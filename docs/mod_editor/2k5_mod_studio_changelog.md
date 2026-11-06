@@ -1,5 +1,20 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC115, beta 80: SOFTDRINK 2K28 v0.9 (APF alpha.111, 2026-11-03)
+
+Prepared by Claude on Noah's behalf.
+
+This release pairs 2K5 Mod Studio **v1.0 RC115** and APF 2K8 Mod Studio **0.1.0-alpha.111** with **SOFTDRINK 2K28 v0.9**. It carries the build reliability work planned as beta 79.1 (which did not ship on its own) and the beta 80 feature wave.
+
+- Coaches: 2026 coach ratings and real play-calling by formation for all 32 head coaches, a 2026 defensive coordinator for every club, Rosters > Coaches and Franchise > Coaches to move, swap, hire or create head coaches, moved coaches keep their own look in their new club's apparel, and an optional CPU coaching carousel at Advance to offseason (off by default).
+- Franchise history: the real 2002-2025 club history, records, all-time leaders and Hall of Fame on a new ESPN.com History screen, box scores from the Schedule, a Player Card game log, a Hall of Fame vote at retirement, and division, conference, home and road records on Team Standings.
+- CPU football: quarterbacks throw on time and check down, quicker deep and rollout throws, modern CPU clock management, man defenders stop spinning on curls, and L/R slide protection calls in the offense audible menu with a button legend (the newest options are experimental and some are off by default).
+- Franchise fixes: real draft class position mixes in every build, starters stop retiring early, no camp sign-and-cut churn, 81 injured-reserve players back on their clubs, tackles only from regular-season games, coach Super Bowl trips counted correctly, and Franchise > Upgrade keeps MyCareer saves working.
+- Simulated seasons: pressures and QB hits at real levels, League Leaders by real values, an Offensive Line tab, and rushing, passing and drops tuned for 17 games.
+- MyCareer: a defensive MyPlayer sees the play from behind his defense, and the draft only sends MyPlayer to a club he could start for.
+- Presentation and art: punt camera from the punter's side, weekly Player Progress views, 49 more official headshots, sideline kit fixes, the 2021 Rams and four other moment teams show their own codes, and clearer 64 MB and BIOS stop screens.
+- Studio: every build failure names its step and file, Check my project dives through a whole project, retries reuse compiled textures, number sheets in more layouts import, and a plan with only in-place options builds.
+
 ## v1.0 RC114, beta 79: SOFTDRINK 2K28 v0.8 (APF alpha.110, 2026-11-01)
 
 Prepared by Claude on Noah's behalf.

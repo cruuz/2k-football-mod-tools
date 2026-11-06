@@ -378,8 +378,6 @@ class CareerHomeNativeTests(unittest.TestCase):
             self.assertEqual(m.get(m.labels['apartment'] + 8), self.labels['home_handler'])
 
 
-if __name__ == '__main__':
-    unittest.main()
 
 
 @unittest.skipUnless(XBE.is_file(), 'pinned USA XBE required')
@@ -398,3 +396,7 @@ class CareerHomeUnionTests(unittest.TestCase):
                           if m.status(result) != 'applied' or m.apply(result, **kwargs)[0] != result], [])
         self.assertGreaterEqual(home.check_static(result)['mycareer_spare_bytes'], 0)
         self.assertEqual(home.apply(result)[0], result)
+
+
+if __name__ == '__main__':
+    unittest.main()

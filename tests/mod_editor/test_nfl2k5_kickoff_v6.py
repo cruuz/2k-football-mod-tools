@@ -306,7 +306,17 @@ class V6Tests(unittest.TestCase):
 
     def test_exact_current_patch_receipt(self):
         if self.saved is not None:
-            self.assertEqual(digest(self.evidence), digest(self.saved['executable']))
+            # b780 sl1: like v3's receipt, this one is exact under the allocator union recorded with it. An owner
+            # that later grows in tests/nfl2k5_allocator_stack.REQUESTS (b780 p2: sprite scorebug code 5376 -> 5920
+            # bytes) moves other owners' allocations and section digests, never this patch. So: the evidence rebuilt
+            # under the recorded union matches byte for byte, and under the live union the kickoff's own legacy and
+            # relocated edits are unchanged.
+            saved = self.saved['executable']
+            recorded = tuple(tuple(row) for row in saved['union_requests'])
+            self.assertEqual(digest(patch_evidence(self.retail, recorded)[1]), digest(saved))
+            for key in ('legacy_input_sha256', 'legacy_output_sha256', 'legacy', 'legacy_section_digest_edits'):
+                self.assertEqual(digest(self.evidence[key]), digest(saved[key]), key)
+            self.assertEqual(digest(self.evidence['relocated']['edits']), digest(saved['relocated']['edits']))
         self.assertEqual(self.evidence['code_bytes_used'], 1939)
         self.assertEqual(self.evidence['code_allocation'], 1939)
         self.assertEqual(self.evidence['state_allocation'], 10)

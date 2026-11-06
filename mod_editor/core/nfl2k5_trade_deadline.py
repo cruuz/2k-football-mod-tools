@@ -33,6 +33,29 @@ returns open and the screen skips the check, so this patch changes nothing.
 Touched sections (``.text`` for the screen guard, ``.data`` for the stage
 table) have their XBE digests recomputed. Status is fail-closed: a mixed or
 unrecognised image is ``foreign`` and ``apply`` refuses it.
+
+Two follow-up boundaries (b780-season1). The weekly advance and the weekly
+inbox stories read the same stored week and still used the retail deadline,
+so beta-78 through beta-80 builds (v0.7 to v0.9) kept trading open through
+Week 9 while the game acted as if it had closed after Week 7:
+
+* the pending-trade purge: with the option on, the Season case of the weekly
+  advance (``FUN_00247d40``, before its week increment) clears the 15 pending
+  trade offers (``0xE3C27C``, 60 bytes each, ``FUN_002bb660``) on every tick
+  after stored week 6, the retail screen limit. The tick that ends displayed
+  Week 8 already emptied the offer list for Week 9, the last open week (CPU
+  offers made in that tick were cleared in the same tick). ``cmp eax,6`` ->
+  ``cmp eax,8`` at 0x247E31: the purge starts with the tick after the last open
+  week, as in retail;
+* the "The Trade Deadline is upon us" inbox story (story 17, posted by
+  ``FUN_0027eb80`` after the week increment) came when the new week was 5,
+  the last week retail shows the trade rows (``week < 6``), so it arrived at
+  Week 6, three weeks early. ``cmp eax,5`` -> ``cmp eax,8`` at 0x27ECF6: it
+  comes at Week 9, the last week the rows show now.
+
+``apply`` writes all four bytes on a retail image. ``repair_followups`` adds
+the two follow-ups to an image a two-site version already moved (``status``
+still reads the two original sites, so those images stay ``applied``).
 """
 
 from __future__ import annotations
@@ -69,6 +92,44 @@ STAGE_GUARD_TAIL = bytes.fromhex("00000100000001000000")
 STAGE_WEEKS_CHOICES = (0x11, 0x12)    # retail 17-week season, 2026 18-week season
 STAGE_DEADLINE_CHOICES = (RETAIL_PREDICATE_WEEK, PREDICATE_WEEK_LIMIT)
 
+# b780-season1 follow-ups: (label, context VA, retail context, immediate VA, retail, patched, note). The context is the
+# complete retail instruction run around the compared immediate; only that one byte may differ.
+PURGE_CONTEXT_VA = 0x00247E23
+PURGE_CONTEXT_RETAIL = bytes.fromhex(
+    "a12401e600"        # mov eax,[0xe60124]  (Trade Deadline option)
+    "85c0"              # test eax,eax
+    "742a"              # je skip
+    "e83fd0e7ff"        # call 0xc4e70 (week)
+    "83f806"            # cmp eax,6
+    "7e20"              # jle skip (else FUN_002bb660 clears the 15 offers at 0xE3C27C)
+)
+PURGE_VA = 0x00247E33
+STORY_CONTEXT_VA = 0x0027ECE7
+STORY_CONTEXT_RETAIL = bytes.fromhex(
+    "e8c45ee4ff"        # call 0xc4bb0 (stage)
+    "83f808"            # cmp eax,8 (Season)
+    "7522"              # jne next story
+    "e87a61e4ff"        # call 0xc4e70 (week, already advanced)
+    "83f805"            # cmp eax,5
+    "7518"              # jne next story
+    "833d2401e60001"    # cmp dword [0xe60124],1 (Trade Deadline option)
+    "750f"              # jne next story
+    "ba11000000"        # mov edx,0x11 (story 17, "The Trade Deadline is upon us. Will there be a deal?")
+    "b93f000000"        # mov ecx,0x3f
+    "e8adf6ffff"        # call 0x27e3c0 (post the story)
+)
+STORY_VA = 0x0027ECF8
+RETAIL_PURGE_WEEK = 6
+PURGE_WEEK_LIMIT = SCREEN_WEEK_LIMIT          # purge from the tick after the last open week (stored 9)
+RETAIL_STORY_WEEK = RETAIL_PREDICATE_WEEK - 1
+STORY_WEEK = PREDICATE_WEEK_LIMIT - 1         # the last week the trade rows show (stored 8, displayed Week 9)
+FOLLOWUPS = (
+    ("pending_trade_purge_week", PURGE_CONTEXT_VA, PURGE_CONTEXT_RETAIL, PURGE_VA, RETAIL_PURGE_WEEK, PURGE_WEEK_LIMIT,
+     "FUN_00247d40 Season tick: cmp eax,6 -> 8; the pending trade offers are cleared from the tick after Week 9"),
+    ("deadline_story_week", STORY_CONTEXT_VA, STORY_CONTEXT_RETAIL, STORY_VA, RETAIL_STORY_WEEK, STORY_WEEK,
+     "FUN_0027eb80 story 17: cmp eax,5 -> 8; 'The Trade Deadline is upon us' comes at Week 9, the last open week"),
+)
+
 
 class TradeDeadlineError(ValueError):
     pass
@@ -99,6 +160,35 @@ def sites() -> tuple[Site, ...]:
         Site("stage_table_season_deadline", STAGE_VA, bytes([RETAIL_PREDICATE_WEEK]), bytes([PREDICATE_WEEK_LIMIT]),
              "stage table row 8 byte +5: the TRADES and TRADING BLOCK rows show while week < 9 (displayed Week 9)"),
     )
+
+
+def followup_sites() -> tuple[Site, ...]:
+    """The two b780-season1 follow-up immediates (one byte each, in ``.text``)."""
+    return tuple(Site(label, va, bytes([retail]), bytes([patched]), note)
+                 for label, _cva, _ctx, va, retail, patched, note in FOLLOWUPS)
+
+
+def _followup_state(payload: bytes, sections, followup) -> str:
+    _label, context_va, context, va, retail, patched, _note = followup
+    got = bytearray(_read(payload, context_va, len(context), sections))
+    at = va - context_va
+    value = got[at]
+    got[at] = context[at]
+    if bytes(got) != context:
+        return "foreign"
+    return "retail" if value == retail else "applied" if value == patched else "foreign"
+
+
+def followups_status(payload: bytes) -> str:
+    """'retail' / 'applied' (both follow-ups) / 'partial' (one) / 'foreign' (a context byte differs)."""
+    try:
+        sections = _sections(payload)
+        states = {_followup_state(payload, sections, f) for f in FOLLOWUPS}
+    except (TradeDeadlineError, ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError):
+        return "foreign"
+    if "foreign" in states:
+        return "foreign"
+    return states.pop() if len(states) == 1 else "partial"
 
 
 def _offset(payload: bytes, va: int, sections) -> int:
@@ -152,18 +242,12 @@ def status(payload: bytes) -> str:
     return "foreign"
 
 
-def apply(payload: bytes) -> tuple[bytes, dict]:
-    """Patch a retail/applied XBE copy; refuse mixed, foreign or short images."""
-    state = status(payload)
-    _require(state != "foreign", "trade-deadline sites are foreign or mixed; refusing")
-    if state == "applied":
-        return payload, dict(owner=OWNER, status="already_applied", changed_bytes=0, file_growth=0,
-                             deadline_week=DEADLINE_WEEK)
+def _write(payload: bytes, selected) -> tuple[bytes, list, list]:
     sections = _sections(payload)
     buf = bytearray(payload)
     edits = []
     touched: set[int] = set()
-    for site in sites():
+    for site in selected:
         off = _offset(payload, site.va, sections)
         _require(bytes(buf[off:off + site.size]) == site.retail, f"trade-deadline site {site.label} is not retail")
         buf[off:off + site.size] = site.patched
@@ -173,10 +257,26 @@ def apply(payload: bytes) -> tuple[bytes, dict]:
         if section.index in touched:
             digest_at = section.header_offset + 36
             buf[digest_at:digest_at + 20] = section_digest(bytes(buf), section)
-    result = bytes(buf)
+    return bytes(buf), sorted(touched), edits
+
+
+def apply(payload: bytes) -> tuple[bytes, dict]:
+    """Patch a retail/applied XBE copy; refuse mixed, foreign or short images.
+
+    A retail image gets the two boundaries and the two follow-ups; an image a two-site version already moved is left
+    to ``repair_followups`` (this returns it unchanged, as before)."""
+    state = status(payload)
+    _require(state != "foreign", "trade-deadline sites are foreign or mixed; refusing")
+    if state == "applied":
+        return payload, dict(owner=OWNER, status="already_applied", changed_bytes=0, file_growth=0,
+                             deadline_week=DEADLINE_WEEK)
+    _require(followups_status(payload) == "retail", "trade-deadline follow-up sites are not retail; refusing")
+    result, touched, edits = _write(payload, sites() + followup_sites())
     _require(status(result) == "applied", "trade-deadline postcondition failed")
+    _require(followups_status(result) == "applied", "trade-deadline follow-up postcondition failed")
     return result, dict(owner=OWNER, status="applied", deadline_week=DEADLINE_WEEK,
                         screen_week_limit=SCREEN_WEEK_LIMIT, predicate_week_limit=PREDICATE_WEEK_LIMIT,
+                        purge_week_limit=PURGE_WEEK_LIMIT, story_week=STORY_WEEK,
                         changed_bytes=sum(a != b for a, b in zip(payload, result)),
                         file_growth=len(result) - len(payload),
                         before_sha256=hashlib.sha256(payload).hexdigest(),
@@ -184,5 +284,25 @@ def apply(payload: bytes) -> tuple[bytes, dict]:
                         sections_repinned=sorted(touched), edits=edits)
 
 
-__all__ = ["DEADLINE_WEEK", "OWNER", "PREDICATE_WEEK_LIMIT", "RETAIL_PREDICATE_WEEK", "RETAIL_SCREEN_WEEK",
-           "SCREEN_WEEK_LIMIT", "SCREEN_VA", "STAGE_VA", "Site", "TradeDeadlineError", "apply", "sites", "status"]
+def repair_followups(payload: bytes) -> tuple[bytes, dict]:
+    """Add the two follow-ups to an image whose deadline is already moved (idempotent; refuses anything else)."""
+    _require(status(payload) == "applied", "the trade deadline is not moved on this image; refusing the follow-ups")
+    state = followups_status(payload)
+    _require(state in ("retail", "partial", "applied"), "trade-deadline follow-up sites are foreign; refusing")
+    receipt = dict(owner=OWNER, purge_week_limit=PURGE_WEEK_LIMIT, story_week=STORY_WEEK)
+    if state == "applied":
+        return payload, dict(receipt, already_applied=True, changed_bytes=0, edits=[])
+    sections = _sections(payload)
+    pending = [site for site, followup in zip(followup_sites(), FOLLOWUPS)
+               if _followup_state(payload, sections, followup) == "retail"]
+    result, touched, edits = _write(payload, pending)
+    _require(status(result) == "applied" and followups_status(result) == "applied",
+             "trade-deadline follow-up postcondition failed")
+    return result, dict(receipt, already_applied=False, changed_bytes=sum(a != b for a, b in zip(payload, result)),
+                        sections_repinned=touched, edits=edits)
+
+
+__all__ = ["DEADLINE_WEEK", "FOLLOWUPS", "OWNER", "PREDICATE_WEEK_LIMIT", "PURGE_VA", "PURGE_WEEK_LIMIT",
+           "RETAIL_PREDICATE_WEEK", "RETAIL_PURGE_WEEK", "RETAIL_SCREEN_WEEK", "RETAIL_STORY_WEEK", "SCREEN_WEEK_LIMIT",
+           "SCREEN_VA", "STAGE_VA", "STORY_VA", "STORY_WEEK", "Site", "TradeDeadlineError", "apply", "followup_sites",
+           "followups_status", "repair_followups", "sites", "status"]

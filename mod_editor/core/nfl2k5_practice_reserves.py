@@ -3,8 +3,14 @@
 Replace the complete retail staging function at 0x61730 in place. ECX/EDX
 are the two source teams; 0xB30864/0xB30A58 are the two 500-byte game copies.
 Each side already has capacity for 65 84-byte player copies. Only the copies
-get active+reserve counts, and only for league type 1, game modes 0..2.
+get active+reserve counts, and only for league type 2 (Franchise), game modes 0..2.
 Mode 3 (training) and every game-day mode retain the retail active-only view.
+
+b780 modes2 (Q27): league type 2 is Franchise (a new franchise calls 0xC7570 with 2 at 0x13EE19; the Tournament
+setups 0x2C5349 / 0x2C5479 pass 1). Revisions before this tested type 1, so Franchise Free Practice never included the
+practice-squad reserves (a Tournament has none). The staging now tests 2; the roster arena growth runtime's own
+staging (tools/roster_arena/lifecycle.h, arena_stage) is corrected the same way. A staging routine with the earlier
+test reads "previous" and apply() upgrades it in place (one byte).
 
 No cave, new runtime flag, source-roster mutation, or save-format change.
 Requires the practice-squad runtime and Franchise Practice patch first.
@@ -25,7 +31,10 @@ TEAM_COPIES = (0xB30864, 0xB30A58)
 PLAYER_COPIES = (0xB30C4C, 0xB321A0)
 COPY_PLAYERS_VA = 0xC3C60
 LEAGUE_VA = 0xE576A0
+LEAGUE_FRANCHISE = 2               # 0xC7570: 0 none, 1 Tournament, 2 Franchise
+PREVIOUS_LEAGUE = 1                # beta-61 .. v0.9 RC tested Tournament by mistake
 MODE_VA = 0xE5FF80
+UPGRADES_PREVIOUS = True
 RETAIL_STAGE = bytes.fromhex(
     "b86408b3002bc8568b3401893083c0043d580ab30072f1b8580ab3008bca2bc88b1401"
     "891083c0043d4c0cb30072f1ba4c0cb300b96408b300e8f22406008a0d8009b30033c0"
@@ -41,14 +50,14 @@ class PracticeReservesError(ValueError):
     """Unsupported staging bytes or absent prerequisites."""
 
 
-def code() -> bytes:
+def code(league: int = LEAGUE_FRANCHISE) -> bytes:
     a = _Asm(STAGE_VA)
     a.b("53 56 57 55 52")                    # save nonvolatiles and home source
     a.b("8bf1 bf6408b300 b97d000000 f3a5")    # copy away's 125 dwords
     a.b("5e b97d000000 f3a5")                # copy home to the following team
     a.b("bb6408b300 bf4c0cb300 bd01000000")   # team, players, side tag
     a.label("side")
-    a.b("833da076e50001")                    # league == Franchise
+    a.b("833da076e500" + f"{league:02x}")     # league == Franchise (2; revision 1 compared 1, the Tournament)
     a.j8("75", "copy")
     a.b("833d80ffe50002")                    # unsigned mode <= 2
     a.j8("77", "copy")
@@ -78,9 +87,9 @@ def code() -> bytes:
     return result
 
 
-def sites() -> list[tuple[str, int, bytes, bytes]]:
+def sites(league: int = LEAGUE_FRANCHISE) -> list[tuple[str, int, bytes, bytes]]:
     return [("practice_reserve_staging", STAGE_VA, RETAIL_STAGE,
-             code().ljust(STAGE_SIZE, b"\x90"))]
+             code(league).ljust(STAGE_SIZE, b"\x90"))]
 
 
 def status(payload: bytes) -> str:
@@ -94,11 +103,13 @@ def status(payload: bytes) -> str:
             # only with its complete sealed allocation and exact hook set.
             from . import nfl2k5_my_career as career
             if (actual[6:] != RETAIL_COPY_PLAYERS[6:] or
-                    career.status(payload) != "applied"):
+                    career.status(payload) not in ("applied", "previous")):   # b780 n6: the beta-79 MyCareer too
                 return "foreign"
         # the grown roster arena projects its overflow block away before the retail-site check
         state = rdata.status(normalized, sites())
-        if state == "applied" and (ps.status(payload) != "applied" or fp.status(payload) != "applied"):
+        if state == "foreign" and rdata.status(normalized, sites(PREVIOUS_LEAGUE)) == "applied":
+            state = "previous"
+        if state in ("applied", "previous") and (ps.status(payload) != "applied" or fp.status(payload) != "applied"):
             return "foreign"
         return state
     except (ValueError, struct.error, IndexError):
@@ -111,13 +122,16 @@ def apply(payload: bytes) -> tuple[bytes, dict[str, object]]:
     if status(payload) == "foreign":
         raise PracticeReservesError("foreign practice staging routine or player-copy helper")
     from . import nfl2k5_roster_arena_growth as growth
-    if growth.status(payload) == 'applied':
+    if growth.status(payload) in ('applied', 'previous'):
         return payload, {'already_applied': True, 'changed_bytes': 0, 'overflow_projection': True}
+    edits = sites()
+    if status(payload) == "previous":   # b780 modes2: the earlier staging becomes this one in place (one byte)
+        edits = [(name, va, old, new) for (name, va, _b, new), (_n, _v, _b2, old) in zip(sites(), sites(PREVIOUS_LEAGUE))]
     try:
-        patched, receipt = rdata.apply(payload, sites(), "Practice reserves")
+        patched, receipt = rdata.apply(payload, edits, "Practice reserves")
     except rdata.RdataSiteError as exc:
         raise PracticeReservesError(str(exc)) from exc
-    return patched, {**receipt, "runtime_verified": False, "league_type": 1,
+    return patched, {**receipt, "runtime_verified": False, "league_type": LEAGUE_FRANCHISE,
                      "practice_modes": [0, 1, 2], "game_day_active_only": True,
                      "source_roster_mutated": False, "new_cave_bytes": 0,
                      "code_bytes": len(code()), "in_game_management": False}

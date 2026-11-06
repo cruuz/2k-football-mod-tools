@@ -72,7 +72,7 @@ inline_load_begin:
 .global mode_ff_dialog
 mode_ff_dialog:
  /* Any native modal restores ordinary speed/audio before its nested loop. */
- mov DWORD PTR [state+2716],0
+ and DWORD PTR [state+2716],0   /* b780 n1: same store, 3 bytes less; the displaced AND ESP sets the flags */
  push ebp
  mov ebp,esp
  and esp,0xfffffff8
@@ -137,13 +137,13 @@ inline_read:
  mov DWORD PTR [esp+28],eax
  test eax,eax
  jnz 2f
- mov DWORD PTR [state+2576],7
  jmp 3f
 1: cmp DWORD PTR [state+2580],0
  je 2f
- mov DWORD PTR [esp+28],0
- mov DWORD PTR [state+2576],7
-3: call mode_load_error
+ and DWORD PTR [esp+28],0
+ /* b780 n1: one shared error store (same bytes reach memory, 13 bytes less). */
+3: mov DWORD PTR [state+2576],7
+ call mode_load_error
 2: popad
  popfd
  pop ebp
@@ -186,13 +186,12 @@ mode_creation_done:
  pop edx
  pop ecx
  jz 1f
+ mov edx,OFFSET FLAT:entry_menu   /* b780 n1: one load for both paths below */
  cmp eax,2
  jne 2f
- mov edx,OFFSET FLAT:entry_menu
  jmp 0x6e450
 2:
  push ecx
- mov edx,OFFSET FLAT:entry_menu
  call 0x6e450
  pop ecx
  push ecx
@@ -329,6 +328,25 @@ mode_camera_pick:
  mov eax,DWORD PTR [0xe5fc50]
  test eax,eax
  jmp 0x89712
+.global mode_camera_dir
+mode_camera_dir:
+ /* b780 n1 (SWeaR 11/02): the camera's facing getter 883F0 reads B61760, the
+  * offense's field direction, for camera states 5..27; retail always films from
+  * behind the offense. A bound MyPlayer on the defensive side sees the play
+  * from behind his own defense, facing the offense. Only this read is negated:
+  * 88490 still compares B61760 with the offense every frame. EAX is free here
+  * (no caller reads it); ECX/EDX and the other registers are untouched. */
+ fld DWORD PTR [0xb61760]
+ call enabled
+ jz 1f
+ mov eax,DWORD PTR [state+2568]
+ test eax,eax
+ jz 1f
+ mov eax,DWORD PTR [eax+0x38]
+ cmp eax,DWORD PTR [0xe60284]
+ jne 1f
+ fchs
+1: ret
 mode_art_input:
  /* Only the bound player's input decoder sees the temporary art-side mask.
   * Native play/task selection and controller assignment run outside it. */
@@ -377,8 +395,9 @@ mode_row_text:
  cmp DWORD PTR [eax+8],OFFSET FLAT:mode_handler
  jne row_done
  mov eax,DWORD PTR [esp+36]
- and DWORD PTR [eax+32],0xff000000
- or DWORD PTR [eax+32],0x00ffff00
+ /* b780 n1: the same colour bytes (00 FF FF, alpha kept) by two stores, 4 bytes less */
+ mov WORD PTR [eax+32],0xff00
+ mov BYTE PTR [eax+34],0xff
 row_done:
  pop eax
  popfd
@@ -399,6 +418,10 @@ start_rank:
  call mode_prospect_rank
  mov DWORD PTR [state+2748],eax
  mov edi,DWORD PTR [state+2560]
+ /* b780 mc1: an injured MyPlayer (+0x20 bit 31, the flag the weekly IR pass 0x2BE020 reads) is not put at the top
+  * of the depth chart; the game's own weekly order stands until he is healthy. */
+ test BYTE PTR [edi+0x23],0x80
+ jnz start_done
  mov esi,DWORD PTR [state+2588]
  movzx ebp,BYTE PTR [edi+41]
  shr ebp,2
@@ -435,12 +458,14 @@ start_write:
  mov eax,0x1ec18
  bt eax,ecx
  pop eax
- lea ecx,[eax+eax*8]
- lea ecx,[ecx*4]
- jnc start_bits
+ /* b780 n1: rank*36 is computed after the BT carry is used (was two LEAs
+  * before the JNC, which left CF alone); same CL on every path, 5 bytes less. */
+ jnc 1f
  cmp eax,3
- jae start_bits
+ jae 1f
  movzx ecx,BYTE PTR [start_sides+eax]
+ jmp start_bits
+1: imul ecx,eax,36
 start_bits:
  and BYTE PTR [edx+41],3
  or BYTE PTR [edx+41],cl

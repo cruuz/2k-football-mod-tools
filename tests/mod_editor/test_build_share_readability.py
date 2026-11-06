@@ -255,7 +255,36 @@ class WindowFitTests(unittest.TestCase):
                     window._build_panel.minimumSizeHint().width(), scroll.viewport().width()
                 )
 
+    def test_the_minimum_window_fits_with_much_wider_text(self) -> None:
+        # b780 CI (windows-latest): Windows has neither stylesheet font (Noto Sans, DejaVu Sans), and with its
+        # substitute the Build tab needed 82 px more than the 1040x600 window: the console-memory box sized itself to
+        # its ~100-character 64 MB label (671 px even with Linux fonts), and buttons and one-line captions set rows'
+        # widths. "Much wider" is relative to this platform's own text: every font-size in the stylesheet is scaled
+        # 1.5x of what this OS draws (about 3x Linux on the Windows runner); the tab must still fit without a
+        # horizontal scroll.
+        import re
+        for theme in ("dark", "light"):
+            window = self._window(theme, 1040, 600)
+            window.setStyleSheet(re.sub(r"font-size:\s*(\d+)px",
+                                        lambda m: f"font-size: {round(int(m.group(1)) * 1.5)}px", window.styleSheet()))
+            for _ in range(20):
+                APP.processEvents()
+            scroll = window._build_panel.parent()
+            while scroll is not None and not isinstance(scroll, QScrollArea):
+                scroll = scroll.parent()
+            with self.subTest(theme=theme):
+                self.assertEqual(scroll.horizontalScrollBar().maximum(), 0)
+                self.assertLessEqual(window._build_panel.minimumSizeHint().width(), scroll.viewport().width())
+                combo = window._build_panel.console_memory_combo
+                longest = max(combo.fontMetrics().horizontalAdvance(combo.itemText(i)) for i in range(combo.count()))
+                self.assertLess(combo.minimumSizeHint().width(), longest)      # the box no longer sizes to its longest label
+
     def test_the_minimum_window_has_no_horizontal_scroll(self) -> None:
+        from PyQt5.QtGui import QFontInfo
+        probe = self._window("dark", 1040, 600)._build_panel
+        print(f"FONTS build panel: drawn {QFontInfo(probe.font()).family()!r} {QFontInfo(probe.font()).pointSizeF():.1f}pt, "
+              f"'Advanced: updated gameplay and season' = "
+              f"{probe.fontMetrics().horizontalAdvance('Advanced: updated gameplay and season')} px", file=sys.stderr)
         # 1040x600 is the shell's own floor and the closest a 1280x720 screen at 125% scaling can
         # get (the logical desktop is 1024x576). The Build tab must still fit inside it.
         for theme in ("dark", "light"):
@@ -349,12 +378,15 @@ class WrappingWidgetTests(unittest.TestCase):
 
 
 class FooterReadabilityTests(unittest.TestCase):
-    """The bottom bar messages must read completely, never cut mid-word.
+    """The bottom bar messages must stay readable and the bar must stay small.
 
-    At 1280x720 the operation status and the Build tab caption shared one row
-    and each got about half the footer, so both ended mid-word ("browse what's"
-    / "Projec").  They now stack and wrap; these tests hold that at the logical
-    sizes behind 100%, 125% and 150% scaling.
+    At 1280x720 the operation status and the Build tab caption shared one row and each got about
+    half the footer, so both ended mid-word ("browse what's" / "Projec"). Wrapping them beside the
+    buttons then crushed the status into a one-letter column and grew the footer to about 210 px
+    over the page (b780-uxfix, both reviews). The messages now have their own row above the
+    buttons: the status shows at most two lines, the caption one, the rest ends in "…", and the
+    whole text is in ``text()`` and the tooltip. These tests hold that at the logical sizes behind
+    100%, 125% and 150% scaling.
     """
 
     def _window(self, theme: str, width: int, height: int) -> StudioMainWindow:
@@ -367,40 +399,43 @@ class FooterReadabilityTests(unittest.TestCase):
             APP.processEvents()
         return window
 
-    def test_footer_messages_reserve_their_full_wrapped_height(self) -> None:
+    def test_footer_messages_have_their_own_row_and_fit(self) -> None:
+        from mod_editor.gui.studio_qt import FOOTER_MAX_HEIGHT
+        from mod_editor.gui.ux_text import ElidedStatusLabel
         for width, height in ((1280, 720), (1536, 864), (1920, 1080)):
             for theme in ("dark", "light"):
                 window = self._window(theme, width, height)
                 footer = window.operation_status.parentWidget()
                 buttons = [b for b in footer.findChildren(QPushButton) if b.isVisible()]
                 self.assertTrue(buttons)
-                left_of_buttons = min(b.geometry().left() for b in buttons)
+                top_of_buttons = min(b.geometry().top() for b in buttons)
+                self.assertLessEqual(footer.height(), FOOTER_MAX_HEIGHT)
                 for name in ("operation_status", "build_share_caption"):
                     label = getattr(window, name)
                     with self.subTest(size=(width, height), theme=theme, label=name):
-                        self.assertIsInstance(label, WrappedLabel)
-                        self.assertTrue(label.wordWrap())
+                        self.assertIsInstance(label, ElidedStatusLabel)
                         self.assertTrue(label.isVisible())
                         self.assertTrue(label.text())
-                        self.assertGreater(label.width(), 0)
-                        wrapped = label._wrapped_height(label.width())
-                        self.assertGreaterEqual(label.height() + 1, wrapped)
-                        self.assertLess(
-                            label.geometry().left() + label.width(), left_of_buttons,
-                        )
+                        self.assertEqual(label.toolTip(), label.text())
+                        self.assertGreaterEqual(label.width(), ElidedStatusLabel.MIN_WIDTH)
+                        lines = label.shown_text().count("\n") + 1
+                        self.assertGreaterEqual(label.height() + 1, label.fontMetrics().lineSpacing() * lines)
+                        self.assertLessEqual(label.geometry().bottom(), top_of_buttons)
 
-    def test_a_long_status_grows_the_footer_instead_of_clipping(self) -> None:
+    def test_a_long_status_ends_in_an_ellipsis_instead_of_growing_the_footer(self) -> None:
+        from mod_editor.gui.studio_qt import FOOTER_MAX_HEIGHT
         window = self._window("dark", 1280, 720)
         footer = window.operation_status.parentWidget()
-        quiet_height = footer.height()
-        window._set_status("A longer operation status " * 10)
+        message = "A longer operation status " * 30
+        window._set_status(message)
         for _ in range(20):
             APP.processEvents()
         label = window.operation_status
-        wrapped = label._wrapped_height(label.width())
-        self.assertGreater(label.height(), 17)
-        self.assertGreaterEqual(label.height() + 1, wrapped)
-        self.assertGreater(footer.height(), quiet_height)
+        self.assertEqual(label.text(), message)
+        self.assertEqual(label.toolTip(), message)
+        self.assertLessEqual(label.shown_text().count("\n"), 1)
+        self.assertTrue(label.shown_text().endswith("…"))
+        self.assertLessEqual(footer.height(), FOOTER_MAX_HEIGHT)
 
 
 if __name__ == "__main__":

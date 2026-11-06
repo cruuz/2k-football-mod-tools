@@ -64,7 +64,7 @@
     "X Levels Steep In",
     "Zone Toss Wk",
     "Y Deep Over Out",
-    "PA Post Corner Shot"
+    "Z Hitch Seam"
    ],
    "cpu_situation": [
     2,
@@ -110,7 +110,7 @@
     "RB Post Wheel",
     "QB Keep",
     "End Around",
-    "Slot Levels",
+    "PHI Quick Outs",
     "Steep In Seam",
     "Slot Cross Dig",
     "Slot Sail Out",
@@ -141,7 +141,7 @@
     "RB Counter",
     "PA Z Dagger",
     "Drive",
-    "Slot Drive",
+    "Y Spacing",
     "Y Drive Out"
    ],
    "cpu_situation": [
@@ -174,7 +174,7 @@
     "Comeback Seam",
     "Z Deep Post",
     "Slot Hitch Seam",
-    "Crack Toss Wk",
+    "Crack Toss",
     "Slot Drive Return",
     "Y Slot Fade Bench",
     "PA Return Flood",
@@ -207,7 +207,7 @@
    "menu": [
     "Slot Scat",
     "PA Slot Y Trail",
-    "Crack Toss Wk",
+    "Crack Toss",
     "RB Smash",
     "Slot Drive Return",
     "Slot Deep Flood",
@@ -240,7 +240,7 @@
     "PA X Curl Combo",
     "Slot Drive Return",
     "Slot Hitch Seam",
-    "Crack Toss Wk",
+    "Crack Toss",
     "PHI Post Wheel",
     "Sprint Slot Sail",
     "Z Deep Post",
@@ -353,7 +353,10 @@
    "menu": [
     "Zone Toss",
     "Inside Zone Split Wk",
-    "RB Lead Draw"
+    "Y Slot Fade",
+    "RB Lead Draw",
+    "PA X Post Go",
+    "PA X Hook Corner"
    ],
    "cpu_situation": [
     4,
@@ -372,7 +375,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Inside Zone Split"
+    "Y Slot Fade",
+    "Inside Zone Split",
+    "PA X Hook Corner",
+    "U China Out"
    ],
    "cpu_situation": [
     4,
@@ -417,8 +423,8 @@
     "Y Stick",
     "RB Verticals",
     "X Slip Screen",
-    "RB Cross Dig",
-    "RB Zig Flat",
+    "QB Power",
+    "QB Draw",
     "Z Steep In Seam"
    ],
    "cpu_situation": [
@@ -491,7 +497,7 @@
     "Outside Zone",
     "Z Return Flood",
     "X Deep Post",
-    "Slot Drive Return",
+    "Slot Scat",
     "Slot Hitch Seam",
     "RB Stretch",
     "Smash Post"
@@ -769,7 +775,7 @@
    "menu": [
     "Slot Scat",
     "PA Seam Shot",
-    "Crack Toss Wk",
+    "Crack Toss",
     "X Smash",
     "RB Texas",
     "X Deep Post",
@@ -810,9 +816,12 @@
    "align": "uc",
    "tag": "goal",
    "menu": [
+    "Inside Zone Split",
+    "RB Off Tackle",
     "Y Spacing",
     "PA Crossers",
-    "PA Boot Y Sail"
+    "PA Boot Y Sail",
+    "RB Iso"
    ],
    "cpu_situation": [
     4,
@@ -1644,7 +1653,6 @@
     "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
-    "Gun Bunch TE",
     "Gun Y Off Trio Close",
     "Pistol Bunch",
     "Gun Y Off Trips",
@@ -1706,7 +1714,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Doubles",
     "Gun Doubles",
     "Gun Trips TE",
     "Gun Bunch X Nasty",
@@ -1742,6 +1749,7 @@
     "Gun Doubles",
     "Gun Trips TE",
     "Gun Bunch X Nasty",
+    "Gun Bunch TE",
     "Gun Y Off Trio Close",
     "Gun Tight Y Off",
     "Gun Spread Y-Slot",
@@ -2495,7 +2503,7 @@
   {
    "play": "p053",
    "play_index": 110,
-   "name": "Crack Toss Wk",
+   "name": "Crack Toss",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -2507,7 +2515,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Doubles",
     "Gun Trips TE",
@@ -2898,6 +2906,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
     "Strong H Tight Close"
    ]
   },
@@ -3011,6 +3020,8 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -3198,6 +3209,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -3248,6 +3260,8 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -3436,6 +3450,7 @@
    "lane": null,
    "formations": [
     "Pistol Deuce Close",
+    "Singleback Ace",
     "Gun Y Trips"
    ]
   },
@@ -3832,6 +3847,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Singleback Ace Double Wing",
     "Strong Jumbo"
    ]
   },
@@ -3904,28 +3920,23 @@
   {
    "play": "p112",
    "play_index": 169,
-   "name": "RB Cross Dig",
-   "concept": "HB Cross Dig Skinny Post Out Drag",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Crossing Dig",
-    "Dig",
-    "Flat",
-    "Seam Out",
-    "Skinny Post"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p113",
@@ -3964,6 +3975,7 @@
    "deep": false,
    "lane": 3,
    "formations": [
+    "Singleback Ace Double Wing",
     "Strong Jumbo"
    ]
   },
@@ -4215,27 +4227,25 @@
   {
    "play": "p126",
    "play_index": 183,
-   "name": "RB Zig Flat",
-   "concept": "HB Zig Flat Skinny Post Hitches",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Flat",
-    "Hitch",
-    "Skinny Post",
-    "Zig"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p127",
@@ -4455,7 +4465,8 @@
    "deep": false,
    "lane": 3,
    "formations": [
-    "Goal Line"
+    "Goal Line",
+    "Singleback Ace Double Wing"
    ]
   },
   {

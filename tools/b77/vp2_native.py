@@ -149,7 +149,7 @@ class AutoWorld(World):
             assert self.get(self.state_va + 56) == 0
 
 
-def bind_automatic(xbe, book, receipt, coach, mode=4, *, load_route="resource"):
+def bind_automatic(xbe, book, receipt, coach, mode=4, *, load_route="resource", table=None):
     w = AutoWorld(xbe, load_route=load_route)
     w.load(book)
     w.install_roster(receipt["automatic_profile"], coach)
@@ -173,7 +173,7 @@ def bind_automatic(xbe, book, receipt, coach, mode=4, *, load_route="resource"):
     assert w.get(0xE5FF80) == mode, "Global game mode changed"
     assert bytes(w.m.mem_read(0xBDFCF0, len(slots))) == slots
     assert bytes(w.m.mem_read(0xBC6E40, len(supplementary))) == supplementary
-    expected = bytearray(ai.expand_profile(book))
+    expected = bytearray(ai.expand_profile(book, table))   # b780 c2-staff: an assigned kernel table
     # F7B30 runs native 1B1EE0/281A90: game-start history decay halves
     # large counters (including playback profiles). Compare their defined
     # integer effect, rather than pretending the raw counters survive setup.

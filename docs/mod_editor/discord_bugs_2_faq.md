@@ -21,9 +21,11 @@ results remain experimental and unwitnessed until the listed comparisons are pla
   matching team, style and sides in Team Kit before import. Horizontal sheets
   and kits can be imported in either order; the last edited PNG for a digit
   wins. Save the replacement-only `.2k5mod` to share; keep working kits private.
-- **How do I arrange a 0-9 sheet?** Use equal cells in one row, one column,
-  five columns by two rows, or two columns by five rows, and select that layout.
-  Read left to right, then top to bottom, starting at 0. See
+- **How do I arrange a 0-9 sheet?** Put the digits in order, starting at 0, in one
+  row, one column, five columns by two rows (0-4 above 5-9), or two columns by five
+  rows, read left to right and then top to bottom. Leave Detect layout on: it also
+  reads sheets with gaps, margins, tall or wide cells and canvases such as 1024x512, as
+  long as the digits do not touch. See
   [number sheet instructions](number_sheets.md) for dimensions, padding and alpha.
 - **Why do some imported numbers look blocky even at 64x64?** The old digit
   encoder rebuilt the smaller textures by choosing a winning colour in each

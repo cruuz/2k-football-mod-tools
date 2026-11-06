@@ -23,6 +23,7 @@ class Machine(CareerMachine):
         self.put(0xE602B8, 13)
         self.put(0xE60294, self.ARENA + 0x91000)
         self.put(0xE602AC, 0x42200000)  # native initial play clock: 40 seconds
+        self.put(self.get(0xE60294) + 0x10, 0x42200000)  # b780 n2: a fresh pre-snap's running play clock
         self.put(self.get(0xE60294) + 0x18, 1)
         self.actors = [self.body + 0x100*i for i in range(22)]
         for i, actor in enumerate(self.actors):

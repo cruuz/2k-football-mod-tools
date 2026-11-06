@@ -38,7 +38,8 @@ def build_route(payload, sofi):
     env = dict(season=season, xbe=payload, state=season.simple_status(payload), target='memory',
                plan=SimpleNamespace(modern_sofi=sofi), receipt={'steps': []},
                _core_module=lambda _: season, _xbe_bytes=lambda _: memory[0],
-               _write_xbe_bytes=lambda _, b: memory.__setitem__(0, b))
+               _write_xbe_bytes=lambda _, b: memory.__setitem__(0, b),
+               _step=lambda *_args, **_kwargs: None)  # b791-h3: the blocks mark their build step
     exec(compile(ast.Module(body=[state, route], type_ignores=[]), 'mod_build routing blocks', 'exec'), env)
     return memory[0], env['receipt']
 

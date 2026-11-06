@@ -62,4 +62,21 @@ def bound(owner: QObject, callback: Callable[..., object]) -> Callable[..., None
     return deliver
 
 
-__all__ = ["bound"]
+#: worker thread stack for every Studio thread pool (b780 CI: see roomy_pool)
+WORKER_STACK_BYTES = 8 << 20
+
+
+def roomy_pool(pool):
+    """``pool`` with an 8 MiB stack for the threads it starts from now on; returns the pool.
+
+    Qt starts pool threads with the platform's default secondary-thread stack, which is 512 KiB on macOS. b780 CI
+    (macos-latest, Python 3.11/3.12): the Studio's prepare task imported nfl2k5_team_sleeves, hence numpy, on a pool
+    thread, and numpy's import-time macOS self-check (polyfit through Accelerate) overflowed that stack: "Fatal Python
+    error: Bus error", the whole Studio gone. CPython gives its own threads 16 MiB on macOS; the Studio's pools now get
+    8 MiB everywhere (Linux's default already; Windows' default is 1 MiB)."""
+    if pool.stackSize() < WORKER_STACK_BYTES:      # 0 means the platform default
+        pool.setStackSize(WORKER_STACK_BYTES)
+    return pool
+
+
+__all__ = ["bound", "roomy_pool", "WORKER_STACK_BYTES"]

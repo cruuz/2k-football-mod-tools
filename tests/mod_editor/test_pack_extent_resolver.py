@@ -164,6 +164,10 @@ class PackExtentResolverTests(unittest.TestCase):
             def status(_xbe: bytes) -> str:
                 return "applied"
 
+            @staticmethod
+            def repair_followups(xbe: bytes) -> tuple[bytes, dict]:  # b780-season1: already moved, nothing written
+                return xbe, {"already_applied": True}
+
         class Schedule:
             @staticmethod
             def encode_schedule(_doc):

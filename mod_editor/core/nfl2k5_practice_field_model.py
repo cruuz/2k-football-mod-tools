@@ -1656,8 +1656,21 @@ def compose_bundle(retail, current, name, *, colour_settings=None, team_logo=Fal
     out = bytearray(current)
     out[start:end] = model[start:end]
     chunk = ml.bundle_scenes(retail)["field"]
-    field, finfo = field_span(retail, name, colour_settings=colour_settings, team_logo=team_logo, outer_index=outer_index,
-                              tint_bundle=current, shield=shield)
+    custom = bool(colour_settings) and _custom_colour(colour_settings)
+    cause = ("your colour settings leave no room in its fixed slot" if custom
+             else "the new colours leave no room in its fixed slot")
+    kept = []
+    try:
+        field, finfo = field_span(retail, name, colour_settings=colour_settings, team_logo=team_logo,
+                                  outer_index=outer_index, tint_bundle=current, shield=shield)
+    except (sb.ScneBuildError, ValueError) as exc:
+        # b791: the field is cosmetic. When no rung of its ladder fits, the field, its detail normal and divots stay
+        # exactly as Modern colour (or retail) left them, and the facility around it is still built.
+        kept.append(dict(site="field", reason=str(exc) or type(exc).__name__,
+                         user_note=f"Modern practice facility: the practice field ({name}) keeps its field as it was "
+                                   f"(the facility around it is built): {cause}."))
+        sb.require(len(out) == len(current), f"{name}: the bundle changed size")
+        return bytes(out), dict(info, field=None, normal=None, kept=kept)
     out[chunk.offset:chunk.offset + len(field)] = field
     sites = ms.bundle_sites(bytes(out))
     at, size = sites["normal"]
@@ -1667,9 +1680,25 @@ def compose_bundle(retail, current, name, *, colour_settings=None, team_logo=Fal
         at, size = sites["divots"]
         tint = ms.field_tint(bytes(out))
         grass_mean = [v * (t / 255.0) for v, t in zip(finfo["map_mean"], tint)]
-        out[at:at + size] = ms.divots_span(bytes(out[at:at + size]), "grass", grass_mean)
+        try:
+            out[at:at + size] = ms.divots_span(bytes(out[at:at + size]), "grass", grass_mean)
+        except ValueError as exc:   # b791: the wear layer is cosmetic; it keeps its bytes and the build goes on
+            kept.append(dict(site="divots", reason=str(exc) or type(exc).__name__,
+                             user_note=f"Modern practice facility: the practice field ({name}) keeps its divot layer "
+                                       f"as it was: {cause}."))
     sb.require(len(out) == len(current), f"{name}: the bundle changed size")
-    return bytes(out), dict(info, field=finfo, normal=variant)
+    result = dict(info, field=finfo, normal=variant)
+    if kept:
+        result["kept"] = kept
+    return bytes(out), result
+
+
+def _custom_colour(colour_settings):
+    from . import nfl2k5_modern_color as colour
+    try:
+        return colour.is_custom(colour_settings)
+    except ValueError:
+        return False
 
 
 def _compose(job):
@@ -1723,6 +1752,7 @@ def apply_to_image(target, *, retail_source, art_root=None, team_logo=False, pro
                    team_logo=bool(team_logo), shield=shield is not None, art_root=str(art_root) if art_root else None,
                    bundles={})
     new_colour = deepcopy(colour_receipt) if colour_receipt else None
+    notes = []
     results = ml.run_jobs(_compose, jobs, workers=workers, progress=say, label="Practice facility")
     with ml._outer_image()(str(target), writable=True) as archive:
         for name, after, info in results:
@@ -1737,6 +1767,9 @@ def apply_to_image(target, *, retail_source, art_root=None, team_logo=False, pro
                                                    if k in ("look", "light", "rig", "palette_cap", "detail", "team_logo",
                                                             "map_mean", "outside_mean")},
                                             normal=info.get("normal"), system=info["system"], video=info["video"])
+            if info.get("kept"):   # b791: the divots kept as they were, why, and the Build summary line
+                receipt["bundles"][name]["kept"] = info["kept"]
+                notes.extend(row["user_note"] for row in info["kept"])
             if new_colour is not None and name in new_colour.get("bundle_pins", {}):
                 row = new_colour["bundle_pins"][name]
                 new_colour["bundle_pins"][name] = dict(row, applied_sha256=sha(after), sites=[
@@ -1752,8 +1785,13 @@ def apply_to_image(target, *, retail_source, art_root=None, team_logo=False, pro
         colour._save_image_receipt(target, new_colour)
     receipt_path(target).write_text(json.dumps(receipt, indent=1, default=str) + "\n", encoding="utf-8", newline="\n")
     say("Practice facility: done", 1, 1)
-    return dict(verify(target), bundles_written=len(results), colour=settings is not None, team_logo=bool(team_logo),
-                shield=shield is not None)
+    out = dict(verify(target), bundles_written=len(results), colour=settings is not None, team_logo=bool(team_logo),
+               shield=shield is not None)
+    if notes:
+        from . import nfl2k5_modern_surfaces as ms
+        out.update(user_notes=ms.compact_notes(notes, "Modern practice facility"),
+                   kept=sorted(n for n, row in receipt["bundles"].items() if row.get("kept")))
+    return out
 
 
 def apply_lab_disc(disc, source, *, art_root=None, team_logo=False, progress=None):

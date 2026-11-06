@@ -22,6 +22,18 @@ spare slots while they hold historic teams, so neither side offers the team in t
 slot, and the Random Team spin stays on the resident list. Leaving the list returns the slot to an
 empty created-team slot, as the ESPN 25th Anniversary exit event 20C3C0 does.
 
+Revision 2 (b780 modes2, Q23/Q24). An imported team's label pair (its Team Select name and playbook key) is the
+label of the FIRST team with the entry's asset code, which is the club itself (rows 0..31 are the 32 clubs with 32
+distinct codes, and no later row carries a club's code), as retail 2D17B0 gives on a retail roster. Revision 1 took
+the last match, so the two spare slots named every team with their code: the classic teams' SEAMEN/SEA holder rows
+named the '72 and '84 Dolphins and every Miami team-season (and ran Seattle's book for them), and a historic team on
+the other side named any team of its franchise. The one team that keeps its own name takes own_label, a label pair in
+the owned code: the classic teams variant writes its identity (the Seamen, 230) and nickname (SEAMEN) and points the
+abbreviation at the text on its own helper page (SEA, Seattle's book, as before); the base variant names no team.
+Revision-1 copies
+(beta-78 .. the v0.9 RC; the base, season-route and classic variants) read "previous" and upgrade in place: only
+the owned code changes.
+
 Hooks: the six calls of the four retail step functions from the Team Select next and previous
 handlers (2C2240, 2C2310) and the Random Team spin (2C1AC0, 2C1B10). Practice and First Person
 Football use the same local list. Every other flow calls the retail step functions unchanged, and the
@@ -40,6 +52,7 @@ from pathlib import Path
 import struct
 
 from . import nfl2k5_historic_teams_quick_game_code as assembly
+from . import nfl2k5_historic_teams_quick_game_code_b778 as assembly_b778
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
@@ -60,6 +73,12 @@ HELP_TEXT = (
     "historic teams. Practice and First Person Football also offer the historic list. "
     "Other flows, Franchise and season lists are unchanged.")
 
+REVISION = 2
+UPGRADES_PREVIOUS = True      # b780 modes2: a revision-1 copy reads "previous"; apply() upgrades it in place
+NO_OWN_NAME = None            # the base variant: no team keeps its own name (the identity byte is 0xFF)
+OWN_IDENTITY_AT = assembly.LABELS["own_name"] + 6    # the imm8 of cmp byte ptr [ebx+0x118], identity
+OWN_LABEL_AT, OWN_TEXT_AT = assembly.LABELS["own_label"], assembly.LABELS["own_text"]
+OWN_TEXT_CHARS = 6            # own_text holds 6 UTF-16 characters and the NUL
 QUICK_GAME_FLOW = 1
 LOCAL_FLOWS = (1, 3, 7)
 FLOW_VA = 0xACF614
@@ -113,14 +132,27 @@ def require(condition, message):
         raise HistoricQuickGameError(message)
 
 
-def code_for(code_va, data_va, *, seasons=False, classic_va=None):
+def code_for(code_va, data_va, *, seasons=False, classic_va=None, own_name=NO_OWN_NAME, revision=REVISION):
+    # own_name: None, or (identity, nickname, abbreviation VA) of the classic variant's own-name team
     """The owned code. seasons: the HTS- season filename route (historic_rosters_2026). classic_va: the address of the
     classic teams' helper allocation (nfl2k5_classic_teams); the list then runs on past the roster's historic entries
     into the Anniversary moment team-seasons and the classic team-seasons, and an entry's year and file digit are read
-    through EDI (the helper's override record) instead of EAX."""
-    symbols = dict(SYMBOLS, state=data_va)
-    result = bytearray(assembly.CODE)
-    for offset, kind, symbol, value in assembly.RELOCATIONS:
+    through EDI (the helper's override record) instead of EAX. own_name (revision 2, classic variant only): the identity
+    of the one team that keeps its own label pair. revision=1 rebuilds the shipped beta-78 .. v0.9 RC code
+    (recognition and in-place upgrade only)."""
+    require(revision in (1, 2), "unknown historic Quick Game revision")
+    require(own_name is NO_OWN_NAME or (classic_va is not None and revision == 2),
+            "only the classic teams variant names a team that keeps its own name")
+    if own_name is not NO_OWN_NAME:
+        identity, nickname, abbreviation = own_name
+        require(type(identity) is int and 0 <= identity < 0xFF, "own-name identity outside the byte-wide identities")
+        require(isinstance(nickname, str) and nickname.isascii() and 0 < len(nickname) <= OWN_TEXT_CHARS
+                and "\0" not in nickname, "own-name nickname must be 1..6 ASCII characters")
+        require(type(abbreviation) is int and 0x10000 <= abbreviation < 0x4000000, "own-name abbreviation address")
+    source = assembly if revision == 2 else assembly_b778
+    symbols = dict(SYMBOLS, state=data_va, code=code_va)
+    result = bytearray(source.CODE)
+    for offset, kind, symbol, value in source.RELOCATIONS:
         target = symbols[symbol] + value + struct.unpack_from("<i", result, offset)[0]
         if kind == 2:
             target -= code_va + offset
@@ -132,7 +164,16 @@ def code_for(code_va, data_va, *, seasons=False, classic_va=None):
         struct.pack_into('<I',result,at,code_va+len(result))
         result.extend('HTS-h-%s-%d-%s-%d.iff\0'.encode('utf-16le'))
     if classic_va is not None:
-        result = bytearray(_classic_variant(bytes(result), code_va, classic_va, seasons=seasons))
+        result = bytearray(_classic_variant(bytes(result), code_va, classic_va, seasons=seasons,
+                                            body=len(source.CODE)))
+        if revision == 2 and own_name is not NO_OWN_NAME:
+            require(result[OWN_IDENTITY_AT - 6:OWN_IDENTITY_AT + 1] == bytes.fromhex("80bb18010000ff"),
+                    "own-name test moved")
+            identity, nickname, abbreviation = own_name
+            result[OWN_IDENTITY_AT] = identity
+            result[OWN_TEXT_AT:OWN_TEXT_AT + 2 * OWN_TEXT_CHARS + 2] = \
+                (nickname.encode("utf-16le") + b"\0\0").ljust(2 * OWN_TEXT_CHARS + 2, b"\0")
+            struct.pack_into("<I", result, OWN_LABEL_AT + 4, abbreviation)
     require(len(result) <= CODE_SIZE, "historic teams in Quick Game exceeds its RX budget")
     return bytes(result).ljust(CODE_SIZE, b"\xcc")
 
@@ -146,8 +187,8 @@ CLASSIC_ENTRIES = dict(total=0x00, cmp_total=0x06, entry=0x3E, fmt=0x0C)
 _ROOT = "1829b700"
 
 
-def _classic_variant(code, code_va, classic_va, *, seasons):
-    fmt = 0xE9F984 if not seasons else code_va + len(assembly.CODE)
+def _classic_variant(code, code_va, classic_va, *, seasons, body=None):
+    fmt = 0xE9F984 if not seasons else code_va + (len(assembly.CODE) if body is None else body)
     replace = (
         ("a1" + _ROOT + "8b4058", "total", 2),               # mov eax,[root]; mov eax,[eax+58h]  -> list length
         ("8b0d" + _ROOT + "3b4158", "cmp_total", 2),          # mov ecx,[root]; cmp eax,[ecx+58h]  -> against it
@@ -216,18 +257,61 @@ def _recognize(payload):
         code, data = owned
         body = image.read(code["va"], CODE_SIZE)
         classic = _classic_va(payload)
-        variants = [code_for(code["va"], data["va"]), code_for(code["va"], data["va"], seasons=True)]
-        if classic is not None:
-            variants += [code_for(code["va"], data["va"], classic_va=classic),
-                         code_for(code["va"], data["va"], seasons=True, classic_va=classic)]
-        states.add("retail" if body == b"\xcc" * CODE_SIZE else "applied" if body in variants else "foreign")
-    require(states in ({"retail"}, {"applied"}), "foreign/mixed historic Quick Game hooks or owned code")
+        found = None if body == b"\xcc" * CODE_SIZE else _variant(body, code["va"], data["va"], classic)
+        states.add("retail" if body == b"\xcc" * CODE_SIZE else "foreign" if found is None
+                   else "applied" if found["revision"] == REVISION else "previous")
+    states_ok = ({"retail"}, {"applied"}, {"applied", "previous"})
+    require(states in states_ok, "foreign/mixed historic Quick Game hooks or owned code")
+    if states == {"applied", "previous"}:
+        states = {"previous"}       # the six call sites are the same in both revisions; the owned code is older
     for va, size, digest, what in GUARDS:
         require(_guard_digest(image, va, size, edits) == digest, f"foreign {what} at {va:#x}")
     return next(iter(states))
 
 
+def _variant(body, code_va, data_va, classic):
+    """{revision, seasons, classic, own_name} of an installed owned body, else None. Revision 2 is tried first."""
+    for revision in (REVISION, 1):
+        for seasons in (False, True):
+            if body == code_for(code_va, data_va, seasons=seasons, revision=revision):
+                return dict(revision=revision, seasons=seasons, classic=False, own_name=NO_OWN_NAME)
+            if classic is None:
+                continue
+            own = _own_name_of(body) if revision == REVISION else NO_OWN_NAME
+            try:
+                expected = code_for(code_va, data_va, seasons=seasons, classic_va=classic, own_name=own,
+                                    revision=revision)
+            except HistoricQuickGameError:
+                continue
+            if body == expected:
+                return dict(revision=revision, seasons=seasons, classic=True, own_name=own)
+    return None
+
+
+def _own_name_of(body):
+    """(identity, nickname, abbreviation VA) a revision-2 classic body names, or None (identity byte 0xFF)."""
+    if len(body) < OWN_TEXT_AT + 2 * OWN_TEXT_CHARS + 2 or body[OWN_IDENTITY_AT] == 0xFF:
+        return NO_OWN_NAME
+    raw = body[OWN_TEXT_AT:OWN_TEXT_AT + 2 * OWN_TEXT_CHARS + 2]
+    end = next((i for i in range(0, len(raw), 2) if raw[i:i + 2] == b"\0\0"), 0)
+    try:
+        nickname = raw[:end].decode("utf-16le")
+    except UnicodeDecodeError:
+        return NO_OWN_NAME
+    return (body[OWN_IDENTITY_AT], nickname, struct.unpack_from("<I", body, OWN_LABEL_AT + 4)[0])
+
+
+def _installed(payload):
+    """The installed variant (see _variant) of an applied or previous copy."""
+    code, data = allocations(payload)
+    found = _variant(XbeImage(payload).read(code["va"], CODE_SIZE), code["va"], data["va"], _classic_va(payload))
+    require(found is not None, "foreign historic Quick Game code")
+    return found
+
+
 def status(payload):
+    """'retail', 'applied' (revision 2), 'previous' (revision 1, beta-78 .. the v0.9 RC; apply() upgrades it in
+    place) or 'foreign'."""
     try:
         return _recognize(payload)
     except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError):
@@ -235,36 +319,42 @@ def status(payload):
 
 
 def season_routing_status(payload):
-    if status(payload) != 'applied':
+    """True when the installed code (either revision) takes the HTS- season filename route."""
+    if status(payload) not in ('applied', 'previous'):
         return False
-    code,data=allocations(payload)
-    body=XbeImage(payload).read(code['va'],CODE_SIZE)
-    classic=_classic_va(payload)
-    return body==code_for(code['va'],data['va'],seasons=True) or (
-        classic is not None and body==code_for(code['va'],data['va'],seasons=True,classic_va=classic))
+    return _installed(payload)['seasons']
 
 
 def classic_status(payload):
-    """'applied' when the Quick Game code runs the classic teams variant, 'base' when it is installed without it."""
-    if status(payload) != 'applied':
+    """'applied' when the Quick Game code runs the revision-2 classic teams variant, 'previous' for the revision-1
+    classic variant (beta-78 .. the v0.9 RC), 'base' when it is installed without it."""
+    state = status(payload)
+    if state not in ('applied', 'previous'):
         return 'foreign'
-    code,data=allocations(payload)
-    body=XbeImage(payload).read(code['va'],CODE_SIZE)
-    classic=_classic_va(payload)
-    if classic is not None and body in (code_for(code['va'],data['va'],classic_va=classic),
-                                        code_for(code['va'],data['va'],seasons=True,classic_va=classic)):
-        return 'applied'
-    return 'base'
+    found = _installed(payload)
+    if not found['classic']:
+        return 'base'
+    return 'applied' if found['revision'] == REVISION else 'previous'
 
 
-def enable_classic(payload, classic_va):
+def classic_own_name(payload):
+    """(identity, nickname, abbreviation VA) the revision-2 classic variant names as keeping its own label pair, or
+    None (no such team, or not the revision-2 classic variant)."""
+    if classic_status(payload) != 'applied':
+        return None
+    return _installed(payload)['own_name']
+
+
+def enable_classic(payload, classic_va, own_name=NO_OWN_NAME):
     """Switch the installed Quick Game code to the classic teams variant (keeping the season route if present).
-    Only nfl2k5_classic_teams calls this, after it installed its helper allocation at classic_va."""
+    Only nfl2k5_classic_teams calls this, after it installed its helper allocation at classic_va. own_name: None, or
+    (identity, nickname, abbreviation VA) of the one classic team that keeps its own label pair."""
     require(status(payload)=='applied','classic teams require local historic selection')
     code,data=allocations(payload)
     seasons=season_routing_status(payload)
     buffer=bytearray(payload)
-    buffer[code['raw']:code['raw']+CODE_SIZE]=code_for(code['va'],data['va'],seasons=seasons,classic_va=classic_va)
+    buffer[code['raw']:code['raw']+CODE_SIZE]=code_for(code['va'],data['va'],seasons=seasons,classic_va=classic_va,
+                                                        own_name=own_name)
     _,_,requests=space._validate(payload)
     if space.is_scaleout(payload):
         space._seal_scaleout(buffer,requests)
@@ -298,14 +388,58 @@ def enable_season_routing(payload):
     return result
 
 
+def _with_body(payload, body):
+    """The payload with this owned code body, resealed (directory and section digests) as the owner installs it."""
+    code, _data = allocations(payload)
+    require(len(body) == CODE_SIZE, "owned code body size")
+    buffer = bytearray(payload)
+    buffer[code["raw"]:code["raw"] + CODE_SIZE] = body
+    _, _, requests = space._validate(payload)
+    if space.is_scaleout(payload):
+        space._seal_scaleout(buffer, requests)
+    else:
+        buffer[space.DIRECTORY:space._directory_end(requests)] = space._directory(requests, space._code_bytes(buffer, requests))
+        for section in _sections(buffer):
+            buffer[section.header_offset + 36:section.header_offset + 56] = section_digest(buffer, section)
+    return bytes(buffer)
+
+
+def _upgrade(payload, common):
+    """Revision 1 -> 2 in place: only the owned code changes; the variant (season route, classic) is kept. A classic
+    variant is upgraded by the classic teams owner (nfl2k5_classic_teams.upgrade_xbe), which also moves its helpers'
+    season-route format address and writes the own-name identity."""
+    found = _installed(payload)
+    code, data = allocations(payload)
+    if found["classic"]:
+        # The classic teams' helpers carry the season route's format address, which moves with this body: that
+        # owner upgrades both together (and writes its own-name identity).
+        from . import nfl2k5_classic_teams as ct
+        result, receipt = ct.upgrade_xbe(payload)
+        return result, dict(common, status="upgraded", previous_revision=1, revision=REVISION, classic=receipt,
+                            changed_bytes=receipt["changed_bytes"], edits=[],
+                            before_sha256=hashlib.sha256(payload).hexdigest(),
+                            after_sha256=hashlib.sha256(result).hexdigest())
+    result = _with_body(payload, code_for(code["va"], data["va"], seasons=found["seasons"]))
+    require(status(result) == "applied", "historic Quick Game upgrade read-back failed")
+    after = _installed(result)
+    require((after["seasons"], after["classic"]) == (found["seasons"], found["classic"]),
+            "the upgrade changed the season route or the classic variant")
+    return result, dict(common, status="upgraded", previous_revision=1, revision=REVISION,
+                        changed_bytes=sum(a != b for a, b in zip(payload, result)), edits=[],
+                        before_sha256=hashlib.sha256(payload).hexdigest(),
+                        after_sha256=hashlib.sha256(result).hexdigest())
+
+
 def apply(payload):
-    """Install on a clean base, or replay an installed copy unchanged."""
+    """Install on a clean base, replay an installed copy unchanged, or upgrade a revision-1 copy in place."""
     state = _recognize(payload)  # full preflight before allocation/mutation
     common = dict(owner=OWNER, experimental=True, runtime_witnessed=False, label=UI_LABEL,
                   body_bytes=len(assembly.CODE), rx_bytes=CODE_SIZE, rw_bytes=DATA_SIZE, ro_bytes=0,
-                  save_growth=0, quick_game_flow=QUICK_GAME_FLOW)
+                  save_growth=0, quick_game_flow=QUICK_GAME_FLOW, revision=REVISION)
     if state == "applied":
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
+    if state == "previous":
+        return _upgrade(payload, common)
     if space.status(payload) == "retail":
         # Alone, the two-page layout; with any scale-out owner the Build pass reserves the whole union first.
         allocated, receipt = space.apply(payload, REQUESTS)

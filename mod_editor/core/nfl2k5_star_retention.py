@@ -43,6 +43,9 @@ RATING = 0x00246D80        # fastcall (player, edx=1): float overall / 100
 VALUE = 0x002BD440         # the value the veteran cut compares with
 HOOK = ("veteran_cut_value", 0x002BFB67, bytes.fromhex("e8d4d8ffff"))   # call 0x2BD440 inside 0x2BFAF0
 ECONOMY_SURPLUS = (0x002BFB61, bytes.fromhex("6a01"), bytes.fromhex("6a00"))  # franchise economy revision 2
+# b780 hunt1: franchise economy revision 6 sends the cut's own release call (call 0x2BD900) through its guard that
+# never releases a club's last healthy K or P; that one call reads as retail here.
+ECONOMY_RELEASE = (0x002BFBBD, bytes.fromhex("e83eddffff"))
 GUARDS = (
     (0x002BFAF0, 236, "beaa2d14440a4f43aee883aef9d3682d00204417226488de04181f61478cae59"),   # veteran cap cut
     (0x00247FD7, 62, "a1dfd9babaf3039cf3611dc8f3c74b6eb9febbee3bb19d8cedf507880cfc05e1"),    # stage-6 caller
@@ -129,8 +132,19 @@ def _recognize(payload):
             at = surplus_va - va
             if bytes(content[at:at + 2]) == surplus_economy:
                 content[at:at + 2] = surplus_retail
+        release_va, release_retail = ECONOMY_RELEASE
+        if va <= release_va and release_va + len(release_retail) <= va + size:
+            at = release_va - va
+            if bytes(content[at:at + len(release_retail)]) == _economy_release():
+                content[at:at + len(release_retail)] = release_retail
         require(hashlib.sha256(content).hexdigest() == digest, f"Foreign star retention prerequisite at {va:#x}")
     return next(iter(states))
+
+
+def _economy_release():
+    """The franchise economy's own bytes at the cut's release call (revision 6)."""
+    from . import nfl2k5_franchise_economy as economy
+    return next(site.patched for site in economy.sites() if site.va == economy.VETERAN_CUT_RELEASE)
 
 
 def status(payload):

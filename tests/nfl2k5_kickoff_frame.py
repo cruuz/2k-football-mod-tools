@@ -7,6 +7,7 @@ This fixture proves native CPU behavior for its stated inputs, not gameplay.
 from collections import Counter
 import hashlib
 import struct
+import time
 
 from tests.mod_editor.test_nfl2k5_kickoff_v2 import NativeMachine
 from tests.mod_editor.test_nfl2k5_dynamic_kickoff import Machine, x86, uni
@@ -250,9 +251,16 @@ class FrameMachine(NativeMachine):
         self.uc.reg_write(x86.UC_X86_REG_ESP, self.STACK)
         self.put(self.STACK, self.STOP)
         self.f32(self.STACK + 4, 1 / 60)
+        # b780 sl1: frame_timeout_us bounds the frame's CPU time in this process, not its wall time. A return
+        # frame costs about 0.1 s, yet on a loaded machine (swap, I/O and CPU pressure) one was stalled past a
+        # 2 s wall-clock bound and failed b661's simwin66 replay. Unicorn's own timeout is wall-clock, so it
+        # only stops a runaway frame, at 30 times the CPU bound; instruction_limit stays an exact bound.
+        cpu = time.process_time()
         self.uc.emu_start(0x11A7C0, self.STOP, count=self.instruction_limit,
-                          timeout=self.frame_timeout_us)
+                          timeout=30 * self.frame_timeout_us)
         assert self.uc.reg_read(x86.UC_X86_REG_EIP) == self.STOP, 'frame execution bound reached'
+        assert (not self.frame_timeout_us or
+                time.process_time() - cpu <= self.frame_timeout_us / 1e6), 'frame CPU-time bound reached'
         assert tuple(self.phase_entries) == PHASES, self.phase_entries
         assert self.uc.reg_read(x86.UC_X86_REG_ESP) == self.STACK + 8, 'frame ABI imbalance'
         return self.snapshot()

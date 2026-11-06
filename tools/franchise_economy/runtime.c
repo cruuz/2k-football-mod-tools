@@ -42,6 +42,13 @@ extern unsigned FAST n_wanted_at(unsigned pos);                    /* 0x2BD400 n
 #define PROVE_IT_FREE_AGENT(p) (!((p)[0x24] & 15) && UNSIGNED_WEEKS(p) >= 2)
 int FAST economy_cap(u8 *team, unsigned with_penalty, unsigned year);
 unsigned FAST economy_best_room(u8 *p, u8 **club);
+/* b780 econ3 (revision 7): window roster_n (defined at the end). */
+extern const u8 cut_rows[4][17];
+unsigned FAST economy_full(u8 *team, unsigned pos);
+unsigned FAST economy_offer_room(u8 *offer);
+unsigned club_level(u8 *team, unsigned pos, float him, unsigned busy);
+void economy_need(int *need, u8 *team, unsigned want);
+int FAST economy_vet_short(u8 *team);
 
 static unsigned maximum(unsigned a, unsigned b) { return a > b ? a : b; }
 static unsigned minimum(unsigned a, unsigned b) { return a < b ? a : b; }
@@ -194,9 +201,18 @@ SECTION(".roster_d") unsigned FAST economy_fill_room(u8 *team, unsigned budget) 
     return room > 0 ? minimum(budget, (unsigned)room) : 0;
 }
 
+/* b780 hunt1 (revision 6): the gate's room rule refuses a club of 54 or more (written when the trim held every camp at
+ * 54). With the native camp limit (revision 5) camps hold up to 65 from the draft to the season gate, so a club that
+ * lost its only kicker or punter in the offseason (an expiring contract, a retirement) could not sign one again before
+ * the gate's cut to 53, which cannot make one (v0.9 RC, seed 2602: Kansas City's kicker left in free agency and the club
+ * opened year 4 with none). A K or P signing (the native signing's second argument is 1 or 2) now skips that count test
+ * below the native 65 and keeps the cap-room rule: economy_fill_room + 9 is its body after the 9-byte count test
+ * (cmp byte [ecx+0x11C], 53; ja), with ECX and EDX as the body expects them. The fills only ask for a K or P where the
+ * club has none (the native minimum and wanted depth are 1). Every other signing keeps the gate as it was. */
 SECTION(".fill_gate") __attribute__((naked)) void economy_fill_gate(void) {
-    __asm__("mov 4(%esp), %ecx\nmov 12(%esp), %edx\n"
-            "call economy_fill_room\ntest %eax, %eax\njz 1f\n"
+    __asm__("mov 4(%esp), %ecx\nmov 12(%esp), %edx\nmov 8(%esp), %eax\ndec %eax\ncmp $1, %eax\nja 4f\n"
+            "cmpb $64, 0x11c(%ecx)\nja 4f\ncall economy_fill_room+9\njmp 5f\n4: call economy_fill_room\n"
+            "5: test %eax, %eax\njz 1f\n"
             "mov %eax, 12(%esp)\nsub $0x114, %esp\njmp 0x322bb6\n"
             "1: xor %eax, %eax\nret $16\n");
 }
@@ -230,8 +246,10 @@ SECTION(".txn_years") __attribute__((naked)) void economy_txn_years(void) {
             "1: movl %edx, 0x14(%esp)\nret\n");
 }
 
+/* b780 econ3 (revision 7, Q33): the gate asks economy_offer_both (roster_o): no bid from a computer club already at its
+ * modern maximum at the player's position, then the room test as before. Same size, so no symbol moves. */
 SECTION(".offer_gate") __attribute__((naked)) void economy_offer_gate(void) {
-    __asm__("mov %edi, %ecx\ncall economy_offer_room\ntest %eax, %eax\n"
+    __asm__("mov %edi, %ecx\ncall economy_offer_both\ntest %eax, %eax\n"
             "jz 0x323cbd\nmov 0xb72918, %ecx\njmp 0x323bb9\n");
 }
 
@@ -308,6 +326,9 @@ SECTION(".roster_b") static unsigned restructure_best(u8 *team) {
     return best != 0;
 }
 
+unsigned FAST economy_camp_limit(void);   /* b780 b4-economy (D10): defined at the end of roster_m */
+void FAST economy_cover(u8 *team, void *menu);   /* b780 hunt1: defined after roster_h's rodata (naked, fastcall ECX/EDX) */
+
 /* DESIGN: replace the native CPU cap-cut routine with a bounded reconciliation
  * that also runs after the rollover returns IR players. Keep the native 54
  * player/cap gate intact; release through the real transaction and FA paths.
@@ -323,7 +344,7 @@ SECTION(".fill_room") static void trim(u8 *team, unsigned force) {
         n_recount(team);
         unsigned count = team[0x11c], least = economy_floor(0);
         int room = ROOM(team);
-        if (count <= 54 && room >= 0 && !force) return;
+        if (count <= economy_camp_limit() && room >= 0 && !force) return;
         if (room < 0 && CPU(team) && restructure_best(team)) continue;
         u8 *best = 0;
         float score = 2.0f;
@@ -355,7 +376,7 @@ SECTION(".reconcile") void FAST economy_reconcile(u8 *team) {
  * closes), so the best cheap player at a needed position signs at about the minimum. */
 SECTION(".roster_a") static void fill(u8 *team, void *menu, float chance, unsigned want, unsigned floor) {
     int need[17];
-    (want ? n_need_want : n_need_low)(need, team);
+    economy_need(need, team, want);   /* b780 econ3 (revision 7): the native need with the modern depth cells */
     for (unsigned pos = 0; pos < 17; ++pos)
         while (need[pos] < 0) {
             ++need[pos];
@@ -380,6 +401,7 @@ SECTION(".roster_a") static void fill(u8 *team, void *menu, float chance, unsign
  * club still short without room for a minimum salary restructures, else releases
  * one well-paid player, then refills with minimum salaries. */
 SECTION(".roster_a") static void upkeep(u8 *team, void *menu) {
+    if (*(u32 *)0xe576a4 >= 8) economy_cover(team, menu);   /* b780 hunt1: in season a hurt K or P is covered */
     for (unsigned attempt = 0; attempt < 12; ++attempt) {
         trim(team, 0);
         fill(team, menu, 1.0f, 0, 1);
@@ -403,14 +425,13 @@ SECTION(".roster_c") unsigned FAST economy_best_room(u8 *p, u8 **club) {
     int best = 0;
     for (unsigned t = 0; t < n_teams(); ++t) {
         u8 *team = n_team(t);
-        unsigned count = team[0x11c], better = 0, busy = 0, level;
+        /* b780 b4-economy (D10): the club that signs him (club != 0, the prove-it pass) needs an open spot below 53,
+         * so nobody is cut to make room (a full club reads busy); the ask (club == 0) still counts every club. Weeks 1-4
+         * of a simulated v0.8 season: every CPU club cut a player for one every week. */
+        unsigned count = team[0x11c], level;
         if (!CPU(team)) continue;
-        for (unsigned j = 0; j < count; ++j) {
-            u8 *q = ((u8 **)team)[j];
-            busy |= q[0x25] >= 0x40;     /* signed a long-unsigned free agent since this week's count */
-            if (q[0x35] == pos && !(n_rating(q, 1) < him)) ++better;
-        }
-        level = busy ? 0 : better < n_minimum_at(pos) ? 2 : better < n_wanted_at(pos) ? 1 : 0;
+        /* b780 econ3 (revision 7): the start/play level and the club's busy and full tests (club_level, roster_n). */
+        level = club_level(team, pos, him, club && count >= 53);
         int room = ROOM(team) - 10;
         if (count < FLOOR_PLAYERS) room -= (int)((FLOOR_PLAYERS - 1 - count) * least);
         if (level && room > 0 && (level > tier || (level == tier && room > best))) {
@@ -456,6 +477,7 @@ SECTION(".week") void FAST economy_week(void *menu, unsigned unused, float low, 
         if (!PROVE_IT_FREE_AGENT(p) || p[0x35] >= 17 || !(n_rating(p, 1) > PROVE_IT)) continue;
         unsigned ask = economy_value(p, 0, 0, 1, 1);
         if (economy_best_room(p, &club) < ask || !club) continue;
+        /* b780 b4-economy (D10): economy_best_room no longer offers a full club, so this cut never runs now. */
         if (club[0x11c] >= limit) n_cut_to(club, limit - 1);
         n_cpu_sign(club, p[0x35], ask + 1, menu);
     }
@@ -476,8 +498,10 @@ SECTION(".roster_d") void FAST economy_clubs(void *menu, unsigned vetcut) {
         u8 *team = n_team(t);
         if (!CPU(team)) continue;
         if (!vetcut) { upkeep(team, menu); continue; }
+        /* b780 econ3 (revision 7, Q45): restructure only while the club is short of the veteran cut's line (room for
+         * two league-minimum signings; economy_vet_short), not within the retail gate's 6000 ($24M). */
         do n_recount(team);
-        while (*(int *)(team + 0x124) + 6000 >= economy_cap(team, 1, 0) && restructure_best(team));
+        while (economy_vet_short(team) > 0 && restructure_best(team));
     }
 }
 
@@ -507,11 +531,11 @@ SECTION(".roster_e") __attribute__((naked)) void economy_fa_retire(void) {
             "movw $1, 10(%edi)\n1: push %eax\ncall 0x2bcf90\nmov %si, 10(%edi)\npop %esi\nret $4\n");
 }
 
-SECTION(".week") __attribute__((naked)) void economy_after(void) {
+SECTION(".week_tail") __attribute__((naked)) void economy_after(void) {
     __asm__("mov %ebx, %ecx\nxor %edx, %edx\ncall economy_clubs\njmp 0xc4bb0\n");
 }
 
-SECTION(".week") __attribute__((naked)) void economy_stage6(void) {
+SECTION(".week_tail") __attribute__((naked)) void economy_stage6(void) {
     __asm__("xor %ecx, %ecx\nmov $1, %edx\ncall economy_clubs\njmp 0x247fd7\n");
 }
 
@@ -664,6 +688,31 @@ SECTION(".roster_m") __attribute__((noinline)) static int oldest(u8 **list, unsi
     return need;
 }
 
+/* b780 b4-economy (row D10; v0.8 known issue "CPU clubs still sign and cut fringe players in camp"): trim() held every
+ * CPU club at 54 after every stage action all year, so right after the draft each club released about six players,
+ * a third of them that day's picks (one simulated v0.8 offseason: 151 releases at the draft, 52 of them rookies).
+ * Retail lets a club carry 65 until the regular season (0x247AF0) and cuts it once at the season gate (0x2BFAA0,
+ * now the smart cut-down), so the camp limit is the native one before the season and 54 from the season on. */
+SECTION(".roster_m") __attribute__((noinline)) unsigned FAST economy_camp_limit(void) {
+    return maximum(n_roster_limit(), 54);
+}
+
+/* b780 hunt1 (revision 6): the retail stage-6 veteran cap cut (0x2BFAF0, run for every club at 0x247FF5) releases an
+ * overpaid veteran whatever his position. With the native camp limit (revision 5) camp payrolls stay over the cap, so
+ * the stage-6 fill that follows could not sign a replacement: a club whose only kicker or punter was that veteran
+ * started the season without one (SOFTDRINK 2K28 v0.9 RC, seed 2602: CHI and KC with no K at kickoff while 30 kickers
+ * were free agents; v0.8, trimmed to 54, signed one in the same stage). The cut's own release call (0x2BFBBD) comes
+ * here: it never releases the club's last healthy K or P (the trim and the smart cut already keep one of every
+ * position) and otherwise jumps to the native release with the same registers and arguments, so the release keeps the
+ * cut's return address. In roster_m's spare bytes, after its own code: no other symbol moves.
+ * b780 econ3 (revision 7, Q45): the stub now asks economy_vet_pick (roster_n) which player to release, if any (the K/P
+ * guard moved there): ECX = team, EDX = the cut's candidate, the native release's two stack arguments untouched. */
+SECTION(".roster_m") __attribute__((naked)) void economy_vet_release(void) {
+    __asm__("push %ecx\ncall economy_vet_pick\npop %ecx\ntest %eax, %eax\njz 1f\nmov %eax, %edx\n"
+            "jmp 0x2bd900\n1: ret $8\n");
+}
+
+
 /* (a) past the position's age, oldest first; (b) within two years of it, lowest-rated first; (c) only when the
  * class would still have fewer than MIN_CLASS records, the oldest remaining free agents. The roster file has a
  * fixed number of records, so a class can only be as deep as the league frees each year: the sims report how
@@ -689,6 +738,29 @@ SECTION(".roster_h") int STD economy_class_topup(int need, unsigned retiring) {
     return oldest(list, n, need, -40, CLASS_SIZE - MIN_CLASS);
 }
 
+/* b780 hunt1 (coordinator, 11/03: "if a K or P can get hurt in a played or simulated game, a 53-man club then has no
+ * way to replace him in season. Make that signing work, for example by releasing the lowest-value player the way a
+ * real club would"). A played game can hurt a kicker or a punter: the collision injury chain (0x137520 and 0x137680
+ * -> 0x1373C0, the harder-hit of the two players -> 0x136B10) tests no position. The CPU fill never asked for a
+ * replacement, because the native need (0x2BD880 over 0xC3CB0) counts injured players too, so the kick went to the
+ * depth chart's next player. Each in-season weekly pass a CPU club with no healthy K (or P) now signs one; a club
+ * at 53 first makes room with the smart cut (0x2BF9A0: the lowest-rated player at a position above its minimum; K
+ * and P stay at their minimum of 1, so the hurt kicker stays). The signing goes through 0x322BB0 and the gate (cap
+ * room) like every CPU fill. */
+/* ECX = team, EDX = menu (fastcall); K (1), then P (2): no healthy one on the club (the injured bit, +0x23 bit 7, as
+ * the trim, the gate and economy_vet_release read it) -> at 53 the smart cut 0x2BF9A0 to 52, then the CPU signing
+ * 0x322BB0 (team, pos, 0xFFFF, menu), whose gate keeps the cap-room rule. The free-agent pool always held kickers and
+ * punters in the offline seasons (29 to 78); with none the signing fails and the club waits at 52 until one is free. */
+SECTION(".roster_h_tail") __attribute__((naked)) void FAST economy_cover(u8 *team __attribute__((unused)),
+                                                             void *menu __attribute__((unused))) {
+    __asm__("push %ebx\npush %esi\npush %ebp\nmov %ecx, %esi\nmov %edx, %ebp\nxor %ebx, %ebx\ninc %ebx\n"
+            "1: movzbl 0x11c(%esi), %ecx\n"
+            "2: dec %ecx\njs 3f\nmov (%esi,%ecx,4), %eax\ncmpb %bl, 0x35(%eax)\njne 2b\ntestb $0x80, 0x23(%eax)\njnz 2b\njmp 5f\n"
+            "3: cmpb $53, 0x11c(%esi)\njb 4f\npush $52\npop %edx\nmov %esi, %ecx\ncall 0x2bf9a0\n"
+            "4: push %ebp\npush $0xffff\npush %ebx\npush %esi\ncall 0x322bb0\n"
+            "5: inc %ebx\ncmp $3, %ebx\njb 1b\npop %ebp\npop %esi\npop %ebx\nret\n");
+}
+
 /* b779 rc1 (Noah 10/28: "make it smart, so teams aren't cutting guys that they need at certain positions. They'll
  * prioritize the lowest overall at a position where they have more than they need, according to modern NFL
  * position keeping"). Replaces the native cut-down 0x2BF9A0 (fastcall team, target; every caller: the preseason
@@ -698,8 +770,16 @@ SECTION(".roster_h") int STD economy_class_topup(int need, unsigned retiring) {
  * position with two or more. Minimums: 2024 53-man rosters (atlantafalcons.com, 2024-08-28, all 32 teams:
  * QB 2.4, RB 3.6, WR 5.9, TE 3.3, OL 9.4, DL 7.9, LB 7.3, DB 10.3, K 1, P 1 on average), at or below the league
  * average: QB 2, K 1, P 1, WR 5, CB 5, FS 2, SS 2, HB 3, FB 0, TE 3, LB 5 (OLB 3 + ILB 2 when the league has
- * OLBs, else ILB 5 under the one-pool scheme), C 2, G 3, T 3 (OL 8), DT 3, DE 4 (DL 7). 44 in all. */
-SECTION(".roster_l_rodata") static const u8 cut_min[17] = {2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 3, 2, 2, 3, 3, 3, 4};
+ * OLBs, else ILB 5 under the one-pool scheme), C 2, G 3, T 3 (OL 8), DT 3, DE 4 (DL 7). 44 in all.
+ *
+ * b780 econ3 (revision 7, Q33; HUNT6/HUNT1: QBs 2.7 to 3.7 a club over four offseasons, DT 5.25 to 3.44, TE 3.56 to
+ * 3.00, 30 to 57 DTs released at each season gate). Raw overalls are not comparable across positions, so "the
+ * lowest-rated player above his minimum" took the low-overall depth positions (DT, TE) down to their minimums every
+ * year while a fourth or fifth QB stayed. The cut now works in tiers (roster_n's tables): first a position above its
+ * modern maximum (QB 3, FB 2) loses its lowest-rated player; then a position above the keep target from the same
+ * 2024 averages (QB 2, WR 6, CB 6, FS 2, SS 2, HB 3, FB 1, TE 3, LB 5, C 2, G 3, T 4, DT 4, DE 4: 49 with K and P);
+ * then a position above its minimum (as before); then any position with two or more. K and P keep the old rule
+ * (above their minimum of 1 only), so a club that covered a hurt kicker never loses the healthy one to a maximum. */
 
 /* The lowest-rated active player at a position with more than mins[position] (floor 0), or more than one
  * (floor 1). */
@@ -716,9 +796,122 @@ SECTION(".roster_k") __attribute__((noinline)) static u8 *cut_pick(u8 *team, con
 }
 
 SECTION(".roster_l") void FAST economy_smart_cut(u8 *team, unsigned target) {
-    u8 mins[17], *best;
-    for (unsigned i = 0; i < 17; ++i) mins[i] = cut_min[i];
-    if (!league_has_olb()) { mins[10] = 0; mins[11] = 5; }
-    while (team[0x11c] > target && ((best = cut_pick(team, mins, 0)) || (best = cut_pick(team, mins, 1))))
+    u8 rows[3][17], *best;
+    unsigned k;
+    for (k = 0; k < 51; ++k) (&rows[0][0])[k] = (&cut_rows[0][0])[k];
+    if (!league_has_olb())          /* the one-pool scheme: OLB slots count as LB */
+        for (k = 0; k < 3; ++k) { rows[k][11] += rows[k][10]; rows[k][10] = 0; }
+    while (team[0x11c] > target) {
+        for (k = 0; k < 3 && !(best = cut_pick(team, rows[k], 0)); ++k) {}
+        if (k == 3 && !(best = cut_pick(team, rows[2], 1))) return;
         n_release(team, best, 1, 1);
+    }
+}
+
+/* ---- b780 econ3 (revision 7): two more unreferenced retail library functions (tools/franchise_economy/dead_code.py):
+ * window roster_n at 0x3C0920 (537 bytes) and window roster_o at 0x264AC0 (295 bytes). ---- */
+/* The smart cut's tiers (above a maximum, above the keep target, above the minimum) and the most a computer club signs or
+ * bids for at a position (QB 3, K 1, P 1, FB 2); 30 = no limit. */
+SECTION(".roster_n_rodata") __attribute__((aligned(1))) const u8 cut_rows[4][17] = {
+    {3, 30, 30, 30, 30, 30, 30, 30, 2, 30, 30, 30, 30, 30, 30, 30, 30},     /* cut_max: above a modern maximum */
+    {2, 30, 30, 6, 6, 2, 2, 3, 1, 3, 3, 2, 2, 3, 4, 4, 4},                 /* cut_keep: above the 2024 keep target */
+    /* cut_min, as before (nfl2k5_roster_refresh.CUT_MINIMUMS mirrors it for the injured players' rejoin cut): */
+    {2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 3, 2, 2, 3, 3, 3, 4},
+    {3, 1, 1, 30, 30, 30, 30, 30, 2, 30, 30, 30, 30, 30, 30, 30, 30},     /* sign_max: the most a club signs or bids for */
+};
+/* The native depth tables (0x521C68 minimum, 0x521C20 wanted) with the modern cells: FS and SS minimum 2 (retail 1),
+ * TE minimum 3 (retail 2), QB wanted 3 (retail 4). The tables themselves stay as they are (nfl2k5_position_pools owns
+ * them and MyCareer's advisory reads them): the economy adds these steps where it reads them, and at the draft need's
+ * minimum call (0x31E02D in 0x31DEA0), whose minimum + round table - count put FS and SS last every round (year 1 of
+ * a v0.9 franchise: 3 of the class's 22 safeties drafted, 35 of its 44 tackles). */
+SECTION(".roster_n_rodata") __attribute__((aligned(1))) const signed char depth_step[2][17] = {
+    {0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+    {-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+};
+
+/* The draft need's minimum (0x31E02D: call 0x2BD410, ECX = position; EAX only, as the native table read). */
+SECTION(".roster_o") unsigned FAST economy_draft_min(unsigned pos) {
+    return n_minimum_at(pos) + depth_step[0][pos];
+}
+
+/* b780 econ3 (revision 7, Q45; coordinator 11/03: "Cut only when a club is over the cap, or can't fit two
+ * league-minimum signings, so clubs keep room for in-season injury and IR replacements"). How far the club is past
+ * that line, in game thousands (> 0: short of room for two minimum signings). The payroll is 0xC3F00's (+0x124), so
+ * IR salaries count once modern injured reserve adds them to its result. */
+SECTION(".roster_n") int FAST economy_vet_short(u8 *team) {
+    n_recount(team);
+    return *(int *)(team + 0x124) + (int)(2 * economy_floor(0)) - economy_cap(team, 1, 0);
+}
+
+/* The retail veteran cap cut (0x2BFAF0, stage 6, every club, years pro >= 10, 210%) proposed an overpaid veteran while
+ * payroll + 6000 >= cap. Release nobody while the club is not short of the line above. Otherwise (coordinator 11/04: "A
+ * club $0.52M short shouldn't lose Mark Andrews. Choose from every player above the position minimums, cheapest value
+ * loss first, while still clearing the line, with charted starters last") the release comes from the whole club: every
+ * player under contract at a position above its smart-cut minimum (cut_rows row 2, OLB slots as LB in the one-pool
+ * scheme; never the club's last healthy K or P), valued by the cut's own value call at 0x2BFB67 (which star retention
+ * may hook). Of those whose charge clears the shortfall, the least value lost, a depth-chart starter (+0x28 rank 0)
+ * only when no backup clears it; when no single release clears it, the least value lost again, backups first (the cut
+ * proposes again while the club is short). The proposal itself only says the club has an overpaid veteran. */
+SECTION(".roster_n") u8 *FAST economy_vet_pick(u8 *team, u8 *proposed) {
+    int over = economy_vet_short(team);
+    unsigned (FAST *worth)(u8 *, unsigned, unsigned, unsigned, unsigned) =
+        (unsigned (FAST *)(u8 *, unsigned, unsigned, unsigned, unsigned))(0x2BFB6C + *(int *)0x2BFB68);
+    unsigned olb = league_has_olb(), least = 0;
+    u8 *best = 0;
+    (void)proposed;
+    if (over <= 0) return 0;
+    for (unsigned i = 0; i < team[0x11c]; ++i) {
+        u8 *q = ((u8 **)team)[i];
+        unsigned pos = q[0x35], left = q[0x24] & 15, j, floor;
+        if (pos >= 17 || !left) continue;
+        floor = cut_rows[2][pos];
+        if (!olb && pos - 10u < 2u) floor = pos == 10 ? 0 : cut_rows[2][10] + cut_rows[2][11];
+        if (n_at_position(team, pos) <= floor) continue;
+        if (pos - 1u < 2u) {                 /* K or P: another healthy one must stay */
+            for (j = 0; j < team[0x11c]; ++j) {
+                u8 *o = ((u8 **)team)[j];
+                if (o != q && o[0x35] == pos && !(o[0x23] & 0x80)) break;
+            }
+            if (j == team[0x11c]) continue;
+        }
+        int charge = (int)(n_salary(q) + n_prorated(*(u16 *)(q + 10), q[0x26] >> 4, q[0x27] & 15));
+        unsigned key = (worth(q, 0, 0, 1, left) & 0xffff) | !((*(u16 *)(q + 0x28) >> 10) & 7) << 16 | (charge < over) << 17;
+        if (!best || key < least) { best = q; least = key; }
+    }
+    return best;
+}
+
+/* fill(): count minus the minimum (want 0) or the wanted depth (want 1), as 0x2BD880 / 0x2BD8C0 count (0xC3CB0, every
+ * player at the position), with the modern cells. */
+SECTION(".roster_c_tail") void economy_need(int *need, u8 *team, unsigned want) {
+    for (unsigned pos = 0; pos < 17; ++pos)
+        need[pos] = (int)n_at_position(team, pos) - (int)(want ? n_wanted_at(pos) : n_minimum_at(pos)) - depth_step[want][pos];
+}
+
+/* b780 econ3 (revision 7, Q33): a computer club already at its modern maximum at the player's position (QB 3, K 1, P 1,
+ * FB 2) makes no bid (the free-agent wishes of nfl2k5_draft_ai signed 4 to 11 QBs each free agency); otherwise the
+ * offer's room test (economy_offer_room) as before. */
+SECTION(".roster_o") unsigned FAST economy_offer_both(u8 *offer) {
+    return !economy_full(*(u8 **)(offer + 4), (*(u8 **)offer)[0x35]) && economy_offer_room(offer);
+}
+
+/* A computer-run club (not a human one; best_room's clubs are computer clubs already) at its modern maximum at the
+ * position (row 3). */
+SECTION(".roster_o") unsigned FAST economy_full(u8 *team, unsigned pos) {
+    return pos < 17 && !n_human(team) && n_at_position(team, pos) >= cut_rows[3][pos];
+}
+
+/* economy_best_room's level for one club: 2 if he would start (fewer players at least as good as him than the minimum),
+ * 1 if he would play (fewer than the wanted depth), 0 when the club is busy (signed a long-unsigned free agent since
+ * this week's count, or full for the signing pass) or at its maximum at his position. Before revision 7 a club with
+ * three worse QBs read 2 for a 70+ QB, so the prove-it pass gave it a fourth. */
+SECTION(".roster_o") unsigned club_level(u8 *team, unsigned pos, float him, unsigned busy) {
+    unsigned better = 0;
+    for (unsigned j = 0; j < team[0x11c]; ++j) {
+        u8 *q = ((u8 **)team)[j];
+        busy |= q[0x25] >= 0x40;     /* signed a long-unsigned free agent since this week's count */
+        if (q[0x35] == pos && !(n_rating(q, 1) < him)) ++better;
+    }
+    if (busy || economy_full(team, pos)) return 0;
+    return better < n_minimum_at(pos) + depth_step[0][pos] ? 2 : better < n_wanted_at(pos) + depth_step[1][pos] ? 1 : 0;
 }

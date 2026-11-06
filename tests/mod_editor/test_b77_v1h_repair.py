@@ -64,7 +64,9 @@ class NativeTests(unittest.TestCase):
         original = SOURCE.read_bytes()
         result, receipt = repair.repair(original)
         self.assertEqual(repair.sha(result), repair.REPAIRED_SHA256)
-        self.assertEqual(receipt["code_padding"], 87)
+        # b780 int2: the spare before the tag follows the current generated MyCareer runtime (as in test_nfl2k5_my_career_mcs);
+        # 87 at the beta-77.1 pin, 41 at this v0.6 allocation with the beta-80 runtime (b8 + j23 + n1 + n2)
+        self.assertEqual(receipt["code_padding"], 13)   # b780-int: 41 -> 13 with mc1's MyCareer fixes and star setting
         self.assertTrue(receipt["scope"]["outside_scope_identical"])
         honors = [r for r in receipt["preserved_reservations"] if r["owner"] == "nfl2k5_honors"]
         self.assertEqual({r["kind"] for r in honors}, {"code", "data"})

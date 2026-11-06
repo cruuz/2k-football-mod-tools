@@ -6,7 +6,7 @@ used to measure registration, never as replacement artwork.
 from __future__ import annotations
 
 from collections import Counter, deque
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from io import BytesIO
 import math
 
@@ -18,6 +18,10 @@ from .nfl2k5_digit_texture import resize_cell, make_digit_mips, quantize_digit_l
 REGISTRATION_KEY = "nfl2k5_digit_registration"
 REGISTRATION_CHOICES = (("Match retail size", "retail"), ("As authored", "as_authored"))
 ALPHA_LOW, ALPHA_HIGH = 16, 240
+#: The cleanup keeps solid colour with a one texel soft edge. A digit that keeps under a quarter of the solid pixels it
+#: should have at its size is refused (it would be written blank or broken), and one that keeps under 0.6 of them gets a
+#: note in the preview. Digits with fewer than SURVIVAL_MIN_PIXELS expected solid pixels are too small to judge.
+SURVIVAL_REFUSE, SURVIVAL_NOTE, SURVIVAL_MIN_PIXELS = 0.25, 0.6, 24
 
 
 def registration_mode(payload: bytes) -> str:
@@ -133,6 +137,10 @@ def extend_edge_colours(image: Image.Image) -> Image.Image:
     return Image.frombytes("RGBA", image.size, bytes(data))
 
 
+def _solid_pixels(image: Image.Image) -> int:
+    return sum(1 for a in image.getchannel("A").getdata() if a >= ALPHA_HIGH)
+
+
 def prepare_digit(image: Image.Image, retail: Image.Image, mode: str = "retail") -> tuple[Image.Image, dict]:
     if image.size != retail.size or mode not in {"retail", "as_authored"}:
         raise ValidationError("Digit preparation needs matching canvases and a supported registration.")
@@ -153,7 +161,9 @@ def prepare_digit(image: Image.Image, retail: Image.Image, mode: str = "retail")
     image = flatten_regions(image, tones)
     bounds = image.getchannel("A").getbbox()
     if not bounds:
-        raise ValidationError("The number cell is empty after alpha cleanup. Supply a visible digit.")
+        raise ValidationError("This digit is almost invisible: every pixel is below 6 percent opacity, so nothing is left "
+                              "after cleanup. Draw the digit in solid colour on a transparent background, then preview again.")
+    source_solid = _solid_pixels(image)
     box = reference["box"]
     if not box:
         raise ValidationError("The retail digit has no measurable registration box.")
@@ -170,6 +180,21 @@ def prepare_digit(image: Image.Image, retail: Image.Image, mode: str = "retail")
         image.paste(glyph, (left, top))
         destination = [left, top, left+size[0], top+size[1]]
     image = one_texel_edge(bind_alpha(image))
+    kept, wanted = _solid_pixels(image), source_solid * scale * scale
+    if not image.getchannel("A").getbbox():
+        raise ValidationError("Nothing is left of this digit after cleanup. The game keeps a pixel only when it is at least "
+                              "half solid, so a digit drawn at 40 percent opacity, or with strokes thinner than about 2 pixels "
+                              "at the size the game uses, disappears. Make the digit fully opaque and thicker, then preview again.")
+    survival = None
+    if wanted >= SURVIVAL_MIN_PIXELS:
+        if kept < SURVIVAL_REFUSE * wanted:
+            raise ValidationError(
+                f"Most of this digit was removed by cleanup: about {kept:,} of the {round(wanted):,} solid pixels it should "
+                "have at this size remain. The game keeps only solid colour with a one pixel soft edge, so strokes thinner "
+                "than about 2 pixels at 64 and areas under half opacity disappear. Draw the digit with thicker, fully opaque "
+                "strokes, or simplify the art, then preview again.")
+        if kept < SURVIVAL_NOTE * wanted:
+            survival = round(kept / wanted, 2)
     image = flatten_regions(image, tones)
     image, after = collapse_colours(image)
     image = extend_edge_colours(image)
@@ -181,6 +206,7 @@ def prepare_digit(image: Image.Image, retail: Image.Image, mode: str = "retail")
                     "alpha_below_to_zero": ALPHA_LOW, "alpha_at_or_above_to_opaque": ALPHA_HIGH,
                     "antialias_band_texels": 1, "resample": "float_premultiplied_lanczos",
                     "transparent_rgb": "nearest_visible_edge", "mip_border_alpha_zero": True,
+                    **({"solid_area_kept": survival} if survival is not None else {}),
                     "applied": True},
     }
 
@@ -213,35 +239,319 @@ def kept_retail_reason(stored_size: int) -> str:
             "after cleanup and the recognisable-art fit ladder. Simplify the fill and outline, then preview again.")
 
 
+def kept_retail_advice(*, stored_size: int | None = None, needed: int | None = None, colours: int | None = None) -> str:
+    """What was measured and what to change, for a digit that stayed retail (empty when nothing is known)."""
+    parts = []
+    if needed and stored_size and needed > stored_size:
+        parts.append(f"Even the simplest version tried needs about {needed:,} bytes and the slot holds {stored_size:,}.")
+    if colours and colours > 4:
+        parts.append(f"It uses {colours} colours after cleanup; gradients and soft shading cost the most space.")
+    if parts:
+        parts.append("Use one flat fill and one flat outline, no glow or shadow, and fewer curves and corners.")
+    return " ".join(parts)
+
+
 def fit_summary(preparation: dict, colours: int) -> str:
     mode = "retail registration" if preparation["registration"]["mode"] == "retail" else "As authored placement"
     factor = preparation["fit"]["registration_factor"]
     extra = f" Additional scale {factor:.0%}." if factor < 1 else ""
+    simplified = preparation["fit"].get("simplified")
+    if simplified:
+        extra += f" To fit this slot, {simplified['text']}."
     return f"fits after {mode} and cleanup ({colours} colours).{extra}"
 
 
-def fit_digit(image, retail, mode, mip_count, candidate, *, stream_tag, offset_bits, stored_size):
-    """Bounded, shared preparation and encoding, including honest last resorts."""
+@dataclass(frozen=True)
+class _Step:
+    """One deliberate, reported simplification, tried only after the faithful fit has failed."""
+
+    name: str
+    text: str
+    colours: int | None = None
+    hard: bool = False
+    clean: bool = False
+
+
+# From least to most visible. None of them drops the outline or the fill, and none is silent:
+# the receipt, the preview note and Check my images all say which one was used.
+_STEPS = (
+    # Resampling leaves in-between shades that the fill and outline never had. Merging them back into the
+    # colours the digit is drawn in (thin ones too) changes nothing the artist drew, and a clean two-colour digit
+    # has a lower palette floor.
+    _Step("clean_colours", "stray in-between shades were merged into the flat colours it is drawn in", clean=True),
+    _Step("hard_edges", "its edges were made hard at the largest size (the smaller views keep soft edges)", hard=True),
+    _Step("clean_hard", "stray in-between shades were merged into its flat colours and its edges made hard at the largest size",
+          hard=True, clean=True),
+    _Step("bands_4", "its shading was reduced to 4 flat colours, with hard edges", colours=4, hard=True),
+    _Step("bands_3", "its shading was reduced to 3 flat colours, with hard edges", colours=3, hard=True),
+    _Step("bands_2", "its shading was reduced to 2 flat colours, with hard edges", colours=2, hard=True),
+    # Only for a digit that is nothing but shading (no outline, one region), where one flat colour loses no region.
+    _Step("bands_1", "its shading was flattened to one colour, with hard edges", colours=1, hard=True),
+)
+_HARD_LUT = [0] * 128 + [255] * 128
+#: A fill chain that steps through at least this many 16-wide bands of colour is shading (a gradient), not a flat region.
+_SHADED = 6
+
+
+def hard_edges(image: Image.Image) -> Image.Image:
+    """Binary alpha at the largest size. Smaller levels are still averaged from it, so they stay soft."""
+    result = image.copy()
+    result.putalpha(image.getchannel("A").point(_HARD_LUT))
+    return extend_edge_colours(result)
+
+
+def _seed_colours(counts: Counter, count: int) -> list[tuple[int, int, int]]:
+    """Weighted k-means over a handful of colours, seeded from the most common colour, then the farthest."""
+    colours = sorted(counts)
+    centres = [max(colours, key=lambda c: (counts[c], c))]
+    while len(centres) < min(count, len(colours)):
+        centres.append(max(colours, key=lambda c: (min(sum((c[k]-m[k])**2 for k in range(3)) for m in centres), c)))
+    for _ in range(12):
+        members: list[list[tuple[int, int, int]]] = [[] for _ in centres]
+        for colour in colours:
+            index = min(range(len(centres)), key=lambda i: (sum((colour[k]-centres[i][k])**2 for k in range(3)), i))
+            members[index].append(colour)
+        moved = []
+        for index, group in enumerate(members):
+            total = sum(counts[c] for c in group)
+            moved.append(tuple(round(sum(c[k]*counts[c] for c in group)/total) for k in range(3)) if total else centres[index])
+        if moved == centres:
+            break
+        centres = moved
+    return centres
+
+
+def _smooth_colours(image: Image.Image) -> Counter:
+    """Colours of pixels inside flat or gently shaded areas.
+
+    A pixel counts when it and its four neighbours are solid and no neighbour differs from it by more than
+    16 in any channel. Edges, anti-aliasing blends and the seam between an outline and its fill do not count,
+    so they cannot be mistaken for shading or for an extra region.
+    """
+    width, height = image.size
+    pixels = list(image.getdata())
+    smooth: Counter = Counter()
+    for y in range(1, height - 1):
+        for x in range(1, width - 1):
+            here = pixels[y * width + x]
+            if here[3] < ALPHA_HIGH:
+                continue
+            for there in (pixels[y * width + x - 1], pixels[y * width + x + 1],
+                          pixels[(y - 1) * width + x], pixels[(y + 1) * width + x]):
+                if there[3] < ALPHA_HIGH or max(abs(here[k] - there[k]) for k in range(3)) > 16:
+                    break
+            else:
+                smooth[here[:3]] += 1
+    return smooth
+
+
+def _rim_colour(image: Image.Image) -> tuple[int, int, int] | None:
+    """The one colour that rims the digit (an outline), or None. Half the solid pixels touching its edge share it."""
+    width, height = image.size
+    pixels = list(image.getdata())
+    rim: Counter = Counter()
+    for y in range(height):
+        for x in range(width):
+            here = pixels[y * width + x]
+            if here[3] < ALPHA_HIGH:
+                continue
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nx, ny = x + dx, y + dy
+                if not (0 <= nx < width and 0 <= ny < height) or pixels[ny * width + nx][3] < ALPHA_HIGH:
+                    rim[here[:3]] += 1
+                    break
+    total = sum(rim.values())
+    if not total:
+        return None
+    best = max(rim, key=lambda c: (rim[c], c))
+    near = sum(n for c, n in rim.items() if max(abs(c[k] - best[k]) for k in range(3)) <= 24)
+    return best if near * 2 >= total else None
+
+
+def _peaks(image: Image.Image) -> list[tuple[int, int, int]]:
+    """The flat colours a digit is drawn in: the commonest shade of each group of solid shades.
+
+    A shade joins a colour already found when it is within 40 per channel of it, and a blend that lies on the way
+    between two found colours (an anti-aliased seam) is not a colour of its own. Any other group of shades that holds at
+    least 1 percent of the visible pixels (and 8 of them) is a colour of the digit, however thin or small (a one pixel
+    ring of gold around a white digit with a royal outline is three colours, even when the ring is only the soft edge, and
+    so is a small flat patch of red). More than five colours means a picture, and the list is cut there.
+    """
+    solid = Counter(p[:3] for p in image.getdata() if p[3] >= ALPHA_LOW)
+    total = sum(solid.values())
+    peaks: list[tuple[int, int, int]] = []
+
+    def close(a, b):
+        return sum((a[k] - b[k]) ** 2 for k in range(3)) <= 40 * 40
+
+    def between(colour):
+        for i, a in enumerate(peaks):
+            for b in peaks[i + 1:]:
+                vector = tuple(b[k] - a[k] for k in range(3))
+                length = sum(v * v for v in vector)
+                if not length:
+                    continue
+                t = max(0.0, min(1.0, sum((colour[k] - a[k]) * vector[k] for k in range(3)) / length))
+                if sum((colour[k] - a[k] - t * vector[k]) ** 2 for k in range(3)) <= 40 * 40:
+                    return True
+        return False
+
+    for colour, _amount in sorted(solid.items(), key=lambda item: (-item[1], item[0])):
+        if any(close(colour, peak) for peak in peaks) or between(colour):
+            continue
+        if sum(n for other, n in solid.items() if close(other, colour)) >= max(8, 0.01 * total):
+            peaks.append(colour)
+            if len(peaks) > 5:
+                break
+    return peaks
+
+
+class _Shading:
+    """What a digit is made of: an outline colour (or none), the fill, and how many separate regions.
+
+    Only smooth pixels count (see ``_smooth_colours``). Smooth colours that lie within one gradient step of
+    each other form one chain, and a chain with a real share of the fill is one region, so a gradient is one
+    region however many shades it has, and a flat patch of another colour is a region of its own.
+    """
+
+    def __init__(self, image: Image.Image) -> None:
+        smooth = _smooth_colours(image)
+        self.smooth = smooth
+        self.rim = _rim_colour(image)
+        fill = Counter({c: n for c, n in smooth.items()
+                        if self.rim is None or max(abs(c[k] - self.rim[k]) for k in range(3)) > 40})
+        colours = sorted(fill)
+        parent = list(range(len(colours)))
+
+        def find(index: int) -> int:
+            while parent[index] != index:
+                parent[index] = parent[parent[index]]
+                index = parent[index]
+            return index
+
+        for i, first in enumerate(colours):
+            for j in range(i + 1, len(colours)):
+                if sum((first[k] - colours[j][k]) ** 2 for k in range(3)) <= 48 * 48:
+                    parent[find(i)] = find(j)
+        chains: dict[int, list[tuple[int, int, int]]] = {}
+        for index, colour in enumerate(colours):
+            chains.setdefault(find(index), []).append(colour)
+        total = sum(fill.values())
+        real = [chain for chain in chains.values() if sum(fill[c] for c in chain) >= max(4, total * 0.03)]
+        self.fill = Counter({c: fill[c] for chain in real for c in chain})
+        self.regions = len(real) + (1 if self.rim is not None else 0)
+        #: A chain that steps through many shades (16-wide steps of colour) is shading, a gradient; a flat colour is not.
+        steps = max((len({(c[0] // 16, c[1] // 16, c[2] // 16) for c in chain}) for chain in real), default=0)
+        self.shaded = steps >= _SHADED
+        solid = [p[:3] for p in image.getdata() if p[3] >= ALPHA_HIGH]
+        self.distinct = len(set(solid))
+        #: Flat colours with stray in-between shades (resampling overshoot): a few colours, many more shades than
+        #: colours, a real share of smooth pixels, and not so many shades that it is a picture.
+        self.peaks = _peaks(image)
+        self.noisy = (not self.shaded and 1 <= len(self.peaks) <= 4 and self.distinct >= len(self.peaks) + 3
+                      and self.distinct <= 64 and bool(solid) and sum(smooth.values()) >= 0.10 * len(solid))
+
+
+def flatten_shading(image: Image.Image, count: int, *, clean: bool = False) -> Image.Image | None:
+    """Merge a gradient into *count* flat colours in all, or (``clean``) merge stray shades into the digit's own colours.
+
+    None when that would change nothing or lose a region. An outline keeps its own colour (one of the *count*), and
+    the fill shades are grouped around the commonest shade and the shades farthest from it, so a flat patch of another
+    colour keeps its own colour too. Edge blends are simply given to the nearest of the final colours. ``clean`` is for
+    flat colours with in-between shades (``noisy``): the result has exactly the colours the digit is drawn in (``_peaks``),
+    thin ones included, so no colour with a real share of the digit can be merged away.
+    """
+    shading = _Shading(image)
+    if clean:
+        if not shading.noisy:
+            return None
+        centres = list(shading.peaks)
+    else:
+        if not shading.shaded or count < shading.regions:
+            return None
+        fixed = [shading.rim] if shading.rim is not None else []
+        wanted = count - len(fixed)
+        if wanted > 0 and not shading.fill:
+            return None
+        centres = fixed + (_seed_colours(shading.fill, wanted) if wanted > 0 else [])
+        if not centres:
+            return None
+    nearest: dict[tuple[int, int, int], tuple[int, int, int]] = {}
+    out = []
+    for p in image.getdata():
+        if p[3] < ALPHA_LOW:
+            out.append(p)
+            continue
+        key = p[:3]
+        if key not in nearest:
+            nearest[key] = min(centres, key=lambda c: (sum((c[k]-key[k])**2 for k in range(3)), c))
+        out.append((*nearest[key], p[3]))
+    result = Image.new("RGBA", image.size)
+    result.putdata(out)
+    return extend_edge_colours(result)
+
+
+def _apply_step(art: Image.Image, step: _Step) -> Image.Image | None:
+    """The art after *step*, or None when the step would change nothing for this digit."""
+    result = art
+    if step.hard and any(0 < a < 255 for a in art.getchannel("A").getdata()):
+        result = hard_edges(art)
+        before, after = sum(art.getchannel("A").getdata()) / 255, sum(result.getchannel("A").getdata()) / 255
+        if abs(after - before) > 0.10 * before:
+            # Hard edges would lose a tenth of the digit's area: strokes thinner than a texel would vanish.
+            return None
+    if step.clean:
+        return flatten_shading(result, 0, clean=True)
+    if step.colours is not None:
+        # Only shaded art (many fill shades, as a gradient has) is flattened, and never to fewer colours than it
+        # has separate regions: an outline and flat patches are design, and merging them would change it.
+        return flatten_shading(result, step.colours)
+    return None if result is art else result
+
+
+def _palette_floor(regions: int, banded: int | None) -> int:
+    """Fewest palette entries worth trying. Below 16 only clean few-colour art qualifies.
+
+    Two flat colours may go down to 8. Three or four are allowed 12 only after their shading was
+    deliberately flattened by a reported step. Any other art keeps the 16-colour quality floor.
+    """
+    if 1 <= regions <= 2:
+        return 8
+    if banded is not None and 3 <= regions <= 4:
+        return 12
+    return 16
+
+
+def _ladder(art, size, mode, mip_count, candidate, *, stream_tag, offset_bits, stored_size, attempts, step):
+    """The registration-scale and palette ladder for one version of the art.
+
+    Returns ``(fit, levels, factor, floor)``. ``fit`` is the first stream that fits, or None when none does;
+    ``levels`` and ``floor`` then describe the smallest version that was tried. The faithful version
+    (``step`` None) behaves exactly as it always has, so no digit that fitted before changes.
+    """
     from nfl_tset_png_import import quantize_levels_to_vc_lz_bound, QualityBudgetError
-    prepared, receipt = prepare_digit(image, retail, mode)
-    levels = prepared_mips(prepared, mip_count)
-    attempts = []
-    # Below 16 entries only a clean two-tone input qualifies. Both opaque
-    # colours remain protected; palette capacity is spent on coverage next.
-    regions = sorted({c[:3] for c in prepared.getdata() if c[3] >= ALPHA_LOW})
-    floor = 8 if 1 <= len(regions) <= 2 else 16
+    levels = prepared_mips(art, mip_count)
+    # Below 16 entries only a clean few-colour input qualifies. Every opaque colour
+    # remains protected; palette capacity is spent on coverage next.
+    regions = sorted({c[:3] for c in art.getdata() if c[3] >= ALPHA_LOW})
+    floor = _palette_floor(len(regions), step.colours if step is not None else None)
+    flatten_smaller = floor < 16 if step is not None else floor == 8
+    tag = {"simplification": step.name} if step is not None else {}
+    factor = 1.0
     for factor in (1.0, 0.94, 0.88):
         if factor != 1.0:
             if mode == "as_authored":
                 break
-            bounds = prepared.getchannel("A").getbbox()
-            size = (max(1, round((bounds[2]-bounds[0])*factor)), max(1, round((bounds[3]-bounds[1])*factor)))
-            smaller = Image.new("RGBA", image.size)
-            left = (bounds[0]+bounds[2]-size[0])//2
-            top = (bounds[1]+bounds[3]-size[1])//2
-            smaller.paste(resize_cell(prepared.crop(bounds), size), (left, top))
+            bounds = art.getchannel("A").getbbox()
+            shrunk = (max(1, round((bounds[2]-bounds[0])*factor)), max(1, round((bounds[3]-bounds[1])*factor)))
+            smaller = Image.new("RGBA", size)
+            left = (bounds[0]+bounds[2]-shrunk[0])//2
+            top = (bounds[1]+bounds[3]-shrunk[1])//2
+            smaller.paste(resize_cell(art.crop(bounds), shrunk), (left, top))
             smaller = one_texel_edge(bind_alpha(smaller))
-            if floor == 8:
+            if step is not None and step.hard:
+                smaller = hard_edges(smaller)
+            if flatten_smaller:
                 smaller = flatten_regions(smaller, regions)
             levels = prepared_mips(smaller, mip_count)
         try:
@@ -251,20 +561,62 @@ def fit_digit(image, retail, mode, mip_count, candidate, *, stream_tag, offset_b
                 quantizer=edge_quantizer, minimum_palette_limit=floor,
                 palette_limits=(256, 128, 64, 32, 16, 12, 8))
         except QualityBudgetError as exc:
-            attempts.extend({**a, "registration_factor": factor} for a in getattr(exc, "attempts", ()))
+            attempts.extend({**a, **tag, "registration_factor": factor} for a in getattr(exc, "attempts", ()))
             continue
-        attempts.extend({**a, "registration_factor": factor} for a in fit.attempts)
+        attempts.extend({**a, **tag, "registration_factor": factor} for a in fit.attempts)
         used = {fit.palette[i] for i in fit.index_levels[0] if fit.palette[i][3] >= ALPHA_LOW}
-        if floor == 8 and any(not any(max(abs(c[k]-region[k]) for k in range(3)) <= 24 for c in used)
-                              for region in regions):
+        if flatten_smaller and any(not any(max(abs(c[k]-region[k]) for k in range(3)) <= 24 for c in used)
+                                   for region in regions):
             # Never accept a tier that lost a contrasting fill or outline.
             # A smaller image cannot restore a missing region either.
-            break
+            return None, levels, factor, floor
+        return fit, levels, factor, floor
+    return None, levels, factor, floor
+
+
+def _needed_bytes(levels, floor, candidate, *, stream_tag, offset_bits) -> int | None:
+    """Encoded size of the smallest version the ladder tried, measured without a bound (None if it cannot be)."""
+    try:
+        from nfl_txtr import compress_vc_lz
+        palette, indices, _ = edge_quantizer(levels, floor)
+        stream, _info = compress_vc_lz(candidate(levels, palette, indices), stream_tag=stream_tag, offset_bits=offset_bits)
+        return len(stream)
+    except Exception:  # an unmeasured shortfall is reported as unmeasured, never invented
+        return None
+
+
+def fit_digit(image, retail, mode, mip_count, candidate, *, stream_tag, offset_bits, stored_size):
+    """Bounded, shared preparation and encoding, including honest last resorts.
+
+    The authored digit is fitted exactly as before. Only when that fails does the encoder try, in order,
+    the reported simplifications in ``_STEPS``; each keeps both the fill and the outline. A digit that still
+    cannot fit raises QualityBudgetError, carrying how many bytes its simplest version needs.
+    """
+    from nfl_tset_png_import import QualityBudgetError
+    prepared, receipt = prepare_digit(image, retail, mode)
+    attempts: list[dict] = []
+    smallest = None  # (levels, floor) of the smallest version tried, for the measured shortfall
+    for step in (None, *_STEPS):
+        art = prepared if step is None else _apply_step(prepared, step)
+        if art is None:
+            continue
+        fit, levels, factor, floor = _ladder(art, image.size, mode, mip_count, candidate, stream_tag=stream_tag,
+                                             offset_bits=offset_bits, stored_size=stored_size, attempts=attempts, step=step)
+        if fit is None:
+            smallest = (levels, floor)
+            continue
         receipt["fit"] = {"registration_factor": factor, "minimum_palette_budget": floor,
                           "two_tone": floor == 8, "attempts": attempts,
                           "written_box": measure(Image.frombytes("RGBA", image.size, levels[0].rgba))["box"]}
+        if step is not None:
+            receipt["fit"]["simplified"] = {"name": step.name, "text": step.text}
         return replace(fit, attempts=tuple(attempts)), levels, receipt
     error = QualityBudgetError(kept_retail_reason(stored_size))
     error.attempts = tuple(attempts)
     error.preparation = receipt
+    error.stored_size = stored_size
+    error.needed_bytes = (_needed_bytes(*smallest, candidate, stream_tag=stream_tag, offset_bits=offset_bits)
+                          if smallest else None)
+    error.advice = kept_retail_advice(stored_size=stored_size, needed=error.needed_bytes,
+                                      colours=receipt.get("cleanup", {}).get("final_visible_rgb"))
     raise error

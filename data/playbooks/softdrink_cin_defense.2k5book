@@ -9,10 +9,10 @@
   "notes": "DESIGN: Al Golden (Notre Dame / Anarumo multiple); 2025 baseline CIN. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "3d380b92bd51356fce2f962ab4e68cf878eb2a694f0ce6eaa1489cb0bec58f43",
+  "book_fingerprint": "8b294aff51abf91c233c5f268f41423584d6f25ac5d167a6b0284c441d12ea76",
   "donor_formation_count": 50,
   "donor_play_count": 270,
-  "donor_node_count": 2362
+  "donor_node_count": 2364
  },
  "budget": {
   "formations": 50,

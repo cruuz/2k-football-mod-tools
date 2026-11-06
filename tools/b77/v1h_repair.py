@@ -22,7 +22,14 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from tools.b77.g2_repair import read, scope_receipt, sha, write_new
 
 V06_SHA256 = "f67e6fc1cb76c9ea1f1ad504e4a6491ff126483d66a9da8ddb92950bbaf740ba"
-REPAIRED_SHA256 = "b544c801652d7060d85e8d8e581eb3d554f2bee9488ebeba68e91bb6c1cdc80c"
+# b780 re-pin (int2): the tool relinks the Studio's current MyCareer owner into the pinned v0.6 base, and that owner
+# changed after the beta-77.1 pin (b778/b779, then beta-80's draft need, footer admission, defensive camera, punt hand
+# back, previous reading and companion status), so b544c801... was already stale at beta-79 (its private fixture was
+# absent, so the test skipped). Derived from repair() on the pinned base with every postcondition holding: 69 spans,
+# 19,247 changed bytes, all 70 other reservations unchanged, seals and directory intact, idempotent.
+# b780-int re-pin 2 (after mc1 290936cd1 / a4b2f2d13, the MyCareer fixes and the MyPlayer star setting): the same
+# derivation, 69 spans, 19,342 changed bytes, every postcondition holding.
+REPAIRED_SHA256 = "2b22a68bb8c6173f50276c67800fc0f4dc8ae34a22aa6b1688e74d10a0414da8"
 
 
 def repair(payload: bytes, *, reference: bytes | None = None) -> tuple[bytes, dict]:
@@ -69,7 +76,10 @@ def repair(payload: bytes, *, reference: bytes | None = None) -> tuple[bytes, di
             spans.append((at, 20))
             buf[at:at + 20] = section_digest(bytes(buf), section)
     result = bytes(buf)
-    if (reference is None and sha(result) != REPAIRED_SHA256) or mode.status(result) != "applied":
+    # b780 int2: the shipped v0.6 executable carries older templates of owners revised since, which the whole-image
+    # check of the neighbours (check_context, beta-79) cannot recognize; the MyCareer owner itself (allocation, code,
+    # state pages, hooks) is checked exactly, as in mc2_repair.
+    if (reference is None and sha(result) != REPAIRED_SHA256) or mode.status(result, context=False) != "applied":
         raise ValueError("repair template differs from the validated revision")
     if space.status(result) != "applied" or space._read_scale_directory(result) != requests:
         raise ValueError("allocator postcondition failed")

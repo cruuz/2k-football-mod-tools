@@ -1952,13 +1952,13 @@
  "receipt": {
   "team": "CHI",
   "offense_pack": "data/playbooks/softdrink_chi_modern.2k5book",
-  "offense_pack_sha256": "c7e201f61c9a05739066079a7d1540ccfa5495566c1aa7bd7a1d7eee6dddb25c",
-  "source_fingerprint": "11e48b4c183c84a54f1bbf94a9fe311cb040a8a373a09ef76f595a190485f9dc",
-  "replacement_sha256": "83b96877708c7436e4c297f29c6eb9dd6dd67a7c3a9de98c5b6d7392453f1586",
+  "offense_pack_sha256": "ed65ec2441a2422a6948ab272511736d29a7f48cff99793af3f4e4039eaa06a0",
+  "source_fingerprint": "b9362e4a16c829ea881efa10ed24c911aea4c23926e95ab3d37e4b35a48d20e7",
+  "replacement_sha256": "beb88bf39dea07cef6a09f6d2fefadc428ba3c1caf9a7d8ab82601956e9d6c12",
   "semantic_sha256": "9049c072583ab47d6504065f83bb5021316072800f994108c92bb6f5a01f67c6",
   "plays": 64,
   "formations": 4,
-  "nodes": 2862,
+  "nodes": 2857,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1966,7 +1966,10 @@
   "band_loss": 0.05598,
   "spy_play": null,
   "native_scoring_faults": 0,
+  "name_pool_units": 5038,
+  "name_pool_capacity": 5088,
+  "name_mode": 0,
   "pack": "data/playbooks/softdrink_chi_defense.2k5book",
-  "pack_sha256": "19a52f0220d2126afc23f79815f6c7c09fd776e7e2367919a3a96d92dfc3742e"
+  "pack_sha256": "68a736dbed763957014abedad4d19f65a24ece87b666fccaba38db5fe92404fd"
  }
 }

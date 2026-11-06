@@ -52,14 +52,16 @@ class StudioShellLayoutTests(unittest.TestCase):
         rows = self._row_texts()
         self.assertEqual(len(rows), 1 + len(PRODUCT_CATEGORY_ORDER) + 7)
         self.assertEqual(rows[0], "Getting Started")
-        self.assertEqual(rows[-7], "★ Rosters")
-        self.assertEqual(rows[-6], "★ Models")
-        self.assertEqual(rows[-5], "Animations")
+        self.assertEqual(rows[1], "★ Build & Share")       # b780-uxfix: second, not 20th of 20 below the fold
+        self.assertEqual(rows[-6], "★ Rosters")
+        self.assertEqual(rows[-5], "★ Models")
+        self.assertEqual(rows[-4], "Animations")
         self.assertFalse(self.window._animations_panel.import_button.isEnabled())
-        self.assertEqual(rows[-4], "★ Create a Play")
-        self.assertEqual(rows[-3], "MyCareer")
-        self.assertEqual(rows[-2], "Scorebar")
-        self.assertEqual(rows[-1], "★ Build & Share")
+        self.assertEqual(rows[-3], "★ Create a Play")
+        self.assertEqual(rows[-2], "MyCareer")
+        self.assertEqual(rows[-1], "Scorebar")
+        for row in range(self.window.navigation.count()):  # every row opens its own page
+            self.assertEqual(self.window._navigation_row(self.window._navigation_key(row)), row)
         self.assertEqual(_tab_titles(self.window._create_play_tabs), ["Create a Play", "Info"])
         self.assertIn("Gameplay", rows)
         self.assertIn("Presentation", rows)
@@ -87,7 +89,7 @@ class StudioShellLayoutTests(unittest.TestCase):
             self.assertNotIn(moved, titles)
         patches = self.window._gameplay_patches_panel
         assert patches is not None
-        self.assertEqual(set(patches.checks), {"momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "helmet_finish", "kick_laces", "punter_holder", "letter_grades", "honors_page", "prospect_names", "franchise_practice", "player_star", "depth_roles", "dynamic_kickoff", "depth_chart_rows", "practice_squad", "depth_locks", "season_cap", "xbe_space", "kickoff_relocated", "guardian_cap", "screen_timing", "scorebug", "scorebug_runtime", "music_policy", "music_unlock", "music_userlist", "all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning", "flatter_deep_ball", "chop_block_toggle", "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", "momentum_collisions", "read_option_runtime", "screen_hooks", "franchise_2026_rules", "senior_bowl", "guardian_overlay", "my_career", "crib_reclaim", "modern_naming", "reserves_16", "created_teams_extra", "position_pools", "franchise_autosave", "espn25_rosters", "coverage_trail", "franchise_edit_player", "cpu_money_downs", "accelerated_clock", "coach_ai", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "coin_defer", "decided_clock", "weather_haze", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "k128_memory", "k128_roster_heap", "k128_early"})
+        self.assertEqual(set(patches.checks), {"momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "helmet_finish", "kick_laces", "punter_holder", "letter_grades", "honors_page", "prospect_names", "franchise_practice", "player_star", "depth_roles", "dynamic_kickoff", "depth_chart_rows", "practice_squad", "depth_locks", "season_cap", "xbe_space", "kickoff_relocated", "guardian_cap", "screen_timing", "scorebug", "scorebug_runtime", "music_policy", "music_unlock", "music_userlist", "all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning", "flatter_deep_ball", "chop_block_toggle", "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", "momentum_collisions", "read_option_runtime", "screen_hooks", "franchise_2026_rules", "senior_bowl", "guardian_overlay", "my_career", "crib_reclaim", "modern_naming", "reserves_16", "created_teams_extra", "position_pools", "franchise_autosave", "espn25_rosters", "coverage_trail", "coverage_hitch_brake", "franchise_edit_player", "cpu_money_downs", "accelerated_clock", "coach_ai", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "coin_defer", "decided_clock", "weather_haze", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "k128_memory", "k128_roster_heap", "k128_early"})
 
     def test_presentation_page_has_inventory_scorebug_and_commentary(self) -> None:
         page = self.window._category_pages[ProductCategory.SCOREBUG_PRESENTATION]
@@ -122,12 +124,12 @@ class StudioShellLayoutTests(unittest.TestCase):
 
     def test_build_and_share_page_has_both_tabs(self) -> None:
         nav = self.window.navigation
-        nav.setCurrentRow(nav.count() - 1)
+        nav.setCurrentRow(self.window._navigation_row("build_share"))
         self.application.processEvents()
         page = self.window._build_share_page
         self.assertIsInstance(page, QTabWidget)
         assert isinstance(page, QTabWidget)
-        self.assertEqual(_tab_titles(page), ["Build", "Share"])
+        self.assertEqual(_tab_titles(page), ["Build", "Install & Share"])   # b780-uxfix: the tab installs first
         self.assertIs(page.widget(0), self.window._build_panel)
         self.assertIs(page.widget(1), self.window._share_panel)
         self.assertEqual(self.window.page_title.text(), "Build & Share")
@@ -169,13 +171,13 @@ class BuildShareActionBarTests(StudioShellLayoutTests):
         nav = self.window.navigation
         project_widgets = (self.window.edit_count, self.window.undo_button, self.window.revert_all_button,
                            self.window.check_images_button, self.window.build_button)
-        nav.setCurrentRow(1)
+        nav.setCurrentRow(self.window._navigation_row(ProductCategory.UNIFORMS_EQUIPMENT))
         self.assertTrue(all(not w.isHidden() for w in project_widgets))
-        nav.setCurrentRow(nav.count() - 1)          # ★ Build & Share
+        nav.setCurrentRow(self.window._navigation_row("build_share"))          # ★ Build & Share
         self.assertTrue(all(w.isHidden() for w in project_widgets))
         self.assertFalse(self.window.launch_button.isHidden())
         self.assertFalse(self.window.configure_xemu_button.isHidden())
-        nav.setCurrentRow(nav.count() - 2)          # ★ Create a Play: controls return
+        nav.setCurrentRow(self.window._navigation_row("create_play"))          # ★ Create a Play: controls return
         self.assertTrue(all(not w.isHidden() for w in project_widgets))
 
     def test_a_finished_build_tab_copy_is_offered_to_launch(self) -> None:

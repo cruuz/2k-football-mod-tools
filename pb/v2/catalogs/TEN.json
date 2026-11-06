@@ -320,9 +320,12 @@
    "align": "uc",
    "tag": "short",
    "menu": [
+    "RB Slam",
+    "RB Dive",
     "X Snag",
     "Max U Seam Shot",
-    "PA X Fade Curl"
+    "PA X Fade Curl",
+    "RB Lead Draw"
    ],
    "cpu_situation": [
     4,
@@ -407,7 +410,7 @@
    "menu": [
     "Empty Spacing",
     "Z Deep Hooks",
-    "RB Slants",
+    "QB Power",
     "X Slip Screen",
     "X Dagger Whip",
     "Bubble Screen"
@@ -479,7 +482,10 @@
    "menu": [
     "Y Whip",
     "X Bench",
-    "Y Whip Seam"
+    "01 Trap",
+    "Y Whip Seam",
+    "Power G",
+    "Counter GT"
    ],
    "cpu_situation": [
     3,
@@ -619,6 +625,8 @@
    "align": "pistol",
    "tag": "base",
    "menu": [
+    "RB Counter Wk",
+    "Crack Toss",
     "Y Seam Hitch",
     "Z Comeback Seam Whip",
     "X Out Seam",
@@ -636,7 +644,8 @@
     "X Whip",
     "RB Fade Curl",
     "RB Texas",
-    "Y Deep Over Out"
+    "Y Deep Over Out",
+    "Lead Stretch"
    ],
    "cpu_situation": [
     0,
@@ -2290,6 +2299,7 @@
     "Pistol Y Off Trips",
     "Pistol Trey",
     "Singleback Wing",
+    "Pistol Doubles Y Off",
     "Singleback Doubles Tight",
     "Singleback Bunch"
    ]
@@ -2315,6 +2325,7 @@
     "Pistol Y Off Trips",
     "Pistol Trey",
     "Singleback Wing",
+    "Pistol Doubles Y Off",
     "Singleback Doubles Tight",
     "Singleback Bunch"
    ]
@@ -2627,6 +2638,7 @@
    "formations": [
     "Singleback Ace",
     "Pistol Deuce Close",
+    "Gun Wing Slot Offset",
     "Singleback Y Trips"
    ]
   },
@@ -2946,6 +2958,7 @@
    "lane": 4,
    "formations": [
     "Gun Wildcat",
+    "Pistol Doubles Y Off",
     "Gun Tight Slots"
    ]
   },
@@ -3788,6 +3801,7 @@
    "deep": false,
    "lane": 3,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4102,6 +4116,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "I-Form Tight",
     "Full House Sneak"
    ]
   },
@@ -4128,27 +4143,23 @@
   {
    "play": "p119",
    "play_index": 182,
-   "name": "RB Slants",
-   "concept": "HB Slants Seam Out Comebacks",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Arrow",
-    "Comeback",
-    "Seam Out",
-    "Slant"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p120",
@@ -4359,6 +4370,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4483,6 +4495,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Gun Wing Slot Offset",
     "Gun Deuce Close"
    ]
   },
@@ -4543,6 +4556,7 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "Gun Wing Slot Offset",
     "Gun Deuce Close"
    ]
   },

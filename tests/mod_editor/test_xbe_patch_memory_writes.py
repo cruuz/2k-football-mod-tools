@@ -504,7 +504,15 @@ class PatchWriteTests(unittest.TestCase):
                         checked += 1
                         self.assertTrue(data["va"] <= target < data["va"] + data["size"], write)
             self.assertGreater(checked, 0)
-            self.assertFalse(image.runtime_writable(code["va"], code["size"]))
+            if code["va"] >= space.POOL_VA:
+                # b780 pres2 (Q51, 9b9d86f38): the 6,336-byte sprite scorebug code no longer fits the v3 RX run and
+                # spills whole to the v4 pool, which is ONE preloaded writable + executable section by design (flags
+                # 0x07, like retail .data; see test_beta61_allocator_integration). Code there is runtime-writable, so pin
+                # that it is exactly that pool section; every code row in the v3 runs keeps the strict rule below.
+                section = image.section(code["va"], code["size"])
+                self.assertEqual((section.start, section.flags), (space.POOL_VA, space.POOL_FLAGS))
+            else:
+                self.assertFalse(image.runtime_writable(code["va"], code["size"]))
             self.assertTrue(image.runtime_writable(data["va"], data["size"]))
 
     def test_kickoff_fixes_retain_the_existing_code_and_state_budget(self) -> None:

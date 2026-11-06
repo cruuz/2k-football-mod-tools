@@ -30,13 +30,18 @@ does; the thunk tables in .text looked dead statically but ARE called at runtime
     offense or kicked-ball catcher: rand -> rand / (K * (Human Catching + CPU Catching))
     other defense catcher:         rand -> rand / (2 * Interception slider)
 
-so a pass is caught when ``rand < P * m`` with ``m = K * (human + cpu)``.  K = ``ODDS_SCALE`` = 2.0 is
-the retail float constant at 0x4E6084 and the two Catching sliders are read straight from the
-factor table.  Human and CPU receivers get the SAME odds: the multiplier is the sum of both
+so a pass is caught when ``rand < P * m`` with ``m = K * (human + cpu)``.  K = ``ODDS_SCALE`` = 1.25 is
+the retail float constant at 0x4EF1CC (b780 b5-sim; b779 gp1 used 2.0 at 0x4E6084) and the two Catching
+sliders are read straight from the factor table.  Human and CPU receivers get the SAME odds: the multiplier is the sum of both
 sliders, never the receiving side's own.  Every difficulty preset sets the pair to values that
-sum to 1.0 (Rookie 1.0/0.0, Pro 0.75/0.25, All-Pro 0.5/0.5, Legend 0.25/0.75), so ``m = 2``
-(double the retail catch odds) for every preset and every saved profile; moving either slider
-moves both teams.  (The previous revision used the receiving side's own slider: the Pro human
+sum to 1.0 (Rookie 1.0/0.0, Pro 0.75/0.25, All-Pro 0.5/0.5, Legend 0.25/0.75), so ``m = 1.25``
+(a quarter above the retail catch odds) for every preset and every saved profile; moving either slider
+moves both teams.  b780 b5-sim: at m = 2 a receiver rated 70 or better never dropped a ball in his hands (only
+P < 0.5 drops) and the v0.8 release measured 0.1 to 0.3 drops a team-game against the NFL's 1.2. With m = 1.25 the
+real catch routine (Unicorn, the SOFTDRINK target mix weighted by simulated-season targets) drops 2.8 % of hands
+rolls with the assumed coverage and 6.0 % with harsh coverage (gp1's lower-rated synthetic mix: 4.2 % and 8.7 %; NFL
+5.2 % of catchable targets, nflverse + FTN 2022-25): Catching 90+ about 0.1-0.8 %, 80s 1.0-3.5 %, 70s 2.2-6 %, 60s
+4-10 %. Elite hands stay almost sure.  (The previous revision used the receiving side's own slider: the Pro human
 got x1.5 and the CPU stayed at retail odds, which is why the CPU dropped many more passes than
 the human.)  Interception keeps its full range: 0 makes picks impossible, 50 is retail, 100
 doubles them (the game's own slider branch keeps a 10 % floor and scales with difficulty,
@@ -85,7 +90,7 @@ CEIL_SITES = (0x0014AC20, 0x0014B490)   # Human / CPU Catching "maximum" callbac
 CATCHING_FACTOR_INDEX = 4
 # Default odds multiplier m = K * (human + cpu) = K at every difficulty preset (the pair always sums to 1.0).
 # K is a retail float constant in .rdata, referenced by address.
-ODDS_SCALE = 2.0
+ODDS_SCALE = 1.25
 ODDS_SCALE_VA = {1.25: 0x004EF1CC, 1.5: 0x004E6D0C, 1.75: 0x004E81A4, 2.0: 0x004E6084, 2.5: 0x004E6D44,
                  3.0: 0x004E6D4C, 4.0: 0x004E6D40}[ODDS_SCALE]
 CPU_CATCHING_CELL = FACTOR_TABLE + 4 * CATCHING_FACTOR_INDEX           # side 0 (CPU)
@@ -144,16 +149,17 @@ def cave_bytes() -> bytes:
 DEFENDER_BYTES = 11
 
 
-def kick_gate_bytes() -> bytes:
+def kick_gate_bytes(scale_va: int | None = None) -> bytes:
     """The 22-byte tail (the slot of the former kick gate): +0 the interception branch,
     rand / (2 * Interception); +11 the catching branch, rand / (ODDS_SCALE * (human + cpu))."""
 
+    scale_va = ODDS_SCALE_VA if scale_va is None else scale_va
     code = b"\xd9\x05" + struct.pack("<I", INT_SLIDER_GLOBAL)  # fld [Interception slider]
     code += b"\xd8\xc0"                                         # fadd st0,st0           2*slider
     code += b"\xde\xf9"                                         # fdivp st1,st0          rand/(2*slider)
     code += b"\xc3"                                             # ret
     assert len(code) == DEFENDER_BYTES
-    code += b"\xd8\x0d" + struct.pack("<I", ODDS_SCALE_VA)     # fmul [K]               m = K*(h+c)
+    code += b"\xd8\x0d" + struct.pack("<I", scale_va)          # fmul [K]               m = K*(h+c)
     code += b"\xd8\xf9"                                         # fdivr st0,st1          st0 = rand/m
     code += b"\xdd\xd9"                                         # fstp st1               pop the spare rand
     code += b"\xc3"                                             # ret
@@ -209,8 +215,13 @@ def _sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
     ]
 
 
+# b780 b5-sim: the b779 gp1 revision (K = 2.0 at 0x4E6084, beta-79 / v0.8) differs only in the tail's constant address.
+PREVIOUS_ODDS_SCALE_VA = 0x004E6084
+
+
 def status(payload: bytes) -> str:
-    """'retail', 'applied', or 'foreign' (bytes match neither; refuse to touch)."""
+    """'retail', 'applied', 'previous' (the beta-79 revision with K = 2.0; apply() moves it to the current K) or
+    'foreign' (bytes match neither; refuse to touch)."""
 
     states = set()
     try:
@@ -224,7 +235,18 @@ def status(payload: bytes) -> str:
         return "retail"
     if states == {"applied"}:
         return "applied"
+    if _previous(payload, sites):
+        return "previous"
     return "foreign"
+
+
+def _previous(payload: bytes, sites) -> bool:
+    old_tail = kick_gate_bytes(PREVIOUS_ODDS_SCALE_VA)
+    for label, off, before, after in sites:
+        got = payload[off: off + len(before)]
+        if got != (old_tail if label == "kick_gate" else after):
+            return False
+    return True
 
 
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
@@ -233,6 +255,15 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     state = status(payload)
     if state == "applied":
         return payload, {"already_applied": True, "edits": [], "changed_bytes": 0, "sections_repinned": []}
+    if state == "previous":                      # beta-79 revision: only the tail's scale constant moves (XBE header)
+        buf = bytearray(payload)
+        off = _offset(payload, KICK_GATE_VA)
+        buf[off: off + KICK_GATE_SIZE] = kick_gate_bytes()
+        patched = bytes(buf)
+        _require(status(patched) == "applied", "post-upgrade verification failed")
+        return patched, {"upgraded_from": "previous", "edits": [{"label": "kick_gate", "file_offset": f"0x{off:x}",
+                         "before": kick_gate_bytes(PREVIOUS_ODDS_SCALE_VA).hex(), "after": kick_gate_bytes().hex()}],
+                         "changed_bytes": sum(1 for a, b in zip(payload, patched) if a != b), "sections_repinned": []}
     _require(state == "retail", f"catch-slider sites are {state}, not retail")
     buf = bytearray(payload)
     edits = []
@@ -255,4 +286,4 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
 
 
 __all__ = ["CatchSliderError", "CAVE_SIZE", "CAVE_VA", "DIFFICULTY_PRESETS", "FRESH_PROFILE_DIFFICULTY", "HOOK_VA",
-           "CEIL_SITES", "apply", "cave_bytes", "odds_multiplier", "status"]
+           "CEIL_SITES", "PREVIOUS_ODDS_SCALE_VA", "apply", "cave_bytes", "odds_multiplier", "status"]

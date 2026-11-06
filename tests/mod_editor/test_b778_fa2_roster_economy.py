@@ -37,7 +37,7 @@ class Revision3ImageTests(unittest.TestCase):
         cls.current, cls.receipt = economy.apply(cls.retail)
 
     def test_revision_three_sites(self):
-        self.assertIn(economy.REVISION, (3, 4))   # b779 rc1 revision 4 keeps every revision-3 site
+        self.assertIn(economy.REVISION, (3, 4, 5, 6, 7))   # b779 rc1 revision 4 / b780 revision 5 / hunt1 6 keep every revision-3 site
         image = XbeImage(self.current)
         self.assertEqual(image.read(economy.USER_FLOOR, 7), bytes.fromhex("80b91c01000032"))
         text = image.read(0xE891F0, 120).decode("utf-16-le").split("\0")[0]
@@ -336,7 +336,9 @@ class RestructureBeforeTheVeteranCutTests(unittest.TestCase):
         m.uc.mem_write(vet, bytes(raw))
         no_restructure_room(m, team, {vet, star})
         m.call(0xC3F00, ecx=team)
-        m.put(0xE3C278, m.get(team + 0x124) + 1000)
+        # b780 econ3 (revision 7, Q45): the stage-6 restructures and cut act only while the club cannot fit two
+        # league-minimum signings (was: within 6000 of the cap); revision 2's retail gate still sees 6000 here
+        m.put(0xE3C278, m.get(team + 0x124) + 100)
         m.put(0xE576A4, 6)
         m.put(0xE576B4, 0)
         released = []
@@ -388,7 +390,24 @@ class WeeklyFillPortTests(unittest.TestCase):
     def test_same_signings_as_retail(self):
         from tests.franchise_economy_legacy import legacy_image
         retail = retail_bytes()
-        self.assertEqual(self.run_week(economy.apply(retail)[0]), self.run_week(legacy_image(retail, 2)))
+        self.assertEqual(self.run_week(economy.apply(retail)[0]), self.run_week(modern_depth(legacy_image(retail, 2))))
+
+
+def modern_depth(payload: bytes) -> bytes:
+    """b780 econ3 (economy revision 7): the rebuilt pass reads the native depth tables with the modern cells (FS and SS
+    minimum 2, TE minimum 3, QB wanted 3; nfl2k5_franchise_economy depth_step), so for the comparison retail's own pass
+    gets the same cells in its tables (the economy itself never writes them)."""
+    from mod_editor.core import nfl2k5_position_pools as pools
+    from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+    from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+    image, out = XbeImage(payload), bytearray(payload)
+    for va, pos, value in ((pools.ROSTER_TARGETS_VA, 5, 2), (pools.ROSTER_TARGETS_VA, 6, 2),
+                           (pools.ROSTER_TARGETS_VA, 9, 3), (pools.ROSTER_MAXIMA_VA, 0, 3)):
+        at = image.offset(va + 4 * pos, 4)
+        out[at:at + 4] = struct.pack("<I", value)
+    for section in _sections(bytes(out)):
+        out[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(out), section)
+    return bytes(out)
 
 
 if __name__ == "__main__":

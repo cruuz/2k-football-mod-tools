@@ -39,6 +39,8 @@ SCOREBUG_RUNTIME_HELP = (
     "Draw the scorebug from one PNG and JSON design, with live scores, clocks, downs, "
     "timeout ticks and team colours. Preview it over a screenshot from Scorebar Studio. "
     "A scorebar folder selects a compatible sprite design. Requires Scorebug and a disc image. "
+    "On the play-call screen it also shows where the ball is beside the down and distance "
+    "(for example 1st & 10  NYJ 35), and keeps the page boxes of a long play menu clear of the formation name. "
     "EXPERIMENTAL / UNWITNESSED in a played game; rebuild from the supported base."
 )
 
@@ -56,6 +58,8 @@ OPTIONS = (
     ("read_option_runtime", "Read option mesh controls (experimental)", tt.read_option_patch.HELP_TEXT),
     ("screen_hooks", "Screen pass timing hooks (second experiment)", tt.screen_hooks_patch.HELP_TEXT),
     ("coverage_trail", "Close pursuit recovery (experimental)", tt.coverage_trail_patch.HELP_TEXT),
+    # b780 cv1: the man-coverage spin brake, a child of Close pursuit recovery (same owner and reservation).
+    ("coverage_hitch_brake", tt.coverage_trail_patch.HITCH_CAPTION, tt.coverage_trail_patch.HITCH_HELP),
     ("franchise_edit_player", "Franchise Edit Player (experimental)", tt.franchise_edit_player_patch.HELP_TEXT),
     ("cpu_money_downs", tt.cpu_money_downs_patch.BUILD_CAPTION, tt.cpu_money_downs_patch.HELP_TEXT),
     ("accelerated_clock", tt.accelerated_clock_patch.BUILD_CAPTION, tt.accelerated_clock_patch.HELP_TEXT),
@@ -127,8 +131,77 @@ OPTIONS += (
 )
 KEYS = tuple(row[0] for row in OPTIONS)
 # String-valued option rows: the checkbox means "not retail"; the adjacent combo picks the level.
-# Parent option -> child options: unchecking the parent clears the children; checking a child checks the parent.
-CHILDREN = {"weekly_prep": ("weekly_prep_cpu", "weekly_prep_remember"), "k128_memory": ("k128_roster_heap", "k128_early")}
+# b780 studio1 (Q60): every "this box needs that box" rule between the Build and Game Fixes boxes, in ONE table. Each child lists
+# the parents it needs: ticking a child ticks its parents that can be ticked, unticking a parent unticks its children, and the
+# build refuses a child whose parent is missing. This module used to hold only the beta-62 pairs (as parent -> children) and the
+# Build page held the Anniversary and clock rules in a second table of its own (ANNIVERSARY_DEPENDENCIES), so Game Fixes did not
+# know those rules at all; a rule held by one page only is how the two pages came to disagree about the same plan.
+# b780 m64prof: the table lives in core (nfl2k5_build_settings.REQUIRES) so the 64 MB profile closes over the same rules.
+from mod_editor.core.nfl2k5_build_settings import REQUIRES  # noqa: E402
+
+
+def _children_of(requires):
+    children = {}
+    for child, parents in requires.items():
+        for parent in parents:
+            children.setdefault(parent, []).append(child)
+    return {parent: tuple(kids) for parent, kids in children.items()}
+
+
+# Parent option -> child options, derived from REQUIRES (never edited by hand).
+CHILDREN = _children_of(REQUIRES)
+# The parents whose children the settings validator (nfl2k5_throw_tuning) refuses to take without them: a plan that ticks one of
+# those children must carry the parent even when the disc only has it installed (Save Project failed otherwise). The other rules
+# are met when a build is made (BuildPanel._plan_for_build).
+VALIDATED_TOGETHER = ("coverage_trail", "weekly_prep", "k128_memory")
+
+
+def tick_parents(child, box_of):
+    """A ticked child needs its parents: tick each one that can be ticked. ``box_of(key)`` is the page's check box or None."""
+    for parent in REQUIRES.get(child, ()):
+        box = box_of(parent)
+        if box is not None and box.isEnabled() and not box.isChecked():
+            box.setChecked(True)
+
+
+def untick_children(parent, box_of):
+    """An unticked parent leaves its children without what they need: untick each one that can be changed."""
+    for child in CHILDREN.get(parent, ()):
+        box = box_of(child)
+        if box is not None and box.isEnabled() and box.isChecked():
+            box.setChecked(False)
+
+
+def connect_requirements(box_of, child_toggled, parent_toggled, parent_clicked=None):
+    """Wire the rules to a page whose boxes all exist: ``child_toggled(child, on)`` for every child box and
+    ``parent_toggled(parent, on)`` for every parent box, once each, and ``parent_clicked(parent, on)`` for a parent whose
+    default-on children come along when the user ticks it (a click, not a project load). ``box_of(key)`` is the page's check box
+    or None (a page may lack some of them)."""
+    for child in REQUIRES:
+        box = box_of(child)
+        if box is not None:
+            box.toggled.connect(lambda on, key=child: child_toggled(key, on))
+    for parent in CHILDREN:
+        box = box_of(parent)
+        if box is not None:
+            box.toggled.connect(lambda on, key=parent: parent_toggled(key, on))
+    if parent_clicked is not None:
+        for parent in DEFAULT_ON_CHILDREN:
+            box = box_of(parent)
+            if box is not None:
+                box.clicked.connect(lambda on, key=parent: parent_clicked(key, on))
+# b780-mem1: children that come on when the user ticks their parent (a click, not a project load); untick to opt out.
+# The early form makes the room the pregame intro needs at 128 MB on this content (the late form loops at retail-model
+# stadiums such as Baltimore).
+DEFAULT_ON_CHILDREN = {"k128_memory": ("k128_early",)}
+
+
+def tick_default_children(parent, box_of):
+    """A parent the user ticked brings its default-on children along (b780-mem1); a child that cannot change is left alone."""
+    for child in DEFAULT_ON_CHILDREN.get(parent, ()):
+        box = box_of(child)
+        if box is not None and box.isEnabled():
+            box.setChecked(True)
 LEVELS = {"cpu_money_downs": (("Retail", "retail"), ("Modern", "modern"), ("Aggressive", "aggressive"), ("Modern 2", "modern2"))}
 UNAVAILABLE = {"franchise_2026_rules": FRANCHISE_HELP, "senior_bowl": tt.senior_bowl_patch.NATIVE_BLOCKER}
 HIRES_FAMILIES = (

@@ -1,6 +1,10 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.110`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.111`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.111: beta 80 (2026-11-03)
+
+Charged abilities revision 5: each defensive line move (Swim, Club, Spin, Rip) needs its own ability for a second-level charge, in the play and in the discharge effect; a defender keeps the first level on the line moves he lacks. Before this, any charged ability raised all four line moves to the second level. The second ring now appears only when the full second-level charge is ready to spend; before, it showed as soon as level 1 was complete. Ball-carrier moves, the quarterback arm rule, medal stars and CPU players are unchanged. Proved offline on BASE and Title Update 1.1 with the game's own line-move chooser, charge use, outcome check and feedback; not yet witnessed in Xenia.
 
 ## 0.1.0-alpha.110: beta 79 (2026-11-01)
 

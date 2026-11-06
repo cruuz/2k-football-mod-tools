@@ -6,7 +6,7 @@ FEATURE_KEYS = (
     "momentum_collisions", "momentum_collision_level", "read_option_runtime",
     "franchise_2026_rules", "senior_bowl", "senior_bowl_settings", "senior_bowl_seed",
     "guardian_overlay", "guardian_everyone_practice", "guardian_players",
-    "my_career", "my_career_setup", "franchise_autosave", "crib_reclaim", "trim_intro_videos", "screen_hooks", "coverage_trail", "franchise_edit_player", "cpu_money_downs", "accelerated_clock", "accelerated_clock_minimum_seconds", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "deep_zone_bail_calls", "modern_naming",
+    "my_career", "my_career_setup", "franchise_autosave", "crib_reclaim", "trim_intro_videos", "screen_hooks", "coverage_trail", "coverage_hitch_brake", "franchise_edit_player", "cpu_money_downs", "accelerated_clock", "accelerated_clock_minimum_seconds", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "deep_zone_bail_calls", "modern_naming",
     "reserves_16", "created_teams_extra", "hires_families",
 )
 FEATURE_KEYS += (
@@ -58,16 +58,23 @@ FEATURE_KEYS += ("kick_meter_2026",)  # b76-km: the kick meter in the 2026 ESPN 
 FEATURE_KEYS += ("modern_goalposts",)  # b77-v1: the uprights 35 ft above the crossbar (NFL since 2014)
 FEATURE_KEYS += ("modern_coaches",)  # b77-co1: the 2026 head coaches (sideline look, faces, DAL/WAS pictures)
 FEATURE_KEYS += ("cpu_qb_zone_windows", "cpu_qb_recheck", "cpu_qb_tiers", "db_ball_play")  # b776-ai2: CPU AI late executable owners, off in every preset
+FEATURE_KEYS += ("db_dive_window",)  # b780-cv3: defenders leap only for balls they can reach, the last late executable owner
 FEATURE_KEYS += ("hair_styles",)  # b775-hs1: added hair models chosen per player (roster +0x0D), late executable owner
 FEATURE_KEYS += ("play_art_routes",)  # b776-pa2: play art routes at their real length, late executable owner
 FEATURE_KEYS += ("run_blocking",)  # b777-ol1: run blocking, the last late executable owner
 FEATURE_KEYS += ("pass_protection",)  # b778-pr1: pass protection, a late executable owner
 FEATURE_KEYS += ("pass_rush_stats",)  # b779-st1: pressures / QB hits / allowed stats, a late executable owner (b779-int1: key was missing)
+FEATURE_KEYS += ("history_screen",)  # b780-j4: franchise History screen, box scores and game log, a late executable owner
+FEATURE_KEYS += ("cpu_passer_iq",)  # b780 a-passer: CPU quarterbacks throw on time and check down, a late executable owner
+FEATURE_KEYS += ("cpu_clock2", "cpu_clock2_overtime")  # b780 b-clock: modern CPU clock management, a late executable owner
+FEATURE_KEYS += ("intro_autoskip",)  # b780-mem1: the pregame intro skips itself when its director could not load
+FEATURE_KEYS += ("protection_calls",)  # b780 p1-slide: the user's slide call at the line (L / R in the audible menu), late executable owner
 FEATURE_KEYS += ("team_number_scale",)  # b776-ns1: per-kit jersey number size {kit: scale}, late executable owner
 FEATURE_KEYS += ("qb_accuracy",)  # b777-qb3: accurate short and on-the-run throws by Pass Accuracy, late executable owner
 FEATURE_KEYS += ("star_retention",)  # b778-fa1: CPU clubs keep their stars (veteran cap cut), late executable owner
 FEATURE_KEYS += ("practice_injuries",)  # b778-pi1: franchise practice keeps injuries, late executable owner
 FEATURE_KEYS += ("cpu_ball_carriers",)  # b778-ai5: CPU ball carriers stay in bounds / QBs slide past the sticks
+FEATURE_KEYS += ("cpu_runner_vision",)  # b780 cv2-runner: CPU ball carriers see where defenders go (needs cpu_ball_carriers)
 FEATURE_KEYS += ("return_coverage",)  # b778-kr1: return coverage pursuit angles, late owner
 FEATURE_KEYS += ("modern_force_out",)  # b778-fo1: modern sideline catches (no force-out from 2008), late executable owner
 FEATURE_KEYS += ("crib_trophy_room",)  # b778-xs1: the Crib keeps only the Trophy Room side (shop cut), in place
@@ -80,11 +87,24 @@ FEATURE_KEYS += ("franchise_draft_clock",)  # b778-dr1: broadcast-paced franchis
 FEATURE_KEYS += ("weekly_progression",)  # b778-pg1: franchise weekly progression, late executable owner
 FEATURE_KEYS += ("trophy_room",)  # b778-pg2: the Crib display name
 FEATURE_KEYS += ("player_progress", "player_progress_visible")  # b778-pg2/pg3: Player Progress screen/row, late executable owner
+FEATURE_KEYS += ("franchise_history",)  # b780 j23: franchise history and records footer, late executable owner
 FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Contracts null-college crash guard, late executable owner
+FEATURE_KEYS += ("load_user_team_guard",)  # b780 mc1: Franchise load with no human club, in-place sites
+FEATURE_KEYS += ("save_list_type_guard",)  # b780 mc1: boot save list with a NULL save type, in-place sites
+FEATURE_KEYS += ("coach_career_fix",)  # b780 c1 (wired at b780-int): coach Super Bowl trip counter fix, in-place site
+FEATURE_KEYS += ("history_pool",)  # b780 hist1: career history pool (no wrapped totals, chunked collection), in-place sites
 FEATURE_KEYS += ("sim_cb_tackles",)  # b778-cb1: cornerback tackle credit, late executable owner
 FEATURE_KEYS += ("sim_rb_injuries",)  # b779-sim2: weekly RB injury roll and simulated-game carry guard
 FEATURE_KEYS += ("sim_realism",)  # b779-sim2 r4: scheduled-sim season realism, late executable owner
+FEATURE_KEYS += ("coach_carousel",)  # b780-c6: the coaching carousel, late executable owner + roster pool
+FEATURE_KEYS += ("standings_records",)  # b780-j1: Team Standings division / conference / home / road records, late executable owner
+FEATURE_KEYS += ("catch_snap_limit",)  # b780-cv4: CPU defenders cannot slide to the ball for a pick, late executable owner
+FEATURE_KEYS += ("speed_threshold",)  # b780-cv5: speed separation strength 0..100 on deep routes, late executable owner (0 = off)
+FEATURE_KEYS += ("scramble_blocking",)  # b780-cv7: receivers block for a scrambling QB, late executable owner (test)
+FEATURE_KEYS += ("injured_reserve_guard", "modern_injured_reserve")  # b780 IR1: the Pro Bowl IR guard (in place) and modern injured reserve (late executable owner)
+FEATURE_KEYS += ("audible_legend",)  # b780-p3: audible panel button legend (late executable owner; the lift follows the bar)
 FEATURE_KEYS += ("sim_stats",)  # b778-sim1: simulated franchise game pace (in place, no allocation)
+FEATURE_KEYS += ("quick_long_release",)  # b780-c-release: quicker deep and rollout throws (constants only, in place, no allocation)
 FEATURE_KEYS += ("option_defaults", "default_quarter_minutes", "default_sim_quarter_minutes")  # b779-df1: fresh-profile default options (in place, no allocation)
 FEATURE_KEYS += ("modern_clock_led",)  # b778-sd4: LED play clock and score digits, late executable owner
 FEATURE_KEYS += ("inbox_standings",)  # b778-pc3: inbox story 23 standings setup (pointer-only edit)
@@ -103,6 +123,7 @@ FEATURE_KEYS += ("honors_page", "honors_history")  # b77-f5: Player Card honors 
 FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Player Contracts null-college screen guard (late owner)
 FEATURE_KEYS += ("my_career_home",)  # ui1: MyCareer Career Home (default on with MyCareer)
 FEATURE_KEYS += ("super_bowl_user_art",)  # b773-sb2: Super Bowl logos folder; "" = the bundled real logos (sb3)
+FEATURE_KEYS += ("console_memory",)  # b780-m64b: 128 (default, absent in older projects) or 64 (experimental)
 MUSIC_KEYS = ("music_shuffle", "music_shuffle_selection")
 
 
@@ -144,6 +165,8 @@ def build_settings(value):
     for key in ("music_project", "music_library", "my_career_setup"):
         tt._require(choices[key] is None or type(choices[key]) is str, f"{key} must be a path or None")
     tt._require(choices["screen_timing"] in (None, "A", "B", "C", "D"), "Screen timing must be A, B, C, D or None")
+    tt._require(0 <= choices["speed_threshold"] <= 100, "Speed separation must be a whole number from 0 to 100")  # b780-cv5
+    tt._require(choices["console_memory"] in (128, 64), "Console memory must be 128 or 64 (MB)")  # b780-m64b
     week = choices["abilities_off_week"]
     tt._require(week is None or type(week) is int and 0 <= week <= 17, "Abilities off week must be 0..17 or None")
     for key in ("player_tags", "playbook_packs"):
@@ -187,3 +210,33 @@ def to_plan(state, source, target):
     return BuildPlan(source, target, **values)
 
 FEATURE_KEYS += ("team_ratings",)  # Dynamic modern team rating getters.
+
+
+# b780 studio1 (Q60): every "this box needs that box" rule between the Build and Game Fixes boxes, in ONE table (moved here
+# from mod_editor/gui/beta62_options.py by b780 m64prof, which the pages still import it through). Each child lists the
+# parents it needs: ticking a child ticks its parents that can be ticked, unticking a parent unticks its children, and the
+# build refuses a child whose parent is missing.
+REQUIRES = {
+    "coverage_hitch_brake": ("coverage_trail",),
+    "weekly_prep_cpu": ("weekly_prep",),
+    "weekly_prep_remember": ("weekly_prep",),
+    "k128_roster_heap": ("k128_memory",),
+    "k128_early": ("k128_memory",),
+    "espn25_named_previews": ("espn25_more_moments",),
+    "espn25_era_rules": ("espn25_more_moments", "dynamic_kickoff", "defensive_try", "overtime"),
+    "historic_rosters_2026": ("historic_teams_quick_game",),
+    "classic_teams": ("historic_teams_quick_game",),  # b775-ct1
+    "cpu_clock2_overtime": ("cpu_clock2",),  # b780 b-clock: the overtime window extends the modern clock rules
+    "cpu_runner_vision": ("cpu_ball_carriers",),  # b780 cv2-runner: its wider sideline limit is cpu_ball_carriers' taper
+}
+# b780 m64prof: values that mean something only with another option on; the build refuses them otherwise
+# (nfl2k5_momentum._settings: "a collision level requires momentum_collisions", "contact requires a nonzero momentum level").
+VALUE_REQUIRES = {
+    "momentum_collision_level": ("momentum_collisions",),
+    "momentum_contact": ("momentum",),
+}
+
+
+def build_requires():
+    """{option: the options it needs} for every dependency rule the build applies: REQUIRES and VALUE_REQUIRES."""
+    return {**REQUIRES, **VALUE_REQUIRES}

@@ -1,0 +1,975 @@
+{
+ "checked": "2026-11-02",
+ "urls": {
+  "https://bernews.com/2025/08/antonio-pierce-set-new-adviser-role/": {
+   "http": 200,
+   "expect": [
+    "Athletes in Control",
+    "Pierce"
+   ],
+   "found": [
+    "Athletes in Control",
+    "Pierce"
+   ]
+  },
+  "https://www.49ers.com/news/article-2/Kyle-Shanahan-Named-Head-Coach-of-the-San-Francisco-49ers/4f4c2e57-f237-4481-9483-3472833db519": {
+   "http": 200,
+   "expect": [
+    "Shanahan",
+    "head coach"
+   ],
+   "found": [
+    "Shanahan",
+    "head coach"
+   ]
+  },
+  "https://www.49ers.com/team/coaches-roster/matt-eberflus": {
+   "http": 200,
+   "expect": [
+    "Eberflus",
+    "assistant head coach"
+   ],
+   "found": [
+    "Eberflus",
+    "assistant head coach"
+   ]
+  },
+  "https://www.49ers.com/team/coaches-roster/raheem-morris": {
+   "http": 200,
+   "expect": [
+    "Morris",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Morris",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.atlantafalcons.com/news/atlanta-falcons-name-kevin-stefanski-head-coach": {
+   "http": 200,
+   "expect": [
+    "Stefanski",
+    "head coach"
+   ],
+   "found": [
+    "Stefanski",
+    "head coach"
+   ]
+  },
+  "https://www.atlantafalcons.com/team/coaches-roster/jeff-ulbrich": {
+   "http": 200,
+   "expect": [
+    "Ulbrich",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Ulbrich",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.azcardinals.com/news/cardinals-choose-mike-lafleur-as-new-head-coach-2026": {
+   "http": 200,
+   "expect": [
+    "LaFleur",
+    "head coach"
+   ],
+   "found": [
+    "LaFleur",
+    "head coach"
+   ]
+  },
+  "https://www.azcardinals.com/team/coaches-roster/nick-rallis": {
+   "http": 200,
+   "expect": [
+    "Rallis",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Rallis",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.baltimoreravens.com/news/jesse-minter-hired-ravens-head-coach-chargers-defensive-coordinator": {
+   "http": 200,
+   "expect": [
+    "Minter",
+    "head coach"
+   ],
+   "found": [
+    "Minter",
+    "head coach"
+   ]
+  },
+  "https://www.baltimoreravens.com/team/coaches-roster/anthony-weaver": {
+   "http": 200,
+   "expect": [
+    "Weaver",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Weaver",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.bengals.com/news/zac-taylor-named-10th-bengals-head-coach": {
+   "http": 200,
+   "expect": [
+    "Taylor",
+    "head coach"
+   ],
+   "found": [
+    "Taylor",
+    "head coach"
+   ]
+  },
+  "https://www.bengals.com/team/coaches-roster/al-golden": {
+   "http": 200,
+   "expect": [
+    "Golden",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Golden",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.bostonglobe.com/2026/05/29/sports/jerod-mayo-new-job-patriots/": {
+   "http": 200,
+   "expect": [
+    "Fifth Down",
+    "Mayo"
+   ],
+   "found": [
+    "Fifth Down",
+    "Mayo"
+   ]
+  },
+  "https://www.buccaneers.com/news/bucs-bruce-arians-new-role-todd-bowles-named-head-coach": {
+   "http": 200,
+   "expect": [
+    "Bowles",
+    "head coach"
+   ],
+   "found": [
+    "Bowles",
+    "head coach"
+   ]
+  },
+  "https://www.buffalobills.com/news/buffalo-bills-announce-sean-mcdermott-has-been-relieved-of-his-duties-as-head-coach": {
+   "http": 200,
+   "expect": [
+    "McDermott",
+    "relieved"
+   ],
+   "found": [
+    "McDermott",
+    "relieved"
+   ]
+  },
+  "https://www.buffalobills.com/news/joe-brady-agrees-to-terms-to-be-the-next-buffalo-bills-head-coach": {
+   "http": 200,
+   "expect": [
+    "Brady",
+    "head coach"
+   ],
+   "found": [
+    "Brady",
+    "head coach"
+   ]
+  },
+  "https://www.buffalobills.com/team/coaches-roster/jim-leonhard": {
+   "http": 200,
+   "expect": [
+    "Leonhard",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Leonhard",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.chargers.com/news/chargers-name-jim-harbaugh-michigan-head-coach": {
+   "http": 200,
+   "expect": [
+    "Harbaugh",
+    "head coach"
+   ],
+   "found": [
+    "Harbaugh",
+    "head coach"
+   ]
+  },
+  "https://www.chargers.com/team/coaches-roster/chris-o-leary": {
+   "http": 200,
+   "expect": [
+    "O'Leary",
+    "defensive coordinator"
+   ],
+   "found": [
+    "O'Leary",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.chargers.com/team/coaches-roster/mike-mcdaniel": {
+   "http": 200,
+   "expect": [
+    "McDaniel",
+    "offensive coordinator"
+   ],
+   "found": [
+    "McDaniel",
+    "offensive coordinator"
+   ]
+  },
+  "https://www.chicagobears.com/news/bears-hire-ben-johnson-as-head-coach-2025": {
+   "http": 200,
+   "expect": [
+    "Johnson",
+    "head coach"
+   ],
+   "found": [
+    "Johnson",
+    "head coach"
+   ]
+  },
+  "https://www.chicagobears.com/team/coaches/dennis-allen": {
+   "http": 200,
+   "expect": [
+    "Allen",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Allen",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.chiefs.com/team/coaches-roster/steve-spagnuolo": {
+   "http": 200,
+   "expect": [
+    "Spagnuolo",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Spagnuolo",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.clevelandbrowns.com/news/todd-monken-named-browns-head-coach": {
+   "http": 200,
+   "expect": [
+    "Monken",
+    "head coach"
+   ],
+   "found": [
+    "Monken",
+    "head coach"
+   ]
+  },
+  "https://www.clevelandbrowns.com/team/coaches-roster/mike-rutenberg": {
+   "http": 200,
+   "expect": [
+    "Rutenberg",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Rutenberg",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.colts.com/news/shane-steichen-head-coach-eagles-offensive-coordinator-jalen-hurts-philip-rivers": {
+   "http": 200,
+   "expect": [
+    "Steichen",
+    "head coach"
+   ],
+   "found": [
+    "Steichen",
+    "head coach"
+   ]
+  },
+  "https://www.colts.com/team/coaches-roster/lou-anarumo": {
+   "http": 200,
+   "expect": [
+    "Anarumo",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Anarumo",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.commanders.com/news/dan-quinn-named-washington-commanders-31st-head-coach": {
+   "http": 200,
+   "expect": [
+    "Quinn",
+    "head coach"
+   ],
+   "found": [
+    "Quinn",
+    "head coach"
+   ]
+  },
+  "https://www.commanders.com/team/coaches-roster/daronte-jones": {
+   "http": 200,
+   "expect": [
+    "Jones",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Jones",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.dallascowboys.com/news/brian-schottenheimer-officially-named-newest-cowboys-head-coach": {
+   "http": 200,
+   "expect": [
+    "Schottenheimer",
+    "head coach"
+   ],
+   "found": [
+    "Schottenheimer",
+    "head coach"
+   ]
+  },
+  "https://www.dallascowboys.com/team/coaches-roster/christian-parker": {
+   "http": 200,
+   "expect": [
+    "Parker",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Parker",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.denverbroncos.com/news/broncos-name-sean-payton-as-head-coach": {
+   "http": 200,
+   "expect": [
+    "Payton",
+    "head coach"
+   ],
+   "found": [
+    "Payton",
+    "head coach"
+   ]
+  },
+  "https://www.denverbroncos.com/team/coaches-roster/vance-joseph": {
+   "http": 200,
+   "expect": [
+    "Joseph",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Joseph",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.detroitlions.com/news/lions-agree-to-terms-with-dan-campbell-to-become-team-s-new-head-coach": {
+   "http": 200,
+   "expect": [
+    "Campbell",
+    "head coach"
+   ],
+   "found": [
+    "Campbell",
+    "head coach"
+   ]
+  },
+  "https://www.detroitlions.com/team/coaches-roster/kelvin-sheppard": {
+   "http": 200,
+   "expect": [
+    "Sheppard",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Sheppard",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.giants.com/news/john-harbaugh-hired-head-coach-new-york-giants-nfl": {
+   "http": 200,
+   "expect": [
+    "Harbaugh",
+    "head coach"
+   ],
+   "found": [
+    "Harbaugh",
+    "head coach"
+   ]
+  },
+  "https://www.giants.com/team/coaches-roster/brian-callahan": {
+   "http": 200,
+   "expect": [
+    "Callahan",
+    "passing game coordinator",
+    "quarterbacks coach"
+   ],
+   "found": [
+    "Callahan",
+    "passing game coordinator",
+    "quarterbacks coach"
+   ]
+  },
+  "https://www.giants.com/team/coaches-roster/dennard-wilson": {
+   "http": 200,
+   "expect": [
+    "Wilson",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Wilson",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.houstontexans.com/news/houston-texans-hire-demeco-ryans-as-head-coach": {
+   "http": 200,
+   "expect": [
+    "Ryans",
+    "head coach"
+   ],
+   "found": [
+    "Ryans",
+    "head coach"
+   ]
+  },
+  "https://www.houstontexans.com/team/coaches-roster/matt-burke": {
+   "http": 200,
+   "expect": [
+    "Burke",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Burke",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.inquirer.com/college-sports/cbs-doug-pederson-college-football-tv-eagles-20260728.html": {
+   "http": 200,
+   "expect": [
+    "CBS",
+    "Pederson"
+   ],
+   "found": [
+    "CBS",
+    "Pederson"
+   ]
+  },
+  "https://www.jaguars.com/news/k000151-jacksonville-jaguars-agree-to-terms-with-liam-coen-to-become-head-coach": {
+   "http": 200,
+   "expect": [
+    "Coen",
+    "head coach"
+   ],
+   "found": [
+    "Coen",
+    "head coach"
+   ]
+  },
+  "https://www.jaguars.com/team/coaches-roster/anthony-campanile": {
+   "http": 200,
+   "expect": [
+    "Campanile",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Campanile",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.ksl.com/article/51642551/panthers-fire-defensive-coordinator-ejiro-evero-following-27-19-loss-to-the-packers": {
+   "http": 200,
+   "expect": [
+    "Evero",
+    "Wash",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Evero",
+    "Wash",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.miamidolphins.com/news/miami-dolphins-agree-to-terms-with-jeff-hafley-as-head-coach": {
+   "http": 200,
+   "expect": [
+    "Hafley",
+    "head coach"
+   ],
+   "found": [
+    "Hafley",
+    "head coach"
+   ]
+  },
+  "https://www.miamidolphins.com/team/coaches-roster/sean-duggan": {
+   "http": 200,
+   "expect": [
+    "Duggan",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Duggan",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.nbcnews.com/sports/football/new-york-giants-hire-john-harbaugh-coach-baltimore-ravens-firing-rcna254610": {
+   "http": 200,
+   "expect": [
+    "Harbaugh",
+    "head coach"
+   ],
+   "found": [
+    "Harbaugh",
+    "head coach"
+   ]
+  },
+  "https://www.nbcsports.com/fantasy/football/player-news/2026-07-31/report-mcdermott-begins-learning-tour-with-rams": {
+   "http": 200,
+   "expect": [
+    "McDermott",
+    "Rams"
+   ],
+   "found": [
+    "McDermott",
+    "Rams"
+   ]
+  },
+  "https://www.nbcsports.com/pressbox/press-releases/mike-tomlin-joins-nbc-sports-football-night-in-america": {
+   "http": 200,
+   "expect": [
+    "Football Night in America",
+    "Tomlin"
+   ],
+   "found": [
+    "Football Night in America",
+    "Tomlin"
+   ]
+  },
+  "https://www.neworleanssaints.com/news/kellen-moore-new-orleans-saints-head-coach-search-philadelphia-eagles-offensive-coordinator": {
+   "http": 200,
+   "expect": [
+    "Moore",
+    "head coach"
+   ],
+   "found": [
+    "Moore",
+    "head coach"
+   ]
+  },
+  "https://www.neworleanssaints.com/team/coaches-roster/brandon-staley": {
+   "http": 200,
+   "expect": [
+    "Staley",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Staley",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.news4jax.com/sports/2026/10/30/panthers-fire-defensive-coordinator-ejiro-evero-following-27-19-loss-to-the-packers/": {
+   "http": 200,
+   "expect": [
+    "Evero",
+    "Wash",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Evero",
+    "Wash",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.newyorkjets.com/news/jets-hire-aaron-glenn-head-coach-01-22-2025": {
+   "http": 200,
+   "expect": [
+    "Glenn",
+    "head coach"
+   ],
+   "found": [
+    "Glenn",
+    "head coach"
+   ]
+  },
+  "https://www.newyorkjets.com/team/coaches-roster/brian-duker": {
+   "http": 200,
+   "expect": [
+    "Duker",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Duker",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.nfl.com/news/bears-firing-head-coach-matt-eberflus-following-sixth-straight-loss-4-8-start-to-season": {
+   "http": 200,
+   "expect": [
+    "Eberflus"
+   ],
+   "found": [
+    "Eberflus"
+   ]
+  },
+  "https://www.nfl.com/news/brian-callahan-titans-fire-head-coach": {
+   "http": 200,
+   "expect": [
+    "Callahan",
+    "fire"
+   ],
+   "found": [
+    "Callahan",
+    "fire"
+   ]
+  },
+  "https://www.nfl.com/news/browns-fire-head-coach-kevin-stefanski-following-six-seasons-in-cleveland": {
+   "http": 200,
+   "expect": [
+    "Stefanski",
+    "fire"
+   ],
+   "found": [
+    "Stefanski",
+    "fire"
+   ]
+  },
+  "https://www.nfl.com/news/cardinals-fire-hc-jonathan-gannon-following-three-seasons": {
+   "http": 200,
+   "expect": [
+    "Gannon",
+    "fire"
+   ],
+   "found": [
+    "Gannon",
+    "fire"
+   ]
+  },
+  "https://www.nfl.com/news/dolphins-fire-head-coach-mike-mcdaniel-after-four-seasons": {
+   "http": 200,
+   "expect": [
+    "McDaniel",
+    "fire"
+   ],
+   "found": [
+    "McDaniel",
+    "fire"
+   ]
+  },
+  "https://www.nfl.com/news/falcons-firing-hc-raheem-morris-following-two-seasons-with-team": {
+   "http": 200,
+   "expect": [
+    "Morris",
+    "fire"
+   ],
+   "found": [
+    "Morris",
+    "fire"
+   ]
+  },
+  "https://www.nfl.com/news/giants-fire-head-coach-brian-daboll-after-2-8-start": {
+   "http": 200,
+   "expect": [
+    "Daboll",
+    "fire"
+   ],
+   "found": [
+    "Daboll",
+    "fire"
+   ]
+  },
+  "https://www.nfl.com/news/klint-kubiak-confirms-he-s-headed-to-raiders-as-hc-after-seahawks-super-bowl-win": {
+   "http": 200,
+   "expect": [
+    "Kubiak",
+    "head coach"
+   ],
+   "found": [
+    "Kubiak",
+    "head coach"
+   ]
+  },
+  "https://www.nfl.com/news/mike-tomlin-stepping-down-as-head-coach-of-steelers-after-19-seasons": {
+   "http": 200,
+   "expect": [
+    "Tomlin",
+    "stepping down"
+   ],
+   "found": [
+    "Tomlin",
+    "stepping down"
+   ]
+  },
+  "https://www.nfl.com/news/raiders-fire-hc-pete-carroll-following-his-first-season-in-las-vegas": {
+   "http": 200,
+   "expect": [
+    "Carroll",
+    "fire"
+   ],
+   "found": [
+    "Carroll",
+    "fire"
+   ]
+  },
+  "https://www.nfl.com/news/ravens-fire-hc-john-harbaugh-after-his-18th-season-ends-with-missing-playoffs": {
+   "http": 200,
+   "expect": [
+    "Harbaugh",
+    "fire"
+   ],
+   "found": [
+    "Harbaugh",
+    "fire"
+   ]
+  },
+  "https://www.nfl.com/news/saints-fire-head-coach-dennis-allen-after-loss-to-panthers-2-7-start-to-season": {
+   "http": 200,
+   "expect": [
+    "Allen"
+   ],
+   "found": [
+    "Allen"
+   ]
+  },
+  "https://www.nfl.com/news/story/0ap1000000121923/article/andy-reid-kansas-city-chiefs-make-it-official": {
+   "http": 200,
+   "expect": [
+    "Reid",
+    "head coach"
+   ],
+   "found": [
+    "Reid",
+    "head coach"
+   ]
+  },
+  "https://www.nfl.com/news/story/0ap3000000773406/article/los-angeles-rams-name-sean-mcvay-new-head-coach": {
+   "http": 200,
+   "expect": [
+    "McVay",
+    "head coach"
+   ],
+   "found": [
+    "McVay",
+    "head coach"
+   ]
+  },
+  "https://www.packers.com/news/matt-lafleur-named-green-bay-s-15th-head-coach": {
+   "http": 200,
+   "expect": [
+    "LaFleur",
+    "head coach"
+   ],
+   "found": [
+    "LaFleur",
+    "head coach"
+   ]
+  },
+  "https://www.packers.com/team/coaches-roster/jonathan-gannon": {
+   "http": 200,
+   "expect": [
+    "Gannon",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Gannon",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.panthers.com/news/panthers-agree-to-terms-with-dave-canales-to-become-head-coach": {
+   "http": 200,
+   "expect": [
+    "Canales",
+    "head coach"
+   ],
+   "found": [
+    "Canales",
+    "head coach"
+   ]
+  },
+  "https://www.panthers.com/team/coaches-roster/todd-wash": {
+   "http": 200,
+   "expect": [
+    "Wash",
+    "interim"
+   ],
+   "found": [
+    "Wash",
+    "interim"
+   ]
+  },
+  "https://www.patriots.com/news/patriots-hall-of-famer-mike-vrabel-returns-to-new-england-as-our-16th-head-coach": {
+   "http": 200,
+   "expect": [
+    "Vrabel",
+    "head coach"
+   ],
+   "found": [
+    "Vrabel",
+    "head coach"
+   ]
+  },
+  "https://www.patriots.com/team/coaches-roster/zak-kuhr": {
+   "http": 200,
+   "expect": [
+    "Kuhr",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Kuhr",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.philadelphiaeagles.com/news/eagles-announce-nick-sirianni-as-head-coach": {
+   "http": 200,
+   "expect": [
+    "Sirianni",
+    "head coach"
+   ],
+   "found": [
+    "Sirianni",
+    "head coach"
+   ]
+  },
+  "https://www.philadelphiaeagles.com/team/coaches/vic-fangio": {
+   "http": 200,
+   "expect": [
+    "Fangio",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Fangio",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.raiders.com/team/coaches-roster/rob-leonard": {
+   "http": 200,
+   "expect": [
+    "Leonard",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Leonard",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.seahawks.com/news/mike-macdonald-named-head-coach-of-the-seattle-seahawks": {
+   "http": 200,
+   "expect": [
+    "Macdonald",
+    "head coach"
+   ],
+   "found": [
+    "Macdonald",
+    "head coach"
+   ]
+  },
+  "https://www.seahawks.com/team/coaches-roster/aden-durde": {
+   "http": 200,
+   "expect": [
+    "Durde",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Durde",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.steelers.com/news/labriola-on-why-it-was-mike-mccarthy": {
+   "http": 200,
+   "expect": [
+    "McCarthy",
+    "head coach"
+   ],
+   "found": [
+    "McCarthy",
+    "head coach"
+   ]
+  },
+  "https://www.steelers.com/team/coaches-roster/patrick-graham": {
+   "http": 200,
+   "expect": [
+    "Graham",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Graham",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.tennesseetitans.com/news/it-s-official-titans-hire-robert-saleh-as-team-s-new-head-coach": {
+   "http": 200,
+   "expect": [
+    "Saleh",
+    "head coach"
+   ],
+   "found": [
+    "Saleh",
+    "head coach"
+   ]
+  },
+  "https://www.tennesseetitans.com/team/coaches-roster/brian-daboll": {
+   "http": 200,
+   "expect": [
+    "Daboll",
+    "offensive coordinator"
+   ],
+   "found": [
+    "Daboll",
+    "offensive coordinator"
+   ]
+  },
+  "https://www.tennesseetitans.com/team/coaches-roster/gus-bradley": {
+   "http": 200,
+   "expect": [
+    "Bradley",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Bradley",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.therams.com/team/coaches-roster/chris-shula": {
+   "http": 200,
+   "expect": [
+    "Shula",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Shula",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.vikings.com/news/kevin-oconnell-head-coach-announcement": {
+   "http": 200,
+   "expect": [
+    "O'Connell",
+    "head coach"
+   ],
+   "found": [
+    "O'Connell",
+    "head coach"
+   ]
+  },
+  "https://www.vikings.com/team/coaches-roster/brian-flores": {
+   "http": 200,
+   "expect": [
+    "Flores",
+    "defensive coordinator"
+   ],
+   "found": [
+    "Flores",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.wect.com/2026/01/18/atlanta-falcons-hire-kevin-stefanski-new-head-coach": {
+   "http": 200,
+   "expect": [
+    "Stefanski",
+    "head coach"
+   ],
+   "found": [
+    "Stefanski",
+    "head coach"
+   ]
+  }
+ }
+}

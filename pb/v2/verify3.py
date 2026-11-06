@@ -97,6 +97,8 @@ def main(argv=None):
     ap.add_argument("--books", type=Path, required=True)
     ap.add_argument("--team", action="append")
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--merge", action="store_true",
+                    help="with --team: write the given teams' rows into the existing receipt (a partial re-run after a pack change)")
     args = ap.parse_args(argv)
     from nfl2k5_playbook_position_recode import OuterImage, BOOK_ENTRIES
     from mod_editor.core import nfl2k5_playbook_pack as packs
@@ -114,11 +116,19 @@ def main(argv=None):
                   str(row.get("detail", ""))[:300], flush=True)
     out = dict(status="PROVED OFFLINE", runtime_witness=False, generator="pb/v2/generator.py (b776 pb1)",
                scope="retail instructions under Unicorn (scoring, menu walk); no gameplay", teams=rows)
-    if not args.team:
-        dest = ROOT / "pb" / "v2" / "receipts"
-        dest.mkdir(parents=True, exist_ok=True)
-        (dest / "league-offline-v3.json").write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8", newline="\n")
     bad = [t for t, r in rows.items() if not r["ok"]]
+    dest = ROOT / "pb" / "v2" / "receipts"
+    dest.mkdir(parents=True, exist_ok=True)
+    receipt = dest / "league-offline-v3.json"
+    if args.team and args.merge:
+        if bad:
+            raise SystemExit(f"failed: {bad} (receipt not merged)")
+        whole = json.loads(receipt.read_text(encoding="utf-8"))
+        whole["teams"].update(rows)
+        whole["teams"] = {t: whole["teams"][t] for t in packs.TEAM_BOOKS if t in whole["teams"]}
+        receipt.write_text(json.dumps(whole, indent=1) + "\n", encoding="utf-8", newline="\n")
+    elif not args.team:
+        receipt.write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8", newline="\n")
     if bad:
         raise SystemExit(f"failed: {bad}")
 

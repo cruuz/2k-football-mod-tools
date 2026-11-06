@@ -27,7 +27,11 @@ from .nfl2k5_player_progression import (FOOTER_SIZE as PPG_SIZE, PPG_SAVE_SIZES,
                                         PPG_CAREER_SAVE_SIZES, footer_start as _ppg_footer_start)
 PPG_SIZES = PPG_SAVE_SIZES
 PPG_CAREER_SIZES = PPG_CAREER_SAVE_SIZES
-CONTAINER_SIZES = tuple(BASE_SIZES) + tuple(SIZES) + tuple(PPG_SIZES) + tuple(PPG_CAREER_SIZES)
+# b780 j23: every franchise container the Studio reads: each native size, with or without this block, with any
+# franchise footer (the extension body, the Player Progress footer or both: nfl2k5_franchise_extension).
+from . import nfl2k5_franchise_extension as _ext
+CONTAINER_SIZES = _ext.franchise_sizes()
+CAREER_CONTAINER_SIZES = tuple(n + SIZE + f for n in BASE_SIZES for f in _ext.FOOTER_SIZES)
 BALANCE_CAP = 1000000
 BIRTH_MASK = 0x0FFFF000
 SUPERSIM_CHOICES = ("Off", "Skip presentation", "Fast forward")
@@ -91,11 +95,20 @@ def validate(block, *, arena_size=_arena.CAPACITY_ARENA_SIZE):
     return bytes(block)
 
 
+def has_block(payload):
+    """b780 j23: True when this franchise container carries the 128-byte block (before any footer)."""
+    found = _ext.layout(payload)
+    return found is not None and found.career_offset is not None
+
+
 def native_size(payload):
     """Validate framing without assuming that all suffix bytes are arena growth."""
-    at = _ppg_footer_start(payload)
-    if at is not None:
-        payload = payload[:at]
+    if _ext.layout(payload) is not None:      # b780 j23: strip every franchise footer (body, Player Progress, both)
+        payload = payload[:_ext.native_length(payload)]
+    else:
+        at = _ppg_footer_start(payload)
+        if at is not None:
+            payload = payload[:at]
     n = len(payload)
     require(n in BASE_SIZES + SIZES, "unsupported franchise container length")
     base = n - SIZE if n in SIZES else n
@@ -112,7 +125,7 @@ def native_size(payload):
 
 def read(payload, *, identity=True):
     base = native_size(payload)
-    require(len(payload) in (base + SIZE, base + SIZE + PPG_SIZE),
+    require(has_block(payload) and _ext.native_length(payload) == base + SIZE,
             "this Franchise has no inline MyCareer block")
     block = validate(payload[base:base + SIZE], arena_size=0x91000 + base - BASE_SIZES[0])
     if identity:
@@ -139,7 +152,8 @@ def append(payload, block):
     """
     base = native_size(payload)
     validate(block, arena_size=0x91000 + base - BASE_SIZES[0])
-    tail = payload[base + SIZE:] if len(payload) >= base + SIZE else payload[base:]
+    # b780 j23: every franchise footer after the native save (and an old block) is kept as the tail
+    tail = payload[_ext.native_length(payload):]
     result = bytes(payload[:base]) + bytes(block) + bytes(tail)
     read(result)
     return result, {"experimental": True, "runtime_witnessed": False,

@@ -71,7 +71,10 @@ def compose(retail, plan):
         plan = replace(plan, accel_ramp=False)
     pack_groups = mb.plan_playbook_packs(plan.playbook_packs)
     tree = ast.parse(inspect.getsource(mb._build))
-    env = dict(plan=plan, tt=tt, source=DISC, progress=lambda *_: None,
+    # The real build evaluates these keyword expressions in mod_build's own globals, so module helpers the build
+    # adds (b780-p3 _audible_panel_choice) resolve here too; the build's locals are supplied below.
+    env = dict(vars(mb))
+    env.update(plan=plan, tt=tt, source=DISC, progress=lambda *_: None,
                uniform_choice_mode=mb.uniform_choice_mode,
                complete_offense_packs=pack_groups[0])
     kwargs_node = next(n.value for n in ast.walk(tree) if isinstance(n, ast.AnnAssign)

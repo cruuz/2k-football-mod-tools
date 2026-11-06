@@ -469,14 +469,17 @@ def apply(payload: bytes, requests=(), *, scaleout=False) -> tuple[bytes, dict]:
                     "reservations": reservations(result)}
 
 
-def install_code(payload: bytes, owner: str, code: bytes) -> tuple[bytes, dict]:
+def install_code(payload: bytes, owner: str, code: bytes, *, previous: bytes | None = None) -> tuple[bytes, dict]:
     """Fill only an established code allocation, then seal its bytes and digest.
 
     A filled allocation can only be replayed with identical bytes. Reconfiguration
     requires a clean rebuild, so mixed owner payloads cannot be silently repaired.
+    b780 n6: ``previous`` names the exact body an earlier release of this owner installed (same size); an allocation
+    holding exactly those bytes is upgraded in place to ``code``. Same allocation and address; nothing else moves.
     """
+    _require(previous is None or len(previous) == len(code), "an in-place upgrade keeps the owner's size")
     if is_scaleout(payload):
-        return _install_scaleout(payload, owner, code, "code")
+        return _install_scaleout(payload, owner, code, "code", previous=previous)
     grown, _, requests = _validate(payload)
     _require(grown, "code requires an established allocation")
     matches = [a for a in _allocations(requests) if a["owner"] == owner and a["kind"] == "code"]
@@ -484,7 +487,8 @@ def install_code(payload: bytes, owner: str, code: bytes) -> tuple[bytes, dict]:
     a = matches[0]
     _require(len(code) == a["size"], "code must fill its exact named allocation")
     old = payload[a["raw"]:a["raw"] + a["size"]]
-    _require(old in (b"\xcc" * a["size"], code), "foreign or differently configured owner code")
+    _require(old in (b"\xcc" * a["size"], code) or (previous is not None and old == previous),
+             "foreign or differently configured owner code")
     buf = bytearray(payload)
     buf[a["raw"]:a["raw"] + a["size"]] = code
     buf[DIRECTORY:_directory_end(requests)] = _directory(requests, _code_bytes(buf, requests))
@@ -494,7 +498,8 @@ def install_code(payload: bytes, owner: str, code: bytes) -> tuple[bytes, dict]:
     buf[s.header_offset + 36:s.header_offset + 56] = section_digest(buf, s)
     result = bytes(buf)
     _require(status(result) == "applied", "code install postcondition failed")
-    return result, {"status": "applied", "edits": [{"label": owner, "va": hex(a["va"]), "size": a["size"]}]}
+    return result, {"status": "applied", "edits": [{"label": owner, "va": hex(a["va"]), "size": a["size"]}],
+                    **({"upgraded_from_previous": True} if previous is not None and old == previous != code else {})}
 
 
 def extend_scaleout(payload: bytes, extra) -> tuple[bytes, dict]:
@@ -764,7 +769,30 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_preseason_warning",  # b779-rc1: 16-byte RW "already warned" byte, after the module loader
                "nfl2k5_sim_rb_injuries",  # b779-sim2: weekly RB injury roll and simulated-game carrier guard (int1: after rc1)
                "nfl2k5_sim_realism",  # b779-sim2 r4: scheduled-sim season realism
-               "nfl2k5_sim_realism_state")  # b779-sim2 r4: its 16-byte hand-off state
+               "nfl2k5_sim_realism_state",  # b779-sim2 r4: its 16-byte hand-off state
+               "nfl2k5_coach_carousel",  # b780-c6: the coaching carousel at Advance to offseason (code + parameters)
+               "nfl2k5_franchise_footer",  # b780 j23: the franchise extension footer host (after Player Progress)
+               "nfl2k5_history",  # b780 j23: the franchise history capture (after the footer host it reads)
+               "nfl2k5_history_screen",  # b780-j4: the History screen, box scores, game log (after every b779 owner)
+               "nfl2k5_standings_records",  # b780-j1: Team Standings records (2,304 code + 16 RW bytes), last
+               "nfl2k5_cpu_passer_iq",  # b780 a-passer: the CPU passer's checkdown factor and its per-play state
+               "nfl2k5_cpu_clock2",  # b780 b-clock: modern CPU clock management, after every b779 owner
+               "nfl2k5_runner_vision",  # b780 cv2-runner: CPU carriers read where defenders go (after ball_carrier_ai)
+               "nfl2k5_dive_window",  # b780-cv3: defenders leap only for balls they can reach (after every b779 owner)
+               "nfl2k5_catch_snap_limit")  # b780-cv4: defender catch snap limit, last (it never moves another owner)
+# b780-cv5: the speed separation slider's 1,024-byte code owner goes after every other late owner (it hooks the speed
+# mapper epilogue and nothing else), so it never moves another owner's address. It is appended as its own statement.
+LATE_OWNERS += ("nfl2k5_speed_threshold",)
+LATE_OWNERS += ("nfl2k5_scramble_blocking",)  # b780-cv7: receivers block for a scrambling QB (after every other late owner)
+LATE_OWNERS += ("nfl2k5_protection_calls",)  # b780 p1-slide: the user's slide call at the line (code + 16-byte RW state)
+LATE_OWNERS += ("nfl2k5_audible_legend",)  # b780-p3: audible panel lift + on-screen button legend (code only)
+LATE_OWNERS += ("nfl2k5_lineup_roles",)  # b780 sub1: third-down back on passing downs + the FB fallback (code only)  (reserved by the first space pass)
+LATE_OWNERS += ("nfl2k5_intro_autoskip",)  # b780-mem1: the pregame intro skips itself when its director could not load (64 B code)  (reserved by the first space pass)
+LATE_OWNERS += ("nfl2k5_injured_reserve",)  # b780 IR1: modern franchise injured reserve (code + its 5,312-byte store)  (reserved by the first space pass)
+LATE_OWNERS += ("nfl2k5_rookie_faces_hair",)  # b780 GEN1 Q81: rookie hair styles from the faces, appended at the
+# rookie faces image step only when Hair styles is on (so 64 MB builds never take it); last, so it moves nothing
+# b780-int: the hair owner stays after lineup_roles, intro_autoskip and injured_reserve: all are reserved by the first space pass, the hair owner
+# is appended at the rookie faces image step, so an earlier place would move them and extend_scaleout refuses.
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -1087,10 +1115,15 @@ def _scale_allocations(requests):
         r = next(r for r in regions if r["kind"] == "code")
         owner, kind, size, align = sprite
         at = (cursors[r["va"]] + align - 1) & -align
-        _require(at + size <= r["size"], "Sprite scorebug exceeds remaining RX capacity")
-        out.append(dict(owner=owner, kind=kind, size=size, align=align,
-                        va=r["va"] + at, raw=r["raw"] + at, owner_offset=0))
-        cursors[r["va"]] = at + size
+        if at + size <= r["size"]:
+            out.append(dict(owner=owner, kind=kind, size=size, align=align,
+                            va=r["va"] + at, raw=r["raw"] + at, owner_offset=0))
+            cursors[r["va"]] = at + size
+        else:
+            # b780 pres2: grown past the room the v3 run has left (revision 17: 5,920 -> 6,336 bytes), the sprite scorebug
+            # goes whole to the pool, after every owner placed so far, like any owner the v3 run cannot hold whole. A plan
+            # it fit in packs exactly as before; only a plan that used to be refused here changes.
+            to_pool(owner, kind, size, align)
     for owner, kind, size, align in late:
         for r in regions:
             if r["kind"] != kind:
@@ -1500,14 +1533,15 @@ def _apply_scaleout(payload, requests):
         file_growth=len(result) - len(payload), allocations=allocations, reservations=reservations(result))
 
 
-def _install_scaleout(payload, owner, content, kind):
+def _install_scaleout(payload, owner, content, kind, *, previous=None):
     _, _, requests = _validate(payload)
     allocations = [a for a in _scale_allocations(requests) if a["owner"] == owner and a["kind"] == kind]
     _require(allocations and owner not in (LOGO_REQUEST[0], DIRECTORY_OWNER), "owner has no installable allocation")
     _require(len(content) == sum(a["size"] for a in allocations), "content must fill its exact named allocation")
     old = b"".join(payload[a["raw"]:a["raw"] + a["size"]] for a in allocations)
     padding = b"\xcc" if kind == "code" else b"\0"
-    _require(old in (padding * len(content), content), "foreign or differently configured owner content")
+    _require(old in (padding * len(content), content) or (previous is not None and old == previous),
+             "foreign or differently configured owner content")
     buf, at, edits = bytearray(payload), 0, []
     for a in allocations:
         buf[a["raw"]:a["raw"] + a["size"]] = content[at:at + a["size"]]
@@ -1517,7 +1551,8 @@ def _install_scaleout(payload, owner, content, kind):
     # The same production length-prefixed section digest scheme is used above.
     result = bytes(buf)
     _require(status(result) == "applied", "owner install postcondition failed")
-    return result, dict(status="already_applied" if old == content else "applied", edits=edits)
+    return result, dict(status="already_applied" if old == content else "applied", edits=edits,
+                        **({"upgraded_from_previous": True} if previous is not None and old == previous != content else {}))
 
 
 def install_read_only(payload: bytes, owner: str, content: bytes) -> tuple[bytes, dict]:

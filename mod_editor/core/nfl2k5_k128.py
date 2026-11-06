@@ -22,6 +22,14 @@ K128 (R1's "late form", 226 bytes, two hooks) teaches the running kernel to mana
 Because the pages arrive after the arena exists, every retail address stays where it was (the XBE
 image, the arena, the frame surfaces); the game's own >64 MB branch then takes a 63.0 MiB region (measured in the lab).
 
+The early form (option ``early``) runs phase 2 at the XBE entry instead, so the arena init finds the room the
+XBE's pages took (the kernel moves them above 64 MB) and the GPU-visible arena, the main heap, grows from 46.7 to
+61.6 MiB. b780-mem1 (2026-11-03): it adds ``MiAddPhysicalPages(0x4010, 0x7FF0)``, leaving the top 64 KB of the
+128 MB (0x07FF0000..0x07FFFFFF) out of the free lists. With the pages there before the game's first allocations, a
+buffer could take the last physical page, and xemu's audio DSP scatter-gather (``hw/xbox/mcpx/apu/dsp/gp_ep.c:69``,
+``assert(paddr + bytes < RAM size)``) aborts on a DMA that ends exactly at 128 MiB: the EMU1 witness of the RC with the
+early form aborted at the intro movie (DSP on) and at the legal screens (DSP off). The late form keeps R1's bytes.
+
 Guards (all must hold, or the stub does nothing and the game runs as a 64 MB title): the kernel build
 is 4627 (through the title's own thunk slot of ordinal 324, ``0x4E3BA4``), ``NV_PFB_CSTATUS`` reads
 ``0x08000000`` (xemu is set to 128 MB), ``PDE[0x210]`` is empty, the ``MiAddPhysicalPages`` prologue
@@ -59,6 +67,7 @@ from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_k128"
+UPGRADES_PREVIOUS = True   # b780 n6: status() may read "previous" (the beta-79 install); apply() upgrades it
 EVIDENCE = "EXPERIMENTAL"
 CODE_SIZE = 0x600   # b779-km1: 0x400 was full; the two failure messages need 651 bytes at +0x200
 # Code only: the RW pages are full in the complete owner union, and the roster heap needs no state of its
@@ -137,6 +146,15 @@ ENTRY_PUSH_OFFSET = 0x28             # 68 d1 6b 01 00: push 0x16bd1 (the origina
 assert len(K128_STUBS) == 226 and hashlib.sha256(K128_STUBS).hexdigest() == K128_STUBS_SHA256
 assert K128_STUBS[ENTRY_PUSH_OFFSET:ENTRY_PUSH_OFFSET + 5] == b"\x68" + struct.pack("<I", RETAIL_ENTRY)
 assert K128_STUBS[ARENA_OFFSET - 1] == 0xC3 and K128_STUBS[GUARDS_OFFSET - 1] == 0xC3
+# b780-mem1: the early form's copy of the stubs, identical but for the end page k128_arena gives MiAddPhysicalPages
+# (exclusive): 0x7FF0 instead of 0x8000, so the top 16 pages never reach the free lists (see the module notes). Only the
+# early form runs k128_arena at the entry; the late form's call at 0x327D1 keeps R1's verbatim bytes.
+EARLY_END_IMM_OFFSET = 0x87           # imm32 of "push 0x8000" in "push 0x8000; push 0x4010; mov eax, MiAddPhysicalPages"
+EARLY_LAST_PFN = 0x7FF0
+assert K128_STUBS[EARLY_END_IMM_OFFSET - 1:EARLY_END_IMM_OFFSET + 9] == bytes.fromhex("68008000006810400000")
+EARLY_STUBS = (K128_STUBS[:EARLY_END_IMM_OFFSET] + struct.pack("<I", EARLY_LAST_PFN)
+               + K128_STUBS[EARLY_END_IMM_OFFSET + 4:])
+assert len(EARLY_STUBS) == len(K128_STUBS)
 
 HEAP_OFFSET = 0x100                  # xheap_pick, when the roster heap is on
 CAP_OFFSET = 0x180                   # the in-game block cap, when the roster heap is on
@@ -148,13 +166,49 @@ OPT_K128, OPT_ROSTER_HEAP, OPT_EARLY, OPT_REQUIRE = 0x1, 0x2, 0x4, 0x8
 # phase 1 like k128_entry; when the machine will not get 128 MB (the guards fail, or the page count is not 0x4000 or
 # 0x8000) and 128 MB is not already managed, it takes an 8 MB contiguous buffer below 32 MB (MmAllocateContiguousMemoryEx
 # through the title's import), scans it out (NV_PCRTC_START; a 32-bit pitch for the mode's width, CR01 -> CR13/CR19; CR28 32
-# bpp; the attribute display bit; SR01 screen on), draws three lines of text and stops in a hlt loop instead of starting
-# the game. The text names the failed setting (b779-km1): xemu memory below 128 MB draws "THIS BUILD NEEDS 128 MB / SET
-# XEMU SYSTEM MEMORY / TO 128 MB"; with 128 MB set (NV_PFB_CSTATUS = 0x08000000) any other guard failure, which means
-# the kernel is not the 4627 build K128 supports or is in an unsupported state, draws "THIS BUILD NEEDS THE 4627 / XBOX
-# BIOS (COMPLEX 4627) / IN XEMU SETTINGS > SYSTEM". Otherwise it continues exactly as k128_entry does (and, with the
-# early form, runs k128_arena at once), reading the option word at CODE_SIZE-4.
+# bpp; the attribute display bit; SR01 screen on), draws the text and stops in a hlt loop instead of starting the game.
+# The text names the failed setting (b779-km1): xemu memory below 128 MB draws "THIS BUILD NEEDS 128 MB / SET XEMU SYSTEM
+# MEMORY / TO 128 MB" and, since b780-b11, "THEN CLOSE XEMU AND / OPEN IT AGAIN" (xemu reads the memory setting only when it
+# starts); with 128 MB set (NV_PFB_CSTATUS = 0x08000000) any other guard failure, which means the kernel is not the 4627
+# build K128 supports or is in an unsupported state, draws "THIS BUILD NEEDS THE 4627 / XBOX BIOS (COMPLEX 4627) / IN XEMU
+# SETTINGS > SYSTEM" and, since b780-b11, a line "KERNEL <build> CODE <n>" (n: 1 the kernel is not the 4627 build, 2 the
+# memory tables are already in use, 3 MiAddPhysicalPages is not the 4627 code, 4 the page count is not 0x4000 or 0x8000), so a
+# photo of the screen names the cause. Otherwise it continues exactly as k128_entry does (and, with the early form, runs
+# k128_arena at once), reading the option word at CODE_SIZE-4. Everything before the text choice (the first
+# REQUIRE_STARTUP_BYTES bytes, the whole start-up path and the memory re-check) is byte for byte what beta-79 shipped.
 REQUIRE_CODE = bytes.fromhex(
+    "609ce8000000005de8a8feffff753fa1d4b203803d0040000074073d00800000752cc705d4b2038000800000f685f503"
+    "000004740d9d61e8f2fdffff68d16b0100c39d6168d16b0100c3fbf4ebfd813dd4b2038000800000750c813d400830c0"
+    "6700000474c66a046a0068ffffff016a006800008000ff15a43c4e0085c074ca89c625ffffff03a3000860fdbad41360"
+    "fdc602010fb65a0143c1e30589d8c1e803c60213884201c1e80324e0c60219884201c60228804a01038a4206c642ec20"
+    "bac4030cfdc60201806201df89f7b90000200031c0f3ab813d0c0210fd000000088d9542030000740a8d95d10200006a"
+    "01eb026a000fb70285c074630fb74a020fafc301f08d3c880fb64a0483c2050fb602425156578db5fc0100008d048001"
+    "c66a0559ac57516a0759d0e8731b57515083c8ff6a0459890789470489470889470c01dfe2f158595f8d3c9fe2dc595f"
+    "83c710e2cf5f5e5983c760e2b2eb96833c24000f85e1feffffc704240100000083ec1c5689e783c7048db5b5020000b9"
+    "07000000fcf3a55ea1a43b4e000fb740048d7c240fb90500000031d2f7b5b10200000fb69415a602000088174fe2eb8d"
+    "7c240bb904000000803f1e7506c6070047e2f5a1a43b4e00668178041312b101751b833d400830c000b1027510813d1a"
+    "f90180568b7424b1037502b1040fb6c90fb68c0da6020000884c241689e2e9f2feffff000000000001017f01017f0808"
+    "087f00417f410046494949317f494949363f4040403f7f404040407f4141221c7f0408107f7f494949417f021c027f63"
+    "1408146307087008073e4141413e7f0919294600427f4000426151494636494949361814127f103c4a49493001710905"
+    "03001c2241000041221c003e414141227f0909090641221408003e414949387c1211127c7f081422413e5149453e2141"
+    "454b312745454539064949291e1e10111f132014151221900a00000044016800121d0a0f090a07000000000000180e08"
+    "0a00000000000000b4002c00170102030400050603070800090a0a080400101112000b05e400380016040a01000c0a0b"
+    "0600040d04010a0b000b0a0b0e0f0d1401d40009010e00101112000b0544015c001301020a090018070e040a000c0a0b"
+    "06001c09087401a4000d0e190a09000301001c1b1c03090000b4001400190102030400050603070800090a0a08040001"
+    "020a0013141115e4002000180c050e0c0005030e040016180e0b19070a0c00131411151714011400190309000c0a0b06"
+    "00040a010103091b04001a00040d04010a0b0000"
+)
+REQUIRE_CODE_SHA256 = "6f19d49eea5c98c4b67dbdf39a4a6140f071fde14133d132c4dbec5ccbe4c774"
+REQUIRE_STARTUP_BYTES = 0xE1                     # up to and including the cmp of NV_PFB_CSTATUS that picks the text
+REQUIRE_STARTUP_SHA256 = "15e8007ca0ee56594ca9014627156763b0e48fa86a56825920b3a08ebe57fd30"   # the beta-79 bytes (v0.8 disc)
+REQUIRE_HALT_OFFSET = REQUIRE_OFFSET + 0x4B      # the hlt of the stop loop
+assert len(REQUIRE_CODE) == 932 and hashlib.sha256(REQUIRE_CODE).hexdigest() == REQUIRE_CODE_SHA256
+assert hashlib.sha256(REQUIRE_CODE[:REQUIRE_STARTUP_BYTES]).hexdigest() == REQUIRE_STARTUP_SHA256
+assert REQUIRE_CODE[REQUIRE_HALT_OFFSET - REQUIRE_OFFSET:REQUIRE_HALT_OFFSET - REQUIRE_OFFSET + 3] == b"\xf4\xeb\xfd"
+# b780 n6: the 128 MB entry as beta-79 / SOFTDRINK 2K28 v0.8 shipped it (b779-km1, 651 bytes; frozen). Its first
+# REQUIRE_STARTUP_BYTES are this release's; only the stop screen's text differs. A v0.8 install with the 128 MB stop
+# reads "previous" and apply() rewrites the owned code in place (same allocation, entry, hooks and options).
+PREVIOUS_REQUIRE_CODE = bytes.fromhex(
     "609ce8000000005de8a8feffff753fa1d4b203803d0040000074073d00800000752cc705d4b2038000800000f685f5030000"
     "04740d9d61e8f2fdffff68d16b0100c39d6168d16b0100c3fbf4ebfd813dd4b2038000800000750c813d400830c067000004"
     "74c66a046a0068ffffff016a006800008000ff15a43c4e0085c074ca89c625ffffff03a3000860fdbad41360fdc602010fb6"
@@ -170,10 +224,9 @@ REQUIRE_CODE = bytes.fromhex(
     "05030e040016180e0b19070a0c00131411151714011400190309000c0a0b0600040a010103091b04001a00040d04010a0b00"
     "00"
 )
-REQUIRE_CODE_SHA256 = "5ae638250eb9579f224963e1af3b7557a703736726552d6d747b6d270d656976"
-REQUIRE_HALT_OFFSET = REQUIRE_OFFSET + 0x4B      # the hlt of the stop loop
-assert len(REQUIRE_CODE) == 651 and hashlib.sha256(REQUIRE_CODE).hexdigest() == REQUIRE_CODE_SHA256
-assert REQUIRE_CODE[REQUIRE_HALT_OFFSET - REQUIRE_OFFSET:REQUIRE_HALT_OFFSET - REQUIRE_OFFSET + 3] == b"\xf4\xeb\xfd"
+PREVIOUS_REQUIRE_CODE_SHA256 = "5ae638250eb9579f224963e1af3b7557a703736726552d6d747b6d270d656976"
+assert len(PREVIOUS_REQUIRE_CODE) == 651 and hashlib.sha256(PREVIOUS_REQUIRE_CODE).hexdigest() == PREVIOUS_REQUIRE_CODE_SHA256
+assert PREVIOUS_REQUIRE_CODE[:REQUIRE_STARTUP_BYTES] == REQUIRE_CODE[:REQUIRE_STARTUP_BYTES]
 MM_PAGES = 0x8003B2D4                # MmNumberOfPhysicalPages (the STICKY section)
 
 UI_LABEL = "128 MB memory (K128, xemu set to 128 MB)"
@@ -186,7 +239,8 @@ HELP_TEXT = (
     "other kernel, the patch stays asleep and the game runs as retail. A disc that also has the Guardian overlay, "
     "16 reserves or the extra created teams needs the 128 MB: without it the disc stops at startup and names the "
     "failed setting on screen (System Memory below 128 MB, or the Flash ROM/BIOS is not the 4627 build), instead of "
-    "failing at the pregame intro. xemu only; a console has 64 MB.")
+    "failing at the pregame intro; the BIOS message also prints the kernel number it found. xemu only; a console has "
+    "64 MB.")
 ROSTER_HEAP_HELP = (
     "EXPERIMENTAL / UNWITNESSED. Needs the 128 MB option. Retail: the roster block (580 KB, the arena that 16 "
     "reserves and extra created teams grow) sits in the main heap, and each game's in-game block takes all but "
@@ -200,7 +254,8 @@ EARLY_HELP = (
     "memory; the Xbox kernel then moves the game's program pages above 64 MB to make room, and the graphics "
     "memory grows to 61.6 MB, room for larger textures. With the roster heap on, the in-game block's cap keeps "
     "that room free during the game. The game's addresses stay the same; only where its program pages sit "
-    "changes. At 64 MB it stays asleep. xemu only.")
+    "changes. The top 64 KB of the 128 MB is left unused, because xemu's audio chip stops the emulator on a "
+    "transfer that ends at the last byte of memory. At 64 MB it stays asleep. xemu only.")
 BUILD_CAPTION = UI_LABEL
 
 
@@ -353,11 +408,13 @@ def early_code(code_va: int) -> bytes:
     return bytes(body)
 
 
-def code_for(code_va: int, flags: int) -> bytes:
+def code_for(code_va: int, flags: int, *, previous: bool = False) -> bytes:
+    """The owned code for ``flags``; ``previous`` puts the beta-79 128 MB entry (PREVIOUS_REQUIRE_CODE) in place."""
     _require(flags & ~(OPT_K128 | OPT_ROSTER_HEAP | OPT_EARLY | OPT_REQUIRE) == 0 and flags & OPT_K128,
              "unknown K128 options")
     out = bytearray(b"\xcc" * CODE_SIZE)
-    out[0:len(K128_STUBS)] = K128_STUBS
+    stubs = EARLY_STUBS if flags & OPT_EARLY else K128_STUBS   # b780-mem1: the early form keeps the top 64 KB out
+    out[0:len(stubs)] = stubs
     if flags & OPT_ROSTER_HEAP:
         pick = heap_pick_code(code_va)
         _require(HEAP_OFFSET + len(pick) <= OPTIONS_OFFSET, "roster heap code exceeds its allocation")
@@ -371,8 +428,9 @@ def code_for(code_va: int, flags: int) -> bytes:
         _require(EARLY_OFFSET + len(early) <= OPTIONS_OFFSET, "early entry exceeds its allocation")
         out[EARLY_OFFSET:EARLY_OFFSET + len(early)] = early
     if flags & OPT_REQUIRE:
-        _require(REQUIRE_OFFSET + len(REQUIRE_CODE) <= OPTIONS_OFFSET, "the 128 MB entry exceeds its allocation")
-        out[REQUIRE_OFFSET:REQUIRE_OFFSET + len(REQUIRE_CODE)] = REQUIRE_CODE
+        require = PREVIOUS_REQUIRE_CODE if previous else REQUIRE_CODE
+        _require(REQUIRE_OFFSET + len(require) <= OPTIONS_OFFSET, "the 128 MB entry exceeds its allocation")
+        out[REQUIRE_OFFSET:REQUIRE_OFFSET + len(require)] = require
     struct.pack_into("<I", out, OPTIONS_OFFSET, flags)
     return bytes(out)
 
@@ -427,7 +485,12 @@ def _owned_state(payload: bytes):
         _require(image.read(CAP_SITE_VA, 9) == RETAIL_CAP_SITE, "in-game block site with an empty allocation")
         return "retail", found, None
     flags = struct.unpack_from("<I", blob, OPTIONS_OFFSET)[0]
-    _require(blob == code_for(code["va"], flags), "foreign K128 code or options")
+    state = "applied"
+    if blob != code_for(code["va"], flags):
+        # b780 n6: the beta-79 128 MB entry (only with the 128 MB stop; otherwise both revisions are the same bytes)
+        _require(bool(flags & OPT_REQUIRE) and blob == code_for(code["va"], flags, previous=True),
+                 "foreign K128 code or options")
+        state = "previous"
     _require(_entry_state(payload, code["va"], flags) == "applied", "K128 code without its entry hook")
     edits = sites(code["va"], flags)
     _require(not edits or rdata.status(payload, edits) == "applied", "mixed K128 hooks")
@@ -436,7 +499,7 @@ def _owned_state(payload: bytes):
     if not flags & OPT_ROSTER_HEAP:
         _require(image.read(ROSTER_SITE_VA, 5) == RETAIL_ROSTER_SITE, "roster site moved without the roster heap")
         _require(image.read(CAP_SITE_VA, 9) == RETAIL_CAP_SITE, "in-game block capped without the roster heap")
-    return "applied", found, flags
+    return state, found, flags
 
 
 def status(payload: bytes) -> str:
@@ -448,7 +511,7 @@ def status(payload: bytes) -> str:
 
 def read_settings(payload: bytes) -> dict:
     state = status(payload)
-    if state != "applied":
+    if state not in ("applied", "previous"):   # b780 n6: "previous" = the beta-79 128 MB stop text, same options
         return {"status": state, "k128": False, "roster_heap": False, "early": False, "require_128": False}
     flags = _owned_state(payload)[2]
     return {"status": state, "k128": True, "roster_heap": bool(flags & OPT_ROSTER_HEAP),
@@ -489,6 +552,20 @@ def apply(payload: bytes, *, roster_heap: bool = False, early: bool = False,
         _require(_owned_state(payload)[2] == flags, "K128 options differ; rebuild from the original")
         return payload, {**common, "already_applied": True, "changed_bytes": 0}
     before = payload
+    if state == "previous":
+        # b780 n6: beta-79 -> this release in place: the 128 MB entry's stop text; entry, hooks and options stay
+        _require(_owned_state(payload)[2] == flags, "K128 options differ; rebuild from the original")
+        code_va = allocations(payload)["code"]["va"]
+        result, code_receipt = space.install_code(payload, OWNER, code_for(code_va, flags),
+                                                  previous=code_for(code_va, flags, previous=True))
+        buf = bytearray(result)
+        _repin(buf)
+        result = bytes(buf)
+        _require(status(result) == "applied", "K128 upgrade postcondition failed")
+        return result, {**common, "already_applied": False, "upgraded_from": "beta-79", "code_install": code_receipt,
+                        "code_va": hex(code_va), "changed_bytes": sum(a != b for a, b in zip(before, result)),
+                        "before_sha256": hashlib.sha256(before).hexdigest(),
+                        "after_sha256": hashlib.sha256(result).hexdigest()}
     if space.status(payload) == "retail":
         payload, _ = space.apply(payload, REQUESTS, scaleout=True)
     found = allocations(payload)

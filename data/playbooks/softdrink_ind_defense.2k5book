@@ -9,10 +9,10 @@
   "notes": "DESIGN: Lou Anarumo (Anarumo multiple disguise); 2025 baseline IND. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "f16900981d5f2cd466c7909396710bb55d323b68983fb77e3cd07f14797929d3",
+  "book_fingerprint": "c2993ebcbbd2beab4a429a4615e7352cb8076028f7b3bfcfc30426d81d00efc3",
   "donor_formation_count": 50,
   "donor_play_count": 268,
-  "donor_node_count": 2382
+  "donor_node_count": 2390
  },
  "budget": {
   "formations": 50,
@@ -461,7 +461,7 @@
   },
   {
    "id": "d9",
-   "custom_name": "Cover 1 Hole",
+   "custom_name": "Cover 1 Robber Off",
    "play_type": "defense",
    "concept": "Cover 1 Robber",
    "donor": {
@@ -525,7 +525,7 @@
   },
   {
    "id": "d11",
-   "custom_name": "Quarters",
+   "custom_name": "Cover 4 Quarters",
    "play_type": "defense",
    "concept": "Cover 4 Quarters",
    "donor": {
@@ -589,7 +589,7 @@
   },
   {
    "id": "d13",
-   "custom_name": "Rotate 3 Sky",
+   "custom_name": "Rotate 3 Sky Strong",
    "play_type": "defense",
    "concept": "Cover 3 Sky",
    "donor": {
@@ -627,7 +627,7 @@
   },
   {
    "id": "d14",
-   "custom_name": "Cover 3 Buzz",
+   "custom_name": "Cover 3 Buzz Weak",
    "play_type": "defense",
    "concept": "Cover 3 Buzz",
    "donor": {
@@ -653,7 +653,7 @@
   },
   {
    "id": "d15",
-   "custom_name": "Rotate 3 Sky Bail",
+   "custom_name": "Rotate 3 Sky Strong Bail",
    "play_type": "defense",
    "concept": "Cover 3 Sky",
    "donor": {
@@ -755,7 +755,7 @@
   },
   {
    "id": "d18",
-   "custom_name": "Zero Blitz",
+   "custom_name": "Cover 0 Double A Blitz",
    "play_type": "defense",
    "concept": "Cover 0 Blitz",
    "donor": {
@@ -807,7 +807,7 @@
   },
   {
    "id": "d20",
-   "custom_name": "Rotate 3 Cloud",
+   "custom_name": "Rotate 3 Cloud Strong",
    "play_type": "defense",
    "concept": "Cover 3 Cloud",
    "donor": {
@@ -845,7 +845,7 @@
   },
   {
    "id": "d21",
-   "custom_name": "Cover 6 Flip",
+   "custom_name": "Cover 6 Split",
    "play_type": "defense",
    "concept": "Cover 6",
    "donor": {
@@ -947,7 +947,7 @@
   },
   {
    "id": "d24",
-   "custom_name": "Rotate 3 Cloud Bail",
+   "custom_name": "Rotate 3 Cloud Strong Bail",
    "play_type": "defense",
    "concept": "Cover 3 Cloud",
    "donor": {
@@ -1075,7 +1075,7 @@
   },
   {
    "id": "d28",
-   "custom_name": "Creeper Mike Rotate",
+   "custom_name": "Sim Pressure Mike Rotate",
    "play_type": "defense",
    "concept": "Sim Pressure 3",
    "donor": {
@@ -1265,7 +1265,7 @@
   },
   {
    "id": "d33",
-   "custom_name": "2 Fire Nickel",
+   "custom_name": "Cover 2 Nickel Fire",
    "play_type": "defense",
    "concept": "Cover 2 Fire",
    "donor": {
@@ -1291,7 +1291,7 @@
   },
   {
    "id": "d34",
-   "custom_name": "Cover 0 Max",
+   "custom_name": "Cover 0 Nickel Blitz",
    "play_type": "defense",
    "concept": "Cover 0 Blitz",
    "donor": {
@@ -1317,7 +1317,7 @@
   },
   {
    "id": "d35",
-   "custom_name": "Cover 6 Split",
+   "custom_name": "Cover 6 Flip",
    "play_type": "defense",
    "concept": "Cover 6",
    "donor": {
@@ -1397,7 +1397,7 @@
   },
   {
    "id": "d37",
-   "custom_name": "Cover 1 Rat",
+   "custom_name": "Cover 1 Rat Off",
    "play_type": "defense",
    "concept": "Cover 1 Robber",
    "donor": {
@@ -1435,7 +1435,7 @@
   },
   {
    "id": "d187",
-   "custom_name": "Cover 4 Drop",
+   "custom_name": "Quarters Drop 8",
    "play_type": "defense",
    "concept": "Cover 4 Quarters",
    "donor": {
@@ -1665,7 +1665,7 @@
   },
   {
    "id": "d194",
-   "custom_name": "Cover 0 Double A Blitz",
+   "custom_name": "Zero Blitz",
    "play_type": "defense",
    "concept": "Cover 0 Blitz",
    "donor": {
@@ -1691,7 +1691,7 @@
   },
   {
    "id": "d195",
-   "custom_name": "Cover 1 Robber Off",
+   "custom_name": "Cover 1 Robber Lurk",
    "play_type": "defense",
    "concept": "Cover 1 Robber",
    "donor": {
@@ -1729,7 +1729,7 @@
   },
   {
    "id": "d196",
-   "custom_name": "Cover 3 Sky",
+   "custom_name": "Cover 3 Sky Strong",
    "play_type": "defense",
    "concept": "Cover 3 Sky",
    "donor": {
@@ -1819,7 +1819,7 @@
   },
   {
    "id": "d199",
-   "custom_name": "Zero Blitz 2",
+   "custom_name": "Cover 0 Max",
    "play_type": "defense",
    "concept": "Cover 0 Blitz",
    "donor": {
@@ -1935,7 +1935,7 @@
   },
   {
    "id": "d210",
-   "custom_name": "Cover 3 Buzz Weak",
+   "custom_name": "Cover 3 Buzz Weak Bail",
    "play_type": "defense",
    "concept": "Cover 3 Buzz",
    "donor": {
@@ -1999,7 +1999,7 @@
   },
   {
    "id": "d212",
-   "custom_name": "2 Read Match",
+   "custom_name": "Cover 2 Match",
    "play_type": "defense",
    "concept": "Cover 2",
    "donor": {
@@ -2045,7 +2045,7 @@
   },
   {
    "id": "d213",
-   "custom_name": "Cover 3 Cloud",
+   "custom_name": "Cover 3 Cloud Weak",
    "play_type": "defense",
    "concept": "Cover 3 Cloud",
    "donor": {
@@ -2071,7 +2071,7 @@
   },
   {
    "id": "d214",
-   "custom_name": "Cover 2 Match",
+   "custom_name": "2 Read Match",
    "play_type": "defense",
    "concept": "Cover 2 Hard",
    "donor": {

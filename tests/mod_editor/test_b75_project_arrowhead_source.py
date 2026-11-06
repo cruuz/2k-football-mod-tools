@@ -148,17 +148,32 @@ class ProjectArrowheadSourceTests(unittest.TestCase):
         self.assertIn("no longer on this computer", str(chosen.exception))
 
     def test_a_lost_private_file_is_reported_in_words_not_as_a_temp_path(self):
-        """Any later step that loses a staged file gets a sentence, not [Errno 2]."""
+        """Any later step that loses a staged file gets a sentence, not [Errno 2].
+
+        b791-h3: Modern Arrowhead is an optional (visual) step, so the build is finished without it and its note says
+        the sentence; with NFL2K5_BUILD_STRICT=1 (release gates) it stops the build with it, as every core step does."""
         target = self.root / "lost.iso"
         with self._modules(reach_for_the_consumed_copy=True):
+            receipt = mod_build.build_with_project(self._plan(target.name), self.service, None, None)
+        row = receipt["left_out"][0]
+        self.assertEqual(row["step"], "modern_arrowhead")
+        note = row["user_notes"][0]
+        self.assertIn("the project build's private copy of the disc", note)
+        self.assertNotIn(mod_build.STAGE_PREFIX, note)
+        self.assertNotIn("Errno", note)
+        self.assertTrue(target.is_file())
+        self.assertEqual(self.source.read_bytes(), self.original)
+        strict = self.root / "lost-strict.iso"
+        with self._modules(reach_for_the_consumed_copy=True), mock.patch.dict(os.environ, {"NFL2K5_BUILD_STRICT": "1"}):
             with self.assertRaises(ValueError) as caught:
-                mod_build.build_with_project(self._plan(target.name), self.service, None, None)
+                mod_build.build_with_project(self._plan(strict.name), self.service, None, None)
         message = str(caught.exception)
+        self.assertEqual(caught.exception.step, "modern_arrowhead")
         self.assertIn("Modern Arrowhead: stadium packages", message)
         self.assertIn("the project build's private copy of the disc", message)
         self.assertNotIn(mod_build.STAGE_PREFIX, message)
         self.assertNotIn("Errno", message)
-        self.assertFalse(target.exists())
+        self.assertFalse(strict.exists())
         self.assertEqual(self.source.read_bytes(), self.original)
 
     def test_the_words_carry_a_fix_hint(self):

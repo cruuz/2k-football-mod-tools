@@ -115,14 +115,26 @@ class PrivateResources(unittest.TestCase):
         self.assertAlmostEqual(passed / (passed + run),
                                raw["pass_calls"] / (raw["pass_calls"] + raw["run_calls"]), delta=.003)
 
-    def test_wrong_roster_coach_refuses_before_any_book_is_compiled(self):
+    def test_a_wrong_roster_coach_leaves_only_his_club_native(self):
+        """b780 c2-staff: per club. One club whose coach is not his 2026 identity loses its profile; the 31 others
+        keep theirs. With no 2026 coach at all the preflight refuses before it reads a playbook."""
         from unittest.mock import patch
         from mod_editor.core import nfl2k5_roster_records as rr, nfl2k5_playbook_pack as packs
+        from mod_editor.core import nfl2k5_coach_staff as staff
         raw = bytearray(self.roster)
         roster = rr.RosterDocument(raw[32:])
         names = rr._coach_tool()
         at = names.relative_target(roster.body, roster.teams[0].coach_offset, "first coach")
         raw[32 + at:32 + at + 2] = b"X\0"
+        bindings, reasons = staff.profile_bindings(bytes(raw[32:]), roster.teams)
+        self.assertIsNone(bindings[0])
+        self.assertTrue(all(bindings[1:]))
+        self.assertEqual(len(reasons), 1)
+        self.assertTrue(reasons[0].startswith("San Francisco: "))
+        nobody = bytearray(self.roster)
+        for team in roster.teams[:32]:
+            at = names.relative_target(roster.body, team.coach_offset, "first coach")
+            nobody[32 + at:32 + at + 2] = b"X\0"
         calls = []
         class Archive:
             def __enter__(self):
@@ -132,10 +144,10 @@ class PrivateResources(unittest.TestCase):
             def read_entry(self, index):
                 calls.append(index)
                 if index != 5:
-                    raise AssertionError("Read a playbook before rejecting the wrong coach")
-                return bytes(raw)
+                    raise AssertionError("Read a playbook before rejecting the roster")
+                return bytes(nobody)
         with patch.object(packs._outer_image(), "OuterImage", return_value=Archive()):
-            with self.assertRaisesRegex(ai.CoachAIError, "roster coach"):
+            with self.assertRaisesRegex(ai.CoachAIError, "at least one 2026 NFL head coach"):
                 ai.plan_profiles("bounded roster fixture")
         self.assertEqual(calls, [5])
 

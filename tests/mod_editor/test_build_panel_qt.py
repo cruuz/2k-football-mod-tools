@@ -245,7 +245,8 @@ class PresetPlanEqualsPresetTests(unittest.TestCase):
                 panel = BuildPanel()
                 try:
                     state = {key: "retail" for key in panel._boxes()}
-                    state.update(path="retail.iso", container="xiso", throw=None)
+                    state.update(path="retail.iso", container="xiso", throw=None,
+                                 speed_threshold="retail")  # b780-cv5: a number row, not a check box, so not in _boxes()
                     panel.apply_state(state)
                     panel.historic_teams_quick_game_check.setChecked(True)   # a leftover choice the preset must clear
                     panel.apply_preset(name)
@@ -286,6 +287,29 @@ class PresetPlanEqualsPresetTests(unittest.TestCase):
             self.assertIn("depth locks: older revision (needs update)", panel.source_status.text())
             panel.depth_locks_check.setChecked(True)
             self.assertTrue(panel.plan().depth_locks)
+        finally:
+            panel.deleteLater()
+            self.app.processEvents()
+
+    def test_beta79_catch_slider_and_cornerback_credit_are_upgrades_not_disabled_boxes(self) -> None:
+        """b780 rev1: on a v0.8 disc both read "previous" and the build upgrades them in place, but their boxes were
+        disabled with no badge or listing (the depth-locks case above)."""
+        panel = BuildPanel()
+        try:
+            state = {key: "retail" for key in panel._boxes()}
+            state.update(path="v08.iso", container="xiso", throw=None, catch_slider="previous", sim_cb_tackles="previous",
+                         sim_rb_injuries="previous")   # b780 db2: the beta-79 RB injury guard (no fullback rule)
+            panel.apply_state(state)
+            for key, box, name in (("catch_slider", panel.catch_check, "catching slider"),
+                                   ("sim_cb_tackles", panel.sim_cb_tackles_check, "cornerback tackle credit"),
+                                   ("sim_rb_injuries", panel.sim_rb_injuries_check, "simulated RB injuries")):
+                with self.subTest(key=key):
+                    self.assertTrue(box.isEnabled())
+                    self.assertFalse(box.isChecked())
+                    self.assertEqual(panel._badges[key].text(), "Needs update")
+                    self.assertIn(f"{name}: older revision (needs update)", panel.source_status.text())
+                    box.setChecked(True)
+                    self.assertTrue(getattr(panel.plan(), key))
         finally:
             panel.deleteLater()
             self.app.processEvents()

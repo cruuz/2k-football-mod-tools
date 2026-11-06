@@ -57,7 +57,7 @@ class ProductShellAccessibilityTests(unittest.TestCase):
 
     def test_2k5_find_shortcut_targets_the_active_page_search(self) -> None:
         self.assertEqual(self.two_k5.find_shortcut.key().toString(), "Ctrl+F")
-        self.two_k5.navigation.setCurrentRow(1)
+        self.two_k5.navigation.setCurrentRow(self.two_k5._navigation_row("uniforms_equipment"))   # b780-uxfix: by key
         self.application.processEvents()
         self.assertIs(self.two_k5._current_search_field(), self.two_k5.uniform_search)
         self.two_k5.uniform_search.setText("Giants away")
@@ -78,10 +78,10 @@ class ProductShellAccessibilityTests(unittest.TestCase):
         assert self.two_k5._crib_panel is not None
         assert self.two_k5._playbooks_panel is not None
         expectations = (
-            (2, self.two_k5._roster_panel.current_search, "Eli Manning"),
-            (3, self.two_k5._text_roster_panel.text_search, "salary cap"),
-            (8, self.two_k5._crib_panel.search, "team photos"),
-            (11, self.two_k5._playbooks_panel.search, "shotgun routes"),
+            (self.two_k5._navigation_row("rosters_players"), self.two_k5._roster_panel.current_search, "Eli Manning"),
+            (self.two_k5._navigation_row("team_identity"), self.two_k5._text_roster_panel.text_search, "salary cap"),
+            (self.two_k5._navigation_row("crib"), self.two_k5._crib_panel.search, "team photos"),
+            (self.two_k5._navigation_row("playbooks_plays"), self.two_k5._playbooks_panel.search, "shotgun routes"),
         )
         for row, field, query in expectations:
             with self.subTest(page=self.two_k5.navigation.item(row).text().strip()):

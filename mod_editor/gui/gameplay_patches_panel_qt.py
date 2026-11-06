@@ -13,6 +13,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -30,6 +31,7 @@ from PyQt5.QtWidgets import (
 from mod_editor.gui import beta62_options as r62_ui
 from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_throw_tuning as tt
+from mod_editor.core import nfl2k5_depth_chart_rows as _special_rows
 from mod_editor.gui.ux_text import NOT_TESTED, XEMU_LINE, Details, plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title, write_caption
 
 SOURCE_FILTER = "NFL 2K5 default.xbe or disc image (default.xbe *.xbe *.xiso *.iso *.img);;All files (*)"
@@ -79,7 +81,10 @@ PATCHES = (
      "overall is compared across positions, so the positions whose rookies roll the highest overalls (HB, DE, "
      "T, QB) fill round 1 and the 11th-best HB goes as soon as HB is a top-three need. Patch: the pick is the "
      "prospect with the best edge over his own position's class average, times real positional value, plus "
-     "the team's need order and a little noise; CPU free-agent targets are scored the same way."),
+     "the team's need order and a little noise; CPU free-agent targets are scored the same way. Kickers and "
+     "punters go from round 5 on (at most one rare standout earlier in a draft), and every draft class gets a real "
+     "position mix instead of the positions of the players who left, so later classes keep their quarterbacks and "
+     "Create Player keeps its records."),
     ("returner_fix", "Real kick and punt returners on CPU depth charts",
      "Retail: the franchise auto depth chart never records which player had the best punt-return score; it "
      "stores the score itself as the roster slot, so the punt returner is whoever sits in slot 0 (often a QB), "
@@ -102,7 +107,10 @@ PATCHES = (
      "as one club. Patch: a TEAM column sits next to Yr (frozen, the stats still scroll). The season in progress "
      "shows the club the player is on now; every game he plays records his club for that season, so a finished "
      "season shows the club of his last game (a trade, signing or release shows from the next game on, and a "
-     "released player keeps the club he left). Seasons played before this patch was in the save, the folded "
+     "released player keeps the club he left). On the original 2004 rosters the Studio also writes the real club "
+     "of every past season the roster has stats for (built-in nflverse data; a season it does not cover shows the "
+     "player's own 2004 club), so this one option fills the whole column in a franchise started from the disc; the "
+     "2026 SOFTDRINK roster brings its own history. Seasons played before this patch was in an older save, the folded "
      "\"pre\" row and the Total row read \"--\". Offensive linemen have no stats table in the game and stay without "
      "it. Franchise saves stay loadable either way."),
     ("kick_rules", "Modern kicking: kickoff from the 35, touchbacks to the 35, PAT from the 15, ~70-yard legs",
@@ -213,7 +221,7 @@ PATCHES = (
      "disagree by more than two yards, bunch sets and special teams keep their retail assignments and are listed in "
      "the build report. Changes who lines up, not how they play: Advanced. No new depth-chart rows yet. Unwitnessed in game."),
     ("depth_chart_rows", "SPECIAL: 13 rows and complete player names (experimental)",
-     "Retail: special teams has four depth-chart rows. Patch: SPECIAL shows KR, PR, K, P, LS, LGUN, RGUN, NCB, DCB, SLWR, GAD, 3DRB and PWRB together, with names beside all available player numbers. Offense and defense keep eleven rows and show X / Z receiver labels. Row spacing is three pixels tighter on all depth-chart tabs; the font stays the same. Role labels have more room. These roles share player lists, so changing one can change another. Requires one-pool positions and the playbook roles. EXPERIMENTAL/UNWITNESSED."),
+     _special_rows.HELP_TEXT),  # b780 hunt5: what each SPECIAL row does, row by row
     ("practice_squad", "Reserve save compatibility: 53 active + 12 existing reserves",
      "Retail: franchise rosters have no practice-squad phase. Patch: preserves existing reserves, contracts and save "
      "storage, with reserve moves available in Studio's save tools. Final cuts release players to free agency. "
@@ -319,7 +327,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "draft_ai": ("Smarter Franchise drafts & free agency", "Changes CPU decisions; Fantasy Draft is separate.", ""),
     "returner_fix": ("Fix CPU kick & punt returners", "Changes automatic depth-chart selection.", ""),
     "progression": ("Change player growth & decline", "NFL career arcs by position: backs fade early, quarterbacks last; young QBs rise or fall on their play.", ""),
-    "team_column": ("Show TEAM in Player Card season stats", "Which team each season was played for.", ""),
+    "team_column": ("Show each season's team on the Player Card", "TEAM column; fills past seasons with real teams on the original rosters.", ""),
     "kick_rules": ("Modern kick spots & kicking power", "Kickoff: 35 · touchback: 35 · PAT snap: 15.", ""),
     "dynamic_kickoff": ("Dynamic kickoff: ready stance and close blocks", "Nobody moves until the ball comes down; landing zone; the CPU kicks to it. "
                         "Held players keep an idle pose facing the kick; return blockers take close assignments.", NOT_TESTED),
@@ -394,9 +402,12 @@ class GameplayPatchesPanel(QWidget):
                  target_suffix: str = "gameplay patched") -> None:
         super().__init__(parent)
         self._facade = facade
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         self._task: _Task | None = None
         self._state: dict[str, object] | None = None
+        # b780 studio1: the 64 MB target locks options on Build; the link hands this page the same lock (key -> tooltip, badge)
+        self.memory_lock_for = None
+        self._memory_mirror: dict[str, tuple] = {}
         self.checks: dict[str, QCheckBox] = {}
         self._patches = tuple(patches)
         self._title = title
@@ -511,11 +522,6 @@ class GameplayPatchesPanel(QWidget):
                 check.setToolTip(helper or label)
                 check.toggled.connect(lambda _c: self._refresh())
                 head.addWidget(check)
-            if key in r62_ui.CHILDREN:
-                check.toggled.connect(lambda on, p=key: self._parent_toggled(p, on))
-            for parent, children in r62_ui.CHILDREN.items():
-                if key in children:
-                    check.toggled.connect(lambda on, p=parent: self._child_toggled(p, on))
             if key == "cpu_money_downs":
                 self.cpu_money_downs_level = QComboBox()
                 for text, value in r62_ui.LEVELS["cpu_money_downs"]:
@@ -622,6 +628,9 @@ class GameplayPatchesPanel(QWidget):
             self.badges[key] = badge_label
             self._static_badges[key] = badge
         root.addWidget(list_box)
+        # b780 studio1 (Q60): the same rule table Build reads (beta62_options.REQUIRES), for the boxes this page has
+        r62_ui.connect_requirements(self.checks.get, self._requirement_child_toggled, self._requirement_parent_toggled,
+                                   self._requirement_parent_clicked)
         out = QHBoxLayout()
         self.target_caption = QLabel("Save disc copy as")
         out.addWidget(self.target_caption)
@@ -698,7 +707,18 @@ class GameplayPatchesPanel(QWidget):
                 self.badges[key].setVisible(True)
                 continue
             upgrade = key == "position_pools" and value == "needs_fix"
-            check.setEnabled((value == "retail" or upgrade) and not needs_image and key not in r62_ui.UNAVAILABLE)
+            # b780 studio1: the Build tab's Needs update treatment, which this page lacked: on the released v0.8 disc these
+            # read "Unknown state." or, for a legacy draft AI, a tooltip about the beta 58-60 star, and no badge.
+            from mod_editor.gui.build_panel_qt import (
+                LEGACY_UPGRADE_KEYS, PREVIOUS_REBUILD_KEYS, PREVIOUS_UPGRADE_KEYS, rebuild_only_reason)
+            locked_on = key in ("honors_page", "k128_memory")      # Build keeps these ticked and greyed out; so does this page
+            update = ((value == "previous" and key in PREVIOUS_UPGRADE_KEYS)
+                      or (value == "legacy" and (key in LEGACY_UPGRADE_KEYS or key in ("draft_ai", "depth_locks"))))
+            rebuild = value == "previous" and key in PREVIOUS_REBUILD_KEYS
+            # b780 studio1 (Q69): on a disc this release cannot build on, an in-place update is not an offer (same rule as Build)
+            declined_reason = rebuild_only_reason(state) if (update or upgrade) else ""
+            check.setEnabled((value == "retail" or (not declined_reason and (upgrade or (update and not locked_on))))
+                             and not needs_image and key not in r62_ui.UNAVAILABLE)
             check.setChecked(False)
             tip = {"applied": "Already installed on this source.",
                    "needs_fix": "Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.",
@@ -709,9 +729,21 @@ class GameplayPatchesPanel(QWidget):
                    "retail": ""}.get(value, "Unknown state.")
             # a known non-retail state is the more useful message; an unreadable one (a bare XBE cannot
             # carry a playbook patch, so inspect says n/a) should say what the user needs instead
-            full_disc = needs_image and value not in ("applied", "foreign", "partial")
+            full_disc = needs_image and value not in ("applied", "foreign", "partial", "previous", "legacy")
+            if declined_reason:
+                tip = "An older revision of this change is installed (beta 79 or earlier). " + declined_reason
+            elif update:
+                tip = ("An older revision of this change is installed (beta 79 or earlier). "
+                       + ("This build brings it up to date in place, so it stays ticked." if locked_on else
+                          "Select to update it to this release's revision (in place)."))
+            elif rebuild:
+                tip = ("The beta 79 version of this change is installed. This release cannot update it in place; build from "
+                       "your retail game to get this release's version.")
             check.setToolTip("Full disc required (not a bare default.xbe)." if full_disc else tip)
             badge = ("Full disc required" if full_disc else
+                     "Older revision: rebuild from retail" if declined_reason else
+                     "Needs update" if update else
+                     "Beta 79 version: rebuild from retail" if rebuild else
                      {"applied": "Already installed", "foreign": "Unrecognized source data",
                       "needs_fix": "Needs CPU lineup fix",
                       "partial": "Unrecognized source data"}.get(value, self._static_badges.get(key, "")))
@@ -805,18 +837,47 @@ class GameplayPatchesPanel(QWidget):
         if path:
             self.my_career_setup_field.setText(path)
 
-    def _parent_toggled(self, parent, on):
-        if not on:
-            for child in r62_ui.CHILDREN[parent]:
-                if child in self.checks:
-                    self.checks[child].setChecked(False)
+    def _apply_memory_locks(self) -> None:
+        """Grey out here what Build's 64 MB target has greyed out, with Build's reason, and give it back at 128 MB exactly as it
+        was. Without it a click here was recorded on the locked Build box and came back on at 128 MB."""
+        provider = self.memory_lock_for
+        for key, box in self.checks.items():
+            info = provider(key) if provider is not None else None
+            badge = self.badges.get(key)
+            if info is not None:
+                if key not in self._memory_mirror:
+                    self._memory_mirror[key] = (box.isEnabled(), box.toolTip(),
+                                                badge.text() if badge is not None else None,
+                                                not badge.isHidden() if badge is not None else False)
+                box.setEnabled(False)
+                box.setToolTip(info[0])
+                if badge is not None:
+                    badge.setText(info[1])
+                    badge.setVisible(bool(info[1]))
+            elif key in self._memory_mirror:
+                enabled, tip, text, shown = self._memory_mirror.pop(key)
+                box.setEnabled(enabled)
+                box.setToolTip(tip)
+                if badge is not None and text is not None:
+                    badge.setText(text)
+                    badge.setVisible(shown)
+
+    def _requirement_child_toggled(self, child, on):
+        """Q60: a ticked child ticks the parents it needs that this page has."""
+        if on:
+            r62_ui.tick_parents(child, self.checks.get)
         self._refresh()
 
-    def _child_toggled(self, parent, on):
-        box = self.checks.get(parent)
-        if box is not None and on and not box.isChecked() and box.isEnabled():
-            box.setChecked(True)
+    def _requirement_parent_toggled(self, parent, on):
+        """Q60: an unticked parent unticks the children that need it."""
+        if not on:
+            r62_ui.untick_children(parent, self.checks.get)
         self._refresh()
+
+    def _requirement_parent_clicked(self, parent, on):
+        """b780-mem1: a parent the user ticked brings its default children along."""
+        if on:
+            r62_ui.tick_default_children(parent, self.checks.get)
 
     def _money_downs_changed(self):
         level = str(self.cpu_money_downs_level.currentData() or "retail")
@@ -988,10 +1049,13 @@ class GameplayPatchesPanel(QWidget):
             self.checks, self._helpers, self._state)
         any_on = any(c.isChecked() for key, c in self.checks.items() if key not in ("helmet_finish", "weather_haze")) or self._helmet_finish_changed() or self._weather_haze_changed() or self._modern_scrambles_selected()
         configured = True   # MyCareer no longer needs a setup file: an empty field selects in-game creation
+        from mod_editor.gui.build_panel_qt import rebuild_only_reason
+        rebuild_only = rebuild_only_reason(self._state or {})    # b780 studio1 (Q69): said here, as Build says it, not by the engine
         self.write_button.setEnabled(configured and any_on and bool(self.source_field.text()) and bool(self.target_field.text())
                                      and self._task is None and not self._reading
-                                     and not self._playbook_blockers)
-        self.write_button.setToolTip(" ".join(self._playbook_blockers))
+                                     and not self._playbook_blockers and not rebuild_only)
+        self.write_button.setToolTip(rebuild_only or " ".join(self._playbook_blockers))
+        self._apply_memory_locks()
 
     def _choose_source(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)

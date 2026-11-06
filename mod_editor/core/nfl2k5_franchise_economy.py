@@ -193,7 +193,107 @@ for _va, _digest in ((0x382200, "dc79bd8fe3a5e4434acf93056e6e304d0cfd27e357e5f39
 REVISION_4_SITES = frozenset({0x382200, 0x41E2A0, 0x3A5F20, 0x3BAB20, 0x3E2310, 0x3E9740, 0x3E21D0, 0x3DBC10, SMART_CUT, CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT,
                               CLASS_POSITION, PRESEASON_GATE, CLASS_COUNT, CLASS_TARGET_CMP, CLASS_TARGET_NEED,
                               CLASS_TOPUP, TXN_YEARS})  # b779 vs1: the transaction-years call
-REVISION = 4
+# b780 b4-economy (revision 5, row D10; v0.8 known issue "CPU clubs still sign and cut fringe players in camp").
+# PROVED OFFLINE (Unicorn, released v0.8 XBE + disc ROST, every game played): (1) trim() held every CPU club at 54
+# after every stage action all year, so right after the draft each club released about six players, many of them
+# that day's picks; it now keeps the native camp limit (0x247AF0: 65) until the regular season, and the season
+# gate's smart cut-down makes the one cut to 53. (2) In season every CPU club signed a long-unsigned 70+ free agent
+# and cut a player for him every week (weeks 1-4 of the first season: 32 a week, median overall 74 in, 50 out); the
+# prove-it pass now offers a free agent only to clubs with an open spot below 53, so its cut never runs. Code: the
+# reconcile, roster_c and roster_m windows. A revision-4 image (beta-79 / v0.8, and the revision-3 v0.7, whose
+# bytes at these three windows are the same) upgrades in place.
+REVISION_5_SITES = frozenset({0x2BFBE0, 0x3D2890, 0x3DBC10})
+PREVIOUS_REVISION_4 = {
+    0x2BFBE0: "2799f37d8a03a2f2461bc433c91551d686d2470ac4799536a6333f7365a962cb",   # reconcile (trim at 54)
+    0x3D2890: "54acdc781f3da60b581bd64136523c9ea28f32386333b84051f0157fa410cff3",   # roster_c (best room: any club)
+    0x3DBC10: "00e9fe65190ac0bf28e38e740cd4f929f449b091f97a5ba6cdb4f75de1349d48",   # roster_m (no camp limit)
+}
+# b780 b1-draft (row B1; SharkMagick 11/01 on the original rosters: "kickers getting drafted in R3 again", "only one
+# qb"): the class half of revision 4 (create vacancies kept, every class from the position mix) is a bug fix that
+# every franchise draft needs, not an economy preference. The draft class owner (nfl2k5_draft_class) installs these
+# four sites without the economy. They are the economy's own bytes: window "roster_f" is self-contained (it reads
+# only the roster root 0xB72918, the class countdown 0xE41CDC and its own mix) and the three call sites reach only
+# it. An image that carries only these four reads "retail" here, and the economy installs over them unchanged.
+CLASS_WINDOW = 0x382200
+CLASS_SITES = frozenset({CLASS_WINDOW, CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT, CLASS_POSITION})
+# b780 hunt1 (revision 6). PROVED OFFLINE (the game's own franchise flow on the SOFTDRINK 2K28 v0.9 RC executable and
+# roster, seed 2602, every K/P release and signing traced): the retail stage-6 veteran cap cut (0x2BFAF0, every club
+# from 0x247FF5) released Chicago's and Kansas City's only kickers (Santos, Butker); the stage-6 fill that follows
+# replaced neither (v0.8, whose trim held camps at 54, signed Jacoby Howell for Chicago in the same stage), so both
+# clubs started the season, and played it, with no kicker while 30 kickers were free agents. The cut's own release call
+# now goes through economy_vet_release (roster_m's spare bytes), which never releases a club's last healthy K or P and
+# otherwise jumps to the native release 0x2BD900 with the same registers, arguments and return address. Every other
+# release of the cut, and every other position, is unchanged. A revision-5 image (beta-80 RC) and a revision-4 image
+# (beta-79 / v0.8: roster_m and these sites as revision 4 had them) read "legacy" and upgrade in place.
+#
+# The same revision lets a club with no K or P sign one in camp: the fill gate (economy_fill_gate, the money window's
+# tail) refused every CPU fill signing for a club of 54 or more (a rule from the 54-man camps of revisions 3 and 4);
+# with revision 5's native camp of up to 65 a club that lost its only kicker or punter to an expiring contract or a
+# retirement could not sign one again before the season gate (seed 2602, year 4: Kansas City's Butker was not
+# re-signed and the club opened the season with no kicker). A K or P signing now skips the count test below the
+# native 65 and keeps the cap-room rule (economy_fill_room + 9, its body after the count test); every other signing
+# keeps the gate as it was.
+VETERAN_CUT_RELEASE = 0x2BFBBD      # call 0x2BD900 (the native release) inside the retail veteran cap cut 0x2BFAF0
+PINS[VETERAN_CUT_RELEASE] = "3d18b8832025dceab76a172af5a2e1082b4c45ca0d57b922dae19d762e4e2414"
+ROSTER_M_WINDOW = 0x3DBC10
+MONEY_WINDOW = 0x31E580
+# b780 hunt1 (revision 6, FIXWAVE #5): a played game can hurt a kicker or a punter (the collision injury chain 0x137520 /
+# 0x137680 -> 0x1373C0 -> 0x136B10 tests no position), and the CPU fill never asked for a replacement (the native need
+# 0x2BD880 counts injured players). In season the weekly upkeep (roster_a) now calls economy_cover (roster_h, after its
+# read-only byte): a CPU club with no healthy K (or P) signs one, a club at 53 first making room with the smart cut.
+ROSTER_A_WINDOW = 0x396F50
+ROSTER_H_WINDOW = 0x3A5F20
+REVISION_6_WINDOWS = frozenset({ROSTER_M_WINDOW, MONEY_WINDOW, ROSTER_A_WINDOW, ROSTER_H_WINDOW})
+REVISION_6_SITES = frozenset({VETERAN_CUT_RELEASE}) | REVISION_6_WINDOWS
+PREVIOUS_REVISION_5 = {             # the windows as revision 5 (and, for money, revisions 3 and 4) installed them
+    ROSTER_M_WINDOW: "8598a66655239f218e2976ca5265172b449bdeb5d7598e38288e03d4c216c934",   # roster_m before the release guard
+    MONEY_WINDOW: "89f77f74f246f1457c67a46019e43d3715acd906e87c78f240852a8cb057aafe",      # the gate with the count test only
+    ROSTER_A_WINDOW: "6be2398d8741253061b23f6b1f8771b01930b89afeb045ca1139244000331d73",   # upkeep without the K/P cover
+    ROSTER_H_WINDOW: "7acc32405997a296298697ce845112c708b40887729aa8121cadcbac3e1eca77",   # the class top-up alone
+}
+# b780 econ3 (revision 7, BETA81_QUEUE Q33 and Q45). PROVED OFFLINE (the game's own franchise flow, hunt1 screener, seed
+# 2602, four offseasons on the v0.9 RC executable and roster: run F against the revision-7 upgrade of the same image).
+# Q33, CPU roster drift (HUNT6; QBs 2.72 to 3.72 a club, 22 clubs with 4 or more, DT 5.25 to 3.44, TE 3.56 to 3.00, 3 of
+# 22 safeties drafted in year 1 against 35 of 44 tackles):
+# - the smart cut-down (roster_l) cuts in tiers (roster_n's tables): a position above its modern maximum (QB 3, FB 2),
+#   then a position above the 2024 53-man keep target, then above the minimum (as before), then any position with two
+#   or more;
+#   raw overalls are not comparable across positions, so the old "lowest overall above a minimum" cut 30 to 57 DTs at
+#   every season gate and never a fourth QB;
+# - a computer club at its modern maximum at a position (QB 3, K 1, P 1, FB 2) gets no prove-it signing (club_level,
+#   called by economy_best_room) and makes no free-agent bid (economy_offer_both, behind the offer gate);
+# - the native depth cells the economy reads move to modern values where it reads them (FS and SS minimum 2, TE minimum
+#   3, QB wanted 3: economy_need for the CPU fill, club_level, and the draft need's minimum call at 0x31E02D in
+#   0x31DEA0, so safeties and tight ends rank as needs in the CPU draft). The tables at 0x521C68 / 0x521C20 are not
+#   written (nfl2k5_position_pools owns them; MyCareer's advisory reads them).
+# Q45 (coordinator 11/03: "Cut only when a club is over the cap, or can't fit two league-minimum signings"): the stage-6
+# restructures (economy_clubs) and the retail veteran cap cut's releases (economy_vet_release -> economy_vet_pick) act
+# only while payroll + two rookie minimums exceeds the cap (was payroll + 6000, $24M, >= cap), and the cut releases the
+# player above his position's minimum whose charge clears the shortfall with the least value lost, charted starters
+# last (coordinator 11/04), never the last healthy K or P. Code: two more unreferenced retail library functions (roster_n 0x3C0920, roster_o 0x264AC0; dead_code.py),
+# and the contracts, week, roster_a, roster_c, roster_d, roster_l and roster_m windows. A revision-6 image (and every
+# older one) reads "legacy" and upgrades in place.
+DRAFT_NEED_MINIMUM = 0x31E02D       # call 0x2BD410 (native minimum) in the draft need 0x31DEA0
+ROSTER_N_WINDOW = 0x3C0920
+ROSTER_O_WINDOW = 0x264AC0
+PINS[DRAFT_NEED_MINIMUM] = "7d81075f5e933d4985cb09d7bc121431f2e58bd80b0c370ea54894a7beb443fe"
+PINS[ROSTER_N_WINDOW] = "0acdd04030bf3c49cc3377ba0638a24e3148e5b06e6641c8583206105ccc387b"
+PINS[ROSTER_O_WINDOW] = "5a6643fac404521c9f37c72989ea8b406cd04040ba31add1a83c2da6e2d5a938"
+REVISION_7_NEW = frozenset({DRAFT_NEED_MINIMUM, ROSTER_N_WINDOW, ROSTER_O_WINDOW})
+PREVIOUS_REVISION_6 = {             # the windows revision 7 rewrites, as revision 6 installed them
+    0x3228A0: "54ed4fb62c422d2319d9c29c0a3cd0564a1b95641f71dcc4a6647c496451be8d",   # contracts (offer gate: room only)
+    0x323870: "8272fdbcca8a0f2015d99f13c4e7220cc4a826adc236dc8321854379b828c4a1",   # week (fill's revision-6 address)
+    ROSTER_A_WINDOW: "ffa79836c601541f4a7b30d9acbfe66a1a14fe8977a2ce68da01d0232bfbdcfc",   # fill on the native need
+    0x3D2890: "f381cf526373970fdbfd76a1186e8b5e7bb9f20d5c0535505d8cd018f788af23",   # roster_c (best room, native depth)
+    0x3BA4B0: "d88fa0bb64477da24f4e8c7faa875de0be6f0947a395ef8c8d871b4e16922fc5",   # roster_d (restructure within 6000)
+    0x3E21D0: "f89f1e04149d31cb0ebb1dfc0ac5736b2cc8fa83588a5225890e17183c910a3f",   # roster_l (minimum-only smart cut)
+    ROSTER_M_WINDOW: "47b7240b14bb22604529c6e495f16926db5c972b2472ff67c61813a33b777abb",   # roster_m (K/P guard only)
+}
+REVISION_7_SITES = REVISION_7_NEW | frozenset(PREVIOUS_REVISION_6)
+# The smart cut's modern maxima (runtime.c cut_rows row 0) by position code, for readers that predict the cut (MyCareer's
+# draft advisory reads the native maximum table, whose QB 4 the cut no longer keeps when the economy is installed).
+CUT_MAXIMUM = {0: 3, 8: 2}
+REVISION = 7
 
 
 class EconomyError(ValueError):
@@ -208,10 +308,11 @@ class Site:
 
 
 def sites(revision: int = REVISION) -> tuple[Site, ...]:
-    if revision not in (1, 2, 3, 4):
+    if revision not in (1, 2, 3, 4, 5, 6, 7):
         raise EconomyError("unknown economy revision")
     windows = {va: code for va, code in WINDOWS.items()
-               if (revision >= 3 or va not in REVISION_3_SITES) and (revision >= 4 or va not in REVISION_4_SITES)}
+               if (revision >= 3 or va not in REVISION_3_SITES) and (revision >= 4 or va not in REVISION_4_SITES)
+               and (revision >= 7 or va not in REVISION_7_NEW)}
     replacements = {**windows, ROOKIE_TABLE_VA: ROOKIE_TABLE,
                     0x13EF17: bytes.fromhex("c70578c2e300") + struct.pack("<I", GAME_CAP),
                     0x4FE7A0: struct.pack("<f", CAP_GROWTH),
@@ -248,6 +349,10 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
         replacements[TXN_YEARS] = (b"\xe8" + struct.pack("<i", SYMBOLS["economy_txn_years"] - TXN_YEARS - 5)
                                    + b"\x90" * (len(TXN_YEARS_RETAIL) - 5))  # b779 vs1
         replacements[SMART_CUT] = b"\xe9" + struct.pack("<i", SYMBOLS["economy_smart_cut"] - SMART_CUT - 5)
+    if revision >= 6:
+        replacements[VETERAN_CUT_RELEASE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_vet_release"] - VETERAN_CUT_RELEASE - 5)
+    if revision >= 7:
+        replacements[DRAFT_NEED_MINIMUM] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_draft_min"] - DRAFT_NEED_MINIMUM - 5)
     return tuple(Site(a, b, PINS[a]) for a, b in sorted(replacements.items()))
 
 
@@ -258,21 +363,88 @@ def _site_state(image: XbeImage, site: Site) -> str:
 
 
 def _standalone_status(payload: bytes) -> str:
-    """retail | applied | legacy (revision 1 or 2: the revision-1 sites with their revision-1/2 bytes, the
-    revision-2 sites retail or applied, the revision-3 and -4 sites retail; or revision 3: every site applied
-    but the revision-4 sites, which are retail) | foreign."""
+    """retail | applied | legacy | foreign. b780 econ3 (revision 7): an image with every revision-7 site applied reads
+    as the rules below read the rest of it; an image with none of them (the new windows and the draft-need call
+    retail, the rewritten windows as revision 6 or an older revision left them) reads "legacy" where those rules read
+    "applied" or "legacy" (it upgrades in place); a mix of the two is foreign."""
     try:
         image = XbeImage(payload)
+        seven = {}
+        for site in sites():
+            if site.va in REVISION_7_SITES:
+                state = _site_state(image, site)
+                if state == "foreign" and site.va in PREVIOUS_REVISION_6 and hashlib.sha256(
+                        image.read(site.va, len(site.patched))).hexdigest() == PREVIOUS_REVISION_6[site.va]:
+                    state = "revision6"
+                seven[site.va] = state
+        new = {seven[va] for va in REVISION_7_NEW}
+        rewritten = {seven[va] for va in PREVIOUS_REVISION_6}
+        if new == {"applied"} and rewritten == {"applied"}:
+            return _status_before_7(image, frozenset())
+        if new == {"retail"} and "applied" not in rewritten:
+            state = _status_before_7(image, frozenset(va for va, st in seven.items() if st == "revision6"))
+            return "legacy" if state in ("applied", "legacy") else state
+        return "foreign"
+    except (ValueError, struct.error, IndexError):
+        return "foreign"
+
+
+def _status_before_7(image: XbeImage, revision_6: frozenset) -> str:
+    """The revision-6 rules: retail | applied | legacy (revision 1 or 2: the revision-1 sites with their revision-1/2
+    bytes, the revision-2 sites retail or applied, the revision-3 and -4 sites retail; or revision 3: every site applied
+    but the revision-4 sites, which are retail; or revision 4: every site applied but the revision-5 sites, which carry
+    their revision-4 bytes) | foreign. The windows in `revision_6` carry their revision-6 bytes and count as applied;
+    revision 7's new sites are left out."""
+    try:
         states = {}
         for site in sites():
-            state = _site_state(image, site)
+            if site.va in REVISION_7_NEW:
+                continue
+            state = "applied" if site.va in revision_6 else _site_state(image, site)
             if state == "foreign" and site.va in PREVIOUS and \
                     hashlib.sha256(image.read(site.va, len(site.patched))).hexdigest() == PREVIOUS[site.va]:
                 state = "previous"
+            if state == "foreign" and site.va in PREVIOUS_REVISION_4 and \
+                    hashlib.sha256(image.read(site.va, len(site.patched))).hexdigest() == PREVIOUS_REVISION_4[site.va]:
+                state = "revision4"
             states[site.va] = state
+        # b780 hunt1 (revision 6): an image from before revision 6 has the cut's native release call, and roster_m and
+        # money as the revision it came with (revision 5, 4 or 3: money's bytes are the same in all three; roster_m is
+        # retail before revision 4). Read those windows as that revision; the image is then "legacy".
+        before_6 = False
+        if states[VETERAN_CUT_RELEASE] == "retail":
+            del states[VETERAN_CUT_RELEASE]
+            for va in REVISION_6_WINDOWS:
+                if states[va] in ("applied", "retail"):
+                    continue
+                digest = hashlib.sha256(image.read(va, len(WINDOWS[va]))).hexdigest()
+                if digest == PREVIOUS_REVISION_5[va]:
+                    states[va] = "applied"
+                    before_6 = True
+                elif states[va] not in ("revision4", "previous"):
+                    return "foreign"
+                else:
+                    before_6 = True
         unique = set(states.values())
         if len(unique) == 1 and unique <= {"applied", "retail"}:
+            if before_6:
+                return "legacy" if unique == {"applied"} else "foreign"
+            if unique == {"applied"} and VETERAN_CUT_RELEASE not in states:
+                return "foreign"     # the windows of revision 6 without its cut call
             return next(iter(unique))
+        if "revision4" in unique:
+            # b780 b4-economy: a revision-4 image (beta-79 / v0.8) upgrades in place to revision 5. A revision-3
+            # image carries the same bytes at these sites, so they count as applied for the older rules below.
+            if {states[va] for va in REVISION_5_SITES} == {"revision4"} and \
+                    {state for va, state in states.items() if va not in REVISION_5_SITES} == {"applied"}:
+                return "legacy"
+            states = {va: "applied" if state == "revision4" else state for va, state in states.items()}
+        if {states[va] for va in CLASS_SITES} == {"applied"}:
+            # b780 b1-draft: the draft class owner's four sites (the class half of revision 4) without the economy
+            # read as no economy; on a revision-3 image they read as its retail class sites, which still upgrades.
+            if {state for va, state in states.items() if va not in CLASS_SITES} == {"retail"}:
+                return "retail"
+            states = {**states, **{va: "retail" for va in CLASS_SITES}}
         # b779 rc1: a revision-3 image (beta-78 / v0.7) upgrades in place to revision 4. b779 vs1: its picks
         # window is the revision-3 one (no transaction-years stub yet), which reads "previous".
         if {states[va] for va in REVISION_4_SITES} == {"retail"} and states[PICKS_WINDOW] in ("applied", "previous") and \

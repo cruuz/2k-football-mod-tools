@@ -159,12 +159,18 @@ def _require(ok, message):
         raise ValueError(message)
 
 
+# b780 n6: beside the beta-79 MyCareer this section reads "previous" (it links to that runtime's labels)
+PREVIOUS_REFUSAL = ("Career Home on this disc belongs to the beta 79 MyCareer, so this release cannot update it in "
+                    "place. Rebuild from your retail game to get this release's MyCareer and Career Home.")
+
+
 def career_labels(payload):
     """MyCareer's label addresses for this image (independent of the Career Home variant), plus the image's regular
     season length for the schedule rows (``season_weeks``; not an address)."""
     from . import nfl2k5_my_career_mode as mode
     code, data = legacy.allocations(payload)
-    return {**mode.code_for(code["va"], data["va"])[1], "state": data["va"], "m3": mode.EXTRA_VA,
+    # b780 n6: the installed MyCareer revision's labels (beta-79's on a v0.8 executable)
+    return {**mode.installed_labels(payload), "state": data["va"], "m3": mode.EXTRA_VA,
             "season_weeks": season_weeks(payload)}
 
 
@@ -282,6 +288,7 @@ def _career_state(payload):
         bands = grades._owned_state(payload)[2]
     except (ValueError, KeyError, IndexError, TypeError, struct.error):
         bands = None
+    previous = mode.installed_previous(payload)   # b780 n6: the beta-79 MyCareer
     for graded in (False, True):
         if graded and bands is None:
             continue
@@ -290,7 +297,7 @@ def _career_state(payload):
             if home:
                 fields = apartment_fields(code_for(career_labels(payload))[1])
             expected = mode.code_for(code["va"], data["va"], letter_grades=graded, grade_bands=bands,
-                                     home=fields)[0]
+                                     home=fields, previous=previous)[0]
             if blob == expected:
                 return graded, bands, home is not None
     raise ValueError("foreign MyCareer code for Career Home")
@@ -303,7 +310,10 @@ def status(payload):
         if not space.has_home_section(payload):
             return "retail"
         from . import nfl2k5_my_career_mode as mode
-        _require(mode.status(payload) == "applied", "Career Home needs the applied MyCareer owner")
+        # b780 n6: beside the beta-79 MyCareer ("previous") the same Career Home is linked to its labels; it reads
+        # "previous" too, and apply() leaves the update to a rebuild from retail with MyCareer
+        career_state = mode.status(payload)
+        _require(career_state in ("applied", "previous"), "Career Home needs the applied MyCareer owner")
         block = payload[RAW:RAW + SIZE]
         content = _block_content(block)
         _require(content == code_for(career_labels(payload))[0], "foreign Career Home content")
@@ -312,7 +322,7 @@ def status(payload):
         if struct.unpack_from("<I", payload, header)[0] != FLAGS:  # on demand: only with the loader's gate
             _require(any(r["owner"] == "nfl2k5_module_loader" for r in space.layout(payload)["allocations"]),
                      "Career Home is not preloaded and no module loader opens it")
-        return "applied"
+        return career_state
     except (ValueError, KeyError, IndexError, TypeError, struct.error, OverflowError):
         return "foreign"
 
@@ -322,6 +332,7 @@ def apply(payload):
     from . import nfl2k5_my_career_mode as mode
     state = status(payload)
     _require(state != "foreign", "foreign/mixed Career Home; rebuild from the original")
+    _require(state != "previous", PREVIOUS_REFUSAL)   # b780 n6: linked to the beta-79 MyCareer
     if state == "applied":
         return payload, {"owner": OWNER, "already_applied": True, "changed_bytes": 0}
     _require(space.is_scaleout(payload), "Career Home needs the scale-out allocator")
@@ -396,7 +407,7 @@ def _unpack_template(blob):
 def check_static(payload):
     """Validate every Career Home descriptor, row, string, handler and action pointer. Returns a receipt; raises."""
     from . import nfl2k5_my_career_mode as mode
-    _require(status(payload) == "applied", "Career Home is not applied")
+    _require(status(payload) in ("applied", "previous"), "Career Home is not applied")
     image = XbeImage(payload)
     career = career_labels(payload)
     content, labels = code_for(career)

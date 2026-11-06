@@ -1,6 +1,6 @@
 # 2K Football Mod Tools
 
-Beta 79 is the current release (2K5 1.0.0rc114 and APF 0.1.0-alpha.110). The
+Beta 80 is the current release (2K5 1.0.0rc115 and APF 0.1.0-alpha.111). The
 project is open source under the MIT license, and forks are welcome. See
 [Making your own fork](CONTRIBUTING.md#making-your-own-fork).
 
@@ -143,7 +143,7 @@ This is a **beta**. What that means here:
 - Your own legally dumped game disc (an `.iso`/XISO, or its extracted folder).
 
 **Platform support.** CI is configured to run the suite on Linux, Windows, and
-macOS with Python 3.11 and 3.12. Linux is the locally exercised release path;
+macOS with Python 3.11, 3.12 and 3.13 (3.13 with NumPy 2). Linux is the locally exercised release path;
 the other two platforms are automated compatibility targets rather than
 manually driven GUI release witnesses.
 
@@ -188,13 +188,13 @@ Double-click launchers are bundled for all three platforms (see *Install*).
      your own user folder, and never asks for administrator rights. Open 2K5
      Mod Studio from the Start Menu afterwards. If you prefer the portable
      archive, extract it and double-click **`2K5-Mod-Studio.bat`**; the first
-     run builds a private runtime automatically (it needs 64-bit Python 3.11 or
-     3.12 from [python.org](https://www.python.org/downloads/windows/) and an
+     run builds a private runtime automatically (it needs 64-bit Python 3.11,
+     3.12 or 3.13 from [python.org](https://www.python.org/downloads/windows/) and an
      internet connection).
    - **Linux, SteamOS and Steam Deck (Desktop Mode)**: the archive has the
      application but no Python, so run the one-time setup first. It builds a
      private runtime in the extracted folder (no `sudo`, no change to the
-     system partition) and needs Python 3.11 or 3.12 plus an internet
+     system partition) and needs Python 3.11, 3.12 or 3.13 plus an internet
      connection:
      ```bash
      tar -xzf 2K5-Mod-Studio-*.tar.gz
@@ -262,7 +262,7 @@ the checkout: it installs the packages and the reviewed data files on first run.
 New to modding? Read [START HERE](docs/START_HERE.md) first: it goes step by step from
 nothing to a playing SOFTDRINK 2K28 disc, then roster edits and franchise upgrades.
 
-**Install SOFTDRINK 2K28:** go to **Build & Share → Share → Install SOFTDRINK
+**Install SOFTDRINK 2K28:** press **Install SOFTDRINK 2K28…** on **Getting Started**, or go to **Build & Share → Install & Share → Install SOFTDRINK
 2K28**, then choose your unmodified retail image, the downloaded `.2k5patch`
 file itself, and a new output image. Follow [Install SOFTDRINK 2K28 in 5
 steps](docs/mod_editor/install_softdrink_2k28.md) and [recommended xemu
@@ -272,7 +272,7 @@ settings](docs/mod_editor/recommended_xemu_settings.md).
 ★ Build & Share → Build, press **Basic** (the 2004 game with the 2K5 fixes),
 **Advanced** (everything modern) or **Experimental** (widescreen and the rough
 edges), then Build. You get a patched COPY with a receipt; the original is never
-touched. The Share tab turns that copy into a `.2k5patch` anyone can apply to
+touched. The Install & Share tab turns that copy into a `.2k5patch` anyone can apply to
 their own image.
 
 1. **Load Game** → select your clean ISO (or its extracted folder). The editor

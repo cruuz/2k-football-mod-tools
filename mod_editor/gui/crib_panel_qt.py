@@ -23,10 +23,17 @@ from uuid import uuid4
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_crib import CribAsset, CribAssetStatus
+from mod_editor.core.nfl2k5_crib_trophy_room import BUILD_CAPTION as _TROPHY_ROOM_CUT_CAPTION
 from mod_editor.gui.task_delivery import bound
 
 
 ProgressSink = Callable[[str, int, int], None]
+
+# b780-b13 (Noah 10/28: "Crib stays trophy room, toggle later"): a person who opens this page to find out why the Crib shops are
+# gone is told which check box turns the cut off. The caption comes from the owner module, so the note cannot drift from the box.
+CUT_NOTE = ("A disc built with any SOFTDRINK preset, or the SOFTDRINK 2K28 pack, keeps only the Trophy Room in the Crib: its "
+            f"shops are removed. To keep the whole Crib, untick \"{_TROPHY_ROOM_CUT_CAPTION}\" under Build & Share, Build, "
+            "Gameplay.")
 VALID_STATUS_FILTERS = (None, "editable", "modified")
 
 
@@ -344,6 +351,7 @@ class CallbackCribPanelHost:
 
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, pyqtSignal
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtGui import QImageReader, QPixmap
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -545,7 +553,7 @@ class CribPanel(QWidget):
         self._refresh_after_task = False
         self._preview_generation = 0
         self._tasks: set[_Task] = set()
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         # Private exact-size copies prepared from ordinary images.  They serve
         # one edit and are removed with the panel, never entered into projects.
         self._fit_dir: Path | None = None
@@ -583,6 +591,11 @@ class CribPanel(QWidget):
         subtitle.setWordWrap(True)
         titles.addWidget(title)
         titles.addWidget(subtitle)
+        self.cut_note = QLabel(CUT_NOTE)
+        self.cut_note.setObjectName("cribMuted")
+        self.cut_note.setWordWrap(True)
+        self.cut_note.setAccessibleName("The Crib in SOFTDRINK builds")
+        titles.addWidget(self.cut_note)
         self.count_label = QLabel("Loading 498 assets…")
         self.count_label.setObjectName("cribCountPill")
         header.addLayout(titles, 1)

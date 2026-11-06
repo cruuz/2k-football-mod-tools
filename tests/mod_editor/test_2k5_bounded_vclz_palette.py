@@ -330,10 +330,15 @@ class Real1568ByteComposedBuildTests(unittest.TestCase):
                 )
                 fit = import_report["bounded_palette_fit"]
                 self.assertEqual(fit["stored_size_bound"], 1_568)
-                self.assertEqual(fit["attempts"][0]["palette_entries"], 256)
+                # The first try is the full 256-entry tier. Digits now go through nfl2k5_digit_art.fit_digit,
+                # whose digit quantizer (quantize_digit_levels with preserve_transparent_rgb, which keeps the
+                # transparent border colour as its own entry) returns one entry fewer than each tier's maximum
+                # on this fixture: 255, 127, then 63, which fits.
+                self.assertEqual(fit["attempts"][0]["maximum_palette_entries"], 256)
+                self.assertEqual(fit["attempts"][0]["palette_entries"], 255)
                 self.assertEqual(fit["attempts"][0]["result"], "vc_lz_overflow")
                 self.assertEqual(fit["attempts"][-1]["result"], "fit")
-                self.assertLess(fit["selected_palette_entries"], 256)
+                self.assertLess(fit["selected_palette_entries"], fit["attempts"][0]["palette_entries"])
                 self.assertGreaterEqual(fit["selected_palette_entries"], 16)
                 self.assertLessEqual(fit["selected_encoded_bytes"], 1_568)
 

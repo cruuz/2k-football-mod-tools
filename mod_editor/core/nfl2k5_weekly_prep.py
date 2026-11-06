@@ -4,6 +4,14 @@ Fix the DB drill's CB-only filter, prepare participants before played/simulated
 games, and retain plans through native cleanup. Bonuses remain temporary.
 Options are immutable build settings. Plans/state/seeds use existing save fields.
 Reserve the complete selected REQUESTS union before installing an owner.
+
+Revision 2 (b780 modes2, Q29): the remembered-plan test asks the game's own user-club test 13EC30 (C4D50), as the
+team gate already did, instead of reading the human-coach array 0xE5775C. A Franchise is unchanged (retail C4D50
+reads that array). MyCareer marks its club human in the array and hooks C4D50 so weekly management callers see the
+club as CPU; through the array the MyCareer club took the remembered human plan path, which never has a plan in
+MyCareer, so it was the only club without weekly prep bonuses. Now it gets the CPU plan. The two call sites keep
+their bytes' length and the helpers follow the last entry, so the hooks are the same; revision-1 installs read
+"previous" and apply() upgrades the code in place.
 """
 from __future__ import annotations
 
@@ -15,11 +23,14 @@ from pathlib import Path
 import struct
 
 from . import nfl2k5_weekly_prep_code as assembly
+from . import nfl2k5_weekly_prep_code_b779 as assembly_b779
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_weekly_prep"
+REVISION = 2
+UPGRADES_PREVIOUS = True      # b780 modes2: a revision-1 install reads "previous"; apply() upgrades its code
 CODE_SIZE = 1536
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 HELP_TEXT = (
@@ -60,11 +71,13 @@ def require(condition, message):
         raise ValueError(message)
 
 
-def code_for(code_va, *, cpu=True, remember=True):
+def code_for(code_va, *, cpu=True, remember=True, revision=REVISION):
     require(type(cpu) is bool and type(remember) is bool, "weekly prep options must be bools")
+    require(revision in (1, 2), "unknown weekly prep revision")
+    source = assembly if revision == 2 else assembly_b779
     symbols = dict(SYMBOLS, cpu_option=int(cpu), remember_option=int(remember))
-    result = bytearray(assembly.CODE)
-    for offset, kind, symbol, value in assembly.RELOCATIONS:
+    result = bytearray(source.CODE)
+    for offset, kind, symbol, value in source.RELOCATIONS:
         target = symbols[symbol] + value + struct.unpack_from("<I", result, offset)[0]
         if kind == 2:
             target -= code_va + offset
@@ -93,6 +106,7 @@ def _recognize(payload):
     edits = sites(owned["va"] if owned else 0)
     states = set()
     settings = None
+    revision = None
     for _, va, before, after in edits:
         actual = image.read(va, len(before))
         states.add("retail" if actual == before else "applied" if owned and actual == after else "foreign")
@@ -101,9 +115,9 @@ def _recognize(payload):
         if body == b"\xcc" * CODE_SIZE:
             states.add("retail")
         else:
-            for cpu, remember in itertools.product((False, True), repeat=2):
-                if body == code_for(owned["va"], cpu=cpu, remember=remember):
-                    settings = dict(cpu=cpu, remember=remember)
+            for rev, cpu, remember in itertools.product((REVISION, 1), (False, True), (False, True)):
+                if body == code_for(owned["va"], cpu=cpu, remember=remember, revision=rev):
+                    settings, revision = dict(cpu=cpu, remember=remember), rev
                     break
             states.add("applied" if settings is not None else "foreign")
     require(states in ({"retail"}, {"applied"}), "foreign/mixed weekly prep hooks or owned code")
@@ -113,7 +127,8 @@ def _recognize(payload):
             if va <= at and at + len(before) <= va + size:
                 raw[at-va:at-va+len(before)] = before
         require(hashlib.sha256(raw).hexdigest() == digest, f"foreign weekly prep prerequisite at {va:#x}")
-    return next(iter(states)), settings
+    # the hooks are the same in both revisions; a revision-1 body reads "previous"
+    return ("previous" if revision == 1 else next(iter(states))), settings
 
 
 def status(payload):
@@ -128,6 +143,16 @@ def read_settings(payload):
     return dict(status=state, **(_recognize(payload)[1] or {})) if state != "foreign" else dict(status=state)
 
 
+def _upgrade(payload, installed, common):
+    """Revision 1 -> 2 in place: the owned code with the installed options; the hooks are unchanged."""
+    owned = allocation(payload)
+    old = XbeImage(payload).read(owned["va"], CODE_SIZE)
+    result, _ = space.install_code(payload, OWNER, code_for(owned["va"], **installed), previous=old)
+    require(status(result) == "applied", "weekly prep upgrade read-back failed")
+    return result, dict(common, **installed, status="upgraded", previous_revision=1, revision=REVISION,
+                        changed_bytes=sum(a != b for a, b in zip(payload, result)), edits=[])
+
+
 def apply(payload, *, cpu=None, remember=None):
     """None replays installed settings, or enables the option on a clean base.
 
@@ -140,10 +165,12 @@ def apply(payload, *, cpu=None, remember=None):
     common = dict(owner=OWNER, experimental=True, runtime_witnessed=False,
                   body_bytes=len(assembly.CODE), rx_bytes=CODE_SIZE, rw_bytes=0,
                   ro_bytes=0, save_growth=0, native_plan_words_per_team=500)
-    if state == "applied":
+    if state in ("applied", "previous"):
         require((cpu is None or cpu == installed["cpu"]) and
                 (remember is None or remember == installed["remember"]),
                 "different weekly prep settings; rebuild from a clean base")
+        if state == "previous":
+            return _upgrade(payload, installed, common)
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[], **installed)
     settings = dict(cpu=True if cpu is None else cpu, remember=True if remember is None else remember)
     if space.status(payload) == "retail":

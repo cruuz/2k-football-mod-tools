@@ -134,7 +134,7 @@
     "Slot Cross Dig",
     "QB Keep",
     "End Around",
-    "Y Return Flood",
+    "Z Snag",
     "X Drive Return"
    ],
    "cpu_situation": [
@@ -193,7 +193,7 @@
     "PA Slot Deep Over",
     "Slot Flood Out",
     "Z Hitch Seam",
-    "RB Toss",
+    "RB Toss Wk",
     "Zig Flat",
     "Z Bench Levels",
     "Slot Stick Return",
@@ -381,7 +381,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "RB Slam"
+    "RB Texas",
+    "RB Slam",
+    "PA U Seam Shot",
+    "PA X Out Seam"
    ],
    "cpu_situation": [
     4,
@@ -423,9 +426,9 @@
     "Y Stick",
     "RB Cross Dig",
     "Double Slants",
-    "Y Drive",
-    "Z Deep Post",
-    "RB Corner Strike"
+    "Y Return Flood",
+    "QB Draw",
+    "QB Power"
    ],
    "cpu_situation": [
     4,
@@ -494,7 +497,7 @@
    "menu": [
     "X China",
     "PA Z Zig Flat",
-    "RB Toss",
+    "RB Toss Wk",
     "X Curl Combo Whip",
     "Slot Drive",
     "STL Post Corner",
@@ -726,7 +729,7 @@
     "RB Whip Return",
     "PA Z Deep Post",
     "Guard Iso",
-    "Z Steep In Seam",
+    "Y Spacing",
     "PA X Stick",
     "Inside Zone"
    ],
@@ -792,7 +795,7 @@
    "tag": "spread",
    "menu": [
     "Slot Slot Fade",
-    "Sail",
+    "Shallow Cross",
     "RB Draw",
     "Double Slants",
     "X Comeback Seam",
@@ -1000,7 +1003,7 @@
     "Inside Zone",
     "RB Whip Return",
     "STL Yankee",
-    "Z Steep In Seam",
+    "Y Spacing",
     "PA X Stick",
     "Guard Iso",
     "PA Z Deep Post",
@@ -1024,9 +1027,9 @@
    "tag": "pass",
    "menu": [
     "Y China",
-    "PA Z Corner Post",
-    "U Bubble Screen",
     "X Fade Curl Snag",
+    "Crack Toss",
+    "U Bubble Screen",
     "X Fade Curl Bench",
     "X Corner Post",
     "STL PA Crossers",
@@ -1543,33 +1546,32 @@
    "deep": true,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {
    "play": "p019",
    "play_index": 19,
-   "name": "Z Deep Post",
-   "concept": "Z Deep Post Angle Cross Hitches",
-   "family": "deep",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Z",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Angle Cross",
-    "Flat",
-    "Hitch",
-    "Post"
+    "Go"
    ],
-   "deep": true,
+   "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p020",
@@ -2350,7 +2352,7 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Empty Trey",
+    "Gun Empty Trey",
     "Singleback Bunch X Nasty",
     "Pistol Y Off Trips",
     "Pistol Trey",
@@ -2689,8 +2691,7 @@
    "formations": [
     "Singleback Ace",
     "Ace Wing",
-    "Singleback Ace Bunch",
-    "Gun Ace Flex"
+    "Singleback Ace Bunch"
    ]
   },
   {
@@ -2934,7 +2935,8 @@
    "formations": [
     "Singleback Ace",
     "Ace Wing",
-    "Singleback Ace Bunch"
+    "Singleback Ace Bunch",
+    "Gun Ace Flex"
    ]
   },
   {
@@ -3012,9 +3014,7 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Pro",
-    "Gun Split Pro",
-    "Gun Split Y Off"
+    "I-Form Pro"
    ]
   },
   {
@@ -3593,7 +3593,7 @@
   {
    "play": "p091",
    "play_index": 91,
-   "name": "RB Toss",
+   "name": "RB Toss Wk",
    "concept": "HB Toss",
    "family": "run",
    "header": "run_toss",
@@ -3605,7 +3605,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 0,
+   "lane": 4,
    "formations": [
     "Gun Wildcat",
     "Gun Bunch TE"
@@ -3954,7 +3954,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Spread"
+    "Gun Spread",
+    "Gun Spread Tight"
    ]
   },
   {
@@ -4159,7 +4160,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {
@@ -4247,7 +4249,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Split Pro"
+    "Gun Split Pro",
+    "Gun Split Y Off"
    ],
    "added_by": "b778 pb7"
   },
@@ -4597,7 +4600,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Full House"
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {
@@ -4887,27 +4891,23 @@
   {
    "play": "p149",
    "play_index": 228,
-   "name": "RB Corner Strike",
-   "concept": "HB Corner Strike Angle Cross Comebacks",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Angle Cross",
-    "Comeback",
-    "Corner",
-    "Flat"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p150",

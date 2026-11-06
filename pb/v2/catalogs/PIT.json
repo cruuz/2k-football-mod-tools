@@ -174,7 +174,7 @@
     "X Snag Post",
     "Slot Dagger",
     "PA Stick Nod",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Slot Scat",
     "Z Bench",
     "Z Comeback Seam",
@@ -203,14 +203,14 @@
    "tag": "pass",
    "menu": [
     "Slot Stick",
-    "PA Slot Stick Nod",
-    "X Snag Post",
-    "X Dagger",
     "PIT Four Verticals",
+    "Power G",
     "PIT RB Screen",
     "Y Scissors",
     "Slot Hitch Seam",
-    "Slot Curls"
+    "Slot Curls",
+    "Crack Toss Wk",
+    "01 Trap"
    ],
    "cpu_situation": [
     4,
@@ -249,7 +249,7 @@
     "X Snag Post",
     "Cluster Wheel",
     "Slot Scat",
-    "Crack Toss",
+    "Crack Toss Wk",
     "X Comeback Seam",
     "Z Comeback Seam",
     "PA Stick Nod",
@@ -301,11 +301,11 @@
    "align": "uc",
    "tag": "base",
    "menu": [
-    "X Snag Deep Go",
+    "RB Counter",
+    "Guard Iso",
+    "Slip Screen Wk",
     "Z Out Seam",
     "X Sail",
-    "Slip Screen Wk",
-    "X Whip Out Dig",
     "PA X Go Shot",
     "PA Steep In Seam",
     "PA X Scissors",
@@ -347,7 +347,10 @@
    "menu": [
     "RB Dive Wk",
     "RB Dive",
-    "Inside Zone"
+    "FB Slant Flat",
+    "Inside Zone",
+    "U China Out",
+    "Max FB Go Shot"
    ],
    "cpu_situation": [
     3,
@@ -366,7 +369,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "RB Lead Draw"
+    "FB Slant Flat",
+    "RB Lead Draw",
+    "U China Out",
+    "Max FB Go Shot"
    ],
    "cpu_situation": [
     4,
@@ -383,11 +389,11 @@
    "align": "uc",
    "tag": "short",
    "menu": [
+    "RB Counter",
+    "Guard Iso",
     "X Whip Out Dig",
-    "PA X Sail",
     "PA X Go Shot",
     "PA Z Dagger",
-    "X Steep In Seam",
     "X Snag Deep Go"
    ],
    "cpu_situation": [
@@ -408,9 +414,9 @@
     "RB Scat Seams",
     "X Bench",
     "Bubble Screen",
-    "RB Flood Return",
+    "QB Draw",
     "Y Mills",
-    "Z Snag Spot Out"
+    "QB Power"
    ],
    "cpu_situation": [
     4,
@@ -496,7 +502,7 @@
     "Z Hitch Seam",
     "Y Mills",
     "01 Trap Wk",
-    "RB Toss Wk",
+    "RB Toss",
     "Slot Stick",
     "Cluster Wheel",
     "X Dagger",
@@ -641,7 +647,7 @@
     "PIT RB Screen",
     "PIT Smash",
     "Slot Stick",
-    "Crack Toss",
+    "Crack Toss Wk",
     "X Snag Post",
     "Z Comeback Seam",
     "Y Scissors",
@@ -691,7 +697,7 @@
     "X Stick Out",
     "PIT Smash",
     "Y Post Wheel",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Slot Stick",
     "Z Cluster Wheel",
     "PA Post Corner Shot",
@@ -725,7 +731,7 @@
    "menu": [
     "X Snag Post",
     "PIT Mesh Wheel",
-    "Crack Toss",
+    "Crack Toss Wk",
     "RB Double Move",
     "X Comeback Seam",
     "Slot Choice",
@@ -790,7 +796,7 @@
     "Direct Snap Power",
     "Z Hitch Seam",
     "Slot Curls",
-    "RB Toss Wk",
+    "RB Toss",
     "Z Cluster Wheel",
     "Z Bench",
     "PA Post Corner Shot",
@@ -844,7 +850,7 @@
     "PIT Smash",
     "PA Slot Stick Nod",
     "Z Post Go",
-    "RB Toss Wk",
+    "RB Toss",
     "Z Cluster Wheel",
     "PIT Quick Outs",
     "X Slip Screen",
@@ -883,9 +889,12 @@
    "align": "uc",
    "tag": "short",
    "menu": [
+    "RB Dive Wk",
+    "Inside Zone",
     "FB Slant Flat",
     "Jumbo Boot",
-    "Max FB Go Shot"
+    "Max FB Go Shot",
+    "RB Iso Wk"
    ],
    "cpu_situation": [
     1,
@@ -1015,7 +1024,7 @@
     "Y Post Wheel",
     "RB Sweep",
     "RB Texas",
-    "RB Toss Wk",
+    "RB Toss",
     "Z Hitch Seam",
     "01 Trap Wk",
     "Slot Choice",
@@ -1469,7 +1478,6 @@
    "deep": true,
    "lane": null,
    "formations": [
-    "I-Form Pro",
     "Wing T"
    ]
   },
@@ -1543,6 +1551,8 @@
    "deep": true,
    "lane": null,
    "formations": [
+    "Full House",
+    "Full House Sneak",
     "Ace Jumbo"
    ]
   },
@@ -1736,7 +1746,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Tight Y Off",
     "Gun Wing Trio",
@@ -1838,7 +1847,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Pistol Doubles",
     "Gun Tight Y Off",
     "Pistol Y Off Trips",
@@ -1906,7 +1914,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Pistol Doubles",
     "Gun Tight Y Off",
     "Pistol Y Off Trips",
@@ -2403,6 +2410,7 @@
    "lane": 4,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Wing Trio",
     "Gun Trey Open",
@@ -2441,7 +2449,7 @@
   {
    "play": "p047",
    "play_index": 104,
-   "name": "Crack Toss",
+   "name": "Crack Toss Wk",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -2453,9 +2461,10 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Wing Trio",
     "Gun Trey Open",
@@ -2509,6 +2518,7 @@
    "lane": 2,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Wing Trio",
     "Gun Trey Open",
@@ -2666,7 +2676,7 @@
   {
    "play": "p056",
    "play_index": 113,
-   "name": "RB Toss Wk",
+   "name": "RB Toss",
    "concept": "HB Toss",
    "family": "run",
    "header": "run_toss",
@@ -2678,7 +2688,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 0,
+   "lane": 4,
    "formations": [
     "Gun Tight Y Off",
     "Gun Normal Y Off Close",
@@ -2832,7 +2842,6 @@
    "lane": null,
    "formations": [
     "Split Backs",
-    "I-Form Pro",
     "Wing T"
    ]
   },
@@ -2937,7 +2946,6 @@
    "lane": null,
    "formations": [
     "Split Backs",
-    "Wing T",
     "Singleback FB Wing"
    ]
   },
@@ -3019,7 +3027,6 @@
    "lane": null,
    "formations": [
     "Split Backs",
-    "Wing T",
     "Singleback FB Wing"
    ]
   },
@@ -3778,6 +3785,8 @@
    "deep": false,
    "lane": 3,
    "formations": [
+    "I-Form Pro",
+    "Wing T",
     "Singleback FB Wing"
    ]
   },
@@ -3882,7 +3891,8 @@
    "deep": false,
    "lane": 2,
    "formations": [
-    "Full House"
+    "Full House",
+    "Ace Jumbo"
    ]
   },
   {
@@ -3933,6 +3943,8 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Full House",
+    "Full House Sneak",
     "Ace Jumbo"
    ]
   },
@@ -4024,7 +4036,9 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {
@@ -4044,7 +4058,9 @@
    "deep": false,
    "lane": 3,
    "formations": [
-    "Split Backs"
+    "Split Backs",
+    "I-Form Pro",
+    "Wing T"
    ]
   },
   {
@@ -4093,28 +4109,25 @@
   {
    "play": "p115",
    "play_index": 172,
-   "name": "RB Flood Return",
-   "concept": "HB Flood Return Out Drag",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Dig",
-    "Flat",
-    "Return",
-    "Sail",
-    "Seam Out"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p116",
@@ -4247,7 +4260,8 @@
    "deep": false,
    "lane": 2,
    "formations": [
-    "Full House"
+    "Full House",
+    "Ace Jumbo"
    ]
   },
   {
@@ -4291,7 +4305,8 @@
    "deep": false,
    "lane": 3,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Ace Jumbo"
    ]
   },
   {
@@ -4630,28 +4645,23 @@
   {
    "play": "p139",
    "play_index": null,
-   "name": "Z Snag Spot Out",
-   "concept": "Z Snag Spot Out Comebacks",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Z",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Arrow",
-    "Comeback",
-    "Flag",
-    "Snag",
-    "Spot Out"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p140",

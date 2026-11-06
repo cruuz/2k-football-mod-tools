@@ -102,6 +102,8 @@ class BuildPlanCoverageTests(unittest.TestCase):
             "my_career_home",  # b775-ui1: Career Home rides with MyCareer (default on); preset/project/recipe key, no Build tab control
             "indicator_names_style",  # b775-nl1: the player name label style (retail default) comes from the Studio preset or the project file, like the atlas folder
             "team_number_scale",  # b776-ns1: per-kit jersey number sizes are a recipe/project key only (coordinator: no Build tab control yet)
+            "speed_threshold",  # b780-cv5: the Speed separation strength is a spin box (0-100) on the Build tab, not a check box
+            "console_memory",  # b780-m64b: the Console memory combo (128 MB xemu / 64 MB experimental) in Make my disc
         }
         self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
         self.assertEqual(bound - fields, set(), "controls that name a field BuildPlan no longer has")

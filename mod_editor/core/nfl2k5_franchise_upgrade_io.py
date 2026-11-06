@@ -8,6 +8,7 @@ import json
 from pathlib import Path, PurePosixPath
 import shutil
 import os
+import struct
 import tempfile
 import zipfile
 import zlib
@@ -18,9 +19,11 @@ from . import nfl2k5_save_rost as sr
 
 #: The migrations a franchise can take. Hair styles and honors come from the disc;
 #: played-clubs uses the same verified club repair as Upgrade; undated candidates stay in the receipt;
-#: b778-fa3: free-agents adds the disc's 2026-10-22 free-agent depth players the franchise lacks.
+#: b778-fa3: free-agents adds the disc's 2026-10-22 free-agent depth players the franchise lacks;
+#: b780-b10: coach-records copies the disc's coach ratings, play-calling habits and announcer line where the franchise
+#: still has the older discs' values, champions seeds the Super Bowl history, game-settings the new default options.
 COMMANDS = ("upgrade", "coach-sync", "team-history", "hair-styles", "honors", "played-clubs", "free-agents",
-            "rookie-templates")
+            "rookie-templates", "champions", "game-settings", "coach-records")
 DEFAULT_COHORT = Path(__file__).resolve().parents[2] / "mod_editor/data/f12_cohort.json"
 
 
@@ -125,11 +128,29 @@ class UpgradePlan:
     receipt: dict
 
 
+def load_disc_defaults(path: Path) -> dict:
+    """b780 b10-profile: the default game settings of the disc's default.xbe (what a fresh profile starts with).
+
+    -> ``nfl2k5_profile_defaults.build_targets``; a disc whose executable cannot be read gives state "unreadable"."""
+    from . import nfl2k5_espn25_rosters as disc_files
+    from . import nfl2k5_profile_defaults as profile
+    try:
+        return profile.build_targets(disc_files.read_xbe(Path(path)))
+    except (ValueError, OSError, EOFError, KeyError, IndexError, struct.error) as exc:
+        return {"state": "unreadable", "values": {}, "error": str(exc) or exc.__class__.__name__}
+
+
 def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
-                 cohort_path: Path = DEFAULT_COHORT, team_history_path: Path | None = None) -> UpgradePlan:
-    """Read, validate and preview every change, without creating any files."""
+                 cohort_path: Path = DEFAULT_COHORT, team_history_path: Path | None = None,
+                 game_defaults: bool = True) -> UpgradePlan:
+    """Read, validate and preview every change, without creating any files.
+
+    ``game_defaults`` (b780 b10-profile): Upgrade also takes the disc's new default game settings into the franchise's own
+    copy of the options (Quarter Length, Sim. Quarter Length, Chop Block), for the options that still hold the old
+    retail value. The ``game-settings`` command does only that."""
     upgrade.require(command in COMMANDS, "unknown upgrade command")
-    upgrade.require(team_history_path is None or command not in ("coach-sync", "hair-styles", "honors", "rookie-templates"),
+    upgrade.require(team_history_path is None or command not in ("coach-sync", "hair-styles", "honors", "rookie-templates",
+                                                                  "champions", "game-settings", "coach-records"),
                     "TEAM evidence requires upgrade, team-history, played-clubs or free-agents")
     container = load_container(source)
     before_validation = upgrade.validate_save(container.savegame)
@@ -148,6 +169,14 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
         steps.append(step)
     if command in ("upgrade", "coach-sync"):
         payload, step = upgrade.sync_coaches(payload, body)
+        steps.append(step)
+        # b780-c6: an older franchise gets the disc's coaching carousel hiring pool (nothing when the disc has none)
+        payload, step = upgrade.sync_coach_pool(payload, body)
+        steps.append(step)
+    if command in ("upgrade", "coach-records"):
+        # b780-b10: the disc's 2026 coach ratings, play-calling habits and announcer line, where the franchise still has the
+        # older discs' values (after coach-sync, which writes the body id and portrait of the same records)
+        payload, step = upgrade.sync_coach_records(payload, body)
         steps.append(step)
     if command in ("upgrade", "hair-styles"):
         # b778-hr3: a franchise started before the disc had hair styles keeps style 0 for everyone
@@ -170,6 +199,17 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
         # b778-fa3: the free-agent depth fills vacant records of the save itself; free-agents alone refuses without room
         payload, step = upgrade.sync_free_agents(payload, body, strict=command == "free-agents")
         steps.append(step)
+    if command in ("upgrade", "champions"):
+        # b780-b10: the disc's Super Bowl history, after the roster arena has grown (the block sits at its end)
+        payload, step = upgrade.sync_champions(payload, body)
+        steps.append(step)
+    disc_defaults = None
+    if command == "game-settings" or (command == "upgrade" and game_defaults):
+        # b780-b10: the franchise's own copy of the options takes the disc's new defaults where it still has the old ones
+        disc_defaults = load_disc_defaults(disc)
+        payload, step = upgrade.sync_game_settings(payload, disc_defaults)
+        steps.append(step)
+    upgrade.check_career_block(container.savegame, payload)         # b780-b10: never emit a career the game would refuse
     after_validation = upgrade.validate_save(payload)
     receipt = {"schema": upgrade.SCHEMA, "command": command, "dry_run": True,
                "input": str(source.resolve()), "disc": str(disc.resolve()),
@@ -180,6 +220,8 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
                "output_extra_sha256": upgrade.sha(rr.sign_save(payload)),
                "changed_fields": sum(len(s["changes"]) for s in steps), "steps": steps,
                "validation": {"before": before_validation, "after": after_validation}}
+    if disc_defaults is not None:
+        receipt["disc_default_settings"] = disc_defaults
     if command == "upgrade":
         receipt["cohort_sha256"] = hash_file(cohort_path)
     if team_history_path:

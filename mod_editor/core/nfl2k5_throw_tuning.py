@@ -56,6 +56,7 @@ from . import platform_compat
 from . import nfl2k5_catch_slider as catch_slider_patch
 from . import nfl2k5_accel_ramp as accel_ramp_patch
 from . import nfl2k5_draft_ai as draft_ai_patch
+from . import nfl2k5_draft_class as draft_class_patch  # b780 b1-draft: the class half of the draft fixes
 from . import nfl2k5_edge_rename as edge_rename_patch
 from . import nfl2k5_returner_fix as returner_fix_patch
 from . import nfl2k5_progression as progression_patch
@@ -73,6 +74,7 @@ from . import nfl2k5_practice_squad_screen as practice_squad_screen_patch
 from . import nfl2k5_abilities_runtime as abilities_patch
 from . import nfl2k5_qb_spy_runtime as qb_spy_patch
 from . import nfl2k5_calendar_engine as calendar_engine_patch
+from . import nfl2k5_later_schedule as later_schedule_patch  # b780-season1: later seasons keep the template's weekdays, kickoffs and Thanksgiving hosts (with the calendar)
 from . import nfl2k5_read_option_runtime as read_option_patch
 from . import nfl2k5_franchise_2026 as franchise_2026_patch
 from . import nfl2k5_senior_bowl as senior_bowl_patch
@@ -163,13 +165,35 @@ from . import nfl2k5_draft_clock as draft_clock_patch  # noqa: F401  b778-dr1: l
 from . import nfl2k5_player_progress_screen as player_progress_patch  # noqa: F401  b778-pg2: late owner; imported so the cave manifest recorder observes it
 from . import nfl2k5_sim_cb_tackles as sim_cb_tackles_patch  # noqa: F401  b778-cb1: late owner (cornerback tackle credit); imported so the cave manifest recorder observes it
 from . import nfl2k5_sim_stats as sim_stats_patch  # noqa: F401  b778-sim1: in-place simulated-game pace fix; imported so the pinned closure records it
+from . import nfl2k5_quick_long_release as quick_long_release_patch  # noqa: F401  b780-c-release: in-place quicker deep and rollout throws; imported so the pinned closure records it
 from . import nfl2k5_option_defaults as option_defaults_patch  # noqa: F401  b779-df1: in-place fresh-profile default options; imported so the pinned closure records it
 from . import nfl2k5_sim_rb_injuries as sim_rb_injuries_patch  # noqa: F401  b779-sim2: late owner (weekly RB injury roll and simulated-game carrier guard); imported so the cave manifest recorder observes it
 from . import nfl2k5_sim_realism as sim_realism_patch  # noqa: F401  b779-sim2 r4: scheduled-sim season realism (late owner)
+from . import nfl2k5_coach_carousel as coach_carousel_patch  # noqa: F401  b780-c6: coaching carousel (late owner, last)
+from . import nfl2k5_standings_records as standings_records_patch  # noqa: F401  b780-j1: Team Standings records (late owner)
+from . import nfl2k5_history_screen as history_screen_patch  # noqa: F401  b780-int: History screen, reserved in the first space pass
+from . import nfl2k5_franchise_footer as franchise_footer_patch  # noqa: F401  b780-int: franchise footer host, reserved in the first space pass
+from . import nfl2k5_history as franchise_history_capture_patch  # noqa: F401  b780-int: history capture, reserved in the first space pass
+from . import nfl2k5_runner_vision as runner_vision_patch  # noqa: F401  b780 cv2-runner: CPU ball carrier vision (late owner); imported so the cave manifest recorder observes it
+from . import nfl2k5_dive_window as dive_window_patch  # noqa: F401  b780-cv3: defenders leap only for balls they can reach (late owner)
+from . import nfl2k5_catch_snap_limit as catch_snap_limit_patch  # noqa: F401  b780-cv4: defender catch snap limit (late owner); imported so the cave manifest recorder observes it
+from . import nfl2k5_speed_threshold as speed_threshold_patch  # noqa: F401  b780-cv5: late owner (speed separation); imported so the cave manifest recorder observes it and the presets read its SOFTDRINK strength
+from . import nfl2k5_scramble_blocking as scramble_blocking_patch  # noqa: F401  b780-cv7: late owner (scramble blocking); imported so the cave manifest recorder observes it
+from . import nfl2k5_audible_legend as audible_legend_patch  # noqa: F401  b780-p3: audible panel lift + legend (late owner)
+from . import nfl2k5_lineup_roles as lineup_roles_patch  # noqa: F401  b780 sub1: SPECIAL third-down back + FB fallback (late owner)
+from . import nfl2k5_intro_autoskip as intro_autoskip_patch  # noqa: F401  b780-mem1: the intro skips itself when its director could not load (late tail owner)
+from . import nfl2k5_injured_reserve as injured_reserve_patch  # noqa: F401  b780 IR1: modern injured reserve (late owner)
+from . import nfl2k5_load_user_team_guard as load_user_team_guard_patch  # noqa: F401  b780 mc1: Franchise load guard (in-place sites); imported so the cave manifest recorder observes it
+from . import nfl2k5_save_list_type_guard as save_list_type_guard_patch  # noqa: F401  b780 mc1: boot save-list guard (in-place sites); imported so the cave manifest recorder observes it
 from . import nfl2k5_preseason_warning as preseason_warning_patch  # noqa: F401  b779-int1: rc1's warned flag joins the union (LATE_OWNERS before the sim owners)
+from . import nfl2k5_cpu_passer_iq as cpu_passer_iq_patch  # noqa: F401  b780 a-passer: late owner (CPU quarterbacks throw on time); imported so the cave manifest recorder observes it
+from . import nfl2k5_cpu_clock2 as cpu_clock2_patch  # noqa: F401  b780 b-clock: late owner (modern CPU clock management)
+from . import nfl2k5_protection_calls as protection_calls_patch  # noqa: F401  b780 p1-slide: late owner (the user's slide call at the line); joins the union like pass protection
 from . import nfl2k5_clock_led as clock_led_patch  # noqa: F401  b778-sd4: late owner (modern LED clock digits); imported so the cave manifest recorder observes it
 from . import nfl2k5_team_number_scale as team_number_scale_patch  # noqa: F401  b776-ns1: its late owner is reserved with the first space pass
 from . import nfl2k5_contract_college_guard as contract_college_guard_patch  # noqa: F401  b778-cr1: late owner
+from . import nfl2k5_coach_career_fix as coach_career_fix_patch  # noqa: F401  b780 c1: in-place site; imported so the cave manifest recorder observes it
+from . import nfl2k5_history_pool as history_pool_patch  # noqa: F401  b780 hist1: in-place sites; imported so the cave manifest recorder observes it
 from . import nfl2k5_module_loader as module_loader_patch  # noqa: F401  b778-xs1: late owner
 from . import nfl2k5_classic_teams as classic_teams_patch  # noqa: F401  b775-ct1: late owner
 from . import nfl2k5_lineman_rating as lineman_rating_patch
@@ -864,6 +888,7 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "catch_slider": catch_slider_patch.status(payload),
         "accel_ramp": accel_ramp_patch.status(payload),
         "draft_ai": draft_ai_patch.status(payload),
+        "draft_class": draft_class_patch.status(payload),
         "edge_rename": edge_rename_patch.status(payload),
         "returner_fix": returner_fix_patch.status(payload),
         "franchise_economy": franchise_economy_patch.status(payload),
@@ -999,6 +1024,7 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "catch_slider": catch_slider_patch.status(payload),
         "accel_ramp": accel_ramp_patch.status(payload),
         "draft_ai": draft_ai_patch.status(payload),
+        "draft_class": draft_class_patch.status(payload),
         "edge_rename": edge_rename_patch.status(payload),
         "edge_rename_disc": disc_status,
         "returner_fix": returner_fix_patch.status(payload),
@@ -1093,6 +1119,31 @@ def is_disc_image(path: Path | str) -> bool:
 
 def read_any(path: Path | str) -> dict[str, object]:
     return read_image(path) if is_disc_image(path) else read_xbe(path)
+
+
+def read_scheme_states(path: Path | str) -> dict[str, object]:
+    """The container and the three executable-side states the Rosters page reads to name a disc's position scheme
+    (``edge_rename``, ``edge_rename_disc`` for an image, ``scheme_labels``), without ``read_any``'s other ~150 status functions.
+
+    ``read_any`` is the whole Build read: 50 s on a retail disc and over 3 minutes on a SOFTDRINK one, and the Rosters page ran it
+    on the window's own thread to learn these. The values are the ones ``read_xbe`` and ``read_image`` report (b780 studio1)."""
+
+    resolved = _resolve_source(path)
+    if not is_disc_image(resolved):
+        payload = resolved.read_bytes()
+        return {"container": "xbe", "edge_rename": edge_rename_patch.status(payload),
+                "scheme_labels": scheme_labels_patch.status(payload)}
+    descriptor = _open_binary(resolved, os.O_RDONLY)
+    try:
+        size = os.fstat(descriptor).st_size
+        offset, length = image_xbe_extent(descriptor, size)
+        payload = platform_compat.pread(descriptor, length, offset)
+        disc_status = _edge_disc_status(descriptor, size)
+    finally:
+        os.close(descriptor)
+    _require(len(payload) == length, "short read of default.xbe from the image")
+    return {"container": "xiso", "edge_rename": edge_rename_patch.status(payload),
+            "edge_rename_disc": disc_status, "scheme_labels": scheme_labels_patch.status(payload)}
 
 
 # --------------------------------------------------------------------------
@@ -1331,6 +1382,8 @@ R62_RUNTIME_KEYS += ("my_career_home",)
 # b778 fa4: reserve the existing arena-growth owner for the capacity-grown roster without enabling reserves.
 R62_SPACE_KEYS += ("roster_capacity",)
 R62_RUNTIME_KEYS += ("roster_capacity",)
+# b780 cv1: coverage_trail's moving arrival brake (the man-coverage spin fix) reuses that owner's reservation: no space key.
+R62_RUNTIME_KEYS += ("coverage_hitch_brake",)
 
 def _r62_options(values):
     return {key: (values.get('roster_capacity', False) if key == 'roster_capacity' else values[key])
@@ -1399,15 +1452,18 @@ def _deferred_r62_options(values, defer):
     return {**values, **{key: False for key in R62_SPACE_KEYS if key != "created_teams_extra"},
             "cpu_scrambles": "retail",
             "momentum_collision_level": 0, "created_teams_extra": 0, "cpu_money_downs": "retail", "weekly_prep_cpu": False, "weekly_prep_remember": False,
-            "read_option_intent_table": None, "my_career_setup": None, "kickoff_return_blocking": False}
+            "read_option_intent_table": None, "my_career_setup": None, "kickoff_return_blocking": False,
+            "coverage_hitch_brake": False}
 
 
-def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, read_option_intent_table=None, guardian_everyone_practice=True, my_career_setup=None, crib_reclaim=False, modern_naming=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, anniversary_kickoff_tables=None, widescreen_menus=None, team_logo_swap=None, period_goalposts=None, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, kickoff_return_blocking=False, my_career_home=False, roster_capacity=False):
+def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, coverage_hitch_brake=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, read_option_intent_table=None, guardian_everyone_practice=True, my_career_setup=None, crib_reclaim=False, modern_naming=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, anniversary_kickoff_tables=None, widescreen_menus=None, team_logo_swap=None, period_goalposts=None, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, kickoff_return_blocking=False, my_career_home=False, roster_capacity=False):
     _validate_lever_flags(momentum_collisions, read_option_runtime, franchise_2026_rules,
                           senior_bowl, guardian_overlay, guardian_everyone_practice,
                           my_career, crib_reclaim, screen_hooks, modern_naming, reserves_16, franchise_autosave, coverage_trail, franchise_edit_player,
                           weekly_prep, weekly_prep_cpu, weekly_prep_remember, coach_ai, playbook_pair,
-                          deep_zone_facing, deep_zone_bail)
+                          deep_zone_facing, deep_zone_bail, coverage_hitch_brake)
+    _require(not coverage_hitch_brake or coverage_trail,
+             "Stop man-coverage spins needs Close pursuit recovery: turn both on, or both off")
     momentum_patch._settings(0, False, momentum_collisions, momentum_collision_level)
     accelerated_clock_patch.encode_options(enabled=accelerated_clock, minimum_seconds=accelerated_clock_minimum_seconds)
     _validate_lever_flags(coin_defer, decided_clock, historic_teams_quick_game, espn25_more_moments, espn25_named_previews, historic_stock_books, espn25_era_rules)
@@ -1456,7 +1512,7 @@ def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level
         my_career_patch.read_setup(my_career_setup)   # legacy prepared-save route; None = generic in-game creation
 
 
-def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, widescreen_menus=None, team_logo_swap=None, period_goalposts=None, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, my_career_home=False, roster_capacity=False, hair_styles=False, cpu_qb_reads=False, db_ball_play=False, play_art_routes=False, team_number_scale=False, run_blocking=False, pass_protection=False, pass_rush_stats=False, qb_accuracy=False, modern_force_out=False, practice_injuries=False, cpu_ball_carriers=False, return_coverage=False, star_retention=False, star_career=False, franchise_draft_clock=False, weekly_progression=False, player_progress=False, contract_college_guard=False, sim_cb_tackles=False, modern_clock_led=False, module_loader=False, classic_teams=False, sim_rb_injuries=False, sim_realism=False, preseason_warning=False):
+def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, widescreen_menus=None, team_logo_swap=None, period_goalposts=None, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, my_career_home=False, roster_capacity=False, hair_styles=False, cpu_qb_reads=False, db_ball_play=False, play_art_routes=False, team_number_scale=False, run_blocking=False, pass_protection=False, pass_rush_stats=False, qb_accuracy=False, modern_force_out=False, practice_injuries=False, cpu_ball_carriers=False, return_coverage=False, star_retention=False, star_career=False, franchise_draft_clock=False, weekly_progression=False, player_progress=False, contract_college_guard=False, sim_cb_tackles=False, modern_clock_led=False, module_loader=False, classic_teams=False, sim_rb_injuries=False, sim_realism=False, preseason_warning=False, coach_carousel=False, standings_records=False, cpu_passer_iq=False, cpu_clock2=False, cpu_runner_vision=False, db_dive_window=False, catch_snap_limit=False, scramble_blocking=False, protection_calls=False, audible_legend=False, lineup_roles=False, intro_autoskip=False, injured_reserve=False, history_screen=False, franchise_history=False, franchise_history_static_body=True, speed_threshold=0):
     _validate_r62_options(momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, coverage_trail=coverage_trail, franchise_edit_player=franchise_edit_player, cpu_money_downs=cpu_money_downs, accelerated_clock=accelerated_clock, coin_defer=coin_defer, decided_clock=decided_clock, cpu_scrambles=cpu_scrambles, weekly_prep=weekly_prep, weekly_prep_cpu=weekly_prep_cpu, weekly_prep_remember=weekly_prep_remember, coach_ai=coach_ai, playbook_pair=playbook_pair, deep_zone_facing=deep_zone_facing, deep_zone_bail=deep_zone_bail, reserves_16=reserves_16, created_teams_extra=created_teams_extra, franchise_autosave=franchise_autosave, historic_teams_quick_game=historic_teams_quick_game, espn25_more_moments=espn25_more_moments, espn25_named_previews=espn25_named_previews, historic_stock_books=historic_stock_books, espn25_era_rules=espn25_era_rules, anniversary_kickoff=anniversary_kickoff, widescreen_menus=widescreen_menus, team_logo_swap=team_logo_swap, period_goalposts=period_goalposts, k128_memory=k128_memory, k128_roster_heap=k128_roster_heap, k128_early=k128_early, letter_grades=letter_grades, honors_page=honors_page, my_career_home=my_career_home, roster_capacity=roster_capacity)
     return (
         (kickoff_relocated_patch.REQUESTS if with_kickoff else ())
@@ -1516,6 +1572,26 @@ def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defe
         + (preseason_warning_patch.REQUESTS if preseason_warning else ())   # b779-int1: before the sim owners
         + (sim_rb_injuries_patch.REQUESTS if sim_rb_injuries else ())
         + (sim_realism_patch.REQUESTS if sim_realism else ())
+        + (coach_carousel_patch.REQUESTS if coach_carousel else ())   # b780-c6: the last late owner
+        + (standings_records_patch.REQUESTS if standings_records else ())  # b780-j1
+        # b780-int: the owners that used to append themselves when applied are reserved here too, in LATE_OWNERS order,
+        # so appending one never moves a later owner this pass already placed ("appending the owner would move an
+        # existing allocation" stopped the Experimental build at the History screen)
+        + (franchise_footer_patch.requests(static_body=franchise_history_static_body) if franchise_history else ())
+        + (franchise_history_capture_patch.REQUESTS if franchise_history else ())
+        + (history_screen_patch.REQUESTS if history_screen else ())
+        + (speed_threshold_patch.REQUESTS if speed_threshold else ())
+        + (cpu_passer_iq_patch.REQUESTS if cpu_passer_iq else ())  # b780 a-passer: the last late owner
+        + (cpu_clock2_patch.REQUESTS if cpu_clock2 else ())  # b780 b-clock
+        + (runner_vision_patch.REQUESTS if cpu_runner_vision else ())  # b780 cv2-runner: after the b779 late owners
+        + (dive_window_patch.REQUESTS if db_dive_window else ())  # b780-cv3
+        + (catch_snap_limit_patch.REQUESTS if catch_snap_limit else ())  # b780-cv4: last, LATE_OWNERS order
+        + (scramble_blocking_patch.REQUESTS if scramble_blocking else ())  # b780-cv7 (late owner: LATE_OWNERS order)
+        + (protection_calls_patch.REQUESTS if protection_calls else ())  # b780 p1-slide: last (LATE_OWNERS order)
+        + (audible_legend_patch.REQUESTS if audible_legend else ())   # b780-p3: audible panel lift / legend (late owner)
+        + (lineup_roles_patch.REQUESTS if lineup_roles else ())   # b780 sub1: the last late owner (LATE_OWNERS order)
+        + (intro_autoskip_patch.REQUESTS if intro_autoskip else ())   # b780-mem1: intro auto-skip (late tail owner)
+        + (injured_reserve_patch.REQUESTS if injured_reserve else ())   # b780 IR1: modern injured reserve (late owner, last)
         + (clock_led_patch.REQUESTS if modern_clock_led else ())
         + (classic_teams_patch.REQUESTS if classic_teams else ())
         + (module_loader_patch.REQUESTS if module_loader else ())
@@ -1552,13 +1628,13 @@ def _moment_coaches_requests():
 
 
 class _xbe_space_adapter:
-    def __init__(self, with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, widescreen_menus=None, team_logo_swap=None, period_goalposts=None, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, my_career_home=False, roster_capacity=False, hair_styles=False, cpu_qb_reads=False, db_ball_play=False, play_art_routes=False, team_number_scale=False, run_blocking=False, pass_protection=False, pass_rush_stats=False, qb_accuracy=False, modern_force_out=False, practice_injuries=False, cpu_ball_carriers=False, return_coverage=False, star_retention=False, star_career=False, franchise_draft_clock=False, weekly_progression=False, player_progress=False, contract_college_guard=False, sim_cb_tackles=False, modern_clock_led=False, module_loader=False, classic_teams=False, sim_rb_injuries=False, sim_realism=False, preseason_warning=False):
+    def __init__(self, with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, widescreen_menus=None, team_logo_swap=None, period_goalposts=None, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, my_career_home=False, roster_capacity=False, hair_styles=False, cpu_qb_reads=False, db_ball_play=False, play_art_routes=False, team_number_scale=False, run_blocking=False, pass_protection=False, pass_rush_stats=False, qb_accuracy=False, modern_force_out=False, practice_injuries=False, cpu_ball_carriers=False, return_coverage=False, star_retention=False, star_career=False, franchise_draft_clock=False, weekly_progression=False, player_progress=False, contract_college_guard=False, sim_cb_tackles=False, modern_clock_led=False, module_loader=False, classic_teams=False, sim_rb_injuries=False, sim_realism=False, preseason_warning=False, coach_carousel=False, standings_records=False, cpu_passer_iq=False, cpu_clock2=False, cpu_runner_vision=False, db_dive_window=False, catch_snap_limit=False, scramble_blocking=False, protection_calls=False, audible_legend=False, lineup_roles=False, intro_autoskip=False, injured_reserve=False, history_screen=False, franchise_history=False, franchise_history_static_body=True, speed_threshold=0):
         self.scaleout = bool(camera or franchise_autosave or weekly_prep or weekly_prep_cpu or weekly_prep_remember or coach_ai or playbook_pair or deep_zone_facing or deep_zone_bail
                              or (momentum_collisions and momentum_collision_level > 0) or accelerated_clock or coin_defer or decided_clock or cpu_scrambles == "modern"
-                             or bool(team_logo_swap) or bool(period_goalposts) or sim_rb_injuries or sim_realism or preseason_warning)  # b76-pf P1: read-only space needs the scale-out; b77-v1b: the late owner needs it too
+                             or bool(team_logo_swap) or bool(period_goalposts) or sim_rb_injuries or sim_realism or preseason_warning or coach_carousel or standings_records or history_screen or franchise_history or bool(speed_threshold) or cpu_clock2 or cpu_runner_vision or catch_snap_limit or scramble_blocking or audible_legend or lineup_roles or injured_reserve)  # b76-pf P1: read-only space needs the scale-out; b77-v1b: the late owner needs it too
         self.requests = _selected_space_requests(
             with_kickoff, runtime, momentum, defensive_try, zone_drop_cap, all_stadiums, coverage_slider, scramble_tuning, music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine,
-            momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, coverage_trail=coverage_trail, franchise_edit_player=franchise_edit_player, cpu_money_downs=cpu_money_downs, accelerated_clock=accelerated_clock, coin_defer=coin_defer, decided_clock=decided_clock, cpu_scrambles=cpu_scrambles, weekly_prep=weekly_prep, weekly_prep_cpu=weekly_prep_cpu, weekly_prep_remember=weekly_prep_remember, coach_ai=coach_ai, playbook_pair=playbook_pair, deep_zone_facing=deep_zone_facing, deep_zone_bail=deep_zone_bail, reserves_16=reserves_16, created_teams_extra=created_teams_extra, camera=camera, franchise_autosave=franchise_autosave, historic_teams_quick_game=historic_teams_quick_game, espn25_more_moments=espn25_more_moments, espn25_named_previews=espn25_named_previews, historic_stock_books=historic_stock_books, espn25_era_rules=espn25_era_rules, anniversary_kickoff=anniversary_kickoff, widescreen_menus=widescreen_menus, team_logo_swap=team_logo_swap, period_goalposts=period_goalposts, k128_memory=k128_memory, k128_roster_heap=k128_roster_heap, k128_early=k128_early, letter_grades=letter_grades, honors_page=honors_page, my_career_home=my_career_home, roster_capacity=roster_capacity, hair_styles=hair_styles, cpu_qb_reads=cpu_qb_reads, db_ball_play=db_ball_play, play_art_routes=play_art_routes, team_number_scale=team_number_scale, run_blocking=run_blocking, pass_protection=pass_protection, pass_rush_stats=pass_rush_stats, qb_accuracy=qb_accuracy, modern_force_out=modern_force_out, practice_injuries=practice_injuries, cpu_ball_carriers=cpu_ball_carriers, return_coverage=return_coverage, star_retention=star_retention, star_career=star_career, franchise_draft_clock=franchise_draft_clock, weekly_progression=weekly_progression, player_progress=player_progress, contract_college_guard=contract_college_guard, sim_cb_tackles=sim_cb_tackles, modern_clock_led=modern_clock_led, module_loader=module_loader, classic_teams=classic_teams, sim_rb_injuries=sim_rb_injuries, sim_realism=sim_realism, preseason_warning=preseason_warning)
+            momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, coverage_trail=coverage_trail, franchise_edit_player=franchise_edit_player, cpu_money_downs=cpu_money_downs, accelerated_clock=accelerated_clock, coin_defer=coin_defer, decided_clock=decided_clock, cpu_scrambles=cpu_scrambles, weekly_prep=weekly_prep, weekly_prep_cpu=weekly_prep_cpu, weekly_prep_remember=weekly_prep_remember, coach_ai=coach_ai, playbook_pair=playbook_pair, deep_zone_facing=deep_zone_facing, deep_zone_bail=deep_zone_bail, reserves_16=reserves_16, created_teams_extra=created_teams_extra, camera=camera, franchise_autosave=franchise_autosave, historic_teams_quick_game=historic_teams_quick_game, espn25_more_moments=espn25_more_moments, espn25_named_previews=espn25_named_previews, historic_stock_books=historic_stock_books, espn25_era_rules=espn25_era_rules, anniversary_kickoff=anniversary_kickoff, widescreen_menus=widescreen_menus, team_logo_swap=team_logo_swap, period_goalposts=period_goalposts, k128_memory=k128_memory, k128_roster_heap=k128_roster_heap, k128_early=k128_early, letter_grades=letter_grades, honors_page=honors_page, my_career_home=my_career_home, roster_capacity=roster_capacity, hair_styles=hair_styles, cpu_qb_reads=cpu_qb_reads, db_ball_play=db_ball_play, play_art_routes=play_art_routes, team_number_scale=team_number_scale, run_blocking=run_blocking, pass_protection=pass_protection, pass_rush_stats=pass_rush_stats, qb_accuracy=qb_accuracy, modern_force_out=modern_force_out, practice_injuries=practice_injuries, cpu_ball_carriers=cpu_ball_carriers, return_coverage=return_coverage, star_retention=star_retention, star_career=star_career, franchise_draft_clock=franchise_draft_clock, weekly_progression=weekly_progression, player_progress=player_progress, contract_college_guard=contract_college_guard, sim_cb_tackles=sim_cb_tackles, modern_clock_led=modern_clock_led, module_loader=module_loader, classic_teams=classic_teams, sim_rb_injuries=sim_rb_injuries, sim_realism=sim_realism, preseason_warning=preseason_warning, coach_carousel=coach_carousel, standings_records=standings_records, history_screen=history_screen, franchise_history=franchise_history, franchise_history_static_body=franchise_history_static_body, speed_threshold=speed_threshold, cpu_passer_iq=cpu_passer_iq, cpu_clock2=cpu_clock2, cpu_runner_vision=cpu_runner_vision, db_dive_window=db_dive_window, catch_snap_limit=catch_snap_limit, scramble_blocking=scramble_blocking, protection_calls=protection_calls, audible_legend=audible_legend, lineup_roles=lineup_roles, intro_autoskip=intro_autoskip, injured_reserve=injured_reserve)
 
     def status(self, payload):
         state = xbe_space_patch.status(payload)
@@ -1621,6 +1697,8 @@ class _my_career_adapter:
     prepared-save setup keeps the legacy route. The legacy status recognizes the generic tag and delegates
     complete validation, so one status covers both formats."""
 
+    PREVIOUS_REFUSAL = my_career_mode_patch.PREVIOUS_REFUSAL   # b780 n6: a beta-79 MyCareer is a rebuild from retail
+
     def __init__(self, setup):
         self.setup = None if setup is None else my_career_patch.read_setup(setup)
 
@@ -1639,9 +1717,11 @@ class _k128_adapter:
     def __init__(self, roster_heap, early=False, require=False):
         self.roster_heap, self.early, self.require = bool(roster_heap), bool(early), bool(require)
 
+    UPGRADES_PREVIOUS = True   # b780 n6: the beta-79 128 MB entry reads "previous"; k128_patch.apply upgrades it
+
     def status(self, payload):
         state = k128_patch.status(payload)
-        if state == "applied":
+        if state in ("applied", "previous"):
             settings = k128_patch.read_settings(payload)
             _require((settings["roster_heap"], settings["early"], settings["require_128"])
                      == (self.roster_heap, self.early, self.require),
@@ -1659,6 +1739,8 @@ def k128_requires_128(guardian_overlay=False, reserves_16=False, created_teams_e
 
 
 class _roster_arena_adapter:
+    UPGRADES_PREVIOUS = True   # b780 modes2: a beta-78 .. v0.9 RC runtime (practice staging league 1) upgrades in place
+
     def __init__(self, reserves_16, created_teams_extra, capacity=False):
         self.kwargs = dict(reserves_16=reserves_16, created_teams_extra=created_teams_extra,
                            capacity=capacity)
@@ -1704,6 +1786,17 @@ class _deep_zone_adapter:
 
     def apply(self, payload):
         return deep_zone_patch.apply(payload, **self.settings)
+
+
+class _coverage_trail_adapter:
+    """b780 cv1: Close pursuit recovery with or without its moving arrival brake (one owner, one reservation)."""
+    status = staticmethod(coverage_trail_patch.status)
+
+    def __init__(self, moving_arrival_brake):
+        self.moving_arrival_brake = moving_arrival_brake
+
+    def apply(self, payload):
+        return coverage_trail_patch.apply(payload, moving_arrival_brake=self.moving_arrival_brake)
 
 
 class _weekly_prep_adapter:
@@ -1820,6 +1913,7 @@ def _flat_distance_curves(payload, wanted, arc_table=False):
 
 
 def _grown_status_fields(payload):
+    trail_settings = coverage_trail_patch.read_settings(payload)  # b780 cv1: one recognition for both templates
     prep = weekly_prep_patch.read_settings(payload)
     deep_zone_state = deep_zone_patch.status(payload)
     deep_zone_settings = ({"status": "foreign"} if deep_zone_state == "foreign" else
@@ -1851,7 +1945,9 @@ def _grown_status_fields(payload):
             "read_option_runtime_settings": read_option_patch.read_settings(payload),
             "screen_hooks": screen_hooks_patch.status(payload),
             "screen_hooks_settings": screen_hooks_patch.read_settings(payload),
-            "coverage_trail": coverage_trail_patch.status(payload),
+            "coverage_trail": trail_settings["status"],
+            "coverage_hitch_brake": ("foreign" if trail_settings["status"] == "foreign" else
+                                     "applied" if trail_settings["moving_arrival_brake"] else "retail"),
             "franchise_edit_player": franchise_edit_player_patch.status(payload),
             "cpu_money_downs": cpu_money_downs_patch.status(payload),
             "cpu_money_downs_settings": cpu_money_downs_patch.read_settings(payload),
@@ -1916,6 +2012,7 @@ def _grown_status_fields(payload):
             "abilities_settings": abilities_patch.read_settings(payload),
             "qb_spy": qb_spy_patch.status(payload),
             "calendar_engine": calendar_engine_patch.status(payload),
+            "later_schedule": later_schedule_patch.status(payload),
             "zone_drop_settings": zone_drop_patch.read_settings(payload)}
 
 
@@ -1946,6 +2043,10 @@ def _check_installed_runtime_settings(payload, options):
     An intermediate pass does not express removal. Public/final application
     still rejects changing or disabling any already installed runtime setting.
     """
+    trail_settings = coverage_trail_patch.read_settings(payload)
+    if trail_settings.get("moving_arrival_brake"):  # b780 cv1
+        _require(options.get("coverage_trail") and options.get("coverage_hitch_brake"),
+                 "Stop man-coverage spins is already installed on this executable; rebuild from a verified base to turn it off")
     accelerated_clock = options["accelerated_clock"]
     accelerated_clock_minimum_seconds = options["accelerated_clock_minimum_seconds"]
     coin_defer = options["coin_defer"]
@@ -1984,12 +2085,13 @@ def _check_installed_runtime_settings(payload, options):
         state = module.status(payload)
         if selected:
             _require(state != "foreign", f"{module.BUILD_CAPTION}: foreign prerequisites")
-        if state == "applied":
+        # b780 n6: a beta-79 install reads "previous" (its apply upgrades it in place); it is installed all the same
+        if state == "applied" or (state == "previous" and getattr(module, "UPGRADES_PREVIOUS", False)):
             _require(selected, f"{module.BUILD_CAPTION} is installed; rebuild from a verified base to turn it off")
             if module is decided_clock_patch:
                 module.verify(payload, margin=decided_clock_margin,
                               seconds=decided_clock_seconds)
-            if module is k128_patch:
+            if module is k128_patch:   # applied or previous: the options are read the same way
                 installed = k128_patch.read_settings(payload)
                 _require((installed["roster_heap"], installed["early"], installed["require_128"])
                          == (bool(options.get("k128_roster_heap")), bool(options.get("k128_early")),
@@ -2052,7 +2154,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     senior_bowl=False,
     guardian_overlay=False,
     my_career=False,
-    screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False,
+    screen_hooks=False, coverage_trail=False, coverage_hitch_brake=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False,
     reserves_16=False,
     created_teams_extra=0,
     franchise_autosave=False,
@@ -2077,7 +2179,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     modern_naming=False,
     _defer_runtime_settings=False,
     roster_capacity=False,
-    hair_styles=False, cpu_qb_reads=False, db_ball_play=False, play_art_routes=False, team_number_scale=False, run_blocking=False, pass_protection=False, pass_rush_stats=False, qb_accuracy=False, modern_force_out=False, practice_injuries=False, cpu_ball_carriers=False, return_coverage=False, star_retention=False, star_career=False, franchise_draft_clock=False, weekly_progression=False, player_progress=False, contract_college_guard=False, sim_cb_tackles=False, modern_clock_led=False, module_loader=False, classic_teams=False, sim_rb_injuries=False, sim_realism=False, preseason_warning=False,
+    hair_styles=False, cpu_qb_reads=False, db_ball_play=False, play_art_routes=False, team_number_scale=False, run_blocking=False, pass_protection=False, pass_rush_stats=False, qb_accuracy=False, modern_force_out=False, practice_injuries=False, cpu_ball_carriers=False, return_coverage=False, star_retention=False, star_career=False, franchise_draft_clock=False, weekly_progression=False, player_progress=False, contract_college_guard=False, sim_cb_tackles=False, modern_clock_led=False, module_loader=False, classic_teams=False, sim_rb_injuries=False, sim_realism=False, preseason_warning=False, coach_carousel=False, standings_records=False, history_screen=False, franchise_history=False, franchise_history_static_body=True, speed_threshold=0, cpu_passer_iq=False, cpu_clock2=False, cpu_runner_vision=False, db_dive_window=False, catch_snap_limit=False, scramble_blocking=False, protection_calls=False, audible_legend=False, lineup_roles=False, intro_autoskip=False, injured_reserve=False,
 ) -> tuple[bytes, dict[str, object]]:
     """Curves (if any), the relocated arc-by-distance table (if asked), then the catch-slider,
     acceleration-ramp, draft-AI, EDGE-rename, returner and progression patches (if asked)."""
@@ -2139,7 +2241,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
             receipt = {**receipt, "arc_table_patch": {"already_applied": True}}
     if catch_slider:
         state = catch_slider_patch.status(patched)
-        if state == "retail":
+        if state in ("retail", "previous"):          # b780 b5-sim: "previous" = the beta-79 revision (K = 2.0)
             patched, catch_receipt = catch_slider_patch.apply(patched)
             receipt = {**receipt, "catch_slider_patch": catch_receipt,
                        "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(catch_receipt["changed_bytes"])}
@@ -2157,7 +2259,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
             receipt = {**receipt, "accel_ramp_patch": {"already_applied": True}}
     if draft_ai:
         state = draft_ai_patch.status(patched)
-        if state == "retail":
+        if state in ("retail", "legacy"):   # b780 b1-draft: a beta-78/79 head is upgraded in place
             patched, draft_receipt = draft_ai_patch.apply(patched)
             receipt = {**receipt, "draft_ai_patch": draft_receipt,
                        "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(draft_receipt["changed_bytes"])}
@@ -2236,19 +2338,36 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         # Reserve compatibility also accepts the old automatic-cut installation;
         # replay its guarded writer so an upgrade actually restores native cuts.
         # b778-pg1: so does progression (the beta-77 curves-only patch gains the NFL career layer in place)
-        if state == "retail" or (state == "legacy" and key in ("player_star_patch", "depth_locks_patch", "franchise_economy_patch", "progression_patch")) or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")):
+        # b780 sub1: a previous SPECIAL role table (revision 1 or 2) reads "previous"; apply rewrites its role records
+        # b780 st1: so does the returner fix (beta-79 and older: the loop only; the KR/PR getter gains its slot check)
+        if state == "retail" or (state == "legacy" and key in ("player_star_patch", "depth_locks_patch", "franchise_economy_patch", "progression_patch", "returner_fix_patch")) or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")) or (state == "previous" and key == "depth_chart_rows_patch"):
             patched, sub_receipt = module.apply(patched)
-            if state == "legacy":
-                sub_receipt = {**sub_receipt, "upgraded_from": "legacy"}
+            if state in ("legacy", "previous"):
+                sub_receipt = {**sub_receipt, "upgraded_from": sub_receipt.get("upgraded_from") or state}
             receipt = {**receipt, key: sub_receipt,
                        "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(sub_receipt["changed_bytes"])}
         else:
             _require(state == "applied", f"{label} sites are {state}; refusing to patch")
             receipt = {**receipt, key: {"already_applied": True}}
+    if draft_ai:
+        # b780 b1-draft (row B1): the class half of the draft fixes, economy revision 4's class sites (create vacancies
+        # kept, every class from the position mix). With the economy on, the economy installed the same bytes above.
+        # It never refuses the build: on an executable whose class sites hold other bytes (a foreign patch, a synthetic
+        # test image) the draft AI still installs, and the receipt and the report say the class fix is not there.
+        state = draft_class_patch.status(patched)
+        if state == "retail":
+            patched, class_receipt = draft_class_patch.apply(patched)
+            receipt = {**receipt, "draft_class_patch": class_receipt,
+                       "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(class_receipt["changed_bytes"])}
+        elif state == "applied":
+            receipt = {**receipt, "draft_class_patch": {"already_applied": True}}
+        else:
+            receipt = {**receipt, "draft_class_patch": {"skipped": True, "status": state,
+                                                        "reason": "the draft class sites hold other bytes"}}
     if practice_squad and franchise_practice:
         # practice-only reserve staging (beta 61): reserves join the disposable practice roster; needs both patches above
         state = practice_reserves_patch.status(patched)
-        if state == "retail":
+        if state in ("retail", "previous"):   # b780 modes2: a previous staging (league 1) is upgraded in place
             patched, sub_receipt = practice_reserves_patch.apply(patched)
             receipt = {**receipt, "practice_reserves_patch": sub_receipt,
                        "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(sub_receipt["changed_bytes"])}
@@ -2298,7 +2417,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                       franchise_draft_clock=franchise_draft_clock, weekly_progression=weekly_progression,
                       player_progress=player_progress, contract_college_guard=contract_college_guard,
                       sim_cb_tackles=sim_cb_tackles, modern_clock_led=modern_clock_led,
-                      module_loader=module_loader, classic_teams=classic_teams, sim_rb_injuries=sim_rb_injuries, sim_realism=sim_realism, preseason_warning=preseason_warning)
+                      module_loader=module_loader, classic_teams=classic_teams, sim_rb_injuries=sim_rb_injuries, sim_realism=sim_realism, preseason_warning=preseason_warning, coach_carousel=coach_carousel, standings_records=standings_records, history_screen=history_screen, franchise_history=franchise_history, franchise_history_static_body=franchise_history_static_body, speed_threshold=speed_threshold, cpu_passer_iq=cpu_passer_iq, cpu_clock2=cpu_clock2, cpu_runner_vision=cpu_runner_vision, db_dive_window=db_dive_window, catch_snap_limit=catch_snap_limit, scramble_blocking=scramble_blocking, protection_calls=protection_calls, audible_legend=audible_legend, lineup_roles=lineup_roles, intro_autoskip=intro_autoskip, injured_reserve=injured_reserve)
     # Final owners: choose the complete allocation set before the first growth.
     # Selecting reserve compatibility must also retire an installed legacy
     # screen, even when the old screen recipe key is off. Do not add a request
@@ -2330,6 +2449,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         (scramble_tuning, scramble_tuning_patch, "scramble_tuning_patch", "experimental slow-QB acceleration"),
         (all_stadiums, roster_storage_patch, "all_stadiums_patch", "all 82 Create a Team stadiums (experimental)"),
         (calendar_engine, calendar_engine_patch, "calendar_engine_patch", "128-season calendar (experimental)"),
+        # b780-season1: rides with the calendar (its date helpers); no allocation, the code sits in four helpers only the old tail called
+        (calendar_engine, later_schedule_patch, "later_schedule_patch", later_schedule_patch.BUILD_CAPTION),
         (abilities, _abilities_adapter(abilities_off_week, abilities_lock_right_stick, abilities_lock_special_moves, abilities_lock_speedster,
                             abilities_right_stick_stars_only, abilities_button_moves_stars_only,
                             abilities_charge_stars_only, abilities_star_access),
@@ -2344,7 +2465,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         (momentum_on, _momentum_adapter(momentum, momentum_contact, momentum_collisions, momentum_collision_level), "momentum_patch", "experimental player momentum"),
         (read_option_runtime, _read_option_adapter(read_option_intent_table), "read_option_runtime_patch", "read option mesh controls (experimental)"),
         (screen_hooks, screen_hooks_patch, "screen_hooks_patch", "screen pass timing hooks (second experiment)"),
-        (coverage_trail, coverage_trail_patch, "coverage_trail_patch", "Close pursuit recovery (experimental)"),
+        (coverage_trail, _coverage_trail_adapter(coverage_hitch_brake), "coverage_trail_patch", "Close pursuit recovery (experimental)"),
         (franchise_edit_player, franchise_edit_player_patch, "franchise_edit_player_patch", "Franchise Edit Player (experimental)"),
         (cpu_money_downs != "retail", _cpu_money_downs_adapter(cpu_money_downs), "cpu_money_downs_patch", cpu_money_downs_patch.BUILD_CAPTION),
         (accelerated_clock, _accelerated_clock_adapter(accelerated_clock_minimum_seconds), "accelerated_clock_patch", accelerated_clock_patch.BUILD_CAPTION),
@@ -2399,7 +2520,11 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
             continue
         state = module.status(patched)
         accepted = ("retail", "applied", "needs_fix") if module is stock_books_patch else ("retail", "applied")
-        _require(state in accepted, f"{label} is {state}; refusing")
+        if getattr(module, "UPGRADES_PREVIOUS", False):
+            accepted += ("previous",)   # b780 n6: a beta-79 install (honors + champions, camera v7, K128), upgraded in place
+        # b780 n6: a beta-79 install that cannot be updated in place says so in plain words
+        _require(state in accepted, getattr(module, "PREVIOUS_REFUSAL", None) if state == "previous"
+                 and getattr(module, "PREVIOUS_REFUSAL", None) else f"{label} is {state}; refusing")
         patched, sub_receipt = module.apply(patched)
         receipt[key] = sub_receipt
         receipt["changed_byte_count"] = int(receipt.get("changed_byte_count", 0)) + int(sub_receipt["changed_bytes"])
@@ -2477,7 +2602,7 @@ def write_xbe_copy(
     senior_bowl=False,
     guardian_overlay=False,
     my_career=False,
-    screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False,
+    screen_hooks=False, coverage_trail=False, coverage_hitch_brake=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False,
     reserves_16=False,
     created_teams_extra=0,
     franchise_autosave=False,
@@ -2563,6 +2688,7 @@ def write_xbe_copy(
         "catch_slider": catch_slider_patch.status(result),
         "accel_ramp": accel_ramp_patch.status(result),
         "draft_ai": draft_ai_patch.status(result),
+        "draft_class": draft_class_patch.status(result),
         "edge_rename": edge_rename_patch.status(result),
         "returner_fix": returner_fix_patch.status(result),
         "progression": progression_patch.status(result),
@@ -2722,7 +2848,7 @@ def write_image_copy(
     senior_bowl=False,
     guardian_overlay=False,
     my_career=False,
-    screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False,
+    screen_hooks=False, coverage_trail=False, coverage_hitch_brake=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False,
     reserves_16=False,
     created_teams_extra=0,
     franchise_autosave=False,
@@ -2975,6 +3101,7 @@ def write_image_copy(
         "catch_slider": catch_slider_patch.status(after),
         "accel_ramp": accel_ramp_patch.status(after),
         "draft_ai": draft_ai_patch.status(after),
+        "draft_class": draft_class_patch.status(after),
         "edge_rename": edge_rename_patch.status(after),
         "edge_rename_disc": disc_receipt["after"] if disc_receipt is not None else disc_before or None,
         "returner_fix": returner_fix_patch.status(after),

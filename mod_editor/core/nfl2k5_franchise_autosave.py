@@ -203,14 +203,20 @@ def _recognize(payload):
     # that exact companion hook back to retail for this prerequisite hash.
     from . import nfl2k5_weekly_prep as weekly_prep
     if image.read(0xC7B47, 5) != bytes.fromhex("e8d4d6ffff"):
-        require(weekly_prep.status(payload) == "applied", "foreign weekly prep simulation companion")
+        # b780 mc1: weekly prep revision 2 (modes2 Q29) reads a beta-79 / v0.8 install (revision 1) as "previous"; its
+        # hooks are the same in both revisions, so the companion edits below are exact for either.
+        require(weekly_prep.status(payload) in ("applied", "previous"), "foreign weekly prep simulation companion")
         companion_edits.extend(weekly_prep.sites(weekly_prep.allocation(payload)["va"]))
-    if any(image.read(va, len(bytes.fromhex(pin))) != bytes.fromhex(pin)
+    # b780 j23: the franchise footer host holds four of MyCareer's save sites (chained to MyCareer's handlers or to the
+    # retail calls); read them as the bytes they displaced before deciding whether MyCareer is a companion.
+    from . import nfl2k5_franchise_footer as footer
+    beneath = XbeImage(footer.underlying_view(payload))
+    if any(beneath.read(va, len(bytes.fromhex(pin))) != bytes.fromhex(pin)
            for _, va, pin, _ in (*career.SAVE_HOOKS, career.MODE_HOOKS[0])):
-        require(career._recognize(payload) == "applied",
+        # b780 n6: the beta-79 MyCareer ("previous") with its own sites
+        require(career._recognize(payload) in ("applied", "previous"),
                 "foreign MyCareer completion/save companion")
-        code, data = career.legacy.allocations(payload)
-        companion_edits.extend(career.sites(code["va"], data["va"]))
+        companion_edits.extend(career.installed_sites(payload))
     # b778 bd3: beside the Player Progress screen, MyCareer's footer hooks read through MyCareer's own view of that
     # exact composition (my_career_mode.player_progress_view); anything else stays foreign below.
     guarded = XbeImage(career.player_progress_view(payload))

@@ -980,7 +980,9 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
                     operations.append({"op": "kick_power", "enabled": True, "status": after})
                 else:
                     operations.append({"op": label,
-                                       "enabled": after == "applied" or (label == "position_pools" and after == "needs_fix"),
+                                       "enabled": after == "applied" or (label == "position_pools" and after == "needs_fix")
+                                                  or (label == "draft_ai" and after == "legacy")  # b780 b1-draft: beta-78/79 head
+                                                  or (label == "catch_slider" and after == "previous"),  # b780 b5-sim
                                        "status": after})
         try:
             before = tt.infer_settings(tt.read_curves(base_xbe), tt.arc_table_status(base_xbe))

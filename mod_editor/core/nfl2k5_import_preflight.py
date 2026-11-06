@@ -312,6 +312,8 @@ class SlotPrediction:
     refused_tiers: tuple[int, ...] = ()
     detail: str = ""
     decoded_sha256: str | None = None
+    #: For a kept-retail digit: the measured size and what to change (empty when not measured).
+    advice: str = ""
 
     @property
     def headroom_bytes(self) -> int | None:
@@ -327,7 +329,7 @@ class SlotPrediction:
         """One line a user can act on."""
 
         if self.kind.endswith("_digit") and self.detail:
-            return f"{self.label}: {self.detail}"
+            return f"{self.label}: {self.detail}" + (f" {self.advice}" if self.advice else "")
         if self.outcome == FULL:
             return f"{self.label}: fits as authored ({self.palette_entries} colours)."
         if self.outcome == REDUCED:
@@ -465,7 +467,8 @@ def predict_slot(
             return SlotPrediction(asset_id, name, contract.kind, KEPT_RETAIL,
                                   source_colours=source_colours, allocation_bytes=allocation_bytes,
                                   refused_tiers=tuple(int(a['maximum_palette_entries']) for a in getattr(exc,'attempts',())),
-                                  detail=kept_retail_reason(allocation_bytes))
+                                  detail=kept_retail_reason(allocation_bytes),
+                                  advice=str(getattr(exc, "advice", "") or ""))
         return SlotPrediction(asset_id, name, contract.kind, REFUSED,
                               detail=f"{exc} Remove fine noise, dithering, and long smooth gradients.",
                               source_colours=source_colours, allocation_bytes=allocation_bytes)

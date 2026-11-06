@@ -37,15 +37,20 @@ class PlanningTests(unittest.TestCase):
         # K128 used to hold in the run, so cpu_money_downs_late and cpu_third_down (b778 spills) now fit the v3 run
         # and are no longer spills. In the budget union the star_career pair (code 2,080 + data 4,096) and the
         # money-downs state word still do not fit and also fall to the pool. Everything else keeps its v3 address.
+        # b780 p2-playcall (accepted at b780-int): the sprite scorebug's code grew 5,376 -> 5,920 bytes (the ball spot and
+        # the page boxes), so the third-down owner (and, in the budget union, the money-downs late code) no longer fits
+        # the v3 run and falls to the pool as well (fresh builds only; p2's report, allocator pins in the same commit).
+        # b780 pres2: the sprite scorebug's code is now 6,336 bytes (owner revision 17). Behind M3's promoted code it no longer
+        # fits the v3 code run, so the planner spills it whole to the pool (first, before the late owners); the room it
+        # leaves takes K128 (1,536 B) and the third-down owner (and in the budget union the money-downs late code, the star
+        # career code and the return coverage code) back into the v3 run, so those are no longer spills. Champions
+        # (5,632 B), the sprite, and the data rows listed below fall to the pool.
         spills = {
-            'full': {('nfl2k5_k128', 'code', 0), ('nfl2k5_champions', 'code', 0)},
-            'budget': {('nfl2k5_k128', 'code', 0), ('nfl2k5_champions', 'code', 0),
-                       ('nfl2k5_star_career', 'code', 0), ('nfl2k5_star_career', 'data', 0),
+            'full': {('nfl2k5_champions', 'code', 0), ('nfl2k5_scorebug_runtime', 'code', 0)},
+            'budget': {('nfl2k5_champions', 'code', 0), ('nfl2k5_scorebug_runtime', 'code', 0),
+                       ('nfl2k5_star_career', 'data', 0),
                        ('nfl2k5_cpu_money_downs_late_state', 'data', 0),
-                       # b779-fixD (4c89ebbb2): the beta62 budget fixture now also lists return coverage (code 192)
-                       # and the module loader (code 256, data 32), late owners that fall to the pool after them.
-                       ('nfl2k5_return_coverage', 'code', 0),
-                       ('nfl2k5_module_loader', 'code', 0), ('nfl2k5_module_loader', 'data', 0)},
+                       ('nfl2k5_module_loader', 'data', 0)},
         }
         for label, requests in unions:
             with self.subTest(owners=sorted({r[0] for r in requests})):
@@ -66,7 +71,8 @@ class PlanningTests(unittest.TestCase):
                     if new['va'] >= space.POOL_VA:
                         # A v4 pool row: new storage, so its address may move when the pool grows. It must stay the
                         # same allocation, and only a late owner may spill out of v3.
-                        self.assertIn(row['owner'], space.LATE_OWNERS, f"{key} left v3 but is not a late owner")
+                        self.assertIn(row['owner'], (*space.LATE_OWNERS, runtime.OWNER),
+                                      f"{key} left v3 but is neither a late owner nor the sprite scorebug (b780 pres2)")
                         self.assertEqual((row['owner'], row['kind'], row['size'], row['align']),
                                          (new['owner'], new['kind'], new['size'], new['align']),
                                          f"{key} changed allocation")
@@ -91,12 +97,11 @@ class PlanningTests(unittest.TestCase):
                 self.assertEqual((extra['va'], extra['size']), (mode.EXTRA_VA, 4096))
                 # The six fixed v3 regions never change; v4 only appends the pool. Pool pages, derived from the pool
                 # rows: the 4,096-byte directory page, then the spills in LATE_OWNERS order.
-                #   full:   4,096 + k128 1,536 + champions 5,632 = 11,264 -> 3 pages
-                #   budget: 4,096 + 1,536 + 5,632 + star_career code 2,080 + star_career data 4,096 (aligned) + the
-                #           8-byte money-downs state word = 17,448, + return coverage 192 + module loader 256 + 32
-                #           (b779-fixD) -> still 5 pages
+                #   full:   b780 pres2: 4,096 + sprite 6,336 + champions 5,632 = 16,064 -> 4 pages (was 3 with k128 + champions)
+                #   budget: b780 pres2: 4,096 + sprite 6,336 + champions 5,632 + star_career data 4,096 + the 8-byte
+                #           money-downs state word + module loader data 32 -> 5 pages (the same count as before)
                 self.assertEqual(before['regions'][:6], after['regions'][:6])
-                expected_size = {'full': space.SCALE3_FILE_SIZE + 3 * space.PAGE,
+                expected_size = {'full': space.SCALE3_FILE_SIZE + 4 * space.PAGE,
                                  'budget': space.SCALE3_FILE_SIZE + 5 * space.PAGE}.get(label, space.SCALE3_FILE_SIZE)
                 self.assertEqual(after['file_size'], expected_size)
                 if label == 'budget':

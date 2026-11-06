@@ -84,7 +84,11 @@ class BuildIntegrationTests(unittest.TestCase):
                                             scorebug_runtime=True, music_library='recipe.json')
                 # The ordering sentinel is plain text, not an XDVDFS image.
                 # Its copy, music handoff and atomic publication remain real.
+                # b780-p3: the runtime score bar also brings the audible panel lift (reserved in this pass, installed as a
+                # late step). This synthetic image is plain text and the lift has its own tests (beta62 integration,
+                # the audible legend suite), so this ordering test keeps the lift out.
                 with patch.object(build, '_core_module', side_effect=modules.get), patch.object(tt, 'is_disc_image', return_value=True), \
+                        patch.object(build, '_audible_panel_choice', return_value=None), \
                         patch.object(build, 'inspect', side_effect=lambda p, **k:{'path':str(p)}), \
                         patch.object(build, '_identity_note', return_value=''), \
                         patch.object(build, '_check_playbook_scoring', return_value={'synthetic': True}), \

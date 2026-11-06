@@ -92,10 +92,15 @@ class Harness:
             list(range(len(self.project.value["edits"]))) if indices is None else indices)
 
     @contextlib.contextmanager
-    def patched(self):
+    def patched(self, table=None):
+        # b791 h6-cache: a unit's code identity is the source of the compile modules of its kind (and what they import),
+        # read from the repository, not every file the worker happened to load. The fake repository has one such module.
+        table = table or {"live_face": ("code/loaded.py",), "team_select": ("code/loaded.py",)}
         with patch.object(self.tool, "_unit_compile", side_effect=self.fake_compile), \
              patch.object(self.tool, "ROOT", self.root), \
-             patch.object(self.tool, "_UNIT_NATIVE_HELPERS", ()), \
+             patch.object(self.tool, "_UNIT_CODE_ROOTS", table), \
+             patch.object(self.tool, "_UNIT_DISPATCH", None), \
+             patch.object(self.tool, "_UNIT_PLUMBING", ()), \
              patch.object(self.tool, "_loaded_code_files", return_value=("code/loaded.py",)):
             yield
 
@@ -150,6 +155,10 @@ class OrderTests(unittest.TestCase):
                        {"scratch": "/tmp/.unit-compile-x/a.bin"},
                        {self.tool._UNIT_PLACEHOLDER_TEXT + "-key": 1}):
             self.assertIsNone(self.tool.unit_assign_order(self.built(report), 7, edit, "live_face"))
+        # The order written as a number is as wrong as the order written in a name.
+        self.assertIsNone(self.tool.unit_assign_order(
+            self.built({"order": self.tool._UNIT_PLACEHOLDER_ORDER}), 7, edit, "live_face"))
+        self.assertIsNotNone(self.tool.unit_assign_order(self.built({"order": 7, "ok": True}), 7, edit, "live_face"))
         # An edit-order unit has no placeholder, but its worker folder still may not leak.
         self.assertIsNone(self.tool.unit_assign_order(
             self.built({"scratch": "/tmp/.unit-compile-x"}, previews=[]), None, edit, "torso"))
@@ -268,20 +277,27 @@ class UnitCacheTests(unittest.TestCase):
                         NFL2K5_DISABLE_COMPILE_CACHE="0"):
             self.assertEqual(self.harness.units(CompileCache(None)).key(0), base)
 
-    def test_edit_order_kinds_key_their_edit_index(self):
-        harness = Harness(self.tool, self.root / "ts" if (self.root / "ts").mkdir() is None else None,
-                          count=2, kind="team_select")
+    def test_a_units_key_holds_no_position_and_its_number_is_applied_when_it_is_used(self):
+        # b791 h6-cache: the kit layers used to compile under (and be keyed by) their project edit index, so one texture
+        # added early moved every later index and made all of those saved results miss. Every unit now compiles under the
+        # placeholder order; the loop applies the real number, which is still the edit index for the first set.
+        (self.root / "ts").mkdir()
+        harness = Harness(self.tool, self.root / "ts", count=2, kind="team_select")
         units = harness.units(CompileCache(None))
         edits = harness.project.value["edits"]
         edits[1].update({key: edits[0][key] for key in ("asset_code", "png")})
         harness.pins = {**harness.pins}
-        self.assertNotEqual(units.key(0), units.key(1))
+        self.assertEqual(units.key(0), units.key(1))
+        self.assertEqual(units._task(1)[1], self.tool._UNIT_PLACEHOLDER_ORDER)
         span_units = self.harness.units(CompileCache(None))
         face = self.harness.project.value["edits"]
         face[1].update(face_id=face[0]["face_id"], png=face[0]["png"])
         self.assertEqual(span_units.key(0), span_units.key(1))
+        with harness.patched():
+            self.assertEqual(units.take(0, 40)[1][0][1][0][0], "00000_preview.png")
+            self.assertEqual(units.take(1, 41)[1][0][1][0][0], "00001_preview.png")
 
-    def test_kit_layers_keep_the_span_order_where_the_old_parallel_path_did_not_run(self):
+    def test_the_edit_index_numbers_the_first_set_only_where_the_old_parallel_path_ran(self):
         folder = self.root / "small"
         folder.mkdir()
         harness = Harness(self.tool, folder, count=2, kind="team_select")
@@ -289,9 +305,10 @@ class UnitCacheTests(unittest.TestCase):
         span = self.tool.IndependentUnits(
             harness.project, harness.pins, harness.report_paths, harness.report_pins,
             harness.index, harness.inventory, folder, 1, CompileCache(None), [0, 1], ())
-        self.assertEqual(legacy._task(1)[1], 1)
+        # Both compile under the placeholder and so share one key; only the number applied on use differs.
+        self.assertEqual(legacy._task(1)[1], self.tool._UNIT_PLACEHOLDER_ORDER)
         self.assertEqual(span._task(1)[1], self.tool._UNIT_PLACEHOLDER_ORDER)
-        self.assertNotEqual(legacy.key(1), span.key(1))
+        self.assertEqual(legacy.key(1), span.key(1))
         with harness.patched():
             self.assertEqual(span.take(0, 40)[1][0][1][0][0], "00040_preview.png")
             self.assertEqual(legacy.take(0, 40)[1][0][1][0][0], "00000_preview.png")
@@ -322,12 +339,17 @@ class UnitCacheTests(unittest.TestCase):
             self.assertEqual((units.hits, units.misses), (6, 0))
 
     def test_a_native_helper_change_invalidates_even_though_it_is_never_imported(self):
+        # The compile module launches the helper by a literal repository path: code that is never imported.
         helper = self.root / "tools/nfl2k5_equipment_optimal"
         helper.parent.mkdir()
         helper.write_bytes(b"one")
-        with self.harness.patched(), patch.object(self.tool, "_UNIT_NATIVE_HELPERS",
-                                                  ("tools/nfl2k5_equipment_optimal",)):
+        (self.root / "code/loaded.py").write_text('HELPER = "tools/nfl2k5_equipment_optimal"\n', encoding="utf-8", newline="\n")
+        stranger = self.root / "tools/apf_h7a_optimal"
+        stranger.write_bytes(b"one")
+        with self.harness.patched():
             self.harness.run(self.cache)
+            self.assertEqual(self.harness.run(self.cache)[0].hits, 6)
+            stranger.write_bytes(b"two")          # a helper no compile module names is not part of the identity
             self.assertEqual(self.harness.run(self.cache)[0].hits, 6)
             helper.write_bytes(b"two")
             self.assertEqual(self.harness.run(self.cache)[0].hits, 0)
@@ -350,7 +372,7 @@ class UnitCacheTests(unittest.TestCase):
             self.cache.put(keys[2], {"unit_zlib": zlib.compress(text.encode())[:20]})
             self.cache.put(keys[3], {"unit_zlib": b"\x00" * 9})
             record = _decode(json.loads(zlib.decompress(self.cache.get(keys[4])["unit_zlib"])))
-            record["code"] = {"code/loaded.py": "0" * 64}
+            record["code"] = dict(record["code"], modules={"code/loaded.py": "0" * 64})
             text = json.dumps(_encode(record), separators=(",", ":"))
             self.cache.put(keys[4], {"unit_zlib": zlib.compress(text.encode())})
             calls = len(self.harness.calls)

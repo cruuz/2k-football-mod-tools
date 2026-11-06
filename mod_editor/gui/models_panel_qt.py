@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Callable
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, QUrl, pyqtSignal
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (
     QCheckBox,
@@ -103,7 +104,7 @@ class ModelsPanel(QWidget):
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._facade = facade
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         self._pool.setMaxThreadCount(1)
         self._task: _Task | None = None
         self._source: models.ModelSource | None = None

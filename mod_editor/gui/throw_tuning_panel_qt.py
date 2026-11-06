@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from PyQt5.QtCore import QObject, QPointF, QRunnable, Qt, QThreadPool, pyqtSignal
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtGui import QColor, QPainter, QPen, QPolygonF
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -118,7 +119,7 @@ class ThrowTuningPanel(QWidget):
         self.facade = facade
         self._busy = False
         self._tasks: set[_Task] = set()
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         self._report: dict[str, object] | None = None
         self._syncing = False
         self.setObjectName("throwTuningPanel")
@@ -302,8 +303,9 @@ class ThrowTuningPanel(QWidget):
         self.catch_check = QCheckBox("Fix Catching && Interception sliders")
         self.catch_check.setToolTip(
             "Retail: the Catching slider barely reaches play. This executable patch multiplies the catch odds "
-            "by 2 x (Human Catching + CPU Catching), the same for both teams: every difficulty preset gives "
-            "x2 (double the retail odds), and moving either slider moves both teams. Raises both Catching menu "
+            "by 1.25 x (Human Catching + CPU Catching), the same for both teams: every difficulty preset gives "
+            "x1.25 (a quarter above the retail odds, about NFL drop rates), and moving either slider moves both "
+            "teams. Raises both Catching menu "
             "ceilings to 200. xemu-only."
         )
         also.addWidget(self.catch_check)
@@ -690,6 +692,9 @@ class ThrowTuningPanel(QWidget):
             self._syncing = False
         if draft_state == "applied":
             self.draft_check.setToolTip("Already applied in this source; it cannot be removed here (start from retail).")
+        elif draft_state == "legacy":  # b780 b1-draft: the beta-78/79 revision, updated in place when ticked
+            self.draft_check.setToolTip("An older revision is in this source; tick it to update it (kickers and punters from round 5, "
+                                        "real draft class position mix).")
         for box, key in ((self.returner_check, "returner_fix"), (self.progression_check, "progression")):
             box_state = str(report.get(key, "foreign"))
             self._syncing = True
@@ -779,7 +784,7 @@ class ThrowTuningPanel(QWidget):
         catch_change = self.catch_check.isChecked() and str(self._report.get("catch_slider")) == "retail"
         scorebug_change = self.scorebug_check.isChecked() and getattr(self, "_scorebug_state", "n/a") == "retail"
         accel_change = self.accel_check.isChecked() and str(self._report.get("accel_ramp")) == "retail"
-        draft_change = self.draft_check.isChecked() and str(self._report.get("draft_ai")) == "retail"
+        draft_change = self.draft_check.isChecked() and str(self._report.get("draft_ai")) in ("retail", "legacy")
         returner_change = self.returner_check.isChecked() and str(self._report.get("returner_fix")) == "retail"
         progression_change = self.progression_check.isChecked() and str(self._report.get("progression")) == "retail"
         edge_change = self.edge_check.isChecked() and getattr(self, "_edge_writable", False)
@@ -802,9 +807,10 @@ class ThrowTuningPanel(QWidget):
         want_catch = self.catch_check.isChecked() and str(self._report.get("catch_slider") if self._report else "") == "retail"
         want_scorebug = self.scorebug_check.isChecked() and getattr(self, "_scorebug_state", "n/a") == "retail"
         want_accel = self.accel_check.isChecked() and str(self._report.get("accel_ramp") if self._report else "") == "retail"
-        want_draft = self.draft_check.isChecked() and str(self._report.get("draft_ai") if self._report else "") == "retail"
+        want_draft = self.draft_check.isChecked() and str(self._report.get("draft_ai") if self._report else "") in ("retail", "legacy")
         want_edge = self.edge_check.isChecked() and getattr(self, "_edge_writable", False)
-        want_returner = self.returner_check.isChecked() and str(self._report.get("returner_fix") if self._report else "") == "retail"
+        # b780 st1: a beta-79 or older returner fix ("legacy": loop only) gains the KR/PR getter's slot check when ticked
+        want_returner = self.returner_check.isChecked() and str(self._report.get("returner_fix") if self._report else "") in ("retail", "legacy")
         want_progression = self.progression_check.isChecked() and str(self._report.get("progression") if self._report else "") == "retail"
         overwrite = target.exists()
         is_image = tt.is_disc_image(source)

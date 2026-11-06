@@ -25,9 +25,9 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Crack Toss Wk",
     "RB Slip Screen Wk",
     "PA Y Mills",
-    "X Curl Flat",
     "PA Y Smash Seams",
     "Z Slant Flat",
     "Z Double Move",
@@ -53,6 +53,8 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Counter GT",
+    "RB Stretch Wk",
     "FB Screen",
     "PA Z Out Seam",
     "PA Z Post Go",
@@ -61,7 +63,8 @@
     "PA Post Corner Shot",
     "Z Go Shot Out",
     "PA X Corner Post",
-    "PA Y Bang Hitch"
+    "PA Y Bang Hitch",
+    "RB Lead Draw"
    ],
    "cpu_situation": [
     4,
@@ -313,6 +316,8 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Counter GT",
+    "RB Stretch Wk",
     "PA Post Corner Shot",
     "Z Fade Curl Slant",
     "PA Y Bang Hitch",
@@ -321,7 +326,8 @@
     "PA Z Out Seam",
     "PA Z Post Go",
     "Z Hook Corner",
-    "PA X Corner Post"
+    "PA X Corner Post",
+    "RB Lead Draw"
    ],
    "cpu_situation": [
     2,
@@ -426,8 +432,8 @@
     "Z Snag Hitches",
     "RB Curls Outs",
     "Slot Bubble Screen",
-    "RB Verticals",
-    "RB Smash Whip",
+    "QB Draw",
+    "QB Power",
     "Z Out Seam"
    ],
    "cpu_situation": [
@@ -854,7 +860,7 @@
    "menu": [
     "X Slot Fade Outs",
     "PA X Y Trail",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Y Deep Over",
     "U Return Flood",
     "U Zig Flat",
@@ -880,7 +886,7 @@
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "RB Slip Screen",
+    "Outside Zone",
     "PA Y Bang Hitch",
     "X Slot Fade Outs",
     "Z Double Move",
@@ -910,7 +916,7 @@
    "menu": [
     "RB Slot Fade",
     "X Double Move Whip",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Z Slant Flat",
     "PA X Y Trail",
     "X Curl Flat",
@@ -2818,7 +2824,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Singleback Ace",
     "Gun Y Trips",
     "Gun Ace Flex",
     "Gun Ace"
@@ -3397,7 +3402,7 @@
   {
    "play": "p082",
    "play_index": 139,
-   "name": "Crack Toss",
+   "name": "Crack Toss Wk",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -3409,8 +3414,9 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
+    "Singleback Ace",
     "Gun Y Trips",
     "Gun Ace"
    ]
@@ -4071,6 +4077,8 @@
    "deep": false,
    "lane": 3,
    "formations": [
+    "Strong Close",
+    "I-Form Pro",
     "Wing T"
    ]
   },
@@ -4255,6 +4263,8 @@
    "deep": false,
    "lane": 0,
    "formations": [
+    "Strong Close",
+    "I-Form Pro",
     "Wing T"
    ]
   },
@@ -4346,22 +4356,23 @@
   {
    "play": "p123",
    "play_index": 180,
-   "name": "RB Slip Screen",
-   "concept": "HB Slip Screen",
-   "family": "screen",
-   "header": "screen",
-   "play_type": "pass",
+   "name": "Outside Zone",
+   "concept": "Outside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
    "personnel": "12",
    "home": "Gun Ace Flex",
-   "primary": "HB",
-   "screen": "back",
+   "primary": null,
+   "screen": null,
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": null,
+   "lane": 4,
    "formations": [
     "Gun Ace Flex"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p124",
@@ -4466,27 +4477,25 @@
   {
    "play": "p129",
    "play_index": 186,
-   "name": "RB Verticals",
-   "concept": "HB Verticals Corner Smash",
-   "family": "deep",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Bender",
-    "Corner",
-    "Go",
-    "Hitch"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p130",
@@ -4786,6 +4795,8 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Strong Close",
+    "I-Form Pro",
     "Wing T"
    ]
   },
@@ -4985,28 +4996,23 @@
   {
    "play": "p152",
    "play_index": 230,
-   "name": "RB Smash Whip",
-   "concept": "HB Smash Whip Dagger",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Corner",
-    "Dig",
-    "Flat",
-    "Hitch",
-    "Whip"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   }
  ],
  "shared_links": 369,

@@ -110,7 +110,7 @@
    "tag": "empty",
    "menu": [
     "X Snag Spot Out",
-    "Max Stick Nod",
+    "RB Spacing",
     "QB Keep",
     "End Around",
     "X Choice Out",
@@ -167,7 +167,7 @@
    "menu": [
     "DET RB Screen",
     "PA Z Deep Post",
-    "Crack Toss",
+    "Crack Toss Wk",
     "DET Dagger",
     "Post Corner Shot",
     "Slot Drive",
@@ -246,7 +246,7 @@
     "Double Slants",
     "DET Dagger",
     "RB Counter",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Z Quick Outs Snag",
     "Max Stick Nod",
     "Slot Cross Dig",
@@ -419,9 +419,9 @@
    "menu": [
     "Y Stick",
     "RB Post Wheel",
-    "RB Choice Out",
-    "RB Flood",
-    "Drive",
+    "QB Draw",
+    "QB Power",
+    "Double Slants",
     "Slot Whip"
    ],
    "cpu_situation": [
@@ -471,7 +471,7 @@
     "RB Slip Screen",
     "Counter GT",
     "RB Hitch Seam",
-    "Z Steep In Seam",
+    "Double Slants",
     "Slot China"
    ],
    "cpu_situation": [
@@ -1000,6 +1000,7 @@
    "menu": [
     "FB Screen",
     "PA Z Go Shot",
+    "Power G Wk",
     "Slot Fade",
     "Z Corner Post",
     "PA Z Deep Post",
@@ -1009,7 +1010,9 @@
     "PA Y China",
     "Y Whip Return",
     "X Stick Return",
-    "Z Steep In Seam"
+    "Z Steep In Seam",
+    "RB Slam",
+    "Inside Zone"
    ],
    "cpu_situation": [
     2,
@@ -1028,8 +1031,8 @@
    "menu": [
     "Inside Zone",
     "X Slip Screen",
-    "PA Steep In Seam",
-    "PA FB Out Seam",
+    "Y Whip Return",
+    "PA Z Go Shot",
     "FB Fade Curl",
     "Z Corner Post",
     "Y Slot Fade",
@@ -1492,7 +1495,8 @@
    "lane": null,
    "formations": [
     "Strong Close",
-    "Gun Split Y Off"
+    "Gun Split Y Off",
+    "Singleback FB Wing"
    ]
   },
   {
@@ -1802,7 +1806,6 @@
    "lane": null,
    "formations": [
     "Gun Trips TE",
-    "Gun Empty Trey",
     "Gun Tight Slots",
     "Gun Doubles Clamp Stack",
     "Singleback Y Off Trey",
@@ -2541,7 +2544,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Empty Trey",
     "Gun Bunch X Nasty",
     "Pistol Bunch TE",
     "Singleback Wing",
@@ -3279,7 +3281,8 @@
    "formations": [
     "Strong Close",
     "Wing T",
-    "Gun Split Y Off"
+    "Gun Split Y Off",
+    "Singleback FB Wing"
    ]
   },
   {
@@ -3496,7 +3499,8 @@
    "lane": 0,
    "formations": [
     "Strong Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Gun Split Y Off"
    ]
   },
   {
@@ -3555,7 +3559,7 @@
   {
    "play": "p091",
    "play_index": 146,
-   "name": "Crack Toss",
+   "name": "Crack Toss Wk",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -3567,7 +3571,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Doubles",
     "Gun Bunch X Nasty"
@@ -4136,7 +4140,8 @@
    "deep": false,
    "lane": 3,
    "formations": [
-    "Strong Close"
+    "Strong Close",
+    "Gun Split Y Off"
    ]
   },
   {
@@ -4389,28 +4394,23 @@
   {
    "play": "p128",
    "play_index": 201,
-   "name": "RB Flood",
-   "concept": "HB Flood Out and Up Smash",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Corner",
-    "Flat",
-    "Hitch",
-    "Out and Up",
-    "Sail"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p129",
@@ -4622,28 +4622,25 @@
   {
    "play": "p138",
    "play_index": null,
-   "name": "RB Choice Out",
-   "concept": "HB Choice Out Comebacks",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Comeback",
-    "Corner Post",
-    "Out",
-    "Spot Out",
-    "Whip"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p139",
@@ -4751,6 +4748,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Gun Split Y Off",
     "Singleback FB Wing"
    ]
   },

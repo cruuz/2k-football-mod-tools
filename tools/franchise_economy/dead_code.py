@@ -48,6 +48,10 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     0x3E21D0: (160, "30a0fdf7c568efef21be4aeaa4461f101cca85fd9a54263e904ac053531de2c2"),   # b779 rc1 "roster_l": the smart cut-down
     0x3DBC10: (160, "6f22f98b376a8bed14faf2552886a6b5396ca8347ea08e98ad8b1813c5ad2244"),   # b779 rc1 "roster_m": the top-up's oldest-first pass
     0x3BAB20: (192, "64eede86bf0bcb5253985b1d803e8d72d59a173eb6b2067abab634eb72adcc4e"),
+    # b780 econ3 (revision 7, "roster_n" / "roster_o"): the veteran cut's pick, the smart cut's tiers and the modern
+    # depth steps (a vector routine and two small helpers no code, table or pointer anywhere in the image reaches).
+    0x3C0920: (537, "0acdd04030bf3c49cc3377ba0638a24e3148e5b06e6641c8583206105ccc387b"),
+    0x264AC0: (295, "5a6643fac404521c9f37c72989ea8b406cd04040ba31add1a83c2da6e2d5a938"),
     0x41E2A0: (192, "6380da53ed52f0ec42021477b15a441b2b0532da2189e902ea9c02225ff7aec7"),
 }
 

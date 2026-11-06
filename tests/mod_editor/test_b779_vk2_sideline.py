@@ -44,7 +44,7 @@ class AuditRowsTests(unittest.TestCase):
 
     def test_the_list_validates_and_keeps_vk1_rows(self) -> None:
         kit._sideline_rows()                               # every row passes the validator
-        self.assertEqual(len(self.rows), 63)
+        self.assertGreaterEqual(len(self.rows), 63)        # b780-b12 added the D14 rows (its test pins the count)
         for selector in ("03A9", "15A6", "15H6", "24A10", "22H5", "22A5"):
             self.assertIn(selector, self.rows)
         self.assertEqual(self.rows["15A6"]["parts"], ["pants", "sleeve", "helmet"])

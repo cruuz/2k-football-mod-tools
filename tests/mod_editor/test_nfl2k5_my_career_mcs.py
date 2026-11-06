@@ -93,11 +93,21 @@ class ScheduleStaticTests(unittest.TestCase):
         b778 mc6 spends 4 of them on the identity fix (primary +2, inline_stage/inline_decode +2 after alignment).
         The spare bytes follow the generated MyCareer runtime: the beta-78 ship left them at 32 / 26 (the pin of
         9 / 3 was stale), and b779 ag1 (the 0xCA000 capacity arena and the 128-byte block reader, commits ddf823673 and
-        e957bda25) shrank the runtime by 12 bytes: 20 / 14 on this retail-length image."""
+        e957bda25) shrank the runtime by 12 bytes: 20 / 14 on this retail-length image. b780 b8-mycareer adds the draft need
+        gate (club_needs, the starter table and a longer draft tick) and moves the 25 Upgrades attribute names from the code
+        into the M3 ASCII pool, which leaves 71 / 65; b780 j23-footer's footer hooks in the save/load paths cost 30 more
+        (41 / 35); b780 n1 (the defensive camera read, 36 bytes, less five byte-identical runtime.S rewrites worth 30) 7 more
+        after alignment (34 / 28); and b780 n2 adds the kick check to the Supersim hand-back and the 3-second play-clock limit
+        on the snap hold (32 bytes) and moves the ticker's "Waiting for the next play" into the M3 ASCII pool (26 bytes
+        back): 35 / 29 on the merged beta-80 runtime (b780-int, b8 + j23 + n1 + n2; the M3 scratch buffer moved to +3248).
+        b780 mc1 spends 28 more: Play next game opens Choose team / Sign over Career Home for a MyPlayer without a club,
+        a loaded free-agent career opens Career Home, only a rookie in his own draft resumes the draft screen (never
+        reading through a lost career's empty identity), an injured MyPlayer is not made the starter, and the career
+        club has CPU depth management on (7 / 1)."""
         code, data = mode.legacy.allocations(self.career17)
         alone = mode.TAG_OFFSET - (mode.code_for(code['va'], data['va'])[1]['content_end'] - code['va'])
         with_home = home.check_static(self.p17)['mycareer_spare_bytes']
-        self.assertEqual((alone, with_home), (20, 14))
+        self.assertEqual((alone, with_home), (7, 1))
         self.assertEqual(alone - with_home, 6)       # Career Home's three addresses cost 6 bytes, as at ui1 and on the beta-78 base
         self.assertGreaterEqual(home.check_static(self.p18)['mycareer_spare_bytes'], 0)
 

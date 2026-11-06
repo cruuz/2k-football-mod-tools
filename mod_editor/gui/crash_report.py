@@ -34,6 +34,25 @@ _DIALOG_TRACEBACK_LIMIT = 4000
 #: Faults already shown to the user, so a repeating one does not stack dialogs.
 _ALREADY_SHOWN: set[str] = set()
 
+#: Apps whose crash hook is installed (the running Studio). See :func:`reports_enabled`.
+_INSTALLED: set[str] = set()
+
+#: errors.log is capped (b780-uxfix). One fault in a resize handler wrote 215 reports, about 51 MB,
+#: on every visit to a page, and nothing ever trimmed the file. Past this size the log moves to
+#: errors.log.1 (replacing the older copy) and a new one starts, so the folder holds at most about
+#: twice this much.
+LOG_LIMIT_BYTES = 2 * 1024 * 1024
+
+#: A single report longer than this keeps its start and its end, where a traceback names what failed.
+REPORT_LIMIT_CHARS = 64 * 1024
+
+#: A fault that repeats is written in full this many times per session; after that each repeat is
+#: one short entry (time and the error line), so it is still counted without filling the disk.
+FULL_REPEATS = 3
+
+#: How many times each fault (see :func:`signature`) has been logged in this session.
+_LOGGED: dict[str, int] = {}
+
 
 def signature(exc_type, tb) -> str:
     """What makes two reports "the same fault" for dialog purposes.
@@ -53,10 +72,17 @@ def signature(exc_type, tb) -> str:
     return f"{getattr(exc_type, '__name__', exc_type)}:{code.co_filename}:{frame.tb_lineno}"
 
 
+#: Environment override for the report folder (tests and portable installs); empty means the platform default.
+LOG_DIRECTORY_ENV = "MOD_STUDIO_LOG_DIR"
+
+
 def log_directory(app_name: str) -> Path:
-    """Where reports are written, following each platform's convention."""
+    """Where reports are written, following each platform's convention (``MOD_STUDIO_LOG_DIR`` overrides it)."""
 
     slug = app_name.lower().replace(" ", "-")
+    override = os.environ.get(LOG_DIRECTORY_ENV, "").strip()
+    if override:
+        return Path(override) / slug
     if sys.platform == "win32":
         base = Path(os.environ.get("LOCALAPPDATA") or Path.home() / "AppData" / "Local")
     elif sys.platform == "darwin":
@@ -97,7 +123,7 @@ def format_report(exc_type, exc, tb, app_name: str, *, when: str | None = None) 
 
 
 def record_operation(operation: str, message: str, app_name: str, *,
-                     directory: Path | None = None, when: str | None = None) -> Path | None:
+                     directory: Path | None = None, when: str | None = None, details: str = "") -> Path | None:
     """Append a caught, user-facing failure to errors.log with the version.
 
     Build and import failures are caught and shown in a dialog, so the crash
@@ -105,6 +131,9 @@ def record_operation(operation: str, message: str, app_name: str, *,
     people report. Coach Edwards' "texture receipt is missing" (2026-09-20)
     existed only as a phone photo for that reason. Every "Couldn't ..." dialog
     now leaves an entry here, so "share the error" can mean sharing a file.
+
+    ``details`` (b791-h3): the full traceback of the failure, kept below the
+    message so the entry says where it happened, not only what it said.
     """
 
     stamp = when or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -116,6 +145,8 @@ def record_operation(operation: str, message: str, app_name: str, *,
         f"operation: {operation}\n"
         f"\n{text}\n"
     )
+    if str(details or "").strip():
+        report += f"\n{str(details).rstrip()}\n"
     return write_report(report, app_name, directory=directory)
 
 
@@ -124,8 +155,11 @@ def write_report(report: str, app_name: str, *, directory: Path | None = None) -
 
     target = (directory or log_directory(app_name)) / "errors.log"
     try:
+        report = _shorten(str(report))
         target.parent.mkdir(parents=True, exist_ok=True)
-        with target.open("a", encoding="utf-8") as handle:
+        _rotate(target, len(report.encode("utf-8", "replace")))
+        # "\n" on every platform (b791-h3): one entry reads the same in any viewer and diff.
+        with target.open("a", encoding="utf-8", newline="\n") as handle:
             handle.write(report)
             handle.write("\n" + "-" * 60 + "\n")
         return target
@@ -133,6 +167,47 @@ def write_report(report: str, app_name: str, *, directory: Path | None = None) -
         # A read-only or missing home directory is not a reason to lose the
         # message; the caller still shows it on screen.
         return None
+
+
+def _shorten(report: str) -> str:
+    """Keep a very long report readable: its first quarter and its end, with the cut said in place."""
+
+    if len(report) <= REPORT_LIMIT_CHARS:
+        return report
+    head = REPORT_LIMIT_CHARS // 4
+    tail = REPORT_LIMIT_CHARS - head
+    cut = len(report) - head - tail
+    return (report[:head] + f"\n[... {cut} characters cut here to keep errors.log small ...]\n"
+            + report[-tail:])
+
+
+def _rotate(target: Path, incoming: int) -> None:
+    """Start a new errors.log when this entry would take it past :data:`LOG_LIMIT_BYTES`."""
+
+    try:
+        size = target.stat().st_size
+    except OSError:
+        return
+    if size == 0 or size + incoming <= LOG_LIMIT_BYTES:
+        return
+    try:
+        os.replace(target, target.with_name(target.name + ".1"))
+    except OSError:
+        # A locked or read-only file is not a reason to lose the report; it is still appended.
+        pass
+
+
+def _repeat_report(exc_type, exc, app_name: str, count: int) -> str:
+    """The short entry for a fault already written in full :data:`FULL_REPEATS` times."""
+
+    stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    line = "".join(traceback.format_exception_only(exc_type, exc)).strip()
+    return (
+        f"{app_name} {app_version(app_name)}\n"
+        f"time: {stamp}\n"
+        f"repeat {count} of an error already saved in full above (full details are kept for the first "
+        f"{FULL_REPEATS}):\n{line}\n"
+    )
 
 
 def summary_lines(app_name: str, saved_to: Path | None) -> tuple[str, str, str]:
@@ -229,7 +304,10 @@ def handle(exc_type, exc, tb, *, app_name: str, directory: Path | None = None,
         sys.__excepthook__(exc_type, exc, tb)
         return
     try:
-        report = format_report(exc_type, exc, tb, app_name)
+        key = signature(exc_type, tb)
+        count = _LOGGED[key] = _LOGGED.get(key, 0) + 1
+        report = (format_report(exc_type, exc, tb, app_name) if count <= FULL_REPEATS
+                  else _repeat_report(exc_type, exc, app_name, count))
     except Exception:  # noqa: BLE001
         sys.__excepthook__(exc_type, exc, tb)
         return
@@ -243,7 +321,6 @@ def handle(exc_type, exc, tb, *, app_name: str, directory: Path | None = None,
         pass
     if not show_dialog:
         return
-    key = signature(exc_type, tb)
     if key in _ALREADY_SHOWN:
         return
     _ALREADY_SHOWN.add(key)
@@ -259,10 +336,23 @@ def install(app_name: str, *, directory: Path | None = None) -> Callable:
         handle(exc_type, exc, tb, app_name=app_name, directory=directory)
 
     sys.excepthook = hook
+    _INSTALLED.add(app_name)
     return previous
 
 
+def reports_enabled(app_name: str) -> bool:
+    """Whether build reports go to the user's log folder (b791-h3).
+
+    True in the running Studio (its crash hook is installed) and whenever
+    ``MOD_STUDIO_LOG_DIR`` names a folder; a test that builds a panel on its
+    own writes nothing into the real log folder or errors.log.
+    """
+
+    return bool(os.environ.get(LOG_DIRECTORY_ENV, "").strip()) or app_name in _INSTALLED
+
+
 __all__ = [
+    "reports_enabled",
     "format_report",
     "handle",
     "install",

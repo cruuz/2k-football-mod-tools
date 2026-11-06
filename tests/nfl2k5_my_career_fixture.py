@@ -41,7 +41,12 @@ class Machine:
         self.u, self.x = u, x
         self.uc = u.Uc(u.UC_ARCH_X86, u.UC_MODE_32)
         im = XbeImage(payload)
-        self.uc.mem_map(0x10000, 0x1510000 - 0x10000)
+        # b780-int: map through the last section a composed build adds (j23's static franchise footer body ends past
+        # 0x1510000 when the scale-out pool already reaches it), never into the save/bodies scratch at 0x2000000
+        end = max([0x1510000] + [(sec.start + max(sec.raw_size, 1) + 0xFFFF) & ~0xFFFF for sec in im.sections])
+        if end > self.SAVE:
+            raise ValueError('composed XBE sections reach the fixture scratch at 0x2000000')
+        self.uc.mem_map(0x10000, end - 0x10000)
         # The existing draft-AI owner stores immutable constants and its
         # free-agent routine in the owned header logo span. A section-only
         # mapping silently zeroed the constants and omitted that code.
@@ -68,6 +73,17 @@ class Machine:
         # The native 0x1565F0 assignment helper itself is executed unchanged.
         self.stub(0x120880, lambda: (self.input_modes.append((self.reg("ECX"), self.reg("EDX"))), self.ret()))
         self.stub(0x7D550, lambda: self.ret())
+        # (after the two native-service stubs: mode4's presentation() pops stubs[0])
+        # b780 mc1 (Q79): a composed build with the on-demand Career Home module (nfl2k5_module_loader) calls the
+        # kernel's XeLoadSection (ordinal 327, thunk 0x4E3BFC -> 0x80000147) when a MyCareer screen opens; the thunk
+        # target was unmapped here. Every section's bytes are already mapped above, so the service answers
+        # STATUS_SUCCESS (stdcall, one argument) and records the section header; XeUnloadSection (328) likewise.
+        self.section_loads = []
+        self.uc.mem_map(0x80000000, 0x1000)
+        self.uc.mem_write(0x80000000, b"\xc3" * 0x1000)
+        self.stubs.append(self.uc.hook_add(u.UC_HOOK_CODE, lambda *_: (
+            self.section_loads.append(self.get(self.reg("ESP") + 4)), self.ret(0, pop=4)), begin=0x80000147, end=0x80000147))
+        self.stubs.append(self.uc.hook_add(u.UC_HOOK_CODE, lambda *_: self.ret(0, pop=4), begin=0x80000148, end=0x80000148))
         if save is not None:
             self.uc.mem_write(self.SAVE, save)
             self.root = self.SAVE + 0x320

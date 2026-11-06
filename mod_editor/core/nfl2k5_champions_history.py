@@ -188,6 +188,82 @@ def read_block(raw: bytes) -> list[dict]:
     return sorted(rows, key=lambda r: -r["super_bowl"])
 
 
+def roman(n: int) -> str:
+    """Super Bowl numerals as the game prints them: 39 -> XXXIX, 60 -> LX."""
+
+    out = ""
+    for value, text in ((1000, "M"), (900, "CM"), (500, "D"), (400, "CD"), (100, "C"), (90, "XC"), (50, "L"), (40, "XL"),
+                        (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I")):
+        while n >= value:
+            out += text
+            n -= value
+    return out
+
+
+def _slot(raw: bytes, i: int) -> bytes:
+    return raw[ENTRIES_AT + i * ENTRY:ENTRIES_AT + (i + 1) * ENTRY]
+
+
+def _slot_ok(e: bytes, i: int) -> bool:
+    """The native ``entry_at`` test: the entry's number belongs in slot ``i`` and both clubs are real."""
+
+    t = int.from_bytes(e[1:4], "little")
+    return bool(e[0]) and e[0] % RING == i and 1 <= (t & 63) <= 32 and 1 <= (t >> 6 & 63) <= 32
+
+
+def block_ok(raw: bytes) -> bool:
+    """True for a 270-byte block the game's own reader accepts (magic, version 2, ring 22, checksum)."""
+
+    return (len(raw) >= USED and raw[:8] == MAGIC and raw[8] == 2 and raw[9] == RING
+            and int.from_bytes(raw[12:16], "little") == checksum(raw))
+
+
+def merge_blocks(own: bytes | None, seed: bytes, newest_allowed: int | None = None) -> tuple[bytes, dict]:
+    """b780 b10: the disc's seasons added to a saved franchise's history block, keeping what the game recorded.
+
+    ``own`` is the block bytes in the save (``None`` or all zero for a franchise that never recorded a Super Bowl) and
+    ``seed`` the disc's block. Only slots that are completely empty are filled, so a season the game wrote itself is
+    never replaced; a seed season is added only while it is inside the ring window under the newest season the save
+    holds (the ring keeps 22) and not newer than ``newest_allowed`` (the last Super Bowl the franchise could have seen).
+    The newest-season MVP field is copied only when it is empty and the seed's newest season is the newest of the result.
+    Returns (270 bytes, {"added": [numbers], "kept": [numbers], "skipped": [(number, why)], "seeded": bool}).
+    Raises ChampionsHistoryError for a seed that does not read, or an ``own`` that is neither empty nor a readable block.
+    """
+
+    _require(block_ok(seed) and bool(read_block(seed)), "the disc's champions history does not read")
+    seed_numbers = {e[0]: e for i in range(RING) for e in [_slot(seed, i)] if _slot_ok(e, i)}
+    _require(bool(seed_numbers), "the disc's champions history is empty")
+    if own is None or not any(own[:USED]):
+        keep = {n: e for n, e in seed_numbers.items() if newest_allowed is None or n <= newest_allowed}
+        _require(bool(keep), "no season of the disc's champions history has been played in this franchise yet")
+        mvp = seed[MVP_AT:MVP_AT + 9] if seed[MVP_AT] in keep and seed[MVP_AT] == max(keep) else None
+        out = block_bytes(keep, mvp)
+        return out, {"added": sorted(keep), "kept": [], "skipped": sorted((n, "not played yet") for n in seed_numbers
+                                                                         if n not in keep), "seeded": True}
+    _require(block_ok(own), "the save's spare bytes hold something other than a champions history")
+    own_entries = {e[0]: e for i in range(RING) for e in [_slot(own, i)] if _slot_ok(e, i)}
+    newest_own = max(own_entries, default=0)
+    out = bytearray(own[:USED])
+    added, skipped = [], []
+    for n in sorted(seed_numbers):
+        i = n % RING
+        if newest_allowed is not None and n > newest_allowed:
+            skipped.append((n, "not played yet"))
+        elif newest_own and n + RING <= newest_own:
+            skipped.append((n, "older than the ring keeps"))
+        elif any(_slot(own, i)):
+            if n not in own_entries:
+                skipped.append((n, "its slot is taken"))
+        else:
+            out[ENTRIES_AT + i * ENTRY:ENTRIES_AT + (i + 1) * ENTRY] = seed_numbers[n]
+            added.append(n)
+    best = max(list(own_entries) + added, default=0)
+    if not any(own[MVP_AT:MVP_AT + 9]) and best and seed[MVP_AT] == best and best in added:
+        out[MVP_AT:MVP_AT + 9] = seed[MVP_AT:MVP_AT + 9]
+    out[12:16] = checksum(bytes(out)).to_bytes(4, "little")
+    return bytes(out), {"added": added, "kept": sorted(own_entries), "skipped": skipped, "seeded": False}
+
+
 def load(path: Path | str = DEFAULT_DATA) -> dict:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     validate(data)
@@ -340,6 +416,7 @@ def apply_image(path, data: Mapping | None = None) -> dict:
 
 
 __all__ = ["SCHEMA", "DEFAULT_DATA", "RING", "ENTRY", "ChampionsHistoryError", "CLUBS", "pack_person", "unpack_person",
+           "block_ok", "merge_blocks", "roman",
            "club_index", "entry_bytes", "mvp_slot", "newest_mvp", "seeded_block", "block_bytes", "read_block", "checksum", "load", "validate", "entries_for",
            "gap_offset", "apply_body", "read_body", "has_room", "image_has_room", "read_image", "apply_image",
            "NO_ROOM_NOTE"]

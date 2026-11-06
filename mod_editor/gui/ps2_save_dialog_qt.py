@@ -236,6 +236,7 @@ from PyQt5.QtCore import (  # noqa: E402
     QTimer,
     pyqtSignal,
 )
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtGui import QColor, QFont  # noqa: E402
 from PyQt5.QtWidgets import (  # noqa: E402
     QAbstractItemView,
@@ -381,7 +382,7 @@ class Ps2SaveEditorDialog(QDialog):
         # exists to keep the write off the Qt thread, not to run writes in
         # parallel.  The task is held so it outlives run() and is not
         # collected while its queued signals are still in flight.
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         self._pool.setMaxThreadCount(1)
         self._write_task: _WriteTask | None = None
         self._pending_output: Path | None = None

@@ -192,6 +192,7 @@ class SettingsTests(unittest.TestCase):
                 m.put(m.state+2712, 1)
                 m.put(m.state+2736, (flags >> 5) & 3)
                 m.put(m.state+2708,1);m.put(m.state+2716,1)
+                saved_star = m.uc.mem_read(m.call('primary')+0x53, 1)[0] & 1
                 output = m.native_save()
                 self.assertEqual(save.read(output)[82], flags)
                 with Machine(other) as cold:
@@ -202,7 +203,9 @@ class SettingsTests(unittest.TestCase):
                     self.assertEqual(cold.get(cold.state+2736),(flags >> 5) & 3)
                     self.assertEqual((cold.get(0xE5FFE4), cold.get(cold.state+2696), cold.get(cold.state+2700)), (1, choice, 1))
                     self.assertEqual((cold.get(cold.state+2708),cold.get(cold.state+2716)),(0,0))
-                    self.assertEqual(cold.uc.mem_read(cold.call('primary')+0x53, 1)[0] & 1, 0)
+                    # b780 mc1: star Off leaves +0x53 bit 0 to the game (an earned star survives a reload); only On
+                    # forces it. The Settings toggle clears it when the player turns the setting Off.
+                    self.assertEqual(cold.uc.mem_read(cold.call('primary')+0x53, 1)[0] & 1, saved_star)
                     # The original Franchise callback still changes the same word;
                     # the next save samples it while keeping the Supersim and
                     # stat-line bits, never a stale shadow flag.

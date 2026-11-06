@@ -283,7 +283,7 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
         self.window.browse_uniform_equipment_button.click()
         self.application.processEvents()
 
-        texture_row = PRODUCT_CATEGORY_ORDER.index(ProductCategory.TEXTURES) + 1
+        texture_row = self.window._navigation_row(ProductCategory.TEXTURES)   # b780-uxfix: rows by key
         self.assertEqual(self.window.navigation.currentRow(), texture_row)
         state = self.window._visual_browsers[ProductCategory.TEXTURES]
         self.assertEqual(state.search.text(), "18H0 equipment")
@@ -391,7 +391,11 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
             mock.patch.object(self.window, "_review_digit_sheet_preview", return_value=True, create=True),
             mock.patch(
                 "mod_editor.gui.studio_qt.QInputDialog.getItem",
-                side_effect=[("Arm / shoulder numbers", True), ("One row: 0 1 2 3 4 5 6 7 8 9", True), ("Match retail size", True)],
+                side_effect=[("Arm / shoulder numbers", True)],
+            ),
+            mock.patch(          # b780 CI: the layout and size questions wrap at a pixel width (ux_text.get_item)
+                "mod_editor.gui.studio_qt.get_item",
+                side_effect=[("One row: 0 1 2 3 4 5 6 7 8 9", True), ("Match retail size", True)],
             ),
             mock.patch(
                 "mod_editor.gui.studio_qt.QFileDialog.getOpenFileName",

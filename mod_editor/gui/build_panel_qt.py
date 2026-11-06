@@ -11,11 +11,13 @@ from __future__ import annotations
 from mod_editor.gui.ux_text import plain_error
 from mod_editor.core.update_check import BUILD_RELEASE_TAG
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from pathlib import Path
 
 from PyQt5.QtCore import QTimer, QObject, QRunnable, Qt, QThreadPool, pyqtSignal, pyqtSlot
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtWidgets import (
+    QApplication,
     QCheckBox,
     QComboBox,
     QFileDialog,
@@ -34,21 +36,36 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+import os
 import threading
 import time
 import tempfile
 from dataclasses import replace, asdict
 
 from mod_editor.gui import beta62_options as r62_ui
+from mod_editor.gui import speed_threshold_ui  # b780-cv5: the Speed separation strength row
 from mod_editor.core import mod_build, platform_compat
 from mod_editor.core import nfl2k5_player_star as player_star
+from mod_editor.core import nfl2k5_console_memory as console_memory  # b780-m64b: 128 MB / 64 MB target
 from mod_editor.core import nfl2k5_throw_tuning as tt
 from mod_editor.core.errors import ModEditorError
 from mod_editor.gui.playbook_pack_dialog_qt import BOOK_SET_EXPLAINER, BookSetTeamsDialog, book_set_status_text
 from mod_editor.gui.ux_text import (
     NOT_TESTED, STUDIO_THEMES, XEMU_LINE, Details, WrappedLabel, WrappingCheckBox, build_panel_stylesheet,
-    plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title,
+    build_summary_lines, plain_failure, show_build_failure, show_operation_error, source_captions, suggest_copy_name,
+    tab_title,
 )
+
+
+def _studio_log_directory():
+    """The Studio's log folder (errors.log, builds/), or None outside the running Studio (b791-h3)."""
+    try:
+        from mod_editor.gui import crash_report
+        if not crash_report.reports_enabled("2K5 Mod Studio"):
+            return None
+        return crash_report.log_directory("2K5 Mod Studio")
+    except Exception:  # noqa: BLE001
+        return None
 
 
 #: The narrowest a combo box on the Build page asks to be (see BuildPanel.__init__).
@@ -71,17 +88,19 @@ IMAGE_FILTER = "Xbox disc images (*.xiso *.iso *.img);;All files (*)"
 XBE_FILTER = "Xbox executables (default.xbe *.xbe);;All files (*)"
 
 
-PRESET_LABELS = {"softdrink_basic": "Basic", "softdrink_advanced": "Modern", "softdrink_experimental": "Experimental"}
-PRESET_BUTTONS = {"softdrink_basic": "Basic — 2004 fixes",
-                  "softdrink_advanced": "Modern — updated gameplay & season",
-                  "softdrink_experimental": "Experimental — extra changes"}
+# b780-uxfix: one name per preset. The button said "Modern" while the help texts, the FAQ, the release notes, the
+# project check and the published "SOFTDRINK patch advanced" all say Advanced.
+PRESET_LABELS = {"softdrink_basic": "Basic", "softdrink_advanced": "Advanced", "softdrink_experimental": "Experimental"}
+PRESET_BUTTONS = {"softdrink_basic": "Basic: 2004 fixes",
+                  "softdrink_advanced": "Advanced: updated gameplay and season",
+                  "softdrink_experimental": "Experimental: extra changes"}
 PRESET_CAPTIONS = {
     "softdrink_basic": ("2004 season and rules. Throw/catching fixes, Franchise draft and free agency, CPU returners, "
-                        "kicking power, Player Card team column, Edit Player position and Pro Bowl tab order."),
+                        "kicking power, Player Card team column with real past teams, Edit Player position and Pro Bowl tab order."),
     "softdrink_advanced": ("Basic plus acceleration, progression, position changes, modern rules, 2026 season, "
                            "letter-grade ratings in Franchise, presentation, screen timing and other selected changes. "
                            "Includes changes not yet tested in-game."),
-    "softdrink_experimental": ("Modern plus widescreen, dynamic kickoff alignment and kick laces. "
+    "softdrink_experimental": ("Advanced plus widescreen, dynamic kickoff alignment and kick laces. "
                                "Includes changes not yet tested in-game."),
 }
 BRIEF_CHANGES = 6   # changes named on the first screen of the Make my disc confirmation
@@ -234,15 +253,27 @@ from mod_editor.core import nfl2k5_cpu_qb_reads as _cpu_qb_reads, nfl2k5_db_ball
 from mod_editor.core import nfl2k5_run_blocking as _run_blocking  # noqa: E402  b777-ol1
 from mod_editor.core import nfl2k5_pass_protection as _pass_protection  # noqa: E402  b778-pr1
 from mod_editor.core import nfl2k5_pass_rush_stats as _pass_rush_stats  # noqa: E402  b779-st1
+from mod_editor.core import nfl2k5_history_screen as _history_screen  # noqa: E402  b780-j4
+from mod_editor.core import nfl2k5_cpu_passer_iq as _cpu_passer_iq  # noqa: E402  b780 a-passer
+from mod_editor.core import nfl2k5_protection_calls as _protection_calls  # noqa: E402  b780 p1-slide
+from mod_editor.core import nfl2k5_intro_autoskip as _intro_autoskip  # noqa: E402  b780-mem1
 CPU_AI_OPTIONS = (
     ("cpu_qb_zone_windows", _cpu_qb_reads.BUILD_CAPTION_ZONE, _cpu_qb_reads.HELP_ZONE),
     ("cpu_qb_recheck", _cpu_qb_reads.BUILD_CAPTION_RECHECK, _cpu_qb_reads.HELP_RECHECK),
     ("cpu_qb_tiers", _cpu_qb_reads.BUILD_CAPTION_TIERS, _cpu_qb_reads.HELP_TIERS),  # b779-gp1
+    ("cpu_passer_iq", _cpu_passer_iq.BUILD_CAPTION, _cpu_passer_iq.HELP_TEXT),  # b780 a-passer
     ("db_ball_play", _db_ball_play.BUILD_CAPTION, _db_ball_play.HELP_TEXT),
 )
+# b780-cv3: defenders leap only for balls they can reach (off in every preset).
+from mod_editor.core import nfl2k5_dive_window as _dive_window  # noqa: E402
+CPU_AI_OPTIONS += (("db_dive_window", _dive_window.BUILD_CAPTION, _dive_window.HELP_TEXT),)
 # b777-qb3: QB accuracy on short and on-the-run throws (on in the experimental preset only).
 from mod_editor.core import nfl2k5_qb_accuracy as _qb_accuracy  # noqa: E402
 CPU_AI_OPTIONS += (("qb_accuracy", _qb_accuracy.BUILD_CAPTION, _qb_accuracy.HELP_TEXT),)
+# b780 b-clock: modern CPU clock management and its overtime window (on in the Advanced and Experimental presets).
+from mod_editor.core import nfl2k5_cpu_clock2 as _cpu_clock2  # noqa: E402
+CPU_AI_OPTIONS += (("cpu_clock2", _cpu_clock2.BUILD_CAPTION, _cpu_clock2.HELP_TEXT),
+                   ("cpu_clock2_overtime", _cpu_clock2.OT_CAPTION, _cpu_clock2.OT_HELP_TEXT))
 # b778-fo1: modern sideline catches (no force-out from the 2008 season; on in the Advanced and Experimental presets).
 from mod_editor.core import nfl2k5_force_out as _force_out  # noqa: E402
 from mod_editor.core import nfl2k5_module_loader as _module_loader  # noqa: E402  b778-xs1
@@ -252,8 +283,14 @@ from mod_editor.core import nfl2k5_rookie_faces as _rookie_faces  # noqa: E402
 # b778-pi1: franchise practice keeps injuries (on with the Coach's Desk Practice row in Advanced and Experimental).
 from mod_editor.core import nfl2k5_practice_injuries as _practice_injuries  # noqa: E402
 from mod_editor.core import nfl2k5_ball_carrier_ai as _ball_carrier_ai  # noqa: E402
+from mod_editor.core import nfl2k5_runner_vision as _runner_vision  # noqa: E402  b780 cv2-runner
 # b778-kr1: return coverage takes pursuit angles on kick and punt returns (on in the Advanced and Experimental presets).
 from mod_editor.core import nfl2k5_return_coverage as _return_coverage  # noqa: E402
+from mod_editor.core import nfl2k5_depth_chart_rows as _special_rows  # noqa: E402
+# b780-cv4: CPU defenders cannot slide to the ball for a pick (opt-in, off in every preset).
+from mod_editor.core import nfl2k5_catch_snap_limit as _catch_snap_limit  # noqa: E402
+# b780-cv7: receivers block for a scrambling QB (off in every preset: a feel test for Noah).
+from mod_editor.core import nfl2k5_scramble_blocking as _scramble_blocking  # noqa: E402
 from mod_editor.core import nfl2k5_star_retention as _star_retention  # noqa: E402
 from mod_editor.core import nfl2k5_alien_prospect as _alien_prospect  # noqa: E402
 from mod_editor.core import nfl2k5_star_career as _star_career  # noqa: E402  b778-st2
@@ -264,13 +301,28 @@ from mod_editor.core import nfl2k5_draft_clock as _draft_clock  # noqa: E402
 # b778-pg1: franchise in-season weekly progression (off in every preset until the second scale-out).
 from mod_editor.core import nfl2k5_weekly_progression as _weekly_progression  # noqa: E402
 from mod_editor.core import nfl2k5_player_progress_screen as _player_progress  # noqa: E402
+from mod_editor.core import nfl2k5_franchise_footer as _franchise_footer  # noqa: E402  b780 j23
 from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # noqa: E402
+from mod_editor.core import nfl2k5_load_user_team_guard as _load_guard  # noqa: E402  b780 mc1
+from mod_editor.core import nfl2k5_save_list_type_guard as _save_list_guard  # noqa: E402  b780 mc1
+from mod_editor.core import nfl2k5_coach_career_fix as _coach_career_fix  # noqa: E402  b780 c1 (wired at b780-int)
+from mod_editor.core import nfl2k5_history_pool as _history_pool  # noqa: E402  b780 hist1
 from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
 from mod_editor.core import nfl2k5_sim_rb_injuries as _sim_rb_injuries  # noqa: E402  b779-sim2
 from mod_editor.core import nfl2k5_sim_realism as _sim_realism  # noqa: E402  b779-sim2 r4
+from mod_editor.core import nfl2k5_coach_carousel as _coach_carousel  # noqa: E402  b780-c6
+from mod_editor.core import nfl2k5_standings_records as _standings_records  # noqa: E402  b780-j1
+from mod_editor.core import nfl2k5_audible_legend as _audible_legend  # noqa: E402  b780-p3
+from mod_editor.core import nfl2k5_injured_reserve as _injured_reserve  # noqa: E402  b780 IR1
 from mod_editor.core import nfl2k5_sim_stats as _sim_stats  # noqa: E402
+from mod_editor.core import nfl2k5_quick_long_release as _quick_long_release  # noqa: E402  b780-c-release
 from mod_editor.core import nfl2k5_option_defaults as _option_defaults  # noqa: E402  b779-df1
 from mod_editor.core import nfl2k5_clock_led as _clock_led  # noqa: E402
+# b780-b13 (Noah 10/28: "Crib stays trophy room, toggle later"): every preset ticks the Crib cut, and the Basic preset is
+# "2004 fixes", so say it where people choose a preset and name the one check box that undoes it (its caption comes from
+# the owner module, so the note cannot drift from the box).
+PRESET_CRIB_NOTE = ("All three presets also cut the Crib down to the Trophy Room (its shops are removed). To keep the whole "
+                    f"Crib, untick \"{_crib_trophy_room.BUILD_CAPTION}\" under Gameplay below before you make your disc.")
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
@@ -283,6 +335,9 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("run_blocking", _run_blocking.BUILD_CAPTION, _run_blocking.HELP_TEXT),
                  ("pass_protection", _pass_protection.BUILD_CAPTION, _pass_protection.HELP_TEXT),
                  ("pass_rush_stats", _pass_rush_stats.BUILD_CAPTION, _pass_rush_stats.HELP_TEXT),
+                 ("history_screen", _history_screen.BUILD_CAPTION, _history_screen.HELP_TEXT),  # b780-j4
+                 ("protection_calls", _protection_calls.BUILD_CAPTION, _protection_calls.HELP_TEXT),  # b780 p1-slide
+                 ("intro_autoskip", _intro_autoskip.BUILD_CAPTION, _intro_autoskip.HELP_TEXT),  # b780-mem1
                  ("modern_force_out", _force_out.BUILD_CAPTION, _force_out.HELP_TEXT),  # b778-fo1
                  ("module_loader", _module_loader.BUILD_CAPTION, _module_loader.HELP_TEXT),  # b778-xs1
                  ("crib_trophy_room", _crib_trophy_room.BUILD_CAPTION, _crib_trophy_room.HELP_TEXT),  # b778-xs1
@@ -293,7 +348,11 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  # b778 ci2: the tab caption stays short; the full wording is the module help.
                  ("cpu_ball_carriers", "CPU carriers in bounds; QBs slide past sticks (experimental)",
                   _ball_carrier_ai.HELP_TEXT),  # b778-ai5
+                 ("cpu_runner_vision", "CPU carriers see where defenders go: cutbacks (experimental)",
+                  _runner_vision.HELP_TEXT),  # b780 cv2-runner: needs cpu_ball_carriers (ANNIVERSARY_DEPENDENCIES)
                  ("return_coverage", _return_coverage.BUILD_CAPTION, _return_coverage.HELP_TEXT),  # b778-kr1
+                 ("catch_snap_limit", _catch_snap_limit.BUILD_CAPTION, _catch_snap_limit.HELP_TEXT),  # b780-cv4
+                 ("scramble_blocking", _scramble_blocking.BUILD_CAPTION, _scramble_blocking.HELP_TEXT),  # b780-cv7
                  ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
                  ("sportscenter_lineup", _sportscenter_lineup.BUILD_CAPTION, _sportscenter_lineup.HELP_TEXT),  # b778-sc2
                  ("inbox_standings", _inbox_standings.BUILD_CAPTION, _inbox_standings.HELP_TEXT),  # b778-pc3
@@ -304,26 +363,87 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("player_progress", _player_progress.BUILD_CAPTION, _player_progress.HELP_TEXT),  # b778-pg2
                  ("player_progress_visible", _player_progress.VISIBLE_CAPTION,
                   _player_progress.VISIBLE_HELP_TEXT),  # b778-pg3
+                 ("franchise_history", _franchise_footer.BUILD_CAPTION, _franchise_footer.HELP_TEXT),  # b780 j23
                  ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT),  # b778-cr1
+                 ("load_user_team_guard", _load_guard.BUILD_CAPTION, _load_guard.HELP_TEXT),  # b780 mc1
+                 ("save_list_type_guard", _save_list_guard.BUILD_CAPTION, _save_list_guard.HELP_TEXT),  # b780 mc1
+                 ("coach_career_fix", _coach_career_fix.BUILD_CAPTION, _coach_career_fix.HELP_TEXT),  # b780 c1
+                 ("history_pool", _history_pool.BUILD_CAPTION, _history_pool.HELP_TEXT),  # b780 hist1
                  ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
                  ("sim_rb_injuries", _sim_rb_injuries.BUILD_CAPTION, _sim_rb_injuries.HELP_TEXT),  # b779-sim2
                  ("sim_realism", _sim_realism.BUILD_CAPTION, _sim_realism.HELP_TEXT),  # b779-sim2 r4
+                 ("coach_carousel", _coach_carousel.BUILD_CAPTION, _coach_carousel.HELP_TEXT),  # b780-c6
+                 ("standings_records", _standings_records.BUILD_CAPTION, _standings_records.HELP_TEXT),  # b780-j1
+                 ("audible_legend", _audible_legend.BUILD_CAPTION, _audible_legend.HELP_TEXT),  # b780-p3
+                 ("modern_injured_reserve", _injured_reserve.BUILD_CAPTION, _injured_reserve.HELP_TEXT),  # b780 IR1
+                 ("injured_reserve_guard", _injured_reserve.GUARD_CAPTION, _injured_reserve.GUARD_HELP),  # b780 IR1 (Q66)
                  ("sim_stats", _sim_stats.BUILD_CAPTION, _sim_stats.HELP_TEXT),  # b778-sim1
+                 ("quick_long_release", _quick_long_release.BUILD_CAPTION, _quick_long_release.HELP_TEXT),  # b780-c-release
                  ("option_defaults", _option_defaults.BUILD_CAPTION, _option_defaults.HELP_TEXT),  # b779-df1
                  ("modern_clock_led", _clock_led.BUILD_CAPTION, _clock_led.HELP_TEXT))  # b778-sd4
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
+# b780 n6: options whose beta-79 install reads "previous" in inspect(); the build upgrades it in place
+PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory",
+                         # b780 rev1: these two read "previous" on a v0.8 disc too, and the build upgrades them in
+                         # place (catch_slider_patch.apply, nfl2k5_sim_cb_tackles.apply); their boxes were greyed out
+                         "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit",
+                         # b780 db2: the beta-79 RB injury guard (no fullback rule) is upgraded in place as well
+                         "sim_rb_injuries": "simulated RB injuries",
+                         # b780 hunt6: revision 1 of the franchise record fixes (the v0.9 release candidates)
+                         "coach_career_fix": "coach record fix"}
+# b780 studio1: older revisions that read "legacy" and that the build upgrades in place (progression.apply and
+# franchise_economy.apply both accept "retail" or "legacy"). A v0.8 disc reads legacy for both; the boxes were greyed out
+# with no badge and no line in the disc summary, so retirement by age and the economy revision could not be added.
+# "returner_fix" is dormant until b780 st1 (the KR/PR getter's slot check) is merged: only then does a beta-79 or older disc
+# read "legacy" for it, and nfl2k5_returner_fix.apply accepts "retail" or "legacy" the same way.
+LEGACY_UPGRADE_KEYS = {"progression": "player growth, decline and retirement", "franchise_economy": "2026 franchise economy",
+                       "returner_fix": "CPU kick and punt returner fix"}
+
+
+def rebuild_only_reason(state: Mapping[str, object]) -> str:
+    """Why this release cannot build on top of the disc the state describes, in plain words, or "" when it can try.
+
+    b780 studio1 (Q69). A disc built by an older release (the released SOFTDRINK 2K28 discs) carries the Modern practice field's
+    team logo at midfield, a runtime table in the executable, while its practice facility reads foreign here (or cannot be read: a
+    bare executable), so the logo cannot be kept (the engine keeps an installed option only with its parent in the plan) and it
+    cannot be turned off in place. A facility that reads retail or applied can be put in the plan with the logo. The
+    engine then stops every build at its first check ("Practice field: team logo at midfield (experimental) is installed;
+    rebuild from a verified base to turn it off"), and behind that check another waits (the v0.8 plan's next refusal is
+    "128 MB memory options differ", the installed heap, early and 128 MB settings not being the page's plan). The page used to
+    offer Needs update boxes on such a disc and then let the engine refuse. Both Build and Game Fixes ask this one function."""
+
+    if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") not in ("applied", "retail"):
+        what = "disc" if state.get("container") == "xiso" else "executable"
+        return (f"This {what} already has the practice field's team logo at midfield, put there by an older build. This release "
+                f"can neither keep it nor update it in place, so it cannot build on top of this {what}. To change it, build "
+                f"again from a dump of your own retail disc.")
+    return ""
+# b780 n6: beta-79 installs this release reads ("previous") but cannot update in place (they grew, or MyCareer and its
+# companions are linked together); the option stays off and says to rebuild from the retail game
+PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
+                         "pass_rush_stats": "pass rush stats", "scorebug_runtime": "scorebug effects",
+                         "sim_realism": "simulated season realism",
+                         # b780 studio1: the released v0.8 disc reads "previous" for these two as well. Rookie faces cannot
+                         # be written over the beta-79 generator bytes (xbe_apply wants retail or this release's), and the
+                         # Player Progress row belongs to the screen above; both were greyed out with a generic badge.
+                         "rookie_faces": "rookie faces and first names", "player_progress_visible": "Player Progress row"}
+# b780 studio1: the plan fields behind the installed runtime options the build will not drop (the modules listed in
+# nfl2k5_throw_tuning._check_installed_runtime_settings, and the plan fields their derived switches read:
+# widescreen -> 4:3 menus, dynamic kickoff -> the 25th Anniversary kickoff gate, modern goalposts -> period goalposts,
+# the practice facility and its team logo -> the logo swap).
+KEPT_WHEN_INSTALLED = ("coin_defer", "decided_clock", "historic_teams_quick_game", "espn25_more_moments", "espn25_named_previews",
+                       "historic_stock_books", "espn25_era_rules", "dynamic_kickoff", "widescreen", "modern_goalposts",
+                       "modern_practice_field", "modern_practice_field_team_logo", "k128_memory", "letter_grades", "honors_page",
+                       "coach_ai")
+KEPT_NEEDS = {"modern_practice_field_team_logo": "modern_practice_field"}
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
     "modern_mercedes_benz", "modern_usbank", "modern_lucas_oil", "modern_state_farm",
     "modern_hard_rock", "modern_gillette", "modern_lambeau", "modern_everbank",
     "modern_board_kit", "modern_practice_field", "modern_practice_field_team_logo", "modern_surfaces",
 )
-ANNIVERSARY_DEPENDENCIES = {
-    "espn25_named_previews": ("espn25_more_moments",),
-    "espn25_era_rules": ("espn25_more_moments", "dynamic_kickoff", "defensive_try", "overtime"),
-    "historic_rosters_2026": ("historic_teams_quick_game",),
-    "classic_teams": ("historic_teams_quick_game",),  # b775-ct1
-}
+# b780 studio1 (Q60): the one table of "this box needs that box" rules, shared with Game Fixes (kept under its old name for callers)
+ANNIVERSARY_DEPENDENCIES = r62_ui.REQUIRES
 
 
 class _Signals(QObject):
@@ -340,6 +460,7 @@ class _Task(QRunnable):
         self._operation = operation
         self.cancelled = threading.Event()
         self.latest_progress = "Preparing the build"
+        self.failure: BaseException | None = None
         self.started = time.monotonic()
         self.last_update = self.started
         self._last_emit = 0.0
@@ -376,6 +497,9 @@ class _Task(QRunnable):
             progress.cancelled = self.cancelled
             result = self._operation(progress)
         except BaseException as exc:  # worker failures must always reach Qt
+            # b791-h3: the exception itself (its step, resource and the files written for it) stays readable for
+            # the failure dialog and Copy summary; the signal still carries the plain sentence.
+            self.failure = exc
             self.signals.failed.emit(plain_error(exc))
         else:
             self.signals.finished.emit(result)
@@ -390,6 +514,7 @@ class BuildPanel(QWidget):
     abilities_locks_changed = pyqtSignal(dict)  # rules v2 lock settings (runtime key names) for the Rosters page
     built = pyqtSignal(dict)   # the receipt of the copy just written (Share pre-fills from it)
     book_set_changed = pyqtSignal()   # modern/classic books or pack list edited here; the shell saves it and syncs Playbooks
+    memory_locks_changed = pyqtSignal()   # the 64 MB target locked or unlocked options (Game Fixes shows the same locks)
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None, *, available=None,
                  theme: str = "dark") -> None:
@@ -397,7 +522,9 @@ class BuildPanel(QWidget):
         self._facade = facade
         self._theme = theme if theme in STUDIO_THEMES else "dark"
         self.operation_guard = None
-        self._pool = QThreadPool(self)
+        # b791-h3: the main window says which project the doctor reads after a failed build (saved .2k5mod or session)
+        self.doctor_project = None
+        self._pool = roomy_pool(QThreadPool(self))
         self._task: _Task | None = None
         self._heartbeat_timer = QTimer(self)
         self._heartbeat_timer.setInterval(1000)
@@ -438,12 +565,43 @@ class BuildPanel(QWidget):
         self._hires_budget_timer.setSingleShot(True)
         self._hires_budget_timer.setInterval(200)
         self._hires_budget_timer.timeout.connect(self._preview_hires_budget)
+        # b780-m64b: the console memory target. At 64 MB the options that need 128 MB are greyed out; each lock keeps what
+        # the box was before (enabled, tooltip, badge) so 128 MB gives it back exactly, and the ticks it took away.
+        self._memory_locks: dict[str, tuple[bool, str, str | None]] = {}
+        self._memory_ticks: set[str] = set()
+        self._memory_cost_labels: dict[str, QLabel] = {}
+        self._memory_applying = False
+        # The memory model can take seconds per plan, so its answer is worked out off the page thread (like the Hi-res
+        # budget): the shown line and the refusal are for the plan identity below, never for an older selection.
+        self._memory_budget_identity: str | None = None
+        self._memory_budget_result = None     # (prediction or None, costs) for that identity
+        self._memory_budget_tasks = {}
+        self._memory_budget_serial = 0
+        self._memory_budget_timer = QTimer(self)
+        self._memory_budget_timer.setSingleShot(True)
+        self._memory_budget_timer.setInterval(250)
+        self._memory_budget_timer.timeout.connect(self._start_memory_budget)
         self._build_ui()
+        self._fit_narrow_windows()
         self._marks_task = None
         self._marks_modules = dict(self._available)
         self._official_marks_pack_changed()
         self.refresh_book_set()
         self._refresh()
+
+    #: the widest a Build-page choice box sizes itself, in characters (b780 CI: see _compact_combos)
+    COMBO_CHARS = 14
+
+    def _fit_narrow_windows(self) -> None:
+        """Nothing on this page sets its width from a long text: choice boxes size to a short label (the current
+        choice elides; the drop-down list still shows every choice in full), and row captions ("...:") wrap.
+
+        b780 CI (windows-latest): each box sized itself to its longest choice (the 64 MB memory label is about 100
+        characters: 671 px with Linux fonts, about twice that with the Windows runner's), and the one-line caption
+        "Speed separation on deep routes (experimental):" set its row's width too, which put a horizontal scroll on
+        the Build tab at the 1040-px minimum window."""
+        from mod_editor.gui.ux_text import fit_narrow_windows
+        fit_narrow_windows(self, self.COMBO_CHARS)
 
     # ---------------------------------------------------------------- UI
     def _build_ui(self) -> None:
@@ -546,12 +704,64 @@ class BuildPanel(QWidget):
         self.preset_scope_note.setWordWrap(True)
         self.preset_scope_note.setAccessibleName("What the presets do not include")
         pr.addWidget(self.preset_scope_note)
+        self.preset_crib_note = WrappedLabel(PRESET_CRIB_NOTE)
+        self.preset_crib_note.setObjectName("throwMuted")
+        self.preset_crib_note.setWordWrap(True)
+        self.preset_crib_note.setAccessibleName("The Crib in the presets")
+        pr.addWidget(self.preset_crib_note)
         root.addWidget(presets)
 
         # The disc, the copy and the button come BEFORE the long option list, so the one
         # thing the first-run path needs is never off-screen (BS-03 / BS-10).
         make = QGroupBox("Make my disc")
         mk = QVBoxLayout(make)
+        # b780-m64b: which console memory the disc is made for (128 MB xemu, the default; 64 MB experimental)
+        memory_row = QHBoxLayout()
+        self.console_memory_caption = QLabel(console_memory.CAPTION)
+        memory_row.addWidget(self.console_memory_caption)
+        self.console_memory_combo = QComboBox()
+        for value in console_memory.CHOICES:
+            self.console_memory_combo.addItem(console_memory.LABELS[value], value)
+        self.console_memory_combo.setCurrentIndex(self.console_memory_combo.findData(console_memory.DEFAULT))
+        self.console_memory_combo.setAccessibleName("Console memory")
+        self.console_memory_combo.setToolTip(console_memory.HELP_TEXT)
+        self.console_memory_combo.setAccessibleDescription(console_memory.HELP_TEXT)
+        self.console_memory_combo.currentIndexChanged.connect(lambda _index: self._refresh())
+        self.console_memory_caption.setBuddy(self.console_memory_combo)
+        memory_row.addWidget(self.console_memory_combo, 1)
+        mk.addLayout(memory_row)
+        self.console_memory_note = WrappedLabel(console_memory.NOTE_128)
+        self.console_memory_note.setObjectName("throwMuted")
+        self.console_memory_note.setWordWrap(True)
+        self.console_memory_note.setAccessibleName("About the console memory choice")
+        mk.addWidget(self.console_memory_note)
+        self.memory_budget_label = WrappedLabel("")
+        self.memory_budget_label.setWordWrap(True)
+        self.memory_budget_label.setAccessibleName("64 MB memory budget")
+        self.memory_budget_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.memory_budget_label.hide()
+        mk.addWidget(self.memory_budget_label)
+        memory_actions = QHBoxLayout()
+        self.memory_recommended_button = QPushButton(console_memory.RECOMMENDED_BUTTON)
+        self.memory_recommended_button.setToolTip(console_memory.RECOMMENDED_HELP)
+        self.memory_recommended_button.setAccessibleDescription(console_memory.RECOMMENDED_HELP)
+        self.memory_recommended_button.clicked.connect(lambda _checked=False: self.apply_recommended_64())
+        self.memory_recommended_button.hide()
+        memory_actions.addWidget(self.memory_recommended_button)
+        memory_actions.addStretch(1)
+        mk.addLayout(memory_actions)
+        self.memory_action_label = WrappedLabel("")
+        self.memory_action_label.setObjectName("throwMuted")
+        self.memory_action_label.setWordWrap(True)
+        self.memory_action_label.hide()
+        mk.addWidget(self.memory_action_label)
+        # b780-m64b: roster edits that grow the roster file are fitted to the original size at 64 MB; say what goes
+        self.memory_roster_label = WrappedLabel("")
+        self.memory_roster_label.setObjectName("throwMuted")
+        self.memory_roster_label.setWordWrap(True)
+        self.memory_roster_label.setAccessibleName("64 MB roster fit")
+        self.memory_roster_label.hide()
+        mk.addWidget(self.memory_roster_label)
         out = QHBoxLayout()
         self.target_caption = QLabel("Save disc copy as")
         out.addWidget(self.target_caption)
@@ -584,8 +794,12 @@ class BuildPanel(QWidget):
         self.build_button.clicked.connect(self._build)
         actions.addWidget(self.build_button)
         self.check_button = QPushButton("Check my project")
-        self.check_button.setToolTip("Finds in minutes what Make my disc would refuse or change in your project and "
-                                     "options, and says what to untick. Nothing is written.")
+        self.check_button.setToolTip("A whole check of your project and options before a long build: what Make my disc "
+                                     "would refuse or change, every stadium and colour refit tried with your values, the "
+                                     "new kits on your own kits, options no release build tried, and your project against "
+                                     "every size limit. A few minutes for most projects; up to about half an hour with "
+                                     "every stadium option on (the stadium refits are most of it). Save report keeps "
+                                     "it all. Nothing is written to your project or disc.")
         self.check_button.setAccessibleDescription(self.check_button.toolTip())
         self.check_button.clicked.connect(self._check_project)
         actions.addWidget(self.check_button)
@@ -595,6 +809,7 @@ class BuildPanel(QWidget):
         actions.addWidget(self.cancel_button)
         actions.addStretch(1)
         self._last_build_summary = ""
+        self._last_check_report = None  # b791 h4: the last Check my project report (Save report writes it)
         self._requested_build_summary = ""
         self._requested_build_labels = []
         self.copy_summary_button = QPushButton("Copy Build summary")
@@ -692,7 +907,7 @@ class BuildPanel(QWidget):
         g.addWidget(self.throw_details)
         self.catch_check = self._option(g, "catch_slider", "Fix Catching & Interception sliders",
                                         "Catching controls drops; Interception controls picks.",
-                                        details="The catch odds are multiplied by 2 x (Human Catching + CPU Catching), the same for both teams (the menu goes to 200), "
+                                        details="The catch odds are multiplied by 1.25 x (Human Catching + CPU Catching), the same for both teams (the menu goes to 200), "
                                                 "and a defender's roll is divided by twice the Interception slider (0 = no picks, 50 = original, 100 = double).")
         self.accel_check = self._option(g, "accel_ramp", "Legacy acceleration ramp",
             "Adds a rating-based speed envelope to controller-driven players.",
@@ -811,6 +1026,7 @@ class BuildPanel(QWidget):
         for key, caption, help_text in BUILD_OPTIONS:
             setattr(self, key + "_check", self._option(g, key, caption, help_text,
                     badge="EXPERIMENTAL / UNWITNESSED", needs_image=True))
+        self.speed_threshold_spin = speed_threshold_ui.add_control(g, self._refresh)  # b780-cv5
         self.cpu_money_downs_level = QComboBox()
         for caption, value in r62_ui.LEVELS["cpu_money_downs"]:
             self.cpu_money_downs_level.addItem(caption, value)
@@ -856,10 +1072,6 @@ class BuildPanel(QWidget):
         g.addWidget(WrappedLabel(tt.cpu_scrambles_patch.BUILD_CAPTION))
         g.addWidget(self.cpu_scrambles_level)
         self.cpu_scrambles_level.currentIndexChanged.connect(lambda _index: self._refresh())
-        for parent, children in r62_ui.CHILDREN.items():
-            getattr(self, parent + "_check").toggled.connect(lambda on, p=parent: self._parent_toggled(p, on))
-            for child in children:
-                getattr(self, child + "_check").toggled.connect(lambda on, p=parent: self._child_toggled(p, on))
         self.momentum_collision_level = QComboBox()
         for caption, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
             self.momentum_collision_level.addItem(caption, value)
@@ -988,7 +1200,10 @@ class BuildPanel(QWidget):
         self.draft_check = self._option(f, "draft_ai", "Smarter Franchise drafts & free agency",
                                         "Changes CPU decisions; Fantasy Draft is separate.",
                                         details="The pick is the prospect with the best edge over his own position's class average, times real "
-                                                "positional value, plus the team's need order and a little noise; CPU free-agent targets are scored the same way.")
+                                                "positional value, plus the team's need order and a little noise; CPU free-agent targets are scored the same way. "
+                                                "Kickers and punters go from round 5 on (at most one rare standout earlier in a draft). Every draft class "
+                                                "gets a real position mix (21 QBs, 9 kickers and 9 punters in a 380-player class) instead of the positions of the "
+                                                "players who left, and draft classes no longer use up the records Create Player needs.")
         self.returner_check = self._option(f, "returner_fix", "Fix CPU kick & punt returners",
                                            "Changes automatic depth-chart selection.",
                                            details="The original stores a punt-return score as the roster slot, so the punt returner is whoever sits in "
@@ -1009,17 +1224,21 @@ class BuildPanel(QWidget):
             details="Changes the cap, generated contracts and trade values. Use the separately imported 2026 "
                     "contract roster. Imported cap schedules are approximations, and original APY and guarantees "
                     "are not reproduced exactly. Keep this off for existing saves.")
-        self.team_column_check = self._option(f, "team_column", "Show TEAM in Player Card season stats",
-                                              "Which team each season was played for.",
-                                              details="The season in progress shows the club the player is on now; a finished season shows the club "
-                                                      "of his last game. Seasons played before this change was in the save, the folded \"pre\" row and "
-                                                      "the Total row read \"--\". Franchise saves stay loadable either way.")
-        self.team_history_check = self._option(f, "team_history", "Past teams in Player Card stats",
-                                               "New franchises only; missing seasons use the player's 2004 team.",
+        self.team_column_check = self._option(f, "team_column", "Show each season's team on the Player Card",
+                                              "Adds a TEAM column next to Yr. On the original 2004 rosters it also fills every past season with the real team, in franchises started from this disc.",
+                                              details="This one option does both jobs on the original rosters: it adds the TEAM column and writes the real "
+                                                      "team of every past season the roster already has stats for (built-in nflverse data, CC-BY-4.0). "
+                                                      "Seasons that data does not cover show the player's own 2004 team, and the few 2004 free agents "
+                                                      "with no team still read \"--\". The season in progress shows the team the player is on now; a "
+                                                      "finished season shows the team of his last game. The 2026 SOFTDRINK roster brings its own team history. "
+                                                      "Past seasons only appear in a franchise started from this disc. The folded \"pre\" row and the "
+                                                      "Total row read \"--\". Franchise saves stay loadable either way.")
+        self.team_history_check = self._option(f, "team_history", "Use my own team history file instead",
+                                               "Optional. Replaces the built-in past teams; needs the TEAM column above.",
                                                badge="New franchises only", needs_image=True,
-                                               details="Writes the real club of every past season the roster carries stats for (built-in nflverse data, "
-                                                       "CC-BY-4.0). Seasons the data does not cover are filled with the player's own 2004 club; only the 2004 "
-                                                       "free agents still read \"--\". A CSV under Custom data replaces the built-in data.")
+                                               details="You do not need this for the original rosters: the TEAM column above already writes the built-in "
+                                                       "past teams. Tick this only to use your own CSV (choose it under Custom data); a row in your file "
+                                                       "wins over the built-in data and over the player's own 2004 team.")
         self.career_stats_check = self._option(f, "career_stats", "Career stats from CSV",
                                                "Real per-season counters for the roster's past seasons, from a CSV you supply.",
                                                badge="New franchises only", needs_image=True,
@@ -1159,7 +1378,7 @@ class BuildPanel(QWidget):
         self.depth_chart_rows_check = self._option(
             r, "depth_chart_rows", "SPECIAL: 13 rows and complete player names (experimental)",
             "All 13 SPECIAL roles on one screen, with complete player names; offense and defense keep eleven rows.", badge=NOT_TESTED, needs_image=True,
-            details="Retail: special teams has four depth-chart rows. Patch: SPECIAL shows KR, PR, K, P, LS, LGUN, RGUN, NCB, DCB, SLWR, GAD, 3DRB and PWRB together, with names beside all available player numbers. Offense and defense keep eleven rows and show X / Z receiver labels. Row spacing is three pixels tighter on all depth-chart tabs; the font stays the same. Role labels have more room. These roles share player lists, so changing one can change another. Requires one-pool positions and the playbook roles. EXPERIMENTAL/UNWITNESSED.")
+            details=_special_rows.HELP_TEXT)  # b780 hunt5: what each SPECIAL row does, row by row
         self.roster_edits_check = self._option(r, "roster_edits", "Include exported ★ Rosters edits",
                                                "Export roster edits on ★ Rosters, then choose that JSON file here.", needs_image=True,
                                                details="Applies a roster-edits snapshot written by ★ Rosters. It runs last of the roster passes and writes only "
@@ -1769,12 +1988,8 @@ class BuildPanel(QWidget):
         self.career_stats_check.toggled.connect(self.career_row.setVisible)
         self.roster_edits_check.toggled.connect(self.edits_row.setVisible)
         self.roster_edits_check.toggled.connect(lambda on: self.roster_edits_status.setVisible(on and bool(self.roster_edits_status.text())))
-        for child, parents in ANNIVERSARY_DEPENDENCIES.items():
-            getattr(self, child + "_check").toggled.connect(
-                lambda on, key=child: self._anniversary_toggled(key, on))
-            for parent in parents:
-                getattr(self, parent + "_check").toggled.connect(
-                    lambda on, key=child: self._anniversary_parent_toggled(key, on))
+        r62_ui.connect_requirements(self._requirement_box, self._requirement_child_toggled, self._requirement_parent_toggled,
+                                   self._requirement_parent_clicked)
         self.historic_stock_books_check.toggled.connect(
             lambda on: self._exclusive_books("historic_stock_books", "playbook_pair", on))
         self.playbook_pair_check.toggled.connect(
@@ -2022,6 +2237,7 @@ class BuildPanel(QWidget):
         boxes = self._boxes()
         toggles = set(self._toggle_boxes())
         checked_before = {key: box.isChecked() for key, box in boxes.items() if box in toggles}
+        speed_before = self.speed_threshold_spin.value()  # b780-cv5
         previous_path = str((self._state or {}).get("path") or "")
         incoming_path = str(state.get("path") or "")
         same_disc = (bool(previous_path) and bool(incoming_path)
@@ -2042,6 +2258,11 @@ class BuildPanel(QWidget):
         # throw option (and its plan) into the new build (b778-bd2).
         for box in self._toggle_boxes():
             box.setChecked(False)
+        if not keep_selection:
+            self._memory_ticks.clear()  # b780-m64b: a new disc starts clean at 128 MB too
+        self.speed_threshold_spin.blockSignals(True)  # b780-cv5: a new disc starts at 0, like the check boxes
+        self.speed_threshold_spin.setValue(0)
+        self.speed_threshold_spin.blockSignals(False)
         # The two throw sub-options are not feature toggles; a new disc starts at their defaults.
         self.realistic_check.setChecked(True)
         self.arc_by_distance_check.setChecked(False)
@@ -2090,8 +2311,21 @@ class BuildPanel(QWidget):
             ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
             ("camera", "camera"), ("widescreen", "widescreen"), ("scorebug", "ESPN scorebug"))
             if state.get(key) == "applied"]
+        rebuild_only = rebuild_only_reason(state)   # b780 studio1 (Q69): on such a disc "needs update" would be an invitation
+        needs = "rebuild from retail to update" if rebuild_only else "needs update"
         if state.get("depth_locks") == "legacy":   # fx1 (review pr68 #4): an older revision, upgraded in place
-            applied.append("depth locks: older revision (needs update)")
+            applied.append(f"depth locks: older revision ({needs})")
+        if state.get("draft_ai") == "legacy":      # b780 b1-draft: the beta-78/79 draft AI, upgraded in place
+            applied.append(f"draft AI: older revision ({needs})")
+        for key, name in LEGACY_UPGRADE_KEYS.items():  # b780 studio1: upgraded in place too
+            if state.get(key) == "legacy":
+                applied.append(f"{name}: older revision ({needs})")
+        for key, name in PREVIOUS_UPGRADE_KEYS.items():  # b780 n6: beta-79 installs, upgraded in place
+            if state.get(key) == "previous":
+                applied.append(f"{name}: older revision ({needs})")
+        for key, name in PREVIOUS_REBUILD_KEYS.items():  # b780 n6: beta-79 installs a rebuild from retail updates
+            if state.get(key) == "previous":
+                applied.append(f"{name}: beta 79 revision (rebuild from retail to update)")
         foreign = [key.replace("_", " ") for key in mod_build.BuildPlan.__dataclass_fields__
                    if state.get(key) == "foreign"]
         settings = state.get("throw")
@@ -2113,13 +2347,39 @@ class BuildPanel(QWidget):
             # fx1 (review pr68 #4): revision 1/2 depth locks (b775/b776 discs) read "legacy"; the build upgrades them
             # in place (_apply_all accepts it), so the box is an upgrade like the position pools repair.
             locks_upgrade = key == "depth_locks" and value == "legacy"
-            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade) and (is_image or not needs_image))
+            # b780 b1-draft: the beta-78/79 draft AI head reads "legacy"; the build upgrades it in place too.
+            draft_upgrade = key == "draft_ai" and value == "legacy"
+            # b780 n6: a beta-79 install (honors page, camera v7, K128) reads "previous"; the build upgrades it in place.
+            previous_upgrade = key in PREVIOUS_UPGRADE_KEYS and value == "previous"
+            legacy_upgrade = key in LEGACY_UPGRADE_KEYS and value == "legacy"  # b780 studio1
+            # b780 studio1 (Q69): on a disc this release cannot build on, an in-place update is not an offer
+            update_only = upgrade or locks_upgrade or draft_upgrade or previous_upgrade or legacy_upgrade
+            declined = bool(rebuild_only) and update_only
+            box.setEnabled(available and (value == "retail" or (update_only and not declined))
+                           and (is_image or not needs_image))
             box.setChecked(False)
             if not available:
                 box.setToolTip("Not available in this release.")
                 self._set_badge(key, "Not available in this release")
+            elif declined:
+                box.setToolTip("An older revision of this is installed. " + rebuild_only)
+                self._set_badge(key, "Older revision: rebuild from retail")
             elif locks_upgrade:
                 box.setToolTip("Depth chart locks from an older build are installed. Select to update them to this "
+                               "release's revision (in place).")
+                self._set_badge(key, "Needs update")
+            elif draft_upgrade:
+                box.setToolTip("Smarter Franchise drafts from an older build are installed. Select to update them to this "
+                               "release's revision (in place): kickers and punters from round 5 and real draft class "
+                               "position mixes.")
+                self._set_badge(key, "Needs update")
+            elif previous_upgrade:
+                older = "a v0.9 test build" if key == "coach_career_fix" else "an older build (beta 79)"  # b780 hunt6
+                box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from {older} is installed. Select to "
+                               "update it to this release's revision (in place).")
+                self._set_badge(key, "Needs update")
+            elif legacy_upgrade:
+                box.setToolTip(f"An older revision of {LEGACY_UPGRADE_KEYS[key]} is installed. Select to update it to this "
                                "release's revision (in place).")
                 self._set_badge(key, "Needs update")
             elif upgrade:
@@ -2128,6 +2388,10 @@ class BuildPanel(QWidget):
             elif value == "applied":
                 box.setToolTip("Already installed on this source.")
                 self._set_badge(key, "Already installed")
+            elif key in PREVIOUS_REBUILD_KEYS and value == "previous":
+                box.setToolTip(f"The beta 79 {PREVIOUS_REBUILD_KEYS[key]} is installed on this source. This release cannot "
+                               "update it in place; build from your retail game to get this release's version.")
+                self._set_badge(key, "Beta 79 version: rebuild from retail")
             elif value == "foreign":
                 box.setToolTip("Not recognised: the bytes at this change's sites are neither retail nor this patch "
                                "(changed by another tool), so it can't be added here.")
@@ -2147,6 +2411,16 @@ class BuildPanel(QWidget):
                     "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", *BUILD_KEYS):
             gate(getattr(self, key + "_check"), key, needs_image=True)
         gate(self.trim_intro_videos_check, "trim_intro_videos", needs_image=True)
+        # b780 studio1: CPU ball carrier vision is the wider sideline taper of the carrier owner, which can only be chosen
+        # when the owner is first written (nfl2k5_ball_carrier_ai.apply refuses the other taper on an installed one). The box
+        # stayed tickable on a disc that already carries the owner and then met a dependency it could never satisfy.
+        if state.get("cpu_ball_carriers") == "applied" and state.get("cpu_runner_vision") == "retail":
+            box = self.cpu_runner_vision_check
+            box.setEnabled(False)
+            box.setChecked(False)
+            box.setToolTip("CPU ball carriers are already installed on this disc with the normal sideline taper, and carrier "
+                           "vision is the wider taper of the same patch, so it needs a disc built from your retail game.")
+            self._set_badge("cpu_runner_vision", "Build from retail to add")
         # b76-i1: a source with a custom intro may take another movie, so retail or custom enables it
         custom_state = str(state.get("custom_intro"))
         custom_available = self._available.get("custom_intro", False)
@@ -2580,6 +2854,12 @@ class BuildPanel(QWidget):
         gate(self.widescreen_check, "widescreen")
         self.throw_check.setEnabled(True)
         dropped = []
+        speed_threshold_ui.refresh(self.speed_threshold_spin, state, self._available.get("speed_threshold", True))  # b780-cv5
+        if keep_selection and speed_before:
+            if self.speed_threshold_spin.isEnabled():
+                self.speed_threshold_spin.setValue(speed_before)
+            elif state.get("speed_threshold") != "applied":
+                dropped.append("speed_threshold")
         if keep_selection:
             for key, was_checked in checked_before.items():
                 if not was_checked:
@@ -2619,7 +2899,7 @@ class BuildPanel(QWidget):
         if self._state is None:
             self.pending_preset = name
             return False
-        if any(box.isChecked() for box in self._toggle_boxes()):
+        if any(box.isChecked() for box in self._toggle_boxes()) or self.speed_threshold_spin.value():
             self.preset_note.setText("Your current choices were kept; press a preset button to replace them.")
             return False
         self.apply_preset(name)
@@ -2694,6 +2974,7 @@ class BuildPanel(QWidget):
         self._apply_abilities_access(values.get("abilities_star_access", tt.abilities_patch.DEFAULT_STAR_ACCESS))
         boxes = self._boxes()
         applied, skipped = [], []
+        self._memory_ticks.clear()  # b780-m64b: the preset replaces the selection
         if "max_deep_yards" in values:
             self.ceiling_spin.setValue(int(round(float(values["max_deep_yards"]))))
         def wanted(key):
@@ -2714,12 +2995,21 @@ class BuildPanel(QWidget):
                 want = wanted(key) and key not in orphans
                 if want and not box.isEnabled() and key not in ("realistic_flight", "arc_by_distance"):
                     skipped.append(key)
+                    if key in self._memory_locks:
+                        self._memory_ticks.add(key)  # b780-m64b: off at 64 MB, back with the preset at 128 MB
                     continue
                 box.setChecked(want)
                 if want and key not in ("realistic_flight", "arc_by_distance"):
                     applied.append(key)
         finally:
             self._preset_applying = False
+        wanted_speed = int(values.get("speed_threshold", 0))  # b780-cv5: the strength follows the preset where the disc can take it
+        if self.speed_threshold_spin.isEnabled():
+            self.speed_threshold_spin.setValue(wanted_speed)
+            if wanted_speed:
+                applied.append("speed_threshold")
+        elif wanted_speed:
+            skipped.append("speed_threshold")
         preset_money = str(values.get("cpu_money_downs", "retail"))
         if preset_money != "retail" and self.cpu_money_downs_check.isChecked() and self.cpu_money_downs_level.findData(preset_money) >= 0:
             self.cpu_money_downs_level.blockSignals(True)
@@ -2749,6 +3039,8 @@ class BuildPanel(QWidget):
                 "More inputs ▸ Modern books).")
 
     def _short_label(self, key: str) -> str:
+        if key == "speed_threshold":  # b780-cv5: a number row, not a check box
+            return speed_threshold_ui.CAPTION
         box = self._boxes().get(key)
         return box.text().replace("&&", "&") if box is not None else key
 
@@ -2756,10 +3048,15 @@ class BuildPanel(QWidget):
         state = str((self._state or {}).get(key))
         if not self._available.get(key, True):
             return "not available in this release"
+        reason = self.memory_forced_reason(key)  # b780-m64b
+        if reason and state not in self._INSTALLED:
+            return "off at 64 MB: " + console_memory.badge_reason(reason, key)
         if state == "applied":
             return "already installed"
         if state == "foreign":
             return "unrecognized source data"
+        if state == "previous":                 # b780 studio1: it said "full disc required" about a full disc
+            return "the beta 79 version is installed; rebuild from retail to update it"
         return "full disc required"
 
     def _boxes(self) -> dict[str, QCheckBox]:
@@ -2877,7 +3174,7 @@ class BuildPanel(QWidget):
     def plan(self) -> mod_build.BuildPlan:
         plan = mod_build.BuildPlan(
             source=self.source_field.text(), target=self.target_field.text(),
-            overwrite=platform_compat.io_path(self.target_field.text()).exists() if self.target_field.text() else False,
+            overwrite=self._target_exists(),
             throw=self.throw_check.isChecked(), max_deep_yards=float(self.ceiling_spin.value()),
             arc=float(self.arc_spin.value()) / 100.0,
             realistic_flight=self.realistic_check.isChecked(),
@@ -2984,6 +3281,8 @@ class BuildPanel(QWidget):
             name=self.name_field.text().strip(), author=self.author_field.text().strip(),
             notes=self.notes_field.toPlainText().strip(),
         )
+        if hasattr(self, "speed_threshold_spin"):  # b780-cv5: 0 when the control is off, the installed strength when locked
+            plan.speed_threshold = speed_threshold_ui.plan_value(self.speed_threshold_spin, self._state)
         if plan.depth_chart_rows:
             state = self._state or {}
             plan.position_pools = plan.position_pools or state.get("position_pools") != "applied"
@@ -3010,7 +3309,381 @@ class BuildPanel(QWidget):
             setattr(plan, key, value)
         if getattr(self, "_momentum_legacy_disabled", False):
             plan.notes = (plan.notes + "\nlegacy_accel_ramp_disabled_by_momentum_profile=true").strip()
+        plan.console_memory = self.console_memory()  # b780-m64b
+        # b780 studio1: a child whose parent the disc already carries is met by the disc. The parent's box is greyed out
+        # ("Already installed", unticked), so the plan said hitch brake without close pursuit recovery and the settings
+        # validator refused it: Save Project failed with "turn both on, or both off" about a box nobody could tick. The
+        # build replays an installed parent as already applied and adds the child to it in place.
+        for parent in r62_ui.VALIDATED_TOGETHER:
+            if not getattr(plan, parent, False) and self._installed(parent) and any(
+                    getattr(plan, child, False) for child in r62_ui.CHILDREN[parent]):
+                setattr(plan, parent, True)
         return plan
+
+    def _target_exists(self) -> bool:
+        """Whether the output file is already there. A name the drive cannot hold is simply not there: ``Path.exists``
+        raises OSError (File name too long) for it, and plan() runs on every keystroke in the field, so typing or
+        suggesting a long name raised out of the slot and made Save Project fail until the name was shortened."""
+        text = self.target_field.text()
+        if not text:
+            return False
+        try:
+            return bool(platform_compat.io_path(text).exists())
+        except (OSError, ValueError):
+            return False
+
+    @staticmethod
+    def _name_too_long(text: str) -> bool:
+        """The file name part is longer than the drive allows (255 bytes on Linux and macOS; 255 UTF-16 units on Windows,
+        where a character outside the Basic Multilingual Plane, such as an emoji, takes two)."""
+        name = Path(text.strip()).name
+        return len(name.encode("utf-16-le", "surrogatepass")) // 2 > 255 if platform_compat.IS_WINDOWS else len(os.fsencode(name)) > 255
+
+    def _installed(self, key: str) -> bool:
+        """The disc this page read already carries ``key`` exactly as this release writes it."""
+        return (self._state or {}).get(key) == "applied"
+
+    def _plan_for_build(self) -> mod_build.BuildPlan:
+        """``plan()`` for a build over a disc that already carries options: the plan keeps what is installed.
+
+        The build refuses to drop an installed runtime option ("X is installed; rebuild from a verified base to turn it
+        off", ``nfl2k5_throw_tuning._check_installed_runtime_settings``) and checks option dependencies against the plan,
+        not the disc, while this page shows an installed option as greyed out and unticked. So on a disc built by the
+        Studio, including the released v0.8 disc, every build was refused at its first check (era rules without their
+        bases, widescreen menus, the kickoff gate ...). An installed option is replayed as already applied."""
+        plan = self.plan()
+        for name in KEPT_WHEN_INSTALLED:
+            if getattr(plan, name, True) is False and self._installed(name):
+                # a sub-option is kept only with its parent in the plan (the build refuses the logo without the facility)
+                parent = KEPT_NEEDS.get(name)
+                if parent is None or getattr(plan, parent, False) or self._installed(parent):
+                    setattr(plan, name, True)
+                    if parent is not None:
+                        setattr(plan, parent, True)
+        for child, parents in ANNIVERSARY_DEPENDENCIES.items():
+            if getattr(plan, child, False):
+                for parent in parents:
+                    if not getattr(plan, parent, False) and self._installed(parent):
+                        setattr(plan, parent, True)
+        return plan
+
+    # ------------------------------------------------------------- b780-m64b: console memory
+    def console_memory(self) -> int:
+        """128 (xemu, the full SOFTDRINK build; the default) or 64 (original Xbox and hakuX, experimental)."""
+        combo = getattr(self, "console_memory_combo", None)
+        value = combo.currentData() if combo is not None else None
+        return value if value in console_memory.CHOICES else console_memory.DEFAULT
+
+    def set_console_memory(self, value, *, keep_ticks: bool = True, refresh: bool = True) -> None:
+        """Choose the target. ``keep_ticks=False`` (a project or recipe restore) forgets the ticks 64 MB took away, so
+        going back to 128 MB keeps exactly what was restored."""
+        value = console_memory.normalize(int(value)) if value is not None else console_memory.DEFAULT
+        if not keep_ticks:
+            self._memory_ticks.clear()
+        combo = self.console_memory_combo
+        blocked = combo.blockSignals(True)
+        combo.setCurrentIndex(combo.findData(value))
+        combo.blockSignals(blocked)
+        if refresh:
+            self._refresh()
+
+    def _memory_label(self, key: str) -> str:
+        """The page's caption for an option the memory model names ("" lets the model's module name it)."""
+        if key == "speed_threshold" or key in self._boxes():
+            return self._short_label(key)
+        return ""
+
+    def memory_forced_reason(self, key: str) -> str:
+        """Why the 64 MB target turned this option off, or "" (128 MB, or an option it keeps)."""
+        if self.console_memory() != 64:
+            return ""
+        return console_memory.requires_128().get(key, "")
+
+    _INSTALLED = ("applied", "previous", "applied (custom)", "on")
+
+    def _memory_installed_blockers(self) -> list[str]:
+        """The 128 MB-only options already on the source disc (a 64 MB build cannot take them off)."""
+        state = self._state or {}
+        return [key for key in console_memory.requires_128() if str(state.get(key)) in self._INSTALLED]
+
+    def _memory_lock_tip(self, key: str, reason: str) -> str:
+        return (f"Off for the 64 MB build: {reason}. Choose Console memory 128 MB (xemu, full SOFTDRINK) to use it.")
+
+    def _apply_console_memory(self) -> None:
+        """Grey out the options the 64 MB target cannot carry (with the reason), or give them back at 128 MB."""
+        if self._memory_applying:
+            return
+        self._memory_applying = True
+        try:
+            target = self.console_memory()
+            boxes = self._boxes()
+            if target == 64:
+                rules = console_memory.requires_128()
+                for key in [key for key in self._memory_locks if key not in rules]:
+                    self._memory_unlock(key, boxes)
+                state = self._state or {}
+                locked = []
+                for key, reason in rules.items():
+                    box = boxes.get(key)
+                    if box is None:
+                        continue
+                    if str(state.get(key)) in self._INSTALLED:
+                        # installed on the source: the disc read set the box (installed, kept on) and the blocker says
+                        # why; a lock from an earlier disc would hand back that disc's state at 128 MB
+                        self._memory_locks.pop(key, None)
+                        continue
+                    badge = self._badges.get(key)
+                    lock_badge = console_memory.lock_badge(reason, key)
+                    tip = self._memory_lock_tip(key, reason)
+                    if key not in self._memory_locks or box.isEnabled() or (badge is not None and badge.text() != lock_badge):
+                        badge_text = badge.text() if badge is not None else None
+                        if badge_text is not None and badge_text.startswith(console_memory.LOCK_PREFIX):
+                            badge_text = self._static_badges.get(key, "")
+                        old_tip = box.toolTip()
+                        if old_tip == tip:
+                            old_tip = box.accessibleDescription()
+                        # first lock, or the disc read (gate) or another rule changed the box since: keep what it is now
+                        self._memory_locks[key] = (box.isEnabled(), old_tip, badge_text)
+                    locked.append((key, box, lock_badge, tip))
+                # pass 1: remember every tick first (unticking a parent such as 128 MB memory clears its children), then untick
+                self._memory_ticks.update(key for key, box, _badge, _tip in locked if box.isChecked())
+                for key, box, _badge, _tip in locked:
+                    if box.isChecked():
+                        box.setChecked(False)
+                for key, box, lock_badge, tip in locked:   # pass 2: grey out with the plain reason
+                    box.setEnabled(False)
+                    box.setToolTip(tip)
+                    self._set_badge(key, lock_badge)
+            elif self._memory_locks:
+                keys = list(self._memory_locks)
+                for key in keys:
+                    self._memory_unlock(key, boxes)
+                for key in keys:
+                    box = boxes.get(key)
+                    if key in self._memory_ticks and box is not None and box.isEnabled():
+                        box.setChecked(True)
+                self._memory_ticks.clear()
+            self._refresh_memory_display(target)
+            self.memory_locks_changed.emit()
+        finally:
+            self._memory_applying = False
+
+    def _memory_unlock(self, key: str, boxes: dict) -> None:
+        enabled, tip, badge_text = self._memory_locks.pop(key)
+        box = boxes.get(key)
+        if box is None:
+            return
+        box.setEnabled(enabled)
+        box.setToolTip(tip)
+        if badge_text is not None:
+            self._set_badge(key, badge_text)
+
+    def _memory_cost_label(self, key: str):
+        """The option's 64 MB memory line under its helper text (made the first time it is needed), or None."""
+        label = self._memory_cost_labels.get(key)
+        if label is not None:
+            return label
+        helper = self._helpers.get(key)
+        row = helper.parentWidget() if helper is not None else None
+        layout = row.layout() if row is not None else None
+        if layout is None:
+            return None
+        label = QLabel("")
+        label.setObjectName("optionBadge")   # the same small pill as the qualifier badge above it
+        label.setWordWrap(True)
+        label.setContentsMargins(30, 0, 0, 0)
+        label.setAccessibleName("Memory this option costs at 64 MB")
+        line = QHBoxLayout()
+        line.setContentsMargins(0, 0, 0, 0)
+        line.addWidget(label)
+        line.addStretch(1)
+        layout.insertLayout(layout.indexOf(helper) + 1, line)
+        self._memory_cost_labels[key] = label
+        return label
+
+    def _refresh_memory_display(self, target: int) -> None:
+        sixty_four = target == 64
+        self.console_memory_note.setText(console_memory.NOTE_64 if sixty_four else console_memory.NOTE_128)
+        self.memory_budget_label.setVisible(sixty_four)
+        self.memory_recommended_button.setVisible(sixty_four)
+        self.memory_recommended_button.setEnabled(sixty_four and self._task is None)
+        if not sixty_four:
+            self._memory_budget_timer.stop()
+            self.memory_action_label.hide()
+            self.memory_roster_label.hide()
+            for label in self._memory_cost_labels.values():
+                label.hide()
+            return
+        plan = self.plan()
+        fitted = console_memory.roster_fit_applies(plan) and not console_memory.roster_fit_problem(plan)
+        self.memory_roster_label.setText(console_memory.ROSTER_FIT_NOTE if fitted else "")
+        self.memory_roster_label.setVisible(fitted)
+        if console_memory.model() is None:
+            self.memory_budget_label.setText(console_memory.budget_line(None))
+            return
+        identity = self._memory_identity()
+        if identity != self._memory_budget_identity:
+            self._memory_budget_identity = identity
+            self._memory_budget_result = None
+            self._memory_budget_timer.start()
+        if self._memory_budget_result is None:
+            self.memory_budget_label.setText(console_memory.CHECKING)
+            return
+        prediction, costs = self._memory_budget_result
+        rules = console_memory.requires_128()
+        costs = {key: size for key, size in costs.items() if key not in rules}
+        for key, size in costs.items():
+            label = self._memory_cost_label(key)
+            if label is not None:
+                label.setText(console_memory.cost_text(size))
+                label.show()
+        for key, label in self._memory_cost_labels.items():
+            if key not in costs:
+                label.hide()
+        self.memory_budget_label.setText(console_memory.NO_ESTIMATE if prediction is None else
+                                         console_memory.budget_line(prediction, labels=self._memory_label))
+
+    def _memory_plan(self):
+        """The plan the memory model is asked about: the page's plan as a 64 MB build makes it (forced-off options off,
+        roster edits that grow the roster file fitted to the original size)."""
+        return console_memory.model_plan(self.plan())
+
+    def _memory_identity(self) -> str:
+        return console_memory.identity(self._memory_plan())
+
+    def _start_memory_budget(self) -> None:
+        if self.console_memory() != 64 or console_memory.model() is None:
+            return
+        plan = self._memory_plan()
+        identity = console_memory.identity(plan)
+        if identity != self._memory_budget_identity:
+            return   # the selection moved on; its own refresh scheduled the next check
+        if self._memory_budget_tasks:
+            return   # one estimate at a time: the reply starts the next one for whatever is selected then
+        self._memory_budget_serial += 1
+        token = self._memory_budget_serial
+
+        def work(_progress):
+            try:
+                return token, identity, console_memory.predict(plan), console_memory.option_costs(plan)
+            except Exception:  # noqa: BLE001 - a model that cannot answer gives no prediction, never a crash
+                return token, identity, None, {}
+        task = _Task(work)
+        self._memory_budget_tasks[token] = task
+        task.signals.finished.connect(self._memory_budget_reply)
+        self._pool.start(task)
+
+    @pyqtSlot(object)
+    def _memory_budget_reply(self, reply) -> None:
+        token, identity, prediction, costs = reply
+        self._memory_budget_tasks.pop(token, None)
+        if identity != self._memory_budget_identity:
+            if self._memory_budget_result is None and self.console_memory() == 64:
+                self._start_memory_budget()   # the selection changed while this one ran: ask about the current one
+            return
+        self._memory_budget_result = (prediction, costs)
+        self._refresh()
+
+    def wait_for_memory_budget(self, timeout_ms: int = 60000) -> bool:
+        """Finish the pending 64 MB estimate now (tests, and anything that must read the line at once)."""
+        if self._memory_budget_timer.isActive():
+            self._memory_budget_timer.stop()
+            self._start_memory_budget()
+        done = True
+        for _round in range(4):   # a reply may start one more estimate for a selection that changed meanwhile
+            done = self._pool.waitForDone(timeout_ms) and done
+            QApplication.processEvents()
+            if not self._memory_budget_tasks:
+                break
+        return done and not self._memory_budget_tasks
+
+    def _memory_blocker(self) -> str:
+        """Why a 64 MB Make my disc cannot run, or ""."""
+        if self.console_memory() != 64:
+            return ""
+        installed = self._memory_installed_blockers()
+        if installed:
+            names = ", ".join(self._short_label(key) for key in installed)
+            return (f"This disc already has {names}, which needs 128 MB, and a build cannot take it off. Make the 64 MB "
+                    "disc from your unmodified game disc, or choose Console memory 128 MB.")
+        problems = console_memory.problems(self.plan(), labels=self._memory_label, fit=False)
+        if problems:
+            return " ".join(problems)
+        if console_memory.model() is None:
+            return ""
+        if self._memory_budget_result is None or self._memory_budget_identity != self._memory_identity():
+            return console_memory.CHECKING
+        prediction = self._memory_budget_result[0]
+        if prediction is not None and console_memory.refuses(prediction):
+            return console_memory.refusal(prediction, labels=self._memory_label)
+        return ""
+
+    def apply_recommended_64(self) -> dict[str, list[str]]:
+        """Apply the memory model's recommended 64 MB set to the page (64 MB target; the boxes it turns off or on)."""
+        profile = console_memory.recommended_profile(self.plan())
+        self.set_console_memory(64)   # the target's own rules first: they remember what they turn off for 128 MB
+        boxes = self._boxes()
+        changed_off, changed_on, skipped = [], [], []
+        # plan fields this page sets from a box of another name
+        aliases = {"calendar_engine": "season_cap"}
+
+        def wanted(key, value):
+            return (value == "matte" if key == "helmet_finish" else
+                    value != "retail" if key in ("music_policy", *r62_ui.LEVELS) else bool(value))
+        # a few passes: a box another rule ticks again (Scorebug while Scorebug effects is still on) is unticked next pass
+        for _round in range(3):
+            moved = False
+            for key, value in profile.items():
+                if key == console_memory.FIELD:
+                    continue
+                if key == "speed_threshold" and hasattr(self, "speed_threshold_spin"):
+                    if self.speed_threshold_spin.isEnabled() and self.speed_threshold_spin.value() != int(value or 0):
+                        self.speed_threshold_spin.setValue(int(value or 0))
+                        (changed_on if value else changed_off).append(key)
+                        moved = True
+                    continue
+                box = boxes.get(aliases.get(key, key))
+                if box is None or key in ("realistic_flight", "arc_by_distance"):
+                    continue
+                want = wanted(key, value)
+                if want == box.isChecked():
+                    continue
+                if want and not box.isEnabled():
+                    if key not in skipped:
+                        skipped.append(key)
+                    continue
+                box.setChecked(want)
+                moved = True
+                record = changed_on if want else changed_off
+                name = aliases.get(key, key)
+                if name not in record:
+                    record.append(name)
+                if key == "cpu_money_downs" and want and self.cpu_money_downs_level.findData(value) >= 0:
+                    self.cpu_money_downs_level.setCurrentIndex(self.cpu_money_downs_level.findData(value))
+            if not moved:
+                break
+        # the set's own choices stay at 128 MB; what the 64 MB target itself took away still comes back there
+        self._memory_ticks.difference_update(set(profile) - set(console_memory.requires_128()))
+        self._refresh()
+        if not profile or set(profile) <= {console_memory.FIELD, *console_memory.requires_128()}:
+            text = ("Recommended 64 MB set: the memory model has no recommendation in this build, so only the options that "
+                    "need 128 MB are off.")
+        else:
+            def names(keys, limit=8):
+                shown = ", ".join(self._short_label(key) for key in keys[:limit])
+                return shown + (f" and {len(keys) - limit} more (unticked below)" if len(keys) > limit else "")
+            parts = []
+            if changed_off:
+                parts.append(f"turned off {len(changed_off)}: " + names(changed_off))
+            if changed_on:
+                parts.append("turned on " + names(changed_on))
+            if skipped:
+                parts.append("not available on this disc: " + names(skipped))
+            text = ("Recommended 64 MB set applied: " + ("; ".join(parts) if parts else "your selection already matched it")
+                    + ". Review the list below, then Make my disc.")
+        self.memory_action_label.setText(text)
+        self.memory_action_label.show()
+        return {"off": changed_off, "on": changed_on, "skipped": skipped}
 
     def has_work(self) -> bool:
         p = self.plan()
@@ -3040,7 +3713,20 @@ class BuildPanel(QWidget):
                     or any(getattr(p, key) for key in BUILD_KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.elbow_options or p.the1wam_lineman_rating or p.xemu_display_list_fix or p.resource_load_guard or p.loader_wakeup_fix or p.rb_rename or p.name_keyboard or p.penalties or p.uniform_choice or p.team_sleeves or p.kick_laces or p.punter_holder or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs or self._helmet_finish_changed()
-                    or p.weather_plan or self._weather_haze_changed() or self._number_kerning_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or self._modern_metlife_changed() or self._modern_metlife_model_changed() or self._modern_helmets_changed() or p.trim_intro_videos or p.cpu_scrambles == "modern")
+                    or p.weather_plan or self._weather_haze_changed() or self._number_kerning_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or self._modern_metlife_changed() or self._modern_metlife_model_changed() or self._modern_helmets_changed() or p.trim_intro_videos or p.cpu_scrambles == "modern"
+                    or bool(self._speed_separation_chosen())
+                    # standalone steps of mod_build the list above never named: ticked alone, each was refused as "nothing is selected"
+                    or p.espn25_rosters or bool(p.honors_history) or p.trophy_room)
+
+    def _speed_separation_chosen(self) -> int:
+        """The Speed separation strength the player set (0 = off).
+
+        It is a number row, not a check box, so it has to be counted here by hand: without it a build with only this
+        row set was refused as "nothing is selected", and no summary (the Make my disc? dialog, the Build selection
+        line, Copy Build summary) named it. A locked row (the disc already carries it, or it cannot be changed on this
+        source) is not a change to make, so only an enabled row counts."""
+        spin = getattr(self, "speed_threshold_spin", None)
+        return int(spin.value()) if spin is not None and spin.isEnabled() else 0
 
     def _helmet_finish_changed(self) -> bool:
         """True when the chosen finish differs from what the source carries (a Glossy restoration counts)."""
@@ -3088,6 +3774,8 @@ class BuildPanel(QWidget):
                     text += f" ({self.hires_scale_combo.currentText()}, {self.hires_target_combo.currentText()}, {self.hires_folder_field.text().strip()})"
                 if key == "throw":
                     text += f" ({self.ceiling_spin.value()} yd)"
+                if key == "modern_everbank_construction" and not self.modern_everbank_check.isChecked():
+                    continue  # b780-uxfix: a sub-option is a change only with its stadium ("Selected: 1 change" with none ticked)
                 if key == "weather_haze" and not self._weather_haze_changed():
                     continue
                 if key == "number_kerning" and not self._number_kerning_changed():
@@ -3129,6 +3817,9 @@ class BuildPanel(QWidget):
             labels.append("Restore retail dry-weather haze response")
         if self._modern_color_changed() and not self.modern_color_check.isChecked():
             labels.append("Retail colour & lighting (choose the original retail source)")
+        strength = self._speed_separation_chosen()
+        if strength:
+            labels.append(f"{speed_threshold_ui.CAPTION} ({strength})")
         if self.cpu_scrambles_level.currentData() == "modern":
             labels.append(tt.cpu_scrambles_patch.BUILD_CAPTION + ": Modern")
         if self.star_players:
@@ -3163,17 +3854,24 @@ class BuildPanel(QWidget):
             return denial
         if self._reading:
             return "Reading disc…"
+        reason = rebuild_only_reason(self._state or {})
+        if reason:      # b780 studio1 (Q69): said before Make my disc, not by the engine's first check after it
+            return reason
         if self.softdrink_project_check.isChecked():
             if not self.softdrink_project_field.text().strip() or not platform_compat.io_path(self.softdrink_project_field.text()).is_file():
                 return "Choose an existing SOFTDRINK league project, or turn off Include SOFTDRINK league artwork."
             if self._include_session_project():
                 return "Save the open project's edits, then use a clean session for the SOFTDRINK source project, or turn off Include SOFTDRINK league artwork."
         for child, parents in ANNIVERSARY_DEPENDENCIES.items():
-            if getattr(self, child + "_check").isChecked():
+            child_box = getattr(self, child + "_check")
+            # b780 studio1: a ticked box that is greyed out is installed on the disc, not asked for, and a base the disc
+            # already carries is met. Both were treated as missing, so on the released v0.8 disc (era rules installed, the
+            # kickoff, defensive try and overtime boxes unticked as installed) Make my disc was blocked for every choice.
+            if child_box.isChecked() and child_box.isEnabled():
                 missing = [getattr(self, key + "_check").text() for key in parents
-                           if not getattr(self, key + "_check").isChecked()]
+                           if not getattr(self, key + "_check").isChecked() and not self._installed(key)]
                 if missing:
-                    return getattr(self, child + "_check").text() + " requires: " + ", ".join(missing) + "."
+                    return child_box.text() + " requires: " + ", ".join(missing) + "."
         if self.historic_stock_books_check.isChecked() and self.playbook_pair_check.isChecked():
             return "Choose stock historic books or separate offensive and defensive playbooks."
         if self._include_session_project():
@@ -3232,6 +3930,9 @@ class BuildPanel(QWidget):
         target = self.target_field.text().strip()
         if not target:
             return "Choose where to save the disc."
+        if self._name_too_long(target):
+            return ("That disc copy name is too long for the drive (a file name can be 255 characters at most). Shorten it, "
+                    "or choose another name with Choose….")
         if platform_compat.paths_alias(target, source):
             return "Source and output are the same file. Fix: choose a different output file."
         # b778-bd2: an empty selection used to finish "successfully" with a copy of the
@@ -3241,6 +3942,9 @@ class BuildPanel(QWidget):
                     "least one change, then Make my disc. The Basic, Modern and Experimental presets add gameplay, "
                     "franchise and presentation changes; for the SOFTDRINK 2K28 rosters, uniforms and stadium art, "
                     "use Share > Install SOFTDRINK 2K28.")
+        problem = self._memory_blocker()  # b780-m64b: what a 64 MB build cannot carry, or will not fit
+        if problem:
+            return problem
         problem = mod_build.local_output_problem(target)
         if problem:
             return problem
@@ -3366,12 +4070,19 @@ class BuildPanel(QWidget):
         else:
             combo.setEnabled(clock.isEnabled() and clock.isChecked())
         for key in ("coin_defer", "decided_clock", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "espn25_named_previews", "historic_stock_books", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early", "letter_grades", "honors_page", "team_ratings", "play_art_routes"):
-            if (self._state or {}).get(key) == "applied":
+            # b780 n6: a beta-79 install ("previous") is installed too: kept on, and the build upgrades it in place
+            if (self._state or {}).get(key) == "applied" or (key in PREVIOUS_UPGRADE_KEYS
+                                                             and (self._state or {}).get(key) == "previous"):
                 box = getattr(self, key + "_check")
                 box.blockSignals(True)
                 box.setChecked(True)
                 box.blockSignals(False)
                 box.setEnabled(False)
+                if (self._state or {}).get(key) == "previous":
+                    # gate() worded this as a box to select; a locked, ticked box needs no selecting (b780 studio1)
+                    reason = rebuild_only_reason(self._state or {})      # b780 studio1 (Q69): no in-place update on such a disc
+                    box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. "
+                                   + (reason or "This build brings it up to this release's revision in place, so it stays ticked."))
         state = self._state or {}
         installed = state.get("decided_clock_settings") or {}
         cutoff = installed.get("settings") or {}
@@ -3396,6 +4107,8 @@ class BuildPanel(QWidget):
                 "Choose a verified base disc to change CPU QB scrambles.")
         else:
             self.cpu_scrambles_level.setToolTip(tt.cpu_scrambles_patch.HELP_TEXT)
+        if hasattr(self, "speed_threshold_spin"):  # b780-cv5
+            speed_threshold_ui.refresh(self.speed_threshold_spin, self._state, self._available.get("speed_threshold", True))
         for key, reason in r62_ui.UNAVAILABLE.items():
             box = getattr(self, key + "_check")
             box.setEnabled(False)
@@ -3431,6 +4144,7 @@ class BuildPanel(QWidget):
         from mod_editor.studio.plan_controls import refresh_playbook_controls
         self._playbook_blockers = refresh_playbook_controls(
             self._boxes(), self._helpers, self._state, self._available)
+        self._apply_console_memory()  # b780-m64b: last, so no earlier rule re-enables an option 64 MB turned off
         blocker = self.blocker()
         self.cancel_button.setEnabled(self._task is not None)
         self.music_preview_button.setEnabled(bool(
@@ -3462,19 +4176,25 @@ class BuildPanel(QWidget):
         self._senior_bowl_options = copy.deepcopy(options)
         self._refresh()
 
-    def _anniversary_toggled(self, child, on):
+    def _requirement_box(self, key):
+        return getattr(self, key + "_check", None)
+
+    def _requirement_child_toggled(self, child, on):
+        """Q60: a ticked child ticks the parents it needs (a preset sets every box itself, so it is left alone)."""
         if on and not self._preset_applying:
-            for parent in ANNIVERSARY_DEPENDENCIES[child]:
-                box = getattr(self, parent + "_check")
-                if box.isEnabled():
-                    box.setChecked(True)
+            r62_ui.tick_parents(child, self._requirement_box)
         self._refresh()
 
-    def _anniversary_parent_toggled(self, child, on):
-        box = getattr(self, child + "_check")
-        if not on and box.isEnabled():
-            box.setChecked(False)
+    def _requirement_parent_toggled(self, parent, on):
+        """Q60: an unticked parent unticks the children that need it."""
+        if not on:
+            r62_ui.untick_children(parent, self._requirement_box)
         self._refresh()
+
+    def _requirement_parent_clicked(self, parent, on):
+        """b780-mem1: a parent the user ticked brings its default children along."""
+        if on:
+            r62_ui.tick_default_children(parent, self._requirement_box)
 
     def _exclusive_books(self, selected, other, on):
         box = getattr(self, other + "_check")
@@ -3590,18 +4310,6 @@ class BuildPanel(QWidget):
         self.official_marks_import_button.setEnabled(True)
         self._official_marks_pack_changed()
         QMessageBox.warning(self, "Could not save logos", message)
-
-    def _parent_toggled(self, parent, on):
-        if not on:
-            for child in r62_ui.CHILDREN[parent]:
-                getattr(self, child + "_check").setChecked(False)
-        self._refresh()
-
-    def _child_toggled(self, parent, on):
-        box = getattr(self, parent + "_check")
-        if on and not box.isChecked() and box.isEnabled():
-            box.setChecked(True)
-        self._refresh()
 
     def _money_downs_level(self) -> str:
         return str(self.cpu_money_downs_level.currentData() or "modern2")
@@ -3825,7 +4533,11 @@ class BuildPanel(QWidget):
         if not name:
             return "Choose the folder of 2026 team venue art (one <team>/venue folder per team)."
         folder = Path(name)
-        if not folder.is_dir():
+        try:
+            is_folder = folder.is_dir()
+        except (OSError, ValueError):       # a name the drive cannot hold raises File name too long, not False
+            is_folder = False
+        if not is_folder:
             return f"The 2026 venue art folder was not found: {name}"
         try:
             stamp = tuple(sorted((str(m), m.stat().st_mtime_ns) for m in folder.glob("*/venue/manifest.json")))
@@ -4106,7 +4818,13 @@ class BuildPanel(QWidget):
         self.softdrink_project_check.show()
         self.softdrink_project_field.show()
         self.softdrink_art_button.show()
+        # b780-m64b: Share > Customize SOFTDRINK 2K28 says which console memory to build for (128 when it says nothing).
+        # Building the pack for 64 MB starts from the recommended 64 MB set; the page lists what it turned off.
+        memory = console_memory.of(recipe)
+        self.set_console_memory(memory, refresh=False)
         self._refresh()
+        if memory == 64:
+            self.apply_recommended_64()
 
     def _softdrink_build_settings(self):
         choices = self.project_build_settings()
@@ -4114,7 +4832,7 @@ class BuildPanel(QWidget):
         # is inspected. Preserve the user's actual selections across that read.
         for key, box in self._boxes().items():
             if isinstance(choices.get(key), bool):
-                choices[key] = box.isChecked()
+                choices[key] = box.isChecked() or key in self._memory_ticks  # b780-m64b: set aside at 64 MB, kept
         for key, box, field in (
             ("custom_intro", self.custom_intro_check, self.custom_intro_field),
             ("modern_venues_2026", self.modern_venues_check, self.modern_venues_field),
@@ -4436,6 +5154,13 @@ class BuildPanel(QWidget):
             files.append(f"star players: {len(plan.player_tags)}")
         if files:
             lines.append("Files: " + "; ".join(files))
+        if getattr(plan, "console_memory", 128) == 64:  # b780-m64b
+            lines += ["", "Console memory: " + console_memory.LABELS[64] + ". For the full experience use xemu at 128 MB."]
+            prediction = self._memory_budget_result[0] if self._memory_budget_result else None
+            if console_memory.alternate_kit_shortfall(prediction):
+                lines.append(console_memory.alternate_kit_warning(prediction))
+            if console_memory.roster_fit_applies(plan) and not console_memory.roster_fit_problem(plan):
+                lines.append(console_memory.ROSTER_FIT_NOTE)
         lines += ["", "Takes a few minutes. " + XEMU_LINE]
         return "\n".join(lines)
 
@@ -4500,6 +5225,102 @@ class BuildPanel(QWidget):
                     and getattr(self._facade, "modified_count", 0))
 
     def _build_operation(self, plan, progress, include_session=False, softdrink_project=None):
+        """The worker side of Make my disc (b791-h3: tracked, logged, and reported when it stops).
+
+        Every build runs inside ``build_steps.track``: each step, every progress line, the notes and any left-out
+        step are recorded. A finished build writes its build log beside the disc (and a copy in the Studio's log
+        folder). A build that stops writes, here on the worker and before the dialog opens, the full errors.log entry,
+        the build log and the diagnostic .zip with the project doctor's report; the exception carries where they are.
+        """
+        from mod_editor.core import build_report, build_steps
+        labels = list(getattr(self, "_requested_build_labels", ()) or ())
+        tracked = build_steps.track(progress)
+        try:
+            with tracked:
+                receipt = self._run_build(plan, tracked.progress, include_session, softdrink_project)
+        except BaseException as exc:
+            self._record_failed_build(tracked.tracker, exc, plan, labels, progress, include_session, softdrink_project)
+            raise
+        try:
+            record = build_report.record_end(tracked.tracker, plan=plan, labels=labels, receipt=receipt,
+                                             log_directory=_studio_log_directory())
+            if record.build_log:
+                receipt["build_log"] = record.build_log
+        except Exception:  # noqa: BLE001 - a log that cannot be written never fails a finished build
+            pass
+        # Some resource passes follow the receipt's earlier inspection. Keep
+        # the existing final source-state refresh, on this worker rather than
+        # in the completion dialog's GUI callback. A courtesy refresh failure
+        # does not turn an already verified/published build into a failed build.
+        progress.published = True
+        progress("Reading the finished disc's settings", 0, 0)
+        receipt["_build_panel_state"] = None
+        try:
+            from mod_editor.core.studio_inspection import inspect_source
+            receipt["_build_panel_state"] = inspect_source(Path(receipt["target"]), marks_pack=plan.official_marks_pack)
+        except Exception:
+            pass
+        return receipt
+
+    def _doctor_project(self, include_session, softdrink_project):
+        """What the project doctor should read after a failed build: the project that went into that build.
+
+        b780-uxfix: the main window's saved project or open session came first even when the build was options
+        only or built the SOFTDRINK source project, so the report could describe a project that was never built.
+        Now: the SOFTDRINK source project when it was built; nothing for an options-only build; for a build of the
+        open session's edits, the main window's choice (``doctor_project``: the saved .2k5mod when unchanged), else
+        the session itself.
+        """
+        if softdrink_project:
+            return Path(softdrink_project)
+        if not include_session:
+            return None
+        chooser = getattr(self, "doctor_project", None)
+        if callable(chooser):
+            try:
+                chosen = chooser()
+                if chosen is not None:
+                    return chosen
+            except Exception:  # noqa: BLE001
+                pass
+        return getattr(self._facade, "_session", None)
+
+    def _record_failed_build(self, tracker, exc, plan, labels, progress, include_session, softdrink_project):
+        """Write the build log, the errors.log entry and the diagnostic .zip of a build that stopped (never raises)."""
+        from mod_editor.core import build_report, build_steps
+        try:
+            if not isinstance(exc, Exception) or build_steps.is_cancel(exc):
+                # A cancel is not a fault: the build log says where it was; no errors.log entry and no report.
+                build_report.record_end(tracker, plan=plan, labels=labels, log_directory=_studio_log_directory())
+                return
+
+            def say(message, done=0, total=0):
+                try:
+                    progress(message, done, total)
+                except Exception:  # noqa: BLE001 - a Cancel here only skips the doctor, never the report
+                    pass
+
+            def doctor():
+                project = self._doctor_project(include_session, softdrink_project)
+
+                def doctor_progress(message, done=0, total=0):
+                    progress(f"Diagnostic report, project doctor: {message}", done, total)  # Cancel stops the doctor
+
+                return build_report.run_doctor(project, plan.source, plan, progress=doctor_progress,
+                                               workers=build_report.default_workers(),
+                                               labels=getattr(self, "_requested_option_words", None))
+
+            from mod_editor.gui import crash_report
+            append = ((lambda text: crash_report.write_report(text, "2K5 Mod Studio"))
+                      if crash_report.reports_enabled("2K5 Mod Studio") else None)
+            record = build_report.record_failure(
+                tracker, exc, plan=plan, labels=labels, log_directory=_studio_log_directory(),
+                append_errors_log=append, doctor=doctor, progress=say)
+            exc.studio_build_record = record.as_dict()
+        except Exception:  # noqa: BLE001 - reporting must never hide the build's own error
+            pass
+
+    def _run_build(self, plan, progress, include_session=False, softdrink_project=None):
         if plan.modern_naming and getattr(self._facade, "source_ready", False):
             tt.modern_naming_patch.catalog_overrides(self._facade.text_catalog_snapshot(progress), enabled=True,
                                                     value_lookup=self._facade.text_value)
@@ -4524,18 +5345,6 @@ class BuildPanel(QWidget):
                     raise ValueError("Choose the open project's source disc to include its staged edits")
             receipt = mod_build.build_with_project(plan, facade.build_service, cache, session, progress,
                                                        require_change=True)
-        # Some resource passes follow the receipt's earlier inspection. Keep
-        # the existing final source-state refresh, on this worker rather than
-        # in the completion dialog's GUI callback. A courtesy refresh failure
-        # does not turn an already verified/published build into a failed build.
-        progress.published = True
-        progress("Reading the finished disc's settings", 0, 0)
-        receipt["_build_panel_state"] = None
-        try:
-            from mod_editor.core.studio_inspection import inspect_source
-            receipt["_build_panel_state"] = inspect_source(Path(receipt["target"]), marks_pack=plan.official_marks_pack)
-        except Exception:
-            pass
         return receipt
 
     def _heartbeat(self):
@@ -4572,11 +5381,13 @@ class BuildPanel(QWidget):
         # page is on afterwards, not the one it was on before.
         if self.blocker():
             return
-        plan = self.plan()
+        plan = self._plan_for_build()
         if not self._confirm_make_disc(plan):
             return
         self._requested_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\n" + self.confirmation_text(plan)
         self._requested_build_labels = self.selected_labels()
+        # b791-h3: every option's Build tab words, read here on the GUI thread, for a failed build's project doctor
+        self._requested_option_words = {key: box.text().replace("&&", "&") for key, box in self._boxes().items()}
         # What this build starts from, kept so a renamed or moved copy never
         # costs the next build its source (see _recover_missing_source). A
         # chain keeps the file it began at, not the copy before last.
@@ -4601,28 +5412,32 @@ class BuildPanel(QWidget):
         self._pool.start(task)
 
     def _check_project(self) -> None:
-        """Check my project (b779-ce1): the quick checks of nfl2k5_project_check, off the GUI thread, nothing written."""
+        """Check my project (b779-ce1; b791 h4 v2: the whole dive of nfl2k5_project_check.doctor), off the GUI thread,
+        nothing written to the project or the disc."""
         if self.blocker():
             return
-        plan = self.plan()
+        plan = self._plan_for_build()
         include_session = self._include_session_project()
         facade = self._facade
+        labels = {key: box.text().replace("&&", "&") for key, box in self._boxes().items()}
 
         def operation(progress):
             from mod_editor.core import nfl2k5_project_check as project_check
-            asset_ids, document, fit_rows, paths, index = [], None, [], None, None
+            project, document, fit_rows, index = None, None, None, None
             if include_session:
                 from mod_editor.core.equipment_staging import cached_equipment_fit_rows
                 with facade._lock:
                     session = facade._session
-                    asset_ids = project_check.assets_from_session(session)
-                    paths = project_check.paths_from_session(session)
-                    fit_rows = list(cached_equipment_fit_rows(session))
+                    project = project_check.ProjectInputs(
+                        name=str(getattr(session, "name", "") or "open project"),
+                        asset_ids=project_check.assets_from_session(session),
+                        paths=project_check.paths_from_session(session),
+                        fit_rows=list(cached_equipment_fit_rows(session)))
                     cache = facade._cache
                     index = cache.pack0 if cache is not None else None
-                document = facade.build_service.preflight_project(session)
-            return project_check.check(plan, asset_ids=asset_ids, document=document, fit_rows=fit_rows,
-                                       progress=progress, asset_paths=paths, source_index=index)
+                project.document = facade.build_service.preflight_project(session)
+            return project_check.doctor(project, plan.source, plan, progress=progress, source_index=index,
+                                        labels=labels)
 
         task = _Task(operation)
         task.signals.progress.connect(self.progress_label.setText)
@@ -4643,12 +5458,43 @@ class BuildPanel(QWidget):
         self.operation_state_changed.emit(False)
         self.progress_bar.hide()
         self.progress_label.setText("")
-        text = report.text()
-        self._last_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\nCheck my project\n\n{text}"
+        summary = report.summary() if callable(getattr(report, "summary", None)) else report.text()
+        self._last_check_report = report
+        self._last_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\nCheck my project\n\n{summary}"
         self.copy_summary_button.setEnabled(True)
-        self.status_label.setText(text)
-        QMessageBox.information(self, "Check my project", text)
+        self.status_label.setText(summary)
+        self._show_check_report(report, summary)
         self._refresh()
+
+    def _show_check_report(self, report: object, summary: str) -> None:
+        """The summary with the whole report behind Show Details, and Save report... to keep it (text, JSON and the
+        summary, for a help request)."""
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Information if getattr(report, "ok", True) else QMessageBox.Warning)
+        box.setWindowTitle("Check my project")
+        box.setText(summary)
+        full = report.text()
+        if full != summary:
+            box.setDetailedText(full)
+        save = box.addButton("Save report\u2026", QMessageBox.ActionRole) if callable(getattr(report, "write", None)) else None
+        box.addButton(QMessageBox.Ok)
+        box.exec_()
+        if save is not None and box.clickedButton() is save:
+            self._save_check_report(report)
+
+    def _save_check_report(self, report: object, folder: str | None = None) -> list:
+        """Write the report's three files into a folder the person picks; returns the paths written."""
+        if folder is None:
+            folder = QFileDialog.getExistingDirectory(self, "Save the project check report in")
+        if not folder:
+            return []
+        try:
+            written = list(report.write(folder).values())
+        except OSError as exc:
+            QMessageBox.warning(self, "Could not save the report", plain_error(exc))
+            return []
+        self.status_label.setText("Project check report saved: " + ", ".join(str(p) for p in written))
+        return written
 
     def _progress_counts(self, done, total):
         self.progress_bar.setRange(0, total if total > 0 else 0)
@@ -4674,18 +5520,26 @@ class BuildPanel(QWidget):
             names.update({"xbe": "gameplay and game settings", "position_pool_filters": "position lists",
                           "visual_project": "project artwork", "project": "project edits"})
             labels = list(dict.fromkeys(names.get(str(step.get("step")), "other selected project changes")
-                        for step in receipt.get("steps", ()) if isinstance(step, dict)))
+                        for step in receipt.get("steps", ())
+                        if isinstance(step, dict) and step.get("status") != "left_out"))  # b791-h3: not built
         contents = "Build selection: " + (", ".join(labels) if labels else "no recorded changes") + "."
         from mod_editor.gui.ux_text import disc_next_steps
-        next_step = disc_next_steps(target)
+        built_plan = receipt.get("plan") if isinstance(receipt.get("plan"), dict) else {}
+        next_step = disc_next_steps(target, console_memory=console_memory.of(built_plan),  # b780-m64b
+                                    next_steps_64=console_memory.NEXT_STEPS_64)
         if not tt.is_disc_image(target):
             next_step = "This is an executable copy. Build from a game disc to make a playable disc image."
         from mod_editor.core.build_feedback import timing_summary
         timing = timing_summary(receipt.get("stage_seconds"))
         if timing:
             contents += "\n" + timing
+        # b791-h3: a visual step that could not be made was left out (restored exactly); name each one.
+        left = [row.get("label", row.get("step", "")) for row in receipt.get("left_out", ()) or ()]
+        if left:
+            contents += "\nLeft out (see the notes above): " + ", ".join(left) + "."
         body = f"{target}\n\n{message}\n\n{contents}\n\nYour original game disc was not changed.\n\n{next_step}"
-        self._last_build_summary = (self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}") + f"\n\n{title}\n{body}"
+        extra = f"\n\nBuild log: {receipt['build_log']}" if receipt.get("build_log") else ""
+        self._last_build_summary = (self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}") + f"\n\n{title}\n{body}{extra}"
         self.copy_summary_button.setEnabled(True)
         self.status_label.setText(f"{title}: {target}. {message}")
         self.built.emit(dict(receipt))
@@ -4729,6 +5583,8 @@ class BuildPanel(QWidget):
     def _check_failed(self, message: str) -> None:
         """Check my project could not finish: say "check", and do not borrow the last build's summary."""
         message = plain_error(message)
+        if message.startswith("Build cancelled"):
+            message = "The check was cancelled. Nothing was written."
         self._last_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\nCheck my project\n\nFirst error: {message}"
         self.copy_summary_button.setEnabled(True)
         self._heartbeat_timer.stop()
@@ -4740,17 +5596,54 @@ class BuildPanel(QWidget):
         show_operation_error(self, "check your project", message)
         self._refresh()
 
+    def _build_was_cancelled(self, message: str) -> bool:
+        """b780 Q56: the build stopped because Cancel was pressed (the worker raises BuildCancelled)."""
+        failure = getattr(self._task, "failure", None)
+        try:
+            from mod_editor.core.nfl2k5_project_fit import BuildCancelled
+            if isinstance(failure, BuildCancelled):
+                return True
+        except ImportError:
+            pass
+        return message.startswith("Build cancelled")
+
     def _failed(self, message: str) -> None:
         message = plain_error(message)
-        self._last_build_summary = (self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}") + f"\n\nFirst error: {message}"
+        if self._build_was_cancelled(message):
+            # b780 Q56: a Cancel the user pressed is not a failure: no red "Couldn't make the disc" box and no
+            # Discord hint, just what happened.
+            self._last_build_summary = ((self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}")
+                                        + "\n\nBuild cancelled (Cancel was pressed). Nothing was written.")
+            self.copy_summary_button.setEnabled(True)
+            self._heartbeat_timer.stop()
+            self._task = None
+            self.operation_state_changed.emit(False)
+            self.progress_bar.hide()
+            self.progress_label.setText("")
+            self.status_label.setText("Build cancelled. Nothing was written; your project and your original disc "
+                                      "are unchanged.")
+            self._refresh()
+            return
+        # b791-h3: the worker wrote errors.log, the build log and the diagnostic .zip; its exception says where.
+        failure = getattr(self._task, "failure", None)
+        record = getattr(failure, "studio_build_record", None) if failure is not None else None
+        summary = "\n".join(build_summary_lines(record, message)) if record else f"First error: {message}"
+        self._last_build_summary = (self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}") + f"\n\n{summary}"
         self.copy_summary_button.setEnabled(True)
         self._heartbeat_timer.stop()
         self._task = None
         self.operation_state_changed.emit(False)
         self.progress_bar.hide()
         self.progress_label.setText("")
-        self.status_label.setText(plain_failure("make the disc", message))
-        show_operation_error(self, "make the disc", message)
+        if record:
+            where = record.get("label") or "the build"
+            if record.get("resource"):
+                where += f" ({record['resource']})"
+            self.status_label.setText(f"Couldn't make the disc. It stopped during {where}: {record.get('reason')}.")
+            show_build_failure(self, record, message)
+        else:
+            self.status_label.setText(plain_failure("make the disc", message))
+            show_operation_error(self, "make the disc", message)
         self._refresh()
 
 

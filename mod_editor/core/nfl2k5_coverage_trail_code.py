@@ -21,6 +21,7 @@ RELOCATIONS = (
     (508, 2, 'native_tail', 0),
 )
 LABELS = {
+    'arrival': 447,
     'code_end': 520,
     'constants': 512,
     'entry': 0,

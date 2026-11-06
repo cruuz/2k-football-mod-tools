@@ -59,6 +59,7 @@ import struct
 import numpy as np
 
 from . import nfl2k5_bump_texture_writer as bump
+from . import build_steps  # b791-h3: a failed compile names its kit
 from nfl_txtr import decode_chunk, parse_chunks, parse_texture, swizzle_2d, texture_to_rgba, unswizzle_2d
 from nfl_vc_lz_fill import rebuild_fixed_span_filled
 
@@ -86,6 +87,13 @@ MERGE_LEVELS = 1               # near-identical palette twins may be folded toge
 def require(ok, message):
     if not ok:
         raise ValueError("2026 kit fixes: " + message)
+
+
+class NothingToChange(ValueError):
+    """An art step that would leave its texture exactly as it is (b791-h2-kits): the colours or marks it works on are
+    not on this kit. It is a ValueError with the same message the plain check always raised, so every caller that
+    stops on it still does; the Anniversary moment kits stage reads it as "nothing to change here" on donors that are
+    not the shipped SOFTDRINK ones (a retail or user-made Giants sleeve has no 2026 maker marks to clear)."""
 
 
 def sha(data):
@@ -1037,12 +1045,14 @@ def compile_texture(span, row, donors=None, *, fixed=True):
         # ku1 (b776): the whole scheme moves in the palette first (indices kept, so every protected texel takes its
         # entry's new colour); the art operations then paint on the remapped texture
         palette, remapped = remap_palette(palette, row)
-        require(remapped, "the palette remap moved no entry")
+        if not remapped:
+            raise NothingToChange("2026 kit fixes: the palette remap moved no entry")
     original_palette = palette.copy()
     h, w = planes[0].shape
     base = palette[planes[0]].astype(np.uint8)
     painted, scope = paint(base, row.get("ops", []), donors)
-    require(scope.any() or remapped, "the art changed no texel")
+    if not (scope.any() or remapped):
+        raise NothingToChange("2026 kit fixes: the art changed no texel")
     alphas = painted[..., 3].astype(np.int64)
     alpha_changed = painted[..., 3] != base[..., 3]
     # exact art colours first, then the most frequent edge blends far from the palette, per alpha class in the art
@@ -1200,7 +1210,8 @@ def compile_palette(span, row):
         else:
             new_palette[hit, :3] = np.array(hex_rgb(mapping["to"]), np.int64)
         changed += [int(i) for i in np.flatnonzero(hit)]
-    require(changed and not np.array_equal(new_palette, palette), "the palette recolour changed nothing")
+    if not (changed and not np.array_equal(new_palette, palette)):
+        raise NothingToChange("2026 kit fixes: the palette recolour changed nothing")
     new = bytearray(decoded)
     new[at:at + 1024] = np.ascontiguousarray(new_palette[:, [2, 1, 0, 3]], np.uint8).tobytes()
     new = bytes(new)
@@ -1393,6 +1404,15 @@ def _chunk_for(raw, index):
     raise ValueError("2026 kit fixes: chunk %d absent" % index)
 
 
+def known_pairs(row) -> dict:
+    """{input SHA-256: output SHA-256} of one pinned texture: its own pins and its ``also`` pairs (b780 art1: a kit
+    texture whose old 2004 logo was cleaned at the source; the same fix compiled on it)."""
+    pairs = {row["before_sha256"]: row["after_sha256"]}
+    for pair in row.get("also", ()):
+        pairs[pair["before_sha256"]] = pair["after_sha256"]
+    return pairs
+
+
 def compile_resource(selector, raw, *, strict=True, document=None, kits=None):
     """Compile every pinned texture of one kit package; refuses partial or unknown inputs when strict. ``kits`` maps
     a donor kit selector to its package bytes (the uf3 ``name`` rows)."""
@@ -1405,9 +1425,10 @@ def compile_resource(selector, raw, *, strict=True, document=None, kits=None):
         span = raw[chunk.offset:chunk.end_offset]
         layout_ok = (len(raw), chunk.offset, len(span)) == (row["resource_size"], row["offset"], row["length"])
         digest = sha(span) if layout_ok else None
+        pairs = known_pairs(row)
         # ``after_equivalent_sha256``: the same finished texture stored by an earlier codec (an already repaired disc).
-        states.append((row, chunk, span, "before" if digest == row["before_sha256"]
-                       else "after" if digest == row["after_sha256"] or digest in row.get("after_equivalent_sha256", ())
+        states.append((row, chunk, span, "before" if digest in pairs
+                       else "after" if digest in pairs.values() or digest in row.get("after_equivalent_sha256", ())
                        else "other"))
     kinds = {s[3] for s in states}
     if kinds == {"after"}:
@@ -1483,7 +1504,7 @@ def compile_resource(selector, raw, *, strict=True, document=None, kits=None):
                 skipped.append(row["chunk"])
                 continue
             new, detail = compile_texture(span, row, donors)
-        require(sha(new) == row["after_sha256"], selector + ": Studio compile differs from its output pin")
+        require(sha(new) == known_pairs(row)[sha(span)], selector + ": Studio compile differs from its output pin")
         replacements.append((chunk.offset, new))
         parts.append(dict(selector=selector, chunk_index=chunk.index, offset=chunk.offset, length=len(new),
                           before_sha256=sha(span), after_sha256=sha(new),
@@ -1537,7 +1558,8 @@ def apply_to_image(path, *, strict=False, document=None):
             require(len(entries) == 1, selector + " kit package absent or duplicated")
             entry = entries[0]
             raw = image.read_segments(index.sub_extents(entry, 0, entry.size))
-            replacements, receipt = compile_resource(selector, raw, strict=strict, document=document, kits=donors)
+            with build_steps.resource(selector + ".IFF"):
+                replacements, receipt = compile_resource(selector, raw, strict=strict, document=document, kits=donors)
             plans.append((entry, replacements, receipt))
         states = {p[2]["state"] for p in plans}
         if states == {"other_uniform"}:
@@ -1901,15 +1923,21 @@ def _sideline_inpaint(rgba, box, keep, tolerance=0.18):
 
 def _sideline_apply_rules(rgba, region, rules):
     """Move every listed source colour family inside ``region`` to its target at once, painted shading kept.
-    ``rules`` are (source, target, tolerance, box-or-None); the masks are all taken from the input, so a swap of
-    two colours works, and a texel that two rules claim takes the rule it belongs to most."""
+    ``rules`` are (source, target, tolerance, box-or-None[, flat]); the masks are all taken from the input, so a swap
+    of two colours works, and a texel that two rules claim takes the rule it belongs to most. b780-b12: a ``flat``
+    rule takes the target as it is, without the source's shading (a narrow retail collar band whose dark
+    anti-aliased edges would otherwise stay as a dark outline in the new colour)."""
     rgb = rgba[..., :3].astype(np.float32) / 255.0
     luma = rgb @ SIDELINE_LUMA
     best = np.zeros(rgb.shape[:2], np.float32)
     acc = np.zeros(rgb.shape, np.float32)
-    for source, target, tolerance, box in rules:
+    for rule in rules:
+        source, target, tolerance, box = rule[:4]
+        flat = len(rule) > 4 and bool(rule[4])
         dst = np.asarray(target, np.float32) / 255.0
         member, k = _sideline_membership(rgb, luma, source, tolerance)
+        if flat:
+            k = np.ones_like(k)
         area = region if box is None else region & _sideline_box(region.shape, box)
         # a texel that already is the target colour stays put (a re-run converges instead of darkening shades)
         area = area & (np.abs(rgb - dst[None, None, :]).max(axis=2) * 255.0 > SIDELINE_SAME)
@@ -1951,6 +1979,30 @@ SIDELINE_COMPOSE = {"sleeve": ((195, 101, 256, 127), (0, 0, 121, 65)),
                     "torso": ((128, 0, 256, 100), (0, 0, 391, 253))}
 SIDELINE_SHELL_BOX = (38, 91, 126, 128)          # the helmet side inside the island's border
 SIDELINE_NECK_GREY = (217, 217, 217)            # jersey00's collar placeholder: the island keeps its neck hole there
+# b780-b12 (D14, staged for Noah's review): an island whose retail art carried side panels (the orange Bengals
+# torsos) leaves ghost lines of those panels in its measured folds, and an island whose retail shading lived in
+# colour blotches (the charcoal Colts torso) has no folds left at all. A compose op may name a fold source
+# (``folds``): a kit of the SAME team whose island is the game's plain light retail jersey (the classic white kits
+# share one painted template), whose folds then light the compose. Only lighting comes from it, never art. A fold
+# source that is absent, not plain or not light (a user's own art in that slot) is not used: the island's own folds
+# light the compose, as before, and the receipt says so.
+SIDELINE_FOLDS_PLAIN = 0.8                       # at least this share of the source island is one fabric family
+SIDELINE_FOLDS_LIGHT = 0.6                       # and that fabric is light (luma), so its folds read cleanly
+
+
+def _sideline_fold_source(atlas, box):
+    """(usable, why): is ``box`` of ``atlas`` a plain light island whose folds can light another kit's compose."""
+    x0, y0, x1, y1 = box
+    fabric = _sideline_mode(atlas, _sideline_box(atlas.shape[:2], box))
+    sub = atlas[y0:y1, x0:x1, :3].astype(np.float32) / 255.0
+    member, _k = _sideline_membership(sub, sub @ SIDELINE_LUMA, [int(v) for v in fabric], 0.18, narrow=True)
+    plain = float((member > 0.5).mean())
+    light = float(np.asarray(fabric, np.float32) @ SIDELINE_LUMA) / 255.0
+    if plain < SIDELINE_FOLDS_PLAIN:
+        return False, "not plain (%.2f of the island is its fabric)" % plain
+    if light < SIDELINE_FOLDS_LIGHT:
+        return False, "not a light island (fabric luma %.2f)" % light
+    return True, "plain light island"
 
 
 def _sideline_blur(a, passes=2):
@@ -2005,13 +2057,14 @@ def _sideline_resize(rgb_u8, size):
     return np.asarray(Image.fromarray(np.ascontiguousarray(rgb_u8)).resize(size, Image.BOX), np.float32) / 255.0
 
 
-def _sideline_compose(rgba, part, texture, op):
-    """Lay the field texture's island crop into the part's island, lit by the island's own folds."""
+def _sideline_compose(rgba, part, texture, op, fold_atlas=None):
+    """Lay the field texture's island crop into the part's island, lit by the island's own folds (or, b780-b12, by
+    the folds of ``fold_atlas``'s same island: a same-team plain retail island, see ``SIDELINE_FOLDS_PLAIN``)."""
     (x0, y0, x1, y1), crop = SIDELINE_COMPOSE[part]
     cx0, cy0, cx1, cy1 = op.get("crop", crop)
     w, h = x1 - x0, y1 - y0
     src = _sideline_resize(texture[cy0:cy1, cx0:cx1, :3], (w, h))
-    ratio = _sideline_folds(rgba, (x0, y0, x1, y1))
+    ratio = _sideline_folds(rgba if fold_atlas is None else fold_atlas, (x0, y0, x1, y1))
     new = _sideline_lit(src, ratio)
     keep = np.zeros((h, w), bool)
     if part == "torso":
@@ -2076,11 +2129,26 @@ def _sideline_shell_repaint(rgba, texture, shell, op):
     return out
 
 
-def sideline_measured_repair(alt, donors, field, row, textures=None):
+def _sideline_rule_list(rules, target_field):
+    """The (source, target, tolerance, box, flat) list of a part's ``recolour`` rules; a rule whose source already is
+    its field target is dropped."""
+    todo = []
+    for rule in rules:
+        target = target_field if rule.get("to", "field") == "field" else np.asarray(rule["to"], np.int64)
+        source = np.asarray(rule["from"], np.int64)
+        if rule.get("to", "field") == "field" and np.abs(source - target).max() <= SIDELINE_SAME:
+            continue
+        todo.append((source, target, float(rule.get("tolerance", 0.18)), rule.get("box"), bool(rule.get("flat"))))
+    return todo
+
+
+def sideline_measured_repair(alt, donors, field, row, textures=None, folds=None):
     """vk2's measured path for one row. ``donors`` maps part -> donor atlas (absent: repaired in place), ``field``
-    part -> the measured field colour, ``textures`` part -> the kit's own field texture (``compose``/``shell``).
+    part -> the measured field colour, ``textures`` part -> the kit's own field texture (``compose``/``shell``),
+    ``folds`` (b780-b12) part -> the atlas whose island folds light that part's compose (absent: its own).
     Returns the atlas and the texels each part moved (net, so a re-run over a repaired atlas reports zero)."""
     out = alt.copy()
+    folds = folds or {}
     rules = row.get("recolour") or {}
     fills = row.get("fill") or {}
     inpaints = row.get("inpaint") or {}
@@ -2097,7 +2165,7 @@ def sideline_measured_repair(alt, donors, field, row, textures=None):
                 region = _sideline_box(out.shape[:2], box)
                 out[region] = donor[region]
             if part in composes:
-                out = _sideline_compose(out, part, textures[part], composes[part])
+                out = _sideline_compose(out, part, textures[part], composes[part], folds.get(part))
             else:
                 out = _sideline_shell_repaint(out, textures[part], field[part], shells[part])
             for op in inpaints.get(part, ()):
@@ -2116,13 +2184,7 @@ def sideline_measured_repair(alt, donors, field, row, textures=None):
         elif part not in rules and (part in fills or part in inpaints):
             pass        # only the boxed fixes below: the fabric itself is already the field kit's
         elif part in rules:
-            todo = []
-            for rule in rules[part]:
-                target = field[part] if rule.get("to", "field") == "field" else np.asarray(rule["to"], np.int64)
-                source = np.asarray(rule["from"], np.int64)
-                if rule.get("to", "field") == "field" and np.abs(source - target).max() <= SIDELINE_SAME:
-                    continue
-                todo.append((source, target, float(rule.get("tolerance", 0.18)), rule.get("box")))
+            todo = _sideline_rule_list(rules[part], field[part])
             if todo:
                 out = _sideline_apply_rules(out, region, todo)
         else:
@@ -2243,6 +2305,10 @@ def _sideline_rows(document=None):
             require(part in SIDELINE_COMPOSE and isinstance(op, dict)
                     and all(_sideline_inside(b, SIDELINE_BOXES[part]) for b in op.get("keep", ())),
                     selector + ": bad " + part + " compose")
+            # b780-b12: a fold source lights the compose only; it must be another kit of the SAME team
+            require("folds" not in op or (_sideline_selector(op["folds"]) and op["folds"][:2] == selector[:2]
+                                          and op["folds"] != selector),
+                    selector + ": a " + part + " fold source must be another NN[HA]N kit of the same team")
         for part, op in (row.get("shell") or {}).items():
             decal = op.get("decal") if isinstance(op, dict) else None
             require(part == "helmet" and isinstance(op, dict) and part not in (row.get("compose") or {})
@@ -2258,7 +2324,8 @@ def _sideline_rows(document=None):
                 require(_sideline_colour(rule.get("from"))
                         and (rule.get("to", "field") == "field" or _sideline_colour(rule.get("to")))
                         and 0.0 < float(rule.get("tolerance", 0.18)) <= 0.5
-                        and (rule.get("box") is None or _sideline_inside(rule["box"], SIDELINE_BOXES[part])),
+                        and (rule.get("box") is None or _sideline_inside(rule["box"], SIDELINE_BOXES[part]))
+                        and isinstance(rule.get("flat", False), bool),
                         selector + ": bad " + part + " recolour rule")
         for part, ops in (row.get("inpaint") or {}).items():
             require(isinstance(ops, list) and ops and all(
@@ -2320,11 +2387,15 @@ def _sideline_measured_plan(row, entry, raw, chunks, splayer, alt, package):
                 require(51 in donor_chunks, donor + ": donor splayer chunk absent")
                 donor_atlas[donor] = _sideline_rgba(
                     donor_raw[donor_chunks[51].offset:donor_chunks[51].end_offset], "txtr", "splayer")
+    fold_atlas, fold_notes = _sideline_fold_atlases(row, package)
     repaired, changed = sideline_measured_repair(
-        alt, {part: donor_atlas[d] for part, d in donors.items() if d and part != "pants"}, field, row, textures)
+        alt, {part: donor_atlas[d] for part, d in donors.items() if d and part != "pants"}, field, row, textures,
+        fold_atlas)
+    extra = dict(folds=fold_notes) if fold_notes else {}
     if not any(changed.values()):
-        return (entry, [], dict(selector=selector, state="unchanged", changed_texels=changed))
-    new_span, fit = _sideline_compile(splayer, repaired)
+        return (entry, [], dict(selector=selector, state="unchanged", changed_texels=changed, **extra))
+    with build_steps.resource(selector + ".IFF splayer"):
+        new_span, fit = _sideline_compile(splayer, repaired)
     check = _sideline_rgba(new_span, "txtr", "splayer")
     for part in row["parts"]:
         now = _sideline_part_colour(check, part)
@@ -2335,7 +2406,38 @@ def _sideline_measured_plan(row, entry, raw, chunks, splayer, alt, package):
                 selector + ": the repaired " + part + " colour did not take")
     return (entry, [(chunks[51].offset, new_span)],
             dict(selector=selector, state="repaired", changed_texels=changed,
-                 field={k: [int(v) for v in f] for k, f in field.items()}, fit=asdict(fit)))
+                 field={k: [int(v) for v in f] for k, f in field.items()}, fit=asdict(fit), **extra))
+
+
+def _sideline_fold_atlases(row, package):
+    """b780-b12: ({part: atlas}, {part: note}) for the row's compose fold sources. A source that cannot be read, or
+    whose island is not a plain light one, is skipped (the part keeps its own folds) and named in the note; this
+    is lighting only, so it never stops the pass."""
+    atlases, notes = {}, {}
+    for part, op in sorted((row.get("compose") or {}).items()):
+        source = op.get("folds")
+        if not source:
+            continue
+        box = SIDELINE_COMPOSE[part][0]
+        atlas = None
+        if package is not None:
+            try:
+                _entry, raw = package(source)
+                chunks = {chunk.index: chunk for chunk in parse_chunks(raw)}
+                if 51 in chunks and chunks[51].kind == "TXTR":
+                    atlas = _sideline_rgba(raw[chunks[51].offset:chunks[51].end_offset], "txtr", "splayer")
+            except (ValueError, KeyError, IndexError, struct.error):
+                atlas = None
+        if atlas is None:
+            notes[part] = source + ": not readable on this disc, the island's own folds were used"
+            continue
+        usable, why = _sideline_fold_source(atlas, box)
+        if not usable:
+            notes[part] = source + ": " + why + ", the island's own folds were used"
+            continue
+        atlases[part] = atlas
+        notes[part] = source + ": " + why
+    return atlases, notes
 
 
 def apply_sideline(path, *, strict=False, document=None):
@@ -2427,7 +2529,8 @@ def apply_sideline(path, *, strict=False, document=None):
             if not any(changed.values()):
                 plans.append((entry, [], dict(selector=selector, state="unchanged", changed_texels=changed)))
                 continue
-            new_span, fit = _sideline_compile(splayer, repaired)
+            with build_steps.resource(selector + ".IFF splayer"):
+                new_span, fit = _sideline_compile(splayer, repaired)
             check = _sideline_rgba(new_span, "txtr", "splayer")
             # the repaired fabrics must now read as the field colours (palette quantisation allows a few levels)
             if "pants" in row["parts"]:

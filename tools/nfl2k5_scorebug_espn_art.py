@@ -64,10 +64,38 @@ def font_file(name: str) -> Path | None:
     return None
 
 
-def have_text_font() -> bool:
-    """Whether the faces the digit sheet is drawn with are installed on this machine."""
+# b780: the digit sheet's own glyphs (DejaVu Sans Bold 0-9, colon and FINAL, white with coverage alpha; no retail pixel:
+# the retail bolt cell is clear), drawn once with Pillow 10.2.0 / FreeType 2.13.2, the renderer of the published patch.
+# Drawing them at build time made the art depend on the machine: Pillow 11 (Windows Setup, the Linux .venv, Python 3.13)
+# rendered 179 pixels differently and a machine without DejaVu (Windows) skipped the atlas. The sheet is now this layer
+# plus the user's own retail bolt cell, the same on every machine.
+DIGIT_GLYPHS = Path(__file__).resolve().parents[1] / "data" / "nfl2k5_scorebug_digit_glyphs.png"
+DIGIT_GLYPHS_SHA256 = "8fe988cdf53ba925bb044b5165bed6c9f662023b52f7d58c625d249bcf1016ec"
+BOLT_CELL = (96, 64, 128, 96)
 
-    return font_file(FONT_BOLD) is not None
+
+def digit_glyphs() -> Image.Image | None:
+    """The shipped glyph layer of the digit sheet, or ``None`` when it is absent or not the pinned file."""
+
+    import hashlib
+
+    try:
+        payload = DIGIT_GLYPHS.read_bytes()
+    except OSError:
+        return None
+    if hashlib.sha256(payload).hexdigest() != DIGIT_GLYPHS_SHA256:
+        return None
+    import io
+
+    layer = Image.open(io.BytesIO(payload))
+    layer.load()
+    return layer.convert("RGBA")
+
+
+def have_text_font() -> bool:
+    """Whether the digit sheet can be made here: the shipped glyph layer, or the DejaVu face it was drawn with."""
+
+    return digit_glyphs() is not None or font_file(FONT_BOLD) is not None
 
 
 def font(path: str, size: int) -> ImageFont.FreeTypeFont:
@@ -195,7 +223,19 @@ def espn_mark(retail: Image.Image | None = None) -> Image.Image:
 
 
 def digits(retail: Image.Image) -> Image.Image:
-    """Bold sans digits in the retail 32x32 cells; the bolt cell is copied from retail."""
+    """Bold sans digits in the retail 32x32 cells; the bolt cell is copied from retail (the shipped glyph layer when
+    present: the same bytes on every machine; else drawn with the installed DejaVu face)."""
+
+    layer = digit_glyphs()
+    if layer is not None:
+        out = layer.copy()
+        out.paste(retail.convert("RGBA").crop(BOLT_CELL), BOLT_CELL[:2])
+        return out
+    return digits_from_font(retail)
+
+
+def digits_from_font(retail: Image.Image) -> Image.Image:
+    """The digit sheet drawn with DejaVu Sans Bold (how the glyph layer was made; the result depends on the renderer)."""
 
     src = retail.convert("RGBA")
     im = Image.new("RGBA", (128, 128), CLEAR)

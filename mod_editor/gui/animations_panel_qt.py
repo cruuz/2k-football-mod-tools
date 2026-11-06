@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from PyQt5.QtCore import QObject, QPointF, QRunnable, Qt, QThreadPool, pyqtSignal
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import (
     QComboBox, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QListWidget,
@@ -91,7 +92,7 @@ class AnimationsPanel(QWidget):
         self._task = None
         self._import_plan = None
         self._plan_kind = None
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         self._pool.setMaxThreadCount(1)
         layout = QVBoxLayout(self)
         self.badge = QLabel('EXPERIMENTAL / UNWITNESSED')

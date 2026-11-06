@@ -72,6 +72,14 @@ class Machine(FrameMachine):
         self.f32(context + 0x28, 914.4)
         if kickoff:
             self.put(0xE602B4, 2)
+        # b780 sl1: a real pre-snap starts with a full play clock. The native
+        # play clock reset B6E30 (also run by the period start B8910 after
+        # B6DC0) stores E602AC (40 s) and runs the clock at a scrimmage or try,
+        # stopped at a kickoff. This scene has no previous play, so without it
+        # the clock read 0.0, already expired, and MyCareer's snap hold (b780
+        # n2: never into the last 3 s) let the CPU snap before MyPlayer's
+        # appearance settled. Same input as the scheduler fixture's clock.
+        self.call(0xB6E30, budget=3000000)
         self.cpu_choice()
         self.finite_positions()
 

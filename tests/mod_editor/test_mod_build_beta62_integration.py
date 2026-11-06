@@ -216,7 +216,14 @@ class ExecutableTests(unittest.TestCase):
                 self.assertEqual(tt._grown_status_fields(before)[key], 'retail')
             requested = tuple(runtime.REQUESTS) + tuple(extra_requests) + (tuple(kickoff.REQUESTS) if with_kickoff else ())
             from mod_editor.core import nfl2k5_calendar_engine as calendar
-            self.assertEqual(set(requested), set(REQUESTS) - set(calendar.REQUESTS))  # the calendar needs the 2026 templates, absent on a synthetic disc
+            from mod_editor.core import nfl2k5_audible_legend as legend
+            # the calendar needs the 2026 templates, absent on a synthetic disc
+            expected = set(REQUESTS) - set(calendar.REQUESTS)
+            if writer == 'build':
+                # the Build tab's runtime score bar brings the audible panel lift (b780-p3), so its owner is reserved
+                # in this first space pass too; the tuning dispatcher has no late owners and never adds it
+                expected |= set(legend.REQUESTS)
+            self.assertEqual(set(requested), expected)
             grown, rec = space.apply(before, requested)
             grown, _ = runtime.apply(grown)
             if with_kickoff:
@@ -249,11 +256,14 @@ class ExecutableTests(unittest.TestCase):
                             build, '_check_playbook_scoring', return_value={'status':'applied','books':0,'faults':0}):  # Synthetic image has no PLAY archive; both real gates are covered with retail resources separately.
                         result=build.build(build.BuildPlan(str(source),str(target),scorebug_runtime=True,
                                                            kickoff_relocated=True,**GROWN))
-                    self.assertEqual([row['step'] for row in result['steps']], ['xbe','kickoff_alignment','kickoff_returns','scorebug_runtime','xbe_space','unc_bowl_uniforms','nameplate_fixes_2026','menu_icon_orientation'])  # the plan wants XBE work, so the ordinary XBE pass (grown owners deferred) runs first
+                    self.assertEqual([row['step'] for row in result['steps']], ['xbe','kickoff_alignment','kickoff_returns','scorebug_runtime','xbe_space','unc_bowl_uniforms','nameplate_fixes_2026','menu_icon_orientation','audible_legend'])  # b780-p3: the runtime score bar brings the audible panel lift; the plan wants XBE work, so the ordinary XBE pass (grown owners deferred) runs first
                 final=build._xbe_bytes(target)
                 for key in ('all_stadiums','coverage_slider','scramble_tuning','music_shuffle','practice_squad_screen','abilities','qb_spy'):
                     self.assertEqual(tt._grown_status_fields(final)[key], 'applied')
                 self.assertEqual(runtime.status(final), 'applied')
+                if writer == 'build':
+                    from mod_editor.core import nfl2k5_audible_legend as legend
+                    self.assertEqual(legend.status(final), 'applied')
                 self.assertEqual(len(final), space.SCALE3_FILE_SIZE)  # b778-xs1: the v3 extent (SCALE_FILE_SIZE is now the v4 upper bound)
             self.assertEqual(events,['runtime','runtime'])
 

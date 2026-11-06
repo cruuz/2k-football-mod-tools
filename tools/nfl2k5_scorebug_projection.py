@@ -359,12 +359,15 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                     runtime_textures=None, identity=None, timeouts=(3, 3), scorebug_folder=None, runtime_fonts=(),
                     possession='home', game_seconds=790, play_seconds=12, quarter=1,
                     ball_yards=50, visibility_state=None, down=1, distance_yards=10, goal_to_go=False, broadcast="play_now",
-                    records=None, season='regular', phase=4, trace=None, previous_down=None, previous_timeouts=None):
+                    records=None, season='regular', phase=4, trace=None, previous_down=None, previous_timeouts=None,
+                    playcall=False):
     """Run the actual scene relocator, setup, frame driver and camera activation.
 
     Startup animation selection, optional font IDs, per-frame game predicates
     and the GPU render-list boundary are replaced. Settled score transforms run
     by default. score_transforms=False reproduces the old harness omission.
+    playcall=True raises the retail play-call mode words (0xB641B4, 0xB641B0) the sprite owner keeps its bar up for
+    (b780 p2: the ball spot is drawn only while they are set).
     """
     from mod_editor.core import nfl2k5_scorebar_v3 as static_bar
     live_timeouts = struct.unpack_from('<I', decoded, 0x60)[0] == static_bar.TIMEOUT_MAGIC
@@ -473,6 +476,7 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
     else:
         configure_visibility(m, visibility_state)
     m.put(0xa95870, mode)
+    m.put(0xb641b4, int(bool(playcall))); m.put(0xb641b0, int(bool(playcall)))
     m.put(m.home + 4, timeouts[0]); m.put(m.away + 4, timeouts[1])
     m.run(0xfc200)
     for i in range(2):

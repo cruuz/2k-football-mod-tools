@@ -412,8 +412,12 @@ def _class_template(payload, document, primary):
 
 
 def _migrate_capacity(payload: bytes, records: int, class_records: int | None = None,
-                      arena_size: int = CAPACITY_ARENA_SIZE) -> tuple[bytes, dict]:
+                      arena_size: int = CAPACITY_ARENA_SIZE, in_place: bool = False) -> tuple[bytes, dict]:
     """Append blank primary records and private name buffers, growing the arena to ``arena_size``.
+
+    b780 b10: ``in_place`` runs the extension below on a save that is ALREADY ``arena_size`` big (the game moved a
+    v0.7 save's tail to the bigger arena when it first saved it, but added none of the draft-class records): the free
+    class records are inserted into the arena's own spare bytes and the tail stays where it is.
 
     Every existing table and object keeps its bytes; the primary insertion moves everything after
     the primary table by (appended records) * 0x54 and rebases the exact pointer inventory used by C0730.
@@ -445,14 +449,15 @@ def _migrate_capacity(payload: bytes, records: int, class_records: int | None = 
         descriptor = capacity_descriptor(payload, layout)
         require(descriptor is not None, 'arena settings differ; rebuild from the original')
         appended, old_end = descriptor
-        if layout.arena_size == arena_size:
+        if layout.arena_size == arena_size and not in_place:
             fill = capacity_class_records(old_count - appended, records, old_end - root, arena_size)
             ok = (records <= appended <= records + fill if class_records is None
                   else appended == records + class_records)
             require(ok, 'arena settings differ; rebuild from the original')
             return payload, {'already_applied': True, 'changed_bytes': 0, 'file_growth': 0,
                              'capacity_records': appended, 'arena_size': layout.arena_size}
-        require(layout.arena_size < arena_size, 'capacity arena is already larger than requested')
+        require(layout.arena_size < arena_size or (in_place and layout.arena_size == arena_size),
+                'capacity arena is already larger than requested')
         # Extension: only free class records are added; the existing vacancies stay as they are.
         vacancies = 0
         base_count = old_count - appended
@@ -490,8 +495,13 @@ def _migrate_capacity(payload: bytes, records: int, class_records: int | None = 
         source = 'retail'
     require(type(free) is int and free >= 0, 'invalid class record request')
     class_template = _class_template(payload, document, primary) if free else None
+    wanted = free
     if class_records is None and class_template is None:
         free = 0        # no free first-class record to copy (a synthetic or emptied roster): vacancies only
+    if in_place and free == 0:
+        return payload, {'already_applied': True, 'changed_bytes': 0, 'file_growth': 0, 'capacity_records': appended,
+                         'arena_size': layout.arena_size, 'class_records': 0, 'class_records_wanted': wanted,
+                         'reason': 'no free draft-class record in the save to copy' if wanted else ''}
     total = appended + vacancies + free
     # an extension with nothing to copy (no free first-class record) still moves the tail to the bigger arena
     require(0 < total < 0x10000 and (vacancies + free > 0 or prior is not None), 'nothing to append')
@@ -612,7 +622,7 @@ def _migrate_capacity(payload: bytes, records: int, class_records: int | None = 
     require(read(result, final.layout.root, final.layout.end, final.layout.version) is not None,
             'capacity block missing after growth')
     return result, {'already_applied': False, 'experimental': True, 'runtime_witnessed': False,
-                    'source': source, 'arena_size_before': layout.arena_size,
+                    'source': source, 'in_place': in_place, 'arena_size_before': layout.arena_size,
                     'arena_size': arena_size, 'capacity_records': total,
                     'vacancy_records': vacancies, 'class_records': free,
                     'primary_before': old_count, 'primary_after': old_count + vacancies + free,
@@ -623,6 +633,28 @@ def _migrate_capacity(payload: bytes, records: int, class_records: int | None = 
                     'file_growth': len(result) - len(payload),
                     'before_sha256': hashlib.sha256(payload).hexdigest(),
                     'after_sha256': hashlib.sha256(result).hexdigest()}
+
+
+def fill_class_records(payload: bytes, class_records: int | None = None) -> tuple[bytes, dict]:
+    """b780 b10: add the free draft-class records a capacity save lacks, inside the arena it already has.
+
+    The v0.8 game moves a v0.7 save's tail to the bigger arena the first time it saves it, but it adds none of the 865
+    draft-class records, so Franchise > Upgrade used to find "already the disc's arena size" and stop. The extension
+    code runs unchanged on such a save: the records go after the primary table, their names after the descriptor's
+    names, every pointer is rebased and the descriptor is rewritten, but the arena, the tail and everything after
+    the arena keep their place (``file_growth`` is 0). A save that already holds all the records that fit is returned
+    as it is; so is one with no capacity descriptor or no free class record to copy, with the reason in the receipt.
+    """
+    from .nfl2k5_save_rost import decode
+    document = decode(bytes(payload))
+    layout = document.layout
+    require(is_capacity_size(layout.arena_size), 'in-place class records need a capacity arena')
+    require(layout.version in (SAVE_VERSION, DISC_VERSION), 'in-place class records need a saved or disc roster')
+    if capacity_descriptor(bytes(payload), layout) is None:
+        return bytes(payload), {'already_applied': True, 'changed_bytes': 0, 'file_growth': 0, 'class_records': 0,
+                                'arena_size': layout.arena_size,
+                                'reason': 'this save has no capacity descriptor (the game migrated it itself)'}
+    return _migrate_capacity(bytes(payload), 0, class_records, layout.arena_size, in_place=True)
 
 
 def _legacy_capacity(payload: bytes, layout) -> bytes:

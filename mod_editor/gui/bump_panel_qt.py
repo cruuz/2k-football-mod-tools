@@ -20,6 +20,7 @@ import hashlib
 from typing import Any
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -152,7 +153,7 @@ class BumpPanel(QWidget):
         self.facade = facade
         self._busy = False
         self._tasks: set[_Task] = set()
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         self._packages: list[dict[str, object]] = []
         self._slots: dict[str, dict[str, object]] = {}
         self._preview: dict[str, object] | None = None

@@ -1,7 +1,9 @@
 /* Sprite presentation engine. No heap allocation, FONT lookup, or mutable RX data.
  * Resource tables contain all layout/UV/glyph metrics. Native formatters retain
  * the game's clock, quarter, down/distance and score semantics. Franchise team
- * records are counted once at setup with the retail per-week counters. */
+ * records are counted once at setup with the retail per-week counters. b780 p2: while the play-call screen keeps the bar up,
+ * the down text is followed by the ball spot ("1st & 10  NYJ 35"), read from the retail "Ball on" formatter. b780 pres2: while
+ * the pause screen is up the bar is drawn in the band above the menu (sprite_pause_draw). */
 typedef unsigned int u32;
 typedef unsigned short u16;
 typedef short s16;
@@ -25,7 +27,9 @@ struct Header {u32 magic,revision,fields,field_offset,statics,static_offset,size
  * left (home bits 0..7, away 8..15), the tab's side (1 away at the anchor, 2 home at the alternate) and the red
  * play-clock flag the frame's fields read. */
 struct State {u32 scene,active,home,away,home_wing,away_wing,home_plate,away_plate,home_rim,away_rim,kick_phase,kicker;u16 record[2][12];
- u32 down,interim,timeouts,tab,tab_side,red;};
+ u32 down,interim,timeouts,tab,tab_side,red,shift;};
+/* b780 pres2: shift is the y offset (packed scene units) the pause screen has moved the bar by, 0 when it sits in place. */
+_Static_assert(sizeof(struct State)==124,"bytes 124..127 of the owner's data page are the play-call strip flag");
 typedef union {u32 u;float f;} Bits;
 #define INTERIM_SECONDS 0x40e00000u /* 7.0: ESPN's median "3rd Down" (52 in the full Broncos-Chiefs game, p25 5, p75 10) */
 #define TAB_SECONDS 0x40800000u     /* 4.0: ESPN's TIMEOUT popups ran 2, 4 and 5 s in the same game */
@@ -131,6 +135,31 @@ NOINLINE u32 FAST possessor(struct State *s) {
 static u32 FAST element_visible(u32 record);
 NOINLINE static u32 espn_mode(void);
 NOINLINE static u32 timeouts_now(void);
+static u32 playcall_keep(void);
+
+/* b780 p2: the ball spot. The retail ball-on formatter (FBEB0) writes "Ball on NYJ 35" (the side that owns the line and
+ * the yards to its goal line) or "Ball at Midfield"; the bar's build turns retail's line break into a space, and the
+ * formatter's kick-attempt text ("35 yd FG") and phase 0's empty string do not start with B, so they are not a spot. The
+ * text after the eight-unit prefix follows the down text as the spot's own small glyphs. The scene has no spare quad, so
+ * the team is ONE word token (the mark 1 and its abbreviation: "\1NYJ" is a cell, an abbreviation without one shows no
+ * spot) and the yard line is two digit tokens (16..25; the plain digits are the down text's larger cells), with the
+ * narrow space 26 between them. `out` is the 16-unit spot slot of the field buffer, with 40 more units behind it as the
+ * formatter's scratch. It is left empty when there is no spot; otherwise it holds a gap (one label space, one narrow
+ * space) and the spot. */
+NOINLINE static void spot(u16 *out) {
+ u16 *raw=out+16,*to=out+2;u32 c,digits;
+ if(!V(0xe60280) || !V(0xe60284))return;               /* FBEB0 reads both teams; a game between plays has neither */
+ raw[0]=0;((Formatter)0xfbeb0)(raw);
+ if(raw[0]!='B' || !raw[8])return;
+ digits=raw[5]=='a';
+ if(digits){raw[8]='5';raw[9]='0';raw[10]=0;}else *to++=1;
+ for(raw+=8;(c=*raw) && to<out+15;raw++){
+  if(c==' '){digits=1;c=26;}else if(digits && c-'0'<10)c+=16-'0';
+  *to++=c;
+ }
+ if(to==out+2)return;
+ out[0]=' ';out[1]=26;*to=0;
+}
 
 NOINLINE void sprite_setup(struct State *s) {
  u8 *b=base();s->active=0;if(!b)return;
@@ -172,7 +201,7 @@ NOINLINE void sprite_setup(struct State *s) {
 }
 
 NOINLINE static u32 text(struct State *s,struct Field *f,u16 *out) {
- out[0]=0;
+ out[0]=0;out[40]=0;
  u32 source=f->source,p;
  if(source<2){p=V(source?0xe5fc68:0xe5fc28);if(!p || V(p)>999)return 0;((Formatter)(source?0xfc070:0xfc050))(out);}
  else if(source<4){p=V(source==2?0xe5fc28:0xe5fc68);if(!p)return 0;u32 n=V(p+4);if(n>3)return 0;V(out)='0'+n;}
@@ -190,8 +219,11 @@ NOINLINE static u32 text(struct State *s,struct Field *f,u16 *out) {
   if(espn_mode()){V(out)='E'|('S'<<16);V(out+2)='P'|('N'<<16);out[4]=0;return 1;}
   if(!V(0xe602ec) || !V(0xe60280))return 0;
   ((Formatter)0xfc7d0)(out);
-  /* sb: after a play ESPN shows the new down alone ("3rd Down") before the distance. */
-  if((int)s->interim>0 && out[3]==' '){V(out+4)='D'|('o'<<16);V(out+6)='w'|('n'<<16);out[8]=0;}
+  /* sb: after a play ESPN shows the new down alone ("3rd Down") before the distance. b780 p2: the play-call screen
+   * is where the distance is read, so it keeps "3rd & 5" and adds the ball spot (nwostar 10/24). */
+  u32 keep=playcall_keep();
+  if((int)s->interim>0 && out[3]==' ' && !keep){V(out+4)='D'|('o'<<16);V(out+6)='w'|('n'<<16);out[8]=0;}
+  if(keep)spot(out+40);
  }
  /* Records (8 home, 9 away) are the setup text; their tabs (10, 11) are one token
   * for the text length; the arrow (12) returns 2 when it belongs over the home score. */
@@ -226,8 +258,24 @@ NOINLINE static u32 timeouts_now(void) {
  return t;
 }
 
+/* The glyphs of one string appended to tokens[count..]: the new count, or 0 when a character has no glyph, the line has
+ * too many tokens or too many of them draw a quad (the spaces draw none, so they cost no slot: b780 p2). */
+NOINLINE static u32 glyphs_for(u8 *b,struct Field *f,const u16 *at,struct Glyph **tokens,u32 count,u32 *drawn,int *total) {
+ struct Glyph *glyph=(struct Glyph*)(b+f->glyphs);
+ while(*at) {
+  struct Glyph *match=(struct Glyph*)0;u32 length=0;
+  for(u32 i=0;i<f->count;i++){
+   u32 n=0;while(n<4 && glyph[i].token[n] && glyph[i].token[n]==at[n])n++;
+   if(n && (n==4 || !glyph[i].token[n])){match=glyph+i;length=n;break;}
+  }
+  if(!match || count==16 || (match->width && match->height && ++*drawn>f->capacity))return 0;
+  tokens[count++]=match;*total+=match->advance;at+=length;
+ }
+ return count;
+}
+
 NOINLINE static void field(u8 *b,struct State *s,struct Field *f) {
- struct Glyph *tokens[16];u16 buffer[96];u32 count=0;int total=0;
+ struct Glyph *tokens[16];u16 buffer[96];u32 count,more,drawn=0,spare,quad=0;int total=0,extra;
  for(u32 j=0;j<f->capacity;j++)color(b,f->vertex+j*4,0);
  if(f->capacity>16 || f->vertex+f->capacity*4>286 || f->count>128)return;
  if(f->visibility && !V(f->visibility))return;
@@ -243,50 +291,85 @@ NOINLINE static void field(u8 *b,struct State *s,struct Field *f) {
  }
  u32 side=text(s,f,buffer);
  if(!side)return;
- u16 *at=buffer;
- while(*at && at<buffer+80) {
-  struct Glyph *glyph=(struct Glyph*)(b+f->glyphs),*match=(struct Glyph*)0;u32 length=0;
-  for(u32 i=0;i<f->count;i++){
-   u32 n=0;while(n<4 && glyph[i].token[n] && glyph[i].token[n]==at[n])n++;
-   if(n && (n==4 || !glyph[i].token[n])){match=glyph+i;length=n;break;}
-  }
-  if(!match || count==f->capacity)return;
-  tokens[count++]=match;total+=match->advance;at+=length;
- }
- if(!count || *at)return;
+ count=glyphs_for(b,f,buffer,tokens,0,&drawn,&total);
+ if(!count)return;
+ /* b780 p2: the ball spot rides the same line when every one of its characters has a glyph, the quads it needs are left
+  * over and the line needs at most a 23 % squeeze (the widest real line, "2nd & GOAL  WAS 10", needs 21 %); otherwise the down text stands alone, as before. */
+ extra=total;spare=drawn;
+ if(buffer[40] && (more=glyphs_for(b,f,buffer+40,tokens,count,&spare,&extra))
+    && (extra-(tokens[more-1]->advance-tokens[more-1]->width))*100<=f->width*130){count=more;total=extra;}
  total-=tokens[count-1]->advance-tokens[count-1]->width;
  if(total<=0)return;
  int width=total<f->width?total:f->width;
  int left=(side==2?f->alt:f->x)-(f->align==1?width/2:f->align==2?width:0),advance=0;
  for(u32 i=0;i<count;i++) {
-  struct Glyph *g=tokens[i];u32 first=f->vertex+i*4;
+  struct Glyph *g=tokens[i];
   int x0=left+advance*width/total,x1=left+(advance+g->width)*width/total;
-  int y0=f->y+g->rise,y1=y0-g->height;
+  int y0=f->y+g->rise+(int)s->shift,y1=y0-g->height;
+  advance+=g->advance;
+  if(!g->width || !g->height)continue;
+  u32 first=f->vertex+quad++*4;
   for(u32 j=0;j<4;j++) {
    s16 *pos=(s16*)(b+0x2660+(first+j)*6),*uv=(s16*)(b+0x2d20+(first+j)*10+4);
    pos[0]=(j&1)?x1:x0;pos[1]=(j&2)?y1:y0;pos[2]=f->z;
    uv[0]=g->uv[j*2];uv[1]=g->uv[j*2+1];
   }
-  if(g->width && g->height)color(b,first,f->source==6 && s->red?0xffffffff:f->color);
-  advance+=g->advance;
+  color(b,first,f->source==6 && s->red?0xffffffff:f->color);
  }
 }
 
-/* sb B1: play calling keeps the 2026 bar up and draws no retail play-call bar. The retail play-call bar's draws
- * (0x8C450, 0x8CA00) run only while [0xB641B4] and [0xB641B0] are set; the build turns both draws off and points
- * the per-frame hide at 0x8BEA0 here, so the bar stays while that mode is on and replays and menus still hide it. */
+/* sb B1: play calling keeps the 2026 bar up and draws no retail play-call bar. The retail play-call bar's draw
+ * (0x8CA00) runs only while [0xB641B4] and [0xB641B0] are set; the build turns that draw off and points the
+ * per-frame hide at 0x8BEA0 here, so the bar stays while that mode is on and replays and menus still hide it.
+ * b780 gc1: 0x8C450 is not a play-call draw and stays retail. Its one caller is the franchise Gamecast's draw
+ * event (0xEC550 in the visualsimulatormenu event table); it draws the Gamecast's score panel (teams, scores,
+ * quarter, clock, down) from the simulator's state, and turning it off left the Gamecast with no score or time. */
 NOINLINE void sprite_playcall_hide(void) {
  if(V(0xb641b4) && V(0xb641b0))return;
  ((void (*)(void))0xfc6b0)();
 }
 static u32 playcall_keep(void) {
- /* The mode is on and the build's draw guard is in place (0x8C465 reads jmp): without the guard, retail. */
- return V(0xb641b4) && V(0xb641b0) && *(volatile u8 *)0x8c465==0xe9;
+ /* The mode is on and the build's draw guard is in place (0x8CA18 reads jmp): without the guard, retail. */
+ return V(0xb641b4) && V(0xb641b0) && *(volatile u8 *)0x8ca18==0xe9;
+}
+
+/* b780 pres2: the pause screen. The Paused menu's backdrop (0x6BEF0 -> 0x64FE0) draws the frozen game and the play-call
+ * panel (0x8CA00, which this build keeps off) but never the HUD draw (FC360, called only by the in-game draw 0x646B0), so
+ * no bar showed while paused. [0xA83A14] is the retail pause counter (IsPaused() is 0x64BE0: above zero while a menu holds
+ * the game) and [0xA83F14] is 1 while that menu uses the frozen-game backdrop (the Gamecast clears it). In play the PAUSED
+ * banner sits where the bar draws, so while paused the bar moves into the empty band above the menu panel (HUD lines 44 to
+ * 90 of 448; the panel starts at line 102): PAUSE_TOP is its top edge in packed scene units (scene y 380 = HUD line 44).
+ * Every quad but the corner mark moves, so text, tab and plates follow; the first update after the pause moves it back. */
+#define PAUSE_TOP 21845
+static u32 pausing(void) {return (int)V(0xa83a14)>0 && V(0xa83f14)==1;}
+static s16 *vy(u8 *b,u32 v) {return (s16*)(b+0x2660+v*6)+1;}
+/* The highest y of the bar's own quads (the statics but the corner mark). */
+static int bar_top(u8 *b) {
+ struct Header *h=header(b);struct Static *st=(struct Static*)(b+h->static_offset);int top=-32768;
+ for(u32 i=0;i<h->statics;i++)if(!st[i].brand)for(u32 j=0;j<4;j++){int y=*vy(b,st[i].vertex+j);if(y>top)top=y;}
+ return top;
+}
+static void bar_move(u8 *b,int d) {
+ struct Header *h=header(b);struct Static *st=(struct Static*)(b+h->static_offset);
+ for(u32 v=0;v<h->quads*4;v++)*vy(b,v)+=d;
+ for(u32 i=0;i<h->statics;i++)if(st[i].brand)for(u32 j=0;j<4;j++)*vy(b,st[i].vertex+j)-=d;
+}
+/* Called in place of the paused backdrop's call to 0x8CA00 (after it): draws the bar with the HUD draw, whatever the
+ * retail show/hide left the draw gate [0xA95524] at, and puts the gate back. */
+NOINLINE void sprite_pause_draw(struct State *s) {
+ u8 *b=base();if(!b || !s->active || s->scene!=(u32)b+256 || !pausing())return;
+ if(!s->shift){int top=bar_top(b);if(top>-32768 && top<PAUSE_TOP){bar_move(b,PAUSE_TOP-top);s->shift=(u32)(PAUSE_TOP-top);}}
+ u32 gate=V(0xa95524);V(0xa95524)=1;
+ ((void (*)(void))0xfc360)();
+ V(0xa95524)=gate;
 }
 
 /* dt is the frame time FC9C0 receives (IEEE single bits, sb). */
 NOINLINE void sprite_update(struct State *s,u32 dt) {
  u8 *b=base();if(!b || !s->active || s->scene!=(u32)b+256)return;
+ /* b780 pres2: back in place on the first frame the pause screen is gone (a bar not at the paused top, a scene loaded
+  * since, is left alone). */
+ if(s->shift && !pausing()){if(bar_top(b)==PAUSE_TOP)bar_move(b,-(int)s->shift);s->shift=0;}
  if(dt-1>=0x3f7fffffu)dt=0;
  /* sb: the interim label starts when the down steps to 2nd, 3rd or 4th in the same series. */
  u32 p=V(0xe602ec);

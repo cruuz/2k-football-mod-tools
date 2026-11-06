@@ -201,7 +201,9 @@ class NumberSheetQualityWiringTests(unittest.TestCase):
             ns = self.ns
             with patch.dict(ns, {
                 "QFileDialog": SimpleNamespace(getOpenFileName=lambda *a: (str(source), "")),
-                "QInputDialog": SimpleNamespace(getItem=Mock(side_effect=[("Jersey numbers", True), (SHEET_LAYOUTS[0][0], True), ("Match retail size", True)])),
+                # b780 CI: the layout and size questions are ux_text.get_item (their explanations wrap at a pixel width)
+                "QInputDialog": SimpleNamespace(getItem=Mock(side_effect=[("Jersey numbers", True)])),
+                "get_item": Mock(side_effect=[(SHEET_LAYOUTS[0][0], True), ("Match retail size", True)]),
             }):
                 if encode_error:
                     with self.assertRaises(ValidationError): ns["_choose_digit_sheet_import"](host)

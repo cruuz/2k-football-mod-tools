@@ -34,7 +34,8 @@ FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2
            "data/nfl2k5_classic_teams/",  # b778-ss1: the Seamen card, field and face art
            "data/nfl2k5_alien_prospect/",  # b778-ee1: the gray alien portrait and face textures
            "data/trophy_room_logo/",  # b778-pg2: the authored TROPHY ROOM emblem
-           "data/nfl2k5_glyph_fixes_2026/")  # b776-fn2 (int2)
+           "data/nfl2k5_glyph_fixes_2026/",  # b776-fn2 (int2)
+           "data/nfl2k5_scorebug_digit_glyphs.png")  # b780: the scorebug digit sheet's glyph layer (one file)
 CLASSIFICATION = ("b779 pt1's real portrait atlases are the official NFL.com / ESPN headshot photographs of the created real free agents, cropped and reduced to the game's 128 x 128 P8 portrait format (Noah 2026-10-28: the card shows the real picture, like the NFL roster does); the original photo files never ship, only these game-format portraits. "
                   "b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), "
                   "reviewed face by face; no photograph or retail-extracted pixels. "
@@ -74,7 +75,13 @@ CLASSIFICATION = ("b779 pt1's real portrait atlases are the official NFL.com / E
                   "seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 "
                   "team logos at mark size or a plain club roundel."
                   " b776 fn2's four Titans 7 digit textures (data/nfl2k5_glyph_fixes_2026) are flat two-colour shapes drawn from "
-                  "measurements of 2026 club photos (constant-width stem, block foot), not traced from a font file or photo pixels.")
+                  "measurements of 2026 club photos (constant-width stem, block foot), not traced from a font file or photo pixels. "
+                  "b780's scorebug digit sheet glyph layer (data/nfl2k5_scorebug_digit_glyphs.png) is rendered text: the digits 0-9, "
+                  "the colon and FINAL drawn by tools/nfl2k5_scorebug_espn_art.py (digits_from_font) with DejaVu Sans Bold through "
+                  "Pillow 10.2.0 / FreeType 2.13.2, white glyph coverage on transparent, and the retail bolt cell cleared; it holds no "
+                  "font file data, no photograph and no retail pixel. DejaVu is under the Bitstream Vera license (DejaVu's changes are "
+                  "public domain), which allows reproducing and distributing the fonts; the release ships only this rendering of "
+                  "those characters, not the font.")
 
 # Reviewed by i3 on 2026-10-14 (contact sheets in the i3 scratch png_review/). Not authored art, so not catalogued.
 # path or (folder, name) -> (SHA-256 of the reviewed bytes, reason). A different SHA-256 at the path needs a new review.

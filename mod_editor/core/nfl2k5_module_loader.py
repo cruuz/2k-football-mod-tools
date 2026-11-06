@@ -222,7 +222,8 @@ def _recognize(payload):
         raw = image.read(va, len(before))
         states.add("retail" if raw == before else "applied" if code and raw == after else "foreign")
     if code:
-        require(home.status(payload) == "applied", "the module loader needs Career Home")
+        # b780 n6: the loader's own bytes do not link to MyCareer; beside the beta-79 Career Home ("previous") it is exact
+        require(home.status(payload) in ("applied", "previous"), "the module loader needs Career Home")
         expected = code_for(code["va"], data["va"], header_va(payload), ranges(payload))[0]
         raw = image.read(code["va"], CODE_SIZE)
         states.add("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == expected else "foreign")

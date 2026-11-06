@@ -42,11 +42,19 @@
   },
   {
    "file": "faces_03.png",
-   "sha256": "edaaedd290919bc21fc058537b70d5ef56642971ed3bd0eb91d234ec04493ced"
+   "sha256": "a91895f20c14d79b4b046d0349593419bcdd88f198422da2ddb381daafe210b5"
   },
   {
    "file": "faces_03_pal.png",
-   "sha256": "77a6f98119cbedabfbe1e991a86702cf478531308ff3b32c661a39c1cebed9c1"
+   "sha256": "6a0c15cb000ff27ff93699e6db9ae2729e6066eb29788261320cb84a54b91acf"
+  },
+  {
+   "file": "faces_04.png",
+   "sha256": "db6ffb1534ac90f11b604ee005d759fbb279d6ae8c53d3151037fb81eadc8e1a"
+  },
+  {
+   "file": "faces_04_pal.png",
+   "sha256": "ac11215c3ccf6afbf986614e45f64b04d29229961a0f952f257b2343e13f082b"
   }
  ],
  "portraits": [
@@ -25591,6 +25599,4625 @@
     11
    ],
    "review": "ok"
+  },
+  {
+   "id": 30946,
+   "gsis_id": "00-0035127",
+   "first": "Andre",
+   "last": "James",
+   "position": "C",
+   "college": "UCLA",
+   "birth_month": 5,
+   "birth_day": 2,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cliagitqwyz5snrphj2c",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 04 Aug 2025 06:37:36 GMT",
+   "source_bytes": 5335955,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "7ff404602b6b82007acd9cf0d2a18827f50fa7ee11355ec8cb2a4712472f0e7c",
+   "atlas": "faces_03.png",
+   "cell": [
+    2,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30947,
+   "gsis_id": "00-0037106",
+   "first": "Jaylon",
+   "last": "Jones",
+   "position": "CB",
+   "college": "Ole Miss",
+   "birth_month": 10,
+   "birth_day": 14,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wdcshvjrfqw2ocj3vtvj",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Wed, 22 Jul 2026 19:57:02 GMT",
+   "source_bytes": 4338674,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "de9903464f94977946600e93d0be5069362c821b42aa0d5a87a01cefd3ff5002",
+   "atlas": "faces_03.png",
+   "cell": [
+    3,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30948,
+   "gsis_id": "00-0038462",
+   "first": "Keshawn",
+   "last": "Banks",
+   "position": "DT",
+   "college": "San Diego State",
+   "birth_month": 12,
+   "birth_day": 21,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/psqcg6omspml02ur6jlf",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 02 Aug 2026 15:17:51 GMT",
+   "source_bytes": 3545980,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "50a9d9342a0890a964cb1278c1205b38103a1a990d5f5d0ad93b1988ab885ea7",
+   "atlas": "faces_03.png",
+   "cell": [
+    4,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30949,
+   "gsis_id": "00-0039477",
+   "first": "Jack",
+   "last": "Browning",
+   "position": "P",
+   "college": "San Diego State",
+   "birth_month": 11,
+   "birth_day": 14,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://a.espncdn.com/i/headshots/nfl/players/full/4876013.png",
+   "source_list": "espn",
+   "source_http_last_modified": "Sat, 02 Nov 2024 22:29:15 GMT",
+   "source_bytes": 277404,
+   "source_size": [
+    600,
+    436
+   ],
+   "source_sha256": "578440cd6a6875c7916ab9a7a63584a5a64f20348578db62db4ac345242ccc2a",
+   "atlas": "faces_03.png",
+   "cell": [
+    5,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30950,
+   "gsis_id": "00-0035298",
+   "first": "Scott",
+   "last": "Miller",
+   "position": "WR",
+   "college": "Bowling Green",
+   "birth_month": 7,
+   "birth_day": 31,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zj8u3vanltf0qbd3ln3x",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 18:26:30 GMT",
+   "source_bytes": 4685036,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "28d1457be3863e46baaa62a615358a8d3245d719e6784c10bd690d4a27cd76fe",
+   "atlas": "faces_03.png",
+   "cell": [
+    6,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30951,
+   "gsis_id": "00-0037984",
+   "first": "Damarion",
+   "last": "Williams",
+   "position": "CB",
+   "college": "Houston",
+   "birth_month": 7,
+   "birth_day": 15,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vmakhsdcrjdtw0psgslj",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 17 Jul 2026 18:58:11 GMT",
+   "source_bytes": 5056428,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "827e4df4fbc2451441e505952aa436776dc0368dd9750f72133815934710a914",
+   "atlas": "faces_03.png",
+   "cell": [
+    7,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30952,
+   "gsis_id": "00-0035857",
+   "first": "Chris",
+   "last": "Williams",
+   "position": "DT",
+   "college": "Wagner",
+   "birth_month": 6,
+   "birth_day": 16,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vznnciqhfciaxujb2a8i",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 01 Aug 2026 09:01:41 GMT",
+   "source_bytes": 3855163,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "62ae7924e6e7fee03b0970c88272aebf8384b90fbcaf0e38c6ab59d01a476c1e",
+   "atlas": "faces_03.png",
+   "cell": [
+    8,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30953,
+   "gsis_id": "00-0037302",
+   "first": "Austin",
+   "last": "Deculus",
+   "position": "T",
+   "college": "Louisiana State",
+   "birth_month": 3,
+   "birth_day": 12,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/da3gpuvmzfoc7tnn5nut",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 17 Jul 2026 04:49:46 GMT",
+   "source_bytes": 5040730,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "6f3ddcb380ad97aae4c84f66fe6a356f8472bafb250455353990909223e8db5f",
+   "atlas": "faces_03.png",
+   "cell": [
+    9,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30954,
+   "gsis_id": "00-0038693",
+   "first": "Garrett",
+   "last": "Nelson",
+   "position": "DE",
+   "college": "Nebraska",
+   "birth_month": 3,
+   "birth_day": 1,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://a.espncdn.com/i/headshots/nfl/players/full/4430250.png",
+   "source_list": "espn",
+   "source_http_last_modified": "Thu, 12 Feb 2026 16:28:20 GMT",
+   "source_bytes": 282548,
+   "source_size": [
+    600,
+    436
+   ],
+   "source_sha256": "b3ea1b09fbba9e22783deeec04f16d4ef497980f12ceda4565043150249ea6a1",
+   "atlas": "faces_03.png",
+   "cell": [
+    10,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30955,
+   "gsis_id": "00-0039054",
+   "first": "Marte",
+   "last": "Mapu",
+   "position": "DE",
+   "college": "Sacramento State",
+   "birth_month": 11,
+   "birth_day": 8,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/iulfjo62qs1q2uec0rxu",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 16 Jul 2026 05:21:06 GMT",
+   "source_bytes": 4121611,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "fc8127a34b358fec3de146c4666457882ec865969723902a5088844a858d6857",
+   "atlas": "faces_03.png",
+   "cell": [
+    11,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30956,
+   "gsis_id": "00-0040637",
+   "first": "Lucas",
+   "last": "Scott",
+   "position": "FB",
+   "college": "Army",
+   "birth_month": 8,
+   "birth_day": 25,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fczsn4gxvqg2a99hlkdy",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 12 Aug 2025 22:00:01 GMT",
+   "source_bytes": 3600516,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "06378116f51bc119967a41a5ef68d870d225ee98b278a71b47b5e7c539416667",
+   "atlas": "faces_03.png",
+   "cell": [
+    12,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30957,
+   "gsis_id": "00-0039494",
+   "first": "Kenny",
+   "last": "Dyson",
+   "position": "DE",
+   "college": "Bryant",
+   "birth_month": 6,
+   "birth_day": 27,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ikgxg2vrumhdez3bu0w9",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 05 Sep 2024 09:13:15 GMT",
+   "source_bytes": 5828237,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "e589e89aa0471d7c3d7f07f0dba7ad01f809774d61b4800aff53c36aebea50e8",
+   "atlas": "faces_03.png",
+   "cell": [
+    13,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30958,
+   "gsis_id": "00-0036859",
+   "first": "Jimmy",
+   "last": "Morrissey",
+   "position": "C",
+   "college": "Pittsburgh",
+   "birth_month": 6,
+   "birth_day": 9,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jdstqkmytx1eycdnss8o",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 26 Jul 2026 09:11:30 GMT",
+   "source_bytes": 1200910,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "512eab39187c0a3ec42a04f637c673ad8c1a48d6ba87d75b9a29112519737922",
+   "atlas": "faces_03.png",
+   "cell": [
+    14,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30959,
+   "gsis_id": "00-0038092",
+   "first": "Erik",
+   "last": "Ezukanma",
+   "position": "WR",
+   "college": "Texas Tech",
+   "birth_month": 1,
+   "birth_day": 25,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jlhjonsu8idqrcj6tune",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 07 Aug 2026 18:47:33 GMT",
+   "source_bytes": 3510520,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "40d9ead652aa45787463406017f87c2f2a56107ff80a9d6be4bd0789a5de5e0a",
+   "atlas": "faces_03.png",
+   "cell": [
+    15,
+    11
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30960,
+   "gsis_id": "00-0038458",
+   "first": "Owen",
+   "last": "Wright",
+   "position": "HB",
+   "college": "William & Mary",
+   "birth_month": 2,
+   "birth_day": 28,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nig1vy9k1asfhkanvlki",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 27 Nov 2025 10:23:02 GMT",
+   "source_bytes": 3548712,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "5a9153c26e0a900ca8c402936a7b7c4bc63f53aeedb249f7208d1bff8c0fdd64",
+   "atlas": "faces_03.png",
+   "cell": [
+    0,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30961,
+   "gsis_id": "00-0038998",
+   "first": "Jake",
+   "last": "Haener",
+   "position": "QB",
+   "college": "Washington",
+   "birth_month": 3,
+   "birth_day": 10,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jfxyp1qkekty7jwh5kcr",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 10 Aug 2025 19:56:05 GMT",
+   "source_bytes": 1276644,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "8f1db34e0edeec5aba94bfa55d3e4065b32b487a849063820a9d9a519fb43f77",
+   "atlas": "faces_03.png",
+   "cell": [
+    1,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30962,
+   "gsis_id": "00-0038622",
+   "first": "Deuce",
+   "last": "Vaughn",
+   "position": "HB",
+   "college": "Kansas State",
+   "birth_month": 11,
+   "birth_day": 2,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/z8lnunc6vvq9qlnidaw3",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 04 Aug 2025 01:03:30 GMT",
+   "source_bytes": 3060218,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "5dd64e356db0f92fea667f23bf1802412ef1f590f05939dc77e7d824afca9213",
+   "atlas": "faces_03.png",
+   "cell": [
+    2,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30963,
+   "gsis_id": "00-0039265",
+   "first": "Gabe",
+   "last": "Hall",
+   "position": "DT",
+   "college": "Baylor",
+   "birth_month": 1,
+   "birth_day": 12,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ofalkqy1zcwgoggtgdlt",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 07 Aug 2026 18:40:24 GMT",
+   "source_bytes": 1333752,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "8bf51308213d86c6f51b2d8ed71cab7e72296018a5e91c00169128552c81bd5a",
+   "atlas": "faces_03.png",
+   "cell": [
+    3,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30964,
+   "gsis_id": "00-0039488",
+   "first": "Mark",
+   "last": "Perry",
+   "position": "SS",
+   "college": "TCU",
+   "birth_month": 5,
+   "birth_day": 30,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/brg1bcmlylgd5ucjiydw",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 14 Jul 2026 03:51:46 GMT",
+   "source_bytes": 5163271,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "cfa048b449a0cf575d879fb95b300bb7148103a71fc89994678268eb29232bb2",
+   "atlas": "faces_03.png",
+   "cell": [
+    4,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30965,
+   "gsis_id": "00-0038883",
+   "first": "Isaiah",
+   "last": "Winstead",
+   "position": "WR",
+   "college": "East Carolina",
+   "birth_month": 8,
+   "birth_day": 9,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://a.espncdn.com/i/headshots/nfl/players/full/4247942.png",
+   "source_list": "espn",
+   "source_http_last_modified": "Fri, 28 Jul 2023 19:19:51 GMT",
+   "source_bytes": 273354,
+   "source_size": [
+    600,
+    436
+   ],
+   "source_sha256": "93a8aae235925759fa6d0f7d03746a1b16c36baf3c71266629a0f102db06fc70",
+   "atlas": "faces_03.png",
+   "cell": [
+    5,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30966,
+   "gsis_id": "00-0039277",
+   "first": "Jimmy",
+   "last": "Ciarlo",
+   "position": "ILB",
+   "college": "Army",
+   "birth_month": 2,
+   "birth_day": 28,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/t0hjumfjcgkggvfe2rbp",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 13 Jul 2026 18:11:53 GMT",
+   "source_bytes": 5097351,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "299305cee9e80cc7aadabbc2164523f9be6c5362a3a61e184f804c1cced02954",
+   "atlas": "faces_03.png",
+   "cell": [
+    6,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30967,
+   "gsis_id": "00-0039241",
+   "first": "Beau",
+   "last": "Brade",
+   "position": "FS",
+   "college": "Maryland",
+   "birth_month": 1,
+   "birth_day": 29,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/aa1pdnb0jaba4zs5nnry",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 16 Jul 2026 20:40:29 GMT",
+   "source_bytes": 1365479,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "6ef46aaf8d5dfc86c6dcba6018db3c11d74ffb2d176c91f08ff51a2b79ebb79d",
+   "atlas": "faces_03.png",
+   "cell": [
+    7,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30968,
+   "gsis_id": "00-0039373",
+   "first": "Audric",
+   "last": "Estime",
+   "position": "HB",
+   "college": "Notre Dame",
+   "birth_month": 9,
+   "birth_day": 6,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lcoend1mysjfhl8f4rrt",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 20 Nov 2025 10:20:44 GMT",
+   "source_bytes": 3566225,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "32366d4c4d1bebb729ddcb699335b909f99c6358fe799841839ba89225463caa",
+   "atlas": "faces_03.png",
+   "cell": [
+    8,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30969,
+   "gsis_id": "00-0039379",
+   "first": "Jamari",
+   "last": "Thrash",
+   "position": "WR",
+   "college": "Louisville",
+   "birth_month": 12,
+   "birth_day": 19,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/byihyhwwpltzyetas85a",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 11 Sep 2025 02:07:49 GMT",
+   "source_bytes": 3680443,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "7f934c4051e387efa2197139b22e38cad988ab28610fafe46f212bd27ecf4d36",
+   "atlas": "faces_03.png",
+   "cell": [
+    9,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30970,
+   "gsis_id": "00-0039624",
+   "first": "Kyle",
+   "last": "Hergel",
+   "position": "G",
+   "college": "Boston College",
+   "birth_month": 10,
+   "birth_day": 7,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/c0lvxs9aaybnyyacvvtz",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 16:32:03 GMT",
+   "source_bytes": 4256056,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "94db81eb24f6d30ad2aa86eed7242ed15325b879a080187541b954a12455b6c3",
+   "atlas": "faces_03.png",
+   "cell": [
+    10,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30971,
+   "gsis_id": "00-0039442",
+   "first": "Kingsley",
+   "last": "Eguakun",
+   "position": "C",
+   "college": "Florida",
+   "birth_month": 3,
+   "birth_day": 23,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tybhcfzdfccvnxz4labx",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 12 Aug 2025 00:21:34 GMT",
+   "source_bytes": 4901105,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "c0684312bf52cfbed93fd54613ebfb2855b76918576f17aed11a9f50da59aafb",
+   "atlas": "faces_03.png",
+   "cell": [
+    11,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30972,
+   "gsis_id": "00-0039586",
+   "first": "Tyrek",
+   "last": "Funderburk",
+   "position": "CB",
+   "college": "Appalachian State",
+   "birth_month": 11,
+   "birth_day": 28,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tzkkwtxovny5ufixvvoq",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 10 Jul 2026 02:03:07 GMT",
+   "source_bytes": 4734591,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "ed4f2776dca02323489ec7be9c775a1cd8010d2732308c1045182fec762df654",
+   "atlas": "faces_03.png",
+   "cell": [
+    12,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30973,
+   "gsis_id": "00-0039685",
+   "first": "A.J.",
+   "last": "Woods",
+   "position": "CB",
+   "college": "Pittsburgh",
+   "birth_month": 3,
+   "birth_day": 28,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zecg893zdz500syj1k08",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 02 Aug 2026 05:42:28 GMT",
+   "source_bytes": 4033066,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "3b0fcc4d8e80e77483ea9dd15ee483d824ed6c04fc9a16424117a97b4bd6b2cc",
+   "atlas": "faces_03.png",
+   "cell": [
+    13,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30974,
+   "gsis_id": "00-0039754",
+   "first": "Devin",
+   "last": "Culp",
+   "position": "TE",
+   "college": "Washington",
+   "birth_month": 2,
+   "birth_day": 2,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/e32gorf12yuyy6iyijt9",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 16 Jul 2026 20:59:27 GMT",
+   "source_bytes": 5412457,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "6d2c825106dd2f644b457d633ebd647f718c8fe43396413f9a98080dd86cd6d0",
+   "atlas": "faces_03.png",
+   "cell": [
+    14,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30975,
+   "gsis_id": "00-0040307",
+   "first": "Josh",
+   "last": "Priebe",
+   "position": "G",
+   "college": "Michigan",
+   "birth_month": 7,
+   "birth_day": 30,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/z8bgbhmsahpeyrozqgpi",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 04 Sep 2025 09:03:04 GMT",
+   "source_bytes": 4100299,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "49dd04c62a96d6f955eac0f83071217bacb01f3c28a8c26b21122eb072d66c6e",
+   "atlas": "faces_03.png",
+   "cell": [
+    15,
+    12
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30976,
+   "gsis_id": "00-0039823",
+   "first": "Elijah",
+   "last": "Jones",
+   "position": "CB",
+   "college": "Boston College",
+   "birth_month": 1,
+   "birth_day": 8,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lweacpqc2c7vb7rswsry",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 03:48:20 GMT",
+   "source_bytes": 4128403,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "c4260b7083b82642ce722ce2243d2a4639a53ebf4c28787c6cd946d06fface1d",
+   "atlas": "faces_03.png",
+   "cell": [
+    0,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30977,
+   "gsis_id": "00-0040659",
+   "first": "Derrick",
+   "last": "Canteen",
+   "position": "FS",
+   "college": "Virginia Tech",
+   "birth_month": 4,
+   "birth_day": 2,
+   "group": "created_player",
+   "identity_match": "manual_birth_name",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vfpxchkywc1vt3yeom9q",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 19 Jul 2026 09:17:15 GMT",
+   "source_bytes": 5986262,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "914de4f944c9c54a020c8b3b77f6e4e5e2031776b9e6ad96c69bfec71f8db56e",
+   "atlas": "faces_03.png",
+   "cell": [
+    1,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30978,
+   "gsis_id": "00-0040365",
+   "first": "Daryl",
+   "last": "Porter",
+   "position": "CB",
+   "college": "Miami, FL",
+   "birth_month": 2,
+   "birth_day": 3,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://a.espncdn.com/i/headshots/nfl/players/full/4691005.png",
+   "source_list": "espn",
+   "source_http_last_modified": "Thu, 12 Feb 2026 16:27:57 GMT",
+   "source_bytes": 311409,
+   "source_size": [
+    600,
+    436
+   ],
+   "source_sha256": "943351733564ae4790615f36ec8b3ac66e21255bf393e29649b4fb1d27ed690f",
+   "atlas": "faces_03.png",
+   "cell": [
+    2,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30979,
+   "gsis_id": "00-0040388",
+   "first": "Jakobie",
+   "last": "Keeney-James",
+   "position": "WR",
+   "college": "Eastern Washington",
+   "birth_month": 9,
+   "birth_day": 26,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://a.espncdn.com/i/headshots/nfl/players/full/5178972.png",
+   "source_list": "espn",
+   "source_http_last_modified": "Fri, 14 Nov 2025 22:59:19 GMT",
+   "source_bytes": 336046,
+   "source_size": [
+    600,
+    436
+   ],
+   "source_sha256": "b2b4d2f58730e4506d9fef0fa3bb421ba3703762a8337e26e0a5c539232483ba",
+   "atlas": "faces_03.png",
+   "cell": [
+    3,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30980,
+   "gsis_id": "00-0040559",
+   "first": "Jakob",
+   "last": "Robinson",
+   "position": "CB",
+   "college": "Utah State",
+   "birth_month": 10,
+   "birth_day": 4,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qlefsw8fylwrmbgtmez7",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 19 Jul 2026 09:17:13 GMT",
+   "source_bytes": 5562179,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "27bd68803b424f1a806252e6a0d298ef9d582c81c994ae33abf6d8bbf9fe4c84",
+   "atlas": "faces_03.png",
+   "cell": [
+    4,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30981,
+   "gsis_id": "00-0040674",
+   "first": "Keydrain",
+   "last": "Calligan",
+   "position": "CB",
+   "college": "Jackson State",
+   "birth_month": 12,
+   "birth_day": 4,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://a.espncdn.com/i/headshots/nfl/players/full/4606181.png",
+   "source_list": "espn",
+   "source_http_last_modified": "Thu, 06 Aug 2026 19:38:26 GMT",
+   "source_bytes": 286759,
+   "source_size": [
+    600,
+    436
+   ],
+   "source_sha256": "30d828c4c37693e77926b49a9cfa30eaaacf5b62999ecd77d91f83dbd0a2fbc2",
+   "atlas": "faces_03.png",
+   "cell": [
+    5,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30982,
+   "gsis_id": "00-0034386",
+   "first": "Justin",
+   "last": "Watson",
+   "position": "WR",
+   "college": "None",
+   "birth_month": 4,
+   "birth_day": 4,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qupxjfqxueke4sgmlrk3",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 16 Jul 2026 12:16:58 GMT",
+   "source_bytes": 3746997,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "08aba05c51609f935dc36659fcc60cd53e3d15bb94512641e38f6ba08fafb91f",
+   "atlas": "faces_03.png",
+   "cell": [
+    6,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30983,
+   "gsis_id": "00-0036271",
+   "first": "Quez",
+   "last": "Watkins",
+   "position": "WR",
+   "college": "None",
+   "birth_month": 6,
+   "birth_day": 9,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/w3szyykihsngaeq3906b",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 07 Aug 2026 18:42:26 GMT",
+   "source_bytes": 3386163,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "50a8cb25da0290bb3d1a5020e1b19f9b2422e8320df3bee867cfca8d9a128395",
+   "atlas": "faces_03.png",
+   "cell": [
+    7,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30984,
+   "gsis_id": "00-0035629",
+   "first": "Jonah",
+   "last": "Williams",
+   "position": "DT",
+   "college": "Alabama",
+   "birth_month": 11,
+   "birth_day": 17,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ton1hb2fidrdk6zv8erf",
+   "source_list": "players.csv",
+   "source_http_last_modified": "Mon, 11 Aug 2025 22:53:56 GMT",
+   "source_bytes": 3577394,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "291780dd7e993297579d5b7a98208bbb53a11b00edf5f5cf6050e0b6017a0d14",
+   "atlas": "faces_03.png",
+   "cell": [
+    8,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30985,
+   "gsis_id": "00-0033221",
+   "first": "Daniel",
+   "last": "Brunskill",
+   "position": "C",
+   "college": "San Diego State",
+   "birth_month": 1,
+   "birth_day": 27,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lrak5cbjwhudqx5wiigo",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 11 Sep 2025 10:22:04 GMT",
+   "source_bytes": 3860479,
+   "source_size": [
+    3200,
+    2450
+   ],
+   "source_sha256": "766a1433f689b3e9b071870f807edf6fe05b39767af605fd415ea47352bcdf18",
+   "atlas": "faces_03.png",
+   "cell": [
+    9,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30986,
+   "gsis_id": "00-0033907",
+   "first": "Dawuane",
+   "last": "Smoot",
+   "position": "DT",
+   "college": "Illinois",
+   "birth_month": 3,
+   "birth_day": 2,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gmwsx9fddqfaqsm6dx0a",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 11 Aug 2025 22:36:50 GMT",
+   "source_bytes": 4859874,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "46991b922b47a4b067cb144167ad1c03b213d4a25f6370c9efb7624121ab4971",
+   "atlas": "faces_03.png",
+   "cell": [
+    10,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30987,
+   "gsis_id": "00-0031554",
+   "first": "Eric",
+   "last": "Kendricks",
+   "position": "ILB",
+   "college": "UCLA",
+   "birth_month": 2,
+   "birth_day": 29,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/adc49lyuljufsfseggdc",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 05 Sep 2024 13:20:12 GMT",
+   "source_bytes": 4768761,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "e73ed50398698a392cfede58bf29b6e109669b0d55d81fcab0649676d837a51c",
+   "atlas": "faces_03.png",
+   "cell": [
+    11,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30988,
+   "gsis_id": "00-0035697",
+   "first": "Germaine",
+   "last": "Pratt",
+   "position": "ILB",
+   "college": "None",
+   "birth_month": 5,
+   "birth_day": 21,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/genaletbuldhonkf0zlc",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 20 Nov 2025 11:10:41 GMT",
+   "source_bytes": 1384878,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "0cc4fc077777b52997f354b083d1f8add6929cbd12c31fd0f65850c4e31eaf79",
+   "atlas": "faces_03.png",
+   "cell": [
+    12,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30989,
+   "gsis_id": "00-0032442",
+   "first": "Elandon",
+   "last": "Roberts",
+   "position": "ILB",
+   "college": "Morgan State",
+   "birth_month": 4,
+   "birth_day": 22,
+   "group": "created_player",
+   "identity_match": "manual_birth_name",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/niydmsknfdiu1zyivwso",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 04 Aug 2025 01:27:50 GMT",
+   "source_bytes": 3676950,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "8caeec2c05385158b3b11e9d2fb6f46126fb488690bdd4fcfd2c1572cbdaf75d",
+   "atlas": "faces_03.png",
+   "cell": [
+    13,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30990,
+   "gsis_id": "00-0037811",
+   "first": "Chad",
+   "last": "Muma",
+   "position": "ILB",
+   "college": "Wyoming",
+   "birth_month": 8,
+   "birth_day": 18,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/y1i2juo53q38pudbpkpv",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Wed, 22 Jul 2026 20:02:13 GMT",
+   "source_bytes": 4275044,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "1b91dc8cec572400653e9b10b3bde96f21a52757b4b566bbaee6820ecae8321b",
+   "atlas": "faces_03.png",
+   "cell": [
+    14,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30991,
+   "gsis_id": "00-0035142",
+   "first": "Ugochukwu",
+   "last": "Amadi",
+   "position": "FS",
+   "college": "Oregon",
+   "birth_month": 5,
+   "birth_day": 16,
+   "group": "created_player",
+   "identity_match": "name_match_s6",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xo6ierx4ousz4wxuye0z",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 11 Aug 2025 22:48:24 GMT",
+   "source_bytes": 1267306,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "d94a4d4bcfdd0a6ddbb6392f33722c7004a2bf285a9f3f58c6f9088ff18bfd45",
+   "atlas": "faces_03.png",
+   "cell": [
+    15,
+    13
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30992,
+   "gsis_id": "00-0036884",
+   "first": "Marco",
+   "last": "Wilson",
+   "position": "CB",
+   "college": "Florida",
+   "birth_month": 3,
+   "birth_day": 3,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/m4jq4nxx4nwauuobcznx",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 19 Jul 2026 09:14:19 GMT",
+   "source_bytes": 4230883,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "bc4a2c85e3b85ed8e7fb02b70563b447c486f51f5f06d902b504aab1627975e7",
+   "atlas": "faces_03.png",
+   "cell": [
+    0,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30993,
+   "gsis_id": "00-0040037",
+   "first": "Jamon",
+   "last": "Johnson",
+   "position": "ILB",
+   "college": "Kentucky",
+   "birth_month": 11,
+   "birth_day": 28,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://a.espncdn.com/i/headshots/nfl/players/full/4569680.png",
+   "source_list": "espn",
+   "source_http_last_modified": "Fri, 08 Aug 2025 21:38:13 GMT",
+   "source_bytes": 282462,
+   "source_size": [
+    600,
+    436
+   ],
+   "source_sha256": "1ca63e98bbc84b84cbf20c19bfa5c845cfe9a1f21776a45cfdcff75d19f3723a",
+   "atlas": "faces_03.png",
+   "cell": [
+    1,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30994,
+   "gsis_id": "00-0040770",
+   "first": "Ajani",
+   "last": "Carter",
+   "position": "FS",
+   "college": "Houston",
+   "birth_month": 8,
+   "birth_day": 17,
+   "group": "created_player",
+   "identity_match": "name_match_s8",
+   "source_url": "https://a.espncdn.com/i/headshots/nfl/players/full/4429379.png",
+   "source_list": "espn",
+   "source_http_last_modified": "Fri, 21 Nov 2025 22:18:03 GMT",
+   "source_bytes": 334427,
+   "source_size": [
+    600,
+    436
+   ],
+   "source_sha256": "ba82d7932e84eab750a6306ccb872e403751bf4471a04a0c0208b88755a6bfec",
+   "atlas": "faces_03.png",
+   "cell": [
+    2,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30995,
+   "gsis_id": "00-0038397",
+   "first": "Evan",
+   "last": "Hull",
+   "position": "HB",
+   "college": "Northwestern",
+   "birth_month": 10,
+   "birth_day": 26,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nljdoot20e71vinaigbe",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 08:15:29 GMT",
+   "source_bytes": 4031720,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "f024d63185ca6da1f4fea30c3ccc52f25d08416f8c3d4512faacbc4068cc2689",
+   "atlas": "faces_03.png",
+   "cell": [
+    3,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30996,
+   "gsis_id": "00-0040283",
+   "first": "Jared",
+   "last": "Harrison-Hunte",
+   "position": "DT",
+   "college": "SMU; Miami",
+   "birth_month": 7,
+   "birth_day": 22,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/eesgp9vlpztlps1nl4sx",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 01:33:48 GMT",
+   "source_bytes": 5125436,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "9692e77295e38b5aa1754e414c654f2927edc93bf952745e94443d34608d916e",
+   "atlas": "faces_03.png",
+   "cell": [
+    4,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30997,
+   "gsis_id": "00-0036510",
+   "first": "Kenny",
+   "last": "Yeboah",
+   "position": "TE",
+   "college": "Mississippi",
+   "birth_month": 10,
+   "birth_day": 30,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/bjyunji7y2odt4n4judm",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 27 Jul 2026 23:40:35 GMT",
+   "source_bytes": 5313482,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "8fe9d388eafca779877a5fc1844445bf2b8a91ff33db6244fa63b86792aafa15",
+   "atlas": "faces_03.png",
+   "cell": [
+    5,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30998,
+   "gsis_id": "00-0040230",
+   "first": "Kitan",
+   "last": "Crawford",
+   "position": "SS",
+   "college": "Nevada; Texas",
+   "birth_month": 12,
+   "birth_day": 31,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/puy0uqictbwcojpkmmrr",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 17 Jul 2026 11:55:03 GMT",
+   "source_bytes": 5287717,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "4ac11a98ce1fac2f636dc555fd9123fccb0686f06b952d32aa44d301d1d4e7ea",
+   "atlas": "faces_03.png",
+   "cell": [
+    6,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 30999,
+   "gsis_id": "00-0036285",
+   "first": "A.J.",
+   "last": "Terrell",
+   "position": "CB",
+   "college": "Clemson",
+   "birth_month": 9,
+   "birth_day": 23,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/plww5syeocezywkpgpmg",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 01 Aug 2026 06:12:14 GMT",
+   "source_bytes": 3689897,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "beffb93d46bbbef257e26bf22db0a2eca41dd34d894c163bd90ae22cfadf167c",
+   "atlas": "faces_03.png",
+   "cell": [
+    7,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31000,
+   "gsis_id": "00-0037822",
+   "first": "Brian",
+   "last": "Asamoah",
+   "position": "LB",
+   "college": "Oklahoma",
+   "birth_month": 3,
+   "birth_day": 29,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xohuccngmgsc8x8t7onn",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 20 Nov 2025 10:40:54 GMT",
+   "source_bytes": 3183440,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "148b6ab156a5533187f97be3f6a4328444f121e92b4092bdf861973d71c4b557",
+   "atlas": "faces_03.png",
+   "cell": [
+    8,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31001,
+   "gsis_id": "00-0036711",
+   "first": "Charles",
+   "last": "Snowden",
+   "position": "EDGE",
+   "college": "Virginia",
+   "birth_month": 3,
+   "birth_day": 27,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lwfjnx5rgx1hanfqfnl7",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 11 Aug 2025 23:16:43 GMT",
+   "source_bytes": 3308763,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "4e3ddffa12da585f15c03bf8c78c35e246c8566a31f311602477a7bd9cc4fd1e",
+   "atlas": "faces_03.png",
+   "cell": [
+    9,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31002,
+   "gsis_id": "00-0037826",
+   "first": "Drake",
+   "last": "Jackson",
+   "position": "EDGE",
+   "college": "USC",
+   "birth_month": 4,
+   "birth_day": 12,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/x8ndvrqtk5q076kwedxg",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Wed, 22 Jul 2026 20:02:41 GMT",
+   "source_bytes": 4958852,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "3724734a16b127a1ced66be49d3c7d83759d5d0b16d61b3e1b39b714f02bbbbf",
+   "atlas": "faces_03.png",
+   "cell": [
+    10,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31003,
+   "gsis_id": "00-0036906",
+   "first": "Khalil",
+   "last": "Herbert",
+   "position": "HB",
+   "college": "Virginia Tech",
+   "birth_month": 4,
+   "birth_day": 21,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gjwksf9ygntjmtceeerh",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 20 Nov 2025 10:52:47 GMT",
+   "source_bytes": 1466392,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "e294ebe47785043dcff04e61a4c77060db147a79ee1526a78361cb83f5e2fbf9",
+   "atlas": "faces_03.png",
+   "cell": [
+    11,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31004,
+   "gsis_id": "00-0039791",
+   "first": "Adisa",
+   "last": "Isaac",
+   "position": "EDGE",
+   "college": "Penn State",
+   "birth_month": 10,
+   "birth_day": 4,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kgf0y0szaf289d6ys8sy",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 13 Jul 2026 18:11:16 GMT",
+   "source_bytes": 4215019,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "ec61c8b9fbe0baa1d5c13e20799072d415996cdbb0846e2aed2ccc74df3d687a",
+   "atlas": "faces_03.png",
+   "cell": [
+    12,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31005,
+   "gsis_id": "00-0035698",
+   "first": "Chuma",
+   "last": "Edoga",
+   "position": "T",
+   "college": "USC",
+   "birth_month": 5,
+   "birth_day": 25,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/daovqppglueevdbutt7k",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Wed, 05 Aug 2026 10:28:00 GMT",
+   "source_bytes": 4125137,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "501dab1395d15bc6a25747bc775d23a7ea52c246cc57b85baa33cd637c0a2d5a",
+   "atlas": "faces_03.png",
+   "cell": [
+    13,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31006,
+   "gsis_id": "00-0040870",
+   "first": "Ja'Kobi",
+   "last": "Lane",
+   "position": "WR",
+   "college": "USC",
+   "birth_month": 8,
+   "birth_day": 5,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gjezd2a8imfrxyv16wuj",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 14 Jul 2026 10:33:30 GMT",
+   "source_bytes": 5258967,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "51e37a0ac488433254336a258abb85123d2436f6ee89a6cac2517037d1135937",
+   "atlas": "faces_03.png",
+   "cell": [
+    14,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31007,
+   "gsis_id": "00-0039234",
+   "first": "T.J.",
+   "last": "Tampa",
+   "position": "CB",
+   "college": "Iowa State",
+   "birth_month": 3,
+   "birth_day": 13,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/poanrufasprugy1q1ulq",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 05 Sep 2024 09:33:42 GMT",
+   "source_bytes": 4185399,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "8470604ee9e8cc72255685a8e4f2abe0735a1cb559e2dfa6e7f80d78717d71d5",
+   "atlas": "faces_03.png",
+   "cell": [
+    15,
+    14
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31008,
+   "gsis_id": "00-0036199",
+   "first": "Geno",
+   "last": "Stone",
+   "position": "FS",
+   "college": "Iowa",
+   "birth_month": 4,
+   "birth_day": 19,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fwblmbnmduj5ylhfcfaf",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 13:04:11 GMT",
+   "source_bytes": 5147867,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "60f36224ca4b55c6091de99b016d6a71d311a917bfcd1eb38eef92b6c89c81be",
+   "atlas": "faces_03.png",
+   "cell": [
+    0,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31009,
+   "gsis_id": "00-0039469",
+   "first": "Te'Cory",
+   "last": "Couch",
+   "position": "CB",
+   "college": "Miami",
+   "birth_month": 9,
+   "birth_day": 6,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vzh2dirtk77zm4vig1lx",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 12 Aug 2025 00:22:31 GMT",
+   "source_bytes": 4288394,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "9f8a273c9a44dd1dd1d2eb4ba67b865d9d7f2e04371e1c898fa2904fe5d70c6e",
+   "atlas": "faces_03.png",
+   "cell": [
+    1,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31010,
+   "gsis_id": "00-0040394",
+   "first": "Anthony",
+   "last": "Tyus",
+   "position": "HB",
+   "college": "Ohio",
+   "birth_month": 3,
+   "birth_day": 20,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ycph0v6jfxwkcycuztk0",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 13 Jul 2026 18:25:26 GMT",
+   "source_bytes": 4338835,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "1d7e4dedb2c0204b9bb80e8d122742e222034171958c72b8faa4f970c48c7384",
+   "atlas": "faces_03.png",
+   "cell": [
+    2,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31011,
+   "gsis_id": "00-0040289",
+   "first": "Bam",
+   "last": "Martin-Scott",
+   "position": "LB",
+   "college": "South Carolina; Dodge City CC",
+   "birth_month": 7,
+   "birth_day": 4,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fvfw5drjy4cxaotvve69",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 20 Nov 2025 10:05:55 GMT",
+   "source_bytes": 3622014,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "6cd2932120fcd877774e9f4b4f2f28312f426f573e716506c91d03b725bce822",
+   "atlas": "faces_03.png",
+   "cell": [
+    3,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31012,
+   "gsis_id": "00-0036795",
+   "first": "Jake",
+   "last": "Curhan",
+   "position": "G",
+   "college": "California",
+   "birth_month": 2,
+   "birth_day": 9,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sfcyxgyi8qkzafuqwbnl",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 20 Nov 2025 10:48:36 GMT",
+   "source_bytes": 3745752,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "5bdd4c447ff2fb4a492d7791348054a64229633147be0647302ded53290aa5e7",
+   "atlas": "faces_03.png",
+   "cell": [
+    4,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31013,
+   "gsis_id": "00-0039076",
+   "first": "Nick",
+   "last": "Hampton",
+   "position": "EDGE",
+   "college": "Appalachian State",
+   "birth_month": 4,
+   "birth_day": 5,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/aj7xvaomrralumwm35ve",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 13 Jul 2026 05:48:50 GMT",
+   "source_bytes": 4725347,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "d1099ed766330e03936672a3eeb98c5db58734e340a6bd4ede4a15f8b1f41af4",
+   "atlas": "faces_03.png",
+   "cell": [
+    5,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31014,
+   "gsis_id": "00-0035890",
+   "first": "Tershawn",
+   "last": "Wharton",
+   "position": "DT",
+   "college": "Missouri-Rolla",
+   "birth_month": 6,
+   "birth_day": 25,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mj9xqaj2jvv5unjgxomd",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 28 Sep 2025 10:33:51 GMT",
+   "source_bytes": 3494847,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "ffcf14e01d178bc49913dcd7045eff9777d4000e834dfbc3e3b9c12cf0f0fc97",
+   "atlas": "faces_03.png",
+   "cell": [
+    6,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31015,
+   "gsis_id": "00-0040644",
+   "first": "Trevor",
+   "last": "Etienne",
+   "position": "HB",
+   "college": "Georgia; Florida",
+   "birth_month": 7,
+   "birth_day": 9,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pcuzq84x7ia5yvmikltb",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 11 Jul 2026 03:41:25 GMT",
+   "source_bytes": 4787717,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "edc7f57f7c23117013f6174a04efd9acaf27138157809ec35763fa10edcc92ed",
+   "atlas": "faces_03.png",
+   "cell": [
+    7,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31016,
+   "gsis_id": "00-0038111",
+   "first": "Kyler",
+   "last": "Gordon",
+   "position": "CB",
+   "college": "Washington",
+   "birth_month": 12,
+   "birth_day": 17,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lf0y6uogvxs0jycztehi",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 08:05:42 GMT",
+   "source_bytes": 5845282,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "6a4cdd26efac035ed5f878792ecd0a4a22e13071ae227aed7078416b32a0052a",
+   "atlas": "faces_03.png",
+   "cell": [
+    8,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31017,
+   "gsis_id": "00-0034344",
+   "first": "Marcus",
+   "last": "Davenport",
+   "position": "EDGE",
+   "college": "Texas-San Antonio",
+   "birth_month": 9,
+   "birth_day": 4,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hauze2vwdskhaiqjifk1",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 11 Aug 2025 22:39:17 GMT",
+   "source_bytes": 4208512,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "0477b5eb4bc8799db71b2c6a75a498138da0d0d9227f91a2a1d77cebf2e659db",
+   "atlas": "faces_03.png",
+   "cell": [
+    9,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31018,
+   "gsis_id": "00-0035039",
+   "first": "Stephen",
+   "last": "Carlson",
+   "position": "TE",
+   "college": "Princeton",
+   "birth_month": 12,
+   "birth_day": 12,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zqcvldqv8sazzftgrtf1",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 19:18:46 GMT",
+   "source_bytes": 4058779,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "dbf09dbf74009d2d4c6e50c04a3451965efccbdf066fce8e3dff72eba2e512bf",
+   "atlas": "faces_03.png",
+   "cell": [
+    10,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31019,
+   "gsis_id": "00-0038440",
+   "first": "Zavier",
+   "last": "Scott",
+   "position": "HB",
+   "college": "Maine",
+   "birth_month": 7,
+   "birth_day": 17,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/z8sqpgdoyuv5rask15vn",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 17 Jul 2026 01:22:00 GMT",
+   "source_bytes": 4056561,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "4fc99339d8e4606dda9b8403046ef691b8ef5ef853212ac47472d62cc31365ce",
+   "atlas": "faces_03.png",
+   "cell": [
+    11,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31020,
+   "gsis_id": "00-0039631",
+   "first": "Cam",
+   "last": "Grandy",
+   "position": "TE",
+   "college": "Illinois State; Missouri Western",
+   "birth_month": 11,
+   "birth_day": 19,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uay5dmniqx1baal3q3uu",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 05 Sep 2024 09:17:53 GMT",
+   "source_bytes": 3661702,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "2d7cf18ac5c4b7196c8db30735dc91d7a95649ad8b0d35ffa8be234cfc9d2198",
+   "atlas": "faces_03.png",
+   "cell": [
+    12,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31021,
+   "gsis_id": "00-0037844",
+   "first": "Russ",
+   "last": "Yeast",
+   "position": "FS",
+   "college": "Kansas State",
+   "birth_month": 5,
+   "birth_day": 8,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zojmeuz1wcm1tlfewvxe",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 14 Jul 2026 03:36:11 GMT",
+   "source_bytes": 1345874,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "f49bac069c9933a1d512f54753dc168457098e43af2f8bd56666ff5a6c59f032",
+   "atlas": "faces_03.png",
+   "cell": [
+    13,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31022,
+   "gsis_id": "00-0040704",
+   "first": "Dillon",
+   "last": "Gabriel",
+   "position": "QB",
+   "college": "Oregon; Oklahoma; UCF",
+   "birth_month": 12,
+   "birth_day": 28,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/szpyvusef9jvoctbnkbk",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 04 Sep 2025 09:13:38 GMT",
+   "source_bytes": 3970357,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "9a5cdda103a554f8b52c43a6d924f988e6d141352e7cfb66ee2ef7bb2d077184",
+   "atlas": "faces_03.png",
+   "cell": [
+    14,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31023,
+   "gsis_id": "00-0040162",
+   "first": "Dylan",
+   "last": "Sampson",
+   "position": "HB",
+   "college": "Tennessee",
+   "birth_month": 9,
+   "birth_day": 14,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/den1hzzomdxfcsgk88o5",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 04 Sep 2025 09:13:32 GMT",
+   "source_bytes": 5041862,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "0967f9ce5c9882284aee59821d881656e5a30e4d5d2d475e443fc578809133a8",
+   "atlas": "faces_03.png",
+   "cell": [
+    15,
+    15
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31024,
+   "gsis_id": "00-0037282",
+   "first": "James",
+   "last": "Mitchell",
+   "position": "TE",
+   "college": "Virginia Tech",
+   "birth_month": 8,
+   "birth_day": 11,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/q8b9goebgmuwusl6vqdc",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 11 Jul 2026 07:30:31 GMT",
+   "source_bytes": 4205480,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "913f2c9f9e7b1969b53349524f0fc4181e78e56e47a06c335dec9e6ee1f60876",
+   "atlas": "faces_04.png",
+   "cell": [
+    0,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31025,
+   "gsis_id": "00-0037578",
+   "first": "Juanyeh",
+   "last": "Thomas",
+   "position": "FS",
+   "college": "Georgia Tech",
+   "birth_month": 6,
+   "birth_day": 24,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qelzpivpkpwghq6aeozg",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Wed, 22 Jul 2026 20:00:57 GMT",
+   "source_bytes": 3353641,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "5dd2fe81ffc8c5f369d5131ba948a35813828048d0087a9f09a386be2dc23c2b",
+   "atlas": "faces_04.png",
+   "cell": [
+    1,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31026,
+   "gsis_id": "00-0039703",
+   "first": "Cody",
+   "last": "Schrader",
+   "position": "HB",
+   "college": "Missouri; Truman State University",
+   "birth_month": 9,
+   "birth_day": 8,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/snrwsjepuvkatdjjokp8",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 14 Jul 2026 02:53:01 GMT",
+   "source_bytes": 4278591,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "42554dd35861414f3be8218bc68843ec1a200044bd7849377aef2fc5107484ac",
+   "atlas": "faces_04.png",
+   "cell": [
+    2,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31027,
+   "gsis_id": "00-0041297",
+   "first": "Gavin",
+   "last": "Ortega",
+   "position": "G",
+   "college": "Weber State",
+   "birth_month": 4,
+   "birth_day": 29,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/birjqhksr8vcpsxs27nw",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 23 Jul 2026 19:51:37 GMT",
+   "source_bytes": 3896187,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "243f0680799556defc29e9771bb2a9daa6c0664139f61f67b5a5fd8ca0a5fcf0",
+   "atlas": "faces_04.png",
+   "cell": [
+    3,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31028,
+   "gsis_id": "00-0036952",
+   "first": "Jonathon",
+   "last": "Cooper",
+   "position": "EDGE",
+   "college": "Ohio State",
+   "birth_month": 1,
+   "birth_day": 8,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rzjdnsaz0sfs9v4xetov",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 04 Aug 2025 06:38:05 GMT",
+   "source_bytes": 3947016,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "cb3be149d7218e4d0e8ca17bc868838aeeb8e3f8b58d96d51e6040ee890d1fc2",
+   "atlas": "faces_04.png",
+   "cell": [
+    4,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31029,
+   "gsis_id": "00-0035663",
+   "first": "Taylor",
+   "last": "Rapp",
+   "position": "FS",
+   "college": "Washington",
+   "birth_month": 12,
+   "birth_day": 22,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/olasn9vezmd1uvomkpws",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 11 Aug 2025 22:54:52 GMT",
+   "source_bytes": 4053935,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "84599a4c509b16ae78c3c8fb83e9c0c890837fd7520b9bc9817fe0127d96332c",
+   "atlas": "faces_04.png",
+   "cell": [
+    5,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31030,
+   "gsis_id": "00-0039141",
+   "first": "Brian",
+   "last": "Branch",
+   "position": "SS",
+   "college": "Alabama",
+   "birth_month": 10,
+   "birth_day": 22,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zcri8hzscyasi2nhjdlk",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 12 Aug 2025 00:10:04 GMT",
+   "source_bytes": 4393473,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "cb706b1d3cad6c19f09e2ffe6393b70c5c614a7cddb368a24a9a014c138b5dba",
+   "atlas": "faces_04.png",
+   "cell": [
+    6,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31031,
+   "gsis_id": "00-0037297",
+   "first": "Cade",
+   "last": "Mays",
+   "position": "C",
+   "college": "Tennessee",
+   "birth_month": 4,
+   "birth_day": 26,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lw5vbu41hbzw9nychtb7",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 14 Jul 2026 03:33:41 GMT",
+   "source_bytes": 4510703,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "c4a72db748996ed292c90d587f9ae29ac1537e9b9f7ef294fbfcb023b26b2a05",
+   "atlas": "faces_04.png",
+   "cell": [
+    7,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31032,
+   "gsis_id": "00-0031763",
+   "first": "DeAndre",
+   "last": "Carter",
+   "position": "WR",
+   "college": "Sacramento State",
+   "birth_month": 4,
+   "birth_day": 10,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jx4io3owliw3l5xve6ta",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 04 Sep 2025 10:38:21 GMT",
+   "source_bytes": 4475007,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "932b327f435735151672af8128ebb51f23b64ce12acd131b208418e9e696f842",
+   "atlas": "faces_04.png",
+   "cell": [
+    8,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31033,
+   "gsis_id": "00-0032803",
+   "first": "Jalen",
+   "last": "Mills",
+   "position": "FS",
+   "college": "LSU",
+   "birth_month": 4,
+   "birth_day": 6,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yc4745ngoppgf1syjghl",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 07 Nov 2024 11:33:42 GMT",
+   "source_bytes": 3439650,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "4a6d89ad06da99114739a25633dc264bfd474ec57430790fb16e7d82d2d504aa",
+   "atlas": "faces_04.png",
+   "cell": [
+    9,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31034,
+   "gsis_id": "00-0037364",
+   "first": "Arron",
+   "last": "Mosby",
+   "position": "EDGE",
+   "college": "Fresno State",
+   "birth_month": 4,
+   "birth_day": 13,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/siq8ayl7lif3uddghbum",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 14 Jul 2026 13:26:50 GMT",
+   "source_bytes": 6226379,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "b78ceaa656af365dcf90f953f2617dceea5e801424aa8657e47cb9883ddd6159",
+   "atlas": "faces_04.png",
+   "cell": [
+    10,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31035,
+   "gsis_id": "00-0040352",
+   "first": "Coleman",
+   "last": "Owen",
+   "position": "WR",
+   "college": "Ohio; Northern Arizona",
+   "birth_month": 3,
+   "birth_day": 23,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cjnhiftygnypqumwfphq",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Wed, 22 Jul 2026 16:16:59 GMT",
+   "source_bytes": 4032449,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "b0379230ce05b684cf142ed6a785969872eb093f93671040cae67f47ab502eff",
+   "atlas": "faces_04.png",
+   "cell": [
+    11,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31036,
+   "gsis_id": "00-0038506",
+   "first": "Jordon",
+   "last": "Riley",
+   "position": "DT",
+   "college": "Oregon; Nebraska; Garden City CC; North Carolina",
+   "birth_month": 5,
+   "birth_day": 19,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tr46ilf5hznzboea38ag",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 14 Jul 2026 05:29:40 GMT",
+   "source_bytes": 4609842,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "a00f800a3a03a488c383f5a6a7aab6fd8dbed047ad35eaaffb1cdf9a3412c5ef",
+   "atlas": "faces_04.png",
+   "cell": [
+    12,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31037,
+   "gsis_id": "00-0035700",
+   "first": "Josh",
+   "last": "Jacobs",
+   "position": "HB",
+   "college": "Alabama",
+   "birth_month": 2,
+   "birth_day": 11,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uceokxeo0uqrqms3e3vl",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 14 Jul 2026 05:47:58 GMT",
+   "source_bytes": 3675123,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "3662ab565b9a8381e359bf23220801adeb88a639948a102b8bc4185b5d835315",
+   "atlas": "faces_04.png",
+   "cell": [
+    13,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31038,
+   "gsis_id": "00-0036284",
+   "first": "Mekhi",
+   "last": "Becton",
+   "position": "G",
+   "college": "Louisville",
+   "birth_month": 4,
+   "birth_day": 18,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/y8g95wptr3ozqhtj6urd",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 11 Aug 2025 23:04:59 GMT",
+   "source_bytes": 5591910,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "608f53f9a51bbc42f76debd88f53f91cae2d084a00836db41710b7b70fc9722b",
+   "atlas": "faces_04.png",
+   "cell": [
+    14,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31039,
+   "gsis_id": "00-0040009",
+   "first": "Savion",
+   "last": "Williams",
+   "position": "WR",
+   "college": "TCU",
+   "birth_month": 11,
+   "birth_day": 22,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/snmedlu4ra62snufe1qg",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 14 Jul 2026 02:23:24 GMT",
+   "source_bytes": 5556008,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "5c3b3a4f0c26c8724d77af1adf790a191a2407bb44767e5211f48e318b02c5ef",
+   "atlas": "faces_04.png",
+   "cell": [
+    15,
+    0
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31040,
+   "gsis_id": "00-0034836",
+   "first": "Braden",
+   "last": "Smith",
+   "position": "T",
+   "college": "Auburn",
+   "birth_month": 3,
+   "birth_day": 25,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/x8um4d5hecdo3rckd0gb",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 13:04:10 GMT",
+   "source_bytes": 3597063,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "fd32edde4356a76ad9a33d4b36760d53d84fa7138de0b6c765ae1790116fdeaa",
+   "atlas": "faces_04.png",
+   "cell": [
+    0,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31041,
+   "gsis_id": "00-0036241",
+   "first": "Bryce",
+   "last": "Hall",
+   "position": "CB",
+   "college": "Virginia",
+   "birth_month": 11,
+   "birth_day": 5,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/y12zzoocat1f5thpdmf5",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 13:04:12 GMT",
+   "source_bytes": 3770729,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "4e99049506ed41f053ea3ee17246a764f760c053e20980ccec59c2f80958d2b6",
+   "atlas": "faces_04.png",
+   "cell": [
+    1,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31042,
+   "gsis_id": "00-0038599",
+   "first": "Henry",
+   "last": "To'oTo'o",
+   "position": "LB",
+   "college": "Alabama; Tennessee",
+   "birth_month": 1,
+   "birth_day": 5,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/epsdr0zqlm2vrhizwama",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 11 Aug 2025 23:53:52 GMT",
+   "source_bytes": 1365380,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "0ef071d6b4181141aa445346d64a7d20902e42d1eaf2e9b904d24f3405e25aad",
+   "atlas": "faces_04.png",
+   "cell": [
+    2,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31043,
+   "gsis_id": "00-0037661",
+   "first": "Ja'Marcus",
+   "last": "Ingram",
+   "position": "CB",
+   "college": "Buffalo; Texas Tech",
+   "birth_month": 8,
+   "birth_day": 4,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/psqzuevupspatsrfianv",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 19 Jul 2026 09:12:09 GMT",
+   "source_bytes": 4151701,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "ca47d5fee8bf3fb1cfab1f9c1d0bfd311a89f82d133f36db6f9ed1aea9188c4e",
+   "atlas": "faces_04.png",
+   "cell": [
+    3,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31044,
+   "gsis_id": "00-0036441",
+   "first": "Kenneth",
+   "last": "Murray",
+   "position": "LB",
+   "college": "Oklahoma",
+   "birth_month": 11,
+   "birth_day": 16,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/up14o9gpznxgcvc5xtqh",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 04 Aug 2025 01:02:48 GMT",
+   "source_bytes": 993625,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "8be568f7fc91c5135a23baed244c6e2fadf874dd6ac5eef432545a0e0e8dacba",
+   "atlas": "faces_04.png",
+   "cell": [
+    4,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31045,
+   "gsis_id": "00-0038977",
+   "first": "Tank",
+   "last": "Dell",
+   "position": "WR",
+   "college": "Houston; Independence Comm. College; Alabama A&M",
+   "birth_month": 10,
+   "birth_day": 29,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nwfuoyhr6o2urgwox2nb",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 00:14:45 GMT",
+   "source_bytes": 4785545,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "9d5d6ebe3ae443f9084ca583863732730517cb9a397f2114251ac0ef6fa194c6",
+   "atlas": "faces_04.png",
+   "cell": [
+    5,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31046,
+   "gsis_id": "00-0033463",
+   "first": "Carl",
+   "last": "Lawson",
+   "position": "EDGE",
+   "college": "Auburn",
+   "birth_month": 6,
+   "birth_day": 29,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fv6hftu35bcjuenhupde",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 07 Nov 2024 11:28:09 GMT",
+   "source_bytes": 1232928,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "9387a12430980ead7dbd49775790bbe5d32228e299f102fe9702237ebbabfe8b",
+   "atlas": "faces_04.png",
+   "cell": [
+    6,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31047,
+   "gsis_id": "00-0040347",
+   "first": "Johnathan",
+   "last": "Edwards",
+   "position": "CB",
+   "college": "Tulane",
+   "birth_month": 11,
+   "birth_day": 16,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hvshzsyqwcqqtfdltrpu",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 04 Aug 2025 06:36:09 GMT",
+   "source_bytes": 1395109,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "bdfbe498ff44183b5705441e368254930641bfa7057f545a63f6425208576a80",
+   "atlas": "faces_04.png",
+   "cell": [
+    7,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31048,
+   "gsis_id": "00-0041320",
+   "first": "Kenneth",
+   "last": "Harris",
+   "position": "CB",
+   "college": "Oklahoma State",
+   "birth_month": 5,
+   "birth_day": 2,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hnfpjatae3feakzaa7oo",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 23 Jul 2026 00:02:00 GMT",
+   "source_bytes": 3874034,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "d6b36900e1b0240f18a318c3bf89e7519e50e7f60d46c437e0dc5a3397236c1f",
+   "atlas": "faces_04.png",
+   "cell": [
+    8,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31049,
+   "gsis_id": "00-0035026",
+   "first": "Kevin",
+   "last": "Givens",
+   "position": "DT",
+   "college": "Penn State",
+   "birth_month": 3,
+   "birth_day": 1,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/dpbmpsyvi88lpb4xebly",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 11 Aug 2025 22:47:54 GMT",
+   "source_bytes": 3707898,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "d04b6cf1c896562d6d9a31666d2ccb2dbe700d6a9a90f3411d45f8e1f3735cd2",
+   "atlas": "faces_04.png",
+   "cell": [
+    9,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31050,
+   "gsis_id": "00-0038394",
+   "first": "Will",
+   "last": "Mallory",
+   "position": "TE",
+   "college": "Miami",
+   "birth_month": 6,
+   "birth_day": 22,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/eti1fo2pwyhiihzpxiqo",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 03:46:07 GMT",
+   "source_bytes": 1402211,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "c05188750d21cbf18485c16eef4009bc2a6b14cbeb6f2856bde6029b794dc105",
+   "atlas": "faces_04.png",
+   "cell": [
+    10,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31051,
+   "gsis_id": "00-0040298",
+   "first": "Andrew",
+   "last": "Armstrong",
+   "position": "WR",
+   "college": "Arkansas; East Texas A&M",
+   "birth_month": 10,
+   "birth_day": 31,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hkw32xqnimm6dvx2qfvl",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 17 Jul 2026 04:30:44 GMT",
+   "source_bytes": 4950744,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "bb70f5a5c69d908bc4ae73a720b1c39bc1ce312bac9963a6b3be40664a779714",
+   "atlas": "faces_04.png",
+   "cell": [
+    11,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31052,
+   "gsis_id": "00-0040118",
+   "first": "Cooper",
+   "last": "McDonald",
+   "position": "LB",
+   "college": "TCU; San Diego State",
+   "birth_month": 8,
+   "birth_day": 7,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uuogsrg8u8cewevs0fxi",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Wed, 22 Jul 2026 20:22:00 GMT",
+   "source_bytes": 4123524,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "85a864eb5267743963b062020077aa9222046e7a86ee114484801effa93fe90e",
+   "atlas": "faces_04.png",
+   "cell": [
+    12,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31053,
+   "gsis_id": "00-0040959",
+   "first": "Jaydn",
+   "last": "Ott",
+   "position": "HB",
+   "college": "Oklahoma; California",
+   "birth_month": 12,
+   "birth_day": 16,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ywfb4a8vkz1eubb43o8i",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 19 Jul 2026 17:38:02 GMT",
+   "source_bytes": 4270503,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "ded205b560e0738edfb7116fad39549b9e35e344ddf5a8849fbd616f27650e2b",
+   "atlas": "faces_04.png",
+   "cell": [
+    13,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31054,
+   "gsis_id": "00-0040093",
+   "first": "Melvin",
+   "last": "Smith",
+   "position": "CB",
+   "college": "Southern Arkansas",
+   "birth_month": 4,
+   "birth_day": 12,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ks6nnexhp5jftsjlt1ah",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 17 Jul 2026 04:13:15 GMT",
+   "source_bytes": 5185051,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "495d2d57bd2d22c6c3056d7bc4a234673ea35a8c67b96f0a8c807754c2fb0d27",
+   "atlas": "faces_04.png",
+   "cell": [
+    14,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31055,
+   "gsis_id": "00-0037080",
+   "first": "Tyreke",
+   "last": "Smith",
+   "position": "EDGE",
+   "college": "Ohio State",
+   "birth_month": 2,
+   "birth_day": 14,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ty7bslavrkn5iqziogvf",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 26 Jul 2026 09:12:01 GMT",
+   "source_bytes": 4001630,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "65ea89882a006a31d2bb7fe3da000f51e38c7207c0b496a7c7aae4cf0a075867",
+   "atlas": "faces_04.png",
+   "cell": [
+    15,
+    1
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31056,
+   "gsis_id": "00-0038851",
+   "first": "Caleb",
+   "last": "Murphy",
+   "position": "EDGE",
+   "college": "Ferris State; Grand Valley",
+   "birth_month": 12,
+   "birth_day": 15,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zictuopzrdrlcli08uc4",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 03:47:11 GMT",
+   "source_bytes": 4739499,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "8c5129ffda794c4ddef2817ca7cd85c66fd00bf6df9ccb3f04dcd8f5d87e3aae",
+   "atlas": "faces_04.png",
+   "cell": [
+    0,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31057,
+   "gsis_id": "00-0040065",
+   "first": "Isas",
+   "last": "Waxter",
+   "position": "CB",
+   "college": "Villanova",
+   "birth_month": 9,
+   "birth_day": 17,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/t95edoropxwx1zlmwt9m",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 19 Jul 2026 09:13:27 GMT",
+   "source_bytes": 5699281,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "6285ba159e5dba7ceccd4bf3812d5f24e2282dc3a7da07bfab9913ad6f3f5990",
+   "atlas": "faces_04.png",
+   "cell": [
+    1,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31058,
+   "gsis_id": "00-0037242",
+   "first": "Kaiir",
+   "last": "Elam",
+   "position": "CB",
+   "college": "Florida",
+   "birth_month": 5,
+   "birth_day": 5,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/adqm9ipyqa3yzguoxklt",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 16:27:52 GMT",
+   "source_bytes": 4852727,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "2903bbba02faccbf441f1c8e5c838ec6d028e1e4ebf1d6c6e3618481c25ffd7e",
+   "atlas": "faces_04.png",
+   "cell": [
+    2,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31059,
+   "gsis_id": "00-0040184",
+   "first": "KeAndre",
+   "last": "Lambert-Smith",
+   "position": "WR",
+   "college": "Auburn; Penn State",
+   "birth_month": 10,
+   "birth_day": 16,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xhhzgylwh0ptvpaghnuu",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 10 Aug 2025 20:15:24 GMT",
+   "source_bytes": 5149314,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "e901dc4992cf52014d010ad752a040d052336b7770ad72a2718d34272082eea7",
+   "atlas": "faces_04.png",
+   "cell": [
+    3,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31060,
+   "gsis_id": "00-0029822",
+   "first": "Brandon",
+   "last": "McManus",
+   "position": "K",
+   "college": "Temple",
+   "birth_month": 7,
+   "birth_day": 25,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qvwi9b1vfkn0wlmdl7ej",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 04 Aug 2025 00:14:19 GMT",
+   "source_bytes": 4459908,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "50d2c7af8ca3c41bc852be9e9411bd82160d664fa9df274ac5170b58d00677d4",
+   "atlas": "faces_04.png",
+   "cell": [
+    4,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31061,
+   "gsis_id": "00-0041421",
+   "first": "Darryl",
+   "last": "Peterson",
+   "position": "EDGE",
+   "college": "Wisconsin",
+   "birth_month": 9,
+   "birth_day": 16,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nawtfh3f2qgclu8oatjf",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 23 Jul 2026 19:57:35 GMT",
+   "source_bytes": 3620662,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "16390ef2339ac2e67f61c74087745e4f2def6607ba1806d58fdd0d136c3ed025",
+   "atlas": "faces_04.png",
+   "cell": [
+    5,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31062,
+   "gsis_id": "00-0028394",
+   "first": "Jake",
+   "last": "McQuaide",
+   "position": "C",
+   "college": "Ohio State",
+   "birth_month": 12,
+   "birth_day": 7,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gjtq2nbl0i8ejcx4dx9u",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 20 Nov 2025 11:57:09 GMT",
+   "source_bytes": 4267354,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "b3f0f912fc035eb3e6cd77cc2dd35bd8a127aebc995c123619e2106c898c5959",
+   "atlas": "faces_04.png",
+   "cell": [
+    6,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31063,
+   "gsis_id": "00-0041394",
+   "first": "Keagen",
+   "last": "Trost",
+   "position": "T",
+   "college": "Missouri; Wake Forest",
+   "birth_month": 4,
+   "birth_day": 15,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yu1xi1tsm8my89xiefte",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 10 Jul 2026 01:42:06 GMT",
+   "source_bytes": 4332291,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "001cc0cc2a818e8b9463d422f6388a67f7833c683dd12e610579b9fc4875626c",
+   "atlas": "faces_04.png",
+   "cell": [
+    7,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31064,
+   "gsis_id": "00-0041006",
+   "first": "Cian",
+   "last": "Slone",
+   "position": "LB",
+   "college": "N.C. State; Utah State",
+   "birth_month": 9,
+   "birth_day": 19,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/t27ear9faclf1tdibwj9",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 16 Jul 2026 04:29:30 GMT",
+   "source_bytes": 4039493,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "a8b143b7190f2115c6d288bc538364036e6f3e696f9f9b3ca1d26cc236ced222",
+   "atlas": "faces_04.png",
+   "cell": [
+    8,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31065,
+   "gsis_id": "00-0040581",
+   "first": "Dont'e",
+   "last": "Thornton",
+   "position": "WR",
+   "college": "Tennessee; Oregon",
+   "birth_month": 11,
+   "birth_day": 30,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hlxztd3lpjaxtzojuxwh",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 04 Aug 2025 06:35:57 GMT",
+   "source_bytes": 3627879,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "f484e0cec5595ac7ae28b7628372082fe01e9cf7596f6d24de3cd3110df381eb",
+   "atlas": "faces_04.png",
+   "cell": [
+    9,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31066,
+   "gsis_id": "00-0041534",
+   "first": "Tim",
+   "last": "Keenan",
+   "position": "DT",
+   "college": "Alabama",
+   "birth_month": 12,
+   "birth_day": 9,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qasbqd0pea2nnfgtg9fj",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 14 Jul 2026 20:35:39 GMT",
+   "source_bytes": 4831568,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "dc65c2e3443ed1212b3e21cfe045437d85a6be09f70efbaca401b6062b991d38",
+   "atlas": "faces_04.png",
+   "cell": [
+    10,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31067,
+   "gsis_id": "00-0035692",
+   "first": "Clelin",
+   "last": "Ferrell",
+   "position": "EDGE",
+   "college": "Clemson",
+   "birth_month": 5,
+   "birth_day": 17,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rit24n5qbvlrxdv6w9fq",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 27 Nov 2025 10:55:06 GMT",
+   "source_bytes": 4410361,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "685e31253e5dc70208e0aa13ff60dd922f76c632c91674e91b64284e64b3e8df",
+   "atlas": "faces_04.png",
+   "cell": [
+    11,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31068,
+   "gsis_id": "00-0041527",
+   "first": "Kyle",
+   "last": "Louis",
+   "position": "LB",
+   "college": "Pittsburgh",
+   "birth_month": 3,
+   "birth_day": 9,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oxwphzdkvzlnhxa7csss",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 17:19:49 GMT",
+   "source_bytes": 5367909,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "bc82f564691d0680d90e758db849088ffd2f291d7fbcb9d8a7c351099388ddac",
+   "atlas": "faces_04.png",
+   "cell": [
+    12,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31069,
+   "gsis_id": "00-0041531",
+   "first": "Max",
+   "last": "Llewellyn",
+   "position": "EDGE",
+   "college": "Iowa",
+   "birth_month": 8,
+   "birth_day": 16,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/y2nse9dofpqbcubmlios",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 09:19:39 GMT",
+   "source_bytes": 4130028,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "6f7bf98d8d850ee4e9d3695559c92a3c38765aec34b4016dc6e673da6a04bba9",
+   "atlas": "faces_04.png",
+   "cell": [
+    13,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31070,
+   "gsis_id": "00-0041159",
+   "first": "Rodney",
+   "last": "McGraw",
+   "position": "EDGE",
+   "college": "Western Michigan",
+   "birth_month": 3,
+   "birth_day": 31,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/awycambsgw8afjj1aon2",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 09:19:33 GMT",
+   "source_bytes": 5645863,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "80351e3988a597cd20e9b56bf886dc6ee405e84cdbd2f43b584242b275d1f26e",
+   "atlas": "faces_04.png",
+   "cell": [
+    14,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31071,
+   "gsis_id": "00-0033862",
+   "first": "Zane",
+   "last": "Gonzalez",
+   "position": "K",
+   "college": "Arizona State",
+   "birth_month": 5,
+   "birth_day": 7,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hrbmt2hunsrov39rqjzj",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 16 Jul 2026 04:25:27 GMT",
+   "source_bytes": 3941240,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "c1c0c2ba35a73216c0c34e32c69f7f5ef86d4ba9ee5fb400c38965bded998e64",
+   "atlas": "faces_04.png",
+   "cell": [
+    15,
+    2
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31072,
+   "gsis_id": "00-0037525",
+   "first": "Jordan",
+   "last": "Mason",
+   "position": "HB",
+   "college": "Georgia Tech",
+   "birth_month": 5,
+   "birth_day": 24,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xe3i1lsb3rsioqy61krt",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 18:04:38 GMT",
+   "source_bytes": 4256092,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "c51a0519b2526097d13fe828045a5bb6e006e8d5a683ff86a0a0a9c5d50e9c4d",
+   "atlas": "faces_04.png",
+   "cell": [
+    0,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31073,
+   "gsis_id": "00-0035676",
+   "first": "A.J.",
+   "last": "Brown",
+   "position": "WR",
+   "college": "Mississippi",
+   "birth_month": 6,
+   "birth_day": 30,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qfhvjyssf0lwsh0kienp",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 17 Jul 2026 05:08:56 GMT",
+   "source_bytes": 4567428,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "f7939b99630608dba6eb167eda98cfe8388eda6af09a28c1094fb2cd34031f46",
+   "atlas": "faces_04.png",
+   "cell": [
+    1,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31074,
+   "gsis_id": "00-0040537",
+   "first": "Elliott",
+   "last": "Davison",
+   "position": "FS",
+   "college": "Texas-San Antonio",
+   "birth_month": 12,
+   "birth_day": 19,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/sam2pxtmbodcfdlh2sy6",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 26 Jul 2026 09:13:56 GMT",
+   "source_bytes": 3709895,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "b660e22a5fcf5f87266a7e98133b8e3fc644caed5cf1a342e7b00083411939c8",
+   "atlas": "faces_04.png",
+   "cell": [
+    2,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31075,
+   "gsis_id": "00-0040568",
+   "first": "Lan",
+   "last": "Larison",
+   "position": "HB",
+   "college": "UC Davis",
+   "birth_month": 10,
+   "birth_day": 11,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oi8ulttyhcueekl7dw9z",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 10:06:07 GMT",
+   "source_bytes": 3918790,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "b6919326d1672f07ae818f49dfb3e5368e7d4a0c6be15fcb81f955cf0700deff",
+   "atlas": "faces_04.png",
+   "cell": [
+    3,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31076,
+   "gsis_id": "00-0038979",
+   "first": "Cedric",
+   "last": "Tillman",
+   "position": "WR",
+   "college": "Tennessee",
+   "birth_month": 4,
+   "birth_day": 19,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lthk2v1lyrx3aqbmtljg",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 01:59:37 GMT",
+   "source_bytes": 3173333,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "2676ada401bac54e511380ec1b16b4b1ea29530ff7c14894cb1a214b0ab08abb",
+   "atlas": "faces_04.png",
+   "cell": [
+    4,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31077,
+   "gsis_id": "00-0040539",
+   "first": "Easton",
+   "last": "Kilty",
+   "position": "T",
+   "college": "Kansas State; North Dakota",
+   "birth_month": 5,
+   "birth_day": 1,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/nm3soijgp6nsg8rltwfc",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 03:23:08 GMT",
+   "source_bytes": 3487994,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "93510070a4ed86df2fe247bf07267f9ce71aa8afa5b04a8644064beec13d4317",
+   "atlas": "faces_04.png",
+   "cell": [
+    5,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31078,
+   "gsis_id": "00-0033063",
+   "first": "Zach",
+   "last": "Wood",
+   "position": "C",
+   "college": "SMU",
+   "birth_month": 1,
+   "birth_day": 10,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vldx7g9vu0boohxmhs48",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 11 Sep 2025 10:23:33 GMT",
+   "source_bytes": 2705692,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "ebbf4b90a18aeef9090c8d5c96a4165ef03acfe785bd5521341df8dabc3e3db7",
+   "atlas": "faces_04.png",
+   "cell": [
+    6,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31079,
+   "gsis_id": "00-0038938",
+   "first": "Jalin",
+   "last": "Hyatt",
+   "position": "WR",
+   "college": "Tennessee",
+   "birth_month": 9,
+   "birth_day": 25,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fqgvjckxe03pr4eup6m7",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 17 Jul 2026 07:50:38 GMT",
+   "source_bytes": 4645705,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "a8ef5683af977f420496fbee44fb975e63402ebc3f55291315a31ed39ca12899",
+   "atlas": "faces_04.png",
+   "cell": [
+    7,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31080,
+   "gsis_id": "00-0037138",
+   "first": "Josh",
+   "last": "Sills",
+   "position": "G",
+   "college": "Oklahoma State; West Virginia",
+   "birth_month": 1,
+   "birth_day": 26,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/an9zbstcvxajstl79jqd",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 09:16:48 GMT",
+   "source_bytes": 1459409,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "59a516a1f189b9701447dda082b1d8934bb8eab17ba5e68e50b2e6b8ba3c430f",
+   "atlas": "faces_04.png",
+   "cell": [
+    8,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31081,
+   "gsis_id": "00-0036937",
+   "first": "Paulson",
+   "last": "Adebo",
+   "position": "CB",
+   "college": "Stanford",
+   "birth_month": 7,
+   "birth_day": 3,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yft8adxhq7go3eqd8d9k",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Wed, 22 Jul 2026 19:55:07 GMT",
+   "source_bytes": 4801529,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "d004c512fe0b4c74e7df16b413e339f0acb2a5a74c3da7e4a2e66bfc693b77f6",
+   "atlas": "faces_04.png",
+   "cell": [
+    9,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31082,
+   "gsis_id": "00-0037468",
+   "first": "Raheem",
+   "last": "Layne",
+   "position": "SS",
+   "college": "Indiana",
+   "birth_month": 7,
+   "birth_day": 2,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/z3fhkczvsef6tqspduap",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Wed, 22 Jul 2026 20:00:27 GMT",
+   "source_bytes": 3661370,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "9b7255c95948b2e7fd3124957d7d8ad3aa762eb72ce59f0a1d6e2d094ce61172",
+   "atlas": "faces_04.png",
+   "cell": [
+    10,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31083,
+   "gsis_id": "00-0040434",
+   "first": "Trace",
+   "last": "Ford",
+   "position": "EDGE",
+   "college": "Oklahoma; Oklahoma State",
+   "birth_month": 1,
+   "birth_day": 24,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wfwaqxn21kdhpybvhqih",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 26 Jul 2026 09:14:14 GMT",
+   "source_bytes": 4865966,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "68e5d67ac26bf8de72b3861245c759a0ed14226a0fb99253266087c07074b3d6",
+   "atlas": "faces_04.png",
+   "cell": [
+    11,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31084,
+   "gsis_id": "00-0040034",
+   "first": "Brant",
+   "last": "Banks",
+   "position": "T",
+   "college": "Rice",
+   "birth_month": 5,
+   "birth_day": 1,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fgyysqdckajohxo82d6w",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 19 Jul 2026 09:11:59 GMT",
+   "source_bytes": 5487733,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "2937002004355ae321e7b32ab80cf10d7eb227a9b0b20801794d60089b832640",
+   "atlas": "faces_04.png",
+   "cell": [
+    12,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31085,
+   "gsis_id": "00-0041410",
+   "first": "Jaden",
+   "last": "Keller",
+   "position": "LB",
+   "college": "Virginia Tech",
+   "birth_month": 4,
+   "birth_day": 17,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/duxi42g5xtjzketv36eb",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 09:21:47 GMT",
+   "source_bytes": 3422704,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "6deb6ad45cec4d7ef663bd8b641d3a928831aa275072744484ab203d61386c74",
+   "atlas": "faces_04.png",
+   "cell": [
+    13,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31086,
+   "gsis_id": "00-0041511",
+   "first": "Omar",
+   "last": "Cooper",
+   "position": "WR",
+   "college": "Indiana",
+   "birth_month": 12,
+   "birth_day": 14,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lmua2lbg0m77ibvydvaq",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Tue, 14 Jul 2026 19:48:36 GMT",
+   "source_bytes": 4269626,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "bc246c357086d38d8de76b3b8918a493664632838af1b0471f11ff2efd43d311",
+   "atlas": "faces_04.png",
+   "cell": [
+    14,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31087,
+   "gsis_id": "00-0040404",
+   "first": "Payton",
+   "last": "Page",
+   "position": "DT",
+   "college": "Clemson",
+   "birth_month": 9,
+   "birth_day": 27,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/crckyjovtc8qdhteax2r",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 23:20:09 GMT",
+   "source_bytes": 4704981,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "1499c032e4af349766bd0abb2aed37ed401d335b588e43bfc9372bfc1593f3df",
+   "atlas": "faces_04.png",
+   "cell": [
+    15,
+    3
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31088,
+   "gsis_id": "00-0035000",
+   "first": "Quinton",
+   "last": "Bell",
+   "position": "EDGE",
+   "college": "Prairie View A&M",
+   "birth_month": 5,
+   "birth_day": 9,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zjs3eeybw4lxtljzm8lf",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 04 Sep 2025 10:10:21 GMT",
+   "source_bytes": 4139296,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "67f5cbee316bd6e870b178c3777920944257740c5ea9a7dcdb772c34e1855bb3",
+   "atlas": "faces_04.png",
+   "cell": [
+    0,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31089,
+   "gsis_id": "00-0041483",
+   "first": "Eli",
+   "last": "Stowers",
+   "position": "TE",
+   "college": "Vanderbilt; New Mexico State; Texas A&M",
+   "birth_month": 4,
+   "birth_day": 15,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/c9rjqit3q5tm9hzkm5ay",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 07 Aug 2026 09:42:02 GMT",
+   "source_bytes": 4529712,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "cc8e604b564d39e6e0ffa93567c24f28937af0409e2220213548942f13b60ec9",
+   "atlas": "faces_04.png",
+   "cell": [
+    1,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31090,
+   "gsis_id": "00-0036567",
+   "first": "Elijah",
+   "last": "Mitchell",
+   "position": "HB",
+   "college": "Louisiana-Lafayette",
+   "birth_month": 5,
+   "birth_day": 2,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gqupeqvrzpqeubx6p04o",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 07 Aug 2026 18:42:05 GMT",
+   "source_bytes": 3337714,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "5db79baada5e826f16ec8b2b95e3df4d8128ee03a20995db7ebeb112aee13367",
+   "atlas": "faces_04.png",
+   "cell": [
+    2,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31091,
+   "gsis_id": "00-0037086",
+   "first": "Grant",
+   "last": "Calcaterra",
+   "position": "TE",
+   "college": "SMU; Oklahoma",
+   "birth_month": 12,
+   "birth_day": 4,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/inpyxw55sxo96shrt4si",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 07 Aug 2026 14:42:39 GMT",
+   "source_bytes": 3615061,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "290d67b6d73c3a49308dd5220d0f679ee3026a526280151395464460911c1c44",
+   "atlas": "faces_04.png",
+   "cell": [
+    3,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31092,
+   "gsis_id": "00-0040586",
+   "first": "Jaydon",
+   "last": "Blue",
+   "position": "HB",
+   "college": "Texas",
+   "birth_month": 1,
+   "birth_day": 8,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/unb7f3lnt0ggohvovjpw",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 02:10:36 GMT",
+   "source_bytes": 3920793,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "7703ab063ab8c4a45fd056e842d885ccfff739ff4a8c6eadf08cb54c2e648a0b",
+   "atlas": "faces_04.png",
+   "cell": [
+    4,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31093,
+   "gsis_id": "00-0039398",
+   "first": "Joe",
+   "last": "Milton",
+   "position": "QB",
+   "college": "Tennessee; Michigan",
+   "birth_month": 3,
+   "birth_day": 6,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tsj9lobse1gxzanf39dt",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 04 Aug 2025 01:03:47 GMT",
+   "source_bytes": 3222532,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "663304d45a18eec57410b27d0fde60bc3695758489909d33edce4e78adc430cc",
+   "atlas": "faces_04.png",
+   "cell": [
+    5,
+    4
+   ],
+   "review": "ok_flagged"
+  },
+  {
+   "id": 31094,
+   "gsis_id": "00-0037002",
+   "first": "Landon",
+   "last": "Dickerson",
+   "position": "G",
+   "college": "Alabama",
+   "birth_month": 9,
+   "birth_day": 30,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zkgccdubnxvforo1xaqt",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 07 Aug 2026 18:43:24 GMT",
+   "source_bytes": 4972078,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "1dd7d7a5c4d1ebc2195602dd2898e132fefc734333e07739e61e02d25c91b573",
+   "atlas": "faces_04.png",
+   "cell": [
+    6,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31095,
+   "gsis_id": "00-0041162",
+   "first": "Mason",
+   "last": "Reiger",
+   "position": "EDGE",
+   "college": "Wisconsin; Louisville",
+   "birth_month": 8,
+   "birth_day": 19,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/l0onarptlshevpa3bba1",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 23 Jul 2026 19:46:42 GMT",
+   "source_bytes": 3637712,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "8d41da7343c979990df40e7dd6a93d14dbd4895718663df46facc0441e400704",
+   "atlas": "faces_04.png",
+   "cell": [
+    7,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31096,
+   "gsis_id": "00-0037382",
+   "first": "Brandon",
+   "last": "Johnson",
+   "position": "WR",
+   "college": "UCF; Tennessee",
+   "birth_month": 7,
+   "birth_day": 26,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pjdx1jdr9snczoeyevli",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 23 Oct 2025 09:36:07 GMT",
+   "source_bytes": 4707907,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "0f26d70242d77c492546e5e36a43bc2937e65f84e6ec841e77d6221baa6ac564",
+   "atlas": "faces_04.png",
+   "cell": [
+    8,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31097,
+   "gsis_id": "00-0036775",
+   "first": "Brandon",
+   "last": "Smith",
+   "position": "WR",
+   "college": "Iowa",
+   "birth_month": 12,
+   "birth_day": 10,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/h4ezdffu0biwqoxn7bql",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 19 Jul 2026 09:16:13 GMT",
+   "source_bytes": 4629609,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "4817a0f35be26abd10f41eef2847f1afa77a32911cd5e7d751fc0ed2f37738c0",
+   "atlas": "faces_04.png",
+   "cell": [
+    9,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31098,
+   "gsis_id": "00-0034277",
+   "first": "DeShon",
+   "last": "Elliott",
+   "position": "SS",
+   "college": "Texas",
+   "birth_month": 4,
+   "birth_day": 21,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hf9qrjvja3ej77feihts",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 19 Jul 2026 05:36:59 GMT",
+   "source_bytes": 4607160,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "c55fee5fbd1a573e4f9576c9a971af9e5405b65f6a71c7c65b4e2ae947b4d6e9",
+   "atlas": "faces_04.png",
+   "cell": [
+    10,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31099,
+   "gsis_id": "00-0038409",
+   "first": "Lew",
+   "last": "Nichols",
+   "position": "HB",
+   "college": "Central Michigan",
+   "birth_month": 8,
+   "birth_day": 16,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/plqg1yngo8vvs8ths7aw",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 16 Jul 2026 05:30:47 GMT",
+   "source_bytes": 4688784,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "60ed3ea355cc39be298ea60293ff981d8bdd162b941ae60b2f0e8d0ff09730cf",
+   "atlas": "faces_04.png",
+   "cell": [
+    11,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31100,
+   "gsis_id": "00-0031622",
+   "first": "Bobby",
+   "last": "Hart",
+   "position": "T",
+   "college": "Florida State",
+   "birth_month": 8,
+   "birth_day": 21,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uqobnujagdsizf4lngbp",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Wed, 29 Jul 2026 20:29:31 GMT",
+   "source_bytes": 3573991,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "3f8d790759ecd44f9ae1a10c5b7ccabe69e98ef28e933260796bd299df5e6701",
+   "atlas": "faces_04.png",
+   "cell": [
+    12,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31101,
+   "gsis_id": "00-0037745",
+   "first": "Velus",
+   "last": "Jones",
+   "position": "HB",
+   "college": "Tennessee; USC",
+   "birth_month": 5,
+   "birth_day": 11,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/d4y5fxivhcxk34q7stpb",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Wed, 22 Jul 2026 20:01:40 GMT",
+   "source_bytes": 3703430,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "ea005853e72cc76a261d55aa574200df8651bbc8fd0dd7bef68d345d48845a84",
+   "atlas": "faces_04.png",
+   "cell": [
+    13,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31102,
+   "gsis_id": "00-0039165",
+   "first": "Zach",
+   "last": "Charbonnet",
+   "position": "HB",
+   "college": "UCLA; Michigan",
+   "birth_month": 1,
+   "birth_day": 8,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cuuyog0lpxfaj0y0huvp",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 17 Jul 2026 21:38:08 GMT",
+   "source_bytes": 3430050,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "b6245e47c0591297b408ca6cfa2e2d8e3fd1cae3c42306fdca0b3071dca5a9a8",
+   "atlas": "faces_04.png",
+   "cell": [
+    14,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31103,
+   "gsis_id": "00-0034775",
+   "first": "Christian",
+   "last": "Kirk",
+   "position": "WR",
+   "college": "Texas A&M",
+   "birth_month": 11,
+   "birth_day": 18,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ffp75mtwnqgrv0qz0txz",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 16 Jul 2026 04:13:53 GMT",
+   "source_bytes": 5573658,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "6afc02ccfb8457ff9d51a68c82195577b6dba504aa4ddc5012ac75700afd5f8f",
+   "atlas": "faces_04.png",
+   "cell": [
+    15,
+    4
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31104,
+   "gsis_id": "00-0038648",
+   "first": "Jalen",
+   "last": "Graham",
+   "position": "LB",
+   "college": "Purdue",
+   "birth_month": 1,
+   "birth_day": 11,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yx3s8vah183b6x6jt8z8",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 16 Jul 2026 04:23:32 GMT",
+   "source_bytes": 4793210,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "608d3a87730924da1e1aa6a9c094517bc579968846736710eb5d7080f0155680",
+   "atlas": "faces_04.png",
+   "cell": [
+    0,
+    5
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31105,
+   "gsis_id": "00-0035359",
+   "first": "David",
+   "last": "Sills",
+   "position": "WR",
+   "college": "West Virginia",
+   "birth_month": 5,
+   "birth_day": 29,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/g0jd9yaq2yhw05ktamlh",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 17 Jul 2026 03:11:31 GMT",
+   "source_bytes": 4252024,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "8338cd7ebe8fab5b3030b2bb7c10dbedf9d3e50ee2746e774a434f3c1fd27107",
+   "atlas": "faces_04.png",
+   "cell": [
+    1,
+    5
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31106,
+   "gsis_id": "00-0038043",
+   "first": "Joshua",
+   "last": "Williams",
+   "position": "CB",
+   "college": "Fayetteville State University",
+   "birth_month": 10,
+   "birth_day": 17,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hvt5vdfto4jhqnrwkrij",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 21:39:58 GMT",
+   "source_bytes": 3426298,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "7a2f4f78dbd09d1ac009027b58049c061bf32c99984721d3146f078907786c13",
+   "atlas": "faces_04.png",
+   "cell": [
+    2,
+    5
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31107,
+   "gsis_id": "00-0037585",
+   "first": "Timmy",
+   "last": "Horne",
+   "position": "DT",
+   "college": "Kansas State",
+   "birth_month": 10,
+   "birth_day": 25,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oyicb9r9spccby8tpsxg",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 09:23:57 GMT",
+   "source_bytes": 4478410,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "adb6869567d72e7c526cc7ffb247c640346ec08419807f5187d289a99ca47dee",
+   "atlas": "faces_04.png",
+   "cell": [
+    3,
+    5
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31108,
+   "gsis_id": "00-0040522",
+   "first": "Xavier",
+   "last": "Restrepo",
+   "position": "WR",
+   "college": "Miami",
+   "birth_month": 4,
+   "birth_day": 12,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/f8aoygwmzxztmfrmo8tc",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 08:12:57 GMT",
+   "source_bytes": 3977887,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "5f33d5bdd03bc637056774aa6d350287d24097266e38b05dc12ad47fb1e8c057",
+   "atlas": "faces_04.png",
+   "cell": [
+    4,
+    5
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31109,
+   "gsis_id": "00-0035278",
+   "first": "Byron",
+   "last": "Cowart",
+   "position": "DT",
+   "college": "Maryland; Auburn",
+   "birth_month": 5,
+   "birth_day": 20,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rqlwnbljdfaiw4wewvhz",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 11 Oct 2026 04:20:08 GMT",
+   "source_bytes": 3747335,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "ad93c068125182633a23596d2e61b183b5eb2624ec4d90a7951fc95db12f444e",
+   "atlas": "faces_04.png",
+   "cell": [
+    5,
+    5
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31110,
+   "gsis_id": "00-0033955",
+   "first": "Jeremy",
+   "last": "McNichols",
+   "position": "HB",
+   "college": "Boise State",
+   "birth_month": 12,
+   "birth_day": 26,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xcrgrtlk6ukrshtlnr5e",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Fri, 17 Jul 2026 04:21:11 GMT",
+   "source_bytes": 5149565,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "e377c2194d036adb4b8edc3496c69702b865d326223836a7df13d3b696d4e734",
+   "atlas": "faces_04.png",
+   "cell": [
+    6,
+    5
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31111,
+   "gsis_id": "00-0039368",
+   "first": "Jordan",
+   "last": "Magee",
+   "position": "LB",
+   "college": "Temple",
+   "birth_month": 3,
+   "birth_day": 24,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/smdokbnjckcbpc9yfxwt",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Wed, 22 Jul 2026 20:14:35 GMT",
+   "source_bytes": 4717741,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "284fd0cb1ccb3b3f4bc5108aba3eed74abc4754e7e51a12b24c9ea038d0b6bd6",
+   "atlas": "faces_04.png",
+   "cell": [
+    7,
+    5
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31112,
+   "gsis_id": "00-0040731",
+   "first": "Trey",
+   "last": "Amos",
+   "position": "CB",
+   "college": "Mississippi; Alabama; Louisiana",
+   "birth_month": 3,
+   "birth_day": 3,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cxabcu8nz9p6k6sqsw4t",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 14 Aug 2025 20:30:13 GMT",
+   "source_bytes": 3942935,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "b1aef6a847b51a9ddb9e786b592164e8570109b791a8a81b2c4f030757b965fa",
+   "atlas": "faces_04.png",
+   "cell": [
+    8,
+    5
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31113,
+   "gsis_id": "00-0036415",
+   "first": "Van",
+   "last": "Jefferson",
+   "position": "WR",
+   "college": "Florida; Mississippi",
+   "birth_month": 7,
+   "birth_day": 26,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/inwxk1xlvzculj8m3pah",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 16 Jul 2026 19:29:25 GMT",
+   "source_bytes": 5178277,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "0a4f4dd2c0cf77b795275e8d92aa18d6c5dc529c48e6f20df1ce841feee3e6d3",
+   "atlas": "faces_04.png",
+   "cell": [
+    9,
+    5
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31114,
+   "gsis_id": "00-0041581",
+   "first": "Brett",
+   "last": "Thorson",
+   "position": "P",
+   "college": "Georgia",
+   "birth_month": 1,
+   "birth_day": 6,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rvlb3wcjdvjy6o5y9eji",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 10 Oct 2026 06:51:49 GMT",
+   "source_bytes": 4491460,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "3aa831e743e842ebe462c6f980929535db85ea2ea761cbd7cd3d0e17e9555f3c",
+   "atlas": "faces_04.png",
+   "cell": [
+    10,
+    5
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31115,
+   "gsis_id": "00-0040889",
+   "first": "Hezekiah",
+   "last": "Masses",
+   "position": "CB",
+   "college": "California; Florida International",
+   "birth_month": 6,
+   "birth_day": 30,
+   "group": "roster_player",
+   "identity_match": "roster_2026_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ba2rfnspviherhdlsxml",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 24 Sep 2026 06:50:57 GMT",
+   "source_bytes": 3007439,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "885ecc05e38a2da68ccf71ab8d4bdc31edc11609a9e764cc4ab2d6ab94f1772f",
+   "atlas": "faces_04.png",
+   "cell": [
+    11,
+    5
+   ],
+   "review": "ok"
   }
- ]
+ ],
+ "additions": [
+  {
+   "job": "b780-b9-presentation",
+   "fetched": "2026-11-02",
+   "rows": 49,
+   "note": "Created real players that the v0.8 roster holds with a no-photo selector but that were neither free agents nor refresh-created when b779-pt1 built its target list (signed or unattached players: the 69 orphans among them). Same pipeline as pt1: nflverse players.csv and roster_2026.csv (snapshot of 2026-10-28), identity by name, birth month/day and position or college; the eight rows with source_list 'espn' take the ESPN headshot of the same espn_id because nflverse lists no headshot for them."
+  },
+  {
+   "job": "b780-rst2",
+   "fetched": "2026-11-03",
+   "rows": 121,
+   "moved_from_wrong_faces": 2,
+   "note": "Real players on 2026 club rosters that the pack had no record for, and two players whose records showed another man's stock portrait; same pipeline as pt1 and b9 D12."
+  }
+ ],
+ "wrong_faces": [
+  {
+   "gsis_id": "00-0041498",
+   "first": "Kage",
+   "last": "Casey",
+   "birth_month": 10,
+   "birth_day": 10,
+   "club": "DEN",
+   "photo_id": 2661,
+   "shows": "DaVon Hamilton (JAX): the pack's headshot for 2661, which his record took over from retail Cooper Carlisle",
+   "headshot": "none listed (nflverse roster_2026 headshot_url empty)"
+  }
+ ],
+ "wrong_faces_note": "b780 roster1: real players whose record still holds a stock portrait id that shows someone else (found on the v0.9 RC disc: a portrait id two listed players share, or a retail id the pack never re-pictured). The build gives them the no-photo card (7100), as the pack does for any player without an accurate headshot."
 }

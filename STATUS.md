@@ -1,4 +1,8 @@
-# 2K5 Mod Studio: v1.0 RC114 Release Status
+# 2K5 Mod Studio: v1.0 RC115 Release Status
+
+## Beta 80 (RC115 / APF alpha.111, 2026-11-03)
+
+Beta 80 pairs RC115 with SOFTDRINK 2K28 v0.9. It adds the 2026 coaching staff (ratings, play-calling, coordinators, coach moves and an optional carousel), franchise history (the History screen, box scores, game log, Hall of Fame and standings records), smarter CPU passing and clock management, slide protection calls, and fixes for the franchise draft, retirements, camp churn, injured reserve, early tackles, simulated stats and MyCareer. Builds no longer stop on cosmetic steps without naming the step and file. APF alpha.111 gives each defensive line move its own charge level. The full list is in the [2K5 changelog](docs/mod_editor/2k5_mod_studio_changelog.md).
 
 ## Beta 79 (RC114 / APF alpha.110, 2026-11-01)
 

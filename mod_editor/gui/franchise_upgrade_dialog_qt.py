@@ -3,7 +3,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import (
-    QDialog, QFileDialog, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
+    QCheckBox, QDialog, QFileDialog, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
     QPlainTextEdit, QPushButton, QVBoxLayout,
 )
 
@@ -27,6 +27,55 @@ class _Worker(QThread):
             self.failed.emit(str(exc))
         else:
             self.succeeded.emit(result)
+
+
+def champions_lines(step):
+    """b780-b10: the Super Bowl history step in plain words."""
+    if not step["added"]:
+        return [f"Super Bowl history: not changed ({step['reason']})."]
+    from mod_editor.core.nfl2k5_champions_history import roman
+    first, last = min(step["added"]), max(step["added"])
+    text = (f"Super Bowl history from the disc: {len(step['added'])} seasons added "
+            f"(Super Bowl {roman(first)} to {roman(last)})" if first != last else
+            f"Super Bowl history from the disc: Super Bowl {roman(first)} added")
+    if step["kept"]:
+        count = len(step["kept"])
+        text += (f"; the {count} seasons the game recorded in this franchise are kept" if count != 1 else
+                 "; the season the game recorded in this franchise is kept")
+    return [text + "."]
+
+
+def game_settings_lines(step):
+    """b780-b10: the franchise's own game settings in plain words."""
+    changed = [row for row in step["rows"] if row["action"] == "change"]
+    if not changed:
+        return [f"Game settings: not changed ({step['reason']})."]
+    lines = ["Game settings taken from the disc (this franchise had the old defaults):"]
+    lines += [f"  {row['label']}: {row['current_text']} -> {row['target_text']}" for row in changed]
+    lines += [f"  {row['label']}: kept at {row['current_text']} ({row['note']})"
+              for row in step["rows"] if row["action"] == "kept"]
+    lines.append("  Your Settings save has its own copy of these settings: Gameplay > Saves & Sliders can do the same for it.")
+    return lines
+
+
+def coach_records_lines(step):
+    """b780-b10: the coach ratings, play-calling habits and announcer line step in plain words."""
+    if not step["changes"]:
+        return [f"Coach ratings and play-calling: not changed ({step['reason']})."]
+    counts = {"ratings": 0, "tendencies": 0, "announcer": 0}
+    for change in step["changes"]:
+        counts[change["field"].split(".")[0]] += 1
+    text = (f"Coach ratings and play-calling from the disc: {step['coaches_changed']} coaches updated "
+            f"({counts['ratings']} ratings, {counts['tendencies']} play-calling groups, "
+            f"{counts['announcer']} announcer lines)")
+    if step["fields_kept"]:
+        text += f"; {step['fields_kept']} values that differ from the older discs' defaults are kept as they are"
+    lines = [text + "."]
+    if step["no_baseline_preserved"]:
+        names = ", ".join(row["coach"] for row in step["no_baseline_preserved"][:6])
+        lines.append(f"  Coaches that keep their own numbers (not on the older discs): {names}"
+                     + (f" and {len(step['no_baseline_preserved']) - 6} more" if len(step["no_baseline_preserved"]) > 6 else "."))
+    return lines
 
 
 def preview_text(plan):
@@ -73,18 +122,30 @@ def preview_text(plan):
             if len(step["changes"]) > 12:
                 lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
             growth = step.get("save_arena_growth")
-            if growth:
+            if growth and growth.get("in_place"):   # b780-b10: the game had already moved the save to the bigger file
+                lines.append(f"Draft-class player records added: {growth['class_records']}. The new game had already moved "
+                             "this save to the bigger roster file, so the file keeps its size.")
+            elif growth:
                 lines.append(f"Roster arena grown: {growth['arena_size_before']:,} to {growth['arena_size_after']:,} bytes, "
                              f"{growth['class_records']} more draft-class player records (the save is "
                              f"{growth['file_growth']:,} bytes larger).")
             elif step.get("arena_growth", "").startswith("kept"):
                 lines.append(f"Roster arena not grown: {step['arena_growth']}.")
+            elif "no records added" in step.get("arena_growth", ""):
+                lines.append("Draft-class player records: none added "
+                             f"({step['arena_growth'].split('no records added: ', 1)[1]}).")
             if step["no_room"]:
                 lines.append(f"  No room for {len(step['no_room'])} more: the save has no empty player records left.")
         elif step["operation"] == "rookie_templates":   # b779-rf3
             lines.append(f"Draft-class templates from the disc: {step['templates_changed']} of {step['templates']} updated "
                          f"({len(step['changes'])} ratings). Future draft classes use them; no current player or "
                          "prospect changes.")
+        elif step["operation"] == "champions":   # b780-b10
+            lines += champions_lines(step)
+        elif step["operation"] == "coach_records":   # b780-b10
+            lines += coach_records_lines(step)
+        elif step["operation"] == "game_settings":   # b780-b10
+            lines += game_settings_lines(step)
         elif step["operation"] == "team_history":
             lines.append(f"Historical teams restored: {len(step['changes'])}; "
                          f"rows without historical evidence: {step['unresolved_rows']}")
@@ -95,8 +156,23 @@ def preview_text(plan):
     lines += [f"Structural checks passed; {warnings} existing notices retained in the receipt.",
               f"Total changed fields: {receipt['changed_fields']}", "",
               "Write a signed copy to keep these changes. A JSON receipt beside the output folder records every field and both hashes.",
-              "Your season progress, generated players, contracts and existing statistics are preserved."]
+              "Your season progress, generated players, contracts and existing statistics are preserved.",
+              "Players already in the save keep their years pro, season history and photos; a new franchise gets the "
+              "corrected ones."]
     return "\n".join(lines)
+
+
+def upgraded_folder_name(source: Path) -> str:
+    """The proposed new save folder: the save's whole name plus -upgraded.
+
+    b780 Q59: Path.stem cut a save folder named with dots ("Franchise 2.0" became "Franchise 2-upgraded"). Only a
+    .zip archive's own extension is dropped.
+    """
+    source = Path(source)
+    name = source.name
+    if source.suffix.casefold() == ".zip" and not source.is_dir():
+        name = name[: -len(source.suffix)]
+    return name + "-upgraded"
 
 
 class FranchiseUpgradeDialog(QDialog):
@@ -109,9 +185,11 @@ class FranchiseUpgradeDialog(QDialog):
         self.resize(780, 580)
         layout = QVBoxLayout(self)
         hint = QLabel("For older SOFTDRINK franchises that began with the 2026 roster. "
-                      "Choose the current build's disc to update experience, playbooks, coach appearances, hair styles, "
-                      "award history, the free-agent pool and the draft-class templates. "
-                      "Preview first, then write a new signed save folder.")
+                      "Choose the current build's disc to update experience, playbooks, coach appearances, coach ratings and "
+                      "play-calling, hair styles, award history, the Super Bowl history, the free-agent pool, the "
+                      "draft-class records and templates and the default game settings. It works whether or not the new "
+                      "game has already saved this franchise. Preview first, then write a new signed save folder; "
+                      "your original is never touched.")
         hint.setWordWrap(True)
         layout.addWidget(hint)
         form = QFormLayout()
@@ -125,10 +203,17 @@ class FranchiseUpgradeDialog(QDialog):
         row.addWidget(self.disc_edit, 1)
         row.addWidget(self.disc_button)
         form.addRow("Current disc", row)
-        self.output_edit = QLineEdit(str(self.source.with_name(self.source.stem + "-upgraded")))
+        self.output_edit = QLineEdit(str(self.source.with_name(upgraded_folder_name(self.source))))
         self.output_edit.setAccessibleName("New signed save folder")
         form.addRow("New save folder", self.output_edit)
         layout.addLayout(form)
+        self.settings_check = QCheckBox("Also use this disc's new default game settings "
+                                        "(Quarter Length, Sim. Quarter Length, Chop Block)")
+        self.settings_check.setChecked(True)
+        self.settings_check.setAccessibleName("Use the disc's default game settings")
+        self.settings_check.setToolTip("Only settings that still hold the old retail value (5 minutes, 5 minutes, Off) "
+                                       "change. A setting you changed yourself stays. The preview lists each one.")
+        layout.addWidget(self.settings_check)
         self.details = QPlainTextEdit()
         self.details.setReadOnly(True)
         self.details.setAccessibleName("Franchise upgrade preview")
@@ -145,6 +230,7 @@ class FranchiseUpgradeDialog(QDialog):
         layout.addLayout(row)
         self.disc_button.clicked.connect(self._choose_disc)
         self.disc_edit.textChanged.connect(self._invalidate)
+        self.settings_check.toggled.connect(self._invalidate)
         self.preview_button.clicked.connect(self._preview)
         self.write_button.clicked.connect(self._write)
         self.close_button.clicked.connect(self.reject)
@@ -159,7 +245,8 @@ class FranchiseUpgradeDialog(QDialog):
             self.disc_edit.setText(path)
 
     def _busy(self, busy):
-        for widget in (self.disc_edit, self.disc_button, self.output_edit, self.preview_button, self.close_button):
+        for widget in (self.disc_edit, self.disc_button, self.output_edit, self.settings_check, self.preview_button,
+                       self.close_button):
             widget.setEnabled(not busy)
         self.write_button.setEnabled(not busy and self.plan is not None)
 
@@ -179,7 +266,8 @@ class FranchiseUpgradeDialog(QDialog):
         self.plan = None
         self.details.setPlainText("Reading the signed save and current disc…")
         disc = Path(self.disc_edit.text().strip())
-        self._run(lambda: service.plan_upgrade(self.source, disc), self._preview_ready)
+        game_defaults = self.settings_check.isChecked()
+        self._run(lambda: service.plan_upgrade(self.source, disc, game_defaults=game_defaults), self._preview_ready)
 
     def _preview_ready(self, plan):
         self.plan = plan

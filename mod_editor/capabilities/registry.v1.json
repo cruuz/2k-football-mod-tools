@@ -1430,6 +1430,7 @@
         "docs/research/apf_b75_charge_abilities.md",
         "tests/mod_editor/test_apf_charge_abilities.py",
         "tests/mod_editor/test_apf_charge_abilities_native.py",
+        "tests/mod_editor/test_apf_charge_line_moves_native.py",
         "tests/mod_editor/test_apf_charge_abilities_qt.py"
       ],
       "game": "apf2k8_xbox360",
@@ -1443,7 +1444,8 @@
       "input_constraints": [
         "Pinned Xbox 360 BASE or TU 1.1; EXPERIMENTAL and off by default.",
         "Charged ability bits replace the Gold/passing-mode cap. The QB no-arm input gate is unchanged.",
-        "Code reservation 0x84D0D100..0x84D0D180 must stay disjoint from other patches."
+        "Code reservation 0x84D0D100..0x84D0D7FF must stay disjoint from other patches.",
+        "Defensive line moves (Swim, Club, Spin, Rip) each need their own ability for level 2 (revision 5)."
       ],
       "portme": [
         "Witness the level-2 halo and charged moves in Xenia for Silver/Bronze and Gold without abilities.",
@@ -1479,7 +1481,7 @@
         "resource": "Input charge-state cap and separate QB arm-ability gate",
         "retail_file": "User-owned APF Xbox 360 BASE or Title Update 1.1"
       },
-      "summary": "Charge level 2 follows charged abilities at any tier. Gold without a charged ability stops at 1; QB no-arm gate stays retail. Gameplay UNWITNESSED.",
+      "summary": "Charge level 2 follows charged abilities at any tier, and each move needs its own ability for a level 2 effect, defensive line moves included. Gold without a charged ability stops at 1; QB no-arm gate stays retail. Gameplay UNWITNESSED.",
       "surface": "scripts_config",
       "title": "Ability-based charging (EXPERIMENTAL)",
       "validation_command": "python3 -m tests.mod_editor.test_apf_charge_abilities"
@@ -6197,6 +6199,75 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_coach_carousel apply source.xbe new-carousel.xbe",
+        "module": "mod_editor/core/nfl2k5_coach_carousel.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_coach_carousel.py",
+        "mod_editor/core/nfl2k5_coach_carousel_code.py",
+        "tools/nfl2k5_coach_carousel/runtime.c",
+        "tools/nfl2k5_coach_carousel_data.py",
+        "data/nfl2k5_coach_carousel_2026.json",
+        "mod_editor/core/nfl2k5_coach_owners.py",
+        "data/nfl2k5_owners_2026.json",
+        "data/nfl2k5_coach_pool_2026.json",
+        "tests/mod_editor/test_b780_c6_coach_carousel.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL. Players asked for a coaching carousel (b780 r2 research). Off in every preset until its emulator gate passes; the c6 report recommends the preset values."
+      },
+      "id": "nfl2k5.franchise.coach_carousel",
+      "input_constraints": [
+        "Pinned USA XBE or a verified composed input; a late allocator owner (nfl2k5_xbe_space.LATE_OWNERS, last) with 4,096 RX bytes holding its 184-byte parameter block (an 8-byte header and c5-owners' 176-byte native table); no writable memory, no heap, no save field. Foreign or mixed bytes refuse.",
+        "Sites: the stage-9 rollover call 0x248632 (Advance to offseason), the owner goal check's warning mark (0x2BA675, 0x2BA6BC: the owner fires a user only at All Teams) and the Owner Firing row callbacks (.rdata 0x500C40..0x500C4C: Off / CPU Teams / All Teams; the retail 'On' value and default reads CPU Teams).",
+        "The hiring pool is a checked '2K5CPOOL' block the build writes into the free tail of the main roster's coach strings (after the last main-roster writer); a franchise keeps it in its roster copy and Franchise > Upgrade copies it into an older save. Without a pool nothing changes.",
+        "Model: c5-owners (nfl2k5_coach_owners.fire_permille, ported bit for bit): opening-day coaches 1999-2026 from the pinned nflverse games.csv (861 decisions, 191 changes), the record on a 17-game scale and the coach's seasons with the club, times each owner's measured patience (0.80 to 1.29); at most 12 changes an offseason; user clubs never change coach."
+      ],
+      "portme": [
+        "Franchise: Owner Firing reads CPU Teams; sim a season and the playoffs, Advance to offseason after the Super Bowl notice: one COACHING CHANGES notice per three changes; the new coaches show by name and career; save, reload, keep playing."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source, the sourced model and pool data; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Advance to offseason replayed under Unicorn with every native routine real on a league at the end of a simulated v0.8 season (Owner Firing Off = the released advance byte for byte; CPU Teams with the pool: every rewritten record checked, native hazard equal to the Python model at the draw boundary, the game's own roster save/reload keeps every coach pointer). Emulator gate: see the c6 report.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; false in every preset (experimental)",
+            "name": "coach_carousel",
+            "required": true
+          }
+        ],
+        "notes": "Build-time option; in game the Owner Firing franchise option chooses Off, CPU Teams or All Teams."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS and the main ROST resource (pack 0, outer entry 5)",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE sites listed above, the owned late allocation, and the free tail of the ROST coach strings for the hiring pool.",
+        "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
+      },
+      "summary": "Franchise coaching carousel: at Advance to offseason CPU clubs may part ways with their head coach and hire one from a pool of 38 real people (the 2026 defensive coordinators and recent head coaches without a head job, with their real head coaching records) or a coach another club let go, about 7 a year as in the NFL since 1999 (the record, the coach's seasons with the club and each owner's measured patience decide). A notice lists the changes; the new coach's name, picture, career and ratings show everywhere the game names coaches; the club keeps its sideline model, tendencies and playbook. Owner Firing gets Off / CPU Teams / All Teams.",
+      "surface": "schedules_franchise",
+      "title": "Coaching carousel at Advance to offseason, Owner Firing Off / CPU Teams / All Teams (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_b780_c6_coach_carousel"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_franchise_economy <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_franchise_economy.py",
         "operation": "write"
@@ -6260,6 +6331,71 @@
       "surface": "schedules_franchise",
       "title": "2026 franchise economy (experimental, real-dollar display)",
       "validation_command": "python3 -m tests.mod_editor.test_franchise_economy"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_history_screen apply source.xbe new-history.xbe",
+        "module": "mod_editor/core/nfl2k5_history_screen.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_history_screen.py",
+        "mod_editor/core/nfl2k5_history_screen_code.py",
+        "tools/nfl2k5_history_screen/runtime.c",
+        "tests/mod_editor/test_b780_j4_history_screen.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. b780-j4 (Discord #2k5-ideas: a Team History tab, past seasons, records, award history, Hall of Fame classes, box scores of played games, game logs). Off in Basic, on in Advanced and Experimental."
+      },
+      "id": "nfl2k5.franchise.history_screen",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; a late allocator owner placed after every b779 late owner (or appended to an installed sealed image by nfl2k5_xbe_space.extend_scaleout). Foreign or mixed bytes refuse.",
+        "Owned 16,384 RX bytes (the screens), 64 RW bytes (page, club, scroll, the selected box score) and a 24 KiB read-only block (two menu descriptors cloned from Team Standings, the ESPN.com rows plus TEAM HISTORY, the seeded real history). Edits: the ESPN.com descriptor's row-table pointer (0x525674, 4 bytes) and the Schedule input (0x24D2E5, 6 bytes).",
+        "Franchise history is read from the franchise extension footer (b780 j23-footer, 2K5XTND1 envelope 1) through the footer host's body word when that owner is installed; without it the franchise parts read empty.",
+        "The Player Card's game log page needs the honors option (the champions owner finds this owner through its ESPN.com rows).",
+        "Rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Franchise: Coach's Desk > ESPN.com > TEAM HISTORY (last row): SEASONS (the franchise record, then every season newest first), RECORDS, LEADERS, RECORD BOOK, AWARDS (L/R change the award), HALL OF FAME (L/R filter by club). Black/White change the page, L/R the team, Up/Down scroll, B goes back. Schedule: highlight a played game, X (the legend says for Box Score): the score by quarter, and for your team's games the team stats and player lines. Player Card (with the honors option): Black/R past the champions page shows the player's game log this season."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Every page's text, the input, the box score, the Schedule hook, the game log and the four-page Player Card cycle (with the honors owner installed) run under Unicorn on the retail executable (python3 -m tests.mod_editor.test_b780_j4_history_screen); emulator stills are in the job report.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false in Basic, true in Advanced and Experimental",
+            "name": "history_screen",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE .rdata pointer 0x525674 and .text site 0x24D2E5; owned RX, RW and read-only bytes in the allocator's late region.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Adds a TEAM HISTORY row to the Franchise ESPN.com menu: every club's seasons (real 2002 to 2025 history, then the seasons of your franchise), club records, all-time leaders, the NFL record book, the season awards and the Hall of Fame, with franchise-made entries marked NEW. On the Schedule, X opens the box score of a played game, and the Player Card gets a game log page.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Franchise History screen, box scores from the Schedule and Player Card game log (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_b780_j4_history_screen"
     },
     {
       "backend": {
@@ -6391,6 +6527,72 @@
       "surface": "schedules_franchise",
       "title": "Senior Bowl preview (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_senior_bowl"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_standings_records apply source.xbe new-standings.xbe",
+        "module": "mod_editor/core/nfl2k5_standings_records.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_standings_records.py",
+        "mod_editor/core/nfl2k5_standings_records_code.py",
+        "tests/mod_editor/test_nfl2k5_standings_records.py",
+        "tools/nfl2k5_standings_records/runtime.c",
+        "tools/nfl2k5_standings_records/stubs.S",
+        "tools/nfl2k5_standings_records_build.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. CER, 2026-10-07: a way to get division and conference records into the Team Standings page. Off in Basic, on in Advanced and Experimental; the page opens on the retail columns and changes only when a player presses White or Black."
+      },
+      "id": "nfl2k5.franchise.standings_records",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; the owner is a late allocator owner placed after every other late owner (or appended to an installed sealed image by nfl2k5_xbe_space.extend_scaleout). Foreign or mixed bytes refuse, as does a changed game routine it relies on (26 retail spans are pinned by SHA-256).",
+        "Owned 2,304 RX bytes (the stubs, the record counting, the label and legend text) and a 16-byte RW block (the view). Edits: the pressed-mask test at 0x35543F in the Team Standings input, the three header labels (0x355903, 0x35592A, 0x355951) and three cell formatters (0x355B1E, 0x355B68, 0x355BB2) of its draw, the four legend lines (0x355D39, 0x355D5F, 0x355D85, 0x355DAB) and the enter callback pointer at 0x54CDB4.",
+        "ESPN.com > Team Standings in Franchise: White and Black turn the columns W L T (retail), DIV CONF, HOME ROAD STRK. DIV and CONF count the regular-season rows of the season's schedule grid only (the byte at 0x5151C4: 17, or 18 with the season-length patch), division games count for both, nothing is saved. HOME, ROAD and STRK are the game's own values. With the view at W L T every stub falls through to the retail routine; the realignment screen that shares the draw and input code is never touched.",
+        "Rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Franchise: open ESPN.com > Team Standings mid-season; press White or Black: the W L T columns become DIV and CONF (the legend under the tables says so), again for HOME, ROAD and STRK, again for W L T; L and R still switch AFC and NFC; leaving and coming back opens on W L T. Check the numbers against the schedule for one club."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "The real Team Standings draw, input, enter and legend code run under Unicorn on the retail executable with the owner installed: view 0 is call for call the retail screen; views 1 and 2 show the Python model's DIV and CONF records and the game's own HOME, ROAD and streak for all 32 clubs over random seasons with ties, overtime, byes, playoff rows and 17 and 18 week seasons (python3 -m tests.mod_editor.test_nfl2k5_standings_records). No game boot, no gameplay witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false in Basic, true in Advanced and Experimental",
+            "name": "standings_records",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE .text sites listed above and one .rdata pointer; owned 2,304 RX and 16 RW bytes in the allocator's late region. No save field.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Adds division and conference records to ESPN.com's Team Standings page, with home, road and streak columns: White and Black turn the columns, the headers and the legend say which view is showing, and the page opens on the retail W L T. The records are worked out from the season's schedule (regular season only), so nothing is stored in the save.",
+      "surface": "schedules_franchise",
+      "title": "Team Standings records: division, conference, home, road and streak (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_standings_records"
     },
     {
       "backend": {
@@ -6786,7 +6988,9 @@
       "classification": "runtime-proved",
       "evidence": [
         "docs/mod_editor/nfl2k5_coach_ai.md",
-        "tests/mod_editor/test_nfl2k5_coach_ai.py"
+        "tests/mod_editor/test_b772_coach_ai_roster_gate.py",
+        "tests/mod_editor/test_nfl2k5_coach_ai.py",
+        "tests/mod_editor/test_nfl2k5_coach_staff.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -6797,10 +7001,11 @@
       },
       "id": "nfl2k5.gameplay.coach_ai",
       "input_constraints": [
-        "A supported USA disc and exact final compiled NFL playbooks, with roster kind, team asset and coach portrait identities matching the 2026 directory. Rebuild after book edits; stale or foreign profile tails refuse.",
+        "A supported USA disc and exact final compiled NFL playbooks. Per club (b780): a club gets the profile of the 2026 head coach it employs (name and picture), fitted to its own final book with its defensive coordinator's rings; a club without one plays native, and only that club. Rebuild after book edits; stale or foreign profile tails refuse.",
         "Includes VIP-aware Modern 2. Modes 4..7 only; humans, active MyCareer, special/scenario routes and non-current teams retain native behavior. Paired playbooks retain native replay suppression.",
         "Uses 896 existing tail bytes per NFL PLAY resource, 5120 RX bytes and 128 RW bytes, plus at most two 8608-byte heap contexts. No USR slots or save-format changes.",
-        "Portrait textures are separate input art. Missing textures retain the native fallback."
+        "Portrait textures are separate input art. Missing textures retain the native fallback.",
+        "The kernel's 32-row coach table (1,408 bytes, no relocations) is written per build for the club assignment; the recognizer accepts any valid table and refuses junk."
       ],
       "portme": [
         "Broaden live coverage beyond the witnessed DAL/WAS Play Now and IND/TEN/DEN franchise routes; all 32 teams and modes 4..7 have component checks."
@@ -6984,7 +7189,9 @@
         "tests/mod_editor/test_nfl2k5_coverage_trail_unicorn.py",
         "tests/nfl2k5_coverage_trail_frame.py",
         "docs/mod_editor/nfl2k5_coverage_trail_frames.json",
-        "tools/nfl2k5_coverage_trail.S"
+        "tools/nfl2k5_coverage_trail.S",
+        "tests/mod_editor/test_nfl2k5_hitch_brake.py",
+        "tools/replay_nfl2k5_hitch.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -6998,7 +7205,8 @@
         "Pinned USA XBE or verified composed input; reserve the complete owner union before installing bytes. Mixed or foreign owners refuse before mutation.",
         "CPU defender during a live play, ordinary locomotion, no queued special command, known man or pursuit task with a live opposing target.",
         "Opponent within three yards and requested turn at least 90 degrees; stationary arrival uses the native 0.35-yard radius.",
-        "No guarantee for strafe, animation transitions, contact or every man-coverage failure. Rebuild from base to opt out."
+        "No guarantee for strafe, animation transitions, contact or every man-coverage failure. Rebuild from base to opt out.",
+        "Brake (coverage_hitch_brake): man callbacks 0x1A4830/0x1A4CF0/0x1A4DD0 only, finite target velocity, the same 0.35-yard arrival distance; clears this tick's throttle only. Needs coverage_trail; rebuild from base to opt out."
       ],
       "portme": [
         "Wire the shared product controls and regenerate the production cave manifest as specified in WIRING.md.",
@@ -7014,18 +7222,23 @@
         "evidence": [
           "ASTRA_DEFENDER_CIRCLING_REPORT.md"
         ],
-        "scope": "Bounded native planner, ordinary locomotion, root sampler and transform traces with supplied target paths and one synthetic straight clip. Pursuit orbit and stationary recovery are proved in that fixture; a native lapse command and RNG survive. Full task scheduling, real animation transitions, contact, the reported man-coverage cause and gameplay remain unwitnessed.",
+        "scope": "Bounded native planner, ordinary locomotion, root sampler and transform traces with supplied target paths and one synthetic straight clip. Pursuit orbit and stationary recovery are proved in that fixture; a native lapse command and RNG survive. Full task scheduling, real animation transitions, contact, the reported man-coverage cause and gameplay remain unwitnessed. b780 cv1 brake: the same fixture on the released v0.8 executable (r5 matrix 6 yd/s and a 9 yd/s matrix, seven routes, both field directions) removes every stem pivot and leaves at most one turn back after a curl; pursuit controls are byte-for-byte unchanged.",
         "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "false in Basic, Advanced and Experimental; explicit opt-in",
+            "allowed": "false in Basic; true in Advanced and Experimental",
             "name": "coverage_trail",
             "required": true
+          },
+          {
+            "allowed": "true or false; needs coverage_trail; on in Advanced and Experimental (where coverage_trail is on), off in Basic",
+            "name": "coverage_hitch_brake",
+            "required": false
           }
         ],
-        "notes": "Retail: close full-throttle pursuit can circle. Patch: authorize a close turn and stop after stationary arrival. Keep the retail coverage pursuit is the inverse UI switch for the same Boolean."
+        "notes": "Retail: close full-throttle pursuit can circle. Patch: authorize a close turn and stop after stationary arrival. b780 cv1: coverage_hitch_brake (Stop man-coverage spins and run-ins) also holds a man defender for one tick inside the 0.35-yard arrival distance of a moving receiver instead of pivoting past him again; same owner, hook and 640-byte reservation. Keep the retail coverage pursuit is the inverse UI switch for coverage_trail; turning it off clears the brake too."
       },
       "source_container": {
         "format": "XBE in XDVDFS",
@@ -7035,10 +7248,82 @@
         "resource": "One pinned six-byte turn-integrator hook at 0x2FC9F0; 640-byte RX reservation, immutable constants inside code, no owner RW state.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "A nearby CPU defender in ordinary man coverage or pursuit can turn back and stop on reaching a stationary opponent.",
+      "summary": "A nearby CPU defender in ordinary man coverage or pursuit can turn back and stop on reaching a stationary opponent; with the optional brake, a man defender no longer pivots again and again around a moving receiver.",
       "surface": "gameplay_tuning_sliders",
       "title": "Close pursuit recovery (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_coverage_trail"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_cpu_clock2 apply source.xbe --output new-clock.xbe --overtime",
+        "module": "mod_editor/core/nfl2k5_cpu_clock2.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_cpu_clock2_code.py",
+        "tests/mod_editor/test_nfl2k5_cpu_clock2.py",
+        "tests/mod_editor/test_nfl2k5_cpu_clock2_unicorn.py",
+        "tools/nfl2k5_cpu_clock2.S",
+        "tools/nfl2k5_cpu_clock2_assemble.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Advanced gameplay option: Off in Basic, on in the Advanced and Experimental presets. The overtime window is a second checkbox that needs the first. In-game play is UNWITNESSED beyond the job report's emulator gates."
+      },
+      "id": "nfl2k5.gameplay.cpu_clock2",
+      "input_constraints": [
+        "Pinned USA XBE or a verified composed input; the owner is the last late allocator owner (one 1,152-byte RX allocation, no writable data). Foreign or mixed bytes at any of the ten hook sites or inside any of the seventeen guarded routines refuse.",
+        "Booleans cpu_clock2 and cpu_clock2_overtime (overtime needs cpu_clock2). A different overtime choice needs a rebuild from a clean base.",
+        "Hooks: 0x20A79B, 0x207A36, 0x18C0E8, 0x206ED9 (calls), 0x2D33D8, 0x2D340C, 0x188614, 0x206F10, 0x189080 (jumps) and, with overtime, 0x205FE0."
+      ],
+      "portme": [
+        "Integrate BuildPlan, presets, build settings, the Build tab checkboxes, packaging pins and the allocator union; regenerate the protected production cave manifest with the owner last in LATE_OWNERS.",
+        "Witness in game: a CPU defense trailing in Q4 calls a timeout before the two-minute warning; a leading CPU offense lets the play clock run down from 5:00; a CPU team down two scores hurries before 5:00; a first-half kneel; the clock running out after a final kneel; overtime clock decisions in Franchise."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "tests/mod_editor/test_nfl2k5_cpu_clock2_unicorn.py"
+        ],
+        "scope": "The game's own clock routines (time needed, urgency, hurry, onside, snap delay, timeout poll, kneel, late window and its callers) replayed in Unicorn on supplied game state before and after the owner. Full games are UNWITNESSED beyond the emulator gates named in the job report.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; Off in Basic, On in Advanced and Experimental",
+            "name": "cpu_clock2",
+            "required": true
+          },
+          {
+            "allowed": "false | true; needs cpu_clock2; Off in Basic, On in Advanced and Experimental",
+            "name": "cpu_clock2_overtime",
+            "required": true
+          }
+        ],
+        "notes": "Build-time settings. Off skips the writer in the Studio."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Nine pinned live hooks (ten with overtime) in the native CPU clock routines; one owned 1,152-byte RX allocation.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "CPU teams manage the clock like modern NFL teams: two-score hurry from 10:00 of Q4, four-minute offense, early defensive timeouts, end-of-half kneel, kneel runoff, and optional overtime clock logic where the end of overtime decides the game.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Modern CPU clock management",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_cpu_clock2"
     },
     {
       "backend": {
@@ -7118,6 +7403,68 @@
       "surface": "gameplay_tuning_sliders",
       "title": "CPU fourth downs, two-point tries and overtime (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_cpu_money_downs"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_cpu_passer_iq --xbe source.xbe --apply --output new-cpu-passer.xbe",
+        "module": "mod_editor/core/nfl2k5_cpu_passer_iq.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_cpu_passer_iq.py",
+        "tests/mod_editor/test_nfl2k5_cpu_passer_iq_unicorn.py",
+        "tools/nfl2k5_cpu_passer_iq.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. On in Advanced and Experimental, off in Basic (b780 r1-cpu research, job A)."
+      },
+      "id": "nfl2k5.gameplay.cpu_passer_iq",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; the CPU QB reads and CPU scramble owners compose (each normalizes the others' verified sites). Foreign or mixed bytes refuse before mutation.",
+        "CPU passers only: the short-throw term of targets nearer than 15 yards fades from 2 s after the snap (sooner once the first read cycle completed) to 20 percent, and to 20 percent at once at pocket pressure 0.7; human passers keep every retail score.",
+        "A late allocator owner (256 RX, 16 RW bytes), installed last; rebuild from a clean base to turn it off."
+      ],
+      "portme": [
+        "Measure CPU v CPU snap-to-release times, pump fakes and the share of targets to backs over a season sample before tuning FLOOR (the checkdown-rate lever)."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native instruction replays of the target scorer 0x19A7E0 with the field terms 0x199CE0, both pump-fake paths of the QB tick 0x19BB60, the throw press holdoff gate 0x19BAE0 and the read advance 0x199100, with declared input seams. Played games, completion rates and the target share of backs are unwitnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic; true in Advanced and Experimental",
+            "name": "cpu_passer_iq",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Hook 0x199F23 (5); operands 0x19BFD1, 0x19C1C2 (to the retail 0.6 at 0x4EFE14) and 0x19C194 (20 to 60); read dwell curve 0x50C548 (44); owned 256 RX and 16 RW bytes.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "CPU quarterbacks look downfield early, then check the ball down to an open back or tight end late in the play or under pressure; pump fakes block the throw 0.6 s instead of 1.5 s and weak readers move through their reads faster.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "CPU quarterbacks throw on time and check down (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_cpu_passer_iq"
     },
     {
       "backend": {
@@ -7346,6 +7693,68 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_dive_window --xbe source.xbe --apply --output new-dive-window.xbe",
+        "module": "mod_editor/core/nfl2k5_dive_window.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_dive_window.py",
+        "tests/mod_editor/test_nfl2k5_dive_window_flights.py",
+        "tools/nfl2k5_dive_window.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Off in Basic, Advanced and Experimental until its emulator gate passes (b780 r5-coverage research, job CV3)."
+      },
+      "id": "nfl2k5.gameplay.dive_window",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; composes with Defenders break on the thrown ball. Foreign or mixed bytes refuse before mutation.",
+        "CPU defenders reacting to a throw only: no leap or catch try at a ball more than 0.03 s of flight past the stored catch point while that point is still ahead of the ball and on its line (the receiver gets it first), and no leap from more than 1.5 yards beside the ball's path (retail 3 yards). Human-controlled defenders, tipped or overthrown balls, the close-contest branch and degenerate ball paths keep the retail decision.",
+        "A late allocator owner (352 RX bytes, no RW state), installed after every other late owner; rebuild from a clean base to turn it off."
+      ],
+      "portme": [
+        "Witness CPU defenders on deep balls, curls and outs in man and zone with the option on and off: fewer leaps from far away, no defender freezing, breakups within a yard unchanged."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native instruction replays of the ball-play decision 0x1F52C0 with the hook (crafted states) and of the cave at its ABI. Played games, leap outcomes and breakup rates are unwitnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "db_dive_window",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "One jump at 0x1F56CB (21 bytes: the native 1-yard test of 0x1F52C0, run unchanged by the owner's code before the catch roll and the 3-yard test); owned 352 RX bytes, immutable constants inside code.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "A CPU defender who reacts to a pass leaps, dives or tries the catch only when he can reach the ball: not from more than a yard and a half beside its path, and not at a ball the receiver catches first.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Defenders leap only for balls they can reach (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_dive_window"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_throw_arc <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_throw_arc.py",
         "operation": "write"
@@ -7542,6 +7951,74 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_franchise_footer (installed by the Build option franchise_history)",
+        "module": "mod_editor/core/nfl2k5_franchise_footer.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_franchise_extension.py",
+        "mod_editor/core/nfl2k5_franchise_footer.py",
+        "mod_editor/core/nfl2k5_history.py",
+        "tools/nfl2k5_franchise_footer/runtime.c",
+        "tools/nfl2k5_history/runtime.c",
+        "tests/mod_editor/test_nfl2k5_franchise_footer.py",
+        "tests/mod_editor/test_nfl2k5_history.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. b780 j23 (players' #2k5-ideas asks for a team history, records, the Hall of Fame and past box scores): one versioned franchise save footer and the native capture at the game commit and the season close. Off in every preset until its emulator gates pass."
+      },
+      "id": "nfl2k5.gameplay.franchise_history",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; two late allocator owners placed after the Player Progress screen: nfl2k5_franchise_footer (4,096 RX; 64 RW with the 128 MB roster heap, else 98,352 RW holding the footer body) and nfl2k5_history (10,240 RX, code only). Foreign or mixed bytes refuse.",
+        "Footer host edits: 0x16AA26 (franchise total size), 0x16E50D (save, after the front office and the MyCareer block), 0x16E815 (load end), 0x16ABB5 (the franchise save-list admission, replacing MyCareer's), 0x13EF21 (a new franchise). The size, save and load calls chain to the bytes they displaced (retail or the generic MyCareer owner). With the full Player Progress screen on, that owner is installed hosted (its footer becomes the last 34,320 bytes of the save, as in v0.8).",
+        "History edits: 0x1356C8 and 0x1356FF (the played and simulated commit tails, jmp 0x73770) and 0x248601 (stage 9, call 0x13ED70). It reads the game state through getters only and writes only inside the footer body.",
+        "Save format: native save | MyCareer 128 (optional) | extension body 98,288 (2K5XTND1, optional) | Player Progress footer 34,320 (optional, last). Old saves load and start an empty history; v0.8 saves keep their Player Progress.",
+        "Rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Franchise: play or simulate games; your club's games keep a box score; at Advance to offseason the season, the champion, the awards, records, all-time leaders and Hall of Fame candidates are recorded in the franchise save. Save, cold boot, load: the history is still there (the History screen that shows it is job j4-history)."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Every hook of both owners runs under Unicorn on the retail executable (the footer host's size, save, load, admission and new-franchise paths with the published size family; the capture on a synthetic league against a Python model of the format). No game boot yet.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false in every preset",
+            "name": "franchise_history",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips both writers and their allocations; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE .text sites listed above; owned code and memory in the allocator's late region.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Franchise history and records: every season's standings and playoff results, the awards, club and league records, all-time leaders, Hall of Fame classes and the box scores of your team's games, kept in one versioned block footer in the franchise save (about 98 KB; on the 128 MB build it uses the extra memory).",
+      "surface": "schedules_franchise",
+      "title": "Franchise history and records footer and capture (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_franchise_footer"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_honors apply source.xbe new-honors.xbe",
         "module": "mod_editor/core/nfl2k5_honors.py",
         "operation": "write"
@@ -7615,6 +8092,67 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_intro_autoskip apply source.xbe --output new-intro-autoskip.xbe",
+        "module": "mod_editor/core/nfl2k5_intro_autoskip.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_b780_mem1_intro_autoskip.py",
+        "tests/mod_editor/test_b780_mem1_heapb_headroom.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "On in every SOFTDRINK preset and the pack (Noah 11/03: everything found is fixed in beta-80). It acts only when the pregame intro's director could not load; every intro that loads plays as before."
+      },
+      "id": "nfl2k5.gameplay.intro_autoskip",
+      "input_constraints": [
+        "Pinned USA XBE, or a sealed scale-out image: a late tail owner whose 64-byte helper sits in a legacy RX page tail, so no section grows.",
+        "The call at 0x125C37 and the code it relies on (the intro update 0x125BC0, 0x70A10, 0x709B0, the completion 0x1256D0, the skip handler 0xA2120, its tables and the intro skip 0xA2198) must be retail; anything else is refused before any write.",
+        "Meant with the resource load guard, which turns DIR_INTRO's failed allocation into a skipped resource."
+      ],
+      "portme": [
+        "Regenerate data/nfl2k5_cave_reservations.json from an observed build after integration (the recorder observes this owner on its late-owner probe copy)."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Unicorn on the v0.9 RC's own intro update after its own game setup proves the skip equals a native A press when the director is missing and that nothing changes when it loads; the 64 MiB emulator gate is pending.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "true in Basic, Advanced and Experimental (and the pack)",
+            "name": "intro_autoskip",
+            "required": true
+          }
+        ],
+        "notes": "Retail: when DIR_INTRO does not fit in heap B the stadium flyover repeats until A is pressed. Patch: the intro then ends through the game's own A skip and the game goes on to the coin toss."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "one live 5-byte call; one 64-byte RX owner in a legacy page tail",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "The pregame intro skips itself, exactly as an A press would, when its director could not load, instead of looping on the stadium flyover; intros that load play as before.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Skip the pregame intro when it cannot load",
+      "validation_command": "python3 -m tests.mod_editor.test_b780_mem1_intro_autoskip"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_k128 apply source.xbe new-128mb.xbe [--roster-heap]",
         "module": "mod_editor/core/nfl2k5_k128.py",
         "operation": "write"
@@ -7634,7 +8172,7 @@
       "id": "nfl2k5.gameplay.k128_memory",
       "input_constraints": [
         "Pinned USA XBE or verified composed input with the retail entry point; reserve the complete selected owner union before installation. Foreign or mixed bytes refuse.",
-        "Owned 512 RX bytes (R1's 226-byte K128-late stubs, the optional roster heap pick and in-game block cap, the optional early entry); the XBE entry, the 10-byte compare at 0x327D1 (left retail by the early form) and, with the roster heap, the call at 0xC1F37 and the 9-byte in-game block site at 0x84EC2.",
+        "Owned 512 RX bytes (R1's 226-byte K128-late stubs, the optional roster heap pick and in-game block cap, the optional early entry); the XBE entry, the 10-byte compare at 0x327D1 (left retail by the early form) and, with the roster heap, the call at 0xC1F37 and the 9-byte in-game block site at 0x84EC2. The early form's copy of the stubs adds pages 0x4010..0x7FEF and keeps the top 64 KB of the 128 MB out (xemu's audio DSP asserts on a transfer that ends at the last byte of RAM).",
         "The roster heap and the early form need the 128 MB option; the roster heap composes with the arena growth (16 reserves, extra created teams).",
         "Rebuild from a verified base to remove it."
       ],
@@ -8029,6 +8567,69 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_protection_calls apply source.xbe --output new-protection-calls.xbe",
+        "module": "mod_editor/core/nfl2k5_protection_calls.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_protection_calls.py",
+        "tests/mod_editor/test_nfl2k5_protection_calls_unicorn.py",
+        "tools/nfl2k5_protection_calls.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL. On in the Experimental preset (the SOFTDRINK 2K28 recipe) so it is played on the test disc first; Basic and Advanced keep the game's automatic slide."
+      },
+      "id": "nfl2k5.gameplay.protection_calls",
+      "input_constraints": [
+        "Pinned USA XBE, or a sealed scale-out image: a late allocator owner, appended after every other late owner without moving one.",
+        "The two hook sites (0x23BC4F, 0x18FE65) and their guarded neighbours (0x23BC40 slide call, 0x23B6E0 ret 4, the 0x18FBE0 case, its switch slot and index bytes) must be retail; anything else is refused before any write.",
+        "Acts only on the offense's three-audible menu (record 0 open, count 3, the offense's own controller); five-play menus keep L and R as audibles."
+      ],
+      "portme": [
+        "Show the active call in the audible menu legend (b780 p3-legend can read the 16-byte call state: team, play log counter, call, used).",
+        "Regenerate data/nfl2k5_cave_reservations.json from an observed build after integration (the recorder observes this owner on its late-owner probe copy)."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Unicorn replays of the retail slide call, automatic read, pass set and at-line case prove the call value, its lifetime and the button routing; the in-game emulator gate is pending.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic and Advanced; true in Experimental",
+            "name": "protection_calls",
+            "required": true
+          }
+        ],
+        "notes": "Retail: the game slides the line by itself from the box count (0xC16BAC, up to 3 yd); L and R on the three-audible menu find no play and close it. Patch: L / R set SLIDE LEFT / RIGHT (3 yd) for the next snap, the same button again clears; CPU offenses keep the automatic slide."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "two live jumps of 5 and 10 bytes; one 256-byte RX owner; one 16-byte RW call state",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "At the line, L and R in the offense's audible menu slide the whole pass protection 3 yards left or right for the next snap; the computer's offense keeps the game's automatic slide.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Protection calls: slide the line with L / R at the line (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_protection_calls"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_qb_spy_runtime source.xbe new-spy.xbe",
         "module": "mod_editor/core/nfl2k5_qb_spy_runtime.py",
         "operation": "write"
@@ -8175,6 +8776,133 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_runner_vision --xbe source.xbe --apply --output new-runner-vision.xbe",
+        "module": "mod_editor/core/nfl2k5_runner_vision.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_runner_vision.py",
+        "tests/mod_editor/test_nfl2k5_ball_carrier_ai.py",
+        "mod_editor/core/nfl2k5_runner_vision.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL. CPU ball carriers judge defenders by where they are going, so they cut back behind a man who overruns the play and stop bending to the sideline under pursuit. Needs CPU ball carriers stay in bounds (its wider 9-yard sideline limit). Off in every preset until its emulator gate passes."
+      },
+      "id": "nfl2k5.gameplay.runner_vision",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; the ball-carrier push routine 0x2E2260 must be byte-identical to retail (its owner copy is made from the source's own bytes). Mixed or foreign owners refuse before mutation.",
+        "CPU-controlled ball carrier ([[carrier+0xC]] == -1) with his team's clock urgency 0.5 or less; human carriers and urgent clocks run the retail routine.",
+        "Defenders only: the side of each push from their closest approach within 0.35 s, its strength from their bearing now with softer side and behind weights; teammates and blockers keep the retail look-ahead, bearing and weights.",
+        "Late allocator owner after nfl2k5_sim_realism_state; needs nfl2k5_ball_carrier_ai installed with wide_sideline. Rebuild from base to opt out."
+      ],
+      "portme": [
+        "Integration keeps nfl2k5_runner_vision after nfl2k5_ball_carrier_ai in LATE_OWNERS and regenerates the production cave manifest.",
+        "Emulator gate: CPU vs CPU attract demo or Quick Game, count CPU carries that reach the sideline untouched, owner on and off."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "tests/mod_editor/test_nfl2k5_runner_vision.py"
+        ],
+        "scope": "The real retail push routine, its relocated owner copy and the real sideline filter with the ball-carrier cave run in Unicorn on synthetic players; the copy equals the retail routine bit for bit when every player takes the retail path, and humans, urgent clocks and teammate-only scenes are bit-identical. Gameplay is not witnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic, Advanced and Experimental; explicit opt-in with cpu_ball_carriers",
+            "name": "cpu_runner_vision",
+            "required": true
+          }
+        ],
+        "notes": "Retail: a CPU carrier pushes away from where defenders are now, so pursuit from inside bends him to the sideline and he never cuts back. Patch: CPU carriers on a calm clock push away from where each defender will be at their closest approach, as hard as his bearing now warrants."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "One pinned five-byte call at 0x2E3072 in the ball-carrier task; 1,664-byte RX reservation holding a wrapper, the owner copy of 0x2E2260 built from the source and its constants; no owner RW state.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "CPU ball carriers judge defenders by where they are going: cutbacks behind overpursuit and less sideline drift.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "CPU ball carrier vision (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_runner_vision"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_scramble_blocking <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_scramble_blocking.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_scramble_blocking.py",
+        "tools/nfl2k5_scramble_blocking.S",
+        "tests/mod_editor/test_nfl2k5_scramble_blocking.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL. Build-time option and a feel test for Noah: once a quarterback carrying the ball is half a yard past the line on a play with no forward pass, his CPU tight ends, receivers and backs who are not blocking get the game's drive block, one blocker per man; off in every preset."
+      },
+      "id": "nfl2k5.gameplay.scramble_blocking",
+      "input_constraints": [
+        "User-owned pinned USA default.xbe, or a verified scale-out image (the released SOFTDRINK v0.8 executable gains no file size); the AI tick 0x214FC0, the block installer 0x23F450, its refresh 0x23CD60, the engaged-pair test 0x231EE0, the block manager 0x23DBE0 and the block-task test 0x23ABA0 must be retail. Foreign or mixed bytes refuse.",
+        "One 5-byte call at the AI tick's first instruction (0x214FC0), an 816-byte late code owner and a 16-byte late state owner (nfl2k5_xbe_space.LATE_OWNERS, last). Installed images keep the rule; rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Build a disc with this option, play Practice or Quick Game, tuck the ball and run past the line with the quarterback (and let a CPU quarterback scramble), and compare the receivers with a disc built without the option."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native Unicorn execution of the installed hook, the game's block installer, selector, refresh and drive-block tick on synthetic players (retail and the released v0.8 executable). Not witnessed by Noah; the feel is his call.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "scramble_blocking",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only; there is no in-game toggle. Human and CPU quarterbacks get the same rule."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "one five-byte call and named 816-byte code and 16-byte state allocations",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Receivers and backs block downfield for a quarterback who runs past the line: the game's own drive block, one blocker per defender.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Receivers block for a scrambling QB (experimental test)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scramble_blocking"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_scramble_tuning <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_scramble_tuning.py",
         "operation": "write"
@@ -8302,6 +9030,71 @@
       "surface": "gameplay_tuning_sliders",
       "title": "Screen pass timing hooks (second experiment, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_screen_hooks"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_speed_threshold source.xbe --value 35 --output new-speed-separation.xbe",
+        "module": "mod_editor/core/nfl2k5_speed_threshold.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_speed_threshold.py",
+        "mod_editor/core/nfl2k5_speed_threshold_code.py",
+        "tests/mod_editor/test_nfl2k5_speed_threshold.py",
+        "tests/mod_editor/test_nfl2k5_speed_threshold_unicorn.py",
+        "tests/nfl2k5_speed_threshold_frame.py",
+        "tools/nfl2k5_speed_threshold.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Optional number 0 to 100 on the Build page (0 installs nothing). Players asked for more separation between fast receivers and slower corners (X_Ray, Ju3tin, THE1WAM): in the stock game a 10-point Speed gap is only 0.3 yards a second. 35 in the Experimental preset (the SOFTDRINK 2K28 recipe builds from it); Basic and Advanced keep 0."
+      },
+      "id": "nfl2k5.gameplay.speed_separation",
+      "input_constraints": [
+        "Pinned USA XBE or a verified composed input whose speed mapper (0x238020), its seven-byte epilogue (0x2381B1) and the constants it reads are retail; the owner is a late allocator owner (1,024 RX bytes, no RW) placed after every other owner or appended to an installed sealed image. Mixed or foreign bytes refuse before mutation.",
+        "A CPU defender in the established man task, running straight downfield (body and requested headings within 22.5 degrees), covering a faster opposing receiver who is also running straight and fast downfield, eight to twelve yards past the line of scrimmage (ramp). Everything else returns the unpatched speed.",
+        "The strength is a whole number 0 to 100 and is fixed at build time: rebuild from the original disc to change it."
+      ],
+      "portme": [
+        "Practice or Quick Game, CPU man coverage against a go route with a receiver at least 10 Speed above the corner: check the corner falls about a yard further back by 40 yards at strength 35 (about two and three quarters at 100), with no change to turns, cuts, zone coverage, human defenders or the receiver."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "The real speed mapper, the hook and the cave run under Unicorn on the retail and the released v0.8 executables: strength scaling, the scope fallbacks, register and x87 preservation, and 60 Hz go-route replays of the real man planner and locomotion (WR 93 against CB 83: strength 35 adds about one yard of separation by 40 yards). No route scripts, contact or full game scheduler.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "whole number 0 to 100; default 0 in Basic and Advanced, 35 in Experimental",
+            "name": "speed_threshold",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. 0 skips the writer and its allocation. The strength is stored in one byte of the owned code."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "One 7-byte hook at 0x2381B1 (the speed mapper epilogue) and 1,024 owned RX bytes; no RW state.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "A faster receiver pulls away from a slower CPU corner on a go route or other straight deep route in man coverage: the corner's straight running speed is reduced a little for each point of Speed he gives up, scaled by the chosen strength.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Speed separation on deep routes (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_speed_threshold"
     },
     {
       "backend": {
@@ -10601,6 +11394,73 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_staff_ui",
+        "module": "mod_editor/core/nfl2k5_staff_ui.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/nfl2k5_staff_ui.md",
+        "tests/mod_editor/test_b780_c4_coaches_panel_qt.py",
+        "tests/mod_editor/test_b780_c4_staff_ui_model.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. The Rosters > Coaches tab edits the staff section of the roster edits; the build-time writer is nfl2k5_coach_staff. Nothing is built from it unless the roster edits are exported and included in Build."
+      },
+      "id": "nfl2k5.rosters.coach_staff",
+      "input_constraints": [
+        "A game disc roster (version 17 or 18) with the 32 club head coach records. A roster read from an Xbox save is refused: use the Franchise page.",
+        "One head coach and one defensive coordinator per club, nobody in two seats, nobody lost without being replaced; every document the page writes keeps those rules and problems() names what is wrong with a hand-written one.",
+        "A new coach has a first and last name of 24 characters at most, up to three biography lines of 52, one of the game's coach models and an overall rating 0 to 99.",
+        "Head coaches are matched by the full name the loaded roster holds; coordinators come from the Studio's 2026 data (data/vip/defense_identity_2026.json).",
+        "A staff plan cannot travel inside a complete roster with faces file yet."
+      ],
+      "portme": [
+        "Merge with the build-time writer nfl2k5_coach_staff (job c2-staff); play a build with a moved coach and report what the announcer, the Coach Matchup screen and the CPU's play calling do."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable, a disc or a save.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "EXPERIMENTAL / UNWITNESSED. Offline only: the page and its document run against synthetic rosters and the released SOFTDRINK v0.8 disc's roster (read only). No disc has been built from a plan and no moved coach has been played.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "roster edits .json; the staff section is written beside the player edits",
+            "name": "roster_edits",
+            "required": false
+          },
+          {
+            "allowed": "staff file .json (schema nfl2k5_coach_staff/v1)",
+            "name": "staff_file",
+            "required": false
+          }
+        ],
+        "notes": "The plan rides inside the roster edits (BuildPlan.roster_edits); there is no separate Build option."
+      },
+      "source_container": {
+        "format": "Xbox disc ROST (coach table and team coach pointers)",
+        "hash_pins": [],
+        "resource": "35 coach records of 0xA8 bytes at root +0x30/+0x34; team +0x14C points at a record",
+        "retail_file": "user-owned NFL 2K5 USA disc"
+      },
+      "summary": "Plan the coaching staff of a build on the Rosters page: swap or hire head coaches, create a coach, change a defensive coordinator, choose whether a moved coach brings his playbook, and keep a plan as a file.",
+      "surface": "players_rosters",
+      "title": "Coaching staff plan (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_b780_c4_staff_ui_model"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_espn25_rosters build source.iso historic.iso --receipt historic-receipt.json",
         "module": "mod_editor/core/nfl2k5_espn25_rosters.py",
         "operation": "write"
@@ -10955,6 +11815,73 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_franchise_save swap SAVE_FOLDER NEW_FOLDER DET SF",
+        "module": "mod_editor/core/nfl2k5_franchise_save.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/franchise_save.md",
+        "tests/mod_editor/test_b780_c4_staff_franchise_panel.py",
+        "tests/mod_editor/test_b780_c4_staff_save.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Franchise page > Coaches: Swap with another club, Fire and hire, Hire for a club. Each is one journaled edit written into a re-signed copy."
+      },
+      "id": "nfl2k5.saves.franchise_coach_moves",
+      "input_constraints": [
+        "A signature-verified franchise SAVEGAME.DAT (720,044 bytes, or the grown capacity arena); the source is never changed, the copy is written to a new folder.",
+        "Only the 32 league clubs employ coaches; exhibition squads keep the coach record they borrow.",
+        "A new coach's name needs the save's coach text to be one back-to-back region that nothing else points at (SOFTDRINK and Franchise1 are; Finn's 2004 save is not) and to fit the game's 5,506-byte region; swaps and hiring a coach already in the save always work.",
+        "Names are 24 characters at most, biography lines 52, plain printable ASCII.",
+        "The game's empty coach placeholders cannot be hired; a coach who already leads a club is swapped, not hired."
+      ],
+      "portme": [
+        "Load a copy in the game and report the Coach's Card, the Coach Matchup screen, the announcer and the sideline for a swapped club."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable, a disc or a save.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "EXPERIMENTAL / UNWITNESSED. Offline replay and byte-exact signed round trips on a synthetic arena and on the Franchise1 and Finn fixtures. The game has not loaded a save with a moved coach.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "franchise save folder, SAVEGAME.DAT or zip",
+            "name": "save",
+            "required": true
+          },
+          {
+            "allowed": "an empty folder for the new signed copy",
+            "name": "output",
+            "required": true
+          }
+        ],
+        "notes": "swap SAVE OUT TEAM TEAM | hire SAVE OUT TEAM COACH | replace SAVE OUT TEAM FIRST LAST [BIO...]; coaches SAVE lists the clubs' head coaches and the coaches no club employs."
+      },
+      "source_container": {
+        "format": "Xbox franchise save arena (ROST version 0 or 1)",
+        "hash_pins": [],
+        "resource": "team +0x14C coach pointer, coach record +0x1C/+0x26/+0x28/+0x2A counters, +0x1A flags, +0x40 photo, the 175 coach strings",
+        "retail_file": "user-owned franchise save"
+      },
+      "summary": "Swap two clubs' head coaches, fire a head coach and hire a coach already in the save, or fire him and hire a new person, inside a franchise save, with a re-signed copy and a plain reason for every refusal.",
+      "surface": "saves",
+      "title": "Franchise save head coach moves (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_b780_c4_staff_save"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_calendar_engine --xbe <source.xbe> --output <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_calendar_engine.py",
         "operation": "write"
@@ -11213,6 +12140,69 @@
       "surface": "schedules_franchise",
       "title": "128-season franchise gate (experimental)",
       "validation_command": "python3 tools/validate_beta61_integrated_features.py"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_audible_legend status <source>",
+        "module": "mod_editor/core/nfl2k5_audible_legend.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_audible_legend.py",
+        "tests/mod_editor/test_b780_p3_audible_legend.py",
+        "tests/mod_editor/test_b779_au2_audible_panel.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL. Build tab checkbox; Off in Basic and Advanced, On in Experimental (the SOFTDRINK 2K28 recipe). The panel lift is automatic whenever the build has the bottom score bar; there is no in-game toggle."
+      },
+      "id": "nfl2k5.scorebug_presentation.audible_legend",
+      "input_constraints": [
+        "Pinned USA XBE or a verified composed input; a late allocator owner (1,280 RX bytes: two entry points, row tables and UTF-16 strings; no RW state), appended to an installed sealed image by nfl2k5_xbe_space.extend_scaleout or reserved with the build's request union. Foreign or mixed bytes refuse.",
+        "Edits: two call sites. 0x648C5 (the in-game HUD setup's call to the audible panel setup 0xFF130): after the native setup, each pane root (records 0xBA3178 + 0x14 / + 0x60) whose y word is exactly 240.0 moves to 186.0 (54 units up, the play-call screen's lift above the same bar). 0xFF60B (the panel draw's header text call): the native header is drawn unchanged, then up to three rows of button legend with the same text object (font slot 3, line height 14, the game's own button icons).",
+        "Rows follow the native button gates: Browse and Back always; Black (flip play / flip) and R3 (flip routes) only outside Basic Training, the NO HUDDLE panel and kicking formations, on an offensive or defensive play, R3 also off when the play's route flip is off; White (last play) outside Basic Training; the L/R slide row only with the slide-call owner (nfl2k5_protection_calls), lit with the active call. A panel opened by the computer gets no legend.",
+        "The lift is applied whenever the build has the bottom score bar (scorebug or scorebug_runtime), with or without the legend. Rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Play a game with the 2026 score bar. At the line on offense press Y: the panel sits above the bar (its play name and the bottom of the diagram are no longer covered) and the legend rows show above it. Press Black (the play flips), R3 (the routes flip), White (the huddle play comes back) and left/right (browse). On defense press Y at the line: the defense's rows. In Basic Training only Browse and Back."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Both hooked call sites run under Unicorn on the retail executable with the owner installed and the nine retail fonts: the native header draws unchanged, every panel state draws exactly its rows in place (no overlap, inside the screen, above the panel), registers and the x87 stack are preserved; the lift moves only a settled root. Installing on the released v0.8 executable moves no other allocation.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; false in Basic and Advanced, true in Experimental",
+            "name": "audible_legend",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. The lift follows the bottom score bar; the legend is this option."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE .text call sites 0x648C5 and 0xFF60B; owned 1,280 RX bytes in the allocator's late region.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "The audible panel at the line shows what its other buttons do, in the game's own lettering and button icons: browse, back, flip play, flip routes, last play, and the line slide when protection calls are on (the active call lit). Only buttons that work at that moment are listed. With the 2026 score bar, the panel also sits 54 units higher so the bar no longer covers its play name and the bottom of the diagram.",
+      "surface": "scorebug_presentation",
+      "title": "Audible panel button legend and lift clear of the score bar (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_b780_p3_audible_legend"
     },
     {
       "backend": {
@@ -11615,9 +12605,11 @@
           "reports/b72_s1/native_sequence.json",
           "reports/b72_s1/watermark_native.json",
           "tests/mod_editor/test_nfl2k5_scorebug_sd.py",
-          "tests/mod_editor/test_nfl2k5_scorebug_watermark.py"
+          "tests/mod_editor/test_nfl2k5_scorebug_watermark.py",
+          "tests/mod_editor/test_nfl2k5_scorebug_ball_spot.py",
+          "tests/mod_editor/test_nfl2k5_playcall_layout.py"
         ],
-        "scope": "The sprite scorebug plates, interim labels, clock, watermark and play-call behaviour were seen in the lab. The later raised play-call position and Eagles/Bears fit remain offline only. TIMEOUT, HALFTIME and the red low play clock were not all captured in those runs; Xbox appearance remains unwitnessed.",
+        "scope": "The sprite scorebug plates, interim labels, clock, watermark and play-call behaviour were seen in the lab. The later raised play-call position and Eagles/Bears fit remain offline only, as do the play-call ball spot and the long-menu page boxes (b780 p2). TIMEOUT, HALFTIME and the red low play clock were not all captured in those runs; Xbox appearance remains unwitnessed.",
         "status": "partial"
       },
       "selectors": {

@@ -60,6 +60,22 @@ points, 8-10 backs and 28-33 receivers over 1,000 yards.  ``PASS_SCALE`` 0.92 (s
 22.78/22.42/22.49 points, pass TD 1.57/1.55/1.60, rush TD 0.97/0.95/0.87, 18/18/12 backs and 24/22/26
 receivers over 1,000 yards.
 
+b780 b5-sim, calibrated on the released v0.8 executable itself (a 17-game regular season; the earlier rounds ran the
+retail 16-game harness, which understated season totals): the season rush correction goes to each team's lead back
+only (HB, depth rank 0) at 8 percent; the play mix bias moves with the QB1's Pass Accuracy (0.4 a point around 87), the
+redirect share with the WR1's Catching (0.08 + 0.015 a point around 90); the stat-space pass scale is 0.86 because every
+simulated QB1 plays all 17 games (19 and 13 passers over 4,000 yards at 0.92 against the NFL's 8.2); the tackle
+correction uses its constant (10 percent; the code had a hard-coded 21).
+
+b780 db2: ``RUSH_BONUS_PCT`` 8 -> 0. The 8 percent lead-back correction made up for the carries fullbacks took (the retail
+lottery gave the modern roster's fullbacks 9.6-9.9% of simulated carries). With the fullback rule in
+``nfl2k5_sim_rb_injuries`` (a fullback keeps 1 in 16 of his carries, the rest are drawn again) the lead backs carry
+219-226 times a season (NFL 218), and the correction put them at 1,002-1,042 yards with 16-20 backs over 1,000
+(NFL 958 and 13.4). Without it, the same two v0.8-executable seasons (seeds 2502/2501; the correction is stat space only,
+so the games are identical) give lead backs 928/965 yards, 10/17 backs over 1,000 (mean 13.5), RB top-10 1,236/1,310
+(NFL 1,269) and top-32 960/1,006 (NFL 985). The correction code stays in place and adds nothing. A custom build with this
+option but without Simulated RB short injuries keeps the retail fullback carries and loses the old correction.
+
 Every site is recognised by its pinned retail bytes; the module refuses a foreign executable.  The
 data reservation (16 bytes) holds the temporary merge and run-outcome hand-offs and nothing else.
 The played-game path (game mode other than 4 at the merge gate), the live playbook calls and every
@@ -71,17 +87,18 @@ import hashlib
 import struct
 
 OWNER = "nfl2k5_sim_realism"
-CODE_SIZE = 832
+CODE_SIZE = 896                      # b780 b5-sim: 832 -> 896 (QB-scaled mix, WR1-scaled targets, lead-back rush rule)
 DATA_SIZE = 16
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 4))
 BUILD_CAPTION = "Simulated season realism (experimental)"
 HELP_TEXT = (
     "EXPERIMENTAL. In franchise games the CPU simulates (not games you play) the play mix moves toward "
-    "the modern NFL (about 33 passes and 27 runs a team), targets concentrate on the top receiver and "
-    "tight end, mobile quarterbacks run for NFL-sized totals, team interceptions move toward 12.8, and "
-    "tackle totals move toward the NFL leader and top-10 levels. Red-zone passes gain fewer yards so scoring "
-    "and the touchdown mix land near the modern NFL, and season rush yards get a post-game correction. Played "
-    "games, ratings and rosters are unchanged. The numbers are calibrated from nflverse 2021-2025 regular seasons."
+    "the modern NFL (about 33 passes and 27 runs a team), and better passers call more passes than weaker ones; "
+    "targets concentrate on the top receiver and tight end, more so for an elite receiver; mobile quarterbacks "
+    "run for NFL-sized totals, team interceptions move toward 12.8, and tackle totals move toward the NFL leader and "
+    "top-10 levels. Red-zone passes gain fewer yards so scoring and the touchdown mix land near the modern NFL. "
+    "Played games, ratings and rosters are unchanged. The numbers are calibrated from nflverse 2021-2025 regular "
+    "seasons on 17-game simulated seasons."
 )
 
 SIM_MODE = 0x00E5FF80                # game mode word: 4 = the franchise scheduled-game simulator
@@ -112,8 +129,12 @@ PASS_SITES = (
 )
 FN_YARD_CONVERT = 0x00106480
 
-MIX_BIAS = 8.5                       # run score must beat pass score by this much to stay a run
-TARGET_RATE = 0.14                   # share of non-WR1/TE1 targets redirected
+MIX_BIAS = 8.5                       # run score must beat pass score by this much to stay a run (average QB)
+MIX_QB_PIVOT = 87                    # b780 b5-sim: QB1 Pass Accuracy of the league-average starter (SOFTDRINK roster)
+MIX_QB_SLOPE = 0.4                   # extra bias per accuracy point above the pivot (fewer passes below it)
+TARGET_RATE = 0.08                   # share of non-WR1/TE1 targets redirected (average WR1; b780 b5-sim: was 0.14)
+TARGET_PIVOT = 90                    # b780 b5-sim: WR1 Catching of the league-average WR1 (SOFTDRINK roster)
+TARGET_SLOPE = 0.015                 # extra redirect share per Catching point above the pivot (less below it)
 TARGET_WR1_SHARE = 0.75              # of the redirected targets, the rest go to the TE1
 QB_SCRAMBLE_BASE = 45
 QB_SCRAMBLE_SCALE = 0.0036           # extra QB-carry probability per scramble point above the base
@@ -122,28 +143,36 @@ QB_MOBILE_SUM = 150                  # mobile family: scramble + agility > 150
 QB_BONUS_YARDS = 3.0
 QB_BONUS_RZ_LINE = 20.0              # inside the opponent 20 is the red zone for both yard scales
 INTERCEPT_SCALE = 1.35
-PASS_SCALE = 0.92
+PASS_SCALE = 0.86                    # b780 b5-sim: 17-game v0.8 seasons (every QB1 plays all 17 games); b779-int1 0.92
 RUN_RZ_SCALE = 0.94              # red-zone run yardage (round 6: near-retail, small trim)
 RZ_PASS_SCALE = 0.64             # red-zone pass yardage before the native conversion (scoring lever)
-RUSH_BONUS_PCT = 20              # post-game season rush-yard correction (RBs and other non-QBs)
-TACKLE_BONUS_PCT = 10
+RUSH_BONUS_PCT = 0               # post-game season rush-yard correction, lead backs only (b780 db2: 0, was 8 in b780 b5-sim,
+                                 # 20 for every non-QB in b779-int1): it made up for the carries the fullbacks took, which
+                                 # nfl2k5_sim_rb_injuries now hands back (see the docstring)
+LEAD_BACK_POSITION = 7               # HB, depth rank 0 (player +0x28 bits 10-12) at the merge
+TACKLE_BONUS_PCT = 10                # b780 b5-sim: the code added a hard-coded 21% (imul 21) while this constant, the helper
+                                     # and the round-5 notes said 10%; the code now uses the constant (17-game seasons put
+                                     # the 21% tackle leader at 171-190 against the NFL's 155-180)
 SKIP_TACKLE_POSITION = 4             # cornerbacks are calibrated by nfl2k5_sim_cb_tackles
 
-# Fixed float-pool offsets inside the code cave (the assembler must not cross them).
-MIX_BIAS_OFF = 704
-TARGET_RATE_OFF = 708
-TARGET_WR1_OFF = 712
-QB_SCALE_OFF = 716
-QB_BONUS_VALUE_OFF = 720
-INTERCEPT_SCALE_OFF = 724
-PASS_SCALE_OFF = 728
-TACKLE_PCT_OFF = 732
-QB_BONUS_RZ_OFF = 736
-RUN_RZ_SCALE_OFF = 740
-RUSH_BONUS_PCT_OFF = 744
-RZ_PASS_SCALE_OFF = 748
-RED_ZONE_OFF = 752
-ZERO_OFF = 756
+# Fixed float-pool offsets inside the code cave (the assembler must not cross them). b780 b5-sim moved the pool from
+# 704 to 816 for the longer mix, target and lead-back code.
+MIX_BIAS_OFF = 816
+TARGET_RATE_OFF = 820
+TARGET_WR1_OFF = 824
+QB_SCALE_OFF = 828
+QB_BONUS_VALUE_OFF = 832
+INTERCEPT_SCALE_OFF = 836
+PASS_SCALE_OFF = 840
+TACKLE_PCT_OFF = 844
+QB_BONUS_RZ_OFF = 848
+RUN_RZ_SCALE_OFF = 852
+RUSH_BONUS_PCT_OFF = 856
+RZ_PASS_SCALE_OFF = 860
+RED_ZONE_OFF = 864
+ZERO_OFF = 868
+MIX_QB_SLOPE_OFF = 872
+TARGET_SLOPE_OFF = 876
 FLOAT_POOL = MIX_BIAS_OFF
 
 
@@ -211,6 +240,26 @@ def _assemble(code_va, data_va):
     a.b("dfe0")                                           # fnstsw ax
     a.b("f6c441")                                         # test ah,0x41
     a.j8("74", "mix_red")                                 # spot > 79.5: own side, retail call
+    # b780 b5-sim: bias = MIX_BIAS + MIX_QB_SLOPE * (QB1 Pass Accuracy - MIX_QB_PIVOT), so better passers call more passes
+    # and weaker ones fewer around the same league mix (eax, ecx and edx are dead here: both paths reload them)
+    a.b("a1" + _u32(TEAM_OFFENSE).hex())                  # mov eax,[offense]
+    a.b("8b4008")                                         # mov eax,[eax+8]  slot 0 = QB
+    a.b("85c0")                                           # test eax,eax
+    a.j8("74", "mix_flat")
+    a.b("80783500")                                       # cmp byte [eax+0x35],0  a quarterback
+    a.j8("75", "mix_flat")
+    a.b("0fb64842")                                       # movzx ecx,byte [eax+0x42]  Pass Accuracy
+    a.b("83e9" + struct.pack("<b", MIX_QB_PIVOT).hex())   # sub ecx,pivot
+    a.b("890d" + _u32(state_out).hex())                   # mov [tmp],ecx
+    a.b("db05" + _u32(state_out).hex())                   # fild dword [tmp]
+    a.b("d80d" + _u32(code_va + MIX_QB_SLOPE_OFF).hex())  # fmul slope
+    a.b("d805" + _u32(code_va + MIX_BIAS_OFF).hex())      # fadd bias
+    a.b("d91d" + _u32(state_out).hex())                   # fstp dword [tmp]
+    a.b("d9442414")                                       # fld [esp+0x14]
+    a.b("d8642418")                                       # fsub [esp+0x18]
+    a.b("d81d" + _u32(state_out).hex())                   # fcomp [tmp]  QB-scaled bias
+    a.j8("eb", "mix_decide")
+    a.label("mix_flat")
     a.b("d9442414")                                       # fld [esp+0x14]
     a.b("d8642418")                                       # fsub [esp+0x18]
     a.b("d81d" + _u32(code_va + MIX_BIAS_OFF).hex())      # fcomp bias
@@ -280,9 +329,18 @@ def _assemble(code_va, data_va):
     a.j8("74", "target_done")
     a.b("39da")                                           # cmp edx,ebx
     a.j8("74", "target_done")
+    # b780 b5-sim: rate = TARGET_RATE + TARGET_SLOPE * (WR1 Catching - TARGET_PIVOT): an elite WR1 draws more of the other
+    # targets, a weaker one fewer (a rate below 0 never redirects; the WR1 pointer is still in eax)
+    a.b("0fb64844")                                       # movzx ecx,byte [eax+0x44]  Catching
+    a.b("83e9" + struct.pack("<b", TARGET_PIVOT).hex())   # sub ecx,pivot
+    a.b("890d" + _u32(state_out).hex())                   # mov [tmp],ecx
+    a.b("db05" + _u32(state_out).hex())                   # fild dword [tmp]
+    a.b("d80d" + _u32(code_va + TARGET_SLOPE_OFF).hex())  # fmul slope
+    a.b("d805" + _u32(code_va + TARGET_RATE_OFF).hex())   # fadd rate
+    a.b("d91d" + _u32(state_out).hex())                   # fstp dword [tmp]
     a.b("b9" + _u32(MATCH_RNG).hex())
     a.call(FN_RAND)
-    a.b("d81d" + _u32(code_va + TARGET_RATE_OFF).hex())
+    a.b("d81d" + _u32(state_out).hex())                   # fcomp [tmp]
     a.b("dfe0")
     a.b("f6c401")
     a.j8("74", "target_done")
@@ -386,8 +444,12 @@ def _assemble(code_va, data_va):
     a.b("a1" + _u32(state).hex())
     a.b("85c0")
     a.j32("0f84", "tackle_done")
-    a.b("80783500")                                       # cmp byte [eax+0x35],0  quarterbacks keep their line
-    a.j8("74", "rush_done")
+    # b780 b5-sim: the season rush correction goes to the lead back only (HB, depth rank 0); every other runner keeps the
+    # engine's line, so team rushing is not inflated by backups, fullbacks and receivers
+    a.b("807835" + bytes([LEAD_BACK_POSITION]).hex())      # cmp byte [eax+0x35],7  a halfback
+    a.j8("75", "rush_done")
+    a.b("f74028001c0000")                                 # test dword [eax+0x28],0x1C00  depth rank 0
+    a.j8("75", "rush_done")
     a.b("8bc8")                                           # mov ecx,eax
     a.b("ba02000000")                                     # mov edx,2
     a.call(FN_STAT_READ)
@@ -418,7 +480,7 @@ def _assemble(code_va, data_va):
     a.b("8b0d" + _u32(state).hex())
     a.b("80793504")                                       # cmp byte [ecx+0x35],4
     a.j8("74", "tackle_done")
-    a.b("69c015000000")                                   # imul eax,eax,21
+    a.b("69c0" + struct.pack("<I", TACKLE_BONUS_PCT).hex())  # imul eax,eax,TACKLE_BONUS_PCT
     a.b("0532000000")                                     # add eax,50
     a.b("99")                                             # cdq
     a.b("b964000000")                                     # mov ecx,100
@@ -441,7 +503,8 @@ def _assemble(code_va, data_va):
             + _flt(QB_BONUS_YARDS) + _flt(INTERCEPT_SCALE) + _flt(PASS_SCALE) + _flt(TACKLE_BONUS_PCT)
             + _flt(QB_BONUS_RZ_LINE) + _flt(RUN_RZ_SCALE) + _flt(RUSH_BONUS_PCT)
             + _flt(RZ_PASS_SCALE))
-    pool = pool.ljust(RED_ZONE_OFF - FLOAT_POOL, b"\xcc") + _flt(79.5) + _flt(0.0)
+    pool = (pool.ljust(RED_ZONE_OFF - FLOAT_POOL, b"\xcc") + _flt(79.5) + _flt(0.0) + _flt(MIX_QB_SLOPE)
+            + _flt(TARGET_SLOPE))
     body += pool.ljust(CODE_SIZE - FLOAT_POOL, b"\xcc")
     require(len(body) == CODE_SIZE, "sim realism code size")
     return a, bytes(body)
@@ -481,12 +544,42 @@ def sites(code_va):
     return out
 
 
+# b780 n6: beta-79 / v0.8 carries the 832-byte revision (frozen in nfl2k5_sim_realism_b779). It reads "previous";
+# this release's 896 bytes do not fit its allocation, so apply() refuses to update it in place (rebuild from retail).
+PREVIOUS_REVISION = "beta-79"
+PREVIOUS_REFUSAL = ("Simulated season realism on this disc is the beta 79 revision. This release's version is larger "
+                    "than the room the earlier build gave it, so it cannot be updated in place. Rebuild from your "
+                    "retail game, or turn Simulated season realism off to keep the beta 79 version.")
+
+
+def _previous_module():
+    from . import nfl2k5_sim_realism_b779 as previous
+    return previous
+
+
+def _revision(payload):
+    """(code size, code_for, sites) of the revision whose allocation this image carries (this release by default)."""
+    from . import nfl2k5_xbe_space as space
+    rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == OWNER and r["kind"] == "code"]
+    previous = _previous_module()
+    if len(rows) == 1 and rows[0]["size"] == previous.CODE_SIZE:
+        return previous.CODE_SIZE, previous.code_for, previous.sites, "previous"
+    return CODE_SIZE, code_for, sites, "applied"
+
+
+def installed_sites(payload):
+    """The installed revision's sites (this release's or the beta-79 one), [] without the owner's allocation. Owners
+    that restore this one's hooks before hashing a shared context (nfl2k5_sim_cb_tackles) use this."""
+    code, _data = _allocations(payload)
+    return _revision(payload)[2](code["va"])
+
+
 def _allocations(payload):
     from . import nfl2k5_xbe_space as space
     rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == OWNER]
     code = [r for r in rows if r["kind"] == "code"]
     data = [r for r in rows if r["kind"] == "data"]
-    require(len(code) == 1 and (code[0]["size"], code[0]["align"]) == (CODE_SIZE, 16),
+    require(len(code) == 1 and (code[0]["size"], code[0]["align"]) in ((CODE_SIZE, 16), (_previous_module().CODE_SIZE, 16)),
             "Missing or foreign sim realism code allocation")
     require(len(data) == 1 and (data[0]["size"], data[0]["align"]) == (DATA_SIZE, 4),
             "Missing or foreign sim realism data allocation")
@@ -499,19 +592,25 @@ def _recognize(payload):
     image = XbeImage(payload)
     present = any(r["owner"] == OWNER for r in space.layout(payload)["allocations"])
     code = data = None
+    size, make_code, make_sites, installed = CODE_SIZE, code_for, sites, "applied"
     if present:
         code, data = _allocations(payload)
-    edits = sites(code["va"] if code else 0)
+        size, make_code, make_sites, installed = _revision(payload)
+    edits = make_sites(code["va"] if code else 0)
     states = set()
     for _label, va, before, after in edits:
         raw = image.read(va, len(before))
         states.add("retail" if raw == before else "applied" if code and raw == after else "foreign")
     if code:
-        raw = image.read(code["va"], CODE_SIZE)
-        expected = code_for(code["va"], data["va"])
-        states.add("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == expected else "foreign")
+        raw = image.read(code["va"], size)
+        expected = make_code(code["va"], data["va"])
+        states.add("retail" if raw == b"\xcc" * size else "applied" if raw == expected else "foreign")
     require(states in ({"retail"}, {"applied"}), "Foreign or mixed sim realism site/code")
-    return next(iter(states))
+    state = next(iter(states))
+    if state == "applied" and installed == "previous":
+        return "previous"
+    require(state == "applied" or size == CODE_SIZE, "an empty beta-79 sim realism allocation; rebuild from retail")
+    return state
 
 
 def apply(payload):
@@ -520,6 +619,7 @@ def apply(payload):
     from .nfl2k5_cave_oracle import XbeImage
     state = _recognize(payload)
     require(state != "foreign", "sim realism: foreign bytes")
+    require(state != "previous", PREVIOUS_REFUSAL)
     if state == "applied":
         code, data = _allocations(payload)
         return payload, {"owner": OWNER, "status": "already_applied", "code_va": hex(code["va"]),
@@ -570,4 +670,4 @@ __all__ = ["OWNER", "CODE_SIZE", "DATA_SIZE", "REQUESTS", "BUILD_CAPTION", "HELP
            "INTERCEPT_SCALE", "PASS_SCALE", "RUN_RZ_SCALE", "RZ_PASS_SCALE",
            "TACKLE_BONUS_PCT", "RUSH_BONUS_PCT", "tackle_bonus", "rush_bonus", "pass_rz_scale",
            "run_rz_scale", "qb_carry_rate", "code_for", "sites", "apply",
-           "status", "SimRealismError"]
+           "status", "SimRealismError", "installed_sites", "PREVIOUS_REVISION", "PREVIOUS_REFUSAL"]

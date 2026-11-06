@@ -207,16 +207,22 @@ class BootstrapTests(unittest.TestCase):
         self.assertIn("No administrator rights", message)
 
     def test_unsupported_python_version_names_python_312(self):
-        run = FakeRun(version="3.13 64")
+        run = FakeRun(version="3.14 64")       # b780 Q8: 3.13 is supported now; 3.14 is the first one that is not
         with self.assertRaises(studio_bootstrap.BootstrapError) as found:
             studio_bootstrap.ensure_runtime(
                 self.app, "python", requirements=self.requirements, run=run, echo=lambda _: None
             )
         message = str(found.exception)
-        self.assertIn("Python 3.13 is not supported", message)
+        self.assertIn("Python 3.14 is not supported", message)
         self.assertIn("Python 3.12", message)
         self.assertIn("https://www.python.org/downloads/windows/", message)
         self.assertEqual(run.commands_with("venv"), [])
+
+    def test_python_313_is_supported(self):
+        """b780 Q8: Python 3.13 installs NumPy 2 through the requirements' version markers."""
+        self.assertIn((3, 13), studio_bootstrap.SUPPORTED_VERSIONS)
+        run = FakeRun(version="3.13 64")
+        studio_bootstrap._check_base_python("python", (), run)
 
     def test_32_bit_python_is_refused_before_installing(self):
         run = FakeRun(version="3.12 32")

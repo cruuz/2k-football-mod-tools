@@ -496,6 +496,10 @@ class RetailRosterTests(unittest.TestCase):
             # a trailing dummy absorbs the fixture's end-of-pack padding so entry 5 keeps its exact size
             fixture = SyntheticXiso(Path(tmp), dummies + [(5, self.resource), (200, b"TAIL" + bytes(0x100))], pack_sizes=(0xA0000,), pack_sectors=(64,))
             self.assertEqual(th.status(fixture.path), "retail")
+            # b780 b2: the franchise's start year (2026) is not the roster's epoch; refused before anything is written
+            with self.assertRaisesRegex(th.TeamHistoryError, "count back from 2004, not 2026"):
+                th.apply(fixture.path, "retail", base_year=2026)
+            self.assertEqual(th.status(fixture.path), "retail")
             receipt = th.apply(fixture.path, "retail")
             self.assertEqual(receipt["status"], "applied")
             self.assertEqual(receipt["pool_used_after"], self.receipt["pool_used_after"])
@@ -514,6 +518,37 @@ class RetailRosterTests(unittest.TestCase):
             self.assertEqual(th.status(fixture.path), "foreign")
             with self.assertRaises(th.TeamHistoryError):
                 th.apply(fixture.path, "retail")
+
+    def test_the_column_alone_brings_the_history_through_the_build_step_on_a_disc_image(self) -> None:
+        """b780 b2: mod_build's implied step on a real XDVDFS image (synthetic disc, the retail roster): written once with the
+        roster's own 2004 epoch, a second pass is "already applied", and a roster the history does not fit is a note."""
+        from nfl2k5_xiso_fixture import SyntheticXiso
+
+        with tempfile.TemporaryDirectory() as tmp:
+            dummies = [(100 + k, b"DUMY" + bytes(0x100)) for k in range(5)]
+            fixture = SyntheticXiso(Path(tmp), dummies + [(5, self.resource), (200, b"TAIL" + bytes(0x100))],
+                                    pack_sizes=(0xA0000,), pack_sectors=(64,))
+            receipt, notes = {"steps": []}, []
+            mod_build._apply_implied_team_history(fixture.path, receipt, lambda msg, *a: notes.append(msg))
+            step = receipt["steps"][0]
+            self.assertEqual((step["step"], step["implied_by"], step["base_year"], step["status"]),
+                             ("team_history", "team_column", 2004, "applied"))
+            self.assertEqual(step["seasons_with_a_team"], self.receipt["seasons_with_a_team"])
+            self.assertEqual(th.status(fixture.path), "applied")
+            self.assertTrue(any("real past teams" in n for n in notes), notes)
+            again = {"steps": []}
+            mod_build._apply_implied_team_history(fixture.path, again, lambda *a: None)
+            self.assertEqual(again["steps"][0], {"step": "team_history", "implied_by": "team_column",
+                                                 "status": "applied", "already_applied": True})
+            with th._outer_image()(fixture.path, writable=True) as archive:                 # a pool that is not the original's
+                entry = th._entry(archive)
+                archive.write(entry.virtual_offset + th.RESOURCE_HEADER_SIZE + th.OBJ_OFF + 0x40,
+                              struct.pack("<I", self.receipt["pool_used_after"] + 1))
+            foreign, said = {"steps": []}, []
+            mod_build._apply_implied_team_history(fixture.path, foreign, lambda msg, *a: said.append(msg))
+            self.assertEqual(foreign["steps"][0]["status"], "skipped")
+            self.assertIn("not the original 2004 roster", foreign["steps"][0]["reason"])
+            self.assertTrue(any("skipped" in n for n in said), said)
 
     def test_custom_csv_source(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -543,11 +578,15 @@ class UnicornGetterTests(unittest.TestCase):
             entry = th._entry(archive)
             body = archive.read(entry.virtual_offset, entry.size)[th.RESOURCE_HEADER_SIZE:]
         rows, _p = th.load_rows("retail")
+        cls.retail_body = body
         cls.body, _receipt = th.apply_body(body, rows)
         cls.roster = th.parse_body(cls.body)
 
-    def _machine(self):
+    def _machine(self, body=None):
         from unicorn import UC_ARCH_X86, UC_MODE_32, Uc
+
+        body = self.body if body is None else body
+        roster = th.parse_body(body)
 
         uc = Uc(UC_ARCH_X86, UC_MODE_32)
         uc.mem_map(0x00010000, 0x00E61000 - 0x00010000)
@@ -556,7 +595,7 @@ class UnicornGetterTests(unittest.TestCase):
                 uc.mem_write(section.virtual_address, self.patched_xbe[section.raw_offset: section.raw_offset + section.raw_size])
         # the roster body at SCRATCH with the pointers the getter follows made absolute (the game's relocation)
         base = self.SCRATCH
-        relocated = bytearray(self.body)
+        relocated = bytearray(body)
         obj = th.OBJ_OFF
 
         def absolute(field_off: int) -> None:
@@ -567,10 +606,10 @@ class UnicornGetterTests(unittest.TestCase):
         absolute(obj + 0x1C)
         absolute(obj + 0x44)
         absolute(obj + 0x04)
-        teams_off = th._rel(self.body, obj + 0x1C)
-        for k in range(len(self.roster.teams)):
+        teams_off = th._rel(body, obj + 0x1C)
+        for k in range(len(roster.teams)):
             absolute(teams_off + k * th.TEAM_SIZE + 0x108)
-        for p in self.roster.players:
+        for p in roster.players:
             absolute(p.offset + 0x2C)
         uc.mem_map(base, 0xB0000)
         uc.mem_write(base, bytes(relocated))
@@ -608,6 +647,33 @@ class UnicornGetterTests(unittest.TestCase):
         by_slot = {(w >> 23) & 0x1F: (w & 0xFFFF) - 1 for w in mover.entries if ((w >> 16) & 0x7F) == tc.TEAM_FIELD}
         self.assertEqual(self._getter(uc, mover.offset, 12), self.roster.teams[by_slot[mover.count - 1]])
         self.assertEqual(self._getter(uc, mover.offset, 13), self.roster.teams[by_slot[mover.count - 2]])
+
+    def _card(self, uc, player, base_year=th.BASE_YEAR) -> dict[int, str]:
+        """{season: TEAM text} for every past row the card draws for this player (bank 12 up: a games entry per slot)."""
+        rows = {}
+        for bank in range(12, 27):
+            slot = player.count - bank + 11
+            if slot >= 1 and slot in player.games_slots():
+                rows[base_year - (bank - 11)] = self._getter(uc, player.offset, bank)
+        return rows
+
+    def test_a_veterans_card_names_every_real_club_after_the_history_and_none_before_it(self) -> None:
+        """b780 b2 (SharkMagick, 10/27 and 11/01 "Team Card still empty", Jeff Blake started with the Jets): a Basic build
+        wrote the column but no history, so every past row of the card read "--"; with the built-in history the game's own
+        getter names the club of each season (the club the CSV gives, the player's 2004 club nowhere it has a row)."""
+        blake = next(p for p in self.roster.players if (p.first, p.last) == ("Jeff", "Blake"))
+        rows, _p = th.load_rows("retail")
+        real = {r.season: r.team for r in rows
+                if (r.first, r.last) == ("Jeff", "Blake") and r.season < th.BASE_YEAR and r.team}
+        self.assertGreaterEqual(len(real), 10)
+        self.assertEqual({real[1992], real[1996], real[2000], real[2002]}, {"NYJ", "CIN", "NO", "BAL"})
+        before = self._card(self._machine(self.retail_body), blake)
+        self.assertEqual(len(before), 11)
+        self.assertEqual(set(before.values()), {"--"}, "no history in the roster: every past row is empty")
+        after = self._card(self._machine(), blake)
+        self.assertEqual(sorted(after), sorted(before))
+        for season, text in after.items():
+            self.assertEqual(text, real[season], season)
 
 
 if __name__ == "__main__":

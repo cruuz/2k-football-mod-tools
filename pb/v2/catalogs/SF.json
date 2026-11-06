@@ -350,7 +350,10 @@
    "menu": [
     "RB Draw",
     "Inside Zone Split Wk",
-    "Inside Zone Split"
+    "PA Y China",
+    "Inside Zone Split",
+    "Max X Post Go",
+    "PA U Whip Curl"
    ],
    "cpu_situation": [
     3,
@@ -369,7 +372,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Lead Stretch Wk"
+    "U Whip",
+    "Lead Stretch Wk",
+    "PA Y China",
+    "Max X Post Go"
    ],
    "cpu_situation": [
     4,
@@ -414,9 +420,9 @@
     "RB Choice",
     "RB Deep Flood",
     "Z Hitch Seam",
-    "RB Curls Seams",
-    "Slot Y Trail",
-    "Slot Stick Nod"
+    "QB Draw",
+    "QB Power",
+    "Double Slants"
    ],
    "cpu_situation": [
     4,
@@ -847,13 +853,16 @@
    "menu": [
     "Y China Return",
     "PA Y Seam Shot",
+    "Wide Zone Weak",
     "Z Corner Post",
     "Z Out Seam",
     "X Dagger",
     "PA Z Go Shot",
     "X Scissors Fade",
     "Z Steep In Seam",
-    "PA Y Levels"
+    "PA Y Levels",
+    "RB Lead Draw",
+    "Power G"
    ],
    "cpu_situation": [
     0,
@@ -916,12 +925,15 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Wide Zone Weak",
+    "RB Lead Draw",
     "PA Y Switch",
-    "X Corner Post",
+    "RB Texas",
     "Z Dagger Whip",
     "FB Smash Smash",
     "PA Y Smash",
-    "Z Corner Post"
+    "Z Corner Post",
+    "Inside Zone"
    ],
    "cpu_situation": [
     4,
@@ -1182,7 +1194,9 @@
    "lane": 0,
    "formations": [
     "Weak Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Gun Split Pro",
+    "Singleback FB Wing"
    ]
   },
   {
@@ -2212,7 +2226,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Empty Trey",
     "Singleback Bunch X Nasty",
     "Gun Y Off Trio Close",
     "Gun Trips",
@@ -3102,7 +3115,8 @@
    "lane": null,
    "formations": [
     "Weak Close",
-    "Wing T"
+    "Wing T",
+    "Singleback FB Wing"
    ]
   },
   {
@@ -3301,6 +3315,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
     "Strong H Tight Close"
    ]
   },
@@ -3326,6 +3341,8 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -3403,6 +3420,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -3545,7 +3563,9 @@
    "lane": 2,
    "formations": [
     "Weak Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Gun Split Pro",
+    "Singleback FB Wing"
    ]
   },
   {
@@ -3643,6 +3663,8 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -4293,28 +4315,25 @@
   {
    "play": "p127",
    "play_index": 206,
-   "name": "RB Curls Seams",
-   "concept": "HB Curls Seams",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Curl",
-    "Flat",
-    "Go",
-    "Hitch",
-    "Hook"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p128",
@@ -4522,28 +4541,23 @@
   {
    "play": "p137",
    "play_index": null,
-   "name": "Slot Y Trail",
-   "concept": "Slot Y Trail Out and Up Smash",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Slot",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Corner",
-    "Dig",
-    "Hitch",
-    "Out and Up",
-    "Over"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p138",
@@ -4652,7 +4666,8 @@
    "deep": false,
    "lane": 4,
    "formations": [
-    "Pistol Strong"
+    "Pistol Strong",
+    "Gun Split Pro"
    ]
   },
   {
@@ -4672,7 +4687,8 @@
    "deep": false,
    "lane": 2,
    "formations": [
-    "Wing T"
+    "Wing T",
+    "Singleback FB Wing"
    ]
   },
   {

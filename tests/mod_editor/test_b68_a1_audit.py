@@ -38,8 +38,8 @@ class IntegrationTests(unittest.TestCase):
         from mod_editor.core.product_catalog import build_nfl2k5_product_catalog
         registry = CapabilityRegistryLoader().load(allow_sample_fallback=False, check_files=False)
         catalog = build_nfl2k5_product_catalog(registry)
-        self.assertEqual(len(registry.capabilities), 211)  # b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1, b76-u2 MetLife, b76-m1 25 more moments, b76-k1 128 MB memory, b76-vb3 kickoff return blocking, b76-u5 MetLife model, b76-u6 SoFi Stadium, b76-st Highmark Stadium, b76-tf modern surfaces, b76-km: + kick meter, b76-hm modern helmets, b76-st2 AT&T, Levi's, Allegiant and Mercedes-Benz, b76-st4 Hard Rock, Gillette, Lambeau and EverBank, b76-st5: + modern_board_kit, b77-f4: + letter grades in Franchise
-        self.assertEqual(len(catalog.capabilities), 136)
+        self.assertEqual(len(registry.capabilities), 226)  # b780-mem1 (3c20d2f36): + nfl2k5.gameplay.intro_autoskip; b780 a-passer: + CPU quarterbacks throw on time; b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1, b76-u2 MetLife, b76-m1 25 more moments, b76-k1 128 MB memory, b76-vb3 kickoff return blocking, b76-u5 MetLife model, b76-u6 SoFi Stadium, b76-st Highmark Stadium, b76-tf modern surfaces, b76-km: + kick meter, b76-hm modern helmets, b76-st2 AT&T, Levi's, Allegiant and Mercedes-Benz, b76-st4 Hard Rock, Gillette, Lambeau and EverBank, b76-st5: + modern_board_kit, b77-f4: + letter grades in Franchise
+        self.assertEqual(len(catalog.capabilities), 151)  # b780-mem1: + the intro auto-skip; b780 a-passer: + CPU quarterbacks throw on time
         path = ROOT / 'packaging/check_2k5_mod_studio_runtime.py'
         source = path.read_text()
         # Execute the production assertions against the actual registry, without
@@ -51,8 +51,8 @@ class IntegrationTests(unittest.TestCase):
                                           'require(len(product_catalog.capabilities)')):
                     with self.subTest(expression=expression):
                         exec(expression, dict(require=self.assertTrue, registry=registry, product_catalog=catalog))
-        self.assertTrue('registry=211 sections=12 nfl2k5_capabilities=136' in source)
-        self.assertIn('registry=211 sections=12 nfl2k5_capabilities=136',
+        self.assertTrue('registry=226 sections=12 nfl2k5_capabilities=151' in source)  # b780 a-passer: + cpu_passer_iq
+        self.assertIn('registry=226 sections=12 nfl2k5_capabilities=151',
                       (ROOT / 'tests/mod_editor/test_phase1_packaging.py').read_text())
 
     def test_new_core_modules_are_in_all_release_closures(self):
@@ -154,7 +154,9 @@ class CacheKeyTests(unittest.TestCase):
 
     def test_every_cached_selector_option_and_input_changes_the_production_key(self):
         tool = backend()
-        class StopLookup(Exception):
+        # b791 h6-cache: a BaseException, so that no stage on the way to the lookup (the saved-result check before the loop turns any
+        # Exception into "the saved results were not used", the phase wrapper turns it into a ProjectError) can swallow the stop.
+        class StopLookup(BaseException):
             pass
         class ObservedCache(CompileCache):
             def get(cache, key):
@@ -165,6 +167,9 @@ class CacheKeyTests(unittest.TestCase):
             png = root / 'art.png'
             png.write_bytes(encode_rgba_png(8, 8, bytes((30, 60, 90, 255)) * 64))
             (root / 'other.png').write_bytes(png.read_bytes())
+            # b791 h6-cache: a key is content-addressed (a session folder is new every time a project is opened), so an option that
+            # names another file changes it only when the other file holds other bytes.
+            (root / 'different.png').write_bytes(encode_rgba_png(8, 8, bytes((90, 60, 30, 255)) * 64))
             (root / 'recipe.json').write_bytes(b'{"positions":[0,1,2]}')
             (root / 'other.json').write_bytes(b'{"positions":[0,1,3]}')
             pin = SimpleNamespace(path=root / '0', sha256='index')
@@ -172,10 +177,11 @@ class CacheKeyTests(unittest.TestCase):
             observed = []
             def lookup(edit, *, index=pin, inventory=pin, reports=None):
                 project = tool.ProjectFile(root / 'project.json', b'{}', {'edits': [edit]}, (0, 0))
-                with patch.object(tool, 'CompileCache', ObservedCache), self.assertRaises(tool.ProjectError) as stopped:
-                    tool.prepare_project(project, index, inventory, reports or {'test': report},
+                with patch.object(tool, 'CompileCache', ObservedCache), self.assertRaises(StopLookup):
+                    # b791 h6-cache: a key holds the compatibility report of the edit's own kind (another kind in the
+                    # project must not change it), so the stand-in report is filed under the edit's kind.
+                    tool.prepare_project(project, index, inventory, reports or {edit['kind']: report},
                                          root, -1, {}, parallelism=1)
-                self.assertIsInstance(stopped.exception.__cause__, StopLookup)
                 return observed[-1]
             cache = CompileCache(root / '.nfl2k5-compile-cache')
             # All fields admitted by the cached kinds, including every selector
@@ -185,22 +191,22 @@ class CacheKeyTests(unittest.TestCase):
             for kind in ('torso', 'sleeve', 'pants'):
                 cases.append((dict(kind=kind, asset_code='18', side='H', variant=0,
                                    clean_png='art.png', mud_png=None, mud_mode='darken_60'),
-                              dict(asset_code='19', side='A', variant=1, clean_png='other.png',
-                                   mud_png='other.png', mud_mode='supplied')))
+                              dict(asset_code='19', side='A', variant=1, clean_png='different.png',
+                                   mud_png='different.png', mud_mode='supplied')))
             cases += [
                 (dict(kind='live_helmet', asset_code='18', side='H', variant=0, family='helmet00', png='art.png'),
-                 dict(asset_code='19', side='A', variant=1, family='helmet00_mud', png='other.png')),
+                 dict(asset_code='19', side='A', variant=1, family='helmet00_mud', png='different.png')),
                 (dict(kind='live_number_nameplate', asset_code='18', side='H', variant=0, family='jersey', digit=0, png='art.png'),
-                 dict(asset_code='19', side='A', variant=1, family='pants', digit=1, png='other.png')),
+                 dict(asset_code='19', side='A', variant=1, family='pants', digit=1, png='different.png')),
                 (dict(kind='team_select', asset_code='18', side='home', style=0, family='unif', resolution=256, png='art.png'),
-                 dict(asset_code='19', side='away', style=1, family='helmet', resolution=128, png='other.png')),
+                 dict(asset_code='19', side='away', style=1, family='helmet', resolution=128, png='different.png')),
                 (dict(kind='live_face', face_id=0, family='p001', png='art.png'),
-                 dict(face_id=1, family='p002', png='other.png')),
+                 dict(face_id=1, family='p002', png='different.png')),
                 (dict(kind='create_team_field_art', logo_code='01', weather='clear', texture='center_logo', png='art.png'),
-                 dict(logo_code='02', weather='snow', texture='endzone', png='other.png')),
-                (dict(kind='player_portrait', portrait_id=1, png='art.png'), dict(portrait_id=2, png='other.png')),
+                 dict(logo_code='02', weather='snow', texture='endzone', png='different.png')),
+                (dict(kind='player_portrait', portrait_id=1, png='art.png'), dict(portrait_id=2, png='different.png')),
                 (dict(kind=tool.UNIFORM_EQUIPMENT_KIND, asset_id='tset:0:8:0:shoes01', png='art.png'),
-                 dict(asset_id='tset:0:8:1:shoes04', png='other.png')),
+                 dict(asset_id='tset:0:8:1:shoes04', png='different.png')),
             ]
             for kind, field, first, second in (
                 (tool.P8_TEXTURE_KIND, 'asset_id', 'p8:first', 'p8:second'),
@@ -210,7 +216,7 @@ class CacheKeyTests(unittest.TestCase):
                 (tool.STADIUM_TEXTURE_KIND, 'target', 'scene.texture0001', 'scene.texture0002'),
                 (tool.CRIB_SCENE_TEXTURE_KIND, 'selector', *list(tool.crib_scene_adapter.TARGETS)[:2]),
             ):
-                cases.append((dict(kind=kind, png='art.png', **{field:first}), {field:second, 'png':'other.png'}))
+                cases.append((dict(kind=kind, png='art.png', **{field:first}), {field:second, 'png':'different.png'}))
             for kind in (tool.STADIUM_GEOMETRY_KIND, tool.CRIB_SCENE_GEOMETRY_KIND):
                 cases.append((dict(kind=kind, target='scene.c0001.mesh', recipe='recipe.json'),
                               dict(target='scene.c0002.mesh', recipe='other.json')))
@@ -225,6 +231,17 @@ class CacheKeyTests(unittest.TestCase):
                         new_key, value = lookup(dict(base, **{name: changed}))
                         self.assertNotEqual(new_key, key)
                         self.assertIsNone(value)
+            # The same bytes under another file name are the same key (what lets a reopened project reuse its results).
+            for same in (dict(kind='torso', asset_code='18', side='H', variant=0, clean_png='art.png', mud_png=None,
+                              mud_mode='darken_60'),
+                         dict(kind='live_helmet', asset_code='18', side='H', variant=0, family='helmet00', png='art.png'),
+                         dict(kind=tool.CRIB_STANDALONE_TEXTURE_KIND, selector='first', png='art.png'),
+                         dict(kind=tool.UNIFORM_EQUIPMENT_KIND, asset_id='tset:0:8:0:shoes01', png='art.png')):
+                with self.subTest(kind=same['kind'], same_bytes_other_name=True):
+                    first_key, _ = lookup(same)
+                    field = 'clean_png' if same['kind'] == 'torso' else 'png'
+                    renamed_key, _ = lookup(dict(same, **{field: 'other.png'}))
+                    self.assertEqual(renamed_key, first_key)
             base = dict(kind='p8_texture', asset_id='pixels', png='art.png')
             original = png.read_bytes()
             key, _ = lookup(base); cache.put(key, {'cached': True})
@@ -239,7 +256,7 @@ class CacheKeyTests(unittest.TestCase):
             png.write_bytes(original)
             for name, kwargs in (('index', {'index':SimpleNamespace(path=pin.path,sha256='changed')}),
                                  ('inventory', {'inventory':SimpleNamespace(path=pin.path,sha256='changed')}),
-                                 ('report', {'reports':{'test':SimpleNamespace(payload=b'[]',sha256='changed')}})):
+                                 ('report', {'reports':{'p8_texture':SimpleNamespace(payload=b'[]',sha256='changed')}})):
                 with self.subTest(input=name):
                     changed, value = lookup(base, **kwargs)
                     self.assertNotEqual(changed,key); self.assertIsNone(value)

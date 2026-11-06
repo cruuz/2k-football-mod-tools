@@ -12,7 +12,7 @@ from .models import (
     UniformAsset,
 )
 
-__version__ = "0.1.0-alpha.110"
+__version__ = "0.1.0-alpha.111"
 
 
 def _delete_qt_widgets_before_exit():

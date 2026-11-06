@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC114: Getting Started (beta 79)
+# 2K5 Mod Studio v1.0 RC115: Getting Started (beta 80)
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -26,7 +26,7 @@ If a bundled package is missing, reinstall the latest Setup.
 The Windows `.bat` launchers in a source ZIP or portable archive now set up a
 private `.venv` beside the application on the first run. They install
 `packaging/requirements-studio.txt` automatically (about 110 MB to download,
-about 400 MB on disk) and need 64-bit Python 3.11 or 3.12 from python.org plus
+about 400 MB on disk) and need 64-bit Python 3.11, 3.12 or 3.13 from python.org plus
 an internet connection. A source ZIP also downloads the reviewed data files
 the Studio needs from the same release (about 65 MB); a portable archive
 already contains them. No administrator rights are used. To repair that
@@ -34,8 +34,11 @@ runtime, run `2K5-Mod-Studio.bat --setup`; to use a different interpreter, set
 `MOD_STUDIO_PYTHON` to its full path before running the launcher.
 
 The Linux tarball contains application files and no Python runtime. Use Python
-3.11 or 3.12 with `packaging/requirements-studio.txt`, which pins NumPy 1.26.4 to
-the same version as CI. From the extracted application folder:
+3.11, 3.12 or 3.13 with `packaging/requirements-studio.txt`. It pins NumPy
+1.26.4 on 3.11 and 3.12 (the same version as CI and Windows Setup) and NumPy
+2.3.5 on 3.13, which has no NumPy 1.26 build; the same project builds
+byte-identical discs on Python 3.12 and 3.13. From the extracted application
+folder:
 
 ```sh
 python3 -m venv .venv
@@ -51,12 +54,15 @@ including NumPy. An external interpreter remains your responsibility.
 ## First disc: open, choose, build, play
 
 1. Click **Open game disc…** and choose your untouched USA Xbox disc image. Wait for **Disc open**.
-2. In **Getting Started**, choose **Start SOFTDRINK Basic →**. This opens **★ Build & Share**
-   and selects **Basic — 2004 fixes** after the disc check. **Modern** is the ADVANCED pack;
+2. In **Getting Started**, choose **Make my own disc (fixes only) →**. This opens **★ Build & Share**
+   and selects **Basic: 2004 fixes** after the disc check. **Advanced** adds updated gameplay and the 2026 season;
    **Experimental** adds further experiments. Read the selected changes and their help before building.
    These presets choose gameplay, franchise and presentation changes. They do not add the SOFTDRINK 2K28
    pack (its edited rosters, uniforms, stadium art and moments); for that disc use **Share → Install
    SOFTDRINK 2K28** ([steps](install_softdrink_2k28.md)).
+   All three presets also cut the Crib down to the Trophy Room (its shops are removed). To keep the whole Crib,
+   untick **The Crib: keep only the Trophy Room (removes the shops)** under **Gameplay** before you build
+   ([FAQ](2k5_mod_studio_faq.md#can-i-keep-the-whole-crib-with-its-shops)).
 3. In **Build**, check **Save disc copy as**, then click **Make my disc** and review the confirmation.
    If that button is unavailable, the sentence beside it explains what is missing.
 4. After **Disc ready**, use **Play latest disc in xemu**. Configure xemu first if prompted,
@@ -69,7 +75,8 @@ including NumPy. An external interpreter remains your responsibility.
 
 | Page | What you can do |
 | --- | --- |
-| Getting Started | Open your game disc or start the Basic preset. |
+| Getting Started | Install SOFTDRINK 2K28, open your game disc, or start your own disc from the Basic preset. |
+| ★ Build & Share | Install SOFTDRINK 2K28 (Install & Share), choose a preset, review all changes, Make my disc, copy the Build summary, or share a patch. |
 | Uniforms & Equipment | Edit uniform sets, team kits, equipment colours and helmet finish. |
 | Names, Numbers & Faces | Find portrait, face and number artwork. |
 | Text & Team Identity | Edit game text and preview Position Names (EDGE) and modern mode names. |
@@ -88,7 +95,6 @@ including NumPy. An external interpreter remains your responsibility.
 | ★ Create a Play | Design plays with the wizard and its Info reference. |
 | MyCareer | Create MyPlayer and review MyCareer settings. |
 | Scorebar | Edit the scorebar layout and artwork. |
-| ★ Build & Share | Choose a preset, review all changes, Make my disc, copy the Build summary, or share a patch. |
 
 
 ## Before you begin
@@ -141,9 +147,12 @@ the same:
 You do not have to work this out yourself. The Build tab's source line and the
 Apply panel both name your image as soon as you choose it: *retail dump (xiso)*,
 *retail dump (raw/redump with video partition)*, *repacked disc*, *modified disc*,
+*disc built with 2K5 Mod Studio* (a SOFTDRINK or Customize disc; a released
+SOFTDRINK disc is named, for example *SOFTDRINK 2K28 v0.8 (a released disc)*),
 or *unknown image*, with a sentence saying what to do. Every refusal quotes the
 same line, so a failure says which disc you handed it and not just how many bytes
-disagreed.
+disagreed. A disc the Studio built is not a starting point: to change it, build
+again from a dump of your own retail disc.
 
 
 **Hi-res pack (experimental, unwitnessed).** This optional Build choice is
@@ -1354,10 +1363,13 @@ $1000-unit value the game keeps, and every team's salary against the cap. **Sche
 date or time and press **Apply to this game**, or **Swap home/away**. A game that has been played is
 refused with the reason unless you tick **Allow editing played games**; its score stays read-only
 because which side the quarter bytes belong to is still a hypothesis. **Coaches** lists every coach
-record with his team: seasons, wins / losses / ties, winning seasons, Super Bowls, playoff and Super
+record with his team: seasons, wins / losses / ties, winning seasons, Super Bowls (roster: the appearances
+the roster gives him; Super Bowls played in the franchise count in his Super Bowl wins and losses), playoff and Super
 Bowl records, the photo and body ids, the run % playcalling split, then the 23 ratings and the ten
-Back Field tendencies on the same bars as the player cards; names and the three info lines are pooled
-strings and stay read-only. **Injured Reserve** shows each team's five slots; **Place on IR…** picks
+formation shares on the same bars as the player cards (two sets of five: how often his run calls and his
+pass calls come from shotgun / pistol / empty, split backs, I form, one back or no back; each set adds up to
+100 for the game's own coaches, and the page says what yours adds up to); names and the three info lines
+are pooled strings and stay read-only. **Injured Reserve** shows each team's five slots; **Place on IR…** picks
 one of the team's rostered players and does exactly Finn's move (his own save is reproduced byte for
 byte), and **Activate** is the inverse, labelled unwitnessed because nobody has watched the game accept
 it; a free agent or a draft prospect is refused in Finn's words. **Checks** prints the file map by
@@ -1462,8 +1474,23 @@ default, Franchise Auto Save, the 2026 franchise);
 **Experimental** adds widescreen hor+ (set xemu's Display aspect to 16x9), the
 dynamic-kickoff line-up and the ESPN scorebar. Untick anything you do not want, choose where the
 patched **copy** goes, and Build. The original is never touched; a receipt is
-written beside the copy. The **Share** tab turns that copy into a `.2k5patch`
+written beside the copy. The **Install & Share** tab turns that copy into a `.2k5patch`
 file anyone can check and apply to their own image.
+
+**Console memory** (top of **Make my disc**, beta 80): **128 MB, xemu (full SOFTDRINK)** is the default and the main
+build, with every option, for xemu with System Memory at 128 MiB and the Complex 4627 BIOS. **64 MB, original Xbox and
+Android hakuX (experimental, estimated, not yet tested on a real Xbox or hakuX)** makes a disc for 64 MB machines. It
+turns off and greys out every option that needs 128 MB or the real Xbox kernel (each says why), leaves out the 128 MB
+and 4627 BIOS start-up checks, shows what each remaining option costs in memory, and says whether the selection is
+predicted to fit at the hardest stadium or what to turn off. **Use the recommended 64 MB set** applies the memory
+model's suggestion, and **Make my disc** refuses a selection that is predicted not to fit. A selection that fits only
+with the default uniforms is made with a warning: a player-picked alternate kit at the heaviest stadium may not fit, so
+if a game loops on the stadium shots, use the default uniforms. Roster edits that make the roster file bigger (the
+SOFTDRINK 2K28 2026 rosters do) are fitted to the original game's roster size at 64 MB: the free agents beyond the
+original game's count are left out, and franchise draft-pick ownership and the backfield labels fall back to the 2004
+game's. The memory numbers are an estimate from a model; for the full experience use xemu at 128 MiB. Going back to 128
+MB gives back everything 64 MB turned off. On **Share**, **Build for** next to **Customize SOFTDRINK 2K28…** loads the
+pack's sources straight into the 64 MB target, with the recommended 64 MB set applied.
 
 Modern overtime (in Advanced and Experimental) is the current NFL rule: a 10-minute
 period (scaled from your quarter length), both teams get a possession unless the first
@@ -1487,9 +1514,14 @@ empty OLB group" below.) If you import a roster
 that still carries OLB players, they show up under "Outside Linebackers" with the OLB badge
 instead of hiding inside a second "Linebackers".
 
-**TEAM column on the Player Card** (Gameplay group, in both Basic and Advanced): the
+**TEAM column on the Player Card** (Gameplay group, in Basic, Advanced and Experimental; the Build tab calls it
+"Show each season's team on the Player Card"): the
 franchise Player Card's season-by-season stats gain a TEAM column next to Yr, showing
-which team each season was played for. The row for the season in progress shows the club
+which team each season was played for. **On the original 2004 rosters this one option also fills every past
+season** (the real team history described next), so the column is complete from the first day of a new franchise;
+before beta 80 a second option, "Past teams in Player Card stats", was needed and Basic left it off, which is why the
+column read "--" in every past row of a Basic build (reported as "Team Card still empty"). The 2026 SOFTDRINK roster
+carries its own history and needs nothing extra. The row for the season in progress shows the club
 the player is on right now, so a trade shows up there at once (a player on injured reserve
 or released shows the club he last played for). Every game he plays records his club in the
 season he is playing, so a completed season shows the club of the **last game he played in
@@ -1521,9 +1553,10 @@ band under the bar (the "Bottom Line" strip) keeps its retail art in a build —
 was hand painted and there is no way to regenerate it from your disc. If you want it, apply the
 published `SOFTDRINK patch advanced` `.2k5patch` from **Share** instead, which carries it.
 
-**Real team history** (Build tab, ADVANCED and EXPERIMENTAL; disc images only): the retail
+**Real team history** (part of the TEAM column above since beta 80; before that a separate Build tab option, on in
+ADVANCED and EXPERIMENTAL only; disc images only): the retail
 roster already carries season-by-season stats for 1,325 players back to 1982, and the TEAM
-column above can only learn teams from the seasons a patched disc plays. This toggle writes
+column above can only learn teams from the seasons a patched disc plays. This step writes
 the real club of those past seasons into the roster template from nflverse-data (CC-BY-4.0):
 1,148 of the 1,325 players match by name and birth date and the data places 5,042 season rows.
 **Every remaining row is filled with that player's own 2004 club** rather than left
@@ -1546,7 +1579,12 @@ code such as `RAI`, `RAM`, `PHX`, `HOU` for the Oilers up to 1996). One line per
 enough and a CSV row always wins over the 2004-club fill. Players are matched by name and birth
 date, then last name and birth date, then name and position; a season is only written when the
 roster has stats for it (the receipt lists every row that could not be used). In this cut
-relocated franchises show the 2004 abbreviation (a 1990 Oilers season reads TEN).
+relocated franchises show the 2004 abbreviation (a 1990 Oilers season reads TEN). The history always counts
+back from the original roster's own 2004 season, also in a build that starts the franchise in 2026: the
+2026 option moves the calendar, not a retail player's seasons (beta 79 and earlier passed 2026 here, so an
+Advanced or Experimental build kept none of the real rows and showed every player's 2004 club in every season).
+The step only runs on the original roster: when the roster was replaced (the 2026 SOFTDRINK roster) or changed
+so it no longer matches, the Build log and the receipt say why nothing was written and the build goes on.
 
 **Modern draft-prospect names** (Build tab and Gameplay Patches, ADVANCED and EXPERIMENTAL; disc
 images only): retail names every generated rookie and free agent from the 1990 US Census lists,
@@ -1640,17 +1678,24 @@ that.
 
 ## Number sheets and encoded preview
 
-Use a 640x64 transparent PNG with ten 64x64 cells in digit order. A 64x640
-column, 320x128 grid or 128x320 grid also works. Use one flat fill and one
-outline colour. Keep a margin inside each cell. Leave out noise, gradients,
-guides and labels. AI output needs the cleanup the tool now applies.
+Use a transparent PNG with the ten digits in order: one row (0 to 9), one
+column, or two rows with 0-4 above 5-9. With 64x64 cells that is 640x64,
+64x640, 320x128 or 128x320, and larger cells work too. Detect layout finds
+the layout itself, including sheets with margins, gaps or tall cells and
+canvases such as 1024x512, as long as the digits do not touch; the preview
+says how the sheet was cut. A sheet that cannot be read says what it saw and
+how to fix it. A flat fill with one outline colour fits most slots and one flat
+colour fits the smallest; gradients and shadows fit roomy slots as drawn and
+are simplified, never the outline, when a slot is too small. Leave out labels
+and guides.
 
 Choose the uniform, digit family, layout and Match retail size. Each glyph
 is fitted inside the original digit's box without changing its aspect.
 As authored keeps your placement for expert work. The encoded preview shows
 what the build will write above the retail comparison at every level, plus
 a 57 pair at an estimated small size. KEPT RETAIL badges and the Import
-button count any digits that cannot fit. Check my images predicts the same
+button count any digits that cannot fit, and the notes say why and by how
+many bytes. Check my images predicts the same
 outcome when the game source is loaded. Save the project and inspect front,
 back and shoulder numbers in play. Camera lighting and appearance remain
 unwitnessed until played. See [the number sheet guide](number_sheets.md).

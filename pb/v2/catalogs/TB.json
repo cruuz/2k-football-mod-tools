@@ -311,9 +311,12 @@
    "align": "uc",
    "tag": "short",
    "menu": [
+    "Pin Pull Sweep",
+    "Inside Zone Split Wk",
     "PA Post Corner Shot",
     "PA X Out Seam",
-    "PA X Dagger"
+    "PA X Dagger",
+    "RB Slam"
    ],
    "cpu_situation": [
     4,
@@ -376,7 +379,10 @@
    "menu": [
     "RB Draw",
     "RB Counter Wk",
-    "Lead Stretch"
+    "FB Screen",
+    "Lead Stretch",
+    "PA X Sail Return",
+    "PA Z Go Shot"
    ],
    "cpu_situation": [
     4,
@@ -397,7 +403,7 @@
     "RB Cross Dig",
     "Y Whip Return",
     "RB Return Flood",
-    "Slot Flood Return",
+    "QB Power",
     "Max Y Verticals"
    ],
    "cpu_situation": [
@@ -425,7 +431,7 @@
     "Slot Choice Return",
     "PA Slot Cross Dig",
     "X Mills Dig",
-    "Crack Toss Wk",
+    "Crack Toss",
     "RB Stretch Wk",
     "Steep In Seam",
     "01 Trap",
@@ -451,7 +457,7 @@
    "menu": [
     "Slot Slot Fade",
     "PA Z Post Go",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Slot Bang Hitch",
     "X Hook Corner",
     "RB Levels Snag",
@@ -495,7 +501,7 @@
     "Inside Zone",
     "Slot Choice Return",
     "Z Steep In Seam",
-    "Crack Toss Wk",
+    "Crack Toss",
     "Slot Stick Return",
     "Z Comeback Seam",
     "Direct Snap Power",
@@ -570,7 +576,7 @@
     "01 Trap",
     "Slot Choice Return",
     "Z Comeback Seam",
-    "Crack Toss Wk",
+    "Crack Toss",
     "Z Hitch Seam",
     "Z Dagger Seam Out",
     "Z Bench Dig Bang",
@@ -749,12 +755,15 @@
    "align": "pistol",
    "tag": "base",
    "menu": [
+    "Crack Toss",
+    "RB Sweep",
     "RB Slip Screen Wk",
     "RB Comeback Seam",
     "X Steep In Seam",
     "Y Stick Nod",
     "U Choice Out",
-    "PA X Dagger"
+    "PA X Dagger",
+    "Zone Toss Wk"
    ],
    "cpu_situation": [
     4,
@@ -819,7 +828,7 @@
    "menu": [
     "Y Double Slants",
     "Z Out Seam",
-    "Crack Toss Wk",
+    "Crack Toss",
     "X Curl Combo",
     "Bubble Screen",
     "X Double Move",
@@ -927,7 +936,7 @@
     "Slot Corner Post",
     "Slot Stick Return",
     "X Curl Combo",
-    "Crack Toss Wk",
+    "Crack Toss",
     "Z Bench Dig Bang",
     "PA Z Deep Post",
     "X Stick Out and Up",
@@ -1276,7 +1285,8 @@
    "lane": null,
    "formations": [
     "Weak Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Wing T"
    ]
   },
   {
@@ -2324,7 +2334,7 @@
   {
    "play": "p045",
    "play_index": 97,
-   "name": "Crack Toss Wk",
+   "name": "Crack Toss",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -2336,7 +2346,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 0,
+   "lane": 4,
    "formations": [
     "Gun Wildcat",
     "Gun Doubles Clamp Stack",
@@ -2844,7 +2854,8 @@
    "lane": null,
    "formations": [
     "Weak Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Wing T"
    ]
   },
   {
@@ -2886,7 +2897,8 @@
    "lane": 4,
    "formations": [
     "Pistol Y Trips",
-    "Singleback Ace"
+    "Singleback Ace",
+    "Pistol Ace"
    ]
   },
   {
@@ -2959,7 +2971,8 @@
    "lane": 4,
    "formations": [
     "Pistol Y Trips",
-    "Singleback Ace"
+    "Singleback Ace",
+    "Pistol Ace"
    ]
   },
   {
@@ -3216,7 +3229,7 @@
   {
    "play": "p082",
    "play_index": 134,
-   "name": "Crack Toss",
+   "name": "Crack Toss Wk",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -3228,7 +3241,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Spread"
    ]
@@ -3844,7 +3857,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Pro"
+    "I-Form Pro",
+    "Wing T"
    ]
   },
   {
@@ -3938,7 +3952,8 @@
    "deep": false,
    "lane": 0,
    "formations": [
-    "Gun Ace Wing"
+    "Gun Ace Wing",
+    "Pistol Ace"
    ]
   },
   {
@@ -4133,6 +4148,7 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4275,28 +4291,23 @@
   {
    "play": "p128",
    "play_index": 206,
-   "name": "Slot Flood Return",
-   "concept": "Slot Flood Return Whip",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Slot",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Curl",
-    "Flat",
-    "Return",
-    "Sail",
-    "Whip"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p129",
@@ -4403,6 +4414,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4618,6 +4630,7 @@
    "deep": false,
    "lane": 3,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },

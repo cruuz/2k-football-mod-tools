@@ -97,7 +97,8 @@ class BuildHandoffTests(unittest.TestCase):
                 Path(plan.target).write_bytes(b'fully composed music')
                 return {'steps': [], 'result': {}}
             verifier = Mock(return_value={'installed': False})
-            namespace = function_namespace(sources['mod_editor/core/mod_build.py'], {'build', 'preflight_plan'}, vars(mod_build))
+            namespace = function_namespace(sources['mod_editor/core/mod_build.py'],  # b791-h3: build() is the tracked wrapper
+                                           {'build', '_build_and_publish', 'preflight_plan'}, vars(mod_build))
             library = types.SimpleNamespace(revalidate_playlist=verifier)
             # Keep non-music receipt readers on their real module contracts.
             namespace.update(_prepare_music_project=prepare, _build=build_private,

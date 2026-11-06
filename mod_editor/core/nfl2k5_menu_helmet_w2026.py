@@ -18,7 +18,8 @@ logo space, each overlapped by the next, placed on every card by a fitted projec
    palettes have almost no free entries for the new gold.
 
 All arithmetic is integer, so the result is byte-identical on every platform; each slot is pinned before and after.
-Only the exact known art changes (``before_sha256``); retail, older or user art is left alone.
+Only the exact known art changes (``before_sha256``, or a pair in the target's ``also`` list: b780 art1's cards with
+the old feather tips cleaned at the source); retail, older or user art is left alone.
 """
 from __future__ import annotations
 
@@ -300,6 +301,15 @@ def locate(archive, aggregate: str, name: str):
     return offset, span
 
 
+def known_pins(target: dict) -> dict:
+    """{before SHA-256: after SHA-256} of a slot: the art hu1 was pinned to, plus the ``also`` pairs of later known
+    art (b780 art1: the league project's cards with the old 2004 feather tips cleaned, the same W painted on them)."""
+    pins = {target["before_sha256"]: target["after_sha256"]}
+    for pair in target.get("also", ()):
+        pins[pair["before_sha256"]] = pair["after_sha256"]
+    return pins
+
+
 def plan_archive(archive, doc=None):
     doc = doc or spec()
     plan, rows = [], []
@@ -310,15 +320,16 @@ def plan_archive(archive, doc=None):
             rows.append(dict(member=target["member"], aggregate=target["aggregate"], state="not_applicable"))
             continue
         digest = sha(before)
-        if digest == target["after_sha256"]:
+        pins = known_pins(target)
+        if digest in pins.values():
             rows.append(dict(member=target["member"], aggregate=target["aggregate"], state="applied", written=0))
             continue
-        if digest != target["before_sha256"]:
+        if digest not in pins:
             rows.append(dict(member=target["member"], aggregate=target["aggregate"], state="not_applicable",
                              target_sha256=digest))
             continue
         after, receipt = paint(before, doc["model"], target)
-        hs.require(sha(after) == target["after_sha256"], f"{target['member']} differs from its pin")
+        hs.require(sha(after) == pins[digest], f"{target['member']} differs from its pin")
         plan.append((at, before, after))
         rows.append(dict(aggregate=target["aggregate"], state="applied", written=1, virtual_offset=at,
                          size=len(before), before_sha256=digest, after_sha256=sha(after),

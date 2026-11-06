@@ -36,6 +36,12 @@ def roster_tables(scheme='retail', *, xbe=None):
                   struct.unpack('<17I', image.read(pools.ROSTER_MAXIMA_VA, 68)))
         if actual != (target, maximum):
             raise ValueError('Executable roster tables differ from the selected roster mode. Match the mode before reviewing.')
+        # b780 mc1 (ECON3): an installed franchise economy's smart cut-down keeps fewer players at some positions
+        # (QB 3, FB 2) than the native maxima, which it does not rewrite; rate cut risk against what it keeps.
+        from . import nfl2k5_franchise_economy as economy
+        cut = getattr(economy, 'CUT_MAXIMUM', None)
+        if cut and economy.status(xbe) == 'applied':
+            maximum = tuple(min(value, cut.get(pos, value)) for pos, value in enumerate(maximum))
     return target, maximum
 
 
@@ -60,7 +66,8 @@ def estimate(payload, *, player_index, expected_class, scheme='retail', xbe=None
     from . import nfl2k5_my_career as career, nfl2k5_franchise_save as fs
     scheme = roster.normalise_scheme(scheme)
     career.save_key(payload)
-    if payload[fs.SEASON_BLOCK + fs.S_MODE] != 2 or payload[fs.SEASON_BLOCK + fs.S_STAGE] != 5:
+    season = career.season_block(payload)   # b780 Q19: grown SOFTDRINK saves move the season block
+    if payload[season + fs.S_MODE] != 2 or payload[season + fs.S_STAGE] != 5:
         raise ValueError('Draft Advisory needs the prepared NFL Draft stage save.')
     document = roster.RosterDocument(payload, base=roster.find_block_base(payload), scheme=scheme)
     if scheme == 'one_pool' and any(p.pool == 'primary' and p.record.get('position') == 10 for p in document.players):

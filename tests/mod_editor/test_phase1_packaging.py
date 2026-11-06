@@ -34,13 +34,18 @@ class ModStudioPackagingTests(unittest.TestCase):
             line for line in package_source.splitlines()
             if line.startswith("__version__ = ")
         ]
-        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc114"'])
+        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc115"'])
         self.assertIn(
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
         )
+        # b780-uxfix: the header names the release people know (Beta 80); the RC is in its tooltip
         self.assertIn(
-            'QLabel(f"v1.0 RC{release_candidate} • Xbox Edition")',
+            'QLabel(f"{release_name} • Xbox Edition")',
+            studio_source,
+        )
+        self.assertIn(
+            'setToolTip(f"2K5 Mod Studio v1.0 RC{release_candidate} ({update_check.BUILD_RELEASE_TAG})")',
             studio_source,
         )
         getting_started = (
@@ -54,7 +59,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC114: Getting Started"
+            "# 2K5 Mod Studio v1.0 RC115: Getting Started"
         ))
         self.assertIn(
             "## v1.0 RC48 Audio Converter, Stadium Model Export, Update Check", changelog
@@ -70,7 +75,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn("complete 19-page sidebar", getting_started)
         self.assertIn("twelve-section desktop launch signature", packaging_readme)
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio: v1.0 RC114 Release Status"
+            "# 2K5 Mod Studio: v1.0 RC115 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
@@ -288,7 +293,8 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn("packaging/requirements-studio.txt", launcher)
         requirements = (ROOT / "packaging/requirements-studio.txt").read_text(encoding="utf-8")
         for distribution in ("PyQt5", "Pillow", "numpy", "capstone", "unicorn"):
-            self.assertRegex(requirements, rf"(?m)^{distribution}==[^\s]+$")
+            # b780 Q8: an exact pin, optionally for a Python version range (numpy 1.26.4 before 3.13, numpy 2 on 3.13)
+            self.assertRegex(requirements, rf'(?m)^{distribution}==[^\s;]+(; python_version [<>=]+ "3\.\d+")?$')
         self.assertIn("python3 -m mod_editor --studio", combined)
         self.assertIn("python3-pyqt5", readme)
         self.assertNotIn("tkinter", combined.casefold())
@@ -579,7 +585,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn('"mod_editor.studio.uniform_bundle"', runtime_probe)
         self.assertIn("_exercise_team_kit", runtime_probe)
         self.assertIn("_exercise_workspace_recovery", runtime_probe)
-        self.assertIn("registry=211 sections=12 nfl2k5_capabilities=136", runtime_probe)
+        self.assertIn("registry=226 sections=12 nfl2k5_capabilities=151", runtime_probe)
         self.assertIn("stadium_textures_editable=23838", runtime_probe)
         self.assertIn("audio=850 audio_editable=850 audio_export_only=0", runtime_probe)
         self.assertIn("audio_streaming_ranges=53571", runtime_probe)

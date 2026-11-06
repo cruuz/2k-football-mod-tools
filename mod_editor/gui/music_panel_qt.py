@@ -328,7 +328,7 @@ class PlaylistPage(QWidget):
         if not path:
             return
         try:
-            with Path(path).open("r", encoding="utf-8") as handle:
+            with Path(path).open("r", encoding="utf-8-sig") as handle:   # b780-uxfix: a Notepad BOM is fine
                 text = handle.read(2097153)
             if len(text) > 2097152:
                 raise ValueError("Playlist choices file is too large")

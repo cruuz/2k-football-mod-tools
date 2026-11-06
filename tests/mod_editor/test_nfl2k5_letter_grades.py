@@ -241,8 +241,13 @@ class AllocatorTests(unittest.TestCase):
                                         ("nfl2k5_module_loader", "code"), ("nfl2k5_module_loader", "data")]))
         # b779-km1: K128's 1,536-byte request no longer fits the legacy code tail, so it moves whole to the v4
         # pool and letter grades takes the free tail; both stay late owners, K128 still placed first.
+        # b780 pres2 (Q51, 9b9d86f38): the 6,336-byte sprite scorebug no longer fits the v3 run and spills whole to the
+        # pool (it alone makes the base union a v4 image now), so K128 packs back into the run at 0x14F07A0 and letter
+        # grades follows it directly (0x14F0DA0); K128 is still placed first.
         k128, mine = new[("nfl2k5_k128", "code", 0)], new[(lg.OWNER, "code", 0)]
-        self.assertGreaterEqual(k128["va"], space.POOL_VA)
+        self.assertLess(k128["va"], space.POOL_VA)
+        self.assertEqual(mine["va"], k128["va"] + k128["size"])
+        self.assertGreaterEqual(old[("nfl2k5_scorebug_runtime", "code", 0)]["va"], space.POOL_VA)
         self.assertLess(mine["va"], space.POOL_VA)
         self.assertGreaterEqual(plan_with["capacity"]["code"]["available_bytes"], 0)
         self.assertGreater(plan_without["capacity"]["code"]["available_bytes"],

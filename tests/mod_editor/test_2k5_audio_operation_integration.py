@@ -755,12 +755,15 @@ class StudioAudioOperationFenceTests(unittest.TestCase):
             task.run()  # type: ignore[attr-defined]
             self.application.processEvents()
             start.assert_not_called()
-            schedule.assert_called_once()
-            self.assertEqual(schedule.call_args.args[0], 0)
-            self.assertIs(
-                schedule.call_args.args[1].__self__,
-                self.window,
-            )
+            # b780-uxfix (b6f9536c6): refreshing the recent menus also defers the Getting Started "Continue with"
+            # refresh (singleShot(0, bound(window, _refresh_welcome_state))); the recovery save is scheduled once.
+            saves = [c for c in schedule.call_args_list
+                     if getattr(c.args[1], "__func__", None) is type(self.window)._save_recovery_snapshot]
+            self.assertEqual(len(saves), 1, schedule.call_args_list)
+            self.assertEqual(saves[0].args[0], 0)
+            self.assertIs(saves[0].args[1].__self__, self.window)
+            self.assertTrue(all(c.args[0] == 0 for c in schedule.call_args_list))
+            self.assertLessEqual(len(schedule.call_args_list), 2)
 
     def test_project_undo_and_revert_all_invalidate_before_mutation_admission(
         self,

@@ -59,11 +59,28 @@ wear the body of a leaner retail coach. The vertex count, triangles, skin weight
 are retail. Their heads, and those of DAL, NYJ, TB, MIA, DET, CLE, NE, ATL and NYG, are painted on the head mesh in
 3D (one skin tone, painted hair and facial hair).
 
+Moved coaches (b780 c3-looks): the Studio's coaching staff (b780 c2-staff) moves a head coach to another club by moving
+his coach record content there. The staff this option dresses is read from the roster after every roster writer: the
+2026 coach each club's record holds, by name and picture (``roster_staff``: {club: the club whose 2026 head coach now
+leads it}; ``staff=`` overrides it). The look follows the man, the colours follow the
+club: the coach record the club points at gets the model the coach wears (``+0x18``), and that model is dressed in his
+own head, headset, glasses and geometry with the shirt, jacket and chest logo of the club he now leads (``APPAREL``).
+Every coach model maps the same UV layout for those three textures (measured on all 36 retail models), so a club's
+apparel art fits any coach. The cap the capped models wear samples the shirt texture, so it takes the new club's cap
+colour; the cap and chest logos the game binds at run time are the new club's own; the sideline staff stay the club's.
+Dallas's and Washington's reserved pictures (7031, 7034) follow their coaches to the clubs they lead. A moved look is
+the coach's own compiled scene (pinned per club as ``scene_sha256``: the decoded scene without the three apparel
+textures) with the new club's apparel (pinned per club and palette size as ``apparel_sha256``), so it is recognised by
+its content on any disc and rebuilt from the retail, the 2026 or another moved look without the retail image. A coach
+who leads no club keeps his model in his own club's look; a club led by a coach who is not one of the 32 (``None``)
+keeps the model its record names.
+
 EXPERIMENTAL and UNWITNESSED: proved offline (decoded textures, byte receipts, renders from the data); the look in
 the game is for Noah's eyes.
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 import hashlib
 import io
 import json
@@ -84,9 +101,10 @@ HELP_TEXT = (
     "blended onto the game's coach head. Each coach stands on the game's coach body closest to his build (lean "
     "coaches on a lean body) and of his own skin (Tampa Bay's Todd Bowles on the game's 2004 Dennis Green model), "
     "Pittsburgh's Mike McCarthy wears a cap, Washington's Dan Quinn has a bald head, and Kansas City's Andy Reid wears the game's own 2004 Andy Reid model with today's white hair and glasses. His "
-    "sideline staff wear the same 2026 colours. Dallas and Washington pictures come from the SOFTDRINK league "
-    "data; without it they show the game's no-photo image. The animations are the game's own. Experimental: "
-    "not yet seen in the game by the SOFTDRINK tester."
+    "sideline staff wear the same 2026 colours. A head coach you move to another club in the Studio keeps his "
+    "own face and body there and wears his new club's colours; his picture goes with him. Dallas and Washington "
+    "pictures come from the SOFTDRINK league data; without it they show the game's no-photo image. The animations "
+    "are the game's own. Experimental: not yet seen in the game by the SOFTDRINK tester."
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -134,6 +152,11 @@ GEOMETRY_SHAPES = ("coachBodyGrp1", "coachLodGrp1", "coachHeadGrp1")
 # Jon Gruden model with a darkened face, "we should use an actual black model".
 DARK_SKIN_MODELS = frozenset({"00", "05", "06", "11", "19", "50", "51"})
 SKINS = ("dark", "light")
+# b780 c3-looks: the textures a moved coach takes from the club he now leads (every other texture, the geometry and the
+# glasses are his own); TEXTURES names their materials. The chest logo texture also dresses jacketLogoShader1.
+APPAREL = ("shirt", "jacket", "logo")
+# roster abbreviations a staff document may use for a 2026 club (the 2004 ones stay in the roster records)
+CLUB_ALIASES = {"WSH": "WAS", "ARZ": "ARI", "SD": "LAC", "STL": "LAR", "OAK": "LV"}
 
 
 class ModernCoachesError(ValueError):
@@ -190,6 +213,11 @@ def _check_pins(document: dict) -> dict:
         require(len(row.get("sideline", ())) == len(PACKAGES), f"{row['team']}: the sideline packages are incomplete")
         require("geometry" not in row or (isinstance(row["geometry"], str) and len(row["geometry"]) == 64),
                 f"{row['team']}: the geometry pin is malformed")
+        # b780 c3-looks: the coach's own scene without the apparel, and the club's apparel at every palette size
+        require(_is_digest(row.get("scene_sha256")), f"{row['team']}: the coach scene pin is missing")
+        apparel = row.get("apparel_sha256")
+        require(isinstance(apparel, dict) and set(apparel) == {str(size) for size in PALETTE_LADDER}
+                and all(_is_digest(v) for v in apparel.values()), f"{row['team']}: the apparel pins are incomplete")
     bodies = [row["body_code"] for row in teams]
     require(len(set(bodies)) == len(bodies), "two clubs name the same coach body")
     for row in teams:
@@ -205,6 +233,10 @@ def _check_pins(document: dict) -> dict:
         require(set(row) >= {"team", "portrait_id", "retail_photo_id", "outer_index", "chunk_offset", "span_size",
                              "retail_sha256", "applied_sha256", "rejected_sha256"}, "modern coach portrait pin incomplete")
     return document
+
+
+def _is_digest(value) -> bool:
+    return isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value)
 
 
 def skin_mismatches(document: dict) -> list[str]:
@@ -233,6 +265,62 @@ def art_names(row: dict) -> tuple[str, ...]:
     if row.get("head_recipe"):
         return tuple(n for n in ART_NAMES if n != "head") + HEAD_RECIPE_FILES
     return ART_NAMES
+
+
+# --- the coaching staff (b780 c3-looks) ---------------------------------------------------------------------------
+
+def _club(name, clubs) -> str:
+    text = str(name or "").strip().upper()
+    text = CLUB_ALIASES.get(text, text)
+    require(text in clubs, f"{name!r} is not one of the 32 clubs")
+    return text
+
+
+def coach_name(team: str, document: dict | None = None) -> str:
+    """The 2026 head coach of ``team`` as the pins name him (``bodies[team]["coach"]``)."""
+    document = pins() if document is None else document
+    return str(((document.get("bodies") or {}).get(team) or {}).get("coach") or f"The {team} head coach")
+
+
+def assignment(staff=None, *, document: dict | None = None) -> dict[str, str | None]:
+    """{club: the club whose 2026 head coach leads it, or None (a coach who is not one of the 32)} for all 32 clubs.
+    ``staff`` maps clubs to coaches ({"LV": "KC"}: Andy Reid leads the Raiders); a club it leaves out keeps its own
+    coach. Every coach leads at most one club."""
+    document = pins() if document is None else document
+    clubs = [r["team"] for r in document["teams"]]
+    out: dict[str, str | None] = {club: club for club in clubs}
+    if staff:
+        require(isinstance(staff, Mapping), "the coaching staff must map each club to its head coach")
+        for host, coach in staff.items():
+            out[_club(host, clubs)] = None if coach is None else _club(coach, clubs)
+    leads: dict[str, str] = {}
+    for host in clubs:
+        coach = out[host]
+        if coach is None:
+            continue
+        if coach in leads:
+            raise ModernCoachesError(f"{coach_name(coach, document)} ({coach}) is the head coach of two clubs, "
+                                     f"{leads[coach]} and {host}. Give one of them another head coach.")
+        leads[coach] = host
+    return out
+
+
+def roster_staff(roster) -> dict | None:
+    """{club: the 2026 head coach it employs now (his 2026 club), or None for a coach who is not one of the 32}, read
+    from the coach records the 32 clubs point at, matched by name and picture by the coaching staff module
+    (``nfl2k5_coach_staff.coach_records``, b780 c2-staff, which moves a coach by moving his record content). None when
+    that module is not part of this Studio or the roster names none of the 2026 coaches (a retail roster): then each
+    club keeps its own 2026 coach as before."""
+    try:
+        from . import nfl2k5_coach_staff as coach_staff
+    except ImportError:
+        return None
+    try:
+        records = coach_staff.coach_records(roster.body, roster.teams)
+    except (ValueError, KeyError, IndexError, struct.error):
+        return None
+    staff = {str(hc.club.team): (None if hc.directory_id is None else str(hc.directory_id)) for hc in records.values()}
+    return staff if any(staff.values()) else None
 
 
 def derive_head(retail_rgba, mask_rgb, classes: dict, overlay_rgba=None):
@@ -515,8 +603,18 @@ def _refit(template_span: bytes, decoded: bytes) -> tuple[bytes, dict]:
     raise ModernCoachesError(f"the coach scene does not fit its retail span ({last})")
 
 
-def compile_archive(raw: bytes, row: dict) -> tuple[bytes, dict]:
-    """The coach archive ``raw`` (retail bytes) with the 2026 textures of ``row`` refit into chunk 0."""
+def _texture_rows(rec: dict) -> dict:
+    """{material name: embedded texture row} of a parsed coach scene (the first texture that maps each material)."""
+    rows: dict = {}
+    for tex in rec["embedded_textures"]:
+        for material in tex.get("mapped_material_names") or ():
+            rows.setdefault(material, tex)
+    return rows
+
+
+def compose_scene(raw: bytes, row: dict) -> tuple[dict, bytearray, dict]:
+    """(parsed scene, decoded scene, texture detail) of the coach archive ``raw`` (retail bytes) dressed in the 2026
+    art of ``row``, before it is compressed: what ``compile_archive`` refits into the retail span."""
     import numpy as np  # noqa: F401
     tx, _fill = _tools()
     mm = _mm()
@@ -528,10 +626,7 @@ def compile_archive(raw: bytes, row: dict) -> tuple[bytes, dict]:
     require(rec.get("name") == "coach", f"{row['archive']}: chunk 0 is not the coach scene")
     system = int(rec["system_bytes"])
     edited = bytearray(decoded)
-    rows = {}
-    for tex in rec["embedded_textures"]:
-        for material in tex.get("mapped_material_names") or ():
-            rows.setdefault(material, tex)
+    rows = _texture_rows(rec)
     detail = {}
     for name, material in TEXTURES:
         tex = rows.get(material)
@@ -569,11 +664,122 @@ def compile_archive(raw: bytes, row: dict) -> tuple[bytes, dict]:
         detail["glasses"] = dict(material=GLASSES_MATERIAL, hidden=True, kept_columns=GLASSES_KEEP_COLUMNS)
     if row.get("geometry"):
         detail["geometry"] = apply_geometry(edited, rec, load_geometry(row))
+    return rec, edited, detail
+
+
+def compile_archive(raw: bytes, row: dict) -> tuple[bytes, dict]:
+    """The coach archive ``raw`` (retail bytes) with the 2026 textures of ``row`` refit into chunk 0."""
+    tx, _fill = _tools()
+    chunk = tx.parse_chunks(raw)[0]
+    _rec, edited, detail = compose_scene(raw, row)
     span = raw[chunk.offset:chunk.offset + 0x20 + chunk.stored_size]
     rebuilt, fit = _refit(span, bytes(edited))
     out = raw[:chunk.offset] + rebuilt + raw[chunk.offset + len(rebuilt):]
     require(len(out) == len(raw), "the coach archive changed size")
     return out, dict(textures=detail, fit=fit)
+
+
+# --- moved coaches: his own scene, the new club's apparel (b780 c3-looks) -----------------------------------------
+
+def apparel_regions(rec: dict) -> list[tuple[int, int]]:
+    """The decoded-scene byte ranges of the apparel textures (``APPAREL``): each P8 allocation, every mip's indices
+    then the 256-entry palette, as ``write_p8`` fills it."""
+    system = int(rec["system_bytes"])
+    rows = _texture_rows(rec)
+    materials = dict(TEXTURES)
+    out = []
+    for name in APPAREL:
+        tex = rows.get(materials[name])
+        require(tex is not None and tex.get("format_name") == "P8", f"the coach scene has no P8 {name} texture")
+        start, end = system + int(tex["pixel_offset"]), system + int(tex["palette_offset"]) + 1024
+        require(start < end, f"the coach scene's {name} texture is malformed")
+        out.append((start, end))
+    return out
+
+
+def scene_digest(decoded, regions) -> str:
+    """SHA-256 of a decoded coach scene with its apparel ranges zeroed: the coach's own look on his model."""
+    buf = bytearray(decoded)
+    for start, end in regions:
+        buf[start:end] = bytes(end - start)
+    return sha(buf)
+
+
+def apparel_digest(decoded, regions) -> str:
+    """SHA-256 of a decoded coach scene's apparel ranges, in ``APPAREL`` order."""
+    return sha(b"".join(bytes(decoded[start:end]) for start, end in regions))
+
+
+def write_apparel(edited: bytearray, rec: dict, host_row: dict, palette: int) -> None:
+    """Quantize the shirt, jacket and chest logo art of ``host_row``'s club into a decoded coach scene in place."""
+    mm = _mm()
+    system = int(rec["system_bytes"])
+    rows = _texture_rows(rec)
+    materials = dict(TEXTURES)
+    for name in APPAREL:
+        tex = rows[materials[name]]
+        rgba = _rgba(art_path(host_row["team"], name), int(tex["width"]), int(tex["height"]))
+        mm.write_p8(edited, system, tex, rgba, maximum=int(palette))
+
+
+def decode_span(span: bytes) -> tuple[dict, bytes] | None:
+    """(parsed scene, decoded scene) of a stored coach scene span, or None when it does not decode as one."""
+    tx, _fill = _tools()
+    try:
+        chunk = tx.parse_chunks(span, allow_trailing=True)[0]
+        if chunk.kind != "SCNE" or chunk.offset != 0:
+            return None
+        rec, decoded = _mm()._scene(span, chunk)
+        if rec.get("name") != "coach":
+            return None
+        return rec, decoded
+    except (ValueError, KeyError, IndexError, TypeError, struct.error):
+        return None
+
+
+def dressed_by(span: bytes, row: dict, document: dict) -> str | None:
+    """The club whose shirt, jacket and chest logo dress ``row``'s coach in ``span`` (his own compiled look under
+    that club's apparel at a palette size of the ladder), or None when the span is not his compiled look."""
+    found = decode_span(span)
+    if found is None:
+        return None
+    rec, decoded = found
+    try:
+        regions = apparel_regions(rec)
+    except ModernCoachesError:
+        return None
+    if scene_digest(decoded, regions) != row["scene_sha256"]:
+        return None
+    digest = apparel_digest(decoded, regions)
+    for club in document["teams"]:
+        if digest in club["apparel_sha256"].values():
+            return club["team"]
+    return None
+
+
+def compile_moved(template_span: bytes, base, rec: dict, row: dict, host_row: dict) -> tuple[bytes, dict]:
+    """``row``'s coach scene dressed in the shirt, jacket and chest logo of ``host_row``'s club: ``base`` is a decoded
+    scene of his own compiled look (any club's apparel; checked against ``scene_sha256``) and ``template_span`` the
+    stored span it is refit into (retail, 2026 or moved: the wrapper and stream parameters are the same). The apparel
+    takes the first palette size of the ladder, from the coach's own, at which the scene fits its retail span; his
+    own textures keep theirs, so his look is the same bytes at every club."""
+    regions = apparel_regions(rec)
+    if scene_digest(base, regions) != row["scene_sha256"]:
+        raise ModernCoachesError(f"{row['archive']}: not the compiled look of {coach_name(row['team'])}")
+    last: Exception | None = None
+    for palette in [size for size in PALETTE_LADDER if size <= int(row["palette_max"])]:
+        edited = bytearray(base)
+        write_apparel(edited, rec, host_row, palette)
+        require(apparel_digest(edited, regions) == host_row["apparel_sha256"][str(palette)],
+                f"{host_row['team']}: the apparel art differs from its pin at {palette} colours")
+        try:
+            rebuilt, fit = _refit(template_span, bytes(edited))
+        except ModernCoachesError as exc:
+            last = exc
+            continue
+        return rebuilt, dict(apparel_palette=palette, coach_palette=int(row["palette_max"]), fit=fit)
+    raise ModernCoachesError(f"{coach_name(row['team'])} does not fit his model in {host_row['team']}'s colours "
+                             f"at any palette size ({last})")
 
 
 # --- the sideline staff -----------------------------------------------------------------------------------------
@@ -704,45 +910,142 @@ ROSTER_ABBREVIATIONS = {"WAS": ("WAS", "WSH"), "ARI": ("ARI", "ARZ"), "LAC": ("L
                         "LV": ("LV", "OAK")}
 
 
-def _coach_field_site(archive, team: str, field: int) -> tuple[int, int]:
-    """(virtual offset of the u16 at the club's coach record + ``field``, its value)."""
+def _coach_field_site(archive, team: str, field: int) -> tuple[int | None, int | None]:
+    """(virtual offset of the u16 at + ``field`` of the record of ``team``'s 2026 head coach, its value).
+
+    b780 c2-staff: a coaching staff can move a coach to another club (his record content moves there, and his body and
+    picture with it), so the record is the one that holds HIM, found by his name (``nfl2k5_coach_staff``): a moved coach
+    keeps wearing his own 2026 model. A roster without the 2026 names keeps the club's own record (as before). A 2026
+    coach no club employs any more (the staff let him go) has no record: (None, None), and nothing is written for him."""
+    from . import nfl2k5_coach_staff as staff
     base, doc = _roster(archive)
     want = ROSTER_ABBREVIATIONS.get(team, (team,))
     clubs = [t for t in doc.teams if t.index < 32 and t.abbreviation in want and t.coach_offset is not None]
     require(len(clubs) == 1, f"the roster has no single {team} club with a coach record")
-    at = clubs[0].coach_offset + field
+    record = clubs[0].coach_offset
+    located: dict[str, list[int]] = {}
+    try:
+        for coach in staff.coach_records(doc.body, doc.teams).values():
+            if coach.directory_id is not None:
+                located.setdefault(coach.directory_id, []).append(coach.record_offset)
+    except (staff.StaffError, ValueError):
+        located = {}
+    if len(located.get(team, ())) == 1:
+        record = located[team][0]
+    elif located:
+        return None, None
+    at = record + field
     return base + at, struct.unpack_from("<H", doc.body, at)[0]
 
 
-def _coach_photo_site(archive, team: str) -> tuple[int, int]:
+def _coach_photo_site(archive, team: str) -> tuple[int | None, int | None]:
     """(virtual offset of the u16 at the club's coach record +0x40, its value)."""
     return _coach_field_site(archive, team, 0x40)
 
 
-def _coach_body_site(archive, team: str) -> tuple[int, int]:
+def _coach_body_site(archive, team: str) -> tuple[int | None, int | None]:
     """(virtual offset of the u16 at the club's coach record +0x18, its value): the coach model number."""
     return _coach_field_site(archive, team, BODY_FIELD)
 
 
-def _parts(archive, document: dict) -> list[dict]:
-    """Every owned span with its retail and applied digests and its current state."""
+def _coach_records(archive, clubs) -> tuple[int, Any, dict[str, int]]:
+    """(virtual offset of the roster body, the roster, {club: body offset of the coach record its team points at})."""
+    base, doc = _roster(archive)
+    records = {}
+    for team in clubs:
+        want = ROSTER_ABBREVIATIONS.get(team, (team,))
+        found = [t for t in doc.teams if t.index < 32 and t.abbreviation in want and t.coach_offset is not None]
+        require(len(found) == 1, f"the roster has no single {team} club with a coach record")
+        records[team] = found[0].coach_offset
+    return base, doc, records
+
+
+def _coach_state(span: bytes, row: dict, dress: dict, document: dict) -> str:
+    """State of ``row``'s coach model when it should wear ``dress``'s apparel: retail, applied, previous (an earlier
+    version of this option), home (his 2026 look in his own club's apparel, a move asked for), moved (his compiled look
+    in another club's apparel) or foreign."""
+    digest = sha(span)
+    own = dress["team"] == row["team"]
+    if digest == row["retail_sha256"]:
+        return "retail"
+    if digest == row["applied_sha256"]:
+        return "applied" if own else "home"
+    if digest in row.get("superseded_sha256", ()):
+        return "previous"
+    found = dressed_by(span, row, document)
+    if found is None:
+        return "foreign"
+    return "applied" if (found == dress["team"] and not own) else "moved"
+
+
+def _disc_staff(document: dict, spans: dict, body_at) -> dict:
+    """The moves this disc already carries (no staff asked for): a coach's compiled look in another club's apparel,
+    on the model that club's coach record names. His own club, unless it leads another of the 32, has a coach who is
+    not one of them (``None``)."""
+    staff: dict[str, str | None] = {}
+    for row in document["teams"]:
+        _at, span = spans[row["team"]]
+        digest = sha(span)
+        if digest in (row["retail_sha256"], row["applied_sha256"]) or digest in row.get("superseded_sha256", ()):
+            continue
+        host = dressed_by(span, row, document)
+        if host is not None and host != row["team"] and body_at(host)[1] == int(row["body_code"]):
+            staff[host] = row["team"]
+    for coach in list(staff.values()):
+        staff.setdefault(coach, None)
+    return staff
+
+
+def _parts(archive, document: dict, staff=None) -> list[dict]:
+    """Every owned span with its retail and applied digests and its current state for the coaching ``staff``
+    ({club: coach club}; None: who leads which club as the roster names them (``roster_staff``), or, on a roster
+    without the 2026 names, the moved looks the disc already carries: none on a retail or 2026 disc)."""
     entries = {e.name_id: e for e in archive.entries}
-    out = []
+    rows = {r["team"]: r for r in document["teams"]}
+    base, doc, records = _coach_records(archive, list(rows))
+
+    def field_at(club: str, field: int) -> tuple[int, int]:
+        return base + records[club] + field, struct.unpack_from("<H", doc.body, records[club] + field)[0]
+
+    spans = {}
     for row in document["teams"]:
         entry = entries.get(name_id(row["archive"]))
         require(entry is not None, f"{row['archive']} is not on this disc")
         at = entry.virtual_offset + row["span_offset"]
-        span = archive.read(at, row["span_size"])
-        digest = sha(span)
-        state = ("retail" if digest == row["retail_sha256"] else "applied" if digest == row["applied_sha256"]
-                 else "previous" if digest in row.get("superseded_sha256", ()) else "foreign")
-        out.append(dict(kind="coach", team=row["team"], at=at, size=row["span_size"], state=state, row=row))
-        if row["body_code"] != row["team_code"]:
-            site, value = _coach_body_site(archive, row["team"])
-            state = ("retail" if value == int(row["team_code"]) else "applied" if value == int(row["body_code"])
-                     else "previous" if value in {int(c) for c in row.get("superseded_body_codes", ())}
-                     else "kept")
-            out.append(dict(kind="body_id", team=row["team"], at=site, size=2, state=state, row=row, value=value))
+        spans[row["team"]] = (at, archive.read(at, row["span_size"]))
+    if staff is None:                               # the coaches the roster names (c2-staff), else the looks on the disc
+        staff = roster_staff(doc)
+        if staff is None:
+            staff = _disc_staff(document, spans, lambda club: field_at(club, BODY_FIELD))
+    assign = assignment(staff, document=document)
+    host_of = {coach: host for host, coach in assign.items() if coach is not None}
+    out = []
+    for row in document["teams"]:
+        coach = row["team"]
+        dress = rows[host_of.get(coach, coach)]     # a coach who leads no club keeps his own club's look
+        at, span = spans[coach]
+        out.append(dict(kind="coach", team=coach, host=dress["team"], at=at, size=row["span_size"],
+                        state=_coach_state(span, row, dress, document), row=row, host_row=dress))
+    for row in document["teams"]:
+        host = row["team"]
+        coach = assign[host]
+        if coach is None:                           # not one of the 32: his record keeps the model it names
+            site, value = field_at(host, BODY_FIELD)
+            wearer = next((r["team"] for r in document["teams"] if int(r["body_code"]) == value), None)
+            if wearer is not None:                  # ... and that model is a 2026 coach's: a note, nothing written
+                out.append(dict(kind="shared_model", team=host, coach=wearer, at=site, size=2, state="kept",
+                                row=rows[wearer], value=value))
+            continue
+        crow = rows[coach]
+        if coach == host and crow["body_code"] == crow["team_code"]:
+            continue
+        site, value = field_at(host, BODY_FIELD)
+        stale = {int(crow["team_code"]), int(row["team_code"]), int(row["body_code"])}
+        earlier = {int(c) for c in list(crow.get("superseded_body_codes", ())) + list(row.get("superseded_body_codes", ()))}
+        state = ("applied" if value == int(crow["body_code"]) else "retail" if value in stale
+                 else "previous" if value in earlier else "kept")
+        out.append(dict(kind="body_id", team=host, coach=coach, at=site, size=2, state=state, row=crow, value=value))
+    for row in document["teams"]:
         for pkg in row["sideline"]:
             at, span = _package_span(archive, entries, pkg["package"], pkg["chunk_index"])
             digest = sha(span)
@@ -767,22 +1070,28 @@ def _parts(archive, document: dict) -> list[dict]:
         span = archive.read(at, row["span_size"])
         state = portrait_state(span, row)
         out.append(dict(kind="portrait", team=row["team"], at=at, size=row["span_size"], state=state, row=row))
-        site, value = _coach_photo_site(archive, row["team"])
+        # b780 c3-looks: the reserved picture follows its coach to the club he leads (none: no record names it)
+        host = host_of.get(row["team"])
+        if host is None:
+            continue
+        site, value = field_at(host, 0x40)
         state = ("retail" if value == row["retail_photo_id"] else "applied" if value == int(row["portrait_id"])
                  else "kept")
-        out.append(dict(kind="photo_id", team=row["team"], at=site, size=2, state=state, row=row, value=value))
+        out.append(dict(kind="photo_id", team=host, coach=row["team"], at=site, size=2, state=state, row=row,
+                        value=value))
     return out
 
 
-def resource_states(source, *, document: dict | None = None) -> dict[str, str]:
+def resource_states(source, *, document: dict | None = None, staff=None) -> dict[str, str]:
     document = pins() if document is None else _check_pins(document)
     with _outer_image()(source) as archive:
-        return {f"{p['kind']}:{p['team']}": p["state"] for p in _parts(archive, document)}
+        return {f"{p['kind']}:{p['team']}": p["state"] for p in _parts(archive, document, staff)}
 
 
-def image_status(source, *, document: dict | None = None) -> str:
-    """'retail', 'applied', 'mixed' (some parts each) or 'foreign' (a coach span or portrait is neither)."""
-    states = resource_states(source, document=document)
+def image_status(source, *, document: dict | None = None, staff=None) -> str:
+    """'retail', 'applied', 'mixed' (some parts each) or 'foreign' (a coach span or portrait is neither), for the
+    coaching ``staff`` (None: the moves the disc already carries)."""
+    states = resource_states(source, document=document, staff=staff)
     values = {v for v in states.values() if v != "kept"}
     if "foreign" in values:
         return "foreign"
@@ -814,15 +1123,55 @@ def _retail_archive(retail, name: str) -> bytes:
         return archive.read(entry.virtual_offset, entry.size)
 
 
-def plan_image(source, *, document: dict | None = None, progress=None, retail=None) -> tuple[list, list[dict]]:
+def _coach_plan(archive, entries, part: dict, retail) -> tuple[bytes, bytes, dict]:
+    """(before, after, detail) of one coach model: his 2026 look in the apparel of the club he leads."""
+    row, host_row = part["row"], part["host_row"]
+    own = host_row["team"] == row["team"]
+    lo, hi = row["span_offset"], row["span_offset"] + row["span_size"]
+    entry = entries[name_id(row["archive"])]
+    raw = archive.read(entry.virtual_offset, entry.size)
+    before = raw[lo:hi]
+    template = raw
+    if part["state"] == "previous":
+        template = _retail_archive(retail, row["archive"])
+        require(len(template) == len(raw) and sha(template[lo:hi]) == row["retail_sha256"],
+                f"{row['archive']}: the retail image does not hold the retail coach")
+        require(template[:lo] == raw[:lo] and template[hi:] == raw[hi:],
+                f"{row['archive']}: bytes outside the coach span differ from retail")
+    if own and part["state"] in ("retail", "previous"):
+        compiled, detail = compile_archive(template, row)
+        require(compiled[:lo] == raw[:lo] and compiled[hi:] == raw[hi:],
+                f"{row['archive']}: bytes outside the coach span changed")
+        after = compiled[lo:hi]
+    else:
+        if part["state"] in ("retail", "previous"):
+            rec, base, _detail = compose_scene(template, row)
+        else:                                       # home or moved: his compiled look is on the disc already
+            found = decode_span(before)
+            require(found is not None, f"{row['archive']}: the coach scene does not decode")
+            rec, base = found
+        after, detail = compile_moved(template[lo:hi], base, rec, row, host_row)
+        require(len(after) == len(before), f"{row['archive']}: the moved coach changed size")
+        detail = dict(detail, coach=coach_name(row["team"]), host=host_row["team"], source=part["state"])
+    if own:
+        require(sha(after) == row["applied_sha256"], f"{row['archive']}: the compiled coach differs from its pin")
+    else:
+        found = decode_span(after)
+        require(found is not None and dressed_by(after, row, {"teams": [host_row]}) == host_row["team"],
+                f"{row['archive']}: the moved coach failed its read-back")
+    return before, after, detail
+
+
+def plan_image(source, *, document: dict | None = None, progress=None, retail=None, staff=None) -> tuple[list, list[dict]]:
     """Compile every retail part of ``source`` (read only): ([(virtual offset, before, after)], receipt rows).
     A coach model that holds an earlier version of this option (``previous``) is compiled from ``retail`` (the user's
-    retail USA image) when it is given, and refused otherwise."""
+    retail USA image) when it is given, and refused otherwise. ``staff`` ({club: coach club}, b780 c3-looks) dresses
+    each moved coach's model in the apparel of the club he leads (None: the moves the disc already carries)."""
     document = pins() if document is None else _check_pins(document)
     say = progress or (lambda message, done, total: None)
     plan, rows = [], []
     with _outer_image()(source) as archive:
-        parts = _parts(archive, document)
+        parts = _parts(archive, document, staff)
         require(all(p["state"] != "foreign" for p in parts),
                 "a coach model or portrait is neither the retail nor the 2026 bytes; rebuild from a supported USA source")
         require(retail is not None or all(p["state"] != "previous" for p in parts if p["kind"] in ("coach", "retired")),
@@ -832,28 +1181,15 @@ def plan_image(source, *, document: dict | None = None, progress=None, retail=No
             row = part["row"]
             out = dict(kind=part["kind"], team=part["team"], virtual_offset=part["at"], size=part["size"],
                        state_before=part["state"])
-            if part["state"] in ("retail", "previous") and part["kind"] == "coach":
-                say(f"2026 head coaches: {part['team']}", index, len(parts))
-                entry = entries[name_id(row["archive"])]
-                raw = archive.read(entry.virtual_offset, entry.size)
-                if part["state"] == "previous":
-                    template = _retail_archive(retail, row["archive"])
-                    require(len(template) == len(raw) and sha(template[row["span_offset"]:row["span_offset"]
-                                                                       + row["span_size"]]) == row["retail_sha256"],
-                            f"{row['archive']}: the retail image does not hold the retail coach")
-                    require(template[:row["span_offset"]] == raw[:row["span_offset"]]
-                            and template[row["span_offset"] + row["span_size"]:]
-                            == raw[row["span_offset"] + row["span_size"]:],
-                            f"{row['archive']}: bytes outside the coach span differ from retail")
-                    compiled, detail = compile_archive(template, row)
-                else:
-                    compiled, detail = compile_archive(raw, row)
-                before = raw[row["span_offset"]:row["span_offset"] + row["span_size"]]
-                after = compiled[row["span_offset"]:row["span_offset"] + row["span_size"]]
-                require(compiled[:row["span_offset"]] == raw[:row["span_offset"]]
-                        and compiled[row["span_offset"] + row["span_size"]:] == raw[row["span_offset"] + row["span_size"]:],
-                        f"{row['archive']}: bytes outside the coach span changed")
-                require(sha(after) == row["applied_sha256"], f"{row['archive']}: the compiled coach differs from its pin")
+            if part["kind"] == "coach":
+                out["host"] = part["host"]
+            if part["kind"] in ("body_id", "photo_id"):
+                out["coach"] = part["coach"]
+            if part["state"] in ("retail", "previous", "home", "moved") and part["kind"] == "coach":
+                moved = part["host"] != part["team"]
+                say(f"2026 head coaches: {part['team']}" + (f" ({coach_name(part['team'], document)} leads "
+                                                              f"{part['host']})" if moved else ""), index, len(parts))
+                before, after, detail = _coach_plan(archive, entries, part, retail)
                 plan.append((part["at"], before, after))
                 out.update(written=True, archive=row["archive"], before_sha256=sha(before), after_sha256=sha(after),
                            changed_bytes=sum(a != b for a, b in zip(before, after)), **detail)
@@ -888,10 +1224,10 @@ def plan_image(source, *, document: dict | None = None, progress=None, retail=No
                 out.update(written=True, body_before=int(part["value"]), body_after=int(row["body_code"]),
                            archive=row["archive"], changed_bytes=sum(x != y for x, y in zip(before, after)))
             elif part["state"] == "retail" and part["kind"] == "photo_id":
-                before = struct.pack("<H", row["retail_photo_id"])
+                before = struct.pack("<H", int(part["value"]))
                 after = struct.pack("<H", int(row["portrait_id"]))
                 plan.append((part["at"], before, after))
-                out.update(written=True, photo_id_before=row["retail_photo_id"], photo_id_after=int(row["portrait_id"]),
+                out.update(written=True, photo_id_before=int(part["value"]), photo_id_after=int(row["portrait_id"]),
                            changed_bytes=sum(x != y for x, y in zip(before, after)))
             else:
                 out.update(written=False, changed_bytes=0, value=part.get("value"))
@@ -899,26 +1235,50 @@ def plan_image(source, *, document: dict | None = None, progress=None, retail=No
     return plan, rows
 
 
-def apply_to_image(target, *, document: dict | None = None, progress=None, retail=None) -> dict[str, Any]:
+def apply_to_image(target, *, document: dict | None = None, progress=None, retail=None, staff=None) -> dict[str, Any]:
     """Build-only: ``target`` is the caller's disposable output image. Retail or already-2026 parts only (an earlier
-    version of this option only with ``retail``, the user's retail USA image)."""
+    version of this option only with ``retail``, the user's retail USA image). ``staff``: see ``plan_image``."""
     document = pins() if document is None else _check_pins(document)
-    plan, rows = plan_image(target, document=document, progress=progress, retail=retail)
+    if staff is not None:
+        assignment(staff, document=document)            # a staff naming one coach for two clubs stops before any write
+    plan, rows = plan_image(target, document=document, progress=progress, retail=retail, staff=staff)
     with _outer_image()(target, writable=True) as archive:
         _write_all(archive, plan)
-    state = image_status(target, document=document)
+    state = image_status(target, document=document, staff=staff)
     require(state == "applied", f"the 2026 head coaches failed their read-back on the copy ({state})")
+    moved = sorted(f"{r['team']}>{r['host']}" for r in rows if r["kind"] == "coach" and r["host"] != r["team"])
+    kept = sorted(r["team"] for r in rows if r["kind"] == "body_id" and r["state_before"] == "kept")
+    host_of = {r["team"]: r["host"] for r in rows if r["kind"] == "coach"}
+    notes = [f"{r['team']}'s head coach is not one of the 32 2026 coaches but stands on model {r['value']:02d}, the model of "
+             f"{coach_name(r['coach'], document)}, so he shows that face in {host_of.get(r['coach'], r['coach'])}'s colours. Give him "
+             f"a model no 2026 head coach wears (c06, c11, c50 or c51)." for r in rows if r["kind"] == "shared_model"]
     return dict(label=LABEL, option=BUILD_KEY, state=state, runtime_witnessed=False, parts=rows, written=len(plan),
-                already_applied=len(rows) - len(plan), changed_bytes=sum(r["changed_bytes"] for r in rows))
+                already_applied=len(rows) - len(plan), changed_bytes=sum(r["changed_bytes"] for r in rows),
+                moved_coaches=moved, kept_coach_models=kept, notes=notes)
 
 
-def verify(source, *, enabled: bool = True, document: dict | None = None) -> dict[str, Any]:
-    state = image_status(source, document=document)
+def verify(source, *, enabled: bool = True, document: dict | None = None, staff=None) -> dict[str, Any]:
+    state = image_status(source, document=document, staff=staff)
     require(state == ("applied" if enabled else "retail"), "the 2026 head coaches do not match the request")
     return dict(state=state, enabled=enabled, label=LABEL, runtime_witnessed=False)
 
 
 # --- pins (development) ------------------------------------------------------------------------------------------
+
+def look_pins(raw: bytes, row: dict) -> dict:
+    """b780 c3-looks: ``scene_sha256`` (the coach's compiled scene without the apparel) and ``apparel_sha256`` (his
+    club's shirt, jacket and chest logo at every palette size of the ladder) of a pin row, from its retail archive."""
+    rec, base, _detail = compose_scene(raw, row)
+    regions = apparel_regions(rec)
+    apparel = {}
+    for size in PALETTE_LADDER:
+        edited = bytearray(base)
+        write_apparel(edited, rec, row, size)
+        apparel[str(size)] = apparel_digest(edited, regions)
+    require(apparel[str(int(row["palette_max"]))] == apparel_digest(base, regions),
+            f"{row['team']}: the apparel does not quantize the same twice")
+    return dict(scene_sha256=scene_digest(base, regions), apparel_sha256=apparel)
+
 
 def record_pins(retail_image, teams: dict, portraits: list[dict], superseded: dict | None = None) -> dict:
     """The pin document from a retail USA image and the shipped art: retail and compiled digests of every part.
@@ -960,6 +1320,7 @@ def record_pins(retail_image, teams: dict, portraits: list[dict], superseded: di
             row["superseded_sha256"] = [d for d in superseded.get(name, ()) if d not in (row["applied_sha256"],
                                                                                           row["retail_sha256"])]
             row["fit"] = _detail["fit"]
+            row.update(look_pins(raw, row))
             row["sideline"] = []
             for variant in PACKAGES:
                 package = f"{code}{variant}.iff"

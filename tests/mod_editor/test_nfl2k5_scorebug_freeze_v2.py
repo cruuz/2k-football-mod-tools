@@ -110,7 +110,7 @@ class InstallationTests(unittest.TestCase):
         cls.patched, cls.receipt = r.apply(cls.retail)
 
     def test_named_budget_and_static_v3_both_orders(self):
-        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (5376, 128))  # beta 76 s15: records, tabs and the possession arrow; sb: the broadcast states
+        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (6336, 128))  # b780 pres2: the pause-screen bar (+416); b780 p2: ball spot and page strip fit; beta 76 s15: records, tabs and the possession arrow; sb: the broadcast states
         code, data = r.sites(self.patched)
         self.assertLess(len(r.code_for(code['va'], data['va'])[0].rstrip(b'\xcc')), r.CODE_SIZE)
         left = r.apply(r.scene.apply_xbe(self.retail)[0])[0]

@@ -21,6 +21,20 @@ select a matching kit. For the rest this stage, run on the Studio build copy aft
 The packages are appended as new outer entries at the end of the archive (``nfl2k5_historic_styles.rewrite_archive``).
 All inputs are read before any write; replay on the output is a no-op; any other state of a target index refuses.
 With the SOFTDRINK donors (``data/nfl2k5_moment_kits_pins.json``) every composed package must equal its pin.
+
+Donors that are not the shipped SOFTDRINK ones (a retail disc, a user's own kits) compose in a forgiving mode that
+never stops a build on a cosmetic step (b779-ce1, b791-h2-kits): a donor chunk the user's art made unusable takes the
+retail chunk; an art step with nothing to change on the donor (K1's step that clears the 2026 maker marks, on a
+sleeve that has none) is "nothing to change here" and is named; a kit that still cannot be made is left out together
+with its moment selections and the classic team defaults that needed it, and every one of these is named in the build
+log. The SOFTDRINK donors stay strict: a refusal there is a bug to see.
+
+Art steps that draw flat colour (polygons, fills, outlines, copies: ``PAINT_OPS``) were made for the stock piece they
+sit on, the retail piece or the shipped SOFTDRINK one. On donors that are not the shipped ones they run only when the
+donor chunk really is that stock piece (it equals the retail chunk, or its hash is in the pins' ``stock_chunks``); on a
+piece of the user's own art they are skipped, the user's pixels are kept, and the kit receipt says so
+(``kept_art``). Colour swaps (``palette_map``, ``recolor``, ``remap``) and the choice of which donor piece goes where
+are the kit's design and still run on the user's art (``judged_rows`` lists every decision with its reason).
 """
 from __future__ import annotations
 
@@ -35,6 +49,7 @@ PINS = ROOT / "data/nfl2k5_moment_kits_pins.json"
 SCHEMA = "nfl2k5_moment_kits/v1"
 PIN_SCHEMA = "nfl2k5_moment_kits_pins/v1"
 OWNER = "nfl2k5_moment_kits"
+FEATURE = "Anniversary moment kits"     # the name every refusal and note starts with (the classic teams pass their own)
 FILLER = "ek1_moment_kits_end.bin"     # zero bytes after the new packages: the archive must end on a sector
 MOMENT_ROWS = 51
 MAX_STYLE = 14
@@ -47,7 +62,7 @@ CARD_KEYS = ("unif_h", "helm_h", "mini_h", "unif_a", "helm_a", "mini_a", "logo")
 
 def require(ok, message):
     if not ok:
-        raise ValueError("Anniversary moment kits: " + message)
+        raise ValueError(FEATURE + ": " + message)
 
 
 def sha(data):
@@ -56,11 +71,11 @@ def sha(data):
 
 def validate_document(doc):
     """Validate a moment/classic-kit document in the shared shape and return it."""
-    require(isinstance(doc, dict) and doc.get("schema") == SCHEMA, "unexpected data schema")
+    require(isinstance(doc, dict) and doc.get("schema") == SCHEMA, "the kit data does not have the expected schema")
     doc.setdefault("selections", [])
     doc.setdefault("classic_defaults", [])
     ids = [k["id"] for k in doc["kits"]]
-    require(len(set(ids)) == len(ids), "duplicate kit ids")
+    require(len(set(ids)) == len(ids), "two kits in the data share one id")
     seen = set()
     for kit in doc["kits"]:
         require(type(kit["style"]) is int and 1 <= kit["style"] <= MAX_STYLE, kit["id"] + ": style out of range")
@@ -77,17 +92,22 @@ def validate_document(doc):
     by_id = {k["id"]: k for k in doc["kits"]}
     rows = set()
     for s in doc["selections"]:
-        require(1 <= s["row"] <= MOMENT_ROWS and s["side"] in ("away", "home"), "selection row/side")
+        require(1 <= s["row"] <= MOMENT_ROWS and s["side"] in ("away", "home"),
+                f"a selection names row {s['row']} {s['side']}, which is not one of the {MOMENT_ROWS} moments")
         require((s["row"], s["side"]) not in rows, f"row {s['row']} {s['side']} selected twice")
         rows.add((s["row"], s["side"]))
-        require(("kit" in s) != ("reuse" in s), "a selection names a new kit or an existing one")
+        require(("kit" in s) != ("reuse" in s),
+                f"row {s['row']} {s['side']}: a selection names a new kit or an existing one, not both or neither")
         if "kit" in s:
             kit = by_id[s["kit"]]
-            require(kit["style"] == s["style"] and s["file"][2:4] == kit["code"], f"row {s['row']}: kit/file mismatch")
+            require(kit["style"] == s["style"] and s["file"][2:4] == kit["code"],
+                    f"row {s['row']}: the kit {kit['id']} (style {kit['style']}, franchise {kit['code']}) does not match "
+                    f"the selected style {s['style']} of {s['file']}")
         else:
-            require(s["reuse"][:2] == s["file"][2:4] and int(s["reuse"][3:]) == s["style"], f"row {s['row']}: reuse")
+            require(s["reuse"][:2] == s["file"][2:4] and int(s["reuse"][3:]) == s["style"],
+                    f"row {s['row']}: the reused kit {s['reuse']} does not match the selected style {s['style']} of {s['file']}")
     files = [c["file"] for c in doc.get("classic_defaults", [])]
-    require(len(set(files)) == len(files), "a team file has two classic defaults")
+    require(len(set(files)) == len(files), "a classic team file has two default uniforms in the data")
     for c in doc.get("classic_defaults", []):
         require(type(c["style"]) is int and 1 <= c["style"] <= MAX_STYLE, c["file"] + ": classic default style")
     return doc
@@ -115,7 +135,7 @@ def _expand(spec):
     for key, value in spec.items():
         a, _, b = key.partition("-")
         for index in range(int(a), int(b or a) + 1):
-            require(index not in out and 0 < index < 53, "chunk " + key)
+            require(index not in out and 0 < index < 53, f"chunk range {key} is out of range or listed twice")
             out[index] = value
     return out
 
@@ -140,7 +160,94 @@ def donors(doc=None):
     return sorted(out)
 
 
-def compose_side(side, packages, retail=None, report=None, label=""):
+# Art steps that draw flat colour over what is there. The stock piece they were authored on has the art they remove or
+# cover; the user's own art does not, so on it they would leave flat patches (Coach Edwards' Giants sleeve: two pure white
+# boxes on his light grey cloth, his own swoosh untouched). Unknown steps count as paint.
+PAINT_OPS = frozenset({"poly", "multipoly", "flood", "texels", "grow", "ring", "halo", "enclosed", "close", "copy",
+                       "stamp", "warp"})
+# Steps that move colours already on the piece and keep its shading (a team colour swap): the kit's design.
+RECOLOUR_OPS = frozenset({"recolor", "retint", "lift", "remap"})
+
+
+def row_paints(row):
+    """True when an art row draws flat colour (so it only runs on the stock piece it was made for). Colour swaps
+    (``palette_map``, ``palette``) and rows whose steps only recolour do not."""
+    if row.get("kind") not in ("tset", "txtr"):
+        return False
+    return any(op.get("op") not in RECOLOUR_OPS for op in row.get("ops", ()))
+
+
+def atlas_paints(atlas):
+    """The same for a far-player atlas edit (its remaps and recolours are colour swaps; the rest draws)."""
+    return any(op.get("op") not in RECOLOUR_OPS for op in (atlas or {}).get("ops", ()))
+
+
+def stock_needs(doc):
+    """{donor selector: [chunk indexes]} whose stock hashes the drawing steps of ``doc`` look up (the chunk each such
+    step paints on, and the far-player atlas chunk of every donor a drawing atlas edit reads)."""
+    out = {}
+    for kit in doc["kits"]:
+        for side in kit["sides"].values():
+            sources = _expand(side.get("chunks", {}))
+            for row in side.get("art", ()):
+                if row_paints(row):
+                    out.setdefault(sources.get(row["chunk"], side["base"]), set()).add(row["chunk"])
+            atlas = side.get("atlas")
+            if atlas_paints(atlas):
+                out.setdefault(sources.get(51, side["base"]), set()).add(51)
+                for overlay in atlas.get("overlays", ()):
+                    out.setdefault(overlay["donor"], set()).add(51)
+    return {selector: sorted(chunks) for selector, chunks in sorted(out.items())}
+
+
+def _stock_table():
+    """{selector: {chunk index (text): sha256 of that chunk's span}} of the shipped SOFTDRINK pieces (the pins)."""
+    try:
+        return pins().get("stock_chunks") or {}
+    except (OSError, ValueError, KeyError):
+        return {}
+
+
+class _Stock:
+    """Is a donor chunk one of the stock pieces the drawing art steps were made for?
+
+    Yes when it is byte for byte the retail chunk (a historic spare the retail disc lacks stands for its franchise's
+    retail style-0 kit, which is what the historic styles step makes it from) or the shipped SOFTDRINK chunk (the pins'
+    ``stock_chunks``). Anything else is the user's own art, and so is a piece the caller lists in ``user_pieces``
+    ({(selector, chunk)}: a project's replaced pieces, for a check that has not compiled them into the donors)."""
+
+    def __init__(self, retail, user_pieces=None, table=None):
+        self.retail = retail
+        self.user = {(str(sel).upper(), int(chunk)) for sel, chunk in (user_pieces or ())}
+        self.table = _stock_table() if table is None else table
+        self._spans = {}
+
+    def retail_span(self, selector, index):
+        key = (selector, index)
+        if key not in self._spans:
+            from nfl_txtr import parse_chunks
+            span = None
+            for name in (selector, selector[:3] + "0"):
+                if name in self.retail:
+                    package = self.retail[name]
+                    chunks = parse_chunks(package)
+                    if len(chunks) == 53:
+                        span = package[chunks[index].offset:chunks[index].end_offset]
+                        break
+            self._spans[key] = span
+        return self._spans[key]
+
+    def is_stock(self, selector, index, span, swapped=False):
+        """``swapped``: the span is the retail chunk this kit took in place of the user's (so it is stock)."""
+        if not swapped and (selector.upper(), index) in self.user:
+            return False
+        if sha(span) == (self.table.get(selector) or {}).get(str(index)):
+            return True
+        was = self.retail_span(selector, index)
+        return was is not None and was == span
+
+
+def compose_side(side, packages, retail=None, report=None, label="", unchanged=None, kept=None, user_pieces=None):
     """The new kit package of one side, from ``packages`` {selector: bytes}.
 
     b779-ce1 (Coach Edwards' project): a donor kit the user's own artwork made bigger than any retail kit, or whose
@@ -148,26 +255,56 @@ def compose_side(side, packages, retail=None, report=None, label=""):
     When ``retail`` ({selector: retail package bytes}) is given, such a donor chunk is taken from the retail kit
     instead, in this new Anniversary kit only (the user's own kit keeps its texture), and the swap is appended to
     ``report`` by name. Only the chunks that cause the refusal are swapped; if that still does not compose, the
-    original refusal stands (the caller can then leave the whole kit out)."""
+    original refusal stands (the caller can then leave the whole kit out).
+
+    b791-h2-kits: ``retail`` also means the donors are not the shipped SOFTDRINK ones, so an art step that has nothing to
+    change on the donor (the K1 step that clears two 2026 maker marks, on a sleeve that never had them) is "nothing to
+    change here": the chunk stays as it is and the step is appended to ``unchanged`` ({side, chunk, texture, art, step})
+    instead of stopping the build with "the art changed no texel". Without ``retail`` the donors must be the shipped
+    ones and the refusal stands. ``label`` names the kit and side in every refusal.
+
+    b791-h2-kits (Coach Edwards' own Giants sleeve): in that same forgiving mode an art step that draws flat colour
+    (``row_paints``) runs only on a donor chunk that is the stock piece it was made for (``_Stock``); on the user's own
+    art it is skipped, the pixels stay, and the step is appended to ``kept`` ({side, chunk, texture, art, donor,
+    step}). ``user_pieces`` ({(selector, chunk)}) names pieces to treat as the user's although the donor bytes given
+    are still the stock ones (a check that has not compiled the project's artwork into them)."""
+    who = label or side["base"]
+    lenient = retail is not None
+    nothing = [] if lenient else None
+    left = [] if lenient else None
+    stock = _Stock(retail, user_pieces) if lenient else None
     try:
-        return _compose_side(side, packages, {})
+        out = _compose_side(side, packages, {}, None, who, nothing, stock, left)
     except ValueError as first:
-        if retail is None:
+        if not lenient:
             raise
-        for swaps in _swap_plans(side, packages, retail):
+        for swaps in _swap_plans(side, packages, retail, stock):
+            attempt, attempt_left = [], []
             try:
-                out = _compose_side(side, packages, swaps, retail)
+                out = _compose_side(side, packages, swaps, retail, who, attempt, stock, attempt_left)
             except ValueError:
                 continue
             if report is not None:
-                report.append(dict(side=label, reason=str(first), chunks=sorted(swaps),
+                report.append(dict(side=who, reason=str(first), chunks=sorted(swaps),
                                    from_kits=sorted({swaps[i] for i in swaps})))
+            if unchanged is not None:
+                unchanged.extend(attempt)
+            if kept is not None:
+                kept.extend(attempt_left)
             return out
         raise first
+    if unchanged is not None and nothing:
+        unchanged.extend(nothing)
+    if kept is not None and left:
+        kept.extend(left)
+    return out
 
 
-def _swap_plans(side, packages, retail):
-    """The chunk swaps to try, smallest first: {chunk index: donor selector whose RETAIL chunk replaces it}."""
+def _swap_plans(side, packages, retail, stock=None):
+    """The chunk swaps to try, smallest first: {chunk index: donor selector whose RETAIL chunk replaces it}.
+
+    A chunk whose drawing art step is skipped because the piece is the user's own (``stock``) is not swapped for the
+    retail one to make that step work: the step does not run on it, and the user's art stays."""
     from nfl_txtr import parse_chunks
     from . import nfl2k5_kit_fixes_2026 as fixes
     sources = _expand(side.get("chunks", {}))
@@ -182,6 +319,10 @@ def _swap_plans(side, packages, retail):
             continue
         a, b = have[index], was[index]
         span, original = packages[selector][a.offset:a.end_offset], retail[selector][b.offset:b.end_offset]
+        if stock is not None and index in art and all(
+                row_paints(row) and not stock.is_stock(selector, index, span)
+                for row in side.get("art", []) if row["chunk"] == index):
+            art.discard(index)
         if (a.video_bytes, a.system_bytes) != (b.video_bytes, b.system_bytes):
             size_changed[index] = selector
         elif span != original and index in art:
@@ -200,30 +341,56 @@ def _swap_plans(side, packages, retail):
     return plans
 
 
-def _compose_side(side, packages, swaps, retail=None):
+def _compose_side(side, packages, swaps, retail=None, who="", unchanged=None, stock=None, kept=None):
     from nfl_txtr import decode_chunk, parse_chunks
     from . import nfl2k5_era_kits as era
     from . import nfl2k5_kit_fixes_2026 as fixes
+    who = who or side["base"]
     base = packages[side["base"]]
     chunks = parse_chunks(base)
-    require(len(chunks) == 53 and chunks[0].kind == "Unif", side["base"] + ": not a kit package")
+    if len(chunks) != 53 or chunks[0].kind != "Unif":
+        what = (f"it has {len(chunks)} chunks, not 53" if len(chunks) != 53
+                else f"its first chunk is {chunks[0].kind}, not Unif")
+        raise ValueError(f"{FEATURE}: {who}: the base kit {side['base']} is not a kit package; {what}")
     sources = _expand(side.get("chunks", {}))
-    spans = []
+    spans, origin = [], {}
     for c in chunks:
         selector = sources.get(c.index, side["base"])
         donor = (retail if c.index in swaps else packages)[selector]
         dc = parse_chunks(donor)
-        require(len(dc) == 53 and dc[c.index].kind == c.kind, f"chunk {c.index} kind differs in the donor")
+        if len(dc) != 53 or dc[c.index].kind != c.kind:
+            what = (f"the donor has {len(dc)} chunks, not 53" if len(dc) != 53
+                    else f"the donor chunk is {dc[c.index].kind}, not {c.kind}")
+            raise ValueError(f"{FEATURE}: {who}: chunk {c.index} of the donor {selector} does not match the chunk it "
+                             f"replaces in {side['base']}; {what}")
         spans.append(donor[dc[c.index].offset:dc[c.index].end_offset])
+        origin[c.index] = (selector, c.index in swaps)
+    donor_spans = list(spans)          # the pieces as the donors have them: a colour swap below must not hide them
     for row in side.get("art", []):
         i = row["chunk"]
-        if row["kind"] == "palette_map":
-            spans[i] = palette_map(spans[i], row)
-        elif row["kind"] == "palette":
-            spans[i], _receipt = fixes.compile_palette(spans[i], row)
-        else:
-            # a row may ask for a fresh encoding (b775-ct1: whole new numerals do not fit the donor's stored span)
-            spans[i], _receipt = fixes.compile_texture(spans[i], row, fixed=not row.get("reencode", False))
+        if stock is not None and row_paints(row) and not stock.is_stock(origin[i][0], i, donor_spans[i], origin[i][1]):
+            # the user's own art: the step was made for the stock piece and would leave flat colour on this one
+            if kept is not None:
+                kept.append(dict(side=who, chunk=i, texture=row.get("texture"), art=row["kind"], donor=origin[i][0],
+                                 step=row.get("note") or _ART_WORDS.get(row["kind"], "artwork step")))
+            continue
+        try:
+            if row["kind"] == "palette_map":
+                spans[i] = palette_map(spans[i], row)
+            elif row["kind"] == "palette":
+                spans[i], _receipt = fixes.compile_palette(spans[i], row)
+            else:
+                # a row may ask for a fresh encoding (b775-ct1: whole new numerals do not fit the donor's stored span)
+                spans[i], _receipt = fixes.compile_texture(spans[i], row, fixed=not row.get("reencode", False))
+        except fixes.NothingToChange as exc:
+            if unchanged is None:
+                raise _art_refusal(who, row, exc) from exc
+            # the step has nothing to change on this donor: the chunk stays as the donor has it
+            unchanged.append(dict(side=who, chunk=i, texture=row.get("texture"), art=row["kind"],
+                                  step=row.get("note") or _ART_WORDS.get(row["kind"], "artwork step"),
+                                  reason=_plain(exc)))
+        except ValueError as exc:
+            raise _art_refusal(who, row, exc) from exc
     atlas = side.get("atlas")
     if atlas:
         span = spans[51]
@@ -234,7 +401,22 @@ def _compose_side(side, packages, swaps, retail=None):
             other = packages[row["donor"]]
             overlays.append((decode_chunk(other, parse_chunks(other)[51])[0], row["boxes"]))
         mixed = era._native_atlas(decoded, c, overlays, atlas["format"])
-        if atlas.get("ops"):
+        draw = bool(atlas.get("ops"))
+        if draw and stock is not None and atlas_paints(atlas):
+            # the atlas edit draws on the base atlas and on the boxes copied into it: every atlas it reads must be stock
+            base_selector, base_swapped = origin[51]
+            pieces = [(base_selector, donor_spans[51], base_swapped)]
+            for row in atlas["overlays"]:
+                other = packages[row["donor"]]
+                oc = parse_chunks(other)[51]
+                pieces.append((row["donor"], other[oc.offset:oc.end_offset], False))
+            mine = [sel for sel, piece, swapped in pieces if not stock.is_stock(sel, 51, piece, swapped)]
+            if mine:
+                draw = False
+                if kept is not None:
+                    kept.append(dict(side=who, chunk=51, texture="far-player atlas", art="atlas", donor=mine[0],
+                                     step="far-player atlas edit"))
+        if draw:
             from . import nfl2k5_classic_kit_art as classic_art      # b778-ss2: finish the far-player atlas
             mixed = classic_art.atlas_edit(mixed, c, atlas["ops"])
         spans[51] = era._encoded_span(span, mixed, len(mixed) - c.system_bytes)
@@ -246,12 +428,34 @@ def _compose_side(side, packages, swaps, retail=None):
         out[UNIF_COLOURS:UNIF_COLOURS + 8] = classic_art.unif_words(side["unif_colours"])
     out = bytes(out)
     parsed = parse_chunks(out)
-    require(len(parsed) == 53, "composed package chunk count")
+    require(len(parsed) == 53, f"{who}: the composed package has {len(parsed)} chunks, not 53")
     video = sum(c.video_bytes for c in parsed)
     system = sum(c.system_bytes for c in parsed)
     require(video <= MAX_VIDEO_BYTES and system <= MAX_SYSTEM_BYTES,
-            f"composed kit allocation {system}/{video} exceeds the largest existing kit")
+            f"{who}: composed kit allocation {system}/{video} exceeds the largest existing kit")
     return out
+
+
+_ART_WORDS = {"palette_map": "colour swap", "palette": "colour change", "tset": "artwork step", "txtr": "artwork step"}
+
+
+def _plain(reason, who=None):
+    """A refusal's text without the feature prefix the build log already prints ("2026 kit fixes: " and this stage's
+    own), and without the kit and side it starts with when the sentence around it names them (``who`` is that label)."""
+    text = str(reason)
+    for prefix in (FEATURE + ": ", "2026 kit fixes: ", "Classic teams' kits: "):
+        if text.startswith(prefix):
+            text = text[len(prefix):]
+    if who and text.startswith(who + ": "):
+        text = text[len(who) + 2:]
+    return text
+
+
+def _art_refusal(who, row, exc):
+    """The named refusal of one art step: the kit and side, the piece, the texture and the plain reason."""
+    where = f"chunk {row['chunk']} ({_chunk_words([row['chunk']])}{', ' + row['texture'] if row.get('texture') else ''})"
+    return ValueError(f"{FEATURE}: {who}: the {_ART_WORDS.get(row['kind'], 'artwork step')} for {where} cannot be "
+                      f"applied: {_plain(exc)}")
 
 
 def _hex(text):
@@ -306,23 +510,28 @@ def palette_map(span, row):
         palette = fixes.read_palette(new, chunk, t)
         mapped = map_entries(palette, row["map"], int(row.get("tolerance", 12)))
         new = fixes.write_texture(new, chunk, dict(t, pixel=0, width=0, height=0, mips=0), [], mapped)
-    require(new != decoded, "the palette map changed nothing")
+    if new == decoded:
+        # b791-h2-kits: none of the colours this swap moves is on the donor (the kit already has the look, or its own)
+        raise fixes.NothingToChange(FEATURE + ": the palette map changed nothing")
     from . import nfl2k5_era_kits as era
     # a new package has no fixed allocation to keep: re-encode the chunk (same decoded bytes and video allocation)
     return era._encoded_span(span, new, chunk.video_bytes)
 
 
-def compose(doc, packages, retail=None, report=None, skipped=None):
+def compose(doc, packages, retail=None, report=None, skipped=None, unchanged=None, kept=None, user_pieces=None):
     """{new package name: bytes} for every kit.
 
-    ``retail`` / ``report``: see ``compose_side``. ``skipped`` (a dict, b779-ce1): a kit that cannot be composed even
-    with retail chunks is left out and recorded as {kit id: reason} instead of stopping the build; the donors are
-    never touched. Without it the refusal propagates (the shipped SOFTDRINK documents compose exactly)."""
+    ``retail`` / ``report`` / ``unchanged`` / ``kept`` / ``user_pieces``: see ``compose_side``. ``skipped`` (a dict,
+    b779-ce1): a kit that cannot be composed even with retail chunks is left out and recorded as {kit id: reason}
+    instead of stopping the build; the donors are never touched. Without it the refusal propagates (the shipped
+    SOFTDRINK documents compose exactly). The swaps, no-op steps and kept pieces of a kit that is left out are not
+    recorded (the kit is not made)."""
     out = {}
     for kit in doc["kits"]:
+        swaps, nothing, left = [], [], []
         try:
             made = {package_name(kit["code"], letter, kit["style"]):
-                    compose_side(side, packages, retail, report, _side_label(kit, letter))
+                    compose_side(side, packages, retail, swaps, _side_label(kit, letter), nothing, left, user_pieces)
                     for letter, side in kit["sides"].items()}
         except ValueError as exc:
             if skipped is None:
@@ -330,6 +539,12 @@ def compose(doc, packages, retail=None, report=None, skipped=None):
             skipped[kit["id"]] = str(exc)
             continue
         out.update(made)
+        if report is not None:
+            report.extend(swaps)
+        if unchanged is not None:
+            unchanged.extend(nothing)
+        if kept is not None:
+            kept.extend(left)
     return out
 
 
@@ -337,14 +552,32 @@ def _side_label(kit, letter):
     return f"{kit['id']} ({kit.get('team', kit['code'])}, {'away' if letter == 'A' else 'home'})"
 
 
+def dropped_defaults(doc, skipped):
+    """[{file, style, kit}]: the classic team defaults of ``doc`` that need a kit in ``skipped`` ({kit id: reason}).
+
+    A classic default is the uniform a classic team file opens on in Quick Game. When it is a new kit's own style, the
+    file only has a year pair for that style because the moment selection of the same kit labelled it, so leaving the
+    kit out leaves the default with nothing to point at (b791-h2-kits: Coach Edwards' build stopped on exactly this:
+    "classic default 9 has no year pair in its team file")."""
+    if not skipped:
+        return []
+    needs = {(s["file"], s["style"]): s["kit"] for s in doc.get("selections", ()) if s.get("kit") in skipped}
+    return [dict(file=c["file"], style=c["style"], kit=needs[(c["file"], c["style"])])
+            for c in doc.get("classic_defaults", ()) if (c["file"], c["style"]) in needs]
+
+
 def without_kits(doc, skipped):
-    """The document without the kits in ``skipped`` ({kit id: reason}) and without the selections that point at them
-    (those moment sides keep the kit they had)."""
+    """The document without the kits in ``skipped`` ({kit id: reason}), without the selections that point at them
+    (those moment sides keep the kit they had) and without the classic team defaults that need them (that team file
+    keeps the default uniform it has)."""
     if not skipped:
         return doc
     out = dict(doc)
     out["kits"] = [k for k in doc["kits"] if k["id"] not in skipped]
     out["selections"] = [s for s in doc["selections"] if s.get("kit") not in skipped]
+    if "classic_defaults" in doc:
+        gone = {d["file"] for d in dropped_defaults(doc, skipped)}
+        out["classic_defaults"] = [c for c in doc["classic_defaults"] if c["file"] not in gone]
     return out
 
 
@@ -390,12 +623,13 @@ def main_label(main_roster, code, style):
     for at, c in hs.team_records(main_roster)[:32]:
         if c == code:
             return struct.unpack_from("<HH", body, at + hs.TABLE + 4 * (style - 1))
-    raise ValueError("no NFL team uses asset code " + code)
+    raise ValueError(f"{FEATURE}: no NFL team uses asset code {code}, so the main roster has no year label for style {style}")
 
 
-def file_edit(raw, labels, default=None):
+def file_edit(raw, labels, default=None, name=""):
     """The team file with each {style: (first, last)} pair set where it is still (0, 0) (other pairs stay) and, when
-    given, its default style byte (+0x192: the classic team's main uniform in Quick Game) set to ``default``."""
+    given, its default style byte (+0x192: the classic team's main uniform in Quick Game) set to ``default``.
+    ``name`` (the team file's name) is only for the refusal."""
     from . import nfl2k5_historic_styles as hs
     _code, t, pairs = _team_file_pairs(raw)
     out = bytearray(raw)
@@ -404,9 +638,17 @@ def file_edit(raw, labels, default=None):
             struct.pack_into("<HH", out, t + hs.TABLE + 4 * (style - 1), *pair)
     if default is not None:
         require(struct.unpack_from("<HH", out, t + hs.TABLE + 4 * (default - 1)) != (0, 0),
-                f"classic default {default} has no year pair in its team file")
+                f"{name or 'a classic team file'}: its default uniform is style {default} (currently style "
+                f"{raw[t + hs.STYLE]}) but the file has no year pair for style {default}, so the classic default "
+                f"{default} has no year pair in its team file")
         out[t + hs.STYLE] = default
     return bytes(out)
+
+
+def _has_pair(raw, labels, style):
+    """True when ``file_edit(raw, labels)`` leaves a year pair at ``style`` (it has one, or ``labels`` gives one)."""
+    _code, _t, pairs = _team_file_pairs(raw)
+    return pairs[style - 1] != (0, 0) or tuple(labels.get(style, (0, 0))) != (0, 0)
 
 
 def wanted_labels(doc, main_roster, files):
@@ -421,7 +663,8 @@ def wanted_labels(doc, main_roster, files):
             if _team_file_pairs(files[s["file"]])[2][s["style"] - 1] != (0, 0):
                 continue
             pair = main_label(main_roster, s["file"][2:4], s["style"])
-            require(pair != (0, 0), f"row {s['row']}: reused style {s['style']} is listed nowhere")
+            require(pair != (0, 0), f"row {s['row']} ({s['file']}): the existing style {s['style']} it reuses has no "
+                                    f"year label in the main roster either, so it is listed nowhere")
         out.setdefault(s["file"], {})[s["style"]] = pair
     return out
 
@@ -479,7 +722,9 @@ class RetailPackages(dict):
         disc, hs = self._open()
         with disc:
             target = hs.Target(disc)
-            require(target.has(selector_name(selector)), selector + ": retail kit absent from the retail disc")
+            require(target.has(selector_name(selector)),
+                    f"{selector}: the retail disc has no {selector_name(selector)}, so no retail chunk of it can "
+                    "stand in for an edited one")
             value = self[selector] = target.get(selector_name(selector))
         return value
 
@@ -497,12 +742,21 @@ def read_inputs(target, doc, retail=None, allow_skip=True):
     ``allow_skip``: a kit that cannot be composed even then is left out (False: the refusal stands)."""
     from . import nfl2k5_historic_styles as hs
     inputs = dict(packages={}, files={}, members={}, retail=RetailPackages(retail) if retail is not None else None,
-                  report=[], skipped={}, allow_skip=allow_skip)
+                  report=[], unchanged=[], kept=[], dropped_defaults=[], skipped={}, allow_skip=allow_skip)
+    users = _donor_users(doc)
     for selector in donors(doc):
-        require(target.has(selector_name(selector)), selector + ": donor kit absent from the copy")
+        require(target.has(selector_name(selector)),
+                f"the donor kit {selector} ({selector_name(selector)}) is not on the disc copy; the new kit "
+                f"{', '.join(users.get(selector, ['?']))} is made from it")
         inputs["packages"][selector] = target.get(selector_name(selector))
-    for name in [s["file"] for s in doc["selections"]] + [c["file"] for c in doc.get("classic_defaults", [])]:
-        require(target.has(name), name + ": team file absent from the copy")
+    wanted = {}
+    for s in doc["selections"]:
+        wanted.setdefault(s["file"], []).append(f"row {s['row']} {s['side']}")
+    for c in doc.get("classic_defaults", []):
+        wanted.setdefault(c["file"], []).append("its classic default")
+    for name, why in wanted.items():
+        require(target.has(name), f"the team file {name} is not on the disc copy; the kits stage needs it for "
+                                  f"{' and '.join(why)} (the historic teams and extra Anniversary moments steps create it)")
         inputs["files"][name] = target.get(name)
     inputs["situ"] = target.get(identity=hs.SITU_OUTER_ID)
     inputs["main"] = target.get(identity=hs.ROSTER_OUTER_ID)
@@ -516,6 +770,19 @@ def read_inputs(target, doc, retail=None, allow_skip=True):
     return inputs
 
 
+def _donor_users(doc):
+    """{donor selector: [kit ids that read it]} (for the refusals that name a missing donor)."""
+    users = {}
+    for kit in doc["kits"]:
+        for side in kit["sides"].values():
+            picked = {side["base"], *_expand(side.get("chunks", {})).values(),
+                      *(o["donor"] for o in side.get("atlas", {}).get("overlays", []))}
+            for selector in picked:
+                if kit["id"] not in users.setdefault(selector, []):
+                    users[selector].append(kit["id"])
+    return users
+
+
 def _donors_pinned(packages):
     try:
         pin = pins()
@@ -525,12 +792,24 @@ def _donors_pinned(packages):
 
 
 def expected(doc, inputs):
-    """(packages, members {aggregate: {name: slot}}, files {name: bytes}, situ bytes) of the applied state."""
+    """(packages, members {aggregate: {name: slot}}, files {name: bytes}, situ bytes) of the applied state.
+
+    What this composition did is left in ``inputs``: ``report`` (retail chunk swaps), ``unchanged`` (art steps with
+    nothing to change on a donor), ``kept`` (drawing art steps not run because the piece is the user's own art),
+    ``skipped`` ({kit id: reason} of the kits left out) and ``dropped_defaults`` (the classic team defaults that went
+    with a left-out kit; each file keeps the default uniform it has). These are only ever filled for donors that are
+    not the shipped SOFTDRINK ones (``inputs["retail"]`` is set)."""
     from . import nfl2k5_historic_styles as hs
-    packages = compose(doc, inputs["packages"], inputs.get("retail"), inputs.setdefault("report", []),
-                       inputs.setdefault("skipped", {}) if inputs.get("retail") is not None
-                       and inputs.get("allow_skip", True) else None)
-    doc = without_kits(doc, inputs.get("skipped"))
+    lenient = inputs.get("retail") is not None
+    report, unchanged, kept = [], [], []
+    inputs["report"], inputs["unchanged"], inputs["kept"] = report, unchanged, kept
+    packages = compose(doc, inputs["packages"], inputs.get("retail"), report,
+                       inputs.setdefault("skipped", {}) if lenient and inputs.get("allow_skip", True) else None,
+                       unchanged if lenient else None, kept if lenient else None, inputs.get("user_pieces"))
+    full, left_out = doc, inputs.get("skipped")
+    doc = without_kits(doc, left_out)
+    dropped = [dict(d, kept=_default_of(inputs["files"].get(d["file"])), why="its kit was left out")
+               for d in dropped_defaults(full, left_out)]
     members = {a["name"]: {} for a in hs.AGGREGATES}
     for kit in doc["kits"]:
         authored = {}
@@ -547,14 +826,35 @@ def expected(doc, inputs):
                 members[aggregate][new] = hs.rename_slot(donor, new)
     labels = wanted_labels(doc, inputs["main"], inputs["files"])
     defaults = {c["file"]: c["style"] for c in doc.get("classic_defaults", [])}
-    files = {name: file_edit(raw, labels.get(name, {}), defaults.get(name)) for name, raw in inputs["files"].items()}
+    files = {}
+    for name, raw in inputs["files"].items():
+        default = defaults.get(name)
+        if default is not None and lenient and not _has_pair(raw, labels.get(name, {}), default):
+            # not a left-out kit's default (those are gone already) but a default this file cannot show: a classic
+            # team's opening uniform is cosmetic, so the file keeps the one it has and the build says so
+            dropped.append(dict(file=name, style=default, kit=None, kept=_default_of(raw),
+                                why=f"the file has no year pair for style {default}"))
+            default = None
+        files[name] = file_edit(raw, labels.get(name, {}), default, name)
+    inputs["dropped_defaults"] = dropped
     situ = bytearray(inputs["situ"])
     fields = _situ_fields(inputs["situ"])
     if doc.get("selections"):
-        require(len({r for r, _s in fields}) == MOMENT_ROWS, "the copy does not hold the 51 Anniversary moments")
+        require(len({r for r, _s in fields}) == MOMENT_ROWS,
+                f"the disc copy holds {len({r for r, _s in fields})} Anniversary moments, not the {MOMENT_ROWS} "
+                "this stage works on (turn on the 25 more moments)")
     for s in doc["selections"]:
         struct.pack_into("<I", situ, fields[(s["row"], s["side"])][1], s["style"])
     return packages, members, files, bytes(situ)
+
+
+def _default_of(raw):
+    """The default uniform style a classic team file opens on now (+0x192), or None when the file is not on the copy."""
+    if raw is None:
+        return None
+    from . import nfl2k5_historic_styles as hs
+    _code, t, _pairs = _team_file_pairs(raw)
+    return raw[t + hs.STYLE]
 
 
 def _installed_document(doc, inputs):
@@ -629,10 +929,13 @@ def state_of(doc, inputs, target, *, pinned_packages=None):
     return "applied"
 
 
-def image_status(path, doc=None, retail=None, allow_skip=True, installed=None):
+def image_status(path, doc=None, retail=None, allow_skip=True, installed=None, why=None):
     """``installed`` ({package name: sha256}, b779-int1): the packages a build's own stage wrote and read back on this
     copy; a later read-back of that build accepts exactly those bytes in place of the shipped pins (later passes
-    repaint donor kits, so composing again differs; see ``state_of``)."""
+    repaint donor kits, so composing again differs; see ``state_of``).
+
+    ``why`` (a list, b791-h2-kits): when the copy cannot be read at all, the reason is appended to it (the status is
+    still 'foreign'), so a caller that has to stop can say what was wrong instead of only "foreign"."""
     from . import nfl2k5_historic_styles as hs
     from . import nfl2k5_music_archive as archive
     pinned = dict(installed) if installed else None
@@ -650,21 +953,28 @@ def image_status(path, doc=None, retail=None, allow_skip=True, installed=None):
             if doc.get("selections") and len(_situ_fields(target.get(identity=hs.SITU_OUTER_ID))) != 2 * MOMENT_ROWS:
                 return "not_applicable"
             return state_of(doc, read_inputs(target, doc, retail, allow_skip), target, pinned_packages=pinned)
-    except (ValueError, KeyError, IndexError, struct.error, OSError):
+    except (ValueError, KeyError, IndexError, struct.error, OSError) as exc:
+        if why is not None:
+            why.append(f"{type(exc).__name__}: {exc}")
         return "foreign"
 
 
 def compile_edits(target, doc, inputs):
     """(edits {outer index: bytes}, appended [(name, bytes)], receipt rows) for a 'retail' copy."""
     from . import nfl2k5_historic_styles as hs
+    owners = {package_name(k["code"], l, k["style"]): k["id"] for k in doc.get("kits", ()) for l in "HA"}
     for name, there in inputs["new_present"].items():
-        require(not there, name + " already exists: the index is not free")
+        require(not there, f"{name} already exists on the disc copy, so the index for the new kit "
+                           f"{owners.get(name, name)} is not free")
     packages, members, files, situ = expected(doc, inputs)
     skipped = dict(inputs.get("skipped") or {})
     doc = without_kits(doc, skipped)
     if not packages:
         return {}, [], dict(kits=[], pinned_donors=None, members=0, team_files=[], selections=0,
-                            skipped_kits=skipped, substitutions=list(inputs.get("report") or []))
+                            skipped_kits=skipped, substitutions=list(inputs.get("report") or []),
+                            unchanged_art=list(inputs.get("unchanged") or []),
+                            kept_art=list(inputs.get("kept") or []),
+                            dropped_defaults=list(inputs.get("dropped_defaults") or []))
     edits = {}
     for aggregate in hs.AGGREGATES:
         record, cdf = inputs["members"][aggregate["name"]]
@@ -700,17 +1010,26 @@ def compile_edits(target, doc, inputs):
         pinned = all(sha(inputs["packages"][s]) == pin["donors"].get(s) for s in inputs["packages"])
         if pinned:
             for name, data in packages.items():
-                require(sha(data) == pin["packages"][name], name + ": composed kit differs from its pin")
+                require(sha(data) == pin["packages"][name],
+                        f"{name}: the new kit {owners.get(name, name)} composed from the shipped SOFTDRINK donors "
+                        "differs from its pin")
     rows = [dict(file=n, size=len(d), sha256=sha(d)) for n, d in sorted(packages.items())]
     return edits, appended, dict(kits=rows, pinned_donors=pinned,
                                  donors={selector: sha(data) for selector, data in sorted(inputs["packages"].items())},
                                  members=sum(len(v) for v in members.values()),
                                  team_files=sorted(n for n in files if files[n] != inputs["files"][n]),
                                  selections=len(doc["selections"]),
-                                 skipped_kits=skipped, substitutions=list(inputs.get("report") or []))
+                                 skipped_kits=skipped, substitutions=list(inputs.get("report") or []),
+                                 unchanged_art=list(inputs.get("unchanged") or []),
+                                 kept_art=list(inputs.get("kept") or []),
+                                 dropped_defaults=list(inputs.get("dropped_defaults") or []))
 
 
-CHUNK_NAMES = {4: "socks", 5: "elbow pads", 6: "gloves", 7: "long sleeves", 8: "shoes", 9: "shoes", 10: "wristbands"}
+CHUNK_NAMES = {1: "jersey", 2: "pants", 3: "sleeves", 4: "socks", 5: "elbow pads", 6: "gloves", 7: "long sleeves",
+               8: "shoes", 9: "shoes", 10: "wristbands", 11: "helmet", 12: "helmet", 43: "names", 44: "names",
+               49: "logo", 51: "far-player sheet", 52: "flipchip",
+               **{i: "jersey numbers" for i in range(13, 23)}, **{i: "helmet numbers" for i in range(23, 33)},
+               **{i: "arm numbers" for i in range(33, 43)}}
 
 
 def _chunk_words(indexes):
@@ -718,35 +1037,148 @@ def _chunk_words(indexes):
     return ", ".join(words[:-1]) + " and " + words[-1] if len(words) > 1 else words[0]
 
 
-def user_notes(receipt, feature="Anniversary moment kits"):
-    """Plain sentences for the build log and summary: every swap and every kit left out, by name (b779-ce1)."""
+def user_notes(receipt, feature=FEATURE):
+    """Plain sentences for the build log and summary: every retail swap, every art step with nothing to change, every
+    kit left out and every classic team default that went with one, by name (b779-ce1, b791-h2-kits)."""
     notes = []
     for row in receipt.get("substitutions", ()):
         kits_from = " and ".join(row["from_kits"])
-        why = row["reason"].split(": ", 1)[-1]
+        why = _plain(row["reason"], row["side"])
         notes.append(f"{feature}: the new kit {row['side']} uses the retail {_chunk_words(row['chunks'])} of {kits_from} "
                      f"(chunk{'s' if len(row['chunks']) > 1 else ''} {', '.join(str(c) for c in row['chunks'])}), because "
-                     f"your edited version cannot be used in a new kit ({why}). Your own kits keep your artwork.")
+                     f"your edited version cannot be used in a new kit: {why}. Your own kits keep your artwork.")
+    for row in receipt.get("unchanged_art", ()):
+        notes.append(f"{feature}: the new kit {row['side']} uses the {_chunk_words([row['chunk']])} of your kit unchanged "
+                     f"(chunk {row['chunk']}{', ' + row['texture'] if row.get('texture') else ''}): the step "
+                     f"\"{row['step']}\" had nothing to change on it.")
+    kept_by_side = {}
+    for row in receipt.get("kept_art", ()):
+        kept_by_side.setdefault(row["side"], []).append(row)
+    for side, rows in kept_by_side.items():
+        chunks = sorted({row["chunk"] for row in rows})
+        words = _chunk_words(chunks)
+        if len(rows) == 1:
+            row = rows[0]
+            notes.append(f"{feature}: the new kit {side} kept your own {words} untouched "
+                         f"(chunk {row['chunk']}{', ' + row['texture'] if row.get('texture') else ''}): the step "
+                         f"\"{row['step']}\" was made for the stock piece, so it did not paint over your art.")
+        else:
+            notes.append(f"{feature}: the new kit {side} kept your own {words} untouched "
+                         f"(chunk{'s' if len(chunks) > 1 else ''} {', '.join(str(c) for c in chunks)}): the artwork "
+                         "steps that paint on them were made for the stock pieces, so they did not paint over your art.")
     for kit_id, reason in sorted(receipt.get("skipped_kits", {}).items()):
-        notes.append(f"{feature}: the new kit {kit_id} was left out and the moment sides that use it keep the kit they "
-                     f"had ({reason.split(': ', 1)[-1]}).")
+        notes.append(f"{feature}: the new kit {kit_id} was left out because {_plain(reason, _kit_label(kit_id, reason))}. "
+                     "The moment sides that use it keep the kit they had.")
+    for row in receipt.get("dropped_defaults", ()):
+        kept = f" (style {row['kept']})" if row.get("kept") is not None else ""
+        because = (f"the new kit {row['kit']} it would open on was left out" if row.get("kit")
+                   else row.get("why") or "its new uniform could not be used")
+        notes.append(f"{feature}: the classic team file {row['file']} keeps the default uniform it has{kept}, because "
+                     f"{because}.")
     return notes
 
 
-def apply_to_image(path, doc=None, retail=None, allow_skip=True, feature="Anniversary moment kits"):
+def dry_run(doc, packages, retail, user_pieces=None):
+    """What the stage would do with these donors, as a receipt ``user_notes`` can print (b791-h2-kits; the project
+    check and the doctor use it to try the kits on a project's own donors). Reads no disc and writes nothing.
+
+    ``packages`` {selector: bytes} are the donors; ``retail`` a RetailPackages (or any {selector: bytes}) for the
+    forgiving mode, or None for the shipped SOFTDRINK donors, whose refusals propagate. ``user_pieces``
+    ({(selector, chunk)}): pieces of the donors the project replaces with its own artwork, for a check whose donors do
+    not have that artwork compiled in; the drawing art steps are then kept off them exactly as Build keeps them off the
+    compiled art. Returns {kits (the packages made), substitutions, unchanged_art, kept_art, skipped_kits,
+    dropped_defaults}; the last follows the left-out kits by the document's own data (a team file's year pair needs
+    its team file, which only the real stage reads)."""
+    report, unchanged, kept, skipped = [], [], [], {}
+    lenient = retail is not None
+    made = compose(doc, packages, retail, report, skipped if lenient else None, unchanged if lenient else None,
+                   kept if lenient else None, user_pieces if lenient else None)
+    return dict(kits=sorted(made), substitutions=report, unchanged_art=unchanged, kept_art=kept, skipped_kits=skipped,
+                dropped_defaults=[dict(d, kept=None, why="its kit was left out") for d in dropped_defaults(doc, skipped)])
+
+
+def judged_rows(doc=None):
+    """Every art step of a kit document with what the stage does with it on a piece of the user's own art, and why
+    ([{kit, side, chunk, kind, steps, runs_on_user_art, reason}]). The drawing steps are the only ones kept off it."""
+    doc = doc or document()
+    rows = []
+    for kit in doc["kits"]:
+        for letter, side in sorted(kit["sides"].items()):
+            who = _side_label(kit, letter)
+            sources = _expand(side.get("chunks", {}))
+            for row in side.get("art", ()):
+                steps = sorted({op.get("op") for op in row.get("ops", ())}) or [row["kind"]]
+                draws = row_paints(row)
+                if draws:
+                    reason = ("draws flat colour (" + ", ".join(s for s in steps if s not in RECOLOUR_OPS) +
+                              ") on the stock piece it was made for; on the user's own art it would leave flat patches, "
+                              "so it is kept off it and the pixels stay")
+                elif row["kind"] in ("palette_map", "palette"):
+                    reason = ("a colour swap: the kit is the donor in other colours, so it runs on the user's piece too "
+                              "and changes only the colours it names (nothing to change is noted)")
+                else:
+                    reason = ("only moves the piece's own colours and keeps its shading, so it runs on the user's piece "
+                              "too (nothing to change is noted)")
+                rows.append(dict(kit=kit["id"], side=letter, label=who, chunk=row["chunk"], kind=row["kind"],
+                                 steps=steps, donor=sources.get(row["chunk"], side["base"]),
+                                 runs_on_user_art=not draws, reason=reason))
+            atlas = side.get("atlas")
+            if atlas:
+                steps = sorted({op.get("op") for op in atlas.get("ops", ())}) or ["overlay"]
+                if atlas_paints(atlas):
+                    reason = ("copies boxes from the donors' far-player sheets (runs on any piece) and then draws "
+                              "(" + ", ".join(s for s in steps if s not in RECOLOUR_OPS) + "); the drawing is kept off a "
+                              "sheet that is the user's own art and the other steps still run")
+                else:
+                    reason = "copies boxes from the donors' far-player sheets and recolours them: runs on any piece"
+                rows.append(dict(kit=kit["id"], side=letter, label=who, chunk=51, kind="atlas", steps=steps,
+                                 donor=sources.get(51, side["base"]), runs_on_user_art=not atlas_paints(atlas),
+                                 reason=reason))
+            if side.get("unif_colours") or side.get("unif"):
+                rows.append(dict(kit=kit["id"], side=letter, label=who, chunk=0, kind="unif", steps=["colour words"],
+                                 donor=side.get("unif") or side["base"], runs_on_user_art=True,
+                                 reason="sets the facemask and turtleneck colours the kit needs; these are colour words, "
+                                        "not artwork, so they apply to any piece"))
+    return rows
+
+
+def _kit_label(kit_id, reason):
+    """The 'K1 (NYG, away)' label a refusal starts with, when it starts with this kit's (so a note can drop it)."""
+    text = _plain(reason)
+    if text.startswith(kit_id + " ("):
+        end = text.find("): ")
+        if end > 0:
+            return text[:end + 1]
+    return None
+
+
+def apply_to_image(path, doc=None, retail=None, allow_skip=True, feature=FEATURE):
     """Install every new kit and moment selection on a private build copy; replay is a no-op.
 
     ``retail`` (a path or a callable returning one): when a donor kit of the user's cannot be composed into a new
     kit, that chunk (or, last, the whole kit) is taken from the retail disc and named in ``user_notes`` rather than
-    stopping the build. ``allow_skip=False`` (the classic teams' own kit, which their files need): no kit is left out."""
+    stopping the build. ``allow_skip=False`` (the classic teams' own kit, which their files need): no kit is left out.
+    A refusal that still happens starts with ``feature`` (the classic teams' own kit is not an Anniversary moment)."""
+    try:
+        return _apply_to_image(path, doc, retail, allow_skip, feature)
+    except ValueError as exc:
+        text = str(exc)
+        if feature != FEATURE and text.startswith(FEATURE + ": "):
+            raise ValueError(feature + ": " + text[len(FEATURE) + 2:]) from exc
+        raise
+
+
+def _apply_to_image(path, doc, retail, allow_skip, feature):
     from . import nfl2k5_historic_styles as hs
     from . import nfl2k5_music_archive as archive
     doc = doc or document()
     path = Path(path).resolve()
-    state = image_status(path, doc, retail, allow_skip)
+    why = []
+    state = image_status(path, doc, retail, allow_skip, why=why)
     if state in ("applied", "not_applicable"):
         return dict(state=state, written=0)
-    require(state == "retail", "the copy is " + state)
+    require(state == "retail", f"the disc copy's kits are {state}, neither untouched nor completely installed"
+                               + (f" ({why[0]})" if why else ""))
     with archive.Disc(path, descriptors=()) as disc:
         target = hs.Target(disc)
         inputs = read_inputs(target, doc, retail, allow_skip)
@@ -756,9 +1188,19 @@ def apply_to_image(path, doc=None, retail=None, allow_skip=True, feature="Annive
         # every kit was left out: nothing to write, the copy stays as it is
         return dict(state="skipped_all", experimental=True, runtime_witnessed=False, owner=OWNER, written=0,
                     user_notes=notes, **receipt)
-    rewrite = hs.rewrite_archive(path, edits, appended, verify=lambda p: image_status(p, doc, retail, allow_skip) == "applied")
+    rewrite = hs.rewrite_archive(path, edits, appended, verify=lambda p: _verified(p, doc, retail, allow_skip))
     return dict(state="applied", experimental=True, runtime_witnessed=False, owner=OWNER, user_notes=notes,
                 **receipt, **rewrite)
+
+
+def _verified(path, doc, retail, allow_skip):
+    """The read-back of a rewritten copy; a refusal says what the read-back found instead of only that it failed."""
+    why = []
+    state = image_status(path, doc, retail, allow_skip, why=why)
+    if state != "applied":
+        raise ValueError(f"{FEATURE}: the rewritten disc copy reads back as {state}, not as installed"
+                         + (f" ({why[0]})" if why else ""))
+    return True
 
 
 def main(argv=None):

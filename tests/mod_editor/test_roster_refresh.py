@@ -73,9 +73,12 @@ class RefreshTests(unittest.TestCase):
         self.assertEqual(new.club_of(new.players[0]), 1)
         self.assertEqual(new.players[0].record.get('jersey'), 18)
         allowed = {'jersey','depth_rank','depth_side','unknown_52','pbp_id'}
+        free = {new.by_offset[o].index for o in new.free_agents}
         for p,q in zip(old.players,new.players):
             for k,v in p.record.values.items():
-                if k not in allowed:self.assertEqual(v,q.record.values[k],(p.index,k))
+                # b780 rst2 (Q44, the b778 fd1 fix): a free agent carries no contract (retail's free agents have a zero block)
+                if p.index in free and k in refresh.CONTRACT_FIELDS:self.assertEqual(q.record.values[k],0,(p.index,k))
+                elif k not in allowed:self.assertEqual(v,q.record.values[k],(p.index,k))
             self.assertEqual(p.record.get('unknown_52') & 0xe0,q.record.get('unknown_52') & 0xe0)
         self.assertEqual(refresh.apply_body(out,plan)[0],out)
         self.assertGreater(receipt['changed_bytes'],0)

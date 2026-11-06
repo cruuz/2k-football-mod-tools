@@ -242,10 +242,22 @@ class HostBudgetTests(unittest.TestCase):
             # Player Progress footer (34,320 B) on top of the career footer.
             # b779 rc1: mode_grown_member reads the capacity (0xB0000) arena's overflow row too, so MyCareer
             # creation no longer refuses "Roster is full." on v0.7 (test_b779_rc1_roster_capacity).
+            # b780 b8-mycareer: m3_draft_tick holds the AI's taken flag on MyPlayer when the club on the clock already has
+            # starters at his position who are rated 9 + 3 points per round gone above him (club_needs, m3_starters;
+            # test_nfl2k5_my_career_draft_need); the 25 Upgrades attribute names moved to the M3 ASCII pool and the text
+            # scratch buffer from m3+2700 to m3+3200.
+            # b780 n2: at a punt or field goal the Supersim hand-back keeps the CPU's call instead of reopening the
+            # play-call screen (on the released disc the CPU punter then never snapped), and
+            # mode_ff_hold_snap never holds a CPU snap into the last 3 s of the play clock (test_nfl2k5_my_career_punt_settle).
+            # b780 mc1: mode_play opens Choose team / Sign over Career Home for a MyPlayer without a club, a loaded
+            # free-agent career opens Career Home, and mode_loaded resumes the draft screen only for a rookie in his
+            # own draft (test_nfl2k5_my_career_mc1).
             'tools/mycareer_mode/runtime.c':
-                '9d0f9925d0eedf97af2b28784dcc592d8778551ad02293f9bf9c9ce03ff4e32c',
+                'a117be3bcfce2c6cc6920abd344da36bca0605845c2860b416fdcad85763c725',  # b780 mc1 on b780-int (b8 + j23 + n2)
             'tools/mycareer_mode/runtime.S':
-                '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
+                # b780 n1: mode_camera_dir (the defensive camera read) and five byte-identical size rewrites.
+                # b780 mc1: start_player leaves an injured MyPlayer (+0x20 bit 31) where the game's order has him.
+                'f76373e1df0b38b6a2eb0773e861329d88bc1d2198e1acba0d4685bd9137cc79',
             'mod_editor/core/nfl2k5_my_career_mode.py':
                 # Integrated era/context and CP companion validation. CP2 only
                 # refreshes this host pin. v1h also repairs the reviewed native C
@@ -255,7 +267,7 @@ class HostBudgetTests(unittest.TestCase):
                 # mo2: guard view accepts the moment context hook over the pinned 0xCB240 span.
                 # b778 bd3: recognition views for the star-career class-loop hooks and the Player Progress
                 # screen chained over the inline footer hooks (runtime code unchanged).
-                'a0439aa3de1475112754a86e4485c8ce699b9593ef797322e70288af641a5c50',
+                '3c82e41999502ce5d0003dada780f57a84e6d6ffe9f7151908049bb78143d9c1',  # b780-int: b8 + j23 + n1 (defensive camera read and its five byte-identical rewrites)
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

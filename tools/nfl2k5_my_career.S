@@ -239,6 +239,13 @@ resolve_done:
  cmp eax, 32
  jae resolve_return
  mov DWORD PTR [0xe5775c+eax*4], 1
+.ifdef MYCAREER_INLINE
+ /* b780 mc1 (Q38): "CPU manages my depth chart" [0xE60140] on for the career club, which the setup defaults
+  * 0x148C60 clear. The weekly sorts 0x2BDD1B and 0x2BE060 ask 0x13EC30 first, which this owner's 0xC4D50 hook
+  * answers CPU for the career club, so today they sort it either way; with the setting on they keep doing so if
+  * that answer ever says human. New, resumed and loaded careers all pass here. */
+ mov BYTE PTR [0xe60140], 1
+.endif
 resolve_return:
  popad
  ret

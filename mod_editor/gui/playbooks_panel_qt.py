@@ -489,6 +489,7 @@ class PlaybooksPanelHost(Protocol):
 
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, pyqtSignal
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QComboBox,
@@ -561,7 +562,7 @@ class PlaybooksPanel(QWidget):
         self._refresh_after_task = False
         self._generation = 0
         self._tasks: set[_Task] = set()
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         self._search_timer = QTimer(self)
         self._search_timer.setSingleShot(True)
         self._search_timer.setInterval(180)

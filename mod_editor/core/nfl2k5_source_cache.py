@@ -184,7 +184,7 @@ class Nfl2k5SourceCache:
         _regular_non_symlink(selected, "NFL 2K5 XISO")
 
         def hash_progress(completed: int, total: int) -> None:
-            _emit(progress, "Checking your XISO", completed, total)
+            _emit(progress, "Checking your game file", completed, total)  # b780-uxfix: plain words
 
         # Deliberately no whole-file size or SHA-256 gate here any more. Dumps of
         # one disc legitimately differ -- where the game partition starts, how

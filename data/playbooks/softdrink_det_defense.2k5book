@@ -9,10 +9,10 @@
   "notes": "DESIGN: Kelvin Sheppard (Glenn / Allen man multiple); 2025 baseline DET. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "e02dfbf560b73974a3a6f3ff2d011c651392191f496f310b8ba1b51fe54ad249",
+  "book_fingerprint": "bea625bce2ac71701f6ba9385ded2bf425fe49beb14f20e24f64dfba3ddc220c",
   "donor_formation_count": 50,
   "donor_play_count": 268,
-  "donor_node_count": 2245
+  "donor_node_count": 2244
  },
  "budget": {
   "formations": 50,

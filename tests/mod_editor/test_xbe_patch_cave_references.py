@@ -365,6 +365,17 @@ class CaveReferenceTests(unittest.TestCase):
             lo, hi = jukebox.FUNCTION_VA, jukebox.FUNCTION_VA + jukebox.FUNCTION_SIZE
             ranges = {(a, b) for a, b in ranges if not (a < hi and b > lo)}
             ranges.add((lo, hi))
+        # b780 b4-economy rewrites the complete retirement decision (0x2BCF90..0x2BD0E0) in place. The rewrite keeps the
+        # routine's first bytes, so retail's own jump at 0x2BCF95 (to its tail at 0x2BD0CC, now rewritten to 0x2BD0A7)
+        # looked external to the first changed run. Treat the exact owner rewrite as one completely pinned function,
+        # like the Crib list repair above; any other change in that span still counts as an ordinary cave.
+        from mod_editor.core import nfl2k5_progression as progression
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage as _Image
+        _retire_code, _ = progression.retirement_code()
+        _lo, _hi = progression.RETIRE_VA, progression.RETIRE_VA + progression.RETIRE_SIZE
+        if _Image(self.patched).read(_lo, len(_retire_code)) == _retire_code:
+            ranges = {(a, b) for a, b in ranges if not (a < _hi and b > _lo)}
+            ranges.add((_lo, _hi))
         # Scorebar v3 replaces complete pinned live spans. Split adjacent
         # callbacks at their independently referenced entries, and include
         # retained byte islands so their displaced branches remain internal.
@@ -612,7 +623,9 @@ class CaveReferenceTests(unittest.TestCase):
             # b778 int3: with ai8/kr1/pr1 the growable v4 pool carries the same
             # 1,128 owner-hook raw candidates into its new pages as v3; the
             # legacy-page gate above is still empty.
-            self.assertEqual(len(proof["encoded_references"]), 1128)
+            # b780 pres2 (Q51, 9b9d86f38): the sprite scorebug spills to the pool, which grows from 3 to 4 pages; the 12 raw
+            # candidates on the new page 0x150E000 are the whole change (test_nfl2k5_xbe_space pins the same 1,140).
+            self.assertEqual(len(proof["encoded_references"]), 1140)  # 1,128 + 12
         self.assertEqual(relocated.status(self.patched), "applied")
         from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         self.assertEqual(runtime.status(self.patched), "applied")

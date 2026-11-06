@@ -9,10 +9,10 @@
   "notes": "DESIGN: Brandon Staley (Fangio split coverage); 2025 baseline NO. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "74fca237364d5d17ff5a5676228246da907f1a5ab8854ef0146b75088a845eca",
+  "book_fingerprint": "4dc3862d132899e2c57a670918ae4681d3e6d4ea50cbfd1a81ec625fd83fa0fb",
   "donor_formation_count": 50,
   "donor_play_count": 268,
-  "donor_node_count": 2284
+  "donor_node_count": 2276
  },
  "budget": {
   "formations": 50,

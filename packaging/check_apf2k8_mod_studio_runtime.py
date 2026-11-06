@@ -25,7 +25,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.110"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.111"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -1403,7 +1403,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 211  # b77-f5: shared Player Card honors capability
+        len(registry.capabilities) == 226  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: shared Player Card honors capability
         and len(registry.for_game(core_model.GameId.APF2K8)) == 74,
         "shared/APF capability registry counts changed",
     )

@@ -30,9 +30,9 @@ BEFORE_ROLES = ((3, 4, "SLOT", "SLOT RECEIVER", 3, 2),
                 (3, 11, "3DB", "3RD DOWN BACK", 7, 2),
                 (3, 12, "PWR", "POWER BACK", 7, 4))
 EXPECTED_ORDER = "KR PR K P LS LGUN RGUN NCB DCB SLWR GAD 3DRB PWRB".split()
-EXPECTED_CHAINS = {"LS": (12, 2), "LGUN": (3, 3), "RGUN": (4, 3),
+EXPECTED_CHAINS = {"LS": (12, 2), "LGUN": (3, 6), "RGUN": (4, 6),
                    "NCB": (4, 2), "DCB": (4, 3), "SLWR": (3, 2),
-                   "GAD": (3, 4), "3DRB": (7, 0), "PWRB": (7, 1)}
+                   "GAD": (3, 7), "3DRB": (7, 3), "PWRB": (7, 1)}   # b780 sub1: revision 3, every role row its own order
 
 
 def before_special(patched):
@@ -308,11 +308,55 @@ class NativeDrawTests(DrawProbe):
             self.assertEqual(rows._read(self.patched, va, 8), bytes.fromhex('568bf2ba88305300'))
         # Existing native ordinal/picker tests check these preserved contracts
         # against the on-field PLAY reader as well as the chart resolver.
-        old = {long: (pos, chain) for _, _, _, long, pos, chain in BEFORE_ROLES}
+        # b780 sub1 (revision 3): every role row is its own order; EXPECTED_CHAINS is the whole contract
         for _, _, short, long, pos, chain in rows.ROLE_ROWS:
-            key = '3RD DOWN BACK' if short == '3DRB' else long
-            expected = EXPECTED_CHAINS[short] if short in ('3DRB', 'PWRB') else old[key]
-            self.assertEqual((pos, chain), expected)
+            self.assertEqual((pos, chain), EXPECTED_CHAINS[short])
+
+
+@unittest.skipUnless(legacy.XBE.is_file() and legacy.HAVE_UNICORN, "private retail XBE and unicorn are needed")
+class ThirdDownBackMirrorTests(unittest.TestCase):
+    """b780 db2 (beta-80 report: "using a 3rd down back in Special doesn't work, it just copies your running back order
+    in Offense and doesn't hold its own order"). 3DRB is a view of the HB rank order, the same list as the Offense HB
+    row; only PWRB (7, 1, the side chain) is an independent order. Since b780 hunt5 (revision 2) the view starts at the
+    second man (7, 2: RB2, RB3, ...), so the starter keeps priority. The game's own row lookup and SPECIAL swap path
+    show it: a swap made on 3DRB reorders the Offense HB row behind the starter, one made on PWRB does not."""
+
+    TEAM, STACK, STOP = legacy.ExecutionTests.TEAM, legacy.ExecutionTests.STACK, legacy.ExecutionTests.STOP
+    boot, player, call, unit, lookup = (legacy.ExecutionTests.boot, legacy.ExecutionTests.player,
+                                        legacy.ExecutionTests.call, legacy.ExecutionTests.unit,
+                                        legacy.ExecutionTests.lookup)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.retail = legacy.XBE.read_bytes()
+        cls.patched = rows.apply(legacy.prepare(cls.retail))[0]
+
+    def order(self, uc, pos, chain, count=3):
+        return [self.lookup(uc, row, pos, chain) for row in range(count)]
+
+    def test_third_down_back_keeps_its_own_order(self):
+        # b780 sub1 (revision 3): 3DRB is the RB side order from its second place (7, 3), PWRB the side order from the
+        # top (7, 1); both leave the Offense RB order (and the starter) alone. Before (revisions 1 and 2) a 3DRB swap
+        # reordered the Offense RB row.
+        offense_hb = modern.read_record(self.patched, 0, 1)
+        third = modern.read_record(self.patched, 3, 11)
+        power = modern.read_record(self.patched, 3, 12)
+        self.assertEqual((offense_hb["position"], offense_hb["chain"]), (7, 0))
+        self.assertEqual((third["position"], third["chain"]), (7, 3))
+        self.assertEqual((power["position"], power["chain"]), (7, 1))
+        # three halfbacks: rank order 1, 0, 2 and side order 2, 0, 1
+        uc = self.boot([(7, 1, 2), (7, 0, 0), (7, 2, 1)])
+        self.assertEqual(self.order(uc, 7, 0), [self.player(1), self.player(0), self.player(2)])
+        self.assertEqual(self.order(uc, 7, 3, count=2), [self.player(2), self.player(0)])   # side rows 1 and 2
+        for slot in (11, 12):
+            with self.subTest(row="3DRB" if slot == 11 else "PWRB"):
+                uc = self.boot([(7, 1, 2), (7, 0, 0), (7, 2, 1)])
+                before = self.order(uc, 7, 0)
+                side_before = self.order(uc, 7, 1)
+                self.unit(uc, 3, slot)
+                self.call(uc, 0x2442E8, until=0x244308, ecx=self.player(0), esi=self.player(2), edi=self.TEAM)
+                self.assertEqual(self.order(uc, 7, 0), before)                # the Offense RB order never moves
+                self.assertNotEqual(self.order(uc, 7, 1), side_before)
 
 
 def load_tests(loader, tests, pattern):

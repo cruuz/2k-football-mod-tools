@@ -38,14 +38,25 @@ class Machine(BinderMachine):
     def __exit__(self, *_):
         self.close()
 
+    #: ROST bodies the frontend accepts: the retail resource, and the grown arenas of SOFTDRINK discs (b779 rc1
+    #: 0xB0000, v0.8 on 0xCA000), whose capacity word is the arena size (the installed bridge checks it).
+    GROWN_ARENAS = (0xB0000, 0xCA000)
+
     def frontend(self, roster):
-        """Native menu stack and retail ROST, with layout/hardware seams.
+        """Native menu stack and retail (or grown-arena) ROST, with layout/hardware seams.
 
         This executes C0500 relative fixups. It does not load a Franchise,
         fabricate a player or bypass any franchise initializer.
+
+        NOTE (b780 mc1, Q79): 0x48BC0, the league PRNG draw (generator 0xB12680, 83 callers), answers 0 here so
+        creation is deterministic. Any league work after creation (weeks, stage advances, drafts) then runs with
+        every random draw frozen: call live_league_prng() first, as the draft fixture does.
         """
-        if len(roster) != 593760 or roster[0x0C:0x10] != b"ROST":
-            raise ValueError("the bounded retail ROST resource is required")
+        size = len(roster) - 64
+        if roster[0x0C:0x10] != b"ROST" or (len(roster) != 593760 and size not in self.GROWN_ARENAS):
+            raise ValueError("the bounded retail ROST resource (or a grown-arena disc ROST) is required")
+        self.capacity = size if size in self.GROWN_ARENAS else 0x91000
+        self.put(0xB72808, self.capacity)
         self.root = self.ARENA
         self.put(0xE576A0, 0)
         self.put(0xB7280C, len(roster) - 64)
@@ -93,6 +104,10 @@ class Machine(BinderMachine):
             self.replace_stub(va, lambda: self.ret(int(self.reg("ECX") == 0)))
         for va in (0x2498A0, 0x128C70, 0x128C60, 0xEC200, 0x771F0):
             self.replace_stub(va, lambda: self.ret())
+
+    def live_league_prng(self):
+        """End frontend()'s deterministic 0x48BC0 seam: the game's own league generator from here on."""
+        self.replace_stub(0x48BC0, None)
 
     def depth(self):
         return self.get(self.manager + 0x100)
@@ -163,14 +178,14 @@ class Machine(BinderMachine):
         self.replace_stub(0x649C0, lambda: (self.put(0xA83A10, 0), self.ret()))
         self.replace_stub(0x64CD0, lambda: self.ret() if self.get(0xA83A18) == 3 else None)
 
-    def native_load(self, save, *, requested=True, read_ok=True, capacity=0x91000):
+    def native_load(self, save, *, requested=True, read_ok=True, capacity=None):
         """Execute 16E540 dispatch, metadata admission and ALL four deserializers.
 
         Only storage/authentication completion, heap allocation/free and six
         roster preview refresh services are substituted. No serializer or
         MyCareer decisions are replaced by the fixture.
         """
-        self.put(0xB72808, capacity)
+        self.put(0xB72808, getattr(self, "capacity", 0x91000) if capacity is None else capacity)
         self.put(self.state + 2580, int(requested))
         self.put(0xBDBDBC, self.BODIES)
         self.put(0xBDBDB8, 0)
@@ -195,17 +210,19 @@ class Machine(BinderMachine):
         self.call(0x16E540, ecx=0, budget=8000000)
         self.root = self.get(0xB72918)
 
-    def loaded_menu(self):
+    def loaded_menu(self, *, budget=500000000):
         """Native successful-load UI dispatch, CLEAR and REPLACE (16DD30).
 
         The storage callback has completed before this frame. Device polling
         is idle; the native completion operation and all stack changes run.
+        b780 mc1 (Q79): MyCareer's load hooks walk every club and record, so the 0xCA000 arena needs far more than the
+        call's old 100,000-instruction default; the budget is an instruction bound, never a wall clock.
         """
         self.put(0xBDBDB0, 0)
         for va in (0x77AE0, 0x77B20, 0x77A90, 0x77AB0, 0x77470, 0x77B00):
             self.replace_stub(va, None)
         self.ui_heap()
-        self.call(0x16DD30, ecx=self.manager)
+        self.call(0x16DD30, ecx=self.manager, budget=budget)
 
     def native_save(self, *, accepted=True, allocated=True, budget=50000000):
         """Execute 16E3F0 and all serializers through the signing boundary.

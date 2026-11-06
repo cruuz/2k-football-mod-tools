@@ -43,6 +43,9 @@ def _combo(widget, value):
 def restore(panel, state):
     choices = {**saved.from_plan(saved.to_plan({}, "", "")), **saved.build_settings(state)}
     with quiet(panel):
+        if hasattr(panel, "set_console_memory"):
+            # b780-m64b: the target first, so the boxes below land under its rules; an older project reads 128 MB
+            panel.set_console_memory(choices.get("console_memory", 128), keep_ticks=False, refresh=False)
         for key, box in panel._boxes().items():
             value = choices[key]
             box.setChecked(value == "matte" if key == "helmet_finish"
@@ -52,6 +55,8 @@ def restore(panel, state):
         panel.colour_lighting.set_active(choices["modern_color"])
         panel.ceiling_spin.setValue(round(choices["max_deep_yards"]))
         panel.arc_spin.setValue(round(choices["arc"] * 100))
+        if hasattr(panel, "speed_threshold_spin"):  # b780-cv5: the Build page's Speed separation strength
+            panel.speed_threshold_spin.setValue(choices["speed_threshold"])
         panel._momentum_last_positive = choices["momentum"] or 50
         panel._collision_last_positive = choices["momentum_collision_level"] or 50
         for field, value in (("scorebug_watermark_combo", choices["scorebug_watermark"]),
@@ -93,7 +98,13 @@ class GameplayBuildLink:
         self.build, self.gameplay, self.changed = build, gameplay, changed
         self.suspended = suspended
         self.busy = False
+        self._dropped: list[str] = []      # keys whose copy was dropped while another copy was in flight (see _copy)
+        self._copying = None               # (source, destination, value) of the copy in flight
         self.shared = set(build._boxes()) & set(gameplay.checks)
+        self._key_of = {}
+        for key in self.shared:
+            self._key_of[id(build._boxes()[key])] = key
+            self._key_of[id(gameplay.checks[key])] = key
         for key in self.shared:
             build._boxes()[key].toggled.connect(lambda _on, k=key: self.copy_from_build(k))
             gameplay.checks[key].toggled.connect(lambda _on, k=key: self.copy_from_gameplay(k))
@@ -104,7 +115,20 @@ class GameplayBuildLink:
         for origin in (build, gameplay):
             origin.guardian_everyone_practice_check.toggled.connect(lambda _on, p=origin: self.copy_levels(p))
             origin.my_career_setup_field.textChanged.connect(lambda _text, p=origin: self.copy_levels(p))
+        # b780 studio1: Build's 64 MB target greys out the options a 64 MB build cannot carry; Game Fixes shows the same lock
+        # (and a click that still reaches a locked box is not copied, so nothing is recorded to come back at 128 MB)
+        if hasattr(gameplay, "memory_lock_for") and hasattr(build, "_memory_locks"):
+            gameplay.memory_lock_for = self.memory_lock
+        if hasattr(build, "memory_locks_changed") and hasattr(gameplay, "_apply_memory_locks"):
+            build.memory_locks_changed.connect(gameplay._apply_memory_locks)
         self.refresh_from_build()
+
+    def memory_lock(self, key):
+        """(tooltip, badge) while Build's 64 MB target holds this box locked, else None."""
+        if key in self.shared and key in getattr(self.build, "_memory_locks", {}):
+            badge = self.build._badges.get(key)
+            return (self.build._boxes()[key].toolTip(), badge.text() if badge is not None else "")
+        return None
 
     def refresh_from_build(self):
         with quiet(self.gameplay):
@@ -142,14 +166,48 @@ class GameplayBuildLink:
         self._copy(self.gameplay.checks[key], self.build._boxes()[key])
 
     def _copy(self, source, destination):
+        locked = self._key_of.get(id(destination))
+        if locked is not None and destination is self.build._boxes()[locked] and self.memory_lock(locked) is not None:
+            # a box Build's 64 MB target holds off takes no copy: it was recorded as a tick to bring back at 128 MB
+            if not self.busy and not self.suspended():
+                self.settle([locked])
+            return
         if self.busy or self.suspended():
+            if self.busy and self._copying is not None and not (
+                    (source, destination) == (self._copying[1], self._copying[0]) and source.isChecked() == self._copying[2]):
+                # Not the echo of the copy in flight (every effective copy toggles its destination, which asks for the copy
+                # back with the value just copied): a rule on the destination page ticked or cleared another box, or put
+                # this one back, while the copy ran.
+                key = self._key_of.get(id(source))
+                if key is not None and key not in self._dropped:
+                    self._dropped.append(key)
             return
         self.busy = True
+        self._copying = (source, destination, source.isChecked())
+        self._dropped = []
         try:
             destination.setChecked(source.isChecked())
         finally:
             self.busy = False
+            self._copying = None
+        # While `busy` was set, the destination page's own rules (a child that needs its parents, a rival that must go
+        # off) could tick or clear other boxes, and those toggles were dropped. Ticking ESPN scorebug effects on Game
+        # Fixes left Build with the scorebug and extra patch space ticked while Game Fixes showed both unticked. The
+        # Build page owns the plan, so mirror just those boxes from Build onto Game Fixes: the two pages never disagree.
+        # Only those boxes, and not a full refresh: this copy may be the first of several slots of one click (Game Fixes'
+        # own rule ticks a parent before the link copies the child), and a full refresh wiped the box the user had just
+        # ticked because its own copy had not been made yet (b780 studio1: Stop man-coverage spins on Game Fixes).
+        if self._dropped:
+            dropped, self._dropped = self._dropped, []
+            self.settle(dropped)
         self.changed()
+
+    def settle(self, keys):
+        """Make Game Fixes show what Build holds for these boxes (Build owns the plan)."""
+        with quiet(self.gameplay):
+            for key in keys:
+                self.gameplay.checks[key].setChecked(self.build._boxes()[key].isChecked())
+            self.gameplay._refresh()
 
 
 def observe_build_choices(panel, changed):

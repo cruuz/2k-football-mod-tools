@@ -21,15 +21,21 @@ and makes it useful all season:
   by the roster list index. The depth chart reorders after games; an index would overwrite or lose
   a player's history.
 * **Screen values** (0x365B20): the season view returns the stored baseline for ``Previously``, the
-  live rating for ``Currently`` and their difference for ``Change``. The historical weekly ring is
-  still stored (below); the release keeps the season row instead of a view switcher.
-* **Stable row label** (b779-pp5): the old toggle replaced the screen's ignored-event slot (0xF4268)
-  and incremented the view on every call. That slot is a per-frame event (event 9), so the label
-  cycled at frame rate while the value getter clamped the view to the stored week count: the video's
-  "+/- Change" / "Weeks" flicker and overlap. No distinct Black/UP/DOWN event reaches that class, so
-  the shipped fix keeps the retail no-op handler and the retail ``+/- Change`` header. The weekly
-  ring and its capture are unchanged; a future screen-scoped input can expose them without touching
-  the save format.
+  live rating for ``Currently`` and their difference for ``Change``. The view button (below) steps
+  the same three rows through the stored weeks.
+* **Weekly Prep's Player Results stays retail** (b780 hunt3): retail draws that screen ("Preparation Results",
+  descriptor 0x551A40) with the same handler, getter and label site as Player Progress, and tells them apart by
+  [0xCC2388] (1 there, 0 here). Beta-78 to the v0.9 RC never read it, so once the season baseline existed the
+  practice results showed the season baseline and season change. Both hooks now hand that screen to retail.
+* **Weekly views, screen-scoped** (b780-b9, Noah's v0.8 known issue "weekly Player Progress views are not
+  reachable"): b779-pp5 found that the old toggle sat on the shared ignored-event slot (0xF4268), a per-frame event
+  (event 9), so the label cycled at frame rate with no button involved, and removed it.  The views come back through
+  an event wrapper that replaces only this screen's own descriptor pointer (0x551808, the list-screen handler
+  0xF40F0): on the per-frame event it reads the pad's held-button word, and each new press of the view button steps
+  the third row through the season change, last week, 2 weeks ago ... as many weeks as the record stores (at most
+  8), then back to the season.  Every other event is handed to the retail handler by a jump.  The row label names
+  the week the numbers show (clamped to the stored weeks, so it never names a week it does not show) and the
+  Front Office row list resets the view to the season each time it is built.
 
 The record is the ``PPG3`` v1 history ring and the footer is ``PPGF0001`` in
 ``nfl2k5_player_progression``. The footer follows the complete native save (and the MyCareer footer
@@ -38,7 +44,7 @@ when present); the native save transaction writes and signs it. Old saves have n
 Front Office in b778-pg2.
 
 The owner is a late executable owner. It requests **code 4,096 bytes** and **writable data 34,336
-bytes** (16 toggle bytes + the 34,320-byte footer). It needs the growable pool from job xs1. It
+bytes** (16 view and button-state bytes + the 34,320-byte footer). It needs the growable pool from job xs1. It
 composes with the generic MyCareer owner by chaining its displaced size/save/load hooks; MyCareer's
 runtime also admits the footer sizes (``tools/mycareer_mode/runtime.c``).
 """
@@ -65,7 +71,10 @@ VISIBLE_HELP_TEXT = (
 HELP_TEXT = (
     "EXPERIMENTAL. The Front Office Player Progress screen is available every week of the regular "
     "season and playoffs. Previously is the season-opening rating, Currently is the live rating and "
-    "+/- Change is movement since the season began. Old saves load normally."
+    "+/- Change is movement since the season began. Each press of the Black button on the screen goes "
+    "one week further back (last week, 2 weeks ago and so on, up to 8 weeks of your games) and the "
+    "bottom row names the week shown; the press after the oldest week returns to the season. Old "
+    "saves load normally."
 )
 
 IMAGE_BASE = 0x10000
@@ -82,10 +91,23 @@ SLOT_SIZE = record.SLOT_SIZE
 SNAPSHOT_SIZE = record.SNAPSHOT_SIZE
 RECORD_HEADER_SIZE = record.RECORD_HEADER_SIZE
 MAX_VIEW_WEEKS = 8
+# The per-frame event reads this pad word (port 0, sub block 0: the "held buttons" word of the game's pad block, the one
+# the held accessor 0x709F0 returns) and this button bit: the Black button.  Measured in the emulator on the v0.8 disc
+# (b780 b9, xemu headless, the keys driven through xdotool, the pad block read from guest RAM): with nothing pressed the
+# word is 0; held, Y sets 0x800, Black 0x1000 and White 0x2000 (the bits follow the controller's analog button order
+# A 0x100, B 0x200, X 0x400, Y 0x800, Black 0x1000, White 0x2000, left trigger 0x4000, right trigger 0x8000, matching
+# the A 0x100 and B 0x200 the game's own replay-skip and MyCareer code test).  b779-pp5 held Black on this very screen
+# for 120 frames and saw only the per-frame event 9, so the retail handler does nothing with it.
+VIEW_PAD_VA = 0x00B37A88
+VIEW_PAD_MASK = 0x00001000
+VIEW_BUTTON = "Black"
+PAD_COUNT = 8                    # the screens poll pads 0..7
+PAD_STRIDE = 0x244               # bytes between two pads' blocks
 
 _TEXT_STRIDE = 24
-_TEXTS = ("Last Week", "2 Weeks", "3 Weeks", "4 Weeks", "5 Weeks", "6 Weeks", "7 Weeks", "8 Weeks")
-LAST_WEEK_TEXT = b"".join(text.encode("utf-16-le") + b"\0\0" for text in _TEXTS).ljust(
+_TEXTS = ("Last Week", "2 Wks Ago", "3 Wks Ago", "4 Wks Ago", "5 Wks Ago", "6 Wks Ago", "7 Wks Ago", "8 Wks Ago")
+# every label sits on its own 24-byte stride (the header routine multiplies by it), padded with zero bytes
+LAST_WEEK_TEXT = b"".join(text.encode("utf-16-le").ljust(_TEXT_STRIDE, b"\0") for text in _TEXTS).ljust(
     _TEXT_STRIDE * MAX_VIEW_WEEKS, b"\0")
 
 # --- retail routines and globals the cave reads or calls -----------------------------------------
@@ -101,6 +123,12 @@ FN_STAGE_ENTER = 0x00247B20
 FN_STAGE = 0x000C4BB0
 FN_LEAGUE = 0x000C4B80
 RETAIL_HEADER_TEXT = 0x00EB92D8
+# b780 hunt3: the getter (0x365B20) and the label site (0x365E34) are shared. Retail draws Player Progress (descriptor
+# 0x551800) and Weekly Prep's Player Results, titled "Preparation Results" (descriptor 0x551A40), with one handler
+# (event 8, 0x365CE0). Their event 4 handlers store this word: 0x365F70 stores 0 (Player Progress), 0x365F90 stores 1
+# (Preparation Results), and the retail getter takes the practice values when it is 1. Both hooks leave that screen
+# retail.
+SCREEN_MODE_VA = 0x00CC2388
 
 
 # --- hook sites ---------------------------------------------------------------------------------
@@ -111,7 +139,7 @@ SITE_WEEK = (0x000C4E60, bytes.fromhex("890db476e500c3"))
 SITE_GAME_END = (0x001353FC, bytes.fromhex("e8cff9ffff"))         # call 0x134dd0 (second club's stat merge)
 SITE_VALUE = (0x00365B20, bytes.fromhex("538b5c240c"))
 SITE_HEADER = (0x00365E34, bytes.fromhex("bad892eb00"))
-SITE_EVENT_POINTER = (0x000F4268, struct.pack("<I", 0x000F4221))
+SITE_EVENT_POINTER = (0x00551808, struct.pack("<I", 0x000F40F0))   # screen descriptor +8: the list-screen event handler
 SITE_TOTAL_SIZE = (0x0016AA26, bytes.fromhex("e8555d1600"))       # call 0x2d0780 (front-office size)
 SITE_SAVE_FRONT_OFFICE = (0x0016E50D, bytes.fromhex("e87e221600"))  # call 0x2d0790 (write front office)
 SITE_LOAD_END = (0x0016E815, bytes.fromhex("e8661f1600"))          # call 0x2d0780 (after the load)
@@ -147,6 +175,7 @@ GUARDS = (
     ("week_advance", 0x000C5D14, 0x20, "eb8c8b928d15c51927b2be3d9d9be47d125ca6330ddf56f7814e814547e6ce79"),
     ("game_end", 0x001353D0, 0x40, "43aeb9adc0db3244104a928fe684f2915a6c8f34478a62f78828976d92c5f9e6"),
     ("screen_event", 0x000F4268, 0x10, "13e838dff3bb9b334bfccb42574a81b2fb743ca8130dd23f54099eb3d411f08a"),
+    ("list_screen_handler", 0x000F40F0, 0x139, "9b8cee178b68ce9a781b5c8e4dc16e1ed8b29f4b3ccaa07a580bdff39bf9478f"),
 )
 _ERRORS = (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, AttributeError)
 
@@ -163,9 +192,16 @@ JGE = "0f8d"
 
 CODE_SIZE = 4096
 DATA_SIZE = 16 + FOOTER_SIZE
+# b780 j23: the footers a save may carry after its native size (nfl2k5_franchise_extension.FOOTER_SIZES x MyCareer).
+_EXTENSION_BODY = 0x18000 - 16
+_ADMITTED_EXTRAS = tuple(career + footer for footer in (0, FOOTER_SIZE, _EXTENSION_BODY, _EXTENSION_BODY + FOOTER_SIZE)
+                         for career in (0, record.MYCAREER_FOOTER_SIZE) if career + footer)
 TRAILER_SIZE = 24
 TRAILER_MAGIC = 0x47505056          # "VPPG"
-VARIANT_VISIBLE, VARIANT_FULL = 1, 2
+VARIANT_VISIBLE, VARIANT_FULL, VARIANT_HOSTED = 1, 2, 3
+# b780 j23: HOSTED = the full screen and capture, but the franchise footer host (nfl2k5_franchise_footer) saves
+# and loads the 34,320 bytes; this owner installs none of the four save-path sites.
+HOSTED_TARGETS = (0x002D0780, 0x002D0790, 0x002D0780)   # retail targets in the unreachable footer hook code
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", (DATA_SIZE + 15) & ~15, 16))
 
 
@@ -207,6 +243,8 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
 
     # ---- visibility: stage 1..4 and 7..9 visible, everything else hidden -----------------------
     a.label("visibility")
+    if not visible_only:
+        a.b("66c705" + _imm(data_va) + "0000")  # mov word [view,previous],0: the screen opens on the season row
     a.b("a1" + _imm(STAGE_VA))                  # mov eax,[stage]
     a.b("c7420801000000")                       # mov dword [edx+8],1
     a.b("83f804"); a.j8("74", "vis4")           # cmp eax,4 ; je vis4
@@ -224,21 +262,76 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     if visible_only:
         return a.assemble(), dict(a.labels)
 
-    # ---- stable row label (b779-pp5) ----------------------------------------------------------
-    # The old toggle sat on the screen's ignored-event class, which is a per-frame event (event 9):
-    # it incremented on every frame and the label cycled at frame rate. No distinct Black/UP/DOWN
-    # event reaches this class, so a reliable button gate is not available here. The released fix
-    # keeps the season row ("+/- Change") and leaves the stored weekly ring for a future, properly
-    # screen-scoped switcher. Both hooks stay installed so the install layout is unchanged; the
-    # handler is the retail no-op and the header returns the retail string.
-    a.label("toggle")
-    a.b("5f")                                   # pop edi (the retail event's stack contract)
-    a.b("b801000000")                           # mov eax,1
-    a.b("5e")                                   # pop esi
-    a.b("c3")
+    # ---- the screen's own event wrapper and the row label (b780 b9, D11) ---------------------------
+    # b779-pp5 found that the old toggle sat on the shared ignored-event slot (0xF4268), which is the screen's
+    # PER-FRAME event (event 9): it incremented the view at frame rate, so the label flickered and no button was
+    # involved at all.  The wrapper below is screen-scoped instead: it replaces the screen descriptor's own event
+    # pointer (0x551808, the list-screen handler 0xF40F0), so no other screen sees it.  On the per-frame event it
+    # reads the pad's held-button word, and one press (not held, then held) steps the view: season, last week, 2
+    # weeks ago ... up to the weeks the record stores, then back to the season.  Every other event, and every frame
+    # without a new press, is handed to the retail handler by a plain jump, so it sees exactly the arguments the
+    # caller passed.  The previous-state byte follows the button on every frame, so a held button steps once.
+    a.label("event")
+    a.b("83fa09"); a.j8("75", "ev_chain")         # cmp edx,9 ; jne chain (not the per-frame event)
+    a.b("9c50")                                   # pushfd ; push eax
+    a.b("5351")                                   # push ebx ; push ecx
+    # the held-button word of every pad (the game polls eight, 0x244 bytes apart): whichever controller Noah uses
+    a.b("31c0")                                   # xor eax,eax
+    a.b("bb" + _imm(VIEW_PAD_VA))                 # mov ebx,first pad's held word
+    a.b("b9" + _imm(PAD_COUNT))                   # mov ecx,pads
+    a.label("ev_pads")
+    a.b("0b03")                                   # or eax,[ebx]
+    a.b("81c3" + _imm(PAD_STRIDE))                # add ebx,0x244
+    a.b("49"); a.j8("75", "ev_pads")              # dec ecx ; jnz
+    a.b("25" + _imm(VIEW_PAD_MASK))               # and eax,button mask
+    a.b("f7d8" "1bc0" "f7d8")                     # neg eax ; sbb eax,eax ; neg eax -> 1 when the button is down
+    a.b("0fb61d" + _imm(data_va + 1))             # movzx ebx,byte [previous]
+    a.b("a2" + _imm(data_va + 1))                 # mov [previous],al
+    a.b("85c0"); a.j8("74", "ev_done")            # test eax,eax ; jz done (up)
+    a.b("85db"); a.j8("75", "ev_done")            # test ebx,ebx ; jnz done (was already down)
+    # a new press: next view (0 = season, 1..count = stored weeks, never more than MAX_VIEW_WEEKS)
+    a.b("813d" + _imm(record_va) + _imm(RECORD_MAGIC)); a.j8("75", "ev_none")   # cmp [record],magic ; jne none
+    a.b("803d" + _imm(record_va + 4) + "01"); a.j8("75", "ev_none")              # cmp byte [version],1 ; jne none
+    a.b("f605" + _imm(record_va + 5) + "01"); a.j8("74", "ev_none")              # test byte [flags],1 ; jz none
+    a.b("0fb61d" + _imm(record_va + 10))          # movzx ebx,byte [count]
+    a.b("83fb" + f"{MAX_VIEW_WEEKS:02x}"); a.j8("76", "ev_count_ok")             # cmp ebx,8 ; jbe
+    a.b("b3" + f"{MAX_VIEW_WEEKS:02x}")           # mov bl,8
+    a.label("ev_count_ok")
+    a.b("0fb605" + _imm(data_va))                 # movzx eax,byte [view]
+    a.b("40")                                     # inc eax
+    a.b("39d8"); a.j8("76", "ev_store")           # cmp eax,ebx ; jbe store (still inside 0..count)
+    a.label("ev_none")
+    a.b("31c0")                                   # xor eax,eax (back to the season row)
+    a.label("ev_store")
+    a.b("a2" + _imm(data_va))                     # mov [view],al
+    a.label("ev_done")
+    a.b("59")                                     # pop ecx
+    a.b("5b589d")                                 # pop ebx ; pop eax ; popfd
+    a.label("ev_chain")
+    a.jmp_abs(0x000F40F0)                         # the retail list-screen handler, arguments untouched
 
+    # The label of the third row: the retail "+/- Change" for the season view, else the text of the stored week
+    # the numbers show.  The view is clamped to the stored weeks exactly like the value getter below, so the label
+    # never names a week the numbers do not show (no record, a short record, a stale byte: the retail label).
+    # Call site 0x365E34 replaced `mov edx,0xEB92D8`; EAX and ECX are dead there (ECX is reloaded by the next lea).
     a.label("header")
-    a.b("ba" + _imm(RETAIL_HEADER_TEXT))        # mov edx,retail "+/- Change"
+    a.b("ba" + _imm(RETAIL_HEADER_TEXT))          # mov edx,retail "+/- Change"
+    a.b("833d" + _imm(SCREEN_MODE_VA) + "00")     # cmp dword [0xCC2388],0 (b780 hunt3)
+    a.j8("75", "hdr_done")                        # jne done: Preparation Results keeps the retail label
+    a.b("0fb605" + _imm(data_va))                 # movzx eax,byte [view]
+    a.b("85c0"); a.j8("74", "hdr_done")           # test eax,eax ; jz done (season)
+    a.b("813d" + _imm(record_va) + _imm(RECORD_MAGIC)); a.j8("75", "hdr_done")
+    a.b("803d" + _imm(record_va + 4) + "01"); a.j8("75", "hdr_done")
+    a.b("f605" + _imm(record_va + 5) + "01"); a.j8("74", "hdr_done")
+    a.b("0fb60d" + _imm(record_va + 10))          # movzx ecx,byte [count]
+    a.b("39c8"); a.j8("76", "hdr_clamped")        # cmp eax,ecx ; jbe
+    a.b("89c8")                                   # mov eax,ecx
+    a.label("hdr_clamped")
+    a.b("85c0"); a.j8("74", "hdr_done")           # no stored week: the season label
+    a.b("48")                                     # dec eax
+    a.b("6bc0" + f"{_TEXT_STRIDE:02x}")           # imul eax,eax,24
+    a.b("8d90" + _imm(text_va))                   # lea edx,[eax+text]
+    a.label("hdr_done")
     a.b("c3")
 
     # ---- stage-8 call wrapper: enter the stage, then capture the season baseline --------------
@@ -276,6 +369,10 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     # tables, not one byte), so the screen asks it for both sides of the comparison.  The stored
     # side is staged into the live player's 28 ratings, read, and restored.
     a.label("value")
+    # b780 hunt3: Preparation Results (Weekly Prep's Player Results) shares this getter; it gets the retail getter
+    # with ECX, the arguments and the return address exactly as its caller left them.
+    a.b("833d" + _imm(SCREEN_MODE_VA) + "00")   # cmp dword [0xCC2388],0
+    a.j32(JNE, "value_screen_retail")
     a.b("53565755")                             # push ebx,esi,edi,ebp
     a.b("83ec48")                               # sub esp,0x48
     a.b("8b44245c")                             # mov eax,[esp+0x5c] mode
@@ -310,7 +407,7 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("8b44241c"); a.b("8b4064")              # mov eax,[list+0x64]
     a.b("89442424")                             # [esp+0x24]=group
     # selected view: 0 = season, 1..count = stored week
-    a.b("0fb605" + _imm(data_va))               # movzx eax,byte [toggle]
+    a.b("0fb605" + _imm(data_va))               # movzx eax,byte [view]
     a.b("0fb64d0a")                             # movzx ecx,byte [record+10] count
     a.b("39c8"); a.j32(JBE, "view_ok")          # cmp eax,ecx ; jbe
     a.b("89c8")                                 # mov eax,ecx
@@ -399,6 +496,7 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     # franchise with no record yet the fallback bugchecked at 0xF31B6 (Front Office > Player Progress froze).
     a.b("8b4c2418")                             # mov ecx,[esp+0x18] (the manager)
     a.b("83c448"); a.b("5d5f5e5b")              # restore the caller frame
+    a.label("value_screen_retail")              # b780 hunt3: entered untouched for Preparation Results
     a.b("53"); a.b("8b5c240c")                  # replay the retail prologue
     a.jmp_abs(0x00365B25)
 
@@ -717,11 +815,13 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("b801000000"); a.b("5e"); a.b("c3")     # mov eax,1 ; pop esi ; ret (damaged)
     a.label("adm_ok")
     a.b("31c0"); a.b("5e"); a.b("c3")
-    a.label("adm_family")                       # ZF: ecx is eax plus 0, the career, the progress or both footers
+    a.label("adm_family")                       # ZF: ecx is eax plus 0, the career block, then any footer
+    # b780 j23: one family for every footer (nfl2k5_franchise_extension.admitted_sizes): 0, the Player Progress
+    # footer, the extension body, or both, each with or without the MyCareer block.
     a.b("39c1"); a.j8("74", "adm_family_done")
-    a.b("8d90" + _imm(record.MYCAREER_FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_family_done")
-    a.b("8d90" + _imm(FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_family_done")
-    a.b("8d90" + _imm(record.MYCAREER_FOOTER_SIZE + FOOTER_SIZE)); a.b("39d1")
+    for extra in _ADMITTED_EXTRAS:
+        a.b("8d90" + _imm(extra)); a.b("39d1"); a.j8("74", "adm_family_done")
+    a.b("83f9ff")                               # cmp ecx,-1: a file size is never 0xFFFFFFFF, so ZF = 0 here
     a.label("adm_family_done")
     a.b("c3")
     return a.assemble(), dict(a.labels)
@@ -755,7 +855,7 @@ def labels() -> dict[str, int]:
 
 def _code(visible_only: bool, code_va: int, data_va: int,
           size_target: int, save_target: int, load_target: int,
-          use_native_admission: bool = True) -> bytes:
+          use_native_admission: bool = True, hosted: bool = False) -> bytes:
     if visible_only:
         first, labels_now = _assemble(code_va, data_va, 0, 0, 0, 0, 0, 0, 0, visible_only=True)
         _require(len(first) == len(_VISIBLE_TEMPLATE) and labels_now == _VISIBLE_LABELS,
@@ -770,6 +870,8 @@ def _code(visible_only: bool, code_va: int, data_va: int,
                             size_target, save_target, load_target)
     _require(len(code) == len(first) and again == labels_now, "cave assembly drifted")
     blob = code + MAP + LAST_WEEK_TEXT
+    if hosted:
+        return _finish(blob, VARIANT_HOSTED, 0, 0, 0, False)
     return _finish(blob, VARIANT_FULL, size_target, save_target, load_target, use_native_admission)
 
 
@@ -784,6 +886,11 @@ def visible_code_for(code_va: int) -> bytes:
     return _code(True, code_va, 0, 0, 0, 0)
 
 
+def hosted_code_for(code_va: int, data_va: int) -> bytes:
+    """b780 j23: the hosted variant's allocation: the full cave (its footer hooks unreachable), trailer variant 3."""
+    return _code(False, code_va, data_va, *HOSTED_TARGETS, use_native_admission=False, hosted=True)
+
+
 def _sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
     """Every executable edit: label, VA, retail bytes, patched bytes."""
     lab = _LABELS
@@ -792,7 +899,7 @@ def _sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
     week = code_va + lab["week_setter"]
     value = code_va + lab["value"]
     header = code_va + lab["header"]
-    toggle = code_va + lab["toggle"]
+    event = code_va + lab["event"]
     return [
         ("visibility", SITE_VISIBILITY[0], SITE_VISIBILITY[1],
          b"\xe9" + _rel32(vis, SITE_VISIBILITY[0])),
@@ -809,7 +916,7 @@ def _sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
         ("change_header", SITE_HEADER[0], SITE_HEADER[1],
          b"\xe8" + _rel32(header, SITE_HEADER[0])),
         ("event_pointer", SITE_EVENT_POINTER[0], SITE_EVENT_POINTER[1],
-         struct.pack("<I", toggle)),
+         struct.pack("<I", event)),
     ]
 
 
@@ -848,7 +955,7 @@ def allocation(payload: bytes) -> tuple[dict, dict] | None:
 def _trailer_at(image: XbeImage, code_va: int) -> tuple[int, int, int, int, bool] | None:
     raw = image.read(code_va + CODE_SIZE - TRAILER_SIZE, TRAILER_SIZE)
     magic, variant, size_target, save_target, load_target, native_admission = struct.unpack("<IIIIII", raw)
-    if magic != TRAILER_MAGIC or variant not in (VARIANT_VISIBLE, VARIANT_FULL) or native_admission > 1:
+    if magic != TRAILER_MAGIC or variant not in (VARIANT_VISIBLE, VARIANT_FULL, VARIANT_HOSTED) or native_admission > 1:
         return None
     return variant, size_target, save_target, load_target, bool(native_admission)
 
@@ -887,21 +994,31 @@ def _save_prerequisites_ok(image: XbeImage) -> bool:
 # economy (revision 3, AFTER_STAGE) redirects the stage getter call at the head of the next-season routine, five
 # bytes before this owner's own stage_next_season site. It is accepted only as that owner's exact call into its own
 # installed code, with the franchise economy reading back applied; the retail bytes restore the guarded digest.
-CO_OWNER_SITES = ((0x00248628, bytes.fromhex("e873f4ffff")),)   # call 0x247AA0, the retail stage getter
+CO_OWNER_SITES = ((0x00248628, bytes.fromhex("e873f4ffff")),   # call 0x247AA0, the retail stage getter
+                  (0x00248632, bytes.fromhex("e809f5ffff")))   # b780-c6: call 0x247B40, the coaching carousel's site
 
 
 def _co_owner_restore(image: XbeImage, va: int, size: int, content: bytearray) -> None:
+    """Put back the retail bytes of another owner's site inside a guarded span when that owner is installed and the bytes
+    are exactly its own: the franchise economy's stage getter call (0x248628) and, b780-c6, the coaching carousel's
+    rollover call (0x248632)."""
     hooked = [(at, retail) for at, retail in CO_OWNER_SITES if va <= at and at + len(retail) <= va + size
               and bytes(content[at - va:at - va + len(retail)]) != retail]
     if not hooked:
         return
+    payload = bytes(image.data)
+    patched: dict[int, bytes] = {}
     from . import nfl2k5_franchise_economy as economy
-    if economy.status(bytes(image.data)) != "applied":
-        return
-    sites = {site.va: site for site in economy.sites()}
+    # b780 n6: a beta-79 economy reads "legacy" (b4: upgraded in place); its stage getter call is the same bytes
+    if economy.status(payload) in ("applied", "legacy"):
+        patched.update({site.va: site.patched for site in economy.sites()})
+    if any(at == 0x00248632 for at, _retail in hooked):
+        from . import nfl2k5_coach_carousel as carousel
+        if carousel.status(payload) == "applied":
+            code = carousel.allocations(payload)["code"]["va"]
+            patched.update({at: after for _label, at, _before, after in carousel.sites(code)})
     for at, retail in hooked:
-        site = sites.get(at)
-        if site is not None and bytes(content[at - va:at - va + len(retail)]) == site.patched:
+        if patched.get(at) == bytes(content[at - va:at - va + len(retail)]):
             content[at - va:at - va + len(retail)] = retail
 
 
@@ -936,9 +1053,32 @@ def _footer_prerequisite_ok(image: XbeImage, site) -> bool:
     return raw[0] == 0xE8
 
 
+# b780 n6: beta-79 / SOFTDRINK 2K28 v0.8 carries the previous revision (frozen generator nfl2k5_player_progress_screen_b779:
+# the old event slot 0xF4268 and the older cave). It reads "previous"; MyCareer and the franchise owners see its exact
+# hooks through the functions below; apply() refuses to update it in place (MyCareer's beta-79 handlers are its chain
+# targets), so the update is a rebuild from the retail game.
+PREVIOUS_REVISION = "beta-79"
+PREVIOUS_REFUSAL = ("The Player Progress screen on this disc is the beta 79 revision, chained to the beta 79 MyCareer, so "
+                    "this release cannot update it in place. Rebuild from your retail game to get this release's screen.")
+
+
+def _previous_module():
+    from . import nfl2k5_player_progress_screen_b779 as previous
+    return previous
+
+
+def _revision(previous: bool):
+    """(code_for, _sites, _footer_sites) of this release or of the beta-79 revision."""
+    if previous:
+        old = _previous_module()
+        return old.code_for, old._sites, old._footer_sites
+    return code_for, _sites, _footer_sites
+
+
 def _exact_full_install(payload: bytes):
-    """(code_va, displaced targets) of this owner's complete full install without the native admission (its code
-    blob, trailer and every main and footer hook exactly as apply() writes them), else None (b778 bd3)."""
+    """(code_va, displaced targets, previous) of this owner's complete full install without the native admission (its
+    code blob, trailer and every main and footer hook exactly as apply() writes them; b780 n6: or exactly as beta-79
+    wrote them, previous=True), else None (b778 bd3)."""
     try:
         found = allocation(payload)
         if not found:
@@ -949,12 +1089,16 @@ def _exact_full_install(payload: bytes):
         if trailer is None or trailer[0] != VARIANT_FULL or trailer[4]:
             return None
         targets = trailer[1:4]
-        if image.read(code_va, CODE_SIZE) != code_for(code_va, data_va, targets, use_native_admission=False):
+        raw = image.read(code_va, CODE_SIZE)
+        for previous in (False, True):
+            make_code, make_sites, make_footer = _revision(previous)
+            if raw != make_code(code_va, data_va, targets, use_native_admission=False):
+                continue
+            if all(image.read(va, len(after)) == after
+                   for _label, va, _before, after in make_sites(code_va) + make_footer(code_va, include_admission=True)):
+                return code_va, targets, previous
             return None
-        for _label, va, _before, after in _sites(code_va) + _footer_sites(code_va, include_admission=True):
-            if image.read(va, len(after)) != after:
-                return None
-        return code_va, targets
+        return None
     except _ERRORS:
         return None
 
@@ -968,17 +1112,59 @@ def chained_footer_sites(payload: bytes) -> dict[int, tuple[bytes, int | None]]:
     found = _exact_full_install(payload)
     if found is None:
         return {}
-    code_va, targets = found
+    code_va, targets, previous = found
     displaced = dict(zip(("total_size", "save_front_office", "load_end"), targets))
     return {va: (after, displaced.get(label))
-            for label, va, _before, after in _footer_sites(code_va, include_admission=True)}
+            for label, va, _before, after in _revision(previous)[2](code_va, include_admission=True)}
+
+
+def hosted_addresses(payload: bytes) -> tuple[int, int] | None:
+    """b780 j23: (RAM footer VA, capture_baseline VA) of this owner's exact hosted install, else None. The franchise
+    footer host saves and loads those 34,320 bytes and calls capture_baseline for a save without a valid footer."""
+    try:
+        found = allocation(payload)
+        if not found or _recognize(payload) != "hosted":
+            return None
+        code_va, data_va = found[0]["va"], found[1]["va"]
+        return data_va + 16, code_va + _LABELS["capture_baseline"]
+    except _ERRORS:
+        return None
 
 
 def installed_main_sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
     """(label, VA, retail bytes, installed bytes) of this owner's main hooks, for its exact complete full install
-    (_exact_full_install); empty otherwise (b778 bd3, for MyCareer's view of a composed image)."""
+    (_exact_full_install) or its exact hosted install (b780 j23); empty otherwise (b778 bd3, for MyCareer's view of a
+    composed image)."""
     found = _exact_full_install(payload)
-    return [] if found is None else _sites(found[0])
+    if found is None:
+        hosted_va = _exact_hosted_install(payload)
+        return [] if hosted_va is None else _sites(hosted_va)
+    return _revision(found[2])[1](found[0])
+
+
+def _exact_hosted_install(payload: bytes) -> int | None:
+    """b780-int: the code VA of this owner's exact hosted install (trailer variant 3, the hosted code blob and every
+    main hook as apply() writes them), else None. Structural only, like _exact_full_install: it never asks the
+    franchise save routine's other owners (MyCareer asks this owner from inside its own recognizer, and the full
+    _recognize checks the save routine through MyCareer and Auto Save, which looped forever when a pool reserved this
+    owner's allocation before its install)."""
+    try:
+        found = allocation(payload)
+        if not found:
+            return None
+        image = XbeImage(payload)
+        code_va, data_va = found[0]["va"], found[1]["va"]
+        trailer = _trailer_at(image, code_va)
+        if trailer is None or trailer[0] != VARIANT_HOSTED or tuple(trailer[1:]) != (0, 0, 0, False):
+            return None
+        if image.read(code_va, CODE_SIZE) != hosted_code_for(code_va, data_va):
+            return None
+        for _label, va, _before, after in _sites(code_va):
+            if image.read(va, len(after)) != after:
+                return None
+        return code_va
+    except _ERRORS:
+        return None
 
 
 def _displaced_targets(image: XbeImage) -> tuple[int, int, int]:
@@ -1010,6 +1196,18 @@ def _recognize(payload: bytes) -> str:
         _require(_save_prerequisites_ok(image), "foreign franchise save routine")
         return "retail"
     variant, size_target, save_target, load_target, native_admission = trailer
+    if variant == VARIANT_HOSTED:
+        # b780 j23: the main sites are this owner's; the four save-path sites belong to the footer host (or are still
+        # retail/MyCareer before it installs). They must never be this owner's own footer hooks.
+        states = _site_states(image, _sites(code_va))
+        _require(states in ({"retail"}, {"applied"}), "mixed hosted Player Progress sites")
+        _require(_site_states(image, _footer_sites(code_va, include_admission=True)) <= {"retail", "foreign"},
+                 "a hosted Player Progress build carries its own footer hooks")
+        _require((size_target, save_target, load_target, native_admission) == (0, 0, 0, False),
+                 "foreign hosted Player Progress trailer")
+        _require(image.read(code_va, CODE_SIZE) == hosted_code_for(code_va, data_va), "foreign hosted Player Progress code")
+        _require(_guards_ok(image, _sites(code_va)), "foreign Player Progress prerequisite")
+        return "hosted" if states == {"applied"} else "retail"
     full_sites = _sites(code_va) + _footer_sites(code_va, include_admission=not native_admission)
     visible = _sites(code_va)[:1]
     if variant == VARIANT_VISIBLE:
@@ -1025,16 +1223,23 @@ def _recognize(payload: bytes) -> str:
         _require(raw == expected, "foreign visibility-only code")
         _require(_guards_ok(image, visible), "foreign Player Progress prerequisite")
         return "visible" if states == {"applied"} else "retail"
+    raw = image.read(code_va, CODE_SIZE)
+    targets = (size_target, save_target, load_target)
+    previous = raw != code_for(code_va, data_va, targets, use_native_admission=native_admission)
+    if previous:   # b780 n6: the exact beta-79 full install (code, nine sites and footer hooks) reads "previous"
+        old = _previous_module()
+        _require(raw == old.code_for(code_va, data_va, targets, use_native_admission=native_admission),
+                 "foreign Player Progress code")
+        full_sites = old._sites(code_va) + old._footer_sites(code_va, include_admission=not native_admission)
     states = _site_states(image, full_sites)
     _require(states in ({"retail"}, {"applied"}), "mixed Player Progress sites")
     if native_admission:
         _require(image.read(SITE_ADMISSION[0], 1) == b"\xe9",
                  "the native admission hook this build chains to is gone")
-    raw = image.read(code_va, CODE_SIZE)
-    expected = code_for(code_va, data_va, (size_target, save_target, load_target),
-                        use_native_admission=native_admission)
-    _require(raw == expected, "foreign Player Progress code")
     _require(_guards_ok(image, full_sites), "foreign Player Progress prerequisite")
+    if previous:
+        _require(states == {"applied"}, "a beta-79 Player Progress cave without its hooks")
+        return "previous"
     return "applied" if states == {"applied"} else "retail"
 
 
@@ -1055,22 +1260,32 @@ def variant(payload: bytes) -> str | None:
             return None
         if trailer[0] == VARIANT_VISIBLE:
             return "visible" if _recognize(payload) == "visible" else None
+        if trailer[0] == VARIANT_HOSTED:
+            return "hosted" if _recognize(payload) == "hosted" else None
         return "full" if _recognize(payload) == "applied" else None
     except _ERRORS:
         return None
 
 
-def apply(payload: bytes, *, visible_only: bool = False) -> tuple[bytes, Mapping[str, object]]:
-    """Install (or replay) the owner.  Needs the growable pool (xs1)."""
+def apply(payload: bytes, *, visible_only: bool = False, hosted: bool = False) -> tuple[bytes, Mapping[str, object]]:
+    """Install (or replay) the owner.  Needs the growable pool (xs1).
+
+    b780 j23 ``hosted``: the full screen and capture without the four save-path hooks; install the franchise footer
+    host (``nfl2k5_franchise_footer``) afterwards, which saves and loads this owner's footer."""
+    _require(not (visible_only and hosted), "the hosted variant is the full screen; visible_only excludes it")
     state = _recognize(payload)
+    if state == "hosted" and hosted:
+        return payload, {"owner": OWNER, "experimental": True, "status": "already_applied", "changed_bytes": 0,
+                         "edits": [], "variant": "hosted", "footer_size": FOOTER_SIZE, "save_growth": FOOTER_SIZE}
     common = {"owner": OWNER, "experimental": True, "code_bytes": CODE_SIZE,
               "data_bytes": REQUESTS[1][2], "record_size": RECORD_SIZE,
               "footer_size": FOOTER_SIZE, "save_growth": 0 if visible_only else FOOTER_SIZE}
     if state == "visible" and visible_only:
         return payload, {**common, "status": "already_applied", "changed_bytes": 0, "edits": []}
-    if state == "applied" and not visible_only:
+    if state == "applied" and not visible_only and not hosted:
         return payload, {**common, "status": "already_applied", "changed_bytes": 0, "edits": []}
-    _require(state in ("retail", "visible"), "foreign Player Progress installation")
+    _require(state != "previous", PREVIOUS_REFUSAL)   # b780 n6
+    _require(state in ("retail", "visible") and not (hosted and state == "visible"), "foreign Player Progress installation")
     before = payload
     if allocation(payload) is None:
         if space.status(payload) == "retail":
@@ -1084,14 +1299,14 @@ def apply(payload: bytes, *, visible_only: bool = False) -> tuple[bytes, Mapping
     image = XbeImage(payload)
     targets = (0x002D0780, 0x002D0790, 0x002D0780)
     use_native_admission = False
-    if not visible_only:
+    if not visible_only and not hosted:
         targets = _displaced_targets(image)
-    blob = _code(visible_only, code["va"], data["va"], *targets,
-                 use_native_admission=use_native_admission)
+    blob = (hosted_code_for(code["va"], data["va"]) if hosted else
+            _code(visible_only, code["va"], data["va"], *targets, use_native_admission=use_native_admission))
     payload, _ = space.install_code(payload, OWNER, blob)
     buf = bytearray(payload)
     image = XbeImage(payload)
-    edits = (_sites(code["va"])[:1] if visible_only else
+    edits = (_sites(code["va"])[:1] if visible_only else _sites(code["va"]) if hosted else
              _sites(code["va"]) + _footer_sites(code["va"], include_admission=not use_native_admission))
     for label, va, old, new in edits:
         off = image.offset(va, len(old))
@@ -1109,10 +1324,10 @@ def apply(payload: bytes, *, visible_only: bool = False) -> tuple[bytes, Mapping
     for section in _sections(buf):
         buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
     result = bytes(buf)
-    final_state = "visible" if visible_only else "applied"
+    final_state = "visible" if visible_only else "hosted" if hosted else "applied"
     _require(_recognize(result) == final_state and space.status(result) == "applied",
              "Player Progress postcondition failed")
-    return result, {**common, "status": "applied", "variant": final_state,
+    return result, {**common, "status": "applied", "variant": final_state, "hosted": hosted,
                     "native_admission": use_native_admission,
                     "code_va": hex(code["va"]), "data_va": hex(data["va"]),
                     "before_sha256": hashlib.sha256(before).hexdigest(),
@@ -1135,4 +1350,4 @@ __all__ = ["OWNER", "BUILD_CAPTION", "HELP_TEXT", "VISIBLE_CAPTION", "VISIBLE_HE
            "SITE_VISIBILITY", "SITE_STAGE_NEW_SEASON", "SITE_STAGE_NEXT", "SITE_WEEK", "SITE_VALUE",
            "SITE_HEADER", "SITE_EVENT_POINTER", "SITE_TOTAL_SIZE", "SITE_SAVE_FRONT_OFFICE",
            "SITE_LOAD_END", "SITE_ADMISSION", "PlayerProgressScreenError", "allocation", "apply",
-           "code_for", "labels", "status", "variant", "visible_code_for"]
+           "code_for", "hosted_addresses", "hosted_code_for", "labels", "status", "variant", "visible_code_for"]

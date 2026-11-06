@@ -1719,13 +1719,13 @@
  "receipt": {
   "team": "OAK",
   "offense_pack": "data/playbooks/softdrink_oak_modern.2k5book",
-  "offense_pack_sha256": "200faa0ccbefbb42061eb5304f516e5b2f4b99358b03e3ff9384e5608635c9d4",
-  "source_fingerprint": "ba9990eeb0d6085cf5a7501316ed92adea9d5666a72829c24aa797544f9e7ea1",
-  "replacement_sha256": "683b9f96084c38f18a9a85501fe0b492861f49e66f1c14f6396af9327a869114",
+  "offense_pack_sha256": "5d9734db906aaceb9da8f31461f8d1a9bafffd37ce357d39646bd37461a3e8b8",
+  "source_fingerprint": "2cc9813733a3108e3d1968c06559bcc31a6619fac781fa3aa973f2faf963c607",
+  "replacement_sha256": "56cc7e15066be17d5b6e9bce4ef98fd6e0b0404f98b8b85969b369f543967d8f",
   "semantic_sha256": "698366604b564f6f710e1c78beb57260e2318a00cc7ac853511a0f579f72f86a",
   "plays": 57,
   "formations": 4,
-  "nodes": 2882,
+  "nodes": 2880,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1733,7 +1733,10 @@
   "band_loss": 0.17907,
   "spy_play": null,
   "native_scoring_faults": 0,
+  "name_pool_units": 5048,
+  "name_pool_capacity": 5088,
+  "name_mode": 0,
   "pack": "data/playbooks/softdrink_oak_defense.2k5book",
-  "pack_sha256": "a6752d1c1a43e9daee364dd2866ca9f05ec6af392b6777278a45e091953bc48b"
+  "pack_sha256": "ce446988874b96cab4a6616fcdb98a6fe61217bea670f6fda5997959a6b4b36f"
  }
 }

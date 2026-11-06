@@ -1852,13 +1852,13 @@
  "receipt": {
   "team": "BAL",
   "offense_pack": "data/playbooks/softdrink_bal_modern.2k5book",
-  "offense_pack_sha256": "06d62404c43d71df0cbce544d6d11a56177b495f9ee3e41763f92170f825fdf4",
-  "source_fingerprint": "c2827705239d91392801eb3381d4eeabb515caf231a005f0a70c94edc96fe714",
-  "replacement_sha256": "5540e3985264d5366ae7779e2d8fb28065ad3cdb7051b8917ca509bd2bff2e9e",
+  "offense_pack_sha256": "f287405737f6ff8d48037a6a5209ced84af19249fef9eee39a8f04452925c70f",
+  "source_fingerprint": "3bc53933f3687fd312aaf95d13ac5f6d63ff8a10d240e8a384d2b61e7c4bc9c1",
+  "replacement_sha256": "98beed15ffc26f617181d09a48212b5bb29a56d50919427feb835fffda16dee4",
   "semantic_sha256": "04469ed7b7a80e8e38f0906caa4aad87472b895804735715e333eb7106bcfa24",
   "plays": 62,
   "formations": 4,
-  "nodes": 2945,
+  "nodes": 2941,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1866,7 +1866,10 @@
   "band_loss": 1.42149,
   "spy_play": null,
   "native_scoring_faults": 0,
+  "name_pool_units": 5067,
+  "name_pool_capacity": 5088,
+  "name_mode": 0,
   "pack": "data/playbooks/softdrink_bal_defense.2k5book",
-  "pack_sha256": "fb9b95a13ae8ef6bc3056f1d53f6ef4b4e012cd331cb01a801851c9291507376"
+  "pack_sha256": "6b29983a79a1fc73c1cb155b9b847d41d9fefe791dd3078f1e8e6342c63d3719"
  }
 }

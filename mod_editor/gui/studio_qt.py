@@ -26,6 +26,7 @@ from pathlib import Path
 import tempfile
 import time
 import threading
+import traceback
 from typing import Any, Callable, Iterable, Mapping, Protocol, Sequence, runtime_checkable
 from uuid import uuid4
 import weakref
@@ -85,6 +86,13 @@ from mod_editor.core.texture_master import (
 )
 from mod_editor.gui import branding
 from mod_editor.gui.ux_text import XEMU_LINE, Details, tab_title  # noqa: F401
+from mod_editor.gui.ux_text import ElidedStatusLabel  # b780-uxfix: the footer messages
+from mod_editor.gui.ux_text import FlowLayout, get_item, make_shrinkable  # b780 CI: wrapping rows, dialogs, eliding buttons
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
+try:   # b780 CI (macOS): numpy's import-time self-check runs on the main thread, not first inside a pool task
+    import numpy  # noqa: F401
+except ImportError:   # pragma: no cover - numpy is a Studio requirement; the pages that need it say so themselves
+    pass
 from mod_editor.core import mod_build, platform_compat
 from mod_editor.gui import crash_report
 from mod_editor.gui import update_ui
@@ -268,7 +276,7 @@ _FIX_HINTS: tuple[tuple[str, str], ...] = (
 )
 
 
-def _record_failed_operation(label: str, message: str) -> None:
+def _record_failed_operation(label: str, message: str, details: str | None = None) -> None:
     """Append a failed background operation to errors.log, never raising.
 
     Beta 74. A build or import that fails is caught and shown in the
@@ -281,7 +289,11 @@ def _record_failed_operation(label: str, message: str) -> None:
 
     try:
         from mod_editor.gui import crash_report
-        crash_report.record_operation(label, message, "2K5 Mod Studio")
+        if details:
+            # b791-h3: the traceback says where it happened, not only what it said
+            crash_report.record_operation(label, message, "2K5 Mod Studio", details=details)
+        else:
+            crash_report.record_operation(label, message, "2K5 Mod Studio")
     except Exception:  # noqa: BLE001 - logging must never block the dialog
         pass
 
@@ -318,6 +330,40 @@ def _build_blocker_message(*, ready: bool, edit_count: int, busy: bool) -> str:
     return BUILD_READY_MESSAGE
 
 
+#: b780 Q52: from this many edits a recovery snapshot waits for AUTOSAVE_QUIET_MS without changes (it takes seconds).
+AUTOSAVE_QUIET_EDITS = 1000
+AUTOSAVE_QUIET_MS = 15000
+
+#: b780-uxfix2: the widest a file name may be on Getting Started's Continue with <file> button.
+CONTINUE_NAME_WIDTH = 420
+
+#: b780-uxfix: the Share tab installs SOFTDRINK 2K28 first; "Share" alone read as sending something to a friend.
+SHARE_TAB_TITLE = "Install & Share"
+
+#: b780-uxfix: the footer never grows past this (two message lines, the Build & Share caption, the buttons).
+#: b780 CI: 184 leaves room for a second row of buttons when wide text makes them wrap (one row at normal sizes).
+FOOTER_MAX_HEIGHT = 184
+
+
+def roster_work_sentences(players: int, staff: int, context: str) -> tuple[str, str, str]:
+    """The unsaved ★ Rosters prompt: (text, informative text, summary), the verb and pronoun agreeing with the count.
+
+    b780-uxfix2: it read "★ Rosters has 1 edited player that are not saved yet".
+    """
+    parts = []
+    if players:
+        parts.append(f"{players} edited player{'s' if players != 1 else ''}")
+    if staff:
+        parts.append(f"{staff} staff change{'s' if staff != 1 else ''}")
+    summary = " and ".join(parts) or "edits"
+    one = players + staff == 1
+    verb, them = ("is", "it") if one else ("are", "them")
+    return (f"★ Rosters has {summary} that {verb} not saved yet.",
+            f"{context} loses {them}. To keep {them}, choose Cancel, then on ★ Rosters use "
+            "Export roster edits (.json)… or Save disc copy…. A project file does not hold roster edits.",
+            summary)
+
+
 def _getting_started_document() -> Path | None:
     """The packaged Getting Started guide, or None when this build does not carry it."""
 
@@ -325,6 +371,70 @@ def _getting_started_document() -> Path | None:
     for candidate in (
         here.parents[2] / "docs" / "mod_editor" / "2k5_mod_studio_getting_started.md",
         here.parents[1] / "docs" / "2k5_mod_studio_getting_started.md",
+    ):
+        try:
+            if candidate.is_file():
+                return candidate
+        except OSError:
+            continue
+    return None
+
+
+def _help_document(name: str) -> Path | None:
+    """A packaged help page from docs/mod_editor (same lookup as the guide and the FAQ), or None."""
+
+    here = Path(__file__).resolve()
+    for candidate in (here.parents[2] / "docs" / "mod_editor" / name, here.parents[1] / "docs" / name):
+        try:
+            if candidate.is_file():
+                return candidate
+        except OSError:
+            continue
+    return None
+
+
+#: b780-uxfix: the two short pages a first-time user needs, first in the Help menu.
+HELP_START_HERE = ("Start here: install SOFTDRINK 2K28 in 5 steps…", "install_softdrink_2k28.md")
+HELP_XEMU_SETUP = ("Set up xemu (memory and BIOS)…", "recommended_xemu_settings.md")
+
+
+def _show_help_document(parent: QWidget, path: Path) -> QWidget:
+    """Show a packaged Markdown page inside the Studio (b780-uxfix).
+
+    Help used to hand the .md file to the operating system: on Windows that is usually "How do you want to
+    open this file?" or raw **stars** in Notepad. One help window is reused; links to other pages open in it,
+    web links open in the browser.
+    """
+
+    from mod_editor.gui.ux_text import MarkdownHelpDialog
+    dialog = getattr(parent, "_help_dialog", None)
+    if dialog is None:
+        dialog = MarkdownHelpDialog(parent)
+        parent._help_dialog = dialog
+    dialog.load(path)
+    dialog.show()
+    dialog.raise_()
+    return dialog
+
+
+def _open_logs_folder() -> bool:
+    """Open the folder that holds errors.log (made first if this install has not written one yet)."""
+
+    folder = crash_report.log_directory("2K5 Mod Studio")
+    try:
+        folder.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        pass
+    return bool(QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder))))
+
+
+def _faq_document() -> Path | None:
+    """The packaged FAQ (same lookup as the Getting Started guide), or None when this build does not carry it."""
+
+    here = Path(__file__).resolve()
+    for candidate in (
+        here.parents[2] / "docs" / "mod_editor" / "2k5_mod_studio_faq.md",
+        here.parents[1] / "docs" / "2k5_mod_studio_faq.md",
     ):
         try:
             if candidate.is_file():
@@ -802,6 +912,7 @@ class _EmbeddedOperationGuardedHost:
         self._team_names_enabled = team_names_enabled or (lambda: False)
         self._modern_naming_enabled = modern_naming_enabled or (lambda: False)
         self._override_cache = None
+        self._digest_cache = None   # b780-uxfix: (manifest file stamp, digest); see _naming_digest
         self._requester = requester
         self._require_mutation_admission = require_mutation_admission
 
@@ -835,19 +946,36 @@ class _EmbeddedOperationGuardedHost:
             teams.append(team)
         return Nfl2k5TextCatalog(catalog.banks, catalog.assets, teams, catalog.players, catalog.number_assets)
 
+    def _naming_digest(self):
+        """The modern naming manifest's digest, computed again only when the manifest file changes.
+
+        b780-uxfix: Names, Numbers & Faces asks for it on every table cell (text_value). Reading,
+        checking and hashing the manifest each time froze the window for minutes once a Modern or
+        Experimental preset was ticked. The file's size, change time and inode stand for its content.
+        """
+        from mod_editor.core import nfl2k5_modern_naming as modes
+        from mod_editor.core.nfl2k5_throw_tuning import _modern_naming_digest
+        try:
+            info = os.stat(modes.MANIFEST)
+            stamp = (str(modes.MANIFEST), info.st_mtime_ns, info.st_size, info.st_ino)
+        except OSError:
+            return _modern_naming_digest()
+        if self._digest_cache is None or self._digest_cache[0] != stamp:
+            self._digest_cache = (stamp, _modern_naming_digest())
+        return self._digest_cache[1]
+
     def _team_name_overrides(self, catalog=None):
-        if not (self._team_names_enabled() or self._modern_naming_enabled()):
+        team_names, modern_naming = self._team_names_enabled(), self._modern_naming_enabled()  # b780-uxfix: once
+        if not (team_names or modern_naming):
             return {}
         from mod_editor.core import nfl2k5_team_names_2026 as names, nfl2k5_modern_naming as modes
-        from mod_editor.core.nfl2k5_throw_tuning import _modern_naming_digest
-        key = (self._team_names_enabled(), self._modern_naming_enabled(),
-               getattr(self._host, "source_path", None), _modern_naming_digest())
+        key = (team_names, modern_naming, getattr(self._host, "source_path", None), self._naming_digest())
         if catalog is None and self._override_cache is not None and self._override_cache[0] == key:
             return self._override_cache[1]
         if catalog is None:
             catalog = self._host.text_catalog_snapshot(lambda *_: None)
-        values = {**names.catalog_overrides(catalog, enabled=self._team_names_enabled(), value_lookup=self._host.text_value),
-                  **modes.catalog_overrides(catalog, enabled=self._modern_naming_enabled(), value_lookup=self._host.text_value)}
+        values = {**names.catalog_overrides(catalog, enabled=team_names, value_lookup=self._host.text_value),
+                  **modes.catalog_overrides(catalog, enabled=modern_naming, value_lookup=self._host.text_value)}
         self._override_cache = key, values, {asset_id: self._host.text_value(asset_id) for asset_id in values}
         return values
 
@@ -1406,7 +1534,7 @@ class _WorkspaceMap(dict):
         self.window = window
 
     def __missing__(self, category):
-        self.window._ensure_workspace(PRODUCT_CATEGORY_ORDER.index(category) + 1)
+        self.window._ensure_workspace(self.window._navigation_row(category))
         if category not in self:
             raise KeyError(category)
         return self[category]
@@ -1495,6 +1623,7 @@ class _BackgroundTask(QRunnable):
         self.operation = operation
         self.signals = _TaskSignals()
         self.cancelled = threading.Event()
+        self.traceback_text = ""
         self.setAutoDelete(False)
 
     def run(self) -> None:
@@ -1510,6 +1639,8 @@ class _BackgroundTask(QRunnable):
             result = self.operation(progress)
         except BaseException as exc:  # Qt must receive failures, never lose them.
             message = plain_error(exc)
+            # b791-h3: errors.log keeps the whole traceback (the dialog keeps the plain sentence)
+            self.traceback_text = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
             self.signals.error.emit(message)
         else:
             self.signals.result.emit(result)
@@ -1760,7 +1891,7 @@ class StudioMainWindow(QMainWindow):
         self._source_state = None
         self._senior_bowl_panel = None
         self._scorebar_panel = None
-        self.thread_pool = QThreadPool.globalInstance()
+        self.thread_pool = roomy_pool(QThreadPool.globalInstance())   # b780 CI: macOS pool threads had 512 KiB
         self._workers: set[_BackgroundTask] = set()
         self._blocking = False
         self._embedded_audio_busy = False
@@ -1932,6 +2063,17 @@ class StudioMainWindow(QMainWindow):
 
     def _install_help_menu(self) -> None:
         help_menu = self.menuBar().addMenu("&Help")
+        # b780-uxfix: the 5-step install and the xemu settings come first, shown inside the Studio
+        for caption, name in (HELP_START_HERE, HELP_XEMU_SETUP):
+            page = _help_document(name)
+            action = help_menu.addAction(caption)
+            if page is None:
+                action.setEnabled(False)
+                action.setToolTip("This page is not included in this build; see the website.")
+            else:
+                action.setToolTip(str(page))
+                action.triggered.connect(lambda _checked=False, path=page: _show_help_document(self, path))
+        help_menu.addSeparator()
         discord_action = help_menu.addAction("Join the Discord…")
         discord_action.setToolTip("Opens the community Discord invite in your browser.")
         discord_action.triggered.connect(
@@ -1944,9 +2086,25 @@ class StudioMainWindow(QMainWindow):
             guide_action.setToolTip("The guide is not included in this build; see the website.")
         else:
             guide_action.setToolTip(str(guide))
-            guide_action.triggered.connect(
-                lambda _checked=False, path=guide: QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
+            guide_action.triggered.connect(   # b780-uxfix: inside the Studio, not handed to the OS as raw .md
+                lambda _checked=False, path=guide: _show_help_document(self, path)
             )
+        # b780-b13: the common first-run questions (.iso or .xiso, no disc drive, a sharper picture, a game that will not
+        # start) live in the FAQ; it was only reachable from the Getting Started guide's last page.
+        faq = _faq_document()
+        faq_action = help_menu.addAction("Questions and answers (FAQ)…")
+        if faq is None:
+            faq_action.setEnabled(False)
+            faq_action.setToolTip("The FAQ is not included in this build; see the website.")
+        else:
+            faq_action.setToolTip(str(faq))
+            faq_action.triggered.connect(   # b780-uxfix: inside the Studio, not handed to the OS as raw .md
+                lambda _checked=False, path=faq: _show_help_document(self, path)
+            )
+        # b780-uxfix: errors.log was hard to find when someone asked for it
+        logs_action = help_menu.addAction("Open the logs folder (errors.log)…")
+        logs_action.setToolTip("Opens the folder with errors.log, to attach it to a help request on the Discord.")
+        logs_action.triggered.connect(lambda _checked=False: _open_logs_folder())
         help_menu.addSeparator()
         check_action = help_menu.addAction("Check for Updates…")
         check_action.triggered.connect(self._check_for_updates_now)
@@ -2220,7 +2378,9 @@ class StudioMainWindow(QMainWindow):
                 if owner == "Audio" else "."
             )
             if busy
-            else f"{owner} finished — project actions are available again."
+            # b780-uxfix: a finished Check my project said "Build finished"; the Build tab runs both
+            else ("The Build tab is done. Project actions are available again." if owner == "Build"
+                  else f"{owner} finished — project actions are available again.")
         )
         self._refresh_recent_menus()
         self._refresh_action_states()
@@ -2366,7 +2526,7 @@ class StudioMainWindow(QMainWindow):
     def _show_keyboard_hints(self) -> None:
         self._set_status(
             "Keys: Ctrl+F search · Esc clear · Ctrl+1 categories · "
-            "Ctrl+O open XISO · Ctrl+S save project · Ctrl+/ this help"
+            "Ctrl+O open game file · Ctrl+S save project · Ctrl+/ this help"
         )
 
     def _workspace_state(self) -> object | None:
@@ -2383,6 +2543,8 @@ class StudioMainWindow(QMainWindow):
 
     def _refresh_recent_menus(self) -> None:
         state = self._workspace_state()
+        if hasattr(self, "welcome_continue_button"):
+            QTimer.singleShot(0, bound(self, self._refresh_welcome_state))   # b780-uxfix: Continue with <last file>
         if self._recent_source_menu is not None:
             self._recent_source_menu.clear()
             sources = tuple(getattr(state, "recent_sources", ()))
@@ -2434,17 +2596,85 @@ class StudioMainWindow(QMainWindow):
                 candidate is not None and not self._embedded_operation_is_busy()
             )
 
+    # ------------------------------------------------------------ b780-uxfix: roster work is unsaved work too
+    def _watch_roster_work(self) -> None:
+        """Refresh the window title whenever ★ Rosters records an edit (its undo stack's change hook)."""
+
+        stack = getattr(getattr(self, "_roster_editor_panel", None), "undo_stack", None)
+        if stack is None:
+            return
+        previous = stack.on_change
+
+        def changed() -> None:
+            if previous is not None:
+                previous()
+            self._refresh_project_document_state()
+
+        stack.on_change = changed
+
+    def _roster_work_unsaved(self) -> bool:
+        """Whether ★ Rosters holds roster, staff, franchise or ESPN edits that are not exported or written.
+
+        Those edits live in the page until Export roster edits or Save disc copy; a project file does not
+        hold them, so they never set the workspace's unsaved state and closing the window lost them silently.
+        """
+
+        panel = getattr(self, "_roster_editor_panel", None)
+        try:
+            if panel is None or not panel.is_dirty():
+                return False
+            if panel.espn25_dirty():
+                return True
+            snapshot = getattr(panel, "_edits_snapshot", None)   # set when the edits were last exported or written
+            return snapshot is None or snapshot != panel.edits_key()
+        except Exception:  # noqa: BLE001 - a guard question must never break closing
+            return False
+
+    def _roster_work_counts(self) -> tuple[int, int]:
+        panel = self._roster_editor_panel
+        try:
+            return len(panel._dirty), (panel.coaches_panel.change_count() if hasattr(panel, "coaches_panel") else 0)
+        except Exception:  # noqa: BLE001
+            return 0, 0
+
+    def _roster_work_summary(self) -> str:
+        return roster_work_sentences(*self._roster_work_counts(), "")[2]
+
+    def _confirm_roster_work_lost(self, context: str) -> bool:
+        """Ask before an action that drops unsaved ★ Rosters work; True means go ahead."""
+
+        if not self._roster_work_unsaved():
+            return True
+        if not crash_report.dialog_is_possible(QApplication.platformName()):
+            return True   # offscreen checks: nobody can answer a modal question
+        return self._prompt_roster_work_lost(context)
+
+    def _prompt_roster_work_lost(self, context: str) -> bool:
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Warning)
+        box.setWindowTitle("Roster edits are not saved")
+        text, informative, _summary = roster_work_sentences(*self._roster_work_counts(), context)
+        box.setText(text)
+        box.setInformativeText(informative)
+        lose = box.addButton("Lose roster edits", QMessageBox.DestructiveRole)
+        cancel = box.addButton(QMessageBox.Cancel)
+        box.setDefaultButton(cancel)
+        box.setEscapeButton(cancel)
+        box.exec_()
+        return box.clickedButton() is lose
+
     def _prompt_unsaved_decision(self, context: str) -> str:
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Warning)
         box.setWindowTitle("Save your changes first?")
-        box.setText("This workspace has changes that are not saved to its project.")
+        # b780-uxfix: plain words (it spoke of edit sets and retail-free projects)
+        box.setText("You have changes that are not saved in a project file yet.")
         box.setInformativeText(
-            f"{context} can replace the current edit set. Save a retail-free "
-            ".2k5mod project, discard these edits, or cancel."
+            f"{context} can lose them. Save them as a .2k5mod project (it holds only your own changes, "
+            "never game data), discard them, or cancel."
         )
-        save = box.addButton("Save Project", QMessageBox.AcceptRole)
-        discard = box.addButton("Discard Edits", QMessageBox.DestructiveRole)
+        save = box.addButton("Save project", QMessageBox.AcceptRole)
+        discard = box.addButton("Discard changes", QMessageBox.DestructiveRole)
         cancel = box.addButton(QMessageBox.Cancel)
         box.setDefaultButton(save)
         box.setEscapeButton(cancel)
@@ -2463,6 +2693,8 @@ class StudioMainWindow(QMainWindow):
     ) -> None:
         """Run ``action`` after preserving or explicitly discarding edits."""
 
+        if not self._confirm_roster_work_lost(context):   # b780-uxfix
+            return
         if not self._workspace_dirty:
             action(False)
             return
@@ -2504,15 +2736,17 @@ class StudioMainWindow(QMainWindow):
     def _prompt_recovery_decision(self, candidate: RecoveryCandidate) -> str:
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Question)
-        box.setWindowTitle("Recover unsaved edits?")
-        box.setText("Mod Studio found an autosaved edit set from an interrupted session.")
+        box.setWindowTitle("Bring back your changes?")
+        # b780-uxfix: plain words (it spoke of an autosaved edit set from an interrupted session)
+        box.setText("Last time the Studio closed before your changes were saved.")
         box.setInformativeText(
-            f"Source: {candidate.source_path.name}\n"
-            "The recovery file contains user-authored replacements only."
+            f"Game file: {candidate.source_path.name}\n"
+            "The Studio kept a copy of your own changes (never game data). Bring them back reopens this "
+            "game file with them; Start fresh deletes the copy. Your original game file was not changed."
         )
-        recover = box.addButton("Recover Edits", QMessageBox.AcceptRole)
-        later = box.addButton("Not Now", QMessageBox.RejectRole)
-        discard = box.addButton("Discard Recovery", QMessageBox.DestructiveRole)
+        recover = box.addButton("Bring them back", QMessageBox.AcceptRole)
+        later = box.addButton("Ask me later", QMessageBox.RejectRole)
+        discard = box.addButton("Start fresh", QMessageBox.DestructiveRole)
         box.setDefaultButton(recover)
         box.setEscapeButton(later)
         box.exec_()
@@ -2670,7 +2904,11 @@ class StudioMainWindow(QMainWindow):
         brand_title = QLabel("MOD STUDIO")
         brand_title.setObjectName("brandTitle")
         release_candidate = __version__.rsplit("rc", 1)[-1]
-        brand_subtitle = QLabel(f"v1.0 RC{release_candidate} • Xbox Edition")
+        # b780-uxfix: people say "Beta 80" (the update check, the FAQ, the Discord); the RC stays in the tooltip.
+        release_name = update_check.BUILD_RELEASE_TAG.replace("-", " ").title()
+        brand_subtitle = QLabel(f"{release_name} • Xbox Edition")
+        brand_subtitle.setToolTip(f"2K5 Mod Studio v1.0 RC{release_candidate} ({update_check.BUILD_RELEASE_TAG})")
+        brand_subtitle.setAccessibleName(f"{release_name}, version 1.0 RC{release_candidate}")
         brand_subtitle.setObjectName("mutedLabel")
         brand.addWidget(brand_title)
         brand.addWidget(brand_subtitle)
@@ -2696,6 +2934,13 @@ class StudioMainWindow(QMainWindow):
         welcome_item.setData(Qt.UserRole, "welcome")
         welcome_item.setSizeHint(QSize(210, 38))
         self.navigation.addItem(welcome_item)
+        # b780-uxfix: ★ Build & Share is second (it was 20th of 20, below the fold): it installs SOFTDRINK 2K28.
+        # Rows are found by key (_navigation_row), never by position.
+        build_item = QListWidgetItem("  ★ Build & Share")
+        build_item.setData(Qt.UserRole, "build_share")
+        build_item.setSizeHint(QSize(210, 44))
+        build_item.setToolTip("Install SOFTDRINK 2K28, choose patches and make a disc copy, or export and install mod files.")
+        self.navigation.addItem(build_item)
         for category in PRODUCT_CATEGORY_ORDER:
             display_title = category_display_title(self.product_catalog, category)
             item = QListWidgetItem(f"  {display_title}")
@@ -2737,16 +2982,11 @@ class StudioMainWindow(QMainWindow):
         scorebar_item.setToolTip("Design the in-game scorebar: pick a preset, recolour each part or use your "
                                  "own pictures, then hand the folder to Build. Experimental and unwitnessed.")
         self.navigation.addItem(scorebar_item)
-        build_item = QListWidgetItem("  ★ Build & Share")
-        build_item.setData(Qt.UserRole, "build_share")
-        build_item.setSizeHint(QSize(210, 44))
-        build_item.setToolTip("Choose patches, make a disc copy, or export and install mod files.")
-        self.navigation.addItem(build_item)
         side_layout.addWidget(self.navigation, 1)
 
-        safety = QLabel(
-            "ORIGINAL STAYS SAFE\nKeep your original disc. Check the destination "
-            "before writing a copy."
+        safety = QLabel(   # b780-uxfix: say what the Studio does, in plain words
+            "ORIGINAL STAYS SAFE\nYour original game file is never changed. The Studio always "
+            "saves a new file."
         )
         safety.setObjectName("safetyCard")
         safety.setWordWrap(True)
@@ -2774,9 +3014,11 @@ class StudioMainWindow(QMainWindow):
         self.pages.setObjectName("pages")
         self.welcome_page = self._build_welcome_page()
         self.pages.addWidget(self._page_scroll_host(self.welcome_page))
+        self._add_lazy_page("build_share", self._build_build_share_page)   # b780-uxfix: second, as in the sidebar
         for category in PRODUCT_CATEGORY_ORDER:
             self._add_lazy_page(category.value, lambda category=category: self._build_category_page(category))
         self._roster_editor_panel = _BuildContextRosterPanel(self.facade)
+        self._watch_roster_work()  # b780-uxfix: roster, staff and franchise edits mark the title
         self.pages.addWidget(self._page_scroll_host(self._roster_editor_panel))
         self._models_panel = ModelsPanel(self.facade)
         self._models_panel.project_changed.connect(self._models_project_changed)
@@ -2795,7 +3037,6 @@ class StudioMainWindow(QMainWindow):
         self._sync_mycareer_position_scheme()
         self.pages.addWidget(self._page_scroll_host(self._my_career_panel))
         self._add_lazy_page("scorebar", self._build_scorebar_page)
-        self._add_lazy_page("build_share", self._build_build_share_page)
         workspace_layout.addWidget(self.pages, 1)
         workspace_layout.addWidget(footer)
         root_layout.addWidget(workspace, 1)
@@ -2850,6 +3091,8 @@ class StudioMainWindow(QMainWindow):
             self._pending_build_navigation_preset = None
             if preset:
                 self._apply_build_navigation_preset(preset)
+            if getattr(self, "_pending_share_install", False):   # b780-uxfix: Getting Started's Install button
+                QTimer.singleShot(0, self._run_share_install)
         self._refresh_action_states()
 
     def _show_workspace(self, row, *, select=True):
@@ -3124,7 +3367,7 @@ class StudioMainWindow(QMainWindow):
             self._connect_book_set()
             page = self._playbooks_panel
         elif category == ProductCategory.SLIDERS_GAMEPLAY:
-            self._ensure_workspace(self.navigation.count() - 1)
+            self._ensure_workspace(self._navigation_row("build_share"))
             # Throw Distance & Arc is the one writable workspace on this
             # page: two sliders over the game's own arm-strength curve
             # tables, written to a COPY of default.xbe (xemu-only), the
@@ -3242,7 +3485,7 @@ class StudioMainWindow(QMainWindow):
         self.open_source_button.setToolTip(
             "Open your ESPN NFL 2K5 USA Xbox disc file (.iso). The source file is kept unchanged."
         )
-        self.open_source_button.setAccessibleName("Open an NFL 2K5 XISO")
+        self.open_source_button.setAccessibleName("Open your NFL 2K5 game file")
         self.open_source_button.setAccessibleDescription(
             self.open_source_button.toolTip()
         )
@@ -3262,9 +3505,11 @@ class StudioMainWindow(QMainWindow):
         outer.setSpacing(16)
         hero = QLabel("Make NFL 2K5 yours.")
         hero.setObjectName("heroTitle")
+        hero.setWordWrap(True)     # b780 CI: with wide text the one-line title set the page width (1,283 px)
+        hero.setMinimumWidth(120)
         sub = QLabel(
-            "Open your Xbox game disc file, choose patches or edit your roster, then "
-            "save a new copy. You can also replace uniforms and artwork."
+            "Install SOFTDRINK 2K28 on your own game file, or open your game file to choose patches, edit your "
+            "roster and replace uniforms and artwork. The Studio always saves a new copy."
         )
         sub.setObjectName("heroSubtitle")
         sub.setWordWrap(True)
@@ -3274,11 +3519,12 @@ class StudioMainWindow(QMainWindow):
 
         steps = QHBoxLayout()
         steps.setSpacing(12)
+        # b780-uxfix: the four steps of the common job (install SOFTDRINK 2K28 and play it), xemu setup included
         for number, title, body in (
-            ("1", "Open your game", "Use your ESPN NFL 2K5 USA Xbox disc file (.iso), or open an Xbox save on ★ Rosters."),
-            ("2", "Choose your changes", "Start with SOFTDRINK patches, edit players, or replace artwork."),
-            ("3", "Save a copy", "Use the save or build button for that task. Your original is never changed."),
-            ("4", "Play or share", "Open the disc copy in xemu, or export a mod file from Share."),
+            ("1", "Get your two files", "Your NFL 2K5 game file (.iso) and the SOFTDRINK 2K28 download (.2k5patch)."),
+            ("2", "Install", "Press Install SOFTDRINK 2K28 and pick the two files. Your original file is never changed."),
+            ("3", "Set up xemu once", "System Memory 128 MiB and the Complex 4627 BIOS, then restart xemu (Help ▸ Set up xemu)."),
+            ("4", "Play", "Press Play latest disc in xemu, or in xemu choose Machine > Load Disc."),
         ):
             card = QFrame()
             card.setObjectName("stepCard")
@@ -3289,6 +3535,7 @@ class StudioMainWindow(QMainWindow):
             number_label.setObjectName("stepNumber")
             title_label = QLabel(title)
             title_label.setObjectName("cardTitle")
+            title_label.setWordWrap(True)     # b780 CI: with Windows font metrics "Set up xemu once" clipped in its card
             body_label = QLabel(body)
             body_label.setObjectName("cardBody")
             body_label.setWordWrap(True)
@@ -3313,48 +3560,77 @@ class StudioMainWindow(QMainWindow):
         ready = QLabel("Start here")
         ready.setObjectName("cardTitle")
         ready_sub = QLabel(
-            "Open a game disc file for disc edits. To edit a roster save, go to ★ Rosters."
+            "Most people start with Install SOFTDRINK 2K28: you need your NFL 2K5 game file (.iso) and the "
+            "SOFTDRINK 2K28 download (.2k5patch). To make your own changes, open your game file instead."
         )
+        ready_sub.setWordWrap(True)
         ready_sub.setObjectName("cardBody")
         self.welcome_ready = ready
         self.welcome_ready_sub = ready_sub
         start_text.addWidget(ready)
         start_text.addWidget(ready_sub)
         start_layout.addLayout(start_text)
-        start_buttons = QHBoxLayout()
-        start_buttons.setSpacing(10)
-        # One obvious first click, then the two tasks most people came for.  The roster
-        # route stays enabled without a disc: a Finn user opens an Xbox save there.
+        # b780 CI (windows-latest): with Windows font metrics the four buttons in one row ran to 1809 px in a
+        # 1280-px window. A flow layout wraps them to a second line instead of widening the page, whatever the font.
+        start_buttons = FlowLayout(spacing=10, pin_parent_height=True)   # b780 CI round 4: the box gets its exact height
+        # b780-uxfix: most people came for SOFTDRINK 2K28, so its installer is the first, primary
+        # button (the same three steps as Install & Share). The roster route stays enabled without
+        # a disc: a Finn user opens an Xbox save there. Uniforms stay one click away in the sidebar.
+        install_button = QPushButton("Install SOFTDRINK 2K28…")
+        install_button.setObjectName("primaryButton")
+        install_button.setToolTip(
+            "Most people start here. You pick your NFL 2K5 game file (.iso), then the SOFTDRINK 2K28 download "
+            "(.2k5patch), then where to save the new disc. About 5 minutes. Your original file is never changed.")
+        install_button.setAccessibleName("Install SOFTDRINK 2K28")
+        install_button.clicked.connect(self._install_softdrink_from_start)
         open_button = QPushButton("Open game disc…")
-        open_button.setObjectName("primaryButton")
-        open_button.setToolTip("Open your ESPN NFL 2K5 USA Xbox disc file (.iso). The source file is kept unchanged.")
+        open_button.setObjectName("secondaryButton")
+        open_button.setToolTip("Open your ESPN NFL 2K5 USA Xbox disc image: a .iso or .xiso file (both work, they are the same kind "
+                               "of file). The source file is kept unchanged.")
         open_button.clicked.connect(self._choose_source)
-        softdrink_button = QPushButton("Start SOFTDRINK Basic  \u2192")
+        softdrink_button = QPushButton("Make my own disc (fixes only)  \u2192")
         softdrink_button.setObjectName("secondaryButton")
-        softdrink_button.setToolTip("★ Build & Share with the Basic preset ticked: the 2004 game with the 2K5 fixes. "
+        softdrink_button.setToolTip("Choose your own gameplay fixes on ★ Build & Share, starting from the Basic preset "
+                                    "(the 2004 game with the 2K5 fixes). This does not install SOFTDRINK 2K28. "
                                     "Needs an open disc; you can untick anything before Make my disc.")
         softdrink_button.clicked.connect(lambda: self._go_to_build_share("softdrink_basic"))
         rosters_button = QPushButton("Edit rosters  \u2192")
         rosters_button.setObjectName("secondaryButton")
         rosters_button.setToolTip("★ Rosters: players, ratings, equipment, contracts and depth order, from the open disc or an Xbox save.")
         rosters_button.clicked.connect(self._go_to_rosters)
-        browse_button = QPushButton("Browse uniforms")
-        browse_button.setObjectName("secondaryButton")
-        browse_button.clicked.connect(lambda: self.navigation.setCurrentRow(1))
+        # b780-uxfix (beginner review 9.1): after a restart the last game file was only under File > Recent discs
+        continue_button = QPushButton("")
+        continue_button.setObjectName("secondaryButton")
+        continue_button.hide()
+        continue_button.clicked.connect(self._continue_with_recent_source)
+        self.welcome_continue_button = continue_button
+        self.welcome_install_button = install_button
         self.welcome_open_button = open_button
-        self.welcome_task_buttons = (softdrink_button, rosters_button, browse_button)
+        self.welcome_task_buttons = (softdrink_button, rosters_button)
+        # b780 CI: each start button keeps its natural width (the flow layout wraps them to more rows); only a caption
+        # wider than the whole row is drawn elided, with a tooltip
+        for start_button in (install_button, open_button, softdrink_button, rosters_button, continue_button):
+            make_shrinkable(start_button)
+        start_buttons.addWidget(install_button)
         start_buttons.addWidget(open_button)
         start_buttons.addWidget(softdrink_button)
         start_buttons.addWidget(rosters_button)
-        start_buttons.addWidget(browse_button)
-        start_buttons.addStretch(1)
         start_layout.addLayout(start_buttons)
+        # b780-uxfix2: Continue gets its own row; beside the four it clipped every label at 1280x720
+        continue_row = QHBoxLayout()
+        continue_row.setSpacing(10)
+        continue_row.addWidget(continue_button)
+        continue_row.addStretch(1)
+        start_layout.addLayout(continue_row)
         outer.addWidget(start)
         discord = QLabel(
-            f'Stuck? <a href="{update_check.COMMUNITY_DISCORD}">Ask on the Discord</a> '
+            "Stuck? The FAQ (Help ▸ Questions and answers) covers the common first-run questions: .iso or .xiso, no disc "
+            "drive, a sharper picture, a game that will not start. Still stuck? "
+            f'<a href="{update_check.COMMUNITY_DISCORD}">Ask on the Discord</a> '
             "(also under Help ▸ Join the Discord…)."
         )
         discord.setObjectName("cardBody")
+        discord.setWordWrap(True)  # b780-b13: the longer sentence must wrap, not widen the page
         discord.setTextFormat(Qt.RichText)
         discord.setOpenExternalLinks(True)
         discord.setTextInteractionFlags(Qt.TextBrowserInteraction)
@@ -3362,6 +3638,22 @@ class StudioMainWindow(QMainWindow):
         outer.addWidget(discord)
         outer.addStretch(1)
         return page
+
+    def _install_softdrink_from_start(self) -> None:
+        """Getting Started's Install SOFTDRINK 2K28…: open Install & Share and run its three-step install."""
+
+        self._go_to_build_share()
+        if getattr(self, "_share_panel", None) is None:
+            self._pending_share_install = True   # Build & Share is still loading; _ensure_workspace runs it
+            return
+        self._run_share_install()
+
+    def _run_share_install(self) -> None:
+        self._pending_share_install = False
+        tabs = getattr(self, "_build_share_page", None)
+        if tabs is not None:
+            tabs.setCurrentWidget(self._share_panel)
+        self._share_panel.install_softdrink()
 
     def _go_to_rosters(self) -> None:
         """Select ★ Rosters (Getting Started's Edit rosters button); works without a disc."""
@@ -4876,27 +5168,23 @@ class StudioMainWindow(QMainWindow):
         footer = QFrame()
         footer.setObjectName("footer")
         footer.setMinimumHeight(70)
-        layout = QHBoxLayout(footer)
-        layout.setContentsMargins(24, 10, 24, 10)
-        layout.setSpacing(8)
+        # b780-uxfix: two rows, the messages above and the buttons below. Beside the buttons the
+        # status got what they left: a one-letter column at 1280x720, and a footer about 210 px
+        # tall over the page. Each message now has the full footer width, shows at most two lines
+        # (the rest ends in "…", the whole text is in its tooltip), and the footer height is capped.
+        rows = QVBoxLayout(footer)
+        rows.setContentsMargins(24, 8, 24, 8)
+        rows.setSpacing(6)
+        # b780 CI round 3: with the Windows runner's text the six buttons no longer fit one row and were squeezed below
+        # their captions; they now wrap to a second row, still at the right edge
+        layout = FlowLayout(spacing=8, align_right=True)
         status_box = QVBoxLayout()
         status_box.setSpacing(4)
-        # A plain QLabel clipped its one-line sentence at 1280x720 and the
-        # footer's two messages split the row in half. A wrapped label reserves
-        # the height of the whole sentence instead, and both messages share one
-        # stacked column so each gets the full footer width. The horizontal
-        # policy is Ignored so a long status line never becomes a hard minimum
-        # width for the window.
-        self.operation_status = WrappedLabel(
+        self.operation_status = ElidedStatusLabel(
             getattr(self, "_pending_status", None)
             or "Open your game disc to start (top right), or browse what’s available."
         )
         self.operation_status.setObjectName("operationStatus")
-        self.operation_status.setTextFormat(Qt.PlainText)
-        self.operation_status.setSizePolicy(
-            QSizePolicy.Ignored, self.operation_status.sizePolicy().verticalPolicy()
-        )
-        self.operation_status.setMinimumWidth(0)
         self.operation_status.setAccessibleName("Current operation status")
         self.operation_status.setAccessibleDescription(
             "Reports what the app is doing and whether an operation succeeded."
@@ -4911,7 +5199,11 @@ class StudioMainWindow(QMainWindow):
         self.progress_bar.hide()
         status_box.addWidget(self.operation_status)
         status_box.addWidget(self.progress_bar)
-        layout.addLayout(status_box, 1)
+        status_row = QHBoxLayout()      # the messages, with the edit count at their right
+        status_row.setSpacing(12)
+        status_row.addLayout(status_box, 1)
+        rows.addLayout(status_row)
+        rows.addLayout(layout)
         self.edit_count = QLabel("No project edits")
         self.edit_count.setObjectName("editCount")
         self.edit_count.setToolTip("Art, text and audio edits that go into Make disc from project.")
@@ -4967,29 +5259,26 @@ class StudioMainWindow(QMainWindow):
         # On ★ Build & Share the project controls hide (they are about staged
         # art/text/audio edits); this caption says where those went instead of
         # leaving an unexplained gap (X-08).
-        self.build_share_caption = WrappedLabel(
+        self.build_share_caption = ElidedStatusLabel(
             "This Build tab uses the changes selected here. Project edits use "
-            "Make disc from project on the editing pages."
+            "Make disc from project on the editing pages.", max_lines=1
         )
         self.build_share_caption.setObjectName("buildShareCaption")
-        self.build_share_caption.setToolTip(self.build_share_caption.text())
-        self.build_share_caption.setSizePolicy(
-            QSizePolicy.Ignored, self.build_share_caption.sizePolicy().verticalPolicy()
-        )
-        self.build_share_caption.setMinimumWidth(0)
         self.build_share_caption.hide()
         status_box.addWidget(self.build_share_caption)
-        layout.addWidget(self.edit_count)
+        status_row.addWidget(self.edit_count, 0, Qt.AlignTop)
         layout.addWidget(self.undo_button)
         layout.addWidget(self.revert_all_button)
-        layout.addSpacing(4)
         layout.addWidget(self.configure_xemu_button)
-        layout.addSpacing(4)
         # Directly above Build, because this is the question a user has right
         # before they press it: will my art come through the way I drew it?
         layout.addWidget(self.check_images_button)
         layout.addWidget(self.build_button)
         layout.addWidget(self.launch_button)
+        for footer_button in (self.undo_button, self.revert_all_button, self.configure_xemu_button,
+                              self.check_images_button, self.build_button, self.launch_button):
+            make_shrinkable(footer_button)     # b780 CI: wraps first; a caption wider than the footer elides
+        footer.setMaximumHeight(FOOTER_MAX_HEIGHT)
         return footer
 
     def _populate_uniform_filters(self) -> None:
@@ -6902,7 +7191,7 @@ class StudioMainWindow(QMainWindow):
                 "Choose a physical uniform set before browsing its equipment."
             )
             return
-        row = PRODUCT_CATEGORY_ORDER.index(ProductCategory.TEXTURES) + 1
+        row = self._navigation_row(ProductCategory.TEXTURES)
         self._ensure_workspace(row)
         state = self._visual_browsers.get(ProductCategory.TEXTURES)
         if state is None:
@@ -7050,7 +7339,7 @@ class StudioMainWindow(QMainWindow):
             self,
             "Open ESPN NFL 2K5 for Xbox (.iso)",
             str(initial),
-            "Xbox XISO (*.iso *.xiso);;All files (*)",
+            "NFL 2K5 game file (*.iso *.xiso);;All files (*)",  # b780-uxfix: plain words
         )
         if not filename:
             return
@@ -7168,7 +7457,7 @@ class StudioMainWindow(QMainWindow):
         self._start_task(
             lambda progress: self.facade.load_source(source, progress),
             success,
-            label="Opening your NFL 2K5 XISO",
+            label="Opening your NFL 2K5 game file",
             blocking=True,
             on_error=failed,
         )
@@ -7386,6 +7675,7 @@ class StudioMainWindow(QMainWindow):
         note = QLabel(
             "Each row shows the build result above the retail digit at the same size. "
             "A KEPT RETAIL badge means that slot will use its original number. "
+            "The notes below say how the sheet was cut, which digits were simplified to fit, and why any stayed retail. "
             "The 57 comparison uses the jersey base colour at an estimated screen size. "
             "The game adds lighting and camera-dependent detail. In-game appearance is unwitnessed.", dialog,
         )
@@ -7403,10 +7693,17 @@ class StudioMainWindow(QMainWindow):
         details = QPlainTextEdit(dialog)
         details.setReadOnly(True)
         details.setPlainText(preview.details)
-        details.setMaximumHeight(160)
+        details.setMaximumHeight(210)
         layout.addWidget(details)
         buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, dialog)
         buttons.button(QDialogButtonBox.Ok).setText(preview.import_button_text)
+        if getattr(preview, "receipts", ()) and preview.import_count == 0:
+            # Every digit would stay retail: nothing would change, so do not offer an import that does nothing.
+            buttons.button(QDialogButtonBox.Ok).setEnabled(False)
+            buttons.button(QDialogButtonBox.Ok).setToolTip(
+                "None of the ten digits fits its slot, so nothing would be imported. "
+                "The notes above say why. Simplify the sheet and try again."
+            )
         buttons.accepted.connect(dialog.accept)
         buttons.rejected.connect(dialog.reject)
         layout.addWidget(buttons)
@@ -7447,25 +7744,27 @@ class StudioMainWindow(QMainWindow):
         family = dict(choices).get(str(label))
         if family is None:
             return
-        layout_label, accepted = QInputDialog.getItem(
-            self, "Number sheet layout", SHEET_HELP,
-            [row[0] for row in SHEET_LAYOUT_CHOICES], 0, False,
+        # b780-uxfix: the input dialog never wraps its label, so the one-line help made it 4,027 px wide with
+        # OK and Cancel off screen. b780 CI: a fixed 88-character fold was still 1,518 px with Windows fonts, so
+        # the label now wraps at a pixel width (ux_text.get_item).
+        layout_label, accepted = get_item(
+            self, "Number sheet layout", SHEET_HELP, [row[0] for row in SHEET_LAYOUT_CHOICES], 0,
         )
         if not accepted:
             return
         orientation = dict(SHEET_LAYOUT_CHOICES).get(str(layout_label), "auto")
         from mod_editor.core.nfl2k5_digit_art import REGISTRATION_CHOICES
-        registration_label, accepted = QInputDialog.getItem(
+        registration_label, accepted = get_item(          # b780 CI: wraps at a pixel width, like the layout question
             self, "Number size", "Match retail size keeps the glyph inside the original number box. "
             "As authored keeps your placement and can extend beyond the number mesh.",
-            [row[0] for row in REGISTRATION_CHOICES], 0, False,
+            [row[0] for row in REGISTRATION_CHOICES], 0,
         )
         if not accepted:
             return
         registration = dict(REGISTRATION_CHOICES)[str(registration_label)]
         filename, _ = QFileDialog.getOpenFileName(
             self,
-            f"Choose the {label.lower()} 0-9 sheet (ten equal cells)",
+            f"Choose the {label.lower()} 0-9 sheet (the ten digits in order)",
             str(Path.home()),
             IMAGE_IMPORT_FILTER,
         )
@@ -7782,6 +8081,12 @@ class StudioMainWindow(QMainWindow):
                 self._load_selected_unif_colors()
 
             self._defer_until_blocking_task_finished(refresh_loaded_project)
+            if recovery:
+                # b780-uxfix: a recovery opens its disc without the open-disc hook, so Build's disc field, Game
+                # Fixes, Saves & Sliders and Share stayed empty and Make my disc stayed off. Feed them the disc
+                # after the recovered project is in place (its Build choices are restored when the read finishes).
+                self._defer_until_blocking_task_finished(
+                    lambda: self._prefill_panels_from_source(self._active_source_path))
             self._refresh_build_includes(baseline=True)
 
         self._start_task(
@@ -7888,7 +8193,7 @@ class StudioMainWindow(QMainWindow):
         if self._refuse_while_audio_busy("revert every edit"):
             return
         count = int(getattr(self.facade, "modified_count", 0))
-        metadata_count = int(getattr(self.facade, "project_metadata_count", 0))
+        metadata_count = self._cue_label_count()  # b780-uxfix: cue labels only, not the saved Build choices
         project_count = count + metadata_count
         if project_count <= 0:
             return
@@ -8179,7 +8484,7 @@ class StudioMainWindow(QMainWindow):
             )
 
         def error(message: str) -> None:
-            _record_failed_operation(label, message)
+            _record_failed_operation(label, message, getattr(worker, "traceback_text", "") or None)
             if on_error is not None:
                 on_error(message)
             self._set_status(f"Could not finish: {message}")
@@ -8272,6 +8577,23 @@ class StudioMainWindow(QMainWindow):
     def _navigation_key(self, row: int) -> str:
         item = self.navigation.item(row)
         return str(item.data(Qt.UserRole) or "") if item is not None else ""
+
+    def _navigation_row(self, key) -> int:
+        """The sidebar row (and page index) of a workspace key or ProductCategory (b780-uxfix: never by position)."""
+
+        wanted = str(getattr(key, "value", key))
+        for row in range(self.navigation.count()):
+            if self._navigation_key(row) == wanted:
+                return row
+        raise ValueError(f"Unknown workspace: {wanted}")
+
+    def _row_category(self, row: int):
+        """The ProductCategory a sidebar row shows, or None for Getting Started and the ★ workspaces."""
+
+        try:
+            return ProductCategory(self._navigation_key(row))
+        except ValueError:
+            return None
 
     def _prefill_panels_from_source(self, source: Path | None) -> None:
         """Feed the disc that was just opened to every page that has its own source field.
@@ -8401,7 +8723,7 @@ class StudioMainWindow(QMainWindow):
         identity = state.get("disc_identity")
         kind = str(identity.get("kind", "")) if isinstance(identity, Mapping) else ""
         badge = {"retail-xiso": "original", "retail-raw": "original",
-                 "repack": "repacked", "modified": "modified"}.get(kind, "")
+                 "repack": "repacked", "modified": "modified", "studio-built": "built with the Studio"}.get(kind, "")
         self.source_pill.setText(f"●  Disc: {display}" + (f" · {badge}" if badge else ""))
         line = str(state.get("disc_identity_line") or "")
         self.source_pill.setToolTip(
@@ -8420,12 +8742,41 @@ class StudioMainWindow(QMainWindow):
         if bool(getattr(self.facade, "source_ready", False)):
             display = str(getattr(self.facade, "source_display_name", "") or "your disc")
             ready_label.setText(f"Disc open: {display}")
-            sub_label.setText("Next: choose SOFTDRINK patches or edit rosters.")
+            sub_label.setText("Next: install SOFTDRINK 2K28 on this game file, make your own disc, or edit rosters.")
         else:
             ready_label.setText("Start here")
-            sub_label.setText("Open a game disc file for disc edits. To edit a roster save, go to ★ Rosters.")
+            sub_label.setText(
+                "Most people start with Install SOFTDRINK 2K28: you need your NFL 2K5 game file (.iso) and the "
+                "SOFTDRINK 2K28 download (.2k5patch). To make your own changes, open your game file instead.")
         for button in getattr(self, "welcome_task_buttons", ()):
             button.setEnabled(True)
+        continue_button = getattr(self, "welcome_continue_button", None)
+        if continue_button is not None:
+            recent = None if bool(getattr(self.facade, "source_ready", False)) else self._recent_source()
+            continue_button.setVisible(recent is not None)
+            if recent is not None:
+                # b780-uxfix2: a long file name is shortened in the middle (the whole path is in the tooltip)
+                name = continue_button.fontMetrics().elidedText(recent.name, Qt.ElideMiddle, CONTINUE_NAME_WIDTH)
+                continue_button.setText(f"Continue with {name}")
+                continue_button.setToolTip(f"Open the game file you used last time: {recent}")
+                continue_button.setProperty("recent_source", str(recent))
+
+    def _recent_source(self) -> Path | None:
+        """The most recent game file that still exists, or None."""
+        state = self._workspace_state()
+        for value in tuple(getattr(state, "recent_sources", ()) or ()):
+            path = Path(value)
+            try:
+                if path.is_file() and not path.is_symlink():
+                    return path
+            except OSError:
+                continue
+        return None
+
+    def _continue_with_recent_source(self) -> None:
+        value = self.welcome_continue_button.property("recent_source")
+        if value:
+            self._request_source_switch(Path(value))
 
     def _refresh_player_assets_hint(self) -> None:
         search = getattr(self, "player_asset_search", None)
@@ -8472,6 +8823,35 @@ class StudioMainWindow(QMainWindow):
         if self._build_panel is not None:
             self._build_panel._refresh()
 
+    def _recovery_waits_for_quiet(self) -> bool:
+        """Coalesce recovery snapshots of a big project into one after 15 quiet seconds (b780 Q52).
+
+        A snapshot of a project with thousands of edits takes seconds to write, and every Build-tab change asked
+        for a new one. Below AUTOSAVE_QUIET_EDITS nothing changes; above it each change restarts a 15 s timer and
+        the snapshot is written once the edits stop.
+        """
+        if getattr(self, "_recovery_quiet_over", False):
+            self._recovery_quiet_over = False
+            return False
+        try:
+            big = int(getattr(self.facade, "modified_count", 0)) >= AUTOSAVE_QUIET_EDITS
+        except Exception:  # noqa: BLE001 - a count must never stop autosave
+            big = False
+        if not big:
+            return False
+        timer = getattr(self, "_recovery_quiet_timer", None)
+        if timer is None:
+            timer = self._recovery_quiet_timer = QTimer(self)
+            timer.setSingleShot(True)
+            timer.setInterval(AUTOSAVE_QUIET_MS)
+            timer.timeout.connect(bound(self, self._recovery_quiet_elapsed))
+        timer.start()   # every change starts the quiet period again
+        return True
+
+    def _recovery_quiet_elapsed(self) -> None:
+        self._recovery_quiet_over = True
+        self._save_recovery_snapshot()
+
     def _mark_workspace_changed(self, *, rebuild_components: bool = False) -> None:
         """Mark an authored change and immediately queue a safe autosave."""
 
@@ -8486,6 +8866,8 @@ class StudioMainWindow(QMainWindow):
     def _save_recovery_snapshot(self) -> None:
         store = self.workspace_store
         if store is None or not self._workspace_dirty:
+            return
+        if self._recovery_waits_for_quiet():
             return
         embedded_owners = self._embedded_operation_owners()
         if embedded_owners:
@@ -8692,6 +9074,9 @@ class StudioMainWindow(QMainWindow):
             )
             event.ignore()
             return
+        if not self._confirm_roster_work_lost("Closing Mod Studio"):   # b780-uxfix
+            event.ignore()
+            return
         if not self._workspace_dirty:
             self._close_texture_master_workspace()
             event.accept()
@@ -8725,8 +9110,9 @@ class StudioMainWindow(QMainWindow):
     def _refresh_project_document_state(self) -> None:
         """Render project identity without adding another crowded header row."""
 
+        roster_unsaved = self._roster_work_unsaved()   # b780-uxfix: roster work shows the * too
         if self._active_project_path is not None:
-            marker = "*" if self._workspace_dirty else ""
+            marker = "*" if self._workspace_dirty or roster_unsaved else ""
             self.setWindowTitle(
                 f"{self._active_project_path.name}{marker} — 2K5 Mod Studio"
             )
@@ -8735,7 +9121,7 @@ class StudioMainWindow(QMainWindow):
                 f"Save this project's edits to {save_target} (a .2k5mod file: your "
                 "replacements and text, never game data). ★ Rosters has separate save buttons."
             )
-        elif self._workspace_dirty:
+        elif self._workspace_dirty or roster_unsaved:
             self.setWindowTitle("Untitled* — 2K5 Mod Studio")
             save_tip = (
                 "Save the edits in this project as a .2k5mod file you can reopen or share. "
@@ -8831,9 +9217,21 @@ class StudioMainWindow(QMainWindow):
         self._start_task(lambda progress: self.facade.refit_equipment(asset_id, progress),
                          success, label='Refitting equipment', blocking=True, show_errors=False)
 
+    def _cue_label_count(self) -> int:
+        """The audio cue labels in the project (what the footer calls "cue labels" and Revert All removes).
+
+        b780-uxfix: ``project_metadata_count`` also counts the saved Build choices and the MyCareer
+        journal, which Revert All never removes. Opening a disc with no edits read "1 cue label",
+        turned Revert All red and offered a revert that did nothing.
+        """
+        try:
+            return len(tuple(getattr(self.facade, "labeled_audio_asset_ids", ()) or ()))
+        except Exception:  # noqa: BLE001 - a count for a label must never break the footer
+            return 0
+
     def _refresh_edit_state(self, *, rebuild_components: bool = False) -> None:
         count = int(getattr(self.facade, "modified_count", 0))
-        metadata_count = int(getattr(self.facade, "project_metadata_count", 0))
+        metadata_count = self._cue_label_count()  # b780-uxfix: cue labels only, not the saved Build choices
         self.edit_count.setText(
             f"{count} project edit{'s' if count != 1 else ''} • "
             f"{metadata_count} cue label{'s' if metadata_count != 1 else ''}"
@@ -8869,7 +9267,7 @@ class StudioMainWindow(QMainWindow):
         ready = bool(getattr(self.facade, "source_ready", False))
         modified = set(getattr(self.facade, "modified_asset_ids", ()))
         count = int(getattr(self.facade, "modified_count", 0))
-        metadata_count = int(getattr(self.facade, "project_metadata_count", 0))
+        metadata_count = self._cue_label_count()  # b780-uxfix: cue labels only, not the saved Build choices
         selected = self._selected_asset is not None
         global_busy = self._blocking or self._embedded_operation_is_busy()
         if self._build_panel is not None and hasattr(self._build_panel, 'equipment_refit_button'):
@@ -9120,7 +9518,7 @@ class StudioMainWindow(QMainWindow):
             self._mark_workspace_changed()
 
     def _sprite_watermark_changed(self, value: str) -> None:
-        self._ensure_workspace(self.navigation.count() - 1)
+        self._ensure_workspace(self._navigation_row("build_share"))
         combo=self._build_panel.scorebug_watermark_combo
         combo.setCurrentIndex(combo.findData(value))
         self._capture_music_build_settings()
@@ -9135,7 +9533,7 @@ class StudioMainWindow(QMainWindow):
 
     def _scorebar_folder_chosen(self, folder: str) -> None:
         """Scorebar Studio saved a folder: fill the Build tab's scorebar folder field."""
-        self._ensure_workspace(self.navigation.count() - 1)
+        self._ensure_workspace(self._navigation_row("build_share"))
         self._build_panel.scorebug_folder_field.setText(folder)
         self._capture_music_build_settings()
         self._mark_workspace_changed()
@@ -9180,10 +9578,22 @@ class StudioMainWindow(QMainWindow):
             self._mark_workspace_changed()
 
     def _my_career_setup_ready(self, path):
-        self._ensure_workspace(self.navigation.count() - 1)
+        self._ensure_workspace(self._navigation_row("build_share"))
         self._build_panel.set_my_career_setup(path)
         self._capture_music_build_settings()
         self._mark_workspace_changed()
+
+    def _same_source(self, field_text, source) -> bool:
+        """Whether the Build disc field names the open disc.
+
+        b780-uxfix: the two naming previews ask on every Names, Numbers & Faces table cell; the answer
+        is kept until either path's text changes instead of resolving both paths each time.
+        """
+        key = (str(field_text), str(source))
+        memo = getattr(self, "_same_source_memo", None)
+        if memo is None or memo[0] != key:
+            memo = self._same_source_memo = (key, Path(field_text).resolve() == Path(source).resolve())
+        return memo[1]
 
     def _modern_naming_preview_enabled(self):
         panel = getattr(self, "_build_panel", None)
@@ -9192,7 +9602,7 @@ class StudioMainWindow(QMainWindow):
             getter = getattr(self.facade, "project_build_settings", None)
             return bool(callable(getter) and getter().get("modern_naming"))
         return bool(panel and source and panel.modern_naming_check.isChecked()
-                    and Path(panel.source_field.text()).resolve() == Path(source).resolve())
+                    and self._same_source(panel.source_field.text(), source))
 
     def _team_names_preview_enabled(self) -> bool:
         panel = getattr(self, "_build_panel", None)
@@ -9203,9 +9613,10 @@ class StudioMainWindow(QMainWindow):
         if not panel.team_names_2026_check.isChecked():
             return False
         source = getattr(self.facade, "source_path", None)
-        return bool(source and Path(panel.source_field.text()).resolve() == Path(source).resolve())
+        return bool(source and self._same_source(panel.source_field.text(), source))
 
     def _refresh_team_names_preview(self, *_args) -> None:
+        self._same_source_memo = None   # b780-uxfix: a new refresh measures the paths again
         panel = getattr(self, "_text_roster_panel", None)
         if panel is not None:
             panel.reload()
@@ -9217,6 +9628,7 @@ class StudioMainWindow(QMainWindow):
         tabs.setObjectName("buildShareTabs")
         tabs.setAccessibleName("Build and share workspaces")
         self._build_share_page = tabs
+        tabs.currentChanged.connect(lambda _index: self._refresh_action_bar_for_page(self.navigation.currentRow()))
         self._build_panel = BuildPanel(self.facade, available=self._available_build_options, theme=self._theme)
         self._refresh_build_includes()
         # The MyCareer picker follows the position-pools option (EDGE and LB only
@@ -9231,6 +9643,7 @@ class StudioMainWindow(QMainWindow):
         self._build_panel.modern_naming_check.toggled.connect(self._refresh_team_names_preview)
         self._build_panel.source_field.textChanged.connect(self._refresh_team_names_preview)
         self._build_panel.operation_guard = self._build_operation_guard
+        self._build_panel.doctor_project = self._doctor_project_for_build  # b791-h3
         self._build_panel.operation_state_changed.connect(self._build_operation_state_changed)
         self._build_panel.progress_text_changed.connect(self.operation_status.setText)
         self._build_panel.music_shuffle_check.toggled.connect(self._build_music_shuffle_changed)
@@ -9260,7 +9673,9 @@ class StudioMainWindow(QMainWindow):
         # Share: a .2k5patch (byte runs + the modder's own images/audio + recipe)
         # made from a patched copy, applied to somebody else's own disc copy.
         self._share_panel = SharePanel(self.facade)
-        tabs.addTab(self._share_panel, "Share")
+        tabs.addTab(self._share_panel, tab_title(SHARE_TAB_TITLE))
+        # b780-uxfix: Disc ready offers Play in xemu when the footer's Play button could start the new disc
+        self._share_panel.play_hook = lambda: self._launch_xemu if self.launch_button.isEnabled() else None
         self._build_panel.built.connect(self._share_panel.prefill_from_build)
         self._build_panel.built.connect(self._on_build_tab_built)
         self._share_panel.disc_written.connect(self._register_external_disc)
@@ -9357,6 +9772,15 @@ class StudioMainWindow(QMainWindow):
         panel = getattr(self, "_roster_editor_panel", None)
         if panel is not None:
             panel.show_espn25()
+
+    def _doctor_project_for_build(self):
+        """b791-h3: the project the doctor reads after a failed build: the saved .2k5mod when nothing changed since
+        it was saved, else the open session (its unsaved edits are what was built), else None."""
+        path = getattr(self, "_active_project_path", None)
+        if path is not None and not getattr(self, "_workspace_dirty", False):
+            return Path(path)
+        session = getattr(self.facade, "_session", None)
+        return session if session is not None and getattr(self.facade, "modified_count", 0) else None
 
     def _build_operation_guard(self) -> str | None:
         denial = self._embedded_operation_denial("Build")
@@ -9472,7 +9896,7 @@ class StudioMainWindow(QMainWindow):
     ) -> None:
         if self._navigation_key(row) == "rosters":
             if self._build_panel is None:
-                self._show_workspace(self.navigation.count() - 1, select=False)
+                self._show_workspace(self._navigation_row("build_share"), select=False)
                 if self._build_panel is None:
                     return
             self._prefill_roster_if_pending()
@@ -9485,9 +9909,9 @@ class StudioMainWindow(QMainWindow):
             if getattr(self.facade, "models_source_paths", None):
                 self._animations_panel.reload()
             return
-        if row <= 0 or row - 1 >= len(PRODUCT_CATEGORY_ORDER):
+        category = self._row_category(row)
+        if category is None:
             return
-        category = PRODUCT_CATEGORY_ORDER[row - 1]
         if category in self._visual_browsers:
             self._filter_visual_assets(category)
             if category == ProductCategory.ROSTERS_PLAYERS \
@@ -9559,18 +9983,22 @@ class StudioMainWindow(QMainWindow):
         for widget in (self.edit_count, self.undo_button, self.revert_all_button,
                        self.check_images_button, self.build_button):
             widget.setVisible(not on_build_share)
-        self.build_share_caption.setVisible(on_build_share)
+        # b780-uxfix: the caption is about the Build tab; Install & Share showed it too
+        tabs = getattr(self, "_build_share_page", None)
+        on_build_tab = tabs is None or tabs.currentWidget() is getattr(self, "_build_panel", None)
+        self.build_share_caption.setVisible(on_build_share and on_build_tab)
 
     def _update_header_title(self, row: int) -> None:
         if row <= 0:
             self.page_title.setText("Getting Started")
             return
-        if row - 1 >= len(PRODUCT_CATEGORY_ORDER):
-            special = row - 1 - len(PRODUCT_CATEGORY_ORDER)
-            titles = ("Rosters", "Models", "Animations", "Create a Play", "MyCareer", "Scorebar", "Build & Share")
-            self.page_title.setText(titles[special] if special < len(titles) else "")
+        category = self._row_category(row)
+        if category is None:   # b780-uxfix: the ★ workspaces by key, wherever their row is
+            titles = {"rosters": "Rosters", "models": "Models", "animations": "Animations",
+                      "create_play": "Create a Play", "my_career": "MyCareer", "scorebar": "Scorebar",
+                      "build_share": "Build & Share"}
+            self.page_title.setText(titles.get(self._navigation_key(row), ""))
             return
-        category = PRODUCT_CATEGORY_ORDER[row - 1]
         self.page_title.setText(
             category_display_title(self.product_catalog, category)
         )
