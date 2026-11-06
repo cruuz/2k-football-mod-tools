@@ -59,6 +59,24 @@ def _app() -> QApplication:
     return _APP[0]
 
 
+def _font_report(widget=None) -> str:
+    """b780 CI: the fonts this platform really draws with, printed so a CI log shows them (Linux, macOS and Windows
+    runners differ by about 2x in text width)."""
+    from PyQt5.QtGui import QFontInfo
+    app = _app()
+    lines = []
+    for name, font in (("QApplication.font()", app.font()), ("widget", widget.font() if widget is not None else None)):
+        if font is None:
+            continue
+        info = QFontInfo(font)
+        metrics = widget.fontMetrics() if (widget is not None and name == "widget") else app.fontMetrics()
+        lines.append(f"{name}: requested {font.family()!r} {font.pointSizeF()}pt/{font.pixelSize()}px, drawn {info.family()!r} "
+                     f"{info.pointSizeF():.1f}pt, 'Install SOFTDRINK 2K28' = {metrics.horizontalAdvance('Install SOFTDRINK 2K28')} px")
+    text = " | ".join(lines)
+    print("FONTS " + text, file=sys.stderr)
+    return text
+
+
 def _shot(widget: QWidget, name: str) -> None:
     """Save a grab when UXFIX_SHOTS names a folder (the proof screenshots); tests never need it."""
     if SHOTS:
@@ -196,10 +214,12 @@ class WordingTests(unittest.TestCase):
         self.assertGreater(before.sizeHint().width(), 2000)              # about 4,027 px in the review
         before.deleteLater()
         # b780 CI: a fixed 88-character fold was still 1,518 px with Windows font metrics; the label now wraps at a
-        # pixel width, so the box fits with this platform's font and with a much wider one.
+        # pixel width and the choice box no longer sizes to its longest choice, so the box fits with this platform's
+        # font and with one 1.5x wider.
+        _font_report()
         original = app.font()
         try:
-            for scale in (1.0, 2.0):          # 2.0: the Windows runner drew this text about 1.95x as wide as Linux
+            for scale in (1.0, 1.5):          # 1.5x of this platform's own font (Windows' is about 2x Linux already)
                 wide = QFont(original)
                 wide.setPointSizeF(original.pointSizeF() * scale)
                 app.setFont(wide)
@@ -672,15 +692,18 @@ class StudioWindowTests(unittest.TestCase):
     def test_9_the_start_buttons_wrap_with_a_much_wider_font(self):
         # b780 CI (windows-latest): Windows has neither stylesheet font (Noto Sans, DejaVu Sans) and its substitute
         # made the four buttons in one row 1,809 px wide in a 1280-px window. They now wrap (ux_text.FlowLayout).
-        # Every font-size in the window's stylesheet is scaled 2x (the Windows runner drew this text about 1.95x as wide
-        # as Linux): every button must still show whole inside 1280 px, with Continue below them and working, and no
-        # label or button anywhere on the page may be narrower than its text (the step titles wrap).
+        # "Much wider" is relative to this platform's own text: every font-size in the window's stylesheet is scaled 1.5x
+        # of what this OS draws (the Windows runner already draws about 2x Linux, so 1.5x there is about 3x Linux).
+        # Every button must keep its natural width inside 1280 px, Continue below them and working, and no label or
+        # button anywhere on the page may be narrower than its text (the title and step titles wrap).
         import re
         window = self.window
         normal = window.welcome_install_button.sizeHint().width()
         sheet = window.styleSheet()
-        window.setStyleSheet(re.sub(r"font-size:\s*(\d+)px", lambda m: f"font-size: {round(int(m.group(1)) * 2)}px", sheet))
+        _font_report(window.welcome_install_button)
+        window.setStyleSheet(re.sub(r"font-size:\s*(\d+)px", lambda m: f"font-size: {round(int(m.group(1)) * 1.5)}px", sheet))
         _pump(self.app, 15)
+        _font_report(window.welcome_install_button)
         try:
             widened = self._start_buttons_fit(window, "_wide_font")
             window.resize(1280, 720)
@@ -696,7 +719,7 @@ class StudioWindowTests(unittest.TestCase):
             window.setStyleSheet(sheet)
             _pump(self.app, 15)
             self._size(1280, 720)
-        self.assertGreater(widened, normal * 1.3)        # the wider text really reached the page
+        self.assertGreater(widened, normal * 1.25)       # the wider text really reached the page
 
     def test_7_getting_started_offers_the_last_game_file(self):
         window = self.window

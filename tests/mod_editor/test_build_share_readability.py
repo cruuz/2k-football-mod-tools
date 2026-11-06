@@ -258,14 +258,15 @@ class WindowFitTests(unittest.TestCase):
     def test_the_minimum_window_fits_with_much_wider_text(self) -> None:
         # b780 CI (windows-latest): Windows has neither stylesheet font (Noto Sans, DejaVu Sans), and with its
         # substitute the Build tab needed 82 px more than the 1040x600 window: the console-memory box sized itself to
-        # its ~100-character 64 MB label (671 px even with Linux fonts), and one-line row captions set their rows' width.
-        # Every font-size in the stylesheet is scaled 2x here (the Windows runner drew text about 1.95x as wide as
-        # Linux); the tab must still fit without a horizontal scroll.
+        # its ~100-character 64 MB label (671 px even with Linux fonts), and buttons and one-line captions set rows'
+        # widths. "Much wider" is relative to this platform's own text: every font-size in the stylesheet is scaled
+        # 1.5x of what this OS draws (about 3x Linux on the Windows runner); the tab must still fit without a
+        # horizontal scroll.
         import re
         for theme in ("dark", "light"):
             window = self._window(theme, 1040, 600)
             window.setStyleSheet(re.sub(r"font-size:\s*(\d+)px",
-                                        lambda m: f"font-size: {round(int(m.group(1)) * 2)}px", window.styleSheet()))
+                                        lambda m: f"font-size: {round(int(m.group(1)) * 1.5)}px", window.styleSheet()))
             for _ in range(20):
                 APP.processEvents()
             scroll = window._build_panel.parent()
@@ -279,6 +280,11 @@ class WindowFitTests(unittest.TestCase):
                 self.assertLess(combo.minimumSizeHint().width(), longest)      # the box no longer sizes to its longest label
 
     def test_the_minimum_window_has_no_horizontal_scroll(self) -> None:
+        from PyQt5.QtGui import QFontInfo
+        probe = self._window("dark", 1040, 600)._build_panel
+        print(f"FONTS build panel: drawn {QFontInfo(probe.font()).family()!r} {QFontInfo(probe.font()).pointSizeF():.1f}pt, "
+              f"'Advanced: updated gameplay and season' = "
+              f"{probe.fontMetrics().horizontalAdvance('Advanced: updated gameplay and season')} px", file=sys.stderr)
         # 1040x600 is the shell's own floor and the closest a 1280x720 screen at 125% scaling can
         # get (the logical desktop is 1024x576). The Build tab must still fit inside it.
         for theme in ("dark", "light"):

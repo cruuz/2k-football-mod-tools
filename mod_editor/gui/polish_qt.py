@@ -42,9 +42,11 @@ def polish_controls(root: QWidget) -> None:
             for i in range(widget.count()):
                 if not widget.tabToolTip(i):
                     widget.setTabToolTip(i, widget.tabText(i).replace('&&', '&'))
-        if isinstance(widget, (QPushButton, QToolButton)) and widget.text():
+        if isinstance(widget, (QPushButton, QToolButton)) and widget.text() and not widget.property('elidesText'):
             # Pages have scrolling hosts. A long action stays reachable instead
             # of losing its last words when Qt divides a narrow horizontal row.
+            # (b780 CI: a button that draws its own caption elided with a full tooltip, ux_text.make_shrinkable,
+            # keeps its small minimum; pinned here it set the Build tab's width with the Windows runner's text.)
             width = widget.sizeHint().width()
             if widget.maximumWidth() >= width:
                 widget.setMinimumWidth(max(widget.minimumWidth(), width))

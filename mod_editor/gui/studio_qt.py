@@ -87,7 +87,7 @@ from mod_editor.core.texture_master import (
 from mod_editor.gui import branding
 from mod_editor.gui.ux_text import XEMU_LINE, Details, tab_title  # noqa: F401
 from mod_editor.gui.ux_text import ElidedStatusLabel  # b780-uxfix: the footer messages
-from mod_editor.gui.ux_text import FlowLayout, get_item  # b780 CI: wrapping start buttons; a wrapping choose-one dialog
+from mod_editor.gui.ux_text import FlowLayout, get_item, make_shrinkable  # b780 CI: wrapping rows, dialogs, eliding buttons
 from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 try:   # b780 CI (macOS): numpy's import-time self-check runs on the main thread, not first inside a pool task
     import numpy  # noqa: F401
@@ -341,7 +341,8 @@ CONTINUE_NAME_WIDTH = 420
 SHARE_TAB_TITLE = "Install & Share"
 
 #: b780-uxfix: the footer never grows past this (two message lines, the Build & Share caption, the buttons).
-FOOTER_MAX_HEIGHT = 132
+#: b780 CI: 184 leaves room for a second row of buttons when wide text makes them wrap (one row at normal sizes).
+FOOTER_MAX_HEIGHT = 184
 
 
 def roster_work_sentences(players: int, staff: int, context: str) -> tuple[str, str, str]:
@@ -1853,6 +1854,18 @@ class _BuildContextRosterPanel(RosterEditorPanel):
     def use_build_year(self, *_args):
         if self.franchise_panel.active:
             self.franchise_panel.base_year_spin.setValue(self.configured_base_year())
+
+
+class _MinimumHeightWrappedLabel(WrappedLabel):
+    """A wrapped label that reports its wrapped height as its minimum, without height-for-width.
+
+    b780 CI: Getting Started's start buttons wrap (FlowLayout), so the Start here box is taller at narrow widths
+    and wide text. Qt's height-for-width distribution in the scroll page gave the box less than its rows need
+    (Continue overlapped the last row of buttons); without height-for-width in the box, the page gives it at
+    least its minimum, which includes the button rows at the current width."""
+
+    def hasHeightForWidth(self) -> bool:  # type: ignore[override]
+        return False
 
 
 class StudioMainWindow(QMainWindow):
@@ -3504,6 +3517,8 @@ class StudioMainWindow(QMainWindow):
         outer.setSpacing(16)
         hero = QLabel("Make NFL 2K5 yours.")
         hero.setObjectName("heroTitle")
+        hero.setWordWrap(True)     # b780 CI: with wide text the one-line title set the page width (1,283 px)
+        hero.setMinimumWidth(120)
         sub = QLabel(
             "Install SOFTDRINK 2K28 on your own game file, or open your game file to choose patches, edit your "
             "roster and replace uniforms and artwork. The Studio always saves a new copy."
@@ -3556,7 +3571,7 @@ class StudioMainWindow(QMainWindow):
         start_text.setSpacing(2)
         ready = QLabel("Start here")
         ready.setObjectName("cardTitle")
-        ready_sub = QLabel(
+        ready_sub = _MinimumHeightWrappedLabel(
             "Most people start with Install SOFTDRINK 2K28: you need your NFL 2K5 game file (.iso) and the "
             "SOFTDRINK 2K28 download (.2k5patch). To make your own changes, open your game file instead."
         )
@@ -3604,6 +3619,10 @@ class StudioMainWindow(QMainWindow):
         self.welcome_install_button = install_button
         self.welcome_open_button = open_button
         self.welcome_task_buttons = (softdrink_button, rosters_button)
+        # b780 CI: each start button keeps its natural width (the flow layout wraps them to more rows); only a caption
+        # wider than the whole row is drawn elided, with a tooltip
+        for start_button in (install_button, open_button, softdrink_button, rosters_button, continue_button):
+            make_shrinkable(start_button)
         start_buttons.addWidget(install_button)
         start_buttons.addWidget(open_button)
         start_buttons.addWidget(softdrink_button)
@@ -5168,8 +5187,9 @@ class StudioMainWindow(QMainWindow):
         rows = QVBoxLayout(footer)
         rows.setContentsMargins(24, 8, 24, 8)
         rows.setSpacing(6)
-        layout = QHBoxLayout()
-        layout.setSpacing(8)
+        # b780 CI round 3: with the Windows runner's text the six buttons no longer fit one row and were squeezed below
+        # their captions; they now wrap to a second row, still at the right edge
+        layout = FlowLayout(spacing=8, align_right=True)
         status_box = QVBoxLayout()
         status_box.setSpacing(4)
         self.operation_status = ElidedStatusLabel(
@@ -5196,7 +5216,6 @@ class StudioMainWindow(QMainWindow):
         status_row.addLayout(status_box, 1)
         rows.addLayout(status_row)
         rows.addLayout(layout)
-        layout.addStretch(1)
         self.edit_count = QLabel("No project edits")
         self.edit_count.setObjectName("editCount")
         self.edit_count.setToolTip("Art, text and audio edits that go into Make disc from project.")
@@ -5262,14 +5281,15 @@ class StudioMainWindow(QMainWindow):
         status_row.addWidget(self.edit_count, 0, Qt.AlignTop)
         layout.addWidget(self.undo_button)
         layout.addWidget(self.revert_all_button)
-        layout.addSpacing(4)
         layout.addWidget(self.configure_xemu_button)
-        layout.addSpacing(4)
         # Directly above Build, because this is the question a user has right
         # before they press it: will my art come through the way I drew it?
         layout.addWidget(self.check_images_button)
         layout.addWidget(self.build_button)
         layout.addWidget(self.launch_button)
+        for footer_button in (self.undo_button, self.revert_all_button, self.configure_xemu_button,
+                              self.check_images_button, self.build_button, self.launch_button):
+            make_shrinkable(footer_button)     # b780 CI: wraps first; a caption wider than the footer elides
         footer.setMaximumHeight(FOOTER_MAX_HEIGHT)
         return footer
 

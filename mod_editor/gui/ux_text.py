@@ -26,6 +26,8 @@ from string import Template
 
 from PyQt5.QtCore import QEvent, QPoint, QRect, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtWidgets import QStylePainter
+from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import (
     QCheckBox, QLabel, QLayout, QMessageBox, QSizePolicy, QStyle, QStyleOptionButton, QToolButton,
     QVBoxLayout, QWidget,
@@ -401,10 +403,13 @@ class FlowLayout(QLayout):
     of buttons never sets the width of the page it sits on.
     """
 
-    def __init__(self, parent: QWidget | None = None, *, spacing: int = 6) -> None:
+    def __init__(self, parent: QWidget | None = None, *, spacing: int = 6, align_right: bool = False) -> None:
         super().__init__(parent)
         self._items: list = []
         self._spacing = spacing
+        self._align_right = align_right   # b780 CI: the footer's buttons keep to the right edge
+        self._width = 0                   # the width last laid out at (see minimumSize)
+        self._asked = -1                  # the height last asked of the parents
         self.setContentsMargins(0, 0, 0, 0)
 
     def addItem(self, item) -> None:  # type: ignore[no-untyped-def]
@@ -423,37 +428,73 @@ class FlowLayout(QLayout):
         return Qt.Orientations(0)
 
     def hasHeightForWidth(self) -> bool:
-        return True
+        # b780 CI: Qt's height-for-width chain through nested box layouts and a scroll page left the rows less height
+        # than they need; minimumSize reports the height for the current width instead (see setGeometry)
+        return False
 
     def heightForWidth(self, width: int) -> int:
         return self._arrange(QRect(0, 0, width, 0), apply=False)
 
     def setGeometry(self, rect: QRect) -> None:
         super().setGeometry(rect)
-        self._arrange(rect, apply=True)
+        needed = self._arrange(rect, apply=True)
+        self._width = rect.width()
+        if needed != rect.height() and needed != self._asked:
+            # b780 CI: a parent box layout does not re-ask a nested layout for its height-for-width when the rows change
+            # (a wider font at the same width), so the rows overran the height they were given (Continue overlapped
+            # the last row of start buttons). minimumSize now reports the height for this width; lay the parents out
+            # again, from the event loop (Qt ignores it from inside a layout pass).
+            self._asked = needed
+            from PyQt5.QtCore import QTimer
+            QTimer.singleShot(0, self._relayout)
 
     def sizeHint(self) -> QSize:
         return self.minimumSize()
+
+    def _relayout(self) -> None:
+        self.invalidate()
+        widget = self.parentWidget()
+        while widget is not None:
+            widget.updateGeometry()
+            if widget.layout() is not None:
+                widget.layout().invalidate()
+            if widget.isWindow():
+                break
+            widget = widget.parentWidget()
 
     def minimumSize(self) -> QSize:
         size = QSize()
         for item in self._items:
             size = size.expandedTo(item.minimumSize())
         margins = self.contentsMargins()
-        return size + QSize(margins.left() + margins.right(), margins.top() + margins.bottom())
+        size = size + QSize(margins.left() + margins.right(), margins.top() + margins.bottom())
+        if self._width > 0:
+            size.setHeight(max(size.height(), self._arrange(QRect(0, 0, self._width, 0), apply=False)))
+        return size
 
     def _arrange(self, rect: QRect, *, apply: bool) -> int:
         margins = self.contentsMargins()
         area = rect.adjusted(margins.left(), margins.top(), -margins.right(), -margins.bottom())
         x, y, line_height = area.x(), area.y(), 0
+        rows: list[list] = [[]]
         for item in self._items:
+            if item.widget() is not None and item.widget().isHidden():
+                continue
             hint = item.sizeHint()
             if x > area.x() and x + hint.width() > area.right() + 1:
                 x, y, line_height = area.x(), y + line_height + self._spacing, 0
-            if apply:
-                item.setGeometry(QRect(QPoint(x, y), hint))
-            x += hint.width() + self._spacing
+                rows.append([])
+            width = min(hint.width(), area.width())     # b780 CI: an item wider than the row gets the row (it elides)
+            rows[-1].append((item, QRect(QPoint(x, y), QSize(width, hint.height()))))
+            x += width + self._spacing
             line_height = max(line_height, hint.height())
+        if apply:
+            for row in rows:
+                shift = 0
+                if self._align_right and row:
+                    shift = max(0, area.right() + 1 - row[-1][1].right() - 1)
+                for item, place in row:
+                    item.setGeometry(place.translated(shift, 0))
         return y + line_height - rect.y() + margins.bottom()
 
 
@@ -980,6 +1021,87 @@ def suggest_copy_name(source: str | Path, *, suffix: str = "modded") -> str:
     return str(candidate)
 
 
+class _ElidingPaint(QObject):
+    """Paints a button's caption elided (with a tooltip) when the layout gives it less width than the caption needs.
+
+    The button keeps its full ``text()``; only what is drawn is shortened. See make_shrinkable."""
+
+    def eventFilter(self, widget, event):  # type: ignore[no-untyped-def]
+        if event.type() != QEvent.Paint or not isinstance(widget, (QPushButton, QToolButton)):
+            return False
+        text = widget.text()
+        metrics = widget.fontMetrics()
+        lines = text.split("\n")
+        needed = max(metrics.horizontalAdvance(line) for line in lines) if lines else 0
+        padding = max(0, widget.sizeHint().width() - needed)
+        room = widget.width() - padding
+        if needed <= room:
+            return False
+        shown = "\n".join(metrics.elidedText(line, Qt.ElideRight, max(room, metrics.horizontalAdvance("…"))) for line in lines)
+        if not widget.toolTip():
+            widget.setToolTip(text.replace("\n", " "))
+        painter = QStylePainter(widget)
+        if isinstance(widget, QPushButton):
+            option = QStyleOptionButton()
+            widget.initStyleOption(option)
+            option.text = shown
+            painter.drawControl(QStyle.CE_PushButton, option)
+        else:
+            from PyQt5.QtWidgets import QStyleOptionToolButton
+            option = QStyleOptionToolButton()
+            widget.initStyleOption(option)
+            option.text = shown
+            painter.drawComplexControl(QStyle.CC_ToolButton, option)
+        return True
+
+
+def make_shrinkable(button, minimum_width: int = 72):
+    """Let a layout narrow ``button`` below its caption's width; the caption is then drawn elided, with a tooltip.
+
+    b780 CI: buttons sized themselves to their captions, so with the Windows runner's wide text (about twice Linux)
+    a row of them set the page width and the Build tab scrolled sideways. ``text()`` is unchanged."""
+    button.setMinimumWidth(minimum_width)
+    if button.property("elidesText"):
+        return button
+    button.setProperty("elidesText", True)      # polish_qt.polish_controls leaves its minimum alone
+    # One filter per button, owned by it: a shared module-level filter outlived its C++ object across test apps
+    button.installEventFilter(_ElidingPaint(button))
+    return button
+
+
+def fit_narrow_windows(root: QWidget, combo_chars: int = 14) -> None:
+    """Nothing in ``root`` sets its width from a long text (b780 CI; the Build and Install & Share tabs).
+
+    Multi-word plain labels wrap; buttons narrow and draw their caption elided with a tooltip (make_shrinkable);
+    choice boxes size to a short label (the current choice elides; the drop-down list shows every choice in full).
+    With the Windows runner's text (about 2x Linux) these set the tab's width and put a horizontal scroll on the
+    1040-px minimum window."""
+    from PyQt5.QtWidgets import QAbstractButton, QCheckBox, QComboBox, QLabel, QRadioButton
+    for label in root.findChildren(QLabel):
+        text = label.text().strip()
+        if not label.wordWrap() and "<" not in text and " " in text:
+            label.setWordWrap(True)
+        if label.wordWrap() and label.minimumWidth() == 0:
+            # Qt's own minimum for a wrapped label stays wide (about 500 px at large text); let rows narrow it
+            label.setMinimumWidth(min(label.minimumSizeHint().width(), 96))
+    # b780 CI round 3: buttons sized themselves to their captions (the preset buttons, Custom data ▸, More inputs ▸)
+    # and with the Windows runner's text a row of them set the page width; they now narrow, drawing the caption
+    # elided with a tooltip
+    for button in root.findChildren(QAbstractButton):
+        if not isinstance(button, (QCheckBox, QRadioButton)):
+            make_shrinkable(button)
+    for combo in root.findChildren(QComboBox):
+        combo.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
+        combo.setMinimumContentsLength(min(combo_chars, max((len(combo.itemText(i)) for i in range(combo.count())),
+                                                                 default=combo_chars)))
+        view = combo.view()
+        view.setTextElideMode(Qt.ElideNone)
+        view.setMinimumWidth(view.sizeHintForColumn(0) + 2 * combo.style().pixelMetric(combo.style().PM_ScrollBarExtent))
+        combo.setMinimumWidth(min(combo.minimumSizeHint().width(), 120))   # the current choice elides
+        if combo.count() and not combo.toolTip():
+            combo.setToolTip(combo.currentText())
+
+
 #: the widest the label of a choose-one dialog may be, in pixels (b780 CI: a character count is no bound, Windows
 #: font metrics made 88 characters 1,518 px wide)
 ITEM_DIALOG_TEXT_WIDTH = 560
@@ -1007,6 +1129,13 @@ def item_dialog(parent, title: str, text: str, items, current: int = 0):
         label.setWordWrap(True)
         label.setMaximumWidth(width)
         label.setMinimumWidth(min(width, label.fontMetrics().averageCharWidth() * 40))
+    from PyQt5.QtWidgets import QComboBox
+    for combo in dialog.findChildren(QComboBox):      # b780 CI round 3: the choice box sized to its longest choice
+        combo.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
+        combo.setMinimumContentsLength(16)
+        combo.setMaximumWidth(width)
+        combo.view().setTextElideMode(Qt.ElideNone)
+        combo.view().setMinimumWidth(min(combo.view().sizeHintForColumn(0) + 24, int(width * 1.6)))
     return dialog
 
 
@@ -1021,5 +1150,5 @@ __all__ = [
     "DISCORD_HINT", "Details", "NOT_TESTED", "XEMU_LINE", "fix_hint", "plain_failure",
     "plain_error", "failure_body", "show_operation_error", "source_captions", "suggest_copy_name", "tab_title", "write_caption", "disc_next_steps",
     "build_failure_texts", "build_summary_lines", "show_build_failure", "DIAGNOSTIC_DESTINATION",
-    "ITEM_DIALOG_TEXT_WIDTH", "item_dialog", "get_item",
+    "ITEM_DIALOG_TEXT_WIDTH", "item_dialog", "get_item", "make_shrinkable", "fit_narrow_windows",
 ]

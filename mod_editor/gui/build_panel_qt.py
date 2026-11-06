@@ -590,7 +590,7 @@ class BuildPanel(QWidget):
         self._refresh()
 
     #: the widest a Build-page choice box sizes itself, in characters (b780 CI: see _compact_combos)
-    COMBO_CHARS = 22
+    COMBO_CHARS = 14
 
     def _fit_narrow_windows(self) -> None:
         """Nothing on this page sets its width from a long text: choice boxes size to a short label (the current
@@ -600,18 +600,8 @@ class BuildPanel(QWidget):
         characters: 671 px with Linux fonts, about twice that with the Windows runner's), and the one-line caption
         "Speed separation on deep routes (experimental):" set its row's width too, which put a horizontal scroll on
         the Build tab at the 1040-px minimum window."""
-        for label in self.findChildren(QLabel):
-            if not label.wordWrap() and label.text().rstrip().endswith(":") and "<" not in label.text():
-                label.setWordWrap(True)
-        for combo in self.findChildren(QComboBox):
-            combo.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
-            combo.setMinimumContentsLength(min(self.COMBO_CHARS, max((len(combo.itemText(i)) for i in range(combo.count())),
-                                                                     default=self.COMBO_CHARS)))
-            view = combo.view()
-            view.setTextElideMode(Qt.ElideNone)
-            view.setMinimumWidth(view.sizeHintForColumn(0) + 2 * combo.style().pixelMetric(combo.style().PM_ScrollBarExtent))
-            if combo.count() and not combo.toolTip():
-                combo.setToolTip(combo.currentText())
+        from mod_editor.gui.ux_text import fit_narrow_windows
+        fit_narrow_windows(self, self.COMBO_CHARS)
 
     # ---------------------------------------------------------------- UI
     def _build_ui(self) -> None:

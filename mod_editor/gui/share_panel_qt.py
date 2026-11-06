@@ -111,6 +111,8 @@ class SharePanel(QWidget):
         #: b780-uxfix: set by the Studio: () -> callable or None; the callable starts the latest disc in xemu.
         self.play_hook = None
         self._build()
+        from mod_editor.gui.ux_text import fit_narrow_windows
+        fit_narrow_windows(self)    # b780 CI: at the Windows runner's text this tab set the page width (923 px)
 
     # ------------------------------------------------------------------ the open-disc hook
     def follow_source(self, source: Path | str) -> None:
