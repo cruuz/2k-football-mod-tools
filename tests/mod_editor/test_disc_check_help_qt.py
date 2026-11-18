@@ -1,6 +1,7 @@
 """Exercise the real menu, dialog, worker and support clipboard."""
 import os
 from pathlib import Path
+import sys
 import tempfile
 import threading
 import time
@@ -8,6 +9,8 @@ import unittest
 from unittest.mock import patch
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+ROOT = Path(__file__).resolve().parents[2]
+sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
 from PyQt5.QtCore import QTimer
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QApplication, QFileDialog
@@ -137,3 +140,7 @@ class DiscCheckHelpTests(unittest.TestCase):
 
     def test_closing_studio_stops_a_check_before_closing_the_window(self):
         self._stop_check(True)
+
+
+if __name__ == "__main__":
+    unittest.main()
