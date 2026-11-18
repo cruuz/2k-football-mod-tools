@@ -566,6 +566,8 @@ def write_into_memcard(
             )
         for page_index, block in staged:
             start = page_index * MEMCARD_PAGE
+            if raw[start:start + MEMCARD_PAGE_DATA] == block:
+                continue
             raw[start : start + MEMCARD_PAGE_DATA] = block
             touched_pages.add(page_index)
         written.append(name)
@@ -573,7 +575,8 @@ def write_into_memcard(
     for page_index in sorted(touched_pages):
         start = page_index * MEMCARD_PAGE
         data = bytes(raw[start : start + MEMCARD_PAGE_DATA])
-        raw[start + MEMCARD_PAGE_DATA : start + MEMCARD_PAGE] = page_spare(data)
+        spare_start = start + MEMCARD_PAGE_DATA
+        raw[spare_start:spare_start + PAGE_ECC_BYTES] = page_spare(data)[:PAGE_ECC_BYTES]
 
     _write_reserved(output, bytes(raw), (card,) + tuple(forbid))
     return {
@@ -608,6 +611,7 @@ _ECC_LINE_SEED = 0x7F
 _ECC_LINE_MASK = 0x7F
 ECC_CHUNK = 128
 ECC_PER_CHUNK = 3
+PAGE_ECC_BYTES = MEMCARD_PAGE_DATA // ECC_CHUNK * ECC_PER_CHUNK
 
 
 def _column_mask(value: int) -> int:

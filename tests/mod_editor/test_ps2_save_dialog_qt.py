@@ -155,7 +155,7 @@ class SuggestedNameTests(unittest.TestCase):
         self.assertTrue(suggested_psu_name("").endswith(".psu"))
 
 
-def _two_save_card(path: Path) -> tuple[str, str]:
+def _two_save_card(path: Path, *, different_first_game: bool = False) -> tuple[str, str]:
     """Create two independent, sealed saves on a small FAT-backed ECC card."""
     cluster_size = 1024
     clusters = [bytearray(cluster_size) for _ in range(3)]
@@ -187,6 +187,9 @@ def _two_save_card(path: Path) -> tuple[str, str]:
         if label == "Second":
             save_lib.set_player_name(save, 0, "first", "Delta")
         save.reseal()
+        if different_first_game and label == "First":
+            save.files["game.dat"] = save.files.pop(save.directory)
+            save.directory = "OTHER-GAME"
         files = [entry(key, file_mode, len(data), store(data)) for key, data in save.files.items()]
         dirs.append((save.directory, len(files), store(b"".join(files))))
     root = store(entry(".", directory_mode, len(dirs) + 1, 0) + b"".join(
@@ -278,6 +281,43 @@ class ServiceTests(unittest.TestCase):
         self.assertFalse(name_capacity(row, "first", "🏈🏈🏈").valid)
         self.service.set_name(0, "first", "A🏈🏈")
         self.assertTrue(self.service.write(self.root / "unicode.psu").verified)
+
+    def test_pcsx2_card_checksum_and_other_game_files_survive_verified_name_edit(self):
+        source = self.root / "pcsx2.ps2"
+        other, selected = _two_save_card(source, different_first_game=True)
+        image = bytearray(source.read_bytes())
+        marker = b"save-tag" + b"\xff" * 504
+        image[528:2 * 528] = marker + save_lib.page_spare(b"\xff" * 512)
+        selected_pages = verify_lib.decode_memcard(source, selected).card_pages[selected]
+        for page in selected_pages:
+            image[page * 528 + 524:page * 528 + 528] = b"keep"
+        source.write_bytes(image)
+        self.service.open(source, selected)
+        self.service.set_name(0, "first", "Al")
+        self.service.set_name(0, "first", "Echo")
+        output = self.root / "verified.ps2"
+        result = self.service.write(output)
+        self.assertTrue(result.verified, result.detail)
+        saved = output.read_bytes()
+        self.assertEqual(saved[528:2 * 528], image[528:2 * 528])
+        self.assertEqual(source.read_bytes(), image)
+        for page in selected_pages:
+            self.assertEqual(saved[page * 528 + 524:page * 528 + 528], b"keep")
+        checks = verify_lib.verify_memcard_write(source, output, selected)
+        self.assertEqual(checks["ecc"]["pcsx2_checksum_pages"], 1)
+        self.assertEqual(checks["other_saves_untouched"], [other])
+        self.assertTrue(checks["changed_card_pages"])
+
+        altered = bytearray(saved)
+        altered[528] ^= 1
+        output.write_bytes(altered)
+        with self.assertRaisesRegex(verify_lib.VerifyError, "outside the selected save"):
+            verify_lib.verify_memcard_write(source, output, selected)
+        altered = bytearray(saved)
+        altered[528 + 200] ^= 1
+        output.write_bytes(altered)
+        with self.assertRaisesRegex(verify_lib.VerifyError, "wrong ECC"):
+            verify_lib.verify_memcard_write(source, output, selected)
 
     def test_second_directory_survives_revert_psu_and_card_copy(self):
         card = self.root / "two-saves.ps2"

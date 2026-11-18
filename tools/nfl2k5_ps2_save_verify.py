@@ -59,6 +59,8 @@ _PAGE_DATA = 512
 _ECC_CHUNK = 128
 _ECC_SPARE_USED = 12
 _ERASED_SPARE = b"\xff" * _ECC_SPARE_USED
+_PCSX2_CHECKSUM_OFFSET = 0x210
+_FORMATTED_FF_ECC = bytes.fromhex("77 7f 7f") * 4
 
 # Page-ECC constants, restated here rather than imported: a verifier that
 # borrowed the writer's ECC could only ever agree with it.
@@ -88,6 +90,7 @@ class DecodedSave:
 
     directory: str
     files: dict[str, bytes] = field(default_factory=dict)
+    card_pages: dict[str, dict[int, int]] = field(default_factory=dict, repr=False, compare=False)
 
     @property
     def payload(self) -> bytes:
@@ -156,7 +159,7 @@ def decode_directory(path: Path) -> DecodedSave:
     return decoded
 
 
-def decode_memcard(path: Path, directory: str | None = None) -> DecodedSave:
+def decode_memcard(path: Path, directory: str | None = None, *, require_named_payload: bool = True) -> DecodedSave:
     """Read a save out of a .ps2 card image without the writer's reader.
 
     Independently walks the superblock, the indirect FAT and the directory
@@ -219,13 +222,25 @@ def decode_memcard(path: Path, directory: str | None = None) -> DecodedSave:
                 yield mode, length, first, name
                 seen += 1
 
-    def read_file(start: int, length: int) -> bytes:
+    def read_file(start: int, length: int) -> tuple[bytes, dict[int, int]]:
         out = bytearray()
+        pages: dict[int, int] = {}
         for index in chain(start):
-            out += cluster(alloc_offset + index)
+            first_page = (alloc_offset + index) * pages_per_cluster
+            for index_in_cluster in range(pages_per_cluster):
+                remaining = length - len(out)
+                if not remaining:
+                    break
+                physical = first_page + index_in_cluster
+                size = min(remaining, _PAGE_DATA)
+                block = page(physical)
+                _require(len(block) == _PAGE_DATA, f"File page {physical} falls outside the card")
+                pages[physical] = size
+                out += block[:size]
             if len(out) >= length:
                 break
-        return bytes(out[:length])
+        _require(len(out) == length, "The file ends before its declared length")
+        return bytes(out), pages
 
     root_count = next(records(rootdir, 1))[1]
     found: list[DecodedSave] = []
@@ -240,8 +255,8 @@ def decode_memcard(path: Path, directory: str | None = None) -> DecodedSave:
                 continue
             if not entry_mode & 0x8000:
                 continue
-            decoded.files[entry_name] = read_file(entry_first, entry_len)
-        if decoded.directory in decoded.files:
+            decoded.files[entry_name], decoded.card_pages[entry_name] = read_file(entry_first, entry_len)
+        if decoded.directory in decoded.files or (directory is not None and not require_named_payload):
             found.append(decoded)
     if not found:
         raise VerifyError(f"{path}: no matching save on this memory card")
@@ -343,7 +358,7 @@ def audit_memcard_ecc(path: Path) -> dict:
     raw = Path(path).read_bytes()
     if len(raw) % _PAGE:
         raise VerifyError(f"{path}: not a {_PAGE}-byte-page memory-card image")
-    checked = erased = 0
+    checked = erased = pcsx2_checksum_pages = 0
     bad: list[int] = []
     for page in range(len(raw) // _PAGE):
         base = page * _PAGE
@@ -351,6 +366,13 @@ def audit_memcard_ecc(path: Path) -> dict:
         spare = raw[base + _PAGE_DATA : base + _PAGE][:_ECC_SPARE_USED]
         if spare == _ERASED_SPARE:
             erased += 1
+            continue
+        # PCSX2 FileMemoryCard::Close writes its 64-bit state checksum at 0x210
+        # without replacing the reserved page's formatted NAND parity.
+        if (base == _PCSX2_CHECKSUM_OFFSET and raw.startswith(b"Sony PS2 Memory Card Format")
+                and data[:8] != b"\xff" * 8 and data[8:] == b"\xff" * (_PAGE_DATA - 8)
+                and spare == _FORMATTED_FF_ECC):
+            pcsx2_checksum_pages += 1
             continue
         expected = b"".join(
             _chunk_ecc(data[start : start + _ECC_CHUNK])
@@ -362,6 +384,7 @@ def audit_memcard_ecc(path: Path) -> dict:
     return {
         "pages_checked": checked,
         "pages_erased": erased,
+        "pcsx2_checksum_pages": pcsx2_checksum_pages,
         "pages_bad": len(bad),
         "first_bad_pages": bad[:8],
     }
@@ -387,27 +410,39 @@ def verify_memcard_write(
     )
     report["ecc"] = ecc
 
-    before_all = {save.directory: save for save in decode_memcard_all(original_card)}
-    after_all = {save.directory: save for save in decode_memcard_all(written_card)}
-    _require(
-        set(before_all) == set(after_all),
-        "the set of saves on the card changed: "
-        f"{sorted(set(before_all) ^ set(after_all))}",
-    )
-    _require(directory in after_all, f"{written_card} has no save named {directory}")
-
-    untouched = []
-    for name in sorted(before_all):
-        if name == directory:
+    before = decode_memcard(original_card, directory)
+    after = decode_memcard(written_card, directory)
+    original = Path(original_card).read_bytes()
+    written = Path(written_card).read_bytes()
+    _require(len(original) == len(written), "Memory card size changed")
+    editable = {**before.card_pages[directory], **before.card_pages.get("EXTRA", {})}
+    changed_pages = []
+    for start in range(0, len(original), _PAGE):
+        prior = original[start:start + _PAGE]
+        current = written[start:start + _PAGE]
+        if prior == current:
             continue
-        _require(
-            before_all[name].files == after_all[name].files,
-            f"save {name} changed, but only {directory} may be written",
-        )
-        untouched.append(name)
-    report["other_saves_untouched"] = untouched
-
-    report["save"] = verify(before_all[directory], after_all[directory], declared)
+        index = start // _PAGE
+        _require(index in editable, f"Page {index} changed outside the selected save")
+        file_bytes = editable[index]
+        _require(prior[file_bytes:_PAGE_DATA] == current[file_bytes:_PAGE_DATA],
+                 f"Page {index} changed beyond the selected file")
+        _require(prior[_PAGE_DATA + _ECC_SPARE_USED:] == current[_PAGE_DATA + _ECC_SPARE_USED:],
+                 f"Page {index} changed reserved spare bytes")
+        parity = b"".join(_chunk_ecc(current[i:i + _ECC_CHUNK]) for i in range(0, _PAGE_DATA, _ECC_CHUNK))
+        _require(current[_PAGE_DATA:_PAGE_DATA + _ECC_SPARE_USED] == parity,
+                 f"Edited page {index} has wrong ECC")
+        changed_pages.append(index)
+    report["changed_card_pages"] = changed_pages
+    other_names = sorted(name for name in _memcard_directories(original_card) if name != directory)
+    for name in other_names:
+        # A second save could reference one of the edited physical pages. Other
+        # games also use names such as "game.dat" for their own payload.
+        sibling_before = decode_memcard(original_card, name, require_named_payload=False)
+        sibling_after = decode_memcard(written_card, name, require_named_payload=False)
+        _require(sibling_before.files == sibling_after.files, f"Save {name} changed outside the selected save")
+    report["other_saves_untouched"] = other_names
+    report["save"] = verify(before, after, declared)
     report["result"] = "PASS"
     return report
 
