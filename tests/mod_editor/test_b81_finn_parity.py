@@ -336,26 +336,23 @@ class GridTests(_PanelCase):
         rows = [self.panel.player_table.item(r, 2).text().lstrip("● ") for r in range(len(self.panel._rows))]
         self.assertEqual(rows, [p.display for p in self.panel._rows], "the grid shows the sorted order")
 
-    def test_the_arrows_wait_for_team_order_and_say_why(self) -> None:
-        self.assertTrue(self.panel.up_button.isEnabled() or self.panel.down_button.isEnabled())
+    def test_the_arrows_edit_the_depth_chart_in_any_grid_order(self) -> None:
+        # wave 1 disabled the arrows while sorted (they moved the pointer list); wave 2 (R4) makes them edit the
+        # stored depth rank, which does not depend on the grid's order
         self.assertFalse(self.panel.sort_box.isVisibleTo(self.panel))
-        self.panel.select_player(self.panel._rows[3])
+        qbs = self.panel.document.depth_order(0, 0)
         self.panel.sort_by("ovr")
-        self.assertFalse(self.panel.up_button.isEnabled())
-        self.assertFalse(self.panel.down_button.isEnabled())
-        self.assertIn("Team order", self.panel.up_button.toolTip())
+        self.panel.select_player(qbs[1])
+        self.assertTrue(self.panel.up_button.isEnabled())
         self.assertTrue(self.panel.sort_box.isVisibleTo(self.panel))
-        self.assertIn("Sorted by Est. OVR, highest first", self.panel.sort_note.text())
-        order = list(self.panel.document.teams[0].slots)
-        self.assertFalse(self.panel.move_selected(1), "no move while sorted")
-        self.assertEqual(self.panel.document.teams[0].slots, order)
-        self.assertIn("Press Team order", self.panel.status_label.text())
+        self.assertEqual(self.panel.sort_note.text(), "Sorted by Est. OVR, highest first. Team order puts the list back.")
+        slots = list(self.panel.document.teams[0].slots)
+        self.assertTrue(self.panel.move_selected(-1))
+        self.assertIs(self.panel.document.depth_order(0, 0)[0], qbs[1])
+        self.assertEqual(self.panel.document.teams[0].slots, slots)
         self.panel.team_order_button.click()
         self.assertIsNone(self.panel._sort)
-        self.assertTrue(self.panel.down_button.isEnabled())
-        team = self.panel.document.team_players(0)
-        self.assertEqual(self.panel._rows, team, "team order is the pointer list again")
-        self.assertTrue(self.panel.move_selected(1), "the arrows work once the grid is back in team order")
+        self.assertEqual(self.panel._rows, self.panel.document.team_players(0), "team order is the pointer list again")
 
     def test_the_column_picker_offers_finns_bands_in_his_order(self) -> None:
         self.panel._fill_columns_menu()
@@ -1056,6 +1053,194 @@ class SmallPassesPanelTests(_PanelCase):
         receipt = self.panel.import_player_data_bytes(backup, groups=["ratings"], current_list_only=True)
         self.assertEqual(receipt["changed"], 1)
         self.assertNotEqual(player.record.values["speed"], 3)
+
+
+# --------------------------------------------------------------------------------------------- wave 2: R4 depth
+class DepthCoreTests(unittest.TestCase):
+    """The stored depth rank (+0x28 bits 10-12) is what the game's chart and starters follow (finn-facts FACTS.md)."""
+
+    def setUp(self) -> None:
+        self.document = rr.load_body(league_body())
+
+    def rows(self, code: int, field: str = "depth_rank") -> list[tuple[str, int, int, int]]:
+        return [(p.last, p.record.values["depth_rank"], p.record.values["depth_side"],
+                 p.record.values["unknown_52"]) for p in self.document.depth_order(0, code, field)]
+
+    def test_a_move_keeps_rows_unique_and_gap_free_and_locks_who_moved(self) -> None:
+        qbs = self.document.depth_order(0, 0)
+        self.assertEqual(len(qbs), 3)
+        slots = list(self.document.teams[0].slots)
+        result = self.document.place_in_depth(qbs[2], 0)
+        self.assertEqual([r[0] for r in self.rows(0)], [qbs[2].last, qbs[0].last, qbs[1].last])
+        self.assertEqual([r[1] for r in self.rows(0)], [0, 1, 2])
+        self.assertTrue(all(r[3] & 1 for r in self.rows(0)), "every QB whose place changed is rank-locked")
+        self.assertEqual(self.document.teams[0].slots, slots, "the pointer list is not the depth chart")
+        self.assertEqual(set(p.offset for p in result["changed"]), {p.offset for p in qbs})
+        self.document.restore_depth(result["before"])
+        self.assertEqual([r[0] for r in self.rows(0)], [p.last for p in qbs])
+        self.assertTrue(all(r[3] == 0 for r in self.rows(0)))
+
+    def test_gaps_close_without_locking_and_a_paired_starter_never_holds_both_slots(self) -> None:
+        tackles = self.document.depth_order(0, 14)
+        self.assertEqual([r[1] for r in self.rows(14)], [0, 2, 3], "the fixture has a gap")
+        result = self.document.place_in_depth(tackles[1], 0)
+        rows = self.rows(14)
+        self.assertEqual([r[1] for r in rows], [0, 1, 2])
+        self.assertEqual(sorted(r[2] for r in rows), [0, 1, 2], "the side order is unique and gap-free too")
+        top = rows[0]
+        self.assertNotEqual(top[2], 0, "LT is not also RT")
+        self.assertEqual(rows[-1][3], 0, "a player only renumbered to close a gap is not locked")
+        self.assertEqual(len(result["changed"]), 3)
+
+    def test_the_side_order_of_a_paired_position_and_refusals(self) -> None:
+        wrs = self.document.depth_order(0, 3, "depth_side")
+        self.document.place_in_depth(wrs[-1], 0, "depth_side")
+        self.assertEqual(self.document.depth_order(0, 3, "depth_side")[0].last, wrs[-1].last)
+        self.assertTrue(wrs[-1].record.depth_locks["side"])
+        qb = self.document.depth_order(0, 0)[0]
+        with self.assertRaisesRegex(rr.RosterRecordError, "one depth order"):
+            self.document.place_in_depth(qb, 1, "depth_side")
+        agent = next(p for p in self.document.players if p.last == "AgentOne")
+        with self.assertRaisesRegex(rr.RosterRecordError, "no depth chart row"):
+            self.document.place_in_depth(agent, 0)
+        self.assertEqual(rr.depth_slot_names(14), ("LT", "RT"))
+        self.assertEqual(rr.depth_slot_names(0), ("QB", None))
+        self.assertEqual(rr.depth_slot_names(16, "one_pool")[0], "L EDGE")
+
+    def test_a_csv_depth_change_seats_the_chart_and_names_the_others(self) -> None:
+        qbs = self.document.depth_order(0, 0)
+        text = rr.export_csv(self.document, [qbs[1]])
+        lines = text.splitlines()
+        header = lines[0].split(",")
+        cells = lines[1].split(",")
+        cells[header.index("depth_rank")] = "0"
+        preview = rr.preview_csv(self.document, "\n".join([lines[0], ",".join(cells)]) + "\n")
+        related = {(c["pool"], c["index"]) for c in preview.receipt["changes"]}
+        self.assertIn(("primary", qbs[0].index), related, "the QB he passed is part of the preview")
+        rr.apply_csv_preview(self.document, preview)
+        self.assertEqual([p.last for p in self.document.depth_order(0, 0)], [qbs[1].last, qbs[0].last, qbs[2].last])
+        self.assertEqual([p.record.values["depth_rank"] for p in self.document.depth_order(0, 0)], [0, 1, 2])
+        self.assertTrue(self.document.depth_order(0, 0)[0].record.depth_locks["rank"])
+        self.document.check_depth_locks()
+
+
+class DepthPanelTests(_PanelCase):
+    body_factory = staticmethod(league_body)
+
+    def test_the_chip_shows_the_chart_the_arrows_change_and_my_changes_lists_it(self) -> None:
+        panel = self.panel
+        panel._chip_clicked("OL")
+        tackles = [p for p in panel._rows if p.record.values["position"] == 14]
+        self.assertEqual([p.record.values["depth_rank"] for p in tackles], sorted(p.record.values["depth_rank"]
+                                                                                    for p in tackles))
+        panel.select_player(tackles[-1])
+        self.assertFalse(panel.depth_order_combo.isHidden(), "a tackle has LT and RT orders")
+        self.assertEqual([panel.depth_order_combo.itemText(i) for i in range(2)], ["LT order", "RT order"])
+        self.assertTrue(panel.up_button.isEnabled())
+        self.assertIn("depth chart", panel.up_button.toolTip())
+        self.assertTrue(panel.move_selected(-1))
+        self.assertIn("is now LT #2", panel.status_label.text())
+        panel.depth_order_combo.setCurrentIndex(1)
+        panel.select_player(tackles[-1])
+        self.assertTrue(panel.move_selected(-1) or panel.move_selected(1))
+        panel.refresh_diff()
+        report = panel.report.toPlainText()
+        self.assertIn("Depth", report)
+        panel.sort_by("speed")
+        panel.select_player(tackles[0])
+        self.assertTrue(panel.up_button.isEnabled(), "the arrows do not depend on the grid's order any more")
+        panel._chip_clicked("All")
+        panel.team_list.setCurrentRow(panel._team_list_row("free_agent", -1))
+        self.assertIsNotNone(panel.selected_player())
+        self.assertFalse(panel.up_button.isEnabled())
+        self.assertIn("club", panel.up_button.toolTip())
+
+
+def _depth_cpu():
+    from test_nfl2k5_depth_locks import CPU, HAVE_CPU, XBE
+    if not (HAVE_CPU and XBE.is_file()):
+        raise unittest.SkipTest(f"retail extraction and Unicorn required: {XBE}")
+    return CPU, XBE
+
+
+class DepthNativeTests(unittest.TestCase):
+    """The game's own code over records the Studio wrote: the depth chart row picker 0x242AE0 (Codex's witness) and the
+    patched weekly sort 0x2BDCF0, run in the in-tree Unicorn harness of test_nfl2k5_depth_locks."""
+
+    def chart(self, cpu, position: int = 0, chain: int = 0, rows: int = 2) -> list[int]:
+        """0x242AE0(row, position, chain) with the team in EDX: the player the chart shows in that row of that
+        position's rank order (chain 0) or side order (chain 1); the screen's caller 0x24353E is the return."""
+
+        from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_EDX, UC_X86_REG_ESP
+        from test_nfl2k5_depth_locks import PLAYERS, STACK, TEAM
+        import struct
+        out = []
+        for row in range(rows):
+            cpu.uc.mem_write(STACK, struct.pack("<IIII", 0x24353E, row, position, chain))
+            cpu.uc.reg_write(UC_X86_REG_ESP, STACK)
+            cpu.uc.reg_write(UC_X86_REG_EDX, TEAM)
+            cpu.uc.emu_start(0x242AE0, 0x24353E, count=2_000_000)
+            eax = cpu.uc.reg_read(UC_X86_REG_EAX)
+            out.append((eax - PLAYERS) // 84 if eax else None)
+        return out
+
+    @staticmethod
+    def studio_records(players):
+        return [p.record.encode() for p in players]
+
+    def test_a_studio_rank_move_changes_the_games_chart_and_a_pointer_swap_does_not(self) -> None:
+        CPU, XBE = _depth_cpu()
+        retail = XBE.read_bytes()
+        document = rr.load_body(league_body())
+        qbs = document.depth_order(0, 0)[:2]
+        records = self.studio_records(qbs)
+        cpu = CPU(retail)
+        cpu.seed(records)
+        self.assertEqual(self.chart(cpu), [0, 1], "loaded: QB1 then QB2")
+        cpu.seed(records, order=[1, 0])
+        self.assertEqual(self.chart(cpu), [0, 1], "the old arrows (pointer order) leave the game's chart alone")
+        document.place_in_depth(qbs[1], 0)
+        cpu = CPU(retail)
+        cpu.seed(self.studio_records(qbs))
+        self.assertEqual(self.chart(cpu), [1, 0], "the Studio's move makes QB2 the game's starter")
+
+    def test_the_side_order_is_the_right_slot_of_the_chart(self) -> None:
+        CPU, XBE = _depth_cpu()
+        document = rr.load_body(league_body())
+        tackles = document.depth_order(0, 14)
+        document.place_in_depth(tackles[0], 0)                  # settle both orders first
+        right = document.depth_order(0, 14, "depth_side")
+        document.place_in_depth(right[-1], 0, "depth_side")
+        cpu = CPU(XBE.read_bytes())
+        players = document.depth_order(0, 14)
+        cpu.seed([p.record.encode() for p in players])
+        rt = self.chart(cpu, position=14, chain=1, rows=1)[0]   # RT: the tackles' side order (slot table 0x5140D8)
+        lt = self.chart(cpu, position=14, chain=0, rows=1)[0]   # LT: their rank order
+        self.assertIs(players[rt], right[-1])
+        self.assertIs(players[lt], document.depth_order(0, 14)[0])
+        self.assertNotEqual(lt, rt)
+
+    def test_the_patched_weekly_pass_keeps_a_studio_move_and_undoes_an_unlocked_one(self) -> None:
+        CPU, XBE = _depth_cpu()
+        from mod_editor.core import nfl2k5_depth_locks as locks
+        from mod_editor.core import nfl2k5_returner_fix as returners
+        from test_nfl2k5_depth_locks import record, fields
+        patched = locks.apply(returners.apply(XBE.read_bytes())[0])[0]
+        document = rr.load_body(league_body())
+        qbs = document.depth_order(0, 0)[:2]
+        for qb, rank in zip(qbs, (0, 1)):
+            qb.record.values.update(depth_rank=rank, depth_side=rank, unknown_52=0)
+        document.place_in_depth(qbs[1], 0)
+        studio = [record(position=0, rank=q.record.values["depth_rank"], side=q.record.values["depth_side"],
+                         bits=q.record.values["unknown_52"], score=score) for q, score in zip(qbs, (.80, .79))]
+        raw = [record(position=0, rank=r, side=r, score=score) for r, score in ((1, .80), (0, .79))]
+        for label, records, starter in (("studio, locked", studio, 1), ("rank only, unlocked", raw, 0)):
+            cpu = CPU(patched)
+            cpu.seed(records)
+            cpu.run(0x2BDCF0)
+            starters = [i for i in range(2) if fields(cpu.player(i))[0] == 0]
+            with self.subTest(label):
+                self.assertEqual(starters, [starter])
 
 
 if __name__ == "__main__":

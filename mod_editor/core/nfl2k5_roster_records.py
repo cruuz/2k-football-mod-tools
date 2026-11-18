@@ -248,6 +248,32 @@ DRAFT_CLASS_WHY = ("the game regenerates the draft class into a fixed window of 
 # chain, rank = players already at that code (capped at 7), side by this rule.
 DEPTH_ROW_CAP = 7
 DEPTH_SIDE_FOR_RANK = {0: 2, 1: 0, 2: 1}
+# b81 R4 (Codex's native witness, finn-facts FACTS.md): the depth chart screen (row picker 0x242AE0) and the fielded
+# starter (0xE80D0 / 0xE8790) follow the stored depth rank at +0x28 bits 10-12; the club's pointer order changes
+# neither. Paired positions carry a second order in bits 13-15 (the side): the retail chart draws the left slot (LT,
+# LG, LWR, LCB, LDE, LDT, LOLB, ILB/LILB) from the rank order and the right slot (RT, RG, RWR, RCB, RDE, RDT, ROLB,
+# RILB) from the side order (slot table 0x5140D8, +0x44 chain). The game's own chart swap (0x242CA0) exchanges one
+# order's rows between two players and sets that order's lock bit on both, which is what keeps a change through the
+# patched weekly pass.
+DEPTH_FIELDS = ("depth_rank", "depth_side")
+DEPTH_LOCK_BITS = {"depth_rank": 0x01, "depth_side": 0x02}
+PAIRED_DEPTH_CODES = (3, 4, 7, 10, 11, 13, 14, 15, 16)          # nfl2k5_depth_locks.PAIRED_POSITIONS
+_RETAIL_DEPTH_SLOTS = {3: ("LWR", "RWR"), 4: ("LCB", "RCB"), 7: ("HB", "HB 2nd order"), 10: ("LOLB", "ROLB"),
+                       11: ("ILB", "RILB"), 13: ("LG", "RG"), 14: ("LT", "RT"), 15: ("LDT", "RDT"), 16: ("LDE", "RDE")}
+
+
+def depth_slot_names(code: int, scheme: str = "retail") -> tuple[str, str | None]:
+    """What the game's depth chart calls a position's rank order and, for a paired position, its side order."""
+
+    code = int(code)
+    if code not in PAIRED_DEPTH_CODES:
+        return position_name(code, scheme), None
+    name = position_name(code, scheme)
+    if name == position_name(code, "retail") and code in _RETAIL_DEPTH_SLOTS:
+        return _RETAIL_DEPTH_SLOTS[code]
+    if code == 7:
+        return name, f"{name} 2nd order"
+    return (f"L{name}", f"R{name}") if len(name) <= 3 else (f"L {name}", f"R {name}")
 
 
 class RosterRecordError(ValueError):
@@ -1990,10 +2016,105 @@ class RosterDocument:
         player.college_index = index
         player.college = self.colleges[index]
 
-    def move_in_depth(self, team_index: int, slot: int, delta: int) -> bool:
-        """Move one player up or down his team's pointer list -- Finn's ↑↓ arrows.
+    # ------------------------------------------------------------------ depth chart (b81 R4)
+    def depth_order(self, team_index: int, code: int, field: str = "depth_rank") -> list[Player]:
+        """One position's order on a club as the game's chart reads it: by the stored row, then pointer order."""
 
-        The holder, returner, kicker and snapper slot bytes stay with their players (b780 hunt5)."""
+        _require(field in DEPTH_FIELDS, f"{field!r} is not a depth order")
+        team = self.teams[team_index]
+        players = [(slot, self.by_offset[offset]) for slot, offset in enumerate(team.slots)
+                   if self.by_offset[offset].record.values["position"] == int(code)]
+        players.sort(key=lambda item: (item[1].record.values[field], item[0]))
+        return [player for _slot, player in players]
+
+    def _depth_snapshot(self, team_index: int, code: int) -> dict[int, tuple[int, int, int]]:
+        return {p.offset: (p.record.values["depth_rank"], p.record.values["depth_side"], p.record.values["unknown_52"])
+                for p in self.depth_order(team_index, code)}
+
+    def restore_depth(self, snapshot: Mapping[int, Sequence[int]]) -> None:
+        """Undo of ``place_in_depth`` / ``settle_depth``: rows and lock bits exactly as they were."""
+
+        for offset, (rank, side, flags) in snapshot.items():
+            values = self.by_offset[offset].record.values
+            values["depth_rank"], values["depth_side"], values["unknown_52"] = int(rank), int(side), int(flags)
+
+    def settle_depth(self, team_index: int, code: int, field: str, pinned: Mapping[int, int],
+                     *, lock: bool = True, displaced: Player | None = None) -> dict[str, Any]:
+        """Seat one position order on a club: each ``pinned`` player (record offset -> row) at his row (in row order; a
+        taken row goes to the
+        next free one), everyone else in his current order in the rows left, rows unique and gap-free from 0 (the
+        eighth and later players share row 7, the game's overflow row). Players whose row changed get that order's
+        lock bit, as the game's own chart swap does, so the patched weekly pass keeps the new order (it still frees a
+        CPU club's lock when an unlocked player is 3 or more overall points better).
+
+        On a paired position one player must not start in both slots (LT and RT). If the new top of this order is also
+        the top of the other order, he and ``displaced`` (who started here before; by default the old top of this
+        order) exchange their rows in the other order: the two starters swap sides. Returns ``{"before", "changed"}``
+        with ``before`` for ``restore_depth``."""
+
+        _require(field in DEPTH_FIELDS, f"{field!r} is not a depth order")
+        code = int(code)
+        _require(field == "depth_rank" or code in PAIRED_DEPTH_CODES,
+                 f"{position_name(code, self.scheme)} has one depth order (the side order is for paired positions)")
+        order = self.depth_order(team_index, code, field)
+        position_of = {p.offset: i for i, p in enumerate(order)}
+        _require(all(offset in position_of for offset in pinned), "a pinned player is not on this club at this position")
+        before = self._depth_snapshot(team_index, code)
+        old_top = order[0] if order else None
+        seats: list[Player | None] = [None] * len(order)
+        for offset, row in sorted(pinned.items(), key=lambda item: (int(item[1]), position_of[item[0]])):
+            wanted = max(0, min(int(row), len(order) - 1))
+            free = [i for i, seat in enumerate(seats) if seat is None]
+            seats[min((i for i in free if i >= wanted), default=max(free))] = order[position_of[offset]]
+        rest = iter(p for p in order if p.offset not in pinned)
+        seats = [player if player is not None else next(rest) for player in seats]
+        reordered = {p.offset for row, p in enumerate(seats) if position_of[p.offset] != row}
+        for row, player in enumerate(seats):
+            player.record.values[field] = min(row, DEPTH_ROW_CAP)
+        locked = {offset: {field} for offset in reordered}
+        other = "depth_side" if field == "depth_rank" else "depth_rank"
+        if code in PAIRED_DEPTH_CODES and len(seats) > 1:
+            # the other order stays as it was, made unique and gap-free (housekeeping, no new lock) ...
+            for row, player in enumerate(self.depth_order(team_index, code, other)):
+                player.record.values[other] = min(row, DEPTH_ROW_CAP)
+            # ... unless the new top here also tops it: then the two starters swap sides
+            top = seats[0]
+            previous = displaced if displaced is not None else old_top
+            if (top.record.values[other] == 0 and previous is not None and previous is not top
+                    and previous.offset in position_of):
+                a, b = top.record.values, previous.record.values
+                a[other], b[other] = b[other], a[other]
+                for offset in (top.offset, previous.offset):
+                    locked.setdefault(offset, set()).add(other)
+        changed = [p for p in seats if (p.record.values["depth_rank"], p.record.values["depth_side"])
+                   != before[p.offset][:2]]
+        if lock:
+            for player in seats:
+                for name in locked.get(player.offset, ()):
+                    player.record.values["unknown_52"] |= DEPTH_LOCK_BITS[name]
+        return {"before": before, "changed": changed}
+
+    def place_in_depth(self, player: Player, row: int, field: str = "depth_rank") -> dict[str, Any]:
+        """Put ``player`` at ``row`` (0 = starter) of his position's order on his club: what the Rosters arrows and the
+        CSV's depth columns do. Refused for a player who is not on a club's active list. See ``settle_depth``."""
+
+        _require(self.by_offset.get(player.offset) is player, "player belongs to another document")
+        _require((player.pool, player.index) not in self.reserve_owner,
+                 "a reserve has no depth chart row; promote him first")
+        team_index = self.club_of(player)
+        _require(team_index is not None and player.offset in self.teams[team_index].slots,
+                 f"{player.display} is not on a club's active list, so he has no depth chart row")
+        assert team_index is not None
+        code = player.record.values["position"]
+        order = self.depth_order(team_index, code, field)
+        target = max(0, min(int(row), len(order) - 1))
+        displaced = order[target] if order[target] is not player else None
+        return self.settle_depth(team_index, code, field, {player.offset: target}, displaced=displaced)
+
+    def move_in_depth(self, team_index: int, slot: int, delta: int) -> bool:
+        """Move one player up or down his team's POINTER list. The game's depth chart and starters do not follow this
+        order (they follow the stored depth rank, see ``place_in_depth``); it decides only what the six specialist bytes
+        index, which is why they move with their players here (b780 hunt5). The Rosters arrows use ``place_in_depth``."""
 
         team = self.teams[team_index]
         target = slot + delta
@@ -2033,7 +2154,8 @@ class RosterDocument:
         Conflicting chain locks refuse before mutation. Returner selection
         transfers that role's bit from its previous owner. The next patched
         in-game compaction resolves the returner bit to a roster-slot index.
-        Pointer-list arrows alone do not change a rank/side assignment.
+        The Rosters arrows (``place_in_depth``) change the stored rank or side
+        row and set these bits for the players they move.
         """
         from .nfl2k5_depth_locks import lock_bit
         lock_bit(role)
@@ -4165,6 +4287,9 @@ CSV_HELP = (
     "without significant leading zeros; pointers and long numeric identifiers are never exported. "
     "For Excel use Data > From Text/CSV, UTF-8, and Text for names, college and birth_date. "
     "Conflicting edits to a raw field and its style/date view refuse the row. "
+    "depth_rank and depth_side are the depth chart rows the game uses (0 = starter): a changed row seats the "
+    "player there on his club, the others in that position keep their order below him, and the moved players "
+    "are locked to their rows (a lock column in the same row wins). "
     "CSV files exported by Bad_AL's NFL2K5Tool also import directly; rows are matched by team "
     "and name, with position and jersey as tie-breakers. By default only its 27 rating columns "
     "are applied; its position, jersey, appearance, equipment and bio columns are ignored and "
@@ -4775,6 +4900,7 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
         if key is not None:
             counts[key] = counts.get(key, 0) + 1
     changes, refused, skipped, matched = [], [], [], 0
+    depth_requests: dict[tuple[str, int], dict[str, tuple[int, bool]]] = {}
     for (number, row), key in zip(rows, identities):
         reason = ("row width differs from header" if None in row or None in row.values() else
                   "invalid pool + index; identity is never matched by name" if key is None else
@@ -4828,6 +4954,10 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
                           for k in CSV_COLUMNS if old[k] != new[k]]
                 if fields:
                     changes.append({"row": number, "pool": key[0], "index": key[1], "changes": fields})
+                for name in DEPTH_FIELDS:              # b81 R4: settled with the club's chart after every row
+                    # (a row that also moves the player to another team keeps its raw rows: the move seats him)
+                    if name in edits and "team" not in edits:
+                        depth_requests.setdefault(key, {})[name] = (int(new[name]), f"lock_{name[6:]}" in edits)
                 for skipped_column, reason in row_skipped:
                     skipped.append({"row": number, "pool": key[0], "index": key[1],
                                     "field": skipped_column, "reason": reason})
@@ -4848,6 +4978,7 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
                     continue
                 refused.append({"row": number, "pool": key[0], "index": key[1], "reason": f"{column}: {exc}"})
                 break
+    _settle_csv_depth(working, depth_requests)
     # Include changes to peers when a returner lock transfers to another player.
     source_rows = {key: number for (number, _), key in zip(rows, identities) if key is not None}
     final_changes = []
@@ -4894,6 +5025,39 @@ def import_csv(document: RosterDocument, text: str, *, delimiter: str | None = N
     return apply_csv_preview(document, preview_csv(document, text, delimiter=delimiter,
                                                    normalise_commentary=normalise_commentary,
                                                    include_appearance=include_appearance))
+
+
+def _settle_csv_depth(document: RosterDocument, requests: Mapping[tuple[str, int], Mapping[str, tuple[int, bool]]]) -> None:
+    """b81 R4: a CSV that changes depth_rank or depth_side seats those players at their rows in their club's chart the
+    way the Rosters arrows do (unique, gap-free rows, the others in their order, moved players locked). A lock column
+    the same row sets wins over the automatic lock. Free agents and reserves keep the raw values (no chart)."""
+
+    by_key = {(p.pool, p.index): p for p in document.players}
+    groups: dict[tuple[int, int, str], dict[int, int]] = {}
+    explicit: dict[int, set[str]] = {}
+    for key, fields in requests.items():
+        player = by_key.get(key)
+        if player is None or key in document.reserve_owner:
+            continue
+        club = document.club_of(player)
+        if club is None or player.offset not in document.teams[club].slots:
+            continue
+        code = player.record.values["position"]
+        for name, (row, has_lock_column) in fields.items():
+            if name == "depth_side" and code not in PAIRED_DEPTH_CODES:
+                continue
+            groups.setdefault((club, code, name), {})[player.offset] = row
+            if has_lock_column:
+                explicit.setdefault(player.offset, set()).add(name)
+    for (club, code, name), pinned in sorted(groups.items(), key=lambda item: (item[0][0], item[0][1],
+                                                                                 DEPTH_FIELDS.index(item[0][2]))):
+        kept = {offset: document.by_offset[offset].record.values["unknown_52"] for offset in explicit}
+        document.settle_depth(club, code, name, pinned)
+        for offset, flags in kept.items():
+            values = document.by_offset[offset].record.values
+            for field in explicit[offset]:
+                bit = DEPTH_LOCK_BITS[field]
+                values["unknown_52"] = (values["unknown_52"] & ~bit) | (flags & bit)
 
 
 def _apply_csv_cell(document: RosterDocument, player: Player, column: str,
@@ -6193,6 +6357,7 @@ __all__ = [
     "years_pro_from_years_exp", "years_pro_label",
     "advance_years_pro", "apply", "apply_body",
     "body_mass_index", "body_type_apply", "body_type_preview", "contract_years_change", "copy_player",
+    "depth_slot_names", "DEPTH_FIELDS", "DEPTH_LOCK_BITS", "PAIRED_DEPTH_CODES",
     "find_players", "global_edit_preview_many", "player_location", "decode_record", "edits_document", "encode_record", "encoded_size",
     "export_csv", "field_coverage", "find_block_base", "global_edit_apply", "global_edit_preview",
     "import_csv", "load_body", "load_image", "load_save", "read_edits", "read_utf16z",
