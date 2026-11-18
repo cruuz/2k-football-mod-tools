@@ -2557,7 +2557,9 @@ class StudioMainWindow(QMainWindow):
     def _focus_current_search(self) -> None:
         handler = self._page_find_handler()
         if handler is not None and handler():
-            self._set_status("Find player • type a name or college • Enter goes to him • Ctrl+/ keyboard help")
+            loaded = getattr(getattr(handler, "__self__", None), "document", None) is not None
+            self._set_status("Find player • type a name or college • Enter goes to him • Ctrl+/ keyboard help"
+                             if loaded else "Search ready • type to filter • Esc clears • Ctrl+/ keyboard help")
             return
         field = self._current_search_field()
         if field is None:
