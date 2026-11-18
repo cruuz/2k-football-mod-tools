@@ -19,7 +19,6 @@ from copy import deepcopy
 from dataclasses import dataclass, replace
 import errno
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import Callable
 import sys
 
@@ -49,7 +48,7 @@ class SaveSummary:
     def headline(self) -> str:
         state = "checksum OK" if self.checksum_valid else "checksum MISMATCH"
         return (
-            f"{self.directory} — {self.kind} · "
+            f"{self.directory}: {self.kind} · "
             f"{self.player_count:,} players · {state}"
         )
 
@@ -302,8 +301,9 @@ class Ps2SaveService:
             raise ValidationError(f"Refusing to overwrite an existing file: {output}. Choose a new filename.")
         try:
             output.parent.mkdir(parents=True, exist_ok=True)
-            with TemporaryDirectory(prefix=".studio-ps2-", dir=output.parent) as folder:
-                staged = Path(folder) / output.name
+            from .image_use import studio_staging
+            with studio_staging(output.parent, ".studio-ps2-") as stage:
+                staged = stage.path / output.name
                 result = self._write_and_verify(staged, save, declared, to_card, announce)
                 if result.verified:
                     try:
@@ -366,6 +366,6 @@ class Ps2SaveService:
             True,
             changed,
             len(declared),
-            f"Saved and verified — {len(declared)} change(s), "
+            f"Saved and verified: {len(declared)} change(s), "
             f"{changed} bytes, roster tables intact.{extra}",
         )

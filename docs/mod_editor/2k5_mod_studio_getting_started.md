@@ -13,7 +13,7 @@ independently verified cache. The app still guards the exact file you selected
 for read-only scans, recovery, and Build, and a built copy keeps that source
 container's actual size.
 
-Use **Help → Report a bug…** to open the [Studio issue tracker](https://github.com/cruuz/2k-football-mod-tools/issues). Existing community members can open the project server from Help and share patches or ask questions there.
+Use **Help → Report a bug…** to open the [Studio issue tracker](https://github.com/cruuz/2k-football-mod-tools/issues). To ask a question or share a patch, join the community Discord: <https://discord.gg/FkNSKRAKch> (also **Help → Join the Discord…**).
 
 
 ## Python packages for portable installs
@@ -280,7 +280,7 @@ small change.
 9. Save the resulting `.2k5mod` project, then Build normally.
 
 Every physical set has **39 writable components**: torso/jersey, sleeve,
-pants, both live helmet families, jersey/helmet/arm digits 0–9, the horizontal
+pants, both live helmet families, jersey/helmet/arm digits 0-9, the horizontal
 nameplate atlas, and three separate Team Select cards. The live textures and
 Team Select pictures are different storage: changing one never regenerates the
 other. Edit both `helmet00` and `helmet02` for complete player-model coverage.
@@ -329,12 +329,12 @@ not part of Team Kit's 39 live/card components:
 
 | Resource | Size | Editor label |
 | --- | ---: | --- |
-| `logo` | 128×128 | Team Logo — Presentation |
+| `logo` | 128×128 | Team Logo: Presentation |
 | `chiclet` | 64×64 | Team Chiclet |
 | `splayer` | 256×128 | Team Player Banner |
 | `flipchip` | 64×64 | Team Flip Chip |
 
-Open **All Textures → Team Presentation — Menu / UI**, or search a team name,
+Open **All Textures → Team Presentation: Menu / UI**, or search a team name,
 abbreviation, selector such as `21H0`, `menu logo`, or one of the four resource
 names. All 2,536 records across 634 sets support preview, Export PNG, Edit,
 dialog/drag-drop Replace, Revert, project save/load, and the composed XISO
@@ -362,7 +362,7 @@ archives:
 | Franchise-office team logo | 85 | 256×256 | `franchise logo` or `coach desk` |
 | Draft/PDA team logo | 85 | 64×64 | `draft logo` or `pda logo` |
 
-Open **Team Logos — Menus / Presentation**, **Team Mini Cards — Menus /
+Open **Team Logos, Menus / Presentation**, **Team Mini Cards, Menus /
 Presentation**, or **Franchise & Draft Presentation**. Each entry shows its
 team asset code, known team/style owners, exact archive, and statically
 established consumer scope. A complete screen-by-screen consumer map is not
@@ -382,8 +382,8 @@ XISO Build are available for every one of these menu and draft/PDA entries.
 The 85 `NN_teamlogo_00_h0` franchise-office rasters are editable presentation
 textures in the **Franchise & Draft Presentation** group, each replaced inside
 its exact compressed P8 span. Their consumer scope is statically established
-— the executable binds them to the `FRANCHISE2` / `coach_desk` scene's
-`teamlogo` element — and their ownership as stock midfield team logos remains
+the executable binds them to the `FRANCHISE2` / `coach_desk` scene's
+`teamlogo` element: and their ownership as stock midfield team logos remains
 unproved, so the editor does not relabel franchise-office art as field art.
 
 ## Set facemask, faceshield, and turtleneck colours
@@ -409,7 +409,7 @@ A Team Kit folder or ZIP is a **private working export**. Its templates may
 reproduce retail artwork from your own disc, so do not upload, publish, or send
 that bundle to other people. The shareable artifact is the `.2k5mod` project,
 which contains only your authored pixel-changed replacements and logical
-metadata—never the exported source templates.
+metadata: never the exported source templates.
 
 The manifest is bound to the exact source XISO SHA-256 and to the working pixel
 baseline that existed at export time. Import it while that same source and
@@ -569,7 +569,7 @@ unusually noisy texture or edited position stream cannot fit, the app refuses
 it with an actionable message instead of creating a risky build.
 
 The first Stadium visit derives private glTF/PNG data from your own source
-cache. This can take 10–30 minutes and use roughly 750 MiB. Completed scenes are
+cache. This can take 10-30 minutes and use roughly 750 MiB. Completed scenes are
 checkpointed so generation can resume after an interruption. These derived
 models/textures stay private and are not part of a shareable project.
 
@@ -668,7 +668,7 @@ and commentary are no longer hidden behind the archive-resource browser:
   raw containers are excluded because they are not individual playable sounds.
   Rows keep their normal type and actions, so selecting a standalone cue or a
   streaming range still shows its exact Play, Export, Replace, Revert, and WAV
-  contract. **Export matching audio** publishes 1–256 matching rows as current
+  contract. **Export matching audio** publishes 1-256 matching rows as current
   playable WAVs with truthful per-row source/replacement labels. Raw `.bin`
   export stays in the dedicated bank/range scopes. **Meaning confidence** is
   disabled here because its 1/152/697 labels apply only to standalone sounds;
@@ -756,8 +756,8 @@ put it in the project. When you export a matching collection or Audio
 Shortlist, its local ZIP manifest includes the custom title, note, and preserved
 game/catalog name, and its playlist uses the custom title. The stable cue ID
 and payload path remain canonical. The ZIP may contain retail-derived audio
-from your own XISO and is still a private listening export—not a shareable mod
-project—even though its label metadata is user-authored.
+from your own XISO and is still a private listening export: not a shareable mod
+project: even though its label metadata is user-authored.
 
 Typing in Audio search deliberately waits 220 milliseconds after the last
 keystroke before rebuilding the result page. During that brief update, the old
@@ -771,7 +771,7 @@ Play is bound to the sound and game source currently selected. Changing to a
 different row stops Mod Studio's player; refreshing the same row leaves it
 alone. A delayed WAV preparation result or error from an older row/XISO is
 discarded, even if you later return to an asset with the same ID. Linux playback
-requires one controllable helper—`ffplay`, `paplay`, or `aplay`. If none is installed, the
+requires one controllable helper-`ffplay`, `paplay`, or `aplay`. If none is installed, the
 app explains what to install and does not open a separate player it cannot stop.
 
 Select a standalone sound or one playable streaming range, then click **Load
@@ -794,7 +794,7 @@ Use **Soundtrack & music (136)** for a one-click view of every currently known
 music range. These are exact bank/range identities, not recovered song titles.
 **Export soundtrack & music (136)** saves that filtered collection as one WAV
 ZIP. For any other view, **Export matching audio** becomes available when the
-current filters contain 1–256 rows. The default mixed All Playable view exports
+current filters contain 1-256 rows. The default mixed All Playable view exports
 WAV only. Complete banks export as raw `.bin` from **Streaming banks**, ranges
 can export as decoded WAV or exact raw `.bin` from **Playable streaming
 ranges**, and standalone sounds export as their current WAV (your staged
@@ -807,7 +807,7 @@ Choose a playable standalone sound or indexed streaming range, then click **Add
 selected sound**. **Add this page** adds every playable row currently visible;
 the operation adds all of them or none of them if the 256-sound limit would be
 exceeded. **Add all matching** collects an entire filtered result in one action
-when it contains 1–256 standalone sounds or playable streaming ranges. It
+when it contains 1-256 standalone sounds or playable streaming ranges. It
 rechecks the search, family, edit status, meaning confidence, count, and order
 before changing the shortlist; existing selections stay selected once, and a
 result that would exceed 256 adds nothing. A `★ Selected` status and the
@@ -831,7 +831,7 @@ order as one transactional WAV ZIP. Standalone rows use the current WAV, so a
 staged replacement is included; streaming ranges likewise use the staged WAV
 when Modified and the verified local decoder otherwise. Complete streaming
 banks are excluded because one bank contains many
-sounds—open **Playable streaming ranges** and select the ranges you want.
+sounds: open **Playable streaming ranges** and select the ranges you want.
 
 The full 136-range decoded music collection is about **1.22 GiB of WAV payload**
 before ZIP compression. Allow roughly 3 GiB of temporary free space and expect
@@ -860,7 +860,7 @@ Undo, recovery, or Build, and retail-derived entries must not be redistributed.
    exactly the row's listed channels, sample rate, and frame count. Replace
    refuses even a one-frame mismatch or extra WAV metadata.
 3. Click **Replace** or drop the authored WAV on the replacement area. The first
-   audio edit on a newly indexed game may take roughly **20–35 minutes** while
+   audio edit on a newly indexed game may take roughly **20-35 minutes** while
    Mod Studio reads the XISO and creates two private, metadata-only source-audio
    safety indexes. This happens once, shows progress in the app, needs no
    terminal command, and never writes to the source XISO. Later edits reuse the
@@ -896,7 +896,7 @@ The replacement-pack card has three content modes:
   per-audio PCM fingerprint inventory, or rollback bytes. For 697 provisionally
   named rows, the physical slot is exact while the human meaning and runtime
   cue owner may still be unknown. Old v3 all-850 packs remain accepted.
-- **Selected shortlist (1–256)** creates a v2 pack from the shortlist's exact
+- **Selected shortlist (1-256)** creates a v2 pack from the shortlist's exact
   visible order. Use it to mix standalone sounds with fixed-slot soundtrack,
   commentary, stadium, crowd, and presentation ranges.
 - **Legacy 153-cue pack** keeps the original v1 pack byte-compatible: all 152
@@ -908,9 +908,9 @@ authoring hand-off; use Selected shortlist for a soundtrack collection or a
 small hand-picked set. **All Playable Audio is a browser/export scope, not a
 54,421-row replacement-pack template.** The v4 contract and canonical order
 remain exactly the 850 standalone sounds; streaming ranges enter a replacement
-pack only through the existing 1–256 selected-shortlist route:
+pack only through the existing 1-256 selected-shortlist route:
 
-1. For a selected pack, add 1–256 Editable standalone sounds or **Playable
+1. For a selected pack, add 1-256 Editable standalone sounds or **Playable
    streaming ranges** to the Audio Shortlist. Use **Add all matching** when one
    filtered result contains the set you want. For example: choose **Standalone
    sounds**, set **Meaning confidence → Reviewed labels (152)**, then click
@@ -918,7 +918,7 @@ pack only through the existing 1–256 selected-shortlist route:
    one action. Use **Review selected** and Move up/down if order matters.
    All-850 and legacy exports ignore the shortlist.
 2. In the replacement-pack card, choose **All standalone sounds (850)**,
-   **Selected shortlist (1–256)**, or **Legacy 153-cue pack**. Choose
+   **Selected shortlist (1-256)**, or **Legacy 153-cue pack**. Choose
    **Editable folder** for local work or **ZIP hand-off** to move one template,
    then click **Export replacement template**. Existing destinations are never
    overwritten.
@@ -1034,7 +1034,7 @@ A build is assembled under a temporary name and the requested output is created
 exclusively only after success. A failed build cannot publish a partial output,
 and the source XISO is never a build destination.
 
-When sharing a mod, send the `.2k5mod` project—not your XISO, private cache,
+When sharing a mod, send the `.2k5mod` project: not your XISO, private cache,
 exported originals, or built output. The recipient applies the project to their
 own recognized dump.
 
@@ -1069,19 +1069,19 @@ job from his menu, replace outdated stock plays, build. Every authored play is
 checked against the game's own validator before it is staged; the build refuses
 anything the game would reject.
 
-## Playbook packs — share a playbook, not a disc
+## Playbook packs: share a playbook, not a disc
 
 **Playbooks & Plays → Install Playbook Pack…**, and the same card on Create a Play step 1. A
 `.2k5book` is a small JSON recipe somebody made in this studio: formations, plays, and the stock
-entries each one replaces. It carries no game data at all — it is compiled against *your* disc when
-you Build — so it is safe to post in a thread or attach to a pull request. Before anything is staged
+entries each one replaces. It carries no game data at all: it is compiled against *your* disc when
+you Build: so it is safe to post in a thread or attach to a pull request. Before anything is staged
 you see a plan table (per entry: what it replaces, and OK / conflict / over budget) under a live
 budget bar reading `plays 254/270, formations 39/50, nodes 2,746/3,500`, and you choose where it
 goes: the pack's own team, a retarget to any other book (every target is re-resolved **by name** in
-that team's book), or all 32 at once. What installs are ordinary project edits — they show in the
+that team's book), or all 32 at once. What installs are ordinary project edits: they show in the
 edit list, revert one at a time, and save into your `.2k5mod`. **Export Playbook Pack…** is the
 mirror: design what you want in Create a Play, press it, and you have a file to share, with no
-Python and no git. `data/playbooks/modern_gun_core.2k5book` ships as a worked example — four gun
+Python and no git. `data/playbooks/modern_gun_core.2k5book` ships as a worked example: four gun
 sets and eleven pass concepts that replace ranked dated entries so the book does not grow, which is
 what lets it install into the eight team books already at the 270-play cap. Contributors can gate
 their own work with `tools/nfl2k5_playbook_pack.py check FILE.2k5book`, whose first six rules need
@@ -1215,7 +1215,7 @@ Windows installer layout, or an unpacked release folder you can write to. A
 folder you cannot write to, or a git checkout, gets the link only. Nothing is
 downloaded until you press the button and confirm.
 
-## ★ Rosters — every player, on the disc or in a save
+## ★ Rosters: every player, on the disc or in a save
 
 **★ Rosters** is the studio's replacement for Flying Finn's *NFL 2K5 GameSave Editor*: the same
 three-pane shape people know, over the disc as well as over a save, with undo, dirty markers, a diff
@@ -1227,13 +1227,13 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    `SAVEGAME.DAT` with its `EXTRA` beside it (real saves keep the roster as the game's in-memory arena;
    the page reads that layout and the disc's). The stored signature is checked on load, and a save
    whose `EXTRA` does not verify is refused rather than quietly re-signed.
-2. **Left** — the 32 clubs, the game's extra squads (Pro Bowl, all-time, the two user teams), then
+2. **Left**: the 32 clubs, the game's extra squads (Pro Bowl, all-time, the two user teams), then
    Free Agents, the Draft Class and the leftover pools.
-3. **Middle** — search by name, years pro (type `R` for rookies) or college; the position chips (QB RB WR TE OL DL LB DB
+3. **Middle**: search by name, years pro (type `R` for rookies) or college; the position chips (QB RB WR TE OL DL LB DB
    K/P) narrow the list; the grid shows position, number, name, years pro, an OVR estimate and the
    depth slot. **↑ Move up / ↓ Move down** reorder the team's own pointer list, which *is* the depth
    chart.
-4. **Right** — the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
+4. **Right**: the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
    Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
    ← → nudge by one, ↑ ↓ jump to the next card. Enum cards are dropdowns built from the tables lifted
    out of Finn's binary, so no value order is guessed.
@@ -1241,14 +1241,14 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
 **Position scheme.** A patched disc does not necessarily have the retail seventeen positions, so the
 page asks the source which table it is on before it labels anything. Two Build patches change what a
 position *means*: the **EDGE rename** prints EDGE / Edge Rusher everywhere the game said Defensive
-End (the codes do not move), and the **one-pool** pass — `position_pools` in Advanced, plus the ROST
-reclassify — makes 16 EDGE, 15 the interior (the 3-4 nose is simply DT #1), 11 LB and **retires 10**:
+End (the codes do not move), and the **one-pool** pass: `position_pools` in Advanced, plus the ROST
+reclassify: makes 16 EDGE, 15 the interior (the 3-4 nose is simply DT #1), 11 LB and **retires 10**:
 no player on a reclassified roster carries OLB any more. For a disc image the page reads the disc's
 own `edge_rename` / `scheme_labels` / `position_pools` states; for an Xbox save or a loose roster body
 it infers the scheme from the records, where an **empty OLB code in the main player pool** is the
 reclassify signature (retail ships 191 OLBs; the 68 class-generator templates are not counted,
 because the pass leaves those keyed one per position on purpose). A save carries no executable, so it
-**cannot** show the EDGE rename — that patch only rewrites text — and the page says so instead of
+**cannot** show the EDGE rename, that patch only rewrites text, and the page says so instead of
 guessing. The **Position scheme** selector next to the source row tells you what was detected and
 why, and lets you set it yourself. Everything that names a position follows it: the grid, the header,
 the chips (one pool gains its own **EDGE** chip, and DL becomes the interior), the Position picker,
@@ -1257,28 +1257,28 @@ position code the way the game keys its own rating labels, so a one-pool LB is s
 linebacker card set and an EDGE on the defensive-end one, jersey ranges follow the pool, and the
 depth chart is grouped per code. The picker greys out a code the scheme retired and refuses to write
 it, and a CSV that brings OLB rows onto a one-pool roster maps them to LB and lists every row it
-moved. Nothing in your roster is renamed by any of this — only what the editor shows you.
+moved. Nothing in your roster is renamed by any of this: only what the editor shows you.
 
 **What you can edit.** First and last name, college, position, jersey number, years pro (it counts the season you are in, so a rookie is 1 and the game prints R), hand,
 height, weight, date of birth, the play-by-play name id and the portrait id; skin, face, face mask,
 face shield, body type, dreads, eye black, mouthpiece, turtleneck, sleeves, neck roll, both gloves,
 wrists, elbows and shoes, and the helmet; all 28 rating bytes; the depth rank and side; and the
-**contract** — value, type, signing-bonus tier, length and years remaining, with the penalty shown
+**contract**: value, type, signing-bonus tier, length and years remaining, with the penalty shown
 derived the way Finn showed it. The contract block is the one thing no open tool has ever edited.
 
 **The Style tab.** Three of the 28 rating bytes are style channels, not scalars, and they get
 first-class controls:
 
-* **Power Run Style** (`+0x4D`) — a **Finesse / Balanced / Power** segmented control writing the
+* **Power Run Style** (`+0x4D`): a **Finesse / Balanced / Power** segmented control writing the
   game's own 1 / 50 / 99, with the raw byte on a card beneath. The game decodes it below 33, below
   66, else, and reads it in play as a blend weight.
-* **Signature release** (the low bit of **Scramble**, `+0x4F`; in retail only Vick, Gannon and Rivers carry it) — the only bit test on any rating byte
+* **Signature release** (the low bit of **Scramble**, `+0x4F`; in retail only Vick, Gannon and Rivers carry it): the only bit test on any rating byte
   anywhere in the executable. It picks which family of directional animation sets a player uses;
   believed, not proved, to be the throw and release motion. The toggle moves **only** that bit, and
   the Scramble slider (presets Pocket 10 / Balanced 50 / Scrambling 90) moves the magnitude while
   preserving it. Scramble is a real rating the Player Card never prints but the game's own roster
   editor does; with Agility it also picks the mobile-quarterback family.
-* **Kicking Style** (`+0x4B`) — **EXPERIMENTAL**. The game names it and holds it at 99 for every
+* **Kicking Style** (`+0x4B`): **EXPERIMENTAL**. The game names it and holds it at 99 for every
   kicker, 1 for every punter and 49 for everyone else, but no consumer is proved. Presets are those
   three values.
 
@@ -1287,19 +1287,19 @@ not related to the Scramble parity bit.
 
 **Names share strings.** The player-name pool is packed solid: 65,120 bytes holding 5,094 strings
 with **no free space**, so it cannot grow. Typing a name that already exists anywhere in the roster
-points this player at that string — Finn's own trick for beating the rename limit, and it always
+points this player at that string: Finn's own trick for beating the rename limit, and it always
 works. A brand-new longer name needs a free block, which appears when some other name is shortened;
 when there is none the edit is refused with the number of bytes it needed. The status line under the
 name fields always says how much room is left.
 
 **Tools.** **Global Attribute Editor** takes an attribute (including the style channels), a rule
-(set / add / percent), a scope (positions, this team, rookies only) and an optional condition —
-"every QB with Speed ≥ 80 → signature release", "all HBs with Break Tackle ≥ 75 → Power" — and shows
+(set / add / percent), a scope (positions, this team, rookies only) and an optional condition
+"every QB with Speed ≥ 80 → signature release", "all HBs with Break Tackle ≥ 75 → Power": and shows
 **every affected player before it changes anything**. **Copy player** and **Paste ▾**
 (player / attributes only / photo only) follow Finn's rules: a paste never carries names, college,
 play-by-play or photo unless you ask for the photo. **One-shot passes ▾** advance years pro for the
 league or the list, and restore height, weight and date of birth to what the roster shipped with.
-**CSV ▾** exports the list or the whole league and reads it back — it also reads Finn's
+**CSV ▾** exports the list or the whole league and reads it back: it also reads Finn's
 semicolon-delimited export, and a spreadsheet with three columns is a legal edit. Files exported
 by Bad_AL's NFL2K5Tool import directly, matched by team and name with position and jersey as
 tie-breakers. They import ratings only by default, so a community ratings sheet for another
@@ -1307,8 +1307,8 @@ roster cannot change faces, gear, height, weight, college, photo or PBP ids; the
 the ignored columns, and its **Also import appearance and bio columns** box imports them too.
 
 **Teams.** Under the grid: **Release to free agency**, **Sign to ▾** / **Move to ▾** a team,
-**Swap with…** another rostered player. These are Finn's operations done his way — the team's pointer
-list and its count byte, the free-agent list and its count — with his limits: a club must keep 42,
+**Swap with…** another rostered player. These are Finn's operations done his way: the team's pointer
+list and its count byte, the free-agent list and its count: with his limits: a club must keep 42,
 may hold 54, and the free-agent list is full at 2,500 (the game's own ceiling). The draft class is
 off limits, because the game regenerates it into a fixed window of records every time it loads a
 roster; edit prospects in place. A player who joins a team lands at the bottom of his position's
@@ -1316,9 +1316,9 @@ depth chain. Every move undoes, shows up in **Show my changes** as text, travels
 document (Build replays it) and can be done from a spreadsheet through the CSV's `team` column.
 
 **Check & repair.** When a roster loads, the Checks tab lists every mechanical repair the page
-can prove — the "headless" bit (Finn cleared it silently; the retail disc itself has one), a player
+can prove: the "headless" bit (Finn cleared it silently; the retail disc itself has one), a player
 on a position the loaded scheme retired, a team count byte that overstates its list, a duplicate
-list entry — and changes nothing until you press **Repair (N)**. You get an itemised receipt and an
+list entry: and changes nothing until you press **Repair (N)**. You get an itemised receipt and an
 undo. **Check this roster** flags jerseys outside the NFL range for a position, ratings above 99,
 impossible heights and dates, clubs under 42 or over 54, and the headless bit. **Show my changes**
 lists every field you changed against the roster you loaded.
@@ -1379,7 +1379,7 @@ top, so the two never fight over the arena. In game, check the salary cap edit f
 is the game's own arithmetic), then a moved user team, then a schedule change; everything but the year
 rule and the IR move is unwitnessed.
 
-## ★ Models — every model out to Blender and back
+## ★ Models: every model out to Blender and back
 
 1. Load your XISO, open **★ Models** (below the categories) and press **List the models**.
    Every 3D model on the disc appears; filter by group (Players, Helmets & face masks,
@@ -1407,7 +1407,7 @@ and there is no V flip. Tiled surfaces (seat rows, crowd, concrete, ad boards; 2
 stadium meshes, up to 12 repeats) legitimately run past 0..1 in Blender and repeat, and each
 mesh's tiling is listed in the README and in the mesh extras (`nfl2k5_uv_scale`,
 `nfl2k5_uv_offset`). Beta 56 used one fixed formula for every model, which squeezed tiled
-surfaces onto one repeat and mirrored V — the "scrambled stadium textures" people saw in
+surfaces onto one repeat and mirrored V: the "scrambled stadium textures" people saw in
 Blender. **Write UVs from the file** on import inverts through the same per-mesh constant;
 a UV moved outside a mesh's range widens that mesh's constant for you (one axis at a time)
 when **Widen the range** is ticked. UVs stay off by default on import.
@@ -1460,7 +1460,7 @@ What you cannot change (yet): the number of vertices or triangles, bones, weight
 and the body-type / face morph deltas (their channels are listed in the export). The player
 body and head are shared base meshes; editing them changes every player.
 
-## ★ Build & Share — the SOFTDRINK patch
+## ★ Build & Share: the SOFTDRINK patch
 
 Open your disc image (File → Open), go to **★ Build & Share → Build**, and press
 one of the three preset buttons: **Basic** keeps the game in 2004 and ticks only
@@ -1539,8 +1539,8 @@ code under an emulator in the test suite, so please report what you see.
 **The ESPN scorebug** (Build tab and Presentation, EXPERIMENTAL only since the current release; disc images
 only; the current release replaces this bar with the v3 static bar and adds Scorebar Studio, both described
 below, so the rest of this paragraph is the the current release history): one horizontal ESPN-style bar at
-the bottom centre that never swaps sides — ESPN mark,
-both abbreviations and scores, down & distance, quarter, clock, play clock — replacing the
+the bottom centre that never swaps sides: ESPN mark,
+both abbreviations and scores, down & distance, quarter, clock, play clock: replacing the
 retail two-row bug, its drive-direction side swap and the drop-box animations. It is built
 entirely from your own disc: the retail scorebug scene and the frame, mark and digit atlases
 are read out of your image (each checked against its known retail SHA-256 first), the modern
@@ -1550,7 +1550,7 @@ here and cannot do this step from a loose `default.xbe`.
 
 Two things to expect. The shared digit sheet is drawn with the DejaVu Sans Bold font; if your
 system does not have it the digits are left retail and the receipt says so. And the ticker
-band under the bar (the "Bottom Line" strip) keeps its retail art in a build — that one atlas
+band under the bar (the "Bottom Line" strip) keeps its retail art in a build: that one atlas
 was hand painted and there is no way to regenerate it from your disc. If you want it, apply the
 published `SOFTDRINK patch advanced` `.2k5patch` from **Share** instead, which carries it.
 

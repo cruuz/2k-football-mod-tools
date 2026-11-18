@@ -2,55 +2,55 @@
 
 Beta 81 includes 2K5 Mod Studio 1.0 RC116 and APF 2K8 Mod Studio alpha.112. To play SOFTDRINK 2K28 v0.10, download **2K5 Mod Studio** and one game patch, then choose **Getting Started → Install SOFTDRINK 2K28**. To edit the roster, artwork, playbooks or build options, choose **Customize SOFTDRINK 2K28**. [Download the editors](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-81) · [Download the game patch](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10) · [Installation guide](docs/mod_editor/install_softdrink_2k28.md) · [What's new](docs/mod_editor/2k5_mod_studio_changelog.md)
 
-> **Beta.** Two retail-free mod editors — Windows, macOS and Linux — for classic
+> **Beta.** Two retail-free mod editors, Windows, macOS and Linux, for classic
 > 2K football games:
 > **ESPN NFL 2K5** (original Xbox) and **All-Pro Football 2K8** (Xbox 360).
-> Bring your own legally dumped game disc — the editors ship **no game data**.
+> Bring your own legally dumped game disc: the editors ship **no game data**.
 
 These tools let you browse a decoded catalog of your game's assets and replace
-the ones with a proven, independently verified write path — uniforms, portraits,
+the ones with a proven, independently verified write path: uniforms, portraits,
 team art, scorebug graphics, stadium textures (including **fans, cheerleaders,
 coaches, officials, chain crew, camera, and sideline props**), rosters, text,
-and audio — then build a modded copy you can run in an emulator.
+and audio: then build a modded copy you can run in an emulator.
 
 ---
 
 ## The two editors
 
-### 2K5 Mod Studio — ESPN NFL 2K5 (original Xbox)
-- **Supported Team Kit** — 39 writable components per physical set (jersey,
-  sleeve, pants, both helmet families, digits 0–9, nameplate, Team Select
+### 2K5 Mod Studio: ESPN NFL 2K5 (original Xbox)
+- **Supported Team Kit**: 39 writable components per physical set (jersey,
+  sleeve, pants, both helmet families, digits 0-9, nameplate, Team Select
   cards), HOME/AWAY, with GIMP folder/ZIP round-trip. All **28,530**
   package-local socks, elbow pads, gloves, long sleeves, shoes, and wristbands
   are separately searchable, previewable, exportable, and palette-editable
   through fixed-span TSET imports that preserve their shared retail shape and
   every unselected sibling.
-- **All Textures** — 11,395 editable standalone targets, including every
+- **All Textures**: 11,395 editable standalone targets, including every
   uniform-package presentation texture, all 1,585 raw menu-logo/mini-card
   slots, all 170 franchise-office and draft/PDA logo surfaces, and all 4,080
   reviewed player strips. The franchise-office set is editable as presentation
-  art — its in-game home is the franchise/coach-desk screen, not midfield. Raw
+  art: its in-game home is the franchise/coach-desk screen, not midfield. Raw
   menu arrays preserve their complete fixed-slot structure and never invoke
   VC-LZ.
-- **Stadium Studio** — 477 scenes, 23,838 editable P8 texture occurrences, with
+- **Stadium Studio**: 477 scenes, 23,838 editable P8 texture occurrences, with
   a **"People & sideline only"** filter to isolate fans, cheerleaders, coaches,
   officials, chain crew, camera/media, ushers, and sideline props. The proved
   full scene can also round-trip same-topology vertex-position edits through
   glTF while preserving game UV/material/collision and other stream bytes.
-- **Audio** — all 850 standalone cues and all 53,571 playable streaming ranges
+- **Audio**: all 850 standalone cues and all 53,571 playable streaming ranges
   (exact-slot replacement), with project-backed cue labels/notes.
-- **Rosters** — current primary players (names + jersey numbers) and historical
+- **Rosters**: current primary players (names + jersey numbers) and historical
   teams; jersey numbers plus per-player None/Clear/Dark face-shield type for
   both player pools via the generalized disc-roster writer. Face shield is not
   a HOME/AWAY tint, and loaded saves may override the disc seed.
-- **Text** — 20,074 editable strings across 716 banks.
+- **Text**: 20,074 editable strings across 716 banks.
 - Portraits, live faces, create-team field art, scorebug/presentation art.
 - Runs in **xemu**.
 
-### APF 2K8 Mod Studio — All-Pro Football 2K8 (Xbox 360)
-- **Uniforms** — 96 editable textures (jersey/pants/helmet/shoulder) plus the
+### APF 2K8 Mod Studio: All-Pro Football 2K8 (Xbox 360)
+- **Uniforms**: 96 editable textures (jersey/pants/helmet/shoulder) plus the
   shared `digital_font` and `draft_logo`.
-- **Team crests** — all 118 `uniform_logo` packages; one staged crest is
+- **Team crests**: all 118 `uniform_logo` packages; one staged crest is
   mirrored into `logo_l0` and `logo_l1`, both mip chains are regenerated, and
   the matching logo-cache entry is independently verified. The fixed
   `front_crown_to_rear_v1` profile bakes one semantic side canvas bilaterally
@@ -65,11 +65,11 @@ and audio — then build a modded copy you can run in an emulator.
   transport sentinel remains legal only in the bounded side-decal lane. One
   copied `0A` is created after every gate passes. No Xenia patch or
   `default.xex` edit is produced; gameplay and hardware behavior remain unproved.
-- **Rosters & Players** — team display names, player names, all 31 base ratings
+- **Rosters & Players**: team display names, player names, all 31 base ratings
   per player, exact Position, and a 53-row roster planner. A paired 1,344-row
   RPCS3/Xenia stock-roster audit has zero unexplained rows after exact platform
   color-byte normalization.
-- **Playbook assignments** — choose existing offensive and defensive books for
+- **Playbook assignments**: choose existing offensive and defensive books for
   all 40 team slots in a new, verified raw save; signed CON files are
   a verified raw handoff. The on-disc **Assignment Routes** editor can also copy
   or atomically swap an exact stock player-assignment descriptor and existing
@@ -77,15 +77,15 @@ and audio — then build a modded copy you can run in an emulator.
   preserves every route node and formation-membership bit, and refuses a copy
   that would orphan a game-authored chain. Drawing new waypoint/opcode routes
   remains unavailable.
-- **Model round trip** — export the stock helmet and player as static glTF,
+- **Model round trip**: export the stock helmet and player as static glTF,
   then import same-count, same-topology POSITION-only edits into a new verified
   copied `0A`. Materials, UVs, skinning, attachment authoring, animation,
   collision, allocation growth, and changed-topology replacement remain outside
   this writer.
-- **Audio** — all 47,775 individually editable AUDO/AUSB cues (exact-slot XMA1
+- **Audio**: all 47,775 individually editable AUDO/AUSB cues (exact-slot XMA1
   replacement via a user-supplied encoder), with cue labels/notes and batch
   folder/ZIP authoring.
-- **Field Art & Stadiums** — edit six exact field-art base textures while the
+- **Field Art & Stadiums**: edit six exact field-art base textures while the
   remaining semantic inventory stays browse/export-only; the proved stadium
   scene owns 78 editable embedded textures and 77 same-topology
   POSITION-editable surfaces. Other scenes and material/shader authoring remain
@@ -110,7 +110,7 @@ This is a **beta**. What that means here:
   Many writers are offline-proved but not yet captured in gameplay; the
   capability registry labels each one (`Editable`, `Preview`/`Export-only`,
   `Proof boundary`, or `Research boundary`).
-- Executable patches (e.g. gameplay experiments) are **emulator-only** — they
+- Executable patches (e.g. gameplay experiments) are **emulator-only**: they
   invalidate the retail signature and are not for original hardware.
 - Some advanced areas remain explicitly outside this release's proved
   authoring scope (general or changed-topology 3D model replacement,
@@ -184,7 +184,7 @@ Double-click launchers are bundled for all three platforms (see *Install*).
      ```
      (On Debian, Ubuntu and Mint the setup needs `sudo apt install python3-venv`
      first. `install.sh` belongs to APF 2K8 Mod Studio only.)
-   - **macOS** — extract the whole archive. In Finder, right-click
+   - **macOS**: extract the whole archive. In Finder, right-click
      **`2K5-Mod-Studio.command`** and choose **Open**. If the launcher asks
      for Python, install Python 3.11, 3.12 or 3.13 and open it again. On the
      first run it sets up the dependencies and opens Studio. To prepare the
@@ -265,7 +265,7 @@ their own image.
    ones expose **Inspect/Export**.
 3. **Replace** an asset with your own file (e.g. a PNG or WAV of the exact
    shape). The editor validates it against the fixed-allocation contract.
-4. **Save** a project (`.2k5mod` / `.apf2k8mod`) — a portable, human-readable
+4. **Save** a project (`.2k5mod` / `.apf2k8mod`): a portable, human-readable
    plan that never contains game bytes.
 5. **Build** to a **new, empty** folder. The editor copies your source and
    applies your edits there; it refuses to overwrite your source.
@@ -311,7 +311,7 @@ verify its pinned facts and visuals with
 
 ## Contributing
 
-Contributions are welcome — PS2 support arrived that way. Read
+Contributions are welcome: PS2 support arrived that way. Read
 [`CONTRIBUTING.md`](CONTRIBUTING.md) first: this project classifies every
 capability by how strongly it has been *proved*, and a writer only ships with an
 independent verifier. Understanding that ladder before you write code will save
@@ -319,16 +319,19 @@ you a review round.
 
 Bug reports and detailed feature requests are just as valuable. A request that
 names the exact in-game symptom is often the research lead that makes a feature
-possible at all.
+possible at all. Report bugs on the
+[issue tracker](https://github.com/cruuz/2k-football-mod-tools/issues), and ask
+questions or share patches on the community Discord: <https://discord.gg/FkNSKRAKch> (both Studios also
+offer these under **Help**).
 
 Security issues, and any case where the tools claim a guarantee they do not
-actually enforce, go to [`SECURITY.md`](SECURITY.md) — privately, please.
+actually enforce, go to [`SECURITY.md`](SECURITY.md): privately, please.
 
 ---
 
 ## License
 
-Released under the **MIT License** — see [`LICENSE`](LICENSE).
+Released under the **MIT License**: see [`LICENSE`](LICENSE).
 
 [`NOTICE.md`](NOTICE.md) covers what that licence does *not* grant: it applies to
 these tools and their source only, and gives you no rights to any game, game

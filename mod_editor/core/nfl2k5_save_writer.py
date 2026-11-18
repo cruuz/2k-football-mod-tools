@@ -40,7 +40,6 @@ import os
 import shutil
 import stat
 import struct
-import tempfile
 from pathlib import Path
 
 from . import platform_compat
@@ -446,79 +445,127 @@ def _write_staged_save(path: Path, data: bytes) -> None:
     _require(path.read_bytes() == data, f"Staged save file did not verify: {path.name}")
 
 
-def _publish_save_pair(files, previous):
-    from .image_use import _publication_lock
+def output_state(path: Path):
+    """The identity of an existing output file, or None. Anything but a regular file is refused."""
+    return _output_state(path)
+
+
+def _verify_published(files) -> None:
+    for path, data in files.items():
+        _require(path.read_bytes() == data, f"The written save file did not read back: {path}")
+
+
+def _make_parents(path: Path, created: list[Path]) -> None:
+    """Create the missing folders above ``path`` and remember them, outermost first, for removal on failure."""
+    missing = []
+    folder = path.parent
+    while not folder.exists():
+        missing.append(folder)
+        folder = folder.parent
+    for folder in reversed(missing):
+        folder.mkdir()
+        created.append(folder)
+
+
+def publish_save_files(files, previous, *, new_root: Path | None = None) -> None:
+    """Publish a set of verified save files together: staged, read back, then renamed into place.
+
+    ``files`` maps each output path to its bytes and ``previous`` to the identity it had when the caller checked it
+    (None for a new file). When ``new_root`` does not exist yet and holds every output, the whole folder is staged
+    beside it and published in one no-replace rename. Otherwise each file is staged on its own volume, an existing
+    output is copied aside first, and a failure restores what was there. Nothing new is left behind on failure, so the
+    same destination can be retried. This is the one transaction for the loose writer and for signed save copies."""
+    from .image_use import ROLLBACK_NAME, _publication_lock, studio_staging
 
     targets = tuple(files)
-    directory = targets[0].parent
     with ExitStack() as locks:
         for target in sorted(targets, key=platform_compat.path_key):
             locks.enter_context(_publication_lock(target))
         _require(all(_output_state(path) == previous[path] for path in targets),
                  "The save destination changed. Choose a new folder or retry.")
-        created = None
-        if targets[1].parent == directory and not directory.exists():
-            # The ordinary GUI save publishes a complete new Xbox folder in one rename.
-            directory.parent.mkdir(parents=True, exist_ok=True)
-            with tempfile.TemporaryDirectory(prefix=".2k5-save-", dir=directory.parent) as temp:
-                staged = Path(temp) / "pair"
-                staged.mkdir()
-                for path, data in files.items():
-                    _write_staged_save(staged / path.name, data)
-                try:
-                    platform_compat.publish_no_replace(staged, directory, is_directory=True)
-                except platform_compat.NoReplacePublishUnavailable:
-                    # Linux ntfs-3g, other FUSE folders and some network or removable volumes have no atomic
-                    # no-replace folder rename. Create the new folder exclusively and publish the two files into it
-                    # with the same verification and rollback as two explicit destinations.
-                    pass
-                else:
-                    return
-            directory.mkdir()
-            created = directory
-
-        # The CLI also supports two explicit destinations, including existing files on separate volumes.
-        work = {}
-        published = []
-        keep_backup = set()
-        try:
-            for path, data in files.items():
-                path.parent.mkdir(parents=True, exist_ok=True)
-                work[path] = Path(tempfile.mkdtemp(prefix=".2k5-save-", dir=path.parent))
-                _write_staged_save(work[path] / "new", data)
-                if previous[path] is not None:
-                    shutil.copy2(path, work[path] / "original")
-            for path in targets:
-                _require(_output_state(path) == previous[path], f"The output changed while editing: {path}")
-                if previous[path] is None:
-                    platform_compat.publish_no_replace(work[path] / "new", path)
-                else:
-                    os.replace(work[path] / "new", path)
-                published.append(path)
-            created = None
-        except BaseException:
-            for path in reversed(published):
-                try:
-                    if previous[path] is None:
-                        path.unlink()
+        created: list[Path] = []
+        if new_root is not None and not os.path.lexists(new_root):
+            _require(all(platform_compat.path_is_within(path, new_root) for path in targets),
+                     "Every save file must be inside the new folder.")
+            _make_parents(new_root, created)
+            try:
+                with studio_staging(new_root.parent, ".2k5-save-") as stage:
+                    staged = stage.path / "pair"
+                    staged.mkdir()
+                    for path, data in files.items():
+                        item = staged / path.relative_to(new_root)
+                        item.parent.mkdir(parents=True, exist_ok=True)
+                        _write_staged_save(item, data)
+                    try:
+                        platform_compat.publish_no_replace(staged, new_root, is_directory=True)
+                    except platform_compat.NoReplacePublishUnavailable:
+                        # Linux ntfs-3g, other FUSE folders and some network or removable volumes have no atomic
+                        # no-replace folder rename. Create the new folder exclusively and publish each file into it
+                        # with the same verification and rollback as explicit destinations.
+                        pass
                     else:
-                        os.replace(work[path] / "original", path)
-                except OSError:
-                    keep_backup.add(work[path])
-            if keep_backup:
-                raise SaveWriterError("The save could not be restored. Recovery files are in " +
-                                      ", ".join(map(str, keep_backup)))
-            raise
-        finally:
-            for stage in work.values():
-                if stage not in keep_backup:
-                    shutil.rmtree(stage)
-            if created is not None:
-                # A failed fallback leaves no empty edited-save folder in the way of a retry.
+                        _verify_published(files)
+                        return
+                new_root.mkdir()
+                created.append(new_root)
+            except BaseException:
+                _remove_empty(created)
+                raise
+
+        published = []
+        try:
+            with ExitStack() as stages:
+                work = {}
+                for path, data in files.items():
+                    _make_parents(path, created)
+                    work[path] = stages.enter_context(studio_staging(path.parent, ".2k5-save-"))
+                    _write_staged_save(work[path].path / "new", data)
+                    if previous[path] is not None:
+                        shutil.copy2(path, work[path].path / ROLLBACK_NAME)
                 try:
-                    created.rmdir()
-                except OSError:
-                    pass
+                    for path in targets:
+                        _require(_output_state(path) == previous[path], f"The output changed while editing: {path}")
+                        if previous[path] is None:
+                            platform_compat.publish_no_replace(work[path].path / "new", path)
+                        else:
+                            os.replace(work[path].path / "new", path)
+                        published.append(path)
+                    _verify_published(files)
+                except BaseException:
+                    kept = []
+                    for path in reversed(published):
+                        try:
+                            if previous[path] is None:
+                                path.unlink()
+                            else:
+                                os.replace(work[path].path / ROLLBACK_NAME, path)
+                        except OSError:
+                            work[path].keep = True
+                            kept.append(str(work[path].path))
+                    published.clear()
+                    if kept:
+                        raise SaveWriterError("The save could not be restored. Recovery files are in " + ", ".join(kept))
+                    raise
+        except BaseException:
+            if not published:
+                # A failed attempt leaves no new folder in the way of a retry.
+                _remove_empty(created)
+            raise
+
+
+def _remove_empty(folders: list[Path]) -> None:
+    for folder in reversed(folders):
+        try:
+            folder.rmdir()
+        except OSError:
+            pass
+
+
+def _publish_save_pair(files, previous):
+    targets = tuple(files)
+    directory = targets[0].parent
+    same_folder = all(path.parent == directory for path in targets)
+    publish_save_files(files, previous, new_root=directory if same_folder else None)
 
 
 def edit_save_file(

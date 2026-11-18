@@ -203,7 +203,7 @@ disc...** (marked experimental).
 ## 9. Where to report bugs and ask questions
 
 - **Help → Report a bug…** opens the [Studio issue tracker](https://github.com/cruuz/2k-football-mod-tools/issues). For a game-pack problem, use the [SOFTDRINK issue tracker](https://github.com/cruuz/softdrink-2k28/issues).
-- Existing project Discord members can use **Help → Open project Discord (members)…** and post in **#2k5-bugs**.
+- The community Discord: <https://discord.gg/FkNSKRAKch> (also **Help → Join the Discord…** in both Studios). The invite opens **#2k5-help**; post bugs in **#2k5-bugs**.
 - Security problems: see [SECURITY.md](../SECURITY.md).
 
 ## 10. More reading

@@ -162,7 +162,7 @@ def load_layout(folder=None):
         require(all(r.get(k)==variants[0].get(k) for r in variants for k in ('box','pin','opacity','material','z')), 'Watermark variants must share one quad and placement.')
     for row in spec['fields']:
         require(row['source'] in SOURCES and row['glyph_set'] in spec['glyph_sets'], 'Unknown scorebug data source or glyph set.')
-        require(type(row['slots'])==int and 1<=row['slots']<=16, 'Each field needs 1–16 quads.')
+        require(type(row['slots'])==int and 1<=row['slots']<=16, 'Each field needs 1-16 quads.')
         require(row['alignment'] in ('left','center','right'), 'Unknown field alignment.')
         require(len(row['anchor'])==2 and all(_number(v) and 0<=v<=limit for v,limit in zip(row['anchor'],(1920,1080))), 'Invalid field anchor.')
         # Only the possession arrow and the TIMEOUT tab (sb) move between two positions: away at the anchor, home at
@@ -178,7 +178,7 @@ def load_layout(folder=None):
         require(0<len(gset['glyphs'])<=128, 'Too many glyphs in '+name)
         require(_number(gset.get('cap_height')) and 1<=gset['cap_height']<=110, 'Invalid glyph set cap height.')
         for token,row in gset['glyphs'].items():
-            require(1<=len(token)<=4 and all(0<ord(c)<128 for c in token), 'Glyph tokens must have 1–4 ASCII characters.')
+            require(1<=len(token)<=4 and all(0<ord(c)<128 for c in token), 'Glyph tokens must have 1-4 ASCII characters.')
             require(row['cell'] in spec['cells'] and len(row['size'])==2 and all(_number(v) and 0<=v<=256 for v in row['size']), 'Invalid glyph cell or size.')
             require(_number(row['advance']) and 0<row['advance']<=256 and _number(row.get('raise',0)), 'Invalid glyph advance.')
     if spec.get('team_accents'):

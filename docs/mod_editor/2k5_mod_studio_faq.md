@@ -55,7 +55,7 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
    file was when you chose it: if you moved or renamed one, choose it again. Keep at least 8 GB free where the new disc is
    saved.
 6. **Stuck on the Xbox logo?** Quit xemu completely, not just the game, open it again and load the disc again.
-7. **Still stuck?** Ask in the Discord and say your Studio version, the SOFTDRINK pack version, your xemu version, the
+7. **Still stuck?** Ask in the Discord (<https://discord.gg/FkNSKRAKch>) and say your Studio version, the SOFTDRINK pack version, your xemu version, the
    memory setting, the BIOS name and exactly where it stops (Xbox logo, black screen, a message), with a screenshot. For a disc
    you built yourself, also post **Copy Build summary**.
 
@@ -415,7 +415,7 @@ intro.
   tested one (2: the memory tables are already in use, 3: a kernel routine the patch needs is
   not where it expects, 4: the memory page count is unusual). If you see that, post a photo of
   the screen and the MD5 hash that xemu shows under **Flash ROM (BIOS)** (Machine, Settings,
-  System), or the SHA-256 start that Studio's note showed, in the Discord bugs channel, so we can
+  System), or the SHA-256 start that Studio's note showed, in the Discord bugs channel (<https://discord.gg/FkNSKRAKch>), so we can
   tell which BIOS it is.
 
 ## Does Studio check my xemu settings and BIOS?
@@ -481,7 +481,7 @@ Finn 4.0.0.41 reads only some of the name locations an expanded roster can use. 
 
 Keep a copy of the failing save including its companion files, the pack filename, the output from **Check disc**, and **Copy Build summary** from a custom build. Record the team, season, week, screen and last input. For portraits include the player's full name and a screenshot. An existing franchise carries its own photo assignments. Comparing that save with a new franchise from the same disc identifies which data to inspect.
 
-For a play-call or audible freeze, record the last offensive and defensive calls, input sequence and whether commentary continued. For weekly SportsCenter, include the week and whether the franchise had been reloaded. Players have reported disappearing models in the Rams–Bengals and 49ers–Ravens Super Bowl moments. Include the play, position, camera and renderer, any equipment edits, and whether it happens when entering that moment directly from a fresh boot. A short clip can show whether the missing player still blocks or carries the ball. The Studio can collect a freeze capture on xemu. [Freeze capture and disc check](freeze_capture_and_disc_check.md)
+For a play-call or audible freeze, record the last offensive and defensive calls, input sequence and whether commentary continued. For weekly SportsCenter, include the week and whether the franchise had been reloaded. Players have reported disappearing models in the Super Bowl moments with the Rams and Bengals and with the 49ers and Ravens. Include the play, position, camera and renderer, any equipment edits, and whether it happens when entering that moment directly from a fresh boot. A short clip can show whether the missing player still blocks or carries the ball. The Studio can collect a freeze capture on xemu. [Freeze capture and disc check](freeze_capture_and_disc_check.md)
 
 ## Can I keep coaching my team after an owner warning?
 

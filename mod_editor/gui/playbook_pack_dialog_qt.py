@@ -44,7 +44,7 @@ def pack_summary_lines(pack: pack_mod.PlaybookPack) -> tuple[str, ...]:
     """Header lines for one pack: who made it, what it is, what it starts from."""
 
     lines = [
-        f"{pack.book.name}  —  v{pack.book.version} by {pack.book.author}  ({pack.book.license})",
+        f"{pack.book.name}: v{pack.book.version} by {pack.book.author}  ({pack.book.license})",
         f"Authored on {pack.book.team}: {len(pack.formations)} formation(s), {len(pack.plays)} play(s); "
         f"started from a book with {pack.base.donor_formation_count} formations, "
         f"{pack.base.donor_play_count} plays, {pack.base.donor_node_count} nodes "
@@ -72,7 +72,7 @@ def team_choices(pack: pack_mod.PlaybookPack, available: Sequence[str]) -> tuple
 
     choices: list[tuple[str, object]] = []
     if pack.book.team in available:
-        choices.append((f"As authored — {pack.book.team}", pack.book.team))
+        choices.append((f"As authored: {pack.book.team}", pack.book.team))
     if any(p.option_intent for p in pack.plays):
         return tuple(choices)
     for team in available:
@@ -113,7 +113,7 @@ def install_blockers(preview: pack_mod.PackPreview) -> tuple[str, ...]:
     reasons: list[str] = []
     for row in preview.plan.rows:
         if row.status not in ("ok", "retargeted"):
-            reasons.append(f"{row.kind} “{row.name}”: {row.status} — {row.detail}")
+            reasons.append(f"{row.kind} “{row.name}”: {row.status}, {row.detail}")
     reasons.extend(preview.plan.blocked)
     reasons.extend(preview.check.errors)
     return tuple(reasons)
@@ -175,7 +175,7 @@ class PlaybookPackInstallDialog(QDialog):
         self.pack = host.load_playbook_pack(self.path)
         self.preview: pack_mod.PackPreview | None = None
         self.installed_teams: tuple[str, ...] = ()
-        self.setWindowTitle(f"Install Playbook Pack — {self.pack.book.name}")
+        self.setWindowTitle(f"Install Playbook Pack: {self.pack.book.name}")
         self.setMinimumSize(940, 640)
 
         layout = QVBoxLayout(self)
@@ -282,10 +282,10 @@ class PlaybookPackInstallDialog(QDialog):
             note = self.preview.plan.budget_line()
             if self.preview.retargeted:
                 changed = sum(1 for r in self.preview.resolutions if r.how == "ranked")
-                note += (f"  —  retargeted to {team}"
+                note += (f": retargeted to {team}"
                          + (f", {changed} entry target(s) re-resolved by rank" if changed else ""))
             if multi:
-                note += f"  —  will be staged into all {len(self.selected_teams())} team books"
+                note += f": will be staged into all {len(self.selected_teams())} team books"
             self.status.setText(note)
         self.buttons.button(QDialogButtonBox.Ok).setEnabled(not blockers)
 

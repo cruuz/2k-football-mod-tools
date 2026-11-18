@@ -617,6 +617,29 @@ class ExternalBuild:
     console_memory: int | None = None
 
 
+def launch_memory_target(result: object) -> int | None:
+    """The console memory to check before Play latest disc starts a disc Studio made.
+
+    An install or Build-tab disc carries its target (64 or 128). A ★ Rosters copy and a texture-project build do not,
+    so the disc answers for itself: when its executable carries the 128 MB memory patch it needs 128 MiB and Complex
+    4627, which beta 80 checked before every launch. A disc without that patch runs at either setting, so a 64 MB
+    edition copied through ★ Rosters is not told to switch to 128 MiB. An unreadable executable is checked as 128.
+    """
+
+    known = getattr(result, "console_memory", None)
+    if known in (64, 128):
+        return known
+    image = getattr(result, "output_xiso", None)
+    if image is None:
+        return None
+    try:
+        from mod_editor.core import mod_build, nfl2k5_k128
+        state = nfl2k5_k128.status(mod_build._xbe_bytes(Path(image)))
+    except Exception:  # noqa: BLE001 - a settings reminder must never stop the launch
+        return 128
+    return None if state == "retail" else 128
+
+
 @dataclass(frozen=True)
 class StudioOperationResult:
     message: str
@@ -1159,7 +1182,7 @@ class Nfl2k5StudioFacade:
             result = self._last_build
         if result is None:
             return (
-                "Build a modded XISO first — Launch starts the most recent "
+                "Build a modded XISO first: Launch starts the most recent "
                 "build, and there is not one yet in this session."
             )
         if not result.output_xiso.is_file() or result.output_xiso.is_symlink():
@@ -1428,7 +1451,7 @@ class Nfl2k5StudioFacade:
             self._stadium_cache_result = stadium_result
         progress("Complete asset browser ready", 1, 1)
         return StudioOperationResult(
-            f"Game ready — {cache.resource_count:,} assets indexed from your copy."
+            f"Game ready: {cache.resource_count:,} assets indexed from your copy."
         )
 
     @property
@@ -2077,7 +2100,7 @@ class Nfl2k5StudioFacade:
             )
             if not 1 <= page.total <= 256 or len(page.assets) != page.total:
                 raise ValidationError(
-                    "Export matching audio requires 1–256 rows. Narrow the current "
+                    "Export matching audio requires 1-256 rows. Narrow the current "
                     "search, family, or status filters."
                 )
             session = self._require_session()
@@ -2789,7 +2812,7 @@ class Nfl2k5StudioFacade:
             changed = session.create_formation(request)
         progress("Formation created", 2, 2)
         return StudioOperationResult(
-            "Formation created as clone — new formation appears at end of book."
+            "Formation created as clone: new formation appears at end of book."
             if changed else "That formation clone is already staged."
         )
 
@@ -2815,7 +2838,7 @@ class Nfl2k5StudioFacade:
             changed = session.create_play(request)
         progress("Play created", 2, 2)
         return StudioOperationResult(
-            "Play created as clone — new play appears at end of book."
+            "Play created as clone: new play appears at end of book."
             if changed else "That play clone is already staged."
         )
 
@@ -3094,7 +3117,7 @@ class Nfl2k5StudioFacade:
                 first = blocked[0] if blocked else None
                 reason = first.detail if first is not None else preview.plan.blocked[0]
                 raise ValidationError(
-                    f"{team}: “{first.name}” cannot be installed — {reason}"
+                    f"{team}: “{first.name}” cannot be installed, {reason}"
                     if first is not None else f"{team}: {reason}"
                 )
             if not preview.check.ok:
@@ -3233,7 +3256,7 @@ class Nfl2k5StudioFacade:
             self._stadium_studio = studio
             self._stadium_cache_result = result
         return StudioOperationResult(
-            f"Stadium Studio ready — {result.scene_count:,} private scenes indexed."
+            f"Stadium Studio ready: {result.scene_count:,} private scenes indexed."
         )
 
     def stadium_scenes(self, search: str, progress: ProgressSink) -> object:
@@ -3726,7 +3749,7 @@ class Nfl2k5StudioFacade:
             identity = project_target_identity(path)
         progress("Project saved", 1, 1)
         return StudioOperationResult(
-            f"Project saved — {path.name}. No retail game data was included.",
+            f"Project saved: {path.name}. No retail game data was included.",
             path,
             identity,
         )
@@ -4001,7 +4024,7 @@ class Nfl2k5StudioFacade:
         settings_warning = ""
         try:
             settings_warning = xemu_settings.play_warning(
-                xemu_settings.config_path(command), target_mb=getattr(result, "console_memory", None)
+                xemu_settings.config_path(command), target_mb=launch_memory_target(result)
             )
         except (OSError, ValueError, TypeError):
             settings_warning = ""

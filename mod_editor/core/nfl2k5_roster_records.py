@@ -3075,29 +3075,62 @@ class SaveContainer:
         return members
 
     def write(self, target: Path | str, payload: bytes, *, overwrite: bool = False) -> dict[str, Any]:
-        """Write a re-signed copy of this container.  Never writes over the source."""
+        """Write a re-signed copy of this container.  Never writes over the source.
 
-        destination = Path(target).expanduser()
-        _require(destination.resolve() != self.path.resolve(), "the target must not be the source save")
+        The copy is staged, verified and published by the loose save writer's transaction
+        (``nfl2k5_save_writer.publish_save_files``): a new folder appears whole or not at all, a failure leaves nothing
+        behind (so the same destination can be retried), and an output folder inside the source save is refused."""
+
+        from . import nfl2k5_save_writer as writer
+        from . import platform_compat
+
+        destination = platform_compat.io_path(platform_compat.absolute_path(Path(target).expanduser()))
+        source = platform_compat.io_path(platform_compat.absolute_path(self.path))
+        _require(not platform_compat.paths_alias(destination, source) and destination.resolve() != source.resolve(),
+                 "the target must not be the source save")
+        if self.kind == "directory":
+            # A copy inside the source folder becomes one of its members and mixes the two saves.
+            inside = (platform_compat.path_is_within(destination, source)
+                      or platform_compat.path_is_within(destination.resolve(), source.resolve()))
+            _require(not inside, "Choose an output folder outside the source save. A copy inside it would mix "
+                                 "the two saves.")
         members = self.with_savegame(payload)
+        _require(members[self.savegame_name] == payload and verify_extra(payload, members[self.extra_name]),
+                 "the re-signed copy does not verify")
         if self.kind == "zip" or destination.suffix.lower() == ".zip":
-            _require(overwrite or not destination.exists(), f"{destination} exists")
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            with zipfile.ZipFile(destination, "w", zipfile.ZIP_DEFLATED) as archive:
+            buffer = io.BytesIO()
+            with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
                 for name in self.members:
                     archive.writestr(name, members[name])
-            written = str(destination)
+            with zipfile.ZipFile(io.BytesIO(buffer.getvalue())) as check:
+                _require({info.filename: check.read(info) for info in check.infolist() if not info.is_dir()} == members,
+                         "signed-copy members differ on read-back")
+            files = {destination: buffer.getvalue()}
+            new_root = None
         else:
-            destination.mkdir(parents=True, exist_ok=True)
+            files = {}
             for name, data in members.items():
-                item = destination / name
-                item.parent.mkdir(parents=True, exist_ok=True)
-                _require(overwrite or not item.exists(), f"{item} exists")
-                item.write_bytes(data)
-            written = str(destination)
-        reopened = SaveContainer.load(destination, require_signature=True)
-        _require(reopened.savegame == payload, "signed-copy SAVEGAME.DAT read-back differs")
-        _require(reopened.members == members, "signed-copy members differ on read-back")
+                item = destination.joinpath(*name.split("/"))
+                _require(platform_compat.path_is_within(item, destination), f"unsafe member name {name!r}")
+                files[item] = data
+            new_root = destination
+        source_files = [source] if source.is_file() else [p for p in source.rglob("*") if p.is_file()]
+        if self.kind == "loose" and source.with_name(EXTRA_NAME).is_file():
+            source_files.append(source.with_name(EXTRA_NAME))
+        previous = {}
+        for path in files:
+            _require(not any(platform_compat.paths_alias(path, item) for item in source_files),
+                     f"{path} is part of the source save")
+            try:
+                previous[path] = writer.output_state(path)
+            except writer.SaveWriterError as exc:
+                raise RosterRecordError(str(exc)) from exc
+            _require(overwrite or previous[path] is None, f"{path} exists")
+        try:
+            writer.publish_save_files(files, previous, new_root=new_root)
+        except writer.SaveWriterError as exc:
+            raise RosterRecordError(str(exc)) from exc
+        written = str(destination)
         untouched = [name for name in self.members if name not in (self.savegame_name, self.extra_name)]
         return {"target": written, "kind": self.kind, "savegame": self.savegame_name,
                 "extra": self.extra_name, "extra_sha1": members[self.extra_name].hex(),

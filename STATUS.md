@@ -41,7 +41,7 @@ The beta-77 integration adds modern and classic playbook controls, franchise gra
 - SOFTDRINK 2K28 v0.4 clears the repeated wrong portrait on 236 free agents using the native no-photo fallback. It includes the corrected RB orders and 135 repaired stadium variants. Load the disc roster and start a fresh franchise; existing saves retain their embedded roster.
 - These changes have offline evidence. No new gameplay witness is claimed. APF 2K8 alpha.105 aligns the version with this release and has no gameplay changes.
 
-## Beta 63 (RC87, 2026-09-08) — the last 2K5 beta before APF 2K8
+## Beta 63 (RC87, 2026-09-08): the last 2K5 beta before APF 2K8
 
 Source/UI versions are **2K5 RC87** and **APF alpha.84**.
 
@@ -55,7 +55,7 @@ Source/UI versions are **2K5 RC87** and **APF alpha.84**.
   fresh-rip Stadium Studio cache fix (also the beta-62 hotfix). Every new option is experimental and off or Retail in
   every preset; nothing new is witnessed. See the RC87 changelog section.
 
-## Beta 62 (RC86, 2026-09-06) — the whole wave-2 backlog, wired
+## Beta 62 (RC86, 2026-09-06): the whole wave-2 backlog, wired
 
 Source/UI versions are **2K5 RC86** and **APF alpha.84**.
 
@@ -67,7 +67,7 @@ Source/UI versions are **2K5 RC86** and **APF alpha.84**.
   franchise 2026 rules enforcement, deep-zone facing/bail, the scorebug freeze root cause, hi-res memory fit. All new options are
   experimental and unwitnessed; see the RC86 changelog section.
 
-## Beta 60 (unreleased) — ★ Rosters reads the disc's own position scheme
+## Beta 60 (unreleased): ★ Rosters reads the disc's own position scheme
 
 Source/UI versions are **2K5 RC84** and **APF alpha.84**.
 
@@ -98,14 +98,14 @@ Source/UI versions are **2K5 RC84** and **APF alpha.84**.
   get the full editor and re-sign as before. Verified on the two signed saves on hand; franchise saves untested.
 - **★ Rosters is scheme-aware.** The page no longer shows the retail 17 positions on every roster.
   It detects whether the loaded source is on the retail table, the **EDGE rename** or the
-  **one-pool** model (EDGE / LB / interior, OLB retired) — from the disc's own patch states for an
-  image, from the records for a save or a loose body — and every label, chip, picker, CSV column,
+  **one-pool** model (EDGE / LB / interior, OLB retired): from the disc's own patch states for an
+  image, from the records for a save or a loose body: and every label, chip, picker, CSV column,
   jersey check and depth note follows it. Ratings stay keyed by the position **code**, the way the
   game keys them, so a one-pool LB is still read on the linebacker card set and an EDGE on the
   defensive-end one. Codes are never written outside the scheme: the picker greys the retired OLB
   out, and a CSV that brings OLB rows onto a reclassified roster maps them to LB and says so.
   A selector overrides the detection. Unwitnessed in game.
-- **★ Rosters, phase 2 (Finn parity):** team membership — release / sign / move / swap as pointer-list
+- **★ Rosters, phase 2 (Finn parity):** team membership, release / sign / move / swap as pointer-list
   edits with Finn's 42 / 54 limits and the game's own 2,500-slot free-agent ceiling (append helper
   `0x242560`), the draft class refused because the game regenerates it into a fixed record window at
   load; **Check & repair** offered on load with a receipt (never silent); **`.PlayerData`** export and
@@ -114,7 +114,7 @@ Source/UI versions are **2K5 RC84** and **APF alpha.84**.
   from the disc's own data (4,303 portraits); and `docs/nfl2k5_ratings_and_styles.md`. Moves travel
   in the roster-edits document and the CSV; Build replays them. Unwitnessed in game.
 
-## Beta 59 (unreleased) — ★ Rosters: the whole roster editable, on the disc and in a save
+## Beta 59 (unreleased): ★ Rosters: the whole roster editable, on the disc and in a save
 
 Source/UI versions are **2K5 RC83** and **APF alpha.84**.
 
@@ -132,7 +132,7 @@ Source/UI versions are **2K5 RC83** and **APF alpha.84**.
 - Build & Share carries the edit as the `roster_edits` step and packs it into a `.2k5patch`.
 - Format credit: Flying Finn (Glen Leskinen) and Bad_AL. Unwitnessed in game.
 
-## Beta 58 — the community list: Free Practice in Franchise, Position on Edit Player, jerseys anywhere, penalties, prospect names, Pro Bowl order, laces, the star (2026-09-04)
+## Beta 58: the community list: Free Practice in Franchise, Position on Edit Player, jerseys anywhere, penalties, prospect names, Pro Bowl order, laces, the star (2026-09-04)
 
 Source/UI versions are **2K5 RC82** and **APF alpha.84**; both use updater tag
 `beta-59`.
@@ -158,7 +158,7 @@ Source/UI versions are **2K5 RC82** and **APF alpha.84**; both use updater tag
 - **Not in this release:** 7-on-7 practice (built, hidden until witnessed).
   Everything above is unwitnessed in game unless Noah's test says otherwise.
 
-## Beta 57 — Update now, the franchise TEAM column with real history, and two report fixes (2026-09-03)
+## Beta 57: Update now, the franchise TEAM column with real history, and two report fixes (2026-09-03)
 
 Source/UI versions are **2K5 RC82** and **APF alpha.84**; both use updater tag
 `beta-58`.
@@ -179,7 +179,7 @@ Source/UI versions are **2K5 RC82** and **APF alpha.84**; both use updater tag
 - **Not in this release:** the 7-on-7 practice mode (built, three runtime bugs
   fixed through xemu's debugger, not yet witnessed through a snap).
 
-## Beta 56 — ★ Models: export any model to Blender and back (2026-09-03)
+## Beta 56: ★ Models: export any model to Blender and back (2026-09-03)
 
 Source/UI versions are **2K5 RC81** and **APF alpha.84**; both use updater tag
 `beta-56`.
@@ -197,7 +197,7 @@ Source/UI versions are **2K5 RC81** and **APF alpha.84**; both use updater tag
   vertices) both fit their retail spans. In-game witnessing of an imported model
   is Noah's release gate.
 
-## Beta 55 — every archive pack found through the disc directory (2026-09-03)
+## Beta 55: every archive pack found through the disc directory (2026-09-03)
 
 Source/UI versions are **2K5 RC79** and **APF alpha.84**; both use updater tag
 `beta-55`.
@@ -209,7 +209,7 @@ Source/UI versions are **2K5 RC79** and **APF alpha.84**; both use updater tag
   Identical Advanced builds proven on the retail rip, a redump-style image and an
   extract-xiso reordered image, also under the simulated-Windows check.
 
-## Beta 54 — Build & Share with the SOFTDRINK patch presets (2026-09-03)
+## Beta 54: Build & Share with the SOFTDRINK patch presets (2026-09-03)
 
 Source/UI versions are **2K5 RC78** and **APF alpha.84**; both use updater tag
 `beta-54`.
@@ -245,14 +245,14 @@ Source/UI versions are **2K5 RC78** and **APF alpha.84**; both use updater tag
   build" (its art and retail mesh are not shipped); the published Advanced
   `.2k5patch` carries it.
 
-## Beta 53 — Create a Formation / Create a Play, Play Designer, Throw Distance & Arc (2026-09-02)
+## Beta 53: Create a Formation / Create a Play, Play Designer, Throw Distance & Arc (2026-09-02)
 
 Source/UI versions are **2K5 RC77** and **APF alpha.84**; both use updater tag
 `beta-53`.
 
 - **★ Create a Play is a native workspace (last nav entry).** Five steps: pick
   a team's playbook, lay out a formation (modern templates, drag to move, click
-  to swap or change a position — RB2 instead of the FB, a WR instead of the
+  to swap or change a position: RB2 instead of the FB, a WR instead of the
   TE), choose run or pass, draw routes by dragging from a player (or click him
   for a menu of jobs), then replace outdated stock plays and build the disc.
   The PLAY format is decoded end to end (formation slot records, the 29 node
@@ -268,7 +268,7 @@ Source/UI versions are **2K5 RC77** and **APF alpha.84**; both use updater tag
   mid-tier arms gain a few yards and only elite arms reach the top) and the
   pass arc (deep balls hang longer and climb higher). Live per-arm preview of
   ceiling / hang time / apex, read from a default.xbe or a disc image, written
-  to a COPY with the section digest recomputed and byte-diff verified —
+  to a COPY with the section digest recomputed and byte-diff verified
   xemu-only, the same contract as Bump strength. Witnessed in xemu with gdb:
   retail Vick capped at 55.0 yd; ceiling 80 / arc 40 % launched 80.0-yard,
   5.00 s bombs on the log. CLI: `tools/nfl2k5_throw_distance.py`.
@@ -276,7 +276,7 @@ Source/UI versions are **2K5 RC77** and **APF alpha.84**; both use updater tag
   panel contract (raw body, formation selector staging, authored plays), and
   the formation/play writer tests run under CI's per-file runner.
 
-## Beta 52 — Windows binary-open hotfix (2026-08-24)
+## Beta 52: Windows binary-open hotfix (2026-08-24)
 
 Source/UI versions are **2K5 RC76** and **APF alpha.83**; both use updater tag
 `beta-52`.
@@ -289,7 +289,7 @@ Source/UI versions are **2K5 RC76** and **APF alpha.83**; both use updater tag
   Linux/macOS behavior is unchanged; Windows CI was red on the bump suite in
   beta-51 and this is the fix.
 
-## Beta 51 — bump maps end to end, bump strength, saves & sliders, stadium glTF loop, hundreds-of-edits speed (2026-08-23)
+## Beta 51: bump maps end to end, bump strength, saves & sliders, stadium glTF loop, hundreds-of-edits speed (2026-08-23)
 
 Source/UI versions are **2K5 RC75** and **APF alpha.82**; both use updater
 tag `beta-51`.
@@ -302,7 +302,7 @@ tag `beta-51`.
   packages that cross pack extents are segmented and fully editable now.
 - **Bump strength is editable.** The detail-scale floats in default.xbe
   (jersey/pants/sleeve; sock fixed) are found by byte pattern and patched on
-  a copy with digest recompute — xemu-only by honest design. Authoring
+  a copy with digest recompute: xemu-only by honest design. Authoring
   templates mark the retail collar/shield UV zones.
 - **Saves & Sliders edits the 21 gameplay sliders and franchise year**, and
   re-signs the copy (title-static HMAC) so the game loads it; write-back can
@@ -318,12 +318,12 @@ tag `beta-51`.
   sometimes-applies mechanism).
 
 
-## Beta 33 — the stock CPU playbooks (2026-08-10)
+## Beta 33: the stock CPU playbooks (2026-08-10)
 
 Source/UI versions are **2K5 RC60** and **APF alpha.65**; both use updater tag
 `beta-33`.
 
-- **Fine-tune Plays now edits APF's stock `SPLB` playbook membership** — the
+- **Fine-tune Plays now edits APF's stock `SPLB` playbook membership**: the
   fifteen on-disc resources the game ships (seven offensive, four defensive,
   four unnamed). Pick a book, pick a formation, tick plays in and out. Only the
   selected record's entry list is rewritten; the trailer, every other record,
@@ -333,11 +333,11 @@ Source/UI versions are **2K5 RC60** and **APF alpha.65**; both use updater tag
   0x54-stride bitmap and described it as "which plays each formation offers".
   Decoding the SPLB books refutes that: row 147 of that table yields "Big Pinch,
   Big Fan…" where the 3-4 defence is "Base, Fan, Razor Left…", coverage is
-  24–25%, and no record is fully covered. The writer is removed and the relation
+  24-25%, and no record is fully covered. The writer is removed and the relation
   is now recorded as unidentified. The bytes were bounded and verified; the
   description was wrong, which is the same defect by this project's standard.
 
-## Beta 32 — two-layer crests, stadium cache recovery, playbook fine-tuning (2026-08-10)
+## Beta 32: two-layer crests, stadium cache recovery, playbook fine-tuning (2026-08-10)
 
 Source/UI versions are **2K5 RC59** and **APF alpha.64**; both use updater tag
 `beta-32`.
@@ -346,18 +346,18 @@ Source/UI versions are **2K5 RC59** and **APF alpha.64**; both use updater tag
   region masks across two textures (`logo_l0` = regions 0-2, `logo_l1` =
   regions 3-5), so mirroring drew the mark twice in the wrong colours. Measured
   over all 118 packages: none have identical layers, 79 carry real detail art,
-  and 39 ship a cleared detail layer — retail's own shape, which is what one
+  and 39 ship a cleared detail layer: retail's own shape, which is what one
   supplied image now produces. Export both layers was added.
 - **A stadium cache from an older build no longer dead-ends.** Beta 30's
   identity fix left previously derived caches failing their own marker check
   with no recovery; they are now re-derived automatically, while safety
   refusals still refuse.
 - **Playbooks → Fine-tune Plays** adds or removes plays from any of MASTER's
-  163 formations — one bit per play inside a fixed allocation, independently
+  163 formations: one bit per play inside a fixed allocation, independently
   verified. The 36/33 book names in a save resolve to only 7 offensive and 4
   defensive real books, so book assignment alone often changed nothing.
 
-## Beta 31 — browsed rows reach their editor, findable stadium geometry (2026-08-10)
+## Beta 31: browsed rows reach their editor, findable stadium geometry (2026-08-10)
 
 Source/UI versions are **2K5 RC58** and **APF alpha.63**; both use updater tag
 `beta-31`.
@@ -384,7 +384,7 @@ Source/UI versions are **2K5 RC58** and **APF alpha.63**; both use updater tag
   GitHub's list order, so a Beta 31 build is never told to "update" to Beta 31
   or to anything behind it.
 
-## Beta 30 — valid-container cache repair (2026-08-09)
+## Beta 30: valid-container cache repair (2026-08-09)
 
 Source/UI versions were **2K5 RC57** and **APF alpha.62**; both used updater tag
 `beta-30`.
@@ -417,7 +417,7 @@ soundtrack album, Team Logo master, reserve Assign, **Menus Export**, **Export N
 E2 depth includes playbook community legend + G1 donor tip + empty search
 teaching. G1 multi-Dime + G2 multi-Ace offline packs ship (runtime unproved). Broader
 suite evidence is **batched** (monorepo single-run hang residual; APF audio GUI 32p
-in 8-at-a-time batches). — do not treat this note as a sealed public release.
+in 8-at-a-time batches).: do not treat this note as a sealed public release.
 
 
 > **APF 2K8 parallel product status:** read
@@ -451,7 +451,7 @@ in 8-at-a-time batches). — do not treat this note as a sealed public release.
 > It ships explicit
 > bounded Audio waveforms, atomic 47,814-row audio export, a 258-record Field
 > Art inventory, exact team display-name and player first/last-name editing,
-> complete shared-name alias disclosure, true independent 0–99
+> complete shared-name alias disclosure, true independent 0-99
 > Replace/Revert for all 31 base ratings on all 2,254 player records, and a
 > source-bound 63,112-cell ratings-sheet importer with conflict preview, a
 > separate atomic export for all 19 original physical audio banks, and a
@@ -520,7 +520,7 @@ in 8-at-a-time batches). — do not treat this note as a sealed public release.
 > 40,316 unique whole-AUSB-payload hashes remain an inventory metric, not the
 > authorization boundary.
 >
-> The private Alpha.23 candidate booted, selected **Track 12 — Bury Me Standing
+> The private Alpha.23 candidate booted, selected **Track 12: Bury Me Standing
 > Remix**, and visibly remained in playback for 25 seconds without a crash.
 > The completed capture experiment was negative/inconclusive: the final sustained
 > segment matched neither mutated candidate nor stock Track 12, the best
@@ -538,7 +538,7 @@ in 8-at-a-time batches). — do not treat this note as a sealed public release.
 >
 > Alpha.24 carries forward the 32-team × 53-row roster planner: 42 source memberships
 > are runtime-visible and eleven reserves are project-only. Reserve plans never
-> copy the 42 source rows, and Build does not apply slots 43–53. True 53-active
+> copy the 42 source rows, and Build does not apply slots 43-53. True 53-active
 > teams still require a version-pinned XEX accessor/direct-consumer patch plus
 > owned side-table storage. The focused Alpha.24 closure passes 163/163 tests.
 > Its sealed release contains exactly 100 allowlisted files, and both the stage
@@ -645,18 +645,18 @@ Last updated: 2026-08-09 (America/New_York)
   cross-console mapping nor earlier-title write authorization can be proved
   from the available source.
 
-## Published releases — the assets actually on GitHub
+## Published releases: the assets actually on GitHub
 
 The seal receipts throughout this document describe a **staged package** for a
 version. The GitHub release **asset** for that same version is a different
 tarball: built from the same allowlist, but additionally carrying the bundled
-`extract-xiso` binaries, their build receipt, and the release-time documents —
+`extract-xiso` binaries, their build receipt, and the release-time documents
 all of which are gitignored release-build inputs. Both artifacts are pinned, and
 they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-50` — 2026-08-22 · CURRENT
+### `beta-50`: 2026-08-22 · CURRENT
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-50>
 
@@ -683,7 +683,7 @@ TE-runs-FB-route oversight named. 2K5 RC74 carries no 2K5 functional change.
 | `APF-2K8-Mod-Studio-0.1.0-alpha.81-Setup.exe` | 52,746,903 | `2d17aa20b5b79f1fe6cd806a0e37bd52d918497474fc639cb3afa3444e31ece8` |
 | `APF-2K8-Mod-Studio-0.1.0-alpha.81-Setup.exe.sha256` | 110 | `87ee3d6844b16be73e2e3e19fc9147c852a17ca4a06fe69065e1cfdf633966a6` |
 
-### `beta-49` — 2026-08-21 · superseded
+### `beta-49`: 2026-08-21 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-49>
 
@@ -706,7 +706,7 @@ node synthesis stays refused; the XBE is never touched.
 | `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe` | 52,740,465 | `d4dd682a49cbc9ac7da554486a5def9d0c2df6b20cbe8fe9989a4adfd7616d58` |
 | `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe.sha256` | 110 | `a89588cd10474ccb60e80e80f1408bff38c6fc5973b18dcdc57bf0fde34b187f` |
 
-### `beta-48` — 2026-08-21 · superseded
+### `beta-48`: 2026-08-21 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-48>
 
@@ -731,7 +731,7 @@ the panel says. No retail bytes; no executable patching.
 | `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe` | 52,740,465 | `d4dd682a49cbc9ac7da554486a5def9d0c2df6b20cbe8fe9989a4adfd7616d58` |
 | `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe.sha256` | 110 | `a89588cd10474ccb60e80e80f1408bff38c6fc5973b18dcdc57bf0fde34b187f` |
 
-### `beta-47` — 2026-08-21 · superseded
+### `beta-47`: 2026-08-21 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-47>
 
@@ -756,7 +756,7 @@ never-boots empties warning. No retail bytes; no `default.xex` patching.
 | `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe` | 52,740,465 | `d4dd682a49cbc9ac7da554486a5def9d0c2df6b20cbe8fe9989a4adfd7616d58` |
 | `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe.sha256` | 110 | `a89588cd10474ccb60e80e80f1408bff38c6fc5973b18dcdc57bf0fde34b187f` |
 
-### `beta-46` — 2026-08-15 · superseded
+### `beta-46`: 2026-08-15 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-46>
 
@@ -777,7 +777,7 @@ hosted CI jobs passed on Linux, macOS, and Windows with Python 3.11/3.12.
 | `APF-2K8-Mod-Studio-0.1.0-alpha.78-Setup.exe` | 52,724,180 | `afd199cd5f73d060e68df24f9393eab6ef9bbae26f28ff1e0577b70adf751e15` |
 | `APF-2K8-Mod-Studio-0.1.0-alpha.78-Setup.exe.sha256` | 110 | `4c02f8a4977976950bcf73982f6a40880dbb1f5b7f0fbf5b901619896b8a980b` |
 
-### `beta-45` — 2026-08-15 · superseded
+### `beta-45`: 2026-08-15 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-45>
 
@@ -799,7 +799,7 @@ copied `0A` stay refused. Runtime visibility is unproved.
 | `APF-2K8-Mod-Studio-0.1.0-alpha.77-Setup.exe` | 52,721,196 | `2630b91c4ea38eb03b04ac160c5cedf56f3444858264d8113b61f5fa18ab3b37` |
 | `APF-2K8-Mod-Studio-0.1.0-alpha.77-Setup.exe.sha256` | 110 | `6b6565fc7e058315fef39c9a300ff4ceee526f773a8789e7046f58ce38f3e745` |
 
-### `beta-44` — 2026-08-14 · superseded
+### `beta-44`: 2026-08-14 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-44>
 
@@ -815,7 +815,7 @@ together, and writes into the folder Xenia already loads.
 | `apf2k8-mod-studio-0.1.0-alpha.76-20260814.tar.gz` | 1,810,390 | `20bab375ce66bfd668768fce92f5cb903078ece6f4323c38e96df56fb9d37cda` |
 | `apf2k8-mod-studio-0.1.0-alpha.76-20260814.tar.gz.sha256` | 115 | `019ceb36b5e7939e9e9e2b1624fc1420378674901f986853b7462ffd859d51d4` |
 
-### `beta-43` — 2026-08-14 · superseded
+### `beta-43`: 2026-08-14 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-43>
 
@@ -835,7 +835,7 @@ staged 206 files, APF staged 197); the local suite is **234 passed, 0 failed,
 The Windows installers are unsigned; SmartScreen will warn. Verify the SHA-256
 before running.
 
-### `beta-33` — 2026-08-10 · superseded
+### `beta-33`: 2026-08-10 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-33>
 
@@ -851,7 +851,7 @@ staged 201 files, APF staged 192); the local suite is 223 of 223 files green.
 | `apf2k8-mod-studio-0.1.0-alpha.66-20260810.tar.gz.sha256` | 115 | `45ec2865da317abf3166a44d3abdf2c5a64a55712791344853adc8a431ee0400` |
 | `APF-2K8-Mod-Studio-0.1.0-alpha.66-Setup.exe` | 52,705,870 | `26846c7294756b1109ebf0d2670f50d95bb7efa9a724213b31b72e19899b2256` |
 
-### `beta-32` — 2026-08-10 · superseded
+### `beta-32`: 2026-08-10 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-32>
 
@@ -867,7 +867,7 @@ Beta 32 carries 2K5 RC59 and APF alpha.64. Both retail-free release gates pass
 | `apf2k8-mod-studio-0.1.0-alpha.64-20260810.tar.gz.sha256` | 115 | `f1bf33d4666089e108c5859dd23e11ebec9d6260dc588d9973e4c6163ecbd11f` |
 | `APF-2K8-Mod-Studio-0.1.0-alpha.64-Setup.exe` | 52,705,992 | `59533e7cea506c4eee84a1dcec23ecb7ca082e029359b3ea4c24a7e492bc47c4` |
 
-### `beta-31` — 2026-08-10 · superseded
+### `beta-31`: 2026-08-10 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-31>
 
@@ -884,7 +884,7 @@ byte-for-byte from their staged trees, and both retail-free release gates pass
 | `apf2k8-mod-studio-0.1.0-alpha.63-20260810.tar.gz.sha256` | 115 | `a8b00030325eb3d5de7d3fb383b6b641b4d282cab29bb7fc7d4f918a4769b22a` |
 | `APF-2K8-Mod-Studio-0.1.0-alpha.63-Setup.exe` | 52,702,500 | `226877e6ab54ca4a76b912afb24d46496c08145b3ac09213a79a1c66a5ccb5b4` |
 
-### `beta-30` — 2026-08-09 · superseded
+### `beta-30`: 2026-08-09 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-30>
 
@@ -900,7 +900,7 @@ rebuilt byte-for-byte before publication.
 | `apf2k8-mod-studio-0.1.0-alpha.62-20260809.tar.gz.sha256` | 115 | `c694e897775276186b1b6ce91a0cfad35617641e8c856f84e752f669468bff17` |
 | `APF-2K8-Mod-Studio-0.1.0-alpha.62-Setup.exe` | 52,699,449 | `3e5291d16fb429cc3a64da8951f5c5184a2fa6a217b75b9816775ec1d9c32f99` |
 
-### `beta-29` — 2026-08-09 · superseded (refreshed in place)
+### `beta-29`: 2026-08-09 · superseded (refreshed in place)
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-29>
 
@@ -916,7 +916,7 @@ the shared updater build tag from `beta-22` to `beta-29` in both products.
 | `apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz.sha256` | 115 | `0122a5ce9746da1f9f644ff3d4472b1253315d0957610d8902ce2e55c3a1f394` |
 | `APF-2K8-Mod-Studio-0.1.0-alpha.61-Setup.exe` | 52,688,569 | `7d5a909d45847f4845814d16239cd981171abd9f48d07a62cf3a97b143bb9388` |
 
-### `beta-22` — 2026-07-28 · superseded
+### `beta-22`: 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-22>
 
@@ -961,7 +961,7 @@ The registry is deliberately not rewritten until a save-diff confirms it.
 > dimensions such as the Titans' 32x32 sleeve/shoulder numbers, and keeps every
 > export-only selector outside the writer path.
 
-### `beta-21` — 2026-07-28 · superseded
+### `beta-21`: 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-21>
 
@@ -986,7 +986,7 @@ Caught while doing it: the APF field-art test drove the staging path with a
 wrong-sized PNG and hit the new modal, hanging forever. It now drives both
 answers.
 
-### `beta-19` — 2026-07-28 · superseded
+### `beta-19`: 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-19>
 
@@ -1009,7 +1009,7 @@ Tests walk the whole chain -- picker, session, canonical project, composed
 build -- and check producer against consumer, which is the join this lane kept
 dying at across three previous attempts.
 
-### `beta-18` — 2026-07-28 · superseded
+### `beta-18`: 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-18>
 
@@ -1031,7 +1031,7 @@ reports itself.
 Tests assert the rules: every published kind must have a decoder, and no
 catalog id may produce a filename Windows rejects.
 
-### `beta-17` — 2026-07-28 · superseded
+### `beta-17`: 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-17>
 
@@ -1058,7 +1058,7 @@ every letterform; only VC_P8_LINEAR orders its size halfwords that way, so the
 Stadium geometry export is command-line only and its card says so. Whole-model
 stadium import still does not exist.
 
-### `beta-16` — 2026-07-28 · superseded
+### `beta-16`: 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-16>
 
@@ -1082,7 +1082,7 @@ and prints the command.
 Still ahead: the All Textures workspace and stadium model import. Stadium
 geometry export to glTF works today; whole-model import does not exist.
 
-### `beta-15` — 2026-07-28 · superseded
+### `beta-15`: 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-15>
 
@@ -1102,7 +1102,7 @@ Colours & Other Tools. Verified headless against the shipped build.
 version three releases old. It is now asserted against STATUS.md and the newest
 changelog heading.
 
-### `beta-14` — 2026-07-28 · superseded
+### `beta-14`: 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-14>
 
@@ -1123,7 +1123,7 @@ against Pillow on every variant.
 The exact-dimensions rule stays: a texture fills a fixed byte span, so a
 differently sized image cannot occupy it. The message now says so.
 
-### `beta-13` — 2026-07-28 · superseded
+### `beta-13`: 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-13>
 
@@ -1147,7 +1147,7 @@ project's own copy. Identity is per-extent everywhere now.
 Proved on three differently packed images of the same game: identical 31,652
 changed bytes at three different absolute offsets.
 
-### `beta-12` — 2026-07-28 · superseded
+### `beta-12`: 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-12>
 
@@ -1171,7 +1171,7 @@ the facemask/faceshield tint and word 1 is `HI_turtleneck`. Repainting the
 coloured square on a helmet texture cannot move the facemask, because the
 facemask is a separate material fed by that value.
 
-### `beta-11` — 2026-07-28 · superseded
+### `beta-11`: 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-11>
 
@@ -1191,7 +1191,7 @@ already did. The ZIP export's hard-link publish is routed the same way, since
 No disc, indexing or build behaviour changed; the beta-10 fixes were re-verified
 against the reporter's pressed-disc read from this published tarball.
 
-### `beta-10` — 2026-07-27 · superseded by beta-11
+### `beta-10`: 2026-07-27 · superseded by beta-11
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-10>
 
@@ -1210,7 +1210,7 @@ being byte-identical. Files are located by name now and offsets derived from the
 image in hand. Verified by building real mods from both of the reporter's images
 and again from this published tarball.
 
-### `beta-9` — 2026-07-27 · superseded by beta-10
+### `beta-9`: 2026-07-27 · superseded by beta-10
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-9>
 
@@ -1231,7 +1231,7 @@ build. See `CHANGELOG.md`.
 Verified from the published tarball against both of his images: recognised,
 fully indexed (16 packs, index byte-identical to its pin), build-gate accepted.
 
-### `beta-8` — 2026-07-27 · superseded by beta-9
+### `beta-8`: 2026-07-27 · superseded by beta-9
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-8>
 
@@ -1248,7 +1248,7 @@ size or hash. Unconditional: every Windows user, every image. Fixed repo-wide --
 38 text writes across 29 shipped files now pin the line ending, held at zero by
 a test. See `CHANGELOG.md`.
 
-### `beta-7` — 2026-07-27 · superseded by beta-8
+### `beta-7`: 2026-07-27 · superseded by beta-8
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-7>
 
@@ -1273,7 +1273,7 @@ transcribed.** The two installer digests in the beta-6 notes were written out by
 hand from a truncated printout and the tail was wrong; they were corrected in
 place, and this table is now produced mechanically so that cannot recur.
 
-### `beta-6` — 2026-07-27 · superseded by beta-7
+### `beta-6`: 2026-07-27 · superseded by beta-7
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-6>
 
@@ -1290,7 +1290,7 @@ installers are byte-reproducible**: the mtime normalisation added after beta-5
 works, and two from-scratch builds of each installer were compared byte for
 byte, as were both tarballs.
 
-### `beta-5` — 2026-07-27 · superseded by beta-6
+### `beta-5`: 2026-07-27 · superseded by beta-6
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-5>
 
@@ -1313,8 +1313,8 @@ the published reality before it was used to change anything. Both beta-5
 tarballs were then built twice independently and compared byte for byte.
 
 **The installers are content-reproducible, not byte-reproducible, and the
-distinction is worth stating exactly.** Each of the five external inputs — the
-CPython embeddable interpreter and four wheels — is pinned to an exact SHA-256
+distinction is worth stating exactly.** Each of the five external inputs: the
+CPython embeddable interpreter and four wheels: is pinned to an exact SHA-256
 and verified before use, and the staged runtime tree is reproducible: two
 independent builds produced 2,674 files with an identical content hash. NSIS
 itself is deterministic, verified here by compiling one fixed staged tree twice
@@ -1342,7 +1342,7 @@ tarballs can.
 The installers are **not code-signed**. Windows shows a SmartScreen prompt on
 first run, and the wizard's second page says so before writing anything.
 
-### `beta-4` — 2026-07-25 · superseded by beta-5
+### `beta-4`: 2026-07-25 · superseded by beta-5
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-4>
 
@@ -1364,7 +1364,7 @@ in this repository. The installers additionally pull an interpreter and four
 wheels from the network, so each of those five artifacts is pinned to an exact
 SHA-256 and verified before use; an unpinned wheel appearing, a pinned wheel
 failing to appear, or any hash mismatch stops the build. With those pinned,
-NSIS output is itself deterministic — both installers were built twice and
+NSIS output is itself deterministic: both installers were built twice and
 compared byte for byte.
 
 > **Correction, recorded 2026-07-27 rather than quietly edited.** That last
@@ -1377,7 +1377,7 @@ compared byte for byte.
 The installers are **not code-signed**. Windows shows a SmartScreen prompt on
 first run, and the wizard's second page says so before writing anything.
 
-### `beta-3` — 2026-07-25 · superseded by beta-4
+### `beta-3`: 2026-07-25 · superseded by beta-4
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-3>
 
@@ -1388,13 +1388,13 @@ first run, and the wizard's second page says so before writing anything.
 
 No editor code changed between beta 2 and beta 3, which is why both products
 still identify as `v1.0-RC29` and `0.1.0-alpha.34`. Both archives nevertheless
-changed, because both now ship `LICENSE` and `NOTICE.md` — MIT requires its own
+changed, because both now ship `LICENSE` and `NOTICE.md`: MIT requires its own
 text to accompany every copy, and neither archive had contained one. The APF
 archive additionally carries the corrected `APF2K8-README.md`. The APF asset
 filename now carries a date, matching the 2K5 convention, so one filename can
 never again cover more than one set of bytes.
 
-### `beta-2` — 2026-07-25 · SUPERSEDED by beta-3
+### `beta-2`: 2026-07-25 · SUPERSEDED by beta-3
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-2>
 
@@ -1404,7 +1404,7 @@ never again cover more than one set of bytes.
 | `apf2k8-mod-studio-0.1.0-alpha.34.tar.gz` | 1,105,799 | `f047682430f4cc5be868b586b875fbf602c62799130cbd5623b128a6219676f1` |
 
 Its 2K5 asset was published once and never changed. Its APF asset was replaced
-twice under a single filename — the reason beta 3 dates that filename. The two
+twice under a single filename: the reason beta 3 dates that filename. The two
 superseded APF uploads, recorded so an early download can still be identified:
 
 | Superseded APF upload | Bytes | SHA-256 | Why it was replaced |
@@ -1419,7 +1419,7 @@ compared byte-for-byte rather than asserted, including a rebuild of the two live
 beta-2 assets before any of the beta-3 changes were made, to prove the pipeline
 matched reality before it was used to change anything.
 
-## RC29 project-backed Audio cue labels — sealed
+## RC29 project-backed Audio cue labels: sealed
 
 Audio now lets a modder attach a custom title and multiline note to every
 playable standalone cue and indexed streaming range. Titles/notes are
@@ -1464,7 +1464,7 @@ its adjacent mode-`0444` sidecar passes. RC28 and RC27 remain preserved.
 - **Next step:** bring the same durable cue-label/search/export workflow to APF 2K8, then continue bounded audio-authoring and general UX polish without changing RC29's sealed bytes.
 - **Deliberately not done:** RC29 includes no retail/game audio, decoded PCM, encoder, source path, rollback bytes, visible desktop session, pointer control, emulator run, or new audible-runtime claim.
 
-## APF Alpha.34 project-backed Audio cue labels — sealed
+## APF Alpha.34 project-backed Audio cue labels: sealed
 
 The source/UI version and release declarations identify Alpha.34 as the current
 sealed retail-free package. Every one
@@ -1489,7 +1489,7 @@ preimage, rollback byte, or replacement packet.
 - **Next step:** continue bounded audio-authoring and general UX polish, and evaluate Backbreaker tooling scaffolding, without changing Alpha.34's sealed bytes.
 - **Deliberately not done:** Alpha.34 bundles no retail/game audio, decoded PCM, encoder, source path, rollback bytes, visible desktop session, pointer control, emulator run, or new audible-runtime claim; no independent-audit claim is made for this headless seal.
 
-## APF Alpha.33 selected-sound Audio drag and drop — sealed
+## APF Alpha.33 selected-sound Audio drag and drop: sealed
 
 The Audio detail pane now accepts one local regular `.xma` or exact PCM16
 `.wav` for any of the 47,775 individually editable AUDO/AUSB rows. XMA1 and WAV
@@ -1519,7 +1519,7 @@ moved recoverably to Trash.
 - **Next step:** build project-backed 2K5 Audio cue labels/notes so auditioned unknown cues become durable and searchable, then evaluate the same UX for APF.
 - **Deliberately not done:** Alpha.33 bundles no encoder or retail audio, accepts no FLAC/MP3, claims no authored-audio runtime causality, changes no true-53 boundary, and used no active desktop or pointer.
 
-## APF Alpha.31 Add-all-matching and safe teardown — sealed
+## APF Alpha.31 Add-all-matching and safe teardown: sealed
 
 Audio now has **Add all matching (N)** beneath the shortlist controls. It uses
 the exact applied search/kind/role/source token or active Soundtrack album,
@@ -1553,7 +1553,7 @@ recoverably to Trash.
 - **Next step:** improve the 2K5 Audio workspace, then return to APF filtered replacement-pack ergonomics while user-supplied runtime inputs remain unavailable.
 - **Deliberately not done:** no encoder, retail audio, private game source, active desktop, pointer control, emulator run, FLAC/MP3 import, runtime-position claim, or true-53 claim was added to Alpha.31.
 
-## RC28 Audio replacement-pack Preview and explicit Apply — sealed
+## RC28 Audio replacement-pack Preview and explicit Apply: sealed
 
 Audio replacement-pack import now begins with a fully validated, read-only
 Preview. The folder or ZIP, public manifest/source binding, current baselines,
@@ -1596,7 +1596,7 @@ recoverably to Trash.
 - **Next step:** finish APF Alpha32's corrected worker-idle barrier and seal it, then continue the next bounded Audio/UX improvement.
 - **Deliberately not done:** no audible-runtime claim, retail payload, visible desktop, pointer control, emulator, external player, or whole-bank writer was added to RC28.
 
-## RC27 default All Playable Audio — sealed
+## RC27 default All Playable Audio: sealed
 
 Audio now opens on one **All Playable Audio (54,421)** scope. Its order is
 deliberately domain-prefixed rather than globally re-sorted: all **850
@@ -1608,7 +1608,7 @@ the playable count.
 
 Search, stable paging, combined family filtering, and **Modified** operate
 across both playable domains. Existing rows keep their existing actions and
-contracts. A current mixed result of 1–256 rows can export as one ordered WAV
+contracts. A current mixed result of 1-256 rows can export as one ordered WAV
 collection with truthful retail-derived/user-replacement metadata; the mixed
 route refuses raw BIN so a standalone WAV cannot be mislabeled as encoded bank
 data. Raw bank/range export remains available from its dedicated scope.
@@ -1617,7 +1617,7 @@ The 1/152/697 **Meaning confidence** groups remain standalone-only and are not
 silently applied to half of the mixed result. The public v4 replacement pack is
 also unchanged: it remains the frozen canonical **all-850 standalone** template.
 RC27 does not claim an all-54,421 replacement template; streaming ranges use
-their exact per-row writer or the existing 1–256 selected-shortlist pack.
+their exact per-row writer or the existing 1-256 selected-shortlist pack.
 
 The complete combined headless suite passes **1090/1090**, the 2K5 slice passes
 **603/603**, the release-focused selection passes **122/122**, and the final
@@ -1639,7 +1639,7 @@ recoverably to Trash.
 - **Next step:** add a bounded pre-import comparison/preview for replacement packs, then carry the best Audio ergonomics back to APF.
 - **Deliberately not done:** no all-54,421 replacement template, whole-bank writer, recovered song title, runtime-audibility claim, retail payload, visible desktop, pointer control, emulator, or external player was added.
 
-## RC26 bounded Audio waveforms and shared worker safety — sealed
+## RC26 bounded Audio waveforms and shared worker safety: sealed
 
 Every playable 2K5 sound now has an explicit **Load waveform** action: all 850
 standalone AUDO cues and all 53,571 independently addressed AUSB ranges. The
@@ -1677,7 +1677,7 @@ RC25 re-verifies unchanged; temporary extraction/rebuild outputs were moved
 recoverably to Trash.
 
 The Desktop proof kit now also contains eight new 1920×1080 source-loaded
-editor renders—four 2K5 and four APF—covering dashboards, Giants away uniforms,
+editor renders: four 2K5 and four APF: covering dashboards, Giants away uniforms,
 jerseys, Stadium Studio, and soundtrack/audio browsers. Their manifest verifies
 dimensions, hashes, file sizes, and nonblank headless rendering, and the entire
 34-file kit passes its refreshed `SHA256SUMS`. No visible desktop or pointer was
@@ -1690,7 +1690,7 @@ earlier reviewed dashboard captures remain the fallback.
 - **Next step:** ship RC27's one default **All Playable Audio (54,421)** search spanning standalone cues and streaming ranges, then carry the best bounded batch ergonomics back to APF.
 - **Deliberately not done:** no visible desktop, pointer control, audio device, emulator, external player, retail bytes, recovered song-title claim, or audible-runtime claim was used or added.
 
-## APF Alpha.30 interruptible Audio decode — sealed
+## APF Alpha.30 interruptible Audio decode: sealed
 
 Audio **Play** now becomes **Cancel preview** while its private PCM is being
 prepared, and **Load waveform** becomes **Cancel waveform** during the same
@@ -1728,7 +1728,7 @@ Alpha.29 re-verifies unchanged.
 - **Next step:** ship one-action **Add all matching** shortlist curation, then perform the bounded encoded Track/cue build-and-listen A/B when user-supplied inputs are available.
 - **Deliberately not done:** no encoder, retail audio, private game source, active desktop, pointer control, emulator run, FLAC/MP3 import, or cancellation inside one monolithic archive-decompression call was added to Alpha.30.
 
-## APF Alpha.29 owned Audio lifecycle — sealed
+## APF Alpha.29 owned Audio lifecycle: sealed
 
 Audio page-wide actions can no longer consume the old 100-row table while a
 new search/filter is waiting on its 180 ms debounce. The applied token covers
@@ -1764,7 +1764,7 @@ Alpha.28 re-verifies unchanged.
 - **Next step:** use the packaged PCM16 workflow for one bounded encoded Track/cue build and listen A/B, then carry the same owned-query/preview audit into any remaining large media browsers.
 - **Deliberately not done:** no encoder, retail audio, private game source, active desktop, pointer control, emulator run, FLAC/MP3 import, or in-flight source-index cancellation was added to Alpha.29.
 
-## RC25 recoverable Audio curation — sealed
+## RC25 recoverable Audio curation: sealed
 
 Clearing an Audio shortlist no longer destroys up to 256 hand-picked sounds.
 The same compact toolbar control becomes **Undo** and restores the exact prior
@@ -1787,7 +1787,7 @@ pending search is applied against the old source; a first-load refusal returns
 to the honest empty **Load your NFL 2K5 XISO** state. Recovery runs while the
 whole Audio panel is still disabled, before normal task cleanup re-enables it.
 
-Final independent review returned **GO** with no P0–P2 finding and also proved
+Final independent review returned **GO** with no P0-P2 finding and also proved
 that canceling the unsaved-workspace dialog starts no worker and never
 invalidates Audio. The complete headless/offscreen product suite passes
 **1034/1034** and the focused Audio/UI/source-bound/packaging selection passes
@@ -1802,7 +1802,7 @@ with SHA-256
 `8ad21fb0a92be85a8402fcbe85d44b27b8b9ea13468b54cda2466ce756bd4e4a`;
 its adjacent mode-`0444` sidecar is the seal marker. RC24 remains unchanged.
 
-## RC24 applied-query Audio actions — sealed
+## RC24 applied-query Audio actions: sealed
 
 Every displayed Audio catalog page now carries the exact source epoch, search
 text, scope, family, edit status, and meaning-confidence token that produced it.
@@ -1820,7 +1820,7 @@ the timer is canceled and normal labels/actions return immediately rather than
 remaining dimmed for another interval. Filter/scope shortcuts and source
 transitions cancel older timers; shortlist-review pagination remains
 independent. Independent review reran 55 focused tests plus nine direct edge
-cases and returned **GO** with no P0–P2 finding.
+cases and returned **GO** with no P0-P2 finding.
 
 The complete headless/offscreen product suite passes **1028/1028** and the
 focused Audio/UI/source-bound/packaging selection passes **112/112**. The fresh
@@ -1834,7 +1834,7 @@ with SHA-256
 `67296073fcd22d93fc18bebb031a5de27247d703dd2cfa0c84b7813f6276da85`;
 its adjacent mode-`0444` sidecar is the seal marker. RC23 remains unchanged.
 
-## RC23 selection/source-bound Audio preview — sealed
+## RC23 selection/source-bound Audio preview: sealed
 
 Audio preview requests now carry a monotonically increasing epoch plus the
 exact selected asset ID. An asynchronous preparation result or error can act
@@ -1856,7 +1856,7 @@ disables the embedded Audio panel throughout global blocking work.
 Independent review initially found two P1 lifecycle holes: obsolete preparation
 errors could still raise a modal, and stale FailedToStart could strand a newer
 prepared request. Both were fixed, their regressions were added, the obsolete
-pre-fix stage was deleted, and final review returned **GO** with no P0–P2
+pre-fix stage was deleted, and final review returned **GO** with no P0-P2
 finding. The complete headless/offscreen product suite passes **1022/1022** and
 the focused Audio/UI/source-bound/packaging selection passes **106/106**.
 
@@ -1870,7 +1870,7 @@ with SHA-256
 `aa23ad080da99d5c795613cca11e140b8626abddcfa14c3f8db558b913b3f9f3`;
 its adjacent mode-`0444` sidecar is the seal marker. RC22 remains unchanged.
 
-## RC22 responsive Audio toolbars — sealed
+## RC22 responsive Audio toolbars: sealed
 
 The five Audio search/filter controls and seven shortlist controls now use two
 deliberate grid rows instead of two oversized single-row toolbars. Search/scope
@@ -1880,8 +1880,8 @@ remains directly visible, with no overflow menu and no changed signal route.
 
 The Audio panel's normal minimum-width hint dropped from 1,442 to 833 pixels. A
 permanent offscreen geometry regression applies the conservative simultaneous
-longest state—Add this page (200), Add all matching (256), Review selected
-(256), Selected 256 / 256, and Export selected WAVs (256)—and proves the panel
+longest state: Add this page (200), Add all matching (256), Review selected
+(256), Selected 256 / 256, and Export selected WAVs (256)-and proves the panel
 fits at 930 pixels. Both inner grids are 882 pixels; all 12 controls remain
 inside the panel, at or above their own minimum usable widths, and have zero
 pairwise overlap. That fits the main window's 932-pixel workspace at its
@@ -1889,7 +1889,7 @@ supported 1,180-pixel minimum width.
 
 The complete headless/offscreen product suite passes **1016/1016** and the
 focused Audio UI/backend/streaming/facade/packaging selection passes **100/100**.
-Independent review returned **GO** with no P0–P2 finding and independently
+Independent review returned **GO** with no P0-P2 finding and independently
 reproduced the 930/882-pixel geometry. The stage and a fresh extraction each
 pass release → runtime → desktop/Bash → release, contain 144 files and
 102,537,046 file bytes, report `audio_toolbar_layout=two_row_930`,
@@ -1900,7 +1900,7 @@ with SHA-256
 `e7f3018ccd5fb3b8a446204ceb22e5f491c6813cee72c0d11315e2e2eba97548`;
 its adjacent mode-`0444` sidecar is the seal marker. RC21 remains unchanged.
 
-## RC21 scrollable Audio inspector — sealed
+## RC21 scrollable Audio inspector: sealed
 
 The selected-sound inspector now scrolls its complete title, status, technical
 metadata, ownership/alias warnings, shared-slot owner list, action/WAV contract,
@@ -1920,7 +1920,7 @@ that is the next responsive-layout task.
 
 The complete headless/offscreen product suite passes **1015/1015** and the
 focused Audio UI/backend/streaming/facade/packaging selection passes **99/99**.
-Independent review returned **GO** with no P0–P2 finding. The stage and a fresh
+Independent review returned **GO** with no P0-P2 finding. The stage and a fresh
 extraction each pass release → runtime → desktop/Bash → release, contain 144
 files and 102,534,262 file bytes, report
 `audio_detail_layout=scrollable_pinned_actions`, `private_inventory=false`, and
@@ -1931,7 +1931,7 @@ with SHA-256
 `7c9acd6d99042144514a61ebaa7aad9bcf17f1ac9aed6f58bef7c9a9565ac692`;
 its adjacent mode-`0444` sidecar is the seal marker. RC20 remains unchanged.
 
-## RC20 bounded Audio “Add all matching” — sealed
+## RC20 bounded Audio “Add all matching”: sealed
 
 Standalone Audio now has a separate **Add all matching** action beside **Add
 this page**. It converts the complete current search/family/edit-status/meaning-
@@ -1951,7 +1951,7 @@ files.
 
 The complete headless/offscreen product suite passes **1014/1014** and the
 focused Audio UI/backend/streaming/facade/packaging selection passes **98/98**.
-Independent review returned **GO** with no P0–P2 finding. The stage and a fresh
+Independent review returned **GO** with no P0-P2 finding. The stage and a fresh
 extraction each pass release → runtime → desktop/Bash → release, contain 144
 files and 102,528,972 file bytes, report
 `audio_add_all_matching=bounded_256`, `private_inventory=false`, and
@@ -1962,7 +1962,7 @@ with SHA-256
 `98402cb4e638e8beca5f2f5a0cf41cc452de712a6897c030b3b76d88bba7f38e`;
 its adjacent mode-`0444` sidecar is the seal marker. RC19 remains unchanged.
 
-## RC19 Audio meaning-confidence filter — sealed
+## RC19 Audio meaning-confidence filter: sealed
 
 Standalone Audio now has a separate **Meaning confidence** filter with the exact
 public v4 cue-map groups: **Menu Back route (1)**, **Reviewed labels (152)**,
@@ -1982,7 +1982,7 @@ import tests remain green.
 
 The complete headless/offscreen product suite passes **1009/1009** and the
 focused Audio UI/backend/streaming/facade/packaging selection passes **93/93**.
-Independent review returned **GO** with no P0–P2 finding. The stage and a fresh
+Independent review returned **GO** with no P0-P2 finding. The stage and a fresh
 extraction each pass release → runtime → desktop/Bash → release, contain 144
 files and 102,514,393 file bytes, report
 `audio_meaning_confidence=1_152_697`, `private_inventory=false`, and
@@ -1993,7 +1993,7 @@ with SHA-256
 `bb1fac8a0c3267045d3d0556c0c92124dfe90990e165ec358d4fdd5d3ac9711b`;
 its adjacent mode-`0444` sidecar is the seal marker. RC18 remains unchanged.
 
-## RC18 in-app Audio pack paths — sealed
+## RC18 in-app Audio pack paths: sealed
 
 Every standalone Audio detail view now shows the exact public
 `replacements/NNN__selected-audio.wav` destination used by the mapped v4
@@ -2004,7 +2004,7 @@ and raw universal containers clear, hide, and disable this standalone-only card.
 
 The path is derived from the same canonical catalog order used by v3/v4 export,
 through one backend helper shared by the standalone host and product facade. The
-UI receives only the generic relative path—not a physical selector, offset,
+UI receives only the generic relative path: not a physical selector, offset,
 source fingerprint, retail payload, or private ownership record. V1/v2 ZIP
 goldens and the deterministic v3 ZIP remain pinned; v4 remains additive. The
 first clean-stage attempt usefully failed because the new runtime assertion was
@@ -2014,7 +2014,7 @@ the failed attempt.
 
 The complete headless/offscreen product suite passes **1006/1006** and the
 focused Audio UI/backend/streaming/facade/packaging selection passes **90/90**.
-Independent review returned **GO** with no P0–P2 finding. The corrected stage
+Independent review returned **GO** with no P0-P2 finding. The corrected stage
 and a fresh extraction each pass release → runtime → desktop/Bash → release,
 contain 144 files and 102,506,230 file bytes, report
 `audio_pack_path_lookup=canonical_850`, `private_inventory=false`, and
@@ -2025,7 +2025,7 @@ with SHA-256
 `af79c83aeff1f723088edc59af6ad1708dc18fcd65bb4ade7eb5f53234fea05d`;
 its adjacent mode-`0444` sidecar is the seal marker. RC17 remains unchanged.
 
-## RC17 human-friendly 850-sound cue map — sealed
+## RC17 human-friendly 850-sound cue map: sealed
 
 The default **All standalone sounds (850)** workflow now exports a retail-free
 v4 folder or deterministic ZIP with `AUDIO-CUE-MAP.csv`. The 850 canonical rows
@@ -2047,7 +2047,7 @@ or rollback byte; true WAV changes still enter as one atomic Undo action.
 
 The complete headless/offscreen product suite passes **1005/1005** and the
 focused audio/facade/GUI/packaging selection passes **83/83**. Independent
-review returned **GO** with no P0–P2 finding. The stage and a fresh extraction
+review returned **GO** with no P0-P2 finding. The stage and a fresh extraction
 each pass release → runtime → desktop/Bash → release, contain 144 files and
 102,498,172 file bytes, report
 `audio_replacement_pack_v4=all_standalone_850_mapped`,
@@ -2058,7 +2058,7 @@ with SHA-256
 `a616e9174bcfbdf19caa0e868c1bb25d7ad596d47e49f375e08191ecaff33606`;
 its adjacent mode-`0444` sidecar is the seal marker. RC16 remains unchanged.
 
-## RC16 complete 850-sound authoring pack — sealed
+## RC16 complete 850-sound authoring pack: sealed
 
 **All standalone sounds (850)** is now the default Audio batch-authoring
 workflow. One click exports a retail-free v3 folder or deterministic ZIP for
@@ -2071,7 +2071,7 @@ contains no original WAVs, decoded game audio, private PCM fingerprint
 inventories, physical offsets, rollback bytes, or other retail payload.
 
 Legacy compatibility is unchanged: v1 remains the exact frozen ordered 153-cue
-pack, while v2 remains an ordered 1–256-sound selection that may mix standalone
+pack, while v2 remains an ordered 1-256-sound selection that may mix standalone
 sounds with exact AUSB ranges. RC16 restores their RC15 downstream call shapes
 as well as their file bytes. Complete streaming banks remain excluded. The 697
 provisionally named standalone rows still warn that physical ownership is exact
@@ -2080,7 +2080,7 @@ launched for RC16.
 
 The complete headless/offscreen product suite passes **1001/1001** and the
 focused audio/facade/GUI/packaging selection passes **79/79**. Independent
-post-fix review passed 7/7 and returned **GO** with no P0–P2 finding. The stage
+post-fix review passed 7/7 and returned **GO** with no P0-P2 finding. The stage
 and a fresh extraction each pass release → runtime → desktop/Bash → release,
 contain 144 files and 102,477,638 file bytes, report
 `audio_replacement_pack_v3=all_standalone_850`, `private_inventory=false`, and
@@ -2091,7 +2091,7 @@ with SHA-256
 `ee28afd8491d8586763e2883c289ad77d1541551ef1affce34bf16112c8bf092`;
 its adjacent mode-`0444` sidecar is the seal marker. RC15 remains unchanged.
 
-## RC15 complete standalone audio editing — sealed
+## RC15 complete standalone audio editing: sealed
 
 All **850 standalone AUDO sounds** are now Editable: Menu Back keeps its
 separate fixed-target route, and the other 849 resolve by stable outer/chunk ID
@@ -2103,7 +2103,7 @@ or decoded content.
 
 Legacy v1 batch packs remain frozen at the original 153 rows and ordering.
 The Audio UI labels that route **Legacy 153-cue pack**; v2 **Selected shortlist
-(1–256)** packs can include any newly unlocked standalone slot alongside exact
+(1-256)** packs can include any newly unlocked standalone slot alongside exact
 AUSB soundtrack, commentary, crowd, stadium, and presentation ranges. Complete
 raw banks remain Export-only. Work and verification are terminal/offscreen only;
 no visible GUI or emulator has been launched for RC15.
@@ -2121,7 +2121,7 @@ with SHA-256
 its adjacent mode-`0444` sidecar is the seal marker. Independent final review
 returned **GO**. RC14 remains unchanged.
 
-## RC14 roster workspace navigation — shipped
+## RC14 roster workspace navigation: shipped
 
 Current and historical name/number editing now lives under **Rosters &
 Players → Players & Numbers**, beside **Portraits & Faces**. **Text & Team
@@ -2140,7 +2140,7 @@ with SHA-256
 `bac81312efd8a2e5e42190c281e97493db5ed8959b0b2848d5e7c7e94604eb2e`;
 its adjacent mode-`0444` sidecar is the seal marker. RC13 remains unchanged.
 
-## Emergency storage cleanup — shipped
+## Emergency storage cleanup: shipped
 
 The Storage filesystem had reached effectively zero free space. A bounded,
 headless cleanup removed 96 reproducible test/build payloads totaling
@@ -2158,7 +2158,7 @@ available, required, and upward-rounded shortfall without creating a partial
 output. The focused build-safety suite passes 32/32 and the direct unit-boundary
 matrix passes 16/16.
 
-## RC13 collection parity and keyboard search — shipped
+## RC13 collection parity and keyboard search: shipped
 
 RC13 fixes a product-path mismatch exposed only after RC11 made fixed AUSB
 ranges Editable: collection and shortlist export already ask the session for a
@@ -2184,12 +2184,12 @@ with SHA-256
 `adc08a47aee41a9789369a42b57cd63f560502e447e37663ba50fdaa817331e5`;
 its adjacent mode-`0444` sidecar is the seal marker. RC12 remains unchanged.
 
-## RC12 selected Audio Shortlist replacement packs — shipped
+## RC12 selected Audio Shortlist replacement packs: shipped
 
 RC11 already makes every one of the 53,571 logical fixed AUSB ranges
 individually Editable, but its batch pack covered only 153 standalone cues.
 RC12 closes that product mismatch without changing writer semantics:
-**Selected shortlist (1–256)** exports a metadata-only v2 folder/ZIP for an
+**Selected shortlist (1-256)** exports a metadata-only v2 folder/ZIP for an
 ordered mix of Editable standalone and streaming-range rows, while **All
 standalone cues (153)** and old v1 imports remain compatible.
 
@@ -2214,7 +2214,7 @@ with SHA-256
 `064b54dd437da50cb0829588204b7cbc22f333f81fd2076e05b7227ca7248dba`;
 its adjacent mode-`0444` sidecar is the seal marker. RC11 remains unchanged.
 
-## RC11 complete fixed-range streaming audio — shipped
+## RC11 complete fixed-range streaming audio: shipped
 
 All **53,571 logical AUSB ranges** are now Editable through **53,570 exact
 physical fixed slots**. Replace/Revert/Undo/Revert-All, Modified playback and
@@ -2238,7 +2238,7 @@ the 6,300,499,968-byte image size and changed 2,568 bytes inside one authorized
 after. The generated XISO and all temporary authoring artifacts were removed,
 leaving 269 GiB free. The public-safe receipt is
 [`reports/product/nfl2k5_streaming_ausb_product_flow_20260720.json`](reports/product/nfl2k5_streaming_ausb_product_flow_20260720.json).
-No GUI or emulator ran, so this proves the offline product flow—not in-game
+No GUI or emulator ran, so this proves the offline product flow: not in-game
 audibility, semantic cue naming, loop behavior, or mixer ownership.
 
 The later RC11 result supersedes the interim Post-RC9 paragraphs below where
@@ -2246,12 +2246,12 @@ they say public streaming Replace was locked or session/project wiring was
 still in progress. Those paragraphs are retained as chronological checkpoints,
 not current product limits.
 
-## RC9 Audio batch authoring — shipped
+## RC9 Audio batch authoring: shipped
 
 The RC9 Audio workspace has **Export replacement template** and
 **Import replacement pack** for all 153 supported standalone cues: 152 unique
 fixed-AUDO slots plus Menu Back. A folder or ZIP template contains only cue IDs,
-filenames, exact PCM16 contracts, and an empty `replacements/` directory—zero
+filenames, exact PCM16 contracts, and an empty `replacements/` directory: zero
 retail WAVs. Modders add only authored WAVs; import validates the complete pack
 before staging all real changes as one Undo action. Mixed imports report both
 changed and already-current cues. Streaming soundtrack, commentary, stadium,
@@ -2292,7 +2292,7 @@ validation, commit, and Undo preserve the complete session tree, leave no
 hidden transaction WAVs, and retain a retryable Undo action. This closure is
 packaged in RC9; sealed RC8 remains untouched.
 
-## Post-RC9 AUSB fixed-slot backend — shipped source slice
+## Post-RC9 AUSB fixed-slot backend: shipped source slice
 
 The isolated streaming-audio backend now canonicalizes physical AUSB ranges,
 maps every semantic owner to that canonical slot, plans exact one- or two-pack
@@ -2313,7 +2313,7 @@ private source-bound PCM fingerprint inventory and Build transaction gate are
 complete. No retail bytes, GUI, XISO, cache archive, or release package was
 modified by this source slice.
 
-## Post-RC9 private audio-origin inventory — intermediate source slice
+## Post-RC9 private audio-origin inventory: intermediate source slice
 
 The private exact-PCM fingerprint store is implemented at
 `mod_editor/core/nfl2k5_audio_source_fingerprints.py`. It binds a canonical,
@@ -2439,19 +2439,19 @@ packaging gate passes **17/17**. The existing reviewed standalone AUDO metadata
 exception remains unchanged and must be described honestly until its
 public/private split is a separate shipped migration.
 
-## Post-RC9 audio-browser search latency — UX slice shipped
+## Post-RC9 audio-browser search latency: UX slice shipped
 
 A real-source headless benchmark found that rebuilding search text for all
-53,571 streaming rows cost **367–424 ms per query**, which would feel laggy
+53,571 streaming rows cost **367-424 ms per query**, which would feel laggy
 while typing. The facade now precomputes the metadata-only haystacks once per
 loaded catalog in about **395 ms** and invalidates them when the catalog
-changes. The same searches now complete in **23–35 ms** median; unfiltered
+changes. The same searches now complete in **23-35 ms** median; unfiltered
 paging remains about **4 ms**. The focused backend/facade suite passes
 **23/23**, including one-build-per-catalog and catalog-A-to-B invalidation.
 The index contains catalog metadata only, changes no retail cache or XISO, and
 does not alter any Editability status.
 
-## APF membership-census hook — reviewed checkpoint shipped
+## APF membership-census hook: reviewed checkpoint shipped
 
 The observation-only Xenia hook is committed at
 `d09cae8d8374324048ef603d48a9c1696b39d552` and the runner is locked to the
@@ -2486,7 +2486,7 @@ Dedicated Gameplay
 and Menus inspectors, source-bound autosave/recovery, recent-file menus, and
 Save/Discard/Cancel data-loss gates are also included. RC4 turned that
 inventory into a practical collection workflow: a one-click 136-range
-soundtrack/music view, Modified-only review, and transactional 1–256-row
+soundtrack/music view, Modified-only review, and transactional 1-256-row
 WAV/raw ZIP export. Every bundle is checksum-manifested, distinguishes user
 replacements from retail-derived local exports, and remains structurally
 outside shareable projects.
@@ -2813,10 +2813,10 @@ proving the probe left no bytecode or other undeclared files.
 
 All 11 product tabs exist from the first launch:
 
-1. **Uniforms & Equipment** — searchable PNG previews and bounded
+1. **Uniforms & Equipment**: searchable PNG previews and bounded
    Export/Replace/Revert/Build for proved jerseys/torsos, sleeves, pants,
    helmets, digits/nameplates, and separate Team Select cards.
-2. **Rosters & Players** — complete current/historical name, jersey-number, and
+2. **Rosters & Players**: complete current/historical name, jersey-number, and
    per-player None/Clear/Dark face-shield-type
    workflows under **Players & Numbers**, plus searchable portrait and
    live-face texture workflows under **Portraits & Faces**. All 6,522 indexed
@@ -2825,22 +2825,22 @@ All 11 product tabs exist from the first launch:
    secondary-pool rows. Face shield is not a HOME/AWAY tint, and loaded saves
    may override the disc seed. Secondary names remain read-only because their
    text allocation is zero.
-3. **Text & Team Identity** — the universal fixed-allocation text browser,
+3. **Text & Team Identity**: the universal fixed-allocation text browser,
    including team identity and all safely owned strings. Roster editing is no
    longer filed here.
-4. **Field Art & Create-Team Art** — proved create-team field-art textures with
+4. **Field Art & Create-Team Art**: proved create-team field-art textures with
    PNG Export/Replace/Revert/Build.
-5. **Stadiums** — Stadium Studio for 477 scenes, including orbit/pan/zoom,
+5. **Stadiums**: Stadium Studio for 477 scenes, including orbit/pan/zoom,
    click-through surface ownership, and bounded editing for all 23,838 indexed
    P8 texture occurrences on existing geometry.
-6. **Scorebug & Presentation** — proved scorebug/presentation textures,
+6. **Scorebug & Presentation**: proved scorebug/presentation textures,
    including the shared `digital_font` caveat.
-7. **Menus & UI** — all seven named Main Menu rows/transitions, layout and
+7. **Menus & UI**: all seven named Main Menu rows/transitions, layout and
    rendering ownership, actionable limitations, JSON/CSV export, capability
    cards, and the complete archive-resource raw fallback.
-8. **The Crib** — all 498 catalogued textures editable, plus bounded
+8. **The Crib**: all 498 catalogued textures editable, plus bounded
    same-topology position import for ten exact meshes across seven scenes.
-9. **Audio** — browse/play/export for all 850 standalone AUDO resources, with
+9. **Audio**: browse/play/export for all 850 standalone AUDO resources, with
    all 850 exact physical slots editable and honest semantic warnings on 697
    alias-related rows; searchable raw export for all 17 AUSB soundtrack/
    commentary/stadium/presentation bank descriptors;
@@ -2849,11 +2849,11 @@ All 11 product tabs exist from the first launch:
    slots. The ordered 256-sound shortlist collects standalone sounds and ranges
    across filters/scopes and exports the exact selection as one transactional
    WAV ZIP.
-10. **Sliders & Gameplay** — dedicated tables for 21 named sliders, 17 Fantasy
+10. **Sliders & Gameplay**: dedicated tables for 21 named sliders, 17 Fantasy
     Draft weights, save/signature evidence, and five franchise findings, with
     JSON/CSV export. Unproved Catching and Draft experiments are not exposed as
     presets or writers.
-11. **Playbooks & Plays** — a structured viewer for every decoded PLAY book,
+11. **Playbooks & Plays**: a structured viewer for every decoded PLAY book,
     formation, play, assignment chain, node, and player-slot reference, plus
     raw resource export and exact same-book stock assignment-route copy/revert.
     Freehand waypoint/opcode authoring remains unsupported.
@@ -2950,7 +2950,7 @@ Preview/Export-only, or represented by an in-app Proof/Research boundary and
 its findings note. These
 items did not block v1.0.
 
-### Tier 2 — best effort
+### Tier 2: best effort
 
 | Item | v1.0 disposition | Why it is not fully shipped | Single best next step |
 | --- | --- | --- | --- |
@@ -2963,7 +2963,7 @@ items did not block v1.0.
 | ESPN 25th moment text | Shipped | All four display strings for each of 25 moments are editable; no remaining Tier 2 text gap is hidden. | Use the shipped text editor; keep scenario state and unlock behavior in the Tier 3 lane below. |
 | Deeper roster editing | Unsupported beyond proved names and all jersey numbers | Position codes/labels and selected read-only metadata are decoded for inspection, but ratings, membership, depth charts, and zero-capacity secondary-pool names do not share the proved fixed-field contract. | Isolate and runtime-check one additional writable field family before exposing it. |
 
-### Tier 3 — spike-only
+### Tier 3: spike-only
 
 | Item | v1.0 disposition | Why it is not fully shipped | Single best next step |
 | --- | --- | --- | --- |
@@ -2987,7 +2987,7 @@ items did not block v1.0.
 
 ## Five-line current 2K5 status
 
-- **Current candidate:** RC50 source and UI, with the complete product surface represented as Editable, Preview, Export-only, Proof, or Research—never a placeholder promise.
+- **Current candidate:** RC50 source and UI, with the complete product surface represented as Editable, Preview, Export-only, Proof, or Research: never a placeholder promise.
 - **Headless result:** the exact allowlist, retail/private-data release gate, staged runtime closure, desktop-entry validation, launcher syntax, and repeated post-runtime release gate pass from a clean stage.
 - **Runtime evidence:** boot-level proofs remain separate from causal feature proofs; a successful launch never gets relabeled as proof that a changed texture, model, or cue was consumed.
 - **Release boundary:** this working tree is a candidate only until its owner explicitly authorizes commit, push, packaging, or publication.

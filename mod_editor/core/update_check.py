@@ -32,8 +32,8 @@ RELEASES_API = (
     "https://api.github.com/repos/cruuz/2k-football-mod-tools/releases?per_page=10"
 )
 RELEASES_PAGE = "https://github.com/cruuz/2k-football-mod-tools/releases"
-# Existing members can open the project server directly. New users can report issues without an invite.
-COMMUNITY_DISCORD = "https://discord.com/channels/1545254363189092372"
+#: The public community Discord invite, defined in mod_editor.core.errors and read by both Studios' Help menus.
+from .errors import COMMUNITY_DISCORD  # noqa: E402,F401
 ISSUES_PAGE = "https://github.com/cruuz/2k-football-mod-tools/issues"
 
 #: The release this build was cut from. Packaging updates it when a release is

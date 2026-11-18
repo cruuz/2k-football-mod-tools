@@ -455,7 +455,7 @@ class ActiveProjectWindowTests(unittest.TestCase):
             project = Path(temporary) / "My Active Mod.2k5mod"
             self.window._mark_workspace_changed()
             self.assertEqual(
-                self.window.windowTitle(), "Untitled* — 2K5 Mod Studio"
+                self.window.windowTitle(), "Untitled* - 2K5 Mod Studio"
             )
             self.assertTrue(self.window.save_project_button.isEnabled())
             self.assertTrue(self.window._save_project_as_action.isEnabled())
@@ -472,7 +472,7 @@ class ActiveProjectWindowTests(unittest.TestCase):
             choose.assert_called_once()
             self.assertEqual(self.window._active_project_path, project.resolve())
             self.assertEqual(
-                self.window.windowTitle(), "My Active Mod.2k5mod — 2K5 Mod Studio"
+                self.window.windowTitle(), "My Active Mod.2k5mod - 2K5 Mod Studio"
             )
             self.assertFalse(self.window._workspace_dirty)
 
@@ -505,7 +505,7 @@ class ActiveProjectWindowTests(unittest.TestCase):
             self.assertTrue(self.window._workspace_dirty)
             self.assertEqual(self.window.edit_count.text(), "No project edits • unsaved")
             self.assertEqual(
-                self.window.windowTitle(), "Saved Mod.2k5mod* — 2K5 Mod Studio"
+                self.window.windowTitle(), "Saved Mod.2k5mod* - 2K5 Mod Studio"
             )
             self.assertTrue(self.window.save_project_button.isEnabled())
             self.assertTrue(self.window._save_project_action.isEnabled())
