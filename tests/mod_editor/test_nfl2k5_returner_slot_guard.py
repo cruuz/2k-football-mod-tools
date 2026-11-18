@@ -29,7 +29,7 @@ from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest  # no
 
 try:
     from unicorn import Uc, UcError, UC_ARCH_X86, UC_MODE_32, UC_HOOK_MEM_UNMAPPED, UC_PROT_ALL
-    from unicorn.x86_const import (UC_X86_REG_EAX, UC_X86_REG_ECX, UC_X86_REG_EDX, UC_X86_REG_ESI, UC_X86_REG_ESP)
+    from unicorn.x86_const import (UC_X86_REG_EAX, UC_X86_REG_ECX, UC_X86_REG_EDX, UC_X86_REG_ESI, UC_X86_REG_ESP, UC_X86_REG_EIP)
     HAVE_UC = True
 except ImportError:  # pragma: no cover
     HAVE_UC = False
@@ -147,6 +147,8 @@ class _Machine:
         hook = uc.hook_add(UC_HOOK_MEM_UNMAPPED, unmapped)
         try:
             uc.emu_start(va, STOP, count=2_000_000)
+            if uc.reg_read(UC_X86_REG_EIP) != STOP:
+                return ("budget", uc.reg_read(UC_X86_REG_EIP))
             return ("returned", uc.reg_read(UC_X86_REG_EAX))
         except UcError:
             return ("fault", fault[0] if fault else None)
@@ -167,7 +169,25 @@ class _Machine:
         uc.reg_write(UC_X86_REG_ESP, esp)
         uc.reg_write(UC_X86_REG_EDX, self.team)
         uc.emu_start(GET_ROW, caller, count=2_000_000)
+        if uc.reg_read(UC_X86_REG_EIP) != caller:
+            raise AssertionError("returner row failed to reach its native caller")
         return uc.reg_read(UC_X86_REG_EAX)
+
+    def fielded_rows(self) -> list[int]:
+        """Read KR1, KR2 and PR via the native lineup constructor and match personnel reader."""
+        def native(address, regs, args=()):
+            status, result = self.call(address, regs, args)
+            if status != "returned":
+                raise AssertionError(f"native returner routine {address:#x} stopped at {result!r}: {status}")
+            return result
+
+        native(0xE80D0, {UC_X86_REG_ECX: self.team, UC_X86_REG_EDX: OBJ}, (0, 0))
+        players = []
+        for kind, rank in ((26, 0), (26, 1), (27, 0)):
+            count = native(0xE75A0, {UC_X86_REG_ECX: kind, UC_X86_REG_EDX: OBJ})
+            player = native(0xE7810, {UC_X86_REG_EAX: kind, UC_X86_REG_ECX: 0}, (OBJ, rank)) if rank < count else 0
+            players.append(player)
+        return players
 
     def specials(self) -> list[int]:
         return list(self.uc.mem_read(self.team + 0x194, 6))
@@ -227,6 +247,22 @@ class ReturnerGetterStatusTests(unittest.TestCase):
         v1 = returner.getter_bytes_v1()                                  # the first st1 form upgrades in place
         self.assertEqual(len(v1), returner.GETTER_SIZE)
         self.assertEqual(v1[98:], b"\xcc" * 30)
+
+    def test_both_previous_beta81_display_versions_upgrade_and_foreign_lookup_refuses(self):
+        # Original standard and its subsequent draw/edit dispatch fix shared the same fixed-offset list lookup.
+        previous = returner.PREVIOUS["returner_lookup"][0]
+        self.assertEqual(hashlib.sha256(previous).hexdigest(), "1dac7fe757cac8407a9d6901a31193c81f79212805ec8dadb41261749a35c459")
+        historical_chart = returner.PREVIOUS["returner_chart"][0]
+        self.assertEqual(hashlib.sha256(historical_chart).hexdigest(), "4a8eed1f56d098193c651e310ff96a2fe42d22f03729ca8f5e6103b2dbaa8487")
+        for chart in (historical_chart, returner.row_label_bytes()):
+            old = bytearray(self.applied)
+            for va, body in ((returner.ROW_LABEL_VA, chart), (returner.FN_NTH_RETURNER, previous)):
+                offset = returner._offset(self.applied, va)
+                old[offset:offset + len(body)] = body
+            self.assertEqual(returner.status(bytes(old)), "legacy")
+            self.assertEqual(returner.apply(bytes(old))[0], self.applied)
+            old[offset + len(previous) - 1] ^= 1
+            self.assertEqual(returner.status(bytes(old)), "foreign")
 
     def test_only_the_owned_sites_and_the_text_digest_change(self):
         text = next(s for s in _sections(self.retail) if s.virtual_address <= returner.GETTER_VA < s.virtual_address + s.raw_size)
@@ -332,21 +368,29 @@ class ReturnerGetterNativeTests(unittest.TestCase):
         self.assertGreaterEqual(cases, 64 * 18)
 
     def test_injured_locked_returner_rows_follow_the_game_lineup_and_recover_with_the_player(self):
-        original = bytes([0, 2, 3, 9, 1, 2])
-        for image in self.images.values():
-            machine = _Machine(image, PS_TAIL, original)
-            injured = machine.players[1, 2]
-            machine.uc.mem_write(injured + 0x27, b"\x40")
-            self.assertEqual(machine.call(0xE80D0, {UC_X86_REG_ECX: machine.team, UC_X86_REG_EDX: OBJ},
-                                          (0, 0))[0], "returned")
-            selected = list(machine.uc.mem_read(OBJ + 0x1c, 3))
-            self.assertEqual(selected[0], 3)
-            for (pos, rank), slot in zip(((KR, 0), (KR, 1), (PR, 0)), selected):
-                self.assertEqual(machine.row_from(COLUMN_TEXT, pos, rank), machine.players[1, slot])
-            machine.call(RERANK, {UC_X86_REG_ECX: machine.team})
-            self.assertEqual(machine.specials(), list(original))
-            machine.uc.mem_write(injured + 0x27, b"\0")
-            self.assertEqual(machine.row_from(COLUMN_TEXT, KR, 0), injured)
+        # Three distinct designated players let a PR injury and a KR injury be tested independently.
+        original = bytes([0, 2, 3, 9, 1, 8])
+        roles = ((KR, 0), (KR, 1), (PR, 0))
+        for name, image in self.images.items():
+            for role, slot in ((0, 2), (2, 8)):
+                with self.subTest(image=name, role=roles[role]):
+                    machine = _Machine(image, PS_TAIL, original)
+                    stored = [machine.players[1, i] for i in (2, 3, 8)]
+                    self.assertEqual(machine.fielded_rows(), stored)
+                    injured = machine.players[1, slot]
+                    machine.uc.mem_write(injured + 0x23, b"\x80")  # active injury
+                    machine.uc.mem_write(injured + 0x27, b"\x40")  # Out for field availability
+                    fielded = machine.fielded_rows()
+                    self.assertNotIn(injured, fielded)
+                    self.assertEqual(fielded[role], stored[1])     # healthy designated KR2 fills in
+                    self.assertEqual([machine.row_from(COLUMN_TEXT, p, r) for p, r in roles], fielded)
+                    self.assertEqual([machine.row_from(EDIT_CALLERS[-1], p, r) for p, r in roles], stored)
+                    self.assertEqual(machine.call(RERANK, {UC_X86_REG_ECX: machine.team})[0], "returned")
+                    self.assertEqual(machine.specials(), list(original))
+                    machine.uc.mem_write(injured + 0x23, b"\0")
+                    machine.uc.mem_write(injured + 0x27, b"\0")
+                    self.assertEqual(machine.fielded_rows(), stored)
+                    self.assertEqual([machine.row_from(COLUMN_TEXT, p, r) for p, r in roles], stored)
 
     def test_draw_callbacks_show_the_fielded_returner_and_edits_act_on_the_stored_slot(self):
         # The draw callbacks show who fields the kick (the game's lineup builder 0xE80D0); the input handler
@@ -360,8 +404,7 @@ class ReturnerGetterNativeTests(unittest.TestCase):
                 machine = _Machine(image, PS_TAIL, original)
                 for slot in out:
                     machine.uc.mem_write(machine.players[1, slot] + 0x27, b"\x40")
-                machine.call(0xE80D0, {UC_X86_REG_ECX: machine.team, UC_X86_REG_EDX: OBJ}, (0, 0))
-                fielded = [machine.players[1, s] for s in machine.uc.mem_read(OBJ + 0x1c, 3)]
+                fielded = machine.fielded_rows()
                 stored = [machine.players[1, s] for s in stored_slots]
                 if out == (2,):
                     self.assertNotEqual(fielded[0], stored[0])    # the healthy KR2 moves up
