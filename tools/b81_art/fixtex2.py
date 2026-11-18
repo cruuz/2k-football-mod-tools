@@ -76,7 +76,7 @@ def old_ink(name, T):
         left[:] = False                 # the detector's findings on this texture were not reviewed by eye: left as it is
     for box in ov.get('add', []):       # [x0,y0,x1,y1]: ink in the box is old (reviewed by eye)
         m = np.zeros((256, 256), bool); m[box[1]:box[3], box[0]:box[2]] = True
-        left |= m & (cur_dev > float(ov.get('add_dev', 30.0))) & ~foot & z
+        left |= m & (cur_dev > float(ov.get('add_dev', 30.0))) & ~foot & texdet.zone_mask(fam)   # reviewed by eye: hardware mask not applied
     for box in ov.get('keep', []):
         left[box[1]:box[3], box[0]:box[2]] = False
     # a loose piece that is mostly old ink is old as a whole (its outline or fringe is not the retail colour any more)
