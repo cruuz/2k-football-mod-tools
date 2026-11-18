@@ -198,7 +198,8 @@ IR_LEGACY_NOTE = ("This save has 5 injured reserve slots a club (an older build 
 class IrPickerDialog(QDialog):
     """Finn's *Place on IR*: pick one of the team's rostered players."""
 
-    def __init__(self, team_label: str, rows: Sequence[tuple[int, str]], parent: QWidget | None = None) -> None:
+    def __init__(self, team_label: str, rows: Sequence[tuple[int, str]], parent: QWidget | None = None,
+                 *, selected: int | None = None) -> None:
         super().__init__(parent)
         self.setWindowTitle(f"Place on injured reserve: {team_label}")
         layout = QVBoxLayout(self)
@@ -221,6 +222,11 @@ class IrPickerDialog(QDialog):
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
         self.resize(420, 480)
+        if selected is not None:            # b81: the Rosters grid's right-click Place on IR… arrives with him chosen
+            for row in range(self.list.count()):
+                if self.list.item(row).data(Qt.UserRole) == int(selected):
+                    self.list.setCurrentRow(row)
+                    break
 
     def chosen(self) -> int | None:
         item = self.list.currentItem()
@@ -478,7 +484,7 @@ class FranchisePanel(QWidget):
         self.tabs.addTab(self._build_overview(), "Overview")
         self.tabs.addTab(self._build_schedule(), "Schedule")
         self.tabs.addTab(self._build_coaches(), "Coaches")
-        self.tabs.addTab(self._build_injured_reserve(), "Injured Reserve")
+        self._ir_tab_index = self.tabs.addTab(self._build_injured_reserve(), "Injured Reserve")
         self.tabs.addTab(self._build_checks(), "Checks")
         self.tabs.currentChanged.connect(self._tab_changed)
         layout.addWidget(self.tabs, 1)
@@ -767,7 +773,9 @@ class FranchisePanel(QWidget):
         self.place_ir_button.clicked.connect(self._place_ir_clicked)
         self.activate_ir_button = QPushButton("Activate")
         self.activate_ir_button.setToolTip("The inverse of Finn's move: the player rejoins the end of the team's "
-                                           "list and the slot is cleared. Nobody has watched the game accept it yet.")
+                                           "list and the slot is cleared. Nobody has watched the game accept it yet. "
+                                           "This is a return from IR, not Finn's Heal Player: it does not change "
+                                           "an injury.")
         self.activate_ir_button.clicked.connect(self._activate_ir_clicked)
         top.addWidget(self.place_ir_button)
         top.addWidget(self.activate_ir_button)
@@ -1361,6 +1369,8 @@ class FranchisePanel(QWidget):
     def _ir_selection_changed(self) -> None:
         """b780-uxfix: Activate says why the game would refuse the selected player, in the game's own words."""
         tip = "Bring the selected player back to the roster. The game's rules are checked before anything changes."
+        heal = (" This is a return from IR (Finn's Activate), not Finn's Heal Player: it does not change an "
+                "injury.")
         row = self.ir_table.currentRow()
         item = self.ir_table.item(row, 2) if row >= 0 else None
         if self._save is not None and item is not None and item.text() and irs.read_state(self._save).extension:
@@ -1370,7 +1380,7 @@ class FranchisePanel(QWidget):
                 reason = None
             if reason:
                 tip = f"Can't bring him back yet: {reason}"
-        self.activate_ir_button.setToolTip(tip)
+        self.activate_ir_button.setToolTip(tip + heal)
 
     def checks_text_for(self) -> str:
         """The Checks page as text: the region map by status, what is editable here, the edits, the byte diff."""
@@ -1764,15 +1774,30 @@ class FranchisePanel(QWidget):
         self.sync_from_roster()
         return [(index, self._player_text(index)) for index in self._save.team_player_indices(team)]
 
-    def _place_ir_clicked(self) -> None:
+    def _place_ir_clicked(self, _checked: bool = False, *, selected: int | None = None) -> bool:
         if self._save is None:
-            return
+            return False
         team = self._ir_team()
-        dialog = IrPickerDialog(self._team_label(team), self.ir_candidates(team), self)
+        dialog = IrPickerDialog(self._team_label(team), self.ir_candidates(team), self, selected=selected)
         if dialog.exec_() == QDialog.Accepted:
             chosen = dialog.chosen()
             if chosen is not None:
-                self.place_on_ir(team, chosen)
+                return self.place_on_ir(team, chosen)
+        return False
+
+    def show_injured_reserve(self, team: int) -> bool:
+        """b81 (Finn parity): bring up Franchise > Injured Reserve on ``team``, the way the Rosters grid's
+        right-click Place on IR… arrives here. Returns False when no franchise save is loaded."""
+
+        if self._save is None:
+            return False
+        if self._host is not None:
+            self._host.setCurrentIndex(self._host_index)
+        self.tabs.setCurrentIndex(self._ir_tab_index)
+        index = self.ir_team_combo.findData(int(team))
+        if index >= 0:
+            self.ir_team_combo.setCurrentIndex(index)
+        return index >= 0
 
     def _activate_ir_clicked(self) -> None:
         if self._save is None:

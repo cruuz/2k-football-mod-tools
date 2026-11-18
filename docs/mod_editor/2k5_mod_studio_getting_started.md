@@ -1228,16 +1228,20 @@ and a validation pass on top. The format knowledge behind it comes from **Flying
 Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the retail disc.
 
 1. Open the page and press **Use the open disc** (or **Open disc roster…**). An Xbox save works too:
-   **Open Xbox save…** takes an Action Replay `.zip`, an extracted save folder or a loose
+   **Open Xbox save (Finn's zip)…** takes an Action Replay `.zip` (the file Flying Finn's editor opens), an extracted save folder or a loose
    `SAVEGAME.DAT` with its `EXTRA` beside it (real saves keep the roster as the game's in-memory arena;
    the page reads that layout and the disc's). The stored signature is checked on load, and a save
    whose `EXTRA` does not verify is refused rather than quietly re-signed.
 2. **Left**: the 32 clubs, the game's extra squads (Pro Bowl, all-time, the two user teams), then
    Free Agents, the Draft Class and the leftover pools.
-3. **Middle**: search by name, years pro (type `R` for rookies) or college; the position chips (QB RB WR TE OL DL LB DB
-   K/P) narrow the list; the grid shows position, number, name, years pro, an OVR estimate and the
+3. **Middle**: the search box filters the list you have open by name, years pro (type `R` for rookies) or
+   college. **Find…** (Ctrl+F) is Finn's Find Player: it searches every club, the reserves, the free agents
+   and the draft class at once (a name, `Last, First`, or a college, with an optional position and years pro),
+   and **Go to player** opens his list and selects him. The position chips (QB RB WR TE OL DL LB DB
+   K/P, plus EDGE on a one-pool roster) narrow the list; the grid shows position, number, name, years pro, an OVR estimate and the
    depth slot. **↑ Move up / ↓ Move down** reorder the team's own pointer list, which *is* the depth
-   chart.
+   chart. Right-click a player for Finn's player menu: copy, the three pastes, Find player, Only his
+   position, Place on IR… and Release to free agency.
 4. **Right**: the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
    Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
    ← → nudge by one, ↑ ↓ jump to the next card. Enum cards are dropdowns built from the tables lifted
@@ -1350,15 +1354,38 @@ contains player fields but does not contain the disc's face artwork; copying its
 can select a different person's face in another project. The source and destination need matching
 player and team capacities. This transfer is proved offline and has no gameplay witness yet.
 
+**Coming from Flying Finn's editor.** The same jobs, in these places:
+
+| Finn | ★ Rosters |
+|---|---|
+| File > Open (an Action Replay zip) | **Open Xbox save (Finn's zip)…** (Ctrl+O in the Studio opens a game disc) |
+| Search > Find Player (Ctrl+F) | **Find…** or Ctrl+F: every team, the reserves, the free agents and the draft class |
+| Edit Player (double-click) | Select the player; the editor on the right is always open. PgUp / PgDn there move to the previous or next player |
+| Change Name `…` list | Type the name. A name that already exists is shared, which needs no free space |
+| Depth Chart (Ctrl+D) | Ctrl+D shows only the selected player's position; **↑ Move up / ↓ Move down** reorder it |
+| Copy Player (Ctrl+C), Paste Player (Ctrl+V), Paste Attributes Only (Ctrl+Alt+A) | Same keys, or **Copy player** and **Paste ▾** |
+| Tools > Global Editor | **Global Attribute Editor…** |
+| Tools > Auto-update > Advance year | **Tools ▾ → Add a year pro to everyone (Advance year)** |
+| Tools > Backup and Restore | **CSV ▾ → .PlayerData backup (Finn's format)** |
+| Place on IR (right-click) | Right-click → **Place on IR…** opens **Franchise → Injured Reserve** with him chosen |
+| Heal Player | Not available. **Activate** on the IR tab returns a player from IR; it does not change an injury |
+| Manage Salary Cap | **Franchise → Overview → Salary cap** |
+| Save (writes the zip back) | **Save Xbox save copy…** writes a new signed copy; your original is never changed |
+
+Ctrl+Z and Ctrl+Y undo and redo on this page (Finn had no undo). Ctrl+/ lists the keys.
+
 **Writing.** Your source is never touched.
 
 * **Export roster edits (.json)…** writes a small JSON document. The Build tab picks it up as the
   **roster edits** step, and Share packs it into a `.2k5patch` as an asset, so an edit travels
   without the disc.
-* **Save disc copy…** copies the disc image and edits the copy; for a save, **Save Xbox save copy…** writes a
-  **re-signed** container beside the original with every other member (`SaveMeta.xbx`, `TYPE`, the
-  images) copied byte for byte. Renaming or dropping those is what makes the game call a save
-  corrupt, so they are never rebuilt.
+* **Save disc copy…** copies the disc image and edits the copy; for a save, **Save Xbox save copy…** asks for a
+  folder and writes a **re-signed** copy there: `<your zip name> (edited).zip` for an Action Replay zip, or a
+  `<save folder> (edited)` folder for an extracted save, with a number added if that name is taken. Every other
+  member (`SaveMeta.xbx`, `TYPE`, the images) is copied byte for byte. Renaming or dropping those is what makes
+  the game call a save corrupt, so they are never rebuilt. Finn's editor saved over the zip you opened; the
+  Studio never does, so put the new copy on your Xbox in place of the old one, or copy its `SAVEGAME.DAT`
+  and `EXTRA` into your save. Those two files only work as a pair.
 
 In a build, the roster-edits step runs **last** of the roster passes, so the star tags, the real team
 history, the modern prospect names and the one-pool positions all survive it. Unwitnessed in game.

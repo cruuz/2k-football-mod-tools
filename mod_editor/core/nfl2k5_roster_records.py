@@ -2138,6 +2138,34 @@ class RosterDocument:
         self.__dict__.update(fresh.__dict__)
         self.original, self.scheme_detection = original, detection
 
+    def reserve_move_precheck(self, team_index: int, primary_index: int, *, promote: bool) -> None:
+        """The refusals of ``nfl2k5_practice_squad.reserve_transaction`` that the document state answers, in its words,
+        without encoding and re-decoding the whole save (b81: that full check took about 3 s a player on the 4,096-player
+        SOFTDRINK save, and the Rosters page ran it for every player it selected). Promote and Demote still run the full
+        transaction when pressed, so an arena that cannot be repacked is refused there."""
+
+        from . import nfl2k5_practice_squad as ps
+        try:
+            ps._require(self.version in (0, 1), 'reserve moves require a signed-save copy')
+            ps._require(type(team_index) is int and 0 <= team_index < min(32, len(self.teams)), 'select an NFL team')
+            player = next((p for p in self.by_pool("primary") if p.index == primary_index), None)
+            ps._require(player is not None, 'invalid primary player identity')
+            assert player is not None
+            flags = player.record.values["player_type"]
+            ps._require(bool(flags & 4) and not flags & 0x18, 'player is inactive, retired, or a draft prospect')
+            ps._require(player.record.values["injured_reserve"] != 0xEE, 'player is marked injured reserve')
+            team = self.teams[team_index]
+            reserves = list(self.reserves.get(team_index, ()))
+            if promote:
+                ps._require(primary_index in reserves, 'player is not a reserve owned by this team')
+                ps._require(len(team.slots) < ps.ACTIVE_LIMIT, 'promotion requires fewer than 53 active players')
+            else:
+                ps._require(team.slots.count(player.offset) == 1, 'player is not active on this team')
+                limit = self.reserve_limit(team_index)
+                ps._require(len(reserves) < limit, f'practice squad is full ({limit} players)')
+        except ValueError as exc:
+            raise MembershipRefused(str(exc)) from exc
+
     def reserve_move_check(self, team_index: int, primary_index: int, *, promote: bool) -> None:
         from . import nfl2k5_practice_squad as ps
         try:
@@ -5629,6 +5657,69 @@ def copy_player(source: PlayerRecord, target: PlayerRecord, *, mode: str = "all"
     return count
 
 
+# ------------------------------------------------------------------------------------------- find (b81 R1)
+FIND_LIST_KINDS = ("team", "reserve", "free_agent", "draft_class", "pool")
+
+
+def player_location(document: RosterDocument, player: Player) -> tuple[str, int]:
+    """Which list on the Rosters page shows ``player``: ``("team", club)``, ``("reserve", club)``,
+    ``("team", squad)`` for someone only on an extra squad, else ``("free_agent" | "draft_class" | "pool", -1)``.
+
+    A club wins over the all-star and all-time squads that may also list him; a reserve is shown under
+    his club's Reserves row; a draft slot or unused capacity record has no list of its own."""
+
+    owner = document.reserve_owner.get((player.pool, player.index))
+    if owner is not None:
+        return ("reserve", owner)
+    club = document.club_of(player)
+    if club is not None:
+        return ("team", club)
+    if player.teams:
+        return ("team", min(player.teams))
+    if player.group in ("free_agent", "draft_class", "pool"):
+        return (player.group, -1)
+    return ("", -1)
+
+
+def find_players(document: RosterDocument, text: str = "", *, positions: Sequence[int] = (),
+                 years_pro: int | None = None, limit: int | None = None) -> list[dict[str, Any]]:
+    """Finn's Search > Find Player(s), over the whole league rather than the open list.
+
+    ``text`` matches first name, last name, the full name, ``Last, First`` (Finn's order) or the college,
+    ignoring case; every word must match somewhere.  ``positions`` keeps those position codes (empty = all);
+    ``years_pro`` keeps one stored value (1 = rookie).  Players with no name at all (unused draft and
+    capacity records) are never returned.  Rows are ``{"player", "where", "location"}``, last-name prefix
+    hits first, then by last and first name; ``where`` is the membership text the header card prints."""
+
+    needle = " ".join(str(text or "").replace(",", " ").split()).casefold()
+    words = needle.split()
+    wanted = {int(code) for code in positions}
+    hits: list[Player] = []
+    for player in document.players:
+        if not (player.first or player.last):
+            continue
+        values = player.record.values
+        if wanted and values["position"] not in wanted:
+            continue
+        if years_pro is not None and values["years_pro"] != int(years_pro):
+            continue
+        if words:
+            haystack = f"{player.first} {player.last} {player.college}".casefold()
+            if not all(word in haystack for word in words):
+                continue
+        if player_location(document, player)[0] == "":
+            continue
+        hits.append(player)
+    first = words[0] if words else ""
+    hits.sort(key=lambda p: (not p.last.casefold().startswith(first), p.last.casefold(), p.first.casefold(),
+                             p.pool, p.index))
+    if limit is not None:
+        hits = hits[:max(0, int(limit))]
+    where = document._membership_map({t.index: t.slots for t in document.teams}, document.free_agents,
+                                     document.reserves) if hits else {}
+    return [{"player": p, "where": where.get(p.offset, ""), "location": player_location(document, p)} for p in hits]
+
+
 # -------------------------------------------------------------------------------------------- repairs
 # Finn's editor repairs one thing silently on load and reports it afterwards ("Repaired N headless
 # players. Be sure to save file if everything looks OK."): a set +0x0C bit 7, which renders the model
@@ -5937,7 +6028,7 @@ __all__ = [
     "ROOKIE_YEARS_PRO", "YEARS_PRO_MAX", "accrued_seasons", "is_rookie_years_pro", "years_pro_for_season",
     "years_pro_from_years_exp", "years_pro_label",
     "advance_years_pro", "apply", "apply_body",
-    "copy_player", "decode_record", "edits_document", "encode_record", "encoded_size",
+    "copy_player", "find_players", "player_location", "decode_record", "edits_document", "encode_record", "encoded_size",
     "export_csv", "field_coverage", "find_block_base", "global_edit_apply", "global_edit_preview",
     "import_csv", "load_body", "load_image", "load_save", "read_edits", "read_utf16z",
     "resource_status", "restore_measurements", "save_document", "sign_save", "status",

@@ -74,7 +74,7 @@ from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
 from PyQt5.QtCore import QObject, QRunnable, QSignalBlocker, QSize, Qt, QThreadPool, pyqtSignal
-from PyQt5.QtGui import QColor, QFont, QPainter, QPen
+from PyQt5.QtGui import QColor, QFont, QKeySequence, QPainter, QPen
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QApplication,
@@ -97,6 +97,7 @@ from PyQt5.QtWidgets import (
     QProgressDialog,
     QPushButton,
     QScrollArea,
+    QShortcut,
     QSizePolicy,
     QSpinBox,
     QSplitter,
@@ -115,7 +116,7 @@ from mod_editor.gui.abilities_panel_qt import AbilitiesPanel
 from mod_editor.gui.coaches_panel_qt import CoachesPanel
 from mod_editor.gui.espn25_panel_qt import Espn25Panel
 from mod_editor.gui.franchise_panel_qt import FranchisePanel
-from mod_editor.gui.ux_text import Details, show_operation_error, suggest_copy_name
+from mod_editor.gui.ux_text import Details, FlowLayout, show_operation_error, suggest_copy_name
 
 DISC_FILTER = "Disc images (*.iso *.xiso *.xiso.iso);;All files (*)"
 SAVE_FILTER = "Xbox saves (*.zip SAVEGAME.DAT);;All files (*)"
@@ -936,6 +937,145 @@ class IdPickerDialog(QDialog):
         return int(self.spin.value())
 
 
+# --------------------------------------------------------------------------------------------- find (b81 R1)
+class FindPlayerDialog(QDialog):
+    """Finn's Search > Find Player(s) (Ctrl+F): every club, the reserves, free agents, the draft class and
+    the other pools at once. Go to player selects his list on the left and the player in the grid."""
+
+    COLUMNS = ("Player", "POS", "#", "Yrs", "College", "Where")
+    LIMIT = 500
+
+    def __init__(self, panel: "RosterEditorPanel") -> None:
+        super().__init__(panel)
+        self.setWindowTitle("Find player")
+        self._panel = panel
+        self._rows: list[dict[str, Any]] = []
+        layout = QVBoxLayout(self)
+        hint = QLabel("Searches every team, the reserves, free agents and the draft class. Type a name "
+                      "(Last, First works too) or a college.")
+        hint.setWordWrap(True)
+        layout.addWidget(hint)
+        row = QHBoxLayout()
+        self.text = QLineEdit()
+        self.text.setPlaceholderText("Name or college")
+        self.text.setAccessibleName("Find player: name or college")
+        self.text.setClearButtonEnabled(True)
+        self.text.textChanged.connect(lambda _t: self.refresh())
+        self.text.returnPressed.connect(self.go)
+        row.addWidget(self.text, 1)
+        self.position_combo = QComboBox()
+        self.position_combo.setAccessibleName("Find player: position")
+        self.position_combo.currentIndexChanged.connect(lambda _i: self.refresh())
+        row.addWidget(self.position_combo)
+        self.years_combo = QComboBox()
+        self.years_combo.setAccessibleName("Find player: years pro")
+        self.years_combo.addItem("Any years pro", None)
+        self.years_combo.addItem("Rookies (R)", rr.ROOKIE_YEARS_PRO)
+        for years in range(2, rr.FIELD_BY_NAME["years_pro"].maximum + 1):
+            self.years_combo.addItem(f"{years} yrs pro", years)
+        self.years_combo.currentIndexChanged.connect(lambda _i: self.refresh())
+        row.addWidget(self.years_combo)
+        layout.addLayout(row)
+        self.table = QTableWidget(0, len(self.COLUMNS))
+        self.table.setHorizontalHeaderLabels(list(self.COLUMNS))
+        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table.verticalHeader().setVisible(False)
+        self.table.setAccessibleName("Find player: results")
+        self.table.horizontalHeader().setStretchLastSection(True)
+        self.table.cellDoubleClicked.connect(lambda _r, _c: self.go())
+        layout.addWidget(self.table, 1)
+        bottom = QHBoxLayout()
+        self.count_label = QLabel("")
+        bottom.addWidget(self.count_label, 1)
+        self.go_button = QPushButton("Go to player")
+        self.go_button.setDefault(True)
+        self.go_button.clicked.connect(self.go)
+        close = QPushButton("Close")
+        close.clicked.connect(self.reject)
+        bottom.addWidget(self.go_button)
+        bottom.addWidget(close)
+        layout.addLayout(bottom)
+        self.resize(720, 520)
+        self.reset_positions()
+
+    def reset_positions(self) -> None:
+        """The position filter in the loaded scheme's own names (a one-pool roster offers EDGE, never OLB)."""
+
+        scheme = self._panel.scheme
+        current = self.position_combo.currentData()
+        with QSignalBlocker(self.position_combo):
+            self.position_combo.clear()
+            self.position_combo.addItem("Any position", ())
+            for code in rr.live_position_codes(scheme):
+                self.position_combo.addItem(rr.position_name(code, scheme), (code,))
+            index = self.position_combo.findData(current) if current is not None else 0
+            self.position_combo.setCurrentIndex(max(0, index))
+
+    def refresh(self) -> list[dict[str, Any]]:
+        document = self._panel.document
+        if document is None:
+            self._rows = []
+        else:
+            filtered = bool(self.text.text().strip() or self.position_combo.currentData()
+                            or self.years_combo.currentData() is not None)
+            self._rows = rr.find_players(document, self.text.text(),
+                                         positions=self.position_combo.currentData() or (),
+                                         years_pro=self.years_combo.currentData()) if filtered else []
+        shown = self._rows[:self.LIMIT]
+        self.table.setUpdatesEnabled(False)
+        self.table.setRowCount(len(shown))
+        for row, hit in enumerate(shown):
+            player = hit["player"]
+            record = player.record
+            cells = (player.display, record.position_name, str(record.values["jersey"]),
+                     rr.years_pro_label(record.values["years_pro"]), player.college or "-", hit["where"])
+            for column, text in enumerate(cells):
+                item = QTableWidgetItem(text)
+                if column in (2, 3):
+                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                self.table.setItem(row, column, item)
+        self.table.resizeColumnsToContents()
+        self.table.setUpdatesEnabled(True)
+        if shown:
+            self.table.setCurrentCell(0, 0)
+        total = len(self._rows)
+        if not (self.text.text().strip() or self.position_combo.currentData()
+                or self.years_combo.currentData() is not None):
+            self.count_label.setText("Type a name to search the whole league.")
+        elif total > len(shown):
+            self.count_label.setText(f"{total} players match; the first {len(shown)} are listed. Type more to narrow it.")
+        else:
+            self.count_label.setText(f"{total} player{'s' if total != 1 else ''} found")
+        self.go_button.setEnabled(bool(shown))
+        self._fit_width()
+        return self._rows
+
+    def _fit_width(self) -> None:
+        """Grow (never shrink) to show every column, within the screen: large text widens the columns."""
+
+        screen = self.screen().availableGeometry() if self.screen() is not None else None
+        margins = self.layout().contentsMargins()
+        needed = (self.table.horizontalHeader().length() + self.table.verticalScrollBar().sizeHint().width()
+                  + 2 * self.table.frameWidth() + margins.left() + margins.right() + 4)
+        if screen is not None:
+            needed = min(needed, screen.width() - 32)
+        if needed > self.width():
+            self.resize(needed, self.height())
+
+    def chosen(self) -> rr.Player | None:
+        row = self.table.currentRow()
+        return self._rows[row]["player"] if 0 <= row < min(len(self._rows), self.LIMIT) else None
+
+    def go(self) -> bool:
+        player = self.chosen()
+        if player is None or not self._panel.go_to_player(player):
+            return False
+        self.accept()
+        return True
+
+
 # --------------------------------------------------------------------------------------------- swap
 class SwapPlayerDialog(QDialog):
     """Pick the rostered player to exchange slots with: a team, then one of its players."""
@@ -1252,8 +1392,6 @@ class RosterEditorPanel(QWidget):
         self._clipboard: rr.PlayerRecord | None = None
         self._dirty: set[tuple[str, int]] = set()
         self.auto_filled = False        # the document came from the shell's open disc, not a button here
-        self._reserve_legality_cache = {}
-        self._reserve_legality_state = None
         self._rows: list[rr.Player] = []
         self._group: tuple[str, int] = ("team", 0)
         self._chip = "All"
@@ -1283,7 +1421,10 @@ class RosterEditorPanel(QWidget):
         self.cards: dict[str, AttributeCard] = {}
         self._card_order: list[str] = []
         self._page_cards: dict[int, list[str]] = {}
+        self._find_dialog: FindPlayerDialog | None = None
+        self.shortcuts: dict[str, QShortcut] = {}
         self._build()
+        self._install_shortcuts()
         self._refresh_actions()
 
     @property
@@ -1307,8 +1448,12 @@ class RosterEditorPanel(QWidget):
         self.open_disc_button = QPushButton("Open disc roster…")
         self.open_disc_button.setToolTip("Read the roster out of any game disc file (.iso).")
         self.open_disc_button.clicked.connect(self._choose_disc)
-        self.open_save_button = QPushButton("Open Xbox save…")
-        self.open_save_button.setToolTip("Read a roster or franchise save (SAVEGAME.DAT) from your Xbox. No disc needed.")
+        self.open_save_button = QPushButton("Open Xbox save (Finn's zip)…")
+        self.open_save_button.setAccessibleName("Open Xbox save")
+        self.open_save_button.setToolTip(
+            "Read a roster or franchise save from your Xbox: the Action Replay .zip that Flying Finn's editor "
+            "opened, an extracted save folder, or SAVEGAME.DAT with its EXTRA. No disc needed. Your file is "
+            "never changed: saving writes a new signed copy.")
         self.open_save_button.clicked.connect(self._choose_save)
         self.use_loaded_button = QPushButton("Use the open disc")
         self.use_loaded_button.setToolTip("Read the roster of the disc opened at the top right. Replaces what is loaded here.")
@@ -1415,7 +1560,7 @@ class RosterEditorPanel(QWidget):
         self.passes_button.setToolTip("One-off passes over many players.")
         self.passes_button.setPopupMode(QToolButton.InstantPopup)
         passes_menu = QMenu(self.passes_button)
-        passes_menu.addAction("Add a year pro to everyone", lambda: self.advance_years_pro(False))
+        passes_menu.addAction("Add a year pro to everyone (Advance year)", lambda: self.advance_years_pro(False))
         passes_menu.addAction("Add a year pro to this list", lambda: self.advance_years_pro(True))
         passes_menu.addAction("Restore height / weight / birth date", self.restore_measurements)
         passes_menu.addAction("Shift ages to season year...", self.open_age_shift)
@@ -1465,8 +1610,9 @@ class RosterEditorPanel(QWidget):
         self.save_edits_button.clicked.connect(self._save_edits)
         self.write_button = QPushButton("Save disc copy…")
         self.write_button.setToolTip("Write a copy you can reopen in ★ Rosters. Your loaded disc or save stays unchanged. "
-                                     "Disc roster: writes a separate disc copy. Xbox save: writes a signed save "
-                                     "container in the folder you choose.")
+                                     "Disc roster: writes a separate disc copy. Xbox save: writes a new signed save "
+                                     "(a new .zip for a zip) in the folder you choose. Finn's editor saved over "
+                                     "the original; this never does.")
         self.write_button.clicked.connect(self._write_copy)
         tools.addWidget(self.save_edits_button)
         tools.addWidget(self.write_button)
@@ -1482,7 +1628,8 @@ class RosterEditorPanel(QWidget):
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(self._build_team_pane())
         splitter.addWidget(self._build_grid_pane())
-        splitter.addWidget(self._build_editor_pane())
+        self.editor_pane = self._build_editor_pane()
+        splitter.addWidget(self.editor_pane)
         splitter.setStretchFactor(0, 0)
         splitter.setStretchFactor(1, 2)
         splitter.setStretchFactor(2, 4)          # the cards are the widest thing on the page
@@ -1534,16 +1681,27 @@ class RosterEditorPanel(QWidget):
         box = QVBoxLayout(pane)
         box.setContentsMargins(0, 0, 0, 0)
         self.search = QLineEdit()
-        self.search.setPlaceholderText("Search name, years pro (R = rookie) or college")
+        self.search.setPlaceholderText("Search this list. Ctrl+F searches every team")
         self.search.setAccessibleName("Search players")
+        self.search.setToolTip("Filters the list on the left by name, years pro (R = rookie) or college. "
+                               "Ctrl+F (Find player) searches every team, the free agents and the draft class.")
         self.search.textChanged.connect(lambda _t: self.refresh_grid())
-        box.addWidget(self.search)
+        search_row = QHBoxLayout()
+        search_row.addWidget(self.search, 1)
+        self.find_button = QPushButton("Find…")
+        self.find_button.setToolTip("Find player (Ctrl+F): search every team, the reserves, the free agents and "
+                                    "the draft class, then go to him.")
+        self.find_button.clicked.connect(self.studio_find)
+        search_row.addWidget(self.find_button)
+        box.addLayout(search_row)
 
-        self.chip_row = QHBoxLayout()
-        self.chip_row.setSpacing(2)
+        # b81: the chips wrap instead of eliding; under one pool eleven chips did not fit a 1366-px window and
+        # EDGE and K/P were drawn as "..."
+        self.chip_box = QWidget()
+        self.chip_row = FlowLayout(self.chip_box, spacing=2, pin_parent_height=True)
         self.chips: dict[str, QToolButton] = {}
         self._rebuild_chips()
-        box.addLayout(self.chip_row)
+        box.addWidget(self.chip_box)
 
         self.player_table = QTableWidget(0, 7)
         self.player_table.setHorizontalHeaderLabels(["POS", "#", "Player", "Yrs", "Est. OVR", "Depth", "Locks"])
@@ -1559,6 +1717,10 @@ class RosterEditorPanel(QWidget):
         self.player_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.player_table.verticalHeader().setVisible(False)
         self.player_table.setAccessibleName("Players")
+        self.player_table.setToolTip("Select a player to edit him on the right. Right-click for copy, paste, "
+                                     "Place on IR and Finn's other player commands.")
+        self.player_table.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.player_table.customContextMenuRequested.connect(self._show_grid_menu)
         self.player_table.currentCellChanged.connect(
             lambda row, _c, _pr, _pc: self._select_row(row))
         box.addWidget(self.player_table, 1)
@@ -2096,7 +2258,6 @@ class RosterEditorPanel(QWidget):
             button.clicked.connect(lambda _c=False, name=label: self._chip_clicked(name))
             self.chips[label] = button
             self.chip_row.addWidget(button)
-        self.chip_row.addStretch(1)
 
     def _refresh_position_card(self) -> None:
         """Name the Position picker in the loaded scheme and grey out any code it retired."""
@@ -2667,6 +2828,208 @@ class RosterEditorPanel(QWidget):
     def _select_row(self, row: int) -> None:
         self._show_player(self._rows[row] if 0 <= row < len(self._rows) else None)
 
+    # ------------------------------------------------------------------ find and keys (b81 R1, R6)
+    def studio_find(self) -> bool:
+        """The studio's Ctrl+F on this page: Finn's Find Player over the whole league once a roster is loaded,
+        else the list search box. Returns True when it handled the key."""
+
+        if self.document is None:
+            self.search.setFocus(Qt.ShortcutFocusReason)
+            return True
+        self.open_find_dialog()
+        return True
+
+    def open_find_dialog(self) -> FindPlayerDialog | None:
+        if self.document is None:
+            self._set_status("Load a roster first.")
+            return None
+        if self._find_dialog is None or self._find_dialog.parent() is not self:
+            self._find_dialog = FindPlayerDialog(self)
+        dialog = self._find_dialog
+        dialog.reset_positions()
+        dialog.refresh()
+        dialog.show()
+        dialog.raise_()
+        dialog.activateWindow()
+        dialog.text.setFocus(Qt.ShortcutFocusReason)
+        dialog.text.selectAll()
+        return dialog
+
+    def _team_list_row(self, kind: str, index: int) -> int:
+        for row in range(self.team_list.count()):
+            data = self.team_list.item(row).data(Qt.UserRole)
+            if data is not None and tuple(data) == (kind, index):
+                return row
+        return -1
+
+    def go_to_player(self, player: rr.Player) -> bool:
+        """Show the list that holds ``player`` (his club, its Reserves, Free Agents, the Draft Class or Other
+        pools), clear the chip and search filters if they would hide him, and select him."""
+
+        if self.document is None or self.document.by_offset.get(player.offset) is not player:
+            return False
+        kind, index = rr.player_location(self.document, player)
+        row = self._team_list_row(kind, index) if kind else -1
+        if row < 0:
+            self._set_status(f"{player.display} is not on any list this page shows.")
+            return False
+        self.pages.setCurrentIndex(0)
+        for label, button in self.chips.items():
+            button.setChecked(label == "All")
+        self._chip = "All"
+        with QSignalBlocker(self.search):
+            self.search.clear()
+        with QSignalBlocker(self.team_list):
+            self.team_list.setCurrentRow(row)
+        self._group = (kind, index)
+        self.refresh_grid()
+        if not self.select_player(player):
+            return False
+        item = self.player_table.item(self.player_table.currentRow(), 0)
+        if item is not None:
+            self.player_table.scrollToItem(item, QAbstractItemView.PositionAtCenter)
+        self.player_table.setFocus(Qt.OtherFocusReason)
+        self._set_status(f"Found {player.display}: {self.document.membership_text(player)}.")
+        return True
+
+    def step_player(self, delta: int) -> bool:
+        """Finn's PgUp / PgDn in Edit Player: the previous or next player of the list, keeping the open tab."""
+
+        if not self._rows:
+            return False
+        row = self.player_table.currentRow()
+        target = max(0, min(len(self._rows) - 1, (row if row >= 0 else 0) + int(delta)))
+        if target == row:
+            return False
+        self.player_table.setCurrentCell(target, max(0, self.player_table.currentColumn()))
+        return True
+
+    def show_position_players(self) -> bool:
+        """Finn's Depth Chart key (Ctrl+D): narrow the grid to the selected player's position group on his
+        list and keep him selected, so Move up / Move down work on that position."""
+
+        player = self.selected_player()
+        if player is None:
+            return False
+        code = player.record.values["position"]
+        chip = next((name for name, codes in rr.position_groups(self._scheme).items()
+                     if code in codes and name in self.chips), None)
+        if chip is None:
+            return False
+        self._chip_clicked(chip)
+        self.select_player(player)
+        self._set_status(f"Showing only the {chip} players of this list. Choose All to see everyone again.")
+        return True
+
+    def _install_shortcuts(self) -> None:
+        """Finn's keys on this page (b81 R6). Copy, paste and Ctrl+D act on the Roster tab only; PgUp/PgDn step
+        to the previous or next player while the editor (Finn's Edit Player) has the focus, so the grid keeps
+        its own page jump; undo and redo also serve the Franchise and Coaches tabs, which share this page's
+        history. Ctrl+F is the studio's own key and arrives through ``studio_find``. A text box keeps its own
+        Ctrl+C/V/Z."""
+
+        def add(keys: Sequence[str], parent: QWidget, slot: Callable[[], Any], name: str) -> None:
+            for key in keys:
+                shortcut = QShortcut(QKeySequence(key), parent)
+                shortcut.setContext(Qt.WidgetWithChildrenShortcut)
+                shortcut.activated.connect(slot)
+                self.shortcuts[f"{name}:{key}"] = shortcut
+
+        roster = self.pages.widget(0)
+        add(["Ctrl+C"], roster, self.copy_player, "copy")
+        add(["Ctrl+V"], roster, lambda: self.paste_player("all"), "paste")
+        add(["Ctrl+Alt+A"], roster, lambda: self.paste_player("attributes"), "paste_attributes")
+        add(["Ctrl+D"], roster, self.show_position_players, "depth")
+        add(["PgDown"], self.editor_pane, lambda: self.step_player(1), "next")
+        add(["PgUp"], self.editor_pane, lambda: self.step_player(-1), "previous")
+        add(["Ctrl+Z"], self, self._shortcut_undo, "undo")
+        add(["Ctrl+Y", "Ctrl+Shift+Z"], self, self._shortcut_redo, "redo")
+
+    def _history_tab(self) -> bool:
+        current = self.pages.currentWidget()
+        return current is not self.espn25_panel
+
+    def _shortcut_undo(self) -> None:
+        if self._history_tab() and self.undo_stack.can_undo():
+            self.undo()
+
+    def _shortcut_redo(self) -> None:
+        if self._history_tab() and self.undo_stack.can_redo():
+            self.redo()
+
+    # ------------------------------------------------------------------ right-click menu (Finn's popup)
+    def grid_menu(self) -> QMenu:
+        """The grid's right-click menu: Finn's player popup in this page's words, with his keys shown."""
+
+        menu = QMenu(self.player_table)
+        player = self.selected_player()
+        loaded = self.document is not None and player is not None
+        action = menu.addAction("Copy player", self.copy_player)
+        action.setShortcut(QKeySequence("Ctrl+C"))
+        action.setEnabled(loaded)
+        for text, mode, key in (("Paste player", "all", "Ctrl+V"),
+                                ("Paste attributes only", "attributes", "Ctrl+Alt+A"),
+                                ("Paste photo only", "photo", "")):
+            action = menu.addAction(text, lambda kind=mode: self.paste_player(kind))
+            if key:
+                action.setShortcut(QKeySequence(key))
+            action.setEnabled(loaded and self._clipboard is not None)
+        menu.addSeparator()
+        menu.addAction("Find player… (every team)", self.studio_find).setShortcut(QKeySequence("Ctrl+F"))
+        action = menu.addAction("Only his position", self.show_position_players)
+        action.setShortcut(QKeySequence("Ctrl+D"))
+        action.setEnabled(loaded)
+        menu.addSeparator()
+        place = menu.addAction("Place on IR…", self.place_selected_on_ir)
+        place.setEnabled(self.ir_place_reason(player) == "")
+        place.setToolTip(self.ir_place_reason(player) or "Opens Franchise > Injured Reserve with him chosen.")
+        release = menu.addAction("Release to free agency", self.release_selected)
+        release.setEnabled(self.release_button.isEnabled())
+        menu.setToolTipsVisible(True)
+        for action in menu.actions():
+            action.setShortcutVisibleInContextMenu(True)
+        return menu
+
+    def _show_grid_menu(self, position) -> None:
+        row = self.player_table.rowAt(position.y())
+        if row >= 0:
+            self.player_table.setCurrentCell(row, max(0, self.player_table.columnAt(position.x())))
+        self.grid_menu().exec_(self.player_table.viewport().mapToGlobal(position))
+
+    def ir_place_reason(self, player: rr.Player | None) -> str:
+        """Why Place on IR… is not offered for ``player`` ('' when it is)."""
+
+        if player is None or self.document is None:
+            return "Select a player first."
+        if not self.franchise_panel.active:
+            return "Injured reserve is part of a franchise save. Open one to use it."
+        if self.document.is_draft_class(player):
+            return rr.MSG_DRAFT_CLASS
+        if (player.pool, player.index) in self.document.reserve_owner:
+            return "Promote this reserve to the active roster first."
+        if player.record.on_injured_reserve:
+            return f"{player.display} is already on injured reserve."
+        club = self.document.club_of(player)
+        if club is None or player.pool != "primary":
+            return rr.MSG_FREE_AGENT_IR
+        return ""
+
+    def place_selected_on_ir(self) -> bool:
+        """Finn's right-click Place on IR: jump to Franchise > Injured Reserve on his club with him chosen."""
+
+        player = self.selected_player()
+        reason = self.ir_place_reason(player)
+        if reason:
+            self._set_status(reason)
+            return False
+        assert player is not None and self.document is not None
+        club = self.document.club_of(player)
+        assert club is not None
+        if not self.franchise_panel.show_injured_reserve(club):
+            self._set_status("This franchise save has no injured reserve list for that team.")
+            return False
+        return self.franchise_panel._place_ir_clicked(selected=player.index)
+
     # ------------------------------------------------------------------ editor pane
     def _show_player(self, player: rr.Player | None) -> None:
         self.abilities_panel.set_player(player)
@@ -2762,10 +3125,12 @@ class RosterEditorPanel(QWidget):
             if users > 1:
                 shared.append(f"{which} name shared with {users - 1} other player(s)")
         if pool.free_bytes <= 0:
-            lead = "Name space is full. Reuse an existing name; a unique name may also fit in its own slot."
+            lead = ("Name space is full. Typing a name that already exists shares it (this replaces Finn's name "
+                    "picker); a unique name may also fit in its own slot.")
         else:
             lead = (f"Name space: {pool.free_bytes} of {pool.capacity_bytes} bytes free · {len(pool.blocks)} names. "
-                    "A longer name needs free space or an existing name.")
+                    "A longer name needs free space. Typing a name that already exists shares it and needs none "
+                    "(this replaces Finn's name picker).")
         self.name_pool_label.setText(lead + (" · " + "; ".join(shared) if shared else ""))
 
     def _baseline_record(self, player: rr.Player) -> rr.PlayerRecord | None:
@@ -4250,11 +4615,50 @@ class RosterEditorPanel(QWidget):
         except (OSError, ValueError) as exc:
             show_operation_error(self, "migrate the signed save copy", str(exc))
 
+    def save_copy_destination(self, folder: Path | str) -> Path:
+        """Where Save Xbox save copy writes inside the folder the user chose: a new ``<name> (edited).zip`` for
+        an Action Replay zip, a new ``<name> (edited)`` folder for an extracted save or a loose SAVEGAME.DAT.
+        Never an existing path (a number is added), never the source. A chosen folder was refused before b81
+        for a zip ("target is not a regular file"), which is the file Finn users bring."""
+
+        folder = Path(folder)
+        source = self._source_path
+        kind = getattr(getattr(self.document, "container", None), "kind", "")
+        if source is None:
+            stem = "NFL 2K5 save"
+        elif kind == "zip":
+            stem = source.stem
+        elif kind == "loose":
+            stem = source.parent.name or "NFL 2K5 save"
+        else:
+            stem = source.name
+        stem = stem.strip() or "NFL 2K5 save"
+        suffix = ".zip" if kind == "zip" else ""
+        candidate = folder / f"{stem} (edited){suffix}"
+        counter = 2
+        while candidate.exists() or (source is not None and candidate.resolve() == source.resolve()):
+            candidate = folder / f"{stem} (edited {counter}){suffix}"
+            counter += 1
+        return candidate
+
+    def save_copy_message(self, receipt: Mapping[str, Any]) -> str:
+        """The after-save words a Finn user needs: his editor saved over the zip, this one never does."""
+
+        written = str(receipt.get("target", ""))
+        both = (f"{Path(str(receipt.get('savegame', 'SAVEGAME.DAT'))).name} and "
+                f"{Path(str(receipt.get('extra', 'EXTRA'))).name}")
+        if receipt.get("kind") == "zip":
+            return (f"Signed save copy written: {written}. Your original save was not changed. Use the new zip "
+                    f"in its place, or copy {both} from it into your save; they only work as a pair.")
+        return (f"Signed save copy written: {written}. Your original save was not changed. Copy {both} from "
+                f"this folder back into your save; they only work as a pair.")
+
     def _write_copy(self) -> None:
         if self.document is None:
             return
         if self._source_kind == "save":
-            chosen = QFileDialog.getExistingDirectory(self, "Choose the folder for the signed Xbox save copy")
+            chosen = QFileDialog.getExistingDirectory(
+                self, "Choose a folder for the signed Xbox save copy (your original stays as it is)")
         else:
             suggested = (suggest_copy_name(self._source_path, suffix="roster edited")
                          if self._source_path is not None and self._source_path.is_file() else "roster-edited.xiso.iso")
@@ -4277,13 +4681,13 @@ class RosterEditorPanel(QWidget):
                 if self.undo_stack.on_change is not None:
                     self.undo_stack.on_change()
             else:
-                receipt = self.write_copy_to(chosen)
+                receipt = self.write_copy_to(self.save_copy_destination(chosen))
         except Exception as exc:  # noqa: BLE001
             show_operation_error(self, "write the copy", plain_error(exc))
             return
         written = str(receipt.get("target", chosen))
         if self._source_kind == "save":
-            self._set_status(f"Xbox save copy written: {written}. Put SAVEGAME.DAT and EXTRA back together.")
+            self._set_status(self.save_copy_message(receipt))
         else:
             self._set_status(f"Disc ready: {written}. Open it in xemu.")
             self.disc_written.emit(written)
@@ -4345,27 +4749,18 @@ class RosterEditorPanel(QWidget):
                        and (player.pool, player.index) not in self.document.reserve_owner)
         on_team = bool(movable and player is not None and player.teams)
         self.unlock_button.setEnabled(bool(player and any(player.record.depth_locks.values())))
-        if self.document is not None and self._source_kind == "save":
-            state = (id(self.document), bytes(self.document.body),
-                     tuple(tuple(t.slots) for t in self.document.teams), tuple(self.document.free_agents),
-                     tuple(tuple(p.record.values.values()) for p in self.document.players))
-            if state != self._reserve_legality_state:
-                self._reserve_legality_state = state
-                self._reserve_legality_cache.clear()
         for button, promote in ((self.promote_button, True), (self.demote_button, False)):
             legal, reason = False, "Select an owned player from an Xbox save"
             if self.document is not None and player is not None and player.pool == "primary":
                 owner = self.document.club_of(player)
                 if owner is not None and self._source_kind == "save":
-                    key = (owner, player.index, promote)
-                    if key not in self._reserve_legality_cache:
-                        try:
-                            self.document.reserve_move_check(owner, player.index, promote=promote)
-                            legal, reason = True, "EXPERIMENTAL / UNWITNESSED. Save a signed Xbox save copy."
-                        except rr.RosterRecordError as exc:
-                            reason = str(exc)
-                        self._reserve_legality_cache[key] = (legal, reason)
-                    legal, reason = self._reserve_legality_cache[key]
+                    # b81: the quick check of the document state; pressing the button runs the full transaction
+                    # (the full check here cost about 3 s a player on the SOFTDRINK save)
+                    try:
+                        self.document.reserve_move_precheck(owner, player.index, promote=promote)
+                        legal, reason = True, "EXPERIMENTAL / UNWITNESSED. Save a signed Xbox save copy."
+                    except rr.RosterRecordError as exc:
+                        reason = str(exc)
             button.setEnabled(legal)
             button.setToolTip(reason)
         self.release_button.setEnabled(on_team)
