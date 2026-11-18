@@ -588,7 +588,7 @@ class PathTests(unittest.TestCase):
         for option in ("--hydrate-from", "--hydrate-release"):
             for present_after in (False, True):
                 with self.subTest(option=option, present_after=present_after), tempfile.TemporaryDirectory() as temp:
-                    root = Path(temp)
+                    root = Path(temp).resolve()
                     repo = root / "selected"
                     tests = repo / "tests/mod_editor"
                     tests.mkdir(parents=True)
@@ -808,7 +808,7 @@ class ProcessTests(unittest.TestCase):
         # Native CPython also implements ._pth. Exercise the actual site hook
         # and a child interpreter without pretending these are Windows tests.
         with tempfile.TemporaryDirectory(prefix="winci pth ") as temp:
-            root = Path(temp)
+            root = Path(temp).resolve()
             python = root / "python"
             shutil.copy2(sys.executable, python)
             (root / "python._pth").write_text("\n".join([
