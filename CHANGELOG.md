@@ -117,7 +117,7 @@ records every feature, uniform set, correction and remaining proof limit. The
 - Keep the final pack's exact reconstruction proof separate from source rebuilding: Anniversary donor kits and the Denver/Pittsburgh/Seattle native helmet layer still have source-build blockers.
 - Repair the five earlier integration-test failures, add pin checking and portable fixture defaults, normalize release modes and prepare both product archives and Windows Setup files. Windows execution can be explicitly deferred during cross-building and remains a required publication check.
 
-## beta-76.5 — 2026-10-06
+## beta-76.5: 2026-10-06
 
 2K5 is **v1.0-RC110** and APF is **0.1.0-alpha.106**. The SOFTDRINK pack target is
 **2K28 v0.5**. These changes have offline/native proof and reviewed machine
@@ -177,7 +177,7 @@ graphic and APF DL behavior remain unresolved. Minnesota's first-position-only
 horn binding remains unfinished. No canned weekly highlights or new Noah
 gameplay witness are claimed.
 
-## beta-46 — 2026-08-15
+## beta-46: 2026-08-15
 
 **The two broken Beta 45 Playbooks actions are repaired, and the raw WR3↔TE
 research export is no longer presented as something a modder can install.**
@@ -199,7 +199,7 @@ research export is no longer presented as something a modder can install.**
 - No game writer changed. Field Art, jersey digits, jersey capacity, stock-book
   editing, source safety, and the copied-`0A` refusal keep their Beta 45 limits.
 
-## beta-45 — 2026-08-15
+## beta-45: 2026-08-15
 
 **Field Art writes 221 textures, All Textures writes 480 jersey digits, and
 jersey slots show the same capacity rank as shoulders.**
@@ -224,7 +224,7 @@ jersey slots show the same capacity rank as shoulders.**
   archive data.
 - Opening a copied or studio-built `0A` still fails closed.
 
-## beta-44 — 2026-08-14
+## beta-44: 2026-08-14
 
 **Urianus can edit every stock book, the TE-workaround copy is gone, and
 Build writes into the folder Xenia already loads.**
@@ -246,10 +246,10 @@ Build writes into the folder Xenia already loads.**
   written.
 - davidhbui's PS3 texture-parity spec is checked in as
   `docs/product/APF_PS3_TEXTURE_PARITY.md`. Weave / numbers / endzones are
-  not in this cut — those are the next writer family, not tonight's
+  not in this cut: those are the next writer family, not tonight's
   playbook-safety release.
 
-## beta-43 — 2026-08-14
+## beta-43: 2026-08-14
 
 **Four investigations, one shipped user-facing bug fixed, and the first camera
 map either game has ever had.**
@@ -263,17 +263,17 @@ Beta 41/42 replaced a hard build failure with a palette ladder that quantizes
 art down until it fits its fixed VC-LZ span. That is lossy and it shipped
 silent. **Check My Images** now sits above Build and tells you, per staged slot,
 whether your art fits as authored, will be reduced to N colours, or will not fit
-at all — before the build decides it for you.
+at all: before the build decides it for you.
 
 Finishing it turned up a defect worth more than the feature: the `sleeve` slot
 was modelled as 512x256 with six mips like the torso. The real sleeve slot is
-**128x128, five mips, with a 64-byte gap between the clean and mud palettes** —
+**128x128, five mips, with a 64-byte gap between the clean and mud palettes**
 a sevenfold error that would have produced a confident wrong answer for every
 sleeve. Slot contracts are now *derived* from the four importers with an
 import-time cross-check, not typed into a table.
 
 Also corrected: the torso/sleeve/pants copy now says **do not paint jersey
-numbers into the art** — 2K5 draws them from separate digit textures in the same
+numbers into the art**: 2K5 draws them from separate digit textures in the same
 set (Jersey/Arm 64x64, Helmet 32x32, Nameplate 1024x32), so baked-in numbers
 appear twice. And the nameplate atlas is **1024x32 horizontal**, not the 32x1024
 the copy claimed; that was a pre-fix transposed value the decoder corrected long
@@ -287,11 +287,11 @@ had not located a single camera byte.
 
 - 2K5: seven settings, row table mapped, **six presets** (Standard, Far, Side,
   Iso, Blimp, Custom). Camera Distance is a multiplier, Camera Height is world
-  units — only Angle is 0..1, and a UI that draws all three the same is wrong.
+  units: only Angle is 0..1, and a UI that draws all three the same is wrong.
 - APF: nine settings including a **Camera Pitch** axis 2K5 does not have, and
   separate Home/Away toggles.
 - **APF ships a sixth preset, `Blimp`, that the menu cannot reach.** Its block
-  is fully authored — a camera 3,750 units up, which is what its name says. It
+  is fully authored: a camera 3,750 units up, which is what its name says. It
   is unreachable because three immediates hard-code the bound and none of them
   reads `maximum()`.
 - Stated as a refusal, not an omission: the gameplay camera has **no asset-side
@@ -302,7 +302,7 @@ had not located a single camera byte.
 ### Fixed: the public inspector was mislabelling 12 of 18 sliders
 
 The save is a flat memcpy of the RAM struct, so each slider vector is stored in
-its globals' **address** order, where Catching is last — not the menu's display
+its globals' **address** order, where Catching is last: not the menu's display
 order, where it is fourth. Twelve of the eighteen vector slots were therefore
 published under their neighbour's name. A reader who saw "Human Catching 0.35"
 was looking at Human Coverage; the real Human Catching in that save is 1.0.
@@ -310,13 +310,13 @@ was looking at Human Coverage; the real Human Catching in that save is 1.0.
 Order is now derived from the address table rather than assumed, and four checks
 that had been asserting the wrong values were corrected with it. The matching
 APF defect is fixed too: blob element order is memory order, so Human Catching
-is element 9 and CPU Catching element 18 — a writer built on the old indices
+is element 9 and CPU Catching element 18: a writer built on the old indices
 would have written Coverage while claiming Catching.
 
 ### Fixed: the test harness was hiding red
 
 `conftest` reclassified a failed test as skipped whenever the failure message
-merely contained the name of an absent gitignored tree — and six of those names
+merely contained the name of an absent gitignored tree: and six of those names
 are ordinary words: `build`, `assets`, `research`, `extracted`, `artifacts`,
 `docs/updates`. A real assertion failure reading "... decided at build time" was
 reported as `Skipped: game data not present: build`. Matching is now path-shaped.
@@ -329,13 +329,13 @@ Regenerating it failed with "second-target representative edit exceeds outer
 allocation". The cause was not drift: the greedy H7A encoder is **2,599 bytes
 worse than retail** on that block *before* any edit, so a greedy rebuild
 overflows a slot retail itself fits. The generator now re-encodes by preserving
-retail's own tokens — pure Python, so the regenerated catalog is byte-identical
+retail's own tokens: pure Python, so the regenerated catalog is byte-identical
 on all three platforms rather than depending on a Linux-only binary. The
 representative edit's growth dropped from 659 bytes to **59**, and its slack rose
 from 1,367 to 1,967: the safety property strengthened.
 
 That unblocked a second correction. The SCNE per-node transform record is
-**144 bytes, not 64** — provable two ways, and the shipped catalog had been
+**144 bytes, not 64**: provable two ways, and the shipped catalog had been
 pinning a span covering 44% of the real table. At the correct stride every one
 of the 96 records checked has `m[15] == 1.0` and zero non-finite components, and
 a long-standing "non-finite components" note disappears: those bytes are a
@@ -344,7 +344,7 @@ node-name CRC-32 that reads as a signalling NaN at the wrong stride.
 ### Research landed
 
 - `docs/product/APF_GAMEPLAY_BUG_MAP.md` gains **G15**: the NFL 2K5 franchise
-  rookie draft restricts CPU round-1 picks to **4 of 17 positions** — QB/HB/DE on
+  rookie draft restricts CPU round-1 picks to **4 of 17 positions**: QB/HB/DE on
   picks 1-5, DE/HB/T on 6-32, the same board for all 32 teams. Two gates on the
   round counter replace the scoring formula with a table constant and then read
   only the top three entries. It leaks into the human's Suggested Picks as well.
@@ -354,12 +354,12 @@ node-name CRC-32 that reads as a signalling NaN at the wrong stride.
   rows are truncated to size 8, which had already produced two wrong conclusions.
 - `docs/product/CAMERA_MAP.md` is new and complete for both products.
 - The catching slider was investigated and **refused**. On 2K5 the value is
-  genuinely meaningful above 100 — the arithmetic stays linear — but it cannot be
+  genuinely meaningful above 100, the arithmetic stays linear, but it cannot be
   written (the save is signed), one press of the "+" control snaps it back to
   100, and it does not generalise: Fumble saturates, Interception inverts, and
   Fatigue is a boolean that is already off at 100.
 
-## beta-42 — 2026-08-13
+## beta-42: 2026-08-13
 
 **2K5 RC65: pants too, and a test that finds the next one.**
 
@@ -368,57 +368,57 @@ node-name CRC-32 that reads as a signalling NaN at the wrong stride.
   75472-byte bound`. Beta 41 wired the palette ladder into live helmet, jersey,
   scorebug and create-team field art but not pants, because the sweep that
   found the offenders was truncated and the resulting list was then hard-coded
-  into the test that was supposed to guard it — so the test agreed with the
+  into the test that was supposed to guard it: so the test agreed with the
   omission. Pants now uses the ladder like its siblings.
 - **That test now derives the set from the tree instead of trusting a list.**
   Anything that compresses into a bounded VC-LZ span and still quantizes at a
   flat 256 fails the suite, so a missed or newly added importer cannot inherit
   this bug by being forgotten.
 - **A failing edit is named by the coordinates it was picked by.** Beta 41's
-  message said only `pants:` — a uniform edit carries no selector, so the label
+  message said only `pants:`, a uniform edit carries no selector, so the label
   fell back to the bare kind. It now reads
   `pants (asset_code=NE, side=home, variant=0)`.
 - APF 2K8 has no functional change; it moves to alpha.74 because the shared
   updater identity is now `beta-42`.
 
-## beta-41 — 2026-08-13
+## beta-41: 2026-08-13
 
 **2K5 RC64: a fixed VC-LZ span fits the art down instead of refusing it.**
 
 - **A texture that will not fit its retail compressed span is now quantized
   down instead of failing the build.** Building could refuse with `VC-LZ stream
-  needs more than the 34416-byte bound` — 34,416 is a live helmet TXTR — and
+  needs more than the 34416-byte bound`, 34,416 is a live helmet TXTR, and
   the message named no team, no slot, and no image.
 - `quantize_levels_to_vc_lz_bound` has shipped for a while and is what the
   sleeve, digit, all-texture and Crib importers already use: palettes from 256
   down to 2, first fit wins. Four importers that compress into a bounded span
-  still called the plain 256-entry quantizer and hard-failed — live helmet,
+  still called the plain 256-entry quantizer and hard-failed: live helmet,
   jersey, scorebug, and the compressed create-team field art. **The ladder
   starts at 256, so art that already fit is byte-for-byte unchanged**; only art
   that used to fail steps down. When even two colours will not fit, the message
   says what to simplify.
-- The three P8 importers that write uncompressed fixed spans — team select
-  card, player portrait, Crib team photo — have no bound to overflow and are
+- The three P8 importers that write uncompressed fixed spans: team select
+  card, player portrait, Crib team photo: have no bound to overflow and are
   deliberately left alone.
 - **Every build failure now names the edit that caused it.** The dispatcher
   knew each edit's kind and selector and attached neither.
 - APF 2K8 has no functional change; it moves to alpha.73 because the shared
   updater identity is now `beta-41`. Reported against Beta 40.
 
-## beta-40 — 2026-08-13
+## beta-40: 2026-08-13
 
 **2K5 RC63: Team Kit equipment edits can actually be built.**
 
 - **Swapping a sock, glove, shoe, wristband, elbow pad, or long-sleeve texture
   no longer breaks the build.** Build Modded XISO refused with `Unknown uniform
-  asset ID: tset:3660:4:0:socks00` and left the source XISO untouched — and
+  asset ID: tset:3660:4:0:socks00` and left the source XISO untouched, and
   Save Project, Load Project, Import Team Kit, Undo's restore and Revert All
   all refused the same way, so a session could fill up with equipment edits
   that had nowhere to go.
 - Only the uniform *sets* live in the uniform catalog. The Team Kit's 45
   package-local equipment parts are `tset:` assets from the extended visual
   catalog, along with `p8:` textures, portraits, live faces, create-field art
-  and the scorebug — 47,237 assets the build could not name. Staging worked
+  and the scorebug: 47,237 assets the build could not name. Staging worked
   because the panel hands `replace()` an already-resolved asset object; every
   later step re-resolved the ID string through the wrong catalog.
 - All of those steps now resolve through `Nfl2k5ProductVisualCatalog`, the
@@ -429,7 +429,7 @@ node-name CRC-32 that reads as a signalling NaN at the wrong stride.
 - APF 2K8 has no functional change; it moves to alpha.72 because the shared
   updater identity is now `beta-40` and its archive bytes therefore differ.
 
-## beta-39 — 2026-08-13
+## beta-39: 2026-08-13
 
 **APF 2K8 alpha.71: Save Project keeps Fine-tune Plays, and three community
 reports answered.**
@@ -442,8 +442,8 @@ reports answered.**
   against alpha.69 and again against alpha.70.
 - **Emptying a formation now leads with what it does in game.** Urianus emptied
   the formations without a TE in `O-ManBlock` on alpha.70 and the CPU lined up
-  personnel packages that book does not contain — and one the game does not
-  ship at all — for plays that are not in the book. Static count `0x84a8ac30` /
+  personnel packages that book does not contain: and one the game does not
+  ship at all: for plays that are not in the book. Static count `0x84a8ac30` /
   get-nth `0x84a8bd20` returning 0/null was never a proof that the director
   handles an empty record gracefully, and the copy said so as if it were. The
   confirmation now opens with the report, and emptying *every* populated
@@ -453,16 +453,16 @@ reports answered.**
   entry, the allocation, and the slot's real compressed budget. A build with
   several over-budget targets reports all of them at once instead of stopping
   at the first. The uniform panel shows each shoulder slot's budget and its
-  rank among the 24 before anything is staged — the budget is set by how
+  rank among the 24 before anything is staged: the budget is set by how
   detailed retail's own artwork in that slot is, so the slot with the most free
   space can be the least able to take a busy mask. Reported by davidhbui.
-- **Field Art: outer 6 is not a shared layer.** It is one team's own endzone —
-  the package whose writer was proved first — and the old wording told users
+- **Field Art: outer 6 is not a shared layer.** It is one team's own endzone
+  the package whose writer was proved first: and the old wording told users
   that editing it changed a common layer. Withdrawn in the panel and the doc.
   Endzone layers are also region masks rather than artwork, which the copy now
   states. **Export endzone contact sheet…** renders all 118 packages into
   labelled sheets so a team's endzone can be found by eye; 31 packages are
-  identified so far. A name search cannot work — the nicknames are not on the
+  identified so far. A name search cannot work: the nicknames are not on the
   disc at all. Reported by davidhbui.
 - Fine-tune Plays keeps its full static record but no longer word-wraps 11,360
   characters of executable addresses between the user and the controls; it is
@@ -471,7 +471,7 @@ reports answered.**
   window test whose launcher settings double predated it.
 - 2K5 stays RC62. The shared updater identity is `beta-39`.
 
-## beta-38 — 2026-08-12
+## beta-38: 2026-08-12
 
 **APF 2K8 alpha.70: tagged-slot compose, empty formations, title update 1.1.**
 
@@ -484,7 +484,7 @@ reports answered.**
   role legend unproved). 3rd-and-long play choice remains runtime-unproved.
   2K5 stays RC62. The shared updater identity is `beta-38`.
 
-## beta-37 — 2026-08-12
+## beta-37: 2026-08-12
 
 **APF 2K8 alpha.69 completes the mask-preview follow-up.**
 
@@ -497,7 +497,7 @@ reports answered.**
 - Fine-tune Plays now uses honest stored-membership wording; runtime CPU
   consumption remains unproved. The shared updater identity is `beta-37`.
 
-## beta-36 — 2026-08-11
+## beta-36: 2026-08-11
 
 **APF 2K8 previews and Windows builds no longer require elevation.**
 `0.1.0-alpha.68`.
@@ -514,7 +514,7 @@ reports answered.**
   export while keeping the two shared writer slots separate from unproved
   per-team authoring.
 
-## beta-11 — 2026-07-28
+## beta-11: 2026-07-28
 
 **Exporting a Team Kit as a folder now works on Windows.** `v1.0-RC36`.
 
@@ -542,7 +542,7 @@ where that fails outright. It uses a rename there now.
 
 Nothing about discs, indexing or building changed in this release.
 
-## beta-10 — 2026-07-27
+## beta-10: 2026-07-27
 
 **beta-9 let you load your disc. This one lets you save.** `v1.0-RC35`.
 
@@ -566,7 +566,7 @@ Verified by building real mods from the reporter's own two images -- a
 scorebug, Crib photo and roster-text edits. Four builds, four outputs, each the
 size of its own source.
 
-## beta-9 — 2026-07-27
+## beta-9: 2026-07-27
 
 **The one that actually works with your disc, all the way through a build.**
 `v1.0-RC34` and `0.1.0-alpha.39`.
@@ -576,7 +576,7 @@ developed against a reporter's own two disc images rather than the project's
 copy, which is what finally exposed the causes the project's own image could
 never contain.
 
-### Fixed — a genuine disc read is accepted
+### Fixed: a genuine disc read is accepted
 - **A raw disc read has two filesystems.** The video partition sits at byte 0
   with only a placeholder in it; the game is further in. The reader stopped at
   the first filesystem, found no `default.xbe`, and rejected the disc. It now
@@ -588,14 +588,14 @@ never contain.
   there, and JSON escaping added three bytes, so the index could never match its
   own pinned hash.
 
-### Fixed — building, not just loading
+### Fixed: building, not just loading
 The build lane still demanded the user's container equal the project's rip, in
 three places. An image could load, index, be browsed and edited, then be refused
 at the final step. Container equality is gone across the build, audio and
 stadium lanes; copy lengths follow the user's real file, and identity comes from
 the located game partition, its file count and `default.xbe`.
 
-### Fixed — Stadium Studio on Fedora and openSUSE
+### Fixed: Stadium Studio on Fedora and openSUSE
 It pinned the bytes of a PNG it generates itself. zlib-ng, the system zlib on
 those distributions, emits different but perfectly valid compressed output, so
 Stadium Studio refused to open even with a flawless dump. It now verifies the
@@ -610,7 +610,7 @@ A 7,825,162,240-byte raw disc read and a 6,300,958,720-byte repack. Both
 recognised, both fully indexed (16 packs, index byte-identical to its pin), both
 accepted by the build lane's source validation.
 
-## beta-8 — 2026-07-27
+## beta-8: 2026-07-27
 
 **No Windows user could ever finish loading a game. This fixes that.**
 `v1.0-RC33` and `0.1.0-alpha.38`.
@@ -619,7 +619,7 @@ accepted by the build lane's source validation.
 - **"The generated game index did not match NFL 2K5".** The index was written in
   text mode, and on Windows text mode rewrites every `\n` as `\r\n`. With
   2,289,506 newlines, Windows produced 58,035,920 bytes against a pinned
-  55,746,414 — same disc, same packs, different file. This was unconditional:
+  55,746,414: same disc, same packs, different file. This was unconditional:
   every Windows user, every disc image, every time, and the wording blamed their
   game when their game was fine. Linux and macOS never see it, because text mode
   is a no-op there.
@@ -627,15 +627,15 @@ accepted by the build lane's source validation.
   ending. A test holds the shipped surface at zero unguarded text writes, so no
   future generated file can differ between platforms.
 
-## beta-7 — 2026-07-27
+## beta-7: 2026-07-27
 
 **beta-6 fixed half of this. If it still refused your game, or failed straight
 after loading it, this is the one.** `v1.0-RC32` and `0.1.0-alpha.37`.
 
 ### Fixed
 - **A raw disc read is accepted whatever tool made it.** beta-6 checked a *list*
-  of four known game-partition offsets — the same mistake as checking one, with
-  four guesses — and a real user's rip was not in it. The reader now **searches**
+  of four known game-partition offsets: the same mistake as checking one, with
+  four guesses: and a real user's rip was not in it. The reader now **searches**
   for the disc filesystem instead of guessing, so layouts nobody here has seen
   still work.
 - **`ModuleNotFoundError: No module named 'nfl_outer'` right after loading.**
@@ -644,11 +644,11 @@ after loading it, this is the one.** `v1.0-RC32` and `0.1.0-alpha.37`.
   adds a script's own directory to `sys.path`, but the embeddable runtime inside
   the installer does not, because its `._pth` defines the path outright. The
   tarball, CI and a source checkout all launch Python the ordinary way, which is
-  exactly why nothing we ran caught it — and the installer is what most people
+  exactly why nothing we ran caught it: and the installer is what most people
   use. Every shipped tool now restores its own directory, and the `._pth` lists
   `app\tools` too. Affected both editors.
 
-## beta-6 — 2026-07-27
+## beta-6: 2026-07-27
 
 **If the editor refused your copy of NFL 2K5, this is the release that fixes
 it.** Both products move: `v1.0-RC31` and `0.1.0-alpha.36`.
@@ -660,14 +660,14 @@ it.** Both products move: `v1.0-RC31` and `0.1.0-alpha.36`.
   container, not of a game, so people with perfectly legal copies were told
   their file "is not the supported NFL 2K5 Xbox XISO". Two real reports drove
   this: a full raw disc read of 7,825,162,240 bytes, and a repack of the same
-  game 224 sectors longer. The filesystem is now located rather than assumed —
-  byte 0 or any XGD1/XGD2/XGD3 raw-read offset — and identity comes from
+  game 224 sectors longer. The filesystem is now located rather than assumed
+  byte 0 or any XGD1/XGD2/XGD3 raw-read offset: and identity comes from
   `default.xbe` inside the image. Eleven checks moved from "equals our copy" to
   "is the right game". Loading is much faster too, since recognition hashes an
   11.9 MB executable instead of 6.3 GB.
 - **A failed build cleans up after itself on Windows.** Writers unlinked the
-  partial output while its descriptor was still open — fine on Linux, refused by
-  Windows — and swallowed the error, so the next build hit "refusing to
+  partial output while its descriptor was still open: fine on Linux, refused by
+  Windows: and swallowed the error, so the next build hit "refusing to
   overwrite existing output" with nothing visibly wrong. Affected four writers
   across both editors.
 
@@ -683,7 +683,7 @@ it.** Both products move: `v1.0-RC31` and `0.1.0-alpha.36`.
   index against its own, and every writer still checks the exact extents it
   touches. Those cover the bytes that matter, which a whole-file hash never did.
 
-## beta-5 — 2026-07-27
+## beta-5: 2026-07-27
 
 **Windows bug fix.** Editor code changed, so both products move: `v1.0-RC30` and
 `0.1.0-alpha.35`. If you are on Windows and beta-4 could not export a texture,
@@ -694,7 +694,7 @@ this is the release that fixes it.
   logos, the logo cache, the generic texture writer and uniform mips all failed
   immediately with `AttributeError: module 'os' has no attribute 'O_CLOEXEC'`.
   That flag does not exist in CPython on Windows, and four writers passed it to
-  `os.open` as a bare attribute rather than `getattr(os, "O_CLOEXEC", 0)` — the
+  `os.open` as a bare attribute rather than `getattr(os, "O_CLOEXEC", 0)`: the
   form 284 other sites in the tree already used. A user reported it against the
   ordinary "export and replace field endzone" flow; thank you.
 - **The 2K5 direct uniform-colour writer falls back correctly off Linux.**
@@ -708,7 +708,7 @@ this is the release that fixes it.
   PEP 446 makes every descriptor CPython creates non-inheritable on all
   platforms, so close-on-exec never depended on the flag that was missing.
 - Nothing was at risk on the affected machines. The failure landed in the output
-  reservation — after the read-only preflight, before any output existed — so no
+  reservation, after the read-only preflight, before any output existed, so no
   file was written at all.
 
 ### Added
@@ -720,14 +720,14 @@ this is the release that fixes it.
   shipped writer's real reservation path. Targets come from the allowlists, so a
   writer added later is covered without editing the test.
 
-## beta-4 — 2026-07-25
+## beta-4: 2026-07-25
 
 **Windows installers.** No editor code changed, so both products still identify
 as `v1.0-RC29` and `0.1.0-alpha.34`, and the tarballs are byte-identical to
 beta 3. This release adds a way to install without a command prompt.
 
 ### Added
-- **`2K5-Mod-Studio-…-Setup.exe` and `APF-2K8-Mod-Studio-…-Setup.exe`** — wizard
+- **`2K5-Mod-Studio-…-Setup.exe` and `APF-2K8-Mod-Studio-…-Setup.exe`**: wizard
   installers that need nothing preinstalled. No Python, no pip, no 7-Zip, no
   PATH changes, no command prompt. They install per-user under `%LOCALAPPDATA%`,
   so they never ask for administrator rights or touch Program Files, and they
@@ -750,7 +750,7 @@ delete the guarantee that makes the tool safe to point at a game.
 
 Instead each installer carries a **private CPython** (python.org's embeddable
 build) beside the application, with `..\app` on `sys.path` via its `._pth`. The
-application ships byte-identical to the tarball — same files, same pins — and
+application ships byte-identical to the tarball, same files, same pins, and
 runs with no `PYTHONPATH` and no dependence on the working directory.
 
 ### Reproducible, and fail-closed about it
@@ -758,7 +758,7 @@ Every byte entering the installer from outside this repository is pinned to an
 exact SHA-256 and verified before use: the interpreter and all four wheels
 (PyQt5, PyQt5-Qt5, PyQt5-sip, Pillow). A hash mismatch, an unpinned wheel the
 resolver pulled in, or a pinned wheel that fails to appear all stop the build
-rather than shipping. Version pins alone would not be enough — a version can be
+rather than shipping. Version pins alone would not be enough: a version can be
 re-uploaded and a resolver can choose a transitive dependency nobody reviewed.
 
 Both installers rebuild **byte-identical**, verified by building each twice and
@@ -780,7 +780,7 @@ say so up front rather than letting it come as a surprise.
 
 ---
 
-## beta-3 — 2026-07-25
+## beta-3: 2026-07-25
 
 **Documentation, licensing and packaging. No editor code changed**, so both
 products still identify as `v1.0-RC29` and `0.1.0-alpha.34`.
@@ -795,7 +795,7 @@ archives to point people at.
   not yet passing on Windows or macOS. Both had stopped being true: the bundled
   `extract-xiso.exe` was in the same tarball, and all six CI jobs had been
   reporting identical results. Corrected, and the title no longer says
-  "for Linux" — one archive serves all three platforms.
+  "for Linux": one archive serves all three platforms.
 - **`README.md`'s opening line** still described "two retail-free Linux mod
   editors" a few paragraphs above the section stating that all three platforms
   pass the same suite.
@@ -805,7 +805,7 @@ archives to point people at.
   both.
 
 ### Added
-- **`NOTICE.md`** — the game-IP scope (previously an appendix inside `LICENSE`),
+- **`NOTICE.md`**: the game-IP scope (previously an appendix inside `LICENSE`),
   the retail-free statement, third-party attribution for the bundled extractor,
   and the trademark notice.
 - **`tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md` now ships in
@@ -824,7 +824,7 @@ archives to point people at.
 
 ### Changed
 - `LICENSE` now contains the MIT text and nothing else, so licence scanners
-  identify the project as MIT. **No terms changed** — the game-IP paragraph moved
+  identify the project as MIT. **No terms changed**: the game-IP paragraph moved
   verbatim into `NOTICE.md` and still applies.
 - The APF asset is named `apf2k8-mod-studio-0.1.0-alpha.34-20260725.tar.gz`,
   matching the 2K5 convention of a dated asset name. Beta 2 reused one filename
@@ -839,20 +839,20 @@ cold-start with no `PYTHONPATH`.
 
 ---
 
-## beta-2 — 2026-07-25
+## beta-2: 2026-07-25
 
-**Superseded by beta 3** — its APF archive was replaced twice and its shipped
+**Superseded by beta 3**: its APF archive was replaced twice and its shipped
 documentation was wrong. Kept for the record.
 
 ### Added
 - **Windows and macOS support.** Every OS difference is concentrated in one shim
   (`mod_editor/core/platform_compat.py`). Real implementations rather than
-  `if windows: skip` — positional I/O, directory transactions, atomic
+  `if windows: skip`, positional I/O, directory transactions, atomic
   no-clobber publication, private-cache privacy, ownership and durable flushes
   each have genuine Windows and macOS paths, and where a platform cannot provide
   a guarantee the tools say so instead of pretending.
 - **APF team logos** on helmets and the score bug, and **APF field art /
-  endzones** — both proven bit-exact by an independent verifier, taking the
+  endzones**: both proven bit-exact by an independent verifier, taking the
   capability registry to 65.
 - CI matrix across Windows, macOS and Linux on Python 3.11 and 3.12, plus a
   capability-registry job and both retail-free release gates.
@@ -870,7 +870,7 @@ documentation was wrong. Kept for the record.
 
 ---
 
-## beta-1 — 2026-07-22
+## beta-1: 2026-07-22
 
 First public beta of both editors. Linux-first. See
 [`BETA_RELEASE_NOTES.md`](BETA_RELEASE_NOTES.md).

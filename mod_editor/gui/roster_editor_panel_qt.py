@@ -69,7 +69,6 @@ import struct
 import copy
 import csv
 import threading
-from tempfile import TemporaryDirectory
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
@@ -683,7 +682,7 @@ class GlobalEditDialog(QDialog):
         layout.addLayout(limits)
 
         scheme = panel.scheme
-        scope = QGroupBox(f"Positions (none ticked = every position) — {rr.SCHEME_TITLES[scheme]}")
+        scope = QGroupBox(f"Positions (none ticked = every position): {rr.SCHEME_TITLES[scheme]}")
         scope_layout = QGridLayout(scope)
         # named in the loaded scheme, and a code the scheme retired is offered greyed out so a
         # sweep cannot be aimed at a pool no player is in
@@ -694,7 +693,7 @@ class GlobalEditDialog(QDialog):
             box.setToolTip(f"{rr.position_long_name(code, scheme)} (code {code})")
             if rr.is_retired_position(code, scheme):
                 box.setEnabled(False)
-                box.setToolTip(f"{rr.position_long_name(code, scheme)} (code {code}) — retired on "
+                box.setToolTip(f"{rr.position_long_name(code, scheme)} (code {code}): retired on "
                                f"this roster; nobody carries it")
             self.positions[label] = box
             scope_layout.addWidget(box, code // 6, code % 6)
@@ -772,7 +771,7 @@ class GlobalEditDialog(QDialog):
         self._refresh_scope_label()
         if self.preview_rows:
             self.preview_rows = []
-            self.count_label.setText("Settings changed — press Show affected players again.")
+            self.count_label.setText("Settings changed: press Show affected players again.")
 
     # ------------------------------------------------------------------ behaviour
     def settings(self) -> dict[str, Any]:
@@ -1620,7 +1619,7 @@ class RosterEditorPanel(QWidget):
         header_box = QVBoxLayout(header)
         header_box.setContentsMargins(10, 8, 10, 8)
         header_box.setSpacing(2)
-        self.header_name = QLabel("—")
+        self.header_name = QLabel("-")
         name_font = QFont()
         name_font.setPointSizeF(name_font.pointSizeF() + 3)
         name_font.setBold(True)
@@ -2101,8 +2100,8 @@ class RosterEditorPanel(QWidget):
             name = rr.position_name(code, self._scheme)
             retired = rr.is_retired_position(code, self._scheme)
             labels.append(f"{name} (retired)" if retired else name)
-            tooltips[code] = (f"{rr.position_long_name(code, self._scheme)} — code {code}"
-                              + (" — this roster's scheme retired it; the picker will not write it"
+            tooltips[code] = (f"{rr.position_long_name(code, self._scheme)}: code {code}"
+                              + (": this roster's scheme retired it; the picker will not write it"
                                  if retired else ""))
         card.set_choices(labels, codes, disabled=rr.retired_position_codes(self._scheme),
                          tooltips=tooltips)
@@ -2135,17 +2134,17 @@ class RosterEditorPanel(QWidget):
         detection = self._scheme_detection
         title = rr.SCHEME_TITLES[self._scheme]
         if not detection:
-            self.scheme_label.setText(f"Position names: {title} — nothing loaded yet.")
+            self.scheme_label.setText(f"Position names: {title}, nothing loaded yet.")
             return
         detected = str(detection.get("scheme", "retail"))
-        lead = (f"Position names: {title} — detected from the {detection.get('source', 'roster data')}"
+        lead = (f"Position names: {title}, detected from the {detection.get('source', 'roster data')}"
                 if self._scheme_choice == "auto"
-                else f"Position names: {title} — chosen by you (detection said {rr.SCHEME_TITLES[detected]})")
+                else f"Position names: {title}, chosen by you (detection said {rr.SCHEME_TITLES[detected]})")
         parts = [f"{lead}: {detection.get('why', '')}."]
         if detection.get("note"):
             parts.append(f"⚠ {detection['note']}.")
         if detection.get("confidence") == "low" and self._scheme_choice == "auto":
-            parts.append("Low confidence — set it under Change position scheme if you know the disc.")
+            parts.append("Low confidence: set it under Change position scheme if you know the disc.")
         if self._source_kind == "save":
             parts.append("Check the position scheme against the disc you play with.")
         self.scheme_label.setText(" ".join(parts))
@@ -2666,7 +2665,7 @@ class RosterEditorPanel(QWidget):
         self.guardian_cap_check.blockSignals(False)
         self.guardian_bulk_button.setEnabled(player is not None)
         if player is None:
-            self.header_name.setText("—")
+            self.header_name.setText("-")
             self.header_stats.setText("")
             self.header_contract.setText("")
             self.header_profile.setText("")
@@ -2692,7 +2691,7 @@ class RosterEditorPanel(QWidget):
         experience = ("rookie (R)" if years_pro == rr.ROOKIE_YEARS_PRO else f"{years_pro} yrs pro")   # as the card prints it
         self.header_stats.setText(
             f"{record.position_name} · #{record.values['jersey']} · {record.height_text} · "
-            f"{record.weight} lb{age} · {experience} · {player.college or '—'} · "
+            f"{record.weight} lb{age} · {experience} · {player.college or '-'} · "
             f"{rr.HANDS[record.values['hand']]} hand · "
             f"{rr.POWER_RUN_STYLES[record.power_run_style_bucket]} · {family}")
         code = record.values["position"]
@@ -3760,8 +3759,8 @@ class RosterEditorPanel(QWidget):
         if export:
             lines.append(f"Export replay on the original disc body: {export['matched']}/{changed} repaired words "
                          f"match (college table entry {export['entry']} {export['college'] or '(blank)'!r})"
-                         + (f" — {export['note']}" if export.get("note") else "")
-                         + ("" if export["verified"] else " — MISMATCH: do not rely on the export for this repair"))
+                         + (f": {export['note']}" if export.get("note") else "")
+                         + ("" if export["verified"] else ": MISMATCH: do not rely on the export for this repair"))
         return "\n".join(lines)
 
     # ------------------------------------------------------------------ reports
@@ -3778,7 +3777,7 @@ class RosterEditorPanel(QWidget):
             if item.get("check") == "jersey" and "outside the NFL range" in detail:
                 detail = (detail.replace("is outside the NFL range", "is outside this check's")
                           .replace(" for a ", " range for a ") + ". This may already be present in your source")
-            lines.append(f"{words.get(level, level.capitalize())} — {who}: {detail}")
+            lines.append(f"{words.get(level, level.capitalize())}: {who}: {detail}")
         self.report.setPlainText("\n".join(lines) or "Nothing to report.")
         self.tabs.setCurrentIndex(self.tabs.count() - 1)
         return findings
@@ -4046,9 +4045,10 @@ class RosterEditorPanel(QWidget):
                       represents_current_roster: bool = True) -> dict[str, Any]:
         document = self.edits_document() if document is None else document
         from mod_editor.core.nfl2k5_roster_save_to_disc import json_text
+        from mod_editor.core.image_use import studio_staging
         destination = Path(path)
-        with TemporaryDirectory(dir=destination.parent, prefix=".roster-") as folder:
-            staged = Path(folder) / destination.name
+        with studio_staging(destination.parent, ".roster-") as stage:
+            staged = stage.path / destination.name
             staged.write_text(json_text(document), encoding="utf-8", newline="\n")
             os.replace(staged, destination)
         self._edits_path = destination
@@ -4177,9 +4177,10 @@ class RosterEditorPanel(QWidget):
 
     @staticmethod
     def _write_disc_copy(source: Path, destination: Path, edits: dict[str, Any], overwrite: bool) -> dict[str, Any]:
+        from mod_editor.core.image_use import studio_staging
         from mod_editor.core.platform_compat import publish_no_replace
-        with TemporaryDirectory(dir=destination.parent, prefix=".roster-") as directory:
-            staged = Path(directory) / destination.name
+        with studio_staging(destination.parent, ".roster-") as stage:
+            staged = stage.path / destination.name
             shutil.copyfile(source, staged)
             result = rr.apply(staged, edits)
             if overwrite:

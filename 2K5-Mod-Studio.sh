@@ -102,7 +102,7 @@ if [[ "${1:-}" == "--setup" ]]; then
         exit 1
     fi
     if ! "$venv_dir/bin/python3" -c 'from PyQt5 import QtWidgets; import PIL, numpy, capstone, unicorn' >/dev/null 2>&1; then
-        printf '%s\n' "The packages installed but one of them does not load. Run the setup again; if it repeats, share the messages above on the Discord." >&2
+        printf '%s\n' "The packages installed but one of them does not load. Run the setup again; if it repeats, share the messages above on the Discord (https://discord.gg/FkNSKRAKch)." >&2
         exit 1
     fi
     printf '%s\n' "Setup finished. Start 2K5 Mod Studio with:  ./2K5-Mod-Studio.sh"

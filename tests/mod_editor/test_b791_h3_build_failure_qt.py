@@ -71,7 +71,7 @@ class DialogTextTests(unittest.TestCase):
                        "Modern colour values: turf.value_lift=3.1 (default 1.0)",
                        "Build log: C:\\2K5\\out.xiso.iso.build-log.txt",
                        "Diagnostic report: C:\\2K5\\out.xiso.iso.diagnostic-20261102-143005.zip (send it to the SOFTDRINK "
-                       "Discord)"):
+                       "Discord, https://discord.gg/FkNSKRAKch)"):
             self.assertIn(needle, lines)
 
 

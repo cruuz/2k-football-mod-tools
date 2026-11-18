@@ -2,7 +2,7 @@
 
 ## 0.1.0-alpha.112, beta 81
 
-An update that fails to download or verify leaves the editor open. Subsequent changes receive the normal save prompt. **Help → Report a bug…** opens the Studio issue tracker. Existing project Discord members can open their server directly from Help.
+An update that fails to download or verify leaves the editor open. Subsequent changes receive the normal save prompt. **Help → Report a bug…** opens the Studio issue tracker. **Help → Join the Discord…** opens the public community invite, <https://discord.gg/FkNSKRAKch>.
 
 Portable users on alpha.111 can install this release through the update banner. The updater checks for the APF launcher and keeps the previous installation for recovery.
 
@@ -123,7 +123,7 @@ Version aligned with this release; no APF 2K8 changes ship here.
 - Recent projects are available before loading a game. Opening one loads its recorded local source first; an unavailable source path gives a clear error. Older entries without a source binding need their game loaded once.
 - Building into an existing empty folder succeeds without a replacement prompt. Non-empty destinations still require confirmation, and the loaded source remains protected. These fixes were checked offline; no in-game result is claimed.
 
-## 0.1.0-alpha.93 — beta 71.1: the reports after beta 71 — 2026-09-16
+## 0.1.0-alpha.93, beta 71.1: the reports after beta 71, 2026-09-16
 
 - Portable install instructions now declare NumPy 1.26.4 alongside the other Studio packages. Windows Setup includes it, updates retain local packages, and release checks audit third-party imports inside callbacks as well as startup imports.
 
@@ -131,7 +131,7 @@ Version aligned with this release; no APF 2K8 changes ship here.
 - CPU Play Calling explains the existing own-book scope: 24 disc teams can each have an offensive and defensive copy, for 48 independent books. This is the action's scope, not an archive capacity limit. The pool has 36 offensive and 33 defensive labels, initially sharing content; the automatic action preserves the 16 saved-team slots and their USER assignments. Manual book allocation restores access to Book Identity's broader built-folder utility, with all 40 roster slots and unused labels.
 - Formation fine-tuning sits beside the situation candidates. Change the short, medium and long ratings, preview personnel and formation weights across situations, then Confirm or add the edit to Pending edits. Confirm runs the existing checks and supports Undo and saved projects. Ratings are shared yardage anchors, so their effects can span several situations; preview weights are not guaranteed call percentages. Gameplay remains UNWITNESSED.
 
-## 0.1.0-alpha.92 — beta 71: CPU play calling situations and the play-calling page (in progress, 2026-09-15)
+## 0.1.0-alpha.92: beta 71: CPU play calling situations and the play-calling page (in progress, 2026-09-15)
 
 - CPU Play Calling keeps source books and validated staged edits in memory, so a single edit updates its affected book. Confirm runs the existing checks automatically, with optional review details and inline fixes for blockers. Pending edits collects personnel, formations, Never call, retirement with run/pass share, tendencies, audibles, requested rows and situation masks; Confirm all checks their interactions and stages the clean set in one Undo step. Blocked rows stay available to clear. MASTER personnel still affects every book.
 
@@ -147,7 +147,7 @@ Version aligned with this release; no APF 2K8 changes ship here.
 - The situation table labels its TE count as requested personnel. Bounded BASE/TU traces now execute the native depth selector and all eleven assignments: with a TE available, the one-TE call uses it; with an empty TE depth list, the native fallback supplies a fullback while the role byte still says TE. The tested roster inputs are synthetic; the cause of any particular in-game lineup remains UNWITNESSED.
 - Independent per-situation removal remains unavailable. Exhaustive native rating checks find no zero-weight rating code; clearing membership excludes a formation across all shared queries. A new native situation filter and persistent data format are still required before this can be offered as an independent edit.
 
-## 0.1.0-alpha.91 — beta 70: the APF 2K8 work after beta 69 — 2026-09-15
+## 0.1.0-alpha.91, beta 70: the APF 2K8 work after beta 69, 2026-09-15
 
 Beta 70 carries the APF 2K8 changes made after beta 69; bullets are added as each change lands.
 
@@ -156,14 +156,14 @@ Beta 70 carries the APF 2K8 changes made after beta 69; bullets are added as eac
 - Aszemple: “only thing is its very slow to import and build the logos from the PS3 Bundle”. Identical six-mask inputs now share pending fits, and fitted compression streams travel to package workers for exact reuse. With the native helper disabled, the synthetic one-crest pipeline measured 17.18 to 14.17 seconds and 32 distinct crests measured 102.17 to 72.92 seconds. Packages, fit receipts, archive readback and linked-cache outputs match beta 69 byte for byte. The repeated-input case and retail comparisons are recorded in the APF-1 report. These are Linux-host measurements of the portable path; Windows/macOS timing and in-game rendering remain UNWITNESSED. The shipped beta-69 portable default kept the greedy ladder, despite the broader optimal-fallback wording in its changelog. Beta 70 preserves those output bytes. The explicit portable optimal mode remains available for parity checks; fits try it only after a greedy miss when that mode is selected. Compression caches now distinguish the encoder policy so switching modes cannot reuse the wrong fit.
 - Urianus: “Not yet, got caught up with RL stuff”. His formation removal, situational personnel, “Except 5-2, which is never selected if added” and “TEs are still not on 3rd” reports remain open for in-game testing. The handoff separates beta-67/69 offline proofs from exact match checks, including loaded USER books and Xenia patch application. Rating help now explains that raw 0 favors the category but weighs less than 1 in the later formation draw, and that play X changes initial weight without promising a call frequency. No ordinary third-down TE guarantee or new executable patch is claimed.
 
-## 0.1.0-alpha.90 — beta 69: the APF 2K8 work after beta 67 — 2026-09-13
+## 0.1.0-alpha.90, beta 69: the APF 2K8 work after beta 67, 2026-09-13
 
 Beta 69 carries the APF 2K8 changes made after beta 67; bullets are added as each change lands.
 
 - Aszemple: “only thing is its very slow to import and build the logos from the PS3 Bundle”. Crest preflight, package compilation and linked-cache art now use bounded process workers. The native H7A helper has an exact greedy mode, and decoded sources, regenerated pixels and unchanged package results are reused after checking their content. The greedy, optimal, 8, 4 and 2 shade order, six independent masks, alpha, mip regeneration and fixed allocations stay byte-identical in the offline comparisons. The synthetic 32-crest import and package-write pipeline, including the linked logo cache, measured 1,373.3 seconds before and 70.1 seconds after on the test machine. One crest measured 41.7 seconds before and 10.2 seconds after. These measurements exclude full game-folder copying; the dataset and limits are in the J10 report. Aszemple's own timing and every in-game result remain UNWITNESSED.
 - PS3 import and build show progress as crests finish and offer Cancel while the worker runs. Cancelling staging undoes that import's completed edits; builds keep the original source untouched. Windows and macOS retain Python encoding when the Linux helper is absent, including the same optimal parse and fit decisions. Forced Python byte comparisons passed offline; native Windows and macOS execution remains UNWITNESSED.
 
-- Aszemple: “Next is how do I get the uniforms codes applied that I've already done from in the APF editor and on my rosters.” Custom Team Appearance now offers Apply my custom team appearance to this roster save. Choose raw Roster.ROS, a supported STFS package, or a decrypted PS3 roster/ZIP; review matching slots 32–39 and write a new file plus a receipt. Current controls and optional other staged slots use the disc writer's same 112-byte appearance bound per slot. The verifier reparses the output and names the slots changed. Sources are preserved; in-game appearance is UNWITNESSED.
+- Aszemple: “Next is how do I get the uniforms codes applied that I've already done from in the APF editor and on my rosters.” Custom Team Appearance now offers Apply my custom team appearance to this roster save. Choose raw Roster.ROS, a supported STFS package, or a decrypted PS3 roster/ZIP; review matching slots 32-39 and write a new file plus a receipt. Current controls and optional other staged slots use the disc writer's same 112-byte appearance bound per slot. The verifier reparses the output and names the slots changed. Sources are preserved; in-game appearance is UNWITNESSED.
 - Aszemple asked whether the editor could take “a .Ros file or PS3 roster file and update the uniforms and players”. The appearance transfer now has an explicit “Xenia only; a real console will reject this package” output for supported STFS saves. PROVED offline: changed data-block and active hash-table SHA-1 repair, metadata/header hash repair, unchanged signature bytes, and synthetic extraction round trips. The pinned local Xenia reader does not check the console signature. Full package loading remains HYPOTHESIS and UNWITNESSED; no console signing key is supplied. Fixed STFS data offsets for duplicate hash tables and higher-level boundaries. Raw output remains available when package output is refused.
 - davidhbui: “pick an in-game asset that fit my art, switch to that one in game, save, and then copy that uniform into my roster in the editor”. PS3 import now verifies all 40 teams' HOME/AWAY uniform selector records and converted colours, with exact selector before/after values and named carried/refused fields in the receipt. Jersey and shoulder codes survive conversion; custom artwork still needs its separate import. Editor-to-save overlays preserve those destination codes while changing only colours and helmet/crest selectors. Choosing a new PS3 source clears the previous Xbox appearance baseline. PS3 roster ZIPs also work when USERDATA is at the top level.
 - Aszemple: “Was able import both the logos and roster files from my rpcs3 files”. This September 13 witness confirms the import workflow. It does not establish uniform rendering, roster loading in game, or the still-needed helmet close-up; those outcomes remain UNWITNESSED.
@@ -171,16 +171,16 @@ Beta 69 carries the APF 2K8 changes made after beta 67; bullets are added as eac
 - 7ET asked for an “Offensive Scheme Install Package” and to “create a play call spreadsheet”. CPU Play Calling now offers eight authored offensive schemes, a reviewed team copy when needed, rating and tendency changes, Undo and a CSV covering all 23 situational buckets. The data comes from general football knowledge without internet research. The CSV separates coaching intent from the beta-67 model's predictions and explains buckets the eleven engine rows cannot distinguish. Optional row weights do not override the ordinary CPU lottery; tempo, snap count, weather ratio and coin-toss policy have no proved authoring control here. All in-game outcomes are UNWITNESSED.
 - Urianus reported that added heavy sets “doesn't trigger them in run situations, like on GL”. New bounded native checks reproduce beta 67's counterexample: added and cloned Jacks/Jokers have the native donor's category memberships and return run plays at the goal line. This does not reproduce or dismiss his specific game result; the witness must record the loaded book and saved USER override. His September 11 report predates beta 67.
 - Urianus: “Except 5-2, which is never selected if added.” The existing row-13 button now recognizes the actual `5-2:Big` category name. Bounded native matchups select added 5-2 zero times in 128 draws at row 12 and 63 times after moving it to row 13. MASTER changes affect every book; the on-field result is UNWITNESSED.
-- Urianus: “The main limitation now, besides playcalling, is REMOVING formations”. Never call excludes an ordinary formation from the CPU lottery without deleting its plays or compacting records, with reversible project membership receipts. A team copy made after Never call retains the original memberships, so the copied formation can be restored after saving and reopening the project. A bounded native sweep selects the retired record zero times over 10,240 tuples; gameplay is UNWITNESSED. It requires another formation for the affected personnel. Special formations 151–162 remain protected because a cached Hail Mary path bypasses this gate. Saved books, merges and gameplay remain separate witness requirements.
+- Urianus: “The main limitation now, besides playcalling, is REMOVING formations”. Never call excludes an ordinary formation from the CPU lottery without deleting its plays or compacting records, with reversible project membership receipts. A team copy made after Never call retains the original memberships, so the copied formation can be restored after saving and reopening the project. A bounded native sweep selects the retired record zero times over 10,240 tuples; gameplay is UNWITNESSED. It requires another formation for the affected personnel. Special formations 151-162 remain protected because a cached Hail Mary path bypasses this gate. Saved books, merges and gameplay remain separate witness requirements.
 - Urianus: “the patch doesn't work either afaict” and “TEs are still not on 3rd”. The beta-67 installer still wrote beside Xenia while the Studio launched with a different storage root. Launch now copies both managed patches into that storage root's patches folder, removes stale managed copies on the next launch, and forwards the reviewed apply-patches switch explicitly. Fake-process tests verify the actual launch directory and arguments. This corrects patch delivery; the pass-fetch experiment still does not replace the ordinary third-down CPU selector, and gameplay is UNWITNESSED.
 - Urianus: “I don't understand this menu”. Error messages now keep the cause without exception class prefixes, and options carry hover help. Stadium actions keep their complete captions at laptop widths. A completed build names its authored contents and distinguishes CPU Play Calling edits from an unchanged copy. The checks are offscreen interface and receipt tests; they do not establish a new in-game result.
 - 7ET asked for an “Offensive Scheme Install Package”. The new FAQ explains that Play Calling decides which plays get called, while Create formation and Create play already exist in the design workspace. Both authoring experiments are off by default, limited to CPU books and UNWITNESSED in-game. Getting Started now lists every current sidebar page in order and links the installation, import and emulator answers.
 
-## 0.1.0-alpha.89 — beta 68: no APF changes — 2026-09-12
+## 0.1.0-alpha.89, beta 68: no APF changes, 2026-09-12
 
 No APF 2K8 changes in beta 68; the version marker moves with the release tag.
 
-## 0.1.0-alpha.88 — beta 67: CPU play calling under user control — 2026-09-12
+## 0.1.0-alpha.88, beta 67: CPU play calling under user control, 2026-09-12
 
 Beta 67 is APF 2K8 only; bullets are added as each change lands.
 
@@ -197,7 +197,7 @@ Beta 67 is APF 2K8 only; bullets are added as each change lands.
 - Urianus: “The main limitation now, besides playcalling, is REMOVING formations”. PROVED bounded BASE research keeps a removed formation absent by compacting whole surviving records before normalisation. Leaving a record hole can alter a surviving secondary-category trailer during native compaction. Saved USER banks and global merges are separate sources. This is research, with the exact edit and limits documented; a new removal feature is not shipped here.
 - Urianus: “Adding heavy run formations, like Jacks or Jokers, to O-Singleback3WR ... doesn't trigger them in run situations, like on GL” and “TEs are still not on 3rd.” PROVED bounded BASE and TU 1.1 research traces the whole CPU offensive call: the situation row, the weighted category enumeration, the formation and play lotteries, the X rating and audible tags, and the last-resort fetch. Heavy sets added to O-Singleback3WR survive the native normaliser and are selected at the goal line in the harness, so no rule forbids them. The third downs without a tight end come from the category each book carries nearest the requested row, whose personnel roles hold no tight end; O-Shotgun keeps one on the same downs. The four retry attempts are not the personnel ladder, and a successful call never reaches the last-resort fetch, so the pass-fetch patch cannot change these calls. HYPOTHESIS: Urianus' exact in-game result stays unexplained and needs a trace of his loaded book and match state. This is research, with the addresses, evidence and the follow-up control-surface design documented in `apf_playcall_model.md`; no play-calling code, preset or patch changed.
 
-## 0.1.0-alpha.87 — beta 66.1: fixes for the reports after beta 66 — 2026-09-11
+## 0.1.0-alpha.87, beta 66.1: fixes for the reports after beta 66, 2026-09-11
 
 Beta 66.1 is the hotfix for what came in after beta 66; bullets are added as each change lands.
 
@@ -209,7 +209,7 @@ Beta 66.1 is the hotfix for what came in after beta 66; bullets are added as eac
 - Independent offensive copies now open directly in Fine-tune. Change clone formations, plays and same-formation audible slots, save a named book-edit recipe, and build a verified new game folder. The shared donor stays unchanged. The page explains why the original Studio project must be built before cloning and how to continue editing afterward.
 - Urianus: “I wouldn't mess with the general playcalling logic at all until we figure out how to take full control of CPU PBs.” This update changes book content and assignments without changing play-calling logic. The content-control plan and exact witness steps are in `apf_b661_cpu_book_control.md`. Expanded-book gameplay and TU compatibility remain UNWITNESSED.
 
-## 0.1.0-alpha.86 — beta 66: the UI overhaul, the Team Art browser, Discord fixes — 2026-09-11
+## 0.1.0-alpha.86, beta 66: the UI overhaul, the Team Art browser, Discord fixes, 2026-09-11
 
 Beta 66 answers every APF report in Discord since beta 64 (Aszemple, Ulf the White, davidhbui, Urianus Magnus
 Ursulinus). The bullets below are added as each change lands; in-game behaviour remains UNWITNESSED until played.
@@ -228,7 +228,7 @@ Ursulinus). The bullets below are added as each change lands; in-game behaviour 
 - **davidhbui: field material opacity writer.** Eleven named material alpha constants in field scenes 53, 252, 578 and 1333 now have scalar project recipes, Undo/Revert and normal Build composition with field textures. All four retail entries pass token-preserving H7A refit within allocation and independent reparse. The Field Art row is supplied for GUI integration; ADVANCED, off by default, rendering UNWITNESSED.
 - **Urianus Magnus Ursulinus and Aszemple: Deep Threat release-glitch investigation.** Documented the packed ability bit, dispatcher, two scoring branches and title-update matches. An animation-only repair is not proved, so no ability-disabling patch is offered. The reported release glitch remains open.
 
-## 0.1.0-alpha.85 — the 2K8 beta (beta-64): playbooks, play design, coverage, book identity, CPU play calling, PS3 imports — 2026-09-09
+## 0.1.0-alpha.85, the 2K8 beta (beta-64): playbooks, play design, coverage, book identity, CPU play calling, PS3 imports, 2026-09-09
 
 - **Fixed: Fine-tune Plays > Change formation follows the formation's retail personnel package.**
   I Jacks → Singleback Quads now selects Flush (1 RB / 0 TE / 4 WR), instead of keeping Jacks
@@ -283,21 +283,21 @@ Product identity: **0.1.0-alpha.85**. All new gameplay is **UNWITNESSED**.
   cover the integrated wave. See [wave guide](apf_wave_2026_09_09.md) for scope
   and [PS3 import guide](ps3_bundle_import.md) for format restrictions.
 
-## 0.1.0-alpha.84 — maintenance identity for Beta 53 — 2026-09-02
+## 0.1.0-alpha.84, maintenance identity for Beta 53, 2026-09-02
 
 No APF feature change. This identity rides along with Beta 53, the 2K5 release
 that adds Create a Formation / Create a Play, the Play Designer and the Throw
 Distance & Arc workspace (see the 2K5 changelog). The APF studio is
 byte-for-byte the beta-52 surface plus the version string.
 
-## 0.1.0-alpha.83 — maintenance identity for the Beta 52 hotfix — 2026-08-24
+## 0.1.0-alpha.83, maintenance identity for the Beta 52 hotfix, 2026-08-24
 
 No APF feature change. This identity rides along with Beta 52, the Windows
 binary-open hotfix for the 2K5 bump/strength/save file paths (see the 2K5
 changelog). The APF studio is byte-for-byte the beta-51 surface plus the
 version string.
 
-## 0.1.0-alpha.82 — add many formations at once, shared-play honesty, package-model clarity — 2026-08-23
+## 0.1.0-alpha.82, add many formations at once, shared-play honesty, package-model clarity, 2026-08-23
 
 - **New: Add Formation no longer stops at one.** Beta-50 fixed the dialog
   crash but still staged only a single candidate slot and refused the second
@@ -321,7 +321,7 @@ version string.
   exactly one WR role; the personnel table is XEX-resident). Both are
   documented with the decisive in-game experiments in the follow-up report.
 
-## 0.1.0-alpha.81 — readable dialogs, add-formation crash fix, who-lines-up model clarity — 2026-08-22
+## 0.1.0-alpha.81, readable dialogs, add-formation crash fix, who-lines-up model clarity, 2026-08-22
 
 - **Fixed: the Add / Change formation dialog was nearly unreadable.** The
   dialog inherited the light Windows background while keeping the studio's
@@ -346,7 +346,7 @@ version string.
   confirms with Add formation, change-formation with Apply change, both
   visible and defaulted, instead of an unstyled bare OK.
 
-## 0.1.0-alpha.80 — who lines up, CPU package levers, relayed copy, digits v2, two-layer crests and endzones — 2026-08-21
+## 0.1.0-alpha.80, who lines up, CPU package levers, relayed copy, digits v2, two-layer crests and endzones, 2026-08-21
 
 - **New: two-layer helmet crests through the project build.** Staging a crest
   with its `logo_l1` detail image now carries both layers through the session,
@@ -377,13 +377,13 @@ version string.
   relayed copy, removal+move composition, digits v2), which never published
   on its own.
 
-## 0.1.0-alpha.79 — who lines up, CPU package levers, relayed copy, digits v2 — 2026-08-18 (staged, unpublished)
+## 0.1.0-alpha.79, who lines up, CPU package levers, relayed copy, digits v2, 2026-08-18 (staged, unpublished)
 
 - **New: Who lines up.** Playbooks & Plays gains a tab that stages the APF
   MASTER formation `+0x11` 11-byte role maps as project edits; Build writes
   them into the copied MASTER PLAY (outer 180), composed with any staged
   assignment-route clones. Role 8 = TE, role 9 = WR; the other nine roles stay
-  numbered. Runtime look is unproved — check the formation in Xenia after
+  numbered. Runtime look is unproved: check the formation in Xenia after
   Build. This is not a 3rd-and-long director patch and does not touch
   `default.xex`.
 - **New: formation/package levers (experimental).** Fine-tune Plays gains
@@ -415,7 +415,7 @@ version string.
   (`._*.png`) drops are detected and explained; the 3rd-and-long status copy
   names the new package levers without claiming CPU behavior.
 
-## 0.1.0-alpha.78 — Playbooks repair and export withdrawal — 2026-08-15
+## 0.1.0-alpha.78, Playbooks repair and export withdrawal, 2026-08-15
 
 - **Fixed: 3rd-and-long editing status no longer crashes.** Beta 45 tried to
   import a research module that was not included in the APF package. The first
@@ -441,7 +441,7 @@ version string.
   retail source, a matching project, and deterministic replay verification; it
   is not part of alpha.78.
 
-## 0.1.0-alpha.77 — field extras, numbers, jersey capacity — 2026-08-15
+## 0.1.0-alpha.77, field extras, numbers, jersey capacity, 2026-08-15
 
 - **Field Art writable set is 221, not six.** The original six bases stay
   pinned. Package 659 adds 21 weave/dirtmaps (ten 64×64 8_8_8_8 weaves,
@@ -472,7 +472,7 @@ version string.
   Writers pin retail entry hashes, so a second pass from a copied `0A`
   is unsafe. Arbitrary modified volumes stay refused.
 
-## 0.1.0-alpha.76 — Fine-tune Plays does not choose personnel — 2026-08-14
+## 0.1.0-alpha.76, Fine-tune Plays does not choose personnel, 2026-08-14
 
 - **Withdrawn: Fine-tune Plays as a way to change who lines up.** The panel
   changes which MASTER plays a formation stores. It does not change who lines
@@ -496,11 +496,11 @@ version string.
   replace) so Xenia can keep the path. Close Xenia first if the folder is
   open. The retail source is still never written.
 
-## 0.1.0-alpha.75 — camera map, and a catalog that regenerates again — 2026-08-14
+## 0.1.0-alpha.75, camera map, and a catalog that regenerates again, 2026-08-14
 
-- **New: `--inspect-camera-options apf2k8`.** Nine named settings — including a
+- **New: `--inspect-camera-options apf2k8`.** Nine named settings, including a
   **Camera Pitch** axis NFL 2K5 does not have, and separate Home and Away pivot
-  and zoom toggles — with their shipped ranges, plus the named presets.
+  and zoom toggles: with their shipped ranges, plus the named presets.
 - **APF ships a sixth camera preset the menu cannot reach.** `Blimp` is fully
   authored: a camera 3,750 units above the field, which is what its name says.
   It is unreachable because three instructions hard-code the selection bound and
@@ -524,14 +524,14 @@ version string.
   0x24) and CPU Catching is element 18 (byte 0x48). The previously published
   indices would have written Coverage while claiming Catching.
 
-## 0.1.0-alpha.74 — no APF changes — 2026-08-13
+## 0.1.0-alpha.74, no APF changes, 2026-08-13
 
 Beta 42 completes the 2K5 VC-LZ work: the pants importer was missed in Beta 41
 and now uses the palette ladder, and the guard test derives its list from the
 tree rather than trusting a hand-written one. Nothing in APF changed; the shared
 update checker identifies this build as `beta-42`.
 
-## 0.1.0-alpha.73 — no APF changes — 2026-08-13
+## 0.1.0-alpha.73, no APF changes, 2026-08-13
 
 Beta 41 fixes 2K5's fixed VC-LZ span handling: a texture that will not fit its
 retail compressed allocation is now quantized down instead of failing the
@@ -539,7 +539,7 @@ build, and every build failure names the edit that caused it. Nothing in APF
 changed; the version moves so both products keep shipping from one release, and
 the shared update checker identifies this build as `beta-41`.
 
-## 0.1.0-alpha.72 — no APF changes — 2026-08-13
+## 0.1.0-alpha.72, no APF changes, 2026-08-13
 
 Beta 40 fixes 2K5's Team Kit equipment routing: swapping a sock, glove, shoe,
 wristband, elbow pad or long-sleeve texture used to refuse at Build with
@@ -547,7 +547,7 @@ wristband, elbow pad or long-sleeve texture used to refuse at Build with
 products keep shipping from one release, and the shared update checker
 identifies this build as `beta-40`.
 
-## 0.1.0-alpha.71 — Save Project keeps Fine-tune Plays — 2026-08-13
+## 0.1.0-alpha.71, Save Project keeps Fine-tune Plays, 2026-08-13
 
 Beta 39 answers three community reports.
 
@@ -557,8 +557,8 @@ the session, so Save Project produced a file that silently did not contain
 them, and reopening that project showed an untouched playbook. Urianus reported
 it against alpha.69 and confirmed it was still there in alpha.70.
 
-Every staged change — a play ticked in or out, a tagged slot carried onto
-another play, a tagged slot moved — is now one `splb_book_membership`
+Every staged change: a play ticked in or out, a tagged slot carried onto
+another play, a tagged slot moved: is now one `splb_book_membership`
 modification carrying only selectors: an outer entry, a record, and play
 indices. Never a byte of the user's SPLB resource. It round-trips through the
 project archive with the same canonical-JSON, hash-pinned handling the
@@ -574,8 +574,8 @@ the formations without a TE in `O-ManBlock` and watched the CPU line up
 personnel packages that book does not contain (00, 10, 01, 12, 11) and one the
 game does not ship at all (02), running plays that are not in the book. It
 happened whenever the director selected an emptied formation; untouched books
-behaved normally. Plays are not bound to formations — he moved an offensive
-play into a defensive book and it ran — so a formation that stores nothing does
+behaved normally. Plays are not bound to formations: he moved an offensive
+play into a defensive book and it ran: so a formation that stores nothing does
 not make the director skip it, it makes the director call something the book
 never listed.
 
@@ -585,17 +585,17 @@ come from it. That was never a proof that the director handles the null well,
 and the previous copy read as though it were. The confirmation dialog now opens
 with the report, the compile report carries
 `empty_record_runtime_safe: False`, and emptying **every** populated formation
-in a book is refused outright — that leaves the director nothing at all to
+in a book is refused outright: that leaves the director nothing at all to
 select.
 
 To keep a formation and put TEs on its tagged slots, add those plays and use
 **Move tagged slot…**; nothing has been reported against that path.
 
 **The panel's static record moved behind “Research pins”.** All of it still
-ships — every address, including the withdrawn candidates — but 11,360
+ships, every address, including the withdrawn candidates, but 11,360
 characters of hex no longer word-wrap between the play list and the buttons.
 
-## 0.1.0-alpha.70 — tagged-slot compose, empty formations, title update 1.1 — 2026-08-12
+## 0.1.0-alpha.70, tagged-slot compose, empty formations, title update 1.1, 2026-08-12
 
 Beta 38 fixes the stock-playbook verifier so a tagged slot can move onto a play
 added in the same request (X-43Blitz Bear: play 542 → 560). Fine-tune Plays
@@ -617,13 +617,13 @@ masks at `0x820FC380` with a personnel cell (also `0x84862580`);
 situation `+8`. `0x84a89ea8` maps a play onto an SPLB record, not a
 situation; `+0x1F8` is a play-type filter. `0x848699d8` filters by type
 nibble, not down. `0x848699d8` reads the current book from playcall `+0x20`
-(global `0x851A2780`); `0x8493d968` registers that object. `0x8485e7f8` has 0 `bl` callers. `0x8466af70` loads `dir_ingame.iff`. `0x8466a818` relocates DRCT pointers (NFL `0x000dc700` analog); `0x8466aae0` walks the relocated fixed table, not the instruction consumer. `0x8466abc0` indexes fixed-record children via `+0x18`; `0x8466af28` indexes strings via `+0x14`. Picker `0x8486ce88` takes the playcall object as `r3` (`0x8470c2c4`). Jump-table `0x8470bf18` takes a small integer mode 0..19 (`0x84712498`); case 2 (`li r3, 2` at `0x847163d4`) is frontend, not CPU down/ytg. Find-by-slot's book singleton is `0x8520CDE0` (init `0x84a139d0`). Shadow `0x84887e18` writes bitmasks to `0x8516C908+0x20`, not a book. Slot `+0` can be type singleton `0x850F1218` (install `0x84ad0048`); init `0x847c6da8` copies live MASTER from `0x84F3F7D8+0x2C` (`0x849fd6a8`) onto type `+0x20`. Helper `0x8486cd80` is UI-only. Setter `0x849fd6c8` is bind/SPLB-select (table `0x851D9660` via `0x849fcf60`), not per-play. `0x849d81d0` is init-stored at `0x84E28670+0x2C94` (0 `bl`). `get_down` lives only in packed property blob `0x84EB0DE4`. Property-get-by-id `0x849c9c90` uses ids 997..999, not down. Relocator `0x8466a994` inlines the instruction directory at `+0x20`. NFL `0x000dca40` is a bitset/float lookup, not an instruction indexer. `dir_ingame.iff` (outer 153) has 1015 instruction records; 1014 begin `0B 00 01 00` then a token at +4 — bytecode, not a C++ vtable. The relocator rewrites only the inline directory words; it does not follow those pointers into record bodies. Packed `lhz +6` getter `0x84ab2010` has 0 `bl` and 0 inbound pointers. DRCT vtable[2] `0x8466ba30` unlinks a list. Byte-stream `0x8466bd38` compares 94/96/97 and 275–330, not instruction tokens. `0x84bcd760` is a string classifier (0 `bl`). 0 `addi 32`/`lwzx`/`lbz 0(record)` consumer. `dir_wrapup.iff` (outer 265) has 96 records, all `0B 00`. Groups are tagged fields (`0B 00` + u16 field + u8), not a VM opcode at +4. vtable[0] `0x8466b8b0` only relocates then walks the fixed table (`bl 0x8466aae0` at `0x8466b8fc`). Packed +0x14/+0x18 indexers have 0 `bl` and 0 inbound pointers. `0x8466af48` is a bounds check (r4 < +0x10), not a type mapper. `0x84b162a8` is an embedded C++ object at +0x20. `lbz`+`cmpwi 11` then 12 is a class-id, not tag `0x0B`. Field ids inside `0B 00` groups are BE u16 `0x0100`/`0x0200`, not 1/2. Nested lead bytes `0x03`..`0x09` appear after those groups. 0 `lhz`+`cmpwi 0x0100` parser (`0x84c381e8` is stack/float). 0 skip-`0B 00` then `lhz`. 0 `lhbrx` in TEXT. `0x84a87b38` is play-type nibble `srwi 28`. `0x84bdfb00` is ASCII Y/I. 0 `cmpwi 0x0B00` in TEXT. `0x848bb1a8` is RTTI class 2 vs 11. `0x8466b660` is a map count vs 256, not field `0x0100`. `0x8466c7f0` is a packed LE f32 (4×lbz, not lwbrx). 0 lis/addi of `0x84EE65C0`. `0x84671838` is C++ vt[2] on r4+0x20, not a property registrar. 0B groups are tag + u8 variant + BE u16 field + u8 (variant 0 is 3589/3621; variants 1–5 use field `0x0200`), not a 2-byte `0B00` tag. `0x84842f48` is RTTI class 3/4/5/6/7/11/12 via +0x14/+4. `0x8476ca80` counts 10×5-byte slots at object +0x13D9. `0x8492bb24` sums 5-byte windows then uses floats. `0x84b0a4c0` compact-int-indexes stride-12 table `0x84EE65A8` (max id `0x35`) then `bctrl` get/set; 0 `cmpwi 11` in those cases. `0x849e7790` copies a 12-byte record (`0xffff` sentinel), not a 0B group. `0x847e2818` is class-id 3/5/6/7/4 via +4, not leftover leads. `0x84abb590` copies 5 bytes with no tag check. `0x84a9d7a0` copies stride-32 floats at +0x1C, not NFL table `0xB73BD0`. NFL `dir_ingame` (outer 4) has 1310 instruction records, all starting `0B`; prefixes `0B 00 01 00` / `01 01` / `01 02` — same tag+variant+u16 encoding as APF. `0x84be2b48` is an ASCII/scanf 0..11 jump, not leftover leads. `0x848777cc` loads one float from `0x84F1A150+0x1C`, not a stride-32 bitset table. `0x84b93b10` reads a 5-byte header with no `0x0B` check; caller `0x84b94258` switches on first byte 0..4. Non-`0B` leftovers are concatenated typed groups: type `0x04` is tag + 4-byte LE float (size 5) on APF and NFL; types `0x05`/`0x06`/`0x07`/`0x08`/`0x09` are 1-byte tags (a following `00` is the terminator type, not a payload); type `0x03` is tag + u8 (size 2). That walk consumes APF ingame 1015/1015 and NFL ingame 1310/1310. `0x849277a8` switches on a presentation byte (cases 4/11 store floats), not those tags. `0x84c4c480` copies 1/2/4/8 bytes with endian swap (`cmplwi` 1/2/4/8 then `lwbrx` for width 4), not a type-4 float reader. `0x84ba2520` walks a stride-12 table in r4 from a packed descriptor (`mulli` 12 + `lbz` +8), not a property `bctrl` registrar. `0x846c2068` compares object +0x62 to 4 then stores 5, not float-group size. `0x8466c890` is a float-expression VM (opcodes 0..12, table `0x8466c91c`, cursor `0x84F1779C`); case 4 is the LE f32 immediate (helper `0x8466c7f0`); case 11 consumes 1 extra byte, not a leftover 0B group. Descriptor slot `0x844dd260`. `0x8477f950` switches on a UI byte 0..12 (cases 5-10 just return). `0x84a37850` loads situation down and ytg together and wraps ytg at 100, not a play picker. `0x848864b0` compares situation word0 to 4 (not down) and playcall+0x38 to 11. `0x84a5eb08` indexes 24-byte tables by type 3/4/8/9/11/12, not leftover. `0x8475b7b0` tweens `0x84D58C70` (`lfs` +0x258, counter +0x25C), not situation ytg. NFL xbe has 0 `add r32,5` within 80 bytes of `cmp al, 0x0B`; the only `.text` sites with both `cmp al,4` and `cmp al,0x0B` within 48 bytes are `0x1138e0` (object +0x35 enum) and killed play-type classifiers `0x133fd1` / `0x27e830`. `0x84a23bd0` cycles situation +0x1F8 through 0..7 (UI play-type filter), not CPU 3rd-and-long. The only PE pointer to picker `0x8486ce88` is its `.pdata` row `0x844e8568` (section `0x844DBE00`), not a `bctrl` dispatch slot. Situation +0x1F8 setter `0x849d36d8` has 0 `bl` and 0 PE pointers. NFL relocator `0x000dc700` returns after fixing +0x14/+0x0c/+0x08 and does not walk instruction bodies. `0x848631d0` is the +0x1F8 getter used by the "Offensive Play calling" widget (`0x845FE7D4`); `0x849d36d8` remains the packed setter (0 `bl`). NFL `0x168ad0` walks a SHAP list at +0x14 (stride 0xC, dword==3), not leftover TLV. The only `lhz` +6 then `addi` 32 is relocator `0x8466a994`. `0x84a2ccd8` reads situation +0x1F8 and +0x2BC (word0==2, filter==0, tab==3), not down/ytg. The only TEXT sites with cmp 4, addi 5, and cmp 11 together are occupancy `0x84961548` and bit-pack `0x849e3a24`, not leftover sizes. Picker-caller neighborhood `0x84814dcc` / `0x84816118` compares situation word0 to 4, not Fourth Down; the addi 5 is `srawi`-3 index math. `0x8485a04c` switches word0 0/1/2/3/4/9 into mode immediates. Real `addi r,r,5` (not `li 5`) plus cmp 4/11 is still not a leftover stream: `0x84869e60` is a 4-wide fill remainder and `0x84a9adcc` is an 11-slot `lbzx` at object+5 beside the role table. `0x84a21298` is a packed UI formatter (0 `bl`) that indexes the seven labels at `0x84E446C8` ("First Down" … "Third and Long" `0x845FD8B4` … "Fourth and Long"); every `lis`/`addi` of its object `0x85212B88` sits in the same `0x84a20xxx` widget cluster, not a CPU picker. `lbz`+`cmplwi` 9 then `bctr` at `0x84911750` / `0x849ecd48` switch object fields, not leftover tags. `0x847d7590` / `0x8480189c` compare playcall `0x851A2780+0x3C` to 3/6, not down. Every TEXT `lis`/`addi` of leftover cursor `0x84F1779C` / `0x84F177AC` sits in expr-VM `0x8466c778`–`0x8466d888`; the VM entry stores r5 to cursor+8 (`0x8466c8dc`). No TEXT site loads situation +0x254 and +0x25C together and yields D&D index 4; lookalikes `0x8499e420` / `0x849a3b58` compare script node +0x10/+0x14. Packed get_ytg `0x84b68cd8` (`lwz r3, +0x25C(r3)`) has 0 `bl` and 0 PE pointers; the situation property blob that holds get_down `0x84ad92e0` has no +0x25C getter. Expr VM `0x8466c890` has only desc slot `0x844dd260` (0 inbound PE ptrs, 0 TEXT `lis`/`addi`). 0 `lwz` +0x20 then `lbz` and cmp 4/11 leftover walk. `0x84879bc0` extracts ytg bit 1, not a D&D index. Packed object get_down `0x84b68cc8` sits next to get_ytg (0 PE ptrs). `0x84ad0348` copies situation +0x254/+0x258/+0x25C onto a stack blob (only PE is `.pdata` `0x844f72b0`); not a D&D index. 0 aligned inbound PE pointers into get_down blob `0x84EB0800`..`0x84EB0F00`. Other TEXT `lwz` +0x254/+0x25C pairs are stack slots, tween `0x8475b7b0`, status query `0x84b694a8`, or a non-situation object where +0x254 is a pointer (`0x84b39458`). TEXT `lis`/`addi` of the blob only hit row base `0x84EB02D0` (packed `0x84ad9f40`: `mulli` r4, 0x1C then `lwz` +4). get_down's row `0x84EB0DD0` is not 0x1C-aligned from that base. 0 `addi` 32 then `lwz` 0 then `lbz` 0(record) leftover walk. 8 `lwz` +0x20 then `lbz` 0 sites are string/ASCII. Only TEXT `lis 0x0B00` is bitmask `0x848ee750` (`li r4, 11`). `0x84b64c88` walks a 4-byte window with UTF-8 extra-byte table `0x844C69C8` (0xC0→1, 0xE0→2, 0xF0→3; 0x0B→0), not leftover sizes. Which play the CPU
+(global `0x851A2780`); `0x8493d968` registers that object. `0x8485e7f8` has 0 `bl` callers. `0x8466af70` loads `dir_ingame.iff`. `0x8466a818` relocates DRCT pointers (NFL `0x000dc700` analog); `0x8466aae0` walks the relocated fixed table, not the instruction consumer. `0x8466abc0` indexes fixed-record children via `+0x18`; `0x8466af28` indexes strings via `+0x14`. Picker `0x8486ce88` takes the playcall object as `r3` (`0x8470c2c4`). Jump-table `0x8470bf18` takes a small integer mode 0..19 (`0x84712498`); case 2 (`li r3, 2` at `0x847163d4`) is frontend, not CPU down/ytg. Find-by-slot's book singleton is `0x8520CDE0` (init `0x84a139d0`). Shadow `0x84887e18` writes bitmasks to `0x8516C908+0x20`, not a book. Slot `+0` can be type singleton `0x850F1218` (install `0x84ad0048`); init `0x847c6da8` copies live MASTER from `0x84F3F7D8+0x2C` (`0x849fd6a8`) onto type `+0x20`. Helper `0x8486cd80` is UI-only. Setter `0x849fd6c8` is bind/SPLB-select (table `0x851D9660` via `0x849fcf60`), not per-play. `0x849d81d0` is init-stored at `0x84E28670+0x2C94` (0 `bl`). `get_down` lives only in packed property blob `0x84EB0DE4`. Property-get-by-id `0x849c9c90` uses ids 997..999, not down. Relocator `0x8466a994` inlines the instruction directory at `+0x20`. NFL `0x000dca40` is a bitset/float lookup, not an instruction indexer. `dir_ingame.iff` (outer 153) has 1015 instruction records; 1014 begin `0B 00 01 00` then a token at +4, bytecode, not a C++ vtable. The relocator rewrites only the inline directory words; it does not follow those pointers into record bodies. Packed `lhz +6` getter `0x84ab2010` has 0 `bl` and 0 inbound pointers. DRCT vtable[2] `0x8466ba30` unlinks a list. Byte-stream `0x8466bd38` compares 94/96/97 and 275-330, not instruction tokens. `0x84bcd760` is a string classifier (0 `bl`). 0 `addi 32`/`lwzx`/`lbz 0(record)` consumer. `dir_wrapup.iff` (outer 265) has 96 records, all `0B 00`. Groups are tagged fields (`0B 00` + u16 field + u8), not a VM opcode at +4. vtable[0] `0x8466b8b0` only relocates then walks the fixed table (`bl 0x8466aae0` at `0x8466b8fc`). Packed +0x14/+0x18 indexers have 0 `bl` and 0 inbound pointers. `0x8466af48` is a bounds check (r4 < +0x10), not a type mapper. `0x84b162a8` is an embedded C++ object at +0x20. `lbz`+`cmpwi 11` then 12 is a class-id, not tag `0x0B`. Field ids inside `0B 00` groups are BE u16 `0x0100`/`0x0200`, not 1/2. Nested lead bytes `0x03`..`0x09` appear after those groups. 0 `lhz`+`cmpwi 0x0100` parser (`0x84c381e8` is stack/float). 0 skip-`0B 00` then `lhz`. 0 `lhbrx` in TEXT. `0x84a87b38` is play-type nibble `srwi 28`. `0x84bdfb00` is ASCII Y/I. 0 `cmpwi 0x0B00` in TEXT. `0x848bb1a8` is RTTI class 2 vs 11. `0x8466b660` is a map count vs 256, not field `0x0100`. `0x8466c7f0` is a packed LE f32 (4×lbz, not lwbrx). 0 lis/addi of `0x84EE65C0`. `0x84671838` is C++ vt[2] on r4+0x20, not a property registrar. 0B groups are tag + u8 variant + BE u16 field + u8 (variant 0 is 3589/3621; variants 1-5 use field `0x0200`), not a 2-byte `0B00` tag. `0x84842f48` is RTTI class 3/4/5/6/7/11/12 via +0x14/+4. `0x8476ca80` counts 10×5-byte slots at object +0x13D9. `0x8492bb24` sums 5-byte windows then uses floats. `0x84b0a4c0` compact-int-indexes stride-12 table `0x84EE65A8` (max id `0x35`) then `bctrl` get/set; 0 `cmpwi 11` in those cases. `0x849e7790` copies a 12-byte record (`0xffff` sentinel), not a 0B group. `0x847e2818` is class-id 3/5/6/7/4 via +4, not leftover leads. `0x84abb590` copies 5 bytes with no tag check. `0x84a9d7a0` copies stride-32 floats at +0x1C, not NFL table `0xB73BD0`. NFL `dir_ingame` (outer 4) has 1310 instruction records, all starting `0B`; prefixes `0B 00 01 00` / `01 01` / `01 02`, same tag+variant+u16 encoding as APF. `0x84be2b48` is an ASCII/scanf 0..11 jump, not leftover leads. `0x848777cc` loads one float from `0x84F1A150+0x1C`, not a stride-32 bitset table. `0x84b93b10` reads a 5-byte header with no `0x0B` check; caller `0x84b94258` switches on first byte 0..4. Non-`0B` leftovers are concatenated typed groups: type `0x04` is tag + 4-byte LE float (size 5) on APF and NFL; types `0x05`/`0x06`/`0x07`/`0x08`/`0x09` are 1-byte tags (a following `00` is the terminator type, not a payload); type `0x03` is tag + u8 (size 2). That walk consumes APF ingame 1015/1015 and NFL ingame 1310/1310. `0x849277a8` switches on a presentation byte (cases 4/11 store floats), not those tags. `0x84c4c480` copies 1/2/4/8 bytes with endian swap (`cmplwi` 1/2/4/8 then `lwbrx` for width 4), not a type-4 float reader. `0x84ba2520` walks a stride-12 table in r4 from a packed descriptor (`mulli` 12 + `lbz` +8), not a property `bctrl` registrar. `0x846c2068` compares object +0x62 to 4 then stores 5, not float-group size. `0x8466c890` is a float-expression VM (opcodes 0..12, table `0x8466c91c`, cursor `0x84F1779C`); case 4 is the LE f32 immediate (helper `0x8466c7f0`); case 11 consumes 1 extra byte, not a leftover 0B group. Descriptor slot `0x844dd260`. `0x8477f950` switches on a UI byte 0..12 (cases 5-10 just return). `0x84a37850` loads situation down and ytg together and wraps ytg at 100, not a play picker. `0x848864b0` compares situation word0 to 4 (not down) and playcall+0x38 to 11. `0x84a5eb08` indexes 24-byte tables by type 3/4/8/9/11/12, not leftover. `0x8475b7b0` tweens `0x84D58C70` (`lfs` +0x258, counter +0x25C), not situation ytg. NFL xbe has 0 `add r32,5` within 80 bytes of `cmp al, 0x0B`; the only `.text` sites with both `cmp al,4` and `cmp al,0x0B` within 48 bytes are `0x1138e0` (object +0x35 enum) and killed play-type classifiers `0x133fd1` / `0x27e830`. `0x84a23bd0` cycles situation +0x1F8 through 0..7 (UI play-type filter), not CPU 3rd-and-long. The only PE pointer to picker `0x8486ce88` is its `.pdata` row `0x844e8568` (section `0x844DBE00`), not a `bctrl` dispatch slot. Situation +0x1F8 setter `0x849d36d8` has 0 `bl` and 0 PE pointers. NFL relocator `0x000dc700` returns after fixing +0x14/+0x0c/+0x08 and does not walk instruction bodies. `0x848631d0` is the +0x1F8 getter used by the "Offensive Play calling" widget (`0x845FE7D4`); `0x849d36d8` remains the packed setter (0 `bl`). NFL `0x168ad0` walks a SHAP list at +0x14 (stride 0xC, dword==3), not leftover TLV. The only `lhz` +6 then `addi` 32 is relocator `0x8466a994`. `0x84a2ccd8` reads situation +0x1F8 and +0x2BC (word0==2, filter==0, tab==3), not down/ytg. The only TEXT sites with cmp 4, addi 5, and cmp 11 together are occupancy `0x84961548` and bit-pack `0x849e3a24`, not leftover sizes. Picker-caller neighborhood `0x84814dcc` / `0x84816118` compares situation word0 to 4, not Fourth Down; the addi 5 is `srawi`-3 index math. `0x8485a04c` switches word0 0/1/2/3/4/9 into mode immediates. Real `addi r,r,5` (not `li 5`) plus cmp 4/11 is still not a leftover stream: `0x84869e60` is a 4-wide fill remainder and `0x84a9adcc` is an 11-slot `lbzx` at object+5 beside the role table. `0x84a21298` is a packed UI formatter (0 `bl`) that indexes the seven labels at `0x84E446C8` ("First Down" … "Third and Long" `0x845FD8B4` … "Fourth and Long"); every `lis`/`addi` of its object `0x85212B88` sits in the same `0x84a20xxx` widget cluster, not a CPU picker. `lbz`+`cmplwi` 9 then `bctr` at `0x84911750` / `0x849ecd48` switch object fields, not leftover tags. `0x847d7590` / `0x8480189c` compare playcall `0x851A2780+0x3C` to 3/6, not down. Every TEXT `lis`/`addi` of leftover cursor `0x84F1779C` / `0x84F177AC` sits in expr-VM `0x8466c778`-`0x8466d888`; the VM entry stores r5 to cursor+8 (`0x8466c8dc`). No TEXT site loads situation +0x254 and +0x25C together and yields D&D index 4; lookalikes `0x8499e420` / `0x849a3b58` compare script node +0x10/+0x14. Packed get_ytg `0x84b68cd8` (`lwz r3, +0x25C(r3)`) has 0 `bl` and 0 PE pointers; the situation property blob that holds get_down `0x84ad92e0` has no +0x25C getter. Expr VM `0x8466c890` has only desc slot `0x844dd260` (0 inbound PE ptrs, 0 TEXT `lis`/`addi`). 0 `lwz` +0x20 then `lbz` and cmp 4/11 leftover walk. `0x84879bc0` extracts ytg bit 1, not a D&D index. Packed object get_down `0x84b68cc8` sits next to get_ytg (0 PE ptrs). `0x84ad0348` copies situation +0x254/+0x258/+0x25C onto a stack blob (only PE is `.pdata` `0x844f72b0`); not a D&D index. 0 aligned inbound PE pointers into get_down blob `0x84EB0800`..`0x84EB0F00`. Other TEXT `lwz` +0x254/+0x25C pairs are stack slots, tween `0x8475b7b0`, status query `0x84b694a8`, or a non-situation object where +0x254 is a pointer (`0x84b39458`). TEXT `lis`/`addi` of the blob only hit row base `0x84EB02D0` (packed `0x84ad9f40`: `mulli` r4, 0x1C then `lwz` +4). get_down's row `0x84EB0DD0` is not 0x1C-aligned from that base. 0 `addi` 32 then `lwz` 0 then `lbz` 0(record) leftover walk. 8 `lwz` +0x20 then `lbz` 0 sites are string/ASCII. Only TEXT `lis 0x0B00` is bitmask `0x848ee750` (`li r4, 11`). `0x84b64c88` walks a 4-byte window with UTF-8 extra-byte table `0x844C69C8` (0xC0→1, 0xE0→2, 0xF0→3; 0x0B→0), not leftover sizes. Which play the CPU
 calls on 3rd-and-long
 remains runtime-unproved (down is object `+0x254` / Third Down = 3 at
 `0x848d96e4`; that helper is not a play picker). The shared update checker
 identifies this build as `beta-38`.
 
-## 0.1.0-alpha.69 — visible exports and honest playbook wording — 2026-08-12
+## 0.1.0-alpha.69, visible exports and honest playbook wording, 2026-08-12
 
 Beta 37 completes the Beta 36 mask-preview follow-up:
 
@@ -638,7 +638,7 @@ Beta 37 completes the Beta 36 mask-preview follow-up:
   runtime CPU consumption of an edited list remains unproved. The shared update
   checker identifies this build as `beta-37`.
 
-## 0.1.0-alpha.68 — previews and normal-user Windows builds — 2026-08-11
+## 0.1.0-alpha.68, previews and normal-user Windows builds, 2026-08-11
 
 Beta 36 makes `jersey_color` and `shoulder_color` previews visible when retail
 stores their unused alpha channel as all zero. The preview substitutes opaque
@@ -676,7 +676,7 @@ layers; per-team replacement remains unproved and is labeled that way.
   block-compressed formats at 8 or 16 bytes per block, where both corrections
   are no-ops; their output is unchanged, byte for byte.
 - If you built a crest with alpha.64 through alpha.66, rebuild it from the same
-  PNG — no re-authoring, just another Build.
+  PNG: no re-authoring, just another Build.
 - `derive_layout` now refuses any layout whose levels share bytes, so this
   cannot reach a crest again without failing first.
 
@@ -691,14 +691,14 @@ layers; per-team replacement remains unproved and is labeled that way.
 - **A single image no longer gets copied into `logo_l1`.** The two layers hold
   regions 0-2 and 3-5 of one crest and are not interchangeable, so the same mask
   in both selected all six regions and drew the mark once per region. One image
-  now goes to `logo_l0` and clears the detail layer — what the export dialog
+  now goes to `logo_l0` and clears the detail layer: what the export dialog
   already said happened, and what a full project Build already did. The
   copied-volume Build was the odd one out, so the same staged image could give
   you two different crests depending on which button you pressed.
 - `tools/apf_logocache_patch.py` gains the `--clear-l1` flag its Python API
   already had, so the cache can be told the same thing as the package.
 
-## 0.1.0-alpha.65 — the stock CPU playbooks, and a corrected claim — 2026-08-10
+## 0.1.0-alpha.65, the stock CPU playbooks, and a corrected claim, 2026-08-10
 
 ### Edit the CPU playbooks themselves
 
@@ -710,7 +710,7 @@ layers; per-team replacement remains unproved and is labeled that way.
 - Fifteen books ship: seven offensive (`O-ZoneBlock`, `O-WestCoast`,
   `O-ManBlock`, `O-Shotgun`, `O-TwoBack`, `O-SinglebackAce`,
   `O-Singleback3WR`), four defensive (`X-43Cover2`, `X-43Blitz`, `X-34Base`,
-  `X-34ZoneBlitz`) and four unnamed. That is the whole real set — the 36 and 33
+  `X-34ZoneBlitz`) and four unnamed. That is the whole real set: the 36 and 33
   book records in a roster save are labels over these.
 - Only the selected record's entry list is rewritten. The record trailer, every
   other record, both tail regions whose meaning is not established, and every
@@ -725,8 +725,8 @@ layers; per-team replacement remains unproved and is labeled that way.
   MASTER's 0x54-stride bitmap and called it "which plays each formation offers".
   Decoding the `SPLB` books refutes that reading: for MASTER row 147 the books
   give the 3-4 defence "Base, Fan, Razor Left…", while row 147 of that table
-  yields "Big Pinch, Big Fan, Big 2 Hard…" — 31 of 51 overlap, rows 147/148/149
-  are identical, and coverage across all populated book records is 24–25% with
+  yields "Big Pinch, Big Fan, Big 2 Hard…": 31 of 51 overlap, rows 147/148/149
+  are identical, and coverage across all populated book records is 24-25% with
   no record fully covered. The row index is not the formation index, or the
   relation is not formation-to-play.
 - That writer has been removed and `playbook_inventory` now records the relation
@@ -736,19 +736,19 @@ layers; per-team replacement remains unproved and is labeled that way.
 
 - The shared updater identity is `beta-33`.
 
-## 0.1.0-alpha.64 — two-layer crests, and playbook fine-tuning — 2026-08-10
+## 0.1.0-alpha.64, two-layer crests, and playbook fine-tuning, 2026-08-10
 
 ### The reported crest bug, root-caused
 
 - **One image was being written into both crest layers.** A crest is not one
-  picture and not even three masks — it is **six region masks split across two
+  picture and not even three masks: it is **six region masks split across two
   textures**. The shader binds `Layer0`/`Layer1` at `s0`/`s1` with a six-entry
-  palette and Region0–Region5 weights, so `logo_l0` carries regions 0-2 and
+  palette and Region0-Region5 weights, so `logo_l0` carries regions 0-2 and
   `logo_l1` carries regions 3-5. Writing your art into both drew it a second
   time in the other three palette colours.
 - Measured across all 118 crest packages: **none** have identical layers,
   **79 carry real detail art** in `logo_l1`, and **39 ship a `logo_l1` whose
-  RGB is zero with its alpha untouched** — retail's own shape for a crest that
+  RGB is zero with its alpha untouched**: retail's own shape for a crest that
   uses no detail layer.
 - One dropped image now goes to `logo_l0` and the detail layer's region masks
   are cleared with its alpha copied through byte-for-byte, so your mark is drawn
@@ -776,28 +776,28 @@ layers; per-team replacement remains unproved and is labeled that way.
 
 - The shared updater identity is `beta-32`.
 
-## 0.1.0-alpha.63 — browsed rows reach their real editor — 2026-08-10
+## 0.1.0-alpha.63, browsed rows reach their real editor, 2026-08-10
 
 ### Community issue closed
 
 - **`logo_l0 is not an editable PNG slot in this browser` (reported against
-  Beta 29 and Beta 30)** — the message was true about the browser and false
+  Beta 29 and Beta 30)**: the message was true about the browser and false
   about the product. Every one of the 118 `uniform_logo_NN` crest packages is
   written by **Logos → Team Logo**, and the browser's own search hint pointed
   people straight at those rows. Selecting a row a proved writer owns now offers
   **Edit in Team Logo… / Edit in Uniforms… / Edit in Wordmarks… / Edit in Field
   Art…** instead of a refusal. That button opens the workspace, selects the
-  exact slot, and — if you chose or dropped an image in the browser — brings it
+  exact slot, and, if you chose or dropped an image in the browser, brings it
   with you already staged. 236 crest layers, 96 uniform materials, 206
   wordmarks, and the six writable field-art textures are covered.
-- **The asset notes stopped contradicting the app** — a row a workspace writes
+- **The asset notes stopped contradicting the app**: a row a workspace writes
   no longer reads "No validated replacement writer owns this target yet"; it
   names the workspace that owns it. Rows with genuinely no writer say exactly
   that, and still offer raw/parts export.
 
 ### Stadium models
 
-- **Editable meshes are a list, not a hunt** — Stadium Studio now carries an
+- **Editable meshes are a list, not a hunt**: Stadium Studio now carries an
   **Editable meshes** picker holding every catalog-authorized POSITION target in
   the open scene (77 in the proved outer-14 / inner-8 scene). Choosing one
   selects it for Export/Import and highlights it in the 3D view; clicking a
@@ -806,7 +806,7 @@ layers; per-team replacement remains unproved and is labeled that way.
 
 ### Emulator
 
-- **Launch in Xenia never silently grays** — it stays clickable and names the
+- **Launch in Xenia never silently grays**: it stays clickable and names the
   one thing that is missing (no build yet, Xenia not configured, or a build
   folder that has since moved). When Xenia is the missing piece, clicking offers
   to choose it there and then, instead of relabelling a dead button.
@@ -823,7 +823,7 @@ layers; per-team replacement remains unproved and is labeled that way.
 
 - The shared updater identity is `beta-31`.
 
-## 0.1.0-alpha.62 — real-ISO release validation — 2026-08-09
+## 0.1.0-alpha.62, real-ISO release validation, 2026-08-09
 
 - The shipped ISO recognition, extraction, load, and read-only source path was
   revalidated against a real USA APF 2K8 image in addition to the retail-free
@@ -838,17 +838,17 @@ layers; per-team replacement remains unproved and is labeled that way.
   removed and stripped; release/runtime pins now cover the 51,336-byte
   privacy-clean ELF.
 
-## 0.1.0-alpha.61 — never-silent-gray + blank-preview fail-closed — 2026-08-09
+## 0.1.0-alpha.61, never-silent-gray + blank-preview fail-closed, 2026-08-09
 
 ### Beta 29 refresh
 
-- **Updater identity corrected** — alpha.61 now identifies its release channel
+- **Updater identity corrected**: alpha.61 now identifies its release channel
   as `beta-29`, not the stale `beta-22` packaging label, so manual and automatic
   checks no longer offer Beta 29 to an already-current Beta 29 build.
 
 ### Community issues closed or honesty-labeled
 
-- **Import / Replace gray with no explanation (Discord class)** — expanded
+- **Import / Replace gray with no explanation (Discord class)**: expanded
   never-silent-gray across:
   - Stadium Studio **mesh** Import/Export (disableReason + click-to-explain)
   - Stadium Studio **package** Replace/Export/Revert/Build (locked embeds teach
@@ -861,11 +861,11 @@ layers; per-team replacement remains unproved and is labeled that way.
   - **Field Art** focused editor Export/Replace/Build/Revert (stage wall)
   - **Team Logo** Export/Replace/Build/Revert/Master (load/stage/profile walls)
   - **Custom Team Appearance** Stage/Revert when unloaded
-  - **All Textures empty search** — teaches logo_l0, number_N_color, font_albedo
+  - **All Textures empty search**: teaches logo_l0, number_N_color, font_albedo
   - **Equipment Colors Revert** never silent-gray; **roster Open/Save/Assign/Clear** never silent-gray
   - **APF stock playbook routes** Copy/Swap/Revert never silent-gray
   - **Audio Load waveform** never silent-gray (bank/unavailable rows explain)
-  - **Text workspace Apply/Revert** never silent-gray — empty selection, UTF-16
+  - **Text workspace Apply/Revert** never silent-gray: empty selection, UTF-16
     unit limit, no-change, and nothing-staged walls explain on click
   - **Text Sheet Export/Import** never silent-gray (load/loading walls)
   - **Ratings sheet Export/Import** never silent-gray (load/workspace walls)
@@ -878,24 +878,24 @@ layers; per-team replacement remains unproved and is labeled that way.
   - **Audio Play** never silent-gray (bank/unsupported rows explain)
   - **Audio PCM template / Replace from audio / XMA Replace / Revert** never silent-gray
   - **Audio shortlist construction** never silent-gray (toggle/page/match/clear/review/move/export)
-  - **Team Logo Place on helmet** never silent-gray under Retail coverage —
+  - **Team Logo Place on helmet** never silent-gray under Retail coverage
     disableReason teaches Full-shell-only placement (coverage-changed path matched)
-  - **Helmet logo placement Save** never silent-gray when art is out of canvas —
+  - **Helmet logo placement Save** never silent-gray when art is out of canvas
     status + accept re-validation teach the wall
   - **All Textures / inventory Previous/Next** never silent-gray (first/last/Load walls)
   - **Complete audio Previous/Next + Export decoded rows** never silent-gray; export_rows clears disableReason when query current
   - **XMA1 encoder wizard Save/Test** never silent-gray (path/Wine/tone-test walls)
-- **Field Art “Stock NFL endzones” button** — one-click jump to the ≈118 stock
+- **Field Art “Stock NFL endzones” button**: one-click jump to the ≈118 stock
   endzone family in the ownership map + inventory (browse/export only; focused
   editor still owns the six writable base slots). Unloaded state stays clickable
   and teaches Load first.
-- **Blank previews / “Preparing preview…” forever** — AssetBrowser, Uniform,
+- **Blank previews / “Preparing preview…” forever**: AssetBrowser, Uniform,
   Wordmark, digital_font, Team Logo crest, Field Art slots, stadium package +
   embedded TXTR fail closed after **45s** with re-select / Export-raw guidance
   (token/generation-scoped so a newer selection cancels the watchdog).
-- **Crib drop-parity hang under offscreen tests** — fit-mode `QInputDialog`
+- **Crib drop-parity hang under offscreen tests**: fit-mode `QInputDialog`
   must be mocked; production drop path already offers Contain/Cover/Stretch.
-- **PORTME preview errors** — list full supported PNG format set (incl. DXN
+- **PORTME preview errors**: list full supported PNG format set (incl. DXN
   namefont, format-32 cubemap face-0, linear DXT) + re-select guidance.
 
 ### Honesty
@@ -906,36 +906,36 @@ layers; per-team replacement remains unproved and is labeled that way.
   authorized embedded TXTRs are writable offline.
 - Freehand routes still not Editable; G1/G2 still offline-bytes only.
 
-## 0.1.0-alpha.60 — nameplate DXN, linear TXTR, package maps, keyboard/UX — 2026-08-08
+## 0.1.0-alpha.60, nameplate DXN, linear TXTR, package maps, keyboard/UX, 2026-08-08
 
 ### Community issues closed or honesty-labeled
 
-- **Nameplate gibberish (font_albedo / font_normal)** — root cause: base-only DXN
+- **Nameplate gibberish (font_albedo / font_normal)**: root cause: base-only DXN
   (`packed_mips=False`). All 11 NameFont packages preview on real 0A. Outer IDs:
   114, 283, 504, 538, 609, 640, 937, 956, 963, 1312, 1383.
-- **Jersey numbers discoverability** — `number_0_color`…`number_9_color` 512×512;
+- **Jersey numbers discoverability**: `number_0_color`…`number_9_color` 512×512;
   All Textures search teaches these names (Titans-style “missing” often catalog;
   tip says not under shoulder material).
-- **Save Players teaching** — Face shield/visor label; Play-by-play ID = VO name
+- **Save Players teaching**: Face shield/visor label; Play-by-play ID = VO name
   table (G6 “Number 68…” class); G10/G11 2nd-level charge gate honesty
   (offline tier/abilities editable; XEX gate unproved).
-- **Equipment Stage never silent-gray** — stays clickable; Load/filter reasons.
-- **Linear / rain textures** — untiled uncompressed TXTR (e.g.
+- **Equipment Stage never silent-gray**: stays clickable; Load/filter reasons.
+- **Linear / rain textures**: untiled uncompressed TXTR (e.g.
   `crowd_shirt_stripe_color_rain`) PNG-preview instead of linear PORTME.
-- **Linear DXT** — untiled DXT1/2_3/4_5 TXTR bases PNG-preview (pitch-padded
+- **Linear DXT**: untiled DXT1/2_3/4_5 TXTR bases PNG-preview (pitch-padded
   block rows); same BC decoders as tiled path.
-- **Helmet shell recommended path** — Team Logos UI teaches Full-shell +
+- **Helmet shell recommended path**: Team Logos UI teaches Full-shell +
   Normal logo with **opaque shell body α255** (names 0x88 translucency defect).
-- **General DXT5A** — coach_hair_occlusion / field_radiance / digit atlases
+- **General DXT5A**: coach_hair_occlusion / field_radiance / digit atlases
   beyond digital_font 128×128.
-- **Cubemap lightmaps** — format-32 face-0 preview (SpecularLightBox class).
-- **Import model silent gray** — buttons stay clickable; click explains Load-game.
-- **Equipment Colors** — team filter; HOME kit only / AWAY kit only; per-set teaching.
-- **Keyboard** — Ctrl+F / Esc clear search / Ctrl+/ hints; studioSearch markers.
-- **G1 package map** — formation `+0x0D` 11-byte role map; experimental offline
+- **Cubemap lightmaps**: format-32 face-0 preview (SpecularLightBox class).
+- **Import model silent gray**: buttons stay clickable; click explains Load-game.
+- **Equipment Colors**: team filter; HOME kit only / AWAY kit only; per-set teaching.
+- **Keyboard**: Ctrl+F / Esc clear search / Ctrl+/ hints; studioSearch markers.
+- **G1 package map**: formation `+0x0D` 11-byte role map; experimental offline
   export Package-Map Copy (not a runtime fix pack).
-- **G2 menu composition** — formation link-table copy writer + experimental export.
-- **Playbook browser** — package-map line in inspector; Ace/Dime/Bear ⚠ annotations.
+- **G2 menu composition**: formation link-table copy writer + experimental export.
+- **Playbook browser**: package-map line in inspector; Ace/Dime/Bear ⚠ annotations.
 
 ### Honesty
 
@@ -943,34 +943,34 @@ layers; per-team replacement remains unproved and is labeled that way.
 - Experimental PLAY exports do not stage project edits or mutate source ISO.
 - Freehand routes still not Editable.
 
-## 0.1.0-alpha.59 — community texture/import UX, model tooltips, Field Art honesty, playbook flags — 2026-08-07
+## 0.1.0-alpha.59, community texture/import UX, model tooltips, Field Art honesty, playbook flags, 2026-08-07
 
 ### Community issues closed or honesty-labeled
 
-- **Import fit chooser** — `fit_slot_image` offers Contain/Cover/Stretch; wordmark combo includes Stretch.
-- **G1/G2 RE spike** — shared `playbook_package_rule_spike` + gameplay map addresses (no fake fix pack).
-- **Continuation re-verify** — real `extracted/.../0A` logo_l0/l1 format-15 decode+PNG export; logo patch source-read-only with decode-back max error 0.
-- **More Xenos PNG previews** — 8, 1_5_5_5, 5_6_5, 8_8 (plus prior 8888 / 4_4_4_4 / DXT family); PORTME lists supported formats.
-- **Playbooks** — filter for ⚠ Ace/Dime/Bear community-flagged books only.
-- **Field Art blurb** — names ~118 stock NFL endzones vs six writable proved slots.
+- **Import fit chooser**: `fit_slot_image` offers Contain/Cover/Stretch; wordmark combo includes Stretch.
+- **G1/G2 RE spike**: shared `playbook_package_rule_spike` + gameplay map addresses (no fake fix pack).
+- **Continuation re-verify**: real `extracted/.../0A` logo_l0/l1 format-15 decode+PNG export; logo patch source-read-only with decode-back max error 0.
+- **More Xenos PNG previews**: 8, 1_5_5_5, 5_6_5, 8_8 (plus prior 8888 / 4_4_4_4 / DXT family); PORTME lists supported formats.
+- **Playbooks**: filter for ⚠ Ace/Dime/Bear community-flagged books only.
+- **Field Art blurb**: names ~118 stock NFL endzones vs six writable proved slots.
 
-- **logo_l0 / logo_l1 format 15 (`4_4_4_4`)** — re-verified; regression tests drive
+- **logo_l0 / logo_l1 format 15 (`4_4_4_4`)**: re-verified; regression tests drive
   shipped `apf_inner.decode_txtr_base_rgba` + PNG write without retail bytes
   (`tests/mod_editor/test_apf_xenos_4444_png.py`). Import/swap remains the
   existing logo writer path (beta-27 decode + offline logo patch).
-- **Import resize** — Contain / Cover / Stretch via shared `image_fit`; dialog
+- **Import resize**: Contain / Cover / Stretch via shared `image_fit`; dialog
   and drag/drop share `fit_slot_image`. Stretch mode added for forced non-aspect
   fits; CLI `tools/nfl_fit_image.py` documents it.
-- **Import edited model gray without reason** — helmet/player import buttons now
+- **Import edited model gray without reason**: helmet/player import buttons now
   always carry a tooltip explaining load-required vs same-topology contract
   (`model_export_qt.set_context`).
-- **Field Art stock NFL** — focused editor copy states that ≈118 stock endzone
+- **Field Art stock NFL**: focused editor copy states that ≈118 stock endzone
   packages live in the inventory/All Textures browser; only six offline-proved
   base slots are writable. Wall: `docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md`.
-- **Playbook Ace/Dime/Bear warnings** — browser annotations only (no fake fix
-  pack). Gameplay map: `docs/product/APF_GAMEPLAY_BUG_MAP.md` (G1–G14).
-- **§6.1 ledger** — `docs/product/S61_EDITOR_BUG_WALLS.md` fix-or-wall tracker.
-- **Facemask / turtleneck** — remains per-team HOME/AWAY Equipment Colors
+- **Playbook Ace/Dime/Bear warnings**: browser annotations only (no fake fix
+  pack). Gameplay map: `docs/product/APF_GAMEPLAY_BUG_MAP.md` (G1-G14).
+- **§6.1 ledger**: `docs/product/S61_EDITOR_BUG_WALLS.md` fix-or-wall tracker.
+- **Facemask / turtleneck**: remains per-team HOME/AWAY Equipment Colors
   (not global); visor is per-player Save Players type, not a uniform tint.
 
 ### Honesty
@@ -978,7 +978,7 @@ layers; per-team replacement remains unproved and is labeled that way.
 - No freehand route Editable claim. No per-team endzone writer overclaim.
 - Writers remain copy-only with independent verifiers.
 
-## 0.1.0-alpha.55 candidate — whole-shell v24, complete wordmarks/save players, roster truth, and release hardening — 2026-08-04
+## 0.1.0-alpha.55 candidate, whole-shell v24, complete wordmarks/save players, roster truth, and release hardening, 2026-08-04
 
 ### Team Logo ownership is explicit in the editor
 
@@ -997,7 +997,7 @@ layers; per-team replacement remains unproved and is labeled that way.
 
 - **Logos & Team Art → Wordmarks** exposes the complete independently selected
   `uniform_textlogo_00.iff` through `uniform_textlogo_205.iff` family. The
-  selector is typed 0–205 and shows current ROST slot-6 team ownership; it does
+  selector is typed 0-205 and shows current ROST slot-6 team ownership; it does
   not alias the 118 square Team Logo crest slots.
 - File selection and drag/drop accept ordinary image dimensions through
   explicit Contain or Cover fitting to 512×128. Transparency is composited onto
@@ -1137,7 +1137,7 @@ layers; per-team replacement remains unproved and is labeled that way.
   shell's DXN normal + specular-lightmap path, so whole-shell designs read
   matte. A second import mode, **native material**, instead repaints the
   helmet package's `helmet_color` texture with literal RGB (BC1, full mip
-  chain, deterministic opaque encoder) while the shell stays on material 1 —
+  chain, deterministic opaque encoder) while the shell stays on material 1
   one material and one shading path for body and crest, so the design inherits
   the retail metallic response.
 - The semantic 512×512 weight mask is composited over the team shell colour
@@ -1158,12 +1158,12 @@ layers; per-team replacement remains unproved and is labeled that way.
   The palette-mask lane remains the bounded decal route; neither mode claims
   arbitrary source RGB survives literally.
 
-## 0.1.0-alpha.53 candidate — headless crest pipeline, save assignments, roster parity, and model export 2026-08-03
+## 0.1.0-alpha.53 candidate: headless crest pipeline, save assignments, roster parity, and model export 2026-08-03
 
 ### Team crests and helmet coverage
 
 - **Custom Team Appearance now owns the missing shell-color path for user slots
-  32–39.** HOME and AWAY each expose ten ARGB swatches plus exact helmet and
+  32-39.** HOME and AWAY each expose ten ARGB swatches plus exact helmet and
   crest selectors with unproved bytes labeled opaque. The one-click 2017 Eagles
   preset preserves the helmet model and complete opaque helmet tail, selects
   crest 30 with the complete Xenia-proved crest-routing sequence, and uses
@@ -1216,7 +1216,7 @@ layers; per-team replacement remains unproved and is labeled that way.
   whole-volume changed-span and atomic-publication checks.
 - **Accepted custom teams now have a direct raw-save appearance path.** Switch
   the same panel to **Raw Roster Save**, load a raw `Roster.ROS`, and the editor
-  maps user-facing IDs 24–31 to ROST slots 32–39 before exposing HOME/AWAY
+  maps user-facing IDs 24-31 to ROST slots 32-39 before exposing HOME/AWAY
   palettes and helmet/crest selectors. It writes only a new payload plus
   receipt, SHA-binds the source, revalidates unique aligned pointer ownership,
   restricts each edit to an exact 112-byte union, and independently reopens and
@@ -1375,7 +1375,7 @@ layers; per-team replacement remains unproved and is labeled that way.
 - Requires FFmpeg on `PATH` for conversion only. Without it, exact files still
   work and anything else is refused with an explanation.
 
-## 0.1.0-alpha.51 — the executable answers three open questions 2026-07-30
+## 0.1.0-alpha.51: the executable answers three open questions 2026-07-30
 
 One session's work, kept as one entry: decrypting `default.xex` settled the rating
 labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
@@ -1385,7 +1385,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - **All 31 rating bytes are editable, up from 28, and all 27 names now come from
   the executable rather than inference.** `tools/xex_extract_pe.cpp` decrypts
   `default.xex` into its 54 MB loaded image, which contains an **attribute
-  descriptor table at `0x820E4D94`** — 27 records of stride `0x60`, each holding
+  descriptor table at `0x820E4D94`**: 27 records of stride `0x60`, each holding
   the UI abbreviation at `+0x00`, the display name at `+0x0C`, and a pointer at
   `+0x18` to that attribute's own setter. The setter's `stb` displacement names
   the byte, decoded from instruction words for all 27 records.
@@ -1397,7 +1397,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   excluded neighbours, and all four unnamed bytes (`0xBD`, `0xC5`, `0xD2`, `0xD4`)
   carry a neutral label. No descriptor record points at their setters, so the
   game's own UI has no name for them and none is invented. `0xD4` is the odd one
-  out — it owns formula slot 24 and a getter but no UI string, which is exactly
+  out: it owns formula slot 24 and a getter but no UI string, which is exactly
   the "hidden rating" earlier notes described. The Base Ratings tab lists 31 rows
   and the private CSV exports 31 columns.
 - **An APFe-derived relabelling was applied and then reverted the same day.** Its
@@ -1408,12 +1408,12 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   looks like X" reasoning on top of that produced six confident wrong names. The
   write-up keeps the whole path, including the wrong turn:
   `docs/research/apf_rating_slot_settlement.md`.
-- **Not every one of the 31 bytes is a 0–99 magnitude, and the writer now knows
+- **Not every one of the 31 bytes is a 0-99 magnitude, and the writer now knows
   the difference.** Read off the 1,437 stock records with a populated block:
   `Kicking Style` (`0xD1`) holds 49 at every field position with 99 for the 30
   kickers and 1 for the 30 punters, and `0xD2` holds 0 in 1,433 records and 1 in
   2. Both are indices, so an unobserved value is refused in
-  `validate_field_value` — at the writer, so the desktop panel, the ratings CSV
+  `validate_field_value`: at the writer, so the desktop panel, the ratings CSV
   and the CLI are all covered. `Leadership` (`0xD3`, constant 50 everywhere) and
   `Consistency` (`0xD7`, 99 in 1,435 of 1,437) are recorded as constants but
   deliberately *not* blocked: APF shipped them unvaried, so writing them is
@@ -1421,7 +1421,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   the set is small, `observed_stock_values`.
 - Caveat for anyone parsing an APFe export: `RunCoverage` appears twice in the
   header, the header names 169 of 177 fields, and past the rating block the names
-  are shifted off their data — `SpecialTeamDemon` flags 12 quarterbacks and 4
+  are shifted off their data: `SpecialTeamDemon` flags 12 quarterbacks and 4
   punters. Only the 31 rating columns are trustworthy, and only positionally.
 
 ### Field art
@@ -1443,7 +1443,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   key dominates, so the cap bounded nothing: the 1.44 MB endzone block ran past
   six minutes without finishing and looked like a hung test suite. It now records
   the newest *earlier* position per key, so every visited link is a legal
-  candidate — **28 seconds** for the same block and the same output.
+  candidate: **28 seconds** for the same block and the same output.
   `compress_h7a_best`'s subprocess ceiling dropped 900s to 180s so a pathological
   input takes the greedy fallback instead of stalling its caller.
 - Measured the real budget, in `docs/research/apf_h7a_allocation_budget.md`: a
@@ -1462,7 +1462,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - **The crest editor now offers all 118 of the game's logo slots, up from 24.**
   APF ships `uniform_logo_00.iff` through `uniform_logo_117.iff`. Twenty-four are
   worn by built-in teams; the other ninety-four are the game's own selectable logo
-  library — the "swappable options" a modder described cycling through in the
+  library: the "swappable options" a modder described cycling through in the
   in-game uniform editor while asking how to get more of their art onto helmets.
 - This was a **catalog limit, not a writer limit**. `build_patch` already took
   `entry_index` as an ordinary parameter and consulted `PINNED_ENTRIES` only via
@@ -1472,8 +1472,8 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   against the unmapped `uniform_logo_00.iff` (outer entry 363) beside the
   Americans control.
 - Slots are **resolved from the user's own archive** by CRC32 of the uppercase
-  filename, not from a typed table. The packages are scattered — slot 0 lives at
-  outer entry 363 while slot 30 is at 1133 — and a hand-written list of a
+  filename, not from a typed table. The packages are scattered: slot 0 lives at
+  outer entry 363 while slot 30 is at 1133: and a hand-written list of a
   hundred-odd indices is a list someone can get wrong. The picker starts as the
   twenty-four teams and widens once a game is loaded.
 - **Library slots are labelled by index, never given invented team names.** That
@@ -1504,13 +1504,13 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 
 - **Exported stadium glTF now opens at a sane size in Blender.** APF authors
   geometry in centimetres and glTF's unit is the metre, so an unscaled export
-  arrived ~100x too large — a stadium spans ~17,759 units, well past Blender's
+  arrived ~100x too large: a stadium spans ~17,759 units, well past Blender's
   default 1000 m clip distance. A modder reported it as "not sure if the gltf is
   loading correctly on blender", with a screenshot of a mesh filling the viewport.
 - The conversion is **one root node scaled by 0.01**, not a rewritten buffer.
   `scene.bin` stays byte-identical game data, which the static topology
   conformance spec depends on, and the position writer's recipe still declares
-  `coordinate_space` as the const `serialized_scne_object_space` — pre-scaling the
+  `coordinate_space` as the const `serialized_scne_object_space`: pre-scaling the
   buffer would have put the export and the writer in different spaces.
 - **The trade-off is stated in the file rather than left to be discovered.**
   Anything read out of a viewer is now in metres while a recipe must be in raw
@@ -1521,7 +1521,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - Verified on the real stadium scene: one root, all 89 mesh nodes parented to it,
   buffer still reading raw centimetres, and the scaled extent landing in the tens
   of metres. `tests/apf_gltf_units_test.py` pins that the declaration matches what
-  the wrapper actually does — metadata claiming a conversion that was not applied
+  the wrapper actually does: metadata claiming a conversion that was not applied
   would be worse than none.
 - **Not verified by me:** the Blender round-trip itself. Re-exporting from Blender
   may bake the root scale into vertices, so anyone building a recipe from a
@@ -1534,7 +1534,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   header: each `0x30` record is
   `[absolute vector][parent-relative vector][name/crc/parent/child/sibling]`. Both
   the old and new models put the name block at the same address, so names, CRCs
-  and the child/sibling topology always validated — only the vectors moved, and
+  and the child/sibling topology always validated: only the vectors moved, and
   they moved to the *next* record.
 - Two things that looked like findings were artifacts of it: "the serializer omits
   the two float4 payloads from the terminal record" (there is no record *count+1*
@@ -1559,28 +1559,28 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - **Task #10 is closed: the crest UV transform is pixel-shader constant `c29`.**
   Three `ps_3_0` variants declare it as `ReverseLogoScaleAndOffset`, a single
   `float4`, and all three carry the compiled default `(1, 1, 0, 0)`. It is not in
-  any asset, so no texture edit can move it — which is why the crest box never
+  any asset, so no texture edit can move it: which is why the crest box never
   responded to art changes.
 - **The name points at the mirrored side, but that is not proved.** The constant
   is called *Reverse*, so the shader has a notion of a reversed helmet side and a
-  UV transform for it — the obvious way to draw one crest on both sides. Its
+  UV transform for it: the obvious way to draw one crest on both sides. Its
   compiled default is identity though, so a mirror only happens if the engine
   overrides `c29` at draw time. Catching that write is task #11; until then no
   claim is made about the "wings are backwards" report.
 - **New tool: `tools/apf_xex_shader_interfaces.py`.** Point it at the decrypted
   image from the already-vendored `tools/xex_extract_pe.cpp` and it reports every
-  shader constant interface — name, register set, register index, count and
+  shader constant interface: name, register set, register index, count and
   compiled default. **130 constant tables** are present. It prints an interface
   report only; no shader bytecode or texture bytes are read out.
 - **The region-colour scheme is declared outright**, where it had only been
   measured by painting test patterns and reading screenshots. Shader `84E95944`
   binds `RegionMap` next to `Region0Weight`…`Region5Weight` and the same
-  `Palette[6]` at `c12`–`c17` as the crest shader, plus `WeaveMap` and three
+  `Palette[6]` at `c12`-`c17` as the crest shader, plus `WeaveMap` and three
   wrinkle-normal maps. Six regions, six palette entries, six weights. Seven
   shaders bind a `RegionMap`.
 - **Do not patch `c29` by register number.** The crest and cloth shaders are
-  register-compatible variants of one material — same `Layer0`/`Layer1` samplers,
-  same `Palette` range, same lighting registers — but `c29` is
+  register-compatible variants of one material: same `Layer0`/`Layer1` samplers,
+  same `Palette` range, same lighting registers: but `c29` is
   `ReverseLogoScaleAndOffset` in one and `WeaveRepeat` in the other (and `c26`,
   `c27`, `c31`, `c36` are likewise reused). A register-global patch would set
   fabric weave repetition to a UV transform. Any executable patch has to be scoped
@@ -1594,7 +1594,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   exist on the asset side too. If the crest shader is reachable as an asset, editing
   it beats patching the executable outright.
 
-## 0.1.0-alpha.50 — rating-slot research 2026-07-28
+## 0.1.0-alpha.50: rating-slot research 2026-07-28
 
 > **Superseded by alpha.51:** the predicted shift did not exist. The shipped
 > mapping was already correct; APFe's labels are misassigned.
@@ -1608,7 +1608,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   is not rewritten until a save-diff confirms it; the write-up states the exact
   prediction that experiment should produce.
 
-## 0.1.0-alpha.49 — draw on the crest in the app 2026-07-28
+## 0.1.0-alpha.49: draw on the crest in the app 2026-07-28
 
 - **Edit…** on the team-logo panel opens the crest at its exact 512x512 size:
   pencil, eraser, fill, eyedropper, full colour picker with alpha, and zoom to
@@ -1618,7 +1618,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - `tools/nfl_fit_image.py` converts images to an exact size from a terminal,
   one file or a whole folder at a time.
 
-## 0.1.0-alpha.48 — helmet crests accept any image 2026-07-28
+## 0.1.0-alpha.48: helmet crests accept any image 2026-07-28
 
 - **The team-logo panel refused anything that was not already 512x512.** A
   crest pulled from anywhere never is, so helmet-logo work died on that dialog.
@@ -1627,40 +1627,40 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   did. Your original file is never modified and the proved writer still gets an
   exact 512x512 RGBA PNG.
 
-## 0.1.0-alpha.47 — no APF change 2026-07-28
+## 0.1.0-alpha.47: no APF change 2026-07-28
 
 - Version parity only. No APF behaviour changed.
 
-## 0.1.0-alpha.46 — no APF change 2026-07-28
+## 0.1.0-alpha.46: no APF change 2026-07-28
 
 - Version parity only. No APF behaviour changed.
 
-## 0.1.0-alpha.45 — no APF change 2026-07-28
+## 0.1.0-alpha.45: no APF change 2026-07-28
 
 - Version parity only. No APF behaviour changed.
 
-## 0.1.0-alpha.44 — no APF change 2026-07-28
+## 0.1.0-alpha.44: no APF change 2026-07-28
 
 - Version parity only. No APF behaviour changed.
 
-## 0.1.0-alpha.43 — no APF change 2026-07-28
+## 0.1.0-alpha.43: no APF change 2026-07-28
 
 - Version parity only. The 2K5 side fixed a stale on-screen version and three
   capabilities its Uniforms page never rendered; APF behaviour is unchanged.
 
-## 0.1.0-alpha.42 — the PNG importer accepts real PNGs 2026-07-28
+## 0.1.0-alpha.42: the PNG importer accepts real PNGs 2026-07-28
 
 - The shared PNG importer demanded colour type 6 at bit depth 8, non-interlaced,
   and refused everything else. Every standard colour type and bit depth is now
   decoded and widened to RGBA internally.
 
-## 0.1.0-alpha.41 — shared registry row count 2026-07-28
+## 0.1.0-alpha.41: shared registry row count 2026-07-28
 
 - No APF behaviour changed. The shared capability registry gained NFL 2K5's
   general texture lane, so the APF runtime gate's shared row count moved from
   66 to 67. APF's own 34 capabilities are unchanged.
 
-## 0.1.0-alpha.40 — the game partition is found, not guessed 2026-07-28
+## 0.1.0-alpha.40: the game partition is found, not guessed 2026-07-28
 
 - **A legally dumped disc could be refused with "does not appear to be a valid
   xbox iso image."** The bundled `extract-xiso` probes exactly four partition
@@ -1690,7 +1690,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   ledger (0A/0B/1A/1B and default.xex, by exact size and hash) is still the
   identity check, and all six files come out byte-identical to it.
 
-## 0.1.0-alpha.39 — a disc image is identified by its contents 2026-07-27
+## 0.1.0-alpha.39: a disc image is identified by its contents 2026-07-27
 
 - Selecting an APF disc image no longer requires the whole container to hash to
   the project's own rip. The per-file ledger (0A/0B/1A/1B and default.xex, by
@@ -1699,7 +1699,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   container hash is still recorded and still keys the extraction cache.
 - No capability, pin or writer contract changed.
 
-## 0.1.0-alpha.38 — generated text is LF on every platform 2026-07-27
+## 0.1.0-alpha.38: generated text is LF on every platform 2026-07-27
 
 - Every shipped module now pins the line ending when it writes text. Text mode
   on Windows rewrites `\n` as `\r\n`, so any file this product generates and
@@ -1711,18 +1711,18 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - No capability, pin or writer contract changed. Binary writes were never
   affected.
 
-## 0.1.0-alpha.37 — sibling imports work on installed Windows copies 2026-07-27
+## 0.1.0-alpha.37: sibling imports work on installed Windows copies 2026-07-27
 
 - Fixed `ModuleNotFoundError` from the shipped `tools/*.py` on installed Windows
   copies. Those scripts import each other, and the embeddable CPython the
   installer ships defines `sys.path` from a `._pth` file without adding a
   script's own directory the way every ordinary interpreter does.
   `apf_texture_patch` and `apf_roster` were among those affected. Never
-  reproducible from the tarball, from source, or in CI — only after installing.
+  reproducible from the tarball, from source, or in CI: only after installing.
 - Each shipped tool now restores its own directory, and the `._pth` lists
   `app\tools` as a second, independent guard. No capability changed.
 
-## 0.1.0-alpha.36 — failed builds clean up after themselves on Windows 2026-07-27
+## 0.1.0-alpha.36: failed builds clean up after themselves on Windows 2026-07-27
 
 - Fixed cleanup after a failed write. Every writer unlinked the partial output
   while its descriptor was still open, which is correct on Linux and impossible
@@ -1734,14 +1734,14 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   `apf_logo_patch` and `apf_texture_patch` were all affected.
 - No capability, pin or guarantee changed.
 
-## 0.1.0-alpha.35 — the texture writers run on Windows 2026-07-27
+## 0.1.0-alpha.35: the texture writers run on Windows 2026-07-27
 
 - Fixed the crash that made **every APF texture writer unusable on Windows**.
   Field art, team logos, the logo cache, the generic texture writer and uniform
   mips all failed before doing any work with
   `AttributeError: module 'os' has no attribute 'O_CLOEXEC'`. That flag does not
   exist in CPython on Windows, and four writers passed it to `os.open` as a bare
-  attribute instead of `getattr(os, "O_CLOEXEC", 0)` — the form 284 other sites
+  attribute instead of `getattr(os, "O_CLOEXEC", 0)`: the form 284 other sites
   in the tree already used. Reported by a user against the ordinary "export and
   replace field endzone" flow.
 - **No capability changed and no guarantee was weakened.** The registry stays at
@@ -1752,7 +1752,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   fail-closed refusals are byte-for-byte what alpha.34 proved.
 - Nothing was ever at risk on the affected machines. The failure landed in the
   output reservation, after the read-only preflight and before any output
-  existed, so no file was written at all — the refusal dialog's "the original
+  existed, so no file was written at all: the refusal dialog's "the original
   game was not modified" understated it.
 - Added `tests/mod_editor/test_shipped_tools_posix_only.py`, which needs **no
   retail data**. Every existing test over these writers is gated on extracted
@@ -1760,11 +1760,11 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   parity with Linux and macOS while never executing one `os.open` inside a
   writer. The new file scans both release allowlists for bare POSIX-only
   `os.open` flags and, with those names deleted from `os`, drives every shipped
-  writer's real reservation path — asserting the fail-closed refusal still
+  writer's real reservation path: asserting the fail-closed refusal still
   refuses for the right reason. Targets come from the allowlists, so a writer
   added later is covered without editing the test.
 
-## 0.1.0-alpha.34 — project-backed Audio cue labels 2026-07-20
+## 0.1.0-alpha.34: project-backed Audio cue labels 2026-07-20
 
 - Added the product contract
   `project_metadata_only_stable_logical_cue_id` for all 47,775 playable APF
@@ -1791,7 +1791,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   sealed-package metrics remain pending until the concurrent core and GUI
   implementation freezes. Alpha.33 remains preserved unchanged.
 
-## 0.1.0-alpha.33 — selected-sound Audio drag and drop 2026-07-20
+## 0.1.0-alpha.33: selected-sound Audio drag and drop 2026-07-20
 
 - Added the product contract
   `selected_exact_slot_xma1_or_pcm16_wav` and a visible **Drop .xma or exact
@@ -1818,7 +1818,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   deterministic rebuild, complete APF suite, combined cross-title suite, and
   independent review pass. Alpha.32 remains preserved unchanged.
 
-## 0.1.0-alpha.32 — validated Audio pack review candidate 2026-07-20
+## 0.1.0-alpha.32: validated Audio pack review candidate 2026-07-20
 
 - Replaced the one-click batch-audio import hand-off with the product contract
   `fully_validated_read_only_preview_then_explicit_apply`. **Review replacement
@@ -1852,10 +1852,10 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   its complete APF and cross-title suites, clean stage/extraction gates, and
   deterministic rebuild passed; Alpha.31 remains preserved unchanged.
 
-## 0.1.0-alpha.31 — Add-all-matching and safe Audio teardown 2026-07-20
+## 0.1.0-alpha.31: Add-all-matching and safe Audio teardown 2026-07-20
 
 - Added **Add all matching (N)** to the Audio shortlist. It uses the exact
-  applied search/kind/role/source query—or the active Soundtrack album—rather
+  applied search/kind/role/source query: or the active Soundtrack album: rather
   than only the current 100-row page. Already selected rows are skipped and
   new rows retain stable game-catalog order.
 - Kept the 256-sound shortlist boundary atomic. If all new matches would not
@@ -1877,7 +1877,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   process-group cancellation. Alpha.31 adds no encoder, source audio, retail
   bytes, private source path, project payload, or desktop interaction.
 
-## 0.1.0-alpha.30 — interruptible Audio preview and waveform decode 2026-07-20
+## 0.1.0-alpha.30: interruptible Audio preview and waveform decode 2026-07-20
 
 - Changed **Play** to **Cancel preview** while APF is preparing a private WAV.
   A click, selected-row change, source/model change, or page transition now
@@ -1910,7 +1910,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   were terminal-only and headless; authored-audio audibility still requires a
   controller-driven Xenia A/B with the modder's own encoder and audio.
 
-## 0.1.0-alpha.29 — owned Audio browsing lifecycle 2026-07-20
+## 0.1.0-alpha.29: owned Audio browsing lifecycle 2026-07-20
 
 - Added an applied Audio query token covering the decoded model epoch, search,
   record kind, role, source/bank, and page offset. During the 180 ms typing
@@ -1942,14 +1942,14 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   No interactive desktop, emulator, private game source, or retail audio was
   used for this release.
 
-## 0.1.0-alpha.28 — batch PCM16 replacement packs 2026-07-20
+## 0.1.0-alpha.28: batch PCM16 replacement packs 2026-07-20
 
 - Added a second, metadata-only audio replacement-pack contract:
   `apf2k8_mod_studio_audio_replacement_pack/v2`. Choose **Exact PCM16 WAV**
   before creating a folder or ZIP template; its listed payload paths are
   `pcm16/*.wav`. A template can still describe any filtered set, the
   Soundtrack album, the reviewed shortlist, or all 47,775 editable AUDO/AUSB
-  rows. It carries target shape and source/project binding only—never original
+  rows. It carries target shape and source/project binding only: never original
   audio, decoded source names, an encoder, preimages, or rollback bytes.
 - Added project-atomic batch WAV import through the modder's existing,
   separately configured XMA1 encoder. Every supplied WAV must be one exact
@@ -1987,7 +1987,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   archive identity are recorded in `APF2K8_STATUS.md` and the adjacent
   `.sha256` sidecar; no interactive desktop or emulator was launched.
 
-## 0.1.0-alpha.27 — selected-sound PCM authoring bridge 2026-07-20
+## 0.1.0-alpha.27: selected-sound PCM authoring bridge 2026-07-20
 
 - Added **Export PCM authoring template…** and **Replace from PCM WAV…** to
   every individually editable Audio row: 2,261 standalone AUDO sounds plus
@@ -2002,7 +2002,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   `{channels}`, `{sample_rate}`, `{sample_count}`, and `{encoded_size}`
   placeholders. No shell command is accepted or constructed.
 - Kept external-tool configuration outside `.apf2k8mod`: resolved encoder/Wine
-  paths, literal argv, and a 30–1800 second timeout live only in per-user
+  paths, literal argv, and a 30-1800 second timeout live only in per-user
   application settings. Deleted/corrupt tools report **Needs attention** rather
   than breaking the Audio page. A 600-second default covers the longest
   soundtrack authoring jobs better than the backend's shorter library default.
@@ -2024,7 +2024,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   180-second passive slot-43 observe control preserved the source and ended
   `path_not_reached`. Ordinary no-input boot does not exercise the defensive
   roster-builder path, so modified mode stays locked pending a deliberately
-  navigated positive observe run. The 0–99 editor already covers all 63,112
+  navigated positive observe run. The 0-99 editor already covers all 63,112
   mapped base-rating cells; true 53-player runtime teams remain an emulator-side
   multi-consumer project, not a data-only edit.
 - Sealed the exact retail-free allowlist after independent GO review: `104`
@@ -2036,7 +2036,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   byte-identical. The adjacent `.sha256` sidecar, not this packaged document,
   is the archive's authoritative identity.
 
-## 0.1.0-alpha.26 — audio ZIP hand-off and accessible shell 2026-07-20
+## 0.1.0-alpha.26: audio ZIP hand-off and accessible shell 2026-07-20
 
 - Added a clear **Editable folder / ZIP hand-off** selector to the Audio batch
   authoring workflow. Either format can describe the current filters, the
@@ -2065,14 +2065,14 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   system fonts, and navigation, operation status/progress, Build, and Launch
   expose descriptive accessibility text. Focused offscreen Qt coverage checks
   both product shells; this is not a visual or screen-reader certification.
-- This remains an exact-slot, pre-encoded one-stream RIFF XMA1 workflow—not an
+- This remains an exact-slot, pre-encoded one-stream RIFF XMA1 workflow: not an
   audio encoder. WAV/FLAC/MP3 input and authored-audio runtime causality remain
   unproved. Alpha.26 was the then-current headless-tested packaged checkpoint;
   Alpha.25 remains the prior sealed retail-free package. The exact allowlisted
   stage and clean extraction pass the retail-free and isolated runtime gates;
   no interactive desktop or emulator was launched.
 
-## 0.1.0-alpha.25 — batch audio authoring checkpoint 2026-07-19
+## 0.1.0-alpha.25: batch audio authoring checkpoint 2026-07-19
 
 - Added the Audio tab's retail-free **Create replacement template…** and
   **Import replacement folder…** workflow across all 47,775 individually
@@ -2080,7 +2080,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   substreams. A template may come from the current search/kind/role/source
   filters or the exact reviewed shortlist. It contains only generated target
   IDs, coordinates, exact slot shape, alias ownership, and loaded-source
-  binding—never original audio or source-owned sound names.
+  binding: never original audio or source-owned sound names.
 - Added safe manifest-plus-folder batch admission for already encoded,
   one-stream RIFF XMA1 files. Missing listed files are intentional skips. The
   importer rejects unknown files/rows, repeated identities or filenames,
@@ -2125,7 +2125,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   runtime gate. The archive remains deliberately self-hash-free and is
   authenticated by its adjacent checksum sidecar.
 
-## 0.1.0-alpha.24 — headless packaged checkpoint 2026-07-19
+## 0.1.0-alpha.24: headless packaged checkpoint 2026-07-19
 
 - Added an output-drive free-space preflight before hashing or creating a
   private build stage. APF Build now requires room for the complete extracted
@@ -2153,7 +2153,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   Alpha.24's exact archive identity is authenticated by its adjacent checksum
   sidecar. No GUI or emulator was launched.
 
-## 0.1.0-alpha.23 — previous packaged checkpoint 2026-07-19
+## 0.1.0-alpha.23: previous packaged checkpoint 2026-07-19
 
 - Extended strict pre-encoded RIFF XMA1 Replace/Revert, modified badges, Undo,
   project save/load, replacement preview, and typed Build from the 2,261
@@ -2171,7 +2171,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - Closed alias and retail-byte safety. The one `cwdloop` physical allocation has
   two disclosed semantic owners. Identical edits through both IDs deduplicate;
   divergent writes to the same bytes fail before publication. Projects retain
-  canonical user packets plus semantic shape/owner fingerprints only—no source
+  canonical user packets plus semantic shape/owner fingerprints only: no source
   audio, preimage, source fingerprint, physical coordinate, or descriptor byte.
   Session admission, project load, modified preview, and Build each reject any
   replacement containing one complete `0x800`-byte packet found anywhere in
@@ -2181,7 +2181,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   scan took 14.13 seconds and peaked at 208,896 KiB RSS. The 40,316 unique whole
   AUSB payload hashes remain an inventory measurement, not the safety boundary.
 - Recorded the runtime and decoder boundaries without promoting causality. The
-  private candidate booted, selected **Track 12 — Bury Me Standing Remix**, and
+  private candidate booted, selected **Track 12: Bury Me Standing Remix**, and
   visibly remained in playback for 25 seconds without a crash. The completed
   objective capture experiment was negative/inconclusive: its sustained segment
   matched neither the mutated candidate nor stock Track 12 (best 17-second
@@ -2207,7 +2207,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   byte-identical. The sealed package's own changelog remains deliberately
   self-hash-free; this source entry was updated after sealing.
 
-## 0.1.0-alpha.22 — sealed 2026-07-19
+## 0.1.0-alpha.22: sealed 2026-07-19
 
 - Added an experimental exact-slot editor for all 2,261 standalone `AUDO`
   resources. Selecting a **Standalone AUDO** row now exposes **Replace with
@@ -2234,7 +2234,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - Did not claim a general audio encoder. WAV, FLAC, MP3, WMA, XMA2, and
   size-changing XMA input remain unsupported because the local distributable
   toolchain has no validated XMA1 encoder. The 45,514 `AUSB` substreams and all
-  19 physical multi-cue banks—including both 15-track soundtrack encodings—
+  19 physical multi-cue banks: including both 15-track soundtrack encodings-
   remain browse/play/export-only while their cue-directory/repack semantics are
   unresolved.
 - Completed a matched Xenia runtime spot check instead of leaving playback as
@@ -2267,7 +2267,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   free; this post-seal source entry and the adjacent sidecar authenticate the
   immutable archive.
 
-## 0.1.0-alpha.21 — 2026-07-19
+## 0.1.0-alpha.21: 2026-07-19
 
 - Promoted bounded player **First name** and **Last name** replacement into the
   runnable product source. The existing token-preserving ROST route now admits
@@ -2290,7 +2290,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   fingerprint; it does not persist retail player names, alias-owner lists,
   source strings, ROST records, preimages, physical offsets, or game bytes.
 - The runtime basis remains the isolated Xenia `Marino` → `CODEX` proof: **Dan
-  CODEX #13 QB** rendered in player selection and **QB #13 DAN CODEX — GOLD
+  CODEX #13 QB** rendered in player selection and **QB #13 DAN CODEX: GOLD
   STAR** rendered on the Star Card without the former startup crash. The
   complete Alpha.21 product suite passes `648/648` in `90.763s`.
 - Completed the real-source public product smoke through the same actions a
@@ -2337,7 +2337,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   teams still require an executable consumer/accessor extension rather than a
   larger name allocation.
 
-## 0.1.0-alpha.20 — 2026-07-19
+## 0.1.0-alpha.20: 2026-07-19
 
 - Turned **Export complete audio catalog…** into a self-describing private
   audio library. Its v2 manifest retains the role, source/bank, format, sample
@@ -2353,15 +2353,15 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   control-character sanitization applies to the convenience CSV/playlist;
   the source-derived JSON metadata remains the authoritative record.
 - Kept the boundary unchanged: the ZIP is private retail-derived output, Track
-  01–15 remains honest when artist/title are unknown, original XMA1 may require
+  01-15 remains honest when artist/title are unknown, original XMA1 may require
   a compatible player, and no encoder, replacement writer, or cue/loop
   ownership is implied.
 
-## 0.1.0-alpha.19 — 2026-07-18
+## 0.1.0-alpha.19: 2026-07-18
 
 - Added **Export all original banks (19)…** as a separate private audio route.
-  It copies every physical external XMA1 `.bin`—including `jukeboxmusic` and
-  `jukebox22`—through the already bounded raw-bank reader into one atomically
+  It copies every physical external XMA1 `.bin`-including `jukeboxmusic` and
+  `jukebox22`-through the already bounded raw-bank reader into one atomically
   published, non-overwriting ZIP. The deterministic manifest records the
   source fingerprint, exact bank name/outer identity/name ID, payload size and
   SHA-256, plus every AUSB descriptor owner and conservative role label.
@@ -2376,7 +2376,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   are private retail-derived files and never enter `.apf2k8mod` projects or the
   public application package.
 
-## 0.1.0-alpha.18 — 2026-07-18
+## 0.1.0-alpha.18: 2026-07-18
 
 - Added **Import ratings sheet…** beside the complete roster export, with
   `Ctrl+Shift+I` as a keyboard shortcut. The v2
@@ -2396,7 +2396,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   when preserving or reverting an existing source `100`; authored values stay
   exact `0..99` integers.
 - Kept the CSV private and the project retail-free. `.apf2k8mod` stores only
-  canonical authored rating payloads and semantic target metadata—not the CSV,
+  canonical authored rating payloads and semantic target metadata: not the CSV,
   player names, source values, roster records, or preimages.
 - Real-source smoke covered 63,112 cells, Dan Marino Speed `40` → `99`, active-
   project conflict confirmation, one-step Undo, project-ZIP inspection, and an
@@ -2404,9 +2404,9 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   `0..99` and contain no actual `100`; the source-100 compatibility/revert case
   remains covered by the focused synthetic contract test.
 
-## 0.1.0-alpha.17 — 2026-07-18
+## 0.1.0-alpha.17: 2026-07-18
 
-- Promoted the completed 0–99 ratings slice from source-head wording to the
+- Promoted the completed 0-99 ratings slice from source-head wording to the
   packaged product documentation. Getting Started now reports the live
   8 Editable / 6 Preview / 3 Export-only / 14 Coming Soon capability split,
   and the README points to each archive's authoritative checksum sidecar and
@@ -2414,7 +2414,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - Product code is unchanged from the 617/617-tested Alpha 16 ratings build;
   this checkpoint corrects release-facing version/document consistency.
 
-## 0.1.0-alpha.16 — source head, 2026-07-18
+## 0.1.0-alpha.16: source head, 2026-07-18
 
 - Promoted all 28 mapped per-player **Base Ratings** from exact Preview to
   strict native `0..99` authoring. Each edit is addressed by player index and
@@ -2441,14 +2441,14 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   Summary, and Team Select. A one-byte Dan Marino Speed `40` → `99` candidate
   preserved 284,014 of 284,015 tokens, booted, and loaded/rendered the edited
   player card without the former crash. APF has no numeric ratings screen, so
-  the latter proves transport and player-record load—not a measured gameplay
+  the latter proves transport and player-record load: not a measured gameplay
   effect.
 - Kept ratings-sheet export as a private, owner-only planning artifact. The
   public `.apf2k8mod` format contains only user-authored semantic deltas and
   retail-free target metadata; it never embeds the source roster or original
   rating values.
 
-## 0.1.0-alpha.15 — source head, 2026-07-18
+## 0.1.0-alpha.15: source head, 2026-07-18
 
 - Added **Export ratings sheet…** to Rosters & Players. It creates a private,
   wide CSV with all 2,254 on-disc players, identity/position/team context, and
@@ -2468,7 +2468,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   and a practical guest-state logging route. Each must end with a concrete
   experiment/result before writer exposure changes.
 
-## 0.1.0-alpha.14 — 2026-07-18
+## 0.1.0-alpha.14: 2026-07-18
 
 - Added a searchable, read-only **Base Ratings** panel for every one of the
   2,254 on-disc player records. It exposes all 28 independent stored bytes: 27
@@ -2547,7 +2547,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   `b38350de9dbc121c963861db44e2bac2d9caa8595cdd35e39766f2b205203279`.
   The complete receipt is in [STATUS](APF2K8_STATUS.md).
 
-## 0.1.0-alpha.13 — 2026-07-18
+## 0.1.0-alpha.13: 2026-07-18
 
 - Added a capability-to-action binding layer between the shared registry and
   the APF desktop. Every capability card that remains Editable or Export-only
@@ -2634,7 +2634,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   sidecar, and extracted package remain immutable; this exact receipt was added
   only to the source documentation after sealing.
 
-## 0.1.0-alpha.12 — 2026-07-18
+## 0.1.0-alpha.12: 2026-07-18
 
 - Replaced the generic Stadium asset page with the first honest Stadium Studio.
   It inventories all 93 exact `stadium` SCNE records and prepares a private,
@@ -2685,7 +2685,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   primary/secondary/utility/build/launch styling globally. Full detail is in
   `APF2K8_STATUS.md`.
 
-## 0.1.0-alpha.11 — 2026-07-18
+## 0.1.0-alpha.11: 2026-07-18
 
 - Expanded Uniforms & Equipment from the 96 specialist writer cards to the
   complete 408-record category. **Editable Materials (96)** preserves the four
@@ -2752,7 +2752,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   leading-glyph/padding and dense-text ellipsis are retained honestly in the
   detailed `APF2K8_STATUS.md` receipt and queued for the next source build.
 
-## 0.1.0-alpha.10 — 2026-07-18
+## 0.1.0-alpha.10: 2026-07-18
 
 - Added a complete **Review selected** Audio workspace. It displays up to 256
   hand-picked sounds in exact insertion order with local 100-row paging,
@@ -2783,7 +2783,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   oversized CSVs, or a late invalid row. Only authored replacement text enters
   project/recovery state.
 - A Text Sheet necessarily contains original strings from the user's own game,
-  so it is a private editing file—not a shareable project or release artifact.
+  so it is a private editing file: not a shareable project or release artifact.
   `.apf2k8mod` remains replacement-only and the public package remains
   retail-free.
 - Headless gates pass `20/20` focused Audio/Text-Sheet tests, `20/20` focused
@@ -2822,7 +2822,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   observed controls and desktop-isolation boundary are recorded in
   `APF2K8_STATUS.md`.
 
-## 0.1.0-alpha.9 — 2026-07-18
+## 0.1.0-alpha.9: 2026-07-18
 
 - Added normal **Open Recent Game** and **Open Recent Project** menus. APF ISO/
   XISO files and extracted game folders are both remembered, the newest eight
@@ -2892,7 +2892,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - The sealed alpha.8 archive was reverified unchanged at
   `7fe2198bebdf0f0f0c2114358b1174bfbc34507bf93678f559347c99c6f9003a`.
 
-## 0.1.0-alpha.8 — 2026-07-18
+## 0.1.0-alpha.8: 2026-07-18
 
 - Turned `.apf2k8mod` files into normal active documents. The window title now
   distinguishes `Untitled*`, a dirty named project, and a clean named project;
@@ -2958,7 +2958,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   alpha.9. Alpha.8 preserves normal explicit Save/Save As behavior and does not
   hide that remaining convenience gap.
 
-## 0.1.0-alpha.7 — 2026-07-18
+## 0.1.0-alpha.7: 2026-07-18
 
 - Added a session-only **Audio shortlist** for collecting sounds across
   unrelated searches, pages, roles, and banks. Users can add/remove the current
@@ -3001,7 +3001,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   symlinks, hardlinked files, caches, retail bytes, or private payloads. The
   sealed alpha.6 archive was reverified unchanged.
 
-## 0.1.0-alpha.6 — 2026-07-18
+## 0.1.0-alpha.6: 2026-07-18
 
 - Added an explicit **Audio source / bank** filter above the 47,795-row decoded
   catalog. It exposes Standalone AUDO plus every AUSB bank with its playable
@@ -3032,9 +3032,9 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   uniforms) passed before archiving and again after clean extraction.
 - The adjacent `.sha256` sidecar is the authoritative archive checksum.
 
-## 0.1.0-alpha.5 — 2026-07-18
+## 0.1.0-alpha.5: 2026-07-18
 
-- Added transactional **Export matching sounds** for any 1–256 playable rows
+- Added transactional **Export matching sounds** for any 1-256 playable rows
   selected by the Audio search, record-kind, and role filters. This closes the
   practical bulk-export gap for bounded slices of the 11,797-row `players`,
   31,826-row `lines`, and 1,498-row `teams` speech banks without pretending the
@@ -3053,7 +3053,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - Isolated-display visual QA checked the current build on `DISPLAY=:99`. The broad
   47,795-row view shows filtered export as clearly disabled; its own full-width
   row and the replacement row are fully separated with no clipping or overlap.
-  The enabled 1–256 state is covered by the focused offscreen Qt interaction
+  The enabled 1-256 state is covered by the focused offscreen Qt interaction
   test without opening an export dialog on the user's desktop.
 - Passed all 72 APF product tests before creating the non-overwriting alpha.5
   package. The archive's adjacent `.sha256` sidecar is the authoritative
@@ -3070,7 +3070,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   archiving. A clean extraction repeats the same gates before publication.
 - The adjacent `.sha256` sidecar is the authoritative archive checksum.
 
-## 0.1.0-alpha.4 — 2026-07-18
+## 0.1.0-alpha.4: 2026-07-18
 
 - Turned all four decoded English text banks into one bounded text editor.
   Menus & Text now places 2,413 underlying TXT/STRG pool allocations before the
@@ -3109,13 +3109,13 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   heuristics with an unknown fallback. No role label changes write eligibility.
 - Paired the 15 `jukeboxmusic` stereo streams with the 15 `jukebox22` mono
   companions by exact source index and matching duration. The UI calls them
-  Soundtrack Track 01–15 and explicitly leaves artist/title unknown instead of
+  Soundtrack Track 01-15 and explicitly leaves artist/title unknown instead of
   guessing copyrighted track metadata.
 - Added Play/Stop through session-private, decoder-verified PCM WAVs. Preview
   names come only from bounded coordinates, symlinks and unreceipted/tampered
   files fail closed, no shell is invoked, and the entire preview directory is
   removed when the loaded-game session closes.
-- Added complete-bank ZIP export for AUSB banks containing 1–256 substreams,
+- Added complete-bank ZIP export for AUSB banks containing 1-256 substreams,
   including both 15-track soundtrack banks. Original XMA1 is the safe default;
   verified-WAV mode aborts without publishing a partial ZIP if any decode fails.
 - Kept Replace visibly disabled with the exact boundary: the public/local
@@ -3179,7 +3179,7 @@ alpha.3 archive remains unchanged.
   duplicate paths, case collisions, private runtime evidence, or retail game
   data.
 
-## 0.1.0-alpha.3 — 2026-07-18
+## 0.1.0-alpha.3: 2026-07-18
 
 This checkpoint turns the APF-specific alpha into a directly installable
 per-user Linux application and tightens the primary editing workspace without
@@ -3228,7 +3228,7 @@ changing the evidence boundary of any game asset.
 - Isolated visual QA on private Xvfb `:99` found no blocking or major defect in
   the fixed Uniforms screen; the active desktop `:0` was never used.
 
-## 0.1.0-alpha.2 — 2026-07-18
+## 0.1.0-alpha.2: 2026-07-18
 
 This is the first APF-specific product and release-closure checkpoint. It
 separates shippable application code from the retail-heavy research workspace.

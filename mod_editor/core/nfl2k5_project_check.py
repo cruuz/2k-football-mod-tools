@@ -33,6 +33,7 @@ import json
 import re
 import sys
 import time
+from .errors import COMMUNITY_DISCORD
 from pathlib import Path
 from typing import Callable, Iterable
 
@@ -1524,8 +1525,8 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                     + (" This version leaves that step out of your disc instead and names it in the build log."
                        if left_out else ""),
                     f"Untick {option_label(dry.STEP_OPTIONS.get(step, step), labels)}, or set the Modern colour values "
-                    "back toward the defaults, then check again. Send this report to the SOFTDRINK Discord so the "
-                    "refit can be fixed.", code=f"stadiums.failed.{step}"))
+                    "back toward the defaults, then check again. Send this report to the SOFTDRINK Discord "
+                    f"({COMMUNITY_DISCORD}) so the refit can be fixed.", code=f"stadiums.failed.{step}"))
             kept_groups = {}
             for row in result.kept:
                 kept_groups.setdefault((row["step"], row["part"]), []).append(row)

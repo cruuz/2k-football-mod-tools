@@ -200,7 +200,7 @@ class IrPickerDialog(QDialog):
 
     def __init__(self, team_label: str, rows: Sequence[tuple[int, str]], parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self.setWindowTitle(f"Place on injured reserve — {team_label}")
+        self.setWindowTitle(f"Place on injured reserve: {team_label}")
         layout = QVBoxLayout(self)
         hint = QLabel("Choose the player. He leaves the team's list the way Finn's editor does it, and the holder, "
                       "kicker and returner choices stay with the same players, as the game's own roster moves keep them; "
@@ -1169,7 +1169,7 @@ class FranchisePanel(QWidget):
                 tip = ""
                 if game.scores is not None:
                     first, second = game.scores
-                    score = f"{sum(first)} – {sum(second)}"
+                    score = f"{sum(first)}-{sum(second)}"
                     tip = (f"quarters {'-'.join(map(str, first))} / {'-'.join(map(str, second))}; which side is "
                            f"which is a HYPOTHESIS, so scores stay read-only")
                 cells = [str(game.slot + 1), self._team_short(game.away) if game.away_known else "To be decided",
@@ -1385,14 +1385,14 @@ class FranchisePanel(QWidget):
             note = {"PROVED": "read off the game's own save / restore routines or witnessed",
                     "HYPOTHESIS": "layout known, meaning believed; shown read-only",
                     "OPAQUE": "carried byte for byte, never shown as editable"}[status]
-            lines.append(f"  {status}: {len(regions)} regions, {total:,} bytes — {note}")
+            lines.append(f"  {status}: {len(regions)} regions, {total:,} bytes, {note}")
             for region in regions:
-                extra = f" — {region.note}" if region.note else ""
+                extra = f": {region.note}" if region.note else ""
                 lines.append(f"    0x{region.offset:06X}..0x{region.end:06X}  {region.label}{extra}")
         lines.append("")
         lines.append("Editable on this page:")
         for what, status, why in EDITABLE_HERE:
-            lines.append(f"  {what}: {status} — {why}")
+            lines.append(f"  {what}: {status}, {why}")
         lines.append("")
         labels = self.edit_labels()
         lines.append(f"Franchise edits since load ({len(labels)}):")
@@ -1407,7 +1407,7 @@ class FranchisePanel(QWidget):
         for start, end in ranges[:CHECKS_RANGE_LINES]:
             region = next((r for r in fs.REGIONS if r.offset <= start < r.end), None)
             where = f"{region.label} [{region.status}]" if region else "outside the map"
-            lines.append(f"  0x{start:06X}..0x{end:06X} ({end - start} B) — {where}")
+            lines.append(f"  0x{start:06X}..0x{end:06X} ({end - start} B), {where}")
         if len(ranges) > CHECKS_RANGE_LINES:
             lines.append(f"  ... and {len(ranges) - CHECKS_RANGE_LINES} more ranges (a coach's new name rewrites the coach text)")
         return "\n".join(lines)
@@ -1582,7 +1582,7 @@ class FranchisePanel(QWidget):
                 attached = sorted((c for c in coaches if c.teams), key=lambda c: min(c.teams))
                 for coach in attached + [c for c in coaches if not c.teams]:
                     teams = ", ".join(self._team_short(t) for t in coach.teams) or "no team"
-                    self.coach_list.addItem(f"{coach.name or f'coach {coach.index}'} — {teams}")
+                    self.coach_list.addItem(f"{coach.name or f'coach {coach.index}'}: {teams}")
                     self._coach_rows.append(coach.index)
             if self._coach_rows:
                 self.coach_list.setCurrentRow(self._coach_rows.index(keep) if keep in self._coach_rows else 0)

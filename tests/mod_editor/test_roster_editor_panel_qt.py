@@ -317,7 +317,7 @@ class RosterEditorPanelTests(unittest.TestCase):
         findings = self.panel.run_validation()
         self.assertTrue(any(item["check"] == "jersey" for item in findings))
         self.assertIn("outside this check's", self.panel.report.toPlainText())
-        self.assertIn("Editor check —", self.panel.report.toPlainText())
+        self.assertIn("Editor check:", self.panel.report.toPlainText())
         entries = self.panel.refresh_diff()
         self.assertEqual(len(entries), 1)
         self.assertIn("1 player differs", self.panel.report.toPlainText())

@@ -85,7 +85,7 @@ from mod_editor.core.texture_master import (
     fit_transform as texture_master_fit_transform,
     snapshot_texture_master_source,
 )
-from mod_editor.gui import branding, locate_qt_plugins
+from mod_editor.gui import branding, first_window_usable, fit_first_window, locate_qt_plugins, pointer_screen_area
 from mod_editor.gui.ux_text import XEMU_LINE, Details, tab_title  # noqa: F401
 from mod_editor.gui.ux_text import ElidedStatusLabel  # b780-uxfix: the footer messages
 from mod_editor.gui.ux_text import FlowLayout, get_item, make_shrinkable  # b780 CI: wrapping rows, dialogs, eliding buttons
@@ -206,7 +206,7 @@ CHECK_IMAGES_MESSAGE = (
 #: slot either way, and it is the number of distinct shades that has to fit.
 CHECK_IMAGES_ADVICE = (
     "What costs palette here is the number of distinct shades in your art, not "
-    "its resolution — the editor resizes to the slot either way. Flat team "
+    "its resolution: the editor resizes to the slot either way. Flat team "
     "colours fit; photographic noise, dithering, and long smooth gradients are "
     "what force a reduction."
 )
@@ -240,7 +240,7 @@ def _is_apple_double_path(path: Path) -> bool:
 _FIX_HINTS: tuple[tuple[str, str], ...] = (
     (
         "needs a PNG that is exactly",
-        "Fix: use that asset's Replace button and drop any image — Mod Studio "
+        "Fix: use that asset's Replace button and drop any image, Mod Studio "
         "resizes it to the slot's exact size for you.",
     ),
     (
@@ -250,7 +250,7 @@ _FIX_HINTS: tuple[tuple[str, str], ...] = (
     ),
     (
         "needs a PNG file",
-        "Fix: choose an image file — PNG, JPEG, BMP, GIF, WebP or TGA. Any "
+        "Fix: choose an image file, PNG, JPEG, BMP, GIF, WebP or TGA. Any "
         "size works; the editor resizes it for you.",
     ),
     (
@@ -1236,6 +1236,11 @@ class UniformFilter:
     owner: str | None = None
 
 
+#: D19: Field Art links to the NFL field textures in All Textures. The groups are the p8 texture inventory's own names
+#: (nfl2k5_p8_texture_writer.EXPECTED_GROUPS); a test pins them so a renamed group cannot silently show everything.
+FIELD_ART_TEXTURE_LINKS = (("Browse NFL end zones", "End Zone"), ("Browse NFL fields", "Field Surface"))
+
+
 @dataclass
 class _VisualBrowserState:
     category: ProductCategory
@@ -1769,7 +1774,7 @@ class _PngDropPreview(QFrame):
                 self,
                 "That drop can't be used yet",
                 "That file is not an image this panel can read. Drop a PNG, "
-                "JPEG, BMP, GIF, WebP or TGA image — any size is fine, the "
+                "JPEG, BMP, GIF, WebP or TGA image: any size is fine, the "
                 "editor resizes it for you.",
             )
             event.ignore()  # type: ignore[attr-defined]
@@ -1989,9 +1994,10 @@ class StudioMainWindow(QMainWindow):
         icon = _window_icon()
         if icon is not None:
             self.setWindowIcon(icon)
-        # Qt reports usable screen coordinates in logical pixels, including on scaled displays.
-        available = self.screen().availableGeometry().size()
-        usable = QSize(max(1, available.width() - 24), max(1, available.height() - 48))
+        # Qt reports usable screen coordinates in logical pixels, including on scaled displays. The first window fits
+        # the monitor under the pointer (the one a window manager opens it on), the same rule APF uses.
+        available = pointer_screen_area(self)
+        usable = first_window_usable(available)
         self._scroll_shell = usable.width() < 1040 or usable.height() < 600
         self.setMinimumSize(QSize(1040, 600).boundedTo(usable))
         self.resize(QSize(1480, 920).boundedTo(usable))
@@ -2012,6 +2018,8 @@ class StudioMainWindow(QMainWindow):
         self._refresh_edit_state()
         if hasattr(self, "unif_color_set") and bool(getattr(self.facade, "source_ready", False)):
             self._load_selected_unif_colors()
+        # Once the menus and pages exist: 2K5 keeps no window geometry between sessions.
+        fit_first_window(self, available)
         # After the window is up, never during construction: a slow network
         # must not delay the app appearing.
         QTimer.singleShot(1200, self._start_automatic_update_check)
@@ -2077,8 +2085,8 @@ class StudioMainWindow(QMainWindow):
         self._disc_check_action.triggered.connect(lambda: self._choose_disc_check())
         issue_action = help_menu.addAction("Report a bug…")
         issue_action.triggered.connect(lambda: QDesktopServices.openUrl(QUrl(update_check.ISSUES_PAGE)))
-        discord_action = help_menu.addAction("Open project Discord (members)…")
-        discord_action.setToolTip("Opens the project server for existing Discord members.")
+        discord_action = help_menu.addAction("Join the Discord…")
+        discord_action.setToolTip("Opens the community Discord invite in your browser.")
         discord_action.triggered.connect(
             lambda: QDesktopServices.openUrl(QUrl(update_check.COMMUNITY_DISCORD))
         )
@@ -2417,7 +2425,7 @@ class StudioMainWindow(QMainWindow):
             if busy
             # b780-uxfix: a finished Check my project said "Build finished"; the Build tab runs both
             else ("The Build tab is done. Project actions are available again." if owner == "Build"
-                  else f"{owner} finished — project actions are available again.")
+                  else f"{owner} finished: project actions are available again.")
         )
         self._refresh_recent_menus()
         self._refresh_action_states()
@@ -3386,7 +3394,7 @@ class StudioMainWindow(QMainWindow):
             self._audio_panel.audio_annotation_changed.connect(
                 lambda _asset_id: self._mark_workspace_changed()
             )
-            self._audio_panel.setToolTip("Browse, preview, export and replace supported audio — drop any common file (MP3, WAV, FLAC, OGG, M4A); it is converted to the slot's exact shape when FFmpeg is available.")
+            self._audio_panel.setToolTip("Browse, preview, export and replace supported audio: drop any common file (MP3, WAV, FLAC, OGG, M4A); it is converted to the slot's exact shape when FFmpeg is available.")
             self._audio_panel.setAccessibleDescription("Audio workspace: searchable playable cues and ranges with replace support for exact-slot standalone and streaming-range sounds.")
             # Sounds: the rotating SFX banks (hits, whistles, crowd
             # reactions, QB cadence) and the standalone AUDO cues,
@@ -3685,7 +3693,8 @@ class StudioMainWindow(QMainWindow):
         discord = QLabel(
             "Stuck? The FAQ (Help ▸ Questions and answers) covers the common first-run questions: .iso or .xiso, no disc "
             "drive, a sharper picture, a game that will not start. Still stuck? "
-            f'<a href="{update_check.ISSUES_PAGE}">Report a bug</a> or open the community Discord through Help.'
+            f'<a href="{update_check.ISSUES_PAGE}">Report a bug</a> or '
+            f'<a href="{update_check.COMMUNITY_DISCORD}">ask on the Discord</a> (both are also in the Help menu).'
         )
         discord.setObjectName("cardBody")
         discord.setWordWrap(True)  # b780-b13: the longer sentence must wrap, not widen the page
@@ -3941,7 +3950,7 @@ class StudioMainWindow(QMainWindow):
         self.import_team_kit_button.setToolTip(
             "Validate every PNG first, then stage only pixel changes as one Undo action."
         )
-        self.import_digit_sheet_button = QPushButton("Import number sheet 0–9…")
+        self.import_digit_sheet_button = QPushButton("Import number sheet 0-9…")
         self.import_digit_sheet_button.setObjectName("secondaryButton")
         self.import_digit_sheet_button.setProperty("teamKitAction", "digit-sheet")
         self.import_digit_sheet_button.setAccessibleName(
@@ -4092,7 +4101,7 @@ class StudioMainWindow(QMainWindow):
         panel_layout.addLayout(row)
 
         self.unif_color_status = QLabel(
-            "Load your NFL 2K5 XISO to read this uniform's original colours — then pick facemask and turtleneck colours below."
+            "Load your NFL 2K5 XISO to read this uniform's original colours: then pick facemask and turtleneck colours below."
         )
         self.unif_color_status.setObjectName("mutedLabel")
         self.unif_color_status.setWordWrap(True)
@@ -4132,7 +4141,7 @@ class StudioMainWindow(QMainWindow):
             f"Asset {uniform_set.asset_code}"
         )
         return (
-            f"{owner} — {uniform_set.style_label} "
+            f"{owner}: {uniform_set.style_label} "
             f"{uniform_set.side_name.title()} [{uniform_set.selector}]"
         )
 
@@ -4225,7 +4234,7 @@ class StudioMainWindow(QMainWindow):
             self._refresh_unif_color_swatches()
             state = "Staged project edit" if modified else "Retail source"
             self.unif_color_status.setText(
-                f"{state} for {selector} — facemask/faceshield "
+                f"{state} for {selector}: facemask/faceshield "
                 f"#{self._pending_facemask[2:]}, HI_turtleneck "
                 f"#{self._pending_turtleneck[2:]}."
             )
@@ -4241,7 +4250,7 @@ class StudioMainWindow(QMainWindow):
             hint = friendly_fix_hint(message)
             detail = message.strip()
             if hint is not None:
-                detail = f"{detail} — {hint}"
+                detail = f"{detail}: {hint}"
             self.unif_color_status.setText(
                 f"Could not read {selector}: {detail} "
                 f"Nothing was staged. Pick another set or reload your XISO."
@@ -4344,7 +4353,7 @@ class StudioMainWindow(QMainWindow):
             )
             if bool(chosen[2]):
                 self.unif_color_status.setText(
-                    f"Staged for {selector} — facemask/faceshield "
+                    f"Staged for {selector}: facemask/faceshield "
                     f"#{chosen[0][2:]}, HI_turtleneck #{chosen[1][2:]}. "
                     "Build Modded XISO to write them to a copy of your disc."
                 )
@@ -4529,7 +4538,7 @@ class StudioMainWindow(QMainWindow):
         row = next((r for r in rows if r.player_index == index), None)
         if row is None:
             return
-        lines = [f"{row.name} — face_id {row.face_id}"]
+        lines = [f"{row.name}: face_id {row.face_id}"]
         for asset in row.assets:
             origin = ("linked by the roster record"
                       if asset.link in ("face_id", "photo_id") else "matched by name")
@@ -4577,7 +4586,7 @@ class StudioMainWindow(QMainWindow):
             notice = QLabel(note)
             notice.setObjectName("findingsBanner")
             notice.setWordWrap(True)
-            notice.setToolTip("Why this section has its current status — from the registry's finding notes. Hover to keep it visible while reading capabilities below.")
+            notice.setToolTip("Why this section has its current status: from the registry's finding notes. Hover to keep it visible while reading capabilities below.")
             notice.setAccessibleDescription("Registry finding explaining the status shown for these field-art entries.")
             layout.addWidget(notice)
 
@@ -4656,7 +4665,7 @@ class StudioMainWindow(QMainWindow):
             intro_label.setWordWrap(True)
             browser_layout.addWidget(intro_label)
         if section.category == ProductCategory.FIELD_ART_CREATE_TEAM:
-            for caption, group in (("Browse NFL end zones", "End Zone"), ("Browse NFL fields", "Field Surface")):
+            for caption, group in FIELD_ART_TEXTURE_LINKS:
                 button = QPushButton(caption)
                 button.clicked.connect(lambda _checked=False, group=group: self._browse_nfl_field_textures(group))
                 browser_layout.addWidget(button)
@@ -4720,7 +4729,7 @@ class StudioMainWindow(QMainWindow):
         # Never silent-gray at construction: teach Load/import walls.
         master_boot = (
             "Load your game and import/replace artwork first so an authoring "
-            "master draft exists. Click still explains — button stays clickable."
+            "master draft exists. Click still explains: button stays clickable."
         )
         master_button.setEnabled(True)
         master_button.setToolTip(master_boot)
@@ -5022,7 +5031,7 @@ class StudioMainWindow(QMainWindow):
         )
         scenes_layout.addWidget(apply_textures_button)
         scenes_note = QLabel(
-            "3D exports contain game data — keep them to yourself. Import needs the same vertices and faces."
+            "3D exports contain game data: keep them to yourself. Import needs the same vertices and faces."
         )
         scenes_note.setObjectName("mutedLabel")
         scenes_note.setWordWrap(True)
@@ -5212,7 +5221,7 @@ class StudioMainWindow(QMainWindow):
             layout.addWidget(where)
         elif backend.get("operation") == "write":
             where = QLabel(
-                "No in-app workspace yet — this one runs from the command line:"
+                "No in-app workspace yet: this one runs from the command line:"
             )
             where.setObjectName("findingsNote")
             where.setWordWrap(True)
@@ -5559,7 +5568,7 @@ class StudioMainWindow(QMainWindow):
             if generation != self._preview_generation:
                 return
             if not preview.set_png(Path(value)):
-                self._set_status("Preview unavailable — the asset was not changed.")
+                self._set_status("Preview unavailable: the asset was not changed.")
 
         def failed(message: str) -> None:
             # Without this the panel sat on "Preparing ..." forever: the task
@@ -5569,7 +5578,7 @@ class StudioMainWindow(QMainWindow):
             # exactly how the missing All Textures decoder presented.
             if generation != self._preview_generation:
                 return
-            preview.set_empty(f"Preview unavailable — {message}")
+            preview.set_empty(f"Preview unavailable: {message}")
             self._set_status(f"Could not prepare {asset.label}: {message}")
 
         self._start_task(
@@ -5678,7 +5687,7 @@ class StudioMainWindow(QMainWindow):
                 f"{label} must be exactly {width}×{height}, and that image is "
                 f"{probe.source_width}×{probe.source_height}.\n\n"
                 f"Mod Studio will apply fit mode “{chosen_mode}”.\n\n"
-                "Your original file is not modified — the prepared copy is used "
+                "Your original file is not modified: the prepared copy is used "
                 "for this edit only.",
                 QMessageBox.Yes | QMessageBox.Cancel,
                 QMessageBox.Yes,
@@ -5694,7 +5703,7 @@ class StudioMainWindow(QMainWindow):
             self._show_error(f"Could not resize that image. {exc}")
             return None
         verb = "Prepared" if needs_png_conversion else "Resized"
-        self._set_status(f"{verb} for {label} — {result.describe()} ({chosen_mode}).")
+        self._set_status(f"{verb} for {label}: {result.describe()} ({chosen_mode}).")
         return staged
 
     def _discard_texture_master_draft(self, asset_id: str) -> None:
@@ -6204,7 +6213,7 @@ class StudioMainWindow(QMainWindow):
             revert_block = revert_tip = edit_block
         else:
             revert_block = revert_tip = (
-                "Nothing to revert—this visual asset is still original."
+                "Nothing to revert: this visual asset is still original."
             )
         state.revert_button.setEnabled(True)
         state.revert_button.setToolTip(revert_tip)
@@ -6293,7 +6302,7 @@ class StudioMainWindow(QMainWindow):
                 first = state.offset + 1
                 last = state.offset + len(state.rows)
                 state.range_label.setText(
-                    f"{first:,}–{last:,} of {state.total:,} indexed"
+                    f"{first:,}-{last:,} of {state.total:,} indexed"
                 )
                 state.asset_list.setCurrentRow(0)
             else:
@@ -6459,7 +6468,7 @@ class StudioMainWindow(QMainWindow):
         state.scene_metadata.setText(
             "Preparing private stadium assets from your own game.\n"
             f"First time only: about {ESTIMATED_PRIVATE_BYTES // (1024**2)} MB "
-            f"and {ESTIMATED_SECONDS_LOW // 60}–{ESTIMATED_SECONDS_HIGH // 60} "
+            f"and {ESTIMATED_SECONDS_LOW // 60}-{ESTIMATED_SECONDS_HIGH // 60} "
             "minutes. Later opens are instant."
         )
         state.count_label.setText("Preparing…")
@@ -6472,7 +6481,7 @@ class StudioMainWindow(QMainWindow):
             if total > 1 and completed <= total:
                 current.count_label.setText(f"{completed:,}/{total:,}")
                 current.scene_metadata.setText(
-                    f"{stage}…\n{completed:,} of {total:,} — first time only, "
+                    f"{stage}…\n{completed:,} of {total:,}, first time only, "
                     "later opens are instant."
                 )
             else:
@@ -6780,7 +6789,7 @@ class StudioMainWindow(QMainWindow):
             import_scene.setEnabled(True)
             if not ready:
                 tip = (
-                    "Load your NFL 2K5 XISO first — Import edited model needs a prepared "
+                    "Load your NFL 2K5 XISO first: Import edited model needs a prepared "
                     "Stadium Studio scene. Topology must match the export."
                 )
             elif scene is None:
@@ -6803,7 +6812,7 @@ class StudioMainWindow(QMainWindow):
             apply_textures.setEnabled(True)
             if not ready:
                 tip = (
-                    "Load your NFL 2K5 XISO first — Apply textures from glTF needs "
+                    "Load your NFL 2K5 XISO first: Apply textures from glTF needs "
                     "a prepared Stadium Studio scene."
                 )
             elif scene is None:
@@ -6860,7 +6869,7 @@ class StudioMainWindow(QMainWindow):
         elif rep_block:
             rev_block = rev_tip = rep_block
         else:
-            rev_block = rev_tip = "Nothing to revert—this texture is still original."
+            rev_block = rev_tip = "Nothing to revert: this texture is still original."
         state.revert_button.setEnabled(True)
         state.revert_button.setToolTip(rev_tip)
         state.revert_button.setProperty("disableReason", rev_block)
@@ -7250,8 +7259,13 @@ class StudioMainWindow(QMainWindow):
         row = self._navigation_row(category)
         self._ensure_workspace(row)
         browser = self._visual_browsers[category]
+        index = browser.group_filter.findData(group)
+        if index < 0:
+            # Never fall back to every group: say why the link found nothing.
+            self._set_status(f"No {group} textures are listed yet. Open your game disc, then try again.")
+            return
         browser.search.clear()
-        browser.group_filter.setCurrentIndex(max(0, browser.group_filter.findData(group)))
+        browser.group_filter.setCurrentIndex(index)
         self.navigation.setCurrentRow(row)
 
     def _browse_selected_uniform_equipment(self) -> None:
@@ -7369,7 +7383,7 @@ class StudioMainWindow(QMainWindow):
         asset = self._selected_asset
         self.component_help.setText(
             f"{asset.label}: this slot holds an exact {asset.width} × {asset.height} "
-            "image. Drop or choose any image, in any size or format — Mod Studio "
+            "image. Drop or choose any image, in any size or format: Mod Studio "
             "resizes it to the slot for you before anything enters your project."
         )
         self._refresh_action_states()
@@ -7391,7 +7405,7 @@ class StudioMainWindow(QMainWindow):
                 return
             path = Path(value)  # facade promises a path
             if not self.preview.set_png(path):
-                self._set_status("Preview unavailable — the asset was not changed.")
+                self._set_status("Preview unavailable: the asset was not changed.")
 
         self._start_task(
             lambda progress: self.facade.preview_asset(asset, progress),
@@ -7484,7 +7498,7 @@ class StudioMainWindow(QMainWindow):
                         f"Game opened, but recent-file state could not update: "
                         f"{str(exc).strip()}"
                     )
-            self._set_status(_result_message(result, "Disc opened — choose a task on the left."))
+            self._set_status(_result_message(result, "Disc opened: choose a task on the left."))
             self._refresh_edit_state()
 
             def refresh_loaded_source() -> None:
@@ -7805,7 +7819,7 @@ class StudioMainWindow(QMainWindow):
         )
         label, accepted = QInputDialog.getItem(
             self,
-            "Import a complete 0–9 digit sheet",
+            "Import a complete 0-9 digit sheet",
             "Which digit family should this sheet replace?",
             [row[0] for row in choices],
             current,
@@ -8019,7 +8033,7 @@ class StudioMainWindow(QMainWindow):
             self._active_project_path = identity.path
             self._active_project_identity = identity
             self._set_status(
-                _result_message(result, f"Project saved — {destination.name}.")
+                _result_message(result, f"Project saved: {destination.name}.")
             )
             self._workspace_dirty = False
             if self.workspace_store is not None:
@@ -8379,11 +8393,11 @@ class StudioMainWindow(QMainWindow):
             )
         else:
             headline = (
-                f"None of these {len(rows)} could be checked here — they will be "
+                f"None of these {len(rows)} could be checked here: they will be "
                 "decided at build time."
             )
 
-        self._set_status(f"Image check — {headline}")
+        self._set_status(f"Image check: {headline}")
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Warning if refused else QMessageBox.Information)
         box.setWindowTitle("Image check")
@@ -8436,7 +8450,7 @@ class StudioMainWindow(QMainWindow):
             except TypeError:
                 name = destination.name
             self._set_status(
-                _result_message(result, f"Build complete — {name} is ready for xemu.")
+                _result_message(result, f"Build complete: {name} is ready for xemu.")
             )
             from mod_editor.core.nfl2k5_build_service import summarize_kept_retail
             kept = tuple(getattr(result, "kept_retail", ()) or ())
@@ -9182,7 +9196,7 @@ class StudioMainWindow(QMainWindow):
         if self._active_project_path is not None:
             marker = "*" if self._workspace_dirty or roster_unsaved else ""
             self.setWindowTitle(
-                f"{self._active_project_path.name}{marker} — 2K5 Mod Studio"
+                f"{self._active_project_path.name}{marker} - 2K5 Mod Studio"
             )
             save_target = self._active_project_path.name
             save_tip = (
@@ -9190,7 +9204,7 @@ class StudioMainWindow(QMainWindow):
                 "replacements and text, never game data). ★ Rosters has separate save buttons."
             )
         elif self._workspace_dirty or roster_unsaved:
-            self.setWindowTitle("Untitled* — 2K5 Mod Studio")
+            self.setWindowTitle("Untitled* - 2K5 Mod Studio")
             save_tip = (
                 "Save the edits in this project as a .2k5mod file you can reopen or share. "
                 "★ Rosters has separate save buttons."
@@ -9411,7 +9425,7 @@ class StudioMainWindow(QMainWindow):
                 revert_reason = colour_reason
             elif not self._selected_unif_color_modified:
                 revert_reason = (
-                    "Nothing to revert—this uniform set's colours are still original."
+                    "Nothing to revert: this uniform set's colours are still original."
                 )
             else:
                 revert_reason = ""
@@ -9471,7 +9485,7 @@ class StudioMainWindow(QMainWindow):
             check_blocker = "Open your game disc first."
         elif count <= 0:
             check_blocker = (
-                "Replace at least one image first — this checks what you have "
+                "Replace at least one image first: this checks what you have "
                 "staged."
             )
         elif global_busy:
@@ -10033,8 +10047,11 @@ class StudioMainWindow(QMainWindow):
         if source and platform_compat.paths_alias(source, target):
             self._set_status("That copy is the open source disc, not a new build; Play latest disc was not changed.")
             return
+        from mod_editor.core import nfl2k5_console_memory
+        # A Build-tab receipt stores plan.to_recipe(), which leaves out console_memory for the standard 128 MB target.
+        memory = nfl2k5_console_memory.of(receipt.get("plan") or {})
         try:
-            self.facade.register_external_build(Path(target), console_memory=receipt.get("plan", {}).get("console_memory"))
+            self.facade.register_external_build(Path(target), console_memory=memory)
         except Exception as exc:  # noqa: BLE001 - a missing file only means Launch stays blocked
             self._set_status(str(exc))
             return

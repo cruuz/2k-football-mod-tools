@@ -521,10 +521,10 @@ class SavePanel(QWidget):
             mirror = values.get("mirror")
             name_item = QTableWidgetItem(label)
             current_item = QTableWidgetItem(
-                f"{float(editable):.2f}" if editable is not None else "—"
+                f"{float(editable):.2f}" if editable is not None else "-"
             )
             mirror_item = QTableWidgetItem(
-                f"{float(mirror):.2f}" if mirror is not None else "—"
+                f"{float(mirror):.2f}" if mirror is not None else "-"
             )
             self.slider_table.setItem(row, 0, name_item)
             self.slider_table.setItem(row, 1, current_item)

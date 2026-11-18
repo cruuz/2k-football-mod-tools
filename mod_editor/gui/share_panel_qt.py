@@ -499,7 +499,7 @@ class SharePanel(QWidget):
         word = {"ready": "Ready to apply", "applied": "Already installed",
                 "mismatch": "Doesn't match this mod's required starting disc"}.get(
             str(report["state"]), str(report["state"]).replace("_", " ").capitalize())
-        self.check_status.setText(f"{word} — {report['explanation']}")
+        self.check_status.setText(f"{word}: {report['explanation']}")
         self._refresh()
 
     # ------------------------------------------------------------------ choosers

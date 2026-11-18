@@ -44,7 +44,7 @@ Extract the whole archive. In Finder, right-click **`APF-2K8-Mod-Studio.command`
 
 The bundled `extract-xiso` extractor ships as **both** a Linux binary and a
 Windows `.exe`, built from the same vendored 2.7.1 source, so handing the app an
-**ISO** works on either. **macOS has no bundled build** — point it at an
+**ISO** works on either. **macOS has no bundled build**: point it at an
 **already-extracted game folder** there, or build extract-xiso yourself
 (`brew install extract-xiso`, or `cmake` on the vendored source) and pass it as
 `SourceManager(extract_xiso=...)`. `tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md`
@@ -227,7 +227,7 @@ bounded timeout stay in local application settings and never enter a mod
 project. External output is untrusted until the existing XMA1 RIFF, allocation,
 packet, complete-decode, duration, alias, and cross-family exact-source-packet
 checks all pass. The build environment had no real XMA1 encoder, so synthetic
-tests prove the bridge and cleanup only—not third-party-tool compatibility or
+tests prove the bridge and cleanup only: not third-party-tool compatibility or
 in-game audibility. Read the
 [PCM encoder guide](docs/mod_editor/apf2k8_external_xma1_encoder.md).
 
@@ -235,7 +235,7 @@ The private Track 12 runtime candidate booted, selected the requested track,
 and remained stable, but the completed objective capture was honestly
 negative/inconclusive for modified-stream causality. The final sustained
 segment matched neither the mutated candidate nor decoded stock Track 12, so
-the experiment proves boot/selection/stability—not authored-audio consumption
+the experiment proves boot/selection/stability: not authored-audio consumption
 or stock fallback. Read the
 [AUSB exact-slot contract](docs/product/APF_AUSB_EXACT_SLOT_FEASIBILITY.md).
 
@@ -301,7 +301,7 @@ attributes, skins, changed topology, and runtime visibility remain unproved or
 locked. The source game is never modified.
 
 The current Alpha.54 source carries forward Alpha.21's exact team **Display
-name**, player **First name** / **Last name**, and true native 0–99 base-rating
+name**, player **First name** / **Last name**, and true native 0-99 base-rating
 editing through the bounded ROST route. **Rosters & Players** exposes all 3,273 mapped UTF-16BE identity
 allocations and all 2,254 on-disc player records, while authoring admits exactly
 3,191 player-name allocations serving 4,482 writable first/last references plus
@@ -362,7 +362,7 @@ Builds now use a token-preserving H7A route instead of relocating every decoded
 token. A bounded `Americans` → `CODEXTEAM` build booted through first-run team
 construction and rendered the authored name in Logo Selection, Team Summary,
 and Team Select. A separate bounded `Marino` → `CODEX` build visibly rendered
-**Dan CODEX #13 QB** in player selection and **QB #13 DAN CODEX — GOLD STAR**
+**Dan CODEX #13 QB** in player selection and **QB #13 DAN CODEX: GOLD STAR**
 on the Star Card without the old startup crash. These results support only
 exact player first/last names and team display names; they do not grant
 permission to neighboring packed fields. Read the positive
@@ -379,10 +379,10 @@ fields into a new verified `Roster.ROS` handoff.
 Alpha.26 carries forward Alpha.23's 32-team × 53-row roster surface as an
 honest planner, not a
 53-active-player game writer. Stock APF currently consumes the first 42
-membership rows per populated team; rows 43–53 are eleven project-only reserve
-choices, and Build does not apply them. True runtime slots 43–53 still require
+membership rows per populated team; rows 43-53 are eleven project-only reserve
+choices, and Build does not apply them. True runtime slots 43-53 still require
 a version-pinned emulator-target XEX accessor/consumer patch plus owned
-side-table storage. Teams 25–32 use populated online-placeholder records whose
+side-table storage. Teams 25-32 use populated online-placeholder records whose
 offline selector ownership remains unproved. The completed
 [true-53 runtime consumer inventory](docs/product/APF_TRUE_53_RUNTIME_CONSUMER_INVENTORY.md)
 maps the current lower bound: 93 central-helper calls, at least 25 direct roster
@@ -392,10 +392,10 @@ eleven-slot side table plus coordinated consumer hooks as the viable route.
 
 Player selection opens a searchable **Base Ratings** editor containing the
 game's 31 independent stored values: 27 semantic attributes plus four distinct
-untranslated fields labeled by their stored offsets—**Unknown Rating (0xD4)**,
+untranslated fields labeled by their stored offsets-**Unknown Rating (0xD4)**,
 **Unknown Rating (0xBD)**, **Unknown Rating (0xC5)**, and **Unknown Rating
 (0xD2)**. Every attribute is authored as a true native
-integer from 0 through 99—there is no Madden-style scale conversion, hidden
+integer from 0 through 99: there is no Madden-style scale conversion, hidden
 compression, or shared overall value. Apply and Revert operate on one player
 and one semantic attribute at a time, modified badges make the project delta
 obvious, and team-name plus rating changes compose into one token-preserving
@@ -443,7 +443,7 @@ positionally. PBP is the play-by-play announcer ID, not a playbook field.
 
 **Playbooks & Plays → Save Assignments** edits the separate roster-save pointer
 table, not `playbook_master.iff`. A raw save lists all **40 team slots** and all
-**69 named books**—36 offense and 33 defense—and stages both assignments before
+**69 named books**-36 offense and 33 defense: and stages both assignments before
 writing a new save plus manifest. The inspected source SHA-256 is rechecked,
 the source is never opened for writing, output paths cannot alias or overwrite,
 and an independent pass verifies the exact changed bytes while confirming the
@@ -478,7 +478,7 @@ visor tint that APF does not carry.
 
 **Uniforms & Equipment → Custom Team Appearance → Raw Roster Save** edits the
 appearance graph carried by an accepted custom team's raw `Roster.ROS`.
-User-facing team IDs 24–31 map to ROST slots 32–39. HOME/AWAY palettes and exact
+User-facing team IDs 24-31 map to ROST slots 32-39. HOME/AWAY palettes and exact
 helmet/crest selectors are bounded to a 112-byte union per selected team; the
 source is SHA-bound and read-only, output and receipt are new/no-overwrite, and
 an independent pass reopens both files and verifies pointer ownership and the
@@ -520,10 +520,10 @@ independent verifier proves that no byte outside the selected package changed.
 A square Team Logo crest is never silently squeezed into this rectangular
 wordmark family. Runtime consumption remains unproved.
 
-Select **Full-shell crest wrap — entire helmet shell** to build the fixed
+Select **Full-shell crest wrap: entire helmet shell** to build the fixed
 `front_crown_to_rear_v1` shell-atlas route into the copied `0A` itself. The
 project keeps the semantic 512×512 design. Full-shell import has two explicit modes:
-**Normal logo — convert to APF regions (recommended)** contains ordinary art at
+**Normal logo: convert to APF regions (recommended)** contains ordinary art at
 512×512, requires confirmation of the rendered shell plus two detail colours,
 and shows the palette-mapped material preview; **APF region mask (advanced)**
 accepts only exact four-bit red/green weights with blue fixed to zero, no hidden
@@ -601,13 +601,19 @@ gates, independent extraction, deterministic rebuild, and isolated-display
 visual QA. The adjacent `.sha256` sidecar is authoritative for the archive you
 received. See [STATUS](docs/mod_editor/APF2K8_STATUS.md) for versioned receipts.
 
+## Help and community
+
+Report bugs on the [issue tracker](https://github.com/cruuz/2k-football-mod-tools/issues)
+(**Help → Report a bug…**). Ask questions or share patches on the community Discord:
+<https://discord.gg/FkNSKRAKch> (**Help → Join the Discord…**).
+
 ## Run without installing
 
 Keep this entire folder together and run the launcher for your platform:
 
-- **Linux** — `./APF-2K8-Mod-Studio.sh`
-- **Windows** — double-click `APF-2K8-Mod-Studio.bat`
-- **macOS** — double-click `APF-2K8-Mod-Studio.command`
+- **Linux**: `./APF-2K8-Mod-Studio.sh`
+- **Windows**: double-click `APF-2K8-Mod-Studio.bat`
+- **macOS**: double-click `APF-2K8-Mod-Studio.command`
 
 Each portable launcher resolves everything relative to this folder. Moving or
 renaming the folder is fine; moving only the launcher is not.

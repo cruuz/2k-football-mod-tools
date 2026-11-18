@@ -191,7 +191,7 @@ def main():
     parser.add_argument("--ql", type=int, choices=range(1, 16), default=15)
     parser.add_argument("--weeks", type=int, choices=range(1, 20), default=19)
     parser.add_argument("--user-team", type=int, choices=range(32), default=0,
-                        help="franchise club controlled by the user while games are simulated (0–31)")
+                        help="franchise club controlled by the user while games are simulated (0-31)")
     args = parser.parse_args()
     result = run(args.xbe.read_bytes(), args.roster_body.read_bytes(), seed=args.seed, quarters=args.ql,
                  weeks=args.weeks, user_team=args.user_team)

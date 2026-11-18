@@ -671,7 +671,8 @@ def _transaction(target, inputs=(), overwrite=False):
 
 
 def export_for_share(base, built, output, meta, *, overwrite=False, progress=None):
-    """Keep legacy operations for in-place and append-only edits. Rebuild moved layouts by file."""
+    """Keep legacy operations for in-place edits. Rebuild moved layouts by file, and any pair the legacy writer refuses,
+    so manual Export succeeds wherever Quick Export of the same pair does."""
     with _path(base).open("rb") as before, _path(built).open("rb") as after:
         try:
             old, new = xc.read_layout(before), xc.read_layout(after)
@@ -686,8 +687,43 @@ def export_for_share(base, built, output, meta, *, overwrite=False, progress=Non
                          new.entries[p].byte_offset < old.size for p, e in old.entries.items()))
     if not moved and not meta.get("file_based"):
         from . import modpack_ops
-        operations = modpack_ops.changed_file_operations(base, built)
-        return m.export(base, built, output, meta, overwrite=overwrite, progress=progress, file_operations=operations)
+        output_path = _path(output)
+        part = output_path.with_name(output_path.name + ".part")
+
+        def outputs():
+            states = []
+            for path in (output_path, part):
+                try:
+                    info = path.lstat()
+                except FileNotFoundError:
+                    states.append(None)
+                else:
+                    states.append((info.st_ino, info.st_size, info.st_mtime_ns))
+            return states
+
+        before = outputs()
+        try:
+            operations = modpack_ops.changed_file_operations(base, built)
+            return m.export(base, built, output, meta, overwrite=overwrite, progress=progress, file_operations=operations)
+        except m.ModpackError as legacy:
+            # The byte-run format cannot describe every in-place growth (a last file that grew past the old end, a
+            # resized directory). Quick Export of the same pair writes file-based packs, so manual Export does too.
+            # The legacy writer refuses before it creates any output; never fall back over something it left.
+            if outputs() != before:
+                raise
+            refused = legacy
+    else:
+        refused = None
+    try:
+        return _export_by_files(base, built, output, meta, overwrite=overwrite, progress=progress)
+    except m.ModpackError as exc:
+        if refused is not None:
+            raise exc from refused
+        raise
+
+
+def _export_by_files(base, built, output, meta, *, overwrite=False, progress=None):
+    """The format-3 export behind export_for_share."""
 
     staged = m._stage_assets(meta.get("assets") or (), ())
     project_members, project = m._stage_project(meta.get("project"))
@@ -709,7 +745,21 @@ def export_for_share(base, built, output, meta, *, overwrite=False, progress=Non
         return export(base, built, output, name=meta["name"], author=meta.get("author", ""),
                       version=meta.get("version", ""), description=meta.get("description", ""),
                       recipe=recipe, source_assets=attachments,
-                      overwrite=overwrite, progress=progress, require_retail=bool(reference), retail_reference=reference)
+                      overwrite=overwrite, progress=progress, require_retail=bool(reference) or _retail_base(base),
+                      retail_reference=reference)
+
+
+def _retail_base(base) -> bool:
+    """Whether a share's starting disc identifies as the clean USA game, so the pack asks installers for a clean dump.
+
+    The identity check reads the executable and the roster template (not the whole image). The export then pins every
+    base file by hash, and require_retail re-checks the executable, so a modified base still cannot pass as clean."""
+    from . import nfl2k5_disc_identity as identity
+    try:
+        kind = identity.identify(_path(base)).kind
+    except (OSError, ValueError):
+        return False
+    return kind in (identity.KIND_RETAIL_XISO, identity.KIND_RETAIL_RAW, identity.KIND_REPACK)
 
 
 def export(base_iso, built_iso, output, *, name="SOFTDRINK 2K28", recipe=None,

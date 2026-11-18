@@ -25,6 +25,7 @@ import re
 from string import Template
 
 from PyQt5.QtCore import QEvent, QPoint, QRect, QSize, Qt, pyqtSignal
+from mod_editor.core.errors import COMMUNITY_DISCORD
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtWidgets import QStylePainter
 from PyQt5.QtCore import QObject
@@ -45,7 +46,7 @@ XEMU_SETUP_STEPS = ("Before you play, once, in xemu: open Machine > Settings > S
 NOT_TESTED = "Not yet tested in-game"
 
 #: Where a lost first-timer should ask.  The Help menu carries the same link.
-DISCORD_HINT = "Share that text on the Discord if you need help."
+DISCORD_HINT = f"Share that text on the Discord ({COMMUNITY_DISCORD}) if you need help."
 
 
 #: Every colour the Build & Share pages paint text on.  The two themes use the
@@ -812,7 +813,8 @@ _FIX_HINTS: tuple[tuple[str, str], ...] = (
     # The Studio's own .studio-build-* folder is named for the user by what the
     # file in it was for, never by its random temporary path, so the hint is
     # about the build rather than about a file they could go and look for.
-    ("private copy of the disc", "Fix: build again. If it happens twice, copy this message and share it on the Discord."),
+    ("private copy of the disc", "Fix: build again. If it happens twice, copy this message and share it on the "
+                                 f"Discord ({COMMUNITY_DISCORD})."),
     ("Permission denied", "Fix: choose a folder you can write to."),
     ("not a regular file", "Fix: choose the disc file itself."),
     ("no longer on this computer", "Fix: open the file you want to build from, then build again."),
@@ -859,7 +861,8 @@ def failure_body(message: object, *, hint: str | None = None,
     cause = plain_error(message)
     step = hint or fix_hint(cause)
     if not step:
-        step = "Review the selected file and options, then try again. If it still fails, copy this message and share it on the Discord."
+        step = ("Review the selected file and options, then try again. If it still fails, copy this message and "
+                f"share it on the Discord ({COMMUNITY_DISCORD}).")
     lines = [cause, step]
     if source_unchanged and "Your original game disc was not changed." not in cause:
         lines.append("Your original game disc was not changed.")
@@ -911,7 +914,7 @@ def show_operation_error(parent: QWidget | None, operation: str, message: str,
 
 
 #: Where a failed build's diagnostic report should go (b791-h3).
-DIAGNOSTIC_DESTINATION = "the SOFTDRINK Discord"
+DIAGNOSTIC_DESTINATION = f"the SOFTDRINK Discord, {COMMUNITY_DISCORD}"
 
 
 def build_failure_texts(record: dict, message: str = "") -> tuple[str, str]:

@@ -240,6 +240,129 @@ def _finish_publication(target, journal, suffixes):
     journal.rmdir()
 
 
+#: Every private staging folder Studio makes beside an output carries this marker, opened and locked for as long as the
+#: folder is in use. A folder with an unlocked marker was left by a Studio that stopped (a crash, a kill or a power cut)
+#: and is removed by the next operation in the same output folder. Nothing without the exact marker is ever touched.
+STAGING_MARKER = ".2k5-studio-staging"
+STAGING_MARKER_TEXT = (b"2K5 Mod Studio private staging folder. Studio removes it when no Studio is using it.\n")
+#: A folder that holds a user's previous file (the save writers' rollback copy) is renamed to this marker instead and
+#: is never removed automatically: it may be the only copy left after an interrupted replacement.
+RECOVERY_MARKER = ".2k5-studio-recovery"
+#: The file name the save writers use for the previous output they may restore. A stale folder holding one is kept.
+ROLLBACK_NAME = "original"
+
+
+class StudioStaging:
+    """One marked staging folder. Set ``keep`` (with a reason) to leave it on disk for the user."""
+
+    def __init__(self, path: Path):
+        self.path = path
+        self.keep = False
+
+
+def _stale_staging_folder(entry: Path) -> bool:
+    try:
+        info = entry.lstat()
+    except OSError:
+        return False
+    if not stat.S_ISDIR(info.st_mode) or getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT:
+        return False
+    marker = entry / STAGING_MARKER
+    try:
+        marker_info = marker.lstat()
+        if not stat.S_ISREG(marker_info.st_mode) or marker_info.st_size != len(STAGING_MARKER_TEXT):
+            return False
+        if any(child.name == ROLLBACK_NAME for child in entry.iterdir()):
+            return False
+        from . import platform_compat
+        with open(marker, "r+b") as handle:
+            try:
+                platform_compat.exclusive_nonblocking_lock(handle.fileno())
+            except BlockingIOError:
+                return False            # a running Studio owns it
+            try:
+                return handle.read(len(STAGING_MARKER_TEXT) + 1) == STAGING_MARKER_TEXT
+            finally:
+                platform_compat.release_lock(handle.fileno())
+    except OSError:
+        return False
+
+
+def recover_studio_staging(parent, prefix: str) -> list[str]:
+    """Remove stale marked staging folders named ``prefix*`` directly inside ``parent``. Returns their names."""
+    removed = []
+    try:
+        entries = sorted(Path(parent).iterdir())
+    except OSError:
+        return removed
+    for entry in entries:
+        if not entry.name.startswith(prefix) or not _stale_staging_folder(entry):
+            continue
+        try:
+            _remove_staging(entry)
+        except OSError:
+            continue
+        removed.append(entry.name)
+    return removed
+
+
+def _remove_staging(entry: Path) -> None:
+    """Remove a staging folder's contents, then its marker, then the folder: a partial removal is retried later."""
+    for child in entry.iterdir():
+        if child.name == STAGING_MARKER:
+            continue
+        if child.is_dir() and not child.is_symlink():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
+    (entry / STAGING_MARKER).unlink(missing_ok=True)
+    entry.rmdir()
+
+
+@contextmanager
+def studio_staging(parent, prefix: str):
+    """A private, marked staging folder on the output's own volume (so the final rename never crosses volumes).
+
+    Stale folders with the same prefix are recovered first. The folder is removed afterwards unless ``keep`` is set,
+    in which case it is marked for the user and never removed automatically."""
+    from . import platform_compat
+    parent = Path(parent)
+    recover_studio_staging(parent, prefix)
+    stage = StudioStaging(Path(tempfile.mkdtemp(prefix=prefix, dir=parent)))
+    marker = stage.path / STAGING_MARKER
+    handle = None
+    locked = False
+    try:
+        handle = open(marker, "xb")
+        handle.write(STAGING_MARKER_TEXT)
+        handle.flush()
+        try:
+            platform_compat.exclusive_nonblocking_lock(handle.fileno())
+            locked = True
+        except OSError:
+            # Some network volumes have no advisory locks. Recovery cannot lock there either, so it never removes this.
+            pass
+        yield stage
+    finally:
+        if handle is not None:
+            if locked:
+                try:
+                    platform_compat.release_lock(handle.fileno())
+                except OSError:
+                    pass
+            handle.close()
+        if stage.keep:
+            try:
+                os.replace(marker, stage.path / RECOVERY_MARKER)
+            except OSError:
+                pass
+        else:
+            try:
+                _remove_staging(stage.path)
+            except OSError:
+                pass    # Windows can hold a just-closed file for a moment; the unlocked marker lets the next run finish
+
+
 def recover_image_publication(target, suffixes):
     """Recover an interrupted build before taking a fresh snapshot of the destination."""
     with _publication_lock(target) as journal:
