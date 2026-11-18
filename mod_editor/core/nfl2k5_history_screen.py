@@ -154,7 +154,7 @@ GUARDS = (
 # the schedule accessors is outside every span; none so far.
 VARIABLE_BYTES = ()
 
-# b780 n8: three other owners hook native entry points inside the "screen push" and "menu dispatcher" spans. Each hook is
+# Other owners hook native entry points inside the guarded screen, dispatcher and background functions. Each hook is
 # accepted only as the exact bytes of a complete install that its own owner validates (status "applied"), and is read as
 # the retail bytes it displaced before the span is hashed; any other byte change there stays foreign. All three pass the
 # History screen's descriptors through unchanged (Unicorn: tests/mod_editor/test_b780_n8_history_compose.py):
@@ -165,14 +165,16 @@ VARIABLE_BYTES = ()
 #   MyCareer and Career Home descriptors, replays push edi / mov edi, edx / jge and resumes at 0x6E39F (or 0x6E3F0).
 # * Music playlist: the dispatcher prologue 0x6E4E0 jumps to screen_event, which queues background music on events 1
 #   and 3 of every screen and then runs the complete retail dispatcher (0x6E4E5 on).
+# * The pause scorebar draws only for the root Paused descriptor. History uses the native background tail.
 COMPANION_HOOKS = (
     # (label, VA, retail bytes, owner module)
     ("mycareer_screen_push", 0x0006E390, bytes.fromhex("568bf183be0001000020"), "nfl2k5_my_career"),
     ("module_loader_screen_push", 0x0006E39A, bytes.fromhex("578bfa7d51"), "nfl2k5_module_loader"),
     ("playlist_screen_event", 0x0006E4E0, bytes.fromhex("5155578bf9"), "nfl2k5_music_playlist"),
+    ("scorebar_pause_background", 0x0006C096, bytes.fromhex("e935ffffff"), "nfl2k5_scorebug_runtime"),
 )
 COMPANION_NAMES = {"nfl2k5_my_career": "MyCareer", "nfl2k5_module_loader": "the on-demand Career Home loader",
-                   "nfl2k5_music_playlist": "the music playlist"}
+                   "nfl2k5_music_playlist": "the music playlist", "nfl2k5_scorebug_runtime": "the pause scorebar"}
 
 # ---- the read-only block --------------------------------------------------------------------------------------------
 RO_MAGIC = b"HSR1"
@@ -651,6 +653,11 @@ def _guard_digest(image: XbeImage, va: int, size: int, checked_sites, companions
 
 def _companion_bytes(payload: bytes, label: str) -> bytes:
     """The exact hook bytes the companion owner's current install writes at its site."""
+    if label == "scorebar_pause_background":
+        from . import nfl2k5_scorebug_runtime as scorebar
+        code, data = scorebar.sites(payload)
+        _, entry_points = scorebar.code_for(code["va"], data["va"])
+        return scorebar.hook_bytes(scorebar.PAUSE_HOOK_NAME, entry_points)
     if label == "mycareer_screen_push":
         from . import nfl2k5_my_career as legacy, nfl2k5_my_career_mode as mode
         code, data = legacy.allocations(payload)

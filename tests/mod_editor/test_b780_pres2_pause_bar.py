@@ -171,6 +171,18 @@ class StatusAndPreviousTests(unittest.TestCase):
         cls.retail = _retail()
         cls.patched, cls.receipt = owner.apply(cls.retail)
 
+    def test_team_history_accepts_the_root_pause_hook_only_from_its_complete_owner(self):
+        from mod_editor.core import nfl2k5_history_screen as history
+
+        image = history.XbeImage(self.patched)
+        history._check_guards(image, self.patched)
+        self.assertIn("scorebar_pause_background", [row[0] for row in history.companion_sites(self.patched)])
+        va, retail = owner.PAUSE_HOOK
+        changed = bytearray(self.patched)
+        changed[image.offset(va, len(retail)) + 1] ^= 1
+        with self.assertRaisesRegex(ValueError, "foreign history screen dependency: scorebar_pause_background"):
+            history._check_guards(history.XbeImage(changed), changed)
+
     def at(self, payload, va, n):
         off = scene.layout.sbpos.va_to_off(payload, va)
         return payload[off:off + n]

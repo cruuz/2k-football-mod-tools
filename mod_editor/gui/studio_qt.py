@@ -2903,9 +2903,10 @@ class StudioMainWindow(QMainWindow):
         sidebar = QFrame()
         sidebar.setObjectName("sidebar")
         sidebar.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
-        sidebar.setMinimumWidth(248)
         side_layout = QVBoxLayout(sidebar)
         side_layout.setContentsMargins(16, 18, 16, 14)
+        # A layout floor keeps 248 px at normal text size and can grow with its contents.
+        side_layout.addStrut(216)  # 248 including the two 16 px margins
         side_layout.setSpacing(10)
 
         brand_row = QHBoxLayout()
@@ -2914,7 +2915,8 @@ class StudioMainWindow(QMainWindow):
         mark.setObjectName("brandMark")
         brand = QVBoxLayout()
         brand.setSpacing(0)
-        brand_title = QLabel("MOD STUDIO")
+        brand_title = WrappedLabel("MOD STUDIO")
+        brand_title.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         brand_title.setObjectName("brandTitle")
         release_candidate = __version__.rsplit("rc", 1)[-1]
         # b780-uxfix: people say "Beta 80" (the update check, the FAQ, the Discord); the RC stays in the tooltip.

@@ -224,6 +224,26 @@ class DescriptionVisibilityTests(unittest.TestCase):
 
 
 class WindowFitTests(unittest.TestCase):
+    def test_sidebar_brand_fits_when_text_doubles(self):
+        window = StudioMainWindow(offer_recovery=False)
+        try:
+            window.resize(1480, 920)
+            window.show()
+            APP.processEvents()
+            brand = window.findChild(QLabel, "brandTitle")
+            for widget in window.findChildren(QLabel) + window.findChildren(QPushButton):
+                if widget.isVisible():
+                    pixels = QFontInfo(widget.font()).pixelSize() * 2
+                    widget.setStyleSheet(f"font-size: {pixels}px;")
+            for _ in range(4):
+                APP.processEvents()
+            fits_on_one_line = brand.fontMetrics().horizontalAdvance(brand.text()) <= brand.contentsRect().width()
+            fits_when_wrapped = brand.wordWrap() and brand.heightForWidth(brand.width()) <= brand.height()
+            self.assertTrue(fits_on_one_line or fits_when_wrapped, brand.text())
+        finally:
+            window._allow_close = True
+            window.close()
+
     def test_getting_started_heading_fits_with_enlarged_header_text(self):
         window = StudioMainWindow(offer_recovery=False)
         try:
