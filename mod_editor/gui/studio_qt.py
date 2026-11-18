@@ -10033,8 +10033,11 @@ class StudioMainWindow(QMainWindow):
         if source and platform_compat.paths_alias(source, target):
             self._set_status("That copy is the open source disc, not a new build; Play latest disc was not changed.")
             return
+        from mod_editor.core import nfl2k5_console_memory
+        # A Build-tab receipt stores plan.to_recipe(), which leaves out console_memory for the standard 128 MB target.
+        memory = nfl2k5_console_memory.of(receipt.get("plan") or {})
         try:
-            self.facade.register_external_build(Path(target), console_memory=receipt.get("plan", {}).get("console_memory"))
+            self.facade.register_external_build(Path(target), console_memory=memory)
         except Exception as exc:  # noqa: BLE001 - a missing file only means Launch stays blocked
             self._set_status(str(exc))
             return

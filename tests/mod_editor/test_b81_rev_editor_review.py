@@ -152,5 +152,47 @@ class Ps2CopyOnVolumesWithoutHardLinks(unittest.TestCase):
                 self.assertEqual(list(root.glob(".studio-ps2-*")), [])
 
 
+class BuildTabDiscKeepsItsXemuCheck(unittest.TestCase):
+    """E08 sibling: beta 81 passes each finished disc's console target to Play latest disc, and an unknown target
+    skips the xemu settings check. A Build-tab receipt stores plan.to_recipe(), which omits console_memory when it is
+    128, so reading the key directly turned every standard 128 MB build into an unknown disc. Beta 80 checked 128 MiB
+    and Complex 4627 before every launch."""
+
+    def registered_memory(self, plan) -> object:
+        from types import SimpleNamespace
+        from mod_editor.gui.studio_qt import StudioMainWindow
+
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / "built.xiso.iso"
+            target.write_bytes(b"disc")
+            seen = {}
+            host = SimpleNamespace(
+                facade=SimpleNamespace(register_external_build=lambda path, console_memory=None:
+                                       seen.update(memory=console_memory)),
+                _set_status=lambda *_: None, _refresh_action_states=lambda: None)
+            receipt = {"target": str(target), "source": str(Path(folder) / "retail.iso"),
+                       "outcome": {"status": "changed"}, "plan": plan.to_recipe()}
+            StudioMainWindow._on_build_tab_built(host, receipt)
+        return seen["memory"]
+
+    def test_standard_and_64_mb_build_tab_discs_register_their_targets(self) -> None:
+        from mod_editor.core import mod_build
+
+        standard = mod_build.BuildPlan("retail.iso", "built.iso", k128_memory=True)
+        self.assertNotIn("console_memory", standard.to_recipe())
+        self.assertEqual(self.registered_memory(standard), 128)
+        compact = mod_build.BuildPlan("retail.iso", "built.iso", console_memory=64)
+        self.assertEqual(self.registered_memory(compact), 64)
+
+    def test_unknown_target_skips_the_check_that_a_128_target_makes(self) -> None:
+        from mod_editor.studio import xemu_settings
+
+        with tempfile.TemporaryDirectory() as folder:
+            config = Path(folder) / "xemu.toml"
+            config.write_text("[sys]\nmem_limit = '64'\n", encoding="utf-8", newline="\n")
+            self.assertEqual(xemu_settings.play_warning(config, target_mb=None), "")
+            self.assertIn("128 MiB", xemu_settings.play_warning(config, target_mb=128))
+
+
 if __name__ == "__main__":
     unittest.main()
