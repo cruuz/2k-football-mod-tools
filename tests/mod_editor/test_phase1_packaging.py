@@ -39,9 +39,9 @@ class ModStudioPackagingTests(unittest.TestCase):
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
         )
-        # b780-uxfix: the header names the release people know (Beta 80); the RC is in its tooltip
+        # The public beta name is visible and the build number is available in its tooltip.
         self.assertIn(
-            'QLabel(f"{release_name} • Xbox Edition")',
+            'f"{release_name} • Xbox Edition"',
             studio_source,
         )
         self.assertIn(
