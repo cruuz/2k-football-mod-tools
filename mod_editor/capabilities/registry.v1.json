@@ -11823,18 +11823,19 @@
       "evidence": [
         "docs/mod_editor/franchise_save.md",
         "tests/mod_editor/test_b780_c4_staff_franchise_panel.py",
-        "tests/mod_editor/test_b780_c4_staff_save.py"
+        "tests/mod_editor/test_b780_c4_staff_save.py",
+        "tests/mod_editor/test_b81_finn_parity.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Franchise page > Coaches: Swap with another club, Fire and hire, Hire for a club. Each is one journaled edit written into a re-signed copy."
+        "reason": "EXPERIMENTAL / UNWITNESSED. Franchise page > Coaches: Swap with another club, Fire and hire, Hire for a club. Each is one journaled edit written into a re-signed copy. A roster save (no franchise) opens the same Coaches screen beside Roster (b81): coach numbers, ratings, play calling and these moves."
       },
       "id": "nfl2k5.saves.franchise_coach_moves",
       "input_constraints": [
-        "A signature-verified franchise SAVEGAME.DAT (720,044 bytes, or the grown capacity arena); the source is never changed, the copy is written to a new folder.",
+        "A signature-verified franchise SAVEGAME.DAT (720,044 bytes, or the grown capacity arena), or a roster save with coach records (FranchiseSave.roster_save: season, schedule, cap and IR refuse there); the source is never changed, the copy is written to a new folder.",
         "Only the 32 league clubs employ coaches; exhibition squads keep the coach record they borrow.",
         "A new coach's name needs the save's coach text to be one back-to-back region that nothing else points at (SOFTDRINK and Franchise1 are; Finn's 2004 save is not) and to fit the game's 5,506-byte region; swaps and hiring a coach already in the save always work.",
         "Names are 24 characters at most, biography lines 52, plain printable ASCII.",

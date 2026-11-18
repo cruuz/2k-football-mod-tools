@@ -536,6 +536,94 @@ class PassTests(unittest.TestCase):
                             source.record.values["first_name_pointer"], "names never travel")
         self.assertEqual(target.first, "Michael")
 
+    # b81 R7: a SOFTDRINK record also says which roster slot it holds; a Paste must not carry that
+    def _returners(self) -> tuple[rr.Player, rr.Player]:
+        """Harrison (WR, IND) holds KR1 and a locked rank 0; James is moved to WR and sits behind him."""
+
+        harrison = next(p for p in self.document.players if p.last == "Harrison")
+        james = next(p for p in self.document.players if p.last == "James")
+        self.document.set_position(james, 3)
+        harrison.record.values["depth_rank"], harrison.record.values["depth_side"] = 0, 0
+        james.record.values["depth_rank"], james.record.values["depth_side"] = 1, 1
+        self.document.set_depth_lock(harrison, "rank")
+        self.document.set_depth_lock(harrison, "kr1")
+        self.document.set_depth_lock(harrison, "pr")
+        return harrison, james
+
+    def test_paste_from_a_locked_kr1_leaves_the_bench_players_locks_and_rank(self) -> None:
+        harrison, james = self._returners()
+        before = dict(james.record.values)
+        result = self.document.paste_player(james, harrison.record.copy(), mode="all")
+        self.assertGreater(result["count"], 0)
+        self.assertFalse(result["position_changed"])
+        values = james.record.values
+        self.assertEqual(values["speed"], harrison.record.values["speed"], "ratings travel")
+        self.assertEqual(values["jersey"], harrison.record.values["jersey"], "Finn's paste carries the number")
+        for key in ("depth_rank", "depth_side", "unknown_52"):
+            self.assertEqual(values[key], before[key], f"{key} belongs to James's slot")
+        self.assertEqual(james.record.depth_locks, {"rank": False, "side": False, "kr1": False, "kr2": False, "pr": False})
+        self.assertEqual(self.document.depth_lock_conflicts(0), [], "one KR1 and one PR on the club")
+        owners = [p for p in self.document.team_players(0) if p.record.depth_locks["kr1"]]
+        self.assertEqual(owners, [harrison])
+        self.assertEqual(result["before"].values, before, "the snapshot is the record before the paste")
+
+    def test_paste_keeps_the_targets_injury_ir_kind_pool_and_star(self) -> None:
+        harrison, james = self._returners()
+        source = harrison.record.copy()
+        source.values.update(injured_reserve=0xEE, unknown_29_low=2, star_tag=1, pool_kind=3,
+                             player_type=source.values["player_type"] | 0x10)
+        before = {key: james.record.values[key] for key in rr.PASTE_KEEPS_TARGET}
+        self.document.paste_player(james, source, mode="all")
+        self.assertEqual({key: james.record.values[key] for key in rr.PASTE_KEEPS_TARGET}, before)
+        self.assertFalse(james.record.on_injured_reserve, "no IR marker without a place in the IR block")
+
+    def test_abilities_and_tier_travel_only_when_asked_but_the_guardian_cap_does(self) -> None:
+        harrison, james = self._returners()
+        harrison.record.set_ability("speedster", True)
+        harrison.record.set_ability("juke", True)
+        harrison.record.ability_tier = 2
+        harrison.record.guardian_cap = True
+        self.document.paste_player(james, harrison.record.copy(), mode="all")
+        self.assertTrue(james.record.guardian_cap, "the Guardian cap is gear")
+        self.assertFalse(any(james.record.abilities.values()))
+        self.assertEqual(james.record.ability_tier, 0)
+        self.document.paste_player(james, harrison.record.copy(), mode="all", abilities=True)
+        self.assertTrue(james.record.abilities["speedster"] and james.record.abilities["juke"])
+        self.assertEqual(james.record.ability_tier, 2)
+        self.assertFalse(any(james.record.depth_locks.values()), "abilities never bring the locks along")
+        self.assertEqual(self.document.depth_lock_conflicts(0), [])
+        # attributes only: the 28 rating bytes, plus the abilities when asked, never gear or locks
+        manning = next(p for p in self.document.players if p.last == "Manning")
+        rr.copy_player(harrison.record, manning.record, mode="attributes", abilities=True)
+        self.assertEqual(manning.record.ability_tier, 2)
+        self.assertFalse(manning.record.guardian_cap)
+        self.assertFalse(any(manning.record.depth_locks.values()))
+
+    def test_a_pasted_position_takes_the_position_edit_rule(self) -> None:
+        harrison, james = self._returners()
+        manning = next(p for p in self.document.players if p.last == "Manning")
+        manning.record.values["depth_rank"] = 0
+        result = self.document.paste_player(harrison, manning.record.copy(), mode="all")
+        self.assertTrue(result["position_changed"])
+        self.assertEqual(harrison.record.values["position"], 0)
+        self.assertEqual((harrison.record.values["depth_rank"], harrison.record.values["depth_side"]),
+                         (1, rr.DEPTH_SIDE_FOR_RANK.get(1, 1)), "bottom of the QB chain behind Manning")
+        self.assertFalse(any(harrison.record.depth_locks.values()), "a new position starts unlocked")
+        self.assertEqual(self.document.depth_lock_conflicts(0), [])
+        harrison.record.values.update(result["before"].values)          # what the page's undo does
+        self.assertTrue(harrison.record.depth_locks["kr1"])
+        self.assertEqual(harrison.record.values["position"], 3)
+
+    def test_a_retired_position_refuses_the_whole_paste(self) -> None:
+        document = rr.load_body(one_pool_body(), scheme="one_pool")
+        target = next(p for p in document.players if p.last == "Lewis")
+        source = target.record.copy()
+        source.values.update(position=10, speed=99)
+        before = dict(target.record.values)
+        with self.assertRaises(rr.RosterRecordError):
+            document.paste_player(target, source, mode="all")
+        self.assertEqual(target.record.values, before, "nothing changes when the paste is refused")
+
     def test_advance_years_pro_stops_at_the_field_width(self) -> None:
         self.assertEqual(rr.advance_years_pro(self.document), len(SAMPLE))
         self.assertEqual(self.document.players[0].record.values["years_pro"], 8)

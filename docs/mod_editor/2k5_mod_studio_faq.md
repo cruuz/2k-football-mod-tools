@@ -477,7 +477,15 @@ played issue; keep that separate from a build failure.
 
 Open your Xbox save in **★ Rosters → Open Xbox save…**, select the team and use the **CSV** menu to export its players. On a signed v0.9 roster, Finn’s GameSave Editor 4.0.0.41 showed 57 Giants and left 39 first- or last-name cells blank across 28 players. J.J. McCarthy and Jevon Holland lost both names on screen. Abdul Carter, Patrick Ricard, Greg Newsome, Cam Skattebo and Chris Manhertz lost their surnames. Studio read and exported both names for all 57 players from the same save.
 
-Finn 4.0.0.41 reads only some of the name locations an expanded roster can use. In a signed test copy, it showed the same four-letter first name in one location and left it blank in two others. Finn can ask whether to auto-repair names when opening an expanded roster. Choose **No** to inspect the file. Keep the original save and use the Studio export to check the players before making changes.
+Finn 4.0.0.41 reads only some of the name locations an expanded roster can use. In a signed test copy, it showed the same four-letter first name in one location and left it blank in two others. Finn's program contains a prompt that offers to auto-repair names, and it may show it when opening an expanded roster; nobody has yet recorded what that repair does to a SOFTDRINK roster. If it appears, choose **No**. Keep the original save and use the Studio export to check the players before making changes.
+
+## I used Flying Finn's editor. Where is everything in the Studio?
+
+Open **★ Rosters** and press **Open Xbox save (Finn's zip)…**: it takes the same Action Replay `.zip`. Ctrl+F (or **Find…**) is Finn's Find Player and searches every team, the reserves, the free agents and the draft class. Ctrl+C, Ctrl+V and Ctrl+Alt+A copy, paste and paste attributes only, as in Finn; PgUp and PgDn in the editor move to the previous or next player; right-click a player for Place on IR and the rest of Finn's player menu. The guide's **Coming from Flying Finn's editor** table lists every place.
+
+Coaches in a roster save are on the **Coaches** tab beside **Roster**, and a franchise save's schedule has Finn's Add Game, Remove Game, Clear Week and Home/Away check on **Franchise → Schedule**.
+
+Two things work differently on purpose. **Save Xbox save copy…** writes a new signed copy in a folder you choose and never changes the zip you opened (Finn saved over it), so use the new zip in place of the old one. And **Paste player** keeps the target's depth place, returner locks, injury and IR state and star tag, because on a SOFTDRINK roster copying those can give a team two kick returners or a player marked on IR without an IR slot.
 
 ## Which files help diagnose a franchise freeze or an unexpected portrait?
 

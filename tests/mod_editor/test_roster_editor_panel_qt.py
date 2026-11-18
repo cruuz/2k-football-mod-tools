@@ -270,6 +270,39 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.panel.undo()
         self.assertEqual(target.record.values["speed"], 88)
 
+    def test_paste_from_a_locked_returner_keeps_the_targets_slot_and_undoes(self) -> None:
+        # b81 R7: Harrison (WR) holds KR1 and PR; James is made a WR behind him, then gets Harrison pasted on
+        document = self.panel.document
+        assert document is not None
+        harrison = next(p for p in document.players if p.last == "Harrison")
+        james = next(p for p in document.players if p.last == "James")
+        document.set_position(james, 3)
+        document.set_depth_lock(harrison, "kr1")
+        document.set_depth_lock(harrison, "pr")
+        harrison.record.set_ability("speedster", True)
+        self.panel.refresh_grid()
+        self.assertTrue(self.panel.select_player(harrison))
+        self.assertTrue(self.panel.copy_player())
+        self.assertTrue(self.panel.select_player(james))
+        before = dict(james.record.values)
+        self.assertFalse(self.panel.paste_abilities_action.isChecked(), "abilities are opt-in")
+        self.assertGreater(self.panel.paste_player("all"), 0)
+        self.assertEqual(james.record.values["speed"], harrison.record.values["speed"])
+        self.assertEqual(james.record.values["unknown_52"], before["unknown_52"], "no KR1/PR lock, no Speedster")
+        self.assertEqual((james.record.values["depth_rank"], james.record.values["depth_side"]),
+                         (before["depth_rank"], before["depth_side"]))
+        self.assertEqual(document.depth_lock_conflicts(0), [])
+        self.assertIn("Kept his depth place and locks", self.panel.status_label.text())
+        self.assertIn((james.pool, james.index), self.panel._dirty)
+        self.panel.undo()
+        self.assertEqual(james.record.values, before)
+        self.panel.redo()
+        self.assertEqual(james.record.values["speed"], harrison.record.values["speed"])
+        self.panel.paste_abilities_action.setChecked(True)
+        self.panel.paste_player("all")
+        self.assertTrue(james.record.abilities["speedster"])
+        self.assertFalse(james.record.depth_locks["kr1"], "the tick copies abilities, never returner locks")
+
     # ------------------------------------------------------------------ passes
     def test_global_edit_preview_and_apply(self) -> None:
         preview = self.panel.global_edit_preview(attribute="speed", mode="add", value=5, positions=["QB"])

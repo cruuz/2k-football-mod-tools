@@ -1228,16 +1228,24 @@ and a validation pass on top. The format knowledge behind it comes from **Flying
 Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the retail disc.
 
 1. Open the page and press **Use the open disc** (or **Open disc roster…**). An Xbox save works too:
-   **Open Xbox save…** takes an Action Replay `.zip`, an extracted save folder or a loose
+   **Open Xbox save (Finn's zip)…** takes an Action Replay `.zip` (the file Flying Finn's editor opens), an extracted save folder or a loose
    `SAVEGAME.DAT` with its `EXTRA` beside it (real saves keep the roster as the game's in-memory arena;
    the page reads that layout and the disc's). The stored signature is checked on load, and a save
    whose `EXTRA` does not verify is refused rather than quietly re-signed.
 2. **Left**: the 32 clubs, the game's extra squads (Pro Bowl, all-time, the two user teams), then
    Free Agents, the Draft Class and the leftover pools.
-3. **Middle**: search by name, years pro (type `R` for rookies) or college; the position chips (QB RB WR TE OL DL LB DB
-   K/P) narrow the list; the grid shows position, number, name, years pro, an OVR estimate and the
-   depth slot. **↑ Move up / ↓ Move down** reorder the team's own pointer list, which *is* the depth
-   chart.
+3. **Middle**: the search box filters the list you have open by name, years pro (type `R` for rookies) or
+   college. **Find…** (Ctrl+F) is Finn's Find Player: it searches every club, the reserves, the free agents
+   and the draft class at once (a name, `Last, First`, or a college, with an optional position and years pro),
+   and **Go to player** opens his list and selects him. The position chips (QB RB WR TE OL DL LB DB
+   K/P, plus EDGE on a one-pool roster) narrow the list; the grid shows position, number, name, years pro, an OVR estimate and the
+   depth slot. **Columns ▾** adds the columns of Finn's grid: all his ratings in his order, body (height,
+   weight, age, hand, body type, skin, face, hair, college), every piece of gear and the contract. Click a
+   column heading to sort by it (a rating sorts highest first; click again to reverse); the selected
+   player stays selected. **↑ Move up / ↓ Move down** reorder the team's own pointer list, which *is* the depth
+   chart, so they wait while the grid is sorted: the line under the grid says so, and **Team order** puts the
+   list back. Right-click a player for Finn's player menu: copy, the three pastes, Find player, Only his
+   position, Place on IR… and Release to free agency.
 4. **Right**: the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
    Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
    ← → nudge by one, ↑ ↓ jump to the next card. Enum cards are dropdowns built from the tables lifted
@@ -1297,13 +1305,24 @@ works. A brand-new longer name needs a free block, which appears when some other
 when there is none the edit is refused with the number of bytes it needed. The status line under the
 name fields always says how much room is left.
 
-**Tools.** **Global Attribute Editor** takes an attribute (including the style channels), a rule
-(set / add / percent), a scope (positions, this team, rookies only) and an optional condition
+**Tools.** **Global Attribute Editor** takes an attribute (including the style channels; **More attributes**
+applies the same rule to several at once), a rule (set / add / percent), a scope (positions, this team, a
+**Teams** list where a club includes its reserves, rookies only) and an optional condition
 "every QB with Speed ≥ 80 → signature release", "all HBs with Break Tackle ≥ 75 → Power": and shows
 **every affected player before it changes anything**. **Copy player** and **Paste ▾**
 (player / attributes only / photo only) follow Finn's rules: a paste never carries names, college,
-play-by-play or photo unless you ask for the photo. **One-shot passes ▾** advance years pro for the
-league or the list, and restore height, weight and date of birth to what the roster shipped with.
+play-by-play or photo unless you ask for the photo. On top of Finn's rules, a paste keeps what belongs
+to the player's roster spot rather than to the player: his depth rank and side, his depth and returner
+locks (KR1, KR2, PR), his injury and IR state, his player kind (NFL player, prospect, MyCareer) and the
+star tag. Carrying those could give a club two KR1s or a player who claims to be on IR without an IR
+slot. Abilities and their tier stay too unless you tick **Include abilities and tier** in the Paste
+menu. If the paste changes his position, he goes to the bottom of that position's depth order,
+unlocked, the same as a position edit. **Tools ▾** advances years pro for the
+league or the list (Finn's Advance year), restores height, weight and date of birth to what the roster shipped with,
+and sets **Body type from weight** or **from BMI** with Finn's thresholds (Skinny below 200 lb, Normal from 200,
+Large from 270, Extra Large from 300; by BMI 26, 30 and 35), showing every player it would change first. **Open on
+this list next time** is Finn's Default Team. The contract cards keep Finn's rule: years remaining cannot be more
+than the contract length, and a shorter length takes the years remaining down with it.
 **CSV ▾** exports the list or the whole league and reads it back: it also reads Finn's
 semicolon-delimited export, and a spreadsheet with three columns is a legal edit. Files exported
 by Bad_AL's NFL2K5Tool import directly, matched by team and name with position and jersey as
@@ -1334,7 +1353,12 @@ and DE have none in the game's table) exactly as the game does. The play-by-play
 have a **…** button that opens a searchable list: the play-by-play ids this roster uses, the
 jersey-number call-outs and the recorded surname bank; the 4,303 portraits on the disc with the
 players that wear them. **CSV ▾** also exports and restores Finn's **`.PlayerData`** backups, matched
-back by name and play-by-play index, so a community backup restores here.
+back by name and play-by-play index, so a community backup restores here. Before a restore you choose what comes
+back, as in Finn's restore dialog: ratings, abilities, appearance, body, contract, number and position,
+play-by-play and photo ids, college. **Roster spot** (depth rows, depth and returner locks, injury and IR state)
+is off unless you tick it: a backup from another time or another save would bring back an old team's depth and a
+kick returner lock another player holds now. **CSV ▾ → Export this list as a web page** is Finn's Export as HTML: the
+list shown, with the grid's columns, in its current order.
 
 **Moving a roster between projects.** Open the source disc and choose **Tools ▾ → Export complete
 roster with faces…**. Open the destination disc, choose **Tools ▾ → Load complete roster with
@@ -1344,15 +1368,42 @@ contains player fields but does not contain the disc's face artwork; copying its
 can select a different person's face in another project. The source and destination need matching
 player and team capacities. This transfer is proved offline and has no gameplay witness yet.
 
+**Coming from Flying Finn's editor.** The same jobs, in these places:
+
+| Finn | ★ Rosters |
+|---|---|
+| File > Open (an Action Replay zip) | **Open Xbox save (Finn's zip)…** (Ctrl+O in the Studio opens a game disc) |
+| Search > Find Player (Ctrl+F) | **Find…** or Ctrl+F: every team, the reserves, the free agents and the draft class |
+| Edit Player (double-click) | Select the player; the editor on the right is always open. PgUp / PgDn there move to the previous or next player |
+| Change Name `…` list | Type the name. A name that already exists is shared, which needs no free space |
+| Depth Chart (Ctrl+D) | Ctrl+D shows only the selected player's position; **↑ Move up / ↓ Move down** reorder it |
+| The player grid (every rating as a column, click to sort) | **Columns ▾**, then click a heading |
+| Copy Player (Ctrl+C), Paste Player (Ctrl+V), Paste Attributes Only (Ctrl+Alt+A) | Same keys, or **Copy player** and **Paste ▾** |
+| Tools > Global Editor | **Global Attribute Editor…** |
+| Tools > Auto-update > Advance year | **Tools ▾ → Add a year pro to everyone (Advance year)** |
+| Tools > Auto-update > Body type from weight / from BMI | **Tools ▾ → Body type from weight / from BMI (Auto-update)…** |
+| Tools > Options > Default Team | **Tools ▾ → Open on this list next time** |
+| File > Export as HTML | **CSV ▾ → Export this list as a web page (HTML)…** |
+| Tools > Backup and Restore | **CSV ▾ → .PlayerData backup (Finn's format)** |
+| Place on IR (right-click) | Right-click → **Place on IR…** opens **Franchise → Injured Reserve** with him chosen |
+| Heal Player | Not available. **Activate** on the IR tab returns a player from IR; it does not change an injury |
+| Manage Salary Cap | **Franchise → Overview → Salary cap** |
+| Save (writes the zip back) | **Save Xbox save copy…** writes a new signed copy; your original is never changed |
+
+Ctrl+Z and Ctrl+Y undo and redo on this page (Finn had no undo). Ctrl+/ lists the keys.
+
 **Writing.** Your source is never touched.
 
 * **Export roster edits (.json)…** writes a small JSON document. The Build tab picks it up as the
   **roster edits** step, and Share packs it into a `.2k5patch` as an asset, so an edit travels
   without the disc.
-* **Save disc copy…** copies the disc image and edits the copy; for a save, **Save Xbox save copy…** writes a
-  **re-signed** container beside the original with every other member (`SaveMeta.xbx`, `TYPE`, the
-  images) copied byte for byte. Renaming or dropping those is what makes the game call a save
-  corrupt, so they are never rebuilt.
+* **Save disc copy…** copies the disc image and edits the copy; for a save, **Save Xbox save copy…** asks for a
+  folder and writes a **re-signed** copy there: `<your zip name> (edited).zip` for an Action Replay zip, or a
+  `<save folder> (edited)` folder for an extracted save, with a number added if that name is taken. Every other
+  member (`SaveMeta.xbx`, `TYPE`, the images) is copied byte for byte. Renaming or dropping those is what makes
+  the game call a save corrupt, so they are never rebuilt. Finn's editor saved over the zip you opened; the
+  Studio never does, so put the new copy on your Xbox in place of the old one, or copy its `SAVEGAME.DAT`
+  and `EXTRA` into your save. Those two files only work as a pair.
 
 In a build, the roster-edits step runs **last** of the roster passes, so the star tags, the real team
 history, the modern prospect names and the one-pool positions all survive it. Unwitnessed in game.
@@ -1366,7 +1417,14 @@ $1000-unit value the game keeps, and every team's salary against the cap. **Sche
 22 × 17 grid week by week (away, home, date, kick-off, played, score); pick a game, change the teams,
 date or time and press **Apply to this game**, or **Swap home/away**. A game that has been played is
 refused with the reason unless you tick **Allow editing played games**; its score stays read-only
-because which side the quarter bytes belong to is still a hypothesis. **Coaches** lists every coach
+because which side the quarter bytes belong to is still a hypothesis. Finn's week tools are there too, for
+regular-season weeks: **Add game to this week** (the teams, date and kick-off set above; refused if either team
+already plays that week or the week is full), **Remove this game** (the week's later games move up one place) and
+**Clear this week**; a week with a played game needs the same tick. Playoff rounds keep their games, because the
+bracket keeps its seeds by position. Under the week list, **Season check** is Finn's Home/Away table: every club's
+home and away games, with a plain note for any club that is not at the season's count (16 in 17 weeks, 17 in 18),
+whose home and away differ by more than one, or that plays twice in a week. These edits change this season's grid;
+the next season starts from the schedule template as usual. **Coaches** lists every coach
 record with his team: seasons, wins / losses / ties, winning seasons, Super Bowls (roster: the appearances
 the roster gives him; Super Bowls played in the franchise count in his Super Bowl wins and losses), playoff and Super
 Bowl records, the photo and body ids, the run % playcalling split, then the 23 ratings and the ten
@@ -1383,6 +1441,13 @@ with the byte ranges it touched. Each tab undoes per action and the header count
 top, so the two never fight over the arena. In game, check the salary cap edit first (the cap projection
 is the game's own arithmetic), then a moved user team, then a schedule change; everything but the year
 rule and the IR move is unwitnessed.
+
+**Coaches in a roster save.** Finn's editor edits coaches in any save, and so does this page: open a roster save
+(not a franchise) and a **Coaches** tab appears beside **Roster**. It is the Franchise page's Coaches screen: every
+coach's numbers, the 23 ratings, the ten formation shares, and the head-coach moves (swap, fire and hire, hire).
+Each change undoes with the page's Undo, is listed by **Show my changes**, and is written by **Save Xbox save copy…**
+together with your player edits into one signed copy. Not yet tested in the game. (For a game disc, the **Coaches**
+tab is the build's staff plan instead.)
 
 ## ★ Models: every model out to Blender and back
 

@@ -2541,7 +2541,26 @@ class StudioMainWindow(QMainWindow):
                 return field
         return None
 
+    def _page_find_handler(self):
+        """A page that owns Ctrl+F itself (★ Rosters: Finn's league-wide Find player, b81 R1), or None."""
+
+        page = self.pages.currentWidget()
+        if page is None:
+            return None
+        panels = [page] if isinstance(page, RosterEditorPanel) else []
+        panels += page.findChildren(RosterEditorPanel)
+        for panel in panels:
+            if panel.isVisibleTo(page) or panel is page:
+                return panel.studio_find
+        return None
+
     def _focus_current_search(self) -> None:
+        handler = self._page_find_handler()
+        if handler is not None and handler():
+            loaded = getattr(getattr(handler, "__self__", None), "document", None) is not None
+            self._set_status("Find player • type a name or college • Enter goes to him • Ctrl+/ keyboard help"
+                             if loaded else "Search ready • type to filter • Esc clears • Ctrl+/ keyboard help")
+            return
         field = self._current_search_field()
         if field is None:
             self._set_status(
@@ -2569,6 +2588,12 @@ class StudioMainWindow(QMainWindow):
             self._set_status("Search cleared")
 
     def _show_keyboard_hints(self) -> None:
+        if self._page_find_handler() is not None:       # b81 R6: Finn's keys on ★ Rosters
+            self._set_status(
+                "Rosters keys: Ctrl+F find player · Ctrl+C copy · Ctrl+V paste · Ctrl+Alt+A paste attributes · "
+                "Ctrl+D his position · PgUp/PgDn previous/next player · Ctrl+Z/Ctrl+Y undo/redo"
+            )
+            return
         self._set_status(
             "Keys: Ctrl+F search · Esc clear · Ctrl+1 categories · "
             "Ctrl+O open game file · Ctrl+S save project · Ctrl+/ this help"

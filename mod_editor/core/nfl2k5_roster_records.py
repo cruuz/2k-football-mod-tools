@@ -1908,6 +1908,28 @@ class RosterDocument:
         for key in ("position", "depth_rank", "depth_side", "unknown_52"):
             player.record.values[key] = int(values[key])
 
+    def paste_player(self, target: Player, source: PlayerRecord, *, mode: str = "all",
+                     abilities: bool = False) -> dict[str, Any]:
+        """Finn's Paste onto ``target`` without carrying another player's slot (b81 R7).
+
+        ``copy_player`` keeps the target's depth rank/side, lock bits, injury and IR state, player kind,
+        pool kind and star tag.  A pasted position is checked against the loaded scheme first (a retired
+        code refuses the whole paste, nothing changes) and then set the way a position edit sets it: on a
+        club the player goes to the bottom of his new position's chain, unlocked.  Returns
+        ``{"count", "before", "position_changed"}``; ``before`` is the record to restore for undo."""
+
+        _require(self.by_offset.get(target.offset) is target, "player belongs to another document")
+        new_position = None
+        if mode == "all" and source.values["position"] != target.record.values["position"]:
+            new_position = int(source.values["position"])
+            check_position_code(new_position, self.scheme)
+        before = target.record.copy()
+        count = copy_player(source, target.record, mode=mode, abilities=abilities)
+        if new_position is not None:
+            target.record.values["position"] = before.values["position"]
+            self.change_position(target, new_position)
+        return {"count": count, "before": before, "position_changed": new_position is not None}
+
     # ------------------------------------------------------------------ edits
     def _protect_split_name_pool(self) -> None:
         """A relocated roster can place other live objects inside the outer range of player names."""
@@ -2115,6 +2137,34 @@ class RosterDocument:
             fresh.teams[i] = current
         self.__dict__.update(fresh.__dict__)
         self.original, self.scheme_detection = original, detection
+
+    def reserve_move_precheck(self, team_index: int, primary_index: int, *, promote: bool) -> None:
+        """The refusals of ``nfl2k5_practice_squad.reserve_transaction`` that the document state answers, in its words,
+        without encoding and re-decoding the whole save (b81: that full check took about 3 s a player on the 4,096-player
+        SOFTDRINK save, and the Rosters page ran it for every player it selected). Promote and Demote still run the full
+        transaction when pressed, so an arena that cannot be repacked is refused there."""
+
+        from . import nfl2k5_practice_squad as ps
+        try:
+            ps._require(self.version in (0, 1), 'reserve moves require a signed-save copy')
+            ps._require(type(team_index) is int and 0 <= team_index < min(32, len(self.teams)), 'select an NFL team')
+            player = next((p for p in self.by_pool("primary") if p.index == primary_index), None)
+            ps._require(player is not None, 'invalid primary player identity')
+            assert player is not None
+            flags = player.record.values["player_type"]
+            ps._require(bool(flags & 4) and not flags & 0x18, 'player is inactive, retired, or a draft prospect')
+            ps._require(player.record.values["injured_reserve"] != 0xEE, 'player is marked injured reserve')
+            team = self.teams[team_index]
+            reserves = list(self.reserves.get(team_index, ()))
+            if promote:
+                ps._require(primary_index in reserves, 'player is not a reserve owned by this team')
+                ps._require(len(team.slots) < ps.ACTIVE_LIMIT, 'promotion requires fewer than 53 active players')
+            else:
+                ps._require(team.slots.count(player.offset) == 1, 'player is not active on this team')
+                limit = self.reserve_limit(team_index)
+                ps._require(len(reserves) < limit, f'practice squad is full ({limit} players)')
+        except ValueError as exc:
+            raise MembershipRefused(str(exc)) from exc
 
     def reserve_move_check(self, team_index: int, primary_index: int, *, promote: bool) -> None:
         from . import nfl2k5_practice_squad as ps
@@ -5321,6 +5371,7 @@ PLAYER_DATA_COLLEGE_SIZE = 32
 PLAYER_DATA_EXCLUDED = frozenset(POINTER_FIELDS) | {"star_tag"}
 
 
+
 @dataclass
 class PlayerDataEntry:
     index: int
@@ -5383,24 +5434,50 @@ def read_player_data(data: bytes) -> list[PlayerDataEntry]:
     return entries
 
 
+def _player_data_plan(groups: Sequence[str]) -> tuple[tuple[str, ...], dict[str, int], bool]:
+    """``(whole fields, {field: mask}, college)`` for a set of restore groups."""
+
+    unknown = [name for name in groups if name not in PLAYER_DATA_GROUPS]
+    _require(not unknown, f"unknown .PlayerData group(s): {', '.join(map(str, unknown))}")
+    masks: dict[str, int] = {}
+    whole: list[str] = []
+    for name in groups:
+        group_masks = _PLAYER_DATA_MASKS.get(name, {})
+        for field in PLAYER_DATA_GROUPS[name]:
+            if field in group_masks:
+                masks[field] = masks.get(field, 0) | group_masks[field]
+            elif field not in whole:
+                whole.append(field)
+    if set(groups) >= set(PLAYER_DATA_DEFAULT_GROUPS):
+        # every byte no group names (Finn's unnamed fields) comes back with a full restore, as it did before
+        named = {field for fields in PLAYER_DATA_GROUPS.values() for field in fields} | PLAYER_DATA_EXCLUDED
+        whole += [f.name for f in FIELDS if f.name not in named and f.name not in whole]
+    return tuple(whole), masks, "college" in groups
+
+
 def import_player_data(document: RosterDocument, data: bytes, *, mode: str = "all",
-                       players: Sequence[Player] | None = None) -> dict[str, Any]:
+                       players: Sequence[Player] | None = None,
+                       groups: Sequence[str] | None = None) -> dict[str, Any]:
     """Finn's Restore Player Data, under the studio's identity rules.
 
     Each entry is matched to a roster record by **last + first name and the play-by-play index**;
     a name that is unique on the roster still matches when the index differs (logged), a name
-    that matches several records is skipped rather than guessed.  ``mode`` is ``all`` (every
-    non-pointer field except the studio's star tag, plus the college by name) or ``attributes``
-    (the 28 rating bytes only).  Returns a receipt: entries, matched, changed, fields, log."""
+    that matches several records is skipped rather than guessed.  ``mode`` is ``all`` or ``attributes``
+    (the 28 rating bytes only); ``groups`` (b81 R15, Finn's restore checklist) picks field groups from
+    ``PLAYER_DATA_GROUPS`` instead. ``all`` is every group but ``spot``: the roster slot state (depth rows, locks,
+    injury and IR, player kind, pool) stays as the roster has it unless ``spot`` is asked for, and the studio's star
+    tag never comes back. A restored position goes through ``change_position``. Returns a receipt: entries, matched,
+    changed, fields, log."""
 
     _require(mode in ("all", "attributes"), "mode must be all or attributes")
+    if groups is None:
+        groups = ("ratings",) if mode == "attributes" else PLAYER_DATA_DEFAULT_GROUPS
+    whole, masks, with_college = _player_data_plan(tuple(groups))
     entries = read_player_data(data)
     scope = list(players) if players is not None else list(document.players)
     by_name: dict[tuple[str, str], list[Player]] = {}
     for player in scope:
         by_name.setdefault((player.last.casefold(), player.first.casefold()), []).append(player)
-    keys = RATING_BYTE_ORDER if mode == "attributes" else tuple(
-        f.name for f in FIELDS if f.name not in PLAYER_DATA_EXCLUDED)
     log: list[str] = []
     matched = changed_players = fields_written = 0
     for entry in entries:
@@ -5422,11 +5499,28 @@ def import_player_data(document: RosterDocument, data: bytes, *, mode: str = "al
         matched += 1
         values = entry.values
         touched = 0
-        for name in keys:
+        for name in whole:
+            if name == "position":
+                continue
             if player.record.values[name] != values[name]:
                 player.record.values[name] = values[name]
                 touched += 1
-        if mode == "all" and entry.college and entry.college != player.college:
+        for name, mask in masks.items():
+            merged = (player.record.values[name] & ~mask) | (values[name] & mask)
+            if merged != player.record.values[name]:
+                player.record.values[name] = merged
+                touched += 1
+        if "position" in whole and values["position"] != player.record.values["position"]:
+            try:
+                if "spot" in groups:            # the exact old slot was asked for: no re-rank
+                    check_position_code(values["position"], document.scheme)
+                    player.record.values["position"] = values["position"]
+                else:
+                    document.change_position(player, values["position"])
+                touched += 1
+            except RosterRecordError as exc:
+                log.append(f"entry {entry.index} {entry.display}: position not restored ({exc})")
+        if with_college and entry.college and entry.college != player.college:
             if entry.college in document.colleges:
                 document.set_college(player, document.colleges.index(entry.college))
                 touched += 1
@@ -5482,7 +5576,9 @@ def global_edit_preview(document: RosterDocument, *, attribute: str, mode: str, 
     for player in (players if players is not None else document.players):
         if wanted_positions and player.record.values["position"] not in wanted_positions:
             continue
-        if wanted_teams and not wanted_teams.intersection(player.teams):
+        # a club's reserves are part of the club here (b81): Finn had no reserve list, a SOFTDRINK club does
+        if wanted_teams and not (wanted_teams.intersection(player.teams)
+                                 or document.reserve_owner.get((player.pool, player.index)) in wanted_teams):
             continue
         if rookies_only and not is_rookie_years_pro(player.record.values["years_pro"]):
             continue
@@ -5503,14 +5599,37 @@ def global_edit_preview(document: RosterDocument, *, attribute: str, mode: str, 
     return out
 
 
-def global_edit_apply(document: RosterDocument, preview: Sequence[Mapping[str, Any]], attribute: str) -> int:
+def global_edit_preview_many(document: RosterDocument, *, attributes: Sequence[str], **settings: Any) -> list[dict[str, Any]]:
+    """Finn's Global Attribute Editor with several attributes ticked (b81 R12): the same rule and scope for each.
+
+    Every attribute is previewed against the roster as it is now, so a condition on one of them is judged before any
+    of them changes. Rows carry ``attribute``; ``global_edit_apply`` takes them as one pass."""
+
+    names = list(dict.fromkeys(str(name) for name in attributes))
+    _require(bool(names), "choose at least one attribute")
+    out: list[dict[str, Any]] = []
+    for name in names:
+        for row in global_edit_preview(document, attribute=name, **settings):
+            out.append({**row, "attribute": name})
+    return out
+
+
+def global_edit_apply(document: RosterDocument, preview: Sequence[Mapping[str, Any]], attribute: str = "") -> int:
+    """Apply a preview; a row's own ``attribute`` (several-attribute pass) wins over ``attribute``. A position goes
+    through ``change_position`` (bottom of the new chain, unlocked), the rule every other position edit follows."""
+
     by_key = {(p.pool, p.index): p for p in document.players}
     count = 0
     for row in preview:
         player = by_key.get((str(row["pool"]), int(row["index"])))
         if player is None:
             continue
-        player.record.set(attribute, int(row["after"]))
+        name = str(row.get("attribute") or attribute)
+        _require(bool(name), "the preview row names no attribute")
+        if name == "position":
+            document.change_position(player, int(row["after"]))
+        else:
+            player.record.set(name, int(row["after"]))
         count += 1
     return count
 
@@ -5528,6 +5647,67 @@ def advance_years_pro(document: RosterDocument, players: Sequence[Player] | None
             player.record.values["years_pro"] = current + 1
             count += 1
     return count
+
+
+# b81 R10: Finn's Tools > Auto-update > Body type from weight / from BMI, with the thresholds of his
+# ENFAutoBodyType.txt (Skinny|Normal|Large|Extra Large boundaries). A value at a boundary takes the bigger body.
+BODY_TYPE_THRESHOLDS = {"weight": (200, 270, 300), "bmi": (26.0, 30.0, 35.0)}
+
+
+def body_mass_index(record: PlayerRecord) -> float | None:
+    """Finn's hint: BMI = weight (lb) * 703 / height (in) squared. None without a height."""
+
+    height = record.values["height"]
+    return round(record.weight * 703 / (height * height), 1) if height else None
+
+
+def body_type_preview(document: RosterDocument, method: str, players: Sequence[Player] | None = None,
+                      thresholds: Sequence[float] | None = None) -> list[dict[str, Any]]:
+    """What Body type from weight (``method="weight"``) or from BMI (``"bmi"``) would change, before it changes it.
+
+    Only named players are considered (unused draft and capacity records keep their bytes). Rows:
+    pool, index, name, position, weight, height, bmi, before, after (body codes, see ``BODIES``)."""
+
+    _require(method in BODY_TYPE_THRESHOLDS, "method must be weight or bmi")
+    limits = tuple(thresholds) if thresholds is not None else BODY_TYPE_THRESHOLDS[method]
+    _require(len(limits) == 3 and list(limits) == sorted(limits), "three thresholds, lowest first")
+    rows: list[dict[str, Any]] = []
+    for player in (players if players is not None else document.players):
+        if not (player.first or player.last):
+            continue
+        record = player.record
+        bmi = body_mass_index(record)
+        measure = record.weight if method == "weight" else bmi
+        if measure is None:
+            continue
+        after = sum(1 for limit in limits if measure >= limit)
+        before = record.values["body"]
+        if after != before:
+            rows.append({"pool": player.pool, "index": player.index, "name": player.display,
+                         "position": record.position_name, "weight": record.weight,
+                         "height": record.values["height"], "bmi": bmi, "before": before, "after": after})
+    return rows
+
+
+def body_type_apply(document: RosterDocument, rows: Sequence[Mapping[str, Any]]) -> int:
+    return global_edit_apply(document, [{**row, "attribute": "body"} for row in rows])
+
+
+def contract_years_change(record: PlayerRecord, name: str, value: int) -> dict[str, int]:
+    """b81 R16, Finn's "Years remaining cannot be greater than contract length" (his spelling fixed): the values
+    the contract length and years remaining take when ``name`` is set to ``value``. A remaining above the length is
+    refused; a length below the remaining takes the remaining down with it."""
+
+    _require(name in ("contract_length", "contract_remaining"), "only the contract years are checked here")
+    length = record.values["contract_length"]
+    remaining = record.values["contract_remaining"]
+    if name == "contract_remaining":
+        _require(int(value) <= length, f"Years remaining cannot be greater than the contract length ({length})")
+        return {"contract_remaining": int(value)}
+    out = {"contract_length": int(value)}
+    if remaining > int(value):
+        out["contract_remaining"] = int(value)
+    return out
 
 
 def restore_measurements(document: RosterDocument, retail: RosterDocument,
@@ -5551,26 +5731,152 @@ def restore_measurements(document: RosterDocument, retail: RosterDocument,
 COPY_EXCLUDED = frozenset({"college_pointer", "first_name_pointer", "last_name_pointer",
                            "history_pointer", "pbp_id", "photo_id"})
 
+# b81 R7 (Finn parity audit, section 4 T5).  A record also says which roster SLOT it holds, and on a
+# SOFTDRINK roster that state is team-unique: KR1, KR2 and PR locks may have one owner per club, a
+# locked depth row one owner per position, the IR marker must agree with the club's IR block, and
+# +0x08 says NFL player, draft prospect, unused slot or MyCareer class.  Finn's Paste predates all of
+# it (his record map calls +0x52/+0x53 padding), and the game's own field-by-field player clone
+# (0xC16CD..0xC1DDB) never copies +0x52 or +0x53 either.  So a Paste keeps the target's slot state;
+# abilities and their tier travel only when the user asks; the Guardian cap is gear and travels.
+PASTE_KEEPS_TARGET = ("player_type", "injured_reserve", "unknown_29_low", "depth_rank", "depth_side",
+                      "pool_kind", "star_tag")
+PASTE_LOCK_MASK = 0x1F           # unknown_52 bits 0..4: rank, side, KR1, KR2, PR locks (nfl2k5_depth_locks)
+PASTE_ABILITY_MASKS = {"unknown_52": 0xE0,         # Speedster, Right-Stick Moves, Juke
+                       "unknown_53_high": 0x6F}    # Spin, Truck, Hurdle, Stiff-Arm and the two tier bits
+PASTE_GEAR_MASKS = {"unknown_53_high": 0x10}       # the Guardian cap overlay
+PASTE_KEPT_TEXT = ("his depth place and locks (rank, side, KR1, KR2, PR), injury and IR state, "
+                   "player kind, pool and star tag")
 
-def copy_player(source: PlayerRecord, target: PlayerRecord, *, mode: str = "all") -> int:
-    """Finn's Paste / Paste-Attributes-Only / Paste-Photo.
+# b81 R15: Finn's Restore Player Data options as field groups. The "spot" group is the roster slot state a Paste also
+# keeps (R7): a backup made at another time, or on another save, would put back an old team's depth rows, a returner
+# lock another player now holds, or an IR marker with no IR slot, so it is restored only when asked.
+PLAYER_DATA_GROUPS: dict[str, tuple[str, ...]] = {
+    "ratings": RATING_BYTE_ORDER,
+    "abilities": ("unknown_52", "unknown_53_high"),                  # masked: PASTE_ABILITY_MASKS
+    "appearance": ("skin_low", "skin_high", "face", "body", "dreads", "hair_style", "eye_black", "helmet",
+                   "face_mask", "face_shield", "mouthpiece", "turtleneck", "sleeves", "neck_roll", "left_glove_low",
+                   "left_glove_high", "right_glove", "left_wrist_low", "left_wrist_high", "right_wrist",
+                   "left_elbow_low", "left_elbow_high", "right_elbow", "left_shoe", "right_shoe", "headless",
+                   "unknown_53_high"),                                  # masked: the Guardian cap only
+    "body": ("height", "weight_raw", "hand", "birth_month", "birth_day", "birth_year_low", "birth_year_high"),
+    "contract": ("contract_value", "contract_type", "contract_bonus", "contract_length", "contract_remaining"),
+    "identity": ("jersey", "years_pro", "position"),
+    "commentary_photo": ("pbp_id", "photo_id"),
+    "college": (),
+    "spot": PASTE_KEEPS_TARGET + ("unknown_52",),                       # masked: the lock bits; star_tag never
+}
+PLAYER_DATA_GROUP_LABELS = {
+    "ratings": "Ratings (all 28 bytes)", "abilities": "Abilities and their tier",
+    "appearance": "Appearance and gear", "body": "Height, weight, hand and birth date",
+    "contract": "Contract", "identity": "Number, years pro and position",
+    "commentary_photo": "Play-by-play name and photo id", "college": "College (by name)",
+    "spot": "Roster spot: depth rank and side, depth and returner locks, injury and IR state, player kind, pool",
+}
+PLAYER_DATA_DEFAULT_GROUPS = tuple(name for name in PLAYER_DATA_GROUPS if name != "spot")
+_PLAYER_DATA_MASKS = {"abilities": PASTE_ABILITY_MASKS, "appearance": PASTE_GEAR_MASKS,
+                      "spot": {"unknown_52": PASTE_LOCK_MASK}}
 
-    ``all`` copies everything except college, names, PBP and photo (his own rule); ``attributes``
-    copies the 28 rating bytes only; ``photo`` copies the portrait id only."""
+
+def copy_player(source: PlayerRecord, target: PlayerRecord, *, mode: str = "all",
+                abilities: bool = False) -> int:
+    """Finn's Paste / Paste-Attributes-Only / Paste-Photo, tailored to a SOFTDRINK roster.
+
+    ``all`` copies everything except college, names, PBP and photo (his own rule) and except the slot
+    state in ``PASTE_KEEPS_TARGET`` and the lock bits (b81 R7); ``attributes`` copies the 28 rating
+    bytes only; ``photo`` copies the portrait id only.  ``abilities`` adds the ability flags and their
+    tier (never the locks) to ``all`` or ``attributes``.  Returns how many fields changed.
+
+    This is the raw record copy; on a document use ``RosterDocument.paste_player``, which also sends a
+    position change through ``change_position`` (bottom of the new chain, unlocked)."""
 
     _require(mode in ("all", "attributes", "photo"), "mode must be all, attributes or photo")
+    _require(isinstance(abilities, bool), "abilities must be a boolean")
+    masks: dict[str, int] = {}
     if mode == "photo":
         keys: Sequence[str] = ("photo_id",)
     elif mode == "attributes":
         keys = RATING_BYTE_ORDER
     else:
-        keys = tuple(name for name in (f.name for f in FIELDS) if name not in COPY_EXCLUDED)
+        skip = COPY_EXCLUDED | set(PASTE_KEEPS_TARGET) | set(PASTE_ABILITY_MASKS)
+        keys = tuple(name for name in (f.name for f in FIELDS) if name not in skip)
+        masks = dict(PASTE_GEAR_MASKS)
+    if abilities and mode != "photo":
+        for name, mask in PASTE_ABILITY_MASKS.items():
+            masks[name] = masks.get(name, 0) | mask
     count = 0
     for key in keys:
         if target.values[key] != source.values[key]:
             target.values[key] = source.values[key]
             count += 1
+    for key, mask in masks.items():
+        merged = (target.values[key] & ~mask) | (source.values[key] & mask)
+        if merged != target.values[key]:
+            target.values[key] = merged
+            count += 1
     return count
+
+
+# ------------------------------------------------------------------------------------------- find (b81 R1)
+FIND_LIST_KINDS = ("team", "reserve", "free_agent", "draft_class", "pool")
+
+
+def player_location(document: RosterDocument, player: Player) -> tuple[str, int]:
+    """Which list on the Rosters page shows ``player``: ``("team", club)``, ``("reserve", club)``,
+    ``("team", squad)`` for someone only on an extra squad, else ``("free_agent" | "draft_class" | "pool", -1)``.
+
+    A club wins over the all-star and all-time squads that may also list him; a reserve is shown under
+    his club's Reserves row; a draft slot or unused capacity record has no list of its own."""
+
+    owner = document.reserve_owner.get((player.pool, player.index))
+    if owner is not None:
+        return ("reserve", owner)
+    club = document.club_of(player)
+    if club is not None:
+        return ("team", club)
+    if player.teams:
+        return ("team", min(player.teams))
+    if player.group in ("free_agent", "draft_class", "pool"):
+        return (player.group, -1)
+    return ("", -1)
+
+
+def find_players(document: RosterDocument, text: str = "", *, positions: Sequence[int] = (),
+                 years_pro: int | None = None, limit: int | None = None) -> list[dict[str, Any]]:
+    """Finn's Search > Find Player(s), over the whole league rather than the open list.
+
+    ``text`` matches first name, last name, the full name, ``Last, First`` (Finn's order) or the college,
+    ignoring case; every word must match somewhere.  ``positions`` keeps those position codes (empty = all);
+    ``years_pro`` keeps one stored value (1 = rookie).  Players with no name at all (unused draft and
+    capacity records) are never returned.  Rows are ``{"player", "where", "location"}``, last-name prefix
+    hits first, then by last and first name; ``where`` is the membership text the header card prints."""
+
+    needle = " ".join(str(text or "").replace(",", " ").split()).casefold()
+    words = needle.split()
+    wanted = {int(code) for code in positions}
+    hits: list[Player] = []
+    for player in document.players:
+        if not (player.first or player.last):
+            continue
+        values = player.record.values
+        if wanted and values["position"] not in wanted:
+            continue
+        if years_pro is not None and values["years_pro"] != int(years_pro):
+            continue
+        if words:
+            haystack = f"{player.first} {player.last} {player.college}".casefold()
+            if not all(word in haystack for word in words):
+                continue
+        if player_location(document, player)[0] == "":
+            continue
+        hits.append(player)
+    first = words[0] if words else ""
+    hits.sort(key=lambda p: (not p.last.casefold().startswith(first), p.last.casefold(), p.first.casefold(),
+                             p.pool, p.index))
+    if limit is not None:
+        hits = hits[:max(0, int(limit))]
+    where = document._membership_map({t.index: t.slots for t in document.teams}, document.free_agents,
+                                     document.reserves) if hits else {}
+    return [{"player": p, "where": where.get(p.offset, ""), "location": player_location(document, p)} for p in hits]
 
 
 # -------------------------------------------------------------------------------------------- repairs
@@ -5789,6 +6095,11 @@ def validate(document: RosterDocument, players: Sequence[Player] | None = None) 
                              "detail": "0 years pro prints as 0 on the card; the game's rookie is 1 (it prints R) and "
                                        "retail never stores 0 on a club or free agent. nflverse years_exp counts "
                                        "completed seasons: add 1 (years_pro_from_years_exp)"})
+        if (record.values["contract_remaining"] > record.values["contract_length"] and player.pool == "primary"
+                and record.values["player_type"] & FLAG_NFL_PLAYER):
+            findings.append({"level": "warning", "player": player.display, "check": "contract",
+                             "detail": f"{record.values['contract_remaining']} years remaining on a "
+                                       f"{record.values['contract_length']}-year contract (Finn refused this)"})
         if record.values["headless"]:
             findings.append({"level": "error", "player": player.display, "check": "headless",
                              "detail": "+0x0C bit 7 is set; this model renders without a head "
@@ -5881,7 +6192,8 @@ __all__ = [
     "ROOKIE_YEARS_PRO", "YEARS_PRO_MAX", "accrued_seasons", "is_rookie_years_pro", "years_pro_for_season",
     "years_pro_from_years_exp", "years_pro_label",
     "advance_years_pro", "apply", "apply_body",
-    "copy_player", "decode_record", "edits_document", "encode_record", "encoded_size",
+    "body_mass_index", "body_type_apply", "body_type_preview", "contract_years_change", "copy_player",
+    "find_players", "global_edit_preview_many", "player_location", "decode_record", "edits_document", "encode_record", "encoded_size",
     "export_csv", "field_coverage", "find_block_base", "global_edit_apply", "global_edit_preview",
     "import_csv", "load_body", "load_image", "load_save", "read_edits", "read_utf16z",
     "resource_status", "restore_measurements", "save_document", "sign_save", "status",
