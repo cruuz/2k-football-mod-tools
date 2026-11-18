@@ -44,6 +44,20 @@ class Machine(BinderMachine):
     #: 0xB0000, v0.8 on 0xCA000), whose capacity word is the arena size (the installed bridge checks it).
     GROWN_ARENAS = (0xB0000, 0xCA000)
 
+    #: Game options the fixture seeds (b81 queue, Q79; MC1's 11/04 audit). The 0x2E0-byte options block at 0xE5FF80
+    #: is BSS: the game fills it at boot (FUN_00077D20 -> FUN_00077C50) or copies it from a save, and this fixture
+    #: does neither, so Quarter Length 0xE6000C and Sim. Quarter Length 0xE60010 read 0. The week sim reads both
+    #: about 1,100 times a week (0x10B315 takes 0xE60010 for a fresh simulation), so with 0 every simulated stat line,
+    #: the history built from them and the halftime time-of-possession split (idiv at 0xCD47B) are wrong or fault,
+    #: while results and standings still look right. 15 / 15 is what every real-derived save carries (the in-game
+    #: menus clamp 1..15 and 3..15, so a player can never reach 0).
+    OPTION_SEED = ((0xE6000C, 15), (0xE60010, 15))
+
+    def seed_game_options(self):
+        """Write the game options a real profile or franchise save always carries (see OPTION_SEED)."""
+        for va, value in self.OPTION_SEED:
+            self.put(va, value)
+
     def frontend(self, roster):
         """Native menu stack and retail (or grown-arena) ROST, with layout/hardware seams.
 
@@ -61,6 +75,7 @@ class Machine(BinderMachine):
         self.put(0xB72808, self.capacity)
         self.root = self.ARENA
         self.put(0xE576A0, 0)
+        self.seed_game_options()
         self.put(0xB7280C, len(roster) - 64)
         self.uc.mem_write(self.ARENA, roster[64:])
         self.call(0xC0500, ecx=self.ARENA, budget=1000000)
