@@ -103,12 +103,13 @@ class ScheduleStaticTests(unittest.TestCase):
         b780 mc1 spends 28 more: Play next game opens Choose team / Sign over Career Home for a MyPlayer without a club,
         a loaded free-agent career opens Career Home, only a rookie in his own draft resumes the draft screen (never
         reading through a lost career's empty identity), an injured MyPlayer is not made the starter, and the career
-        club has CPU depth management on (7 / 1)."""
+        club has CPU depth management on (7 / 1). Beta 81 (D10/D11: the live-ball camera focus, the roster club entry and
+        the quarter controls) leaves the runtime 28 bytes smaller: 35 / 26 (measured on ab29387a1)."""
         code, data = mode.legacy.allocations(self.career17)
         alone = mode.TAG_OFFSET - (mode.code_for(code['va'], data['va'])[1]['content_end'] - code['va'])
         with_home = home.check_static(self.p17)['mycareer_spare_bytes']
-        self.assertEqual((alone, with_home), (7, 1))
-        self.assertEqual(alone - with_home, 6)       # Career Home's three addresses cost 6 bytes, as at ui1 and on the beta-78 base
+        self.assertEqual((alone, with_home), (35, 26))
+        self.assertEqual(alone - with_home, 9)       # Career Home's three addresses: 6 bytes at ui1 and on the beta-78 base; 9 measured on beta 81
         self.assertGreaterEqual(home.check_static(self.p18)['mycareer_spare_bytes'], 0)
 
     def test_runtime_reads_the_same_season_byte(self):
@@ -298,7 +299,9 @@ class ScheduleNativeTests(unittest.TestCase):
             team = m.get(m.state + 56)
             m.replace_stub(0x177990, lambda: m.ret(pop=4))  # league-advance progress renderer only
             m.replace_stub(m.labels['career_fixture'], lambda: m.ret(0))
-            m.call(0x247D40, ecx=m.manager, budget=3_000_000_000)
+            # b81 queue (Q79): with the fixture's real 15-minute quarter lengths the native week plays its games out (it
+            # read 0-minute quarters before), so the week costs about twice the instructions (MC1 measured 6.2G).
+            m.call(0x247D40, ecx=m.manager, budget=6_200_000_000)
             m.replace_stub(m.labels['career_fixture'], None)
             slot, cell = self.own(m, 0)
             self.assertEqual(cell[0], 3)
