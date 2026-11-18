@@ -8,6 +8,7 @@ renderer or save device is claimed.
 import struct
 import sys
 import unittest
+from unittest.mock import Mock, patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -35,6 +36,32 @@ def retail_bytes():
 
 
 class BytesTests(unittest.TestCase):
+    def test_season_totals_keep_departed_players_and_credit_only_new_stats_after_a_trade(self):
+        from tools.franchise_sim import season_probe
+
+        machine = Mock()
+        machine.get.return_value = 3
+        tracking = season_probe.SeasonParticipants(machine)
+        moved, departed = 100, 200
+        first_week = [(0, moved), (1, departed)]
+        second_week = [(0, moved)]
+        totals = [{"pass_yds": 210, "rush_yds": -3}, {"pass_yds": 24, "rush_yds": 2},
+                  {"pass_yds": 530, "rush_yds": -1}]
+        with patch.object(season_probe, "club_players", side_effect=[first_week, second_week]), \
+                patch.object(season_probe, "stat_line", side_effect=totals), \
+                patch.object(season_probe, "player_info", side_effect=lambda _, player: {"ptr": player}):
+            for club in (5, 18):
+                machine.reg.return_value = club
+                tracking.game()
+                tracking.finish_week()
+
+        result = tracking.results()
+        league = {p["ptr"]: (p["pass_yds"], p["rush_yds"]) for p in result["all_participants"]}
+        club_totals = {(p["ptr"], p["team"]): (p["pass_yds"], p["rush_yds"]) for p in result["team_participants"]}
+        self.assertEqual(league, {moved: (530, -1), departed: (24, 2)})
+        self.assertEqual(club_totals, {(moved, 5): (210, -3), (moved, 18): (320, 2), (departed, 5): (24, 2)})
+        machine.put.assert_called_with(0xBD7F98, 3)
+
     def test_geometry_and_encoding(self):
         self.assertEqual(od.REQUESTS, ())
         self.assertEqual(od.SITE_A + od.SITE_A_SIZE, 0x77CBD)
@@ -196,6 +223,7 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(season["sliders"], {"injury": 0.5, "fumble": 0.5, "interception": 0.5})
         self.assertEqual((season["state"]["stage"], season["weeks"], season["scores"]), (8, 0, []))
         self.assertEqual({p["team"] for p in season["players"]}, set(range(32)))
+        self.assertEqual((season["all_participants"], season["team_participants"]), ([], []))
 
     def test_no_other_option_changes(self):
         _, base = self.boot_block(self.retail)
@@ -207,6 +235,24 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(self.word(new, 0xE5FF84), 1)
         self.assertEqual(struct.unpack("<f", struct.pack("<I", self.word(new, 0xE600D4)))[0], 0.75)
         self.assertEqual(struct.unpack("<f", struct.pack("<I", self.word(new, 0xE600F8)))[0], 0.25)
+
+    def test_franchise_menu_registers_the_selected_teams_coaching_controls(self):
+        from tests.nfl2k5_supersim_draft_fixture import Machine, retail_roster
+        machine = Machine(self.retail, trace_writes=False)
+        machine.load_retail_roster(retail_roster())
+        machine.configure_fresh_franchise(seed=2501, quarter_minutes=15)
+        machine.call(0x13EE10, budget=2_000_000_000)
+        self.assertEqual(machine.call(0xC6CF0, ecx=15), 0)
+        machine.finish_franchise_team_selection(15)
+        self.assertEqual(machine.call(0x13EC40), 1)
+        self.assertEqual(machine.call(0x13EC70), 15)
+        gameplans = [machine.call(0xC6CF0, ecx=i) for i in range(32)]
+        self.assertEqual(gameplans, [0xE41CE0 + i * 0x24 for i in range(32)])
+        fallback = bytes(machine.uc.mem_read(0x4F6A20, 36))
+        self.assertTrue(all(bytes(machine.uc.mem_read(p, 36)) == fallback for p in gameplans))
+        self.assertEqual(machine.call(0x2C75B0), 1)   # Offense: Run/Pass slider arrow
+        self.assertAlmostEqual(machine.f32(gameplans[15]), 0.55)
+        self.assertEqual(machine.f32(gameplans[14]), 0.5)
 
     def test_each_pair_lands_exactly(self):
         for quarter, sim, chop in ((6, 12, False), (1, 3, True), (15, 15, True), (12, 4, False), (5, 5, False)):

@@ -2904,7 +2904,7 @@ class StudioMainWindow(QMainWindow):
 
         sidebar = QFrame()
         sidebar.setObjectName("sidebar")
-        sidebar.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        sidebar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
         side_layout = QVBoxLayout(sidebar)
         side_layout.setContentsMargins(16, 18, 16, 14)
         # A layout floor keeps 248 px at normal text size and can grow with its contents.
@@ -2923,7 +2923,7 @@ class StudioMainWindow(QMainWindow):
         release_candidate = __version__.rsplit("rc", 1)[-1]
         # b780-uxfix: people say "Beta 80" (the update check, the FAQ, the Discord); the RC stays in the tooltip.
         release_name = update_check.BUILD_RELEASE_TAG.replace("-", " ").title()
-        brand_subtitle = QLabel(f"{release_name} • Xbox Edition")
+        brand_subtitle = WrappedLabel(f"{release_name} • Xbox Edition")
         brand_subtitle.setToolTip(f"2K5 Mod Studio v1.0 RC{release_candidate} ({update_check.BUILD_RELEASE_TAG})")
         brand_subtitle.setAccessibleName(f"{release_name}, version 1.0 RC{release_candidate}")
         brand_subtitle.setObjectName("mutedLabel")

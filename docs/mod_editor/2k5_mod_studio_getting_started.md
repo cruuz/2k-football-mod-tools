@@ -1476,7 +1476,7 @@ patched **copy** goes, and Build. The original is never touched; a receipt is
 written beside the copy. The **Install & Share** tab turns that copy into a `.2k5patch`
 file anyone can check and apply to their own image.
 
-**Console memory** (top of **Make my disc**, beta 80): **128 MB, xemu (full SOFTDRINK)** is the default and the main
+**Console memory** appears at the top of **Make my disc**. **128 MB, xemu (full SOFTDRINK)** is the default and the main
 build, with every option, for xemu with System Memory at 128 MiB and the Complex 4627 BIOS. **64 MB, original Xbox and
 Android hakuX (experimental, estimated, not yet tested on a real Xbox or hakuX)** makes a disc for 64 MB machines. It
 turns off and greys out every option that needs 128 MB or the real Xbox kernel (each says why), leaves out the 128 MB
@@ -1487,9 +1487,11 @@ with the default uniforms is made with a warning: a player-picked alternate kit 
 if a game loops on the stadium shots, use the default uniforms. Roster edits that make the roster file bigger (the
 SOFTDRINK 2K28 2026 rosters do) are fitted to the original game's roster size at 64 MB: the free agents beyond the
 original game's count are left out, and franchise draft-pick ownership and the backfield labels fall back to the 2004
-game's. The memory numbers are an estimate from a model; for the full experience use xemu at 128 MiB. Going back to 128
-MB gives back everything 64 MB turned off. On **Share**, **Build for** next to **Customize SOFTDRINK 2K28…** loads the
-pack's sources straight into the 64 MB target, with the recommended 64 MB set applied.
+game's. The memory fit is an estimate. In xemu, use 128 MiB for the standard edition.
+When you customize a downloaded pack, leave **Build for** on **Use the selected pack's edition** to keep its
+authored settings, including the calendar and salary cap. To convert a standard pack for 64 MB, choose the
+64 MB target before clicking **Customize SOFTDRINK 2K28…**. To use a 64 MB pack at 128 MiB, choose the 128 MB
+target. Its existing feature choices stay selected, and you can enable additional features on the Build tab.
 
 Modern overtime (in Advanced and Experimental) is the current NFL rule: a 10-minute
 period (scaled from your quarter length), both teams get a possession unless the first

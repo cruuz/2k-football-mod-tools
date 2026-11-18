@@ -598,9 +598,9 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "21b19fe0d6b77d494f1784f46f32efdb843fd7eb7431936ac6c7a383daac9141",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "5b65f542a1541c5e787f6b6d4290f75a67bb99d8f6ab5519d5b9388a2c384c1e",
+        "mod_editor/core/mod_build.py": "cb7f1afe805a5b0be1694c8ef5f5259c68ed7f0126624692b9feae7998fb579b",
         "mod_editor/core/nfl2k5_console_memory.py": "68583ec468e7b07ecc671a2e1ae04c86ee4be41f771e50ce3373762473cc7981",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
-        "mod_editor/core/build_steps.py": "497cf54a2253fab9aec74da9f8b45f51d5bad4e99097afd80c65d0b582414022",  # b791-h3: step context and optional steps
+        "mod_editor/core/build_steps.py": "ba250f9948944d8b116561d12d59c4dffef6d06e3704c79de3d28734bd46e640",  # b791-h3: step context and optional steps
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fbe8667f474f7eef8f9fa5bc5662755f99301cedcfda128055b9244d11b71b14",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
@@ -1001,7 +1001,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_coach_carousel.py": "54925f33ea8d2aea6b3fe3499ca094465bdcf0c6a0d67fa3cc8407714fbd74ee",  # b780-c6: the coaching carousel (late owner, imported by throw_tuning)
         "mod_editor/core/nfl2k5_coach_carousel_code.py": "86cd01c57d294d3c34551f0aa7f6949764350a7343e80ef3ef596f52bbae36e9",  # b780-c6: its generated runtime template
         "mod_editor/core/nfl2k5_coach_owners.py": "97094f12b5bad7def37132988614efbd2f727a12470b98712f8725ff406c4029",  # b780-int: c5's owner patience model, imported by the carousel at module level
-        "mod_editor/core/nfl2k5_sim_stats.py": "26af040eea115ef53bea9bbd38a329185e42ea27cea201866e6432cd71b3ef00",  # b778-sim1
+        "mod_editor/core/nfl2k5_sim_stats.py": "52680d840b0bd4e01919d0a9160ece5f69eac6d45d68ed7d478464f304615ff3",  # b778-sim1
         "mod_editor/core/nfl2k5_option_defaults.py": "74c27b923397fc9ced78505caf95d4d9aacef221905ace82f1ce3230ffb0ad5d",  # b779-df1
         "mod_editor/core/nfl2k5_quick_long_release.py": "007dcffb32ccd61421ab69a2248e9f837298d3851e58e7de5bac2191c71ef898",  # b780-c-release
         "mod_editor/core/nfl2k5_clock_led.py": "ab030b1fbed873b96e0ba6055fcc38ef53193c31f2df496128e2de581e7b01c2",  # b778-sd4

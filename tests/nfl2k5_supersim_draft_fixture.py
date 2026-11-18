@@ -163,6 +163,15 @@ class Machine:
         self.reg("EIP", self.get(sp))
         self.reg("ESP", sp + 4 + pop)
 
+    def finish_franchise_team_selection(self, user_team):
+        """Run franchise team selection and menu initialization up to the frontend screen push."""
+        if not 0 <= user_team < 32:
+            raise ValueError("user team must be between 0 and 31")
+        team = self.call(0xC4C50, ecx=user_team)
+        self.call(0xC4DA0, ecx=team, edx=1)
+        self.call(0x13EC90, ecx=team)
+        self.call(0x13F1B0, ecx=self.ARENA + 0x1A0000, stop=0x13F2E0, budget=2_000_000_000)
+
     def leaf(self, address, action, *, reason):
         if not reason:
             raise ValueError("a substituted leaf requires its evidence boundary")

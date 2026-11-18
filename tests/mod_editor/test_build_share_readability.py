@@ -55,6 +55,13 @@ def _scroll_host(panel: BuildPanel) -> QScrollArea:
     return host
 
 
+def _font_pixels(widget) -> int:
+    font = widget.font()
+    if font.pixelSize() > 0:
+        return font.pixelSize()
+    return max(1, round(font.pointSizeF() * widget.logicalDpiY() / 72))
+
+
 class ContrastTests(unittest.TestCase):
     def test_theme_pairs_meet_wcag_aa(self) -> None:
         for theme in ("dark", "light"):
@@ -231,15 +238,18 @@ class WindowFitTests(unittest.TestCase):
             window.show()
             APP.processEvents()
             brand = window.findChild(QLabel, "brandTitle")
+            subtitle = next(label for label in brand.parentWidget().findChildren(QLabel)
+                            if label.text().endswith(" • Xbox Edition"))
             for widget in window.findChildren(QLabel) + window.findChildren(QPushButton):
                 if widget.isVisible():
-                    pixels = QFontInfo(widget.font()).pixelSize() * 2
+                    pixels = _font_pixels(widget) * 2
                     widget.setStyleSheet(f"font-size: {pixels}px;")
             for _ in range(4):
                 APP.processEvents()
-            fits_on_one_line = brand.fontMetrics().horizontalAdvance(brand.text()) <= brand.contentsRect().width()
-            fits_when_wrapped = brand.wordWrap() and brand.heightForWidth(brand.width()) <= brand.height()
-            self.assertTrue(fits_on_one_line or fits_when_wrapped, brand.text())
+            for label in (brand, subtitle):
+                fits_on_one_line = label.fontMetrics().horizontalAdvance(label.text()) <= label.contentsRect().width()
+                fits_when_wrapped = label.wordWrap() and label.heightForWidth(label.width()) <= label.height()
+                self.assertTrue(fits_on_one_line or fits_when_wrapped, label.text())
         finally:
             window._allow_close = True
             window.close()
@@ -252,7 +262,7 @@ class WindowFitTests(unittest.TestCase):
             window.show()
             APP.processEvents()
             for widget in header.findChildren(QLabel) + header.findChildren(QPushButton):
-                pixels = round(QFontInfo(widget.font()).pixelSize() * 1.25)
+                pixels = round(_font_pixels(widget) * 1.25)
                 widget.setStyleSheet(f"font-size: {pixels}px;")
             for _ in range(4):
                 APP.processEvents()
@@ -353,11 +363,14 @@ class WindowFitTests(unittest.TestCase):
             while scroll is not None and not isinstance(scroll, QScrollArea):
                 scroll = scroll.parent()
             self.assertIsInstance(scroll, QScrollArea)
-            with self.subTest(theme=theme):
-                self.assertEqual(scroll.horizontalScrollBar().maximum(), 0)
-                self.assertLessEqual(
-                    window._build_panel.minimumSizeHint().width(), scroll.viewport().width()
-                )
+            tabs = window._build_share_page
+            for page in (window._build_panel, window._share_panel):
+                tabs.setCurrentWidget(page)
+                for _ in range(4):
+                    APP.processEvents()
+                with self.subTest(theme=theme, tab=tabs.tabText(tabs.currentIndex())):
+                    self.assertEqual(scroll.horizontalScrollBar().maximum(), 0)
+                    self.assertLessEqual(tabs.minimumSizeHint().width(), scroll.viewport().width())
 
     def test_a_missing_official_marks_pack_does_not_widen_the_page(self) -> None:
         # b778 ci2: a lean checkout has no saved logo pack. The old full "missing"

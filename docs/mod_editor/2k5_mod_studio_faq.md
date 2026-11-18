@@ -65,6 +65,8 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
 
 Download the ready-made **64 MB** pack and install it directly through **Install SOFTDRINK 2K28**. It targets the original Xbox memory budget and leaves out the 128 MB memory patch. Hardware Xbox, hakuX and XBased compatibility remains unverified. With an emulator that implements its own kernel, report the emulator version and which pack you installed. The standard pack uses the 4627 kernel in xemu.
 
+If you already have a franchise from the standard edition with **Player Progress**, keep using the 128 MiB edition for that save. We loaded the same signed 987,836-byte franchise on both setups. The standard game opened it and the compact 64 MB game listed it as **Damaged**. Switch back to the standard edition to continue that franchise, or start a fresh one on the 64 MB disc.
+
 To customize a 64 MB disc:
 
 1. In **Build & Share → Install & Share**, leave **Build for** on **Use the selected pack's edition**.
@@ -318,6 +320,12 @@ An “unedited” geometry check does not establish that the skeleton pair is co
 missing-file explanation on **★ Models**. Check the build selection before combining models
 with other changes; the [changelog](2k5_mod_studio_changelog.md) describes the model workflow
 included in your installed build.
+
+## Can I change how often my franchise runs the ball when I simulate?
+
+Open **Coaching Gameplan** for the team you control. Move **Offense: Run/Pass** toward the low end for more team rushing attempts or toward the high end for more passes. The setting changes the team’s play selection. The game distributes carries among players.
+
+In a beta 81 test, the same Giants franchise played 17 simulated games at each endpoint with 15-minute quarters. The low setting produced 602 team rushes, 410 passes and 386 Cam Skattebo carries. The high setting produced 493 rushes, 478 passes and 302 Skattebo carries. In two fresh seasons at the neutral setting, Skattebo had 313 and 330 carries. If you see the reported 420-carry season, include the signed franchise save, team, week and Coaching Gameplan settings. [SOFTDRINK v0.10 game notes](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10)
 
 ## Can the CPU go for it more often on fourth down?
 
