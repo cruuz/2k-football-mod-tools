@@ -1,5 +1,6 @@
 """Offscreen A3 editing through the same project review/Undo path."""
 import os
+import unittest
 os.environ['QT_QPA_PLATFORM'] = 'offscreen'
 from PyQt5.QtWidgets import QApplication
 from tests.mod_editor.test_apf_playcalling_editor_facade import FacadeFixture
@@ -46,3 +47,7 @@ class WeightQtTests(FacadeFixture):
         self.assertEqual(self.facade._playcalling.state(self.facade.session).situation_masks['O-ManBlock'][12], [62])
         self.assertIn('try phase 3', live.request.text())
         self.assertFalse(self.facade.launcher.pass_fetch_status(kind='situations')['installed'])
+
+
+if __name__ == "__main__":
+    unittest.main()

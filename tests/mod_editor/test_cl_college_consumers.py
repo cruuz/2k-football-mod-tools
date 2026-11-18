@@ -121,3 +121,7 @@ class RealCollegeConsumers(unittest.TestCase):
         after.set_rel(after.college_offsets[i],after.rel(after.college_offsets[other]))
         with rr._outer_image()(RETAIL) as arc,self.assertRaisesRegex(ValueError,'referenced by'):
             refs.verify_table_edit(arc,before.to_body(),after.to_body())
+
+
+if __name__ == "__main__":
+    unittest.main()

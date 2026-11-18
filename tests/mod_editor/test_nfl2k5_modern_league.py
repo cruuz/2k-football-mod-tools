@@ -137,3 +137,7 @@ class RetailLeagueTests(unittest.TestCase):
                     self.assertTrue(row['walks_ended'])
                     self.assertEqual(row['short_page_formations'],[])
                     self.assertTrue(row['coach_ai']['ok'])
+
+
+if __name__ == "__main__":
+    unittest.main()
