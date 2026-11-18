@@ -22,8 +22,8 @@ The standard 128 MiB edition includes Team History, modern injured reserve and M
 - Both editions honor **Owner Firing → Off** when a coach already has a final warning. An existing 1–16 Giants franchise reached the playable 2030 offseason with Off. With On, the same coach lost his job.
 - Injured reserve now tracks regular-season time through save/reload and includes an injured player's earned stats in awards. Club signing limits count active players. Contracts and Cap Manager include the injured player’s salary after an IR move and a franchise reload. Free-agent and draft views distinguish available players from future generation slots. Stock 2004 players keep their career ages when a modern franchise calendar is built.
 - Career Settings lets you change played and simulated quarter lengths independently. Team Rosters and League Leaders return to the same career. The camera uses normal presentation framing at the coin toss, between plays and for officials. Game Plan, Options and Quit retain legible headings under the pause scorebar.
-- The modern CPU punts in the early, tied midfield situations that produced unnecessary fourth-down attempts. Clock management accounts for the opponent's timeouts and two-point conversions. The CPU gives its quarterback time in a clean pocket. On offset pitch plays, Flip Routes keeps the back in position for the exchange.
-- In two 272-game seasons on the standard 128 MiB edition with the default coaching sliders, quarterbacks averaged 222 passing yards and 17.6 rushing yards per team game, up from 206 and 12.4 in beta 80. The five-season NFL averages were 234 passing and 18.2 rushing. Comparable second receivers drew 45% and 44% of their pair’s targets, up from 43% and 41%. The two beta 81 seasons had 10 and 13 individual 4,000-yard passers, compared with an NFL average of 8.2.
+- The modern CPU punts in the early, tied midfield situations that produced unnecessary fourth-down attempts. Clock management accounts for the opponent's timeouts and two-point conversions. The CPU gives its quarterback time in a clean pocket. On offset shotgun pitch plays, Flip Routes keeps the back in position for the exchange. For manual pre-snap motion, close the audible menu, select an eligible player with up/down on the D-pad or left stick, then send him with left/right.
+- In two 272-game seasons on the standard 128 MiB edition with the default coaching sliders, quarterbacks averaged 223 passing yards and 17.1 rushing yards per team game, up from 206 and 12.4 in beta 80. The five-season NFL averages were 234 passing and 18.2 rushing. Comparable second receivers drew 44% and 43% of their pair’s targets, up from 43% and 41%. The two beta 81 seasons had 10 and 12 individual 4,000-yard passers, compared with an NFL average of 8.2.
 
 See the [installation guide](install_softdrink_2k28.md) and the [support FAQ](2k5_mod_studio_faq.md).
 
@@ -3116,10 +3116,11 @@ defaults to off or retail in every preset unless stated.
   and what an audible slot does at the line, are readings of the corpus, not witnessed runtime claims.
 - `nfl2k5_play_library.PASS_CONCEPTS` gains **Y-Cross** and **Snag** (14 concepts), so the wizard and
   any pack can build them from the library rather than by hand.
-- **Honest limits, stated on every install:** the engine has no pre-snap motion (no opcode has a
-  pre-snap phase and all 88,254 retail Start nodes sit at x=0, y=0), no give-or-throw RPO (the ball
-  simulation walks each chain once, so a QB who hands off cannot throw later) and no tempo. Option
-  routes and keep-or-throw RPOs are accepted by the ported validator but **unwitnessed in game**.
+- RC83's authored plays omit scripted pre-snap motion. All 88,254 retail Start nodes surveyed had
+  coordinates (0, 0). The original game also supports manual motion of an eligible player.
+  The pack omits give-or-throw RPOs and tempo changes. The ball simulation walks each chain once,
+  so a QB who hands off cannot throw later. The ported validator accepts option routes and
+  keep-or-throw RPOs. Their behavior in game was unverified at RC83.
 
 ## v1.0 RC82 — the community list: Free Practice in Franchise, Position on Edit Player, jerseys anywhere, penalties, prospect names, Pro Bowl order, laces, the star; overtime and Models UV fixes (2026-09-04)
 

@@ -151,12 +151,12 @@ Action over a `books/` directory.
 Be honest in your pack notes. The engine reaches roughly **80 % of a 2015
 offence and 50 % of a 2024 one**.
 
-**Yes, and witnessed in retail:** gun spread 10/11 personnel, empty, pistol,
+**Yes, and witnessed in retail:** gun spread 10/11 personnel, empty,
 routes out to about 40 yards (the distance operand is an 8-bit foot field that
 spans ~63 yards, and a 35-yard stem passes the validator), mesh / levels /
 dagger / flood / stick / smash and the rest of the pure-geometry concepts,
 read and speed option with a pitch, nickel and dime, Tampa 2, big nickel and
-3-3-5 fronts.
+3-3-5 fronts. The modern books also support authored pistol formations.
 
 **Accepted by the validator but never witnessed in game** — say so if you ship
 one:
@@ -166,17 +166,23 @@ one:
   implemented in the shipped executable and used by *zero* retail plays);
 * **keep-or-throw RPO** (the quarterback keeps the read and throws).
 
-**No. The engine cannot do these, whatever a pack claims:**
+**Manual pre-snap motion.** At the line, close the audible panel. Use up/down on
+the D-pad or left stick to select an eligible player, then left/right to send
+him in motion.
 
-* **No pre-snap motion.** No opcode has a pre-snap phase, and all 88,254 retail
-  Start nodes sit at x = 0, y = 0.
+**Playbook authoring limits**
+
+* **Scripted motion.** The modern team books have no built-in pre-snap motion.
+  The assignment format has no known pre-snap motion command. All 88,254 retail
+  Start nodes in the playbook survey use x = 0 and y = 0. A jet sweep can use
+  the pitch and reverse mechanics, but its play assignments cannot send a
+  receiver across the formation before the snap.
 * **No give-or-throw RPO.** The ball simulation walks each chain once and in
   order, so once the quarterback hands the ball off he cannot throw later in the
   same chain. A play built that way is rejected with "node 5 needs the ball but
   nobody gave it to slot 0".
-* **No tempo / no-huddle.** That is game logic, not play data.
-* **Jet sweep is partial** — the pitch and reverse mechanics ship, the pre-snap
-  motion does not.
+* **No-huddle.** A pack can supply the no-huddle play menu. The game controls
+  the tempo.
 
 ## Sharing, and the test division
 
