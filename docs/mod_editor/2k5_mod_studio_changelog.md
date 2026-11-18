@@ -4,7 +4,7 @@
 
 ### Installing and creating a mod
 
-- On macOS, both Finder launchers can prepare their own Python environment on first use. They find an existing environment and open from folders whose names contain accents or emoji.
+- On macOS, both Finder launchers can prepare their own Python environment on first use. They find an existing environment and open from folders whose names contain accents or emoji. The APF Linux archive supports `./APF-2K8-Mod-Studio.sh --setup`. Its first window fits the selected monitor, and a returning player keeps their saved layout.
 - Install the standard SOFTDRINK 2K28 pack for xemu at 128 MiB with Complex 4627, or install the experimental 64 MB download directly. Studio remembers the selected target when it launches xemu.
 - Quick Export handles a finished disc whose files were compacted, reordered or moved. Changing the selected pack or source clears its previous compatibility result. Starting a new export clears the preceding cover, name and project.
 - Customize retains the star access settings, Honors, jersey number sizes and league artwork. Artwork indexing reports progress, and interrupted source extraction can be retried. Builds check coach storage before copying the disc and publish the finished disc together with its receipts.
