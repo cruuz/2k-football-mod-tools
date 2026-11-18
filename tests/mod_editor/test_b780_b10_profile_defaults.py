@@ -483,6 +483,19 @@ class SavesPanelTests(unittest.TestCase):
         self.assertIn("still has the old defaults", self.panel.defaults_status.text())
         self.assertEqual(self.panel._collect_option_edits(), {"quarter_minutes": 7, "sim_minutes": 15, "chop_block": 1})
 
+    def test_untouched_custom_slider_keeps_its_full_precision(self):
+        payload = bytearray(settings_save())
+        struct.pack_into("<f", payload, writer.SPECIAL_SLIDERS["Injury"], 0.8125)
+        self.open_save(payload)
+        self.panel._populate_sliders(self.panel._save_info)
+        spin = self.panel._slider_spins["Injury"]
+        self.assertAlmostEqual(spin.value(), 0.81)
+        self.assertEqual(self.panel._collect_slider_edits(), {})
+        spin.setValue(0.70)
+        self.assertEqual(self.panel._collect_slider_edits(), {"Injury": 0.70})
+        spin.setValue(0.81)
+        self.assertEqual(self.panel._collect_slider_edits(), {})
+
     def test_a_player_choice_is_unticked_and_can_be_ticked(self):
         self.open_save(settings_save(10, 5, 0))
         boxes = self.panel._default_checks

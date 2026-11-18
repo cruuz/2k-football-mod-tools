@@ -11,11 +11,13 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import os
 from pathlib import Path
 import struct
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -23,7 +25,7 @@ if str(ROOT) not in sys.path:
 
 from mod_editor.core import nfl2k5_save_writer as saver  # noqa: E402
 
-RETAIL_XBE = Path("/tmp/opencode/espn26/default.xbe")
+RETAIL_XBE = Path(os.environ.get("NFL2K5_RETAIL_XBE", "/tmp/opencode/espn26/default.xbe"))
 
 SYNTH_CERT_KEY = bytes(range(16))
 PARTITION_OFFSET = 0x80000  # partition X
@@ -181,6 +183,94 @@ class SigningAndLooseFileTests(unittest.TestCase):
             saver.MASTER_XBOX_KEY, SYNTH_CERT_KEY, hashlib.sha1
         ).digest()[:16])
 
+    def _source_pair(self):
+        save = self.work / "Franchise" / "SAVEGAME.DAT"
+        save.parent.mkdir()
+        data = _settings_save()
+        signature = hmac.digest(self.sig_key, data, "sha1")
+        save.write_bytes(data)
+        save.with_name("EXTRA").write_bytes(signature)
+        return save, data, signature
+
+    def test_suggested_copy_keeps_both_xbox_names_and_uses_a_new_folder(self):
+        save, data, signature = self._source_pair()
+        first = saver.suggested_save_copy(save)
+        self.assertEqual(first, self.work / "Franchise edited" / "SAVEGAME.DAT")
+        first.parent.mkdir()
+        self.assertEqual(saver.suggested_save_copy(save), self.work / "Franchise edited 2" / "SAVEGAME.DAT")
+        self.assertEqual(save.read_bytes(), data)
+        self.assertEqual(save.with_name("EXTRA").read_bytes(), signature)
+
+    def test_dat_and_extra_reject_source_aliases_and_each_other(self):
+        save, data, signature = self._source_pair()
+        extra = save.with_name("EXTRA")
+        dest = self.work / "different.DAT"
+        sidecar = self.work / "different.EXTRA"
+        alias_data, alias_mac = self.work / "data-link", self.work / "mac-link"
+        os.link(save, alias_data)
+        os.link(extra, alias_mac)
+        for dat, mac in ((save, sidecar), (dest, save), (extra, sidecar), (dest, extra),
+                         (alias_data, sidecar), (dest, alias_mac), (dest, dest), (self.xbe, sidecar)):
+            with self.subTest(dat=dat.name, mac=mac.name), self.assertRaises(saver.SaveWriterError):
+                saver.edit_save_file(save, dat, mac, xbe_path=self.xbe, sliders={"Injury": 0.5}, overwrite=True)
+            self.assertEqual(save.read_bytes(), data)
+            self.assertEqual(extra.read_bytes(), signature)
+            self.assertFalse(dest.exists())
+            self.assertFalse(sidecar.exists())
+
+    def test_second_staging_failure_leaves_new_folder_absent_and_can_retry(self):
+        save, data, signature = self._source_pair()
+        target = saver.suggested_save_copy(save)
+        extra = target.with_name("EXTRA")
+        write = saver._write_staged_save
+        def fail_extra(path, blob):
+            if path.name == "EXTRA":
+                raise OSError("second staged write failed")
+            write(path, blob)
+        with patch.object(saver, "_write_staged_save", fail_extra), self.assertRaisesRegex(OSError, "second staged"):
+            saver.edit_save_file(save, target, extra, xbe_path=self.xbe, sliders={"Injury": 0.5})
+        self.assertFalse(target.parent.exists())
+        self.assertEqual(list(self.work.glob(".2k5-save-*")), [])
+        saver.edit_save_file(save, target, extra, xbe_path=self.xbe, sliders={"Injury": 0.5})
+        self.assertEqual(extra.read_bytes(), hmac.digest(self.sig_key, target.read_bytes(), "sha1"))
+        self.assertEqual((save.read_bytes(), save.with_name("EXTRA").read_bytes()), (data, signature))
+
+    def test_second_replace_failure_restores_prior_pair_and_can_retry(self):
+        save, data, signature = self._source_pair()
+        target = saver.suggested_save_copy(save)
+        extra = target.with_name("EXTRA")
+        target.parent.mkdir()
+        target.write_bytes(b"prior save")
+        extra.write_bytes(b"prior signature")
+        for args, message in (({}, "no edits"), ({"sliders": {"Injury": 2.0}}, "slider range")):
+            with self.subTest(message=message), self.assertRaisesRegex(saver.SaveWriterError, message):
+                saver.edit_save_file(save, target, extra, xbe_path=self.xbe, overwrite=True, **args)
+            self.assertEqual((target.read_bytes(), extra.read_bytes()), (b"prior save", b"prior signature"))
+        replace = os.replace
+        def fail_signature(src, dst):
+            if Path(src).name == "new" and Path(dst) == extra:
+                raise OSError("second replacement failed")
+            replace(src, dst)
+        with patch.object(saver.os, "replace", fail_signature), self.assertRaisesRegex(OSError, "second replacement"):
+            saver.edit_save_file(save, target, extra, xbe_path=self.xbe, sliders={"Injury": 0.5}, overwrite=True)
+        self.assertEqual((target.read_bytes(), extra.read_bytes()), (b"prior save", b"prior signature"))
+        self.assertEqual(list(target.parent.glob(".2k5-save-*")), [])
+        saver.edit_save_file(save, target, extra, xbe_path=self.xbe, sliders={"Injury": 0.5}, overwrite=True)
+        self.assertEqual(extra.read_bytes(), hmac.digest(self.sig_key, target.read_bytes(), "sha1"))
+        self.assertEqual((save.read_bytes(), save.with_name("EXTRA").read_bytes()), (data, signature))
+
+    def test_damaged_source_signature_leaves_an_existing_pair_untouched(self):
+        save, _, _ = self._source_pair()
+        save.with_name("EXTRA").write_bytes(b"damaged")
+        target = saver.suggested_save_copy(save)
+        extra = target.with_name("EXTRA")
+        target.parent.mkdir()
+        target.write_bytes(b"old dat")
+        extra.write_bytes(b"old mac")
+        with self.assertRaisesRegex(saver.SaveWriterError, "signature"):
+            saver.edit_save_file(save, target, extra, xbe_path=self.xbe, sliders={"Injury": 0.5}, overwrite=True)
+        self.assertEqual((target.read_bytes(), extra.read_bytes()), (b"old dat", b"old mac"))
+
     def test_read_save_reports_kind_and_sliders(self) -> None:
         save = self.work / "SAVEGAME.DAT"
         save.write_bytes(_settings_save())
@@ -195,8 +285,8 @@ class SigningAndLooseFileTests(unittest.TestCase):
         save = self.work / "SAVEGAME.DAT"
         original = _settings_save()
         save.write_bytes(original)
-        target = self.work / "mut.DAT"
-        extra = self.work / "EXTRA"
+        target = self.work / "edited" / "SAVEGAME.DAT"
+        extra = target.with_name("EXTRA")
         result = saver.edit_save_file(
             save, target, extra, xbe_path=self.xbe,
             sliders={"Human Catching": 0.9}, slider_mode="consistent",
@@ -238,8 +328,9 @@ class SigningAndLooseFileTests(unittest.TestCase):
     def test_overwrite_replaces_existing_outputs(self) -> None:
         save = self.work / "SAVEGAME.DAT"
         save.write_bytes(_settings_save())
-        target = self.work / "mut.DAT"
-        extra = self.work / "EXTRA"
+        target = self.work / "edited" / "SAVEGAME.DAT"
+        target.parent.mkdir()
+        extra = target.with_name("EXTRA")
         target.write_bytes(b"\x00" * 8)
         extra.write_bytes(b"\x00" * 8)
         saver.edit_save_file(
@@ -254,8 +345,8 @@ class SigningAndLooseFileTests(unittest.TestCase):
         save.write_bytes(_settings_save())
         with self.assertRaisesRegex(saver.SaveWriterError,
                                     "no edits were requested"):
-            saver.edit_save_file(save, self.work / "m.DAT",
-                                 self.work / "EXTRA", xbe_path=self.xbe)
+            saver.edit_save_file(save, self.work / "edited" / "SAVEGAME.DAT",
+                                 self.work / "edited" / "EXTRA", xbe_path=self.xbe)
 
 
 class FatXWriteBackTests(unittest.TestCase):

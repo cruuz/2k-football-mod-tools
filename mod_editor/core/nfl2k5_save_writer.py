@@ -33,11 +33,14 @@ FATX support is ported from the A4 research tool (attachments/A4).
 from __future__ import annotations
 
 from dataclasses import dataclass
+from contextlib import ExitStack
 import hashlib
 import hmac
 import os
+import shutil
 import stat
 import struct
+import tempfile
 from pathlib import Path
 
 from . import platform_compat
@@ -247,6 +250,7 @@ def apply_slider_edits(
 # A1b: game options in the same block (b780 b10-profile)
 # ---------------------------------------------------------------------------
 
+OWNER_FIRING_VA = 0xE60144
 OPTION_BLOCK_VA = 0xE5FF80
 #: name -> (RAM address, lowest, highest) of the three options a build can change the defaults of (b779 df1). The block
 #: is an image of RAM from OPTION_BLOCK_VA, so an option sits at ``address - OPTION_BLOCK_VA`` in a Settings save and in
@@ -272,15 +276,19 @@ def apply_option_edits(payload: bytearray, options: dict[str, int] | None) -> li
     if not options:
         return []
     _require(len(payload) >= SETTINGS_BLOCK_SIZE, "save is smaller than the 0x2E0 settings block")
+    fields = OPTION_FIELDS
+    if "owner_firing" in options:
+        _require(save_kind(bytes(payload)) == "franchise", "Owner Firing requires a franchise save")
+        fields = {**OPTION_FIELDS, "owner_firing": (OWNER_FIRING_VA, 0, 2)}
     for name, value in options.items():
-        _require(name in OPTION_FIELDS,
-                 f"unknown option {name!r}; expected one of {', '.join(OPTION_FIELDS)}")
-        _address, low, high = OPTION_FIELDS[name]
+        _require(name in fields,
+                 f"unknown option {name!r}; expected one of {', '.join(fields)}")
+        _address, low, high = fields[name]
         _require(type(value) is int and low <= value <= high,
                  f"{name} must be a whole number from {low} to {high}")
     rows: list[dict[str, object]] = []
     for name, value in options.items():
-        address = OPTION_FIELDS[name][0]
+        address = fields[name][0]
         offset = address - OPTION_BLOCK_VA
         before = struct.unpack_from("<I", payload, offset)[0]
         if before == value:
@@ -341,6 +349,7 @@ def read_franchise_fields(payload: bytes, *, base_year: int = FRANCHISE_DISPLAY_
     validate_franchise_base_year(base_year)
     year_field = payload[FRANCHISE_YEAR_OFFSET + shift]
     return {
+        "owner_firing": struct.unpack_from("<I", payload, OWNER_FIRING_VA - OPTION_BLOCK_VA)[0],
         "state_bytes": state.hex(),
         "stage_weeks": payload[FRANCHISE_STAGE_WEEKS_OFFSET + shift],
         "week": payload[FRANCHISE_WEEK_OFFSET + shift],
@@ -404,6 +413,97 @@ def read_save(savegame_path: Path | str, *, base_year: int = FRANCHISE_DISPLAY_Y
     return result
 
 
+def suggested_save_copy(source: Path) -> Path:
+    """A new sibling folder holding the two filenames the Xbox expects."""
+    folder = source.absolute().parent
+    label = f"{folder.name} edited" if folder.name else "Edited save"
+    parent = folder.parent
+    if not os.access(parent, os.W_OK):
+        parent, label = folder, "Edited save"
+    destination = parent / label
+    number = 2
+    while os.path.lexists(destination):
+        destination = parent / f"{label} {number}"
+        number += 1
+    return destination / "SAVEGAME.DAT"
+
+
+def _output_state(path: Path):
+    try:
+        info = path.lstat()
+    except FileNotFoundError:
+        return None
+    _require(stat.S_ISREG(info.st_mode) and not getattr(info, "st_reparse_tag", 0),
+             f"target is not a regular file: {path}")
+    return info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns
+
+
+def _write_staged_save(path: Path, data: bytes) -> None:
+    with path.open("xb") as stream:
+        stream.write(data)
+        stream.flush()
+        os.fsync(stream.fileno())
+    _require(path.read_bytes() == data, f"Staged save file did not verify: {path.name}")
+
+
+def _publish_save_pair(files, previous):
+    from .image_use import _publication_lock
+
+    targets = tuple(files)
+    directory = targets[0].parent
+    with ExitStack() as locks:
+        for target in sorted(targets, key=platform_compat.path_key):
+            locks.enter_context(_publication_lock(target))
+        _require(all(_output_state(path) == previous[path] for path in targets),
+                 "The save destination changed. Choose a new folder or retry.")
+        if targets[1].parent == directory and not directory.exists():
+            # The ordinary GUI save publishes a complete new Xbox folder in one rename.
+            directory.parent.mkdir(parents=True, exist_ok=True)
+            with tempfile.TemporaryDirectory(prefix=".2k5-save-", dir=directory.parent) as temp:
+                staged = Path(temp) / "pair"
+                staged.mkdir()
+                for path, data in files.items():
+                    _write_staged_save(staged / path.name, data)
+                platform_compat.publish_no_replace(staged, directory, is_directory=True)
+            return
+
+        # The CLI also supports two explicit destinations, including existing files on separate volumes.
+        work = {}
+        published = []
+        keep_backup = set()
+        try:
+            for path, data in files.items():
+                path.parent.mkdir(parents=True, exist_ok=True)
+                work[path] = Path(tempfile.mkdtemp(prefix=".2k5-save-", dir=path.parent))
+                _write_staged_save(work[path] / "new", data)
+                if previous[path] is not None:
+                    shutil.copy2(path, work[path] / "original")
+            for path in targets:
+                _require(_output_state(path) == previous[path], f"The output changed while editing: {path}")
+                if previous[path] is None:
+                    platform_compat.publish_no_replace(work[path] / "new", path)
+                else:
+                    os.replace(work[path] / "new", path)
+                published.append(path)
+        except BaseException:
+            for path in reversed(published):
+                try:
+                    if previous[path] is None:
+                        path.unlink()
+                    else:
+                        os.replace(work[path] / "original", path)
+                except OSError:
+                    keep_backup.add(work[path])
+            if keep_backup:
+                raise SaveWriterError("The save could not be restored. Recovery files are in " +
+                                      ", ".join(map(str, keep_backup)))
+            raise
+        finally:
+            for stage in work.values():
+                if stage not in keep_backup:
+                    shutil.rmtree(stage)
+
+
 def edit_save_file(
     source_dat: Path | str,
     target_dat: Path | str,
@@ -426,26 +526,31 @@ def edit_save_file(
     source is always refused.
     """
 
-    source = Path(source_dat).expanduser().resolve(strict=True)
-    target = Path(target_dat).expanduser()
-    extra_target = Path(target_extra).expanduser()
-    source_info = _regular_non_link(source)
-    for candidate in (target, extra_target):
-        if not candidate.exists():
-            continue
-        _require(overwrite,
-                 f"target already exists; pass overwrite=True to replace it: "
-                 f"{candidate}")
-        candidate_info = candidate.lstat()
-        _require(
-            (source_info.st_dev, source_info.st_ino)
-            != (candidate_info.st_dev, candidate_info.st_ino),
-            "source and target are the same file; the target must be a copy",
-        )
-        _require(stat.S_ISREG(candidate_info.st_mode),
-                 f"target is not a regular file: {candidate}")
-        candidate.unlink()
-    payload = bytearray(source.read_bytes())
+    selected = platform_compat.io_path(platform_compat.absolute_path(source_dat))
+    source = selected.resolve(strict=True)
+    _regular_non_link(source)
+    xbe = platform_compat.io_path(xbe_path).resolve(strict=True)
+    target, extra_target = (platform_compat.io_path(platform_compat.absolute_path(p)) for p in (target_dat, target_extra))
+    protected = [source, xbe]
+    companions = []
+    for folder in {selected.parent, source.parent}:
+        companions.extend(path for path in folder.iterdir() if path.name.casefold() == "extra")
+    protected.extend(companions)
+    if selected.name.casefold() == "savegame.dat" or source.name.casefold() == "savegame.dat":
+        protected.extend((selected.with_name("EXTRA"), source.with_name("EXTRA")))
+    previous = {}
+    for path in (target, extra_target):
+        platform_compat.validate_output_path(path)
+        _require(not any(platform_compat.paths_alias(path, item) or path.resolve() == item.resolve() for item in protected),
+                 "Choose a separate edited save folder to preserve the source save and its EXTRA.")
+        previous[path] = _output_state(path)
+        _require(previous[path] is None or overwrite, f"target already exists; pass overwrite=True to replace it: {path}")
+    _require(not platform_compat.paths_alias(target, extra_target) and target.resolve() != extra_target.resolve(),
+             "The output save and EXTRA must be two different files.")
+    _require(target.resolve() not in extra_target.resolve().parents and extra_target.resolve() not in target.resolve().parents,
+             "Neither output file can be the other file's folder.")
+    original = source.read_bytes()
+    payload = bytearray(original)
     kind = save_kind(bytes(payload))
     _require(kind in ("settings", "franchise"),
              f"save size {len(payload)} is neither Settings1 (736) nor "
@@ -461,17 +566,17 @@ def edit_save_file(
     _require(bool(slider_changes) or year_change is not None or bool(option_changes),
              "no edits were requested")
 
-    xbe_payload = Path(xbe_path).expanduser().resolve(strict=True).read_bytes()
-    sig_key = derive_sig_key(xbe_payload)
-    extra = sign_save(sig_key, bytes(payload))
-
-    target.parent.mkdir(parents=True, exist_ok=True)
-    extra_target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_bytes(bytes(payload))
-    extra_target.write_bytes(extra)
+    sig_key = derive_sig_key(xbe.read_bytes())
+    if selected.name.casefold() == "savegame.dat" or source.name.casefold() == "savegame.dat":
+        for companion in companions:
+            _require(companion.is_file() and verify_extra(sig_key, original, companion.read_bytes()),
+                     "The source SAVEGAME.DAT and EXTRA signature do not match the selected game.")
+    edited = bytes(payload)
+    extra = sign_save(sig_key, edited)
+    _publish_save_pair({target: edited, extra_target: extra}, previous)
     return {
         "schema": EDIT_SCHEMA,
-        "source": {"path": str(source), "sha256": _digest(source.read_bytes()),
+        "source": {"path": str(source), "sha256": _digest(original),
                    "kind": kind},
         "target": {"path": str(target), "sha256": _digest(bytes(payload)),
                    "kind": kind},
@@ -780,7 +885,7 @@ def _argument_parser():
                              default="consistent")
     edit_parser.add_argument("--option", action="append", default=[], nargs=2,
                              metavar=("NAME", "VALUE"),
-                             help="a game option: quarter_minutes, sim_minutes or chop_block (0 or 1)")
+                             help="quarter_minutes, sim_minutes, chop_block, or franchise owner_firing (0 Off, 1 On, 2 carousel All Teams)")
     edit_parser.add_argument("--franchise-year", type=int, default=None)
     edit_parser.add_argument("--overwrite", action="store_true",
                              help="replace existing output files")
@@ -803,7 +908,7 @@ def _argument_parser():
                                   default="consistent")
     writeback_parser.add_argument("--option", action="append", default=[], nargs=2,
                                   metavar=("NAME", "VALUE"),
-                                  help="a game option: quarter_minutes, sim_minutes or chop_block (0 or 1)")
+                                  help="quarter_minutes, sim_minutes, chop_block, or franchise owner_firing (0 Off, 1 On, 2 carousel All Teams)")
     writeback_parser.add_argument("--franchise-year", type=int, default=None)
     return parser
 

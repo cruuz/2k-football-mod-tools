@@ -56,6 +56,7 @@ from mod_editor.core.nfl2k5_save_writer import (
     SLIDER_MODES,
     edit_save_file,
     read_save,
+    suggested_save_copy,
 )
 
 
@@ -249,6 +250,12 @@ class SavePanel(QWidget):
         self.year_note.setObjectName("bumpMuted")
         options_row.addWidget(self.year_note, 1)
         root.addLayout(options_row)
+        self.owner_firing_check = QCheckBox("Turn off Owner Firing in the signed franchise copy")
+        self.owner_firing_check.setToolTip(
+            "Beta 81 honors Off even if the owner already issued a final warning."
+        )
+        self.owner_firing_check.hide()
+        root.addWidget(self.owner_firing_check)
 
         out_row = QHBoxLayout()
         out_row.addWidget(QLabel("Save the copy as"))
@@ -307,6 +314,11 @@ class SavePanel(QWidget):
         franchise = bool(have_save and self._save_info
                          and self._save_info.get("kind") == "franchise")
         self.year_spin.setEnabled(ready and franchise)
+        current = ((self._save_info or {}).get("franchise") or {}).get("owner_firing")
+        self.owner_firing_check.setVisible(franchise and current in (0, 1, 2))
+        self.owner_firing_check.setEnabled(ready and franchise and current in (1, 2))
+        self.owner_firing_check.setText("Owner Firing is Off in this franchise" if current == 0 else
+                                       "Turn off Owner Firing in the signed franchise copy")
         self.apply_button.setEnabled(
             ready and have_xbe and have_save and have_out
         )
@@ -449,9 +461,11 @@ class SavePanel(QWidget):
 
     def _collect_option_edits(self) -> dict[str, int]:
         """The ticked Game defaults rows, as the values to write."""
-        if self._default_report is None:
-            return {}
         edits: dict[str, int] = {}
+        if self.owner_firing_check.isEnabled() and self.owner_firing_check.isChecked():
+            edits["owner_firing"] = 0
+        if self._default_report is None:
+            return edits
         for entry in self._default_report["rows"]:
             box = self._default_checks.get(entry["key"])
             if box is not None and box.isChecked() and box.isEnabled() and entry["target"] is not None \
@@ -470,6 +484,7 @@ class SavePanel(QWidget):
         def done(result: object) -> None:
             assert isinstance(result, dict)
             self._save_info = result
+            self.owner_firing_check.setChecked(False)
             self.save_field.setText(str(path))
             self._populate_sliders(result)
             kind = result.get("kind")
@@ -486,7 +501,7 @@ class SavePanel(QWidget):
                 self.year_note.setText(
                     "Settings saves carry sliders only (no franchise year)."
                 )
-            suggested = path.with_name(f"{path.stem}_edited{path.suffix}")
+            suggested = suggested_save_copy(path)
             self.out_field.setText(str(suggested))
             self._set_status(
                 f"{kind} save loaded: {len(result.get('sliders') or {})} "
@@ -520,12 +535,9 @@ class SavePanel(QWidget):
             spin.setDecimals(2)
             if editable is not None:
                 spin.setValue(float(editable))
-            spin.valueChanged.connect(self._slider_changed)
+            spin.setProperty("loadedSliderValue", spin.value())
             self._slider_spins[label] = spin
             self.slider_table.setCellWidget(row, 3, spin)
-
-    def _slider_changed(self, _value: float) -> None:
-        pass
 
     def _choose_out(self) -> None:
         chosen, _filter = QFileDialog.getSaveFileName(
@@ -541,18 +553,18 @@ class SavePanel(QWidget):
         edits: dict[str, float] = {}
         for label, spin in self._slider_spins.items():
             values = sliders.get(label) or {}
-            original = values.get("editable")
-            if original is None:
+            if values.get("editable") is None:
                 continue
             new_value = spin.value()
-            if abs(new_value - float(original)) > 1e-9:
+            # The save can carry more precision than this control displays.
+            if new_value != spin.property("loadedSliderValue"):
                 edits[label] = new_value
         return edits
 
     def _apply_clicked(self) -> None:
         if self._save_info is None:
             return
-        save_path = Path(str(self._save_info.get("path") or ""))
+        save_path = Path(self.save_field.text() or str(self._save_info.get("path") or ""))
         xbe_path = self._xbe_file or Path(self.xbe_field.text())
         out_path = Path(self.out_field.text())
         edits = self._collect_slider_edits()
@@ -571,16 +583,18 @@ class SavePanel(QWidget):
             QMessageBox.information(
                 self, "Saves & sliders",
                 "Nothing changed yet. Adjust a slider, tick a game default "
-                "or change the franchise year first.",
+                "or edit a franchise setting first.",
             )
             return
         extra_path = out_path.with_name("EXTRA")
         overwrite = out_path.exists() or extra_path.exists()
         summary_bits = [f"{len(edits)} slider edit(s)"]
-        if option_edits:
-            summary_bits.append("game defaults: " + ", ".join(
-                f"{profile_defaults.BY_KEY[key].label} -> {profile_defaults.BY_KEY[key].show(value)}"
-                for key, value in option_edits.items()))
+        if "owner_firing" in option_edits:
+            summary_bits.append("Owner Firing set to Off")
+        for key, value in option_edits.items():
+            if key in profile_defaults.BY_KEY:
+                option = profile_defaults.BY_KEY[key]
+                summary_bits.append(f"{option.label} set to {option.show(value)}")
         if year is not None:
             summary_bits.append(f"franchise year -> {year}")
         confirmation = QMessageBox.question(
@@ -616,6 +630,9 @@ class SavePanel(QWidget):
                 f"Slider writes: {len(changes)} (mode: {mode})",
             ]
             for change in result.get("option_changes") or []:
+                if change["key"] == "owner_firing":
+                    lines.append("Owner Firing set to Off")
+                    continue
                 option = profile_defaults.BY_KEY[change["key"]]
                 lines.append(f"{option.label}: {option.show(change['before'])} -> {option.show(change['after'])}")
             if year_change:
