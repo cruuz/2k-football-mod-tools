@@ -1908,6 +1908,28 @@ class RosterDocument:
         for key in ("position", "depth_rank", "depth_side", "unknown_52"):
             player.record.values[key] = int(values[key])
 
+    def paste_player(self, target: Player, source: PlayerRecord, *, mode: str = "all",
+                     abilities: bool = False) -> dict[str, Any]:
+        """Finn's Paste onto ``target`` without carrying another player's slot (b81 R7).
+
+        ``copy_player`` keeps the target's depth rank/side, lock bits, injury and IR state, player kind,
+        pool kind and star tag.  A pasted position is checked against the loaded scheme first (a retired
+        code refuses the whole paste, nothing changes) and then set the way a position edit sets it: on a
+        club the player goes to the bottom of his new position's chain, unlocked.  Returns
+        ``{"count", "before", "position_changed"}``; ``before`` is the record to restore for undo."""
+
+        _require(self.by_offset.get(target.offset) is target, "player belongs to another document")
+        new_position = None
+        if mode == "all" and source.values["position"] != target.record.values["position"]:
+            new_position = int(source.values["position"])
+            check_position_code(new_position, self.scheme)
+        before = target.record.copy()
+        count = copy_player(source, target.record, mode=mode, abilities=abilities)
+        if new_position is not None:
+            target.record.values["position"] = before.values["position"]
+            self.change_position(target, new_position)
+        return {"count": count, "before": before, "position_changed": new_position is not None}
+
     # ------------------------------------------------------------------ edits
     def _protect_split_name_pool(self) -> None:
         """A relocated roster can place other live objects inside the outer range of player names."""
@@ -5551,24 +5573,58 @@ def restore_measurements(document: RosterDocument, retail: RosterDocument,
 COPY_EXCLUDED = frozenset({"college_pointer", "first_name_pointer", "last_name_pointer",
                            "history_pointer", "pbp_id", "photo_id"})
 
+# b81 R7 (Finn parity audit, section 4 T5).  A record also says which roster SLOT it holds, and on a
+# SOFTDRINK roster that state is team-unique: KR1, KR2 and PR locks may have one owner per club, a
+# locked depth row one owner per position, the IR marker must agree with the club's IR block, and
+# +0x08 says NFL player, draft prospect, unused slot or MyCareer class.  Finn's Paste predates all of
+# it (his record map calls +0x52/+0x53 padding), and the game's own field-by-field player clone
+# (0xC16CD..0xC1DDB) never copies +0x52 or +0x53 either.  So a Paste keeps the target's slot state;
+# abilities and their tier travel only when the user asks; the Guardian cap is gear and travels.
+PASTE_KEEPS_TARGET = ("player_type", "injured_reserve", "unknown_29_low", "depth_rank", "depth_side",
+                      "pool_kind", "star_tag")
+PASTE_LOCK_MASK = 0x1F           # unknown_52 bits 0..4: rank, side, KR1, KR2, PR locks (nfl2k5_depth_locks)
+PASTE_ABILITY_MASKS = {"unknown_52": 0xE0,         # Speedster, Right-Stick Moves, Juke
+                       "unknown_53_high": 0x6F}    # Spin, Truck, Hurdle, Stiff-Arm and the two tier bits
+PASTE_GEAR_MASKS = {"unknown_53_high": 0x10}       # the Guardian cap overlay
+PASTE_KEPT_TEXT = ("his depth place and locks (rank, side, KR1, KR2, PR), injury and IR state, "
+                   "player kind, pool and star tag")
 
-def copy_player(source: PlayerRecord, target: PlayerRecord, *, mode: str = "all") -> int:
-    """Finn's Paste / Paste-Attributes-Only / Paste-Photo.
 
-    ``all`` copies everything except college, names, PBP and photo (his own rule); ``attributes``
-    copies the 28 rating bytes only; ``photo`` copies the portrait id only."""
+def copy_player(source: PlayerRecord, target: PlayerRecord, *, mode: str = "all",
+                abilities: bool = False) -> int:
+    """Finn's Paste / Paste-Attributes-Only / Paste-Photo, tailored to a SOFTDRINK roster.
+
+    ``all`` copies everything except college, names, PBP and photo (his own rule) and except the slot
+    state in ``PASTE_KEEPS_TARGET`` and the lock bits (b81 R7); ``attributes`` copies the 28 rating
+    bytes only; ``photo`` copies the portrait id only.  ``abilities`` adds the ability flags and their
+    tier (never the locks) to ``all`` or ``attributes``.  Returns how many fields changed.
+
+    This is the raw record copy; on a document use ``RosterDocument.paste_player``, which also sends a
+    position change through ``change_position`` (bottom of the new chain, unlocked)."""
 
     _require(mode in ("all", "attributes", "photo"), "mode must be all, attributes or photo")
+    _require(isinstance(abilities, bool), "abilities must be a boolean")
+    masks: dict[str, int] = {}
     if mode == "photo":
         keys: Sequence[str] = ("photo_id",)
     elif mode == "attributes":
         keys = RATING_BYTE_ORDER
     else:
-        keys = tuple(name for name in (f.name for f in FIELDS) if name not in COPY_EXCLUDED)
+        skip = COPY_EXCLUDED | set(PASTE_KEEPS_TARGET) | set(PASTE_ABILITY_MASKS)
+        keys = tuple(name for name in (f.name for f in FIELDS) if name not in skip)
+        masks = dict(PASTE_GEAR_MASKS)
+    if abilities and mode != "photo":
+        for name, mask in PASTE_ABILITY_MASKS.items():
+            masks[name] = masks.get(name, 0) | mask
     count = 0
     for key in keys:
         if target.values[key] != source.values[key]:
             target.values[key] = source.values[key]
+            count += 1
+    for key, mask in masks.items():
+        merged = (target.values[key] & ~mask) | (source.values[key] & mask)
+        if merged != target.values[key]:
+            target.values[key] = merged
             count += 1
     return count
 

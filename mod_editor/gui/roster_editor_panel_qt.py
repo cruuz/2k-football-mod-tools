@@ -1384,9 +1384,20 @@ class RosterEditorPanel(QWidget):
         self.paste_button.setText("Paste ▾")
         self.paste_button.setPopupMode(QToolButton.InstantPopup)
         paste_menu = QMenu(self.paste_button)
+        self.paste_button.setToolTip(
+            "Paste the copied player's ratings, gear, body and contract onto the selected player. "
+            "Names, college, photo and play-by-play name stay. So do his depth place and locks, "
+            "injury and IR state, player kind and star tag, which belong to his roster spot.")
         paste_menu.addAction("Paste player", lambda: self.paste_player("all"))
         paste_menu.addAction("Paste attributes only", lambda: self.paste_player("attributes"))
         paste_menu.addAction("Paste photo only", lambda: self.paste_player("photo"))
+        paste_menu.addSeparator()
+        self.paste_abilities_action = paste_menu.addAction("Include abilities and tier")
+        self.paste_abilities_action.setCheckable(True)
+        self.paste_abilities_action.setToolTip(
+            "Also copy Speedster, Juke and the other ability flags with their tier. Off by default: "
+            "abilities are often set by hand or by the auto-assign pass.")
+        paste_menu.setToolTipsVisible(True)
         self.paste_button.setMenu(paste_menu)
         self.template_button = QToolButton()
         self.template_button.setText("Template ▾")
@@ -3208,26 +3219,55 @@ class RosterEditorPanel(QWidget):
         self._refresh_actions()
         return True
 
-    def paste_player(self, mode: str = "all") -> int:
+    def paste_player(self, mode: str = "all", *, abilities: bool | None = None) -> int:
+        """Finn's Paste (Ctrl+V), Paste attributes only (Ctrl+Alt+A) and Paste photo only.
+
+        The target keeps his own depth place, locks, injury and IR state, player kind, pool and star tag
+        (b81 R7: carrying them could give a club two KR1s or a phantom IR player). Abilities travel only
+        with the menu's "Include abilities and tier" tick. A pasted position goes through the position
+        edit's rule (bottom of the new chain, unlocked) and is refused when the scheme retired it."""
+
         player = self.selected_player()
-        if player is None or self._clipboard is None:
+        if player is None or self._clipboard is None or self.document is None:
             return 0
-        before = player.record.copy()
-        count = rr.copy_player(self._clipboard, player.record, mode=mode)
+        if abilities is None:
+            abilities = self.paste_abilities_action.isChecked()
+        source = self._clipboard
+        document = self.document
+        try:
+            result = document.paste_player(player, source, mode=mode, abilities=abilities)
+        except rr.RosterRecordError as exc:
+            self._set_status(f"Nothing was pasted. {plain_error(exc)}")
+            return 0
+        count = int(result["count"])
         if not count:
+            self._set_status(f"Nothing to paste: {player.display} already has those values.")
             return 0
+        before = result["before"]
+        after = player.record.copy()
 
         def undo(snapshot: rr.PlayerRecord = before) -> None:
             player.record.values.update(snapshot.values)
             self._after_edit(player)
+            self.refresh_grid()
 
-        def redo(source: rr.PlayerRecord = self._clipboard, kind: str = mode) -> None:
-            rr.copy_player(source, player.record, mode=kind)
+        def redo(snapshot: rr.PlayerRecord = after) -> None:
+            player.record.values.update(snapshot.values)
             self._after_edit(player)
+            self.refresh_grid()
 
-        self.undo_stack.push(UndoEntry(f"paste ({mode}) onto {player.display}", undo, redo))
+        label = {"all": "paste", "attributes": "paste attributes", "photo": "paste photo"}[mode]
+        self.undo_stack.push(UndoEntry(f"{label} onto {player.display}", undo, redo))
         self._after_edit(player)
-        self._set_status(f"Pasted {count} fields onto {player.display}.")
+        if result["position_changed"]:
+            self.refresh_grid()
+        kept = ""
+        if mode == "all":
+            kept = f" Kept {rr.PASTE_KEPT_TEXT}"
+            kept += "." if abilities else ", and his abilities (tick Include abilities and tier to copy them)."
+            if result["position_changed"]:
+                kept += " His position changed, so he moved to the bottom of that position's depth order, unlocked."
+        self._set_status(f"Pasted {count} field{'s' if count != 1 else ''} onto {player.display}.{kept}")
         return count
 
     @staticmethod

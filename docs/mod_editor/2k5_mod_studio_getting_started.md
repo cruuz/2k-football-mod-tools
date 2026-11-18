@@ -1302,7 +1302,13 @@ name fields always says how much room is left.
 "every QB with Speed ≥ 80 → signature release", "all HBs with Break Tackle ≥ 75 → Power": and shows
 **every affected player before it changes anything**. **Copy player** and **Paste ▾**
 (player / attributes only / photo only) follow Finn's rules: a paste never carries names, college,
-play-by-play or photo unless you ask for the photo. **One-shot passes ▾** advance years pro for the
+play-by-play or photo unless you ask for the photo. On top of Finn's rules, a paste keeps what belongs
+to the player's roster spot rather than to the player: his depth rank and side, his depth and returner
+locks (KR1, KR2, PR), his injury and IR state, his player kind (NFL player, prospect, MyCareer) and the
+star tag. Carrying those could give a club two KR1s or a player who claims to be on IR without an IR
+slot. Abilities and their tier stay too unless you tick **Include abilities and tier** in the Paste
+menu. If the paste changes his position, he goes to the bottom of that position's depth order,
+unlocked, the same as a position edit. **One-shot passes ▾** advance years pro for the
 league or the list, and restore height, weight and date of birth to what the roster shipped with.
 **CSV ▾** exports the list or the whole league and reads it back: it also reads Finn's
 semicolon-delimited export, and a spreadsheet with three columns is a legal edit. Files exported
