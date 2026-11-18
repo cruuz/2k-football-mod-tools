@@ -598,7 +598,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "21b19fe0d6b77d494f1784f46f32efdb843fd7eb7431936ac6c7a383daac9141",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "cb7f1afe805a5b0be1694c8ef5f5259c68ed7f0126624692b9feae7998fb579b",
+        "mod_editor/core/mod_build.py": "0cad57b0c161383d0866f9afa77a174a58ba4485c2e1168e309b7f3c947505f9",
         "mod_editor/core/nfl2k5_console_memory.py": "68583ec468e7b07ecc671a2e1ae04c86ee4be41f771e50ce3373762473cc7981",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/build_steps.py": "ba250f9948944d8b116561d12d59c4dffef6d06e3704c79de3d28734bd46e640",  # b791-h3: step context and optional steps
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
@@ -975,7 +975,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_champions_history.py": "276ac2e36390dd3fb77af6a03481197308ba0a650d29af249d21faf4c47b4d53",  # b780-int: the champions history the j23 footer format and champions owner now import
         "mod_editor/core/nfl2k5_history_code.py": "7677da0a95a58b89dd5e5b46c6bd74f8d69fd11b73678daa74c4d55d7464c0a5",  # b780 j23
         "mod_editor/core/nfl2k5_contract_college_guard.py": "4bf8deeb95c3718380e8dc248ec2a2f0c81116f304d1a93723e277cc4bd32fe6",  # b778-cr1
-        "mod_editor/core/nfl2k5_coach_career_fix.py": "badd8d8b1b667c69e7bfea1db6ade7b633d72f3a52691d23f270c84154ed4c22",  # b780 c1 (wired at b780-int)
+        "mod_editor/core/nfl2k5_coach_career_fix.py": "7dea3f42075289b257c8b81e9591d35d6d19530d450ecb5469764925e6bd90ba",  # b780 c1 (wired at b780-int)
         "mod_editor/core/nfl2k5_history_pool.py": "2ab343c67a32c1bb69162defbb63c47bdc8d53adc5372bd17b5c3ef5eb072d8f",  # b780 hist1
         "mod_editor/core/nfl2k5_history_pool_code.py": "a4b2a9e08453619b58e3fec5ec9fb0f9bc0446bb224ef5cc057aefaa06d02eab",  # b780 hist1: its generated runtime
         "mod_editor/core/nfl2k5_load_user_team_guard.py": "1f898e60d87828daa3da539a9c871a348fe931ed8759dc6a62e466d78edd5d6f",  # b780 mc1
@@ -998,7 +998,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_injured_reserve_code_b780.py": "0435e068e930f74a937e075f0f235fc61d951ba7b12873ac2b6fdcfc17f3b78a",
         "mod_editor/core/nfl2k5_injured_reserve_save.py": "34a30bfbfbc1c3386bb3f3b81f2a3571a1753d392307eacdb9812b9261f12652",  # b780 IR1: the save extension codec (imported by nfl2k5_franchise_save)
         "mod_editor/core/nfl2k5_preseason_warning.py": "44647523c32291820e98b2dad0a9c44af27fe6bca13626104551dc3647bcc6f2",  # b779-int1: imported by throw_tuning for the build union (693fe63a0)
-        "mod_editor/core/nfl2k5_coach_carousel.py": "54925f33ea8d2aea6b3fe3499ca094465bdcf0c6a0d67fa3cc8407714fbd74ee",  # b780-c6: the coaching carousel (late owner, imported by throw_tuning)
+        "mod_editor/core/nfl2k5_coach_carousel.py": "aa132ec652edafbaf86c86180e409eaa465039cca76ab6eee17aa8fd707685fd",  # b780-c6: the coaching carousel (late owner, imported by throw_tuning)
         "mod_editor/core/nfl2k5_coach_carousel_code.py": "86cd01c57d294d3c34551f0aa7f6949764350a7343e80ef3ef596f52bbae36e9",  # b780-c6: its generated runtime template
         "mod_editor/core/nfl2k5_coach_owners.py": "97094f12b5bad7def37132988614efbd2f727a12470b98712f8725ff406c4029",  # b780-int: c5's owner patience model, imported by the carousel at module level
         "mod_editor/core/nfl2k5_sim_stats.py": "52680d840b0bd4e01919d0a9160ece5f69eac6d45d68ed7d478464f304615ff3",  # b778-sim1

@@ -69,7 +69,7 @@ class ExecutableTests(unittest.TestCase):
         self.assertEqual(patched[site:site + 4], bytes.fromhex("0f1f4000"))
         self.assertEqual(self.retail[site:site + 4], bytes.fromhex("66ff4032"))
         # b780 hunt6: revision 2's two in-place routines (tests/mod_editor/test_b780_hunt6_franchise_records.py)
-        spans = [(rdata.offset_of(self.retail, va), len(before)) for _l, va, before, _a in fix.SITES_V2]
+        spans = [(rdata.offset_of(self.retail, va), len(before)) for _l, va, before, _a in fix.SITES_V2 + fix.SITES_V3]
         outside = [i for i in changed if not site <= i < site + 4 and not any(a <= i < a + n for a, n in spans)]
         self.assertLessEqual(len(outside), 20, "only the section digest (20 bytes) may move besides the sites")
         self.assertEqual(receipt["sections_repinned"], [0])

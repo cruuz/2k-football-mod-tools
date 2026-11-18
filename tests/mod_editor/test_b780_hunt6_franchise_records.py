@@ -91,9 +91,9 @@ class Cpu:
 
 
 class SiteTests(unittest.TestCase):
-    def test_revision2_sites(self):
-        self.assertEqual(fix.REVISION, 2)
-        self.assertEqual([va for _l, va, _b, _a in fix.SITES], [0x247CD6, 0x135260, 0x148A40])
+    def test_all_installed_sites(self):
+        self.assertEqual(fix.REVISION, 3)
+        self.assertEqual([va for _l, va, _b, _a in fix.SITES], [0x247CD6, 0x135260, 0x148A40, 0x2BA67B])
         for label, va, before, after in fix.SITES:
             self.assertEqual(len(before), len(after), label)
         self.assertLess(len(fix.BUILD_CAPTION), 61)
@@ -118,7 +118,8 @@ class SiteTests(unittest.TestCase):
         if os.name == "nt" or not all(shutil.which(t) for t in ("as", "ld", "objcopy")):
             self.skipTest("optional GNU assembler reproducibility check")
         specs = (("result", fix.RESULT_VA, fix.PATCHED_RESULT.rstrip(b"\x90")),
-                 ("owner_text", fix.OWNER_TEXT_VA, fix.PATCHED_OWNER_TEXT))
+                 ("owner_text", fix.OWNER_TEXT_VA, fix.PATCHED_OWNER_TEXT),
+                 ("warning_action", fix.WARNING_ACTION_VA, fix.PATCHED_WARNING_ACTION))
         with tempfile.TemporaryDirectory() as tmp:
             obj, elf = Path(tmp) / "c.o", Path(tmp) / "c.elf"
             subprocess.run(["as", "--32", str(ROOT / "docs/mod_editor/nfl2k5_coach_career_fix.S"), "-o", str(obj)],
@@ -141,10 +142,10 @@ class UpgradeTests(unittest.TestCase):
     def _spans(self, payload):
         return {rdata.offset_of(payload, va): len(before) for _l, va, before, _a in fix.SITES}
 
-    def test_retail_applies_all_three_sites_and_the_digest_only(self):
+    def test_retail_applies_all_sites_and_the_digest_only(self):
         self.assertEqual(fix.status(self.retail), "retail")
         patched, receipt = fix.apply(self.retail)
-        self.assertEqual((fix.status(patched), receipt["revision"]), ("applied", 2))
+        self.assertEqual((fix.status(patched), receipt["revision"]), ("applied", 3))
         spans = self._spans(self.retail)
         changed = [i for i, (a, b) in enumerate(zip(self.retail, patched)) if a != b]
         outside = [i for i in changed if not any(a <= i < a + n for a, n in spans.items())]
@@ -160,7 +161,7 @@ class UpgradeTests(unittest.TestCase):
 
     def test_a_foreign_byte_in_any_new_site_refuses(self):
         patched = fix.apply(self.retail)[0]
-        for _label, va, before, _after in fix.SITES_V2:
+        for _label, va, before, _after in fix.SITES_V2 + fix.SITES_V3:
             for delta in (0, len(before) - 1):
                 broken = bytearray(patched)
                 broken[rdata.offset_of(patched, va) + delta] ^= 0x41

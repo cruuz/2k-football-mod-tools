@@ -34,18 +34,19 @@ in every preset (tests/mod_editor/test_b780_hunt6_franchise_records.py runs each
   every build without the carousel. ``(value + 1) >> 1`` gives Off, On, On (the retail owner check already treats any
   nonzero value as On). A carousel build replaces the row's text callback pointer, so it never runs this one.
 
-A revision-1 install (the v0.9 release candidates) reads ``previous`` and is upgraded in place.
+Revision 3 honors Off when an existing franchise already carries the owner's last-warning mark. The ordinary firing
+branch checks the saved option before posting a dismissal. The optional carousel still chooses which modes may enter
+that branch. Recognized revision-1 and revision-2 installations upgrade in place.
 """
 from __future__ import annotations
 
 from . import nfl2k5_rdata_sites as rdata
 
 OWNER = "nfl2k5_coach_career_fix"
-BUILD_CAPTION = "Franchise record fixes: coach records, Owner Firing label"
-HELP_TEXT = ("Keeps franchise records honest: no Super Bowl trip for a mere winning season, and playoff games stay out "
-             "of a head coach's career and season record (a 9-8 club that loses its first playoff game keeps its "
-             "winning season); playoff and Super Bowl records count as before. A carousel save's All Teams Owner "
-             "Firing shows On, not a blank label. No change to games or ratings.")
+BUILD_CAPTION = "Coach records and Owner Firing"
+HELP_TEXT = ("Count a coach's regular-season, playoff and Super Bowl records separately. "
+             "Show a carousel save's All Teams setting as On in a standard build. "
+             "When an existing franchise has Owner Firing set to Off, a previous owner warning can no longer end the coach's job.")
 
 #: (label, virtual address, retail bytes, patched bytes): inc [eax+0x30] (kept) then inc [eax+0x32] -> nop dword [eax+0]
 SITES_V1 = (("rollover: Super Bowl trip per winning season", 0x247CD6,
@@ -69,29 +70,51 @@ SITES_V2 = (("game result: playoff games stay out of the coach's career and seas
              RETAIL_RESULT, PATCHED_RESULT),
             ("franchise options: the Owner Firing text reads any nonzero value as On", OWNER_TEXT_VA,
              RETAIL_OWNER_TEXT, PATCHED_OWNER_TEXT))
-SITES = SITES_V1 + SITES_V2
-REVISION = 2
+WARNING_ACTION_VA = 0x2BA67B
+RETAIL_WARNING_ACTION = bytes.fromhex(
+    "e840e5d8ff84c38bcf7518e815a6e0ffba290000008bc8e8293dfcff5f5e5d33c05bc3"
+    "e8fda5e0ffba2a0000008bc8e8113dfcff5f5e5d33c05bc3")
+PATCHED_WARNING_ACTION = bytes.fromhex(
+    "833d4401e600007432e837e5d8ff84c389f9750ce80ca6e0ffba29000000eb0ae800a6e0ff"
+    "ba2a00000089c1e8143dfcff5f5e5d31c05bc3909090")
+SITES_V3 = (("owner firing: honor Off after a previous warning", WARNING_ACTION_VA,
+             RETAIL_WARNING_ACTION, PATCHED_WARNING_ACTION),)
+SITES = SITES_V1 + SITES_V2 + SITES_V3
+REVISION = 3
 COACH_SUPER_BOWLS = 0x32
 
 
+def _installed_revision(payload: bytes) -> int | None:
+    states = tuple(rdata.status(payload, group) for group in (SITES_V1, SITES_V2, SITES_V3))
+    for revision in range(REVISION + 1):
+        if states == ("applied",) * revision + ("retail",) * (REVISION - revision):
+            return revision
+    return None
+
+
 def status(payload: bytes) -> str:
-    """``retail`` | ``applied`` | ``previous`` (a revision-1 install, upgraded in place) | ``foreign``."""
-    state = rdata.status(payload, SITES)
-    if state != "foreign":
-        return state
-    if rdata.status(payload, SITES_V1) == "applied" and rdata.status(payload, SITES_V2) == "retail":
-        return "previous"
-    return "foreign"
+    """Recognize the original executable and each complete historical revision."""
+    return {None: "foreign", 0: "retail", 1: "previous", 2: "previous", 3: "applied"}[_installed_revision(payload)]
 
 
 def apply(payload: bytes):
-    """(patched payload, receipt).  A revision-1 install gains the revision-2 sites; anything else that is neither
-    retail nor already patched is refused."""
-    if status(payload) == "previous":
-        patched, receipt = rdata.apply(payload, SITES_V2, "coach career counter fix (revision 2)")
-        return patched, {**receipt, "upgraded_from": 1, "revision": REVISION}
-    patched, receipt = rdata.apply(payload, SITES, "coach career counter fix")
+    revision = _installed_revision(payload)
+    if revision is None:
+        raise rdata.RdataSiteError("unrecognized coach record or Owner Firing instructions")
+    sites = {0: SITES, 1: SITES_V2 + SITES_V3, 2: SITES_V3, 3: SITES}[revision]
+    patched, receipt = rdata.apply(payload, sites, "coach records and Owner Firing")
+    if 0 < revision < REVISION:
+        receipt = {**receipt, "upgraded_from": revision}
     return patched, {**receipt, "revision": REVISION}
+
+
+def restore_previous(payload: bytes):
+    """Restore the recognized revision-2 rule while retaining the coach records and other installed owners."""
+    revision = _installed_revision(payload)
+    if revision not in (2, 3):
+        raise rdata.RdataSiteError("an installed revision-2 or revision-3 coach record fix is required")
+    undo = tuple((label, va, after, before) for label, va, before, after in SITES_V3)
+    return rdata.apply(payload, undo, "restore the previous Owner Firing rule")
 
 
 def verify(payload: bytes) -> dict:

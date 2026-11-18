@@ -1,4 +1,4 @@
-# Franchise record fixes, revision 2 of nfl2k5_coach_career_fix (b780 hunt6). GNU as, Intel syntax; the test links
+# Franchise record fixes, revisions 2 and 3 of nfl2k5_coach_career_fix (b780 hunt6). GNU as, Intel syntax; the test links
 # each section at its retail address and compares the bytes with the module's patched spans:
 #   ld -m elf_i386 --section-start=.result=0x135260 --section-start=.owner_text=0x148a40
 # Revision 1's site (0x247CD6, inc word [eax+0x32] -> nop dword [eax+0]) is a single instruction and lives in the module.
@@ -88,3 +88,33 @@ owner_text:
  shr eax, 1
  mov eax, dword ptr [eax*4+0x4ed994]
  ret
+
+# The stored last-warning bit can outlive the Owner Firing setting in an existing franchise.
+# This span starts after the optional carousel's own mode gate and ends before its warning setter.
+# The two original dismissal messages share their existing send-and-return tail.
+.section .warning_action,"ax"
+.global warning_action
+warning_action:
+ cmp dword ptr [0xe60144], 0
+ je past_warning_action
+ call 0x48bc0
+ test bl, al
+ mov ecx, edi
+ jne second_notice
+ call 0xc4ca0
+ mov edx, 0x29
+ jmp emit_dismissal
+second_notice:
+ call 0xc4ca0
+ mov edx, 0x2a
+emit_dismissal:
+ mov ecx, eax
+ call 0x27e3c0
+ pop edi
+ pop esi
+ pop ebp
+ xor eax, eax
+ pop ebx
+ ret
+ .fill 59 - (. - warning_action), 1, 0x90
+past_warning_action:

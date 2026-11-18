@@ -2421,7 +2421,7 @@ def _apply_coach_career_fix(plan: "BuildPlan", target: Path, receipt: dict, prog
     module = _core_module("nfl2k5_coach_career_fix")
     if module is None:
         raise RuntimeError("The coach career counter fix needs nfl2k5_coach_career_fix.")
-    progress("Franchise records: coach Super Bowl trips and playoff W-L, the Owner Firing label", 0, 0)
+    progress("Coach records and Owner Firing", 0, 0)
     payload, fix_receipt = module.apply(_xbe_bytes(target))
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
