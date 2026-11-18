@@ -310,6 +310,126 @@ class NamingTests(_PanelCase):
         self.assertIn("franchise save", place.toolTip())
 
 
+# --------------------------------------------------------------------------------------------- R2 grid
+class GridTests(_PanelCase):
+    body_factory = staticmethod(league_body)
+
+    def headers(self) -> list[str]:
+        table = self.panel.player_table
+        return [table.horizontalHeaderItem(c).text() for c in range(table.columnCount())]
+
+    def test_sorting_by_speed_puts_the_fastest_first_and_keeps_the_selection(self) -> None:
+        chosen = self.panel._rows[7]
+        self.panel.select_player(chosen)
+        self.panel.sort_by("speed")
+        speeds = [p.record.values["speed"] for p in self.panel._rows]
+        self.assertEqual(speeds, sorted(speeds, reverse=True), "a rating sorts highest first")
+        self.assertIs(self.panel.selected_player(), chosen, "the selected player survives the sort")
+        self.assertIn("SPD", self.headers(), "sorting by a hidden column shows it")
+        column = self.headers().index("SPD")
+        self.panel._header_clicked(column)
+        speeds = [p.record.values["speed"] for p in self.panel._rows]
+        self.assertEqual(speeds, sorted(speeds), "a second click reverses")
+        self.panel._header_clicked(2)
+        names = [p.last.casefold() for p in self.panel._rows]
+        self.assertEqual(names, sorted(names), "the name column sorts A to Z first")
+        rows = [self.panel.player_table.item(r, 2).text().lstrip("● ") for r in range(len(self.panel._rows))]
+        self.assertEqual(rows, [p.display for p in self.panel._rows], "the grid shows the sorted order")
+
+    def test_the_arrows_wait_for_team_order_and_say_why(self) -> None:
+        self.assertTrue(self.panel.up_button.isEnabled() or self.panel.down_button.isEnabled())
+        self.assertFalse(self.panel.sort_box.isVisibleTo(self.panel))
+        self.panel.select_player(self.panel._rows[3])
+        self.panel.sort_by("ovr")
+        self.assertFalse(self.panel.up_button.isEnabled())
+        self.assertFalse(self.panel.down_button.isEnabled())
+        self.assertIn("Team order", self.panel.up_button.toolTip())
+        self.assertTrue(self.panel.sort_box.isVisibleTo(self.panel))
+        self.assertIn("Sorted by Est. OVR, highest first", self.panel.sort_note.text())
+        order = list(self.panel.document.teams[0].slots)
+        self.assertFalse(self.panel.move_selected(1), "no move while sorted")
+        self.assertEqual(self.panel.document.teams[0].slots, order)
+        self.assertIn("Press Team order", self.panel.status_label.text())
+        self.panel.team_order_button.click()
+        self.assertIsNone(self.panel._sort)
+        self.assertTrue(self.panel.down_button.isEnabled())
+        team = self.panel.document.team_players(0)
+        self.assertEqual(self.panel._rows, team, "team order is the pointer list again")
+        self.assertTrue(self.panel.move_selected(1), "the arrows work once the grid is back in team order")
+
+    def test_the_column_picker_offers_finns_bands_in_his_order(self) -> None:
+        self.panel._fill_columns_menu()
+        bands = [a.text() for a in self.panel.columns_menu.actions() if a.menu() is not None]
+        self.assertEqual(bands, ["Ratings", "Body", "Gear", "Contract"])
+        ratings = next(a.menu() for a in self.panel.columns_menu.actions() if a.text() == "Ratings")
+        entries = [a.text() for a in ratings.actions() if a.isCheckable()]
+        self.assertEqual(entries[:5], ["Speed", "Agility", "Strength", "Jumping", "Coverage"], "Finn's order")
+        self.assertEqual(len(entries), 28)
+        self.panel._show_band("Ratings", True)
+        self.assertEqual(self.headers()[:7], ["POS", "#", "Player", "Yrs", "Est. OVR", "Depth", "Locks"])
+        self.assertEqual(self.headers()[7:10], ["SPD", "AGI", "STR"])
+        player = self.panel._rows[0]
+        self.assertEqual(self.panel.player_table.item(0, 7).text(), str(player.record.values["speed"]))
+        self.panel._toggle_grid_column("helmet", True)
+        self.assertEqual(self.headers()[-1], "Helmet")
+        self.assertEqual(self.panel.player_table.item(0, len(self.headers()) - 1).text(),
+                         rr.HELMETS[player.record.values["helmet"]])
+        self.panel.set_grid_columns([])
+        self.assertEqual(len(self.headers()), 7)
+
+    def test_an_edit_updates_its_cell_in_place_in_a_sorted_grid(self) -> None:
+        self.panel.sort_by("speed")
+        self.panel.select_player(self.panel._rows[0])
+        player = self.panel.selected_player()
+        self.panel.set_field(player, "speed", 1)
+        self.assertIs(self.panel._rows[0], player, "the edited row stays where it is")
+        column = self.headers().index("SPD")
+        self.assertEqual(self.panel.player_table.item(0, column).text(), "1")
+        self.panel.undo()
+        self.assertEqual(self.panel.player_table.item(0, column).text(), str(player.record.values["speed"]))
+
+    def test_free_agents_get_lock_boxes_only_where_a_lock_can_be_cleared(self) -> None:
+        document = self.panel.document
+        agent = next(p for p in document.players if p.last == "AgentTwo")
+        agent.record.set_depth_lock("kr1", True)
+        self.panel.team_list.setCurrentRow(self.panel._team_list_row("free_agent", -1))
+        widgets = [self.panel.player_table.cellWidget(r, 6) for r in range(self.panel.player_table.rowCount())]
+        owners = [p for p, w in zip(self.panel._rows, widgets) if w is not None]
+        self.assertEqual(owners, [agent])
+
+
+@unittest.skipUnless(SOFTDRINK_ROSTER_SAVE.is_file(), f"SOFTDRINK roster save absent: {SOFTDRINK_ROSTER_SAVE}")
+class GridSpeedTests(unittest.TestCase):
+    """b81 brief: opening Free Agents and sorting must stay interactive on the 4,096-player roster."""
+
+    def test_free_agents_open_and_sort_quickly_with_every_column(self) -> None:
+        application = _app()
+        panel = RosterEditorPanel()
+        try:
+            self.assertTrue(panel.load_save(SOFTDRINK_ROSTER_SAVE))
+            panel.set_grid_columns([k for band in panel_module.GRID_BANDS.values() for k in band])
+            started = time.perf_counter()
+            panel.team_list.setCurrentRow(panel._team_list_row("free_agent", -1))
+            application.processEvents()
+            opened = time.perf_counter() - started
+            self.assertGreater(len(panel._rows), 800)
+            started = time.perf_counter()
+            panel.sort_by("speed")
+            application.processEvents()
+            sorted_in = time.perf_counter() - started
+            started = time.perf_counter()
+            panel.team_list.setCurrentRow(panel._team_list_row("team", 1))
+            application.processEvents()
+            team = time.perf_counter() - started
+            # measured on the build machine: 0.49 s, 0.52 s and 0.05 s; the bound leaves room for a busy runner
+            self.assertLess(opened, 1.5)
+            self.assertLess(sorted_in, 1.5)
+            self.assertLess(team, 1.0)
+        finally:
+            panel.deleteLater()
+            application.processEvents()
+
+
 class SaveCopyTests(unittest.TestCase):
     """Finn saved over the zip; the Studio writes a new signed copy and says what to do with it."""
 

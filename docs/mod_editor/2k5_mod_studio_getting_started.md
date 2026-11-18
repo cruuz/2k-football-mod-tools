@@ -1239,8 +1239,12 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    and the draft class at once (a name, `Last, First`, or a college, with an optional position and years pro),
    and **Go to player** opens his list and selects him. The position chips (QB RB WR TE OL DL LB DB
    K/P, plus EDGE on a one-pool roster) narrow the list; the grid shows position, number, name, years pro, an OVR estimate and the
-   depth slot. **↑ Move up / ↓ Move down** reorder the team's own pointer list, which *is* the depth
-   chart. Right-click a player for Finn's player menu: copy, the three pastes, Find player, Only his
+   depth slot. **Columns ▾** adds the columns of Finn's grid: all his ratings in his order, body (height,
+   weight, age, hand, body type, skin, face, hair, college), every piece of gear and the contract. Click a
+   column heading to sort by it (a rating sorts highest first; click again to reverse); the selected
+   player stays selected. **↑ Move up / ↓ Move down** reorder the team's own pointer list, which *is* the depth
+   chart, so they wait while the grid is sorted: the line under the grid says so, and **Team order** puts the
+   list back. Right-click a player for Finn's player menu: copy, the three pastes, Find player, Only his
    position, Place on IR… and Release to free agency.
 4. **Right**: the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
    Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
@@ -1363,6 +1367,7 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Edit Player (double-click) | Select the player; the editor on the right is always open. PgUp / PgDn there move to the previous or next player |
 | Change Name `…` list | Type the name. A name that already exists is shared, which needs no free space |
 | Depth Chart (Ctrl+D) | Ctrl+D shows only the selected player's position; **↑ Move up / ↓ Move down** reorder it |
+| The player grid (every rating as a column, click to sort) | **Columns ▾**, then click a heading |
 | Copy Player (Ctrl+C), Paste Player (Ctrl+V), Paste Attributes Only (Ctrl+Alt+A) | Same keys, or **Copy player** and **Paste ▾** |
 | Tools > Global Editor | **Global Attribute Editor…** |
 | Tools > Auto-update > Advance year | **Tools ▾ → Add a year pro to everyone (Advance year)** |

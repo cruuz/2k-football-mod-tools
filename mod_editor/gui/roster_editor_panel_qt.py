@@ -133,6 +133,57 @@ TOGGLE_STYLE = (
 )
 
 
+# --------------------------------------------------------------------------------------------- grid (b81 R2)
+# The seven columns the page always shows (tests and the depth tools address them by index), then the bands of
+# Finn's grid a user can add from Columns ▾: his 27 attributes in his own order (plus Kicking Style), body,
+# gear and contract.
+GRID_BASE_COLUMNS = (("pos", "POS"), ("jersey", "#"), ("player", "Player"), ("years", "Yrs"),
+                     ("ovr", "Est. OVR"), ("depth", "Depth"), ("locks", "Locks"))
+GRID_BANDS: dict[str, tuple[str, ...]] = {
+    "Ratings": rr.RATING_UI_ORDER + ("kicking_style",),
+    "Body": ("height", "weight", "age", "hand", "body", "skin", "face", "dreads", "hair_style", "college"),
+    "Gear": ("helmet", "face_mask", "face_shield", "eye_black", "mouthpiece", "turtleneck", "sleeves", "neck_roll",
+             "left_glove", "right_glove", "left_wrist", "right_wrist", "left_elbow", "right_elbow", "left_shoe",
+             "right_shoe", "guardian_cap"),
+    "Contract": ("contract_value", "contract_length", "contract_remaining", "contract_type", "contract_bonus"),
+}
+GRID_SHORT_LABELS = {
+    "speed": "SPD", "agility": "AGI", "strength": "STR", "jumping": "JMP", "coverage": "COV", "pass_rush": "PRS",
+    "run_coverage": "RCV", "pass_blocking": "PBK", "run_blocking": "RBK", "catch": "CTH", "run_route": "RTE",
+    "break_tackle": "BTK", "hold_onto_ball": "HLD", "power_run_style": "PRSt", "pass_accuracy": "ACC",
+    "pass_arm_strength": "ARM", "pass_read_coverage": "READ", "tackle": "TAK", "kick_power": "KPW",
+    "kick_accuracy": "KAC", "stamina": "STA", "durability": "DUR", "leadership": "LDR", "scramble": "SCR",
+    "composure": "CMP", "consistency": "CON", "aggressiveness": "AGG", "kicking_style": "KSt",
+    "height": "Ht", "weight": "Wt", "age": "Age", "hand": "Hand", "body": "Body", "skin": "Skin", "face": "Face",
+    "dreads": "Dreads", "hair_style": "Hair", "college": "College", "helmet": "Helmet", "face_mask": "Mask",
+    "face_shield": "Visor", "eye_black": "Eye blk", "mouthpiece": "Mouth", "turtleneck": "Turtle",
+    "sleeves": "Sleeves", "neck_roll": "Neck", "left_glove": "L glove", "right_glove": "R glove",
+    "left_wrist": "L wrist", "right_wrist": "R wrist", "left_elbow": "L elbow", "right_elbow": "R elbow",
+    "left_shoe": "L shoe", "right_shoe": "R shoe", "guardian_cap": "Guardian", "contract_value": "Contract",
+    "contract_length": "Len", "contract_remaining": "Left", "contract_type": "Type", "contract_bonus": "Bonus",
+}
+# the first click on these sorts the highest first, the way a ratings column is read
+GRID_HIGH_FIRST = frozenset(GRID_BANDS["Ratings"]) | {"ovr", "years", "height", "weight", "age", "contract_value",
+                                                      "contract_length", "contract_remaining"}
+
+
+def grid_column_label(key: str) -> str:
+    """The long name of a grid column (its header tooltip and its Columns ▾ entry)."""
+
+    for base, label in GRID_BASE_COLUMNS:
+        if base == key:
+            return label
+    if key == "age":
+        return "Age (season year)"
+    if key == "college":
+        return "College"
+    if key == "contract_value":
+        return "Contract value ($M)"
+    label = rr.RATING_LABELS.get(key) or (rr.FIELD_BY_NAME[key].label if key in rr.FIELD_BY_NAME
+                                          else key.replace("_", " ").title())
+    return label
+
+
 # --------------------------------------------------------------------------------------------- undo
 @dataclass
 class UndoEntry:
@@ -1422,6 +1473,8 @@ class RosterEditorPanel(QWidget):
         self._card_order: list[str] = []
         self._page_cards: dict[int, list[str]] = {}
         self._find_dialog: FindPlayerDialog | None = None
+        self._grid_columns: list[str] = [key for key, _label in GRID_BASE_COLUMNS]      # b81 R2
+        self._sort: tuple[str, bool] | None = None          # (column key, highest/last first) or the list's own order
         self.shortcuts: dict[str, QShortcut] = {}
         self._build()
         self._install_shortcuts()
@@ -1703,15 +1756,12 @@ class RosterEditorPanel(QWidget):
         self._rebuild_chips()
         box.addWidget(self.chip_box)
 
-        self.player_table = QTableWidget(0, 7)
-        self.player_table.setHorizontalHeaderLabels(["POS", "#", "Player", "Yrs", "Est. OVR", "Depth", "Locks"])
-        header_item = self.player_table.horizontalHeaderItem(4)
-        if header_item is not None:
-            header_item.setToolTip("Editor estimate. The overall shown in-game may differ.")
-        depth_item = self.player_table.horizontalHeaderItem(5)
-        if depth_item is not None:
-            depth_item.setToolTip("Stored depth rank / side. The arrows move a player in the team list; "
-                                  "stored depth rank and side are separate.")
+        self.player_table = QTableWidget(0, len(GRID_BASE_COLUMNS))
+        self._apply_grid_headers()
+        header = self.player_table.horizontalHeader()
+        header.setSectionsClickable(True)
+        header.setSortIndicatorShown(False)
+        header.sectionClicked.connect(self._header_clicked)
         self.player_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.player_table.setSelectionMode(QAbstractItemView.SingleSelection)
         self.player_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -1737,10 +1787,35 @@ class RosterEditorPanel(QWidget):
         self.unlock_button = QPushButton("Unlock")
         self.unlock_button.clicked.connect(self.unlock_selected)
         order.addWidget(self.unlock_button)
+        self.columns_button = QToolButton()
+        self.columns_button.setText("Columns ▾")
+        self.columns_button.setPopupMode(QToolButton.InstantPopup)
+        self.columns_button.setToolTip("Add Finn's grid columns: every rating, body, gear and contract. "
+                                       "Click a column heading to sort by it.")
+        self.columns_menu = QMenu(self.columns_button)
+        self.columns_menu.aboutToShow.connect(self._fill_columns_menu)
+        self.columns_button.setMenu(self.columns_menu)
+        order.addWidget(self.columns_button)
         order.addStretch(1)
         self.count_label = QLabel("")
         order.addWidget(self.count_label)
         box.addLayout(order)
+        # b81 R2: a sorted grid is not the team's order, so the arrows wait until it is back
+        sort_row = QHBoxLayout()
+        self.sort_note = QLabel("")
+        self.sort_note.setWordWrap(True)
+        self.sort_note.setAccessibleName("Grid sort")
+        sort_row.addWidget(self.sort_note, 1)
+        self.team_order_button = QPushButton("Team order")
+        self.team_order_button.setToolTip("Show the list in its own order again (the order Move up and Move down "
+                                          "change).")
+        self.team_order_button.clicked.connect(lambda: self.sort_by(None))
+        sort_row.addWidget(self.team_order_button)
+        self.sort_box = QWidget()
+        self.sort_box.setLayout(sort_row)
+        sort_row.setContentsMargins(0, 0, 0, 0)
+        self.sort_box.setVisible(False)
+        box.addWidget(self.sort_box)
 
         membership = QHBoxLayout()
         self.release_button = QPushButton("Release to free agency")
@@ -2781,38 +2856,213 @@ class RosterEditorPanel(QWidget):
         return ""
 
     def refresh_grid(self) -> None:
+        previous = self.selected_player()
         players = self.visible_players()
+        if self._sort is not None:
+            players = self._sorted(players)
         self._rows = players
         chart = self._depth_chart()
-        self.player_table.blockSignals(True)
-        self.player_table.setRowCount(len(players))
+        columns = self._grid_columns
+        table = self.player_table
+        table.setUpdatesEnabled(False)
+        table.blockSignals(True)
+        if table.columnCount() != len(columns):
+            table.setColumnCount(len(columns))
+            self._apply_grid_headers()
+        table.clearContents()
+        table.setRowCount(len(players))
+        team_list = self._group[0] == "team"
+        locks_at = columns.index("locks") if "locks" in columns else -1
         for row, player in enumerate(players):
-            record = player.record
-            marker = "● " if (player.pool, player.index) in self._dirty else ""
-            cells = (record.position_name, str(record.values["jersey"]), f"{marker}{player.display}",
-                     rr.years_pro_label(record.values["years_pro"]), str(record.overall()),
-                     self._depth_text(player))
-            note = self._depth_note(chart, player) if chart else ""
-            for column, text in enumerate(cells):
-                item = QTableWidgetItem(text)
-                if column in (1, 3, 4):
-                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
-                if column == 0:
-                    item.setToolTip(f"{record.position_long_name} (code {record.values['position']})")
-                elif column == 5 and note:
-                    item.setToolTip(note)
-                self.player_table.setItem(row, column, item)
-            self.player_table.setCellWidget(row, 6, self._locks_widget(player))
-        self.player_table.resizeColumnsToContents()
-        self.player_table.blockSignals(False)
+            for column, item in enumerate(self._row_items(player, chart)):
+                if item is not None:
+                    table.setItem(row, column, item)
+            # lock check boxes where they can do something: a team list, or a stale lock to clear (b81: 871
+            # free agents built 4,355 check boxes and opening the list took most of a second)
+            if locks_at >= 0 and (team_list or any(player.record.depth_locks.values())):
+                table.setCellWidget(row, locks_at, self._locks_widget(player))
+        table.resizeColumnsToContents()
+        table.blockSignals(False)
+        table.setUpdatesEnabled(True)
         self.count_label.setText(f"{len(players)} shown · {len(self._dirty)} edited")
+        self._refresh_sort_note()
         if players:
-            row = self.player_table.currentRow()
-            self.player_table.setCurrentCell(min(row if row >= 0 else 0, len(players) - 1), 0)
-            self._select_row(self.player_table.currentRow())
+            row = next((i for i, p in enumerate(players) if p is previous), -1)
+            if row < 0:
+                row = table.currentRow()
+            table.setCurrentCell(min(row if row >= 0 else 0, len(players) - 1), 0)
+            self._select_row(table.currentRow())
         else:
             self._show_player(None)
         self._refresh_actions()
+
+    # ------------------------------------------------------------------ grid columns and sorting (b81 R2)
+    def _apply_grid_headers(self) -> None:
+        tips = {"ovr": "Editor estimate. The overall shown in-game may differ.",
+                "depth": "Stored depth rank / side. The arrows move a player in the team list; stored depth rank and "
+                         "side are separate."}
+        for column, key in enumerate(self._grid_columns):
+            label = dict(GRID_BASE_COLUMNS).get(key) or GRID_SHORT_LABELS.get(key) or grid_column_label(key)
+            item = QTableWidgetItem(label)
+            item.setToolTip(tips.get(key) or f"{grid_column_label(key)}. Click to sort; click again to reverse.")
+            self.player_table.setHorizontalHeaderItem(column, item)
+
+    def _cell(self, player: rr.Player, key: str) -> tuple[str, Any]:
+        """The text a grid column shows for ``player`` and the value it sorts by."""
+
+        record = player.record
+        values = record.values
+        if key == "pos":
+            return record.position_name, (values["position"], player.index)
+        if key == "jersey":
+            return str(values["jersey"]), values["jersey"]
+        if key == "player":
+            marker = "● " if (player.pool, player.index) in self._dirty else ""
+            return f"{marker}{player.display}", (player.last.casefold(), player.first.casefold())
+        if key == "years":
+            return rr.years_pro_label(values["years_pro"]), values["years_pro"]
+        if key == "ovr":
+            overall = record.overall()
+            return str(overall), overall
+        if key == "depth":
+            return self._depth_text(player), (values["position"], values["depth_rank"], values["depth_side"])
+        if key == "locks":
+            locks = record.depth_locks
+            return "", sum(1 << n for n, on in enumerate(locks.values()) if on)
+        if key == "age":
+            birth = record.birth_date
+            if birth is None:
+                return "", -1
+            year = (self.document.reference_year if self.document is not None else None) or 2004
+            age = year - birth.year - ((9, 1) < (birth.month, birth.day))
+            return str(age), age
+        if key == "college":
+            return player.college, player.college.casefold()
+        if key == "height":
+            return record.height_text, values["height"]
+        if key == "weight":
+            return str(record.weight), record.weight
+        if key == "contract_value":
+            return f"{record.contract_millions:.2f}", values["contract_value"]
+        value = record.get(key)
+        choices = rr.ENUMS.get(key)
+        if choices is not None and 0 <= value < len(choices):
+            return str(choices[value]), value
+        return str(value), value
+
+    def _row_items(self, player: rr.Player, chart: dict[int, list[rr.Player]]) -> list[QTableWidgetItem | None]:
+        items: list[QTableWidgetItem | None] = []
+        record = player.record
+        for key in self._grid_columns:
+            text, _sort_key = self._cell(player, key)
+            if key == "locks" and not any(record.depth_locks.values()):
+                items.append(None)
+                continue
+            item = QTableWidgetItem(text)
+            if key not in ("pos", "player", "depth", "college") and key not in rr.ENUMS:
+                item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            if key == "pos":
+                item.setToolTip(f"{record.position_long_name} (code {record.values['position']})")
+            elif key == "depth" and chart:
+                note = self._depth_note(chart, player)
+                if note:
+                    item.setToolTip(note)
+            items.append(item)
+        return items
+
+    def _sorted(self, players: list[rr.Player]) -> list[rr.Player]:
+        assert self._sort is not None
+        key, descending = self._sort
+        if key not in self._grid_columns:
+            return players
+        # a stable sort over the list's own order, so equal values keep the team order
+        return sorted(players, key=lambda p: self._cell(p, key)[1], reverse=descending)
+
+    def sort_by(self, key: str | None, descending: bool | None = None) -> None:
+        """Sort the grid by a column (Finn's grid header), or ``None`` for the list's own order. A ratings or
+        number column sorts highest first on the first click. The selected player stays selected."""
+
+        if key is None:
+            self._sort = None
+        else:
+            if key not in self._grid_columns:
+                self.set_grid_columns([*self._grid_columns, key], refresh=False)
+            if descending is None:
+                descending = key in GRID_HIGH_FIRST
+            self._sort = (key, bool(descending))
+        self.refresh_grid()
+
+    def _header_clicked(self, column: int) -> None:
+        if not 0 <= column < len(self._grid_columns):
+            return
+        key = self._grid_columns[column]
+        if self._sort is not None and self._sort[0] == key:
+            self.sort_by(key, not self._sort[1])
+        else:
+            self.sort_by(key)
+
+    def set_grid_columns(self, keys: Sequence[str], *, refresh: bool = True) -> list[str]:
+        """Show the base columns plus ``keys`` from Finn's bands, in band order. Unknown keys are ignored."""
+
+        known = {key for band in GRID_BANDS.values() for key in band}
+        wanted = [key for key in keys if key in known]
+        extra = [key for band in GRID_BANDS.values() for key in band if key in wanted]
+        self._grid_columns = [key for key, _label in GRID_BASE_COLUMNS] + list(dict.fromkeys(extra))
+        if self._sort is not None and self._sort[0] not in self._grid_columns:
+            self._sort = None
+        self.player_table.setColumnCount(len(self._grid_columns))
+        self._apply_grid_headers()
+        if refresh:
+            self.refresh_grid()
+        return list(self._grid_columns)
+
+    def _toggle_grid_column(self, key: str, shown: bool) -> None:
+        extra = [k for k in self._grid_columns if k not in dict(GRID_BASE_COLUMNS)]
+        if shown and key not in extra:
+            extra.append(key)
+        elif not shown and key in extra:
+            extra.remove(key)
+        self.set_grid_columns(extra)
+
+    def _show_band(self, band: str, shown: bool) -> None:
+        extra = [k for k in self._grid_columns if k not in dict(GRID_BASE_COLUMNS)]
+        members = GRID_BANDS[band]
+        extra = [k for k in extra if k not in members] + (list(members) if shown else [])
+        self.set_grid_columns(extra)
+
+    def _fill_columns_menu(self) -> None:
+        menu = self.columns_menu
+        menu.clear()
+        for band, keys in GRID_BANDS.items():
+            sub = menu.addMenu(band)
+            sub.addAction(f"Show all {band.lower()}", lambda b=band: self._show_band(b, True))
+            sub.addAction(f"Hide all {band.lower()}", lambda b=band: self._show_band(b, False))
+            sub.addSeparator()
+            for key in keys:
+                action = sub.addAction(grid_column_label(key))
+                action.setCheckable(True)
+                action.setChecked(key in self._grid_columns)
+                action.toggled.connect(lambda on, k=key: self._toggle_grid_column(k, on))
+        menu.addSeparator()
+        menu.addAction("Fewer columns (the usual seven)", lambda: self.set_grid_columns([]))
+
+    def _refresh_sort_note(self) -> None:
+        if self._sort is None:
+            self.sort_box.setVisible(False)
+            self.player_table.horizontalHeader().setSortIndicatorShown(False)
+            return
+        key, descending = self._sort
+        column = self._grid_columns.index(key) if key in self._grid_columns else -1
+        header = self.player_table.horizontalHeader()
+        header.setSortIndicatorShown(column >= 0)
+        if column >= 0:
+            header.setSortIndicator(column, Qt.DescendingOrder if descending else Qt.AscendingOrder)
+        direction = "highest first" if descending else "lowest first"
+        if key in ("player", "college", "pos") or key in rr.ENUMS:
+            direction = "Z to A" if descending else "A to Z"
+        self.sort_note.setText(f"Sorted by {grid_column_label(key)}, {direction}. Move up and Move down work in "
+                               f"the team's own order: press Team order first.")
+        self.sort_box.setVisible(True)
 
     def selected_player(self) -> rr.Player | None:
         row = self.player_table.currentRow()
@@ -3249,24 +3499,23 @@ class RosterEditorPanel(QWidget):
         return False
 
     def _refresh_grid_row(self, player: rr.Player) -> None:
+        """One row after an edit. A sorted grid keeps the row where it is until the next refresh, the way a
+        spreadsheet does, so the player being edited never jumps away."""
+
         chart = self._depth_chart()
         for row, candidate in enumerate(self._rows):
             if candidate is player:
-                record = player.record
-                marker = "● " if (player.pool, player.index) in self._dirty else ""
-                note = self._depth_note(chart, player) if chart else ""
-                for column, text in enumerate((record.position_name, str(record.values["jersey"]),
-                                               f"{marker}{player.display}",
-                                               rr.years_pro_label(record.values["years_pro"]), str(record.overall()),
-                                               self._depth_text(player))):
+                for column, fresh in enumerate(self._row_items(player, chart)):
                     item = self.player_table.item(row, column)
-                    if item is not None:
-                        item.setText(text)
-                        if column == 0:
-                            item.setToolTip(f"{record.position_long_name} "
-                                            f"(code {record.values['position']})")
-                        elif column == 5:
-                            item.setToolTip(note)
+                    if fresh is None:
+                        if item is not None:
+                            item.setText("")
+                        continue
+                    if item is None:
+                        self.player_table.setItem(row, column, fresh)
+                    else:
+                        item.setText(fresh.text())
+                        item.setToolTip(fresh.toolTip())
                 break
         self.count_label.setText(f"{len(self._rows)} shown · {len(self._dirty)} edited")
 
@@ -3330,6 +3579,9 @@ class RosterEditorPanel(QWidget):
         player = self.selected_player()
         kind, team_index = self._group
         if player is None or self.document is None or kind != "team":
+            return False
+        if self._sort is not None:          # b81 R2: a sorted grid is not the team's order
+            self._set_status("The grid is sorted, so its order is not the team's. Press Team order, then move him.")
             return False
         team = self.document.teams[team_index]
         try:
@@ -4740,8 +4992,13 @@ class RosterEditorPanel(QWidget):
         self.copy_button.setEnabled(selected)
         self.paste_button.setEnabled(selected and self._clipboard is not None)
         self.template_button.setEnabled(selected)
-        self.up_button.setEnabled(selected and self._group[0] == "team")
-        self.down_button.setEnabled(selected and self._group[0] == "team")
+        arrows = selected and self._group[0] == "team" and self._sort is None
+        self.up_button.setEnabled(arrows)
+        self.down_button.setEnabled(arrows)
+        arrow_tip = ("Move this player in the team list. Stored depth rank and side are separate." if self._sort is None
+                     else "The grid is sorted, so its order is not the team's. Press Team order to move players.")
+        self.up_button.setToolTip(arrow_tip)
+        self.down_button.setToolTip(arrow_tip)
         player = self.selected_player()
         movable = bool(loaded and player is not None and self.document is not None
                        and not self.document.is_draft_class(player)
