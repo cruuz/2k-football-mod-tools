@@ -82,7 +82,7 @@ class PlanTests(unittest.TestCase):
         self.assertIs(hosted.test_count, runner.test_count)
         self.assertEqual((hosted.EVIDENCE, hosted.ISOLATED), (runner.EVIDENCE, runner.ISOLATED))
         (self.tests / "test_alpha.py").write_text(
-            "import os, pathlib\nassert pathlib.Path(os.environ['PYTHONPATH']) == pathlib.Path.cwd()\n"
+            "import os, pathlib\nassert pathlib.Path(os.environ['PYTHONPATH']).samefile(pathlib.Path.cwd())\n"
             "assert os.environ['QT_QPA_PLATFORM'] == 'offscreen'\nprint('Ran 2 tests in 0.1s')\n")
         (self.tests / "test_beta.py").write_text("print('3 passed, 1 skipped, 5 subtests passed in 0.1s')\n")
         (self.tests / "test_gamma.py").rename(self.tests / runner.ISOLATED)
@@ -90,7 +90,7 @@ class PlanTests(unittest.TestCase):
             "import os\nassert 'PYTHONPATH' not in os.environ\nprint('Ran 1 test in 0.1s')\n")
         (self.tests / sorted(runner.LEAN_SKIPS)[0]).write_text("raise AssertionError('missing evidence')\n")
         with contextlib.redirect_stdout(io.StringIO()) as output:
-            self.assertEqual(hosted.run_suite(self.repo, ""), 0)
+            self.assertEqual(hosted.run_suite(self.repo, ""), 0, output.getvalue())
         self.assertIn("SUMMARY: files=4 passed=3 failed=0 skipped=1 tests=7", output.getvalue())
         self.assertEqual(runner.argument_parser().parse_args([]).timeout, 420)
 
