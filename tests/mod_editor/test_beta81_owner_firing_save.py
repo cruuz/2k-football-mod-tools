@@ -90,3 +90,7 @@ class OwnerFiringSaveTests(unittest.TestCase):
             choose(panel.save_button, settings)
             self.assertTrue(panel.owner_firing_check.isHidden())
             self.assertNotIn('owner_firing', panel._collect_option_edits())
+
+
+if __name__ == "__main__":
+    unittest.main()

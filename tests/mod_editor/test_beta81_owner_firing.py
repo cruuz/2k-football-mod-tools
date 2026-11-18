@@ -83,3 +83,7 @@ class OwnerFiringTests(unittest.TestCase):
                     outcome = self.decision(new_carousel, setting, warned, 1)
                     self.assertEqual(outcome, expected)
                     self.assertEqual(outcome[0], int(setting != 2 or not warned))
+
+
+if __name__ == "__main__":
+    unittest.main()
