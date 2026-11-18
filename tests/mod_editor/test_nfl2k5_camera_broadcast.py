@@ -241,8 +241,12 @@ class NativeTests(unittest.TestCase):
                     self.assertEqual(bytes(m.uc.mem_read(controls, 36)), control_before)
                     focus = m.BODIES + 0x1D000
                     args = (0x3C888889, focus, focus+16, focus+32, focus+48, 0x3F800000)
-                    m.call('mode_camera_focus', args=args, stop=0x5F760)
-                    self.assertEqual(m.get(m.reg('ESP') + 8), m.get(body + 0x18) + 0x30)
+                    # Beta 81 (D10): MyPlayer is tracked only while the ball is live (play state 0xE); the pre-snap
+                    # (0x10) and dead-ball (0x12) cameras keep their own subject, as retail frames them.
+                    for play_state, target in ((0xE, m.get(body + 0x18) + 0x30), (0x10, focus), (0x12, focus)):
+                        m.put(0xE602B8, play_state)
+                        m.call('mode_camera_focus', args=args, stop=0x5F760)
+                        self.assertEqual(m.get(m.reg('ESP') + 8), target, hex(play_state))
                     self.assertEqual(m.get(0xB665F0), choice)
 
     @classmethod
