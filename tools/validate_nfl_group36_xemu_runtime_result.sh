@@ -21,7 +21,7 @@ test "$(sha256sum "$DOC" | cut -d' ' -f1)" = \
 test "$(sha256sum "$TOOL" | cut -d' ' -f1)" = \
   3d1d6bff68f000f86f72f52db83613cef06053d0daf9d3b1e7df449843129f1f
 test "$(sha256sum "$TEST" | cut -d' ' -f1)" = \
-  e449e3da9d525e59e6601df1f4f1ac53f9ed6e1b6f24169eebe23066466ab444
+  093ffe1875c5830287eb5c72941a90bd78552a22465425074c4b1b620280189b
 
 PYTHONPATH=tools python3 -m unittest \
   tests.test_nfl_group36_xemu_runtime_result >/dev/null

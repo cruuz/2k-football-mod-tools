@@ -31,6 +31,7 @@ for p in (ROOT, ROOT / "tools"):
 
 from mod_editor.core import nfl2k5_bump_strength as strength  # noqa: E402
 from mod_editor.core import nfl2k5_preseason as pre  # noqa: E402
+from mod_editor.core import nfl2k5_progression as progression  # noqa: E402
 from mod_editor.core import nfl2k5_season_length as season  # noqa: E402
 import nfl2k5_franchise_schedule as fs  # noqa: E402
 
@@ -101,7 +102,10 @@ class StaticTests(unittest.TestCase):
         spans.sort()
         for (a0, a1, la), (b0, _b1, lb) in zip(spans, spans[1:]):
             self.assertLessEqual(a1, b0, f"{la} overlaps {lb}")
-        # every other module's named virtual addresses stay outside the rewritten regions
+        # The retirement routine reads the season owner's four-byte immediate as its base year.
+        year_operand = next(s for s in season.year_sites(2026) if s.label == "ui_year_string")
+        self.assertEqual((progression.SEASON_BASE_VA, 4), (year_operand.va, year_operand.size))
+        self.assertIn(b"\xa1" + struct.pack("<I", year_operand.va), progression.retirement_code()[0])
         regions = [(lo, hi) for lo, hi, _ in mine if hi - lo > 1]
         for name in ("nfl2k5_overtime", "nfl2k5_kick_rules", "nfl2k5_draft_ai", "nfl2k5_returner_fix",
                      "nfl2k5_position_pools", "nfl2k5_progression", "nfl2k5_camera", "nfl2k5_hud_layout",
@@ -112,6 +116,8 @@ class StaticTests(unittest.TestCase):
             except Exception:  # noqa: BLE001 - other work streams may not have landed the module
                 continue
             for attr, value in vars(module).items():
+                if module is progression and attr == "SEASON_BASE_VA":
+                    continue
                 if isinstance(value, int) and not isinstance(value, bool) and attr.upper() == attr and "VA" in attr:
                     for lo, hi in regions:
                         self.assertFalse(lo <= value < hi, f"{name}.{attr}=0x{value:x} inside 0x{lo:x}..0x{hi:x}")
@@ -154,6 +160,20 @@ class RetailSmokeTests(unittest.TestCase):
             if s.virtual_address <= va < s.virtual_address + s.raw_size:
                 return s.raw_offset + (va - s.virtual_address)
         raise AssertionError(hex(va))
+
+    def test_progression_writes_are_disjoint_from_preseason_and_year_sites(self) -> None:
+        progressed, receipt = progression.apply(self.retail)
+        sites = (*pre.sites(), *season.year_sites(2026))
+        for edit in receipt["edits"]:
+            start = int(edit["va"], 16)
+            end = start + edit["bytes"]
+            for site in sites:
+                self.assertFalse(start < site.va + site.size and site.va < end,
+                                 f"progression:{edit['label']} overlaps {site.label}")
+        groups = ("year", "preseason")
+        scheduled, _ = season.apply(self.retail, groups=groups)
+        self.assertTrue(season.apply(progressed, groups=groups)[0] == progression.apply(scheduled)[0],
+                        "applying progression before or after the schedule produced different XBE bytes")
 
     def test_sites_are_retail_and_apply_repins_text_and_rdata(self) -> None:
         for site in pre.sites():
