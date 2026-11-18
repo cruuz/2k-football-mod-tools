@@ -50,8 +50,8 @@ class Document(unittest.TestCase):
             self.assertNotIn(key, seen)
             seen.add(key)
             self.assertEqual(row["kind"], "txtr")
-            self.assertEqual(row["chunk"], hc.CHUNKS[row["texture"]])
-            self.assertEqual(row["size"][:2], [256, 256])
+            self.assertEqual(row["chunk"], dict(hc.CHUNKS, splayer=51)[row["texture"]])
+            self.assertEqual(row["size"][:2], [256, 128] if row["texture"] == "splayer" else [256, 256])
             self.assertGreaterEqual(row["size"][2], 1)
             self.assertEqual(len(row["before_sha256"]), 64)
             self.assertEqual(len(row["after_sha256"]), 64)
@@ -74,11 +74,28 @@ class Document(unittest.TestCase):
 
     def test_runs_stay_inside_the_texture_and_are_whole_colours(self):
         for row in rows():
+            height = row["size"][1]
             for y, x0, colours in row["ops"][0]["rows"]:
                 self.assertEqual(len(colours) % 6, 0)
                 self.assertGreater(len(colours), 0)
                 bytes.fromhex(colours)
-                self.assertTrue(0 <= y < 256 and 0 <= x0 and x0 + len(colours) // 6 <= 256, (row["selector"], y, x0))
+                self.assertTrue(0 <= y < height and 0 <= x0 and x0 + len(colours) // 6 <= 256, (row["selector"], y, x0))
+
+    def test_the_far_away_atlas_rows_are_the_carolina_blue_alternate_helmet_patch(self):
+        far = [r for r in rows() if r["texture"] == "splayer"]
+        self.assertEqual(sorted(r["selector"] for r in far), ["04A2", "04H2"])
+        for row in far:
+            for x, y in run_texels(row):
+                self.assertTrue(37 <= x < 128 and 90 <= y < 128, (row["selector"], x, y))    # the helmet patch only
+        self.assertEqual(far[0]["ops"], far[1]["ops"])
+
+    def test_carolina_home_keeps_its_silver_far_away_helmet(self):
+        # the sideline pass used to paint the home atlas's helmet black with the pants; now only the pants
+        sideline = json.loads((ROOT / "data/nfl2k5_sideline_2026.json").read_text(encoding="utf-8"))
+        row = [r for r in sideline["kits"] if r["selector"] == "04H0"]
+        self.assertEqual(len(row), 1)
+        self.assertEqual(row[0]["parts"], ["pants"])
+        self.assertEqual(sorted(row[0]["field"]), ["pants"])
 
     def test_the_modern_shell_detail_texel_is_never_repainted(self):
         x, y = DETAIL_TEXEL
@@ -106,7 +123,7 @@ class Document(unittest.TestCase):
     def test_home_and_away_of_one_kit_share_their_runs_except_carolina_style_0(self):
         by = {(r["selector"], r["texture"]): r for r in rows()}
         for (selector, texture), row in by.items():
-            if selector[2] != "H":
+            if selector[2] != "H" or texture == "splayer":
                 continue
             away = by.get((selector[:2] + "A" + selector[3:], texture))
             self.assertIsNotNone(away, selector)

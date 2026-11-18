@@ -150,6 +150,48 @@ def imported(raw: bytes, selector: str, family: str, png: Path, retail_index: Pa
     return raw[:chunk.offset] + span + raw[chunk.end_offset:]
 
 
+def copy_box_row(entry: dict, kits: dict):
+    """A row that gives one texture a box of another kit's same texture (the far-away player atlas of a kit whose
+    helmet changed takes the helmet patch of the kit that already wears that helmet). The colours are the donor's;
+    the compiler finds palette room for them in the entries only the replaced texels used."""
+    kf, _ = kit_modules()
+    selector, index, name = entry["selector"], int(entry["chunk"]), entry["texture"]
+    x0, y0, x1, y1 = (int(v) for v in entry["box"])
+    raw, donor_raw = kits[selector], kits[entry["from"]]
+    chunk = kf._chunk_for(raw, index)
+    span = raw[chunk.offset:chunk.end_offset]
+    donor_chunk = kf._chunk_for(donor_raw, index)
+    before, _palette, texture = level0(span)
+    donor, _p, donor_texture = level0(donor_raw[donor_chunk.offset:donor_chunk.end_offset])
+    if texture["name"] != name or donor_texture["name"] != name or donor.shape != before.shape:
+        raise ValueError(f"{selector}: chunk {index} is not {name} in both kits")
+    wanted = before.copy()
+    wanted[y0:y1, x0:x1, :3] = donor[y0:y1, x0:x1, :3]
+    rows = runs_of(before, wanted)
+    row = dict(selector=selector, chunk=index, texture=name, kind="txtr",
+               size=[int(texture["width"]), int(texture["height"]), int(texture["mips"])],
+               resource_size=len(raw), offset=int(chunk.offset), length=len(span), before_sha256=sha(span),
+               defects=[entry["note"]], note=entry["note"], ops=[dict(op="runs", rows=rows)], max_blend_slots=64)
+    try:
+        new, detail = kf.compile_texture(span, row)
+    except Exception as exc:  # noqa: BLE001 - a tight allocation: crisp mip parents compress better
+        if "scratch word" not in str(exc):
+            raise
+        row["mip"] = "mode"
+        new, detail = kf.compile_texture(span, row)
+    after, _palette, _texture = level0(new)
+    row["after_sha256"] = sha(new)
+    row["texels"] = int((after[..., :3] != before[..., :3]).any(axis=2).sum())
+    error = np.abs(after[y0:y1, x0:x1, :3].astype(np.int64) - wanted[y0:y1, x0:x1, :3]).max(axis=2)
+    outside = (after != before).any(axis=2)
+    outside[y0:y1, x0:x1] = False
+    info = dict(texels=row["texels"], worst_colour_error=int(error.max()), mean_colour_error=float(error.mean()),
+                texels_changed_outside_box=int(outside.sum()), palette_slots_added=len(detail["palette_slots_added"]),
+                merged_twin_slots=int(detail["merged_twin_slots"]), before_sha256=row["before_sha256"],
+                after_sha256=row["after_sha256"])
+    return row, after, info
+
+
 def cmd_build(args) -> int:
     from PIL import Image
     cleaned = Path(args.cleaned)
@@ -189,6 +231,20 @@ def cmd_build(args) -> int:
         if args.decoded:
             Path(args.decoded).mkdir(parents=True, exist_ok=True)
             Image.fromarray(after, "RGBA").save(Path(args.decoded) / f"{name}.png")
+    for entry in (json.loads(Path(args.copy_boxes).read_text(encoding="utf-8")) if args.copy_boxes else []):
+        need = [s for s in (entry["selector"], entry["from"]) if s not in kits]
+        kits.update(read_kits(Path(args.image), need))
+        key = f"{entry['texture']}_{entry['selector']}"
+        try:
+            row, after, info = copy_box_row(entry, kits)
+        except Exception as exc:  # noqa: BLE001 - named in the receipt; the other rows are still written
+            receipt[key] = dict(error=str(exc)[:300])
+            print("FAILED", key, str(exc)[:160], flush=True)
+            continue
+        rows.append(row)
+        receipt[key] = info
+        if args.decoded:
+            Image.fromarray(after, "RGBA").save(Path(args.decoded) / f"{key}.png")
     rows.sort(key=lambda r: (r["selector"], r["chunk"]))
     document = dict(schema="nfl2k5_kit_fixes_2026/v1", source=SOURCE, method=METHOD, textures=rows)
     Path(args.out).write_text(json.dumps(document, separators=(",", ":"), sort_keys=True) + "\n", encoding="utf-8",
@@ -239,6 +295,8 @@ def main(argv=None) -> int:
     b.add_argument("--new-art", help="JSON {selector: {family: png}}: slots whose league project art changes with "
                    "this job; their rows are pinned to what the Studio's importer makes of that PNG")
     b.add_argument("--retail-index", help="the retail vc_53450030/0 (needed with --new-art)")
+    b.add_argument("--copy-boxes", help="JSON [{selector, chunk, texture, from, box, note}]: a texture takes a box of "
+                   "another kit's same texture (far-away helmet patches of kits whose helmet changed)")
     b.add_argument("--out", required=True)
     b.add_argument("--receipt")
     b.add_argument("--decoded", help="folder for the compiled level-0 PNGs (what the game will hold)")
