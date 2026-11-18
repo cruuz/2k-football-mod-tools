@@ -175,9 +175,8 @@ return personnel for offense.
   opcode `0x16` identifies a receiver carry. Since b780 sub1 (Q61) no group is
   given a gadget ordinal (refused as `gadget_is_a_per_play_substitution`):
   personnel belongs to the whole shared group, so the old WR ordinal 4 also
-  put the gadget receiver at WR in 35 base sets of those groups. The gadget
-  player now comes in per play (`nfl2k5_lineup_roles` rule 3, below) and every
-  group keeps X/Z/SLOT.
+  put the gadget receiver at WR in 35 base sets of those groups. Each group
+  keeps its X/Z/SLOT receivers. Automatic GAD substitutions are disabled.
 * **GUN/GUNR:** punt type 10 with a punter, two unambiguous outside coverage
   positions at least ten yards wide, within one yard of the line. Left uses
   WR ordinal 6 (rank row 3); right uses CB ordinal 6 (rank row 3), the SPECIAL
@@ -221,7 +220,7 @@ SPECIAL has **13 rows**, scrolling only on SPECIAL:
 | 7 | NCB / NICKEL CORNER | 4, 2 | CB rank 1 | 18, 2 | CB3 in 114 nickel and dime formations; kickoff units |
 | 8 | DCB / DIME CORNER | 4, 3 | CB side 1 | 18, 3 | CB4 in 38 dime formations; kickoff units |
 | 9 | SLWR / SLOT RECEIVER | 3, 2 | WR rank 1 | 9, 2 | inside WR in 541 three-WR sets (and in 4/5-WR sets) |
-| 10 | GAD / GADGET | 3, 7 | WR side 3 | (rule 3) | the carrier spot of the 111 gadget plays of the v0.9 club books, on that play only; no formation asks for it |
+| 10 | GAD / GADGET | 3, 7 | WR side 3 | (rule 3) | stores the GAD assignment. Automatic substitution is disabled, and formations use their regular receivers |
 | 11 | 3DRB / THIRD DOWN BACK | 7, 3 | HB side 1 | (rule 1) | the lead back on obvious passing downs; no formation asks for it |
 | 12 | PWRB / POWER BACK | 7, 1 | HB side 0 | 10, 1 | the back in 217 goal-line, jumbo and heavy-I sets; 2nd back in two-back sets |
 
@@ -254,12 +253,10 @@ One late allocator owner, applied with the SPECIAL rows. It hooks two 5-byte cal
   When the formation also asks for the power back (an RB ordinal-1 slot), he keeps his own slot and the next back
   plays fullback. When no back is free, the next tier (a tight end) does. The scheduled simulator's own lineup is
   unchanged, so its calibrated carry shares hold.
-* **Rule 3, GAD (OFF in beta-80**, coordinator 11/05: a live-game freeze on FC2's attract demo, a node pointer of 0xFED2 read on the snap path; notes in the b780 scratch notes/sub1_rule3_redo.md; no code of the owner reads the builder's play argument now). As designed: The builder is handed the called play (its second argument: `0x18AD10` → `0x18A5D0` →
-  `0xE89F0`). Its slot chains are absolute after loading (the reader at `0x1915B0`). When a WR slot of an offensive
-  play takes a handoff in that play (the planner's own `0x13`/`0x16` test), the GAD row (WR ordinal 7) is asked
-  first for that slot. He takes it only when he is at least as fast as the slot's own pick, on every club (the
-  same reasons as the 3DRB). When he takes the spot, the receiver he replaced can fill a later receiver spot of the same
-  set, and the last receiver picked sits.
+* **Rule 3, GAD.** Automatic gadget substitutions are disabled. The game passes a formation and a play category
+  to the lineup builder. The earlier rule interpreted a player’s position on the field as a play address.
+  That froze a MyCareer punt and a CPU exhibition demo. Selecting a GAD in SPECIAL saves the assignment.
+  Gadget plays use the receiver chosen by the normal lineup.
 
 * **Rule 4, injured players on CPU depth charts** (MC1's finding). The weekly CPU auto-depth `0x2BDCF0` ranks by
   rating and never tests the injury bit (player `+0x20` bit 31). Its three calls (`0x247D5C`, `0x248075`, `0x24853D`)
@@ -290,15 +287,14 @@ Proof: the game's own builder and picker under Unicorn on the v0.9 executable an
   human and CPU clubs alike (see the SUB1 sweep log for the old-save, MyCareer and shipped-default rosters).
 - Rule 2 changed the FB slot of 84 formations. In two ATL goal-line sets a TE plays FB, because the only other back
   is the power back, who keeps his slot.
-- Rule 3 changed none of the 1,281 non-gadget plays. On the 111 gadget plays the GAD takes the carrier spot only
-  when he is at least as fast as the slot's own pick. `mod_build.inspect` reads every other owner the same with
-  and without the owner.
+- The earlier GAD test supplied a called-play record directly. Its 111 gadget plays and 1,281 other plays
+  covered the playbook classification. The live lineup builder receives different data, as the two freezes showed.
 
 **Shipped defaults** (`nfl2k5_third_down_back.default_special_rows`, the last step of the final roster file):
 - 3DRB is the club's best receiving back (catch + route running; the starter included, the power back excluded), so
   a backup takes obvious passing downs by default only when he is the better receiver.
-- GAD is the club's fastest receiver. Where he is the Z or the side slot receiver (side rows 0 and 1, used by the
-  base sets) the default is WR1, the X, who is already on the field on a gadget play, so the slot keeps its own pick.
+- The default GAD is the club’s fastest receiver. When that receiver is already used at Z or slot, the default
+  points to WR1. The SPECIAL assignment takes effect only in a lineup rule that reads it.
 - The 2026 roster tools had written RB3 and WR4 there.
 
 All indices remain `unit * 11 + slot`: units 0–2 occupy records 0–32 and
