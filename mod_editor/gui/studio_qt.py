@@ -2072,6 +2072,9 @@ class StudioMainWindow(QMainWindow):
                 action.setToolTip(str(page))
                 action.triggered.connect(lambda _checked=False, path=page: _show_help_document(self, path))
         help_menu.addSeparator()
+        self._disc_check_action = help_menu.addAction("Check my SOFTDRINK disc…")
+        self._disc_check_action.setToolTip("Compare a finished Xbox disc image with the released game files.")
+        self._disc_check_action.triggered.connect(lambda: self._choose_disc_check())
         issue_action = help_menu.addAction("Report a bug…")
         issue_action.triggered.connect(lambda: QDesktopServices.openUrl(QUrl(update_check.ISSUES_PAGE)))
         discord_action = help_menu.addAction("Open project Discord (members)…")
@@ -2139,6 +2142,40 @@ class StudioMainWindow(QMainWindow):
         if getattr(status, "available", False):
             self._update_banner.show_status(status)
         update_ui.report_manual_check(self, status, self._update_banner)
+
+    def _choose_disc_check(self) -> None:
+        from mod_editor.gui.disc_check_qt import DiscCheckDialog, check_image
+
+        previous = getattr(self, "_disc_check_dialog", None)
+        if previous is not None:
+            previous.raise_()
+            previous.activateWindow()
+            return
+        if self._blocking or self._refuse_while_embedded_busy("check a disc"):
+            return
+        initial = getattr(self.facade, "last_build_output", None) or Path.home()
+        if callable(initial):
+            initial = initial() or Path.home()
+        chosen, _ = QFileDialog.getOpenFileName(
+            self, "Choose a SOFTDRINK Xbox disc image to check", str(initial),
+            "Xbox disc images (*.iso *.xiso);;All files (*)",
+        )
+        if not chosen or self._blocking or self._refuse_while_embedded_busy("check a disc"):
+            return
+        image = Path(chosen)
+        dialog = DiscCheckDialog(self, image)
+        self._disc_check_dialog = dialog
+        dialog.finished.connect(lambda _: setattr(self, "_disc_check_dialog", None))
+        dialog.show()
+        cancellation = dialog.cancellation
+
+        def done(report):
+            self._set_status("Disc check cancelled." if dialog.cancellation.is_set() else "Disc check complete.")
+            dialog.finish(report)
+
+        self._start_task(lambda progress: check_image(image, progress, cancellation), done,
+                         label="Checking the SOFTDRINK disc", blocking=True, on_progress=dialog.update_progress,
+                         on_error=lambda _message: dialog.finish(None))
 
     def _start_automatic_update_check(self) -> None:
         """Quiet on startup: only a genuinely newer release shows anything."""
@@ -9067,6 +9104,14 @@ class StudioMainWindow(QMainWindow):
         if self._update_banner.update_in_progress:
             event.ignore()
             return
+        disc_check = getattr(self, "_disc_check_dialog", None)
+        if disc_check is not None and disc_check.running:
+            if not disc_check.close_studio_requested:
+                disc_check.close_studio_requested = True
+                disc_check.reject()
+                self._defer_until_blocking_task_finished(self.close)
+            event.ignore()
+            return
         opening = getattr(self, '_project_open_worker', None)
         if opening is not None:
             opening.cancelled.set()
@@ -9293,6 +9338,8 @@ class StudioMainWindow(QMainWindow):
         metadata_count = self._cue_label_count()  # b780-uxfix: cue labels only, not the saved Build choices
         selected = self._selected_asset is not None
         global_busy = self._blocking or self._embedded_operation_is_busy()
+        if hasattr(self, "_disc_check_action"):
+            self._disc_check_action.setEnabled(not global_busy)
         if self._build_panel is not None and hasattr(self._build_panel, 'equipment_refit_button'):
             self._build_panel.equipment_refit_button.setEnabled(not global_busy)
             self._build_panel.equipment_refit_choice.setEnabled(not global_busy)
