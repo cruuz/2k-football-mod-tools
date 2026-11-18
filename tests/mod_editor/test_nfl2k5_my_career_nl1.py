@@ -214,7 +214,7 @@ class DraftedNoticeTests(unittest.TestCase):
     def test_the_format_lives_in_the_m3_ascii_pool(self):
         _, labels = mode.code_for(0x400000, 0x500000)
         self.assertIn('m3_drafted_format', mode.POOLED2)
-        self.assertGreaterEqual(labels['m3_drafted_format'], mode.EXTRA_VA + 2160)
+        self.assertGreaterEqual(labels['m3_drafted_format'], labels['text2_base'])
         self.assertLess(labels['m3_drafted_format'], mode.EXTRA_VA + 2700)
         for grades in (False, True):
             _, labels = mode.code_for(0x400000, 0x500000, letter_grades=grades)

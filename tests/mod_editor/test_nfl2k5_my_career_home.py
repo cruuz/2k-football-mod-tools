@@ -21,8 +21,8 @@ from tests.nfl2k5_my_career_fixture import XBE, HAVE_UC
 from tests.nfl2k5_supersim_draft_fixture import retail_bytes
 
 MAIN_MENU, TEAM_SELECT, SAVE_LOAD = 0x515660, 0x51B908, 0x507EC8
-HOME_ROWS = ['Play next game', 'Schedule', 'Practice', 'MyPlayer', 'Upgrades', 'Settings + Save', 'Quit to Menu']
-OPTION_ROWS = ['Settings', 'Save', 'Sim to next appearance', 'Start MyPlayer', 'Classic Apartment', 'Back']
+HOME_ROWS = ['Play next game', 'Schedule', 'Practice', 'MyPlayer', 'Upgrades', 'Settings, Save + League', 'Quit to Menu']
+OPTION_ROWS = ['Settings', 'Save', 'Sim to next appearance', 'Start MyPlayer', 'Classic Apartment', 'Around the League', 'Back']
 CLASSIC_ROWS = ['Play next game', 'Practice', 'MyPlayer', 'Start MyPlayer', 'Upgrades', 'Settings', 'Save']
 PANEL = (290, 84, 620, 310)  # x0, y0, x1, y1 in HUD text space
 
@@ -79,14 +79,16 @@ class CareerHomeStaticTests(unittest.TestCase):
     def test_static_checker_covers_every_descriptor_row_and_pointer(self):
         receipt = home.check_static(self.payload)
         self.assertEqual(receipt['descriptors'], {'apartment': 'Career Home', 'home_classic': 'Apartment',
-                                                  'home_options': 'Settings + Save', 'home_schedule': 'Season Schedule'})
+                                                  'home_options': 'Settings, Save + League', 'home_schedule': 'Season Schedule',
+                                                  'home_league': 'Around the League'})
         # mcs: the Schedule list is the image's regular weeks (17 on this retail-length image), then the playoffs.
         self.assertEqual(receipt['rows']['home_schedule'],
                          [f'Week {i}' for i in range(1, 18)] + ['Wild Card', 'Divisional', 'Conference', 'Super Bowl'])
         self.assertEqual(receipt['rows']['apartment'], HOME_ROWS)
         self.assertEqual(receipt['rows']['home_options'], OPTION_ROWS)
         self.assertEqual(receipt['rows']['home_classic'][:7], CLASSIC_ROWS)
-        self.assertEqual(receipt['rows']['home_classic'][-1], 'Quit to main menu')
+        self.assertEqual(receipt['rows']['home_classic'][-3:], ['Quit to main menu', 'Team Rosters', 'League Leaders'])
+        self.assertEqual(receipt['rows']['home_league'], ['Team Rosters', 'League Leaders', 'Back'])
         self.assertGreaterEqual(receipt['mycareer_spare_bytes'], 0)
         labels = home.code_for(home.career_labels(self.payload))[1]
         # Negative controls: a row action, a row label and a descriptor handler pointing anywhere else refuse.
@@ -297,7 +299,7 @@ class CareerHomeNativeTests(unittest.TestCase):
             self.assertEqual(shot['quads'], [])
             m.frame(0x200)  # B from the Classic Apartment returns to the sub-list
             self.assertEqual(m.top(), self.labels['home_options'])
-            m.select(5)  # Back
+            m.select(6)  # Back
             self.assertEqual(m.top(), m.labels['apartment'])
             m.select(5)
             m.frame(0x200)  # B from the sub-list returns to Career Home
@@ -320,6 +322,76 @@ class CareerHomeNativeTests(unittest.TestCase):
             # The native quit question both times, then the game's own default-roster restore notice.
             self.assertEqual(texts[0], texts[1])
             self.assertIn('Quit now?', texts[0])
+
+    def test_career_quarter_controls_save_independently_and_drive_the_next_match_clock(self):
+        from mod_editor.core import nfl2k5_save_writer as writer
+        from tests.nfl2k5_my_career_home_fixture import Machine
+
+        m, _ = self.machine()
+        with m:
+            m.ui_heap()
+            m.put(0xE6000C, 7)
+            m.put(0xE60010, 15)
+            m.select(5)   # Settings, Save + League
+            m.select(0)   # Settings
+            self.assertIn('Quarter Lengths', m.screen()['rows'])
+            m.select(5)
+            self.assertEqual(m.top(), m.labels['quarter_menu'])
+            for _ in range(8):
+                m.frame(0x08000000)   # right: played 7 to 15
+            self.assertEqual((m.get(0xE6000C), m.get(0xE60010)), (15, 15))
+            m.frame(0x02000000)       # down: simulated quarters
+            m.frame(0x08000000)       # wrap 15 to 3
+            m.frame(0x08000000)
+            self.assertEqual((m.get(0xE6000C), m.get(0xE60010)), (15, 4))
+            for _ in range(3):
+                m.frame(0x200)
+            self.assertEqual(m.top(), m.labels['apartment'])
+            saved = m.native_save(budget=500000000)
+            self.assertEqual(struct.unpack_from('<2I', saved, 0x8C), (15, 4))
+            key = writer.derive_sig_key(self.payload)
+            self.assertTrue(writer.verify_extra(key, saved, writer.sign_save(key, saved)))
+        with Machine(self.payload) as cold:
+            cold.cold(self.roster, saved)
+            self.assertEqual((cold.get(0xE6000C), cold.get(0xE60010)), (15, 4))
+            self.assertEqual(cold.top(), cold.labels['apartment'])
+            cold.call(0x55F05, stop=0x55F61)
+            self.assertEqual(struct.unpack('<f', cold.uc.mem_read(0xE602B0, 4))[0], 900)
+
+    def test_loaded_career_roster_and_league_leaders_use_real_rows_and_return(self):
+        from tests.nfl2k5_my_career_home_fixture import Machine
+
+        with Machine(self.payload) as created:
+            created.create(self.roster, club=15, preseason=False)
+            source = created.native_save(budget=500000000)
+        with Machine(self.payload) as league:
+            league.cold(self.roster, source)
+            # Play a real week-one CPU fixture to establish the season's first passing leaders.
+            league.call(0xC7A20, ecx=0, edx=0, args=(league.manager,), budget=300000000)
+            source = league.native_save(budget=500000000)
+        with Machine(self.payload) as m:
+            m.cold(self.roster, source)
+            m.capture(self.fonts, self.evidence)
+            m.ui_heap()
+            for va in (0x27C820, 0x27CDF0, 0x27C830):
+                m.replace_stub(va, None)  # real spreadsheet construct, populate and close
+            m.select(5)
+            m.select(5)
+            self.assertEqual(m.screen()['rows'], ['Team Rosters', 'League Leaders', 'Back'])
+            for row, dest in enumerate((mode.TEAM_ROSTERS, mode.LEAGUE_LEADERS)):
+                m.select(row, budget=10000000)
+                self.assertEqual(m.top(), dest)
+                sheet = m.call(0xF31B0, ecx=m.manager)
+                self.assertGreater(m.get(sheet + 0xA4), 0)
+                self.assertTrue(m.get(sheet + 0x40))
+                if row == 0:
+                    self.assertEqual(m.get(0xACECD4), 15)
+                m.frame(0x200, budget=5000000)
+                self.assertEqual(m.top(), self.labels['home_league'])
+            m.frame(0x200)
+            m.frame(0x200)
+            self.assertEqual(m.top(), m.labels['apartment'])
+            self.assertEqual(m.get(m.state + 56), 15)
 
     def test_a_pad_in_port_2_drives_career_home_and_owns_myplayer(self):
         m, _ = self.machine()

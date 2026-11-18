@@ -267,7 +267,7 @@ class HostBudgetTests(unittest.TestCase):
                 # mo2: guard view accepts the moment context hook over the pinned 0xCB240 span.
                 # b778 bd3: recognition views for the star-career class-loop hooks and the Player Progress
                 # screen chained over the inline footer hooks (runtime code unchanged).
-                '3c82e41999502ce5d0003dada780f57a84e6d6ffe9f7151908049bb78143d9c1',  # b780-int: b8 + j23 + n1 (defensive camera read and its five byte-identical rewrites)
+                'e4212622fac2c1c202f8ba695fd9fcc95d04193cbb5deb39c5beabf59c96467a',  # b780-int: b8 + j23 + n1 (defensive camera read and its five byte-identical rewrites)
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

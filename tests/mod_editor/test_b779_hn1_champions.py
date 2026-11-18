@@ -103,8 +103,10 @@ class StaticTests(unittest.TestCase):
         marks = dict(champions.OTHERWORLDLY_MARKS)
         self.assertEqual(marks, {"sacks2": 60, "tackles": 300, "rush_yds": 2500, "rec_yds": 2200, "pass_yds": 6000,
                                  "pass_td": 60, "def_int": 15})
-        for fragment in ("/ 60;", "/ 300;", "/ 2500;", "/ 2200;", "/ 6000;", "/ 60;", "/ 15;"):
-            self.assertIn(fragment, source)
+        fields = ("pass_yds", "pass_td", "pass_int", "rush_yds", "rush_td", "rec", "rec_yds", "rec_td",
+                  "tackles", "sacks2", "def_int", "ff")
+        for key, value in marks.items():
+            self.assertIn("{%d, %d}" % (fields.index(key), value), source)
 
 
 def line(**kw):
@@ -340,12 +342,13 @@ class LeagueMachine(Machine):
             self.uc.mem_write(self.GAP - 352, history.RESERVE_MAGIC + bytes(344))
 
     def history(self):
-        return history.read_block(bytes(self.uc.mem_read(self.GAP, history.USED)))
+        return history.read_block(bytes(self.uc.mem_read(self.GAP, history.MAX_USED)))
 
     def wire(self, players):
         self.put(self.ROOT + 0x1C, self.TEAMS)
         self.put(self.ROOT + 0x18, 52)
         self.put(LEAGUE_MODE, 2)
+        self.put(0xE576AC, 32)
         for i in range(34):                               # the league's club table (mode 2 reads it, not the roster)
             self.put(LEAGUE_TEAMS + 4 * i, self.team_ptr(i))
 
@@ -421,6 +424,24 @@ class NativeTests(unittest.TestCase):
                                    "super_bowl_mvp": {"initial": "K", "last": "WALKER", "position": "HB"},
                                    "season_mvp": {"initial": "M", "last": "STAFFORD", "position": "QB"},
                                    "season_mvp_club": 4})         # a generational suffix is not kept, the club is Seattle's
+
+    def test_extended_final_scores_share_a_ring_with_unchanged_beta80_seasons(self):
+        m = self.machine()
+        old = history.seeded_block()
+        m.uc.mem_write(m.GAP, old)
+        self.season(m, high=67, low=64)
+        m.call(self.champ["champions_advance"], ecx=0xCAFE)
+        row = m.history()[0]
+        self.assertEqual((row["champion_points"], row["runner_up_points"]), (67, 64))
+        self.assertEqual(row["super_bowl_mvp"]["last"], "WALKER")
+        self.assertTrue(any(row["super_bowl"] == 60 for row in m.history()))
+        self.season(m, high=200, low=170)
+        row_index = m.uc.mem_read(SB_ROW, 1)[0]
+        m.uc.mem_write(SCORES + row_index * 17 * 10, bytes([255] * 5 + [240] * 5))
+        m.call(self.champ["champions_advance"], ecx=0xCAFE)
+        row = m.history()[0]
+        self.assertEqual((row["champion_points"], row["runner_up_points"]), (1275, 1200))
+        self.assertEqual(bytes(m.uc.mem_read(m.GAP + history.MAX_USED, 14)), bytes(14))
 
     def test_a_road_winner_and_a_missing_mvp(self):
         m = self.machine()
@@ -703,6 +724,18 @@ class NativeTests(unittest.TestCase):
         ("KKA", "K", 0, 4, dict(pass_yds=9999)),
     ]
     RECORDS = {0: (14, 3, 0), 1: (12, 5, 0), 2: (6, 11, 0), 3: (9, 8, 0)}
+
+    def test_native_vote_includes_a_quarterback_on_injured_reserve(self):
+        m = self.machine()
+        specs = [("Allen", "QB", 0, 7, dict(pass_yds=5600, pass_td=55)),
+                 ("Backup", "QB", 0, 2, dict(pass_yds=1800, pass_td=10))]
+        records = {0: (13, 4, 0)}
+        allen, backup = self.league(m, specs, records)
+        m.club(0, "Buffalo", "Bills", "BUF", [backup], records[0])
+        m.put(0xE421E0, allen)
+        m.record(AWARD_TAIL, "award tail")
+        m.call(self.champ["champions_awards"])
+        self.assertEqual((m.get(AWARDS + 0x5800), m.get(AWARDS + 0x5804)), (allen, m.team_ptr(0)))
 
     def test_the_native_vote_matches_the_model(self):
         m = self.machine()

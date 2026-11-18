@@ -46,6 +46,8 @@ import os
 import zlib
 from dataclasses import fields as _dc_fields, is_dataclass
 
+from . import nfl2k5_pass_rush_stats as pass_rush_stats
+
 EVIDENCE = "MODELLED"
 TARGETS = (64, 128)
 
@@ -137,6 +139,11 @@ OWNER_BYTES = {
     "guardian_overlay": (496, 0, 0, 0, 0),
     "injured_reserve": (6144, 0, 0, 0, 5312),   # b780 IR1: the runtime and its 32 x 20 store (nfl2k5_injured_reserve.REQUESTS)
 }
+
+# Keep the calibrated release layout for comparisons against the actual RC executable.
+BUILD_OWNER_BYTES = {**OWNER_BYTES, "pass_rush_stats": (
+    0, pass_rush_stats.CODE_SIZE, pass_rush_stats.READ_ONLY_SIZE, 0, pass_rush_stats.DATA_SIZE)}
+
 FRANCHISE_STATIC_BODY = 98_352 - 64    # without the 128 MB roster heap the franchise history body is XBE data
 # the scale-out's own owners (counted only with the scale-out; the legacy layout carries the boot logo itself)
 INFRASTRUCTURE = ("xbe_space_directory", "boot_logo", "moment_context")
@@ -473,9 +480,9 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
     found = owners(opts)
     if not found:
         return RETAIL_RESIDENT + extra
-    code = sum(OWNER_BYTES[o][0] + OWNER_BYTES[o][1] for o in found)
-    read_only = sum(OWNER_BYTES[o][2] + OWNER_BYTES[o][3] for o in found)
-    data = sum(OWNER_BYTES[o][4] for o in found)
+    code = sum(BUILD_OWNER_BYTES[o][0] + BUILD_OWNER_BYTES[o][1] for o in found)
+    read_only = sum(BUILD_OWNER_BYTES[o][2] + BUILD_OWNER_BYTES[o][3] for o in found)
+    data = sum(BUILD_OWNER_BYTES[o][4] for o in found)
     if "franchise_footer" in found and not _roster_heap(opts, target_mb):
         data += FRANCHISE_STATIC_BODY
     if not any(on(opts, f) for f in SCALEOUT_FIELDS):

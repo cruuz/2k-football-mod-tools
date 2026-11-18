@@ -6,7 +6,7 @@
   {
    "team": "ARZ",
    "offense_pack": "data/playbooks/softdrink_arz_modern.2k5book",
-   "offense_pack_sha256": "7fcde0bede95064574d0542a3e7d603171930883425621578335d852471f1a41",
+   "offense_pack_sha256": "9dbdb390c5bfb43cdf23496f9010f9ad4f6a286a2640fab4e2e2960666d81138",
    "source_fingerprint": "da4d6643ef48aa63e984379700ab0237ecf0ab40f41b200f5fc32c5cf0e03236",
    "replacement_sha256": "a7a01eba86ecf8bc43f3e394c4872b9b7f6920a380811855ddb44af06d092e1d",
    "semantic_sha256": "c218c6131e01eb9c6b43a2bf0eb0c1919e06f4a8958d0f92daa6afc337ae9d31",
@@ -29,7 +29,7 @@
   {
    "team": "ATL",
    "offense_pack": "data/playbooks/softdrink_atl_modern.2k5book",
-   "offense_pack_sha256": "483f4df1609b45309208ff3f9354871ffa5bc9c9521693e8254accb00e8ff203",
+   "offense_pack_sha256": "afc2402f9242f8a14f46d0e20419ab4a9a712c96fc0dc19ed9c48b2c17e07946",
    "source_fingerprint": "25ee90398944ebfe1d6039a21fc794472e1e3e4d92c030a5a022a4b804453579",
    "replacement_sha256": "0a5bb3c4792c20a7073172dee6a532763259cc15e71681fb1652040fbddbce0c",
    "semantic_sha256": "ebed333bc545b10ba4a7c3e3cd990e1cbf8df557ca9fd370e389d278ff151418",
@@ -52,7 +52,7 @@
   {
    "team": "BAL",
    "offense_pack": "data/playbooks/softdrink_bal_modern.2k5book",
-   "offense_pack_sha256": "f287405737f6ff8d48037a6a5209ced84af19249fef9eee39a8f04452925c70f",
+   "offense_pack_sha256": "991285fd19f14cc84e777e850b8c45afab63b52c872ab64deed6de69cd8faee1",
    "source_fingerprint": "3bc53933f3687fd312aaf95d13ac5f6d63ff8a10d240e8a384d2b61e7c4bc9c1",
    "replacement_sha256": "98beed15ffc26f617181d09a48212b5bb29a56d50919427feb835fffda16dee4",
    "semantic_sha256": "04469ed7b7a80e8e38f0906caa4aad87472b895804735715e333eb7106bcfa24",
@@ -75,7 +75,7 @@
   {
    "team": "BUF",
    "offense_pack": "data/playbooks/softdrink_buf_modern.2k5book",
-   "offense_pack_sha256": "5715507b0f810e369a91056ac0a0050953b8532c30db3948b9586f243fb5dae4",
+   "offense_pack_sha256": "a10d9474067c69423df9fbe73d481b10dea53e94eb3b02069afc6548ac01d2de",
    "source_fingerprint": "4ca432ed6412bf147941ec56aab8f20d8a60fd8ca6685276154d2e8d1642e79e",
    "replacement_sha256": "e6538a28ab7a2f93890d40668507cce5ac0db837fe3559cc9899fb21df1e902f",
    "semantic_sha256": "090cbfd2f2bd872fb470af7182e4d54f6d1820f9f8aa6c02c20dcd413cd4bc38",
@@ -98,7 +98,7 @@
   {
    "team": "CAR",
    "offense_pack": "data/playbooks/softdrink_car_modern.2k5book",
-   "offense_pack_sha256": "7c94fe06f4f6d3598f163dfce8821a8bb3b634251bbbbc6479ff153288274cda",
+   "offense_pack_sha256": "59e6b0d2d38825ab98f51a88dc3ae5daf0d4d27765f47aac833330fe18f19523",
    "source_fingerprint": "82948ef2a151e4bf468ce6d5d138d7a12823f9f14c2577a9914214d8e1c3a46f",
    "replacement_sha256": "85ecc408ddb159e4d431f003c87c5b08089cf65c88bc30218a9f012c509dfbcf",
    "semantic_sha256": "b5852f6d039789d72f0f666ed93a8028414e77e08115b1569d330c0c21efbd1c",
@@ -121,7 +121,7 @@
   {
    "team": "CHI",
    "offense_pack": "data/playbooks/softdrink_chi_modern.2k5book",
-   "offense_pack_sha256": "ed65ec2441a2422a6948ab272511736d29a7f48cff99793af3f4e4039eaa06a0",
+   "offense_pack_sha256": "f57fc5ca962d1a60896ae797718ce4cf06a6f9f95c6129bf6ecb9ec5ca9d06b9",
    "source_fingerprint": "b9362e4a16c829ea881efa10ed24c911aea4c23926e95ab3d37e4b35a48d20e7",
    "replacement_sha256": "beb88bf39dea07cef6a09f6d2fefadc428ba3c1caf9a7d8ab82601956e9d6c12",
    "semantic_sha256": "9049c072583ab47d6504065f83bb5021316072800f994108c92bb6f5a01f67c6",
@@ -144,7 +144,7 @@
   {
    "team": "CIN",
    "offense_pack": "data/playbooks/softdrink_cin_modern.2k5book",
-   "offense_pack_sha256": "0b0aa3ce33f11e7c0d046f83fb519734d7fc66a8d7157e7e26f0612718a28000",
+   "offense_pack_sha256": "a976a3d532bae4677fa2f7a4f4466d113ef563a579f2139f1e27cab3433768f3",
    "source_fingerprint": "8b294aff51abf91c233c5f268f41423584d6f25ac5d167a6b0284c441d12ea76",
    "replacement_sha256": "425d7fb4cc39e3381dc0b5614f06a2b8254064f9772d6efc92e4cd67cf0cb788",
    "semantic_sha256": "2cab68dbd3d8d1d92814daa65f7cb44cefc8c5550690fc0bbebdafe6f84332d6",
@@ -167,7 +167,7 @@
   {
    "team": "CLE",
    "offense_pack": "data/playbooks/softdrink_cle_modern.2k5book",
-   "offense_pack_sha256": "2e542859074856661df11aa065bd5b3df18bac6187770f014c4f708a96e74351",
+   "offense_pack_sha256": "6acb84b82f67801df1eaa2f9baa7bc58f17d92c99f2e2c94a9997a2651b090d5",
    "source_fingerprint": "e6a9e716c5d72ff79244b009d349758cd97f0ea07acdcc5bd4bda67767e89418",
    "replacement_sha256": "80ba05d3e7ef20e016f6d01533f594d0e7cf5a4712afcd3ce9ff214cffe665c5",
    "semantic_sha256": "9f95228210bb76437d8c1b71e8edaa86cd8bcf8d753e8cf97300f8782305917e",
@@ -190,7 +190,7 @@
   {
    "team": "DAL",
    "offense_pack": "data/playbooks/softdrink_dal_modern.2k5book",
-   "offense_pack_sha256": "2ee7708cc5fb7c28f0c545cae638c0ffc9c0c9e0e828fb7417055b04d78a9532",
+   "offense_pack_sha256": "ab8a0e96f632b28155d613dd47f6992dafad55bb6b38a725217b61d13e9d0c07",
    "source_fingerprint": "968cbe17845578f084e63ad7fc864d41494e513fb71fc5c928447021235338ff",
    "replacement_sha256": "11fad0d9c94ab0fad6d0081312f3a7003ce3fbd86be24419f52bd99889910bc1",
    "semantic_sha256": "fdf65267420b32b50980810312465760f7655bd1c2efc52f03e294c30257ef83",
@@ -213,7 +213,7 @@
   {
    "team": "DEN",
    "offense_pack": "data/playbooks/softdrink_den_modern.2k5book",
-   "offense_pack_sha256": "2d66ec8f7bed99f08ce7237e14d05a8c7d7944e5c17dab2954ebbfbe685c31a5",
+   "offense_pack_sha256": "31f05ad78a193f39f04cbca47d3b96bbd9eded5fbf1135268ba43568afcd873a",
    "source_fingerprint": "2cdd1224d6d88c367a275cf24697b8eef68b79f1098a52d92423f92481c22266",
    "replacement_sha256": "4ed0d2b328e7e5eb91b43ac45df455bf5514be41faf5115e1cc826538532a8b8",
    "semantic_sha256": "8e0d051b9b7d9e73a110351f153b41d6603bff4732e792660e2719630887aae9",
@@ -236,7 +236,7 @@
   {
    "team": "DET",
    "offense_pack": "data/playbooks/softdrink_det_modern.2k5book",
-   "offense_pack_sha256": "c6fb9bb730b6f6870b0f83160b8e9c314c436414f808bbd1ad17968db7abdab8",
+   "offense_pack_sha256": "64a2917ff5cd54256ab4be2075e20298e8957953b33650ad6d2ea8d92927cb6e",
    "source_fingerprint": "bea625bce2ac71701f6ba9385ded2bf425fe49beb14f20e24f64dfba3ddc220c",
    "replacement_sha256": "026944bcdb9e7fa2eed274adbe0044e09a254b1520b3887f466d38cf6fcdd619",
    "semantic_sha256": "7a5aad43346145b446e67b7093e253318c1f4e9e925300f817868530e7f3c799",
@@ -259,7 +259,7 @@
   {
    "team": "GB",
    "offense_pack": "data/playbooks/softdrink_gb_modern.2k5book",
-   "offense_pack_sha256": "942ac4fc8730ae3c90123b3c6a78df935dfa3c7211c841bbe7dc225e7c6d61a3",
+   "offense_pack_sha256": "49dd37a873ba8f0af19873f01afc47425971ad91486145cd35dca1b83b006a7a",
    "source_fingerprint": "66143cf10ee0800642cb4787cb59f080dc79f53e8c3078d78b33bcfdc76498ae",
    "replacement_sha256": "92b0ede7b5e30c31106d6dd5aca89aa8b31d35892ce67980ccf17c5cc16e7202",
    "semantic_sha256": "819e47ed96ab85d19e71b9cc24539d37f62f5a7e62fba53e817aa7db8c774058",
@@ -282,7 +282,7 @@
   {
    "team": "HOU",
    "offense_pack": "data/playbooks/softdrink_hou_modern.2k5book",
-   "offense_pack_sha256": "eadec85530233678bd86b68d69f4ab059c43059cd7cdadab20aac6c0353902b9",
+   "offense_pack_sha256": "e96c554b785923e308ed061f79c1ed246e5d2473cdaffe6aa06f2474723e48e3",
    "source_fingerprint": "441cac34ea97fef1a3faafd7b9af7465c6d53a996848daa8a62116103c23fd56",
    "replacement_sha256": "c9fd94258b71a7452a671aa5eb88f8255882ae8d29a42fb3eabc42dfb0b343df",
    "semantic_sha256": "3d5156f12839762838d90466bf219921ca4ecefa9157957a802320d8f9cf7506",
@@ -305,7 +305,7 @@
   {
    "team": "IND",
    "offense_pack": "data/playbooks/softdrink_ind_modern.2k5book",
-   "offense_pack_sha256": "8db7799183324e094940215501cee91b36038af8f64f21bbf525d084d6f6be57",
+   "offense_pack_sha256": "0b95d73133f3289da3f44bab13985feda6378909a5189abf5ac5bf2f0823908d",
    "source_fingerprint": "c2993ebcbbd2beab4a429a4615e7352cb8076028f7b3bfcfc30426d81d00efc3",
    "replacement_sha256": "9f70ea11230297db0763f2747760f8e15131ed05d7657d869d02ae64aa318fff",
    "semantic_sha256": "3b13db7df3349f6df246aa67a5d4debd203f4d43c95b0d33bf59a0225dfe9584",
@@ -328,7 +328,7 @@
   {
    "team": "JAX",
    "offense_pack": "data/playbooks/softdrink_jax_modern.2k5book",
-   "offense_pack_sha256": "38dc9d4dc0678c74d8384030759791683474c43ffe057e5a227eaa747022f122",
+   "offense_pack_sha256": "023655204c8947f912f4d3ec5028088867fc10f6a63a2a00a1157b4b02c2a87e",
    "source_fingerprint": "5ef6fdc0b22733cfca0b397aecc50c1b99deb9ae5ac3cc242f4c47698d172fc8",
    "replacement_sha256": "e3a18599a4acd5c7c895dec8eea42d2448b393134ac50bfead72d5d75cc63b0b",
    "semantic_sha256": "7bc9cde48e4d65d3676c6991a821126fd2de84e9d394ce6ce34ef5aad2d8ed46",
@@ -351,7 +351,7 @@
   {
    "team": "KC",
    "offense_pack": "data/playbooks/softdrink_kc_modern.2k5book",
-   "offense_pack_sha256": "73a68bfcea705bebab163689c25fbac9654ae165864d2e03c880b58f07ef895c",
+   "offense_pack_sha256": "3f40d13eafd820eb167a164510df317c8dac3a7135a80e85bb1ecf77ccdba20d",
    "source_fingerprint": "5b0610f76a82cadfd4e79e60cb65f31a3116f704a83a84edd8d352f32b90cc6f",
    "replacement_sha256": "0b232fceceb4fca40623b341d6ecfd8ceb42077f4b85870026c0bfeea515ef9f",
    "semantic_sha256": "3ce9befebd971d52c3c3a82b58be8abe3220fbab7f1199fb3641d8de08238df1",
@@ -374,7 +374,7 @@
   {
    "team": "MIA",
    "offense_pack": "data/playbooks/softdrink_mia_modern.2k5book",
-   "offense_pack_sha256": "7f0d6979385e092b989b2778a8948c4bce1951ad627162fb1e8f2dd344fa1252",
+   "offense_pack_sha256": "c7db1b9fb7ab2015d35969ff891de73c69ccb7e933318d34ba0bde57b363469d",
    "source_fingerprint": "5693ad7a8cd0eb84598924fcaf448e3a18ebf19180a4374ede9b65dfe2a3fa2a",
    "replacement_sha256": "1810ba3d7d93b7369a3cb9bee0295fc6a4fc301b6c8ae421bd48ce6179385b7a",
    "semantic_sha256": "d45dfabeec06f42672dec5b43b08b9623bdd0006cc6c74fb9ba3bf72bd504e54",
@@ -397,7 +397,7 @@
   {
    "team": "MIN",
    "offense_pack": "data/playbooks/softdrink_min_modern.2k5book",
-   "offense_pack_sha256": "e43a6a2dded05abb98531611126ca271fec3f6d89bb3d824d85eb9eefb9d7ba9",
+   "offense_pack_sha256": "9197e908eac2e356102be95099dcfa6be17aeccb3c757501fb286f8788539dfe",
    "source_fingerprint": "7e735006ae32f3e73c27aef106b55f3b4778559f68be5066d35505b7df64876b",
    "replacement_sha256": "3ad68e6e20b2b68f4d876ba49ae041f37b22ab7fade0d8a57732d4b2a886aee3",
    "semantic_sha256": "25b050db6bea3cd122beae5a5baeee2c1ec3cb0b7bf4923c5ec055ed49c11004",
@@ -420,7 +420,7 @@
   {
    "team": "NE",
    "offense_pack": "data/playbooks/softdrink_ne_modern.2k5book",
-   "offense_pack_sha256": "f1ecc7b0194f8bf46f2b051749db63c64c40a5002f71b554cf1130c4f8ebf3de",
+   "offense_pack_sha256": "0d2899813cf6873a6cb4fea8791d580079fe13901f31ed5e45d4b1d53a726ae6",
    "source_fingerprint": "a605289cdab22ef2215a8e2d66417b62bcbc42dc6415c947e0a054a8d7f0920f",
    "replacement_sha256": "7cdece534d575d177f6027e49d737a38486caf491b0f1459433744c9371a8907",
    "semantic_sha256": "0377df6dbcf395c5aa51f4177e403704454fb61afb57fe861989e191a59bb23d",
@@ -443,7 +443,7 @@
   {
    "team": "NO",
    "offense_pack": "data/playbooks/softdrink_no_modern.2k5book",
-   "offense_pack_sha256": "88491a93b143c3f7e5a00dd953754651606800c0deef5d3f85340cb9befb92e0",
+   "offense_pack_sha256": "98803fb7d9b6b211c5ce2cbed17d9325ab7248e83ed4f21adb3f126d74c6fe03",
    "source_fingerprint": "4dc3862d132899e2c57a670918ae4681d3e6d4ea50cbfd1a81ec625fd83fa0fb",
    "replacement_sha256": "33d9fba09f1bec7e875bca025705578ece9ee47a639a35764eaf2ec4bfb0a764",
    "semantic_sha256": "0938c76762622f289d98e13ed1849b66749308d383ac94beafc0a59c54bb3c87",
@@ -466,7 +466,7 @@
   {
    "team": "NYG",
    "offense_pack": "data/playbooks/softdrink_giants_modern.2k5book",
-   "offense_pack_sha256": "f1eb221c536724ce9fc6cecb13110f968760f5d6562a913648f90f58852d7910",
+   "offense_pack_sha256": "80aa139636d4b8f428da7b550d55e7c7d16dd7036a5d298be4378a668d6a4a92",
    "source_fingerprint": "08ee973c745d9f51ba6fed05dfc8fbd188e77f48cc0a94d1100a6e5146f4608c",
    "replacement_sha256": "4a156618707ec68b66439a557d629fac752e665c0061b64041bfed685038850a",
    "semantic_sha256": "3c52d55ee441b5fb914848eb684415adb9dd3f64329df783386b01343bce97a4",
@@ -489,7 +489,7 @@
   {
    "team": "NYJ",
    "offense_pack": "data/playbooks/softdrink_nyj_modern.2k5book",
-   "offense_pack_sha256": "0a132df48ccea3d083776358cfbf8f2f0db89c8174cdf98c7fc7adc65e582a83",
+   "offense_pack_sha256": "2d748a806443b58b412e762f99714cf065c5e9cbecf8c4449bfc4e9820d16e76",
    "source_fingerprint": "f282df991bfe6a07929aa48566c2f4eb902233d61c05c635f9a73877c82cf2eb",
    "replacement_sha256": "f007a93cd9dd3041cd6e55cdcc4f4661065e777c7e97d4e7fcbca566f29b90b5",
    "semantic_sha256": "ae23210878a9405460ddb462bc812ac0c4a1d028acc4d8b8b25534ebeed5e5a8",
@@ -512,7 +512,7 @@
   {
    "team": "OAK",
    "offense_pack": "data/playbooks/softdrink_oak_modern.2k5book",
-   "offense_pack_sha256": "5d9734db906aaceb9da8f31461f8d1a9bafffd37ce357d39646bd37461a3e8b8",
+   "offense_pack_sha256": "3e103735f159f8e7cf1048dd4761d7ea0af5df0348cebacefd598c05e4accbf5",
    "source_fingerprint": "2cc9813733a3108e3d1968c06559bcc31a6619fac781fa3aa973f2faf963c607",
    "replacement_sha256": "56cc7e15066be17d5b6e9bce4ef98fd6e0b0404f98b8b85969b369f543967d8f",
    "semantic_sha256": "698366604b564f6f710e1c78beb57260e2318a00cc7ac853511a0f579f72f86a",
@@ -535,7 +535,7 @@
   {
    "team": "PHI",
    "offense_pack": "data/playbooks/softdrink_phi_modern.2k5book",
-   "offense_pack_sha256": "e1dbc31b487aae8fda4fac862c89513a068878476727d1a921057a7c304b1602",
+   "offense_pack_sha256": "1c74f32197b1e866b6acddb49202edd2958efcd445729fae4c8025554f059197",
    "source_fingerprint": "792588377b9c16225772ef579cf2c305b8e5005b4f5a3a4081f450295f4194b8",
    "replacement_sha256": "f46f34314380515197a3b774fe9969a35cc769a1e069fc85c3228a653745ea07",
    "semantic_sha256": "8cc84c84f3a216e9e33de40fc6fba09bd3475fbfa574153ba2a2778288239d68",
@@ -558,7 +558,7 @@
   {
    "team": "PIT",
    "offense_pack": "data/playbooks/softdrink_pit_modern.2k5book",
-   "offense_pack_sha256": "2506e3808d827a2aafd3bb5c2d46bd862c60ad5994eb1f8480e8adf26fceaeba",
+   "offense_pack_sha256": "31e822754515085943325561682c503a24e0bd12eacf06119dda7b9eb866e668",
    "source_fingerprint": "d2af78f79706d9e1ae6b9c8dea170f57dd8511674dd9dcf1917b4e1c8fa7e66f",
    "replacement_sha256": "2a07a98e2eb922850c08a52926aad8f4b07c36f825d52dfa4e19aac25a2ce630",
    "semantic_sha256": "17e2a8ce6dc8394b64c4813e9f669a109a8e3fd8eca428aa3212cc597609621f",
@@ -581,7 +581,7 @@
   {
    "team": "SD",
    "offense_pack": "data/playbooks/softdrink_sd_modern.2k5book",
-   "offense_pack_sha256": "fe6b5290103578407954a6e4d77c020eae91e09dccb06af4aad7a2132940502e",
+   "offense_pack_sha256": "66d323e5a14bd54cf94670e9f26b706be28a451a700ea376f1241669578c6a92",
    "source_fingerprint": "4c68add6c8421c9dc5a4db5af4813b7704c4dff62ba7816ee671ffbb48261b31",
    "replacement_sha256": "48fd54c214c4d7779bd8282db38187552c610a9ae3999bf18c85a2e3f01decb4",
    "semantic_sha256": "1905e8bb16d89c6b9648af1b6168c47710831d7cde59fc6ccd5578fc3176ad3a",
@@ -604,7 +604,7 @@
   {
    "team": "SEA",
    "offense_pack": "data/playbooks/softdrink_sea_modern.2k5book",
-   "offense_pack_sha256": "9e9b4745bef4b996f394e217d2e5ec32daf9f58227bda4ee56d95303b17f7f59",
+   "offense_pack_sha256": "1f6429cb679fc43d6391568df0abe48cac119472f477a9212a208a3e42b708df",
    "source_fingerprint": "2eebf4de4c8ce2a130db51956242368ed675ee6aa3093db10d41a2c4dee1f53c",
    "replacement_sha256": "bb695f5ab0dd8e467544a17d5b13ec79e7307738ce316f4eba83848fb9a9e8ee",
    "semantic_sha256": "a009c5306560d32ff2e02a780ea55bcc854c1fe8ae9f4acdad4dad1cdac0a577",
@@ -627,7 +627,7 @@
   {
    "team": "SF",
    "offense_pack": "data/playbooks/softdrink_sf_modern.2k5book",
-   "offense_pack_sha256": "7d78726dabc8c76c1dfc807ae3ea86ebc364551357b1c9d2f160fe94c9743212",
+   "offense_pack_sha256": "df2dfc374dbe1b74db518bc5a6791d4c36c05ba248751a6fc3eacaa38c578152",
    "source_fingerprint": "80c1466943d9c001d7960efcf1e1cb51843972c87eb517702d89ac3ece0bc5bd",
    "replacement_sha256": "4f876033520e1b619c04a078e64241df013e149f9bf352e6f306362f9200aa06",
    "semantic_sha256": "c1b05f27ac250a0450c41f68ea602725f1c8fb37e214f6201529b9aa4a1b99ee",
@@ -650,7 +650,7 @@
   {
    "team": "STL",
    "offense_pack": "data/playbooks/softdrink_stl_modern.2k5book",
-   "offense_pack_sha256": "9e31f8fbfb650f00ec0bdabb62bef37fcb536c535cf2a09041c4c13ee0483c27",
+   "offense_pack_sha256": "f62dd18e2cf836cd89994da69f52222caa663c623a33cd47fe54db0bb04f39a3",
    "source_fingerprint": "31c55826f303ee3f32962672fb94b76004ff3de091aefe37dc0cc3d6a043fab2",
    "replacement_sha256": "2855e17e269659db87added6e7b8b40b6c14e6320312bc5bf5fa041f5a5f9b89",
    "semantic_sha256": "9f6fe346d437848d764779af139dff1d7295dca14345f9eeddd78ef95eecf153",
@@ -673,7 +673,7 @@
   {
    "team": "TB",
    "offense_pack": "data/playbooks/softdrink_tb_modern.2k5book",
-   "offense_pack_sha256": "4ec44c12a7000d9d632f36ed433b2b59fc00b5a70867eafb6b0ea66b13c8074c",
+   "offense_pack_sha256": "4baec84172f105d603edfe9eb2ef80f659e82d88dca41a8a851c81df92c90777",
    "source_fingerprint": "e090b313690055014b80459c53f6102777c2d91cc7a2f3cd405af61ede79b40e",
    "replacement_sha256": "81c57df1d46cc74b3b89b265e31c9b91fb26fccb4af0c7888e4cfb9812dcd5f6",
    "semantic_sha256": "7caa5c1bd55e6c33c2e4e013e13be61c4089efbd5c4cd1ea51adbf8404313860",
@@ -696,7 +696,7 @@
   {
    "team": "TEN",
    "offense_pack": "data/playbooks/softdrink_ten_modern.2k5book",
-   "offense_pack_sha256": "c7d34d1b24a68d61cbbc1ffda1d9c7911070ec65f3f525ccbd78b22f06b5b71c",
+   "offense_pack_sha256": "9340d5280264f2113198c3f808519617435deae052a59e4e7280dd0b174bf781",
    "source_fingerprint": "1ef9791c12d9a23839cf9a61e15c3f7f03e687dd7369f0223bc29a7dfe1ef2dc",
    "replacement_sha256": "7a8dea0036ef811cf8730307ac2b1eaad28450a4671e5c89f4cfe17ed498367e",
    "semantic_sha256": "1ef22b888758a9317c4a21a1341919897310e8d70a510e77140a04d16d9fa562",
@@ -719,7 +719,7 @@
   {
    "team": "WAS",
    "offense_pack": "data/playbooks/softdrink_was_modern.2k5book",
-   "offense_pack_sha256": "9685fb207521df0f6a209c92b66f6e107f7497a6ae588fd2496ea4ee10d26008",
+   "offense_pack_sha256": "d8e20be9de60a6452707599bee7a72c9507678d2e90d54c23667bd91ee38e60a",
    "source_fingerprint": "36d20abc9695cb9c18ff3ef6dbe044e097ad3d72931332e3b0e95946d8e52027",
    "replacement_sha256": "5af28c89548343e9969f6c731169b487f0b23d7585512a356217e52e7bc185cc",
    "semantic_sha256": "9e9804269d0ec458807cc64336b77527740f1ed39338e90fb2f21cc2292c6f88",

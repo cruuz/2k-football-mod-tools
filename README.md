@@ -1,8 +1,6 @@
 # 2K Football Mod Tools
 
-Beta 80 is the current release (2K5 1.0.0rc115 and APF 0.1.0-alpha.111). The
-project is open source under the MIT license, and forks are welcome. See
-[Making your own fork](CONTRIBUTING.md#making-your-own-fork).
+Beta 81 includes 2K5 Mod Studio 1.0 RC116 and APF 2K8 Mod Studio alpha.112. To play SOFTDRINK 2K28 v0.10, download the editor and the game patch, then choose **Install SOFTDRINK 2K28**. To edit the roster, artwork, playbooks or build options, choose **Customize SOFTDRINK 2K28**. [Installation guide](docs/mod_editor/install_softdrink_2k28.md) · [What's new](docs/mod_editor/2k5_mod_studio_changelog.md)
 
 > **Beta.** Two retail-free mod editors — Windows, macOS and Linux — for classic
 > 2K football games:

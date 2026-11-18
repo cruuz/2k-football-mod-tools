@@ -20057,6 +20057,7 @@ class ApfStudioMainWindow(QMainWindow):
         shell.setContentsMargins(0, 0, 0, 0)
         shell.setSpacing(0)
         self._update_banner = update_ui.UpdateBanner(product="apf")
+        self._update_banner.update_ready.connect(self._allow_update_quit)
         shell.addWidget(self._update_banner)
         body = QWidget()
         shell.addWidget(body, 1)
@@ -22095,23 +22096,19 @@ class ApfStudioMainWindow(QMainWindow):
         self.close()
 
     def prepare_for_update_quit(self, proceed: Callable[[], None]) -> None:
-        """Settle unsaved work before an update is downloaded.
-
-        The same contract the 2K5 studio answers: the Windows installer waits
-        for this process to exit before it writes a file, so the question is
-        asked before the download starts rather than underneath a banner that
-        has already said the studio is closing. Answering sets ``_allow_close``,
-        which ``closeEvent`` takes as the decision; cancelling never calls
-        ``proceed`` and no update starts.
+        """Ask about unsaved work before downloading. Only a successful installer
+        handoff enables the one-time close override.
         """
 
-        def go(_discarded: bool) -> None:
-            self._allow_close = True
-            proceed()
+        self._continue_after_unsaved("Updating Mod Studio", lambda _discarded: proceed())
 
-        self._continue_after_unsaved("Updating Mod Studio", go)
+    def _allow_update_quit(self, _plan: object) -> None:
+        self._allow_close = True
 
     def closeEvent(self, event: QCloseEvent) -> None:
+        if self._update_banner.update_in_progress:
+            event.ignore()
+            return
         self._save_ui_state()
         if self._workers:
             self._cancel_transient_audio_reads()

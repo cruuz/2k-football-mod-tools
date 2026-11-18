@@ -22,8 +22,8 @@ What the player sees
      franchise footer keeps them).
   4. RECORD BOOK: NFL single-game, single-season and career records; a club record set in this franchise that beats
      the real one takes its place, marked NEW.
-  5. AWARDS: L/R choose the award (MVP, OPOY, DPOY, OROY, DROY, Comeback, Coach of the Year, Super Bowl MVP); one line
-     per season, franchise seasons first, then the real winners.
+  5. AWARDS: L/R choose the award (MVP, OPOY, DPOY, OROY, DROY, Comeback, Coach of the Year, Super Bowl MVP); franchise
+     seasons first, then all real winners including shared awards.
   6. HALL OF FAME: classes newest first, franchise inductees then the real members; L/R filter by club (all clubs first).
 
 * **Box score from the Schedule**: X on a played game (the menu legend says "for Box Score") opens it: the line score by
@@ -134,7 +134,7 @@ GUARDS = (
     ("schedule selected game", 0x0024B680, 0x83),
     ("menu legend", 0x000F35A0, 0x2A),
     ("pads", 0x000709B0, 0xC0),
-    ("cursor sound", 0x0014D390, 0x24),
+    ("cursor sound", 0x0014D390, 0x24), ("cursor sound name", 0x00EB3C54, 52),
     ("text init", 0x00046920, 0x16),
     ("text font", 0x000469B0, 0xD),
     ("text align", 0x00046A00, 0x4),
@@ -183,6 +183,7 @@ RO_HEADER = 0x80
 AWARDS = ("mvp", "opoy", "dpoy", "oroy", "droy", "cpoy", "coy", "sbmvp")
 CATEGORIES = ("passing_yards", "passing_td", "completions", "rushing_yards", "rushing_td", "receptions",
               "receiving_yards", "receiving_td", "sacks_half", "interceptions", "tackles", "forced_fumbles")
+BOOK_CATEGORIES = CATEGORIES + ("points", "field_goals")
 LEADER_CATEGORIES = ("passing_yards", "passing_td", "rushing_yards", "rushing_td", "receptions", "receiving_yards",
                      "receiving_td", "sacks_half", "interceptions", "tackles")
 CATEGORY_ALIASES = {"pass_yds": "passing_yards", "pass_td": "passing_td", "rush_yds": "rushing_yards",
@@ -275,7 +276,7 @@ class _Names:
 
 
 def _holder(row: Mapping) -> Mapping:
-    """The first listed holder of a seed record (ties list every holder; the screen names the first)."""
+    """The primary holder of a club record (one slot per club, category and scope)."""
     holders = row.get("holders") or ()
     return holders[0] if holders and isinstance(holders[0], Mapping) else row
 
@@ -358,7 +359,7 @@ def _seed_tables(seed: Mapping | None):
         award = str(row.get("award", "")).lower().replace("sb_mvp", "sbmvp")
         if award not in awards:
             continue
-        for winner in (row.get("winners") or ())[:1]:      # shared awards: the first listed winner
+        for winner in row.get("winners") or ():
             awards[award].append(dict(year=int(row.get("season", 0)), name=winner.get("name", ""),
                                       pos=position_code(winner.get("position")), club=club_key(winner.get("club"))))
     for rows in awards.values():
@@ -366,14 +367,17 @@ def _seed_tables(seed: Mapping | None):
     book = []
     for row in seed.get("nfl_records", ()) or ():
         category, kind = category_key(row.get("category")), row.get("kind") or row.get("scope")
-        if category not in CATEGORIES or kind not in KINDS:
+        if category not in BOOK_CATEGORIES or kind not in KINDS:
             continue
-        holder = _holder(row)
-        year = 0 if kind == "career" else _year(holder.get("season") or holder.get("year") or row.get("year"))
-        book.append(dict(category=CATEGORIES.index(category), kind=KINDS.index(kind), name=holder.get("name", ""),
-                         value=category_value(category, row.get("value", 0)), year=year,
-                         club=club_key(holder.get("club") or row.get("club")),
-                         pos=position_code(holder.get("position") or row.get("position"))))
+        holders = row.get("holders") or [row]
+        dated = [(0 if kind == "career" else _year(h.get("season") or h.get("year") or row.get("year")), h)
+                 for h in holders if isinstance(h, Mapping)]
+        # The first eligible holder represents the record if a franchise mark later replaces the tie.
+        for i, (year, holder) in enumerate(sorted(dated, key=lambda pair: pair[0])):
+            book.append(dict(category=BOOK_CATEGORIES.index(category), kind=KINDS.index(kind), coholder=bool(i),
+                             name=holder.get("name", ""), value=category_value(category, row.get("value", 0)),
+                             year=year, club=club_key(holder.get("club") or row.get("club")),
+                             pos=position_code(holder.get("position") or row.get("position"))))
     book.sort(key=lambda r: (r["category"], r["kind"]))
     hof = []
     members = seed.get("hall_of_fame", ())
@@ -502,8 +506,9 @@ def build_ro(ro_va: int, code_va: int, item_rows: bytes, seed: Mapping | None = 
     hof_rows = b"".join(struct.pack("<HHBB", r["year"], names.add(r["name"]), r["pos"], club_byte(r["club"]))
                         for r in hof)
     fields["hof"], fields["hof_count"] = put(hof_rows), len(hof)
-    book_rows = b"".join(struct.pack("<BBHIHBB", r["category"], r["kind"], names.add(r["name"]), r["value"], r["year"],
-                                     club_byte(r["club"]), r["pos"]) for r in book)
+    book_rows = b"".join(struct.pack("<BBHIHBB", r["category"], r["kind"] | (0x80 if r["coholder"] else 0),
+                                     names.add(r["name"]), r["value"], r["year"], club_byte(r["club"]), r["pos"])
+                         for r in book)
     fields["book"], fields["book_count"] = put(book_rows), len(book)
     # club records: 32 x {u16 first, u16 count} (128 bytes), then 8-byte entries {u8 category << 1 | kind (0 game,
     # 1 season), u8 pos, u16 name, u16 value, u16 year}
@@ -597,13 +602,13 @@ def _rel32(source_end: int, target: int) -> bytes:
     return struct.pack("<i", target - source_end)
 
 
-def code_for(code_va: int, data_va: int, ro_va: int, xtnd_ptr_va: int = 0) -> bytes:
+def code_for(code_va: int, data_va: int, ro_va: int, xtnd_ptr_va: int = 0, *, template=runtime) -> bytes:
     """The owned RX content with the template's relocations applied, padded to CODE_SIZE with int3. ``xtnd_ptr_va`` is
     the footer owner's body-pointer word (0: no footer owner, the franchise parts read empty)."""
 
     symbols = {"code": code_va, "state": data_va, "ro": ro_va, "xtnd_ptr": xtnd_ptr_va}
-    result = bytearray(runtime.CODE)
-    for offset, kind, symbol, value in runtime.RELOCATIONS:
+    result = bytearray(template.CODE)
+    for offset, kind, symbol, value in template.RELOCATIONS:
         target = symbols[symbol] + value + struct.unpack_from("<i", result, offset)[0]
         if kind == 2:
             target -= code_va + offset
@@ -612,12 +617,12 @@ def code_for(code_va: int, data_va: int, ro_va: int, xtnd_ptr_va: int = 0) -> by
     return bytes(result).ljust(CODE_SIZE, b"\xcc")
 
 
-def labels(code_va: int) -> dict[str, int]:
-    return {name: code_va + offset for name, offset in runtime.LABELS.items()}
+def labels(code_va: int, *, template=runtime) -> dict[str, int]:
+    return {name: code_va + offset for name, offset in template.LABELS.items()}
 
 
-def sites(code_va: int, ro_va: int, rows_offset: int) -> list[tuple[str, int, bytes, bytes]]:
-    at = labels(code_va)
+def sites(code_va: int, ro_va: int, rows_offset: int, *, template=runtime) -> list[tuple[str, int, bytes, bytes]]:
+    at = labels(code_va, template=template)
     out = []
     for label, va, before, kind in SITE_TABLE:
         if kind == "rows":
@@ -722,7 +727,7 @@ def _item_rows(image: XbeImage) -> bytes:
 
 
 def owned_state(payload: bytes):
-    """-> ("retail" | "applied", allocations | None); anything else raises."""
+    """Return the recognized retail, previous or applied state and any owner allocations."""
 
     _require(space.status(payload) != "foreign", "foreign XBE geometry, owner seal or section digest")
     image = XbeImage(payload)
@@ -742,9 +747,14 @@ def owned_state(payload: bytes):
     _require(0 < rows < RO_SIZE and ro[rows:rows + ESPN_ROW_SIZE * ESPN_RETAIL_ROWS] == _item_rows(image),
              "the history screen's ESPN.com rows differ from the executable's")
     xtnd = struct.unpack_from("<I", ro, RO_HEADER - 12)[0]
-    _require(code == code_for(code_va, found["data"]["va"], ro_va, xtnd), "foreign history screen code")
-    _require(rdata.status(payload, sites(code_va, ro_va, rows)) == "applied", "mixed history screen sites")
-    return "applied", found
+    template, state = runtime, "applied"
+    if code != code_for(code_va, found["data"]["va"], ro_va, xtnd):
+        from . import nfl2k5_history_screen_code_b780 as template
+        _require(code == code_for(code_va, found["data"]["va"], ro_va, xtnd, template=template),
+                 "foreign history screen code")
+        state = "previous"
+    _require(rdata.status(payload, sites(code_va, ro_va, rows, template=template)) == "applied", "mixed history screen sites")
+    return state, found
 
 
 def status(payload: bytes) -> str:
@@ -754,11 +764,14 @@ def status(payload: bytes) -> str:
         return "foreign"
 
 
+PREVIOUS_REFUSAL = ("This disc has the beta 80 Franchise History screen. "
+                    "Rebuild from your retail game to install its updated historical records and menus.")
+
+
 def refusal(payload: bytes) -> str | None:
     """b780 n8: why ``status`` reads foreign (the first failed check, in plain words), or None."""
     try:
-        owned_state(payload)
-        return None
+        return PREVIOUS_REFUSAL if owned_state(payload)[0] == "previous" else None
     except (ValueError, IndexError, KeyError, TypeError, struct.error, OverflowError) as exc:
         return str(exc) or type(exc).__name__
 
@@ -774,6 +787,7 @@ def install(payload: bytes, seed: Mapping | None = None, xtnd_ptr_va: int = 0) -
     """Allocate (a late owner), fill the code and the read-only block, patch the two sites. Idempotent."""
 
     state, found = owned_state(payload)
+    _require(state != "previous", PREVIOUS_REFUSAL)
     common = {"owner": OWNER, "experimental": True, "code_bytes": len(runtime.CODE),
               "owner_bytes": CODE_SIZE + DATA_SIZE + RO_SIZE}
     if state == "applied":
@@ -850,6 +864,7 @@ GUARD_PINS: dict[str, str] = {
     "schedule selected game": "ec90c74a01a4d2beeb038b6521467c7622f63ad6e2320d7e51c72018a738edef",
     "menu legend": "49dc6d6961ea1982d8556df39afee5f00a2b1cbf3bf222d8d677920e058c0a80",
     "pads": "b7f411a8a6c4f00286a7df5e5238987e34a5c283632a89a27a238b75519a0ef6",
+    "cursor sound name": "a40f301d683d1347db013099dc876585d2f7fd01434e49daf68edb512b3914d0",
     "cursor sound": "f3e7a1b8abb6220d082e866b736c133189f3bf8a20a8b213ba694bf4c3355168",
     "text init": "715bb82c65136312646957ed6be69fef751004cc7d44f88d321e3c4fd01129e2",
     "text font": "df8e500f21e4fa0b671d89bca38e9934bda6334fe78b372e232d4be9c78d290a",

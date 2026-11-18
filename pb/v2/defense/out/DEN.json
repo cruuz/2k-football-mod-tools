@@ -2076,7 +2076,7 @@
  "receipt": {
   "team": "DEN",
   "offense_pack": "data/playbooks/softdrink_den_modern.2k5book",
-  "offense_pack_sha256": "2d66ec8f7bed99f08ce7237e14d05a8c7d7944e5c17dab2954ebbfbe685c31a5",
+  "offense_pack_sha256": "31f05ad78a193f39f04cbca47d3b96bbd9eded5fbf1135268ba43568afcd873a",
   "source_fingerprint": "2cdd1224d6d88c367a275cf24697b8eef68b79f1098a52d92423f92481c22266",
   "replacement_sha256": "4ed0d2b328e7e5eb91b43ac45df455bf5514be41faf5115e1cc826538532a8b8",
   "semantic_sha256": "8e0d051b9b7d9e73a110351f153b41d6603bff4732e792660e2719630887aae9",

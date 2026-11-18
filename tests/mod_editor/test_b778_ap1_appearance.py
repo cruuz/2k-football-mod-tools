@@ -212,7 +212,7 @@ class RealPlanTests(unittest.TestCase):
                 self.assertEqual(old.record.get(name), new.record.get(name), (old.index, name))
 
     def test_every_measured_entry_is_a_created_row_never_a_draft_bank_record(self):
-        draft = {p.index for p in self.after.by_pool("primary") if p.group == "draft_class"}
+        draft = {p.index for p in self.after.by_pool("primary") if self.after.is_draft_class(p)}
         created = {row["index"] for row in self.plan["players"] if row.get("new")}
         self.assertFalse(created & draft)
         names = {(row["first"], row["last"]) for row in self.plan["players"] if row.get("new")}

@@ -781,13 +781,14 @@ class InsideRostersTests(_Case):
         self.assertFalse(page.has_changes())
         self.assertEqual(panel.undo_stack.depth, (0, 0))
 
-    def test_a_complete_roster_with_faces_cannot_carry_staff_changes_yet(self) -> None:
+    def test_complete_roster_with_faces_keeps_staff_changes(self) -> None:
         self.load_disc_like()
         panel = self.panel
         panel.coaches_panel.swap_clubs("SF", "CIN")
         panel._appearance_bundle = {"anything": 1}
-        with self.assertRaisesRegex(rr.RosterRecordError, "cannot be exported together with a complete roster with faces"):
-            panel.edits_document()
+        document = panel.edits_document()
+        self.assertEqual(document["appearance_assets"], panel._appearance_bundle)
+        self.assertEqual(document["staff"], panel.coaches_panel.export_staff())
 
     def test_the_engine_note_says_what_is_missing(self) -> None:
         self.load_disc_like()

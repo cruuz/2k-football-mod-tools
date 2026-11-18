@@ -32,11 +32,11 @@ PLAN_COLUMNS = ("What", "Name", "Replaces", "Status", "Why")
 #: What the format honestly cannot do, shown on every install so nobody ships a
 #: pack promising it (the engine limits, not the studio's).
 ENGINE_LIMITS_TEXT = (
-    "What the engine cannot do, whatever a pack says: no pre-snap motion, no "
-    "give-or-throw RPO (the ball sim walks each chain once, so a quarterback who "
-    "hands off cannot throw later), and no tempo / no-huddle. Option routes and "
-    "keep-or-throw RPOs are accepted by the ported retail validator but have "
-    "never been witnessed in game."
+    "For manual pre-snap motion, close the audible panel. On the left stick or D-pad, "
+    "use up/down to select an eligible player, then left/right to send him in motion. "
+    "The modern books do not script motion. Give-or-throw RPOs are restricted by the one-pass ball simulation. "
+    "A pack can supply a no-huddle menu; the game controls the tempo. "
+    "Option routes and keep-or-throw RPOs pass the retail validator and still need on-field verification."
 )
 
 
@@ -50,6 +50,9 @@ def pack_summary_lines(pack: pack_mod.PlaybookPack) -> tuple[str, ...]:
         f"{pack.base.donor_play_count} plays, {pack.base.donor_node_count} nodes "
         f"(fingerprint {pack.base.book_fingerprint[:12]}…)",
     ]
+    if pack.book.offset_toss_flip:
+        lines.append("On an offset shotgun pitch to the back’s side, R3 flips the full play so the exchange follows "
+                     "the back. Black flips the full play on every eligible call.")
     if any(p.play_type == "defense" for p in pack.plays):
         from mod_editor.core import nfl2k5_play_library as lib
         totals = pack_mod.budget_totals(pack)

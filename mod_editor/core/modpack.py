@@ -810,13 +810,14 @@ def inspect(pack: Pack | Path | str) -> dict[str, Any]:
     }
 
 
-def extract_assets(pack: Pack | Path | str, directory: Path | str, *, overwrite: bool = False) -> dict[str, Any]:
+def extract_assets(pack: Pack | Path | str, directory: Path | str, *, overwrite: bool = False,
+                   resume: bool = False, progress: ProgressSink | None = None) -> dict[str, Any]:
     """Write every asset (verified) plus ``recipe.json`` and ``manifest.json`` under ``directory``."""
 
     loaded = pack if isinstance(pack, Pack) else load(pack)
     if loaded.manifest.raw.get("format") == 3:
         from . import modpack_files
-        return modpack_files.extract_assets(loaded, directory, overwrite=overwrite)
+        return modpack_files.extract_assets(loaded, directory, overwrite=overwrite, resume=resume, progress=progress)
     root = Path(directory).expanduser()
     root.mkdir(parents=True, exist_ok=True)
     written: list[str] = []
@@ -1362,6 +1363,8 @@ def _export_modular(base_iso, patched_iso, out_path, meta, *, overwrite, recipe,
                         role=item.role, source_name=item.source_name) for item in staged]
         recipe_doc = {"operations": list(recognised["operations"]) + list(meta.get("operations") or []),
                       "detected": recognised["detected"]}
+        if meta.get("console_settings"):
+            recipe_doc["overrides"] = dict(meta["console_settings"])
         if project_document is not None:
             recipe_doc["project"] = project_document
         is_retail = size == RETAIL_XISO_SIZE and base_sha == RETAIL_XISO_SHA256
@@ -1578,6 +1581,8 @@ def export(
         "operations": [dict(item) for item in recognised["operations"]] + [dict(item) for item in user_operations],
         "detected": recognised["detected"],
     }
+    if meta.get("console_settings"):
+        recipe_doc["overrides"] = dict(meta["console_settings"])
     if project_document is not None:
         recipe_doc["project"] = project_document
 

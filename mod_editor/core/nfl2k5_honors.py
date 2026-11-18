@@ -290,12 +290,9 @@ def _owned_state(payload: bytes):
         _check_guards(image, edits)
         _require(champions_state == "retail", "honors and champions installations differ")
         return "retail", found
-    if code == code_for(code_va, data_va, champs_va):
-        state = "applied"
-    else:
-        _require(bool(champs_va) and code == code_for(code_va, data_va, champs_va, champions_previous=True),
-                 "foreign honors code")
-        state = "previous"
+    revision = champions.installed_revision(payload, champs_va) if champs_va else False
+    _require(code == code_for(code_va, data_va, champs_va, champions_previous=revision), "foreign honors code")
+    state = "previous" if revision else "applied"
     edits = sites(code_va)
     _require(rdata.status(payload, edits) == "applied", "mixed honors sites")
     _check_guards(image, edits)
@@ -329,9 +326,12 @@ def fold_site_edit(payload: bytes) -> list[tuple[int, bytes]]:
 def read_settings(payload: bytes) -> dict:
     state = status(payload)
     installed = state in ("applied", "previous")   # b780 n6: "previous" = the beta-79 install (upgraded by apply)
+    prior = {}
+    if state == "previous":
+        revision = champions.installed_revision(payload, champions.allocations(payload)["code"]["va"])
+        prior = {"revision": champions.PREVIOUS_REVISION if revision is True else revision, "needs_update": True}
     return {"status": state, "honors_page": installed, "fields": dict(FIELDS) if installed else None,
-            "champions": installed, "award_rule": champions.AWARD_RULE if installed else None,
-            **({"revision": champions.PREVIOUS_REVISION, "needs_update": True} if state == "previous" else {})}
+            "champions": installed, "award_rule": champions.AWARD_RULE if installed else None, **prior}
 
 
 def reservations(payload: bytes) -> list[dict]:
@@ -360,10 +360,10 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
         champs_va = _champions_va(payload, found)
         relinked, code_receipt = space.install_code(
             payload, OWNER, code_for(code_va, data_va, champs_va),
-            previous=code_for(code_va, data_va, champs_va, champions_previous=True))
+            previous=XbeImage(payload).read(code_va, CODE_SIZE))
         result, champions_receipt = champions.install(relinked)
         _require(status(result) == "applied", "honors upgrade postcondition failed")
-        return result, {**common, "already_applied": False, "upgraded_from": champions.PREVIOUS_REVISION,
+        return result, {**common, "already_applied": False, "upgraded_from": champions_receipt["upgraded_from"],
                         "code_install": code_receipt, "code_va": hex(code_va), "data_va": hex(data_va),
                         "changed_bytes": sum(a != b for a, b in zip(before, result)) + abs(len(result) - len(before)),
                         "champions": champions_receipt,

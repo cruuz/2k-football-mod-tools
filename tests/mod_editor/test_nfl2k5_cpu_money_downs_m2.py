@@ -31,7 +31,7 @@ class Modern2PolicyTests(unittest.TestCase):
 
     def test_tables_equal_the_sourced_data_file(self):
         data = json.loads(SOURCES.read_text(encoding="utf-8"))
-        limit, shift, thr = patch.m2_tables()
+        limit, shift, thr = patch.m2_tables("b778")
         self.assertEqual(list(limit), data["tables"]["limit_x"])
         self.assertEqual(list(shift), data["tables"]["shift"])
         self.assertEqual(list(thr), data["tables"]["thr10"])
@@ -59,7 +59,7 @@ class Modern2PolicyTests(unittest.TestCase):
         self.assertNotIn("\u2014", SOURCES.read_text(encoding="utf-8"))
 
     def test_typical_table_is_the_published_chart(self):
-        limit = patch.m2_tables()[0]
+        limit = patch.m2_tables("b778")[0]
         self.assertEqual(max(limit), 10)                       # the 4th-and-10 sliver near the opponent 41
         self.assertEqual(limit[41], 10)
         self.assertEqual([limit[x] for x in (62, 67, 68, 75, 76, 80)], [4, 4, 3, 3, 2, 2])
@@ -69,7 +69,7 @@ class Modern2PolicyTests(unittest.TestCase):
         typical = dict(level="modern2", quarter=1, seconds=800, quarter_seconds=900)
         self.assertEqual(patch.decision(own_yard=15, distance=1, **typical), "retail")
         self.assertEqual(patch.decision(own_yard=19, distance=1, **typical), "retail")      # 81 yards to goal: outside the table
-        self.assertEqual(patch.decision(own_yard=20, distance=2, **typical), "go")
+        self.assertEqual(patch.decision(own_yard=20, distance=2, **typical), "retail")
         self.assertEqual(patch.decision(own_yard=15, distance=2, level="modern2", quarter=4, seconds=600, quarter_seconds=900), "go")
 
     def test_regulation_examples(self):
@@ -514,6 +514,16 @@ class Modern2NativeTests(unittest.TestCase):
                                  patch.two_point_decision(margin=margin, quarter=q, seconds=secs, quarter_seconds=qs, ot_bits=bits, home=home),
                                  (margin, q, secs, qs, bits, home))
         self.assertGreater(cells, 8000)
+
+    def test_own_half_punts_and_fourth_and_short_control(self):
+        for quarter, seconds, yard, distance in ((1, 400, 40, 4), (1, 400, 48, 5), (1, 400, 49, 5),
+                                                (3, 330, 48, 7), (3, 330, 49, 7)):
+            setting = dict(down=4, own_yard=yard, distance=distance, score_margin=0, quarter=quarter,
+                           seconds=seconds, quarter_seconds=420)
+            self.assertEqual(self.m.category(**setting), self.base.category(**setting), setting)
+            self.assertEqual(self.m.policy(**setting), 0, setting)
+        self.assertEqual(self.m.policy(down=4, own_yard=40, distance=1, score_margin=0, quarter=1,
+                                       seconds=400, quarter_seconds=420), 1)
 
     def test_dispatcher_forced_kick_go_and_the_fake_guard(self):
         # leading by 3, 0:50 left, 4th and 9 at the opponent 30 (inside range - 5): the policy forces the kick

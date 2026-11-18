@@ -400,6 +400,33 @@ class NamePoolTests(unittest.TestCase):
         self.assertEqual(pool.free_bytes, 0)
         self.assertEqual(pool.capacity_bytes, sum(block.capacity for block in pool.blocks.values()))
 
+    def test_snapshot_preserves_live_team_strings_between_relocated_player_names(self) -> None:
+        from mod_editor.core import nfl2k5_roster_snapshot as snapshot
+
+        body = bytearray(self.body)
+        first_name_field = PLAYERS_OFF + rr.FIELD_BY_NAME["first_name_pointer"].offset
+        relocated = NAME_STRINGS_OFF + 0x800
+        encoded = "Peyton".encode("utf-16-le") + b"\0\0"
+        body[relocated:relocated + len(encoded)] = encoded
+        struct.pack_into("<i", body, first_name_field, relocated - first_name_field + 1)
+        # A team also references the relocated text. Repacking player names must preserve that alias.
+        city_field = TEAMS_OFF + rr.TEAM_CITY
+        struct.pack_into("<i", body, city_field, relocated - city_field + 1)
+        roster = rr.load_body(body)
+        self.assertEqual(roster.names.free_bytes, 0)
+        team_names = [team.display for team in roster.teams]
+        rows = [dict(first=p.first, last=p.last) for p in roster.players]
+        snapshot._names(roster, rows)
+        self.assertEqual(roster.to_body(), body)
+        rows[0]["first"] = "Pete"
+        rows[1]["last"] = "Lee"
+        snapshot._names(roster, rows)
+        reopened = rr.load_body(roster.to_body())
+        self.assertEqual(reopened.players[0].display, "Pete Manning")
+        self.assertEqual(reopened.players[1].display, "Marvin Lee")
+        self.assertEqual([team.display for team in reopened.teams], team_names)
+        self.assertEqual(reopened.body[relocated:relocated + len(encoded)], encoded)
+
     def test_an_existing_string_is_shared_rather_than_copied(self) -> None:
         vick = next(p for p in self.document.players if p.last == "Vick")
         receipt = self.document.set_name(vick, "first", "Randy")     # Randy Moss already has one
@@ -1342,7 +1369,8 @@ class RetailTests(unittest.TestCase):
         self.assertEqual(summary["teams"], rr.RETAIL_TEAM_COUNT)
         self.assertEqual(summary["colleges"], rr.RETAIL_COLLEGE_COUNT)
         self.assertEqual(summary["free_agents"], rr.RETAIL_FREE_AGENT_COUNT)
-        self.assertEqual(summary["draft_class"], 380)
+        self.assertEqual(summary["draft_class"], 0)
+        self.assertEqual(summary["draft_slots"], 380)
         self.assertEqual((self.document.names.start, self.document.names.end), (0x7B970, 0x8B7D0))
         self.assertEqual(self.document.names.free_bytes, 0, "the retail name pool is packed solid")
         self.assertEqual(len(self.document.names.blocks), 5094)
@@ -1535,7 +1563,11 @@ class RetailMembershipTests(unittest.TestCase):
         receipt = self.document.release(player, sf.index)
         self.assertEqual((receipt["team_players"], receipt["free_agents"]), (52, 242))
         self.assertEqual(sorted(player.teams), sorted(alumni), "an all-star side keeps him")
-        self.document.release(self.document.team_players(afc.index)[0], afc.index)
+        afc_player = self.document.team_players(afc.index)[0]
+        club = self.document.club_of(afc_player)
+        self.document.release(afc_player, afc.index)
+        self.assertEqual(self.document.club_of(afc_player), club)
+        self.assertFalse(self.document.is_free_agent(afc_player))
         with self.assertRaisesRegex(rr.MembershipRefused, "AFC AFC must maintain at least 42"):
             self.document.release(self.document.team_players(afc.index)[0], afc.index)
         with self.assertRaisesRegex(rr.MembershipRefused, "Max players reached"):
@@ -1548,11 +1580,11 @@ class RetailMembershipTests(unittest.TestCase):
         centers = next(p for p in self.document.players if p.display == "Larry Centers")
         self.assertTrue(self.document.is_free_agent(centers) and centers.teams, "retail lists him on ASW and as a free agent")
         self.document.release(centers, centers.teams[0])
-        self.assertEqual(len(self.document.free_agents), 243, "already a free agent: the list does not grow")
+        self.assertEqual(len(self.document.free_agents), 242, "already a free agent: the list does not grow")
         reloaded = rr.load_body(self.document.to_body())
         self.assertEqual(len(reloaded.teams[sf.index].slots), 52)
         self.assertEqual(reloaded.teams[sf.index].player_count, 52)
-        self.assertEqual(len(reloaded.free_agents), 243)
+        self.assertEqual(len(reloaded.free_agents), 242)
         self.assertEqual([p.display for p in reloaded.team_players(chi.index)][0], a.display)
         document = rr.edits_document(self.document)
         replayed, receipt = rr.apply_body(self.body, document)

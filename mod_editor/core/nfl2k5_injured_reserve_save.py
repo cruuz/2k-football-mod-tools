@@ -241,8 +241,11 @@ def read_state(save) -> IrState:
         players = None
     extension, returns, clubs = decode(bytes(save.buffer[off:off + CELLS * 4]), players=players)
     entries = []
+    preseason = save.header.stage < 8
     for c, rows in enumerate(clubs):
         for slot, (index, games, season) in enumerate(rows):
+            if preseason:
+                games = 0  # The native reader also discards preseason credits written by beta 80.
             hurt, weeks = injury(save, index)
             reason = _why(save, games, season, returns[c], index) if extension else REASONS["legacy_full"]
             name = save.player_name(index) if c < save.league_team_count else ""

@@ -1958,7 +1958,7 @@
  "receipt": {
   "team": "SF",
   "offense_pack": "data/playbooks/softdrink_sf_modern.2k5book",
-  "offense_pack_sha256": "7d78726dabc8c76c1dfc807ae3ea86ebc364551357b1c9d2f160fe94c9743212",
+  "offense_pack_sha256": "df2dfc374dbe1b74db518bc5a6791d4c36c05ba248751a6fc3eacaa38c578152",
   "source_fingerprint": "80c1466943d9c001d7960efcf1e1cb51843972c87eb517702d89ac3ece0bc5bd",
   "replacement_sha256": "4f876033520e1b619c04a078e64241df013e149f9bf352e6f306362f9200aa06",
   "semantic_sha256": "c1b05f27ac250a0450c41f68ea602725f1c8fb37e214f6201529b9aa4a1b99ee",

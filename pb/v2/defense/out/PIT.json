@@ -2037,7 +2037,7 @@
  "receipt": {
   "team": "PIT",
   "offense_pack": "data/playbooks/softdrink_pit_modern.2k5book",
-  "offense_pack_sha256": "2506e3808d827a2aafd3bb5c2d46bd862c60ad5994eb1f8480e8adf26fceaeba",
+  "offense_pack_sha256": "31e822754515085943325561682c503a24e0bd12eacf06119dda7b9eb866e668",
   "source_fingerprint": "d2af78f79706d9e1ae6b9c8dea170f57dd8511674dd9dcf1917b4e1c8fa7e66f",
   "replacement_sha256": "2a07a98e2eb922850c08a52926aad8f4b07c36f825d52dfa4e19aac25a2ce630",
   "semantic_sha256": "17e2a8ce6dc8394b64c4813e9f669a109a8e3fd8eca428aa3212cc597609621f",

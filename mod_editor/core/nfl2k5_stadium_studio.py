@@ -340,19 +340,16 @@ def classify_stadium_people_textures(
     it only reads the given dataclasses, so it is unit-testable without a game
     source cache.
     """
-    material_names: dict[str, tuple[str, tuple[str, ...]]] = {}
+    material_names: dict[str, list[str]] = {}
     for material in materials:
-        material_names[material.texture_id or ""] = (
-            material.name,
-            tuple(owner.node_name for owner in material.owners),
-        )
+        if material.texture_id:
+            names = material_names.setdefault(material.texture_id, [])
+            names.append(material.name)
+            names.extend(owner.node_name for owner in material.owners)
     result: dict[str, tuple[str, ...]] = {}
     for texture in textures:
         names: list[str] = [scene_name, *texture.mapped_material_names]
-        material_name, node_names = material_names.get(texture.texture_id, ("", ()))
-        if material_name:
-            names.append(material_name)
-        names.extend(node_names)
+        names.extend(material_names.get(texture.texture_id, ()))
         categories = stadium_people_categories_for_names(*names)
         if categories:
             result[texture.texture_id] = categories
@@ -664,7 +661,7 @@ class Nfl2k5StadiumStudio:
                 for category in categories:
                     groups[category].append(texture)
         return tuple(
-            (category_id, label, tuple(textures))
+            (category_id, label, tuple(groups[category_id]))
             for category_id, label, _tokens in STADIUM_PEOPLE_CATEGORIES
             if groups[category_id]
         )

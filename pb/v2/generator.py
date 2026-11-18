@@ -1571,12 +1571,12 @@ def assemble(result: dict, team: str):
                               menu=[c.design.name for c in menu]))
     notes = (f"DESIGN (b776 pb1 v3, era {result['prof'].era}): {result['prof'].family} tree; Madden 27 family and "
              "personnel shares (Civil.GG playbook database) x the team's 2025 tendencies; retail-template runs, "
-             "combo pass concepts, every retail route kind. No pre-snap motion, no RPO, no read option. "
+             "combo pass concepts, every retail route kind. Manual pre-snap motion: use up/down on the D-pad or left stick to select an eligible player, then left/right to send him in motion. The modern plays do not script motion, RPOs or read options. R3 flips the whole play on an offset shotgun pitch to the back's side. Black flips the whole play. "
              "All gameplay unwitnessed.")
     all_plays = tuple(plays_out) + ((special,) if special else ())
     pack = packs.PlaybookPack(
         packs.PackBook(team, f"SOFTDRINK 2K28 {team} Offense", "SOFTDRINK / Claude (pb1)", VERSION, "CC0-1.0",
-                       notes=notes[:2000]),
+                       notes=notes[:2000], offset_toss_flip=True),
         packs.PackBase(packs.book_fingerprint(info.body), len(info.book.formations), len(info.book.plays),
                        info.book.node_count),
         tuple(forms_out), all_plays, packs.OFFENSE_SCHEMA, tuple(menus_out))

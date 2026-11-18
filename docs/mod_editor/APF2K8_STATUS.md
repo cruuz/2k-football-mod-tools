@@ -1,6 +1,10 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.111`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.112`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.112, beta 81
+
+The shared updater protects edits after a failed installation and through the handoff to the installer.
 
 ## 0.1.0-alpha.111: beta 80 (2026-11-03)
 

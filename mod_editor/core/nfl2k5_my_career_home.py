@@ -72,8 +72,8 @@ HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. MyCareer's Apartment becomes Career Home: Play next game, Schedule, Practice, "
     "MyPlayer, Upgrades, Settings and save, and Quit, with no scrolling, and a live panel with MyPlayer's club, "
     "overall, XP, depth chart spot, next game and this season's stats. Schedule lists the club's season week by week "
-    "with opponents, dates and results. Settings and save holds Settings, Save, Sim to next "
-    "appearance, Start MyPlayer and the Classic Apartment (the old screen, unchanged). Uses the optional extra "
+    "with opponents, dates and results. Settings, Save + League holds career settings, including played and "
+    "simulated quarter lengths, save, Team Rosters, League Leaders and the Classic Apartment. Uses the optional extra "
     "executable section, so it cannot be combined with a jukebox music library.")
 
 # Native list descriptor fields shared with every MyCareer screen: the retail 'navigation' layout name, its
@@ -127,6 +127,7 @@ OPTION_ROWS = (("m3_settings_text", "mode_settings_open"), ("save_text", "mode_s
                ("home_text_classic", "home_classic_open"), ("m3_back_text", "m3_back"))
 DESCRIPTORS = (("home_classic", "apartment_text", "hub_rows"), ("home_options", "home_text_more", "home_options_rows"),
                ("home_schedule", "home_title_schedule", "home_schedule_rows"))
+LEAGUE_TITLE = "Around the League"
 MAX_VISIBLE_ROWS = 7
 # Schedule rows: the image's regular weeks (the stage table's Season row byte +4, which the 18-week season owner
 # raises from 17), then the four postseason rounds, in grid-row order. The runtime reads the same byte.
@@ -160,7 +161,7 @@ def _require(ok, message):
 
 
 # b780 n6: beside the beta-79 MyCareer this section reads "previous" (it links to that runtime's labels)
-PREVIOUS_REFUSAL = ("Career Home on this disc belongs to the beta 79 MyCareer, so this release cannot update it in "
+PREVIOUS_REFUSAL = ("Career Home on this disc belongs to a beta 79 or beta 80 MyCareer, so this release cannot update it in "
                     "place. Rebuild from your retail game to get this release's MyCareer and Career Home.")
 
 
@@ -194,7 +195,11 @@ def code_for(career):
         out.extend(bytes(size))
         return labels[name] - CONTENT_VA
 
-    for name, value in STRINGS:
+    released = career.get("career_beta", 81) < 81
+    strings = STRINGS if released else (*STRINGS, ("home_text_league", LEAGUE_TITLE))
+    for name, value in strings:
+        if name == "home_text_more" and not released:
+            value = "Settings, Save + League"
         content = (value + "\0").encode("utf-16le")
         at = reserve(name, len(content))
         out[at:at + len(content)] = content
@@ -206,12 +211,24 @@ def code_for(career):
         _require(len(content) <= limit, f"{name}: more rows than the native window shows")
         at = labels[name] - CONTENT_VA if name == "home_rows" else reserve(name, 52 * (len(content) + 1))
         for i, (label, action) in enumerate(content):
-            struct.pack_into("<13I", out, at + 52 * i, 9, names[label] if isinstance(label, str) else label,
-                             *([0] * 8), names[action], 0, 0)
+            label = names[label] if isinstance(label, str) else label
+            if isinstance(action, int) or action == "home_league":
+                dest = action if isinstance(action, int) else labels[action]
+                struct.pack_into("<3I", out, at + 52 * i, 0, label, dest)
+            else:
+                struct.pack_into("<13I", out, at + 52 * i, 9, label, *([0] * 8), names[action], 0, 0)
         struct.pack_into("<I", out, at + 52 * len(content), 3)
 
     rows("home_rows", HOME_ROWS)
-    rows("home_options_rows", OPTION_ROWS)
+    descriptors = DESCRIPTORS
+    if released:
+        rows("home_options_rows", OPTION_ROWS)
+    else:
+        from . import nfl2k5_my_career_mode as mode
+        reserve("home_league", 44)
+        rows("home_options_rows", (*OPTION_ROWS[:-1], ("home_text_league", "home_league"), OPTION_ROWS[-1]))
+        rows("home_league_rows", (*((label, target) for _, label, target in mode.LEAGUE_ROWS), OPTION_ROWS[-1]))
+        descriptors = (*DESCRIPTORS, ("home_league", "home_text_league", "home_league_rows"))
     # The schedule table goes last (its length and labels depend on the season length): reserve its address now,
     # after the descriptors, so nothing before it moves.
     for name, title, table in DESCRIPTORS:
@@ -230,7 +247,7 @@ def code_for(career):
     for i, name in enumerate(week_names):
         struct.pack_into("<13I", out, at + 52 * i, 9, names[name], *([0] * 8), names["home_schedule_row"], 0, 0)
     struct.pack_into("<I", out, at + 52 * len(week_names), 3)
-    for name, title, table in DESCRIPTORS:
+    for name, title, table in descriptors:
         struct.pack_into("<11I", out, labels[name] - CONTENT_VA, names[title], 0, labels["home_handler"], 0,
                          names[table], 0, LAYOUT, BINDINGS, *FRAME, 0x13)
     symbols = {"code": CODE_VA, "": 0, **career, **labels}
@@ -288,7 +305,7 @@ def _career_state(payload):
         bands = grades._owned_state(payload)[2]
     except (ValueError, KeyError, IndexError, TypeError, struct.error):
         bands = None
-    previous = mode.installed_previous(payload)   # b780 n6: the beta-79 MyCareer
+    previous = mode.previous_revision(payload)
     for graded in (False, True):
         if graded and bands is None:
             continue
@@ -332,7 +349,7 @@ def apply(payload):
     from . import nfl2k5_my_career_mode as mode
     state = status(payload)
     _require(state != "foreign", "foreign/mixed Career Home; rebuild from the original")
-    _require(state != "previous", PREVIOUS_REFUSAL)   # b780 n6: linked to the beta-79 MyCareer
+    _require(state != "previous", PREVIOUS_REFUSAL)
     if state == "applied":
         return payload, {"owner": OWNER, "already_applied": True, "changed_bytes": 0}
     _require(space.is_scaleout(payload), "Career Home needs the scale-out allocator")
@@ -423,7 +440,7 @@ def check_static(payload):
     pool = {}
     blob = image.read(code["va"], legacy.CODE_SIZE)
     for name, base, template, count in (("text", data["va"] + 1408, "text_template", "text_bytes"),
-                                        ("text2", mode.EXTRA_VA + 2160, "text2_template", "text2_bytes")):
+                                        ("text2", career["text2_base"], "text2_template", "text2_bytes")):
         raw = blob[career[template] - code["va"]:career[template] - code["va"] + career[count]]
         for i, byte in enumerate(raw):
             pool[base + 2 * i] = byte
@@ -456,9 +473,14 @@ def check_static(payload):
     descriptors = {"apartment": struct.unpack_from("<11I", menu, at)}
     for name in ("home_classic", "home_options", "home_schedule"):
         descriptors[name] = struct.unpack_from("<11I", read(labels[name], 44))
+    if "home_league" in labels:
+        descriptors["home_league"] = struct.unpack_from("<11I", read(labels["home_league"], 44))
     receipt = {"descriptors": {}, "rows": {}}
     expected_rows = {"apartment": labels["home_rows"], "home_classic": career["hub_rows"],
                      "home_options": labels["home_options_rows"], "home_schedule": labels["home_schedule_rows"]}
+    if "home_league" in labels:
+        expected_rows["home_league"] = labels["home_league_rows"]
+    screens = {target: label for _, label, target in mode.LEAGUE_ROWS}
     for name, fields in descriptors.items():
         title, events, handler, _c, rows, _14, layout, binding, frame0, frame1, flags = fields
         _require(events == 0 and _c == 0 and _14 == 0, f"{name}: unexpected event table or spare words")
@@ -473,7 +495,7 @@ def check_static(payload):
         if rows == career["hub_rows"]:
             raw = _unpack_template(blob[career["m3_menu_template"] - code["va"]:])
             source = lambda off, n: raw[rows - mode.EXTRA_VA - 256 + off:rows - mode.EXTRA_VA - 256 + off + n]
-            limit = 10
+            limit = 11
         else:
             source = lambda off, n: read(rows + off, n)
             limit = GRID_ROWS if name == "home_schedule" else MAX_VISIBLE_ROWS
@@ -482,8 +504,17 @@ def check_static(payload):
             if row[0] == 3:
                 break
             _require(i < limit, f"{name}: no end marker within {limit} rows")
-            _require(row[0] == 9 and not any(row[2:10]) and not any(row[11:]), f"{name} row {i}: not a call row")
-            entry(row[10], f"{name} row {i} action")
+            if row[0] == 0:
+                dest = row[2]
+                _require((dest == labels.get("home_league") or screens.get(dest) == row[1]) and not any(row[3:]),
+                         f"{name} row {i}: unknown screen")
+                if dest in screens:
+                    _require(struct.unpack("<I", read(dest, 4))[0] == row[1]
+                             and struct.unpack("<I", read(dest + 8, 4))[0] == 0xF40F0,
+                             f"{name} row {i}: foreign spreadsheet descriptor")
+            else:
+                _require(row[0] == 9 and not any(row[2:10]) and not any(row[11:]), f"{name} row {i}: not a call row")
+                entry(row[10], f"{name} row {i} action")
             table.append(string(row[1]))
         receipt["rows"][name] = table
     _require(len(receipt["rows"]["apartment"]) == len(HOME_ROWS) <= MAX_VISIBLE_ROWS, "Career Home must show every row")
@@ -497,6 +528,7 @@ def check_static(payload):
         string(labels[key])
     receipt.update(section=hex(VA), size=SIZE, content_bytes=len(content), spare_bytes=SIZE - HEADER - len(content),
                    season_weeks=weeks,
-                   mycareer_spare_bytes=mode.TAG_OFFSET - (mode.code_for(code["va"], data["va"], home=apartment_fields(labels))[1]["content_end"] - code["va"]))
+                   mycareer_spare_bytes=mode.TAG_OFFSET - (mode.code_for(code["va"], data["va"], home=apartment_fields(labels),
+                   previous=mode.previous_revision(payload))[1]["content_end"] - code["va"]))
     _require(receipt["mycareer_spare_bytes"] >= 0, "MyCareer code budget exceeded")
     return receipt

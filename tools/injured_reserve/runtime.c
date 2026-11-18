@@ -119,6 +119,8 @@ static u32 weeks_out(const u8 *p) { return (*(const u32 *)(p + 0x20) >> 22) & 0x
 static u32 count_of(const u8 *club) { return club[TEAM_COUNT]; }
 
 static i32 played(u32 c) {
+    /* Stage 7 uses a separate preseason grid, replaced on opening day. */
+    if (STAGE_GET() < 8) return 0;
     const u8 *cell = (const u8 *)GRID;
     i32 n = 0;
     for (u32 i = 0; i < GRID_CELLS; i++, cell += 8)
@@ -196,6 +198,17 @@ FC u32 ir_payroll(u8 *club) {
         total += SALARY_B(*(u16 *)(p + 0x0A), (w >> 20) & 0xF, (w >> 24) & 0xF);
     }
     return total;
+}
+
+/* Cap Manager forecasts and its three highest-paid rows share the retail loop at
+   0x347CA0. Feed its existing salary calculation the same active + IR membership as RECOUNT. */
+FC u32 ir_display_count(u8 *club) {
+    return count_of(club) + (MODE_GET() == 2 ? ir_count(club) : 0);
+}
+
+FC u8 *ir_display_player(u8 *club, u32 slot) {
+    u32 n = count_of(club);
+    return slot < n ? ((u8 **)club)[slot] : ir_get(club, slot - n);
 }
 
 static u32 place(u8 *p, u8 *club, u32 how) {
@@ -483,7 +496,7 @@ void ir_load_ext(u8 *office) {
             if (!p || locate(p, 0) >= 0) continue;
             u32 st = ext ? nib(office, W_STATES, c * LEGACY + i) : 0;
             k->e[k->n].p = p;
-            k->e[k->n].base = (i16)(now - (i32)(st & 7));
+            k->e[k->n].base = (i16)(now - (STAGE_GET() >= 8 ? (i32)(st & 7) : 0));
             k->e[k->n].flags = (st & 8) ? F_SEASON : 0;
             k->e[k->n].how = HOW_LOAD;
             k->n++;
@@ -495,7 +508,7 @@ void ir_load_ext(u8 *office) {
                 u8 *p = table + 0x54 * index;
                 if (index >= players || k->n >= CAP || locate(p, 0) >= 0 || listed_anywhere(p)) { S->dropped++; continue; }
                 k->e[k->n].p = p;
-                k->e[k->n].base = (i16)(now - (i32)(st & 7));
+                k->e[k->n].base = (i16)(now - (STAGE_GET() >= 8 ? (i32)(st & 7) : 0));
                 k->e[k->n].flags = (st & 8) ? F_SEASON : 0;
                 k->e[k->n].how = HOW_LOAD;
                 k->n++;
@@ -504,6 +517,12 @@ void ir_load_ext(u8 *office) {
         mirror(c);
     }
     if (ext) S->loads_extended++; else S->loads_legacy++;
+    if (MODE_GET() == 2) {
+        for (u32 c = 0; c < CLUBS; c++) {
+            u8 *club = CLUB_AT(c);
+            if (club) RECOUNT(club);
+        }
+    }
     S->magic = 0x52493236u;
     S->version = 1;
 }

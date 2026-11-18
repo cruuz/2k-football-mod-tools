@@ -49,7 +49,7 @@ def rel_target(site, call):
 
 class SourceTests(unittest.TestCase):
     def test_revision_allocation_and_state(self):
-        self.assertEqual(owner.REVISION, 17)
+        self.assertEqual(owner.REVISION, 18)
         self.assertEqual(owner.CODE_SIZE, 6336)
         code, labels = owner.code_for(CODE_VA, DATA_VA)
         self.assertEqual(len(code), owner.CODE_SIZE)
@@ -74,20 +74,23 @@ class SourceTests(unittest.TestCase):
                          [(0x8CA18, '0f8421050000', 'e92205000090')])
         self.assertEqual((owner.GAMECAST_PANEL_GATE[0], owner.GAMECAST_PANEL_GATE[1].hex()), (0x8C465, '0f8417050000'))
 
-    def test_the_hook_is_the_backdrops_call_of_the_panel_draw(self):
+    def test_pause_root_dispatch_and_previous_backdrop_hook(self):
         va, original = owner.PAUSE_HOOK
-        self.assertEqual((va, original.hex()), (0x65092, 'e869790200'))
-        self.assertEqual(rel_target(va, original), PANEL_DRAW)
+        self.assertEqual((va, original.hex()), (0x6C096, 'e935ffffff'))
+        self.assertEqual(rel_target(va, original), 0x6BFD0)
+        self.assertEqual(rel_target(*owner.PAUSE_HOOK_R17), PANEL_DRAW)
+        self.assertEqual(owner.hooks(17)[owner.PAUSE_HOOK_NAME], owner.PAUSE_HOOK_R17)
         self.assertEqual(owner.hooks()[owner.PAUSE_HOOK_NAME], owner.PAUSE_HOOK)
-        for earlier in owner.EARLIER_REVISIONS:
+        for earlier in (16, 15):
             self.assertNotIn(owner.PAUSE_HOOK_NAME, owner.hooks(earlier))
 
-    def test_the_stub_calls_the_panel_draw_first_then_the_engine_and_returns(self):
+    def test_root_stub_calls_native_backdrop_then_engine_and_returns(self):
         code, labels = owner.code_for(CODE_VA, DATA_VA)
         at = labels[owner.PAUSE_HOOK_NAME] - CODE_VA
         stub = code[at:at + 64]
-        self.assertEqual(rel_target(labels[owner.PAUSE_HOOK_NAME], stub[:5]), PANEL_DRAW)
-        self.assertEqual(stub[5:7].hex(), '9c60')                      # pushfd; pushad: the saved frame, as every owner hook
+        self.assertEqual(stub[:7], bytes.fromhex('813cc1') + struct.pack('<I', owner.ROOT_PAUSE_MENU))
+        self.assertEqual(rel_target(labels[owner.PAUSE_HOOK_NAME] + 14, stub[14:19]), 0x6BFD0)
+        self.assertEqual(stub[19:21].hex(), '9c60')                      # pushfd; pushad: the saved frame, as every owner hook
         end = stub.index(b'\xc3', 7)
         body = stub[:end + 1]
         self.assertIn(b'\x68' + struct.pack('<I', DATA_VA), body)        # push the owner's data page (the engine State)
@@ -102,9 +105,9 @@ class SourceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_scorebug_sprite_code_r15 as r15
         for earlier in owner.EARLIER_REVISIONS:
             body, labels = owner.code_for(CODE_VA, DATA_VA, earlier)
-            self.assertEqual(len(body), owner.EARLIER_CODE_SIZE)
-            self.assertNotIn(owner.PAUSE_HOOK_NAME, labels)
-            self.assertNotIn('sprite_pause_draw', labels)
+            self.assertEqual(len(body), owner.CODE_SIZE if earlier == 17 else owner.EARLIER_CODE_SIZE)
+            self.assertEqual(owner.PAUSE_HOOK_NAME in labels, earlier == 17)
+            self.assertEqual('sprite_pause_draw' in labels, earlier == 17)
         self.assertNotIn('sprite_pause_draw', r16.LABELS)
         self.assertEqual(len(r16.CODE), len(r15.CODE))
         # Revision 15 -> 16 changed the play-call guard's address (0x8C465 -> 0x8CA18): two bytes of the engine.
@@ -144,7 +147,7 @@ class RetailPremiseTests(unittest.TestCase):
 def earlier_install(retail, earlier):
     """What apply() wrote for an earlier revision (its allocation, body, hooks and edits), for the recognizer tests."""
     prepared, _ = scene.apply_xbe(retail)
-    prepared, _ = space.apply(prepared, ((owner.OWNER, 'code', owner.EARLIER_CODE_SIZE, 16), (owner.OWNER, 'data', owner.DATA_SIZE, 16)))
+    prepared, _ = space.apply(prepared, ((owner.OWNER, 'code', owner.CODE_SIZE if earlier == 17 else owner.EARLIER_CODE_SIZE, 16), (owner.OWNER, 'data', owner.DATA_SIZE, 16)))
     code, data = owner.sites(prepared, earlier)
     body, labels = owner.code_for(code['va'], data['va'], earlier)
     installed, _ = space.install_code(prepared, owner.OWNER, body)
@@ -176,12 +179,13 @@ class StatusAndPreviousTests(unittest.TestCase):
         self.assertEqual(owner.status(self.patched), 'applied')
         code, data = owner.sites(self.patched)
         labels = owner.code_for(code['va'], data['va'])[1]
-        self.assertEqual(self.at(self.patched, 0x65092, 5), b'\xe8' + struct.pack('<i', labels[owner.PAUSE_HOOK_NAME] - 0x65092 - 5))
+        self.assertEqual(self.at(self.patched, 0x65092, 5), owner.PAUSE_HOOK_R17[1])
+        self.assertEqual(self.at(self.patched, 0x6C096, 5), owner.hook_bytes(owner.PAUSE_HOOK_NAME, labels))
         # The 2004 panel stays hidden (the jump at 0x8CA18), the Gamecast's panel draw stays retail.
         self.assertEqual(self.at(self.patched, 0x8CA18, 6), GUARD)
         self.assertEqual(self.at(self.patched, 0x8C465, 6).hex(), '0f8417050000')
         self.assertEqual({e['label'] for e in self.receipt['edits']} & {owner.PAUSE_HOOK_NAME}, {owner.PAUSE_HOOK_NAME})
-        self.assertEqual(self.receipt['binding_revision'], 17)
+        self.assertEqual(self.receipt['binding_revision'], 18)
         self.assertEqual(owner.apply(self.patched)[1]['status'], 'already_applied')
 
     def test_earlier_exact_installs_read_previous_and_are_refused_in_place(self):
@@ -411,31 +415,30 @@ class PauseDrawTests(unittest.TestCase):
         self.assertEqual(m.shift(), 0)
 
     def test_the_stub_at_the_hook_site_runs_the_retail_panel_off_and_the_bar_on(self):
-        """The applied executable: the backdrop's tail (call at 0x65092, then its epilogue) reaches the stub; the panel draw
-        exits at the owner's jump (none of its body runs) and the bar draws only while paused."""
+        """Follow the real manager stack and render-class dispatcher on the applied binary."""
         patched, _ = owner.apply(_retail())
         m = Machine(patched, installed=True)
-        site = scene.layout.sbpos.va_to_off(patched, 0x65092)
-        self.assertEqual(rel_target(0x65092, patched[site:site + 5]), m.labels[owner.PAUSE_HOOK_NAME])
-        panel_body = []
-        m.hooks.append(m.uc.hook_add(m.u.UC_HOOK_CODE, lambda _u, at, _s, _d: panel_body.append(at), begin=0x8CA1E, end=0x8CF3E))
-        for paused in (False, True, False):
-            m.reset()
-            m.uc.mem_write(0x8CA18, patched[scene.layout.sbpos.va_to_off(patched, 0x8CA18):][:6])
-            m.uc.ctl_remove_cache(0x8CA18, 0x8CA1E)
-            if paused:
-                m.pause()
-            m.fc360.clear()
-            panel_body.clear()
-            m.put(m.SP, m.STOP)
-            m.reg('ESP', m.SP)
-            m.reg('EBP', m.SP - 4)
-            m.uc.emu_start(0x65092, m.STOP, count=200000)
-            self.assertEqual(m.reg('EIP'), m.STOP)
-            self.assertEqual(panel_body, [], 'the retail play-call panel never draws')
-            self.assertEqual(len(m.fc360), 1 if paused else 0, paused)
-            self.assertEqual(m.get(GATE), 0)
-            self.assertEqual(max(m.quad_tops()[:3]), PAUSE_TOP if paused else -6457)
+        root = owner.ROOT_PAUSE_MENU
+        manager = 0xA84B18
+        for descriptor, paused in ((root, True), (0x503F5C, True), (0x5038C8, True), (0x4E8D70, True),
+                                   (0x504248, True), (root, False), (root, True)):
+            with self.subTest(descriptor=hex(descriptor), paused=paused):
+                m.reset()
+                m.put(manager + 0x100, 6 if descriptor == root else 7)
+                m.put(manager + 6 * 8, root)
+                m.put(manager + 7 * 8, descriptor)
+                if paused:
+                    m.pause()
+                # Hardware backdrop submission ends here. Native stack, branch, overlay and gate execute.
+                called = []
+                m.hooks.append(m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: called.append(m.reg('EDX')),
+                                             begin=0x6BFD0, end=0x6BFD0))
+                m.stub_return(0x6BFD0)
+                m.call(0x6C080, ecx=manager)
+                self.assertEqual(len(called), 1)
+                self.assertEqual(len(m.fc360), int(paused and descriptor == root))
+                self.assertEqual(m.get(GATE), 0)
+                self.assertEqual(max(m.quad_tops()[:3]), PAUSE_TOP if m.fc360 else -6457)
 
 
 if __name__ == '__main__':

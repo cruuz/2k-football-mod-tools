@@ -108,10 +108,13 @@ def _relative_pointer(body: bytes, offset: int) -> int | None:
     """Resolve the engine's ``field_offset + int32le(field) - 1`` rule."""
     if offset + 4 > len(body):
         return None
-    raw = struct.unpack_from("<I", body, offset)[0]
+    raw = struct.unpack_from("<i", body, offset)[0]
     if raw == 0:
         return None
-    return offset + raw - 1
+    target = offset + raw - 1
+    if not 0 <= target < len(body):
+        raise VerifyError(f"Relative pointer at 0x{offset:x} is outside the roster")
+    return target
 
 
 def decode_psu(path: Path) -> DecodedSave:
@@ -489,6 +492,24 @@ def changed_ranges(before: bytes, after: bytes) -> list[tuple[int, int]]:
     return spans
 
 
+def _player_names(payload: bytes, table: tuple[int, int]) -> dict:
+    base = 0 if payload.startswith(_ROST_MAGIC) else _FRANCHISE_PREFIX
+    body = payload[base + _WRAPPER_SIZE:]
+    count, start = table
+    names = {}
+    for index in range(count):
+        for field, offset in (("first", 0x10), ("last", 0x14)):
+            ptr = _relative_pointer(body, start + index * 0x54 + offset)
+            if ptr is None:
+                continue
+            end = ptr
+            while end + 2 <= len(body) and body[end:end + 2] != b"\0\0":
+                end += 2
+            _require(end + 2 <= len(body), f"player {index} {field} name has no terminator")
+            names[index, field] = body[ptr:end]
+    return names
+
+
 def verify(original: DecodedSave, edited: DecodedSave,
            declared: list[dict] | None = None) -> dict:
     report: dict[str, object] = {"schema": "nfl2k5_ps2_save_verify/v1"}
@@ -542,6 +563,14 @@ def verify(original: DecodedSave, edited: DecodedSave,
         _require(before_offset == after_offset,
                  f"ROST table {name} moved; the arena must not be relocated")
     report["tables_checked"] = len(before_tables)
+    if declared and all({"player", "field", "value"} <= item.keys() for item in declared):
+        expected = _player_names(original.payload, before_tables["primary_players"])
+        for item in declared:
+            key = (int(item["player"]), item["field"])
+            _require(key in expected, f"No original name for {key}")
+            expected[key] = item["value"].encode("utf-16le")
+        _require(_player_names(edited.payload, after_tables["primary_players"]) == expected,
+                 "A player name differs from the declared changes")
     report["payload_bytes"] = len(edited.payload)
     report["crc32"] = zlib.crc32(edited.payload) & 0xFFFFFFFF
     report["result"] = "PASS"

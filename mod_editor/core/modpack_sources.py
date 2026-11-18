@@ -153,20 +153,31 @@ def resolve(document, root):
     return document
 
 
-def materialize(recipe, directory):
+def materialize(recipe, directory, *, resume=False, console_target=None):
     """Create editable absolute-path working copies; frozen assets remain intact."""
     m._require(recipe.get("schema") == "softdrink_sources/v1", "Pack has no portable Studio sources")
     root = f._path(m.platform_compat.absolute_path(f._output_path(directory)))
     local = resolve(recipe, root)
+    if console_target is not None:
+        from . import nfl2k5_console_memory as memory
+        value = memory.normalize(console_target)
+        local[memory.FIELD] = value
+        local["overrides"] = {**local.get("overrides", {}), memory.FIELD: value}
     project = compose_project(resolve(json.loads(Path(local["project"]).read_text(encoding="utf-8")), root))
     project_path = f._contained_path(root, "SOFTDRINK-league-project.json")
     recipe_path = f._contained_path(root, "SOFTDRINK-build-recipe.json")
-    m._require(not project_path.exists() and not recipe_path.exists(), "Choose a new source folder to preserve your edits")
-    with f._transaction(project_path) as part:
-        part.write_text(json.dumps(project, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     local["project"] = str(project_path)
-    with f._transaction(recipe_path) as part:
-        part.write_text(json.dumps(local, indent=2), encoding="utf-8", newline="\n")
+    files = ((project_path, (json.dumps(project, indent=2, sort_keys=True) + "\n").encode("utf-8")),
+             (recipe_path, json.dumps(local, indent=2).encode("utf-8")))
+    # Verify both destinations before writing. An interruption between files is resumable.
+    for path, data in files:
+        if path.exists():
+            m._require(resume and path.is_file() and path.stat().st_size == len(data) and path.read_bytes() == data,
+                       f"Choose a new source folder to preserve your edits in {path.name}")
+    for path, data in files:
+        if not path.exists():
+            with f._transaction(path) as part:
+                part.write_bytes(data)
     return local
 
 
@@ -185,10 +196,10 @@ def write_bundle(output, recipe, assets, *, overwrite=False):
                 asset_count=len(rows), assets_bytes=sum(r["length"] for r in rows), compressed_bytes=sum(r["compressed_bytes"] for r in rows))
 
 
-def extract_bundle(bundle, directory, expected):
+def extract_bundle(bundle, directory, expected, *, resume=False, progress=None):
     bundle = f._path(bundle)
     m._require(isinstance(expected, dict) and {"size", "sha256"} <= expected.keys(), "The pack does not declare an optional sources file")
-    m._require(Path(bundle).stat().st_size == expected["size"] and m.hash_file(bundle) == expected["sha256"],
+    m._require(Path(bundle).stat().st_size == expected["size"] and m.hash_file(bundle, progress=progress) == expected["sha256"],
                "This sources file does not match the finished pack")
     m._zip_directory_guard(f._path(bundle))
     with zipfile.ZipFile(bundle) as z:
@@ -203,7 +214,7 @@ def extract_bundle(bundle, directory, expected):
         m._require(sum(a["length"] for a in doc["assets"]) <= 8 * 1024**3, "Sources exceed 8 GiB")
     # Same streamed SHA-256 and safe-path extractor as embedded sources.
     manifest = m.Manifest("sources", "", "", "", "", {}, {}, {}, {}, (), recipe=doc["recipe"], raw=doc)
-    f.extract_assets(m.Pack(Path(bundle), manifest, Path(bundle).stat().st_size), directory)
+    f.extract_assets(m.Pack(Path(bundle), manifest, Path(bundle).stat().st_size), directory, resume=resume, progress=progress)
     return doc["recipe"]
 
 
@@ -230,8 +241,9 @@ def build_project(plan, project, progress):
     mod_build.preflight_project_options(plan, document)
     mod_build.preflight_board_source(plan, progress)
     if not document["edits"]:
-        return mod_build.build(plan, progress)
-    cache = Nfl2k5SourceCache().index(Path(plan.source))
+        return mod_build.build(plan, progress, require_change=True)
+    cache = Nfl2k5SourceCache().index(Path(plan.source), progress=progress)
     def project_progress(event):
         progress(getattr(event, "message", str(event)), getattr(event, "completed", 0), getattr(event, "total", 0))
-    return mod_build.build(plan, progress, _project_builder=lambda output: service.build(cache, Path(project), output, project_progress))
+    return mod_build.build(plan, progress, require_change=True,
+                           _project_builder=lambda output: service.build(cache, Path(project), output, project_progress))

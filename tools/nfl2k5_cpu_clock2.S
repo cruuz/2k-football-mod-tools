@@ -248,7 +248,7 @@ fg_late:
 /* ---- End-of-half kneel. Site 0x206F10, entry of the CPU kneel test (called by the native caller 0x20B180 and the
  * VIP situation key 0xF7010). Q2: kneel when the offense is on its own side (50 to 92 yards out), down 1 to 3, at
  * most 60 s left, its native estimate asks for no time (it is not trying to score), and the native kneel formula
- * (4 - defense timeouts - down) x play clock + current play clock + 15 > t holds. Other quarters: native. */
+ * (4 - defense timeouts - down) x play clock, plus the current play clock only while running, exceeds t. Other quarters: native. */
 half_kneel:
     cmp dword ptr [0xe602c4], 2
     je 1f
@@ -296,9 +296,17 @@ half_kneel:
     mov eax, dword ptr [eax+8]
     test eax, eax
     jz 8f
+    .ifdef BETA80
     mov ecx, 4
+    .else
+    push 4
+    pop ecx
+    .endif
     sub ecx, dword ptr [eax+4]        /* defense timeouts */
     sub ecx, ebx
+    .ifndef BETA80
+    js 8f                            /* spare defensive timeout can stop the current cycle too */
+    .endif
     mov dword ptr [esp+4], ecx
     fild dword ptr [esp+4]
     fmul dword ptr [0xe602ac]         /* native play-clock reset */
@@ -307,12 +315,20 @@ half_kneel:
     jnz 6f
     mov eax, dword ptr [0xe60294]
     fadd dword ptr [eax+0x10]         /* current play clock */
-6:  fadd dword ptr [c15]
+6:
+.ifdef BETA80
+    fadd dword ptr [c15]
+.endif
     fcomp dword ptr [esp]
     fnstsw ax
     test ah, 0x41                     /* formula <= t: no kneel */
     jnz 8f
+    .ifdef BETA80
     mov eax, 1
+    .else
+    push 1
+    pop eax
+    .endif
     jmp 9f
 7:  fstp st(0)
 8:  xor eax, eax
@@ -452,13 +468,30 @@ ot_window:
     ret
 4:  jmp late_time
 
+/* Site 0x20a6b0: native normally counts touchdowns as seven and recognizes a
+ * one-point remainder as a conversion. At a 16-point deficit the first of the
+ * two touchdowns can also be followed by a two-point conversion. */
+.ifndef BETA80
+.global estimate_score
+estimate_score:
+    cmp esi, -16
+    jne 1f
+    inc esi
+1:  add esi, 7
+    inc ebx
+    cmp esi, -1
+    ret
+.endif
+
     .balign 4
 c600:   .float 600.0
 c300:   .float 300.0
 c120:   .float 120.0
 c60:    .float 60.0
 c40:    .float 40.0
+.ifdef BETA80
 c15:    .float 15.0
+.endif
 c0:     .float 0.0
 c4572:  .float 4572.0
 c8412:  .float 8412.48

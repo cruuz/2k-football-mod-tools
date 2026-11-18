@@ -116,6 +116,7 @@ class Ps2Save:
     # original timestamps/attributes byte-for-byte.
     _entries: dict[str, bytes] = field(default_factory=dict, repr=False)
     _dir_entry: bytes | None = field(default=None, repr=False)
+    _name_slots: list[dict[str, object]] | None = field(default=None, repr=False, compare=False)
 
     @property
     def payload_name(self) -> str:
@@ -742,6 +743,14 @@ def player_name_slots(save: Ps2Save) -> list[dict[str, object]]:
     Capacity is the exact byte span the stored UTF-16LE string occupies
     including its terminator; a replacement may not exceed it.
     """
+    if save._name_slots is not None:
+        payload = save.payload
+        result = []
+        for slot in save._name_slots:
+            offset, size = int(slot["file_offset"]), int(slot["capacity_bytes"])
+            value = payload[offset:offset + size].decode("utf-16le", "replace").split("\0", 1)[0]
+            result.append(dict(slot, value=value))
+        return result
     base, _length = roster_region(save)
     body_offset = base + WRAPPER_SIZE
     body = save.payload[body_offset:]
@@ -763,6 +772,8 @@ def player_name_slots(save: Ps2Save) -> list[dict[str, object]]:
             end = pointer
             while end + 2 <= len(body) and body[end : end + 2] != b"\x00\x00":
                 end += 2
+            if end + 2 > len(body):
+                raise SaveError(f"player {index} {label} name is unterminated")
             slots.append({
                 "player": index,
                 "field": label,
@@ -770,7 +781,17 @@ def player_name_slots(save: Ps2Save) -> list[dict[str, object]]:
                 "capacity_bytes": end - pointer + 2,
                 "value": body[pointer:end].decode("utf-16le", "replace"),
             })
-    return slots
+    previous = None
+    previous_end = 0
+    for slot in sorted(slots, key=lambda item: int(item["file_offset"])):
+        start = int(slot["file_offset"])
+        end = start + int(slot["capacity_bytes"])
+        if previous is not None and start < previous_end:
+            previous["shared"] = slot["shared"] = True
+        if end >= previous_end:
+            previous, previous_end = slot, end
+    save._name_slots = slots
+    return [dict(slot) for slot in slots]
 
 
 def set_player_name(save: Ps2Save, player: int, field_name: str, value: str) -> dict:
@@ -788,7 +809,14 @@ def set_player_name(save: Ps2Save, player: int, field_name: str, value: str) -> 
     if not matches:
         raise SaveError(f"player {player} has no {field_name}-name slot")
     slot = matches[0]
-    encoded = value.encode("utf-16le") + b"\x00\x00"
+    if slot.get("shared") and value != slot["value"]:
+        raise SaveError(f"player {player} {field_name} shares a name slot with another name")
+    if "\0" in value:
+        raise SaveError("A name cannot contain a null character")
+    try:
+        encoded = value.encode("utf-16le") + b"\x00\x00"
+    except UnicodeEncodeError as exc:
+        raise SaveError("This name contains an incomplete Unicode character") from exc
     capacity = int(slot["capacity_bytes"])  # type: ignore[arg-type]
     if len(encoded) > capacity:
         raise SaveError(

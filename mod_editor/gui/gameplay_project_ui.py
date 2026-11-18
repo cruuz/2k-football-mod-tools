@@ -24,6 +24,9 @@ def quiet(panel):
 def capture(panel):
     state = saved.from_plan(panel.plan())
     state.update(panel.music_build_settings())
+    artwork = panel.softdrink_project_field.text().strip()
+    if artwork or panel.softdrink_project_check.isChecked():
+        state.update(softdrink_project=artwork, include_softdrink_project=panel.softdrink_project_check.isChecked())
     state.update(deepcopy(panel._senior_bowl_options))
     # A prepared file can exist before its option is enabled.
     state["my_career_setup"] = panel.my_career_setup_field.text().strip() or None
@@ -76,6 +79,16 @@ def restore(panel, state):
         panel.screen_timing_combo.setCurrentText(choices["screen_timing"] or "D")
         for key, box in getattr(panel, "abilities_lock_checks", {}).items():
             box.setChecked(bool(choices.get(key, True)))
+        panel._apply_abilities_star_boxes(choices)
+        panel._apply_abilities_access(choices["abilities_star_access"])
+        panel._team_number_scale = deepcopy(choices["team_number_scale"])
+        _combo(panel.stock_age_combo, choices["stock_age_policy"])
+        panel.honors_history_field.setText("" if choices["honors_history"] == "builtin" else choices["honors_history"])
+        artwork = choices.get("softdrink_project", "")
+        panel.softdrink_project_field.setText(artwork)
+        panel.softdrink_project_check.setChecked(choices.get("include_softdrink_project", bool(artwork)))
+        for widget in (panel.softdrink_project_field, panel.softdrink_project_check, panel.softdrink_art_button):
+            widget.setVisible(bool(artwork) or panel.softdrink_project_check.isChecked())
         for key in ("team_history", "career_stats", "prospect_names", "roster_edits", "espn25_plan", "weather_plan", "music_project",
                     "music_library", "hires_folder", "scorebug_folder", "my_career_setup", "name", "author"):
             getattr(panel, key + "_field").setText(choices[key] or "")

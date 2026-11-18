@@ -1971,7 +1971,7 @@
  "receipt": {
   "team": "NYG",
   "offense_pack": "data/playbooks/softdrink_giants_modern.2k5book",
-  "offense_pack_sha256": "f1eb221c536724ce9fc6cecb13110f968760f5d6562a913648f90f58852d7910",
+  "offense_pack_sha256": "80aa139636d4b8f428da7b550d55e7c7d16dd7036a5d298be4378a668d6a4a92",
   "source_fingerprint": "08ee973c745d9f51ba6fed05dfc8fbd188e77f48cc0a94d1100a6e5146f4608c",
   "replacement_sha256": "4a156618707ec68b66439a557d629fac752e665c0061b64041bfed685038850a",
   "semantic_sha256": "3c52d55ee441b5fb914848eb684415adb9dd3f64329df783386b01343bce97a4",

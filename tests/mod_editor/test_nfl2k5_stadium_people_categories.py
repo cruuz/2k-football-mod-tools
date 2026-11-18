@@ -164,6 +164,18 @@ class ClassifyStadiumPeopleTexturesTests(unittest.TestCase):
             {},
         )
 
+    def test_all_materials_sharing_a_texture_contribute_to_the_group(self) -> None:
+        from types import SimpleNamespace
+        from mod_editor.core.nfl2k5_stadium_studio import Nfl2k5StadiumStudio
+        texture = _tex("t1")
+        materials = [_mat("crowda", "t1"), _mat("field_grass", "t1", ("coach",))]
+        for ordered in (materials, list(reversed(materials))):
+            details = SimpleNamespace(textures=(texture,), materials=ordered)
+            studio = SimpleNamespace(_scenes=[SimpleNamespace(name="stadium")], scene_details=lambda _: details)
+            groups = Nfl2k5StadiumStudio.people_and_sideline_textures(studio)
+            self.assertEqual({group: entries for group, _label, entries in groups},
+                             {"crowd": (texture,), "coaches": (texture,)})
+
     def test_specific_role_wins_in_mapped_name(self) -> None:
         self.assertEqual(
             classify_stadium_people_textures(

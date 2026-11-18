@@ -226,7 +226,8 @@ class V08DiscStatesTests(_PanelCase):
             box = getattr(panel, key + "_check", None)
             if box is None:
                 continue                                            # my_career_home has no box of its own
-            self.assertIn(panel._badges[key].text(), ("Needs update", "Beta 79 version: rebuild from retail"), key)
+            rebuild_label = "Earlier version: rebuild from retail" if key == "pass_rush_stats" else "Beta 79 version: rebuild from retail"
+            self.assertIn(panel._badges[key].text(), ("Needs update", rebuild_label), key)
             if panel._badges[key].text() != "Needs update":
                 self.assertFalse(box.isEnabled(), key)
                 self.assertIn("build from your retail game", box.toolTip(), key)

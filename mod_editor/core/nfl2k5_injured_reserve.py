@@ -37,6 +37,7 @@ import hashlib
 import struct
 
 from . import nfl2k5_injured_reserve_code as runtime
+from . import nfl2k5_injured_reserve_code_b780 as previous_runtime
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
@@ -80,6 +81,10 @@ HOOKS = (
     ("save", 0x2D09FD, "be40cce300", "ir_save_stub", 0xE8, 5),
     ("load", 0x2D0F70, "c744241000000000", "ir_load_stub", 0xE8, 8),
     ("start", 0x13EEDA, "e8c15ff8ff", "ir_start_hook", 0xE8, 5),
+    ("forecast_first_count", 0x347CA8, "8a901c010000", "ir_display_count_stub", 0xE8, 6),
+    ("forecast_player", 0x347CE0, "8b34883b74243c", "ir_display_player_stub", 0xE8, 7),
+    ("forecast_count", 0x347D98, "0fb6901c010000", "ir_display_count_stub", 0xE8, 7),
+    ("unspecified_injury_status", 0x13E255, "33c05f59c3", "ir_unknown_status", 0xE9, 5),
 )
 STAMP = hashlib.sha256(runtime.CODE).hexdigest()[:16]
 _ERRORS = (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, AttributeError)
@@ -94,16 +99,16 @@ def _require(ok, message):
         raise InjuredReserveOwnerError(message)
 
 
-def code_for(code_va: int, store_va: int) -> bytes:
+def code_for(code_va: int, store_va: int, *, revision=runtime) -> bytes:
     """The owned RX content: the template with its relocations applied and the config filled."""
-    out = bytearray(runtime.CODE)
-    for offset, kind, symbol, value in runtime.RELOCATIONS:
+    out = bytearray(revision.CODE)
+    for offset, kind, symbol, value in revision.RELOCATIONS:
         _require(symbol == "code", "unexpected injured reserve relocation")
         target = code_va + value + struct.unpack_from("<i", out, offset)[0]
         if kind == 2:
             target -= code_va + offset
         struct.pack_into("<I", out, offset, target & 0xFFFFFFFF)
-    struct.pack_into("<4I", out, CONFIG_AT, CONFIG_MAGIC, CONFIG_VERSION, store_va, 0)
+    struct.pack_into("<4I", out, revision.LABELS["ir_config"], CONFIG_MAGIC, CONFIG_VERSION, store_va, 0)
     _require(len(out) <= CODE_SIZE, "the injured reserve runtime exceeds its allocation")
     return bytes(out).ljust(CODE_SIZE, b"\xcc")
 
@@ -112,12 +117,14 @@ def _rel32(source_end, target):
     return struct.pack("<i", target - source_end)
 
 
-def sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
+def sites(code_va: int, *, revision=runtime) -> list[tuple[str, int, bytes, bytes]]:
     """Every executable edit of the modern install as (label, VA, retail bytes, patched bytes); the guard is
     separate (GUARD_VA) and the place hook's six bytes sit on top of it."""
     out = []
     for label, va, before, entry, opcode, length in HOOKS:
-        patched = bytes([opcode]) + _rel32(va + 5, code_va + runtime.LABELS[entry]) + b"\x90" * (length - 5)
+        if entry not in revision.LABELS:
+            continue
+        patched = bytes([opcode]) + _rel32(va + 5, code_va + revision.LABELS[entry]) + b"\x90" * (length - 5)
         out.append((label, va, bytes.fromhex(before), patched))
     return out
 
@@ -159,9 +166,17 @@ def _recognize(payload: bytes) -> str:
         return guard
     code_va, store_va = rows["code"]["va"], rows["data"]["va"]
     _require(guard == "hooked", "the Pro Bowl guard is missing under the modern install")
-    for _label, va, _before, patched in sites(code_va):
+    code = image.read(code_va, CODE_SIZE)
+    revision = next((rev for rev in (runtime, previous_runtime) if code == code_for(code_va, store_va, revision=rev)), None)
+    _require(revision is not None, "injured reserve code is foreign")
+    for _label, va, _before, patched in sites(code_va, revision=revision):
         _require(image.read(va, len(patched)) == patched, f"injured reserve site {va:#x} is foreign")
-    _require(image.read(code_va, CODE_SIZE) == code_for(code_va, store_va), "injured reserve code is foreign")
+    if revision is previous_runtime:
+        previous_vas = {va for _, va, _, _ in sites(code_va, revision=previous_runtime)}
+        for _, va, original, _ in sites(code_va):
+            if va not in previous_vas:
+                _require(image.read(va, len(original)) == original, f"foreign injured reserve extension at {va:#x}")
+        return "previous"
     return "applied"
 
 
@@ -185,7 +200,7 @@ def apply(payload: bytes, mode: str = "modern") -> tuple[bytes, dict]:
     state = status(payload)
     _require(state != "foreign", "the source executable's injured reserve sites are foreign or partially patched")
     common = dict(owner=OWNER, mode=mode, experimental=True, runtime_witnessed=False)
-    if state == "applied" or (mode == "guard" and state == "guard"):
+    if state == "applied" or (mode == "guard" and state in ("guard", "previous")):
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
     before = payload
     edits = []
@@ -209,7 +224,9 @@ def apply(payload: bytes, mode: str = "modern") -> tuple[bytes, dict]:
             payload, receipt = space.extend_scaleout(payload, REQUESTS)
     rows = allocations(payload)
     code_va, store_va = rows["code"]["va"], rows["data"]["va"]
-    payload, _ = space.install_code(payload, OWNER, code_for(code_va, store_va))
+    old_code = code_for(code_va, store_va, revision=previous_runtime) if state == "previous" else None
+    old_sites = {va: after for _, va, _, after in sites(code_va, revision=previous_runtime)}
+    payload, _ = space.install_code(payload, OWNER, code_for(code_va, store_va), previous=old_code)
     image = XbeImage(payload)
     buf = bytearray(payload)
     off = image.offset(GUARD_VA, len(GUARD))
@@ -217,7 +234,7 @@ def apply(payload: bytes, mode: str = "modern") -> tuple[bytes, dict]:
     for label, va, retail, patched in sites(code_va):
         off = image.offset(va, len(patched))
         now = bytes(buf[off:off + len(patched)])
-        _require(now == retail or (va == GUARD_VA and now == GUARD[:len(patched)]), f"injured reserve site {va:#x} is not retail")
+        _require(now == retail or (state == "previous" and now == old_sites.get(va)) or (va == GUARD_VA and now == GUARD[:len(patched)]), f"injured reserve site {va:#x} is not retail")
         buf[off:off + len(patched)] = patched
         edits.append(dict(label=label, va=hex(va), before=retail.hex(), after=patched.hex()))
     _repin(buf)
@@ -231,7 +248,7 @@ def apply(payload: bytes, mode: str = "modern") -> tuple[bytes, dict]:
 
 
 def store_va(payload: bytes) -> int | None:
-    rows = allocations(payload) if status(payload) == "applied" else {}
+    rows = allocations(payload) if status(payload) in ("applied", "previous") else {}
     return rows["data"]["va"] if rows else None
 
 

@@ -383,7 +383,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("modern_clock_led", _clock_led.BUILD_CAPTION, _clock_led.HELP_TEXT))  # b778-sd4
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 # b780 n6: options whose beta-79 install reads "previous" in inspect(); the build upgrades it in place
-PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory",
+PREVIOUS_UPGRADE_KEYS = {"modern_injured_reserve": "modern injured reserve", "honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory",
                          # b780 rev1: these two read "previous" on a v0.8 disc too, and the build upgrades them in
                          # place (catch_slider_patch.apply, nfl2k5_sim_cb_tackles.apply); their boxes were greyed out
                          "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit",
@@ -420,7 +420,8 @@ def rebuild_only_reason(state: Mapping[str, object]) -> str:
     return ""
 # b780 n6: beta-79 installs this release reads ("previous") but cannot update in place (they grew, or MyCareer and its
 # companions are linked together); the option stays off and says to rebuild from the retail game
-PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
+PREVIOUS_MULTIPLE_RELEASES = {"pass_rush_stats", "history_screen"}
+PREVIOUS_REBUILD_KEYS = {"history_screen": "Franchise History", "my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
                          "pass_rush_stats": "pass rush stats", "scorebug_runtime": "scorebug effects",
                          "sim_realism": "simulated season realism",
                          # b780 studio1: the released v0.8 disc reads "previous" for these two as well. Rookie faces cannot
@@ -555,6 +556,7 @@ class BuildPanel(QWidget):
         self.playbook_packs: list[str] = []
         self._music_shuffle_selection = None  # the Music page's playlist document (schema 1), set by the shell
         self._senior_bowl_options = {}
+        self._team_number_scale = {}
         self._guardian_players = None
         self._hires_budget_identity = None
         self._hires_budget_receipt = None
@@ -1218,6 +1220,12 @@ class BuildPanel(QWidget):
                                                       "first three seasons move up or down on their passing efficiency; a veteran QB never "
                                                       "loses ratings for a down year. Retirement ages follow NFL career lengths. Draft-day "
                                                       "ratings are unchanged.")
+        self.stock_age_combo = QComboBox()
+        self.stock_age_combo.addItem("2026 stock ages: preserve playing ages", "preserve_age")
+        self.stock_age_combo.addItem("2026 stock ages: keep historical birthdays", "keep_birthdates")
+        self.stock_age_combo.setToolTip("Applies to original roster players when the 2026 season and player growth are both selected.")
+        self.stock_age_combo.setAccessibleName("Stock player ages for 2026 progression")
+        f.addWidget(self.stock_age_combo)
         self.franchise_economy_check = self._option(
             f, "franchise_economy", tt.franchise_economy_patch.BUILD_CAPTION,
             "New franchises with the matching contract roster. Money displays in real dollars; contracts are fitted.",
@@ -2051,7 +2059,7 @@ class BuildPanel(QWidget):
         # b779-ui3: the qualifier badge sat beside the check box, so a long check box label plus a long
         # badge set the row's minimum width (a 425 px label + a 200 px badge at 100%, nearly 1,000 px on
         # Windows). It now gets its own line and wraps; the badge still names every qualifier at a glance.
-        badge_label = QLabel(badge)
+        badge_label = QLabel(badge, row)
         badge_label.setObjectName("optionBadge")
         badge_label.setWordWrap(True)
         badge_label.setContentsMargins(30, 0, 0, 0)
@@ -2061,7 +2069,7 @@ class BuildPanel(QWidget):
         badge_row.addWidget(badge_label)
         badge_row.addStretch(1)
         rl.addLayout(badge_row)
-        helper_label = WrappedLabel(helper)
+        helper_label = WrappedLabel(helper, row)
         helper_label.setObjectName("throwMuted")
         helper_label.setWordWrap(True)
         helper_label.setIndent(30)
@@ -2325,7 +2333,8 @@ class BuildPanel(QWidget):
                 applied.append(f"{name}: older revision ({needs})")
         for key, name in PREVIOUS_REBUILD_KEYS.items():  # b780 n6: beta-79 installs a rebuild from retail updates
             if state.get(key) == "previous":
-                applied.append(f"{name}: beta 79 revision (rebuild from retail to update)")
+                version = "earlier" if key in PREVIOUS_MULTIPLE_RELEASES else "beta 79"
+                applied.append(f"{name}: {version} revision (rebuild from retail to update)")
         foreign = [key.replace("_", " ") for key in mod_build.BuildPlan.__dataclass_fields__
                    if state.get(key) == "foreign"]
         settings = state.get("throw")
@@ -2374,7 +2383,7 @@ class BuildPanel(QWidget):
                                "position mixes.")
                 self._set_badge(key, "Needs update")
             elif previous_upgrade:
-                older = "a v0.9 test build" if key == "coach_career_fix" else "an older build (beta 79)"  # b780 hunt6
+                older = "a v0.9 test build" if key == "coach_career_fix" else "an older build"  # b780 hunt6
                 box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from {older} is installed. Select to "
                                "update it to this release's revision (in place).")
                 self._set_badge(key, "Needs update")
@@ -2389,9 +2398,10 @@ class BuildPanel(QWidget):
                 box.setToolTip("Already installed on this source.")
                 self._set_badge(key, "Already installed")
             elif key in PREVIOUS_REBUILD_KEYS and value == "previous":
-                box.setToolTip(f"The beta 79 {PREVIOUS_REBUILD_KEYS[key]} is installed on this source. This release cannot "
+                version = "Earlier" if key in PREVIOUS_MULTIPLE_RELEASES else "Beta 79"
+                box.setToolTip(f"The {version.lower()} {PREVIOUS_REBUILD_KEYS[key]} is installed on this source. This release cannot "
                                "update it in place; build from your retail game to get this release's version.")
-                self._set_badge(key, "Beta 79 version: rebuild from retail")
+                self._set_badge(key, version + " version: rebuild from retail")
             elif value == "foreign":
                 box.setToolTip("Not recognised: the bytes at this change's sites are neither retail nor this patch "
                                "(changed by another tool), so it can't be added here.")
@@ -2972,6 +2982,8 @@ class BuildPanel(QWidget):
         if not self._abilities_lock_sync:   # fx1: the Rosters page's lock boxes follow the preset (once, after the loop)
             self.abilities_locks_changed.emit(self.abilities_lock_settings())
         self._apply_abilities_access(values.get("abilities_star_access", tt.abilities_patch.DEFAULT_STAR_ACCESS))
+        self._team_number_scale = dict(values.get("team_number_scale") or {})
+        self.stock_age_combo.setCurrentIndex(self.stock_age_combo.findData(values.get("stock_age_policy", "preserve_age")))
         boxes = self._boxes()
         applied, skipped = [], []
         self._memory_ticks.clear()  # b780-m64b: the preset replaces the selection
@@ -3056,7 +3068,8 @@ class BuildPanel(QWidget):
         if state == "foreign":
             return "unrecognized source data"
         if state == "previous":                 # b780 studio1: it said "full disc required" about a full disc
-            return "the beta 79 version is installed; rebuild from retail to update it"
+            version = "earlier" if key in PREVIOUS_MULTIPLE_RELEASES else "beta 79"
+            return f"the {version} version is installed; rebuild from retail to update it"
         return "full disc required"
 
     def _boxes(self) -> dict[str, QCheckBox]:
@@ -3191,6 +3204,8 @@ class BuildPanel(QWidget):
             **{key: box.isChecked() for key, box in self.abilities_lock_checks.items()},
             **{key: box.isChecked() for key, box in self.abilities_star_checks.items()},
             abilities_star_access=self.abilities_star_access(),
+            team_number_scale=dict(self._team_number_scale),
+            stock_age_policy=self.stock_age_combo.currentData(),
             qb_spy=self.qb_spy_check.isChecked(),
             calendar_engine=self.season_cap_check.isChecked(),
             coverage_slider=self.coverage_slider_check.isChecked(),
@@ -3978,6 +3993,8 @@ class BuildPanel(QWidget):
         self._refresh()
 
     def _refresh(self) -> None:
+        if hasattr(self, "stock_age_combo") and hasattr(self, "season_check"):
+            self.stock_age_combo.setVisible(self.progression_check.isChecked() and self.season_check.isChecked())
         if hasattr(self, "uniform_choice_mode"):
             uniform_state = (self._state or {}).get("uniform_choice")
             if uniform_state == "applied":
@@ -4861,20 +4878,15 @@ class BuildPanel(QWidget):
     def restore_project_build_settings(self, state):
         from .gameplay_project_ui import restore
         from mod_editor.core import nfl2k5_build_settings as saved
-        self.official_marks_pack_field.setText(saved.build_settings(state).get("official_marks_pack") or "")
-        self.super_bowl_user_art_field.setText(saved.build_settings(state).get("super_bowl_user_art") or "")
+        choices = saved.build_settings(state)
+        self.official_marks_pack_field.setText(choices.get("official_marks_pack") or "")
+        self.super_bowl_user_art_field.setText(choices.get("super_bowl_user_art") or "")
         restore(self, state)
-        # b76-i1: the custom intro movie path is not one of the shared path fields
-        from mod_editor.core import nfl2k5_build_settings as saved
-        movie = saved.build_settings(state).get("custom_intro") or ""
-        if movie:
-            self.custom_intro_field.setText(movie)
-            self.custom_intro_check.setChecked(self.custom_intro_check.isEnabled())
-        # b76-u4: the 2026 venue art folder is not one of the shared path fields either
-        venue_art = saved.build_settings(state).get("modern_venues_2026") or ""
-        if venue_art:
-            self.modern_venues_field.setText(venue_art)
-            self.modern_venues_check.setChecked(self.modern_venues_check.isEnabled())
+        for key, field, box in (("custom_intro", self.custom_intro_field, self.custom_intro_check),
+                                ("modern_venues_2026", self.modern_venues_field, self.modern_venues_check)):
+            path = choices.get(key) or ""
+            field.setText(path)
+            box.setChecked(bool(path))
 
     def music_build_settings(self):
         document = tt.music_playlist_patch.copy_options(self._music_shuffle_selection)
@@ -5419,12 +5431,15 @@ class BuildPanel(QWidget):
         plan = self._plan_for_build()
         include_session = self._include_session_project()
         facade = self._facade
+        artwork = self.softdrink_project_field.text().strip() if self.softdrink_project_check.isChecked() else ""
         labels = {key: box.text().replace("&&", "&") for key, box in self._boxes().items()}
 
         def operation(progress):
             from mod_editor.core import nfl2k5_project_check as project_check
-            project, document, fit_rows, index = None, None, None, None
-            if include_session:
+            project, index = None, None
+            if artwork:
+                project = Path(artwork)
+            elif include_session:
                 from mod_editor.core.equipment_staging import cached_equipment_fit_rows
                 with facade._lock:
                     session = facade._session

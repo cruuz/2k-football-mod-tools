@@ -789,11 +789,11 @@ def normalize_state(state=None):
     require(state['possession'] in ('home','away'),'Possession must be home or away.')
     require(state['event'] in ('standard','FLAG','FUMBLE','hang time','ball on','score slabs','hidden play clock'),'Unknown retail event state.')
     require(state['broadcast'] in ('play_now','monday_night','sunday_night','monday_afternoon'),'Unknown broadcast slot.')
-    # Franchise records are counted by the owner at setup from a synthetic season (W, L, T per side, 16 games at most).
+    # Both retail and modern-season previews feed the game's schedule reader.
     for key in ('home_record','away_record'):
         record=state[key]
         require(record is None or (isinstance(record,(list,tuple)) and len(record)==3 and all(type(v)==int and v>=0 for v in record)
-                and sum(record)<=16),'A preview record is null or [wins, losses, ties] with at most 16 games.')
+                and sum(record)<=17),'A preview record is null or [wins, losses, ties] with at most 17 games.')
     require(state['season'] in SEASONS,'Unknown season stage.')
     require(type(state['phase'])==int and state['phase'] in PHASES,'The play phase is 0 to 4.')
     # Beta 76 sb: a previous down one lower shows the interim label; a timeout called by one side shows its tab.

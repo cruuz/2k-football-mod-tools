@@ -158,7 +158,7 @@ def apply_body(body):
             'spare capacity requires the audited 2479 primary records')
     source = rr.load_body(before, scheme='one_pool', reference_year=2026)
     require(len(source.free_agents) == 377, 'apply dated free agents before restoring import capacity')
-    require([p.index for p in source.group_players('draft_class')] == list(range(1944, 2324)),
+    require([p.index for p in source.by_pool('primary') if p.group in ('draft_class', 'draft_slot')] == list(range(1944, 2324)),
             'spare capacity would alter the native 380-player draft window')
     unused = [p for p in source.by_pool('primary') if p.record.get('player_type') & 1]
     require(len(unused) == 15 and all(p.group == 'pool' and p.index >= 2464

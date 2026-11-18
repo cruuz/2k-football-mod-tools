@@ -182,7 +182,7 @@ class TargetTests(unittest.TestCase):
         got = mb.predict(None, 64)
         self.assertEqual(got["forced_off"], ["k128_memory", "k128_roster_heap", "roster_capacity"])
         self.assertFalse(got["fits"])
-        self.assertEqual((got["room"], got["over_bytes"]), (736_384, 892_992))
+        self.assertEqual((got["room"], got["over_bytes"]), (732_288, 897_088))
         self.assertEqual(got["hardest"], "NRG Stadium (s37)")
         self.assertEqual((got["matchup"]["home_kit"], got["matchup"]["away_kit"], got["matchup"]["delta"]),
                          ("37h0", "02a1", 177_792))
@@ -226,14 +226,14 @@ class ApiTests(unittest.TestCase):
                           ("suggestions", list), ("forced_off", list), ("notes", list)):
             self.assertIsInstance(got[key], kind, key)
         self.assertTrue(all(isinstance(f, str) and isinstance(n, int) for f, n in got["suggestions"]))
-        self.assertEqual(got["suggestions"][0], ("scorebug", 404_224))        # the sprite scorebug and its fonts
+        self.assertEqual(got["suggestions"][0], ("scorebug", 408_320))        # the sprite scorebug and its fonts
         self.assertIn(("scorebug_runtime", 0), got["suggestions"])           # rides with it
 
     def test_option_costs(self):
         costs = mb.option_costs()
         self.assertTrue(all(isinstance(k, str) and type(v) is int and v > 0 for k, v in costs.items()))
         self.assertEqual((costs["scorebug"], costs["hair_styles"], costs["depth_chart_rows"]),
-                         (404_224, 84_736, 81_920))
+                         (408_320, 88_832, 81_920))
         self.assertEqual(list(costs), sorted(costs, key=lambda k: -costs[k]))
 
     def test_plan_forms(self):

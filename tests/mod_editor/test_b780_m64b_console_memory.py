@@ -597,7 +597,9 @@ class Model(unittest.TestCase):
         self.assertEqual(cm.LABELS[128], "128 MB, xemu (full SOFTDRINK)")
         self.assertEqual(cm.LABELS[64], "64 MB, original Xbox and Android hakuX (experimental, estimated, not yet "
                                         "tested on a real Xbox or hakuX)")
-        self.assertIn("the 2026 rosters, fitted to the original game's roster size", cm.SHARE_NOTE)
+        self.assertIn("64 MB pack", cm.SHARE_NOTE)
+        self.assertIn("Install either directly", cm.SHARE_NOTE)
+        self.assertIn("original game's roster size", cm.SHARE_NOTE)
         for text in (cm.ROSTER_FIT_NOTE, cm.SHARE_NOTE):
             self.assertNotIn("\u2014", text)
 

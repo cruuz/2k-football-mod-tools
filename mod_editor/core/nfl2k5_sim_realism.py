@@ -17,8 +17,8 @@ read-only code and leaves the played game alone:
 * **Play mix** (``MIX_HOOK``): the run/pass comparison is biased by ``MIX_BIAS`` in favour of the
   pass.  The simulator's own down/distance/clock/score thresholds are untouched, so the mix still
   follows the situation.
-* **Targets** (``TARGET_HOOK``): after the engine's target pick, a target that is neither the
-  depth-chart WR1 nor TE1 is replaced by one of them at ``TARGET_RATE`` (WR1 3 times in 4).
+* **Targets** (``TARGET_HOOK``): the simulator preserves native picks for both starting receivers and the
+  first tight end. Comparable starting receivers share additional targets.
 * **QB runs** (``QB_HOOK``): after the engine's carrier pick, a QB with a mobile scramble byte is
   chosen at a rate that rises with the scramble rating; every mobile QB carry gains
   ``QB_BONUS_YARDS`` in the run outcome (``QB_BONUS_HOOKS``).  Pocket QBs keep the retail outcome.
@@ -73,7 +73,7 @@ lottery gave the modern roster's fullbacks 9.6-9.9% of simulated carries). With 
 219-226 times a season (NFL 218), and the correction put them at 1,002-1,042 yards with 16-20 backs over 1,000
 (NFL 958 and 13.4). Without it, the same two v0.8-executable seasons (seeds 2502/2501; the correction is stat space only,
 so the games are identical) give lead backs 928/965 yards, 10/17 backs over 1,000 (mean 13.5), RB top-10 1,236/1,310
-(NFL 1,269) and top-32 960/1,006 (NFL 985). The correction code stays in place and adds nothing. A custom build with this
+(NFL 1,269) and top-32 960/1,006 (NFL 985). The beta 80 correction code stays in place and adds nothing. A custom build with this
 option but without Simulated RB short injuries keeps the retail fullback carries and loses the old correction.
 
 Every site is recognised by its pinned retail bytes; the module refuses a foreign executable.  The
@@ -94,8 +94,8 @@ BUILD_CAPTION = "Simulated season realism (experimental)"
 HELP_TEXT = (
     "EXPERIMENTAL. In franchise games the CPU simulates (not games you play) the play mix moves toward "
     "the modern NFL (about 33 passes and 27 runs a team), and better passers call more passes than weaker ones; "
-    "targets concentrate on the top receiver and tight end, more so for an elite receiver; mobile quarterbacks "
-    "run for NFL-sized totals, team interceptions move toward 12.8, and tackle totals move toward the NFL leader and "
+    "both starting receivers keep the targets the game gives them. Strong receiving pairs share extra targets, and mobile quarterbacks "
+    "carry more often. Team interceptions move toward 12.8, and tackle totals move toward the NFL leader and "
     "top-10 levels. Red-zone passes gain fewer yards so scoring and the touchdown mix land near the modern NFL. "
     "Played games, ratings and rosters are unchanged. The numbers are calibrated from nflverse 2021-2025 regular "
     "seasons on 17-game simulated seasons."
@@ -132,18 +132,21 @@ FN_YARD_CONVERT = 0x00106480
 MIX_BIAS = 8.5                       # run score must beat pass score by this much to stay a run (average QB)
 MIX_QB_PIVOT = 87                    # b780 b5-sim: QB1 Pass Accuracy of the league-average starter (SOFTDRINK roster)
 MIX_QB_SLOPE = 0.4                   # extra bias per accuracy point above the pivot (fewer passes below it)
-TARGET_RATE = 0.08                   # share of non-WR1/TE1 targets redirected (average WR1; b780 b5-sim: was 0.14)
+TARGET_RATE = 0.08                   # share of eligible targets redirected with an average WR1
 TARGET_PIVOT = 90                    # b780 b5-sim: WR1 Catching of the league-average WR1 (SOFTDRINK roster)
 TARGET_SLOPE = 0.015                 # extra redirect share per Catching point above the pivot (less below it)
-TARGET_WR1_SHARE = 0.75              # of the redirected targets, the rest go to the TE1
+TARGET_WR1_SHARE = 0.75              # receiver share of redirects, with the rest going to TE1
+WR2_MIN_CATCH = 80
+WR2_MAX_CATCH_GAP = 8
+WR2_SHARE = 0.28                     # share of receiver redirects for a competitive WR2
 QB_SCRAMBLE_BASE = 45
-QB_SCRAMBLE_SCALE = 0.0036           # extra QB-carry probability per scramble point above the base
-QB_SCRAMBLE_CAP = 32                 # points, so the maximum is 0.1152
+QB_SCRAMBLE_SCALE = 0.0056           # extra QB-carry probability per scramble point above the base
+QB_SCRAMBLE_CAP = 40                 # cap used by the game for scramble points above the base
 QB_MOBILE_SUM = 150                  # mobile family: scramble + agility > 150
-QB_BONUS_YARDS = 3.0
+QB_BONUS_YARDS = 3.5
 QB_BONUS_RZ_LINE = 20.0              # inside the opponent 20 is the red zone for both yard scales
 INTERCEPT_SCALE = 1.35
-PASS_SCALE = 0.86                    # b780 b5-sim: 17-game v0.8 seasons (every QB1 plays all 17 games); b779-int1 0.92
+PASS_SCALE = 0.91                    # stat-space scale across the three completion commits
 RUN_RZ_SCALE = 0.94              # red-zone run yardage (round 6: near-retail, small trim)
 RZ_PASS_SCALE = 0.64             # red-zone pass yardage before the native conversion (scoring lever)
 RUSH_BONUS_PCT = 0               # post-game season rush-yard correction, lead backs only (b780 db2: 0, was 8 in b780 b5-sim,
@@ -173,6 +176,7 @@ RED_ZONE_OFF = 864
 ZERO_OFF = 868
 MIX_QB_SLOPE_OFF = 872
 TARGET_SLOPE_OFF = 876
+WR2_SHARE_OFF = 880
 FLOAT_POOL = MIX_BIAS_OFF
 
 
@@ -228,7 +232,110 @@ def _flt(value):
     return struct.pack("<f", value)
 
 
-def _assemble(code_va, data_va):
+def _beta80_merge(a, state):
+    """Exact season-merge instructions retained to recognize installed beta 80 copies."""
+    a.label("tackle_return")
+    a.b("60")                                             # pushad
+    a.b("a1" + _u32(state).hex())
+    a.b("85c0")
+    a.j32("0f84", "tackle_done")
+    # b780 b5-sim: the season rush correction goes to the lead back only (HB, depth rank 0); every other runner keeps the
+    # engine's line, so team rushing is not inflated by backups, fullbacks and receivers
+    a.b("807835" + bytes([LEAD_BACK_POSITION]).hex())      # cmp byte [eax+0x35],7  a halfback
+    a.j8("75", "rush_done")
+    a.b("f74028001c0000")                                 # test dword [eax+0x28],0x1C00  depth rank 0
+    a.j8("75", "rush_done")
+    a.b("8bc8")                                           # mov ecx,eax
+    a.b("ba02000000")                                     # mov edx,2
+    a.call(FN_STAT_READ)
+    a.b("8b0d" + _u32(state + 8).hex())
+    a.b("2bc1")                                           # sub eax,ecx
+    a.b("85c0")
+    a.j8("7e", "rush_done")
+    a.b("69c0" + struct.pack("<I", RUSH_BONUS_PCT).hex())
+    a.b("0532000000")                                     # add eax,50
+    a.b("99")                                             # cdq
+    a.b("b964000000")                                     # mov ecx,100
+    a.b("f7f9")                                           # idiv ecx
+    a.b("85c0")
+    a.j8("7e", "rush_done")
+    a.b("50")                                             # push bonus
+    a.b("6a02")                                           # push 2
+    a.b("5a")                                             # pop edx
+    a.b("8b0d" + _u32(state).hex())
+    a.call(FN_HISTORY_ADD)
+    a.label("rush_done")
+    a.b("8b0d" + _u32(state).hex())                       # mov ecx,[state]
+    a.b("ba12000000")                                     # mov edx,18
+    a.call(FN_STAT_READ)
+    a.b("8b0d" + _u32(state + 4).hex())
+    a.b("2bc1")                                           # sub eax,ecx
+    a.b("85c0")
+    a.j8("7e", "tackle_done")
+    a.b("8b0d" + _u32(state).hex())
+    a.b("80793504")                                       # cmp byte [ecx+0x35],4
+    a.j8("74", "tackle_done")
+    a.b("69c0" + struct.pack("<I", TACKLE_BONUS_PCT).hex())  # imul eax,eax,TACKLE_BONUS_PCT
+    a.b("0532000000")                                     # add eax,50
+    a.b("99")                                             # cdq
+    a.b("b964000000")                                     # mov ecx,100
+    a.b("f7f9")                                           # idiv ecx
+    a.b("85c0")
+    a.j8("7e", "tackle_done")
+    a.b("50")                                             # push bonus
+    a.b("6a12")                                           # push 18
+    a.b("5a")                                             # pop edx
+    a.b("8b0d" + _u32(state).hex())
+    a.call(FN_HISTORY_ADD)
+    a.label("tackle_done")
+    a.b("c705" + _u32(state).hex() + "00000000")          # [state]=0
+    a.b("61")                                             # popad
+    a.b("c20800")                                         # ret 8
+
+
+def _season_merge(a, state):
+    """Apply each eligible runner or defender's percentage to this game's stat delta."""
+    a.label("tackle_return")
+    a.b("60")                                             # pushad
+    a.b("8b3d" + _u32(state).hex())                       # edi = player
+    a.b("85ff")
+    a.j8("74", "merge_done")
+    a.b("807f35" + bytes([LEAD_BACK_POSITION]).hex())
+    a.j8("75", "merge_tackles")
+    a.b("f74728001c0000")                                 # test depth rank bits
+    a.j8("75", "merge_tackles")
+    a.b("6a025e")                                         # esi = rushing yards field
+    a.b("6a" + bytes([RUSH_BONUS_PCT]).hex() + "5d")     # ebp = correction percent
+    a.b("8b1d" + _u32(state + 8).hex())                   # ebx = prior rushing yards
+    a.j32("e8", "correct_delta")
+    a.label("merge_tackles")
+    a.b("807f35" + bytes([SKIP_TACKLE_POSITION]).hex())
+    a.j8("74", "merge_done")
+    a.b("6a125e")                                         # esi = tackles field
+    a.b("6a" + bytes([TACKLE_BONUS_PCT]).hex() + "5d")
+    a.b("8b1d" + _u32(state + 4).hex())                   # ebx = prior tackles
+    a.j32("e8", "correct_delta")
+    a.label("merge_done")
+    a.b("31c0a3" + _u32(state).hex())                     # clear the hand-off
+    a.b("61c20800")                                       # popad; ret 8
+    a.label("correct_delta")
+    a.b("85ed")                                           # disabled correction
+    a.j8("74", "delta_done")
+    a.b("89f289f9")                                       # edx = stat, ecx = player
+    a.call(FN_STAT_READ)
+    a.b("29d8")                                           # sub eax,ebx
+    a.j8("7e", "delta_done")
+    a.b("0fafc583c03299")                                 # (delta * percent + 50) / 100
+    a.b("6a6459f7f9")
+    a.b("85c0")
+    a.j8("7e", "delta_done")
+    a.b("5089f289f9")                                     # add bonus to this player's stat
+    a.call(FN_HISTORY_ADD)
+    a.label("delta_done")
+    a.b("c3")
+
+
+def _assemble(code_va, data_va, *, beta80=False):
     from .nfl2k5_draft_ai import _Asm
     a = _Asm(code_va)
     state, state_out = data_va, data_va + 8
@@ -291,9 +398,9 @@ def _assemble(code_va, data_va):
     a.b("0fb6484f")                                       # movzx ecx,byte [eax+0x4f]
     a.b("83e92d")                                         # sub ecx,45
     a.j8("7e", "qb_done")
-    a.b("83f928")                                         # cmp ecx,40
+    a.b("83f9" + bytes([QB_SCRAMBLE_CAP]).hex())                                         # cmp ecx,40
     a.j8("7e", "qb_ok")
-    a.b("b928000000")                                     # mov ecx,40
+    a.b("b9" + _u32(QB_SCRAMBLE_CAP).hex())                                     # mov ecx,40
     a.label("qb_ok")
     a.b("890d" + _u32(state_out).hex())                   # mov [state],ecx
     a.b("db05" + _u32(state_out).hex())                   # fild dword [state]
@@ -319,16 +426,24 @@ def _assemble(code_va, data_va):
     a.b("8bd8")                                           # mov ebx,eax
     a.b("a1" + _u32(TEAM_OFFENSE).hex())
     a.b("8bf0")                                           # mov esi,eax      sim team
+
+    early_exit = "target_done" if beta80 else "target_native"
     a.b("8b4618")                                         # mov eax,[esi+0x18] WR1 (slot 4)
     a.b("85c0")
-    a.j8("74", "target_done")
+    a.j8("74", early_exit)
     a.b("39d8")                                           # cmp eax,ebx
-    a.j8("74", "target_done")
+    a.j8("74", early_exit)
     a.b("8b5628")                                         # mov edx,[esi+0x28] TE1 (slot 8)
     a.b("85d2")
-    a.j8("74", "target_done")
+    a.j8("74", early_exit)
     a.b("39da")                                           # cmp edx,ebx
-    a.j8("74", "target_done")
+    a.j8("74", early_exit)
+    if not beta80:
+        a.b("395e1c")                                     # cmp [esi+0x1c],ebx: preserve the native WR2 selection
+        a.j8("75", "target_rate")
+        a.label("target_native")
+        a.b("895c241c61c3")                               # return the original receiver
+        a.label("target_rate")
     # b780 b5-sim: rate = TARGET_RATE + TARGET_SLOPE * (WR1 Catching - TARGET_PIVOT): an elite WR1 draws more of the other
     # targets, a weaker one fewer (a rate below 0 never redirects; the WR1 pointer is still in eax)
     a.b("0fb64844")                                       # movzx ecx,byte [eax+0x44]  Catching
@@ -351,6 +466,27 @@ def _assemble(code_va, data_va):
     a.b("f6c401")
     a.j8("74", "target_te")
     a.b("8b5e18")                                         # mov ebx,[esi+0x18] WR1
+    if not beta80:
+        # Share receiver redirects only when the second depth slot holds a competitive WR.
+        a.b("8b7e1c")                                     # mov edi,[esi+0x1c] WR2 (slot 5)
+        a.b("85ff")
+        a.j8("74", "target_done")
+        a.b("807f3503")                                   # cmp byte [edi+0x35],WR
+        a.j8("75", "target_done")
+        a.b("0fb64f44")                                   # movzx ecx,byte [edi+0x44] WR2 Catching
+        a.b("83f9" + bytes([WR2_MIN_CATCH]).hex())
+        a.j8("72", "target_done")
+        a.b("83c1" + bytes([WR2_MAX_CATCH_GAP]).hex())
+        a.b("0fb64344")                                   # movzx eax,byte [ebx+0x44] WR1 Catching
+        a.b("39c1")
+        a.j8("72", "target_done")
+        a.b("b9" + _u32(MATCH_RNG).hex())
+        a.call(FN_RAND)
+        a.b("d81d" + _u32(code_va + WR2_SHARE_OFF).hex())
+        a.b("dfe0")
+        a.b("f6c401")
+        a.j8("74", "target_done")
+        a.b("89fb")                                       # mov ebx,edi
     a.j8("eb", "target_done")
     a.label("target_te")
     a.b("8b5e28")                                         # mov ebx,[esi+0x28] TE1
@@ -424,11 +560,11 @@ def _assemble(code_va, data_va):
     a.j8("75", "tackle_entry_skip")
     a.b("89f8")                                           # mov eax,edi
     a.b("a3" + _u32(state).hex())
-    a.b("ba12000000")                                     # mov edx,18
+    a.b("ba12000000" if beta80 else "6a125a")                                     # mov edx,18
     a.b("89f9")                                           # mov ecx,edi
     a.call(FN_STAT_READ)
     a.b("a3" + _u32(state + 4).hex())
-    a.b("ba02000000")                                     # mov edx,2
+    a.b("ba02000000" if beta80 else "6a025a")                                     # mov edx,2
     a.b("89f9")                                           # mov ecx,edi
     a.call(FN_STAT_READ)
     a.b("a3" + _u32(state + 8).hex())
@@ -438,73 +574,22 @@ def _assemble(code_va, data_va):
     a.b("83c404")                                         # add esp,4
     a.jmp_abs(TACKLE_ENTRY_RESUME)
 
-    # ---- tackle scale: add 21% of this game's delta back ------------------------------------
-    a.label("tackle_return")
-    a.b("60")                                             # pushad
-    a.b("a1" + _u32(state).hex())
-    a.b("85c0")
-    a.j32("0f84", "tackle_done")
-    # b780 b5-sim: the season rush correction goes to the lead back only (HB, depth rank 0); every other runner keeps the
-    # engine's line, so team rushing is not inflated by backups, fullbacks and receivers
-    a.b("807835" + bytes([LEAD_BACK_POSITION]).hex())      # cmp byte [eax+0x35],7  a halfback
-    a.j8("75", "rush_done")
-    a.b("f74028001c0000")                                 # test dword [eax+0x28],0x1C00  depth rank 0
-    a.j8("75", "rush_done")
-    a.b("8bc8")                                           # mov ecx,eax
-    a.b("ba02000000")                                     # mov edx,2
-    a.call(FN_STAT_READ)
-    a.b("8b0d" + _u32(state + 8).hex())
-    a.b("2bc1")                                           # sub eax,ecx
-    a.b("85c0")
-    a.j8("7e", "rush_done")
-    a.b("69c0" + struct.pack("<I", RUSH_BONUS_PCT).hex())
-    a.b("0532000000")                                     # add eax,50
-    a.b("99")                                             # cdq
-    a.b("b964000000")                                     # mov ecx,100
-    a.b("f7f9")                                           # idiv ecx
-    a.b("85c0")
-    a.j8("7e", "rush_done")
-    a.b("50")                                             # push bonus
-    a.b("6a02")                                           # push 2
-    a.b("5a")                                             # pop edx
-    a.b("8b0d" + _u32(state).hex())
-    a.call(FN_HISTORY_ADD)
-    a.label("rush_done")
-    a.b("8b0d" + _u32(state).hex())                       # mov ecx,[state]
-    a.b("ba12000000")                                     # mov edx,18
-    a.call(FN_STAT_READ)
-    a.b("8b0d" + _u32(state + 4).hex())
-    a.b("2bc1")                                           # sub eax,ecx
-    a.b("85c0")
-    a.j8("7e", "tackle_done")
-    a.b("8b0d" + _u32(state).hex())
-    a.b("80793504")                                       # cmp byte [ecx+0x35],4
-    a.j8("74", "tackle_done")
-    a.b("69c0" + struct.pack("<I", TACKLE_BONUS_PCT).hex())  # imul eax,eax,TACKLE_BONUS_PCT
-    a.b("0532000000")                                     # add eax,50
-    a.b("99")                                             # cdq
-    a.b("b964000000")                                     # mov ecx,100
-    a.b("f7f9")                                           # idiv ecx
-    a.b("85c0")
-    a.j8("7e", "tackle_done")
-    a.b("50")                                             # push bonus
-    a.b("6a12")                                           # push 18
-    a.b("5a")                                             # pop edx
-    a.b("8b0d" + _u32(state).hex())
-    a.call(FN_HISTORY_ADD)
-    a.label("tackle_done")
-    a.b("c705" + _u32(state).hex() + "00000000")          # [state]=0
-    a.b("61")                                             # popad
-    a.b("c20800")                                         # ret 8
+    if beta80:
+        _beta80_merge(a, state)
+    else:
+        _season_merge(a, state)
     body = bytearray(a.assemble())
     require(len(body) <= FLOAT_POOL, f"sim realism code is {len(body)} bytes, float pool {FLOAT_POOL}")
     body = body.ljust(FLOAT_POOL, b"\xcc")
-    pool = (_flt(MIX_BIAS) + _flt(TARGET_RATE) + _flt(TARGET_WR1_SHARE) + _flt(QB_SCRAMBLE_SCALE)
-            + _flt(QB_BONUS_YARDS) + _flt(INTERCEPT_SCALE) + _flt(PASS_SCALE) + _flt(TACKLE_BONUS_PCT)
+    qb_scale, qb_yards, pass_scale = (0.0036, 3.0, 0.86) if beta80 else (QB_SCRAMBLE_SCALE, QB_BONUS_YARDS, PASS_SCALE)
+    pool = (_flt(MIX_BIAS) + _flt(TARGET_RATE) + _flt(TARGET_WR1_SHARE) + _flt(qb_scale)
+            + _flt(qb_yards) + _flt(INTERCEPT_SCALE) + _flt(pass_scale) + _flt(TACKLE_BONUS_PCT)
             + _flt(QB_BONUS_RZ_LINE) + _flt(RUN_RZ_SCALE) + _flt(RUSH_BONUS_PCT)
             + _flt(RZ_PASS_SCALE))
     pool = (pool.ljust(RED_ZONE_OFF - FLOAT_POOL, b"\xcc") + _flt(79.5) + _flt(0.0) + _flt(MIX_QB_SLOPE)
             + _flt(TARGET_SLOPE))
+    if not beta80:
+        pool += _flt(WR2_SHARE)
     body += pool.ljust(CODE_SIZE - FLOAT_POOL, b"\xcc")
     require(len(body) == CODE_SIZE, "sim realism code size")
     return a, bytes(body)
@@ -524,8 +609,8 @@ def label_offsets():
     return _LABEL_CACHE
 
 
-def sites(code_va):
-    offs = label_offsets()
+def sites(code_va, *, beta80=False):
+    offs = _assemble(code_va, 0, beta80=True)[0].labels if beta80 else label_offsets()
     hook = lambda label, site, before, off: (label, site, before,
                                              b"\xe8" + struct.pack("<i", code_va + off - site - 5))
     mix = ("mix", MIX_SITE, MIX_BEFORE, b"\xe8" + struct.pack("<i", code_va - MIX_SITE - 5) + b"\x90" * 4)
@@ -564,6 +649,13 @@ def _revision(payload):
     previous = _previous_module()
     if len(rows) == 1 and rows[0]["size"] == previous.CODE_SIZE:
         return previous.CODE_SIZE, previous.code_for, previous.sites, "previous"
+    if rows and rows[0]["size"] == CODE_SIZE:
+        from .nfl2k5_cave_oracle import XbeImage
+        code, data = _allocations(payload)
+        def old_code(va, state):
+            return _assemble(va, state, beta80=True)[1]
+        if XbeImage(payload).read(code["va"], CODE_SIZE) == old_code(code["va"], data["va"]):
+            return CODE_SIZE, old_code, lambda va: sites(va, beta80=True), "beta80"
     return CODE_SIZE, code_for, sites, "applied"
 
 
@@ -607,8 +699,8 @@ def _recognize(payload):
         states.add("retail" if raw == b"\xcc" * size else "applied" if raw == expected else "foreign")
     require(states in ({"retail"}, {"applied"}), "Foreign or mixed sim realism site/code")
     state = next(iter(states))
-    if state == "applied" and installed == "previous":
-        return "previous"
+    if state == "applied" and installed in ("previous", "beta80"):
+        return installed
     require(state == "applied" or size == CODE_SIZE, "an empty beta-79 sim realism allocation; rebuild from retail")
     return state
 
@@ -636,13 +728,15 @@ def apply(payload):
             require(space.is_scaleout(payload), "Simulated season realism needs the scale-out allocator")
             payload, receipt = space.extend_scaleout(payload, REQUESTS)
     code, data = _allocations(payload)
-    payload, _ = space.install_code(payload, OWNER, code_for(code["va"], data["va"]))
+    previous = _assemble(code["va"], data["va"], beta80=True)[1] if state == "beta80" else None
+    old_hooks = {va: after for _, va, _, after in sites(code["va"], beta80=True)} if previous else {}
+    payload, _ = space.install_code(payload, OWNER, code_for(code["va"], data["va"]), previous=previous)
     image = XbeImage(payload)
     buf = bytearray(payload)
-    edits = sites(code["va"])
+    edits = [(label, va, old_hooks.get(va, old), new) for label, va, old, new in sites(code["va"])]
     for _label, va, old, new in edits:
         off = image.offset(va, len(old))
-        require(bytes(buf[off:off + len(old)]) == old, f"sim realism site {va:#x} is not retail")
+        require(bytes(buf[off:off + len(old)]) == old, f"Unrecognized sim realism site {va:#x}")
         buf[off:off + len(new)] = new
     for section in _sections(buf):
         buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
@@ -660,7 +754,8 @@ def apply(payload):
 
 def status(payload):
     try:
-        return _recognize(payload)
+        state = _recognize(payload)
+        return "applied" if state == "beta80" else state
     except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, UnicodeError, OSError):
         return "foreign"
 

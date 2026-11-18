@@ -793,6 +793,7 @@ LATE_OWNERS += ("nfl2k5_rookie_faces_hair",)  # b780 GEN1 Q81: rookie hair style
 # rookie faces image step only when Hair styles is on (so 64 MB builds never take it); last, so it moves nothing
 # b780-int: the hair owner stays after lineup_roles, intro_autoskip and injured_reserve: all are reserved by the first space pass, the hair owner
 # is appended at the rookie faces image step, so an earlier place would move them and extend_scaleout refuses.
+LATE_OWNERS += ("nfl2k5_offset_toss",)  # Installed after every other owner, including the rookie hair pass.
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.

@@ -306,16 +306,31 @@ human_eax:
 .global mode_art_input
 .global mode_camera_focus
 mode_camera_focus:
- /* Phase 7 is the pre-lineup presentation. Its descriptor and skeleton
-  * focus already supply framing; keep that focus untouched.
-  * Gameplay phases retain the existing MyPlayer camera hook verbatim. */
+ /* Only track the player while the ball is live. The toss, huddle,
+  * playcall, lineup and post-play cameras supply their own subject. */
  pushfd
  cmp DWORD PTR [0xb616c0],7
- jne 1f
- popfd
+ je 2f
+ cmp DWORD PTR [0xe602b8],14
+ je 1f
+2: popfd
  jmp 0x5f760
 1: popfd
  jmp camera_focus
+.global mode_roster_club
+mode_roster_club:
+ /* The franchise roster's second entry callback normally selects club 0.
+  * Start at MyPlayer's current club, including after a trade or a cold load.
+  * The sheet's shoulder buttons still browse every club. */
+ call 0x2b8020
+ call inline_active
+ test eax,eax
+ jz 1f
+ mov eax,DWORD PTR [state+56]
+ cmp eax,32
+ jae 1f
+ mov DWORD PTR [0xacecd4],eax
+1: ret
 .global mode_camera_pick
 mode_camera_pick:
  /* Native 89590's last camera-only choice; earlier play/task work is done.

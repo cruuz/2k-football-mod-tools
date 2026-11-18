@@ -638,6 +638,7 @@ class ProjectInputs:
     paths: dict = field(default_factory=dict)
     manifest_bytes: int = 0
     archive_bytes: int = 0
+    edit_count: int | None = None
     fit_receipt_bytes: int = 0
     uniform_colors: int = 0
     manifest_sha256: str = ""
@@ -677,6 +678,15 @@ def project_inputs(project, *, document=None, fit_rows=None) -> ProjectInputs:
     if isinstance(project, (str, Path)):
         import zipfile
         path = Path(project)
+        if path.suffix.lower() == ".json":
+            from .nfl2k5_build_service import Nfl2k5BuildService
+            recipe = Nfl2k5BuildService().preflight_project(path)
+            rows = recipe["edits"]
+            paths = {row["target"]: path.parent / row["png"] for row in rows if row.get("target") and row.get("png")}
+            raw = path.read_bytes()
+            return ProjectInputs(name=path.name, asset_ids=[row["target"] for row in rows if row.get("target")],
+                                 document=recipe, edit_count=len(rows), paths=paths, manifest_bytes=len(raw),
+                                 manifest_sha256=hashlib.sha256(raw).hexdigest())
         data = read_archive(path)
         inputs = ProjectInputs(name=path.name, asset_ids=list(data["asset_ids"]), document=document or data["document"],
                                fit_rows=list(fit_rows if fit_rows is not None else data["fit_rows"]),
@@ -1247,13 +1257,14 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
     tries); ``checks=("options", "untested", "inventory")`` takes seconds."""
     import tempfile
     import zipfile
+    from .errors import ValidationError
     started = time.monotonic()
     say = progress or (lambda *_: None)
     wanted = tuple(DOCTOR_CHECKS if checks is None else [c for c in DOCTOR_CHECKS if c in set(checks)])
     unreadable = None
     try:
         inputs = project_inputs(project, document=document, fit_rows=fit_rows)
-    except (OSError, ValueError, KeyError, zipfile.BadZipFile) as exc:   # ValidationError is a ValueError
+    except (OSError, ValueError, ValidationError, KeyError, zipfile.BadZipFile) as exc:
         unreadable = exc
         inputs = ProjectInputs(name=Path(str(project)).name if isinstance(project, (str, Path)) else "",
                                document=document, fit_rows=list(fit_rows or ()))
@@ -1265,7 +1276,8 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
             f"{type(unreadable).__name__}: {str(unreadable)[:400]}",
             "Open the project in Studio and save it again (File > Save project), then check again.",
             code="project.unreadable"))
-    report.project = dict(name=inputs.name, edits=len(inputs.asset_ids), manifest_bytes=inputs.manifest_bytes,
+    report.project = dict(name=inputs.name, edits=len(inputs.asset_ids) if inputs.edit_count is None else inputs.edit_count,
+                          manifest_bytes=inputs.manifest_bytes,
                           manifest_sha256=inputs.manifest_sha256, archive_bytes=inputs.archive_bytes)
     selected = [key for key, value in _plan_options(plan).items() if value is True]
     report.options = dict(selected=selected, colour_changes=[list(row) for row in colour_lever_changes(

@@ -206,8 +206,9 @@ class ReturnerGetterStatusTests(unittest.TestCase):
 
     def test_new_getter_fits_and_ends_in_int3(self):
         code, helper = returner._getter_code(), returner._lineup_helper_code()
-        self.assertEqual((len(code), len(helper)), (96, 32))           # the site holds both, exactly 128 bytes
-        self.assertEqual(returner.getter_bytes(), code + helper)
+        self.assertLessEqual(len(code), 96)
+        self.assertEqual(len(helper), 32)           # the site holds both, exactly 128 bytes
+        self.assertEqual(returner.getter_bytes(), code.ljust(96, b"\xcc") + helper)
         self.assertEqual((code[-1:], helper[-1:]), (b"\xc3", b"\xc3"))
         v1 = returner.getter_bytes_v1()                                  # the first st1 form upgrades in place
         self.assertEqual(len(v1), returner.GETTER_SIZE)
@@ -217,12 +218,13 @@ class ReturnerGetterStatusTests(unittest.TestCase):
         text = next(s for s in _sections(self.retail) if s.virtual_address <= returner.GETTER_VA < s.virtual_address + s.raw_size)
         allowed = [(text.header_offset + 36, text.header_offset + 56)]
         for va, size in ((returner.SITE_VA, returner.SITE_SIZE), (returner.GETTER_VA, returner.GETTER_SIZE),
+                         (returner.ROW_LABEL_VA, returner.ROW_LABEL_SIZE), (returner.FN_NTH_RETURNER, returner.NTH_SIZE),
                          (returner.LINEUP_HOOK_VA, 7), (returner.EXCHANGE_VA, returner.EXCHANGE_SIZE),
                          (returner.ALL_STAR_CALL_VA, 5)):
             off = returner._offset(self.retail, va)
             allowed.append((off, off + size))
         for start, end in _diff_runs(self.retail, self.applied):
-            self.assertTrue(any(lo <= start and end <= hi for lo, hi in allowed), hex(start))
+            self.assertTrue(all(any(lo <= offset < hi for lo, hi in allowed) for offset in range(start, end)), hex(start))
 
     def test_legacy_image_upgrades_to_the_fresh_install(self):
         legacy = _legacy(self.retail)
@@ -231,7 +233,7 @@ class ReturnerGetterStatusTests(unittest.TestCase):
         self.assertEqual(upgraded, self.applied)
         self.assertEqual(receipt["upgraded_from"], "legacy")
         self.assertEqual([e["label"] for e in receipt["edits"]],
-                         ["returner_getter", "lineup_slot_check", "exchange_store", "all_star_skip"])
+                         ["returner_chart", "returner_lookup", "returner_getter", "lineup_slot_check", "exchange_store", "all_star_skip"])
         # the first b780 st1 install (loop + 98-byte getter) upgrades the same way
         first = bytearray(legacy)
         off = returner._offset(legacy, returner.GETTER_VA)
@@ -275,7 +277,7 @@ class ReturnerGetterStatusTests(unittest.TestCase):
                     off = returner._offset(data, va)
                     allowed.append((off, off + size))
                 for start, end in _diff_runs(data, upgraded):
-                    self.assertTrue(any(lo <= start and end <= hi for lo, hi in allowed), hex(start))
+                    self.assertTrue(all(any(lo <= offset < hi for lo, hi in allowed) for offset in range(start, end)), hex(start))
                 self.assertEqual(receipt["changed_bytes"], sum(end - start for start, end in _diff_runs(data, upgraded)))
         if not seen:
             self.skipTest("no released executable configured (NFL2K5_V08_XBE, NFL2K5_B780_RC_XBE)")
@@ -310,6 +312,23 @@ class ReturnerGetterNativeTests(unittest.TestCase):
                         self.assertEqual(new.row(position, rank), old.row(position, rank))
                         cases += 1
         self.assertGreaterEqual(cases, 64 * 18)
+
+    def test_injured_locked_returner_rows_follow_the_game_lineup_and_recover_with_the_player(self):
+        original = bytes([0, 2, 3, 9, 1, 2])
+        for image in self.images.values():
+            machine = _Machine(image, PS_TAIL, original)
+            injured = machine.players[1, 2]
+            machine.uc.mem_write(injured + 0x27, b"\x40")
+            self.assertEqual(machine.call(0xE80D0, {UC_X86_REG_ECX: machine.team, UC_X86_REG_EDX: OBJ},
+                                          (0, 0))[0], "returned")
+            selected = list(machine.uc.mem_read(OBJ + 0x1c, 3))
+            self.assertEqual(selected[0], 3)
+            for (pos, rank), slot in zip(((KR, 0), (KR, 1), (PR, 0)), selected):
+                self.assertEqual(machine.row(pos, rank), ("returned", machine.players[1, slot]))
+            machine.call(RERANK, {UC_X86_REG_ECX: machine.team})
+            self.assertEqual(machine.specials(), list(original))
+            machine.uc.mem_write(injured + 0x27, b"\0")
+            self.assertEqual(machine.row(KR, 0), ("returned", injured))
 
     def test_an_empty_returner_byte_reads_no_player(self):
         for name, image in self.images.items():

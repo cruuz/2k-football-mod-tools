@@ -710,10 +710,11 @@ class GameplayPatchesPanel(QWidget):
             # b780 studio1: the Build tab's Needs update treatment, which this page lacked: on the released v0.8 disc these
             # read "Unknown state." or, for a legacy draft AI, a tooltip about the beta 58-60 star, and no badge.
             from mod_editor.gui.build_panel_qt import (
-                LEGACY_UPGRADE_KEYS, PREVIOUS_REBUILD_KEYS, PREVIOUS_UPGRADE_KEYS, rebuild_only_reason)
+                LEGACY_UPGRADE_KEYS, PREVIOUS_REBUILD_KEYS, PREVIOUS_MULTIPLE_RELEASES, PREVIOUS_UPGRADE_KEYS, rebuild_only_reason)
             locked_on = key in ("honors_page", "k128_memory")      # Build keeps these ticked and greyed out; so does this page
             update = ((value == "previous" and key in PREVIOUS_UPGRADE_KEYS)
                       or (value == "legacy" and (key in LEGACY_UPGRADE_KEYS or key in ("draft_ai", "depth_locks"))))
+            previous_label = "Earlier" if key in PREVIOUS_MULTIPLE_RELEASES else "Beta 79"
             rebuild = value == "previous" and key in PREVIOUS_REBUILD_KEYS
             # b780 studio1 (Q69): on a disc this release cannot build on, an in-place update is not an offer (same rule as Build)
             declined_reason = rebuild_only_reason(state) if (update or upgrade) else ""
@@ -731,19 +732,19 @@ class GameplayPatchesPanel(QWidget):
             # carry a playbook patch, so inspect says n/a) should say what the user needs instead
             full_disc = needs_image and value not in ("applied", "foreign", "partial", "previous", "legacy")
             if declined_reason:
-                tip = "An older revision of this change is installed (beta 79 or earlier). " + declined_reason
+                tip = "An older revision of this change is installed. " + declined_reason
             elif update:
-                tip = ("An older revision of this change is installed (beta 79 or earlier). "
+                tip = ("An older revision of this change is installed. "
                        + ("This build brings it up to date in place, so it stays ticked." if locked_on else
                           "Select to update it to this release's revision (in place)."))
             elif rebuild:
-                tip = ("The beta 79 version of this change is installed. This release cannot update it in place; build from "
+                tip = (f"The {previous_label.lower()} version of this change is installed. This release cannot update it in place; build from "
                        "your retail game to get this release's version.")
             check.setToolTip("Full disc required (not a bare default.xbe)." if full_disc else tip)
             badge = ("Full disc required" if full_disc else
                      "Older revision: rebuild from retail" if declined_reason else
                      "Needs update" if update else
-                     "Beta 79 version: rebuild from retail" if rebuild else
+                     previous_label + " version: rebuild from retail" if rebuild else
                      {"applied": "Already installed", "foreign": "Unrecognized source data",
                       "needs_fix": "Needs CPU lineup fix",
                       "partial": "Unrecognized source data"}.get(value, self._static_badges.get(key, "")))

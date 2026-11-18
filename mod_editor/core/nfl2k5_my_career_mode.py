@@ -12,6 +12,7 @@ import struct
 from . import nfl2k5_my_career as legacy
 from . import nfl2k5_my_career_mode_code as assembly
 from . import nfl2k5_my_career_mode_code_b779 as assembly_b779
+from . import nfl2k5_my_career_mode_code_b780 as assembly_b780
 from . import nfl2k5_xbe_space as space
 from . import nfl2k5_rdata_sites as rdata
 from .nfl2k5_cave_oracle import XbeImage
@@ -35,6 +36,23 @@ POOLED2 = frozenset(("m3_prep_note", "m3_prospect_error", "m3_sign_cut_text", "m
 # +3248): the scratch buffer moved from +3200 to +3248 and its formatted line is capped at 176 characters (it ends at
 # +3600, where LEAGUE_MENU starts); every format it holds is one on-screen line, far shorter.
 POOL2_END = 3248
+POOL2_START = 1744
+# Native type-7 controls from Game Options (0x501CA8) and Franchise Settings (0x52BD70).
+# These read the active career's own option block and format the current number in minutes.
+PLAYED_QUARTER_ROW = (7, "m3_quarter_played", 0, 0x149180, 0x149190, 0x149170, 0x149120, 0x149140,
+                      0x14C490, 0x1491A0, 0, 0, 0)
+SIM_QUARTER_ROW = (7, 0xE9CCF0, 0, 0x2C6F70, 0x2C6F80, 0x2C6F60, 0x2C6F00, 0x2C6F30,
+                   0x2C74E0, 0x2C6F90, 0, 0, 0)
+# Franchise's type-0 rows push these spreadsheet descriptors through the native menu stack.
+# The franchise variant initializes the current league and omits the front-end Roster Manager's
+# event-10 "Save Roster" prompt. Both retail variants use the same roster spreadsheet and tabs.
+TEAM_ROSTERS = 0x5557C0
+LEAGUE_LEADERS = 0x54A910
+LEAGUE_ROWS = ((0, 0xEABA98, TEAM_ROSTERS), (0, 0xEA9CC8, LEAGUE_LEADERS))
+POOLED_81 = frozenset(("m3_fpf_off_text", "m3_fpf_on_text", "m3_supersim_off_text", "m3_supersim_skip_text",
+                       "m3_supersim_fast_text", "m3_star_off_text", "m3_star_on_text", "m3_quarter_played",
+                       "m3_quarter_title"))
+CAREER_POOL_81 = frozenset(("m3_call_every_text", "m3_call_position_text", "m3_call_coach_text"))
 # b780 n6: beta-79 / SOFTDRINK 2K28 v0.8 carries the previous runtime (nfl2k5_my_career_mode_code_b779; the 25 rating
 # names were still RX strings and the second pool ended at +2700). code_for/sites(previous=True) build that exact
 # install so it reads "previous" (status) instead of foreign, and every companion that validates MyCareer can see it.
@@ -47,7 +65,7 @@ PREVIOUS_ABSENT_HOOKS = frozenset(("mode_camera_dir",))
 # b780-int: beta-79's own second pool (n2 later pooled the ticker's wait line, which beta-79 kept in RX)
 PREVIOUS_POOLED2 = frozenset(("m3_prep_note", "m3_prospect_error", "m3_sign_cut_text", "m3_unavailable_text",
                               "m3_confirm_text", "m3_drafted_format"))
-PREVIOUS_REFUSAL = ("MyCareer on this disc is the beta 79 revision. Career Home, Player Progress and the franchise "
+PREVIOUS_REFUSAL = ("MyCareer on this disc is a beta 79 or beta 80 revision. Career Home, Player Progress and the franchise "
                     "screens are linked to it, so this release cannot update it in place. Rebuild from your retail "
                     "game to get this release's MyCareer.")
 COMMON = frozenset(("attach", "copy", "reset", "assign", "automatic", "team_reset", "manual", "transfer",
@@ -273,10 +291,14 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
     # previous (b780 n6): the beta-79 runtime and string pools, exactly as beta-79 built them.
     from . import nfl2k5_franchise_autosave_code as autosave_code
     from . import nfl2k5_my_career_progression as progression
-    runtime = assembly_b779 if previous else assembly
-    pool2_end = PREVIOUS_POOL2_END if previous else POOL2_END
+    beta79 = previous is True or previous == "beta-79"
+    runtime = assembly_b779 if beta79 else assembly_b780 if previous else assembly
+    pool2_start = 2160 if previous else POOL2_START
+    pool2_end = PREVIOUS_POOL2_END if beta79 else POOL2_END
     out = bytearray(runtime.CODE)
     labels = {name: code_va + offset for name, offset in runtime.LABELS.items()}
+    labels["career_beta"] = 79 if beta79 else 80 if previous else 81
+    labels["text2_base"] = EXTRA_VA + pool2_start
 
     def reserve(name, size, align=4):
         out.extend(bytes((-len(out)) % align))
@@ -289,13 +311,15 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
     text_pool2 = bytearray()
 
     def string(name, value):
-        if name in (PREVIOUS_POOLED2 if previous else POOLED2) or (name.startswith("m3_rating_") and not previous):
-            labels[name] = EXTRA_VA + 2160 + 2 * len(text_pool2)
+        if (name in (PREVIOUS_POOLED2 if beta79 else POOLED2) or (name.startswith("m3_rating_") and not beta79)
+                or (not previous and name in POOLED_81)):
+            labels[name] = labels["text2_base"] + 2 * len(text_pool2)
             text_pool2.extend((value + "\0").encode("ascii"))
             return
         # mc2: these M3 notes are drawn only after init_menus, so they use the
         # RW text pool (one RX byte per character) to make room for the fixes.
-        if name in POOLED or (name not in ("mode_text", "team_text") and not name.startswith("m3_")):
+        if (name in POOLED or (not previous and name in CAREER_POOL_81)
+                or (name not in ("mode_text", "team_text") and not name.startswith("m3_"))):
             labels[name] = data_va + 1408 + 2 * len(text_pool)
             text_pool.extend((value + "\0").encode("ascii"))
             return
@@ -326,7 +350,8 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
         ("m3_prep_note", "MyPlayer is selected. The game is not available yet."),
         ("m3_begin_text", "Continue to the draft"),
         ("m3_draft_text", "NFL Draft"),
-        ("m3_draft_note", "Teams choose by ratings and need. Selection is not guaranteed."),
+        ("m3_draft_note", "Teams choose by ratings and need. Selection is not guaranteed." if previous
+         else "Teams draft by ratings and need."),
         ("m3_upgrade_text", "Upgrades"), ("m3_prev_text", "Previous attribute"),
         ("m3_next_text", "Next attribute"), ("m3_buy_text", "Buy one point"),
         ("m3_back_text", "Back"),
@@ -342,7 +367,8 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
         ("m3_settings_text", "Settings"),
         ("m3_fpf_off_text", "First Person Football: Off"),
         ("m3_fpf_on_text", "First Person Football: On"),
-        ("m3_settings_note", "Supersim runs while you wait. B returns to Apartment."),
+        ("m3_settings_note", "Supersim runs while you wait. B returns to Apartment." if previous
+         else "Save in the career menu."),
         ("m3_supersim_off_text", "Supersim: Off"),
         ("m3_supersim_skip_text", "Supersim: Skip presentation"),
         ("m3_supersim_fast_text", "Supersim: Fast forward"),
@@ -366,6 +392,9 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
         ("m3_drafted_format", "You were drafted by the %s %s."),
     ):
         string(name, value)
+    if not previous:
+        string("m3_quarter_played", "Played Quarter Length")
+        string("m3_quarter_title", "Quarter Lengths")
     at = reserve("m3_prospect_labels", 20)
     struct.pack_into("<5I", out, at, *(labels[f"m3_prospect_{i}"] for i in range(5)))
     names = []
@@ -383,7 +412,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
     at = reserve("text_template", len(text_pool), align=2)
     out[at:at + len(text_pool)] = text_pool
     labels["text_bytes"] = len(text_pool)
-    legacy.require(2160 + 2 * len(text_pool2) <= pool2_end, f"MyCareer M3 text RW exceeds 2160..{pool2_end - 1}")
+    legacy.require(pool2_start + 2 * len(text_pool2) <= pool2_end, "MyCareer M3 text overlaps scratch storage")
     at = reserve("text2_template", len(text_pool2), align=2)
     out[at:at + len(text_pool2)] = text_pool2
     labels["text2_bytes"] = len(text_pool2)
@@ -405,17 +434,26 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
     menu_reserve("club_menu", 44)
     for name in ("entry_menu", "apartment", "team_menu", "practice_menu"):
         menu_reserve(name, 44)
+    if not previous:
+        menu_reserve("quarter_menu", 44)
     for name in ("m3_progress_menu", "m3_prep_menu", "m3_draft_menu", "m3_upgrade_menu", "m3_settings_menu"):
         extra_reserve(name, 44)
 
-    def rows(name, content, extra=False):
-        at = (extra_reserve if extra else menu_reserve)(name, 52 * (len(content) + 1))
+    def rows(name, content, extra=False, native=()):
+        count = len(content) + len(native)
+        # Every native layout scan stops on the first word (kind 3). Keep the old assets byte-exact.
+        compact = extra or name in ("team_rows", "m3_upgrade_rows", "quarter_rows")
+        terminal = 4 if compact and not previous else 52
+        at = (extra_reserve if extra else menu_reserve)(name, 52 * count + terminal)
         target = extra_menu if extra else menu
         for i, (label, action) in enumerate(content):
             struct.pack_into("<13I", target, at + 52 * i, 9,
                              labels[label] if isinstance(label, str) else label,
                              *([0] * 8), labels[action], 0, 0)
-        struct.pack_into("<I", target, at + 52 * len(content), 3)
+        for i, row in enumerate(native, len(content)):
+            words = [labels[word] if isinstance(word, str) else word for word in row]
+            struct.pack_into("<13I", target, at + 52 * i, *words, *([0] * (13 - len(words))))
+        struct.pack_into("<I", target, at + 52 * count, 3)
         return at
 
     rows("entry_rows", (("draft_text", "mode_draft"), ("udfa_text", "mode_undrafted"),
@@ -427,19 +465,27 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
                       ("m3_settings_text", "mode_settings_open"),
                       ("save_text", "mode_save_menu"),
                       ("sim_appearance_text", "mode_sim_appearance"),
-                      ("quit_text", "mode_quit")), extra=True)
+                      ("quit_text", "mode_quit")), extra=True, native=() if previous else LEAGUE_ROWS)
     rows("settings_rows", (("m3_fpf_off_text", "mode_settings_toggle"),
                                 ("m3_supersim_skip_text", "mode_settings_toggle"),
                                 ("m3_star_on_text", "mode_settings_toggle"),
                                 ("m3_stat_on_text", "mode_settings_toggle"),
-                                ("m3_call_every_text", "mode_settings_toggle")), extra=True)
+                                ("m3_call_every_text", "mode_settings_toggle")), extra=True,
+         native=() if previous else ((0, "m3_quarter_title", labels["quarter_menu"]),))
     rows("team_rows", (("team_text", "mode_team_open"), ("sign_text", "mode_sign")))
     rows("m3_progress_rows", (("quit_text", "mode_quit"),), extra=True)
     rows("m3_draft_rows", (("save_text", "mode_save_menu"), ("quit_text", "mode_quit")), extra=True)
     rows("m3_prep_rows", (("m3_begin_text", "m3_begin_draft"), ("card_text", "mode_card"),
                          ("save_text", "mode_save_menu"), ("quit_text", "mode_quit")), extra=True)
     rows("m3_upgrade_rows", (("m3_prev_text", "m3_upgrade_previous"), ("m3_next_text", "m3_upgrade_next"),
-                            ("m3_buy_text", "m3_upgrade_buy"), ("m3_back_text", "m3_back")), extra=True)
+                            ("m3_buy_text", "m3_upgrade_buy"), ("m3_back_text", "m3_back")), extra=bool(previous))
+    if not previous:
+        # The general navigation handler only supports actions and screen links. The native Game Options handler
+        # draws the values and arrows and edits type-7 rows by left/right, using the current loaded option block.
+        rows("quarter_rows", (), native=(PLAYED_QUARTER_ROW, SIM_QUARTER_ROW))
+        struct.pack_into("<11I", menu, labels["quarter_menu"] - data_va - 200, labels["m3_quarter_title"],
+                         0, 0xF3FC0, 0, labels["quarter_rows"], 0, 0xE7E1EC, 0xAC9800,
+                         0x02400044, 0x018D0052, 0x15)
     for name, title, table in (("m3_progress_menu", "m3_progress_text", "m3_progress_rows"),
                                 ("m3_prep_menu", "m3_prep_text", "m3_prep_rows"),
                                 ("m3_draft_menu", "m3_draft_text", "m3_draft_rows"),
@@ -451,7 +497,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
                          # ui1: with Career Home, B also leaves Upgrades (native back, flag 0x10).
                          0x13 if name == "m3_settings_menu" or (home is not None and name == "m3_upgrade_menu")
                          else 3)
-    legacy.require(len(extra_menu) <= 1900, "M3 menus exceed owned workspace")
+    legacy.require(256 + len(extra_menu) <= pool2_start, "M3 menus overlap the text pool")
     compressed = _encode_menu(extra_menu)
     at = reserve("m3_menu_template", len(compressed), align=2)
     out[at:at + len(compressed)] = compressed
@@ -505,7 +551,7 @@ def sites(code_va, data_va, *, season_birth_dates=False, previous=False):
     labels = code_for(code_va, data_va, previous=previous)[1]
     hooks = [(name, va, pin, handler, op) for name, va, pin, handler, op in legacy.HOOKS if name in COMMON]
     hooks += [(name, va, pin, name, op) for name, va, pin, op in (*SAVE_HOOKS, *MODE_HOOKS)
-              if not (previous and name in PREVIOUS_ABSENT_HOOKS)]
+              if not ((previous is True or previous == "beta-79") and name in PREVIOUS_ABSENT_HOOKS)]
     edits = [(name, va, bytes.fromhex(pin), legacy.branch(va, labels["mode_camera_focus" if handler == "camera_focus" else handler], len(bytes.fromhex(pin)), op))
              for name, va, pin, handler, op in hooks]
     for name, va, before, after in (("entry_kind", 0x501494, 0, 9),
@@ -514,6 +560,9 @@ def sites(code_va, data_va, *, season_birth_dates=False, previous=False):
                                     ("entry_action", 0x5014BC, 0, labels["mode_entry"]),
                                     ("postgame_resume", 0x4F1994, 0xC74E0, labels["mode_postgame"])):
         edits.append((name, va, struct.pack("<I", before), struct.pack("<I", after)))
+    if not previous:
+        edits.append(("roster_starting_club", 0x5556A0, struct.pack("<I", 0x2B8020),
+                      struct.pack("<I", labels["mode_roster_club"])))
     # Create Player's Birth Year row steps 1954..2008 instead of 1954..1984, so
     # MyPlayer's modern default (runtime.c mode_create) can be stepped. In the
     # 1900-based 7-bit year, the increment's limit (0x343D3A cmp dl,imm8) and the
@@ -763,9 +812,11 @@ def check_context(payload, edits, *, installed=False, real=None):
     from . import nfl2k5_injured_reserve as injured_reserve
     ir_sites = [site for site in injured_reserve.sites(0) if site[1] != injured_reserve.GUARD_VA]
     if any(image.read(va, len(before)) != before for _, va, before, _ in ir_sites):
-        legacy.require(injured_reserve.status(companions) == "applied", "foreign injured reserve companion")
+        state = injured_reserve.status(companions)
+        legacy.require(state in ("applied", "previous"), "foreign injured reserve companion")
+        revision = injured_reserve.previous_runtime if state == "previous" else injured_reserve.runtime
         ir_code = injured_reserve.allocations(payload)["code"]["va"]
-        camera_edits.extend(site for site in injured_reserve.sites(ir_code) if site[1] != injured_reserve.GUARD_VA)
+        camera_edits.extend(site for site in injured_reserve.sites(ir_code, revision=revision) if site[1] != injured_reserve.GUARD_VA)
     for va, size, digest in GUARDS:
         raw = bytearray(image.read(va, size))
         # nm1 changes only the collector's label decision, not career control.
@@ -858,42 +909,51 @@ def _home_fields(payload, code, data, *, previous=False):
 @functools.lru_cache(maxsize=16)
 def _home_fields_at(code_va, data_va, previous):
     from . import nfl2k5_my_career_home as career_home
-    career = {**code_for(code_va, data_va, previous=previous)[1], "state": data_va, "m3": EXTRA_VA}
-    return career_home.apartment_fields(career_home.code_for(career)[1])
+    # All released Career Home variants reserve these same three addresses before their code and tables.
+    return {"title": career_home.CONTENT_VA, "handler": career_home.CODE_VA,
+            "rows": career_home.CONTENT_VA + career_home.TITLE_ROOM}
 
 
 @functools.lru_cache(maxsize=16)
-def _previous_blob(code_va, data_va, home):
-    """The beta-79 blob at these addresses (with or without the Career Home Apartment); cached, it is pure."""
-    fields = _home_fields_at(code_va, data_va, True) if home else None
-    return code_for(code_va, data_va, home=fields, previous=True)[0]
+def _previous_blob(code_va, data_va, home, revision=True):
+    """The exact released owner at these addresses, with or without Career Home."""
+    fields = _home_fields_at(code_va, data_va, revision) if home else None
+    return code_for(code_va, data_va, home=fields, previous=revision)[0]
 
 
-def installed_previous(payload) -> bool:
-    """b780 n6: True when the MyCareer code allocation holds exactly the beta-79 build (its runtime, string pools and
-    the Career Home Apartment fields linked to it). Cheap: compares the owned bytes only; status() validates the rest."""
+def previous_revision(payload):
+    """Identify a byte-exact older runtime including its linked Apartment fields. status validates the hooks."""
     try:
         if not any(a["owner"] == OWNER for a in space.layout(payload)["allocations"]):
             return False
         code, data = legacy.allocations(payload)
         blob = XbeImage(payload).read(code["va"], CODE_SIZE)
-        return blob == _previous_blob(code["va"], data["va"], space.has_home_section(payload))
+        for revision in ("beta-80", "beta-79"):
+            if blob == _previous_blob(code["va"], data["va"], space.has_home_section(payload), revision):
+                return revision
+        return False
     except (ValueError, KeyError, IndexError, TypeError, struct.error, OverflowError):
         return False
+
+
+def installed_previous(payload) -> bool:
+    return bool(previous_revision(payload))
 
 
 def installed_labels(payload):
     """The labels of the installed revision (this release's, or beta-79's for a previous install), for companions that
     link to MyCareer entries (Career Home) or normalize its hooks."""
     code, data = legacy.allocations(payload)
-    return code_for(code["va"], data["va"], previous=installed_previous(payload))[1]
+    previous = previous_revision(payload)
+    return code_for(code["va"], data["va"], home=_home_fields(payload, code, data, previous=previous),
+                    previous=previous)[1]
 
 
 def installed_sites(payload):
     """Every MyCareer edit of the installed revision (sites() with the beta-79 labels for a previous install)."""
     code, data = legacy.allocations(payload)
     return sites(code["va"], data["va"], season_birth_dates=bool(_season_birth_date_sites(payload)),
-                 previous=installed_previous(payload))
+                 previous=previous_revision(payload))
 
 
 def _recognize(payload, context=True):
@@ -902,7 +962,7 @@ def _recognize(payload, context=True):
     payload = era.underlying_view(payload)
     found = any(a["owner"] == OWNER for a in space.layout(payload)["allocations"])
     code, data = legacy.allocations(payload) if found else ({"va": 0}, {"va": 0})
-    previous = found and installed_previous(payload)
+    previous = found and previous_revision(payload)
     edits = sites(code["va"], data["va"], season_birth_dates=bool(_season_birth_date_sites(payload)), previous=previous)
     installed = payload
     payload = _player_progress_view(payload, edits)
@@ -951,7 +1011,7 @@ def status(payload, context=True):
 def apply(payload):
     state = status(payload)
     legacy.require(state != "foreign", "foreign/mixed generic MyCareer; rebuild from original")
-    legacy.require(state != "previous", PREVIOUS_REFUSAL)   # b780 n6
+    legacy.require(state != "previous", PREVIOUS_REFUSAL)
     common = {"owner": OWNER, "experimental": True, "runtime_witnessed": False,
               "in_game_mode": True, "inline_save_version": 1, "save_growth": 128,
               "machine_code_bytes": len(assembly.CODE), "code_capacity": CODE_SIZE, "data_capacity": DATA_SIZE + 4096,

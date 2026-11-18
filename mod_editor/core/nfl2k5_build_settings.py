@@ -124,6 +124,8 @@ FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Player Contracts null-c
 FEATURE_KEYS += ("my_career_home",)  # ui1: MyCareer Career Home (default on with MyCareer)
 FEATURE_KEYS += ("super_bowl_user_art",)  # b773-sb2: Super Bowl logos folder; "" = the bundled real logos (sb3)
 FEATURE_KEYS += ("console_memory",)  # b780-m64b: 128 (default, absent in older projects) or 64 (experimental)
+PROJECT_KEYS = ("softdrink_project", "include_softdrink_project")
+FEATURE_KEYS += ("stock_age_policy",)
 MUSIC_KEYS = ("music_shuffle", "music_shuffle_selection")
 
 
@@ -136,9 +138,13 @@ def defaults():
 def build_settings(value):
     from . import nfl2k5_music_playlist as music, nfl2k5_throw_tuning as tt
     from . import nfl2k5_senior_bowl as bowl, nfl2k5_hires_pack as hires
-    tt._require(type(value) is dict and set(value) <= set(FEATURE_KEYS + MUSIC_KEYS),
+    tt._require(type(value) is dict and set(value) <= set(FEATURE_KEYS + MUSIC_KEYS + PROJECT_KEYS),
                 "Unsupported Build settings")
     result = music.build_settings({key: value[key] for key in MUSIC_KEYS if key in value})
+    for key, expected_type in zip(PROJECT_KEYS, (str, bool)):
+        if key in value:
+            tt._require(type(value[key]) is expected_type, f"Invalid league artwork setting: {key}")
+            result[key] = value[key]
     choices = {**defaults(), **deepcopy({key: value[key] for key in FEATURE_KEYS if key in value})}
     tt._require(choices["helmet_finish"] in ("glossy", "matte"), "Helmet finish must be glossy or matte")
     from . import nfl2k5_modern_color as colour
@@ -146,6 +152,7 @@ def build_settings(value):
     from . import nfl2k5_team_number_scale as number_scale
     choices["team_number_scale"] = number_scale.normalize(choices["team_number_scale"])
     tt._require(choices["scorebug_watermark"] in ("auto", "mnf", "off"), "ESPN watermark must be auto, mnf or off")
+    tt._require(choices["stock_age_policy"] in ("preserve_age", "keep_birthdates"), "Unknown stock roster age policy")
     expected = defaults()
     for key in FEATURE_KEYS:
         item, default = choices[key], expected[key]
@@ -206,6 +213,8 @@ def to_plan(state, source, target):
     """Reconstruct choices in a new build; never inherit overwrite permission."""
     from .mod_build import BuildPlan, CommentarySwap
     values = build_settings(state)
+    for key in PROJECT_KEYS:
+        values.pop(key, None)
     values["commentary"] = [CommentarySwap(**row) for row in values.get("commentary", [])]
     return BuildPlan(source, target, **values)
 

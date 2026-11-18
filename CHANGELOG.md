@@ -11,6 +11,10 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-81
+
+2K5 Mod Studio RC116 improves mod sharing, roster and save editing, and franchise history. APF 2K8 Mod Studio alpha.112 includes the shared updater fix.
+
 ## beta-80: 2026-11-05
 
 2K5 is **v1.0-RC115** and APF is **0.1.0-alpha.111**. The pack is

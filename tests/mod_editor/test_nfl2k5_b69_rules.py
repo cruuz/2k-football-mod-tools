@@ -360,7 +360,7 @@ class EscapeMachine(Machine):
             self.stop_at = va
         super()._code(u, va, size, data)
 
-    def escape(self, bucket, *, cpu=True, position=0, timer=.5, pressure=.9, attempt=True, phase=4, state=14):
+    def escape(self, bucket, *, cpu=True, position=0, timer=.5, pressure=.9, attempt=True, phase=4, state=14, elapsed=1.0):
         self.put(self.PLAYER+12, self.COMMAND)
         self.put(self.PLAYER+0x3C, self.ROSTER)
         self.put(self.COMMAND, -1 if cpu else 0)
@@ -369,6 +369,9 @@ class EscapeMachine(Machine):
         self.put(0xE602B8, state)
         self.f32(self.STACK+12, timer)
         self.f32(self.STACK+16, pressure)
+        self.f32(0xBE47C0, pressure)                       # native smoothed pocket pressure
+        self.put(0xE6029C, self.ROSTER + 0x100)
+        self.f32(self.ROSTER + 0x110, elapsed)              # seconds since snap
         self.f32(self.STACK+32, .8)  # effective Scramble supplied by upstream rating helper
         rng = 0xE5FCA0
         self.uc.mem_write(rng, bytes(8+55*8))
@@ -387,13 +390,37 @@ class ScrambleTests(unittest.TestCase):
         cls.retail = retail_xbe()
         cls.payload = scrambles.apply(cls.retail)[0]
 
+    def test_verified_beta80_factor_and_code_upgrade_together(self):
+        from mod_editor.core import nfl2k5_xbe_space as space
+        from mod_editor.core import nfl2k5_rules_patch as patch
+        places = patch.allocations(self.payload, scrambles)
+        legacy_code, _ = scrambles.previous(places)[0]
+        old, _ = space.install_code(self.payload, scrambles.OWNER, legacy_code, previous=scrambles.code_for(places))
+        self.assertEqual(scrambles.status(old), "foreign")
+        old, _ = space._install_scaleout(old, scrambles.OWNER, scrambles.BETA80_FACTOR, "read_only",
+                                         previous=scrambles.encode_options())
+        self.assertEqual(scrambles.verify(old)["modern_factor"], 0.5)
+        upgraded, receipt = scrambles.apply(old)
+        self.assertTrue(receipt["upgraded"])
+        self.assertEqual(upgraded, self.payload)
+
     def test_more_native_escape_branches_under_identical_inputs(self):
         m, p = EscapeMachine(self.retail), EscapeMachine(self.payload)
         before = [m.escape(i) for i in range(100)]
         after = [p.escape(i) for i in range(100)]
         self.assertGreater(sum(after), sum(before))
         self.assertTrue(all(not b or a for b, a in zip(before, after)))
-        self.assertEqual((sum(before), sum(after)), (21, 41))
+        self.assertEqual((sum(before), sum(after)), (21, 25))
+
+    def test_clean_pocket_reads_then_uses_retail_and_early_native_gate(self):
+        m, p = EscapeMachine(self.retail), EscapeMachine(self.payload)
+        for settings, expected in ((dict(pressure=0.0, elapsed=1.0), (21, 0)),
+                                   (dict(pressure=0.69, elapsed=2.49), (21, 0)),
+                                   (dict(pressure=0.0, elapsed=2.5), (21, 21)),
+                                   (dict(pressure=0.7, elapsed=1.0), (21, 25)),
+                                   (dict(timer=.25), (0, 0)), (dict(attempt=False), (0, 0))):
+            self.assertEqual(tuple(sum(machine.escape(i, **settings) for i in range(100))
+                                   for machine in (m, p)), expected, settings)
 
     def test_human_non_qb_and_non_live_inputs_keep_retail(self):
         for settings in (dict(cpu=False), dict(position=3), dict(phase=2), dict(state=13)):

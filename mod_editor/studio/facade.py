@@ -611,9 +611,10 @@ def _project_open_change(before, before_hash, after, after_hash, *, cause=""):
 
 @dataclass(frozen=True)
 class ExternalBuild:
-    """A disc written outside the texture-project build (Build & Share); only the path matters to Launch."""
+    """A finished disc and its known console target for the launch screen."""
 
     output_xiso: Path
+    console_memory: int | None = None
 
 
 @dataclass(frozen=True)
@@ -1125,7 +1126,7 @@ class Nfl2k5StudioFacade:
     def can_launch_xemu(self) -> bool:
         return not self.xemu_blocker
 
-    def register_external_build(self, image: Path) -> None:
+    def register_external_build(self, image: Path, *, console_memory: int | None = None) -> None:
         """Make a disc written by Build & Share the build that Launch starts.
 
         Until now only the texture-project build counted as "the latest build", so a
@@ -1137,7 +1138,7 @@ class Nfl2k5StudioFacade:
         if not image.is_file() or image.is_symlink():
             raise ValidationError(f"The built copy is not a regular file: {image}")
         with self._lock:
-            self._last_build = ExternalBuild(output_xiso=image)
+            self._last_build = ExternalBuild(output_xiso=image, console_memory=console_memory)
 
     @property
     def xemu_blocker(self) -> str:
@@ -3999,7 +4000,9 @@ class Nfl2k5StudioFacade:
         assert_image_available(result.output_xiso)
         settings_warning = ""
         try:
-            settings_warning = xemu_settings.play_warning(xemu_settings.config_path(command))
+            settings_warning = xemu_settings.play_warning(
+                xemu_settings.config_path(command), target_mb=getattr(result, "console_memory", None)
+            )
         except (OSError, ValueError, TypeError):
             settings_warning = ""
         if settings_warning:

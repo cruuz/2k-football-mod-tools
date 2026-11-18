@@ -7,14 +7,17 @@
 
    HISTORY. The roster arena ends with a 0x400-byte region: the 352-byte reserve block (magic "2K5RSV2") written by the
    practice-squad owner, then free bytes, and a franchise save's auxiliary tail (up to 366 bytes, the last bytes of the
-   arena). The history is one checked 270-byte block placed right after the reserve block, so it ends 0x192 bytes before
-   the arena's end, clear of the auxiliary tail (which begins 0x16E before the end) with 36 bytes to spare (the arena is
-   saved whole with every franchise, so the history costs no save size and an old save simply has no block):
+   arena). The checked history block follows the reserve block and occupies 270 bytes (v2) or 292 bytes (v3),
+   within the 306 bytes before the auxiliary tail (which begins 0x16E before the end). The arena is
+   saved whole with every franchise, so the history costs no save size and an old save simply has no block:
      +0 magic "2K5CHMP\0", +8 version 2, +9 ring size (22), +12 Adler-32 of bytes 0..11 and 16..269,
      +16 the newest season's MVP: [0] Super Bowl number, [1..7] the player (55 bits: initial, nine letters, position code;
        five bits each), [8] the player's club + 1;  +28 22 entries of 11 bytes, entry n % 22 holding Super Bowl number n:
        [0] n, [1..3] champion + 1 (6 bits), runner-up + 1 (6), champion points (6), runner-up points (6),
        [4..10] Super Bowl MVP (55 bits as above).
+   A final over 63 points uses v3. Each marked row (entry[10] bit 7) uses two zero-based 5-bit clubs and two 7-bit
+   scores in [1..3]. One byte per slot at +270 holds the upper four bits of each score. Unmarked rows keep v2 packing.
+   V3 extends the checksum through byte 291 and holds the full native score (five unsigned quarter totals, 0..1275).
    A block or entry that fails its checks reads as empty, so a foreign write can only lose history, never show a wrong
    champion; with no reserve block (an arena without the Studio's reserve schema) the history is simply off. */
 
@@ -44,6 +47,9 @@ typedef unsigned char u8;
 #define AWAY_SCORE ((i32 (FC *)(u32, u32))0x000C5150)
 #define HOME_TEAM  ((u32 (FC *)(u32, u32))0x000C4E00)
 #define AWAY_TEAM  ((u32 (FC *)(u32, u32))0x000C4E20)
+#define CLUB_INDEX ((u32 (FC *)(u32))0x000C4CA0)
+#define IR_COUNT   ((u32 (FC *)(u32))0x00246E50)
+#define IR_GET     ((u32 (FC *)(u32, u32))0x00246EC0)
 #define TEAM_FIRST ((u32 (FC *)(u32))0x000C3E70)
 #define TEAM_NEXT  ((u32 (FC *)(u32, u32))0x000C3E80)
 #define TEAM_COUNT ((u32 (*)(void))0x000C6430)
@@ -143,7 +149,7 @@ static u32 adler(const u8 *p, u32 n, u32 a, u32 b) {
 
 static u32 block_sum(const u8 *g) {
     u32 first = adler(g, 12, 1, 0);
-    return adler(g + MVP_AT, USED - MVP_AT, first & 0xFFFF, first >> 16);
+    return adler(g + MVP_AT, USED - MVP_AT + (g[8] == 3 ? RING : 0), first & 0xFFFF, first >> 16);
 }
 
 static const u8 magic[8] = {'2', 'K', '5', 'C', 'H', 'M', 'P', 0};
@@ -152,7 +158,7 @@ static u32 block_ok(const u8 *g) {
     for (u32 i = 0; i < 8; i++)
         if (g[i] != magic[i])
             return 0;
-    return g[8] == 2 && g[9] == RING && block_sum(g) == (u32)g[12] + ((u32)g[13] << 8) + ((u32)g[14] << 16) + ((u32)g[15] << 24);
+    return (g[8] == 2 || g[8] == 3) && g[9] == RING && block_sum(g) == (u32)g[12] + ((u32)g[13] << 8) + ((u32)g[14] << 16) + ((u32)g[15] << 24);
 }
 
 static void seal(u8 *g) {
@@ -170,7 +176,7 @@ static const u8 *entry_at(const u8 *g, u32 n) {
         return 0;
     const u8 *e = g + ENTRIES_AT + (n % RING) * ENTRY;
     u32 t = (u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16), champion = t & 63, runner = t >> 6 & 63;
-    return e[0] == n && champion >= 1 && champion <= 32 && runner >= 1 && runner <= 32 ? e : 0;
+    return e[0] == n && ((e[10] & 0x80) ? g[8] == 3 : (champion >= 1 && champion <= 32 && runner >= 1 && runner <= 32)) ? e : 0;
 }
 
 static u32 sym5(u32 c) {
@@ -298,15 +304,26 @@ static void record_season(u32 n, u32 champion, u32 runner_up, u32 champion_point
     u8 *e = g + ENTRIES_AT + (n % RING) * ENTRY;
     for (u32 i = 0; i < ENTRY; i++)
         e[i] = 0;
-    champion_points = champion_points > 63 ? 63 : champion_points;
-    runner_points = runner_points > 63 ? 63 : runner_points;
-    u32 t = (champion + 1) | (runner_up + 1) << 6 | champion_points << 12 | runner_points << 18;
+    u32 t = (champion + 1) | (runner_up + 1) << 6 | (champion_points & 63) << 12 | (runner_points & 63) << 18;
     e[0] = (u8)n;
+    if (sb_mvp)
+        pack_person(e + 4, sb_mvp);
+    if ((champion_points | runner_points) > 63) {
+        /* Five quarter/OT bytes can total 1275. A v3 block adds one high-score byte per
+           ring slot within the documented 306-byte gap. Existing entries keep their encoding. */
+        if (g[8] == 2) {
+            for (u32 i = 0; i < RING; i++) g[USED + i] = 0;
+            g[8] = 3;
+        }
+        e[10] |= 0x80;
+        t = champion | (runner_up << 5) | ((champion_points & 127) << 10) | ((runner_points & 127) << 17);
+        g[USED + n % RING] = (u8)((champion_points >> 7) | (runner_points >> 7) << 4);
+    } else if (g[8] == 3) {
+        g[USED + n % RING] = 0;
+    }
     e[1] = (u8)t;
     e[2] = (u8)(t >> 8);
     e[3] = (u8)(t >> 16);
-    if (sb_mvp)
-        pack_person(e + 4, sb_mvp);
     if (mvp) {                                            /* the newest season's MVP has one slot of its own */
         u8 *m = g + MVP_AT;
         for (u32 i = 0; i < 9; i++)
@@ -424,10 +441,24 @@ static u16 *put_abbr(u16 *out, u32 index_plus_one) {
     return team ? put_text(out, (const u16 *)G(team + 0x108)) : out;
 }
 
-static u32 entry_champion(const u8 *e) { return ((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) & 63; }
-static u32 entry_runner_up(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) >> 6) & 63; }
-static u32 entry_champion_points(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) >> 12) & 63; }
-static u32 entry_runner_points(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) >> 18) & 63; }
+static u16 *put_scoreline(u16 *out, const u8 *e, const u8 *g) {
+    u32 t = *(const u32 *)e >> 8;
+    u32 champ = t & 63, runner = (t >> 6) & 63, high = (t >> 12) & 63, low = t >> 18;
+    if (e[10] & 0x80) {
+        u32 more = g[USED + e[0] % RING];
+        champ = 1 + (t & 31);
+        runner = 1 + ((t >> 5) & 31);
+        high = ((t >> 10) & 127) | ((more & 15) << 7);
+        low = (t >> 17) | ((more >> 4) << 7);
+    }
+    out = put_abbr(out, champ);
+    *out++ = ' ';
+    out = put_uint(out, high);
+    *out++ = '-';
+    out = put_uint(out, low);
+    *out++ = ' ';
+    return put_abbr(out, runner);
+}
 
 /* b780 j4-history: a fourth card page, the franchise History screen owner's game log. That owner repoints the ESPN.com row
    table (0x525674) at its read-only block and keeps {magic "HSX1", flip, rows, bio} in the 16 bytes before its rows;
@@ -529,13 +560,7 @@ void FC champions_ratings(volatile u32 *state) {
         const u8 *e = entry_at(g, n);
         u16 *out = put_uint(text, n + 1965);
         *out++ = ' ';
-        out = put_abbr(out, entry_champion(e));
-        *out++ = ' ';
-        out = put_uint(out, entry_champion_points(e));
-        *out++ = '-';
-        out = put_uint(out, entry_runner_points(e));
-        *out++ = ' ';
-        out = put_abbr(out, entry_runner_up(e));
+        out = put_scoreline(out, e, g);
         if (get_bits(e + 4, 5, 5)) {
             *out++ = ' ';
             *out++ = ' ';
@@ -587,13 +612,7 @@ void champions_bio(void) {
     out = put_ascii(text, "SUPER BOWL ");
     out = put_roman(out, newest);
     out = put_ascii(out, ": ");
-    out = put_abbr(out, entry_champion(e));
-    *out++ = ' ';
-    out = put_uint(out, entry_champion_points(e));
-    *out++ = '-';
-    out = put_uint(out, entry_runner_points(e));
-    *out++ = ' ';
-    out = put_abbr(out, entry_runner_up(e));
+    out = put_scoreline(out, e, g);
     *out = 0;
     bio_line(text, lines++);
     if (get_bits(e + 4, 0, 5) | get_bits(e + 4, 5, 5)) {
@@ -618,8 +637,9 @@ void champions_bio(void) {
 
 /* ---- modern award voting -------------------------------------------------------------------------------------- */
 enum { P_QB, P_K, P_P, P_WR, P_CB, P_FS, P_SS, P_HB, P_FB, P_TE, P_OLB, P_ILB, P_C, P_G, P_T, P_DT, P_DE };
-typedef struct {
-    i32 pass_yds, pass_td, pass_int, rush_yds, rush_td, rec, rec_yds, rec_td, tackles, sacks2, def_int, ff;
+typedef union {
+    struct { i32 pass_yds, pass_td, pass_int, rush_yds, rush_td, rec, rec_yds, rec_td, tackles, sacks2, def_int, ff; };
+    i32 stat[12];
 } Line;
 
 /* Production in hundredths of a point: 1 point per 25 passing yards, 4 per passing TD, -2 per interception, 1 per 10
@@ -646,37 +666,24 @@ static const u8 droy_weight[17] = {0, 0, 0, 0, 120, 45, 45, 0, 0, 0, 105, 60, 0,
 
 /* Otherworldly seasons, as a percentage of a mark nobody has reached in the NFL: a single one at 100 or more wins MVP. */
 static u32 otherworldly(const Line *s) {
-    u32 r = 0, v;
-    v = (u32)(s->sacks2 > 0 ? s->sacks2 : 0) * 100 / 60;          /* 30 sacks (record 22.5) */
-    r = v > r ? v : r;
-    v = (u32)(s->tackles > 0 ? s->tackles : 0) * 100 / 300;       /* 300 tackles */
-    r = v > r ? v : r;
-    v = (u32)(s->rush_yds > 0 ? s->rush_yds : 0) * 100 / 2500;    /* 2,500 rushing yards (record 2,105) */
-    r = v > r ? v : r;
-    v = (u32)(s->rec_yds > 0 ? s->rec_yds : 0) * 100 / 2200;      /* 2,200 receiving yards (record 1,964) */
-    r = v > r ? v : r;
-    v = (u32)(s->pass_yds > 0 ? s->pass_yds : 0) * 100 / 6000;    /* 6,000 passing yards (record 5,477) */
-    r = v > r ? v : r;
-    v = (u32)(s->pass_td > 0 ? s->pass_td : 0) * 100 / 60;        /* 60 passing touchdowns (record 55) */
-    r = v > r ? v : r;
-    v = (u32)(s->def_int > 0 ? s->def_int : 0) * 100 / 15;        /* 15 interceptions (record 14) */
-    r = v > r ? v : r;
-    return r;
+    static const struct { u8 field; u16 mark; } marks[] = {
+        {9, 60}, {8, 300}, {3, 2500}, {6, 2200}, {0, 6000}, {1, 60}, {10, 15}
+    };
+    u32 best = 0;
+    for (u32 i = 0; i < sizeof(marks) / sizeof(marks[0]); i++) {
+        i32 stat = s->stat[marks[i].field];
+        if (stat > 0) {
+            u32 percent = (u32)stat * 100 / marks[i].mark;
+            if (percent > best) best = percent;
+        }
+    }
+    return best;
 }
 
 static void read_line(u32 p, Line *s) {
-    s->pass_yds = STAT(p, 8);
-    s->pass_td = STAT(p, 9);
-    s->pass_int = STAT(p, 10);
-    s->rush_yds = STAT(p, 2);
-    s->rush_td = STAT(p, 3);
-    s->rec = STAT(p, 12);
-    s->rec_yds = STAT(p, 13);
-    s->rec_td = STAT(p, 14);
-    s->tackles = STAT(p, 18);
-    s->sacks2 = STAT(p, 19);
-    s->def_int = STAT(p, 20);
-    s->ff = STAT(p, 21);
+    static const u8 categories[] = {8, 9, 10, 2, 3, 12, 13, 14, 18, 19, 20, 21};
+    for (u32 i = 0; i < sizeof(categories); i++)
+        s->stat[i] = STAT(p, categories[i]);
 }
 
 /* Team success factor in percent from the regular-season record: 35 at .400 or worse, 100 at .750 or better. */
@@ -713,7 +720,12 @@ void champions_modern_awards(void) {
         for (u32 i = 0; i < teams; i++) {
             u32 team = TEAM_AT(i);
             u32 factor = team ? team_factor(team) : 0;
-            for (u32 p = team ? TEAM_FIRST(team) : 0; p; p = TEAM_NEXT(team, p)) {
+            if (!team) continue;
+            u32 ir_count = i < 32 && CLUB_INDEX(team) < 32 ? IR_COUNT(team) : 0;
+            for (u32 active = TEAM_FIRST(team), j = 0; active || j < ir_count;
+                 active ? (active = TEAM_NEXT(team, active)) : j++) {
+                u32 p = active ? active : IR_GET(team, j);
+                if (!p) continue;
                 u32 pos = B(p + 0x35);
                 if (pos > P_DE || pos == P_K || pos == P_P || pos == P_C || pos == P_G || pos == P_T)
                     continue;

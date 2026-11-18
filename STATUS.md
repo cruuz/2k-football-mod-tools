@@ -1,4 +1,8 @@
-# 2K5 Mod Studio: v1.0 RC115 Release Status
+# 2K5 Mod Studio: v1.0 RC116 Release Status
+
+## Beta 81 (RC116 / APF alpha.112)
+
+SOFTDRINK 2K28 v0.10 includes the standard 128 MiB and experimental 64 MB packs. The editor can install either directly or customize its artwork, roster and playbooks. The release repairs franchise retirement and IR, Team History and lineman statistics, MyCareer quarter settings, the pause scorebar and CPU decisions. Studio also repairs complete roster transfers, PS2 save verification, Quick Export and interrupted builds. [Editor and game changelog](docs/mod_editor/2k5_mod_studio_changelog.md) · [Install the game pack](docs/mod_editor/install_softdrink_2k28.md)
 
 ## Beta 80 (RC115 / APF alpha.111, 2026-11-03)
 

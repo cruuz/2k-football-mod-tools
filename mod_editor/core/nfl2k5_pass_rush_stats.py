@@ -47,7 +47,9 @@ simming"; "add a category for offensive lineman in League Leaders that tracks th
   PRS and QBH added at the end; a new eighth tab, Offensive Line, lists # NAME TEAM PA HA SA. The tab list of the League
   Leaders spreadsheet (0x54A13C, null-terminated, read by the spreadsheet's own walker 0x174D00) takes the new tab in its
   old terminator slot 0x54A158; the next word (0x54A15C, alignment padding) is the new terminator. The new tab uses the
-  Special Teams header (filter index 6: any player with a value in one of the tab's columns), so only linemen appear.
+  Special Teams header (filter index 6). Its shortlist admits linemen with games played, including zero allowed,
+  and retains the lowest 40 totals for the selected blocking stat. Each new sort starts with the fewest allowed.
+  Player Stats and Rookie Watch use the same columns with their native club and rookie filters.
 * Simulated draws moved from PFR's charting level to PFF's (the counts players quote): prs_rush_share 0.71 -> 1.2, QB hits
   kept at the NFL's official level (prs_hit_share 0.53 -> 0.33), interior linemen 0.15 + 1.80 -> 0.20 + 2.40, the line's
   charge 4.3 -> 6.8 a game, line QB hits 0.45 -> 0.33, line sacks 60% -> 40% of the team's sacks (worst linemen
@@ -63,8 +65,8 @@ from . import nfl2k5_pass_rush_stats_code as runtime
 
 OWNER = "nfl2k5_pass_rush_stats"
 EVIDENCE = "EXPERIMENTAL"
-CODE_SIZE = 3328
-READ_ONLY_SIZE = 3584
+CODE_SIZE = 3584
+READ_ONLY_SIZE = 4096
 DATA_SIZE = 1152
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "read_only", READ_ONLY_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 
@@ -112,6 +114,12 @@ SITE_TABLE = (
     # b780 b5-sim: the stats sheets' row pickers ("cmp edx, 0xE9" at each entry), ids 106-110 to this owner's reader
     ("leaders_filter", 0x003216A0, bytes.fromhex("81fae9000000"), "prs_leader_a", "jmp"),
     ("leaders_sort", 0x003216C0, bytes.fromhex("81fae9000000"), "prs_leader_c", "jmp"),
+    ("player_count_eligible", 0x00321940, bytes.fromhex("e85bfdffff"), "prs_shortlist_eligible", "call"),
+    ("rookie_count_eligible", 0x003219D1, bytes.fromhex("e8cafcffff"), "prs_shortlist_eligible", "call"),
+    ("player_row_eligible", 0x00321B90, bytes.fromhex("e80bfbffff"), "prs_shortlist_eligible", "call"),
+    ("rookie_row_eligible", 0x00321C41, bytes.fromhex("e85afaffff"), "prs_shortlist_eligible", "call"),
+    ("shortlist_eligible", 0x00321CEC, bytes.fromhex("e8aff9ffff"), "prs_shortlist_eligible", "call"),
+    ("shortlist_value", 0x00321DE6, bytes.fromhex("e8d5f8ffff"), "prs_shortlist_value", "call"),
 )
 # 0x320C28[i]: the card's screen entries this owner takes over (label, entry VA, retail target, stub label)
 CARD_JUMPS = (("card_wr", 0x00320C34, 0x00320BD2, "prs_card_wr"),
@@ -146,11 +154,15 @@ DEFENSE_TAB_SLOT, NEW_TAB_SLOT, TABS_TERMINATOR = 0x0054A148, 0x0054A158, 0x0054
 DEFENSE_TAB, SPECIAL_TEAMS_TAB = 0x00548188, 0x00548438
 TAB_HEADER = 0x9C
 TAB_TITLE_OFF, TAB_FILTER_OFF, TAB_SORT_OFF = 0x08, 0x20, 0x94
+TAB_SORT_DIRECTION = 0x98
 JERSEY, NAME_COLUMN, TEAM_NAME = 0x00540998, 0x00543928, 0x005439D8
 DEFENSE_COLUMNS = (JERSEY, NAME_COLUMN, TEAM_NAME, 0x00544FD8, 0x00545088, 0x00545138, 0x005451E8, 0x00545298,
                    0x00545348, 0x005453F8, 0x005454A8, 0x00545608, 0x005456B8, 0x00545CE8, 0x00545768, 0x00545818,
                    0x005458C8)    # # NAME TEAM TKL AST SACK YDS AVG PD INT YDS AVG LNG TD TFL FF FR, then FBK (0x548268)
 OL_TAB_TITLE = "Offensive Line"
+# Each native spreadsheet ends its tab array with two zero words. Retain its own team and rookie row callbacks.
+# key, first tab pointer, Special Teams template
+OL_STATS_TABS = (("player", 0x00549F0C, 0x00549080), ("rookie", 0x0054A024, 0x00547E40))
 OL_LEADER_KEYS = ("pa", "ha")     # SA's leader column already exists (LEADER_KEYS)
 # new columns: (key, abbreviation, long name, stat id)
 COLUMNS = (("tgt", "TGT", "Targets", TARGETS_SELECTOR),
@@ -171,12 +183,21 @@ GUARDS = (
     ("shed caller", 0x00234725, 0x6A), ("release call", 0x002DB2B0, 0x23), ("sack branches", 0x000CE29C, 0xA3),
     ("commit tail", 0x00134E11, 0x1F), ("card selector", 0x00320B95, 0xC0), ("card getter", 0x00320430, 0x2C),
     # b780 b5-sim: the League Leaders tabs this owner copies, and the padding word that becomes the tab list's terminator
+    ("player stats tab", 0x00549080, TAB_HEADER), ("rookie watch tab", 0x00547E40, TAB_HEADER),
+    ("player stats tab end", 0x00549F24, 4), ("player stats padding", 0x00549F2C, 4),
+    ("rookie watch tab end", 0x0054A03C, 4), ("rookie watch padding", 0x0054A044, 4),
     ("defense tab header", 0x00548188, 0x9C), ("defense tab columns", 0x00548224, 0x44),
     ("special teams tab header", 0x00548438, 0x9C), ("tab list padding", 0x0054A15C, 0x4),
     ("leader getters", 0x003216A6, 0x2D), ("tab walker", 0x00174D00, 0x2D),
 )
 
 GUARD_SHA256_PINNED = {
+    "player stats tab": "643bc368bfc57e092903e504f051c50442f3e89e29574851416ad247319babb8",
+    "rookie watch tab": "227d71c76a906f4dc6ceb09d7b8325a449f1aa2331198e2a533937231fbecbd2",
+    "player stats tab end": "c4c550ec4144cc2407ba2262c60c7a8dad72b438181d4d47e4a8c19625675dc4",
+    "player stats padding": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+    "rookie watch tab end": "50b547fe79a5ff00387afaba35a281430aef22d8119170cfe767102fedc4c799",
+    "rookie watch padding": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
     "live code": "cff8e37c309bcd7591a790e627fa90435365161736a1ae5460511ddb1f5de27f",
     "live arrays": "347de136b17b08efb5206b0415188dc8efad2f58c125d923c105ad65b75dd5ee",
     "live next": "faa90367a2072a3eea71a9318233475beee234180063d22304f2b1d0806286be",
@@ -268,6 +289,11 @@ def read_only_layout(read_only_va):
     at += TAB_HEADER + 4 * (len(DEFENSE_COLUMNS) + 4)       # + FBK, PRS, QBH and the terminator
     out["tab_ol"] = at
     at += TAB_HEADER + 4 * 7                                # # NAME TEAM PA HA SA and the terminator
+    out["sort_stats_ol"] = at
+    at += 8
+    for key, _tabs, _template in OL_STATS_TABS:
+        out["tab_" + key + "_ol"] = at
+        at += TAB_HEADER + 4 * 6                            # # NAME PA HA SA and the terminator
     out["end"] = at
     _require(at - read_only_va <= READ_ONLY_SIZE, "the pass rush read-only block exceeds its budget")
     return out
@@ -373,8 +399,12 @@ def read_only_bytes(image, code_va, read_only_va, source_lists):
     field_of = {"prs": "pressures", "qbh": "qb_hits", "sa": "sacks_allowed", "pa": "pressures_allowed",
                 "ha": "qb_hits_allowed"}
     for key in LEADER_KEYS + OL_LEADER_KEYS:
-        put(lay["ld_" + key], _descriptor(leader_template, leader, lay["s_" + key], lay["l_" + key],
-                                          FIELDS[field_of[key]], cookie=0x307BA))
+        column = bytearray(_descriptor(leader_template, leader, lay["s_" + key], lay["l_" + key],
+                                       FIELDS[field_of[key]], cookie=0x307BA))
+        if key in ("pa", "ha", "sa"):
+            for event in (0x20, 0x38):
+                struct.pack_into("<I", column, event, labels(code_va)["prs_sort_allowed"])
+        put(lay["ld_" + key], column)
     for va, data in league_leader_tabs(image, lay):
         put(va, data)
     return bytes(buf)
@@ -393,10 +423,20 @@ def league_leader_tabs(image, lay):
     _require(struct.unpack_from("<3I", header, TAB_FILTER_OFF - 8) == (0x0027CCD0, 0x10000, 6),
              "the League Leaders special teams tab is not retail")
     struct.pack_into("<I", header, TAB_TITLE_OFF, lay["t_ol"])
-    struct.pack_into("<I", header, TAB_SORT_OFF, lay["sort_ol"])
+    struct.pack_into("<II", header, TAB_SORT_OFF, lay["sort_ol"], 0)
     tab_ol = bytes(header) + struct.pack("<7I", JERSEY, NAME_COLUMN, TEAM_NAME, lay["ld_pa"], lay["ld_ha"], lay["ld_sa"], 0)
-    return [(lay["t_ol"], _utf16(OL_TAB_TITLE)), (lay["sort_ol"], struct.pack("<2i", 3, -999)),
-            (lay["tab_def"], tab_def), (lay["tab_ol"], tab_ol)]
+    result = [(lay["t_ol"], _utf16(OL_TAB_TITLE)), (lay["sort_ol"], struct.pack("<2i", 3, -999)),
+              (lay["tab_def"], tab_def), (lay["tab_ol"], tab_ol),
+              (lay["sort_stats_ol"], struct.pack("<2i", 2, -999))]
+    for key, tabs, template in OL_STATS_TABS:
+        _require(image.read(tabs + 6 * 4, 4) == struct.pack("<I", template) and image.read(tabs + 8 * 4, 4) == bytes(4),
+                 f"the {key} stats tab terminator or template changed")
+        header = bytearray(image.read(template, TAB_HEADER))
+        struct.pack_into("<I", header, TAB_TITLE_OFF, lay["t_ol"])
+        struct.pack_into("<II", header, TAB_SORT_OFF, lay["sort_stats_ol"], 0)
+        cols = (JERSEY, NAME_COLUMN, lay["ld_pa"], lay["ld_ha"], lay["ld_sa"], 0)
+        result.append((lay["tab_" + key + "_ol"], bytes(header) + struct.pack("<6I", *cols)))
+    return result
 
 
 def sites(code_va):
@@ -423,6 +463,9 @@ def data_edits(code_va, read_only_va=0):
     out.append(("leaders_defense_tab", DEFENSE_TAB_SLOT, struct.pack("<I", DEFENSE_TAB),
                 struct.pack("<I", lay["tab_def"] if lay else 0)))
     out.append(("leaders_offensive_line_tab", NEW_TAB_SLOT, bytes(4), struct.pack("<I", lay["tab_ol"] if lay else 0)))
+    for key, tabs, _template in OL_STATS_TABS:
+        out.append((key + "_offensive_line_tab", tabs + 7 * 4, bytes(4),
+                    struct.pack("<I", lay["tab_" + key + "_ol"] if lay else 0)))
     return out
 
 
@@ -496,18 +539,21 @@ def _recognize(payload):
     return next(iter(states))
 
 
-# b780 n6: beta-79 / SOFTDRINK 2K28 v0.8 carries the smaller revision (read-only tables 2,816 bytes, no card cell text).
-# Its exact install (as e8c1de3a8's recognizer, frozen in nfl2k5_pass_rush_stats_b779, accepts it) reads "previous";
-# this release's tables do not fit its allocations, so apply() refuses to update it in place.
-PREVIOUS_REVISION = "beta-79"
-PREVIOUS_REFUSAL = ("Pass rush stats on this disc are the beta 79 revision. This release's version needs more room than "
-                    "the earlier build gave it, so it cannot be updated in place. Rebuild from your retail game, or turn "
-                    "Pass rush stats off to keep the beta 79 version.")
+# Both older layouts have smaller allocations. Their frozen templates verify code, tables and sites before a rebuild is suggested.
+PREVIOUS_REVISION = "beta-79/beta-80"
+PREVIOUS_REFUSAL = ("This disc has an earlier Pass rush stats layout (beta 79 or beta 80). "
+                    "Rebuild from your retail game to install the updated Offensive Line menus.")
 
 
 def status(payload):
     try:
         return _recognize(payload)
+    except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, UnicodeError, OSError):
+        pass
+    try:
+        from . import nfl2k5_pass_rush_stats_b780 as beta80
+        if beta80._recognize(payload) == "applied":
+            return "previous"
     except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, UnicodeError, OSError):
         pass
     try:

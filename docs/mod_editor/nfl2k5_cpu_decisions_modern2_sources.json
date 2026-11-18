@@ -692,6 +692,7 @@
    2
   ],
   "deliberate_deviations": [
+   "Beta 81 caps the neutral threshold at one yard from the own 20 through 34, two from the own 35 through 44, and three from the own 45 through 49. The published chart below is the prior reference. The game still applies its score and time adjustments and its separate last-possession rules.",
    "Own goal line to own 20 (x above 80): the published chart says go on 4th-and-1 from about the own 8 and 4th-and-2 from about the own 11; the shipped table keeps retail there (as the v0.5 Modern table does) because a failed try deep in the CPU's own end is not covered by any measurement of this engine's conversion rate. Clock and score shifts still apply there.",
    "Every window edge is pulled in by one yard (chart resolution).",
    "Distances above 10 are outside the chart: only the clock/score shifts (nfl4th) can make the CPU go on 4th-and-11 or longer; capped at 25 yards."

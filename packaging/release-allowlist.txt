@@ -57,6 +57,7 @@ mod_editor/core/nfl2k5_dynamic_kickoff.py
 mod_editor/core/nfl2k5_franchise_save.py
 mod_editor/core/nfl2k5_injured_reserve.py
 mod_editor/core/nfl2k5_injured_reserve_code.py
+mod_editor/core/nfl2k5_injured_reserve_code_b780.py
 mod_editor/core/nfl2k5_injured_reserve_save.py
 mod_editor/core/nfl2k5_staff_ui.py
 mod_editor/core/nfl2k5_playoff_picture.py
@@ -719,6 +720,7 @@ mod_editor/core/nfl2k5_letter_grades_progress.py
 mod_editor/core/nfl2k5_period_goalposts.py
 mod_editor/core/nfl2k5_champions.py
 mod_editor/core/nfl2k5_champions_code.py
+mod_editor/core/nfl2k5_champions_code_b780.py
 mod_editor/core/nfl2k5_champions_code_b779.py
 mod_editor/core/nfl2k5_champions_history.py
 data/nfl2k5_champions_2026.json
@@ -806,6 +808,7 @@ data/nfl2k5_espn25_more_moments.json
 data/nfl2k5_moment_venues.json
 data/nfl2k5_moment_goalposts.json
 data/nfl2k5_stock_books.json
+data/nfl2k5_stock_dob_fingerprints.txt
 data/nfl2k5_front_schemes.json
 data/nfl2k5_moment_playbook_eras.json
 data/nfl2k5_era_rules.json
@@ -927,6 +930,7 @@ tests/mod_editor/test_nfl2k5_offense_concepts.py
 tests/mod_editor/test_b776_pb1_offense.py
 mod_editor/core/nfl2k5_play_intents.py
 mod_editor/core/nfl2k5_playbook_pack.py
+mod_editor/core/nfl2k5_offset_toss.py
 mod_editor/core/nfl2k5_play_scoring.py
 mod_editor/core/nfl2k5_play_scoring_pins.json
 mod_editor/core/nfl2k5_screen_authored_pins.py
@@ -1089,6 +1093,7 @@ mod_editor/core/nfl2k5_my_career.py
 mod_editor/core/nfl2k5_my_career_code.py
 mod_editor/core/nfl2k5_my_career_mode.py
 mod_editor/core/nfl2k5_my_career_mode_code.py
+mod_editor/core/nfl2k5_my_career_mode_code_b780.py
 mod_editor/core/nfl2k5_my_career_mode_code_b779.py
 mod_editor/core/nfl2k5_my_career_home.py
 mod_editor/core/nfl2k5_my_career_home_code.py
@@ -3849,12 +3854,15 @@ tests/mod_editor/test_nfl2k5_pass_protection.py
 tests/mod_editor/test_nfl2k5_pass_protection_unicorn.py
 mod_editor/core/nfl2k5_preseason_warning.py
 mod_editor/core/nfl2k5_pass_rush_stats.py
+mod_editor/core/nfl2k5_pass_rush_stats_b780.py
 mod_editor/core/nfl2k5_pass_rush_stats_b779.py
 mod_editor/core/nfl2k5_pass_rush_stats_code.py
+mod_editor/core/nfl2k5_pass_rush_stats_code_b780.py
 mod_editor/core/nfl2k5_pass_rush_stats_code_b779.py
 tests/mod_editor/test_nfl2k5_pass_rush_stats.py
 mod_editor/core/nfl2k5_history_screen.py
 mod_editor/core/nfl2k5_history_screen_code.py
+mod_editor/core/nfl2k5_history_screen_code_b780.py
 tests/mod_editor/test_b780_j4_history_screen.py
 tests/mod_editor/test_b780_n8_coach_table_order.py
 tests/mod_editor/test_b780_n8_history_compose.py

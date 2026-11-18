@@ -28,9 +28,9 @@ class ConstantTests(unittest.TestCase):
         self.assertEqual(r.TARGET_RATE, 0.08)                               # b780 b5-sim: was 0.14
         self.assertEqual((r.TARGET_PIVOT, r.TARGET_SLOPE), (90, 0.015))      # b780 b5-sim: WR1-scaled redirect
         self.assertEqual(r.TARGET_WR1_SHARE, 0.75)
-        self.assertEqual(r.QB_BONUS_YARDS, 3.0)
+        self.assertEqual(r.QB_BONUS_YARDS, 3.5)
         self.assertEqual(r.QB_BONUS_RZ_LINE, 20.0)
-        self.assertEqual(r.PASS_SCALE, 0.86)  # b780 b5-sim (17-game v0.8 seasons; b779-int1 0.92)
+        self.assertEqual(r.PASS_SCALE, 0.91)
         self.assertEqual(r.RUN_RZ_SCALE, 0.94)
         self.assertEqual(r.RZ_PASS_SCALE, 0.64)  # b779-int1 rebalance
         self.assertEqual(r.RUSH_BONUS_PCT, 0)  # b780 db2: 0 with the fullback rule (b5-sim 8 lead backs; b779-int1 20)
@@ -66,9 +66,9 @@ class ConstantTests(unittest.TestCase):
     def test_qb_carry_rate_follows_the_scramble_byte(self):
         self.assertEqual(r.qb_carry_rate(20), 0.0)
         self.assertEqual(r.qb_carry_rate(45), 0.0)
-        self.assertAlmostEqual(r.qb_carry_rate(57), 12 * 0.0036, places=6)
-        self.assertAlmostEqual(r.qb_carry_rate(72), 27 * 0.0036, places=6)
-        self.assertAlmostEqual(r.qb_carry_rate(99), 32 * 0.0036, places=6)   # cap
+        self.assertAlmostEqual(r.qb_carry_rate(57), 12 * r.QB_SCRAMBLE_SCALE, places=6)
+        self.assertAlmostEqual(r.qb_carry_rate(72), 27 * r.QB_SCRAMBLE_SCALE, places=6)
+        self.assertAlmostEqual(r.qb_carry_rate(99), 40 * r.QB_SCRAMBLE_SCALE, places=6)   # cap
         self.assertLess(r.qb_carry_rate(50), r.qb_carry_rate(65))
 
 
@@ -125,7 +125,7 @@ class CodeTests(unittest.TestCase):
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.MIX_QB_SLOPE_OFF)[0], 0.4, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_SLOPE_OFF)[0], 0.015, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.INTERCEPT_SCALE_OFF)[0], 1.35, places=6)
-        self.assertAlmostEqual(_s.unpack_from("<f", code, r.PASS_SCALE_OFF)[0], 0.86, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.PASS_SCALE_OFF)[0], r.PASS_SCALE, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.RUN_RZ_SCALE_OFF)[0], 0.94, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.RZ_PASS_SCALE_OFF)[0], 0.64, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.RUSH_BONUS_PCT_OFF)[0], 0.0, places=6)
@@ -147,6 +147,19 @@ class CodeTests(unittest.TestCase):
 
 
 class InstallTests(unittest.TestCase):
+    def test_verified_beta80_merge_and_targets_upgrade_together(self):
+        from mod_editor.core import nfl2k5_rdata_sites as rdata, nfl2k5_xbe_space as space
+        data = retail_bytes()
+        if data is None:
+            self.skipTest("private USA retail XBE is absent")
+        allocated = space.apply(data, r.REQUESTS, scaleout=True)[0]
+        code, state = r._allocations(allocated)
+        old_body = r._assemble(code["va"], state["va"], beta80=True)[1]
+        old = space.install_code(allocated, r.OWNER, old_body)[0]
+        old = rdata.apply(old, r.sites(code["va"], beta80=True), r.OWNER)[0]
+        self.assertEqual(r.status(old), "applied")
+        self.assertEqual(r.apply(old)[0], r.apply(data)[0])
+
     def test_apply_is_read_back_and_idempotent(self):
         data = retail_bytes()
         if data is None:

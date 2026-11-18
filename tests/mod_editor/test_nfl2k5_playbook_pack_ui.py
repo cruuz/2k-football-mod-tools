@@ -82,7 +82,7 @@ class PackUiModelTests(unittest.TestCase):
         self.assertIn("already replaced by a staged edit", blockers[0])
 
     def test_engine_limits_are_stated_on_every_install(self) -> None:
-        for phrase in ("pre-snap motion", "give-or-throw RPO", "tempo", "never been witnessed"):
+        for phrase in ("manual pre-snap motion", "up/down", "left/right", "Give-or-throw RPO", "tempo", "on-field verification"):
             self.assertIn(phrase, ui.ENGINE_LIMITS_TEXT)
 
 

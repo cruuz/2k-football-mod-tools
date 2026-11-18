@@ -85,7 +85,8 @@ HOOKS2 = {
 # applied only above 15 seconds. The estimate (20A4D0) is non-zero only inside about 55 to 65 yards of the goal.
 HOOKS3 = {"timeout_window": (0x207202, bytes.fromhex("74694e00"))}
 HOOK3_AFTER = {"timeout_window": bytes.fromhex("80414e00")}
-M2_VARIANTS = ("b778_late", "b778", "v061", "p9")  # ai6 late rule, ai4 no late owner, beta-77.1, b77 p9
+LATE_VARIANTS = ("b81_late", "b778_late")
+M2_VARIANTS = (*LATE_VARIANTS, "b81", "b778", "v061", "p9")  # ai6 late rule, ai4 no late owner, beta-77.1, b77 p9
 HOOK2_LABEL = {"fourth": "fourth", "play": "play", "target": "target", "two_point": "two_point",
                "fg_dispatch": "fg_guard", "fg_commit": "fg_guard"}
 EXPONENT_AFTER = b"\x02"
@@ -130,14 +131,23 @@ def _m2(variant="b778"):
     """(code, relocations, labels) of a Modern 2 template variant."""
     if variant not in M2_VARIANTS:
         raise ValueError(f"Unknown Modern 2 variant {variant!r}")
-    suffix = {"b778_late": "2_LATE", "b778": "2", "v061": "2_V061", "p9": "2_LEGACY"}[variant]
-    return (getattr(assembly, "CODE" + suffix), getattr(assembly, "RELOCATIONS" + suffix),
-            getattr(assembly, "LABELS" + suffix))
+    suffix = {"b81": "2", "b81_late": "2_LATE", "b778_late": "2_LATE", "b778": "2", "v061": "2_V061", "p9": "2_LEGACY"}[variant]
+    code, labels = getattr(assembly, "CODE" + suffix), getattr(assembly, "LABELS" + suffix)
+    if variant in ("b81", "b81_late"):
+        # A neutral CPU decision in its own territory should risk shorter distances.
+        # Keep opponent territory, time/score adjustments, and the late possession rules.
+        code = bytearray(code)
+        for own_yard in range(20, 50):
+            offset = labels["limit_x"] + 100 - own_yard
+            maximum = 1 if own_yard < 35 else 2 if own_yard < 45 else 3
+            code[offset] = min(code[offset], maximum)
+        code = bytes(code)
+    return code, getattr(assembly, "RELOCATIONS" + suffix), labels
 
 
-def m2_tables():
+def m2_tables(variant="b81_late"):
     """(limit_x[81], shift[126], thr10[33]) exactly as the Modern 2 machine code reads them."""
-    code, _, labels = _m2()
+    code, _, labels = _m2(variant)
     limit = tuple(code[labels["limit_x"]:labels["limit_x"] + 81])
     shift = tuple(b - 256 if b > 127 else b for b in code[labels["shift"]:labels["shift"] + 126])
     thr = tuple(code[labels["thr"]:labels["thr"] + 33])
@@ -172,7 +182,14 @@ def _decision_modern2(down, own_yard, distance, score_margin, quarter, seconds, 
 def _decision_modern2_core(down, own_yard, distance, score_margin, quarter, seconds, quarter_seconds, ot_bits, home,
                            kick_range, native_fg, timeouts=0, defense_points=None, punt_roll=None):
     limit_x, shift, _ = m2_tables()
-    xi = math.floor(_f32(_f32(100 - own_yard) + _f32(.0001)))
+    # The native selector subtracts the separately rounded line-of-scrimmage
+    # and first-down marker in centimeters before it compares yards to go.
+    spot = _f32((own_yard - 50) * 91.44)
+    marker = _f32((own_yard - 50 + distance) * 91.44)
+    yard = _f32(91.44)
+    distance = _f32(abs(marker - spot) / yard)
+    yards_to_goal = _f32(50 - spot / yard)
+    xi = math.floor(_f32(yards_to_goal + _f32(.0001)))
     region = 0 if xi > 60 else 1 if xi > 40 else 2
     base = limit_x[xi] if xi <= 80 else 0
     if quarter >= 5:
@@ -347,7 +364,7 @@ def code_for(va, level="modern", *, variant="b778", late_va=None, state_va=None)
                "native_fg": 0x20AF80, "kicker_range": 0x18B120, "margin_fn": 0x205F40, "hail_mary": 0x206DD0,
                "native_vip": 0xF71E0, "two_point_tail": 0x206E75}
     if level == "modern2":
-        if variant == "b778_late":
+        if variant in LATE_VARIANTS:
             if late_va is None or state_va is None:
                 raise ValueError("the late fourth-down template needs the late owner allocations")
             symbols["late_decision"] = late_va
@@ -374,7 +391,7 @@ def sites(va, level="modern", *, variant="b778"):
             else:
                 after = EXPONENT_AFTER
             rows.append((name, hook, before, after))
-        if variant in ("b778", "b778_late"):
+        if variant in ("b81", "b778", *LATE_VARIANTS):
             rows += [(name, hook, before, HOOK3_AFTER[name]) for name, (hook, before) in HOOKS3.items()]
         return rows
     return [(name, hook, before,
@@ -451,6 +468,12 @@ def _main_row(payload):
     return _rows(payload, OWNER)
 
 
+def _late_verified(payload, late, state):
+    image = XbeImage(payload)
+    return (image.read(late["va"], LATE_CODE_SIZE) == late_code_for(late["va"], state["va"])
+            and image.read(state["va"], LATE_STATE_SIZE) == bytes(LATE_STATE_SIZE))
+
+
 def read_settings(payload):
     """Installed level. Modern 2 also names its template: ``vip_policy`` (a user VIP delegates), ``clock_policy``
     (b778: automatic coach profiles use Modern 2, end-of-half timeout window) and ``late_policy`` (ai6: the
@@ -461,14 +484,16 @@ def read_settings(payload):
             return {"level": level, "vip_policy": False, "clock_policy": False, "late_policy": False,
                     "experimental": True, "runtime_witnessed": False}
     late, state = _late_row(payload), _late_state_row(payload)
-    if late is not None and state is not None and lever.status(
-            payload, _adapter("modern2", variant="b778_late", late_va=late["va"],
-                              state_va=state["va"])) == "applied":
-        return {"level": "modern2", "vip_policy": True, "clock_policy": True, "late_policy": True,
-                "variant": "b778_late", "experimental": True, "runtime_witnessed": False}
-    if lever.status(payload, _adapter("modern2", variant="b778")) == "applied":
-        return {"level": "modern2", "vip_policy": True, "clock_policy": True, "late_policy": False,
-                "variant": "b778", "experimental": True, "runtime_witnessed": False}
+    if late is not None and state is not None and _late_verified(payload, late, state):
+        for variant in LATE_VARIANTS:
+            if lever.status(payload, _adapter("modern2", variant=variant, late_va=late["va"],
+                                             state_va=state["va"])) == "applied":
+                return {"level": "modern2", "vip_policy": True, "clock_policy": True, "late_policy": True,
+                        "variant": variant, "experimental": True, "runtime_witnessed": False}
+    for variant in ("b81", "b778"):
+        if lever.status(payload, _adapter("modern2", variant=variant)) == "applied":
+            return {"level": "modern2", "vip_policy": True, "clock_policy": True, "late_policy": False,
+                    "variant": variant, "experimental": True, "runtime_witnessed": False}
     for variant, vip in (("v061", True), ("p9", False)):
         if lever.status(payload, _adapter("modern2", variant=variant)) == "applied":
             return {"level": "modern2", "vip_policy": vip, "clock_policy": False, "late_policy": False,
@@ -484,11 +509,12 @@ def status(payload):
         state = lever.status(payload, _adapter(level))
         if state != "foreign":
             return state
-    if late is not None and late_state is not None and lever.status(
-            payload, _adapter("modern2", variant="b778_late", late_va=late["va"],
-                              state_va=late_state["va"])) != "foreign":
-        return "applied"
-    for variant in ("b778", "v061", "p9"):
+    if late is not None and late_state is not None and _late_verified(payload, late, late_state):
+        for variant in LATE_VARIANTS:
+            if lever.status(payload, _adapter("modern2", variant=variant, late_va=late["va"],
+                                             state_va=late_state["va"])) == "applied":
+                return "applied"
+    for variant in ("b81", "b778", "v061", "p9"):
         state = lever.status(payload, _adapter("modern2", variant=variant))
         if state != "foreign":
             return state
@@ -507,11 +533,11 @@ def _install_modern2(payload, *, allocation=None, allow_no_late=False):
     if (late is None or late_state is None) and not allow_no_late:
         space._require(False, "CPU money downs needs its companion allocations "
                               "(nfl2k5_cpu_money_downs_late and _late_state)")
-    variant = "b778_late" if late is not None and late_state is not None else "b778"
-    late_va = late["va"] if variant == "b778_late" else None
-    state_va = late_state["va"] if variant == "b778_late" else None
+    variant = "b81_late" if late is not None and late_state is not None else "b81"
+    late_va = late["va"] if variant in LATE_VARIANTS else None
+    state_va = late_state["va"] if variant in LATE_VARIANTS else None
     installed = payload
-    if variant == "b778_late":
+    if variant in LATE_VARIANTS:
         space._require(XbeImage(installed).read(state_va, LATE_STATE_SIZE) == bytes(LATE_STATE_SIZE),
                        "late fourth-down state must be zero at install")
         installed, _ = space.install_code(installed, LATE_OWNER, late_code_for(late_va, state_va))
@@ -523,7 +549,7 @@ def _install_modern2(payload, *, allocation=None, allow_no_late=False):
     edits = [{"label": label, "va": hex(va), "file_offset": hex(rdata.offset_of(result, va)),
               "before": before.hex(), "after": after.hex()}
              for label, va, before, after in sites(main["va"], "modern2", variant=variant)]
-    if variant == "b778_late":
+    if variant in LATE_VARIANTS:
         edits.append({"label": "late_owner", "va": hex(late["va"]),
                       "file_offset": hex(late["raw"]), "size": late["size"]})
         edits.append({"label": "late_state", "va": hex(state_va), "size": LATE_STATE_SIZE})
@@ -532,7 +558,7 @@ def _install_modern2(payload, *, allocation=None, allow_no_late=False):
                   "after": code_for(main["va"], "modern2", variant=variant, late_va=late_va,
                                      state_va=state_va).hex()})
     receipt = {"owner": OWNER, "level": "modern2", "vip_policy": True, "clock_policy": True,
-               "late_policy": variant == "b778_late", "variant": variant, "edits": edits,
+               "late_policy": variant in LATE_VARIANTS, "variant": variant, "edits": edits,
                "allocation": allocation,
                "reservations": space.reservations(result),
                "sections_repinned": patch["sections_repinned"],
@@ -553,7 +579,7 @@ def apply(payload, *, level="modern"):
                          "edits": [], "experimental": True, "runtime_witnessed": False}
     if level == "modern2":
         settings = read_settings(payload)
-        if settings and settings["level"] == "modern2" and settings.get("late_policy"):
+        if settings and settings["level"] == "modern2" and settings.get("variant") == "b81_late":
             return payload, {"owner": OWNER, "level": "modern2", "late_policy": True,
                              "already_applied": True, "changed_bytes": 0, "edits": [],
                              "experimental": True, "runtime_witnessed": False}
@@ -600,7 +626,7 @@ def upgrade_to_modern2(payload):
     from .nfl2k5_bump_strength import _sections, section_digest
     from . import nfl2k5_rdata_sites as rdata
     settings = read_settings(payload)
-    if settings is not None and settings["level"] == "modern2" and settings.get("late_policy"):
+    if settings is not None and settings["level"] == "modern2" and settings.get("variant") == "b81_late":
         return payload, {"owner": OWNER, "level": "modern2", "late_policy": True,
                          "already_applied": True, "changed_bytes": 0, "edits": []}
     old = settings
@@ -621,22 +647,25 @@ def upgrade_to_modern2(payload):
     a = lever.allocation(payload, OWNER, CODE_SIZE)
     requests = space._read_scale_directory(payload)
     variant = old.get("variant", "b778")
-    new_variant = "b778_late" if late is not None and late_state is not None else "b778"
+    new_variant = "b81_late" if late is not None and late_state is not None else "b81"
     old_sites = {name: (hook, before, after) for name, hook, before, after
                  in sites(a["va"], old["level"], variant=variant)}
     new_sites = sites(a["va"], "modern2", variant=new_variant)
     buf = bytearray(payload)
-    late_va = late["va"] if new_variant == "b778_late" else None
-    state_va = late_state["va"] if new_variant == "b778_late" else None
+    late_va = late["va"] if new_variant in LATE_VARIANTS else None
+    state_va = late_state["va"] if new_variant in LATE_VARIANTS else None
     code = code_for(a["va"], "modern2", variant=new_variant, late_va=late_va, state_va=state_va)
     space._require(bytes(buf[a["raw"]:a["raw"] + a["size"]]) ==
-                   code_for(a["va"], old["level"], variant=variant), "foreign owner code")
+                   code_for(a["va"], old["level"], variant=variant, late_va=late_va, state_va=state_va), "foreign owner code")
     buf[a["raw"]:a["raw"] + a["size"]] = code
     edits, touched = [], set()
-    if new_variant == "b778_late":
+    if new_variant in LATE_VARIANTS:
         space._require(XbeImage(payload).read(state_va, LATE_STATE_SIZE) == bytes(LATE_STATE_SIZE),
                        "late fourth-down state must be zero at install")
-        buf[late["raw"]:late["raw"] + late["size"]] = late_code_for(late_va, state_va)
+        helper = late_code_for(late_va, state_va)
+        current = bytes(buf[late["raw"]:late["raw"] + late["size"]])
+        space._require(current in (b"\xcc" * LATE_CODE_SIZE, helper), "Unrecognized late fourth-down companion")
+        buf[late["raw"]:late["raw"] + late["size"]] = helper
         edits.append({"label": "late_owner", "va": hex(late["va"]), "file_offset": hex(late["raw"]),
                       "size": late["size"]})
         edits.append({"label": "late_state", "va": hex(state_va), "size": LATE_STATE_SIZE})
@@ -659,7 +688,7 @@ def upgrade_to_modern2(payload):
     result = bytes(buf)
     space._require(status(result) == "applied", "CPU money downs upgrade postcondition failed")
     return result, {"owner": OWNER, "level": "modern2", "vip_policy": True, "clock_policy": True,
-                    "late_policy": new_variant == "b778_late", "variant": new_variant,
+                    "late_policy": new_variant in LATE_VARIANTS, "variant": new_variant,
                     "from_level": old["level"], "from_vip_policy": old["vip_policy"],
                     "from_variant": old.get("variant"), "already_applied": False,
                     "edits": edits, "changed_bytes": sum(x != y for x, y in zip(payload, result)),

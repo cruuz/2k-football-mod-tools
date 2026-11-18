@@ -1,5 +1,9 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.112, beta 81
+
+An update that fails to download or verify leaves the editor open. Subsequent changes receive the normal save prompt.
+
 ## 0.1.0-alpha.111: beta 80 (2026-11-03)
 
 - Charged abilities revision 5: each defensive line move now needs its own ability for a second-level charge. Swim, Club, Spin and Rip each count only for their own move. A defender keeps a first-level discharge, and first-level strength, on the line moves he lacks. Before this, any charged ability gave all four line moves the second level, both in the play and in the discharge effect.

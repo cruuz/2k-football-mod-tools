@@ -20,8 +20,9 @@ for entry in (ROOT, ROOT / "tests"):
     if str(entry) not in sys.path:
         sys.path.insert(0, str(entry))
 
-from PyQt5.QtGui import QPalette  # noqa: E402
-from PyQt5.QtWidgets import QApplication, QPushButton, QScrollArea  # noqa: E402
+from PyQt5.QtCore import QEvent, QObject  # noqa: E402
+from PyQt5.QtGui import QFontInfo, QPalette  # noqa: E402
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QScrollArea  # noqa: E402
 
 from mod_editor.core import mod_build  # noqa: E402
 from mod_editor.gui.build_panel_qt import BuildPanel  # noqa: E402
@@ -130,6 +131,25 @@ class ContrastTests(unittest.TestCase):
 
 
 class DescriptionVisibilityTests(unittest.TestCase):
+    def test_option_descriptions_stay_inside_the_panel_during_construction(self):
+        shown = []
+
+        class WindowObserver(QObject):
+            def eventFilter(self, widget, event):
+                if (event.type() == QEvent.Show and isinstance(widget, QLabel)
+                        and widget.isWindow() and widget.objectName() in {"optionBadge", "throwMuted"}):
+                    shown.append(widget.objectName())
+                return False
+
+        observer = WindowObserver()
+        APP.installEventFilter(observer)
+        try:
+            panel = BuildPanel()
+            self.addCleanup(panel.deleteLater)
+        finally:
+            APP.removeEventFilter(observer)
+        self.assertFalse(shown, f"{len(shown)} option labels showed as separate windows")
+
     def _panel_on_scroll(self, theme: str) -> tuple[BuildPanel, QScrollArea]:
         panel = BuildPanel(theme=theme)
         host = _scroll_host(panel)
@@ -204,6 +224,26 @@ class DescriptionVisibilityTests(unittest.TestCase):
 
 
 class WindowFitTests(unittest.TestCase):
+    def test_getting_started_heading_fits_with_enlarged_header_text(self):
+        window = StudioMainWindow(offer_recovery=False)
+        try:
+            header = window.page_title.parentWidget()
+            header.setFixedWidth(690)
+            window.show()
+            APP.processEvents()
+            for widget in header.findChildren(QLabel) + header.findChildren(QPushButton):
+                pixels = round(QFontInfo(widget.font()).pixelSize() * 1.25)
+                widget.setStyleSheet(f"font-size: {pixels}px;")
+            for _ in range(4):
+                APP.processEvents()
+            title = window.page_title
+            fits_on_one_line = title.fontMetrics().horizontalAdvance(title.text()) <= title.contentsRect().width()
+            fits_when_wrapped = title.wordWrap() and title.heightForWidth(title.width()) <= title.height()
+            self.assertTrue(fits_on_one_line or fits_when_wrapped, title.text())
+        finally:
+            window._allow_close = True
+            window.close()
+
     def _window(self, theme: str, width: int, height: int) -> StudioMainWindow:
         window = StudioMainWindow(theme=theme)
         window.resize(width, height)

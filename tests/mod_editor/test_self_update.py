@@ -768,6 +768,8 @@ class StudioUpdateQuitTests(unittest.TestCase):
                 # what lets the update start at all.
                 self.assertEqual(len(asked), 1)
                 self.assertEqual(went, [True])
+                self.assertFalse(window._allow_close)
+                window._update_banner.update_ready.emit(object())
                 self.assertTrue(window._allow_close)
 
                 def never(context: str) -> str:

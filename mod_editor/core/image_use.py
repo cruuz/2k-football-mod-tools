@@ -6,6 +6,9 @@ Windows asks the kernel for a temporary read handle with no sharing.
 """
 from __future__ import annotations
 
+from contextlib import contextmanager
+import hashlib
+import json
 import os
 from pathlib import Path
 import shutil
@@ -155,6 +158,134 @@ def _publish_when_released(publish, target: Path) -> None:
                     "minute: pause it for this folder or choose another output folder, then make the disc again. "
                     "Nothing was published.") from exc
             time.sleep(PUBLISH_HELD_WAIT_SECONDS)
+
+
+def _file_state(info):
+    return None if info is None else [info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns]
+
+
+def receipt_states(target, suffixes):
+    """Snapshot the paths that a completed build will publish or retire."""
+    states = {}
+    for suffix in suffixes:
+        path = io_path(str(target) + suffix)
+        try:
+            info = path.lstat()
+        except FileNotFoundError:
+            states[suffix] = None
+            continue
+        if not stat.S_ISREG(info.st_mode) or getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT:
+            raise ValidationError(f"The output receipt must be a regular file: {path}. Choose another output filename.")
+        states[suffix] = _file_state(info)
+    return states
+
+
+@contextmanager
+def _publication_lock(target):
+    from . import platform_compat
+    from .nfl2k5_source_cache import default_cache_root
+    key = hashlib.sha256(os.fsencode(os.path.normcase(os.path.realpath(target)))).hexdigest()
+    locks = default_cache_root() / "publication-locks"
+    locks.mkdir(mode=0o700, parents=True, exist_ok=True)
+    with (locks / key).open("a+b") as lock:
+        try:
+            platform_compat.exclusive_nonblocking_lock(lock.fileno())
+        except BlockingIOError as exc:
+            raise ValidationError("Another build is publishing this destination. Choose a different output filename.") from exc
+        try:
+            yield target.parent / (".2k5-publish-" + key[:24])
+        finally:
+            platform_compat.release_lock(lock.fileno())
+
+
+def _finish_publication(target, journal, suffixes):
+    """Reconcile a failed or interrupted commit. The disc rename occurs after every sidecar."""
+    if not journal.exists():
+        return
+    if journal.is_symlink() or not journal.is_dir():
+        raise ValidationError(f"A publication recovery path is occupied: {journal}")
+    manifest = journal / "commit.json"
+    if not manifest.exists():
+        # No receipt can have moved before the journal is finalized.
+        if {f.name for f in journal.iterdir()} <= {"commit.tmp"}:
+            (journal / "commit.tmp").unlink(missing_ok=True)
+            journal.rmdir()
+            return
+        raise ValidationError(f"Unrecognized files in publication recovery folder: {journal}")
+    if manifest.is_symlink() or manifest.stat().st_size > 16384:
+        raise ValidationError(f"Unreadable publication recovery record: {manifest}")
+    doc = json.loads(manifest.read_bytes())
+    if set(doc["old"]) != set(suffixes) or set(doc["new"]) != set(suffixes) or doc["target"] != target.name:
+        raise ValidationError(f"The publication recovery record does not belong to {target.name}.")
+    committed = receipt_states(target, ("",))[""] == doc["disc_after"]
+    states = receipt_states(target, suffixes)
+    for number, suffix in enumerate(sorted(suffixes)):
+        backup = journal / str(number)
+        old, new, current = doc["old"][suffix], doc["new"][suffix], states[suffix]
+        if not committed:
+            dest = io_path(str(target) + suffix)
+            if current not in (None, old, new):
+                raise ValidationError(f"The output receipt changed during recovery. Your previous receipt is in {journal}.")
+            if backup.exists():
+                if receipt_states(backup, ("",))[""] != old:
+                    raise ValidationError(f"Previous receipt changed in {journal}.")
+                _publish_when_released(lambda: os.replace(backup, dest), dest)
+            elif old is None and current is not None:
+                _publish_when_released(dest.unlink, dest)
+            elif current != old:
+                raise ValidationError(f"Cannot verify the previous receipt for {target.name}. Recovery files are in {journal}.")
+        else:
+            backup.unlink(missing_ok=True)
+    manifest.unlink()
+    journal.rmdir()
+
+
+def recover_image_publication(target, suffixes):
+    """Recover an interrupted build before taking a fresh snapshot of the destination."""
+    with _publication_lock(target) as journal:
+        _finish_publication(target, journal, suffixes)
+
+
+def publish_image_with_receipts(staging, target, previous, previous_receipts):
+    """Commit the verified files together. Keep rollback data until the new disc has its final name."""
+    from . import platform_compat
+    with _publication_lock(target) as journal:
+        _finish_publication(target, journal, previous_receipts)
+        if receipt_states(target, previous_receipts) != previous_receipts:
+            raise ValidationError("The output receipts changed while building. Choose another output filename.")
+        staged = receipt_states(staging, previous_receipts)
+        if not any(previous_receipts.values()) and not any(staged.values()):
+            publish_image(staging, target, previous)
+            return
+        doc = dict(target=target.name, disc_after=_file_state(staging.stat()), old=previous_receipts, new=staged)
+        journal.mkdir(mode=0o700)
+        try:
+            draft = journal / "commit.tmp"
+            with draft.open("xb") as writer:
+                writer.write(json.dumps(doc).encode())
+                writer.flush()
+                os.fsync(writer.fileno())
+            os.replace(draft, journal / "commit.json")
+            platform_compat.fsync_directory(journal)
+            platform_compat.fsync_directory(target.parent)
+            for number, suffix in enumerate(sorted(previous_receipts)):
+                dest = io_path(str(target) + suffix)
+                if previous_receipts[suffix] is not None:
+                    _publish_when_released(lambda: os.replace(dest, journal / str(number)), dest)
+                if staged[suffix] is not None:
+                    new = io_path(str(staging) + suffix)
+                    _publish_when_released(lambda: publish_no_replace(new, dest), dest)
+            platform_compat.fsync_directory(journal)
+            platform_compat.fsync_directory(target.parent)
+            publish_image(staging, target, previous)
+        except BaseException:
+            _finish_publication(target, journal, previous_receipts)
+            raise
+        # An OS lock on a backup may delay housekeeping. The committed image and its receipts are already usable.
+        try:
+            _finish_publication(target, journal, previous_receipts)
+        except OSError:
+            pass
 
 
 def publish_image(staging: Path, target: Path, previous) -> None:

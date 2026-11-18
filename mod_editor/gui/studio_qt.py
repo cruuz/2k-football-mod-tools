@@ -47,6 +47,7 @@ from PyQt5.QtWidgets import (
     QColorDialog,
     QFileDialog,
     QFrame,
+    QGridLayout,
     QHeaderView,
     QHBoxLayout,
     QInputDialog,
@@ -1988,15 +1989,12 @@ class StudioMainWindow(QMainWindow):
         icon = _window_icon()
         if icon is not None:
             self.setWindowIcon(icon)
-        # Width keeps the sidebar + a full workspace panel visible; the height
-        # floor is deliberately low so the window fits a 1366x768 laptop after
-        # the OS chrome.  Pages scroll (see _page_scroll_host), so a short window
-        # never clips the header or the bottom build/launch action bar.
-        # The shell now fits its own content at about 1,092 px wide, so the
-        # floor no longer has to be 1,180. A 1366-wide laptop is a normal
-        # machine for this audience and the window must fit on one.
-        self.setMinimumSize(1040, 600)
-        self.resize(1480, 920)
+        # Qt reports usable screen coordinates in logical pixels, including on scaled displays.
+        available = self.screen().availableGeometry().size()
+        usable = QSize(max(1, available.width() - 24), max(1, available.height() - 48))
+        self._scroll_shell = usable.width() < 1040 or usable.height() < 600
+        self.setMinimumSize(QSize(1040, 600).boundedTo(usable))
+        self.resize(QSize(1480, 920).boundedTo(usable))
         self.setObjectName("studioWindow")
         self._build_ui()
         self._stall_watchdog = install_workspace_runtime(self)
@@ -2654,6 +2652,9 @@ class StudioMainWindow(QMainWindow):
         box.setIcon(QMessageBox.Warning)
         box.setWindowTitle("Roster edits are not saved")
         text, informative, _summary = roster_work_sentences(*self._roster_work_counts(), context)
+        if self._roster_editor_panel.franchise_panel.edits:
+            text = "This franchise has changes that have not been written to an Xbox save."
+            informative = f"{context} can lose them. Use Save Xbox save copy on the Rosters page to keep franchise edits."
         box.setText(text)
         box.setInformativeText(informative)
         lose = box.addButton("Lose roster edits", QMessageBox.DestructiveRole)
@@ -2874,13 +2875,24 @@ class StudioMainWindow(QMainWindow):
 
     def _build_ui(self) -> None:
         root = QWidget()
-        self.setCentralWidget(root)
+        if self._scroll_shell:
+            # The sidebar, header and footer share the sheet. Keyboard focus also scrolls
+            # their actions into view on displays smaller than the full desktop layout.
+            shell_scroll = QScrollArea()
+            shell_scroll.setObjectName("studioShellScroll")
+            shell_scroll.setFrameShape(QFrame.NoFrame)
+            shell_scroll.setWidgetResizable(True)
+            shell_scroll.setWidget(root)
+            self.setCentralWidget(shell_scroll)
+        else:
+            self.setCentralWidget(root)
         # The update strip sits above everything and stays hidden unless a newer
         # release exists, so the normal window is unchanged.
         shell = QVBoxLayout(root)
         shell.setContentsMargins(0, 0, 0, 0)
         shell.setSpacing(0)
         self._update_banner = update_ui.UpdateBanner(product="2k5")
+        self._update_banner.update_ready.connect(self._allow_update_quit)
         shell.addWidget(self._update_banner)
         body = QWidget()
         shell.addWidget(body, 1)
@@ -2890,7 +2902,8 @@ class StudioMainWindow(QMainWindow):
 
         sidebar = QFrame()
         sidebar.setObjectName("sidebar")
-        sidebar.setFixedWidth(248)
+        sidebar.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        sidebar.setMinimumWidth(248)
         side_layout = QVBoxLayout(sidebar)
         side_layout.setContentsMargins(16, 18, 16, 14)
         side_layout.setSpacing(10)
@@ -2920,7 +2933,7 @@ class StudioMainWindow(QMainWindow):
         self.navigation = QListWidget()
         self.navigation.setObjectName("navigation")
         self.navigation.setFrameShape(QFrame.NoFrame)
-        self.navigation.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.navigation.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.navigation.setSpacing(1)
         self.navigation.setSelectionMode(QAbstractItemView.SingleSelection)
         self.navigation.setAccessibleName("Modding categories")
@@ -2949,7 +2962,7 @@ class StudioMainWindow(QMainWindow):
             item.setToolTip(display_title)
             if category is ProductCategory.FIELD_ART_CREATE_TEAM:
                 item.setToolTip("The field art of the game's own Create-a-Team teams (fictional logos by design). "
-                                "Real NFL end zones and midfield art live under All Textures / Stadiums.")
+                                "Open NFL end zones and field surfaces in All Textures.")
             self.navigation.addItem(item)
         roster_item = QListWidgetItem("  ★ Rosters")
         roster_item.setData(Qt.UserRole, "rosters")
@@ -3446,7 +3459,7 @@ class StudioMainWindow(QMainWindow):
         title_box.setSpacing(0)
         self.page_eyebrow = QLabel("ESPN NFL 2K5 • XBOX")
         self.page_eyebrow.setObjectName("eyebrow")
-        self.page_title = QLabel("Getting Started")
+        self.page_title = WrappedLabel("Getting Started")
         self.page_title.setObjectName("pageTitle")
         title_box.addWidget(self.page_eyebrow)
         title_box.addWidget(self.page_title)
@@ -3517,13 +3530,14 @@ class StudioMainWindow(QMainWindow):
         outer.addWidget(hero)
         outer.addWidget(sub)
 
-        steps = QHBoxLayout()
+        steps = QGridLayout()
         steps.setSpacing(12)
+        columns = 2 if self._scroll_shell else 4
         # b780-uxfix: the four steps of the common job (install SOFTDRINK 2K28 and play it), xemu setup included
         for number, title, body in (
             ("1", "Get your two files", "Your NFL 2K5 game file (.iso) and the SOFTDRINK 2K28 download (.2k5patch)."),
             ("2", "Install", "Press Install SOFTDRINK 2K28 and pick the two files. Your original file is never changed."),
-            ("3", "Set up xemu once", "System Memory 128 MiB and the Complex 4627 BIOS, then restart xemu (Help ▸ Set up xemu)."),
+            ("3", "Set up xemu once", "Standard pack: 128 MiB and Complex 4627. For the 64 MB pack, choose 64 MiB. Restart xemu (Help ▸ Set up xemu)."),
             ("4", "Play", "Press Play latest disc in xemu, or in xemu choose Machine > Load Disc."),
         ):
             card = QFrame()
@@ -3545,7 +3559,9 @@ class StudioMainWindow(QMainWindow):
             card_layout.addWidget(number_label)
             card_layout.addWidget(title_label)
             card_layout.addWidget(body_label, 1)
-            steps.addWidget(card, 1)
+            index = int(number) - 1
+            steps.addWidget(card, index // columns, index % columns)
+            steps.setColumnStretch(index % columns, 1)
         outer.addLayout(steps)
 
         start = QFrame()
@@ -4597,6 +4613,11 @@ class StudioMainWindow(QMainWindow):
             intro_label.setObjectName("mutedLabel")
             intro_label.setWordWrap(True)
             browser_layout.addWidget(intro_label)
+        if section.category == ProductCategory.FIELD_ART_CREATE_TEAM:
+            for caption, group in (("Browse NFL end zones", "End Zone"), ("Browse NFL fields", "Field Surface")):
+                button = QPushButton(caption)
+                button.clicked.connect(lambda _checked=False, group=group: self._browse_nfl_field_textures(group))
+                browser_layout.addWidget(button)
         search = QLineEdit()
         _configure_search_field(
             search,
@@ -7182,6 +7203,15 @@ class StudioMainWindow(QMainWindow):
             return selectors
         return (self._selected_set.selector,) if self._selected_set is not None else ()
 
+    def _browse_nfl_field_textures(self, group: str) -> None:
+        category = ProductCategory.TEXTURES
+        row = self._navigation_row(category)
+        self._ensure_workspace(row)
+        browser = self._visual_browsers[category]
+        browser.search.clear()
+        browser.group_filter.setCurrentIndex(max(0, browser.group_filter.findData(group)))
+        self.navigation.setCurrentRow(row)
+
     def _browse_selected_uniform_equipment(self) -> None:
         """Open the canonical visual browser on one set's equipment records."""
 
@@ -8789,13 +8819,13 @@ class StudioMainWindow(QMainWindow):
         else:
             search.setPlaceholderText("Player name…  (open your game disc first)")
 
-    def _register_external_disc(self, path: str) -> None:
+    def _register_external_disc(self, path: str, console_memory: int | None = None) -> None:
         """A disc written by ★ Rosters, ★ Models or Share is a disc Play latest can start (M09)."""
 
         if not path:
             return
         try:
-            self.facade.register_external_build(Path(path))
+            self.facade.register_external_build(Path(path), console_memory=console_memory)
         except Exception as exc:  # noqa: BLE001 - a missing file only means Play stays blocked
             self._set_status(str(exc))
             return
@@ -9009,23 +9039,9 @@ class StudioMainWindow(QMainWindow):
         self.close()
 
     def prepare_for_update_quit(self, proceed: Callable[[], None]) -> None:
-        """Settle unsaved work before an update is downloaded.
-
-        The update banner calls this before it downloads or spawns anything,
-        because the Windows installer waits for this process to exit before it
-        writes a file: an answer that arrives after the hand-off is an answer
-        that keeps the installer waiting, which is what beta 74 did. So the
-        two questions a closing studio can ask are both asked here instead.
-
-        A studio that is not free to close refuses the update outright rather
-        than starting one it cannot finish, and answering the unsaved-work
-        question sets ``_allow_close``, which ``closeEvent`` reads as the
-        decision instead of asking a second time. The drain fences above it,
-        an audio or build worker that must reach a safe boundary, are left
-        exactly as they are: they defer a close, they never prompt for one.
-        Cancelling simply never calls ``proceed``, and no update starts.
+        """Ask about unsaved work before downloading. A successful installer handoff
+        enables the one-time close override, while a failed download returns to editing.
         """
-
         if self._blocking:
             QMessageBox.information(
                 self,
@@ -9037,13 +9053,15 @@ class StudioMainWindow(QMainWindow):
         if self._refuse_while_embedded_busy("update"):
             return
 
-        def go(_discarded: bool) -> None:
-            self._allow_close = True
-            proceed()
+        self._continue_after_unsaved("Updating Mod Studio", lambda _discarded: proceed())
 
-        self._continue_after_unsaved("Updating Mod Studio", go)
+    def _allow_update_quit(self, _plan: object) -> None:
+        self._allow_close = True
 
     def closeEvent(self, event: QCloseEvent) -> None:  # type: ignore[override]
+        if self._update_banner.update_in_progress:
+            event.ignore()
+            return
         opening = getattr(self, '_project_open_worker', None)
         if opening is not None:
             opening.cancelled.set()
@@ -9369,9 +9387,7 @@ class StudioMainWindow(QMainWindow):
         if self._save_project_action is not None:
             self._save_project_action.setEnabled(can_save)
         if self._save_project_as_action is not None:
-            self._save_project_as_action.setEnabled(
-                ready and self._workspace_dirty and not global_busy
-            )
+            self._save_project_as_action.setEnabled(ready and not global_busy)
         self.undo_button.setEnabled(
             ready
             and bool(getattr(self.facade, "can_undo", False))
@@ -9526,7 +9542,6 @@ class StudioMainWindow(QMainWindow):
 
     def _sprite_scorebar_folder_chosen(self, folder: str) -> None:
         self._scorebar_folder_chosen(folder)
-        self._build_panel.scorebug_check.setChecked(True)
         self._build_panel.scorebug_runtime_check.setChecked(True)
         self._capture_music_build_settings()
         self._set_status("Sprite scorebug design and option handed to Build.")
@@ -9535,9 +9550,10 @@ class StudioMainWindow(QMainWindow):
         """Scorebar Studio saved a folder: fill the Build tab's scorebar folder field."""
         self._ensure_workspace(self._navigation_row("build_share"))
         self._build_panel.scorebug_folder_field.setText(folder)
+        self._build_panel.scorebug_check.setChecked(True)
         self._capture_music_build_settings()
         self._mark_workspace_changed()
-        self._set_status("Scorebar folder handed to Build. Tick Experimental ESPN scorebar on the Build tab.")
+        self._set_status("ESPN scorebar enabled in Build with the selected folder.")
 
     def _sync_mycareer_position_scheme(self, *_args):
         """Point the MyCareer picker at the retail or EDGE/LB position scheme.
@@ -9678,7 +9694,9 @@ class StudioMainWindow(QMainWindow):
         self._share_panel.play_hook = lambda: self._launch_xemu if self.launch_button.isEnabled() else None
         self._build_panel.built.connect(self._share_panel.prefill_from_build)
         self._build_panel.built.connect(self._on_build_tab_built)
-        self._share_panel.disc_written.connect(self._register_external_disc)
+        self._share_panel.disc_written.connect(
+            lambda path: self._register_external_disc(path, self._share_panel.last_apply.get("console_memory"))
+        )
         def customize_softdrink(recipe):
             try:
                 self._build_panel.load_softdrink_sources(recipe)
@@ -9964,7 +9982,7 @@ class StudioMainWindow(QMainWindow):
             self._set_status("That copy is the open source disc, not a new build; Play latest disc was not changed.")
             return
         try:
-            self.facade.register_external_build(Path(target))
+            self.facade.register_external_build(Path(target), console_memory=receipt.get("plan", {}).get("console_memory"))
         except Exception as exc:  # noqa: BLE001 - a missing file only means Launch stays blocked
             self._set_status(str(exc))
             return

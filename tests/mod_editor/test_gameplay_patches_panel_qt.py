@@ -33,7 +33,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
                                "exhibition Team Select", "retail Cowboys rule", "UNWITNESSED"),
             "weather_plan": ("Edits temperature", "new franchise"),
             "weather_haze": ("0.8 to 1.0", "Does not force fog"),
-            "cpu_scrambles": ("0.25 to 0.50", "per game are not established"),
+            "cpu_scrambles": ("0.25 to 0.3125", "per game are not established"),
             "coin_defer": ("CPU winners", "a human Defer choice is not available"),
             "decided_clock": ("your selected margin", "not mathematical elimination"),
             "scorebug_runtime": ("one PNG and JSON design", "Preview it over a screenshot", "Requires Scorebug and a disc image"),

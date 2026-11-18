@@ -511,9 +511,9 @@ class FranchisePanel(QWidget):
         year_row.addWidget(self.year_rule_label, 1)
         form.addRow("Season year", year_row)
         self.season_cap_label = QLabel(
-            "EXPERIMENTAL / UNWITNESSED. Use the calendar patch with your build's starting year "
-            "for long franchises. A save alone does not identify that patch. "
-            "Editing this year does not simulate seasons.")
+            "The build starting year sets how Studio reads this save. The season year changes the save’s "
+            "season index. To keep players the same age on a modern calendar, use the roster birth-year "
+            "shift in Build. Editing the season year does not simulate seasons.")
         self.season_cap_label.setWordWrap(True)
         form.addRow(self.season_cap_label)
         self.stage_label = QLabel("")

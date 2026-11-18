@@ -2013,7 +2013,7 @@
  "receipt": {
   "team": "PHI",
   "offense_pack": "data/playbooks/softdrink_phi_modern.2k5book",
-  "offense_pack_sha256": "e1dbc31b487aae8fda4fac862c89513a068878476727d1a921057a7c304b1602",
+  "offense_pack_sha256": "1c74f32197b1e866b6acddb49202edd2958efcd445729fae4c8025554f059197",
   "source_fingerprint": "792588377b9c16225772ef579cf2c305b8e5005b4f5a3a4081f450295f4194b8",
   "replacement_sha256": "f46f34314380515197a3b774fe9969a35cc769a1e069fc85c3228a653745ea07",
   "semantic_sha256": "8cc84c84f3a216e9e33de40fc6fba09bd3475fbfa574153ba2a2778288239d68",

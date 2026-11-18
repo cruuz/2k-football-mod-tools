@@ -54,6 +54,7 @@ from typing import Mapping
 
 from . import nfl2k5_champions_code as runtime
 from . import nfl2k5_champions_code_b779 as runtime_b779
+from . import nfl2k5_champions_code_b780 as runtime_b780
 from . import nfl2k5_rdata_sites as rdata
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
@@ -206,7 +207,7 @@ PREVIOUS_REVISION = "beta-79"
 
 
 def _revision(previous: bool):
-    return runtime_b779 if previous else runtime
+    return runtime_b780 if previous == "beta-80" else runtime_b779 if previous else runtime
 
 
 def code_for(code_va: int, *, previous: bool = False) -> bytes:
@@ -223,6 +224,15 @@ def code_for(code_va: int, *, previous: bool = False) -> bytes:
         struct.pack_into("<I", result, offset, target & 0xFFFFFFFF)
     _require(len(result) <= CODE_SIZE, "the champions runtime exceeds its fixed budget")
     return bytes(result).ljust(CODE_SIZE, b"\xcc")
+
+
+def installed_revision(payload: bytes, code_va: int):
+    """Return False (current), beta-80, or True (the original beta-79 link convention)."""
+    installed = XbeImage(payload).read(code_va, CODE_SIZE)
+    for revision in (False, "beta-80", True):
+        if installed == code_for(code_va, previous=revision):
+            return revision
+    raise ChampionsError("foreign champions code")
 
 
 def labels(code_va: int, *, previous: bool = False) -> dict[str, int]:
@@ -333,12 +343,9 @@ def owned_state(payload: bytes):
         _require(rdata.status(payload, edits) == "retail", "champions sites changed with an empty allocation")
         _check_guards(image, edits + _companion_sites(payload))
         return "retail", found
-    if code == code_for(code_va):
-        state = "applied"
-    else:
-        _require(code == code_for(code_va, previous=True), "foreign champions code")
-        state = "previous"
-    edits = sites(code_va, previous=state == "previous")
+    revision = installed_revision(payload, code_va)
+    state = "previous" if revision else "applied"
+    edits = sites(code_va, previous=revision)
     _require(rdata.status(payload, edits) == "applied", "mixed champions sites")
     _check_guards(image, edits + _companion_sites(payload))
     return state, found
@@ -371,12 +378,14 @@ def install(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     if state == "previous":
         code_va = found["code"]["va"]
         # the two entries (champions_advance, champions_awards) kept their offsets, so the site bytes do not change
-        _require(sites(code_va, previous=True) == sites(code_va), "the beta-79 champions sites differ from this "
+        before = XbeImage(payload).read(code_va, CODE_SIZE)
+        prior = "beta-80" if before == code_for(code_va, previous="beta-80") else PREVIOUS_REVISION
+        _require(sites(code_va, previous=(prior if prior == "beta-80" else True)) == sites(code_va), "the beta-79 champions sites differ from this "
                  "release's; rebuild from a verified base")
         result, code_receipt = space.install_code(payload, OWNER, code_for(code_va),
-                                                  previous=code_for(code_va, previous=True))
+                                                  previous=before)
         _require(status(result) == "applied", "champions upgrade postcondition failed")
-        return result, {**common, "already_applied": False, "upgraded_from": PREVIOUS_REVISION,
+        return result, {**common, "already_applied": False, "upgraded_from": prior,
                         "code_install": code_receipt, "code_va": hex(code_va),
                         "changed_bytes": sum(a != b for a, b in zip(payload, result)) + abs(len(result) - len(payload))}
     _require(bool(found), "reserve the champions allocation first")

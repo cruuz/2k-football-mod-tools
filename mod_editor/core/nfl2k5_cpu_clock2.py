@@ -77,7 +77,7 @@ SYMBOLS = dict(late_native=0x205FE0, late_time=0x205FEF, half_time=0x205F80, mar
                poll_return=0x18873C, poll_take=0x188722, kneel_back=0x206F1A, lineup_back=0x189086,
                fg_back=0x20AF86)
 # (label, site VA, retail bytes, opcode, code label). Calls replace a retail call; jumps replace whole instructions.
-SITES = (
+BETA80_SITES = (
     ("estimate_window", 0x20A79B, "e840b8ffff", 0xE8, "estimate_lw"),
     ("urgency_window", 0x207A36, "e8a5e5ffff", 0xE8, "urgency_lw"),
     ("hurry_window", 0x18C0E8, "e8f39e0700", 0xE8, "hurry_lw"),
@@ -90,6 +90,8 @@ SITES = (
     # b780 modes2 (Q22): the native field-goal test's prologue (push ebp; mov ebp,esp; and esp,-16)
     ("fg_late", 0x20AF80, "558bec83e4f0", 0xE9, "fg_late"),
 )
+SCORE_SITE = ("estimate_score", 0x20A6B0, "83c6074383feff", 0xE8, "estimate_score")
+SITES = BETA80_SITES + (SCORE_SITE,)
 OT_SITE = ("overtime_window", 0x205FE0, "a1c402e600", 0xE9, "ot_window")
 # Full retail routines this owner hooks, re-enters or calls (USA default.xbe), hashed with this owner's own hook
 # bytes restored to retail. A foreign edit inside any of them refuses the build.
@@ -126,11 +128,11 @@ def require(ok, message):
         raise CpuClock2Error(message)
 
 
-def code_for(va):
+def code_for(va, *, beta80=False):
     """The owner's code at its allocated VA, padded with int3 to the reservation."""
-    out = bytearray(assembly.CODE)
+    out = bytearray(assembly.CODE_BETA80 if beta80 else assembly.CODE)
     symbols = dict(SYMBOLS, code=va)
-    for offset, kind, symbol, value in assembly.RELOCATIONS:
+    for offset, kind, symbol, value in (assembly.RELOCATIONS_BETA80 if beta80 else assembly.RELOCATIONS):
         target = symbols[symbol] + value + struct.unpack_from("<I", out, offset)[0]
         if kind == 2:
             target -= va + offset
@@ -139,16 +141,17 @@ def code_for(va):
     return bytes(out).ljust(CODE_SIZE, b"\xcc")
 
 
-def _rows(overtime):
-    return SITES + ((OT_SITE,) if overtime else ())
+def _rows(overtime, *, beta80=False):
+    return (BETA80_SITES if beta80 else SITES) + ((OT_SITE,) if overtime else ())
 
 
-def sites(va, *, overtime=False):
+def sites(va, *, overtime=False, beta80=False):
     """(label, site VA, retail bytes, patched bytes) for an allocation at ``va``."""
     result = []
-    for name, site, before, opcode, label in _rows(overtime):
+    labels = assembly.LABELS_BETA80 if beta80 else assembly.LABELS
+    for name, site, before, opcode, label in _rows(overtime, beta80=beta80):
         before = bytes.fromhex(before)
-        after = bytes((opcode,)) + struct.pack("<i", va + assembly.LABELS[label] - site - 5)
+        after = bytes((opcode,)) + struct.pack("<i", va + labels[label] - site - 5)
         result.append((name, site, before, after + b"\x90" * (len(before) - 5)))
     return result
 
@@ -180,8 +183,11 @@ def inspect(payload):
     row = allocations(payload)
     _guards(image)
     va = row["va"] if row else 0
-    main = sites(va)
-    ot = sites(va, overtime=True)[-1]
+    beta80 = bool(row and image.read(va, CODE_SIZE) == code_for(va, beta80=True))
+    main = sites(va, beta80=beta80)
+    if beta80:
+        require(image.read(SCORE_SITE[1], 7) == bytes.fromhex(SCORE_SITE[2]), "Foreign CPU clock scoring estimate")
+    ot = sites(va, overtime=True, beta80=beta80)[-1]
     states = set()
     for name, site, before, after in main:
         raw = image.read(site, len(before))
@@ -195,7 +201,7 @@ def inspect(payload):
         if row:
             require(image.read(va, CODE_SIZE) == b"\xcc" * CODE_SIZE, "Foreign CPU clock code")
         return None
-    require(image.read(va, CODE_SIZE) == code_for(va), "Foreign CPU clock code, relocation or padding")
+    require(image.read(va, CODE_SIZE) == code_for(va, beta80=beta80), "Foreign CPU clock code, relocation or padding")
     return {"overtime": overtime}
 
 
@@ -226,7 +232,10 @@ def normalized_sites(payload):
     settings = inspect(payload)
     if settings is None:
         return []
-    return sites(allocations(payload)["va"], overtime=settings["overtime"])
+    from .nfl2k5_cave_oracle import XbeImage
+    va = allocations(payload)["va"]
+    beta80 = XbeImage(payload).read(va, CODE_SIZE) == code_for(va, beta80=True)
+    return sites(va, overtime=settings["overtime"], beta80=beta80)
 
 
 def apply(payload, *, overtime=False):
@@ -236,9 +245,14 @@ def apply(payload, *, overtime=False):
     from .nfl2k5_cave_oracle import XbeImage
     overtime = bool(overtime)
     settings = inspect(payload)
+    old_code, old_hooks = None, {}
     if settings is not None:
         require(settings["overtime"] == overtime, "Different CPU clock overtime choice; rebuild from a clean base")
-        return payload, dict(owner=OWNER, status="already_applied", settings=settings, changed_bytes=0, edits=[])
+        va = allocations(payload)["va"]
+        old_code = code_for(va, beta80=True)
+        if XbeImage(payload).read(va, CODE_SIZE) != old_code:
+            return payload, dict(owner=OWNER, status="already_applied", settings=settings, changed_bytes=0, edits=[])
+        old_hooks = {site: after for _, site, _, after in sites(va, overtime=overtime, beta80=True)}
     before_sha = hashlib.sha256(payload).hexdigest()
     row = allocations(payload)
     if row is None:
@@ -250,13 +264,14 @@ def apply(payload, *, overtime=False):
     else:
         allocated, allocation = payload, dict(status="already_allocated", allocations=[row])
     va = allocations(allocated)["va"]
-    installed, _ = space.install_code(allocated, OWNER, code_for(va))
+    installed, _ = space.install_code(allocated, OWNER, code_for(va), previous=old_code)
     image = XbeImage(installed)
     buf = bytearray(installed)
     edits = []
     for name, site, before, after in sites(va, overtime=overtime):
+        before = old_hooks.get(site, before)
         off = image.offset(site, len(before))
-        require(bytes(buf[off:off + len(before)]) == before, f"CPU clock site {site:#x} is not retail")
+        require(bytes(buf[off:off + len(before)]) == before, f"Unrecognized CPU clock site {site:#x}")
         buf[off:off + len(before)] = after
         edits.append(dict(label=name, va=hex(site), before=before.hex(), after=after.hex()))
     for section in _sections(buf):

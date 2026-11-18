@@ -101,6 +101,14 @@ RETAIL_SITE = bytes.fromhex(
 # padding nops after it, up to the row getter FUN_00242ae0.  Retail bytes = v0.8 = v0.9 RC bytes.
 GETTER_VA = 0x00242A60
 GETTER_SIZE = 0x80
+ROW_LABEL_VA = 0x242980
+ROW_LABEL_SIZE = 0x50
+RETAIL_ROW_LABEL = bytes.fromhex("a18074c1008b4c240403c283e8006a00742d48741d48740dba0889e800e85e7ae0ffc20c00baf488e800e8517ae0ffc20c00bae088e800e8447ae0ffc20c00bacc88e800e8377ae0ffc20c0090909090")
+NTH_SIZE = 0x90
+RETAIL_NTH = bytes.fromhex(
+    "518b5424080fb6831c010000558b6c24105733ff2bd63bc789542410897c24087e5f8b04bb33c985f6ba010000007e113b448d00750233d2413bce7cf385d274348b54241c33c985"
+    "d27e2a0fb65035908b6c24183b548d00750e8b6c2410396c2408741fff4424088b6c241c413bcd7cdf8b6c24140fb6831c010000473bf87ca133c05f5d59c2100090909090909090"
+)
 FN_NTH_RETURNER = 0x002429D0    # stdcall(row, exclusions, position table, count; ebx = team, esi = exclusions) -> eax
 NTH_POSITIONS = 0x00514D38      # its retail table of the six kick-return positions
 TEAM_COUNT = 0x11C
@@ -310,7 +318,110 @@ def site_bytes(v2: bool = False) -> bytes:
     return body + b"\xcc" * (SITE_SIZE - len(body))
 
 
-def _getter_code(v1: bool = False) -> bytes:
+def _row_label_code() -> bytes:
+    """The four adjacent Special Teams labels in the retail order, including its default for every other row."""
+    a = _Asm(ROW_LABEL_VA)
+    a.b("a18074c100 01d0 83f803")
+    a.j8("72", "label")
+    a.b("6a03 58")
+    a.label("label")
+    a.b("6bc014 8d90cc88e800 8b4c2404 6a00")
+    a.call(0x4A400)
+    a.b("c20c00")
+    return a.assemble()
+
+
+def _display_check() -> bytes:
+    """The chart's named rows reflect the fielded lineup. Internal rerank/swap callers retain their saved assignments."""
+    a = _Asm(ROW_LABEL_VA + len(_row_label_code()))
+    # The parent row getter at 0x242ae0 has four saved registers and 28 local bytes. The original
+    # index/assignment callers return in 0x242bb0..0x242c94, preceding the first display callback.
+    a.b("817c2448102d2400")
+    a.j8("72", "done")
+    a.b("85c0")
+    a.j8("74", "done")
+    a.b("8b542404 85d2")                   # first named slot on the getter's stack
+    a.j8("74", "selected")
+    a.b("f6422770")
+    a.j8("75", "fielded")
+    a.label("selected")
+    a.b("f6402770")
+    a.j8("74", "done")
+    a.label("fielded")
+    a.jmp_abs(FN_NTH_RETURNER + len(_nth_code()))
+    a.label("done")
+    a.b("c3")
+    return a.assemble()
+
+
+def row_label_bytes() -> bytes:
+    body = _row_label_code() + _display_check()
+    _require(len(body) <= ROW_LABEL_SIZE, "returner display exceeds the Special Teams label routine")
+    return body.ljust(ROW_LABEL_SIZE, b"\xcc")
+
+
+def _nth_code() -> bytes:
+    """The retail list lookup, compacted inside its original 144-byte function to share the space with the row display."""
+    a = _Asm(FN_NTH_RETURNER)
+    a.b("55 57 51")             # save EBP, EDI and ECX as the native function does
+    a.b("8b542410 2bd6")
+    a.j8("78", "empty")
+    a.b("31ed")   # requested row minus number of named entries; EBP = club slot
+    a.label("player")
+    a.b("89e8 3a831c010000")
+    a.j8("73", "empty")         # slot >= club count
+    a.b("8b04ab 89f1 8b7c2414") # EAX=player; ECX=excluded count; EDI=excluded list
+    a.b("85c9")
+    a.j8("7e", "positions")
+    a.b("f2af")                 # search excluded player pointers
+    a.j8("74", "next")
+    a.label("positions")
+    a.b("8b4c241c 8b7c2418")    # number of position codes, their address
+    a.b("50 0fb64035")          # preserve the player, compare his position against the list
+    a.label("position")
+    a.b("85c9")
+    a.j8("7e", "miss")
+    a.b("f2af")
+    a.j8("75", "miss")
+    a.b("4a")                   # count each match (including a repeated position, as in retail)
+    a.j8("79", "position")
+    a.b("58")
+    a.j8("eb", "done")
+    a.label("miss")
+    a.b("58")
+    a.label("next")
+    a.b("45")
+    a.j8("eb", "player")
+    a.label("empty")
+    a.b("31c0")
+    a.label("done")
+    a.b("59 5f 5d c21000")
+    return a.assemble()
+
+
+def _available_returner() -> bytes:
+    """Resolve an unavailable named depth row through the same lineup builder that actually fields the returner."""
+    a = _Asm(FN_NTH_RETURNER + len(_nth_code()))
+    a.b("8d7920")               # EDI = named row + 0x20; the getter restores the incoming EDI
+    a.b("29f7 29f7")         # KR starts +0x1c (2 named), PR +0x1e (1 named)
+    a.b("81ec34030000 89e2 89d9 6a00 6a00")  # native lineup context on our stack; normal availability
+    a.call(0xE80D0)
+    a.b("0fb6143c 81c434030000")
+    a.b("31c0 3a931c010000")   # builder may leave an empty byte
+    a.j8("73", "done")
+    a.b("8b0493")
+    a.label("done")
+    a.b("c3")
+    return a.assemble()
+
+
+def lookup_bytes() -> bytes:
+    body = _nth_code() + _available_returner()
+    _require(len(body) <= NTH_SIZE, f"returner lookup requires {len(body)} bytes")
+    return body.ljust(NTH_SIZE, b"\xcc")
+
+
+def _getter_code(v1: bool = False, *, previous: bool = False) -> bytes:
     """FUN_00242a60 with a slot check.  in: eax = 0xFE (KR) / 0xFD (PR), ecx = list row, edx = team.
     out: eax = player or 0.  The named slots (KR1, KR2 or PR) go into a zeroed two-dword exclusion list,
     each only when its byte is a roster slot of the team (unsigned byte below the player count); a row
@@ -334,9 +445,9 @@ def _getter_code(v1: bool = False) -> bytes:
         a.b("56")                              # push esi          ; list[0] = 0  (list at [esp])
         a.b("8bda")                            # mov ebx,edx       ; team
     a.b("8dbb" + struct.pack("<I", TEAM_PR).hex())   # lea edi,[ebx+0x199]  ; PR byte
-    a.b("3dfd000000")                          # cmp eax,0xfd
+    a.b("3dfd000000" if v1 or previous else "3cfd")                          # cmp eax,0xfd
     a.j8("74", "one_more")                     # je  -> 1 named slot
-    a.b("3dfe000000")                          # cmp eax,0xfe
+    a.b("3dfe000000" if v1 or previous else "3cfe")                          # cmp eax,0xfe
     a.j8("75", "nth")                          # jne -> no named slot (retail: never called so)
     a.b("8dbb" + struct.pack("<I", TEAM_KR1).hex())  # lea edi,[ebx+0x195]  ; KR1 byte, KR2 follows
     a.b("46")                                  # inc esi
@@ -356,6 +467,8 @@ def _getter_code(v1: bool = False) -> bytes:
     a.b("3bce")                                # cmp ecx,esi
     a.j8("73", "nth")                          # jae nth
     a.b("8b048c")                              # mov eax,[esp+ecx*4]
+    if not (v1 or previous):
+        a.call(ROW_LABEL_VA + len(_row_label_code()))
     a.j8("eb", "done")                         # jmp done
     a.label("nth")
     a.b("6a06")                                # push 6
@@ -402,11 +515,11 @@ def _lineup_helper_code() -> bytes:
     return a.assemble()
 
 
-def getter_bytes() -> bytes:
+def getter_bytes(*, previous: bool = False) -> bytes:
     """The getter site: the guarded getter (96 bytes) and the line-up builder's slot check (32 bytes)."""
-    code = _getter_code()
-    _require(GETTER_VA + len(code) == LINEUP_HELPER_VA, f"returner getter is {len(code)} bytes, not 96")
-    body = code + _lineup_helper_code()
+    code = _getter_code(previous=previous)
+    _require(GETTER_VA + len(code) <= LINEUP_HELPER_VA, "returner getter exceeds its assigned room")
+    body = code.ljust(LINEUP_HELPER_VA - GETTER_VA, b"\xcc") + _lineup_helper_code()
     _require(len(body) <= GETTER_SIZE, f"returner getter site is {len(body)} bytes, over {GETTER_SIZE}")
     return body + b"\xcc" * (GETTER_SIZE - len(body))
 
@@ -548,6 +661,8 @@ def _sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
     _require(len(RETAIL_GETTER) == GETTER_SIZE, "retail transcript must cover the whole returner getter")
     _require(len(RETAIL_EXCHANGE) == EXCHANGE_SIZE, "retail transcript must cover the whole exchange store")
     return [("returner_loop", _offset(payload, SITE_VA), RETAIL_SITE, site_bytes()),
+            ("returner_chart", _offset(payload, ROW_LABEL_VA), RETAIL_ROW_LABEL, row_label_bytes()),
+            ("returner_lookup", _offset(payload, FN_NTH_RETURNER), RETAIL_NTH, lookup_bytes()),
             ("returner_getter", _offset(payload, GETTER_VA), RETAIL_GETTER, getter_bytes()),
             ("lineup_slot_check", _offset(payload, LINEUP_HOOK_VA), RETAIL_LINEUP_HOOK, lineup_hook_bytes()),
             ("exchange_store", _offset(payload, EXCHANGE_VA), RETAIL_EXCHANGE, exchange_bytes()),
@@ -557,7 +672,7 @@ def _sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
 # Earlier installs that upgrade in place: the first b780 st1 getter; depth locks revision 5's own all-star call
 # (an image where depth locks came first): the returner fix owns the loop head's call and points it at its own
 # skip, so either order of the two owners ends in the same bytes.
-PREVIOUS = {"returner_getter": (getter_bytes_v1(),), "all_star_skip": (DEPTH_LOCKS_ALL_STAR_CALL,),
+PREVIOUS = {"returner_getter": (getter_bytes_v1(), getter_bytes(previous=True)), "all_star_skip": (DEPTH_LOCKS_ALL_STAR_CALL,),
             "returner_loop": (site_bytes(v2=True),)}
 
 

@@ -29,7 +29,7 @@ class StaticTests(unittest.TestCase):
     def test_sites_and_routines(self):
         import capstone
         (_, site, before, after), (_, cave_va, cave_old, cave), \
-            (_, name_site, name_before, name_after), (_, cave2_va, cave2_old, cave2) = guard.SITES
+            (_, name_site, name_before, name_after), (_, cave2_va, cave2_old, cave2) = guard.BETA80_SITES
         self.assertEqual((site, before, cave_va, cave_old), (MATCH, bytes.fromhex("5633f6eb0b"), 0x160771, b"\x90" * 15))
         self.assertEqual(site + 5 + struct.unpack_from('<i', after, 1)[0], cave_va)
         self.assertEqual((name_site, cave2_va, cave2_old), (NAME_CALL, 0x160354, b"\x90" * 12))
@@ -88,6 +88,21 @@ class NativeTests(unittest.TestCase):
         cls.retail = retail_bytes()
         cls.guarded = guard.apply(cls.retail)[0]
 
+    @staticmethod
+    def _connect_page_query(uc):
+        import unicorn
+        from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_ESP
+        address = 0x5000010
+        uc.mem_write(guard.PROTECT_IMPORT, struct.pack("<I", address))
+        uc.mem_write(address, b"\xc2\x04\x00")
+
+        def query(machine, _address, _size, _data):
+            pointer = struct.unpack("<I", machine.mem_read(machine.reg_read(UC_X86_REG_ESP) + 4, 4))[0]
+            readable = any(lo <= pointer <= hi and access & unicorn.UC_PROT_READ
+                           for lo, hi, access in machine.mem_regions())
+            machine.reg_write(UC_X86_REG_EAX, 2 if readable else 0)
+        uc.hook_add(unicorn.UC_HOOK_CODE, query, begin=address, end=address)
+
     def _matcher(self, payload, edi):
         import unicorn as u
         from unicorn.x86_const import UC_X86_REG_ESP, UC_X86_REG_EAX, UC_X86_REG_EDI, UC_X86_REG_EIP
@@ -105,6 +120,7 @@ class NativeTests(unittest.TestCase):
         uc.reg_write(UC_X86_REG_ESP, 0x2000000 - 0x400)
         uc.mem_write(0x2000000 - 0x400, struct.pack('<I', 0x5000000))
         uc.reg_write(UC_X86_REG_EDI, edi)
+        self._connect_page_query(uc)
         uc.reg_write(UC_X86_REG_EAX, 0)
         try:
             uc.emu_start(MATCH, 0x5000000, count=200000)
@@ -144,6 +160,7 @@ class NativeTests(unittest.TestCase):
         uc.reg_write(UC_X86_REG_ESP, 0x2000000 - 0x400)
         uc.mem_write(0x2000000 - 0x400, struct.pack('<I', 0x5000000))
         uc.reg_write(UC_X86_REG_ECX, ecx)
+        self._connect_page_query(uc)
         uc.reg_write(UC_X86_REG_EAX, 0)
         try:
             uc.emu_start(guard.CAVE2_VA, 0x5000000, count=200000)
@@ -175,7 +192,15 @@ class NativeTests(unittest.TestCase):
             retail_null = ('fault', hex(uc.reg_read(UC_X86_REG_EIP)))
         self.assertEqual(retail_null, ('fault', hex(NAME_FN)))
         self.assertEqual(self._name_guard(0x1FF8000), 8)   # len("Mycareer")
-        self.assertEqual(self._name_guard(0), 0)           # NULL name: no fault, empty
+        self.assertEqual(self._name_guard(0), 0)
+        for unusable in (0xe9ef, 0x428c0000):
+            self.assertEqual(self._name_guard(unusable), 0)
+            self.assertEqual(self._matcher(self.guarded, unusable), 0)
+
+    def test_beta_80_upgrades_to_the_same_verified_reader(self):
+        legacy, _ = rdata.apply(self.retail, guard.BETA80_SITES, "beta 80")
+        self.assertEqual(guard.status(legacy), "previous")
+        self.assertEqual(guard.apply(legacy)[0], self.guarded)
 
 
 @unittest.skipUnless(HAVE_UC and XBE.is_file(), 'pinned USA XBE, retail ROST and Unicorn required')

@@ -417,10 +417,14 @@ static i32 bank_int(u32 player, u32 field, u32 bank) {
     if (bank == 8 || bank == 9) {
         /* career: every live word of this field in the current class (the native search 0x14E800's filter) */
         const volatile u32 *w = (const volatile u32 *)G(player + 0x2C);
-        u32 cls = G(CLASS);
+        u32 cls = G(CLASS), years_pro = (G(player + 0x24) >> 8) & 31;
+        u32 elapsed = G(SEASONS);
+        /* Games played qualifies zero-allowed linemen only in seasons tracked by this franchise. */
+        u32 first_slot = field == 0 && years_pro > elapsed ? years_pro - elapsed : 0;
         for (u32 n = 0; w && n < 50000; n++, w++) {
             u32 word = *w;
-            if (((word >> 16) & 0x7F) == field && ((word >> 29) & 1) == cls && !(word & 0x10000000))
+            if (((word >> 16) & 0x7F) == field && ((word >> 29) & 1) == cls && !(word & 0x10000000)
+                && ((word >> 23) & 31) >= first_slot)
                 v += (i32)(short)(word & 0xFFFF);
             if (word & 0x80000000)
                 break;
@@ -466,4 +470,36 @@ const u16 *FC prs_card_text(u32 row, u32 field) {
    106..110, which have no history field and read 0. */
 float FC prs_leader_value(u32 player, u32 field, u32 bank) {
     return bank_value(player, field, bank);
+}
+
+/* The League Leaders builder keeps the largest 40 keys before the spreadsheet can sort its rows.
+   For allowed stats a smaller number is better. The actual column getter still returns the number shown. */
+#define SHEET_HAS_STAT ((float (FC *)(u32, u32, u32))0x003216A0)
+#define SHEET_SORT_KEY ((float (FC *)(u32, u32, u32))0x003216C0)
+float FC prs_shortlist_value(u32 player, u32 field, u32 bank) {
+    if (field >= FIELD0 + S_PA && field <= FIELD0 + S_SA)
+        return -(float)bank_int(player, field, bank);
+    return SHEET_SORT_KEY(player, field, bank);
+}
+
+float FC prs_shortlist_eligible(u32 player, u32 field, u32 bank) {
+    if (field < FIELD0 + S_PA || field > FIELD0 + S_SA)
+        return SHEET_HAS_STAT(player, field, bank);
+    if (!player || GB(player + 0x35) < 12 || GB(player + 0x35) > 14)
+        return 0;
+    /* A lineman can play without allowing a pressure, hit or sack. Field 0 is games played.
+       Imported seasons before the franchise began do not contain the tracked blocking stats. */
+    return !(bank >= 12 && bank <= 26 && bank - 11 > G(SEASONS)) && bank_int(player, 0, bank) > 0;
+}
+
+/* The retail button toggles an already-selected sort, but defaults each new column to descending.
+   A new allowed-stat selection starts with the lowest displayed counts. */
+#define SORT_COLUMN ((void (FC *)(u32, u32, u32))0x00170320)
+#define TOGGLE_SORT ((void (FC *)(u32))0x00170380)
+void FC prs_sort_allowed(u32 sheet) {
+    u32 selected = G(sheet + 0xC0);
+    if (selected == G(sheet + 0xD4))
+        TOGGLE_SORT(sheet);
+    else
+        SORT_COLUMN(sheet, selected, 0);
 }

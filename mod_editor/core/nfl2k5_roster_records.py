@@ -1529,7 +1529,8 @@ class RosterDocument:
     def __init__(self, body: bytes | bytearray, *, base: int = 0, source: str = "body",
                  container: "SaveContainer | None" = None, resource_header: bytes = b"",
                  scheme: str = "retail", reference_year: int | None = None,
-                 base_year: int = 2004) -> None:
+                 base_year: int = 2004, modern_ir: bool = False) -> None:
+        self.modern_ir = bool(modern_ir)
         self.body = bytearray(body)
         self.base = base
         self.source = source
@@ -1664,6 +1665,10 @@ class RosterDocument:
         except arena.ArenaError as exc:
             raise RosterRecordError(str(exc)) from exc
         self.arena_end = arena_end
+        from .nfl2k5_save_rost import Layout
+        descriptor = arena.capacity_descriptor(b, Layout(self.version, None, base, root, arena_end))
+        self.original_primary_count = self.u32(ob + POOL_FIELDS["primary"][0]) - (descriptor[0] if descriptor else 0)
+
         try:
             self.stadiums = storage.read_stadiums(b, root=root, end=arena_end)
         except storage.RosterStorageError as exc:
@@ -1751,6 +1756,8 @@ class RosterDocument:
                     name_offsets.append(target)
                     self.name_refs[target] = self.name_refs.get(target, 0) + 1
         self.names = StringPool(self.body, name_offsets, "player name")
+        if self.names.free:
+            self._protect_split_name_pool()
         self.college_pool = StringPool(self.body, college_strings, "college") if college_strings else None
         free_agent_set = set(self.free_agents)
         for player in self.players:
@@ -1776,12 +1783,15 @@ class RosterDocument:
         kind = player.record.values["player_type"]
         if (player.pool, player.index) in self.reserve_owner:
             player.group = "reserve"
+        elif player.offset in members and self.club_of(player) is None:
+            player.group = "free_agent"
         elif player.teams:
             player.group = "team"
-        elif player.offset in members:
-            player.group = "free_agent"
         elif player.pool == "primary" and (kind == 0 or kind & FLAG_PROSPECT):
-            player.group = "draft_class"
+            if player.first or player.last:
+                player.group = "draft_class"
+            else:
+                player.group = "draft_slot" if player.index < self.original_primary_count else "draft_capacity"
         else:
             player.group = "pool"
         return player.group
@@ -1841,6 +1851,8 @@ class RosterDocument:
                 "secondary": len(self.by_pool("secondary")), "teams": len(self.teams),
                 "colleges": len(self.colleges), "free_agents": len(self.free_agents),
                 "draft_class": len(self.group_players("draft_class")),
+                "draft_slots": len(self.group_players("draft_slot")),
+                "draft_capacity": len(self.group_players("draft_capacity")),
                 "names": self.names.summary(), "source": self.source,
                 "scheme": self.scheme, "base": f"0x{self.base:x}"}
 
@@ -1897,6 +1909,27 @@ class RosterDocument:
             player.record.values[key] = int(values[key])
 
     # ------------------------------------------------------------------ edits
+    def _protect_split_name_pool(self) -> None:
+        """A relocated roster can place other live objects inside the outer range of player names."""
+        from bisect import bisect_left
+        from . import nfl2k5_roster_arena as arena, nfl2k5_save_rost as codec
+
+        try:
+            parsed = codec.decode(self.original, preamble=self.base)
+            pointers = sorted(target for f in arena.pointer_fields(parsed) if (target := parsed.rel(f)) is not None)
+        except ValueError:
+            # An unfamiliar layout can still reuse the referenced names and their own allocations.
+            self.names.free.clear()
+            return
+        tables = [(t.offset, t.offset + t.count * t.stride) for t in parsed.tables.values()
+                  if t.offset is not None and t.count]
+        for start, size in tuple(self.names.free.items()):
+            end = start + size
+            step = bisect_left(pointers, start)
+            if ((step < len(pointers) and pointers[step] < end)
+                    or any(left < end and start < right for left, right in tables)):
+                del self.names.free[start]
+
     def set_name(self, player: Player, which: str, text: str) -> dict[str, Any]:
         """Set a player's first or last name through the shared pool.  ``which`` is first|last."""
 
@@ -1922,6 +1955,7 @@ class RosterDocument:
         if current is not None and current != offset and self.name_refs.get(current, 0) == 0:
             self.names.release_if_unused(current)
         setattr(player, which, text)
+        self._reclassify(player)
         mode = "shared" if self.name_refs[offset] > 1 else ("in place" if offset == current else "moved")
         return {"changed": True, "offset": offset, "mode": mode,
                 "free_bytes_before": before_free, "free_bytes_after": self.names.free_bytes}
@@ -2046,7 +2080,7 @@ class RosterDocument:
         _require(len(payload) == len(self.body), "the roster arena changed size")
         fresh = RosterDocument(payload, base=self.base, source=self.source, container=self.container,
                                resource_header=self.resource_header, scheme=self.scheme,
-                               reference_year=self.reference_year, base_year=self.base_year)
+                               reference_year=self.reference_year, base_year=self.base_year, modern_ir=self.modern_ir)
         old_players = {(p.pool, p.index): p for p in self.players}
         _require(set(old_players) == {(p.pool, p.index) for p in fresh.players},
                  "pool remapping requires an explicit complete identity map")
@@ -2174,7 +2208,7 @@ class RosterDocument:
         return player.offset in self.free_agents
 
     def is_draft_class(self, player: Player) -> bool:
-        return player.group == "draft_class"
+        return player.group in ("draft_class", "draft_slot", "draft_capacity")
 
     def check_operation(self, player: Player, operation: str) -> None:
         """Finn's refusals, before any list is touched."""
@@ -2197,7 +2231,7 @@ class RosterDocument:
             raise MembershipRefused("Activate this player from injured reserve first")
         if self.is_draft_class(player):
             raise MembershipRefused(f"{MSG_DRAFT_CLASS} {player.display}: {DRAFT_CLASS_WHY}.")
-        if operation == "injured_reserve" and self.is_free_agent(player) and not player.teams:
+        if operation == "injured_reserve" and self.is_free_agent(player) and self.club_of(player) is None:
             raise MembershipRefused(MSG_FREE_AGENT_IR)
 
     def membership_limit(self, team_index: int) -> int:
@@ -2207,6 +2241,48 @@ class RosterDocument:
         if is_franchise_save(bytes(self.body)) and FranchiseSave(bytes(self.body)).header.stage >= 8:
             limit = min(limit, 53)
         return limit
+
+    def projected_ir_players(self, team_index: int, slots=None) -> set[int]:
+        """Offsets the modern franchise-start pass will place on IR for this club."""
+        if not self.modern_ir or self.version not in (17, 18) or not 0 <= team_index < min(32, len(self.teams)):
+            return set()
+        from . import nfl2k5_injured_reserve as ir
+        extra_remaining = ir.EXTENDED_CAP
+        for team in self.teams[:team_index + 1]:
+            held = set()
+            for offset in slots if team.index == team_index and slots is not None else team.slots:
+                player = self.by_offset[offset]
+                injury = player.record.values["unknown_20_high"]
+                if not injury & 0x200 or injury & 0xff < ir.LONG_WEEKS:
+                    continue
+                if len(held) == ir.CAP:
+                    break
+                if len(held) >= ir.LEGACY_SLOTS:
+                    if extra_remaining == 0 or player.pool != "primary" or player.index > 0xfff:
+                        continue
+                    extra_remaining -= 1
+                held.add(offset)
+        return held
+
+    def projected_ir_count(self, team_index: int, slots=None) -> int:
+        return len(self.projected_ir_players(team_index, slots))
+
+    def active_count(self, team_index: int, slots=None) -> int:
+        slots = self.teams[team_index].slots if slots is None else slots
+        return len(slots) - self.projected_ir_count(team_index, slots)
+
+    def active_limit(self, team_index: int, maximum: int = TEAM_MAX_PLAYERS) -> int:
+        if self.modern_ir and self.version in (17, 18) and self.teams[team_index].is_club:
+            return min(maximum, 53)
+        return min(maximum, self.membership_limit(team_index))
+
+    def _check_sign_room(self, team: TeamRecord, player: Player, maximum: int) -> None:
+        limit = self.active_limit(team.index, maximum)
+        if self.active_count(team.index, [*team.slots, player.offset]) > limit:
+            raise MembershipRefused(f"{MSG_SIGN_MAX_PLAYERS} {team.display} has {self.active_count(team.index)} "
+                                    f"active players (the cap is {limit}).")
+        if len(team.slots) >= self.membership_limit(team.index):
+            raise MembershipRefused(f"{team.display} has no free pointer slot for another player or reserve")
 
     def _team_for_membership(self, team_index: int) -> TeamRecord:
         _require(0 <= team_index < len(self.teams), f"no team {team_index}")
@@ -2240,7 +2316,8 @@ class RosterDocument:
         # the game's removal handler 0xC3A90: his roles are cleared, the roles below him move up with their players
         self._set_specialists(team, specialists_after_removal(self._specialists(team), slot))
         player.teams.remove(team_index)
-        player.record.values["unknown_52"] &= ~0x1F
+        if team.is_club or (self.club_of(player) is None and not self.is_free_agent(player)):
+            player.record.values["unknown_52"] &= ~0x1F
         return slot
 
     def _attach(self, player: Player, team_index: int, slot: int | None) -> int:
@@ -2266,20 +2343,20 @@ class RosterDocument:
         assert team_index is not None
         team = self._team_for_membership(team_index)
         _require(player.offset in team.slots, f"{player.display} is not on {team.display}")
-        if len(team.slots) - 1 < minimum:
+        if self.active_count(team.index, [p for p in team.slots if p != player.offset]) < minimum:
             raise MembershipRefused(MSG_RELEASE_MINIMUM.format(team=team.display, minimum=minimum))
-        already_free_agent = self.is_free_agent(player)
-        if not already_free_agent and len(self.free_agents) >= self.free_agent_capacity:
+        enter_free_agency = team.is_club and not self.is_free_agent(player)
+        if enter_free_agency and len(self.free_agents) >= self.free_agent_capacity:
             raise MembershipRefused(f"{MSG_RELEASE_MAX_FREE_AGENTS} The list holds "
                                     f"{self.free_agent_capacity} pointers and all are used.")
         slot = self._detach(player, team_index)
-        if not already_free_agent:
+        if enter_free_agency:
             self.free_agents.append(player.offset)
         self._reclassify(player)
         return {"operation": "release", "player": player.display, "pool": player.pool,
                 "index": player.index, "from": {"kind": "team", "team": team.abbreviation,
                                                 "team_index": team_index, "slot": slot},
-                "to": {"kind": "free_agent"}, "team_players": len(team.slots),
+                "to": {"kind": player.group}, "team_players": len(team.slots),
                 "free_agents": len(self.free_agents), "group": player.group}
 
     def sign(self, player: Player, team_index: int, *, slot: int | None = None,
@@ -2296,21 +2373,18 @@ class RosterDocument:
             if other is not None:
                 raise MembershipRefused(f"{player.display} is on {self.teams[other].display}; move him "
                                         "between teams instead of signing him twice")
-        maximum = min(maximum, self.membership_limit(team_index))
-        if len(team.slots) >= maximum:
-            raise MembershipRefused(f"{MSG_SIGN_MAX_PLAYERS} {team.display} has {len(team.slots)} "
-                                    f"(the cap is {maximum}).")
-        if len(team.slots) >= TEAM_SLOTS:
-            raise MembershipRefused(f"{team.display} has no free pointer slot (the record holds {TEAM_SLOTS})")
+        self._check_sign_room(team, player, maximum)
         was_free_agent = self.is_free_agent(player)
-        if was_free_agent:
+        old_group = player.group
+        if was_free_agent and team.is_club:
             self.free_agents.remove(player.offset)
         at = self._attach(player, team_index, slot)
-        depth = self._rerank(player, team_index)
+        depth = (self._rerank(player, team_index) if team.is_club or
+                 (self.club_of(player) is None and not was_free_agent) else {})
         self._reclassify(player)
         return {"operation": "sign", "player": player.display, "pool": player.pool,
                 "index": player.index,
-                "from": {"kind": "free_agent"} if was_free_agent else {"kind": player.group},
+                "from": {"kind": old_group},
                 "to": {"kind": "team", "team": team.abbreviation, "team_index": team_index, "slot": at},
                 "depth": depth, "team_players": len(team.slots),
                 "free_agents": len(self.free_agents), "group": player.group}
@@ -2330,14 +2404,9 @@ class RosterDocument:
         target = self._team_for_membership(to_team)
         _require(player.offset in source.slots, f"{player.display} is not on {source.display}")
         _require(player.offset not in target.slots, f"{player.display} is already on {target.display}")
-        if len(source.slots) - 1 < minimum:
+        if self.active_count(source.index, [p for p in source.slots if p != player.offset]) < minimum:
             raise MembershipRefused(MSG_RELEASE_MINIMUM.format(team=source.display, minimum=minimum))
-        maximum = min(maximum, self.membership_limit(to_team))
-        if len(target.slots) >= maximum:
-            raise MembershipRefused(f"{MSG_SIGN_MAX_PLAYERS} {target.display} has {len(target.slots)} "
-                                    f"(the cap is {maximum}).")
-        if len(target.slots) >= TEAM_SLOTS:
-            raise MembershipRefused(f"{target.display} has no free pointer slot (the record holds {TEAM_SLOTS})")
+        self._check_sign_room(target, player, maximum)
         was = self._detach(player, from_team)
         at = self._attach(player, to_team, slot)
         depth = self._rerank(player, to_team)
@@ -2365,6 +2434,13 @@ class RosterDocument:
         if team_a != team_b:
             _require(second.offset not in a.slots, f"{second.display} is already on {a.display}")
             _require(first.offset not in b.slots, f"{first.display} is already on {b.display}")
+            if self.modern_ir:
+                for team, departing, arriving in ((a, first, second), (b, second, first)):
+                    after = [arriving.offset if p == departing.offset else p for p in team.slots]
+                    before, count = self.active_count(team.index), self.active_count(team.index, after)
+                    if count > max(before, self.active_limit(team.index)) or count < min(before, TEAM_MIN_PLAYERS):
+                        raise MembershipRefused(f"{team.display} would have {count} active players after this swap")
+
         slot_a, slot_b = a.slots.index(first.offset), b.slots.index(second.offset)
         a.slots[slot_a], b.slots[slot_b] = second.offset, first.offset
         if team_a == team_b:
@@ -2485,6 +2561,8 @@ class RosterDocument:
             entries = sorted(by_offset.get(player.offset, []))
             if player.pool == "primary" and player.index in reserve_owners:
                 text = f"{self.teams[reserve_owners[player.index]].abbreviation} Reserves"
+            elif player.offset in free_set and not any(self.teams[t].is_club for t, _, _ in entries):
+                text = "Free Agents" + "".join(" + " + self.teams[t].abbreviation for t, _, _ in entries)
             elif entries:
                 team_index, slot, count = entries[0]
                 text = f"{self.teams[team_index].abbreviation} ({slot + 1} of {count})"
@@ -2495,8 +2573,10 @@ class RosterDocument:
                 text = "Free Agents"
             else:
                 kind = player.record.values["player_type"]
-                text = ("Draft Class" if player.pool == "primary" and (kind == 0 or kind & FLAG_PROSPECT)
-                        else "Pool")
+                text = "Pool"
+                if player.pool == "primary" and (kind == 0 or kind & FLAG_PROSPECT):
+                    text = ("Draft Class" if player.first or player.last else
+                            "Draft generator slot" if player.index < self.original_primary_count else "Unused class capacity")
             out[player.offset] = text
         return out
 
@@ -2734,6 +2814,20 @@ def load_body(body: bytes, *, scheme: str = "retail", reference_year: int | None
     return RosterDocument(body, base=0, source="body", scheme=scheme, reference_year=reference_year)
 
 
+def image_rules(path: Path | str) -> tuple[int, bool]:
+    from . import mod_build, nfl2k5_injured_reserve as ir, nfl2k5_season_length as seasons
+    source = Path(path)
+    if source.is_dir():
+        source = source / "default.xbe"
+    if not source.is_file():
+        return 2004, False
+    try:
+        payload = mod_build._xbe_bytes(source)
+        return seasons.read_year(payload) or 2004, ir.status(payload) in ("applied", "previous")
+    except (OSError, ValueError, struct.error):
+        return 2004, False
+
+
 def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False,
                reference_year: int | None = None) -> RosterDocument:
     """The main roster resource of a disc image or a loose pack folder (read-only).
@@ -2747,9 +2841,10 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
         resource = archive.read(entry.virtual_offset, entry.size)
     _require(resource[:4] == b"ROST" and len(resource) in MAIN_ROSTER_RESOURCE_SIZES,
              "the roster resource is foreign")
+    year, modern_ir = image_rules(path)
     document = RosterDocument(resource[RESOURCE_HEADER_SIZE:], base=0, source=str(path),
                               resource_header=resource[:RESOURCE_HEADER_SIZE], scheme=scheme,
-                              reference_year=reference_year)
+                              reference_year=reference_year, base_year=year, modern_ir=modern_ir)
     if detect:
         document.scheme_detection = detect_scheme(document, source=path)
         document.set_scheme(str(document.scheme_detection["scheme"]))
@@ -3271,7 +3366,7 @@ def apply_college_aliases(roster: RosterDocument, aliases, updates) -> None:
 
 
 def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
-               scheme: str | None = None, refresh_follows: bool = False) -> tuple[bytes, dict[str, Any]]:
+               scheme: str | None = None, refresh_follows: bool = False, modern_ir: bool = False) -> tuple[bytes, dict[str, Any]]:
     """Apply a roster-edits document to a ROST body; returns the new body and a receipt.
 
     ``scheme`` is the TARGET roster's position scheme.  It defaults to what the target's own
@@ -3287,7 +3382,7 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
     from . import nfl2k5_roster_snapshot as snapshot
     if doc["schema"] == snapshot.SCHEMA:
         return snapshot.apply_body(body, doc, scheme=scheme)
-    roster = RosterDocument(body)
+    roster = RosterDocument(body, modern_ir=modern_ir)
     target_scheme = normalise_scheme(scheme) if scheme else str(detect_scheme_from_data(roster)["scheme"])
     roster.set_scheme(target_scheme)
     index: dict[tuple[str, int], Player] = {(p.pool, p.index): p for p in roster.players}
@@ -3829,6 +3924,7 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
             log.append(f"{key}: reserve moves require a signed-save copy (move skipped)")
             continue
         movers.append((player, entry))
+    original_clubs = {player.offset: roster.club_of(player) for player, _ in movers}
     # phase 1: detach every mover from every team list, and from the free-agent list only when
     # the document says he stops being one (a free agent who stays one keeps his place in the list)
     for player, entry in movers:
@@ -3855,6 +3951,7 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
     for slot, player in sorted(free_placements, key=lambda item: item[0]):
         if player.offset not in roster.free_agents:
             roster.free_agents.insert(max(0, min(slot, len(roster.free_agents))), player.offset)
+    new_clubs = {p.offset: t for _, t, p in placements if roster.teams[t].is_club}
     for slot, team_index, player in sorted(placements, key=lambda item: (item[0], item[1])):
         if player.offset in roster.teams[team_index].slots:
             continue
@@ -3862,8 +3959,16 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
             log.append(f"{player.display}: {roster.teams[team_index].display} has no free pointer slot")
             continue
         roster._attach(player, team_index, slot)
-        roster._rerank(player, team_index)
+        club = new_clubs.get(player.offset)
+        if ((club == team_index and club != original_clubs[player.offset]) or
+                (club is None and original_clubs[player.offset] is None and not roster.is_free_agent(player))):
+            roster._rerank(player, team_index)
     roster._reindex_membership()
+    for player, _entry in movers:
+        club = roster.club_of(player)
+        if club == original_clubs[player.offset] and (club is not None or roster.is_free_agent(player)):
+            player.record.values["unknown_52"] = snapshot["depth_locks"][player.offset]
+            player.record.values["depth_rank"], player.record.values["depth_side"] = snapshot["depth"][player.offset]
     # Phase 1 takes each mover off every list he is on and phase 2 puts him back where the document says, so a
     # player who stays on a team (an all-star squad beside his new club) is detached and attached again there.
     # Each role ends on the player who held it before the transaction (0xFF if he left that list): the game's
@@ -3883,11 +3988,15 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
         now, before = len(team.slots), before_counts.get(team_index, 0)
         if not team.clean_parse:
             problems.append(f"{team.display} did not parse cleanly")
-        if team.is_club and 0 < now < TEAM_MIN_PLAYERS and now < before:
-            problems.append(f"{team.display} would drop to {now} players (minimum {TEAM_MIN_PLAYERS})")
+        active = roster.active_count(team_index)
+        prior_active = roster.active_count(team_index, snapshot["teams"].get(team_index, ()))
+        if team.is_club and 0 < active < TEAM_MIN_PLAYERS and active < prior_active:
+            problems.append(f"{team.display} would drop to {active} players (minimum {TEAM_MIN_PLAYERS})")
         limit = roster.membership_limit(team_index)
         if now > limit and now > before:
             problems.append(f"{team.display} would grow to {now} players (cap {limit}, including reserve storage)")
+        if roster.modern_ir and active > max(prior_active, roster.active_limit(team_index)):
+            problems.append(f"{team.display} would grow to {active} active players (cap {roster.active_limit(team_index)})")
         if now > TEAM_SLOTS:
             problems.append(f"{team.display} would need {now} pointer slots (the record holds {TEAM_SLOTS})")
     for player, _entry in movers:
@@ -3918,7 +4027,9 @@ def apply(path: Path | str, source: Path | str | Mapping[str, Any], *,
         state = resource_status(before)
         _require(state in ("retail", "edited"), f"the roster resource is {state}; refusing")
         say("Applying the roster edits")
-        body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], edits, scheme=scheme, refresh_follows=refresh_follows)
+        modern_ir = bool(edits.get("moves")) and image_rules(path)[1]
+        body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], edits, scheme=scheme,
+                                   refresh_follows=refresh_follows, modern_ir=modern_ir)
         body, commentary_receipt = repair_commentary_body(body)
         receipt["commentary"] = {k: v for k, v in commentary_receipt.items() if k != "edits"}
         # b778 fr1: the last word on the main roster: no player leaves without a college record (a null word
@@ -5569,18 +5680,48 @@ def jersey_range(code: int) -> tuple[int, int]:
     return JERSEY_RANGES_BY_CODE.get(int(code), (0, 99))
 
 
+def jersey_ranges(code: int, year: int, scheme: str = "retail") -> tuple[tuple[int, int], ...]:
+    """Rule 5-1-2 numbering under the 2021 expansion and the 2023 adoption of zero."""
+    if year < 2021:
+        return (jersey_range(code),)
+    low = 0 if year >= 2023 else 1
+    if code == 0 or code in (1, 2) and year < 2023:
+        return ((low, 19),)
+    if code in (1, 2):
+        return ((low, 49), (90, 99))
+    if code in (3, 7, 8, 9):
+        return ((low, 49), (80, 89))
+    if code in (4, 5, 6):
+        return ((low, 49),)
+    if code in (10, 11):
+        return ((low, 59), (90, 99))
+    if code in (12, 13, 14):
+        return ((50, 79),)
+    if code in (15, 16):
+        # The merged EDGE pool includes players registered as outside linebackers.
+        return ((low if code == 16 and scheme == "one_pool" else 50, 79), (90, 99))
+    return ((0, 99),)
+
+
 def validate(document: RosterDocument, players: Sequence[Player] | None = None) -> list[dict[str, Any]]:
     """The validation cards: jersey ranges per position, rating bounds, pool budget, measurements."""
 
     findings: list[dict[str, Any]] = []
+    season = document.reference_year or document.base_year
+    # The game stores designated long snappers in other position pools (usually C). The NFL permits
+    # special positions to request other numbers (Rule 5-1-2); the club's actual LS slot is authoritative.
+    snappers = {t.slots[slot] for t in document.teams[:CLUB_TEAM_COUNT]
+                for slot in [document._specialists(t)[4]] if slot < len(t.slots)}
     for player in (players if players is not None else document.players):
         record = player.record
         position = record.position_name
-        low, high = jersey_range(record.values["position"])
+        ranges = (((0, 99),) if season >= 2021 and player.offset in snappers
+                  else jersey_ranges(record.values["position"], season, document.scheme))
         number = record.values["jersey"]
-        if not low <= number <= high:
+        if player.group not in ("draft_slot", "draft_capacity") and not any(lo <= number <= hi for lo, hi in ranges):
+            valid = " or ".join(f"{lo}-{hi}" for lo, hi in ranges)
             findings.append({"level": "warning", "player": player.display, "check": "jersey",
-                             "detail": f"#{number} is outside the NFL range {low}-{high} for a {position}"})
+                             "detail": f"#{number} is outside the NFL range {valid} for a {position}"})
         if is_retired_position(record.values["position"], document.scheme):
             instead = replacement_position_code(record.values["position"], document.scheme)
             findings.append({"level": "warning", "player": player.display, "check": "position",
@@ -5633,6 +5774,18 @@ def validate_membership(document: RosterDocument) -> list[dict[str, Any]]:
 
     findings: list[dict[str, Any]] = []
     for team in document.teams:
+        if team.is_club and document.modern_ir:
+            numbers: dict[int, list[Player]] = {}
+            off_roster = document.projected_ir_players(team.index)
+            for offset in team.slots:
+                if offset not in off_roster:
+                    p = document.by_offset[offset]
+                    numbers.setdefault(p.record.values["jersey"], []).append(p)
+            for number, duplicates in numbers.items():
+                if len(duplicates) > 1:
+                    findings.append({"level": "warning", "player": team.display, "check": "duplicate jersey",
+                                     "detail": f"#{number} is shared by active players " +
+                                               ", ".join(p.display for p in duplicates)})
         if not team.clean_parse:
             findings.append({"level": "error", "player": team.display, "check": "team list",
                              "detail": f"the count byte says {team.player_count} players but only "
@@ -5640,13 +5793,15 @@ def validate_membership(document: RosterDocument) -> list[dict[str, Any]]:
         if len(set(team.slots)) != len(team.slots):
             findings.append({"level": "error", "player": team.display, "check": "team list",
                              "detail": "the same player record is listed twice"})
-        if team.is_club and 0 < len(team.slots) < TEAM_MIN_PLAYERS:
+        active = document.active_count(team.index)
+        maximum = document.active_limit(team.index)
+        if team.is_club and 0 < active < TEAM_MIN_PLAYERS:
             findings.append({"level": "warning", "player": team.display, "check": "roster size",
-                             "detail": f"{len(team.slots)} players; Finn's editor keeps every club at "
+                             "detail": f"{active} players on the active roster; Finn's editor keeps every club at "
                                        f"{TEAM_MIN_PLAYERS} or more"})
-        if len(team.slots) > TEAM_MAX_PLAYERS:
+        if active > maximum:
             findings.append({"level": "warning", "player": team.display, "check": "roster size",
-                             "detail": f"{len(team.slots)} players, above the {TEAM_MAX_PLAYERS}-man cap "
+                             "detail": f"{active} active players, above the {maximum}-man cap "
                                        "(the game carries up to 65 through the off-season and trims "
                                        "the tail at the season gate)"})
     for player in document.players:

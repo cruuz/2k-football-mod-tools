@@ -625,6 +625,10 @@ def franchise_records_fixture(m, records, season='regular'):
     in slot 2, rows 1..16 (row 0 slot 0 is the fixture's current game). ``records`` maps 'home'/'away' to (W, L, T) or
     None. In the playoffs the current game moves to the Divisional row (18) and each side also won a Wild Card game in
     row 17, which the regular-season count must leave out. Only the retail per-week counters read these cells."""
+    from mod_editor.core import nfl2k5_season_length as season_length
+    regular_rows = (season_length.PATCHED_REGULAR_WEEKS if any(sum(value or ()) == 17 for value in records.values())
+                    else REGULAR_ROWS)
+    m.uc.mem_write(season_length.SEASON_WEEKS_VA, bytes([regular_rows]))
     mode, stage, game_mode = FRANCHISE_SEASONS[season]
     teams = [m.alloc(0x1f4) for _ in range(34)]
     for i, team in enumerate(teams):
@@ -639,20 +643,20 @@ def franchise_records_fixture(m, records, season='regular'):
     for index, side in ((0, 'home'), (1, 'away')):
         w, l, t = records.get(side) or (0, 0, 0)
         for row, result in enumerate(['W'] * w + ['L'] * l + ['T'] * t, 1):
-            if row >= REGULAR_ROWS:
-                raise ValueError('the record fixture holds at most 16 games a side')
+            if row >= regular_rows:
+                raise ValueError('the record fixture holds at most 17 games a side')
             cell = row * 17 + 1 + index
             ours, theirs = {'W': (21, 7), 'L': (7, 21), 'T': (10, 10)}[result]
             grid[cell * 8:cell * 8 + 8] = bytes((3, index, 2 + row, 10, 1, 26, 1, 0))
             scores[cell * 10:cell * 10 + 10] = bytes((ours, 0, 0, 0, 0, theirs, 0, 0, 0, 0))
     if season == 'playoffs':
         for index in (0, 1):
-            cell = REGULAR_ROWS * 17 + index
+            cell = regular_rows * 17 + index
             grid[cell * 8:cell * 8 + 8] = bytes((3, index, 20 + index, 1, 16, 27, 1, 0))
             scores[cell * 10:cell * 10 + 10] = bytes((24, 0, 0, 0, 0, 3, 0, 0, 0, 0))
-        divisional = (REGULAR_ROWS + 1) * 17
+        divisional = (regular_rows + 1) * 17
         grid[divisional * 8:divisional * 8 + 8] = current
-        m.put(0xe576b4, REGULAR_ROWS + 1); m.put(0xe576bc, 0)
+        m.put(0xe576b4, regular_rows + 1); m.put(0xe576bc, 0)
     m.uc.mem_write(0xe57c40, bytes(grid))
     m.uc.mem_write(0xe587f0, bytes(scores))
 

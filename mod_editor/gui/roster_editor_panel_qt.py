@@ -63,11 +63,13 @@ from __future__ import annotations
 from mod_editor.gui.ux_text import failure_body, plain_error
 
 import json
+import os
 import shutil
 import struct
 import copy
 import csv
 import threading
+from tempfile import TemporaryDirectory
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
@@ -1845,7 +1847,10 @@ class RosterEditorPanel(QWidget):
     def _team_count_label(self, team: rr.TeamRecord) -> str:
         name = team.abbreviation or team.nickname or f'Team {team.index}'
         if team.index < 32:
-            return f"{name} · {len(team.slots)} active + {len(self.document.reserves[team.index])}/{self.document.reserve_limit(team.index)} reserve"
+            on_ir = self.document.projected_ir_count(team.index)
+            ir_label = f" + {on_ir} IR" if on_ir else ""
+            return (f"{name} · {len(team.slots) - on_ir} active{ir_label}"
+                    f" + {len(self.document.reserves[team.index])}/{self.document.reserve_limit(team.index)} reserve")
         return f"{name} · {len(team.slots)}"
 
     def _restore_composed(self, payload: bytes, edits) -> None:
@@ -2199,7 +2204,7 @@ class RosterEditorPanel(QWidget):
                    f"available on the Checks tab" if self._repair_plans else "")
         self._set_status(
             f"{summary['players']:,} players · {summary['teams']} teams · {summary['free_agents']} free "
-            f"agents · {summary['draft_class']} draft prospects{repairs}")
+            f"agents · {summary['draft_class']} named draft prospects · {summary['draft_slots']} open draft slots{repairs}")
         self._edits_snapshot = None
         self._offer_college_repair(document)
         if self._repair_plans:
@@ -2257,7 +2262,8 @@ class RosterEditorPanel(QWidget):
     def is_dirty(self) -> bool:
         """Whether this roster (or its Anniversary tab) carries edits the user would lose on a reload."""
 
-        return bool(self._dirty) or self.undo_stack.can_undo() or self.espn25_dirty()
+        return (bool(self._dirty) or self.undo_stack.can_undo() or self.espn25_dirty()
+                or self._appearance_bundle is not None or self.coaches_panel.has_changes())
 
     # ------------------------------------------------------------------ ESPN Anniversary
     @staticmethod
@@ -2493,14 +2499,16 @@ class RosterEditorPanel(QWidget):
         lost = (f"{len(self._dirty)} player{'s' if len(self._dirty) != 1 else ''} edited here" if self._dirty else "")
         if staff:
             lost += (" and " if lost else "") + f"{staff} staff change{'s' if staff != 1 else ''}"
-        box.setText(f"{lost or 'Your edits'} would be lost."
-                    f"{anniversary}\n\n"
-                    "Export roster edits (.json)… or Save disc copy… first to keep them.")
+        save_hint = ("Use Save Xbox save copy to keep franchise changes."
+                     if self.franchise_panel.edits else
+                     "Export roster edits or save a copy first to keep them.")
+        box.setText(f"{lost or 'Your edits'} would be lost.{anniversary}\n\n{save_hint}")
         keep = box.addButton("Keep editing", QMessageBox.RejectRole)
-        box.addButton("Discard roster changes", QMessageBox.DestructiveRole)
+        discard = box.addButton("Discard roster changes", QMessageBox.DestructiveRole)
         box.setDefaultButton(keep)
+        box.setEscapeButton(keep)
         box.exec_()
-        return box.clickedButton() is not keep
+        return box.clickedButton() is discard
 
     def _choose_disc(self) -> None:
         if not self._confirm_replace():
@@ -3938,9 +3946,6 @@ class RosterEditorPanel(QWidget):
             staff = self.coaches_panel.export_staff()
         except ValueError as exc:
             raise rr.RosterRecordError(plain_error(exc)) from exc
-        if staff and self._appearance_bundle is not None:
-            raise rr.RosterRecordError("Staff changes cannot be exported together with a complete roster with faces yet. "
-                                       "Put every coach back on the Coaches tab, or load the roster without the faces file.")
         document = self._edits_document_players()
         if staff:
             document["staff"] = staff
@@ -3981,8 +3986,13 @@ class RosterEditorPanel(QWidget):
         source = self._source_path.resolve()
         if target == source or source.is_dir() and source in target.parents:
             raise rr.RosterRecordError("Export the roster outside the source disc or pack folder.")
-        document = (self.edits_document() if self._appearance_bundle is not None else
-                    appearance.complete_document(self._source_path, self.document))
+        if self._appearance_bundle is not None:
+            document = self.edits_document()
+        else:
+            document = appearance.complete_document(self._source_path, self.document)
+            staff = self.coaches_panel.export_staff()
+            if staff:
+                document["staff"] = staff
         return self.save_edits_to(target, document=document)
 
     def load_roster_with_faces(self, path: Path | str) -> dict[str, Any]:
@@ -3993,7 +4003,14 @@ class RosterEditorPanel(QWidget):
         edits = rr.read_edits(path)
         if edits["schema"] != snapshot.SCHEMA or "appearance_assets" not in edits:
             raise rr.RosterRecordError("Choose an Export complete roster with faces file.")
-        body, receipt = rr.apply_body(self.document.to_body(), edits, scheme=self.document.scheme)
+        player_edits = dict(edits)
+        staff = player_edits.pop("staff", {})
+        body, receipt = rr.apply_body(self.document.to_body(), player_edits, scheme=self.document.scheme)
+        if staff:
+            # Validate the pending coach plan against the replacement roster. The
+            # panel keeps the plan editable and the final disc writer applies it once.
+            check = rr.RosterDocument(body)
+            rr.apply_coach_edits(check.body, check.teams, {"staff": staff}, [], obj_base=check.obj_base)
         with rr._outer_image()(self._source_path) as archive:
             appearance.prepare_writes(archive, edits["appearance_assets"], body)
         document = rr.RosterDocument(body, source=str(self._source_path),
@@ -4002,6 +4019,7 @@ class RosterEditorPanel(QWidget):
         document.original = self.document.original
         self.load_document(document, source=self._source_path, kind="disc", label=Path(path).name)
         self._appearance_bundle = copy.deepcopy(edits["appearance_assets"])
+        self.coaches_panel.set_staff(staff)
         self._set_status("Roster and faces loaded. Export roster edits for Build, or save a disc copy.")
         return receipt
 
@@ -4017,22 +4035,30 @@ class RosterEditorPanel(QWidget):
 
     def _import_roster_faces(self) -> None:
         chosen, _ = QFileDialog.getOpenFileName(self, "Load complete roster with faces", "", EDITS_FILTER)
-        if not chosen:
+        if not chosen or not self._confirm_replace():
             return
         try:
             self.load_roster_with_faces(chosen)
         except (OSError, ValueError) as exc:
             QMessageBox.warning(self, "Could not load roster faces", failure_body(exc))
 
-    def save_edits_to(self, path: Path | str, *, document: dict[str, Any] | None = None) -> dict[str, Any]:
+    def save_edits_to(self, path: Path | str, *, document: dict[str, Any] | None = None,
+                      represents_current_roster: bool = True) -> dict[str, Any]:
         document = self.edits_document() if document is None else document
         from mod_editor.core.nfl2k5_roster_save_to_disc import json_text
-        Path(path).write_text(json_text(document), encoding="utf-8", newline="\n")
-        self._edits_path = Path(path)
-        self._edits_snapshot = self.edits_key()
+        destination = Path(path)
+        with TemporaryDirectory(dir=destination.parent, prefix=".roster-") as folder:
+            staged = Path(folder) / destination.name
+            staged.write_text(json_text(document), encoding="utf-8", newline="\n")
+            os.replace(staged, destination)
+        self._edits_path = destination
+        franchise_pending = bool(self.franchise_panel.edits)
+        if represents_current_roster and not franchise_pending:
+            self._edits_snapshot = self.edits_key()
         self.roster_edits_changed.emit(str(path))
         self._set_status(f"Roster edits exported to {path} ({len(document.get('edits', []))} players). "
-                         "Build uses this saved file. Export again after further changes.")
+                         + ("Franchise changes still need Save Xbox save copy." if franchise_pending
+                            else "Build uses this saved file. Export again after further changes."))
         return document
 
     def save_roster_to_disc(self, path: Path | str, *, save_path: Path | str | None = None,
@@ -4058,7 +4084,7 @@ class RosterEditorPanel(QWidget):
         target = rr.load_image(target_path, detect=True)
         result = save_import.compare(target, source, replace_roster=True, appearance_source=appearance_source)
         result.write_receipt(destination)
-        self.save_edits_to(destination, document=result.edits)
+        self.save_edits_to(destination, document=result.edits, represents_current_roster=False)
         self._set_status(result.summary)
         return result
 
@@ -4146,8 +4172,21 @@ class RosterEditorPanel(QWidget):
                 "Use Save roster edits… and apply them from Build & Share, or load a disc image.")
         if destination.exists() and not overwrite:
             raise rr.RosterRecordError(f"{destination} exists")
-        shutil.copyfile(self._source_path, destination)
-        return rr.apply(destination, self.edits_document())
+        edits = self.edits_document()
+        return self._write_disc_copy(self._source_path, destination, edits, overwrite)
+
+    @staticmethod
+    def _write_disc_copy(source: Path, destination: Path, edits: dict[str, Any], overwrite: bool) -> dict[str, Any]:
+        from mod_editor.core.platform_compat import publish_no_replace
+        with TemporaryDirectory(dir=destination.parent, prefix=".roster-") as directory:
+            staged = Path(directory) / destination.name
+            shutil.copyfile(source, staged)
+            result = rr.apply(staged, edits)
+            if overwrite:
+                os.replace(staged, destination)
+            else:
+                publish_no_replace(staged, destination)
+        return result
 
     def _migrate_arena_save(self):
         source, _ = QFileDialog.getOpenFileName(self, "Choose the signed save to migrate", "", SAVE_FILTER)
@@ -4182,7 +4221,22 @@ class RosterEditorPanel(QWidget):
         if not chosen:
             return
         try:
-            receipt = self.write_copy_to(chosen)
+            if self._source_kind == "disc" and self._source_path is not None:
+                destination = Path(chosen)
+                source = self._source_path
+                if destination.resolve() == source.resolve() or destination.exists():
+                    raise rr.RosterRecordError("Choose a new output filename for the edited disc.")
+                if not source.is_file():
+                    raise rr.RosterRecordError("Open a disc image to save an edited disc copy.")
+                self.document.check_depth_locks()
+                edits = self.edits_document()
+                receipt = run_in_background(self, "Saving edited disc", "Copying and verifying the roster and artwork.",
+                                            lambda: self._write_disc_copy(source, destination, edits, False))
+                self._edits_snapshot = self.edits_key()
+                if self.undo_stack.on_change is not None:
+                    self.undo_stack.on_change()
+            else:
+                receipt = self.write_copy_to(chosen)
         except Exception as exc:  # noqa: BLE001
             show_operation_error(self, "write the copy", plain_error(exc))
             return

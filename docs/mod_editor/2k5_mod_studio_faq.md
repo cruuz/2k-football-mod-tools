@@ -1,4 +1,4 @@
-# 2K5 Mod Studio FAQ, beta 80
+# 2K5 Mod Studio FAQ, beta 81
 
 Start with the [Getting Started guide](2k5_mod_studio_getting_started.md).
 These answers combine the previous release FAQ and the community reports for beta 71.1.
@@ -48,13 +48,8 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
 1. **Does the original game start?** Load your untouched retail disc image in the same xemu. If that does not start either,
    the problem is xemu's own setup, and nothing in the Studio will fix it. xemu needs its own boot ROM, BIOS and hard disk
    image: see xemu's [required files](https://xemu.app/docs/required-files/).
-2. **Memory.** Set xemu's **System Memory** to **128 MiB** (Machine, then Settings, then the System tab). Quit xemu completely
-   and open it again, because xemu applies this only after a restart. The current SOFTDRINK 2K28 disc does not run at 64 MiB.
-   (A disc you built yourself with **Console memory** set to 64 MB is the one exception; see the next question.)
-3. **BIOS.** xemu needs a debug BIOS or a modified retail BIOS that can start unsigned games, and SOFTDRINK 2K28's start-up
-   patch needs the modified retail **COMPLEX 4627** one. Choose it under Machine, then Settings, then System, then Flash ROM
-   (BIOS). With any other BIOS the patch stays asleep and the game stops with a BIOS message. The Studio and this project do
-   not supply BIOS files.
+2. **Memory.** For the standard pack, select **Machine → Settings → System → System Memory → 128 MiB**. For the `-64MB` pack, select **64 MiB**. Quit and reopen xemu after a change.
+3. **BIOS.** The standard pack's memory patch runs on kernel 4627. Select your **COMPLEX 4627** under **Flash ROM (BIOS)**. If the startup check stops the game, its screen shows the detected kernel and a code. The 64 MB pack omits those checks. xemu still needs its own compatible firmware.
 4. **The right disc.** In xemu choose **Machine**, then **Load Disc**, and pick the new disc the Studio saved, not your
    original and not an older SOFTDRINK disc. It must be the whole image file, not a shortcut, a zip or a folder.
 5. **Paths and folders.** Keep the disc image and xemu's files (BIOS, boot ROM, hard disk image) in plain folders you can read
@@ -68,14 +63,9 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
 
 ## Can I play SOFTDRINK 2K28 on Android, in hakuX?
 
-Not the ready-made pack, but you can try a **64 MB build** (experimental, estimated, not yet tested on a real Xbox or
-hakuX). The SOFTDRINK 2K28 pack that **Install SOFTDRINK 2K28** puts on your disc is the full build for xemu on a Windows,
-Linux or macOS computer (and the Steam Deck), with 128 MiB of memory and the COMPLEX 4627 BIOS. hakuX is a separate Android emulator, not xemu: by its own requirements it runs without
-an Xbox BIOS, because it reimplements the Xbox kernel instead of running the real one. The pack's start-up check needs the
-real 4627 kernel and 128 MiB, so the pack is not expected to start there, and a black screen without the message is what to
-expect.
+Download the ready-made **64 MB** pack and install it directly through **Install SOFTDRINK 2K28**. It targets the original Xbox memory budget and leaves out the 128 MB memory patch. Hardware Xbox, hakuX and XBased compatibility remains unverified. With an emulator that implements its own kernel, report the emulator version and which pack you installed. The standard pack uses the 4627 kernel in xemu.
 
-The Studio can make a disc for 64 MB machines, such as an original Xbox console and hakuX:
+To customize a 64 MB disc:
 
 1. In **Build & Share**, open the **Share** tab. Set **Build for** to **64 MB, original Xbox and Android hakuX
    (experimental, estimated, not yet tested on a real Xbox or hakuX)**, then click **Customize SOFTDRINK 2K28…**. The **Build**
@@ -425,7 +415,7 @@ intro.
 ## Does Studio check my xemu settings and BIOS?
 
 Only when you start xemu from Studio (**Play latest disc in xemu**). It reads `xemu.toml` and
-shows a note if System Memory is not 128 MiB or the Flash ROM is not set. The check only reads:
+checks the memory target of a Studio install or build. The standard 128 MB pack also checks the Flash ROM. The check only reads:
 it never changes your BIOS or your memory setting and never stops the launch (the one thing
 Studio writes to `xemu.toml` is the path of your new disc, so xemu remembers it). It recognises
 the tested Complex 4627 image by its contents, so the same BIOS saved as a 256 KB, 512 KB or
@@ -440,9 +430,7 @@ game's own screen is the check.
 
 Run Studio in **Desktop Mode** (the Linux and Steam Deck steps are in [Start here](../START_HERE.md)).
 EmuDeck installs xemu as a Flatpak, so its settings are in
-`~/.var/app/app.xemu.xemu/data/xemu/xemu/xemu.toml`. Set System Memory to 128 MiB and the Complex
-4627 BIOS in Desktop Mode, close xemu normally, then start it again, from Desktop Mode or Game
-Mode, and check the memory still says 128 MiB before you load the disc.
+`~/.var/app/app.xemu.xemu/data/xemu/xemu/xemu.toml`. Choose the memory setting for your pack in Desktop Mode. For the standard pack use 128 MiB and Complex 4627. For the 64 MB pack choose 64 MiB. Restart xemu and confirm the setting before loading the disc.
 
 A freeze while scrolling Contracts or Free Agents has one known cause: players with no college
 on the screen's info panel. Franchises saved on SOFTDRINK 0.6.1 can still hold such players, and
@@ -476,3 +464,27 @@ lt9608's performance question concerns **emulator settings**. Compare your origi
 xemu, then use xemu's settings and emulator community support. The studio does not set emulator
 resolution or guarantee performance. Include emulator version and settings when reporting a
 played issue; keep that separate from a build failure.
+
+## Why does Finn’s editor show a blank name?
+
+Open your Xbox save in **★ Rosters → Open Xbox save…**, select the team and use the **CSV** menu to export its players. On a signed v0.9 roster, Finn’s GameSave Editor 4.0.0.41 showed 57 Giants and left 39 first- or last-name cells blank across 28 players. J.J. McCarthy and Jevon Holland lost both names on screen. Abdul Carter, Patrick Ricard, Greg Newsome, Cam Skattebo and Chris Manhertz lost their surnames. Studio read and exported both names for all 57 players from the same save.
+
+Finn can ask whether to auto-repair names when opening an expanded roster. Choose **No** to inspect the file. Keep the original save and use the Studio export to check the players before making changes.
+
+## Which files help diagnose a franchise freeze or an unexpected portrait?
+
+Keep a copy of the failing save including its companion files, the pack filename, the output from **Check disc**, and **Copy Build summary** from a custom build. Record the team, season, week, screen and last input. For portraits include the player's full name and a screenshot. An existing franchise carries its own photo assignments. Comparing that save with a new franchise from the same disc identifies which data to inspect.
+
+For a play-call or audible freeze, record the last offensive and defensive calls, input sequence and whether commentary continued. For weekly SportsCenter, include the week and whether the franchise had been reloaded. For missing players in a historical moment, include the moment and camera. The Studio can collect a freeze capture on xemu. [Freeze capture and disc check](freeze_capture_and_disc_check.md)
+
+## Why does an older franchise show tackles before Week 1 or fewer draft prospects?
+
+An older cornerback-stat patch could award regular-season tackles during preseason, in the playoffs or to a corner who sat out. The current patch checks the season stage and whether the game credited that player with playing. A saved Player Card can still contain the old totals. If you kept a save from before those games, load a copy on the updated disc and replay or simulate forward. Once regular-season games have been played, the season total alone cannot identify which tackles came from the older patch.
+
+In **★ Rosters**, open the signed franchise save and select **Draft Class** to see its named prospects. The overview lists empty draft slots separately. **Franchise → Upgrade** can add room for future classes, including when the game already resized the save. Choose your current disc, preview the changes and write a new signed save folder. The preview reports how many draft-class records it can add. Already-generated prospects and picks stay with that franchise. To regenerate a particular class with the updated disc, start from a backup made before the game generated it.
+
+## I use the native PC or Android port or a separate Mod Manager
+
+Those programs have their own version numbers. In a report, include the program name and version, pack filename, platform, renderer, a screenshot and whether it also happens with a clean game. For a Manager-built disc, include the Manager version and the roster and calendar options. Trophy Room music is a selectable build setting.
+
+The native Windows port's 0.8.1 hotfix covers controller icons appearing on uniforms, music startup, fullscreen and renderer recovery. One player who saw a blank frame in Direct3D 12 got a picture using Vulkan. The port lists its Windows log folder and gives separate Android update instructions. Its release notes identify v0.9 as a supported pack. Android save-space, overwrite or delete failures need the Android port version and its own save location. Keep a separate copy of the save before testing. [Native port hotfix and log locations](https://github.com/MatthewJeff2002/2K5Remade/releases/tag/v0.8.1)

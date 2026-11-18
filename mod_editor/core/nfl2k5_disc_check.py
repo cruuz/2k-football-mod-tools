@@ -192,49 +192,55 @@ def check(image: Path | str, *, releases: Iterable[dict[str, Any]] | None = None
 def _compare(target, fd, size, base, by_lower, hashed, progress) -> dict[str, Any]:
     files = {k.lower(): (k, v) for k, v in target["files"].items()}
     total = sum(v["size"] for _k, v in files.values())
-    done = 0
+    done = changed_bytes = 0
+    chunk = target.get("chunk", CHUNK)
+    compared_bytes = 0
     differing, missing, extra, cut = [], [], [], []
     for low in sorted(files):
         name, want = files[low]
         entry = by_lower.get(low)
         if entry is None:
             missing.append(name)
+            changed_bytes += want["size"]
+            compared_bytes += want["size"]
             done += want["size"]
             continue
-        if entry.size != want["size"]:
-            differing.append(dict(file=name, reason="size", expected=want["size"], found=entry.size, mib=[]))
-            done += want["size"]
-            continue
+        span = max(entry.size, want["size"])
+        compared_bytes += span
         if low not in hashed:
             hashed[low] = _file_hashes(fd, size, base, entry, progress, done, total)
         digest, chunks, readable = hashed[low]
         done += want["size"]
         if readable < entry.size:
             cut.append(dict(file=name, readable_mib=round(readable / MIB, 1), size_mib=round(entry.size / MIB, 1)))
-        if digest != want["sha256"]:
+        if digest != want["sha256"] or entry.size != want["size"]:
             bad = [i for i, (a, b) in enumerate(zip(chunks, want["chunks"])) if a != b]
-            if len(chunks) < len(want["chunks"]):
-                bad += list(range(len(chunks), len(want["chunks"])))
-            differing.append(dict(file=name, reason="content", chunks=len(bad),
-                                  mib=_ranges(bad, target.get("chunk", CHUNK), entry.size)))
+            bad.extend(range(min(len(chunks), len(want["chunks"])), max(len(chunks), len(want["chunks"]))))
+            changed_bytes += sum(min(chunk, span - index * chunk) for index in bad)
+            difference = dict(file=name, reason="content", chunks=len(bad), mib=_ranges(bad, chunk, span))
+            if entry.size != want["size"]:
+                difference.update(reason="size", expected=want["size"], found=entry.size)
+            differing.append(difference)
     for low, e in by_lower.items():
         if low not in files:
             extra.append(e.path)
+            compared_bytes += e.size
+            changed_bytes += e.size
     names = [low for low in files if low in by_lower]
     sizes_matching = sum(1 for low in names if by_lower[low].size == files[low][1]["size"])
     differing_names = {d["file"].lower() for d in differing} | {c["file"].lower() for c in cut}
     files_matching = sum(1 for low in names if low not in differing_names and by_lower[low].size == files[low][1]["size"])
-    changed_bytes = sum(len(d.get("mib", [])) for d in differing)
-    share = (sum(d.get("chunks", 0) for d in differing) * target.get("chunk", CHUNK)) / max(1, total)
+    ranges = sum(len(d["mib"]) for d in differing)
+    share = changed_bytes / max(1, compared_bytes)
     if not differing and not missing and not cut and not extra:
         state = "matches"
-    elif cut or (share < 0.25 and not missing):
+    elif cut or (share < 0.25 and sizes_matching and not missing and not extra):
         state = "damaged"
     else:
         state = "different"
     return dict(state=state, release=target["name"], release_sha256=target.get("image_sha256"),
                 release_size=target.get("image_size"), differing=differing, missing=missing, extra=extra,
-                cut_short=cut, differing_share=round(share, 4), ranges=changed_bytes,
+                cut_short=cut, differing_share=round(share, 4), ranges=ranges,
                 names_matching=len(names), sizes_matching=sizes_matching, files_matching=files_matching)
 
 

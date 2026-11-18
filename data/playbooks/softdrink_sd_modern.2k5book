@@ -6,7 +6,8 @@
   "author": "SOFTDRINK / Claude (pb1)",
   "version": "4.0.0",
   "license": "CC0-1.0",
-  "notes": "DESIGN (b776 pb1 v3, era 2020s): wide_zone tree; Madden 27 family and personnel shares (Civil.GG playbook database) x the team's 2025 tendencies; retail-template runs, combo pass concepts, every retail route kind. No pre-snap motion, no RPO, no read option. All gameplay unwitnessed."
+  "notes": "DESIGN (b776 pb1 v3, era 2020s): wide_zone tree; Madden 27 family and personnel shares (Civil.GG playbook database) x the team's 2025 tendencies; retail-template runs, combo pass concepts, every retail route kind. Manual pre-snap motion: use up/down on the D-pad or left stick to select an eligible player, then left/right to send him in motion. The modern plays do not script motion, RPOs or read options. R3 flips the whole play on an offset shotgun pitch to the back's side. Black flips the whole play. All gameplay unwitnessed.",
+  "offset_toss_flip": true
  },
  "base": {
   "book_fingerprint": "f137c9c6736821833a18be26b3d3ee67020eecb506f50f795dc0c0d4edaf8552",

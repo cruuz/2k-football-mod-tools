@@ -880,6 +880,7 @@ class BuildPlan:
     # Xbox kernel and a selection the memory model says will not fit (nfl2k5_console_memory). A 128 plan's recipe has
     # no console_memory key, so it is byte for byte what it was before the option existed.
     console_memory: int = 128
+    stock_age_policy: str = "preserve_age"
 
     def wants_xbe_patch(self) -> bool:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
@@ -1591,7 +1592,10 @@ def _pass_rush_stats_preflight(source: Path, progress) -> None:
         payload = _xbe_bytes(source)
     except (OSError, ValueError) as exc:
         raise ValueError(f"Pass rush stats cannot read default.xbe: {exc}") from exc
-    if module.status(payload) == "foreign":
+    state = module.status(payload)
+    if state == "previous":
+        raise ValueError("Pass rush stats on this disc need a new build from your unmodified retail disc.")
+    if state == "foreign":
         raise ValueError("The pass rush or Player Card code in this source is not retail or Pass rush stats. Turn it "
                          "off or build from your unmodified retail dump.")
 
@@ -1981,7 +1985,7 @@ def _injured_reserve_preflight(source: Path, progress) -> None:
     if module is None:
         raise ValueError("Modern injured reserve is not available in this installation.")
     progress("Checking the franchise injured reserve", 0, 0)
-    if module.status(_xbe_bytes(source)) not in ("retail", "guard", "applied"):
+    if module.status(_xbe_bytes(source)) not in ("retail", "guard", "previous", "applied"):
         raise ValueError("The franchise injured reserve routines in this source are not retail. Build from an "
                          "unmodified retail dump.")
 
@@ -2005,7 +2009,10 @@ def _history_screen_preflight(source: Path, progress) -> None:
         raise ValueError("The franchise History screen is not available in this installation.")
     progress("Checking ESPN.com and the Schedule for the History screen", 0, 0)
     payload = _xbe_bytes(source)
-    if module.status(payload) not in ("retail", "applied"):
+    state = module.status(payload)
+    if state == "previous":
+        raise ValueError("This disc has an older Franchise History screen. Rebuild from your unmodified retail disc.")
+    if state not in ("retail", "applied"):
         # b780 n8: name the first check that failed (for example an older MyCareer whose hook sits on the screen push)
         reason = module.refusal(payload) if hasattr(module, "refusal") else None
         raise ValueError("The ESPN.com menu, the Schedule input or the menu code in this source is not retail"
@@ -2515,7 +2522,7 @@ def _apply_sim_realism(plan: "BuildPlan", target: Path, receipt: dict, progress)
     receipt["result"]["sim_realism"] = "applied"
 
 
-def _coach_carousel_preflight(source: Path, progress) -> None:
+def _coach_carousel_preflight(source: Path, progress, roster_edits=None) -> None:
     """b780-c6: refuse a source whose Advance to offseason, owner check or Owner Firing row is foreign, before any write."""
     module = _core_module("nfl2k5_coach_carousel")
     if module is None:
@@ -2524,6 +2531,22 @@ def _coach_carousel_preflight(source: Path, progress) -> None:
     if module.status(_xbe_bytes(source)) not in ("retail", "applied"):
         raise ValueError("Advance to offseason, the owner goal check or the Owner Firing option in this source is not "
                          "retail. Build from an unmodified retail dump.")
+    if tt.is_disc_image(source):
+        progress("Checking the hiring pool against the selected roster", 0, 0)
+        with module._outer_image()(source) as archive:
+            body = module._main_roster(archive)[2]
+        if roster_edits:
+            from . import nfl2k5_roster_records as records
+            document = records.read_edits(Path(roster_edits))
+            if document.get("coaches") or document.get("staff"):
+                working = bytearray(body)
+                records.apply_coach_edits(working, records.RosterDocument(body).teams, document, [])
+                body = bytes(working)
+        try:
+            module.apply_body(body)
+        except ValueError as exc:
+            raise ValueError(f"Coaching carousel: the selected roster cannot fit the hiring pool ({exc}). "
+                             "Choose roster edits with space in the coach biographies, or turn off Coaching carousel.") from exc
 
 
 @_core_step("coach_carousel")
@@ -2731,7 +2754,7 @@ def _apply_injured_reserve(plan: "BuildPlan", target: Path, receipt: dict, progr
     payload, ir_receipt = module.apply(_xbe_bytes(target), mode)
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
-    if final != payload or module.status(final) != ("applied" if mode == "modern" else "guard"):
+    if final != payload or module.status(final) not in (("applied",) if mode == "modern" else ("guard", "previous", "applied")):
         raise RuntimeError("Modern injured reserve: the output does not read back as applied")
     receipt["steps"].append({"step": "injured_reserve", **{k: v for k, v in ir_receipt.items() if k != "reservations"}})
     receipt["result"]["injured_reserve"] = mode
@@ -3422,7 +3445,7 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     injured_reserve = _core_module("nfl2k5_injured_reserve")  # b780 IR1: retail, guard, applied (modern) or foreign
     out["injured_reserve"] = injured_reserve.status(_xbe_bytes(source)) if injured_reserve is not None else "unavailable"
     # b780 IR1: the two options' own states (the panel reads inspect()[option]): the guard is in both installs
-    out["injured_reserve_guard"] = {"guard": "applied", "applied": "applied"}.get(out["injured_reserve"], out["injured_reserve"])
+    out["injured_reserve_guard"] = {"guard": "applied", "previous": "applied", "applied": "applied"}.get(out["injured_reserve"], out["injured_reserve"])
     out["modern_injured_reserve"] = {"guard": "retail"}.get(out["injured_reserve"], out["injured_reserve"])
     load_guard = _core_module("nfl2k5_load_user_team_guard")  # b780 mc1
     out["load_user_team_guard"] = load_guard.status(_xbe_bytes(source)) if load_guard is not None else "unavailable"
@@ -4237,6 +4260,8 @@ PLAYBOOK_OPTION_LABELS = {
 
 def validate_plan(plan: BuildPlan) -> list[str]:
     """Report incompatible choices before reading game inputs or copying a disc."""
+    if plan.stock_age_policy not in ("preserve_age", "keep_birthdates"):
+        return ["Choose a supported stock roster age policy."]
     if type(plan.official_marks_pack) is not str:
         return ["official_marks_pack must be a folder path (text)"]
     if plan.historic_rosters_2026:
@@ -4488,10 +4513,20 @@ def _build_and_publish(plan: BuildPlan, progress: ProgressSink | None = None, *,
         if problem:
             raise ValueError(problem)
         plan, coach_ai_skip = _coach_ai_decision(plan, progress)
+        if require_change and _project_builder is None and coach_ai_skip and coach_ai_skip["status"] == "skipped":
+            empty = BuildPlan(plan.source, plan.target, overwrite=plan.overwrite, name=plan.name, author=plan.author,
+                              notes=plan.notes, console_memory=plan.console_memory, stock_age_policy=plan.stock_age_policy)
+            if plan == empty:
+                raise ValueError("Nothing was written: the only selected change was left out. " + coach_ai_skip["user_notes"][0])
         preflight_board_source(plan, progress)
         r62 = _validated_r62_plan_options(plan)
-        from .image_use import check_image_destination, publish_image
+        from .image_use import check_image_destination, receipt_states, publish_image_with_receipts, recover_image_publication
+        from .xdvdfs_compact import STUDIO_RECEIPTS
+        recover_image_publication(target, STUDIO_RECEIPTS)
         previous_target = check_image_destination(target, overwrite=plan.overwrite)
+        previous_receipts = receipt_states(target, STUDIO_RECEIPTS)
+        if previous_target is None and not plan.overwrite and any(previous_receipts.values()):
+            raise ValueError("The destination already has Studio receipts. Choose a new output filename.")
         with tempfile.TemporaryDirectory(prefix=STAGE_PREFIX, dir=target.parent) as folder:
             directory = Path(folder)
             stage = directory
@@ -4563,6 +4598,11 @@ def _build_and_publish(plan: BuildPlan, progress: ProgressSink | None = None, *,
                     _digest(directory / target.name))
             else:
                 receipt["outcome"] = measure(source, directory / target.name)
+            compacted = receipt.get("disc_compaction", {})
+            if require_change and receipt["outcome"]["status"] == "changed" and compacted.get("files"):
+                from .xdvdfs_compact import game_files_changed
+                if not game_files_changed(source, compacted["files"], progress):
+                    receipt["outcome"].update(status="unchanged", message="Only the disc layout changed. The game files are identical.")
             if require_change and receipt["outcome"].get("status") == "unchanged":
                 # b778-bd2: the step writers ran but every selected change was already on
                 # the source (or kept as it was). Publishing this would hand the user a
@@ -4572,11 +4612,11 @@ def _build_and_publish(plan: BuildPlan, progress: ProgressSink | None = None, *,
                     # b791-h3: the selected changes were left out (named), not "already installed".
                     raise ValueError(
                         "Nothing was written: every selected change that would have changed this disc was left out ("
-                        + "; ".join(row["user_notes"][0] for row in left) + "). The finished copy would be identical "
-                        "to the source. Nothing was written to your chosen output.")
+                        + "; ".join(row["user_notes"][0] for row in left) + "). Its game files are identical "
+                        "to the source game files. Nothing was written to your chosen output.")
                 raise ValueError(
                     "Nothing was written: every selected change is already installed on this disc or was "
-                    "left as it is, so the finished copy would be identical to the source. Choose your "
+                    "left as it is, so the finished game files would be identical to the source. Choose your "
                     "unmodified retail disc as the source, or select different changes, then make the disc "
                     "again. Nothing was written to your chosen output.")
             # The public digest describes the final compact image, including when
@@ -4589,35 +4629,16 @@ def _build_and_publish(plan: BuildPlan, progress: ProgressSink | None = None, *,
             _step("publish")
             progress("Publishing the verified disc", 0, 0)
             from . import nfl2k5_modern_color as colour
-            colour_receipt = colour.read_image_receipt(directory / target.name)
-            venues26 = _core_module("nfl2k5_modern_venues_2026")  # b76-u4
-            venues_receipt = venues26.read_receipt(directory / target.name) if venues26 is not None else None
-            # b76-tf: the Modern surfaces receipt travels with the disc too (its status reads it)
-            surfaces = _core_module("nfl2k5_modern_surfaces")
-            surfaces_receipt = surfaces.read_receipt(directory / target.name) if surfaces is not None else None
+            staged = directory / target.name
+            colour.read_image_receipt(staged)
+            for module_name in ("nfl2k5_modern_venues_2026", "nfl2k5_modern_surfaces"):
+                reader = _core_module(module_name)
+                if reader is not None:
+                    reader.read_receipt(staged)
             greens = _core_module("nfl2k5_broadcast_greens")
-            greens_path = greens.receipt_path(directory / target.name) if greens is not None else None
-            greens_receipt = json.loads(greens_path.read_text()) if greens_path is not None and greens_path.exists() else None
-            publish_image(directory / target.name, target, previous_target)
-            if colour_receipt is not None:
-                colour._save_image_receipt(target, colour_receipt)
-            else:
-                colour.receipt_path(target).unlink(missing_ok=True)
-            if venues26 is not None:
-                if venues_receipt is not None:
-                    venues26._save_receipt(target, venues_receipt)
-                else:
-                    venues26.receipt_path(target).unlink(missing_ok=True)
-            if surfaces is not None:
-                if surfaces_receipt is not None:
-                    surfaces.save_receipt(target, surfaces_receipt)
-                else:
-                    surfaces.receipt_path(target).unlink(missing_ok=True)
-            if greens is not None:
-                if greens_receipt is not None:
-                    greens.save(greens.receipt_path(target), greens_receipt)
-                else:
-                    greens.receipt_path(target).unlink(missing_ok=True)
+            if greens is not None and greens.receipt_path(staged).exists():
+                json.loads(greens.receipt_path(staged).read_bytes())
+            publish_image_with_receipts(staged, target, previous_target, previous_receipts)
             receipt["stage_seconds"] = progress.finish()
             receipt["target"] = str(target)
             receipt["result"]["path"] = str(target)
@@ -6525,7 +6546,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.sim_realism:  # b779-sim2 r4: like pi1, before any write
         _sim_realism_preflight(source, progress)
     if plan.coach_carousel:  # b780-c6: before any write
-        _coach_carousel_preflight(source, progress)
+        _coach_carousel_preflight(source, progress, plan.roster_edits)
     if plan.history_screen:  # b780-j4: before any write
         _history_screen_preflight(source, progress)
     if plan.standings_records:  # b780-j1: like pi1, before any write
@@ -8518,6 +8539,32 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_champions_history(plan, target, receipt, progress, capacity_records)
     # b780-c6: the carousel's hiring pool goes into the coach strings after every other main-roster writer
     _apply_coach_carousel_pool(plan, target, receipt, progress)
+    if plan.season_2026 and plan.progression and tt.is_disc_image(target):
+        age_receipt = {"policy": plan.stock_age_policy}
+        if plan.stock_age_policy == "preserve_age":
+            from . import nfl2k5_roster_ages
+            progress("Preserving stock players’ playing ages for 2026", 0, 0)
+            age_receipt.update(nfl2k5_roster_ages.apply_image(target))
+            age_receipt["user_notes"] = [f"2026 stock player ages: adjusted {age_receipt['changed']} birthdays. "
+                                         "Modern and already-adjusted players keep their dates."]
+        elif plan.stock_age_policy != "keep_birthdates":
+            raise ValueError("Unknown stock roster age policy")
+        else:
+            age_receipt["user_notes"] = ["2026 stock player ages: kept historical birthdays as selected."]
+        receipt["steps"].append({"step": "stock_roster_ages", **age_receipt})
+        receipt["result"]["stock_roster_ages"] = age_receipt
+    if plan.playbook_packs and any(packs.load_pack(path).book.offset_toss_flip for path in plan.playbook_packs):
+        from . import nfl2k5_offset_toss
+        _step("offset_toss_flip")
+        progress("Keeping offset shotgun pitches together on a route flip", 0, 0)
+        native, toss_receipt = nfl2k5_offset_toss.apply(_xbe_bytes(target))
+        if not toss_receipt["already_applied"]:
+            _write_xbe_bytes(target, native)
+        if _xbe_bytes(target) != native:
+            raise ValueError("The offset toss control did not read back on the final disc")
+        receipt["steps"].append({"step": "offset_toss_flip", **toss_receipt})
+        receipt["result"]["offset_toss_flip"] = "applied"
+
     if tt.is_disc_image(target):
         _step("disc_compaction")
         # DESIGN: all growth writers have finished. Compact only this disposable
@@ -8533,6 +8580,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         # build() records the final image digest in its existing single hash pass.
         receipt["result"].pop("image_sha256", None)
     _step("final_checks")
+    if receipt["result"].get("offset_toss_flip") == "applied" and nfl2k5_offset_toss.status(_xbe_bytes(target)) != "applied":
+        raise ValueError("The offset toss control did not survive the final archive pass")
     # Publication gate: inspect the actual finished archive and executable,
     # including full archive rewrites and the last paired owner updates.
     if stock_bank is not None:

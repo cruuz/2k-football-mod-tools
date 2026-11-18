@@ -403,6 +403,7 @@ class PackBook:
     license: str
     targets: tuple[str, ...] = ()        # empty = just ``team``; ("ALL",) = the 32 team books
     notes: str = ""
+    offset_toss_flip: bool = False
 
     def to_json(self) -> dict[str, Any]:
         out = {"team": self.team, "name": self.name, "author": self.author,
@@ -411,13 +412,15 @@ class PackBook:
             out["targets"] = list(self.targets)
         if self.notes:
             out["notes"] = self.notes
+        if self.offset_toss_flip:
+            out["offset_toss_flip"] = True
         return out
 
     @classmethod
     def from_json(cls, value: object) -> "PackBook":
         if not isinstance(value, Mapping):
             raise PlaybookPackError("“book” must be an object with team / name / author / version / license.")
-        extra = set(value) - {"team", "name", "author", "version", "license", "targets", "notes"}
+        extra = set(value) - {"team", "name", "author", "version", "license", "targets", "notes", "offset_toss_flip"}
         if extra:
             raise PlaybookPackError(f"“book” has unsupported fields {sorted(extra)}.")
         team = _text(value.get("team"), "book team")
@@ -438,6 +441,7 @@ class PackBook:
             _text(value.get("license"), "book license"),
             targets,
             _text(value.get("notes", ""), "book notes", allow_empty=True, max_chars=2000),
+            _boolean(value.get("offset_toss_flip", False), "book offset_toss_flip"),
         )
 
     def resolved_targets(self) -> tuple[str, ...]:

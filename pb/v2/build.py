@@ -742,10 +742,10 @@ def build_team(resource: bytes, team: str, core: dict | None = None, pkg: dict |
              f"{team} package (pb/v2/teams/{team}.json); retail-grammar routes and headers; situation ratings from "
              "the book's own retail formations. Compatible direct reads use 2026 regular-season target shares "
              "(pb/research/targets_2026.json; nflverse, CC-BY-4.0), via pb/v2/targeting.py. "
-             "No pre-snap motion, no RPO. All gameplay unwitnessed.")
+             "Manual pre-snap motion: use up/down on the D-pad or left stick to select an eligible player, then left/right to send him in motion. The modern plays do not script motion, RPOs or read options. R3 flips the whole play on an offset shotgun pitch to the back's side. Black flips the whole play. All gameplay unwitnessed.")
     pack = packs.PlaybookPack(
         packs.PackBook(team, f"SOFTDRINK 2K28 {team} Offense", "SOFTDRINK / Claude (p48o)", VERSION, "CC0-1.0",
-                       notes=notes[:2000]),
+                       notes=notes[:2000], offset_toss_flip=True),
         packs.PackBase(packs.book_fingerprint(info.body), len(info.book.formations), len(info.book.plays),
                        info.book.node_count),
         tuple(forms_out), tuple(plays_out), packs.OFFENSE_SCHEMA, tuple(menus_out))

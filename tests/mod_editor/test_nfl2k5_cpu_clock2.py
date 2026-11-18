@@ -53,8 +53,8 @@ class TemplateTests(unittest.TestCase):
             else:
                 self.assertTrue(va <= value < va + len(assembly.CODE) or value == symbols[symbol], (offset, symbol))
         # the constants block at the end of the template
-        tail = struct.unpack("<9f", assembly.CODE[-36:])
-        self.assertEqual(tail[:7], (600.0, 300.0, 120.0, 60.0, 40.0, 15.0, 0.0))   # b780 modes2: + 40 s (Q22)
+        tail = struct.unpack("<8f", assembly.CODE[-32:])
+        self.assertEqual(tail[:6], (600.0, 300.0, 120.0, 60.0, 40.0, 0.0))   # b780 modes2: + 40 s (Q22)
 
     def test_sites_are_jumps_or_calls_into_the_allocation(self):
         va = 0x14DA000
@@ -106,6 +106,16 @@ class RetailTests(unittest.TestCase):
         self.assertEqual(clock2.verify(self.overtime, overtime=True)["settings"], {"overtime": True})
         with self.assertRaises(clock2.CpuClock2Error):
             clock2.verify(self.patched, overtime=True)
+
+    def test_verified_beta80_clock_upgrades_without_moving_its_allocation(self):
+        from mod_editor.core import nfl2k5_rdata_sites as rdata
+        for overtime, current in ((False, self.patched), (True, self.overtime)):
+            allocated, _ = space.apply(self.retail, clock2.REQUESTS, scaleout=True)
+            va = clock2.allocations(allocated)["va"]
+            old, _ = space.install_code(allocated, clock2.OWNER, clock2.code_for(va, beta80=True))
+            old, _ = rdata.apply(old, clock2.sites(va, overtime=overtime, beta80=True), clock2.OWNER)
+            self.assertEqual(clock2.read_settings(old), {"overtime": overtime})
+            self.assertEqual(clock2.apply(old, overtime=overtime)[0], current)
 
     def test_overtime_choice_needs_a_clean_base(self):
         with self.assertRaises(clock2.CpuClock2Error):

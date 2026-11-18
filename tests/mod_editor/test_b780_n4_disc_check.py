@@ -100,6 +100,13 @@ class DiscCheckTests(unittest.TestCase):
         self.assertEqual(result["state"], "unreadable")
         self.assertIn("not a readable Xbox disc image", dc.describe(result))
 
+    def test_all_files_resized_are_a_different_build(self):
+        resized = {key: value + b"addition" for key, value in files().items()}
+        result = dc.check(self.write("resized.iso", build_xdvdfs(resized)), releases=self.releases)
+        self.assertEqual(result["state"], "different", result)
+        self.assertGreater(result["differing_share"], 0)
+        self.assertLessEqual(result["differing_share"], 1)
+
     def test_the_shipped_list_holds_the_v0_8_release(self):
         discs = dc.load_releases()
         v08 = next(d for d in discs if d["name"] == "SOFTDRINK 2K28 v0.8")
