@@ -854,5 +854,209 @@ class SchedulePanelTests(unittest.TestCase):
         self.assertFalse(page.clear_week_button.isEnabled())
 
 
+# --------------------------------------------------------------------------------------------- R10, R12, R15, R16, R17
+class SmallPassesCoreTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.document = rr.load_body(league_body())
+
+    def player(self, last: str) -> rr.Player:
+        return next(p for p in self.document.players if p.last == last)
+
+    def test_body_type_follows_finns_weight_and_bmi_thresholds(self) -> None:
+        cases = {199: 0, 200: 1, 269: 1, 270: 2, 299: 2, 300: 3}
+        targets = self.document.team_players(0)[:len(cases)]
+        for player, (weight, _body) in zip(targets, cases.items()):
+            player.record.weight = weight
+            player.record.values["body"] = 0 if weight >= 200 else 3
+        rows = {(r["pool"], r["index"]): r for r in rr.body_type_preview(self.document, "weight", targets)}
+        for player, (weight, body) in zip(targets, cases.items()):
+            with self.subTest(weight=weight):
+                self.assertEqual(rows[(player.pool, player.index)]["after"], body)
+        unchanged = targets[0].record.values["body"]
+        self.assertEqual(rr.body_type_apply(self.document, list(rows.values())), len(rows))
+        self.assertEqual(targets[1].record.values["body"], 1)
+        self.assertNotEqual(unchanged, targets[0].record.values["body"])
+        player = targets[0]
+        player.record.weight, player.record.values["height"] = 250, 70          # BMI 35.9
+        self.assertAlmostEqual(rr.body_mass_index(player.record), 35.9)
+        bmi = rr.body_type_preview(self.document, "bmi", [player])
+        self.assertEqual(bmi[0]["after"], 3)
+        with self.assertRaises(rr.RosterRecordError):
+            rr.body_type_preview(self.document, "height")
+
+    def test_several_attributes_and_teams_including_their_reserves_in_one_pass(self) -> None:
+        rows = rr.global_edit_preview_many(self.document, attributes=["speed", "agility"], mode="equal", value=77,
+                                           teams=[1])
+        self.assertEqual({r["attribute"] for r in rows}, {"speed", "agility"})
+        self.assertTrue(all(1 in next(p for p in self.document.players if p.index == r["index"]).teams
+                            for r in rows))
+        rr.global_edit_apply(self.document, rows)
+        atl = self.document.team_players(1)
+        self.assertTrue(all(p.record.values["speed"] == 77 and p.record.values["agility"] == 77 for p in atl))
+        self.assertTrue(any(p.record.values["speed"] != 77 for p in self.document.team_players(0)))
+        # the condition is judged before any attribute changes
+        fast = self.document.team_players(0)[0]
+        fast.record.values["speed"] = 90
+        rows = rr.global_edit_preview_many(self.document, attributes=["speed", "agility"], mode="equal", value=10,
+                                           where=("speed", ">=", 90), players=[fast])
+        self.assertEqual({r["attribute"] for r in rows}, {"speed", "agility"},
+                         "agility is still chosen although speed changes in the same pass")
+
+    def test_a_global_position_change_unlocks_and_reranks(self) -> None:
+        player = self.document.team_players(0)[1]
+        player.record.set_depth_lock("rank", True)
+        rows = rr.global_edit_preview(self.document, attribute="position", mode="equal", value=0, players=[player])
+        rr.global_edit_apply(self.document, rows, "position")
+        self.assertEqual(player.record.values["position"], 0)
+        self.assertFalse(any(player.record.depth_locks.values()))
+
+    def test_the_contract_years_guard(self) -> None:
+        record = self.document.players[0].record
+        record.values["contract_length"], record.values["contract_remaining"] = 4, 3
+        with self.assertRaisesRegex(rr.RosterRecordError, "cannot be greater than the contract length"):
+            rr.contract_years_change(record, "contract_remaining", 5)
+        self.assertEqual(rr.contract_years_change(record, "contract_remaining", 4), {"contract_remaining": 4})
+        self.assertEqual(rr.contract_years_change(record, "contract_length", 2),
+                         {"contract_length": 2, "contract_remaining": 2})
+        self.assertEqual(rr.contract_years_change(record, "contract_length", 6), {"contract_length": 6})
+        record.values["contract_remaining"] = 9
+        found = [f for f in rr.validate(self.document) if f["check"] == "contract"]
+        self.assertEqual(len(found), 1)
+
+
+class PlayerDataGroupsTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.document = rr.load_body(synthetic_body())
+        self.backup = rr.export_player_data(self.document)
+        self.manning = next(p for p in self.document.players if p.last == "Manning")
+
+    def test_a_default_restore_keeps_the_roster_spot_and_says_so(self) -> None:
+        manning = self.manning
+        manning.record.set("speed", 12)
+        before_spot = {k: manning.record.values[k] for k in ("depth_rank", "depth_side", "injured_reserve")}
+        backup = bytearray(self.backup)
+        raw = bytearray(backup[0:rr.PLAYER_SIZE])
+        values = rr.decode_record(bytes(raw))
+        values.update(depth_rank=5, depth_side=5, injured_reserve=0xEE, unknown_52=values["unknown_52"] | 0x04)
+        backup[0:rr.PLAYER_SIZE] = rr.encode_record(values)
+        receipt = rr.import_player_data(self.document, bytes(backup))
+        self.assertEqual(receipt["changed"], 1)
+        self.assertEqual(manning.record.values["speed"], 66)
+        self.assertEqual({k: manning.record.values[k] for k in before_spot}, before_spot)
+        self.assertFalse(manning.record.depth_locks["kr1"], "a returner lock never comes back by default")
+        rr.import_player_data(self.document, bytes(backup), groups=["spot"])
+        self.assertEqual((manning.record.values["depth_rank"], manning.record.values["injured_reserve"]), (5, 0xEE))
+        self.assertTrue(manning.record.depth_locks["kr1"])
+
+    def test_groups_pick_what_comes_back(self) -> None:
+        manning = self.manning
+        manning.record.set("speed", 12)
+        manning.record.set("contract_value", 1)
+        manning.record.set("helmet", 1 - manning.record.values["helmet"])
+        rr.import_player_data(self.document, self.backup, groups=["contract"])
+        self.assertEqual((manning.record.values["speed"], manning.record.values["contract_value"]), (12, 200))
+        rr.import_player_data(self.document, self.backup, groups=["ratings", "appearance"])
+        self.assertEqual(manning.record.values["speed"], 66)
+        self.assertEqual(manning.record.values["helmet"], rr.decode_record(self.backup[:rr.PLAYER_SIZE])["helmet"])
+        with self.assertRaisesRegex(rr.RosterRecordError, "unknown .PlayerData group"):
+            rr.import_player_data(self.document, self.backup, groups=["everything"])
+
+
+class SmallPassesPanelTests(_PanelCase):
+    body_factory = staticmethod(league_body)
+
+    def setUp(self) -> None:
+        self.temp = tempfile.TemporaryDirectory()
+        from PyQt5.QtCore import QSettings
+        settings_file = str(Path(self.temp.name) / "rosters.ini")
+        self.settings_patch = mock.patch.object(panel_module, "_roster_settings",
+                                                lambda: QSettings(settings_file, QSettings.IniFormat))
+        self.settings_patch.start()
+        super().setUp()
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        self.settings_patch.stop()
+        self.temp.cleanup()
+
+    def test_body_type_dialog_previews_applies_and_undoes(self) -> None:
+        from mod_editor.gui.roster_editor_panel_qt import BodyTypeDialog
+        player = self.panel._rows[0]
+        player.record.weight = 320
+        player.record.values["body"] = 0
+        dialog = BodyTypeDialog(self.panel, "weight")
+        dialog.list_only.setChecked(True)
+        self.assertIn("Extra Large from 300 lb", dialog.rule.text())
+        self.assertIn(f"{player.display}", dialog.preview.toPlainText())
+        count = dialog.apply()
+        self.assertGreaterEqual(count, 1)
+        self.assertEqual(player.record.values["body"], 3)
+        self.assertIn((player.pool, player.index), self.panel._dirty)
+        self.panel.undo()
+        self.assertEqual(player.record.values["body"], 0)
+
+    def test_the_global_dialog_takes_several_attributes_and_teams(self) -> None:
+        from mod_editor.gui.roster_editor_panel_qt import GlobalEditDialog
+        dialog = GlobalEditDialog(self.panel)
+        dialog.attribute.setCurrentIndex(dialog.attribute.findData("speed"))
+        dialog.set_checked(dialog.more_attributes, ["agility", "strength"])
+        dialog.set_checked(dialog.team_checks, [1])
+        dialog.value.setValue(55)
+        self.assertIn("ATL", dialog.scope_label.text())
+        rows = dialog.refresh_preview()
+        self.assertEqual({r["attribute"] for r in rows}, {"speed", "agility", "strength"})
+        self.assertIn("Agility", dialog.preview.toPlainText())
+        dialog._apply()
+        atl = self.panel.document.team_players(1)
+        self.assertTrue(all(p.record.values["strength"] == 55 for p in atl))
+        self.panel.undo()
+        self.assertTrue(any(p.record.values["strength"] != 55 for p in atl), "one undo for the whole pass")
+
+    def test_years_remaining_cannot_pass_the_length(self) -> None:
+        player = self.panel.selected_player()
+        player.record.values["contract_length"], player.record.values["contract_remaining"] = 3, 2
+        self.panel._show_player(player)
+        self.assertFalse(self.panel.set_contract_years(player, "contract_remaining", 5))
+        self.assertIn("cannot be greater than the contract length", self.panel.status_label.text())
+        self.assertEqual(player.record.values["contract_remaining"], 2)
+        self.assertTrue(self.panel.set_contract_years(player, "contract_length", 1))
+        self.assertEqual((player.record.values["contract_length"], player.record.values["contract_remaining"]), (1, 1))
+        self.panel.undo()
+        self.assertEqual((player.record.values["contract_length"], player.record.values["contract_remaining"]), (3, 2))
+
+    def test_default_list_on_open_and_the_html_export(self) -> None:
+        self.panel.team_list.setCurrentRow(self.panel._team_list_row("team", 1))
+        self.assertEqual(self.panel.remember_default_list(), "team:ATL")
+        self.panel.load_document(rr.load_body(league_body()), label="again")
+        self.assertEqual(self.panel._group, ("team", 1), "Finn's Default Team")
+        self.panel.forget_default_list()
+        self.panel.load_document(rr.load_body(league_body()), label="again")
+        self.assertEqual(self.panel._group, ("team", 0))
+        self.panel.set_grid_columns(["speed"])
+        self.panel.sort_by("speed")
+        text = self.panel.export_html_text()
+        self.assertTrue(text.startswith("<!doctype html>"))
+        self.assertIn("<th>Speed</th>", text)
+        self.assertEqual(text.count("<tr>"), len(self.panel._rows) + 1)
+        first = self.panel._rows[0]
+        self.assertLess(text.index(first.display), text.index(self.panel._rows[-1].display))
+        self.assertNotIn("●", text)
+
+    def test_the_restore_dialog_defaults_leave_the_roster_spot_alone(self) -> None:
+        from mod_editor.gui.roster_editor_panel_qt import PlayerDataRestoreDialog
+        dialog = PlayerDataRestoreDialog(self.panel, 10)
+        self.assertNotIn("spot", dialog.chosen_groups())
+        self.assertIn("ratings", dialog.chosen_groups())
+        self.assertIn("two kick returners", dialog.spot_note.text())
+        attributes = PlayerDataRestoreDialog(self.panel, 10, attributes_only=True)
+        self.assertEqual(attributes.chosen_groups(), ["ratings"])
+        backup = rr.export_player_data(self.panel.document)
+        player = self.panel.document.team_players(0)[0]
+        player.record.set("speed", 3)
+        receipt = self.panel.import_player_data_bytes(backup, groups=["ratings"], current_list_only=True)
+        self.assertEqual(receipt["changed"], 1)
+        self.assertNotEqual(player.record.values["speed"], 3)
+
+
 if __name__ == "__main__":
     unittest.main()

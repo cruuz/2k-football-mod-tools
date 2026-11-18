@@ -1305,8 +1305,9 @@ works. A brand-new longer name needs a free block, which appears when some other
 when there is none the edit is refused with the number of bytes it needed. The status line under the
 name fields always says how much room is left.
 
-**Tools.** **Global Attribute Editor** takes an attribute (including the style channels), a rule
-(set / add / percent), a scope (positions, this team, rookies only) and an optional condition
+**Tools.** **Global Attribute Editor** takes an attribute (including the style channels; **More attributes**
+applies the same rule to several at once), a rule (set / add / percent), a scope (positions, this team, a
+**Teams** list where a club includes its reserves, rookies only) and an optional condition
 "every QB with Speed ≥ 80 → signature release", "all HBs with Break Tackle ≥ 75 → Power": and shows
 **every affected player before it changes anything**. **Copy player** and **Paste ▾**
 (player / attributes only / photo only) follow Finn's rules: a paste never carries names, college,
@@ -1316,8 +1317,12 @@ locks (KR1, KR2, PR), his injury and IR state, his player kind (NFL player, pros
 star tag. Carrying those could give a club two KR1s or a player who claims to be on IR without an IR
 slot. Abilities and their tier stay too unless you tick **Include abilities and tier** in the Paste
 menu. If the paste changes his position, he goes to the bottom of that position's depth order,
-unlocked, the same as a position edit. **One-shot passes ▾** advance years pro for the
-league or the list, and restore height, weight and date of birth to what the roster shipped with.
+unlocked, the same as a position edit. **Tools ▾** advances years pro for the
+league or the list (Finn's Advance year), restores height, weight and date of birth to what the roster shipped with,
+and sets **Body type from weight** or **from BMI** with Finn's thresholds (Skinny below 200 lb, Normal from 200,
+Large from 270, Extra Large from 300; by BMI 26, 30 and 35), showing every player it would change first. **Open on
+this list next time** is Finn's Default Team. The contract cards keep Finn's rule: years remaining cannot be more
+than the contract length, and a shorter length takes the years remaining down with it.
 **CSV ▾** exports the list or the whole league and reads it back: it also reads Finn's
 semicolon-delimited export, and a spreadsheet with three columns is a legal edit. Files exported
 by Bad_AL's NFL2K5Tool import directly, matched by team and name with position and jersey as
@@ -1348,7 +1353,12 @@ and DE have none in the game's table) exactly as the game does. The play-by-play
 have a **…** button that opens a searchable list: the play-by-play ids this roster uses, the
 jersey-number call-outs and the recorded surname bank; the 4,303 portraits on the disc with the
 players that wear them. **CSV ▾** also exports and restores Finn's **`.PlayerData`** backups, matched
-back by name and play-by-play index, so a community backup restores here.
+back by name and play-by-play index, so a community backup restores here. Before a restore you choose what comes
+back, as in Finn's restore dialog: ratings, abilities, appearance, body, contract, number and position,
+play-by-play and photo ids, college. **Roster spot** (depth rows, depth and returner locks, injury and IR state)
+is off unless you tick it: a backup from another time or another save would bring back an old team's depth and a
+kick returner lock another player holds now. **CSV ▾ → Export this list as a web page** is Finn's Export as HTML: the
+list shown, with the grid's columns, in its current order.
 
 **Moving a roster between projects.** Open the source disc and choose **Tools ▾ → Export complete
 roster with faces…**. Open the destination disc, choose **Tools ▾ → Load complete roster with
@@ -1371,6 +1381,9 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Copy Player (Ctrl+C), Paste Player (Ctrl+V), Paste Attributes Only (Ctrl+Alt+A) | Same keys, or **Copy player** and **Paste ▾** |
 | Tools > Global Editor | **Global Attribute Editor…** |
 | Tools > Auto-update > Advance year | **Tools ▾ → Add a year pro to everyone (Advance year)** |
+| Tools > Auto-update > Body type from weight / from BMI | **Tools ▾ → Body type from weight / from BMI (Auto-update)…** |
+| Tools > Options > Default Team | **Tools ▾ → Open on this list next time** |
+| File > Export as HTML | **CSV ▾ → Export this list as a web page (HTML)…** |
 | Tools > Backup and Restore | **CSV ▾ → .PlayerData backup (Finn's format)** |
 | Place on IR (right-click) | Right-click → **Place on IR…** opens **Franchise → Injured Reserve** with him chosen |
 | Heal Player | Not available. **Activate** on the IR tab returns a player from IR; it does not change an injury |
