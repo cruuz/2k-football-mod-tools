@@ -166,17 +166,17 @@ one:
   implemented in the shipped executable and used by *zero* retail plays);
 * **keep-or-throw RPO** (the quarterback keeps the read and throws).
 
-**Manual pre-snap motion.** At the line, close the audible panel. Use up/down on
-the D-pad or left stick to select an eligible player, then left/right to send
-him in motion.
+**Manual pre-snap motion.** At the line, close the audible panel with Y if it
+is open. When the formation allows motion, use up/down on the D-pad or left
+stick to select an eligible player, then left/right to send him in motion.
 
 **Playbook authoring limits**
 
 * **Scripted motion.** The modern team books have no built-in pre-snap motion.
   The assignment format has no known pre-snap motion command. All 88,254 retail
   Start nodes in the playbook survey use x = 0 and y = 0. A jet sweep can use
-  the pitch and reverse mechanics, but its play assignments cannot send a
-  receiver across the formation before the snap.
+  the pitch and reverse mechanics. To send a receiver across the formation
+  before the snap, use manual motion.
 * **No give-or-throw RPO.** The ball simulation walks each chain once and in
   order, so once the quarterback hands the ball off he cannot throw later in the
   same chain. A play built that way is rejected with "node 5 needs the ball but

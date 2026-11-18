@@ -1087,9 +1087,10 @@ what lets it install into the eight team books already at the 270-play cap. Cont
 their own work with `tools/nfl2k5_playbook_pack.py check FILE.2k5book`, whose first six rules need
 no game data.
 
-For manual pre-snap motion, close the audible panel. Use up/down on the D-pad or left stick to
-select an eligible player, then left/right to send him in motion. The modern team books have no
-built-in pre-snap motion. A pack can supply a no-huddle play menu. The game controls the tempo.
+For manual pre-snap motion, close the audible panel with Y if it is open. When the formation
+allows motion, use up/down on the D-pad or left stick to select an eligible player, then
+left/right to send him in motion. The modern team books have no built-in pre-snap motion.
+A pack can supply a no-huddle play menu. The game controls the tempo.
 The ball simulation rules out give-or-throw RPOs. Option routes and keep-or-throw RPOs pass the
 validator and still need on-field verification. [Playbook authoring guide](playbook_packs.md)
 
