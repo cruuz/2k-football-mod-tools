@@ -27,6 +27,11 @@ SPEC = importlib.util.spec_from_file_location(
 runner = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = runner
 SPEC.loader.exec_module(runner)
+HOSTED_SPEC = importlib.util.spec_from_file_location(
+    "hosted_test_suite_tested", ROOT / "packaging/windows/hosted_test_suite.py")
+hosted = importlib.util.module_from_spec(HOSTED_SPEC)
+with patch.dict(sys.modules, {"local_windows_ci": runner}):
+    HOSTED_SPEC.loader.exec_module(hosted)
 
 
 class PlanTests(unittest.TestCase):
@@ -72,10 +77,21 @@ class PlanTests(unittest.TestCase):
 
     def test_ci_skip_list_and_isolated_rule_stay_in_parity(self):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
-        case = workflow.split('case "$name" in', 1)[1].split('skipped=$((skipped + 1))', 1)[0]
-        self.assertEqual(runner.LEAN_SKIPS, set(re.findall(r"test_[\w]+\.py", case)))
-        self.assertIn(f'isolated="{runner.ISOLATED}"', workflow)
-        self.assertIn(runner.EVIDENCE, workflow)
+        self.assertIn('python packaging/windows/hosted_test_suite.py "$timer"', workflow)
+        self.assertIs(hosted.skip_reason, runner.skip_reason)
+        self.assertIs(hosted.test_count, runner.test_count)
+        self.assertEqual((hosted.EVIDENCE, hosted.ISOLATED), (runner.EVIDENCE, runner.ISOLATED))
+        (self.tests / "test_alpha.py").write_text(
+            "import os, pathlib\nassert pathlib.Path(os.environ['PYTHONPATH']) == pathlib.Path.cwd()\n"
+            "assert os.environ['QT_QPA_PLATFORM'] == 'offscreen'\nprint('Ran 2 tests in 0.1s')\n")
+        (self.tests / "test_beta.py").write_text("print('3 passed, 1 skipped, 5 subtests passed in 0.1s')\n")
+        (self.tests / "test_gamma.py").rename(self.tests / runner.ISOLATED)
+        (self.tests / runner.ISOLATED).write_text(
+            "import os\nassert 'PYTHONPATH' not in os.environ\nprint('Ran 1 test in 0.1s')\n")
+        (self.tests / sorted(runner.LEAN_SKIPS)[0]).write_text("raise AssertionError('missing evidence')\n")
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(hosted.run_suite(self.repo, ""), 0)
+        self.assertIn("SUMMARY: files=4 passed=3 failed=0 skipped=1 tests=7", output.getvalue())
         self.assertEqual(runner.argument_parser().parse_args([]).timeout, 420)
 
     def test_evidence_controls_skips_even_when_explicitly_selected(self):
@@ -122,6 +138,19 @@ class OutputTests(unittest.TestCase):
                 result = runner.run_file(work / "test_silent.py", work, r"Z:\repo", work, {}, work, 420, r"Z:\logs", True)
             self.assertEqual(result.rc, 1)
             self.assertIn("No test runner summary", result.output)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary)
+            tests = repo / "tests/mod_editor"
+            tests.mkdir(parents=True)
+            (tests / "test_broken.py").write_text("raise SystemExit(23)")
+            (tests / "test_silent.py").write_text("pass")
+            (tests / "test_tail.py").write_text("print('Ran 4 tests in 0.1s')")
+            with contextlib.redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(hosted.run_suite(repo, ""), 1)
+            self.assertIn("No test runner summary", output.getvalue())
+            self.assertIn("FAIL  test_broken.py  (rc=23)", output.getvalue())
+            self.assertIn("SUMMARY: files=3 passed=1 failed=2 skipped=0 tests=4", output.getvalue())
 
     def test_last_unittest_count_like_ci(self):
         self.assertEqual(runner.test_count("Ran 90 tests\nchild\nRan 1 test in 0.1s\nOK"), 1)
