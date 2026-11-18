@@ -161,8 +161,11 @@ def preserve_stock_ages(body: bytes, *, stock_body: bytes | None = None, source_
         raise rr.RosterRecordError("The original stock roster is for the 2004 season")
     known = _stock_fingerprints(stock_body)
     document = rr.load_body(body, reference_year=source_year)
+    # Only club and free-agent players can age in a franchise. The ESPN personalities, celebrities and
+    # the legends kept on the all-star squads carry real birthdays that must stay as they are.
     retained = [p for p in document.by_pool("primary")
-                if p.record.values["player_type"] & rr.FLAG_NFL_PLAYER and _fingerprint(p) in known]
+                if p.record.values["player_type"] & rr.FLAG_NFL_PLAYER and _fingerprint(p) in known
+                and (document.club_of(p) is not None or document.is_free_agent(p))]
     plan = preview(document, source_year, target_year, retained)
     # Write only the actual birthday bit fields. A build can already contain other owners' edits.
     changed = bytearray(body)

@@ -1076,8 +1076,9 @@ class NativeTests(unittest.TestCase):
             self.assertIn(["PASS YARDS", "SEASON", "5,477", "P. MANNING (DEN)", "2013"], list(book.values()))
             self.draw(m, page=3, scroll=50)
             last = list(self.rows(m).values())
-            self.assertTrue(any(r[:3] == ["POINTS", "CAREER", "2,673"] for r in last))
-            self.assertTrue(any(r[:4] == ["FIELD GOALS", "SEASON", "44", "K. FAIRBAIRN (HOU)"] for r in last))
+            # a career record has no year cell; a holder too wide for its column with the club drops the club
+            self.assertIn(["POINTS", "CAREER", "2,673", "A. VINATIERI"], last)
+            self.assertIn(["FIELD GOALS", "SEASON", "44", "K. FAIRBAIRN", "2025"], last)
             self.assertTrue(any(r[:4] == ["FIELD GOALS", "SEASON", "44", "D. AKERS (SF)"] for r in last))
             self.draw(m, page=4, award=0, scroll=22)
             self.assertTrue({"P. MANNING", "S. MCNAIR"}.issubset({r[1] for r in self.rows(m).values() if r[0] == "2003"}))

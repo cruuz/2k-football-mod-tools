@@ -332,12 +332,19 @@ def _row_label_code() -> bytes:
 
 
 def _display_check() -> bytes:
-    """The chart's named rows reflect the fielded lineup. Internal rerank/swap callers retain their saved assignments."""
-    a = _Asm(ROW_LABEL_VA + len(_row_label_code()))
-    # The parent row getter at 0x242ae0 has four saved registers and 28 local bytes. The original
-    # index/assignment callers return in 0x242bb0..0x242c94, preceding the first display callback.
-    a.b("817c2448102d2400")
-    a.j8("72", "done")
+    """The chart's draw callbacks show the fielded lineup. Every other caller keeps the saved assignment.
+
+    The parent row getter at 0x242ae0 has four saved registers and 28 local bytes, so its caller's return address is
+    at [esp+0x48] here. Only the depth chart's own draw callbacks return into 0x242D00..0x2437FF (the returner photo
+    0x242D48, the panel 0x242E3C, the column text 0x24353E and the rating bars 0x24370E); those show who will field the
+    kick. The rerank and swap helpers below that range and the input handler at 0x2442BE above it keep the stored
+    returner, so pressing a button on a row always edits the saved KR/PR slot and never stores the fill-in."""
+    start = ROW_LABEL_VA + len(_row_label_code())
+    a = _Asm(start)
+    a.b("0fb7542449")                      # movzx edx, word [esp+0x49]: bits 8..23 of that return address
+    a.b("6681ea2d24")                      # sub dx, 0x242D
+    a.b("83fa0b")                          # cmp edx, 0x0B (0x242D..0x2437)
+    a.j8("73", "done")
     a.b("85c0")
     a.j8("74", "done")
     a.b("8b542404 85d2")                   # first named slot on the getter's stack
@@ -348,10 +355,15 @@ def _display_check() -> bytes:
     a.b("f6402770")
     a.j8("74", "done")
     a.label("fielded")
-    a.jmp_abs(FN_NTH_RETURNER + len(_nth_code()))
+    a.b("ebfe")                            # short jump to the lineup lookup, patched below
     a.label("done")
     a.b("c3")
-    return a.assemble()
+    code = bytearray(a.assemble())
+    at = a.labels["fielded"]
+    rel = FN_NTH_RETURNER + len(_nth_code()) - (start + at + 2)
+    _require(-128 <= rel < 128, "the returner lineup lookup is out of short-jump range")
+    code[at + 1] = rel & 0xFF
+    return bytes(code)
 
 
 def row_label_bytes() -> bytes:

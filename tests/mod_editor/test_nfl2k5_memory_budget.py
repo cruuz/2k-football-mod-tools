@@ -232,8 +232,9 @@ class ApiTests(unittest.TestCase):
     def test_option_costs(self):
         costs = mb.option_costs()
         self.assertTrue(all(isinstance(k, str) and type(v) is int and v > 0 for k, v in costs.items()))
+        # hair_styles' marginal cost is page-rounded: beta 81's larger pass rush code (4,096 bytes) moves a boundary
         self.assertEqual((costs["scorebug"], costs["hair_styles"], costs["depth_chart_rows"]),
-                         (408_320, 88_832, 81_920))
+                         (408_320, 84_736, 81_920))
         self.assertEqual(list(costs), sorted(costs, key=lambda k: -costs[k]))
 
     def test_plan_forms(self):

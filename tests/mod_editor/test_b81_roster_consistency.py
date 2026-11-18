@@ -33,6 +33,25 @@ class StockAgesTests(unittest.TestCase):
         again, receipt = ages.preserve_stock_ages(shifted)
         self.assertEqual((again, receipt["changed"]), (shifted, 0))
 
+    def test_people_off_the_clubs_and_free_agency_keep_their_real_birthdays(self):
+        # The retail roster also holds ESPN personalities and celebrities with real birthdays
+        # (Chris Berman 1955, Mel Kiper 1960). No franchise ever ages them, so the 2026 shift must not
+        # make them 22 years younger. A modern roster also keeps stock legends only on the all-star
+        # and celebrity squads; those are not clubs either.
+        body = retail_roster()
+        doc = rr.load_body(body, reference_year=2004)
+        outside = [p for p in doc.by_pool("primary")
+                   if doc.club_of(p) is None and not doc.is_free_agent(p) and p.first and p.last]
+        names = {f"{p.first} {p.last}" for p in outside}
+        self.assertTrue({"Chris Berman", "Mel Kiper"} <= names)
+        shifted, receipt = ages.preserve_stock_ages(body)
+        for p in outside:
+            self.assertEqual(shifted[p.offset:p.offset + 84], body[p.offset:p.offset + 84], f"{p.first} {p.last}")
+        self.assertEqual(receipt["matched"], receipt["changed"])
+        moved = rr.load_body(shifted, reference_year=2004)
+        clubs = [p for p in moved.by_pool("primary") if moved.club_of(p) is not None or moved.is_free_agent(p)]
+        self.assertGreater(sum(1 for p in clubs if shifted[p.offset:p.offset + 84] != body[p.offset:p.offset + 84]), 1900)
+
     @unittest.skipUnless(importlib.util.find_spec("unicorn"), "unicorn unavailable")
     def test_native_retirement_pass_matches_the_same_2004_players(self):
         from mod_editor.core import nfl2k5_progression as progression

@@ -46,6 +46,10 @@ NO_PLAYER_TEXT = 0xE88994     # the depth chart rows' "no player" string
 KR, PR = 0xFE, 0xFD
 GET_ROW, RERANK, KR_PHOTO, ROW_NAME, ROW_NUMBER = 0x242AE0, 0x243790, 0x242D10, 0x243AC0, 0x243B00
 NTH_ROW = 0x242BB0
+# return addresses of the row getter's callers: the depth chart draw callbacks and the edit paths (rerank, input)
+COLUMN_TEXT = 0x24353E
+DRAW_CALLERS = (0x242D48, 0x242E3C, COLUMN_TEXT, 0x24370E)
+EDIT_CALLERS = (0x242BBE, 0x242BDB, 0x242C47, 0x242C61, 0x242C78, 0x242C93, 0x2442C3)
 
 
 def _read(path) -> bytes | None:
@@ -154,6 +158,16 @@ class _Machine:
 
     def row(self, position: int, rank: int):
         return self.call(GET_ROW, {UC_X86_REG_EDX: self.team}, (rank, position, 0))
+
+    def row_from(self, caller: int, position: int, rank: int):
+        """The row getter entered from a real caller's return address (the game decides by it what a row shows)."""
+        uc = self.uc
+        esp = STACK - 0x200
+        uc.mem_write(esp, struct.pack("<4I", caller, rank, position, 0))
+        uc.reg_write(UC_X86_REG_ESP, esp)
+        uc.reg_write(UC_X86_REG_EDX, self.team)
+        uc.emu_start(GET_ROW, caller, count=2_000_000)
+        return uc.reg_read(UC_X86_REG_EAX)
 
     def specials(self) -> list[int]:
         return list(self.uc.mem_read(self.team + 0x194, 6))
@@ -324,11 +338,36 @@ class ReturnerGetterNativeTests(unittest.TestCase):
             selected = list(machine.uc.mem_read(OBJ + 0x1c, 3))
             self.assertEqual(selected[0], 3)
             for (pos, rank), slot in zip(((KR, 0), (KR, 1), (PR, 0)), selected):
-                self.assertEqual(machine.row(pos, rank), ("returned", machine.players[1, slot]))
+                self.assertEqual(machine.row_from(COLUMN_TEXT, pos, rank), machine.players[1, slot])
             machine.call(RERANK, {UC_X86_REG_ECX: machine.team})
             self.assertEqual(machine.specials(), list(original))
             machine.uc.mem_write(injured + 0x27, b"\0")
-            self.assertEqual(machine.row(KR, 0), ("returned", injured))
+            self.assertEqual(machine.row_from(COLUMN_TEXT, KR, 0), injured)
+
+    def test_draw_callbacks_show_the_fielded_returner_and_edits_act_on_the_stored_slot(self):
+        # The draw callbacks show who fields the kick (the game's lineup builder 0xE80D0); the input handler
+        # (0x2442BE: promote, swap) and the rerank helpers get the stored players, so an edit never stores a fill-in.
+        # Cases: KR1 out, and KR1 and KR2 out at once.
+        original = bytes([0, 2, 3, 9, 1, 3])
+        stored_slots = (2, 3, 3)
+        rows = ((KR, 0), (KR, 1), (PR, 0))
+        for name, image in self.images.items():
+            for out in ((2,), (2, 3)):
+                machine = _Machine(image, PS_TAIL, original)
+                for slot in out:
+                    machine.uc.mem_write(machine.players[1, slot] + 0x27, b"\x40")
+                machine.call(0xE80D0, {UC_X86_REG_ECX: machine.team, UC_X86_REG_EDX: OBJ}, (0, 0))
+                fielded = [machine.players[1, s] for s in machine.uc.mem_read(OBJ + 0x1c, 3)]
+                stored = [machine.players[1, s] for s in stored_slots]
+                if out == (2,):
+                    self.assertNotEqual(fielded[0], stored[0])    # the healthy KR2 moves up
+                for caller in DRAW_CALLERS:
+                    with self.subTest(image=name, out=out, caller=hex(caller)):
+                        self.assertEqual([machine.row_from(caller, p, r) for p, r in rows], fielded)
+                for caller in EDIT_CALLERS:
+                    with self.subTest(image=name, out=out, caller=hex(caller)):
+                        self.assertEqual([machine.row_from(caller, p, r) for p, r in rows], stored)
+                self.assertEqual(machine.specials(), list(original))
 
     def test_an_empty_returner_byte_reads_no_player(self):
         for name, image in self.images.items():

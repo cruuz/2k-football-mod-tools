@@ -67,6 +67,7 @@ from __future__ import annotations
 import hashlib
 import importlib
 import json
+import re
 import struct
 from pathlib import Path
 from typing import Mapping
@@ -221,7 +222,8 @@ def _require(condition, message):
 def short_name(name: str) -> str:
     """'Patrick Mahomes' -> 'P. MAHOMES' (the screen's style, like the champions page; 20 characters at most)."""
 
-    parts = [p for p in str(name or "").replace(",", " ").split() if p]
+    # A quoted nickname ('Dick "Night Train" Lane') would push the surname past the 20 characters.
+    parts = [p for p in re.sub(r'"[^"]*"', " ", str(name or "")).replace(",", " ").split() if p]
     if not parts:
         return ""
     if len(parts) == 1:
