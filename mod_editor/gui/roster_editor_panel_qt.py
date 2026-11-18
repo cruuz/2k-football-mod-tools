@@ -184,6 +184,14 @@ def grid_column_label(key: str) -> str:
     return label
 
 
+def _available_geometry(widget: QWidget):
+    """The free area of the screen ``widget`` is on (its own screen where Qt can tell, else the primary)."""
+
+    screen = widget.screen() if hasattr(widget, "screen") else None
+    screen = screen or QApplication.primaryScreen()
+    return screen.availableGeometry() if screen is not None else None
+
+
 # --------------------------------------------------------------------------------------------- preferences (b81 R17)
 ROSTER_SETTINGS = ("2K Football Mod Tools", "rosters")
 DEFAULT_LIST_KEY = "default_list"
@@ -845,7 +853,7 @@ class GlobalEditDialog(QDialog):
         buttons.rejected.connect(self.reject)
         outer.addWidget(buttons)
         body.adjustSize()
-        screen = self.screen().availableGeometry() if self.screen() is not None else None
+        screen = _available_geometry(self)
         wanted = body.sizeHint()
         width = wanted.width() + scroll.verticalScrollBar().sizeHint().width() + 24
         height = wanted.height() + buttons.sizeHint().height() + 32
@@ -949,7 +957,7 @@ def fit_dialog_to_text(dialog: QDialog, chars: int = 72) -> None:
         return
     metrics = dialog.fontMetrics()
     width = max(dialog.minimumSizeHint().width(), metrics.averageCharWidth() * chars)
-    screen = dialog.screen().availableGeometry() if dialog.screen() is not None else None
+    screen = _available_geometry(dialog)
     if screen is not None:
         width = min(width, screen.width() - 32)
     height = layout.totalHeightForWidth(width) if layout.hasHeightForWidth() else layout.totalSizeHint().height()
@@ -1316,7 +1324,7 @@ class FindPlayerDialog(QDialog):
     def _fit_width(self) -> None:
         """Grow (never shrink) to show every column, within the screen: large text widens the columns."""
 
-        screen = self.screen().availableGeometry() if self.screen() is not None else None
+        screen = _available_geometry(self)
         margins = self.layout().contentsMargins()
         needed = (self.table.horizontalHeader().length() + self.table.verticalScrollBar().sizeHint().width()
                   + 2 * self.table.frameWidth() + margins.left() + margins.right() + 4)
