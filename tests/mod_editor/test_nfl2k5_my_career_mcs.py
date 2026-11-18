@@ -103,13 +103,19 @@ class ScheduleStaticTests(unittest.TestCase):
         b780 mc1 spends 28 more: Play next game opens Choose team / Sign over Career Home for a MyPlayer without a club,
         a loaded free-agent career opens Career Home, only a rookie in his own draft resumes the draft screen (never
         reading through a lost career's empty identity), an injured MyPlayer is not made the starter, and the career
-        club has CPU depth management on (7 / 1)."""
-        code, data = mode.legacy.allocations(self.career17)
-        alone = mode.TAG_OFFSET - (mode.code_for(code['va'], data['va'])[1]['content_end'] - code['va'])
-        with_home = home.check_static(self.p17)['mycareer_spare_bytes']
-        self.assertEqual((alone, with_home), (7, 1))
-        self.assertEqual(alone - with_home, 6)       # Career Home's three addresses cost 6 bytes, as at ui1 and on the beta-78 base
-        self.assertGreaterEqual(home.check_static(self.p18)['mycareer_spare_bytes'], 0)
+        club has CPU depth management on (7 / 1). The beta-81 menu layout left 35 / 26 before the revised D11
+        Settings footer. With that text it leaves 23 / 14 on both schedule lengths. The extra week lives in
+        Career Home's own section."""
+        for n, payload in ((17, self.p17), (18, self.p18)):
+            with self.subTest(weeks=n):
+                code, data = mode.legacy.allocations(payload)
+                _, labels = mode.code_for(code['va'], data['va'])
+                alone = code['va'] + mode.TAG_OFFSET - labels['content_end']
+                receipt = home.check_static(payload)
+                with_home = receipt['mycareer_spare_bytes']
+                self.assertEqual((alone, with_home), (23, 14))
+                self.assertEqual(alone - with_home, 9)  # The three Career Home addresses in the compressed menu.
+                self.assertLessEqual(home.HEADER + receipt['content_bytes'], home.SIZE)
 
     def test_runtime_reads_the_same_season_byte(self):
         """The runtime counts rows from the stage table's Season row byte +4, the byte the builder read."""
