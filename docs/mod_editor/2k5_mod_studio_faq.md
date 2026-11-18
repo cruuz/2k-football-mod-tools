@@ -46,8 +46,8 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
 1. **Does the original game start?** Load your untouched retail disc image in the same xemu. If that does not start either,
    the problem is xemu's own setup, and nothing in the Studio will fix it. xemu needs its own boot ROM, BIOS and hard disk
    image: see xemu's [required files](https://xemu.app/docs/required-files/).
-2. **Memory.** For the standard pack, select **Machine → Settings → System → System Memory → 128 MiB**. For the `-64MB` pack, select **64 MiB**. Quit and reopen xemu after a change.
-3. **BIOS.** The standard pack's memory patch runs on kernel 4627. Select your **COMPLEX 4627** under **Flash ROM (BIOS)**. If the startup check stops the game, its screen shows the detected kernel and a code. The 64 MB pack omits those checks. xemu still needs its own compatible firmware.
+2. **Memory.** For the standard pack, select **Machine → Settings → System → System Memory → 128 MiB**. For the v0.9 `-64MB` pack, select **64 MiB**. Quit and reopen xemu after a change.
+3. **BIOS.** The standard pack's memory patch runs on kernel 4627. Select your **COMPLEX 4627** under **Flash ROM (BIOS)**. If the startup check stops the game, its screen shows the detected kernel and a code. The v0.9 64 MB pack omits those checks. xemu still needs its own compatible firmware.
 4. **The right disc.** In xemu choose **Machine**, then **Load Disc**, and pick the new disc the Studio saved, not your
    original and not an older SOFTDRINK disc. It must be the whole image file, not a shortcut, a zip or a folder.
 5. **Paths and folders.** Keep the disc image and xemu's files (BIOS, boot ROM, hard disk image) in plain folders you can read
@@ -61,16 +61,16 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
 
 ## Can I play SOFTDRINK 2K28 on Android, in hakuX?
 
-Download the ready-made **64 MB** pack and install it directly through **Install SOFTDRINK 2K28**. It targets the original Xbox memory budget and leaves out the 128 MB memory patch. Hardware Xbox, hakuX and XBased compatibility remains unverified. With an emulator that implements its own kernel, report the emulator version and which pack you installed. The standard pack uses the 4627 kernel in xemu.
+The published **v0.9 experimental** pack targets 64 MiB. Download it and choose **Install SOFTDRINK 2K28** in Studio. v0.10 is the standard 128 MiB release for xemu with the 4627 BIOS. Physical Xbox, Android hakuX and XBased compatibility still need device testing. [Download v0.9 for 64 MiB](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.9)
 
-If you already have a franchise from the standard edition with **Player Progress**, keep using the 128 MiB edition for that save. We loaded the same signed 987,836-byte franchise on both setups. The standard game opened it and the compact 64 MB game listed it as **Damaged**. **Do not delete it; it still loads on the standard edition.** The save is not damaged; the compact game cannot read a save that size. On a v0.10 or later 64 MB disc, the Delete screen and the load error say this too. Switch back to the standard edition to continue that franchise, or start a fresh one on the 64 MB disc.
+If you already have a franchise from the standard edition with **Player Progress**, keep using the 128 MiB edition for that save. The standard game opened the 987,836-byte expanded franchise. Keep its signed files together if a 64 MiB game displays **Damaged**. **Do not delete it; it still loads on the standard edition.** The save is not damaged; the compact game cannot read a save that size. On a v0.10 or later 64 MB disc, the Delete screen and the load error say this too. Switch back to the standard edition to continue that franchise, or start a fresh one on the 64 MB disc.
 
 If a Super Bowl in your franchise ends with a team scoring more than 63 points, v0.10 keeps the real score and stores the Super Bowl champions history in a newer format. v0.9 cannot read that format. If you take that save back to v0.9, its champions history starts again from empty the next time a season ends there. Keep playing that franchise on v0.10 or later.
 
 To customize a 64 MB disc:
 
 1. In **Build & Share → Install & Share**, leave **Build for** on **Use the selected pack's edition**.
-   Click **Customize SOFTDRINK 2K28…**, select the 64 MB pack and choose a folder for its sources.
+   Click **Customize SOFTDRINK 2K28…**, select the published v0.9 64 MB pack and choose a folder for its sources.
    The **Build** tab opens with the pack's artwork and its 64 MB settings. To customize a standard pack
    for 64 MB, select the explicit 64 MB target under **Build for** before clicking **Customize**.
 2. On the **Build** tab, **Console memory** now reads 64 MB. Every option that needs 128 MB or the real Xbox kernel is off
@@ -325,7 +325,7 @@ included in your installed build.
 
 Open **Coaching Gameplan** for the team you control. Move **Offense: Run/Pass** toward the low end for more team rushing attempts or toward the high end for more passes. The setting changes the team’s play selection. The game distributes carries among players.
 
-In matched 17-game Giants seasons on both memory editions, moving the slider toward the run gave Cam Skattebo more carries. Moving it toward the pass gave him fewer. The release notes show the results for the standard and compact editions separately. If you see a 420-carry season, include the signed franchise save, team, week and Coaching Gameplan settings. [SOFTDRINK v0.10 game notes](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10)
+In matched 17-game Giants seasons on the standard edition, moving the slider toward the run gave Cam Skattebo more carries. Moving it toward the pass gave him fewer. The release notes give his totals at all three settings. If you see a 420-carry season, include the signed franchise save, team, week and Coaching Gameplan settings. [SOFTDRINK v0.10 game notes](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10)
 
 ## Can the CPU go for it more often on fourth down?
 

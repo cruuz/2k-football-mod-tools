@@ -145,14 +145,16 @@ class DiscCheckTests(unittest.TestCase):
         for name, record in v08["files"].items():
             self.assertEqual(len(record["chunks"]), max(1, -(-record["size"] // v08["chunk"])), name)
 
-    def test_both_v0_10_editions_are_identifiable_from_their_game_files(self):
+    def test_published_memory_editions_are_identifiable_from_their_game_files(self):
         catalog = dc.load_releases()
         editions = [
+            "SOFTDRINK 2K28 v0.9",
+            "SOFTDRINK 2K28 v0.9 (64 MB experimental)",
             "SOFTDRINK 2K28 v0.10",
-            "SOFTDRINK 2K28 v0.10 (64 MB experimental)",
         ]
         by_name = {record["name"]: record for record in catalog}
-        self.assertNotEqual(by_name[editions[0]]["image_sha256"], by_name[editions[1]]["image_sha256"])
+        self.assertNotIn("SOFTDRINK 2K28 v0.10 (64 MB experimental)", by_name)
+        self.assertEqual(len({by_name[name]["image_sha256"] for name in editions}), len(editions))
         for name in editions:
             with self.subTest(edition=name):
                 image = by_name[name]

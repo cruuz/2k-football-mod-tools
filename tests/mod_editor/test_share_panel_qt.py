@@ -52,6 +52,14 @@ class SharePanelTests(unittest.TestCase):
         self.panel.deleteLater()
         self.app.processEvents()
 
+    def test_installer_links_the_released_pack_for_each_memory_setting(self) -> None:
+        hint = self.panel.install_hint
+        self.assertTrue(hint.openExternalLinks())
+        self.assertIn('releases/tag/v0.10">v0.10 for 128 MiB</a>', hint.text())
+        self.assertIn('releases/download/v0.9/SOFTDRINK-2K28-v0.9-64MB.2k5patch', hint.text())
+        self.assertIn('64 MiB</a>', hint.text())
+        self.assertNotIn('v0.10-64MB', hint.text())
+
     def test_format_two_pack_loads_checks_and_applies_through_share(self) -> None:
         pack_path = self.tmp / "operations.2k5patch"
         modpack.export(self.base, self.patched, pack_path, {"name": "Operations"}, format_version=2, recipe=False)

@@ -1481,6 +1481,8 @@ patched **copy** goes, and Build. The original is never touched; a receipt is
 written beside the copy. The **Install & Share** tab turns that copy into a `.2k5patch`
 file anyone can check and apply to their own image.
 
+For a ready-made 64 MiB disc, install the published v0.9 experimental pack. To build your own 64 MiB disc from v0.10 sources, use the recommended profile below. [64 MiB download](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.9)
+
 **Console memory** appears at the top of **Make my disc**. **128 MB, xemu (full SOFTDRINK)** is the default and the main
 build, with every option, for xemu with System Memory at 128 MiB and the Complex 4627 BIOS. **64 MB, original Xbox and
 Android hakuX (experimental, estimated, not yet tested on a real Xbox or hakuX)** makes a disc for 64 MB machines. It
