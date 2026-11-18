@@ -273,7 +273,11 @@ class ReturnerGetterStatusTests(unittest.TestCase):
                 allowed = [(text.header_offset + 36, text.header_offset + 56)]
                 for va, size in ((returner.GETTER_VA, returner.GETTER_SIZE), (returner.LINEUP_HOOK_VA, 7),
                                  (returner.EXCHANGE_VA, returner.EXCHANGE_SIZE), (returner.ALL_STAR_CALL_VA, 5),
-                                 (returner.SITE_VA, returner.SITE_SIZE)):    # the loop gains the injury test
+                                 (returner.SITE_VA, returner.SITE_SIZE),     # the loop gains the injury test
+                                 # beta 81 (K01): the row labels and the compacted nth-returner lookup share their
+                                 # two retail functions with the fielded-returner display check
+                                 (returner.ROW_LABEL_VA, returner.ROW_LABEL_SIZE),
+                                 (returner.FN_NTH_RETURNER, returner.NTH_SIZE)):
                     off = returner._offset(data, va)
                     allowed.append((off, off + size))
                 for start, end in _diff_runs(data, upgraded):
