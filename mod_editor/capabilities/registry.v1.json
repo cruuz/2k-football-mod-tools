@@ -7489,7 +7489,7 @@
       "id": "nfl2k5.gameplay.cpu_scrambles",
       "input_constraints": [
         "Pinned USA XBE or verified composed input; reserve complete selected owner union before installation. Foreign or mixed bytes refuse.",
-        "EXPERIMENTAL / UNWITNESSED. Modern keeps a CPU quarterback reading a clean pocket for the first 2.5 seconds after the snap. After that it uses the retail escape chance. Under pressure the lottery factor rises from 0.25 to 0.3125 times effective Scramble. NFL-average scrambles per game are not established.",
+        "EXPERIMENTAL / UNWITNESSED. Changes only the CPU quarterback's escape chance when the game already judges the rush dangerous. In the first 2.5 seconds after the snap, while the game's own pressure reading is still building, there is no escape lottery. Once that reading is high the chance rises from 0.25 to 0.3125 times effective Scramble. After 2.5 seconds with the reading still building it stays at the original 0.25. Human quarterbacks are unchanged. NFL-average scrambles per game are not established.",
         "Rebuild from a verified base to change the selected union or installed settings."
       ],
       "portme": [

@@ -586,7 +586,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_decided_clock.py": "9fdbf3ec93f04366946b8c05b48e312106c8e1273b5d661cb394d4278af9dfec",
         "mod_editor/core/nfl2k5_decided_clock_code.py": "26d142750b0a14c479bf63ae9a17144b91debb561b8827618785392d70e667a8",
         "mod_editor/core/nfl2k5_decided_clock_code_b779.py": "519d35265dadabde1345dfcb876a0b3d81ab0b9bddc564bc48514e6ff65cb361",  # b780 modes2: frozen beta-69 .. v0.9 RC revision
-        "mod_editor/core/nfl2k5_cpu_scrambles.py": "9e4e76a2207b0693bbdbf13cc395dd3fe6b509638d2be2b750754983c68c4710",
+        "mod_editor/core/nfl2k5_cpu_scrambles.py": "b12cd71f227453045fb257f7c681db804a180a01fff7379d2c349593787db78a",
         "mod_editor/core/nfl2k5_cpu_scrambles_code.py": "6f86fc560391fa8e890e1360610357f1f2695da5007eae05a8390efc597fdc66",
         "mod_editor/core/audio_conform.py": "b71528aa23b6dca49bbe023477920661da77cd7c34610dc8f6962be3a0cc9156",
         "mod_editor/core/build_feedback.py": "510fc80b8b080761c54efa891383c10fbf8e84f274c8f787ec8194ac8ba36193",
@@ -695,7 +695,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_coverage_trail.py": "2307dfcfc5419eec9e5b1286cb056d577939028a7a14ff532bfc0a67a24fa902",
         "mod_editor/core/nfl2k5_coverage_trail_code.py": "3c2cfd81b9210f4843bf4eb548987794991161c7ccf5f21ab197d83ac8b0943f",
         "mod_editor/core/nfl2k5_coverage_hitch_code.py": "a7be9dcd4cb6c66222e92cb1f3b49f2d82342cad43507c716f074300c026681b",
-        "mod_editor/core/nfl2k5_cpu_money_downs.py": "47a762e0b6d91e64ccc5f4446dcd3b71019b91e1415d9ff4ca4e7ffb8f54d104",
+        "mod_editor/core/nfl2k5_cpu_money_downs.py": "1a3299c58ec247c6f3c51aaf37b3471cba3ac7b4232154a7e39a070d09f74d6c",
         "mod_editor/core/nfl2k5_cpu_money_downs_code.py": "f9bfb3a36ce4d28b3d3543441808ba36824cb791d816eebec996364419478119",
         "mod_editor/core/nfl2k5_cpu_third_down.py": "e4cf6e7a6cbedf651dff6b797018fdd23959cf2d2ed045482611c56a5aa76ee8",
         "mod_editor/core/nfl2k5_cpu_qb_reads.py": "d23312a9a21ac0ba3114b740be4a2ca315d0f9567b11d0f6a99891fc7f64e005",
@@ -813,9 +813,9 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_pass_rush_stats_code_b780.py": "1f15e31239b14696c9167851dea4f907b720c07c5d0dce3ca3b0ce4329a0d5fc",
         "mod_editor/core/nfl2k5_cpu_passer_iq.py": "b20345c8645b637e4fa619d811e50786bca501259ba16a6fa7a5b7c48b195b27",  # b780 a-passer
         "mod_editor/core/nfl2k5_cpu_passer_iq_code.py": "8f9e07127306df30acb5e5f65cb2c299da1cc8b0fb06e29f1459e3b7d9d209bc",  # b780 a-passer
-        "mod_editor/core/nfl2k5_cpu_clock2.py": "c6fd55071f9e63b84e88e889081ce19f521e84a76d8b60939b3b00f3b906008e",  # b780 b-clock
+        "mod_editor/core/nfl2k5_cpu_clock2.py": "335e32d1e0358c602b6c7bab378cbbd0ebdebc7f93b779892f2b4b026b9a16ee",  # b780 b-clock
         "mod_editor/core/nfl2k5_offset_toss.py": "eda42210555d6925b1a9ee85d3e98016b9be5e9592cd97a580eda4be6904985f",
-        "mod_editor/core/nfl2k5_cpu_clock2_code.py": "5ce957ee1382dd2d18f80d47e39f76c3aed89b00170c3de43366455364bf2d27",  # b780 b-clock
+        "mod_editor/core/nfl2k5_cpu_clock2_code.py": "5e738afcc2f8091b47f89e0ec72bce416e5c56f5986e9eaf070ad3ffbd16fd0f",  # b780 b-clock
         "mod_editor/core/nfl2k5_protection_calls.py": "3b22fb81f3d641e51fa849156910d39190d4a34a8f1ac36297c4e8c849fa5730",  # b780 p1-slide
         "mod_editor/core/nfl2k5_protection_calls_code.py": "2b7d47b62cca789dea4a8da518eeeff36f337b267e1dd2f97eefcd1a6d8509b1",  # b780 p1-slide
         "mod_editor/core/nfl2k5_lineman_rating.py": "e1c08c86e0a31c58fd86d5a155c56ad200cf5ef237771c95b39bfe29215261c1",
@@ -984,7 +984,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "0b5655021e33a2c28bff7523399321f588aa4f925cf84823b9603c474c94f7a7",  # b778-cb1
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "255a6b0ffaa42e85934300130a28b00959c4b5d720c297c290dd8c68b1bbb02a",  # b779-sim2
         "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",  # b780 hunt1: frozen beta-79 roll for the previous state
-        "mod_editor/core/nfl2k5_sim_realism.py": "0aa6c8973585de2f333b9b36b49ac2ec55502c4cf6158f66fbee31be5b592fb2",  # b779-sim2 r6
+        "mod_editor/core/nfl2k5_sim_realism.py": "27a3a41d9f03975851741515be7c123cfe4c82694d33169300c1150c1aa9147a",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_sim_realism_b779.py": "687a35375780ce07948ba555a8c189167586393c5de6f48d954c2902a71010ad",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_standings_records.py": "175712ff8aff730b035aab671bf2208322ba52ec1fef758afad7d24263485c1c",  # b780-j1
         "mod_editor/core/nfl2k5_standings_records_code.py": "b5fa55b20ca61daf797ba9433ec4a950c14efccd71a0ec90a132a03102aa1e5e",  # b780-j1

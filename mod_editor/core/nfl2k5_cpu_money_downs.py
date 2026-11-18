@@ -23,6 +23,11 @@ policy reads only the sign of the native direction value, as native 209CA0 does:
 there (+/-5486.4 cm), and the beta-77.1 test that accepted only +/-1.0 sent every real fourth down back to the retail
 chart (seen in the emulator, b778 ai4). The beta-77.1 templates (pre-VIP and VIP-aware) stay recognizable and
 upgrade in place.
+
+Beta 81 (variant b81s): the own-half and midfield part of the fourth-down table is FOURTH_DOWN_GO_LIMITS, one table that
+rises at most one yard per yard line from the own 20 to the opponent 41, plus FOURTH_DOWN_SHIFT_CHANGES, the few
+score-and-clock cells that would otherwise drop it by two or more yards at the own 40 in a one-score game. Both are Noah's
+to tune. The first beta 81 cap (b81) and the beta 78 to beta 80 template (b778) upgrade in place.
 """
 from __future__ import annotations
 
@@ -85,8 +90,39 @@ HOOKS2 = {
 # applied only above 15 seconds. The estimate (20A4D0) is non-zero only inside about 55 to 65 yards of the goal.
 HOOKS3 = {"timeout_window": (0x207202, bytes.fromhex("74694e00"))}
 HOOK3_AFTER = {"timeout_window": bytes.fromhex("80414e00")}
-LATE_VARIANTS = ("b81_late", "b778_late")
-M2_VARIANTS = (*LATE_VARIANTS, "b81", "b778", "v061", "p9")  # ai6 late rule, ai4 no late owner, beta-77.1, b77 p9
+# b81s (beta 81 review) is installed now. b81 (the first beta 81 cap), b778 (beta 78 to beta 80), v061 (beta 77.1) and p9
+# stay recognizable so their installs upgrade in place.
+LATE_VARIANTS = ("b81s_late", "b81_late", "b778_late")
+M2_VARIANTS = (*LATE_VARIANTS, "b81s", "b81", "b778", "v061", "p9")  # ai6 late rule, ai4 no late owner, beta-77.1, b77 p9
+CURRENT_LATE, CURRENT_NO_LATE = "b81s_late", "b81s"
+
+# ---- Fourth-down go limits. NOAH'S TO TUNE. ---------------------------------------------------------------------------
+# The longest fourth down a CPU offense goes for in a neutral game, by its own yard line from its own 20 to the opponent
+# 41 (own 59). The game then adds its score-and-clock shift (``shift`` in the code, per region: own side of its 40, its
+# own 40 to the opponent 41, the opponent 40 and in). The limit never goes down and rises at most one yard per yard line,
+# so the CPU never punts closer to midfield where it went for it one yard further back. Inside the opponent 40 the
+# published chart and the field-goal logic are unchanged. Edit these numbers to tune; the shape test
+# (tests/mod_editor/test_b81_rev_game_fourth_down_shape.py) checks every one-score game state in quarters 1 to 3.
+FOURTH_DOWN_GO_LIMITS = (
+    # (first own yard, last own yard, longest yards to go)
+    (20, 34, 1), (35, 39, 2), (40, 44, 3), (45, 49, 4),
+    (50, 51, 5), (52, 53, 6), (54, 55, 7), (56, 57, 8), (58, 58, 9), (59, 59, 10),
+)
+# Score-and-clock shift cells that otherwise drop the limit by two or more yards at the own 40 in a one-score game.
+# Clock classes: 0 more than 30:00 of game time left, 1 15:00-30:00, 2 10:00-15:00, 3 5:00-10:00, 4 2:00-5:00, 5 less.
+# Margin classes: 0 down 9+, 1 down 4-8, 2 down 1-3, 3 tied, 4 up 1-3, 5 up 4-8, 6 up 9+. Region 0 = own side of the 40,
+# 1 = own 40 to opponent 41. Each change keeps the published order (a trailing team never less aggressive than a tied
+# one, a leading team never more) and never removes a 4th-and-1 attempt. NOAH'S TO TUNE together with the table above.
+FOURTH_DOWN_SHIFT_CHANGES = {
+    # (clock class, margin class, region): yards   # published value
+    (2, 5, 1): -2,   # 10:00-15:00 left, up 4-8, own 40 and beyond          (-4)
+    (3, 2, 0): 4,    # 5:00-10:00 left, down 1-3, own side of the 40        (6)
+    (3, 4, 1): -1,   # 5:00-10:00 left, up 1-3, own 40 and beyond           (-2)
+    (3, 5, 1): -2,   # 5:00-10:00 left, up 4-8, own 40 and beyond           (-4)
+    (4, 2, 0): 5,    # 2:00-5:00 left, down 1-3, own side of the 40         (6)
+    (4, 4, 1): -1,   # 2:00-5:00 left, up 1-3, own 40 and beyond            (-2)
+    (4, 5, 1): -2,   # 2:00-5:00 left, up 4-8, own 40 and beyond            (-4)
+}
 HOOK2_LABEL = {"fourth": "fourth", "play": "play", "target": "target", "two_point": "two_point",
                "fg_dispatch": "fg_guard", "fg_commit": "fg_guard"}
 EXPONENT_AFTER = b"\x02"
@@ -131,9 +167,19 @@ def _m2(variant="b778"):
     """(code, relocations, labels) of a Modern 2 template variant."""
     if variant not in M2_VARIANTS:
         raise ValueError(f"Unknown Modern 2 variant {variant!r}")
-    suffix = {"b81": "2", "b81_late": "2_LATE", "b778_late": "2_LATE", "b778": "2", "v061": "2_V061", "p9": "2_LEGACY"}[variant]
+    suffix = {"b81s": "2", "b81s_late": "2_LATE", "b81": "2", "b81_late": "2_LATE", "b778_late": "2_LATE", "b778": "2",
+              "v061": "2_V061", "p9": "2_LEGACY"}[variant]
     code, labels = getattr(assembly, "CODE" + suffix), getattr(assembly, "LABELS" + suffix)
-    if variant in ("b81", "b81_late"):
+    if variant in ("b81s", "b81s_late"):
+        code = bytearray(code)
+        for first, last, limit in FOURTH_DOWN_GO_LIMITS:
+            for own_yard in range(first, last + 1):
+                code[labels["limit_x"] + 100 - own_yard] = limit
+        for (clock, margin, region), value in FOURTH_DOWN_SHIFT_CHANGES.items():
+            code[labels["shift"] + (clock * 7 + margin) * 3 + region] = value & 0xFF
+        code = bytes(code)
+    elif variant in ("b81", "b81_late"):
+        # The first beta 81 cap, kept only to recognize and upgrade its installs.
         # A neutral CPU decision in its own territory should risk shorter distances.
         # Keep opponent territory, time/score adjustments, and the late possession rules.
         code = bytearray(code)
@@ -145,7 +191,7 @@ def _m2(variant="b778"):
     return code, getattr(assembly, "RELOCATIONS" + suffix), labels
 
 
-def m2_tables(variant="b81_late"):
+def m2_tables(variant=CURRENT_LATE):
     """(limit_x[81], shift[126], thr10[33]) exactly as the Modern 2 machine code reads them."""
     code, _, labels = _m2(variant)
     limit = tuple(code[labels["limit_x"]:labels["limit_x"] + 81])
@@ -391,7 +437,7 @@ def sites(va, level="modern", *, variant="b778"):
             else:
                 after = EXPONENT_AFTER
             rows.append((name, hook, before, after))
-        if variant in ("b81", "b778", *LATE_VARIANTS):
+        if variant in ("b81s", "b81", "b778", *LATE_VARIANTS):
             rows += [(name, hook, before, HOOK3_AFTER[name]) for name, (hook, before) in HOOKS3.items()]
         return rows
     return [(name, hook, before,
@@ -490,7 +536,7 @@ def read_settings(payload):
                                              state_va=state["va"])) == "applied":
                 return {"level": "modern2", "vip_policy": True, "clock_policy": True, "late_policy": True,
                         "variant": variant, "experimental": True, "runtime_witnessed": False}
-    for variant in ("b81", "b778"):
+    for variant in ("b81s", "b81", "b778"):
         if lever.status(payload, _adapter("modern2", variant=variant)) == "applied":
             return {"level": "modern2", "vip_policy": True, "clock_policy": True, "late_policy": False,
                     "variant": variant, "experimental": True, "runtime_witnessed": False}
@@ -514,7 +560,7 @@ def status(payload):
             if lever.status(payload, _adapter("modern2", variant=variant, late_va=late["va"],
                                              state_va=late_state["va"])) == "applied":
                 return "applied"
-    for variant in ("b81", "b778", "v061", "p9"):
+    for variant in ("b81s", "b81", "b778", "v061", "p9"):
         state = lever.status(payload, _adapter("modern2", variant=variant))
         if state != "foreign":
             return state
@@ -533,7 +579,7 @@ def _install_modern2(payload, *, allocation=None, allow_no_late=False):
     if (late is None or late_state is None) and not allow_no_late:
         space._require(False, "CPU money downs needs its companion allocations "
                               "(nfl2k5_cpu_money_downs_late and _late_state)")
-    variant = "b81_late" if late is not None and late_state is not None else "b81"
+    variant = CURRENT_LATE if late is not None and late_state is not None else CURRENT_NO_LATE
     late_va = late["va"] if variant in LATE_VARIANTS else None
     state_va = late_state["va"] if variant in LATE_VARIANTS else None
     installed = payload
@@ -579,7 +625,7 @@ def apply(payload, *, level="modern"):
                          "edits": [], "experimental": True, "runtime_witnessed": False}
     if level == "modern2":
         settings = read_settings(payload)
-        if settings and settings["level"] == "modern2" and settings.get("variant") == "b81_late":
+        if settings and settings["level"] == "modern2" and settings.get("variant") == CURRENT_LATE:
             return payload, {"owner": OWNER, "level": "modern2", "late_policy": True,
                              "already_applied": True, "changed_bytes": 0, "edits": [],
                              "experimental": True, "runtime_witnessed": False}
@@ -626,7 +672,7 @@ def upgrade_to_modern2(payload):
     from .nfl2k5_bump_strength import _sections, section_digest
     from . import nfl2k5_rdata_sites as rdata
     settings = read_settings(payload)
-    if settings is not None and settings["level"] == "modern2" and settings.get("variant") == "b81_late":
+    if settings is not None and settings["level"] == "modern2" and settings.get("variant") == CURRENT_LATE:
         return payload, {"owner": OWNER, "level": "modern2", "late_policy": True,
                          "already_applied": True, "changed_bytes": 0, "edits": []}
     old = settings
@@ -647,7 +693,7 @@ def upgrade_to_modern2(payload):
     a = lever.allocation(payload, OWNER, CODE_SIZE)
     requests = space._read_scale_directory(payload)
     variant = old.get("variant", "b778")
-    new_variant = "b81_late" if late is not None and late_state is not None else "b81"
+    new_variant = CURRENT_LATE if late is not None and late_state is not None else CURRENT_NO_LATE
     old_sites = {name: (hook, before, after) for name, hook, before, after
                  in sites(a["va"], old["level"], variant=variant)}
     new_sites = sites(a["va"], "modern2", variant=new_variant)

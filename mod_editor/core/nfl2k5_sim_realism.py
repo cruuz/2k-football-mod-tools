@@ -753,9 +753,12 @@ def apply(payload):
 
 
 def status(payload):
+    """retail | applied | legacy (the beta 80 / v0.9 revision; apply() updates it in place) | previous (beta 79; rebuild
+    from retail) | foreign. Beta 81 review: the beta 80 revision used to read "applied", so a disc report could not tell
+    v0.9 from v0.10."""
     try:
         state = _recognize(payload)
-        return "applied" if state == "beta80" else state
+        return "legacy" if state == "beta80" else state
     except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, UnicodeError, OSError):
         return "foreign"
 

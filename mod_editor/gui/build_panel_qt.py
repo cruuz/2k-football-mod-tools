@@ -397,7 +397,9 @@ PREVIOUS_UPGRADE_KEYS = {"modern_injured_reserve": "modern injured reserve", "ho
 # "returner_fix" is dormant until b780 st1 (the KR/PR getter's slot check) is merged: only then does a beta-79 or older disc
 # read "legacy" for it, and nfl2k5_returner_fix.apply accepts "retail" or "legacy" the same way.
 LEGACY_UPGRADE_KEYS = {"progression": "player growth, decline and retirement", "franchise_economy": "2026 franchise economy",
-                       "returner_fix": "CPU kick and punt returner fix"}
+                       "returner_fix": "CPU kick and punt returner fix",
+                       # beta 81: the beta 80 (v0.9) simulated season realism reads "legacy"; sim_realism.apply updates it
+                       "sim_realism": "simulated season realism"}
 
 
 def rebuild_only_reason(state: Mapping[str, object]) -> str:

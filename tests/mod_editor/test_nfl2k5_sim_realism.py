@@ -157,8 +157,10 @@ class InstallTests(unittest.TestCase):
         old_body = r._assemble(code["va"], state["va"], beta80=True)[1]
         old = space.install_code(allocated, r.OWNER, old_body)[0]
         old = rdata.apply(old, r.sites(code["va"], beta80=True), r.OWNER)[0]
-        self.assertEqual(r.status(old), "applied")
-        self.assertEqual(r.apply(old)[0], r.apply(data)[0])
+        self.assertEqual(r.status(old), "legacy")          # a disc report must tell v0.9 from v0.10
+        upgraded = r.apply(old)[0]
+        self.assertEqual(upgraded, r.apply(data)[0])
+        self.assertEqual(r.status(upgraded), "applied")
 
     def test_apply_is_read_back_and_idempotent(self):
         data = retail_bytes()
