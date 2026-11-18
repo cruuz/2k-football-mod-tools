@@ -368,7 +368,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
         ("m3_fpf_off_text", "First Person Football: Off"),
         ("m3_fpf_on_text", "First Person Football: On"),
         ("m3_settings_note", "Supersim runs while you wait. B returns to Apartment." if previous
-         else "Save in the career menu."),
+         else "Supersim to your snaps. Save at home."),
         ("m3_supersim_off_text", "Supersim: Off"),
         ("m3_supersim_skip_text", "Supersim: Skip presentation"),
         ("m3_supersim_fast_text", "Supersim: Fast forward"),

@@ -2294,15 +2294,9 @@ def _compile_install_step(before: bytes, pack: PlaybookPack, team: str, xbe):
 
 
 def _warm_worker_count(chains: int) -> int:
-    import os
-    configured = os.environ.get("NFL2K5_BUILD_WORKERS", "").strip()
-    try:
-        workers = int(configured) if configured else (os.cpu_count() or 1) - 1
-    except ValueError:
-        workers = (os.cpu_count() or 1) - 1
-    if os.name == "nt":
-        workers = min(workers, 61)
-    return max(1, min(workers, chains))
+    from .nfl2k5_late_steps import worker_count
+
+    return worker_count(chains)
 
 
 def prewarm_install_steps(archive: Any, packs: Sequence[tuple[str, PlaybookPack]],

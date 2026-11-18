@@ -237,8 +237,12 @@ class SettingsTests(unittest.TestCase):
             self.assertEqual(m.top(), m.labels['m3_settings_menu'])
             texts = checker.rendered(m)
             self.assertIn("MyPlayer stat line: On",[r["text"] for r in m.native_rows])
-            self.assertIn('Supersim runs while you wait. B returns to Apartment.', texts)
-            for index, expected in ((0, 'First Person Football: On'), (1, 'Supersim: Off'), (2, 'MyPlayer star: Off'), (3, 'MyPlayer stat line: Off'), (4, 'By position'), (4, 'Coach calls the plays'), (4, 'You call every play')):
+            self.assertIn('Supersim to your snaps. Save at home.', texts)
+            for index, expected in ((0, 'First Person Football: On'),
+                                    (1, 'Supersim: Off'), (1, 'Supersim: Skip presentation'),
+                                    (1, 'Supersim: Fast forward'), (2, 'MyPlayer star: Off'),
+                                    (3, 'MyPlayer stat line: Off'), (4, 'By position'),
+                                    (4, 'Coach calls the plays'), (4, 'You call every play')):
                 m.select(index)
                 m.native_rows.clear(); checker.rendered(m)
                 selected = [r['text'] for r in m.native_rows if r['color'] & 0xFFFFFF == 0xFFFF00]
