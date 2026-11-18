@@ -1,4 +1,5 @@
 """mc2 native repair: pinned inputs only, Studio-equal owner, idempotent replay and declared scope."""
+import io
 import os
 from pathlib import Path
 import sys
@@ -7,7 +8,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from tools.b77 import mc2_repair as repair
+from tools.b77 import mc2_repair as repair, sp1_repair
 
 DISC_1013 = Path(os.environ.get("NFL2K5_IC1_BASE", "/media/noah/Storage/2K5 Discs/"
                                 "SOFTDRINK 2K28 v0.6.1 fixes (2026-10-13).xiso.iso"))
@@ -37,9 +38,23 @@ class RefusalTests(unittest.TestCase):
                 repair.repair(b"not the pinned executable")
 
     def test_pins_are_complete(self):
-        for value in (repair.BASE_XBE_SHA256, repair.REPAIRED_XBE_SHA256,
-                      repair.BASE_DISC_SHA256, repair.REPAIRED_DISC_SHA256):
+        for value in (repair.BASE_XBE_SHA256, repair.REPAIRED_XBE_SHA256, repair.BETA80_XBE_SHA256,
+                      repair.BASE_DISC_SHA256, repair.BETA80_DISC_SHA256):
             self.assertRegex(value, r"^[0-9a-f]{64}$")
+
+    def test_replay_authenticates_the_bytes_on_both_sides_of_the_executable(self):
+        previous, current = b"old owner", b"new owner"
+        prefix, suffix = b"header", b"other files"
+        genuine = prefix + current + suffix
+        historical = prefix + previous + suffix
+        with patch.multiple(repair, XBE_OFFSET=len(prefix), REPAIRED_XBE_SHA256=repair.sha(current),
+                            BETA80_XBE_SHA256=repair.sha(previous), BETA80_DISC_SHA256=repair.sha(historical)), \
+                patch.object(repair, "build", return_value=(previous, {})), \
+                patch.object(sp1_repair, "DISC_SIZE", len(genuine)):
+            repair.verify_disc_input(io.BytesIO(genuine), current, repair.sha(genuine))
+            for changed in (b"!" + genuine[1:], genuine[:-1] + b"!", genuine + b"!"):
+                with self.subTest(changed=changed), self.assertRaisesRegex(ValueError, "complete input disc|disc size"):
+                    repair.verify_disc_input(io.BytesIO(changed), current, repair.sha(changed))
 
 
 @unittest.skipUnless(SOURCE is not None, "the private v0.6.1 (2026-10-13) default.xbe is needed (NFL2K5_V061_XBE or the disc, NFL2K5_IC1_BASE)")
@@ -66,6 +81,15 @@ class NativeTests(unittest.TestCase):
         damaged[code["raw"]] ^= 1
         with self.assertRaisesRegex(ValueError, "unrecognized"):
             repair.repair(bytes(damaged))
+
+    def test_beta80_repair_upgrades_and_can_authenticate_a_current_disc(self):
+        historical, _ = repair.build(SOURCE, previous="beta-80")
+        self.assertEqual(repair.sha(historical), repair.BETA80_XBE_SHA256)
+        fixed, receipt = repair.repair(historical)
+        self.assertEqual(repair.sha(fixed), repair.REPAIRED_XBE_SHA256)
+        self.assertTrue(receipt["scope"]["outside_scope_identical"])
+        projected, _ = repair.build(fixed, previous="beta-80")
+        self.assertEqual(projected, historical)
 
 
 if __name__ == "__main__":
