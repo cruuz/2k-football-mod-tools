@@ -55,7 +55,8 @@ def card_mask(sel, view, side):
     S = texture_change(sel)
     hit = (pid >= 0) & (pid <= 2) & S[v, u]
     return hit.reshape(256, 4, 256, 4).any(axis=(1, 3))
-def compose(name):
+FOLLOW_GAME = set(json.load(open(__import__('os').path.join(__import__('os').path.dirname(__import__('os').path.abspath(__file__)), 'follow_game.json'))))
+def compose(name, follow_game=None):
     fam, code, side, style, res = C.parse(name)
     assert res == 256
     S_ = 'H' if side == 'home' else 'A'
@@ -72,6 +73,19 @@ def compose(name):
     cov = Ro[..., 3] > 0.02
     z = M & live & cov & (np.abs(D).max(axis=2) > 1.5 / 255.0)
     z = ndimage.binary_dilation(z, iterations=1) & M & live & cov
+    if follow_game is None: follow_game = name in FOLLOW_GAME
+    if follow_game:
+        # the shipped card shows helmet art the league project's own helmet no longer has (it was rendered from older
+        # art): those places take the render of today's helmet as well. Whole blobs on the open shell only.
+        pid, _u, _v = uv(view, S_)
+        shell = ndimage.binary_erosion(((pid == 0) | (pid == 1)).reshape(256, 4, 256, 4).all(axis=(1, 3)), iterations=1)
+        far = shell & live & (Ro[..., 3] > 0.98) & (np.abs(E).max(axis=2) > 30.0 / 255.0)
+        far = ndimage.binary_opening(far, structure=np.ones((2, 2), bool))
+        lab, n = ndimage.label(far, structure=np.ones((3, 3), bool))
+        if n:
+            sizes = ndimage.sum(far, lab, np.arange(1, n + 1))
+            far = np.isin(lab, [i + 1 for i, s_ in enumerate(sizes) if s_ >= 30])
+            z = z | (ndimage.binary_dilation(far, iterations=3) & shell & live)
     hand = ndimage.binary_dilation(z & (np.abs(E).max(axis=2) > TAU_E), iterations=1) & z
     # the shipped card's own smooth offset from the old render, carried across the hand-edited places
     keep = (~hand) & cov & live & (Ro[..., 3] > 0.98)

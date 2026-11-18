@@ -22,7 +22,13 @@ def without_keyline(logo):
     rim = ndimage.binary_dilation(ring, iterations=1) & (al < 250) & ~ring & (rgb.min(axis=2) > 150)
     out = a.copy(); out[ring | rim, 3] = 0
     return Image.fromarray(out, 'RGBA'), int(ring.sum()), float(ndimage.distance_transform_edt(ring).max())
-def remove(name, T, grow=0):
+def outline_colour(logo2):
+    """The colour of the de-keylined logo's own outer outline: the median of its opaque texels next to the outside."""
+    a = np.asarray(logo2, dtype=np.float64)
+    opaque = a[..., 3] > 250
+    rim = opaque & ndimage.binary_dilation(a[..., 3] < 40, iterations=3)
+    return np.median(a[rim][:, :3], axis=0)
+def remove(name, T, grow=0, mode='outline'):
     """Texture with the registered logo's keyline ring repainted: de-keylined logo over the shell rebuilt there."""
     fam, rest = name.split('_'); code = rest[:2]
     r = texdet3.regs()[name]
@@ -38,7 +44,13 @@ def remove(name, T, grow=0):
         if grow: band = ndimage.binary_dilation(band, iterations=grow) & (al2 < 0.98)
         sub = out[v['y0']:v['y0']+v['h'], v['x0']:v['x0']+v['w']]
         # band texels take the de-keylined logo over the shell (the outline's own colour and coverage from the logo file)
-        new = col2 * al2[..., None] + shell * (1 - al2[..., None])
+        if mode == 'outline':
+            # the ring takes the logo's own outline colour (a bolder outline, as the real decal has), anti-aliased
+            # against the shell with the logo file's own coverage
+            ring_col = outline_colour(lg2)
+            new = ring_col * al[..., None] + shell * (1 - al[..., None])
+        else:
+            new = col2 * al2[..., None] + shell * (1 - al2[..., None])
         sub[band] = new[band]
         changed[v['y0']:v['y0']+v['h'], v['x0']:v['x0']+v['w']] |= band
     return out, changed
