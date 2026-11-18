@@ -95,7 +95,7 @@ from mod_editor.core.texture_master import (
     fit_transform as texture_master_fit_transform,
     snapshot_texture_master_source,
 )
-from mod_editor.gui import branding
+from mod_editor.gui import branding, locate_qt_plugins
 from mod_editor.gui import crash_report
 from mod_editor.gui import update_ui
 from mod_editor.gui.apf_audio_waveform_qt import (
@@ -22194,6 +22194,7 @@ def launch_studio(
 
     application = QApplication.instance()
     if application is None:
+        locate_qt_plugins()
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
         QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
         application = QApplication([sys.argv[0]])

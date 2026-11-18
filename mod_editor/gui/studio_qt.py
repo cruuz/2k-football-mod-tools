@@ -85,7 +85,7 @@ from mod_editor.core.texture_master import (
     fit_transform as texture_master_fit_transform,
     snapshot_texture_master_source,
 )
-from mod_editor.gui import branding
+from mod_editor.gui import branding, locate_qt_plugins
 from mod_editor.gui.ux_text import XEMU_LINE, Details, tab_title  # noqa: F401
 from mod_editor.gui.ux_text import ElidedStatusLabel  # b780-uxfix: the footer messages
 from mod_editor.gui.ux_text import FlowLayout, get_item, make_shrinkable  # b780 CI: wrapping rows, dialogs, eliding buttons
@@ -10550,6 +10550,7 @@ def launch_studio(
     if app is None:
         # These attributes must be selected before Qt creates a GUI
         # application. Embedded callers may already have made that choice.
+        locate_qt_plugins()
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
         QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
         app = QApplication([])

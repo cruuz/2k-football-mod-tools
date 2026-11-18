@@ -109,7 +109,7 @@ print('finished artifact gate reached')
 
     def test_launchers_check_numpy_and_recommend_the_complete_requirements(self):
         for relative in ('2K5-Mod-Studio.bat', 'APF-2K8-Mod-Studio.bat',
-                         '2K5-Mod-Studio.command', 'APF-2K8-Mod-Studio.command',
+                         'packaging/macos_studio.sh',
                          'tools/launch_2k5_mod_studio.sh', 'tools/launch_apf2k8_mod_studio.sh'):
             text = (ROOT / relative).read_text()
             with self.subTest(launcher=relative):
