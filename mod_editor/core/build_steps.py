@@ -196,7 +196,7 @@ STEP_LABELS: dict[str, str] = {
     "coach_career_fix": "the coach career counter fix",
     "history_pool": "the career history pool fix",
     "sim_cb_tackles": "Cornerback tackle credit",
-    "sim_stats": "the franchise sim pace fix",
+    "sim_stats": "franchise sim pace and Games Played",
     "option_defaults": "the SOFTDRINK default options",
     "clock_led": "Modern clock digits",
     "inbox_standings": "Inbox standings",

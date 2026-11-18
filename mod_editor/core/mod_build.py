@@ -800,8 +800,8 @@ class BuildPlan:
     # b778-sim1: the simulated franchise game's clock pace. The simulator's per-event clock decrement came from
     # sqrt(300 / (Sim. Quarter Length * 60)) * 0.03, so a 15-minute setting produced about 1.7x the plays, points and
     # yards of a 5-minute setting. One in-place patch at 0x10B89C fixes the decrement (nfl2k5_sim_stats), so a
-    # simulated game lands on NFL totals at every Sim. Quarter Length. Played games, the overtime sim clock and the
-    # CB tackle / weekly progression owners are untouched. On in the Advanced and Experimental presets (the
+    # simulated game lands on NFL totals at every Sim. Quarter Length. Revision 2 also credits Games Played to
+    # substitutes with recorded statistics in scheduled regular-season games. On in the Advanced and Experimental presets (the
     # SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the retail pace.
     sim_stats: bool = False
     # b779-df1: best-experience defaults for a FRESH profile (and Reset to defaults): Quarter Length 7 minutes,
@@ -2802,17 +2802,17 @@ def _apply_lineup_roles(plan: "BuildPlan", target: Path, receipt: dict, progress
 
 
 def _sim_stats_preflight(source: Path, progress) -> None:
-    """b778-sim1: refuse a source whose simulator initializer is foreign, before any write."""
+    """Check the simulator pace and appearance-recording instructions before writing."""
     module = _core_module("nfl2k5_sim_stats")
     if module is None:
-        raise ValueError("The franchise sim pace fix is not available in this installation.")
-    progress("Checking the franchise simulator for the NFL pace fix", 0, 0)
+        raise ValueError("The franchise sim pace and Games Played fix is not available in this installation.")
+    progress("Checking franchise sim pace and Games Played", 0, 0)
     try:
         payload = _xbe_bytes(source)
     except (OSError, ValueError) as exc:
-        raise ValueError(f"The franchise sim pace fix cannot read default.xbe: {exc}") from exc
+        raise ValueError(f"The franchise sim pace and Games Played fix cannot read default.xbe: {exc}") from exc
     if module.status(payload) == "foreign":
-        raise ValueError("The franchise simulator in this source is not retail or the NFL pace fix. Turn it off or "
+        raise ValueError("This source has unrecognized franchise simulator or Games Played instructions. Turn the fix off or "
                          "rebuild from a supported USA source.")
 
 @_core_step("load_user_team_guard")
@@ -2851,18 +2851,18 @@ def _apply_save_list_type_guard(plan: "BuildPlan", target: Path, receipt: dict, 
 
 @_core_step("sim_stats")
 def _apply_sim_stats(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
-    """b778-sim1: normalise the simulated game's clock pace (in place, no allocator request)."""
+    """Apply native franchise sim pace and regular-season Games Played accounting."""
     if not plan.sim_stats:
         return
     module = _core_module("nfl2k5_sim_stats")
     if module is None:
-        raise RuntimeError("The franchise sim pace fix needs nfl2k5_sim_stats.")
-    progress("Stats: franchise simulated-game pace", 0, 0)
+        raise RuntimeError("The franchise sim pace and Games Played fix needs nfl2k5_sim_stats.")
+    progress("Applying franchise sim pace and Games Played", 0, 0)
     payload, sim_receipt = module.apply(_xbe_bytes(target))
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
     if final != payload or module.status(final) != "applied":
-        raise RuntimeError("The franchise sim pace fix: the output does not read back as applied")
+        raise RuntimeError("The franchise sim pace and Games Played fix did not read back as applied")
     receipt["steps"].append({"step": "sim_stats", **{k: v for k, v in sim_receipt.items()
                                                     if k not in ("reservations", "edits")},
                              "edits": sim_receipt.get("edits", [])})
@@ -8677,7 +8677,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.sim_cb_tackles and _core_module("nfl2k5_sim_cb_tackles").status(_xbe_bytes(target)) != "applied":  # b778-cb1
         raise ValueError("cornerback tackle credit did not survive the final passes")
     if plan.sim_stats and _core_module("nfl2k5_sim_stats").status(_xbe_bytes(target)) != "applied":  # b778-sim1
-        raise ValueError("the franchise sim pace fix did not survive the final passes")
+        raise ValueError("franchise sim pace and Games Played did not survive the final passes")
     if plan.quick_long_release and _core_module("nfl2k5_quick_long_release").status(_xbe_bytes(target)) != "applied":
         raise ValueError("quicker deep and rollout throws did not survive the final passes")  # b780-c-release
     if plan.option_defaults and _core_module("nfl2k5_option_defaults").settings(_xbe_bytes(target)) != {  # b779-df1
