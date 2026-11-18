@@ -456,6 +456,7 @@ def _publish_save_pair(files, previous):
             locks.enter_context(_publication_lock(target))
         _require(all(_output_state(path) == previous[path] for path in targets),
                  "The save destination changed. Choose a new folder or retry.")
+        created = None
         if targets[1].parent == directory and not directory.exists():
             # The ordinary GUI save publishes a complete new Xbox folder in one rename.
             directory.parent.mkdir(parents=True, exist_ok=True)
@@ -464,8 +465,17 @@ def _publish_save_pair(files, previous):
                 staged.mkdir()
                 for path, data in files.items():
                     _write_staged_save(staged / path.name, data)
-                platform_compat.publish_no_replace(staged, directory, is_directory=True)
-            return
+                try:
+                    platform_compat.publish_no_replace(staged, directory, is_directory=True)
+                except platform_compat.NoReplacePublishUnavailable:
+                    # Linux ntfs-3g, other FUSE folders and some network or removable volumes have no atomic
+                    # no-replace folder rename. Create the new folder exclusively and publish the two files into it
+                    # with the same verification and rollback as two explicit destinations.
+                    pass
+                else:
+                    return
+            directory.mkdir()
+            created = directory
 
         # The CLI also supports two explicit destinations, including existing files on separate volumes.
         work = {}
@@ -485,6 +495,7 @@ def _publish_save_pair(files, previous):
                 else:
                     os.replace(work[path] / "new", path)
                 published.append(path)
+            created = None
         except BaseException:
             for path in reversed(published):
                 try:
@@ -502,6 +513,12 @@ def _publish_save_pair(files, previous):
             for stage in work.values():
                 if stage not in keep_backup:
                     shutil.rmtree(stage)
+            if created is not None:
+                # A failed fallback leaves no empty edited-save folder in the way of a retry.
+                try:
+                    created.rmdir()
+                except OSError:
+                    pass
 
 
 def edit_save_file(

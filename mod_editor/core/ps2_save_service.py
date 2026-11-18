@@ -309,7 +309,9 @@ class Ps2SaveService:
                     try:
                         publish_no_replace(staged, output)
                     except OSError as exc:
-                        if exc.errno not in {errno.ENOSYS, errno.EOPNOTSUPP, errno.EPERM}:
+                        # macOS gives ENOTSUP (45), not EOPNOTSUPP (102), for link() on exFAT, FAT and SMB.
+                        if exc.errno not in {errno.ENOSYS, errno.EOPNOTSUPP, errno.EPERM,
+                                             getattr(errno, "ENOTSUP", errno.EOPNOTSUPP)}:
                             raise
                         # Some removable filesystems have no exclusive rename or hard links.
                         # Use the writer's exclusive, flushed output path for the verified bytes.
