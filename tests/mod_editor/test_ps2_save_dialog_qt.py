@@ -729,6 +729,21 @@ class WriteIsAsynchronousTests(unittest.TestCase):
         self.assertNotIn("RuntimeError:", warnings[0])
         self.assertIn("write protected", dialog.status_label.text())
 
+    def test_verification_failure_offers_the_same_filename_again(self) -> None:
+        self.host.write = lambda output, progress=None: SimpleNamespace(
+            verified=False, detail="The selected directory failed verification.", output=output,
+        )
+        warnings = []
+        self.dialog_module.QMessageBox.warning = staticmethod(
+            lambda parent, title, body: warnings.append((title, body))
+        )
+        self.dialog._write_save()
+        self._settle()
+        self.assertEqual(len(warnings), 1)
+        self.assertEqual(warnings[0][0], "PS2 save verification failed")
+        self.assertIn("retry the same filename", warnings[0][1])
+        self.assertIn("selected directory", self.dialog.status_label.text())
+
     def test_closing_is_allowed_again_once_the_write_finishes(self) -> None:
         rejections = []
         self.dialog.rejected.connect(lambda: rejections.append(True))

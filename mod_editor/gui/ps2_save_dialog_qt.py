@@ -943,8 +943,9 @@ class Ps2SaveEditorDialog(QDialog):
             self._status(detail)
             QMessageBox.warning(
                 self,
-                "PS2 save was written but did not verify",
-                f"{detail}\n\nYour original save was not changed.",
+                "PS2 save verification failed",
+                f"{detail}\n\nStudio discarded the unverified copy. Your edits are still open. "
+                "You can retry the same filename.",
             )
 
     # -- shared --------------------------------------------------------
