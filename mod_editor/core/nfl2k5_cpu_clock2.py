@@ -128,11 +128,30 @@ def require(ok, message):
         raise CpuClock2Error(message)
 
 
-def code_for(va, *, beta80=False):
+# Installed revisions, newest first: "current" (any multiple-of-8 deficit counts its two-point conversions), "b81" (the
+# first beta 81 revision, 16 points only) and "beta80" (no scoring-estimate site). Older ones upgrade in place.
+REVISIONS = ("current", "b81", "beta80")
+_SUFFIX = {"current": "", "b81": "_B81", "beta80": "_BETA80"}
+
+
+def _revision(revision, beta80):
+    revision = revision or ("beta80" if beta80 else "current")
+    require(revision in REVISIONS, f"Unknown CPU clock revision {revision!r}")
+    return revision
+
+
+def _template(revision):
+    suffix = _SUFFIX[revision]
+    return (getattr(assembly, "CODE" + suffix), getattr(assembly, "RELOCATIONS" + suffix),
+            getattr(assembly, "LABELS" + suffix))
+
+
+def code_for(va, *, beta80=False, revision=None):
     """The owner's code at its allocated VA, padded with int3 to the reservation."""
-    out = bytearray(assembly.CODE_BETA80 if beta80 else assembly.CODE)
+    code, relocations, _ = _template(_revision(revision, beta80))
+    out = bytearray(code)
     symbols = dict(SYMBOLS, code=va)
-    for offset, kind, symbol, value in (assembly.RELOCATIONS_BETA80 if beta80 else assembly.RELOCATIONS):
+    for offset, kind, symbol, value in relocations:
         target = symbols[symbol] + value + struct.unpack_from("<I", out, offset)[0]
         if kind == 2:
             target -= va + offset
@@ -145,11 +164,12 @@ def _rows(overtime, *, beta80=False):
     return (BETA80_SITES if beta80 else SITES) + ((OT_SITE,) if overtime else ())
 
 
-def sites(va, *, overtime=False, beta80=False):
+def sites(va, *, overtime=False, beta80=False, revision=None):
     """(label, site VA, retail bytes, patched bytes) for an allocation at ``va``."""
+    revision = _revision(revision, beta80)
     result = []
-    labels = assembly.LABELS_BETA80 if beta80 else assembly.LABELS
-    for name, site, before, opcode, label in _rows(overtime, beta80=beta80):
+    labels = _template(revision)[2]
+    for name, site, before, opcode, label in _rows(overtime, beta80=revision == "beta80"):
         before = bytes.fromhex(before)
         after = bytes((opcode,)) + struct.pack("<i", va + labels[label] - site - 5)
         result.append((name, site, before, after + b"\x90" * (len(before) - 5)))
@@ -183,11 +203,11 @@ def inspect(payload):
     row = allocations(payload)
     _guards(image)
     va = row["va"] if row else 0
-    beta80 = bool(row and image.read(va, CODE_SIZE) == code_for(va, beta80=True))
-    main = sites(va, beta80=beta80)
-    if beta80:
+    revision = installed_revision(image, va) if row else "current"
+    main = sites(va, revision=revision)
+    if revision == "beta80":
         require(image.read(SCORE_SITE[1], 7) == bytes.fromhex(SCORE_SITE[2]), "Foreign CPU clock scoring estimate")
-    ot = sites(va, overtime=True, beta80=beta80)[-1]
+    ot = sites(va, overtime=True, revision=revision)[-1]
     states = set()
     for name, site, before, after in main:
         raw = image.read(site, len(before))
@@ -201,8 +221,14 @@ def inspect(payload):
         if row:
             require(image.read(va, CODE_SIZE) == b"\xcc" * CODE_SIZE, "Foreign CPU clock code")
         return None
-    require(image.read(va, CODE_SIZE) == code_for(va, beta80=beta80), "Foreign CPU clock code, relocation or padding")
+    require(image.read(va, CODE_SIZE) == code_for(va, revision=revision), "Foreign CPU clock code, relocation or padding")
     return {"overtime": overtime}
+
+
+def installed_revision(image, va):
+    """The revision whose exact code fills the allocation at ``va`` ("current" when none does, so checks fail as foreign)."""
+    raw = image.read(va, CODE_SIZE)
+    return next((revision for revision in REVISIONS if raw == code_for(va, revision=revision)), "current")
 
 
 def status(payload):
@@ -234,8 +260,7 @@ def normalized_sites(payload):
         return []
     from .nfl2k5_cave_oracle import XbeImage
     va = allocations(payload)["va"]
-    beta80 = XbeImage(payload).read(va, CODE_SIZE) == code_for(va, beta80=True)
-    return sites(va, overtime=settings["overtime"], beta80=beta80)
+    return sites(va, overtime=settings["overtime"], revision=installed_revision(XbeImage(payload), va))
 
 
 def apply(payload, *, overtime=False):
@@ -249,10 +274,11 @@ def apply(payload, *, overtime=False):
     if settings is not None:
         require(settings["overtime"] == overtime, "Different CPU clock overtime choice; rebuild from a clean base")
         va = allocations(payload)["va"]
-        old_code = code_for(va, beta80=True)
-        if XbeImage(payload).read(va, CODE_SIZE) != old_code:
+        revision = installed_revision(XbeImage(payload), va)
+        if revision == "current":
             return payload, dict(owner=OWNER, status="already_applied", settings=settings, changed_bytes=0, edits=[])
-        old_hooks = {site: after for _, site, _, after in sites(va, overtime=overtime, beta80=True)}
+        old_code = code_for(va, revision=revision)
+        old_hooks = {site: after for _, site, _, after in sites(va, overtime=overtime, revision=revision)}
     before_sha = hashlib.sha256(payload).hexdigest()
     row = allocations(payload)
     if row is None:

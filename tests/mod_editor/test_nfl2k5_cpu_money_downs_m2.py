@@ -76,8 +76,9 @@ class Modern2PolicyTests(unittest.TestCase):
         d = lambda **kw: patch.decision(level="modern2", quarter_seconds=300, **kw)
         self.assertEqual(d(own_yard=25, distance=1, quarter=1, seconds=250), "go")
         self.assertEqual(d(own_yard=25, distance=8, quarter=1, seconds=250), "retail")
+        # beta 81 table (FOURTH_DOWN_GO_LIMITS): 5 at the 50, plus 1 for 850 game seconds, tied
         self.assertEqual(d(own_yard=50, distance=6, quarter=2, seconds=250), "go")     # middle of the field, 4th and 6
-        self.assertEqual(d(own_yard=50, distance=8, quarter=2, seconds=250), "go")     # limit 7 plus 1 for 850 game seconds, tied
+        self.assertEqual(d(own_yard=50, distance=7, quarter=2, seconds=250), "retail")
         self.assertEqual(d(own_yard=50, distance=9, quarter=2, seconds=250), "retail")
         self.assertEqual(d(own_yard=2, distance=5, quarter=2, seconds=250), "retail")
         self.assertEqual(d(own_yard=90, distance=3, quarter=1, seconds=250), "go")
@@ -118,13 +119,13 @@ class Modern2PolicyTests(unittest.TestCase):
         # sudden death (tied after both possessions) and leading keep the retail logic
         self.assertEqual(patch.decision(own_yard=40, distance=2, score_margin=0, **away_both), "retail")
         self.assertEqual(patch.decision(own_yard=40, distance=2, score_margin=3, **away_both), "retail")
-        # first possession: the typical table without clock or score terms
+        # first possession: the typical table without clock or score terms (beta 81 table: 5 at the 50)
         first = dict(away_both, ot_bits=2)
-        self.assertEqual(patch.decision(own_yard=50, distance=6, score_margin=0, **first), "go")
-        self.assertEqual(patch.decision(own_yard=50, distance=8, score_margin=0, **first), "retail")
+        self.assertEqual(patch.decision(own_yard=50, distance=5, score_margin=0, **first), "go")
+        self.assertEqual(patch.decision(own_yard=50, distance=6, score_margin=0, **first), "retail")
         # the home team reads bit 0 as its own and bit 1 as the opponent's
-        self.assertEqual(patch.decision(own_yard=50, distance=6, score_margin=0, **dict(first, home=True)), "retail")
-        self.assertEqual(patch.decision(own_yard=50, distance=6, score_margin=0, **dict(first, home=True, ot_bits=1)), "go")
+        self.assertEqual(patch.decision(own_yard=50, distance=5, score_margin=0, **dict(first, home=True)), "retail")
+        self.assertEqual(patch.decision(own_yard=50, distance=5, score_margin=0, **dict(first, home=True, ot_bits=1)), "go")
         # no possession tracking (retail sudden death, an era profile): retail
         self.assertEqual(patch.decision(own_yard=40, distance=2, score_margin=-7, **dict(away_both, ot_bits=0)), "retail")
         self.assertEqual(patch.decision(own_yard=40, distance=2, score_margin=-7, **dict(away_both, ot_bits=1)), "retail")

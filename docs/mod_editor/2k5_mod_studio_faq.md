@@ -501,6 +501,8 @@ Open **File → PS2 Save Editor…** and choose the `.ps2` card. If it has multi
 
 An older cornerback-stat patch could award regular-season tackles during preseason, in the playoffs or to a corner who sat out. The current patch checks the season stage and whether the game credited that player with playing. A saved Player Card can still contain the old totals. If you kept a save from before those games, load a copy on the updated disc and replay or simulate forward. Once regular-season games have been played, the season total alone cannot identify which tackles came from the older patch.
 
+Injured reserve has a similar carry-over on the standard edition. If a v0.9 franchise was saved during the regular season while a player it moved to injured reserve in the preseason was still out, v0.10 keeps the older count for him. He can need as many extra regular-season games before returning as the preseason games already played when he was placed. Players placed on injured reserve on v0.10 are counted from the first regular-season game.
+
 In **★ Rosters**, open the signed franchise save and select **Draft Class** to see its named prospects. The overview lists empty draft slots separately. **Franchise → Upgrade** can add room for future classes, including when the game already resized the save. Choose your current disc, preview the changes and write a new signed save folder. The preview reports how many draft-class records it can add. Already-generated prospects and picks stay with that franchise. To regenerate a particular class with the updated disc, start from a backup made before the game generated it.
 
 ## I use the native PC or Android port or a separate Mod Manager
