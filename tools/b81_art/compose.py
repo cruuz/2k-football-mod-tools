@@ -32,6 +32,12 @@ def uv(view, side):
         d = np.load(C.WORK / (f'uvmap_modern_{side}_1024.npz' if view == 'helm' else 'uvmap_modern_unif_1024.npz'))
         _uv[key] = (d['pid'], np.clip((d['U'] * 256).astype(int), 0, 255), np.clip((d['V'] * 256).astype(int), 0, 255))
     return _uv[key]
+def drop_specks(mask, least=4):
+    """A thin drawn line stays (an outline one texel wide); lone texels of palette noise go."""
+    lab, n = ndimage.label(mask, structure=np.ones((3, 3), bool))
+    if not n: return mask
+    sizes = ndimage.sum(mask, lab, np.arange(1, n + 1))
+    return np.isin(lab, [i + 1 for i, s_ in enumerate(sizes) if s_ >= least])
 def texture_change(sel):
     """Texels of the kit's helmet02 that really changed: the cleanup itself, and art a build pass redrew after the
     cards were rendered (not the importer's palette noise)."""
@@ -42,8 +48,7 @@ def texture_change(sel):
     fin_p = C.WORK / 'final' / 'helmets' / f'helmet02_{assign.REASSIGN.get(sel, sel)}.png'
     fin = C.load(fin_p)[..., :3].astype(int)
     cleaned = (new != fin).any(axis=2)
-    redrawn = np.abs(fin - old).max(axis=2) > 40
-    redrawn = ndimage.binary_opening(redrawn, structure=np.ones((2, 2), bool))
+    redrawn = drop_specks(np.abs(fin - old).max(axis=2) > 44)
     return ndimage.binary_dilation(cleaned | redrawn, iterations=1)
 def card_mask(sel, view, side):
     pid, u, v = uv(view, side)

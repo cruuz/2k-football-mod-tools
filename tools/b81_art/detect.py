@@ -45,7 +45,7 @@ def card_rows(sel):
     old_png = C.hindex().get(f'helmet02_{sel}')
     pack = C.load(old_png) if old_png else T
     cleaned = (C.load(OUT / 'helmets' / f'helmet02_{sel}.png')[..., :3] != T[..., :3]).any(axis=2)
-    redrawn = ndimage.binary_opening(np.abs(T[..., :3].astype(int) - pack[..., :3].astype(int)).max(axis=2) > 40, structure=np.ones((2, 2), bool))
+    redrawn = compose.drop_specks(np.abs(T[..., :3].astype(int) - pack[..., :3].astype(int)).max(axis=2) > 44)
     reassigned = sel in assign.REASSIGN
     rows = []
     for fam, view in (('helm', 'helm'), ('unif', 'unif')):
