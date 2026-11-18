@@ -80,6 +80,17 @@ class DiscCheckTests(unittest.TestCase):
         self.assertNotIn("—", text)
         self.assertEqual(big["size"], len(files()["big.bin"]))
 
+    def test_localized_custom_edit_names_the_file_and_explains_both_causes(self):
+        custom = files()
+        custom["default.xbe"] = custom["default.xbe"][:-1] + b"x"
+        result = dc.check(self.write("custom-code.iso", build_xdvdfs(custom)), releases=self.releases)
+        self.assertEqual([row["file"] for row in result["differing"]], ["default.xbe"])
+        self.assertEqual(result["cut_short"], [])
+        message = dc.describe(result)
+        self.assertIn("If you expected the official release", message)
+        self.assertIn("Build summary", message)
+        self.assertNotIn("is a damaged or incomplete copy", message)
+
     def test_repacked_nested_game_files_match_legacy_and_new_records(self):
         data = [(17, b"game content" * 100)]
         original = SyntheticXiso(self.root / "original", data)

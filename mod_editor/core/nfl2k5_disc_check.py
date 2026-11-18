@@ -160,9 +160,10 @@ def _rank(result: dict[str, Any], target: dict[str, Any], image_size: int, order
 def check(image: Path | str, *, releases: Iterable[dict[str, Any]] | None = None, progress: Progress | None = None) -> dict[str, Any]:
     """Compare an image with the released discs. Returns a result dict; ``describe(result)`` says it in plain words.
 
-    state: "matches" (every file equals a released disc), "damaged" (a few files or places differ, or the image is cut
-    short: a bad copy), "different" (most of the disc differs: a different build, e.g. Customize SOFTDRINK), or
-    "unreadable" (no disc directory)."""
+    The existing "damaged" state includes both localized mismatches and truncated files. A nonempty
+    "cut_short" list proves that the image ends inside a listed file. Otherwise the differing bytes
+    can also come from a custom build. "matches" compares game-file contents, "different" indicates
+    broader changes, and "unreadable" means the disc directory could not be read."""
     path = Path(image)
     rel = list(releases) if releases is not None else load_releases()
     fd = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
@@ -278,13 +279,18 @@ def describe(result: dict[str, Any]) -> str:
         return (f"This image matches {name} file for file. The game files are intact. For a freeze, report the steps "
                 "leading up to it, your console or emulator setup and a capture if available.")
     lines = []
-    if state == "damaged":
-        lines.append(f"This image is a damaged or incomplete copy of {name}. Copy or install the disc again "
-                     "(from the Studio's Install SOFTDRINK 2K28, or a fresh download) and check it again.")
+    if result.get("cut_short"):
+        lines.append(f"This image ends inside a game file from {name}. Install the game again from your clean disc "
+                     "with Install SOFTDRINK 2K28, then check the new image.")
+    elif state == "damaged":
+        lines.append(f"This image differs from {name} in the places listed below. "
+                     "If you expected the official release, this may be a damaged or incomplete copy. "
+                     "Use Install SOFTDRINK 2K28 with your clean disc and check the new image. "
+                     "If you customized this disc, compare the listed files with your Build summary.")
     else:
-        lines.append(f"This image is a different disc from {name}: most of it differs. That is expected for a disc "
-                     "made with Customize SOFTDRINK or other Build options, so this check cannot judge it. To test "
-                     "the released disc, install it with Install SOFTDRINK 2K28 and check that image.")
+        lines.append(f"This disc’s game files differ from {name}. Customize SOFTDRINK and other Build options "
+                     "can change the files or their contents. To check the official release, use Install "
+                     "SOFTDRINK 2K28 with your clean disc and check the new image.")
     for c in result.get("cut_short", []):
         lines.append(f"- {c['file']} is cut short: only {c['readable_mib']} of {c['size_mib']} MiB can be read "
                      "(the image file ends early).")
@@ -292,7 +298,7 @@ def describe(result: dict[str, Any]) -> str:
         if d["reason"] == "directory":
             lines.append(f"- {d['file']} is a file where the release has a folder.")
         elif d["reason"] == "size":
-            lines.append(f"- {d['file']} has the wrong size ({d['found']:,} bytes, the release has {d['expected']:,}).")
+            lines.append(f"- {d['file']} is {d['found']:,} bytes. The release has {d['expected']:,}.")
         else:
             where = ", ".join(f"{a}-{b} MiB" for a, b in d["mib"][:6]) + (" and more" if len(d["mib"]) > 6 else "")
             lines.append(f"- {d['file']} differs at {where}.")
