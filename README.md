@@ -123,32 +123,19 @@ This is a **beta**. What that means here:
 ## Requirements
 
 - The **Windows installer** includes Python and its runtime dependencies.
-- For **portable archives or source**, use Python 3.11+ with **PyQt5, Pillow,
-  NumPy, Capstone and Unicorn**. Install the complete pinned set:
-  - **Linux** (Debian/Mint/Ubuntu):
-    ```bash
-    python3 -m venv .venv
-    .venv/bin/python -m pip install -r packaging/requirements-studio.txt
-    ```
-  - **Windows / macOS** (the `apt` line above is Linux-only): install Python 3
-    from [python.org](https://www.python.org/downloads/), then:
-    ```bash
-    python -m pip install -r packaging/requirements-studio.txt
-    ```
+- The portable archives support Python 3.11, 3.12 and 3.13. Their launchers set up PyQt5, Pillow, NumPy, Capstone and Unicorn in the extracted folder. You need an internet connection for the first setup. See **Install** below for your platform.
+- When running from a source checkout on Linux or macOS, you can prepare the same dependencies explicitly:
+
+  ```bash
+  python3 -m venv .venv
+  .venv/bin/python -m pip install -r packaging/requirements-studio.txt
+  ```
 - An emulator to run your modded game:
   - **xemu** for ESPN NFL 2K5.
   - **Xenia Canary** for All-Pro Football 2K8.
 - Your own legally dumped game disc (an `.iso`/XISO, or its extracted folder).
 
-**Platform support.** CI is configured to run the suite on Linux, Windows, and
-macOS with Python 3.11, 3.12 and 3.13 (3.13 with NumPy 2). Linux is the locally exercised release path;
-the other two platforms are automated compatibility targets rather than
-manually driven GUI release witnesses.
-
-**Linux remains the most exercised platform**: the desktop app has been
-smoke-tested end to end there, and the GUI has not been manually driven on
-Windows or macOS, so treat those as well-tested code with a less-tested
-window on top. Two specific limits:
+**Platform support.** The test suite runs on Linux, Windows and macOS with Python 3.11, 3.12 and 3.13. The release checks also drive the Linux GUI and the installed Windows Studio under Wine. The macOS suite opens both Studio windows through their Finder launchers.
 
 - Retail-dependent tests and release gates skip with an explicit reason when
   their private game data or generated build inputs are unavailable.
@@ -202,9 +189,12 @@ Double-click launchers are bundled for all three platforms (see *Install*).
      ```
      (On Debian, Ubuntu and Mint the setup needs `sudo apt install python3-venv`
      first. `install.sh` belongs to APF 2K8 Mod Studio only.)
-   - **macOS**: extract the archive, then double-click
-     **`2K5-Mod-Studio.command`** (the first time, right-click it and choose
-     **Open** to clear Gatekeeper).
+   - **macOS** — extract the whole archive. In Finder, right-click
+     **`2K5-Mod-Studio.command`** and choose **Open**. If the launcher asks
+     for Python, install Python 3.11, 3.12 or 3.13 and open it again. On the
+     first run it sets up the dependencies and opens Studio. To prepare the
+     runtime from Terminal, run `./2K5-Mod-Studio.command --setup` in the
+     extracted folder. [Python for macOS](https://www.python.org/downloads/macos/)
 
    Each launcher checks the runtime dependencies and shows a plain
    message if something is missing. (APF 2K8 Mod Studio ships the same three
