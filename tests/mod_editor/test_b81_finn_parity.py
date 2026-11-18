@@ -536,5 +536,323 @@ class PlaceOnIrTests(unittest.TestCase):
         self.assertEqual(self.panel.ir_place_reason(prospect), rr.MSG_DRAFT_CLASS)
 
 
+# --------------------------------------------------------------------------------------------- R5 coaches in a roster save
+def roster_save_with_coach() -> bytes:
+    """The core tests' synthetic ROSTER save (no franchise season) with one coach record on team 0, grafted the way
+    the franchise page tests graft theirs (Finn's numbers for Belichick)."""
+
+    import struct
+    from mod_editor.core import nfl2k5_franchise_save as fs
+    from test_franchise_panel_qt import COACH_AT, COACH_STRINGS_AT, _rel
+    data = bytearray(synthetic_save_v0(synthetic_body()))
+    team0 = rr.RosterDocument(bytes(data), base=fs.ARENA_PREAMBLE).teams[0].offset
+    cursor = COACH_STRINGS_AT
+    for field_rel, text in ((0x00, "Bill"), (0x04, "Belichick")):
+        raw = text.encode("utf-16-le") + b"\0\0"
+        data[cursor:cursor + len(raw)] = raw
+        _rel(data, COACH_AT + field_rel, cursor)
+        cursor += len(raw)
+    for name, value in (("wins", 75), ("losses", 69), ("super_bowls", 2), ("photo", 33)):
+        rel, fmt = fs.COACH_FIELDS[name]
+        struct.pack_into(fmt, data, COACH_AT + rel, value)
+    for k in range(len(fs.COACH_RATINGS)):
+        data[COACH_AT + fs.COACH_RATINGS_OFFSET + k] = 60 + k
+    struct.pack_into("<I", data, fs.ARENA_ROOT + 0x30, 1)
+    _rel(data, fs.ARENA_ROOT + 0x34, COACH_AT)
+    _rel(data, team0 + rr.TEAM_COACH, COACH_AT)
+    return bytes(data)
+
+
+class RosterSaveCoachCoreTests(unittest.TestCase):
+    def test_a_roster_save_opens_for_its_coaches_and_refuses_everything_seasonal(self) -> None:
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        payload = roster_save_with_coach()
+        self.assertFalse(fs.is_franchise_save(payload), "a roster save is still not a franchise")
+        save = fs.FranchiseSave.roster_save(payload)
+        self.assertEqual(save.kind, "roster")
+        coach = save.coaches()[0]
+        self.assertEqual((coach.name, coach.teams, coach.fields["wins"]), ("Bill Belichick", (0,), 75))
+        for reach in (lambda: save.header, lambda: save.salary_cap, lambda: save.games(),
+                      lambda: save.injured_reserve()):
+            with self.assertRaisesRegex(fs.FranchiseSaveError, "roster save has no franchise"):
+                reach()
+        save.set_coach_field(0, "overall", 88)
+        save.set_coach_field(0, "wins", 76)
+        with self.assertRaises(fs.FranchiseSaveError):
+            save.set_coach_field(0, "overall", 300)
+        changed = [i for i, (a, b) in enumerate(zip(payload, save.to_bytes())) if a != b]
+        offset = save._coach_offset(0)
+        self.assertTrue(changed and all(offset <= i < offset + fs.COACH_SIZE for i in changed))
+        with self.assertRaisesRegex(fs.FranchiseSaveError, "no coach records"):
+            fs.FranchiseSave.roster_save(synthetic_save_v0(synthetic_body()))
+
+    def test_the_franchise_mode_is_unchanged(self) -> None:
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        from test_franchise_panel_qt import synthetic_franchise_with_coach
+        save = fs.FranchiseSave(synthetic_franchise_with_coach(year_field=7, user_team=0))
+        self.assertEqual((save.kind, save.arena_root, save.arena_preamble), ("franchise", fs.ARENA_ROOT, fs.ARENA_PREAMBLE))
+        self.assertEqual(save.header.year_field, 7)
+        self.assertEqual(save.coaches()[0].name, "Bill Belichick")
+
+
+class RosterSaveCoachPanelTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.application = _app()
+
+    def setUp(self) -> None:
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.panel = RosterEditorPanel()
+        self.source = write_container(self.root / "roster", roster_save_with_coach())
+        self.assertTrue(self.panel.load_save(self.source))
+
+    def tearDown(self) -> None:
+        self.panel.deleteLater()
+        self.application.processEvents()
+        self.temp.cleanup()
+
+    def test_the_coaches_page_appears_alone_beside_roster(self) -> None:
+        pages, page = self.panel.pages, self.panel.franchise_panel
+        self.assertTrue(page.coaches_only)
+        self.assertFalse(page.active, "the roster save is not treated as a franchise anywhere else")
+        index = pages.indexOf(page)
+        self.assertTrue(pages.isTabVisible(index))
+        self.assertEqual(pages.tabText(index), "Coaches")
+        self.assertFalse(pages.isTabVisible(self.panel._coaches_index), "no second, disabled Coaches tab")
+        shown = [page.tabs.tabText(i) for i in range(page.tabs.count()) if page.tabs.isTabVisible(i)]
+        self.assertEqual(shown, ["Coaches"])
+        self.assertFalse(page.upgrade_button.isVisibleTo(page))
+        self.assertFalse(page.tabs.tabBar().isVisibleTo(page), "one page needs no tab bar")
+        self.assertEqual(page.coach_list.count(), 1)
+        self.assertIn("Bill Belichick", page.coach_list.item(0).text())
+        # a disc or a plain body afterwards brings the build staff plan back and the page goes away
+        self.panel.load_document(rr.load_body(synthetic_body()), label="body")
+        self.assertFalse(pages.isTabVisible(index))
+        self.assertTrue(pages.isTabVisible(self.panel._coaches_index))
+        self.assertEqual(pages.tabText(index), "Franchise")
+        self.assertTrue(page.tabs.tabBar().isVisibleTo(page))
+
+    def test_a_coach_edit_undoes_shows_in_my_changes_and_reaches_the_signed_copy(self) -> None:
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        page = self.panel.franchise_panel
+        before = self.source.joinpath("53450030", "0001", "SAVEGAME.DAT").read_bytes()
+        self.assertTrue(page.set_coach_value(0, "overall", 88))
+        self.assertTrue(page.set_coach_value(0, "wins", 80))
+        self.assertEqual(page._save.coaches()[0].ratings["overall"], 88)
+        self.assertIn("2 coach edits", page.dirty_label.text())
+        self.assertTrue(self.panel.is_dirty())
+        self.panel.undo()
+        self.assertEqual(page._save.coaches()[0].fields["wins"], 75)
+        self.panel.redo()
+        self.panel.refresh_diff()
+        report = self.panel.report.toPlainText()
+        self.assertIn("Coach changes (2), written by Save Xbox save copy:", report)
+        self.assertIn("Overall 60 → 88", report)
+        # a player edit and the coach edits travel in the same signed copy
+        player = self.panel.document.players[0]
+        self.panel.set_field(player, "speed", 21)
+        receipt = self.panel.write_copy_to(self.root / "copy")
+        self.assertTrue(receipt["signed"])
+        container = rr.SaveContainer.load(self.root / "copy")
+        self.assertTrue(container.verified)
+        back = fs.FranchiseSave.roster_save(container.savegame)
+        self.assertEqual((back.coaches()[0].ratings["overall"], back.coaches()[0].fields["wins"]), (88, 80))
+        self.assertEqual(rr.load_save(self.root / "copy").players[0].record.values["speed"], 21)
+        self.assertEqual(self.source.joinpath("53450030", "0001", "SAVEGAME.DAT").read_bytes(), before)
+
+    def test_a_refused_value_changes_nothing(self) -> None:
+        page = self.panel.franchise_panel
+        depth = self.panel.undo_stack.depth
+        self.assertFalse(page.set_coach_value(0, "overall", 300))
+        self.assertIn("Refused", page.status_label.text())
+        self.assertEqual(self.panel.undo_stack.depth, depth)
+        self.assertEqual(page._save.coaches()[0].ratings["overall"], 60)
+
+    def test_a_head_coach_swap_goes_through_the_composed_path_and_undoes(self) -> None:
+        page = self.panel.franchise_panel
+        heads_before = page._save.head_coaches()
+        self.assertEqual(heads_before.get(0), 0)
+        # one coach record: a swap needs two employed coaches, so the page refuses in its own words
+        self.assertFalse(page.swap_head_coaches(0, 1))
+        self.assertEqual(page._save.head_coaches(), heads_before)
+
+
+@unittest.skipUnless(SOFTDRINK_ROSTER_SAVE.is_file(), f"SOFTDRINK roster save absent: {SOFTDRINK_ROSTER_SAVE}")
+class RosterSaveCoachSoftdrinkTests(unittest.TestCase):
+    """b81 R5 on the real expanded roster save: edit a coach rating, write the signed copy, reload it."""
+
+    def test_a_coach_rating_round_trips_through_a_signed_copy_and_only_his_record_changes(self) -> None:
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        application = _app()
+        panel = RosterEditorPanel()
+        try:
+            self.assertTrue(panel.load_save(SOFTDRINK_ROSTER_SAVE))
+            page = panel.franchise_panel
+            self.assertTrue(page.coaches_only)
+            coach = page._save.coaches()[0]
+            wanted = 77 if coach.ratings["overall"] != 77 else 76
+            started = time.perf_counter()
+            self.assertTrue(page.set_coach_value(coach.index, "overall", wanted))
+            self.assertLess(time.perf_counter() - started, 0.5, "a coach bar step is interactive")
+            with tempfile.TemporaryDirectory() as folder:
+                receipt = panel.write_copy_to(Path(folder) / "copy.zip")
+                self.assertTrue(receipt["signed"])
+                container = rr.SaveContainer.load(Path(folder) / "copy.zip")
+                self.assertTrue(container.verified)
+                back = fs.FranchiseSave.roster_save(container.savegame)
+                self.assertEqual(back.coaches()[coach.index].ratings["overall"], wanted)
+                source = rr.SaveContainer.load(SOFTDRINK_ROSTER_SAVE).savegame
+                changed = [i for i, (a, b) in enumerate(zip(source, container.savegame)) if a != b]
+                record = back._coach_offset(coach.index)
+                self.assertEqual(changed, [record + fs.COACH_RATINGS_OFFSET], "one byte: his Overall")
+        finally:
+            panel.deleteLater()
+            application.processEvents()
+
+
+# --------------------------------------------------------------------------------------------- R8 schedule
+def _real_franchise(name: str):
+    from mod_editor.core import nfl2k5_franchise_save as fs
+    from test_nfl2k5_franchise_save import FIXTURES
+    folder = FIXTURES / name
+    if not folder.is_dir():
+        raise unittest.SkipTest(f"franchise fixture absent: {folder}")
+    return fs.FranchiseSave(rr.SaveContainer.load(folder).savegame)
+
+
+class ScheduleCoreTests(unittest.TestCase):
+    def test_the_retail_season_checks_clean_and_a_removed_game_is_flagged_then_restored(self) -> None:
+        save = _real_franchise("f0")                     # 2004, week 0, nothing played
+        report = save.schedule_integrity()
+        self.assertEqual((report["weeks"], report["expected"]), (17, 16))
+        self.assertEqual(report["flagged"], [])
+        self.assertIn("All 32 clubs have 16 games", report["summary"])
+        week = 2
+        before = [save.game(week, slot) for slot in range(17)]
+        games = [g for g in before if g.exists]
+        removed = save.remove_game(week, 3)
+        self.assertEqual((removed.home, removed.away), (games[3].home, games[3].away))
+        after = [g for g in (save.game(week, slot) for slot in range(17)) if g.exists]
+        self.assertEqual([(g.home, g.away) for g in after], [(g.home, g.away) for g in games[:3] + games[4:]])
+        self.assertEqual(after[3].slot, 3, "the later games moved up one cell")
+        self.assertEqual(save.game(week, len(games) - 1).kind, 7, "the old last cell is a row end now")
+        self.assertEqual(save.game(week, len(games) - 1).flags, 0)
+        flagged = {row["name"] for row in save.schedule_integrity()["flagged"]}
+        self.assertEqual(flagged, {save.team_abbreviation(removed.home), save.team_abbreviation(removed.away)})
+        added = save.add_game(week, home=removed.home, away=removed.away, month=removed.month, day=removed.day,
+                              hour=removed.hour, minute=removed.minute)
+        self.assertEqual((added.slot, added.slot_code, added.flags), (len(games) - 1, removed.slot_code, 0x0101))
+        self.assertEqual(save.schedule_integrity()["flagged"], [])
+
+    def test_refusals_say_why_and_change_nothing(self) -> None:
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        save = _real_franchise("f0")
+        original = save.to_bytes()
+        game = save.game(0, 0)
+        cases = [
+            (lambda: save.add_game(0, home=game.home, away=31 if game.away != 31 else 30, month=9, day=9, hour=1,
+                                   minute=0), "already plays in week 1"),
+            (lambda: save.add_game(17, home=0, away=1, month=1, day=2, hour=1, minute=0), "not a regular-season week"),
+            (lambda: save.add_game(4, home=5, away=5, month=10, day=3, hour=1, minute=0), "cannot play itself"),
+            (lambda: save.add_game(4, home=32, away=5, month=10, day=3, hour=1, minute=0), "outside 0..31"),
+            (lambda: save.remove_game(4, 16), "holds no game"),
+            (lambda: save.clear_week(19), "not a regular-season week"),
+        ]
+        for action, words in cases:
+            with self.subTest(words=words):
+                with self.assertRaisesRegex(fs.FranchiseSaveError, words):
+                    action()
+                self.assertEqual(save.to_bytes(), original)
+
+    def test_played_weeks_need_the_override_and_scores_move_with_their_games(self) -> None:
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        save = _real_franchise("256B40374FD6-Franchise1")          # 2011, the whole season played
+        week = 5
+        games = save.games(rows=[week])
+        self.assertTrue(all(g.played for g in games))
+        with self.assertRaisesRegex(fs.FranchiseSaveError, "Allow editing played games"):
+            save.remove_game(week, 0)
+        with self.assertRaisesRegex(fs.FranchiseSaveError, "Allow editing played games"):
+            save.clear_week(week)
+        save.remove_game(week, 0, allow_played=True)
+        moved = save.game(week, 0)
+        self.assertEqual((moved.home, moved.away, moved.scores), (games[1].home, games[1].away, games[1].scores))
+        self.assertEqual(save.clear_week(week, allow_played=True), len(games) - 1)
+        self.assertEqual(save.games(rows=[week]), [])
+        self.assertTrue(all(save.game(week, slot).kind == 7 for slot in range(17)))
+
+
+class SchedulePanelTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.application = _app()
+
+    def setUp(self) -> None:
+        from test_franchise_panel_qt import synthetic_franchise_with_coach
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.panel = RosterEditorPanel()
+        self.payload = synthetic_franchise_with_coach(year_field=7, user_team=0)
+        self.assertTrue(self.panel.load_save(write_container(self.root / "fr", self.payload)))
+        self.page = self.panel.franchise_panel
+        self.page.tabs.setCurrentIndex(1)
+
+    def tearDown(self) -> None:
+        self.panel.deleteLater()
+        self.application.processEvents()
+        self.temp.cleanup()
+
+    def week(self, row: int) -> list[tuple[int, int]]:
+        return [(g.away, g.home) for g in self.page.save.games(rows=[row])]
+
+    def test_add_remove_and_clear_journal_undo_and_reach_the_copy(self) -> None:
+        page = self.page
+        page.week_combo.setCurrentIndex(1)                       # week 2: empty in the synthetic save
+        self.assertTrue(page.add_game_button.isEnabled())
+        self.assertIn("Season check (17 weeks, 16 games a club)", page.integrity_label.text())
+        page.away_combo.setCurrentIndex(page.away_combo.findData(2))
+        page.home_combo.setCurrentIndex(page.home_combo.findData(0))
+        page.month_spin.setValue(9)
+        page.day_spin.setValue(19)
+        page.add_game_button.click()
+        self.assertEqual(self.week(1), [(2, 0)], page.status_label.text())
+        self.assertEqual(page.save.game(1, 0).slot_code, 0x0A, "the year byte comes from the season's games")
+        self.assertEqual(page.integrity_table.rowCount(), page.save.league_team_count)
+        page.add_game_button.click()                             # the same teams again that week
+        self.assertIn("already plays in week 2", page.status_label.text())
+        self.assertEqual(self.week(1), [(2, 0)])
+        page.schedule_table.selectRow(0)
+        page.remove_game_button.click()
+        self.assertEqual(self.week(1), [])
+        self.panel.undo()
+        self.assertEqual(self.week(1), [(2, 0)])
+        page.week_combo.setCurrentIndex(0)                       # week 1 has a played game
+        page.clear_week_button.click()
+        self.assertIn("Allow editing played games", page.status_label.text())
+        self.assertEqual(len(self.week(0)), 2)
+        page.allow_played_check.setChecked(True)
+        page.clear_week_button.click()
+        self.assertEqual(self.week(0), [])
+        self.panel.undo()
+        self.assertEqual(len(self.week(0)), 2)
+        self.panel.refresh_diff()
+        self.assertIn("Week 2: add", self.panel.report.toPlainText())
+        receipt = self.panel.write_copy_to(self.root / "copy")
+        self.assertTrue(receipt["signed"])
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        back = fs.FranchiseSave(rr.SaveContainer.load(self.root / "copy").savegame)
+        self.assertEqual([(g.away, g.home) for g in back.games(rows=[1])], [(2, 0)])
+
+    def test_playoff_rounds_keep_the_week_tools_off_and_say_why(self) -> None:
+        page = self.page
+        page.week_combo.setCurrentIndex(17)
+        for button in (page.add_game_button, page.remove_game_button, page.clear_week_button):
+            self.assertFalse(button.isEnabled())
+        self.assertIn("bracket", page.add_game_button.toolTip())
+        page.week_combo.setCurrentIndex(page.week_combo.count() - 1)        # All postseason
+        self.assertFalse(page.clear_week_button.isEnabled())
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -2118,10 +2118,12 @@ class RosterEditorPanel(QWidget):
         from mod_editor.core import nfl2k5_franchise_save as fs
         if self.document is None:
             return False
+        if edit.kind == "coach" and self.franchise_panel.coaches_only:
+            return self._coach_number_edit(edit)
         before = self.document.to_body()
         old_edits = self.franchise_panel._edits[:self.franchise_panel._cursor]
-        candidate = fs.FranchiseSave(before)
         try:
+            candidate = self.franchise_panel._new_save(before)      # a franchise save, or a roster save's coaches (R5)
             edit.apply(candidate)
             # the roster codec is consulted only when the edit touched roster state (beta-63.1)
             from mod_editor.core.nfl2k5_practice_squad import validate_save_edit
@@ -2138,6 +2140,44 @@ class RosterEditorPanel(QWidget):
             lambda: self._restore_composed(after, old_edits + [edit])))
         self.franchise_panel._refresh_all()
         self.franchise_panel._set_status(edit.label)
+        return True
+
+    def _coach_number_edit(self, edit) -> bool:
+        """b81 R5: one coach number, rating or play-calling share in a ROSTER save, written straight into the coach
+        record inside the live arena. The composed path re-encodes and re-decodes all 4,164 records twice (about 3 s
+        an edit on the SOFTDRINK save, and a coach bar sends one edit per step); a coach record holds no player data,
+        so only its 0xA8 bytes change, and Undo puts exactly those back. Save Xbox save copy encodes the roster over
+        the same arena, so the coach bytes ride along and the copy is signed as usual."""
+
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        assert self.document is not None
+        page = self.franchise_panel
+        body = self.document.body
+        try:
+            probe = page._new_save(bytes(body))
+            offset = probe._coach_offset(int(edit.args["coach"]))
+            edit.apply(probe)
+        except ValueError as exc:
+            page._last_error = str(exc)
+            page._set_status(f"Refused: {exc}")
+            self._set_status(f"Refused: {exc}")
+            return False
+        before = bytes(body[offset:offset + fs.COACH_SIZE])
+        after = bytes(probe.buffer[offset:offset + fs.COACH_SIZE])
+        if before == after:
+            return False
+        old_edits = page._edits[:page._cursor]
+
+        def put(record: bytes, edits) -> None:
+            assert self.document is not None
+            self.document.body[offset:offset + fs.COACH_SIZE] = record
+            page._edits = list(edits)
+            page._cursor = len(edits)
+            page.sync_from_roster()
+            page._set_status(edits[-1].label if edits else "No coach changes.")
+
+        put(after, old_edits + [edit])
+        self.undo_stack.push(UndoEntry(edit.label, lambda: put(before, old_edits), lambda: put(after, old_edits + [edit])))
         return True
 
     def _show_coaches_tab(self, enabled: bool, state: str) -> None:
@@ -2423,6 +2463,7 @@ class RosterEditorPanel(QWidget):
         self.franchise_panel.clear()
         self.coaches_panel.set_roster(document, kind=kind or "disc")
         self._show_coaches_tab(self.coaches_panel.state == "disc", self.coaches_panel.state)
+        self.pages.setTabVisible(self._coaches_index, True)          # load_save hides it again for a roster save
         # an explicit load replaces the Anniversary catalog too (a routine refresh never reaches here)
         self._reload_espn25(source if kind == "disc" else None)
         self._dirty.clear()
@@ -2689,6 +2730,9 @@ class RosterEditorPanel(QWidget):
                            source=Path(path), kind="save", detection=self.detect_scheme(document))
         self._show_franchise(self._franchise_summary(container.savegame))
         self.franchise_panel.load(container, document)
+        # b81 R5: a roster save's coaches are edited on the Coaches page beside Roster; the build staff plan (also
+        # called Coaches) is for discs, so it steps aside instead of showing a second, disabled Coaches tab
+        self.pages.setTabVisible(self._coaches_index, not self.franchise_panel.coaches_only)
         return True
 
     @staticmethod
@@ -2745,7 +2789,9 @@ class RosterEditorPanel(QWidget):
         lost = (f"{len(self._dirty)} player{'s' if len(self._dirty) != 1 else ''} edited here" if self._dirty else "")
         if staff:
             lost += (" and " if lost else "") + f"{staff} staff change{'s' if staff != 1 else ''}"
-        save_hint = ("Use Save Xbox save copy to keep franchise changes."
+        save_hint = ("Use Save Xbox save copy to keep coach changes." if self.franchise_panel.edits
+                     and self.franchise_panel.coaches_only else
+                     "Use Save Xbox save copy to keep franchise changes."
                      if self.franchise_panel.edits else
                      "Export roster edits or save a copy first to keep them.")
         box.setText(f"{lost or 'Your edits'} would be lost.{anniversary}\n\n{save_hint}")
@@ -4461,6 +4507,11 @@ class RosterEditorPanel(QWidget):
                                  f"{rr.position_name(now, self._scheme)}")
                 else:
                     lines.append(f"    {caption}: {was} -> {now}")
+        journal = self.franchise_panel.edit_labels()
+        if journal:                   # b81: coach and franchise edits are changes too, written with the save copy
+            lines += ["", f"{'Coach' if self.franchise_panel.coaches_only else 'Franchise'} changes "
+                          f"({len(journal)}), written by Save Xbox save copy:"]
+            lines += [f"    {label}" for label in journal]
         self.report.setPlainText("\n".join(lines))
         self.tabs.setCurrentIndex(self.tabs.count() - 1)
         return entries
@@ -4714,7 +4765,8 @@ class RosterEditorPanel(QWidget):
             self._edits_snapshot = self.edits_key()
         self.roster_edits_changed.emit(str(path))
         self._set_status(f"Roster edits exported to {path} ({len(document.get('edits', []))} players). "
-                         + ("Franchise changes still need Save Xbox save copy." if franchise_pending
+                         + (("Coach changes" if self.franchise_panel.coaches_only else "Franchise changes")
+                            + " still need Save Xbox save copy." if franchise_pending
                             else "Build uses this saved file. Export again after further changes."))
         return document
 

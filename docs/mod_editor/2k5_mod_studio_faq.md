@@ -483,6 +483,8 @@ Finn 4.0.0.41 reads only some of the name locations an expanded roster can use. 
 
 Open **★ Rosters** and press **Open Xbox save (Finn's zip)…**: it takes the same Action Replay `.zip`. Ctrl+F (or **Find…**) is Finn's Find Player and searches every team, the reserves, the free agents and the draft class. Ctrl+C, Ctrl+V and Ctrl+Alt+A copy, paste and paste attributes only, as in Finn; PgUp and PgDn in the editor move to the previous or next player; right-click a player for Place on IR and the rest of Finn's player menu. The guide's **Coming from Flying Finn's editor** table lists every place.
 
+Coaches in a roster save are on the **Coaches** tab beside **Roster**, and a franchise save's schedule has Finn's Add Game, Remove Game, Clear Week and Home/Away check on **Franchise → Schedule**.
+
 Two things work differently on purpose. **Save Xbox save copy…** writes a new signed copy in a folder you choose and never changes the zip you opened (Finn saved over it), so use the new zip in place of the old one. And **Paste player** keeps the target's depth place, returner locks, injury and IR state and star tag, because on a SOFTDRINK roster copying those can give a team two kick returners or a player marked on IR without an IR slot.
 
 ## Which files help diagnose a franchise freeze or an unexpected portrait?

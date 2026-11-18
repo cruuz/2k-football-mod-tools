@@ -1404,7 +1404,14 @@ $1000-unit value the game keeps, and every team's salary against the cap. **Sche
 22 × 17 grid week by week (away, home, date, kick-off, played, score); pick a game, change the teams,
 date or time and press **Apply to this game**, or **Swap home/away**. A game that has been played is
 refused with the reason unless you tick **Allow editing played games**; its score stays read-only
-because which side the quarter bytes belong to is still a hypothesis. **Coaches** lists every coach
+because which side the quarter bytes belong to is still a hypothesis. Finn's week tools are there too, for
+regular-season weeks: **Add game to this week** (the teams, date and kick-off set above; refused if either team
+already plays that week or the week is full), **Remove this game** (the week's later games move up one place) and
+**Clear this week**; a week with a played game needs the same tick. Playoff rounds keep their games, because the
+bracket keeps its seeds by position. Under the week list, **Season check** is Finn's Home/Away table: every club's
+home and away games, with a plain note for any club that is not at the season's count (16 in 17 weeks, 17 in 18),
+whose home and away differ by more than one, or that plays twice in a week. These edits change this season's grid;
+the next season starts from the schedule template as usual. **Coaches** lists every coach
 record with his team: seasons, wins / losses / ties, winning seasons, Super Bowls (roster: the appearances
 the roster gives him; Super Bowls played in the franchise count in his Super Bowl wins and losses), playoff and Super
 Bowl records, the photo and body ids, the run % playcalling split, then the 23 ratings and the ten
@@ -1421,6 +1428,13 @@ with the byte ranges it touched. Each tab undoes per action and the header count
 top, so the two never fight over the arena. In game, check the salary cap edit first (the cap projection
 is the game's own arithmetic), then a moved user team, then a schedule change; everything but the year
 rule and the IR move is unwitnessed.
+
+**Coaches in a roster save.** Finn's editor edits coaches in any save, and so does this page: open a roster save
+(not a franchise) and a **Coaches** tab appears beside **Roster**. It is the Franchise page's Coaches screen: every
+coach's numbers, the 23 ratings, the ten formation shares, and the head-coach moves (swap, fire and hire, hire).
+Each change undoes with the page's Undo, is listed by **Show my changes**, and is written by **Save Xbox save copy…**
+together with your player edits into one signed copy. Not yet tested in the game. (For a game disc, the **Coaches**
+tab is the build's staff plan instead.)
 
 ## ★ Models: every model out to Blender and back
 

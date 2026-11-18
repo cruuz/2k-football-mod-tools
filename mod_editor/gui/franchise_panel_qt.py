@@ -29,7 +29,7 @@ module says otherwise (the year rule, the IR move); the activation is the unlabe
 
 from __future__ import annotations
 
-from mod_editor.gui.ux_text import plain_error
+from mod_editor.gui.ux_text import Details, plain_error
 
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -150,6 +150,13 @@ class FranchiseEdit:
         elif self.kind == "game":
             save.set_game(int(a["row"]), int(a["slot"]), allow_played=bool(a.get("allow_played", False)),
                           **{k: int(v) for k, v in dict(a["fields"]).items()})
+        elif self.kind == "game_add":           # b81 R8: Finn's Add Game, Remove Game and Clear Week
+            save.add_game(int(a["row"]), allow_played=bool(a.get("allow_played", False)),
+                          **{k: int(v) for k, v in dict(a["fields"]).items()})
+        elif self.kind == "game_remove":
+            save.remove_game(int(a["row"]), int(a["slot"]), allow_played=bool(a.get("allow_played", False)))
+        elif self.kind == "week_clear":
+            save.clear_week(int(a["row"]), allow_played=bool(a.get("allow_played", False)))
         elif self.kind == "coach":
             save.set_coach_field(int(a["coach"]), str(a["name"]), int(a["value"]))
         elif self.kind == "coach_swap":
@@ -403,6 +410,9 @@ class FranchisePanel(QWidget):
         self._document: rr.RosterDocument | None = None
         self._base = b""
         self._save: fs.FranchiseSave | None = None
+        # b81 R5: "franchise", or "roster" for a roster save, where only the Coaches tab shows (Finn edits coaches in any
+        # save); the same page, journal and writers serve both
+        self._mode = ""
         self._edits: list[FranchiseEdit] = []
         self._cursor = 0
         self._quiet = False
@@ -431,6 +441,9 @@ class FranchisePanel(QWidget):
     def _set_tab_visible(self, visible: bool) -> None:
         if self._host is None:
             return
+        self._host.setTabText(self._host_index, "Coaches" if self._mode == "roster" else "Franchise")
+        self._host.setTabToolTip(self._host_index, "The coaches of this roster save: their numbers, ratings, play calling "
+                                                   "and head-coach moves." if self._mode == "roster" else "")
         if not visible and self._host.currentIndex() == self._host_index:
             self._host.setCurrentIndex(0)
         self._host.setTabVisible(self._host_index, visible)
@@ -440,7 +453,22 @@ class FranchisePanel(QWidget):
 
     @property
     def active(self) -> bool:
-        return self._save is not None
+        """A FRANCHISE save is loaded (a roster save's coaches use this page too; see ``coaches_only``)."""
+
+        return self._save is not None and self._mode == "franchise"
+
+    @property
+    def coaches_only(self) -> bool:
+        """b81 R5: a roster save is loaded and this page shows only its Coaches tab."""
+
+        return self._save is not None and self._mode == "roster"
+
+    def _new_save(self, payload: bytes) -> fs.FranchiseSave:
+        """A FranchiseSave over ``payload`` in this page's mode (a roster save has no franchise season)."""
+
+        if self._mode == "roster":
+            return fs.FranchiseSave.roster_save(payload, container=self._container, base_year=self._base_year)
+        return fs.FranchiseSave(payload, container=self._container)
 
     @property
     def save(self) -> fs.FranchiseSave | None:
@@ -483,7 +511,8 @@ class FranchisePanel(QWidget):
         self.tabs = QTabWidget()
         self.tabs.addTab(self._build_overview(), "Overview")
         self.tabs.addTab(self._build_schedule(), "Schedule")
-        self.tabs.addTab(self._build_coaches(), "Coaches")
+        self.coaches_page = self._build_coaches()
+        self.tabs.addTab(self.coaches_page, "Coaches")
         self._ir_tab_index = self.tabs.addTab(self._build_injured_reserve(), "Injured Reserve")
         self.tabs.addTab(self._build_checks(), "Checks")
         self.tabs.currentChanged.connect(self._tab_changed)
@@ -585,6 +614,23 @@ class FranchisePanel(QWidget):
         self.schedule_table.itemSelectionChanged.connect(self._schedule_row_selected)
         box.addWidget(self.schedule_table, 1)
 
+        # b81 R8: Finn's Home/Away table, read-only, with what looks wrong said in words
+        self.integrity_label = QLabel("")
+        self.integrity_label.setWordWrap(True)
+        self.integrity_label.setAccessibleName("Season check")
+        box.addWidget(self.integrity_label)
+        self.integrity_details = Details("Games per club (home and away)")
+        self.integrity_table = QTableWidget(0, 5)
+        self.integrity_table.setHorizontalHeaderLabels(["Club", "Home", "Away", "Games", "Check"])
+        self.integrity_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.integrity_table.verticalHeader().setVisible(False)
+        self.integrity_table.horizontalHeader().setStretchLastSection(True)
+        self.integrity_table.setAccessibleName("Games per club")
+        self.integrity_table.setMinimumHeight(120)
+        self.schedule_table.setMinimumHeight(140)       # the open check never squeezes the week to one row
+        self.integrity_details.content.addWidget(self.integrity_table)
+        box.addWidget(self.integrity_details)
+
         editor = QGroupBox("Edit the selected game")
         grid = QGridLayout(editor)
         self.away_combo = QComboBox()
@@ -639,10 +685,25 @@ class FranchisePanel(QWidget):
         buttons.addWidget(schedule_note)
         buttons.addStretch(1)
         grid.addLayout(buttons, 2, 0, 1, 4)
+        week_tools = QHBoxLayout()
+        self.add_game_button = QPushButton("Add game to this week")
+        self.add_game_button.setToolTip("Finn's Add Game: a new game in this week with the teams, date and kick-off "
+                                        "above. Regular-season weeks only; refused if either team already plays.")
+        self.add_game_button.clicked.connect(self._add_game_clicked)
+        self.remove_game_button = QPushButton("Remove this game")
+        self.remove_game_button.setToolTip("Finn's Remove Game: the week's later games move up one place.")
+        self.remove_game_button.clicked.connect(self._remove_game_clicked)
+        self.clear_week_button = QPushButton("Clear this week")
+        self.clear_week_button.setToolTip("Finn's Clear Week: remove every game of this week.")
+        self.clear_week_button.clicked.connect(self._clear_week_clicked)
+        for button in (self.add_game_button, self.remove_game_button, self.clear_week_button):
+            week_tools.addWidget(button)
+        week_tools.addStretch(1)
+        grid.addLayout(week_tools, 3, 0, 1, 4)
         self.game_notice = QLabel("")
         self.game_notice.setWordWrap(True)
         self.game_notice.setAccessibleName("Selected game editing notice")
-        grid.addWidget(self.game_notice, 3, 0, 1, 4)
+        grid.addWidget(self.game_notice, 4, 0, 1, 4)
         box.addWidget(editor)
         return page
 
@@ -837,29 +898,57 @@ class FranchisePanel(QWidget):
         FranchiseUpgradeDialog(self._container.path, self).exec_()
 
     def load(self, container: rr.SaveContainer, document: rr.RosterDocument) -> bool:
-        """Adopt a save; returns False (and stays hidden) unless it is a franchise save."""
+        """Adopt a save; returns False (and stays hidden) unless it is a franchise save, or a roster save with coach
+        records, which shows only the Coaches tab (b81 R5)."""
 
         self.clear()
-        if not fs.is_franchise_save(container.savegame):
-            return False
+        if fs.is_franchise_save(container.savegame):
+            mode = "franchise"
+        else:
+            try:
+                fs.FranchiseSave.roster_save(container.savegame)
+            except fs.FranchiseSaveError:
+                return False
+            mode = "roster"
+        self._mode = mode
         self._container = container
         self._document = document
         self._base = bytes(container.savegame)
         self._base_year = document.base_year
-        self._save = fs.FranchiseSave(self._base, container=container, source=str(container.path),
-                                      base_year=self._base_year)
+        if mode == "roster":
+            self._save = fs.FranchiseSave.roster_save(self._base, container=container, source=str(container.path),
+                                                      base_year=self._base_year)
+        else:
+            self._save = fs.FranchiseSave(self._base, container=container, source=str(container.path),
+                                          base_year=self._base_year)
         self._players = {p.index: p for p in document.players if p.pool == "primary"}
+        self._show_mode_tabs()
         self._populate_static()
-        self._refresh_all(force_checks=True)
+        self._refresh_all(force_checks=mode == "franchise")
         self._set_tab_visible(True)
-        self._set_status(f"Franchise save: {self._save.one_line()}")
+        self._set_status(f"Franchise save: {self._save.one_line()}" if mode == "franchise" else
+                         f"{self._save.one_line()}. Coach edits are written into your signed save copy with the "
+                         f"roster edits. Not yet tested in-game.")
         return True
+
+    def _show_mode_tabs(self) -> None:
+        """A roster save shows the Coaches tab alone; a franchise save shows every tab."""
+
+        coaches = self.tabs.indexOf(self.coaches_page)
+        for index in range(self.tabs.count()):
+            self.tabs.setTabVisible(index, self._mode != "roster" or index == coaches)
+        self.upgrade_button.setVisible(self._mode != "roster")
+        self.tabs.tabBar().setVisible(self._mode != "roster")      # one page needs no tab bar
+        if self._mode == "roster":
+            self.tabs.setCurrentIndex(coaches)
 
     def clear(self) -> None:
         self._container = None
         self._document = None
         self._base = b""
         self._save = None
+        self._mode = ""
+        self._show_mode_tabs()
         self._edits = []
         self._cursor = 0
         self._players = {}
@@ -870,7 +959,7 @@ class FranchisePanel(QWidget):
 
     def showEvent(self, event) -> None:  # noqa: N802 - Qt naming
         super().showEvent(event)
-        if self.active:
+        if self._save is not None:
             self.sync_from_roster()
 
     def sync_from_roster(self) -> bool:
@@ -879,7 +968,10 @@ class FranchisePanel(QWidget):
         if self._save is None or self._document is None:
             return False
         try:
-            body = self._document.to_body()
+            # b81 R5: a roster save's page shows only its coaches, which live in the arena bytes themselves; encoding
+            # every player record first (seconds on a 4,096-player roster) would change nothing it shows
+            body = (bytes(self._document.body) if self._mode == "roster" and self.shared_roster_panel is not None
+                    else self._document.to_body())
         except Exception as exc:  # noqa: BLE001 - one message, the roster page's own write shows the same
             self._last_error = f"the roster edits could not be applied first: {plain_error(exc)}"
             self._set_status(f"Refused: {self._last_error}")
@@ -908,6 +1000,9 @@ class FranchisePanel(QWidget):
     # ------------------------------------------------------------------ the journal
     def _fresh_save(self) -> fs.FranchiseSave:
         assert self._container is not None
+        if self._mode == "roster":
+            return fs.FranchiseSave.roster_save(self._base, container=self._container, source=str(self._container.path),
+                                                base_year=self._base_year)
         return fs.FranchiseSave(self._base, container=self._container, source=str(self._container.path),
                                 base_year=self._base_year)
 
@@ -938,7 +1033,7 @@ class FranchisePanel(QWidget):
         if not self.sync_from_roster():
             return False
         before = self._save.to_bytes()
-        candidate = fs.FranchiseSave(before, container=self._container)
+        candidate = self._new_save(before)
         candidate.original = self._save.original
         try:
             edit.apply(candidate)
@@ -982,7 +1077,7 @@ class FranchisePanel(QWidget):
             return ""
         edit = self._edits[self._cursor]
         before = self._save.to_bytes()
-        candidate = fs.FranchiseSave(before, container=self._container)
+        candidate = self._new_save(before)
         candidate.original = self._save.original
         try:
             edit.apply(candidate)
@@ -1042,6 +1137,9 @@ class FranchisePanel(QWidget):
     # ------------------------------------------------------------------ static lists
     def _populate_static(self) -> None:
         assert self._save is not None
+        if self._mode == "roster":                  # b81 R5: a roster save has coaches and nothing seasonal
+            self._fill_coach_list(select=None, first_row=True)
+            return
         self._quiet = True
         try:
             self.control_list.clear()
@@ -1074,6 +1172,11 @@ class FranchisePanel(QWidget):
 
     # ------------------------------------------------------------------ refresh
     def _refresh_all(self, *, force_checks: bool = False) -> None:
+        if self._mode == "roster":
+            self._refresh_header()
+            self._fill_coach_list()
+            self._refresh_coach()
+            return
         self._refresh_header()
         self._refresh_overview()
         self._refresh_schedule()
@@ -1094,7 +1197,8 @@ class FranchisePanel(QWidget):
         self.setEnabled(loaded)
         self.title_label.setText(self._save.one_line() if loaded else "No franchise save loaded.")
         count = self._cursor
-        self.dirty_label.setText(f"● {count} franchise edit{'s' if count != 1 else ''} (not yet written)" if count else "")
+        kind = "coach" if self._mode == "roster" else "franchise"
+        self.dirty_label.setText(f"● {count} {kind} edit{'s' if count != 1 else ''} (not yet written)" if count else "")
         self.undo_button.setEnabled(loaded and self._cursor > 0)
         self.redo_button.setEnabled(loaded and self._cursor < len(self._edits))
         if self.shared_roster_panel is not None:
@@ -1164,6 +1268,7 @@ class FranchisePanel(QWidget):
             if self._save is None:
                 self.schedule_table.setRowCount(0)
                 self.week_label.setText("")
+                self._refresh_integrity()
                 self._fill_game_editor()
                 return
             row = self.week_combo.currentIndex()
@@ -1195,6 +1300,7 @@ class FranchisePanel(QWidget):
             self.schedule_table.resizeColumnsToContents()
             played = sum(1 for g in games if g.played)
             self.week_label.setText(f"{len(games)} games, {played} played")
+            self._refresh_integrity()
             if games:
                 selected_line = next((i for i, game in enumerate(games)
                                       if (game.row, game.slot) == selected_cell), 0)
@@ -1202,6 +1308,95 @@ class FranchisePanel(QWidget):
             self._fill_game_editor()
         finally:
             self._quiet = False
+
+    def _refresh_integrity(self) -> None:
+        """The season check under the week table (b81 R8) and which week tools apply to the week shown."""
+
+        regular = (self._save is not None and self._mode == "franchise"
+                   and 0 <= self.week_combo.currentIndex() < self._save.regular_season_weeks)
+        why = "" if regular else "Playoff rounds come from the bracket; add, remove and clear work on regular-season weeks."
+        for button in (self.add_game_button, self.remove_game_button, self.clear_week_button):
+            button.setEnabled(regular)
+        self.add_game_button.setToolTip(why or "Finn's Add Game: a new game in this week with the teams, date and "
+                                               "kick-off above. Refused if either team already plays that week.")
+        if self._save is None or self._mode != "franchise":
+            self.integrity_label.setText("")
+            self.integrity_table.setRowCount(0)
+            return
+        try:
+            report = self._save.schedule_integrity()
+        except fs.FranchiseSaveError as exc:
+            self.integrity_label.setText(f"Season check unavailable: {exc}")
+            self.integrity_table.setRowCount(0)
+            return
+        self.integrity_label.setText(f"Season check ({report['weeks']} weeks, {report['expected']} games a club): "
+                                     + report["summary"])
+        self.integrity_table.setRowCount(len(report["rows"]))
+        for line, row in enumerate(report["rows"]):
+            cells = (row["name"], str(row["home"]), str(row["away"]), str(row["games"]),
+                     "; ".join(row["notes"]) or "OK")
+            for column, text in enumerate(cells):
+                item = QTableWidgetItem(text)
+                if column in (1, 2, 3):
+                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                self.integrity_table.setItem(line, column, item)
+        self.integrity_table.resizeColumnsToContents()
+
+    def schedule_integrity(self) -> dict[str, Any]:
+        return self._save.schedule_integrity() if self._save is not None else {}
+
+    def add_game(self, row: int, **fields: int) -> bool:
+        """Finn's Add Game through the journal (refusals say why and change nothing)."""
+
+        if self._save is None:
+            return False
+        names = f"{self._team_short(fields.get('away', 0))} at {self._team_short(fields.get('home', 0))}"
+        return self.push(FranchiseEdit("game_add", f"{self._save.schedule_row_name(row).title()}: add {names} "
+                                                   f"{fields.get('month')}/{fields.get('day')}",
+                                       {"row": row, "fields": dict(fields),
+                                        "allow_played": self.allow_played_check.isChecked()}))
+
+    def remove_game(self, row: int, slot: int) -> bool:
+        if self._save is None:
+            return False
+        try:
+            game = self._save.game(row, slot)
+        except fs.FranchiseSaveError as exc:
+            self._set_status(f"Refused: {exc}")
+            return False
+        names = f"{self._team_short(game.away)} at {self._team_short(game.home)}"
+        return self.push(FranchiseEdit("game_remove", f"{game.row_name.title()}: remove {names}",
+                                       {"row": row, "slot": slot, "allow_played": self.allow_played_check.isChecked()}))
+
+    def clear_week(self, row: int) -> bool:
+        if self._save is None:
+            return False
+        return self.push(FranchiseEdit("week_clear", f"{self._save.schedule_row_name(row).title()}: clear every game",
+                                       {"row": row, "allow_played": self.allow_played_check.isChecked()}))
+
+    def _add_game_clicked(self) -> None:
+        row = self.week_combo.currentIndex()
+        if self._save is None or not 0 <= row < fs.GRID_ROWS:
+            return
+        home, away = self.home_combo.currentData(), self.away_combo.currentData()
+        if home is None or away is None:
+            self._set_status("Choose the away and home teams first.")
+            return
+        self.add_game(row, home=int(home), away=int(away), month=self.month_spin.value(), day=self.day_spin.value(),
+                      hour=self.hour_spin.value(), minute=self.minute_spin.value())
+
+    def _remove_game_clicked(self) -> None:
+        game = self._selected_game()
+        if game is None:
+            self._set_status("Select a game first.")
+            return
+        self.remove_game(game.row, game.slot)
+
+    def _clear_week_clicked(self) -> None:
+        row = self.week_combo.currentIndex()
+        if self._save is None or not 0 <= row < fs.GRID_ROWS:
+            return
+        self.clear_week(row)
 
     def _selected_game(self) -> fs.Game | None:
         if self._save is None:
