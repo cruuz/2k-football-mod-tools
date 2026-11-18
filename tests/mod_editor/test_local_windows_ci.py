@@ -106,6 +106,23 @@ class PlanTests(unittest.TestCase):
 
 
 class OutputTests(unittest.TestCase):
+    def test_pytest_terminal_summary_counts_cases_once(self):
+        self.assertEqual(runner.test_count("=== 3 passed, 2 skipped, 1 xfailed, 8 subtests passed in 0.12s ==="), 6)
+        self.assertEqual(runner.test_count("2 passed in 1.2s\r\n"), 2)
+        self.assertEqual(runner.test_count("Ran 0 tests in 0.012s\nOK (skipped=1)"), 0)
+        self.assertIsNone(runner.test_count("module imported"))
+
+    def test_empty_direct_entry_point_is_a_failure(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            work = Path(temporary)
+            def no_tests(*args):
+                args[3].write_text("", encoding="utf-8")
+                return 0
+            with patch.object(runner, "run_process", side_effect=no_tests):
+                result = runner.run_file(work / "test_silent.py", work, r"Z:\repo", work, {}, work, 420, r"Z:\logs", True)
+            self.assertEqual(result.rc, 1)
+            self.assertIn("No test runner summary", result.output)
+
     def test_last_unittest_count_like_ci(self):
         self.assertEqual(runner.test_count("Ran 90 tests\nchild\nRan 1 test in 0.1s\nOK"), 1)
         self.assertIsNone(runner.test_count("no unittest report"))

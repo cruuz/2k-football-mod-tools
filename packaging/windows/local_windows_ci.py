@@ -426,8 +426,15 @@ def hydrate_release(repo: Path, work: Path) -> list[str]:
 
 
 def test_count(output: str) -> int | None:
-    matches = re.findall(r"Ran ([0-9]+) test", output)
-    return int(matches[-1]) if matches else None
+    matches = re.findall(r"^Ran ([0-9]+) tests?\b", output, re.MULTILINE)
+    if matches:
+        return int(matches[-1])
+    for line in reversed(output.splitlines()):
+        if re.search(r"\bin [0-9]+(?:\.[0-9]+)?s\b", line):
+            counts = re.findall(r"\b([0-9]+) (?:passed|failed|skipped|xfailed|xpassed|errors?)\b", line)
+            if counts:
+                return sum(map(int, counts))
+    return None
 
 
 @dataclass
@@ -672,6 +679,12 @@ def run_file(test: Path, repo: Path, repo_windows: str, runtime: Path,
     finally:
         pidfile.unlink(missing_ok=True)
     output = log.read_text(encoding="utf-8", errors="replace")
+    if rc == 0 and test_count(output) is None:
+        rc = 1
+        message = "\nNo test runner summary. Run this test file directly and check its entry point.\n"
+        output += message
+        with log.open("a", encoding="utf-8") as stream:
+            stream.write(message)
     return Result(test.name, rc, output, wine_gap_reason(test.name, rc, output))
 
 

@@ -262,6 +262,20 @@ jobs:
             fi
 
             n=$(printf '%s\n' "$out" | grep -oE 'Ran [0-9]+ test' | grep -oE '[0-9]+' | tail -1)
+            if [ "$rc" -eq 0 ] && [ -z "$n" ]; then
+              # A pytest entry point has a different summary. A missing entry point exits zero silently.
+              n=$(PYTHONPATH=packaging/windows "$PY" -c '
+          import sys
+          from pathlib import Path
+          from local_windows_ci import test_count
+          count = test_count(Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace"))
+          print("" if count is None else count)
+          ' "$OUTF")
+              if [ -z "$n" ]; then
+                rc=1
+                out="$out -- No test runner summary. Run this test file directly and check its entry point."
+              fi
+            fi
             [ -n "$n" ] && total_tests=$((total_tests + n))
 
             if [ "$rc" -eq 0 ]; then
