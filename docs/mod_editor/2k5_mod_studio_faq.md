@@ -1,8 +1,6 @@
 # 2K5 Mod Studio FAQ, beta 81
 
-Start with the [Getting Started guide](2k5_mod_studio_getting_started.md).
-These answers combine the previous release FAQ and the community reports for beta 71.1.
-A successful offline check does not establish how every change plays in a game.
+To play SOFTDRINK 2K28 v0.10, follow the five-step installation guide. To build your own mod, start with the Studio walkthrough. [Install the game](install_softdrink_2k28.md) · [Getting Started in Studio](2k5_mod_studio_getting_started.md)
 
 ## Which studio and emulator do I need?
 
@@ -483,7 +481,19 @@ Finn 4.0.0.41 reads only some of the name locations an expanded roster can use. 
 
 Keep a copy of the failing save including its companion files, the pack filename, the output from **Check disc**, and **Copy Build summary** from a custom build. Record the team, season, week, screen and last input. For portraits include the player's full name and a screenshot. An existing franchise carries its own photo assignments. Comparing that save with a new franchise from the same disc identifies which data to inspect.
 
-For a play-call or audible freeze, record the last offensive and defensive calls, input sequence and whether commentary continued. For weekly SportsCenter, include the week and whether the franchise had been reloaded. For missing players in a historical moment, include the moment and camera. The Studio can collect a freeze capture on xemu. [Freeze capture and disc check](freeze_capture_and_disc_check.md)
+For a play-call or audible freeze, record the last offensive and defensive calls, input sequence and whether commentary continued. For weekly SportsCenter, include the week and whether the franchise had been reloaded. Players have reported disappearing models in the Rams–Bengals and 49ers–Ravens Super Bowl moments. Include the play, position, camera and renderer, any equipment edits, and whether it happens when entering that moment directly from a fresh boot. A short clip can show whether the missing player still blocks or carries the ball. The Studio can collect a freeze capture on xemu. [Freeze capture and disc check](freeze_capture_and_disc_check.md)
+
+## Can I keep coaching my team after an owner warning?
+
+For a new MyNFL franchise, set **Owner Firing** to **Off** during setup. Both v0.10 editions honor that choice after a final warning. To change an existing franchise, use a save from before the dismissal.
+
+1. In Studio, open **Gameplay → Saves & Sliders**. Choose your game disc or its `default.xbe`, then the franchise’s `SAVEGAME.DAT`. Keep its matching `EXTRA` in the same folder.
+2. Select **Turn off Owner Firing in the signed franchise copy**. If the panel says **Owner Firing is Off in this franchise**, you can load that save directly with v0.10. To change only Owner Firing, clear any selected changes under **Game defaults** and leave the sliders as they are.
+3. Choose **Make a signed save copy…**. The suggested destination is a new folder. Use its `SAVEGAME.DAT` and `EXTRA` together when returning the copy to your save container, then load it with v0.10.
+
+## How do I edit one roster on a PCSX2 memory card?
+
+Open **File → PS2 Save Editor…** and choose the `.ps2` card. If it has multiple supported saves, select the roster's directory. After editing, choose a new `.ps2` filename to keep a complete card copy, or a `.psu` filename to export just that save. Studio verifies the change and the other saves before publishing a card copy. If a write fails verification, your edits stay open for a retry.
 
 ## Why does an older franchise show tackles before Week 1 or fewer draft prospects?
 
