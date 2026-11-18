@@ -122,7 +122,17 @@ class Document(unittest.TestCase):
         self.assertEqual(standard, ["00_0", "02_0", "02_2", "02_3", "09_0", "24_10", "24_9"])
         for row in rows():
             if row["texture"] == "helmet00":
-                self.assertLess(row["texels"], 900, row["selector"])      # pieces beside a logo, never a shell
+                self.assertLess(row["texels"], 1500, row["selector"])     # pieces and a keyline beside a logo, never a shell
+
+    def test_the_ravens_logo_loses_the_white_keyline_on_both_shells(self):
+        # the logo file's white outer ring (the real decal has a gold outline only): every Ravens row with the side
+        # raven repaints a ring of at least 700 texels around the two logos, to gold-on-shell or shell
+        by = {(r["selector"], r["texture"]): r for r in rows()}
+        for selector, texture in (("02H0", "helmet02"), ("02H2", "helmet02"), ("02H0", "helmet00"), ("02H2", "helmet00"),
+                                  ("02H3", "helmet00")):
+            texels = run_texels(by[(selector, texture)])
+            near = sum(1 for x, y in texels if 30 <= x < 126 and (60 <= y < 120 or 140 <= y < 200))
+            self.assertGreater(near, 700, (selector, texture))
 
     def test_home_and_away_of_one_kit_share_their_runs_except_carolina_style_0(self):
         by = {(r["selector"], r["texture"]): r for r in rows()}

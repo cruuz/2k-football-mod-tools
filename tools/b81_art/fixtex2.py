@@ -88,6 +88,22 @@ def old_ink(name, T):
         whole = [int(i) for i, s, o in zip(idx, size, old) if o >= 3 and o / s >= 0.3 and s <= 400]
         left = left | np.isin(lab, whole)
     grown = ndimage.binary_dilation(left, iterations=2) & ~footg & (cur_dev > 8.0) & z
+    if ov.get('despeckle') or ov.get('gold'):
+        # the dark alternate's drawn logo (beta 80): stray near-white texels all over it, and a gold arc of the 2004 outline
+        box = np.zeros((256, 256), bool); box[20:236, 20:142] = True
+        box &= texdet.zone_mask(fam) & ~texdet.hardware(fam)[0]
+        r_, g_, b_ = cur[..., 0], cur[..., 1], cur[..., 2]
+        extra_ = np.zeros((256, 256), bool)
+        if ov.get('despeckle'):
+            white = box & (cur.min(axis=2) > 105) & (cur.max(axis=2) - cur.min(axis=2) < 40)
+            lab, n = ndimage.label(white, structure=np.ones((3, 3), bool))
+            if n:
+                sizes = ndimage.sum(white, lab, np.arange(1, n + 1))
+                extra_ |= np.isin(lab, [i + 1 for i, s_ in enumerate(sizes) if s_ <= 5])
+        if ov.get('gold'):
+            extra_ |= ndimage.binary_dilation(box & (r_ - b_ > 55) & (r_ > 95) & (g_ > 60), iterations=1) & box & ~((r_ > 140) & (g_ < 70))
+        left = left | extra_
+        grown = grown | extra_
     # squares of the old (black) shell colour left around a screw, the flag or the shield on a recoloured shell
     boxes = np.zeros((256, 256), bool)
     for box in ov.get('shell_boxes', []):
@@ -99,6 +115,14 @@ def cleanup(name):
     T = final.helmet(name)
     d = old_ink(name, T)
     res, masks = fixtex.cleanup(name, tex=T, foot=ndimage.binary_dilation(d['foot'], iterations=1), extra=d['paint'], shell_only=d['boxes'])
+    fam = name.split('_')[0]; key = name.split('_')[1][:2] + '_' + name.split('_')[1][3:]
+    if key in OVERRIDES.get('keyline', {}).get(fam, []):
+        # the logo file's white outer keyline (the real decal has none): the ring goes back to shell
+        import keyline
+        out, ch = keyline.remove(name, res)
+        pal = np.unique(T[..., :3].reshape(-1, 3), axis=0)
+        res = res.copy(); res[ch, :3] = fixtex.nearest_palette(out[ch], pal)
+        masks['keyline'] = ch
     return T, res, d, masks
 def pair(name, s=3, box=(0, 16, 150, 240)):
     T, res, d, masks = cleanup(name)

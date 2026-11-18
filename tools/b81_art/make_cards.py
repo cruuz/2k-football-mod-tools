@@ -14,13 +14,10 @@ def kits():
 def ready(code, s, style):
     sel = f"{code}{s.upper()}{style}"
     return all((compose.R / k / f'{sel}_{v}.png').exists() for k in ('old', 'new') for v in ('helm', 'unif'))
-def run(only=None):
-    FILES.mkdir(parents=True, exist_ok=True)
-    rec_path = OUT / 'card_receipt.json'
-    receipt = json.load(open(rec_path)) if rec_path.exists() else {}
-    for code, s, style in kits():
-        if only and code not in only: continue
-        if not ready(code, s, style): continue
+def one(args):
+    code, s, style = args
+    receipt = {}
+    if True:
         for fam in ('helm', 'unif'):
             n256 = f'{fam}_{s}{code}_{style}_256'
             new, st = compose.compose(n256)
@@ -42,6 +39,16 @@ def run(only=None):
                                      new_rgba_sha256=sha(after), new_file_sha256=hashlib.sha256((FILES / fn).read_bytes()).hexdigest() if changed else None,
                                      stored_rgba_sha256=sha(q),
                                      visible_change_vs_built=int((np.abs(q.astype(int) - final.card(name).astype(int)).max(axis=2) > 12).sum()))
+    return receipt
+def run(only=None, procs=14):
+    import multiprocessing as mp
+    FILES.mkdir(parents=True, exist_ok=True)
+    rec_path = OUT / 'card_receipt.json'
+    receipt = json.load(open(rec_path)) if rec_path.exists() else {}
+    todo = [k for k in kits() if (not only or k[0] in only) and ready(*k)]
+    with mp.Pool(procs) as pool:
+        for part in pool.imap_unordered(one, todo, chunksize=1):
+            receipt.update(part)
     json.dump(receipt, open(rec_path, 'w'), indent=1, sort_keys=True)
     return receipt
 if __name__ == '__main__':

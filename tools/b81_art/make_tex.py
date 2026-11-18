@@ -24,12 +24,13 @@ def main():
             vents = masks.get('vents', np.zeros((256, 256), bool))
             st = dict(vents=int((vents & (res != T).any(axis=2)).sum()), diamond=int((masks.get('diamond', vents * 0).astype(bool) & (res != T).any(axis=2)).sum()),
                       old=int((d['left'] & ~vents).sum()), old_painted=int((d['paint'] & ~vents & (res != T).any(axis=2)).sum()),
+                      keyline=int((masks.get('keyline', vents * 0).astype(bool) & (res != T).any(axis=2)).sum()),
                       registered=d['panels'], changed=int((res != T).any(axis=2).sum()))
             cache[key] = (res, st)
         assert (res[..., 3] == T[..., 3]).all()
         Image.fromarray(res, 'RGBA').save(OUT / (name + '.png'))
         stats[name] = dict(st, before_rgba_sha256=sha(T), after_rgba_sha256=sha(res))
     json.dump(stats, open(OUT.parent / 'helmet_stats.json', 'w'), indent=1, sort_keys=True)
-    tot = {k: sum(s[k] for s in stats.values()) for k in ('vents', 'diamond', 'old', 'changed')}
+    tot = {k: sum(s.get(k, 0) for s in stats.values()) for k in ('vents', 'diamond', 'old', 'keyline', 'changed')}
     print(len(stats), tot, 'unique', len(cache))
 main()
