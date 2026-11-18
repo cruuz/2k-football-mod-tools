@@ -158,21 +158,38 @@ def materialize(recipe, directory, *, resume=False, console_target=None):
     m._require(recipe.get("schema") == "softdrink_sources/v1", "Pack has no portable Studio sources")
     root = f._path(m.platform_compat.absolute_path(f._output_path(directory)))
     local = resolve(recipe, root)
-    if console_target is not None:
-        from . import nfl2k5_console_memory as memory
-        value = memory.normalize(console_target)
-        local[memory.FIELD] = value
-        local["overrides"] = {**local.get("overrides", {}), memory.FIELD: value}
     project = compose_project(resolve(json.loads(Path(local["project"]).read_text(encoding="utf-8")), root))
     project_path = f._contained_path(root, "SOFTDRINK-league-project.json")
     recipe_path = f._contained_path(root, "SOFTDRINK-build-recipe.json")
     local["project"] = str(project_path)
+
+    def matches(path, data):
+        return path.is_file() and path.stat().st_size == len(data) and path.read_bytes() == data
+
+    if console_target is not None:
+        from . import nfl2k5_console_memory as memory
+        value = memory.normalize(console_target)
+        original_memory = memory.of(recipe)
+        overrides = dict(local.get("overrides", {}))
+        if value == 64 and original_memory != 64:
+            # The builder installs the calendar and 128-season cap together when either is enabled.
+            source_plan = build_plan(local)
+            source_plan.calendar_engine = source_plan.season_cap or source_plan.calendar_engine
+            profile = memory.recommended_profile(source_plan)
+            if profile.get("calendar_engine") is False:
+                profile["season_cap"] = False
+            overrides.update(profile)
+        # A CLI extraction already has the authored target, without the GUI's extra target field.
+        from_cli = value == original_memory and resume and matches(recipe_path, json.dumps(local, indent=2).encode("utf-8"))
+        if not from_cli:
+            local[memory.FIELD] = value
+            local["overrides"] = {**overrides, memory.FIELD: value}
     files = ((project_path, (json.dumps(project, indent=2, sort_keys=True) + "\n").encode("utf-8")),
              (recipe_path, json.dumps(local, indent=2).encode("utf-8")))
     # Verify both destinations before writing. An interruption between files is resumable.
     for path, data in files:
         if path.exists():
-            m._require(resume and path.is_file() and path.stat().st_size == len(data) and path.read_bytes() == data,
+            m._require(resume and matches(path, data),
                        f"Choose a new source folder to preserve your edits in {path.name}")
     for path, data in files:
         if not path.exists():

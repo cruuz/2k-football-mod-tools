@@ -32,8 +32,9 @@ RELEASES_API = (
     "https://api.github.com/repos/cruuz/2k-football-mod-tools/releases?per_page=10"
 )
 RELEASES_PAGE = "https://github.com/cruuz/2k-football-mod-tools/releases"
-#: The community Discord (Noah's invite, 2026-09-04): linked from the Help menu of both studios.
-COMMUNITY_DISCORD = "https://discord.gg/dpMJCnJZD"
+# Existing members can open the project server directly. New users can report issues without an invite.
+COMMUNITY_DISCORD = "https://discord.com/channels/1545254363189092372"
+ISSUES_PAGE = "https://github.com/cruuz/2k-football-mod-tools/issues"
 
 #: The release this build was cut from. Packaging updates it when a release is
 #: tagged; the check compares it with the newest published tag, which works

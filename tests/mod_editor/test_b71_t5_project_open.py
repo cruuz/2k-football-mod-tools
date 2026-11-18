@@ -183,6 +183,7 @@ class BuildTests(unittest.TestCase):
     def test_close_during_open_requests_cancel_without_blocking_dialog(self):
         from mod_editor.gui.studio_qt import StudioMainWindow
         owner=SimpleNamespace(_project_open_worker=SimpleNamespace(cancelled=threading.Event()),
+                              _update_banner=SimpleNamespace(update_in_progress=False),
                               _set_status=lambda message:None)
         event=SimpleNamespace(ignore=lambda:None)
         StudioMainWindow.closeEvent(owner,event)

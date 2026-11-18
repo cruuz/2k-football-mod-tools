@@ -17,7 +17,7 @@ checked_length:
     test cl, 1
     jnz empty
     test ecx, ecx
-    jle empty
+    jz empty                 /* live save metadata also uses the Xbox high-address kernel pool */
     jmp check_page
 
 slot 16

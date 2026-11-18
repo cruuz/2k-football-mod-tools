@@ -672,6 +672,15 @@ class StudioWindowTests(unittest.TestCase):
                     self.assertGreaterEqual(button.width(), button.sizeHint().width())   # nothing elided or clipped
                     right = button.mapTo(window, button.rect().topRight()).x()
                     self.assertLessEqual(right, window.width())
+            header_items = (window.source_pill, window.open_project_button,
+                            window.save_project_button, window.open_source_button)
+            for index, control in enumerate(header_items):
+                with self.subTest(font=tag or "platform", width=width, header=control.text()):
+                    right = control.mapTo(window, control.rect().topRight()).x()
+                    self.assertLess(right, window.width())
+                    self.assertGreaterEqual(control.width(), control.sizeHint().width())
+                    for previous in header_items[:index]:
+                        self.assertFalse(control.geometry().intersects(previous.geometry()))
             self.assertIn("…", continue_button.text())              # the long name is shortened, not the page widened
             lowest = max(b.mapTo(window, b.rect().bottomLeft()).y()
                          for b in (window.welcome_install_button, window.welcome_open_button, *window.welcome_task_buttons))

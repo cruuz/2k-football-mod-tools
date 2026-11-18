@@ -61,7 +61,7 @@ class IntegrationQtTests(unittest.TestCase):
         self.assertEqual(self.panel.my_career_setup_field.text(),'paired/MyCareer.json')
         self.assertFalse(self.panel.my_career_check.isChecked())
 
-    def test_scorebar_folder_from_the_studio_page_fills_the_field_without_ticking_the_option(self):
+    def test_use_in_build_enables_the_scorebar_and_passes_the_folder_to_the_build_plan(self):
         from types import SimpleNamespace
         from mod_editor.gui.studio_qt import StudioMainWindow
         host=SimpleNamespace(_build_panel=self.panel, _set_status=lambda *_: None, _ensure_workspace=lambda index: None, navigation=SimpleNamespace(count=lambda: 1), _navigation_row=lambda key: 0,
@@ -69,7 +69,8 @@ class IntegrationQtTests(unittest.TestCase):
         self.panel.scorebug_check.setChecked(False)
         StudioMainWindow._scorebar_folder_chosen(host,'/tmp/my scorebar')
         self.assertEqual(self.panel.scorebug_folder_field.text(),'/tmp/my scorebar')
-        self.assertFalse(self.panel.scorebug_check.isChecked())
+        self.assertTrue(self.panel.scorebug_check.isChecked())
+        self.assertEqual(self.panel.plan().scorebug_folder, '/tmp/my scorebar')
 
     def test_collision_only_source_locks_both_halves_and_shows_installed_level(self):
         state={**self.state,'momentum_collisions':'applied','momentum':'retail',

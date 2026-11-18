@@ -251,17 +251,17 @@ class SharePanel(QWidget):
         apply_layout.addWidget(self.install_softdrink_button)
         self.customize_softdrink_button = QPushButton("Customize SOFTDRINK 2K28…")
         self.customize_softdrink_button.clicked.connect(self.customize_softdrink)
-        # b780-m64b: the pack is the full 128 MB build; Customize can load its sources for the experimental 64 MB target
         customize_row = QHBoxLayout()
         customize_row.addWidget(self.customize_softdrink_button)
         self.customize_memory_caption = QLabel(console_memory.SHARE_CHOICE_CAPTION)
         customize_row.addWidget(self.customize_memory_caption)
         self.customize_memory_combo = QComboBox()
+        self.customize_memory_combo.addItem("Use the selected pack's edition", None)
         for value in console_memory.CHOICES:
             self.customize_memory_combo.addItem(console_memory.LABELS[value], value)
-        self.customize_memory_combo.setCurrentIndex(self.customize_memory_combo.findData(console_memory.DEFAULT))
         self.customize_memory_combo.setAccessibleName("Customize SOFTDRINK 2K28: build for console memory")
-        self.customize_memory_combo.setToolTip(console_memory.SHARE_CHOICE_HELP)
+        self.customize_memory_combo.setToolTip(
+            "Use the pack's edition or choose a target for this customization. " + console_memory.SHARE_CHOICE_HELP)
         self.customize_memory_combo.setMinimumWidth(220)
         self.customize_memory_caption.setBuddy(self.customize_memory_combo)
         customize_row.addWidget(self.customize_memory_combo, 1)
@@ -327,6 +327,8 @@ class SharePanel(QWidget):
         self._refresh()
 
     def _pack_edited(self):
+        if self._pack is not None:
+            self.customize_memory_combo.setCurrentIndex(0)
         self._pack = None
         self.pack_summary.clear()
         self.memory_note.setText(console_memory.SHARE_NOTE)
@@ -427,9 +429,11 @@ class SharePanel(QWidget):
             self.assets_list.addItem(str(path))
         self._refresh()
 
-    def load_pack(self, path: Path) -> None:
+    def load_pack(self, path: Path, *, keep_customization_target: bool = False) -> None:
         """Read a patch file's manifest (fast; no disc access) and show its summary."""
 
+        if not keep_customization_target and self._pack is not None and not platform_compat.paths_alias(path, self._pack.path):
+            self.customize_memory_combo.setCurrentIndex(0)
         self.pack_field.blockSignals(True)
         self.pack_field.setText(str(path))
         self.pack_field.blockSignals(False)
@@ -669,7 +673,7 @@ class SharePanel(QWidget):
         path, _ = QFileDialog.getOpenFileName(self, "Choose the SOFTDRINK pack", "", PACK_FILTER)
         if not path:
             return
-        self.load_pack(Path(path))
+        self.load_pack(Path(path), keep_customization_target=True)
         if self._pack is None:
             return
         pack = self._pack
@@ -701,19 +705,23 @@ class SharePanel(QWidget):
             return modpack_sources.materialize(recipe, folder, resume=True, console_target=memory)
         memory = self.customize_memory()
         def done(recipe):
+            self.customize_memory_combo.setCurrentIndex(0)
             self.customization_ready.emit(recipe)
             text = "Sources ready. Build now has the frozen recipe and league artwork. Change its options, then Make my disc. Custom builds use the full builder and take longer than installation."
             if memory == 64:
-                text += (f" Console memory is set to 64 MB ({console_memory.STATUS_64}) with the recommended 64 MB set: the "
-                         "options that need 128 MB are off and the Build tab lists what else it turned off. "
-                         + console_memory.ROSTER_FIT_NOTE)
+                text += f" Console memory is set to 64 MB ({console_memory.STATUS_64})."
+                if console_memory.of(pack.manifest.recipe) != 64:
+                    text += " The working recipe includes the recommended 64 MB settings."
+                text += " " + console_memory.ROSTER_FIT_NOTE
             self.apply_status.setText(text)
         self._start(operation, done, self._apply_failed)
 
     def customize_memory(self) -> int:
-        """b780-m64b: the console memory Customize SOFTDRINK 2K28 builds for (128 unless 64 is chosen)."""
+        """The explicit target or the selected pack's memory edition."""
         value = self.customize_memory_combo.currentData()
-        return value if value in console_memory.CHOICES else console_memory.DEFAULT
+        if value in console_memory.CHOICES:
+            return value
+        return console_memory.of(self._pack.manifest.recipe if self._pack else {})
 
     def describe_source(self) -> str:
         """Name the disc image in the source field (also used by tests)."""

@@ -317,9 +317,15 @@ class RostersHostTests(unittest.TestCase):
         self.assertTrue(panel.is_dirty())
         with mock.patch("mod_editor.gui.roster_editor_panel_qt.QMessageBox") as box_class:
             box = box_class.return_value
-            box.clickedButton.return_value = box.addButton.return_value   # "Keep editing"
-            self.assertFalse(panel._confirm_replace())
-            self.assertIn("ESPN Anniversary", box.setText.call_args[0][0])
+            keep, discard = object(), object()
+            for clicked, expected in ((keep, False), (None, False), (discard, True)):
+                with self.subTest(clicked=clicked):
+                    box.addButton.side_effect = (keep, discard)
+                    box.clickedButton.return_value = clicked
+                    self.assertEqual(panel._confirm_replace(), expected)
+                    box.setDefaultButton.assert_called_with(keep)
+                    box.setEscapeButton.assert_called_with(keep)
+                    self.assertIn("ESPN Anniversary", box.setText.call_args[0][0])
         self.assertTrue(self._load())
         self.assertEqual(panel.espn25_panel.pending, {})
         self.assertFalse(panel.is_dirty())

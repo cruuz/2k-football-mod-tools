@@ -493,7 +493,9 @@ class NativeTests(unittest.TestCase):
     def test_a_beta80_install_is_recognized_and_a_mixed_install_is_foreign(self):
         from mod_editor.core import nfl2k5_history_screen_code_b780 as old
         from mod_editor.core import nfl2k5_rdata_sites as rdata
-        payload, _ = space.apply(self.retail, hist.REQUESTS, scaleout=True)
+        payload = self.retail
+        if space.status(payload) != "applied":
+            payload, _ = space.apply(payload, hist.REQUESTS, scaleout=True)
         alloc = hist.allocations(payload)
         cv, rv, dv = [alloc[k]["va"] for k in ("code", "read_only", "data")]
         item_rows = XbeImage(payload).read(hist.ESPN_ROWS, hist.ESPN_ROW_SIZE * hist.ESPN_RETAIL_ROWS)

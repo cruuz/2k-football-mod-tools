@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "2093f38b38f00156977970e0e263dcd544466e93f2a260aa2b1fe8335eba4747",
     "mod_editor/gui/studio_qt.py":
-        "ab1010fedc62abfc5900154df375b149de48a8423e2f0b281123386593458e3a",
+        "cf57db91bd12745f2a2074d4d0cf0917033c8a245d8f638000fc6cf9f246c594",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "4a270672eef322ae4958b6633956dae9386bd4f53b67c16771877d145c65774a",
+    "mod_editor/gui/build_panel_qt.py": "8409e838149aa84bce04747c7cf54f0da4933b55a6af31fb88c60ab457d7a25b",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "88479567430a28c23a117194da817f993332d889069a02082d667c6f667903d3",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "84731ff8e82f24a68956843e87c0cf851857cb3ade4246aa1edcb03739691558",
     "mod_editor/gui/beta62_options.py": "009c389062334a451c15c8e9b312c02e5521b1516bc706c2a48b127ecbcfa858",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "4a270672eef322ae4958b6633956dae9386bd4f53b67c16771877d145c65774a",
+    "mod_editor/gui/build_panel_qt.py": "8409e838149aa84bce04747c7cf54f0da4933b55a6af31fb88c60ab457d7a25b",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "88479567430a28c23a117194da817f993332d889069a02082d667c6f667903d3",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "84731ff8e82f24a68956843e87c0cf851857cb3ade4246aa1edcb03739691558",

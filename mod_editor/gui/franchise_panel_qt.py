@@ -510,10 +510,7 @@ class FranchisePanel(QWidget):
         self.year_rule_label.setWordWrap(True)
         year_row.addWidget(self.year_rule_label, 1)
         form.addRow("Season year", year_row)
-        self.season_cap_label = QLabel(
-            "The build starting year sets how Studio reads this save. The season year changes the save’s "
-            "season index. To keep players the same age on a modern calendar, use the roster birth-year "
-            "shift in Build. Editing the season year does not simulate seasons.")
+        self.season_cap_label = QLabel()
         self.season_cap_label.setWordWrap(True)
         form.addRow(self.season_cap_label)
         self.stage_label = QLabel("")
@@ -1104,6 +1101,7 @@ class FranchisePanel(QWidget):
             if self._save is None:
                 self.year_spin.setValue(YEAR_MIN)
                 self.year_rule_label.setText("")
+                self.season_cap_label.clear()
                 self.stage_label.setText("")
                 self.cap_spin.setValue(0.001)
                 self.cap_raw_label.setText("")
@@ -1116,6 +1114,13 @@ class FranchisePanel(QWidget):
             self.year_spin.setRange(self._base_year,
                                     self._base_year + max(fs.FRANCHISE_MAX_YEAR_INDEX, header.year_field))
             self.year_spin.setEnabled(header.year_field <= fs.FRANCHISE_MAX_YEAR_INDEX)
+            guidance = ("The build starting year sets how Studio reads this save. To keep players the same age "
+                        "on a modern calendar, use the roster birth-year shift in Build. ")
+            # Retail still accepts index 30. Show the build requirement before the next rollover.
+            if header.year_field >= 30:
+                guidance += ("EXPERIMENTAL / UNWITNESSED. Use the calendar patch with your build's starting year "
+                             "for long franchises. A save alone does not identify that patch. ")
+            self.season_cap_label.setText(guidance + "Editing this year does not simulate seasons.")
             self.year_spin.setValue(header.display_year)
             self.year_rule_label.setText(
                 f"season {header.season_ordinal} = index {header.year_field}; "

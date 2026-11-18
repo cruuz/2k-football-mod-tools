@@ -32,6 +32,7 @@ docs/product/PLAY_EDITOR_FINDINGS.md
 docs/product/UNIVERSAL_TEXT_AND_25TH_FINDINGS.md
 mod_editor/__init__.py
 mod_editor/__main__.py
+mod_editor/cli.py
 mod_editor/capabilities/registry.schema.json
 mod_editor/capabilities/registry.v1.json
 mod_editor/capabilities/validate_registry.py

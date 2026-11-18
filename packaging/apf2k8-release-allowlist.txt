@@ -41,6 +41,7 @@ docs/product/APF_TRUE_099_PLAYER_RATINGS.md
 docs/product/APF_TRUE_53_RUNTIME_CONSUMER_INVENTORY.md
 docs/product/APF_UNIFORM_EQUIPMENT_COLORS.md
 install.sh
+mod_editor/__main__.py
 mod_editor/apf_studio/__init__.py
 mod_editor/apf_studio/__main__.py
 mod_editor/apf_studio/asset_io.py

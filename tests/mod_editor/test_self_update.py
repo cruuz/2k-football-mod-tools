@@ -331,6 +331,25 @@ class TarballApplyTests(unittest.TestCase):
             self.assertEqual((root / "mod_editor" / "__main__.py").read_text(), "print('old')\n")
             self.assertEqual(started, [])
 
+    def test_unpack_checks_the_selected_product_entry_point(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            parent = Path(tmp)
+            tarball = parent / "studio.tar.gz"
+            for product, entry in (("apf", "mod_editor/apf_studio/__main__.py"),
+                                   ("2k5", "mod_editor/__main__.py")):
+                with self.subTest(product=product):
+                    tarball.write_bytes(_make_tarball("studio", {entry: b"# entry\n"}))
+                    extracted = U.unpack_tarball(tarball, parent, product=product)
+                    self.assertTrue((extracted / entry).is_file())
+                    other = "2k5" if product == "apf" else "apf"
+                    with self.assertRaisesRegex(U.SelfUpdateError, "does not contain the studio"):
+                        U.unpack_tarball(tarball, parent, product=other)
+
+    def test_apf_archive_includes_the_root_entry_required_by_alpha_111(self) -> None:
+        allowlist = (REPO / "packaging/apf2k8-release-allowlist.txt").read_text().splitlines()
+        self.assertIn("mod_editor/__main__.py", allowlist)
+        self.assertIn("mod_editor/apf_studio/__main__.py", allowlist)
+
     def test_hostile_archives_are_refused(self) -> None:
         def archive_with(name: str, link: bool = False) -> bytes:
             buffer = io.BytesIO()

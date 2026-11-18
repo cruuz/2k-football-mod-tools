@@ -95,6 +95,7 @@ class BuildPlanCoverageTests(unittest.TestCase):
             "roster_edits", "commentary", "playbook_packs", "name", "author", "notes", "official_marks_pack",
             "accelerated_clock_minimum_seconds",  # the Minimum Play Clock Time combo beside the clock check box
             "decided_clock_margin", "decided_clock_seconds", "cpu_scrambles",
+            "stock_age_policy",  # the original roster birthday choice under 2026 season and player growth
             "modern_color_settings",  # the Colour & lighting page (strength and the 55 controls) beside the modern colour check box
             "scorebug_watermark",  # the ESPN watermark combo beside the sprite scorebug check box (build_panel_qt.py:899)
             "super_bowl_user_art",  # b773-sb2: the Your Super Bowl logos folder field beside the official marks pack
@@ -123,12 +124,16 @@ class BuildPlanCoverageTests(unittest.TestCase):
         panel.decided_clock_margin.setCurrentIndex(panel.decided_clock_margin.findData(25))
         panel.decided_clock_seconds.setCurrentIndex(panel.decided_clock_seconds.findData(90))
         panel.cpu_scrambles_level.setCurrentIndex(panel.cpu_scrambles_level.findData("modern"))
+        self.assertEqual(panel.stock_age_combo.currentData(), "preserve_age")
+        panel.stock_age_combo.setCurrentIndex(panel.stock_age_combo.findData("keep_birthdates"))
         plan = panel.plan()
         self.assertAlmostEqual(plan.arc, 0.40)
         self.assertEqual(plan.max_deep_yards, 75.0)
         self.assertEqual((plan.name, plan.author, plan.notes), ("My mod", "me", "first try"))
         self.assertEqual(plan.commentary[0].stream, "cutsceneaudio:3")
         self.assertEqual(plan.playbook_packs, ("/tmp/one.2k5book", "/tmp/two.2k5book"))
+        self.assertEqual(plan.stock_age_policy, "keep_birthdates")
+        self.assertEqual(panel.project_build_settings()["stock_age_policy"], "keep_birthdates")
         self.assertEqual((plan.decided_clock_margin, plan.decided_clock_seconds,
                           plan.cpu_scrambles), (25, 90, "modern"))
         self.assertIn("commentary lines (1)", panel.selected_labels())

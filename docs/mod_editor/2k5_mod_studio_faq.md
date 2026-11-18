@@ -67,10 +67,10 @@ Download the ready-made **64 MB** pack and install it directly through **Install
 
 To customize a 64 MB disc:
 
-1. In **Build & Share**, open the **Share** tab. Set **Build for** to **64 MB, original Xbox and Android hakuX
-   (experimental, estimated, not yet tested on a real Xbox or hakuX)**, then click **Customize SOFTDRINK 2K28…**. The **Build**
-   tab opens with the pack's art and options and the recommended 64 MB set already applied. (To start from your own
-   selection instead, open the **Build** tab and set **Console memory** there.)
+1. In **Build & Share → Install & Share**, leave **Build for** on **Use the selected pack's edition**.
+   Click **Customize SOFTDRINK 2K28…**, select the 64 MB pack and choose a folder for its sources.
+   The **Build** tab opens with the pack's artwork and its 64 MB settings. To customize a standard pack
+   for 64 MB, select the explicit 64 MB target under **Build for** before clicking **Customize**.
 2. On the **Build** tab, **Console memory** now reads 64 MB. Every option that needs 128 MB or the real Xbox kernel is off
    and greyed out, with the reason beside it, for example the three 128 MB memory options, Guardian caps, 16 reserves, the
    two extra created teams and the Hi-res pack. The start-up checks for 128 MB and the 4627 BIOS are left out too.
@@ -469,7 +469,7 @@ played issue; keep that separate from a build failure.
 
 Open your Xbox save in **★ Rosters → Open Xbox save…**, select the team and use the **CSV** menu to export its players. On a signed v0.9 roster, Finn’s GameSave Editor 4.0.0.41 showed 57 Giants and left 39 first- or last-name cells blank across 28 players. J.J. McCarthy and Jevon Holland lost both names on screen. Abdul Carter, Patrick Ricard, Greg Newsome, Cam Skattebo and Chris Manhertz lost their surnames. Studio read and exported both names for all 57 players from the same save.
 
-Finn can ask whether to auto-repair names when opening an expanded roster. Choose **No** to inspect the file. Keep the original save and use the Studio export to check the players before making changes.
+Finn 4.0.0.41 reads only some of the name locations an expanded roster can use. In a signed test copy, it showed the same four-letter first name in one location and left it blank in two others. Finn can ask whether to auto-repair names when opening an expanded roster. Choose **No** to inspect the file. Keep the original save and use the Studio export to check the players before making changes.
 
 ## Which files help diagnose a franchise freeze or an unexpected portrait?
 

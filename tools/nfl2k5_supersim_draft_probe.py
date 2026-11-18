@@ -282,11 +282,7 @@ def fresh_start_proof(payload):
     m = Machine(payload, trace_writes=False)
     body = retail_roster()
     m.load_retail_roster(body)
-    m.seed(12345)
-    m.put(0xE5FF80, 4)
-    m.put(0xE60120, 0)
-    m.put(0xE6000C, 5)
-    m.put(0xE60010, 5)
+    m.configure_fresh_franchise(seed=12345, quarter_minutes=5)
     m.call(draft.NATIVE_START, budget=150000000)
     classes = [i for i in range(m.get(m.root))
                if m.uc.mem_read(m.get(m.root+4)+i*84+8, 1)[0] & 0x34 == 0x14]
@@ -315,9 +311,7 @@ def prior_year_proof(payload):
     """
     m = Machine(payload, trace_writes=False)
     m.load_retail_roster(retail_roster())
-    m.seed(12345)
-    for address, value in ((0xE5FF80, 4), (0xE60120, 0), (0xE6000C, 5), (0xE60010, 5)):
-        m.put(address, value)
+    m.configure_fresh_franchise(seed=12345, quarter_minutes=5)
     m.call(draft.NATIVE_START, budget=150000000)
     menu = m.ARENA+0x1A0000
     notifications = []

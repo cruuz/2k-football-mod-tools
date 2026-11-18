@@ -330,16 +330,18 @@ def _safe_members(archive: tarfile.TarFile, top: str) -> list[tarfile.TarInfo]:
     return members
 
 
-def unpack_tarball(tarball: Path, parent: Path, *, progress: ProgressSink | None = None) -> Path:
+def unpack_tarball(tarball: Path, parent: Path, *, product: str = "2k5",
+                   progress: ProgressSink | None = None) -> Path:
     """Strip one archive root into a fresh sibling; never merge with an install."""
     progress = progress or (lambda *_a: None)
     try:
-        return _unpack_tarball(tarball, parent, progress)
+        return _unpack_tarball(tarball, parent, product, progress)
     except (OSError, tarfile.TarError) as exc:
         raise SelfUpdateError(f"The release could not be unpacked: {exc}") from exc
 
 
-def _unpack_tarball(tarball: Path, parent: Path, progress: ProgressSink) -> Path:
+def _unpack_tarball(tarball: Path, parent: Path, product: str, progress: ProgressSink) -> Path:
+    entrypoint = Path(*str(PRODUCTS[product]["module"]).split(".")) / "__main__.py"
     with tarfile.open(tarball, "r:gz") as archive:
         first = archive.next()
         if first is None:
@@ -367,7 +369,7 @@ def _unpack_tarball(tarball: Path, parent: Path, progress: ProgressSink) -> Path
                     target.chmod(member.mode & 0o777)
                 if index % 50 == 0:
                     progress("Unpacking", index, len(members))
-            if not (staging / "mod_editor" / "__main__.py").is_file():
+            if not (staging / entrypoint).is_file():
                 raise SelfUpdateError("the archive does not contain the studio")
             for target, mode in reversed(directories):
                 target.chmod(mode)
@@ -545,7 +547,7 @@ def apply_tarball(plan: UpdatePlan, tarball: Path, *, progress: ProgressSink | N
     staging = None
     previous = None
     try:
-        staging = unpack_tarball(tarball, parent, progress=progress)
+        staging = unpack_tarball(tarball, parent, product=plan.product, progress=progress)
         staging.chmod(root.stat().st_mode & 0o777)
         staged_python = _stage_python(plan, staging)
         progress("Checking that the new version can start", 0, 1)

@@ -230,6 +230,7 @@ STEP_LABELS: dict[str, str] = {
     "coach_carousel_pool": "the coaching carousel's hiring pool",
     "indicator_names": "the player name label",
     "champions_history": "the champions history",
+    "offset_toss_flip": "aligning the back and pitch on flipped offset tosses",
     "disc_compaction": "compacting the finished disc",
     "final_checks": "the final checks of the finished disc",
     "music_check": "the check of the music playlist",

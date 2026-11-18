@@ -41,7 +41,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # The retail-free native engines reproduce byte for byte with Noble's GCC 13.3 / binutils 2.42.
+        os: [ubuntu-24.04, windows-latest, macos-latest]
         # b780 Q8: 3.13 runs with NumPy 2 (the Studio's own requirements pin NumPy 2.3.5 there)
         python-version: ['3.11', '3.12', '3.13']
     env:

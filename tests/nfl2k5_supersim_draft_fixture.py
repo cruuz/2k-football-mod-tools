@@ -146,6 +146,17 @@ class Machine:
             return struct.unpack("<f", self.uc.mem_read(address, 4))[0]
         self.uc.mem_write(address, struct.pack("<f", value))
 
+    def configure_fresh_franchise(self, *, seed, quarter_minutes, preseason=False):
+        """Run normal boot option initialization before applying the trial's franchise choices."""
+        # Normal boot clears the option block and calls the game's defaults, including the difficulty
+        # presets. The instruction at 0x77D45 begins the separate roster portion of boot.
+        self.call(0x77D20, stop=0x77D45, budget=2_000_000)
+        self.seed(seed)
+        self.put(0xE5FF80, 4)
+        self.put(0xE60120, int(preseason))
+        self.put(0xE6000C, quarter_minutes)
+        self.put(0xE60010, quarter_minutes)
+
     def ret(self, value=0, pop=0):
         sp = self.reg("ESP")
         self.reg("EAX", value)

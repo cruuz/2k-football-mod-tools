@@ -20200,8 +20200,10 @@ class ApfStudioMainWindow(QMainWindow):
             update_ui.set_automatic_checks_enabled
         )
         help_menu.addSeparator()
-        discord_action = help_menu.addAction("Join the Discord…")
-        discord_action.setToolTip("Opens the community Discord invite in your browser.")
+        issue_action = help_menu.addAction("Report a bug…")
+        issue_action.triggered.connect(lambda: QDesktopServices.openUrl(QUrl(update_check.ISSUES_PAGE)))
+        discord_action = help_menu.addAction("Open project Discord (members)…")
+        discord_action.setToolTip("Opens the project server for existing Discord members.")
         discord_action.triggered.connect(
             lambda: QDesktopServices.openUrl(QUrl(update_check.COMMUNITY_DISCORD))
         )

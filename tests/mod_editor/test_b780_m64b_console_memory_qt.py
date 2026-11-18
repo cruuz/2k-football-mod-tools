@@ -424,16 +424,16 @@ class SavedAndShared(_Page):
             panel.load_softdrink_sources(recipe)            # no choice: the full 128 MB build
             self.assertEqual(panel.console_memory(), 128)
 
-    def test_share_offers_the_choice_and_says_the_pack_is_128(self):
+    def test_share_follows_the_pack_by_default_and_offers_both_overrides(self):
         from mod_editor.gui.share_panel_qt import SharePanel
         share = SharePanel()
         self.addCleanup(share.deleteLater)
         combo = share.customize_memory_combo
-        self.assertEqual([combo.itemData(i) for i in range(combo.count())], [128, 64])
+        self.assertEqual([combo.itemData(i) for i in range(combo.count())], [None, 128, 64])
         self.assertEqual(share.customize_memory(), 128)
         self.assertEqual(share.customize_memory_caption.text(), "Build for")
-        self.assertIn("full 128 MB build for xemu", share.memory_note.text())
-        self.assertIn("the 2026 rosters, fitted to the original game's roster size", share.memory_note.text())
+        self.assertIn("xemu at 128 MiB", share.memory_note.text())
+        self.assertIn("64 MB roster fits the original game's roster size", share.memory_note.text())
         combo.setCurrentIndex(combo.findData(64))
         self.assertEqual(share.customize_memory(), 64)
 

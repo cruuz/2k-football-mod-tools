@@ -77,7 +77,7 @@ class ApfEditorExportTests(unittest.TestCase):
         result = ApfJerseyExportResult(Path("/new/export"), provenance, 6, 11)
         stdout = io.StringIO()
         with mock.patch(
-            "mod_editor.__main__.export_apf_jersey", return_value=result
+            "mod_editor.cli.export_apf_jersey", return_value=result
         ) as export, contextlib.redirect_stdout(stdout):
             self.assertEqual(
                 editor_main(
@@ -110,7 +110,7 @@ class ApfEditorExportTests(unittest.TestCase):
 
         for extra in (("--entry", "875"), ("--offset", "1234")):
             with self.subTest(raw_argument=extra[0]), mock.patch(
-                "mod_editor.__main__.export_apf_jersey"
+                "mod_editor.cli.export_apf_jersey"
             ) as export, contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit):
                     editor_main(
@@ -126,7 +126,7 @@ class ApfEditorExportTests(unittest.TestCase):
                     )
                 export.assert_not_called()
         with mock.patch(
-            "mod_editor.__main__.export_apf_jersey"
+            "mod_editor.cli.export_apf_jersey"
         ) as export, contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
                 editor_main(

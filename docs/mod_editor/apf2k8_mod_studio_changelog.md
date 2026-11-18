@@ -2,7 +2,9 @@
 
 ## 0.1.0-alpha.112, beta 81
 
-An update that fails to download or verify leaves the editor open. Subsequent changes receive the normal save prompt.
+An update that fails to download or verify leaves the editor open. Subsequent changes receive the normal save prompt. **Help → Report a bug…** opens the Studio issue tracker. Existing project Discord members can open their server directly from Help.
+
+Portable users on alpha.111 can install this release through the update banner. The updater checks for the APF launcher and keeps the previous installation for recovery.
 
 ## 0.1.0-alpha.111: beta 80 (2026-11-03)
 

@@ -159,11 +159,10 @@ class LateOwnerReservationTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_throw_tuning as tt, nfl2k5_xbe_space as space
         owners = {row[0] for row in tt._selected_space_requests(**self.WAVE)}
         late = list(space.LATE_OWNERS)
-        # b780-int: the rookie faces hair owner (GEN1 Q81) is the one late owner an image step appends (only when Hair
-        # styles reads applied), after every first-pass owner is placed; it stays the last LATE_OWNER, so its append
-        # moves nothing.
-        self.assertEqual(late[-1], "nfl2k5_rookie_faces_hair")
-        wave = late[late.index("nfl2k5_sim_realism_state") + 1:-1]
+        # The image appends the optional rookie hair helper first, then the authored book's toss helper.
+        # Both follow the owners reserved by the first pass.
+        self.assertEqual(late[-2:], ["nfl2k5_rookie_faces_hair", "nfl2k5_offset_toss"])
+        wave = late[late.index("nfl2k5_sim_realism_state") + 1:late.index("nfl2k5_rookie_faces_hair")]
         self.assertEqual(sorted(set(wave) - owners), [])
 
     def test_speed_after_a_later_owner_does_not_move_it(self):

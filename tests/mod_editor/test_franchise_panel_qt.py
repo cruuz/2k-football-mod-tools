@@ -160,6 +160,8 @@ class OverviewTests(_PanelCase):
         self.load(self.payload)
 
     def test_long_season_indices_and_opaque_neighbor_survive_copy_reload(self) -> None:
+        self.assertIn("roster birth-year shift in Build", self.page.season_cap_label.text())
+        self.assertNotIn("calendar patch", self.page.season_cap_label.text())
         payload = bytearray(synthetic_franchise_with_coach(year_field=30))
         payload[0x91327] = 0xA5
         self.load(bytes(payload), name="long")

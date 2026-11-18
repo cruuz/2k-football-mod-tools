@@ -156,6 +156,68 @@ def test_chosen_memory_survives_in_working_recipe_and_resume(tmp_path, target):
     assert modpack_sources.materialize(recipe, tmp_path, resume=True, console_target=target) == local
 
 
+def test_customize_button_follows_each_pack_and_applies_an_override_once(panel, tmp_path):
+    base = image(tmp_path / "clean.iso", {"default.xbe": b"XBEH" + bytes(4096), "turf": b"A"})
+    disc = image(tmp_path / "built.iso", {"default.xbe": b"XBEH" + bytes(4096), "turf": b"B"})
+    project = tmp_path / "league.json"
+    project.write_text('{"edits":[]}')
+    member = "assets/league.json"
+    packs = {}
+    for edition in (64, 128):
+        recipe = dict(schema="softdrink_sources/v1", project="@pack/" + member,
+                      preset="softdrink_experimental",
+                      overrides=dict(console_memory=edition, season_cap=True,
+                                     calendar_engine=False, k128_memory=edition == 128))
+        packs[edition] = tmp_path / f"{edition}.2k5patch"
+        modpack_files.export(base, disc, packs[edition], recipe=recipe, require_retail=False,
+                             source_assets={member: project})
+
+    received = []
+    panel.customization_ready.connect(received.append)
+    build = BuildPanel()
+    panel.customization_ready.connect(build.load_softdrink_sources)
+    chooser = panel.customize_memory_combo
+    for run, (edition, override) in enumerate(((64, None), (128, 64), (128, None), (64, 128), (64, 64))):
+        destination = tmp_path / f"sources-{run}"
+        destination.mkdir()
+        working = destination / "SOFTDRINK-build-recipe.json"
+        if override is None:
+            cli = Path(__file__).resolve().parents[2] / "tools" / "nfl2k5_modpack.py"
+            subprocess.run([sys.executable, str(cli), "extract", str(packs[edition]), "--out", str(destination),
+                            "--customize"], capture_output=True, check=True)
+            original = working.read_bytes(), working.stat().st_mtime_ns
+        if override is not None:
+            chooser.setCurrentIndex(chooser.findData(override))
+        with patch.object(QFileDialog, "getOpenFileName", return_value=(str(packs[edition]), "")), \
+             patch.object(QFileDialog, "getExistingDirectory", return_value=str(destination)):
+            panel.customize_softdrink_button.click()
+        assert len(received) == run + 1
+        working_copy = json.loads(working.read_bytes())
+        if override is None:
+            assert (working.read_bytes(), working.stat().st_mtime_ns) == original
+            frozen = modpack.load(packs[edition]).manifest.recipe
+            with pytest.raises(modpack.ModpackError, match="preserve your edits"):
+                modpack_sources.materialize(frozen, destination, resume=True, console_target=128 if edition == 64 else 64)
+        assert working_copy == received[-1]
+        cli_plan = modpack_sources.build_plan(working_copy)
+        gui_plan = build.plan()
+        assert cli_plan.console_memory == gui_plan.console_memory == (override or edition)
+        # Either calendar switch requests the complete calendar/cap pair from the native builder.
+        keep_calendar = (edition, override) != (128, 64)
+        assert (cli_plan.season_cap or cli_plan.calendar_engine) == keep_calendar
+        assert (gui_plan.season_cap or gui_plan.calendar_engine) == keep_calendar
+        assert gui_plan.k128_memory == cli_plan.k128_memory
+        assert chooser.currentData() is None
+    working.write_text(json.dumps({**working_copy, "my_saved_edits": True}))
+    with pytest.raises(modpack.ModpackError, match="preserve your edits"):
+        modpack_sources.materialize(modpack.load(packs[edition]).manifest.recipe, destination, resume=True, console_target=edition)
+    assert json.loads(working.read_text())["my_saved_edits"] is True
+    chooser.setCurrentIndex(chooser.findData(64))
+    panel.load_pack(packs[128])
+    assert chooser.currentData() is None and panel.customize_memory() == 128
+    build.deleteLater()
+
+
 def test_loose_league_artwork_goes_through_build_preflight_not_zip(tmp_path):
     project = tmp_path / "SOFTDRINK-league-project.json"
     project.write_text(json.dumps(dict(schema="nfl2k5_visual_mod_project/v1", purpose="uniforms", edits=[])))

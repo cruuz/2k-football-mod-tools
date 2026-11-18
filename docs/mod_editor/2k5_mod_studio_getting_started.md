@@ -13,8 +13,7 @@ independently verified cache. The app still guards the exact file you selected
 for read-only scans, recovery, and Build, and a built copy keeps that source
 container's actual size.
 
-Community: questions, bug reports and shared patches live on the Discord,
-https://discord.gg/dpMJCnJZD (also under Help > Join the Discord… in both studios).
+Use **Help → Report a bug…** to open the [Studio issue tracker](https://github.com/cruuz/2k-football-mod-tools/issues). Existing community members can open the project server from Help and share patches or ask questions there.
 
 
 ## Python packages for portable installs

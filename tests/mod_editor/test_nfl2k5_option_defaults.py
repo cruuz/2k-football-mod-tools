@@ -175,6 +175,28 @@ class NativeTests(unittest.TestCase):
         self.assertEqual((self.word(base, QUARTER), self.word(base, SIM), self.word(base, CHOP)), (5, 5, 0))
         self.assertEqual((self.word(new, QUARTER), self.word(new, SIM), self.word(new, CHOP)), (7, 15, 1))
 
+    def test_fresh_franchise_probe_inherits_native_defaults_before_its_game_choices(self):
+        from tests.nfl2k5_supersim_draft_fixture import Machine
+        for payload in (self.retail, self.patched):
+            with self.subTest(chop=od.settings(payload).get("chop_block")):
+                m = Machine(payload, trace_writes=False)
+                m.uc.mem_write(BLOCK, b"\xa5" * BLOCK_SIZE)
+                m.configure_fresh_franchise(seed=2501, quarter_minutes=12, preseason=False)
+                _, normal = self.boot_block(payload)
+                expected = bytearray(normal)
+                for address, value in ((BLOCK, 4), (0xE60120, 0), (QUARTER, 12), (SIM, 12)):
+                    struct.pack_into("<I", expected, address - BLOCK, value)
+                self.assertEqual(m.uc.mem_read(BLOCK, BLOCK_SIZE), expected)
+                self.assertEqual([m.f32(va) for va in (0xE60204, 0xE60208, 0xE6020C)], [0.5] * 3)
+
+    def test_season_probe_records_normal_sliders_as_it_enters_the_regular_season(self):
+        from tests.nfl2k5_supersim_draft_fixture import retail_roster
+        from tools.franchise_sim.season_probe import run
+        season = run(self.retail, retail_roster(), seed=2501, quarters=15, weeks=0)
+        self.assertEqual(season["sliders"], {"injury": 0.5, "fumble": 0.5, "interception": 0.5})
+        self.assertEqual((season["state"]["stage"], season["weeks"], season["scores"]), (8, 0, []))
+        self.assertEqual({p["team"] for p in season["players"]}, set(range(32)))
+
     def test_no_other_option_changes(self):
         _, base = self.boot_block(self.retail)
         _, new = self.boot_block(self.patched)

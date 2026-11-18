@@ -19,6 +19,7 @@ sys.path[:0] = [str(REPO), str(REPO / "tools")]
 
 from mod_editor.core import nfl2k5_disc_check as dc  # noqa: E402
 from tests.mod_editor.test_xiso_layout_tolerance import build_xdvdfs, write_xdvdfs  # noqa: E402
+from tests.nfl2k5_xiso_fixture import SyntheticXiso  # noqa: E402
 
 V08_SHA256 = "b0a72eda50ea9b90c643ed5b36da8450162527a928d949bf0bef60afd5782ad5"
 
@@ -78,6 +79,23 @@ class DiscCheckTests(unittest.TestCase):
         self.assertIn("big.bin differs at 1.0-1.5 MiB", text)
         self.assertNotIn("—", text)
         self.assertEqual(big["size"], len(files()["big.bin"]))
+
+    def test_repacked_nested_game_files_match_legacy_and_new_records(self):
+        data = [(17, b"game content" * 100)]
+        original = SyntheticXiso(self.root / "original", data)
+        repacked = SyntheticXiso(self.root / "repacked", data, pack_sectors=(120, 144, 184))
+        record = dc.make_entry("Nested release", original.path)
+        for marked in (True, False):
+            if not marked:
+                record["files"]["vc_53450030"].pop("directory")
+            with self.subTest(directory_flag=marked):
+                self.assertEqual(dc.check(repacked.path, releases=[record])["state"], "matches")
+        with repacked.path.open("r+b") as stream:
+            stream.seek(repacked.pack_extent("1"))
+            stream.write(b"bad")
+        damaged = dc.check(repacked.path, releases=[record])
+        self.assertEqual(damaged["state"], "damaged", damaged)
+        self.assertEqual([item["file"] for item in damaged["differing"]], ["vc_53450030/1"])
 
     def test_a_copy_cut_short_says_how_much_can_be_read(self):
         blob = self.release.read_bytes()
@@ -165,13 +183,25 @@ class SameNamesReleaseTests(unittest.TestCase):
             self.assertEqual((result["state"], result["release"]), ("damaged", "New release"), result)
             self.assertEqual([d["file"] for d in result["differing"]], ["big.bin"])
 
+    def test_padding_of_another_release_does_not_mask_matching_game_files(self):
+        old_with_padding = self.root / "old-padded.iso"
+        old_with_padding.write_bytes(self.old_image.read_bytes() + bytes(2048))
+        older = dc.make_entry("Padded old release", old_with_padding)
+        damaged = self.root / "damaged-new-padded.iso"
+        blob = bytearray(self.new_image.read_bytes())
+        blob[blob.index(files(seed=5)["big.bin"][:4096]) + 17] ^= 0xFF
+        damaged.write_bytes(blob + bytes(2048))
+        checked = dc.check(damaged, releases=[older, self.new])
+        self.assertEqual((checked["state"], checked["release"]), ("damaged", "New release"))
+
     def test_the_real_v0_9_record_outranks_v0_8_for_a_v0_9_disc(self):
         """The shipped v0.8 record and ship10's v0.9 record share all 20 names; without reading a disc, a v0.9 image's
         files (sizes and hashes from its record) rank v0.9 first, whole or with one damaged file."""
         v08 = next(d for d in dc.load_releases() if d["name"] == "SOFTDRINK 2K28 v0.8")
         v09 = json.loads(self.V09_ENTRY.read_text(encoding="utf-8"))
         self.assertEqual(set(v08["files"]), set(v09["files"]))
-        entries = {k.lower(): mock.Mock(size=v["size"], path=k) for k, v in v09["files"].items()}
+        entries = {k.lower(): mock.Mock(size=v["size"], path=k, attributes=0x10 if k == "vc_53450030" else 0x80)
+                   for k, v in v09["files"].items()}
         for damaged in (None, "big_file"):
             hashed = {k.lower(): (v["sha256"], list(v["chunks"]), v["size"]) for k, v in v09["files"].items()}
             if damaged:

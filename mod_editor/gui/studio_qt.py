@@ -2072,8 +2072,10 @@ class StudioMainWindow(QMainWindow):
                 action.setToolTip(str(page))
                 action.triggered.connect(lambda _checked=False, path=page: _show_help_document(self, path))
         help_menu.addSeparator()
-        discord_action = help_menu.addAction("Join the Discord…")
-        discord_action.setToolTip("Opens the community Discord invite in your browser.")
+        issue_action = help_menu.addAction("Report a bug…")
+        issue_action.triggered.connect(lambda: QDesktopServices.openUrl(QUrl(update_check.ISSUES_PAGE)))
+        discord_action = help_menu.addAction("Open project Discord (members)…")
+        discord_action.setToolTip("Opens the project server for existing Discord members.")
         discord_action.triggered.connect(
             lambda: QDesktopServices.openUrl(QUrl(update_check.COMMUNITY_DISCORD))
         )
@@ -3466,7 +3468,9 @@ class StudioMainWindow(QMainWindow):
         title_box.addWidget(self.page_eyebrow)
         title_box.addWidget(self.page_title)
         layout.addLayout(title_box)
-        layout.addStretch(1)
+        actions = QWidget()
+        action_layout = FlowLayout(actions, spacing=8, align_right=True, pin_parent_height=True)
+        layout.addWidget(actions, 1, Qt.AlignVCenter)
         self.source_pill = QLabel("●  No disc open")
         self.source_pill.setObjectName("sourcePill")
         self.source_pill.setAccessibleName("Loaded game status")
@@ -3505,10 +3509,10 @@ class StudioMainWindow(QMainWindow):
             self.open_source_button.toolTip()
         )
         self.open_source_button.clicked.connect(self._choose_source)
-        layout.addWidget(self.source_pill)
-        layout.addWidget(self.open_project_button)
-        layout.addWidget(self.save_project_button)
-        layout.addWidget(self.open_source_button)
+        action_layout.addWidget(self.source_pill)
+        action_layout.addWidget(self.open_project_button)
+        action_layout.addWidget(self.save_project_button)
+        action_layout.addWidget(self.open_source_button)
         self.navigation.currentRowChanged.connect(self._update_header_title)
         self.navigation.currentRowChanged.connect(self._refresh_action_bar_for_page)
         return header
@@ -3644,8 +3648,7 @@ class StudioMainWindow(QMainWindow):
         discord = QLabel(
             "Stuck? The FAQ (Help ▸ Questions and answers) covers the common first-run questions: .iso or .xiso, no disc "
             "drive, a sharper picture, a game that will not start. Still stuck? "
-            f'<a href="{update_check.COMMUNITY_DISCORD}">Ask on the Discord</a> '
-            "(also under Help ▸ Join the Discord…)."
+            f'<a href="{update_check.ISSUES_PAGE}">Report a bug</a> or open the community Discord through Help.'
         )
         discord.setObjectName("cardBody")
         discord.setWordWrap(True)  # b780-b13: the longer sentence must wrap, not widen the page

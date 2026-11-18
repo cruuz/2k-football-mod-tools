@@ -124,6 +124,8 @@ def make_entry(name: str, image: Path | str, progress: Progress | None = None) -
             if readable != e.size:
                 raise DiscCheckError(f"{e.path} is cut short in the source image; refusing to record it")
             files[e.path] = dict(size=e.size, sha256=digest, chunks=chunks)
+            if e.attributes & 0x10:
+                files[e.path]["directory"] = True
             done += e.size
         os.lseek(fd, 0, os.SEEK_SET)
         while block := os.read(fd, 8 << 20):
@@ -150,11 +152,9 @@ def _candidates(releases: list[dict[str, Any]], by_lower: dict[str, Any]) -> lis
 
 
 def _rank(result: dict[str, Any], target: dict[str, Any], image_size: int, order: int) -> tuple:
-    """b780: v0.8 and v0.9 have the same 20 file names, so name overlap alone tied and the first record always won
-    (every v0.9 disc read as damaged against v0.8). Rank a compared release by an exact image size, then by how many
-    files have its size, then by how many files are identical, then by name overlap, then record order."""
-    return (target.get("image_size") == image_size, result["sizes_matching"], result["files_matching"],
-            result["names_matching"], -order)
+    """Match the game contents first. Repacking or trimming padding can give a disc another release's size."""
+    return (result["files_matching"], result["sizes_matching"], result["names_matching"],
+            target.get("image_size") == image_size, -order)
 
 
 def check(image: Path | str, *, releases: Iterable[dict[str, Any]] | None = None, progress: Progress | None = None) -> dict[str, Any]:
@@ -191,6 +191,9 @@ def check(image: Path | str, *, releases: Iterable[dict[str, Any]] | None = None
 
 def _compare(target, fd, size, base, by_lower, hashed, progress) -> dict[str, Any]:
     files = {k.lower(): (k, v) for k, v in target["files"].items()}
+    # Older records include the sector tables as entries without a directory flag.
+    parents = {name.rpartition("/")[0] for name in files if "/" in name}
+    checked_directories = set()
     total = sum(v["size"] for _k, v in files.values())
     done = changed_bytes = 0
     chunk = target.get("chunk", CHUNK)
@@ -203,6 +206,17 @@ def _compare(target, fd, size, base, by_lower, hashed, progress) -> dict[str, An
             missing.append(name)
             changed_bytes += want["size"]
             compared_bytes += want["size"]
+            done += want["size"]
+            continue
+        if low in parents or want.get("directory"):
+            # The parser already read this table and validated its tree. Its sector offsets and
+            # padding can change during a repack. Every child is checked by path and contents.
+            if entry.attributes & 0x10:
+                checked_directories.add(low)
+            else:
+                differing.append(dict(file=name, reason="directory", mib=[]))
+                changed_bytes += max(entry.size, want["size"])
+                compared_bytes += max(entry.size, want["size"])
             done += want["size"]
             continue
         span = max(entry.size, want["size"])
@@ -227,9 +241,10 @@ def _compare(target, fd, size, base, by_lower, hashed, progress) -> dict[str, An
             compared_bytes += e.size
             changed_bytes += e.size
     names = [low for low in files if low in by_lower]
-    sizes_matching = sum(1 for low in names if by_lower[low].size == files[low][1]["size"])
+    same_size = {low for low in names if low in checked_directories or by_lower[low].size == files[low][1]["size"]}
+    sizes_matching = len(same_size)
     differing_names = {d["file"].lower() for d in differing} | {c["file"].lower() for c in cut}
-    files_matching = sum(1 for low in names if low not in differing_names and by_lower[low].size == files[low][1]["size"])
+    files_matching = len(same_size - differing_names)
     ranges = sum(len(d["mib"]) for d in differing)
     share = changed_bytes / max(1, compared_bytes)
     if not differing and not missing and not cut and not extra:
@@ -260,8 +275,8 @@ def describe(result: dict[str, Any]) -> str:
     if state == "unreadable":
         return result["detail"]
     if state == "matches":
-        return (f"This image matches {name} file for file. The disc copy is good, so a freeze on it is a real game "
-                "problem: please report it with the steps and, if you can, a freeze capture.")
+        return (f"This image matches {name} file for file. The game files are intact. For a freeze, report the steps "
+                "leading up to it, your console or emulator setup and a capture if available.")
     lines = []
     if state == "damaged":
         lines.append(f"This image is a damaged or incomplete copy of {name}. Copy or install the disc again "
@@ -274,7 +289,9 @@ def describe(result: dict[str, Any]) -> str:
         lines.append(f"- {c['file']} is cut short: only {c['readable_mib']} of {c['size_mib']} MiB can be read "
                      "(the image file ends early).")
     for d in result.get("differing", [])[:12]:
-        if d["reason"] == "size":
+        if d["reason"] == "directory":
+            lines.append(f"- {d['file']} is a file where the release has a folder.")
+        elif d["reason"] == "size":
             lines.append(f"- {d['file']} has the wrong size ({d['found']:,} bytes, the release has {d['expected']:,}).")
         else:
             where = ", ".join(f"{a}-{b} MiB" for a, b in d["mib"][:6]) + (" and more" if len(d["mib"]) > 6 else "")

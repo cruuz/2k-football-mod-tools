@@ -8,7 +8,7 @@
 - Quick Export handles a finished disc whose files were compacted, reordered or moved. Changing the selected pack or source clears its previous compatibility result. Starting a new export clears the preceding cover, name and project.
 - Customize retains the star access settings, Honors, jersey number sizes and league artwork. Artwork indexing reports progress, and interrupted source extraction can be retried. Builds check coach storage before copying the disc and publish the finished disc together with its receipts.
 - Complete roster exports carry staff, players, faces and portraits together. Franchise-only edits stay pending until written to a signed Xbox save copy. The roster writer checks a staged copy before publishing it. In PS2 saves, repeatedly editing a name retains its original space, and a card with several saves offers a directory picker.
-- Check Disc identifies both memory variants. Field Art opens the NFL end zones or field surfaces directly. Large-text and small-screen layouts keep navigation and actions accessible. A failed self-update returns you to the project with its unsaved-work protection.
+- Check Disc identifies both memory variants. Field Art opens the NFL end zones or field surfaces directly. Large-text and small-screen layouts keep navigation and actions accessible. A failed self-update returns you to the project with its unsaved-work protection. **Help → Report a bug…** opens the public issue tracker, and existing Discord members can open their server from Help.
 
 ### Playing SOFTDRINK 2K28 v0.10
 
@@ -16,7 +16,7 @@
 - Injured reserve now tracks regular-season time through save/reload and includes an injured player's earned stats in awards. Club signing limits count active players. Free-agent and draft views distinguish available players from future generation slots. Stock 2004 players keep their career ages when a modern franchise calendar is built.
 - Career Settings lets you change played and simulated quarter lengths independently. Team Rosters and League Leaders return to the same career. The camera uses normal presentation framing at the coin toss, between plays and for officials. Game Plan, Options and Quit retain legible headings under the pause scorebar.
 - The modern CPU punts in the early, tied midfield situations that produced unnecessary fourth-down attempts. Clock management accounts for the opponent's timeouts and two-point conversions. The CPU gives its quarterback time in a clean pocket. On offset pitch plays, Flip Routes keeps the back in position for the exchange.
-- Two paired 272-game simulation runs put mobile quarterback rushing around 17–18 yards per team game and gave comparable second receivers 45–46% of their pair's targets. The same runs produced 11 and 17 quarterbacks above 4,000 passing yards, against a five-season NFL mean of 8.2. Individual franchise seasons will vary.
+- In two matched 272-game seasons with the game’s default sliders, quarterback rushing rose from 12–13 to 16–17 yards per team game. Comparable second receivers drew 46% and 50% of their starting pair’s targets, up from 42% and 44%. Passing averaged 217 yards per team game across the two seeds, against 211 in beta 80 and a five-season NFL mean of 234. There were 10 and 11 individual 4,000-yard passers, against an NFL mean of 8.2.
 
 See the [installation guide](install_softdrink_2k28.md) and the [support FAQ](2k5_mod_studio_faq.md).
 
