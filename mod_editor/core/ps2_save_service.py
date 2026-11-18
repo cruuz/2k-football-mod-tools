@@ -16,12 +16,15 @@ widget layer.
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+import errno
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Callable
 import sys
 
 from .errors import ValidationError
+from .platform_compat import publish_no_replace
 
 ROOT = Path(__file__).resolve().parents[2]
 TOOLS = ROOT / "tools"
@@ -262,7 +265,7 @@ class Ps2SaveService:
     def write(
         self, output: Path, progress: Callable[[str], None] | None = None
     ) -> WriteResult:
-        """Reseal, write the save, then verify it against the original.
+        """Reseal and independently verify a staged save, then publish the copy.
 
         A ``.psu`` destination produces a standalone save file; a ``.ps2``
         destination produces a copy of the memory card this save came from
@@ -295,20 +298,39 @@ class Ps2SaveService:
                 "one. Open a .ps2 card first, or save as .psu instead."
             )
 
-        save.reseal()
+        if output.exists() or output.is_symlink():
+            raise ValidationError(f"Refusing to overwrite an existing file: {output}. Choose a new filename.")
         try:
-            if to_card:
-                announce("Writing the memory-card image…")
-                save_lib.write_into_memcard(
-                    self._source, save, output, save.directory
-                )
-            else:
-                announce("Writing the save file…")
-                save_lib.write_psu(save, output)
-        except save_lib.SaveError as exc:
-            raise ValidationError(str(exc)) from exc
-        except OSError as exc:
+            output.parent.mkdir(parents=True, exist_ok=True)
+            with TemporaryDirectory(prefix=".studio-ps2-", dir=output.parent) as folder:
+                staged = Path(folder) / output.name
+                result = self._write_and_verify(staged, save, declared, to_card, announce)
+                if result.verified:
+                    try:
+                        publish_no_replace(staged, output)
+                    except OSError as exc:
+                        if exc.errno not in {errno.ENOSYS, errno.EOPNOTSUPP, errno.EPERM}:
+                            raise
+                        # Some removable filesystems have no exclusive rename or hard links.
+                        # Use the writer's exclusive, flushed output path for the verified bytes.
+                        save_lib._write_reserved(output, staged.read_bytes(), (self._source,))
+                return replace(result, output=output)
+        except FileExistsError as exc:
+            raise ValidationError(f"The output appeared during verification. Choose a new filename: {output}.") from exc
+        except (OSError, save_lib.SaveError) as exc:
             raise ValidationError(f"Could not write {output}: {exc}") from exc
+
+    def _write_and_verify(
+        self, output: Path, save: save_lib.Ps2Save, declared: list[dict], to_card: bool,
+        announce: Callable[[str], None],
+    ) -> WriteResult:
+        save.reseal()
+        if to_card:
+            announce("Writing the memory-card image…")
+            save_lib.write_into_memcard(self._source, save, output, save.directory)
+        else:
+            announce("Writing the save file…")
+            save_lib.write_psu(save, output)
 
         try:
             if to_card:
@@ -334,7 +356,7 @@ class Ps2SaveService:
                 extra = ""
         except verify_lib.VerifyError as exc:
             return WriteResult(output, False, 0, len(declared),
-                               f"Saved, but verification failed: {exc}")
+                               f"Save verification failed: {exc}")
 
         changed = int(report.get("changed_bytes") or 0)
         return WriteResult(

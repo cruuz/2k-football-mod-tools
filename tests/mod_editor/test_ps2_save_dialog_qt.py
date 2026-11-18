@@ -484,6 +484,18 @@ class ServiceVerifiesTheFileTests(unittest.TestCase):
             service_module.save_lib.write_psu = real
         self.assertFalse(result.verified)
         self.assertIn("verification failed", result.detail)
+        self.assertFalse((self.root / "bad.psu").exists())
+        self.assertTrue(self.service.write(self.root / "bad.psu").verified)
+
+    def test_a_destination_claimed_during_verification_survives(self) -> None:
+        output = self.root / "claimed.psu"
+        def create_other_file(stage):
+            if "Verifying" in stage:
+                output.write_bytes(b"another export")
+        with self.assertRaisesRegex(ValidationError, "output appeared|existing file"):
+            self.service.write(output, create_other_file)
+        self.assertEqual(output.read_bytes(), b"another export")
+        self.assertTrue(self.service.dirty)
 
     def test_the_write_announces_each_stage_it_reaches(self) -> None:
         # The GUI has nothing else to show during a multi-second card write.
