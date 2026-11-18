@@ -59,6 +59,13 @@ jobs:
       PYTHONFAULTHANDLER: "1"
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Record the tested revision
+        shell: bash
+        env:
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: bash .github/check-ci-revision.sh "$PR_HEAD"
 
       - uses: actions/setup-python@v5
         with:
@@ -188,6 +195,13 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Record the tested revision
+        shell: bash
+        env:
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: bash .github/check-ci-revision.sh "$PR_HEAD"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -222,6 +236,13 @@ jobs:
       QT_QPA_PLATFORM: offscreen
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Record the tested revision
+        shell: bash
+        env:
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: bash .github/check-ci-revision.sh "$PR_HEAD"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
