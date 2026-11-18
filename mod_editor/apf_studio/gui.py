@@ -43,6 +43,7 @@ from PyQt5.QtCore import (
 from PyQt5.QtGui import (
     QBrush,
     QCloseEvent,
+    QCursor,
     QColor,
     QDesktopServices,
     QIcon,
@@ -80,6 +81,7 @@ from PyQt5.QtWidgets import (
     QSpinBox,
     QSplitter,
     QStackedWidget,
+    QStyle,
     QTabWidget,
     QTableWidget,
     QTableWidgetItem,
@@ -20013,6 +20015,13 @@ class ApfStudioMainWindow(QMainWindow):
         state = self._workspace_state()
         ui = getattr(state, "ui_state", None)
         if not ui:
+            # Before show(), QWidget.screen() can still point at the monitor containing (0, 0).
+            screen = QApplication.screenAt(QCursor.pos()) or self.screen()
+            available = screen.availableGeometry()
+            usable = QSize(max(1, available.width() - 24), max(1, available.height() - 48))
+            self.setMinimumSize(self.minimumSize().boundedTo(usable))
+            self.resize(self.size().boundedTo(usable))
+            self.move(QStyle.alignedRect(Qt.LeftToRight, Qt.AlignCenter, self.size(), available).topLeft())
             return
         from PyQt5.QtCore import QRect
         rectangle = QRect(*ui["geometry"])
