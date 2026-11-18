@@ -376,12 +376,25 @@ class CaveReferenceTests(unittest.TestCase):
         if _Image(self.patched).read(_lo, len(_retire_code)) == _retire_code:
             ranges = {(a, b) for a, b in ranges if not (a < _hi and b > _lo)}
             ranges.add((_lo, _hi))
-        # Scorebar v3 replaces complete pinned live spans. Split adjacent
-        # callbacks at their independently referenced entries, and include
-        # retained byte islands so their displaced branches remain internal.
+        # Each returner routine has its own retail entry. The row getter calls
+        # the position-list lookup and the named KR/PR getter independently.
+        # Pin their callers and both versions of all three adjacent functions.
+        from mod_editor.core import nfl2k5_returner_fix as returner
+        spans = []
+        for entry, before, after in (
+                (returner.ROW_LABEL_VA, returner.RETAIL_ROW_LABEL, returner.row_label_bytes()),
+                (returner.FN_NTH_RETURNER, returner.RETAIL_NTH, returner.lookup_bytes()),
+                (returner.GETTER_VA, returner.RETAIL_GETTER, returner.getter_bytes())):
+            spans.append((entry, entry + len(before), before, after))
+        for caller, entry in ((0x242B7A, returner.FN_NTH_RETURNER), (0x242B9B, returner.GETTER_VA)):
+            call = b"\xe8" + struct.pack("<i", entry - caller - 5)
+            for payload in (self.retail, self.patched):
+                self.assertEqual(payload[caller - BASE:caller - BASE + len(call)], call)
+            self.assertIn(caller, self.targets[entry])
+        # Scorebar v3 also replaces adjacent callbacks at independent entries
+        # and keeps byte islands between their displaced branches.
         from mod_editor.core import nfl2k5_scorebar_v3 as v3
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage
-        spans = []
         for va, old, new, _ in v3.xbe_specs():
             if va >= 0x4e0000:
                 continue
