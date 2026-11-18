@@ -63,7 +63,9 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
 
 Download the ready-made **64 MB** pack and install it directly through **Install SOFTDRINK 2K28**. It targets the original Xbox memory budget and leaves out the 128 MB memory patch. Hardware Xbox, hakuX and XBased compatibility remains unverified. With an emulator that implements its own kernel, report the emulator version and which pack you installed. The standard pack uses the 4627 kernel in xemu.
 
-If you already have a franchise from the standard edition with **Player Progress**, keep using the 128 MiB edition for that save. We loaded the same signed 987,836-byte franchise on both setups. The standard game opened it and the compact 64 MB game listed it as **Damaged**. Switch back to the standard edition to continue that franchise, or start a fresh one on the 64 MB disc.
+If you already have a franchise from the standard edition with **Player Progress**, keep using the 128 MiB edition for that save. We loaded the same signed 987,836-byte franchise on both setups. The standard game opened it and the compact 64 MB game listed it as **Damaged**. **Do not delete it; it still loads on the standard edition.** The save is not damaged; the compact game cannot read a save that size. On a v0.10 or later 64 MB disc, the Delete screen and the load error say this too. Switch back to the standard edition to continue that franchise, or start a fresh one on the 64 MB disc.
+
+If a Super Bowl in your franchise ends with a team scoring more than 63 points, v0.10 keeps the real score and stores the Super Bowl champions history in a newer format. v0.9 cannot read that format. If you take that save back to v0.9, its champions history starts again from empty the next time a season ends there. Keep playing that franchise on v0.10 or later.
 
 To customize a 64 MB disc:
 

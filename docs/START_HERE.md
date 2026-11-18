@@ -33,7 +33,8 @@ the NFLPA, ESPN, 2K or any team. The tools and the pack contain no game data: yo
    If you already downloaded the source ZIP, see [If you downloaded the source ZIP](#if-you-downloaded-the-source-zip) below.
 
 3. **One SOFTDRINK 2K28 v0.10 patch.** Choose the standard download for the full 128 MiB game in xemu.
-   Choose the download marked `64MB` for the experimental 64 MiB edition. Give Studio the `.2k5patch` file
+   Choose the download marked `64MB` for the experimental 64 MiB edition. A franchise saved on the standard edition shows
+   as Damaged in the 64 MiB game. Do not delete it; it still loads on the standard edition. Give Studio the `.2k5patch` file
    exactly as downloaded. The separate `.sha256` file is for checking a download. [Game downloads](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10)
 4. **xemu**, the original Xbox emulator, from [xemu.app](https://xemu.app). xemu needs its own BIOS files, which neither this project
    nor the Studio supplies. See [xemu's required-files guide](https://xemu.app/docs/required-files/).
