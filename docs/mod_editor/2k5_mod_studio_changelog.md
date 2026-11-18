@@ -15,6 +15,8 @@
 
 ### Playing SOFTDRINK 2K28 v0.10
 
+The standard 128 MiB edition includes Team History, modern injured reserve and MyCareer. Both editions include the save-browser repair, simulated Games Played, the Owner Firing fix and the offset-toss correction.
+
 - Team History navigation and box scores work with the native menus and audio. Record and award lists retain joint holders and champions' scores above 63. Linemen appear in Player Stats and Rookie Watch, and League Leaders ranks the qualifying players before taking the top 40.
 - Both SOFTDRINK editions credit Games Played to reserves who record statistics in a simulated regular-season game. In a signed Pittsburgh franchise, Robert Tonyan’s card showed one game, three catches and 41 yards. Previously it showed zero games with the same catches and yards. Existing franchises receive the correction from their next simulated game and retain their earlier totals.
 - Both editions honor **Owner Firing → Off** when a coach already has a final warning. An existing 1–16 Giants franchise reached the playable 2030 offseason with Off. With On, the same coach lost his job.

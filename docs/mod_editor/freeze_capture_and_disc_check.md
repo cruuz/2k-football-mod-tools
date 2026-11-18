@@ -1,15 +1,6 @@
 # When the game freezes: check your disc, then capture the freeze
 
-Some freezes look the same from the outside: the picture stops, and the commentators repeat the same words
-over and over. That sound is the sound card replaying its last bit of audio after the game has stopped. Two
-very different things cause it:
-
-* **A damaged or incomplete copy of the disc.** The game reads commentary and other files from the disc all
-  through a game, including between plays. A copy that was cut short or damaged (an SD card, a transfer that
-  stopped early, a drive that filled up while installing) stops the game at the first read that fails.
-* **A real game problem.** Then the useful thing to know is where the game stopped.
-
-Two small tools tell these apart. Neither changes your disc or your saves.
+When the picture stops, commentary may repeat the last audio the emulator played. That symptom can accompany an incomplete copy, a custom edit, a particular save, an emulator issue or a game bug. Check your disc first. If the freeze repeats, capture where it happens and include the save, game mode and emulator settings you used.
 
 ## 1. Check your SOFTDRINK disc
 

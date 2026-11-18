@@ -323,7 +323,7 @@ included in your installed build.
 
 Open **Coaching Gameplan** for the team you control. Move **Offense: Run/Pass** toward the low end for more team rushing attempts or toward the high end for more passes. The setting changes the team’s play selection. The game distributes carries among players.
 
-In a beta 81 test, the same Giants franchise played 17 simulated games at each endpoint with 15-minute quarters. The low setting produced 602 team rushes, 410 passes and 386 Cam Skattebo carries. The high setting produced 493 rushes, 478 passes and 302 Skattebo carries. In two fresh seasons at the neutral setting, Skattebo had 313 and 330 carries. If you see the reported 420-carry season, include the signed franchise save, team, week and Coaching Gameplan settings. [SOFTDRINK v0.10 game notes](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10)
+In matched 17-game Giants seasons on both memory editions, moving the slider toward the run gave Cam Skattebo more carries. Moving it toward the pass gave him fewer. The release notes show the results for the standard and compact editions separately. If you see a 420-carry season, include the signed franchise save, team, week and Coaching Gameplan settings. [SOFTDRINK v0.10 game notes](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10)
 
 ## Can the CPU go for it more often on fourth down?
 
