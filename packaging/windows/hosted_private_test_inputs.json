@@ -1,0 +1,195 @@
+{
+  "requirements": {
+    "apf_book": {
+      "description": "User-owned APF 2K8 book archive (APF_BOOK_RETAIL_INDEX)",
+      "messages": [
+        "Set APF_BOOK_RETAIL_INDEX to an existing user-owned input; no retail bytes are bundled"
+      ]
+    },
+    "apf_executable": {
+      "description": "User-owned APF 2K8 default.xex",
+      "messages": [
+        "Owned APF_RETAIL_XEX absent",
+        "Owned retail input absent: */All-Pro Football 2K8 (USA)/default.xex; set APF_RETAIL_XEX",
+        "Retail APF default.xex absent: */All-Pro Football 2K8 (USA)/default.xex; set APF_RETAIL_XEX to your owned Xbox 360 executable"
+      ]
+    },
+    "apf_index": {
+      "description": "User-owned APF 2K8 archive 0A",
+      "messages": [
+        "Owned APF retail index absent: */All-Pro Football 2K8 (USA)/0A",
+        "Retail APF 0A absent: */All-Pro Football 2K8 (USA)/0A"
+      ]
+    },
+    "b775_xbe": {
+      "description": "Extracted SOFTDRINK b775 default.xbe (NFL2K5_B775_XBE)",
+      "messages": [
+        "NFL2K5_B775_XBE (the extracted b775 test-disc default.xbe) is not set"
+      ]
+    },
+    "coach_ai_disc": {
+      "description": "Matching NFL2K5_COACH_AI_XBE and NFL2K5_COACH_AI_IMAGE",
+      "messages": [
+        "Set NFL2K5_COACH_AI_XBE and NFL2K5_COACH_AI_IMAGE for native execution"
+      ]
+    },
+    "digit_templates": {
+      "description": "Retail digit archive and corresponding template inventories",
+      "messages": [
+        "Private retail digit templates absent: */vc_53450030/0*"
+      ]
+    },
+    "shipped_xbe": {
+      "description": "Built SOFTDRINK default.xbe (NFL2K5_SHIPPED_XBE)",
+      "messages": [
+        "NFL2K5_SHIPPED_XBE (a built disc's default.xbe) is not set"
+      ]
+    },
+    "signed_franchise": {
+      "description": "Private signed f0 franchise save",
+      "messages": [
+        "private signed f0 franchise evidence is absent"
+      ]
+    },
+    "softdrink_disc": {
+      "description": "SOFTDRINK game image (NFL2K5_N4_SWEEP_DISC)",
+      "messages": [
+        "no SOFTDRINK disc image (set NFL2K5_N4_SWEEP_DISC)"
+      ]
+    },
+    "usa_archive": {
+      "description": "User-owned NFL 2K5 USA pack 0 and its extracted resources",
+      "messages": [
+        "Private animation evidence is absent: */ESPN NFL 2K5 (USA)/vc_53450030/0",
+        "Private model round-trip input absent: */ESPN NFL 2K5 (USA)/vc_53450030/0",
+        "Private retail archive index absent: */ESPN NFL 2K5 (USA)/vc_53450030/0",
+        "Retail extracted vc_53450030/0 is absent; exact PLAY acceptance requires it",
+        "private extracted PLAY archive absent; real loader evidence required",
+        "private extracted USA archive index is absent",
+        "retail extracted vc_53450030/0 missing",
+        "user-owned USA pack 0 absent"
+      ]
+    },
+    "usa_disc": {
+      "description": "User-owned NFL 2K5 USA retail XISO",
+      "messages": [
+        "Retail NFL 2K5 XISO absent; set NFL2K5_HIRES_TEST_IMAGE to a retail evidence copy",
+        "Retail NFL 2K5 XISO absent; set NFL2K5_HIRES_TEST_IMAGE to the retail evidence copy"
+      ]
+    },
+    "usa_roster": {
+      "description": "User-owned NFL 2K5 USA roster archive",
+      "messages": [
+        "private retail roster archive is absent"
+      ]
+    },
+    "usa_xbe": {
+      "description": "User-owned NFL 2K5 USA default.xbe",
+      "messages": [
+        "Private retail XBE absent: */ESPN NFL 2K5 (USA)/default.xbe",
+        "pinned USA retail default.xbe extraction is absent",
+        "pinned USA retail default.xbe is absent",
+        "private USA retail default.xbe extraction absent",
+        "private USA retail default.xbe is absent",
+        "private pinned USA default.xbe extraction is absent",
+        "private retail evidence absent: */ESPN NFL 2K5 (USA)/default.xbe",
+        "user-owned USA default.xbe absent: */ESPN NFL 2K5 (USA)",
+        "user-owned USA evidence absent: */ESPN NFL 2K5 (USA)/default.xbe",
+        "user-owned retail evidence absent: */ESPN NFL 2K5 (USA)/default.xbe"
+      ]
+    },
+    "v04_extraction": {
+      "description": "Private SOFTDRINK v0.4 extraction",
+      "messages": [
+        "private v0.4 extraction not configured"
+      ]
+    },
+    "v08_xbe": {
+      "description": "Extracted SOFTDRINK v0.8 default.xbe",
+      "messages": [
+        "NFL2K5_V08_XBE (the extracted v0.8 release default.xbe) is not set",
+        "Set NFL2K5_SPEED_V08_XBE to the released v0.8 default.xbe to run the v0.8 cases",
+        "set NFL2K5_V08_XBE to a released SOFTDRINK default.xbe"
+      ]
+    }
+  },
+  "files": {
+    "test_apf_b67_defense_model_native.py": {"DefenseModelTests": "apf_index"},
+    "test_apf_b67_model_native.py": {"ModelNativeTests": "apf_index"},
+    "test_apf_b67_writers_native.py": {"WriterNativeTests": "apf_index"},
+    "test_apf_b69_native.py": {"NativeTests": "apf_index"},
+    "test_apf_b69_retirement_native.py": {"RetirementBoundaryTests": "apf_index"},
+    "test_apf_b71_situation_mask_native.py": {"MaskNativeTests": "apf_executable"},
+    "test_apf_b72_personnel_rows_native.py": {"PersonnelNativeTests": "apf_executable"},
+    "test_apf_b76_situation_weights_native.py": {"WeightNativeTests": "apf_executable"},
+    "test_apf_book_unlock_retail.py": {"RetailProof": "apf_book"},
+    "test_apf_charge_abilities_native.py": {"ChargeNativeTests": "apf_executable"},
+    "test_apf_charge_line_moves_native.py": {"LineMoveNativeTests": "apf_executable"},
+    "test_apf_d3_situation_weights_native.py": {"SituationWeightNativeTests": "apf_executable"},
+    "test_apf_defense_research_native.py": {"DefenseResearchTests": "apf_index"},
+    "test_apf_fourth_down_native.py": {"FourthDownNativeTests": "apf_executable"},
+    "test_apf_playcall_research_native.py": {"NativePlaycallTests": "apf_executable"},
+    "test_apf_xex_image_retail.py": {"RetailImageTests": "apf_executable"},
+    "test_b765_p2_repair.py": {"RepairTests": "v04_extraction"},
+    "test_b778_cs1_choose_side.py": {"AutomaticRebind": "coach_ai_disc"},
+    "test_b780_draft_class.py": {"BuildPathTests": "usa_xbe", "ClassOwnerTests": "usa_xbe", "DraftAiHeadTests": "usa_xbe", "NativeClassTurnoverTests": "usa_xbe", "NativeSpecialistCapTests": "signed_franchise"},
+    "test_b780_econ3_roster_drift.py": {"NativeTests": "usa_xbe", "SiteTests": "usa_xbe"},
+    "test_b780_n4_defense_playcall_sweep.py": {"DefensePlayCallSweepTests": "softdrink_disc"},
+    "test_b791_h7_numbers_real.py": {"RealSlotTests": "digit_templates"},
+    "test_franchise_colleges.py": {"CollegeTests": "usa_roster"},
+    "test_franchise_economy_composition.py": {"CompositionTests": "usa_xbe"},
+    "test_franchise_free_agents.py": {"FreeAgentTests": "usa_roster"},
+    "test_models_project_wiring.py": {"WiringTests": "usa_archive"},
+    "test_nfl2k5_abilities_v2_manifest.py": {"ManifestTests": "usa_xbe"},
+    "test_nfl2k5_accelerated_clock.py": {"AcceleratedClockNativeTests": "usa_xbe", "AcceleratedClockWriterTests": "usa_xbe", "RetailLifecycleTests": "usa_xbe"},
+    "test_nfl2k5_accelerated_clock_manifest.py": {"ManifestTests": "usa_xbe"},
+    "test_nfl2k5_animation_import_retail.py": {"BoneTests": "usa_archive", "EmbeddedTests": "usa_xbe", "RetailImportTests": "usa_archive"},
+    "test_nfl2k5_animation_retail.py": {"RetailTests": "usa_archive"},
+    "test_nfl2k5_b69_rules.py": {"B780Modes2CoinTests": "usa_xbe", "ClockTests": "usa_xbe", "CoinTests": "usa_xbe", "ScrambleTests": "usa_xbe", "WriterTests": "usa_xbe"},
+    "test_nfl2k5_catch_snap_limit_unicorn.py": {"ReleasedSoftdrinkTests": "v08_xbe", "RetailTests": "usa_xbe"},
+    "test_nfl2k5_coverage_trail_unicorn.py": {"NativeTests": "usa_xbe", "ReplayTests": "usa_xbe"},
+    "test_nfl2k5_cpu_clock2_unicorn.py": {"ClockReplays": "usa_xbe"},
+    "test_nfl2k5_cpu_money_downs_manifest.py": {"ManifestTests": "usa_xbe"},
+    "test_nfl2k5_cpu_money_downs_unicorn.py": {"NativeTests": "usa_xbe"},
+    "test_nfl2k5_cpu_passer_iq.py": {"CompositionTests": "usa_xbe", "ReleaseExecutableTests": "v08_xbe", "WriterTests": "usa_xbe"},
+    "test_nfl2k5_cpu_passer_iq_unicorn.py": {"CheckdownScoreTests": "usa_xbe", "PumpFakeTests": "usa_xbe", "ReadDwellTests": "usa_xbe"},
+    "test_nfl2k5_cpu_qb_reads.py": {"B775Tests": "b775_xbe", "CompositionTests": "usa_xbe", "WriterTests": "usa_xbe"},
+    "test_nfl2k5_cpu_qb_reads_unicorn.py": {"CoveredWindowTests": "usa_xbe", "RecheckTests": "usa_xbe"},
+    "test_nfl2k5_cpu_qb_tiers_unicorn.py": {"SkillTierTests": "usa_xbe"},
+    "test_nfl2k5_db_ball_play_unicorn.py": {"CatchPointTests": "usa_xbe", "CaveConditionTests": "usa_xbe", "FrameTests": "usa_xbe", "StepZeroTests": "usa_xbe", "ThrottleCaveTests": "usa_xbe"},
+    "test_nfl2k5_deep_zone_frames.py": {"FrameTests": "usa_xbe"},
+    "test_nfl2k5_defense_play_qt.py": {"DefenseQtTests": "usa_archive"},
+    "test_nfl2k5_dive_window_flights.py": {"FlightTests": "usa_archive"},
+    "test_nfl2k5_espn25_loading_wait.py": {"LoadingWaitTests": "usa_xbe"},
+    "test_nfl2k5_espn25_native.py": {"NativeTests": "usa_xbe"},
+    "test_nfl2k5_espn25_one_pool.py": {"NativeTwentyFiveMomentsTests": "usa_archive", "OnePoolTests": "usa_archive"},
+    "test_nfl2k5_espn25_rosters_native.py": {"NativeTests": "usa_xbe"},
+    "test_nfl2k5_franchise_edit_player_unicorn.py": {"NativeTests": "usa_xbe"},
+    "test_nfl2k5_hires_families_retail.py": {"RetailFamilyTests": "usa_disc"},
+    "test_nfl2k5_hires_pack_retail.py": {"RetailTests": "usa_disc"},
+    "test_nfl2k5_historic_release_practice_squad.py": {"BuildPassTests": "usa_xbe", "NativeReentryTests": "usa_xbe"},
+    "test_nfl2k5_match_coverage_qt.py": {"MatchQtTests": "usa_archive"},
+    "test_nfl2k5_my_career_punt_settle.py": {"PuntHandbackTests": "usa_xbe"},
+    "test_nfl2k5_owner_pairwise_composition.py": {"MyCareerScreenGuardTests": "usa_xbe", "PairwiseCompositionTests": "usa_xbe", "QbInitializerGuardTests": "usa_xbe"},
+    "test_nfl2k5_pass_protection_unicorn.py": {"ShedDelayTests": "usa_xbe"},
+    "test_nfl2k5_practice_squad_screen_unicorn.py": {"BindingsTests": "usa_xbe"},
+    "test_nfl2k5_progression_careers.py": {"RoutineTests": "usa_xbe", "StaticTests": "usa_xbe"},
+    "test_nfl2k5_protection_calls_unicorn.py": {"LineButtonTests": "usa_xbe", "ShippedExecutableTests": "shipped_xbe", "SnapSlideTests": "usa_xbe"},
+    "test_nfl2k5_qb_accuracy_backs.py": {"BackTests": "usa_xbe"},
+    "test_nfl2k5_qb_accuracy_quick_lead.py": {"QuickLeadTests": "usa_xbe"},
+    "test_nfl2k5_qb_accuracy_unicorn.py": {"NativeTests": "usa_xbe"},
+    "test_nfl2k5_quick_long_release_unicorn.py": {"NativeTests": "usa_xbe"},
+    "test_nfl2k5_read_option_qt.py": {"OptionQtTests": "usa_archive"},
+    "test_nfl2k5_read_option_screen_hooks_compose.py": {"CompositionTests": "usa_xbe", "NativeInitializerTests": "usa_xbe"},
+    "test_nfl2k5_screen_hooks_manifest.py": {"ManifestTests": "usa_xbe"},
+    "test_nfl2k5_screen_hooks_unicorn.py": {"InstructionTests": "usa_xbe"},
+    "test_nfl2k5_senior_bowl_unicorn.py": {"NativeComponents": "usa_xbe"},
+    "test_nfl2k5_seven_on_seven_manifest.py": {"OwnershipTests": "usa_xbe"},
+    "test_nfl2k5_seven_on_seven_v2.py": {"BookRegressionTests": "usa_archive", "EveryOwnerPairTests": "usa_xbe", "ExecutableTests": "usa_xbe"},
+    "test_nfl2k5_sim_overtime.py": {"SimOvertimeRuleTests": "usa_xbe"},
+    "test_nfl2k5_speed_threshold_unicorn.py": {"RetailFrameTests": "usa_xbe", "RetailScalarTests": "usa_xbe", "V08FrameTests": "v08_xbe", "V08ScalarTests": "v08_xbe"},
+    "test_nfl2k5_supersim_live.py": {"NativeResearchTests": "usa_xbe", "NativeSeriesTests": "usa_xbe", "RuntimeTests": "usa_xbe"},
+    "test_nfl2k5_weekly_prep_unicorn.py": {"B780Modes2MyCareerTests": "usa_xbe", "NativeTests": "usa_xbe"},
+    "test_nfl2k5_weekly_progression.py": {"RuleTests": "usa_xbe", "StaticTests": "usa_xbe"}
+  }
+}

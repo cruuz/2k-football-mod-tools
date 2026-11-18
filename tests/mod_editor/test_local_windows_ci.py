@@ -173,6 +173,92 @@ class OutputTests(unittest.TestCase):
         self.assertIn("PASS  good.py  (? tests)", output.getvalue())
 
 
+class HostedCoverageTests(unittest.TestCase):
+    name = "test_nfl2k5_cpu_clock2_unicorn.py"
+    private_class = """class ClockReplays(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        raise unittest.SkipTest('pinned USA retail default.xbe is absent')
+    def test_private_replay(self):
+        self.fail('unavailable fixture')
+"""
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.tests = self.root / "tests/mod_editor"
+        self.tests.mkdir(parents=True)
+        self.report = self.root / "github-summary.md"
+
+    def write(self, name, classes):
+        (self.tests / name).write_text("import unittest\n" + classes + "\nunittest.main()\n", encoding="utf-8")
+
+    def exercise(self):
+        self.report.unlink(missing_ok=True)
+        with patch.dict(os.environ, GITHUB_STEP_SUMMARY=str(self.report)), contextlib.redirect_stdout(io.StringIO()) as log:
+            rc = hosted.run_suite(self.root, "")
+        return rc, log.getvalue(), self.report.read_text(encoding="utf-8")
+
+    def test_private_zero_requires_the_registered_filename_class_and_absence_reason(self):
+        self.write(self.name, self.private_class)
+        rc, log, report = self.exercise()
+        self.assertEqual(rc, 0, log)
+        self.assertIn("files=1 passed=0 failed=0 skipped=1 tests=0 executed_cases=0", report)
+        self.assertIn("Zero-case files requiring private inputs (1)", report)
+        self.assertIn(f"`{self.name}` — User-owned NFL 2K5 USA default.xbe", report)
+        for changed in ("", self.private_class.replace("is absent", "hash differs"),
+                        self.private_class.replace("pinned USA retail default.xbe is absent", "Unicorn is missing"),
+                        self.private_class.replace("ClockReplays", "UnreviewedClass")):
+            with self.subTest(changed=changed):
+                self.write(self.name, changed)
+                rc, log, report = self.exercise()
+                self.assertEqual(rc, 1, log)
+                self.assertIn("Unexpected zero or missing test runner summary (1)", report)
+        (self.tests / self.name).unlink()
+        self.write("test_unlisted.py", self.private_class)
+        rc, log, report = self.exercise()
+        self.assertEqual(rc, 1, log)
+        self.assertIn("`test_unlisted.py`", report)
+
+    def test_collected_case_skips_are_distinct_from_zero_and_from_executed_cases(self):
+        self.write(self.name, self.private_class + """
+class Public(unittest.TestCase):
+    def test_public(self):
+        with self.subTest():
+            self.skipTest('one scenario is unavailable')
+        self.assertEqual(2 + 2, 4)
+    @unittest.skip('unavailable feature')
+    def test_unavailable(self): pass
+""")
+        self.write("test_platform.py", """@unittest.skip('only runs on the other platform')
+class Platform(unittest.TestCase):
+    def test_platform(self): pass
+""")
+        self.write("test_tail.py", "class Tail(unittest.TestCase):\n    def test_tail(self): self.assertTrue(True)")
+        rc, log, report = self.exercise()
+        self.assertEqual(rc, 0, log)
+        self.assertIn("files=3 passed=2 failed=0 skipped=1 tests=4 executed_cases=2 skipped_cases=2", report)
+        self.assertIn("Zero-case files requiring private inputs (0)", report)
+        self.assertIn("Files with every collected case explicitly skipped (1)", report)
+        self.assertIn("`test_platform.py` — only runs on the other platform", report)
+        self.assertIn("setUpClass (__main__.ClockReplays) skipped", log)
+        self.assertEqual(hosted.skip_details("2 passed, 1 skipped, 3 subtests passed in 0.10s")[0], 1)
+
+    def test_manifest_contains_only_existing_named_test_files_and_requirements(self):
+        manifest = hosted.PRIVATE_INPUTS
+        used = set()
+        for filename, classes in manifest["files"].items():
+            self.assertEqual(Path(filename).name, filename)
+            self.assertTrue((ROOT / "tests/mod_editor" / filename).is_file(), filename)
+            self.assertTrue(classes, filename)
+            used.update(classes.values())
+        self.assertEqual(used, set(manifest["requirements"]))
+        for item in manifest["requirements"].values():
+            self.assertTrue(item["description"])
+            self.assertTrue(all(message.strip("*") for message in item["messages"]))
+
+
 class ClassificationTests(unittest.TestCase):
     # Short original log excerpts, with temp names changed to exercise portability.
     LINK_FAILURE = r'''......F

@@ -28,8 +28,10 @@ from tests.mod_editor import test_xbe_patch_memory_writes as gate
 
 
 def observe():
-    if not gate.XBE.is_file() or importlib.util.find_spec('capstone') is None:
-        raise unittest.SkipTest('retail USA XBE and Capstone required for observed owner manifest')
+    if importlib.util.find_spec('capstone') is None:
+        raise unittest.SkipTest('Capstone is required for the observed owner manifest')
+    if not gate.XBE.is_file():
+        raise unittest.SkipTest('pinned USA retail default.xbe is absent')
     retail = gate.XBE.read_bytes()
     if hashlib.sha256(retail).hexdigest() != RETAIL_SHA256:
         raise unittest.SkipTest('local XBE does not match the USA retail pin')

@@ -105,33 +105,19 @@ def _requires_posix_report_publication(test: unittest.TestCase) -> None:
         )
 
 
-def setUpModule() -> None:
-    """Skip this whole suite unless the pinned validator toolchain is present.
+def _report_commit_primitive():
+    if getattr(os, "O_TMPFILE", 0):
+        return "tools.validate_all_mod_editor_capabilities.os.link", os.link
+    # A named stage can commit via an exclusive rename or a hard link.
+    return "tools.validate_all_mod_editor_capabilities.platform_compat.publish_private_stage", platform_compat.publish_private_stage
 
-    These are adversarial tests for the *exhaustive capability validator*, whose
-    control policy pins an exact host toolchain -- a specific ripgrep at
-    ``PINNED_RG_PATH`` and a fixed ``HOME`` -- that only exists on the maintainer
-    workstation.  On any other host (every CI runner, any contributor's machine)
-    that toolchain is absent, so:
 
-      * the provenance/rg/control-policy tests cannot run (the pinned paths do
-        not resolve), and
-      * the real-subprocess timeout tests drive the validator's process-group
-        kill, which on a CI runner can escape into the runner's own shell and
-        terminate the whole job before it reports a summary.
-
-    Neither is a product defect, so we skip the suite with a named reason rather
-    than fail or hang.  Capability counts and registry integrity are still fully
-    validated on every host by the dedicated ``validate_registry.py`` CI job, so
-    skipping this maintainer-host-only suite loses no coverage there.
-    """
-
-    if not PINNED_RG_PATH.exists():
-        raise unittest.SkipTest(
-            "exhaustive-validator control policy pins a host-specific toolchain "
-            f"({PINNED_RG_PATH}) that is absent here; validated on the maintainer "
-            "host and, for counts/registry, by the dedicated registry CI job"
-        )
+# Only the complete validator needs the maintainer's exact launcher paths. Its
+# live timeout probes also use that toolchain's POSIX process group commands.
+requires_host_toolchain = unittest.skipUnless(
+    PINNED_RG_PATH.is_file() and all(path.is_file() for path in LAUNCHER_PATHS.values()),
+    "the exhaustive validator's pinned host toolchain is absent",
+)
 
 
 class AllCapabilityValidationTests(unittest.TestCase):
@@ -152,6 +138,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
             snapshot,
         )
 
+    @requires_host_toolchain
     def test_canonical_registry_has_exact_validation_coverage(self) -> None:
         from mod_editor.capabilities.validate_registry import load_and_validate, _command_module
         registry = load_and_validate(ROOT / "mod_editor/capabilities/registry.v1.json", check_files=False)
@@ -237,6 +224,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
         self.assertIsNone(result.returncode)
         self.assertEqual(result.final_line, "partial")
 
+    @requires_host_toolchain
     def test_tempfile_output_does_not_wait_for_escaped_stdout_holder(self) -> None:
         started = time.monotonic()
         result = execute_command(
@@ -253,6 +241,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertLess(elapsed, 0.4)
 
+    @requires_host_toolchain
     def test_real_timeout_is_bounded_and_kills_normal_process_group(self) -> None:
         started = time.monotonic()
         result = execute_command(
@@ -264,6 +253,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
         self.assertIsNone(result.returncode)
         self.assertLess(time.monotonic() - started, 1.0)
 
+    @requires_host_toolchain
     def test_timeout_kills_ignored_term_descendant_after_leader_exits(self) -> None:
         descendant_pid: int | None = None
         try:
@@ -362,6 +352,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
         self.assertFalse(any("__pycache__" in path.parts for path in paths))
         self.assertFalse(any(path.is_relative_to(ROOT / "assets/intermediate") for path in paths))
 
+    @requires_host_toolchain
     def test_exact_external_rg_is_regular_and_on_fixed_path(self) -> None:
         resolved = PINNED_RG_PATH.resolve(strict=True)
         snapshot, _payload = read_pinned_file(resolved)
@@ -377,6 +368,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
         self.assertEqual(entries, [resolved.name])
         self.assertEqual((tail / resolved.name).resolve(), resolved)
 
+    @requires_host_toolchain
     def test_audited_registry_host_commands_have_provenance(self) -> None:
         # Audit closure: 42 registry entry scripts plus their 11 literal local
         # shell dependencies. Bash builtins and repository executables are not
@@ -407,6 +399,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
                 self.assertTrue(provenance.executable.sha256)
                 self.assertEqual(provenance.resolved_leaf.path, provenance.executable.path)
 
+    @unittest.skipIf(os.name == "nt", "the provenance witness requires POSIX link and executable modes")
     def test_executable_symlink_chain_retarget_is_rejected(self) -> None:
         with _resolved_tempdir() as temporary:
             root = Path(temporary)
@@ -490,7 +483,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
 
     def test_normal_absolute_report_parent_is_accepted(self) -> None:
         _requires_posix_report_publication(self)
-        path = Path("/tmp") / (
+        path = Path(tempfile.gettempdir()).resolve() / (
             f"mod-editor-aggregate-report-parent-{os.getpid()}-{id(self)}.json"
         )
         self.assertFalse(path.exists())
@@ -602,16 +595,22 @@ class AllCapabilityValidationTests(unittest.TestCase):
             self.assertEqual(path.lstat().st_nlink, 1)
             self.assertEqual(list(root.iterdir()), [path])
 
-    def test_anonymous_publisher_never_calls_path_unlink(self) -> None:
+    def test_publisher_unlinks_only_a_private_named_stage_when_used(self) -> None:
         _requires_posix_report_publication(self)
         with _resolved_tempdir() as temporary:
             path = Path(temporary) / "receipt.json"
-            with mock.patch(
-                "tools.validate_all_mod_editor_capabilities.os.unlink",
-                side_effect=AssertionError("publisher must never path-unlink"),
-            ):
+            with mock.patch("tools.validate_all_mod_editor_capabilities.os.unlink", wraps=os.unlink) as unlink:
                 publish_report(path, b"{}\n")
             self.assertEqual(path.read_bytes(), b"{}\n")
+            if getattr(os, "O_TMPFILE", 0):
+                unlink.assert_not_called()
+            else:
+                # Rename consumes the staging name. The hard-link fallback must unlink it.
+                self.assertLessEqual(unlink.call_count, 1)
+                for args, kwargs in unlink.call_args_list:
+                    self.assertTrue(args[0].startswith(".validation-report."))
+                    self.assertIn("dir_fd", kwargs)
+            self.assertEqual(list(path.parent.iterdir()), [path])
 
     @unittest.skipUnless(
         hasattr(os, "O_TMPFILE"),
@@ -651,12 +650,12 @@ class AllCapabilityValidationTests(unittest.TestCase):
         with _resolved_tempdir() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
-            real_link = os.link
+            commit_path, real_commit = _report_commit_primitive()
 
             def competitor_then_link(
                 source: object, destination: object, **kwargs: object,
             ) -> None:
-                parent_fd = kwargs["dst_dir_fd"]
+                parent_fd = kwargs.get("dst_dir_fd", kwargs.get("dir_fd"))
                 competitor = os.open(
                     destination,
                     (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0),
@@ -667,10 +666,10 @@ class AllCapabilityValidationTests(unittest.TestCase):
                     os.write(competitor, b"competitor\n")
                 finally:
                     os.close(competitor)
-                real_link(source, destination, **kwargs)
+                real_commit(source, destination, **kwargs)
 
             with mock.patch(
-                "tools.validate_all_mod_editor_capabilities.os.link",
+                commit_path,
                 side_effect=competitor_then_link,
             ):
                 with self.assertRaisesRegex(ValidationRunError, "already exists"):
@@ -684,7 +683,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
             root = Path(temporary)
             path = root / "receipt.json"
             with mock.patch(
-                "tools.validate_all_mod_editor_capabilities.os.link",
+                _report_commit_primitive()[0],
                 side_effect=KeyboardInterrupt,
             ):
                 with self.assertRaises(KeyboardInterrupt):
@@ -704,16 +703,16 @@ class AllCapabilityValidationTests(unittest.TestCase):
             ), _resolved_tempdir() as temporary:
                 root = Path(temporary)
                 path = root / "receipt.json"
-                real_link = os.link
+                commit_path, real_commit = _report_commit_primitive()
 
                 def linked_then_raise(
                     source: object, destination: object, **kwargs: object,
                 ) -> None:
-                    real_link(source, destination, **kwargs)
+                    real_commit(source, destination, **kwargs)
                     raise failure
 
                 with mock.patch(
-                    "tools.validate_all_mod_editor_capabilities.os.link",
+                    commit_path,
                     side_effect=linked_then_raise,
                 ):
                     expected = (
@@ -776,17 +775,17 @@ class AllCapabilityValidationTests(unittest.TestCase):
             moved = root / "moved"
             parent.mkdir()
             path = parent / "receipt.json"
-            real_link = os.link
+            commit_path, real_commit = _report_commit_primitive()
 
             def link_then_replace_parent(
                 source: object, destination: object, **kwargs: object,
             ) -> None:
-                real_link(source, destination, **kwargs)
+                real_commit(source, destination, **kwargs)
                 parent.rename(moved)
                 parent.mkdir()
 
             with mock.patch(
-                "tools.validate_all_mod_editor_capabilities.os.link",
+                commit_path,
                 side_effect=link_then_replace_parent,
             ):
                 with self.assertRaisesRegex(ValidationRunError, "identity changed"):
@@ -914,7 +913,14 @@ class AllCapabilityValidationTests(unittest.TestCase):
             real = root / "real"
             (real / "child").mkdir(parents=True)
             alias = root / "alias"
-            alias.symlink_to(real, target_is_directory=True)
+            try:
+                alias.symlink_to(real, target_is_directory=True)
+            except OSError as exc:
+                if getattr(exc, "winerror", None) not in (1, 50, 1314):
+                    raise
+                self.skipTest(f"Windows directory symlink creation unavailable: {exc}")
+            if os.name == "nt" and not alias.is_symlink():
+                self.skipTest("Windows filesystem did not create a directory symlink")
             with self.assertRaisesRegex(ValidationRunError, "ancestor.*symlink"):
                 validate_report_output(alias / "child" / "receipt.json")
 
