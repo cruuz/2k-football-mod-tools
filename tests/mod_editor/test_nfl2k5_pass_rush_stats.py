@@ -648,6 +648,69 @@ class LeaderRankingTests(unittest.TestCase):
                 getter = prs.labels(prs.allocations(self.data)["code"]["va"])["prs_leader_value"]
                 self.assertEqual(sorted(self._value(m, getter, p, 108+k, 11) for p in rows), list(range(40)))
 
+    def test_qualifying_linemen_need_half_of_their_clubs_games(self):
+        """Full-season starters and one-game fill-ins at weeks 1, 9 and 18 and in the playoffs. The save keeps games
+        played (field 0) as a lineman's only opportunity count; the floor is half his club's completed games."""
+        from tests.mod_editor.test_nfl2k5_honors import Machine, word
+        GRID, WEEKS_BYTE, CLASS = 0xE57C40, 0x5151C4, 0xBD7F98
+
+        def grid(m, regular, playoffs):
+            cells = bytearray(22 * 17 * 8)
+            for club, games in enumerate(regular):            # club 0 against club 1, then against club 2
+                for row in range(games):
+                    cell = (row * 17 + 1 + club) * 8
+                    cells[cell:cell + 3] = bytes((3, club, 2 + club))
+            for club, games in enumerate(playoffs):
+                for row in range(games):
+                    cell = ((18 + row) * 17 + 1 + club) * 8
+                    cells[cell:cell + 3] = bytes((3, club, 2 + club))
+            m.uc.mem_write(GRID, bytes(cells))
+
+        scenarios = (("week 1", (1, 1), (0, 0), False, {0: 1, 1: 1}),
+                     ("week 9", (9, 8), (0, 0), False, {0: 5, 1: 4}),
+                     ("week 18", (17, 17), (0, 0), False, {0: 9, 1: 9}),
+                     ("playoffs", (17, 17), (3, 1), True, {0: 2, 1: 1}))
+        for label, regular, playoffs, post, floor in scenarios:
+            with self.subTest(label):
+                m = Machine(self.data)
+                m.put8(WEEKS_BYTE, 18)
+                m.put(CLASS, int(post))
+                grid(m, regular, playoffs)
+                specs = []                                   # (club, games, sacks allowed, role)
+                for club in (0, 1):
+                    full = (playoffs if post else regular)[club]
+                    specs += [(club, full, 1 + i, "starter") for i in range(5)]
+                    specs += [(club, 1, 0, "fill-in") for _ in range(3)]
+                    specs += [(club, floor[club], 2, "at the floor"), (club, floor[club] - 1, 0, "below the floor")]
+                players = m.roster([(3, [word(0, 3, g, post=post), word(110, 3, sa, post=post)])
+                                    for _club, g, sa, _role in specs])
+                teams = (m.TEAMS, m.TEAMS + 0x1F4)
+                for club in (0, 1):
+                    mine = [p for p, spec in zip(players, specs) if spec[0] == club]
+                    for j, p in enumerate(mine):
+                        m.put(teams[club] + 4 * j, p)
+                        m.put8(p + 0x35, 12 + j % 3)
+                    m.put8(teams[club] + 0x11C, len(mine))
+                m.hook(0xC7D40, lambda mm: 2)
+                m.hook(0xC4C50, lambda mm: teams[mm.reg("ECX")] if mm.reg("ECX") < 2 else 0)
+                obj, ids = m.HEAP + 0x70000, m.HEAP + 0x71000
+                m.uc.mem_write(ids, struct.pack("<6I", 0, 0, 0, 108, 109, 110))
+                for off, value in ((0, 3), (0x44, ids), (0x60, 11), (0x64, 6), (0xA0, 6), (0xC0, 5)):
+                    m.put(obj + off, value)
+                m.call(0x321D40, stack=(obj,))
+                rows = {m.get(0xC902DC + 4 * r) for r in range(m.get(0xC902D8))}
+                expected = {p for p, (club, games, _sa, _role) in zip(players, specs)
+                            if games >= 1 and games >= floor[club]}
+                self.assertEqual(rows, expected)
+                roles = {role for p, (_c, _g, _s, role) in zip(players, specs) if p in rows}
+                self.assertIn("starter", roles)
+                self.assertEqual("fill-in" in roles, label == "week 1" or post)
+                if label == "week 18":
+                    # the career view: half the games of the busiest lineman (17), the same linemen qualify
+                    m.put(obj + 0x60, 9)
+                    m.call(0x321D40, stack=(obj,))
+                    self.assertEqual({m.get(0xC902DC + 4 * r) for r in range(m.get(0xC902D8))}, expected)
+
     def test_native_sort_shows_fewest_first_when_selecting_an_allowed_column_and_toggles(self):
         from tests.mod_editor.test_nfl2k5_honors import Machine
         m = Machine(self.data)
@@ -681,6 +744,8 @@ class LeaderRankingTests(unittest.TestCase):
             m.put(m.TEAMS + 4 * i, p)
         m.put8(m.TEAMS + 0x11C, len(players))
         m.put(0xE576B8, 1)
+        m.hook(0xC7D40, lambda mm: 1)                       # the league: this one club (the qualifier walks it)
+        m.hook(0xC4C50, lambda mm: m.TEAMS if mm.reg("ECX") == 0 else 0)
         obj, ids = m.HEAP + 0x70000, m.HEAP + 0x71000
         m.put(obj + 0x44, ids)
         m.put(obj + 0x68, m.TEAMS)

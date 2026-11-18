@@ -65,7 +65,7 @@ from . import nfl2k5_pass_rush_stats_code as runtime
 
 OWNER = "nfl2k5_pass_rush_stats"
 EVIDENCE = "EXPERIMENTAL"
-CODE_SIZE = 3584
+CODE_SIZE = 4096                  # beta 81 review: + the qualifying-lineman games floor (3,988 bytes)
 READ_ONLY_SIZE = 4096
 DATA_SIZE = 1152
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "read_only", READ_ONLY_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
@@ -91,7 +91,7 @@ TARGETS_FIELD = 50
 STATE_COUNTERS_OFF = 0x24         # u8 cnt[136][5], index = play-log player code (0xBBAA0), order PRS QBH PA HA SA
 STATE_DIAGNOSTICS = ("live", "throws", "sacks", "sheds", "credits", "last_defenders", "last_min_mm", "commits", "rng")
 NCODE, NSTAT = 136, 5
-STATE_SIZE = 4 * len(STATE_DIAGNOSTICS) + NCODE * NSTAT + NCODE + 2 * NCODE + 16   # + the card cell text (b780 b5-sim)
+STATE_SIZE = 4 * len(STATE_DIAGNOSTICS) + NCODE * NSTAT + NCODE + 2 * NCODE + 16 + 8   # + the card cell text (b780 b5-sim), the qualifying-lineman view cache
 
 # Tunables: (label, value). The template holds the same values; code_for() writes these.
 # Positions are in centimetres (91.44 a yard: 210 uses of 91.44 in the retail XBE; xemu RAM of prsA2/prsA3).

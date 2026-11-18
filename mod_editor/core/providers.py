@@ -805,10 +805,10 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_run_blocking_code.py": "622c8683badbb73ad0997e96d68a9d116317c5916d92a70be2758b05914e244b",
         "mod_editor/core/nfl2k5_pass_protection.py": "8d85ca582b80d79ad341e8c0158a89094662dd77fbfe655d39d9005742176692",
         "mod_editor/core/nfl2k5_pass_protection_code.py": "a9d8e2bfb43cab4c95d2e5c909a47a5d84fbf3b927ce51f97da619728b49e8de",
-        "mod_editor/core/nfl2k5_pass_rush_stats.py": "0af622ec79cb846246ba22c2ad0299c2c5e5ee08bded31f5e9041242b0c4386f",
+        "mod_editor/core/nfl2k5_pass_rush_stats.py": "bf6db89e8e248bdda1cf7051932cb1a87699ef93be6d4f67d9d7c6b8ed139e37",
         "mod_editor/core/nfl2k5_pass_rush_stats_b779.py": "aa5d0ca54ff78cce5e95e1cecd3c1848484792218465602afc6b91f2064f8281",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_pass_rush_stats_b780.py": "ef2efea90ac371bc1fbe89fd52e897f1b767b580e00513dd8a8ec3d922bcb2d3",
-        "mod_editor/core/nfl2k5_pass_rush_stats_code.py": "2886588a75a3f0064a7ea898a2e3cec14d1a57868157a9a3502c15321320929e",
+        "mod_editor/core/nfl2k5_pass_rush_stats_code.py": "7ae1f6b16903831cc76db878ac0447386e99e40b0df94c7c93c45eee0f86adbb",
         "mod_editor/core/nfl2k5_pass_rush_stats_code_b779.py": "1aaa9727867ef483c1bc53696ab98efefe1440381cdb1771cba1d05f31413c9d",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_pass_rush_stats_code_b780.py": "1f15e31239b14696c9167851dea4f907b720c07c5d0dce3ca3b0ce4329a0d5fc",
         "mod_editor/core/nfl2k5_cpu_passer_iq.py": "b20345c8645b637e4fa619d811e50786bca501259ba16a6fa7a5b7c48b195b27",  # b780 a-passer
