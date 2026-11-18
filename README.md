@@ -139,13 +139,8 @@ This is a **beta**. What that means here:
 
 - Retail-dependent tests and release gates skip with an explicit reason when
   their private game data or generated build inputs are unavailable.
-- The bundled `extract-xiso` extractor ships as **both** a Linux binary and a
-  Windows `.exe`, built from the same vendored 2.7.1 source, so handing the
-  editor a `.iso` works on either. **macOS** has no bundled build — point the
-  editor at an **already-extracted game folder** there, or build extract-xiso
-  yourself and pass it to `SourceManager(extract_xiso=...)`. See
-  `tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md` for the exact
-  build commands and hashes.
+- **2K5 players on every platform** can install a SOFTDRINK patch directly from their clean USA Xbox disc image in **Getting Started → Install SOFTDRINK 2K28…**. The installer reads the game partition itself.
+- **APF disc extraction** uses the bundled `extract-xiso` binary on Linux and Windows. On macOS, open an already-extracted APF game folder, or supply your own extractor through `SourceManager(extract_xiso=...)`. [Extractor build instructions](tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md)
 
 Double-click launchers are bundled for all three platforms (see *Install*).
 
