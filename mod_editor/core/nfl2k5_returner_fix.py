@@ -414,16 +414,22 @@ def _nth_code() -> bytes:
 def _available_returner() -> bytes:
     """Resolve an unavailable named depth row through the same lineup builder that actually fields the returner."""
     a = _Asm(FN_NTH_RETURNER + len(_nth_code()))
-    a.b("8d7920")               # EDI = named row + 0x20; the getter restores the incoming EDI
-    a.b("29f7 29f7")         # KR starts +0x1c (2 named), PR +0x1e (1 named)
-    a.b("81ec34030000 89e2 89d9 6a00 6a00")  # native lineup context on our stack; normal availability
+    a.b("89cf")                               # EDI = named row (preserved by the builder)
+    a.b("81ec34030000 89e2 89d9 6a00 6a00")     # allocate a native lineup context and use normal availability
     a.call(0xE80D0)
-    a.b("0fb6143c 81c434030000")
-    a.b("31c0 3a931c010000")   # builder may leave an empty byte
-    a.j8("73", "done")
-    a.b("8b0493")
+    # The native builder packs its positional lists consecutively, with one directory pointer per kind.
+    # 28 minus the number of named rows selects kind 26 for KR (two rows) or 27 for PR (one row).
+    a.b("6a1c 59 29f1 89ce 89e2")               # ECX = ESI = list kind, EDX = built lineup context
+    a.call(0xE75A0)                             # native number of candidates in this list
+    a.b("39c7")                                 # cmp edi,eax
+    a.j8("73", "empty")                         # a missing KR2 must never read the first PR
+    a.b("89e2 57 52 89f0 31c9")                 # row, context; EAX = kind, ECX = normal roster lookup
+    a.call(0xE7810)                             # same native lookup used by match personnel selection
+    a.j8("eb", "done")
+    a.label("empty")
+    a.b("31c0")
     a.label("done")
-    a.b("c3")
+    a.b("81c434030000 c3")
     return a.assemble()
 
 
@@ -681,10 +687,20 @@ def _sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
             ("all_star_skip", _offset(payload, ALL_STAR_CALL_VA), RETAIL_ALL_STAR_CALL, all_star_call_bytes())]
 
 
+# Complete prior chart and list routines from the standard beta 81 build (6bb6862e0) and the
+# following draw/edit separation (b02446e8c). Each old routine must match before it can upgrade.
+_PREVIOUS_CHART = (_row_label_code() + bytes.fromhex(
+    "817c2448102d2400721d85c074198b54240485d27406f64227707506f64027707405e952000000c3"
+)).ljust(ROW_LABEL_SIZE, b"\xcc")
+_PREVIOUS_LOOKUP = (_nth_code() + bytes.fromhex(
+    "8d792029f729f781ec3403000089e289d96a006a00e89756eaff0fb6143c81c43403000031c03a931c01000073038b0493c3"
+)).ljust(NTH_SIZE, b"\xcc")
+
 # Earlier installs that upgrade in place: the first b780 st1 getter; depth locks revision 5's own all-star call
 # (an image where depth locks came first): the returner fix owns the loop head's call and points it at its own
 # skip, so either order of the two owners ends in the same bytes.
-PREVIOUS = {"returner_getter": (getter_bytes_v1(), getter_bytes(previous=True)), "all_star_skip": (DEPTH_LOCKS_ALL_STAR_CALL,),
+PREVIOUS = {"returner_chart": (_PREVIOUS_CHART,), "returner_lookup": (_PREVIOUS_LOOKUP,),
+            "returner_getter": (getter_bytes_v1(), getter_bytes(previous=True)), "all_star_skip": (DEPTH_LOCKS_ALL_STAR_CALL,),
             "returner_loop": (site_bytes(v2=True),)}
 
 

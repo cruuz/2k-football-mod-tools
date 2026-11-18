@@ -34,17 +34,30 @@ jobs:
   # the release: prove the tools work on real Windows and macOS, not just Linux.
   # ---------------------------------------------------------------------------
   tests:
-    name: tests (${{ matrix.os }}, py${{ matrix.python-version }})
+    name: ${{ matrix.shard && format('Windows suite (py{0}, part {1})', matrix.python-version, matrix.shard) || format('tests ({0}, py{1})', matrix.os, matrix.python-version) }}
     runs-on: ${{ matrix.os }}
-    # Beta 69 added ten feature areas of tests; the Windows suite now needs about 50 minutes on the hosted runner.
     timeout-minutes: 90
+    outputs:
+      win_3_11_1: ${{ steps.suite.outputs.win_3_11_1 }}
+      win_3_11_2: ${{ steps.suite.outputs.win_3_11_2 }}
+      win_3_12_1: ${{ steps.suite.outputs.win_3_12_1 }}
+      win_3_12_2: ${{ steps.suite.outputs.win_3_12_2 }}
+      win_3_13_1: ${{ steps.suite.outputs.win_3_13_1 }}
+      win_3_13_2: ${{ steps.suite.outputs.win_3_13_2 }}
     strategy:
       fail-fast: false
       matrix:
         # The retail-free native engines reproduce byte for byte with Noble's GCC 13.3 / binutils 2.42.
-        os: [ubuntu-24.04, windows-latest, macos-latest]
+        os: [ubuntu-24.04, macos-latest]
         # b780 Q8: 3.13 runs with NumPy 2 (the Studio's own requirements pin NumPy 2.3.5 there)
         python-version: ['3.11', '3.12', '3.13']
+        include:
+          - {os: windows-latest, python-version: '3.11', shard: 1}
+          - {os: windows-latest, python-version: '3.11', shard: 2}
+          - {os: windows-latest, python-version: '3.12', shard: 1}
+          - {os: windows-latest, python-version: '3.12', shard: 2}
+          - {os: windows-latest, python-version: '3.13', shard: 1}
+          - {os: windows-latest, python-version: '3.13', shard: 2}
     env:
       # Qt needs a display. The offscreen platform plugin gives it one with no
       # X server / no window, on every OS.
@@ -177,13 +190,50 @@ jobs:
       # counts and supervises Windows processes without starting Git Bash tools
       # per file. Unix keeps its existing GNU timeout when installed.
       - name: Run the mod_editor test suite
+        id: suite
         shell: bash
+        env:
+          WINDOWS_SHARD: ${{ matrix.shard }}
         run: |
           timer=""
-          if [[ "$RUNNER_OS" != "Windows" ]]; then
+          args=()
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            args=(--shard "$WINDOWS_SHARD")
+          else
             timer="$(type -P timeout || type -P gtimeout || true)"
           fi
-          python packaging/windows/hosted_test_suite.py "$timer"
+          python packaging/windows/hosted_test_suite.py "$timer" "${args[@]}"
+
+  # Preserve the three version-specific required checks. Each reads two
+  # distinct Windows receipts and verifies coverage against this exact checkout.
+  windows-results:
+    name: tests (windows-latest, py${{ matrix.version }})
+    needs: tests
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {version: '3.11', first: win_3_11_1, second: win_3_11_2}
+          - {version: '3.12', first: win_3_12_1, second: win_3_12_2}
+          - {version: '3.13', first: win_3_13_1, second: win_3_13_2}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Record the tested revision
+        shell: bash
+        env:
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: bash .github/check-ci-revision.sh "$PR_HEAD"
+      - name: Verify both Windows test results
+        env:
+          WINDOWS_PART_1: ${{ needs.tests.outputs[matrix.first] }}
+          WINDOWS_PART_2: ${{ needs.tests.outputs[matrix.second] }}
+          WINDOWS_PYTHON: ${{ matrix.version }}
+        run: python3 packaging/windows/hosted_test_suite.py --verify-shards "$WINDOWS_PYTHON"
 
   # ---------------------------------------------------------------------------
   # Capability registry validation (stdlib only, no Qt). Cheap gate that keeps

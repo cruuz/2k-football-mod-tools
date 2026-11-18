@@ -65,6 +65,13 @@ def bounded_projection():
                if fingerprints.get(name) != digest}
     if not changed <= REVALIDATED:
         raise AssertionError('unobserved source drift: '+str(sorted(changed-REVALIDATED)))
+    if not changed and parent.get('section_digests_verified'):
+        # A regenerated production manifest already records the full disc. Exercise
+        # the normal native writer on the registered union and verify that receipt.
+        ReservationManifest(parent, XbeImage(retail), source_root=ROOT)
+        seed = space.apply(retail, stack.REQUESTS, scaleout=True)[0]
+        normal = read.apply(seed)[0]
+        return normal, parent
     # The altered Build orchestration does not introduce an unobserved XBE
     # transport. Pin the actual historical source before comparing its AST.
     name = 'mod_editor/core/mod_build.py'
@@ -141,6 +148,29 @@ def bounded_projection():
     return final, result
 
 
+class CommittedOwnershipTests(unittest.TestCase):
+    def test_current_read_option_writer_and_seven_hooks_are_recorded(self):
+        manifest = json.loads(DEFAULT_MANIFEST.read_bytes())
+        self.assertTrue(manifest['complete'])
+        self.assertEqual(manifest['retail_sha256'], RETAIL_SHA256)
+        for rel in ('mod_editor/core/nfl2k5_read_option_runtime.py',
+                    'mod_editor/core/nfl2k5_read_option_runtime_code.py'):
+            self.assertEqual(manifest['source_sha256'][rel], sha((ROOT / rel).read_bytes()), rel)
+        self.assertTrue(any(step['owner'] == read.OWNER and step['changed_bytes'] > 0
+                            for step in manifest['steps']))
+        self.assertEqual(len(read.HOOKS), 7)
+        for name, (address, original) in read.HOOKS.items():
+            with self.subTest(hook=name):
+                overlaps = [row for row in manifest['spans']
+                            if int(row['start'], 0) < address + len(original)
+                            and address < int(row['end'], 0)]
+                self.assertEqual({row['owner'] for row in overlaps}, {read.OWNER})
+                self.assertTrue(any(row['basis'] == 'declared edit: ' + name
+                                    and int(row['start'], 0) == address
+                                    and int(row['end'], 0) == address + len(original)
+                                    for row in overlaps))
+
+
 @unittest.skipUnless(XBE.is_file(), 'pinned USA retail XBE required')
 class OwnershipRevalidationTests(unittest.TestCase):
     @classmethod
@@ -153,7 +183,10 @@ class OwnershipRevalidationTests(unittest.TestCase):
             self.assertTrue(manifest.overlaps(va, va+len(old)), name)
             self.assertFalse(manifest.overlaps(va, va+len(old), exclude_owner=read.OWNER), name)
         self.assertEqual(len(read.HOOKS), 7)
-        self.assertFalse(self.document['read_option_v5_revalidation']['new_disc_built'])
+        if 'read_option_v5_revalidation' in self.document:
+            self.assertFalse(self.document['read_option_v5_revalidation']['new_disc_built'])
+        else:
+            self.assertTrue(self.document['section_digests_verified'])
         self.assertEqual(read.apply(self.final)[0], self.final)
 
     def test_both_variants_keep_identical_reservations_and_strict_source_pins(self):

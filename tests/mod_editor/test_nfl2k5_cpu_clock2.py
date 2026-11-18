@@ -117,6 +117,24 @@ class RetailTests(unittest.TestCase):
             self.assertEqual(clock2.read_settings(old), {"overtime": overtime})
             self.assertEqual(clock2.apply(old, overtime=overtime)[0], current)
 
+    def test_first_beta81_clock_upgrades_without_moving_its_allocation(self):
+        """The shipped first beta 81 revision (16-point rule only) upgrades in place; a foreign byte refuses."""
+        from mod_editor.core import nfl2k5_rdata_sites as rdata
+        for overtime, current in ((False, self.patched), (True, self.overtime)):
+            allocated, _ = space.apply(self.retail, clock2.REQUESTS, scaleout=True)
+            va = clock2.allocations(allocated)["va"]
+            old, _ = space.install_code(allocated, clock2.OWNER, clock2.code_for(va, revision="b81"))
+            old, _ = rdata.apply(old, clock2.sites(va, overtime=overtime, revision="b81"), clock2.OWNER)
+            self.assertEqual(clock2.read_settings(old), {"overtime": overtime})
+            upgraded, receipt = clock2.apply(old, overtime=overtime)
+            self.assertEqual(upgraded, current)
+            self.assertEqual(clock2.apply(upgraded, overtime=overtime)[1]["status"], "already_applied")
+            bad = bytearray(old)
+            bad[XbeImage(old).offset(va + assembly.LABELS_B81["estimate_score"] + 2, 1)] ^= 1
+            self.assertEqual(clock2.status(bytes(bad)), "foreign")
+            with self.assertRaises(ValueError):
+                clock2.apply(bytes(bad), overtime=overtime)
+
     def test_overtime_choice_needs_a_clean_base(self):
         with self.assertRaises(clock2.CpuClock2Error):
             clock2.apply(self.patched, overtime=True)

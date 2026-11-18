@@ -469,13 +469,22 @@ ot_window:
 4:  jmp late_time
 
 /* Site 0x20a6b0: native normally counts touchdowns as seven and recognizes a
- * one-point remainder as a conversion. At a 16-point deficit the first of the
- * two touchdowns can also be followed by a two-point conversion. */
+ * one-point remainder as a conversion. Any deficit that is a multiple of 8
+ * (8, 16, 24, ...) can be tied by that many touchdowns with two-point
+ * conversions, so such a step counts eight points: the native loop then needs
+ * ceil(deficit / 8) scores (16 is two, 24 three, 32 four). Beta 81's first
+ * revision (B81_SIXTEEN) recognized only 16 and stays assemblable so its
+ * installs upgrade in place. */
 .ifndef BETA80
 .global estimate_score
 estimate_score:
+.ifdef B81_SIXTEEN
     cmp esi, -16
     jne 1f
+.else
+    test esi, 7
+    jnz 1f
+.endif
     inc esi
 1:  add esi, 7
     inc ebx

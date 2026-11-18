@@ -1,9 +1,11 @@
 """One CPU pocket escape lottery threshold. EXPERIMENTAL / UNWITNESSED.
 
 At 0x19C36C in the passing AI 0x19BB60, the timer-gated pressure branch
-uses 0.25 * effective Scramble as its escape probability. Modern uses 0.3125
-for pressured CPU QBs, keeps early clean-pocket reads, and restores the retail
-lottery after 2.5 seconds in a clean pocket. This is not calibrated to NFL game averages.
+uses 0.25 * effective Scramble as its escape probability. The game reaches that lottery only when its own threat
+value is between 0.8125 and 0.925 and an earlier lottery passed (0x19C09D, 0x19C12F, 0x19C352). Modern then reads the
+game's smoothed pocket pressure (0xBE47C0): below 0.70 in the first 2.5 seconds after the snap, while that reading is
+still building, there is no escape lottery; at 0.70 or more the factor is 0.3125; below 0.70 after 2.5 seconds it is
+the original 0.25. It is not a clean-pocket rule. This is not calibrated to NFL game averages.
 Neither the roster parity bit nor the slow-QB acceleration owner is changed.
 """
 from __future__ import annotations
@@ -19,9 +21,11 @@ DEFAULTS = {}
 RETAIL_FACTOR, MODERN_FACTOR = 0.25, 0.3125
 BETA80_FACTOR = struct.pack("<f", 0.50)
 BUILD_CAPTION = "CPU QB scrambles: retail / modern (experimental)"
-HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. Modern keeps a CPU quarterback reading a clean pocket for the first "
-             "2.5 seconds after the snap. After that it uses the retail escape chance. Under pressure the lottery "
-             "factor rises from 0.25 to 0.3125 times effective Scramble. NFL-average scrambles per game are not established.")
+HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. Changes only the CPU quarterback's escape chance when the game already "
+             "judges the rush dangerous. In the first 2.5 seconds after the snap, while the game's own pressure reading "
+             "is still building, there is no escape lottery. Once that reading is high the chance rises from 0.25 to 0.3125 "
+             "times effective Scramble. After 2.5 seconds with the reading still building it stays at the original 0.25. "
+             "Human quarterbacks are unchanged. NFL-average scrambles per game are not established.")
 HOOKS = (("threshold", 0x19C36C, bytes.fromhex("d80d6c694e00"), b"\xe8"),)
 GUARDS = (
     (0x19bb60, 2510, "fdc6a3131d3475c3583cbbc91857d24c02599ef3b29772f8b3e9dedd15cb7aef"),

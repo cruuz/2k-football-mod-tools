@@ -310,6 +310,19 @@ class ClockReplays(unittest.TestCase):
         for name in ("trail_normal_240", "lead_normal_360", "tied_normal_240", "q2_lead_normal_100", "lead_kneel_200"):
             self.assertEqual(delay[name][0], delay[name][1], name)
 
+    def test_two_point_conversions_count_at_every_multiple_of_eight(self):
+        """Q4 4:30, own 25, 15-minute quarters: each score is 140.625 s here. A deficit d needs ceil(d / 8) scores
+        (two-point conversions included), so 16 and 24 no longer count an extra score; retail counts seven-point
+        touchdowns and adds one."""
+        def offense_estimate(r, margin):
+            return r.prepare(dict(down=1, quarter=4, seconds=270, score_margin=margin, own_yard=25, distance=10,
+                                  home=True, quarter_seconds=900))[0]
+        cases = {-8: (1, 1), -9: (2, 2), -15: (2, 2), -16: (3, 2), -17: (3, 3), -23: (4, 3), -24: (4, 3), -25: (4, 4),
+                 -31: (5, 4), -32: (5, 4), -33: (5, 5)}
+        for margin, (retail, modern) in cases.items():
+            with self.subTest(margin=margin):
+                self.assertEqual(self.both(offense_estimate, margin), (retail * 140.625, modern * 140.625))
+
     def test_end_of_half_kneel(self):
         """Only actual clock cycles can be used to end the half."""
         cases = {(39, 30, 7, 2, 2): (0, 1), (39, 30, 0, 1, 3): (0, 1), (39, 30, -3, 1, 3): (0, 1),

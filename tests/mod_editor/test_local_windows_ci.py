@@ -75,6 +75,46 @@ class PlanTests(unittest.TestCase):
             with self.subTest(argv=argv), contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
                 runner.argument_parser().parse_args(argv)
 
+    def test_hosted_shards_cover_each_file_once_when_the_count_changes(self):
+        for size in (2, 3, 6, 7, 1351):
+            files = [Path(f"test_{i:04}.py") for i in range(size)]
+            first = hosted.select_shard(files, 1)
+            second = hosted.select_shard(files, 2)
+            with self.subTest(size=size):
+                self.assertEqual(sorted(first + second), files)
+                self.assertFalse(set(first) & set(second))
+                self.assertLessEqual(abs(len(first) - len(second)), 1)
+                self.assertNotEqual(hosted.inventory_digest(first), hosted.inventory_digest(second))
+        for value in (0, 3):
+            with self.assertRaises(ValueError):
+                hosted.select_shard(files, value)
+
+    def test_windows_result_requires_both_matching_job_outputs(self):
+        files = runner.plan(self.repo, [])
+        for index, path in enumerate(files, 1):
+            path.write_text(f"print('Ran {index} tests in 0.01s')")
+        version = f"{sys.version_info.major}.{sys.version_info.minor}"
+        sha = "b" * 40
+        report = self.repo / "outputs.txt"
+        with patch.dict(os.environ, GITHUB_OUTPUT=str(report)), patch.object(hosted, "checkout_sha", return_value=sha):
+            for part in (1, 2):
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(hosted.run_suite(self.repo, "", shard=part), 0)
+        outputs = dict(line.split("=", 1) for line in report.read_text().splitlines())
+        receipts = [json.loads(outputs[f"win_{version.replace('.', '_')}_{part}"]) for part in (1, 2)]
+        counts = hosted.verify_shards(files, sha, version, receipts)
+        self.assertEqual(counts["files"], len(files))
+        self.assertEqual(counts["executed_cases"], sum(range(1, len(files) + 1)))
+        for modified in (receipts[:1], receipts[::-1], [receipts[0], receipts[0]],
+                         [dict(receipts[0], revision="a"*40), receipts[1]],
+                         [dict(receipts[0], python="0.0"), receipts[1]],
+                         [dict(receipts[0], subset=receipts[1]["subset"]), receipts[1]],
+                         [dict(receipts[0], counts=dict(receipts[0]["counts"], failed=1)), receipts[1]],
+                         [dict(receipts[0], counts=dict(receipts[0]["counts"], skipped=1)), receipts[1]],
+                         [dict(receipts[0], counts=dict(receipts[0]["counts"], tests=0)), receipts[1]]):
+            with self.subTest(modified=modified), self.assertRaises(ValueError):
+                hosted.verify_shards(files, sha, version, modified)
+
     def test_ci_skip_list_and_isolated_rule_stay_in_parity(self):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
         self.assertIn('python packaging/windows/hosted_test_suite.py "$timer"', workflow)

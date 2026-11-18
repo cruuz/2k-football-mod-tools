@@ -241,9 +241,16 @@ class NativeTests(unittest.TestCase):
                     self.assertEqual(bytes(m.uc.mem_read(controls, 36)), control_before)
                     focus = m.BODIES + 0x1D000
                     args = (0x3C888889, focus, focus+16, focus+32, focus+48, 0x3F800000)
-                    m.call('mode_camera_focus', args=args, stop=0x5F760)
-                    self.assertEqual(m.get(m.reg('ESP') + 8), m.get(body + 0x18) + 0x30)
-                    self.assertEqual(m.get(0xB665F0), choice)
+                    # The broadcast camera keeps the pre-snap and dead-ball subjects. Live play follows MyPlayer.
+                    for phase, subject in ((0xB, focus), (0xE, m.get(body + 0x18) + 0x30),
+                                           (0x10, focus), (0x12, focus)):
+                        with self.subTest(choice=choice, phase=phase):
+                            m.put(0xE602B8, phase)
+                            m.call('mode_camera_focus', args=args, stop=0x5F760)
+                            sp = m.reg('ESP')
+                            actual = tuple(m.get(sp + 4 + 4*i) for i in range(len(args)))
+                            self.assertEqual(actual, (args[0], subject, *args[2:]))
+                            self.assertEqual(m.get(0xB665F0), choice)
 
     @classmethod
     def evidence(cls):
