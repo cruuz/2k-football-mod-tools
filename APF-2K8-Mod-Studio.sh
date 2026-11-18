@@ -16,4 +16,13 @@ if [[ ! -x "$launcher" || -L "$launcher" ]]; then
     exit 1
 fi
 
+if [[ ${1:-} == --setup ]]; then
+    cd -- "$release_root" || exit 1
+    if [[ ! -f packaging/posix_studio.sh ]]; then
+        printf '%s\n' 'Private setup is missing. Extract the entire APF 2K8 Mod Studio archive and try again.' >&2
+        exit 1
+    fi
+    exec /bin/bash packaging/posix_studio.sh apf linux "$@"
+fi
+
 exec "$launcher" "$@"

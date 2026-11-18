@@ -327,7 +327,7 @@ mod_editor/apf_studio/community_patches_qt.py
 mod_editor/core/runtime_dependencies.py
 packaging/runtime_dependencies.py
 packaging/requirements-studio.txt
-packaging/macos_studio.sh
+packaging/posix_studio.sh
 packaging/posix_studio_setup.py
 packaging/windows/studio_bootstrap.py
 

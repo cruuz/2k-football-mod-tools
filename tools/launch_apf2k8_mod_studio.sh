@@ -114,20 +114,20 @@ fi
 
 if ! "$studio_python" -c 'from PyQt5 import QtWidgets' >>"$studio_log" 2>&1; then
     printf -v studio_message '%s\n\nDetails: %s' \
-        'PyQt5 is missing from the selected Python runtime. Restore that runtime or install PyQt5 into it.' \
+        'PyQt5 is missing from the selected Python runtime. In the extracted folder, run ./APF-2K8-Mod-Studio.sh --setup, or restore the selected runtime.' \
         "$studio_log"
     show_studio_error "$studio_message"
     exit 1
 fi
 if ! "$studio_python" -c 'import PIL' >>"$studio_log" 2>&1; then
     printf -v studio_message '%s\n\nDetails: %s' \
-        'Pillow is missing from the selected Python runtime. Restore that runtime or install Pillow into it.' \
+        'Pillow is missing from the selected Python runtime. In the extracted folder, run ./APF-2K8-Mod-Studio.sh --setup, or restore the selected runtime.' \
         "$studio_log"
     show_studio_error "$studio_message"
     exit 1
 fi
 if ! "$studio_python" -c 'import numpy; import capstone; import unicorn' >>"$studio_log" 2>&1; then
-    printf -v studio_message 'A Studio runtime package is missing. Run: "%s" -m pip install -r "%s/packaging/requirements-studio.txt"\n\nDetails: %s' \
+    printf -v studio_message 'A Studio runtime package is missing. In the extracted folder, run ./APF-2K8-Mod-Studio.sh --setup. For a separately configured runtime, run: "%s" -m pip install -r "%s/packaging/requirements-studio.txt"\n\nDetails: %s' \
         "$studio_python" "$portable_root" "$studio_log"
     show_studio_error "$studio_message"
     exit 1

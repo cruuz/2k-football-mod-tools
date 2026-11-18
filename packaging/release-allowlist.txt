@@ -2193,7 +2193,7 @@ tools/nfl_normshort3_positions.py
 mod_editor/core/runtime_dependencies.py
 packaging/runtime_dependencies.py
 packaging/requirements-studio.txt
-packaging/macos_studio.sh
+packaging/posix_studio.sh
 packaging/posix_studio_setup.py
 packaging/windows/studio_bootstrap.py
 packaging/requirements-stadium-audit.txt

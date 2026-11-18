@@ -8,8 +8,8 @@ while [[ -L $launcher ]]; do
     if [[ $link == /* ]]; then launcher=$link; else launcher="${launcher%/*}/$link"; fi
 done
 cd -P "${launcher%/*}" || exit 1
-if [[ ! -f packaging/macos_studio.sh ]]; then
+if [[ ! -f packaging/posix_studio.sh ]]; then
     printf '%s\n' 'Extract the entire Studio archive, then open the .command file inside it.' >&2
     exit 1
 fi
-exec /bin/bash packaging/macos_studio.sh apf "$@"
+exec /bin/bash packaging/posix_studio.sh apf macos "$@"

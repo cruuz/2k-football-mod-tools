@@ -1,4 +1,4 @@
-"""Prepare an archive-local Python environment for the macOS Studio launchers."""
+"""Prepare an archive-local Python environment for the portable Studio launchers."""
 import fcntl
 import os
 from pathlib import Path
