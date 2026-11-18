@@ -145,6 +145,27 @@ class DiscCheckTests(unittest.TestCase):
         for name, record in v08["files"].items():
             self.assertEqual(len(record["chunks"]), max(1, -(-record["size"] // v08["chunk"])), name)
 
+    def test_both_v0_10_editions_are_identifiable_from_their_game_files(self):
+        catalog = dc.load_releases()
+        editions = [
+            "SOFTDRINK 2K28 v0.10",
+            "SOFTDRINK 2K28 v0.10 (64 MB experimental)",
+        ]
+        by_name = {record["name"]: record for record in catalog}
+        self.assertNotEqual(by_name[editions[0]]["image_sha256"], by_name[editions[1]]["image_sha256"])
+        for name in editions:
+            with self.subTest(edition=name):
+                image = by_name[name]
+                entries = {key.lower(): mock.Mock(size=file["size"], path=key,
+                                                  attributes=0x10 if key == "vc_53450030" else 0x80)
+                           for key, file in image["files"].items()}
+                hashes = {key.lower(): (file["sha256"], file["chunks"], file["size"])
+                          for key, file in image["files"].items()}
+                matches = [record["name"] for record in catalog
+                           if dc._compare(record, None, image["image_size"], 0, entries,
+                                          hashes, None)["state"] == "matches"]
+                self.assertEqual(matches, [name])
+
     def test_the_command_line_exit_code(self):
         with mock.patch.object(dc, "load_releases", return_value=self.releases), \
                 mock.patch("sys.stdout"), mock.patch("sys.stderr"):
