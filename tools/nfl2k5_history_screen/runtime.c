@@ -218,6 +218,21 @@ static u32 fit_font(const u16 *text, u32 room) {
     return best;
 }
 
+/* nonzero when one of the menu fonts draws `text` within `room` pixels */
+static u32 fits_some_font(const u16 *text, u32 room) {
+    u32 ctx[32];
+    for (u32 k = 0; k < 3; k++) {
+        u32 handle = FONT_GET(fit_fonts[k]);
+        if (!handle)
+            continue;
+        TEXT_INIT(ctx);
+        TEXT_FONT(ctx, handle);
+        if (TEXT_WIDTH(ctx, text) <= (i32)room)
+            return 1;
+    }
+    return 0;
+}
+
 /* one table cell in row r at x, at most `room` pixels wide (0 = no limit) */
 static void cellw(u32 row, float x, u32 room, u32 align, const u16 *text, u32 colour) {
     if (text && *text)
@@ -698,8 +713,11 @@ static void draw_mark(u32 row, u32 category, u32 kind, const Mark *m, u32 with_c
         out = put_ascii(out, " (");
         out = put_club_abbr(out, m->club);
         put_ascii(out, ")");
+        if (!fits_some_font(text, 146))                 /* a long name keeps its own column: the club goes */
+            put_text(text, m->name, 20);
     }
     cellw(row, 380.0f, 146, 1, text, colour);
+    text[0] = 0;                                        /* a career record has no year: an empty cell */
     out = text;
     if (m->fresh)
         out = put_ascii(out, m->year ? "NEW " : "NEW");

@@ -967,8 +967,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_franchise_footer.py": "b54b07f6c30a9a581820cdae216096fd6ddc41b0b556a51f1cd52bdb3e4f7b3a",  # b780 j23
         "mod_editor/core/nfl2k5_player_progress_screen_b779.py": "176720be40abf0887b496a4b056581c2cc65d31e93c58821137692c50cc2197f",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_franchise_footer_code.py": "af47806e13bb5e64eb3d6bc2feee0cc1369304f060f32f24c12b655c19a8c787",  # b780 j23
-        "mod_editor/core/nfl2k5_history_screen.py": "3aa3023b057e8160f3a27dad9ab1ec4c2dd2d2b9e1e737b8fc3c9d60dd9a1469",  # b780-int: j4, now reserved by the first space pass (imported by throw_tuning)
-        "mod_editor/core/nfl2k5_history_screen_code.py": "edb3d5b1d2b0413ba627a235b15d36b420bbb5e6faca7f23a900d65f29d5fce1",  # b780-int: its generated runtime
+        "mod_editor/core/nfl2k5_history_screen.py": "c913c8360f97220e651171ee2c4f2c9bea6172bf9e0ffe633b483ae97234a9ad",  # b780-int: j4, now reserved by the first space pass (imported by throw_tuning)
+        "mod_editor/core/nfl2k5_history_screen_code.py": "f0832a12bad7ced75dc5128a079949063dccb44b51665ad30637ecdfab8320d1",  # b780-int: its generated runtime
         "mod_editor/core/nfl2k5_history_screen_code_b780.py": "fb6dc3c7a66c1d7b60887780b3ffeeb8240086d4267af50446a6eb49fba4aa0f",
         "mod_editor/core/nfl2k5_history.py": "31629561cefcd12f0badcc3c85201f110c7c8924c7d3267b500eb4ff0421534f",  # b780 j23
         "mod_editor/core/nfl2k5_hof_rules.py": "6d9f044659f19a8c6af2502963a98322716713235fe3544ebe703a50b5921ce5",  # b780-int: j6's Hall of Fame rule, imported by the j23 history capture and footer format
