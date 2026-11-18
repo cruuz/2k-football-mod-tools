@@ -140,7 +140,7 @@ RELEASE = os.environ.get("NFL2K5_V061_DISC")
 RETAIL = os.environ.get("NFL2K5_RETAIL_XISO")
 
 
-@unittest.skipUnless(RELEASE, "set NFL2K5_V061_DISC (the SOFTDRINK 2K28 v0.6.1 release disc, read only)")
+@unittest.skipUnless(RELEASE and Path(RELEASE).is_file(), "set NFL2K5_V061_DISC (the SOFTDRINK 2K28 v0.6.1 release disc, read only)")
 class ReleaseDisc(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -181,7 +181,7 @@ class ReleaseDisc(unittest.TestCase):
         self.assertEqual(wrong, [])
 
 
-@unittest.skipUnless(RETAIL, "set NFL2K5_RETAIL_XISO (the retail disc, read only)")
+@unittest.skipUnless(RETAIL and Path(RETAIL).is_file(), "set NFL2K5_RETAIL_XISO (the retail disc, read only)")
 class RetailDisc(unittest.TestCase):
     def test_retail_arctic_cowboy_keeps_its_own_letters_and_metrics(self):
         doc = fixes.nameplates()
