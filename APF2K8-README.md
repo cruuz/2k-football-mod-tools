@@ -15,67 +15,32 @@ remain research; no team assignment patch is included.
 
 ## Install
 
-APF 2K8 Mod Studio needs **Python 3, PyQt5, and Pillow** when you run it from a
-source ZIP or portable archive. The Windows Setup.exe includes them.
-
-Download the release asset from the [Releases](https://github.com/cruuz/2k-football-mod-tools/releases)
-page. Do **not** use the green **Code > Download ZIP** button: that is the
-source code, not the ready-to-run Studio.
-
-- **Linux** (Mint/Ubuntu) — install the operating-system packages:
-  ```bash
-  sudo apt install python3 python3-pyqt5 python3-pil
-  ```
-- **Windows / macOS** (the `apt` line above is Linux-only) — install Python 3
-  from https://www.python.org/downloads/, then:
-  ```bash
-  pip install PyQt5 Pillow
-  ```
-
-That command installs libraries only; the Mod Studio installer itself never
-requests administrator access.
-
-### Linux (per-user install)
-
-Open a terminal in this extracted folder and run:
-
-```bash
-./install.sh
-```
-
-Do **not** use `sudo`. The installer puts the program and shortcut only in your
-user account. After it finishes, open **APF 2K8 Mod Studio** from the
-application menu. You can also run `~/.local/bin/apf2k8-mod-studio`.
+Choose the APF download for your computer. Windows Setup includes Python and all required packages. The portable archive uses Python 3.11, 3.12 or 3.13 and needs an internet connection for the first setup. [APF Studio downloads](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-81)
 
 ### Windows
 
-Run **`APF-2K8-Mod-Studio-*-Setup.exe`**, or extract the portable archive and
-double-click **`APF-2K8-Mod-Studio.bat`**. The `.bat` launcher runs from its own
-folder (paths containing spaces and a source ZIP extracted into a second folder
-of the same name are fine). On the first run it creates a private `.venv`
-beside the launcher and installs `packaging/requirements-studio.txt`
-automatically (about 110 MB to download, about 400 MB on disk). It needs 64-bit
-Python 3.11 or 3.12 from https://www.python.org/downloads/windows/ and an
-internet connection. Later runs start immediately. Run
-`APF-2K8-Mod-Studio.bat --setup` to repair the private runtime. No
-administrator rights are needed.
+Run **`APF-2K8-Mod-Studio-*-Setup.exe`**, then open APF 2K8 Mod Studio from the Start Menu. Installation uses your own Windows account.
+
+For a portable install, extract the whole archive and double-click **`APF-2K8-Mod-Studio.bat`**. It finds a supported 64-bit Python and sets up a private runtime beside the launcher. If prompted for Python, install 3.11, 3.12 or 3.13 and reopen the launcher. You can repeat setup with `APF-2K8-Mod-Studio.bat --setup`. [Python for Windows](https://www.python.org/downloads/windows/)
+
+### Linux and Steam Deck
+
+Extract the archive. In a terminal in the extracted folder, run:
+
+```bash
+./APF-2K8-Mod-Studio.sh --setup
+./APF-2K8-Mod-Studio.sh
+```
+
+Setup installs PyQt5, Pillow, NumPy, Capstone and Unicorn into the private runtime. Later launches use the second command. Debian, Ubuntu and Mint users whose Python lacks `venv` can install the `python3-venv` package.
+
+For an application-menu shortcut on a machine whose system Python already has the required Studio packages, run `./install.sh` from a freshly extracted archive. This installs under your user account and provides `~/.local/bin/apf2k8-mod-studio`.
 
 ### macOS
 
-Extract the archive and double-click **`APF-2K8-Mod-Studio.command`** (the first
-time, right-click it and choose **Open** to clear Gatekeeper). It resolves its
-own folder and runs the same dependency check.
+Extract the whole archive. In Finder, right-click **`APF-2K8-Mod-Studio.command`** and choose **Open**. If prompted for Python, install 3.11, 3.12 or 3.13 and reopen the launcher. On first use it prepares the dependencies and opens Studio. To prepare it from Terminal, run `./APF-2K8-Mod-Studio.command --setup` in the extracted folder. [Python for macOS](https://www.python.org/downloads/macos/)
 
-**Platform support.** CI is configured to run the suite on Linux, Windows, and
-macOS with Python 3.11 and 3.12. Linux is the locally exercised release path;
-the Windows and macOS jobs are automated compatibility targets. Retail-dependent
-tests and release gates skip with an explicit reason when their private game
-data or generated build inputs are unavailable.
-
-**Linux remains the most exercised platform**: the desktop app has been
-smoke-tested end to end there, and the GUI has not been manually driven on
-Windows or macOS, so treat those as well-tested code with a less-tested window
-on top.
+**Platform support.** The test suite runs on Linux, Windows and macOS with Python 3.11, 3.12 and 3.13. The release checks open the Linux GUI and the installed Windows application under Wine. The macOS suite opens the Finder launcher. Tests that require private game data report a skip when those inputs are unavailable.
 
 The bundled `extract-xiso` extractor ships as **both** a Linux binary and a
 Windows `.exe`, built from the same vendored 2.7.1 source, so handing the app an

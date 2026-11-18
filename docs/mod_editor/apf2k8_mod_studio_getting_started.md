@@ -15,20 +15,9 @@ Windows Setup includes its own Python 3.12.10 and NumPy 1.26.4 with the other
 Studio packages. Update now installs the complete new Windows runtime too.
 If a bundled package is missing, reinstall the latest Setup.
 
-The Linux tarball contains application files and no Python runtime. Use Python
-3.11 or 3.12 with `packaging/requirements-studio.txt`, which pins NumPy 1.26.4 to
-the same version as CI. From the extracted application folder:
+For a portable archive, install Python 3.11, 3.12 or 3.13. On Linux, run `./APF-2K8-Mod-Studio.sh --setup` from the extracted folder, then `./APF-2K8-Mod-Studio.sh`. On macOS, right-click `APF-2K8-Mod-Studio.command` in Finder and choose **Open**. The launcher prepares its dependencies on first use. On Windows, double-click `APF-2K8-Mod-Studio.bat` in the extracted folder.
 
-```sh
-python3 -m venv .venv
-.venv/bin/python3 -m pip install -r packaging/requirements-studio.txt
-```
-
-The launcher selects this `.venv`, or the interpreter set by `MOD_STUDIO_PYTHON`.
-Install packages into that same interpreter. A missing NumPy package leaves the
-studio usable; actions requiring it explain the package and install command.
-Portable updates retain the selected local runtime and all its site-packages,
-including NumPy. An external interpreter remains your responsibility.
+The private runtime installs the full pinned set in `packaging/requirements-studio.txt`. Python 3.11 and 3.12 use NumPy 1.26.4. Python 3.13 uses NumPy 2.3.5. For an existing runtime, set `MOD_STUDIO_PYTHON` to its Python executable. Portable updates retain the selected runtime.
 
 ## First game: load, edit, build, play
 
@@ -66,36 +55,20 @@ including NumPy. An external interpreter remains your responsibility.
 
 ## Install or run portable on Linux
 
-After extracting the release, open a terminal in its top-level folder and run:
+For a portable copy, open a terminal in the extracted folder and run:
 
 ```bash
-./install.sh
-```
-
-Do not use `sudo`. The installer first runs the retail-free release audit, then
-copies only the exact declared program files into your user data directory. It
-creates an absolute-path app-menu shortcut and a command at
-`~/.local/bin/apf2k8-mod-studio`. Installation and updates are staged before
-publication, so an interrupted update cannot publish half an application.
-
-To keep the release portable instead, leave its folder together and run:
-
-```bash
+./APF-2K8-Mod-Studio.sh --setup
 ./APF-2K8-Mod-Studio.sh
 ```
 
-The portable launcher resolves the application from its own location; it does
-not depend on the terminal's working directory. Linux Mint/Ubuntu users can
-install the system dependencies with:
-
-```bash
-sudo apt install python3 python3-pyqt5 python3-pil
-```
-
-The Mod Studio installer itself remains per-user and never invokes that
-administrator command. If a dependency is absent, the launcher names the
-missing package and keeps a private diagnostic log under
+Setup only needs to run once. The launcher keeps a diagnostic log under
 `${XDG_STATE_HOME:-$HOME/.local/state}/apf2k8-mod-studio`.
+
+For an application-menu shortcut on a machine where the system Python already
+has the pinned Studio packages, run `./install.sh` from a freshly extracted
+release. The installer checks the release, installs under your user account
+and creates `~/.local/bin/apf2k8-mod-studio`.
 
 Run `./uninstall.sh` from either the extracted release or installed application
 folder to remove it. Uninstall authenticates every owned path and preserves
