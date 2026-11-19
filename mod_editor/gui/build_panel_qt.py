@@ -564,6 +564,7 @@ class BuildPanel(QWidget):
         self._music_shuffle_selection = None  # the Music page's playlist document (schema 1), set by the shell
         self._senior_bowl_options = {}
         self._team_number_scale = {}
+        self._my_career_home = mod_build.BuildPlan.my_career_home
         self._guardian_players = None
         self._hires_budget_identity = None
         self._hires_budget_receipt = None
@@ -735,7 +736,7 @@ class BuildPanel(QWidget):
         self.console_memory_combo.setAccessibleName("Console memory")
         self.console_memory_combo.setToolTip(console_memory.HELP_TEXT)
         self.console_memory_combo.setAccessibleDescription(console_memory.HELP_TEXT)
-        self.console_memory_combo.currentIndexChanged.connect(lambda _index: self._refresh())
+        self.console_memory_combo.currentIndexChanged.connect(self._console_target_changed)
         self.console_memory_caption.setBuddy(self.console_memory_combo)
         memory_row.addWidget(self.console_memory_combo, 1)
         mk.addLayout(memory_row)
@@ -2276,6 +2277,7 @@ class BuildPanel(QWidget):
             box.setChecked(False)
         if not keep_selection:
             self._memory_ticks.clear()  # b780-m64b: a new disc starts clean at 128 MB too
+            self._my_career_home = mod_build.BuildPlan.my_career_home
         self.speed_threshold_spin.blockSignals(True)  # b780-cv5: a new disc starts at 0, like the check boxes
         self.speed_threshold_spin.setValue(0)
         self.speed_threshold_spin.blockSignals(False)
@@ -2954,6 +2956,7 @@ class BuildPanel(QWidget):
         self.abilities_week.setCurrentIndex(0)
         self.abilities_week.blockSignals(False)
         values = dict(mod_build.PRESETS[name])
+        self._my_career_home = values.get("my_career_home", mod_build.BuildPlan.my_career_home)
         values["modern_naming"] = tt.modern_naming_patch.preset_enabled(name.removeprefix("softdrink_"))
         if name == "softdrink_experimental" and not values["modern_naming"]:
             self._helpers["modern_naming"].setText("Modern naming is unavailable: at least one configured label does not fit.")
@@ -3062,7 +3065,7 @@ class BuildPanel(QWidget):
         if key == "speed_threshold":  # b780-cv5: a number row, not a check box
             return speed_threshold_ui.CAPTION
         box = self._boxes().get(key)
-        return box.text().replace("&&", "&") if box is not None else key
+        return box.text().replace("&&", "&") if box is not None else PREVIOUS_REBUILD_KEYS.get(key, key)
 
     def _skip_reason(self, key: str) -> str:
         state = str((self._state or {}).get(key))
@@ -3195,6 +3198,7 @@ class BuildPanel(QWidget):
     def plan(self) -> mod_build.BuildPlan:
         plan = mod_build.BuildPlan(
             source=self.source_field.text(), target=self.target_field.text(),
+            my_career_home=self._my_career_home,
             overwrite=self._target_exists(),
             throw=self.throw_check.isChecked(), max_deep_yards=float(self.ceiling_spin.value()),
             arc=float(self.arc_spin.value()) / 100.0,
@@ -3397,6 +3401,12 @@ class BuildPanel(QWidget):
         value = combo.currentData() if combo is not None else None
         return value if value in console_memory.CHOICES else console_memory.DEFAULT
 
+    def _console_target_changed(self, _index: int, *, refresh: bool = True) -> None:
+        if self.console_memory() == 128:
+            self._boxes()["edition_save_notes"].setChecked(False)
+        if refresh:
+            self._refresh()
+
     def set_console_memory(self, value, *, keep_ticks: bool = True, refresh: bool = True) -> None:
         """Choose the target. ``keep_ticks=False`` (a project or recipe restore) forgets the ticks 64 MB took away, so
         going back to 128 MB keeps exactly what was restored."""
@@ -3404,10 +3414,13 @@ class BuildPanel(QWidget):
         if not keep_ticks:
             self._memory_ticks.clear()
         combo = self.console_memory_combo
+        changed = combo.currentData() != value
         blocked = combo.blockSignals(True)
         combo.setCurrentIndex(combo.findData(value))
         combo.blockSignals(blocked)
-        if refresh:
+        if keep_ticks and changed:
+            self._console_target_changed(combo.currentIndex(), refresh=refresh)
+        elif refresh:
             self._refresh()
 
     def _memory_label(self, key: str) -> str:
@@ -3647,6 +3660,9 @@ class BuildPanel(QWidget):
         self.set_console_memory(64)   # the target's own rules first: they remember what they turn off for 128 MB
         boxes = self._boxes()
         changed_off, changed_on, skipped = [], [], []
+        if "my_career_home" in profile and profile["my_career_home"] != self._my_career_home:
+            self._my_career_home = profile["my_career_home"]
+            (changed_on if self._my_career_home else changed_off).append("my_career_home")
         # plan fields this page sets from a box of another name
         aliases = {"calendar_engine": "season_cap"}
 
@@ -4892,6 +4908,7 @@ class BuildPanel(QWidget):
         from .gameplay_project_ui import restore
         from mod_editor.core import nfl2k5_build_settings as saved
         choices = saved.build_settings(state)
+        self._my_career_home = choices.get("my_career_home", mod_build.BuildPlan.my_career_home)
         self.official_marks_pack_field.setText(choices.get("official_marks_pack") or "")
         self.super_bowl_user_art_field.setText(choices.get("super_bowl_user_art") or "")
         restore(self, state)

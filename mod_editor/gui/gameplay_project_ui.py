@@ -6,19 +6,22 @@ No writer runs here. Synchronization only changes the effective BuildPlan.
 from contextlib import contextmanager
 from copy import deepcopy
 
-from PyQt5.QtCore import QObject, QSignalBlocker
+from PyQt5 import sip
+from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QCheckBox, QComboBox, QLineEdit, QSpinBox, QDoubleSpinBox, QPlainTextEdit
 from mod_editor.core import nfl2k5_build_settings as saved
 
 
 @contextmanager
 def quiet(panel):
-    blockers = [QSignalBlocker(widget) for widget in panel.findChildren(QObject)]
+    children = [(child, child.blockSignals(True)) for child in panel.findChildren(QObject)]
     try:
         yield
     finally:
-        for blocker in blockers:
-            blocker.unblock()
+        # Restoring project controls can replace their Qt-owned children.
+        for child, was_blocked in children:
+            if not sip.isdeleted(child):
+                child.blockSignals(was_blocked)
 
 
 def capture(panel):

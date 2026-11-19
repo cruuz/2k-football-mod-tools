@@ -30,6 +30,30 @@ def panel(app):
     panel.deleteLater()
 
 
+def test_project_restore_can_replace_a_child_while_signals_are_blocked(app):
+    from PyQt5 import sip
+    from PyQt5.QtCore import QObject
+    from PyQt5.QtWidgets import QPlainTextEdit, QWidget
+    from mod_editor.gui.gameplay_project_ui import quiet
+
+    panel = QWidget()
+    notes = QPlainTextEdit(panel)
+    notes.setPlainText("First project")
+    replaced = notes.document().rootFrame()
+    surviving, already_blocked = QObject(panel), QObject(panel)
+    already_blocked.blockSignals(True)
+    with pytest.raises(ValueError, match="cancel restore"):
+        with quiet(panel):
+            assert all(child.signalsBlocked() for child in (surviving, already_blocked, replaced))
+            with quiet(panel):
+                notes.setPlainText("Next project")
+                assert sip.isdeleted(replaced)
+            assert surviving.signalsBlocked()
+            raise ValueError("cancel restore")
+    assert not surviving.signalsBlocked()
+    assert already_blocked.signalsBlocked()
+
+
 def test_new_build_quick_export_then_novice_installs_on_different_layout(panel, tmp_path):
     original = {"default.xbe": b"XBEH" + bytes(5000), "stadium": b"old turf"}
     edited = dict(original, stadium=b"new turf")
@@ -149,10 +173,12 @@ def test_chosen_memory_survives_in_working_recipe_and_resume(tmp_path, target):
     doc.parent.mkdir()
     doc.write_text(json.dumps({"edits": []}))
     recipe = dict(schema="softdrink_sources/v1", project="@pack/" + member, preset="softdrink_experimental",
-                  overrides={"console_memory": 128 if target == 64 else 64})
+                  overrides={"console_memory": 128 if target == 64 else 64, "edition_save_notes": target == 128})
     local = modpack_sources.materialize(recipe, tmp_path, resume=True, console_target=target)
     assert local["overrides"]["console_memory"] == target
-    assert modpack_sources.build_plan(json.loads((tmp_path / "SOFTDRINK-build-recipe.json").read_bytes())).console_memory == target
+    plan = modpack_sources.build_plan(json.loads((tmp_path / "SOFTDRINK-build-recipe.json").read_bytes()))
+    assert plan.console_memory == target
+    assert plan.edition_save_notes is (target == 64)
     assert modpack_sources.materialize(recipe, tmp_path, resume=True, console_target=target) == local
 
 
@@ -166,8 +192,8 @@ def test_customize_button_follows_each_pack_and_applies_an_override_once(panel, 
     for edition in (64, 128):
         recipe = dict(schema="softdrink_sources/v1", project="@pack/" + member,
                       preset="softdrink_experimental",
-                      overrides=dict(console_memory=edition, season_cap=True,
-                                     calendar_engine=False, k128_memory=edition == 128))
+                      overrides=dict(console_memory=edition, season_cap=True, edition_save_notes=edition == 64,
+                                     my_career_home=edition == 128, calendar_engine=False, k128_memory=edition == 128))
         packs[edition] = tmp_path / f"{edition}.2k5patch"
         modpack_files.export(base, disc, packs[edition], recipe=recipe, require_retail=False,
                              source_assets={member: project})
@@ -177,7 +203,7 @@ def test_customize_button_follows_each_pack_and_applies_an_override_once(panel, 
     build = BuildPanel()
     panel.customization_ready.connect(build.load_softdrink_sources)
     chooser = panel.customize_memory_combo
-    for run, (edition, override) in enumerate(((64, None), (128, 64), (128, None), (64, 128), (64, 64))):
+    for run, (edition, override) in enumerate(((64, None), (128, 64), (128, None), (64, 128), (128, 128), (64, 64))):
         destination = tmp_path / f"sources-{run}"
         destination.mkdir()
         working = destination / "SOFTDRINK-build-recipe.json"
@@ -202,6 +228,8 @@ def test_customize_button_follows_each_pack_and_applies_an_override_once(panel, 
         cli_plan = modpack_sources.build_plan(working_copy)
         gui_plan = build.plan()
         assert cli_plan.console_memory == gui_plan.console_memory == (override or edition)
+        assert cli_plan.edition_save_notes is gui_plan.edition_save_notes is ((override or edition) == 64)
+        assert gui_plan.my_career_home is cli_plan.my_career_home is (edition == 128 and override != 64)
         # Either calendar switch requests the complete calendar/cap pair from the native builder.
         keep_calendar = (edition, override) != (128, 64)
         assert (cli_plan.season_cap or cli_plan.calendar_engine) == keep_calendar

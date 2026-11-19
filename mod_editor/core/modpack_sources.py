@@ -179,6 +179,9 @@ def materialize(recipe, directory, *, resume=False, console_target=None):
             if profile.get("calendar_engine") is False:
                 profile["season_cap"] = False
             overrides.update(profile)
+        elif value == 128 and original_memory == 64:
+            # A compact game's save warning would direct a player on standard back to standard.
+            overrides.pop("edition_save_notes", None)
         # A CLI extraction already has the authored target, without the GUI's extra target field.
         from_cli = value == original_memory and resume and matches(recipe_path, json.dumps(local, indent=2).encode("utf-8"))
         if not from_cli:
