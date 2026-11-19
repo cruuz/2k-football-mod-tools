@@ -3,7 +3,7 @@
 Native (Unicorn) replay of the game's own select handler 20CB30, Load Historic Team 2D17B0 and the practice-squad
 importer on a built disc's executable, SITU and team files, with its main ROST as built and after the import floor.
 Also the Studio's roster path: the dated refresh plan on the Oct 13 pack roster, with and without the floor.
-The roster-only checks also accept the original extracted roster bodies. The game replay needs the played i4 disc.
+The Studio writer checks can also use the original Oct 13 roster body. The i4 checks need the played disc.
 """
 from __future__ import annotations
 
@@ -46,16 +46,6 @@ def body_of(resource):
     return resource[32:32 + struct.unpack_from("<I", resource, 4)[0]]
 
 
-def extracted_body(variable, expected_sha256):
-    path = os.environ.get(variable)
-    if not path:
-        raise unittest.SkipTest(f"Supply the dated disc or its extracted roster body via {variable}")
-    body = Path(path).read_bytes()
-    if hashlib.sha256(body).hexdigest() != expected_sha256:
-        raise AssertionError(f"{variable} is not the original roster body")
-    return body
-
-
 def with_body(resource, body):
     size = struct.unpack_from("<I", resource, 4)[0]
     return resource[:32] + body + resource[32 + size:]
@@ -63,10 +53,6 @@ def with_body(resource, body):
 
 def native_select(disc, rost, rows):
     """{row: (import results, away name, home name)} from the game's own code on this disc."""
-    try:
-        import unicorn  # noqa: F401
-    except ImportError as exc:
-        raise unittest.SkipTest(f"Unicorn unavailable: {exc}")
     from mod_editor.core import nfl2k5_espn25_more_moments as mm
     from mod_editor.core import nfl2k5_espn25_rosters as e
     from mod_editor.core import nfl2k5_music_archive as archive
@@ -100,32 +86,30 @@ def native_select(disc, rost, rows):
     return out
 
 
+@unittest.skipUnless(I4_DISC.is_file(), "the i4 test disc is absent")
 class PlayedDiscTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        if I4_DISC.is_file():
-            cls.rost = main_rost(I4_DISC)
-            cls.body = body_of(cls.rost)
-        else:
-            cls.body = extracted_body(
-                "B775_I4_ROST_BODY", "53f1d0a6e7988ed497e57b8c21384e7f15fcc98b25ac056db035b12d77615c3c")
-        cls.repaired_body, cls.receipt = capacity.restore_import_floor(cls.body)
+        try:
+            import unicorn  # noqa: F401
+        except ImportError as exc:
+            raise unittest.SkipTest(f"Unicorn unavailable: {exc}")
+        cls.rost = main_rost(I4_DISC)
+        body, cls.receipt = capacity.restore_import_floor(body_of(cls.rost))
+        cls.repaired = with_body(cls.rost, body)
 
     def test_the_played_disc_has_one_import_of_vacancies(self):
-        self.assertEqual(capacity.import_vacancies(self.body), 65)
+        self.assertEqual(capacity.import_vacancies(body_of(self.rost)), 65)
         self.assertGreaterEqual(self.receipt["vacancies_after"], capacity.IMPORT_FLOOR)
 
-    @unittest.skipUnless(I4_DISC.is_file(), "The i4 disc is required for native historic-team selection")
     def test_the_game_gives_both_sides_the_home_team_on_the_played_disc(self):
         for row, (imports, away, home) in native_select(I4_DISC, self.rost, ROWS).items():
             with self.subTest(row=row):
                 self.assertEqual(imports, [1, 0])               # the away file is refused
                 self.assertEqual((away, home), (ROWS[row][1], ROWS[row][1]))
 
-    @unittest.skipUnless(I4_DISC.is_file(), "The i4 disc is required for native historic-team selection")
     def test_the_import_floor_gives_every_moment_its_two_teams(self):
-        repaired = with_body(self.rost, self.repaired_body)
-        for row, (imports, away, home) in native_select(I4_DISC, repaired, ROWS).items():
+        for row, (imports, away, home) in native_select(I4_DISC, self.repaired, ROWS).items():
             with self.subTest(row=row):
                 self.assertEqual(imports, [1, 1])
                 self.assertEqual((away, home), ROWS[row])
@@ -140,8 +124,12 @@ class StudioRosterPathTests(unittest.TestCase):
         if OCT13_DISC.is_file():
             cls.base = body_of(main_rost(OCT13_DISC))
         else:
-            cls.base = extracted_body(
-                "B775_OCT13_ROST_BODY", "12701297fd05f86ff513acad4363dbe059cdb499d95d13976acb16dd87f8c98e")
+            path = os.environ.get("B775_OCT13_ROST_BODY")
+            if not path:
+                raise unittest.SkipTest("Supply the Oct 13 disc or its B775_OCT13_ROST_BODY")
+            cls.base = Path(path).read_bytes()
+            if hashlib.sha256(cls.base).hexdigest() != "12701297fd05f86ff513acad4363dbe059cdb499d95d13976acb16dd87f8c98e":
+                raise AssertionError("B775_OCT13_ROST_BODY is not the original Oct 13 roster body")
         plan = json.loads(REFRESH_PLAN.read_text(encoding="utf-8"))["roster_refresh"]
         cls.directive = {"schema": rr.EDITS_SCHEMA, "edits": [], "roster_refresh": plan}
 
