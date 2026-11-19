@@ -240,7 +240,7 @@ def run_suite(repo: Path, timer: str, *, seconds: int = 420, shard: int | None =
         key = f"win_{version.replace('.', '_')}_{shard}"
         with Path(destination).open("a", encoding="utf-8") as stream:
             print(f"{key}={json.dumps(receipt, separators=(',', ':'))}", file=stream)
-    print("ALL TEST FILES PASSED", flush=True)
+    print(f"SUITE COMPLETE  passed={passed}  skipped={skipped}  failed=0", flush=True)
     return 0
 
 

@@ -245,6 +245,7 @@ class HostedCoverageTests(unittest.TestCase):
         rc, log, report = self.exercise()
         self.assertEqual(rc, 0, log)
         self.assertIn("files=1 passed=0 failed=0 skipped=1 tests=0 executed_cases=0", report)
+        self.assertEqual(log.splitlines()[-1], "SUITE COMPLETE  passed=0  skipped=1  failed=0")
         self.assertIn("Zero-case files requiring private inputs (1)", report)
         self.assertIn(f"`{self.name}` — User-owned NFL 2K5 USA default.xbe", report)
         for changed in ("", self.private_class.replace("is absent", "hash differs"),
