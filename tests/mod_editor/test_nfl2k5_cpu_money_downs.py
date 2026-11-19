@@ -94,6 +94,20 @@ class PolicyTests(unittest.TestCase):
         subprocess.run([sys.executable, str(ROOT/"tools/nfl2k5_cpu_money_downs_assemble.py"), "--check"],
                        cwd=ROOT, capture_output=True, text=True, check=True)
 
+    def test_assembly_check_preserves_stale_and_missing_tables(self):
+        from tools import nfl2k5_cpu_money_downs_assemble as assembler
+
+        with tempfile.TemporaryDirectory() as directory:
+            include = Path(directory) / "tables.inc"
+            with mock.patch.object(assembler, "TABLES_INC", include), mock.patch.object(sys, "argv", ["assembler", "--check"]):
+                with self.assertRaisesRegex(SystemExit, "table include is stale"):
+                    assembler.main()
+                self.assertFalse(include.exists())
+                include.write_bytes(b"previous table\n")
+                with self.assertRaisesRegex(SystemExit, "table include is stale"):
+                    assembler.main()
+                self.assertEqual(include.read_bytes(), b"previous table\n")
+
     def test_capability_structure_and_paths(self):
         from mod_editor.capabilities import validate_registry as registry
         own = json.loads((ROOT/"docs/mod_editor/nfl2k5_cpu_money_downs_capability.json").read_text())
