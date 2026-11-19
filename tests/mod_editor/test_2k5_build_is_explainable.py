@@ -265,7 +265,10 @@ class DefenseBuildOrderingTests(unittest.TestCase):
                                                             apply_uniforms_b81=lambda target: {"state": "other_uniform"},
                                                             apply_sideline=lambda target: {"state": "other_uniform"}),
                    "nfl2k5_nameplate_fixes_2026": SimpleNamespace(
-                       apply_to_image=lambda target, retail=None: {"state": "other_uniform"})}
+                       apply_to_image=lambda target, retail=None: {"state": "other_uniform"}),
+                   # beta 81: the 2026 jersey relief (a stand-in disc holds none of its kits)
+                   "nfl2k5_relief_2026": SimpleNamespace(
+                       apply_relief_b81u=lambda target, progress=None: {"state": "other_uniform"})}
         tool_modules = {"nfl2k5_playbook_position_recode": recode, "nfl2k5_roster_reclassify": roster}
         with tempfile.TemporaryDirectory() as folder:
             source, target = Path(folder) / "source.iso", Path(folder) / "copy.iso"

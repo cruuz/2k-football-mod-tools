@@ -47,13 +47,27 @@ def blur2(sl, sigma):
     return np.stack([ndi.gaussian_filter(sl[..., i], sigma * S) for i in range(2)], -1)
 
 
-def clean_sculpt(r, torso, on, shape):
+def to2x(mask):
+    """a native-texel mask on the 2x grid, the way mark_mask draws a painted mark"""
+    from PIL import Image
+    h, w = mask.shape
+    return np.asarray(Image.fromarray((mask * 255).astype(np.uint8)).resize((w * S, h * S), Image.BILINEAR)) > 110
+
+
+def hole2x(opening):
+    """the collar opening (native mask, any fill colour) on the 2x grid, smoothed as neck_hole smooths the grey one"""
+    big = np.repeat(np.repeat(opening, S, 0), S, 1)
+    return ndi.gaussian_filter(big.astype(np.float64), 0.8 * S) > 0.5
+
+
+def clean_sculpt(r, torso, on, shape, hole=None):
     """the 2004 sculpt with the 2004 construction (mesh, piping, collar ribs, tab, word block) lifted out"""
     H, W = shape
     sl = slopes(r[..., :2])
     old = old_construction(r[..., :2])
     old_soft = ndi.gaussian_filter(ndi.binary_dilation(old, iterations=5 * S).astype(np.float64), 1.5 * S)
-    hole = neck_hole(torso, (H, W))
+    if hole is None:
+        hole = neck_hole(torso, (H, W))
     dhole = ndi.distance_transform_edt(~hole) / S
     collar_zone = np.clip(1.0 - (dhole - 9.0) / 5.0, 0, 1)
     sculpt = sl * (1 - old_soft)[..., None] + blur2(sl, 2.3) * old_soft[..., None]
@@ -64,7 +78,12 @@ def clean_sculpt(r, torso, on, shape):
     return sculpt, hole, dhole
 
 
-def jersey(level, retail, torso):
+def jersey(level, retail, torso, opening=None, shield=None, marks=None, skip=()):
+    """``opening``, ``shield`` and ``marks`` (native masks, rollout): the kit's collar opening in any fill colour, its
+    painted collar shield (the emboss takes the shield's own outline instead of the fixed 8x10 shape, and the V seam's
+    point stays 5 texels under the shield's foot, as it sat under the fixed shape; the vents stay clear of the shield),
+    and the maker's marks it paints on the torso shoulder caps (raised like the sleeve mark). ``skip`` ('shield')
+    leaves the shield's emboss out and nothing else (the acceptance check measures the emboss that way)."""
     k = LEVELS[level]
     d = np.load(UV / 'uvpos_UNIF_jersey.npz')
     pos, on = d['pos'].astype(np.float64), d['mask']
@@ -75,7 +94,7 @@ def jersey(level, retail, torso):
     front_isl = cols < W * 0.535; back_isl = ~front_isl
     facing_f = nrm[..., 2] > 0.25; facing_b = nrm[..., 2] < -0.25
     r = decode(retail, (W, H))
-    sculpt, hole, dhole = clean_sculpt(r, torso, on, (H, W))
+    sculpt, hole, dhole = clean_sculpt(r, torso, on, (H, W), None if opening is None else hole2x(opening))
     folds = blur2(sculpt, k['blur']) * k['fold']
     h = np.zeros((H, W))
     # the collar V and the shield under it
@@ -83,7 +102,12 @@ def jersey(level, retail, torso):
     vtip = rows[fh].max(); utip = cols[fh & (rows == vtip)].mean()
     du = np.abs(cols - utip) / S; dv = (rows - vtip) / S
     # the V seam: its point 5 texels under the shield's foot, arms rising gently to the armholes
-    apex_r, apex_c = int(vtip + 11 * S), int(round(utip))
+    painted = None if shield is None else to2x(shield) & ~hole
+    if painted is None:
+        apex_r = int(vtip + 11 * S)
+    else:
+        apex_r = int((np.nonzero(shield)[0].max() + 1 + 5) * S)
+    apex_c = int(round(utip))
     y0 = float(np.median(y[apex_r - 1:apex_r + 2, apex_c - 2:apex_c + 3]))
     chev = y - (y0 + 0.22 * ax)
     m = on & front_isl & facing_f & (ax < 23.0) & (y > y0 - 2) & (y < 63.0)
@@ -103,13 +127,21 @@ def jersey(level, retail, torso):
     h += np.where(on, k['collar'] * np.clip((4.4 - dhole) / 1.2, 0, 1) * np.clip(dhole / 0.8, 0, 1), 0)
     # the two ribbed vents beside the shield: fine slanted slits, leaning away from the shield
     vent = on & front_isl & (dhole > 4.6) & (du > 4.2) & (du < 13.0) & (dv > -8.5 + 0.55 * du) & (dv < 3.5 - 0.15 * du)
+    if painted is not None:
+        vent &= ~ndi.binary_dilation(painted, iterations=S)
     side = np.sign(cols - utip)
     slit = np.sin((cols * side + rows * 0.8) * np.pi / (1.25 * S))
     soft = np.clip(ndi.distance_transform_edt(vent) / S / 1.2, 0, 1)
     h += np.where(vent, -k['vent'] * np.clip(slit, 0, 1) * soft, 0)
     # the shield: barely raised
-    shield = on & (du < 3.0 - 0.28 * np.maximum(dv - 1.5, 0) ** 1.3) & (dv > -2.2) & (dv < 6.0) & (dhole > 0.3)
-    h += bevel(shield, k['mark'], 1.0)
+    if painted is None:
+        painted = on & (du < 3.0 - 0.28 * np.maximum(dv - 1.5, 0) ** 1.3) & (dv > -2.2) & (dv < 6.0) & (dhole > 0.3)
+    if 'shield' not in skip:
+        h += bevel(painted, k['mark'], 1.0)
+    caps = None
+    if marks is not None and marks.any():
+        caps = to2x(marks)               # painted across the island edge as the colour texture is (edge bleed)
+        h += bevel(caps, k['mark'], 1.0)
     # sparse pin holes over the body below the V and below the back line (about 2 cm apart = 7 texels, staggered)
     if k['pin'] > 0:
         P = 7.0 * S
@@ -117,6 +149,8 @@ def jersey(level, retail, torso):
         rr = np.hypot((u - np.floor(u) - 0.5) * P, (v - np.floor(v) - 0.5) * P * 0.866) / S
         pit = -k['pin'] * np.clip(1.0 - (rr / 0.8) ** 2, 0, 1)
         body = on & (((front_isl & (chev < -1.2)) | (back_isl & (yoke < -1.2)))) & (y > 11.5) & (dhole > 6)
+        if caps is not None:
+            body &= ~ndi.binary_dilation(caps, iterations=2 * S)
         edge = np.clip((ndi.distance_transform_edt(body) / S - 1.5) / 2.0, 0, 1)
         h += np.where(body, pit * edge, 0)
     h = ndi.gaussian_filter(h, 0.5)
@@ -125,8 +159,9 @@ def jersey(level, retail, torso):
     return reduce(total)
 
 
-def sleeve(level, retail, sleeve_png, mark_boxes=()):
-    """the master sleeve's folds, softened; a plain hem as one hairline; the painted maker's mark barely raised"""
+def sleeve(level, retail, sleeve_png, mark_boxes=(), marks=None):
+    """the master sleeve's folds, softened; a plain hem as one hairline; the painted maker's mark barely raised
+    (``marks``: the kit's painted mark as a native mask, rollout; else found in ``mark_boxes``)"""
     k = LEVELS[level]
     H = W = 128 * S
     r = decode(retail, (W, H)); sl = blur2(slopes(r[..., :2]), max(k['blur'], 1.6)) * k['fold']
@@ -137,25 +172,58 @@ def sleeve(level, retail, sleeve_png, mark_boxes=()):
         island = (t >= 0) & (t < 64)
         sl = sl * np.clip((59.0 - t) / 3.0, 0, 1)[..., None] * island[..., None] + sl * (~island)[..., None]
         h += np.where(island, -k['seam'] * np.exp(-((t - 58.0) / 0.75) ** 2), 0)
-    if mark_boxes:
+    if marks is not None:
+        if marks.any():
+            h += bevel(to2x(marks), k['mark'], 1.0)
+    elif mark_boxes:
         h += bevel(mark_mask(sleeve_png, mark_boxes, (H, W)), k['mark'], 1.0)
     h = ndi.gaussian_filter(h, 0.5)
     return reduce(sl + from_height(h))
 
 
-def pants(level, current, pants_png, mark_boxes=(), shield_boxes=(), old_boxes=((86, 36, 110, 56), (398, 36, 426, 56))):
+def membrane(field, region, iterations=4000):
+    """``field`` inside ``region`` replaced by the smoothest surface that meets the field all round it (Laplace
+    equation, Dirichlet boundary): an emboss lifted out leaves the surrounding folds running on through, no ghost"""
+    ys, xs = np.nonzero(region)
+    y0, y1, x0, x1 = ys.min() - 1, ys.max() + 2, xs.min() - 1, xs.max() + 2
+    f = field[y0:y1, x0:x1].astype(np.float64).copy()
+    inside = region[y0:y1, x0:x1]
+    f[inside] = f[~inside].mean()
+    for _ in range(iterations):
+        avg = 0.25 * (np.roll(f, 1, 0) + np.roll(f, -1, 0) + np.roll(f, 1, 1) + np.roll(f, -1, 1))
+        f[inside] = avg[inside]
+    out = field.copy()
+    out[y0:y1, x0:x1] = f
+    return out
+
+
+def pants(level, current, pants_png, mark_boxes=(), shield_boxes=(), old_boxes=((86, 36, 110, 56), (398, 36, 426, 56)),
+          marks=None, lift='blur'):
     """the pants sculpt kept as it is; the 2004 shield and Reebok embosses lifted out; the painted maker's mark and
-    shield barely raised where the colour texture has them"""
+    shield barely raised where the colour texture has them (``marks``: native masks of the painted mark and shield,
+    rollout; a kit that paints no mark gets none). ``lift``: 'blur' blends a 4-texel blur in (the prototype; it leaves
+    a soft ghost of the 2004 emboss, up to 6 levels), 'fill' lays the surrounding folds through the box (rollout)."""
     k = LEVELS[level]
     H, W = 256 * S, 512 * S
     r = decode(current, (W, H)); sl = slopes(r[..., :2])
     for x0, y0, x1, y1 in old_boxes:
         soft = np.zeros((H, W)); soft[y0 * S:y1 * S, x0 * S:x1 * S] = 1
         soft = ndi.gaussian_filter(soft, 1.5 * S)[..., None]
-        sl = sl * (1 - soft) + blur2(sl, 4.0) * soft
+        if lift == 'fill':
+            region = np.zeros((H, W), bool)
+            region[max(y0 - 3, 0) * S:(y1 + 3) * S, max(x0 - 3, 0) * S:(x1 + 3) * S] = True
+            filled = np.stack([membrane(sl[..., i], region) for i in range(2)], -1)
+            sl = sl * (1 - soft) + filled * soft
+        else:
+            sl = sl * (1 - soft) + blur2(sl, 4.0) * soft
     h = np.zeros((H, W))
-    for bx in (mark_boxes or ((80, 22, 116, 40),), shield_boxes or ((402, 26, 420, 42),)):
-        h += bevel(mark_mask(pants_png, bx, (H, W)), k['pmark'], 1.0)
+    if marks is not None:
+        for m in marks:
+            if m is not None and m.any():
+                h += bevel(to2x(m), k['pmark'], 1.0)
+    else:
+        for bx in (mark_boxes or ((80, 22, 116, 40),), shield_boxes or ((402, 26, 420, 42),)):
+            h += bevel(mark_mask(pants_png, bx, (H, W)), k['pmark'], 1.0)
     h = ndi.gaussian_filter(h, 0.5)
     return reduce(sl + from_height(h))
 
