@@ -101,11 +101,19 @@ class IntegrationQtTests(unittest.TestCase):
                 module = getattr(mod_build.tt, key + '_patch')
                 self.assertEqual(caption, module.BUILD_CAPTION)
                 self.assertEqual(help, module.HELP_TEXT)
-                self.assertIn('Off in every preset', help)
-                self.assertIn('UNWITNESSED', help)
+                for name, preset in mod_build.PRESETS.items():
+                    with self.subTest(option=key, preset=name):
+                        self.assertIs(preset[key], False)
                 if key == 'coin_defer':
                     self.assertIn('CPU winners only', caption)
-                    self.assertIn('Human winners keep the retail menu', help)
+                    self.assertIn('press A on Receive', help)
+                    self.assertIn('choose Kick', help)
+                    self.assertIn('deferring CPU receives after halftime', help)
+                    self.assertIn('Human winners and overtime keep the original Kick and Receive choices', help)
+                    self.assertNotIn('UNWITNESSED', help)
+                else:
+                    self.assertIn('Off in every preset', help)
+                    self.assertIn('UNWITNESSED', help)
             elif key == 'letter_grades':
                 # b773 lg2: the option states its scale and its Studio behaviour directly, like the two above.
                 from mod_editor.core import nfl2k5_letter_grades as grades
