@@ -426,7 +426,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
             )
             self.assertEqual(provenance.executable.path, first)
             public = public_executable_provenance(provenance)
-            self.assertEqual(public["lookup_leaf"]["mode"], "0777")
+            self.assertEqual(public["lookup_leaf"]["mode"], f"{stat.S_IMODE(lookup.lstat().st_mode):04o}")
             self.assertEqual(
                 public["symlink_chain"][1]["symlink_target"], str(first)
             )
