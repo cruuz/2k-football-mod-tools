@@ -477,11 +477,47 @@ class BuiltPlaylistRoutes(_playlist_routes()):
     def setUpClass(cls):
         cls.patched = built_native_xbe()
 
-    @unittest.skip("its context matrix pins the retail Franchise desk table (0x522190), which Franchise Practice "
-                   "repoints in every SOFTDRINK build (event list 0x522194, rows 0x5221A0); the 24 routes run on the "
-                   "composed executable in PlaylistRoutesInTheComposedExecutable")
+    def assert_screen_descriptor(self, image, table, expected_sha256):
+        from mod_editor.core import nfl2k5_franchise_practice as practice
+        if table != practice.COACH_DESK_DESCRIPTOR_VA:
+            return super().assert_screen_descriptor(image, table, expected_sha256)
+        state = practice.status(self.patched)
+        if state == "retail":
+            return super().assert_screen_descriptor(image, table, expected_sha256)
+        self.assertEqual(state, "applied")
+        expected = bytearray(XbeImage(retail_xbe()).read(table, 40))
+        self.assertEqual(hashlib.sha256(expected).hexdigest(), expected_sha256)
+        owned = {"coach_desk_hook_pointer", "coach_desk_row_pointer"}
+        descriptor_sites = [(key, at, before, after) for key, at, before, after in practice.sites()
+                            if table <= at < table + len(expected)]
+        self.assertEqual({key for key, *_ in descriptor_sites}, owned)
+        for _, at, before, after in descriptor_sites:
+            offset = at - table
+            self.assertEqual(expected[offset:offset + len(before)], before)
+            expected[offset:offset + len(before)] = after
+        self.assertEqual(image.read(table, len(expected)), expected)
+
     def test_each_named_policy_transition(self):
-        pass
+        self.patched = built_xbe()
+        super().test_each_named_policy_transition()
+
+    def test_standard_build_named_policy_transitions(self):
+        _, self.patched = standard_build()
+        super().test_each_named_policy_transition()
+
+    def test_standard_desk_rejects_changed_title_pointers_and_events(self):
+        from mod_editor.core import nfl2k5_franchise_practice as practice
+        _, standard = standard_build()
+        image = XbeImage(standard)
+        table = practice.COACH_DESK_DESCRIPTOR_VA
+        pin = hashlib.sha256(XbeImage(retail_xbe()).read(table, 40)).hexdigest()
+        for at in (table, practice.COACH_DESK_HOOKS_PTR_VA, practice.COACH_DESK_ROWS_PTR_VA, practice.CAVE_HOOKS_VA):
+            with self.subTest(address=hex(at)):
+                changed = bytearray(standard)
+                changed[image.offset(at)] ^= 1
+                self.patched = bytes(changed)
+                with self.assertRaises(AssertionError):
+                    self.assert_screen_descriptor(XbeImage(self.patched), table, pin)
 
 
 if __name__ == "__main__":
