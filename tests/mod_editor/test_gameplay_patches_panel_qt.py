@@ -27,10 +27,11 @@ class GameplayPatchesPanelTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def test_three_patches_with_explanations_and_gating(self) -> None:
-        self.assertEqual([k for k, _l, _e in PATCHES], ['catch_slider', 'accel_ramp', 'momentum', 'momentum_contact', 'team_names_2026', 'coverage_slider', 'scramble_tuning', 'chop_block_toggle', 'flatter_deep_ball', 'all_stadiums', 'music_shuffle', 'practice_squad_screen', 'abilities', 'qb_spy', 'defensive_try', 'zone_drop_cap', 'draft_ai', 'returner_fix', 'progression', 'team_column', 'kick_rules', 'dynamic_kickoff', 'overtime', 'camera', 'position_row', 'probowl_order', 'penalties', 'uniform_choice', 'kick_laces', 'punter_holder', 'prospect_names', 'franchise_practice', 'player_star', 'position_pools', 'depth_roles', 'depth_chart_rows', 'practice_squad', 'xbe_space', 'kickoff_relocated', 'helmet_finish', 'screen_timing', 'music_policy', 'music_unlock', 'music_userlist', 'scorebug', 'scorebug_runtime', 'guardian_cap', 'season_cap', 'depth_locks', 'espn25_plan', 'espn25_rosters', 'weather_plan', 'weather_haze', 'cpu_scrambles', 'momentum_collisions', 'read_option_runtime', 'screen_hooks', 'coverage_trail', 'coverage_hitch_brake', 'franchise_edit_player', 'cpu_money_downs', 'accelerated_clock', 'coach_ai', 'playbook_pair', 'deep_zone_facing', 'deep_zone_bail', 'weekly_prep', 'weekly_prep_cpu', 'weekly_prep_remember', 'franchise_2026_rules', 'senior_bowl', 'guardian_overlay', 'my_career', 'franchise_autosave', 'crib_reclaim', 'modern_naming', 'reserves_16', 'created_teams_extra', 'coin_defer', 'decided_clock', 'historic_teams_quick_game', 'kickoff_return_blocking', 'espn25_more_moments', 'k128_memory', 'k128_roster_heap', 'k128_early', 'letter_grades', 'honors_page'])
+        self.assertEqual([k for k, _l, _e in PATCHES], ['catch_slider', 'accel_ramp', 'momentum', 'momentum_contact', 'team_names_2026', 'coverage_slider', 'scramble_tuning', 'chop_block_toggle', 'flatter_deep_ball', 'all_stadiums', 'music_shuffle', 'practice_squad_screen', 'abilities', 'qb_spy', 'defensive_try', 'zone_drop_cap', 'draft_ai', 'returner_fix', 'progression', 'team_column', 'kick_rules', 'dynamic_kickoff', 'overtime', 'camera', 'position_row', 'probowl_order', 'penalties', 'uniform_choice', 'kick_laces', 'punter_holder', 'prospect_names', 'franchise_practice', 'player_star', 'position_pools', 'depth_roles', 'depth_chart_rows', 'practice_squad', 'xbe_space', 'kickoff_relocated', 'helmet_finish', 'screen_timing', 'music_policy', 'music_unlock', 'music_userlist', 'scorebug', 'scorebug_runtime', 'guardian_cap', 'season_cap', 'depth_locks', 'espn25_plan', 'espn25_rosters', 'load_user_team_guard', 'weather_plan', 'weather_haze', 'cpu_scrambles', 'momentum_collisions', 'read_option_runtime', 'screen_hooks', 'coverage_trail', 'coverage_hitch_brake', 'franchise_edit_player', 'cpu_money_downs', 'accelerated_clock', 'coach_ai', 'playbook_pair', 'deep_zone_facing', 'deep_zone_bail', 'weekly_prep', 'weekly_prep_cpu', 'weekly_prep_remember', 'franchise_2026_rules', 'senior_bowl', 'guardian_overlay', 'my_career', 'franchise_autosave', 'crib_reclaim', 'modern_naming', 'reserves_16', 'created_teams_extra', 'coin_defer', 'decided_clock', 'historic_teams_quick_game', 'kickoff_return_blocking', 'espn25_more_moments', 'k128_memory', 'k128_roster_heap', 'k128_early', 'letter_grades', 'honors_page'])
         new_help = {
             "uniform_choice": ("choice form", "Build also offers rule", "Controller Assign",
                                "exhibition Team Select", "retail Cowboys rule", "UNWITNESSED"),
+            "load_user_team_guard": ("own coaching gameplan", "shared franchises", "saved CPU or human control"),
             "weather_plan": ("Edits temperature", "new franchise"),
             "weather_haze": ("0.8 to 1.0", "Does not force fog"),
             "cpu_scrambles": ("0.25 to 0.3125", "per game are not established"),
@@ -45,7 +46,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
             # the older rows use literal Retail/Patch headings.
             for phrase in new_help.get(key, ("Retail", "Patch")):
                 self.assertIn(phrase, explanation, key)
-            if key in new_help and key != "coin_defer":
+            if key in new_help and key not in ("coin_defer", "load_user_team_guard"):
                 self.assertIn("unwitnessed", explanation.lower(), key)
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / "default.xbe"
@@ -62,7 +63,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
                         self.assertIn("Full disc required", check.toolTip())
                         continue
                     # b778-pg1: progression's native career sites (0x2BE0F0, 0xE6488, 0xE63C8, 0xACEDE0) are not modelled
-                    if key in ("weather_haze", "chop_block_toggle", "depth_locks", "music_policy", "music_unlock", "music_userlist", "camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties", "uniform_choice", "helmet_finish", "kick_laces", "punter_holder", "prospect_names", "dynamic_kickoff", "depth_chart_rows", "franchise_practice", "practice_squad", "player_star", "progression"):
+                    if key in ("load_user_team_guard", "weather_haze", "chop_block_toggle", "depth_locks", "music_policy", "music_unlock", "music_userlist", "camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties", "uniform_choice", "helmet_finish", "kick_laces", "punter_holder", "prospect_names", "dynamic_kickoff", "depth_chart_rows", "franchise_practice", "practice_squad", "player_star", "progression"):
                         self.assertFalse(check.isEnabled(), key)
                         self.assertIn("Haze reader unavailable; choose a supported USA source"
                                       if key == "weather_haze" else "neither retail nor this patch", check.toolTip())

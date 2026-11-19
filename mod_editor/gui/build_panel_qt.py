@@ -387,6 +387,7 @@ BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 # b780 n6: options whose beta-79 install reads "previous" in inspect(); the build upgrades it in place
 PREVIOUS_UPGRADE_KEYS = {"punter_holder": "saved field-goal holders", "modern_injured_reserve": "modern injured reserve", "honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory",
                          "coin_defer": "opening coin toss", "decided_clock": "late-game clock",
+                         "load_user_team_guard": "franchise load guard",
                          "historic_teams_quick_game": "historic teams in Quick Game",
                          # b780 rev1: these two read "previous" on a v0.8 disc too, and the build upgrades them in
                          # place (catch_slider_patch.apply, nfl2k5_sim_cb_tackles.apply); their boxes were greyed out

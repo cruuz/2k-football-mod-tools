@@ -95,6 +95,15 @@ class NeedsUpdateWordingTests(_PanelCase):
             self.assertTrue(getattr(plan, key))
         self.assertEqual((plan.decided_clock_margin, plan.decided_clock_seconds), (25, 30))
 
+    def test_previous_franchise_loader_can_be_updated_in_the_shared_build_recipe(self) -> None:
+        panel = self.panel(load_user_team_guard="previous")
+        box = panel._boxes()["load_user_team_guard"]
+        self.assertTrue(box.isEnabled())
+        self.assertEqual(panel._badges["load_user_team_guard"].text(), "Needs update")
+        self.assertIn("saved coaching gameplans", box.text())
+        box.setChecked(True)
+        self.assertTrue(panel._plan_for_build().to_recipe()["load_user_team_guard"])
+
     def test_boxes_that_stay_ticked_do_not_tell_the_player_to_select_them(self) -> None:
         panel = self.panel(honors_page="previous", k128_memory="previous", camera="previous")
         for key in ("honors_page", "k128_memory"):
@@ -458,6 +467,16 @@ class GameFixesNeedsUpdateTests(unittest.TestCase):
             self.assertEqual(panel.badges[key].text(), "Needs update")
             self.assertIn(next(label for name, label, _help in panel._patches if name == key), summary)
         self.assertEqual((plan.decided_clock_margin, plan.decided_clock_seconds), (25, 30))
+
+    def test_previous_franchise_loader_updates_in_game_fixes(self) -> None:
+        panel = self.fixes(load_user_team_guard="previous")
+        box = panel.checks["load_user_team_guard"]
+        self.assertTrue(box.isEnabled())
+        self.assertEqual(panel.badges["load_user_team_guard"].text(), "Needs update")
+        box.setChecked(True)
+        self.assertTrue(panel.plan().to_recipe()["load_user_team_guard"])
+        panel = self.fixes(load_user_team_guard="foreign")
+        self.assertFalse(panel.checks["load_user_team_guard"].isEnabled())
 
     def test_each_beta_79_state_is_an_update_a_locked_update_or_a_rebuild(self) -> None:
         panel = self.fixes(catch_slider="previous", camera="previous", draft_ai="legacy", progression="legacy",
