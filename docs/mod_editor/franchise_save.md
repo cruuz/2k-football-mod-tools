@@ -154,6 +154,7 @@ in-game save/load observation. No save format or serializer changes are made.
   The retail box-score table at `0xAED668` identifies passing yards (`0x4C`), rushing yards (`0x50`),
   penalty yards (`0x62`) and turnovers (`0x42`). Total offense (`0xD0`) adds rushing and passing yards.
   The descriptor at `0xA8BB58` names both operands and the addition routine at `0xCA6D6` combines them.
+  The native season readers sign-extend their 16-bit counters, so a negative passing or rushing total stays negative.
 * **Season template** root `+0x28/+0x2C` → 256 games at `0x72A94` (type 0), the schedule the game copies
   into the grid at season start (`FRANCHISE_2026_SCHEDULE`).  PROVED.
 

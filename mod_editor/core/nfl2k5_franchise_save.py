@@ -338,16 +338,17 @@ class TeamSeason:
     salary: int                     # $1000 units
     record_ring: tuple[int, ...]    # 7 u16 at +0x19C
     games_played: int
-    stats: dict[int, int]           # stat id -> season total (u16)
+    stats: dict[int, int]           # stat id -> raw 16-bit season word
     streak_bytes: tuple[int, ...]
 
     def stat(self, name: str) -> int:
         if name == "total_yards":
-            # The native 0xD0 formula adds the two season totals, including when either is zero.
-            return self.stats.get(0x50, 0) + self.stats.get(0x4C, 0)
+            return self.stat("rushing_yards") + self.stat("passing_yards")
         for stat_id, label in TEAM_STAT_NAMES.items():
             if label == name:
-                return self.stats.get(stat_id, 0)
+                # The native season readers sign-extend the word. A club can finish with negative yards.
+                word = self.stats.get(stat_id, 0)
+                return word - 0x10000 if word >= 0x8000 else word
         raise KeyError(name)
 
 

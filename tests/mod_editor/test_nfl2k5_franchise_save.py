@@ -211,6 +211,16 @@ class SyntheticTests(unittest.TestCase):
         self.assertEqual(season.stat("passing_yards"), 128)
         self.assertEqual(season.stat("rushing_yards"), 117)
 
+    def test_team_yards_preserve_a_negative_game_total(self) -> None:
+        base = self.save.team_offset(0)
+        for passing, rushing, total in ((-12, 5, -7), (0, -3, -3), (0, 0, 0)):
+            with self.subTest(passing=passing, rushing=rushing):
+                struct.pack_into("<hh", self.save.buffer, base + 0x1AA, passing, rushing)
+                season = self.save.team_season(0)
+                self.assertEqual(season.stat("passing_yards"), passing)
+                self.assertEqual(season.stat("rushing_yards"), rushing)
+                self.assertEqual(season.stat("total_yards"), total)
+
     def test_team_seasons_coaches_and_tables(self) -> None:
         seasons = self.save.team_seasons()
         self.assertEqual(len(seasons), self.save.league_team_count)
