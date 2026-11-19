@@ -105,23 +105,28 @@ class KitDocument(unittest.TestCase):
 
     def test_the_first_batch_is_the_reviewed_kits(self):
         self.assertEqual(sorted((r["selector"], r["texture"]) for r in kit_rows() if r["texture"] != "jersey00"),
-                         [("03A0", "sleeve00"), ("03H0", "sleeve00"), ("15A0", "pants00"), ("15H0", "pants00"),
-                          ("15H0", "socks00"), ("23A0", "pants00")])
+                         [("03A0", "sleeve00"), ("03H0", "sleeve00"), ("04A2", "pants00"), ("04H2", "pants00"),
+                          ("07A7", "sleeve00"), ("07H0", "sleeve00"), ("07H7", "sleeve00"), ("15A0", "pants00"),
+                          ("15H0", "pants00"), ("15H0", "socks00"), ("23A0", "pants00")])
+        # batch 3: the panther the real Panthers alternate pants lack (04H2/04A2), the star the real Cowboys navy
+        # sleeves and Arctic shoulder blocks lack (07H0, 07H7/07A7)
 
     def test_the_jersey_rows_repaint_only_the_chest_under_the_collar(self):
         # Round 2 (Noah 11/18: "the NY logo on the giants jersey below the nfl patch is too large. There are likely
         # similar issues on other jerseys"): the league collar shield at its real size on 166 packages (12 by 16
         # texels; it was 8 by 10), wordmarks moved clear of it, the Giants mark as wide as the shield. A jersey row
         # may touch nothing but the strip of chest between the collar point and the number.
+        # Batch 3 added: wordmarks redrawn at their real width (Eagles, Titans, Broncos), the Saints 60th patch at its
+        # real size, the Texans memorial oval, the Panthers alternate and Bills Nickel City shields.
         jerseys = [r for r in kit_rows() if r["texture"] == "jersey00"]
-        self.assertEqual(len(jerseys), 166)
-        self.assertEqual(len({r["selector"] for r in jerseys}), 166)
+        self.assertEqual(len(jerseys), 170)
+        self.assertEqual(len({r["selector"] for r in jerseys}), 170)
         for row in jerseys:
             for run in [op for op in row["ops"] if op["op"] == "runs"][0]["rows"]:   # [row, first column, colours]
-                self.assertTrue(64 <= run[0] <= 108, (row["selector"], run[:2]))
-                self.assertTrue(118 <= run[1] and run[1] + len(run[2]) // 6 <= 205, (row["selector"], run[:2]))
-        for selector in ("25H7", "25A7", "28H7", "28A7", "03H8", "03A8", "11H4", "11A4", "07H9", "07A9", "04H2", "04A2"):
-            self.assertNotIn(selector, {r["selector"] for r in jerseys})        # open: something else sits on the shield
+                self.assertTrue(58 <= run[0] <= 108, (row["selector"], run[:2]))
+                self.assertTrue(90 <= run[1] and run[1] + len(run[2]) // 6 <= 216, (row["selector"], run[:2]))
+        for selector in ("25H7", "25A7", "28H7", "28A7", "11H4", "11A4", "07H9", "07A9"):
+            self.assertNotIn(selector, {r["selector"] for r in jerseys})        # open: no 2026 picture of the look
 
     def test_no_row_touches_a_helmet_or_the_far_away_atlas(self):
         for row in kit_rows():
