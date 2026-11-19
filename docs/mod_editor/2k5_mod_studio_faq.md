@@ -63,7 +63,7 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
 
 The published **v0.9 experimental** pack targets 64 MiB. Download it and choose **Install SOFTDRINK 2K28** in Studio. v0.10 is the standard 128 MiB release for xemu with the 4627 BIOS. Physical Xbox, Android hakuX and XBased compatibility still need device testing. [Download v0.9 for 64 MiB](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.9)
 
-If you already have a franchise from the standard edition with **Player Progress**, keep using the 128 MiB edition for that save. The standard game opened the 987,836-byte expanded franchise. Keep its signed files together if a 64 MiB game displays **Damaged**. **Do not delete it; it still loads on the standard edition.** The save is not damaged; the compact game cannot read a save that size. On a v0.10 or later 64 MB disc, the Delete screen and the load error say this too. Switch back to the standard edition to continue that franchise, or start a fresh one on the 64 MB disc.
+If you already have a franchise from the standard edition with **Player Progress**, keep using the 128 MiB edition for that save. The standard game opened the 987,836-byte expanded franchise. If a 64 MiB game displays **Damaged**, keep both signed files and cancel the delete prompt. Reopen the franchise in the 128 MiB standard game. The compact game can read smaller franchise saves. A custom disc built with beta 81’s recommended 64 MiB profile includes a reminder on the Delete and load-error screens.
 
 If a Super Bowl in your franchise ends with a team scoring more than 63 points, v0.10 keeps the real score and stores the Super Bowl champions history in a newer format. v0.9 cannot read that format. If you take that save back to v0.9, its champions history starts again from empty the next time a season ends there. Keep playing that franchise on v0.10 or later.
 
@@ -507,7 +507,7 @@ For a play-call or audible freeze, record the last offensive and defensive calls
 
 ## Can I keep coaching my team after an owner warning?
 
-For a new MyNFL franchise, set **Owner Firing** to **Off** during setup. Both v0.10 editions honor that choice after a final warning. To change an existing franchise, use a save from before the dismissal.
+For a new MyNFL franchise, set **Owner Firing** to **Off** during setup. The standard 128 MiB v0.10 game honors that choice after a final warning. To change an existing franchise, use a save from before the dismissal.
 
 1. In Studio, open **Gameplay → Saves & Sliders**. Choose your game disc or its `default.xbe`, then the franchise’s `SAVEGAME.DAT`. Keep its matching `EXTRA` in the same folder.
 2. Select **Turn off Owner Firing in the signed franchise copy**. If the panel says **Owner Firing is Off in this franchise**, you can load that save directly with v0.10. To change only Owner Firing, clear any selected changes under **Game defaults** and leave the sliders as they are.
