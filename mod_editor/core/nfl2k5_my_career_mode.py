@@ -786,16 +786,15 @@ def check_context(payload, edits, *, installed=False, real=None):
         legacy.require(lineman.status(companions) == "applied", "foreign overall-dispatch owner")
         camera_edits.append(("lineman_overall_dispatch", lineman.HOOK_VA,
                              lineman.RETAIL_HOOK, lineman.PATCHED_HOOK))
-    # b780-int (ship10 rehearsal2, 28c404c17): MC1's Franchise load user-team guard redirects the user-team call at
-    # 0x2D0D53 inside the front-office deserializer this context pins (0x2D0CE0 + 0x5BF), so MyCareer, Career Home and
-    # the module loader read foreign once the guard step ran. Accept that exact call only after the guard's complete
-    # status (the call, its head and tail in the accessors' padding, the pinned neighbours) reads applied, then restore
-    # the retail call in this hash view. The guard reads only its own bytes, so this adds no validation cycle.
+    # The franchise loader owns two sites inside the pinned front-office deserializer. Its
+    # first revision only has the user-team call. Validate the complete owner before masking
+    # either site in this private hash view so a partial or foreign install cannot pass.
     from . import nfl2k5_load_user_team_guard as user_team_guard
-    _, guard_va, guard_before, guard_after = user_team_guard.SITES[0]
-    if image.read(guard_va, len(guard_before)) != guard_before:
-        legacy.require(user_team_guard.status(companions) == "applied", "foreign Franchise load user-team guard")
-        camera_edits.append(("load_user_team_guard", guard_va, guard_before, guard_after))
+    load_sites = (user_team_guard.SITES_V1[0], user_team_guard.PLAN_SITE)
+    changed_load_sites = [site for site in load_sites if image.read(site[1], len(site[2])) != site[2]]
+    if changed_load_sites:
+        legacy.require(user_team_guard.status(companions) in ("previous", "applied"), "foreign Franchise load guard")
+        camera_edits.extend(changed_load_sites)
     # b780-int (ship10 replay on 8c6b71d41): sub1's situational lineup roles redirect the third auto-depth call
     # (0x24853D, injured_depth_2) inside the season-stage context this check pins (0x2484C9 + 0xA8). Accept its exact
     # hooks only after the lineup roles' complete status (sites, owned code, its own pins) reads applied, then restore

@@ -275,7 +275,8 @@ PATCHES = (
 # never pass a Boolean through the BuildPlan (the field is a plan path chosen on Rosters / Build).
 from mod_editor.core import nfl2k5_weather as weather
 from mod_editor.core import nfl2k5_weather_haze as haze
-PATCHES += (("weather_plan", weather.BUILD_CAPTION, weather.HELP_TEXT),
+PATCHES += (("load_user_team_guard", tt.load_user_team_guard_patch.BUILD_CAPTION, tt.load_user_team_guard_patch.HELP_TEXT),
+            ("weather_plan", weather.BUILD_CAPTION, weather.HELP_TEXT),
             ("weather_haze", haze.BUILD_CAPTION, haze.HELP_TEXT),
             ("cpu_scrambles", tt.cpu_scrambles_patch.BUILD_CAPTION, tt.cpu_scrambles_patch.HELP_TEXT))
 INFORMATIONAL = {"espn25_plan", "weather_plan", "cpu_scrambles"}

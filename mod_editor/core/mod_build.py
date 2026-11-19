@@ -2822,13 +2822,13 @@ def _sim_stats_preflight(source: Path, progress) -> None:
 
 @_core_step("load_user_team_guard")
 def _apply_load_user_team_guard(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
-    """b780 mc1: the Franchise load user-team guard (three in-place sites, no allocation)."""
+    """Restore the front-office club and the saved coaching rows in place."""
     if not plan.load_user_team_guard:
         return
     module = _core_module("nfl2k5_load_user_team_guard")
     if module is None:
         raise RuntimeError("The Franchise load guard needs nfl2k5_load_user_team_guard.")
-    progress("Franchise: load user-team guard", 0, 0)
+    progress(module.BUILD_CAPTION, 0, 0)
     payload, guard_receipt = module.apply(_xbe_bytes(target))
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
