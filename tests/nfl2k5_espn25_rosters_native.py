@@ -2,8 +2,8 @@
 
 Bounded native x86 harness. No console, graphics, sound, or game emulation.
 
-Only explicit archive/controller/presentation boundaries are substituted. Native
-ROST imports, SITU relocation, formatting and scalar setup writes run.
+The bounded heap, archive, controller and presentation services are substituted.
+Native ROST initialization and imports, SITU relocation, formatting and scalar setup writes run.
 """
 import struct
 from unicorn import Uc, UC_ARCH_X86, UC_MODE_32, UC_HOOK_CODE
@@ -38,10 +38,33 @@ class CPU:
         # Fast bounded harness subclasses only need archive lookup during init.
         scope = dict(begin=0x449E0, end=0x449E0) if hasattr(self, 'BOUNDARIES') else {}
         self._code_hook = self.uc.hook_add(UC_HOOK_CODE, self._hook, **scope)
-        self.write(self.MAIN, resources[5][32:])
-        self.w(0xB72918, self.MAIN + 64)
-        self.run(0xC0500, ecx=self.MAIN + 64)
+        self.load_main_roster(resources[5])
         self.load_situ(resources[22][:32 + e.u32(resources[22], 4)])
+
+    def load_main_roster(self, resource):
+        """Allocate the disc's actual arena and relocate the main roster before a historic import."""
+        size = e.u32(resource, 4)
+        arena = self.MAIN + 64
+        assert resource[:4] == b'ROST' and 64 < size <= len(resource) - 32
+
+        def allocate(*_):
+            assert size - 64 <= self.reg('edx') <= self.SITU - arena
+            self.ret(arena)
+
+        # C1F00 registers the handler and writes this XBE's capacity to B72808.
+        heap = self.uc.hook_add(UC_HOOK_CODE, allocate, begin=0x48700, end=0x48700)
+        try:
+            self.run(0xC1F00)
+        finally:
+            self.uc.hook_del(heap)
+        assert self.r(0xB72804) == arena
+        # Mirror the archive delivery. C1EA0 records the declared size, then
+        # C1E30 copies the body after its 64-byte object and records the used length.
+        self.write(self.MAIN, resource[32:32 + size])
+        self.w(0xB72810, size)
+        self.w(0xB7280C, size - 64)
+        self.w(0xB72918, arena)
+        self.run(0xC0500, ecx=arena)
 
     def read(self, at, size):
         return bytes(self.uc.mem_read(at, size))
