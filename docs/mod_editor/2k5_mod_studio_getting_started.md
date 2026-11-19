@@ -1394,7 +1394,11 @@ create-a-player templates (Pocket QB, Speed WR, Power HB, …; the player's thre
 and DE have none in the game's table) exactly as the game does. The play-by-play and portrait cards
 have a **…** button that opens a searchable list: the play-by-play ids this roster uses, the
 jersey-number call-outs and the recorded surname bank; the 4,303 portraits on the disc with the
-players that wear them. **CSV ▾** also exports and restores Finn's **`.PlayerData`** backups, matched
+players that wear them, with the picture of the chosen id beside the list. The player's photo also shows in
+the header above his name. Portraits 0000-9999 are read from your original disc, so open it in the Studio
+(top right) to see them; a portrait your project replaces shows after Build. The real NFL headshots
+(30000 and up) and the draft faces come with the Studio and appear in the game when the disc is built with
+the Rookie faces option. An id with no picture says "No photo", as the game draws its no-photo image. **CSV ▾** also exports and restores Finn's **`.PlayerData`** backups, matched
 back by name and play-by-play index, so a community backup restores here. Before a restore you choose what comes
 back, as in Finn's restore dialog: ratings, abilities, appearance, body, contract, number and position,
 play-by-play and photo ids, college. **Roster spot** (depth rows, depth and returner locks, injury and IR state)
@@ -1416,7 +1420,8 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 |---|---|
 | File > Open (an Action Replay zip) | **Open Xbox save (Finn's zip)…** (Ctrl+O in the Studio opens a game disc) |
 | Search > Find Player (Ctrl+F) | **Find…** or Ctrl+F: every team, the reserves, the free agents and the draft class |
-| Edit Player (double-click) | Select the player; the editor on the right is always open. PgUp / PgDn there move to the previous or next player |
+| Edit Player (double-click) | Select the player; the editor on the right is always open, with his photo in the header. PgUp / PgDn there move to the previous or next player |
+| Photo box and photo list | The **…** button on the Photo card: every portrait with its picture beside the list |
 | Change Name `…` list | Type the name. A name that already exists is shared, which needs no free space |
 | Depth Chart (Ctrl+D) | Ctrl+D shows the selected player's position in depth chart order; **↑ Move up / ↓ Move down** change his row (the stored depth rank the game reads) |
 | Depth Chart > Special Teams | **Special teams…**: returners and holder; kicker, punter and long snapper through the depth chart |

@@ -2110,6 +2110,7 @@ data/nfl2k5_alien_prospect/face_h.png
 data/nfl2k5_alien_prospect/face_n.png
 # b779-pt1: real official-headshot Player Card portraits for the created real free agents
 mod_editor/core/nfl2k5_real_portraits.py
+mod_editor/core/nfl2k5_portrait_preview.py
 data/nfl2k5_real_portraits/portraits.json
 data/nfl2k5_real_portraits/faces_00.png
 data/nfl2k5_real_portraits/faces_00_pal.png

@@ -75,7 +75,7 @@ from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
 from PyQt5.QtCore import QObject, QRunnable, QSignalBlocker, QSize, Qt, QThreadPool, pyqtSignal
-from PyQt5.QtGui import QColor, QFont, QKeySequence, QPainter, QPen
+from PyQt5.QtGui import QColor, QFont, QImage, QKeySequence, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QApplication,
@@ -1376,12 +1376,16 @@ class AgeShiftDialog(QDialog):
 class IdPickerDialog(QDialog):
     """A searchable id list (play-by-play names, portraits) with a spin box for any id the list lacks."""
 
+    PREVIEW = 128                         # the portrait's own size, drawn 1:1
+
     def __init__(self, title: str, entries: Mapping[int, str], current: int, parent: QWidget | None = None,
-                 *, note: str = "", maximum: int = 65535) -> None:
+                 *, note: str = "", maximum: int = 65535,
+                 preview: Callable[[int], tuple[QPixmap | None, str]] | None = None) -> None:
         super().__init__(parent)
         self.setWindowTitle(title)
         self._entries = list(entries.items())
         self._shown: list[int] = []
+        self._preview = preview
         layout = QVBoxLayout(self)
         if note:
             caption = QLabel(note)
@@ -1396,13 +1400,38 @@ class IdPickerDialog(QDialog):
         self.list.setAccessibleName(f"{title}: choices")
         self.list.currentRowChanged.connect(self._row_changed)
         self.list.itemDoubleClicked.connect(lambda _i: self.accept())
-        layout.addWidget(self.list, 1)
+        self.preview_label: QLabel | None = None
+        self.preview_note: QLabel | None = None
+        if preview is None:
+            layout.addWidget(self.list, 1)
+        else:                             # b81 R11: Finn's photo box beside the list
+            body = QHBoxLayout()
+            body.addWidget(self.list, 1)
+            side = QVBoxLayout()
+            self.preview_label = QLabel()
+            self.preview_label.setFixedSize(self.PREVIEW, self.PREVIEW)
+            self.preview_label.setAlignment(Qt.AlignCenter)
+            self.preview_label.setObjectName("portraitPreview")
+            self.preview_label.setAccessibleName(f"{title}: picture")
+            side.addWidget(self.preview_label, 0, Qt.AlignHCenter)
+            self.preview_note = QLabel("")
+            self.preview_note.setWordWrap(True)
+            self.preview_note.setObjectName("throwMuted")
+            side_width = max(self.PREVIEW + 40, self.fontMetrics().averageCharWidth() * 24)   # grows with large text
+            self.preview_note.setMinimumWidth(side_width)
+            self.preview_note.setMaximumWidth(side_width)
+            side.addWidget(self.preview_note)
+            side.addStretch(1)
+            body.addLayout(side)
+            layout.addLayout(body, 1)
         row = QHBoxLayout()
         row.addWidget(QLabel("Id"))
         self.spin = QSpinBox()
         self.spin.setRange(0, maximum)
         self.spin.setValue(int(current))
         self.spin.setAccessibleName(f"{title}: id")
+        if preview is not None:
+            self.spin.valueChanged.connect(self._show_preview)
         row.addWidget(self.spin)
         self.count_label = QLabel("")
         row.addWidget(self.count_label, 1)
@@ -1411,9 +1440,33 @@ class IdPickerDialog(QDialog):
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
-        self.resize(460, 520)
+        self.resize(460 if preview is None else 640, 520)
         self._filter("")
         self.select_id(int(current))
+        self._show_preview(int(current))
+
+    def showEvent(self, event) -> None:  # noqa: N802 - Qt naming
+        super().showEvent(event)
+        # b81 R11: sized by the text, so 200% text keeps the note and the list readable; never past the screen
+        metrics = self.fontMetrics()
+        width = metrics.averageCharWidth() * (56 if self._preview is None else 84)
+        height = metrics.lineSpacing() * 26
+        screen = _available_geometry(self)
+        if screen is not None:
+            width, height = min(width, screen.width() - 32), min(height, screen.height() - 48)
+        self.resize(max(width, 460), max(height, 420))
+
+    def _show_preview(self, number: int) -> None:
+        if self._preview is None or self.preview_label is None or self.preview_note is None:
+            return
+        pixmap, note = self._preview(int(number))
+        if pixmap is None:
+            self.preview_label.clear()
+            self.preview_label.setText("No picture")
+        else:
+            self.preview_label.setPixmap(pixmap)
+        self.preview_note.setText(note)
+        self.preview_label.setToolTip(note)
 
     def _filter(self, text: str) -> None:
         needle = text.strip().casefold()
@@ -1890,6 +1943,7 @@ class RosterEditorPanel(QWidget):
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._facade = facade
+        self.portrait_pack0: Path | None = None      # b81 R11: tests point this at a source cache's pack 0
         self.document: rr.RosterDocument | None = None
         self._baseline: rr.RosterDocument | None = None
         self._source_path: Path | None = None
@@ -2344,9 +2398,20 @@ class RosterEditorPanel(QWidget):
         header = QFrame()
         header.setObjectName("playerHeaderCard")
         header.setFrameShape(QFrame.StyledPanel)
-        header_box = QVBoxLayout(header)
-        header_box.setContentsMargins(10, 8, 10, 8)
+        header_row = QHBoxLayout(header)                 # b81 R11: Finn's header portrait, then the text
+        header_row.setContentsMargins(10, 8, 10, 8)
+        header_row.setSpacing(10)
+        self.header_photo = QLabel()
+        self.header_photo.setFixedSize(self.HEADER_PHOTO, self.HEADER_PHOTO)
+        self.header_photo.setAlignment(Qt.AlignCenter)
+        self.header_photo.setObjectName("portraitPreview")
+        self.header_photo.setAccessibleName("Player photo")
+        self.header_photo.hide()
+        header_row.addWidget(self.header_photo, 0, Qt.AlignTop)
+        header_box = QVBoxLayout()
+        header_box.setContentsMargins(0, 0, 0, 0)
         header_box.setSpacing(2)
+        header_row.addLayout(header_box, 1)
         self.header_name = QLabel("-")
         name_font = QFont()
         name_font.setPointSizeF(name_font.pointSizeF() + 3)
@@ -4157,6 +4222,49 @@ class RosterEditorPanel(QWidget):
             return False
         return self.franchise_panel._place_ir_clicked(selected=player.index)
 
+    # ------------------------------------------------------------------ b81 R11: photos
+    HEADER_PHOTO = 96
+
+    def portrait_previews(self):
+        """The pictures for Photo ids: the open disc's source cache for catalogue ids, the shipped sets for the rest."""
+
+        from mod_editor.core import nfl2k5_portrait_preview as pp
+        pack0 = self.portrait_pack0
+        if pack0 is None:
+            try:
+                paths = getattr(self._facade, "models_source_paths", None)
+            except Exception:  # noqa: BLE001 - no disc open is an ordinary state
+                paths = None
+            pack0 = paths[0] if paths else None
+        return pp.previews_for(pack0)
+
+    def portrait_pixmap(self, photo: int, size: int = 128) -> tuple[QPixmap | None, str]:
+        try:
+            picture = self.portrait_previews().picture(int(photo))
+        except Exception as exc:  # noqa: BLE001 - a preview never blocks editing
+            return None, f"Photo {photo}: no preview ({plain_error(exc)})."
+        if picture.rgba is None:
+            return None, picture.note
+        image = QImage(picture.rgba, 128, 128, 128 * 4, QImage.Format_RGBA8888).copy()
+        pixmap = QPixmap.fromImage(image)
+        if size != 128:
+            pixmap = pixmap.scaled(size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        return pixmap, picture.note
+
+    def _show_header_photo(self, player: rr.Player | None) -> None:
+        if player is None:
+            self.header_photo.hide()
+            return
+        photo = player.record.values["photo_id"]
+        pixmap, note = self.portrait_pixmap(photo, self.HEADER_PHOTO)
+        if pixmap is None:
+            self.header_photo.clear()
+            self.header_photo.setText("No\nphoto")
+        else:
+            self.header_photo.setPixmap(pixmap)
+        self.header_photo.setToolTip(f"Photo {photo}. {note}")
+        self.header_photo.show()
+
     # ------------------------------------------------------------------ editor pane
     def _show_player(self, player: rr.Player | None) -> None:
         self.abilities_panel.set_player(player)
@@ -4165,6 +4273,7 @@ class RosterEditorPanel(QWidget):
         self.guardian_cap_check.setEnabled(player is not None)
         self.guardian_cap_check.blockSignals(False)
         self.guardian_bulk_button.setEnabled(player is not None)
+        self._show_header_photo(player)
         if player is None:
             self.header_name.setText("-")
             self.header_stats.setText("")
@@ -5026,7 +5135,8 @@ class RosterEditorPanel(QWidget):
             return None
         entries, note = self.picker_entries(name)
         title = "Play-by-play name" if name == "pbp_id" else "Portrait"
-        dialog = IdPickerDialog(title, entries, player.record.values[name], self, note=note)
+        dialog = IdPickerDialog(title, entries, player.record.values[name], self, note=note,
+                                preview=None if name == "pbp_id" else self.portrait_pixmap)
         if dialog.exec_() == QDialog.Accepted:
             self.set_field(player, name, dialog.chosen())
         return dialog

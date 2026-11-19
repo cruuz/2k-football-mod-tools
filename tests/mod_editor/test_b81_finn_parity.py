@@ -1683,5 +1683,88 @@ class ClearStatsAvailabilityTests(_PanelCase):
         self.assertIn("Xbox save", message)
 
 
+# --------------------------------------------------------------------------------------------- wave 2: R11 photos
+def _retail_pack0() -> Path | None:
+    named = os.environ.get("NFL2K5_RETAIL_PACK0")
+    if named:
+        return Path(named) if Path(named).is_file() else None
+    from mod_editor.core.nfl2k5_source_cache import PACK0_SIZE, PACK_FOLDER
+    root = Path.home() / ".cache" / "2k5-mod-studio"
+    for candidate in sorted(root.glob("*/" + PACK_FOLDER.as_posix() + "/0")) if root.is_dir() else ():
+        if candidate.is_file() and candidate.stat().st_size == PACK0_SIZE:
+            return candidate
+    return None
+
+
+RETAIL_PACK0 = _retail_pack0()
+
+
+class PortraitPreviewCoreTests(unittest.TestCase):
+    def test_real_and_draft_faces_decode_from_the_shipped_sets(self) -> None:
+        import hashlib
+        from mod_editor.core import nfl2k5_portrait_preview as pp, nfl2k5_real_portraits as real
+        previews = pp.PortraitPreviews(None)
+        photo, (cell, palette) = real.faces()[0]                 # the build's own decode of the first headshot
+        picture = previews.picture(photo)
+        self.assertEqual(picture.kind, "real")
+        self.assertEqual(picture.rgba, b"".join(palette[4 * i:4 * i + 4] for i in cell))
+        draft = previews.picture(13569)
+        self.assertEqual((draft.kind, len(draft.rgba or b"")), ("rookie", 128 * 128 * 4))
+        self.assertEqual(hashlib.sha256(draft.rgba).hexdigest(), hashlib.sha256(previews.picture(11849).rgba).hexdigest(),
+                         "a legacy id shows the same face")
+        none = previews.picture(22000)
+        self.assertEqual((none.kind, none.rgba), ("none", None))
+        self.assertIn("no photo", none.note)
+        closed = previews.picture(5147)
+        self.assertEqual((closed.kind, closed.rgba), ("catalogue", None))
+        self.assertIn("open your original game disc", closed.note)
+
+    @unittest.skipUnless(RETAIL_PACK0 is not None, "no retail source cache (open the original disc in the Studio once)")
+    def test_a_catalogue_portrait_is_the_retail_picture(self) -> None:
+        import hashlib
+        from mod_editor.core import nfl2k5_portrait_preview as pp
+        previews = pp.PortraitPreviews(RETAIL_PACK0)
+        for photo in (0, 386, 5147, 9507):
+            with self.subTest(photo=photo):
+                picture = previews.picture(photo)
+                self.assertEqual(picture.kind, "catalogue")
+                self.assertEqual(hashlib.sha256(picture.rgba).hexdigest(),
+                                 previews._catalogue()[photo].rgba_sha256)     # the catalogue's own decoded identity
+
+
+@unittest.skipUnless(SOFTDRINK_ROSTER_SAVE.is_file(), f"SOFTDRINK roster save absent: {SOFTDRINK_ROSTER_SAVE}")
+class PortraitPreviewPanelTests(unittest.TestCase):
+    def test_the_header_and_the_picker_draw_the_photo(self) -> None:
+        from mod_editor.gui.roster_editor_panel_qt import IdPickerDialog
+        application = _app()
+        panel = RosterEditorPanel()
+        try:
+            panel.portrait_pack0 = RETAIL_PACK0
+            self.assertTrue(panel.load_save(SOFTDRINK_ROSTER_SAVE))
+            document = panel.document
+            real = next(p for p in document.players if 30000 <= p.record.values["photo_id"] < 31200
+                        and document.club_of(p) is not None)
+            panel.select_player(real)
+            panel._show_player(real)
+            self.assertTrue(panel.header_photo.isVisibleTo(panel))
+            self.assertFalse(panel.header_photo.pixmap() is None or panel.header_photo.pixmap().isNull())
+            self.assertIn("Real NFL headshot", panel.header_photo.toolTip())
+            entries, note = panel.picker_entries("photo_id")
+            dialog = IdPickerDialog("Portrait", entries, real.record.values["photo_id"], panel, note=note,
+                                    preview=panel.portrait_pixmap)
+            self.assertFalse(dialog.preview_label.pixmap() is None or dialog.preview_label.pixmap().isNull())
+            dialog.spin.setValue(22000)
+            self.assertEqual(dialog.preview_label.text(), "No picture")
+            self.assertIn("no photo", dialog.preview_note.text())
+            if RETAIL_PACK0 is not None:
+                dialog.spin.setValue(386)
+                self.assertFalse(dialog.preview_label.pixmap() is None or dialog.preview_label.pixmap().isNull())
+                self.assertIn("from your original disc", dialog.preview_note.text())
+            dialog.deleteLater()
+        finally:
+            panel.deleteLater()
+            application.processEvents()
+
+
 if __name__ == "__main__":
     unittest.main()

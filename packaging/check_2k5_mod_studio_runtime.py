@@ -2055,6 +2055,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_inbox_standings",                 # b778-pc3
         "mod_editor.core.nfl2k5_rookie_faces",                    # b778-rh1
         "mod_editor.core.nfl2k5_real_portraits",                  # b779-pt1
+        "mod_editor.core.nfl2k5_portrait_preview",                # b81 R11
         "mod_editor.core.nfl2k5_practice_injuries",               # b778-pi1
         "mod_editor.core.nfl2k5_ball_carrier_ai",                 # b778-ai5
         "mod_editor.core.nfl2k5_runner_vision",                   # b780 cv2-runner
