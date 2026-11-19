@@ -19,6 +19,13 @@
    shape; it goes through the Studio's own digit preparation and fixed-span fit (As authored registration), the
    same route a project edit takes, onto the pinned kit span.
 
+4. b81-uniforms batch 4 (Noah 11/19: "Jags road nameplate and all nameplates should match real ones"): nameplate
+   letter strips redrawn to this season's measured lettering, from authored PNG art (``names_png``: the 1024x32 strip
+   of chunk 43, level 0 exactly the PNG, the smaller levels area averages of it whose clear texels keep the letters'
+   colour) with the glyph widths that go with them (``name_widths``: the 29 width halves of the NAME chunk 44 pairs;
+   the atlas offsets stay). The rows ride in the b81-uniforms digit document and are pinned to the strip a build holds
+   when that step runs (after the nameplate pass).
+
 The Studio runs this after its uniform layers. Exact input and output pins limit it to the known SOFTDRINK spans:
 retail kits and textures a user's own recipe replaced are left alone (strict refuses them).
 """
@@ -29,11 +36,12 @@ import hashlib
 from io import BytesIO
 import json
 from pathlib import Path
+import struct
 
 import numpy as np
 
 from . import nfl2k5_bump_texture_writer as bump
-from nfl_txtr import decode_chunk, parse_chunks, parse_texture, swizzle_2d
+from nfl_txtr import TxtrError, decode_chunk, parse_chunks, parse_texture, swizzle_2d
 from nfl_vc_lz_fill import rebuild_fixed_span_filled
 
 SCHEMA = "nfl2k5_glyph_fixes_2026/v1"
@@ -43,8 +51,12 @@ ART = ROOT / "data/nfl2k5_glyph_fixes_2026"
 #: b81-uniforms (beta 81): digits redrawn against this season's game highlights, pinned to the finished digits of the
 #: released v0.9 build and applied as the last uniform step (``apply_digits_b81``). The document names its own art folder.
 DATA_B81U = ROOT / "data/nfl2k5_glyph_fixes_2026_b81u.json"
-KINDS = ("names_retint", "digit_png", "digit_retint")
+KINDS = ("names_retint", "digit_png", "digit_retint", "names_png", "name_widths")
 NAMES_CHUNK = 43
+NAME_CHUNK = 44                         # the raw NAME chunk: 29 (atlas offset, glyph width) pairs for ' - A..Z c
+NAME_METRICS = slice(0x2C, 0xA0)
+NAMES_SIZE = (1024, 32)
+NAMES_GRID_STEPS = (1, 2, 4, 8, 16, 32)
 
 
 def require(ok, message):
@@ -201,6 +213,152 @@ def compile_digit(span, png_payload):
                               registration=receipt["registration"]["mode"])
 
 
+# -- authored nameplate letters (b81-uniforms batch 4) ---------------------------------------------------------------
+
+def _names_levels(rgba, count):
+    """The stored mip chain of an authored nameplate strip. Level 0 is the strip exactly; each smaller level is the
+    alpha-weighted average of its exact footprint of level 0 (coverage kept). A fully clear footprint keeps the colour
+    the strip's clear texels carry (the letters' own colour), so a filtered letter edge never fades through black."""
+    rgba = np.asarray(rgba, np.uint8)
+    height, width = rgba.shape[:2]
+    clear = rgba[rgba[..., 3] == 0][:, :3].astype(np.int64)
+    if len(clear):
+        colours, counts = np.unique(clear, axis=0, return_counts=True)
+        clear_rgb = colours[np.lexsort((colours[:, 2], colours[:, 1], colours[:, 0], -counts))[0]]
+    else:
+        clear_rgb = np.zeros(3, np.int64)
+    alpha = rgba[..., 3].astype(np.int64)
+    rgb = rgba[..., :3].astype(np.int64)
+    levels = [rgba.copy()]
+    for level in range(1, count):
+        k = 1 << level
+        h, w = height // k, width // k
+        total = alpha.reshape(h, k, w, k).sum(axis=(1, 3))
+        out = np.zeros((h, w, 4), np.int64)
+        out[..., 3] = (total + (k * k) // 2) // (k * k)
+        for channel in range(3):
+            weighted = (rgb[..., channel] * alpha).reshape(h, k, w, k).sum(axis=(1, 3))
+            out[..., channel] = np.where(total > 0, (weighted + total // 2) // np.maximum(total, 1), clear_rgb[channel])
+        out[out[..., 3] == 0, :3] = clear_rgb
+        levels.append(out.astype(np.uint8))
+    return levels
+
+
+def _pack_rgba(rgba):
+    v = np.asarray(rgba, np.uint32).reshape(-1, 4)
+    return (v[:, 0] << 24) | (v[:, 1] << 16) | (v[:, 2] << 8) | v[:, 3]
+
+
+def _names_palettes(levels):
+    """(palette RGBA, index array per level, grid step) candidates, richest first. Level 0's colours are exact entries
+    (by alpha, most used first); the smaller levels' colours follow, a partly clear or blended one rounded to a coarser
+    grid only when the entries would run out. Deterministic: integer arithmetic and sorted unique values only."""
+    first, counts = np.unique(_pack_rgba(levels[0]), return_counts=True)
+    first = first[np.lexsort((first, -counts, first & 0xFF))]
+    for step in NAMES_GRID_STEPS:
+        mips = []
+        for level in levels[1:]:
+            q = level.astype(np.int64)
+            if step > 1:
+                blended = (q[..., 3] > 0) & ~np.isin(_pack_rgba(level), first).reshape(q.shape[:2])
+                rounded = np.clip(((q + step // 2) // step) * step, 0, 255)
+                rounded[..., 3] = np.where((q[..., 3] == 255) | (q[..., 3] == 0), q[..., 3], np.clip(rounded[..., 3], 1, 254))
+                q = np.where(blended[..., None], rounded, q)
+            mips.append(q.astype(np.uint8))
+        extra = np.setdiff1d(np.unique(np.concatenate([_pack_rgba(m) for m in mips])), first) if mips else \
+            np.zeros(0, np.uint32)
+        extra = extra[np.lexsort((extra, extra & 0xFF))]
+        if len(first) + len(extra) > 256:
+            continue
+        values = np.concatenate([first, extra]).astype(np.uint32)
+        order = np.argsort(values, kind="stable")
+        ordered = values[order]
+        indices = []
+        for level in [levels[0]] + mips:
+            packed = _pack_rgba(level)
+            at = np.minimum(np.searchsorted(ordered, packed), len(ordered) - 1)
+            require(bool((ordered[at] == packed).all()), "a strip colour lost its palette entry")
+            indices.append(order[at].astype(np.uint8))
+        palette = np.stack([(values >> 24) & 0xFF, (values >> 16) & 0xFF, (values >> 8) & 0xFF, values & 0xFF], axis=1)
+        yield palette.astype(np.uint8), indices, step
+
+
+def names_png_rgba(png_payload):
+    """The authored strip of a ``names_png`` row as RGBA (32 rows by 1024)."""
+    from PIL import Image
+    with Image.open(BytesIO(png_payload)) as image:
+        require(image.size == NAMES_SIZE, "the nameplate strip PNG is not 1024 x 32")
+        return np.asarray(image.convert("RGBA"), np.uint8).copy()
+
+
+def names_level0(span):
+    """Level 0 of a compiled nameplate strip span as RGBA (what the game's compositor copies letters from)."""
+    chunk, decoded, _info, texture = _one_txtr(span)
+    require(texture.name == "names" and texture.format_name == "VC_P8_LINEAR", "not a linear nameplate strip")
+    at = chunk.system_bytes + texture.palette_offset
+    palette = np.frombuffer(decoded[at:at + 1024], np.uint8).reshape(256, 4)[:, [2, 1, 0, 3]]
+    start = chunk.system_bytes + texture.pixel_offset
+    top = np.frombuffer(decoded[start:start + texture.width * texture.height], np.uint8)
+    return palette[top].reshape(texture.height, texture.width, 4)
+
+
+def compile_names_png(span, png_payload):
+    """Authored nameplate strip (1024 x 32 RGBA PNG) -> the pinned chunk 43 span: level 0 is the PNG exactly, the
+    smaller levels average it (``_names_levels``), the palette holds level 0's colours exactly; the native format,
+    size, mip count, descriptor, wrapper and stored allocation stay. A palette whose stream does not fit the stored
+    span is tried again with the smaller levels' blends on a coarser grid."""
+    chunk, decoded, _info, texture = _one_txtr(span)
+    require(texture.name == "names" and texture.format_name == "VC_P8_LINEAR" and
+            (texture.width, texture.height) == NAMES_SIZE, "not a 1024 x 32 linear nameplate strip")
+    rgba = names_png_rgba(png_payload)
+    levels = _names_levels(rgba, texture.mip_levels)
+    video = decoded[chunk.system_bytes:chunk.system_bytes + chunk.video_bytes]
+    chain = sum(level.shape[0] * level.shape[1] for level in levels)
+    require(texture.pixel_offset + chain <= texture.palette_offset, "the mip chain overlaps the palette")
+    last = None
+    for palette, indices, step in _names_palettes(levels):
+        new_video = bytearray(video)
+        at = texture.pixel_offset
+        for index in indices:
+            new_video[at:at + index.size] = index.tobytes()
+            at += index.size
+        table = np.zeros((256, 4), np.uint8)
+        table[:len(palette)] = palette
+        new_video[texture.palette_offset:texture.palette_offset + 1024] = table[:, [2, 1, 0, 3]].tobytes()
+        new = decoded[:chunk.system_bytes] + bytes(new_video) + decoded[chunk.system_bytes + chunk.video_bytes:]
+        try:
+            fixed, fit = _rebuild(span, new)
+        except TxtrError as exc:
+            last = exc
+            continue
+        require(bool((names_level0(fixed) == rgba).all()), "the compiled strip differs from the authored strip")
+        return fixed, dict(texture="names", palette_entries=int(len(palette)), mip_grid_step=int(step), fit=asdict(fit))
+    raise ValueError("2026 glyph fixes: the nameplate strip does not fit its stored span" + (": " + str(last) if last else ""))
+
+
+def name_widths(name_span):
+    """The 29 (atlas offset, glyph width) pairs (' - A..Z c) of one raw NAME chunk span."""
+    chunks = parse_chunks(name_span)
+    require(len(chunks) == 1 and chunks[0].kind == "NAME" and not chunks[0].compressed and
+            chunks[0].end_offset == len(name_span), "expected one raw NAME chunk")
+    pairs = struct.unpack_from("<58H", name_span, chunks[0].body_offset + NAME_METRICS.start)
+    return list(zip(pairs[0::2], pairs[1::2]))
+
+
+def compile_name_widths(span, widths):
+    """The NAME span with a redrawn strip's 29 glyph widths (each glyph's ink and its letter gap); the atlas offsets
+    and every other byte stay. The game's compositor copies each letter at its stored width."""
+    require(len(widths) == 29 and all(1 <= int(w) <= 32 for w in widths), "29 glyph widths of 1 to 32 texels")
+    pairs = name_widths(span)
+    flat = []
+    for (offset, _old), width in zip(pairs, widths):
+        flat += [offset, int(width)]
+    new = bytearray(span)
+    struct.pack_into("<58H", new, parse_chunks(span)[0].body_offset + NAME_METRICS.start, *flat)
+    require(bytes(new) != span, "the nameplate already has these widths")
+    return bytes(new), dict(texture="NAME", widths_changed=sum(int(a[1]) != int(b) for a, b in zip(pairs, widths)))
+
+
 # -- kit packages ----------------------------------------------------------------------------------------------------
 
 def _chunk_for(raw, index):
@@ -256,10 +414,17 @@ def compile_resource(selector, raw, *, strict=True, document=None, retail_kits=N
                 new, detail = compile_names(span, donor_span, row)
             else:
                 new, detail = compile_names(span, donor_span, row, name=row["texture"], storage="P8")
+        elif row["kind"] == "name_widths":
+            new, detail = compile_name_widths(span, row["widths"])
         else:
             payload = (art_folder(document) / row["png"]).read_bytes()
-            require(sha(payload) == row["png_sha256"], selector + ": authored digit PNG differs from its pin")
-            new, detail = compile_digit(span, payload)
+            require(sha(payload) == row["png_sha256"], selector + ": authored " +
+                    ("nameplate" if row["kind"] == "names_png" else "digit") + " PNG differs from its pin")
+            if row["kind"] == "names_png":
+                new, detail = compile_names_png(span, payload)
+                detail = {k: v for k, v in detail.items() if k != "fit"}
+            else:
+                new, detail = compile_digit(span, payload)
         require(sha(new) == row["after_sha256"], selector + ": Studio compile differs from its output pin")
         replacements.append((chunk.offset, new))
         parts.append(dict(selector=selector, chunk_index=chunk.index, offset=chunk.offset, length=len(new),

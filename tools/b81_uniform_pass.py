@@ -15,6 +15,14 @@ document as its last uniform step (``kit_fixes.apply_uniforms_b81``), after the 
   python3 tools/b81_uniform_pass.py build --image DISC.iso --art DIR --out data/nfl2k5_kit_fixes_2026_b81u.json
                                           [--notes NOTES.json] [--receipt R.json] [--decoded DIR] [--base DOC.json]
   python3 tools/b81_uniform_pass.py check --image DISC.iso
+  python3 tools/b81_uniform_pass.py names --image DISC.iso --retail RETAIL.iso --art DIR --out data/nfl2k5_glyph_fixes_2026_b81u.json
+                                          [--notes NOTES.json] [--receipt R.json] [--decoded DIR]
+
+``names`` (batch 4, Noah 11/19: "Jags road nameplate and all nameplates should match real ones") turns redrawn nameplate
+letter strips (``<SELECTOR>_names.png``, 1024x32 RGBA, and ``<SELECTOR>_names.json`` with the 29 glyph widths) into
+rows of the digit document: ``names_png`` (chunk 43) and ``name_widths`` (the NAME chunk 44). Each row is pinned to the
+strip a build holds when the pass runs: the released kit after the nameplate pass (the Jaguars letters on the retail
+structure, read from ``--retail`` as a build does, and every hollow hyphen filled). The other rows stay.
 
 ``DIR`` holds ``<SELECTOR>_<texture>.png`` (texture: jersey00, pants00, sleeve00, socks00, 48..57 = the jersey digits,
 an48..an57 = the arm digits, hn48..hn57 = the helmet digits). ``--base`` applies an earlier document (the helmet
@@ -340,17 +348,137 @@ def cmd_digits(args) -> int:
         if args.decoded:
             Path(args.decoded).mkdir(parents=True, exist_ok=True)
             Image.fromarray(after, "RGBA").save(Path(args.decoded) / f"{selector}_{native}.png")
-    used = set(stored.values())
+    # the nameplate rows (``names``) share the document and its art folder: they and their PNGs stay as they are
+    previous = json.loads(Path(args.out).read_text(encoding="utf-8")) if Path(args.out).exists() else {}
+    others = [r for r in previous.get("textures", ()) if r["kind"] in NAMES_KINDS]
+    used = set(stored.values()) | {r["png"] for r in others if r.get("png")}
     for old in out_art.glob("*.png"):
         if old.name not in used and not args.keep:
             old.unlink()
-    rows.sort(key=lambda r: (r["selector"], r["chunk"]))
+    rows = sorted(rows + others, key=lambda r: (r["selector"], r["chunk"]))
     document = dict(schema=gf.SCHEMA, purpose=DIGIT_SOURCE, art=DIGIT_ART, references=notes.get("_references", {}),
                     textures=rows)
+    for key in ("names_purpose", "names_references"):
+        if key in previous:
+            document[key] = previous[key]
     Path(args.out).write_text(json.dumps(document, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     if args.receipt:
         Path(args.receipt).write_text(json.dumps(receipt, indent=1, sort_keys=True) + "\n", encoding="utf-8",
                                       newline="\n")
+    print(json.dumps(dict(rows=len(rows), pictures=len(used), failed=failed, selectors=len({r["selector"] for r in rows}))))
+    return 1 if failed else 0
+
+
+NAMES_SOURCE = ("b81-uniforms batch 4 (Noah 11/19: \"Jags road nameplate and all nameplates should match real ones\"): "
+                "nameplate letter strips redrawn to this season's measured lettering, pinned to the strips a build holds "
+                "after the nameplate pass")
+NAMES_KINDS = ("names_png", "name_widths")
+
+
+def retail_kits_for_nameplates(retail) -> dict | None:
+    """The retail kit packages the nameplate pass reads its Jaguars letter structure from (as a build does)."""
+    if retail is None:
+        return None
+    from mod_editor.core import nfl2k5_nameplate_fixes_2026 as nf
+    donors = sorted({row["retail_selector"] for row in nf.structures(nf.spec())})
+    return nf._read_kits(Path(retail), donors)
+
+
+def after_nameplate_pass(selector: str, raw: bytes, retail_kits) -> bytes:
+    """The kit package as a build holds it when the uniform pass runs: the nameplate pass (the Jaguars letters on the
+    retail structure, every hollow hyphen filled) applied first, as ``--base`` does for the helmet cleanup."""
+    from mod_editor.core import nfl2k5_nameplate_fixes_2026 as nf
+    replacements, _detail = nf._compile_package(selector, raw, nf.spec(), retail_kits, False)
+    out = bytearray(raw)
+    for offset, data in replacements:
+        out[offset:offset + len(data)] = data
+    return bytes(out)
+
+
+def names_png_bytes(rgba) -> bytes:
+    """One deterministic PNG of an authored strip (no text chunks)."""
+    from io import BytesIO
+    from PIL import Image
+    buffer = BytesIO()
+    Image.fromarray(np.ascontiguousarray(rgba, np.uint8), "RGBA").save(buffer, "PNG", optimize=False, compress_level=9)
+    return buffer.getvalue()
+
+
+def cmd_names(args) -> int:
+    """Redrawn nameplate strips -> the ``names_png`` and ``name_widths`` rows of the digit document and their art.
+    Every other row of the document and its art stay. Identical strips of several kits are stored once."""
+    from PIL import Image
+    from mod_editor.core import nfl2k5_glyph_fixes_2026 as gf, nfl2k5_nameplate_fixes_2026 as nf
+    kf, _ = modules()
+    jaguars = {row["selector"] for row in nf.structures(nf.spec())}
+    art, out_art, out = Path(args.art), ROOT / "data" / DIGIT_ART, Path(args.out)
+    notes = json.loads(Path(args.notes).read_text(encoding="utf-8")) if args.notes else {}
+    document = json.loads(out.read_text(encoding="utf-8")) if out.exists() else dict(
+        schema=gf.SCHEMA, purpose=DIGIT_SOURCE, art=DIGIT_ART, references={}, textures=[])
+    keep = [r for r in document["textures"] if r["kind"] not in NAMES_KINDS]
+    old_art = {r["png"] for r in document["textures"] if r["kind"] == "names_png"}
+    selectors = sorted(p.name[:-len("_names.png")] for p in art.glob("*_names.png"))
+    kits = read_kits(Path(args.image), selectors)
+    retail = retail_kits_for_nameplates(args.retail)
+    out_art.mkdir(parents=True, exist_ok=True)
+    stored, rows, receipt, failed = {}, [], {}, 0
+    for selector in selectors:
+        try:
+            raw = kits.get(selector)
+            if raw is None:
+                raise ValueError("kit package absent")
+            if retail is None and selector in jaguars:
+                raise ValueError("this strip is pinned after the nameplate pass's retail letters: give --retail")
+            raw = after_nameplate_pass(selector, raw, retail)
+            with Image.open(art / f"{selector}_names.png") as image:
+                payload = names_png_bytes(np.asarray(image.convert("RGBA"), np.uint8))
+            widths = [int(w) for w in json.loads((art / f"{selector}_names.json").read_text(encoding="utf-8"))["widths"]]
+            if sha(payload) not in stored:
+                team = notes.get("_team", {}).get(selector[:2], selector[:2])
+                stored[sha(payload)] = f"{team}_{selector}_names.png"
+                (out_art / stored[sha(payload)]).write_bytes(payload)
+            file = stored[sha(payload)]
+            strip = kf._chunk_for(raw, gf.NAMES_CHUNK)
+            strip_span = raw[strip.offset:strip.end_offset]
+            new_strip, strip_detail = gf.compile_names_png(strip_span, payload)
+            name = kf._chunk_for(raw, gf.NAME_CHUNK)
+            name_span = raw[name.offset:name.end_offset]
+            new_name, name_detail = gf.compile_name_widths(name_span, widths)
+            if not kf.layout_fits(kf.atlas_glyph_starts(new_strip), kf.name_metrics(new_name)):
+                raise ValueError("the strip's glyphs do not start at the NAME offsets")
+        except Exception as exc:  # noqa: BLE001 - named in the receipt; the other rows are still written
+            receipt[selector] = dict(error=str(exc)[:300])
+            print("FAILED", selector, str(exc)[:200], flush=True)
+            failed += 1
+            continue
+        info = notes.get(selector, {})
+        common = dict(selector=selector, resource_size=len(raw), defects=list(info.get("defects", [])),
+                      note=info.get("note", "nameplate letters redrawn to the 2026 lettering"),
+                      reference=list(info.get("reference", [])))
+        rows.append(dict(common, chunk=gf.NAMES_CHUNK, kind="names_png", texture="names", offset=int(strip.offset),
+                         length=len(strip_span), png=file, png_sha256=sha(payload), before_sha256=sha(strip_span),
+                         after_sha256=sha(new_strip)))
+        rows.append(dict(common, chunk=gf.NAME_CHUNK, kind="name_widths", texture="NAME", offset=int(name.offset),
+                         length=len(name_span), widths=widths, before_sha256=sha(name_span), after_sha256=sha(new_name)))
+        receipt[selector] = dict(png=file, strip_before_sha256=sha(strip_span), strip_after_sha256=sha(new_strip),
+                                 name_before_sha256=sha(name_span), name_after_sha256=sha(new_name),
+                                 palette_entries=strip_detail["palette_entries"], mip_grid_step=strip_detail["mip_grid_step"],
+                                 widths_changed=name_detail["widths_changed"])
+        if args.decoded:
+            Path(args.decoded).mkdir(parents=True, exist_ok=True)
+            Image.fromarray(gf.names_level0(new_strip), "RGBA").save(Path(args.decoded) / f"{selector}_names.png")
+        print(selector, file, "palette", strip_detail["palette_entries"], "widths changed", name_detail["widths_changed"],
+              flush=True)
+    used = set(stored.values())
+    for old in old_art - used:
+        if (out_art / old).exists() and not any(r.get("png") == old for r in keep):
+            (out_art / old).unlink()
+    document["textures"] = sorted(keep + rows, key=lambda r: (r["selector"], r["chunk"]))
+    document["names_purpose"] = NAMES_SOURCE
+    document["names_references"] = notes.get("_references", {})
+    out.write_text(json.dumps(document, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+    if args.receipt:
+        Path(args.receipt).write_text(json.dumps(receipt, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(dict(rows=len(rows), pictures=len(used), failed=failed, selectors=len({r["selector"] for r in rows}))))
     return 1 if failed else 0
 
@@ -404,8 +532,16 @@ def main(argv=None) -> int:
     d.add_argument("--keep", action="store_true", help="keep art files this run did not write")
     c = sub.add_parser("check", help="row states of the document on a disc image")
     c.add_argument("--image", required=True)
+    n = sub.add_parser("names", help="write the nameplate rows of the digit document from redrawn letter strips")
+    n.add_argument("--image", required=True)
+    n.add_argument("--retail", help="the retail disc the nameplate pass reads the Jaguars letter structure from")
+    n.add_argument("--art", required=True, help="folder of <SELECTOR>_names.png (1024x32 RGBA) and <SELECTOR>_names.json")
+    n.add_argument("--notes")
+    n.add_argument("--out", required=True)
+    n.add_argument("--receipt")
+    n.add_argument("--decoded")
     args = parser.parse_args(argv)
-    return {"build": cmd_build, "digits": cmd_digits, "check": cmd_check}[args.command](args)
+    return {"build": cmd_build, "digits": cmd_digits, "check": cmd_check, "names": cmd_names}[args.command](args)
 
 
 if __name__ == "__main__":

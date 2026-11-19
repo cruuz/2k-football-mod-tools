@@ -1,5 +1,62 @@
 {
  "art": "nfl2k5_glyph_fixes_2026_b81u",
+ "names_purpose": "b81-uniforms batch 4 (Noah 11/19: \"Jags road nameplate and all nameplates should match real ones\"): nameplate letter strips redrawn to this season's measured lettering, pinned to the strips a build holds after the nameplate pass",
+ "names_references": {
+  "ARI_home": [
+   "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
+   "ARZ/2026-10-11_DET_alternate-black/jersey_back_0141.jpg",
+   "ARZ/2026-10-11_DET_alternate-black/helmet_back_1402.jpg"
+  ],
+  "ARI_road": [
+   "ARZ/2026-09-20_SEA_alternate-desert/helmet_back_0302.jpg",
+   "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
+   "ARZ/2026-10-04_NYG_primary-away/helmet_back_0307.jpg"
+  ],
+  "ATL_1966": [
+   "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg",
+   "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg"
+  ],
+  "BAL_home": [
+   "BAL/2026-10-11_ATL_primary-away/jersey_back_0336.jpg",
+   "BAL/2026-11-16_LAC_alternate-darkness/jersey_back_0427.jpg",
+   "BAL/2026-10-04_TEN_primary-home/helmet_back_0707.jpg"
+  ],
+  "IND_home": [
+   "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+   "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+   "IND/2026-09-13_BAL_primary-home/helmet_back_0901.jpg"
+  ],
+  "IND_road": [
+   "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+   "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg"
+  ],
+  "JAX_home": [
+   "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
+   "JAX/2026-10-11_PHI_primary-home/helmet_back_1047.jpg"
+  ],
+  "JAX_road": [
+   "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
+   "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
+   "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg"
+  ],
+  "NO_white_gold": [
+   "NO/2026-11-08_CLE_alternate-gameday-gold/jersey_back_1356.jpg",
+   "NO/2026-10-05_ATL_primary-away/helmet_back_0226.jpg"
+  ],
+  "NYG_vintage": [
+   "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0342.jpg",
+   "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0509.jpg",
+   "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0509.jpg"
+  ],
+  "NYJ_white": [
+   "NYJ/2026-10-04_CHI_primary-away/helmet_front_0212.jpg",
+   "NYJ/2026-10-25_MIA_alternate-white-out/jersey_back_0440.jpg"
+  ],
+  "TB_road": [
+   "TB/2026-10-04_GB_primary-away/helmet_back_0125.jpg",
+   "TB/2026-10-04_GB_primary-away/helmet_back_1047.jpg"
+  ]
+ },
  "purpose": "b81-uniforms (beta 81): 2026 jersey digits redrawn against this season's game-highlight frames (refs/uniforms_2026), pinned to the finished digits of the released v0.9 disc",
  "references": {
   "ARI": [
@@ -216,6 +273,154 @@
    "resource_size": 1508992,
    "selector": "00A0",
    "texture": "57"
+  },
+  {
+   "after_sha256": "50224470e114423880fd1aefd78df22bd07dc352b4ba72cddf57fc56b530d440",
+   "before_sha256": "6921f4167eba3d2135b3d6695c771a8d338198870c13a4cd2756c2ed1c3bbeeb",
+   "chunk": 43,
+   "defects": [
+    "b81u-ARI-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 7616,
+   "note": "the road name letters in the club's cut-corner face at the real weight: stems 2 texels, bars 4 rows",
+   "offset": 469664,
+   "png": "ARI_00A0_names.png",
+   "png_sha256": "c7c86cea517436f4638c7a9bd60e317835810b2fb135b5ad1050d9b214178158",
+   "reference": [
+    "ARZ/2026-09-20_SEA_alternate-desert/helmet_back_0302.jpg",
+    "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
+    "ARZ/2026-10-04_NYG_primary-away/helmet_back_0307.jpg"
+   ],
+   "resource_size": 1508992,
+   "selector": "00A0",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "b6efa891c8a71983258dccd651e099434e767e44b63f40bd5ca18ed6138fb826",
+   "before_sha256": "6d8c460d8d8622b6a80a526ba2b13db54e6ea8a1d05d6dde2550e518f91ebd80",
+   "chunk": 44,
+   "defects": [
+    "b81u-ARI-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the road name letters in the club's cut-corner face at the real weight: stems 2 texels, bars 4 rows",
+   "offset": 477280,
+   "reference": [
+    "ARZ/2026-09-20_SEA_alternate-desert/helmet_back_0302.jpg",
+    "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
+    "ARZ/2026-10-04_NYG_primary-away/helmet_back_0307.jpg"
+   ],
+   "resource_size": 1508992,
+   "selector": "00A0",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    13,
+    12,
+    13,
+    11,
+    11,
+    13,
+    13,
+    3,
+    11,
+    13,
+    11,
+    15,
+    13,
+    13,
+    12,
+    13,
+    12,
+    12,
+    12,
+    13,
+    13,
+    16,
+    13,
+    12,
+    11,
+    10
+   ]
+  },
+  {
+   "after_sha256": "954549e7b201c7a2c41412073cc19752b1e8445534d5f6c8ad9c3639fee3b53c",
+   "before_sha256": "84800d4c0fb585834035159a2b1c0fa71c3e4d3f12622b1409874561d2dcd706",
+   "chunk": 43,
+   "defects": [
+    "b81u-ARI-nameplate-weight",
+    "b81u-ARI-black-alt-nameplate-colour"
+   ],
+   "kind": "names_png",
+   "length": 7472,
+   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; red on this black alternate, as the real names (WILSON, McBRIDE), not white",
+   "offset": 467440,
+   "png": "ARI_00A0_names.png",
+   "png_sha256": "c7c86cea517436f4638c7a9bd60e317835810b2fb135b5ad1050d9b214178158",
+   "reference": [
+    "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
+    "ARZ/2026-10-11_DET_alternate-black/jersey_back_0141.jpg",
+    "ARZ/2026-10-11_DET_alternate-black/helmet_back_1402.jpg"
+   ],
+   "resource_size": 1501024,
+   "selector": "00A6",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "b6efa891c8a71983258dccd651e099434e767e44b63f40bd5ca18ed6138fb826",
+   "before_sha256": "f15f1c043f79388419517f053d7f71bd9578072a07725e2106add96eb9e7cdb4",
+   "chunk": 44,
+   "defects": [
+    "b81u-ARI-nameplate-weight",
+    "b81u-ARI-black-alt-nameplate-colour"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; red on this black alternate, as the real names (WILSON, McBRIDE), not white",
+   "offset": 474912,
+   "reference": [
+    "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
+    "ARZ/2026-10-11_DET_alternate-black/jersey_back_0141.jpg",
+    "ARZ/2026-10-11_DET_alternate-black/helmet_back_1402.jpg"
+   ],
+   "resource_size": 1501024,
+   "selector": "00A6",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    13,
+    12,
+    13,
+    11,
+    11,
+    13,
+    13,
+    3,
+    11,
+    13,
+    11,
+    15,
+    13,
+    13,
+    12,
+    13,
+    12,
+    12,
+    12,
+    13,
+    13,
+    16,
+    13,
+    12,
+    11,
+    10
+   ]
   },
   {
    "after_sha256": "a68cf837d15879aaae85414c2a3619403a728665b74f2e01ad9d4a2c67f353a7",
@@ -558,6 +763,154 @@
    "texture": "an57"
   },
   {
+   "after_sha256": "bb4e904674743a9ea949084c2c80c7a3719748d739b4f3b54f38ac346d502309",
+   "before_sha256": "84800d4c0fb585834035159a2b1c0fa71c3e4d3f12622b1409874561d2dcd706",
+   "chunk": 43,
+   "defects": [
+    "b81u-ARI-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 7472,
+   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight",
+   "offset": 461856,
+   "png": "ARI_00H0_names.png",
+   "png_sha256": "a6259d3a059663c282b48f71f7f14ff76f572ce802fab605fd2a5d8b89cc4906",
+   "reference": [
+    "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
+    "ARZ/2026-10-11_DET_alternate-black/jersey_back_0141.jpg",
+    "ARZ/2026-10-11_DET_alternate-black/helmet_back_1402.jpg"
+   ],
+   "resource_size": 1497600,
+   "selector": "00H0",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "b6efa891c8a71983258dccd651e099434e767e44b63f40bd5ca18ed6138fb826",
+   "before_sha256": "f15f1c043f79388419517f053d7f71bd9578072a07725e2106add96eb9e7cdb4",
+   "chunk": 44,
+   "defects": [
+    "b81u-ARI-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight",
+   "offset": 469328,
+   "reference": [
+    "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
+    "ARZ/2026-10-11_DET_alternate-black/jersey_back_0141.jpg",
+    "ARZ/2026-10-11_DET_alternate-black/helmet_back_1402.jpg"
+   ],
+   "resource_size": 1497600,
+   "selector": "00H0",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    13,
+    12,
+    13,
+    11,
+    11,
+    13,
+    13,
+    3,
+    11,
+    13,
+    11,
+    15,
+    13,
+    13,
+    12,
+    13,
+    12,
+    12,
+    12,
+    13,
+    13,
+    16,
+    13,
+    12,
+    11,
+    10
+   ]
+  },
+  {
+   "after_sha256": "954549e7b201c7a2c41412073cc19752b1e8445534d5f6c8ad9c3639fee3b53c",
+   "before_sha256": "84800d4c0fb585834035159a2b1c0fa71c3e4d3f12622b1409874561d2dcd706",
+   "chunk": 43,
+   "defects": [
+    "b81u-ARI-nameplate-weight",
+    "b81u-ARI-black-alt-nameplate-colour"
+   ],
+   "kind": "names_png",
+   "length": 7472,
+   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; red on this black alternate, as the real names (WILSON, McBRIDE), not white",
+   "offset": 467440,
+   "png": "ARI_00A0_names.png",
+   "png_sha256": "c7c86cea517436f4638c7a9bd60e317835810b2fb135b5ad1050d9b214178158",
+   "reference": [
+    "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
+    "ARZ/2026-10-11_DET_alternate-black/jersey_back_0141.jpg",
+    "ARZ/2026-10-11_DET_alternate-black/helmet_back_1402.jpg"
+   ],
+   "resource_size": 1501024,
+   "selector": "00H6",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "b6efa891c8a71983258dccd651e099434e767e44b63f40bd5ca18ed6138fb826",
+   "before_sha256": "f15f1c043f79388419517f053d7f71bd9578072a07725e2106add96eb9e7cdb4",
+   "chunk": 44,
+   "defects": [
+    "b81u-ARI-nameplate-weight",
+    "b81u-ARI-black-alt-nameplate-colour"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; red on this black alternate, as the real names (WILSON, McBRIDE), not white",
+   "offset": 474912,
+   "reference": [
+    "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
+    "ARZ/2026-10-11_DET_alternate-black/jersey_back_0141.jpg",
+    "ARZ/2026-10-11_DET_alternate-black/helmet_back_1402.jpg"
+   ],
+   "resource_size": 1501024,
+   "selector": "00H6",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    13,
+    12,
+    13,
+    11,
+    11,
+    13,
+    13,
+    3,
+    11,
+    13,
+    11,
+    15,
+    13,
+    13,
+    12,
+    13,
+    12,
+    12,
+    12,
+    13,
+    13,
+    16,
+    13,
+    12,
+    11,
+    10
+   ]
+  },
+  {
    "after_sha256": "3af98576f197364371e7df50cd6d51fa229c08939bd698994e7ea7ebb0533db2",
    "before_sha256": "3494865c4ab54ad13d4bde384ccee40279c3bdbace312d2939bc320f6a1b24f7",
    "chunk": 13,
@@ -898,6 +1251,77 @@
    "texture": "an57"
   },
   {
+   "after_sha256": "520bf6736270366e3faf7a1e2399f271b8dc760d03a3908b25ca12fc1deacae6",
+   "before_sha256": "880987630f62a2e5ab23e3ed9f5a95cc35ea1c3b60bad714465c564e58972c5b",
+   "chunk": 43,
+   "defects": [
+    "b81u-ATL-1966-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 8736,
+   "note": "the 1966 throwback name letters at the real weight, white with a 1-texel red edge",
+   "offset": 479712,
+   "png": "ATL_01A9_names.png",
+   "png_sha256": "2cf3c06d4f0a4b05565ebe63c70b0c470eda0273f43574d0286bb0c748b50b1a",
+   "reference": [
+    "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg",
+    "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg"
+   ],
+   "resource_size": 1474448,
+   "selector": "01A9",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "e3fefc6a8b26a369d9a459bdcef27f926576747f91ab6f7071c8b6b7ee7a3fed",
+   "before_sha256": "105da59158fe270e101fc0288ca1e0c9177c3bab1a5dff82fc1b94fd418b4e3c",
+   "chunk": 44,
+   "defects": [
+    "b81u-ATL-1966-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the 1966 throwback name letters at the real weight, white with a 1-texel red edge",
+   "offset": 488448,
+   "reference": [
+    "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg",
+    "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg"
+   ],
+   "resource_size": 1474448,
+   "selector": "01A9",
+   "texture": "NAME",
+   "widths": [
+    5,
+    8,
+    13,
+    13,
+    13,
+    13,
+    12,
+    12,
+    13,
+    13,
+    4,
+    12,
+    13,
+    12,
+    15,
+    13,
+    13,
+    13,
+    13,
+    13,
+    13,
+    12,
+    13,
+    13,
+    16,
+    13,
+    13,
+    12,
+    11
+   ]
+  },
+  {
    "after_sha256": "61aa0c73c12a580b4e2a66469d99dd34b9564991da935f6bcae346a97e37cc28",
    "before_sha256": "695d41cc7cecdd34759bf25ae54b29aa095ac7d042a33208da1e3ece5b2144d8",
    "chunk": 13,
@@ -1236,6 +1660,223 @@
    "resource_size": 1553616,
    "selector": "01H0",
    "texture": "an57"
+  },
+  {
+   "after_sha256": "b4152251b968bd75ccc6640b0ebd72bbd6310033e8b9b575d22f73ef8b1aa500",
+   "before_sha256": "4489c36e2967e4d07484140e9f9c019b52cfa4defad8bd90eab82d280aa6a1cc",
+   "chunk": 43,
+   "defects": [
+    "b81u-ATL-1966-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 8784,
+   "note": "the 1966 throwback name letters at the real weight, white with a 1-texel red edge",
+   "offset": 451872,
+   "png": "ATL_01A9_names.png",
+   "png_sha256": "2cf3c06d4f0a4b05565ebe63c70b0c470eda0273f43574d0286bb0c748b50b1a",
+   "reference": [
+    "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg",
+    "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg"
+   ],
+   "resource_size": 1440480,
+   "selector": "01H9",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "e3fefc6a8b26a369d9a459bdcef27f926576747f91ab6f7071c8b6b7ee7a3fed",
+   "before_sha256": "105da59158fe270e101fc0288ca1e0c9177c3bab1a5dff82fc1b94fd418b4e3c",
+   "chunk": 44,
+   "defects": [
+    "b81u-ATL-1966-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the 1966 throwback name letters at the real weight, white with a 1-texel red edge",
+   "offset": 460656,
+   "reference": [
+    "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg",
+    "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg"
+   ],
+   "resource_size": 1440480,
+   "selector": "01H9",
+   "texture": "NAME",
+   "widths": [
+    5,
+    8,
+    13,
+    13,
+    13,
+    13,
+    12,
+    12,
+    13,
+    13,
+    4,
+    12,
+    13,
+    12,
+    15,
+    13,
+    13,
+    13,
+    13,
+    13,
+    13,
+    12,
+    13,
+    13,
+    16,
+    13,
+    13,
+    12,
+    11
+   ]
+  },
+  {
+   "after_sha256": "f0daf3c971ae3ea7ba1e5a81e0fab40b58d600dde3132240b7fb003c080515d1",
+   "before_sha256": "45a9260dd9a6e67f45ed3fa9e865aa2781ea7a93ecbf9b0c3fb95c15591e23e5",
+   "chunk": 43,
+   "defects": [
+    "b81u-BAL-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 7488,
+   "note": "the purple jersey name letters in a lighter condensed block at the real weight",
+   "offset": 510416,
+   "png": "BAL_02H0_names.png",
+   "png_sha256": "7336813b2fe924f2a041e9e40fd289f7acc913c7be1f82935081b9aa12551057",
+   "reference": [
+    "BAL/2026-10-11_ATL_primary-away/jersey_back_0336.jpg",
+    "BAL/2026-11-16_LAC_alternate-darkness/jersey_back_0427.jpg",
+    "BAL/2026-10-04_TEN_primary-home/helmet_back_0707.jpg"
+   ],
+   "resource_size": 1549744,
+   "selector": "02H0",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "2a7685b8771da67f849fde6c152d12894cd11bc60cbfe8be0cee433cff7282a3",
+   "before_sha256": "35b504600100d53d5d30bc72338aae7b97782644f3b40ea5305324537f1b0cbc",
+   "chunk": 44,
+   "defects": [
+    "b81u-BAL-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the purple jersey name letters in a lighter condensed block at the real weight",
+   "offset": 517904,
+   "reference": [
+    "BAL/2026-10-11_ATL_primary-away/jersey_back_0336.jpg",
+    "BAL/2026-11-16_LAC_alternate-darkness/jersey_back_0427.jpg",
+    "BAL/2026-10-04_TEN_primary-home/helmet_back_0707.jpg"
+   ],
+   "resource_size": 1549744,
+   "selector": "02H0",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    3,
+    11,
+    12,
+    12,
+    15,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    13,
+    15,
+    13,
+    12,
+    12,
+    10
+   ]
+  },
+  {
+   "after_sha256": "f0daf3c971ae3ea7ba1e5a81e0fab40b58d600dde3132240b7fb003c080515d1",
+   "before_sha256": "45a9260dd9a6e67f45ed3fa9e865aa2781ea7a93ecbf9b0c3fb95c15591e23e5",
+   "chunk": 43,
+   "defects": [
+    "b81u-BAL-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 7488,
+   "note": "the purple jersey name letters in a lighter condensed block at the real weight",
+   "offset": 507232,
+   "png": "BAL_02H0_names.png",
+   "png_sha256": "7336813b2fe924f2a041e9e40fd289f7acc913c7be1f82935081b9aa12551057",
+   "reference": [
+    "BAL/2026-10-11_ATL_primary-away/jersey_back_0336.jpg",
+    "BAL/2026-11-16_LAC_alternate-darkness/jersey_back_0427.jpg",
+    "BAL/2026-10-04_TEN_primary-home/helmet_back_0707.jpg"
+   ],
+   "resource_size": 1545552,
+   "selector": "02H2",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "2a7685b8771da67f849fde6c152d12894cd11bc60cbfe8be0cee433cff7282a3",
+   "before_sha256": "35b504600100d53d5d30bc72338aae7b97782644f3b40ea5305324537f1b0cbc",
+   "chunk": 44,
+   "defects": [
+    "b81u-BAL-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the purple jersey name letters in a lighter condensed block at the real weight",
+   "offset": 514720,
+   "reference": [
+    "BAL/2026-10-11_ATL_primary-away/jersey_back_0336.jpg",
+    "BAL/2026-11-16_LAC_alternate-darkness/jersey_back_0427.jpg",
+    "BAL/2026-10-04_TEN_primary-home/helmet_back_0707.jpg"
+   ],
+   "resource_size": 1545552,
+   "selector": "02H2",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    3,
+    11,
+    12,
+    12,
+    15,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    13,
+    15,
+    13,
+    12,
+    12,
+    10
+   ]
   },
   {
    "after_sha256": "4be2ab694874986f644e7d030bd170f7fdd452feefe297ac159e1bfc843ff1dc",
@@ -2598,6 +3239,732 @@
    "texture": "an57"
   },
   {
+   "after_sha256": "87e80249139dce5fd3d3c42ec9b4126189becd637a15a5d182cfb27cfb6a243d",
+   "before_sha256": "b2d7e5c10dcfb27a62cbe77885a34a5911f14d89022c9a17ce310e41d8163a81",
+   "chunk": 43,
+   "defects": [
+    "b81u-IND-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 7600,
+   "note": "the road name letters at the real lighter weight with open counters",
+   "offset": 475856,
+   "png": "IND_11A0_names.png",
+   "png_sha256": "105fc446ecf9168f0ba01e0baae141ff9b4aba910df95327e23c9f60bdae31ce",
+   "reference": [
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg"
+   ],
+   "resource_size": 1512432,
+   "selector": "11A0",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "a54e8649de924822e16f566876807bda067df51d0b11235b4bec0b4a9985647d",
+   "before_sha256": "027bb88a7548022f96e38448825b64dfc39ad4134835671023ceeda9940877d6",
+   "chunk": 44,
+   "defects": [
+    "b81u-IND-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the road name letters at the real lighter weight with open counters",
+   "offset": 483456,
+   "reference": [
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg"
+   ],
+   "resource_size": 1512432,
+   "selector": "11A0",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    12,
+    12,
+    13,
+    11,
+    11,
+    13,
+    12,
+    3,
+    11,
+    13,
+    11,
+    15,
+    13,
+    13,
+    12,
+    13,
+    12,
+    12,
+    12,
+    12,
+    13,
+    16,
+    13,
+    13,
+    12,
+    10
+   ]
+  },
+  {
+   "after_sha256": "a5e34910d6e0e1d03e618de0f543bd96b4190f3edf437736cf3e30fe91406548",
+   "before_sha256": "a37b53e374f985f1e5c843b485c39f1e44a3d4d4fd812864a4fb3cefd8b9a7a2",
+   "chunk": 43,
+   "defects": [
+    "b81u-IND-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 8032,
+   "note": "the home and alternate name letters at the real lighter weight with open counters",
+   "offset": 489936,
+   "png": "IND_11A3_names.png",
+   "png_sha256": "4a723c3c1a1dd9f635ecef88135ad1ac49a553ef218d0bb045b0e7ca78686d7b",
+   "reference": [
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-09-13_BAL_primary-home/helmet_back_0901.jpg"
+   ],
+   "resource_size": 1482272,
+   "selector": "11A3",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "a54e8649de924822e16f566876807bda067df51d0b11235b4bec0b4a9985647d",
+   "before_sha256": "027bb88a7548022f96e38448825b64dfc39ad4134835671023ceeda9940877d6",
+   "chunk": 44,
+   "defects": [
+    "b81u-IND-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the home and alternate name letters at the real lighter weight with open counters",
+   "offset": 497968,
+   "reference": [
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-09-13_BAL_primary-home/helmet_back_0901.jpg"
+   ],
+   "resource_size": 1482272,
+   "selector": "11A3",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    12,
+    12,
+    13,
+    11,
+    11,
+    13,
+    12,
+    3,
+    11,
+    13,
+    11,
+    15,
+    13,
+    13,
+    12,
+    13,
+    12,
+    12,
+    12,
+    12,
+    13,
+    16,
+    13,
+    13,
+    12,
+    10
+   ]
+  },
+  {
+   "after_sha256": "a5e34910d6e0e1d03e618de0f543bd96b4190f3edf437736cf3e30fe91406548",
+   "before_sha256": "a37b53e374f985f1e5c843b485c39f1e44a3d4d4fd812864a4fb3cefd8b9a7a2",
+   "chunk": 43,
+   "defects": [
+    "b81u-IND-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 8032,
+   "note": "the home and alternate name letters at the real lighter weight with open counters",
+   "offset": 492272,
+   "png": "IND_11A3_names.png",
+   "png_sha256": "4a723c3c1a1dd9f635ecef88135ad1ac49a553ef218d0bb045b0e7ca78686d7b",
+   "reference": [
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-09-13_BAL_primary-home/helmet_back_0901.jpg"
+   ],
+   "resource_size": 1484704,
+   "selector": "11A4",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "a54e8649de924822e16f566876807bda067df51d0b11235b4bec0b4a9985647d",
+   "before_sha256": "027bb88a7548022f96e38448825b64dfc39ad4134835671023ceeda9940877d6",
+   "chunk": 44,
+   "defects": [
+    "b81u-IND-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the home and alternate name letters at the real lighter weight with open counters",
+   "offset": 500304,
+   "reference": [
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-09-13_BAL_primary-home/helmet_back_0901.jpg"
+   ],
+   "resource_size": 1484704,
+   "selector": "11A4",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    12,
+    12,
+    13,
+    11,
+    11,
+    13,
+    12,
+    3,
+    11,
+    13,
+    11,
+    15,
+    13,
+    13,
+    12,
+    13,
+    12,
+    12,
+    12,
+    12,
+    13,
+    16,
+    13,
+    13,
+    12,
+    10
+   ]
+  },
+  {
+   "after_sha256": "4ef32fbedfe32c6257614cc54b0d246f63ce9ffbcbadec7891863460f137afa0",
+   "before_sha256": "9dea8d99d31e3a0cd22b43a4a1ea2b64eef8fcf66adafd30c2ececc251e38c40",
+   "chunk": 43,
+   "defects": [
+    "b81u-IND-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 7472,
+   "note": "the home and alternate name letters at the real lighter weight with open counters",
+   "offset": 463072,
+   "png": "IND_11A3_names.png",
+   "png_sha256": "4a723c3c1a1dd9f635ecef88135ad1ac49a553ef218d0bb045b0e7ca78686d7b",
+   "reference": [
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-09-13_BAL_primary-home/helmet_back_0901.jpg"
+   ],
+   "resource_size": 1494688,
+   "selector": "11H0",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "a54e8649de924822e16f566876807bda067df51d0b11235b4bec0b4a9985647d",
+   "before_sha256": "027bb88a7548022f96e38448825b64dfc39ad4134835671023ceeda9940877d6",
+   "chunk": 44,
+   "defects": [
+    "b81u-IND-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the home and alternate name letters at the real lighter weight with open counters",
+   "offset": 470544,
+   "reference": [
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-09-13_BAL_primary-home/helmet_back_0901.jpg"
+   ],
+   "resource_size": 1494688,
+   "selector": "11H0",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    12,
+    12,
+    13,
+    11,
+    11,
+    13,
+    12,
+    3,
+    11,
+    13,
+    11,
+    15,
+    13,
+    13,
+    12,
+    13,
+    12,
+    12,
+    12,
+    12,
+    13,
+    16,
+    13,
+    13,
+    12,
+    10
+   ]
+  },
+  {
+   "after_sha256": "284853b1441e3a1fadad0d2db3a5c5092dec47304c6c034905c9ba53e925b7de",
+   "before_sha256": "b6a6c00ed0000bcea656f55354c0ef62ee230205545bb97459cc1a97a504ed65",
+   "chunk": 43,
+   "defects": [
+    "b81u-IND-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 7472,
+   "note": "the home and alternate name letters at the real lighter weight with open counters",
+   "offset": 474544,
+   "png": "IND_11A3_names.png",
+   "png_sha256": "4a723c3c1a1dd9f635ecef88135ad1ac49a553ef218d0bb045b0e7ca78686d7b",
+   "reference": [
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-09-13_BAL_primary-home/helmet_back_0901.jpg"
+   ],
+   "resource_size": 1463584,
+   "selector": "11H3",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "a54e8649de924822e16f566876807bda067df51d0b11235b4bec0b4a9985647d",
+   "before_sha256": "027bb88a7548022f96e38448825b64dfc39ad4134835671023ceeda9940877d6",
+   "chunk": 44,
+   "defects": [
+    "b81u-IND-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the home and alternate name letters at the real lighter weight with open counters",
+   "offset": 482016,
+   "reference": [
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-09-13_BAL_primary-home/helmet_back_0901.jpg"
+   ],
+   "resource_size": 1463584,
+   "selector": "11H3",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    12,
+    12,
+    13,
+    11,
+    11,
+    13,
+    12,
+    3,
+    11,
+    13,
+    11,
+    15,
+    13,
+    13,
+    12,
+    13,
+    12,
+    12,
+    12,
+    12,
+    13,
+    16,
+    13,
+    13,
+    12,
+    10
+   ]
+  },
+  {
+   "after_sha256": "284853b1441e3a1fadad0d2db3a5c5092dec47304c6c034905c9ba53e925b7de",
+   "before_sha256": "b6a6c00ed0000bcea656f55354c0ef62ee230205545bb97459cc1a97a504ed65",
+   "chunk": 43,
+   "defects": [
+    "b81u-IND-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 7472,
+   "note": "the home and alternate name letters at the real lighter weight with open counters",
+   "offset": 478448,
+   "png": "IND_11A3_names.png",
+   "png_sha256": "4a723c3c1a1dd9f635ecef88135ad1ac49a553ef218d0bb045b0e7ca78686d7b",
+   "reference": [
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-09-13_BAL_primary-home/helmet_back_0901.jpg"
+   ],
+   "resource_size": 1469440,
+   "selector": "11H4",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "a54e8649de924822e16f566876807bda067df51d0b11235b4bec0b4a9985647d",
+   "before_sha256": "027bb88a7548022f96e38448825b64dfc39ad4134835671023ceeda9940877d6",
+   "chunk": 44,
+   "defects": [
+    "b81u-IND-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the home and alternate name letters at the real lighter weight with open counters",
+   "offset": 485920,
+   "reference": [
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
+    "IND/2026-09-13_BAL_primary-home/helmet_back_0901.jpg"
+   ],
+   "resource_size": 1469440,
+   "selector": "11H4",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    12,
+    12,
+    13,
+    11,
+    11,
+    13,
+    12,
+    3,
+    11,
+    13,
+    11,
+    15,
+    13,
+    13,
+    12,
+    13,
+    12,
+    12,
+    12,
+    12,
+    13,
+    16,
+    13,
+    13,
+    12,
+    10
+   ]
+  },
+  {
+   "after_sha256": "11eaf2d6779fb75bfccb2116124d585574e1bb53eb4e5a16201385a7205cef39",
+   "before_sha256": "b969b04fdeec67479dace8ffbe702b3df038ea704c5860d66d8c3a66ee693f53",
+   "chunk": 43,
+   "defects": [
+    "b81u-JAX-road-nameplate-heavy"
+   ],
+   "kind": "names_png",
+   "length": 11344,
+   "note": "the road and Bold City name letters redrawn at the real weight (Noah named this plate): stems 2 texels (0.14 of the cap on the player, real 0.16), thin 2-row cross strokes, open counters, a 2-texel letter gap; black #101010 as the numbers",
+   "offset": 500768,
+   "png": "JAX_12A0_names.png",
+   "png_sha256": "88b01fa90f250376b8e2daee12db5327dd7715d4e5e93f1d894ef3757da7744f",
+   "reference": [
+    "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
+    "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
+    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg"
+   ],
+   "resource_size": 1547856,
+   "selector": "12A0",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "0d4052b965bd4ed36073c8b884eee4aee34471af488b9f3ccc65ae4322dc24c2",
+   "before_sha256": "e73b6605d52c45074a54b479b75fcb3f8ab83e98c11fa980693dcd477450732a",
+   "chunk": 44,
+   "defects": [
+    "b81u-JAX-road-nameplate-heavy"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the road and Bold City name letters redrawn at the real weight (Noah named this plate): stems 2 texels (0.14 of the cap on the player, real 0.16), thin 2-row cross strokes, open counters, a 2-texel letter gap; black #101010 as the numbers",
+   "offset": 512112,
+   "reference": [
+    "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
+    "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
+    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg"
+   ],
+   "resource_size": 1547856,
+   "selector": "12A0",
+   "texture": "NAME",
+   "widths": [
+    5,
+    8,
+    14,
+    14,
+    14,
+    14,
+    14,
+    13,
+    14,
+    14,
+    4,
+    12,
+    14,
+    14,
+    16,
+    14,
+    15,
+    14,
+    15,
+    14,
+    14,
+    14,
+    14,
+    15,
+    17,
+    14,
+    14,
+    13,
+    11
+   ]
+  },
+  {
+   "after_sha256": "89a71b65b1ca8ca58aefd813617db4e8c600665b36cf17296c0a40b414ed9588",
+   "before_sha256": "247407e7eafffcc445c599c62f5ab3cff0f56e7143a90c808ec7d93643fa4be3",
+   "chunk": 43,
+   "defects": [
+    "b81u-JAX-road-nameplate-heavy"
+   ],
+   "kind": "names_png",
+   "length": 11344,
+   "note": "the road and Bold City name letters redrawn at the real weight (Noah named this plate): stems 2 texels (0.14 of the cap on the player, real 0.16), thin 2-row cross strokes, open counters, a 2-texel letter gap; black #101010 as the numbers",
+   "offset": 504640,
+   "png": "JAX_12A0_names.png",
+   "png_sha256": "88b01fa90f250376b8e2daee12db5327dd7715d4e5e93f1d894ef3757da7744f",
+   "reference": [
+    "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
+    "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
+    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg"
+   ],
+   "resource_size": 1550288,
+   "selector": "12A6",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "0d4052b965bd4ed36073c8b884eee4aee34471af488b9f3ccc65ae4322dc24c2",
+   "before_sha256": "e73b6605d52c45074a54b479b75fcb3f8ab83e98c11fa980693dcd477450732a",
+   "chunk": 44,
+   "defects": [
+    "b81u-JAX-road-nameplate-heavy"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the road and Bold City name letters redrawn at the real weight (Noah named this plate): stems 2 texels (0.14 of the cap on the player, real 0.16), thin 2-row cross strokes, open counters, a 2-texel letter gap; black #101010 as the numbers",
+   "offset": 515984,
+   "reference": [
+    "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
+    "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
+    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg"
+   ],
+   "resource_size": 1550288,
+   "selector": "12A6",
+   "texture": "NAME",
+   "widths": [
+    5,
+    8,
+    14,
+    14,
+    14,
+    14,
+    14,
+    13,
+    14,
+    14,
+    4,
+    12,
+    14,
+    14,
+    16,
+    14,
+    15,
+    14,
+    15,
+    14,
+    14,
+    14,
+    14,
+    15,
+    17,
+    14,
+    14,
+    13,
+    11
+   ]
+  },
+  {
+   "after_sha256": "8cb61c937059bd5a6ad86a5a48a982b7ba3f733bd509a39df6a21ee69faab5ae",
+   "before_sha256": "7850ea82b5a382e518945d8f831050015c7a8f8864ad0e24261437938e641b97",
+   "chunk": 43,
+   "defects": [
+    "b81u-JAX-home-nameplate-outline"
+   ],
+   "kind": "names_png",
+   "length": 11392,
+   "note": "the home name letters without the black outline the real white letters do not have, in the road face",
+   "offset": 498144,
+   "png": "JAX_12H0_names.png",
+   "png_sha256": "a3e1801c762755899fc9915b77af70dd23b6753262bf34ffe72439805f4cb90d",
+   "reference": [
+    "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
+    "JAX/2026-10-11_PHI_primary-home/helmet_back_1047.jpg"
+   ],
+   "resource_size": 1543312,
+   "selector": "12H0",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "0d4052b965bd4ed36073c8b884eee4aee34471af488b9f3ccc65ae4322dc24c2",
+   "before_sha256": "7da278b81854e1e828d865a5d1fb0552fcd529458698d56520c9c7972d67f4cc",
+   "chunk": 44,
+   "defects": [
+    "b81u-JAX-home-nameplate-outline"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the home name letters without the black outline the real white letters do not have, in the road face",
+   "offset": 509536,
+   "reference": [
+    "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
+    "JAX/2026-10-11_PHI_primary-home/helmet_back_1047.jpg"
+   ],
+   "resource_size": 1543312,
+   "selector": "12H0",
+   "texture": "NAME",
+   "widths": [
+    5,
+    8,
+    14,
+    14,
+    14,
+    14,
+    14,
+    13,
+    14,
+    14,
+    4,
+    12,
+    14,
+    14,
+    16,
+    14,
+    15,
+    14,
+    15,
+    14,
+    14,
+    14,
+    14,
+    15,
+    17,
+    14,
+    14,
+    13,
+    11
+   ]
+  },
+  {
+   "after_sha256": "89a71b65b1ca8ca58aefd813617db4e8c600665b36cf17296c0a40b414ed9588",
+   "before_sha256": "247407e7eafffcc445c599c62f5ab3cff0f56e7143a90c808ec7d93643fa4be3",
+   "chunk": 43,
+   "defects": [
+    "b81u-JAX-road-nameplate-heavy"
+   ],
+   "kind": "names_png",
+   "length": 11344,
+   "note": "the road and Bold City name letters redrawn at the real weight (Noah named this plate): stems 2 texels (0.14 of the cap on the player, real 0.16), thin 2-row cross strokes, open counters, a 2-texel letter gap; black #101010 as the numbers",
+   "offset": 504640,
+   "png": "JAX_12A0_names.png",
+   "png_sha256": "88b01fa90f250376b8e2daee12db5327dd7715d4e5e93f1d894ef3757da7744f",
+   "reference": [
+    "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
+    "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
+    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg"
+   ],
+   "resource_size": 1550288,
+   "selector": "12H6",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "0d4052b965bd4ed36073c8b884eee4aee34471af488b9f3ccc65ae4322dc24c2",
+   "before_sha256": "e73b6605d52c45074a54b479b75fcb3f8ab83e98c11fa980693dcd477450732a",
+   "chunk": 44,
+   "defects": [
+    "b81u-JAX-road-nameplate-heavy"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the road and Bold City name letters redrawn at the real weight (Noah named this plate): stems 2 texels (0.14 of the cap on the player, real 0.16), thin 2-row cross strokes, open counters, a 2-texel letter gap; black #101010 as the numbers",
+   "offset": 515984,
+   "reference": [
+    "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
+    "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
+    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg"
+   ],
+   "resource_size": 1550288,
+   "selector": "12H6",
+   "texture": "NAME",
+   "widths": [
+    5,
+    8,
+    14,
+    14,
+    14,
+    14,
+    14,
+    13,
+    14,
+    14,
+    4,
+    12,
+    14,
+    14,
+    16,
+    14,
+    15,
+    14,
+    15,
+    14,
+    14,
+    14,
+    14,
+    15,
+    17,
+    14,
+    14,
+    13,
+    11
+   ]
+  },
+  {
    "after_sha256": "0c88f188b4b0422d801a4a01e3a6076cec9e686e64328a7b7e84045167c5870e",
    "before_sha256": "bd755d9a16582b19b1c75d6046c8d08d762e5e2095ea6b476a2a6878ba00c791",
    "chunk": 13,
@@ -3958,6 +5325,219 @@
    "texture": "an57"
   },
   {
+   "after_sha256": "91bf2df6cf0216c4deaaf9239770bcb5d1d7d7dfca2b325cf12a2b77ddb0cb94",
+   "before_sha256": "be4308143e3245dbf6ac1be0e8cafde38e748ea41867956d6cf89e8cef627287",
+   "chunk": 43,
+   "defects": [
+    "b81u-NO-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 10288,
+   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut)",
+   "offset": 489904,
+   "png": "NO_17A1_names.png",
+   "png_sha256": "0ea0b1b33bb2990f60786670b08022be2f3b22790068c864eed713b90e562b38",
+   "reference": [
+    "NO/2026-11-08_CLE_alternate-gameday-gold/jersey_back_1356.jpg",
+    "NO/2026-10-05_ATL_primary-away/helmet_back_0226.jpg"
+   ],
+   "resource_size": 1527520,
+   "selector": "17A1",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "fe0d91cce1113365c32e1c1c9121fcffeda756dd320383c558f4245fc80aa2d6",
+   "before_sha256": "d1578e3ebbca44efc7e58e0a0109b3bcfe9aa841607ae059b2d06869d6bbc7da",
+   "chunk": 44,
+   "defects": [
+    "b81u-NO-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut)",
+   "offset": 500192,
+   "reference": [
+    "NO/2026-11-08_CLE_alternate-gameday-gold/jersey_back_1356.jpg",
+    "NO/2026-10-05_ATL_primary-away/helmet_back_0226.jpg"
+   ],
+   "resource_size": 1527520,
+   "selector": "17A1",
+   "texture": "NAME",
+   "widths": [
+    5,
+    8,
+    13,
+    12,
+    12,
+    13,
+    12,
+    11,
+    13,
+    12,
+    4,
+    11,
+    13,
+    11,
+    15,
+    13,
+    13,
+    12,
+    13,
+    12,
+    12,
+    12,
+    12,
+    13,
+    16,
+    13,
+    13,
+    12,
+    10
+   ]
+  },
+  {
+   "after_sha256": "eb7f8d8f7bf9b8bbfdb77cbf135f87a161afc556abfaaf2be95e1effa7b629f1",
+   "before_sha256": "cf6e68c8058df79f55f93577b393e4ddee8c6c37ecde29f3d1da535704cf6876",
+   "chunk": 43,
+   "defects": [
+    "b81u-NO-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 9200,
+   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut)",
+   "offset": 472896,
+   "png": "NO_17A1_names.png",
+   "png_sha256": "0ea0b1b33bb2990f60786670b08022be2f3b22790068c864eed713b90e562b38",
+   "reference": [
+    "NO/2026-11-08_CLE_alternate-gameday-gold/jersey_back_1356.jpg",
+    "NO/2026-10-05_ATL_primary-away/helmet_back_0226.jpg"
+   ],
+   "resource_size": 1508976,
+   "selector": "17A8",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "fe0d91cce1113365c32e1c1c9121fcffeda756dd320383c558f4245fc80aa2d6",
+   "before_sha256": "105da59158fe270e101fc0288ca1e0c9177c3bab1a5dff82fc1b94fd418b4e3c",
+   "chunk": 44,
+   "defects": [
+    "b81u-NO-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut)",
+   "offset": 482096,
+   "reference": [
+    "NO/2026-11-08_CLE_alternate-gameday-gold/jersey_back_1356.jpg",
+    "NO/2026-10-05_ATL_primary-away/helmet_back_0226.jpg"
+   ],
+   "resource_size": 1508976,
+   "selector": "17A8",
+   "texture": "NAME",
+   "widths": [
+    5,
+    8,
+    13,
+    12,
+    12,
+    13,
+    12,
+    11,
+    13,
+    12,
+    4,
+    11,
+    13,
+    11,
+    15,
+    13,
+    13,
+    12,
+    13,
+    12,
+    12,
+    12,
+    12,
+    13,
+    16,
+    13,
+    13,
+    12,
+    10
+   ]
+  },
+  {
+   "after_sha256": "eb7f8d8f7bf9b8bbfdb77cbf135f87a161afc556abfaaf2be95e1effa7b629f1",
+   "before_sha256": "cf6e68c8058df79f55f93577b393e4ddee8c6c37ecde29f3d1da535704cf6876",
+   "chunk": 43,
+   "defects": [
+    "b81u-NO-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 9200,
+   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut)",
+   "offset": 472896,
+   "png": "NO_17A1_names.png",
+   "png_sha256": "0ea0b1b33bb2990f60786670b08022be2f3b22790068c864eed713b90e562b38",
+   "reference": [
+    "NO/2026-11-08_CLE_alternate-gameday-gold/jersey_back_1356.jpg",
+    "NO/2026-10-05_ATL_primary-away/helmet_back_0226.jpg"
+   ],
+   "resource_size": 1508976,
+   "selector": "17H8",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "fe0d91cce1113365c32e1c1c9121fcffeda756dd320383c558f4245fc80aa2d6",
+   "before_sha256": "105da59158fe270e101fc0288ca1e0c9177c3bab1a5dff82fc1b94fd418b4e3c",
+   "chunk": 44,
+   "defects": [
+    "b81u-NO-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut)",
+   "offset": 482096,
+   "reference": [
+    "NO/2026-11-08_CLE_alternate-gameday-gold/jersey_back_1356.jpg",
+    "NO/2026-10-05_ATL_primary-away/helmet_back_0226.jpg"
+   ],
+   "resource_size": 1508976,
+   "selector": "17H8",
+   "texture": "NAME",
+   "widths": [
+    5,
+    8,
+    13,
+    12,
+    12,
+    13,
+    12,
+    11,
+    13,
+    12,
+    4,
+    11,
+    13,
+    11,
+    15,
+    13,
+    13,
+    12,
+    13,
+    12,
+    12,
+    12,
+    12,
+    13,
+    16,
+    13,
+    13,
+    12,
+    10
+   ]
+  },
+  {
    "after_sha256": "7743cd41d32623eb23358a4e4e23b8a81322276c320b409937a5684c4112b6f7",
    "before_sha256": "3c6113afeda2343e0c8b55f60e2ea7eed5fece9b6b8ddbc0b80ce793e099577e",
    "chunk": 13,
@@ -4658,6 +6238,79 @@
    "texture": "an57"
   },
   {
+   "after_sha256": "dddacefb7fb6a9454ee6b81bde59e92082cd114dc68ea29278d3dfc52b8f5d0b",
+   "before_sha256": "f5df0d4be6acec9e089a5efd81e9562ab11f32f01a4813d3c3e92c8bb7646487",
+   "chunk": 43,
+   "defects": [
+    "b81u-NYG-vintage-nameplate-serif"
+   ],
+   "kind": "names_png",
+   "length": 6688,
+   "note": "the Vintage White name letters as the real slab serif, royal blue, no outline",
+   "offset": 473408,
+   "png": "NYG_18A7_names.png",
+   "png_sha256": "25ddb97de1d977bf31ce46ab0fc2092466b88442cd1e43e558ced81bd5b49860",
+   "reference": [
+    "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0342.jpg",
+    "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0509.jpg",
+    "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0509.jpg"
+   ],
+   "resource_size": 1505216,
+   "selector": "18A7",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "1f139981f8ea3b2ec1488bf7e40ee687f07db6f596ed29404cae69995035d10b",
+   "before_sha256": "c022ffbfa08b94331c152ed274eb3955629b2fb6ca33733c5a6fb5369ff65dd8",
+   "chunk": 44,
+   "defects": [
+    "b81u-NYG-vintage-nameplate-serif"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the Vintage White name letters as the real slab serif, royal blue, no outline",
+   "offset": 480096,
+   "reference": [
+    "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0342.jpg",
+    "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0509.jpg",
+    "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0509.jpg"
+   ],
+   "resource_size": 1505216,
+   "selector": "18A7",
+   "texture": "NAME",
+   "widths": [
+    4,
+    6,
+    12,
+    11,
+    11,
+    11,
+    11,
+    10,
+    11,
+    12,
+    5,
+    10,
+    12,
+    10,
+    14,
+    12,
+    11,
+    11,
+    11,
+    11,
+    11,
+    11,
+    12,
+    12,
+    15,
+    12,
+    12,
+    11,
+    9
+   ]
+  },
+  {
    "after_sha256": "a858243ffc8dbd4d69344e8caea3909757ff0e0315cf6087d7e9a23c173a0a59",
    "before_sha256": "d7142ec8fe262ca3427a9a0d7171f757dd4b333507bf538a5be7572522277443",
    "chunk": 13,
@@ -5356,6 +7009,292 @@
    "resource_size": 1505296,
    "selector": "18H7",
    "texture": "an57"
+  },
+  {
+   "after_sha256": "dddacefb7fb6a9454ee6b81bde59e92082cd114dc68ea29278d3dfc52b8f5d0b",
+   "before_sha256": "f5df0d4be6acec9e089a5efd81e9562ab11f32f01a4813d3c3e92c8bb7646487",
+   "chunk": 43,
+   "defects": [
+    "b81u-NYG-vintage-nameplate-serif"
+   ],
+   "kind": "names_png",
+   "length": 6688,
+   "note": "the Vintage White name letters as the real slab serif, royal blue, no outline",
+   "offset": 473408,
+   "png": "NYG_18A7_names.png",
+   "png_sha256": "25ddb97de1d977bf31ce46ab0fc2092466b88442cd1e43e558ced81bd5b49860",
+   "reference": [
+    "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0342.jpg",
+    "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0509.jpg",
+    "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0509.jpg"
+   ],
+   "resource_size": 1505296,
+   "selector": "18H7",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "1f139981f8ea3b2ec1488bf7e40ee687f07db6f596ed29404cae69995035d10b",
+   "before_sha256": "c022ffbfa08b94331c152ed274eb3955629b2fb6ca33733c5a6fb5369ff65dd8",
+   "chunk": 44,
+   "defects": [
+    "b81u-NYG-vintage-nameplate-serif"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the Vintage White name letters as the real slab serif, royal blue, no outline",
+   "offset": 480096,
+   "reference": [
+    "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0342.jpg",
+    "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0509.jpg",
+    "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0509.jpg"
+   ],
+   "resource_size": 1505296,
+   "selector": "18H7",
+   "texture": "NAME",
+   "widths": [
+    4,
+    6,
+    12,
+    11,
+    11,
+    11,
+    11,
+    10,
+    11,
+    12,
+    5,
+    10,
+    12,
+    10,
+    14,
+    12,
+    11,
+    11,
+    11,
+    11,
+    11,
+    11,
+    12,
+    12,
+    15,
+    12,
+    12,
+    11,
+    9
+   ]
+  },
+  {
+   "after_sha256": "7add0d2063bd7167b231c57ab0499e9bcb14e1fb2cff5bb44ef7da777e84954d",
+   "before_sha256": "5f0f92ca30b522fd3aa1c4fcc1a78bed12108c3cfc073495176d44a4e49fb41c",
+   "chunk": 43,
+   "defects": [
+    "b81u-NYJ-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 7584,
+   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR)",
+   "offset": 474848,
+   "png": "NYJ_19A0_names.png",
+   "png_sha256": "451db8b57f45e39014cdc6c567dc104ec2433ee38b69f61b9cfff72ff19bf0f5",
+   "reference": [
+    "NYJ/2026-10-04_CHI_primary-away/helmet_front_0212.jpg",
+    "NYJ/2026-10-25_MIA_alternate-white-out/jersey_back_0440.jpg"
+   ],
+   "resource_size": 1513936,
+   "selector": "19A0",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "2a7685b8771da67f849fde6c152d12894cd11bc60cbfe8be0cee433cff7282a3",
+   "before_sha256": "6d8c460d8d8622b6a80a526ba2b13db54e6ea8a1d05d6dde2550e518f91ebd80",
+   "chunk": 44,
+   "defects": [
+    "b81u-NYJ-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR)",
+   "offset": 482432,
+   "reference": [
+    "NYJ/2026-10-04_CHI_primary-away/helmet_front_0212.jpg",
+    "NYJ/2026-10-25_MIA_alternate-white-out/jersey_back_0440.jpg"
+   ],
+   "resource_size": 1513936,
+   "selector": "19A0",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    3,
+    11,
+    12,
+    12,
+    15,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    13,
+    15,
+    13,
+    12,
+    12,
+    10
+   ]
+  },
+  {
+   "after_sha256": "7add0d2063bd7167b231c57ab0499e9bcb14e1fb2cff5bb44ef7da777e84954d",
+   "before_sha256": "5f0f92ca30b522fd3aa1c4fcc1a78bed12108c3cfc073495176d44a4e49fb41c",
+   "chunk": 43,
+   "defects": [
+    "b81u-NYJ-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 7584,
+   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR)",
+   "offset": 455440,
+   "png": "NYJ_19A0_names.png",
+   "png_sha256": "451db8b57f45e39014cdc6c567dc104ec2433ee38b69f61b9cfff72ff19bf0f5",
+   "reference": [
+    "NYJ/2026-10-04_CHI_primary-away/helmet_front_0212.jpg",
+    "NYJ/2026-10-25_MIA_alternate-white-out/jersey_back_0440.jpg"
+   ],
+   "resource_size": 1494752,
+   "selector": "19A7",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "2a7685b8771da67f849fde6c152d12894cd11bc60cbfe8be0cee433cff7282a3",
+   "before_sha256": "6d8c460d8d8622b6a80a526ba2b13db54e6ea8a1d05d6dde2550e518f91ebd80",
+   "chunk": 44,
+   "defects": [
+    "b81u-NYJ-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR)",
+   "offset": 463024,
+   "reference": [
+    "NYJ/2026-10-04_CHI_primary-away/helmet_front_0212.jpg",
+    "NYJ/2026-10-25_MIA_alternate-white-out/jersey_back_0440.jpg"
+   ],
+   "resource_size": 1494752,
+   "selector": "19A7",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    3,
+    11,
+    12,
+    12,
+    15,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    13,
+    15,
+    13,
+    12,
+    12,
+    10
+   ]
+  },
+  {
+   "after_sha256": "7add0d2063bd7167b231c57ab0499e9bcb14e1fb2cff5bb44ef7da777e84954d",
+   "before_sha256": "5f0f92ca30b522fd3aa1c4fcc1a78bed12108c3cfc073495176d44a4e49fb41c",
+   "chunk": 43,
+   "defects": [
+    "b81u-NYJ-nameplate-weight"
+   ],
+   "kind": "names_png",
+   "length": 7584,
+   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR)",
+   "offset": 455440,
+   "png": "NYJ_19A0_names.png",
+   "png_sha256": "451db8b57f45e39014cdc6c567dc104ec2433ee38b69f61b9cfff72ff19bf0f5",
+   "reference": [
+    "NYJ/2026-10-04_CHI_primary-away/helmet_front_0212.jpg",
+    "NYJ/2026-10-25_MIA_alternate-white-out/jersey_back_0440.jpg"
+   ],
+   "resource_size": 1495680,
+   "selector": "19H7",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "2a7685b8771da67f849fde6c152d12894cd11bc60cbfe8be0cee433cff7282a3",
+   "before_sha256": "6d8c460d8d8622b6a80a526ba2b13db54e6ea8a1d05d6dde2550e518f91ebd80",
+   "chunk": 44,
+   "defects": [
+    "b81u-NYJ-nameplate-weight"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR)",
+   "offset": 463024,
+   "reference": [
+    "NYJ/2026-10-04_CHI_primary-away/helmet_front_0212.jpg",
+    "NYJ/2026-10-25_MIA_alternate-white-out/jersey_back_0440.jpg"
+   ],
+   "resource_size": 1495680,
+   "selector": "19H7",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    13,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    3,
+    11,
+    12,
+    12,
+    15,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    13,
+    15,
+    13,
+    12,
+    12,
+    10
+   ]
   },
   {
    "after_sha256": "67e380c9009912faf3816d029bec565a4b081ca9bd9f4ad214235c2dd12ed1e1",
@@ -6716,6 +8655,77 @@
    "resource_size": 1547680,
    "selector": "24H9",
    "texture": "57"
+  },
+  {
+   "after_sha256": "6740713d044341064e90e1b62069d77f9bdb1a28d01ac2a7613793bae3f52b29",
+   "before_sha256": "3c55fb34319af4f75d684d68c9a6cb3c1365ef4aa8c7fd7dbc6e06765751060f",
+   "chunk": 43,
+   "defects": [
+    "b81u-TB-road-nameplate-colour"
+   ],
+   "kind": "names_png",
+   "length": 6832,
+   "note": "the road name letters black as the real names (DANIELS, OTTON), not red, at the real weight",
+   "offset": 485504,
+   "png": "TB_27A0_names.png",
+   "png_sha256": "928ee9dac1d2a42c060ae59d0d6635e989e718c1cd5915c66b30109ef15fa0e2",
+   "reference": [
+    "TB/2026-10-04_GB_primary-away/helmet_back_0125.jpg",
+    "TB/2026-10-04_GB_primary-away/helmet_back_1047.jpg"
+   ],
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "names"
+  },
+  {
+   "after_sha256": "f003823bf24a6ff0e49a5572fd167d75ca88ffea92b0ef2d22dbdaf7cd9ade69",
+   "before_sha256": "054c2d5f497d99102f7e2a46295f87fef4a65a81b2176c14bf90a7e33e9abf9a",
+   "chunk": 44,
+   "defects": [
+    "b81u-TB-road-nameplate-colour"
+   ],
+   "kind": "name_widths",
+   "length": 192,
+   "note": "the road name letters black as the real names (DANIELS, OTTON), not red, at the real weight",
+   "offset": 492336,
+   "reference": [
+    "TB/2026-10-04_GB_primary-away/helmet_back_0125.jpg",
+    "TB/2026-10-04_GB_primary-away/helmet_back_1047.jpg"
+   ],
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "NAME",
+   "widths": [
+    4,
+    7,
+    11,
+    11,
+    11,
+    11,
+    10,
+    10,
+    11,
+    11,
+    3,
+    10,
+    11,
+    10,
+    13,
+    11,
+    11,
+    11,
+    11,
+    11,
+    11,
+    11,
+    11,
+    11,
+    15,
+    11,
+    11,
+    10,
+    9
+   ]
   },
   {
    "after_sha256": "7c98c1f63aea4ec73aeac2f5b9d0595ac94f909672a8b0b714bda1112d1e7ae7",

@@ -710,6 +710,7 @@ data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_6.png
 data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_7.png
 data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_8.png
 data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_9.png
+data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_names.png
 data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_0.png
 data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_1.png
 data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_2.png
@@ -730,6 +731,7 @@ data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_6.png
 data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_7.png
 data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_8.png
 data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_9.png
+data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_names.png
 data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_0.png
 data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_1.png
 data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_2.png
@@ -750,6 +752,7 @@ data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_6.png
 data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_7.png
 data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_8.png
 data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_9.png
+data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A9_names.png
 data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_0.png
 data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_1.png
 data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_2.png
@@ -770,6 +773,7 @@ data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_6.png
 data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_7.png
 data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_8.png
 data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_9.png
+data/nfl2k5_glyph_fixes_2026_b81u/BAL_02H0_names.png
 data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_0.png
 data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_1.png
 data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_2.png
@@ -810,6 +814,10 @@ data/nfl2k5_glyph_fixes_2026_b81u/DAL_07H0_digit_arm_6.png
 data/nfl2k5_glyph_fixes_2026_b81u/DAL_07H0_digit_arm_7.png
 data/nfl2k5_glyph_fixes_2026_b81u/DAL_07H0_digit_arm_8.png
 data/nfl2k5_glyph_fixes_2026_b81u/DAL_07H0_digit_arm_9.png
+data/nfl2k5_glyph_fixes_2026_b81u/IND_11A0_names.png
+data/nfl2k5_glyph_fixes_2026_b81u/IND_11A3_names.png
+data/nfl2k5_glyph_fixes_2026_b81u/JAX_12A0_names.png
+data/nfl2k5_glyph_fixes_2026_b81u/JAX_12H0_names.png
 data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_0.png
 data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_1.png
 data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_2.png
@@ -880,6 +888,7 @@ data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_6.png
 data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_7.png
 data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_8.png
 data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_9.png
+data/nfl2k5_glyph_fixes_2026_b81u/NO_17A1_names.png
 data/nfl2k5_glyph_fixes_2026_b81u/NYG_18A0_digit_arm_0.png
 data/nfl2k5_glyph_fixes_2026_b81u/NYG_18A0_digit_arm_1.png
 data/nfl2k5_glyph_fixes_2026_b81u/NYG_18A0_digit_arm_2.png
@@ -900,6 +909,7 @@ data/nfl2k5_glyph_fixes_2026_b81u/NYG_18A7_digit_arm_6.png
 data/nfl2k5_glyph_fixes_2026_b81u/NYG_18A7_digit_arm_7.png
 data/nfl2k5_glyph_fixes_2026_b81u/NYG_18A7_digit_arm_8.png
 data/nfl2k5_glyph_fixes_2026_b81u/NYG_18A7_digit_arm_9.png
+data/nfl2k5_glyph_fixes_2026_b81u/NYG_18A7_names.png
 data/nfl2k5_glyph_fixes_2026_b81u/NYG_18H0_digit_arm_0.png
 data/nfl2k5_glyph_fixes_2026_b81u/NYG_18H0_digit_arm_1.png
 data/nfl2k5_glyph_fixes_2026_b81u/NYG_18H0_digit_arm_2.png
@@ -910,6 +920,8 @@ data/nfl2k5_glyph_fixes_2026_b81u/NYG_18H0_digit_arm_6.png
 data/nfl2k5_glyph_fixes_2026_b81u/NYG_18H0_digit_arm_7.png
 data/nfl2k5_glyph_fixes_2026_b81u/NYG_18H0_digit_arm_8.png
 data/nfl2k5_glyph_fixes_2026_b81u/NYG_18H0_digit_arm_9.png
+data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_names.png
+data/nfl2k5_glyph_fixes_2026_b81u/TB_27A0_names.png
 data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_0.png
 data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_1.png
 data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_2.png
