@@ -6,6 +6,7 @@ Set B774_MC2_XBE and B77_RO1_PICKS for the private integrated image/data proof.
 No proprietary bytes or live emulator dependencies are bundled here.
 """
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -17,7 +18,7 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from mod_editor.core import nfl2k5_draft_picks as dp, nfl2k5_xbe_space as space
-from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage
 try:
     import unicorn as u
     from unicorn import x86_const as x
@@ -201,12 +202,30 @@ class Native(Runtime):
             self.call(0x3254D0)
             self.assertEqual(uc.reg_read(x.UC_X86_REG_EAX),self.table[cell])
 
+
+class MyCareerContext(unittest.TestCase):
     def test_mycareer_context_accepts_only_validated_pick_owner(self):
         from mod_editor.core import nfl2k5_my_career_mode as career
-        self.assertEqual(career.status(self.before),'applied')
-        self.assertEqual(career.status(self.after),'applied')
-        bad=bytearray(self.after);bad[XbeImage(self.after).offset(dp.SITE)+1]^=1
-        self.assertEqual(career.status(bytes(bad)),'foreign')
+        from mod_editor.core import nfl2k5_season_length as season
+
+        retail = Path(os.environ.get('NFL2K5_RETAIL_XBE', ''))
+        if not retail.is_file() and os.environ.get('NFL2K5_RETAIL_EXTRACTION'):
+            retail = Path(os.environ['NFL2K5_RETAIL_EXTRACTION']) / 'default.xbe'
+        picks = Path(os.environ.get('B77_RO1_PICKS', ''))
+        if not retail.is_file() or not picks.is_file():
+            self.skipTest('retail USA executable and the complete draft ownership map are required')
+        payload = retail.read_bytes()
+        self.assertEqual(hashlib.sha256(payload).hexdigest(), RETAIL_SHA256)
+        plan = json.loads(picks.read_bytes())
+        # The historical image above predates the current MyCareer hook and several neighboring owners.
+        dated, _ = season.apply(payload, groups=('year',), year=plan['base_season'])
+        before, _ = career.apply(dated)
+        self.assertEqual(career.status(before), 'applied')
+        after, _ = dp.apply(before, plan)
+        self.assertEqual(career.status(after), 'applied')
+        bad = bytearray(after)
+        bad[XbeImage(after).offset(dp.SITE) + 1] ^= 1
+        self.assertEqual(career.status(bytes(bad)), 'foreign')
 
 
 if __name__=='__main__':unittest.main()

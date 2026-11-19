@@ -39,7 +39,8 @@ class RefusalTests(unittest.TestCase):
 
     def test_pins_are_complete(self):
         for value in (repair.BASE_XBE_SHA256, repair.REPAIRED_XBE_SHA256, repair.BETA80_XBE_SHA256,
-                      repair.BASE_DISC_SHA256, repair.BETA80_DISC_SHA256):
+                      repair.OCTOBER17_XBE_SHA256, repair.BASE_DISC_SHA256, repair.BETA80_DISC_SHA256,
+                      repair.OCTOBER17_DISC_SHA256):
             self.assertRegex(value, r"^[0-9a-f]{64}$")
 
     def test_replay_authenticates_the_bytes_on_both_sides_of_the_executable(self):
@@ -90,6 +91,21 @@ class NativeTests(unittest.TestCase):
         self.assertTrue(receipt["scope"]["outside_scope_identical"])
         projected, _ = repair.build(fixed, previous="beta-80")
         self.assertEqual(projected, historical)
+
+
+class October17Tests(unittest.TestCase):
+    def test_original_repair_upgrades_and_requires_its_complete_disc_identity(self):
+        path = Path(os.environ.get("B774_MC2_XBE", ""))
+        if not path.is_file():
+            self.skipTest("B774_MC2_XBE must name the October 17 repaired executable")
+        raw = path.read_bytes()
+        self.assertEqual(repair.sha(raw), repair.OCTOBER17_XBE_SHA256)
+        fixed, receipt = repair.repair(raw)
+        self.assertEqual(repair.sha(fixed), repair.REPAIRED_XBE_SHA256)
+        self.assertTrue(receipt["scope"]["outside_scope_identical"])
+        repair.verify_disc_input(io.BytesIO(), raw, repair.OCTOBER17_DISC_SHA256)
+        with self.assertRaisesRegex(ValueError, "complete input disc"):
+            repair.verify_disc_input(io.BytesIO(), raw, repair.BASE_DISC_SHA256)
 
 
 if __name__ == "__main__":

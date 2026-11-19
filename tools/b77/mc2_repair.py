@@ -37,6 +37,9 @@ from tools.b77.sp1_repair import open_binary, digest_disc, require
 # Projecting that executable back into any accepted revision verifies every other disc byte before writing.
 BASE_DISC_SHA256 = "520429148f57c29a23f56b5f43c5fe04be39728d01a101210aad8336b60581a4"
 BASE_XBE_SHA256 = "1b41ec19aac6377484b9b30ee7a5c5ab220fb93d61aa3c14bafdb70092a9504f"
+# Independently recorded by the October 17 repair at 089be5aaa.
+OCTOBER17_XBE_SHA256 = "0708249cd549e8feebf33ae0724cad6f74488a67babf594ed57053288702c5b5"
+OCTOBER17_DISC_SHA256 = "1fb13c220a2df7240a932274a46c817dc9db1039c5b5189f46b02fe7d1ca2704"
 BETA80_XBE_SHA256 = "4939def556918bb24ebe2d9075b284fac17c53db9fb8791b759ec2c3206b1b8f"
 BETA80_DISC_SHA256 = "9adcb4ef06f0fa7e2c9a9b538dda35ca630ff13c35c3d17a9938260f87803703"
 REPAIRED_XBE_SHA256 = "9f2d7b6b5b5f8327f0ca95446d324af9382767350956f0cb20dbf78f52317610"
@@ -53,7 +56,7 @@ def studio_owner(payload: bytes, code: dict, state: dict, *, previous=False) -> 
 
 def repair(payload: bytes) -> tuple[bytes, dict]:
     digest = sha(payload)
-    if digest not in (BASE_XBE_SHA256, BETA80_XBE_SHA256, REPAIRED_XBE_SHA256):
+    if digest not in (BASE_XBE_SHA256, OCTOBER17_XBE_SHA256, BETA80_XBE_SHA256, REPAIRED_XBE_SHA256):
         raise ValueError(f"unrecognized mc2 executable: {digest}")
     result, receipt = build(payload)
     if sha(result) != REPAIRED_XBE_SHA256:
@@ -138,6 +141,8 @@ def verify_disc_input(stream, raw, before):
     native_hash = sha(raw)
     if native_hash == BASE_XBE_SHA256:
         require(before == BASE_DISC_SHA256, "unknown complete input disc hash")
+    elif native_hash == OCTOBER17_XBE_SHA256:
+        require(before == OCTOBER17_DISC_SHA256, "unknown complete input disc hash")
     elif native_hash == BETA80_XBE_SHA256:
         require(before == BETA80_DISC_SHA256, "unknown complete input disc hash")
     else:
