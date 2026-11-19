@@ -73,13 +73,26 @@ class FranchiseLimitFeasibilityTests(unittest.TestCase):
         self.assertEqual(report_path.read_bytes(), MODULE.canonical_json(self.report))
         self.assertEqual(tsv_path.read_text(), MODULE.matrix_tsv(self.report))
 
+
+class ReportOutputTests(unittest.TestCase):
+    def test_output_creates_a_report_without_private_inputs(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory).resolve() / "reports" / "feasibility.json"
+            MODULE.write_output(path, b"{}\n")
+            self.assertEqual(path.read_bytes(), b"{}\n")
+
     def test_output_refuses_symlink(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             target = root / "target.json"
             target.write_text("do not replace\n")
             link = root / "report.json"
-            link.symlink_to(target)
+            try:
+                link.symlink_to(target)
+            except OSError as exc:
+                if getattr(exc, "winerror", None) == 1314:
+                    self.skipTest("Windows account lacks symbolic-link privilege")
+                raise
             with self.assertRaises(MODULE.FeasibilityError):
                 MODULE.write_output(link, b"{}\n")
             self.assertEqual(target.read_text(), "do not replace\n")
