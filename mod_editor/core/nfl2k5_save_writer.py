@@ -34,6 +34,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from contextlib import ExitStack
+import errno
 import hashlib
 import hmac
 import os
@@ -455,8 +456,8 @@ def _verify_published(files) -> None:
         _require(path.read_bytes() == data, f"The written save file did not read back: {path}")
 
 
-def _make_parents(path: Path, created: list[Path]) -> None:
-    """Create the missing folders above ``path`` and remember them, outermost first, for removal on failure."""
+def _make_parents(path: Path, created: dict[Path, os.stat_result]) -> None:
+    """Remember the identities of the folders created here, outermost first."""
     missing = []
     folder = path.parent
     while not folder.exists():
@@ -464,7 +465,71 @@ def _make_parents(path: Path, created: list[Path]) -> None:
         folder = folder.parent
     for folder in reversed(missing):
         folder.mkdir()
-        created.append(folder)
+        created[folder] = folder.lstat()
+
+
+def _withdraw_save_file(path, expected, captured) -> None:
+    """Move the editor's file out of the way and preserve any replacement at the same name."""
+    current = _output_state(path)
+    if current is None:
+        return
+    _require(current == expected, "the destination changed during verification")
+    os.replace(path, captured)
+    try:
+        same = _output_state(captured) == expected
+    except SaveWriterError:
+        same = False
+    if not same:
+        # A replacement arrived between the check and rename. Give it its name back if free.
+        info = captured.lstat()
+        if stat.S_ISLNK(info.st_mode) or getattr(info, "st_reparse_tag", 0):
+            raise SaveWriterError("a replacement link was retained for recovery")
+        platform_compat.publish_no_replace(captured, path, is_directory=stat.S_ISDIR(info.st_mode))
+        raise SaveWriterError("the destination changed during rollback")
+
+
+def _rollback_save_files(published, written, stages, previous, cause) -> None:
+    """Restore prior files and give exact recovery paths when a name is occupied or a restore fails."""
+    from .image_use import ROLLBACK_NAME
+
+    problems = []
+    # An interruption during rollback must leave captured entries and previous copies available.
+    retained = {stages[path]: stages[path].keep for path in published}
+    for stage in retained:
+        stage.keep = True
+    for index, path in enumerate(reversed(published)):
+        stage = stages[path]
+        original = stage.path / ROLLBACK_NAME
+        backup = original if previous[path] is not None else None
+        captured = stage.path / f"unverified-{index}"
+        try:
+            if backup is None:
+                # Staging recovery retains folders containing "original" after an interruption.
+                original.mkdir(exist_ok=True)
+                captured = original / captured.name
+            _withdraw_save_file(path, written[path], captured)
+            if backup is not None:
+                platform_compat.publish_no_replace(backup, path)
+        except (OSError, SaveWriterError, platform_compat.NoReplacePublishUnavailable) as exc:
+            keep = []
+            for item in (backup, captured):
+                if item is None:
+                    continue
+                try:
+                    item.lstat()
+                except FileNotFoundError:
+                    continue
+                except OSError:
+                    pass  # An unreadable recovery file may still be the only copy.
+                keep.append(item)
+            if keep:
+                retained[stage] = True
+            recovery = ". Recovery files are at " + ", ".join(map(str, keep)) if keep else ""
+            problems.append(f"{path} ({exc}){recovery}")
+    for stage, keep_stage in retained.items():
+        stage.keep = keep_stage
+    if problems:
+        raise SaveWriterError(f"{cause}. The save could not be fully restored. " + "\n".join(problems)) from cause
 
 
 def publish_save_files(files, previous, *, new_root: Path | None = None) -> None:
@@ -473,8 +538,8 @@ def publish_save_files(files, previous, *, new_root: Path | None = None) -> None
     ``files`` maps each output path to its bytes and ``previous`` to the identity it had when the caller checked it
     (None for a new file). When ``new_root`` does not exist yet and holds every output, the whole folder is staged
     beside it and published in one no-replace rename. Otherwise each file is staged on its own volume, an existing
-    output is copied aside first, and a failure restores what was there. Nothing new is left behind on failure, so the
-    same destination can be retried. This is the one transaction for the loose writer and for signed save copies."""
+    output is copied aside first. Readback failures roll back either route. A concurrent edit or unsuccessful restore
+    reports the affected output and any retained copies. The loose writer and signed save copies share this transaction."""
     from .image_use import ROLLBACK_NAME, _publication_lock, studio_staging
 
     targets = tuple(files)
@@ -483,19 +548,22 @@ def publish_save_files(files, previous, *, new_root: Path | None = None) -> None
             locks.enter_context(_publication_lock(target))
         _require(all(_output_state(path) == previous[path] for path in targets),
                  "The save destination changed. Choose a new folder or retry.")
-        created: list[Path] = []
+        created = {}
         if new_root is not None and not os.path.lexists(new_root):
             _require(all(platform_compat.path_is_within(path, new_root) for path in targets),
                      "Every save file must be inside the new folder.")
-            _make_parents(new_root, created)
             try:
+                _make_parents(new_root, created)
                 with studio_staging(new_root.parent, ".2k5-save-") as stage:
                     staged = stage.path / "pair"
                     staged.mkdir()
+                    staged_dirs = {staged: staged.lstat()}
+                    written = {}
                     for path, data in files.items():
                         item = staged / path.relative_to(new_root)
-                        item.parent.mkdir(parents=True, exist_ok=True)
+                        _make_parents(item, staged_dirs)
                         _write_staged_save(item, data)
+                        written[path] = _output_state(item)
                     try:
                         platform_compat.publish_no_replace(staged, new_root, is_directory=True)
                     except platform_compat.NoReplacePublishUnavailable:
@@ -504,61 +572,70 @@ def publish_save_files(files, previous, *, new_root: Path | None = None) -> None
                         # with the same verification and rollback as explicit destinations.
                         pass
                     else:
-                        _verify_published(files)
+                        created.update((new_root / folder.relative_to(staged), state)
+                                       for folder, state in staged_dirs.items())
+                        try:
+                            _verify_published(files)
+                        except BaseException as exc:
+                            _rollback_save_files(targets, written, dict.fromkeys(targets, stage), previous, exc)
+                            raise
                         return
                 new_root.mkdir()
-                created.append(new_root)
-            except BaseException:
-                _remove_empty(created)
+                created[new_root] = new_root.lstat()
+            except BaseException as exc:
+                _remove_empty(created, exc)
                 raise
 
         published = []
         try:
             with ExitStack() as stages:
                 work = {}
+                written = {}
                 for path, data in files.items():
                     _make_parents(path, created)
                     work[path] = stages.enter_context(studio_staging(path.parent, ".2k5-save-"))
-                    _write_staged_save(work[path].path / "new", data)
+                    item = work[path].path / "new"
+                    _write_staged_save(item, data)
+                    written[path] = _output_state(item)
                     if previous[path] is not None:
                         shutil.copy2(path, work[path].path / ROLLBACK_NAME)
                 try:
                     for path in targets:
                         _require(_output_state(path) == previous[path], f"The output changed while editing: {path}")
                         if previous[path] is None:
-                            platform_compat.publish_no_replace(work[path].path / "new", path)
+                            item = work[path].path / "new"
+                            try:
+                                platform_compat.publish_no_replace(item, path)
+                            except OSError:
+                                # On POSIX the hard link can succeed before unlinking the staging name fails.
+                                if platform_compat.paths_alias(item, path):
+                                    published.append(path)
+                                raise
                         else:
                             os.replace(work[path].path / "new", path)
                         published.append(path)
                     _verify_published(files)
-                except BaseException:
-                    kept = []
-                    for path in reversed(published):
-                        try:
-                            if previous[path] is None:
-                                path.unlink()
-                            else:
-                                os.replace(work[path].path / ROLLBACK_NAME, path)
-                        except OSError:
-                            work[path].keep = True
-                            kept.append(str(work[path].path))
-                    published.clear()
-                    if kept:
-                        raise SaveWriterError("The save could not be restored. Recovery files are in " + ", ".join(kept))
+                except BaseException as exc:
+                    _rollback_save_files(published, written, work, previous, exc)
                     raise
-        except BaseException:
-            if not published:
-                # A failed attempt leaves no new folder in the way of a retry.
-                _remove_empty(created)
+        except BaseException as exc:
+            _remove_empty(created, exc)
             raise
 
 
-def _remove_empty(folders: list[Path]) -> None:
-    for folder in reversed(folders):
+def _remove_empty(folders: dict[Path, os.stat_result], cause) -> None:
+    problems = []
+    for folder, state in reversed(folders.items()):
         try:
-            folder.rmdir()
-        except OSError:
+            if os.path.samestat(folder.lstat(), state):
+                folder.rmdir()
+        except FileNotFoundError:
             pass
+        except OSError as exc:
+            if exc.errno not in (errno.ENOTEMPTY, errno.EEXIST):
+                problems.append(f"{folder} ({exc})")
+    if problems:
+        raise SaveWriterError(f"{cause}. Could not clean up the save folders. " + "\n".join(problems)) from cause
 
 
 def _publish_save_pair(files, previous):

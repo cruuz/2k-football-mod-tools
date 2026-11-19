@@ -205,6 +205,28 @@ class SignedSaveCopyIsStaged(_App):
             container.write(second, container.savegame)
         self.assertEqual(tree(second), {"53450030/0001/EXTRA": hashlib.sha256(b"mine").hexdigest()})
 
+    def test_failed_final_readback_removes_only_the_published_members_of_a_nested_copy(self) -> None:
+        from mod_editor.core import nfl2k5_save_writer as writer
+        source, container = self.source()
+        before = tree(source)
+        output = self.root / "copy"
+        foreign = output / "53450030" / "0001" / "other game.txt"
+
+        def fail_readback(files):
+            self.assertTrue(all(path.read_bytes() == data for path, data in files.items()))
+            foreign.write_bytes(b"another save")
+            raise OSError("a drive read failed")
+
+        with patch.object(writer, "_verify_published", side_effect=fail_readback), \
+                self.assertRaisesRegex(OSError, "a drive read failed"):
+            container.write(output, container.savegame)
+        self.assertEqual(tree(output), {foreign.relative_to(output).as_posix(): hashlib.sha256(b"another save").hexdigest()})
+        self.assertTrue(container.write(output, container.savegame)["readback_verified"])
+        expected = container.with_savegame(container.savegame)
+        expected[foreign.relative_to(output).as_posix()] = b"another save"
+        self.assertEqual(rr.SaveContainer.load(output).members, expected)
+        self.assertEqual(tree(source), before)
+
     def test_franchise_page_signed_copy_retries_the_same_name(self) -> None:
         from mod_editor.gui.roster_editor_panel_qt import RosterEditorPanel
         from mod_editor.core import nfl2k5_save_writer as writer

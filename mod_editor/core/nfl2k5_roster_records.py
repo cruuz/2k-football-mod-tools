@@ -3525,9 +3525,9 @@ class SaveContainer:
     def write(self, target: Path | str, payload: bytes, *, overwrite: bool = False) -> dict[str, Any]:
         """Write a re-signed copy of this container.  Never writes over the source.
 
-        The copy is staged, verified and published by the loose save writer's transaction
-        (``nfl2k5_save_writer.publish_save_files``): a new folder appears whole or not at all, a failure leaves nothing
-        behind (so the same destination can be retried), and an output folder inside the source save is refused."""
+        The loose save writer stages and verifies every member. A drive with atomic folder renames receives a new
+        folder in one step. Other destinations use per-file publication with rollback and report any retained
+        recovery paths. An output folder inside the source save is refused."""
 
         from . import nfl2k5_save_writer as writer
         from . import platform_compat
