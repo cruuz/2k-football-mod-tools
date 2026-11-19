@@ -1,13 +1,15 @@
 """beta 81 review M1: the 64 MB edition's save messages for a franchise saved by the 128 MB edition.
 
-Static: two in-place strings, each inside its own slot, the same format arguments in the same order, every reference
-checked. Plans: the 64 MB profile turns it on; every preset (the standard edition) leaves it off, and the build step
-then leaves the executable byte-identical. Native (Unicorn, pinned USA retail executable): the game's own formatter
-0x4A400 renders both messages with a save and device name. Optional real-disc executables (NFL2K5_V010_64_XBE,
-NFL2K5_V010_128_XBE) repeat the apply and identity checks on the shipped editions.
+The delete prompt formats the save and device names. The load error uses the save name and the controller button
+token. Static checks cover both string slots, their references and the native reservation inventory. The 64 MB
+profile enables the messages. The standard build step preserves the entire executable. The game's own formatter
+at 0x4A400 renders both messages in the private retail Unicorn test. Optional NFL2K5_V010_64_XBE and
+NFL2K5_V010_128_XBE inputs check the writer's complete output on the archived editions.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 import re
 import struct
@@ -31,6 +33,28 @@ def _formats(text: str) -> list[str]:
 
 
 class StaticTests(unittest.TestCase):
+    def test_cave_inventory_covers_complete_strings_and_their_guarded_references(self):
+        manifest_path = Path(os.environ.get("NFL2K5_CAVE_MANIFEST", ROOT / "data/nfl2k5_cave_reservations.json"))
+        inventory = json.loads(manifest_path.read_bytes())
+        self.assertIn(notes.OWNER, inventory["extra_owners"])
+        calls = [step for step in inventory["steps"] if step["owner"] == notes.OWNER]
+        self.assertTrue(any(call["function"] == "apply" and call["changed_bytes"] > 0 for call in calls))
+        owned = [row for row in inventory["spans"] if row["owner"] == notes.OWNER]
+        expected = {(va, va + len(after), "declared edit: " + label) for label, va, _, after in notes.SITES}
+        refs = {(va, va + len(code), "guarded string reference: " + label) for label, va, code in notes.DEPENDENCIES}
+        declared = {(int(row["start"], 0), int(row["end"], 0), row["basis"]) for row in owned
+                    if row["basis"] != "observed byte diff"}
+        self.assertEqual(declared, expected | refs)
+        observed = {address for row in owned if row["basis"] == "observed byte diff"
+                    for address in range(int(row["start"], 0), int(row["end"], 0))}
+        for label, start, before, after in notes.SITES:
+            changes = {start + i for i, pair in enumerate(zip(before, after)) if pair[0] != pair[1]}
+            with self.subTest(slot=label):
+                self.assertEqual(observed.intersection(range(start, start + len(after))), changes)
+        for start, end, label in refs:
+            with self.subTest(reference=label):
+                self.assertTrue(observed.isdisjoint(range(start, end)))
+
     def test_texts_keep_the_arguments_and_fit_their_slots(self):
         expected = {"delete confirmation text": (["%s", "%s"], ["%s", "%s"]),
                     "load failure text": (["%s", "%s", "|CROSS|"], ["%s", "|CROSS|"])}   # the device is not named
@@ -72,11 +96,16 @@ class ApplyTests(unittest.TestCase):
         header = [(s.header_offset + 36, s.header_offset + 56) for s in rdata._sections(self.retail)]
         self.assertTrue(all(any(lo <= i < hi for lo, hi in slots + header) for i in changed))
         moved = bytearray(self.retail)
-        label, va, raw = notes.DEPENDENCIES[0]
-        moved[rdata.offset_of(self.retail, va) + 1] ^= 0x10
-        self.assertEqual(notes.status(bytes(moved)), "foreign")
-        with self.assertRaises(ValueError):
-            notes.apply(bytes(moved))
+        for label, va, raw in notes.DEPENDENCIES:
+            start = rdata.offset_of(self.retail, va)
+            for index in range(len(raw)):
+                with self.subTest(reference=label, byte=index):
+                    moved[start + index] ^= 0x10
+                    foreign = bytes(moved)
+                    moved[start + index] ^= 0x10
+                    self.assertEqual(notes.status(foreign), "foreign")
+                    with self.assertRaises(ValueError):
+                        notes.apply(foreign)
 
     def test_the_build_step_leaves_the_standard_edition_byte_identical(self):
         from mod_editor.core import mod_build
@@ -133,7 +162,8 @@ class ApplyTests(unittest.TestCase):
 class ShippedEditionTests(unittest.TestCase):
     """The shipped v0.10 executables (private; set NFL2K5_V010_64_XBE and NFL2K5_V010_128_XBE)."""
 
-    def test_both_shipped_editions_take_the_text_and_only_the_64_mb_plan_applies_it(self):
+    def test_text_writer_changes_only_the_two_strings_and_their_digest_on_each_shipped_edition(self):
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
         found = {k: Path(v) for k, v in V010.items() if v and Path(v).is_file()}
         if not found:
             self.skipTest("shipped v0.10 executables not configured")
@@ -143,8 +173,18 @@ class ShippedEditionTests(unittest.TestCase):
                 self.assertIn(notes.status(payload), ("retail", "applied"))
                 patched = notes.apply(payload)[0]
                 self.assertEqual(notes.status(patched), "applied")
-                diff = sum(a != b for a, b in zip(payload, patched))
-                self.assertLessEqual(diff, sum(len(s[2]) for s in notes.SITES) + 20)
+                image = XbeImage(payload)
+                section = image.section(notes.DELETE_VA)
+                self.assertIsNotNone(section)
+                expected = bytearray(payload)
+                for _, va, _, text in notes.SITES:
+                    self.assertEqual(image.section(va, len(text)), section)
+                    offset = image.offset(va, len(text))
+                    expected[offset:offset + len(text)] = text
+                section_bytes = expected[section.raw:section.raw + section.raw_size]
+                digest = hashlib.sha1(struct.pack("<I", section.raw_size) + section_bytes, usedforsecurity=False).digest()
+                expected[section.header + 36:section.header + 56] = digest
+                self.assertTrue(patched == expected, "unexpected bytes outside the two strings and their section digest")
 
 
 if __name__ == "__main__":
