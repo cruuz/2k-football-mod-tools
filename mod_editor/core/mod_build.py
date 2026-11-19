@@ -4134,9 +4134,10 @@ def _check_playbook_scoring(target: Path, progress: Callable[..., Any]) -> dict[
     # The books are scored in worker processes and consumed in book order (nfl2k5_play_scoring.require_safe_many).
     rows = scoring.require_safe_many(
         books, payload, progress=lambda index, done, total: progress(
-            f"Checking native play scoring: book {index}", done, 37))
+            f"Checking native play scoring: book {index}", done, total))
     if not rows:
         raise RuntimeError("Native PLAY scoring found no books in the build")
+    progress("Native play scoring complete", len(rows), len(books))
     return {"status": "applied", "schema": scoring.SCHEMA, "books": len(rows), "faults": 0, "results": rows}
 
 
