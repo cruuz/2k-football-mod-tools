@@ -9,6 +9,7 @@ touched; a retail-XBE smoke test runs only when the extracted copy exists.
 from __future__ import annotations
 
 import hashlib
+import os
 from pathlib import Path
 import struct
 import sys
@@ -31,7 +32,7 @@ JUMP_TABLE = CODE + 0x300
 JERSEY_HANDLER = CODE + 0x400
 PANTS_HANDLER = CODE + 0x410
 SOCK_HANDLER = CODE + 0x420
-RETAIL_XBE = Path("/tmp/opencode/espn26/default.xbe")
+RETAIL_XBE = Path(os.environ.get("NFL2K5_RETAIL_XBE", "/tmp/opencode/espn26/default.xbe"))
 
 
 def _section_digest(payload: bytes, raw: int, raw_size: int) -> bytes:
