@@ -172,7 +172,7 @@
     "source_report": {
       "path": "reports/gameplay_tuning/nfl_franchise_limit_feasibility.json",
       "schema": "nfl2k5_franchise_limit_feasibility/v1",
-      "sha256": "a5d8e4ad78b0baf89063796df1250cbb774b4b058a9dba008fc3682a838b8af9",
+      "sha256": "3d891bbc3fe5ad597f01da175271457a4ab99f6f9a7bc844694a0d6e8a1fbb25",
       "size": 19555
     },
     "target_count": 5,
