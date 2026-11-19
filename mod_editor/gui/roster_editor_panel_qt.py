@@ -1076,8 +1076,49 @@ class PlayerDataRestoreDialog(QDialog):
         return [name for name, box in self.groups.items() if box.isChecked()]
 
 
+# ------------------------------------------------------------------------------------------- b81 dialogs
+class ScrollBodyDialog(QDialog):
+    """A dialog whose content scrolls when large text makes it taller than the screen, with its buttons always shown
+    below. Subclasses build into ``self.body_layout`` and pass their button box to ``set_buttons``."""
+
+    TEXT_WIDTH = 84                       # characters
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self._outer = QVBoxLayout(self)
+        self._scroll = QScrollArea()
+        self._scroll.setWidgetResizable(True)
+        self._scroll.setFrameShape(QFrame.NoFrame)
+        self._body = QWidget()
+        self.body_layout = QVBoxLayout(self._body)
+        self._scroll.setWidget(self._body)
+        self._outer.addWidget(self._scroll, 1)
+        self._buttons: QWidget | None = None
+
+    def set_buttons(self, buttons: QWidget) -> None:
+        self._buttons = buttons
+        self._outer.addWidget(buttons)
+
+    def showEvent(self, event) -> None:  # noqa: N802 - Qt naming
+        super().showEvent(event)
+        metrics = self.fontMetrics()
+        screen = _available_geometry(self)
+        width = metrics.averageCharWidth() * self.TEXT_WIDTH
+        if screen is not None:
+            width = min(width, screen.width() - 32)
+        margins = self._outer.contentsMargins()
+        inner = width - margins.left() - margins.right() - self._scroll.verticalScrollBar().sizeHint().width()
+        body = self.body_layout
+        height = body.totalHeightForWidth(inner) if body.hasHeightForWidth() else body.totalSizeHint().height()
+        height += (self._buttons.sizeHint().height() if self._buttons is not None else 0)
+        height += 2 * self._outer.spacing() + margins.top() + margins.bottom()
+        if screen is not None:
+            height = min(height, screen.height() - 48)
+        self.resize(width, height)
+
+
 # ------------------------------------------------------------------------------------------- b81 R3
-class SpecialTeamsDialog(QDialog):
+class SpecialTeamsDialog(ScrollBodyDialog):
     """Finn's Special Teams tab for one club, with the game's own rules (Codex's native witness):
     returners and holder are team bytes (a returner's lock claim moves with him), kicker, punter and long snapper are
     depth chart rows."""
@@ -1101,14 +1142,7 @@ class SpecialTeamsDialog(QDialog):
         assert document is not None
         team = document.teams[team_index]
         self.setWindowTitle(f"Special teams: {team.display}")
-        outer = QVBoxLayout(self)
-        self._scroll = QScrollArea()
-        self._scroll.setWidgetResizable(True)
-        self._scroll.setFrameShape(QFrame.NoFrame)
-        self._body = QWidget()
-        layout = QVBoxLayout(self._body)
-        self._scroll.setWidget(self._body)
-        outer.addWidget(self._scroll, 1)
+        layout = self.body_layout
         intro = QLabel("Pick each role from this club's active players. Kicker, punter and long snapper are chosen by "
                        "the depth chart, so those three change depth rows. Nothing changes until you press Apply; "
                        "Undo takes it all back.")
@@ -1160,31 +1194,121 @@ class SpecialTeamsDialog(QDialog):
         buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Close)
         buttons.button(QDialogButtonBox.Apply).clicked.connect(self.apply)
         buttons.rejected.connect(self.reject)
-        outer.addWidget(buttons)
-        self._buttons = buttons
+        self.set_buttons(buttons)
 
     def choices(self) -> dict[str, int | None]:
         return {role: combo.currentData() for role, combo in self.combos.items()}
 
-    def showEvent(self, event) -> None:  # noqa: N802 - Qt naming
-        super().showEvent(event)
-        # the roles scroll when large text makes them taller than the screen; Apply and Close always show
-        metrics = self.fontMetrics()
-        screen = _available_geometry(self)
-        width = metrics.averageCharWidth() * 84
-        if screen is not None:
-            width = min(width, screen.width() - 32)
-        inner = width - 2 * self.layout().contentsMargins().left() - self._scroll.verticalScrollBar().sizeHint().width()
-        body = self._body.layout()
-        height = (body.totalHeightForWidth(inner) if body.hasHeightForWidth() else body.totalSizeHint().height())
-        height += self._buttons.sizeHint().height() + 3 * self.layout().spacing() + 2 * self.layout().contentsMargins().top()
-        if screen is not None:
-            height = min(height, screen.height() - 48)
-        self.resize(width, height)
-
     def apply(self) -> bool:
         ok, message = self._panel.apply_special_teams(self.team_index, self.choices())
         self.status.setText(message)
+        return ok
+
+
+# ------------------------------------------------------------------------------------------- b81 R13
+def stadium_label(entry: Mapping[str, Any]) -> str:
+    """``s25 Levi's Stadium · home of SF``: the asset number the game loads, its SOFTDRINK 2026 venue name."""
+
+    from mod_editor.core.nfl2k5_memory_budget import VENUES
+    code = f"s{int(entry['id']):02d}"
+    name = VENUES.get(code, (f"stadium {int(entry['id'])}",))[0]
+    home = f" · home of {', '.join(entry['home_of'])}" if entry.get("home_of") else ""
+    return f"{code} {name}{home}"
+
+
+class TeamOptionsDialog(ScrollBodyDialog):
+    """Finn's Options tab for one club in an Xbox save: stadium, default jersey, playbook, team play-by-play and the
+    defensive front, as the game reads them (Codex's native witness, TEAM_AND_HISTORY.md). The logo is shown, not
+    edited: it also switches the club's whole uniform and helmet set to the donor club's."""
+
+    def __init__(self, panel: "RosterEditorPanel", team_index: int) -> None:
+        super().__init__(panel)
+        self._panel = panel
+        self.team_index = team_index
+        save = panel.franchise_panel.save
+        assert save is not None
+        document = panel.document
+        assert document is not None
+        team = document.teams[team_index]
+        self.setWindowTitle(f"Team settings: {team.display}")
+        options = save.team_options(team_index)
+        layout = self.body_layout
+        self.TEXT_WIDTH = 88
+        intro = QLabel("These settings live in the save's club record. Each was checked in the game after a signed "
+                       "save loaded (stadium, uniforms on the menus, playbook file, announcer id, depth chart front). "
+                       "Choose from what the save already holds. Nothing changes until Apply; one Undo takes it back.")
+        intro.setWordWrap(True)
+        layout.addWidget(intro)
+        grid = QGridLayout()
+        self.combos: dict[str, QComboBox] = {}
+
+        def row(key: str, label: str, items: Sequence[tuple[str, int]], current: int | None, note: str) -> None:
+            combo = QComboBox()
+            combo.setAccessibleName(label)
+            for text, value in items:
+                combo.addItem(text, value)
+            combo.setCurrentIndex(max(0, combo.findData(current)))
+            combo.setToolTip(note)
+            caption = QLabel(label)
+            caption.setToolTip(note)
+            at = grid.rowCount()
+            grid.addWidget(caption, at, 0)
+            grid.addWidget(combo, at, 1)
+            hint = QLabel(note)
+            hint.setWordWrap(True)
+            hint.setObjectName("throwMuted")
+            grid.addWidget(hint, at + 1, 1)
+            self.combos[key] = combo
+
+        stadium = options["stadium"]
+        row("stadium", "Stadium", [(stadium_label(entry), entry["index"]) for entry in save.stadium_choices()],
+            stadium["index"] if stadium else None,
+            "Home games are played here. Names are the SOFTDRINK 2026 venues; a retail disc shows its own stadium "
+            "for the same number.")
+        row("jersey", "Default jersey", [(f"Style {style}" + (" (home)" if style == 0 else ""), style)
+                                          for style in options["jersey_styles"]], options["jersey"],
+            "The style the menus show for this club. Only the club's own styles are offered.")
+        book = options["playbook"]
+        row("playbook", "Playbook", [(f"{entry['name']} ({entry['key']})"
+                                      + (f" · used by {', '.join(entry['used_by'])}" if entry["used_by"] else ""),
+                                      entry["index"]) for entry in save.playbook_choices()],
+            book["index"] if book else None,
+            "The club points at one of the save's playbooks; the playbook itself is not changed, so clubs sharing "
+            "it keep it.")
+        row("pbp", "Team play-by-play", [(f"Id {entry['id']} · as {', '.join(entry['clubs'])}", entry["id"])
+                                         for entry in save.pbp_choices()], options["pbp"],
+            "The announcer's name call for this club, taken from another club. Which line plays is not yet heard in "
+            "the game.")
+        row("front", "Defensive front", [(name, value) for value, name in enumerate(save.FRONTS)],
+            options["front"] if options["front"] in (0, 1, 2) else None,
+            "Which defensive depth chart pages the game shows (4-3, 3-4 or both). Play calling is not measured.")
+        grid.setColumnStretch(1, 1)
+        layout.addLayout(grid)
+        self.logo_label = QLabel(f"Logo: {options['logo'] or '(none)'} (shown only). Changing it also switches the "
+                                 "club's whole uniform and helmet set to the donor club's, so it is not offered here; "
+                                 "use the Studio's team identity and uniform tools for a disc.")
+        self.logo_label.setWordWrap(True)
+        layout.addWidget(self.logo_label)
+        self.status = QLabel("")
+        self.status.setWordWrap(True)
+        layout.addWidget(self.status)
+        buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Close)
+        buttons.button(QDialogButtonBox.Apply).clicked.connect(self.apply)
+        buttons.rejected.connect(self.reject)
+        self.set_buttons(buttons)
+        self._initial = self.choices()
+
+    def choices(self) -> dict[str, int | None]:
+        return {key: combo.currentData() for key, combo in self.combos.items()}
+
+    def apply(self) -> bool:
+        changes = {key: value for key, value in self.choices().items()
+                   if value is not None and value != self._initial.get(key)}
+        ok, message = self._panel.apply_team_options(self.team_index, changes, labels={
+            key: self.combos[key].currentText() for key in changes})
+        self.status.setText(message)
+        if ok:
+            self._initial = self.choices()
         return ok
 
 
@@ -2136,6 +2260,11 @@ class RosterEditorPanel(QWidget):
                                              "snapper for the club shown.")
         self.special_teams_button.clicked.connect(self.open_special_teams)
         order.addWidget(self.special_teams_button)
+        self.team_options_button = QPushButton("Team settings…")
+        self.team_options_button.setToolTip("Finn's Options tab: stadium, default jersey, playbook, team play-by-play "
+                                            "and defensive front of the club shown, in an Xbox save.")
+        self.team_options_button.clicked.connect(self.open_team_options)
+        order.addWidget(self.team_options_button)
         self.unlock_button = QPushButton("Unlock")
         self.unlock_button.clicked.connect(self.unlock_selected)
         order.addWidget(self.unlock_button)
@@ -3142,6 +3271,7 @@ class RosterEditorPanel(QWidget):
         # b81 R5: a roster save's coaches are edited on the Coaches page beside Roster; the build staff plan (also
         # called Coaches) is for discs, so it steps aside instead of showing a second, disabled Coaches tab
         self.pages.setTabVisible(self._coaches_index, not self.franchise_panel.coaches_only)
+        self._refresh_actions()                       # the club settings and coaches need the loaded franchise view
         return True
 
     @staticmethod
@@ -3648,6 +3778,46 @@ class RosterEditorPanel(QWidget):
             show_operation_error(self, "write the web page", plain_error(exc))
             return
         self._set_status(f"Wrote {chosen} ({len(self._rows)} players).")
+
+    # ------------------------------------------------------------------ team settings (b81 R13)
+    def team_options_reason(self) -> str:
+        kind, index = self._group
+        if self.document is None or kind != "team" or not 0 <= index < len(self.document.teams) \
+                or not self.document.teams[index].is_club:
+            return "Open a club to change its team settings."
+        if self._source_kind != "save":
+            return ("Team settings are edited in an Xbox save. On a disc, stadiums and uniforms are set by the Studio's "
+                    "Build steps.")
+        if self.franchise_panel.save is None:
+            return "This save has no club settings the Studio can read."
+        return ""
+
+    def open_team_options(self) -> TeamOptionsDialog | None:
+        reason = self.team_options_reason()
+        if reason:
+            self._set_status(reason)
+            return None
+        dialog = TeamOptionsDialog(self, self._group[1])
+        dialog.exec_()
+        return dialog
+
+    def apply_team_options(self, team_index: int, changes: Mapping[str, int],
+                           *, labels: Mapping[str, str] | None = None) -> tuple[bool, str]:
+        """One journal edit (one undo) for any number of a club's settings, through the franchise page's journal."""
+
+        if not changes:
+            return False, "Nothing to change."
+        from mod_editor.gui.franchise_panel_qt import FranchiseEdit
+        team = self.document.teams[team_index] if self.document is not None else None
+        words = {"stadium": "stadium", "jersey": "default jersey", "playbook": "playbook", "pbp": "team play-by-play",
+                 "front": "defensive front"}
+        detail = "; ".join(f"{words.get(key, key)} {(labels or {}).get(key, value)}" for key, value in changes.items())
+        label = f"{team.abbreviation if team else team_index} settings: {detail}"
+        ok = self.franchise_panel.push(FranchiseEdit("team_option", label, {"team": team_index,
+                                                                           "changes": dict(changes)}))
+        message = label if ok else (self.franchise_panel.last_error or "Refused.")
+        self._set_status(message)
+        return ok, message
 
     # ------------------------------------------------------------------ special teams (b81 R3)
     def open_special_teams(self) -> SpecialTeamsDialog | None:
@@ -5771,6 +5941,10 @@ class RosterEditorPanel(QWidget):
         self.special_teams_button.setEnabled(bool(loaded and kind == "team" and self.document is not None
                                                   and 0 <= index < len(self.document.teams)
                                                   and self.document.teams[index].is_club))
+        team_reason = self.team_options_reason() if loaded else "Load a roster first."
+        self.team_options_button.setEnabled(not team_reason)
+        self.team_options_button.setToolTip(team_reason or "Finn's Options tab: stadium, default jersey, playbook, "
+                                                          "team play-by-play and defensive front of the club shown.")
         arrow_tip = reason or ("Move him up or down his position's depth chart: the stored depth rank the game's depth "
                                "chart and starters follow. One undo.")
         self.up_button.setToolTip(arrow_tip)

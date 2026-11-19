@@ -989,6 +989,113 @@ class FranchiseSave:
         except storage.RosterStorageError as exc:
             raise FranchiseSaveError(str(exc)) from exc
 
+    # ------------------------------------------------------------------ team settings (b81 R13, Finn's Options tab)
+    # Codex's native witness (finn-facts TEAM_AND_HISTORY.md): six team settings survived signed roster and franchise
+    # cold loads. Offsets are inside one 500-byte team record; pointers are field-relative (+1), 0 = none.
+    TEAM_PLAYBOOK, TEAM_STADIUM, TEAM_FRONT, TEAM_PBP, TEAM_UNIFORM_PAIRS, TEAM_JERSEY, TEAM_LOGO = (
+        0x110, 0x114, 0x150, 0x154, 0x156, 0x192, 0x10C)
+    FRONTS = ("4-3", "3-4", "Both")
+
+    def _team_field(self, team: int, rel: int) -> int:
+        _require(0 <= team < self.league_team_count, f"team {team} is not one of the league's clubs")
+        return self.team_offset(team) + rel
+
+    def _point(self, field: int, target: int) -> None:
+        struct.pack_into("<i", self.buffer, field, target - field + 1)
+
+    def stadium_choices(self) -> list[dict[str, Any]]:
+        """Every stadium record (table at root+0x14, 128 bytes each) with its asset id (+0x7C) and the clubs using it."""
+
+        from . import nfl2k5_roster_storage as storage
+        try:
+            stadiums = storage.read_stadiums(self.buffer, root=self.arena_root, end=self.arena_end)
+        except storage.RosterStorageError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
+        users: dict[int, list[str]] = {}
+        for team in range(self.league_team_count):
+            pointer = self.rel(self.team_offset(team) + self.TEAM_STADIUM)
+            if pointer is not None:
+                users.setdefault(pointer, []).append(self.team_abbreviation(team))
+        return [{"index": s.index, "offset": s.offset, "id": s.asset_id, "home_of": users.get(s.offset, [])}
+                for s in stadiums]
+
+    def playbook_choices(self) -> list[dict[str, Any]]:
+        """Every playbook row (root+0x4C, count root+0x48): its display name and resource key."""
+
+        count = self.u32(self.arena_root + 0x48)
+        table = self.rel(self.arena_root + 0x4C)
+        if table is None or not count:
+            return []
+        _require(count <= 256 and table + count * 8 <= self.arena_end, "the playbook table is outside the arena")
+        users: dict[int, list[str]] = {}
+        for team in range(self.league_team_count):
+            pointer = self.rel(self.team_offset(team) + self.TEAM_PLAYBOOK)
+            if pointer is not None:
+                users.setdefault(pointer, []).append(self.team_abbreviation(team))
+        return [{"index": i, "offset": table + 8 * i, "name": self.wstr(table + 8 * i),
+                 "key": self.wstr(table + 8 * i + 4), "used_by": users.get(table + 8 * i, [])} for i in range(count)]
+
+    def pbp_choices(self) -> list[dict[str, Any]]:
+        """The team announcer ids the league's own clubs carry (a free id makes the game fall back to 99)."""
+
+        seen: dict[int, list[str]] = {}
+        for team in range(self.league_team_count):
+            value = self.u16(self.team_offset(team) + self.TEAM_PBP)
+            seen.setdefault(value, []).append(self.team_abbreviation(team))
+        return [{"id": value, "clubs": clubs} for value, clubs in sorted(seen.items())]
+
+    def jersey_styles(self, team: int) -> list[int]:
+        """Selectable default jersey styles: 0, and every style 1-14 whose u16 pair at +0x156 + 4*style is set (the
+        game's check 0xE2A90)."""
+
+        base = self._team_field(team, self.TEAM_UNIFORM_PAIRS)
+        return [0] + [style for style in range(1, 15) if any(struct.unpack_from("<HH", self.buffer, base + 4 * style))]
+
+    def team_options(self, team: int) -> dict[str, Any]:
+        record = self.team_offset(team)
+        stadium = self.rel(record + self.TEAM_STADIUM)
+        playbook = self.rel(record + self.TEAM_PLAYBOOK)
+        stadiums = {s["offset"]: s for s in self.stadium_choices()}
+        books = {b["offset"]: b for b in self.playbook_choices()}
+        logo = self.rel(record + self.TEAM_LOGO)
+        return {"stadium": stadiums.get(stadium), "playbook": books.get(playbook),
+                "jersey": self.u8(record + self.TEAM_JERSEY), "jersey_styles": self.jersey_styles(team),
+                "pbp": self.u16(record + self.TEAM_PBP), "front": self.u32(record + self.TEAM_FRONT),
+                "logo": self.wstr(record + self.TEAM_LOGO) if logo is not None else ""}
+
+    def set_team_option(self, team: int, option: str, value: int) -> None:
+        """Stadium (a stadium record index), default jersey (a style), playbook (a playbook row index), team play-by-play
+        (an id another club carries) or defensive front (0 4-3, 1 3-4, 2 Both). The logo is not offered: it also
+        switches the club's whole kit family to the donor's (Codex's witness), which a SOFTDRINK disc builds per club."""
+
+        _require(isinstance(value, int), f"{option}: {value!r} is not a whole number")
+        record = self._team_field(team, 0)
+        if option == "stadium":
+            choices = self.stadium_choices()
+            _require(0 <= value < len(choices), f"stadium {value} is not one of the {len(choices)} stadium records")
+            self._point(record + self.TEAM_STADIUM, choices[value]["offset"])
+        elif option == "playbook":
+            choices = self.playbook_choices()
+            _require(0 <= value < len(choices), f"playbook {value} is not one of the {len(choices)} playbook rows")
+            self._point(record + self.TEAM_PLAYBOOK, choices[value]["offset"])
+        elif option == "jersey":
+            styles = self.jersey_styles(team)
+            _require(value in styles, f"style {value} is not one of this club's styles ({', '.join(map(str, styles))})")
+            self.buffer[record + self.TEAM_JERSEY] = value
+        elif option == "pbp":
+            ids = [c["id"] for c in self.pbp_choices()]
+            _require(value in ids, f"announcer id {value} is not one the league's clubs carry")
+            struct.pack_into("<H", self.buffer, record + self.TEAM_PBP, value)
+        elif option == "front":
+            _require(value in (0, 1, 2), "the defensive front is 0 (4-3), 1 (3-4) or 2 (Both)")
+            _require(self.u32(record + self.TEAM_FRONT) in (0, 1, 2), "the stored front is not 0, 1 or 2; left alone")
+            struct.pack_into("<I", self.buffer, record + self.TEAM_FRONT, value)
+        elif option == "logo":
+            raise FranchiseSaveError("the logo also changes the club's whole uniform and helmet set to the donor club's; "
+                                     "it is shown, not edited")
+        else:
+            raise FranchiseSaveError(f"unknown team setting {option!r}")
+
     def team_salaries(self) -> list[int]:
         return [self.team_salary(team) for team in range(self.league_team_count)]
 

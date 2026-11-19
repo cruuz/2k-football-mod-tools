@@ -157,6 +157,10 @@ class FranchiseEdit:
             save.remove_game(int(a["row"]), int(a["slot"]), allow_played=bool(a.get("allow_played", False)))
         elif self.kind == "week_clear":
             save.clear_week(int(a["row"]), allow_played=bool(a.get("allow_played", False)))
+        elif self.kind == "team_option":         # b81 R13: Finn's Options tab, one or several settings of one club
+            changes = dict(a["changes"]) if "changes" in a else {str(a["option"]): a["value"]}
+            for option, value in changes.items():
+                save.set_team_option(int(a["team"]), str(option), int(value))
         elif self.kind == "coach":
             save.set_coach_field(int(a["coach"]), str(a["name"]), int(a["value"]))
         elif self.kind == "coach_swap":

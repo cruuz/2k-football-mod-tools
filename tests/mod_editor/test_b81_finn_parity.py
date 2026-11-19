@@ -1465,5 +1465,89 @@ class FranchiseEditSpeedTests(unittest.TestCase):
             application.processEvents()
 
 
+# --------------------------------------------------------------------------------------------- wave 2: R13 team settings
+CODEX_TEAM_OPTIONS_SIGNED = Path(os.environ.get(
+    "NFL2K5_FINN_TEAM_OPTIONS_SIGNED",
+    "/media/noah/Storage/2K5-project/beta81/finn-facts/evidence/team-options-signed-roster-signed/SAVEGAME.DAT"))
+
+
+@unittest.skipUnless(SOFTDRINK_ROSTER_SAVE.is_file(), f"SOFTDRINK roster save absent: {SOFTDRINK_ROSTER_SAVE}")
+class TeamSettingsSoftdrinkTests(unittest.TestCase):
+    CHANGES = {"stadium": 5, "playbook": 1, "jersey": 1, "pbp": 5, "front": 1}   # SF takes Chicago's, as in Codex's arm
+
+    def save(self):
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        return fs.FranchiseSave.roster_save(rr.SaveContainer.load(SOFTDRINK_ROSTER_SAVE).savegame)
+
+    def test_the_49ers_settings_read_as_the_game_reads_them(self) -> None:
+        options = self.save().team_options(0)
+        self.assertEqual((options["stadium"]["id"], options["playbook"]["key"], options["jersey"], options["pbp"],
+                          options["front"], options["logo"]), (25, "SF", 0, 25, 0, "25"))
+        self.assertEqual(options["jersey_styles"], list(range(8)))
+
+    def test_the_studio_writes_the_bytes_of_codexs_game_accepted_signed_copy(self) -> None:
+        save = self.save()
+        source = save.to_bytes()
+        for option, value in self.CHANGES.items():
+            save.set_team_option(0, option, value)
+        changed = rr.changed_ranges(source, save.to_bytes())
+        team = save.team_offset(0)
+        self.assertTrue(all(team <= start and end <= team + rr.TEAM_SIZE for start, end in changed))
+        if not CODEX_TEAM_OPTIONS_SIGNED.is_file():
+            self.skipTest(f"Codex's signed candidate absent: {CODEX_TEAM_OPTIONS_SIGNED}")
+        codex = CODEX_TEAM_OPTIONS_SIGNED.read_bytes()
+        for start, end in changed:     # his candidate also changed the logo; every byte the Studio wrote matches his
+            self.assertEqual(save.to_bytes()[start:end], codex[start:end], hex(start))
+
+    def test_refusals_and_the_logo(self) -> None:
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        save = self.save()
+        before = save.to_bytes()
+        for option, value, words in (("jersey", 9, "not one of this club's styles"),
+                                     ("pbp", 777, "not one the league's clubs carry"),
+                                     ("front", 3, "4-3"), ("stadium", 999, "stadium records"),
+                                     ("logo", 5, "uniform and helmet set")):
+            with self.subTest(option=option):
+                with self.assertRaisesRegex(fs.FranchiseSaveError, words):
+                    save.set_team_option(0, option, value)
+        self.assertEqual(save.to_bytes(), before)
+
+    def test_the_dialog_applies_as_one_undo_and_the_copy_carries_it(self) -> None:
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        from mod_editor.gui.roster_editor_panel_qt import TeamOptionsDialog
+        application = _app()
+        panel = RosterEditorPanel()
+        try:
+            self.assertTrue(panel.load_save(SOFTDRINK_ROSTER_SAVE))
+            self.assertTrue(panel.team_options_button.isEnabled(), panel.team_options_button.toolTip())
+            dialog = TeamOptionsDialog(panel, 0)
+            self.assertIn("s25 Levi's Stadium", dialog.combos["stadium"].currentText())
+            for key, value in self.CHANGES.items():
+                dialog.combos[key].setCurrentIndex(dialog.combos[key].findData(value))
+            self.assertTrue(dialog.apply(), dialog.status.text())
+            self.assertIn("stadium s05 Soldier Field", panel.status_label.text())
+            panel.refresh_diff()
+            self.assertIn("SF settings:", panel.report.toPlainText())
+            panel.undo()
+            self.assertEqual(panel.franchise_panel.save.team_options(0)["stadium"]["id"], 25)
+            panel.redo()
+            with tempfile.TemporaryDirectory() as folder:
+                panel.write_copy_to(Path(folder) / "copy.zip")
+                container = rr.SaveContainer.load(Path(folder) / "copy.zip")
+                self.assertTrue(container.verified)
+                options = fs.FranchiseSave.roster_save(container.savegame).team_options(0)
+                self.assertEqual((options["stadium"]["id"], options["playbook"]["key"], options["jersey"],
+                                  options["pbp"], options["front"]), (5, "CHI", 1, 5, 1))
+        finally:
+            panel.deleteLater()
+            application.processEvents()
+
+
+class TeamSettingsAvailabilityTests(_PanelCase):
+    def test_a_disc_roster_says_where_team_settings_live(self) -> None:
+        self.assertFalse(self.panel.team_options_button.isEnabled())
+        self.assertIn("Xbox save", self.panel.team_options_button.toolTip())
+
+
 if __name__ == "__main__":
     unittest.main()

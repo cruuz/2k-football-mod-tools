@@ -1270,6 +1270,15 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    the panel shows them for reference. A SOFTDRINK disc with the punter-as-holder option has the punter hold
    whatever the holder slot says. Releasing, signing, moving or swapping players keeps every role on the same player;
    a role whose player leaves the club is emptied, as the game itself does. One undo takes the whole change back.
+
+   **Team settings…** is Finn's Options tab for a club in an Xbox roster or franchise save: the **stadium** it
+   plays home games in, its **default jersey** (only the club's own styles), its **playbook**, the **team
+   play-by-play** name call and the **defensive front** (4-3, 3-4 or both, which decides the depth chart pages).
+   Each choice points the club at something the save already holds (another club's stadium, playbook or announcer
+   id), so nothing shared is rewritten; the bytes are the ones a signed save the game loaded carried. The logo is
+   shown but not offered: changing it also switches the club's whole uniform and helmet set to the donor club's. On a
+   disc, stadiums and uniforms come from the Studio's Build steps. One undo per Apply; **Show my changes** lists it;
+   **Save Xbox save copy…** writes it.
 4. **Right**: the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
    Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
    ← → nudge by one, ↑ ↓ jump to the next card. Enum cards are dropdowns built from the tables lifted
@@ -1403,6 +1412,7 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Change Name `…` list | Type the name. A name that already exists is shared, which needs no free space |
 | Depth Chart (Ctrl+D) | Ctrl+D shows the selected player's position in depth chart order; **↑ Move up / ↓ Move down** change his row (the stored depth rank the game reads) |
 | Depth Chart > Special Teams | **Special teams…**: returners and holder; kicker, punter and long snapper through the depth chart |
+| Team > Options (stadium, playbook, default jersey, team play-by-play, defensive front) | **Team settings…** (Xbox saves) |
 | The player grid (every rating as a column, click to sort) | **Columns ▾**, then click a heading |
 | Copy Player (Ctrl+C), Paste Player (Ctrl+V), Paste Attributes Only (Ctrl+Alt+A) | Same keys, or **Copy player** and **Paste ▾** |
 | Tools > Global Editor | **Global Attribute Editor…** |
