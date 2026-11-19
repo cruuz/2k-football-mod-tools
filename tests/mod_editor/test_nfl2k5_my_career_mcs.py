@@ -334,7 +334,16 @@ class ScheduleNativeTests(unittest.TestCase):
         for slot in range(16):
             self.assertEqual((m.reg('ECX'), m.reg('EDX')), (0, slot))
             for target in (commit, simulate if slot < 15 else m.STOP):
-                m.uc.emu_start(m.reg('EIP'), target, count=phase_budget)
+                # The same address is reached for every game. Stop on its native callback even when
+                # Unicorn already translated that block under an earlier emulation endpoint.
+                hook = None
+                if target != m.STOP:
+                    hook = m.uc.hook_add(m.u.UC_HOOK_CODE, lambda uc, *_: uc.emu_stop(), begin=target, end=target)
+                try:
+                    m.uc.emu_start(m.reg('EIP'), m.STOP, count=phase_budget)
+                finally:
+                    if hook is not None:
+                        m.uc.hook_del(hook)
                 pc = m.reg('EIP')
                 self.assertEqual(pc, target, f'week 1 slot {slot} stopped at {pc:#x} before {target:#x}')
                 if target == commit:
