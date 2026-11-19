@@ -86,7 +86,13 @@ def merge(args):
     body, college_receipt = college_check.heal_null_references(body, source="capacity roster")
     doc = rr.RosterDocument(body, scheme="one_pool", reference_year=2026)
     vacancies = capacity.import_vacancies(body)
-    require(len(doc.free_agents) == len(extended["free_agents"]), "free-agent count differs after the refresh")
+    players = [doc.by_offset[offset] for offset in doc.free_agents]
+    explicit = extended["free_agents"]
+    require([p.index for p in players[:len(explicit)]] == explicit,
+            "the planned free-agent list differs after the refresh")
+    injuries = receipt["roster_refresh"]["injured_reserve"]
+    require([p.display for p in players[len(explicit):]] == injuries["released_players"] + injuries["free_agent_players"],
+            "unexpected free agents after injured-reserve placement")
     require(vacancies >= capacity.IMPORT_FLOOR + args.margin,
             f"only {vacancies} import vacancies remain; need {capacity.IMPORT_FLOOR + args.margin}")
     require(len(doc.by_pool("primary")) == grow_receipt["primary_after"],

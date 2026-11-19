@@ -37,6 +37,9 @@ XBE = Path(os.environ.get('NFL2K5_RETAIL_EXTRACTION',
                           '/media/noah/Storage/for codex 1.0/extracted')) / 'ESPN NFL 2K5 (USA)/default.xbe'
 RECORDS = 612
 CANDIDATES = 533
+# On the October 13 roster the current injury policy returns 81 players to clubs
+# and releases 67 to make room. The dated plan's 346 + 533 explicit entries stay first.
+RELEASED_FOR_ROOM = 67
 
 
 def _fa3():
@@ -147,7 +150,14 @@ class CapacityMigrationTests(unittest.TestCase):
         self.assertEqual(len(body), len(grown))
         final = rr.RosterDocument(body, scheme='one_pool', reference_year=2026)
         self.assertEqual(len(final.by_pool('primary')), arena.CAPACITY_PRIMARY_LIMIT)     # vacancies + class records
-        self.assertEqual(len(final.free_agents), 346 + CANDIDATES)
+        self.assertEqual(len(extended['free_agents']), 346 + CANDIDATES)
+        injuries = receipt['roster_refresh']['injured_reserve']
+        self.assertEqual((injuries['rejoined'], injuries['released_for_room'], injuries['to_free_agents']),
+                         (81, RELEASED_FOR_ROOM, 0))
+        free_agents = [final.by_offset[offset] for offset in final.free_agents]
+        self.assertEqual([p.index for p in free_agents[:346 + CANDIDATES]], extended['free_agents'])
+        self.assertEqual([p.display for p in free_agents[346 + CANDIDATES:]], injuries['released_players'])
+        self.assertEqual(len(free_agents), 346 + CANDIDATES + RELEASED_FOR_ROOM)
         vacancies = spare.import_vacancies(body)
         self.assertEqual(vacancies, receipt['roster_refresh']['import_floor']['vacancies_after'])
         self.assertGreaterEqual(vacancies, spare.IMPORT_FLOOR + 10)
@@ -175,8 +185,9 @@ class CapacityMigrationTests(unittest.TestCase):
         request = document['free_agent_capacity']
         self.assertEqual(request['records'], RECORDS)
         self.assertEqual(request['arena_size'], arena.CAPACITY_ARENA_SIZE)
-        self.assertEqual(request['final_primary'], 2619 + RECORDS)
-        self.assertEqual(request['free_agents'], 346 + CANDIDATES)
+        self.assertEqual(request['base_primary'], 2619)
+        self.assertEqual(request['final_primary'], arena.CAPACITY_PRIMARY_LIMIT)
+        self.assertEqual(request['free_agents'], 346 + CANDIDATES + RELEASED_FOR_ROOM)
         self.assertGreaterEqual(request['import_vacancies'], spare.IMPORT_FLOOR + 10)
         self.assertEqual(request['import_vacancies'], request['margin'] + spare.IMPORT_FLOOR)
         self.assertEqual(document['fa3_free_agent_depth']['added'], CANDIDATES)
@@ -276,7 +287,7 @@ class CapacityImageIntegrationTests(unittest.TestCase):
             built = writer.build_image(fixture.path, destination, reserves_16=False,
                                        created_teams_extra=0, capacity_records=RECORDS)
             self.assertEqual(built['verification']['status'], 'verified')
-            self.assertEqual(built['rost']['primary_after'], 2619 + RECORDS)
+            self.assertEqual(built['rost']['primary_after'], arena.CAPACITY_PRIMARY_LIMIT)
             receipt = {'steps': []}
             plan = types.SimpleNamespace(roster_edits=str(self.FA4_PLAN), position_pools=True,
                                          espn25_more_moments=True, historic_teams_quick_game=True)
@@ -288,8 +299,8 @@ class CapacityImageIntegrationTests(unittest.TestCase):
                 entry = disc.archive_entries[5]
                 final = codec.decode(disc.read_entry_range(entry, 0, entry.size))
             self.assertEqual(final.layout.arena_size, arena.CAPACITY_ARENA_SIZE)
-            self.assertEqual(final.tables['primary'].count, 2619 + RECORDS)
-            self.assertEqual(final.tables['free_agents'].count, 346 + CANDIDATES)
+            self.assertEqual(final.tables['primary'].count, arena.CAPACITY_PRIMARY_LIMIT)
+            self.assertEqual(final.tables['free_agents'].count, 346 + CANDIDATES + RELEASED_FOR_ROOM)
 
 
 @unittest.skipUnless(XBE.is_file(), 'pinned USA XBE required for the native capacity boot path')
