@@ -215,11 +215,16 @@ def status(payload):
         return "foreign"
 
 
+def retirement_status(payload):
+    return "applied" if ps.is_v04_retirement(payload) else status(payload)
+
+
 def apply(payload):
     original = payload
-    state = status(payload)
+    historic = ps.is_v04_retirement(payload)
+    state = "applied" if historic else status(payload)
     _require(state != "foreign", "foreign/mixed Practice Squad screen; refusing")
-    _require(ps.status(payload) == pr.status(payload) == fp.status(payload) == "applied",
+    _require(historic or ps.status(payload) == pr.status(payload) == fp.status(payload) == "applied",
              "apply practice squads, Franchise Practice and practice reserves first")
     payload, storage_receipt = ps.apply(payload)
     common = {"owner": OWNER, "experimental": True, "runtime_witnessed": False,
@@ -233,6 +238,9 @@ def apply(payload):
         _, labels = code_for(payload, code["va"], data["va"])
         result, receipt = rdata.apply(payload, [("retire_practice_squad_menu", fp.COACH_DESK_ROWS_PTR_VA,
             struct.pack("<I", labels["menu"]), struct.pack("<I", fp.NEW_ROW_VA))], OWNER)
+        if historic:
+            _require(hashlib.sha256(result).hexdigest() == ps.V04_RETIRED_SHA256,
+                     "historical Practice Squad retirement differs from the original P1 output")
         return result, {**common, **receipt, "already_applied": result == original,
                         "changed_bytes": sum(a != b for a, b in zip(original, result))}
     if space.status(payload) == "retail":

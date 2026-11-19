@@ -2332,7 +2332,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                                       "music_policy_patch", "music policy")) :
         if not flag:
             continue
-        state = module.status(patched)
+        state = module.retirement_status(patched) if module is practice_squad_patch else module.status(patched)
         # the star patch knows a "legacy" state (the beta-58..60 gate-only version) and upgrades it in place;
         # so do depth locks (revision 1, the b775/b776 discs, before the b777 hole fix);
         # so does the franchise economy (revision 1, before the b778 veteran-cut surplus fix);
@@ -2428,7 +2428,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     if practice_squad:
         if any(a["owner"] == practice_squad_screen_patch.OWNER
                for a in xbe_space_patch.layout(patched)["allocations"]):
-            screen_state = practice_squad_screen_patch.status(patched)
+            screen_state = practice_squad_screen_patch.retirement_status(patched)
             _require(screen_state in ("retail", "applied"),
                      "installed Practice Squad screen is foreign; refusing")
             retire_installed_practice_screen = screen_state == "applied"
@@ -2519,7 +2519,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     ):
         if not flag:
             continue
-        state = module.status(patched)
+        state = module.retirement_status(patched) if module is practice_squad_screen_patch else module.status(patched)
         accepted = ("retail", "applied", "needs_fix") if module is stock_books_patch else ("retail", "applied")
         if getattr(module, "UPGRADES_PREVIOUS", False):
             accepted += ("previous",)   # b780 n6: a beta-79 install (honors + champions, camera v7, K128), upgraded in place
