@@ -40,6 +40,9 @@ SCHEMA = "nfl2k5_glyph_fixes_2026/v1"
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data/nfl2k5_glyph_fixes_2026.json"
 ART = ROOT / "data/nfl2k5_glyph_fixes_2026"
+#: b81-uniforms (beta 81): digits redrawn against this season's game highlights, pinned to the finished digits of the
+#: released v0.9 build and applied as the last uniform step (``apply_digits_b81``). The document names its own art folder.
+DATA_B81U = ROOT / "data/nfl2k5_glyph_fixes_2026_b81u.json"
 KINDS = ("names_retint", "digit_png", "digit_retint")
 NAMES_CHUNK = 43
 
@@ -69,6 +72,27 @@ def spec(path=None):
         seen.add(key)
         require(row["kind"] in KINDS, "unknown row kind")
     return document
+
+
+def art_folder(document):
+    """Where a document's authored PNGs live: its own ``art`` folder under ``data`` (a plain folder name), or the
+    first document's folder."""
+    name = document.get("art")
+    if not name:
+        return ART
+    require(isinstance(name, str) and name == Path(name).name and name.startswith("nfl2k5_glyph_fixes_2026"),
+            "unexpected art folder")
+    return ROOT / "data" / name
+
+
+def digits_b81():
+    """The b81-uniforms digit document."""
+    return spec(DATA_B81U)
+
+
+def apply_digits_b81(path, *, strict=False):
+    """Studio uniform finish pass for the b81-uniforms digits (authored PNGs only, so no retail disc is read)."""
+    return apply_to_image(path, None, strict=strict, document=digits_b81())
 
 
 def _one_txtr(span):
@@ -233,7 +257,7 @@ def compile_resource(selector, raw, *, strict=True, document=None, retail_kits=N
             else:
                 new, detail = compile_names(span, donor_span, row, name=row["texture"], storage="P8")
         else:
-            payload = (ART / row["png"]).read_bytes()
+            payload = (art_folder(document) / row["png"]).read_bytes()
             require(sha(payload) == row["png_sha256"], selector + ": authored digit PNG differs from its pin")
             new, detail = compile_digit(span, payload)
         require(sha(new) == row["after_sha256"], selector + ": Studio compile differs from its output pin")

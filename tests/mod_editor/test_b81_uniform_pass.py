@@ -1,0 +1,450 @@
+"""b81-uniforms: the 2026 uniform pass (data/nfl2k5_kit_fixes_2026_b81u.json, data/nfl2k5_glyph_fixes_2026_b81u.json and
+its art folder, tools/b81_uniform_pass.py, kit_fixes.apply_uniforms_b81, glyph_fixes.apply_digits_b81) and the nameplate
+pass guard that kept the Jaguars name plates and the hyphen fill out of every Studio build.
+
+The documents' shape and pins, what each first-batch row repaints (measured on the rows themselves), the authoring
+helpers on synthetic pictures, the build hooks, and (with the released v0.9 disc on this machine, B81_UNIFORM_DISC)
+every row compiled against the real kit package."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+import unittest
+from unittest import mock
+
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
+import b81_uniform_pass as up  # noqa: E402
+from mod_editor.core import (build_steps, mod_build, nfl2k5_glyph_fixes_2026 as gf,  # noqa: E402
+                             nfl2k5_kit_fixes_2026 as kf, nfl2k5_nameplate_fixes_2026 as nf)
+
+DISC = Path(os.environ.get("B81_UNIFORM_DISC", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.9 (2026-11-05).xiso.iso"))
+SIZES = {"jersey00": [512, 256], "pants00": [512, 256], "sleeve00": [128, 128], "socks00": [64, 64]}
+#: the Chargers' eight kit packages: home, road, the gold jersey, the gold-pants pair and the navy set
+CHARGERS = ("24A0", "24A10", "24A11", "24A9", "24H0", "24H10", "24H11", "24H9")
+
+
+def kit_rows():
+    return kf.uniforms_b81()["textures"]
+
+
+def digit_rows():
+    return gf.digits_b81()["textures"]
+
+
+def run_texels(row):
+    """{(x, y): (r, g, b)} of every texel a row's runs repaint."""
+    out = {}
+    for op in row["ops"]:
+        if op["op"] != "runs":
+            continue
+        for y, x0, colours in op["rows"]:
+            for i in range(len(colours) // 6):
+                out[(x0 + i, y)] = tuple(int(colours[6 * i + k:6 * i + k + 2], 16) for k in (0, 2, 4))
+    return out
+
+
+def near(colour, target, tolerance=24):
+    return max(abs(a - b) for a, b in zip(colour, target)) <= tolerance
+
+
+def png_rgba(path):
+    from PIL import Image
+    with Image.open(path) as image:
+        return np.asarray(image.convert("RGBA"), dtype=np.uint8), dict(image.info)
+
+
+class KitDocument(unittest.TestCase):
+    def test_schema_rows_and_pins(self):
+        document = kf.uniforms_b81()
+        self.assertEqual(document["schema"], kf.SCHEMA)
+        self.assertTrue(document["source"] and document["method"])
+        seen = set()
+        for row in document["textures"]:
+            key = (row["selector"], row["chunk"])
+            self.assertNotIn(key, seen)
+            seen.add(key)
+            self.assertEqual(row["kind"], "tset")
+            self.assertEqual((row["chunk"], "tset"), up.chunk_of(row["texture"]))
+            self.assertEqual(row["size"][:2], SIZES[row["texture"]])
+            self.assertEqual(len(row["before_sha256"]), 64)
+            self.assertEqual(len(row["after_sha256"]), 64)
+            self.assertNotEqual(row["before_sha256"], row["after_sha256"])
+            self.assertGreater(row["resource_size"], row["offset"] + row["length"] - 1)
+            self.assertTrue(row["note"] and row["defects"] and row["reference"], row["selector"])
+            self.assertEqual(row["ops"][-1]["op"], "runs")
+            self.assertTrue(all(op["op"] == "texels" for op in row["ops"][:-1]))
+            self.assertGreater(row["texels"], 0)
+
+    def test_every_run_stays_inside_its_texture(self):
+        for row in kit_rows():
+            width, height = row["size"][:2]
+            for y, x0, colours in row["ops"][-1]["rows"]:
+                self.assertEqual(len(colours) % 6, 0)
+                bytes.fromhex(colours)
+                self.assertTrue(0 <= y < height and 0 <= x0 and x0 + len(colours) // 6 <= width, (row["selector"], y, x0))
+
+    def test_every_named_colour_is_a_texel_the_runs_also_paint(self):
+        # the ``texels`` operations only name the art's colours for the palette; the runs carry the picture
+        for row in kit_rows():
+            painted = run_texels(row)
+            self.assertLessEqual(len(row["ops"]) - 1, 48, row["selector"])
+            for op in row["ops"][:-1]:
+                (x, y), = op["points"]
+                self.assertEqual("#%02X%02X%02X" % painted[(x, y)], op["color"], row["selector"])
+
+    def test_only_a_named_row_may_fold_a_palette_twin(self):
+        folded = {(r["selector"], r["texture"]): (r["folded_twin_entries"], r["texels_moved_one_level"])
+                  for r in kit_rows() if "folded_twin_entries" in r}
+        self.assertEqual(folded, {("23A0", "pants00"): (1, 7)})       # the Rams road pants palette is full
+
+    def test_the_first_batch_is_the_reviewed_kits(self):
+        self.assertEqual(sorted((r["selector"], r["texture"]) for r in kit_rows()),
+                         [("03A0", "sleeve00"), ("03H0", "sleeve00"), ("15A0", "pants00"), ("15H0", "pants00"),
+                          ("15H0", "socks00"), ("23A0", "pants00")])
+
+    def test_no_row_touches_a_helmet_or_the_far_away_atlas(self):
+        for row in kit_rows():
+            self.assertIn(row["chunk"], (1, 2, 3, 4), row["selector"])
+        for row in digit_rows():
+            self.assertTrue(13 <= row["chunk"] <= 22, row["selector"])       # jersey digits only (not the helmet's)
+
+
+class DigitDocument(unittest.TestCase):
+    def test_schema_art_and_pins(self):
+        document = gf.digits_b81()
+        self.assertEqual(document["schema"], gf.SCHEMA)
+        self.assertEqual(document["art"], up.DIGIT_ART)
+        folder = gf.art_folder(document)
+        self.assertEqual(folder, ROOT / "data" / up.DIGIT_ART)
+        seen, files = set(), set()
+        for row in document["textures"]:
+            key = (row["selector"], row["chunk"])
+            self.assertNotIn(key, seen)
+            seen.add(key)
+            self.assertEqual(row["kind"], "digit_png")
+            self.assertEqual(row["texture"], str(48 + row["chunk"] - 13))
+            payload = (folder / row["png"]).read_bytes()
+            self.assertEqual(hashlib.sha256(payload).hexdigest(), row["png_sha256"], row["png"])
+            self.assertNotEqual(row["before_sha256"], row["after_sha256"])
+            self.assertTrue(row["note"] and row["defects"])
+            files.add(row["png"])
+        self.assertEqual(sorted(p.name for p in folder.glob("*.png")), sorted(files))           # no stray art
+
+    def test_the_first_batch_is_all_eight_chargers_packages_ten_digits_each(self):
+        by = {}
+        for row in digit_rows():
+            by.setdefault(row["selector"], set()).add(row["chunk"])
+        self.assertEqual(tuple(sorted(by)), CHARGERS)
+        for selector, chunks in by.items():
+            self.assertEqual(chunks, set(range(13, 23)), selector)
+
+    def test_art_is_64_square_as_authored_and_in_two_flat_colours(self):
+        from mod_editor.core.nfl2k5_digit_art import REGISTRATION_KEY, registration_mode
+        folder = gf.art_folder(gf.digits_b81())
+        for path in sorted(folder.glob("*.png")):
+            rgba, info = png_rgba(path)
+            self.assertEqual(rgba.shape, (64, 64, 4), path.name)
+            self.assertEqual(info.get(REGISTRATION_KEY), "as_authored", path.name)
+            self.assertEqual(registration_mode(path.read_bytes()), "as_authored")
+            solid = rgba[rgba[..., 3] == 255][:, :3]
+            colours, counts = np.unique(solid, axis=0, return_counts=True)
+            self.assertGreater(len(solid), 500, path.name)
+            top = counts.argsort()[::-1][:2]
+            self.assertGreater(counts[top].sum(), 0.8 * len(solid), path.name)                  # a fill and one outline
+
+    def test_the_chargers_digits_stand_upright(self):
+        # the slant the pass removes: on the released digits the opaque box of the top rows sits to the right of the
+        # bottom rows' (the 1's stem leans about 0.13 texel per row). Upright: the 1's stem keeps its column.
+        folder = gf.art_folder(gf.digits_b81())
+        by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
+        for selector in CHARGERS:
+            rgba, _info = png_rgba(folder / by[(selector, 14)])                                 # the digit 1
+            solid = rgba[..., 3] > 127
+            rows = np.flatnonzero(solid.any(axis=1))
+            body = rows[len(rows) // 3:]                                                        # below the flag
+            centres = np.array([np.flatnonzero(solid[y]).mean() for y in body])
+            slope = np.polyfit(body.astype(float), centres, 1)[0]
+            self.assertLess(abs(slope), 0.03, (selector, slope))
+
+    def test_one_shape_set_serves_every_chargers_kit(self):
+        # the alternates' own digits were of uneven height; every kit now wears the home shapes in its own colours
+        folder = gf.art_folder(gf.digits_b81())
+        by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
+        for chunk in range(13, 23):
+            masks = {selector: png_rgba(folder / by[(selector, chunk)])[0][..., 3] > 127 for selector in CHARGERS}
+            first = masks[CHARGERS[0]]
+            for selector, mask in masks.items():
+                self.assertLessEqual(int((mask ^ first).sum()), 4, (selector, chunk))
+        heights = []
+        for chunk in range(13, 23):
+            solid = png_rgba(folder / by[("24H0", chunk)])[0][..., 3] > 127
+            rows = np.flatnonzero(solid.any(axis=1))
+            heights.append(int(rows.max() - rows.min() + 1))
+        self.assertLessEqual(max(heights) - min(heights), 2, heights)
+
+    def test_a_document_art_folder_must_be_a_plain_glyph_folder_name(self):
+        self.assertEqual(gf.art_folder({}), gf.ART)
+        for bad in ("../x", "nfl2k5_glyph_fixes_2026_b81u/..", "other", "a/nfl2k5_glyph_fixes_2026"):
+            with self.assertRaises(ValueError):
+                gf.art_folder({"art": bad})
+
+
+class AuthoringHelpers(unittest.TestCase):
+    def test_chunk_of_names_every_pass_texture(self):
+        self.assertEqual(up.chunk_of("jersey00"), (1, "tset"))
+        self.assertEqual(up.chunk_of("pants00"), (2, "tset"))
+        self.assertEqual(up.chunk_of("sleeve00"), (3, "tset"))
+        self.assertEqual(up.chunk_of("socks00"), (4, "tset"))
+        self.assertEqual(up.chunk_of("48"), (13, "txtr"))
+        self.assertEqual(up.chunk_of("57"), (22, "txtr"))
+        self.assertEqual(up.chunk_of("hn48"), (23, "txtr"))
+        self.assertEqual(up.chunk_of("an57"), (42, "txtr"))
+        for bad in ("helmet02", "58", "an47", "names"):
+            with self.assertRaises(ValueError):
+                up.chunk_of(bad)
+
+    def test_digit_chunk(self):
+        self.assertEqual(up.digit_chunk("digit_jersey_0"), (13, "48"))
+        self.assertEqual(up.digit_chunk("digit_jersey_9"), (22, "57"))
+        self.assertEqual(up.digit_chunk("digit_helmet_3"), (26, "hn51"))
+        self.assertEqual(up.digit_chunk("digit_arm_7"), (40, "an55"))
+
+    def test_runs_of_lists_each_changed_run_once_and_paints_back(self):
+        before = np.zeros((6, 10, 4), np.uint8)
+        before[..., 3] = 255
+        after = before.copy()
+        after[1, 2:5, :3] = (9, 8, 7)
+        after[1, 7, :3] = (1, 1, 1)
+        after[4, 0, :3] = (5, 5, 5)
+        got = up.runs_of(before, after)
+        self.assertEqual(got, [[1, 2, "090807090807090807"], [1, 7, "010101"], [4, 0, "050505"]])
+        painted, scope = kf.paint(before, [dict(op="runs", rows=got)])
+        self.assertTrue((painted == after).all())
+        self.assertEqual(int(scope.sum()), 5)
+
+
+class BuildHook(unittest.TestCase):
+    def test_both_passes_are_optional_labelled_steps_after_the_helmet_cleanup(self):
+        for step in ("kit_fixes_2026_b81u", "glyph_fixes_2026_b81u"):
+            self.assertIn(step, mod_build.OPTIONAL_STEPS)
+            self.assertIn(step, build_steps.STEP_LABELS)
+        source = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
+        helmets = source.index("apply_helmets_b81(target)")
+        kits = source.index("apply_uniforms_b81(target)")
+        digits = source.index("apply_digits_b81(target)")
+        self.assertLess(helmets, kits)
+        self.assertLess(kits, digits)
+        for earlier in ("kit_fixes.apply_sideline(target)", "moment_kits.apply_to_image(target",
+                        "classic.apply_to_image(target, retail)", "nameplate_fixes.apply_to_image("):
+            self.assertLess(source.index(earlier), kits, earlier)
+
+    def test_the_documents_and_the_art_are_shipped(self):
+        allow = (ROOT / "packaging/release-allowlist.txt").read_text(encoding="utf-8").splitlines()
+        self.assertIn("data/nfl2k5_kit_fixes_2026_b81u.json", allow)
+        self.assertIn("data/nfl2k5_glyph_fixes_2026_b81u.json", allow)
+        for path in sorted((ROOT / "data" / up.DIGIT_ART).glob("*.png")):
+            self.assertIn(f"data/{up.DIGIT_ART}/{path.name}", allow)
+        self.assertEqual(kf.DATA_B81U, ROOT / "data/nfl2k5_kit_fixes_2026_b81u.json")
+        self.assertEqual(gf.DATA_B81U, ROOT / "data/nfl2k5_glyph_fixes_2026_b81u.json")
+
+
+class _FakeEntry:
+    def __init__(self, name_id):
+        self.name_id = name_id
+        self.size = 0
+
+
+class NameplatePassGuard(unittest.TestCase):
+    """The b778-uf2 pass (the Jaguars name plates Noah asked for on 10/22, and the hyphen fill) compared its rows'
+    selectors with package FILE names, so a Studio build (not strict) always returned ``other_uniform`` and wrote
+    nothing. With every Jaguars package present the pass must go on to plan its kits."""
+
+    def _run(self, names):
+        ids = {name: number for number, name in enumerate(sorted(names), 1)}
+        back = {number: name for name, number in ids.items()}
+
+        class Image:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
+
+        index = mock.Mock(entries=[_FakeEntry(i) for i in back])
+        planned = []
+
+        def compile_package(selector, raw, document, retail_kits, strict):
+            planned.append(selector)
+            return [], dict(selector=selector, state="applied", structure="applied", hyphen="none")
+
+        with mock.patch.object(nf.bump._Image, "open", return_value=Image()), \
+                mock.patch.object(nf.bump, "_parsed_index", return_value=index), \
+                mock.patch.object(nf.bump, "logical_name_for", side_effect=lambda i: back[i]), \
+                mock.patch.object(nf, "_compile_package", side_effect=compile_package), \
+                mock.patch.object(Image, "read_segments", create=True, return_value=b""), \
+                mock.patch.object(index, "sub_extents", return_value=[]):
+            try:
+                receipt = nf.apply_to_image("disc.iso")
+            except Exception:  # noqa: BLE001 - the fake image carries no kit bytes; only the guard is under test
+                receipt = dict(state="went on")
+        return receipt, planned
+
+    def test_a_build_with_every_jaguars_package_is_not_turned_away(self):
+        wanted = sorted(r["selector"] for r in nf.structures(nf.spec()))
+        self.assertEqual(wanted, ["12A0", "12A6", "12H0", "12H6"])
+        receipt, planned = self._run([s + ".IFF" for s in wanted] + ["26H0.IFF"])
+        self.assertNotEqual(receipt.get("state"), "other_uniform")
+
+    def test_a_disc_without_those_packages_is_still_left_alone(self):
+        receipt, planned = self._run(["26H0.IFF", "12H0.IFF"])
+        self.assertEqual(receipt.get("state"), "other_uniform")
+        self.assertEqual(planned, [])
+
+    def test_the_guard_reads_selectors_not_file_names(self):
+        source = (ROOT / "mod_editor/core/nfl2k5_nameplate_fixes_2026.py").read_text(encoding="utf-8")
+        self.assertIn("not wanted <= set(selectors)", source)
+        self.assertNotIn('not wanted <= {s + ".IFF" for s in selectors}', source)
+
+
+@unittest.skipUnless(DISC.is_file(), "the released SOFTDRINK v0.9 disc is not on this machine")
+class RealDisc(unittest.TestCase):
+    """Offline real-disc proof: every row against the kit packages of the released build (read only)."""
+
+    @classmethod
+    def setUpClass(cls):
+        selectors = sorted({r["selector"] for r in kit_rows()} | {r["selector"] for r in digit_rows()}
+                           | {r["selector"] for r in nf.structures(nf.spec())})
+        cls.kits = up.read_kits(DISC, selectors)
+
+    def after(self, selector, texture):
+        row = [r for r in kit_rows() if (r["selector"], r["texture"]) == (selector, texture)][0]
+        raw = self.kits[selector]
+        chunk = kf._chunk_for(raw, row["chunk"])
+        new, _detail = kf.compile_texture(raw[chunk.offset:chunk.end_offset], row)
+        return up.level0(new, "tset")[0]
+
+    def runs_down(self, column):
+        """[(first row, colour, rows)] down one texel column"""
+        out = []
+        for y, colour in enumerate(tuple(int(v) for v in c[:3]) for c in column):
+            if out and out[-1][1] == colour:
+                out[-1][2] += 1
+            else:
+                out.append([y, colour, 1])
+        return out
+
+    def test_bills_sleeves_are_two_bars_edged_red_with_a_gap(self):
+        red, blue, white = (200, 16, 46), (11, 58, 158), (255, 255, 255)
+        for selector, base, bar in (("03H0", blue, white), ("03A0", white, blue)):
+            sleeve = self.after(selector, "sleeve00")
+            for top in (0, 64):                                   # the two sleeve islands, 64 rows each
+                solid = [(c, n) for _y, c, n in self.runs_down(sleeve[top:top + 64, 64]) if n >= 2]
+                self.assertEqual([c for c, _n in solid], [base, red, bar, red, base, red, bar, red, base], (selector, top))
+                widths = [n for _c, n in solid]
+                self.assertTrue(all(2 <= widths[i] <= 3 for i in (1, 3, 5, 7)), widths)      # thin red edges
+                self.assertTrue(all(7 <= widths[i] <= 9 for i in (2, 6)), widths)            # the two bars
+                self.assertTrue(6 <= widths[4] <= 8, widths)                                 # the gap between them
+            for top in (0, 64):                                   # the stack is plain rings round the arm
+                stack = sleeve[top + 20:top + 53, :, :3]
+                self.assertTrue((stack == stack[:, :1]).all(), selector)
+
+    def test_vikings_home_pants_get_a_broad_purple_band_gold_in_front_and_a_white_lower_leg(self):
+        purple, gold, white = (79, 38, 131), (255, 198, 47), (255, 255, 255)
+        pants = self.after("15H0", "pants00")
+        for y in (40, 100, 160):
+            for columns, front_first in ((range(100, 185), True), (range(327, 412), False)):   # left leg, right leg
+                row = [tuple(int(v) for v in pants[y, x, :3]) for x in columns]
+                band = [i for i, c in enumerate(row) if c == purple]
+                line = [i for i, c in enumerate(row) if c == gold]
+                self.assertGreaterEqual(len(band), 11, y)                                    # it was 4 texels
+                self.assertTrue(3 <= len(line) <= 7, (y, len(line)))
+                self.assertGreater(len(band), 2 * len(line), y)
+                if front_first:
+                    self.assertLess(max(line), min(band), y)                                 # gold toward the front
+                else:
+                    self.assertGreater(min(line), max(band), y)
+        self.assertTrue((pants[232:, :, :3] == 255).all())                                   # white below the hem
+        socks = self.after("15H0", "socks00")
+        self.assertTrue((socks[..., :3] == 255).all())
+
+    def test_vikings_road_and_rams_road_pants_stripes(self):
+        white, gold, sol, royal = (255, 255, 255), (255, 198, 47), (255, 209, 0), (0, 53, 148)
+        vikings, rams = self.after("15A0", "pants00"), self.after("23A0", "pants00")
+        for y in (40, 100, 160):
+            row = [tuple(int(v) for v in vikings[y, x, :3]) for x in range(100, 185)]
+            band = [i for i, c in enumerate(row) if c == white]
+            line = [i for i, c in enumerate(row) if c == gold]
+            self.assertGreaterEqual(len(band), 11, y)                                        # it was 2 texels
+            self.assertTrue(3 <= len(line) <= 7, (y, len(line)))
+            self.assertLess(max(line), min(band), y)
+            row = [tuple(int(v) for v in rams[y, x, :3]) for x in range(100, 185)]
+            band = [i for i, c in enumerate(row) if c == sol]
+            line = [i for i, c in enumerate(row) if c == white]
+            self.assertGreaterEqual(len(band), 8, y)                                         # the sol band it lacked
+            self.assertGreaterEqual(len(line), 5, y)
+            self.assertLess(max(line), min(band), y)                                         # white toward the front
+            rest = {c for c in row} - {white, sol}
+            self.assertTrue(rest and all(near(c, royal, 4) for c in rest), (y, rest))        # hard edges: no blends
+
+    def test_every_kit_row_is_waiting_on_the_released_disc_and_compiles_to_its_pin(self):
+        result = up.states(DISC)
+        self.assertEqual((result["before"], result["after"], result["other"], result["absent"]),
+                         (len(kit_rows()), 0, 0, 0), result["rows"])
+        for selector in sorted({r["selector"] for r in kit_rows()}):
+            replacements, receipt = kf.compile_resource(selector, self.kits[selector], strict=True,
+                                                        document=kf.uniforms_b81())
+            rows = [r for r in kit_rows() if r["selector"] == selector]
+            self.assertEqual(len(replacements), len(rows), selector)
+            for part in receipt["parts"]:
+                self.assertEqual(part["merged_twin_slots"], 1 if selector == "23A0" else 0, selector)
+                if selector != "23A0":
+                    self.assertEqual(part["protected_texels_moved_one_level"], 0, selector)
+                else:                               # over all stored mips; seven of them on the top level
+                    self.assertLessEqual(part["protected_texels_moved_one_level"], 30)
+
+    def test_the_compiled_kit_textures_hold_exactly_the_authored_runs(self):
+        for row in kit_rows():
+            raw = self.kits[row["selector"]]
+            chunk = kf._chunk_for(raw, row["chunk"])
+            span = raw[chunk.offset:chunk.end_offset]
+            before, _native = up.level0(span, "tset")
+            new, _detail = kf.compile_texture(span, row)
+            self.assertEqual(hashlib.sha256(new).hexdigest(), row["after_sha256"])
+            after, _native = up.level0(new, "tset")
+            painted = run_texels(row)
+            changed = np.argwhere((after != before).any(axis=2))
+            outside = 0
+            for y, x in changed:
+                if (int(x), int(y)) in painted:
+                    self.assertEqual(tuple(int(v) for v in after[y, x, :3]), painted[(int(x), int(y))], (row["selector"], x, y))
+                else:
+                    outside += 1                    # a folded twin entry: one level at most
+                    self.assertLessEqual(int(np.abs(after[y, x].astype(int) - before[y, x]).max()), 1)
+            self.assertEqual(outside, row.get("texels_moved_one_level", 0), row["selector"])
+            self.assertEqual(len(changed), row["texels"])
+            for (x, y), colour in painted.items():
+                self.assertEqual(tuple(int(v) for v in after[y, x, :3]), colour)
+            self.assertTrue((after[..., 3] == before[..., 3]).all())                            # alpha never moves
+
+    def test_every_digit_row_compiles_to_its_pin_through_the_studio_digit_route(self):
+        document = gf.digits_b81()
+        for selector in CHARGERS:
+            replacements, receipt = gf.compile_resource(selector, self.kits[selector], strict=True, document=document)
+            self.assertEqual(len(replacements), 10, selector)
+            self.assertEqual(receipt["skipped_textures"], [])
+
+    def test_the_released_disc_still_holds_the_jaguars_plates_the_nameplate_pass_was_meant_to_replace(self):
+        # the evidence for the guard: every pinned Jaguars atlas is still at the pass's own "before" hash
+        for row in nf.structures(nf.spec()):
+            raw = self.kits[row["selector"]]
+            chunk = kf._chunk_for(raw, row["chunk"])
+            self.assertEqual(hashlib.sha256(raw[chunk.offset:chunk.end_offset]).hexdigest(), row["before_sha256"],
+                             row["selector"])
+
+
+if __name__ == "__main__":
+    unittest.main()

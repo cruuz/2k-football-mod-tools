@@ -119,6 +119,8 @@ STEP_LABELS: dict[str, str] = {
     "kit_fixes_2026_sw1": "the 2026 sleeve swoosh repair",
     "kit_fixes_2026_names": "the 2026 nameplate spacing repair",
     "kit_fixes_2026_b81": "the 2026 helmet cleanup",
+    "kit_fixes_2026_b81u": "the 2026 uniform pass",
+    "glyph_fixes_2026_b81u": "the 2026 uniform pass numbers",
     "sideline_2026": "the 2026 sideline uniform repair",
     "moment_kits": "the Anniversary moment kit pass",
     "nameplate_fixes_2026": "the 2026 nameplate fix",
@@ -283,7 +285,7 @@ KEPT: dict[str, str] = {
         "era_kits", "unc_bowl_uniforms", "nyg_shoulder_numbers", "kit_fixes_2026", "kit_fixes_2026_alts",
         "kit_fixes_2026_uf3", "kit_fixes_2026_sea1", "kit_fixes_2026_ov1", "glyph_fixes_2026", "pants_hem_2026",
         "kit_fixes_2026_ku1", "kit_fixes_2026_sw1", "kit_fixes_2026_names", "sideline_2026", "nameplate_fixes_2026",
-        "kit_fixes_2026_b81")},
+        "kit_fixes_2026_b81", "kit_fixes_2026_b81u", "glyph_fixes_2026_b81u")},
     **{step: "Your disc keeps those menu pictures as they were." for step in (
         "menu_icon_uf3", "menu_helmet_w2026", "menu_chiefs_2026")},
 }

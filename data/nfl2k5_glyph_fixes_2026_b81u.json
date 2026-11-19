@@ -1,0 +1,1374 @@
+{
+ "art": "nfl2k5_glyph_fixes_2026_b81u",
+ "purpose": "b81-uniforms (beta 81): 2026 jersey digits redrawn against this season's game-highlight frames (refs/uniforms_2026), pinned to the finished digits of the released v0.9 disc",
+ "references": {
+  "LAC": [
+   "refs/uniforms_2026/LAC/2026-10-11_DEN_primary-home/jersey_back_0552.jpg (upright 9, italic HARRIS plate)",
+   "refs/uniforms_2026/LAC/2026-10-11_DEN_primary-home/jersey_front_0217.jpg (upright 10)",
+   "refs/uniforms_2026/LAC/2026-10-04_SEA_primary-away/helmet_back_0328.jpg (upright 20 on the road jersey)"
+  ]
+ },
+ "schema": "nfl2k5_glyph_fixes_2026/v1",
+ "textures": [
+  {
+   "after_sha256": "74f4ccb820e4669a2c7fb9fa32caea693fc8b75c2c44c18a3af1df939955c500",
+   "before_sha256": "3da5bd8d32f96d66c7bc71eb6d91debe6cc5b41bd6ee069eea22f528b5c4d475",
+   "chunk": 13,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1968,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 444384,
+   "png": "LAC_24A0_digit_jersey_0.png",
+   "png_sha256": "ac0f8cb6a9e8548ddf3c87334fdfdc49cce0e581702e2e74d4c3fd50a424a552",
+   "resource_size": 1532304,
+   "selector": "24A0",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "de81e92458ea571f46aee8174c1e1e206e7ab05fca17c106d6896145714f2c39",
+   "before_sha256": "c2c772f575f47b7ceb0d70fefc19f60df8e71d6d390e90ba524054d584948511",
+   "chunk": 14,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1600,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 446352,
+   "png": "LAC_24A0_digit_jersey_1.png",
+   "png_sha256": "aef7c403a5aa678f3c8a66ee0a136cdd19019de7e42fb135bd7f9eebaef7b5e8",
+   "resource_size": 1532304,
+   "selector": "24A0",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "019a8cb44f66ab6416cc0474d2c1d471ebbf7ce86fba0d0f78cc7c8196a49cdc",
+   "before_sha256": "736c80cca502a5af6f0977ff8cd3439d9ff373a3df12d72fa4de09c7cc36f896",
+   "chunk": 15,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2448,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 447952,
+   "png": "LAC_24A0_digit_jersey_2.png",
+   "png_sha256": "6210a0eab3901dc6551e96d9d378628f834b1daea7903fed153f2d0fdddf1a3b",
+   "resource_size": 1532304,
+   "selector": "24A0",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "0ae1c25055e6544bdb151b7abc7609cf85a5b2466211f86737b88b938276d86a",
+   "before_sha256": "19bb1b9f35410d14f87cb6812340fd230c8c694ff54e08e71a9e6ebf59de5582",
+   "chunk": 16,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2608,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 450400,
+   "png": "LAC_24A0_digit_jersey_3.png",
+   "png_sha256": "f34a042c9b768452718a64a3759ea242ff2e5e70abc68cf36dbff4efc96a1435",
+   "resource_size": 1532304,
+   "selector": "24A0",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "55af1ea8f88661ba9dc28b0818bbc390b198a5c31590fcf0b5e201b5c4813021",
+   "before_sha256": "0381872280e55d1b4e4222e845c9550df5dc7736cdb23ec02baf8dfd34fa61f4",
+   "chunk": 17,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2704,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 453008,
+   "png": "LAC_24A0_digit_jersey_4.png",
+   "png_sha256": "ce10570b4891e699fcdd0ed68d275a5f28c16ac6ee821e4f1250ed47a4c79772",
+   "resource_size": 1532304,
+   "selector": "24A0",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "c69e069d90eef30394050334832f63321b6cdb9a541ebfd43c3321ba7bc860da",
+   "before_sha256": "79dc3bd153a599a7c61948fb7bc150506b4126cbf4ba27debf858f1892554b02",
+   "chunk": 18,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2352,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 455712,
+   "png": "LAC_24A0_digit_jersey_5.png",
+   "png_sha256": "b960e1a974d57d4f99633cc85e0f21b7d317361298939a63971ec171175fa061",
+   "resource_size": 1532304,
+   "selector": "24A0",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "764c1854e581b987468b310601195e69684db6343587663c2fc08e95699405b0",
+   "before_sha256": "9f2538b081b0c155ab819c295ad71f93074a1c8f4219f387be9768bfd0a6e158",
+   "chunk": 19,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2528,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 458064,
+   "png": "LAC_24A0_digit_jersey_6.png",
+   "png_sha256": "cad42c77fb2152281a4b76b62904bd14dad7704d4e10b14c74f7bf175ecc978b",
+   "resource_size": 1532304,
+   "selector": "24A0",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "63cd7410eaa678cccbc9224d6e60d3ba49d283eaaf7a7b7618feb1cdb7ce2e22",
+   "before_sha256": "f9e707de5828194af253454999d9e8ffbddec9bdcf775ef298dc5afff6aee3da",
+   "chunk": 20,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2416,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 460592,
+   "png": "LAC_24A0_digit_jersey_7.png",
+   "png_sha256": "1a860750e2f14f9ce06e1eccb428425a0bad95e4288575eeb0bd94df33b0a805",
+   "resource_size": 1532304,
+   "selector": "24A0",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "0ae943ef93c7893cd2a1a1038546b7677ce20852b870e92029cc1d423ab17d3b",
+   "before_sha256": "408e3f696b47c4c9a229af5f8416a043e94e1cd1327102bb0ca584a08e92b241",
+   "chunk": 21,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2592,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 463008,
+   "png": "LAC_24A0_digit_jersey_8.png",
+   "png_sha256": "ad3fbcecdcae0b15f4d4de53fdd4770c3352bed6a9e9bbadcd5e45e886f0755b",
+   "resource_size": 1532304,
+   "selector": "24A0",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "9a215111474484bfd94a19240a33d991088d7e4a1d6052d72a794bbbb764d422",
+   "before_sha256": "ed9b3647a8edeb122090a116aab8a41d54ebe9b2f7f3c984faddbb8c16179b2b",
+   "chunk": 22,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2496,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 465600,
+   "png": "LAC_24A0_digit_jersey_9.png",
+   "png_sha256": "938357bfb7f6b7a5e399dfde2a066459d52dbe6a9a8b3f2483afd5d1638f2e3f",
+   "resource_size": 1532304,
+   "selector": "24A0",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "7552bd8beb72285a3ecaa587a489fd2c4d6bd83fb58fc19416c7341c40bf0f00",
+   "before_sha256": "c93421ceed2b19b9f9d7ba1d8a095d2b186e4d04a9d4fd6d0d8444599ded7546",
+   "chunk": 13,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1568,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 458416,
+   "png": "LAC_24A0_digit_jersey_0.png",
+   "png_sha256": "ac0f8cb6a9e8548ddf3c87334fdfdc49cce0e581702e2e74d4c3fd50a424a552",
+   "resource_size": 1537264,
+   "selector": "24A10",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "f70a07c6c2f1470ef5f8225c7ce06c225b2d4afaf4d63f7aa9e5e5fd67c6b8d6",
+   "before_sha256": "038c79631801a2bd724b3c90e1edf3db6b89b825957be686ee745e73d8dd5f80",
+   "chunk": 14,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1104,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 459984,
+   "png": "LAC_24A0_digit_jersey_1.png",
+   "png_sha256": "aef7c403a5aa678f3c8a66ee0a136cdd19019de7e42fb135bd7f9eebaef7b5e8",
+   "resource_size": 1537264,
+   "selector": "24A10",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "ce590be122713de9aa5b780d9d0e77fc9b243968695623c26cebfa82935d581d",
+   "before_sha256": "fe31e9d3052fe71d843f4b3497c65446b4b6c7784612ba4e403a9d99fd760490",
+   "chunk": 15,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1952,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 461088,
+   "png": "LAC_24A0_digit_jersey_2.png",
+   "png_sha256": "6210a0eab3901dc6551e96d9d378628f834b1daea7903fed153f2d0fdddf1a3b",
+   "resource_size": 1537264,
+   "selector": "24A10",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "afe4d9aa21c2044269fbdb10ff3f756c24fa3df533742a185cf7e505cce9836d",
+   "before_sha256": "3e936bb279510540efd1ed496167ed96ac5c5ed3ed021ef2e206950d3676f9aa",
+   "chunk": 16,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2192,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 463040,
+   "png": "LAC_24A0_digit_jersey_3.png",
+   "png_sha256": "f34a042c9b768452718a64a3759ea242ff2e5e70abc68cf36dbff4efc96a1435",
+   "resource_size": 1537264,
+   "selector": "24A10",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "ffa4d7f82105969992a4e183b701d154ce19f9c142ef11c8a6b0ec63ee7cc994",
+   "before_sha256": "7dc55c439faf9b9d8b5f8cdf255caa2e7524a3a1c6efcaf0404ee2f3449f915c",
+   "chunk": 17,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1952,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 465232,
+   "png": "LAC_24A0_digit_jersey_4.png",
+   "png_sha256": "ce10570b4891e699fcdd0ed68d275a5f28c16ac6ee821e4f1250ed47a4c79772",
+   "resource_size": 1537264,
+   "selector": "24A10",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "746455c1c183b258841b9b557c21f78f1b2e921a48c96ce8ec3f2ea260694e3f",
+   "before_sha256": "451c890aea3a702e542e486f357169a4dfe10dba860eac413e86a96a7232dd08",
+   "chunk": 18,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1808,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 467184,
+   "png": "LAC_24A0_digit_jersey_5.png",
+   "png_sha256": "b960e1a974d57d4f99633cc85e0f21b7d317361298939a63971ec171175fa061",
+   "resource_size": 1537264,
+   "selector": "24A10",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "dcde3f47cf615898f6a4b2b56088aed365196cc9f2086619b163e8a21a492da1",
+   "before_sha256": "ff031df05e37c3780f2e05292cf83835defde0a24159d77e0c61d3a79b9284aa",
+   "chunk": 19,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1936,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 468992,
+   "png": "LAC_24A0_digit_jersey_6.png",
+   "png_sha256": "cad42c77fb2152281a4b76b62904bd14dad7704d4e10b14c74f7bf175ecc978b",
+   "resource_size": 1537264,
+   "selector": "24A10",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "d7f6a145046845b0b6624ba9a6dfdb11e9c2394cc51da50d234a658ff509511e",
+   "before_sha256": "a5108b35b570c2a2c0dcc04650c5ad636ecf6a1f5069bcfedafd455d159cd380",
+   "chunk": 20,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1984,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 470928,
+   "png": "LAC_24A0_digit_jersey_7.png",
+   "png_sha256": "1a860750e2f14f9ce06e1eccb428425a0bad95e4288575eeb0bd94df33b0a805",
+   "resource_size": 1537264,
+   "selector": "24A10",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "e26f3d89c451e24933338b8b83d29c4f138dfe2f7af43e2345c2ea60d15777c5",
+   "before_sha256": "adc1c51501df1c7bb3b0751687d1596b8da73e2f023788a6dc74966e49b1a51e",
+   "chunk": 21,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2064,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 472912,
+   "png": "LAC_24A0_digit_jersey_8.png",
+   "png_sha256": "ad3fbcecdcae0b15f4d4de53fdd4770c3352bed6a9e9bbadcd5e45e886f0755b",
+   "resource_size": 1537264,
+   "selector": "24A10",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "e7ac963404c527196d3efcbd1ebf674b4e5b34d3b98e8765dcd2827ab3780d24",
+   "before_sha256": "971d9514e66fc75c7350989c60bc7343bd2b0af8ba10c9b0897fe7f3e43bde0f",
+   "chunk": 22,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1904,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 474976,
+   "png": "LAC_24A0_digit_jersey_9.png",
+   "png_sha256": "938357bfb7f6b7a5e399dfde2a066459d52dbe6a9a8b3f2483afd5d1638f2e3f",
+   "resource_size": 1537264,
+   "selector": "24A10",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "f7d65067413bd19bfe22de28801182b8e25218fa8d9fa74eb03caba7117c1817",
+   "before_sha256": "eab1c06c9c274f7fc5f64eab564c413e8d48acea7427a3ebfaa7efaceb61ada9",
+   "chunk": 13,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1920,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 426416,
+   "png": "LAC_24A11_digit_jersey_0.png",
+   "png_sha256": "3e67cb0332c8c9701f9e76895811e8d25aad31faaf565a1942b85ae6ae5ab0d5",
+   "resource_size": 1512960,
+   "selector": "24A11",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "b70f178063c10e26f7a3afee09cdc052bd2cd1ea75cbc454add494b1c8870fe8",
+   "before_sha256": "0c204913dd22f8cd724f70e0378bd704ff18223f26b766948f390608beb8f6ca",
+   "chunk": 14,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1552,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 428336,
+   "png": "LAC_24A11_digit_jersey_1.png",
+   "png_sha256": "180e56d05b1573b314597e50bdbbd65dedaa282a18229f5d341ce3eaf27fb383",
+   "resource_size": 1512960,
+   "selector": "24A11",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "3f0b906627656f22e86c081b162fe730e896fda060ae46238bd06aad19d6ba44",
+   "before_sha256": "f84990bae8fa8c1df0c3e9045860b03a22dba254bf4e08bc25bf351890f48927",
+   "chunk": 15,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2512,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 429888,
+   "png": "LAC_24A11_digit_jersey_2.png",
+   "png_sha256": "6cd2f0bc872a665db1cb9cfe38c3e9b8108144e06036693d38aa0ed1884588d0",
+   "resource_size": 1512960,
+   "selector": "24A11",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "f23841303d0429ec42f1533561b470b7f1bcf1ce5f321d2b223326555ba6088d",
+   "before_sha256": "4159e527774eed34b3c06737fc5ed3b46db5fe4079121e03680adcd9c3f78e03",
+   "chunk": 16,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2640,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 432400,
+   "png": "LAC_24A11_digit_jersey_3.png",
+   "png_sha256": "6be7a4810de4ad1de50899267edeadce50f968794542ff790a38922786ffb3fa",
+   "resource_size": 1512960,
+   "selector": "24A11",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "0c10d79ef978a78c40aa4530418c077b5fc72055c873a28e41fe2c3396414497",
+   "before_sha256": "ecbb8c2bd1743723d2d90889348feca56c4fbb178078924d84b685d63eb49087",
+   "chunk": 17,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2640,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 435040,
+   "png": "LAC_24A11_digit_jersey_4.png",
+   "png_sha256": "25f02b6299e76391141ad128d52b0a7f1e6d07634195cf1ad5f5b9489b989b73",
+   "resource_size": 1512960,
+   "selector": "24A11",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "eeccf7d4cb63394fef18365501649563212faab100e26119746d2a9f43c27d5f",
+   "before_sha256": "9bf39ae3fd8cc09503551998578a80b83c81b3c48e54dfd24f3552f9868f826b",
+   "chunk": 18,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2400,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 437680,
+   "png": "LAC_24A11_digit_jersey_5.png",
+   "png_sha256": "e2f3383d279b4d3c6c40fe34a8c9014a9d21a37ffeb5d0ec60f28bd2e94eb5b3",
+   "resource_size": 1512960,
+   "selector": "24A11",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "5f9612df43d1e5b667e801f6d2f5ad016f8940054b11304582754b2cd731dc5e",
+   "before_sha256": "7f86ebc0980202d120981a82d673bea5fcebca994a5c7b601beb468eeeb291db",
+   "chunk": 19,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2544,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 440080,
+   "png": "LAC_24A11_digit_jersey_6.png",
+   "png_sha256": "a5dea580d269fefb8cdd4b357546dd350386c82fad45e6f9e94d2110ccff1125",
+   "resource_size": 1512960,
+   "selector": "24A11",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "aea89e0426687c572f21863007dd343737b2689f3baf6024a1f37d945d9fecdb",
+   "before_sha256": "b24f52109ebe5029b463d3e4fcb4e8261afad1d46d38199ac448dd60ff837bad",
+   "chunk": 20,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2496,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 442624,
+   "png": "LAC_24A11_digit_jersey_7.png",
+   "png_sha256": "5d4c17b6c1f709962efaec75260bb18db8970c1e652e8a1776ab5fbcd09a2fce",
+   "resource_size": 1512960,
+   "selector": "24A11",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "9dfb7afb23ca108ae4f36ef202ea4f094eea2ac8d51a78e4f52146975a55bfba",
+   "before_sha256": "e416438359815b420fe1ce5d7ed68f4fa86a4878e7b843ab982abecf32d75657",
+   "chunk": 21,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2512,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 445120,
+   "png": "LAC_24A11_digit_jersey_8.png",
+   "png_sha256": "e332243d6b34f321442aab23d4abf977e73c70a87df1b17b3e73895d77f40092",
+   "resource_size": 1512960,
+   "selector": "24A11",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "e9c0c2e60c562368c63aad12bb99a81bce3a1dc9d2ca7a8b744435e855bc522f",
+   "before_sha256": "d095c66f9853544fe01f3a6bb6a0cd147d529e01b8ad5029570e963846078c7e",
+   "chunk": 22,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2592,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 447632,
+   "png": "LAC_24A11_digit_jersey_9.png",
+   "png_sha256": "de893e5cf2f3ff09bf1e1c7e7b4b33fa9ca81177cbbed11bc769d8c896a0eaa9",
+   "resource_size": 1512960,
+   "selector": "24A11",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "59a12c486d959f25e607a403eea033db3e963d42f4910d0245a132bdad7d092c",
+   "before_sha256": "a41836dc39ed1b78d0e26c6ef1106c40f1fe8e27c6f325ac52aaa1e66b1cf23a",
+   "chunk": 13,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1968,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 457008,
+   "png": "LAC_24A9_digit_jersey_0.png",
+   "png_sha256": "1576db79c92e37c306d2135f92950a5be4b8e57fda85287440d9e2cacca66891",
+   "resource_size": 1547680,
+   "selector": "24A9",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "00bdf86180e278985f4e897268a36cff4440b53390690bbe9bf76346400148d7",
+   "before_sha256": "a9506bd18140a7416b30e26293ebfd11c163d8070aae43214f4ba5056da6bbe8",
+   "chunk": 14,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1600,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 458976,
+   "png": "LAC_24A9_digit_jersey_1.png",
+   "png_sha256": "7ee7c8044f43e8436dc37f39b1dfcddc600915267c909b563563f5252bebee22",
+   "resource_size": 1547680,
+   "selector": "24A9",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "1fc717d3697cd9a7cdca4cb901ac641ee80e93d0bfb235a8f756dda489927394",
+   "before_sha256": "0c9d2781fe2328c19c04dda83619185b29ade368565d255e309cee8e3ddf1c36",
+   "chunk": 15,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2496,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 460576,
+   "png": "LAC_24A9_digit_jersey_2.png",
+   "png_sha256": "8957678a5f464cdb57d4affa4c9781edc7522d504dea7c4dea5d658518b50e47",
+   "resource_size": 1547680,
+   "selector": "24A9",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "b0bbdd4366a68ffba47f8f9ab1ca5d244385f2beec151c8246dd7640610802dd",
+   "before_sha256": "2bca43637767a70facf47871628ff15ad2478b7b950f7ddd00d9ee2eddce1c0a",
+   "chunk": 16,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2608,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 463072,
+   "png": "LAC_24A9_digit_jersey_3.png",
+   "png_sha256": "2f3157be97273bca61fe53d089633d9d1670bfde033ab6be61308805e9ccc237",
+   "resource_size": 1547680,
+   "selector": "24A9",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "46c3d196a8a30db2ad263c80bf379ee61ef1c564c93e7828072c9787285564db",
+   "before_sha256": "c3f572b634da7574884ed4649808ec771115b3264cbbb38b1793df80bff0988f",
+   "chunk": 17,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2704,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 465680,
+   "png": "LAC_24A9_digit_jersey_4.png",
+   "png_sha256": "ec4e168ff3185640840f74596c2655cfe7080fdcf4b0feab4f78228f770113dd",
+   "resource_size": 1547680,
+   "selector": "24A9",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "ebf5769beed30cf4c721a0aa3b1d5bf95a7ade1e6675a519eaf89e9ffe93e6e6",
+   "before_sha256": "3ad96a9b8bbbca43178fffecdd4a237d3007f6687786d2494a2a5e1ac4d42894",
+   "chunk": 18,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2320,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 468384,
+   "png": "LAC_24A9_digit_jersey_5.png",
+   "png_sha256": "9b42a1be3608c4b813e036d96f68e346b277850c0087617b2f784b85595599d9",
+   "resource_size": 1547680,
+   "selector": "24A9",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "53eadb85036eeef768a0766f1ce042a4ea079be4a5c0200599c2b8003df32085",
+   "before_sha256": "8e4380cf76d78e7cad418d718f2cf94eeff56ad4827a403a30b9bd3030fe6547",
+   "chunk": 19,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2512,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 470704,
+   "png": "LAC_24A9_digit_jersey_6.png",
+   "png_sha256": "ca6dcd1943f3ddf6ab579ae38f82d68dedf6197352024a93627c9550937fad22",
+   "resource_size": 1547680,
+   "selector": "24A9",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "0d0fc85bdb83de4bd2d852b3319152528c2f129eec864d5b9e10fb5903115b30",
+   "before_sha256": "5f4de88aefbc59c39b7851e2e0929fbc2c30674c505c0111d22bcafc2abb897d",
+   "chunk": 20,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2432,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 473216,
+   "png": "LAC_24A9_digit_jersey_7.png",
+   "png_sha256": "ae8509c3c976d8d6524ad2f626d9323cb4fee686d2578556e7ba3d3d3b510edc",
+   "resource_size": 1547680,
+   "selector": "24A9",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "f4b07c7b7979ad4641bf30aabb678d350780f1ef33b713b6e9ad8948a7192583",
+   "before_sha256": "95ec1fc39fbe9a2e3904340e91881e87c29bdfc56b2f92ded115bf3428edc631",
+   "chunk": 21,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2592,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 475648,
+   "png": "LAC_24A9_digit_jersey_8.png",
+   "png_sha256": "5a822b8f255479bcfb398da102783c5f242f82b56ae7401d0da570ee018c4ee1",
+   "resource_size": 1547680,
+   "selector": "24A9",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "3f26a5d4dfaf3764272cb0c934668de7a2415b3538497b66512fa9dc81013bf9",
+   "before_sha256": "726798b616abec2bc23f1f898b61603b570275c0dc36d1f60e590c1034bdfb47",
+   "chunk": 22,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2512,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 478240,
+   "png": "LAC_24A9_digit_jersey_9.png",
+   "png_sha256": "7d4e963f9c5f82f2fc1852572464b44e074bb5dfcf11fd8a1bb1eae071727449",
+   "resource_size": 1547680,
+   "selector": "24A9",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "f7d65067413bd19bfe22de28801182b8e25218fa8d9fa74eb03caba7117c1817",
+   "before_sha256": "44993d13b34958b74ec5a38544ff49fd0454e6ffbb1b4df26b626d4df3ad77ee",
+   "chunk": 13,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1920,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 442032,
+   "png": "LAC_24A11_digit_jersey_0.png",
+   "png_sha256": "3e67cb0332c8c9701f9e76895811e8d25aad31faaf565a1942b85ae6ae5ab0d5",
+   "resource_size": 1533312,
+   "selector": "24H0",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "b70f178063c10e26f7a3afee09cdc052bd2cd1ea75cbc454add494b1c8870fe8",
+   "before_sha256": "0c204913dd22f8cd724f70e0378bd704ff18223f26b766948f390608beb8f6ca",
+   "chunk": 14,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1552,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 443952,
+   "png": "LAC_24A11_digit_jersey_1.png",
+   "png_sha256": "180e56d05b1573b314597e50bdbbd65dedaa282a18229f5d341ce3eaf27fb383",
+   "resource_size": 1533312,
+   "selector": "24H0",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "3f0b906627656f22e86c081b162fe730e896fda060ae46238bd06aad19d6ba44",
+   "before_sha256": "d91d6f1c3039398e0efea7cf94b5f10f19d95d99692f589d3e233968d9e411d0",
+   "chunk": 15,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2512,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 445504,
+   "png": "LAC_24A11_digit_jersey_2.png",
+   "png_sha256": "6cd2f0bc872a665db1cb9cfe38c3e9b8108144e06036693d38aa0ed1884588d0",
+   "resource_size": 1533312,
+   "selector": "24H0",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "f23841303d0429ec42f1533561b470b7f1bcf1ce5f321d2b223326555ba6088d",
+   "before_sha256": "9186d0a00ed1f26c4b162d355ae4d2639137de335b4327a1b952f584fed908e6",
+   "chunk": 16,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2640,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 448016,
+   "png": "LAC_24A11_digit_jersey_3.png",
+   "png_sha256": "6be7a4810de4ad1de50899267edeadce50f968794542ff790a38922786ffb3fa",
+   "resource_size": 1533312,
+   "selector": "24H0",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "0c10d79ef978a78c40aa4530418c077b5fc72055c873a28e41fe2c3396414497",
+   "before_sha256": "06cff58a25111aa2c53590d768c3e9d95537f85ff99313956d4d1c85cebd3a68",
+   "chunk": 17,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2640,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 450656,
+   "png": "LAC_24A11_digit_jersey_4.png",
+   "png_sha256": "25f02b6299e76391141ad128d52b0a7f1e6d07634195cf1ad5f5b9489b989b73",
+   "resource_size": 1533312,
+   "selector": "24H0",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "eeccf7d4cb63394fef18365501649563212faab100e26119746d2a9f43c27d5f",
+   "before_sha256": "3ca65f45a442db876696a46a95307dd59c7e5eeefaa1acb9fe2435b67352273d",
+   "chunk": 18,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2400,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 453296,
+   "png": "LAC_24A11_digit_jersey_5.png",
+   "png_sha256": "e2f3383d279b4d3c6c40fe34a8c9014a9d21a37ffeb5d0ec60f28bd2e94eb5b3",
+   "resource_size": 1533312,
+   "selector": "24H0",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "5f9612df43d1e5b667e801f6d2f5ad016f8940054b11304582754b2cd731dc5e",
+   "before_sha256": "7d07da7dbed9d237e11a3fc1f9700aef95a16503a5ab598b8704a48de70ea53a",
+   "chunk": 19,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2544,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 455696,
+   "png": "LAC_24A11_digit_jersey_6.png",
+   "png_sha256": "a5dea580d269fefb8cdd4b357546dd350386c82fad45e6f9e94d2110ccff1125",
+   "resource_size": 1533312,
+   "selector": "24H0",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "aea89e0426687c572f21863007dd343737b2689f3baf6024a1f37d945d9fecdb",
+   "before_sha256": "399fd1140c71f4481e02b3e3243072a90797a0673a8c058c836adfab4951b345",
+   "chunk": 20,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2496,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 458240,
+   "png": "LAC_24A11_digit_jersey_7.png",
+   "png_sha256": "5d4c17b6c1f709962efaec75260bb18db8970c1e652e8a1776ab5fbcd09a2fce",
+   "resource_size": 1533312,
+   "selector": "24H0",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "9dfb7afb23ca108ae4f36ef202ea4f094eea2ac8d51a78e4f52146975a55bfba",
+   "before_sha256": "85ab258ba4e906531cf4a813398b2ac77bcce35dfdde550acf484c609ea55ffd",
+   "chunk": 21,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2512,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 460736,
+   "png": "LAC_24A11_digit_jersey_8.png",
+   "png_sha256": "e332243d6b34f321442aab23d4abf977e73c70a87df1b17b3e73895d77f40092",
+   "resource_size": 1533312,
+   "selector": "24H0",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "e9c0c2e60c562368c63aad12bb99a81bce3a1dc9d2ca7a8b744435e855bc522f",
+   "before_sha256": "24a36deee983cf5bacddb4df404830cc68c631a9d14dae57f1f61edf1ebec163",
+   "chunk": 22,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2592,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline)",
+   "offset": 463248,
+   "png": "LAC_24A11_digit_jersey_9.png",
+   "png_sha256": "de893e5cf2f3ff09bf1e1c7e7b4b33fa9ca81177cbbed11bc769d8c896a0eaa9",
+   "resource_size": 1533312,
+   "selector": "24H0",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "de0d8e28fe43951b8b6e2abaf5ccd7e15df5e04566ba620d218e57b23797d60e",
+   "before_sha256": "31855cafe900a82c13585dc0fc2a4942e602b5d61f3d0de8bb18f860a5b3bc2d",
+   "chunk": 13,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1568,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 458416,
+   "png": "LAC_24A11_digit_jersey_0.png",
+   "png_sha256": "3e67cb0332c8c9701f9e76895811e8d25aad31faaf565a1942b85ae6ae5ab0d5",
+   "resource_size": 1537264,
+   "selector": "24H10",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "380429c2227c822f3884d9aff385800a659678423ae1de5d8f68099b8ef8d73e",
+   "before_sha256": "532f35eda80bebe984fa099cc324aa1c51a1718c7409521fcfad64e89d9ca18f",
+   "chunk": 14,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1104,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 459984,
+   "png": "LAC_24A11_digit_jersey_1.png",
+   "png_sha256": "180e56d05b1573b314597e50bdbbd65dedaa282a18229f5d341ce3eaf27fb383",
+   "resource_size": 1537264,
+   "selector": "24H10",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "c61860ee74e31adcf19b4d650c29eb97bf6db0ca55dfc63418c126eb2cfbcb86",
+   "before_sha256": "f8ebed19046803799e7662ce75eba3324ceec2c19f183200d5430d14dfbfbbe0",
+   "chunk": 15,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1952,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 461088,
+   "png": "LAC_24A11_digit_jersey_2.png",
+   "png_sha256": "6cd2f0bc872a665db1cb9cfe38c3e9b8108144e06036693d38aa0ed1884588d0",
+   "resource_size": 1537264,
+   "selector": "24H10",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "00983708103d2223d9450174f96493af93bf13b010d8dcb90578662f1fbfa2c7",
+   "before_sha256": "a5e28df23803d9c456ca9125dac0308551510c99979c2551decb8367f271bf98",
+   "chunk": 16,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2192,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 463040,
+   "png": "LAC_24A11_digit_jersey_3.png",
+   "png_sha256": "6be7a4810de4ad1de50899267edeadce50f968794542ff790a38922786ffb3fa",
+   "resource_size": 1537264,
+   "selector": "24H10",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "3b9610a7b40ade03f0f34a5d4c76fa240c6437e1facaf0db0a3f8bdaf1f831cf",
+   "before_sha256": "fe2db152adc9cd566f63cf8be28af222d8cee119093fe3f8fa0e6b450ff588eb",
+   "chunk": 17,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1952,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 465232,
+   "png": "LAC_24A11_digit_jersey_4.png",
+   "png_sha256": "25f02b6299e76391141ad128d52b0a7f1e6d07634195cf1ad5f5b9489b989b73",
+   "resource_size": 1537264,
+   "selector": "24H10",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "63f58135480d12662efdc3274bbc4d6ee95b02326402af29939cd0a788b998f0",
+   "before_sha256": "9421a5898cd30562ca2add80692fbd16b4e10194b6c3270c4f217a0401d02e35",
+   "chunk": 18,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1808,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 467184,
+   "png": "LAC_24A11_digit_jersey_5.png",
+   "png_sha256": "e2f3383d279b4d3c6c40fe34a8c9014a9d21a37ffeb5d0ec60f28bd2e94eb5b3",
+   "resource_size": 1537264,
+   "selector": "24H10",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "52fa43629ad5f5c55dbe5a0e1db92649bf468a4979345e4a91384007f295a871",
+   "before_sha256": "c3a963f35ebd8d92706259ace54e6875b58ea4513cc08a412f0a672e1484615a",
+   "chunk": 19,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1936,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 468992,
+   "png": "LAC_24A11_digit_jersey_6.png",
+   "png_sha256": "a5dea580d269fefb8cdd4b357546dd350386c82fad45e6f9e94d2110ccff1125",
+   "resource_size": 1537264,
+   "selector": "24H10",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "809f98826a887ae79b3a3dbf6c22163e5f3d5f20f0f7f7add7a133fbeeb56115",
+   "before_sha256": "9f5eefd5db38999cb7ad97aee458c335022564e954d1f00b0a9b73b268e00bca",
+   "chunk": 20,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1984,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 470928,
+   "png": "LAC_24A11_digit_jersey_7.png",
+   "png_sha256": "5d4c17b6c1f709962efaec75260bb18db8970c1e652e8a1776ab5fbcd09a2fce",
+   "resource_size": 1537264,
+   "selector": "24H10",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "1d37bbe63cc494043c6661570cecbee686b551815e6817f0fec125785a6c3c07",
+   "before_sha256": "af206c764c63cb3447798c75203f8759bfa80ce3b0eba632ccfdc59f8721aeae",
+   "chunk": 21,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2064,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 472912,
+   "png": "LAC_24A11_digit_jersey_8.png",
+   "png_sha256": "e332243d6b34f321442aab23d4abf977e73c70a87df1b17b3e73895d77f40092",
+   "resource_size": 1537264,
+   "selector": "24H10",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "e3a6e629cbd0974a1754999c147cf5270afde27e4a800e75275965faf4b65458",
+   "before_sha256": "ff76c46a2c0a141425e93d747e914520e9fb67f91312551208b94b7aac0760c0",
+   "chunk": 22,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1904,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 474976,
+   "png": "LAC_24A11_digit_jersey_9.png",
+   "png_sha256": "de893e5cf2f3ff09bf1e1c7e7b4b33fa9ca81177cbbed11bc769d8c896a0eaa9",
+   "resource_size": 1537264,
+   "selector": "24H10",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "f7d65067413bd19bfe22de28801182b8e25218fa8d9fa74eb03caba7117c1817",
+   "before_sha256": "eab1c06c9c274f7fc5f64eab564c413e8d48acea7427a3ebfaa7efaceb61ada9",
+   "chunk": 13,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1920,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 426416,
+   "png": "LAC_24A11_digit_jersey_0.png",
+   "png_sha256": "3e67cb0332c8c9701f9e76895811e8d25aad31faaf565a1942b85ae6ae5ab0d5",
+   "resource_size": 1507584,
+   "selector": "24H11",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "b70f178063c10e26f7a3afee09cdc052bd2cd1ea75cbc454add494b1c8870fe8",
+   "before_sha256": "0c204913dd22f8cd724f70e0378bd704ff18223f26b766948f390608beb8f6ca",
+   "chunk": 14,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1552,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 428336,
+   "png": "LAC_24A11_digit_jersey_1.png",
+   "png_sha256": "180e56d05b1573b314597e50bdbbd65dedaa282a18229f5d341ce3eaf27fb383",
+   "resource_size": 1507584,
+   "selector": "24H11",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "3f0b906627656f22e86c081b162fe730e896fda060ae46238bd06aad19d6ba44",
+   "before_sha256": "f84990bae8fa8c1df0c3e9045860b03a22dba254bf4e08bc25bf351890f48927",
+   "chunk": 15,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2512,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 429888,
+   "png": "LAC_24A11_digit_jersey_2.png",
+   "png_sha256": "6cd2f0bc872a665db1cb9cfe38c3e9b8108144e06036693d38aa0ed1884588d0",
+   "resource_size": 1507584,
+   "selector": "24H11",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "f23841303d0429ec42f1533561b470b7f1bcf1ce5f321d2b223326555ba6088d",
+   "before_sha256": "4159e527774eed34b3c06737fc5ed3b46db5fe4079121e03680adcd9c3f78e03",
+   "chunk": 16,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2640,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 432400,
+   "png": "LAC_24A11_digit_jersey_3.png",
+   "png_sha256": "6be7a4810de4ad1de50899267edeadce50f968794542ff790a38922786ffb3fa",
+   "resource_size": 1507584,
+   "selector": "24H11",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "0c10d79ef978a78c40aa4530418c077b5fc72055c873a28e41fe2c3396414497",
+   "before_sha256": "ecbb8c2bd1743723d2d90889348feca56c4fbb178078924d84b685d63eb49087",
+   "chunk": 17,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2640,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 435040,
+   "png": "LAC_24A11_digit_jersey_4.png",
+   "png_sha256": "25f02b6299e76391141ad128d52b0a7f1e6d07634195cf1ad5f5b9489b989b73",
+   "resource_size": 1507584,
+   "selector": "24H11",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "eeccf7d4cb63394fef18365501649563212faab100e26119746d2a9f43c27d5f",
+   "before_sha256": "9bf39ae3fd8cc09503551998578a80b83c81b3c48e54dfd24f3552f9868f826b",
+   "chunk": 18,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2400,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 437680,
+   "png": "LAC_24A11_digit_jersey_5.png",
+   "png_sha256": "e2f3383d279b4d3c6c40fe34a8c9014a9d21a37ffeb5d0ec60f28bd2e94eb5b3",
+   "resource_size": 1507584,
+   "selector": "24H11",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "5f9612df43d1e5b667e801f6d2f5ad016f8940054b11304582754b2cd731dc5e",
+   "before_sha256": "7f86ebc0980202d120981a82d673bea5fcebca994a5c7b601beb468eeeb291db",
+   "chunk": 19,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2544,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 440080,
+   "png": "LAC_24A11_digit_jersey_6.png",
+   "png_sha256": "a5dea580d269fefb8cdd4b357546dd350386c82fad45e6f9e94d2110ccff1125",
+   "resource_size": 1507584,
+   "selector": "24H11",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "aea89e0426687c572f21863007dd343737b2689f3baf6024a1f37d945d9fecdb",
+   "before_sha256": "b24f52109ebe5029b463d3e4fcb4e8261afad1d46d38199ac448dd60ff837bad",
+   "chunk": 20,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2496,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 442624,
+   "png": "LAC_24A11_digit_jersey_7.png",
+   "png_sha256": "5d4c17b6c1f709962efaec75260bb18db8970c1e652e8a1776ab5fbcd09a2fce",
+   "resource_size": 1507584,
+   "selector": "24H11",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "9dfb7afb23ca108ae4f36ef202ea4f094eea2ac8d51a78e4f52146975a55bfba",
+   "before_sha256": "e416438359815b420fe1ce5d7ed68f4fa86a4878e7b843ab982abecf32d75657",
+   "chunk": 21,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2512,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 445120,
+   "png": "LAC_24A11_digit_jersey_8.png",
+   "png_sha256": "e332243d6b34f321442aab23d4abf977e73c70a87df1b17b3e73895d77f40092",
+   "resource_size": 1507584,
+   "selector": "24H11",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "e9c0c2e60c562368c63aad12bb99a81bce3a1dc9d2ca7a8b744435e855bc522f",
+   "before_sha256": "d095c66f9853544fe01f3a6bb6a0cd147d529e01b8ad5029570e963846078c7e",
+   "chunk": 22,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2592,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 447632,
+   "png": "LAC_24A11_digit_jersey_9.png",
+   "png_sha256": "de893e5cf2f3ff09bf1e1c7e7b4b33fa9ca81177cbbed11bc769d8c896a0eaa9",
+   "resource_size": 1507584,
+   "selector": "24H11",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "59a12c486d959f25e607a403eea033db3e963d42f4910d0245a132bdad7d092c",
+   "before_sha256": "a41836dc39ed1b78d0e26c6ef1106c40f1fe8e27c6f325ac52aaa1e66b1cf23a",
+   "chunk": 13,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1968,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 457008,
+   "png": "LAC_24A9_digit_jersey_0.png",
+   "png_sha256": "1576db79c92e37c306d2135f92950a5be4b8e57fda85287440d9e2cacca66891",
+   "resource_size": 1547680,
+   "selector": "24H9",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "00bdf86180e278985f4e897268a36cff4440b53390690bbe9bf76346400148d7",
+   "before_sha256": "a9506bd18140a7416b30e26293ebfd11c163d8070aae43214f4ba5056da6bbe8",
+   "chunk": 14,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 1600,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 458976,
+   "png": "LAC_24A9_digit_jersey_1.png",
+   "png_sha256": "7ee7c8044f43e8436dc37f39b1dfcddc600915267c909b563563f5252bebee22",
+   "resource_size": 1547680,
+   "selector": "24H9",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "1fc717d3697cd9a7cdca4cb901ac641ee80e93d0bfb235a8f756dda489927394",
+   "before_sha256": "0c9d2781fe2328c19c04dda83619185b29ade368565d255e309cee8e3ddf1c36",
+   "chunk": 15,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2496,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 460576,
+   "png": "LAC_24A9_digit_jersey_2.png",
+   "png_sha256": "8957678a5f464cdb57d4affa4c9781edc7522d504dea7c4dea5d658518b50e47",
+   "resource_size": 1547680,
+   "selector": "24H9",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "b0bbdd4366a68ffba47f8f9ab1ca5d244385f2beec151c8246dd7640610802dd",
+   "before_sha256": "2bca43637767a70facf47871628ff15ad2478b7b950f7ddd00d9ee2eddce1c0a",
+   "chunk": 16,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2608,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 463072,
+   "png": "LAC_24A9_digit_jersey_3.png",
+   "png_sha256": "2f3157be97273bca61fe53d089633d9d1670bfde033ab6be61308805e9ccc237",
+   "resource_size": 1547680,
+   "selector": "24H9",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "46c3d196a8a30db2ad263c80bf379ee61ef1c564c93e7828072c9787285564db",
+   "before_sha256": "c3f572b634da7574884ed4649808ec771115b3264cbbb38b1793df80bff0988f",
+   "chunk": 17,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2704,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 465680,
+   "png": "LAC_24A9_digit_jersey_4.png",
+   "png_sha256": "ec4e168ff3185640840f74596c2655cfe7080fdcf4b0feab4f78228f770113dd",
+   "resource_size": 1547680,
+   "selector": "24H9",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "ebf5769beed30cf4c721a0aa3b1d5bf95a7ade1e6675a519eaf89e9ffe93e6e6",
+   "before_sha256": "3ad96a9b8bbbca43178fffecdd4a237d3007f6687786d2494a2a5e1ac4d42894",
+   "chunk": 18,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2320,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 468384,
+   "png": "LAC_24A9_digit_jersey_5.png",
+   "png_sha256": "9b42a1be3608c4b813e036d96f68e346b277850c0087617b2f784b85595599d9",
+   "resource_size": 1547680,
+   "selector": "24H9",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "53eadb85036eeef768a0766f1ce042a4ea079be4a5c0200599c2b8003df32085",
+   "before_sha256": "8e4380cf76d78e7cad418d718f2cf94eeff56ad4827a403a30b9bd3030fe6547",
+   "chunk": 19,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2512,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 470704,
+   "png": "LAC_24A9_digit_jersey_6.png",
+   "png_sha256": "ca6dcd1943f3ddf6ab579ae38f82d68dedf6197352024a93627c9550937fad22",
+   "resource_size": 1547680,
+   "selector": "24H9",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "0d0fc85bdb83de4bd2d852b3319152528c2f129eec864d5b9e10fb5903115b30",
+   "before_sha256": "5f4de88aefbc59c39b7851e2e0929fbc2c30674c505c0111d22bcafc2abb897d",
+   "chunk": 20,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2432,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 473216,
+   "png": "LAC_24A9_digit_jersey_7.png",
+   "png_sha256": "ae8509c3c976d8d6524ad2f626d9323cb4fee686d2578556e7ba3d3d3b510edc",
+   "resource_size": 1547680,
+   "selector": "24H9",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "f4b07c7b7979ad4641bf30aabb678d350780f1ef33b713b6e9ad8948a7192583",
+   "before_sha256": "95ec1fc39fbe9a2e3904340e91881e87c29bdfc56b2f92ded115bf3428edc631",
+   "chunk": 21,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2592,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 475648,
+   "png": "LAC_24A9_digit_jersey_8.png",
+   "png_sha256": "5a822b8f255479bcfb398da102783c5f242f82b56ae7401d0da570ee018c4ee1",
+   "resource_size": 1547680,
+   "selector": "24H9",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "3f26a5d4dfaf3764272cb0c934668de7a2415b3538497b66512fa9dc81013bf9",
+   "before_sha256": "726798b616abec2bc23f1f898b61603b570275c0dc36d1f60e590c1034bdfb47",
+   "chunk": 22,
+   "defects": [
+    "b81u-LAC-slanted-jersey-digits"
+   ],
+   "kind": "digit_png",
+   "length": 2512,
+   "note": "the jersey digits stood upright: the 2026 Chargers numbers are upright, the game drew them slanted (the same shapes, sheared back by their measured slant 0.13 and redrawn with one even outline); this kit takes the home kit's shapes in its own colours (its ten digits were of uneven height)",
+   "offset": 478240,
+   "png": "LAC_24A9_digit_jersey_9.png",
+   "png_sha256": "7d4e963f9c5f82f2fc1852572464b44e074bb5dfcf11fd8a1bb1eae071727449",
+   "resource_size": 1547680,
+   "selector": "24H9",
+   "texture": "57"
+  }
+ ]
+}

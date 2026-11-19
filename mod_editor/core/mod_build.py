@@ -48,7 +48,7 @@ OPTIONAL_STEPS = frozenset({
     "kit_fixes_2026_uf3", "kit_fixes_2026_sea1", "kit_fixes_2026_ov1", "glyph_fixes_2026", "menu_icon_uf3",
     "menu_helmet_w2026", "menu_chiefs_2026", "pants_hem_2026", "kit_fixes_2026_ku1", "kit_fixes_2026_sw1",
     "kit_fixes_2026_names", "sideline_2026", "moment_kits", "nameplate_fixes_2026", "team_sleeves",
-    "kit_fixes_2026_b81",
+    "kit_fixes_2026_b81", "kit_fixes_2026_b81u", "glyph_fixes_2026_b81u",
     # stadiums, fields and their colour
     "modern_color_bundles", "modern_arrowhead", "modern_metlife", "modern_venues_2026", "modern_metlife_model",
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant", "modern_mercedes_benz",
@@ -7800,6 +7800,28 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                          **{k: v for k, v in b81_receipt.items() if k != "kits"},
                                          "kits": [{k: v for k, v in kit.items() if k != "parts"}
                                                   for kit in b81_receipt["kits"]]})
+        # b81-uniforms (Noah 11/18: "some uniforms need work to look better and closer to irl ... goal is to match irl
+        # as close as possible"): jersey, pants, sleeve, sock and digit textures corrected against this season's
+        # game-highlight frames. After the helmet cleanup, for the same reason it runs last: no other kit reads these
+        # textures any more. Pinned to the known finished spans; a user's own kit art is left alone.
+        with _optional(receipt, target, progress, "kit_fixes_2026_b81u"):
+            b81u_receipt = b81_helmets.apply_uniforms_b81(target)
+            if b81u_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "kit_fixes_2026_b81u",
+                                         **{k: v for k, v in b81u_receipt.items() if k != "kits"},
+                                         "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                                  for kit in b81u_receipt["kits"]]})
+        # b81-uniforms: jersey digits redrawn against this season's frames (the Chargers' numbers stand upright), from
+        # authored PNGs through the Studio's own digit route; pinned to the finished digits, so a user's own stay.
+        b81u_digits = _core_module("nfl2k5_glyph_fixes_2026")
+        if b81u_digits is not None:                 # as the first glyph pass: a build without the module goes on
+            with _optional(receipt, target, progress, "glyph_fixes_2026_b81u"):
+                b81u_digit_receipt = b81u_digits.apply_digits_b81(target)
+                if b81u_digit_receipt["state"] == "applied":
+                    receipt["steps"].append({"step": "glyph_fixes_2026_b81u",
+                                             **{k: v for k, v in b81u_digit_receipt.items() if k != "kits"},
+                                             "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                                      for kit in b81u_digit_receipt["kits"]]})
     if loaded_weather_plan is not None:
         _step("weather_plan")
         weather = _core_module("nfl2k5_weather")
