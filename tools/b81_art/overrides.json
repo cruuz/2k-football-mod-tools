@@ -73,7 +73,10 @@
     92,
     242
    ]
-  ]
+  ],
+  "refine": {
+   "interior_from": "02_0"
+  }
  },
  "02_3:helmet02": {
   "despeckle": true,
@@ -228,7 +231,21 @@
  "00_0:helmet00": {
   "grow": 3,
   "grow_dev": 5,
-  "mirror_lower": true
+  "mirror_lower": true,
+  "erase": [
+   [
+    108,
+    153,
+    118,
+    163
+   ],
+   [
+    108,
+    92,
+    118,
+    102
+   ]
+  ]
  },
  "04_0:helmet02": {
   "add": [
@@ -344,7 +361,14 @@
   "mirror_lower": true
  },
  "03_8:helmet00": {
-  "mirror_lower": true
+  "refine": {
+   "official": {
+    "panel": "upper",
+    "body_to_shell": true,
+    "old_line": "white"
+   },
+   "free": true
+  }
  },
  "03_9:helmet00": {
   "mirror_lower": true
@@ -353,7 +377,13 @@
   "mirror_lower": true
  },
  "08_5:helmet00": {
-  "mirror_upper": true
+  "refine": {
+   "official": {
+    "panel": "lower",
+    "old_line": "dark"
+   },
+   "free": true
+  }
  },
  "09_2:helmet00": {
   "mirror_lower": true
@@ -387,5 +417,46 @@
  },
  "27_6:helmet00": {
   "mirror_lower": true
+ },
+ "03_8:helmet02": {
+  "refine": {
+   "official": {
+    "panel": "lower",
+    "body_to_shell": true,
+    "old_line": "white"
+   },
+   "free": true
+  }
+ },
+ "08_5:helmet02": {
+  "refine": {
+   "official": {
+    "panel": "lower",
+    "old_line": "dark"
+   },
+   "free": true
+  }
+ },
+ "12_6:helmet02": {
+  "refine": {
+   "mark": "jax",
+   "free": true
+  }
+ },
+ "12_6:helmet00": {
+  "refine": {
+   "gold_to_white": true,
+   "free": true
+  }
+ },
+ "15_0:helmet02": {
+  "refine": {
+   "outline": true
+  }
+ },
+ "15_0:helmet00": {
+  "refine": {
+   "outline": true
+  }
  }
 }

@@ -59,6 +59,10 @@ class Pins(unittest.TestCase):
             self.assertNotEqual(row["source_rgba_sha256"], row["new_rgba_sha256"], name)
         # silver by default (the road kit's helmet), the black helmet with the 2012 panther on the blue alternate
         self.assertEqual(doc["helmet_reassign"], {"04H0": "04A0", "04H2": "04H0", "04A2": "04H0"})
+        # the three alternates whose logo is rebuilt (Bills blue, Broncos white, Jaguars teal): new source art, both shells
+        self.assertEqual(len(doc["helmets"]), 12)
+        for name, row in doc["helmets"].items():
+            self.assertNotEqual(row["source_rgba_sha256"], row["new_rgba_sha256"], name)
 
 
 @unittest.skipUnless((SOURCES / "SOFTDRINK-league-project.json").is_file() and (SOURCES / "b81art-apply-receipt.json").is_file(),
@@ -82,6 +86,18 @@ class SourceFolder(unittest.TestCase):
                 self.assertEqual(rgba_sha(edit["png"]), doc["minis"][name]["new_rgba_sha256"], name)
                 seen += 1
         self.assertEqual(seen, 583)
+
+    def test_the_rebuilt_helmets_are_the_pinned_source_art(self):
+        doc = pins()
+        seen = 0
+        for edit in self.project["edits"]:
+            if edit.get("kind") == "live_helmet":
+                name = f"{edit['family']}_{edit['asset_code']}{edit['side']}{edit['variant']}"
+                if name in doc["helmets"]:
+                    self.assertEqual(rgba_sha(edit["png"]), doc["helmets"][name]["new_rgba_sha256"], name)
+                    seen += 1
+        self.assertEqual(seen, len(doc["helmets"]))
+        self.assertEqual(seen, 12)
 
     def test_carolina_wears_the_assigned_helmets(self):
         helmets = {(f"{e['asset_code']}{e['side']}{e['variant']}", e["family"]): e["png"]

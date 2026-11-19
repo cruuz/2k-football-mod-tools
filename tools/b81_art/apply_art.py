@@ -31,6 +31,7 @@ def main(argv=None):
     cards = json.loads((art / 'card_receipt.json').read_text())
     minis = json.loads((art / 'mini_receipt.json').read_text())
     reassign = json.loads((art / 'helmet_reassign.json').read_text())       # {slot selector: donor selector}
+    new_helmets = json.loads((art / 'helmet_receipt.json').read_text()) if (art / 'helmet_receipt.json').is_file() else {}
     files = src / 'assets' / 'files'
     plan, problems = [], []
     helmets = {}
@@ -51,7 +52,10 @@ def main(argv=None):
             if sel in reassign:
                 donor = helmets[(reassign[sel], e['family'])]
                 plan.append((e, 'png', Path(donor['png']), None, f"{e['family']}_{sel} <- {reassign[sel]}"))
-    expected = sum(1 for r in cards.values() if r.get('file')) + len(minis) + 2 * len(reassign)
+            elif f"{e['family']}_{sel}" in new_helmets:
+                rec = new_helmets[f"{e['family']}_{sel}"]       # a rebuilt logo: the slot's source art is replaced
+                plan.append((e, 'png', art / 'assets' / 'files' / rec['file'], rec['source_rgba_sha256'], f"{e['family']}_{sel}"))
+    expected = sum(1 for r in cards.values() if r.get('file')) + len(minis) + 2 * len(reassign) + len(new_helmets)
     if len(plan) != expected:
         problems.append(f'{len(plan)} edits matched, {expected} expected')
     for e, key, new, want, label in plan:

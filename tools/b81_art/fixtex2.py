@@ -161,6 +161,33 @@ def cleanup(name):
         if ov2.get('lower_from_modern'):
             res, _m = fixes7.lower_from_modern(res, name)
         masks['reoriented'] = (res[..., :3] != before[..., :3]).any(axis=2)
+    rf = ov2.get('refine')
+    if rf:
+        import refine
+        before = res.copy()
+        refine.FREE[0] = bool(rf.get('free'))
+        if rf.get('official'):
+            o_ = rf['official']
+            line = None
+            if o_.get('old_line') == 'white': line = (255, 255, 255)
+            elif o_.get('old_line') == 'dark': line = np.median(res[..., :3][(res[..., :3].astype(np.float64) @ refine.LUM) < 70], axis=0)
+            res = refine.official(res, fam, name.split('_')[1][:2], o_['panel'], body_to_shell=bool(o_.get('body_to_shell')), old_line=line)[0]
+        if rf.get('soften'):
+            line = (255, 255, 255) if rf['soften'] == 'white' else np.median(res[..., :3][(res[..., :3].astype(np.float64) @ refine.LUM) < 70], axis=0)
+            res = refine.soften(res, fam, line)[0]
+        if rf.get('interior_from'):
+            donor = name[:11] + 'H' + rf['interior_from'][3:] if False else f"{fam}_{rf['interior_from'][:2]}H{rf['interior_from'][3:]}"
+            res = refine.interior(res, name[:11] + 'H' + name[12:], cleanup(donor)[1], donor)[0]
+        if rf.get('mark') == 'jax':
+            res = refine.mark(res, fam, refine.jax_mark(), wide_vents=True)[0]
+        if rf.get('outline'):
+            res = refine.outline(res, fam)[0]
+        if rf.get('gold_to_white'):
+            res = refine.gold_to_white(res, fam)[0]
+        if rf.get('modern'):
+            res = refine.modern(res, name, cleanup('helmet02_' + name.split('_')[1])[1])[0]
+        refine.FREE[0] = False
+        masks['refined'] = (res[..., :3] != before[..., :3]).any(axis=2)
     return T, res, d, masks
 def pair(name, s=3, box=(0, 16, 150, 240)):
     T, res, d, masks = cleanup(name)

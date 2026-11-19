@@ -26,10 +26,13 @@ VENT_BOXES = ((28, 100, 64, 128), (66, 106, 100, 130), (66, 124, 100, 148), (28,
 
 
 #: Standard-shell kits whose left-side logo is rebuilt as the right side's mirror image (it faced the back of the helmet)
-STANDARD_LEFT_SIDE = ("00_0", "00_7", "01_0", "02_0", "03_0", "03_3", "03_8", "03_9", "04_0", "09_0", "09_2", "09_9", "12_0",
+STANDARD_LEFT_SIDE = ("00_0", "00_7", "01_0", "02_0", "03_0", "03_3", "03_9", "04_0", "09_0", "09_2", "09_9", "12_0",
                       "14_0", "14_10", "16_9", "24_9", "24_10", "27_0", "27_6")
 #: Standard-shell kits whose right-side logo is rebuilt as the left side's mirror image (the Broncos: it was upside down)
-STANDARD_RIGHT_SIDE = ("08_0", "08_5", "08_6")
+STANDARD_RIGHT_SIDE = ("08_0", "08_6")
+#: Helmet slots whose league project art is replaced by a rebuilt texture (data/nfl2k5_b81_art_cards.json "helmets"):
+#: the Bills' blue alternate, the Broncos' white alternate and the Jaguars' teal alternate, both shells, both sides
+NEW_ART = set(json.loads((ROOT / "data" / "nfl2k5_b81_art_cards.json").read_text(encoding="utf-8")).get("helmets", {}))
 
 
 def rows():
@@ -77,7 +80,14 @@ class Document(unittest.TestCase):
     def test_every_revolution_helmet_of_the_95_kits_is_cleaned_on_both_sides(self):
         revolution = [r for r in rows() if r["texture"] == "helmet02"]
         selectors = {r["selector"] for r in revolution}
-        self.assertEqual(len(revolution), 190)
+        # 190 modern-shell slots; the slots whose league project art is replaced outright (a logo rebuilt from the
+        # official mark needs colours the old palette does not hold) arrive finished and need no row, or a few texels
+        new_art = {name.split("_")[1] for name in NEW_ART if name.startswith("helmet02_")}
+        self.assertEqual(len(selectors | new_art), 190)
+        self.assertEqual(len(revolution), len(selectors))
+        for row in revolution:
+            if row["selector"] in new_art:
+                self.assertLess(row["texels"], 16, row["selector"])
         self.assertEqual(len({s[:2] for s in selectors}), 32)
         for selector in selectors:
             other = selector[:2] + ("A" if selector[2] == "H" else "H") + selector[3:]
@@ -117,7 +127,7 @@ class Document(unittest.TestCase):
 
     def test_every_revolution_row_repaints_the_painted_vents(self):
         for row in rows():
-            if row["texture"] != "helmet02":
+            if row["texture"] != "helmet02" or f"helmet02_{row['selector']}" in NEW_ART:
                 continue
             texels = run_texels(row)
             hit = sum(any(x0 <= x < x1 and y0 <= y < y1 for x, y in texels) for x0, y0, x1, y1 in VENT_BOXES)
@@ -127,7 +137,7 @@ class Document(unittest.TestCase):
     def test_the_standard_shell_rows_are_the_reviewed_kits(self):
         standard = sorted({r["selector"][:2] + "_" + r["selector"][3:] for r in rows() if r["texture"] == "helmet00"})
         self.assertEqual(standard, sorted(set(STANDARD_LEFT_SIDE) | set(STANDARD_RIGHT_SIDE) | {
-            "02_2", "02_3", "04_2", "13_0", "22_0", "22_4", "22_5", "25_0", "25_7"}))
+            "02_2", "02_3", "04_2", "13_0", "15_0", "22_0", "22_4", "22_5", "25_0", "25_7"}))
         for row in rows():
             if row["texture"] == "helmet00":
                 self.assertLess(row["texels"], 6000, row["selector"])     # a logo and what lay beside it, never a shell
@@ -168,6 +178,10 @@ class Document(unittest.TestCase):
                             if r > 150 and g < 70 and b < 70:
                                 red["lower" if y >= 128 else "upper"] += 1
                 self.assertGreaterEqual(min(red.values()), 4, (selector, texture, red))
+
+    def test_the_rebuilt_alternates_are_new_source_art_on_both_shells(self):
+        self.assertEqual(NEW_ART, {f"{shell}_{kit[:2]}{side}{kit[3:]}" for shell in ("helmet00", "helmet02")
+                                   for kit in ("03_8", "08_5", "12_6") for side in "HA"})
 
     def test_the_jets_white_throwback_loses_the_top_of_the_2004_oval(self):
         by = {(r["selector"], r["texture"]): r for r in rows()}
@@ -267,16 +281,18 @@ class RealDisc(unittest.TestCase):
 
     def test_the_released_disc_is_waiting_for_every_row_but_the_new_carolina_art(self):
         # 04H0, 04H2 and 04A2 are pinned to the helmet art the league project gives them in beta 81 (the silver helmet
-        # by default, the black helmet on the blue alternate), on both shells, which the v0.9 disc does not have yet
+        # by default, the black helmet on the blue alternate), on both shells, which the v0.9 disc does not have yet; a
+        # row left on a rebuilt alternate is pinned to what the importer makes of its new source art
         other = sorted((r["selector"], r["texture"]) for r in self.state["rows"])
-        self.assertEqual(other, [(selector, texture) for selector in ("04A2", "04H0", "04H2") for texture in ("helmet00", "helmet02")])
+        self.assertEqual(other, sorted([(selector, texture) for selector in ("04A2", "04H0", "04H2") for texture in ("helmet00", "helmet02")]
+                                       + [(r["selector"], r["texture"]) for r in rows() if f"{r['texture']}_{r['selector']}" in NEW_ART]))
         self.assertEqual(self.state["after"], 0)
         self.assertEqual(self.state["absent"], 0)
-        self.assertEqual(self.state["before"], len(rows()) - 6)
+        self.assertEqual(self.state["before"], len(rows()) - len(other))
 
     def test_sample_rows_compile_to_their_pins_and_change_only_their_texels(self):
         wanted = [("02H0", "helmet02"), ("02H2", "helmet00"), ("09A0", "helmet02"), ("12H5", "helmet02"), ("06H0", "helmet02"),
-                  ("03H0", "helmet00"), ("02H3", "helmet00"), ("02A3", "helmet02"), ("13H0", "helmet00"), ("08A5", "helmet00"),
+                  ("03H0", "helmet00"), ("02H3", "helmet00"), ("02A3", "helmet02"), ("13H0", "helmet00"), ("08A0", "helmet00"),
                   ("22H5", "helmet02")]
         kits = hc.read_kits(DISC, sorted({s for s, _t in wanted}))
         by = {(r["selector"], r["texture"]): r for r in rows()}

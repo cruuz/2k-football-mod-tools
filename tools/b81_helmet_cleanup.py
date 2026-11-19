@@ -223,7 +223,12 @@ def cmd_build(args) -> int:
             receipt[name] = dict(error=str(exc)[:300])
             print("FAILED", name, str(exc)[:160], flush=True)
             continue
+        if args.decoded:
+            Path(args.decoded).mkdir(parents=True, exist_ok=True)
+            Image.fromarray(after, "RGBA").save(Path(args.decoded) / f"{name}.png")
         if row is None:
+            # nothing to repaint: the slot already holds the cleaned texture (new league project art, or untouched)
+            receipt[name] = dict(texels=0, after_rgba_sha256=sha(np.ascontiguousarray(after).tobytes()))
             continue
         rows.append(row)
         receipt[name] = dict(texels=row["texels"], before_sha256=row["before_sha256"], after_sha256=row["after_sha256"],

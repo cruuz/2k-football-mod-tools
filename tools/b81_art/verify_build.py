@@ -35,7 +35,11 @@ def lvl(sel, fam):
 out['carolina'] = {fam: dict(home_equals_away=bool((lvl('04H0', fam) == lvl('04A0', fam)).all()),
                              alt_home_equals_alt_away=bool((lvl('04H2', fam) == lvl('04A2', fam)).all()),
                              alt_differs_from_default=bool((lvl('04H2', fam) != lvl('04H0', fam)).any())) for fam in ('helmet00', 'helmet02')}
-ok = out['helmet_rows']['other'] == 0 and out['helmet_rows']['before'] == 0 and out['helmet_rows']['absent'] == 0 and not bad \
+hrec = json.load(open(O / 'helmet_receipt.json')) if (O / 'helmet_receipt.json').is_file() else {}
+kits.update(hc.read_kits(disc, sorted({n.split('_')[1] for n in hrec} - set(kits))))
+out['new_helmets_checked'] = len(hrec)
+out['new_helmets_not_as_built'] = [n for n in sorted(hrec) if not (lvl(n.split('_')[1], n.split('_')[0]) == C.load(O / 'helmets_compiled' / f'{n}.png')).all()]
+ok = not out['new_helmets_not_as_built'] and out['helmet_rows']['other'] == 0 and out['helmet_rows']['before'] == 0 and out['helmet_rows']['absent'] == 0 and not bad \
      and all(v['home_equals_away'] and v['alt_home_equals_alt_away'] and v['alt_differs_from_default'] for v in out['carolina'].values())
 out['ok'] = ok
 print(json.dumps(out, indent=1))

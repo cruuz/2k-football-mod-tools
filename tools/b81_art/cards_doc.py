@@ -10,8 +10,10 @@ def build():
     pick = lambda r: dict(changed_pixels=int(r.get('changed_pixels', r.get('changed', 0))), new_rgba_sha256=r['new_rgba_sha256'], source_rgba_sha256=r['source_rgba_sha256'])
     doc = dict(schema='nfl2k5_b81_art_cards/v1', about=old['about'],
                cards={k: pick(v) for k, v in sorted(cards.items())}, minis={k: pick(v) for k, v in sorted(minis.items())},
-               helmet_reassign=json.load(open(OUT / 'helmet_reassign.json')))
+               helmet_reassign=json.load(open(OUT / 'helmet_reassign.json')),
+               helmets={k: dict(new_rgba_sha256=v['new_rgba_sha256'], source_rgba_sha256=v['source_rgba_sha256'])
+                        for k, v in sorted(json.load(open(OUT / 'helmet_receipt.json')).items())})
     target.write_text(json.dumps(doc, indent=1, sort_keys=True) + '\n')
     return doc
 if __name__ == '__main__':
-    d = build(); print('cards', len(d['cards']), 'minis', sorted(d['minis']), 'reassign', d['helmet_reassign'])
+    d = build(); print('cards', len(d['cards']), 'minis', len(d['minis']), 'helmets', sorted(d['helmets']))
