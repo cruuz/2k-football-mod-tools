@@ -34,6 +34,10 @@ REDRAWN = CHARGERS + BENGALS + ("00A0", "00H0", "01A0", "01H0", "07H0", "14A0", 
 # batch 5 (measured on 2026 club game photographs, BATCH5/digits/judged.json): Rams, Bears, Jets, Commanders, Colts,
 # Texans wider; Commanders heavier; Browns lighter (home and road of each)
 REDRAWN += ("23H0", "23A0", "05H0", "05A0", "19H0", "19A0", "29H0", "29A0", "11H0", "11A0", "37H0", "37A0", "30H0", "30A0")
+# batch 5 alternates: Broncos white and navy, Lions black and Defend the Den, Packers rivalries, Saints white Color
+# Rush, Jets black and White Out, Seahawks 26A4 and 26H4, Browns brown, Texans Battle Red
+REDRAWN += ("08A5", "08A6", "08H6", "09A2", "09H2", "09A9", "09H9", "10A5", "10H5", "17A1", "17H1", "19A2", "19H2",
+            "19A7", "19H7", "26A4", "26H4", "30A3", "30H3", "37A2", "37H2")
 #: batch 4 (KITS4): the only jersey rows that repaint beyond the chest strip under the collar
 WHOLE_JERSEY = ("09A9", "09H9", "26H4")
 
@@ -256,7 +260,10 @@ class DigitDocument(unittest.TestCase):
                                 # batch 5: real wider than 40 columns allow (two-digit numbers are cut outside 12-51): 40
                                 ("23H0", 40), ("23A0", 40), ("05H0", 30), ("05A0", 30), ("19H0", 38), ("19A0", 38),
                                 ("29H0", 40), ("29A0", 40), ("11H0", 40), ("11A0", 40), ("37H0", 40), ("37A0", 40),
-                                ("30H0", 35), ("30A0", 35)):
+                                ("30H0", 35), ("30A0", 35), ("08A5", 40), ("08A6", 40), ("08H6", 40), ("09A2", 37),
+                                ("09H2", 37), ("09A9", 40), ("09H9", 40), ("10A5", 38), ("10H5", 38), ("17A1", 37), ("17H1", 37),
+                                ("19A2", 38), ("19H2", 38), ("19A7", 38), ("19H7", 38), ("26A4", 38), ("26H4", 38), ("30A3", 35),
+                                ("30H3", 35), ("37A2", 40), ("37H2", 40)):
             solid = png_rgba(folder / by[(selector, 13)])[0][..., 3] > 127
             cols = np.flatnonzero(solid.any(axis=0))
             self.assertLessEqual(abs(int(cols.max() - cols.min() + 1) - width), 1, selector)
@@ -609,10 +616,18 @@ class RealDisc(unittest.TestCase):
                 self.assertEqual(tuple(int(v) for v in after[y, x, :3]), colour)
             self.assertTrue((after[..., 3] == before[..., 3]).all())                            # alpha never moves
 
+    def as_built(self, selector):
+        """the kit package as a build holds it when the glyph step runs: the nameplate pass first (its Jaguars letters
+        come from the retail disc; elsewhere it may fill a hollow hyphen), as the digit document's nameplate rows are
+        pinned"""
+        if not hasattr(type(self), "_retail"):
+            type(self)._retail = up.retail_kits_for_nameplates(RETAIL) if RETAIL.is_file() else None
+        return up.after_nameplate_pass(selector, self.kits[selector], self._retail)
+
     def test_every_digit_row_compiles_to_its_pin_through_the_studio_digit_route(self):
         document = gf.digits_b81()
         for selector in REDRAWN:
-            replacements, receipt = gf.compile_resource(selector, self.kits[selector], strict=True, document=document)
+            replacements, receipt = gf.compile_resource(selector, self.as_built(selector), strict=True, document=document)
             digits = [p for p in receipt["parts"] if p["kind"] == "digit_png"]     # (a kit may also carry nameplate rows)
             self.assertEqual(len(digits), len([r for r in digit_rows() if r["selector"] == selector]), selector)
             self.assertIn(len(digits), (10, 20), selector)                        # jersey digits, and arm digits where drawn
