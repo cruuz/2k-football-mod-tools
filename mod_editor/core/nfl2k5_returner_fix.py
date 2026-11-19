@@ -104,6 +104,14 @@ GETTER_SIZE = 0x80
 ROW_LABEL_VA = 0x242980
 ROW_LABEL_SIZE = 0x50
 RETAIL_ROW_LABEL = bytes.fromhex("a18074c1008b4c240403c283e8006a00742d48741d48740dba0889e800e85e7ae0ffc20c00baf488e800e8517ae0ffc20c00bae088e800e8447ae0ffc20c00bacc88e800e8377ae0ffc20c0090909090")
+SUMMARY_TAIL_VA = 0x242C2D      # in 0x242C00, after it loads the descriptor's position and side
+SUMMARY_FILTER_VA = 0x242C50
+SUMMARY_NAME_RETURN = 0x243AC5
+SUMMARY_JERSEY_RETURN = 0x243B06
+RETAIL_SUMMARY_TAIL = bytes.fromhex(
+    "743983f904751556528b159c74c100b90100000051e899feffff5ec383f906751556528b159c74c100b90200000051e87ffeffff5ec3"
+    "83f901751256528b159c74c10033c951e868feffff5ec333c083f9030f95c056528b159c74c100408bc851e84dfeffff5ec3"
+)
 NTH_SIZE = 0x90
 RETAIL_NTH = bytes.fromhex(
     "518b5424080fb6831c010000558b6c24105733ff2bd63bc789542410897c24087e5f8b04bb33c985f6ba010000007e113b448d00750233d2413bce7cf385d274348b54241c33c985"
@@ -331,19 +339,43 @@ def _row_label_code() -> bytes:
     return a.assemble()
 
 
-def _display_check() -> bytes:
-    """The chart's draw callbacks show the fielded lineup. Every other caller keeps the saved assignment.
+def summary_tail_bytes() -> bytes:
+    """Preserve the shared selector's column mapping and identify its two read-only formatters."""
+    a = _Asm(SUMMARY_TAIL_VA)
+    a.b("49 83f906")                        # decrement the column; 1..6 each form a jersey/name pair
+    a.j8("72", "pair")
+    a.b("6a04 59")                          # other columns take the retail default, rank 2
+    a.label("pair")
+    a.b("d1e9 56 52 51 8b159c74c100")       # rank /= 2; push side, position, rank; EDX = team
+    a.call(0x242AE0)
+    a.label("row_return")
+    a.b("5e c3")                           # restore the selector's saved ESI
+    selector = a.assemble()
+    _require(len(selector) <= SUMMARY_FILTER_VA - SUMMARY_TAIL_VA, "returner summary selector exceeds its room")
 
-    The parent row getter at 0x242ae0 has four saved registers and 28 local bytes, so its caller's return address is
-    at [esp+0x48] here. Only the depth chart's own draw callbacks return into 0x242D00..0x2437FF (the returner photo
-    0x242D48, the panel 0x242E3C, the column text 0x24353E and the rating bars 0x24370E); those show who will field the
-    kick. The rerank and swap helpers below that range and the input handler at 0x2442BE above it keep the stored
-    returner, so pressing a button on a row always edits the saved KR/PR slot and never stores the fill-in."""
+    check = _Asm(SUMMARY_FILTER_VA)
+    check.b("8b54244c")                    # caller of 0x242AE0, including this filter's return address
+    check.b("81fa" + struct.pack("<I", SUMMARY_TAIL_VA + a.labels["row_return"]).hex())
+    check.j8("74", "summary")
+    check.b("81ea002d2400 81fa000b0000 c3") # carry for an existing detail callback in 0x242D00..0x2437FF
+    check.label("summary")
+    check.b("8b542460")                    # above three row arguments and saved ESI: caller of 0x242C00
+    for caller in (SUMMARY_NAME_RETURN, SUMMARY_JERSEY_RETURN):
+        check.b("81fa" + struct.pack("<I", caller).hex())
+        check.j8("74", "draw")
+    check.b("f8 c3")                       # clear carry: edit, duplicate check or another consumer
+    check.label("draw")
+    check.b("f9 c3")
+    body = selector.ljust(SUMMARY_FILTER_VA - SUMMARY_TAIL_VA, b"\xcc") + check.assemble()
+    _require(len(body) <= len(RETAIL_SUMMARY_TAIL), "returner summary filter exceeds its room")
+    return body.ljust(len(RETAIL_SUMMARY_TAIL), b"\xcc")
+
+
+def _display_check() -> bytes:
+    """Only detail draws and the two summary formatters may replace an unavailable named returner."""
     start = ROW_LABEL_VA + len(_row_label_code())
     a = _Asm(start)
-    a.b("0fb7542449")                      # movzx edx, word [esp+0x49]: bits 8..23 of that return address
-    a.b("6681ea2d24")                      # sub dx, 0x242D
-    a.b("83fa0b")                          # cmp edx, 0x0B (0x242D..0x2437)
+    a.call(SUMMARY_FILTER_VA)
     a.j8("73", "done")
     a.b("85c0")
     a.j8("74", "done")
@@ -680,6 +712,7 @@ def _sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
     _require(len(RETAIL_EXCHANGE) == EXCHANGE_SIZE, "retail transcript must cover the whole exchange store")
     return [("returner_loop", _offset(payload, SITE_VA), RETAIL_SITE, site_bytes()),
             ("returner_chart", _offset(payload, ROW_LABEL_VA), RETAIL_ROW_LABEL, row_label_bytes()),
+            ("returner_summary", _offset(payload, SUMMARY_TAIL_VA), RETAIL_SUMMARY_TAIL, summary_tail_bytes()),
             ("returner_lookup", _offset(payload, FN_NTH_RETURNER), RETAIL_NTH, lookup_bytes()),
             ("returner_getter", _offset(payload, GETTER_VA), RETAIL_GETTER, getter_bytes()),
             ("lineup_slot_check", _offset(payload, LINEUP_HOOK_VA), RETAIL_LINEUP_HOOK, lineup_hook_bytes()),
@@ -692,6 +725,9 @@ def _sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
 _PREVIOUS_CHART = (_row_label_code() + bytes.fromhex(
     "817c2448102d2400721d85c074198b54240485d27406f64227707506f64027707405e952000000c3"
 )).ljust(ROW_LABEL_SIZE, b"\xcc")
+_PREVIOUS_DETAIL_CHART = _row_label_code() + bytes.fromhex(
+    "0fb75424496681ea2d2483fa0b731a85c074168b54240485d27406f64227707506f64027707402eb50c3"
+)
 _PREVIOUS_LOOKUP = (_nth_code() + bytes.fromhex(
     "8d792029f729f781ec3403000089e289d96a006a00e89756eaff0fb6143c81c43403000031c03a931c01000073038b0493c3"
 )).ljust(NTH_SIZE, b"\xcc")
@@ -699,7 +735,7 @@ _PREVIOUS_LOOKUP = (_nth_code() + bytes.fromhex(
 # Earlier installs that upgrade in place: the first b780 st1 getter; depth locks revision 5's own all-star call
 # (an image where depth locks came first): the returner fix owns the loop head's call and points it at its own
 # skip, so either order of the two owners ends in the same bytes.
-PREVIOUS = {"returner_chart": (_PREVIOUS_CHART,), "returner_lookup": (_PREVIOUS_LOOKUP,),
+PREVIOUS = {"returner_chart": (_PREVIOUS_CHART, _PREVIOUS_DETAIL_CHART), "returner_lookup": (_PREVIOUS_LOOKUP,),
             "returner_getter": (getter_bytes_v1(), getter_bytes(previous=True)), "all_star_skip": (DEPTH_LOCKS_ALL_STAR_CALL,),
             "returner_loop": (site_bytes(v2=True),)}
 
@@ -720,6 +756,9 @@ def status(payload: bytes) -> str:
     try:
         states = _site_states(payload)
     except (ReturnerFixError, ValueError, struct.error):
+        return "foreign"
+    # The current chart calls a helper in the summary selector. They ship as a pair.
+    if (states["returner_chart"] == "applied") != (states["returner_summary"] == "applied"):
         return "foreign"
     others = {k: v for k, v in states.items() if k != "all_star_skip"}
     call = states["all_star_skip"]           # "previous" = depth locks revision 5's own call, taken over on apply

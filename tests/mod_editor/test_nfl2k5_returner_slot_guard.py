@@ -254,9 +254,10 @@ class ReturnerGetterStatusTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(previous).hexdigest(), "1dac7fe757cac8407a9d6901a31193c81f79212805ec8dadb41261749a35c459")
         historical_chart = returner.PREVIOUS["returner_chart"][0]
         self.assertEqual(hashlib.sha256(historical_chart).hexdigest(), "4a8eed1f56d098193c651e310ff96a2fe42d22f03729ca8f5e6103b2dbaa8487")
-        for chart in (historical_chart, returner.row_label_bytes()):
+        for chart in returner.PREVIOUS["returner_chart"]:
             old = bytearray(self.applied)
-            for va, body in ((returner.ROW_LABEL_VA, chart), (returner.FN_NTH_RETURNER, previous)):
+            for va, body in ((returner.ROW_LABEL_VA, chart), (returner.SUMMARY_TAIL_VA, returner.RETAIL_SUMMARY_TAIL),
+                             (returner.FN_NTH_RETURNER, previous)):
                 offset = returner._offset(self.applied, va)
                 old[offset:offset + len(body)] = body
             self.assertEqual(returner.status(bytes(old)), "legacy")
@@ -268,6 +269,7 @@ class ReturnerGetterStatusTests(unittest.TestCase):
         text = next(s for s in _sections(self.retail) if s.virtual_address <= returner.GETTER_VA < s.virtual_address + s.raw_size)
         allowed = [(text.header_offset + 36, text.header_offset + 56)]
         for va, size in ((returner.SITE_VA, returner.SITE_SIZE), (returner.GETTER_VA, returner.GETTER_SIZE),
+                         (returner.SUMMARY_TAIL_VA, len(returner.RETAIL_SUMMARY_TAIL)),
                          (returner.ROW_LABEL_VA, returner.ROW_LABEL_SIZE), (returner.FN_NTH_RETURNER, returner.NTH_SIZE),
                          (returner.LINEUP_HOOK_VA, 7), (returner.EXCHANGE_VA, returner.EXCHANGE_SIZE),
                          (returner.ALL_STAR_CALL_VA, 5)):
@@ -283,7 +285,8 @@ class ReturnerGetterStatusTests(unittest.TestCase):
         self.assertEqual(upgraded, self.applied)
         self.assertEqual(receipt["upgraded_from"], "legacy")
         self.assertEqual([e["label"] for e in receipt["edits"]],
-                         ["returner_chart", "returner_lookup", "returner_getter", "lineup_slot_check", "exchange_store", "all_star_skip"])
+                         ["returner_chart", "returner_summary", "returner_lookup", "returner_getter",
+                          "lineup_slot_check", "exchange_store", "all_star_skip"])
         # the first b780 st1 install (loop + 98-byte getter) upgrades the same way
         first = bytearray(legacy)
         off = returner._offset(legacy, returner.GETTER_VA)
@@ -322,6 +325,7 @@ class ReturnerGetterStatusTests(unittest.TestCase):
                 text = next(s for s in _sections(data) if s.virtual_address <= returner.GETTER_VA < s.virtual_address + s.raw_size)
                 allowed = [(text.header_offset + 36, text.header_offset + 56)]
                 for va, size in ((returner.GETTER_VA, returner.GETTER_SIZE), (returner.LINEUP_HOOK_VA, 7),
+                                 (returner.SUMMARY_TAIL_VA, len(returner.RETAIL_SUMMARY_TAIL)),
                                  (returner.EXCHANGE_VA, returner.EXCHANGE_SIZE), (returner.ALL_STAR_CALL_VA, 5),
                                  (returner.SITE_VA, returner.SITE_SIZE),     # the loop gains the injury test
                                  # beta 81 (K01): the row labels and the compacted nth-returner lookup share their
@@ -335,6 +339,29 @@ class ReturnerGetterStatusTests(unittest.TestCase):
                 self.assertEqual(receipt["changed_bytes"], sum(end - start for start, end in _diff_runs(data, upgraded)))
         if not seen:
             self.skipTest("no released executable configured (NFL2K5_V08_XBE, NFL2K5_B780_RC_XBE)")
+
+    def test_detail_only_standard_upgrades_and_foreign_summary_selector_refuses(self):
+        prior = returner.PREVIOUS["returner_chart"][1]
+        self.assertEqual(hashlib.sha256(prior).hexdigest(), "2f3e134f56768b4e4b89e68436cc09893e85ca7d67112bb51d4d2e475d873a0b")
+        old = bytearray(self.applied)
+        chart = returner._offset(old, returner.ROW_LABEL_VA)
+        summary = returner._offset(old, returner.SUMMARY_TAIL_VA)
+        old[chart:chart + len(prior)] = prior
+        old[summary:summary + len(returner.RETAIL_SUMMARY_TAIL)] = returner.RETAIL_SUMMARY_TAIL
+        self.assertEqual(returner.status(bytes(old)), "legacy")
+        upgraded, receipt = returner.apply(bytes(old))
+        self.assertEqual(upgraded, self.applied)
+        self.assertEqual([e["label"] for e in receipt["edits"]], ["returner_chart", "returner_summary"])
+        for base in (old, self.applied):
+            foreign = bytearray(base)
+            foreign[summary + len(returner.RETAIL_SUMMARY_TAIL) - 1] ^= 1
+            self.assertEqual(returner.status(bytes(foreign)), "foreign")
+            with self.assertRaises(returner.ReturnerFixError):
+                returner.apply(bytes(foreign))
+        for offset, size in ((chart, len(prior)), (summary, len(returner.RETAIL_SUMMARY_TAIL))):
+            mixed = bytearray(old)
+            mixed[offset:offset + size] = upgraded[offset:offset + size]
+            self.assertEqual(returner.status(bytes(mixed)), "foreign")
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is absent; native x86 proofs require it")
@@ -366,6 +393,57 @@ class ReturnerGetterNativeTests(unittest.TestCase):
                         self.assertEqual(new.row(position, rank), old.row(position, rank))
                         cases += 1
         self.assertGreaterEqual(cases, 64 * 18)
+
+    def test_summary_name_and_jersey_follow_fielded_rows_while_other_selector_callers_keep_stored_slots(self):
+        from mod_editor.core.nfl2k5_depth_chart_rows import SUMMARY_COLUMNS
+        original = bytes([0, 2, 3, 9, 1, 8])
+        m = _Machine(self.images["retail + fix"], PS_TAIL, original)
+        names = {}
+        for slot in range(len(ROSTER)):
+            player = m.players[1, slot]
+            data = PLAYERS + 0x8000 + 0x80 * slot
+            for off, ptr, text in ((0x10, data, "Alex"), (0x14, data + 32, f"Runner{slot}")):
+                m.uc.mem_write(ptr, (text + "\0").encode("utf-16-le"))
+                m.uc.mem_write(player + off, struct.pack("<I", ptr))
+            names[player] = (str(40 + slot), f"A. Runner{slot}")
+        for out in ((), (2,), (8,), (2, 3)):
+            for slot in (2, 3, 8):
+                m.uc.mem_write(m.players[1, slot] + 0x27, b"\x40" if slot in out else b"\0")
+            fielded = m.fielded_rows()
+            for role, (row, rank, saved) in enumerate(((0, 0, 2), (0, 1, 3), (1, 0, 8))):
+                for kind, expected_callback in enumerate((ROW_NUMBER, ROW_NAME)):
+                    col = 1 + 2 * rank + kind
+                    callback = struct.unpack("<I", m.uc.mem_read(SUMMARY_COLUMNS[col] + 8, 4))[0]
+                    self.assertEqual(callback, expected_callback)
+                    state, ptr = m.call(callback, {UC_X86_REG_ECX: col, UC_X86_REG_EDX: row})
+                    self.assertEqual(state, "returned")
+                    rendered = bytes(m.uc.mem_read(ptr, 64)).decode("utf-16-le").split("\0", 1)[0]
+                    self.assertEqual(rendered, names[fielded[role]][kind], (out, row, col))
+                for caller in (0x243B8C, 0x243BB0):
+                    esp = STACK - 0x200
+                    m.uc.mem_write(esp, struct.pack("<I", caller))
+                    m.uc.reg_write(UC_X86_REG_ESP, esp)
+                    m.uc.reg_write(UC_X86_REG_ECX, 1 + 2 * rank)
+                    m.uc.reg_write(UC_X86_REG_EDX, row)
+                    m.uc.emu_start(0x242C00, caller, count=2000000)
+                    self.assertEqual(m.uc.reg_read(UC_X86_REG_EIP), caller)
+                    self.assertEqual(m.uc.reg_read(UC_X86_REG_ESP), esp + 4)
+                    self.assertEqual(m.uc.reg_read(UC_X86_REG_EAX), m.players[1, saved])
+            self.assertEqual(m.specials(), list(original))
+
+    def test_shared_summary_selector_preserves_retail_columns_and_default_rank(self):
+        specials = bytes([0, 2, 3, 9, 1, 8])
+        old = _Machine(self.retail, 0, specials)
+        new = _Machine(self.images["retail + fix"], 0, specials)
+        for page in range(4):
+            for machine in (old, new):
+                machine.uc.mem_write(0xC174B8, struct.pack("<I", page))
+            for row in range(11):
+                for column in (*range(8), 0xFFFFFFFF):
+                    regs = {UC_X86_REG_ECX: column, UC_X86_REG_EDX: row}
+                    previous = old.call(0x242C00, regs)
+                    self.assertEqual(previous[0], "returned", (page, row, column))
+                    self.assertEqual(new.call(0x242C00, regs), previous, (page, row, column))
 
     def test_injured_locked_returner_rows_follow_the_game_lineup_and_recover_with_the_player(self):
         # Three distinct designated players let a PR injury and a KR injury be tested independently.
