@@ -103,7 +103,8 @@ class CommentaryNumbersTests(unittest.TestCase):
         before = Path(os.environ["B765_F1_V04_BODY"]).read_bytes()
         self.assertEqual(f1_repair.sha(before), f1_repair.BODY_BEFORE)
         added, receipt = f1_repair.repair_body(before)
-        self.assertEqual(f1_repair.sha(added), f1_repair.BODY_AFTER)
+        # The current writer uses the updated years-pro/appearance data and resolves colleges on new records.
+        self.assertEqual(f1_repair.sha(added), "9b39d0d968fa5140b9a0b971fa2af12bd68bcf21980486bedad9753e54501fbc")
         self.assertTrue(receipt["scope"]["outside_scope_identical"])
         final, _ = rr.repair_commentary_body(added)
         replay, _ = f1_repair.repair_body(
@@ -113,6 +114,19 @@ class CommentaryNumbersTests(unittest.TestCase):
         reverse, _ = f1_repair.repair_body(
             commentary_first, approved_input_sha256=(f1_repair.sha(commentary_first),))
         self.assertEqual(rr.repair_commentary_body(reverse)[0], final)
+
+    @unittest.skipUnless(os.environ.get("B765_F1_V04_BODY") and os.environ.get("B765_F1_HISTORICAL_OUTPUT"),
+                         "optional pinned v0.4 roster and the beta-76.5 F1 writer output")
+    def test_beta_765_free_agent_writer_output_retains_its_pinned_scope(self):
+        from tools.b765 import f1_repair
+        before = Path(os.environ["B765_F1_V04_BODY"]).read_bytes()
+        historical = Path(os.environ["B765_F1_HISTORICAL_OUTPUT"]).read_bytes()
+        self.assertEqual(f1_repair.sha(before), f1_repair.BODY_BEFORE)
+        self.assertEqual(f1_repair.sha(historical), f1_repair.BODY_AFTER)
+        scope = f1_repair.prove_scope(before, historical, f1_repair.fa.load_data())
+        self.assertEqual(scope["changed_bytes"], 9967)
+        self.assertTrue(scope["outside_scope_identical"])
+        self.assertTrue(scope["draft_380_records_identical"])
 
     def test_actual_disc_writer_repairs_untouched_legacy_records_in_build_inputs(self):
         before = self.fixture()
