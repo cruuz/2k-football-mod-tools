@@ -224,6 +224,63 @@ class PrivateWriterTests(unittest.TestCase):
         cls.base = retail_xbe()
         cls.patched, cls.receipt = cards.apply(cls.base)
 
+    @unittest.skipUnless(uc is not None, "Unicorn is needed for the signed franchise")
+    def test_signed_franchise_promoted_quarterback_on_both_sides_of_backfield(self):
+        from mod_editor.core import nfl2k5_roster_records as records, nfl2k5_senior_bowl as bowl
+        from tests.nfl2k5_supersim_draft_fixture import Machine, signed_save
+
+        def roster_order(game, team, position):
+            count = game.uc.mem_read(team + 0x11C, 1)[0]
+            players = [game.get(team + 4 * i) for i in range(count)]
+            return [p for p in players if game.uc.mem_read(p + 0x35, 1)[0] == position]
+
+        original = Machine(self.base, trace_writes=False)
+        body = bytearray(signed_save())
+        original.load_franchise(bytes(body))
+        quarterbacks = roster_order(original, original.get(0xE5786C), 0)
+        first, promoted = quarterbacks[:2]
+        self.assertEqual([(original.get(p + 0x28) >> 10) & 7 for p in (first, promoted)], [0, 1])
+        for player, rank in ((first, 1), (promoted, 0)):
+            offset = player - original.ARENA + 0x28
+            word, = struct.unpack_from("<I", body, offset)
+            struct.pack_into("<I", body, offset, (word & ~(7 << 10)) | (rank << 10))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "SAVEGAME.DAT"
+            path.write_bytes(body)
+            path.with_name("EXTRA").write_bytes(records.sign_save(bytes(body)))
+            document, _ = bowl.read_franchise(path)
+            payload = bytes(document.body)
+            self.assertEqual(payload, body)
+
+        positions = (0, 7, 8)  # QB, halfback and fullback in the signed f0 franchise.
+        for label, image in (("retail", self.base), ("patched", self.patched)):
+            game = Machine(image, trace_writes=False)
+            game.load_franchise(payload)
+            clubs = [game.get(0xE5786C + 4 * i) for i in range(2)]
+            for home, away in (clubs, clubs[::-1]):
+                with self.subTest(handler=label, promoted_club_home=home == clubs[0]):
+                    game.call(0x77AE0, ecx=home)
+                    game.call(0x77B20, ecx=away)
+                    game.call(0x34BC10, budget=2_000_000)
+                    expected = bytearray(160)
+                    for side, (team, copy) in enumerate(((away, 0xAE7FC0), (home, 0xAE7DCC))):
+                        self.assertEqual(game.uc.mem_read(copy, 500), game.uc.mem_read(team, 500))
+                        context = game.ARENA + 0x150000
+                        game.call(0xE80D0, ecx=team, edx=context, args=(0, 0), budget=2_000_000)
+                        for role, position in enumerate(positions):
+                            raw_first = roster_order(game, team, position)[0]
+                            self.assertGreater(game.call(0xE75A0, ecx=role, edx=context), 0)
+                            starter = game.call(0xE7810, eax=role, args=(context, 0))
+                            self.assertEqual(game.uc.mem_read(starter + 0x35, 1)[0], position)
+                            if team == clubs[0] and position == 0:
+                                self.assertEqual((raw_first, starter), (first, promoted))
+                            player = raw_first if label == "retail" else starter
+                            struct.pack_into("<5I", expected, (side + 2 * role) * 20, 1, 1, 0, player, copy)
+                    game.put(0xAE7C54, 1)  # Backfield tab
+                    game.put(0xAE7C58, 0)  # Player Lineup
+                    game.call(0x34C9B0, budget=2_000_000)  # The screen refresh populates both sides.
+                    self.assertEqual(bytes(game.uc.mem_read(0xAE7C8C, 160)), bytes(expected))
+
     def test_guarded_writer_preallocated_and_idempotent(self):
         self.assertEqual(cards.status(self.base), "retail")
         self.assertEqual(cards.status(self.patched), "applied")
