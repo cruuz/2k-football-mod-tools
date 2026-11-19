@@ -409,7 +409,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_kit_fixes_2026_sw1.json": "4f7052e03fd8d23dceef19de010459e552d3f4b63fd2335e575d13bd1e0de18e",
                 "data/nfl2k5_kit_fixes_2026_names.json": "cb354c62aa6b6e8de0ff01e9f25937f0a2e54169bfc37932bd689599529693fb",
                 "data/nfl2k5_kit_fixes_2026_b81.json": "cfdb20ed4b2f5757590f1179703eb240d71a4af9326ae782f5ceea25498fc646",
-                "data/nfl2k5_kit_fixes_2026_b81u.json": "265438055177b2e8179d8d0dbc8b95110ad09f1462c43474ad9c0e4150e4d2de",
+                "data/nfl2k5_kit_fixes_2026_b81u.json": "5960a01c5e9489e7f1451bd7751c3897576f837a9fe4d363d77a5eaf5a6924f0",
                 "data/nfl2k5_glyph_fixes_2026_b81u.json": "81e3d973277f78622be1fa9ac639e3e850d031646f6715e47d5e3816893ad3f5",
                 "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_0.png": "e9015d2b8c06f224b979129b80f5f1f1fe4a6097c316112ebcaf2ff27d8bba47",
                 "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_1.png": "9828a5ba8e4d8e357196f611964ad5991e687d69c4ce1d2b8c6ae54471accaa1",

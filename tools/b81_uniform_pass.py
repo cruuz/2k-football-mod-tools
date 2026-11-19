@@ -152,34 +152,46 @@ def build_row(selector: str, texture: str, raw: bytes, wanted: np.ndarray, info:
             want[far] = colours[mapped[np.asarray(inverse).reshape(-1)]]
         target[changed, :3] = want.astype(np.uint8)
         changed = (target[..., :3] != before[..., :3]).any(axis=2)      # a snapped texel may be back at what it held
-    rows = runs_of(before, target)
-    if not rows:
-        return None, before, {}
-    # every colour of the repainted texels is named once (one texel that wears it), most used first: the compile then
-    # keeps or gives each an exact palette entry (an entry only the old art used is not handed to another colour) and,
-    # on a full palette, may fold near-identical twin entries to make room
-    declared = []
-    if changed.any():
-        new_colours, counts = np.unique(target[changed][:, :3].astype(np.int64), axis=0, return_counts=True)
-        order = sorted(range(len(new_colours)), key=lambda i: (-int(counts[i]), tuple(int(v) for v in new_colours[i])))
-        for i in order[:int(info.get("declare", 48))]:
-            colour = tuple(int(v) for v in new_colours[i])
-            ys, xs = np.nonzero(changed & (target[..., :3] == np.array(colour, np.uint8)).all(axis=2))
-            declared.append(dict(op="texels", points=[[int(xs[0]), int(ys[0])]], color="#%02X%02X%02X" % colour))
-    row = dict(selector=selector, chunk=index, texture=texture, kind=kind,
-               size=[int(native["width"]), int(native["height"]), int(native["mips"])],
-               resource_size=len(raw), offset=int(chunk.offset), length=len(span), before_sha256=sha(span),
-               defects=list(info.get("defects", [])), note=info.get("note", "corrected against the 2026 frames"),
-               reference=list(info.get("reference", [])), max_blend_slots=int(info.get("max_blend_slots", 96)),
-               ops=declared + [dict(op="runs", rows=rows)])
-    try:
-        new, detail = kf.compile_texture(span, row)
-    except Exception as exc:  # noqa: BLE001 - a tight allocation: crisp mip parents compress better
-        if "fit" not in str(exc).lower() and "scratch word" not in str(exc):
-            raise
-        row["mip"] = "mode"
-        new, detail = kf.compile_texture(span, row)
-    after, _native = level0(new, kind)
+    # Settle: a rarely used colour beyond the declared ones compiles to the nearest palette entry (a level or two
+    # away). The row must hold exactly what the compile makes, so such texels take the compiled colour and the row is
+    # written again until the compile returns the row's own colours.
+    for _settle in range(4):
+        rows = runs_of(before, target)
+        if not rows:
+            return None, before, {}
+        # every colour of the repainted texels is named once (one texel that wears it), most used first: the compile then
+        # keeps or gives each an exact palette entry (an entry only the old art used is not handed to another colour) and,
+        # on a full palette, may fold near-identical twin entries to make room
+        declared = []
+        if changed.any():
+            new_colours, counts = np.unique(target[changed][:, :3].astype(np.int64), axis=0, return_counts=True)
+            order = sorted(range(len(new_colours)), key=lambda i: (-int(counts[i]), tuple(int(v) for v in new_colours[i])))
+            for i in order[:int(info.get("declare", 48))]:
+                colour = tuple(int(v) for v in new_colours[i])
+                ys, xs = np.nonzero(changed & (target[..., :3] == np.array(colour, np.uint8)).all(axis=2))
+                declared.append(dict(op="texels", points=[[int(xs[0]), int(ys[0])]], color="#%02X%02X%02X" % colour))
+        row = dict(selector=selector, chunk=index, texture=texture, kind=kind,
+                   size=[int(native["width"]), int(native["height"]), int(native["mips"])],
+                   resource_size=len(raw), offset=int(chunk.offset), length=len(span), before_sha256=sha(span),
+                   defects=list(info.get("defects", [])), note=info.get("note", "corrected against the 2026 frames"),
+                   reference=list(info.get("reference", [])), max_blend_slots=int(info.get("max_blend_slots", 96)),
+                   ops=declared + [dict(op="runs", rows=rows)])
+        try:
+            new, detail = kf.compile_texture(span, row)
+        except Exception as exc:  # noqa: BLE001 - a tight allocation: crisp mip parents compress better
+            if "fit" not in str(exc).lower() and "scratch word" not in str(exc):
+                raise
+            row["mip"] = "mode"
+            new, detail = kf.compile_texture(span, row)
+        after, _native = level0(new, kind)
+        scope_ = (target[..., :3] != before[..., :3]).any(axis=2)
+        drift = (after[..., :3] != target[..., :3]).any(axis=2) & scope_
+        if not drift.any() or int(np.abs(after[..., :3].astype(np.int64) - target[..., :3])[drift].max()) > int(info.get("snap", 6)):
+            break
+        if _settle == 3:
+            raise ValueError(f"{selector} {texture}: the row does not settle on the compiled colours")
+        target[drift, :3] = after[drift, :3]
+        changed = (target[..., :3] != before[..., :3]).any(axis=2)
     scope = (target[..., :3] != before[..., :3]).any(axis=2)
     outside = (after != before).any(axis=2) & ~scope
     error = np.abs(after[..., :3].astype(np.int64) - target[..., :3]).max(axis=2)

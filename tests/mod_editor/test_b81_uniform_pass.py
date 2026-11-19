@@ -104,19 +104,24 @@ class KitDocument(unittest.TestCase):
         self.assertEqual(folded, {("23A0", "pants00"): (1, 7)})       # the Rams road pants palette is full
 
     def test_the_first_batch_is_the_reviewed_kits(self):
-        self.assertEqual(sorted((r["selector"], r["texture"]) for r in kit_rows()),
+        self.assertEqual(sorted((r["selector"], r["texture"]) for r in kit_rows() if r["texture"] != "jersey00"),
                          [("03A0", "sleeve00"), ("03H0", "sleeve00"), ("15A0", "pants00"), ("15H0", "pants00"),
-                          ("15H0", "socks00"), ("18A0", "jersey00"), ("18A7", "jersey00"), ("18H0", "jersey00"),
-                          ("18H7", "jersey00"), ("23A0", "pants00")])
+                          ("15H0", "socks00"), ("23A0", "pants00")])
 
-    def test_the_giants_chest_mark_rows_repaint_only_the_mark(self):
-        # Noah 11/18: "the NY logo on the giants jersey below the nfl patch is too large". 18 by 15 texels became 9 by 7.
-        for selector in ("18H0", "18A0", "18H7", "18A7"):
-            row = [r for r in kit_rows() if (r["selector"], r["texture"]) == (selector, "jersey00")][0]
-            self.assertEqual(row["texels"], 243, selector)
-            for run in [op for op in row["ops"] if op["op"] == "runs"][0]["rows"]:  # [row, first column, colours]
-                self.assertTrue(85 <= run[0] <= 103, (selector, run[:2]))        # the old box and the new one, nothing else
-                self.assertTrue(152 <= run[1] and run[1] + len(run[2]) // 6 <= 170, (selector, run[:2]))
+    def test_the_jersey_rows_repaint_only_the_chest_under_the_collar(self):
+        # Round 2 (Noah 11/18: "the NY logo on the giants jersey below the nfl patch is too large. There are likely
+        # similar issues on other jerseys"): the league collar shield at its real size on 166 packages (12 by 16
+        # texels; it was 8 by 10), wordmarks moved clear of it, the Giants mark as wide as the shield. A jersey row
+        # may touch nothing but the strip of chest between the collar point and the number.
+        jerseys = [r for r in kit_rows() if r["texture"] == "jersey00"]
+        self.assertEqual(len(jerseys), 166)
+        self.assertEqual(len({r["selector"] for r in jerseys}), 166)
+        for row in jerseys:
+            for run in [op for op in row["ops"] if op["op"] == "runs"][0]["rows"]:   # [row, first column, colours]
+                self.assertTrue(64 <= run[0] <= 108, (row["selector"], run[:2]))
+                self.assertTrue(118 <= run[1] and run[1] + len(run[2]) // 6 <= 205, (row["selector"], run[:2]))
+        for selector in ("25H7", "25A7", "28H7", "28A7", "03H8", "03A8", "11H4", "11A4", "07H9", "07A9", "04H2", "04A2"):
+            self.assertNotIn(selector, {r["selector"] for r in jerseys})        # open: something else sits on the shield
 
     def test_no_row_touches_a_helmet_or_the_far_away_atlas(self):
         for row in kit_rows():
@@ -437,19 +442,28 @@ class RealDisc(unittest.TestCase):
             rest = {c for c in row} - {white, sol}
             self.assertTrue(rest and all(near(c, royal, 4) for c in rest), (y, rest))        # hard edges: no blends
 
+    def marks(self, selector, base, rows, columns=(140, 186)):
+        """box (x0, y0, x1, y1 inclusive) of the texels in a band of chest rows that are not the jersey colour"""
+        torso = self.after(selector, "jersey00")[..., :3].astype(int)
+        band = np.abs(torso[rows[0]:rows[1], columns[0]:columns[1]] - np.array(base)).max(-1) > 30
+        ys, xs = np.nonzero(band)
+        return (int(xs.min()) + columns[0], int(ys.min()) + rows[0], int(xs.max()) + columns[0], int(ys.max()) + rows[0])
+
+    def test_the_collar_shield_is_twelve_by_sixteen_and_hangs_from_the_collar_point(self):
+        # sharp 2026 game photographs, 16 players: the shield is 0.141 of the number height wide, 1.2 tall to wide. The
+        # number glyph is 22.2 cm tall on the player, a texel 0.275 by 0.25 cm: 12 by 16 texels (it was 8 by 10).
+        for selector, base, top in (("18H0", (14, 40, 120), 71), ("24A0", (255, 255, 255), 71), ("18H7", (255, 255, 255), 75)):
+            self.assertEqual(self.marks(selector, base, (top, top + 17), (150, 172)), (155, top, 166, top + 15), selector)
+
     def test_the_giants_chest_mark_is_as_wide_as_the_collar_shield_and_sits_over_the_number(self):
-        # real 2026 frames: the "ny" under the shield is 0.96 to 1.12 of the shield's width (the game had 2.25) and sits
-        # close above the number. The shield is 8 texels wide, centred on column 161.
-        for selector, base in (("18H0", (14, 40, 120)), ("18A0", (255, 255, 255)), ("18H7", (255, 255, 255)),
-                               ("18A7", (255, 255, 255))):
+        # real 2026 pictures: the "ny" under the shield is 0.87 to 1.12 of the shield's width (the game had 18 texels
+        # beside an 8 texel shield) and sits close above the number, whose top is at row 108.
+        for selector, base, top in (("18H0", (14, 40, 120), 93), ("18A0", (255, 255, 255), 93), ("18H7", (255, 255, 255), 95),
+                                    ("18A7", (255, 255, 255), 95)):
+            self.assertEqual(self.marks(selector, base, (top - 2, 108)), (155, top, 166, top + 9), selector)
             torso = self.after(selector, "jersey00")[..., :3].astype(int)
-            mark = np.abs(torso[84:108, 140:186] - np.array(base)).max(-1) > 36
-            ys, xs = np.nonzero(mark)
-            self.assertEqual((int(xs.min()) + 140, int(xs.max()) + 140), (157, 165), selector)
-            self.assertEqual((int(ys.min()) + 84, int(ys.max()) + 84), (97, 103), selector)
-            self.assertFalse(mark[:97 - 84].any(), selector)                         # the old mark left no ghost
-            self.assertAlmostEqual(float(xs.mean()) + 140, 161.0, delta=0.7, msg=selector)
-            self.assertGreater(int(mark[103 - 84].sum()), 6, selector)                # the underline bar is one solid row
+            bar = np.abs(torso[top + 9, 155:167] - np.array(base)).max(-1) > 30
+            self.assertGreater(int(bar.sum()), 8, selector)                         # the underline bar is one solid row
 
     def test_every_kit_row_is_waiting_on_the_released_disc_and_compiles_to_its_pin(self):
         result = up.states(DISC)
@@ -461,8 +475,9 @@ class RealDisc(unittest.TestCase):
             rows = [r for r in kit_rows() if r["selector"] == selector]
             self.assertEqual(len(replacements), len(rows), selector)
             for part in receipt["parts"]:
-                self.assertEqual(part["merged_twin_slots"], 1 if selector == "23A0" else 0, selector)
-                if selector != "23A0":
+                folded = selector == "23A0" and part.get("texture") == "pants00"   # the one full palette (first batch)
+                self.assertEqual(part["merged_twin_slots"], 1 if folded else 0, (selector, part.get("texture")))
+                if not folded:
                     self.assertEqual(part["protected_texels_moved_one_level"], 0, selector)
                 else:                               # over all stored mips; seven of them on the top level
                     self.assertLessEqual(part["protected_texels_moved_one_level"], 30)
