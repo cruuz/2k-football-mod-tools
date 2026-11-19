@@ -483,6 +483,10 @@ Finn 4.0.0.41 reads only some of the name locations an expanded roster can use. 
 
 The game's depth chart and its starters follow each player's stored depth rank, not the order of the team list. Moving a player in the team list (what Flying Finn's arrows and older Studio betas did) changes neither. From beta 81, **★ Rosters → ↑ Move up / ↓ Move down** change the depth rank itself: pick the position chip, select the player and move him. On SOFTDRINK the moved players are locked to their rows so the weekly roster pass keeps them; a computer-run team still promotes a clearly better unlocked player.
 
+## Is it safe to clear a player's stats?
+
+Use the Studio for this, not Flying Finn's Clear Stats. Finn's version erases the player's link to his history. When the game later averaged his passing, receiving or rushing yards, it divided by zero and crashed (seen in the game's own code on a signed save). **★ Rosters → right-click → Clear his career stats…** gives him a fresh, empty history the game can read instead: his stats show zero and new games add to them. League records and award lists keep his name. It needs six free words in the save's career-stat pool for each player; if the pool is full the Studio refuses and changes nothing. Undo takes it back until you save the copy.
+
 ## I used Flying Finn's editor. Where is everything in the Studio?
 
 Open **★ Rosters** and press **Open Xbox save (Finn's zip)…**: it takes the same Action Replay `.zip`. Ctrl+F (or **Find…**) is Finn's Find Player and searches every team, the reserves, the free agents and the draft class. Ctrl+C, Ctrl+V and Ctrl+Alt+A copy, paste and paste attributes only, as in Finn; PgUp and PgDn in the editor move to the previous or next player; right-click a player for Place on IR and the rest of Finn's player menu. The guide's **Coming from Flying Finn's editor** table lists every place.

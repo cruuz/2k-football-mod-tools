@@ -996,6 +996,26 @@ def encode_record(values: Mapping[str, int]) -> bytes:
     return bytes(raw)
 
 
+HISTORY_END_BIT = 0x80000000          # the last word of a player's history stream
+HISTORY_POSTSEASON_BIT = 0x20000000   # a postseason row (0x14EDB0 phase 1)
+HISTORY_CLEAR_FIELDS = (13, 8, 2)     # receiving, passing and rushing yards: the three averages the game divides by
+HISTORY_CLEAR_WORDS = 6
+HISTORY_CAPACITY_LARGE, HISTORY_CAPACITY_SMALL = 50_000, 20_000
+
+
+def neutral_history(slot: int) -> tuple[int, ...]:
+    """b81 R9: the six-word stream the game's own writer 0x14F220 leaves when it records zero for fields 2, 8 and 13 in
+    the regular season and then the postseason of season slot ``slot`` (Codex's native witness: slot 9 gave
+    0x248D0000 0x24880000 0x24820000 0x048D0000 0x04880000 0x84820000). Every getter reads zero and the three averages
+    have a row to divide by."""
+
+    _require(0 <= int(slot) <= 31, f"season slot {slot} is outside 0-31")
+    words = [phase | (int(slot) << 23) | (field << 16)
+             for phase in (HISTORY_POSTSEASON_BIT, 0) for field in HISTORY_CLEAR_FIELDS]
+    words[-1] |= HISTORY_END_BIT
+    return tuple(words)
+
+
 def _signed(value: int) -> int:
     return value - (1 << 32) if value >= (1 << 31) else value
 
@@ -2251,6 +2271,112 @@ class RosterDocument:
             self._set_specialists(team, values)
         return result
 
+    # ------------------------------------------------------------------ b81 R9: Clear Stats
+    # Finn's Clear Stats writes 0 to the player's +0x2C history link. Codex's native witness (finn-facts
+    # TEAM_AND_HISTORY.md, history_clear_native.py) showed that crashes the game: the average reader 0x14EEC0 divides
+    # by the number of matching rows at 0x14EEF2, and the passing/receiving/rushing comparators (fields 8, 13, 2) reach it
+    # with zero rows. The safe clear points the player at a NEW six-word private stream (zero-valued fields 13, 8 and 2,
+    # postseason then regular season, in his current season slot), written at the end of the used pool exactly as the
+    # game's writer 0x14F220 leaves it, and counts the six words at root+0x40. The old stream is left as it was, so any
+    # other player sharing it keeps it, and every other byte of the save is unchanged.
+    def history_pool(self) -> dict[str, int]:
+        """The career-stat pool: where it starts, the words used, the native capacity (0x14E7E0: 50,000 with 35 or more
+        team records, else 20,000) and the free words, after checking its unused room touches no other table."""
+
+        from .nfl2k5_save_rost import TABLES
+        root = self.obj_base + OBJ_OFF
+        used = self.u32(root + 0x40)
+        pool = self.rel(root + 0x44)
+        _require(pool is not None, "this roster has no career-stat pool")
+        assert pool is not None
+        capacity = HISTORY_CAPACITY_LARGE if self.u32(root + 0x18) >= 35 else HISTORY_CAPACITY_SMALL
+        end = pool + 4 * capacity
+        _require(used <= capacity and end <= self.arena_end,
+                 f"the career-stat pool ({used:,} of {capacity:,} words) does not fit this roster block")
+        for name, count_field, pointer_field, stride, _maximum in TABLES:
+            count, start = self.u32(root + count_field), self.rel(root + pointer_field)
+            if count and start is not None:
+                _require(start + count * stride <= pool or start >= end,
+                         f"the {name} table sits inside the career-stat pool's room")
+        return {"offset": pool, "used": used, "capacity": capacity, "free": capacity - used}
+
+    def _history_link(self, player: Player) -> int:
+        return player.offset + FIELD_BY_NAME["history_pointer"].offset
+
+    def history_words(self, player: Player, pool: Mapping[str, int] | None = None) -> tuple[int, ...]:
+        """The player's history stream as this document holds it now (empty when he has none)."""
+
+        value = player.record.values["history_pointer"]
+        if not value:
+            return ()
+        pool = pool or self.history_pool()
+        start = self._history_link(player) + _signed(value) - 1
+        used_end = pool["offset"] + 4 * pool["used"]
+        _require(pool["offset"] <= start < used_end and (start - pool["offset"]) % 4 == 0,
+                 f"{player.display}: the history link points outside the used pool")
+        words = []
+        for at in range(start, used_end, 4):
+            words.append(self.u32(at))
+            if words[-1] & HISTORY_END_BIT:
+                break
+        _require(bool(words) and bool(words[-1] & HISTORY_END_BIT), f"{player.display}: unterminated history stream")
+        return tuple(words)
+
+    def history_is_clear(self, player: Player, pool: Mapping[str, int] | None = None) -> bool:
+        """True when the player already reads the neutral stream for his current season slot."""
+
+        return self.history_words(player, pool) == neutral_history(player.record.values["years_pro"])
+
+    def history_state(self, offsets: Sequence[int], words: int) -> dict[str, Any]:
+        """What ``clear_history`` changes, for undo: the used count, the next ``words`` pool words and the players'
+        links."""
+
+        pool = self.history_pool()
+        start = pool["offset"] + 4 * pool["used"]
+        return {"used": pool["used"], "start": start, "tail": bytes(self.body[start:start + 4 * words]),
+                "links": {offset: self.by_offset[offset].record.values["history_pointer"] for offset in offsets}}
+
+    def restore_history(self, state: Mapping[str, Any]) -> None:
+        struct.pack_into("<I", self.body, self.obj_base + OBJ_OFF + 0x40, int(state["used"]))
+        start, tail = int(state["start"]), bytes(state["tail"])
+        self.body[start:start + len(tail)] = tail
+        for offset, value in state["links"].items():
+            self.by_offset[int(offset)].record.values["history_pointer"] = int(value)
+
+    def clear_history(self, players: Sequence[Player]) -> dict[str, Any]:
+        """Clear each player's season and career stats, the clubs on his history card and his own honor credits the safe
+        way (see above). Refuses, changing nothing, when the pool has fewer free words than six per player; a player who
+        already reads a neutral stream is left alone. Returns the before/after states for undo."""
+
+        pool = self.history_pool()
+        todo: list[Player] = []
+        already: list[Player] = []
+        for player in players:
+            if player in todo or player in already:
+                continue
+            (already if self.history_is_clear(player, pool) else todo).append(player)
+        need = HISTORY_CLEAR_WORDS * len(todo)
+        if need > pool["free"]:
+            raise RosterRecordError(
+                f"the career-stat pool has {pool['free']:,} free words of {pool['capacity']:,} and clearing "
+                f"{len(todo)} player{'' if len(todo) == 1 else 's'} needs {need:,} ({HISTORY_CLEAR_WORDS} each). Nothing "
+                "was changed. The game makes room by folding old seasons as it plays; a fuller clear needs a separate "
+                "proof first")
+        offsets = [p.offset for p in todo]
+        before = self.history_state(offsets, need)
+        at = before["start"]
+        for player in todo:
+            for index, word in enumerate(neutral_history(player.record.values["years_pro"])):
+                struct.pack_into("<I", self.body, at + 4 * index, word)
+            player.record.values["history_pointer"] = (at - self._history_link(player) + 1) & 0xFFFFFFFF
+            at += 4 * HISTORY_CLEAR_WORDS
+        struct.pack_into("<I", self.body, self.obj_base + OBJ_OFF + 0x40, pool["used"] + need)
+        after = {"used": pool["used"] + need, "start": before["start"],
+                 "tail": bytes(self.body[before["start"]:at]),
+                 "links": {p.offset: p.record.values["history_pointer"] for p in todo}}
+        return {"cleared": todo, "already": already, "words": need, "used_before": pool["used"],
+                "used_after": pool["used"] + need, "capacity": pool["capacity"], "before": before, "after": after}
+
     def _specialists(self, team: TeamRecord) -> list[int]:
         """The team's six specialist slot bytes (holder, KR1, KR2, K, LS, PR) as this document holds them now."""
 
@@ -3036,9 +3162,11 @@ class RosterDocument:
             was_college = original._college_name_at(player.offset, self.colleges, self.college_record_index)
             if was_college != player.college:
                 texts["college"] = (was_college, player.college)
-            if changes or texts:
+            # b81 R9: a new history link is Clear Stats (the only writer of this pointer); say so, not the offset
+            history = before.values["history_pointer"] != player.record.values["history_pointer"]
+            if changes or texts or history:
                 out.append({"pool": player.pool, "index": player.index, "name": player.display,
-                            "changes": changes, "texts": texts, "membership": None})
+                            "changes": changes, "texts": texts, "membership": None, "history_cleared": history})
         moved = {(m["pool"], m["index"]): m for m in self.membership_changes()}
         for entry in out:
             move = moved.pop((entry["pool"], entry["index"]), None)
@@ -6528,7 +6656,8 @@ __all__ = [
     "years_pro_from_years_exp", "years_pro_label",
     "advance_years_pro", "apply", "apply_body",
     "body_mass_index", "body_type_apply", "body_type_preview", "changed_ranges", "contract_years_change", "copy_player",
-    "ranges_touch",
+    "ranges_touch", "neutral_history", "HISTORY_CLEAR_WORDS", "HISTORY_CLEAR_FIELDS", "HISTORY_END_BIT",
+    "HISTORY_POSTSEASON_BIT",
     "depth_slot_names", "DEPTH_FIELDS", "DEPTH_LOCK_BITS", "PAIRED_DEPTH_CODES",
     "find_players", "global_edit_preview_many", "player_location", "decode_record", "edits_document", "encode_record", "encoded_size",
     "export_csv", "field_coverage", "find_block_base", "global_edit_apply", "global_edit_preview",

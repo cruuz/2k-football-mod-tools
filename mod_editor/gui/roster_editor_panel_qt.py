@@ -4035,6 +4035,18 @@ class RosterEditorPanel(QWidget):
         action = menu.addAction("Special teams…", self.open_special_teams)
         action.setEnabled(self.special_teams_button.isEnabled())
         menu.addSeparator()
+        # b81 R9: Finn's Clear Stats, the way the game survives it
+        reason = self.clear_stats_reason([player] if player is not None else [])
+        action = menu.addAction("Clear his career stats…", self.clear_career_stats)
+        action.setEnabled(not reason)
+        action.setToolTip(reason or "Empties his season and career stats, the clubs on his history card and his own "
+                                    "honors. League records and award lists are kept. Undo takes it back.")
+        shown = self.visible_players() if self.document is not None else []
+        reason_all = self.clear_stats_reason(shown)
+        action = menu.addAction(f"Clear career stats of all {len(shown)} shown…",
+                                lambda: self.clear_career_stats(self.visible_players()))
+        action.setEnabled(not reason_all and len(shown) > 1)
+        action.setToolTip(reason_all or "Every player in the list as it is filtered now.")
         place = menu.addAction("Place on IR…", self.place_selected_on_ir)
         place.setEnabled(self.ir_place_reason(player) == "")
         place.setToolTip(self.ir_place_reason(player) or "Opens Franchise > Injured Reserve with him chosen.")
@@ -4050,6 +4062,66 @@ class RosterEditorPanel(QWidget):
         if row >= 0:
             self.player_table.setCurrentCell(row, max(0, self.player_table.columnAt(position.x())))
         self.grid_menu().exec_(self.player_table.viewport().mapToGlobal(position))
+
+    # ------------------------------------------------------------------ b81 R9: Clear Stats
+    def clear_stats_reason(self, players: Sequence[rr.Player]) -> str:
+        if self.document is None or not players:
+            return "Select a player first."
+        if self._source_kind != "save":
+            return ("Career stats are cleared in an Xbox save. On a disc, career history comes from the Build step's "
+                    "team history.")
+        return ""
+
+    def clear_career_stats(self, players: Sequence[rr.Player] | None = None, *,
+                           confirm: bool = True) -> tuple[bool, str]:
+        """Finn's Clear Stats in the form the game survives (Codex's native witness): each player gets a new six-word
+        neutral history instead of Finn's null link, which crashes the game's yardage averages. One undo."""
+
+        chosen = [self.selected_player()] if players is None else list(players)
+        chosen = [p for p in chosen if p is not None]
+        reason = self.clear_stats_reason(chosen)
+        if reason:
+            self._set_status(reason)
+            return False, reason
+        document = self.document
+        assert document is not None
+        who = chosen[0].display if len(chosen) == 1 else f"{len(chosen)} players"
+        if confirm and self.isVisible():
+            answer = QMessageBox.question(
+                self, "Clear career stats",
+                f"Clear the career stats of {who}?\n\nThis empties season and career stats, the clubs listed on the "
+                "history card and the player's own honors. League records, award lists and other players are kept. "
+                "Each player uses six words of the save's career-stat pool. Undo takes it back.")
+            if answer != QMessageBox.Yes:
+                return False, "Not cleared."
+        try:
+            receipt = document.clear_history(chosen)
+        except rr.RosterRecordError as exc:
+            message = f"Nothing changed: {exc}."
+            self._set_status(message)
+            return False, message
+        cleared = [p.offset for p in receipt["cleared"]]
+        if not cleared:
+            message = f"Already clear: {who}."
+            self._set_status(message)
+            return False, message
+        before, after = receipt["before"], receipt["after"]
+
+        def put(state) -> None:
+            assert self.document is not None
+            self.document.restore_history(state)
+            for offset in cleared:
+                self._after_edit(self.document.by_offset[offset])
+
+        label = (f"{receipt['cleared'][0].display}: career stats cleared" if len(cleared) == 1
+                 else f"career stats cleared for {len(cleared)} players")
+        self.undo_stack.push(UndoEntry(label, lambda: put(before), lambda: put(after)))
+        put(after)
+        skipped = f"; {len(receipt['already'])} already clear" if receipt["already"] else ""
+        message = (f"{label} ({receipt['words']} pool words, {receipt['used_after']:,} of "
+                   f"{receipt['capacity']:,} used{skipped}).")
+        self._set_status(message)
+        return True, message
 
     def ir_place_reason(self, player: rr.Player | None) -> str:
         """Why Place on IR… is not offered for ``player`` ('' when it is)."""
@@ -4297,7 +4369,7 @@ class RosterEditorPanel(QWidget):
         baseline = self._baseline_record(player)
         changed = baseline is not None and any(
             baseline.values[key] != player.record.values[key]
-            for key in player.record.values if key not in rr.POINTER_FIELDS)
+            for key in player.record.values if key not in rr.POINTER_FIELDS or key == "history_pointer")
         key = (player.pool, player.index)
         if changed or self._name_changed(player) or self._membership_changed(player) or key in self._college_repairs:
             self._dirty.add(key)
@@ -5358,6 +5430,8 @@ class RosterEditorPanel(QWidget):
                 lines.append(f"    team: {was} -> {now}")
             for key, (was, now) in sorted(entry["texts"].items()):
                 lines.append(f"    {key}: {was!r} -> {now!r}")
+            if entry.get("history_cleared"):
+                lines.append("    Career stats: cleared (season and career stats, history card clubs, his honors)")
             for key, (was, now) in sorted(entry["changes"].items()):
                 caption = rr.RATING_LABELS.get(key) or rr.FIELD_BY_NAME[key].label
                 if key == "position":

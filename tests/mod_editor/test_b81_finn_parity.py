@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import struct
 import sys
 import tempfile
 import time
@@ -1547,6 +1548,139 @@ class TeamSettingsAvailabilityTests(_PanelCase):
     def test_a_disc_roster_says_where_team_settings_live(self) -> None:
         self.assertFalse(self.panel.team_options_button.isEnabled())
         self.assertIn("Xbox save", self.panel.team_options_button.toolTip())
+
+
+# --------------------------------------------------------------------------------------------- wave 2: R9 Clear Stats
+CODEX_HISTORY_SOURCE = Path(os.environ.get(
+    "NFL2K5_FINN_HISTORY_SOURCE",
+    "/media/noah/Storage/2K5-project/beta81/cpu-sim/verified-disc-128-dynasty-signed/2026/SAVEGAME.DAT"))
+CODEX_HISTORY_SIGNED = Path(os.environ.get(
+    "NFL2K5_FINN_HISTORY_SIGNED",
+    "/media/noah/Storage/2K5-project/beta81/finn-facts/evidence/player-history-signed/SAVEGAME.DAT"))
+
+
+class NeutralHistoryTests(unittest.TestCase):
+    def test_the_six_words_are_the_game_writers_for_slot_nine(self) -> None:
+        self.assertEqual([hex(w) for w in rr.neutral_history(9)],          # history-clear-native.json, tail_words
+                         ["0x248d0000", "0x24880000", "0x24820000", "0x48d0000", "0x4880000", "0x84820000"])
+        with self.assertRaises(rr.RosterRecordError):
+            rr.neutral_history(32)
+
+
+@unittest.skipUnless(CODEX_HISTORY_SOURCE.is_file() and CODEX_HISTORY_SIGNED.is_file(),
+                     f"Codex's history witness absent: {CODEX_HISTORY_SOURCE}")
+class ClearStatsWitnessTests(unittest.TestCase):
+    def test_clearing_lamar_writes_codexs_game_accepted_bytes(self) -> None:
+        document = rr.load_save(CODEX_HISTORY_SOURCE)
+        lamar = next(p for p in document.players if p.pool == "primary" and p.index == 137)
+        self.assertEqual(lamar.display, "Lamar Jackson")
+        receipt = document.clear_history([lamar])
+        self.assertEqual((receipt["words"], receipt["used_before"], receipt["used_after"]), (6, 44207, 44213))
+        self.assertEqual(document.to_body(), CODEX_HISTORY_SIGNED.read_bytes())   # all 987,836 bytes, 22 changed
+        again = document.clear_history([lamar])
+        self.assertEqual((again["words"], [p.display for p in again["already"]]), (0, ["Lamar Jackson"]))
+
+
+@unittest.skipUnless(SOFTDRINK_ROSTER_SAVE.is_file(), f"SOFTDRINK roster save absent: {SOFTDRINK_ROSTER_SAVE}")
+class ClearStatsCoreTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.document = rr.load_save(SOFTDRINK_ROSTER_SAVE)
+        self.with_history = [p for p in self.document.players if p.record.values["history_pointer"]]
+
+    def test_a_shared_stream_stays_with_the_other_player_and_undo_is_exact(self) -> None:
+        document = self.document
+        target, peer = self.with_history[0], self.with_history[1]
+        # a private copy where the peer shares the target's stream, as in Codex's adversarial arm
+        link = target.offset + rr.FIELD_BY_NAME["history_pointer"].offset
+        stream = link + rr._signed(target.record.values["history_pointer"]) - 1
+        peer.record.values["history_pointer"] = (stream - (peer.offset + 0x2C) + 1) & 0xFFFFFFFF
+        shared = document.history_words(peer)
+        body = bytes(document.body)
+        receipt = document.clear_history([target])
+        self.assertEqual(document.history_words(peer), shared)
+        self.assertEqual(document.history_words(target), rr.neutral_history(target.record.values["years_pro"]))
+        document.restore_history(receipt["before"])
+        self.assertEqual(bytes(document.body), body)
+        self.assertEqual(document.history_words(target), shared)
+
+    def test_a_pool_without_room_refuses_and_changes_nothing(self) -> None:
+        document = self.document
+        pool = document.history_pool()
+        struct.pack_into("<I", document.body, document.obj_base + rr.OBJ_OFF + 0x40, pool["capacity"] - 11)
+        body = bytes(document.body)
+        links = [p.record.values["history_pointer"] for p in self.with_history[:2]]
+        with self.assertRaisesRegex(rr.RosterRecordError, "has 11 free words of 50,000 and clearing 2 players needs 12"):
+            document.clear_history(self.with_history[:2])
+        self.assertEqual(bytes(document.body), body)
+        self.assertEqual([p.record.values["history_pointer"] for p in self.with_history[:2]], links)
+
+    def test_the_page_clears_with_one_undo_and_the_signed_copy_carries_it(self) -> None:
+        application = _app()
+        panel = RosterEditorPanel()
+        try:
+            self.assertTrue(panel.load_save(SOFTDRINK_ROSTER_SAVE))
+            document = panel.document
+            player = panel.selected_player()
+            self.assertTrue(player is not None and player.record.values["history_pointer"])
+            used = document.history_pool()["used"]
+            ok, message = panel.clear_career_stats(confirm=False)
+            self.assertTrue(ok, message)
+            self.assertIn("career stats cleared", message)
+            self.assertIn((player.pool, player.index), panel._dirty)
+            panel.refresh_diff()
+            self.assertIn("Career stats: cleared", panel.report.toPlainText())
+            self.assertEqual(panel.clear_career_stats(confirm=False)[1], f"Already clear: {player.display}.")
+            panel.undo()
+            self.assertEqual(document.history_pool()["used"], used)
+            self.assertNotIn((player.pool, player.index), panel._dirty)
+            panel.redo()
+            with tempfile.TemporaryDirectory() as folder:
+                panel.write_copy_to(Path(folder) / "copy.zip")
+                back = rr.load_save(Path(folder) / "copy.zip")
+                self.assertTrue(back.container.verified)
+                twin = back.by_offset[player.offset]
+                self.assertTrue(back.history_is_clear(twin))
+                self.assertEqual(back.history_pool()["used"], used + 6)
+        finally:
+            panel.deleteLater()
+            application.processEvents()
+
+
+@unittest.skipUnless(SOFTDRINK_FRANCHISE_SAVE.is_file(), f"SOFTDRINK franchise save absent: {SOFTDRINK_FRANCHISE_SAVE}")
+class ClearStatsFranchiseTests(unittest.TestCase):
+    def test_a_franchise_clear_composes_with_franchise_edits(self) -> None:
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        application = _app()
+        panel = RosterEditorPanel()
+        try:
+            self.assertTrue(panel.load_save(SOFTDRINK_FRANCHISE_SAVE))
+            document = panel.document
+            player = next(p for p in document.players if p.record.values["history_pointer"]
+                          and document.club_of(p) is not None)
+            self.assertTrue(panel.clear_career_stats([player], confirm=False)[0])
+            page = panel.franchise_panel
+            cap = page.save.salary_cap
+            self.assertTrue(page.set_salary_cap(cap + 1000))
+            with tempfile.TemporaryDirectory() as folder:
+                receipt = panel.write_copy_to(Path(folder) / "copy")
+                self.assertTrue(receipt["signed"])
+                back = rr.load_save(Path(folder) / "copy" / "SAVEGAME.DAT"
+                                    if (Path(folder) / "copy").is_dir() else Path(folder) / "copy")
+                self.assertTrue(back.history_is_clear(back.by_offset[player.offset]))
+                self.assertEqual(fs.FranchiseSave(back.container.savegame).salary_cap, cap + 1000)
+            panel.undo()
+            panel.undo()
+            self.assertFalse(document.history_is_clear(player))
+        finally:
+            panel.deleteLater()
+            application.processEvents()
+
+
+class ClearStatsAvailabilityTests(_PanelCase):
+    def test_a_disc_roster_says_career_stats_are_cleared_in_a_save(self) -> None:
+        ok, message = self.panel.clear_career_stats(self.panel.document.players[:1], confirm=False)
+        self.assertFalse(ok)
+        self.assertIn("Xbox save", message)
 
 
 if __name__ == "__main__":

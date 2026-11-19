@@ -1279,6 +1279,14 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    shown but not offered: changing it also switches the club's whole uniform and helmet set to the donor club's. On a
    disc, stadiums and uniforms come from the Studio's Build steps. One undo per Apply; **Show my changes** lists it;
    **Save Xbox save copy…** writes it.
+
+   **Clear his career stats…** (right-click a player in an Xbox save) empties his season and career stats, the
+   clubs on his history card and his own honors; **Clear career stats of all … shown…** does the same for the
+   whole filtered list. League records, award lists and every other player are kept. Flying Finn's Clear Stats
+   writes an empty history link, which crashed the game when it averaged that player's yards. The Studio instead
+   gives him a new six-word history with zero yards, the same words the game itself writes, so he reads zero
+   everywhere and earns new stats as he plays. Each player uses six words of the save's career-stat pool (50,000
+   words in a 32-club league); when the pool has no room the Studio says so and changes nothing. One undo.
 4. **Right**: the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
    Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
    ← → nudge by one, ↑ ↓ jump to the next card. Enum cards are dropdowns built from the tables lifted
@@ -1413,6 +1421,7 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Depth Chart (Ctrl+D) | Ctrl+D shows the selected player's position in depth chart order; **↑ Move up / ↓ Move down** change his row (the stored depth rank the game reads) |
 | Depth Chart > Special Teams | **Special teams…**: returners and holder; kicker, punter and long snapper through the depth chart |
 | Team > Options (stadium, playbook, default jersey, team play-by-play, defensive front) | **Team settings…** (Xbox saves) |
+| Clear Stats | Right-click: **Clear his career stats…** or **Clear career stats of all … shown…** (Xbox saves; a safe form, see above) |
 | The player grid (every rating as a column, click to sort) | **Columns ▾**, then click a heading |
 | Copy Player (Ctrl+C), Paste Player (Ctrl+V), Paste Attributes Only (Ctrl+Alt+A) | Same keys, or **Copy player** and **Paste ▾** |
 | Tools > Global Editor | **Global Attribute Editor…** |
