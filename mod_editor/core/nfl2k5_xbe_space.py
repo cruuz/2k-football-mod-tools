@@ -823,7 +823,7 @@ SCALE_TAG = EXT_MAGIC + b"SP03"
 
 
 def dormant_union():
-    """Every allocator owner the manifest builder installs on its disposable disc (beta 61 through beta 63)."""
+    """The requests shared by the manifest generator and its default allocator proof."""
     from . import nfl2k5_dynamic_kickoff_relocated as relocated
     from . import nfl2k5_momentum as momentum, nfl2k5_defensive_try as defensive_try
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_zone_drop as zone_drop
@@ -868,6 +868,7 @@ def dormant_union():
     from . import nfl2k5_classic_teams as classic_teams  # b775-ct1: late, last read-only owner
     from . import nfl2k5_return_coverage as return_coverage  # b778-kr1: in build_manifest's all_requests (verification tooling)
     from . import nfl2k5_module_loader as module_loader  # b778-xs1: the last late owner
+    from . import nfl2k5_seven_on_seven as seven
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
             + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
@@ -893,7 +894,7 @@ def dormant_union():
             + third_down.REQUESTS  # b778-ai8
             + classic_teams.REQUESTS  # b775-ct1 after b775-mo2
             + return_coverage.REQUESTS  # b779-fixD: matches build_manifest's all_requests so allocation_evidence() needs no allocated=
-            + module_loader.REQUESTS)
+            + module_loader.REQUESTS + seven.REQUESTS + GADGET_REQUESTS + (BACKFIELD_REQUEST,))
 
 
 def is_scaleout(payload):

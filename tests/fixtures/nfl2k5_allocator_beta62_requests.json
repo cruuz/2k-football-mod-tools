@@ -616,5 +616,23 @@
   "data",
   32,
   16
+ ],
+ [
+  "nfl2k5_gadget_proof",
+  "code",
+  2048,
+  16
+ ],
+ [
+  "nfl2k5_gadget_proof",
+  "read_only",
+  12800,
+  16
+ ],
+ [
+  "nfl2k5_backfield_cards",
+  "code",
+  176,
+  16
  ]
 ]

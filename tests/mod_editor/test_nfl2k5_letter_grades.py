@@ -209,7 +209,8 @@ class AllocatorTests(unittest.TestCase):
         # star career's code and data; b778 ai8: + third-down code (the five rows this test's pin predates);
         # b779-hn1: + the Super Bowl champions owner (after honors); b779-fixD (4c89ebbb2): + return coverage (1 row)
         # and the module loader (2 rows), which dormant_union() now lists to match the manifest builder.
-        self.assertEqual(len(union) - len(without), 27)
+        # Beta 81 reserves the two gadget slots and the Coach Matchup cards after those owners.
+        self.assertEqual(len(union) - len(without), 30)
         plan_with, plan_without = space.plan(union), space.plan(without)
         # b778 xs1/bd3: a union that no longer fits the v3 runs is a v4 image, which adds a second
         # allocator-directory row at POOL_VA; owner_offset keeps the two pages apart.
@@ -229,6 +230,8 @@ class AllocatorTests(unittest.TestCase):
                          [(1104, space.SCALE_DIRECTORY_VA, space.SCALE_DIRECTORY), (4096, space.POOL_VA, space.POOL_RAW)])
         added = sorted((k[0], k[1]) for k in new if k not in old and k[0] != space.DIRECTORY_OWNER)
         self.assertEqual(added, sorted([(lg.OWNER, "code"), (lg.OWNER, "read_only"), (lg.PROGRESS_OWNER, "code"),
+                                        ("nfl2k5_gadget_proof", "code"), ("nfl2k5_gadget_proof", "read_only"),
+                                        ("nfl2k5_backfield_cards", "code"),
                                         ("nfl2k5_period_goalposts", "code"), ("nfl2k5_period_goalposts", "read_only"),
                                         ("nfl2k5_honors", "code"), ("nfl2k5_honors", "data"),
                                         ("nfl2k5_champions", "code"),  # b779-hn1
