@@ -2,6 +2,11 @@
  "art": "nfl2k5_glyph_fixes_2026_b81u",
  "purpose": "b81-uniforms (beta 81): 2026 jersey digits redrawn against this season's game-highlight frames (refs/uniforms_2026), pinned to the finished digits of the released v0.9 disc",
  "references": {
+  "CIN": [
+   "refs/uniforms_2026/CIN/_digits_b81/home_sheet.png and road_sheet.png (every digit 0-9, 84 native crops with video ids and timestamps in digits.json)",
+   "refs/uniforms_2026/CIN/2026-10-04_JAX_primary-home/helmet_back_0844.jpg (81 on the black jersey)",
+   "refs/uniforms_2026/CIN/2026-09-27_PIT_primary-away/jersey_front_1120.jpg (49 on the white jersey)"
+  ],
   "LAC": [
    "refs/uniforms_2026/LAC/2026-10-11_DEN_primary-home/jersey_back_0552.jpg (upright 9, italic HARRIS plate)",
    "refs/uniforms_2026/LAC/2026-10-11_DEN_primary-home/jersey_front_0217.jpg (upright 10)",
@@ -10,6 +15,1026 @@
  },
  "schema": "nfl2k5_glyph_fixes_2026/v1",
  "textures": [
+  {
+   "after_sha256": "b99cea90a21b666623cb90227d52d596efe1655d6a2f3ef19ba96f575ab03269",
+   "before_sha256": "bd1b3281e9051e7398f303f98cc9931e13a9898072bbc9e7bb62608b8e9d1456",
+   "chunk": 13,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1856,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 462816,
+   "png": "CIN_06A0_digit_jersey_0.png",
+   "png_sha256": "e9015d2b8c06f224b979129b80f5f1f1fe4a6097c316112ebcaf2ff27d8bba47",
+   "resource_size": 1546512,
+   "selector": "06A0",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "ca2e098534f791154609c56ad3fdebcd886b006f8e1d3c2c0d56ba4bc4ea9d52",
+   "before_sha256": "0779aeea9013fb1036f6d95081bbf7196cae2d4a375b466ecf80a41208e6d4a9",
+   "chunk": 14,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1248,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 464672,
+   "png": "CIN_06A0_digit_jersey_1.png",
+   "png_sha256": "9828a5ba8e4d8e357196f611964ad5991e687d69c4ce1d2b8c6ae54471accaa1",
+   "resource_size": 1546512,
+   "selector": "06A0",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "31d2e7b2fc77b06eee1f1d95df9988be0493b38c1ed121cb0027167827433f4f",
+   "before_sha256": "659e67931be904f9253de6f54fa402061a597de8a6ce3a89475741dd738021f6",
+   "chunk": 15,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2224,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 465920,
+   "png": "CIN_06A0_digit_jersey_2.png",
+   "png_sha256": "e79accd4a121ab90d1c5c1bb4c9c3d49a93af6316489bbb953a4d6623e17aa6f",
+   "resource_size": 1546512,
+   "selector": "06A0",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "ba10a90b96169a388bb4fd34c91e5373c73c42fe4076ce85533bc0f63f37d0ea",
+   "before_sha256": "b00dec4382d726b5701b71c74c1e37e5c546c480207a8ecfc40e8abb8400ba0b",
+   "chunk": 16,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2320,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 468144,
+   "png": "CIN_06A0_digit_jersey_3.png",
+   "png_sha256": "b68e469b0c18bd24df58a68a46400db4a09a6460bdd99dbfbc03c6bfb154a436",
+   "resource_size": 1546512,
+   "selector": "06A0",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "45bc22487c660a49c84d106c542311b536800d1675ec32c593574ccb3ead9c14",
+   "before_sha256": "9349698a9eeabbbac9a555ed0aabd92988d1cbc6534a8dcb28cee2dba8239a8d",
+   "chunk": 17,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1888,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 470464,
+   "png": "CIN_06A0_digit_jersey_4.png",
+   "png_sha256": "d19adf64498009721c576cf8913c059c28e89e10841cdb5e9dec2f17746e34af",
+   "resource_size": 1546512,
+   "selector": "06A0",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "db98f7b148ee2aa93e406d49c2e1db17818acbba2bc41f43a0f48b3d320b9ebf",
+   "before_sha256": "defdfbe604ec6da2d4a5974f552800c28ad0054b71e53418ae22a32d13812b81",
+   "chunk": 18,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2144,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 472352,
+   "png": "CIN_06A0_digit_jersey_5.png",
+   "png_sha256": "9d1eae8de6c1df72438fa0358d363057f235d2bbc21abe55da4dedadf74c0b1a",
+   "resource_size": 1546512,
+   "selector": "06A0",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "c41fa97b27d9bf3e44c1387fcebf9aa981ff313885d7087711f518b83c5822ed",
+   "before_sha256": "e206fa82f7342a8c26e05fa2c77b560bcbc40c479c0250ea8f23adffe9b90c20",
+   "chunk": 19,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2304,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 474496,
+   "png": "CIN_06A0_digit_jersey_6.png",
+   "png_sha256": "28eb66e72e9082780e97ca9cf7db17d6f19f0f45ecbd5a4d6272aa0f4e5c1b1d",
+   "resource_size": 1546512,
+   "selector": "06A0",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "cc5e67e325c641f67d43ae3abc5db8b2da7862b862c05abb83c5497d6b99b436",
+   "before_sha256": "f49f189dc8fd50232b556f15dbae6930c89a4c5b85e7ea4c4aa6651852630a21",
+   "chunk": 20,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2080,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 476800,
+   "png": "CIN_06A0_digit_jersey_7.png",
+   "png_sha256": "aab9c8fe7ef81c27939ee6dd2fdf6d33898dd052d14f83c48e6758cb9f569cc2",
+   "resource_size": 1546512,
+   "selector": "06A0",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "3d91cf71ada9ad14420b458f39a346d0f8ee0e68f1e02ab9688d69d55986054e",
+   "before_sha256": "d4b055eb5e3c529187b082ad99ca00acc295da17244ff7c9070744bf63477197",
+   "chunk": 21,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2400,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 478880,
+   "png": "CIN_06A0_digit_jersey_8.png",
+   "png_sha256": "1f846e1c3b9fa3717a88643b124824e22ad7f881b5d5d6f02260adc5548c5c26",
+   "resource_size": 1546512,
+   "selector": "06A0",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "16217b21c98b1e25c76ef6460ba2829c8c9ceba69da86f3f4ba344b928c65e0e",
+   "before_sha256": "771a0f27f4d7c31b7aaf4b94a842288f4e42b27dff2f321e352834b971a26bc9",
+   "chunk": 22,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2352,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 481280,
+   "png": "CIN_06A0_digit_jersey_9.png",
+   "png_sha256": "e42ea1a2a59bfd4362475a014eb6cff9d2839144d10e80945faa41772f46808f",
+   "resource_size": 1546512,
+   "selector": "06A0",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "36e4fd01a966bb5ba1a514decefc0ec1c6afe94c7ed2bb021e7fc29a50daf3ec",
+   "before_sha256": "26d2a6527d9c089023be2b57eaeb76e6df6cb7950a098d312ad53e8034e88981",
+   "chunk": 13,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1568,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 460512,
+   "png": "CIN_06A5_digit_jersey_0.png",
+   "png_sha256": "08b181de811e44949a943491dcbc1030ef4e393d4df1818a1b64803f98702bea",
+   "resource_size": 1550240,
+   "selector": "06A5",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "8bee380490b35ed0f507432cdf43bdbad11f66d13df9dcce484d889b341a852b",
+   "before_sha256": "3a91296865d98eae4dcbce5411014f6bf80902be83f3759a1043463172c12325",
+   "chunk": 14,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1104,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 462080,
+   "png": "CIN_06A5_digit_jersey_1.png",
+   "png_sha256": "95e3c7e10e90d1f70bfcb6d10c2d9c399667fc997e07ba146af08f10a00a8c20",
+   "resource_size": 1550240,
+   "selector": "06A5",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "89726bd71c3c31ed9f8e6ac7668b2effb43aae47a631b32abcf16ac892d2f6af",
+   "before_sha256": "10ca47358a6975dd69c28f8b250742fc6ab627b33b7300f9646eba1cf2defcda",
+   "chunk": 15,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1872,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 463184,
+   "png": "CIN_06A5_digit_jersey_2.png",
+   "png_sha256": "f088a64703ee6cb55ed8281243c7ca0f8d93dea59f9132e02f333572ba8ed148",
+   "resource_size": 1550240,
+   "selector": "06A5",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "5b090058368013a7c555a8fc060a4859b4bb8c5fbcbe448d9f5366457581546d",
+   "before_sha256": "aef5e2ba0c8ae1194ee269d5e7cbc52307bc04f8fd53cda79605c8e572df93b1",
+   "chunk": 16,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2160,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 465056,
+   "png": "CIN_06A5_digit_jersey_3.png",
+   "png_sha256": "9ea983e533af6e18fcf92c505d6652b742b63f8fc8fc6fc23cc4963fb193df81",
+   "resource_size": 1550240,
+   "selector": "06A5",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "684dab7a3741c8489804d7b34acb348a69c10de86bd2d1c2cc84702b6318e2d1",
+   "before_sha256": "e5dc46a28da463e024bd1479a3f1d703e62b9f1642aafa002ef9b1b7ffb92852",
+   "chunk": 17,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1888,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 467216,
+   "png": "CIN_06A5_digit_jersey_4.png",
+   "png_sha256": "2d580c336231b00012b8898ebb39bc46fffff77040422cf16cd6ba1b23937972",
+   "resource_size": 1550240,
+   "selector": "06A5",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "1035fef5efb21bf8ac3dce6ef10d02ab4084300683bbd7479afc7800df988d69",
+   "before_sha256": "3f8397fc5a28225068dcbdf79cb2dd52b9b4a36d0d98a5b9461f2bd0947b0077",
+   "chunk": 18,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1792,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 469104,
+   "png": "CIN_06A5_digit_jersey_5.png",
+   "png_sha256": "88379ce858edd42eff269208ae4367891345512276343b748ec15c4c4cfb8b47",
+   "resource_size": 1550240,
+   "selector": "06A5",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "2ace5707c5c41261e00544802edb86bc6194564989a91c93add700dbc6f54f82",
+   "before_sha256": "3f0a260748f6ab27b08afc95ad38060f3f7d9e12d685367fb3b3a4a861d14312",
+   "chunk": 19,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1952,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 470896,
+   "png": "CIN_06A5_digit_jersey_6.png",
+   "png_sha256": "25559ce797f8c92eab8b845003c408f9359a560b8d31b44d6b96b0f8da7355c5",
+   "resource_size": 1550240,
+   "selector": "06A5",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "9aa54b0d284f5deebfeca1fbcfce3eb0f96581b28c98ac9e4a52ce86b0b7a20e",
+   "before_sha256": "5bc9b05c785f034901149dba02413fddd8acf61940e78be788759dfa2ab4501f",
+   "chunk": 20,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1872,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 472848,
+   "png": "CIN_06A5_digit_jersey_7.png",
+   "png_sha256": "82f8d2702d8effc4b4189ee7a8b127e20fc488b68d3367a312b3309de7f2a426",
+   "resource_size": 1550240,
+   "selector": "06A5",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "457c1af6106fb59c32a7877417e1eec27c01f1f184d3b6677bc662c1532db768",
+   "before_sha256": "78a022d85748a3d5cd13b8ff92b3fe6c6be5c1a998db7c63b50f43abbea78637",
+   "chunk": 21,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2032,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 474720,
+   "png": "CIN_06A5_digit_jersey_8.png",
+   "png_sha256": "7c3e1bd289e086d9e93f3749247b6a3b8be8baf7bc00b0ceac0fbe25c06a9245",
+   "resource_size": 1550240,
+   "selector": "06A5",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "dae3bfc8da12997fd1ba2f604bb09ce4886798368557058166be339e3e596162",
+   "before_sha256": "bbe3ec22c0fbb952240b8cd3fa67eba5da35ca0800491f2e6bb675066fa9e387",
+   "chunk": 22,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1904,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 476752,
+   "png": "CIN_06A5_digit_jersey_9.png",
+   "png_sha256": "f538b1979e4f033957ad32d02680091e8a1d3b9a711dd110207f328028e55f7a",
+   "resource_size": 1550240,
+   "selector": "06A5",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "ef0cba4656db4b15d14ee514ae93559e20bc3f58a92db404365308e008499137",
+   "before_sha256": "9daa56bd21b4a876cf90e64217d70478f7b638f827d9f60cef7788c816e26502",
+   "chunk": 13,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1456,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 466944,
+   "png": "CIN_06A6_digit_jersey_0.png",
+   "png_sha256": "594c847edb9a41f106d61f57a8c54499dffc70d58d40874165fc50716e6ba57f",
+   "resource_size": 1555616,
+   "selector": "06A6",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "aae8665cec1e399e535e490bb767af2aca2dc7e514d296c5f278ba803ca64a01",
+   "before_sha256": "d5a9d170e246e5265367f5451b1a8f20e6a27d02ffdaedbd54dc861f924eb4a2",
+   "chunk": 14,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1008,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 468400,
+   "png": "CIN_06A6_digit_jersey_1.png",
+   "png_sha256": "04396096cdaac9841bd89c71a3450d546cea912c24243132fee443549f601b62",
+   "resource_size": 1555616,
+   "selector": "06A6",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "e547f11ed99a088eb5b0baa3807b949bde734fa0e19cd7227a3711548c7e630b",
+   "before_sha256": "d3ad834c7da484a65773c6da76e1a0195eb2262612313067aac0aed71d20e19d",
+   "chunk": 15,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1792,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 469408,
+   "png": "CIN_06A6_digit_jersey_2.png",
+   "png_sha256": "815bd704413398cec4651c2d5d0f119cb29dcdd69e2e3c6aee3cfdefa9058b1a",
+   "resource_size": 1555616,
+   "selector": "06A6",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "895cfd04333bb30474bdc9d74d055262f4cbc1886403a71d97c97c3a1380c346",
+   "before_sha256": "fa3f97ff8d2b92a6c3e498b2ce4a177cc0439d24b383ab3f0ca6575da4c89c67",
+   "chunk": 16,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2000,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 471200,
+   "png": "CIN_06A6_digit_jersey_3.png",
+   "png_sha256": "211f21548599fda6cb4e4ea290d60f86473c2b22d6e6dea9e5727ce04a9e5708",
+   "resource_size": 1555616,
+   "selector": "06A6",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "1c7c6eba48422fb4bcb552caf007f6b848badedb0ef04cffe4fe939e36f11acf",
+   "before_sha256": "0da9d06e1de8af8ca69a9e108c910a4ecad81343c59b2566eb6e7d5420ffa63b",
+   "chunk": 17,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1744,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 473200,
+   "png": "CIN_06A6_digit_jersey_4.png",
+   "png_sha256": "74f74bb61169b8ad893494ff9017776ea5759440ae3f469456aac43b489feae0",
+   "resource_size": 1555616,
+   "selector": "06A6",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "d53a5e005990e955a9e2493b1ff2c42573010e8939023eb7f92372de00cf9a86",
+   "before_sha256": "f0be449618d944ae81eece443d30b064dacd22905725321e7242fb2a9ada0b10",
+   "chunk": 18,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1696,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 474944,
+   "png": "CIN_06A6_digit_jersey_5.png",
+   "png_sha256": "56de77bf7d5d25e64459797607f61c10b6f0b7ac5ed8d8a9ee71b87ac49c6f0c",
+   "resource_size": 1555616,
+   "selector": "06A6",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "4af26cc5c15921d5392c4451fdd855e9fd650cb036d8b185344c9fd27699665b",
+   "before_sha256": "67e5bbdfab139480e7b69e79e706b0283cf1c151d8226e282b4bc9e553a87327",
+   "chunk": 19,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1808,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 476640,
+   "png": "CIN_06A6_digit_jersey_6.png",
+   "png_sha256": "c05a01c8a6ec421bdf837c81dcb67fc1c5759142a15527cea852da3b55b43065",
+   "resource_size": 1555616,
+   "selector": "06A6",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "c28f1947671173cac5459a95cb50ada200cbf0ff7e559028fe4eba9d69636a2f",
+   "before_sha256": "fe462c049f4e89fe31c1a1dee3e2c200b3dbbd4227084c2154f06022c57b9e7a",
+   "chunk": 20,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1776,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 478448,
+   "png": "CIN_06A6_digit_jersey_7.png",
+   "png_sha256": "195c9bde17f945bb40431102aad1e093c79e9cb508c618d57c1d8a010cfea22b",
+   "resource_size": 1555616,
+   "selector": "06A6",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "9ab5e20e469dc5b2d1f477b64bbe48f10923713e8308a7be72edef36521514db",
+   "before_sha256": "668c90eb14bf4f7d03a597f8f13e245653a6a7105310abfe1f446040c9266e1a",
+   "chunk": 21,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1920,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 480224,
+   "png": "CIN_06A6_digit_jersey_8.png",
+   "png_sha256": "9bb3eed4036674311760a8fd8279f3e6c3643dfb2d96f33f07d4fa081fa6ab4e",
+   "resource_size": 1555616,
+   "selector": "06A6",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "ac5f7510f5c2b077362be1b53744f01adef8f8cba10a01287f576aa5570dd506",
+   "before_sha256": "51e0fe7d10a5d5f0c1824293a2915a02fb3f9e8a4d439d846026143ce71894c9",
+   "chunk": 22,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1840,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 482144,
+   "png": "CIN_06A6_digit_jersey_9.png",
+   "png_sha256": "b6e624a34f33d1f92f15f16d532517464ab476da401ae8727bd5aafddb5a2e24",
+   "resource_size": 1555616,
+   "selector": "06A6",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "1b850b7862cd3933d01b86db7c401a45285a80999556182d470cb9941bd414c3",
+   "before_sha256": "4a497757962d6c7764cdf271ca54a69c4e96dc82859e4c68ea5e81ef0d11ba4c",
+   "chunk": 13,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1744,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 469664,
+   "png": "CIN_06H0_digit_jersey_0.png",
+   "png_sha256": "5bad3fff0b1f020c94c3d6d70410f0a5364659848326ddae8c61272fe596470f",
+   "resource_size": 1552160,
+   "selector": "06H0",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "55b8c93f2df10906deec6602db51b969f1c32d363da492a11bed528309672d32",
+   "before_sha256": "79d8a10e0f68a48a5a178c9a66fabe569a3a6a54c06b004ca26baab13ca18328",
+   "chunk": 14,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1136,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 471408,
+   "png": "CIN_06H0_digit_jersey_1.png",
+   "png_sha256": "2b51e4a97bc9bc823501ad9b06c7adeaa93958f4f77e0fad637c39b8f2138da3",
+   "resource_size": 1552160,
+   "selector": "06H0",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "253cb82dda926b269d79a8512e2d53b7df1ecc8b920e63585c84e2c8a789346c",
+   "before_sha256": "f10d9cd84427618db1e82a51ff880115a8460be246d980760a688cc91a1c103b",
+   "chunk": 15,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2160,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 472544,
+   "png": "CIN_06H0_digit_jersey_2.png",
+   "png_sha256": "272423416c644295d026d056651f19f44964a301002fbb3ae70cb6d44d9a7f4f",
+   "resource_size": 1552160,
+   "selector": "06H0",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "1b4b535781a2ac17db127b140d52dfbb1b753ca5568f56c6316965c7a311919e",
+   "before_sha256": "41c66aed193db0d6957dd84da6ad2da42fe73e881f3643e15aaa0b59ceaef838",
+   "chunk": 16,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2256,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 474704,
+   "png": "CIN_06H0_digit_jersey_3.png",
+   "png_sha256": "0a860ea12333a29b87d2bd61f0c426e15d10836d10751f73fa4db6753ba9b7b0",
+   "resource_size": 1552160,
+   "selector": "06H0",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "2fb8c59a197dec02bfb8b0e5cbaa371694e5dc64f8b292a7125e6b2596ddfc5b",
+   "before_sha256": "51a0c12fc5085daddd99808d610a2dcc04292b7f280e6c1eb393c010f75d8f08",
+   "chunk": 17,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1808,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 476960,
+   "png": "CIN_06H0_digit_jersey_4.png",
+   "png_sha256": "c042ab2b34ee5758bb0a51f82438789e11bcdd604ddaded09bbbee23a42e267e",
+   "resource_size": 1552160,
+   "selector": "06H0",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "6098c1e350f32b750980129c05abfe0b7889e49aa6aacc504cbbf653e8aea082",
+   "before_sha256": "3f25f2b9e68e055561e7fddabb7a9b31c84ad8e32bcbf54ed19b1066c839df6c",
+   "chunk": 18,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2080,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 478768,
+   "png": "CIN_06H0_digit_jersey_5.png",
+   "png_sha256": "318885a3473642834ab8b9dd619afab611ddf71bb08db6f3a25ce096285baad0",
+   "resource_size": 1552160,
+   "selector": "06H0",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "0b36927026431890be72dd53ecbed07ec5fc97c96df8057a9346ea943f79ac9b",
+   "before_sha256": "2d51564e62bf8900abe6d5620abb6ff4eb5f4eba1ee9a3177048847da0a7c279",
+   "chunk": 19,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2224,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 480848,
+   "png": "CIN_06H0_digit_jersey_6.png",
+   "png_sha256": "61769f392563a296bffd2daf08250f2ac56aa76ab760daa92d5c6b921c082a3b",
+   "resource_size": 1552160,
+   "selector": "06H0",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "a3e8c292ebc3e2ff69f73732452c054fbbebdf255c9b9a9661178a4d2bb8c8bb",
+   "before_sha256": "3d061ebb18a1b212ad7f56c186f31e5ccc29e55e08be28ab84dfcf750c652533",
+   "chunk": 20,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2096,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 483072,
+   "png": "CIN_06H0_digit_jersey_7.png",
+   "png_sha256": "e1f06c05919c05bd3df8866ef1ac225dd406289fa36fe5b8b945c9ecffb090ac",
+   "resource_size": 1552160,
+   "selector": "06H0",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "ee9071175d1678b3689be0a1b37dde2686287bd6e94d080818bd59b71feb3491",
+   "before_sha256": "3d082fd82a69eabb04f3d7f7f194ab2cee25919be8bef517c7b96719d6757185",
+   "chunk": 21,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2288,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 485168,
+   "png": "CIN_06H0_digit_jersey_8.png",
+   "png_sha256": "76e2fdaa09d425e2327732bb2ec982eadbe959ac056fbb47fcaca2e38b5797a8",
+   "resource_size": 1552160,
+   "selector": "06H0",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "8804198cc2fe925e2589395569b4503f827e9dfe00a97e40a91ca7934586fec1",
+   "before_sha256": "06f9a7fdc63b6b16d63624bbd48a8d06b0dcb383b448c3d85fde80e25e1c9490",
+   "chunk": 22,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2304,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 487456,
+   "png": "CIN_06H0_digit_jersey_9.png",
+   "png_sha256": "e022d3f820ce41c4c54d764f76484861e74ce7455d83f2910955383041bbfaa9",
+   "resource_size": 1552160,
+   "selector": "06H0",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "36e4fd01a966bb5ba1a514decefc0ec1c6afe94c7ed2bb021e7fc29a50daf3ec",
+   "before_sha256": "26d2a6527d9c089023be2b57eaeb76e6df6cb7950a098d312ad53e8034e88981",
+   "chunk": 13,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1568,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 460512,
+   "png": "CIN_06A5_digit_jersey_0.png",
+   "png_sha256": "08b181de811e44949a943491dcbc1030ef4e393d4df1818a1b64803f98702bea",
+   "resource_size": 1544464,
+   "selector": "06H5",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "8bee380490b35ed0f507432cdf43bdbad11f66d13df9dcce484d889b341a852b",
+   "before_sha256": "3a91296865d98eae4dcbce5411014f6bf80902be83f3759a1043463172c12325",
+   "chunk": 14,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1104,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 462080,
+   "png": "CIN_06A5_digit_jersey_1.png",
+   "png_sha256": "95e3c7e10e90d1f70bfcb6d10c2d9c399667fc997e07ba146af08f10a00a8c20",
+   "resource_size": 1544464,
+   "selector": "06H5",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "89726bd71c3c31ed9f8e6ac7668b2effb43aae47a631b32abcf16ac892d2f6af",
+   "before_sha256": "10ca47358a6975dd69c28f8b250742fc6ab627b33b7300f9646eba1cf2defcda",
+   "chunk": 15,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1872,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 463184,
+   "png": "CIN_06A5_digit_jersey_2.png",
+   "png_sha256": "f088a64703ee6cb55ed8281243c7ca0f8d93dea59f9132e02f333572ba8ed148",
+   "resource_size": 1544464,
+   "selector": "06H5",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "5b090058368013a7c555a8fc060a4859b4bb8c5fbcbe448d9f5366457581546d",
+   "before_sha256": "aef5e2ba0c8ae1194ee269d5e7cbc52307bc04f8fd53cda79605c8e572df93b1",
+   "chunk": 16,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2160,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 465056,
+   "png": "CIN_06A5_digit_jersey_3.png",
+   "png_sha256": "9ea983e533af6e18fcf92c505d6652b742b63f8fc8fc6fc23cc4963fb193df81",
+   "resource_size": 1544464,
+   "selector": "06H5",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "684dab7a3741c8489804d7b34acb348a69c10de86bd2d1c2cc84702b6318e2d1",
+   "before_sha256": "e5dc46a28da463e024bd1479a3f1d703e62b9f1642aafa002ef9b1b7ffb92852",
+   "chunk": 17,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1888,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 467216,
+   "png": "CIN_06A5_digit_jersey_4.png",
+   "png_sha256": "2d580c336231b00012b8898ebb39bc46fffff77040422cf16cd6ba1b23937972",
+   "resource_size": 1544464,
+   "selector": "06H5",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "1035fef5efb21bf8ac3dce6ef10d02ab4084300683bbd7479afc7800df988d69",
+   "before_sha256": "3f8397fc5a28225068dcbdf79cb2dd52b9b4a36d0d98a5b9461f2bd0947b0077",
+   "chunk": 18,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1792,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 469104,
+   "png": "CIN_06A5_digit_jersey_5.png",
+   "png_sha256": "88379ce858edd42eff269208ae4367891345512276343b748ec15c4c4cfb8b47",
+   "resource_size": 1544464,
+   "selector": "06H5",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "2ace5707c5c41261e00544802edb86bc6194564989a91c93add700dbc6f54f82",
+   "before_sha256": "3f0a260748f6ab27b08afc95ad38060f3f7d9e12d685367fb3b3a4a861d14312",
+   "chunk": 19,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1952,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 470896,
+   "png": "CIN_06A5_digit_jersey_6.png",
+   "png_sha256": "25559ce797f8c92eab8b845003c408f9359a560b8d31b44d6b96b0f8da7355c5",
+   "resource_size": 1544464,
+   "selector": "06H5",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "9aa54b0d284f5deebfeca1fbcfce3eb0f96581b28c98ac9e4a52ce86b0b7a20e",
+   "before_sha256": "5bc9b05c785f034901149dba02413fddd8acf61940e78be788759dfa2ab4501f",
+   "chunk": 20,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1872,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 472848,
+   "png": "CIN_06A5_digit_jersey_7.png",
+   "png_sha256": "82f8d2702d8effc4b4189ee7a8b127e20fc488b68d3367a312b3309de7f2a426",
+   "resource_size": 1544464,
+   "selector": "06H5",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "457c1af6106fb59c32a7877417e1eec27c01f1f184d3b6677bc662c1532db768",
+   "before_sha256": "78a022d85748a3d5cd13b8ff92b3fe6c6be5c1a998db7c63b50f43abbea78637",
+   "chunk": 21,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2032,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 474720,
+   "png": "CIN_06A5_digit_jersey_8.png",
+   "png_sha256": "7c3e1bd289e086d9e93f3749247b6a3b8be8baf7bc00b0ceac0fbe25c06a9245",
+   "resource_size": 1544464,
+   "selector": "06H5",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "dae3bfc8da12997fd1ba2f604bb09ce4886798368557058166be339e3e596162",
+   "before_sha256": "bbe3ec22c0fbb952240b8cd3fa67eba5da35ca0800491f2e6bb675066fa9e387",
+   "chunk": 22,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1904,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 476752,
+   "png": "CIN_06A5_digit_jersey_9.png",
+   "png_sha256": "f538b1979e4f033957ad32d02680091e8a1d3b9a711dd110207f328028e55f7a",
+   "resource_size": 1544464,
+   "selector": "06H5",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "ef0cba4656db4b15d14ee514ae93559e20bc3f58a92db404365308e008499137",
+   "before_sha256": "9daa56bd21b4a876cf90e64217d70478f7b638f827d9f60cef7788c816e26502",
+   "chunk": 13,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1456,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 466944,
+   "png": "CIN_06A6_digit_jersey_0.png",
+   "png_sha256": "594c847edb9a41f106d61f57a8c54499dffc70d58d40874165fc50716e6ba57f",
+   "resource_size": 1555616,
+   "selector": "06H6",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "aae8665cec1e399e535e490bb767af2aca2dc7e514d296c5f278ba803ca64a01",
+   "before_sha256": "d5a9d170e246e5265367f5451b1a8f20e6a27d02ffdaedbd54dc861f924eb4a2",
+   "chunk": 14,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1008,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 468400,
+   "png": "CIN_06A6_digit_jersey_1.png",
+   "png_sha256": "04396096cdaac9841bd89c71a3450d546cea912c24243132fee443549f601b62",
+   "resource_size": 1555616,
+   "selector": "06H6",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "e547f11ed99a088eb5b0baa3807b949bde734fa0e19cd7227a3711548c7e630b",
+   "before_sha256": "d3ad834c7da484a65773c6da76e1a0195eb2262612313067aac0aed71d20e19d",
+   "chunk": 15,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1792,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 469408,
+   "png": "CIN_06A6_digit_jersey_2.png",
+   "png_sha256": "815bd704413398cec4651c2d5d0f119cb29dcdd69e2e3c6aee3cfdefa9058b1a",
+   "resource_size": 1555616,
+   "selector": "06H6",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "895cfd04333bb30474bdc9d74d055262f4cbc1886403a71d97c97c3a1380c346",
+   "before_sha256": "fa3f97ff8d2b92a6c3e498b2ce4a177cc0439d24b383ab3f0ca6575da4c89c67",
+   "chunk": 16,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 2000,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 471200,
+   "png": "CIN_06A6_digit_jersey_3.png",
+   "png_sha256": "211f21548599fda6cb4e4ea290d60f86473c2b22d6e6dea9e5727ce04a9e5708",
+   "resource_size": 1555616,
+   "selector": "06H6",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "1c7c6eba48422fb4bcb552caf007f6b848badedb0ef04cffe4fe939e36f11acf",
+   "before_sha256": "0da9d06e1de8af8ca69a9e108c910a4ecad81343c59b2566eb6e7d5420ffa63b",
+   "chunk": 17,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1744,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 473200,
+   "png": "CIN_06A6_digit_jersey_4.png",
+   "png_sha256": "74f74bb61169b8ad893494ff9017776ea5759440ae3f469456aac43b489feae0",
+   "resource_size": 1555616,
+   "selector": "06H6",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "d53a5e005990e955a9e2493b1ff2c42573010e8939023eb7f92372de00cf9a86",
+   "before_sha256": "f0be449618d944ae81eece443d30b064dacd22905725321e7242fb2a9ada0b10",
+   "chunk": 18,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1696,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 474944,
+   "png": "CIN_06A6_digit_jersey_5.png",
+   "png_sha256": "56de77bf7d5d25e64459797607f61c10b6f0b7ac5ed8d8a9ee71b87ac49c6f0c",
+   "resource_size": 1555616,
+   "selector": "06H6",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "4af26cc5c15921d5392c4451fdd855e9fd650cb036d8b185344c9fd27699665b",
+   "before_sha256": "67e5bbdfab139480e7b69e79e706b0283cf1c151d8226e282b4bc9e553a87327",
+   "chunk": 19,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1808,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 476640,
+   "png": "CIN_06A6_digit_jersey_6.png",
+   "png_sha256": "c05a01c8a6ec421bdf837c81dcb67fc1c5759142a15527cea852da3b55b43065",
+   "resource_size": 1555616,
+   "selector": "06H6",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "c28f1947671173cac5459a95cb50ada200cbf0ff7e559028fe4eba9d69636a2f",
+   "before_sha256": "fe462c049f4e89fe31c1a1dee3e2c200b3dbbd4227084c2154f06022c57b9e7a",
+   "chunk": 20,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1776,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 478448,
+   "png": "CIN_06A6_digit_jersey_7.png",
+   "png_sha256": "195c9bde17f945bb40431102aad1e093c79e9cb508c618d57c1d8a010cfea22b",
+   "resource_size": 1555616,
+   "selector": "06H6",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "9ab5e20e469dc5b2d1f477b64bbe48f10923713e8308a7be72edef36521514db",
+   "before_sha256": "668c90eb14bf4f7d03a597f8f13e245653a6a7105310abfe1f446040c9266e1a",
+   "chunk": 21,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1920,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 480224,
+   "png": "CIN_06A6_digit_jersey_8.png",
+   "png_sha256": "9bb3eed4036674311760a8fd8279f3e6c3643dfb2d96f33f07d4fa081fa6ab4e",
+   "resource_size": 1555616,
+   "selector": "06H6",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "ac5f7510f5c2b077362be1b53744f01adef8f8cba10a01287f576aa5570dd506",
+   "before_sha256": "51e0fe7d10a5d5f0c1824293a2915a02fb3f9e8a4d439d846026143ce71894c9",
+   "chunk": 22,
+   "defects": [
+    "b81u-CIN-digit-ring-too-heavy-counters-closed"
+   ],
+   "kind": "digit_png",
+   "length": 1840,
+   "note": "the jersey digits redrawn from this season's frames (Noah 11/18: \"bengals jersey number font isnt accurate\"): the same bold rounded family at its real width (about 0.55 of the height, was 0.50), with the orange ring a hairline (about 1.3 texels, was 2 to 3) so the counters open (the 0's opening 0.29 of its width, was 0.11), a straight 7 and the tall open 4; one shape set for all six Bengals packages in each kit's own two colours. Repainted by an Opus agent to the art director's measured spec and approved at native size.",
+   "offset": 482144,
+   "png": "CIN_06A6_digit_jersey_9.png",
+   "png_sha256": "b6e624a34f33d1f92f15f16d532517464ab476da401ae8727bd5aafddb5a2e24",
+   "resource_size": 1555616,
+   "selector": "06H6",
+   "texture": "57"
+  },
   {
    "after_sha256": "74f4ccb820e4669a2c7fb9fa32caea693fc8b75c2c44c18a3af1df939955c500",
    "before_sha256": "3da5bd8d32f96d66c7bc71eb6d91debe6cc5b41bd6ee069eea22f528b5c4d475",

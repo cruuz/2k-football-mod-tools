@@ -25,6 +25,8 @@ DISC = Path(os.environ.get("B81_UNIFORM_DISC", "/media/noah/Storage/2K5 Discs/SO
 SIZES = {"jersey00": [512, 256], "pants00": [512, 256], "sleeve00": [128, 128], "socks00": [64, 64]}
 #: the Chargers' eight kit packages: home, road, the gold jersey, the gold-pants pair and the navy set
 CHARGERS = ("24A0", "24A10", "24A11", "24A9", "24H0", "24H10", "24H11", "24H9")
+#: the Bengals' six kit packages: home, road, the White Bengal pair and the orange pair
+BENGALS = ("06A0", "06A5", "06A6", "06H0", "06H5", "06H6")
 
 
 def kit_rows():
@@ -134,11 +136,11 @@ class DigitDocument(unittest.TestCase):
             files.add(row["png"])
         self.assertEqual(sorted(p.name for p in folder.glob("*.png")), sorted(files))           # no stray art
 
-    def test_the_first_batch_is_all_eight_chargers_packages_ten_digits_each(self):
+    def test_the_first_batch_is_the_chargers_and_the_bengals_ten_digits_each(self):
         by = {}
         for row in digit_rows():
             by.setdefault(row["selector"], set()).add(row["chunk"])
-        self.assertEqual(tuple(sorted(by)), CHARGERS)
+        self.assertEqual(tuple(sorted(by)), tuple(sorted(CHARGERS + BENGALS)))
         for selector, chunks in by.items():
             self.assertEqual(chunks, set(range(13, 23)), selector)
 
@@ -185,6 +187,41 @@ class DigitDocument(unittest.TestCase):
             rows = np.flatnonzero(solid.any(axis=1))
             heights.append(int(rows.max() - rows.min() + 1))
         self.assertLessEqual(max(heights) - min(heights), 2, heights)
+
+    def test_the_bengals_digits_wear_a_hairline_ring_and_open_counters(self):
+        # Noah 11/18: "bengals jersey number font isnt accurate". Measured against the 2026 frames the ring was 2 to 3
+        # texels (a hairline on the jersey) and it closed the counters; the digits were also narrow (0.50 of the height).
+        folder = gf.art_folder(gf.digits_b81())
+        by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
+        for selector in BENGALS:
+            heights, tops = [], []
+            for chunk in range(13, 23):
+                rgba, _info = png_rgba(folder / by[(selector, chunk)])
+                solid = rgba[..., 3] > 127
+                colours, counts = np.unique(rgba[rgba[..., 3] == 255][:, :3], axis=0, return_counts=True)
+                fill, ring = colours[counts.argsort()[::-1][:2]]
+                is_ring = solid & (np.abs(rgba[..., :3].astype(int) - ring).max(axis=2) < 40)
+                is_fill = solid & (np.abs(rgba[..., :3].astype(int) - fill).max(axis=2) < 40)
+                # a ring of about 1.3 texels is under half the fill's area even on the thin 7 (at 2 to 3 texels it
+                # was close to the fill's own area)
+                self.assertLess(is_ring.sum(), 0.55 * is_fill.sum(), (selector, chunk))
+                rows = np.flatnonzero(solid.any(axis=1)); cols = np.flatnonzero(solid.any(axis=0))
+                heights.append(int(rows.max() - rows.min() + 1)); tops.append(int(rows.min()))
+                if chunk == 13:                                                                   # the 0
+                    middle = solid[(rows.min() + rows.max()) // 2, cols.min():cols.max() + 1]
+                    opening = int((~middle).sum())
+                    self.assertGreaterEqual(opening / len(middle), 0.25, selector)               # it was 0.11
+                    self.assertGreaterEqual(len(middle) / heights[-1], 0.53, selector)           # it was 0.50
+            self.assertLessEqual(max(heights) - min(heights), 1, (selector, heights))
+            self.assertLessEqual(max(tops) - min(tops), 1, (selector, tops))
+
+    def test_one_shape_set_serves_the_bengals_home_and_road(self):
+        folder = gf.art_folder(gf.digits_b81())
+        by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
+        for chunk in range(13, 23):
+            home = png_rgba(folder / by[("06H0", chunk)])[0][..., 3] > 127
+            road = png_rgba(folder / by[("06A0", chunk)])[0][..., 3] > 127
+            self.assertLessEqual(int((home ^ road).sum()), 4, chunk)
 
     def test_a_document_art_folder_must_be_a_plain_glyph_folder_name(self):
         self.assertEqual(gf.art_folder({}), gf.ART)
@@ -432,7 +469,7 @@ class RealDisc(unittest.TestCase):
 
     def test_every_digit_row_compiles_to_its_pin_through_the_studio_digit_route(self):
         document = gf.digits_b81()
-        for selector in CHARGERS:
+        for selector in CHARGERS + BENGALS:
             replacements, receipt = gf.compile_resource(selector, self.kits[selector], strict=True, document=document)
             self.assertEqual(len(replacements), 10, selector)
             self.assertEqual(receipt["skipped_textures"], [])

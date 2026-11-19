@@ -44,8 +44,10 @@ rows = [('REAL: 2026 game highlights (reference only)', row(refs, H) if refs els
         ('BEFORE: the released game (v0.9)', row(renders(a.before) + zooms(a.before), H)),
         ('AFTER: this pass', row(renders(a.after) + zooms(a.after), H))]
 rows = [r for r in rows if r[1] is not None]
-W = max(r[1].width for r in rows) + 32
+import textwrap
+W = max(max(r[1].width for r in rows) + 32, 1500)
 f1, f2, f3 = font(34), font(22), font(18)
+a.note = [line for n in a.note for line in textwrap.wrap(n, width=(W - 32) // 11)]
 notes_h = 28 * len(a.note) + (12 if a.note else 0)
 total = 64 + notes_h + sum(r[1].height + 44 for r in rows) + 16
 sheet = Image.new('RGB', (W, total), (24, 24, 28)); d = ImageDraw.Draw(sheet)
