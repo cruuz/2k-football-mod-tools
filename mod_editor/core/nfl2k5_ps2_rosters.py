@@ -153,14 +153,15 @@ class Ps2SaveContainer:
             try:
                 if to_card:
                     save_lib.write_into_memcard(self.path, save, staged, save.directory)
-                    report = verify_lib.verify_memcard_write(self.path, staged, save.directory)
+                    report = verify_lib.verify_memcard_write(self.path, staged, save.directory,
+                                                             expected_payload=payload)
                     checked = report["save"]
                     extra = {"ecc_pages": report["ecc"]["pages_checked"],
                              "other_saves_untouched": report["other_saves_untouched"]}
                 else:
                     save_lib.write_psu(save, staged)
                     checked = verify_lib.verify(verify_lib.decode_save(self.path, self.directory),
-                                                verify_lib.decode_psu(staged))
+                                                verify_lib.decode_psu(staged), expected_payload=payload)
                     extra = {}
             except (save_lib.SaveError, verify_lib.VerifyError, OSError) as exc:
                 raise Ps2SaveError(f"the PS2 copy did not verify, nothing was written: {exc}") from exc

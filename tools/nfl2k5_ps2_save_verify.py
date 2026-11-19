@@ -9,9 +9,9 @@ the original and edited saves and re-derives, from the bytes alone, that
   2. the payload changed *only* inside the byte ranges the writer declared;
   3. ``EXTRA`` equals the CRC-32 of the edited payload (and the original's
      ``EXTRA`` matched its own payload, so the baseline was sound);
-  4. the ROST arena still parses and every table count *and offset* is
-     unchanged, i.e. the edit stayed inside its fixed allocation instead of
-     moving the arena.
+  4. the ROST tables stay in their original allocations. A full roster edit
+     may change the free-agent list within its allocation. The complete
+     reread must then match the requested payload.
 
 **The verification re-derives the container itself.**  A verifier that reuses
 the writer's parser cannot see a bug in that parser: both sides would read the
@@ -392,7 +392,7 @@ def audit_memcard_ecc(path: Path) -> dict:
 
 def verify_memcard_write(
     original_card: Path, written_card: Path, directory: str,
-    declared: list[dict] | None = None,
+    declared: list[dict] | None = None, *, expected_payload: bytes | None = None,
 ) -> dict:
     """Verify a save edited directly into a memory-card image.
 
@@ -442,7 +442,7 @@ def verify_memcard_write(
         sibling_after = decode_memcard(written_card, name, require_named_payload=False)
         _require(sibling_before.files == sibling_after.files, f"Save {name} changed outside the selected save")
     report["other_saves_untouched"] = other_names
-    report["save"] = verify(before, after, declared)
+    report["save"] = verify(before, after, declared, expected_payload=expected_payload)
     report["result"] = "PASS"
     return report
 
@@ -464,12 +464,7 @@ def decode_save(path: Path, directory: str | None = None) -> DecodedSave:
     return decode_psu(path)
 
 
-def decode_roster_tables(payload: bytes) -> dict[str, tuple[int, int]]:
-    """Locate the ROST arena and return {table: (count, offset)}.
-
-    Independently re-derived: this finds the container, follows the root
-    pointer and walks the table geometry using the constants above.
-    """
+def _roster_arena(payload: bytes) -> tuple[bytes, int]:
     base = None
     for candidate in (0, _FRANCHISE_PREFIX):
         if payload[candidate : candidate + 4] == _ROST_MAGIC:
@@ -480,12 +475,19 @@ def decode_roster_tables(payload: bytes) -> dict[str, tuple[int, int]]:
     stored = struct.unpack_from("<I", payload, base + 4)[0]
     if base + _WRAPPER_SIZE + stored > len(payload):
         raise VerifyError("the ROST container overruns the payload")
-    body = payload[base + _WRAPPER_SIZE :]
+    body = payload[base + _WRAPPER_SIZE : base + _WRAPPER_SIZE + stored]
     if body[0x0C:0x10] != _ROST_MAGIC:
         raise VerifyError("the ROST object header is malformed")
     root = _relative_pointer(body, 0x14)
     if root is None:
         raise VerifyError("the ROST root pointer is null")
+    _require(root + 0x60 <= len(body), "the ROST root overruns the arena")
+    return body, root
+
+
+def decode_roster_tables(payload: bytes) -> dict[str, tuple[int, int]]:
+    """Independently walk the ROST root and return {table: (count, offset)}."""
+    body, root = _roster_arena(payload)
     tables: dict[str, tuple[int, int]] = {}
     for name, count_offset, pointer_offset, stride in _TABLE_GEOMETRY:
         count = struct.unpack_from("<I", body, root + count_offset)[0]
@@ -498,6 +500,33 @@ def decode_roster_tables(payload: bytes) -> dict[str, tuple[int, int]]:
             raise VerifyError(f"table {name} overruns the arena")
         tables[name] = (count, pointer)
     return tables
+
+
+def _verify_free_agents(original: bytes, edited: bytes, before_count: int,
+                        tables: dict[str, tuple[int, int]]) -> None:
+    """A signing or release changes occupancy of the game's fixed free-agent list."""
+    count, start = tables["player_pointer_vector"]
+    if start < 0:
+        return  # decode_roster_tables already requires an empty list for a null pointer.
+    body, root = _roster_arena(edited)
+    end = start + 4 * count
+    if count == before_count and _roster_arena(original)[0][start:end] == body[start:end]:
+        return
+    # The two additional object pointers are the string and career-history pools.
+    starts = [offset for _, offset in tables.values()]
+    starts.extend(_relative_pointer(body, root + field) for field in (0x2C, 0x44))
+    limit = min((offset for offset in starts if offset is not None and offset > start), default=len(body))
+    _require(count <= 2500 and end <= limit, "the free-agent list exceeds its allocation")
+    players = set()
+    for name in ("primary_players", "secondary_players"):
+        size, first = tables[name]
+        players.update(range(first, first + size * 0x54, 0x54))
+    seen = set()
+    for offset in range(start, end, 4):
+        target = _relative_pointer(body, offset)
+        _require(target in players, "a free-agent pointer does not address a player record")
+        _require(target not in seen, "a player appears twice in the free-agent list")
+        seen.add(target)
 
 
 class VerifyError(AssertionError):
@@ -546,7 +575,7 @@ def _player_names(payload: bytes, table: tuple[int, int]) -> dict:
 
 
 def verify(original: DecodedSave, edited: DecodedSave,
-           declared: list[dict] | None = None) -> dict:
+           declared: list[dict] | None = None, *, expected_payload: bytes | None = None) -> dict:
     report: dict[str, object] = {"schema": "nfl2k5_ps2_save_verify/v1"}
 
     _require(original.directory == edited.directory,
@@ -567,6 +596,8 @@ def verify(original: DecodedSave, edited: DecodedSave,
              "the baseline is not a sound reference")
     _require(edited.stored_crc == edited.computed_crc(),
              "the edited save's EXTRA does not match its payload CRC-32")
+    if expected_payload is not None:
+        _require(edited.payload == expected_payload, "the reread roster differs from the requested edits")
 
     spans = changed_ranges(original.payload, edited.payload)
     report["changed_spans"] = [{"offset": off, "length": length} for off, length in spans]
@@ -592,11 +623,13 @@ def verify(original: DecodedSave, edited: DecodedSave,
     for name in before_tables:
         before_count, before_offset = before_tables[name]
         after_count, after_offset = after_tables[name]
-        _require(before_count == after_count,
-                 f"ROST table {name} count changed "
-                 f"{before_count} -> {after_count}")
         _require(before_offset == after_offset,
                  f"ROST table {name} moved; the arena must not be relocated")
+        if expected_payload is not None and name == "player_pointer_vector":
+            _verify_free_agents(original.payload, edited.payload, before_count, after_tables)
+        else:
+            _require(before_count == after_count,
+                     f"ROST table {name} count changed {before_count} -> {after_count}")
     report["tables_checked"] = len(before_tables)
     if declared and all({"player", "field", "value"} <= item.keys() for item in declared):
         expected = _player_names(original.payload, before_tables["primary_players"])

@@ -2409,7 +2409,7 @@ class RosterEditorPanel(QWidget):
         order.addWidget(self.special_teams_button)
         self.team_options_button = QPushButton("Team settings…")
         self.team_options_button.setToolTip("Finn's Options tab: stadium, default jersey, playbook, team play-by-play "
-                                            "and defensive front of the club shown, in an Xbox save.")
+                                            "and defensive front of the club shown, in an Xbox save or PS2 roster save.")
         self.team_options_button.clicked.connect(self.open_team_options)
         order.addWidget(self.team_options_button)
         self.unlock_button = QPushButton("Unlock")
@@ -3989,8 +3989,8 @@ class RosterEditorPanel(QWidget):
                 or not self.document.teams[index].is_club:
             return "Open a club to change its team settings."
         if self._source_kind != "save":
-            return ("Team settings are edited in an Xbox save. On a disc, stadiums and uniforms are set by the Studio's "
-                    "Build steps.")
+            return ("Team settings are edited in an Xbox save or PS2 roster save. On a disc, the Studio's "
+                    "Build steps set stadiums and uniforms.")
         if self.franchise_panel.save is None:
             return "This save has no club settings the Studio can read."
         return ""
@@ -4454,8 +4454,8 @@ class RosterEditorPanel(QWidget):
         if self.document is None or not players:
             return "Select a player first."
         if self._source_kind != "save":
-            return ("Career stats are cleared in an Xbox save. On a disc, career history comes from the Build step's "
-                    "team history.")
+            return ("Career stats are cleared in an Xbox save or PS2 roster save. On a disc, career history comes "
+                    "from the Build step's team history.")
         return ""
 
     def clear_career_stats(self, players: Sequence[rr.Player] | None = None, *,

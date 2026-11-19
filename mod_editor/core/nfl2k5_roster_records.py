@@ -2336,7 +2336,17 @@ class RosterDocument:
     def history_is_clear(self, player: Player, pool: Mapping[str, int] | None = None) -> bool:
         """True when the player already reads the neutral stream for his current season slot."""
 
-        return self.history_words(player, pool) == neutral_history(player.record.values["years_pro"])
+        value = player.record.values["history_pointer"]
+        if not value:
+            return False
+        pool = pool or self.history_pool()
+        start = self._history_link(player) + _signed(value) - 1
+        relative = start - pool["offset"]
+        # Only an exact neutral stream can be skipped. Clearing a damaged link installs a new
+        # stream at the verified pool tail and never follows or changes its former target.
+        if relative < 0 or relative % 4 or relative + 4 * HISTORY_CLEAR_WORDS > 4 * pool["used"]:
+            return False
+        return struct.unpack_from("<6I", self.body, start) == neutral_history(player.record.values["years_pro"])
 
     def history_state(self, offsets: Sequence[int], words: int) -> dict[str, Any]:
         """What ``clear_history`` changes, for undo: the used count, the next ``words`` pool words and the players'

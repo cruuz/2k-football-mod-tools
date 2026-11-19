@@ -1281,18 +1281,19 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    disc, stadiums and uniforms come from the Studio's Build steps. One undo per Apply; **Show my changes** lists it;
    **Save Xbox save copy…** writes it.
 
-   **Clear his career stats…** (right-click a player in an Xbox save) empties his season and career stats, the
+   **Clear his career stats…** (right-click a player in an Xbox save or a PS2 roster save) empties his season and career stats, the
    clubs on his history card and his own honors; **Clear career stats of all … shown…** does the same for the
    whole filtered list. League records, award lists and every other player are kept. Flying Finn's Clear Stats
    writes an empty history link, which crashed the game when it averaged that player's yards. The Studio instead
    gives him a new six-word history with zero yards, the same words the game itself writes, so he reads zero
    everywhere and earns new stats as he plays. Each player uses six words of the save's career-stat pool (50,000
-   words in a 32-club league); when the pool has no room the Studio says so and changes nothing. One undo.
+   words in a 32-club league). The same command repairs a selected player's damaged history link. Use Undo to restore his previous history.
+   The Studio checks for enough free space before it changes the save.
 
    **Copy team, Paste team, Export team, Import team** (right-click a club in the list, or **Tools ▾**) move a
    whole club: its players in order (names, ratings, contracts, appearance, college, birth date), its depth chart
-   rows with the SOFTDRINK depth and returner locks, and its special-teams slots; in an Xbox save also its team
-   settings and head coach (name, ratings, play-calling). **Export team…** writes a `.2k5team` file that
+   rows with the SOFTDRINK depth and returner locks, and its special-teams slots. Xbox saves and PS2 roster saves also offer team
+   settings and head coach edits (name, ratings, play-calling). **Export team…** writes a `.2k5team` file that
    **Import team…** reads on another roster or save. The paste goes player for player into the club's own records,
    so both clubs need the same number of active players and of reserves; the Studio names both counts when they
    differ. Each record keeps its player kind, pool, injury and IR state and star tag, and a club with a player on
@@ -1305,7 +1306,7 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    **Open PS2 save…** opens a PS2 roster save (SLUS-20919: a `.psu`, an extracted `BASLUS-20919…` folder or one
    save on a `.ps2` memory card) on every page described here. **Save PS2 save copy…** writes a new `.psu`, or a
    copy of the card when the save came from one, with the PS2 checksum; the Studio's independent verifier rereads
-   the copy (same files, checksum, every roster table in place, and on a card every page's error check and every
+   the copy (matching roster edits, checksum, every roster table in place, and on a card every page's error check and every
    other save unchanged) before it is published. PS2 franchise saves are not opened here yet, and how the PS2 game
    reads the edits has not been checked in PCSX2.
 4. **Right**: the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
@@ -1446,8 +1447,8 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Change Name `…` list | Type the name. A name that already exists is shared, which needs no free space |
 | Depth Chart (Ctrl+D) | Ctrl+D shows the selected player's position in depth chart order; **↑ Move up / ↓ Move down** change his row (the stored depth rank the game reads) |
 | Depth Chart > Special Teams | **Special teams…**: returners and holder; kicker, punter and long snapper through the depth chart |
-| Team > Options (stadium, playbook, default jersey, team play-by-play, defensive front) | **Team settings…** (Xbox saves) |
-| Clear Stats | Right-click: **Clear his career stats…** or **Clear career stats of all … shown…** (Xbox saves; a safe form, see above) |
+| Team > Options (stadium, playbook, default jersey, team play-by-play, defensive front) | **Team settings…** in Xbox saves and PS2 roster saves |
+| Clear Stats | Right-click **Clear his career stats…** or **Clear career stats of all … shown…** in an Xbox save or PS2 roster save |
 | Team menu: Copy Team, Paste Team, Export Team, Import Team | Right-click a club: the same four, with a preview of what converts or refuses |
 | Open a PS2 save (`.max`, `.psu`) | **Open PS2 save…**: `.psu`, a `BASLUS-20919` folder or a `.ps2` card (roster saves; `.max` not yet) |
 | The player grid (every rating as a column, click to sort) | **Columns ▾**, then click a heading |

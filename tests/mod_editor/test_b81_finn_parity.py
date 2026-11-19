@@ -1564,6 +1564,29 @@ CODEX_HISTORY_SIGNED = Path(os.environ.get(
 
 
 class NeutralHistoryTests(unittest.TestCase):
+    def test_clear_replaces_only_a_selected_invalid_history_link_and_undo_restores_it(self) -> None:
+        raw = bytearray(league_body())
+        pool_start = 0x60000
+        struct.pack_into("<II", raw, rr.OBJ_OFF + 0x40, 1, pool_start - (rr.OBJ_OFF + 0x44) + 1)
+        struct.pack_into("<I", raw, pool_start, rr.HISTORY_END_BIT)
+        document = rr.load_body(bytes(raw))
+        pool = document.history_pool()
+        player = document.players[0]
+        link = document._history_link(player)
+        # A complete but misdirected record in a real PS2 roster pointed to player storage.
+        player.record.values["history_pointer"] = (player.offset - link + 1) & 0xFFFFFFFF
+        original = document.to_body()
+        with self.assertRaisesRegex(rr.RosterRecordError, "outside the used pool"):
+            document.history_words(player, pool)
+        before_pool = bytes(document.body[pool["offset"]:pool["offset"] + pool["used"] * 4])
+        cleared = document.clear_history([player])
+        self.assertEqual(document.history_words(player), rr.neutral_history(player.record.values["years_pro"]))
+        self.assertEqual(bytes(document.body[pool["offset"]:pool["offset"] + pool["used"] * 4]), before_pool)
+        self.assertEqual(cleared["words"], rr.HISTORY_CLEAR_WORDS)
+        self.assertEqual(document.clear_history([player])["words"], 0)
+        document.restore_history(cleared["before"])
+        self.assertEqual(document.to_body(), original)
+
     def test_the_six_words_are_the_game_writers_for_slot_nine(self) -> None:
         self.assertEqual([hex(w) for w in rr.neutral_history(9)],          # history-clear-native.json, tail_words
                          ["0x248d0000", "0x24880000", "0x24820000", "0x48d0000", "0x4880000", "0x84820000"])
@@ -2080,6 +2103,62 @@ class Ps2RostersTests(_PanelCase):
         panel.set_field(player, "speed", 91)
         panel.document.set_name(player, "last", "Psotwo")
         return player
+
+    def test_sign_and_release_write_the_changed_free_agent_list(self) -> None:
+        from mod_editor.core import nfl2k5_ps2_rosters as ps2
+
+        source = self.root / "league.psu"
+        ps2.save_lib.write_psu(_ps2_save(synthetic_save_v0(league_body(), suffix=b"")[0x2E0:]), source)
+        for sign in (True, False):
+            with self.subTest(sign=sign):
+                self.assertTrue(self.panel.load_save(source), self.panel.status_label.text())
+                roster = self.panel.document
+                before = len(roster.free_agents)
+                if sign:
+                    player = roster.by_offset[roster.free_agents[0]]
+                    roster.sign(player, 0)
+                else:
+                    player = roster.team_players(0)[0]
+                    roster.release(player, 0)
+                output = self.root / ("signed.psu" if sign else "released.psu")
+                self.assertTrue(self.panel.write_copy_to(output)["verified"])
+                back = ps2.Ps2SaveContainer.load(output).document()
+                self.assertEqual(len(back.free_agents), before - 1 if sign else before + 1)
+                self.assertEqual(player.offset in back.free_agents, not sign)
+                self.assertEqual(player.offset in back.teams[0].slots, sign)
+
+    def test_invalid_free_agent_entries_and_a_wrong_reread_are_rejected(self) -> None:
+        from mod_editor.core import nfl2k5_ps2_rosters as ps2
+
+        source = self.root / "league.psu"
+        ps2.save_lib.write_psu(_ps2_save(synthetic_save_v0(league_body(), suffix=b"")[0x2E0:]), source)
+        original = ps2.verify_lib.decode_psu(source)
+        roster = ps2.Ps2SaveContainer.load(source).document()
+        count, vector = ps2.verify_lib.decode_roster_tables(original.payload)["player_pointer_vector"]
+        self.assertEqual(count, 3)
+        for target, reason in ((roster.free_agents[1], "twice"), (roster.free_agents[0] + 1, "player record")):
+            with self.subTest(reason=reason):
+                # The independent reader uses offsets from the body, while the document uses file offsets.
+                payload = bytearray(original.payload)
+                slot = 0x20 + vector
+                struct.pack_into("<i", payload, slot, target - slot + 1)
+                save = _ps2_save(payload)
+                edited = ps2.verify_lib.DecodedSave(save.directory, save.files)
+                with self.assertRaisesRegex(ps2.verify_lib.VerifyError, reason):
+                    ps2.verify_lib.verify(original, edited, expected_payload=bytes(payload))
+                with self.assertRaisesRegex(ps2.verify_lib.VerifyError, "reread roster"):
+                    ps2.verify_lib.verify(original, edited, expected_payload=original.payload)
+        count_offset = roster.obj_base + rr.FREE_AGENT_COUNT_FIELD
+        oversized = bytearray(original.payload)
+        struct.pack_into("<I", oversized, count_offset, rr.FREE_AGENT_LIST_CAP + 1)
+        invalid = _ps2_save(oversized)
+        with self.assertRaisesRegex(ps2.verify_lib.VerifyError, "exceeds its allocation"):
+            ps2.verify_lib.verify(original, ps2.verify_lib.DecodedSave(invalid.directory, invalid.files),
+                                   expected_payload=bytes(oversized))
+        roster.sign(roster.by_offset[roster.free_agents[0]], 0)
+        signed = _ps2_save(roster.to_body())
+        with self.assertRaisesRegex(ps2.verify_lib.VerifyError, "player_pointer_vector count changed"):
+            ps2.verify_lib.verify(original, ps2.verify_lib.DecodedSave(signed.directory, signed.files))
 
     def test_a_psu_opens_on_every_page_and_writes_a_verified_copy(self) -> None:
         from mod_editor.core import nfl2k5_ps2_rosters as ps2
