@@ -10,6 +10,7 @@ user_team+0x10C (negative control); with the guard the user team is club 0 and t
 from pathlib import Path
 import struct
 import sys
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -150,6 +151,37 @@ class NativeLoadTests(unittest.TestCase):
         self.assertEqual(g.get(USER_TEAM), g.get(TEAM_TABLE), 'the guard falls back to club 0')
         self.assertEqual([g.get(HUMAN + 4 * i) for i in range(34)], [0] * 34, 'the human table stays as saved')
         self.assertEqual(self.desk_scene_read(g), g.get(g.get(TEAM_TABLE) + 0x10C))
+
+    def test_signed_franchise_load_registers_each_human_club_at_its_physical_coaching_row(self):
+        from mod_editor.core import nfl2k5_roster_records as records, nfl2k5_senior_bowl as bowl
+        from tests.nfl2k5_supersim_draft_fixture import Machine
+
+        # 0xC58CE reads these 34 serialized human flags. The retail f0 has all 32 NFL clubs selected.
+        saved_flags = 0x913CC
+        saved_plans, live_plans, registered = 0x9C5A0, 0xE41CE0, 0xE5A268
+        self.assertEqual(struct.unpack_from('<34I', self.save, saved_flags), (1,) * 32 + (0, 0))
+        with tempfile.TemporaryDirectory() as directory:
+            save = Path(directory) / 'SAVEGAME.DAT'
+            for clubs in ((7,), (0, 31)):
+                flags = tuple(int(i in clubs) for i in range(34))
+                body = bytearray(self.save)
+                struct.pack_into('<34I', body, saved_flags, *flags)
+                save.write_bytes(body)
+                save.with_name('EXTRA').write_bytes(records.sign_save(bytes(body)))
+                signed, _ = bowl.read_franchise(save)
+                payload = bytes(signed.body)
+                self.assertEqual(payload, body)
+                for label, image in (('retail', self.retail), ('patched', self.guarded)):
+                    with self.subTest(human_clubs=clubs, loader=label):
+                        game = Machine(image, trace_writes=False)
+                        game.load_franchise(payload)
+                        self.assertEqual(tuple(game.get(HUMAN + 4 * i) for i in range(34)), flags)
+                        self.assertEqual(game.uc.mem_read(live_plans, 32 * 36), payload[saved_plans:saved_plans + 32 * 36])
+                        expected = [0] * 34
+                        for ordinal, club in enumerate(clubs):
+                            physical_row = ordinal if label == 'retail' else club
+                            expected[club] = live_plans + 36 * physical_row
+                        self.assertEqual([game.get(registered + 4 * i) for i in range(34)], expected)
 
     def test_a_load_with_a_human_club_preserves_the_front_office_club_and_sampled_state(self):
         r = self.loaded(self.retail, human=7)
