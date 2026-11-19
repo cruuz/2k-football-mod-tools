@@ -604,9 +604,9 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
-        "mod_editor/core/modpack.py": "9624b13ad13f46c97701f5d4b56f32793b49fefedb5ba5f8838a88a75dcda1a9",
+        "mod_editor/core/modpack.py": "46063dd0d065daa3f6cf24905bbf8a7137c975da485ef8c23f8456367c4a3de8",
         "mod_editor/core/modpack_files.py": "62d7cf1f6d7a6e9d6bc4899d2820213c6cfa848776e05d36e50b533af32125ce",
-        "mod_editor/core/modpack_ops.py": "485d2d8e3caa9c5096de406768918cde1bd8d8b15ddba15a299e0bd0e8099f4b",
+        "mod_editor/core/modpack_ops.py": "a9d0528670ed13904f040a7408f43355d100be7a41939f3c4fdde6e63db48f0e",
         "mod_editor/core/nfl2k5_abilities_runtime.py": "97092be1e9c457950822e7ee734a90a52341cf20412ac610712d0f03f5886e1d",
         "mod_editor/core/nfl2k5_tap_burst.py": "7dcbe2bcf02e19cdf18c2f58ec8974829c2b71333f94059171c5781fcc4e40b6",
         "mod_editor/core/nfl2k5_human_tap_burst.py": "b327e461bba86bab8443aa8a6502e1ae60c65af82978049f1a8616b87879ab67",
@@ -792,7 +792,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_letter_grades_attributes.py": "0fb3e43e4bd366b542bea98770f75d20ed0a46642bf25f38e261971d44b3e28a",
         "mod_editor/core/nfl2k5_letter_grades_code.py": "b01bcdb0e8a0e8c6a41f606500afeffd41034f2615c776dda6a9b24be6548dbd",
         "mod_editor/core/nfl2k5_letter_grades_progress.py": "5088c0b6a545b95efae98f906b5c4c2e030774b22f87a35fd08a2c1c80b31a90",
-        "mod_editor/core/nfl2k5_honors.py": "dab1a645ff880ab226c0af0e3326bc67c3ce824377ccf379c32e3192255bdd4c",
+        "mod_editor/core/nfl2k5_honors.py": "775745cb1de0c259a7edebdb7981e05d2ca46d2f7eaabf103fb63190a1d22abd",
         "mod_editor/core/nfl2k5_honors_code.py": "5f74c634876b93f5a6fb37073b742d2248f7118f6074651473459791caccef59",
         "mod_editor/core/nfl2k5_champions.py": "cc677f15b8704080071a034b65ff953e2b12df194b64ef550aa17943373fb8b7",
         "mod_editor/core/nfl2k5_champions_code.py": "d0b7c4b07d849a24fda938e120cf7c6d4f15f0b589ac20183ecde61fb7fa463a",
@@ -848,7 +848,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_my_career_mode.py": "dc71170475c111b5c1e1b9b5d7644e3239839073f9cd0ac08662824e35cbf66c",
         "mod_editor/core/nfl2k5_rookie_faces.py": "3b7461fe711d72ada7c2009f04e2736783157612d03c351843fadbce9576b3f9",  # b780-int (gen1mc): MyCareer's draft-signing context reads its draft-number byte
         "mod_editor/core/nfl2k5_my_career_mode_code.py": "dbf9330b042795f057e5dfd92df680f6c004a97eae9f5218a3cd66cd13b5d489",
-        "mod_editor/core/nfl2k5_my_career_home.py": "626a628d861285bc401f92b09024333acc2e6d0dee5535e6365c0d6a84badca1",
+        "mod_editor/core/nfl2k5_my_career_home.py": "852747c8b6ae3b94bc61a3f0d8b7a3060bde155901667e71021a8346c291a0ab",
         "mod_editor/core/nfl2k5_my_career_mode_code_b779.py": "9774a72e254da1609e82a53d2d5b74701e1d2acec484b6588256fc9b256c0355",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_my_career_mode_code_b780.py": "e29173a94e1dd4cea73149f9f0ebfe945c7fb6ebef386e2f3ddf89ec77932ee6",
         "mod_editor/core/nfl2k5_my_career_home_code.py": "c23c0177432f74ec2d8c51b99400bd47c9160fc6e563b8aca05eebd12d7ac485",
