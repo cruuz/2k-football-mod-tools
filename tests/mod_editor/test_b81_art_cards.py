@@ -50,7 +50,11 @@ class Pins(unittest.TestCase):
 
     def test_minis_and_the_carolina_assignment(self):
         doc = pins()
-        self.assertEqual(sorted(doc["minis"]), ["mini_a00_0", "mini_a02_0", "mini_a09_0", "mini_h00_0", "mini_h02_0", "mini_h09_0"])
+        # both sides for the clubs whose Standard-shell helmet lost old-logo pieces; the home side alone for the clubs
+        # whose left-side logo faced the back of the helmet
+        self.assertEqual(sorted(doc["minis"]), sorted(
+            [f"mini_{side}{code}_0" for code in ("00", "02", "09") for side in "ha"]
+            + [f"mini_h{code}_0" for code in ("01", "03", "04", "12", "13", "14", "27")]))
         for name, row in doc["minis"].items():
             self.assertNotEqual(row["source_rgba_sha256"], row["new_rgba_sha256"], name)
         # silver by default (the road kit's helmet), the black helmet with the 2012 panther on the blue alternate
@@ -77,7 +81,7 @@ class SourceFolder(unittest.TestCase):
                 name = edit["asset_id"].split(":")[-1]
                 self.assertEqual(rgba_sha(edit["png"]), doc["minis"][name]["new_rgba_sha256"], name)
                 seen += 1
-        self.assertEqual(seen, 576)
+        self.assertEqual(seen, 583)
 
     def test_carolina_wears_the_assigned_helmets(self):
         helmets = {(f"{e['asset_code']}{e['side']}{e['variant']}", e["family"]): e["png"]

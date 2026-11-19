@@ -77,17 +77,22 @@
  },
  "02_3:helmet02": {
   "despeckle": true,
-  "gold": true
+  "gold": true,
+  "real_mark": true
  },
  "keyline": {
   "helmet02": [
    "02_0",
-   "02_2"
+   "02_2",
+   "25_0",
+   "25_7"
   ],
   "helmet00": [
    "02_0",
    "02_2",
-   "02_3"
+   "02_3",
+   "25_0",
+   "25_7"
   ]
  },
  "09_0:helmet02": {
@@ -119,11 +124,102 @@
     94
    ]
   ],
-  "add_dev": 6
+  "add_dev": 6,
+  "erase": [
+   [
+    28,
+    156,
+    52,
+    188
+   ],
+   [
+    28,
+    67,
+    52,
+    99
+   ],
+   [
+    104,
+    162,
+    129,
+    186
+   ],
+   [
+    104,
+    70,
+    129,
+    94
+   ],
+   [
+    129,
+    171,
+    131,
+    178
+   ],
+   [
+    129,
+    78,
+    131,
+    85
+   ],
+   [
+    54,
+    138,
+    84,
+    160
+   ],
+   [
+    54,
+    96,
+    84,
+    118
+   ]
+  ],
+  "erase_edge_neutral": 3
  },
  "09_0:helmet00": {
   "grow": 4,
-  "grow_dev": 4
+  "grow_dev": 4,
+  "mirror_lower": true,
+  "erase": [
+   [
+    36,
+    71,
+    47,
+    82
+   ],
+   [
+    58,
+    93,
+    80,
+    110
+   ],
+   [
+    36,
+    173,
+    47,
+    184
+   ],
+   [
+    58,
+    145,
+    80,
+    162
+   ],
+   [
+    92,
+    205,
+    105,
+    217
+   ],
+   [
+    109,
+    172,
+    115,
+    179
+   ]
+  ],
+  "erase_edge_neutral": 3
  },
  "00_0:helmet02": {
   "grow": 3,
@@ -131,7 +227,8 @@
  },
  "00_0:helmet00": {
   "grow": 3,
-  "grow_dev": 5
+  "grow_dev": 5,
+  "mirror_lower": true
  },
  "04_0:helmet02": {
   "add": [
@@ -160,6 +257,135 @@
     100
    ]
   ],
-  "add_dev": 6
+  "add_dev": 6,
+  "erase": [
+   [
+    113,
+    145,
+    127,
+    158
+   ],
+   [
+    113,
+    97,
+    127,
+    110
+   ]
+  ]
+ },
+ "19_7:helmet02": {
+  "erase": [
+   [
+    50,
+    147,
+    100,
+    161
+   ],
+   [
+    46,
+    93,
+    100,
+    107
+   ]
+  ]
+ },
+ "22_5:helmet02": {
+  "rot180_upper": true
+ },
+ "08_0:helmet00": {
+  "mirror_upper": true
+ },
+ "08_6:helmet00": {
+  "mirror_upper": true
+ },
+ "keyline_grow": {
+  "25_0": 1,
+  "25_7": 1
+ },
+ "02_3:helmet00": {
+  "real_mark": true
+ },
+ "22_0:helmet00": {
+  "erase": [
+   [
+    74,
+    98,
+    97,
+    111
+   ]
+  ]
+ },
+ "22_4:helmet00": {
+  "erase": [
+   [
+    74,
+    98,
+    97,
+    111
+   ]
+  ]
+ },
+ "22_5:helmet00": {
+  "rot180_upper": true
+ },
+ "00_7:helmet00": {
+  "mirror_lower": true
+ },
+ "01_0:helmet00": {
+  "mirror_lower": true
+ },
+ "02_0:helmet00": {
+  "mirror_lower": true
+ },
+ "03_0:helmet00": {
+  "mirror_lower": true
+ },
+ "03_3:helmet00": {
+  "mirror_lower": true
+ },
+ "03_8:helmet00": {
+  "mirror_lower": true
+ },
+ "03_9:helmet00": {
+  "mirror_lower": true
+ },
+ "04_0:helmet00": {
+  "mirror_lower": true
+ },
+ "08_5:helmet00": {
+  "mirror_upper": true
+ },
+ "09_2:helmet00": {
+  "mirror_lower": true
+ },
+ "09_9:helmet00": {
+  "mirror_lower": true
+ },
+ "12_0:helmet00": {
+  "mirror_lower": true
+ },
+ "14_0:helmet00": {
+  "mirror_lower": true
+ },
+ "14_10:helmet00": {
+  "mirror_lower": true
+ },
+ "16_9:helmet00": {
+  "mirror_lower": true
+ },
+ "13_0:helmet00": {
+  "lower_from_modern": true
+ },
+ "24_9:helmet00": {
+  "mirror_lower": true
+ },
+ "24_10:helmet00": {
+  "mirror_lower": true
+ },
+ "27_0:helmet00": {
+  "mirror_lower": true
+ },
+ "27_6:helmet00": {
+  "mirror_lower": true
  }
 }

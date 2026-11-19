@@ -109,6 +109,16 @@ def old_ink(name, T):
     for box in ov.get('shell_boxes', []):
         m = np.zeros((256, 256), bool); m[box[1]:box[3], box[0]:box[2]] = True
         boxes |= m & (cur.max(axis=2) < 30.0)
+    for box in ov.get('erase', []):
+        # reviewed by eye: everything in the box that is not shell and not inside the official logo goes back to shell
+        m = np.zeros((256, 256), bool); m[box[1]:box[3], box[0]:box[2]] = True
+        boxes |= m & (cur_dev > 4.0) & ~foot & texdet.zone_mask(fam)
+        if ov.get('erase_edge_neutral'):
+            # the registered footprint is a texel wide of this club's drawn logo: grey or dark neutral texels on its
+            # rim (darker than the shell, so neither the logo's light outline nor its colour) are the old piece too
+            band = foot & ~ndimage.binary_erosion(foot, iterations=int(ov['erase_edge_neutral']))
+            lum = cur @ np.array([0.299, 0.587, 0.114]); shell_l = float(shell_cur @ np.array([0.299, 0.587, 0.114]))
+            boxes |= m & band & (cur.max(axis=2) - cur.min(axis=2) < 45.0) & (lum < shell_l - 14.0) & texdet.zone_mask(fam)
     left = left | boxes
     return dict(left=left, boxes=boxes, paint=left | grown | boxes, foot=foot, panels=panels, other=ink & ~exp & ~footg & pz, ink=ink)
 def cleanup(name):
@@ -116,13 +126,41 @@ def cleanup(name):
     d = old_ink(name, T)
     res, masks = fixtex.cleanup(name, tex=T, foot=ndimage.binary_dilation(d['foot'], iterations=1), extra=d['paint'], shell_only=d['boxes'])
     fam = name.split('_')[0]; key = name.split('_')[1][:2] + '_' + name.split('_')[1][3:]
+    ov2 = OVERRIDES.get(f'{key}:{fam}', {})
+    if ov2.get('real_mark'):
+        # the dark alternate: the real front-facing mark replaces the stand-in drawing (see realmark.py for the source)
+        import realmark
+        res, ch, _info = realmark.apply(name, res)
+        masks['real_mark'] = ch
+        return T, res, d, masks
     if key in OVERRIDES.get('keyline', {}).get(fam, []):
         # the logo file's white outer keyline (the real decal has none): the ring goes back to shell
         import keyline
-        out, ch = keyline.remove(name, res)
+        out, ch = keyline.remove(name, res, grow=int(OVERRIDES.get('keyline_grow', {}).get(key, 0)))
         pal = np.unique(T[..., :3].reshape(-1, 3), axis=0)
         res = res.copy(); res[ch, :3] = fixtex.nearest_palette(out[ch], pal)
         masks['keyline'] = ch
+    if ov2.get('rot180_upper') or ov2.get('mirror_upper') or ov2.get('mirror_lower') or ov2.get('lower_from_modern'):
+        import fixes7
+        before = res.copy()
+        if ov2.get('rot180_upper'):
+            # the right-side logo was laid the wrong way round for its island (its word read backwards in game)
+            (x0, y0, x1, y1), keep = fixes7.logo_box(res[..., :3].astype(np.float64), fam, True, pad=0)
+            # only the logo's own texels turn (the filled logo shape and its half-turn image), never a screw beside it
+            shape = ndimage.binary_fill_holes(ndimage.binary_closing(keep[y0:y1, x0:x1], iterations=2))
+            both = shape & shape[::-1, ::-1]
+            res = res.copy(); block = before[y0:y1, x0:x1, :3]
+            res[y0:y1, x0:x1, :3] = np.where(both[..., None], block[::-1, ::-1], block)
+        if ov2.get('mirror_upper'):
+            # the right-side logo was not mirrored for its island (upside down in game): the left side's, mirrored
+            res, _box = fixes7.mirror_upper_from_lower(res, fam)
+        if ov2.get('mirror_lower'):
+            # standard shell: the left-side logo was laid facing the back of the helmet (the modern shell and the retail
+            # art have it facing forward on both sides): it becomes the right side's mirror image
+            res, _m = fixes7.mirror_panel(res, fam, False)
+        if ov2.get('lower_from_modern'):
+            res, _m = fixes7.lower_from_modern(res, name)
+        masks['reoriented'] = (res[..., :3] != before[..., :3]).any(axis=2)
     return T, res, d, masks
 def pair(name, s=3, box=(0, 16, 150, 240)):
     T, res, d, masks = cleanup(name)

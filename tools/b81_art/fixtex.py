@@ -50,6 +50,12 @@ def fill(rgb, paint, keep_out=None):
         band = art1.dilate(paint, 4) & ~paint
         if keep_out is not None: band &= ~keep_out
     return art1.harmonic_fill(rgb.astype(np.float64), paint, band)
+def fill_clean(out, m, keep_out, soft):
+    """A fill that never draws from old ink (``soft``) while anything else is near: a vent or the flag outline beside a
+    piece of the 2004 logo would otherwise carry that piece's colours into the repaired shell."""
+    ko = keep_out | soft
+    if (art1.dilate(m, 4) & ~m & ~ko).sum() < 6: ko = keep_out
+    return nn_fill(out, m, keep_out=ko) if patterned(out, m, ko) else fill(out, m, keep_out=ko)
 def cleanup(name, tex=None, foot=None, extra=None, do_logo=True, shell_only=None):
     fam = name.split('_')[0]
     T = (final.helmet(name) if tex is None else tex)
@@ -58,12 +64,15 @@ def cleanup(name, tex=None, foot=None, extra=None, do_logo=True, shell_only=None
     if foot is None:
         import texdet3
         foot, ok = texdet3.footprint(name)
+    soft = np.zeros((256, 256), bool)
+    if extra is not None: soft |= extra
+    if shell_only is not None: soft |= shell_only
     if fam == 'helmet02':
         vents = np.zeros((256, 256), bool)
         for m in vent_regions():
             m = m & ~foot
             if not m.any(): continue
-            out = nn_fill(out, m, keep_out=foot) if patterned(out, m, foot) else fill(out, m, keep_out=foot)
+            out = fill_clean(out, m, foot, soft & ~m)
             vents |= m
         masks['vents'] = vents
         d = diamond_region()
@@ -76,7 +85,7 @@ def cleanup(name, tex=None, foot=None, extra=None, do_logo=True, shell_only=None
         # a diamond that still holds the flag (a retail-art throwback) stays as it is
         flag = float(np.linalg.norm(out[inner] - shell_in, axis=1).std()) > 30.0
         if flag: paint[:] = False
-        if paint.any(): out = nn_fill(out, paint) if patterned(out, paint) else fill(out, paint)
+        if paint.any(): out = fill_clean(out, paint, np.zeros((256, 256), bool), soft & ~paint)
         masks['diamond'] = paint
     if shell_only is not None and shell_only.any():
         # old shell-colour squares: only texels that are today's shell colour may fill them
@@ -96,6 +105,17 @@ def cleanup(name, tex=None, foot=None, extra=None, do_logo=True, shell_only=None
     pal = np.unique(T[..., :3].reshape(-1, 3), axis=0)
     res = T.copy()
     res[changed, :3] = nearest_palette(out[changed], pal)
+    if soft.any():
+        # repaired shell beside old ink takes only colours the plain shell already uses: a logo-edge blend from the
+        # palette would leave a tinted cloud where the old piece was
+        zone = texdet.zone_mask(fam)
+        shell = np.median(rgb[zone & ~texdet.hardware(fam)[0]], axis=0)
+        dev = np.linalg.norm(rgb - shell, axis=2)
+        plain = zone & ~changed & (dev < 45.0) & ~ndimage.binary_dilation(zone & (dev > 30.0), iterations=3)
+        cols, counts = np.unique(T[..., :3][plain].reshape(-1, 3), axis=0, return_counts=True)
+        pal_shell = cols[counts >= 6]
+        m = changed & (np.linalg.norm(out - shell, axis=2) < 45.0)
+        if len(pal_shell) >= 2 and m.any(): res[m, :3] = nearest_palette(out[m], pal_shell)
     return res, masks
 if __name__ == '__main__':
     from PIL import Image

@@ -19,7 +19,8 @@ def render():
     for code in sorted(MINI_TEAMS):
         for side, S in (('h', 'H'), ('a', 'A')):
             sel = f'{code}{S}0'
-            for kind, tex in (('old', C.hindex()[f'helmet00_{sel}']), ('new', str(C.WORK.parent / 'out' / 'helmets_compiled' / f'helmet00_{sel}.png'))):
+            if side not in MINI_SIDES.get(code, 'ha'): continue
+            for kind, tex in (('old', C.hindex()[f'helmet00_{OLD_SELECTOR.get(sel, sel)}']), ('new', str(C.WORK.parent / 'out' / 'helmets_compiled' / f'helmet00_{sel}.png'))):
                 if not Path(tex).exists(): tex = str(assign.new_tex_path('helmet00', sel))
                 jobs.append(dict(TL.MINI_LIGHT, texture00=tex, facemask_rgb=[12, 12, 12] if code == '02' else [128, 128, 128], shell=TL.MINI_SHELL, facemask=TL.MINI_FACEMASK,
                                  accessories=False, views=[TL.mini_view(side, R / kind / f'mini_{side}{code}.png')]))
@@ -38,7 +39,11 @@ def layer(path):
     return pm.reshape(64, 4, 64, 4, 4).mean(axis=(1, 3))
 PASS_MINIS = {'29', '13'}
 #: teams whose Standard-shell helmet lost old-logo pieces (beta 80's kit fix or this job): only their minis follow
-MINI_TEAMS = {'00', '02', '09'}
+MINI_TEAMS = {'00', '02', '09', '01', '03', '04', '12', '13', '14', '27'}
+#: clubs added for the Standard-shell left-side logo that faced the back of the helmet: only that side's mini changes
+MINI_SIDES = {'01': 'h', '03': 'h', '04': 'h', '12': 'h', '13': 'h', '14': 'h', '27': 'h'}
+#: the shipped Carolina minis are the silver helmet (the away slot's art), so the old render is made from that
+OLD_SELECTOR = {'04H0': '04A0'}
 def compose_mini(name):
     side, code = name[5], name[6:8]
     old = final_mini(name) if code in PASS_MINIS else C.load(mini_path(name))
@@ -71,7 +76,7 @@ if __name__ == '__main__':
     for code in sorted(C.TEAMS):
         for side in 'ha':
             name = f'mini_{side}{code}_0'
-            if code not in MINI_TEAMS: continue
+            if code not in MINI_TEAMS or side not in MINI_SIDES.get(code, 'ha'): continue
             old, out, st = compose_mini(name)
             rows.append((name, st['changed'], st['hand']))
             if st['changed']:

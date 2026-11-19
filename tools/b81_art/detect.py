@@ -30,8 +30,15 @@ def texture_row(name, T, cleaned):
     v = np.zeros((256, 256), bool)
     if fam == 'helmet02':
         for m in fixtex.vent_regions(): v |= ndimage.binary_dilation(m, iterations=1)
-    row.update(old_logo_texels_before=int((d0['left'] & ~v).sum()), old_logo_texels_after=int((d1['left'] & ~v).sum()),
-               registered=bool(d0['panels'] and all(d0['panels'].values())))
+    ov = fixtex2.OVERRIDES.get(f"{name[9:11]}_{name[12:]}:{fam}", {})
+    # texels inside a reviewed erase box are shell again (the box rule fires on any shading, so it is not counted after)
+    after = d1['left'] & ~d1['boxes'] & ~v
+    if ov.get('mirror_lower') or ov.get('lower_from_modern'):
+        # the left side is now made from the right side or the modern shell: it is judged by the right side's count
+        up = after.copy(); up[128:] = False; after = up | up[::-1]
+    row.update(old_logo_texels_before=int((d0['left'] & ~v).sum()), old_logo_texels_after=None if ov.get('real_mark') else int(after.sum()),
+               registered=bool(d0['panels'] and all(d0['panels'].values())),
+               note='stand-in drawing replaced by the real mark' if ov.get('real_mark') else ('left side rebuilt from the right side' if ov.get('mirror_lower') else ''))
     return row
 def project(mask, view, side):
     pid, u, v = compose.uv(view, side)
