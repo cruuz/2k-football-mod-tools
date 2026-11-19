@@ -31,6 +31,9 @@ BENGALS = ("06A0", "06A5", "06A6", "06H0", "06H5", "06H6")
 # every package whose numbers this pass draws again (batch 3 added the clubs measured against the 2026 photographs)
 REDRAWN = CHARGERS + BENGALS + ("00A0", "00H0", "01A0", "01H0", "07H0", "14A0", "14A10", "14H0", "14H10", "18A0", "18A7",
                                "18H0", "18H7", "28A7", "28H7")
+# batch 5 (measured on 2026 club game photographs, BATCH5/digits/judged.json): Rams, Bears, Jets, Commanders, Colts,
+# Texans wider; Commanders heavier; Browns lighter (home and road of each)
+REDRAWN += ("23H0", "23A0", "05H0", "05A0", "19H0", "19A0", "29H0", "29A0", "11H0", "11A0", "37H0", "37A0", "30H0", "30A0")
 #: batch 4 (KITS4): the only jersey rows that repaint beyond the chest strip under the collar
 WHOLE_JERSEY = ("09A9", "09H9", "26H4")
 
@@ -247,7 +250,11 @@ class DigitDocument(unittest.TestCase):
         folder = gf.art_folder(gf.digits_b81())
         by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
         for selector, width in (("18H0", 37), ("18A0", 37), ("18H7", 37), ("24A0", 35), ("00H0", 37), ("00A0", 37),
-                                ("01H0", 39), ("06H0", 31), ("14H0", 37), ("07H0", 35), ("28H7", 36)):   # 28H7: 34 and its 2 texel dark layer
+                                ("01H0", 39), ("06H0", 31), ("14H0", 37), ("07H0", 35), ("28H7", 36),   # 28H7: 34 and its 2 texel dark layer
+                                # batch 5: real wider than 40 columns allow (two-digit numbers are cut outside 12-51): 40
+                                ("23H0", 40), ("23A0", 40), ("05H0", 30), ("05A0", 30), ("19H0", 38), ("19A0", 38),
+                                ("29H0", 40), ("29A0", 40), ("11H0", 40), ("11A0", 40), ("37H0", 40), ("37A0", 40),
+                                ("30H0", 35), ("30A0", 35)):
             solid = png_rgba(folder / by[(selector, 13)])[0][..., 3] > 127
             cols = np.flatnonzero(solid.any(axis=0))
             self.assertLessEqual(abs(int(cols.max() - cols.min() + 1) - width), 1, selector)
