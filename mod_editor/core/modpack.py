@@ -1339,10 +1339,11 @@ def _export_modular(base_iso, patched_iso, out_path, meta, *, overwrite, recipe,
         partition = partition_base(base_fd, size) or 0
         _require((partition_base(patched_fd, patched_size) or 0) == partition, "game partition moved between inputs")
         if patch_operations is None:
-            _require(patched_size >= size, "unrecognised image size change: shrinking needs a registered operation")
+            allocations = ops.detect_allocations(base_fd, patched_fd, size, patched_size, partition, file_operations)
             ranges, base_sha, _ = diff_descriptors(base_fd, patched_fd, size, block=block, gap=gap, progress=report)
             _require(not ranges or ranges[0][0] >= partition, "differences in front of the game partition cannot be shared")
-            operations, payloads = ops.detect(base_fd, patched_fd, size, patched_size, partition, ranges, file_operations)
+            operations, payloads = ops.detect(base_fd, patched_fd, size, patched_size, partition, ranges,
+                                              file_operations, allocations=allocations)
         else:
             operations, payloads = list(patch_operations), {}
             for member, source in (operation_payloads or {}).items():

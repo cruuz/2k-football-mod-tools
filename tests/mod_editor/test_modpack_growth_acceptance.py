@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / 'tests/mod_editor')]
-from mod_editor.core import mod_build, modpack
+from mod_editor.core import mod_build, modpack, modpack_files
 from test_modpack_growth import assert_same
 
 SOURCE = Path(os.environ.get('NFL2K5_RETAIL_XISO', '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso'))
@@ -42,21 +42,25 @@ class ExperimentalGrowthAcceptance(unittest.TestCase):
             plan = mod_build.apply_preset(mod_build.BuildPlan(str(SOURCE), str(built)), 'softdrink_experimental')
             build = mod_build.build(plan, progress=progress)
             save('standalone-build.json', build)
-            exported = modpack.export(SOURCE, built, pack, {'name': 'Experimental growth acceptance'},
-                file_operations=['default.xbe', 'vc_53450030/0'], progress=progress)
+            exported = modpack_files.export_for_share(SOURCE, built, pack, {'name': 'Experimental growth acceptance'},
+                                                       progress=progress)
             save('standalone-export.json', exported)
+            self.assertEqual(exported['format'], 3)
+            self.assertTrue(exported['replay']['all_files_byte_equal'])
             checked = modpack.check(pack, SOURCE, hash_image=True, progress=progress)
             self.assertEqual(checked['state'], 'ready')
             save('standalone-check.json', checked)
             applied = modpack.apply(pack, SOURCE, result, progress=progress)
             save('standalone-apply.json', applied)
             assert_same(self, built, result)
-            self.assertEqual(modpack.check(pack, result)['state'], 'applied')
+            self.assertTrue(applied['target']['all_game_files_verified'])
+            self.assertTrue(applied['target']['matches_author_result'])
             summary = dict(source_bytes=SOURCE.stat().st_size, built_bytes=built.stat().st_size,
                 result_bytes=result.stat().st_size, pack_bytes=pack.stat().st_size,
                 source_sha256=modpack.hash_file(SOURCE), built_sha256=modpack.hash_file(built),
                 result_sha256=modpack.hash_file(result))
-            self.assertEqual(summary['source_sha256'], exported['base']['sha256'])
+            self.assertEqual(summary['source_sha256'], modpack.RETAIL_XISO_SHA256)
+            self.assertEqual(summary['built_sha256'], exported['result']['sha256'])
             self.assertEqual(summary['built_sha256'], summary['result_sha256'])
         summary['images_deleted'] = not built.exists() and not result.exists()
         self.assertTrue(summary['images_deleted'])
