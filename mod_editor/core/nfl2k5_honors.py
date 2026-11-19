@@ -202,15 +202,17 @@ def labels(code_va: int) -> dict[str, int]:
     return {name: code_va + offset for name, offset in runtime.LABELS.items()}
 
 
-def sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
-    """Every executable edit as (label, VA, retail bytes, patched bytes)."""
-
-    at = labels(code_va)
+def _sites_for_labels(at) -> list[tuple[str, int, bytes, bytes]]:
     out = []
     for label, va, before, entry, opcode, length in SITE_TABLE:
         after = bytes([opcode]) + _rel32(va + 5, at[entry]) + b"\x90" * (length - 5)
         out.append((label, va, before, after))
     return out
+
+
+def sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
+    """Every executable edit as (label, VA, retail bytes, patched bytes)."""
+    return _sites_for_labels(labels(code_va))
 
 
 def _guard_digest(image: XbeImage, va: int, size: int, checked_sites) -> str:
@@ -307,9 +309,30 @@ def status(payload: bytes) -> str:
         return "foreign"
 
 
+def _standalone_sites(payload):
+    """The pre-Champions F5 install in b775, for readers of the shared fold only."""
+    found = allocations(payload)
+    if not found or (found["code"]["va"], found["data"]["va"]) != (0x14E0050, 0x14BBFF0):
+        return []
+    code_va = found["code"]["va"]
+    image = XbeImage(payload)
+    # The original F5 writer at 741cc3c6d reproduces all 2,560 relocated bytes at these two VAs.
+    if hashlib.sha256(image.read(code_va, CODE_SIZE)).hexdigest() != "ec0b2658457dd4b21d8682ae3762bd8f64f504b0e49cf6cae6c981407683891a":
+        return []
+    if champions.owned_state(payload) != ("retail", None):
+        return []
+    offsets = {"honors_page_input": 0, "honors_page_enter": 0x3D, "honors_page_ratings": 0x4E,
+               "honors_page_bio": 0x62, "honors_season_hook": 0x76, "honors_sb_hook": 0x85,
+               "honors_fold_rule": 0x94}
+    edits = _sites_for_labels({name: code_va + offset for name, offset in offsets.items()})
+    _require(rdata.status(payload, edits) == "applied", "mixed standalone honors sites")
+    _check_guards(image, edits)
+    return edits
+
+
 def fold_site_edit(payload: bytes) -> list[tuple[int, bytes]]:
     """[(VA, retail bytes)] of the history-fold edit while this owner is *exactly* applied (this release's install or
-    the exact beta-79 one, whose fold hook is the same code), else [].
+    the beta-79 or standalone b775 installs), else [].
 
     b77-f5b: ``nfl2k5_defensive_try`` pins the whole history engine (0x14E7E0, 3,216 bytes) because it writes field 59
     through the engine's writer. This owner's only edit inside that span is the 7-byte rule-table load of the fold
@@ -318,9 +341,17 @@ def fold_site_edit(payload: bytes) -> list[tuple[int, bytes]]:
     these retail bytes before it hashes its context, and only when the whole honors installation validates here.
     """
 
-    if status(payload) not in ("applied", "previous"):
+    state = status(payload)
+    try:
+        if state in ("applied", "previous"):
+            edits = sites(allocations(payload)["code"]["va"])
+        elif state == "foreign":
+            edits = _standalone_sites(payload)
+        else:
+            return []
+    except (ValueError, IndexError, KeyError, TypeError, struct.error, OverflowError):
         return []
-    return [(va, before) for label, va, before, _after in sites(allocations(payload)["code"]["va"]) if label == "history_fold"]
+    return [(va, before) for label, va, before, _after in edits if label == "history_fold"]
 
 
 def read_settings(payload: bytes) -> dict:

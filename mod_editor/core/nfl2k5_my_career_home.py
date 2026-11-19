@@ -61,6 +61,10 @@ VA = space.DATA_VA + space.PAGE          # the music section's address (an unmap
 RAW = space.FILE_SIZE                    # its zero file gap
 # 0x3000 since job mcs (the Schedule screen; ui1 used 0x2000). The music slot's file gap and VA hole hold 0x10000.
 SIZE = 0x3000
+# The b775 UI1 writer predates Schedule. Its complete relocated and padded section is pinned here
+# so the allocator can preserve it when another owner appends, without treating any short section as UI1.
+UI1_SIZE = 0x2000
+UI1_BLOCK_SHA256 = "44bf7a78075578fe65ff67bb7952906be84e48fc1890b3d35565179bc3b4a673"
 FLAGS = 0x07                             # writable | preload | executable (retail .data uses the same flags)
 HEADER = 128
 MAGIC = space.HOME_SECTION_MAGIC
@@ -288,10 +292,13 @@ def _block_content(block):
 def _descriptor(block, payload=None):
     _header, name, refs = space.scale_music_slots(payload)
     flags = FLAGS
-    if payload is not None and struct.unpack_from("<I", payload, _header)[0] == FLAGS & ~0x02:
+    size = SIZE
+    if hashlib.sha256(block[:UI1_SIZE]).hexdigest() == UI1_BLOCK_SHA256:
+        size = UI1_SIZE  # UI1 used the original preload flags
+    elif payload is not None and struct.unpack_from("<I", payload, _header)[0] == FLAGS & ~0x02:
         flags = FLAGS & ~0x02  # b778-xs1: loaded on demand by nfl2k5_module_loader (preload flag clear)
-    return struct.pack("<9I20s", flags, VA, SIZE, RAW, SIZE, 0x10000 + name, 0, 0x10000 + refs,
-                       0x10000 + refs + 2, space._digest(bytes(block[:SIZE])))
+    return struct.pack("<9I20s", flags, VA, size, RAW, size, 0x10000 + name, 0, 0x10000 + refs,
+                       0x10000 + refs + 2, space._digest(bytes(block[:size])))
 
 
 def _career_state(payload):
