@@ -2,7 +2,7 @@
 
 ## Beta 81 (RC116 / APF alpha.112)
 
-SOFTDRINK 2K28 v0.10 includes the standard 128 MiB and experimental 64 MB packs. The editor can install either directly or customize its artwork, roster and playbooks. The release repairs franchise retirement and IR, Team History and lineman statistics, MyCareer quarter settings, the pause scorebar and CPU decisions. Studio also repairs complete roster transfers, PS2 save verification, Quick Export and interrupted builds. [Editor and game changelog](docs/mod_editor/2k5_mod_studio_changelog.md) · [Install the game pack](docs/mod_editor/install_softdrink_2k28.md)
+SOFTDRINK 2K28 v0.10 is the standard 128 MiB edition. For 64 MiB, Studio offers the published v0.9 experimental pack. Either pack can be installed directly or customized with the Studio’s artwork, roster and playbook tools. The release repairs franchise retirement and IR, Team History and lineman statistics, MyCareer quarter settings, the pause scorebar and CPU decisions. Studio also repairs complete roster transfers, PS2 save verification, Quick Export and interrupted builds. [Editor and game changelog](docs/mod_editor/2k5_mod_studio_changelog.md) · [Install the game pack](docs/mod_editor/install_softdrink_2k28.md)
 
 ## Beta 80 (RC115 / APF alpha.111, 2026-11-03)
 

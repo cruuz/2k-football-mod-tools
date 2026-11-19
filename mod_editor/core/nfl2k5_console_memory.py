@@ -69,8 +69,12 @@ RECOMMENDED_HELP = ("Applies the recommended 64 MB selection from the memory mod
 LOCK_PREFIX = "Off at 64 MB: "
 NEXT_STEPS_64 = (f"This is the 64 MB build for an original Xbox or the Android emulator hakuX: {STATUS_64}. To try it in "
                  "xemu the way a console runs it, set System Memory to 64 MiB.")
-SHARE_NOTE = ("Choose the full SOFTDRINK 2K28 pack for xemu at 128 MiB with Complex 4627, or download the "
-              f"64 MB pack ({STATUS_64}). Install either directly. Customize SOFTDRINK 2K28 lets you change "
+PACK_DOWNLOAD_LINKS = (
+    '<a href="https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10">v0.10 for 128 MiB</a> or the '
+    '<a href="https://github.com/cruuz/softdrink-2k28/releases/download/v0.9/'
+    'SOFTDRINK-2K28-v0.9-64MB.2k5patch">v0.9 experimental pack for 64 MiB</a>')
+SHARE_NOTE = ("Choose v0.10 for xemu at 128 MiB with Complex 4627. For a 64 MiB setup, use the "
+              f"published v0.9 64 MB pack ({STATUS_64}). Install either directly. Customize SOFTDRINK 2K28 lets you change "
               "the build target and features. The 64 MB roster fits the original game's roster size.")
 SHARE_CHOICE_CAPTION = "Build for"
 SHARE_CHOICE_HELP = ("Customize SOFTDRINK 2K28 loads the pack's sources into the Build tab. 64 MB sets the Build tab's "

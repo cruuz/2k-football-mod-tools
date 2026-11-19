@@ -61,7 +61,7 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
 
 ## Can I play SOFTDRINK 2K28 on Android, in hakuX?
 
-The published **v0.9 experimental** pack targets 64 MiB. Download it and choose **Install SOFTDRINK 2K28** in Studio. v0.10 is the standard 128 MiB release for xemu with the 4627 BIOS. Physical Xbox, Android hakuX and XBased compatibility still need device testing. [Download v0.9 for 64 MiB](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.9)
+The published **v0.9 experimental** pack targets 64 MiB. Download it and choose **Install SOFTDRINK 2K28** in Studio. v0.10 is the standard 128 MiB release for xemu with the 4627 BIOS. A later 64 MiB update is planned for selected improvements. Physical Xbox, Android hakuX and XBased compatibility still need device testing. [Download v0.9 for 64 MiB](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.9)
 
 If you already have a franchise from the standard edition with **Player Progress**, keep using the 128 MiB edition for that save. The standard game opened the 987,836-byte expanded franchise. If a 64 MiB game displays **Damaged**, keep both signed files and cancel the delete prompt. Reopen the franchise in the 128 MiB standard game. The compact game can read smaller franchise saves. A custom disc built with beta 81’s recommended 64 MiB profile includes a reminder on the Delete and load-error screens.
 
@@ -393,7 +393,7 @@ players' content, not proof of a new studio feature.
 
 ## The game stops on a black screen and says it needs 128 MB or the 4627 BIOS. I set both.
 
-SOFTDRINK checks two things when it starts. xemu's **System Memory** must be 128 MiB, and the
+The standard 128 MiB game checks two things when it starts. xemu's **System Memory** must be 128 MiB, and the
 **Flash ROM (BIOS)** must have the 4627 kernel (the **Complex 4627** image is the one it was
 tested with). If either is wrong it stops on a black screen with white letters and names the one
 to fix. It does this on purpose, because the game would otherwise fail later at the pregame

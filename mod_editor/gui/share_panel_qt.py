@@ -241,10 +241,7 @@ class SharePanel(QWidget):
         apply_box = QGroupBox("Install SOFTDRINK 2K28")
         apply_layout = QVBoxLayout(apply_box)
         self.install_hint = WrappedLabel(
-            'Download <a href="https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10">v0.10 for 128 MiB</a> '
-            'or the <a href="https://github.com/cruuz/softdrink-2k28/releases/download/v0.9/'
-            'SOFTDRINK-2K28-v0.9-64MB.2k5patch">v0.9 experimental pack for 64 MiB</a>. '
-            'Select the downloaded .2k5patch file directly.')
+            f"Download {console_memory.PACK_DOWNLOAD_LINKS}. Select the downloaded .2k5patch file directly.")
         self.install_hint.setOpenExternalLinks(True)
         self.install_hint.setWordWrap(True)
         apply_layout.addWidget(self.install_hint)

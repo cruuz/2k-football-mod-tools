@@ -1,6 +1,6 @@
 # 2K Football Mod Tools
 
-Beta 81 includes 2K5 Mod Studio 1.0 RC116 and APF 2K8 Mod Studio alpha.112. To play SOFTDRINK 2K28 v0.10, download **2K5 Mod Studio** and one game patch, then choose **Getting Started → Install SOFTDRINK 2K28**. To edit the roster, artwork, playbooks or build options, choose **Customize SOFTDRINK 2K28**. [Download the editors](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-81) · [Download the game patch](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10) · [Installation guide](docs/mod_editor/install_softdrink_2k28.md) · [What's new](docs/mod_editor/2k5_mod_studio_changelog.md)
+Beta 81 includes 2K5 Mod Studio 1.0 RC116 and APF 2K8 Mod Studio alpha.112. Download **2K5 Mod Studio** and the patch for your setup. SOFTDRINK 2K28 v0.10 runs at 128 MiB. For 64 MiB, use the published v0.9 experimental pack. In Studio choose **Getting Started → Install SOFTDRINK 2K28**. To edit the roster, artwork, playbooks or build options, choose **Customize SOFTDRINK 2K28**. [Download the editors](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-81) · [128 MiB game](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10) · [64 MiB game](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.9) · [Installation guide](docs/mod_editor/install_softdrink_2k28.md) · [What's new](docs/mod_editor/2k5_mod_studio_changelog.md)
 
 > **Beta.** Two retail-free mod editors, Windows, macOS and Linux, for classic
 > 2K football games:

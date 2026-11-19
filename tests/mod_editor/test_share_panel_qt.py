@@ -9,6 +9,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -17,7 +18,7 @@ for _candidate in (_REPO_ROOT, _REPO_ROOT / "tests" / "mod_editor"):
     if str(_candidate) not in sys.path:
         sys.path.insert(0, str(_candidate))
 
-from PyQt5.QtWidgets import QApplication  # noqa: E402
+from PyQt5.QtWidgets import QApplication, QLabel  # noqa: E402
 
 from mod_editor.core import modpack  # noqa: E402
 from mod_editor.gui.share_panel_qt import SharePanel  # noqa: E402
@@ -53,12 +54,20 @@ class SharePanelTests(unittest.TestCase):
         self.app.processEvents()
 
     def test_installer_links_the_released_pack_for_each_memory_setting(self) -> None:
-        hint = self.panel.install_hint
-        self.assertTrue(hint.openExternalLinks())
-        self.assertIn('releases/tag/v0.10">v0.10 for 128 MiB</a>', hint.text())
-        self.assertIn('releases/download/v0.9/SOFTDRINK-2K28-v0.9-64MB.2k5patch', hint.text())
-        self.assertIn('64 MiB</a>', hint.text())
-        self.assertNotIn('v0.10-64MB', hint.text())
+        from mod_editor.gui.studio_qt import StudioMainWindow
+
+        welcome = StudioMainWindow._build_welcome_page(mock.Mock(_scroll_shell=False))
+        self.addCleanup(welcome.deleteLater)
+        downloads = [label for label in welcome.findChildren(QLabel, "cardBody") if ".2k5patch" in label.text()
+                     and label.openExternalLinks()]
+        self.assertEqual(len(downloads), 1)
+        for page, hint in (("Getting Started", downloads[0]), ("Install & Share", self.panel.install_hint)):
+            with self.subTest(page=page):
+                self.assertTrue(hint.openExternalLinks())
+                self.assertIn('releases/tag/v0.10">v0.10 for 128 MiB</a>', hint.text())
+                self.assertIn('releases/download/v0.9/SOFTDRINK-2K28-v0.9-64MB.2k5patch', hint.text())
+                self.assertIn('64 MiB</a>', hint.text())
+                self.assertNotIn('v0.10-64MB', hint.text())
 
     def test_format_two_pack_loads_checks_and_applies_through_share(self) -> None:
         pack_path = self.tmp / "operations.2k5patch"

@@ -563,6 +563,11 @@ class StudioWindowTests(unittest.TestCase):
         window.navigation.setCurrentRow(0)
         _pump(self.app)
         first = window.welcome_install_button
+        links = [label for label in window.findChildren(QLabel, "cardBody")
+                 if label.isVisible() and label.openExternalLinks() and ".2k5patch" in label.text()]
+        self.assertEqual(len(links), 1)
+        self.assertIn('releases/tag/v0.10">v0.10 for 128 MiB</a>', links[0].text())
+        self.assertIn('releases/download/v0.9/SOFTDRINK-2K28-v0.9-64MB.2k5patch', links[0].text())
         self.assertEqual(first.text(), "Install SOFTDRINK 2K28…")
         self.assertEqual(first.objectName(), "primaryButton")
         self.assertEqual(window.welcome_open_button.objectName(), "secondaryButton")

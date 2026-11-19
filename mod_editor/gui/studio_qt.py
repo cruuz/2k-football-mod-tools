@@ -3588,6 +3588,8 @@ class StudioMainWindow(QMainWindow):
         return header
 
     def _build_welcome_page(self) -> QWidget:
+        from mod_editor.core.nfl2k5_console_memory import PACK_DOWNLOAD_LINKS
+
         page = QWidget()
         outer = QVBoxLayout(page)
         outer.setContentsMargins(34, 28, 34, 26)
@@ -3611,9 +3613,9 @@ class StudioMainWindow(QMainWindow):
         columns = 2 if self._scroll_shell else 4
         # b780-uxfix: the four steps of the common job (install SOFTDRINK 2K28 and play it), xemu setup included
         for number, title, body in (
-            ("1", "Get your two files", "Your NFL 2K5 game file (.iso) and the SOFTDRINK 2K28 download (.2k5patch)."),
+            ("1", "Get your two files", f"Bring your NFL 2K5 game file (.iso). Download {PACK_DOWNLOAD_LINKS}."),
             ("2", "Install", "Press Install SOFTDRINK 2K28 and pick the two files. Your original file is never changed."),
-            ("3", "Set up xemu once", "Standard pack: 128 MiB and Complex 4627. For the 64 MB pack, choose 64 MiB. Restart xemu (Help ▸ Set up xemu)."),
+            ("3", "Set up xemu once", "For v0.10, choose 128 MiB and Complex 4627. For the v0.9 64 MB pack, choose 64 MiB. Restart xemu (Help ▸ Set up xemu)."),
             ("4", "Play", "Press Play latest disc in xemu, or in xemu choose Machine > Load Disc."),
         ):
             card = QFrame()
@@ -3627,6 +3629,9 @@ class StudioMainWindow(QMainWindow):
             title_label.setObjectName("cardTitle")
             title_label.setWordWrap(True)     # b780 CI: with Windows font metrics "Set up xemu once" clipped in its card
             body_label = QLabel(body)
+            if number == "1":
+                body_label.setTextInteractionFlags(Qt.TextBrowserInteraction)
+                body_label.setOpenExternalLinks(True)
             body_label.setObjectName("cardBody")
             body_label.setWordWrap(True)
             body_label.setMinimumWidth(120)
