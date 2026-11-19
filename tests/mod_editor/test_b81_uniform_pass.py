@@ -114,7 +114,8 @@ class KitDocument(unittest.TestCase):
 
     def test_the_first_batch_is_the_reviewed_kits(self):
         self.assertEqual(sorted((r["selector"], r["texture"]) for r in kit_rows() if r["texture"] != "jersey00"),
-                         [("00A6", "sleeve00"), ("00H6", "sleeve00"), ("01A9", "pants00"), ("01H9", "pants00"),
+                         [("00A6", "sleeve00"), ("00A7", "sleeve00"), ("00H6", "sleeve00"), ("00H7", "sleeve00"), ("01A9", "pants00"),
+                          ("01H9", "pants00"),
                           ("02A3", "pants00"), ("02H3", "pants00"),
                           ("03A0", "sleeve00"), ("03H0", "sleeve00"), ("04A2", "pants00"), ("04H2", "pants00"),
                           ("06A0", "sleeve00"), ("06A5", "sleeve00"), ("06A6", "sleeve00"), ("06H5", "sleeve00"),
@@ -135,6 +136,7 @@ class KitDocument(unittest.TestCase):
         # blue-grey (09H9/09A9), Dolphins road white socks (14A0, with the sock-coloured lower leg of the pants),
         # Saints gameday gold pants (17H8/17A8), Jets legacy black pants without the green stripe (19H2/19A2),
         # Seahawks road white socks (26A4, likewise), Seahawks 26H4 sleeves (the 26H0 art of the same jersey)
+        # batch 5 marks: the Cardinals desert sleeve swoosh red, not copper (00H7/00A7)
 
     def test_the_jersey_rows_repaint_only_the_chest_under_the_collar(self):
         # Round 2 (Noah 11/18: "the NY logo on the giants jersey below the nfl patch is too large. There are likely
