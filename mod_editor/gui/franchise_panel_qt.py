@@ -984,6 +984,10 @@ class FranchisePanel(QWidget):
             self._base = body
             self._save = self._fresh_save()
             self._save.original = bytes(self._container.savegame)
+            if self._mode == "franchise":
+                # b81 item 6: this page's view is the roster page's own document written out, so the injured reserve
+                # and name readers use that document instead of parsing all 4,164 records again (0.6 s a read)
+                self._save._roster = self._document
             self._last_error = ""
             self._refresh_all()
             return True

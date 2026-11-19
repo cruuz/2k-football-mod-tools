@@ -2475,6 +2475,10 @@ class RosterEditorPanel(QWidget):
             return False
         if edit.kind == "coach" and self.franchise_panel.coaches_only:
             return self._coach_number_edit(edit)
+        if edit.kind in self.ARENA_ONLY_EDITS:
+            done = self._arena_byte_edit(edit)
+            if done is not None:
+                return done
         before = self.document.to_body()
         old_edits = self.franchise_panel._edits[:self.franchise_panel._cursor]
         try:
@@ -2495,6 +2499,55 @@ class RosterEditorPanel(QWidget):
             lambda: self._restore_composed(after, old_edits + [edit])))
         self.franchise_panel._refresh_all()
         self.franchise_panel._set_status(edit.label)
+        return True
+
+    # b81 item 6: franchise and coach edits that write the season, the front office, coach records or team settings,
+    # never a player record or a team's list
+    ARENA_ONLY_EDITS = frozenset({"year", "cap", "control", "game", "game_add", "game_remove", "week_clear", "coach",
+                                  "coach_swap", "coach_hire", "team_option"})
+
+    def _arena_byte_edit(self, edit) -> bool | None:
+        """b81 item 6: an edit that changes no roster state is written straight into the live bytes. The composed path
+        re-encoded and re-read all 4,164 records two or three times (3 to 4 s an edit on a SOFTDRINK franchise); here
+        the edit runs on the current bytes, the byte ranges it changed are checked against every player record and team
+        list (any overlap falls back to the composed path, returning None), then patched in, and Undo puts exactly those
+        bytes back. Save Xbox save copy encodes the roster over the same bytes as before."""
+
+        assert self.document is not None
+        page = self.franchise_panel
+        document = self.document
+        before = document.to_body()                     # cheap now: unchanged records come from the encode cache
+        try:
+            candidate = page._new_save(before)
+            edit.apply(candidate)
+        except ValueError as exc:
+            page._last_error = str(exc)
+            page._set_status(f"Refused: {exc}")
+            self._set_status(f"Refused: {exc}")
+            return False
+        after = candidate.to_bytes()
+        ranges = rr.changed_ranges(before, after)
+        if not ranges:
+            page._set_status(f"Nothing changed: {edit.label}")
+            return False
+        if rr.ranges_touch(ranges, document.roster_state_ranges()):
+            return None
+        old = [(start, bytes(before[start:end])) for start, end in ranges]
+        new = [(start, bytes(after[start:end])) for start, end in ranges]
+        old_edits = page._edits[:page._cursor]
+
+        def put(chunks, edits) -> None:
+            assert self.document is not None
+            for start, data in chunks:
+                self.document.body[start:start + len(data)] = data
+            page._edits = list(edits)
+            page._cursor = len(edits)
+            page._checks_stale = True
+            page.sync_from_roster()
+
+        put(new, old_edits + [edit])
+        self.undo_stack.push(UndoEntry(edit.label, lambda: put(old, old_edits), lambda: put(new, old_edits + [edit])))
+        page._set_status(edit.label)
         return True
 
     def _coach_number_edit(self, edit) -> bool:

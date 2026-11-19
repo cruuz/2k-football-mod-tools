@@ -1398,5 +1398,72 @@ class SpecialTeamsNativeTests(unittest.TestCase):
                 self.assertEqual(cpu.returner_identities()[0], expected)
 
 
+# --------------------------------------------------------------------------------------------- wave 2: item 6, edit speed
+SOFTDRINK_FRANCHISE_SAVE = Path(os.environ.get(
+    "NFL2K5_SOFTDRINK_FRANCHISE_SAVE",
+    "/media/noah/Storage/2K5-project/beta81/cpu-sim/played-game-beta80/SAVEGAME.DAT"))
+
+
+class EditSpeedHelpersTests(unittest.TestCase):
+    def test_changed_ranges_and_overlap(self) -> None:
+        before = bytes(10000)
+        after = bytearray(before)
+        after[5] = 1
+        after[6] = 2
+        after[9000] = 3
+        self.assertEqual(rr.changed_ranges(before, bytes(after)), [(5, 7), (9000, 9001)])
+        self.assertTrue(rr.ranges_touch([(5, 7)], [(6, 100)]))
+        self.assertFalse(rr.ranges_touch([(5, 7)], [(7, 100), (0, 5)]))
+
+    def test_the_encode_and_decode_caches_follow_the_values(self) -> None:
+        document = rr.load_body(synthetic_body())
+        player = document.players[0]
+        raw = player.record.encode()
+        self.assertIs(player.record.encode(), raw, "unchanged values reuse the bytes")
+        player.record.values["speed"] = 12
+        self.assertEqual(rr.decode_record(player.record.encode())["speed"], 12)
+        first = rr.decode_record(raw)
+        first["speed"] = 99
+        self.assertNotEqual(rr.decode_record(raw)["speed"], 99, "callers get their own dict")
+
+
+@unittest.skipUnless(SOFTDRINK_FRANCHISE_SAVE.is_file(), f"SOFTDRINK franchise save absent: {SOFTDRINK_FRANCHISE_SAVE}")
+class FranchiseEditSpeedTests(unittest.TestCase):
+    """b81 item 6: about 3 to 4 s an edit on a 4,096-player SOFTDRINK franchise before; measured 0.1 to 0.2 s after."""
+
+    def test_season_coach_and_schedule_edits_are_quick_and_reach_the_signed_copy(self) -> None:
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        application = _app()
+        panel = RosterEditorPanel()
+        try:
+            self.assertTrue(panel.load_save(SOFTDRINK_FRANCHISE_SAVE))
+            page = panel.franchise_panel
+            self.assertTrue(page.active)
+            cap = page.save.salary_cap
+            page.set_salary_cap(cap + 1000)                       # the first edit fills the encode cache
+            timings = {}
+            for label, action in (("cap", lambda: page.set_salary_cap(cap + 2000)),
+                                  ("coach", lambda: page.set_coach_value(0, "overall", 71)),
+                                  ("game", lambda: page.edit_game(5, 0, minute=30))):
+                started = time.perf_counter()
+                self.assertTrue(action(), page.status_label.text())
+                timings[label] = time.perf_counter() - started
+            self.assertLess(max(timings.values()), 1.0, timings)
+            self.assertEqual(page.save.salary_cap, cap + 2000)
+            panel.undo()
+            self.assertEqual(page.save.game(5, 0).minute, fs.FranchiseSave(rr.SaveContainer.load(
+                SOFTDRINK_FRANCHISE_SAVE, require_signature=False).savegame).game(5, 0).minute)
+            panel.redo()
+            with tempfile.TemporaryDirectory() as folder:
+                receipt = panel.write_copy_to(Path(folder) / "copy")
+                self.assertTrue(receipt["signed"])
+                back = fs.FranchiseSave(rr.SaveContainer.load(Path(folder) / "copy").savegame)
+                self.assertEqual((back.salary_cap, back.coaches()[0].ratings["overall"], back.game(5, 0).minute),
+                                 (cap + 2000, 71, 30))
+        finally:
+            panel.deleteLater()
+            application.processEvents()
+
+
 if __name__ == "__main__":
     unittest.main()

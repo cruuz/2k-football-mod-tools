@@ -953,14 +953,30 @@ def field_coverage() -> list[int]:
     return bits
 
 
+_FIELD_NAMES = tuple(f.name for f in FIELDS)
+_DECODED: dict[bytes, tuple[int, ...]] = {}      # b81 item 6: raw record -> field values (bounded below)
+_DECODED_LIMIT = 16384
+
+
 def decode_record(raw: bytes) -> dict[str, int]:
-    """Every field of one 0x54 record, named fields and unknown bits alike."""
+    """Every field of one 0x54 record, named fields and unknown bits alike.
+
+    b81: remembered by the record's bytes. One franchise edit read the 4,164-record SOFTDRINK arena nine times
+    (the Rosters document and the save codecs' checks each decode every record); unchanged records now come from
+    this table. A fresh dict is returned every time, so callers may edit it."""
 
     _require(len(raw) == PLAYER_SIZE, f"a player record is {PLAYER_SIZE} bytes, got {len(raw)}")
+    key = bytes(raw)
+    known = _DECODED.get(key)
+    if known is not None:
+        return dict(zip(_FIELD_NAMES, known))
     out: dict[str, int] = {}
     for f in FIELDS:
         word = int.from_bytes(raw[f.offset: f.offset + f.size], "little")
         out[f.name] = (word >> f.shift) & ((1 << f.width) - 1)
+    if len(_DECODED) >= _DECODED_LIMIT:
+        _DECODED.clear()
+    _DECODED[key] = tuple(out[name] for name in _FIELD_NAMES)
     return out
 
 
@@ -1048,11 +1064,12 @@ def franchise_reference_year(payload: bytes | bytearray, preamble: int,
 class PlayerRecord:
     """A decoded 0x54 record with typed access to every field and to the composites."""
 
-    __slots__ = ("values", "scheme", "reference_year")
+    __slots__ = ("values", "scheme", "reference_year", "_encoded")
 
     def __init__(self, values: Mapping[str, int], scheme: str = "retail", *,
                  reference_year: int | None = None) -> None:
         self.values: dict[str, int] = dict(values)
+        self._encoded: tuple[tuple[tuple[str, int], ...], bytes] | None = None
         # which position table this record's code should be READ through; the stored bytes never
         # change with it (see POSITION_SCHEMES)
         self.scheme: str = normalise_scheme(scheme)
@@ -1063,7 +1080,16 @@ class PlayerRecord:
         return cls(decode_record(raw), scheme, reference_year=reference_year)
 
     def encode(self) -> bytes:
-        return encode_record(self.values)
+        """The 0x54 bytes. b81: remembered against the exact field values, so writing a 4,164-record roster encodes only
+        the records that changed since the last write (every franchise edit wrote the roster twice, about 3 s)."""
+
+        key = tuple(self.values.items())
+        cached = self._encoded
+        if cached is not None and cached[0] == key:
+            return cached[1]
+        raw = encode_record(self.values)
+        self._encoded = (key, raw)
+        return raw
 
     def copy(self) -> "PlayerRecord":
         return PlayerRecord(self.values, self.scheme, reference_year=self.reference_year)
@@ -2030,6 +2056,21 @@ class RosterDocument:
     def _depth_snapshot(self, team_index: int, code: int) -> dict[int, tuple[int, int, int]]:
         return {p.offset: (p.record.values["depth_rank"], p.record.values["depth_side"], p.record.values["unknown_52"])
                 for p in self.depth_order(team_index, code)}
+
+    def roster_state_ranges(self) -> list[tuple[int, int]]:
+        """b81 item 6: the body ranges that hold roster STATE (player records, every team's pointer list and count, the
+        free-agent list and its count). An edit whose bytes miss all of these cannot change what this document parsed,
+        so it can be written straight into ``body`` without re-reading the whole roster."""
+
+        ranges = [(p.offset, p.offset + PLAYER_SIZE) for p in self.players]
+        for team in self.teams:
+            ranges.append((team.offset, team.offset + TEAM_SLOTS * 4))
+            ranges.append((team.offset + TEAM_PLAYER_COUNT, team.offset + TEAM_PLAYER_COUNT + 1))
+        if self.free_agent_list is not None:
+            ranges.append((self.free_agent_list, self.free_agent_list + 4 * max(self.free_agent_capacity, 1)))
+            count_field = self.obj_base + OBJ_OFF + 0x38
+            ranges.append((count_field, count_field + 4))
+        return ranges
 
     def restore_depth(self, snapshot: Mapping[int, Sequence[int]]) -> None:
         """Undo of ``place_in_depth`` / ``settle_depth``: rows and lock bits exactly as they were."""
@@ -3425,6 +3466,50 @@ def load_save(path: Path | str, *, require_signature: bool = True, scheme: str =
         document.scheme_detection = detect_scheme(document)
         document.set_scheme(str(document.scheme_detection["scheme"]))
     return document
+
+
+def changed_ranges(before: bytes | bytearray, after: bytes | bytearray, *, block: int = 4096) -> list[tuple[int, int]]:
+    """``[start, end)`` byte ranges where two same-length buffers differ (block-compared, then byte-exact)."""
+
+    _require(len(before) == len(after), "the two buffers differ in length")
+    out: list[tuple[int, int]] = []
+    view_a, view_b = memoryview(before), memoryview(after)
+    for base in range(0, len(before), block):
+        end = min(base + block, len(before))
+        if view_a[base:end] == view_b[base:end]:
+            continue
+        i = base
+        while i < end:
+            if before[i] != after[i]:
+                j = i
+                while j < end and before[j] != after[j]:
+                    j += 1
+                if out and out[-1][1] == i:
+                    out[-1] = (out[-1][0], j)
+                else:
+                    out.append((i, j))
+                i = j
+            else:
+                i += 1
+    return out
+
+
+def ranges_touch(ranges: Sequence[tuple[int, int]], regions: Sequence[tuple[int, int]]) -> bool:
+    """Whether any of ``ranges`` overlaps any of ``regions`` (both ``[start, end)``)."""
+
+    from bisect import bisect_left
+    merged: list[list[int]] = []
+    for start, end in sorted(regions):
+        if merged and start <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+    ends = [end for _start, end in merged]
+    for start, end in ranges:
+        k = bisect_left(ends, start + 1)            # the first merged region that ends after ``start``
+        if k < len(merged) and merged[k][0] < end:
+            return True
+    return False
 
 
 def save_document(document: RosterDocument, target: Path | str, *, overwrite: bool = False) -> dict[str, Any]:
@@ -6442,7 +6527,8 @@ __all__ = [
     "ROOKIE_YEARS_PRO", "YEARS_PRO_MAX", "accrued_seasons", "is_rookie_years_pro", "years_pro_for_season",
     "years_pro_from_years_exp", "years_pro_label",
     "advance_years_pro", "apply", "apply_body",
-    "body_mass_index", "body_type_apply", "body_type_preview", "contract_years_change", "copy_player",
+    "body_mass_index", "body_type_apply", "body_type_preview", "changed_ranges", "contract_years_change", "copy_player",
+    "ranges_touch",
     "depth_slot_names", "DEPTH_FIELDS", "DEPTH_LOCK_BITS", "PAIRED_DEPTH_CODES",
     "find_players", "global_edit_preview_many", "player_location", "decode_record", "edits_document", "encode_record", "encoded_size",
     "export_csv", "field_coverage", "find_block_base", "global_edit_apply", "global_edit_preview",
