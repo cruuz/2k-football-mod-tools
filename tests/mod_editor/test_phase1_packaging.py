@@ -382,19 +382,17 @@ class ModStudioPackagingTests(unittest.TestCase):
                 for path in release_gate.REVIEWED_METADATA),
             16,
         )
-        for relative in release_gate.REVIEWED_METADATA:
-            path = ROOT / relative
-            if relative.startswith("reports/assets/") and not path.exists():
-                self.skipTest(f"Missing asset: {path}")
         for relative, (size, expected_sha, schema) in release_gate.REVIEWED_METADATA.items():
-            path = ROOT / relative
-            payload = path.read_bytes()
-            self.assertEqual(len(payload), size)
-            self.assertEqual(hashlib.sha256(payload).hexdigest(), expected_sha)
-            text = payload.decode("utf-8")
-            document = release_gate.json.loads(text)
-            self.assertEqual(document["schema"], schema)
-            self.assertFalse(release_gate._metadata_contains_payload(document))
+            with self.subTest(metadata=relative):
+                path = ROOT / relative
+                if relative.startswith("reports/assets/") and not path.exists():
+                    self.skipTest(f"Missing asset: {path}")
+                payload = path.read_bytes()
+                self.assertEqual(len(payload), size)
+                self.assertEqual(hashlib.sha256(payload).hexdigest(), expected_sha)
+                document = release_gate.json.loads(payload.decode("utf-8"))
+                self.assertEqual(document["schema"], schema)
+                self.assertFalse(release_gate._metadata_contains_payload(document))
 
     def test_release_allowlist_has_scanner_and_metadata_but_not_private_inventory(self) -> None:
         allowlist_text = (ROOT / "packaging/release-allowlist.txt").read_text(
