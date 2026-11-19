@@ -27,6 +27,9 @@ SIZES = {"jersey00": [512, 256], "pants00": [512, 256], "sleeve00": [128, 128], 
 CHARGERS = ("24A0", "24A10", "24A11", "24A9", "24H0", "24H10", "24H11", "24H9")
 #: the Bengals' six kit packages: home, road, the White Bengal pair and the orange pair
 BENGALS = ("06A0", "06A5", "06A6", "06H0", "06H5", "06H6")
+# every package whose numbers this pass draws again (batch 3 added the clubs measured against the 2026 photographs)
+REDRAWN = CHARGERS + BENGALS + ("00A0", "00H0", "01A0", "01H0", "07H0", "14A0", "14A10", "14H0", "14H10", "18A0", "18A7",
+                               "18H0", "18H7", "28A7", "28H7")
 
 
 def kit_rows():
@@ -123,7 +126,7 @@ class KitDocument(unittest.TestCase):
         self.assertEqual(len({r["selector"] for r in jerseys}), 170)
         for row in jerseys:
             for run in [op for op in row["ops"] if op["op"] == "runs"][0]["rows"]:   # [row, first column, colours]
-                self.assertTrue(58 <= run[0] <= 108, (row["selector"], run[:2]))
+                self.assertTrue(58 <= run[0] <= 112, (row["selector"], run[:2]))   # down to the old lettering some kits lose
                 self.assertTrue(90 <= run[1] and run[1] + len(run[2]) // 6 <= 216, (row["selector"], run[:2]))
         for selector in ("25H7", "25A7", "28H7", "28A7", "11H4", "11A4", "07H9", "07A9"):
             self.assertNotIn(selector, {r["selector"] for r in jerseys})        # open: no 2026 picture of the look
@@ -132,7 +135,7 @@ class KitDocument(unittest.TestCase):
         for row in kit_rows():
             self.assertIn(row["chunk"], (1, 2, 3, 4), row["selector"])
         for row in digit_rows():
-            self.assertTrue(13 <= row["chunk"] <= 22, row["selector"])       # jersey digits only (not the helmet's)
+            self.assertTrue(13 <= row["chunk"] <= 22 or 33 <= row["chunk"] <= 42, row["selector"])  # jersey and arm digits, never the helmet's
 
 
 class DigitDocument(unittest.TestCase):
@@ -148,7 +151,8 @@ class DigitDocument(unittest.TestCase):
             self.assertNotIn(key, seen)
             seen.add(key)
             self.assertEqual(row["kind"], "digit_png")
-            self.assertEqual(row["texture"], str(48 + row["chunk"] - 13))
+            self.assertEqual(row["texture"], str(48 + row["chunk"] - 13) if row["chunk"] < 23
+                             else "an" + str(48 + row["chunk"] - 33))
             payload = (folder / row["png"]).read_bytes()
             self.assertEqual(hashlib.sha256(payload).hexdigest(), row["png_sha256"], row["png"])
             self.assertNotEqual(row["before_sha256"], row["after_sha256"])
@@ -156,27 +160,50 @@ class DigitDocument(unittest.TestCase):
             files.add(row["png"])
         self.assertEqual(sorted(p.name for p in folder.glob("*.png")), sorted(files))           # no stray art
 
-    def test_the_first_batch_is_the_chargers_and_the_bengals_ten_digits_each(self):
+    def test_the_redrawn_sets_are_whole_ten_jersey_digits_and_arm_digits_where_the_kit_has_them(self):
         by = {}
         for row in digit_rows():
             by.setdefault(row["selector"], set()).add(row["chunk"])
-        self.assertEqual(tuple(sorted(by)), tuple(sorted(CHARGERS + BENGALS)))
+        self.assertEqual(tuple(sorted(by)), tuple(sorted(REDRAWN)))
         for selector, chunks in by.items():
-            self.assertEqual(chunks, set(range(13, 23)), selector)
+            self.assertEqual({c for c in chunks if c < 23}, set(range(13, 23)), selector)
+            self.assertIn({c for c in chunks if c >= 33}, (set(), set(range(33, 43))), selector)
 
-    def test_art_is_64_square_as_authored_and_in_two_flat_colours(self):
+    def test_art_is_as_authored_and_in_flat_colours(self):
         from mod_editor.core.nfl2k5_digit_art import REGISTRATION_KEY, registration_mode
         folder = gf.art_folder(gf.digits_b81())
         for path in sorted(folder.glob("*.png")):
             rgba, info = png_rgba(path)
-            self.assertEqual(rgba.shape, (64, 64, 4), path.name)
+            self.assertIn(rgba.shape, ((64, 64, 4), (32, 32, 4)), path.name)
             self.assertEqual(info.get(REGISTRATION_KEY), "as_authored", path.name)
             self.assertEqual(registration_mode(path.read_bytes()), "as_authored")
             solid = rgba[rgba[..., 3] == 255][:, :3]
             colours, counts = np.unique(solid, axis=0, return_counts=True)
-            self.assertGreater(len(solid), 500, path.name)
-            top = counts.argsort()[::-1][:2]
-            self.assertGreater(counts[top].sum(), 0.8 * len(solid), path.name)                  # a fill and one outline
+            self.assertGreater(len(solid), 500 if rgba.shape[0] == 64 else 100, path.name)
+            top = counts.argsort()[::-1][:3]
+            self.assertGreater(counts[top].sum(), 0.8 * len(solid), path.name)        # a fill, an outline, at most an inline
+
+    def test_every_redrawn_jersey_number_stands_full_height_inside_the_safe_columns(self):
+        # batch 3: a number is 62 rows of its 64 cell (22.2 cm on the player, the collar shield 0.141 of that as on the
+        # real jersey). The pack drew several sets 50 to 56 rows tall. Two-digit numbers are cut outside columns 12-51.
+        folder = gf.art_folder(gf.digits_b81())
+        for row in digit_rows():
+            if row["chunk"] > 22:
+                continue
+            solid = png_rgba(folder / row["png"])[0][..., 3] > 127
+            rows = np.flatnonzero(solid.any(axis=1)); cols = np.flatnonzero(solid.any(axis=0))
+            self.assertGreaterEqual(int(rows.max() - rows.min() + 1), 61, row["png"])
+            self.assertTrue(12 <= cols.min() and cols.max() <= 51, (row["png"], int(cols.min()), int(cols.max())))
+
+    def test_number_widths_follow_the_measured_real_numbers(self):
+        # width of the 0 in texels at 62 rows = real width over height x 62 / 1.048 (the cell is 23.8 by 22.7 cm)
+        folder = gf.art_folder(gf.digits_b81())
+        by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
+        for selector, width in (("18H0", 37), ("18A0", 37), ("18H7", 37), ("24A0", 35), ("00H0", 37), ("00A0", 37),
+                                ("01H0", 39), ("06H0", 31), ("14H0", 37), ("07H0", 35), ("28H7", 36)):   # 28H7: 34 and its 2 texel dark layer
+            solid = png_rgba(folder / by[(selector, 13)])[0][..., 3] > 127
+            cols = np.flatnonzero(solid.any(axis=0))
+            self.assertLessEqual(abs(int(cols.max() - cols.min() + 1) - width), 1, selector)
 
     def test_the_chargers_digits_stand_upright(self):
         # the slant the pass removes: on the released digits the opaque box of the top rows sits to the right of the
@@ -231,7 +258,7 @@ class DigitDocument(unittest.TestCase):
                     middle = solid[(rows.min() + rows.max()) // 2, cols.min():cols.max() + 1]
                     opening = int((~middle).sum())
                     self.assertGreaterEqual(opening / len(middle), 0.25, selector)               # it was 0.11
-                    self.assertGreaterEqual(len(middle) / heights[-1], 0.53, selector)           # it was 0.50
+                    self.assertGreaterEqual(len(middle) / heights[-1], 0.49, selector)           # 0.50 at full height = 0.524 on the body, real 0.528
             self.assertLessEqual(max(heights) - min(heights), 1, (selector, heights))
             self.assertLessEqual(max(tops) - min(tops), 1, (selector, tops))
 
@@ -513,9 +540,10 @@ class RealDisc(unittest.TestCase):
 
     def test_every_digit_row_compiles_to_its_pin_through_the_studio_digit_route(self):
         document = gf.digits_b81()
-        for selector in CHARGERS + BENGALS:
+        for selector in REDRAWN:
             replacements, receipt = gf.compile_resource(selector, self.kits[selector], strict=True, document=document)
-            self.assertEqual(len(replacements), 10, selector)
+            self.assertEqual(len(replacements), len([r for r in digit_rows() if r["selector"] == selector]), selector)
+            self.assertIn(len(replacements), (10, 20), selector)                  # jersey digits, and arm digits where drawn
             self.assertEqual(receipt["skipped_textures"], [])
 
     def test_the_released_disc_still_holds_the_jaguars_plates_the_nameplate_pass_was_meant_to_replace(self):
