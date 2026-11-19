@@ -339,7 +339,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
         "Choice form only here. Build also offers a fixed rule. Preview art shows era only.",
         "Reported not working; bounded checks pass / UNWITNESSED"),
     "kick_laces": ("Laces face the posts on kicks", "On field goals and PATs the held ball is turned so the laces face the posts.", NOT_TESTED),
-    "punter_holder": ("Use the punter as the default holder", "Fills empty and inherited assignments in the disc roster. A saved Special Teams selection takes the kick.", ""),
+    "punter_holder": ("Use the punter as the default holder", "Fills empty and inherited assignments in the disc roster. The player you choose in Special Teams holds the ball.", ""),
     "prospect_names": ("Modern draft-prospect names", "New franchises only; some new surnames are announced by number.", "New franchises only"),
     "franchise_practice": ("Practice below Schedule in Franchise", r62_ui.PRACTICE_HELP, NOT_TESTED),
     "seven_on_seven": ("7-on-7 practice (experimental)", "Retail line positions with passing sets and a delayed end rush. UNWITNESSED.", NOT_TESTED),

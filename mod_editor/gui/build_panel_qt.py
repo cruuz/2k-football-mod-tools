@@ -1152,8 +1152,8 @@ class BuildPanel(QWidget):
                                              "On field goals and PATs the held ball is turned so the laces face the posts.", badge=NOT_TESTED)
         self.punter_holder_check = self._option(
             g, "punter_holder", "Use the punter as the default holder",
-            "Sets P1 in the disc roster for clubs with an empty or inherited holder. A holder you choose in "
-            "Special Teams takes field goals and extra points. The build summary lists preserved choices.")
+            "Sets P1 in the disc roster for clubs with an empty or inherited holder. The player you choose in "
+            "Special Teams holds the ball on field goals and extra points. The build summary lists preserved choices.")
         self.uniform_choice_check = self._option(
             g, "uniform_choice", r62_ui.uniform_choice_caption(""),
             r62_ui.UNIFORM_CHOICE_HELP, badge=NOT_TESTED)
