@@ -31,6 +31,7 @@ for entry in (ROOT, ROOT / "tools"):
 from mod_editor.core import nfl2k5_college_check as college_check  # noqa: E402
 from mod_editor.core import nfl2k5_roster_arena as arena  # noqa: E402
 from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
+from mod_editor.core import nfl2k5_roster_refresh as refresh  # noqa: E402
 from mod_editor.core import nfl2k5_spare_capacity as capacity  # noqa: E402
 import importlib.util  # noqa: E402
 
@@ -65,6 +66,23 @@ def floor_shortfall(base, plan, data, margin):
     return count, int(floor.get("added_records") or 0), floor
 
 
+def _check_free_agents(doc, plan):
+    """Check the native pointers against the plan and the injury policy's ordered primary IDs."""
+    primary = {p.index: p for p in doc.by_pool("primary")}
+    explicit = plan["free_agents"]
+    assigned = set(explicit)
+    for team in plan["teams"]:
+        assigned.update(team["active"])
+        assigned.update(team["reserves"])
+    _, _, released, unsigned = refresh._rejoin_injured(
+        primary, plan["players"], plan["teams"], assigned, plan.get("room_policy", refresh.ROOM_POLICY))
+    require(doc.free_agents[:len(explicit)] == [primary[i].offset for i in explicit],
+            "the planned free-agent list differs after the refresh")
+    require(doc.free_agent_count_field == len(doc.free_agents)
+            and doc.free_agents[len(explicit):] == [primary[i].offset for i in released + unsigned],
+            "unexpected free agents after injured-reserve placement")
+
+
 def merge(args):
     data = fa3.load(args.data)
     edits = json.loads(Path(args.edits).read_text(encoding="utf-8"))
@@ -80,19 +98,13 @@ def merge(args):
     grown, grow_receipt = grow(base, records)
     extended = fa3.extend_plan(plan, data, final, grown)
     directive = {"schema": rr.EDITS_SCHEMA, "edits": [], "roster_refresh": extended, "restore_import_floor": True}
-    body, receipt = rr.apply_body(grown, directive, scheme="one_pool")
+    body, _ = rr.apply_body(grown, directive, scheme="one_pool")
     # b778 fa5 / fr1: apply_body is the test/plan writer; the disc writer (rr.apply) heals null colleges, and
     # the proof body must carry the same fix or the Contracts / Free Agents panel bugchecks on the first one.
     body, college_receipt = college_check.heal_null_references(body, source="capacity roster")
     doc = rr.RosterDocument(body, scheme="one_pool", reference_year=2026)
     vacancies = capacity.import_vacancies(body)
-    players = [doc.by_offset[offset] for offset in doc.free_agents]
-    explicit = extended["free_agents"]
-    require([p.index for p in players[:len(explicit)]] == explicit,
-            "the planned free-agent list differs after the refresh")
-    injuries = receipt["roster_refresh"]["injured_reserve"]
-    require([p.display for p in players[len(explicit):]] == injuries["released_players"] + injuries["free_agent_players"],
-            "unexpected free agents after injured-reserve placement")
+    _check_free_agents(doc, extended)
     require(vacancies >= capacity.IMPORT_FLOOR + args.margin,
             f"only {vacancies} import vacancies remain; need {capacity.IMPORT_FLOOR + args.margin}")
     require(len(doc.by_pool("primary")) == grow_receipt["primary_after"],

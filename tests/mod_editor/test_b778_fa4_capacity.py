@@ -171,6 +171,22 @@ class CapacityMigrationTests(unittest.TestCase):
         self.assertEqual(final.free_agent_capacity, 2500)
         self.assertEqual(spare.status(body), 'applied')
         spare.extended_layout(body)
+        # Swapping the two Michael Carters keeps all 946 displayed names and
+        # every single-owner constraint. Only the actual primary pointers differ.
+        with self.subTest(same_name='Michael Carter'):
+            released = final.by_offset[final.free_agents[942]]
+            other = final.by_pool('primary')[1117]
+            self.assertEqual((released.index, released.display, other.display), (2500, 'Michael Carter', 'Michael Carter'))
+            team = final.teams[13]
+            club_slot = team.offset + 4 * team.slots.index(other.offset)
+            fa_slot = final.free_agent_list + 4 * 942
+            swapped = bytearray(body)
+            for field, target in ((club_slot, released.offset), (fa_slot, other.offset)):
+                struct.pack_into('<I', swapped, field, (target - field + 1) & 0xffffffff)
+            wrong = rr.RosterDocument(bytes(swapped), scheme='one_pool', reference_year=2026)
+            self.assertEqual([wrong.by_offset[p].display for p in wrong.free_agents], [p.display for p in free_agents])
+            with self.assertRaisesRegex(fa4.CapacityError, 'unexpected free agents'):
+                fa4._check_free_agents(wrong, extended)
 
     def test_tool_merge_writes_the_same_plan(self):
         if not PLAN.is_file():
