@@ -956,6 +956,10 @@ def field_coverage() -> list[int]:
 _FIELD_NAMES = tuple(f.name for f in FIELDS)
 _DECODED: dict[bytes, tuple[int, ...]] = {}      # b81 item 6: raw record -> field values (bounded below)
 _DECODED_LIMIT = 16384
+# b81 wave 3: records this process has produced with encode_record. decode_record of such bytes gives back the exact
+# values that made them, so a record decoded from them can reuse the bytes instead of encoding again (a composed franchise
+# edit re-reads the whole roster and then writes it, 4,164 encodes, about 0.6 s).
+_ENCODED_RAW: set[bytes] = set()
 
 
 def decode_record(raw: bytes) -> dict[str, int]:
@@ -1097,7 +1101,11 @@ class PlayerRecord:
 
     @classmethod
     def decode(cls, raw: bytes, scheme: str = "retail", *, reference_year: int | None = None) -> "PlayerRecord":
-        return cls(decode_record(raw), scheme, reference_year=reference_year)
+        record = cls(decode_record(raw), scheme, reference_year=reference_year)
+        key = bytes(raw)
+        if key in _ENCODED_RAW:
+            record._encoded = (tuple(record.values.items()), key)
+        return record
 
     def encode(self) -> bytes:
         """The 0x54 bytes. b81: remembered against the exact field values, so writing a 4,164-record roster encodes only
@@ -1109,6 +1117,9 @@ class PlayerRecord:
             return cached[1]
         raw = encode_record(self.values)
         self._encoded = (key, raw)
+        if len(_ENCODED_RAW) >= _DECODED_LIMIT:
+            _ENCODED_RAW.clear()
+        _ENCODED_RAW.add(raw)
         return raw
 
     def copy(self) -> "PlayerRecord":

@@ -1766,5 +1766,203 @@ class PortraitPreviewPanelTests(unittest.TestCase):
             application.processEvents()
 
 
+# --------------------------------------------------------------------------------------------- wave 3: team transfer
+def _team_rows(package):
+    return [(e["list"], e["first"], e["last"], e["college"], e["birth_year"], e["fields"]) for e in package["players"]]
+
+
+class TeamTransferSyntheticTests(_PanelCase):
+    def test_a_disc_paste_carries_players_depth_and_special_teams_with_one_undo(self) -> None:
+        from mod_editor.core import nfl2k5_team_transfer as tt
+        panel, document = self.panel, self.panel.document
+        source, target = 0, 1                                     # IND and ATL, three players each
+        package = tt.team_package(document, source)
+        self.assertIsNone(package["settings"])
+        before = tt.team_package(document, target)
+        body = document.to_body()
+        ok, message = panel.paste_team(target, package)
+        self.assertTrue(ok, message)
+        after = tt.team_package(document, target)
+        self.assertEqual(_team_rows(after), _team_rows(package))
+        self.assertEqual(after["specialists"], package["specialists"])
+        for player in document.team_players(target):           # the club keeps each record's slot state
+            original = rr.PlayerRecord.decode(document.original[player.offset:player.offset + rr.PLAYER_SIZE])
+            for name in tt.KEPT_BY_CLUB:
+                self.assertEqual(player.record.values[name], original.values[name], name)
+        panel.refresh_diff()
+        self.assertIn("pasted onto ATL", panel.report.toPlainText())
+        panel.undo()
+        self.assertEqual(_team_rows(tt.team_package(document, target)), _team_rows(before))
+        self.assertEqual(document.to_body(), body)
+        panel.redo()
+        self.assertEqual(_team_rows(tt.team_package(document, target)), _team_rows(package))
+        edits = rr.edits_document(document)                       # a disc copy replays it through the edits file
+        self.assertTrue(edits["edits"])
+
+    def test_a_file_round_trips_and_a_bad_file_refuses(self) -> None:
+        from mod_editor.core import nfl2k5_team_transfer as tt
+        self.panel._group = ("team", 0)
+        with tempfile.TemporaryDirectory() as folder:
+            written = self.panel.export_team(Path(folder) / "ind")
+            self.assertEqual(written.suffix, tt.SUFFIX)
+            self.assertEqual(tt.read_package(written), tt.team_package(self.panel.document, 0))
+            bad = Path(folder) / "bad.2k5team"
+            bad.write_text('{"schema": "nfl2k5_studio_team/v1", "players": [{"list": "active", "fields": '
+                           '{"history_pointer": 5}}], "specialists": [255, 255, 255, 255, 255, 255]}', encoding="utf-8")
+            with self.assertRaisesRegex(rr.RosterRecordError, "not a field a team file carries"):
+                tt.read_package(bad)
+
+    def test_counts_and_ir_refuse_with_the_reason(self) -> None:
+        from mod_editor.core import nfl2k5_team_transfer as tt
+        document = self.panel.document
+        package = tt.team_package(document, 0)
+        package["players"] = package["players"][:2]
+        ok, message = self.panel.paste_team(1, package)
+        self.assertFalse(ok)
+        self.assertIn("ATL has 3 active players and IND 2", message)
+        self.assertIn("release 1 ATL player first", message)
+        full = tt.team_package(document, 0)
+        document.team_players(1)[0].record.values["injured_reserve"] = 0xEE
+        ok, message = self.panel.paste_team(1, full)
+        self.assertFalse(ok)
+        self.assertIn("on injured reserve; activate them first", message)
+
+
+@unittest.skipUnless(SOFTDRINK_ROSTER_SAVE.is_file(), f"SOFTDRINK roster save absent: {SOFTDRINK_ROSTER_SAVE}")
+class TeamTransferRosterSaveTests(unittest.TestCase):
+    SOURCE, TARGET = 0, 14                                       # SF and ATL: 55 active and 4 reserves each
+
+    def test_sf_onto_atl_round_trips_through_the_signed_copy(self) -> None:
+        from mod_editor.core import nfl2k5_franchise_save as fs, nfl2k5_team_transfer as tt
+        application = _app()
+        panel = RosterEditorPanel()
+        try:
+            self.assertTrue(panel.load_save(SOFTDRINK_ROSTER_SAVE))
+            document = panel.document
+            panel._group = ("team", self.SOURCE)
+            self.assertTrue(panel.copy_team())
+            package = panel._team_clipboard
+            self.assertEqual((package["counts"], package["settings"]["playbook_key"], package["coach"]["last"]),
+                             ({"active": 55, "reserve": 4}, "SF", "Shanahan"))
+            before = panel.team_package(self.TARGET)
+            ok, message = panel.paste_team(self.TARGET, package)
+            self.assertTrue(ok, message)
+            after = panel.team_package(self.TARGET)
+            dropped = {text.split(" (")[0] for text in message.split("original: ")[-1].split(", ")} if "left off" in message else set()
+            for want, got in zip(package["players"], after["players"]):
+                differs = {k for k in want["fields"] if want["fields"][k] != got["fields"][k]}
+                if differs:                                      # only a lock that would collide on a squad is left off
+                    self.assertEqual(differs, {"unknown_52"})
+                    self.assertEqual(want["fields"]["unknown_52"] & ~rr.PASTE_LOCK_MASK,
+                                     got["fields"]["unknown_52"] & ~rr.PASTE_LOCK_MASK)
+            self.assertEqual(after["specialists"], package["specialists"])
+            self.assertEqual({k: v for k, v in after["settings"].items()}, package["settings"])
+            self.assertEqual((after["coach"]["first"], after["coach"]["last"], after["coach"]["ratings"],
+                              after["coach"]["tendencies"]),
+                             (package["coach"]["first"], package["coach"]["last"], package["coach"]["ratings"],
+                              package["coach"]["tendencies"]))
+            self.assertEqual(document.check_depth_locks(), 0)
+            with tempfile.TemporaryDirectory() as folder:
+                panel.write_copy_to(Path(folder) / "copy.zip")
+                back = rr.load_save(Path(folder) / "copy.zip")
+                self.assertTrue(back.container.verified)
+                again = tt.team_package(back, self.TARGET, save=fs.FranchiseSave.roster_save(back.container.savegame))
+                self.assertEqual(_team_rows(again), _team_rows(after))
+                self.assertEqual((again["settings"], again["coach"]["ratings"]), (after["settings"], after["coach"]["ratings"]))
+            panel.undo()
+            self.assertEqual(_team_rows(panel.team_package(self.TARGET)), _team_rows(before))
+            self.assertEqual(panel.team_package(self.TARGET)["coach"]["last"], before["coach"]["last"])
+        finally:
+            panel.deleteLater()
+            application.processEvents()
+
+    def test_a_retail_shaped_package_converts_or_refuses(self) -> None:
+        from mod_editor.core import nfl2k5_team_transfer as tt
+        document = rr.load_save(SOFTDRINK_ROSTER_SAVE, scheme="one_pool")
+        package = tt.team_package(document, self.SOURCE)
+        package["source"]["scheme"] = "retail"
+        linebacker = next(e for e in package["players"] if e["fields"]["position"] == 11)
+        linebacker["fields"]["position"] = 10                    # a retail OLB onto a one-pool roster
+        plan = tt.plan(document, self.TARGET, package)
+        self.assertFalse(plan["refusals"], plan["refusals"])
+        self.assertTrue(any("retired" in note and "code 11" in note for note in plan["notes"]), plan["notes"])
+        tt.apply_players(document, self.TARGET, package, plan)
+        slot = package["players"].index(linebacker)
+        self.assertEqual(plan["pairs"][slot][1].record.values["position"], 11)
+        old = tt.team_package(document, self.SOURCE)
+        old["players"][0]["birth_year"] = 1890
+        plan = tt.plan(document, self.TARGET, old)
+        self.assertTrue(any("birth-year window" in text for text in plan["refusals"]), plan["refusals"])
+        disc = rr.load_body(synthetic_body())                    # a retail disc club of 3 cannot take 55 + 4
+        refusals = tt.plan(disc, 1, tt.team_package(document, self.SOURCE))["refusals"]
+        self.assertTrue(any("ATL has 3 active players and SF 55" in text for text in refusals), refusals)
+        self.assertTrue(any("0 reserves and SF 4" in text for text in refusals), refusals)
+
+
+@unittest.skipUnless(SOFTDRINK_FRANCHISE_SAVE.is_file(), f"SOFTDRINK franchise save absent: {SOFTDRINK_FRANCHISE_SAVE}")
+class TeamTransferFranchiseTests(unittest.TestCase):
+    def test_a_franchise_paste_composes_with_franchise_edits_and_writes(self) -> None:
+        import collections
+        from mod_editor.core import nfl2k5_franchise_save as fs, nfl2k5_team_transfer as tt
+        application = _app()
+        panel = RosterEditorPanel()
+        try:
+            self.assertTrue(panel.load_save(SOFTDRINK_FRANCHISE_SAVE))
+            document = panel.document
+            shapes = collections.defaultdict(list)
+            for team in document.teams[:32]:
+                lists = tt.club_lists(document, team.index)
+                if not any(p.record.on_injured_reserve for lst in lists.values() for p in lst):
+                    shapes[(len(lists["active"]), len(lists["reserve"]))].append(team.index)
+            source, target = next(v for v in shapes.values() if len(v) > 1)[:2]
+            page = panel.franchise_panel
+            cap = page.save.salary_cap
+            self.assertTrue(page.set_salary_cap(cap + 1000))
+            package = panel.team_package(source)
+            ok, message = panel.paste_team(target, package)
+            self.assertTrue(ok, message)
+            with tempfile.TemporaryDirectory() as folder:
+                receipt = panel.write_copy_to(Path(folder) / "copy")
+                self.assertTrue(receipt["signed"])
+                back = rr.load_save(Path(folder) / "copy")
+                save = fs.FranchiseSave(back.container.savegame)
+                again = tt.team_package(back, target, save=save)
+                self.assertEqual([(e["first"], e["last"]) for e in again["players"]],
+                                 [(e["first"], e["last"]) for e in package["players"]])
+                self.assertEqual(again["settings"], package["settings"])
+                self.assertEqual(save.salary_cap, cap + 1000)
+            panel.undo()
+            self.assertEqual(page.save.salary_cap, cap + 1000)
+            panel.undo()
+            self.assertEqual(page.save.salary_cap, cap)
+        finally:
+            panel.deleteLater()
+            application.processEvents()
+
+
+class SharedDecodeTests(unittest.TestCase):
+    """b81 wave 3: a composed franchise edit decoded the same two payloads seven times (IR place 2.1 s -> 1.4 s)."""
+
+    def test_the_same_bytes_decode_once_inside_the_block_only(self) -> None:
+        from mod_editor.core import nfl2k5_save_rost as codec
+        savegame = synthetic_save_v0(synthetic_body())
+        self.assertIsNot(codec.decode(savegame), codec.decode(savegame))
+        with codec.shared_decodes():
+            first = codec.decode(savegame)
+            self.assertIs(codec.decode(savegame), first)
+            self.assertIs(codec.decode(savegame, preamble=first.layout.preamble), first)
+            first.edit_player(first.players[0].pool, first.players[0].index, {"speed": 33})
+            self.assertIsNot(codec.decode(savegame), first, "an edited result is not handed out again")
+        self.assertIsNot(codec.decode(savegame), codec.decode(savegame))
+
+    def test_a_decoded_record_reuses_bytes_this_process_encoded(self) -> None:
+        record = rr.PlayerRecord.decode(synthetic_body()[0:0] or rr.encode_record(rr.decode_record(bytes(rr.PLAYER_SIZE))))
+        raw = record.encode()
+        again = rr.PlayerRecord.decode(raw)
+        self.assertIs(again.encode(), raw)
+        again.values["speed"] = 77
+        self.assertEqual(rr.decode_record(again.encode())["speed"], 77)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1287,6 +1287,19 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    gives him a new six-word history with zero yards, the same words the game itself writes, so he reads zero
    everywhere and earns new stats as he plays. Each player uses six words of the save's career-stat pool (50,000
    words in a 32-club league); when the pool has no room the Studio says so and changes nothing. One undo.
+
+   **Copy team, Paste team, Export team, Import team** (right-click a club in the list, or **Tools ▾**) move a
+   whole club: its players in order (names, ratings, contracts, appearance, college, birth date), its depth chart
+   rows with the SOFTDRINK depth and returner locks, and its special-teams slots; in an Xbox save also its team
+   settings and head coach (name, ratings, play-calling). **Export team…** writes a `.2k5team` file that
+   **Import team…** reads on another roster or save. The paste goes player for player into the club's own records,
+   so both clubs need the same number of active players and of reserves; the Studio names both counts when they
+   differ. Each record keeps its player kind, pool, injury and IR state and star tag, and a club with a player on
+   injured reserve is refused until he is activated. A lock that would collide on a Pro Bowl or legends squad with
+   the original player is left off the copy and listed. A package from a differently shaped roster is converted
+   where the meaning is the same (a retail OLB becomes LB on a one-pool roster, birth years are re-encoded for the
+   season, a stadium or playbook is matched by its id or key) and refused with the reason where it is not. The
+   preview lists every conversion before you paste; one undo takes it all back.
 4. **Right**: the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
    Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
    ← → nudge by one, ↑ ↓ jump to the next card. Enum cards are dropdowns built from the tables lifted
@@ -1427,6 +1440,7 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Depth Chart > Special Teams | **Special teams…**: returners and holder; kicker, punter and long snapper through the depth chart |
 | Team > Options (stadium, playbook, default jersey, team play-by-play, defensive front) | **Team settings…** (Xbox saves) |
 | Clear Stats | Right-click: **Clear his career stats…** or **Clear career stats of all … shown…** (Xbox saves; a safe form, see above) |
+| Team menu: Copy Team, Paste Team, Export Team, Import Team | Right-click a club: the same four, with a preview of what converts or refuses |
 | The player grid (every rating as a column, click to sort) | **Columns ▾**, then click a heading |
 | Copy Player (Ctrl+C), Paste Player (Ctrl+V), Paste Attributes Only (Ctrl+Alt+A) | Same keys, or **Copy player** and **Paste ▾** |
 | Tools > Global Editor | **Global Attribute Editor…** |

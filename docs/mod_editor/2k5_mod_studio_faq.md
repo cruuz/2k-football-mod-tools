@@ -487,6 +487,10 @@ The game's depth chart and its starters follow each player's stored depth rank, 
 
 Use the Studio for this, not Flying Finn's Clear Stats. Finn's version erases the player's link to his history. When the game later averaged his passing, receiving or rushing yards, it divided by zero and crashed (seen in the game's own code on a signed save). **★ Rosters → right-click → Clear his career stats…** gives him a fresh, empty history the game can read instead: his stats show zero and new games add to them. League records and award lists keep his name. It needs six free words in the save's career-stat pool for each player; if the pool is full the Studio refuses and changes nothing. Undo takes it back until you save the copy.
 
+## Why won't the Studio paste one team onto another?
+
+**★ Rosters → right-click a club → Paste team** copies player for player into the club's own records, so both clubs need the same number of active players and the same number of reserves. When they differ, the preview says both counts and how many players to release or sign first. It also refuses while either club has a player on injured reserve, because the IR place lives in the club's IR list, which a paste does not rewrite. Activate him first, paste, then place him again.
+
 ## I used Flying Finn's editor. Where is everything in the Studio?
 
 Open **★ Rosters** and press **Open Xbox save (Finn's zip)…**: it takes the same Action Replay `.zip`. Ctrl+F (or **Find…**) is Finn's Find Player and searches every team, the reserves, the free agents and the draft class. Ctrl+C, Ctrl+V and Ctrl+Alt+A copy, paste and paste attributes only, as in Finn; PgUp and PgDn in the editor move to the previous or next player; right-click a player for Place on IR and the rest of Finn's player menu. The guide's **Coming from Flying Finn's editor** table lists every place.

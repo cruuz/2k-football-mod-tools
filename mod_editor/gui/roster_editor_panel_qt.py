@@ -1312,6 +1312,77 @@ class TeamOptionsDialog(ScrollBodyDialog):
         return ok
 
 
+# ------------------------------------------------------------------------------------------- b81 wave 3
+class TeamPasteDialog(ScrollBodyDialog):
+    """Paste team / Import team: what lands on the club, what converts, and anything that refuses."""
+
+    def __init__(self, panel: "RosterEditorPanel", team_index: int, package: dict[str, Any]) -> None:
+        super().__init__(panel)
+        self._panel = panel
+        self.team_index = team_index
+        self.package = package
+        document = panel.document
+        assert document is not None
+        team = document.teams[team_index]
+        source = package.get("source") or {}
+        counts = package.get("counts") or {}
+        self.setWindowTitle(f"Paste team onto {team.display}")
+        layout = self.body_layout
+        intro = QLabel(
+            f"{source.get('display') or source.get('abbreviation') or 'The team'} ({counts.get('active', '?')} active, "
+            f"{counts.get('reserve', '?')} reserves) goes onto {team.display}, player for player: names, ratings, "
+            "contracts, appearance, depth chart rows and locks, and special teams. Each record keeps its own player "
+            "kind, pool, injury and IR state and star tag. One Undo takes it all back.")
+        intro.setWordWrap(True)
+        layout.addWidget(intro)
+        self.settings_check = QCheckBox("Team settings (stadium, playbook, default jersey, team play-by-play, front)")
+        self.coach_check = QCheckBox("Head coach (name, ratings, play-calling)")
+        for box, key in ((self.settings_check, "settings"), (self.coach_check, "coach")):
+            box.setChecked(package.get(key) is not None and panel._source_kind == "save")
+            box.setEnabled(package.get(key) is not None and panel._source_kind == "save")
+            box.toggled.connect(lambda _on: self.refresh())
+            layout.addWidget(box)
+        self.report = QLabel("")
+        self.report.setWordWrap(True)
+        self.report.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        layout.addWidget(self.report)
+        layout.addStretch(1)
+        self.status = QLabel("")
+        self.status.setWordWrap(True)
+        layout.addWidget(self.status)
+        buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Close)
+        self.apply_button = buttons.button(QDialogButtonBox.Apply)
+        self.apply_button.setText("Paste")
+        self.apply_button.clicked.connect(self.apply)
+        buttons.rejected.connect(self.reject)
+        self.set_buttons(buttons)
+        self.refresh()
+
+    def refresh(self) -> dict[str, Any]:
+        plan = self._panel.plan_team_paste(self.team_index, self.package, settings=self.settings_check.isChecked(),
+                                           coach=self.coach_check.isChecked())
+        lines = []
+        if plan["refusals"]:
+            lines.append("Refused, nothing will change:")
+            lines += [f"• {text}." for text in plan["refusals"]]
+        if plan["notes"]:
+            lines.append("Converted or left as it is:")
+            lines += [f"• {text}." for text in plan["notes"]]
+        lines.append("A copied lock that would collide on a Pro Bowl or legends squad with the original player is "
+                     "left off the copy and listed after the paste.")
+        self.report.setText("\n".join(lines))
+        self.apply_button.setEnabled(not plan["refusals"])
+        return plan
+
+    def apply(self) -> bool:
+        ok, message = self._panel.paste_team(self.team_index, self.package, settings=self.settings_check.isChecked(),
+                                             coach=self.coach_check.isChecked())
+        self.status.setText(message)
+        if ok:
+            self.apply_button.setEnabled(False)
+        return ok
+
+
 # ------------------------------------------------------------------------------------------- pickers
 class AgeShiftDialog(QDialog):
     """Explicit season choice, review, then one undoable in-memory operation."""
@@ -1950,6 +2021,8 @@ class RosterEditorPanel(QWidget):
         self._source_kind = ""
         self._appearance_bundle = None
         self._clipboard: rr.PlayerRecord | None = None
+        self._team_clipboard: dict[str, Any] | None = None    # b81 wave 3: Copy team
+        self._team_pastes: list[str] = []                       # what Show my changes lists for team pastes
         self._dirty: set[tuple[str, int]] = set()
         self.auto_filled = False        # the document came from the shell's open disc, not a button here
         self._rows: list[rr.Player] = []
@@ -2133,6 +2206,12 @@ class RosterEditorPanel(QWidget):
         passes_menu.addAction("Shift ages to season year...", self.open_age_shift)
         passes_menu.addAction("Show age shift receipt", self.show_age_shift_receipt)
         passes_menu.addAction("Export age shift receipt...", lambda: self.export_age_shift_receipt())
+        passes_menu.addSeparator()
+        passes_menu.addAction("Copy team", self.copy_team)
+        passes_menu.addAction("Paste team onto this club…", self.open_paste_team)
+        passes_menu.addAction("Export team…", self.export_team)
+        passes_menu.addAction("Import team onto this club…", self.import_team)
+        passes_menu.addSeparator()
         self.save_roster_to_disc_action = passes_menu.addAction(
             "Use this save's roster on the disc...", self._use_save_roster_on_disc)
         self.save_roster_to_disc_action.setToolTip(
@@ -2238,6 +2317,8 @@ class RosterEditorPanel(QWidget):
         self.team_list = QListWidget()
         self.team_list.setAccessibleName("Teams and player lists")
         self.team_list.currentRowChanged.connect(self._team_changed)
+        self.team_list.setContextMenuPolicy(Qt.CustomContextMenu)        # b81 wave 3: Finn's team menu
+        self.team_list.customContextMenuRequested.connect(self._show_team_menu)
         box.addWidget(self.team_list, 1)
         self.pool_label = QLabel("")
         self.pool_label.setWordWrap(True)
@@ -2650,6 +2731,11 @@ class RosterEditorPanel(QWidget):
         return f"{name} · {len(team.slots)}"
 
     def _restore_composed(self, payload: bytes, edits) -> None:
+        from mod_editor.core import nfl2k5_save_rost as codec
+        with codec.shared_decodes():
+            self._restore_composed_now(payload, edits)
+
+    def _restore_composed_now(self, payload: bytes, edits) -> None:
         self.document.adopt_body(payload)
         self.abilities_panel.set_document(self.document)
         page = self.franchise_panel
@@ -2664,6 +2750,11 @@ class RosterEditorPanel(QWidget):
 
     def _franchise_edit(self, edit) -> bool:
         """Shared chronological undo: publish a fully composed candidate once."""
+        from mod_editor.core import nfl2k5_save_rost as codec
+        with codec.shared_decodes():         # b81 wave 3: the composed path validated the same two payloads 7 times
+            return self._franchise_edit_composed(edit)
+
+    def _franchise_edit_composed(self, edit) -> bool:
         from mod_editor.core import nfl2k5_franchise_save as fs
         if self.document is None:
             return False
@@ -3071,6 +3162,7 @@ class RosterEditorPanel(QWidget):
         self._dirty.clear()
         self.undo_stack.clear()
         self._clipboard = None
+        self._team_pastes = []              # the team clipboard is a self-contained package; it outlives the roster
         self._college_repairs = {}
         self._college_generation += 1
         self._college_check_container = None
@@ -4127,6 +4219,189 @@ class RosterEditorPanel(QWidget):
         if row >= 0:
             self.player_table.setCurrentCell(row, max(0, self.player_table.columnAt(position.x())))
         self.grid_menu().exec_(self.player_table.viewport().mapToGlobal(position))
+
+    # ------------------------------------------------------------------ b81 wave 3: Copy / Paste / Export / Import team
+    def _selected_club(self) -> int | None:
+        kind, index = self._group
+        if self.document is None or kind != "team" or not 0 <= index < len(self.document.teams) \
+                or not self.document.teams[index].is_club:
+            return None
+        return index
+
+    def _team_save(self, payload: bytes):
+        """A FranchiseSave over ``payload`` when an Xbox save is open (team settings and coach), else None."""
+
+        if self._source_kind != "save" or self.franchise_panel.save is None:
+            return None
+        return self.franchise_panel._new_save(payload)
+
+    def team_package(self, team_index: int) -> dict[str, Any]:
+        from mod_editor.core import nfl2k5_team_transfer as tt
+        assert self.document is not None
+        return tt.team_package(self.document, team_index, save=self._team_save(self.document.to_body()))
+
+    def copy_team(self) -> bool:
+        index = self._selected_club()
+        if index is None:
+            self._set_status("Choose a club in the list first.")
+            return False
+        try:
+            self._team_clipboard = self.team_package(index)
+        except rr.RosterRecordError as exc:
+            self._set_status(f"Not copied: {exc}.")
+            return False
+        counts = self._team_clipboard["counts"]
+        self._set_status(f"Copied {self.document.teams[index].abbreviation}: {counts['active']} active, "
+                         f"{counts['reserve']} reserves" + (", team settings and head coach"
+                                                            if self._team_clipboard.get("settings") else "")
+                         + ". Choose a club and Paste team.")
+        return True
+
+    def export_team(self, path: Path | str | None = None) -> Path | None:
+        from mod_editor.core import nfl2k5_team_transfer as tt
+        index = self._selected_club()
+        if index is None:
+            self._set_status("Choose a club in the list first.")
+            return None
+        if path is None:
+            chosen, _ = QFileDialog.getSaveFileName(self, "Export team",
+                                                    f"{self.document.teams[index].abbreviation}{tt.SUFFIX}",
+                                                    f"Studio team (*{tt.SUFFIX})")
+            if not chosen:
+                return None
+            path = chosen
+        written = tt.write_package(path, self.team_package(index))
+        self._set_status(f"Exported {self.document.teams[index].abbreviation} to {written.name}.")
+        return written
+
+    def import_team(self, path: Path | str | None = None) -> bool:
+        from mod_editor.core import nfl2k5_team_transfer as tt
+        if self._selected_club() is None:
+            self._set_status("Choose the club to import onto first.")
+            return False
+        if path is None:
+            chosen, _ = QFileDialog.getOpenFileName(self, "Import team", "", f"Studio team (*{tt.SUFFIX})")
+            if not chosen:
+                return False
+            path = chosen
+        try:
+            package = tt.read_package(path)
+        except rr.RosterRecordError as exc:
+            self._set_status(f"Not imported: {exc}.")
+            return False
+        return self.open_paste_team(package) is not None
+
+    def open_paste_team(self, package: dict[str, Any] | None = None):
+        index = self._selected_club()
+        package = package if package is not None else self._team_clipboard
+        if index is None or package is None:
+            self._set_status("Copy a team first, then choose the club to paste onto." if package is None
+                             else "Choose the club to paste onto first.")
+            return None
+        dialog = TeamPasteDialog(self, index, package)
+        dialog.exec_()
+        return dialog
+
+    def plan_team_paste(self, team_index: int, package: dict[str, Any], *, settings: bool = True,
+                        coach: bool = True) -> dict[str, Any]:
+        from mod_editor.core import nfl2k5_team_transfer as tt
+        assert self.document is not None
+        return tt.plan(self.document, team_index, package, save=self._team_save(self.document.to_body()),
+                       settings=settings, coach=coach)
+
+    def paste_team(self, team_index: int, package: dict[str, Any], *, settings: bool = True,
+                   coach: bool = True) -> tuple[bool, str]:
+        """Put ``package`` onto the club as one edit and one undo (players, depth chart, special teams, and in an Xbox
+        save the team settings and head coach). Anything refused changes nothing."""
+
+        from mod_editor.core import nfl2k5_practice_squad as ps, nfl2k5_team_transfer as tt
+        document = self.document
+        if document is None:
+            return False, "No roster is loaded."
+        page = self.franchise_panel
+        from mod_editor.core import nfl2k5_save_rost as codec
+        with codec.shared_decodes():
+            return self._paste_team_now(document, page, team_index, package, settings=settings, coach=coach)
+
+    def _paste_team_now(self, document, page, team_index: int, package: dict[str, Any], *, settings: bool,
+                        coach: bool) -> tuple[bool, str]:
+        from mod_editor.core import nfl2k5_practice_squad as ps, nfl2k5_team_transfer as tt
+        try:
+            before = self._college_composed()
+            plan = tt.plan(document, team_index, package, save=self._team_save(before), settings=settings, coach=coach)
+        except (rr.RosterRecordError, ValueError) as exc:
+            message = f"Nothing changed: {exc}."
+            self._set_status(message)
+            return False, message
+        if plan["refusals"]:
+            message = "Nothing changed: " + "; ".join(plan["refusals"]) + "."
+            self._set_status(message)
+            return False, message
+        team = document.teams[team_index]
+        source = (package.get("source") or {}).get("abbreviation") or "the team"
+        try:
+            receipt = tt.apply_players(document, team_index, package, plan)
+            after = document.to_body()
+            parts: list[str] = []
+            if any(plan["parts"].values()):
+                candidate = self._team_save(after)
+                parts = tt.apply_team_parts(candidate, team_index, package, plan)
+                after = candidate.to_bytes()
+            if page.active:
+                ps.validate_save_edit(before, after)
+            elif self._source_kind == "save":
+                ps.validate_save(after)
+        except (rr.RosterRecordError, ValueError) as exc:
+            document.adopt_body(before)
+            self.refresh_grid()
+            message = f"Nothing changed: {exc}."
+            self._set_status(message)
+            return False, message
+        journal = page._edits[:page._cursor] if page.active else []
+        label = f"{source} pasted onto {team.abbreviation} ({receipt['players']} players"
+        label += (f"; {', '.join(parts)}" if parts else "") + ")"
+        pastes_before = list(self._team_pastes)
+        pastes_after = pastes_before + [label]
+
+        def install(payload: bytes, pastes: list[str]) -> None:
+            self._team_pastes = list(pastes)
+            self._restore_composed(payload, journal)
+            self._show_player(self.selected_player())
+            self._refresh_actions()
+
+        self.undo_stack.push(UndoEntry(label, lambda: install(before, pastes_before),
+                                       lambda: install(after, pastes_after)))
+        install(after, pastes_after)
+        extra = ""
+        if receipt["locks_dropped"]:
+            extra = (f" {len(receipt['locks_dropped'])} copied lock(s) left off because the player is also on an "
+                     f"exhibition squad with the original: {', '.join(receipt['locks_dropped'][:3])}"
+                     + (" …" if len(receipt["locks_dropped"]) > 3 else "") + ".")
+        message = label + "." + extra
+        self._set_status(message)
+        return True, message
+
+    def _show_team_menu(self, position) -> None:
+        row = self.team_list.indexAt(position).row()
+        if row >= 0:
+            self.team_list.setCurrentRow(row)
+        self.club_menu().exec_(self.team_list.viewport().mapToGlobal(position))
+
+    def club_menu(self) -> QMenu:
+        menu = QMenu(self.team_list)
+        club = self._selected_club()
+        name = self.document.teams[club].abbreviation if club is not None and self.document is not None else ""
+        action = menu.addAction(f"Copy team {name}".strip(), self.copy_team)
+        action.setEnabled(club is not None)
+        source = (self._team_clipboard or {}).get("source", {}).get("abbreviation", "")
+        action = menu.addAction(f"Paste {source or 'team'} onto {name or 'this club'}…", self.open_paste_team)
+        action.setEnabled(club is not None and self._team_clipboard is not None)
+        menu.addSeparator()
+        action = menu.addAction(f"Export team {name}…".replace("  ", " "), self.export_team)
+        action.setEnabled(club is not None)
+        action = menu.addAction(f"Import team onto {name or 'this club'}…", self.import_team)
+        action.setEnabled(club is not None)
+        return menu
 
     # ------------------------------------------------------------------ b81 R9: Clear Stats
     def clear_stats_reason(self, players: Sequence[rr.Player]) -> str:
@@ -5566,6 +5841,8 @@ class RosterEditorPanel(QWidget):
                         lines.append(f"    Ability flags (+0x52): {was & 0xE0} -> {now & 0xE0}")
                 else:
                     lines.append(f"    {caption}: {was} -> {now}")
+        if self._team_pastes:         # b81 wave 3: team settings and the coach are club bytes the player list does not show
+            lines += ["", f"Team pastes ({len(self._team_pastes)}):"] + [f"    {label}" for label in self._team_pastes]
         journal = self.franchise_panel.edit_labels()
         if journal:                   # b81: coach and franchise edits are changes too, written with the save copy
             lines += ["", f"{'Coach' if self.franchise_panel.coaches_only else 'Franchise'} changes "
