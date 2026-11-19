@@ -708,8 +708,9 @@ class GameplayPatchesPanel(QWidget):
             # b780 studio1: the Build tab's Needs update treatment, which this page lacked: on the released v0.8 disc these
             # read "Unknown state." or, for a legacy draft AI, a tooltip about the beta 58-60 star, and no badge.
             from mod_editor.gui.build_panel_qt import (
-                LEGACY_UPGRADE_KEYS, PREVIOUS_REBUILD_KEYS, PREVIOUS_MULTIPLE_RELEASES, PREVIOUS_UPGRADE_KEYS, rebuild_only_reason)
-            locked_on = key in ("honors_page", "k128_memory")      # Build keeps these ticked and greyed out; so does this page
+                KEPT_PREVIOUS, LEGACY_UPGRADE_KEYS, PREVIOUS_REBUILD_KEYS, PREVIOUS_MULTIPLE_RELEASES,
+                PREVIOUS_UPGRADE_KEYS, rebuild_only_reason)
+            locked_on = key in KEPT_PREVIOUS
             update = ((value == "previous" and key in PREVIOUS_UPGRADE_KEYS)
                       or (value == "legacy" and (key in LEGACY_UPGRADE_KEYS or key in ("draft_ai", "depth_locks"))))
             previous_label = "Earlier" if key in PREVIOUS_MULTIPLE_RELEASES else "Beta 79"
@@ -718,7 +719,7 @@ class GameplayPatchesPanel(QWidget):
             declined_reason = rebuild_only_reason(state) if (update or upgrade) else ""
             check.setEnabled((value == "retail" or (not declined_reason and (upgrade or (update and not locked_on))))
                              and not needs_image and key not in r62_ui.UNAVAILABLE)
-            check.setChecked(False)
+            check.setChecked(locked_on and value == "previous")
             tip = {"applied": "Already installed on this source.",
                    "needs_fix": "Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.",
                    "foreign": "Not recognised: the bytes at this change's sites are neither retail nor this patch "
@@ -755,13 +756,14 @@ class GameplayPatchesPanel(QWidget):
                                  "is neither retail nor this patch, so they can't be added here.")
             self.badges["depth_chart_rows"].setText("Unrecognized source data")
             self.badges["depth_chart_rows"].setVisible(True)
-        applied = [LABELS.get(k, (k, "", ""))[0] for k, _l, _e in self._patches if state.get(k) == "applied"]
-        foreign = [LABELS.get(k, (k, "", ""))[0] for k, _l, _e in self._patches if state.get(k) in ("foreign", "partial")]
-        text = ("Already on this source: " + ", ".join(applied) + "." if applied
-                else "No recognized changes found; everything listed is original.")
-        if foreign:
-            text += " Not recognized (changed by another tool): " + ", ".join(foreign) + "."
-        self.source_status.setText(text)
+        descriptions = []
+        for states, prefix in ((("applied",), "Installed changes include "),
+                               (("previous", "legacy", "needs_fix"), "Earlier revisions are installed for "),
+                               (("foreign", "partial"), "Unrecognized source data was found for ")):
+            names = [label for key, label, _help in self._patches if state.get(key) in states]
+            if names:
+                descriptions.append(prefix + ", ".join(names) + ".")
+        self.source_status.setText(" ".join(descriptions) or "No installed changes were identified on this source.")
         self.source_status.setToolTip("Read: " + "; ".join(f"{k}: {state.get(k)}" for k, _l, _e in self._patches))
         self.suggest_target()
         self._refresh()
@@ -1021,13 +1023,13 @@ class GameplayPatchesPanel(QWidget):
             cutoff = installed.get("settings") or {}
             for widget, key in ((self.decided_clock_margin, "margin"),
                                 (self.decided_clock_seconds, "seconds")):
-                if installed.get("status") == "applied":
+                if installed.get("status") in ("applied", "previous"):
                     widget.blockSignals(True)
                     widget.setCurrentIndex(widget.findData(cutoff[key]))
                     widget.blockSignals(False)
                 widget.setEnabled(self.checks["decided_clock"].isEnabled()
                                   and self.checks["decided_clock"].isChecked()
-                                  and installed.get("status") != "applied")
+                                  and installed.get("status") not in ("applied", "previous"))
         if hasattr(self, "cpu_scrambles_level"):
             mode = state.get("cpu_scrambles", "unknown")
             if mode == "applied":

@@ -386,6 +386,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 # b780 n6: options whose beta-79 install reads "previous" in inspect(); the build upgrades it in place
 PREVIOUS_UPGRADE_KEYS = {"punter_holder": "saved field-goal holders", "modern_injured_reserve": "modern injured reserve", "honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory",
+                         "coin_defer": "opening coin toss", "decided_clock": "late-game clock",
+                         "historic_teams_quick_game": "historic teams in Quick Game",
                          # b780 rev1: these two read "previous" on a v0.8 disc too, and the build upgrades them in
                          # place (catch_slider_patch.apply, nfl2k5_sim_cb_tackles.apply); their boxes were greyed out
                          "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit",
@@ -441,6 +443,7 @@ KEPT_WHEN_INSTALLED = ("coin_defer", "decided_clock", "historic_teams_quick_game
                        "modern_practice_field", "modern_practice_field_team_logo", "k128_memory", "letter_grades", "honors_page",
                        "coach_ai")
 KEPT_NEEDS = {"modern_practice_field_team_logo": "modern_practice_field"}
+KEPT_PREVIOUS = frozenset(KEPT_WHEN_INSTALLED).intersection(PREVIOUS_UPGRADE_KEYS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
     "modern_mercedes_benz", "modern_usbank", "modern_lucas_oil", "modern_state_farm",
@@ -4103,20 +4106,20 @@ class BuildPanel(QWidget):
                 if (self._state or {}).get(key) == "previous":
                     # gate() worded this as a box to select; a locked, ticked box needs no selecting (b780 studio1)
                     reason = rebuild_only_reason(self._state or {})      # b780 studio1 (Q69): no in-place update on such a disc
-                    box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. "
+                    box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build is installed. "
                                    + (reason or "This build brings it up to this release's revision in place, so it stays ticked."))
         state = self._state or {}
         installed = state.get("decided_clock_settings") or {}
         cutoff = installed.get("settings") or {}
         for widget, key in ((self.decided_clock_margin, "margin"),
                             (self.decided_clock_seconds, "seconds")):
-            if installed.get("status") == "applied":
+            if installed.get("status") in ("applied", "previous"):
                 widget.blockSignals(True)
                 widget.setCurrentIndex(widget.findData(cutoff[key]))
                 widget.blockSignals(False)
             widget.setEnabled(self.decided_clock_check.isEnabled()
                               and self.decided_clock_check.isChecked()
-                              and installed.get("status") != "applied")
+                              and installed.get("status") not in ("applied", "previous"))
         mode = state.get("cpu_scrambles", "unknown")
         if mode == "applied":
             self.cpu_scrambles_level.blockSignals(True)

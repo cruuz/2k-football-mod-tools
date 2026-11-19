@@ -34,7 +34,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
             "weather_plan": ("Edits temperature", "new franchise"),
             "weather_haze": ("0.8 to 1.0", "Does not force fog"),
             "cpu_scrambles": ("0.25 to 0.3125", "per game are not established"),
-            "coin_defer": ("CPU winners", "a human Defer choice is not available"),
+            "coin_defer": ("CPU winners", "press A on Receive", "Human winners and overtime"),
             "decided_clock": ("your selected margin", "not mathematical elimination"),
             "scorebug_runtime": ("one PNG and JSON design", "Preview it over a screenshot", "Requires Scorebug and a disc image"),
             # b773 lg2: the letter grades option states its scale and its Studio behaviour directly.
@@ -45,7 +45,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
             # the older rows use literal Retail/Patch headings.
             for phrase in new_help.get(key, ("Retail", "Patch")):
                 self.assertIn(phrase, explanation, key)
-            if key in new_help:
+            if key in new_help and key != "coin_defer":
                 self.assertIn("unwitnessed", explanation.lower(), key)
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / "default.xbe"

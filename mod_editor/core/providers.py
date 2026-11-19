@@ -578,10 +578,10 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_moment_gun_weight.py": "ab0fa2a22641666208f5aecdb21d30a99b85c8d23ffeea87c5de37ebd5e29cb9",
         "mod_editor/core/nfl2k5_project_fit.py": "a0184fba0e2b544861fb127ee50f7492c29f9d0667963a492d5cda60fa8ea5fc",
         "mod_editor/core/nfl2k5_my_career_prospects.py": "7c326fbfdaf090c6bf3394af99d266c8f069be8e8a49919f7503e14db9b09c45",
-        "mod_editor/core/nfl2k5_rules_patch.py": "c014a783b7ad04dcf278d4fd6880efe07d7fc16eb4e07d965cd23e162f6ec26e",
-        "mod_editor/core/nfl2k5_coin_defer.py": "5a6ae2e7efe9009cd76b9cadef2e1a876b28851d3e8285a973be8161bf6f8a96",
+        "mod_editor/core/nfl2k5_rules_patch.py": "07589de43b12b8110ccf8895d9500c3abd4d5b5c14acde7b30f4469c2cc8db6b",
+        "mod_editor/core/nfl2k5_coin_defer.py": "c2708dfc02f138d16d8688777cb3b4221dfbbacf1e7317f7865d01ec22de00cd",
         "mod_editor/core/nfl2k5_inbox_standings.py": "4f8d3d31e878a1584d8a0c21a9860a2dd746fdf0f50db383f4bf7ce53b28b19e",
-        "mod_editor/core/nfl2k5_coin_defer_code.py": "640875d3b9e3cd3608808d0f0dec45ff9936d5e1123ffc017ad6de93a7ba0056",
+        "mod_editor/core/nfl2k5_coin_defer_code.py": "7b7110e944011df70b67e8b7e7f937da044304a530ee1b0c4dc471ee83585195",
         "mod_editor/core/nfl2k5_coin_defer_code_b779.py": "fbbd7deef5b1d357a3a82d20c3685530b11585f9fa7e66c8c2a336ef4ac41821",  # b780 modes2: frozen beta-69 .. v0.9 RC revision
         "mod_editor/core/nfl2k5_decided_clock.py": "9fdbf3ec93f04366946b8c05b48e312106c8e1273b5d661cb394d4278af9dfec",
         "mod_editor/core/nfl2k5_decided_clock_code.py": "26d142750b0a14c479bf63ae9a17144b91debb561b8827618785392d70e667a8",
