@@ -4,8 +4,8 @@ A roster record's Photo id (+0x06) selects one of three kinds of picture:
 
 * ``0000``-``9999`` that the shipped portrait catalogue lists (``reports/assets/nfl2k5_player_portrait_compatibility.json``,
   4,303 ids): a 128 x 128 P8 texture in the disc's pack 0. It is read from the private source cache the Studio makes when
-  you open your original disc (``Nfl2k5StudioFacade.models_source_paths``), the same bytes the portrait PNG importer
-  replaces, so a portrait your project replaces shows the new picture only after Build.
+  you open your original disc. An enabled artwork project or a staged session replacement supplies the authored
+  PNG for its selected ids. The preview uses the same 256-colour RGBA palette as the game writer.
 * ``30000``-``31199``: the real NFL headshots ``nfl2k5_real_portraits`` ships (data/nfl2k5_real_portraits), and the
   fictional draft faces ``nfl2k5_rookie_faces`` ships (data/nfl2k5_rookie_faces, ids 10000-21695 and their legacy ids).
   Both are added to the disc by the Rookie faces Build option, which is also what writes those ids into a roster.
@@ -15,13 +15,16 @@ Nothing here writes anything; a preview that cannot be read says why instead of 
 """
 from __future__ import annotations
 
-from collections import OrderedDict
+from collections import Counter, OrderedDict
+from functools import lru_cache
 from dataclasses import dataclass
 import io
 import json
 from pathlib import Path
 import sys
 from typing import Any
+
+from .errors import ValidationError
 
 ROOT = Path(__file__).resolve().parents[2]
 TOOLS = ROOT / "tools"
@@ -45,6 +48,56 @@ class Portrait:
 def _tools() -> None:
     if str(TOOLS) not in sys.path:
         sys.path.insert(0, str(TOOLS))
+
+
+def _file_version(path: Path) -> tuple[int, ...]:
+    from .platform_compat import change_time_identity
+
+    info = path.stat()
+    return info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, *change_time_identity(info)
+
+
+@lru_cache(maxsize=2)
+def _project_portraits(path: Path, version: tuple[int, ...]) -> dict[int, Path]:
+    from .nfl2k5_build_service import Nfl2k5BuildService
+
+    source, document = Nfl2k5BuildService._project_document(path)
+    portraits: dict[int, Path] = {}
+    for row in document["edits"]:
+        if row["kind"] != "player_portrait":
+            continue
+        number = row.get("portrait_id")
+        png = row.get("png")
+        if (not isinstance(number, str) or len(number) != 4 or not number.isascii() or not number.isdigit()
+                or not isinstance(png, str) or not png):
+            raise ValueError("the selected project has an invalid player portrait")
+        photo = int(number)
+        if photo in portraits:
+            raise ValueError(f"the selected project repeats portrait {number}")
+        portraits[photo] = source.parent / png
+    return portraits
+
+
+@lru_cache(maxsize=CACHE_PICTURES)
+def _authored_rgba(path: Path, version: tuple[int, ...]) -> bytes:
+    """Project PNG after the portrait writer's weighted median-cut and nearest RGBA palette mapping."""
+    _tools()
+    import nfl_player_portrait_png_import as writer
+    import numpy as np
+
+    _, _, raw = writer.read_png(path)
+    pixels = np.frombuffer(raw, dtype=np.uint8).reshape(-1, 4)
+    colors, inverse, counts = np.unique(pixels, axis=0, return_inverse=True, return_counts=True)
+    histogram = Counter(dict(zip(map(tuple, colors.tolist()), counts.tolist())))
+    palette = np.asarray(writer.palette_tools.median_cut_palette(histogram, 256), dtype=np.int32)
+    # The square of the source pixel is constant across the palette. Integer argmin preserves the
+    # writer's first-index tie rule. Work a few hundred colours at a time on the UI thread.
+    squared = (palette * palette).sum(axis=1, dtype=np.int32)
+    nearest = np.empty(len(colors), dtype=np.intp)
+    for start in range(0, len(colors), 512):
+        batch = colors[start:start + 512].astype(np.int32)
+        nearest[start:start + len(batch)] = (squared - 2 * (batch @ palette.T)).argmin(axis=1)
+    return palette.astype(np.uint8)[nearest[inverse.reshape(-1)]].tobytes()
 
 
 class PortraitPreviews:
@@ -119,8 +172,25 @@ class PortraitPreviews:
         return "none"
 
     # ------------------------------------------------------------------ pictures
-    def picture(self, photo: int) -> Portrait:
+    def picture(self, photo: int, *, league_project: Path | None = None,
+                staged_png: Path | None = None, rookie_faces: bool | None = None) -> Portrait:
         photo = int(photo)
+        if 0 <= photo <= 9999 and (league_project is not None or staged_png is not None):
+            try:
+                if staged_png is not None and league_project is not None:
+                    raise ValueError("both the open project and the league artwork have edits; select one in Build & Share")
+                art = staged_png
+                if art is None and league_project is not None:
+                    art = _project_portraits(league_project, _file_version(league_project)).get(photo)
+                if art is not None:
+                    if photo not in self._catalogue():
+                        raise ValueError(f"portrait {photo:04d} has no target in the game catalogue")
+                    return Portrait(photo, "catalogue", _authored_rgba(art, _file_version(art)),
+                                    f"Portrait {photo:04d} from the selected project, in the game's 256-colour palette.")
+            except (OSError, ValueError, ValidationError) as exc:
+                return Portrait(photo, "catalogue", None, f"Photo {photo}: cannot read selected artwork ({exc}).")
+        if rookie_faces is False and self.kind(photo) in ("real", "rookie"):
+            return Portrait(photo, "none", None, "No photo: the selected disc uses the original portrait bank.")
         cached = self._pictures.get(photo)
         if cached is not None:
             self._pictures.move_to_end(photo)
@@ -166,8 +236,7 @@ class PortraitPreviews:
         if len(rgba) != SIZE * SIZE * 4:
             raise ValueError("the portrait is not 128 x 128")
         return Portrait(photo, "catalogue", bytes(rgba),
-                        f"Portrait {photo:04d} from your original disc. A portrait your project replaces shows "
-                        "after Build.")
+                        f"Portrait {photo:04d} from your original disc.")
 
     def _atlas(self, folder: Path, name: str, pin: str):
         from PIL import Image  # noqa: PLC0415

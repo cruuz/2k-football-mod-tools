@@ -9768,6 +9768,7 @@ class StudioMainWindow(QMainWindow):
             roster_editor.configured_base_year = lambda: (
                 2026 if self._build_panel.season_check.isChecked()
                 or (self._build_panel._state or {}).get("season_2026") == "applied" else 2004)
+            roster_editor.portrait_build_choices = self._build_panel.portrait_build_choices
             self._build_panel.season_check.toggled.connect(roster_editor.use_build_year)
             roster_editor.roster_edits_changed.connect(self._build_panel.set_roster_edits)
             roster_editor.roster_edits_stale.connect(self._build_panel.mark_roster_edits_stale)
@@ -10009,6 +10010,9 @@ class StudioMainWindow(QMainWindow):
                 if self._build_panel is None:
                     return
             self._prefill_roster_if_pending()
+            panel = self._roster_editor_panel
+            if panel.document is not None:
+                panel._show_header_photo(panel.selected_player())
             return
         if self._navigation_key(row) == "models":
             if bool(getattr(self.facade, "source_ready", False)):

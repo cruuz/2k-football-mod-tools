@@ -4846,6 +4846,12 @@ class BuildPanel(QWidget):
         if memory == 64 and console_memory.of(plan) != 64:
             self.apply_recommended_64()
 
+    def portrait_build_choices(self) -> tuple[Path | None, bool]:
+        """The league artwork and portrait bank this Build page currently selects."""
+        selected = self.softdrink_project_field.text().strip() if self.softdrink_project_check.isChecked() else ""
+        faces = self.rookie_faces_check.isChecked() or (self._state or {}).get("rookie_faces") in ("applied", "previous")
+        return (Path(selected) if selected else None), faces
+
     def _softdrink_build_settings(self):
         choices = self.project_build_settings()
         # plan() intentionally omits source-gated edits before a clean image

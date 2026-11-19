@@ -1087,7 +1087,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/studio/music_service.py": "2f2126c1055d75b71597bf60d2583861eceb790499e2636e51ccb1e3428393d5",
         "mod_editor/studio/project_archive.py": "07ee0383db64aac79cd2846903da63756b45b09c05118de4fd6fec612701c8bb",
         "mod_editor/studio/project_manifest.py": "9ba0fd3d5ce51c800959489ee1e5116a68ec123351cae66b7833da1a6f0aebd0",
-        "mod_editor/studio/session.py": "2b16918c62d59be53d5382eb8bc552176e5e028d77d302516b7a14ce500f4c13",
+        "mod_editor/studio/session.py": "04f02116d8e8904288cf21953ef5002a9b63bcb14a594d4999b63beb9ea186f5",
         "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
         "tools/apf_outer.py": "e9ce600393f9c9f6b372bb385e9486a655167bf6cc9ef256cc96c8439957cd31",
         "tools/game_audio_convert.py": "3ba3f1f4c2aa452198a12e65d8e93e8d690988d0a6a88c80d7c5de91c1e5a983",

@@ -13,6 +13,7 @@ when it is not.
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 import struct
@@ -1718,6 +1719,38 @@ class PortraitPreviewCoreTests(unittest.TestCase):
         closed = previews.picture(5147)
         self.assertEqual((closed.kind, closed.rgba), ("catalogue", None))
         self.assertIn("open your original game disc", closed.note)
+
+    def test_selected_art_uses_game_palette_switches_and_reloads(self) -> None:
+        from PIL import Image
+        from mod_editor.core import nfl2k5_portrait_preview as pp
+        from tools import nfl_tset_png_import as writer
+
+        previews = pp.PortraitPreviews(None)
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            png = folder / "portrait.png"
+            project = folder / "selected.json"
+            pixels = bytes(v for i in range(128 * 128) for v in (i % 251, i % 13, 9, 224))
+            Image.frombytes("RGBA", (128, 128), pixels).save(png)
+            row = {"kind": "player_portrait", "png": png.name, "portrait_id": "0028"}
+            recipe = {"schema": "nfl2k5_visual_mod_project/v1", "purpose": "portrait selection", "edits": [row]}
+            project.write_text(json.dumps(recipe))
+            palette, indices, _ = writer.quantize_levels([writer.MipLevel(0, 128, 128, pixels)])
+            expected = writer.rgba_from_indices(indices[0], palette)
+            self.assertNotEqual(pixels, expected)
+            self.assertEqual(previews.picture(28, league_project=project).rgba, expected)
+            self.assertEqual(previews.picture(28, staged_png=png).rgba, expected)
+            self.assertIsNone(previews.picture(28).rgba)         # this fixture has no original disc cache
+            self.assertIsNone(previews.picture(28, league_project=project, staged_png=png).rgba)
+            Image.new("RGBA", (128, 128), (51, 17, 39, 224)).save(png)
+            second = previews.picture(28, league_project=project)
+            self.assertEqual(second.rgba, bytes((51, 17, 39, 224)) * (128 * 128))
+            project.write_text(json.dumps(dict(recipe, edits=[])))
+            self.assertIsNone(previews.picture(28, league_project=project).rgba)
+            project.write_text(json.dumps(dict(recipe, edits=[row, row])))
+            self.assertIn("repeats portrait", previews.picture(28, league_project=project).note)
+            self.assertEqual(previews.picture(30326, rookie_faces=False).kind, "none")
+            self.assertTrue(previews.picture(30326, rookie_faces=True).available)
 
     @unittest.skipUnless(RETAIL_PACK0 is not None, "no retail source cache (open the original disc in the Studio once)")
     def test_a_catalogue_portrait_is_the_retail_picture(self) -> None:

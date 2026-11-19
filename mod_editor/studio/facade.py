@@ -3477,6 +3477,13 @@ class Nfl2k5StudioFacade:
         progress("Stadium people and sideline textures ready", 1, 1)
         return result
 
+    def staged_portrait_path(self, photo: int) -> Path | None:
+        """The open project's active replacement, including reverts and undo at the same asset id."""
+        with self._read_lock():
+            if self._session is None:
+                return None
+            return self._session.staged_path(f"nfl2k5.portrait.{photo:04d}")
+
     def preview_asset(self, asset: UniformAsset, progress: ProgressSink) -> Path:
         progress(f"Preparing {asset.label}", 0, 1)
         with self._lock:

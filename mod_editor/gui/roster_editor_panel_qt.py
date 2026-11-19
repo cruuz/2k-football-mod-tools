@@ -2015,6 +2015,7 @@ class RosterEditorPanel(QWidget):
         super().__init__(parent)
         self._facade = facade
         self.portrait_pack0: Path | None = None      # b81 R11: tests point this at a source cache's pack 0
+        self.portrait_build_choices: Callable[[], tuple[Path | None, bool | None]] = lambda: (None, None)
         self.document: rr.RosterDocument | None = None
         self._baseline: rr.RosterDocument | None = None
         self._source_path: Path | None = None
@@ -4515,7 +4516,11 @@ class RosterEditorPanel(QWidget):
 
     def portrait_pixmap(self, photo: int, size: int = 128) -> tuple[QPixmap | None, str]:
         try:
-            picture = self.portrait_previews().picture(int(photo))
+            project, rookie_faces = self.portrait_build_choices()
+            staged = getattr(self._facade, "staged_portrait_path", None)
+            staged_png = staged(photo) if callable(staged) and 0 <= photo <= 9999 else None
+            picture = self.portrait_previews().picture(int(photo), league_project=project,
+                                                      staged_png=staged_png, rookie_faces=rookie_faces)
         except Exception as exc:  # noqa: BLE001 - a preview never blocks editing
             return None, f"Photo {photo}: no preview ({plain_error(exc)})."
         if picture.rgba is None:
