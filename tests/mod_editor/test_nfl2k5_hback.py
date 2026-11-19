@@ -6,7 +6,6 @@ Private integrated XBE/ROST inputs are opt-in. Renderer/heap seams are named
 in the reused native fixture; label/pool/count/getter routines execute x86.
 """
 import copy
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -19,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from mod_editor.core import nfl2k5_hback as hb, nfl2k5_position_pools as pools
 from mod_editor.core import nfl2k5_modern_positions as modern
-from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage
+from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 
 
 def sample():
@@ -199,14 +198,9 @@ class Native(unittest.TestCase):
 class MyCareerContext(unittest.TestCase):
     def test_current_career_accepts_only_intact_hback_roles(self):
         from mod_editor.core import nfl2k5_my_career_mode as career, nfl2k5_rdata_sites as rdata
+        from tests.nfl2k5_retail_fixtures import read_nfl_retail_xbe
 
-        retail = Path(os.environ.get('NFL2K5_RETAIL_XBE', ''))
-        if not retail.is_file() and os.environ.get('NFL2K5_RETAIL_EXTRACTION'):
-            retail = Path(os.environ['NFL2K5_RETAIL_EXTRACTION']) / 'default.xbe'
-        if not retail.is_file():
-            self.skipTest('retail USA executable required for current MyCareer and H-back integration')
-        payload = retail.read_bytes()
-        self.assertEqual(hashlib.sha256(payload).hexdigest(), RETAIL_SHA256)
+        payload = read_nfl_retail_xbe()
         # The October fixture in Native carries the October MyCareer writer.
         for writer in (modern, pools, career):
             payload, _ = writer.apply(payload)
