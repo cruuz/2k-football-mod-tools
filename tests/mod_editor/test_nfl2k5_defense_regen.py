@@ -7,6 +7,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / 'tools'), str(ROOT / 'pb/v2/defense')]
@@ -46,16 +47,13 @@ class RegenTests(unittest.TestCase):
         self.assertIn('WRONG OFFENSE', err.getvalue())
 
     def test_stale_defense_receipt_is_reported(self):
-        manifest = regen.OUT / 'manifest.json'
-        original = manifest.read_bytes()
-        try:
-            data = json.loads(original)
-            data['teams'][0]['pack_sha256'] = '1' * 64
-            manifest.write_text(json.dumps(data), newline='\n')
-            report = regen.stale_report(teams=[data['teams'][0]['team']], manifests=False, compile_check=False)
-            self.assertTrue(any(line.startswith('EDITED') for line in report), report)
-        finally:
-            manifest.write_bytes(original)
+        data = json.loads((regen.OUT / 'manifest.json').read_text(encoding='utf-8'))
+        team = data['teams'][0]['team']
+        data['teams'][0]['pack_sha256'] = '1' * 64
+        with tempfile.TemporaryDirectory() as tmp, patch.object(regen, 'OUT', Path(tmp)):
+            (regen.OUT / 'manifest.json').write_text(json.dumps(data), encoding='utf-8')
+            report = regen.stale_report(teams=[team], manifests=False, compile_check=False)
+        self.assertTrue(any(line.startswith(f'EDITED {team}:') for line in report), report)
 
 
 if __name__ == '__main__':
