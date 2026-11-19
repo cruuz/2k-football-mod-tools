@@ -106,7 +106,17 @@ class KitDocument(unittest.TestCase):
     def test_the_first_batch_is_the_reviewed_kits(self):
         self.assertEqual(sorted((r["selector"], r["texture"]) for r in kit_rows()),
                          [("03A0", "sleeve00"), ("03H0", "sleeve00"), ("15A0", "pants00"), ("15H0", "pants00"),
-                          ("15H0", "socks00"), ("23A0", "pants00")])
+                          ("15H0", "socks00"), ("18A0", "jersey00"), ("18A7", "jersey00"), ("18H0", "jersey00"),
+                          ("18H7", "jersey00"), ("23A0", "pants00")])
+
+    def test_the_giants_chest_mark_rows_repaint_only_the_mark(self):
+        # Noah 11/18: "the NY logo on the giants jersey below the nfl patch is too large". 18 by 15 texels became 9 by 7.
+        for selector in ("18H0", "18A0", "18H7", "18A7"):
+            row = [r for r in kit_rows() if (r["selector"], r["texture"]) == (selector, "jersey00")][0]
+            self.assertEqual(row["texels"], 243, selector)
+            for run in [op for op in row["ops"] if op["op"] == "runs"][0]["rows"]:  # [row, first column, colours]
+                self.assertTrue(85 <= run[0] <= 103, (selector, run[:2]))        # the old box and the new one, nothing else
+                self.assertTrue(152 <= run[1] and run[1] + len(run[2]) // 6 <= 170, (selector, run[:2]))
 
     def test_no_row_touches_a_helmet_or_the_far_away_atlas(self):
         for row in kit_rows():
@@ -426,6 +436,20 @@ class RealDisc(unittest.TestCase):
             self.assertLess(max(line), min(band), y)                                         # white toward the front
             rest = {c for c in row} - {white, sol}
             self.assertTrue(rest and all(near(c, royal, 4) for c in rest), (y, rest))        # hard edges: no blends
+
+    def test_the_giants_chest_mark_is_as_wide_as_the_collar_shield_and_sits_over_the_number(self):
+        # real 2026 frames: the "ny" under the shield is 0.96 to 1.12 of the shield's width (the game had 2.25) and sits
+        # close above the number. The shield is 8 texels wide, centred on column 161.
+        for selector, base in (("18H0", (14, 40, 120)), ("18A0", (255, 255, 255)), ("18H7", (255, 255, 255)),
+                               ("18A7", (255, 255, 255))):
+            torso = self.after(selector, "jersey00")[..., :3].astype(int)
+            mark = np.abs(torso[84:108, 140:186] - np.array(base)).max(-1) > 36
+            ys, xs = np.nonzero(mark)
+            self.assertEqual((int(xs.min()) + 140, int(xs.max()) + 140), (157, 165), selector)
+            self.assertEqual((int(ys.min()) + 84, int(ys.max()) + 84), (97, 103), selector)
+            self.assertFalse(mark[:97 - 84].any(), selector)                         # the old mark left no ghost
+            self.assertAlmostEqual(float(xs.mean()) + 140, 161.0, delta=0.7, msg=selector)
+            self.assertGreater(int(mark[103 - 84].sum()), 6, selector)                # the underline bar is one solid row
 
     def test_every_kit_row_is_waiting_on_the_released_disc_and_compiles_to_its_pin(self):
         result = up.states(DISC)
