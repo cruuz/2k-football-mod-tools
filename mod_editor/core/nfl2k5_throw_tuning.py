@@ -935,7 +935,7 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "uniform_choice": uniform_choice_patch.status(payload),
         "uniform_choice_mode": uniform_choice_patch.applied_mode(payload),
         "kick_laces": kick_laces_patch.status(payload),
-        "punter_holder": punter_holder_patch.status(payload),
+        "punter_holder": punter_holder_patch.build_status(payload),
         "franchise_practice": franchise_practice_patch.status(payload),
         "prospect_names": prospect_names_patch.xbe_status(payload),
         "player_star": player_star_patch.status(payload),
@@ -1075,7 +1075,7 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "uniform_choice": uniform_choice_patch.status(payload),
         "uniform_choice_mode": uniform_choice_patch.applied_mode(payload),
         "kick_laces": kick_laces_patch.status(payload),
-        "punter_holder": punter_holder_patch.status(payload),
+        "punter_holder": punter_holder_patch.build_status(payload),
         "franchise_practice": franchise_practice_patch.status(payload),
         "prospect_names": prospect_names_patch.xbe_status(payload),
         "player_star": player_star_patch.status(payload),
@@ -2295,6 +2295,10 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
             else:
                 _require(state == "applied", f"kick-rules sites are {state}; refusing to patch")
                 receipt = {**receipt, "kick_rules_patch": {"already_applied": True}}
+    if punter_holder or punter_holder_patch.build_status(patched) == "previous":
+        patched, holder_receipt = punter_holder_patch.use_stored_holder(patched)
+        receipt = {**receipt, "punter_holder_patch": holder_receipt,
+                   "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + holder_receipt["changed_bytes"]}
     for flag, module, key, label in ((returner_fix, returner_fix_patch, "returner_fix_patch", "returner"),
                                      (progression, progression_patch, "progression_patch", "progression"),
                                      (franchise_economy, franchise_economy_patch, "franchise_economy_patch", franchise_economy_patch.BUILD_CAPTION),
@@ -2318,7 +2322,6 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                                      (chop_block_toggle, _chop_block_adapter, "chop_block_toggle_patch", "experimental Chop Block toggle repair"),
                                      (flatter_deep_ball, flatter_flight_patch, "flatter_deep_ball_patch", "experimental flatter deep flight"),
                                      (kick_laces, kick_laces_patch, "kick_laces_patch", "kick-laces"),
-                                     (punter_holder, punter_holder_patch, "punter_holder_patch", "punter-holder"),
                                      (franchise_practice, franchise_practice_patch, "franchise_practice_patch", "Franchise-practice"),
                                      (bool(prospect_names), _prospect_names_adapter(prospect_names), "prospect_names_patch", "prospect-names"),
                                      (player_star, player_star_patch, "player_star_patch", "player-star"),
@@ -2660,7 +2663,7 @@ def write_xbe_copy(
     original = source.read_bytes()
     arc_table = settings is not None and settings.arc_by_distance
     patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, forward_pass_ruling=forward_pass_ruling, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, elbow_options=elbow_options, the1wam_lineman_rating=the1wam_lineman_rating, xemu_display_list_fix=xemu_display_list_fix, resource_load_guard=resource_load_guard, loader_wakeup_fix=loader_wakeup_fix, rb_rename=rb_rename, trophy_room=trophy_room, name_keyboard=name_keyboard, franchise_economy=franchise_economy, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, punter_holder=punter_holder, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space, kickoff_relocated=kickoff_relocated, scorebug_runtime=scorebug_runtime, momentum=momentum, momentum_contact=momentum_contact, defensive_try=defensive_try, zone_drop_cap=zone_drop_cap, all_stadiums=all_stadiums, coverage_slider=coverage_slider, scramble_tuning=scramble_tuning, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=music_metadata, music_shuffle=music_shuffle, music_shuffle_selection=music_shuffle_selection, practice_squad_screen=practice_squad_screen, abilities=abilities, abilities_off_week=abilities_off_week, abilities_lock_right_stick=abilities_lock_right_stick, abilities_lock_special_moves=abilities_lock_special_moves, abilities_lock_speedster=abilities_lock_speedster, abilities_right_stick_stars_only=abilities_right_stick_stars_only, abilities_button_moves_stars_only=abilities_button_moves_stars_only, abilities_charge_stars_only=abilities_charge_stars_only, abilities_star_access=abilities_star_access, qb_spy=qb_spy, qb_spy_intent_table=qb_spy_intent_table, calendar_engine=calendar_engine, **r62)
-    _require(patched != original, "nothing to write: the requested curves and patches already match the file")
+    _require(punter_holder or patched != original, "nothing to write: the requested curves and patches already match the file")
     _prepare_target(source, target, overwrite)
     descriptor = _open_binary(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
     try:
@@ -2734,7 +2737,7 @@ def write_xbe_copy(
         "penalties": penalties_patch.status(result),
         "uniform_choice": uniform_choice_patch.status(result),
         "kick_laces": kick_laces_patch.status(result),
-        "punter_holder": punter_holder_patch.status(result),
+        "punter_holder": punter_holder_patch.build_status(result),
         "franchise_practice": franchise_practice_patch.status(result),
         "prospect_names": prospect_names_patch.xbe_status(result),
         "player_star": player_star_patch.status(result),
@@ -2923,6 +2926,10 @@ def write_image_copy(
     target = Path(target_image).expanduser()
     report: ProgressSink = progress or (lambda stage, done, total: None)
 
+    holder_defaults = None
+    if punter_holder and not _defer_image_resources:
+        from . import nfl2k5_roster_records
+        holder_defaults = punter_holder_patch.inherited_holder_ids(nfl2k5_roster_records.load_image(source))
     naming_digest = _naming_source_preflight(source, modern_naming)
     if espn25_rosters:
         # compile every historic moment roster against the source before copying anything
@@ -2947,7 +2954,7 @@ def write_image_copy(
             disc_before = edge_rename_patch.disc_status(src, entries)
         # A private build pass can be byte-identical while the final resource
         # pass still has work. Its complete settings were checked before copy.
-        _require(_defer_image_resources or defer_grown or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or patched != original or disc_before.get("status") == "retail",
+        _require(_defer_image_resources or holder_defaults is not None or defer_grown or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or patched != original or disc_before.get("status") == "retail",
                  "nothing to write: the requested curves and patches already match the image")
         _prepare_target(source, target, overwrite)
         if _consume_source:
@@ -3072,6 +3079,12 @@ def write_image_copy(
             actual_size = os.fstat(stream.fileno()).st_size
             after_offset, after_length = image_xbe_extent(stream.fileno(), actual_size)
             after = platform_compat.pread(stream.fileno(), after_length, after_offset)
+    if holder_defaults is not None:
+        defaults = punter_holder_patch.apply_roster_defaults(target, holder_defaults, set())
+        receipt["holder_defaults"] = defaults
+        receipt["changed_byte_count"] += len(defaults["changed"])
+        for note in defaults["user_notes"]:
+            report(note, 0, 0)
     if coach_ai and not _defer_image_resources:
         receipt["coach_ai_resources_patch"] = coach_ai_patch.apply_profiles_to_image(
             target, progress=lambda message: report(message, 0, 0))
@@ -3151,7 +3164,7 @@ def write_image_copy(
         "penalties": penalties_patch.status(after),
         "uniform_choice": uniform_choice_patch.status(after),
         "kick_laces": kick_laces_patch.status(after),
-        "punter_holder": punter_holder_patch.status(after),
+        "punter_holder": punter_holder_patch.build_status(after),
         "franchise_practice": franchise_practice_patch.status(after),
         "prospect_names": prospect_names_patch.xbe_status(after),
         "player_star": player_star_patch.status(after),

@@ -2199,8 +2199,8 @@ class RosterDocument:
     # ------------------------------------------------------------------ special teams (b81 R3)
     # Codex's native witness (finn-facts FACTS.md): the six bytes at team +0x194..+0x199 are signed indexes into the
     # club's pointer list (0xFF = nobody): holder, KR1, KR2, stored kicker, stored long snapper, PR. KR1, KR2 and PR
-    # pick the screen rows and the formation's returners, the holder byte the holder (a SOFTDRINK disc's punter-as-
-    # holder option fields the punter regardless). The stored kicker and long snapper bytes do not decide who plays:
+    # pick the screen rows and the formation's returners. The holder byte selects the holder.
+    # The stored kicker and long snapper bytes do not decide who plays:
     # K #1 kicks, P #1 punts and the center at C #2 snaps on punts and kicks (rank order). On SOFTDRINK the weekly pass
     # puts a returner back on the player who holds that returner's lock claim (+0x52), so the claim moves with him.
     RETURNER_ROLES = ("kr1", "kr2", "pr")

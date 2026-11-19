@@ -1128,8 +1128,8 @@ class SpecialTeamsDialog(ScrollBodyDialog):
                                         "weekly pass keeps him."),
              ("kr2", "Kick returner 2", "Writes the KR2 slot and moves the KR2 lock to him."),
              ("pr", "Punt returner", "Writes the PR slot and moves the PR lock to him."),
-             ("holder", "Holder", "Writes the holder slot. A SOFTDRINK disc with the punter-as-holder option uses the "
-                                  "punter instead."),
+             ("holder", "Holder", "On beta 81 this player holds on field goals and extra points. "
+                                  "Rebuild an older SOFTDRINK disc to upgrade its punter override."),
              ("kicker", "Kicker", "The game's kicker is K #1 in the depth chart: choosing him moves him there."),
              ("punter", "Punter", "The game's punter is P #1 in the depth chart: choosing him moves him there."),
              ("long_snapper", "Long snapper", "On punts and kicks the snap comes from the center at C #2 in the depth "

@@ -494,6 +494,14 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     # b76-vb3: the 25th Anniversary kickoff gate carries the disc's retail special-teams data (read only).
     anniversary_tables = anniversary_kickoff.disc_tables(xiso)
     recorder = Recorder(retail)
+    # New discs use the stock holder reader. Reserve the two sites we still write when upgrading
+    # an older disc, using the actual supported migration and its native section checksum.
+    from . import nfl2k5_punter_holder as holder
+    legacy_holder, _ = holder.apply(retail)
+    restored, migration = holder.use_stored_holder(legacy_holder)
+    if restored != retail:
+        raise OracleError("The older holder override did not restore the retail executable")
+    recorder.observe(holder, "use_stored_holder", legacy_holder, restored, migration)
     modules = {m.__name__: m for m in vars(tt).values() if isinstance(m, ModuleType)
                and m.__name__.startswith("mod_editor.core.nfl2k5_")}
     modules[inbox_standings.__name__] = inbox_standings

@@ -176,13 +176,11 @@ PATCHES = (
      "kickoffs and scrimmage carries are not), then turns the ball 180 degrees about its own long axis with "
      "the game's quaternion product, so the laces face the posts through the hold and the kick. A fake field "
      "goal carries the rolled ball for that play only. Unwitnessed in game."),
-    ("punter_holder", "Punter holds on field goals and PATs",
-     "Retail: the Field Goal formation has a holder slot (kind H) that the depth-chart builder fills from a "
-     "hidden team-record byte, usually the second quarterback; the depth chart has no holder row and nothing "
-     "keeps that byte up to date. Patch: a hook in that builder and a 47-byte cave in a dead routine make the "
-     "depth chart's first punter the holder on every field goal and PAT, for user and CPU teams in every mode; "
-     "the old rule runs only when a team has no punter (or the kicker would fill both slots). A fake field goal "
-     "run or throw is now the punter's. Unwitnessed in game."),
+    ("punter_holder", "Use the punter as the default holder",
+     "Retail reads the club's saved holder for field goals, extra points and fakes. This option fills empty "
+     "or inherited assignments with the first punter when building a disc roster. A player chosen in "
+     "Special Teams keeps the job and appears in the build summary. Patching an older executable restores "
+     "the saved holder rule. A complete disc is needed to set roster defaults."),
     ("prospect_names", "Modern draft-prospect names (disc images only)",
      "Retail: rookies and free agents are named from the 1990 US Census lists (James, Harold, Walter... Smith, "
      "Garcia, Martinez), drawn independently, so a fifth of every draft class carries a Hispanic-origin name and no "
@@ -341,7 +339,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
         "Choice form only here. Build also offers a fixed rule. Preview art shows era only.",
         "Reported not working; bounded checks pass / UNWITNESSED"),
     "kick_laces": ("Laces face the posts on kicks", "On field goals and PATs the held ball is turned so the laces face the posts.", NOT_TESTED),
-    "punter_holder": ("Punter holds on field goals and PATs", "The first punter on the depth chart holds, as in the modern NFL.", NOT_TESTED),
+    "punter_holder": ("Use the punter as the default holder", "Fills empty and inherited assignments in the disc roster. A saved Special Teams selection takes the kick.", ""),
     "prospect_names": ("Modern draft-prospect names", "New franchises only; some new surnames are announced by number.", "New franchises only"),
     "franchise_practice": ("Practice below Schedule in Franchise", r62_ui.PRACTICE_HELP, NOT_TESTED),
     "seven_on_seven": ("7-on-7 practice (experimental)", "Retail line positions with passing sets and a delayed end rush. UNWITNESSED.", NOT_TESTED),

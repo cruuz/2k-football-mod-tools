@@ -1267,9 +1267,10 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    The kicker, the punter and the long snapper are picked by the game from the depth chart (K #1 kicks, P #1 punts,
    and on punts and kicks the center at C #2 snaps), so choosing one of them changes his depth row, and the panel says
    so. The club record also stores a kicker and a long snapper slot; the game does not use them to pick who plays, and
-   the panel shows them for reference. A SOFTDRINK disc with the punter-as-holder option has the punter hold
-   whatever the holder slot says. Releasing, signing, moving or swapping players keeps every role on the same player;
-   a role whose player leaves the club is emptied, as the game itself does. One undo takes the whole change back.
+   the panel shows them for reference. The chosen holder takes field goals and extra points. **Use the punter as
+   the default holder** fills empty or inherited assignments while building a disc. The build summary lists custom
+   holders it preserves. Rebuilding an older SOFTDRINK disc upgrades its holder rule. Releasing, signing, moving
+   or swapping players keeps every role on the same player. A role becomes empty when its player leaves the club. One undo takes the whole change back.
 
    **Team settings…** is Finn's Options tab for a club in an Xbox roster or franchise save: the **stadium** it
    plays home games in, its **default jersey** (only the club's own styles), its **playbook**, the **team

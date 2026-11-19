@@ -385,7 +385,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("modern_clock_led", _clock_led.BUILD_CAPTION, _clock_led.HELP_TEXT))  # b778-sd4
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 # b780 n6: options whose beta-79 install reads "previous" in inspect(); the build upgrades it in place
-PREVIOUS_UPGRADE_KEYS = {"modern_injured_reserve": "modern injured reserve", "honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory",
+PREVIOUS_UPGRADE_KEYS = {"punter_holder": "saved field-goal holders", "modern_injured_reserve": "modern injured reserve", "honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory",
                          # b780 rev1: these two read "previous" on a v0.8 disc too, and the build upgrades them in
                          # place (catch_slider_patch.apply, nfl2k5_sim_cb_tackles.apply); their boxes were greyed out
                          "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit",
@@ -1150,9 +1150,10 @@ class BuildPanel(QWidget):
                                                     "On/Off toggle really works (switch it On in Penalty Settings). Rates are ESTIMATED pending a playtest.")
         self.kick_laces_check = self._option(g, "kick_laces", "Laces face the posts on kicks",
                                              "On field goals and PATs the held ball is turned so the laces face the posts.", badge=NOT_TESTED)
-        self.punter_holder_check = self._option(g, "punter_holder", "Punter holds on field goals and PATs",
-                                                "The depth chart's first punter holds the ball, as in the modern NFL; the old holder rule only if a team has no punter.",
-                                                badge=NOT_TESTED)
+        self.punter_holder_check = self._option(
+            g, "punter_holder", "Use the punter as the default holder",
+            "Sets P1 in the disc roster for clubs with an empty or inherited holder. A holder you choose in "
+            "Special Teams takes field goals and extra points. The build summary lists preserved choices.")
         self.uniform_choice_check = self._option(
             g, "uniform_choice", r62_ui.uniform_choice_caption(""),
             r62_ui.UNIFORM_CHOICE_HELP, badge=NOT_TESTED)
@@ -2294,7 +2295,7 @@ class BuildPanel(QWidget):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("franchise_economy", "2026 franchise economy"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
-                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("loader_wakeup_fix", "disc loader wake-up fix"), ("rb_rename", "RB rename"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("team_sleeves", "team-coloured sleeves"), ("kick_laces", "kick laces"), ("punter_holder", "punter holds"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
+                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("loader_wakeup_fix", "disc loader wake-up fix"), ("rb_rename", "RB rename"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("team_sleeves", "team-coloured sleeves"), ("kick_laces", "kick laces"), ("punter_holder", "default holder"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"), ("espn25_plan", "Anniversary edits"), ("espn25_rosters", "historic rosters"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -2316,7 +2317,7 @@ class BuildPanel(QWidget):
             ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"),
             ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"),
             ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("loader_wakeup_fix", "disc loader wake-up fix"), ("rb_rename", "RB rename"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"),
-            ("uniform_choice", "jersey choice"), ("team_sleeves", "team-coloured sleeves"), ("kick_laces", "kick laces"), ("punter_holder", "punter holds"), ("franchise_practice", "Franchise practice"),
+            ("uniform_choice", "jersey choice"), ("team_sleeves", "team-coloured sleeves"), ("kick_laces", "kick laces"), ("punter_holder", "default holder"), ("franchise_practice", "Franchise practice"),
             ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"),
             ("player_tags", "star tags"),
             ("roster_edits", "roster edits"), ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"),
