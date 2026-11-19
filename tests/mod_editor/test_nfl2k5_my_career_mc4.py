@@ -156,8 +156,13 @@ class QuietProgressTests(unittest.TestCase):
                 m.stubs.append(m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: hits.append(1), begin=va, end=va))
             m.draw()
             self.assertGreaterEqual(len(hits), 2)
-            rows = {r['text'] for r in m.native_rows if r['text']}
-            self.assertTrue({'Enter the draft', 'Undrafted free agent', 'Quit to main menu'} <= rows, rows)
+            # The renderer walks the foreground rows from the bottom of the screen up.
+            rows = [row for row in reversed(m.native_rows) if row['text'] and row['color'] >> 24 == 0xFF]
+            self.assertEqual([row['text'] for row in rows], [
+                'Enter the draft', 'Undrafted free agent', 'Load career', 'Quit to main menu',
+                'Prospect: Original creation',
+            ])
+            self.assertEqual([row['text'] for row in rows if row['color'] == 0xFFFFFF00], ['Enter the draft'])
 
 
 @unittest.skipUnless(HAVE_UC and XBE.is_file(), 'pinned USA XBE, ROST, FONT, LAYT, MRKS and Unicorn required')
@@ -170,10 +175,6 @@ class QuietProgressWithCareerHomeTests(QuietProgressTests):
         from mod_editor.core import nfl2k5_my_career_home as home
         cls.payload = home.apply(cls.payload)[0]
         assert mode.status(cls.payload) == 'applied' and home.status(cls.payload) == 'applied'
-
-    def test_other_owned_menus_still_draw_natively(self):
-        self.skipTest('the entry menu is covered on the plain image; Career Home only replaces the Apartment')
-
 
 if __name__ == '__main__':
     unittest.main()
