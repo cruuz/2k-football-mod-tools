@@ -1,6 +1,7 @@
 """Starting backfield cards, their native calling convention and Studio authoring paths."""
 import itertools
 from pathlib import Path
+import hashlib
 import os
 import struct
 import sys
@@ -24,6 +25,24 @@ except ImportError:
 
 
 class SettingsTests(unittest.TestCase):
+    def test_gadget_slots_precede_cards_even_when_another_feature_spills_to_the_pool(self):
+        expected = {("nfl2k5_gadget_proof", "code"): (0x151F680, 2048),
+                    ("nfl2k5_gadget_proof", "read_only"): (0x151FE80, 12800),
+                    ("nfl2k5_backfield_cards", "code"): (0x1523080, 176)}
+        self.assertLess(space.LATE_OWNERS.index("nfl2k5_gadget_proof"), space.LATE_OWNERS.index(cards.OWNER))
+        for size in (0, 0x2000, 0x13500, 0x17800, 0x30000):
+            with self.subTest(extra_resident_bytes=size):
+                extra = (("test_large_table", "read_only", size, 256),) if size else ()
+                rows = space.plan(extra + cards.REQUESTS)["allocations"]
+                found = {(r["owner"], r["kind"]): (r["va"], r["size"]) for r in rows
+                         if (r["owner"], r["kind"]) in expected}
+                self.assertEqual(found, expected)
+                intervals = sorted((r["va"], r["va"] + r["size"]) for r in rows)
+                self.assertTrue(all(end <= start for (_, end), (start, _) in zip(intervals, intervals[1:])))
+        for partial in space.GADGET_REQUESTS:
+            with self.subTest(incomplete=partial), self.assertRaisesRegex(ValueError, "gadget allocation"):
+                space.plan((partial, space.BACKFIELD_REQUEST))
+
     def test_foreign_format_refuses(self):
         self.assertEqual(cards.status(b"XEX2" + bytes(512)), "foreign")
         with self.assertRaises(ValueError):
@@ -231,6 +250,38 @@ class PrivateWriterTests(unittest.TestCase):
                 self.assertEqual(cards.status(bytes(changed)), "foreign")
                 with self.assertRaises(ValueError):
                     cards.apply(bytes(changed))
+
+    def test_upgrade_reserves_both_gadget_slots_without_enabling_the_rule(self):
+        sources = (("NFL2K5_V08_XBE", "5f987568bc88122f566e30cb5bb8a574acde4549b915b6f2514beab37ab3e9f3"),
+                   ("NFL2K5_B780_RC_XBE", "1a476d94ee64acf5bb287736cc06fea8f8f8181f3ee98e2b9586006c5659c9da"),
+                   ("NFL2K5_V09_XISO", "d78088f9ba47c6197e99ea540d0bc3d2c9255f7cd49152a77946be70dacab866"))
+        for key, expected in sources:
+            with self.subTest(source=key):
+                path = Path(os.environ.get(key, ""))
+                if not path.is_file():
+                    self.skipTest(f"{key} requires a private SOFTDRINK source")
+                source = build._xbe_bytes(path)
+                self.assertEqual(hashlib.sha256(source).hexdigest(), expected)
+                patched, receipt = cards.apply(source)
+                self.assertEqual(receipt["code_va"], "0x1523080")
+                before, after = XbeImage(source), XbeImage(patched)
+                final_rows = space.layout(patched)["allocations"]
+                for old in space.layout(source)["allocations"]:
+                    if old["owner"] != space.DIRECTORY_OWNER:
+                        self.assertIn(old, final_rows)
+                        self.assertEqual(after.read(old["va"], old["size"]), before.read(old["va"], old["size"]))
+                self.assertEqual(after.read(0x151F680, 2048), b"\xcc" * 2048)
+                self.assertEqual(after.read(0x151FE80, 12800), bytes(12800))
+                for va, size in ((0x18A641, 5), (0xE7760, 6)):
+                    self.assertEqual(after.read(va, size), before.read(va, size))
+
+    def test_populated_gadget_reservation_can_gain_cards_in_place(self):
+        reserved, _ = space.apply(self.base, space.GADGET_REQUESTS, scaleout=True)
+        existing_code = bytes([0x90]) * 2047 + b"\xc3"
+        occupied, _ = space.install_code(reserved, space.GADGET_OWNER, existing_code)
+        result, receipt = cards.apply(occupied)
+        self.assertEqual(receipt["code_va"], "0x1523080")
+        self.assertEqual(XbeImage(result).read(0x151F680, 2048), existing_code)
 
     def test_source_export_freezes_the_actual_disc_option(self):
         import json
