@@ -598,7 +598,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "22a50b66cece72046d84de5ed34f3d04c71c6ac921dba125cf9b08505e71efac",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "b398774d67b11b4042d3557a5f3d4e6869f341040a307fa43735cc9fc30dc63d",
+        "mod_editor/core/mod_build.py": "60ad1715a5e0a5133178e5c7acd6cc4644f6bc9cea3092edf1f35a728a4767c1",
         "mod_editor/core/nfl2k5_console_memory.py": "68583ec468e7b07ecc671a2e1ae04c86ee4be41f771e50ce3373762473cc7981",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/build_steps.py": "c49b6ade2b0f2ff6a8ba86fb94ed9863b085833346bdc424682704bcc225d40f",  # b791-h3: step context and optional steps
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
