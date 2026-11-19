@@ -36,9 +36,11 @@ ALTERNATES = ("03_8", "08_5", "12_6")
 #: Standard-shell kits whose side logos are rebuilt from the modern shell's (same place, angle and size on the helmet,
 #: through the surface map of tools/b81_art/shelltransfer.py, each side from its own side): new league-project art on
 #: both sides, so they need no helmet00 row. 04_2 is Carolina's blue alternate, whose slots take 04H0's rebuilt helmet.
+#: Not rebuilt: the Steelers' and Dolphins' home kits (22_0, 14_0), whose stock helmet later build steps copy into
+#: other kits (the Anniversary era kit PIT 4 and the Unc Bowl repair; the classic Dolphins kit).
 STANDARD_REBUILT = ("00_0", "00_6", "00_7", "01_0", "02_0", "02_2", "02_3", "03_0", "03_3", "03_9", "04_0", "04_2",
-                    "05_4", "08_0", "08_6", "09_0", "09_2", "09_9", "12_0", "13_0", "14_0", "14_10", "16_9", "18_7",
-                    "22_0", "22_5", "24_0", "24_9", "24_10", "25_7", "27_0", "27_6", "28_7", "29_9", "37_2")
+                    "05_4", "08_0", "08_6", "09_0", "09_2", "09_9", "12_0", "13_0", "14_10", "16_9", "18_7", "22_5",
+                    "24_0", "24_9", "24_10", "25_7", "27_0", "27_6", "28_7", "29_9", "37_2")
 #: Helmet slots whose league project art is replaced by a rebuilt texture (data/nfl2k5_b81_art_cards.json "helmets")
 NEW_ART = set(json.loads((ROOT / "data" / "nfl2k5_b81_art_cards.json").read_text(encoding="utf-8")).get("helmets", {}))
 
@@ -147,11 +149,11 @@ class Document(unittest.TestCase):
             self.assertGreaterEqual(hit, 4, row["selector"])
 
     def test_the_standard_shell_rows_are_the_reviewed_kits(self):
-        # the kits whose Standard-shell logo stays where it is and still needs a few texels: the Vikings' horn outline,
-        # the Steelers' alternate 4 (old-logo box) and the 49ers' keyline (the Packers' alternate 5 keeps its released
-        # placement, which already matched the modern shell, and needs no texel)
+        # the kits whose Standard-shell logo stays where it is and still needs a few texels: the Dolphins' home kit (its
+        # left side redrawn), the Vikings' horn outline, the Steelers' home kit and alternate 4 (old-logo box) and the
+        # 49ers' keyline (the Packers' alternate 5 keeps its released placement and needs no texel)
         standard = sorted({r["selector"][:2] + "_" + r["selector"][3:] for r in rows() if r["texture"] == "helmet00"})
-        self.assertEqual(standard, ["15_0", "22_4", "25_0"])
+        self.assertEqual(standard, ["14_0", "15_0", "22_0", "22_4", "25_0"])
         for row in rows():
             if row["texture"] == "helmet00":
                 self.assertLess(row["texels"], 6000, row["selector"])     # a logo and what lay beside it, never a shell
@@ -166,9 +168,15 @@ class Document(unittest.TestCase):
     def test_the_standard_shell_logo_faces_forward_on_both_sides(self):
         # the re-authored logos were laid on the Standard shell with the left side facing the back of the helmet (and
         # the Broncos' right side upside down); the retail art and the modern shell mirror the two sides. Every one of
-        # these kits is now rebuilt from the modern shell, each side from its own side
+        # these kits but one is now rebuilt from the modern shell, each side from its own side; the Dolphins' home kit
+        # keeps its row, which redraws the left side (the lower atlas island)
+        by = {(r["selector"], r["texture"]): r for r in rows()}
         kept = [kit for kit in STANDARD_LEFT_SIDE + STANDARD_RIGHT_SIDE + ("13_0",) if kit not in STANDARD_REBUILT]
-        self.assertEqual(kept, [])
+        self.assertEqual(kept, ["14_0"])
+        for side in "HA":
+            texels = run_texels(by[("14" + side + "0", "helmet00")])
+            there = sum(1 for x, y in texels if 20 <= x < 142 and y >= 128)
+            self.assertGreater(there, 900, side)
 
     def test_the_buccaneers_alternate_6_flag_faces_forward_on_the_modern_shell(self):
         # its left-side flag (the lower atlas island) was drawn the other way round from the home kit's; the row redraws
@@ -212,7 +220,7 @@ class Document(unittest.TestCase):
         self.assertEqual(NEW_ART, {slot(shell, kit, side) for shell in ("helmet00", "helmet02") for kit in ALTERNATES
                                    for side in "HA"} | {slot("helmet00", kit, side) for kit in STANDARD_REBUILT
                                                         for side in "HA"})
-        self.assertEqual(len(NEW_ART), 82)
+        self.assertEqual(len(NEW_ART), 78)
 
     def test_the_jets_white_throwback_loses_the_top_of_the_2004_oval(self):
         by = {(r["selector"], r["texture"]): r for r in rows()}

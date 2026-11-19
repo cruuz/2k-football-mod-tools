@@ -336,7 +336,8 @@
     97,
     111
    ]
-  ]
+  ],
+  "keep_placement": true
  },
  "22_4:helmet00": {
   "erase": [
@@ -402,7 +403,8 @@
   "mirror_lower": true
  },
  "14_0:helmet00": {
-  "mirror_lower": true
+  "mirror_lower": true,
+  "keep_placement": true
  },
  "14_10:helmet00": {
   "mirror_lower": true
