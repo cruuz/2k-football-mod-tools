@@ -16,8 +16,8 @@ SOURCES = Path(os.environ.get("B81_ART_SOURCES", "/media/noah/Storage/2K5-projec
 ALTERNATES = ("03_8", "08_5", "12_6")
 #: Standard-shell kits whose side logos are rebuilt from the modern shell (tests/mod_editor/test_b81_art_helmet_cleanup.py)
 STANDARD_REBUILT = ("00_0", "00_6", "00_7", "01_0", "02_0", "02_2", "02_3", "03_0", "03_3", "03_9", "04_0", "04_2",
-                    "05_4", "08_0", "08_6", "09_0", "09_2", "09_9", "10_5", "12_0", "13_0", "14_0", "14_10", "16_9",
-                    "18_7", "22_0", "22_5", "24_0", "24_9", "24_10", "25_7", "27_0", "28_7", "29_9", "37_2")
+                    "05_4", "08_0", "08_6", "09_0", "09_2", "09_9", "12_0", "13_0", "14_0", "14_10", "16_9", "18_7",
+                    "22_0", "22_5", "24_0", "24_9", "24_10", "25_7", "27_0", "27_6", "28_7", "29_9", "37_2")
 NEW_HELMETS = ({f"{shell}_{kit[:2]}{side}{kit[3:]}" for shell in ("helmet00", "helmet02") for kit in ALTERNATES for side in "HA"}
                | {f"helmet00_{kit[:2]}{side}{kit[3:]}" for kit in STANDARD_REBUILT for side in "HA"})
 

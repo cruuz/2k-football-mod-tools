@@ -378,7 +378,7 @@
  "03_8:helmet00": {
   "refine": {
    "free": true,
-   "streak_wrap": true
+   "streak_wrap": false
   }
  },
  "03_9:helmet00": {
@@ -423,7 +423,6 @@
   "mirror_lower": true
  },
  "27_6:helmet00": {
-  "keep_placement": true,
   "mirror_lower": true
  },
  "03_8:helmet02": {
@@ -434,7 +433,7 @@
     "old_line": "white"
    },
    "free": true,
-   "streak_wrap": true
+   "streak_wrap": false
   }
  },
  "08_5:helmet02": {
@@ -466,5 +465,11 @@
   "refine": {
    "outline": true
   }
+ },
+ "27_6:helmet02": {
+  "mirror_lower": true
+ },
+ "10_5:helmet00": {
+  "keep_placement": true
  }
 }

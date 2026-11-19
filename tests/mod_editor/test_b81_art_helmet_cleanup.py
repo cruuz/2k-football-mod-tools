@@ -37,8 +37,8 @@ ALTERNATES = ("03_8", "08_5", "12_6")
 #: through the surface map of tools/b81_art/shelltransfer.py, each side from its own side): new league-project art on
 #: both sides, so they need no helmet00 row. 04_2 is Carolina's blue alternate, whose slots take 04H0's rebuilt helmet.
 STANDARD_REBUILT = ("00_0", "00_6", "00_7", "01_0", "02_0", "02_2", "02_3", "03_0", "03_3", "03_9", "04_0", "04_2",
-                    "05_4", "08_0", "08_6", "09_0", "09_2", "09_9", "10_5", "12_0", "13_0", "14_0", "14_10", "16_9",
-                    "18_7", "22_0", "22_5", "24_0", "24_9", "24_10", "25_7", "27_0", "28_7", "29_9", "37_2")
+                    "05_4", "08_0", "08_6", "09_0", "09_2", "09_9", "12_0", "13_0", "14_0", "14_10", "16_9", "18_7",
+                    "22_0", "22_5", "24_0", "24_9", "24_10", "25_7", "27_0", "27_6", "28_7", "29_9", "37_2")
 #: Helmet slots whose league project art is replaced by a rebuilt texture (data/nfl2k5_b81_art_cards.json "helmets")
 NEW_ART = set(json.loads((ROOT / "data" / "nfl2k5_b81_art_cards.json").read_text(encoding="utf-8")).get("helmets", {}))
 
@@ -148,10 +148,10 @@ class Document(unittest.TestCase):
 
     def test_the_standard_shell_rows_are_the_reviewed_kits(self):
         # the kits whose Standard-shell logo stays where it is and still needs a few texels: the Vikings' horn outline,
-        # the Steelers' alternate 4 (old-logo box), the 49ers' keyline and the Buccaneers' alternate 6 (kept: its
-        # modern-shell left-side flag is drawn the other way round, so it does not follow the modern shell)
+        # the Steelers' alternate 4 (old-logo box) and the 49ers' keyline (the Packers' alternate 5 keeps its released
+        # placement, which already matched the modern shell, and needs no texel)
         standard = sorted({r["selector"][:2] + "_" + r["selector"][3:] for r in rows() if r["texture"] == "helmet00"})
-        self.assertEqual(standard, ["15_0", "22_4", "25_0", "27_6"])
+        self.assertEqual(standard, ["15_0", "22_4", "25_0"])
         for row in rows():
             if row["texture"] == "helmet00":
                 self.assertLess(row["texels"], 6000, row["selector"])     # a logo and what lay beside it, never a shell
@@ -166,15 +166,19 @@ class Document(unittest.TestCase):
     def test_the_standard_shell_logo_faces_forward_on_both_sides(self):
         # the re-authored logos were laid on the Standard shell with the left side facing the back of the helmet (and
         # the Broncos' right side upside down); the retail art and the modern shell mirror the two sides. Every one of
-        # these kits but one is now rebuilt from the modern shell, each side from its own side; the Buccaneers'
-        # alternate 6 keeps its row, which redraws the left side (the lower atlas island)
-        by = {(r["selector"], r["texture"]): r for r in rows()}
+        # these kits is now rebuilt from the modern shell, each side from its own side
         kept = [kit for kit in STANDARD_LEFT_SIDE + STANDARD_RIGHT_SIDE + ("13_0",) if kit not in STANDARD_REBUILT]
-        self.assertEqual(kept, ["27_6"])
+        self.assertEqual(kept, [])
+
+    def test_the_buccaneers_alternate_6_flag_faces_forward_on_the_modern_shell(self):
+        # its left-side flag (the lower atlas island) was drawn the other way round from the home kit's; the row redraws
+        # it as the right side's mirror image, and the Standard shell follows (new art)
+        by = {(r["selector"], r["texture"]): r for r in rows()}
         for side in "HA":
-            texels = run_texels(by[("27" + side + "6", "helmet00")])
+            texels = run_texels(by[("27" + side + "6", "helmet02")])
             there = sum(1 for x, y in texels if 20 <= x < 142 and y >= 128)
-            self.assertGreater(there, 900, side)
+            self.assertGreater(there, 2500, side)
+            self.assertIn(slot("helmet00", "27_6", side), NEW_ART)
 
     def test_the_steelers_throwback_mark_is_turned_on_both_shells(self):
         # one-sided logo (the right side): its word read backwards in game; only the logo's own disc is repainted on
@@ -321,7 +325,7 @@ class RealDisc(unittest.TestCase):
 
     def test_sample_rows_compile_to_their_pins_and_change_only_their_texels(self):
         wanted = [("02H0", "helmet02"), ("15H0", "helmet00"), ("09A0", "helmet02"), ("12H5", "helmet02"), ("06H0", "helmet02"),
-                  ("25A0", "helmet00"), ("27H6", "helmet00"), ("02A3", "helmet02"), ("22H4", "helmet00"), ("19H7", "helmet02"),
+                  ("25A0", "helmet00"), ("27H6", "helmet02"), ("02A3", "helmet02"), ("22H4", "helmet00"), ("19H7", "helmet02"),
                   ("22H5", "helmet02")]
         kits = hc.read_kits(DISC, sorted({s for s, _t in wanted}))
         by = {(r["selector"], r["texture"]): r for r in rows()}
