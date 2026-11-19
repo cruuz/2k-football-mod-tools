@@ -250,13 +250,36 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.assertEqual(self.panel.last_field.text(), "Vick")
         self.assertIn("full", self.panel.status_label.text())
 
-    def test_depth_reorder_moves_the_player_in_the_list(self) -> None:
-        self.assertTrue(self.panel.move_selected(1))
-        self.assertEqual([p.display for p in self.panel.visible_players()],
-                         ["Marvin Harrison", "Peyton Manning", "Edgerrin James"])
+    def test_the_arrows_move_the_stored_depth_rank_not_the_team_list(self) -> None:
+        # b81 R4, Codex's native witness: the game's depth chart and starters follow +0x28 bits 10-12 (the stored
+        # rank); the club's pointer order changes neither, so the arrows edit the rank of the player's position
+        document = self.panel.document
+        assert document is not None
+        manning = next(p for p in document.players if p.last == "Manning")
+        self.panel.select_player(manning)
+        self.assertFalse(self.panel.move_selected(1), "the only QB has nobody to swap with")
+        self.assertIn("already last", self.panel.status_label.text())
+        harrison = next(p for p in document.players if p.last == "Harrison")
+        james = next(p for p in document.players if p.last == "James")
+        document.set_position(james, 3)                      # two receivers: LWR (rank) and RWR (side)
+        harrison.record.values.update(depth_rank=0, depth_side=1)
+        james.record.values.update(depth_rank=1, depth_side=0)
+        self.panel.refresh_grid()
+        self.assertEqual(self.panel._depth_text(james), "RWR")
+        self.panel.select_player(james)
+        slots = list(document.teams[0].slots)
+        self.assertTrue(self.panel.move_selected(-1))
+        self.assertEqual((james.record.values["depth_rank"], harrison.record.values["depth_rank"]), (0, 1))
+        self.assertEqual((james.record.values["depth_side"], harrison.record.values["depth_side"]), (1, 0),
+                         "he cannot start on both sides: the two starters swapped sides")
+        self.assertEqual(document.teams[0].slots, slots, "the team list order did not change")
+        self.assertTrue(james.record.depth_locks["rank"] and harrison.record.depth_locks["rank"])
+        self.assertEqual((self.panel._depth_text(james), self.panel._depth_text(harrison)), ("LWR", "RWR"))
         self.panel.undo()
-        self.assertEqual([p.display for p in self.panel.visible_players()],
-                         ["Peyton Manning", "Marvin Harrison", "Edgerrin James"])
+        self.assertEqual((james.record.values["depth_rank"], james.record.values["depth_side"],
+                          james.record.values["unknown_52"]), (1, 0, 0))
+        self.panel.redo()
+        self.assertEqual(james.record.values["depth_rank"], 0)
 
     def test_copy_and_paste_modes(self) -> None:
         self.assertTrue(self.panel.copy_player())

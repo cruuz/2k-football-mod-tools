@@ -479,6 +479,10 @@ Open your Xbox save in **★ Rosters → Open Xbox save…**, select the team an
 
 Finn 4.0.0.41 reads only some of the name locations an expanded roster can use. In a signed test copy, it showed the same four-letter first name in one location and left it blank in two others. Finn's program contains a prompt that offers to auto-repair names, and it may show it when opening an expanded roster; nobody has yet recorded what that repair does to a SOFTDRINK roster. If it appears, choose **No**. Keep the original save and use the Studio export to check the players before making changes.
 
+## I changed the depth chart in an editor but the game still starts the same player
+
+The game's depth chart and its starters follow each player's stored depth rank, not the order of the team list. Moving a player in the team list (what Flying Finn's arrows and older Studio betas did) changes neither. From beta 81, **★ Rosters → ↑ Move up / ↓ Move down** change the depth rank itself: pick the position chip, select the player and move him. On SOFTDRINK the moved players are locked to their rows so the weekly roster pass keeps them; a computer-run team still promotes a clearly better unlocked player.
+
 ## I used Flying Finn's editor. Where is everything in the Studio?
 
 Open **★ Rosters** and press **Open Xbox save (Finn's zip)…**: it takes the same Action Replay `.zip`. Ctrl+F (or **Find…**) is Finn's Find Player and searches every team, the reserves, the free agents and the draft class. Ctrl+C, Ctrl+V and Ctrl+Alt+A copy, paste and paste attributes only, as in Finn; PgUp and PgDn in the editor move to the previous or next player; right-click a player for Place on IR and the rest of Finn's player menu. The guide's **Coming from Flying Finn's editor** table lists every place.

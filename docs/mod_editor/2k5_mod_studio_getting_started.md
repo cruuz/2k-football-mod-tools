@@ -1242,10 +1242,34 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    depth slot. **Columns ▾** adds the columns of Finn's grid: all his ratings in his order, body (height,
    weight, age, hand, body type, skin, face, hair, college), every piece of gear and the contract. Click a
    column heading to sort by it (a rating sorts highest first; click again to reverse); the selected
-   player stays selected. **↑ Move up / ↓ Move down** reorder the team's own pointer list, which *is* the depth
-   chart, so they wait while the grid is sorted: the line under the grid says so, and **Team order** puts the
-   list back. Right-click a player for Finn's player menu: copy, the three pastes, Find player, Only his
-   position, Place on IR… and Release to free agency.
+   player stays selected, and **Team order** puts the list back. Right-click a player for Finn's player menu:
+   copy, the three pastes, Find player, Only his position, Place on IR… and Release to free agency.
+
+   **Depth chart.** The game's depth chart screen and the players it starts follow each player's stored **depth
+   rank**, not the order of the team list (checked in the game's own code on the retail disc and on SOFTDRINK: moving
+   a player in the team list changed nothing, changing the stored rank changed the chart and the starter). So
+   **↑ Move up / ↓ Move down** move the selected player one row in his position's depth chart: the QB2 who moves up
+   becomes QB1, and the QB1 drops to QB2. Pick a position chip (or press Ctrl+D) and the list shows that position in
+   depth chart order; the **Depth** column says where each player sits (`QB`, `LT`, or `LT #2 · RT #3` for a backup).
+   Positions with two starting slots (tackles, guards, receivers, corners, ends, tackles on defense, outside and
+   inside linebackers) have two orders, left and right, chosen in the box beside the arrows (`LT order` /
+   `RT order`); one player cannot start in both, so moving the right starter into the left slot sends the left
+   starter to the right. Rows stay numbered from 1 with no gaps, and the players who moved are locked to their rows
+   (the Locks column), which is how the game's own depth chart screen keeps a change through the weekly roster pass
+   on SOFTDRINK; that pass still frees a computer-run team's lock when an unlocked player is clearly better (3 or
+   more overall points). A disc without the depth locks patch re-sorts computer-run teams every week anyway. The
+   arrows work on the player's own club, one undo per move, and **Show my changes** lists the new rows. A CSV can set
+   `depth_rank` and `depth_side` (0 = starter) the same way.
+
+   **Special teams…** (beside the arrows, or right-click) is Finn's Special Teams tab for the club shown. The kick
+   returners, the punt returner and the holder are slots in the club record: choosing a returner also moves that
+   returner's lock to him, because on SOFTDRINK the weekly roster pass gives the job back to whoever holds the lock.
+   The kicker, the punter and the long snapper are picked by the game from the depth chart (K #1 kicks, P #1 punts,
+   and on punts and kicks the center at C #2 snaps), so choosing one of them changes his depth row, and the panel says
+   so. The club record also stores a kicker and a long snapper slot; the game does not use them to pick who plays, and
+   the panel shows them for reference. A SOFTDRINK disc with the punter-as-holder option has the punter hold
+   whatever the holder slot says. Releasing, signing, moving or swapping players keeps every role on the same player;
+   a role whose player leaves the club is emptied, as the game itself does. One undo takes the whole change back.
 4. **Right**: the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
    Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
    ← → nudge by one, ↑ ↓ jump to the next card. Enum cards are dropdowns built from the tables lifted
@@ -1275,7 +1299,8 @@ moved. Nothing in your roster is renamed by any of this: only what the editor sh
 **What you can edit.** First and last name, college, position, jersey number, years pro (it counts the season you are in, so a rookie is 1 and the game prints R), hand,
 height, weight, date of birth, the play-by-play name id and the portrait id; skin, face, face mask,
 face shield, body type, dreads, eye black, mouthpiece, turtleneck, sleeves, neck roll, both gloves,
-wrists, elbows and shoes, and the helmet; all 28 rating bytes; the depth rank and side; and the
+wrists, elbows and shoes, and the helmet; all 28 rating bytes; the depth chart rows (rank and side, through the
+arrows); and the
 **contract**: value, type, signing-bonus tier, length and years remaining, with the penalty shown
 derived the way Finn showed it. The contract block is the one thing no open tool has ever edited.
 
@@ -1376,7 +1401,8 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Search > Find Player (Ctrl+F) | **Find…** or Ctrl+F: every team, the reserves, the free agents and the draft class |
 | Edit Player (double-click) | Select the player; the editor on the right is always open. PgUp / PgDn there move to the previous or next player |
 | Change Name `…` list | Type the name. A name that already exists is shared, which needs no free space |
-| Depth Chart (Ctrl+D) | Ctrl+D shows only the selected player's position; **↑ Move up / ↓ Move down** reorder it |
+| Depth Chart (Ctrl+D) | Ctrl+D shows the selected player's position in depth chart order; **↑ Move up / ↓ Move down** change his row (the stored depth rank the game reads) |
+| Depth Chart > Special Teams | **Special teams…**: returners and holder; kicker, punter and long snapper through the depth chart |
 | The player grid (every rating as a column, click to sort) | **Columns ▾**, then click a heading |
 | Copy Player (Ctrl+C), Paste Player (Ctrl+V), Paste Attributes Only (Ctrl+Alt+A) | Same keys, or **Copy player** and **Paste ▾** |
 | Tools > Global Editor | **Global Attribute Editor…** |
