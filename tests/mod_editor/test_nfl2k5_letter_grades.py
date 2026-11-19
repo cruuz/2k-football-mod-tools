@@ -7,8 +7,9 @@ the native repair, and run the *real* retail code under Unicorn: the game's own 
 conversion, the spreadsheet cell formatter with its new kind 9, every patched text site from a real roster player
 (or a real team rating) to the text on screen, and the six spreadsheet cell wrappers over the real column
 descriptors. Nothing is witnessed in game. No retail bytes are stored here: the native tests skip without the
-private USA executable (``NFL2K5_RETAIL_EXTRACTION``), and the v0.5 tests without the shipped v0.5 disc
-(``NFL2K5_V05_DISC``).
+private USA executable (``NFL2K5_RETAIL_EXTRACTION``). The v0.5 tests use the shipped disc
+(``NFL2K5_V05_DISC``). Without that disc, set both ``NFL2K5_V05_XBE`` to the released default.xbe and
+``NFL2K5_V05_ROST_ENTRY`` to its complete outer entry 5, including the 32-byte ROST header.
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 REPO = Path(__file__).resolve().parents[2]
 for entry in (REPO, REPO / "tests"):
@@ -45,6 +47,10 @@ HAVE_CS = importlib.util.find_spec("capstone") is not None
 V05_DISC = Path(os.environ.get("NFL2K5_V05_DISC", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.5 (2026-10-06).xiso.iso"))
 V05_DISC_SHA256 = "5317a7b16558621e4030f3883789060f37a42af542df431a5d338b2ca1f3c76f"
 V05_XBE_SHA256 = "2b0fbbbb89b5c72aaed7c454bf6e78dd2c97f1e417e2d761e515907ed81471ab"
+V05_MEMBERS = {
+    "default.xbe": (12_300_288, V05_XBE_SHA256),
+    "ROST entry 5": (593_792, "b3dd88e2b51824b368e78f99f17d7aea7d64b26316c60fee5c0767f31261f501"),
+}
 
 # Noah's scale (b77_session/reports/F4_2K_PLAYER_GRADE_SYSTEM_noah.png): (lowest rating, highest rating, grade)
 NOAH_SCALE = ((95, 999, "A+"), (90, 94, "A"), (85, 89, "B+"), (80, 84, "B"), (75, 79, "C+"), (70, 74, "C"),
@@ -527,7 +533,6 @@ class StudioBuildTests(unittest.TestCase):
     """Studio's own build on a small image that carries the retail executable: the option installs the owner."""
 
     def test_the_build_installs_exactly_what_the_module_installs(self) -> None:
-        from unittest import mock
         from nfl2k5_commentary_swap_test import _dir_node
         retail = _retail()
         size = len(retail)
@@ -578,9 +583,8 @@ class StudioBuildTests(unittest.TestCase):
         self.assertEqual(lg.status(plain), "retail")
 
 
-def _v05_xbe():
-    if not V05_DISC.is_file():
-        raise unittest.SkipTest("the shipped SOFTDRINK 2K28 v0.5 disc is absent")
+def _v05_disc_inputs():
+    from mod_editor.core import nfl2k5_roster_records as rr
     sys.path.insert(0, str(REPO / "tools"))
     import nfl_uniform_color_xiso_direct_patch as xc
     fd = os.open(V05_DISC, os.O_RDONLY | getattr(os, "O_BINARY", 0))
@@ -593,15 +597,79 @@ def _v05_xbe():
         os.close(fd)
     if hashlib.sha256(data).hexdigest() != V05_XBE_SHA256:
         raise unittest.SkipTest("the disc's default.xbe is not the shipped v0.5 executable")
-    return data
-
-
-def _v05_roster():
-    from mod_editor.core import nfl2k5_roster_records as rr
     try:
-        return rr.load_image(V05_DISC)
+        return data, rr.load_image(V05_DISC)
     except Exception as exc:                      # noqa: BLE001 - the roster is optional evidence
         raise unittest.SkipTest(f"v0.5 roster unreadable: {exc}")
+
+
+def _v05_paired_members(xbe_path, roster_path):
+    if not xbe_path and not roster_path:
+        raise unittest.SkipTest("The v0.5 disc is absent. Set NFL2K5_V05_XBE and NFL2K5_V05_ROST_ENTRY.")
+    if not xbe_path or not roster_path:
+        raise ValueError("supply both NFL2K5_V05_XBE and NFL2K5_V05_ROST_ENTRY")
+
+    def read_member(path, name):
+        size, expected = V05_MEMBERS[name]
+        with Path(path).open("rb") as source:
+            data = source.read(size + 1)
+        if len(data) != size or hashlib.sha256(data).hexdigest() != expected:
+            raise ValueError(f"standalone {name} does not match the shipped v0.5 member")
+        return data
+
+    return read_member(xbe_path, "default.xbe"), read_member(roster_path, "ROST entry 5")
+
+
+def _v05_inputs():
+    if V05_DISC.is_file():
+        return _v05_disc_inputs()
+    from mod_editor.core import nfl2k5_injured_reserve as ir
+    from mod_editor.core import nfl2k5_roster_records as rr
+    from mod_editor.core import nfl2k5_season_length as seasons
+    xbe_path = os.environ.get("NFL2K5_V05_XBE")
+    roster_path = os.environ.get("NFL2K5_V05_ROST_ENTRY")
+    xbe, resource = _v05_paired_members(xbe_path, roster_path)
+    header = rr.RESOURCE_HEADER_SIZE
+    roster = rr.RosterDocument(resource[header:], source=roster_path, resource_header=resource[:header],
+                               base_year=seasons.read_year(xbe) or 2004,
+                               modern_ir=ir.status(xbe) in ("applied", "previous"))
+    return xbe, roster
+
+
+class V05InputTests(unittest.TestCase):
+    def test_standalone_inputs_require_the_pair(self):
+        with self.assertRaises(unittest.SkipTest):
+            _v05_paired_members(None, None)
+        for pair in (("default.xbe", None), (None, "main.resource")):
+            with self.subTest(pair=pair), self.assertRaisesRegex(ValueError, "supply both"):
+                _v05_paired_members(*pair)
+
+    def test_each_member_rejects_truncation_extension_changed_bytes_and_the_other_member(self):
+        xbe, roster = b"one", b"two"
+        pins = {name: (len(data), hashlib.sha256(data).hexdigest())
+                for name, data in (("default.xbe", xbe), ("ROST entry 5", roster))}
+        with tempfile.TemporaryDirectory() as temp, mock.patch.dict(V05_MEMBERS, pins):
+            first, second = Path(temp) / "default.xbe", Path(temp) / "main.resource"
+            first.write_bytes(xbe)
+            second.write_bytes(roster)
+            self.assertEqual(_v05_paired_members(first, second), (xbe, roster))
+            for path, name, good, other in ((first, "default.xbe", xbe, roster),
+                                            (second, "ROST entry 5", roster, xbe)):
+                for bad in (good[:-1], good + b"x", good[:-1] + b"x", other):
+                    with self.subTest(member=name, bad=bad), self.assertRaisesRegex(ValueError, name):
+                        path.write_bytes(bad)
+                        _v05_paired_members(first, second)
+                path.write_bytes(good)
+
+    def test_an_available_disc_uses_the_original_reader(self):
+        with tempfile.TemporaryDirectory() as temp:
+            disc = Path(temp) / "v05.iso"
+            disc.touch()
+            module = sys.modules[__name__]
+            pair = (object(), object())
+            with mock.patch.object(module, "V05_DISC", disc), \
+                 mock.patch.object(module, "_v05_disc_inputs", return_value=pair):
+                self.assertIs(_v05_inputs(), pair)
 
 
 @unittest.skipUnless(HAVE_UC, "unicorn required")
@@ -610,12 +678,11 @@ class V05NativeTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.v05 = _v05_xbe()
+        cls.v05, cls.roster = _v05_inputs()
         sys.path.insert(0, str(REPO / "tools" / "b77"))
         import f4_repair
         cls.repair = f4_repair
         cls.patched, cls.receipt = f4_repair.repair_xbe(cls.v05)
-        cls.roster = _v05_roster()
         from tests.nfl2k5_supersim_draft_fixture import Machine
         cls.mp = Machine(cls.patched, trace_writes=False)
         cls.m0 = Machine(cls.v05, trace_writes=False)
