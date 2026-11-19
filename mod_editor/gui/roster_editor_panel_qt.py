@@ -121,6 +121,7 @@ from mod_editor.gui.ux_text import Details, FlowLayout, show_operation_error, su
 
 DISC_FILTER = "Disc images (*.iso *.xiso *.xiso.iso);;All files (*)"
 SAVE_FILTER = "Xbox saves (*.zip SAVEGAME.DAT);;All files (*)"
+PS2_SAVE_FILTER = "PS2 saves (*.psu *.ps2);;All files (*)"
 EDITS_FILTER = "Roster edits (*.json);;All files (*)"
 CSV_FILTER = "Spreadsheets (*.csv *.txt);;All files (*)"
 PLAYER_DATA_FILTER = "Finn's player backups (*.PlayerData);;All files (*)"
@@ -2091,15 +2092,25 @@ class RosterEditorPanel(QWidget):
             "opened, an extracted save folder, or SAVEGAME.DAT with its EXTRA. No disc needed. Your file is "
             "never changed: saving writes a new signed copy.")
         self.open_save_button.clicked.connect(self._choose_save)
+        self.open_ps2_button = QPushButton("Open PS2 save…")          # b81 wave 3: the whole roster, not only names
+        self.open_ps2_button.setToolTip(
+            "Read a PS2 roster save (SLUS-20919): a .psu, an extracted BASLUS-20919 save folder, or a .ps2 memory card "
+            "image. Every page here works on it; saving writes a new .psu (or a copy of the card) with the PS2 "
+            "checksum, checked by the Studio's independent save verifier. How the PS2 game reads the edits has not "
+            "been checked in PCSX2 yet.")
+        self.open_ps2_button.clicked.connect(self._choose_ps2_save)
         self.use_loaded_button = QPushButton("Use the open disc")
         self.use_loaded_button.setToolTip("Read the roster of the disc opened at the top right. Replaces what is loaded here.")
         self.use_loaded_button.clicked.connect(self._use_open_disc)
         self.source_label = QLabel("No roster loaded.")
         self.source_label.setWordWrap(True)
-        for widget in (self.open_disc_button, self.open_save_button, self.use_loaded_button):
-            source_row.addWidget(widget)
-        source_row.addWidget(self.source_label, 1)
+        source_buttons = QWidget()                                    # wraps at large text instead of clipping
+        flow = FlowLayout(source_buttons, spacing=6, pin_parent_height=True)
+        for widget in (self.open_disc_button, self.open_save_button, self.open_ps2_button, self.use_loaded_button):
+            flow.addWidget(widget)
+        source_row.addWidget(source_buttons, 1)
         layout.addLayout(source_row)
+        layout.addWidget(self.source_label)
         arena = Details("Migrate a signed save for a larger roster")
         arena.add_text("EXPERIMENTAL / UNWITNESSED. Create a separately signed save copy and use it with the matching Build options. The original save stays intact. The league remains 32 teams.")
         self.arena_reserves_check = QCheckBox("16 reserves")
@@ -3407,9 +3418,12 @@ class RosterEditorPanel(QWidget):
                            kind="disc", detection=self.detect_scheme(document, Path(path)))
         return True
 
-    def load_save(self, path: Path | str) -> bool:
+    def load_save(self, path: Path | str, *, directory: str | None = None) -> bool:
+        from mod_editor.core import nfl2k5_ps2_rosters as ps2
         try:
-            container = rr.SaveContainer.load(path)
+            # b81 wave 3: a PS2 roster save opens on the same pages through a container of the same shape
+            container = (ps2.Ps2SaveContainer.load(path, directory=directory) if ps2.is_ps2_path(path)
+                         else rr.SaveContainer.load(path))
         except Exception as exc:  # noqa: BLE001
             self._set_status(f"Could not read the save: {plain_error(exc)}")
             return False
@@ -3422,13 +3436,21 @@ class RosterEditorPanel(QWidget):
                              "(Check my rosters… on the Checks tab can still list its college references, read-only)")
             return False
         # a save carries no executable, so the scheme can only come from the records
-        self.load_document(document, label=f"{Path(path).name} (signature verified)",
-                           source=Path(path), kind="save", detection=self.detect_scheme(document))
+        ps2_save = getattr(container, "platform", "") == "ps2"
+        label = (f"{Path(path).name}: {container.directory} (PS2, checksum OK)" if ps2_save
+                 else f"{Path(path).name} (signature verified)")
+        self.load_document(document, label=label, source=Path(path), kind="save",
+                           detection=self.detect_scheme(document))
         self._show_franchise(self._franchise_summary(container.savegame))
         self.franchise_panel.load(container, document)
         # b81 R5: a roster save's coaches are edited on the Coaches page beside Roster; the build staff plan (also
         # called Coaches) is for discs, so it steps aside instead of showing a second, disabled Coaches tab
         self.pages.setTabVisible(self._coaches_index, not self.franchise_panel.coaches_only)
+        if ps2_save:
+            self.write_button.setText("Save PS2 save copy…")
+            self._set_status("PS2 roster save opened. Edits are written into a new .psu (or a copy of the card) with the "
+                             "PS2 checksum and checked by the Studio's save verifier. How the PS2 game reads them has "
+                             "not been checked in PCSX2 yet.")
         self._refresh_actions()                       # the club settings and coaches need the loaded franchise view
         return True
 
@@ -3511,6 +3533,29 @@ class RosterEditorPanel(QWidget):
             return
         chosen, _f = QFileDialog.getOpenFileName(self, "Open an Xbox NFL 2K5 save", "", SAVE_FILTER)
         if chosen and self.load_save(chosen):
+            self.auto_filled = False
+
+    def _choose_ps2_save(self) -> None:
+        if not self._confirm_replace():
+            return
+        chosen, _f = QFileDialog.getOpenFileName(self, "Open a PS2 NFL 2K5 roster save", "", PS2_SAVE_FILTER)
+        if not chosen:
+            return
+        directory = None
+        if chosen.lower().endswith(".ps2"):
+            from mod_editor.core import nfl2k5_ps2_rosters as ps2
+            try:
+                rosters = ps2.card_saves(chosen)
+            except Exception as exc:  # noqa: BLE001
+                self._set_status(f"Could not read the card: {plain_error(exc)}")
+                return
+            if len(rosters) > 1:
+                from PyQt5.QtWidgets import QInputDialog
+                directory, ok = QInputDialog.getItem(self, "Choose a save", "2K5 roster saves on this card:",
+                                                     rosters, 0, False)
+                if not ok:
+                    return
+        if self.load_save(chosen, directory=directory):
             self.auto_filled = False
 
     def _use_open_disc(self) -> None:
@@ -4537,13 +4582,29 @@ class RosterEditorPanel(QWidget):
             return
         photo = player.record.values["photo_id"]
         pixmap, note = self.portrait_pixmap(photo, self.HEADER_PHOTO)
-        if pixmap is None:
-            self.header_photo.clear()
-            self.header_photo.setText("No\nphoto")
-        else:
-            self.header_photo.setPixmap(pixmap)
+        if pixmap is None and note.startswith("No photo"):
+            pixmap = self._no_photo_pixmap()          # what the game shows; drawn at a fixed size so large text fits
+        if pixmap is None:                            # a disc portrait while no disc is open: say so on hover only
+            self.header_photo.hide()
+            self.header_name.setToolTip(f"Photo {photo}. {note}")
+            return
+        self.header_photo.setPixmap(pixmap)
         self.header_photo.setToolTip(f"Photo {photo}. {note}")
+        self.header_name.setToolTip("")
         self.header_photo.show()
+
+    def _no_photo_pixmap(self) -> QPixmap:
+        size = self.HEADER_PHOTO
+        pixmap = QPixmap(size, size)
+        pixmap.fill(QColor(60, 66, 80))
+        painter = QPainter(pixmap)
+        font = QFont()
+        font.setPixelSize(13)
+        painter.setFont(font)
+        painter.setPen(QColor(200, 205, 215))
+        painter.drawText(pixmap.rect(), Qt.AlignCenter, "No photo")
+        painter.end()
+        return pixmap
 
     # ------------------------------------------------------------------ editor pane
     def _show_player(self, player: rr.Player | None) -> None:
@@ -6292,8 +6353,11 @@ class RosterEditorPanel(QWidget):
             stem = source.parent.name or "NFL 2K5 save"
         else:
             stem = source.name
+        if getattr(getattr(self.document, "container", None), "platform", "") == "ps2":
+            stem = source.stem if source is not None and kind != "directory" else (source.name if source else stem)
+            kind = "ps2-" + kind
         stem = stem.strip() or "NFL 2K5 save"
-        suffix = ".zip" if kind == "zip" else ""
+        suffix = {"zip": ".zip", "ps2-card": ".ps2", "ps2-psu": ".psu", "ps2-directory": ".psu"}.get(kind, "")
         candidate = folder / f"{stem} (edited){suffix}"
         counter = 2
         while candidate.exists() or (source is not None and candidate.resolve() == source.resolve()):
@@ -6305,6 +6369,11 @@ class RosterEditorPanel(QWidget):
         """The after-save words a Finn user needs: his editor saved over the zip, this one never does."""
 
         written = str(receipt.get("target", ""))
+        if receipt.get("platform") == "ps2":
+            where = ("a copy of your memory card with the edited save in it; the other saves are unchanged"
+                     if receipt.get("kind") == "card" else "a .psu you can import with PCSX2's memory card tools or mymc")
+            return (f"PS2 save copy written: {written}, {where}. Checksum sealed and checked by the Studio's save "
+                    "verifier. Your original save was not changed.")
         both = (f"{Path(str(receipt.get('savegame', 'SAVEGAME.DAT'))).name} and "
                 f"{Path(str(receipt.get('extra', 'EXTRA'))).name}")
         if receipt.get("kind") == "zip":
@@ -6317,8 +6386,10 @@ class RosterEditorPanel(QWidget):
         if self.document is None:
             return
         if self._source_kind == "save":
+            ps2_save = getattr(self.document.container, "platform", "") == "ps2"
             chosen = QFileDialog.getExistingDirectory(
-                self, "Choose a folder for the signed Xbox save copy (your original stays as it is)")
+                self, "Choose a folder for the PS2 save copy (your original stays as it is)" if ps2_save
+                else "Choose a folder for the signed Xbox save copy (your original stays as it is)")
         else:
             suggested = (suggest_copy_name(self._source_path, suffix="roster edited")
                          if self._source_path is not None and self._source_path.is_file() else "roster-edited.xiso.iso")

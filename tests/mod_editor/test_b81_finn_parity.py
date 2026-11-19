@@ -1444,13 +1444,16 @@ class FranchiseEditSpeedTests(unittest.TestCase):
             cap = page.save.salary_cap
             page.set_salary_cap(cap + 1000)                       # the first edit fills the encode cache
             timings = {}
-            for label, action in (("cap", lambda: page.set_salary_cap(cap + 2000)),
-                                  ("coach", lambda: page.set_coach_value(0, "overall", 71)),
-                                  ("game", lambda: page.edit_game(5, 0, minute=30))):
-                started = time.perf_counter()
-                self.assertTrue(action(), page.status_label.text())
-                timings[label] = time.perf_counter() - started
-            self.assertLess(max(timings.values()), 1.0, timings)
+            # the fast path never re-reads the roster (a whole-arena re-read was the 3 to 4 s); asserted directly,
+            # so a busy test machine cannot fail it, with a loose wall-clock bound beside it
+            with mock.patch.object(rr.RosterDocument, "adopt_body", side_effect=AssertionError("roster re-read")):
+                for label, action in (("cap", lambda: page.set_salary_cap(cap + 2000)),
+                                      ("coach", lambda: page.set_coach_value(0, "overall", 71)),
+                                      ("game", lambda: page.edit_game(5, 0, minute=30))):
+                    started = time.perf_counter()
+                    self.assertTrue(action(), page.status_label.text())
+                    timings[label] = time.perf_counter() - started
+            self.assertLess(max(timings.values()), 3.0, timings)
             self.assertEqual(page.save.salary_cap, cap + 2000)
             panel.undo()
             self.assertEqual(page.save.game(5, 0).minute, fs.FranchiseSave(rr.SaveContainer.load(
@@ -1995,6 +1998,170 @@ class SharedDecodeTests(unittest.TestCase):
         self.assertIs(again.encode(), raw)
         again.values["speed"] = 77
         self.assertEqual(rr.decode_record(again.encode())["speed"], 77)
+
+
+# --------------------------------------------------------------------------------------------- wave 3: PS2 rosters
+def _ps2_save(payload: bytes, name: str = "Test", kind: str = "ROS"):
+    from mod_editor.core import nfl2k5_ps2_rosters as ps2
+    save = ps2.save_lib.Ps2Save(directory=ps2.save_lib.SAVE_PREFIX + name)
+    save.files[save.payload_name] = bytes(payload)
+    save.files["TYPE"] = kind.encode("utf-16le") + b"\x00\x00"
+    save.files["icon.sys"] = bytes(964)
+    save.reseal()
+    return save
+
+
+def _ps2_roster_payload() -> bytes:
+    return synthetic_save_v0(synthetic_body(), suffix=b"")[0x2E0:]          # wrapper at 0, root at 0x40
+
+
+def _ps2_card(path: Path, saves) -> None:
+    """A FAT-backed, ECC-correct PS2 card image holding ``saves`` (1 KB clusters, as many FAT clusters as needed)."""
+
+    from mod_editor.core import nfl2k5_ps2_rosters as ps2
+    lib = ps2.save_lib
+    size, per_fat = 1024, 256
+    need = sum(-(-len(data) // size) for save in saves for data in save.files.values()) + 4 * len(saves) + 8
+    fats = -(-need // per_fat)
+    alloc = 2 + fats
+    data: list[bytearray] = []
+    fat = [0xFFFFFFFF] * (fats * per_fat)
+
+    def store(blob: bytes) -> int:
+        start = len(data)
+        for offset in range(0, max(len(blob), 1), size):
+            if offset:
+                fat[len(data) - 1] = 0x80000000 | len(data)
+            data.append(bytearray(blob[offset:offset + size].ljust(size, b"\0")))
+        fat[len(data) - 1] = 0xFFFFFFFF
+        return start
+
+    def entry(name: str, mode: int, length: int, first: int) -> bytes:
+        row = bytearray(512)
+        struct.pack_into("<II", row, 0, mode, length)
+        struct.pack_into("<I", row, 0x10, first)
+        row[0x40:0x40 + len(name)] = name.encode("ascii")
+        return bytes(row)
+
+    dirs = []
+    for save in saves:
+        rows = [entry(key, 0x8417, len(blob), store(blob)) for key, blob in save.files.items()]
+        dirs.append((save.directory, len(rows), store(b"".join(rows))))
+    root = store(entry(".", 0x8427, len(dirs) + 1, 0) + b"".join(entry(n, 0x8427, c, f) for n, c, f in dirs))
+    superblock = bytearray(size)
+    superblock[:27] = b"Sony PS2 Memory Card Format"
+    struct.pack_into("<H", superblock, 0x2A, 2)
+    struct.pack_into("<III", superblock, 0x34, alloc, len(data), root)
+    struct.pack_into("<32I", superblock, 0x50, 1, *([0xFFFFFFFF] * 31))
+    indirect = bytearray(struct.pack(f"<{per_fat}I", *[2 + i for i in range(fats)],
+                                     *([0xFFFFFFFF] * (per_fat - fats))))
+    clusters = [superblock, indirect] + [bytearray(struct.pack(f"<{per_fat}I", *fat[i * per_fat:(i + 1) * per_fat]))
+                                         for i in range(fats)] + data
+    with path.open("wb") as out:
+        for cluster in clusters:
+            for offset in (0, 512):
+                page = bytes(cluster[offset:offset + 512])
+                out.write(page + b"".join(lib.chunk_ecc(page[n:n + 128]) for n in range(0, 512, 128)) + bytes(4))
+
+
+class Ps2RostersTests(_PanelCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self._temp = tempfile.TemporaryDirectory(prefix="ps2-rosters-")
+        self.root = Path(self._temp.name)
+
+    def tearDown(self) -> None:
+        self._temp.cleanup()
+        super().tearDown()
+
+    def _edit(self, panel) -> rr.Player:
+        player = panel.document.team_players(0)[0]
+        panel.select_player(player)
+        panel.set_field(player, "speed", 91)
+        panel.document.set_name(player, "last", "Psotwo")
+        return player
+
+    def test_a_psu_opens_on_every_page_and_writes_a_verified_copy(self) -> None:
+        from mod_editor.core import nfl2k5_ps2_rosters as ps2
+        source = self.root / "source.psu"
+        ps2.save_lib.write_psu(_ps2_save(_ps2_roster_payload()), source)
+        original = source.read_bytes()
+        panel = self.panel
+        self.assertTrue(panel.load_save(source), panel.status_label.text())
+        self.assertEqual(panel.write_button.text(), "Save PS2 save copy…")
+        self.assertIn("PCSX2", panel.status_label.text())
+        player = self._edit(panel)
+        receipt = panel.write_copy_to(panel.save_copy_destination(self.root))
+        self.assertEqual((receipt["platform"], receipt["kind"], receipt["verified"], receipt["sealed"]),
+                         ("ps2", "psu", True, True))
+        self.assertTrue(receipt["target"].endswith("source (edited).psu"))
+        self.assertIn("PS2 save copy written", panel.save_copy_message(receipt))
+        back = ps2.Ps2SaveContainer.load(receipt["target"])
+        self.assertTrue(back.verified)
+        twin = back.document().by_offset[player.offset]
+        self.assertEqual((twin.record.values["speed"], twin.last), (91, "Psotwo"))
+        self.assertEqual(source.read_bytes(), original)
+        with self.assertRaisesRegex(rr.RosterRecordError, "exists"):
+            back.write(receipt["target"], back.savegame)
+
+    def test_a_card_copy_keeps_the_other_saves_and_verifies_every_page(self) -> None:
+        from mod_editor.core import nfl2k5_ps2_rosters as ps2
+        card = self.root / "card.ps2"
+        neighbour = ps2.save_lib._synthetic_save()
+        _ps2_card(card, [neighbour, _ps2_save(_ps2_roster_payload(), "Mine")])
+        self.assertEqual(ps2.card_saves(card), [neighbour.directory, ps2.save_lib.SAVE_PREFIX + "Mine"])
+        panel = self.panel
+        self.assertFalse(panel.load_save(card))                          # two roster saves: one must be chosen
+        self.assertIn("choose one", panel.status_label.text())
+        self.assertTrue(panel.load_save(card, directory=ps2.save_lib.SAVE_PREFIX + "Mine"), panel.status_label.text())
+        player = self._edit(panel)
+        receipt = panel.write_copy_to(panel.save_copy_destination(self.root))
+        self.assertEqual((receipt["kind"], receipt["other_saves_untouched"]), ("card", [neighbour.directory]))
+        self.assertGreater(receipt["ecc_pages"], 1000)
+        written = ps2.save_lib.read_memcard(Path(receipt["target"]))
+        self.assertEqual({s.directory: s.files for s in written}[neighbour.directory], neighbour.files)
+        mine = ps2.Ps2SaveContainer.load(receipt["target"], directory=ps2.save_lib.SAVE_PREFIX + "Mine")
+        self.assertEqual(mine.document().by_offset[player.offset].record.values["speed"], 91)
+
+    def test_franchise_kinds_and_bad_checksums_refuse(self) -> None:
+        from mod_editor.core import nfl2k5_ps2_rosters as ps2
+        franchise = self.root / "fran.psu"
+        ps2.save_lib.write_psu(_ps2_save(_ps2_roster_payload(), "Fran", "FXG"), franchise)
+        self.assertFalse(self.panel.load_save(franchise))
+        self.assertIn("PS2 franchise save", self.panel.status_label.text())
+        broken = _ps2_save(_ps2_roster_payload(), "Bad")
+        broken.files["EXTRA"] = b"\0\0\0\0"
+        ps2.save_lib.write_psu(broken, self.root / "bad.psu")
+        self.assertFalse(self.panel.load_save(self.root / "bad.psu"))
+        self.assertIn("checksum does not match", self.panel.status_label.text())
+
+
+@unittest.skipUnless(SOFTDRINK_ROSTER_SAVE.is_file(), f"SOFTDRINK roster save absent: {SOFTDRINK_ROSTER_SAVE}")
+class Ps2RostersLargeArenaTests(unittest.TestCase):
+    """Codec scale only: the SOFTDRINK Xbox roster arena (4,096 players) inside a PS2 container. It says nothing about
+    the PS2 game, which has no SOFTDRINK build."""
+
+    def test_team_paste_depth_and_specialists_write_through_the_ps2_writer(self) -> None:
+        from mod_editor.core import nfl2k5_ps2_rosters as ps2, nfl2k5_team_transfer as tt
+        payload = rr.SaveContainer.load(SOFTDRINK_ROSTER_SAVE).savegame
+        application = _app()
+        panel = RosterEditorPanel()
+        with tempfile.TemporaryDirectory(prefix="ps2-large-") as folder:
+            try:
+                source = Path(folder) / "big.psu"
+                ps2.save_lib.write_psu(_ps2_save(payload, "Big"), source)
+                self.assertTrue(panel.load_save(source), panel.status_label.text())
+                package = panel.team_package(0)
+                ok, message = panel.paste_team(14, package)
+                self.assertTrue(ok, message)
+                receipt = panel.write_copy_to(panel.save_copy_destination(folder))
+                self.assertTrue(receipt["verified"])
+                back = ps2.Ps2SaveContainer.load(receipt["target"]).document()
+                self.assertEqual([(e["first"], e["last"]) for e in tt.team_package(back, 14)["players"]],
+                                 [(e["first"], e["last"]) for e in package["players"]])
+            finally:
+                panel.deleteLater()
+                application.processEvents()
 
 
 if __name__ == "__main__":

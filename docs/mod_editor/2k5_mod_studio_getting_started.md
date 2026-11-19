@@ -1300,6 +1300,13 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    where the meaning is the same (a retail OLB becomes LB on a one-pool roster, birth years are re-encoded for the
    season, a stadium or playbook is matched by its id or key) and refused with the reason where it is not. The
    preview lists every conversion before you paste; one undo takes it all back.
+
+   **Open PS2 save…** opens a PS2 roster save (SLUS-20919: a `.psu`, an extracted `BASLUS-20919…` folder or one
+   save on a `.ps2` memory card) on every page described here. **Save PS2 save copy…** writes a new `.psu`, or a
+   copy of the card when the save came from one, with the PS2 checksum; the Studio's independent verifier rereads
+   the copy (same files, checksum, every roster table in place, and on a card every page's error check and every
+   other save unchanged) before it is published. PS2 franchise saves are not opened here yet, and how the PS2 game
+   reads the edits has not been checked in PCSX2.
 4. **Right**: the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
    Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
    ← → nudge by one, ↑ ↓ jump to the next card. Enum cards are dropdowns built from the tables lifted
@@ -1441,6 +1448,7 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Team > Options (stadium, playbook, default jersey, team play-by-play, defensive front) | **Team settings…** (Xbox saves) |
 | Clear Stats | Right-click: **Clear his career stats…** or **Clear career stats of all … shown…** (Xbox saves; a safe form, see above) |
 | Team menu: Copy Team, Paste Team, Export Team, Import Team | Right-click a club: the same four, with a preview of what converts or refuses |
+| Open a PS2 save (`.max`, `.psu`) | **Open PS2 save…**: `.psu`, a `BASLUS-20919` folder or a `.ps2` card (roster saves; `.max` not yet) |
 | The player grid (every rating as a column, click to sort) | **Columns ▾**, then click a heading |
 | Copy Player (Ctrl+C), Paste Player (Ctrl+V), Paste Attributes Only (Ctrl+Alt+A) | Same keys, or **Copy player** and **Paste ▾** |
 | Tools > Global Editor | **Global Attribute Editor…** |
