@@ -1,69 +1,19 @@
 """Run the three hosted OS matrices with a fresh interpreter and on-disk output per file."""
 from __future__ import annotations
 
-import ast
 import argparse
-import fnmatch
 import hashlib
 import json
 import os
 from pathlib import Path
-import re
 import subprocess
 import sys
 import tempfile
 import time
 
-from local_windows_ci import EVIDENCE, ISOLATED, plan, skip_reason, test_count
-
-
-PRIVATE_INPUTS = json.loads(Path(__file__).with_name("hosted_private_test_inputs.json").read_text(encoding="utf-8"))
-
-
-def skip_details(output: str):
-    """Separate unittest class/module skips (uncounted) from skipped test cases."""
-    fixtures = {}
-    reasons = set()
-    for line in output.splitlines():
-        if " ... skipped " not in line:
-            continue
-        label, value = line.rsplit(" ... skipped ", 1)
-        try:
-            reason = ast.literal_eval(value)
-        except (ValueError, SyntaxError):
-            continue
-        if isinstance(reason, str):
-            reasons.add(reason)
-            if re.fullmatch(r"(?:setUp|tearDown)(?:Class|Module) \([^)]+\)", label):
-                fixtures[label] = reason
-    unittest_results = re.findall(r"^(?:OK|FAILED|NO TESTS RAN)(?: \(([^)\n]*)\))?$", output, re.M)
-    if unittest_results:
-        skipped = re.search(r"\bskipped=(\d+)\b", unittest_results[-1])
-        # A skipped subtest also appears in unittest's outcome total while its
-        # enclosing test remains one executed case.
-        subtests = len(re.findall(r"^  \S.* \.\.\. skipped (?:'|\")", output, re.M))
-        count = int(skipped[1]) if skipped else 0
-        return max(0, count - len(fixtures) - subtests), fixtures, reasons, count
-    for line in reversed(output.splitlines()):
-        if re.search(r"\bin [0-9]+(?:\.[0-9]+)?s\b", line):
-            skipped = re.search(r"\b(\d+) skipped\b", line)
-            if skipped:
-                return int(skipped[1]), fixtures, reasons, 0
-    return 0, fixtures, reasons, 0
-
-
-def missing_private_inputs(name, fixtures, skipped_count):
-    expected = PRIVATE_INPUTS["files"].get(name)
-    if not expected or len(fixtures) != len(expected) or len(fixtures) != skipped_count:
-        return None
-    labels = set()
-    for cls, key in expected.items():
-        reason = fixtures.get(f"setUpClass (__main__.{cls})", "").replace("\\", "/")
-        requirement = PRIVATE_INPUTS["requirements"][key]
-        if not any(fnmatch.fnmatchcase(reason, pattern) for pattern in requirement["messages"]):
-            return None
-        labels.add(requirement["description"])
-    return ", ".join(sorted(labels))
+from local_windows_ci import (
+    EVIDENCE, ISOLATED, PRIVATE_INPUTS, fully_skipped_reason, plan, skip_details, skip_reason, test_count,
+)
 
 
 def write_job_summary(totals, groups):
@@ -189,20 +139,20 @@ def run_suite(repo: Path, timer: str, *, seconds: int = 420, shard: int | None =
             log = output.read_text(encoding="utf-8", errors="replace")
             count = test_count(log)
             elapsed = time.monotonic() - started
-            skipped_cases, fixtures, reasons, skipped_outcomes = skip_details(log)
+            details = skip_details(log)
+            skipped_cases, fixtures, _, _ = details
             if count is not None:
                 tests += count
                 case_skips += min(count, skipped_cases)
-            if rc == 0 and count == 0:
-                private = missing_private_inputs(path.name, fixtures, skipped_outcomes)
-                if private:
-                    private_skips[path.name] = private
-                    print(f"SKIP  {path.name}  (0 cases, private input required: {private})", flush=True)
-                    continue
-            if rc == 0 and count and skipped_cases >= count:
-                explanation = ", ".join(sorted(reasons)) or f"framework reported {skipped_cases} skipped cases"
-                all_case_skips[path.name] = explanation
-                print(f"SKIP  {path.name}  (all {count} collected cases skipped: {explanation})", flush=True)
+            reason = fully_skipped_reason(path.name, count, details) if rc == 0 else None
+            if reason:
+                if count == 0:
+                    private_skips[path.name] = reason
+                    label = "0 cases, private input required"
+                else:
+                    all_case_skips[path.name] = reason
+                    label = f"all {count} collected cases skipped"
+                print(f"SKIP  {path.name}  ({label}: {reason})", flush=True)
                 continue
             if rc == 0 and count:
                 passed += 1

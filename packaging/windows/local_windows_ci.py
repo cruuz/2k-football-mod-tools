@@ -8,6 +8,7 @@ No product APIs, file locking, or test assertions are patched.
 from __future__ import annotations
 
 import argparse
+import ast
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
@@ -52,6 +53,7 @@ RELEASE_ARCHIVES = {
         "8e4fe2ac2b0adc521dd2606e0cf5da67d357220e1ecc9904600d831c024bc8b7",
 }
 CLASSIFICATIONS = json.loads(Path(__file__).with_name("local_windows_ci_failures.json").read_text(encoding="utf-8"))
+PRIVATE_INPUTS = json.loads(Path(__file__).with_name("hosted_private_test_inputs.json").read_text(encoding="utf-8"))
 _cancelled = threading.Event()
 
 # This is loaded by *every* child python.exe through the private ._pth file.
@@ -97,7 +99,7 @@ BOOTSTRAP = r'''
 import os, pathlib, runpy, sys
 script, pidfile = sys.argv[1:]
 pathlib.Path(pidfile).write_text(str(os.getpid()), encoding="ascii")
-sys.argv = [script]
+sys.argv = [script, "-v"]
 sys.path[0] = str(pathlib.Path(script).resolve().parent)
 runpy.run_path(script, run_name="__main__")
 '''
@@ -437,6 +439,61 @@ def test_count(output: str) -> int | None:
     return None
 
 
+def skip_details(output: str):
+    """Separate unittest class/module skips (uncounted) from skipped test cases."""
+    fixtures = {}
+    reasons = set()
+    for line in output.splitlines():
+        if " ... skipped " not in line:
+            continue
+        label, value = line.rsplit(" ... skipped ", 1)
+        try:
+            reason = ast.literal_eval(value)
+        except (ValueError, SyntaxError):
+            continue
+        if isinstance(reason, str):
+            reasons.add(reason)
+            if re.fullmatch(r"(?:setUp|tearDown)(?:Class|Module) \([^)]+\)", label):
+                fixtures[label] = reason
+    unittest_results = re.findall(r"^(?:OK|FAILED|NO TESTS RAN)(?: \(([^)\n]*)\))?$", output, re.M)
+    if unittest_results:
+        skipped = re.search(r"\bskipped=(\d+)\b", unittest_results[-1])
+        # A skipped subtest also appears in unittest's outcome total while its
+        # enclosing test remains one executed case.
+        subtests = len(re.findall(r"^  \S.* \.\.\. skipped (?:'|\")", output, re.M))
+        count = int(skipped[1]) if skipped else 0
+        return max(0, count - len(fixtures) - subtests), fixtures, reasons, count
+    for line in reversed(output.splitlines()):
+        if re.search(r"\bin [0-9]+(?:\.[0-9]+)?s\b", line):
+            skipped = re.search(r"\b(\d+) skipped\b", line)
+            if skipped:
+                return int(skipped[1]), fixtures, reasons, 0
+    return 0, fixtures, reasons, 0
+
+
+def missing_private_inputs(name, fixtures, skipped_count):
+    expected = PRIVATE_INPUTS["files"].get(name)
+    if not expected or len(fixtures) != len(expected) or len(fixtures) != skipped_count:
+        return None
+    labels = set()
+    for cls, key in expected.items():
+        reason = fixtures.get(f"setUpClass (__main__.{cls})", "").replace("\\", "/")
+        requirement = PRIVATE_INPUTS["requirements"][key]
+        if not any(fnmatch.fnmatchcase(reason, pattern) for pattern in requirement["messages"]):
+            return None
+        labels.add(requirement["description"])
+    return ", ".join(sorted(labels))
+
+
+def fully_skipped_reason(name: str, count: int | None, details) -> str | None:
+    skipped, fixtures, reasons, skipped_outcomes = details
+    if count == 0:
+        return missing_private_inputs(name, fixtures, skipped_outcomes)
+    if count is not None and skipped >= count:
+        return ", ".join(sorted(reasons)) or f"framework reported {skipped} skipped cases"
+    return None
+
+
 @dataclass
 class Result:
     name: str
@@ -448,7 +505,7 @@ class Result:
 def summary(results: list[Result]) -> str:
     skipped = sum(r.skipped is not None for r in results)
     failed = sum(r.rc != 0 and r.skipped is None for r in results)
-    total = sum((test_count(r.output) or 0) for r in results if r.skipped is None)
+    total = sum((test_count(r.output) or 0) for r in results if r.skipped is None or r.rc == 0)
     return (f"SUMMARY: files={len(results)} passed={len(results) - failed - skipped} "
             f"failed={failed} skipped={skipped} tests={total}")
 
@@ -679,12 +736,19 @@ def run_file(test: Path, repo: Path, repo_windows: str, runtime: Path,
     finally:
         pidfile.unlink(missing_ok=True)
     output = log.read_text(encoding="utf-8", errors="replace")
-    if rc == 0 and test_count(output) is None:
-        rc = 1
-        message = "\nNo test runner summary. Run this test file directly and check its entry point.\n"
-        output += message
-        with log.open("a", encoding="utf-8") as stream:
-            stream.write(message)
+    if rc == 0:
+        count = test_count(output)
+        reason = fully_skipped_reason(test.name, count, skip_details(output))
+        if reason:
+            label = "0 cases, private input required" if count == 0 else f"all {count} collected cases skipped"
+            return Result(test.name, rc, output, f"{label}: {reason}")
+        if not count:
+            rc = 1
+            message = ("Zero tests ran without the declared private fixture skips." if count == 0
+                       else "No test runner summary. Run this test file directly and check its entry point.")
+            output += f"\n{message}\n"
+            with log.open("a", encoding="utf-8") as stream:
+                stream.write(f"\n{message}\n")
     return Result(test.name, rc, output, wine_gap_reason(test.name, rc, output))
 
 
@@ -693,7 +757,9 @@ def report_result(result: Result) -> None:
         print(f"SKIP {result.name} ({result.skipped})", flush=True)
     elif result.rc == 0:
         n = test_count(result.output)
-        print(f"PASS  {result.name}  ({n if n is not None else '?'} tests)", flush=True)
+        if not n:
+            raise ValueError(f"{result.name} has no positive test count for a pass")
+        print(f"PASS  {result.name}  ({n} tests)", flush=True)
     else:
         print(f"FAIL  {result.name}  (rc={result.rc})", flush=True)
         print("\n".join(result.output.splitlines()[-40:]))
@@ -718,7 +784,6 @@ def main(argv: list[str] | None = None) -> int:
             if args.changed:
                 print("No affected test files.")
                 print(summary([]))
-                print("ALL TEST FILES PASSED")
                 return 0
             raise ValueError("no test files found under tests/mod_editor/test_*.py")
         for command in ("wine", "winepath", "wineboot"):
@@ -780,7 +845,8 @@ def main(argv: list[str] | None = None) -> int:
             print("=" * 70)
             print(summary(results))
             failed = [r.name for r in results if r.rc and r.skipped is None]
-            print("FAILED FILES: " + " ".join(failed) if failed else "ALL TEST FILES PASSED")
+            if failed:
+                print("FAILED FILES:", *failed)
             print(f"WALL CLOCK: {time.monotonic() - started:.3f}s", flush=True)
             return int(bool(failed))
     except (OSError, ValueError, RuntimeError, tarfile.TarError, subprocess.SubprocessError) as error:

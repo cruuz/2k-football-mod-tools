@@ -207,10 +207,12 @@ class OutputTests(unittest.TestCase):
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
             runner.report_result(runner.Result("bad.py", 1, "first line\n" + "tail\n" * 40))
-            runner.report_result(runner.Result("good.py"))
+            runner.report_result(runner.Result("good.py", output="Ran 1 test\nOK"))
+            with self.assertRaisesRegex(ValueError, "no positive test count"):
+                runner.report_result(runner.Result("invalid.py"))
         self.assertNotIn("first line", output.getvalue())
         self.assertIn("FAIL  bad.py  (rc=1)", output.getvalue())
-        self.assertIn("PASS  good.py  (? tests)", output.getvalue())
+        self.assertIn("PASS  good.py  (1 tests)", output.getvalue())
 
 
 class HostedCoverageTests(unittest.TestCase):
@@ -261,6 +263,43 @@ class HostedCoverageTests(unittest.TestCase):
         rc, log, report = self.exercise()
         self.assertEqual(rc, 1, log)
         self.assertIn("`test_unlisted.py`", report)
+
+    def test_local_windows_runner_uses_the_same_skip_rules(self):
+        def execute(command, environment, cwd, log, timeout, pidfile):
+            with log.open("wb") as stream:
+                return subprocess.run([sys.executable, str(self.tests / log.name.removesuffix(".log")), "-v"],
+                                      stdout=stream, stderr=subprocess.STDOUT).returncode
+
+        skipped_case = """class Optional(unittest.TestCase):
+    @unittest.skip('no optional feature')
+    def test_optional(self):
+        self.fail()
+"""
+        self.write(self.name, self.private_class)
+        self.write("test_unlisted.py", self.private_class)
+        self.write("test_optional.py", skipped_case)
+        self.write("test_mixed.py", skipped_case + """
+class Public(unittest.TestCase):
+    def test_public(self):
+        self.assertTrue(True)
+""")
+        with patch.object(runner, "run_process", side_effect=execute):
+            results = [runner.run_file(path, self.root, "Z:", self.root, {}, self.root, 30, "Z:", False)
+                       for path in sorted(self.tests.glob("test_*.py"))]
+        by_name = {result.name: result for result in results}
+        self.assertIn("private input required", by_name[self.name].skipped)
+        self.assertEqual(by_name["test_optional.py"].skipped, "all 1 collected cases skipped: no optional feature")
+        self.assertEqual(by_name["test_unlisted.py"].rc, 1)
+        self.assertIn("Zero tests ran", by_name["test_unlisted.py"].output)
+        self.assertIsNone(by_name["test_mixed.py"].skipped)
+        self.assertEqual(runner.summary(results), "SUMMARY: files=4 passed=1 failed=1 skipped=2 tests=3")
+
+    @unittest.skipUnless(sys.platform == "linux", "the Wine runner starts on Linux")
+    def test_empty_changed_selection_reports_zero_passes(self):
+        self.write("test_other.py", self.private_class)
+        with patch.object(runner, "changed_paths", return_value=set()), contextlib.redirect_stdout(io.StringIO()) as log:
+            self.assertEqual(runner.main(["--repo", str(self.root), "--changed"]), 0)
+        self.assertEqual(log.getvalue().splitlines()[-1], "SUMMARY: files=0 passed=0 failed=0 skipped=0 tests=0")
 
     def test_collected_case_skips_are_distinct_from_zero_and_from_executed_cases(self):
         self.write(self.name, self.private_class + """
