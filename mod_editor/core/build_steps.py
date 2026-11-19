@@ -185,6 +185,7 @@ STEP_LABELS: dict[str, str] = {
     "formation_art_spacing": "the play art icon spacing",
     "force_out": "Modern sideline catches",
     "practice_injuries": "Franchise practice injuries",
+    "backfield_cards": "the starting backfield cards",
     "sportscenter_lineup": "SportsCenter highlight lineups",
     "ball_carriers": "CPU ball carriers",
     "star_retention": "CPU clubs keep their stars",

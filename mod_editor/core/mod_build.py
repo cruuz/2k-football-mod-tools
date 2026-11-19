@@ -886,6 +886,7 @@ class BuildPlan:
     # no console_memory key, so it is byte for byte what it was before the option existed.
     console_memory: int = 128
     stock_age_policy: str = "preserve_age"
+    backfield_cards: bool = False
 
     def wants_xbe_patch(self) -> bool:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
@@ -899,7 +900,7 @@ class BuildPlan:
                 or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star or self.star_career
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page
-                or self.sportscenter_lineup or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
+                or self.sportscenter_lineup or self.backfield_cards or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.contract_college_guard or self.coach_career_fix or self.history_pool
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism or self.coach_carousel or self.history_screen
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
@@ -1153,6 +1154,7 @@ PRESETS["softdrink_experimental"]["alien_prospect"] = True
 # b778-sc2: repair featured-player identity lookup in every SOFTDRINK preset.
 for _preset in PRESETS.values():
     _preset["sportscenter_lineup"] = True
+    _preset["backfield_cards"] = True
 # b778-dr1: the broadcast-paced franchise draft, on with the other SOFTDRINK franchise features (Advanced, Experimental).
 for _preset in PRESETS.values():
     _preset["franchise_draft_clock"] = False
@@ -1404,6 +1406,8 @@ def apply_preset(plan: BuildPlan, name: str) -> BuildPlan:
     values = dict(asdict(plan))
     values["commentary"] = list(plan.commentary)
     values.update(PRESETS[name])
+    if plan.console_memory == 64:
+        values["backfield_cards"] = False
     values["modern_naming"] = tt.modern_naming_patch.preset_enabled(name.removeprefix("softdrink_"))
     if not values.get("name"):
         values["name"] = PRESET_TITLES[name]
@@ -3124,6 +3128,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("speed_threshold", "nfl2k5_speed_threshold"),  # b780-cv5
                                ("scramble_blocking", "nfl2k5_scramble_blocking"),  # b780-cv7
                                ("sportscenter_lineup", "nfl2k5_sportscenter_lineup"),
+                               ("backfield_cards", "nfl2k5_backfield_cards"),
                                ("franchise_draft_clock", "nfl2k5_draft_clock"),  # b778-dr1
                                ("weekly_progression", "nfl2k5_weekly_progression"),  # b778-pg1
                                ("player_progress", "nfl2k5_player_progress_screen"),  # b778-pg2
@@ -3419,6 +3424,8 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     out["cpu_runner_vision"] = runner_vision.status(_xbe_bytes(source)) if runner_vision is not None else "unavailable"
     return_coverage = _core_module("nfl2k5_return_coverage")  # b778-kr1
     out["return_coverage"] = return_coverage.status(_xbe_bytes(source)) if return_coverage is not None else "unavailable"
+    cards = _core_module("nfl2k5_backfield_cards")
+    out["backfield_cards"] = cards.status(_xbe_bytes(source)) if cards is not None else "unavailable"
     sportscenter = _core_module("nfl2k5_sportscenter_lineup")
     out["sportscenter_lineup"] = sportscenter.status(_xbe_bytes(source)) if sportscenter is not None else "unavailable"
     draft_clock = _core_module("nfl2k5_draft_clock")  # b778-dr1
@@ -5774,6 +5781,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Speed separation must be a whole number from 0 to 100.")
     if type(plan.scramble_blocking) is not bool:  # b780-cv7
         raise ValueError("Receivers block for a scrambling QB must be Off or On.")
+    if type(plan.backfield_cards) is not bool:
+        raise ValueError("Starting backfield cards must be Off or On.")
     if type(plan.sportscenter_lineup) is not bool:
         raise ValueError("SportsCenter highlight lineups must be Off or On.")
     if type(plan.franchise_draft_clock) is not bool:  # b778-dr1
@@ -6600,6 +6609,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _speed_threshold_preflight(plan, source, progress)
     if plan.scramble_blocking:  # b780-cv7: before any write
         _scramble_blocking_preflight(source, progress)
+    if plan.backfield_cards:
+        cards = _core_module("nfl2k5_backfield_cards")
+        if cards is None or cards.status(_xbe_bytes(source)) not in ("retail", "applied"):
+            raise ValueError("Starting backfield cards needs a supported Coach Matchup player lineup on the source.")
     if plan.sportscenter_lineup:
         _sportscenter_lineup_preflight(source, progress)
     if plan.franchise_draft_clock:  # b778-dr1: like fo1, before any write
@@ -6764,7 +6777,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
-               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, sportscenter_lineup=False).wants_xbe_patch() or retire_holder or plan.edge_rename or complete_offense_packs or plan.contract_college_guard:
+               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, sportscenter_lineup=False, backfield_cards=False).wants_xbe_patch() or retire_holder or plan.edge_rename or complete_offense_packs or plan.contract_college_guard:
         _step("xbe")
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
@@ -8608,6 +8621,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["steps"].append({"step": "offset_toss_flip", **toss_receipt})
         receipt["result"]["offset_toss_flip"] = "applied"
 
+    if plan.backfield_cards:
+        _step("backfield_cards")
+        progress("Updating the starting backfield cards", 0, 0)
+        native, card_receipt = cards.apply(_xbe_bytes(target))
+        if not card_receipt["already_applied"]:
+            _write_xbe_bytes(target, native)
+        receipt["steps"].append({"step": "backfield_cards", **card_receipt})
+        receipt["result"]["backfield_cards"] = "applied"
+
     if tt.is_disc_image(target):
         _step("disc_compaction")
         # DESIGN: all growth writers have finished. Compact only this disposable
@@ -8623,6 +8645,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         # build() records the final image digest in its existing single hash pass.
         receipt["result"].pop("image_sha256", None)
     _step("final_checks")
+    if plan.backfield_cards and cards.status(_xbe_bytes(target)) != "applied":
+        raise ValueError("Starting backfield cards did not survive the final archive pass")
     if receipt["result"].get("offset_toss_flip") == "applied" and nfl2k5_offset_toss.status(_xbe_bytes(target)) != "applied":
         raise ValueError("The offset toss control did not survive the final archive pass")
     # Publication gate: inspect the actual finished archive and executable,

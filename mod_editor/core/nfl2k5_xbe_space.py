@@ -794,6 +794,17 @@ LATE_OWNERS += ("nfl2k5_rookie_faces_hair",)  # b780 GEN1 Q81: rookie hair style
 # b780-int: the hair owner stays after lineup_roles, intro_autoskip and injured_reserve: all are reserved by the first space pass, the hair owner
 # is appended at the rookie faces image step, so an earlier place would move them and extend_scaleout refuses.
 LATE_OWNERS += ("nfl2k5_offset_toss",)  # Installed after every other owner, including the rookie hair pass.
+# These standard-edition slots were witnessed together in the Xbox. Keeping the vacant gadget
+# slots ahead of Coach Matchup also permits a later in-place install on an existing disc.
+GADGET_OWNER = "nfl2k5_gadget_proof"
+GADGET_REQUESTS = ((GADGET_OWNER, "code", 2048, 16), (GADGET_OWNER, "read_only", 12800, 16))
+BACKFIELD_REQUEST = ("nfl2k5_backfield_cards", "code", 176, 16)
+GADGET_CODE_VA = 0x151F680
+BACKFIELD_VA = 0x1523080
+LINEUP_SLOT_VA = {GADGET_REQUESTS[0][:2]: GADGET_CODE_VA,
+                  GADGET_REQUESTS[1][:2]: GADGET_CODE_VA + GADGET_REQUESTS[0][2],
+                  BACKFIELD_REQUEST[:2]: BACKFIELD_VA}
+LATE_OWNERS += (GADGET_OWNER, BACKFIELD_REQUEST[0])
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -1032,6 +1043,11 @@ def _scale_allocations(requests):
     # their protected manifest extents. Existing request sets pack identically.
     requests = sorted(_requests(requests), key=lambda r: (r[0] == 'nfl2k5_roster_arena_growth', r))
     original_requests = tuple(requests)
+    gadget = tuple(r for r in requests if r[0] == GADGET_OWNER)
+    if gadget:
+        _require(gadget == GADGET_REQUESTS, "incomplete or foreign gadget allocation")
+        _require(all(r == BACKFIELD_REQUEST for r in requests if r[0] == BACKFIELD_REQUEST[0]),
+                 "foreign Backfield card allocation")
     _directory_code_size(requests)  # Validate every named slot before placement.
     requests = [r for r in requests if r[0] not in DIRECTORY_CODE_OWNERS]
     # b76-k1: the K128 owner is placed after every other owner, the promoted MyCareer code and the grown
@@ -1064,10 +1080,16 @@ def _scale_allocations(requests):
 
     def to_pool(owner, kind, size, align):
         at = (pool[0] + align - 1) & -align
+        if gadget:
+            fixed = LINEUP_SLOT_VA.get((owner, kind))
+            if fixed is not None:
+                at = fixed - POOL_VA
+            elif POOL_VA + at < BACKFIELD_VA + BACKFIELD_REQUEST[2] and POOL_VA + at + size > GADGET_CODE_VA:
+                at = (BACKFIELD_VA + BACKFIELD_REQUEST[2] - POOL_VA + align - 1) & -align
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))
-        pool[0] = at + size
+        pool[0] = max(pool[0], at + size)
 
     for owner, kind, size, align in requests:
         if owner in LEGACY_OWNERS:
@@ -1126,6 +1148,9 @@ def _scale_allocations(requests):
             # it fit in packs exactly as before; only a plan that used to be refused here changes.
             to_pool(owner, kind, size, align)
     for owner, kind, size, align in late:
+        if gadget and (owner, kind) in LINEUP_SLOT_VA:
+            to_pool(owner, kind, size, align)
+            continue
         for r in regions:
             if r["kind"] != kind:
                 continue

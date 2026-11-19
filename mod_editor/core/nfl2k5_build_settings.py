@@ -82,6 +82,7 @@ FEATURE_KEYS += ("module_loader",)  # b778-xs1: on-demand Career Home (module lo
 FEATURE_KEYS += ("star_career",)  # b778-st2: rookie stars and stars earned/lost over a career, late executable owner
 FEATURE_KEYS += ("rookie_faces",)  # b778-rh1: new draft headshots matched to skin tone, build and name (image only)
 FEATURE_KEYS += ("alien_prospect",)  # b778-ee1: the once-in-a-century gray alien prospect (needs rookie faces)
+FEATURE_KEYS += ("backfield_cards",)
 FEATURE_KEYS += ("sportscenter_lineup",)  # b778-sc2: featured-player identity lookup, no allocation
 FEATURE_KEYS += ("franchise_draft_clock",)  # b778-dr1: broadcast-paced franchise draft, late executable owner
 FEATURE_KEYS += ("weekly_progression",)  # b778-pg1: franchise weekly progression, late executable owner

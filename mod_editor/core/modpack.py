@@ -955,8 +955,9 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
                                      nfl2k5_edge_rename, nfl2k5_kick_rules, nfl2k5_modern_positions,
                                      nfl2k5_position_pools, nfl2k5_progression, nfl2k5_returner_fix,
                                      nfl2k5_season_length, nfl2k5_widescreen, nfl2k5_overtime, nfl2k5_seven_on_seven,
-                                     nfl2k5_depth_chart_rows)
-        for label, module in (("depth_chart_rows", nfl2k5_depth_chart_rows),
+                                     nfl2k5_backfield_cards, nfl2k5_depth_chart_rows)
+        for label, module in (("backfield_cards", nfl2k5_backfield_cards),
+                              ("depth_chart_rows", nfl2k5_depth_chart_rows),
                               ("catch_slider", nfl2k5_catch_slider),
                               ("accel_ramp", nfl2k5_accel_ramp),
                               ("draft_ai", nfl2k5_draft_ai),
@@ -1072,6 +1073,8 @@ def describe_operation(operation: Mapping[str, Any]) -> str:
         if logical and operation.get("music_policy"):
             text += " Apply the selected music policies."
         return text + " Experimental, not yet tested in game."
+    if op == "backfield_cards":
+        return "Show the starting backfield on Coach Matchup"
     if op == "depth_chart_rows":
         return "SPECIAL depth-chart tab (expanded read-only XBE storage): " + ("on" if operation.get("enabled") else str(operation.get("status", "off")))
     if op == "throw_tuning":

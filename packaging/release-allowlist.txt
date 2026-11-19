@@ -934,6 +934,7 @@ tests/mod_editor/test_b776_pb1_offense.py
 mod_editor/core/nfl2k5_play_intents.py
 mod_editor/core/nfl2k5_playbook_pack.py
 mod_editor/core/nfl2k5_offset_toss.py
+mod_editor/core/nfl2k5_backfield_cards.py
 mod_editor/core/nfl2k5_play_scoring.py
 mod_editor/core/nfl2k5_play_scoring_pins.json
 mod_editor/core/nfl2k5_screen_authored_pins.py
@@ -3971,6 +3972,7 @@ tests/mod_editor/test_b778_sd3_digits.py
 tests/mod_editor/test_b778_ai4_cpu_clock.py
 tests/mod_editor/test_b778_ai6_late_fourth.py
 tests/mod_editor/test_nfl2k5_sportscenter_lineup.py
+tests/mod_editor/test_nfl2k5_backfield_cards.py
 tests/mod_editor/test_nfl2k5_draft_clock.py
 tests/mod_editor/test_nfl2k5_weekly_progression.py
 tests/mod_editor/test_nfl2k5_player_progress_screen.py
