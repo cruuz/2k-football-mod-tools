@@ -122,6 +122,173 @@ class XboxSaveCopyOnVolumesWithoutAtomicFolderRename(unittest.TestCase):
                                  sliders={"Injury": 0.5})
         self.assertTrue(target.is_file())
 
+    def test_final_readback_failure_rolls_back_each_new_folder_route_and_can_retry(self) -> None:
+        publish = platform_compat.publish_no_replace
+        source = {file.name: file.read_bytes() for file in self.save.parent.iterdir()}
+        for fallback in (False, True):
+            with self.subTest(fallback=fallback):
+                target = self.save.parent.parent / str(fallback) / "copy" / "SAVEGAME.DAT"
+                extra = target.with_name("EXTRA")
+                def publish_files(staged, destination, **kwargs):
+                    if fallback and kwargs.get("is_directory"):
+                        raise platform_compat.NoReplacePublishUnavailable("folder rename unavailable")
+                    return publish(staged, destination, **kwargs)
+                with patch.object(platform_compat, "publish_no_replace", side_effect=publish_files):
+                    with patch.object(saver, "_verify_published", side_effect=OSError("readback failed")), \
+                         self.assertRaisesRegex(OSError, "readback failed"):
+                        saver.edit_save_file(self.save, target, extra, xbe_path=self.xbe, sliders={"Injury": 0.5})
+                    self.assertFalse(target.parent.parent.exists())
+                    saver.edit_save_file(self.save, target, extra, xbe_path=self.xbe, sliders={"Injury": 0.5})
+                key = saver.derive_sig_key(self.xbe.read_bytes())
+                self.assertEqual(extra.read_bytes(), hmac.digest(key, target.read_bytes(), "sha1"))
+        self.assertEqual({file.name: file.read_bytes() for file in self.save.parent.iterdir()}, source)
+
+    def test_replaced_existing_output_and_its_previous_copy_both_survive_rollback(self) -> None:
+        target = self.save.parent.parent / "other" / "SAVEGAME.DAT"
+        extra = target.with_name("EXTRA")
+        target.parent.mkdir()
+        target.write_bytes(b"previous game")
+        extra.write_bytes(b"previous signature")
+        foreign = target.parent / "incoming"
+        foreign.write_bytes(b"another program's file")
+
+        def replace_during_verify(files):
+            os.replace(foreign, target)
+            raise OSError("readback interrupted")
+
+        with patch.object(saver, "_verify_published", side_effect=replace_during_verify), \
+             self.assertRaises(saver.SaveWriterError) as error:
+            saver.edit_save_file(self.save, target, extra, xbe_path=self.xbe, sliders={"Injury": 0.5}, overwrite=True)
+        self.assertEqual(target.read_bytes(), b"another program's file")
+        self.assertEqual(extra.read_bytes(), b"previous signature")
+        backups = list(target.parent.glob(".2k5-save-*/original"))
+        self.assertEqual([file.read_bytes() for file in backups], [b"previous game"])
+        self.assertIn(str(target), str(error.exception))
+        self.assertIn(str(backups[0]), str(error.exception))
+
+    def test_replacement_at_the_rollback_rename_is_restored_without_clobbering_a_later_file(self) -> None:
+        move = os.replace
+        for collision in (False, True):
+            with self.subTest(collision=collision):
+                directory = self.save.parent.parent / str(collision)
+                directory.mkdir()
+                target, extra = directory / "SAVEGAME.DAT", directory / "EXTRA"
+                arriving = directory / "incoming"
+                arriving.write_bytes(b"foreign content")
+
+                def race(source, destination):
+                    if source == target:
+                        move(arriving, target)
+                    move(source, destination)
+                    if source == target and collision:
+                        target.write_bytes(b"later file")
+
+                with patch.object(saver, "_verify_published", side_effect=OSError("failed readback")), \
+                     patch.object(os, "replace", side_effect=race), self.assertRaises(saver.SaveWriterError) as error:
+                    saver.edit_save_file(self.save, target, extra, xbe_path=self.xbe, sliders={"Injury": 0.5})
+                self.assertFalse(extra.exists())
+                self.assertIn(str(target), str(error.exception))
+                if collision:
+                    self.assertEqual(target.read_bytes(), b"later file")
+                    saved = list(directory.glob(".2k5-save-*/original/unverified-*"))
+                    self.assertEqual([file.read_bytes() for file in saved], [b"foreign content"])
+                    self.assertIn(str(saved[0]), str(error.exception))
+                else:
+                    self.assertEqual(target.read_bytes(), b"foreign content")
+                    self.assertEqual(list(directory.glob(".2k5-save-*")), [])
+
+    def test_restore_io_error_identifies_the_original_and_restores_the_other_member(self) -> None:
+        directory = self.save.parent.parent / "older"
+        directory.mkdir()
+        target, extra = directory / "SAVEGAME.DAT", directory / "EXTRA"
+        target.write_bytes(b"old game")
+        extra.write_bytes(b"old signature")
+        publish = platform_compat.publish_no_replace
+
+        def fail_restoring_file(staged, destination, **kwargs):
+            if staged.name == "original" and destination == target:
+                raise OSError(errno.EIO, "drive disconnected")
+            return publish(staged, destination, **kwargs)
+
+        with patch.object(saver, "_verify_published", side_effect=OSError("failed readback")), \
+             patch.object(platform_compat, "publish_no_replace", side_effect=fail_restoring_file), \
+             self.assertRaises(saver.SaveWriterError) as error:
+            saver.edit_save_file(self.save, target, extra, xbe_path=self.xbe, sliders={"Injury": 0.5}, overwrite=True)
+        self.assertFalse(target.exists())
+        self.assertEqual(extra.read_bytes(), b"old signature")
+        backups = list(directory.glob(".2k5-save-*/original"))
+        self.assertEqual([file.read_bytes() for file in backups], [b"old game"])
+        self.assertIn(str(backups[0]), str(error.exception))
+        self.assertIn(str(target), str(error.exception))
+        self.assertIn("drive disconnected", str(error.exception))
+
+    def test_directory_cleanup_failure_keeps_the_original_recovery_message(self) -> None:
+        directory = self.save.parent.parent / "new copy"
+        target, extra = directory / "SAVEGAME.DAT", directory / "EXTRA"
+        arriving = self.save.parent.parent / "incoming"
+        arriving.write_bytes(b"foreign file")
+        move, rmdir = os.replace, os.rmdir
+        def two_replacements(source, destination):
+            if source == target:
+                move(arriving, target)
+            move(source, destination)
+            if source == target:
+                target.write_bytes(b"later file")
+        def refuse_rmdir(path, *args, **kwargs):
+            if path == directory:
+                raise PermissionError(errno.EACCES, "cleanup refused")
+            return rmdir(path, *args, **kwargs)
+
+        with patch.object(saver, "_verify_published", side_effect=OSError("readback failed")), \
+             patch.object(os, "replace", side_effect=two_replacements), \
+             patch.object(os, "rmdir", side_effect=refuse_rmdir), self.assertRaises(saver.SaveWriterError) as failure:
+            saver.edit_save_file(self.save, target, extra, xbe_path=self.xbe, sliders={"Injury": 0.5})
+        self.assertEqual(target.read_bytes(), b"later file")
+        self.assertFalse(extra.exists())
+        held = self.save.parent.parent.rglob(".2k5-save-*/original/unverified-*")
+        saved, = (item for item in held if item.read_bytes() == b"foreign file")
+        for detail in (str(saved), str(directory), "readback failed", "cleanup refused"):
+            self.assertIn(detail, str(failure.exception))
+
+    def test_interrupting_rollback_preserves_the_actual_file_captured_at_the_rename(self) -> None:
+        target = self.save.parent.parent / "new copy" / "SAVEGAME.DAT"
+        incoming = self.save.parent.parent / "foreign"
+        incoming.write_bytes(b"concurrent edit")
+        move = os.replace
+        def interrupt_after_move(source, destination):
+            if source == target:
+                move(incoming, target)
+            move(source, destination)
+            if source == target:
+                raise KeyboardInterrupt()
+
+        with patch.object(saver, "_verify_published", side_effect=OSError("readback failed")), \
+             patch.object(os, "replace", side_effect=interrupt_after_move), self.assertRaises(KeyboardInterrupt):
+            saver.edit_save_file(self.save, target, target.with_name("EXTRA"), xbe_path=self.xbe, sliders={"Injury": 0.5})
+        marks = list(self.save.parent.parent.rglob(".2k5-studio-recovery"))
+        self.assertTrue(marks)
+        held = [p for mark in marks for p in mark.parent.rglob("unverified-*")]
+        self.assertIn(b"concurrent edit", [p.read_bytes() for p in held])
+
+    @unittest.skipIf(platform_compat.IS_WINDOWS, "the POSIX publication fallback uses a hard link")
+    def test_linked_second_member_is_withdrawn_if_removing_its_staging_name_fails(self) -> None:
+        target = self.save.parent.parent / "copy" / "SAVEGAME.DAT"
+        extra = target.with_name("EXTRA")
+        unlink = os.unlink
+        def fail_after_link(path, *args, **kwargs):
+            item = Path(path)
+            if item.name == "new" and extra.exists() and platform_compat.paths_alias(item, extra):
+                raise OSError(errno.EIO, "staging unlink failed")
+            return unlink(path, *args, **kwargs)
+
+        with patch.object(platform_compat, "_linux_renameat2", return_value=None), \
+             patch.object(platform_compat, "_macos_renameatx_np", return_value=None):
+            with patch.object(os, "unlink", side_effect=fail_after_link), self.assertRaisesRegex(OSError, "staging unlink"):
+                saver.edit_save_file(self.save, target, extra, xbe_path=self.xbe, sliders={"Injury": 0.5})
+            self.assertFalse(target.parent.exists())
+            saver.edit_save_file(self.save, target, extra, xbe_path=self.xbe, sliders={"Injury": 0.5})
+        self.assertTrue(saver.verify_extra(saver.derive_sig_key(self.xbe.read_bytes()), target.read_bytes(), extra.read_bytes()))
+
 
 class Ps2CopyOnVolumesWithoutHardLinks(unittest.TestCase):
     """The PS2 writer falls back to an exclusive write when the volume cannot link or rename without replacing. Its errno
