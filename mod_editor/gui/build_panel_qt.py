@@ -294,6 +294,7 @@ from mod_editor.core import nfl2k5_scramble_blocking as _scramble_blocking  # no
 from mod_editor.core import nfl2k5_star_retention as _star_retention  # noqa: E402
 from mod_editor.core import nfl2k5_alien_prospect as _alien_prospect  # noqa: E402
 from mod_editor.core import nfl2k5_star_career as _star_career  # noqa: E402  b778-st2
+from mod_editor.core import nfl2k5_backfield_cards as _backfield_cards  # noqa: E402
 from mod_editor.core import nfl2k5_sportscenter_lineup as _sportscenter_lineup  # noqa: E402
 from mod_editor.core import nfl2k5_inbox_standings as _inbox_standings  # noqa: E402  b778-pc3
 # b778-dr1: the broadcast-paced franchise draft (on in the Advanced and Experimental presets).
@@ -355,6 +356,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("catch_snap_limit", _catch_snap_limit.BUILD_CAPTION, _catch_snap_limit.HELP_TEXT),  # b780-cv4
                  ("scramble_blocking", _scramble_blocking.BUILD_CAPTION, _scramble_blocking.HELP_TEXT),  # b780-cv7
                  ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
+                 ("backfield_cards", _backfield_cards.BUILD_CAPTION, _backfield_cards.HELP_TEXT),
                  ("sportscenter_lineup", _sportscenter_lineup.BUILD_CAPTION, _sportscenter_lineup.HELP_TEXT),  # b778-sc2
                  ("inbox_standings", _inbox_standings.BUILD_CAPTION, _inbox_standings.HELP_TEXT),  # b778-pc3
                  # b778 ci2: the tab caption stays short; the full wording is the module help.

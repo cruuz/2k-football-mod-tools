@@ -2067,6 +2067,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_speed_threshold_code",             # b780-cv5
         "mod_editor.core.nfl2k5_cpu_third_down",                   # b778-ai8
         "mod_editor.core.nfl2k5_alien_prospect",                  # b778-ee1
+        "mod_editor.core.nfl2k5_backfield_cards",
         "mod_editor.core.nfl2k5_sportscenter_lineup",             # b778-sc2, in-place
         "mod_editor.core.nfl2k5_draft_clock",                     # b778-dr1
         "mod_editor.core.nfl2k5_weekly_progression",              # b778-pg1

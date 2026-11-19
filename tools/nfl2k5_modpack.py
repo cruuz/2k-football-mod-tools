@@ -33,7 +33,8 @@ from mod_editor.core import modpack  # noqa: E402
 def cmd_export_files(args):
     from mod_editor.core import modpack_files, modpack_sources
     with tempfile.TemporaryDirectory(prefix="pack-sources-", dir=Path(args.out).parent) as work:
-        recipe, assets = ({}, {}) if not args.recipe else modpack_sources.prepare(args.recipe, work, stack=ROOT, marks_pack=args.marks_pack)
+        recipe, assets = ({}, {}) if not args.recipe else modpack_sources.prepare(
+            args.recipe, work, stack=ROOT, marks_pack=args.marks_pack, patched_image=args.patched)
         if args.sources_out:
             modpack._require(bool(assets), "--sources-out requires --recipe")
             recipe["sources_bundle"] = modpack_sources.write_bundle(args.sources_out, recipe, assets, overwrite=args.overwrite)

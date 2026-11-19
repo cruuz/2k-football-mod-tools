@@ -47,7 +47,7 @@ def compose_project(document):
     return dict(document, edits=result)
 
 
-def prepare(recipe_path, work, *, stack=None, marks_pack=None):
+def prepare(recipe_path, work, *, stack=None, marks_pack=None, patched_image=None):
     """Capture effective overrides and every referenced league PNG, preserving originals."""
     recipe_path, work = f._path(recipe_path), f._output_path(work)
     stack = f._path(stack or Path(m.platform_compat.absolute_path(__file__)).parents[2])
@@ -104,6 +104,14 @@ def prepare(recipe_path, work, *, stack=None, marks_pack=None):
         return value
 
     effective = dict(recipe["overrides"])
+    if patched_image is not None:
+        from . import mod_build, nfl2k5_backfield_cards
+        try:
+            card_state = nfl2k5_backfield_cards.status(mod_build._xbe_bytes(Path(patched_image)))
+        except (OSError, ValueError):
+            card_state = "unavailable"
+        if card_state in ("retail", "applied"):
+            effective["backfield_cards"] = card_state == "applied"
     if marks_pack:
         effective["official_marks_pack"] = str(marks_pack)
     from . import nfl2k5_official_marks as marks
@@ -238,7 +246,10 @@ def extract_bundle(bundle, directory, expected, *, resume=False, progress=None):
 def build_plan(recipe, source="", target=""):
     from dataclasses import fields
     from . import mod_build
-    plan = mod_build.apply_preset(mod_build.BuildPlan(str(source), str(target)), recipe["preset"])
+    initial = mod_build.BuildPlan(str(source), str(target), console_memory=recipe["overrides"].get("console_memory", 128))
+    plan = mod_build.apply_preset(initial, recipe["preset"])
+    # Older exported packs predate this preset option. New exports freeze the finished disc’s switch.
+    plan.backfield_cards = False
     known = {field.name for field in fields(plan)} - {"source", "target", "overwrite"}
     for key, value in recipe["overrides"].items():
         m._require(key in known, f"Recipe requires an unknown Studio option: {key}")

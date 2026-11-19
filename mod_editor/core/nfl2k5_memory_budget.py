@@ -141,7 +141,7 @@ OWNER_BYTES = {
 }
 
 # Keep the calibrated release layout for comparisons against the actual RC executable.
-BUILD_OWNER_BYTES = {**OWNER_BYTES, "pass_rush_stats": (
+BUILD_OWNER_BYTES = {**OWNER_BYTES, "backfield_cards": (176, 0, 0, 0, 0), "pass_rush_stats": (
     0, pass_rush_stats.CODE_SIZE, pass_rush_stats.READ_ONLY_SIZE, 0, pass_rush_stats.DATA_SIZE)}
 
 FRANCHISE_STATIC_BODY = 98_352 - 64    # without the 128 MB roster heap the franchise history body is XBE data
@@ -155,6 +155,7 @@ def _modern(value):
 
 # owner -> the plan fields that install it (any of them); INFRASTRUCTURE rides with any space owner
 OWNER_FIELDS = {
+    "backfield_cards": ("backfield_cards",),
     "history_screen": ("history_screen",), "player_progress_screen": ("player_progress",), "my_career": ("my_career",),
     "my_career_m3": ("my_career",), "roster_arena_growth": ("reserves_16", "created_teams_extra", "roster_capacity"),
     "pass_rush_stats": ("pass_rush_stats",), "star_career": ("star_career",), "defensive_try_stats": ("defensive_try",),
@@ -208,7 +209,7 @@ SCALEOUT_FIELDS = ("camera", "franchise_autosave", "weekly_prep", "weekly_prep_c
                    "coin_defer", "decided_clock", "cpu_scrambles", "sim_rb_injuries", "sim_realism", "coach_carousel",
                    "standings_records", "history_screen", "franchise_history", "speed_threshold", "cpu_clock2",
                    "cpu_runner_vision", "catch_snap_limit", "scramble_blocking", "audible_legend", "team_ratings",
-                   "roster_draft_pick_ownership", "roster_hback_roles", "modern_injured_reserve")
+                   "roster_draft_pick_ownership", "roster_hback_roles", "modern_injured_reserve", "backfield_cards")
 
 # --- disc resources the options add to the main heap (inventory of the RC disc against retail, decoded charges) ------
 RESOURCE_BYTES = {
@@ -314,6 +315,7 @@ RC_VALUES = {"momentum": 50, "momentum_collision_level": 50, "cpu_money_downs": 
 # Options a 64 MB build cannot have. A plan field, except roster_capacity: roster edits whose document asks for the
 # capacity arena (free_agent_capacity; see roster_capacity_records).
 REQUIRES_128 = {
+    "backfield_cards": "This option is available in the standard preset. The compact preset keeps the original display.",
     "k128_memory": "It teaches the Xbox's 4627 kernel to use 128 MB at start-up. A 64 MB console has nothing to add, "
                    "hakuX has no real kernel to patch, and with the 128 MB start-up check the disc refuses to start "
                    "below 128 MB.",
