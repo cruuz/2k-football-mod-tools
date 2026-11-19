@@ -225,6 +225,94 @@ def official(T, fam, code, panel, body_to_shell=False, old_line=None):
         region[ok] = blend[ok]
         changed[y0:y0 + h, x0:x0 + w] |= hit & ok
     return snap(T, out, changed) + (int(changed.sum()),)
+KEEP_IOU = 0.80
+KEEP_CORR = 0.92
+KEPT_CORR = {}
+_applies = {}
+def standard_follows_modern(name, T):
+    """Whether a Standard-shell texture's side logo is rebuilt from the modern shell's. Not when its logo still sits where
+    the retail art has it (same ink for the most part: the retail placement reads level on the model already), not for
+    the retail-art kits that have no league-project helmet, and not when there is no logo."""
+    if name not in _applies:
+        import json
+        fam, sel = name.split('_')
+        extra = json.load(open(C.WORK / 'extra_kits.json'))
+        def ink(rgb):
+            z = texdet.zone_mask(fam) & ~texdet.hardware(fam)[0]; shell = np.median(rgb[z], axis=0)
+            m = z & (np.linalg.norm(rgb - shell, axis=2) > 40.0); m[:, 142:] = False; return m
+        a = ink(T[..., :3].astype(np.float64)); b = ink(C.hretail(name)[..., :3].astype(np.float64))
+        iou = float((a & b).sum()) / max(1.0, float((a | b).sum()))
+        _applies[name] = bool(fam == 'helmet00' and sel not in extra and a.sum() >= 150 and iou < 0.8)
+    return _applies[name]
+def old_logo(rgb, fam, upper):
+    """The old logo of one side with the parts of its outline that lie on the rim of the blank helmet's hardware."""
+    zone = texdet.zone_mask(fam); shell = shell_of(rgb, fam); dev = np.linalg.norm(rgb - shell, axis=2)
+    core = texdet.hardware(fam)[1] > 8
+    rows = np.arange(256)[:, None]; half = (rows < 128) if upper else (rows >= 128)
+    _b, lk = fixes7.logo_box(rgb, fam, upper, pad=0)
+    if lk.sum() < 150: return np.zeros((256, 256), bool)
+    rim = (dev > 40.0) & ~core & ndimage.binary_dilation(lk, iterations=6) & half & zone
+    lab, n = ndimage.label(lk | rim, structure=np.ones((3, 3), bool))
+    ids = np.unique(lab[lk]); whole = np.isin(lab, ids[ids > 0])
+    return ndimage.binary_dilation(whole, iterations=3) & zone & half & ~core
+def from_modern_shell(T, name, modern_tex):
+    """Both side logos of a Standard-shell texture taken from the modern shell's finished texture through the surface
+    map (shelltransfer.py): the same place, angle and size on the helmet, each side from its own side."""
+    import shelltransfer
+    fam = 'helmet00'; rgb = T[..., :3].astype(np.float64); out = rgb.copy(); shell = shell_of(rgb, fam); zone = texdet.zone_mask(fam)
+    mrgb = modern_tex[..., :3].astype(np.float64); mask = np.zeros((256, 256), bool)
+    for upper in (False, True):
+        try: _b, mk = fixes7.logo_box(mrgb, 'helmet02', upper, pad=0)
+        except Exception: continue
+        if mk.sum() < 150: continue
+        # the logo itself: its largest piece and the loose pieces that do not sit on a screw of the modern shell (a
+        # recoloured shell can keep a dark square round a screw right beside the logo)
+        lab, n = ndimage.label(mk, structure=np.ones((3, 3), bool)); sizes = ndimage.sum(mk, lab, np.arange(1, n + 1))
+        strong = texdet.hardware('helmet02')[1] >= 60.0
+        ids = []
+        for i in range(n):
+            comp = lab == i + 1; ys, xs = np.nonzero(comp); h, w = ys.max() - ys.min() + 1, xs.max() - xs.min() + 1
+            box = strong[max(0, ys.min() - 1):ys.max() + 2, max(0, xs.min() - 1):xs.max() + 2]
+            square_round_a_screw = i != int(np.argmax(sizes)) and sizes[i] <= 260 and 0.6 <= w / h <= 1.7 and box.sum() >= 6
+            if not square_round_a_screw: ids.append(i + 1)
+        mk = np.isin(lab, ids)
+        mask |= ndimage.binary_dilation(ndimage.binary_fill_holes(ndimage.binary_closing(mk, iterations=2)), iterations=1)
+    screws = (texdet.hardware('helmet02')[1] >= 60.0) & mask          # never carry a modern-shell screw across
+    for v in fixtex.vent_regions(): screws &= ~ndimage.binary_dilation(v, iterations=4)
+    if screws.any(): mrgb = fixtex.nn_fill(mrgb, screws)
+    col, al = shelltransfer.transfer(mrgb, mask)
+    # a Standard-shell logo that already sits where the modern shell's does (same silhouette, both sides) stays as it
+    # is: it is the sharper of the two
+    same = True; rows = np.arange(256)[:, None]
+    for upper in (False, True):
+        half = (rows < 128) if upper else (rows >= 128)
+        try: _b, k0 = fixes7.logo_box(rgb, fam, upper, pad=0)
+        except Exception: k0 = np.zeros((256, 256), bool)
+        cur = ndimage.binary_fill_holes(ndimage.binary_closing(k0, iterations=2)) if k0.sum() >= 150 else np.zeros((256, 256), bool)
+        new = (al > 0.5) & half
+        if cur.sum() < 150 and new.sum() < 150: continue
+        # ... and shows the same picture there (a logo facing the other way can have nearly the same outline): the two
+        # pictures, lightly blurred so a texel of shift does not count, must correlate
+        region = ndimage.binary_dilation(cur | new, iterations=2) & half & zone
+        prev = out * (1 - al[..., None]) + col * al[..., None]
+        ga = np.stack([ndimage.gaussian_filter(rgb[..., c], 1.6) for c in range(3)], axis=-1)[region].ravel()
+        gb = np.stack([ndimage.gaussian_filter(prev[..., c], 1.6) for c in range(3)], axis=-1)[region].ravel()
+        corr = float(np.corrcoef(ga, gb)[0, 1]) if ga.std() > 1 and gb.std() > 1 else 1.0
+        KEPT_CORR[(name, upper)] = round(corr, 3)
+        if corr < KEEP_CORR: same = False
+    if same: return T, 0.0, 0
+    changed = np.zeros((256, 256), bool)
+    for upper in (False, True):
+        try: changed |= old_logo(rgb, fam, upper)
+        except Exception: pass
+    not_shell = (np.linalg.norm(rgb - shell, axis=2) > 12.0) | changed
+    if changed.any():
+        a = fixtex.nn_fill(out, changed, keep_out=not_shell); b = fixtex.fill(a, changed, keep_out=not_shell)
+        out[changed] = 0.5 * a[changed] + 0.5 * b[changed]
+    al = np.where(texdet.hardware(fam)[1] >= 60.0, 0.0, al) * zone
+    out = out * (1 - al[..., None]) + col * al[..., None]
+    changed |= al > 0.01
+    return snap(T, out, changed) + (int(changed.sum()),)
 def gold_to_white(T, fam):
     """The logo's gold fur becomes white with its own shading (the Jaguars' teal alternate carries the white jaguar):
     same drawing, same outline, spots and tongue; only texels of the logo that are gold or brown change."""

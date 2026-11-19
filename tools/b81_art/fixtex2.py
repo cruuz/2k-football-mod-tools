@@ -121,12 +121,41 @@ def old_ink(name, T):
             boxes |= m & band & (cur.max(axis=2) - cur.min(axis=2) < 45.0) & (lum < shell_l - 14.0) & texdet.zone_mask(fam)
     left = left | boxes
     return dict(left=left, boxes=boxes, paint=left | grown | boxes, foot=foot, panels=panels, other=ink & ~exp & ~footg & pz, ink=ink)
+_DONE = {}
 def cleanup(name):
+    """(released texture, finished texture, old-ink findings, masks); every texture is worked out once per process."""
+    if name not in _DONE: _DONE[name] = _cleanup(name)
+    return _DONE[name]
+def _cleanup(name):
     T = final.helmet(name)
     d = old_ink(name, T)
     res, masks = fixtex.cleanup(name, tex=T, foot=ndimage.binary_dilation(d['foot'], iterations=1), extra=d['paint'], shell_only=d['boxes'])
     fam = name.split('_')[0]; key = name.split('_')[1][:2] + '_' + name.split('_')[1][3:]
     ov2 = OVERRIDES.get(f'{key}:{fam}', {})
+    if fam == 'helmet00' and not ov2.get('keep_placement'):
+        import refine
+        if refine.standard_follows_modern(name, T):
+            # Standard shell: the logo takes the modern shell's place, angle and size on the helmet (the re-authored
+            # logos were laid along the atlas axes, which sit tilted on this shell, and one side faced the back)
+            before = res.copy()
+            refine.FREE[0] = True       # a rebuilt Standard-shell texture goes into the league project as new source art
+            moved, _err, count = refine.from_modern_shell(res, name, cleanup('helmet02_' + name.split('_')[1])[1])
+            refine.FREE[0] = False
+            if count:       # (a logo that already sits and looks as the modern shell's does goes on to the steps below)
+                res = moved
+                for box in ov2.get('erase_after', []):
+                    # reviewed by eye: a piece of the old logo the steps above cannot reach (it lies inside the old
+                    # registered footprint and on the hardware rim) goes back to the shell round it
+                    rgb = res[..., :3].astype(np.float64); not_shell = np.linalg.norm(rgb - refine.shell_of(rgb, fam), axis=2) > 12.0
+                    m = np.zeros((256, 256), bool); m[box[1]:box[3], box[0]:box[2]] = True; m &= not_shell
+                    a = fixtex.nn_fill(rgb, m, keep_out=not_shell); b = fixtex.fill(a, m, keep_out=not_shell)
+                    res = res.copy(); res[m, :3] = np.clip(np.round(0.5 * a[m] + 0.5 * b[m]), 0, 255).astype(np.uint8)
+                if ov2.get('refine', {}).get('outline'): res = refine.outline(res, fam)[0]
+                if ov2.get('refine', {}).get('streak_wrap'):
+                    import streakwrap
+                    refine.FREE[0] = True; res = streakwrap.wrap(res, fam, streakwrap.LINES[key])[0]; refine.FREE[0] = False
+                masks['transferred'] = (res[..., :3] != before[..., :3]).any(axis=2)
+                return T, res, d, masks
     if ov2.get('real_mark'):
         # the dark alternate: the real front-facing mark replaces the stand-in drawing (see realmark.py for the source)
         import realmark
@@ -172,6 +201,9 @@ def cleanup(name):
             if o_.get('old_line') == 'white': line = (255, 255, 255)
             elif o_.get('old_line') == 'dark': line = np.median(res[..., :3][(res[..., :3].astype(np.float64) @ refine.LUM) < 70], axis=0)
             res = refine.official(res, fam, name.split('_')[1][:2], o_['panel'], body_to_shell=bool(o_.get('body_to_shell')), old_line=line)[0]
+        if rf.get('streak_wrap'):
+            import streakwrap                               # the Bills' charge streak runs on round the back (3D paint)
+            res, streakwrap.LINES[key], _info = streakwrap.wrap(res, fam)
         if rf.get('soften'):
             line = (255, 255, 255) if rf['soften'] == 'white' else np.median(res[..., :3][(res[..., :3].astype(np.float64) @ refine.LUM) < 70], axis=0)
             res = refine.soften(res, fam, line)[0]

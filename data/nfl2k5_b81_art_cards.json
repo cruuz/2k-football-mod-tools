@@ -112,13 +112,13 @@
    "source_rgba_sha256": "82d0782bbe9bd139091f2b53beb6c0f394aa0e7f706538db7e81c2b1e11d8400"
   },
   "helm_a03_8_128": {
-   "changed_pixels": 1970,
-   "new_rgba_sha256": "cfa37bb74cbbb4dbf168a11ef7f7e68b88c32be5f5dfa1feaa74350f66258c43",
+   "changed_pixels": 2040,
+   "new_rgba_sha256": "e2cbf6cd2ea79b60879014f17c7d0ea0c8bbc2ab77b6126f8e4860acbd470450",
    "source_rgba_sha256": "4251ca3170dc7b56b3b638b1a836a152d35348437b6e290ebb4c19beab9fba75"
   },
   "helm_a03_8_256": {
-   "changed_pixels": 7198,
-   "new_rgba_sha256": "a4514e25dd6df3b78f1692a65833a3c1708db2b5dadc67acfb13588fb859e8db",
+   "changed_pixels": 7467,
+   "new_rgba_sha256": "1bb8e451458d181f65c0a7fd27d7c760924d0244f19bbe3aa53a57c1c27b6567",
    "source_rgba_sha256": "5029e07e7afcbaec1e1fb439b2dbf10bd0efb0b5a6b2323a124dea270ff40804"
   },
   "helm_a03_9_128": {
@@ -1062,13 +1062,13 @@
    "source_rgba_sha256": "1ef26f81569fb222a87832efa8c9a43e24bcb3e9298adf1f3242e722a92cdf59"
   },
   "helm_h03_8_128": {
-   "changed_pixels": 2145,
-   "new_rgba_sha256": "a549232e3ed63649d37ec9c9e13c463fb73ee906b27fc92e50f172f88f9cecc5",
+   "changed_pixels": 2202,
+   "new_rgba_sha256": "1a4185930750d32c0797553ff649a29f9acf0031ba1ce19f635df2ab95cc3c38",
    "source_rgba_sha256": "3dc30a86aaf61eb0438624a2c8beee3270b6588b5930f0f2bd081a0fb7938883"
   },
   "helm_h03_8_256": {
-   "changed_pixels": 7748,
-   "new_rgba_sha256": "6130d7d72d2019591e7c64aa92b0bb48c869d4b152a67072b70c68ba235666ad",
+   "changed_pixels": 7998,
+   "new_rgba_sha256": "d562e828fd16ef3584bedac9d489b8f9c1f4d5d0794ea9ab5ea7a2c6fdd2805e",
    "source_rgba_sha256": "ce29afd3f9a4fe7bdd7d10ff4afc08aa07e53694f3ddc49d764442507b5c5a90"
   },
   "helm_h03_9_128": {
@@ -1957,8 +1957,8 @@
    "source_rgba_sha256": "d88e57747081688872d9be3fabdd833baf238bb8fcd75a3e4fd8ff97c78e6e46"
   },
   "unif_a03_8_256": {
-   "changed_pixels": 3212,
-   "new_rgba_sha256": "02d26f87dbece6dd82d4af85008a0c9bdcbc04d4638985622f667932d05f0261",
+   "changed_pixels": 3370,
+   "new_rgba_sha256": "bfe44441b0b2fde3e312330e7c92359baf2c3a20dd800182d4cb2001e81f998c",
    "source_rgba_sha256": "12e18b7a2ddaef7348bff780f1fae408794bfbb41071ed8220de85a5a6721f19"
   },
   "unif_a03_9_256": {
@@ -2432,8 +2432,8 @@
    "source_rgba_sha256": "d88e57747081688872d9be3fabdd833baf238bb8fcd75a3e4fd8ff97c78e6e46"
   },
   "unif_h03_8_256": {
-   "changed_pixels": 3212,
-   "new_rgba_sha256": "02d26f87dbece6dd82d4af85008a0c9bdcbc04d4638985622f667932d05f0261",
+   "changed_pixels": 3370,
+   "new_rgba_sha256": "bfe44441b0b2fde3e312330e7c92359baf2c3a20dd800182d4cb2001e81f998c",
    "source_rgba_sha256": "12e18b7a2ddaef7348bff780f1fae408794bfbb41071ed8220de85a5a6721f19"
   },
   "unif_h03_9_256": {
@@ -2858,36 +2858,316 @@
   "04H2": "04H0"
  },
  "helmets": {
+  "helmet00_00A0": {
+   "new_rgba_sha256": "c1afc2a13fd3b82f4f3cfa92c08d1c377181dbf1ab5add6320edf45a54dd6dc7",
+   "source_rgba_sha256": "3fec46c2f0659d6fac44978349d8bb7682e6447af1a7ba32dbd07a538bbad935"
+  },
+  "helmet00_00A6": {
+   "new_rgba_sha256": "c6836974e560571c2262f82ca8d2514a0b580f5e4191926e37f1beda8766ac44",
+   "source_rgba_sha256": "182f83f860941cf3da8941ef8cec80d8e1fd63bd95c3fbac43cc63c49615eb94"
+  },
+  "helmet00_00A7": {
+   "new_rgba_sha256": "8ba904e62e9304799dcee160850ae9239f430cd2b370ce64bed71ede3399aba4",
+   "source_rgba_sha256": "0300156ca389994dcc71cabf5daf7e74c3efe7998510f5de68ecac9a7921c6ce"
+  },
+  "helmet00_00H0": {
+   "new_rgba_sha256": "c1afc2a13fd3b82f4f3cfa92c08d1c377181dbf1ab5add6320edf45a54dd6dc7",
+   "source_rgba_sha256": "3fec46c2f0659d6fac44978349d8bb7682e6447af1a7ba32dbd07a538bbad935"
+  },
+  "helmet00_00H6": {
+   "new_rgba_sha256": "c6836974e560571c2262f82ca8d2514a0b580f5e4191926e37f1beda8766ac44",
+   "source_rgba_sha256": "182f83f860941cf3da8941ef8cec80d8e1fd63bd95c3fbac43cc63c49615eb94"
+  },
+  "helmet00_00H7": {
+   "new_rgba_sha256": "8ba904e62e9304799dcee160850ae9239f430cd2b370ce64bed71ede3399aba4",
+   "source_rgba_sha256": "0300156ca389994dcc71cabf5daf7e74c3efe7998510f5de68ecac9a7921c6ce"
+  },
+  "helmet00_01A0": {
+   "new_rgba_sha256": "9430317e18aaa01ff8d69af6e4ddaab6cffc24a64e9cf99ac1a9213728b35516",
+   "source_rgba_sha256": "b8e3794ec17f4e16aea04ad4fad93fd1a3e716a0c9e3b3ccacfff1f85bc000e7"
+  },
+  "helmet00_01H0": {
+   "new_rgba_sha256": "9430317e18aaa01ff8d69af6e4ddaab6cffc24a64e9cf99ac1a9213728b35516",
+   "source_rgba_sha256": "b8e3794ec17f4e16aea04ad4fad93fd1a3e716a0c9e3b3ccacfff1f85bc000e7"
+  },
+  "helmet00_02A0": {
+   "new_rgba_sha256": "68751a2fd93eef1cf81b03cfecb045a4ac81907b6314a818012827665c787c5d",
+   "source_rgba_sha256": "2ccc41db7d823042febc445098dda9ec461020d70bf153b9cd87580e2719f0c1"
+  },
+  "helmet00_02A2": {
+   "new_rgba_sha256": "04490635cf63c910e30cdd5613ede3f8d792f1fce37f38f37abd37792abc99f3",
+   "source_rgba_sha256": "8ee356239ecefdb280374369f9ad5e5c0978a012e7fe7d3686d045a55ca9dc8c"
+  },
+  "helmet00_02A3": {
+   "new_rgba_sha256": "8b14909aa11f344aa5958f2d257bf21b68877aedec4ad755ac97f9ba36d2f518",
+   "source_rgba_sha256": "c5a27e7dfe94c26cbf6633a0c7412d34e4b48305e5adb48fc12495fb2a139a0a"
+  },
+  "helmet00_02H0": {
+   "new_rgba_sha256": "68751a2fd93eef1cf81b03cfecb045a4ac81907b6314a818012827665c787c5d",
+   "source_rgba_sha256": "2ccc41db7d823042febc445098dda9ec461020d70bf153b9cd87580e2719f0c1"
+  },
+  "helmet00_02H2": {
+   "new_rgba_sha256": "04490635cf63c910e30cdd5613ede3f8d792f1fce37f38f37abd37792abc99f3",
+   "source_rgba_sha256": "8ee356239ecefdb280374369f9ad5e5c0978a012e7fe7d3686d045a55ca9dc8c"
+  },
+  "helmet00_02H3": {
+   "new_rgba_sha256": "8b14909aa11f344aa5958f2d257bf21b68877aedec4ad755ac97f9ba36d2f518",
+   "source_rgba_sha256": "c5a27e7dfe94c26cbf6633a0c7412d34e4b48305e5adb48fc12495fb2a139a0a"
+  },
+  "helmet00_03A0": {
+   "new_rgba_sha256": "c584f0b41ebccefb96395b9368e4d9a37a87926bdd84b3c5aa25c471fa159f5d",
+   "source_rgba_sha256": "5cc94e08e00b6576da34ded35447e733d25cd9128263f46fe9d75650d8f68964"
+  },
+  "helmet00_03A3": {
+   "new_rgba_sha256": "0c49383cc58b026480b6b20e6e823fba2f846f6daa9a9fbf3688c7fb96ff2b2e",
+   "source_rgba_sha256": "e6d506093de17d5de81ea3c45ee28c093716e71e89d0be97fd72a627ad6b9a10"
+  },
   "helmet00_03A8": {
-   "new_rgba_sha256": "0a33cf1419f19bf27392ec408aeb71bc537915d6d8053d875cbbb060b4604f6d",
+   "new_rgba_sha256": "bcd22ecd1974f352cda3abb09279ed064ef97b72242d632436428dff18984539",
    "source_rgba_sha256": "be671a76e096aa71a3724078a0d73d7f1f098ed248f50e9ca11c20e0cef4faec"
+  },
+  "helmet00_03A9": {
+   "new_rgba_sha256": "8d5b0ee9fe224ed4557cf66f194edb4e576178bd5084f266785fba2f5c6f1338",
+   "source_rgba_sha256": "ba49b4399c19c14b24877fd4c8cda005d5ca5260aaec40611b1c923c1c8e9e38"
+  },
+  "helmet00_03H0": {
+   "new_rgba_sha256": "c584f0b41ebccefb96395b9368e4d9a37a87926bdd84b3c5aa25c471fa159f5d",
+   "source_rgba_sha256": "5cc94e08e00b6576da34ded35447e733d25cd9128263f46fe9d75650d8f68964"
+  },
+  "helmet00_03H3": {
+   "new_rgba_sha256": "0c49383cc58b026480b6b20e6e823fba2f846f6daa9a9fbf3688c7fb96ff2b2e",
+   "source_rgba_sha256": "e6d506093de17d5de81ea3c45ee28c093716e71e89d0be97fd72a627ad6b9a10"
   },
   "helmet00_03H8": {
-   "new_rgba_sha256": "0a33cf1419f19bf27392ec408aeb71bc537915d6d8053d875cbbb060b4604f6d",
+   "new_rgba_sha256": "bcd22ecd1974f352cda3abb09279ed064ef97b72242d632436428dff18984539",
    "source_rgba_sha256": "be671a76e096aa71a3724078a0d73d7f1f098ed248f50e9ca11c20e0cef4faec"
   },
+  "helmet00_03H9": {
+   "new_rgba_sha256": "8d5b0ee9fe224ed4557cf66f194edb4e576178bd5084f266785fba2f5c6f1338",
+   "source_rgba_sha256": "ba49b4399c19c14b24877fd4c8cda005d5ca5260aaec40611b1c923c1c8e9e38"
+  },
+  "helmet00_04A0": {
+   "new_rgba_sha256": "a94a8f4a5915f8a3b4c54090a3d427c24b1f88825cf8bee197387ac6ce6049d9",
+   "source_rgba_sha256": "99862f065ae1fa4e415bed24373c6db3125069365b71a7a186035a651d87627c"
+  },
+  "helmet00_04A2": {
+   "new_rgba_sha256": "fb0d75e6cc538e502c6e792692abb97fdd330038e267b37a13f6f267d732fba2",
+   "source_rgba_sha256": "87f6656587d7324fb4d0ee05b793457a39a9513447746b08ad5bb2361c809d1a"
+  },
+  "helmet00_04H0": {
+   "new_rgba_sha256": "a94a8f4a5915f8a3b4c54090a3d427c24b1f88825cf8bee197387ac6ce6049d9",
+   "source_rgba_sha256": "779e8d060840cd6a548f330fb68383ce3a32f9fd2cddb6da3878317d7e5fd1c9"
+  },
+  "helmet00_04H2": {
+   "new_rgba_sha256": "fb0d75e6cc538e502c6e792692abb97fdd330038e267b37a13f6f267d732fba2",
+   "source_rgba_sha256": "87f6656587d7324fb4d0ee05b793457a39a9513447746b08ad5bb2361c809d1a"
+  },
+  "helmet00_05A4": {
+   "new_rgba_sha256": "fd2ff56043214c4995b7bf1db2f92216d29be11bff14740dc98be833558137ef",
+   "source_rgba_sha256": "ddaec458806e5997b927bdd3829e6bacce10868e97145efdcf0a844317a3547f"
+  },
+  "helmet00_05H4": {
+   "new_rgba_sha256": "fd2ff56043214c4995b7bf1db2f92216d29be11bff14740dc98be833558137ef",
+   "source_rgba_sha256": "ddaec458806e5997b927bdd3829e6bacce10868e97145efdcf0a844317a3547f"
+  },
+  "helmet00_08A0": {
+   "new_rgba_sha256": "78795bee6c0058afb74edd5d7fefb8b4de89e6aa90fa543af84f0ea94f6b6079",
+   "source_rgba_sha256": "cf3cc0b6e9834cfa57cde4cec0b9a737e20341a42ef083a877f31a114c0308b6"
+  },
   "helmet00_08A5": {
-   "new_rgba_sha256": "7911f98e5f368579da9fca673d16ccbd7cfed3ce3bcb191643945d0a9ec44de6",
+   "new_rgba_sha256": "ab3ee539d96e1eb1e88ab6ea668c21cb9c5080736b89ab51e895079ed5ecb6dc",
    "source_rgba_sha256": "99c516ef4ddbaff42387aad1464f437c8d3901727ca53a81e20082e95924b6e2"
+  },
+  "helmet00_08A6": {
+   "new_rgba_sha256": "7f78c908431f47f7d2b86a45dadeb893b39f2e0bbb048139c2363f7fa95b8f1b",
+   "source_rgba_sha256": "e10fd4f5020b49e3b40e4f422756660753357e67f7069f5d6a95fb1ad02c2d44"
+  },
+  "helmet00_08H0": {
+   "new_rgba_sha256": "78795bee6c0058afb74edd5d7fefb8b4de89e6aa90fa543af84f0ea94f6b6079",
+   "source_rgba_sha256": "cf3cc0b6e9834cfa57cde4cec0b9a737e20341a42ef083a877f31a114c0308b6"
   },
   "helmet00_08H5": {
-   "new_rgba_sha256": "7911f98e5f368579da9fca673d16ccbd7cfed3ce3bcb191643945d0a9ec44de6",
+   "new_rgba_sha256": "ab3ee539d96e1eb1e88ab6ea668c21cb9c5080736b89ab51e895079ed5ecb6dc",
    "source_rgba_sha256": "99c516ef4ddbaff42387aad1464f437c8d3901727ca53a81e20082e95924b6e2"
   },
+  "helmet00_08H6": {
+   "new_rgba_sha256": "7f78c908431f47f7d2b86a45dadeb893b39f2e0bbb048139c2363f7fa95b8f1b",
+   "source_rgba_sha256": "e10fd4f5020b49e3b40e4f422756660753357e67f7069f5d6a95fb1ad02c2d44"
+  },
+  "helmet00_09A0": {
+   "new_rgba_sha256": "00396ae6a11141667ec2e584e6cac9e2f76eb8e2eded9e2cc6dd59fe5cb1345b",
+   "source_rgba_sha256": "182b6066c3648bb761c71f2973d3ea94311a056e2307bcb1efd8739478c856fb"
+  },
+  "helmet00_09A2": {
+   "new_rgba_sha256": "e2c27b0fa56e0230edf8b30d036caf930e087c85b2770a431e9e24f975ae4445",
+   "source_rgba_sha256": "12b795171442963cac9cb142d82b6b4f28c2c40eab41a1d7816539addf662bf2"
+  },
+  "helmet00_09A9": {
+   "new_rgba_sha256": "e2c27b0fa56e0230edf8b30d036caf930e087c85b2770a431e9e24f975ae4445",
+   "source_rgba_sha256": "12b795171442963cac9cb142d82b6b4f28c2c40eab41a1d7816539addf662bf2"
+  },
+  "helmet00_09H0": {
+   "new_rgba_sha256": "00396ae6a11141667ec2e584e6cac9e2f76eb8e2eded9e2cc6dd59fe5cb1345b",
+   "source_rgba_sha256": "182b6066c3648bb761c71f2973d3ea94311a056e2307bcb1efd8739478c856fb"
+  },
+  "helmet00_09H2": {
+   "new_rgba_sha256": "e2c27b0fa56e0230edf8b30d036caf930e087c85b2770a431e9e24f975ae4445",
+   "source_rgba_sha256": "12b795171442963cac9cb142d82b6b4f28c2c40eab41a1d7816539addf662bf2"
+  },
+  "helmet00_09H9": {
+   "new_rgba_sha256": "e2c27b0fa56e0230edf8b30d036caf930e087c85b2770a431e9e24f975ae4445",
+   "source_rgba_sha256": "12b795171442963cac9cb142d82b6b4f28c2c40eab41a1d7816539addf662bf2"
+  },
+  "helmet00_10A5": {
+   "new_rgba_sha256": "2dd12abce225f1a72de523ae933715ed6ac2e522f784a371332c068b9585d8f2",
+   "source_rgba_sha256": "0fd70e007ab743254a709c76c01ea2cc67f1edae35b197759425baf9eb24af8f"
+  },
+  "helmet00_10H5": {
+   "new_rgba_sha256": "2dd12abce225f1a72de523ae933715ed6ac2e522f784a371332c068b9585d8f2",
+   "source_rgba_sha256": "0fd70e007ab743254a709c76c01ea2cc67f1edae35b197759425baf9eb24af8f"
+  },
+  "helmet00_12A0": {
+   "new_rgba_sha256": "a87ec5870ee75df2e67aae61290d52969c2dfa35d8a8a1f48e29d623c4fdf86d",
+   "source_rgba_sha256": "c24c4d82ca87aa301c0f952d169b96a30e7aa8d2ab050605a25865ce93ebb5c8"
+  },
   "helmet00_12A6": {
-   "new_rgba_sha256": "29d0ef7f48166624899bec44fea782f88bbc5abec76de5ede8d68ea94f87d31c",
+   "new_rgba_sha256": "f59ed9acff79be4dd417719a0ffdd2f6b5ec3e671786ed4a5301bacd2aa2987d",
    "source_rgba_sha256": "4669ca2374f1618df1c2de5459611015f15dfbf1c049df807031ae5681f01bc5"
+  },
+  "helmet00_12H0": {
+   "new_rgba_sha256": "a87ec5870ee75df2e67aae61290d52969c2dfa35d8a8a1f48e29d623c4fdf86d",
+   "source_rgba_sha256": "c24c4d82ca87aa301c0f952d169b96a30e7aa8d2ab050605a25865ce93ebb5c8"
   },
   "helmet00_12H6": {
-   "new_rgba_sha256": "29d0ef7f48166624899bec44fea782f88bbc5abec76de5ede8d68ea94f87d31c",
+   "new_rgba_sha256": "f59ed9acff79be4dd417719a0ffdd2f6b5ec3e671786ed4a5301bacd2aa2987d",
    "source_rgba_sha256": "4669ca2374f1618df1c2de5459611015f15dfbf1c049df807031ae5681f01bc5"
   },
+  "helmet00_13A0": {
+   "new_rgba_sha256": "5e91eb8223f84a9bc07a94f687d4ef6c5c7ff32e0bd3dfc91d2ea2664ccfcd1d",
+   "source_rgba_sha256": "3ace79487e7de516bebd38163bde3c7585fb4081db2ddacc505184cd23ee1dc7"
+  },
+  "helmet00_13H0": {
+   "new_rgba_sha256": "5e91eb8223f84a9bc07a94f687d4ef6c5c7ff32e0bd3dfc91d2ea2664ccfcd1d",
+   "source_rgba_sha256": "3ace79487e7de516bebd38163bde3c7585fb4081db2ddacc505184cd23ee1dc7"
+  },
+  "helmet00_14A0": {
+   "new_rgba_sha256": "9e42585a0e4859f17a777aee17b8dec721b1e6408d7a107f63019e372b3c957e",
+   "source_rgba_sha256": "b901bdb3edaab11b5f41c8a4915b2f564c52ee8ede3572bd5416e6dfabdd5b2d"
+  },
+  "helmet00_14A10": {
+   "new_rgba_sha256": "7a8650209293daf2cabc09dc3b9ee3793e2b3637abd2042402b753ceb2f2963a",
+   "source_rgba_sha256": "8e88d1ff365b4c3b2586244b4ac4386227f40810e71b0c63c3c5763835f2d474"
+  },
+  "helmet00_14H0": {
+   "new_rgba_sha256": "9e42585a0e4859f17a777aee17b8dec721b1e6408d7a107f63019e372b3c957e",
+   "source_rgba_sha256": "b901bdb3edaab11b5f41c8a4915b2f564c52ee8ede3572bd5416e6dfabdd5b2d"
+  },
+  "helmet00_14H10": {
+   "new_rgba_sha256": "7a8650209293daf2cabc09dc3b9ee3793e2b3637abd2042402b753ceb2f2963a",
+   "source_rgba_sha256": "8e88d1ff365b4c3b2586244b4ac4386227f40810e71b0c63c3c5763835f2d474"
+  },
+  "helmet00_16A9": {
+   "new_rgba_sha256": "c66461bdc8979074e9f4dbab149cee08914f99c280d8b827beac1770bf1c7a8e",
+   "source_rgba_sha256": "bd8613e06df48b9e1e0b27261874c0186f2f52034e281468be8504dd33bb0e1d"
+  },
+  "helmet00_16H9": {
+   "new_rgba_sha256": "c66461bdc8979074e9f4dbab149cee08914f99c280d8b827beac1770bf1c7a8e",
+   "source_rgba_sha256": "bd8613e06df48b9e1e0b27261874c0186f2f52034e281468be8504dd33bb0e1d"
+  },
+  "helmet00_18A7": {
+   "new_rgba_sha256": "a77cf233061d49b5cd22866413ae7499f2f713eaf9e7a5f61bfef78d0bc1cdcb",
+   "source_rgba_sha256": "192d0a6fdc6d14472bc5c55ed693b2686bf9b200607244df3ef24a571195d472"
+  },
+  "helmet00_18H7": {
+   "new_rgba_sha256": "a77cf233061d49b5cd22866413ae7499f2f713eaf9e7a5f61bfef78d0bc1cdcb",
+   "source_rgba_sha256": "192d0a6fdc6d14472bc5c55ed693b2686bf9b200607244df3ef24a571195d472"
+  },
+  "helmet00_22A0": {
+   "new_rgba_sha256": "f65dc7721c83c66dcab4315497c0c411c087eefd52b4ffb06f1263534e4013dc",
+   "source_rgba_sha256": "e28c38adc883c3879a3017144abce33ab7de278a72086058eaada1e96bb03d1c"
+  },
+  "helmet00_22A5": {
+   "new_rgba_sha256": "b7b2e378c082ee294675aeee6d6f30fe770918a384a07d9a95710ba11b87a263",
+   "source_rgba_sha256": "3256bd955639e2b1528fe6c5d531f037af79f9c2b9ea7d135955a51bc24b3102"
+  },
+  "helmet00_22H0": {
+   "new_rgba_sha256": "f65dc7721c83c66dcab4315497c0c411c087eefd52b4ffb06f1263534e4013dc",
+   "source_rgba_sha256": "e28c38adc883c3879a3017144abce33ab7de278a72086058eaada1e96bb03d1c"
+  },
+  "helmet00_22H5": {
+   "new_rgba_sha256": "b7b2e378c082ee294675aeee6d6f30fe770918a384a07d9a95710ba11b87a263",
+   "source_rgba_sha256": "3256bd955639e2b1528fe6c5d531f037af79f9c2b9ea7d135955a51bc24b3102"
+  },
+  "helmet00_24A0": {
+   "new_rgba_sha256": "2eb63b5d473d5154647da2fc0521cc5cbd83e3c800d36b111041e4f1c6a7bc08",
+   "source_rgba_sha256": "e7a4d635e4398881765f453c08149e8347cd428fbeeda9d3b4b93c5e56f6f42f"
+  },
+  "helmet00_24A10": {
+   "new_rgba_sha256": "9ac79d2259f030f8d82eb525f72952a0fa225461976bf6fcbcb8f926748f95dd",
+   "source_rgba_sha256": "182ed1c8194f4ee0544e9837f07b0021c3cacc00365c1179c1c191639157f09f"
+  },
+  "helmet00_24A9": {
+   "new_rgba_sha256": "d2401027d45e1825c53b87057fd23827bc846d8e0829c4f9da4998dfa1ff0308",
+   "source_rgba_sha256": "182ed1c8194f4ee0544e9837f07b0021c3cacc00365c1179c1c191639157f09f"
+  },
+  "helmet00_24H0": {
+   "new_rgba_sha256": "2eb63b5d473d5154647da2fc0521cc5cbd83e3c800d36b111041e4f1c6a7bc08",
+   "source_rgba_sha256": "e7a4d635e4398881765f453c08149e8347cd428fbeeda9d3b4b93c5e56f6f42f"
+  },
+  "helmet00_24H10": {
+   "new_rgba_sha256": "9ac79d2259f030f8d82eb525f72952a0fa225461976bf6fcbcb8f926748f95dd",
+   "source_rgba_sha256": "182ed1c8194f4ee0544e9837f07b0021c3cacc00365c1179c1c191639157f09f"
+  },
+  "helmet00_24H9": {
+   "new_rgba_sha256": "d2401027d45e1825c53b87057fd23827bc846d8e0829c4f9da4998dfa1ff0308",
+   "source_rgba_sha256": "182ed1c8194f4ee0544e9837f07b0021c3cacc00365c1179c1c191639157f09f"
+  },
+  "helmet00_25A7": {
+   "new_rgba_sha256": "ad8959cdf99ca808b86bfe92ba2028e957fb44eb111b76b6817567cf54018b93",
+   "source_rgba_sha256": "d854209e2cccba54a8f39492f9ba96a37aac486aa0ffc91872596dbecd4f917e"
+  },
+  "helmet00_25H7": {
+   "new_rgba_sha256": "ad8959cdf99ca808b86bfe92ba2028e957fb44eb111b76b6817567cf54018b93",
+   "source_rgba_sha256": "d854209e2cccba54a8f39492f9ba96a37aac486aa0ffc91872596dbecd4f917e"
+  },
+  "helmet00_27A0": {
+   "new_rgba_sha256": "d80178627b5bf1508994e5d052cc2f51899f3d5ef4765fd0711638c0d41a86af",
+   "source_rgba_sha256": "a4e52b207f91e700970bfa339120bc7ffac581e92b9d65854615202bcdeef1b9"
+  },
+  "helmet00_27H0": {
+   "new_rgba_sha256": "d80178627b5bf1508994e5d052cc2f51899f3d5ef4765fd0711638c0d41a86af",
+   "source_rgba_sha256": "a4e52b207f91e700970bfa339120bc7ffac581e92b9d65854615202bcdeef1b9"
+  },
+  "helmet00_28A7": {
+   "new_rgba_sha256": "b8c5f908207e2daf00279f4884cf5c892be598a6ce3a41d5d0061473e2a6114d",
+   "source_rgba_sha256": "f7bb3215716410a6c320e9c8fa8410edb12e1f3af2e49eeb82d98d73b7ba7233"
+  },
+  "helmet00_28H7": {
+   "new_rgba_sha256": "b8c5f908207e2daf00279f4884cf5c892be598a6ce3a41d5d0061473e2a6114d",
+   "source_rgba_sha256": "f7bb3215716410a6c320e9c8fa8410edb12e1f3af2e49eeb82d98d73b7ba7233"
+  },
+  "helmet00_29A9": {
+   "new_rgba_sha256": "71cca8afa66f1712aa8e53e62fa874c99932a52ef8dbbad447ae0cc9b4e8e1cd",
+   "source_rgba_sha256": "40b01274b1635af14eeca5be3f2a66a316957904cf6f911fccb8c10fdd0ae25e"
+  },
+  "helmet00_29H9": {
+   "new_rgba_sha256": "71cca8afa66f1712aa8e53e62fa874c99932a52ef8dbbad447ae0cc9b4e8e1cd",
+   "source_rgba_sha256": "40b01274b1635af14eeca5be3f2a66a316957904cf6f911fccb8c10fdd0ae25e"
+  },
+  "helmet00_37A2": {
+   "new_rgba_sha256": "6b015c117eaf85cdf88c075066a646c9e40629bf803c06e690c3f406c8771b15",
+   "source_rgba_sha256": "f27e1411c87c1ed2528d1565ddb7d0993706e075be05fdd58cb8167ef38c6600"
+  },
+  "helmet00_37H2": {
+   "new_rgba_sha256": "6b015c117eaf85cdf88c075066a646c9e40629bf803c06e690c3f406c8771b15",
+   "source_rgba_sha256": "f27e1411c87c1ed2528d1565ddb7d0993706e075be05fdd58cb8167ef38c6600"
+  },
   "helmet02_03A8": {
-   "new_rgba_sha256": "b8793c3e2d6ce1606bc1f9b2e45cc2779263a939e7427cd48fa20044928124ba",
+   "new_rgba_sha256": "d54954cffb39d8b063587f6e8c52f6d10323e8f413e2913f5aa11634f9540f1e",
    "source_rgba_sha256": "d68822628c3c5adc85d81db77f4bd418bf8642edce6c18f3397bc523bd415f0f"
   },
   "helmet02_03H8": {
-   "new_rgba_sha256": "b8793c3e2d6ce1606bc1f9b2e45cc2779263a939e7427cd48fa20044928124ba",
+   "new_rgba_sha256": "d54954cffb39d8b063587f6e8c52f6d10323e8f413e2913f5aa11634f9540f1e",
    "source_rgba_sha256": "d68822628c3c5adc85d81db77f4bd418bf8642edce6c18f3397bc523bd415f0f"
   },
   "helmet02_08A5": {
@@ -2908,69 +3188,109 @@
   }
  },
  "minis": {
-  "mini_a00_0": {
-   "changed_pixels": 38,
-   "new_rgba_sha256": "4ed42b16c6c4f569902752e3977a628cf900fabef376261e968129ece1ece25f",
-   "source_rgba_sha256": "2e6564c9af185b69b96c480fb564ba809daceb165a36c7138312acbd05cc5ce6"
+  "mini_a01_0": {
+   "changed_pixels": 597,
+   "new_rgba_sha256": "a5d56fdcda1bd6cdefb24be148ef22b539368a46e379c16946db64f09d3a351c",
+   "source_rgba_sha256": "a6652c58d2859c45fa3644de471735d8aa03bcdd6bf628ed4c5698418615b9d3"
   },
   "mini_a02_0": {
-   "changed_pixels": 414,
-   "new_rgba_sha256": "83035cd219291bb29afc234be8e050d4236af6c3962b3d96ea99aabb4dda3c41",
+   "changed_pixels": 489,
+   "new_rgba_sha256": "161347105555b82f98c2d57babb025a52e66814a636a514678222e70ff39442d",
    "source_rgba_sha256": "faffb31b7cceccbba13039c1fb380a5cfa0f4ca808baaf51c78c8c6ed819223f"
   },
+  "mini_a03_0": {
+   "changed_pixels": 621,
+   "new_rgba_sha256": "85e0aa8772024a6f7a8f1204422473483f989b530014fbf1141321637d443d8e",
+   "source_rgba_sha256": "fcf12995375bd8d896ce01e64a1183efc1887b0173dc85fafcd63f20a258cfb2"
+  },
+  "mini_a04_0": {
+   "changed_pixels": 453,
+   "new_rgba_sha256": "f0927f975c380ceb63fa8da85676f7e88e8adbfb5a0b90efd85f369360560dea",
+   "source_rgba_sha256": "da683429a623c594f7046e1aeb6e96b5b3489e8fe8d6cfa43f856b37f715568b"
+  },
   "mini_a09_0": {
-   "changed_pixels": 187,
-   "new_rgba_sha256": "617ead852fcf20a7752c140421a7d772102f55d50ddc45743c32848d8a5b57f3",
+   "changed_pixels": 546,
+   "new_rgba_sha256": "3f90b545f1bcb252787c55ed547a182f4b0ad54009c68c09a1e260af09ffa743",
    "source_rgba_sha256": "a4d29cba8bb5c53ffd480bbec6a1d0d69a65cb1e45d0a7e70243f85badf0b4f7"
   },
+  "mini_a12_0": {
+   "changed_pixels": 670,
+   "new_rgba_sha256": "ab162d5f009be20476ed89da8cf22010279343e53f9937516329d210cbfa283c",
+   "source_rgba_sha256": "d55d200d9196e352381fb4f6e7fc8f3168d5aff8eaacb280fd8b547576e5c8a7"
+  },
+  "mini_a13_0": {
+   "changed_pixels": 764,
+   "new_rgba_sha256": "2b39e0975fd1abc3af31b9d0da2327a86bbb9de4080d690e9e7050ed4c4fd891",
+   "source_rgba_sha256": "8dc76c57550b516af0ab27a212ebd0fca47f5de79acfac74020225368f223f7b"
+  },
+  "mini_a14_0": {
+   "changed_pixels": 604,
+   "new_rgba_sha256": "c905166c3dacda5880f93c7a43044c3bbecf0b5b9e3a1f45d3c7438763745fde",
+   "source_rgba_sha256": "02e08ea9bbbce5ffc37b64791ad4265ddb1dd77003af51f3b90de702f5ee7b4e"
+  },
+  "mini_a24_0": {
+   "changed_pixels": 353,
+   "new_rgba_sha256": "c93e83e875f04001e818395d73176c893cd943a68280ba07a6ee19cddf27e045",
+   "source_rgba_sha256": "4c3162077c4faebbc93efd120449e914a05478f32e1e91124e22730c4a2617de"
+  },
+  "mini_a27_0": {
+   "changed_pixels": 640,
+   "new_rgba_sha256": "1220c8d9ab848a93a76adbcf8302f7251aa1003f90f3456ba4f1ac56aaea81d7",
+   "source_rgba_sha256": "f1986579d21e557b29c6ac8d0ea4ea2058a75f15976f6c6305213972e89a09ae"
+  },
   "mini_h00_0": {
-   "changed_pixels": 455,
-   "new_rgba_sha256": "b9abfbe0db5b1300d0ea5ca390a148a34a0e36fe971a3e5a4c7dcfd2dabef39d",
+   "changed_pixels": 451,
+   "new_rgba_sha256": "50fa901d7f0578fe4da3b7e2dcd839de7eceb6cf2a52f18ac7c7ac7c0e251e6c",
    "source_rgba_sha256": "59b17d9e958f282cb69b8f461cdb919e38f5622937e40cfc4c0b1c427ebc5b97"
   },
   "mini_h01_0": {
-   "changed_pixels": 781,
-   "new_rgba_sha256": "ae7a0eabc07815a41d3abded68354b96c45b348e0e2ad2ee65bb4f08a3c442e2",
+   "changed_pixels": 776,
+   "new_rgba_sha256": "92bac23edfd57ec9b0af6eb232d8fadf787fd0d846dcd71dbda9519a7b2bb4f2",
    "source_rgba_sha256": "ded211837a2404a79695487debdbe1490883b5d00cccb41ef43621303d9e7983"
   },
   "mini_h02_0": {
-   "changed_pixels": 527,
-   "new_rgba_sha256": "e2da57bae5aec613afcc974ddb979216dffefcd7b5df9cc6af8335a64ddfe847",
+   "changed_pixels": 510,
+   "new_rgba_sha256": "4e8dd97bd917221a877a703f405523617d649a612c316e401e29935087eb4566",
    "source_rgba_sha256": "a553cb520efbed0cfa81424585b6417366f489c1dab02f5112ab92f103a46099"
   },
   "mini_h03_0": {
-   "changed_pixels": 797,
-   "new_rgba_sha256": "1652d5873d6b3e791e8288be7ceaede430449da0b823ff29ae722d674030e88b",
+   "changed_pixels": 822,
+   "new_rgba_sha256": "ba001642a43648de25d676639731baacd08e7c1240930ecc4ce0ed9305111a4d",
    "source_rgba_sha256": "e998cfaf6a3ed51a4302e37112591d02b6d377ad62ef7d48ee1d0bf2b6a1b7fb"
   },
   "mini_h04_0": {
-   "changed_pixels": 717,
-   "new_rgba_sha256": "e6e1ab3718174eab9b098d8cb7cc9b9f74d675b69d24e29b40a6dabd09a7a48f",
+   "changed_pixels": 748,
+   "new_rgba_sha256": "5bd3265dcb7a56c697c6a8bf9fb7af0a6c76091af46b830ca3e2cd2cdf805f78",
    "source_rgba_sha256": "1a290a4b46f37cc7619d3fb0f42be38d15f622ca9ac46c72537a8ee152b53e2a"
   },
   "mini_h09_0": {
-   "changed_pixels": 743,
-   "new_rgba_sha256": "77b8658877643be2c0dbd33479d4f6d81afd207da010203209e17fb9c31976e0",
+   "changed_pixels": 725,
+   "new_rgba_sha256": "40dd5b3972ec0583226072b3e74504a77d123c7018c304e196e7c769da3780a4",
    "source_rgba_sha256": "af1f13831b80418950395b2e29c8cf964a5c1b7b7855c9ed6240a7d8dfec3f6e"
   },
   "mini_h12_0": {
-   "changed_pixels": 706,
-   "new_rgba_sha256": "0d9dcc13bd31a8f1c049e56f354dde0e4a699fb6cdb96c1fc8c9a6c484028315",
+   "changed_pixels": 704,
+   "new_rgba_sha256": "455d388727d7bc0474dcde8c6f96ebe8d7366a33b1fdb8b32638f2909bd4d167",
    "source_rgba_sha256": "0e706bb80754a70fdfe1cd6c14d99d6f07215319d53e091c0b772188ee413680"
   },
   "mini_h13_0": {
-   "changed_pixels": 895,
-   "new_rgba_sha256": "d2b476f74a754fe743ef0995776d77907560bb24fd0aaea2a47523a87fc39f2e",
+   "changed_pixels": 881,
+   "new_rgba_sha256": "e72d4322c0147e98143582d8ea3a68c362d42fa149637ba71da28ba42fe49e3c",
    "source_rgba_sha256": "1844cd6262f0eb032237ff1d0763f7c59624684c5663acc6f71b9e229f10287f"
   },
   "mini_h14_0": {
-   "changed_pixels": 689,
-   "new_rgba_sha256": "d6afaddc36c640759098447398684efc68c33547b75165311559235121f83841",
+   "changed_pixels": 707,
+   "new_rgba_sha256": "71baaf824645656a64eb08b7b859a1330f666069d7fbe816761408ba5b5cf28f",
    "source_rgba_sha256": "2744ecf469ccb3a8936b519013e638613cc45df16f0387cea902a7905e739c0e"
   },
+  "mini_h24_0": {
+   "changed_pixels": 603,
+   "new_rgba_sha256": "f4b22c29b718a7f85cf668ce7324d6f8b260b29b75fdf8c6d878fd80bbc8de9b",
+   "source_rgba_sha256": "96665ff3d6656bdb1ad3a1dc8ce1fb596f56edc96a921d6a9142d59c572bcd9b"
+  },
   "mini_h27_0": {
-   "changed_pixels": 789,
-   "new_rgba_sha256": "59929151239d3473daa72c7ecfb12562049f8e2481e3bc07002e9b857f3697eb",
+   "changed_pixels": 785,
+   "new_rgba_sha256": "0d8193e7984f640a2548fa93ec83f17372b37361fd83b253485a0a3ff3f04172",
    "source_rgba_sha256": "a3e67d532f48733fe9570221482791187d2e02c65291cddb604c716f7641a644"
   }
  },

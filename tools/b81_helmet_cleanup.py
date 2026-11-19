@@ -122,7 +122,8 @@ def build_row(selector: str, family: str, raw: bytes, cleaned_rgba: np.ndarray, 
     try:
         new, detail = kf.compile_texture(span, row)
     except Exception as exc:  # noqa: BLE001 - the fixed allocation is tight: keep the mip parents' indices crisp
-        if "scratch word" not in str(exc) and "does not fit" not in str(exc) and "fit" not in str(exc).lower():
+        text = str(exc)
+        if "scratch word" not in text and "does not fit" not in text and "fit" not in text.lower() and "stored body" not in text:
             raise
         row["mip"] = "mode"
         new, detail = kf.compile_texture(span, row)

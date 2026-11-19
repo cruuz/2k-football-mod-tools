@@ -11,7 +11,15 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 PINS = ROOT / "data/nfl2k5_b81_art_cards.json"
-SOURCES = Path(os.environ.get("B81_ART_SOURCES", "/media/noah/Storage/2K5-project/b81-art/src128"))
+SOURCES = Path(os.environ.get("B81_ART_SOURCES", "/media/noah/Storage/2K5-project/b81-art/src128-final"))
+#: the alternates whose logo is rebuilt from the official mark (Bills blue, Broncos white, Jaguars teal), both shells
+ALTERNATES = ("03_8", "08_5", "12_6")
+#: Standard-shell kits whose side logos are rebuilt from the modern shell (tests/mod_editor/test_b81_art_helmet_cleanup.py)
+STANDARD_REBUILT = ("00_0", "00_6", "00_7", "01_0", "02_0", "02_2", "02_3", "03_0", "03_3", "03_9", "04_0", "04_2",
+                    "05_4", "08_0", "08_6", "09_0", "09_2", "09_9", "10_5", "12_0", "13_0", "14_0", "14_10", "16_9",
+                    "18_7", "22_0", "22_5", "24_0", "24_9", "24_10", "25_7", "27_0", "28_7", "29_9", "37_2")
+NEW_HELMETS = ({f"{shell}_{kit[:2]}{side}{kit[3:]}" for shell in ("helmet00", "helmet02") for kit in ALTERNATES for side in "HA"}
+               | {f"helmet00_{kit[:2]}{side}{kit[3:]}" for kit in STANDARD_REBUILT for side in "HA"})
 
 
 def pins():
@@ -50,17 +58,19 @@ class Pins(unittest.TestCase):
 
     def test_minis_and_the_carolina_assignment(self):
         doc = pins()
-        # both sides for the clubs whose Standard-shell helmet lost old-logo pieces; the home side alone for the clubs
-        # whose left-side logo faced the back of the helmet
+        # a mini follows its Standard-shell helmet where that side's texture changes by 500 texels or more (the logo
+        # rebuilt from the modern shell, old-logo pieces gone) and the released mini is that texture's own render: both
+        # sides for these clubs, the home side alone for the Cardinals
         self.assertEqual(sorted(doc["minis"]), sorted(
-            [f"mini_{side}{code}_0" for code in ("00", "02", "09") for side in "ha"]
-            + [f"mini_h{code}_0" for code in ("01", "03", "04", "12", "13", "14", "27")]))
+            [f"mini_{side}{code}_0" for code in ("01", "02", "03", "04", "09", "12", "13", "14", "24", "27") for side in "ha"]
+            + ["mini_h00_0"]))
         for name, row in doc["minis"].items():
             self.assertNotEqual(row["source_rgba_sha256"], row["new_rgba_sha256"], name)
         # silver by default (the road kit's helmet), the black helmet with the 2012 panther on the blue alternate
         self.assertEqual(doc["helmet_reassign"], {"04H0": "04A0", "04H2": "04H0", "04A2": "04H0"})
-        # the three alternates whose logo is rebuilt (Bills blue, Broncos white, Jaguars teal): new source art, both shells
-        self.assertEqual(len(doc["helmets"]), 12)
+        # new source art: the three rebuilt alternates on both shells and every rebuilt Standard-shell kit, both sides
+        self.assertEqual(set(doc["helmets"]), NEW_HELMETS)
+        self.assertEqual(len(doc["helmets"]), 82)
         for name, row in doc["helmets"].items():
             self.assertNotEqual(row["source_rgba_sha256"], row["new_rgba_sha256"], name)
 
@@ -85,7 +95,7 @@ class SourceFolder(unittest.TestCase):
                 name = edit["asset_id"].split(":")[-1]
                 self.assertEqual(rgba_sha(edit["png"]), doc["minis"][name]["new_rgba_sha256"], name)
                 seen += 1
-        self.assertEqual(seen, 583)
+        self.assertEqual(seen, 570 + 21)
 
     def test_the_rebuilt_helmets_are_the_pinned_source_art(self):
         doc = pins()
@@ -97,14 +107,15 @@ class SourceFolder(unittest.TestCase):
                     self.assertEqual(rgba_sha(edit["png"]), doc["helmets"][name]["new_rgba_sha256"], name)
                     seen += 1
         self.assertEqual(seen, len(doc["helmets"]))
-        self.assertEqual(seen, 12)
+        self.assertEqual(seen, 82)
 
     def test_carolina_wears_the_assigned_helmets(self):
-        helmets = {(f"{e['asset_code']}{e['side']}{e['variant']}", e["family"]): e["png"]
+        helmets = {(f"{e['asset_code']}{e['side']}{e['variant']}", e["family"]): rgba_sha(e["png"])
                    for e in self.project["edits"] if e.get("kind") == "live_helmet"}
         doc = pins()
         # after the assignment the three slots hold: 04H0 = the road kit's silver helmet; 04H2 and 04A2 = one and the
-        # same black helmet, which is no longer the art of 04H0
+        # same black helmet, which is no longer the art of 04H0 (by pixels: the rebuilt Standard-shell helmets are
+        # new files per slot)
         for family in ("helmet00", "helmet02"):
             self.assertEqual(helmets[("04H0", family)], helmets[("04A0", family)])
             self.assertEqual(helmets[("04H2", family)], helmets[("04A2", family)])

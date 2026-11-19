@@ -44,7 +44,8 @@ def main():
             reg_ok = bool(d0['panels']) and all(d0['panels'].values())
             l0 = loose(name, T) & ~v & ~ndimage.binary_dilation(d0['foot'], iterations=1); l1 = loose(name, R) & ~v & ~ndimage.binary_dilation(d1['foot'], iterations=1)
             ov = fixtex2.OVERRIDES.get(f"{code}_0:{fam}", {})
-        rebuilt = bool(ov.get('mirror_lower') or ov.get('lower_from_modern'))
+        import refine
+        rebuilt = bool(ov.get('mirror_lower') or ov.get('lower_from_modern')) or (fam == 'helmet00' and refine.standard_follows_modern(name, T))
         if rebuilt:
             # the left side is now made from the right side (or the modern shell), so the official-logo registration of
             # the released texture no longer fits it: the right side is measured (with the released registration) and
@@ -54,12 +55,12 @@ def main():
             d1 = dict(d1, left=np.zeros((256, 256), bool), boxes=np.zeros((256, 256), bool))
         rows.append(dict(club=C.TEAMS[code], texture=name, registered=reg_ok,
                              flagged_before=int((d0['left'] & ~v).sum()), flagged_after=int((d1['left'] & ~d1['boxes'] & ~v).sum()),
-                             loose_retail_ink_before=int(l0.sum()), loose_retail_ink_after=int(l1.sum()),
-                         note='left side rebuilt from the right side; old-ink flags not applicable after' if rebuilt else ''))
+                             loose_retail_ink_before=int(l0.sum()), loose_retail_ink_after=(None if (fam == 'helmet00' and refine.standard_follows_modern(name, T)) else int(l1.sum())),
+                         note='logo rebuilt from the modern shell; old-ink flags not applicable after' if rebuilt else ''))
     json.dump(rows, open(C.WORK.parent / 'out' / 'same_shape.json', 'w'), indent=1)
     print('club tex reg flagged(before>after) loose(before>after)')
     for r in rows:
-        if r['flagged_before'] > 12 or r['loose_retail_ink_after'] > 40 or r['flagged_after'] > 12:
+        if r['flagged_before'] > 12 or (r['loose_retail_ink_after'] or 0) > 40 or r['flagged_after'] > 12:
             print(r['club'], r['texture'][:8], 'R' if r['registered'] else '-', f"{r['flagged_before']}>{r['flagged_after']}", f"{r['loose_retail_ink_before']}>{r['loose_retail_ink_after']}")
 
 if __name__ == '__main__':

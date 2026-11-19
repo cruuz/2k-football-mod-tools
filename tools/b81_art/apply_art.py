@@ -49,13 +49,16 @@ def main(argv=None):
             plan.append((e, 'png', art / 'assets' / 'files' / rec['file'], rec['source_rgba_sha256'], e['asset_id']))
         elif kind == 'live_helmet':
             sel = f"{e['asset_code']}{e['side']}{e['variant']}"
-            if sel in reassign:
+            if f"{e['family']}_{sel}" in new_helmets:
+                # a rebuilt logo: the slot's source art is replaced (on a Carolina slot this new art already is the
+                # assigned donor's texture, so it wins over the plain reassignment)
+                rec = new_helmets[f"{e['family']}_{sel}"]
+                plan.append((e, 'png', art / 'assets' / 'files' / rec['file'], rec['source_rgba_sha256'], f"{e['family']}_{sel}"))
+            elif sel in reassign:
                 donor = helmets[(reassign[sel], e['family'])]
                 plan.append((e, 'png', Path(donor['png']), None, f"{e['family']}_{sel} <- {reassign[sel]}"))
-            elif f"{e['family']}_{sel}" in new_helmets:
-                rec = new_helmets[f"{e['family']}_{sel}"]       # a rebuilt logo: the slot's source art is replaced
-                plan.append((e, 'png', art / 'assets' / 'files' / rec['file'], rec['source_rgba_sha256'], f"{e['family']}_{sel}"))
-    expected = sum(1 for r in cards.values() if r.get('file')) + len(minis) + 2 * len(reassign) + len(new_helmets)
+    both = sum(1 for name in new_helmets if name.split('_')[1] in reassign)
+    expected = sum(1 for r in cards.values() if r.get('file')) + len(minis) + 2 * len(reassign) + len(new_helmets) - both
     if len(plan) != expected:
         problems.append(f'{len(plan)} edits matched, {expected} expected')
     for e, key, new, want, label in plan:

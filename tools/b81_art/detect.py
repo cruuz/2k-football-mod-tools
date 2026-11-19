@@ -36,9 +36,12 @@ def texture_row(name, T, cleaned):
     if ov.get('mirror_lower') or ov.get('lower_from_modern'):
         # the left side is now made from the right side or the modern shell: it is judged by the right side's count
         up = after.copy(); up[128:] = False; after = up | up[::-1]
-    row.update(old_logo_texels_before=int((d0['left'] & ~v).sum()), old_logo_texels_after=None if ov.get('real_mark') else int(after.sum()),
+    import refine
+    moved = fam == 'helmet00' and refine.standard_follows_modern(name, T)      # logo rebuilt from the modern shell: the
+    # released registration no longer describes it, so the old-ink count cannot be taken on the finished texture
+    row.update(old_logo_texels_before=int((d0['left'] & ~v).sum()), old_logo_texels_after=None if (ov.get('real_mark') or moved) else int(after.sum()),
                registered=bool(d0['panels'] and all(d0['panels'].values())),
-               note='stand-in drawing replaced by the real mark' if ov.get('real_mark') else ('left side rebuilt from the right side' if ov.get('mirror_lower') else ''))
+               note='logo rebuilt from the modern shell (place, angle, size)' if moved else ('stand-in drawing replaced by the real mark' if ov.get('real_mark') else ''))
     return row
 def project(mask, view, side):
     pid, u, v = compose.uv(view, side)

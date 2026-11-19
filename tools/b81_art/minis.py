@@ -1,7 +1,7 @@
 """Schedule/menu mini helmets (64 px) re-rendered from the cleaned Standard-shell helmets with the repo's own mini
 renderer (tools/nfl2k5_team_logos_2026.py minis: same camera, light, shell A, facemask 07), composed like the cards."""
 import sys, json, subprocess, os, hashlib; sys.path.insert(0, __import__('os').path.dirname(__import__('os').path.abspath(__file__)))
-import cardlib as C, numpy as np, compose, assign
+import cardlib as C, numpy as np, compose, assign, final
 from scipy import ndimage
 from pathlib import Path
 from PIL import Image
@@ -40,8 +40,12 @@ def layer(path):
 PASS_MINIS = {'29', '13'}
 #: teams whose Standard-shell helmet lost old-logo pieces (beta 80's kit fix or this job): only their minis follow
 MINI_TEAMS = {'00', '02', '09', '01', '03', '04', '12', '13', '14', '27'}
+#: clubs whose Standard-shell logo is rebuilt from the modern shell (place, angle, size): both sides of their mini follow,
+#: unless the released mini was not rendered from the released texture (then the renders cannot carry the change over)
+FOLLOW = {'20', '22', '24', '26', '28', '19', '29'}
+MINI_TEAMS |= FOLLOW
 #: clubs added for the Standard-shell left-side logo that faced the back of the helmet: only that side's mini changes
-MINI_SIDES = {'01': 'h', '03': 'h', '04': 'h', '12': 'h', '13': 'h', '14': 'h', '27': 'h'}
+MINI_SIDES = {}
 #: the shipped Carolina minis are the silver helmet (the away slot's art), so the old render is made from that
 OLD_SELECTOR = {'04H0': '04A0'}
 def compose_mini(name):
@@ -70,15 +74,25 @@ def compose_mini(name):
 if __name__ == '__main__':
     if 'render' in sys.argv: render()
     OUTF = C.WORK.parent / 'out' / 'assets' / 'files'; OUTF.mkdir(parents=True, exist_ok=True)
-    mrec = {}
+    mrec = {}; skipped = []
     rows = []
     tiles = []
     for code in sorted(C.TEAMS):
         for side in 'ha':
             name = f'mini_{side}{code}_0'
             if code not in MINI_TEAMS or side not in MINI_SIDES.get(code, 'ha'): continue
+            # only a side whose Standard-shell texture really changes (the left side is the lower atlas island)
+            sel = f"{code}{'H' if side == 'h' else 'A'}0"
+            tn = C.WORK.parent / 'out' / 'helmets_compiled' / f'helmet00_{sel}.png'
+            newt = C.load(tn if tn.exists() else assign.new_tex_path('helmet00', sel)); oldt = final.helmet(f'helmet00_{OLD_SELECTOR.get(sel, sel)}')
+            diff = (np.abs(newt[..., :3].astype(int) - oldt[..., :3].astype(int)).max(axis=2) > 40)
+            diff = diff[128:, :142] if side == 'h' else diff[:128, :142]
+            if code != '02' and diff.sum() < 500: continue
             old, out, st = compose_mini(name)
             rows.append((name, st['changed'], st['hand']))
+            if st['changed'] and st['changed'] < 40: continue              # a resampling whisper, not a change
+            if st['changed'] and code != '02' and st['hand'] > 0.6 * max(1, st['zone']):
+                skipped.append((name, st['zone'], st['hand'])); continue      # the released mini is not this texture's render
             if st['changed']:
                 fn = f'b81art_{name}.png'
                 Image.fromarray(out, 'RGBA').save(OUTF / fn, optimize=False, compress_level=9)
@@ -88,6 +102,7 @@ if __name__ == '__main__':
             if st['changed'] > 0:
                 tiles.append(C.hstack([C.up(C.over(final_mini(name)), 10), C.up(C.over(C.quantize(out)), 10)], gap=2))
     print(sorted([r for r in rows if r[1] > 0], key=lambda r: -r[1]))
+    print('skipped (released mini not made from the released texture):', skipped)
     json.dump(mrec, open(C.WORK.parent / 'out' / 'mini_receipt.json', 'w'), indent=1, sort_keys=True)
     if tiles:
         rws = [C.hstack(tiles[i:i+2], gap=10) for i in range(0, len(tiles), 2)]
