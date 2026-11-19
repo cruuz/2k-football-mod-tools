@@ -159,9 +159,8 @@ TEAM_STAT_FIELDS: dict[int, int] = {
     0x1D4: 0x42, 0x1D6: 0x64, 0x1D8: 0x5B, 0x1DA: 0x5C, 0x1DE: 0xB8, 0x1E0: 0x30, 0x1E2: 0x40,
     0x1E4: 0x3F, 0x1E6: 0x16, 0x1E8: 0x17,
 }
-# the stat ids with a proved label (per-game descriptor table .data 0xAE59C0: "Passing Yards Per Game" =
-# 0x4C / games 0x63, "Rushing Yards Per Game" = 0x50, "Yds/Game" = 0x62, "Turnovers Per Game" = 0x42)
-TEAM_STAT_NAMES = {0x4C: "passing_yards", 0x50: "rushing_yards", 0x62: "total_yards", 0x42: "turnovers"}
+# Retail box-score labels at 0xAED668. Total offense (0xD0) is derived by the game.
+TEAM_STAT_NAMES = {0x4C: "passing_yards", 0x50: "rushing_yards", 0x62: "penalty_yards", 0x42: "turnovers"}
 
 COACH_SIZE = 0xA8
 # "body" is the model number (c%02d.iff of the low 16 bits; Finn's map reads a dword, whose upper half is the flag byte at
@@ -343,6 +342,9 @@ class TeamSeason:
     streak_bytes: tuple[int, ...]
 
     def stat(self, name: str) -> int:
+        if name == "total_yards":
+            # The native 0xD0 formula adds the two season totals, including when either is zero.
+            return self.stats.get(0x50, 0) + self.stats.get(0x4C, 0)
         for stat_id, label in TEAM_STAT_NAMES.items():
             if label == name:
                 return self.stats.get(stat_id, 0)
