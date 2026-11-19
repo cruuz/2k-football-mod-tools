@@ -291,9 +291,7 @@ class XboxSaveCopyOnVolumesWithoutAtomicFolderRename(unittest.TestCase):
 
 
 class Ps2CopyOnVolumesWithoutHardLinks(unittest.TestCase):
-    """The PS2 writer falls back to an exclusive write when the volume cannot link or rename without replacing. Its errno
-    list names EOPNOTSUPP but not ENOTSUP. They are the same number on Linux (95) and different on macOS (ENOTSUP 45,
-    EOPNOTSUPP 102), and macOS exFAT, FAT and SMB volumes answer link() with ENOTSUP."""
+    """The PS2 writer falls back to an exclusive write when the volume cannot link or rename without replacing."""
 
     def test_every_unsupported_errno_takes_the_verified_fallback(self) -> None:
         from mod_editor.core import ps2_save_service as service
@@ -317,6 +315,42 @@ class Ps2CopyOnVolumesWithoutHardLinks(unittest.TestCase):
                 self.assertTrue(result.verified, result.detail)
                 self.assertTrue((root / "copy.psu").is_file())
                 self.assertEqual(list(root.glob(".studio-ps2-*")), [])
+
+    def test_distinct_macos_link_errors_preserve_the_verified_psu_and_card(self) -> None:
+        from types import SimpleNamespace
+        from mod_editor.core import ps2_save_service as service
+        from test_ps2_save_dialog_qt import _two_save_card
+
+        # Linux aliases ENOTSUP to EOPNOTSUPP, so the host-only test cannot
+        # detect a missing ENOTSUP on Linux CI. Substitute just the service's errno table.
+        darwin = SimpleNamespace(EPERM=1, ENOSYS=78, ENOTSUP=45, EOPNOTSUPP=102)
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            source = root / "source.ps2"
+            _, selected = _two_save_card(source)
+            original = source.read_bytes()
+            editor = service.Ps2SaveService()
+            editor.open(source, selected)
+            editor.set_name(0, "first", "Echo")
+            for suffix in (".psu", ".ps2"):
+                control = root / ("control" + suffix)
+                self.assertTrue(editor.write(control).verified)
+                with patch.object(service, "errno", darwin):
+                    for code in (darwin.ENOTSUP, darwin.EOPNOTSUPP, errno.EIO):
+                        with self.subTest(suffix=suffix, code=code):
+                            target = root / (str(code) + suffix)
+                            error = OSError(code, "filesystem error during verified publication")
+                            with patch.object(service, "publish_no_replace", side_effect=error):
+                                if code == errno.EIO:
+                                    with self.assertRaises(service.ValidationError) as caught:
+                                        editor.write(target)
+                                    self.assertIs(caught.exception.__cause__, error)
+                                    self.assertFalse(target.exists())
+                                else:
+                                    self.assertTrue(editor.write(target).verified)
+                                    self.assertEqual(target.read_bytes(), control.read_bytes())
+                            self.assertEqual(source.read_bytes(), original)
+                            self.assertEqual(list(root.glob(".studio-ps2-*")), [])
 
 
 class BuildTabDiscKeepsItsXemuCheck(unittest.TestCase):
