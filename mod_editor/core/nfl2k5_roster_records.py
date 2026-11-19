@@ -2124,6 +2124,92 @@ class RosterDocument:
         self._set_specialists(team, specialists_after_exchange(self._specialists(team), slot, target))
         return True
 
+    # ------------------------------------------------------------------ special teams (b81 R3)
+    # Codex's native witness (finn-facts FACTS.md): the six bytes at team +0x194..+0x199 are signed indexes into the
+    # club's pointer list (0xFF = nobody): holder, KR1, KR2, stored kicker, stored long snapper, PR. KR1, KR2 and PR
+    # pick the screen rows and the formation's returners, the holder byte the holder (a SOFTDRINK disc's punter-as-
+    # holder option fields the punter regardless). The stored kicker and long snapper bytes do not decide who plays:
+    # K #1 kicks, P #1 punts and the center at C #2 snaps on punts and kicks (rank order). On SOFTDRINK the weekly pass
+    # puts a returner back on the player who holds that returner's lock claim (+0x52), so the claim moves with him.
+    RETURNER_ROLES = ("kr1", "kr2", "pr")
+    RETURNER_CODES = (3, 4, 5, 6, 7, 8)              # WR, CB, FS, SS, HB, FB: the lock owners the patch accepts
+
+    def special_teams(self, team_index: int) -> dict[str, Any]:
+        """The club's special teams as the game picks them: the role bytes (as players) and the depth-chart roles."""
+
+        team = self.teams[team_index]
+        def at(value: int) -> Player | None:
+            return self.by_offset[team.slots[value]] if value < 0x80 and value < len(team.slots) else None
+        stored = dict(zip(SPECIAL_TEAM_OFFSETS, self._specialists(team)))
+        kickers, punters, centers = (self.depth_order(team_index, code) for code in (1, 2, 12))
+        return {"holder": at(stored["h"]), "kr1": at(stored["kr1"]), "kr2": at(stored["kr2"]), "pr": at(stored["pr"]),
+                "kicker": kickers[0] if kickers else None, "punter": punters[0] if punters else None,
+                "long_snapper": centers[1] if len(centers) > 1 else None,
+                "stored_kicker": at(stored["k"]), "stored_long_snapper": at(stored["ls"]), "bytes": stored}
+
+    def special_teams_snapshot(self, team_index: int) -> dict[str, Any]:
+        team = self.teams[team_index]
+        return {"team": team_index, "bytes": self._specialists(team),
+                "players": {p.offset: (p.record.values["depth_rank"], p.record.values["depth_side"],
+                                       p.record.values["unknown_52"]) for p in self.team_players(team_index)}}
+
+    def restore_special_teams(self, snapshot: Mapping[str, Any]) -> None:
+        self._set_specialists(self.teams[int(snapshot["team"])], snapshot["bytes"])
+        self.restore_depth(snapshot["players"])
+
+    def _role_slot(self, team: TeamRecord, player: Player | None) -> int:
+        if player is None:
+            return 0xFF
+        _require(player.offset in team.slots, f"{player.display} is not on {team.display}'s active list")
+        return team.slots.index(player.offset)
+
+    def set_special_role(self, team_index: int, role: str, player: Player | None) -> None:
+        """Holder, KR1, KR2 or PR (``None`` = nobody): the team byte, and for a returner his lock claim, which leaves
+        whoever held it so the patched weekly pass keeps the choice. Kicker, punter and long snapper go through
+        ``set_depth_role``: the game picks them by depth rank."""
+
+        _require(role in ("holder",) + self.RETURNER_ROLES, f"{role!r} is not a team byte role; use set_depth_role")
+        team = self._team_for_membership(team_index)
+        _require(team.is_club, "special teams belong to a club")
+        _require(player is None or self.by_offset.get(player.offset) is player, "player belongs to another document")
+        if role in self.RETURNER_ROLES and player is not None:
+            _require(player.record.values["position"] in self.RETURNER_CODES,
+                     f"{player.display} is a {player.record.position_name}: returners are WR, CB, FS, SS, HB or FB "
+                     "(the positions the returner lock accepts)")
+        slot = self._role_slot(team, player)
+        values = self._specialists(team)
+        values[list(SPECIAL_TEAM_OFFSETS).index("h" if role == "holder" else role)] = slot
+        self._set_specialists(team, values)
+        if role in self.RETURNER_ROLES:
+            if player is None:
+                for peer in self.team_players(team_index):
+                    peer.record.set_depth_lock(role, False)
+            else:
+                self.set_depth_lock(player, role, True, team_index=team_index)
+
+    def set_depth_role(self, team_index: int, role: str, player: Player) -> dict[str, Any]:
+        """The kicker (K #1), punter (P #1) or long snapper (the center at C #2, who snaps on punts and kicks): a depth
+        chart change (``place_in_depth``), and the stored kicker / long snapper byte follows him (the game does not use
+        it to pick who plays; the weekly pass refills the snapper byte for a computer-run club)."""
+
+        rows = {"kicker": (1, 0, "k"), "punter": (2, 0, None), "long_snapper": (12, 1, "ls")}
+        _require(role in rows, f"{role!r} is not a depth chart role")
+        code, row, byte = rows[role]
+        team = self._team_for_membership(team_index)
+        _require(player.record.values["position"] == code,
+                 f"{player.display} is a {player.record.position_name}; make him "
+                 f"{position_name(code, self.scheme)} first (the game picks this role by {position_name(code, self.scheme)} "
+                 "depth)")
+        if role == "long_snapper":
+            _require(len(self.depth_order(team_index, code)) >= 2,
+                     "the snap on punts and kicks comes from the second center by depth; this club has one center")
+        result = self.place_in_depth(player, row)
+        if byte is not None:
+            values = self._specialists(team)
+            values[list(SPECIAL_TEAM_OFFSETS).index(byte)] = self._role_slot(team, player)
+            self._set_specialists(team, values)
+        return result
+
     def _specialists(self, team: TeamRecord) -> list[int]:
         """The team's six specialist slot bytes (holder, KR1, KR2, K, LS, PR) as this document holds them now."""
 

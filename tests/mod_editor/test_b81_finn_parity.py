@@ -1243,5 +1243,160 @@ class DepthNativeTests(unittest.TestCase):
                 self.assertEqual(starters, [starter])
 
 
+# --------------------------------------------------------------------------------------------- wave 2: R3 special teams
+class SpecialTeamsCoreTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.document = rr.load_body(league_body())
+
+    def club(self, code: int) -> list[rr.Player]:
+        return self.document.depth_order(0, code)
+
+    def test_a_returner_writes_the_byte_and_takes_the_lock_claim(self) -> None:
+        doc = self.document
+        wr, cb = self.club(3)[0], self.club(4)[0]
+        doc.set_special_role(0, "kr1", wr)
+        self.assertIs(doc.special_teams(0)["kr1"], wr)
+        self.assertTrue(wr.record.depth_locks["kr1"])
+        doc.set_special_role(0, "kr1", cb)
+        self.assertIs(doc.special_teams(0)["kr1"], cb)
+        self.assertFalse(wr.record.depth_locks["kr1"], "the claim leaves the old returner")
+        self.assertTrue(cb.record.depth_locks["kr1"])
+        doc.set_special_role(0, "kr1", None)
+        self.assertIsNone(doc.special_teams(0)["kr1"])
+        self.assertFalse(cb.record.depth_locks["kr1"])
+        self.assertEqual(doc.special_teams(0)["bytes"]["kr1"], 0xFF)
+        with self.assertRaisesRegex(rr.RosterRecordError, "returners are WR, CB, FS, SS, HB or FB"):
+            doc.set_special_role(0, "pr", self.club(0)[0])
+        doc.set_special_role(0, "holder", self.club(0)[0])
+        self.assertIs(doc.special_teams(0)["holder"], self.club(0)[0])
+
+    def test_kicker_punter_and_snapper_are_depth_rows_and_the_stored_bytes_follow(self) -> None:
+        doc = self.document
+        kickers, centers = self.club(1), self.club(12)
+        doc.set_depth_role(0, "kicker", kickers[-1])
+        self.assertIs(doc.special_teams(0)["kicker"], kickers[-1])
+        self.assertIs(doc.special_teams(0)["stored_kicker"], kickers[-1])
+        doc.set_depth_role(0, "long_snapper", centers[0])
+        roles = doc.special_teams(0)
+        self.assertIs(roles["long_snapper"], centers[0], "C #2 snaps on punts and kicks")
+        self.assertIs(self.club(12)[1], centers[0])
+        self.assertIs(roles["stored_long_snapper"], centers[0])
+        with self.assertRaisesRegex(rr.RosterRecordError, "make him K first"):
+            doc.set_depth_role(0, "kicker", self.club(0)[0])
+        punter = self.club(2)[-1]
+        doc.set_depth_role(0, "punter", punter)
+        self.assertIs(doc.special_teams(0)["punter"], punter)
+
+    def test_release_sign_move_and_swap_keep_every_role_on_its_player(self) -> None:
+        doc = self.document
+        wr, cb, hb, qb = self.club(3)[-1], self.club(4)[-1], self.club(7)[-1], self.club(0)[0]
+        doc.set_special_role(0, "kr1", wr)
+        doc.set_special_role(0, "kr2", cb)
+        doc.set_special_role(0, "pr", hb)
+        doc.set_special_role(0, "holder", qb)
+        team = doc.teams[0]
+        first = doc.by_offset[team.slots[0]]
+        if first in (wr, cb, hb, qb):
+            first = doc.by_offset[team.slots[1]]
+        doc.release(first)                                  # every later role byte moves down one slot
+        roles = doc.special_teams(0)
+        self.assertEqual((roles["kr1"], roles["kr2"], roles["pr"], roles["holder"]), (wr, cb, hb, qb))
+        doc.sign(next(p for p in doc.players if p.last == "AgentOne"), 0)
+        roles = doc.special_teams(0)
+        self.assertEqual((roles["kr1"], roles["kr2"], roles["pr"], roles["holder"]), (wr, cb, hb, qb))
+        other = doc.team_players(1)[0]
+        doc.swap(cb, other)                                 # KR2 leaves the club: nobody holds it
+        roles = doc.special_teams(0)
+        self.assertEqual((roles["kr1"], roles["pr"], roles["holder"]), (wr, hb, qb))
+        self.assertIsNone(roles["kr2"])
+        doc.move_in_depth(0, team.slots.index(wr.offset), 1 if team.slots.index(wr.offset) == 0 else -1)
+        self.assertIs(doc.special_teams(0)["kr1"], wr, "a pointer exchange keeps the role on him")
+
+
+class SpecialTeamsPanelTests(_PanelCase):
+    body_factory = staticmethod(league_body)
+
+    def test_the_dialog_applies_as_one_undo_and_says_how_the_game_picks(self) -> None:
+        from mod_editor.gui.roster_editor_panel_qt import SpecialTeamsDialog
+        panel = self.panel
+        self.assertTrue(panel.special_teams_button.isEnabled())
+        doc = panel.document
+        dialog = SpecialTeamsDialog(panel, 0)
+        self.assertIn("C #2", dialog.notes["long_snapper"].text())
+        self.assertIn("K #1", dialog.notes["kicker"].text())
+        wr = doc.depth_order(0, 3)[-1]
+        center = doc.depth_order(0, 12)[0]
+        dialog.combos["kr1"].setCurrentIndex(dialog.combos["kr1"].findData(wr.offset))
+        dialog.combos["long_snapper"].setCurrentIndex(dialog.combos["long_snapper"].findData(center.offset))
+        holder = doc.special_teams(0)["kr1"]
+        positions = {dialog.combos["kr1"].itemText(i).split()[0] for i in range(1, dialog.combos["kr1"].count())
+                     if dialog.combos["kr1"].itemData(i) != (holder.offset if holder else None)}
+        self.assertTrue(positions <= {"WR", "CB", "FS", "SS", "HB", "FB"}, positions)
+        before = doc.special_teams_snapshot(0)
+        self.assertTrue(dialog.apply())
+        self.assertIs(doc.special_teams(0)["kr1"], wr)
+        self.assertIs(doc.special_teams(0)["long_snapper"], center)
+        self.assertEqual(panel.status_label.text(), "IND special teams set: KR1, long snapper.",
+                         "untouched roles are left alone")
+        panel.undo()
+        self.assertEqual(doc.special_teams_snapshot(0), before, "one undo takes it all back")
+        panel.redo()
+        self.assertIs(doc.special_teams(0)["kr1"], wr)
+        panel.team_list.setCurrentRow(panel._team_list_row("free_agent", -1))
+        self.assertFalse(panel.special_teams_button.isEnabled())
+
+
+@unittest.skipUnless(SOFTDRINK_ROSTER_SAVE.is_file(), f"SOFTDRINK roster save absent: {SOFTDRINK_ROSTER_SAVE}")
+class SpecialTeamsSoftdrinkTests(unittest.TestCase):
+    def test_the_49ers_read_as_the_game_fields_them_and_a_new_kr1_reaches_the_signed_copy(self) -> None:
+        doc = rr.load_save(SOFTDRINK_ROSTER_SAVE, detect=True)
+        roles = {k: (v.display if isinstance(v, rr.Player) else v) for k, v in doc.special_teams(0).items()}
+        # Codex's witness on this disc roster: Samuel, James and Cowing return; Pineiro kicks; Waitman punts and
+        # holds; Jon Weeks is the center at C #2 who snaps on punts and kicks
+        self.assertEqual((roles["kr1"], roles["kr2"], roles["pr"], roles["kicker"], roles["punter"],
+                          roles["long_snapper"]),
+                         ("Deebo Samuel", "Jordan James", "Jacob Cowing", "Eddy Pineiro", "Corliss Waitman",
+                          "Jon Weeks"))
+        samuel = doc.special_teams(0)["kr1"]
+        new = next(p for p in doc.depth_order(0, 3) if p is not samuel and p is not doc.special_teams(0)["kr2"]
+                   and p is not doc.special_teams(0)["pr"])
+        doc.set_special_role(0, "kr1", new)
+        with tempfile.TemporaryDirectory() as folder:
+            rr.save_document(doc, Path(folder) / "copy.zip")
+            back = rr.load_save(Path(folder) / "copy.zip")
+            self.assertTrue(rr.SaveContainer.load(Path(folder) / "copy.zip").verified)
+            after = back.special_teams(0)
+            self.assertEqual(after["kr1"].display, new.display)
+            self.assertEqual((after["kr2"].display, after["pr"].display), ("Jordan James", "Jacob Cowing"))
+            moved = next(p for p in back.team_players(0) if p.display == new.display)
+            old = next(p for p in back.team_players(0) if p.display == "Deebo Samuel")
+            self.assertTrue(moved.record.depth_locks["kr1"])
+            self.assertFalse(old.record.depth_locks["kr1"])
+
+
+class SpecialTeamsNativeTests(unittest.TestCase):
+    """The patched weekly pass 0x2BDCF0 over a club the Studio's chooser edited (in-tree Unicorn harness)."""
+
+    def test_a_chosen_returner_survives_the_weekly_pass_only_with_his_lock(self) -> None:
+        CPU, XBE = _depth_cpu()
+        import struct
+        from mod_editor.core import nfl2k5_depth_locks as locks
+        from mod_editor.core import nfl2k5_returner_fix as returners
+        from test_nfl2k5_depth_locks import record
+        patched = locks.apply(returners.apply(XBE.read_bytes())[0])[0]
+        base = [record(position=3, rank=r, side=r, score=.5) for r in range(3)]
+        base[0] = record(position=3, rank=0, side=0, bits=0x04, score=.5)      # the loaded KR1 holds the KR1 lock
+        for label, moved_lock, expected in (("Studio: byte and lock", True, 2), ("byte only", False, 0)):
+            records = [bytearray(raw) for raw in base]
+            if moved_lock:
+                records[0][0x52] &= ~0x04
+                records[2][0x52] |= 0x04
+            cpu = CPU(patched)
+            cpu.seed([bytes(raw) for raw in records], assignments=(2, 1, 1))
+            cpu.run(0x2BDCF0)
+            with self.subTest(label):
+                self.assertEqual(cpu.returner_identities()[0], expected)
+
+
 if __name__ == "__main__":
     unittest.main()

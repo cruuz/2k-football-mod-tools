@@ -1260,6 +1260,16 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    more overall points). A disc without the depth locks patch re-sorts computer-run teams every week anyway. The
    arrows work on the player's own club, one undo per move, and **Show my changes** lists the new rows. A CSV can set
    `depth_rank` and `depth_side` (0 = starter) the same way.
+
+   **Special teams…** (beside the arrows, or right-click) is Finn's Special Teams tab for the club shown. The kick
+   returners, the punt returner and the holder are slots in the club record: choosing a returner also moves that
+   returner's lock to him, because on SOFTDRINK the weekly roster pass gives the job back to whoever holds the lock.
+   The kicker, the punter and the long snapper are picked by the game from the depth chart (K #1 kicks, P #1 punts,
+   and on punts and kicks the center at C #2 snaps), so choosing one of them changes his depth row, and the panel says
+   so. The club record also stores a kicker and a long snapper slot; the game does not use them to pick who plays, and
+   the panel shows them for reference. A SOFTDRINK disc with the punter-as-holder option has the punter hold
+   whatever the holder slot says. Releasing, signing, moving or swapping players keeps every role on the same player;
+   a role whose player leaves the club is emptied, as the game itself does. One undo takes the whole change back.
 4. **Right**: the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
    Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
    ← → nudge by one, ↑ ↓ jump to the next card. Enum cards are dropdowns built from the tables lifted
@@ -1392,6 +1402,7 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Edit Player (double-click) | Select the player; the editor on the right is always open. PgUp / PgDn there move to the previous or next player |
 | Change Name `…` list | Type the name. A name that already exists is shared, which needs no free space |
 | Depth Chart (Ctrl+D) | Ctrl+D shows the selected player's position in depth chart order; **↑ Move up / ↓ Move down** change his row (the stored depth rank the game reads) |
+| Depth Chart > Special Teams | **Special teams…**: returners and holder; kicker, punter and long snapper through the depth chart |
 | The player grid (every rating as a column, click to sort) | **Columns ▾**, then click a heading |
 | Copy Player (Ctrl+C), Paste Player (Ctrl+V), Paste Attributes Only (Ctrl+Alt+A) | Same keys, or **Copy player** and **Paste ▾** |
 | Tools > Global Editor | **Global Attribute Editor…** |

@@ -1076,6 +1076,118 @@ class PlayerDataRestoreDialog(QDialog):
         return [name for name, box in self.groups.items() if box.isChecked()]
 
 
+# ------------------------------------------------------------------------------------------- b81 R3
+class SpecialTeamsDialog(QDialog):
+    """Finn's Special Teams tab for one club, with the game's own rules (Codex's native witness):
+    returners and holder are team bytes (a returner's lock claim moves with him), kicker, punter and long snapper are
+    depth chart rows."""
+
+    ROLES = (("kr1", "Kick returner 1", "Writes the club's KR1 slot and moves the KR1 lock to him, so SOFTDRINK's "
+                                        "weekly pass keeps him."),
+             ("kr2", "Kick returner 2", "Writes the KR2 slot and moves the KR2 lock to him."),
+             ("pr", "Punt returner", "Writes the PR slot and moves the PR lock to him."),
+             ("holder", "Holder", "Writes the holder slot. A SOFTDRINK disc with the punter-as-holder option uses the "
+                                  "punter instead."),
+             ("kicker", "Kicker", "The game's kicker is K #1 in the depth chart: choosing him moves him there."),
+             ("punter", "Punter", "The game's punter is P #1 in the depth chart: choosing him moves him there."),
+             ("long_snapper", "Long snapper", "On punts and kicks the snap comes from the center at C #2 in the depth "
+                                              "chart: choosing a center moves him there."))
+
+    def __init__(self, panel: "RosterEditorPanel", team_index: int) -> None:
+        super().__init__(panel)
+        self._panel = panel
+        self.team_index = team_index
+        document = panel.document
+        assert document is not None
+        team = document.teams[team_index]
+        self.setWindowTitle(f"Special teams: {team.display}")
+        outer = QVBoxLayout(self)
+        self._scroll = QScrollArea()
+        self._scroll.setWidgetResizable(True)
+        self._scroll.setFrameShape(QFrame.NoFrame)
+        self._body = QWidget()
+        layout = QVBoxLayout(self._body)
+        self._scroll.setWidget(self._body)
+        outer.addWidget(self._scroll, 1)
+        intro = QLabel("Pick each role from this club's active players. Kicker, punter and long snapper are chosen by "
+                       "the depth chart, so those three change depth rows. Nothing changes until you press Apply; "
+                       "Undo takes it all back.")
+        intro.setWordWrap(True)
+        layout.addWidget(intro)
+        grid = QGridLayout()
+        self.combos: dict[str, QComboBox] = {}
+        self.notes: dict[str, QLabel] = {}
+        current = document.special_teams(team_index)
+        players = document.team_players(team_index)
+        eligible = {"kr1": document.RETURNER_CODES, "kr2": document.RETURNER_CODES, "pr": document.RETURNER_CODES,
+                    "kicker": (1,), "punter": (2,), "long_snapper": (12,)}
+        for row, (role, label, note) in enumerate(self.ROLES):
+            combo = QComboBox()
+            combo.setAccessibleName(label)
+            if role in ("kr1", "kr2", "pr", "holder"):
+                combo.addItem("(nobody)", None)
+            chosen = current.get(role)
+            for player in players:
+                codes = eligible.get(role)
+                if codes is not None and player.record.values["position"] not in codes and player is not chosen:
+                    continue                     # the present holder always stays choosable, so Apply never clears him
+                combo.addItem(f"{player.record.position_name} #{player.record.values['jersey']} {player.display}",
+                              player.offset)
+            combo.setCurrentIndex(max(0, combo.findData(chosen.offset if chosen is not None else None)))
+            combo.setToolTip(note)
+            caption = QLabel(label)
+            caption.setToolTip(note)
+            grid.addWidget(caption, row * 2, 0)
+            grid.addWidget(combo, row * 2, 1)
+            hint = QLabel(note)
+            hint.setWordWrap(True)
+            hint.setObjectName("throwMuted")
+            grid.addWidget(hint, row * 2 + 1, 1)
+            self.combos[role] = combo
+            self.notes[role] = hint
+        grid.setColumnStretch(1, 1)
+        layout.addLayout(grid)
+        stored = []
+        for key, name in (("stored_kicker", "kicker"), ("stored_long_snapper", "long snapper")):
+            who = current.get(key)
+            stored.append(f"stored {name} slot: {who.display if who else 'nobody'}")
+        self.stored_label = QLabel("Also in the club record, not used to pick who plays: " + "; ".join(stored) + ".")
+        self.stored_label.setWordWrap(True)
+        layout.addWidget(self.stored_label)
+        self.status = QLabel("")
+        self.status.setWordWrap(True)
+        layout.addWidget(self.status)
+        buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Close)
+        buttons.button(QDialogButtonBox.Apply).clicked.connect(self.apply)
+        buttons.rejected.connect(self.reject)
+        outer.addWidget(buttons)
+        self._buttons = buttons
+
+    def choices(self) -> dict[str, int | None]:
+        return {role: combo.currentData() for role, combo in self.combos.items()}
+
+    def showEvent(self, event) -> None:  # noqa: N802 - Qt naming
+        super().showEvent(event)
+        # the roles scroll when large text makes them taller than the screen; Apply and Close always show
+        metrics = self.fontMetrics()
+        screen = _available_geometry(self)
+        width = metrics.averageCharWidth() * 84
+        if screen is not None:
+            width = min(width, screen.width() - 32)
+        inner = width - 2 * self.layout().contentsMargins().left() - self._scroll.verticalScrollBar().sizeHint().width()
+        body = self._body.layout()
+        height = (body.totalHeightForWidth(inner) if body.hasHeightForWidth() else body.totalSizeHint().height())
+        height += self._buttons.sizeHint().height() + 3 * self.layout().spacing() + 2 * self.layout().contentsMargins().top()
+        if screen is not None:
+            height = min(height, screen.height() - 48)
+        self.resize(width, height)
+
+    def apply(self) -> bool:
+        ok, message = self._panel.apply_special_teams(self.team_index, self.choices())
+        self.status.setText(message)
+        return ok
+
+
 # ------------------------------------------------------------------------------------------- pickers
 class AgeShiftDialog(QDialog):
     """Explicit season choice, review, then one undoable in-memory operation."""
@@ -1956,6 +2068,8 @@ class RosterEditorPanel(QWidget):
 
     def _build_grid_pane(self) -> QWidget:
         pane = QWidget()
+        # b81: wide enough for the grid's position, name and Depth columns; its button rows wrap below this
+        pane.setMinimumWidth(440)
         box = QVBoxLayout(pane)
         box.setContentsMargins(0, 0, 0, 0)
         self.search = QLineEdit()
@@ -2000,7 +2114,9 @@ class RosterEditorPanel(QWidget):
             lambda row, _c, _pr, _pc: self._select_row(row))
         box.addWidget(self.player_table, 1)
 
-        order = QHBoxLayout()
+        # b81: the depth tools wrap instead of squeezing (arrows, order box, Special teams, Unlock, Columns)
+        self.depth_tools = QWidget()
+        order = FlowLayout(self.depth_tools, spacing=6, pin_parent_height=True)
         self.up_button = QPushButton("↑ Move up")
         self.up_button.clicked.connect(lambda: self.move_selected(-1))
         self.down_button = QPushButton("↓ Move down")
@@ -2015,6 +2131,11 @@ class RosterEditorPanel(QWidget):
         order.addWidget(self.up_button)
         order.addWidget(self.down_button)
         order.addWidget(self.depth_order_combo)
+        self.special_teams_button = QPushButton("Special teams…")
+        self.special_teams_button.setToolTip("Finn's Special Teams: returners, holder, kicker, punter and long "
+                                             "snapper for the club shown.")
+        self.special_teams_button.clicked.connect(self.open_special_teams)
+        order.addWidget(self.special_teams_button)
         self.unlock_button = QPushButton("Unlock")
         self.unlock_button.clicked.connect(self.unlock_selected)
         order.addWidget(self.unlock_button)
@@ -2027,10 +2148,9 @@ class RosterEditorPanel(QWidget):
         self.columns_menu.aboutToShow.connect(self._fill_columns_menu)
         self.columns_button.setMenu(self.columns_menu)
         order.addWidget(self.columns_button)
-        order.addStretch(1)
         self.count_label = QLabel("")
-        order.addWidget(self.count_label)
-        box.addLayout(order)
+        box.addWidget(self.depth_tools)
+        box.addWidget(self.count_label)
         # b81 R2: a sorted grid is not the team's order, so the arrows wait until it is back
         sort_row = QHBoxLayout()
         self.sort_note = QLabel("")
@@ -2048,7 +2168,8 @@ class RosterEditorPanel(QWidget):
         self.sort_box.setVisible(False)
         box.addWidget(self.sort_box)
 
-        membership = QHBoxLayout()
+        self.membership_tools = QWidget()
+        membership = FlowLayout(self.membership_tools, spacing=6, pin_parent_height=True)
         self.release_button = QPushButton("Release to free agency")
         self.release_button.setToolTip(
             f"Take the player off this team's pointer list and add him to the free-agent list. "
@@ -2068,8 +2189,7 @@ class RosterEditorPanel(QWidget):
         self.swap_button.clicked.connect(self.open_swap_dialog)
         for widget in (self.release_button, self.team_menu_button, self.swap_button):
             membership.addWidget(widget)
-        membership.addStretch(1)
-        box.addLayout(membership)
+        box.addWidget(self.membership_tools)
         moves = QHBoxLayout()
         self.promote_button = QPushButton("Promote")
         self.demote_button = QPushButton("Demote")
@@ -3476,6 +3596,68 @@ class RosterEditorPanel(QWidget):
             return
         self._set_status(f"Wrote {chosen} ({len(self._rows)} players).")
 
+    # ------------------------------------------------------------------ special teams (b81 R3)
+    def open_special_teams(self) -> SpecialTeamsDialog | None:
+        kind, index = self._group
+        if self.document is None or kind != "team" or not 0 <= index < len(self.document.teams) \
+                or not self.document.teams[index].is_club:
+            self._set_status("Open a club to set its special teams.")
+            return None
+        dialog = SpecialTeamsDialog(self, index)
+        dialog.exec_()
+        return dialog
+
+    def apply_special_teams(self, team_index: int, choices: Mapping[str, int | None]) -> tuple[bool, str]:
+        """Apply the Special teams choices as one undo: role bytes and returner locks, then the depth rows."""
+
+        if self.document is None:
+            return False, "Load a roster first."
+        document = self.document
+        current = document.special_teams(team_index)
+        before = document.special_teams_snapshot(team_index)
+        changed = []
+        try:
+            for role in ("holder", "kr1", "kr2", "pr", "kicker", "punter", "long_snapper"):
+                if role not in choices:
+                    continue
+                wanted = choices[role]
+                now = current.get(role)
+                if (now.offset if now is not None else None) == wanted:
+                    continue
+                player = document.by_offset.get(wanted) if wanted is not None else None
+                if role in ("kicker", "punter", "long_snapper"):
+                    if player is None:
+                        continue
+                    document.set_depth_role(team_index, role, player)
+                else:
+                    document.set_special_role(team_index, role, player)
+                changed.append(role)
+        except rr.RosterRecordError as exc:
+            document.restore_special_teams(before)
+            self._set_status(f"Nothing changed: {exc}")
+            return False, f"Nothing changed: {exc}"
+        if not changed:
+            return False, "Nothing to change."
+        after = document.special_teams_snapshot(team_index)
+        touched = [document.by_offset[offset] for offset, values in after["players"].items()
+                   if before["players"].get(offset) != values]
+        team = document.teams[team_index]
+
+        def put(snapshot) -> None:
+            assert self.document is not None
+            self.document.restore_special_teams(snapshot)
+            for player in touched:
+                self._after_edit(player)
+            self.refresh_grid()
+
+        self.undo_stack.push(UndoEntry(f"{team.abbreviation}: special teams", lambda: put(before), lambda: put(after)))
+        put(after)
+        words = {"kr1": "KR1", "kr2": "KR2", "pr": "PR", "holder": "holder", "kicker": "kicker", "punter": "punter",
+                 "long_snapper": "long snapper"}
+        message = f"{team.abbreviation} special teams set: {', '.join(words[r] for r in changed)}."
+        self._set_status(message)
+        return True, message
+
     # ------------------------------------------------------------------ find and keys (b81 R1, R6)
     def studio_find(self) -> bool:
         """The studio's Ctrl+F on this page: Finn's Find Player over the whole league once a roster is loaded,
@@ -3627,6 +3809,8 @@ class RosterEditorPanel(QWidget):
         action = menu.addAction("Only his position", self.show_position_players)
         action.setShortcut(QKeySequence("Ctrl+D"))
         action.setEnabled(loaded)
+        action = menu.addAction("Special teams…", self.open_special_teams)
+        action.setEnabled(self.special_teams_button.isEnabled())
         menu.addSeparator()
         place = menu.addAction("Place on IR…", self.place_selected_on_ir)
         place.setEnabled(self.ir_place_reason(player) == "")
@@ -5530,6 +5714,10 @@ class RosterEditorPanel(QWidget):
         club, reason = self._depth_context(self.selected_player()) if selected else (None, "Select a player first.")
         self.up_button.setEnabled(club is not None)
         self.down_button.setEnabled(club is not None)
+        kind, index = self._group
+        self.special_teams_button.setEnabled(bool(loaded and kind == "team" and self.document is not None
+                                                  and 0 <= index < len(self.document.teams)
+                                                  and self.document.teams[index].is_club))
         arrow_tip = reason or ("Move him up or down his position's depth chart: the stored depth rank the game's depth "
                                "chart and starters follow. One undo.")
         self.up_button.setToolTip(arrow_tip)
