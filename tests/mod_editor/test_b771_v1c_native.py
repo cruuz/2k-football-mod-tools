@@ -38,13 +38,20 @@ def decode(raw):
     return out
 
 
-@unittest.skipUnless(DISC.is_file(), "shipped v0.6 disc fixture required (B771_V06_DISC)")
 class NativeRegression(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.before_xbe = rosters.read_xbe(DISC)
-        with rr._outer_image()(DISC) as image:
-            cls.before_situ = image.read_entry(22)
+        if DISC.is_file():
+            cls.before_xbe = rosters.read_xbe(DISC)
+            with rr._outer_image()(DISC) as image:
+                cls.before_situ = image.read_entry(22)
+        else:
+            xbe = os.environ.get("B771_V06_XBE")
+            situ = os.environ.get("B771_V06_SITU")
+            if not (xbe and situ):
+                raise unittest.SkipTest("Supply B771_V06_DISC or its B771_V06_XBE and B771_V06_SITU files")
+            cls.before_xbe = Path(xbe).read_bytes()
+            cls.before_situ = Path(situ).read_bytes()
         assert repair.sha(cls.before_xbe) == repair.V06_HASHES["default.xbe"]
         assert repair.sha(cls.before_situ) == repair.V06_HASHES["situation.iff"]
         cls.after_xbe, cls.xbe_receipt = repair.repair_xbe(cls.before_xbe)
@@ -96,6 +103,7 @@ class NativeRegression(unittest.TestCase):
         with self.assertRaises(ValueError):
             repair.repair_xbe(era._seal(bad))
 
+    @unittest.skipUnless(DISC.is_file(), "B771_V06_DISC required for its roster, historic teams and archive directory")
     def test_all_51_menu_selections_load_the_correct_user_side(self):
         if not RETAIL.is_file():
             self.skipTest("private retail disc required for native menu fixture")
