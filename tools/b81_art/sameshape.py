@@ -43,9 +43,19 @@ def main():
                 for m in fixtex.vent_regions(): v |= ndimage.binary_dilation(m, iterations=2)
             reg_ok = bool(d0['panels']) and all(d0['panels'].values())
             l0 = loose(name, T) & ~v & ~ndimage.binary_dilation(d0['foot'], iterations=1); l1 = loose(name, R) & ~v & ~ndimage.binary_dilation(d1['foot'], iterations=1)
-            rows.append(dict(club=C.TEAMS[code], texture=name, registered=reg_ok,
+            ov = fixtex2.OVERRIDES.get(f"{code}_0:{fam}", {})
+        rebuilt = bool(ov.get('mirror_lower') or ov.get('lower_from_modern'))
+        if rebuilt:
+            # the left side is now made from the right side (or the modern shell), so the official-logo registration of
+            # the released texture no longer fits it: the right side is measured (with the released registration) and
+            # counted for both
+            up = loose(name, R) & ~v & ~ndimage.binary_dilation(d0['foot'], iterations=1); up[128:] = False
+            l1 = up | up[::-1]
+            d1 = dict(d1, left=np.zeros((256, 256), bool), boxes=np.zeros((256, 256), bool))
+        rows.append(dict(club=C.TEAMS[code], texture=name, registered=reg_ok,
                              flagged_before=int((d0['left'] & ~v).sum()), flagged_after=int((d1['left'] & ~d1['boxes'] & ~v).sum()),
-                             loose_retail_ink_before=int(l0.sum()), loose_retail_ink_after=int(l1.sum())))
+                             loose_retail_ink_before=int(l0.sum()), loose_retail_ink_after=int(l1.sum()),
+                         note='left side rebuilt from the right side; old-ink flags not applicable after' if rebuilt else ''))
     json.dump(rows, open(C.WORK.parent / 'out' / 'same_shape.json', 'w'), indent=1)
     print('club tex reg flagged(before>after) loose(before>after)')
     for r in rows:
