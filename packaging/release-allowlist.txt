@@ -625,6 +625,7 @@ mod_editor/core/nfl2k5_sim_qb_injuries_code.py
 mod_editor/core/nfl2k5_qb_room.py
 mod_editor/core/nfl2k5_qb_room_code.py
 mod_editor/core/nfl2k5_qb_room_code_b81_3a.py
+mod_editor/core/nfl2k5_qb_room_code_b81_d1d2.py
 mod_editor/core/nfl2k5_qb_room_code_b81_floor.py
 mod_editor/core/nfl2k5_sim_realism.py
 mod_editor/core/nfl2k5_sim_realism_b779.py

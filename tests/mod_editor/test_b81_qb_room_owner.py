@@ -153,10 +153,10 @@ class OwnerTests(unittest.TestCase):
         self.assertEqual((settings["status"], settings["stages"], settings["shadow"], settings["va"]),
                          ("applied", self.code.STAGE_D1, False, 0x1529000))
         # D1 + D2 handover (designer's addendum 2): D1 and D2 ship, D3 (256) and D4 stay off; the floor comes from the
-        # injury level, so the Studio's Realistic installs 195.
+        # injury level and is bit 64 alone since the floor review (F1(b): no over-cap rung), so Realistic installs 67.
         self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT), (self.code.STAGE_D1 | self.code.STAGE_D2, False))
-        self.assertEqual(room.realistic_stages(), 195)
-        self.assertEqual(room.stage_names(195), ["D1 veteran or rookie", "D2 the kid's turn", "floor", "over-cap signing"])
+        self.assertEqual((room.FLOOR_STUDIO_STAGES, room.realistic_stages()), (64, 67))
+        self.assertEqual(room.stage_names(67), ["D1 veteran or rookie", "D2 the kid's turn", "floor"])
         self.assertFalse(room.REALISTIC_STAGES & (self.code.STAGE_D3 | self.code.STAGE_D4))
         self.assertEqual(settings["stage_names"], ["D1 veteran or rookie"])
         row = _room_row(space.layout(self.applied)["allocations"])
@@ -294,7 +294,7 @@ class FloorOwnerTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_star_retention as retention
         room = self.room
         base, _ = ir.apply(self.slice1, "modern", standard_guard=True)
-        floor, _ = room.apply(base, "realistic", stages=room.STAGE_FLOOR | room.STAGE_OVER_CAP | 1)
+        floor, _ = room.apply(base, "realistic", stages=room.STAGE_FLOOR | 1)
         self.assertEqual(retention.status(base), retention.status(floor))
         self.assertEqual(retention.status(floor), "applied")
         self.assertEqual(retention.apply(floor)[1]["status"], "already_applied")
@@ -313,25 +313,26 @@ class FloorOwnerTests(unittest.TestCase):
         self.assertEqual(room._site_stages(code.STAGE_D1), code.STAGE_D1)
         self.assertFalse(room.REALISTIC_STAGES & room.STAGE_FLOOR)  # set only at the floor handover, by the lead
 
-    def test_the_native_signing_routine_is_authenticated(self):
+    def test_over_the_cap_is_retired_and_the_ungated_entry_is_not_read(self):
+        # Floor review F1(b), route A: the floor signs only through the gated routine and never over the cap, so bit 128
+        # is refused for new installs and the native signing routine 0x322BB0..0x322DF1 is no longer the owner's to read.
+        from mod_editor.core import nfl2k5_injured_reserve as ir
         room = self.room
-        retail = Path(os.environ.get("NFL2K5_RETAIL_XBE", ""))
-        if retail.is_file():
-            payload = retail.read_bytes()
-            image = XbeImage(payload)
-            self.assertEqual(image.read(room.FLOOR_ENTRY, 6), room.FLOOR_FIRST)
-            body = image.read(room.FLOOR_RESUME, room.FLOOR_END - room.FLOOR_RESUME)
-            self.assertEqual(hashlib.sha256(body).hexdigest(), room.FLOOR_BODY_SHA256)
-            self.assertEqual(body[-9:], bytes.fromhex("81c414010000c21000"))  # add esp, 0x114; ret 0x10
-            self.assertIsNone(room.floor_entry_problem(payload))
-        # Standard builds enter through the practice-squad gate, which performs the same first instruction.
-        self.assertEqual(XbeImage(self.slice1).read(room.FLOOR_ENTRY, 6), bytes.fromhex("e95bea0a0090"))
-        self.assertIsNone(room.floor_entry_problem(self.slice1))
-        for name, va, data in (("foreign entry", room.FLOOR_ENTRY, bytes.fromhex("e900000000" "90")),
-                               ("foreign body start", room.FLOOR_RESUME, b"\x90"),
-                               ("foreign body", 0x322C40, b"\xcc"), ("foreign return", room.FLOOR_END - 3, b"\x0c")):
+        base, _ = ir.apply(self.slice1, "modern", standard_guard=True)
+        for stages in (room.STAGE_OVER_CAP, room.STAGE_FLOOR | room.STAGE_OVER_CAP):
+            with self.subTest(stages=stages):
+                with self.assertRaisesRegex(ValueError, "over the cap is retired"):
+                    room.apply(base, "realistic", stages=stages)
+        floor, _ = room.apply(base, "realistic")
+        for name, va in (("entry", 0x322BB0), ("body start", 0x322BB6), ("body", 0x322C40), ("return", 0x322DEE)):
             with self.subTest(case=name):
-                self.assertIn("native signing routine", room.floor_entry_problem(self._changed(self.slice1, va, data)))
+                changed = room._patch(floor, [(va, XbeImage(floor).read(va, 1), b"\xcc")])
+                self.assertEqual(room.status(changed), "applied")
+                self.assertEqual(room.apply(changed, "retail")[0],
+                                 room._patch(room.apply(floor, "retail")[0],
+                                             [(va, XbeImage(floor).read(va, 1), b"\xcc")]))
+                self.assertFalse(any("native signing routine" in line
+                                     for line in room.requirements(changed, room.STAGE_FLOOR)))
 
     def test_the_economy_routines_the_floor_calls_are_authenticated(self):
         room = self.room
@@ -352,20 +353,19 @@ class FloorOwnerTests(unittest.TestCase):
         # The helmet test executable has the economy and the practice squad but not modern IR or the ownership page.
         self.assertEqual(needs, ["Emergency quarterback signings need modern injured reserve.",
                                  "Emergency quarterback signings need the franchise ownership safeguards."])
-        foreign = self._changed(self.slice1, 0x322C40, b"\xcc")
-        self.assertIn("The quarterback floor found unrecognized code in the native signing routine (from 0x322BB6).",
+        foreign = self._changed(self.slice1, 0x3B9F60, b"\xc3")
+        self.assertIn("The quarterback floor found unrecognized code in the economy's restructure (0x3B9F60).",
                       room.requirements(foreign, code.STAGE_D1 | room.STAGE_FLOOR))
-        # Without the floor bit the routine is not the owner's business (the changed byte also breaks the section
-        # digest the other owners check, so only the floor's own line is compared).
-        self.assertFalse(any("native signing routine" in line for line in room.requirements(foreign, code.STAGE_D1)))
-        with self.assertRaisesRegex(ValueError, "needs the floor"):
-            room.requirements(self.slice1, code.STAGE_D1 | room.STAGE_OVER_CAP)
-        self.assertEqual(room.requirements(self.slice1, code.STAGE_D1 | room.STAGE_FLOOR | room.STAGE_OVER_CAP), needs)
+        # Without the floor bit the economy's routines are not the owner's business (the changed byte also breaks the
+        # section digest the other owners check, so only the floor's own line is compared).
+        self.assertFalse(any("restructure" in line for line in room.requirements(foreign, code.STAGE_D1)))
+        with self.assertRaisesRegex(ValueError, "over the cap is retired"):
+            room.requirements(self.slice1, code.STAGE_D1 | room.STAGE_FLOOR | room.STAGE_OVER_CAP)
 
     def test_install_stages_needs_modern_ir_and_ownership_and_round_trips(self):
         from mod_editor.core import nfl2k5_injured_reserve as ir
         room, code = self.room, self.code
-        stages = code.STAGE_D1 | room.STAGE_FLOOR | room.STAGE_OVER_CAP
+        stages = code.STAGE_D1 | room.STAGE_FLOOR
         with self.assertRaisesRegex(ValueError, "modern injured reserve"):
             room.install_stages(self.slice1, stages)
         upgraded, _ = ir.apply(self.slice1, "modern", standard_guard=True)  # the real IR installer adds ownership
@@ -400,12 +400,14 @@ class FloorOwnerTests(unittest.TestCase):
 
 class PreviousRevisionTests(unittest.TestCase):
     """Pages an earlier revision's Studio wrote ([validator]'s finding at c8683ea7e, lead's request): the floor handover
-    (template 75257128, stage set 192; the P2a candidate c93f6c0d) and the reviewed stage 0 + 3a page (78d3633d3,
-    stage set 1; candidate 4af354d7). They read "previous"; Realistic upgrades them in place to the current template
+    (template 75257128, stage set 192; the P2a candidate c93f6c0d), the reviewed stage 0 + 3a page (78d3633d3, stage
+    set 1; candidate 4af354d7) and the D1 + D2 handover (template 65259084 at 692062151, 195; the P6 candidate
+    72a78fce). They read "previous"; Realistic upgrades them in place to the current template
     (the bytes of a fresh install on the same source, no allocator row moves); Retail restores the source plus the
     empty reservation; any other page is still foreign. The previous executables are rebuilt here from the frozen
     templates and must equal the hashes recorded when those revisions were built."""
 
+    D1D2_SHA = "72a78fcebfb9b057a897d9925cd93180822f55e08bbfecf084fb90c70bd9eb60"  # P6 candidate at 692062151
     FLOOR_SHA = "c93f6c0d31aa99476b92092d32777f16af8bebe4c3b8fa8256495aa02dbe704b"
     FLOOR_EMPTY_SHA = "a0a81494513bda2b812793ea9bf9e356a3e5af5988932c973778a852bc207502"
     STAGE_3A_SHA = "4af354d711604f4fccc4908f36381da31446c734a0d1fdc61ed34ead008d7eeb"
@@ -420,6 +422,7 @@ class PreviousRevisionTests(unittest.TestCase):
         cls.base, _ = ir.apply(cls.slice1, "modern", standard_guard=True)
         cls.floor_empty, cls.floor = cls._written_by("nfl2k5_qb_room_code_b81_floor", cls.base, 192)
         cls.stage_3a_empty, cls.stage_3a = cls._written_by("nfl2k5_qb_room_code_b81_3a", cls.slice1, 1)
+        _empty, cls.d1d2 = cls._written_by("nfl2k5_qb_room_code_b81_d1d2", cls.base, 195)
 
     @classmethod
     def _written_by(cls, template, source, stages):
@@ -446,10 +449,12 @@ class PreviousRevisionTests(unittest.TestCase):
         sha = lambda data: hashlib.sha256(data).hexdigest()
         self.assertEqual((sha(self.floor), sha(self.floor_empty)), (self.FLOOR_SHA, self.FLOOR_EMPTY_SHA))
         self.assertEqual((sha(self.stage_3a), sha(self.stage_3a_empty)), (self.STAGE_3A_SHA, self.STAGE_3A_EMPTY_SHA))
+        self.assertEqual(sha(self.d1d2), self.D1D2_SHA)
 
     def test_status_reads_previous(self):
         room = self.room
-        for payload, revision, stages in ((self.floor, "b81 floor handover", 192), (self.stage_3a, "b81 stage 3a", 1)):
+        for payload, revision, stages in ((self.floor, "b81 floor handover", 192), (self.stage_3a, "b81 stage 3a", 1),
+                                          (self.d1d2, "b81 D1 + D2 handover", 195)):
             with self.subTest(revision=revision):
                 settings = room.read_settings(payload)
                 self.assertEqual((settings["status"], settings.get("revision"), settings.get("stages")),
@@ -458,7 +463,7 @@ class PreviousRevisionTests(unittest.TestCase):
 
     def test_realistic_upgrades_the_floor_page_in_place(self):
         room = self.room
-        for stages in (None, 192):
+        for stages in (None, 64):
             with self.subTest(stages=stages):
                 upgraded, receipt = room.apply(self.floor, "realistic", stages=stages)
                 fresh, _ = room.apply(self.base, "realistic", stages=stages)
@@ -466,6 +471,13 @@ class PreviousRevisionTests(unittest.TestCase):
                 self.assertEqual(receipt["upgraded_from"], "b81 floor handover")
                 self.assertEqual(self._rows(upgraded), self._rows(self.floor))
                 self.assertEqual(room.read_settings(upgraded)["status"], "applied")
+
+    def test_the_d1_d2_page_upgrades_and_restores(self):
+        room = self.room
+        upgraded, receipt = room.apply(self.d1d2, "realistic")
+        self.assertEqual(upgraded, room.apply(self.base, "realistic")[0])
+        self.assertEqual((receipt["upgraded_from"], self._rows(upgraded)), ("b81 D1 + D2 handover", self._rows(self.d1d2)))
+        self.assertEqual(room.apply(self.d1d2, "retail")[0], self.floor_empty)  # 87346291 + the empty reservation
 
     def test_retail_restores_the_floor_page(self):
         restored, receipt = self.room.apply(self.floor, "retail")
@@ -491,7 +503,7 @@ class PreviousRevisionTests(unittest.TestCase):
         import importlib
         room = self.room
         old = importlib.import_module("mod_editor.core.nfl2k5_qb_room_code_b81_floor")
-        current_calls = {at: p for _l, at, _o, p in room._code().sites(room.VA, 192 | 8)}
+        current_calls = {at: p for _l, at, _o, p in room._code().sites(room.VA, 64 | 8)}
         _empty, unwritten = self._written_by("nfl2k5_qb_room_code_b81_floor", self.base, 64)  # a set no Studio wrote
         cases = {"page code byte": self._changed(self.floor, room.VA + 0x10, b"\x90"),
                  "settings record": self._changed(self.floor, room.VA + old.SETTINGS_OFFSET + 8, b"\x41"),
@@ -524,18 +536,18 @@ class TestOnlyInstallTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_qb_room as room, nfl2k5_sim_qb_injuries as qb
         source = _private("NFL2K5_B81_REVIEWED_TEST_DISC", HELMET_XBE_SHA)
         slice1, _ = qb.apply(source, "realistic")
-        stages = room.STAGE_FLOOR | room.STAGE_OVER_CAP
+        stages = room.STAGE_FLOOR
         with self.assertRaisesRegex(ValueError, "modern injured reserve"):
             room.install_stages(slice1, stages)
         replay, receipt = room.install_stages(slice1, stages, test_without_needs=True)
         self.assertTrue(receipt["test_without_needs"])
-        self.assertEqual((room.read_settings(replay)["stages"], room.read_settings(replay)["shadow"]), (192, False))
+        self.assertEqual((room.read_settings(replay)["stages"], room.read_settings(replay)["shadow"]), (64, False))
         self.assertEqual(room.apply(replay, "retail")[0], space.extend_scaleout(slice1, room.REQUESTS)[0])
-        with self.assertRaisesRegex(ValueError, "needs the floor"):
-            room.install_stages(slice1, room.STAGE_OVER_CAP, test_without_needs=True)
+        with self.assertRaisesRegex(ValueError, "over the cap is retired"):
+            room.install_stages(slice1, stages | room.STAGE_OVER_CAP, test_without_needs=True)
         # Authentication still applies (the byte is changed with resealed digests, so only the routine differs).
-        changed = room._patch(slice1, [(0x322C40, XbeImage(slice1).read(0x322C40, 1), b"\xcc")])
-        with self.assertRaisesRegex(ValueError, "native signing routine"):
+        changed = room._patch(slice1, [(0x3B9F60, XbeImage(slice1).read(0x3B9F60, 1), b"\xc3")])
+        with self.assertRaisesRegex(ValueError, "restructure"):
             room.install_stages(changed, stages, test_without_needs=True)
 
 

@@ -10,7 +10,6 @@ restores it. The byte interface is .b77-scratch/b81/qb34/INTERFACE.md.
 """
 from __future__ import annotations
 
-import hashlib
 import struct
 
 from . import nfl2k5_xbe_space as space
@@ -30,26 +29,23 @@ REALISTIC_STAGES = 1 | 2  # nfl2k5_qb_room_code.STAGE_D1 | STAGE_D2
 SHADOW_DEFAULT = False
 ERRORS = (ValueError, TypeError, IndexError, KeyError, OverflowError, struct.error)
 # The floor (DESIGN addendum F1 to F8): stage bit 64, Realistic only, installed from the injury level (C7 below) and
-# never on a cut list. Its site is the signing call at 0x248010 (installed for bit 8 or 64). Its last resort enters the native
-# signing routine past the gates the way both gates do: `sub esp, 0x114`, then `jmp 0x322BB6` (F3 step 8). So the
-# routine's first instruction must be that one (retail) or one of the recognized gate jumps that perform it, and its
-# body from 0x322BB6 through `add esp, 0x114; ret 0x10` must be the retail bytes (F7.5); anything else is refused.
+# never on a cut list. Its site is the signing call at 0x248010 (installed for bit 8 or 64). It signs only through the
+# gated native signing routine and never over the cap (floor review F1(b), route A at 644c5e30b): the over-cap rung,
+# its ungated entry into 0x322BB6 and stage bit 128 are retired, so the owner no longer authenticates that routine.
+# It still calls the economy's restructure and smart cut, which are authenticated (floor_economy_problem).
 STAGE_FLOOR = 64
-STAGE_OVER_CAP = 128  # the floor's last rung, signing over the cap (F3 step 8); separate so it can be cut; needs 64
-FLOOR_ENTRY, FLOOR_RESUME, FLOOR_END = 0x322BB0, 0x322BB6, 0x322DF1
-FLOOR_FIRST = bytes.fromhex("81ec14010000")  # sub esp, 0x114
-FLOOR_BODY_SHA256 = "95cd45152dd4b3b52243fff6dc7c42ec8a8e3c833af90bc5f1a10a9390fe23be"  # retail 0x322BB6..0x322DF1
+STAGE_OVER_CAP = 128  # retired (floor review F1(b)): new installs refuse it; only earlier revisions' pages carry it
 SIGN_SITE = 0x248010  # the weekly advance's stage-6 signing call the floor and stage 4a replace
 SMART_CUT = 0x2BF9A0  # the native cut-down the floor's release rung calls; the economy points it at economy_smart_cut
 # Coordinator's product rule (2026-11-20): quarterback injuries above zero are never installed without the floor. The
 # Studio's stage set is therefore a function of the plan: these bits whenever injuries are above zero (Realistic, or
 # Custom above 0 percent), plus piece 3's bits from REALISTIC_STAGES where rule C1a allows them.
-FLOOR_STUDIO_STAGES = STAGE_FLOOR | STAGE_OVER_CAP  # the over-cap rung rides with the floor; drop it here to cut it
+FLOOR_STUDIO_STAGES = STAGE_FLOOR  # 64 only since the floor review (F1(b)); earlier Studios wrote 64 | 128
 PIECE3_BITS = 1 | 2 | 4 | 256  # STAGE_D1 | STAGE_D2 | STAGE_D4 | STAGE_D3
 STAGE_NAMES = ((1, "D1 veteran or rookie"), (2, "D2 the kid's turn"), (256, "D3 benched for poor play"),
                (4, "D4 returning starter"),
                (8, "emergency signings (4a)"), (16, "trades (4b)"), (32, "E2 return from IR"),
-               (STAGE_FLOOR, "floor"), (STAGE_OVER_CAP, "over-cap signing"))
+               (STAGE_FLOOR, "floor"), (STAGE_OVER_CAP, "over-cap signing (retired)"))
 
 
 def stage_names(stages):
@@ -115,10 +111,13 @@ def _sites(va, stages, code=None):
 
 def _previous_revisions():
     """(name, frozen page template, the stage sets that revision's Studio wrote) for each earlier template whose pages a
-    disc may hold ([validator]'s finding at c8683ea7e): the floor handover's (752571283e98, pinned at c16934bee and
-    f34553b06; the Studio wrote 192) and the reviewed stage 0 + 3a page's (b1372b645e46 at 78d3633d3; it wrote 1)."""
-    from . import nfl2k5_qb_room_code_b81_3a as stage_3a, nfl2k5_qb_room_code_b81_floor as floor
-    return (("b81 floor handover", floor, (STAGE_FLOOR | STAGE_OVER_CAP,)), ("b81 stage 3a", stage_3a, (1,)))
+    disc may hold ([validator]'s finding at c8683ea7e): the D1 + D2 handover's (65259084fc89, pinned at 692062151; its
+    Studio wrote 195, 192 where piece 3's needs were missing, 3 for Custom 0), the floor handover's (752571283e98,
+    pinned at c16934bee and f34553b06; 192) and the reviewed stage 0 + 3a page's (b1372b645e46 at 78d3633d3; 1)."""
+    from . import nfl2k5_qb_room_code_b81_3a as stage_3a, nfl2k5_qb_room_code_b81_d1d2 as d1d2
+    from . import nfl2k5_qb_room_code_b81_floor as floor
+    return (("b81 D1 + D2 handover", d1d2, (195, 192, 3)), ("b81 floor handover", floor, (192,)),
+            ("b81 stage 3a", stage_3a, (1,)))
 
 
 def sign_calls():
@@ -129,17 +128,6 @@ def sign_calls():
         for stages in stage_sets:
             calls |= {patched for _label, at, _o, patched in _sites(VA, stages, module) if at == SIGN_SITE}
     return calls
-
-
-def floor_entry_problem(payload):
-    """None when the floor's last resort may enter the native signing routine past the gates; else a plain reason."""
-    from . import nfl2k5_roster_fill_composition as composition
-    image = XbeImage(payload)
-    if image.read(FLOOR_ENTRY, len(FLOOR_FIRST)) not in (FLOOR_FIRST, composition.ECONOMY_ENTRY, composition.SQUAD_ENTRY):
-        return "The quarterback floor found unrecognized code at the start of the native signing routine (0x322BB0)."
-    if hashlib.sha256(image.read(FLOOR_RESUME, FLOOR_END - FLOOR_RESUME)).hexdigest() != FLOOR_BODY_SHA256:
-        return "The quarterback floor found unrecognized code in the native signing routine (from 0x322BB6)."
-    return None
 
 
 def floor_economy_problem(payload):
@@ -157,9 +145,10 @@ def floor_economy_problem(payload):
 
 
 def _floor_problems(payload, stages):
-    if not stages & (STAGE_FLOOR | STAGE_OVER_CAP):
+    if not stages & STAGE_FLOOR:
         return []
-    return [p for p in (floor_entry_problem(payload), floor_economy_problem(payload)) if p]
+    problem = floor_economy_problem(payload)
+    return [problem] if problem else []
 
 
 def _sites_state(image, va, stages, code=None):
@@ -248,14 +237,14 @@ def _check_stage_set(stages):
     code = _code()
     _require(not stages & code.STAGE_TRADE, "The quarterback room trade stage is not available in this build")
     _require(not stages & code.STAGE_E2 or stages & code.STAGE_SIGN, "The quarterback room E2 stage needs stage 4a")
-    _require(not stages & STAGE_OVER_CAP or stages & STAGE_FLOOR,
-             "Signing over the cap is the floor's last rung and needs the floor")
+    _require(not stages & STAGE_OVER_CAP,
+             "Signing over the cap is retired: the quarterback floor never goes over the cap")
 
 
 def requirements(payload, stages=None):
     """Plain reasons this executable cannot take Realistic (empty when it can): 128 MiB standard, depth locks and
     lineup roles applied; for the signing stage (4a) and the floor (64) also the economy, the practice squad, modern IR
-    and the ownership page, and for the floor a recognized native signing routine (F7.5). A stage whose needs are
+    and the ownership page, and for the floor the economy's own restructure and smart cut. A stage whose needs are
     missing is an error, never a silent skip."""
     from . import nfl2k5_depth_locks as locks, nfl2k5_k128 as memory, nfl2k5_lineup_roles as lineup
     code = _code()
@@ -273,7 +262,7 @@ def requirements(payload, stages=None):
     if stages & PIECE3_BITS and lineup.status(payload) != "applied":
         missing.append("The quarterback room rules need the situational lineup roles.")
     missing += _floor_problems(payload, stages)
-    if stages & (code.STAGE_SIGN | STAGE_FLOOR | STAGE_OVER_CAP):
+    if stages & (code.STAGE_SIGN | STAGE_FLOOR):
         from . import nfl2k5_franchise_economy as economy, nfl2k5_franchise_ownership as ownership
         from . import nfl2k5_injured_reserve as ir, nfl2k5_practice_squad as squad
         if economy.status(payload) != "applied":

@@ -73,8 +73,8 @@ class RoomInstallationOrderTests(first_pass.QuarterbackInstallationOrderTests):
         from mod_editor.core import nfl2k5_franchise_economy as economy, nfl2k5_practice_squad as squad
         level, stages, _note = mod_build._qb_room_plan(plan, payload)
         # Coordinator's rule: injuries above zero always carry the floor; Custom 0 does not.
-        floor = room.STAGE_FLOOR | room.STAGE_OVER_CAP
-        self.assertEqual(stages & floor, floor if mod_build._qb_injuries_above_zero(plan) else 0)
+        floor = room.FLOOR_STUDIO_STAGES
+        self.assertEqual(stages & (floor | room.STAGE_OVER_CAP), floor if mod_build._qb_injuries_above_zero(plan) else 0)
         studio = level == "realistic"
         if not studio:
             # No Studio stage set on this path (Custom 0 while no piece 3 bit ships): place a D1 page through the
@@ -248,7 +248,7 @@ class StudioRuleTests(unittest.TestCase):
                 # The key names piece 3's rules; the floor follows the injuries (coordinator's rule, 2026-11-20).
                 self.assertEqual(mod_build._qb_room_resolution(plan)[0], explicit)
                 piece3 = mod_build._piece3_bits() if explicit == "realistic" else 0
-                self.assertEqual(mod_build._qb_room_plan(plan)[:2], ("realistic", 192 | piece3))
+                self.assertEqual(mod_build._qb_room_plan(plan)[:2], ("realistic", 64 | piece3))
                 self.assertEqual(plan.to_recipe()["qb_room"], explicit)
         old = {"preset": "softdrink_experimental", "overrides": {}}
         self.assertIsNone(mod_build._qb_room_level(modpack_sources.build_plan(old)))
@@ -328,7 +328,7 @@ class StudioRuleTests(unittest.TestCase):
                 self.assertIn("were not added", note)
                 self.assertNotIn("\u2014", note)
                 self.assertIn("qb_room", budget.owners(budget.options(plan), 128))  # the floor
-                self.assertEqual(mod_build._qb_room_plan(plan)[:2], ("realistic", 192))
+                self.assertEqual(mod_build._qb_room_plan(plan)[:2], ("realistic", 64))
                 ready = replace(plan, depth_locks=True, depth_chart_rows=True)
                 self.assertEqual(mod_build._qb_room_resolution(ready), ("realistic", None))
                 self.assertIn("qb_room", budget.owners(budget.options(ready), 128))
@@ -380,7 +380,7 @@ class StudioRuleTests(unittest.TestCase):
                     followed = replace(plan, **{field: False}, sim_realism=True, qb_room=None)
                     self.assertEqual(mod_build.validate_plan(followed), [])
                     self.assertIsNone(mod_build._qb_room_resolution(followed)[0])  # piece 3 left out
-                    self.assertEqual(mod_build._qb_room_plan(followed)[:2], ("realistic", 192))  # the floor stays
+                    self.assertEqual(mod_build._qb_room_plan(followed)[:2], ("realistic", 64))  # the floor stays
                 self.assertNotIn("—", message)
         self.assertEqual(mod_build.validate_plan(replace(plan, depth_locks=False, qb_room="retail")), [])
         self.assertTrue(mod_build.validate_plan(replace(plan, qb_room="custom")))
@@ -392,7 +392,7 @@ class StudioRuleTests(unittest.TestCase):
         self.assertEqual(mod_build.validate_plan(edit), [])
         named = mod_build.sim_qb_disc_edit("s.iso", "t.iso", "realistic", qb_room="retail")
         self.assertEqual(mod_build._qb_room_resolution(named)[0], "retail")
-        self.assertEqual(mod_build._qb_room_plan(named)[:2], ("realistic", 192))  # the floor rides with the injuries
+        self.assertEqual(mod_build._qb_room_plan(named)[:2], ("realistic", 64))  # the floor rides with the injuries
         self.assertTrue(mod_build._only_sim_qb_changes(named))
         update = mod_build.v09_disc_update("s.iso", "t.iso", sim_qb_injuries="custom")
         self.assertEqual(mod_build._qb_room_level(update), "realistic")
@@ -436,7 +436,7 @@ class FloorRuleTests(unittest.TestCase):
     """Coordinator's product rule (2026-11-20): quarterback injuries above zero are never installed without the floor.
     Each Studio path either completes the floor's needs or refuses in plain words; the installed stage set is pinned."""
 
-    FLOOR = 64 | 128
+    FLOOR = 64  # bit 128 (over the cap) is retired: floor review F1(b)
 
     @property
     def P3(self):
@@ -470,7 +470,7 @@ class FloorRuleTests(unittest.TestCase):
                 self.assertNotIn("\u2014", note)
                 self.assertEqual(self.plan_set(completed), expected)
                 from mod_editor.core import nfl2k5_qb_room as room
-                self.assertEqual(room.stage_names(expected[1])[-2:], ["floor", "over-cap signing"])
+                self.assertEqual(room.stage_names(expected[1])[-1:], ["floor"])  # no over-cap rung (floor review F1(b))
                 self.assertEqual(expected[1] & room.PIECE3_BITS, self.P3 if name.startswith("Experimental R") else 0)
 
     def test_no_floor_without_injuries(self):
@@ -530,7 +530,7 @@ class FloorRuleTests(unittest.TestCase):
                 self.assertIn("added modern injured reserve", update["added"][0])
                 self.assertIn(update["added"][0], receipt["user_notes"])
                 self.assertEqual(update["settings"]["stage_names"], room.stage_names(self.FLOOR | self.P3))
-                self.assertEqual(update["settings"]["stage_names"][-2:], ["floor", "over-cap signing"])
+                self.assertEqual(update["settings"]["stage_names"][-1:], ["floor"])
                 self.assertEqual(receipt["sim_qb_source_update"]["result_sha256"], hashlib.sha256(slice1).hexdigest())
         receipt = self._edit(mod_build.sim_qb_disc_edit("s.iso", "t.iso", "custom", custom_rate=0.0), source)
         self.assertEqual(receipt["qb_room_source_update"]["stages"], self.P3)  # Custom 0: piece 3 only, no floor or IR
@@ -602,7 +602,7 @@ class InPlacePreflightTests(unittest.TestCase):
         update = receipt["qb_room_source_update"]
         self.assertEqual((update["level"], update["result_sha256"]), ("realistic", hashlib.sha256(expected).hexdigest()))
         self.assertEqual((update["settings"]["status"], update["settings"]["va"]), ("applied", 0x1529000))
-        # Stage 3a handover plus the coordinator's floor rule: D1, floor and over-cap, shadow off.
+        # D1 + D2 plus the coordinator's floor rule (the floor alone since the floor review), shadow off.
         self.assertEqual((update["settings"]["stages"], update["settings"]["shadow"]), (room.realistic_stages(), False))
         self.assertEqual(receipt["user_notes"], update["added"])
 
@@ -677,7 +677,7 @@ class BuildPageTests(unittest.TestCase):
         mode.setCurrentIndex(mode.findData("realistic"))
         plan = self.panel._plan_for_build()
         # Basic + Realistic: the floor (needs ticked by the control), no piece 3 (no locks or SPECIAL rows).
-        self.assertEqual((plan.sim_qb_injuries, mod_build._qb_room_plan(plan)[:2]), ("realistic", ("realistic", 192)))
+        self.assertEqual((plan.sim_qb_injuries, mod_build._qb_room_plan(plan)[:2]), ("realistic", ("realistic", 64)))
         self.assertTrue(plan.modern_injured_reserve and plan.franchise_economy)
         self.assertEqual(mod_build.validate_plan(plan), [])
 

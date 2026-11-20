@@ -1032,7 +1032,7 @@ def _note_qb_room_left_out(receipt, note):
 
 
 # Coordinator's product rule (2026-11-20): quarterback injuries above zero are never installed without the floor (the
-# quarterback room's stage bits 64 and 128, nfl2k5_qb_room.FLOOR_STUDIO_STAGES). A full build pulls in what the floor
+# quarterback room's stage bit 64, nfl2k5_qb_room.FLOOR_STUDIO_STAGES). A full build pulls in what the floor
 # needs; an in-place edit adds modern IR when it can and refuses otherwise; the v0.9 update ticks modern IR.
 _QB_FLOOR_NEEDS = (("modern_injured_reserve", "modern injured reserve"), ("franchise_economy", "the franchise economy"),
                    ("practice_squad", "reserve save compatibility (the practice squad)"))
