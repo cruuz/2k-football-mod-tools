@@ -54,13 +54,13 @@ extern u32 qb_seen_healthy;                            /* page + 0x2E08 (RAM onl
 #define SIGN ((u32 (__attribute__((stdcall)) *)(u32, u32, u32, u32))0x00322BB0)
 #define RECOUNT ((void (FC *)(u32))0x000C3F00)
 #define RELEASE ((void (FC *)(u32, u32, u32, u32))0x002BD900)      /* club, player, to the list, log: ret 8 */
+#define SALARY ((u32 (FC *)(u32))0x000E6380)                         /* this season's base charge (fastcall ECX) */
 #define RESTRUCTURE ((i32 (FC *)(u32, u32))0x003B9F60)             /* economy_restructure(player, apply) */
 
 #define AUTO_SIGN 0x00E6013Cu        /* "CPU signs and cuts for my club" */
 #define CAP 0x00E3C278u              /* the league cap, game thousands */
 #define OFFERS 0x00E3C600u
 #define OFFER_COUNT 100u
-#define POOL_MAX 64u
 #define E1 5u
 #define E2 6u
 #define FLOOR_EVENT 7u
@@ -106,10 +106,6 @@ static i32 room_of(u32 team, u32 index) {
     return (i32)cap - (i32)D(team + 0x124);
 }
 
-static int prove_it(u32 p) {                     /* PROVE_IT_FREE_AGENT: no contract years, 2+ unsigned weeks */
-    return !(B(p + 0x24) & 15) && (B(p + 0x25) >> 5) >= 2;
-}
-
 /* A (quarterbacks on the active list), H (the healthy ones) and S' (the best-rated healthy one, with its key). */
 static u32 scan(u32 team, u32 *healthy, u32 *starter, u32 *best) {
     u32 a = 0, h = 0, s = 0, k = 0;
@@ -137,51 +133,54 @@ static __attribute__((noinline)) int listed(u32 team, u32 p) {
     return 0;
 }
 
-/* Every quarterback the native picker can see: the free-agent list, then the counted entries of the offer table. */
-static u32 collect(struct pick *pool) {
-    u32 n = 0, root = D(LEAGUE_ROOT), count = D(root + 0x38), list = D(root + 0x3C);
+/* The man 0x322BB0 takes for `budget`, asked as the picker asks it, in one pass and with nothing stored (P5: from
+   2029/2030 the free-agent list holds more quarterbacks than 66d8a7e1b's 64-entry pool, and every act gave up): in its
+   scan order (the free-agent list [root + 0x38]: count, array; then the counted entries of the offer table 0xE3C600),
+   the first quarterback with a strictly higher rating than the best so far whose value (AX of 0x2BD440, called exactly
+   as the picker calls it and only when the rating is higher, as the picker does) is below the budget. 0 when nobody. */
+static __attribute__((noinline)) u32 pick_at(struct pick *out, u32 budget) {
+    u32 have = 0, root = D(LEAGUE_ROOT), count = D(root + 0x38), list = D(root + 0x3C);
     for (u32 i = 0; i < count + OFFER_COUNT; i++) {
         u32 offer = i >= count, entry = OFFERS + 16 * (i - count), p;
         if (offer && (!(B(entry + 0xB) & 3) || (D(entry + 8) & 0x1C000000u) != 0x0C000000u)) continue;
         p = offer ? D(entry) : D(list + 4 * i);
         if (!p || B(p + 0x35) != 0) continue;
-        if (n == POOL_MAX) return POOL_MAX + 1;
-        pool[n].p = p;
-        pool[n].pool = offer;
-        pool[n].key = rating_key(p);
-        pool[n++].value = VALUE(p, 0, 0, 1, 0) & 0xFFFFu;      /* exactly as 0x322BB0 calls it */
-    }
-    return n;
-}
-
-/* The player 0x322BB0 takes for `budget`: in scan order, a strictly higher rating with value below the budget. */
-static u32 picker(const struct pick *pool, u32 n, u32 budget) {
-    u32 chosen = 0, best = 0, have = 0;
-    for (u32 i = 0; i < n; i++) {
-        if ((have && pool[i].key <= best) || pool[i].value >= budget) continue;
-        chosen = pool[i].p;
-        best = pool[i].key;
+        u32 key = rating_key(p);
+        if (have && key <= out->key) continue;
+        u32 value = VALUE(p, 0, 0, 1, 0) & 0xFFFFu;
+        if (value >= budget) continue;
+        out->p = p;
+        out->key = key;
+        out->value = value;
+        out->pool = offer;
         have = 1;
     }
-    return chosen;
+    return have;
 }
 
-/* A healthy free agent (list, not offer table) whom the picker takes at value + 1 and nobody else:
-   mode 0, the candidate F of 4.1 and F3 step 4: the best-rated whose value is below room minus 10;
-   mode 1 and 2, the target T of F3 step 5: the cheapest (ties: the higher rating) prove-it man, then any. Ties of the
-   deciding key go to list order. */
-static const struct pick *choose(const struct pick *pool, u32 n, i32 room, u32 mode) {
-    const struct pick *best = 0;
-    for (u32 i = 0; i < n; i++) {
-        const struct pick *q = &pool[i];
-        if (q->pool || q->value >= 0xFFFFu || !fully_healthy(q->p)) continue;
-        if (mode == 0 ? room - 10 <= (i32)q->value || (best && q->key <= best->key)
-                      : (mode == 1 && !prove_it(q->p)) ||
-                        (best && (q->value > best->value || (q->value == best->value && q->key <= best->key))))
-            continue;
-        if (picker(pool, n, q->value + 1) == q->p) best = q;
+/* The candidate (DESIGN 4.1, F3 step 4): the best-rated healthy free agent on the list whom the picker takes at his
+   value + 1 and nobody else, valued below room minus 10. The picker's own man at budget room - 10 is the best such
+   man unless he is hurt or on the offer table; any other must be valued below him (else the picker would prefer him),
+   so ask again at his value. The budget falls strictly, so the asks end. Exactly what choosing over the whole pool
+   gave, for a list of any length. */
+static __attribute__((noinline)) u32 choose(struct pick *out, i32 room) {
+    if (room <= 10) return 0;
+    u32 budget = room - 10 > 0xFFFF ? 0xFFFFu : (u32)(room - 10);
+    while (pick_at(out, budget)) {
+        if (!out->pool && fully_healthy(out->p)) return 1;
+        budget = out->value;
     }
-    return best;
+    return 0;
+}
+
+/* Is any free agent on the list a healthy quarterback (F3 step 1)? */
+static __attribute__((noinline)) u32 any_healthy_free_agent(void) {
+    u32 root = D(LEAGUE_ROOT), count = D(root + 0x38), list = D(root + 0x3C);
+    for (u32 i = 0; i < count; i++) {
+        u32 p = D(list + 4 * i);
+        if (p && B(p + 0x35) == 0 && fully_healthy(p)) return 1;
+    }
+    return 0;
 }
 
 /* E2's injured-reserve test: a quarterback on this club's IR, 3 or more better than S', out 3 weeks or more or for
@@ -243,14 +242,9 @@ static void club_signing(u32 menu, u32 shadow, u32 index, u32 stages) {
         if (ir > 0) decision = E2;
     }
     if (!decision) return;
-    struct pick pool[POOL_MAX];
-    u32 n = collect(pool);
-    if (n > POOL_MAX) {
-        qb_counters.sign_pool_overflow++;
-        return;
-    }
+    struct pick fp;
     if (!shadow) RECOUNT(team);                     /* the gate recounts before its room test; so does this */
-    const struct pick *f = choose(pool, n, room_of(team, index), 0);
+    const struct pick *f = choose(&fp, room_of(team, index)) ? &fp : 0;
     u32 w = WINS(team), l = LOSSES(team), t = TIES(team), threshold = decision == E1 ? 100000u : 50000u;
     u32 d = l - w, g = w + l + t, gap = f ? (u32)(overall_of(f->key) - starter_ovr) : 0, result = KEPT;
     if (decision == E2) {
@@ -282,7 +276,8 @@ static void club_signing(u32 menu, u32 shadow, u32 index, u32 stages) {
         CUT_TO(team, 52);
         qb_counters.sign_cuts++;
         RECOUNT(team);                              /* C11: the cut reprices the market; choose again */
-        if ((n = collect(pool)) > POOL_MAX || !(f = choose(pool, n, room_of(team, index), 0))) {
+        if (!choose(&fp, room_of(team, index))) {
+            f = 0;
             qb_counters.sign_room_lost++;
             goto log;
         }
@@ -365,10 +360,11 @@ static const u8 floor_min[17] = {2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 0, 5, 2, 3, 3, 3,
 /* Make room by one release (floor review F1(b), F5): the lowest-valued healthy player at a position that keeps at
    least its minimum of healthy players without him; an injured one (at a position above its minimum) only when no
    such healthy man exists. A quarterback is never taken while he is the club's only healthy one (the floor acts at
-   H = 0 after the swap leaves one hurt quarterback, below the minimum of 2, so none is eligible). Returns 0 when
-   nobody is eligible or the release did not take: the bound on releases per act is the club's players above the
-   minimums. */
-static __attribute__((noinline)) u32 release_one(u32 team) {
+   H = 0 after the swap leaves one hurt quarterback, below the minimum of 2, so none is eligible). With `room` set (the
+   make-room releases, not the cut at 53) a player the recount charges nothing is skipped: no contract years left, or
+   a zero base charge 0xE6380 (the economy's trim skips them the same way; re-check R-F1). Returns 0 when nobody is
+   eligible or the release did not take: the bound on releases per act is the club's players above the minimums. */
+static __attribute__((noinline)) u32 release_one(u32 team, u32 room) {
     u8 all[17] = {0}, fit[17] = {0};
     u32 n = B(team + 0x11C), best = 0, best_key = 0;
     for (u32 i = 0; i < n; i++) {
@@ -384,6 +380,7 @@ static __attribute__((noinline)) u32 release_one(u32 team) {
         if (pos == 10) pos = 11;
         u32 healthy = fully_healthy(p);
         if (healthy ? fit[pos] <= floor_min[pos] : all[pos] <= floor_min[pos]) continue;
+        if (room && (!(B(p + 0x24) & 15) || !SALARY(p))) continue;            /* frees no cap room */
         u32 key = (healthy ? 0 : 0x10000u) | (VALUE(p, 0, 0, 1, 0) & 0xFFFFu);  /* healthy first, then the value */
         if (!best || key < best_key) {
             best = p;
@@ -432,16 +429,11 @@ static void floor_club(u32 shadow, u32 stages, u32 index, u32 point, u32 menu) {
     u32 lost = qb_seen_healthy & bit ? LOST_SINCE : 0;
     qb_counters.floor_runs++;
     if (lost) qb_counters.floor_lost_since++;
-    struct pick pool[POOL_MAX];
+    struct pick fp;
     const struct pick *f = 0;
-    u32 n = collect(pool), out = 0, swaps = 0, restructures = 0, releases = 0, result = KEPT, any = 0;
+    u32 out = 0, swaps = 0, restructures = 0, releases = 0, result = KEPT;
     i32 room = room_of(team, index);
-    if (n > POOL_MAX) {
-        qb_counters.floor_pool_overflow++;
-        goto done;
-    }
-    for (u32 i = 0; i < n; i++) any |= !pool[i].pool && fully_healthy(pool[i].p);
-    if (!any) {                                                       /* 1 */
+    if (!any_healthy_free_agent()) {                                  /* 1 */
         qb_counters.floor_no_free_agent++;
         goto done;
     }
@@ -471,15 +463,13 @@ static void floor_club(u32 shadow, u32 stages, u32 index, u32 point, u32 menu) {
         qb_counters.floor_swaps++;
         a--;
     }
-    if (stages && B(team + 0x11C) == 53 && release_one(team)) qb_counters.floor_cuts++;          /* 3 */
+    if (stages && B(team + 0x11C) == 53 && release_one(team, 0)) qb_counters.floor_cuts++;       /* 3 */
     for (;;) {                          /* C11 and F1(b): choose on the pool as it stands; make room until he fits */
         RECOUNT(team);
-        if ((n = collect(pool)) > POOL_MAX) {
-            qb_counters.floor_pool_overflow++;
-            goto done;
+        if (choose(&fp, room_of(team, index))) {                     /* 4: the gated signing fits */
+            f = &fp;
+            break;
         }
-        if ((f = choose(pool, n, room_of(team, index), 0))) break;   /* 4: the gated signing fits */
-        f = 0;
         if (!stages) {                                                /* camp: rung 1 only */
             qb_counters.floor_no_room++;
             goto done;
@@ -487,7 +477,7 @@ static void floor_club(u32 shadow, u32 stages, u32 index, u32 point, u32 menu) {
         if (restructures < 3 && restructure_once(team)) {             /* 6 */
             restructures++;
             qb_counters.floor_restructures++;
-        } else if (release_one(team)) {                               /* 7, bounded by the minimums */
+        } else if (release_one(team, 1)) {                            /* 7, bounded by the minimums */
             if (releases++) qb_counters.floor_extra_releases++;
             qb_counters.floor_releases++;
         } else {

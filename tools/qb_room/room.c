@@ -208,6 +208,17 @@ static MID u32 decide_d1(struct room *r, struct qb *u) {
 /* R1's season reset (stage 3b, bit 256): at the first pre-game pass of a season with year index 1 or more (stage 8,
    week 0), a healthy quarterback who leads the healthy row 0 man by 6 or more takes row 0 (rows only; the best-rated
    such man, ties to the upper row). Year index 0 is exempt, so the real opening chart stands. */
+static TAIL void clear_season_locks(struct room *r, u32 team) {
+    u32 slots = B(team + 0x11C);
+    if (slots > SLOTS) return;
+    for (u32 i = 0; i < slots; i++) {
+        u32 p = D(team + 4 * i);
+        if (!p || B(p + 0x35) != 0 || !fully_healthy(p) || !(B(p + 0x52) & 1)) continue;
+        if (!r->shadow) B(p + 0x52) &= ~1u;
+        qb_counters.season_locks_cleared++;
+    }
+}
+
 static u32 season_reset(struct room *r) {
     struct qb *top = 0, *first = 0;
     for (u32 i = 0; i < r->n; i++) {
@@ -343,6 +354,14 @@ static void club_pass(struct room *r) {
         qb_counters.skip_unmanaged++;
         return;
     }
+    /* The season's lock clear (coordinator's option (a), re-check RD-F1): by-choice locks last the season. At the
+       first pre-game pass of each season from year index 1 (stage 8 with the week counter still 0: the counter moves
+       at the end of each weekly advance, so this is the season's first pass and no other; a save reloaded at week 0
+       clears again, and D1 recomputes the same answer from its season key), the rank lock of every healthy
+       quarterback of this CPU-managed chart is cleared, so the native sort orders them; hurt quarterbacks keep theirs
+       (the returning-starter rule handles them). Rides with any lock-writing stage (r->stages: bits 1, 2, 4, 256). */
+    if (r->opening && r->stage == 8 && !D(WEEK) && D(YEAR))
+        clear_season_locks(r, team);
     /* Collect: position byte +0x35 = 0, 2..7 of them, rows exactly 0..n-1 (recovery.c's sanity test). */
     u32 slots = B(team + 0x11C), rows = 0, n = 0;
     if (slots > SLOTS) slots = 0;
@@ -419,7 +438,7 @@ static void club_pass(struct room *r) {
     r->coach1000 = 1350 - 600 * (leadership - 61) / 38;
 
     /* 0. The season reset (addendum 2, R1; bit 256): the first pre-game pass of a season from year index 1. */
-    if (r->opening && (r->stages & STAGE_D3) && r->stage == 8 && !D(WEEK) && D(YEAR) && season_reset(r)) return;
+    if (r->opening && r->stage == 8 && !D(WEEK) && D(YEAR) && season_reset(r)) return;
     /* 1. Newcomers: healthy, rank lock clear, best-rated first (ties: the upper row first). */
     if (r->stages & (STAGE_D1 | STAGE_D4)) {
         u32 order[QB_MAX], count = 0;
@@ -466,7 +485,7 @@ static void pass(u32 opening) {
     struct room r;
     r.stages = qb_settings.stages;
     r.opening = opening;
-    if (!(r.stages & (opening ? STAGE_D1 | STAGE_D3 : STAGE_D1 | STAGE_D2 | STAGE_D3 | STAGE_D4))) return;
+    if (!(r.stages & (STAGE_D1 | STAGE_D2 | STAGE_D3 | STAGE_D4))) return;   /* the lock-writing stages */
     r.stage = D(STAGE);
     if (r.stage < 7 || r.stage > 9) {
         qb_counters.passes_inactive++;

@@ -407,6 +407,31 @@ class FloorReview(FloorLeague):
         self.assertEqual(self.events()[-1][8], 2)              # g = releases in the act
         self.assertGreaterEqual(self.room_now(), 0)
 
+    def test_rf4_make_room_never_releases_a_player_charged_nothing(self):
+        # Re-check R-F1 (rev-qb34, probe RF4): six low-rated players on expired deals (no contract years: the recount
+        # charges them nothing, so releasing them frees no room). 66d8a7e1b released 3, 2 of them for nothing.
+        self.floor_settings(stages=FLOOR)
+        others = self.squad([QB(80, 0, injury=hurt(2))], 50)
+        for q in others:
+            q.ovr = max(q.ovr, 66)
+            self.write_player(q)
+        cheap = sorted(others, key=lambda q: q.ovr)[:6]
+        for q in cheap:
+            q.ovr = 50
+            self.write_player(q)
+            self.uc.mem_write(q.address + 0x24, struct.pack("<I", self.word(q.address + 0x24) & ~0xF))
+        self.free_market(58, 54, 62, 60)
+        self.give_room(235)
+        before = set(self.club_list())
+        self.enter_pregame()
+        gone = before - set(self.club_list())
+        self.assertEqual([q for q in cheap if q.address in gone], [])     # none released for nothing
+        counts = self.counters()
+        self.assertGreaterEqual(counts["floor_releases"], 1)
+        self.assertEqual(counts["floor_extra_releases"], counts["floor_releases"] - 1)
+        self.assertEqual(sum(self.healthy(p) for p in self.quarterbacks()), 1)
+        self.assertGreaterEqual(self.room_now(), 0)
+
     def test_f3_a_free_agent_who_is_not_a_prove_it_man_signs_the_one_year_deal(self):
         # The reviewer's probe FP5: no contract years and no unsigned weeks (released this week); f34553b06 left the
         # native signing's five-year contract.
@@ -570,6 +595,47 @@ class AdvancePoints(FloorLeague):
                 else:
                     self.assertEqual(self.club_list(), before)
                     self.assertEqual(self.counters()["floor_no_game"], 1)
+
+@unittest.skipUnless(base.HAVE_UC, "Unicorn is required")
+class LargeMarket(FloorLeague):
+    """P5 (ten seasons): from 2029/2030 the free-agent list holds more quarterbacks than the floor's 64-entry pool
+    (66d8a7e1b: POOL_MAX), and every act gave up as floor_pool_overflow (E1: sign_pool_overflow). The floor and E1 now
+    ask the native picker's own question, one streaming pass over the free-agent list and the offer table per ask, with
+    no store and no limit. Lists of 1,000 to 2,000 entries with more than 64 quarterbacks, all hurt but the last entry."""
+
+    def market(self, size):
+        quarterbacks = max(70, size // 14)
+        entries = []
+        for k in range(size):
+            if k == size - 1:
+                entries.append(QB(60, years=3, contract=PROVE_IT))                     # the only healthy one, last
+            elif k % (size // quarterbacks) == 0:
+                entries.append(QB(70 + k % 9, years=4, injury=hurt(5), contract=0x01000001))
+            else:
+                entries.append(QB(55, years=3, position=3 + k % 13, locked=False, contract=0x01000001))
+        self.free_agents(entries)
+        self.assertGreater(sum(q.position == 0 for q in entries), 64)
+        return entries[-1]
+
+    def test_the_floor_finds_the_only_healthy_quarterback_last_in_a_long_list(self):
+        for size in (1000, 1024, 1025, 1500, 2000):
+            with self.subTest(size=size):
+                self.setUp()
+                self.floor_settings(stages=FLOOR)
+                self.squad([QB(75, 0, injury=hurt(2))], 52)
+                last = self.market(size)
+                self.give_room(20000)
+                self.enter_pregame()
+                self.assertIn(last.address, self.club_list())
+                self.assertEqual(self.counters()["floor_pool_overflow"], 0)
+
+    def test_e1_finds_him_too(self):
+        self.floor_settings(stages=room.STAGE_SIGN)
+        self.squad([QB(75, 0)], 52)                                     # one healthy quarterback: E1's need
+        last = self.market(1025)
+        self.give_room(20000)
+        self.enter_sign()
+        self.assertIn(last.address, self.club_list())
 
 @unittest.skipUnless(base.HAVE_UC, "Unicorn is required")
 class Camp(FloorLeague):
@@ -1015,6 +1081,53 @@ class TF34(unittest.TestCase):
         self.load("no-qb-2508-2027-w18.b81mem.gz")
         self.assertEqual(self.healthy_qbs(11), [])
         self.check(11, self.floor(2), TF3_SIGNED)
+
+P5_IMAGE = Path(os.environ.get("QB_ROOM_P5_IMAGE", "/home/noah/2k-worktrees/.b77-scratch/b81/qb34/evidence/floor/"
+                                                     "p5-2503-2030-w16.b81mem.gz"))   # runs/p5-ten/.../FAIL-2030-st8-w16
+P5_IMAGE_SHA = "b11c4d73026c48726fda8a627bf24986f360b8e0a9ccd4bf9f9e7bbff9bbc9f3"
+
+
+@unittest.skipUnless(base.HAVE_UC, "Unicorn is required")
+class P5Image(unittest.TestCase):
+    """The kept P5 image (candidate root 2503, 2030 after the week 16 advance): TEN's only quarterback, Cam Ward, hurt;
+    1,568 free agents, 98 of them quarterbacks (91 healthy); cap room 4,544. 66d8a7e1b's floor gave up (pool overflow).
+    The page under test is installed over the image's code (the image's settings kept) and the pre-game floor runs."""
+
+    def test_ten_gets_a_healthy_quarterback(self):
+        xbe = P2A / P2A_XBE[0]
+        for path, digest in ((P5_IMAGE, P5_IMAGE_SHA), (xbe, P2A_XBE[1])):
+            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                raise unittest.SkipTest(f"{path.name} is absent or differs")
+        from tests.nfl2k5_supersim_draft_fixture import Machine
+        from tools import franchise_invariants as fi
+        memory = fi.load_memory(P5_IMAGE)
+        m = Machine(xbe.read_bytes(), trace_writes=False)
+        for lo, data in memory.regions:
+            if lo < 0x3000000:
+                m.uc.mem_write(lo, data)
+        settings = bytes(m.uc.mem_read(VA + room.SETTINGS_OFFSET, room.SETTINGS.size))
+        page = room.page_bytes(VA, settings, ir_store_va=m.get(VA + room.LINK_IR_STORE))
+        m.uc.mem_write(VA, page[:room.CODE_LIMIT])
+        for start, size in (getattr(room, "CODE_MID", (0, 0)), getattr(room, "CODE_TAIL", (0, 0))):
+            m.uc.mem_write(VA + start, page[start:start + size])
+        m.uc.ctl_flush_tb()
+        root = m.get(0xB72918)
+        team = m.get(root + 0x1C) + 500 * 30                 # TEN
+
+        def healthy_qbs():
+            players = [m.get(team + 4 * i) for i in range(m.uc.mem_read(team + 0x11C, 1)[0])]
+            return [p for p in players if m.uc.mem_read(p + 0x35, 1)[0] == 0 and not m.get(p + 0x20) & 0xBFC00000
+                    and not m.get(p + 0x24) & 0x70000000]
+
+        self.assertEqual(healthy_qbs(), [])
+        before = room.counters(bytes(m.uc.mem_read(VA, room.PAGE_SIZE)))
+        m.uc.mem_write(m.STACK, struct.pack("<III", m.STOP, m.ARENA + 0x1A0000, 1))
+        m.reg("ESP", m.STACK)
+        m.uc.emu_start(VA + room.LABELS["emergency_pass"], m.STOP, count=3_000_000_000)
+        self.assertEqual(m.reg("EIP"), m.STOP)
+        self.assertEqual(len(healthy_qbs()), 1)
+        counts = room.counters(bytes(m.uc.mem_read(VA, room.PAGE_SIZE)))
+        self.assertEqual(counts.get("floor_pool_overflow", 0) - before.get("floor_pool_overflow", 0), 0)
 
 P2A = Path(os.environ.get("QB_ROOM_P2A_REPLAY", "/home/noah/2k-worktrees/.b77-scratch/b81/qb34/evidence/p2a-replay"))
 P2A_IMAGE = ("00-sign_after-y1-st7-w2-ENTER.b81mem.gz", "c76828e9931eaebdfebd837b5cbe5bf3cf36adb8070618f1f247cdb9d518cd8e")

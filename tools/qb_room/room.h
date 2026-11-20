@@ -158,6 +158,7 @@ struct counters {
     u32 floor_unseated;          /* F4: signed for a user club whose chart the user manages: not seated */
     u32 floor_end_passes;        /* F2: entries at the end of a weekly advance or of a stage advance */
     u32 floor_no_game;           /* F6: a club with no next game (stages 8 and 9): no act */
+    u32 season_locks_cleared;    /* option (a): healthy QBs' rank locks cleared at a season's first pre-game pass */
 };
 /* COUNTERS END */
 extern volatile struct counters qb_counters;          /* page + 0x2040 */

@@ -66,7 +66,7 @@ CLUB_SIZE, PLAYER_SIZE, COACH_SIZE = 500, 0x54, 0xA8
 LEAGUE_CLUBS = 34                       # 32 league clubs and the two all-star sides
 GENERATORS = ((0xB12680, 448), (0xE5FCA0, 448))
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
-PIECE3_RELOCATIONS = "5ae3c4b63a1c33ce7aff8cb68aa19cb605e60c8fb7d7666cf768084080dfb87c"   # D1 after review
+PIECE3_RELOCATIONS = "ada3933514f0b4ef7455b7744e2ab0007b6e0378233e5748f6f1c603a455107f"   # D1 after review
 # Stage 4a runs on a real standard Studio build (retail plus every standard owner, slice 1 Realistic): economy_week
 # at 0x323870, the practice-squad guard and economy gate in front of 0x322BB0, the smart cut at 0x2BF9A0.
 STANDARD_XBE = Path(os.environ.get("NFL2K5_B81_QB_STANDARD_XBE",
@@ -248,14 +248,14 @@ class PageInterface(unittest.TestCase):
 
     def test_stage_4a_is_linked_after_piece_3_which_keeps_every_byte(self):
         # Piece 3 as reworked after the review (DESIGN addendum 2): its main part (both entries, room.c's code and
-        # tables) is 0xF00 bytes with the sha256 and relocations below; D1 sits in the middle piece (page + 0x2200)
+        # tables) is 0xF10 bytes with the sha256 and relocations below; D1 sits in the middle piece (page + 0x2200)
         # and its row shift in the tail. 4a and the floor are linked after the main part, so they move none of it.
         # (Before the review, 5846655b1's piece 3 was 0x10BC bytes, sha256 2441d02a..., 96 relocations.)
-        self.assertEqual(room.PIECE3_BYTES, 0xF00)
+        self.assertEqual(room.PIECE3_BYTES, 0xF10)
         self.assertEqual(hashlib.sha256(room._TEMPLATE[:room.PIECE3_BYTES]).hexdigest(),
-                         "a6dc21e08cb6173a29109a4626cf8c42bf52d613a0b400302a88d951e57f7ebe")
+                         "808e0d12e9ba2eec273a0e9bf86d3929a840e3decc8e43649beefaac13f852c2")
         inside = [r for r in room._RELOCATIONS if r[0] < room.PIECE3_BYTES]
-        self.assertEqual(len(inside), 88)
+        self.assertEqual(len(inside), 89)
         self.assertEqual(hashlib.sha256(repr(inside).encode()).hexdigest(), PIECE3_RELOCATIONS)
         for label in ("emergency_pass", "sign_entry", "sign_after"):
             self.assertGreaterEqual(room.LABELS[label], room.PIECE3_BYTES)
@@ -818,6 +818,64 @@ class D1AfterReview(League):
                     self.assertEqual(self.rows([benched, starter]), [0, 1])
                 else:
                     self.assertEqual(self.table(), before)
+
+
+class SeasonLocks(League):
+    """The season's lock clear (coordinator's option (a), re-check RD-F1): at the first pre-game pass of each season from
+    year index 1 (stage 8, week counter 0), the rank lock (bit 0 of +0x52) of every HEALTHY quarterback of a club whose
+    chart the CPU manages is cleared; the native sort then orders them. It rides with any lock-writing stage (bits 1,
+    2, 4, 256). Year index 0, other weeks (a lock written in week 6, a save reloaded mid-season), user-managed charts and
+    hurt quarterbacks are left alone. Each case fails on 66d8a7e1b (evidence qb34/evidence/native/
+    season-locks-tests-on-66d8a7e1b.txt)."""
+
+    def setUp(self):
+        super().setUp()
+        self.settings(room.STAGE_D1 | room.STAGE_D2D3)            # the Studio's D1 + D2
+        self.write(0xE576B8, 1)                                   # year index 1: the second season
+        self.write(0xE576B4, 0)                                   # week counter 0: the season's first pass
+        self.write(0xE576A4, 8)
+
+    def d2_room(self, club=4, *, injured_third=False):
+        """The reviewer's RD6: a kid (second year now) 80 locked on row 0 by last season's D2 move, the veteran 84
+        locked behind him, a third man (hurt and locked, if asked)."""
+        kid, veteran = QB(80, 0, years=2), QB(84, 1, years=7)
+        third = QB(62, 2, years=9, injury=0x80000000 | 4 << 22 if injured_third else 0)
+        self.club(club, [kid, veteran, third])
+        return kid, veteran, third
+
+    def test_the_first_pass_of_a_season_frees_the_d2_pair_and_the_84_starts(self):
+        kid, veteran, third = self.d2_room(injured_third=True)
+        self.enter("opening")                                     # the season's first pre-game pass
+        self.assertEqual(self.locks([kid, veteran, third]), [0, 0, 1])   # healthy cleared, the hurt man's kept
+        self.write(0xE576B4, 1)
+        self.native_sort()
+        self.enter("room")
+        self.enter("opening")
+        self.assertEqual(self.rows([veteran])[0], 0)
+
+    def test_only_week_0_of_a_later_season_on_a_cpu_chart(self):
+        cases = {"week 0, year 1": (1, 0, 0, True), "year index 0": (0, 0, 0, False), "week 6": (1, 6, 0, False),
+                 "a reload at week 3": (1, 3, 0, False), "user chart": (1, 0, 1, False)}
+        for name, (year, week, human, cleared) in cases.items():
+            with self.subTest(case=name):
+                self.setUp()
+                self.write(0xE576B8, year)
+                self.write(0xE576B4, week)
+                self.write(0xE5775C + 4 * 4, human)
+                self.write(0xE60140, 0)
+                kid, veteran, third = self.d2_room()
+                self.enter("opening")
+                self.assertEqual(self.locks([kid, veteran]), [0, 0] if cleared else [1, 1])
+
+    def test_a_shipped_pair_on_a_cpu_club_is_freed_in_the_second_season(self):
+        starter, backup = QB(75, 0, years=8), QB(79, 1, years=5)          # the shipped roster's own locks
+        self.club(4, [starter, backup, QB(60, 2, years=9)])
+        self.settings(room.STAGE_D2D3)                                     # D2 alone still installs the clear
+        self.enter("opening")
+        self.assertEqual(self.locks([starter, backup]), [0, 0])
+        self.write(0xE576B4, 1)
+        self.native_sort()
+        self.assertEqual(self.rows([backup])[0], 0)
 
 
 # ---- T3: D4 -----------------------------------------------------------------------------------------------------
