@@ -1124,9 +1124,11 @@ class BuildPanel(QWidget):
                                              "Kickoff: 35 · touchback: 35 · PAT snap: 15.",
                                              details="These describe the shipped patch, not a newly verified NFL ruleset. Two-point tries stay at the 2; "
                                                      "the kick meter and kicker curves are re-spaced so a 99 leg reaches 65-69 yards; onside and safety "
-                                                     "kicks are untouched; the CPU keeps its original field-goal range for fourth-down decisions.")
+                                                     "kicks are untouched; the CPU keeps its original field-goal range for fourth-down decisions. "
+                                                     "CPU kickers aim with two thirds of their original error (your own kicks are unchanged).")
         self.kick_power_check = self._option(g, "kick_power", "More kicking power; keep 2004 kick spots",
-                                             "The Basic preset's kicking fix: ~70-yard legs for elite kickers, original kick spots.")
+                                             "The Basic preset's kicking fix: ~70-yard legs for elite kickers, original kick spots. "
+                                             "CPU kickers also aim with two thirds of their original error.")
         self.kickoff_alignment_check = self._option(g, "kickoff_alignment", "Dynamic kickoff alignment",
                                                     "Coverage on the receiving 40, return setup zone 35-30, two returners deep.",
                                                     badge=NOT_TESTED, needs_image=True)
@@ -2072,7 +2074,9 @@ class BuildPanel(QWidget):
 
     def _add_sim_qb_injuries(self, layout):
         help_text = ("For simulated franchise games, including your club. Realistic uses quarterback Durability and "
-                     "adjusts simulated passing. Games you play use their original injuries and passing. "
+                     "adjusts simulated passing. It also gives simulated games modern NFL field goal accuracy by "
+                     "distance, and CPU clubs try 50-yard field goals about as often as NFL teams. Games you play use their "
+                     "original injuries and passing. "
                      "Realistic and Custom require 128 MB and Simulated season realism.")
         caption = QLabel("Simulated quarterback injuries")
         self.qb_injury_mode = QComboBox()

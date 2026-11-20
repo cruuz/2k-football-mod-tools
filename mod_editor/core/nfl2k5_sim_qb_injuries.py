@@ -9,6 +9,7 @@ import struct
 from . import nfl2k5_k128 as memory
 from . import nfl2k5_lineup_roles as lineup
 from . import nfl2k5_sim_realism as simulator
+from . import nfl2k5_sim_scoring as scoring
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
@@ -93,7 +94,8 @@ def _lineup_va(payload):
     return None
 
 
-def _edits(payload, bank, setting):
+def _edits(payload, bank, setting, *, with_scoring=True):
+    """The option's whole edit list; the in-place simulated kicking sites ride with it (beta 81 scoring slice)."""
     from . import nfl2k5_sim_qb_injuries_code as code
     image = XbeImage(payload)
     sim, data = simulator._allocations(payload)
@@ -102,7 +104,9 @@ def _edits(payload, bank, setting):
     addresses = (base, sim['va'], data['va'], _lineup_va(payload))
     body = code.bank_bytes(image.read, *addresses, rate=setting.rate, marker=setting.marker())
     _require(len(body) == bank['size'], 'Incorrect simulated QB injury runtime size')
-    return (*code.edits(*addresses, rate=setting.rate), ('simulated QB injury bank', base, b'\xcc' * bank['size'], body))
+    kicking = scoring.edits() if with_scoring else ()
+    return (*code.edits(*addresses, rate=setting.rate), *kicking,
+            ('simulated QB injury bank', base, b'\xcc' * bank['size'], body))
 
 
 def _transform(payload, edits, *, restoring):
@@ -151,7 +155,11 @@ def _state(payload: bytes):
         return None, payload
     marker = image.read(allocation['va'] + code.MARK_OFFSET, MARK.size)
     setting = _Setting.from_marker(marker)
-    restored = _transform(payload, _edits(payload, allocation, setting), restoring=True)
+    # An option installed before the scoring slice has retail kicking sites; apply() upgrades it in place.
+    kicking = scoring.status(payload)
+    _require(kicking in ('applied', 'retail'), 'Foreign or mixed simulated kicking bytes')
+    restored = _transform(payload, _edits(payload, allocation, setting, with_scoring=kicking == 'applied'),
+                          restoring=True)
     _validate_simulation(restored)
     return setting, restored
 
@@ -183,7 +191,7 @@ def apply(payload, level='realistic', *, custom_rate=0.310):
     XbeImage(source)
     original, physical = _state(source)
     receipt = {'owner':OWNER, 'mode':level, 'custom_rate':wanted.rate / 1000 if wanted else None}
-    if original == wanted:
+    if original == wanted and (wanted is None or scoring.status(source) == 'applied'):
         return source, {**receipt, 'status':'already_applied' if wanted else 'retail', 'changed_bytes':0}
     if wanted is None:
         result = physical
@@ -196,5 +204,6 @@ def apply(payload, level='realistic', *, custom_rate=0.310):
         result = _transform(physical, _edits(physical, bank, wanted), restoring=False)
     confirmed, restored = _state(result)
     _require(confirmed == wanted and restored == physical, 'Simulated QB injury settings failed readback')
+    _require(scoring.status(result) == ('applied' if wanted else 'retail'), 'Simulated kicking failed readback')
     return result, {**receipt, 'status':'applied' if wanted else 'retail', 'changed_bytes':space.count_differing_bytes(source,result),
                     'file_growth':len(result) - len(source)}

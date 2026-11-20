@@ -2601,6 +2601,9 @@ def _verify_sim_qb_injuries(plan, module, payload):
     if (settings["status"] != expected_status or settings["mode"] != plan.sim_qb_injuries
             or (plan.sim_qb_injuries == "custom" and settings["custom_rate"] != plan.sim_qb_injury_rate)):
         raise ValueError("Simulated quarterback injuries did not read back with the chosen settings.")
+    kicking = _core_module("nfl2k5_sim_scoring")
+    if kicking is not None and kicking.status(payload) != expected_status:
+        raise ValueError("Simulated kicking did not read back with the chosen simulator setting.")
     return settings
 
 
@@ -3552,7 +3555,7 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
         "returner_fix": report.get("returner_fix", "unknown"), "progression": report.get("progression", "unknown"),
         "franchise_economy": report.get("franchise_economy", "unknown"),
         "scheme_labels": report.get("scheme_labels", "unknown"), "camera": report.get("camera", "unknown"),
-        "kick_rules": report.get("kick_rules", "unknown"), "dynamic_kickoff": report.get("dynamic_kickoff", "unknown"), "dynamic_kickoff_settings": report.get("dynamic_kickoff_settings"), "playoff_picture": report.get("playoff_picture", "unknown"), "depth_chart_rows": report.get("depth_chart_rows", "unknown"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
+        "kick_rules": report.get("kick_rules", "unknown"), "cpu_kick_aim": report.get("cpu_kick_aim", "unknown"), "dynamic_kickoff": report.get("dynamic_kickoff", "unknown"), "dynamic_kickoff_settings": report.get("dynamic_kickoff_settings"), "playoff_picture": report.get("playoff_picture", "unknown"), "depth_chart_rows": report.get("depth_chart_rows", "unknown"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
         "overtime": report.get("overtime", "unknown"), "team_column": report.get("team_column", "unknown"),
         "position_row": report.get("position_row", "unknown"), "probowl_order": report.get("probowl_order", "unknown"),
         "elbow_options": report.get("elbow_options", "unknown"),
@@ -3676,6 +3679,8 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     qb_settings = qb_injuries.read_settings(_xbe_bytes(source)) if qb_injuries is not None else {"status": "unavailable"}
     out["sim_qb_injuries"] = qb_settings["status"]
     out["sim_qb_injury_settings"] = qb_settings
+    sim_scoring = _core_module("nfl2k5_sim_scoring")  # b81 scoring: simulated kicking, part of the option above
+    out["sim_scoring"] = sim_scoring.status(_xbe_bytes(source)) if sim_scoring is not None else "unavailable"
     coach_carousel = _core_module("nfl2k5_coach_carousel")  # b780-c6
     out["coach_carousel"] = coach_carousel.status(_xbe_bytes(source)) if coach_carousel is not None else "unavailable"
     history_screen = _core_module("nfl2k5_history_screen")  # b780-j4

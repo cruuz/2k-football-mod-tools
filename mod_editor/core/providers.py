@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "dc3cc5177445c4b700c9a160f267520126f553854dcb6a68c074ef8d35bfa13c",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "4acf958911f6222f42127f572dce1bd996352310361e8cf6c1a810d1723d7e9d",
+        "mod_editor/core/mod_build.py": "f977766cf482cf2d8cc11075daab7539759c4acefec52c1dae74882dbae474e8",
         "mod_editor/core/nfl2k5_console_memory.py": "6ea4889a87c02c49c0850efa27a11706457dfd9cd438051f307587b469541758",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -987,8 +987,10 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "0b5655021e33a2c28bff7523399321f588aa4f925cf84823b9603c474c94f7a7",  # b778-cb1
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "255a6b0ffaa42e85934300130a28b00959c4b5d720c297c290dd8c68b1bbb02a",  # b779-sim2
         "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",  # b780 hunt1: frozen beta-79 roll for the previous state
-        "mod_editor/core/nfl2k5_sim_qb_injuries.py": "e8219c52604fe023549411055a7500987d9da4d108bdf2794bac1227a22e18e7",
+        "mod_editor/core/nfl2k5_sim_qb_injuries.py": "3069fd1388ac9d035ec74f20bf9302fe1cf5f99c9094dfe3fb6dfe5d0243b212",
         "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "ab914dbc3989ecaf33799f95c0e555027c2ae097758e97b425b655227ceded3c",
+        "mod_editor/core/nfl2k5_sim_scoring.py": "261b220086da95533014214ed82f3ac41095237714f95b436508322e64bc9677",  # b81 scoring: in-place simulated kicking, installed by the QB option
+        "mod_editor/core/nfl2k5_cpu_kick_aim.py": "cc41567cdd80d6149af319cb2502b62f8d8ff32ea9263b1cdeee388bb9463f99",  # b81 scoring: CPU place-kick aim (imported by throw_tuning)
         "mod_editor/core/nfl2k5_sim_realism.py": "6323212af016c4e70ecd36d340a993e16afc9b57550f3bb7ed2647fc6731a248",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_sim_realism_b779.py": "687a35375780ce07948ba555a8c189167586393c5de6f48d954c2902a71010ad",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_standings_records.py": "175712ff8aff730b035aab671bf2208322ba52ec1fef758afad7d24263485c1c",  # b780-j1
@@ -1069,7 +1071,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_team_logo_swap.py": "d4e46ff301b3449fc78a145548be2bcbc6104caad80563e1d940ef564fd73c12",
         "mod_editor/core/nfl2k5_text_catalog.py": "514706a38b28a4c7189f49e7601813cd55e16f1b9e81c9c8aa3e92c072e962c9",
         "mod_editor/core/nfl2k5_throw_arc.py": "0fbf33d12fe27a0f940fb7e13f375390b88701c4ccb7e89a1de895d8f66b9c3c",
-        "mod_editor/core/nfl2k5_throw_tuning.py": "feb920efc56386eae2ab45949d0e9fbd35f91bd56968b4d723cc724e2b9f4520",
+        "mod_editor/core/nfl2k5_throw_tuning.py": "76cda58bad9d4590f6aefabcf52fe14f3e9e556e2ba866b99475f1ce9d98b020",
         "mod_editor/core/nfl2k5_trade_deadline.py": "6d06124670e0c360c9c9600ee7010d8afd239df7cd6352e18dd3762fc72297f4",
         "mod_editor/core/nfl2k5_unif_color_writer.py": "5e950cc404e25c1fbeff7ee5aa2a3fad235115aeddd743e95be6862677a88324",
         "mod_editor/core/nfl2k5_uniform_catalog.py": "e297a2431241c8cc5b0fa38b42ae6ee77771094fafda28f44c98ad47dafe10b5",

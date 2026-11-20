@@ -64,6 +64,7 @@ from . import nfl2k5_franchise_economy as franchise_economy_patch
 from . import nfl2k5_modern_positions as scheme_labels_patch
 from . import nfl2k5_camera as camera_patch
 from . import nfl2k5_kick_rules as kick_rules_patch
+from . import nfl2k5_cpu_kick_aim as cpu_kick_aim_patch  # b81 scoring: CPU place-kick aim, with the kicking fixes
 from . import nfl2k5_dynamic_kickoff as dynamic_kickoff_patch
 from . import nfl2k5_depth_chart_rows as depth_chart_rows_patch
 from . import nfl2k5_depth_chart_storage as depth_chart_storage
@@ -897,6 +898,7 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "scheme_labels": scheme_labels_patch.status(payload),
         "camera": camera_patch.status(payload),
         "kick_rules": kick_rules_patch.status(payload),
+        "cpu_kick_aim": cpu_kick_aim_patch.status(payload),
         "dynamic_kickoff": dynamic_kickoff_patch.status(payload),
         "dynamic_kickoff_settings": dynamic_kickoff_patch.read_settings(payload),
         "depth_chart_rows": depth_chart_rows_patch.status(payload),
@@ -1034,6 +1036,7 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "scheme_labels": scheme_labels_patch.status(payload),
         "camera": camera_patch.status(payload),
         "kick_rules": kick_rules_patch.status(payload),
+        "cpu_kick_aim": cpu_kick_aim_patch.status(payload),
         "dynamic_kickoff": dynamic_kickoff_patch.status(payload),
         "dynamic_kickoff_settings": dynamic_kickoff_patch.read_settings(payload),
         "depth_chart_rows": depth_chart_rows_patch.status(payload),
@@ -2315,6 +2318,16 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
             else:
                 _require(state == "applied", f"kick-rules sites are {state}; refusing to patch")
                 receipt = {**receipt, "kick_rules_patch": {"already_applied": True}}
+        # b81 scoring: the kicking fixes ask CPU kickers for 32-yard extra points and longer field goals that the
+        # 2004 aim error misses wide; the CPU aim repair travels with them (person-controlled kicks are untouched).
+        aim_state = cpu_kick_aim_patch.status(patched)
+        if aim_state == "retail":
+            patched, aim_receipt = cpu_kick_aim_patch.apply(patched)
+            receipt = {**receipt, "cpu_kick_aim_patch": aim_receipt,
+                       "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(aim_receipt["changed_bytes"])}
+        else:
+            _require(aim_state == "applied", f"CPU kick aim sites are {aim_state}; refusing to patch")
+            receipt = {**receipt, "cpu_kick_aim_patch": {"already_applied": True}}
     if punter_holder or punter_holder_patch.build_status(patched) == "previous":
         patched, holder_receipt = punter_holder_patch.use_stored_holder(patched)
         receipt = {**receipt, "punter_holder_patch": holder_receipt,
@@ -2721,6 +2734,7 @@ def write_xbe_copy(
         "scheme_labels": scheme_labels_patch.status(result),
         "camera": camera_patch.status(result),
         "kick_rules": kick_rules_patch.status(result),
+        "cpu_kick_aim": cpu_kick_aim_patch.status(result),
         "dynamic_kickoff": dynamic_kickoff_patch.status(result),
         "dynamic_kickoff_settings": dynamic_kickoff_patch.read_settings(result),
         "depth_chart_rows": depth_chart_rows_patch.status(result),
@@ -3146,6 +3160,7 @@ def write_image_copy(
         "scheme_labels": scheme_labels_patch.status(after),
         "camera": camera_patch.status(after),
         "kick_rules": kick_rules_patch.status(after),
+        "cpu_kick_aim": cpu_kick_aim_patch.status(after),
         "dynamic_kickoff": dynamic_kickoff_patch.status(after),
         "dynamic_kickoff_settings": dynamic_kickoff_patch.read_settings(after),
         "depth_chart_rows": depth_chart_rows_patch.status(after),
