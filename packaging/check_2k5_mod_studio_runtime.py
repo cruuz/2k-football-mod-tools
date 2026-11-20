@@ -1922,6 +1922,7 @@ def main() -> int:
         "mod_editor.gui.roster_editor_panel_qt",
         "mod_editor.gui.espn25_panel_qt",
         "mod_editor.gui.franchise_panel_qt",
+        "mod_editor.gui.franchise_stats_qt",                     # b81 R41 Team Stats and Box score
         "mod_editor.gui.coaches_panel_qt",                       # b780-c4 Rosters > Coaches
         "mod_editor.gui.task_delivery",
         "mod_editor.gui.ux_text",
@@ -2057,6 +2058,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_real_portraits",                  # b779-pt1
         "mod_editor.core.nfl2k5_portrait_preview",                # b81 R11
         "mod_editor.core.nfl2k5_team_transfer",                   # b81 wave 3
+        "mod_editor.core.nfl2k5_team_stats",                      # b81 R41
         "mod_editor.core.nfl2k5_ps2_rosters",                     # b81 wave 3
         "mod_editor.core.nfl2k5_practice_injuries",               # b778-pi1
         "mod_editor.core.nfl2k5_ball_carrier_ai",                 # b778-ai5

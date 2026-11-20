@@ -2801,6 +2801,7 @@ class RosterEditorPanel(QWidget):
     # b81 item 6: franchise and coach edits that write the season, the front office, coach records or team settings,
     # never a player record or a team's list
     ARENA_ONLY_EDITS = frozenset({"year", "cap", "control", "game", "game_add", "game_remove", "week_clear", "coach",
+                                  "box_score", "game_swap_played",                     # b81 R41
                                   "coach_swap", "coach_hire", "team_option"})
 
     def _arena_byte_edit(self, edit) -> bool | None:

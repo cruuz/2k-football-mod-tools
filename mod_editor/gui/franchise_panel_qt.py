@@ -67,6 +67,8 @@ from PyQt5.QtWidgets import (
 from mod_editor.core import nfl2k5_franchise_save as fs
 from mod_editor.core import nfl2k5_roster_records as rr
 from mod_editor.core import nfl2k5_injured_reserve_save as irs   # b780-uxfix: modern injured reserve (IR1)
+from mod_editor.core import nfl2k5_team_stats as ts               # b81 R41: Finn's Stats tab and Boxscore
+from mod_editor.gui.franchise_stats_qt import BoxScoreDialog, TeamStatsPage
 
 # the coach numbers Finn's Statistics group edits, in his order, then the two ids and the playcalling split
 COACH_STATS: tuple[tuple[str, str], ...] = (
@@ -108,7 +110,11 @@ EDITABLE_HERE = (
     ("User-controlled teams", "PROVED", "FUN_000c4d70 reads the flags; Finn 0x913CC"),
     ("Salary cap", "PROVED", "DAT_00e3c278 in $1000 units; Finn 0x9ACCC"),
     ("Schedule cells", "PROVED", "the 22 x 17 grid; a played cell is refused unless you allow it; "
-                                 "quarter-score side order is a HYPOTHESIS and stays read-only"),
+                                 "swapping a played game's sides swaps its score halves too"),
+    ("Box score (b81 R41)", "PROVED",
+     "home Q1-Q4, OT then away at season block +0x107A; the standings getters 0xC7720/0xC7750/0xC7780 count W-L-T "
+     "from these bytes; optional matching change to points scored/allowed (+0x1D8/+0x1DA); unwitnessed in game"),
+    ("Team statistics (b81 R41)", "READ-ONLY", "31 season words at team +0x1AA..+0x1E8, Finn's columns"),
     ("Coach record", "PROVED", "Finn's map, career numbers re-checked on real coaches; a name changes only through Fire and hire"),
     ("Head coach moves: swap, fire and hire", "HYPOTHESIS",
      "two club pointers (+0x14C) and the coach text; the game's Create Team routine makes the same pointer change, unwitnessed in game"),
@@ -157,6 +163,11 @@ class FranchiseEdit:
             save.remove_game(int(a["row"]), int(a["slot"]), allow_played=bool(a.get("allow_played", False)))
         elif self.kind == "week_clear":
             save.clear_week(int(a["row"]), allow_played=bool(a.get("allow_played", False)))
+        elif self.kind == "box_score":           # b81 R41: Finn's Boxscore
+            ts.set_box_score(save, int(a["row"]), int(a["slot"]), [int(v) for v in a["home"]],
+                             [int(v) for v in a["away"]], season_points=bool(a.get("season_points", True)))
+        elif self.kind == "game_swap_played":    # b81 R41: a played game's sides swap with their scores
+            ts.swap_played_sides(save, int(a["row"]), int(a["slot"]))
         elif self.kind == "team_option":         # b81 R13: Finn's Options tab, one or several settings of one club
             changes = dict(a["changes"]) if "changes" in a else {str(a["option"]): a["value"]}
             for option, value in changes.items():
@@ -519,6 +530,11 @@ class FranchisePanel(QWidget):
         self.tabs.addTab(self.coaches_page, "Coaches")
         self._ir_tab_index = self.tabs.addTab(self._build_injured_reserve(), "Injured Reserve")
         self.tabs.addTab(self._build_checks(), "Checks")
+        # b81 R41: Finn's Stats tab, last so the older tab positions stay where they were
+        self.stats_page = TeamStatsPage()
+        self._stats_tab_index = self.tabs.addTab(self.stats_page, "Team Stats")
+        self.tabs.setTabToolTip(self._stats_tab_index, "Each club's season numbers, the way Finn's Stats tab shows "
+                                                       "them (read-only).")
         self.tabs.currentChanged.connect(self._tab_changed)
         layout.addWidget(self.tabs, 1)
 
@@ -616,6 +632,7 @@ class FranchisePanel(QWidget):
         self.schedule_table.setSelectionMode(QAbstractItemView.SingleSelection)
         self.schedule_table.verticalHeader().setVisible(False)
         self.schedule_table.itemSelectionChanged.connect(self._schedule_row_selected)
+        self.schedule_table.itemDoubleClicked.connect(lambda _item: self._box_score_clicked())
         box.addWidget(self.schedule_table, 1)
 
         # b81 R8: Finn's Home/Away table, read-only, with what looks wrong said in words
@@ -675,16 +692,21 @@ class FranchisePanel(QWidget):
         self.apply_game_button.clicked.connect(self._apply_game_clicked)
         self.swap_button = QPushButton("Swap home/away")
         self.swap_button.clicked.connect(self._swap_clicked)
+        self.box_score_button = QPushButton("Box score…")
+        self.box_score_button.setToolTip("Finn's Boxscore: both clubs' quarter scores for a played game "
+                                         "(double-click a played game too).")
+        self.box_score_button.clicked.connect(self._box_score_clicked)
         self.allow_played_check = QCheckBox("Allow editing played games")
         self.allow_played_check.setToolTip("A played cell carries its score and flags; the page refuses to "
                                            "change it unless you tick this")
         self.allow_played_check.toggled.connect(lambda _checked: self._update_game_notice())
         buttons.addWidget(self.apply_game_button)
         buttons.addWidget(self.swap_button)
+        buttons.addWidget(self.box_score_button)
         buttons.addWidget(self.allow_played_check)
         schedule_note = QLabel("EXPERIMENTAL / UNWITNESSED")
         schedule_note.setObjectName("optionBadge")
-        schedule_note.setToolTip("Schedule edits write the save's grid cells (scores stay read-only); "
+        schedule_note.setToolTip("Schedule and box score edits write the save's grid cells; "
                                  "nobody has watched the game accept them yet.")
         buttons.addWidget(schedule_note)
         buttons.addStretch(1)
@@ -1191,6 +1213,7 @@ class FranchisePanel(QWidget):
         self._fill_coach_list()
         self._refresh_coach()
         self._refresh_injured_reserve()
+        self.stats_page.refresh(self._save if self._mode == "franchise" else None, self._team_label)
         if force_checks or self.tabs.currentIndex() == 4:
             self._refresh_checks(force=True)
         else:
@@ -1289,10 +1312,13 @@ class FranchisePanel(QWidget):
                 score = ""
                 tip = ""
                 if game.scores is not None:
-                    first, second = game.scores
-                    score = f"{sum(first)}-{sum(second)}"
-                    tip = (f"quarters {'-'.join(map(str, first))} / {'-'.join(map(str, second))}; which side is "
-                           f"which is a HYPOTHESIS, so scores stay read-only")
+                    # b81 R41: the first five bytes are the home side's (the standings getters read them so);
+                    # the score reads away-home like the two columns before it
+                    home_q, away_q = game.scores
+                    score = f"{sum(away_q)}-{sum(home_q)}"
+                    tip = (f"{self._team_short(game.away)} {'-'.join(map(str, away_q))} = {sum(away_q)}, "
+                           f"{self._team_short(game.home)} {'-'.join(map(str, home_q))} = {sum(home_q)} "
+                           f"(Q1-Q4, OT). Double-click or Box score… to change it.")
                 cells = [str(game.slot + 1), self._team_short(game.away) if game.away_known else "To be decided",
                          self._team_short(game.home) if game.home_known else "To be decided",
                          f"{game.month}/{game.day}", game.kickoff(), "yes" if game.played else "", score,
@@ -1426,8 +1452,9 @@ class FranchisePanel(QWidget):
             text = "Select a game to edit its date and kickoff time."
         elif game.played:
             text = "This game has been played. " + (
-                "Editing is allowed. Scores stay read-only." if self.allow_played_check.isChecked() else
-                "Select 'Allow editing played games' before applying changes. Scores stay read-only.")
+                "Editing is allowed." if self.allow_played_check.isChecked() else
+                "Select 'Allow editing played games' before applying changes.") + \
+                " Box score… shows and changes its score."
         elif not (game.home_known and game.away_known):
             text = "Teams still to be decided. You can edit the date and kickoff time."
         else:
@@ -1443,6 +1470,7 @@ class FranchisePanel(QWidget):
             for widget in (self.home_combo, self.away_combo, self.month_spin, self.day_spin, self.hour_spin,
                            self.minute_spin, self.apply_game_button, self.swap_button):
                 widget.setEnabled(enabled)
+            self.box_score_button.setEnabled(game is not None and game.played)
             self._update_game_notice()
             if game is None:
                 return
@@ -1733,7 +1761,64 @@ class FranchisePanel(QWidget):
         except fs.FranchiseSaveError as exc:
             self._set_status(f"Refused: {exc}")
             return False
+        if game.played:
+            # b81 R41: the score halves belong to home and away, so a played game's swap moves them too
+            if not self.allow_played_check.isChecked():
+                self._last_error = ("this game has been played (its score and flags are in the save); tick "
+                                    "'Allow editing played games' to change it anyway")
+                self._set_status(f"Refused: {self._last_error}")
+                return False
+            return self.push(FranchiseEdit(
+                "game_swap_played", f"{game.row_name.title()} game {slot + 1}: swap home and away "
+                                    f"({self._team_short(game.home)} now away), each club keeps its score",
+                {"row": row, "slot": slot}))
         return self.edit_game(row, slot, home=game.away, away=game.home)
+
+    # ------------------------------------------------------------------ b81 R41: box scores
+    def edit_box_score(self, row: int, slot: int, home: Sequence[int], away: Sequence[int], *,
+                       season_points: bool = True) -> bool:
+        """Finn's Boxscore through the journal: the ten quarter bytes, and by default both clubs' season points."""
+
+        if self._save is None:
+            return False
+        try:
+            box = ts.box_score(self._save, row, slot)
+        except fs.FranchiseSaveError as exc:
+            self._last_error = str(exc)
+            self._set_status(f"Refused: {exc}")
+            return False
+        home, away = [int(v) for v in home], [int(v) for v in away]
+        if (tuple(home), tuple(away)) == (box.home_quarters, box.away_quarters):
+            self._set_status("Nothing to change on that box score.")
+            return False
+        label = (f"{self._save.schedule_row_name(row).title()}: box score {self._team_short(box.away)} "
+                 f"{box.away_points}-{box.home_points} {self._team_short(box.home)} -> {sum(away)}-{sum(home)}"
+                 + ("" if season_points and not box.postseason else " (season points unchanged)"))
+        return self.push(FranchiseEdit("box_score", label, {"row": row, "slot": slot, "home": home, "away": away,
+                                                            "season_points": bool(season_points)}))
+
+    def box_score_dialog(self, row: int, slot: int) -> BoxScoreDialog | None:
+        """The Boxscore dialog for one played game (not shown; ``exec_`` it)."""
+
+        if self._save is None:
+            return None
+        try:
+            box = ts.box_score(self._save, row, slot)
+        except fs.FranchiseSaveError as exc:
+            self._set_status(f"No box score: {exc}")
+            return None
+        title = f"{self._save.schedule_row_name(row).title()}, game {slot + 1}"
+        return BoxScoreDialog(box, self._team_label(box.away), self._team_label(box.home), title, self)
+
+    def _box_score_clicked(self) -> None:
+        game = self._selected_game()
+        if game is None or not game.played:
+            self._set_status("Select a played game to see its box score.")
+            return
+        dialog = self.box_score_dialog(game.row, game.slot)
+        if dialog is not None and dialog.exec_() == QDialog.Accepted:
+            self.edit_box_score(game.row, game.slot, dialog.quarters("home"), dialog.quarters("away"),
+                                season_points=dialog.season_points())
 
     def _apply_game_clicked(self) -> None:
         game = self._selected_game()

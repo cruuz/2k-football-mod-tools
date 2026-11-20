@@ -1462,6 +1462,8 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Place on IR (right-click) | Right-click → **Place on IR…** opens **Franchise → Injured Reserve** with him chosen |
 | Heal Player | Not available. **Activate** on the IR tab returns a player from IR; it does not change an injury |
 | Manage Salary Cap | **Franchise → Overview → Salary cap** |
+| Franchise Stats tab (team statistics) | **Franchise → Team Stats**: Finn's 31 columns for every club, plus W-L-T and games played; click a heading to sort |
+| Boxscore | **Franchise → Schedule**: select a played game and press **Box score…** (or double-click it) |
 | Save (writes the zip back) | **Save Xbox save copy…** writes a new signed copy; your original is never changed |
 
 Ctrl+Z and Ctrl+Y undo and redo on this page (Finn had no undo). Ctrl+/ lists the keys.
@@ -1490,8 +1492,14 @@ read-only, a checkable list of the user-controlled teams, the salary cap in mill
 $1000-unit value the game keeps, and every team's salary against the cap. **Schedule** shows the
 22 × 17 grid week by week (away, home, date, kick-off, played, score); pick a game, change the teams,
 date or time and press **Apply to this game**, or **Swap home/away**. A game that has been played is
-refused with the reason unless you tick **Allow editing played games**; its score stays read-only
-because which side the quarter bytes belong to is still a hypothesis. Finn's week tools are there too, for
+refused with the reason unless you tick **Allow editing played games**. **Box score…** (or a double-click on a
+played game) is Finn's Boxscore: both clubs' points in each quarter and overtime, with the finals. Change a number
+and press **Apply**. The game counts every club's wins, losses and ties from these numbers, so the standings follow
+the change. **Also change both clubs' season points** (ticked by default) moves the clubs' points scored and allowed
+on **Team Stats** by the same amount, which keeps them equal to their box scores the way the game keeps them; yards
+and the other season numbers stay as the game added them. A playoff game can change its quarters but not its
+winner, because the bracket has already moved the winner on. **Swap home/away** on a played game swaps the two
+score lines too, so each club keeps its own points. Finn's week tools are there too, for
 regular-season weeks: **Add game to this week** (the teams, date and kick-off set above; refused if either team
 already plays that week or the week is full), **Remove this game** (the week's later games move up one place) and
 **Clear this week**; a week with a played game needs the same tick. Playoff rounds keep their games, because the
@@ -1508,13 +1516,20 @@ pass calls come from shotgun / pistol / empty, split backs, I form, one back or 
 are pooled strings and stay read-only. **Injured Reserve** shows each team's five slots; **Place on IR…** picks
 one of the team's rostered players and does exactly Finn's move (his own save is reproduced byte for
 byte), and **Activate** is the inverse, labelled unwitnessed because nobody has watched the game accept
-it; a free agent or a draft prospect is refused in Finn's words. **Checks** prints the file map by
+it; a free agent or a draft prospect is refused in Finn's words. **Team Stats** is Finn's Stats tab: every club
+with its W-L-T (counted from the box scores, the way the game's standings count it), games played and Finn's 31
+season columns in his order (total yards, passing and rushing yards and averages, yards allowed, first downs,
+third and fourth downs, red zone, penalties, turnovers, points scored and allowed, pass and run plays), then the
+two-point counters. It is read-only, as Finn's is, and **Export as CSV…** saves it. The two averages divide by the
+season's pass plays and rushing plays, the numbers the save keeps, so they can differ a little from the game's own
+box score, which divides by attempts and carries. **Checks** prints the file map by
 PROVED / HYPOTHESIS / OPAQUE, what the page may edit, and every franchise edit since load in plain words
 with the byte ranges it touched. Each tab undoes per action and the header counts the unwritten edits.
 **Save Xbox save copy…** writes one re-signed copy carrying the roster edits first and the franchise edits on
 top, so the two never fight over the arena. In game, check the salary cap edit first (the cap projection
 is the game's own arithmetic), then a moved user team, then a schedule change; everything but the year
-rule and the IR move is unwitnessed.
+rule and the IR move is unwitnessed. A box score edit was loaded by the game's own save loader in an offline
+check and its standings followed; nobody has watched it on the Xbox yet.
 
 **Coaches in a roster save.** Finn's editor edits coaches in any save, and so does this page: open a roster save
 (not a franchise) and a **Coaches** tab appears beside **Roster**. It is the Franchise page's Coaches screen: every
