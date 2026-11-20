@@ -390,7 +390,7 @@ BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 # b780 n6: options whose beta-79 install reads "previous" in inspect(); the build upgrades it in place
 PREVIOUS_UPGRADE_KEYS = {"punter_holder": "saved field-goal holders", "modern_injured_reserve": "modern injured reserve", "honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory",
                          "coin_defer": "opening coin toss", "decided_clock": "late-game clock",
-                         "load_user_team_guard": "franchise load guard",
+                         "load_user_team_guard": "franchise load guard", "save_list_type_guard": "boot save list",
                          "historic_teams_quick_game": "historic teams in Quick Game",
                          # b780 rev1: these two read "previous" on a v0.8 disc too, and the build upgrades them in
                          # place (catch_slider_patch.apply, nfl2k5_sim_cb_tackles.apply); their boxes were greyed out
@@ -423,8 +423,8 @@ def rebuild_only_reason(state: Mapping[str, object]) -> str:
     offer Needs update boxes on such a disc and then let the engine refuse. Both Build and Game Fixes ask this one function."""
 
     if state.get("v09_standard_update"):
-        return ("On this v0.9 standard disc the Build page can update Modern injured reserve and Starting backfield cards. "
-                "Choose either or both. Use your retail disc for other changes or a league project.")
+        return ("On this v0.9 standard disc you can select the boot save-list repair, modern injured reserve or starting backfield cards. "
+                "Choose the changes you want. Use your retail disc for other changes or a league project.")
     if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") not in ("applied", "retail"):
         what = "disc" if state.get("container") == "xiso" else "executable"
         return (f"This {what} already has the practice field's team logo at midfield, put there by an older build. This release "
@@ -2038,9 +2038,10 @@ class BuildPanel(QWidget):
         for combo in self.findChildren(QComboBox):
             if combo.minimumWidth() == 0 and combo.minimumSizeHint().width() > COMBO_FLOOR_WIDTH:
                 combo.setMinimumWidth(COMBO_FLOOR_WIDTH)
+        update_boxes = {self._boxes()[key] for key in mod_build.V09_UPDATE_CHOICES}
         for box in self.findChildren(QCheckBox):
             box.toggled.connect(lambda _c: self._refresh())
-            if box not in (self.modern_injured_reserve_check, self.backfield_cards_check):
+            if box not in update_boxes:
                 box.clicked.connect(self._v09_other_selected)
         for combo in self.findChildren(QComboBox):
             combo.activated.connect(self._v09_other_selected)
@@ -2395,8 +2396,8 @@ class BuildPanel(QWidget):
             legacy_upgrade = key in LEGACY_UPGRADE_KEYS and value == "legacy"  # b780 studio1
             # b780 studio1 (Q69): on a disc this release cannot build on, an in-place update is not an offer
             update_only = upgrade or locks_upgrade or draft_upgrade or previous_upgrade or legacy_upgrade
-            v09_ir = key == "modern_injured_reserve" and state.get("v09_standard_update")
-            declined = bool(rebuild_only) and update_only and not v09_ir
+            v09_update = key in mod_build.V09_UPDATE_CHOICES and state.get("v09_standard_update")
+            declined = bool(rebuild_only) and update_only and not v09_update
             box.setEnabled(available and (value == "retail" or (update_only and not declined))
                            and (is_image or not needs_image))
             box.setChecked(False)
@@ -3406,7 +3407,8 @@ class BuildPanel(QWidget):
         bases, widescreen menus, the kickoff gate ...). An installed option is replayed as already applied."""
         plan = self.plan()
         if self._v09_selected(plan):
-            return mod_build.v09_disc_update(plan.source, plan.target, modern_injured_reserve=plan.modern_injured_reserve,
+            return mod_build.v09_disc_update(plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
+                                             modern_injured_reserve=plan.modern_injured_reserve,
                                              backfield_cards=plan.backfield_cards, overwrite=plan.overwrite,
                                              name=plan.name, author=plan.author, notes=plan.notes)
         for name in KEPT_WHEN_INSTALLED:
@@ -3443,10 +3445,11 @@ class BuildPanel(QWidget):
 
     def _v09_selected(self, plan=None):
         if (not (self._state or {}).get("v09_standard_update") or self._v09_other_edit
-                or self.softdrink_project_field.text().strip() or self._include_session_project()
-                or not (self.modern_injured_reserve_check.isChecked() or self.backfield_cards_check.isChecked())):
+                or self.softdrink_project_field.text().strip() or self._include_session_project()):
             return False
-        return self._v09_companion_choices(plan or self.plan()) == self._v09_source_choices
+        boxes = self._boxes()
+        return (any(boxes[key].isChecked() for key in mod_build.V09_UPDATE_CHOICES)
+                and self._v09_companion_choices(plan or self.plan()) == self._v09_source_choices)
 
     # ------------------------------------------------------------- b780-m64b: console memory
     def console_memory(self) -> int:
