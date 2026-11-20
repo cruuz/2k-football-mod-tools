@@ -2,9 +2,10 @@
 .code32
 .section .text
 .global positions
-# Slice 2 (beta 81): one private injury check per simulated franchise scrimmage play for the two tackles, the two
-# guards, the center, the two defensive ends and the ball-carrying halfback. The contract is pos2/DESIGN.md sections 2
-# and 4.1. Entered by CALL from clinical.S `finished`, where the caller restores every general register, the flags and
+# Slices 2 and 3 (beta 81): one private injury check per simulated franchise scrimmage play for every walked lineup
+# slot: tackles, guards, center, ends and the ball-carrying halfback (slice 2), receivers, tight end, fullback,
+# defensive tackles, linebackers, cornerbacks and safeties (slice 3). The contract is pos2/DESIGN.md sections 2 and
+# 4.1 and pos3/DESIGN.md sections 1 and 2. Entered by CALL from clinical.S `finished`, where the caller restores every general register, the flags and
 # the FXSAVE image afterwards. Nothing here draws from or writes to a game generator.
 #
 # At entry [esp] is the return address, [esp+4] the 512-byte FXSAVE image and [esp+516] the saved frame F
@@ -14,7 +15,8 @@
 # the one 0x1028B0 passes to the selector as its restriction (0x1028E4).
 .set FRAME, 516
 .set RUSH_RETURN, 0x1081e8
-.set SLOT_COUNT, 9
+.set SLOT_COUNT, 27
+.set CLASS_COUNT, 12
 positions:
     cmp BYTE PTR [pos_enabled], 0
     je done
@@ -112,7 +114,7 @@ effective_zero:
 effective_store:
     mov [pos_effective+ecx*4], eax
     inc ecx
-    cmp ecx, 5
+    cmp ecx, CLASS_COUNT
     jb effective
     xor ebp, ebp                        # entry index
 walk:
@@ -132,17 +134,20 @@ side_ready:
     jnz next
     test BYTE PTR [edx+0x27], 0x70      # status
     jnz next
-    test BYTE PTR [pos_slots+ebp*4+3], 1
+    movzx eax, BYTE PTR [pos_slots+ebp*4+3]
+    and eax, 3                          # rule: 0 every scrimmage play, 1 rushing ball carrier, 2 rush play
     jz exposed
-    cmp DWORD PTR [ebx+40], RUSH_RETURN # halfbacks: a rush play ...
+    cmp DWORD PTR [ebx+40], RUSH_RETURN
     jne next
-    cmp edx, [0xa971a4]                 # ... on which he is the ball carrier
+    dec eax
+    jnz exposed                         # rule 2: any rush play of his offense
+    cmp edx, [0xa971a4]                 # rule 1: he is the ball carrier
     jne next
 exposed:
     movzx eax, BYTE PTR [edx+0x3b]      # stored Durability (unsigned)
     push ecx
     movzx ecx, BYTE PTR [pos_slots+ebp*4]   # class
-    mov edx, [pos_zero+ecx*4]           # the class's zero point K (110 line, 100 end and halfback)
+    mov edx, [pos_zero+ecx*4]           # the class's zero point K (installer)
     sub edx, eax                        # K - Durability
     jbe immune                          # at or above the zero point: no chance
     mov eax, edx
@@ -155,6 +160,12 @@ exposed:
 saturate:
     mov eax, 0x80000000                 # a certain proposal, never an overflow
 compare:
+    movzx edx, BYTE PTR [pos_slots+ebp*4+3]
+    shr edx, 4                          # exposure weight in sixteenths; 0 means full
+    jz weighted
+    mul edx                             # at most 0x80000000 x 15, fits 64 bits
+    shrd eax, edx, 4
+weighted:
     cmp [pos_sample], eax
     jb hit
     sub [pos_sample], eax               # exclusive events from the one sample
@@ -174,7 +185,8 @@ hit:
     movzx eax, BYTE PTR [pos_slots+ebp*4]
     mov [pos_class], eax
     inc DWORD PTR [pos_hits+eax*4]
-    shl eax, 7                          # 32 dwords per class
+    lea eax, [eax+eax*2]
+    shl eax, 3                          # six dwords per class
     add eax, OFFSET pos_accept
     mov [accept_ptr], eax
     mov eax, [pos_hash]
@@ -223,6 +235,7 @@ pos_duration_accept:
     jbe accept_index
     mov eax, 31
 accept_index:
+    movzx eax, BYTE PTR [pos_week_group+eax]   # weeks 0-1, 2, 3, 4-7, 8-15, 16-31: groups 0 to 5
     mov edx, DWORD PTR [esp+0x3c]       # the acceptance draw
     mov ecx, [accept_ptr]
     cmp edx, [ecx+eax*4]
@@ -246,13 +259,16 @@ victim_side: .long 0
 victim_slot: .long 0
 accept_ptr: .long 0
 pos_plays: .long 0
-pos_hits: .zero 20
-pos_commits: .zero 20
-pos_effective: .zero 20
-pos_scale: .zero 20                     # five floats, installer
-pos_zero: .zero 20                      # five dwords, installer: the zero point K per class
-pos_accept: .zero 640                   # five tables of 32 thresholds by assigned weeks, installer
-pos_slots:                              # class, side (0 offense, 1 defense), lineup slot, flags (1: rushing ball carrier only)
+pos_hits: .zero 48
+pos_commits: .zero 48
+pos_effective: .zero 48
+pos_scale: .zero 48                     # CLASS_COUNT floats, installer
+pos_zero: .zero 48                      # CLASS_COUNT dwords, installer: the zero point K per class
+pos_accept: .zero 288                   # CLASS_COUNT tables of six thresholds by week group, installer
+pos_week_group: .byte 0,0,1,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5   # assigned weeks 0 to 31
+# class, side (0 offense, 1 defense), lineup slot, flags: bits 0-1 the rule (0 every scrimmage play, 1 rushing ball
+# carrier, 2 rush play), bits 4-7 the exposure weight in sixteenths (0 full, 0x40 a quarter). Walk order.
+pos_slots:
     .byte 0, 0, 12, 0
     .byte 0, 0, 13, 0
     .byte 1, 0, 10, 0
@@ -262,5 +278,23 @@ pos_slots:                              # class, side (0 offense, 1 defense), li
     .byte 3, 1, 16, 0
     .byte 4, 0, 1, 1
     .byte 4, 0, 3, 1
+    .byte 5, 0, 4, 0
+    .byte 5, 0, 5, 0
+    .byte 5, 0, 6, 0
+    .byte 5, 0, 7, 0x40
+    .byte 6, 0, 8, 0
+    .byte 7, 0, 2, 0x02
+    .byte 8, 1, 17, 0
+    .byte 8, 1, 18, 0
+    .byte 9, 1, 19, 0
+    .byte 9, 1, 20, 0
+    .byte 9, 1, 21, 0
+    .byte 9, 1, 22, 0x40
+    .byte 10, 1, 24, 0
+    .byte 10, 1, 25, 0
+    .byte 10, 1, 26, 0
+    .byte 11, 1, 23, 0
+    .byte 11, 1, 27, 0
+    .byte 11, 1, 28, 0x40
 pos_enabled: .byte 0
 .section .note.GNU-stack,"",@progbits
