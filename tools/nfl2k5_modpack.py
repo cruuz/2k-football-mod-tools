@@ -10,6 +10,7 @@
     extract  write the bundled assets, recipe and manifest to a folder
     build-sources  run Make my disc with an extracted editable source recipe
     edit-sim-qb    change only quarterback simulation on a new copy of a built standard disc
+    edit-gadget-play  turn only the gadget player on gadget plays on or off on a new copy of a built standard disc
 
 Every run is verified against the SHA-256 of the bytes it replaces before
 anything is written; a wrong base is refused, not patched.
@@ -283,6 +284,18 @@ def cmd_update_v09(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_edit_gadget_play(args):
+    """Beta 81 Q62: the gadget player on gadget plays alone, on a new copy of a built 128 MB standard disc."""
+    from mod_editor.core import mod_build
+    from mod_editor.core.errors import ModEditorError
+    plan = mod_build.gadget_disc_edit(args.source, args.out, enabled=args.mode == "on")
+    try:
+        result = mod_build.build(plan, _progress(not args.json), require_change=True)
+    except ModEditorError as exc:
+        raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, result, (args.source, args.out))
+
+
 def cmd_edit_sim_qb(args):
     from mod_editor.core import mod_build
     from mod_editor.core.errors import ModEditorError
@@ -400,6 +413,14 @@ def main(argv: list[str] | None = None) -> int:
     edit.add_argument("--receipt", help="new JSON receipt file")
     edit.add_argument("--json", action="store_true")
     edit.set_defaults(run=cmd_edit_sim_qb)
+    gadget = sub.add_parser("edit-gadget-play", help="turn only the gadget player on gadget plays on or off, on a copy of a "
+                                                     "built 128 MB standard disc")
+    gadget.add_argument("--source", required=True, help="built 128 MB standard disc with the SPECIAL rows")
+    gadget.add_argument("--out", required=True, help="new output disc")
+    gadget.add_argument("--mode", required=True, choices=("on", "off"))
+    gadget.add_argument("--receipt", help="new JSON receipt file")
+    gadget.add_argument("--json", action="store_true")
+    gadget.set_defaults(run=cmd_edit_gadget_play)
 
     args = parser.parse_args(argv)
     try:

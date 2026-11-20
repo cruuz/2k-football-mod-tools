@@ -288,6 +288,30 @@ class BuildWiringTests(unittest.TestCase):
             build.preflight_plan(replace(plan, depth_chart_rows=False))
         self.assertFalse((ROOT / "never-written.xiso.iso").exists())
 
+    def test_the_single_setting_edit_of_a_built_disc(self):
+        """Add the rule to a copy of an already-built standard disc (CLI edit-gadget-play, as edit-sim-qb does for
+        the QB option): only default.xbe changes, its table from the books on that disc. Preflight writes nothing."""
+        from mod_editor.core import mod_build as build
+        from tools import nfl2k5_modpack as cli
+        plan = build.gadget_disc_edit("built.iso", "copy.iso")
+        self.assertIs(type(plan), build._InstalledGadgetEdit)
+        self.assertTrue(plan.gadget_play and build._only_gadget_changes(plan))
+        self.assertFalse(build._only_gadget_changes(build.BuildPlan("built.iso", "copy.iso", gadget_play=True)))
+        with mock.patch.object(build, "build", return_value={}) as run, \
+                mock.patch("sys.stdout", new_callable=__import__("io").StringIO):
+            self.assertEqual(cli.main(["edit-gadget-play", "--source", "a.iso", "--out", "b.iso", "--mode", "on", "--json"]), 0)
+        self.assertIs(type(run.call_args.args[0]), build._InstalledGadgetEdit)
+        disc = Path(os.environ.get("NFL2K5_B81_REVIEWED_TEST_DISC", "") or "missing")
+        if not disc.is_file():
+            self.skipTest("the reviewed private standard disc is absent")
+        source, books = _disc(str(disc))
+        target = ROOT / "never-written-gadget.xiso.iso"
+        receipt = build.preflight_plan(build.gadget_disc_edit(str(disc), str(target)))
+        self.assertFalse(target.exists())
+        expected, _ = gadget.apply(source, books)
+        self.assertEqual(receipt["gadget_source_update"]["result_sha256"], _sha(expected))
+        self.assertEqual(receipt["gadget_source_update"]["source_state"], "retail")
+
     def test_an_installed_rule_is_replayed_and_an_executable_only_target_is_refused(self):
         """As with every installed owner, a rebuild keeps the rule (the Build tab greys it out); a build that cannot
         read the disc's books never installs it."""

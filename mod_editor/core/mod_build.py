@@ -977,6 +977,19 @@ def sim_qb_disc_edit(source, target, mode, *, custom_rate=BuildPlan.sim_qb_injur
                                overwrite=overwrite, name=name, author=author, notes=notes)
 
 
+class _InstalledGadgetEdit(BuildPlan):
+    """Beta 81 Q62: an explicit single-setting edit of the gadget rule on an already-built standard disc."""
+
+
+def gadget_disc_edit(source, target, *, enabled=True, overwrite=False, name="", author="", notes=""):
+    """Add (or take out) the gadget player on gadget plays on a new copy of a built 128 MB standard disc that has the
+    SPECIAL rows: only default.xbe changes; the rule's table comes from the books already on that disc."""
+    if type(enabled) is not bool:
+        raise ValueError("The gadget player on gadget plays must be Off or On.")
+    return _InstalledGadgetEdit(str(source), str(target), gadget_play=enabled, overwrite=overwrite,
+                                name=name, author=author, notes=notes)
+
+
 # ---------------------------------------------------------------------------------------------
 # SOFTDRINK patch presets (Noah, 9/3): one click to start from a known-good set, then customise.
 #   basic    = gameplay/logic fixes only, stock feel — what an official update would have shipped
@@ -2685,6 +2698,63 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     receipt["result"] = {**inspection, **receipt["result"], "path": str(target)}
     _verify_finished_game_disc(target, receipt, progress)
     return True
+
+
+def _only_gadget_changes(plan):
+    if not isinstance(plan, _InstalledGadgetEdit) or plan.console_memory != 128:
+        return False
+    return plan == gadget_disc_edit(plan.source, plan.target, enabled=plan.gadget_play, overwrite=plan.overwrite,
+                                    name=plan.name, author=plan.author, notes=plan.notes)
+
+
+def _edit_installed_gadget(plan, source, target, original, receipt, progress, *, preflight, consume, reference):
+    """Beta 81 Q62: the gadget rule alone on an already-built standard disc; every other installed setting is kept.
+    The code goes into the fixed gadget slots (reserved by the cards on every standard build, or appended there)."""
+    gadget = _core_module("nfl2k5_gadget_play")
+    lineup = _core_module("nfl2k5_lineup_roles")
+    if gadget is None or lineup is None:
+        raise ValueError("The gadget player on gadget plays is unavailable.")
+    if (tt.k128_patch.read_settings(original).get("require_128") is not True or not space_is_scaleout(original)
+            or lineup.status(original) != "applied"):
+        raise ValueError("The gadget player on gadget plays needs a built 128 MB standard disc with the SPECIAL rows.")
+    gadget.preflight(original)
+    books = _gadget_resources(source)
+    if plan.gadget_play:
+        patched, patch = gadget.apply(original, books)
+    else:
+        patched, patch = gadget.remove(original)
+    receipt["installed_gadget_only"] = True
+    receipt["gadget_source_update"] = {"source_sha256": sha256(original).hexdigest(),
+                                       "result_sha256": sha256(patched).hexdigest(),
+                                       "source_state": gadget.status(original, books)}
+    if preflight:
+        return True
+    _copy_private_build_source(source, target, receipt, progress, consume)
+    receipt["result"] = {}
+    _step("gadget_play")
+    progress("Depth chart: gadget player on gadget plays", 0, 0)
+    if _xbe_bytes(target) != original:
+        raise ValueError("The copied image's executable differs from the source.")
+    if patched != original:
+        _write_xbe_bytes(target, patched)
+    if _xbe_bytes(target) != patched:
+        raise RuntimeError("Gadget player on gadget plays: the output does not read back as written")
+    receipt["steps"].append({"step": "gadget_play", **{k: v for k, v in patch.items() if k != "books"}})
+    receipt["result"]["gadget_play"] = "applied" if plan.gadget_play else "retail"
+    _compact_build_disc(target, reference, receipt, progress)
+    _step("final_checks")
+    final_state = gadget.read_settings(_xbe_bytes(target), _gadget_resources(target))["status"]
+    if final_state != ("applied" if plan.gadget_play else "retail"):
+        raise ValueError(f"The gadget player on gadget plays did not survive the final archive pass ({final_state})")
+    inspection = inspect(target, screen_timing=plan.screen_timing)
+    receipt["result"] = {**inspection, **receipt["result"], "path": str(target)}
+    _verify_finished_game_disc(target, receipt, progress)
+    return True
+
+
+def space_is_scaleout(payload):
+    space = _core_module("nfl2k5_xbe_space")
+    return space is not None and space.is_scaleout(payload)
 
 
 def _coach_carousel_preflight(source: Path, progress, roster_edits=None) -> None:
@@ -5938,6 +6008,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         return _update_v09_disc(plan, progress, preflight=_preflight_only,
                                 project=bool(music_edits) or _consume_source)
     sim_qb_only = _only_sim_qb_changes(plan)
+    gadget_only = _only_gadget_changes(plan)  # beta 81 Q62
     seven_held = bool(plan.seven_on_seven and not SEVEN_ON_SEVEN_RELEASED)
     if seven_held:
         progress("7-on-7 practice is unavailable until repaired; ignoring the saved opt-in", 0, 0)
@@ -6155,7 +6226,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Starting backfield cards must be Off or On.")
     if type(plan.gadget_play) is not bool:  # beta 81 Q62
         raise ValueError("The gadget player on gadget plays must be Off or On.")
-    if plan.gadget_play and not plan.depth_chart_rows and not isinstance(plan, _ReleasedV09Update):
+    if plan.gadget_play and not plan.depth_chart_rows and not isinstance(plan, (_ReleasedV09Update, _InstalledGadgetEdit)):
         # (The released v0.9 standard disc already carries the SPECIAL rows; its update checks them on the disc.)
         raise ValueError("The gadget player on gadget plays needs the SPECIAL depth chart rows (its GAD row).")
     if plan.gadget_play and plan.console_memory != 128:
@@ -6376,6 +6447,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 consume=_consume_source, reference=_retail_source or source):
             return receipt
         raise ValueError("A single-setting disc update needs a built 128 MB disc with a supported version of simulated season realism.")
+    if gadget_only:
+        if not (is_image and installed_xbe is not None):
+            raise ValueError("The gadget player on gadget plays edits a built 128 MB standard disc image.")
+        _edit_installed_gadget(plan, source, target, installed_xbe, receipt, progress, preflight=_preflight_only,
+                               consume=_consume_source, reference=_retail_source or source)
+        return receipt
     retire_holder = installed_xbe is not None and tt.punter_holder_patch.build_status(installed_xbe) == "previous"
     holder_inherited = None
     if plan.punter_holder and is_image:
