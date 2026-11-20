@@ -313,6 +313,7 @@ from mod_editor.core import nfl2k5_history_pool as _history_pool  # noqa: E402  
 from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
 from mod_editor.core import nfl2k5_sim_rb_injuries as _sim_rb_injuries  # noqa: E402  b779-sim2
 from mod_editor.core import nfl2k5_sim_realism as _sim_realism  # noqa: E402  b779-sim2 r4
+from mod_editor.core import nfl2k5_sim_qb_injuries as _sim_qb_injuries  # noqa: E402  b81 slice 2: installed revision
 from mod_editor.core import nfl2k5_coach_carousel as _coach_carousel  # noqa: E402  b780-c6
 from mod_editor.core import nfl2k5_standings_records as _standings_records  # noqa: E402  b780-j1
 from mod_editor.core import nfl2k5_audible_legend as _audible_legend  # noqa: E402  b780-p3
@@ -2071,10 +2072,15 @@ class BuildPanel(QWidget):
         self._refresh()
 
     def _add_sim_qb_injuries(self, layout):
-        help_text = ("For simulated franchise games, including your club. Realistic uses quarterback Durability and "
-                     "adjusts simulated passing. Games you play use their original injuries and passing. "
+        # b81 slice 2 (pos2/DESIGN.md 3.5): the same option now covers the line, the edge and ball-carrying backs.
+        help_text = ("Realistic adds the injuries simulated franchise games were missing: quarterbacks, offensive tackles "
+                     "(who could never be hurt in a simulated game), guards, centers, defensive ends, and running backs "
+                     "by how much they carry. Each simulated play has a small chance that depends on the player's "
+                     "Durability and the Injury slider. Nothing is scripted: some seasons are healthy and some are not. "
+                     "While it is on, the weekly running back roll is replaced by the per-carry chance, and your own club "
+                     "is treated like every other club in the games you simulate. Games you play are not changed. "
                      "Realistic and Custom require 128 MB and Simulated season realism.")
-        caption = QLabel("Simulated quarterback injuries")
+        caption = QLabel("Simulated injuries (quarterback, running back, line, edge)")
         self.qb_injury_mode = QComboBox()
         caption.setBuddy(self.qb_injury_mode)
         for name, value in (("Keep the source setting", None), ("Retail (original 2K5 simulation)", "retail"),
@@ -3943,13 +3949,15 @@ class BuildPanel(QWidget):
         if mode is None:
             return ""
         installed = (self._state or {}).get("sim_qb_injury_settings") or {}
-        if mode == installed.get("mode", "retail") and (
+        # An earlier revision (slice 1, quarterbacks only) at the same mode is still a change: Build upgrades it.
+        current = mode == "retail" or installed.get("revision") == _sim_qb_injuries.REVISION
+        if mode == installed.get("mode", "retail") and current and (
                 mode != "custom" or self.qb_injury_rate.value() == installed.get("custom_rate")):
             return ""
         detail = mode.title()
         if mode == "custom":
             detail += f", {self.qb_injury_rate.value():.3f}%"
-        return f"Simulated quarterback injuries ({detail})"
+        return f"Simulated injuries ({detail})"
 
     def _speed_separation_chosen(self) -> int:
         """The Speed separation strength the player set (0 = off).

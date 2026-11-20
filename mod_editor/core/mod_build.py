@@ -1751,7 +1751,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_sim_cb_tackles", "Cornerback tackle credit", lambda p: p.sim_cb_tackles),  # b778-cb1
     ("nfl2k5_sim_rb_injuries", "Simulated RB short injuries", lambda p: p.sim_rb_injuries),  # b779-sim2
     ("nfl2k5_sim_realism", "Simulated season realism", lambda p: p.sim_realism),  # b779-sim2 r4
-    ("nfl2k5_sim_qb_injuries", "Simulated quarterback injuries", lambda p: p.sim_qb_injuries in ("realistic", "custom")),
+    ("nfl2k5_sim_qb_injuries", "Simulated injuries (quarterback, running back, line, edge)", lambda p: p.sim_qb_injuries in ("realistic", "custom")),
     ("nfl2k5_coach_carousel", "Coaching carousel", lambda p: p.coach_carousel),  # b780-c6
     ("nfl2k5_history_screen", "Franchise History screen", lambda p: p.history_screen),  # b780-j4
     ("nfl2k5_standings_records", "Team Standings records", lambda p: p.standings_records),  # b780-j1

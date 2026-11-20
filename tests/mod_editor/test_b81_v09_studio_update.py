@@ -159,7 +159,7 @@ class BuildChoices(unittest.TestCase):
             with self.subTest(other_updates=other_updates):
                 self.assertFalse(self.panel.blocker())
                 self.assertTrue(self.panel.build_button.isEnabled())
-                self.assertIn("Simulated quarterback injuries (Realistic)", self.panel.selected_labels())
+                self.assertIn("Simulated injuries (Realistic)", self.panel.selected_labels())
                 plan = self.panel._plan_for_build()
                 self.assertIsInstance(plan, build._ReleasedV09Update)
                 self.assertEqual((plan.sim_qb_injuries, plan.sim_realism), ("realistic", True))
