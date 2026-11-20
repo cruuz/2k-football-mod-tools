@@ -364,6 +364,22 @@ class HandBrokenTests(unittest.TestCase):
         boundary = b.report()
         self.assertEqual((failing(boundary), warned(boundary)), (set(), {"I11"}))
 
+    def test_a_preseason_club_with_every_quarterback_hurt_is_the_W7_warning_not_I11(self):
+        b, v = self.fresh(), self.view
+        club = next(c for c in v.clubs if not c.human and sum(b.position(i) == fi.QB for i in c.active) >= 2)
+        for i in club.active:
+            if b.position(i) == fi.QB:
+                b.set_word(i, 0x20, b.word(i, 0x20) | fi.INJURED | 3 << 22)
+        view = fi.view_from_save(b.payload())
+        view.stage = 7                                 # the same room in the preseason
+        for kickoff in (True, False):
+            report = fi.check(view, kickoff=kickoff)
+            self.assertEqual(failing(report), set(), kickoff)
+            self.assertEqual(warned(report), {"W7"}, kickoff)
+            self.assertEqual([r["club"] for r in report.violations], [club.index])
+        view.stage = 9                                 # and in the playoffs: the hard failure again
+        self.assertEqual(failing(fi.check(view, kickoff=True)), {"I11"})
+
     def test_a_club_left_over_the_cap_after_an_over_cap_signing_fails_I3c(self):
         b, v = self.fresh(), self.view
         club = next(c for c in v.clubs if not c.human)

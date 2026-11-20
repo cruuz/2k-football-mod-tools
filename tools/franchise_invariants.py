@@ -53,9 +53,11 @@ I9  the transaction ring cursor is below 600 and every row's kind is in the allo
 I11 every club the CPU signs for (not human, or auto sign/cut 0xE6013C on; a manual human club is exempt) has at least
     one healthy quarterback on its active list (healthy = slice 1's fully_healthy: no injured bit and no weeks in
     +0x20, no status in +0x24 & 0x70000000). DESIGN addendum F5: judged at KICK-OFF (``check(view, kickoff=True)``,
-    the harness runs it at 0x247DCF, after the IR pass and the floor, stages 7 to 9) as a failure; at the week
-    boundary the same test is a warning. Added after P0 root 2508 ended 2027 week 18 with Dallas's three quarterbacks
-    all on IR (coordinator: release blocker).
+    the harness runs it at 0x247DCF, after the IR pass and the floor) as a failure in stages 8 and 9, from week 1
+    through the last playoff game; at the week boundary the same test is a warning. Added after P0 root 2508 ended
+    2027 week 18 with Dallas's three quarterbacks all on IR (coordinator: release blocker).
+W7  the same test in stage 7 (the preseason, kick-off or boundary): a WARNING of its own, "preseason club without a
+    healthy quarterback" (coordinator 11/20: the preseason gap is accepted and reported, never folded into I11).
 I3c (F5) a club with a "signed over the cap" signing (``over_cap_signings``: club, player, week boundaries since the
     signing, which the harness tracks from the owner's ring) is still over the cap at the second boundary after it,
     or over by more than that man's charge at the first -- failure.
@@ -799,6 +801,7 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
 
     # I11 -----------------------------------------------------------------------------------------------------------
     if "I11" not in skip and playing:
+        preseason = stage == 7
         for c in clubs:
             if c.human and not view.auto_sign_cut:
                 continue                               # a manual human club is the user's (F5)
@@ -806,8 +809,9 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
             healthy = [i for i in qbs if not _u32(view.record(i), 0x20) & (INJURED | WEEKS_MASK)
                        and not _u32(view.record(i), 0x24) & STATUS_MASK]
             if not healthy:
-                add("I11", FAIL if kickoff else WARN,
-                    "no healthy quarterback on the active list" + (" at kick-off" if kickoff else ""),
+                add("W7" if preseason else "I11", FAIL if kickoff and not preseason else WARN,
+                    ("preseason club without a healthy quarterback" if preseason else
+                     "no healthy quarterback on the active list") + (" at kick-off" if kickoff else ""),
                     club=c.index, quarterbacks=len(qbs),
                     on_ir=sum(1 for i, _ in view.ir.clubs[c.index] if view.record(i)[0x35] == QB),
                     hurt=[{"index": i, "injured": bool(_u32(view.record(i), 0x20) & INJURED),
