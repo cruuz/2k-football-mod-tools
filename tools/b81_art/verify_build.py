@@ -3,8 +3,8 @@
   1. every row of the helmet document is `after` on the disc;
   2. every Team Select card and changed mini on the disc decodes to the picture the Studio's compile makes of the new PNG;
   3. Carolina: style 0 home and away hold the same helmet pixels; the blue alternate holds the black 2012 helmet.
-Usage: verify_build.py DISC.iso  (run from the repository root)"""
-import sys, json, hashlib
+Usage: verify_build.py DISC.iso [--with-uniforms]  (run from the repository root)"""
+import argparse, sys, json, hashlib
 from pathlib import Path
 import numpy as np
 sys.path.insert(0, __import__('os').path.dirname(__import__('os').path.abspath(__file__)))
@@ -13,11 +13,23 @@ sys.path.insert(0, str(C.WT / 'tools'))
 import b81_helmet_cleanup as hc
 from mod_editor.core import nfl2k5_menu_helmet_w2026 as w, nfl2k5_kit_fixes_2026 as kf
 from tools.nfl2k5_playbook_position_recode import OuterImage
-disc = Path(sys.argv[1]); O = C.WORK.parent / 'out'
+p = argparse.ArgumentParser(description=__doc__)
+p.add_argument('disc', type=Path)
+p.add_argument('--with-uniforms', action='store_true', help='check the subsequent approved 128 MB uniform-card pins')
+args = p.parse_args()
+disc = args.disc; O = C.WORK.parent / 'out'
 def sha(a): return hashlib.sha256(np.ascontiguousarray(a).tobytes()).hexdigest()
 out = {}
 st = hc.states(disc); out['helmet_rows'] = {k: st[k] for k in ('before', 'after', 'other', 'absent')}; out['helmet_rows_not_done'] = st['rows'][:20]
 cards = json.load(open(O / 'card_receipt.json')); minis = json.load(open(O / 'mini_receipt.json'))
+if args.with_uniforms:
+    from tools.b81_uniforms.apply_cards import load_pins
+    successors = load_pins()
+    for name, pin in successors.items():
+        if cards[name]['stored_rgba_sha256'] != pin['source_native_sha256']:
+            raise ValueError(f'{name}: the uniform card does not follow this reviewed helmet card')
+        cards[name] = dict(cards[name], stored_rgba_sha256=pin['stored_rgba_sha256'])
+    out['uniform_cards_checked'] = len(successors)
 bad = []; n = 0
 with OuterImage(disc, writable=False) as archive:
     for name, rec in sorted(cards.items()):
