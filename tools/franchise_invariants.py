@@ -3,6 +3,7 @@
 
     python3 tools/franchise_invariants.py SIGNED_FOLDER_OR_SAVEGAME.DAT [--strict] [--out report.json]
     python3 tools/franchise_invariants.py --memory IMAGE [--root 0x...] [--ir-store 0x... | --xbe default.xbe]
+    python3 tools/franchise_invariants.py SIGNED_FOLDER --repair-rank-locks NEW_FOLDER [--out receipt.json]
 
 Both inputs become one small *league view* (``view_from_save`` / ``view_from_memory``) and every check is written
 once, over that view (``check``). Pure Python; no game code runs. Output: a JSON document with one row per violation
@@ -60,6 +61,22 @@ I11 every club the CPU signs for (not human, or auto sign/cut 0xE6013C on; a man
     all on IR (coordinator: release blocker).
 W7  the same test in stage 7 (the preseason, kick-off or boundary): a WARNING of its own, "preseason club without a
     healthy quarterback" (coordinator 11/20: the preseason gap is accepted and reported, never folded into I11).
+W12 (DESIGN addendum 2, R2 and TD10) on a club whose depth chart the CPU manages (not human, or "CPU manages my
+    depth chart" 0xE60140 on): a healthy quarterback (no injury bit, no weeks, no status) who is rank-locked (bit 0
+    of +0x52) on a row below 0 while he leads the row 0 quarterback by 6 or more overall points -- warning. Under
+    Retail nothing re-seats such a pair. Overall is the game's 0x246D80 integer, computed here in Python
+    (``native_overall``: nfl2k5_my_career_prospects.native_overall, the unboosted EDX=0 form); for healthy
+    quarterbacks it equals 0x246D80(p, 1) run natively on three kept memory images (251 of 251: the 2502/2027
+    preseason sign_after image, P0 2508/2027 week 18, the 2505/2026 week 10 kick-off). Found on 11/20: the shipped
+    2026 roster locks every club player, so released saves already hold such pairs (the v0.9 opening: ARI Brissett
+    89 at row 2 and Carson Beck 70 at row 1 behind Minshew 64, PHI Joe Milton 76 behind Tanner McKee 67; 385 of 415
+    signed harness saves have one). W12 cannot tell a shipped pin from an owner's lock.
+    REPAIR (``--repair-rank-locks NEW_FOLDER``, ``repair_rank_locks``): clears bit 0 of +0x52 on exactly the W12 men
+    (nothing else; the row 0 man keeps his lock, and on a CPU club the native release rule then frees him at the next
+    weekly sort because a better unlocked man now exists), writes a new signed copy through FranchiseSave.write
+    (never over the source), and verifies on reload: the EXTRA verifies, the only changed bytes are those +0x52
+    bytes and each differs by bit 0, no cleared man is still W12, and every other invariant's rows are unchanged.
+    A save with no W12 pair is left alone and no copy is written.
 I3c (F5) a club with a "signed over the cap" signing (``over_cap_signings``: club, player, week boundaries since the
     signing, which the harness tracks from the owner's ring) is still over the cap at the second boundary after it,
     or over by more than that man's charge at the first -- failure.
@@ -595,6 +612,46 @@ def _row(field28: int) -> int:
     return (field28 >> 10) & 7
 
 
+RANK_LOCK = 0x52               # +0x52 bit 0: rank lock (nfl2k5_depth_locks: bits 0..4 rank/side/KR1/KR2/PR)
+W12_LEAD = 6
+
+
+def native_overall(record: bytes) -> int:
+    """The game's integer overall of a 0x54 record (0x246D80, unboosted; equal to EDX=1 for healthy players)."""
+    from mod_editor.core import nfl2k5_my_career_prospects as prospects
+    from mod_editor.core import nfl2k5_roster_records as rr
+    return prospects.native_overall(rr.PlayerRecord.decode(bytes(record[:PLAYER_SIZE])))
+
+
+def _fully_healthy(record: bytes) -> bool:
+    return not _u32(record, 0x20) & (INJURED | WEEKS_MASK) and not _u32(record, 0x24) & STATUS_MASK
+
+
+def rank_lock_pairs(view: LeagueView) -> list[dict]:
+    """W12's cases: on each club whose chart the CPU manages, every healthy quarterback rank-locked below row 0 who
+    leads the (single) row 0 quarterback by W12_LEAD or more overall points."""
+    out = []
+    for c in view.clubs:
+        if not view.managed(c.index):
+            continue
+        qbs = [(i, _row(_u16(view.record(i), 0x28))) for i in c.active if view.record(i)[0x35] == QB]
+        top = [i for i, r in qbs if r == 0]
+        if len(top) != 1:
+            continue                                   # no single row 0 man: I4's business
+        z = top[0]
+        oz = native_overall(view.record(z))
+        for i, r in qbs:
+            rec = view.record(i)
+            if r == 0 or not rec[RANK_LOCK] & 1 or not _fully_healthy(rec):
+                continue
+            o = native_overall(rec)
+            if o - oz >= W12_LEAD:
+                out.append({"club": c.index, "club_name": c.name, "player_index": i, "player_name": view.name(i),
+                            "row": r, "overall": o, "row0_player": z, "row0_name": view.name(z),
+                            "row0_overall": oz, "lead": o - oz, "row0_locked": bool(view.record(z)[RANK_LOCK] & 1)})
+    return out
+
+
 def player_salary(record: bytes, *, active: bool = True) -> int:
     from mod_editor.core.nfl2k5_practice_squad import player_salary as charge
     return charge(record, active=active)
@@ -612,7 +669,7 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
     failure on a save view (stages 8 and 9); stage 7 gives the warning W7 in every case."""
     skip = set(skip)
     if kickoff:
-        skip |= {"I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9"}
+        skip |= {"I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9", "W12"}
     out: list[dict] = []
     clubs = view.clubs
 
@@ -822,6 +879,14 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
                            "weeks": (_u32(view.record(i), 0x20) >> 22) & 0xFF,
                            "status": (_u32(view.record(i), 0x24) >> 28) & 7} for i in qbs])
 
+    # W12 -----------------------------------------------------------------------------------------------------------
+    if "W12" not in skip:
+        for pair in rank_lock_pairs(view):
+            add("W12", WARN, "healthy quarterback rank-locked behind a row 0 man he leads by 6 or more",
+                club=pair["club"], player=pair["player_index"],
+                **{k: pair[k] for k in ("row", "overall", "row0_player", "row0_name", "row0_overall", "lead",
+                                        "row0_locked")})
+
     # I9 ------------------------------------------------------------------------------------------------------------
     if "I9" not in skip:
         if not 0 <= view.ledger_cursor < LEDGER_CAPACITY:
@@ -854,6 +919,58 @@ def load_target(path: Path, *, label: str | None = None) -> tuple[LeagueView, di
     return view, facts
 
 
+class RepairError(RuntimeError):
+    pass
+
+
+def repair_rank_locks(source: Path, target: Path, *, overwrite: bool = False) -> dict:
+    """Clear bit 0 of +0x52 on exactly W12's men and write a new signed copy at ``target``, verified on reload."""
+    import hashlib
+    from mod_editor.core import nfl2k5_franchise_save as fs
+    from mod_editor.core import nfl2k5_roster_records as rr
+    source, target = Path(source), Path(target)
+    save = fs.FranchiseSave.load(source)               # refuses a save whose EXTRA does not verify
+    before = save.to_bytes()
+    view = view_from_save(before, label=str(source))
+    pairs = rank_lock_pairs(view)
+    receipt = {"tool": "franchise_invariants --repair-rank-locks", "source": str(source),
+               "source_sha256": hashlib.sha256(before).hexdigest(), "cleared": pairs, "written": None,
+               "verified": None}
+    if not pairs:
+        receipt["note"] = "no W12 pair: nothing to repair, no copy written"
+        return receipt
+    offsets = []
+    for pair in pairs:
+        at = save.player_offset(pair["player_index"])
+        if bytes(save.buffer[at:at + PLAYER_SIZE]) != view.record(pair["player_index"]):
+            raise RepairError(f"player {pair['player_index']}: the save API's record is not the view's")
+        save.buffer[at + RANK_LOCK] &= 0xFE
+        offsets.append(at + RANK_LOCK)
+    receipt["writer"] = save.write(target, overwrite=overwrite)
+    receipt["written"] = str(target)
+    after = rr.SaveContainer.load(target, require_signature=True).savegame
+    problems = []
+    if len(after) != len(before):
+        problems.append("the copy's length differs")
+    changed = [k for k in range(min(len(before), len(after))) if before[k] != after[k]]
+    if changed != sorted(offsets):
+        problems.append(f"changed bytes {[hex(k) for k in changed][:12]} are not the cleared +0x52 bytes")
+    if any(before[k] ^ after[k] != 1 for k in changed):
+        problems.append("a changed byte differs by more than bit 0")
+    again = view_from_save(after, label=str(target))
+    still = {p["player_index"] for p in rank_lock_pairs(again)} & {p["player_index"] for p in pairs}
+    if still:
+        problems.append(f"still W12 after the repair: {sorted(still)}")
+    rows = lambda v: [r for r in check(v, skip=["W12"]).violations]
+    if rows(again) != rows(view):
+        problems.append("another invariant's rows changed")
+    receipt.update(target_sha256=hashlib.sha256(after).hexdigest(), changed_bytes=[hex(k) for k in changed],
+                   verified=not problems, problems=problems)
+    if problems:
+        raise RepairError("; ".join(problems) + f" (the copy at {target} must not be used)")
+    return receipt
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("target", nargs="?", type=Path, help="signed franchise folder or SAVEGAME.DAT")
@@ -863,15 +980,33 @@ def main(argv=None) -> int:
     ap.add_argument("--xbe", type=Path, help="executable: the IR store VA comes from its layout")
     ap.add_argument("--previous", type=Path, help="the previous week's save or memory image (I8 one-week rule)")
     ap.add_argument("--allowed-kinds", default=",".join(map(str, DEFAULT_KINDS)))
-    ap.add_argument("--skip", action="append", default=[], help="I1..I9, I3c, I11 or I4.injured_row0 (repeatable)")
+    ap.add_argument("--skip", action="append", default=[],
+                    help="I1..I9, I3c, I11, W12 or I4.injured_row0 (repeatable)")
     ap.add_argument("--kickoff", action="store_true", help="judge I11 alone, as a failure (the state at a kick-off)")
     ap.add_argument("--over-cap", action="append", default=[], metavar="CLUB:PLAYER:BOUNDARIES",
                     help="I3c: a signing over the cap, the week boundaries since it (repeatable)")
     ap.add_argument("--strict", action="store_true", help="warnings count as failures")
+    ap.add_argument("--repair-rank-locks", type=Path, metavar="NEW_FOLDER",
+                    help="W12 repair: clear bit 0 of +0x52 on exactly the W12 men and write a new signed copy here")
     ap.add_argument("--out", type=Path, help="write the JSON here and print only the summary line")
     a = ap.parse_args(argv)
     if bool(a.target) == bool(a.memory):
         ap.error("give a save target or --memory, not both")
+    if a.repair_rank_locks:
+        if not a.target:
+            ap.error("--repair-rank-locks repairs a signed save folder, not a memory image")
+        try:
+            receipt = repair_rank_locks(a.target, a.repair_rank_locks)
+        except Exception as exc:                       # RepairError, FranchiseSaveError, RosterRecordError
+            print(f"franchise_invariants repair-rank-locks: REFUSED: {exc}", file=sys.stderr)
+            return 2
+        text = json.dumps(receipt, indent=1) + "\n"
+        (a.out.write_text(text) if a.out else sys.stdout.write(text))
+        line = (f"franchise_invariants repair-rank-locks: cleared {len(receipt['cleared'])} rank lock(s), "
+                f"verified, wrote {receipt['written']}" if receipt["written"] else
+                "franchise_invariants repair-rank-locks: no W12 pair, nothing written")
+        print(line, file=sys.stderr if not a.out else sys.stdout)
+        return 0
 
     def load(path):
         if a.memory:
