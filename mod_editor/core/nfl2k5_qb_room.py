@@ -21,9 +21,10 @@ VA = space.QB_ROOM_VA
 SIZE = space.QB_ROOM_SIZE
 LEVELS = ("retail", "realistic")
 # Piece 3's stage bits for the Studio move here one stage at a time, after each stage's tests and panel (BUILD_ORDERS
-# order 3). Floor handover (lead, after the designer's addendum 2, R1 to R7): no piece 3 bit ships yet; the floor
-# (FLOOR_STUDIO_STAGES below) ships alone, from the injury level. Later handovers set D1 | D2, then D3, then D4.
-REALISTIC_STAGES = 0
+# order 3). The floor handover shipped the floor alone (FLOOR_STUDIO_STAGES below, from the injury level). D1 + D2
+# handover (lead, after the designer's addendum 2): D1 (veteran or rookie at the opening) and D2 (the kid's turn, by
+# record). D3 (bit 256, benched for poor play) and D4 (bit 4) stay off until their own handovers.
+REALISTIC_STAGES = 1 | 2  # nfl2k5_qb_room_code.STAGE_D1 | STAGE_D2
 SHADOW_DEFAULT = False
 ERRORS = (ValueError, TypeError, IndexError, KeyError, OverflowError, struct.error)
 # The floor (DESIGN addendum F1 to F8): stage bit 64, Realistic only, installed from the injury level (C7 below) and
@@ -41,8 +42,9 @@ SMART_CUT = 0x2BF9A0  # the native cut-down the floor's release rung calls; the 
 # Studio's stage set is therefore a function of the plan: these bits whenever injuries are above zero (Realistic, or
 # Custom above 0 percent), plus piece 3's bits from REALISTIC_STAGES where rule C1a allows them.
 FLOOR_STUDIO_STAGES = STAGE_FLOOR | STAGE_OVER_CAP  # the over-cap rung rides with the floor; drop it here to cut it
-PIECE3_BITS = 1 | 2 | 4  # STAGE_D1 | STAGE_D2D3 | STAGE_D4
-STAGE_NAMES = ((1, "D1 veteran or rookie"), (2, "D2 and D3 benching"), (4, "D4 returning starter"),
+PIECE3_BITS = 1 | 2 | 4 | 256  # STAGE_D1 | STAGE_D2 | STAGE_D4 | STAGE_D3
+STAGE_NAMES = ((1, "D1 veteran or rookie"), (2, "D2 the kid's turn"), (256, "D3 benched for poor play"),
+               (4, "D4 returning starter"),
                (8, "emergency signings (4a)"), (16, "trades (4b)"), (32, "E2 return from IR"),
                (STAGE_FLOOR, "floor"), (STAGE_OVER_CAP, "over-cap signing"))
 

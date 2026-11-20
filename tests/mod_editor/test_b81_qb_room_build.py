@@ -257,8 +257,9 @@ class StudioRuleTests(unittest.TestCase):
         with _handover(1):
             self._pack_cases((("softdrink_basic", "retail", None), ("softdrink_experimental", "applied", None),
                               ("softdrink_experimental", "retail", "retail"), ("softdrink_basic", "applied", "realistic")))
-        # Floor handover: no piece 3 bit ships, so a pack never records the key.
-        self._pack_cases((("softdrink_basic", "retail", None), ("softdrink_experimental", "retail", None)))
+        # Floor alone: no piece 3 bit ships, so a pack never records the key.
+        with _handover(0):
+            self._pack_cases((("softdrink_basic", "retail", None), ("softdrink_experimental", "retail", None)))
 
     def _pack_cases(self, cases):
         from unittest.mock import MagicMock, patch
@@ -308,7 +309,8 @@ class StudioRuleTests(unittest.TestCase):
     def test_basic_with_realistic_quarterback_injuries_leaves_the_room_out_with_a_note(self):
         basic = mod_build.apply_preset(mod_build.BuildPlan("s", "t"), "softdrink_basic")
         plan = replace(basic, k128_memory=True, sim_realism=True, sim_qb_injuries="realistic")
-        self.assertEqual(mod_build._qb_room_resolution(plan), ("realistic", None))  # floor handover: nothing left out
+        with _handover(0):
+            self.assertEqual(mod_build._qb_room_resolution(plan), ("realistic", None))  # floor alone: nothing left out
         with _handover(1):
             self._basic_left_out()
 
@@ -351,7 +353,8 @@ class StudioRuleTests(unittest.TestCase):
     def test_an_explicit_realistic_on_basic_is_refused(self):
         basic = mod_build.apply_preset(mod_build.BuildPlan("s", "t"), "softdrink_basic")
         plan = replace(basic, k128_memory=True, sim_realism=True, sim_qb_injuries="realistic", qb_room="realistic")
-        self.assertEqual(mod_build.validate_plan(plan), [])  # floor handover: no piece 3 rule to need anything
+        with _handover(0):
+            self.assertEqual(mod_build.validate_plan(plan), [])  # floor alone: no piece 3 rule to need anything
         with _handover(1):
             self._explicit_refused(plan)
 
@@ -731,8 +734,9 @@ class FaqTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_qb_room as room
         text = (ROOT / "docs/mod_editor/2k5_mod_studio_faq.md").read_text(encoding="utf-8")
         section = text.split("## How do quarterback injuries work when I simulate a franchise game?", 1)[1].split("\n## ", 1)[0]
-        claims = {"who starts at quarterback": 7, "start of the season": 1, "benched": 2, "kid's turn": 2,
-                  "back from injury": 4, "returning starter": 4}
+        # D3 (benched for poor play) is bit 256 since the designer's addendum 2 (R5); D2 (the kid's turn) keeps bit 2.
+        claims = {"who starts at quarterback": 1 | 2 | 4 | 256, "start of the season": 1, "kid's turn": 2,
+                  "benched": 256, "poor play": 256, "back from injury": 4, "returning starter": 4}
         for words, bits in claims.items():
             with self.subTest(claim=words):
                 self.assertEqual(words in section, bool(room.REALISTIC_STAGES & bits))

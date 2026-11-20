@@ -95,13 +95,17 @@ class AllocatorPlacementTests(unittest.TestCase):
 
 class MemoryBudgetTests(unittest.TestCase):
     def test_the_room_row_follows_the_quarterback_option_unless_named(self):
-        # The floor rides with injuries above zero (coordinator's rule); no piece 3 bit ships at the floor handover.
+        # The floor rides with injuries above zero (coordinator's rule); piece 3 where its handed-over bits apply.
+        from mod_editor.core import nfl2k5_qb_room as room
+        piece3 = room.REALISTIC_STAGES & room.PIECE3_BITS
         needs = {"k128_memory": True, "depth_locks": True, "depth_chart_rows": True}
         cases = (({"sim_qb_injuries": "realistic", **needs}, True), ({"sim_qb_injuries": "custom", **needs}, True),
                  ({"sim_qb_injuries": "realistic", "k128_memory": True}, True),
-                 ({"sim_qb_injuries": "custom", "sim_qb_injury_rate": 0.0, **needs}, False),
+                 ({"sim_qb_injuries": "custom", "sim_qb_injury_rate": 0.0, **needs}, bool(piece3)),
+                 ({"sim_qb_injuries": "custom", "sim_qb_injury_rate": 0.0, "k128_memory": True}, False),
                  ({"sim_qb_injuries": "retail", **needs}, False), (needs, False),
-                 ({"sim_qb_injuries": "realistic", "qb_room": "retail", **needs}, True), ({"qb_room": "realistic"}, False))
+                 ({"sim_qb_injuries": "realistic", "qb_room": "retail", **needs}, True),
+                 ({"qb_room": "realistic"}, bool(piece3)))
         for opts, expected in cases:
             with self.subTest(opts=opts):
                 self.assertEqual("qb_room" in budget.owners(opts, 128), expected)
@@ -110,7 +114,8 @@ class MemoryBudgetTests(unittest.TestCase):
     def test_the_resident_executable_reaches_the_end_of_the_room(self):
         base = {"k128_memory": True, "sim_qb_injuries": "realistic", "depth_locks": True, "depth_chart_rows": True}
         with_room = budget.xbe_resident(base, 128)
-        without = budget.xbe_resident(dict(base, sim_qb_injuries="custom", sim_qb_injury_rate=0.0), 128)
+        # Custom 0 keeps slice 1's bank but needs no floor, and without depth locks piece 3 is left out: no room.
+        without = budget.xbe_resident(dict(base, sim_qb_injuries="custom", sim_qb_injury_rate=0.0, depth_locks=False), 128)
         # The quarterback bank ends at 0x1528000; the room's pages end at 0x152C000.
         self.assertEqual(with_room - without, 0x152C000 - 0x1528000)
 
@@ -147,9 +152,12 @@ class OwnerTests(unittest.TestCase):
         settings = room.read_settings(self.applied)
         self.assertEqual((settings["status"], settings["stages"], settings["shadow"], settings["va"]),
                          ("applied", self.code.STAGE_D1, False, 0x1529000))
-        # Floor handover (designer's addendum 2): no piece 3 bit ships; the floor comes from the injury level.
-        self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT), (0, False))
-        self.assertEqual(room.realistic_stages(), room.STAGE_FLOOR | room.STAGE_OVER_CAP)
+        # D1 + D2 handover (designer's addendum 2): D1 and D2 ship, D3 (256) and D4 stay off; the floor comes from the
+        # injury level, so the Studio's Realistic installs 195.
+        self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT), (self.code.STAGE_D1 | self.code.STAGE_D2, False))
+        self.assertEqual(room.realistic_stages(), 195)
+        self.assertEqual(room.stage_names(195), ["D1 veteran or rookie", "D2 the kid's turn", "floor", "over-cap signing"])
+        self.assertFalse(room.REALISTIC_STAGES & (self.code.STAGE_D3 | self.code.STAGE_D4))
         self.assertEqual(settings["stage_names"], ["D1 veteran or rookie"])
         row = _room_row(space.layout(self.applied)["allocations"])
         self.assertEqual((row["va"], row["size"]), (0x1529000, 0x3000))
@@ -296,7 +304,7 @@ class FloorOwnerTests(unittest.TestCase):
     def test_the_floor_bit_and_its_site(self):
         room, code = self.room, self.code
         self.assertEqual((room.STAGE_FLOOR, room.STAGE_OVER_CAP), (64, 128))
-        self.assertEqual((code.STAGE_FLOOR, code.STAGE_OVER_CAP, code.STAGE_MASK), (64, 128, 255))
+        self.assertEqual((code.STAGE_FLOOR, code.STAGE_OVER_CAP, code.STAGE_MASK), (64, 128, 511))  # D3 = 256
         labels = {label: at for label, at, _o, _p in room._sites(0x1529000, code.STAGE_D1)}
         self.assertEqual(labels, {"pregame_entry": 0x247DCA, "room_entry": 0x24807A})
         self.assertEqual({label for label, *_ in room._sites(0x1529000, room.STAGE_FLOOR)},
