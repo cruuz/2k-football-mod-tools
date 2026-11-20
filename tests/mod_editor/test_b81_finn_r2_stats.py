@@ -161,6 +161,16 @@ class BoxScoreCoreTests(unittest.TestCase):
         self.assertEqual(receipt["season_points"], [])
         self.assertTrue(ts.box_score(self.save, 17, 0).postseason)
 
+    def test_the_pro_bowl_box_score_changes_its_quarters_only(self) -> None:
+        cell = self.save.cell(21, 0)
+        block = self.save.season_block
+        self.save.buffer[block + fs.S_GRID + 8 * cell:block + fs.S_GRID + 8 * cell + 8] = bytes([3, 32, 33, 2, 6, 0, 1, 0])
+        self.save.buffer[block + fs.S_SCORES + 10 * cell:block + fs.S_SCORES + 10 * cell + 10] = bytes([7, 7, 7, 7, 0, 0, 3, 0, 3, 0])
+        start = self.save.to_bytes()
+        receipt = ts.set_box_score(self.save, 21, 0, [7, 7, 7, 14, 0], [0, 3, 0, 3, 0])
+        self.assertEqual(receipt["season_points"], [])
+        self.assertEqual(_changed(start, self.save.to_bytes()), [block + fs.S_SCORES + 10 * cell + 3])
+
     def test_swapping_a_played_games_sides_keeps_each_clubs_score(self) -> None:
         ts.set_box_score(self.save, 0, 0, [7, 0, 3, 7, 3], [0, 7, 7, 3, 0], season_points=False)
         before = ts.standings(self.save)

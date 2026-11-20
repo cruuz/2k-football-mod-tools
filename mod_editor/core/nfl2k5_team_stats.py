@@ -283,11 +283,11 @@ def set_box_score(save: fs.FranchiseSave, row: int, slot: int, home_quarters: Se
         fs._require(new.winner is not None, "a playoff game cannot end in a tie")
         fs._require(new.winner == current.winner,
                     "a playoff game keeps its winner: the bracket has already moved the winner on")
-    for team in (current.home, current.away):
-        fs._require(0 <= team < save.league_team_count, f"team {team} is not a league club")
     moves: list[tuple[int, int, int, int]] = []     # (offset, before, after, team)
     apply_points = season_points and not current.postseason
     if apply_points:
+        for team in (current.home, current.away):
+            fs._require(0 <= team < save.league_team_count, f"team {team} is not a league club")
         home_delta = new.home_points - current.home_points
         away_delta = new.away_points - current.away_points
         for team, scored, allowed in ((current.home, home_delta, away_delta), (current.away, away_delta, home_delta)):
