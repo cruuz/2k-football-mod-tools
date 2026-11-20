@@ -208,6 +208,14 @@ def _page_settings(payload, image, page, code):
     _require(page == code.page_bytes(VA, record, ir_store_va=link), "Foreign quarterback room page")
     states = _sites_state(image, VA, settings["stages"], code)
     _require(states == {"applied"} or (states == {"applied", "retail"}), "Foreign or mixed quarterback room sites")
+    current = _code()
+    if code is not current:
+        # An earlier revision never wrote the sites the current template added (0x248687, the stage advance's end, since
+        # the floor review's step 2): on its page they must still hold their retail calls.
+        known = {at for at, *_rest in code.HOOKS}
+        for at, original, _label, _need in current.HOOKS:
+            if at not in known:
+                _require(image.read(at, len(original)) == original, f"Foreign or mixed quarterback room bytes at {at:#x}")
     return settings
 
 

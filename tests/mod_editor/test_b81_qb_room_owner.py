@@ -306,9 +306,12 @@ class FloorOwnerTests(unittest.TestCase):
         self.assertEqual((room.STAGE_FLOOR, room.STAGE_OVER_CAP), (64, 128))
         self.assertEqual((code.STAGE_FLOOR, code.STAGE_OVER_CAP, code.STAGE_MASK), (64, 128, 511))  # D3 = 256
         labels = {label: at for label, at, _o, _p in room._sites(0x1529000, code.STAGE_D1)}
-        self.assertEqual(labels, {"pregame_entry": 0x247DCA, "room_entry": 0x24807A})
-        self.assertEqual({label for label, *_ in room._sites(0x1529000, room.STAGE_FLOOR)},
-                         {"pregame_entry", "room_entry", "sign_entry"})
+        # Floor review step 2: 0x24807A enters end_entry (room_entry's pass, then the end-of-advance floor) and the
+        # floor adds the stage advance's 0x248687.
+        self.assertEqual(labels, {"pregame_entry": 0x247DCA, "end_entry": 0x24807A})
+        self.assertEqual({label: at for label, at, *_ in room._sites(0x1529000, room.STAGE_FLOOR)},
+                         {"pregame_entry": 0x247DCA, "end_entry": 0x24807A, "sign_entry": 0x248010,
+                          "stage_entry": 0x248687})
         self.assertEqual(room._site_stages(room.STAGE_FLOOR) & code.STAGE_SIGN, code.STAGE_SIGN)
         self.assertEqual(room._site_stages(code.STAGE_D1), code.STAGE_D1)
         self.assertFalse(room.REALISTIC_STAGES & room.STAGE_FLOOR)  # set only at the floor handover, by the lead
@@ -333,6 +336,33 @@ class FloorOwnerTests(unittest.TestCase):
                                              [(va, XbeImage(floor).read(va, 1), b"\xcc")]))
                 self.assertFalse(any("native signing routine" in line
                                      for line in room.requirements(changed, room.STAGE_FLOOR)))
+
+    def test_the_stage_advance_site(self):
+        # Floor review step 2 (01535a35b): 0x248687, the stage advance's call 0x27EDF0 where every case converges, enters
+        # stage_entry for bit 64 only. It is authenticated with the other sites and Retail restores it.
+        from mod_editor.core import nfl2k5_injured_reserve as ir
+        room, code = self.room, self.code
+        site, retail = 0x248687, bytes.fromhex("e864670300")
+        self.assertIn((site, retail, "stage_entry", room.STAGE_FLOOR), code.HOOKS)
+        base, _ = ir.apply(self.slice1, "modern", standard_guard=True)
+        empty = space.extend_scaleout(base, room.REQUESTS)[0]
+        floor, receipt = room.apply(base, "realistic", stages=room.STAGE_FLOOR)
+        self.assertIn(hex(site), receipt["sites"])
+        call = XbeImage(floor).read(site, 5)
+        self.assertEqual(call[0], 0xE8)
+        self.assertEqual(site + 5 + int.from_bytes(call[1:], "little", signed=True), room.VA + code.LABELS["stage_entry"])
+        piece3, _ = room.apply(base, "realistic", stages=code.STAGE_D1 | code.STAGE_D2)
+        self.assertEqual(XbeImage(piece3).read(site, 5), retail)  # no floor, no stage advance call
+        self.assertEqual(room.apply(floor, "retail")[0], empty)
+        self.assertEqual(XbeImage(empty).read(site, 5), retail)
+        foreign_call = bytes.fromhex("e800000000")
+        for name, payload in (("floor page", floor), ("empty reservation", empty), ("piece 3 page", piece3)):
+            with self.subTest(case=name):
+                changed = room._patch(payload, [(site, XbeImage(payload).read(site, 5), foreign_call)])
+                self.assertEqual(room.status(changed), "foreign")
+                for level in ("retail", "realistic"):
+                    with self.assertRaisesRegex(ValueError, "not recognized"):
+                        room.apply(changed, level)
 
     def test_the_economy_routines_the_floor_calls_are_authenticated(self):
         room = self.room
@@ -372,7 +402,7 @@ class FloorOwnerTests(unittest.TestCase):
         floor, receipt = room.install_stages(upgraded, stages)
         settings = room.read_settings(floor)
         self.assertEqual((settings["status"], settings["stages"], settings["shadow"]), ("applied", stages, False))
-        self.assertEqual(receipt["sites"], ["0x247dca", "0x24807a", "0x248010"])
+        self.assertEqual(receipt["sites"], ["0x247dca", "0x24807a", "0x248010", "0x248687"])
         empty = space.extend_scaleout(upgraded, room.REQUESTS)[0]
         self.assertEqual(room.apply(floor, "retail")[0], empty)
         self.assertEqual(room.install_stages(empty, stages)[0], floor)
@@ -389,12 +419,13 @@ class FloorOwnerTests(unittest.TestCase):
         page = code.page_bytes(0x1529000, record, ir_store_va=room._ir_store_va(applied, stages))
         edits = [(0x1529000, XbeImage(applied).read(0x1529000, 0x3000), page)]
         edits += [(at, original, patched) for label, at, original, patched in room._sites(0x1529000, stages)
-                  if label == "sign_entry"]
-        self.assertEqual(len(edits), 2)
+                  if label in ("sign_entry", "stage_entry")]
+        self.assertEqual(len(edits), 3)
         floor = room._patch(applied, edits)
         self.assertEqual((room.read_settings(floor)["status"], room.read_settings(floor)["stages"]), ("applied", stages))
         self.assertEqual(room.apply(floor, "retail")[0], room.apply(applied, "retail")[0])
-        self.assertEqual(room.status(self._changed(floor, 0x322C40, b"\xcc")), "foreign")
+        restructure = room._patch(floor, [(0x3B9F60, XbeImage(floor).read(0x3B9F60, 1), b"\xc3")])
+        self.assertEqual(room.status(restructure), "foreign")
 
 
 
@@ -509,7 +540,10 @@ class PreviousRevisionTests(unittest.TestCase):
                  "settings record": self._changed(self.floor, room.VA + old.SETTINGS_OFFSET + 8, b"\x41"),
                  "old page, current call": self._changed(self.floor, 0x248010, current_calls[0x248010]),
                  "stage set no Studio wrote": unwritten,
-                 "3a page with a changed byte": self._changed(self.stage_3a, room.VA + 0x20, b"\x90")}
+                 "3a page with a changed byte": self._changed(self.stage_3a, room.VA + 0x20, b"\x90"),
+                 # The floor handover never wrote the stage advance site (floor review step 2); a call there is foreign.
+                 "floor handover page, stage advance call": room._patch(
+                     self.floor, [(0x248687, XbeImage(self.floor).read(0x248687, 5), current_calls[0x248687])])}
         for name, payload in cases.items():
             with self.subTest(case=name):
                 self.assertEqual(room.status(payload), "foreign")
