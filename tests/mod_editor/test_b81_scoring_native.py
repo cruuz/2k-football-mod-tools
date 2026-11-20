@@ -220,7 +220,7 @@ class BreakawayStop(unittest.TestCase):
         return m.get_f(esp + 0x10)
 
     def test_long_promotions_stop_at_the_1_and_short_ones_still_score(self):
-        new, old = scoring.breakaway_bytes(40.0), scoring.RETAIL_BREAKAWAY
+        new, old = scoring.breakaway_bytes(40.0, 1.0), scoring.RETAIL_BREAKAWAY
         for line_to_goal in (12.0, 25.5, 39.9, 40.0):
             with self.subTest(line_to_goal=line_to_goal):
                 self.assertEqual(self.promote(new, 6.0, line_to_goal, 0.01), f32(line_to_goal + 1.0))
@@ -229,6 +229,14 @@ class BreakawayStop(unittest.TestCase):
             with self.subTest(line_to_goal=line_to_goal):
                 self.assertEqual(self.promote(new, 9.67, line_to_goal, 0.01), f32(line_to_goal - 1.0))
                 self.assertEqual(self.promote(old, 9.67, line_to_goal, 0.01), f32(line_to_goal + 1.0))
+
+    def test_the_shipped_rule_stops_breakaways_from_beyond_78_at_the_10(self):
+        shipped = dict((name, enabled) for name, _, _, enabled in scoring.edits())["simulated breakaway stop"]
+        self.assertEqual(shipped, scoring.breakaway_bytes(78.0, 10.0))
+        self.assertEqual(self.promote_with_constants(shipped, 9.67, 80.79, 0.01, 10.0), f32(70.79))
+        self.assertEqual(self.promote_with_constants(shipped, 9.67, 78.0, 0.01, 10.0), f32(79.0))
+        self.assertEqual(self.promote_with_constants(shipped, 9.67, 63.25, 0.01, 10.0), f32(64.25))
+        self.assertEqual(self.promote(scoring.RETAIL_BREAKAWAY, 9.67, 80.79, 0.01), f32(81.79))
 
     def test_the_stop_distance_comes_from_the_chosen_retail_constant(self):
         for stop_at in (5.0, 10.0, 20.0):
@@ -252,7 +260,7 @@ class BreakawayStop(unittest.TestCase):
             CONSTANTS.update(original)
 
     def test_the_chance_and_eligibility_are_unchanged(self):
-        new, old = scoring.breakaway_bytes(40.0), scoring.RETAIL_BREAKAWAY
+        new, old = scoring.breakaway_bytes(40.0, 1.0), scoring.RETAIL_BREAKAWAY
         for args in ((6.0, 60.0, 0.074), (6.0, 60.0, 0.076), (6.0, 30.0, 0.5), (6.0, 30.0, 0.0749),
                      (6.0, 60.0, 0.01, 0.0), (6.0, 60.0, 0.01, -2.0), (61.0, 60.0, 0.01), (-3.0, 60.0, 0.01)):
             with self.subTest(args=args):

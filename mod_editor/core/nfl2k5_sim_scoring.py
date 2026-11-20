@@ -1,4 +1,4 @@
-"""Simulated-game kicking: field-goal accuracy by distance and long field-goal attempts (in place, two sites).
+"""Simulated-game scoring: field-goal accuracy by distance, long field-goal attempts and long breakaways (in place).
 
 Part of the 128 MiB franchise simulator option ``sim_qb_injuries`` (Realistic and Custom install it, Retail restores
 the original bytes; see ``nfl2k5_sim_qb_injuries._edits``).  Both sites are inside the native scheduled simulator,
@@ -26,6 +26,14 @@ outside the late-game paths (0.074 a club-game against the NFL's 0.434).  The re
 beyond the line to goal: always inside ``RAMP_LOW`` yards to goal, never beyond ``RAMP_HIGH``, linearly in between
 (NFL 2021-25, the same situations, field-goal share of kicks: 0.97 at 36, 0.82 at 37, 0.75 at 38, 0.48 at 39, 0.19
 at 40, 0.14 at 41, 0.04 at 42).  The fourth-quarter, overtime and end-of-half paths are unchanged.
+
+**Long breakaways (``0x109446..0x10949E``, 89 bytes, same length).**  After a completion short of the goal line the
+receiver's trait value times 0.10 is the chance of a breakaway; every success used to become a touchdown from wherever
+the ball was caught.  Accurate kicking alone added about 0.7 points a club-game (0.9 for Week 1 starters, beyond the
+quarterback slice's band), because touchdowns stayed inflated.  The rewrite keeps the eligibility test (it no longer
+rolls for gains that already reach the goal line, which scored anyway), the trait chance and the single draw; a
+breakaway that starts more than ``BREAKAWAY_STOP_BEYOND`` yards from goal ends at the ``BREAKAWAY_STOP_AT`` and the
+drive continues, nearer ones still score.
 """
 from __future__ import annotations
 
@@ -65,21 +73,24 @@ TAIL_PER_YARD = 0.0225
 CAP = 0.98
 RAMP_LOW = 36.0
 RAMP_HIGH = 41.5
-# (d) Breakaway receiver roll (``0x109446..0x10949E``, 89 bytes): off unless calibration needs it.  A promoted
-# breakaway that starts beyond ``BREAKAWAY_STOP_BEYOND`` yards to goal stops at the 1 instead of scoring.
+# (d) Breakaway receiver roll (``0x109446..0x10949E``, 89 bytes).  Today every successful roll turns a completion into a
+# touchdown from wherever it was caught (about 1.4 a club-game, 78% of simulated passing TDs, two thirds from 40+ yards
+# out; NFL: 12% of passing TDs from 40+).  A promoted breakaway that starts beyond ``BREAKAWAY_STOP_BEYOND`` yards to
+# goal now ends at the ``BREAKAWAY_STOP_AT`` (the drive goes on from there); nearer ones still score.  Calibrated so the
+# extra field-goal points of the kicking change are offset and the touchdown mix moves toward the NFL.
 BREAKAWAY_VA = 0x00109446
 BREAKAWAY_SIZE = 0x59
 RETAIL_BREAKAWAY = bytes.fromhex(
     "d9442418d81d80414e00dfe0f6c4417548d9442410d8250072a900d81d406d4e00dfe0f6c4057a316a0aba010000008bcee804d6"
     "1300d80d5c6d4e0051d91c24e8a58bffff85c07410d9050072a900d8059c414e00d95c2410")
-BREAKAWAY_STOP_BEYOND = None
+BREAKAWAY_STOP_BEYOND = 78.0      # frozen 2026-11-20 after calibration (scoring/DESIGN.md section 9)
 FN_RATING = 0x00246A80             # thiscall(ecx=player, edx=1, [esp]=category) -> st0
 FN_CHANCE = 0x00102030             # stdcall(float p) -> eax = draw below p
 BREAKAWAY_SCALE = 0x004E6D5C       # 0.10
 ONE = 0x004E419C                   # 1.0
 # Where a stopped breakaway ends (yards to goal): retail read-only floats, checked by the tests.
 STOP_AT = {1.0: 0x004E419C, 2.0: 0x004E6084, 5.0: 0x004E63A8, 10.0: 0x004E41A8, 20.0: 0x004E6970}
-BREAKAWAY_STOP_AT = 1.0
+BREAKAWAY_STOP_AT = 10.0
 
 
 class SimScoringError(ValueError):
@@ -218,7 +229,8 @@ def read_settings(payload: bytes) -> Mapping[str, object]:
     if state != "applied":
         return {"status": state}
     return {"status": state, "gain_per_yard": GAIN_PER_YARD, "tail_start": TAIL_START,
-            "tail_per_yard": TAIL_PER_YARD, "bases": list(BASES), "ramp_low": RAMP_LOW, "ramp_high": RAMP_HIGH}
+            "tail_per_yard": TAIL_PER_YARD, "bases": list(BASES), "ramp_low": RAMP_LOW, "ramp_high": RAMP_HIGH,
+            "breakaway_stop_beyond": BREAKAWAY_STOP_BEYOND, "breakaway_stop_at": BREAKAWAY_STOP_AT}
 
 
 def lab_overlay(**parameters) -> list[dict[str, str]]:
