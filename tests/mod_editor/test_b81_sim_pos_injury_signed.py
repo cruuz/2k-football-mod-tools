@@ -15,12 +15,6 @@ Two signed franchises cross in both directions:
   at the game's 0x10285F whose selector frame returns inside the bank's positions piece, to a player who was healthy
   at the opening and is still hurt when the week is saved; and at least one IR entry.
 
-In the week run every slice 2 commit is also checked against the game itself (review rev-pos2 L1): the victim is the
-match copy in the walked lineup slot at the commit; a halfback's victim is the play's ball carrier, the pointer
-[0xA971A4] at the rush injury call, which must equal the player the game credits with that carry (the credit write
-0x107DAF; pos2/harness/witness_carrier.py's witness, checked at every rush call of the week); and after a commit with
-status 2 or more the game's own substitution (0x102360) has put another player in that slot.
-
 In each case Realistic writes and signs the franchise; Retail cold-loads it and all 4,096 player records (the health
 words +0x20, +0x24 and +0x28 named separately), the IR entries, the 32 club rows and the practice-squad block equal
 the writer's; Retail writes and signs it again; Realistic cold-loads Retail's save, compares the same state, and
@@ -28,6 +22,21 @@ writes it a last time byte for byte equal to Retail's write, signature included.
 nfl2k5_roster_records.verify_extra. Retail's write equals Realistic's own write at the opening; after the week it
 differs only in the transaction-ledger boundary cursors (front office +0x3324), which the simulating machine keeps
 and a cold load restarts at 0 on either executable.
+
+Slice 3 (pos3/DESIGN.md section 6, test 5): the same exchange after native regular-season weeks whose save holds a
+slice 3 injury (receiver, tight end, fullback, defensive tackle, linebacker, cornerback or safety) on each side of the
+ball, still hurt when saved, and one in slot 28 (the second free safety). SLICE3_WEEKS weeks reach all
+three at the frozen constants. After several weeks the live machine and a cold load differ in RAM-only fields (an IR
+entry's top status byte), so this case compares both executables' cold loads with Realistic's own cold load, which
+must equal the live franchise in every other field and hold the same IR entries.
+
+Every positions-piece commit in a week run is also checked against the game itself (review rev-pos2 L1, extended to
+slice 3): the victim is the match copy in the walked lineup slot at the commit, on the offensive side for offensive
+classes and the defensive side for defensive ones; a halfback's victim is the play's ball carrier, the pointer
+[0xA971A4] at the rush injury call, which must equal the player the game credits with that carry (the credit write
+0x107DAF; pos2/harness/witness_carrier.py's witness, checked at every rush call); a fullback is hurt only inside a
+rush play's injury call; and after a commit with status 2 or more the game's own substitution (0x102360) has put
+another player in that slot.
 
 Private inputs come from /home/noah/2k-worktrees/.b77-scratch/b81/env.sh: NFL2K5_B81_REVIEWED_TEST_DISC (the
 standard executable, 98dd7329) and NFL2K5_B81_OWNERSHIP_FIXTURES (roster d5e02a52 and the signed opening 8bc786af).
@@ -67,12 +76,21 @@ RECORD = 84
 # The carrier witness and the commit's own frame (native bytes pinned in NATIVE_SITES).
 RUSH_ENTRY = 0x107940                     # the rush handler: a new rush play
 CARRY_CREDIT = 0x107DAF                   # mov [ebx+0xD], al: the play record credits this match player with the carry
-RUSH_INJURY_CALL = 0x1081E3               # the rush play's injury call (returns to 0x1081E8)
+RUSH_INJURY_CALL = 0x1081E3               # the rush play's injury call ...
+RUSH_RETURN = 0x1081E8                    # ... and its return
 CARRIER = 0xA971A4                        # the current ball carrier's match copy
+OFFENSE, DEFENSE = 0xA9719C, 0xA971A0     # the two match sides of the current play
 SLOT = 0x18                               # [ESP+0x18] at COMMIT_PC: the lineup slot (edi for the substitution)
 AFTER_COMMIT = 0x10286E                   # every exit of the selector frame, after the substitution call
 NATIVE_SITES = {RUSH_ENTRY: '83ec20', CARRY_CREDIT: '88430d', RUSH_INJURY_CALL - 3: '555555e8',
-                COMMIT_PC: '7c0d8b7c24188b742414e8f2faffff', AFTER_COMMIT: '5f'}
+                RUSH_RETURN: '85c07404', COMMIT_PC: '7c0d8b7c24188b742414e8f2faffff', AFTER_COMMIT: '5f'}
+# Slice 3: classes 5 to 11 of code.POSITION_CLASSES are new; these are read from the defensive side.
+DEFENSIVE_CLASSES = {'end', 'defensive_tackle', 'linebacker', 'cornerback', 'safety'}
+SECOND_FREE_SAFETY = 28
+# Measured at the frozen constants (76edddaf2): from the signed opening, the save first holds a slice 3 injury on each
+# side and one in slot 28 after week 7 (181 positions commits, 108 of them slice 3; the slot 28 victim is a safety).
+# The run is deterministic; if the constants change, measure again (the case fails rather than skips).
+SLICE3_WEEKS = 7
 
 
 def sha256(data):
@@ -181,11 +199,17 @@ class SignedSlice2Exchange(unittest.TestCase):
         return raw, extra
 
     def simulate_week(self, machine):
-        """One native franchise week; return the master index of every player hurt by a slice 2 commit."""
+        """One native franchise week; return the master index of every player hurt by a positions-piece commit."""
+        commits, other = self.simulate_weeks(machine, 1)
+        return [index for index, _, _ in commits], other
+
+    def simulate_weeks(self, machine, weeks, *, enough=None):
+        """Native franchise weeks (stop early once enough(commits) holds); every positions-piece commit as (master
+        index, class index, lineup slot) and the selector return address of every other injury commit."""
         start, end = code.LABELS.get('positions'), code.LABELS.get('depth_hook')
-        halfback = [position.name for position in code.POSITION_CLASSES].index('halfback')
+        names = [position.name for position in code.POSITION_CLASSES]
         slice2, other, checked, pending = [], [], [], []
-        play = {'rush': False, 'credit': None, 'carrier': None}
+        play = {'rush': False, 'credit': None, 'carrier': None, 'in_call': False}
         witness = {'calls': 0, 'disagree': []}
 
         def rush_entry(*_):
@@ -197,10 +221,13 @@ class SignedSlice2Exchange(unittest.TestCase):
 
         def rush_call(*_):
             carrier = machine.get(CARRIER)
-            play['carrier'] = carrier
+            play.update(carrier=carrier, in_call=True)
             witness['calls'] += 1
             if play['credit'] is None or match_copy(play['credit']) != carrier:
                 witness['disagree'].append((play['credit'], hex(carrier)))
+
+        def rush_return(*_):
+            play['in_call'] = False
 
         def after_commit(*_):
             if pending:
@@ -222,14 +249,18 @@ class SignedSlice2Exchange(unittest.TestCase):
             master = machine.get(master_club + 4 * copies.index(copy))
             same = bytes(machine.uc.mem_read(copy + 0x10, 8)) == bytes(machine.uc.mem_read(master + 0x10, 8))
             pool = machine.get(machine.get(PLAYERS_ROOT) + 4)
-            slice2.append((master - pool) // RECORD if same else None)
-            slot = machine.get(esp + SLOT)
-            entry = {'class': machine.get(self.bank + code.LABELS['pos_class']), 'slot': slot, 'copy': copy,
-                     'walked': machine.get(self.bank + code.LABELS['victim_slot']),
-                     'occupant': machine.get(side + 8 + 4 * slot), 'status': machine.reg('EDI') >> 28 & 7,
-                     'carrier': play['carrier'], 'credited': match_copy(play['credit'] or 0)}
+            klass = slot = None
+            if 'pos_class' in code.LABELS:   # the piece sets both before it calls its copy of the selector
+                klass = machine.get(self.bank + code.LABELS['pos_class'])
+                slot = machine.get(self.bank + code.LABELS['victim_slot'])
+            slice2.append(((master - pool) // RECORD if same else None, klass, slot))
+            at = machine.get(esp + SLOT)
+            entry = {'class': klass, 'slot': at, 'walked': slot, 'copy': copy, 'side': side,
+                     'expected_side': machine.get(DEFENSE if names[klass] in DEFENSIVE_CLASSES else OFFENSE),
+                     'occupant': machine.get(side + 8 + 4 * at), 'status': machine.reg('EDI') >> 28 & 7,
+                     'carrier': play['carrier'], 'credited': match_copy(play['credit'] or 0), 'in_rush_call': play['in_call']}
             checked.append(entry)
-            pending.append((entry, side, slot))
+            pending.append((entry, side, at))
 
         def decision(*_):
             raise RuntimeError(f'unexpected decision dialog from {machine.get(machine.reg("ESP")):#x}')
@@ -239,41 +270,50 @@ class SignedSlice2Exchange(unittest.TestCase):
         machine.uc.hook_add(machine.u.UC_HOOK_CODE, decision, begin=0x14E440, end=0x14E440)
         machine.uc.hook_add(machine.u.UC_HOOK_CODE, commit, begin=COMMIT_PC, end=COMMIT_PC)
         for address, hook in ((RUSH_ENTRY, rush_entry), (CARRY_CREDIT, credit), (RUSH_INJURY_CALL, rush_call),
-                              (AFTER_COMMIT, after_commit)):
+                              (RUSH_RETURN, rush_return), (AFTER_COMMIT, after_commit)):
             machine.uc.hook_add(machine.u.UC_HOOK_CODE, hook, begin=address, end=address)
         machine.uc.ctl_flush_tb()
-        machine.call(WEEKLY_SCHEDULER, ecx=machine.manager, budget=0)
-        self.assertNotIn(None, slice2, 'a slice 2 commit hurt a match copy with no master record')
+        for _ in range(weeks):
+            machine.call(WEEKLY_SCHEDULER, ecx=machine.manager, budget=0)
+            if enough is not None and enough(slice2):
+                break
+        self.assertNotIn(None, [index for index, _, _ in slice2], 'a positions commit hurt a match copy with no master')
         # The carrier witness: at every rush injury call the carrier pointer is the player credited with the carry.
-        self.assertGreater(witness['calls'], 0, 'no rush injury call in the week')
+        self.assertGreater(witness['calls'], 0, 'no rush injury call in the run')
         self.assertEqual(witness['disagree'], [], f'carrier pointer and credited carrier differ ({witness["calls"]} calls)')
-        self.assertFalse(pending, 'a slice 2 commit never left the selector frame')
-        target = os.environ.get('NFL2K5_B81_POS_SIGNED_RECORD')   # optional evidence of what the week checked
-        if target:
-            names = [position.name for position in code.POSITION_CLASSES]
-            Path(target).write_text(json.dumps({
-                'rush_injury_calls': witness['calls'], 'carrier_disagreements': len(witness['disagree']),
-                'commits': [dict(entry, **{'class': names[entry['class']], 'copy': hex(entry['copy']),
-                                           'occupant': hex(entry['occupant']), 'after': hex(entry.get('after', 0)),
-                                           'carrier': hex(entry['carrier'] or 0), 'credited': hex(entry['credited'] or 0)})
-                            for entry in checked]}, indent=1) + '\n', encoding='utf-8')
+        self.assertFalse(pending, 'a positions commit never left the selector frame')
         for entry in checked:
-            label = f'{code.POSITION_CLASSES[entry["class"]].name} in slot {entry["slot"]}'
+            label = f'{names[entry["class"]]} in slot {entry["slot"]}'
             self.assertEqual(entry['slot'], entry['walked'], f'{label}: the game committed another slot than the walk')
             self.assertEqual(entry['occupant'], entry['copy'], f'{label}: the victim is not the slot\'s occupant')
-            if entry['class'] == halfback:
+            self.assertEqual(entry['side'], entry['expected_side'], f'{label}: the victim is on the wrong side')
+            if names[entry['class']] == 'halfback':
                 self.assertEqual(entry['copy'], entry['carrier'], f'{label}: the victim is not the ball carrier')
                 self.assertEqual(entry['copy'], entry['credited'], f'{label}: the victim is not credited with the carry')
+            if names[entry['class']] in ('halfback', 'fullback'):
+                self.assertTrue(entry['in_rush_call'], f'{label}: hurt outside a rush play\'s injury call')
             if entry['status'] >= 2:
                 self.assertNotIn(entry['after'], (0, entry['copy']),
                                  f'{label}: no other player took the slot after a status {entry["status"]} commit')
-        classes = {entry['class'] for entry in checked}
-        self.assertIn(halfback, classes, f'no halfback commit in the week to check against the carrier ({len(checked)})')
-        self.assertTrue(classes - {halfback}, 'no line or edge commit in the week')
-        self.checked = checked
+        hurt = {names[entry['class']] for entry in checked}
+        self.assertIn('halfback', hurt, f'no halfback commit in the run to check against the carrier ({len(checked)})')
+        self.assertTrue(hurt - {'halfback'}, 'no other positions commit in the run')
+        target = os.environ.get('NFL2K5_B81_POS_SIGNED_RECORD')   # optional evidence of what the run checked
+        if target and weeks == 1:
+            Path(target).with_suffix('.week1.json').write_text(json.dumps({
+                'rush_injury_calls': witness['calls'], 'carrier_disagreements': len(witness['disagree']),
+                'commits': [{**entry, 'class': names[entry['class']],
+                             **{k: hex(entry.get(k) or 0) for k in ('copy', 'side', 'expected_side', 'occupant',
+                                                                     'after', 'carrier', 'credited')}}
+                            for entry in checked]}, indent=1) + '\n', encoding='utf-8')
         if 'pos_commits' in code.LABELS:
-            counters = struct.unpack('<5I', bytes(machine.uc.mem_read(self.bank + code.LABELS['pos_commits'], 20)))
-            self.assertEqual(sum(counters), len(slice2), 'hooked slice 2 commits differ from the bank counters')
+            classes = len(code.POSITION_CLASSES)
+            counters = struct.unpack(f'<{classes}I', bytes(machine.uc.mem_read(self.bank + code.LABELS['pos_commits'],
+                                                                                4 * classes)))
+            self.assertEqual(sum(counters), len(slice2), 'hooked positions commits differ from the bank counters')
+            for klass in range(classes):
+                self.assertEqual(counters[klass], sum(1 for _, c, _ in slice2 if c == klass),
+                                 f'class {code.POSITION_CLASSES[klass].name}: hooked commits differ from its counter')
         return slice2, other
 
     # -- comparison -------------------------------------------------------------------------------------------------
@@ -361,6 +401,59 @@ class SignedSlice2Exchange(unittest.TestCase):
         moved = [i for i, (a, b) in enumerate(zip(written[0], by_retail[0])) if a != b]
         self.assertEqual([i for i in moved if not ledger <= i < ledger + 8], [],
                          'week 1: Retail\'s write differs from Realistic\'s outside the ledger boundary cursors')
+
+    def test_weeks_with_slice_3_injuries_on_both_sides_and_slot_28_cross_both_ways(self):
+        names = [position.name for position in code.POSITION_CLASSES]
+        self.assertEqual(len(names), 12, 'slice 3 has twelve position classes')
+        machine = self.boot(self.realistic, self.opening)
+        record = lambda state, i: state['players'][RECORD * i:RECORD * (i + 1)]
+        try:
+            opening = census(machine, self.realistic)
+            hurt_at_opening = {i for i in range(opening['count']) if not healthy(record(opening, i))}
+            new = lambda commits: [(i, names[c], slot) for i, c, slot in commits if c is not None and c >= 5
+                                   and i not in hurt_at_opening]
+            sides = lambda commits: {name in DEFENSIVE_CLASSES for _, name, _ in new(commits)}
+            enough = lambda commits: sides(commits) == {False, True} and any(
+                slot == SECOND_FREE_SAFETY for _, _, slot in new(commits))
+            commits, native = self.simulate_weeks(machine, SLICE3_WEEKS, enough=enough)
+            weeks = census(machine, self.realistic)
+            written = self.sign(machine)
+        finally:
+            machine.close()
+        still = [(i, name, slot) for i, name, slot in new(commits) if not healthy(record(weeks, i))]
+        counts = f'{len(commits)} positions commits, {len(new(commits))} slice 3, {len(native)} other, ' \
+                 f'{weeks["state"]["week"]} weeks: {sorted({name for _, name, _ in new(commits)})}'
+        self.assertTrue(any(name not in DEFENSIVE_CLASSES for _, name, _ in still),
+                        f'no offensive slice 3 injury is in the save ({counts})')
+        self.assertTrue(any(name in DEFENSIVE_CLASSES for _, name, _ in still),
+                        f'no defensive slice 3 injury is in the save ({counts})')
+        self.assertTrue(any(slot == SECOND_FREE_SAFETY for _, _, slot in still),
+                        f'no slot 28 injury is in the save ({counts}); measure SLICE3_WEEKS again')
+        self.assertTrue(weeks['ir'], 'the franchise has no IR entry')
+        # Realistic's own cold load is the reference for the exchange; against the live machine it differs only in
+        # IR status words (RAM-only bits), never in which players are on IR or in any other field.
+        machine = self.boot(self.realistic, written[0])
+        try:
+            reloaded = census(machine, self.realistic)
+        finally:
+            machine.close()
+        self.assertEqual({key: value for key, value in reloaded.items() if key != 'ir'},
+                         {key: value for key, value in weeks.items() if key != 'ir'}, 'the cold load differs from the run')
+        self.assertEqual([entry[:2] for entry in reloaded['ir']], [entry[:2] for entry in weeks['ir']],
+                         'the cold load lists other IR entries than the run')
+        changed = sorted({(a[2] ^ b[2]) for a, b in zip(reloaded['ir'], weeks['ir']) if a != b})
+        target = os.environ.get('NFL2K5_B81_POS_SIGNED_RECORD')   # optional evidence: what the save holds
+        if target:
+            Path(target).write_text(json.dumps({
+                'weeks': weeks['state']['week'], 'positions_commits': len(commits), 'other_commits': len(native),
+                'slice3_commits': new(commits), 'slice3_still_hurt_when_saved': still,
+                'save_sha256': sha256(written[0]), 'ir_status_bits_live_vs_cold_load': [hex(bits) for bits in changed]},
+                indent=1) + '\n', encoding='utf-8')
+        by_retail = self.exchange(written[0], reloaded, 'slice 3 weeks')
+        ledger = saves.FranchiseSave(written[0]).front_office_block + saves.F_LEDGER_BOUNDARIES
+        moved = [i for i, (a, b) in enumerate(zip(written[0], by_retail[0])) if a != b]
+        self.assertEqual([i for i in moved if not ledger <= i < ledger + 8], [],
+                         'slice 3 weeks: Retail\'s write differs from Realistic\'s outside the ledger boundary cursors')
 
 
 if __name__ == "__main__":

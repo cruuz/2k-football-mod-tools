@@ -62,7 +62,8 @@ EXPORTED = {
     "positions": ("positions", "pos_sampled", "pos_descriptor", "pos_duration", "pos_duration_accept", "pos_enabled",
                   "pos_scale", "pos_zero", "pos_accept", "pos_slots", "pos_year", "pos_week", "pos_club_a", "pos_club_b",
                   "pos_key", "pos_seq", "pos_hash", "pos_sample", "pos_wide", "pos_class", "victim_side",
-                  "victim_slot", "accept_ptr", "pos_plays", "pos_hits", "pos_commits", "pos_effective"),
+                  "victim_slot", "accept_ptr", "pos_plays", "pos_hits", "pos_commits", "pos_effective",
+                  "pos_week_group"),
 }
 
 

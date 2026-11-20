@@ -1,4 +1,4 @@
-"""Slice 2 native check (tools/qb_sim_injuries/positions.S) executed in Unicorn on the linked quarterback bank.
+"""Slices 2 and 3 native check (tools/qb_sim_injuries/positions.S) executed in Unicorn on the linked quarterback bank.
 
 PositionGate runs the bank from the three hooked scrimmage calls on synthetic lineups, in the style of the slice 1
 fixtures (NativeFixture, ClinicalCalls): the game's own roll, the master Injury predicate and the seeder are stubbed,
@@ -6,7 +6,9 @@ and the second diagnosis copy returns at once, so every decision of positions.S 
 runs the same bank, linked against the retail executable by bank_bytes, inside the repo's native machine with the
 whole retail image mapped: the game's own diagnosis, duration, health write and status code run for real, and only
 the game's roll (0x1028B0) and its lineup substitution (0x102360) are replaced, both named in Machine.leaf.
-The reference stream below follows pos2/DESIGN.md section 2 ("Private stream") and 4.1 ("Arithmetic").
+The reference stream below follows pos2/DESIGN.md section 2 ("Private stream") and 4.1 ("Arithmetic"); slot rules,
+weights and week groups follow pos3/DESIGN.md sections 1 and 2. SlotTwentyEight runs the game's own substitution on a
+real match of the signed franchise (sim_machine).
 """
 from __future__ import annotations
 
@@ -17,9 +19,10 @@ import unittest
 
 from mod_editor.core import nfl2k5_sim_qb_injuries_code as rules
 from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice1 as frozen
+from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice2 as frozen2
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from tests.mod_editor.test_b81_sim_qb_injuries_code import BANK, DATA, SIM, NativeFixture
-from tests.nfl2k5_supersim_draft_fixture import HAVE_UC, Machine, retail_bytes
+from tests.nfl2k5_supersim_draft_fixture import HAVE_UC, Machine, retail_bytes, sim_machine
 
 
 RUSH, PASS, SACK_ESCAPE = 0x1081E3, 0x10904A, 0x108A02
@@ -30,12 +33,34 @@ CARRIER, SLIDER = 0xA971A4, 0xE60204
 M32 = 0xFFFFFFFF
 POS2, PGT2, PLN2, PNT2 = 0x32534F50, 0x32544750, 0x324E4C50, 0x32544E50
 OFFENSE, DEFENSE = 0, 1
-# (class index, side, lineup slot, rushing ball carrier only): pos2/DESIGN.md section 2, in walk order.
-WALK = ((0, OFFENSE, 12, False), (0, OFFENSE, 13, False), (1, OFFENSE, 10, False), (1, OFFENSE, 11, False),
-        (2, OFFENSE, 9, False), (3, DEFENSE, 15, False), (3, DEFENSE, 16, False),
-        (4, OFFENSE, 1, True), (4, OFFENSE, 3, True))
-CLASS_SLOT = {0: 12, 1: 10, 2: 9, 3: 15, 4: 1}
+# (class index, side, lineup slot, flags) in walk order. Flags bits 0-1 are the rule (0 every scrimmage play, 1 rush
+# play on which he is the ball carrier, 2 any rush play), bits 4-7 the exposure weight in sixteenths (0 full).
+# pos2/DESIGN.md section 2 and pos3/DESIGN.md section 1.
+SLICE2_WALK = ((0, OFFENSE, 12, 0), (0, OFFENSE, 13, 0), (1, OFFENSE, 10, 0), (1, OFFENSE, 11, 0),
+               (2, OFFENSE, 9, 0), (3, DEFENSE, 15, 0), (3, DEFENSE, 16, 0), (4, OFFENSE, 1, 1), (4, OFFENSE, 3, 1))
+SLICE3_WALK = ((5, OFFENSE, 4, 0), (5, OFFENSE, 5, 0), (5, OFFENSE, 6, 0), (5, OFFENSE, 7, 0x40), (6, OFFENSE, 8, 0),
+               (7, OFFENSE, 2, 2), (8, DEFENSE, 17, 0), (8, DEFENSE, 18, 0), (9, DEFENSE, 19, 0), (9, DEFENSE, 20, 0),
+               (9, DEFENSE, 21, 0), (9, DEFENSE, 22, 0x40), (10, DEFENSE, 24, 0), (10, DEFENSE, 25, 0),
+               (10, DEFENSE, 26, 0), (11, DEFENSE, 23, 0), (11, DEFENSE, 27, 0), (11, DEFENSE, 28, 0x40))
+WALK = SLICE2_WALK + SLICE3_WALK
+CLASS_SLOT = {0: 12, 1: 10, 2: 9, 3: 15, 4: 1, 5: 4, 6: 8, 7: 2, 8: 17, 9: 19, 10: 24, 11: 23}
+ZERO_POINTS = (110, 110, 110, 100, 100, 100, 100, 105, 100, 100, 100, 100)   # fixed by the two designs
 SIDE_OF = {slot: side for _, side, slot, _ in WALK}
+CLASSES = len(rules.POSITION_CLASSES)
+
+
+def exposed_on(flags, site, player, carrier):
+    rule = flags & 3
+    if rule == 0:
+        return True
+    if site != RUSH:
+        return False
+    return player == carrier if rule == 1 else True
+
+
+def weighted(value, flags):
+    weight = flags >> 4
+    return value if not weight or value is None else value * weight >> 4
 FPCW_64, FPCW_24 = 0x037F, 0x007F
 # Unicorn 2.1 keeps translated code after a host write, so the stubs read their answers from data and every
 # relinked bank is followed by a translation-cache flush.
@@ -85,24 +110,52 @@ def _round_bits(value, bits):
 
 
 
-def rate_with_room(ratings, carrier_rating, nominal, fraction):
-    """The largest Custom rate (0.001 percent units, a multiple of 100, at most `nominal`) at which the nine walked
-    slots' chances at slider 0.5 with these ratings sum to at most `fraction` of certainty, from the module's own
-    constants. Calibration moves base_chance; the walk tests need room under certainty (lead, freeze of 11/20)."""
+def rate_with_room(ratings, nominal, fraction, *, carrier=None):
+    """The largest Custom rate (0.001 percent units, a multiple of 100, at most `nominal`) at which the walked slots'
+    chances on a rush play at slider 0.5 sum to at most `fraction` of certainty, from the module's own constants.
+    `ratings` follows WALK (None: slot empty); `carrier` is the WALK index of the ball carrier. Weights and the
+    carrier and rush rules apply. Calibration moves base_chance; the walk tests need room under certainty (lead,
+    freeze of 11/20; extended to slice 3's 27 slots)."""
     def total(rate):
         chance = 0.0
-        for (index, _, slot, carrier_only), rating in zip(WALK, ratings):
-            position = rules.POSITION_CLASSES[index]
-            if carrier_only and rating != carrier_rating:
+        for number, ((index, _, _, flags), rating) in enumerate(zip(WALK, ratings)):
+            if rating is None or not exposed_on(flags, RUSH, number, carrier):
                 continue
-            chance += (position.base_chance / rules.POSITION_SCALE * rate / rules.DEFAULT_RATE
-                       * max(0, position.zero_point - rating) / (position.zero_point - position.reference_durability))
+            position = rules.POSITION_CLASSES[index]
+            value = (position.base_chance / rules.POSITION_SCALE * rate / rules.DEFAULT_RATE
+                     * max(0, position.zero_point - rating) / (position.zero_point - position.reference_durability))
+            chance += min(value, 1.0) * ((flags >> 4) or 16) / 16
         return chance
-    # The chance is linear in the rate, so take the largest multiple of 100 that keeps the sum at or under `fraction`
-    # (between 100 and Custom 100 percent). `nominal` is kept for the callers' readability; refit constants of 11/20 made
-    # a cap at the nominal rate leave too few proposals for the coverage checks.
-    rate = int(fraction / total(1) // 100 * 100)
-    return max(100, min(100_000, rate))
+    # total() never falls as the rate rises, so take the largest multiple of 100 between 100 and Custom 100 percent
+    # that keeps it at or under `fraction`. `nominal` stays for the callers' readability; since slice 2's refit of
+    # 11/20 (lower constants) a cap at the nominal rate left too few proposals for the coverage checks.
+    lo, hi = 1, 1000
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        if total(mid * 100) <= fraction:
+            lo = mid
+        else:
+            hi = mid - 1
+    return lo * 100
+
+
+
+def plays_for_coverage(ratings, rate, *, carriers=(7, 8), least=6):
+    """Plays (a multiple of 6, at least 240) after which every class expects at least `least` proposals in the
+    rush/pass/sack and carrier rotation of the coverage test, from the module's own constants (lead, slice 3 freeze:
+    calibrated constants made a fixed 240 plays leave the fullback, exposed only on rush plays, without a proposal)."""
+    per_class = [0.0] * len(rules.POSITION_CLASSES)
+    for number in range(6):
+        site, carrier = (RUSH, PASS, SACK_ESCAPE)[number % 3], carriers[number % 2]
+        for walk_index, ((index, _, _, flags), rating) in enumerate(zip(WALK, ratings)):
+            if rating is None or not exposed_on(flags, site, walk_index, carrier):
+                continue
+            position = rules.POSITION_CLASSES[index]
+            value = (position.base_chance / rules.POSITION_SCALE * rate / rules.DEFAULT_RATE
+                     * max(0, position.zero_point - rating) / (position.zero_point - position.reference_durability))
+            per_class[index] += min(value, 1.0) * ((flags >> 4) or 16) / 16 / 6
+    needed = max(least / chance for chance in per_class if chance > 0)
+    return max(240, -(-int(needed) // 6) * 6 + 6)
 
 def effective(scale_bits, slider, fpcw=FPCW_64):
     """fld scale; fmul slider; fistp qword under the given control word (round to nearest), then the clamp."""
@@ -231,16 +284,16 @@ class PositionGate(NativeFixture):
 
     def model_thresholds(self, slider, fpcw=FPCW_64, *, site=RUSH, carrier=None, durability=None):
         """Thresholds of the nine walked slots from the bank's own installed tables and the current lineup."""
-        scales = struct.unpack('<5I', self.uc.mem_read(BANK + rules.LABELS['pos_scale'], 20))
-        zeros = self.table('pos_zero', 5)
+        scales = self.table('pos_scale', CLASSES)
+        zeros = self.table('pos_zero', CLASSES)
         result = []
-        for index, side, slot, carrier_only in WALK:
+        for index, side, slot, flags in WALK:
             player = self.players.get((side, slot))
-            if player is None or (carrier_only and (site != RUSH or player != carrier)):
+            if player is None or not exposed_on(flags, site, player, carrier):
                 result.append(None)
                 continue
             rating = self.uc.mem_read(player + 0x3B, 1)[0] if durability is None else durability
-            result.append(threshold(effective(scales[index], slider, fpcw), zeros[index], rating))
+            result.append(weighted(threshold(effective(scales[index], slider, fpcw), zeros[index], rating), flags))
         return result
 
     def play(self, site=RUSH, *, slider=.5, restriction=0, roll=0, force=None, fpcw=FPCW_64):
@@ -266,7 +319,7 @@ class PositionGate(NativeFixture):
         self.assertIsNotNone(proposal)
         index = next(index for index, s, sl, _ in WALK if (s, sl) == (side, slot))
         self.assertEqual((proposal['side'], proposal['slot'], proposal['class']), (self.sides[side], slot, index))
-        self.assertEqual(proposal['table'], BANK + rules.LABELS['pos_accept'] + 128 * index)
+        self.assertEqual(proposal['table'], BANK + rules.LABELS['pos_accept'] + 24 * index)
         self.assertEqual(proposal['scratch'], 0)
 
     def assert_isolated(self):
@@ -282,7 +335,7 @@ class PositionDecisions(PositionGate):
     def test_forced_samples_meet_every_class_threshold_exactly_for_durability_slider_and_precision(self):
         for rate in (rules.DEFAULT_RATE, 155, 100_000):
             self.load_rate(rate)
-            zeros = self.table('pos_zero', 5)
+            zeros = self.table('pos_zero', CLASSES)
             for index, slot in CLASS_SLOT.items():
                 for durability in sorted({0, 40, 74, 83, 91, 99, zeros[index] - 1}):
                     for slider in (.125, .25, .5, 1.0):
@@ -294,10 +347,10 @@ class PositionDecisions(PositionGate):
                                 self.write(CARRIER, self.players[(SIDE_OF[slot], slot)])
                                 limit = self.model_thresholds(slider, fpcw, carrier=self.word(CARRIER))
                                 limit = next(value for value in limit if value is not None)
-                                scales = struct.unpack('<5I', self.uc.mem_read(BANK + rules.LABELS['pos_scale'], 20))
+                                scales = self.table('pos_scale', CLASSES)
                                 if limit:
                                     self.assert_proposed(self.play(slider=slider, force=limit - 1, fpcw=fpcw), slot)
-                                    self.assertEqual(self.table('pos_effective', 5)[index],
+                                    self.assertEqual(self.table('pos_effective', CLASSES)[index],
                                                      effective(scales[index], slider, fpcw))
                                 if limit <= 0x7FFFFFFF:
                                     self.assertIsNone(self.play(slider=slider, force=limit, fpcw=fpcw))
@@ -306,11 +359,12 @@ class PositionDecisions(PositionGate):
         self.assert_isolated()
 
     def test_durability_at_or_above_the_class_zero_point_is_immune(self):
-        # 110 for tackles, guards and centers, 100 for ends and halfbacks. Sample 0 proposes any positive threshold.
+        # 110 for tackles, guards and centers, 105 for the fullback, 100 for every other class (a fullback rated 104 is
+        # exposed, a receiver rated 100 is not). Sample 0 proposes any positive threshold.
         self.load_rate(100_000)
-        self.assertEqual(self.table('pos_zero', 5), (110, 110, 110, 100, 100))
+        self.assertEqual(self.table('pos_zero', CLASSES), ZERO_POINTS)
         for index, slot in CLASS_SLOT.items():
-            zero = (110, 110, 110, 100, 100)[index]
+            zero = ZERO_POINTS[index]
             for durability, exposed in ((99, True), (zero - 1, True), (zero, False), (zero + 1, False), (255, False)):
                 with self.subTest(index=index, durability=durability):
                     self.clear()
@@ -401,7 +455,7 @@ class PositionDecisions(PositionGate):
 
     def test_halfbacks_only_on_the_rush_call_and_only_as_this_plays_ball_carrier(self):
         self.load_rate(100_000)
-        first, second, other = self.place(1, 70), self.place(3, 70), self.place(2, 70)
+        first, second, other = self.place(1, 70), self.place(3, 70), self.place(29, 70)   # 29: a return slot
         for site, carrier, expected in ((RUSH, first, 1), (RUSH, second, 3), (RUSH, other, None), (RUSH, 0, None),
                                         (PASS, first, None), (PASS, second, None), (SACK_ESCAPE, first, None)):
             with self.subTest(site=hex(site), carrier=hex(carrier)):
@@ -432,9 +486,10 @@ class PositionDecisions(PositionGate):
         self.assert_proposed(self.play(force=0), 16, side=DEFENSE)
         self.assert_isolated()
 
-    def test_one_sample_gives_each_of_the_nine_slots_its_own_interval(self):
-        ratings = (93, 70, 91, 60, 99, 81, 40, 83, 55)
-        self.load_rate(min(rate_with_room(ratings, carrier, 2_000, .8) for carrier in (83, 55)))
+    def test_one_sample_gives_each_of_the_27_slots_its_own_interval_in_walk_order(self):
+        ratings = (93, 70, 91, 60, 99, 81, 40, 83, 55, 78, 66, 90, 50, 80, 85, 70, 88, 62, 79, 95, 58, 74, 81, 64, 78,
+                   92, 45)
+        self.load_rate(min(rate_with_room(ratings, 2_000, .8, carrier=carrier) for carrier in (7, 8)))
         for (_, side, slot, _), rating in zip(WALK, ratings):
             self.place(slot, rating, side=side)
         for carrier_slot in (1, 3):
@@ -459,13 +514,13 @@ class PositionDecisions(PositionGate):
 
     def test_at_custom_100_percent_every_play_proposes_exactly_once(self):
         self.load_rate(100_000)
-        for (_, side, slot, _), rating in zip(WALK, (99, 99, 99, 99, 99, 99, 99, 99, 99)):
-            self.place(slot, rating, side=side)
+        for _, side, slot, _ in WALK:
+            self.place(slot, 99, side=side)
         self.write(CARRIER, self.players[(OFFENSE, 1)])
         for number in range(300):
             site = (RUSH, PASS, SACK_ESCAPE)[number % 3]
             self.assert_proposed(self.play(site, slider=1.0), 12)
-        self.assertEqual(self.table('pos_hits', 5), (300, 0, 0, 0, 0))
+        self.assertEqual(self.table('pos_hits', CLASSES), (300,) + (0,) * (CLASSES - 1))
         self.assertEqual(self.word(BANK + rules.LABELS['pos_plays']), 300)
         self.assertEqual(len(self.position_seeds), 300)
         self.assert_isolated()
@@ -558,6 +613,113 @@ class PositionDecisions(PositionGate):
         self.assert_isolated()
 
 
+class SliceThreeDecisions(PositionGate):
+    """pos3/DESIGN.md section 6 test 1: weights, the fullback rule, sides, exclusions and saturation order."""
+
+    def test_quarter_weight_slots_own_a_quarter_of_a_full_slots_interval_to_the_unit(self):
+        pairs = ((7, 4), (22, 19), (28, 23))   # (quarter-weight slot, a full slot of the same class)
+        for rate in (rules.DEFAULT_RATE, 100_000):
+            self.load_rate(rate)
+            for quarter, full in pairs:
+                for durability in (0, 45, 78, 99):
+                    with self.subTest(rate=rate, slot=quarter, durability=durability):
+                        self.clear()
+                        self.place(full, durability)
+                        unweighted = next(v for v in self.model_thresholds(.5) if v is not None)
+                        self.clear()
+                        self.place(quarter, durability)
+                        limit = next(v for v in self.model_thresholds(.5) if v is not None)
+                        self.assertEqual(limit, unweighted * 4 >> 4)
+                        self.assert_proposed(self.play(force=limit - 1), quarter)
+                        self.assertIsNone(self.play(force=limit))
+                        if unweighted == 0x80000000:   # even a certain chance stays a quarter
+                            self.assertEqual(limit, 0x20000000)
+        self.assert_isolated()
+
+    def test_the_fullback_is_exposed_on_every_rush_play_and_only_then(self):
+        self.load_rate(100_000)
+        fullback = self.place(2, 80)
+        halfback = self.place(1, 100)     # the carrier slot is immune at 100, so the walk reaches slot 2
+        for site, carrier, expected in ((RUSH, halfback, 2), (RUSH, fullback, 2), (RUSH, 0, 2),
+                                        (PASS, fullback, None), (PASS, 0, None), (SACK_ESCAPE, fullback, None)):
+            with self.subTest(site=hex(site), carrier=hex(carrier)):
+                self.write(CARRIER, carrier)
+                proposal = self.play(site, force=0)
+                if expected is None:
+                    self.assertIsNone(proposal)
+                else:
+                    self.assert_proposed(proposal, expected)
+        self.assert_isolated()
+
+    def test_each_new_class_reads_its_own_side(self):
+        self.load_rate(100_000)
+        for _, side, slot, flags in SLICE3_WALK:
+            with self.subTest(slot=slot):
+                self.clear()
+                self.place(slot, 70, side=1 - side)       # the same lineup index on the other side is never read
+                self.assertIsNone(self.play(force=0))
+                self.place(slot, 70, side=side)
+                self.assert_proposed(self.play(force=0), slot, side=side)
+        self.assert_isolated()
+
+    def test_every_exclusion_applies_to_new_slots(self):
+        self.load_rate(100_000)
+        injured, weeks, status = 0x80000000, 1 << 22, 1 << 28
+        for slot, after in ((4, 5), (24, 25)):
+            for name, change, expected in (
+                    ('healthy', {}, slot), ('injured bit', {'health': injured}, after),
+                    ('one week', {'health': weeks}, after), ('status 1', {'status': status}, after),
+                    ('only bit 30', {'health': 0x40000000}, slot)):
+                with self.subTest(slot=slot, case=name):
+                    self.clear()
+                    self.place(slot, 60, **change)
+                    self.place(after, 60)
+                    self.assert_proposed(self.play(force=0), expected)
+            with self.subTest(slot=slot, case='empty'):
+                self.clear()
+                self.place(after, 60)
+                self.assert_proposed(self.play(force=0), after)
+            with self.subTest(slot=slot, case='side guard'):
+                self.clear()
+                self.place(slot, 60)
+                self.place(after, 60)
+                self.write(self.sides[SIDE_OF[slot]] + 0xDC, 1)
+                self.assertIsNone(self.play(force=0))
+        self.clear()
+        self.place(28, 60)
+        for arguments in ({'roll': 1}, {'restriction': 1}):
+            self.assertIsNone(self.play(force=0, **arguments))
+        self.assert_proposed(self.play(force=0), 28)
+        self.assert_isolated()
+
+    def test_saturated_intervals_are_taken_in_walk_order(self):
+        # At Custom 100 percent the 27 intervals far exceed the sample: earlier slots win, later ones are unreachable.
+        self.load_rate(100_000)
+        ratings = (109, 109, 109, 109, 109, 99, 99, 100, 100, 99, 95, 90, 60, 99, 104, 99, 99, 99, 99, 99, 99, 60,
+                   99, 99, 99, 99, 60)
+        for (_, side, slot, _), rating in zip(WALK, ratings):
+            self.place(slot, rating, side=side)
+        self.write(CARRIER, 0)
+        limits = self.model_thresholds(.5)
+        cumulative, reachable = 0, []
+        for value in limits:
+            reachable.append(value is not None and value > 0 and cumulative < 0x80000000)
+            cumulative += value or 0
+        self.assertGreater(cumulative, 0x80000000)
+        self.assertTrue(any(value for value, ok in zip(limits, reachable) if not ok))
+        for force in sorted({0, 1, 0x7FFFFFFF} | {min(0x7FFFFFFF, (n * 0x7FFFFFFF) // 63) for n in range(64)}):
+            with self.subTest(sample=hex(force)):
+                expected = predict(force, limits)
+                proposal = self.play(force=force)
+                if expected is None:
+                    self.assertIsNone(proposal)
+                else:
+                    _, side, slot, _ = WALK[expected]
+                    self.assertTrue(reachable[expected])
+                    self.assert_proposed(proposal, slot, side=side)
+        self.assert_isolated()
+
+
 @unittest.skipUnless(HAVE_UC, 'Unicorn is required for the native branch witnesses')
 class NativeMachine(unittest.TestCase):
     """The bank linked by bank_bytes against the retail executable, run inside the repo's native machine."""
@@ -630,8 +792,7 @@ class NativeMachine(unittest.TestCase):
         hook(UC_HOOK_CODE, primary, PRIMARY, PRIMARY)
         hook(UC_HOOK_CODE, substitute, SUBSTITUTE, SUBSTITUTE)
         hook(UC_HOOK_CODE, commit, COMMIT, COMMIT)
-        decision = self.BANK + rules.LABELS['pos_duration_accept']
-        hook(UC_HOOK_CODE, decide, decision, decision)
+        self.decide, self.decide_handle = decide, None   # placed by link() at the linked module's own label
         for at in (0x48B50, 0x48B90, 0x48BC0, SEED):
             hook(UC_HOOK_CODE, draw, at, at)
         hook(UC_HOOK_MEM_WRITE, wrote)
@@ -642,7 +803,7 @@ class NativeMachine(unittest.TestCase):
         self.link(rules, 100_000)
 
     def tearDown(self):
-        for handle in self.hooks:
+        for handle in self.hooks + ([self.decide_handle] if self.decide_handle else []):
             self.m.uc.hook_del(handle)
         for at, content in self.saved.items():
             self.m.uc.mem_write(at, content)
@@ -657,6 +818,13 @@ class NativeMachine(unittest.TestCase):
         for name, at, _, installed in module.edits(self.BANK, SIM, DATA, rate=rate):
             if name in ('rush', 'pass', 'sack_escape'):
                 self.m.uc.mem_write(at, installed)
+        from unicorn import UC_HOOK_CODE
+        if self.decide_handle:
+            self.m.uc.hook_del(self.decide_handle)
+            self.decide_handle = None
+        if 'pos_duration_accept' in module.LABELS:
+            decision = self.BANK + module.LABELS['pos_duration_accept']
+            self.decide_handle = self.m.uc.hook_add(UC_HOOK_CODE, self.decide, begin=decision, end=decision)
         self.m.uc.ctl_remove_cache(self.BANK, self.BANK + rules.CODE_SIZE)
         self.m.uc.ctl_remove_cache(RUSH & ~0xFFF, (PASS | 0xFFF) + 1)
         self.module = module
@@ -703,7 +871,8 @@ class NativeMachine(unittest.TestCase):
         self.fail('no proposal reached the acceptance decision')
 
     def counters(self, name):
-        return struct.unpack('<5I', self.m.uc.mem_read(self.label(name), 20))
+        count = len(self.module.POSITION_CLASSES)
+        return struct.unpack(f'<{count}I', self.m.uc.mem_read(self.label(name), 4 * count))
 
 
 class NativeCommit(NativeMachine):
@@ -711,11 +880,11 @@ class NativeCommit(NativeMachine):
         for index, side, slot, _ in WALK:
             with self.subTest(slot=slot, side=side):
                 self.link(rules, 100_000)
-                self.m.uc.mem_write(self.label('pos_accept') + 128 * index, struct.pack('<I', 0x80000000) * 32)
-                self.lineup(((side, slot, 75), (OFFENSE, 2, 75)))
-                player, bystander = self.players[(side, slot)], self.players[(OFFENSE, 2)]
+                self.m.uc.mem_write(self.label('pos_accept') + 24 * index, struct.pack('<I', 0x80000000) * 6)
+                self.lineup(((side, slot, 75), (OFFENSE, 30, 75)))   # 30: a return slot nobody walks
+                player, bystander = self.players[(side, slot)], self.players[(OFFENSE, 30)]
                 self.m.put(CARRIER, player)
-                events = self.play_until_decided()
+                events = self.play_until_decided(attempts=40)   # quarter-weight slots propose on fewer plays
                 tries = self.counters('pos_hits')[index]
                 decided = [event for event in events if event[0] == 'decide']
                 self.assertEqual(len(decided), 1)
@@ -728,19 +897,23 @@ class NativeCommit(NativeMachine):
                 subs = [event for event in events if event[0] == 'substitute']
                 self.assertEqual(subs, [('substitute', self.sides[side], slot)] if status >= 2 else [])
                 self.assertEqual(bytes(self.m.uc.mem_read(bystander + 0x20, 12)), bytes(12))
-                expected = [0] * 5
+                expected = [0] * CLASSES
                 expected[index] = 1
                 self.assertEqual(list(self.counters('pos_commits')), expected)
                 expected[index] = tries
                 self.assertEqual(list(self.counters('pos_hits')), expected)
 
     def test_acceptance_boundary_for_every_class_on_the_real_path(self):
-        for index, side, slot, _ in (WALK[0], WALK[2], WALK[4], WALK[6], WALK[8]):
-            limits = rules.position_accept_thresholds(rules.POSITION_CLASSES[index])
+        # Through the week-group table: weeks 0-1, 2, 3, 4-7, 8-15 and 16-31 (and above) share one threshold each.
+        for index, slot in CLASS_SLOT.items():
+            side = SIDE_OF[slot]
+            groups = rules.position_accept_thresholds(rules.POSITION_CLASSES[index])
+            limits = rules.position_accept_by_week(rules.POSITION_CLASSES[index])
             self.link(rules, 100_000)
-            installed = struct.unpack('<32I', self.m.uc.mem_read(self.label('pos_accept') + 128 * index, 128))
-            self.assertEqual(list(installed), limits)
-            for weeks in (0, 1, 2, 3, 4, 6, 7, 31, 32, 255):
+            installed = struct.unpack('<6I', self.m.uc.mem_read(self.label('pos_accept') + 24 * index, 24))
+            self.assertEqual(list(installed), groups)
+            self.assertEqual(len(groups), 6)
+            for weeks in (0, 1, 2, 3, 4, 7, 8, 15, 16, 31, 32, 255):
                 limit = limits[min(weeks, 31)]
                 for draw, kept in ((0, limit > 0), (limit - 1, limit > 0), (limit, False),
                                    (0x7FFFFFFF, limit > 0x7FFFFFFF)):
@@ -760,16 +933,17 @@ class NativeCommit(NativeMachine):
                         self.heal()
 
     def test_no_write_or_draw_outside_the_bank_the_stack_and_the_victims_health(self):
-        ratings = (93, 70, 91, 60, 99, 81, 40, 83, 55)
-        self.link(rules, min(rate_with_room(ratings, carrier, 3_000, .95) for carrier in (83, 55)))
-        self.lineup(tuple((side, slot, rating) for (_, side, slot, _), rating
-                          in zip(WALK, (93, 70, 91, 60, 99, 81, 40, 83, 55))))
+        ratings = (93, 70, 91, 60, 99, 81, 40, 83, 55, 78, 66, 90, 50, 80, 85, 70, 88, 62, 79, 95, 58, 74, 81, 64, 78,
+                   92, 45)
+        rate = min(rate_with_room(ratings, 3_000, .95, carrier=carrier) for carrier in (7, 8))
+        self.link(rules, rate)
+        self.lineup(tuple((side, slot, rating) for (_, side, slot, _), rating in zip(WALK, ratings)))
         shared = bytes(self.m.uc.mem_read(SHARED_RNG, RNG_SIZE))
         league = bytes(self.m.uc.mem_read(LEAGUE_RNG, RNG_SIZE))
         bank, stack = range(self.BANK, self.BANK + rules.CODE_SIZE), range(0x3000000, 0x3010000)
         health = {player + offset for player in self.players.values() for offset in range(0x20, 0x2C)}
         commits = 0
-        for number in range(240):
+        for number in range(plays_for_coverage(ratings, rate)):
             self.m.put(CARRIER, self.players[(OFFENSE, (1, 3)[number % 2])])
             self.writes.clear()
             events = self.play((RUSH, PASS, SACK_ESCAPE)[number % 3])
@@ -801,15 +975,19 @@ class QuarterbackUnchanged(NativeMachine):
     ROUTES = 'PRSPRRPSPRRRSRRPRRRSPPPRPPPRRPRRRRRPRSRPRPRPRRRPRSSPPPPRRSRRPPRPPRPPP'
     ROOMS = 'BBBBBBBBBOOOOOBBBBBBOOOOOOOOBBBBBBBBBBOBBBBBBBBBBOOOOOOOOOBBOOOOOOOBB'
     SITES = {'R': RUSH, 'P': PASS, 'S': SACK_ESCAPE}
-    RATINGS = (60, 45, 58, 50, 66, 52, 41, 63, 48)
+    RATINGS = (60, 45, 58, 50, 66, 52, 41, 63, 48)   # slice 2's nine slots only
+    EVERY_SLOT = RATINGS + (70, 62, 75, 58, 66, 71, 64, 59, 72, 61, 68, 55, 63, 70, 57, 66, 60, 52)
 
-    def script(self, module, rate, *, positions=True):
+    def script(self, module, rate, *, positions=True, ratings=None, new_classes=True):
         from unicorn import UC_HOOK_CODE
 
         self.link(module, rate, positions=positions)
+        if not new_classes:   # slice 3's seven classes off, slice 2's five on: their scale is 0, so E is 0
+            self.m.uc.mem_write(self.label('pos_scale') + 20, bytes(4 * (CLASSES - 5)))
         slice2 = piece(self.BANK)
+        ratings = self.RATINGS if ratings is None else ratings
         self.lineup(((OFFENSE, 0, 59),) + tuple((side, slot, rating) for (_, side, slot, _), rating
-                                                 in zip(WALK, self.RATINGS)))
+                                                 in zip(WALK, ratings) if rating is not None))
         quarterback = self.players[(OFFENSE, 0)]
         for at, value in ((0xE576B8, 0), (0xE576B4, 0), (SHARED_RNG + 8, 0xC051A496), (SHARED_RNG + 16, 0xE770EDAD)):
             self.m.put(at, value)
@@ -870,6 +1048,155 @@ class QuarterbackUnchanged(NativeMachine):
                 if rate == 0:
                     self.assertEqual(proposals, [])
 
+    def test_quarterback_stream_equals_the_frozen_slice_2_bank_with_the_new_classes_off_and_on(self):
+        # pos3/DESIGN.md section 6 test 2: every walked slot occupied; the frozen slice 2 bank walks only its nine.
+        for rate in (rules.DEFAULT_RATE, 100_000):
+            with self.subTest(rate=rate):
+                reference, frozen_seeded = self.script(frozen2, rate, ratings=self.EVERY_SLOT)
+                off, off_seeded = self.script(rules, rate, ratings=self.EVERY_SLOT, new_classes=False)
+                on, on_seeded = self.script(rules, rate, ratings=self.EVERY_SLOT)
+                self.assertEqual(off, reference)
+                self.assertEqual(on, reference)
+                self.assertEqual(off_seeded, frozen_seeded)  # slice 2's classes alone propose as in slice 2
+                self.assertGreater(frozen_seeded, 2)
+                if rate == rules.DEFAULT_RATE:
+                    self.assertGreater(on_seeded, frozen_seeded)  # the new classes proposed and reseeded too
+                    self.assertEqual(reference[0], [(1544708359, 2542877828), (1655909874, 1613989115)])
+
+
+
+class SliceTwoUnchanged(NativeMachine):
+    """pos3/DESIGN.md section 6 test 1, last item: with no new slot occupied, slice 2's five classes propose, keep and
+    commit exactly as the frozen slice 2 bank on an identical script of plays."""
+    RATINGS = (93, 70, 91, 60, 99, 81, 40, 83, 55)
+
+    def script(self, module, rate):
+        from unicorn import UC_HOOK_CODE
+
+        self.link(module, rate)
+        self.lineup(tuple((side, slot, rating) for (_, side, slot, _), rating in zip(SLICE2_WALK, self.RATINGS)))
+        proposals = []
+        L = module.LABELS
+
+        def at_proposal(uc, pc, size, data):
+            proposals.append((self.m.get(self.BANK + L['victim_side']), self.m.get(self.BANK + L['victim_slot']),
+                              self.m.get(self.BANK + L['pos_class']), self.m.get(self.m.reg('ESP') + 8)))
+
+        entry = self.BANK + L['pos_descriptor']
+        handle = self.m.uc.hook_add(UC_HOOK_CODE, at_proposal, begin=entry, end=entry)
+        self.m.uc.ctl_remove_cache(self.BANK, self.BANK + rules.CODE_SIZE)
+        rows = []
+        try:
+            for number in range(240):
+                a, b = (1000, 3000) if number % 2 else (3000, 1000)
+                self.m.put(self.side, self.teams + a)
+                self.m.put(self.other, self.teams + b)
+                self.m.put(CARRIER, self.players[(OFFENSE, (1, 3)[number % 3 == 0])])
+                events = self.play((RUSH, RUSH, PASS, SACK_ESCAPE)[number % 4])
+                rows.append((number, [e for e in events if e[0] in ('decide', 'commit', 'substitute')]))
+                self.heal()
+        finally:
+            self.m.uc.hook_del(handle)
+        return proposals, rows, list(self.counters('pos_hits'))[:5], list(self.counters('pos_commits'))[:5]
+
+    def test_slice_2_classes_propose_keep_and_commit_as_the_frozen_slice_2_bank(self):
+        busy = rate_with_room(self.RATINGS + (None,) * len(SLICE3_WALK), 3_000, .6, carrier=7)
+        for rate in (rules.DEFAULT_RATE, busy):
+            with self.subTest(rate=rate):
+                reference = self.script(frozen2, rate)
+                current = self.script(rules, rate)
+                self.assertEqual(current, reference)
+                decided = sum(e[0] == 'decide' for _, events in reference[1] for e in events)
+                kept = sum(e[0] == 'commit' for _, events in reference[1] for e in events)
+                self.assertGreater(len(reference[0]), 3 if rate == rules.DEFAULT_RATE else 40)
+                if rate == busy:
+                    self.assertGreater(decided, kept)   # some proposals were not kept, some were
+                    self.assertGreater(kept, 0)
+
+
+@unittest.skipUnless(HAVE_UC, 'Unicorn is required for the native branch witnesses')
+class SlotTwentyEight(unittest.TestCase):
+    """The second free safety (defensive slot 28) has never been written by any injury code. A slice 3 commit there
+    reaches the game's health write with side = defense and slot 28, and the game's own substitution 0x102360 (run
+    for real, not replaced) dispatches slot 28 through its jump table (0x10254C, entry 1 = 0x102433) and seats a
+    different player in slot 28. Run on a real match of the signed franchise (sim_machine). Only the game's roll at
+    0x1028B0 is replaced, so the walk sees exactly the state the match initializer built."""
+    BANK = 0x1524000
+    DISPATCH, SLOTS_15_TO_28 = 0x102385, 0x102433
+
+    def test_a_commit_in_slot_28_is_written_and_substituted_by_the_games_own_code(self):
+        from unicorn import UC_HOOK_CODE
+
+        payload = retail_bytes()
+        m = sim_machine(payload, seed=81003)
+        # The loaded franchise leaves the Injury slider at 0.0, where the game's own predicate 0x625A0 says injuries
+        # are off. The game's default slider is 0.5 (configure_fresh_franchise); set it so the predicate answers 1.
+        m.f32(SLIDER, .5)
+        self.assertEqual(m.call(MASTER), 1)
+        m.uc.mem_map(self.BANK, rules.CODE_SIZE)
+        bank = bytearray(rules.bank_bytes(XbeImage(payload).read, self.BANK, SIM, DATA, rate=100_000))
+        bank[rules.LABELS['active']] = 1
+        # Only the safety class can propose: every other class's scale is 0, and the two full-weight safeties are
+        # made immune, so a forced sample 0 lands on slot 28. Its acceptance keeps every diagnosis.
+        scale = rules.LABELS['pos_scale']
+        safety = 11
+        kept_scale = bank[scale + 4 * safety:scale + 4 * safety + 4]
+        bank[scale:scale + 4 * CLASSES] = bytes(4 * CLASSES)
+        bank[scale + 4 * safety:scale + 4 * safety + 4] = kept_scale
+        accept = rules.LABELS['pos_accept'] + 24 * safety
+        bank[accept:accept + 24] = struct.pack('<I', 0x80000000) * 6
+        m.uc.mem_write(self.BANK, bytes(bank))
+        for name, at, _, installed in rules.edits(self.BANK, SIM, DATA, rate=100_000):
+            if name in ('rush', 'pass', 'sack_escape'):
+                m.uc.mem_write(at, installed)
+        offense, defense = m.get(0xA9719C), m.get(0xA971A0)
+        for slot in (23, 27):
+            m.uc.mem_write(m.get(defense + 8 + 4 * slot) + 0x3B, b'\xff')
+        victim = m.get(defense + 8 + 4 * 28)
+        self.assertNotEqual(victim, 0)
+        self.assertLess(m.uc.mem_read(victim + 0x3B, 1)[0], 100)
+        saved = bytes(m.uc.mem_read(victim, 0x54))
+        seen = {'commit': [], 'dispatch': [], 'table': []}
+        m.leaf(0x1028B0, lambda: m.ret(0, pop=12), reason='the game roll answers no injury; the walk is the subject')
+
+        def force(uc, pc, size, data):
+            m.put(self.BANK + rules.LABELS['pos_sample'], 0)
+
+        def commit(uc, pc, size, data):
+            sp = m.reg('ESP')
+            seen['commit'].append((m.get(sp + 0x14), m.get(sp + 0x18), m.reg('EBP')))
+
+        def dispatch(uc, pc, size, data):
+            seen['dispatch'].append((m.reg('ESI'), m.reg('EDI'), m.reg('EAX')))
+
+        def table(uc, pc, size, data):
+            seen['table'].append(pc)
+
+        for at, callback in ((self.BANK + rules.LABELS['pos_sampled'], force), (COMMIT, commit),
+                             (self.DISPATCH, dispatch), (self.SLOTS_15_TO_28, table)):
+            m.uc.hook_add(UC_HOOK_CODE, callback, begin=at, end=at)
+        m.uc.ctl_remove_cache(0x10000, self.BANK + rules.CODE_SIZE)
+        for attempt in range(40):
+            for name, value in dict(EAX=1, EBX=2, ECX=3, EDX=4, ESI=5, EDI=6, EBP=7, ESP=m.STACK, EFLAGS=0x202).items():
+                m.reg(name, value)
+            m.uc.mem_write(m.STACK, struct.pack('<3I', 0, 0, 0))
+            m.uc.emu_start(RUSH, RUSH + 5, count=2_000_000)
+            self.assertEqual(m.reg('EIP'), RUSH + 5)
+            if m.get(defense + 8 + 4 * 28) != victim:
+                break
+            # A diagnosis whose status leaves the player in the lineup (status below 2): heal him and try again.
+            m.uc.mem_write(victim, saved)
+        else:
+            self.fail('no slot 28 commit with status 2 or more in 40 plays')
+        self.assertTrue(seen['commit'])
+        self.assertEqual(seen['commit'][-1], (defense, 28, victim))
+        self.assertIn((defense, 28, 1), seen['dispatch'])      # EAX = slot 28's index byte at 0x102564 + 14 = 1
+        self.assertTrue(seen['table'])
+        replacement = m.get(defense + 8 + 4 * 28)
+        self.assertNotIn(replacement, (0, victim))
+        self.assertTrue(m.get(victim + 0x20) & 0x80000000)
+        self.assertGreaterEqual(m.uc.mem_read(victim + 0x27, 1)[0] >> 4 & 7, 2)
+        self.assertEqual(m.get(offense + 0xDC), 0)
 
 if __name__ == '__main__':
     unittest.main()

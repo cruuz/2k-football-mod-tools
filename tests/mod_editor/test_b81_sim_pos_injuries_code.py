@@ -1,6 +1,6 @@
-"""Slice 2 code module: generated template, installer tables, weekly edit and the frozen slice 1 module.
+"""Slices 2 and 3 code module: generated template, installer tables, weekly edit and the frozen slice 1 and 2 modules.
 
-pos2/DESIGN.md section 6 test 3. Native behaviour is in test_b81_sim_pos_injuries_native.py.
+pos2/DESIGN.md and pos3/DESIGN.md section 6 test 3. Native behaviour is in test_b81_sim_pos_injuries_native.py.
 """
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ from unittest import mock
 
 from mod_editor.core import nfl2k5_sim_qb_injuries_code as rules
 from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice1 as frozen
+from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice2 as frozen2
 from mod_editor.core import nfl2k5_sim_rb_injuries as running_backs
 from mod_editor.core import nfl2k5_xbe_space as space
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
@@ -28,16 +29,28 @@ TOOLS = ROOT / 'tools/qb_sim_injuries'
 BANK, SIM, DATA, LINEUP, RB = 0x1524000, 0x150E000, 0x14FD650, 0x151CE00, 0x1519A80
 # The bytes of `git show d8ceb91e3:mod_editor/core/nfl2k5_sim_qb_injuries_code.py` (sha256sum of that output).
 SLICE1_SHA256 = 'ab914dbc3989ecaf33799f95c0e555027c2ae097758e97b425b655227ceded3c'
+# The bytes of `git show d2abd00a5:mod_editor/core/nfl2k5_sim_qb_injuries_code.py`, the refit slice 2 head slice 3 extends.
+SLICE2_SHA256 = '392af556f5f034cc72da325931885b7a5b109f34d3e7112a8c5792b8f7e23329'
+# The only template bytes that differ from the frozen slice 2 template: inside the positions piece, which now ends at
+# 0x1AF5 (slice 2's ended at 0x1B39; the rest of both is 0xCC fill up to 0x2000).
+CHANGED_FROM_SLICE2 = (0x1402, 0x1B39)
+POSITIONS_END = 0x1AF5
 # Template ranges that differ from the frozen slice 1 template (pos2/DESIGN_CHANGES.md 2): clinical from its first
 # reference to a label after `finished` to its end, the new positions piece, and fixture_start and context, where the
 # added line lengthens the jumps that cross it.
-CHANGED = ((0xFB, 0x13B0), (0x1400, 0x1B39), (0x310C, 0x31AB), (0x361B, 0x3828))
+CHANGED = ((0xFB, 0x13B0), (0x1400, POSITIONS_END), (0x310C, 0x31AB), (0x361B, 0x3828))
 FINISHED = 0x21E
 ADDED_LINES = {'clinical.S': '    call POSITIONS', 'context.S': '    mov dword ptr [POS_CACHED_YEAR],-1',
                'fixture_start.S': '    mov dword ptr [POS_CACHED_YEAR],-1'}
-# pos2/DESIGN.md section 2: class, side (0 offense, 1 defense), lineup slot, flags (1: rushing ball carrier only).
+# pos2/DESIGN.md section 2 and pos3/DESIGN.md section 1: class, side (0 offense, 1 defense), lineup slot, flags
+# (bits 0-1 the rule: 0 every scrimmage play, 1 rushing ball carrier, 2 rush play; bits 4-7 the weight in sixteenths).
 SLOTS = ((0, 0, 12, 0), (0, 0, 13, 0), (1, 0, 10, 0), (1, 0, 11, 0), (2, 0, 9, 0), (3, 1, 15, 0), (3, 1, 16, 0),
-         (4, 0, 1, 1), (4, 0, 3, 1))
+         (4, 0, 1, 1), (4, 0, 3, 1),
+         (5, 0, 4, 0), (5, 0, 5, 0), (5, 0, 6, 0), (5, 0, 7, 0x40), (6, 0, 8, 0), (7, 0, 2, 0x02), (8, 1, 17, 0),
+         (8, 1, 18, 0), (9, 1, 19, 0), (9, 1, 20, 0), (9, 1, 21, 0), (9, 1, 22, 0x40), (10, 1, 24, 0),
+         (10, 1, 25, 0), (10, 1, 26, 0), (11, 1, 23, 0), (11, 1, 27, 0), (11, 1, 28, 0x40))
+# pos3/DESIGN.md section 2: weeks 0-1, 2, 3, 4-7, 8-15, 16-31.
+WEEK_GROUPS = (0, 0, 1, 2) + (3,) * 4 + (4,) * 8 + (5,) * 16
 
 
 def _toolchain():
@@ -106,21 +119,42 @@ class GeneratedTemplate(unittest.TestCase):
         self.assertEqual(linked[FINISHED:FINISHED + 5], b'\xe8' + struct.pack('<i', 0x1400 - FINISHED - 5))
         # The positions piece ends before the recovery piece at 0x2000, followed only by fill.
         self.assertEqual(rules.LABELS['positions'], 0x1400)
-        self.assertEqual(new[0x1B39:0x2000], b'\xcc' * (0x2000 - 0x1B39))
+        self.assertEqual(new[POSITIONS_END:0x2000], b'\xcc' * (0x2000 - POSITIONS_END))
         self.assertEqual(old[0x13A8:0x2000], b'\xcc' * (0x2000 - 0x13A8))
         unmoved = {name for name, at in frozen.LABELS.items() if at < FINISHED or 0x2000 <= at < 0x3100
                    or 0x3200 <= at < 0x3600 or at >= 0x3840}
         self.assertEqual({name: rules.LABELS[name] for name in unmoved}, {name: frozen.LABELS[name] for name in unmoved})
         self.assertEqual(set(frozen.LABELS) - set(rules.LABELS), set())
 
-    def test_the_frozen_module_is_slice_1_byte_for_byte_under_two_comment_lines(self):
-        first, second, body = Path(frozen.__file__).read_bytes().split(b'\n', 2)
-        self.assertTrue(first.startswith(b'# FROZEN') and second.startswith(b'# '))
-        self.assertEqual(hashlib.sha256(body).hexdigest(), SLICE1_SHA256)
-        self.assertEqual(frozen.MARK_OFFSET, rules.MARK_OFFSET)
-        self.assertEqual(frozen.MARK_SIZE, rules.MARK_SIZE)
+    def test_template_equals_the_frozen_slice_2_template_outside_the_positions_piece(self):
+        old, new = frozen2._TEMPLATE, rules._TEMPLATE
+        differ = [n for n in range(len(new)) if old[n] != new[n]]
+        self.assertEqual((differ[0], differ[-1] + 1), CHANGED_FROM_SLICE2)
+        self.assertEqual({name: at for name, at in rules.LABELS.items() if not 0x1400 <= at < 0x2000},
+                         {name: at for name, at in frozen2.LABELS.items() if not 0x1400 <= at < 0x2000})
+        self.assertEqual(set(rules.LABELS) - set(frozen2.LABELS), {'pos_week_group'})
+        # Outside the piece, relocations are slice 2's; the only target that moved is pos_year, which context.S and
+        # fixture_start.S clear on a re-entered fixture (its value is the label's bank offset).
+        moved = {('bank', frozen2.LABELS['pos_year']): ('bank', rules.LABELS['pos_year'])}
+        self.assertEqual([r for r in rules._RELOCATIONS if not 0x1400 <= r[0] < 0x2000],
+                         [r[:2] + moved.get(r[2:], r[2:]) for r in frozen2._RELOCATIONS if not 0x1400 <= r[0] < 0x2000])
+        self.assertEqual(sum(r[2:] in moved for r in frozen2._RELOCATIONS if not 0x1400 <= r[0] < 0x2000), 2)
+        self.assertEqual(rules._LOCAL_FUNCTIONS, frozen2._LOCAL_FUNCTIONS)
+        end = 0x2000
+        while new[end - 1] == 0xCC:
+            end -= 1
+        self.assertEqual(end, POSITIONS_END)
+        self.assertLess(POSITIONS_END, 0x2000)
+
+    def test_the_frozen_modules_are_slices_1_and_2_byte_for_byte_under_two_comment_lines(self):
+        for module, digest in ((frozen, SLICE1_SHA256), (frozen2, SLICE2_SHA256)):
+            first, second, body = Path(module.__file__).read_bytes().split(b'\n', 2)
+            self.assertTrue(first.startswith(b'# FROZEN') and second.startswith(b'# '))
+            self.assertEqual(hashlib.sha256(body).hexdigest(), digest)
+            self.assertEqual((module.MARK_OFFSET, module.MARK_SIZE), (rules.MARK_OFFSET, rules.MARK_SIZE))
         self.assertFalse(hasattr(frozen, 'MARK_SIGNATURE'))
-        self.assertEqual(rules.MARK_SIGNATURE, b'QBMEDv2\0')
+        self.assertEqual(frozen2.MARK_SIGNATURE, b'QBMEDv2\0')
+        self.assertEqual(rules.MARK_SIGNATURE, b'QBMEDv3\0')
         self.assertEqual(rules.MARK_SIZE, struct.calcsize('<8sIII'))
         self.assertEqual(rules._TEMPLATE[rules.MARK_OFFSET:rules.MARK_OFFSET + rules.MARK_SIZE], b'\xcc' * rules.MARK_SIZE)
 
@@ -136,15 +170,20 @@ class PositionTables(unittest.TestCase):
             value = 2 * position.base_chance / 1e8 * (rate / 310) / (position.zero_point - position.reference_durability)
             scales.append(0.0 if position.name == 'halfback' and not halfbacks else value * 2**31)
             zeros.append(position.zero_point)
-            for week in range(32):
+            for group in range(6):   # one threshold per week group, read at the group's first week
+                week = WEEK_GROUPS.index(group)
                 probability = next(p for last, p in position.accept if week <= last)
                 accept.append(round(probability * 2**31))
-        return struct.pack('<5f', *scales), struct.pack('<5I', *zeros), struct.pack('<160I', *accept), int(rate > 0)
+        n = len(rules.POSITION_CLASSES)
+        return (struct.pack(f'<{n}f', *scales), struct.pack(f'<{n}I', *zeros), struct.pack(f'<{6 * n}I', *accept),
+                int(rate > 0))
 
     def installed(self, bank):
+        n = len(rules.POSITION_CLASSES)
+
         def read(name, size):
             return bank[rules.LABELS[name]:rules.LABELS[name] + size]
-        return read('pos_scale', 20), read('pos_zero', 20), read('pos_accept', 640), bank[rules.LABELS['pos_enabled']]
+        return read('pos_scale', 4 * n), read('pos_zero', 4 * n), read('pos_accept', 24 * n), bank[rules.LABELS['pos_enabled']]
 
     def test_linked_bank_tables_equal_the_module_constants_for_realistic_and_custom(self):
         # Realistic, Custom 0, Custom 0.155 percent and Custom 100 percent.
@@ -153,14 +192,16 @@ class PositionTables(unittest.TestCase):
                 bank = rules.bank_bytes(self.image.read, BANK, SIM, DATA, LINEUP, rate=rate)
                 self.assertEqual(self.installed(bank), self.expected(rate))
                 L = rules.LABELS
-                self.assertEqual(bank[L['pos_slots']:L['pos_slots'] + 36], bytes(sum(SLOTS, ())))
+                self.assertEqual(bank[L['pos_slots']:L['pos_slots'] + 4 * len(SLOTS)], bytes(sum(SLOTS, ())))
+                self.assertEqual(L['pos_enabled'], L['pos_slots'] + 4 * len(SLOTS))
+                self.assertEqual(bank[L['pos_week_group']:L['pos_week_group'] + 32], bytes(WEEK_GROUPS))
                 self.assertEqual(struct.unpack_from('<4i', bank, L['pos_year']), (-1, -1, -1, -1))
                 self.assertEqual([L[name] - L['pos_year'] for name in ('pos_week', 'pos_club_a', 'pos_club_b')],
                                  [4, 8, 12])
                 for name, size in (('pos_key', 4), ('pos_seq', 4), ('pos_hash', 4), ('pos_sample', 4),
                                    ('pos_wide', 8), ('pos_class', 4), ('victim_side', 4), ('victim_slot', 4),
-                                   ('accept_ptr', 4), ('pos_plays', 4), ('pos_hits', 20), ('pos_commits', 20),
-                                   ('pos_effective', 20)):
+                                   ('accept_ptr', 4), ('pos_plays', 4), ('pos_hits', 48), ('pos_commits', 48),
+                                   ('pos_effective', 48)):
                     self.assertEqual(bank[L[name]:L[name] + size], bytes(size), name)
         with mock.patch.object(rules, 'HALFBACK_SUPPLEMENT', False):
             bank = rules.bank_bytes(self.image.read, BANK, SIM, DATA, LINEUP, rate=rules.DEFAULT_RATE)
@@ -169,7 +210,12 @@ class PositionTables(unittest.TestCase):
     def test_class_constants_keep_the_fixed_design_values_and_acceptance_rules(self):
         self.assertEqual([(p.name, p.zero_point, p.reference_durability) for p in rules.POSITION_CLASSES],
                          [('tackle', 110, 93), ('guard', 110, 91), ('center', 110, 91), ('end', 100, 81),
-                          ('halfback', 100, 83)])
+                          ('halfback', 100, 83), ('receiver', 100, 78), ('tight_end', 100, 80), ('fullback', 105, 85),
+                          ('defensive_tackle', 100, 80), ('linebacker', 100, 79), ('cornerback', 100, 78),
+                          ('safety', 100, 78)])
+        self.assertEqual(rules.POSITION_CLASSES[:5], frozen2.POSITION_CLASSES)   # slice 2's rows are not touched
+        self.assertEqual(rules.ACCEPT_WEEK_BOUNDARIES, (1, 2, 3, 7, 15, 31))
+        self.assertEqual(rules.POSITION_WEEK_GROUPS, WEEK_GROUPS)
         self.assertIs(rules.HALFBACK_SUPPLEMENT, True)
         for position in rules.POSITION_CLASSES:
             with self.subTest(position.name):
@@ -178,12 +224,19 @@ class PositionTables(unittest.TestCase):
                 weeks = dict(position.accept)
                 self.assertEqual(max(weeks.values()), 1.0)
                 self.assertAlmostEqual(weeks[1], .84 * weeks[2], delta=.0005)  # weeks 0 and 1: 0.84 x two weeks
-                self.assertEqual(len(rules.position_accept_thresholds(position)), 32)
+                self.assertEqual(tuple(last for last, _ in position.accept), rules.ACCEPT_WEEK_BOUNDARIES)
+                groups = rules.position_accept_thresholds(position)
+                self.assertEqual(len(groups), 6)
+                self.assertEqual(rules.position_accept_by_week(position), [groups[g] for g in WEEK_GROUPS])
+                # Slice 2's 32-entry tables and slice 3's six groups give the same threshold for every week.
+                if position.name in [p.name for p in frozen2.POSITION_CLASSES]:
+                    self.assertEqual(rules.position_accept_by_week(position), frozen2.position_accept_thresholds(position))
         broken = rules.PositionClass('broken', 1, 90, 100, ((1, .5), (30, 1.0)))
-        with self.assertRaises(ValueError):
-            rules.position_accept_thresholds(broken)
-        with self.assertRaises(ValueError):
-            rules.position_accept_thresholds(broken._replace(accept=((31, 1.5),)))
+        for accept in (((1, .5), (30, 1.0)), ((1, .5), (2, .5), (3, 1.0), (7, 0), (15, 0)),
+                       ((1, .5), (2, .5), (3, 1.0), (6, 0), (15, 0), (31, 0)),
+                       ((1, .5), (2, .5), (3, 1.5), (7, 0), (15, 0), (31, 0))):
+            with self.assertRaises(ValueError):
+                rules.position_accept_thresholds(broken._replace(accept=accept))
 
     def test_second_diagnosis_copies_are_the_games_bytes_bound_to_the_shared_routines(self):
         bank = rules.bank_bytes(self.image.read, BANK, SIM, DATA, LINEUP)

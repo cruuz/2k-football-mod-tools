@@ -272,7 +272,8 @@ class StudioControls(unittest.TestCase):
         self.assertTrue(panel.has_work())
         self.assertIn("Simulated injuries (Custom, 0.411%)", panel.selected_labels())
         self.assertIn("your own club is treated like every other club", panel.qb_injury_help.text())
-        self.assertIn("offensive tackles (who could never be hurt in a simulated game)", panel.qb_injury_help.text())
+        self.assertIn("every position except kickers and punters", panel.qb_injury_help.text())
+        self.assertIn("cornerbacks and safeties", panel.qb_injury_help.text())
         self.assertIn("Games you play are not changed", panel.qb_injury_help.text())
         self.assertFalse(panel.qb_injury_rate.isHidden())
         panel.sim_realism_check.click()
@@ -307,8 +308,8 @@ class StudioControls(unittest.TestCase):
         self.assertEqual(panel.plan().sim_qb_injuries, "retail")
         self.assertTrue(panel.has_work())
         self.assertIn("Simulated injuries (Retail)", panel.selected_labels())
-        # A slice 1 install (revision 1) at the same mode is still a change: Build upgrades it to the current revision.
-        for revision, labelled in ((1, True), (2, False)):
+        # A slice 1 or slice 2 install (revision 1 or 2) at the same mode is still a change: Build upgrades it in place.
+        for revision, labelled in ((1, True), (2, True), (3, False)):
             with self.subTest(installed_revision=revision):
                 panel.apply_state({**self.retail_state, "sim_qb_injuries": "applied", "sim_qb_injury_settings": {
                     "status": "applied", "mode": "realistic", "custom_rate": .310, "revision": revision}})
