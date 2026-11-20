@@ -132,10 +132,10 @@ class KitDocument(unittest.TestCase):
                           ("06H6", "sleeve00"),
                           ("07A7", "sleeve00"), ("07H0", "sleeve00"), ("07H7", "sleeve00"),
                           ("09A9", "pants00"), ("09H9", "pants00"), ("11A3", "sleeve00"), ("11H3", "sleeve00"),
-                          ("14A0", "pants00"), ("14A0", "sleeve00"), ("14A0", "socks00"),
+                          ("14A0", "pants00"), ("14A0", "sleeve00"), ("14A0", "socks00"), ("14H0", "sleeve00"),
                           ("15A0", "pants00"), ("15H0", "pants00"), ("15H0", "socks00"),
                           ("17A8", "pants00"), ("17H8", "pants00"), ("19A2", "pants00"), ("19H2", "pants00"),
-                          ("21A4", "sleeve00"), ("21H4", "sleeve00"), ("23A0", "pants00"),
+                          ("21A4", "sleeve00"), ("21H4", "sleeve00"), ("23A0", "pants00"), ("25H0", "pants00"),
                           ("26A4", "pants00"), ("26A4", "socks00"), ("26H4", "sleeve00")])
         # batch 3: the panther the real Panthers alternate pants lack (04H2/04A2), the star the real Cowboys navy
         # sleeves and Arctic shoulder blocks lack (07H0, 07H7/07A7)
@@ -147,6 +147,8 @@ class KitDocument(unittest.TestCase):
         # Saints gameday gold pants (17H8/17A8), Jets legacy black pants without the green stripe (19H2/19A2),
         # Seahawks road white socks (26A4, likewise), Seahawks 26H4 sleeves (the 26H0 art of the same jersey)
         # batch 5 marks: the Cardinals desert sleeve swoosh red, not copper (00H7/00A7)
+        # batch 6: the Dolphins sleeve logo at its measured size (14H0, 14A0), the 49ers home pants stripe at its
+        # measured width (25H0)
 
     def test_the_jersey_rows_repaint_only_the_chest_under_the_collar(self):
         # Round 2 (Noah 11/18: "the NY logo on the giants jersey below the nfl patch is too large. There are likely

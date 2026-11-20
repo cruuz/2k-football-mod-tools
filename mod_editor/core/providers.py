@@ -1205,7 +1205,7 @@ class Nfl2k5UnifiedVisualProvider:
         "data/nfl2k5_kit_fixes_2026_sw1.json": "4f7052e03fd8d23dceef19de010459e552d3f4b63fd2335e575d13bd1e0de18e",
         "data/nfl2k5_kit_fixes_2026_names.json": "cb354c62aa6b6e8de0ff01e9f25937f0a2e54169bfc37932bd689599529693fb",
         "data/nfl2k5_kit_fixes_2026_b81.json": "cfdb20ed4b2f5757590f1179703eb240d71a4af9326ae782f5ceea25498fc646",
-        "data/nfl2k5_kit_fixes_2026_b81u.json": "6c022a40f4ac875de0dc10cba127258d71222f7c53576492dbb9536ed59cb65f",
+        "data/nfl2k5_kit_fixes_2026_b81u.json": "455ae527e647ad4ce009139aa61ec00621aa8413cc7e974aceee995216a8aebe",
         "data/nfl2k5_glyph_fixes_2026_b81u.json": "6d27953834db2caf7f5c5375a3cac38c4295e20b308ae6664bc75947db42c924",
         "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_0.png": "26d9a687f3d5b42b484cee12564b93815034384654dcc5e137e69957f89e20c9",
         "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_1.png": "6388edb77bb69daddeebda1b96d96b2cf0532b7314a02492ea5f78290cff195c",
