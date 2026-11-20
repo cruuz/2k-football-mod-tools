@@ -679,6 +679,11 @@ def _allocations(payload):
 
 
 def _recognize(payload):
+    from . import nfl2k5_sim_qb_injuries as quarterback
+    return _recognize_physical(quarterback.physical_view(payload))
+
+
+def _recognize_physical(payload):
     from . import nfl2k5_xbe_space as space
     from .nfl2k5_cave_oracle import XbeImage
     image = XbeImage(payload)

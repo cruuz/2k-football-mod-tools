@@ -572,6 +572,8 @@ def allocations(payload):
 
 
 def _inspect(payload):
+    from . import nfl2k5_sim_qb_injuries as quarterback
+    payload = quarterback.physical_view(payload)
     found = allocations(payload)  # allocator validates all section digests/seals
     image = XbeImage(payload)
     for va, size, digest in GUARDS:

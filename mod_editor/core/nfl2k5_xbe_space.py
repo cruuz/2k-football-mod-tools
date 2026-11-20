@@ -805,6 +805,9 @@ LINEUP_SLOT_VA = {GADGET_REQUESTS[0][:2]: GADGET_CODE_VA,
                   GADGET_REQUESTS[1][:2]: GADGET_CODE_VA + GADGET_REQUESTS[0][2],
                   BACKFIELD_REQUEST[:2]: BACKFIELD_VA}
 LATE_OWNERS += (GADGET_OWNER, BACKFIELD_REQUEST[0])
+QB_INJURY_OWNER = "nfl2k5_sim_qb_injuries"
+QB_INJURY_REQUEST = (QB_INJURY_OWNER, "code", 4 * PAGE, PAGE)
+LATE_OWNERS += (QB_INJURY_OWNER,)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -894,7 +897,7 @@ def dormant_union():
             + third_down.REQUESTS  # b778-ai8
             + classic_teams.REQUESTS  # b775-ct1 after b775-mo2
             + return_coverage.REQUESTS  # b779-fixD: matches build_manifest's all_requests so allocation_evidence() needs no allocated=
-            + module_loader.REQUESTS + seven.REQUESTS + GADGET_REQUESTS + (BACKFIELD_REQUEST,))
+            + module_loader.REQUESTS + seven.REQUESTS + GADGET_REQUESTS + (BACKFIELD_REQUEST, QB_INJURY_REQUEST))
 
 
 def is_scaleout(payload):
@@ -1149,6 +1152,13 @@ def _scale_allocations(requests):
             # it fit in packs exactly as before; only a plan that used to be refused here changes.
             to_pool(owner, kind, size, align)
     for owner, kind, size, align in late:
+        if owner == QB_INJURY_OWNER:
+            _require((owner, kind, size, align) == QB_INJURY_REQUEST, "foreign simulated quarterback injury allocation")
+            # Fixture state and code share this bank. The legacy code pages are read-only.
+            # Keep the released gadget and card slots available on sparse custom builds.
+            pool[0] = max(pool[0], BACKFIELD_VA + BACKFIELD_REQUEST[2] - POOL_VA)
+            to_pool(owner, kind, size, align)
+            continue
         if gadget and (owner, kind) in LINEUP_SLOT_VA:
             to_pool(owner, kind, size, align)
             continue
