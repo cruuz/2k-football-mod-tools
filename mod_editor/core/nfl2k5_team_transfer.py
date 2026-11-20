@@ -90,12 +90,13 @@ def team_package(document: rr.RosterDocument, team_index: int, *, save=None) -> 
     lists = club_lists(document, team_index)
     team = document.teams[team_index]
     players = []
+    ir_context = document.injured_reserve_context()      # b81 finn-r2 F1: the IR list, not the 0xEE byte (id 750)
     for list_name in LISTS:
         for player in lists[list_name]:
             record = player.record
             players.append({"list": list_name, "first": player.first, "last": player.last, "college": player.college,
                             "birth_year": record.birth_year if record.birth_date is not None else None,
-                            "on_ir": bool(record.on_injured_reserve),
+                            "on_ir": document.is_on_injured_reserve(player, ir_context),
                             "fields": {name: int(record.values[name]) for name in CARRIED_FIELDS}})
     return {"schema": SCHEMA,
             "source": {"abbreviation": team.abbreviation, "display": team.display, "scheme": document.scheme,
@@ -112,7 +113,7 @@ def write_package(path: Path | str, package: Mapping[str, Any]) -> Path:
     target = Path(path)
     if target.suffix.lower() != SUFFIX:
         target = target.with_name(target.name + SUFFIX)
-    target.write_text(json.dumps(package, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    target.write_text(json.dumps(package, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     return target
 
 
@@ -169,7 +170,8 @@ def plan(document: rr.RosterDocument, team_index: int, package: Mapping[str, Any
                             f"player into {team.abbreviation}'s records, so the counts must match: "
                             + (f"release {have - want} {team.abbreviation} player{'s' if have - want != 1 else ''} first"
                                if have > want else f"sign {want - have} more to {team.abbreviation} first"))
-    on_ir = [p.display for lst in LISTS for p in lists[lst] if p.record.on_injured_reserve]
+    ir_context = document.injured_reserve_context()      # b81 finn-r2 F1: the IR list, not the 0xEE byte (id 750)
+    on_ir = [p.display for lst in LISTS for p in lists[lst] if document.is_on_injured_reserve(p, ir_context)]
     if on_ir:
         refusals.append(f"{team.abbreviation} has {', '.join(on_ir[:3])}{' …' if len(on_ir) > 3 else ''} on injured "
                         "reserve; activate them first (an IR place lives in the club's IR list, which a paste keeps)")
