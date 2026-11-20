@@ -798,6 +798,16 @@ def paint(rgba, ops, donors=None):
             out[pts[:, 1], pts[:, 0], :3] = np.array(hex_rgb(op["color"]), np.uint8)
             if "alpha" in op:
                 out[pts[:, 1], pts[:, 0], 3] = int(op["alpha"])
+        elif kind == "want":
+            # b81-retail-free-art: names a colour the palette must hold (see art_colours) without listing a texel
+            pass
+        elif kind == "rule":
+            # b81-retail-free-art (ruling 2): a build-time rule of its own module (an exact fill, recolour or move of the
+            # texture the build holds); only these two modules are reachable
+            require(op.get("module") in ("fill", "recolour"), "2026 kit fixes: unknown rule module")
+            import importlib
+            rules = importlib.import_module(".nfl2k5_kit_rule_" + op["module"], __package__)
+            out = rules.apply(out, op, rgba, donors)
         elif kind == "clear":
             # b81-retail-free-art (review rule: erasures are instructions, additions are texels): an old mark is
             # cleared by rule, never by listing its texels; see clear_marks

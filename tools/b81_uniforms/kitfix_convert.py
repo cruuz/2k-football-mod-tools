@@ -53,10 +53,10 @@ def strong_edges(a, t=STRONG):
     return e
 
 
-def edge_overlap(shipped, base):
+def edge_overlap(shipped, base, edges=None):
     if not shipped.any():
         return 0.0
-    edges = strong_edges(base)
+    edges = strong_edges(base) if edges is None else edges
     ys, xs = np.nonzero(shipped)
     box = np.zeros_like(shipped)
     box[max(ys.min() - 2, 0):ys.max() + 3, max(xs.min() - 2, 0):xs.max() + 3] = True
@@ -86,7 +86,7 @@ def runs_of(final, now):
 
 def boxes_of(mask, grow=2, most=6):
     from scipy import ndimage as ndi
-    lab, _n = ndi.label(ndi.binary_dilation(mask, iterations=grow))
+    lab, _n = ndi.label(ndi.binary_dilation(mask, iterations=grow) if grow > 0 else mask)   # iterations=0 would grow forever
     bx = [[s[1].start, s[0].start, s[1].stop, s[0].stop] for s in ndi.find_objects(lab)]
     while len(bx) > most:
         best = None
@@ -115,18 +115,33 @@ def convert_row(row, span, prior_runs, zones):
     final, _ = kf.paint(base, row['ops'])
     carriers = [o for o in row['ops'] if o['op'] == 'texels']
     assert [o['op'] for o in row['ops']].count('runs') == 1 and len(carriers) == len(row['ops']) - 1, row['selector']
-    head = carriers + prior_runs
+    # the one-texel ``texels`` operations only name palette colours: they become ``want`` (a colour, no texel), and the
+    # runs carry whatever those texels still need
+    wants = [dict(op='want', color=o['color']) for o in carriers]
+    head = wants + prior_runs
     ref, _ = kf.paint(base, head)
     changed = (final != ref).any(-1)
+    edges = strong_edges(base)
+    # an erasure: a texel the row sets to the texture's field colour where the base had a mark (the measure the release
+    # check's generator uses, tools/b81_uniforms/texel_rows.py)
+    bcols, bcnt = np.unique(base[..., :3].reshape(-1, 3), axis=0, return_counts=True)
+    field = bcols[bcnt.argmax()].astype(np.int64)
+    marked = (np.abs(base[..., :3].astype(np.int64) - field).max(-1) >= 48) | edges
+    to_field = np.abs(final[..., :3].astype(np.int64) - field).max(-1) <= 8
     trials = [None]
     cols, cnt = np.unique(final[changed][:, :3], axis=0, return_counts=True)
-    for i in np.argsort(-cnt)[:3]:
-        to = tuple(int(v) for v in cols[i])
+    candidates = [tuple(int(v) for v in field)] + [tuple(int(v) for v in cols[i]) for i in np.argsort(-cnt)[:3]]
+    for to in dict.fromkeys(candidates):
         hexed = '#%02X%02X%02X' % to
         erased = changed & (final[..., :3] == np.array(to, np.uint8)).all(-1)
+        if to == candidates[0]:
+            erased = changed & to_field
         if erased.sum() < 4:
             continue
-        shapes = [boxes_of(erased, 2, most) for most in (1, 2, 4, 6)] + [z for z in zones if z]
+        # boxes never reach beyond the texels the row changes (grow 0): a clear that touched a texel the row keeps
+        # would make the runs put the base's own colour back there
+        shapes = ([boxes_of(changed, 0, most) for most in (1, 2, 4, 6)] + [boxes_of(erased, 0, most) for most in (1, 2, 4)]
+                  + [z for z in zones if z])
         for bx in shapes:
             for above, grow in itertools.product((0, 8, 16, 20, 24, 32, 40, 48, 64, 96), (0, 1, 2)):
                 trials.append(dict(op='clear', to=hexed, boxes=bx, above=above, grow=grow))
@@ -135,15 +150,15 @@ def convert_row(row, span, prior_runs, zones):
         ops = head + ([trial] if trial else [])
         now, _ = kf.paint(base, ops)
         runs, shipped = runs_of(final, now)
-        to = np.array(kf.hex_rgb(trial['to']) if trial else (-1, -1, -1))
-        erasure = shipped & (final[..., :3] == to).all(-1) & ~(base[..., :3] == to).all(-1)
-        score = (int(erasure.sum()), round(edge_overlap(shipped, base), 4), int(shipped.sum()))
+        erasure = shipped & to_field & marked & changed
+        restored = shipped & ~changed                  # a texel the row keeps, shipped back: the base's own colour
+        score = (int(restored.sum()), int(erasure.sum()), round(edge_overlap(shipped, base, edges), 4), int(shipped.sum()))
         if best is None or score < best[0]:
             best = (score, ops + [dict(op='runs', rows=runs)], shipped)
-    (erasures, overlap, n), ops, shipped = best
+    (restored, erasures, overlap, n), ops, shipped = best
     check, _ = kf.paint(base, ops)
     assert np.array_equal(check, final), row['selector']
-    return ops, dict(shipped=n, erasure_texels=erasures, edge_overlap=overlap, changed=int(changed.sum()),
+    return ops, dict(shipped=n, erasure_texels=erasures, restored_texels=restored, edge_overlap=overlap, changed=int(changed.sum()),
                      clear=next((o for o in ops if o['op'] == 'clear'), None) is not None)
 
 
