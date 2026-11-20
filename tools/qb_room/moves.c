@@ -14,9 +14,10 @@
    The candidate F: the best-rated healthy free-agent quarterback such that the native picker 0x322BB0, given
    budget = value(F) + 1, takes F and nobody else (simulated exactly over both of its pools, below), and cap room
    minus 10 (the economy gate's cap on the budget) is above value(F); else the next healthy one down; else nothing.
-   Acts, only once F is known and not in shadow: at 53 the smart cut 0x2BF9A0(club, 52); the room re-checked after
-   it; then 0x322BB0(club, 0, value(F) + 1, menu). One quarterback per club per pass; A <= 2 keeps the active list at
-   3 or fewer.
+   Acts, only once F is known and not in shadow: at exactly 53 the smart cut 0x2BF9A0(club, 52) (stage 8 only, so 53 is
+   the most it can be), then the recount, the pool collected again and F chosen again (C11: the cut reprices the
+   market, below; nobody: sign_room_lost); then 0x322BB0(club, 0, value(F) + 1, menu). One quarterback per club per
+   pass; A <= 2 keeps the active list at 3 or fewer.
 
    Game routines (retail and standard disassembly, see the test file):
    - 0x322BB0 n_cpu_sign(team, position, budget, menu): stdcall, ret 0x10, returns 0 when nobody is signed. It keeps
@@ -24,7 +25,11 @@
      budget's low 16 bits, scanning the free-agent list ([root + 0x38]: count, array) and then the offer table
      0xE3C600 (100 x 16 bytes; an entry counts when byte +0xB & 3 and bits 26..28 of dword +8 are 3; player at +0).
      No injury test. On standard its entry jumps to the practice-squad guard and the economy gate first.
-   - 0x2BD440 value: ECX = player, EDX = 0, stack 0, 1, 0 (callee pops 12), value in AX.
+   - 0x2BD440 value: ECX = player, EDX = 0, stack 0, 1, 0 (callee pops 12), value in AX. On 9f435b38 it is a market
+     price: for an unsigned prove-it man (no contract years, +0x25 > 0x3F) min(base, the best bidder's room - 10),
+     the best bidder found by 0x3D2890 over every CPU club (need at the position, economy cap - payroll - 10). A
+     club's own cut, restructure or release changes its room and so the price: every choice here is made on a pool
+     collected after the last such step (C11; P2a 2502/2027).
    - 0x2BF9A0 cut-down (standard: the economy's smart cut): fastcall ECX = club, EDX = target, plain ret.
    - 0xC3F00 payroll recount: fastcall ECX = club (club + 0x124 = payroll). */
 #include "room.h"
@@ -193,8 +198,9 @@ static i32 long_starter(u32 index, i32 best) {
     return 0;
 }
 
-/* One ring row (INTERFACE.md). a and b are player records (0: none); r10 is clamped to 0..65535. */
-static void put(u32 index, u32 decision, u32 result, u32 a, u32 b, u32 d, u32 g, i32 r10, u32 gap, u32 coach,
+/* One ring row (INTERFACE.md). a and b are player records (0: none); r10 is clamped to 0..65535. In the tail piece
+   (page + 0x2E10, build.py). */
+static __attribute__((noinline, section(".text.tail"))) void put(u32 index, u32 decision, u32 result, u32 a, u32 b, u32 d, u32 g, i32 r10, u32 gap, u32 coach,
                 u32 threshold) {
     u32 n = qb_ring_cursor, table = D(D(LEAGUE_ROOT) + 4);
     union { struct event e; u32 w[5]; } row;
@@ -218,7 +224,7 @@ static void put(u32 index, u32 decision, u32 result, u32 a, u32 b, u32 d, u32 g,
 }
 
 /* ---- E1 and E2 (DESIGN 4.1) ---------------------------------------------------------------------------------- */
-static void club_signing(u32 index, u32 stages, u32 shadow, u32 menu) {
+static void club_signing(u32 menu, u32 shadow, u32 index, u32 stages) {
     u32 team = CLUB_AT(index), h, starter, best;
     if (!team) return;
     if (D(USER_FLAG + 4 * index) && D(AUTO_SIGN) != 1) {
@@ -271,11 +277,11 @@ static void club_signing(u32 index, u32 stages, u32 shadow, u32 menu) {
         result = WOULD;
         goto log;
     }
-    if (B(team + 0x11C) >= 53) {
+    if (B(team + 0x11C) == 53) {
         CUT_TO(team, 52);
         qb_counters.sign_cuts++;
-        RECOUNT(team);
-        if (room_of(team, index) - 10 <= (i32)f->value) {
+        RECOUNT(team);                              /* C11: the cut reprices the market; choose again */
+        if ((n = collect(pool)) > POOL_MAX || !(f = choose(pool, n, room_of(team, index), 0))) {
             qb_counters.sign_room_lost++;
             goto log;
         }
@@ -297,17 +303,24 @@ log:
     1 no healthy free-agent quarterback in the picker's pools: stop, count, sign nobody;
     2 pre-game only, while A >= 3: release the lowest-rated (injured) quarterback with the native release
       0x2BD900(club, p, 1, 1); if he is still listed, stop: never a fourth;
-    3 at 53 active: the smart cut 0x2BF9A0(club, 52);
+    3 at exactly 53 active: the smart cut 0x2BF9A0(club, 52), one player;
     4 the candidate rule of E1 (best healthy man the picker takes within room minus 10): the gated signing;
     5 else the target T: the cheapest healthy prove-it free agent (no contract years, 2+ unsigned weeks; ties to the
       higher rating), else the cheapest healthy one, that the picker takes at value(T) + 1;
     6 while room minus 10 is not above value(T), up to 3: restructure the contract with the largest dry-run saving
       above 250 (economy_restructure 0x3B9F60, as restructure_best) and recount;
     7 while still short and 51+ active, up to 2: 0x2BF9A0(club, count - 1) and recount;
-    8 room fits: the gated signing; else, with 52 or fewer active and bit 128 set, the native signing entered past
-      its gates (sign_ungated: sub esp,0x114; jmp 0x322BB6), result code 5 "signed over the cap";
+    8 (C11) recount, collect again, step 4's rule on the fresh pool: the gated signing of that man (rung 2); else
+      the target chosen again on the fresh pool and, with 52 or fewer active and bit 128 set, the native signing
+      entered past its gates (sign_ungated: sub esp,0x114; jmp 0x322BB6), result code 5 "signed over the cap".
+      Steps 4 and 5 also run on a pool collected after step 3's cut;
     9 pre-game only: seat him (floor_seat);
    10 H >= 1, else floor_failed.
+   Stage 7 (camp; the coordinator's rule, 2026-11-20): steps 1, 4, 9 and 10 only. No release of any kind (no swap, no
+   cut, no release rung), no restructure, no over-cap signing; with no candidate within room minus 10, floor_no_room
+   and stop. The gates decide the plain signing (the economy gate refuses at 54+ active, the practice-squad guard at
+   65 minus the reserves); the native cut to 53 then runs and the first stage 8 pre-game call does the full floor.
+   P2a 2502/2027: 61472f79c cut at >= 53, so a camp roster went down to 52 in one call and the signing still failed.
    Ring row: decision 7, a = the injured man released (step 2), b = the man signed (or T), d = restructures,
    g = releases, rating10 = room at the start (clamped 0..65535), gap = rung (1 candidate, 2 gated after 6-7,
    3 over the cap), coach = swaps, threshold = value(F or T). */
@@ -344,7 +357,7 @@ void __attribute__((noinline, cdecl)) floor_seat(u32 team, u32 newman) {
     qb_counters.floor_seated++;
 }
 
-static void floor_club(u32 index, u32 pregame, u32 stages, u32 shadow, u32 menu) {
+static void floor_club(u32 shadow, u32 stages, u32 index, u32 pregame, u32 menu) {
     u32 team = CLUB_AT(index), h, s, k;
     if (!team || B(team + 0x11C) > SLOTS || (D(USER_FLAG + 4 * index) && D(AUTO_SIGN) != 1)) return;
     u32 a = scan(team, &h, &s, &k);
@@ -372,7 +385,7 @@ static void floor_club(u32 index, u32 pregame, u32 stages, u32 shadow, u32 menu)
         result = WOULD;
         goto log;
     }
-    while (pregame && a >= 3) {                                       /* 2 */
+    while (pregame && stages && a >= 3) {                             /* 2 */
         u32 worst = 0, low = 0;
         for (u32 i = 0; i < B(team + 0x11C); i++) {
             u32 p = D(team + 4 * i);
@@ -393,21 +406,39 @@ static void floor_club(u32 index, u32 pregame, u32 stages, u32 shadow, u32 menu)
         qb_counters.floor_swaps++;
         a--;
     }
-    if (swaps && (n = collect(pool)) > POOL_MAX) {                    /* a released man is a free agent now */
-        qb_counters.floor_pool_overflow++;
-        goto done;
-    }
-    if (B(team + 0x11C) >= 53) {                                      /* 3 */
+    if (stages && B(team + 0x11C) == 53) {                            /* 3 */
         CUT_TO(team, 52);
         qb_counters.floor_cuts++;
     }
-    RECOUNT(team);
-    if ((f = choose(pool, n, room_of(team, index), 0))) {             /* 4 */
-        rung = 1;
-        qb_counters.floor_candidate++;
-    } else {
+    for (u32 made = 0;; made = 1) {          /* C11: every choice on the pool as it stands at the signing call */
+        RECOUNT(team);
+        if ((n = collect(pool)) > POOL_MAX) {                         /* released men are free agents now */
+            qb_counters.floor_pool_overflow++;
+            goto done;
+        }
+        if ((f = choose(pool, n, room_of(team, index), 0))) {         /* 4 and 8 */
+            if (made) {
+                rung = 2;
+                qb_counters.floor_gated++;
+            } else {
+                rung = 1;
+                qb_counters.floor_candidate++;
+            }
+            break;
+        }
+        if (!stages) goto no_room;                                    /* camp: rung 1 only */
         if (!(f = choose(pool, n, 0, 1)) && !(f = choose(pool, n, 0, 2))) {      /* 5 */
             qb_counters.floor_no_target++;
+            goto done;
+        }
+        if (made) {
+            if (B(team + 0x11C) <= 52 && (stages & STAGE_OVER_CAP)) {
+                rung = 3;
+                qb_counters.floor_over_cap++;
+                break;
+            }
+no_room:
+            qb_counters.floor_no_room++;
             goto done;
         }
         while (restructures < 3 && room_of(team, index) - 10 <= (i32)f->value && restructure_once(team)) {   /* 6 */
@@ -421,16 +452,6 @@ static void floor_club(u32 index, u32 pregame, u32 stages, u32 shadow, u32 menu)
             qb_counters.floor_releases++;
             RECOUNT(team);
         }
-        if (room_of(team, index) - 10 > (i32)f->value) {              /* 8 */
-            rung = 2;
-            qb_counters.floor_gated++;
-        } else if (B(team + 0x11C) <= 52 && (stages & STAGE_OVER_CAP)) {
-            rung = 3;
-            qb_counters.floor_over_cap++;
-        } else {
-            qb_counters.floor_no_room++;
-            goto done;
-        }
     }
     u32 (__attribute__((stdcall)) *sign)(u32, u32, u32, u32) = rung == 3 ? sign_ungated : SIGN;
     if (sign(team, 0, f->value + 1, menu) && listed(team, f->p)) {
@@ -443,7 +464,7 @@ done:
     scan(team, &h, &s, &k);                                           /* 10 */
     if (!h) qb_counters.floor_failed++;
 log:
-    put(index, FLOOR_EVENT | (D(STAGE) == 7 ? PRESEASON : 0), result, out, f ? f->p : 0, restructures, releases,
+    put(index, FLOOR_EVENT | (stages ? 0 : PRESEASON), result, out, f ? f->p : 0, restructures, releases,
         room, rung, swaps, f ? f->value : 0);
 }
 
@@ -463,8 +484,9 @@ void CDECL emergency_pass(u32 menu, u32 pregame) {
     if (!pregame && (stages & STAGE_SIGN) && stage != 8) qb_counters.sign_inactive++;
     if ((!sign && !floor) || !D(LEAGUE_ROOT)) return;
     u32 shadow = qb_settings.flags & FLAG_SHADOW;
+    if (stage == 7) stages = 0;                       /* camp: the floor tries rung 1 only, releases nobody */
     for (u32 index = 0; index < CLUBS; index++) {
-        if (sign) club_signing(index, stages, shadow, menu);
-        if (floor) floor_club(index, pregame, stages, shadow, menu);
+        if (sign) club_signing(menu, shadow, index, stages);
+        if (floor) floor_club(shadow, stages, index, pregame, menu);
     }
 }

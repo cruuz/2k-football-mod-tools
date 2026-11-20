@@ -196,9 +196,16 @@ class PageInterface(unittest.TestCase):
         self.assertEqual(len(page), room.PAGE_SIZE)
         self.assertEqual(page[0x2000:0x2020], settings)
         self.assertEqual(page[0x2020:0x2040], struct.pack("<I", 0x14FD6D0) + bytes(28))
-        self.assertEqual(page[0x2040:], bytes(0x1000 - 0x40))
+        # Counters, the range reserved for code (0x2200..0x23FF), ring, cursor and menu slot are zero in the file; the
+        # second code piece starts at 0x2E10 and ends by the page's end, zeros after it.
+        tail, size = room.CODE_TAIL
+        self.assertEqual((tail, room.CODE_RESERVED), (0x2E10, (0x2200, 0x2400)))
+        self.assertTrue(0 < size and tail + size <= room.PAGE_SIZE)
+        self.assertEqual(page[0x2040:tail], bytes(tail - 0x2040))
+        self.assertEqual(page[tail + size:], bytes(room.PAGE_SIZE - tail - size))
         self.assertLess(room.CODE_BYTES, 0x2000)
         self.assertEqual(page[room.CODE_BYTES:0x2000], b"\xcc" * (0x2000 - room.CODE_BYTES))
+        self.assertTrue(all(o < room.CODE_BYTES or tail <= o and o + 4 <= tail + size for o, *_ in room._RELOCATIONS))
         other = room.page_bytes(VA + 0x10000, settings, ir_store_va=0x14FD6D0)
         differ = {n for n in range(room.PAGE_SIZE) if page[n] != other[n]}
         fields = set()
@@ -209,7 +216,7 @@ class PageInterface(unittest.TestCase):
         self.assertTrue(differ <= fields)
         self.assertEqual(room.COUNTERS["opening_passes"], 0x2040)
         self.assertEqual(len(set(room.COUNTERS.values())), len(room.COUNTERS))
-        self.assertTrue(all(0x2040 <= at < 0x2400 and at % 4 == 0 for at in room.COUNTERS.values()))
+        self.assertTrue(all(0x2040 <= at < 0x2200 and at % 4 == 0 for at in room.COUNTERS.values()))
         self.assertEqual(room.RING_EVENT.size, 20)
         self.assertEqual(room.RING_OFFSET + room.RING_COUNT * room.RING_EVENT.size, 0x2E00)
         for bad in ((VA + 4, settings), (VA, settings[:31]), (0, settings), (VA, b"\0" * 32)):

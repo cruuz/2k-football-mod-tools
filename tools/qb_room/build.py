@@ -21,12 +21,16 @@ DIVIDER = "# Generated from tools/qb_room by build.py.\n"
 GCC_FLAGS = "-m32 -march=i386 -Os -fomit-frame-pointer -fno-builtin -fno-stack-protector -ffreestanding -fno-pic -fno-pie -fno-asynchronous-unwind-tables -Wall -Wextra -Werror".split()
 PAGE_SIZE = 0x3000
 CODE_LIMIT = 0x2000
+# Further code pieces (INTERFACE.md): the tail of page 3 after the cursor and the menu slot holds .text.tail; page +
+# 0x2200..0x23FF is reserved for code (zero until used), so the counters must end by 0x2200.
+TAIL_START, TAIL_LIMIT = 0x2E10, 0x3000
+RESERVED_CODE = (0x2200, 0x2400)
 # Page data the C code names as extern objects. Offsets are fixed by INTERFACE.md.
 DATA = {"qb_settings": 0x2000, "qb_link_ir_store": 0x2020, "qb_counters": 0x2040, "qb_ring": 0x2400,
         "qb_ring_cursor": 0x2E00, "qb_menu": 0x2E04,
         # moves.c's plain (non-volatile) names for the same counters and cursor (it is their only writer in a pass).
         "qb_counters_plain": 0x2040, "qb_ring_cursor_plain": 0x2E00}
-COUNTERS_LIMIT = 0x2400
+COUNTERS_LIMIT = RESERVED_CODE[0]
 EXPORTED = ("opening_entry", "room_entry", "opening_pass", "room_pass", "emergency_pass", "sign_entry", "sign_after",
             "pregame_entry", "floor_seat", "sign_ungated")
 
@@ -46,17 +50,20 @@ def counter_names():
             raise ValueError(f"counters must be plain u32 fields: {field!r}")
         names.append(match.group(1))
     if len(set(names)) != len(names) or DATA["qb_counters"] + 4 * len(names) > COUNTERS_LIMIT:
-        raise ValueError("counter names must be unique and fit 0x2040..0x23FF")
+        raise ValueError("counter names must be unique and fit 0x2040..0x21FF (112 counters)")
     return names
 
 
 def compile_page(temp):
     entry, logic, moves, obj, script = (temp / name for name in ("entry.o", "room.o", "moves.o", "page.o", "page.ld"))
     # Piece 3 (the two entries, room.c's code and tables) first, exactly as before stage 4a; then moves.c and the
-    # 4a stubs (entry.S section .text.sign), so adding 4a does not move a byte of piece 3.
-    script.write_text("SECTIONS { .text 0 : { *entry.o(.text) *room.o(.text*) *room.o(.rodata*) *moves.o(.text*) "
-                      "*moves.o(.rodata*) *entry.o(.text.sign) *entry.o(.text.floor) *(.text*) *(.rodata*) *(.data*) *(COMMON) "
-                      "*(.bss*) } "
+    # 4a stubs (entry.S section .text.sign), so adding 4a does not move a byte of piece 3. One output section: the
+    # tail piece (functions marked TAIL in moves.c) is placed at page + 0x2E10 in it, so every label and relocation
+    # stays page-relative; the bytes between the two pieces are not code and are never copied.
+    script.write_text("SECTIONS { .text 0 : { *entry.o(.text) *room.o(.text*) *room.o(.rodata*) "
+                      "*moves.o(.text) *moves.o(.rodata*) "
+                      "*entry.o(.text.sign) *entry.o(.text.floor) *(.rodata*) *(.data*) *(COMMON) *(.bss*) "
+                      f"qb_main_end = .; . = {TAIL_START:#x}; *(.text.tail) qb_tail_end = .; }} "
                       "/DISCARD/ : { *(.comment*) *(.note*) *(.eh_frame*) *(.got*) } }")
     subprocess.run(["as", "--32", "-o", entry, HERE / "entry.S"], check=True)
     for source, output in (("room.c", logic), ("moves.c", moves)):
@@ -78,17 +85,27 @@ def collect(temp):
         elf = ELFFile(stream)
         text = elf.get_section_by_name(".text")
         index = elf.get_section_index(".text")
+        stray = [sec.name for sec in elf.iter_sections() if sec["sh_flags"] & 2 and sec.name != ".text" and sec.data_size]
+        if stray:
+            raise ValueError(f"code or data outside the page's .text: {stray}")
         data = text.data()
-        if len(data) >= CODE_LIMIT:
-            raise ValueError("the code does not fit below the settings record")
-        body[:len(data)] = data
         syms = elf.get_section_by_name(".symtab")
+        ends = {s.name: s["st_value"] for s in syms.iter_symbols() if s.name in ("qb_main_end", "qb_tail_end")}
+        main_end, tail_end = ends["qb_main_end"], ends["qb_tail_end"]
+        if main_end >= CODE_LIMIT:
+            raise ValueError("the code does not fit below the settings record")
+        if tail_end > TAIL_LIMIT or len(data) != tail_end:
+            raise ValueError("the tail piece does not fit page + 0x2E10..0x2FFF")
+        body[:main_end] = data[:main_end]
+        body[TAIL_START:tail_end] = data[TAIL_START:tail_end]
         for symbol in syms.iter_symbols():
             if symbol.name and symbol["st_shndx"] == index and symbol["st_info"]["type"] in ("STT_FUNC", "STT_NOTYPE"):
                 labels[symbol.name] = symbol["st_value"]
         rel = elf.get_section_by_name(".rel.text")
         for fixup in rel.iter_relocations() if rel else ():
             field = fixup["r_offset"]
+            if not (field + 4 <= main_end or TAIL_START <= field and field + 4 <= tail_end):
+                raise ValueError(f"relocation outside the code pieces at {field:#x}")
             symbol = syms.get_symbol(fixup["r_info_sym"])
             section, value = symbol["st_shndx"], symbol["st_value"]
             addend = struct.unpack_from("<i", data, field)[0] + value
@@ -104,13 +121,16 @@ def collect(temp):
             if kind not in (1, 2):
                 raise ValueError(f"Unsupported i386 relocation {kind}")
             relocations.append((field, kind == 2, family, addend & 0xFFFFFFFF))
-    return body, len(data), sorted(relocations), {name: labels[name] for name in EXPORTED}
+    return body, (main_end, tail_end - TAIL_START), sorted(relocations), {name: labels[name] for name in EXPORTED}
 
 
 def render():
     with tempfile.TemporaryDirectory(prefix="2k5-qb-room-") as folder:
-        raw, code_bytes, fixes, labels = collect(Path(folder))
-    lines = [DIVIDER.rstrip(), f"CODE_BYTES = {code_bytes:#x}", "", "_TEMPLATE = b''.join(("]
+        raw, (code_bytes, tail_bytes), fixes, labels = collect(Path(folder))
+    lines = [DIVIDER.rstrip(), f"CODE_BYTES = {code_bytes:#x}",
+             f"CODE_TAIL = ({TAIL_START:#x}, {tail_bytes:#x})             # (page offset, bytes): the second code piece",
+             f"CODE_RESERVED = ({RESERVED_CODE[0]:#x}, {RESERVED_CODE[1]:#x})        # reserved for code, zero until used",
+             "", "_TEMPLATE = b''.join(("]
     pos = 0
 
     def literal(chunk):
