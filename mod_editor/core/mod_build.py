@@ -2957,50 +2957,49 @@ def _gadget_resources(target):
 
 
 def _apply_gadget_play(plan, target, receipt, progress):
-    """Beta 81 Q62: the SPECIAL GAD player on gadget plays, from the books on the finished disc (or off again)."""
+    """Beta 81 Q62: the SPECIAL GAD player on gadget plays, with its table compiled from the books on the finished
+    disc. Like every other installed owner, a rule already on the source is replayed (the Build tab shows it greyed
+    out): its table is refreshed for this disc's books and the current gate. Turning it off means building again
+    from the retail disc."""
     gadget = _core_module("nfl2k5_gadget_play")
     if gadget is None:
         if plan.gadget_play:
             raise RuntimeError("The gadget player on gadget plays needs nfl2k5_gadget_play.")
         return
-    original = _xbe_bytes(target)
+    original = None
     if not plan.gadget_play:
-        if gadget.status(original) == "retail":
-            return
-        _step("gadget_play")
-        progress("Turning off the gadget player on gadget plays", 0, 0)
-        payload, patch = gadget.remove(original)
-        _write_xbe_bytes(target, payload)
-        if _xbe_bytes(target) != payload or gadget.status(payload) != "retail":
-            raise RuntimeError("Gadget player on gadget plays: the output does not read back as off")
-        receipt["steps"].append({"step": "gadget_play", **patch})
-        receipt["result"]["gadget_play"] = "retail"
-        return
+        try:
+            original = _xbe_bytes(target)
+            installed = gadget.status(original) in ("applied", "stale")
+        except (OSError, ValueError, KeyError, IndexError):
+            installed = False
+        if not installed or not tt.is_disc_image(target):
+            return  # an executable-only build has no books to refresh the installed table from: kept as it is
     _step("gadget_play")
     if not tt.is_disc_image(target):
         raise ValueError("The gadget player on gadget plays reads the disc's play books; build a disc image.")
     progress("Depth chart: gadget player on gadget plays", 0, 0)
+    original = _xbe_bytes(target) if original is None else original
     payload, patch = gadget.apply(original, _gadget_resources(target))
     if payload != original:
         _write_xbe_bytes(target, payload)
     if _xbe_bytes(target) != payload:
         raise RuntimeError("Gadget player on gadget plays: the output does not read back as written")
     receipt["steps"].append({"step": "gadget_play", **{k: v for k, v in patch.items() if k != "books"},
+                              "replayed_installed_option": not plan.gadget_play,
                               "books": [{k: b[k] for k in ("asset", "name", "eligible_links")} for b in patch["books"]]})
     receipt["result"]["gadget_play"] = "applied"
+    receipt.setdefault("user_notes", []).extend(patch.get("user_notes", []))
 
 
-def _verify_gadget_play(plan, target):
+def _verify_gadget_play(plan, target, receipt):
     """Beta 81 Q62: the finished disc's executable and books agree (after the last archive pass)."""
     gadget = _core_module("nfl2k5_gadget_play")
-    if gadget is None or not tt.is_disc_image(target):
+    if gadget is None or receipt.get("result", {}).get("gadget_play") != "applied":
         return
-    if plan.gadget_play:
-        settings = gadget.read_settings(_xbe_bytes(target), _gadget_resources(target))
-        if settings["status"] != "applied":
-            raise ValueError(f"The gadget player on gadget plays did not survive the final archive pass ({settings})")
-    elif gadget.status(_xbe_bytes(target)) not in ("retail", "unavailable"):
-        raise ValueError("The gadget player on gadget plays is still installed although it is off")
+    settings = gadget.read_settings(_xbe_bytes(target), _gadget_resources(target))
+    if settings["status"] != "applied":
+        raise ValueError(f"The gadget player on gadget plays did not survive the final archive pass ({settings})")
 
 
 def _update_v09_disc(plan, progress, *, preflight, project):
@@ -3070,7 +3069,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     _step("final_checks")
     if _xbe_bytes(target) != expected:
         raise ValueError("The v0.9 disc update did not read back with the selected changes.")
-    _verify_gadget_play(plan, target)
+    _verify_gadget_play(plan, target, receipt)
     receipt["result"] = {**inspect(target), **receipt["result"], "path": str(target)}
     _verify_finished_game_disc(target, receipt, progress)
     return receipt
@@ -9067,7 +9066,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _step("final_checks")
     if plan.backfield_cards and cards.status(_xbe_bytes(target)) != "applied":
         raise ValueError("Starting backfield cards did not survive the final archive pass")
-    _verify_gadget_play(plan, target)
+    _verify_gadget_play(plan, target, receipt)
     if receipt["result"].get("offset_toss_flip") == "applied" and nfl2k5_offset_toss.status(_xbe_bytes(target)) != "applied":
         raise ValueError("The offset toss control did not survive the final archive pass")
     # Publication gate: inspect the actual finished archive and executable,

@@ -288,7 +288,9 @@ class BuildWiringTests(unittest.TestCase):
             build.preflight_plan(replace(plan, depth_chart_rows=False))
         self.assertFalse((ROOT / "never-written.xiso.iso").exists())
 
-    def test_a_rebuild_with_it_off_takes_it_out_and_an_executable_only_target_is_refused(self):
+    def test_an_installed_rule_is_replayed_and_an_executable_only_target_is_refused(self):
+        """As with every installed owner, a rebuild keeps the rule (the Build tab greys it out); a build that cannot
+        read the disc's books never installs it."""
         import tempfile
         from dataclasses import replace
         from mod_editor.core import mod_build as build
@@ -300,9 +302,22 @@ class BuildWiringTests(unittest.TestCase):
             plan = build.apply_preset(build.BuildPlan(str(V09_DISC), str(target)), "softdrink_experimental")
             receipt = {"steps": [], "result": {}}
             build._apply_gadget_play(replace(plan, gadget_play=False), target, receipt, lambda *_: None)
-            self.assertEqual((gadget.status(target.read_bytes()), receipt["result"]["gadget_play"]), ("retail", "retail"))
+            self.assertEqual((target.read_bytes(), receipt["result"]), (installed, {}))
+            target.write_bytes(source)
+            build._apply_gadget_play(replace(plan, gadget_play=False), target, receipt, lambda *_: None)
+            self.assertEqual(target.read_bytes(), source)
             with self.assertRaisesRegex(ValueError, "build a disc image"):
                 build._apply_gadget_play(plan, target, receipt, lambda *_: None)
+        # On a disc the installed rule is refreshed for the disc's books even when the plan does not ask for it.
+        with mock.patch.object(build.tt, "is_disc_image", return_value=True), \
+                mock.patch.object(build, "_xbe_bytes", return_value=installed), \
+                mock.patch.object(build, "_gadget_resources", return_value=books), \
+                mock.patch.object(build, "_write_xbe_bytes") as write:
+            receipt = {"steps": [], "result": {}}
+            build._apply_gadget_play(replace(plan, gadget_play=False), Path("disc.iso"), receipt, lambda *_: None)
+            self.assertEqual(receipt["result"]["gadget_play"], "applied")
+            self.assertTrue(receipt["steps"][-1]["replayed_installed_option"])
+            write.assert_not_called()
 
 
 # ---------------------------------------------------------------------------------------------------------------------
