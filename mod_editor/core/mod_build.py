@@ -920,17 +920,18 @@ class _ReleasedV09Update(BuildPlan):
     """An explicit update of selected options on the published 128 MB disc."""
 
 
-V09_UPDATE_CHOICES = ("modern_injured_reserve", "backfield_cards")
+V09_UPDATE_CHOICES = ("save_list_type_guard", "modern_injured_reserve", "backfield_cards")
 
 
-def v09_disc_update(source, target, *, modern_injured_reserve=False, backfield_cards=False,
+def v09_disc_update(source, target, *, save_list_type_guard=False, modern_injured_reserve=False, backfield_cards=False,
                     overwrite=False, name="", author="", notes=""):
-    if type(modern_injured_reserve) is not bool or type(backfield_cards) is not bool:
+    choices = (save_list_type_guard, modern_injured_reserve, backfield_cards)
+    if any(type(choice) is not bool for choice in choices):
         raise ValueError("The v0.9 update choices must be on or off.")
-    if not (modern_injured_reserve or backfield_cards):
-        raise ValueError("Select Modern injured reserve, Starting backfield cards, or both.")
+    if not any(choices):
+        raise ValueError("Select at least one v0.9 update: the boot save list, modern injured reserve or starting backfield cards.")
     return _ReleasedV09Update(str(source), str(target), overwrite=overwrite, name=name, author=author,
-                              notes=notes, modern_injured_reserve=modern_injured_reserve,
+                              notes=notes, save_list_type_guard=save_list_type_guard, modern_injured_reserve=modern_injured_reserve,
                               backfield_cards=backfield_cards)
 
 
@@ -2811,8 +2812,8 @@ def _apply_backfield_cards(target, receipt, progress):
 
 def _update_v09_disc(plan, progress, *, preflight, project):
     if project or plan != v09_disc_update(
-            plan.source, plan.target, modern_injured_reserve=plan.modern_injured_reserve,
-            backfield_cards=plan.backfield_cards, overwrite=plan.overwrite,
+            plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
+            modern_injured_reserve=plan.modern_injured_reserve, backfield_cards=plan.backfield_cards, overwrite=plan.overwrite,
             name=plan.name, author=plan.author, notes=plan.notes):
         raise ValueError("Use your retail disc to build a project with additional v0.9 changes.")
     source, target = Path(plan.source), Path(plan.target)
@@ -2826,8 +2827,13 @@ def _update_v09_disc(plan, progress, *, preflight, project):
             and (tt.k128_patch.read_settings(original).get("require_128") is True)):
         raise ValueError("Choose the released SOFTDRINK 2K28 v0.9 standard disc image.")
 
-    # Preflight precisely the normal late-owner order on the existing allocator directory.
+    # Apply the same title, injured-reserve and card writers in the order of a standard Build.
     expected = original
+    if plan.save_list_type_guard:
+        guard = _core_module("nfl2k5_save_list_type_guard")
+        if guard is None or guard.status(original) != "previous":
+            raise ValueError("The boot save-list guard on this disc differs from the released v0.9 version.")
+        expected, _ = guard.apply(expected)
     if plan.modern_injured_reserve:
         expected, _ = ir.apply(expected, "modern", standard_guard=True)
     if plan.backfield_cards:
@@ -2842,6 +2848,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     _copy_private_build_source(source, target, receipt, progress, False)
     if receipt.get("source_sha256") != release["image_sha256"] or _xbe_bytes(target) != original:
         raise ValueError("The copied image differs from the released SOFTDRINK 2K28 v0.9 standard disc.")
+    _apply_save_list_type_guard(plan, target, receipt, progress)
     _apply_injured_reserve(plan, target, receipt, progress)
     if plan.backfield_cards:
         _apply_backfield_cards(target, receipt, progress)

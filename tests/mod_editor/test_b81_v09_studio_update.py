@@ -19,19 +19,22 @@ from tools import nfl2k5_modpack as cli
 
 class ReleasedUpdates(unittest.TestCase):
     def test_cli_preserves_exact_selections(self):
-        for ir, cards in itertools.product((False, True), repeat=2):
-            with self.subTest(ir=ir, cards=cards), patch.object(build, "build", return_value={}) as run:
+        for title, ir, cards in itertools.product((False, True), repeat=3):
+            with self.subTest(title=title, ir=ir, cards=cards), patch.object(build, "build", return_value={}) as run:
                 args = ["update-v09", "--source", "old.iso", "--out", "new.iso", "--json"]
+                if title:
+                    args.append("--save-list-guard")
                 if cards:
                     args.append("--backfield-cards")
                 if ir:
                     args.append("--modern-ir")
                 with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-                    self.assertEqual(cli.main(args), 0 if ir or cards else 2)
-                if ir or cards:
+                    self.assertEqual(cli.main(args), 0 if title or ir or cards else 2)
+                if title or ir or cards:
                     plan = run.call_args.args[0]
                     self.assertIsInstance(plan, build._ReleasedV09Update)
-                    self.assertEqual((plan.modern_injured_reserve, plan.backfield_cards), (ir, cards))
+                    self.assertEqual((plan.save_list_type_guard, plan.modern_injured_reserve, plan.backfield_cards),
+                                     (title, ir, cards))
                 else:
                     run.assert_not_called()
 
@@ -60,6 +63,26 @@ class ReleasedUpdates(unittest.TestCase):
                 build.preflight_plan(plan)
             copying.assert_not_called()
             self.assertFalse(Path(plan.target).exists())
+
+    def test_refuses_foreign_or_current_title_guard_before_copy(self):
+        guard, ir, cards = Mock(), Mock(), Mock()
+        ir.status.return_value = "previous"
+        cards.status.return_value = "retail"
+        modules = {"nfl2k5_injured_reserve": ir, "nfl2k5_backfield_cards": cards,
+                   "nfl2k5_save_list_type_guard": guard}
+        plan = build.v09_disc_update("v09.iso", "copy.iso", save_list_type_guard=True)
+        with (patch.object(build.tt, "is_disc_image", return_value=True),
+              patch.object(build, "_v09_reference", return_value={"image_sha256": "known original"}),
+              patch.object(build.tt.k128_patch, "read_settings", return_value={"require_128": True}),
+              patch.object(build, "_xbe_bytes", return_value=b"source"),
+              patch.object(build, "_core_module", side_effect=modules.get),
+              patch.object(build, "_copy_private_build_source") as copying):
+            for state in ("retail", "foreign", "applied"):
+                with self.subTest(state=state), self.assertRaisesRegex(ValueError, "boot save-list"):
+                    guard.status.return_value = state
+                    build._update_v09_disc(plan, lambda *_: None, preflight=False, project=False)
+            guard.apply.assert_not_called()
+            copying.assert_not_called()
 
     def test_source_hash_is_checked_before_the_first_writer(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -101,13 +124,13 @@ class BuildChoices(unittest.TestCase):
         self.addCleanup(self.panel.deleteLater)
         self.state = dict(path=str(self.source), container="xiso", v09_standard_update=True,
                           modern_practice_field="foreign", modern_practice_field_team_logo="applied",
-                          modern_injured_reserve="previous", backfield_cards="retail")
+                          save_list_type_guard="previous", modern_injured_reserve="previous", backfield_cards="retail")
         self.panel.begin_reading(self.source)
         self.panel.apply_state(self.state)
         self.panel.target_field.setText(str(self.source.with_name("new.iso")))
 
     def test_make_my_disc_selects_the_supported_options_independently(self):
-        for flags in itertools.product((False, True), repeat=2):
+        for flags in itertools.product((False, True), repeat=len(build.V09_UPDATE_CHOICES)):
             with self.subTest(flags=flags):
                 for key, enabled in zip(build.V09_UPDATE_CHOICES, flags):
                     box = self.panel._boxes()[key]
@@ -135,6 +158,7 @@ class BuildChoices(unittest.TestCase):
     def test_compact_or_an_unrecognized_disc_does_not_get_the_update(self):
         self.panel.apply_state({**self.state, "v09_standard_update": False})
         self.assertFalse(self.panel.modern_injured_reserve_check.isEnabled())
+        self.assertFalse(self.panel._boxes()["save_list_type_guard"].isEnabled())
         self.panel.backfield_cards_check.click()
         self.assertFalse(self.panel.build_button.isEnabled())
         self.assertIs(type(self.panel._plan_for_build()), build.BuildPlan)
