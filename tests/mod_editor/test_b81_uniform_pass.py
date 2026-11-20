@@ -63,6 +63,9 @@ FOUR_LAYERS = ("27A0",)
 PER_DIGIT = {selector: (0, 4) for selector in RAVENS}
 #: batch 4 (KITS4): the only jersey rows that repaint beyond the chest strip under the collar
 WHOLE_JERSEY = ("09A9", "09H9", "26H4")
+#: R2 (order R2-C): the Commanders road shoulder swoosh, drawn by the game across the torso texture's front/back seam:
+#: (first column, first row, last column + 1, last row + 1) of the hook on the front panel and the tail on the back panel
+WAS_ROAD_SWOOSH = ((54, 9, 72, 22), (250, 9, 268, 22), (283, 14, 298, 40), (483, 14, 496, 40))
 
 
 def kit_rows():
@@ -181,6 +184,7 @@ class KitDocument(unittest.TestCase):
         # Batch 3 added: wordmarks redrawn at their real width (Eagles, Titans, Broncos), the Saints 60th patch at its
         # real size, the Texans memorial oval, the Panthers alternate and Bills Nickel City shields.
         # Batch 4 (KITS4) named the only jerseys repainted beyond that strip: see test_the_batch_4_whole_jersey_rows.
+        # R2 (order R2-C): the Commanders road 29A0 also repaints its two shoulder swooshes (WAS_ROAD_SWOOSH).
         jerseys = [r for r in kit_rows() if r["texture"] == "jersey00"]
         self.assertEqual(len(jerseys), 170)
         self.assertEqual(len({r["selector"] for r in jerseys}), 170)
@@ -189,6 +193,9 @@ class KitDocument(unittest.TestCase):
             if row["selector"] in WHOLE_JERSEY:
                 continue
             for run in [op for op in row["ops"] if op["op"] == "runs"][0]["rows"]:   # [row, first column, colours]
+                if row["selector"] == "29A0" and any(x0 <= run[1] and run[1] + len(run[2]) // 6 <= x1 and y0 <= run[0] < y1
+                                                     for x0, y0, x1, y1 in WAS_ROAD_SWOOSH):
+                    continue
                 self.assertTrue(58 <= run[0] <= 112, (row["selector"], run[:2]))   # down to the old lettering some kits lose
                 self.assertTrue(90 <= run[1] and run[1] + len(run[2]) // 6 <= 216, (row["selector"], run[:2]))
         for selector in ("25H7", "25A7", "28H7", "28A7", "11H4", "11A4", "07H9", "07A9"):
@@ -805,6 +812,25 @@ class RealDisc(unittest.TestCase):
                 self.assertEqual(cols(pants, y, blue), [], (selector, y))                      # the wedge starts lower
             for x in (126, 145, 366, 385):                                                       # the base on both sides
                 self.assertTrue(near(tuple(int(v) for v in pants[190 if x in (126, 385) else 120, x, :3]), base, 12), (selector, x))
+
+    def test_the_commanders_road_shoulder_swoosh_is_one_solid_mark(self):
+        # R2 (order R2-C, art director's ruling): the game draws the road shoulder swoosh across the torso texture's
+        # front/back seam: a hook of 13 or 14 solid texels on the front panel and a faint sliver of a tail on the back
+        # (6 and 9 solid texels), white notches at the seam. Redrawn on the player model as one solid kit-burgundy swoosh,
+        # hook to the front, tail to the back, 5.5 cm tip to tip (5.61 and 5.54 cm): the tail is solid down the back panel.
+        burgundy = np.array((0x5E, 0x15, 0x19))
+        torso = self.after("29A0", "jersey00")[..., :3].astype(int)
+        solid = np.abs(torso - burgundy).max(-1) <= 6
+        counts, spans = [], []
+        for x0, y0, x1, y1 in WAS_ROAD_SWOOSH:
+            box = solid[y0:y1, x0:x1]
+            rows = np.flatnonzero(box.any(axis=1)) + y0
+            counts.append(int(box.sum()))
+            spans.append((int(rows.min()), int(rows.max()), bool((np.diff(rows) == 1).all())))
+        self.assertEqual(counts, [23, 24, 30, 28])
+        self.assertEqual(spans, [(12, 17, True), (12, 17, True), (17, 34, True), (17, 33, True)])
+        for x0, y0, x1, y1 in WAS_ROAD_SWOOSH:
+            self.assertFalse(solid[y1:y1 + 16, x0:x1].any())                     # nothing below the swoosh boxes
 
     def test_every_kit_row_is_waiting_on_the_released_disc_and_compiles_to_its_pin(self):
         result = up.states(DISC)
