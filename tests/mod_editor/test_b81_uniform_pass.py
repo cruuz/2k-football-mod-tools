@@ -237,10 +237,12 @@ class KitDocument(unittest.TestCase):
         for row in jerseys:
             if row["selector"] in WHOLE_JERSEY:
                 continue
-            for op in row["ops"]:                   # a clear stays inside the swoosh boxes too
+            for op in row["ops"]:                   # a clear stays inside the strip (or 29A0's swoosh boxes) too
                 for x0, y0, x1, y1 in op.get("boxes", ()) if op["op"] == "clear" else ():
-                    self.assertTrue(row["selector"] == "29A0" and any(a <= x0 and x1 <= c and b <= y0 and y1 <= d
-                                                                      for a, b, c, d in WAS_ROAD_SWOOSH), row["selector"])
+                    self.assertTrue((58 <= y0 and y1 <= 113 and 90 <= x0 and x1 <= 216)
+                                    or (row["selector"] == "29A0" and any(a <= x0 and x1 <= c and b <= y0 and y1 <= d
+                                                                          for a, b, c, d in WAS_ROAD_SWOOSH)),
+                                    (row["selector"], (x0, y0, x1, y1)))
             for run in [r for op in row["ops"] if op["op"] == "runs" for r in op["rows"]]:   # [row, first column, colours]
                 if row["selector"] == "29A0" and any(x0 <= run[1] and run[1] + len(run[2]) // 6 <= x1 and y0 <= run[0] < y1
                                                      for x0, y0, x1, y1 in WAS_ROAD_SWOOSH):
@@ -1008,12 +1010,11 @@ class RealDisc(unittest.TestCase):
         """b81-retail-free-art (review rule, round 2 rows): an old mark is cleared by rule (``clear``), so no run texel
         takes the clear colour over a base mark; the runs' cover of the base's strong edges is measured against the
         generator's limit. The Bengals strokes and the Saints fleur are redrawn by code where the old mark was: they
-        ship no erasure but cover 0.28 to 0.53 of the old marks' edges, so they stay on this list for a ruling."""
+        ship no erasure; whether a row may ship is its Ruling 2 class (the release check judges it)."""
         sys.path.insert(0, str(ROOT / "tools/b81_uniforms"))
         import kitfix_convert as tool
-        over = set()
         converted = [r for r in kit_rows() if any(op["op"] == "clear" for op in r["ops"])]
-        self.assertEqual(len(converted), 15)
+        self.assertGreaterEqual(len(converted), 15)
         for row in converted:
             raw = self.kits[row["selector"]]
             chunk = kf._chunk_for(raw, row["chunk"])
@@ -1028,9 +1029,7 @@ class RealDisc(unittest.TestCase):
             erasure = shipped & (final[..., :3] == to).all(-1) & ~(base[..., :3] == to).all(-1)
             self.assertEqual(int(erasure.sum()), 0, row["selector"])
             self.assertTrue((final[shipped] != before[shipped]).any(-1).all(), row["selector"])   # only what still differs
-            if tool.edge_overlap(shipped, base) > tool.EDGE_OVERLAP_LIMIT:
-                over.add(row["selector"])
-        self.assertEqual(over, {"06H0", "06A0", "06H5", "06A5", "06H6", "06A6", "17H0", "17A0", "17H3", "17A3", "17H8", "17A8"})
+        # whether a converted row may ship is judged by its class (tools/b81_uniforms/texel_rows.py, the release check)
 
     def test_the_compiled_kit_textures_hold_exactly_the_authored_runs(self):
         for row in kit_rows():

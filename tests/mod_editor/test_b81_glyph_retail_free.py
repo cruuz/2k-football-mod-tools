@@ -93,7 +93,9 @@ class ReviewedPaint(unittest.TestCase):
         self.catalog = json.loads((ROOT / catalog.CATALOG).read_text(encoding="utf-8"))
 
     def test_the_catalog_lists_exactly_the_texel_data_of_every_data_document(self):
-        self.assertEqual(self.catalog["paint"], catalog.paint_section(ROOT))
+        self.assertEqual({r: {o: {k: v[k] for k in ("sha256", "texels")} for o, v in e["rows"].items()}
+                          for r, e in self.catalog["paint"].items()},
+                         {r: e["rows"] for r, e in catalog.paint_section(ROOT).items()})
         glyph = self.catalog["paint"]["data/nfl2k5_glyph_fixes_2026_b81u.json"]["rows"]
         self.assertEqual(len(glyph), PAINTED_ROWS)
         for name in ("kit_fixes_2026_b81u", "kit_fixes_2026_b81", "kit_fixes_2026_sea1", "kit_fixes_2026_sw1",
@@ -103,9 +105,44 @@ class ReviewedPaint(unittest.TestCase):
             document = json.loads((ROOT / relative).read_text(encoding="utf-8"))
             self.assertEqual(sorted(self.release._texel_rows(document)), sorted(self.catalog["paint"][relative]["rows"]))
 
+    def test_every_texel_row_carries_its_class_and_the_gate_judges_it(self):
+        """Ruling 2: each listed row has its provenance class (i, ii, iii), the reason, and for class ii the measures
+        taken on the released disc; the release check refuses a class ii row that does not pass and lets class i and
+        iii rows pass with their reason. Ruling 1's exception list is exactly the six Bengals pants rows."""
+        import tempfile
+        sys.path.insert(0, str(ROOT / "tools/b81_uniforms"))
+        import texel_rows as judge
+        self.assertEqual(self.catalog["paint"], catalog.judged_paint_section(ROOT))
+        self.assertEqual({k: sorted(v) for k, v in judge.RULING_1.items()},
+                         {"data/nfl2k5_kit_fixes_2026_b81u.json": sorted("%s:2:tset" % s for s in
+                                                                         ("06H0", "06A0", "06H5", "06A5", "06H6", "06A6"))})
+        for relative, entry in self.catalog["paint"].items():
+            for owner, row in entry["rows"].items():
+                self.assertIn(row["cls"], ("i", "ii", "iii"), (relative, owner))
+                self.assertTrue(entry["reasons"][row["why"]], (relative, owner))
+        relative = "data/nfl2k5_glyph_fixes_2026_b81u.json"
+        document = json.loads((ROOT / relative).read_text(encoding="utf-8"))
+        reviewed = json.loads(json.dumps(self.catalog["paint"]))
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "doc.json"
+            path.write_text(json.dumps(document), encoding="utf-8")
+            rows = reviewed[relative]["rows"]
+            for row in rows.values():
+                row.update(cls="ii", passes=True)
+            self.release._check_paint(relative, path, reviewed)                         # all class ii, passing
+            owner = sorted(rows)[0]
+            rows[owner].update(passes=False)
+            with self.assertRaises(self.release.ReleaseCheckError):                        # one fails: refused
+                self.release._check_paint(relative, path, reviewed)
+            rows[owner].update(cls="iii")
+            self.release._check_paint(relative, path, reviewed)                         # class iii: passes
+
     def test_the_gate_refuses_unreviewed_or_changed_texel_data(self):
         import tempfile
-        reviewed = self.catalog["paint"]
+        reviewed = json.loads(json.dumps(self.catalog["paint"]))
+        for entry in reviewed.values():                     # the listing alone (the judging has its own test)
+            for row in entry["rows"].values():
+                row.update(cls="iii")
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "doc.json"
             for relative, kind in (("data/nfl2k5_glyph_fixes_2026_b81u.json", "paint"),
@@ -244,6 +281,9 @@ class ReleasedDisc(unittest.TestCase):
                     shipped = np.frombuffer(bytes.fromhex(values), np.uint8).reshape(-1, 4)
                     here = before[y, x0:x0 + len(shipped)]
                     self.assertTrue((shipped != here).any(-1).all(), (row["selector"], row["chunk"], y, x0))
+                    if base.shape == before.shape:          # ruling 2: never the glyph's own texel at that place
+                        self.assertTrue((shipped != base[y, x0:x0 + len(shipped)]).any(-1).all(),
+                                        (row["selector"], row["chunk"], y, x0))
             self.assertLessEqual(tool.edge_overlap(base, ops), tool.EDGE_OVERLAP_LIMIT, (row["selector"], row["chunk"]))
             painted += 1
         self.assertEqual(painted, PAINTED_ROWS)

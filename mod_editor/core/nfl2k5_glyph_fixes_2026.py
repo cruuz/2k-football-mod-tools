@@ -62,7 +62,8 @@ ART = ROOT / "data/nfl2k5_glyph_fixes_2026"
 #: released v0.9 build and applied as the last uniform step (``apply_digits_b81``). The document names its own art folder.
 DATA_B81U = ROOT / "data/nfl2k5_glyph_fixes_2026_b81u.json"
 KINDS = ("names_retint", "digit_png", "digit_retint", "names_png", "name_widths", "digit_derived", "names_derived")
-DERIVE_OPS = ("remap", "embolden", "edge", "inline_fill", "inline_dark", "recolour", "paint", "thin_letters", "clear_rgb")
+DERIVE_OPS = ("remap", "embolden", "edge", "inline_fill", "inline_dark", "recolour", "paint", "thin_letters", "clear_rgb",
+              "hidden_from_base", "keep")
 NAMES_CHUNK = 43
 NAME_CHUNK = 44                         # the raw NAME chunk: 29 (atlas offset, glyph width) pairs for ' - A..Z c
 NAME_METRICS = slice(0x2C, 0xA0)
@@ -334,6 +335,21 @@ def derive_digit(before_rgba, ops):
                 a[hit, :3] = _colour(new)
         elif kind == "thin_letters":
             a = thin_letters(a, op)
+        elif kind == "hidden_from_base":
+            # b81-retail-free-art (ruling 2): the colour under every clear texel is the glyph's own colour at that texel
+            # (as a picture editor leaves it), by rule
+            base0 = np.asarray(before_rgba, np.uint8)
+            require(base0.shape == a.shape, "hidden_from_base needs the glyph's own size")
+            clear = a[..., 3] == 0
+            a[clear, :3] = base0[clear, :3]
+        elif kind == "keep":
+            # b81-retail-free-art (ruling 2): texels the edit leaves as the glyph the build holds had them, by place only
+            # ([row, first column, count]): no texel value is stored
+            base0 = np.asarray(before_rgba, np.uint8)
+            require(base0.shape == a.shape, "keep needs the glyph's own size")
+            for y, x0, count in op["runs"]:
+                require(0 <= y < a.shape[0] and 0 <= x0 and count > 0 and x0 + count <= a.shape[1], "keep outside the glyph")
+                a[y, x0:x0 + count] = base0[y, x0:x0 + count]
         elif kind == "clear_rgb":
             # b81-retail-free-art: the colour stored under every clear texel (alpha 0), by rule, never by listing them
             a[a[..., 3] == 0, :3] = _colour(op["colour"])

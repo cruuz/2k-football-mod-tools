@@ -460,6 +460,33 @@ def paint_section(repo: Path) -> dict:
     return out
 
 
+TEXEL_ROWS = "packaging/nfl2k5_texel_rows.json"
+
+
+def judged_paint_section(repo: Path) -> dict:
+    """Ruling 2: each listed row also carries its provenance class, the reason and whether it passes, from the
+    generator-made packaging/nfl2k5_texel_rows.json (tools/b81_uniforms/texel_rows.py, measured on the released disc).
+    A row the file does not hold with the same texel digest is class ii and does not pass."""
+    section = paint_section(repo)
+    path = repo / TEXEL_ROWS
+    judged = json.loads(path.read_text(encoding="utf-8"))["rows"] if path.exists() else {}
+    for relative, entry in section.items():
+        reasons = []
+        for owner, row in entry["rows"].items():
+            line = judged.get(relative, {}).get(owner)
+            if line is None or line["sha256"] != row["sha256"]:
+                line = dict(cls="ii", passes=False, reason="not classified for these texels (run texel_rows.py)")
+            if line["reason"] not in reasons:
+                reasons.append(line["reason"])
+            row.update(cls=line["cls"], why=reasons.index(line["reason"]),
+                       passes=line["cls"] in ("i", "iii") or bool(line.get("passes")))
+            for key in ("edge_overlap", "base_equal"):
+                if key in line:
+                    row[key] = line[key]
+        entry["reasons"] = reasons                    # rows name their reason by its place in this list (size)
+    return section
+
+
 def build(repo: Path) -> tuple[dict, dict]:
     files, refused = {}, {}
     for relative in declared_pngs(repo):
@@ -478,7 +505,7 @@ def build(repo: Path) -> tuple[dict, dict]:
     undeclared = sorted(set(on_disk) - set(files) - set(refused))
     if undeclared:
         raise SystemExit("PNG files under the reviewed folders are not in the release allowlist: " + ", ".join(undeclared))
-    paint = paint_section(repo)
+    paint = judged_paint_section(repo)
     return dict(classification=CLASSIFICATION, files=files, paint=paint, schema=SCHEMA), refused
 
 

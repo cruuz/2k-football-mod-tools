@@ -110,7 +110,7 @@ def level0(span, row):
     return palette[planes[0]].astype(np.uint8)
 
 
-def convert_row(row, span, prior_runs, zones):
+def convert_row(row, span, prior_runs, zones, erasure_first=False):
     base = level0(span, row)
     final, _ = kf.paint(base, row['ops'])
     carriers = [o for o in row['ops'] if o['op'] == 'texels']
@@ -131,10 +131,14 @@ def convert_row(row, span, prior_runs, zones):
     trials = [None]
     cols, cnt = np.unique(final[changed][:, :3], axis=0, return_counts=True)
     candidates = [tuple(int(v) for v in field)] + [tuple(int(v) for v in cols[i]) for i in np.argsort(-cnt)[:3]]
+    near = changed & to_field                          # the field shade the painter put back (a local cloth shade)
+    if near.any():
+        ncols, ncnt = np.unique(final[near][:, :3], axis=0, return_counts=True)
+        candidates += [tuple(int(v) for v in ncols[i]) for i in np.argsort(-ncnt)[:2]]
     for to in dict.fromkeys(candidates):
         hexed = '#%02X%02X%02X' % to
         erased = changed & (final[..., :3] == np.array(to, np.uint8)).all(-1)
-        if to == candidates[0]:
+        if to == candidates[0] or near[(final[..., :3] == np.array(to, np.uint8)).all(-1)].any():
             erased = changed & to_field
         if erased.sum() < 4:
             continue
@@ -142,6 +146,8 @@ def convert_row(row, span, prior_runs, zones):
         # would make the runs put the base's own colour back there
         shapes = ([boxes_of(changed, 0, most) for most in (1, 2, 4, 6)] + [boxes_of(erased, 0, most) for most in (1, 2, 4)]
                   + [z for z in zones if z])
+        if erasure_first:
+            shapes += [boxes_of(erased, 0, most) for most in (8, 16)]
         for bx in shapes:
             for above, grow in itertools.product((0, 8, 16, 20, 24, 32, 40, 48, 64, 96), (0, 1, 2)):
                 trials.append(dict(op='clear', to=hexed, boxes=bx, above=above, grow=grow))
@@ -153,9 +159,38 @@ def convert_row(row, span, prior_runs, zones):
         erasure = shipped & to_field & marked & changed
         restored = shipped & ~changed                  # a texel the row keeps, shipped back: the base's own colour
         score = (int(restored.sum()), int(erasure.sum()), round(edge_overlap(shipped, base, edges), 4), int(shipped.sum()))
+        if erasure_first:                              # authored art over a region cleared by rule (ruling 1)
+            score = (int(erasure.sum()), int(restored.sum())) + score[2:]
         if best is None or score < best[0]:
             best = (score, ops + [dict(op='runs', rows=runs)], shipped)
+    for _stage in range(4 if erasure_first else 0):
+        if best[0][0] == 0:
+            break
+        # a further clear, in the shade the painter put back, for what the clears so far left (coarse boxes only)
+        ops1 = best[1][:-1]
+        now1, _ = kf.paint(base, ops1)
+        _r, left = runs_of(final, now1)
+        left &= to_field & marked & changed
+        lcols, lcnt = np.unique(final[left][:, :3], axis=0, return_counts=True)
+        hexed = '#%02X%02X%02X' % tuple(int(v) for v in (lcols[lcnt.argmax()] if len(lcols) else field))
+        for most in (1, 2, 3, 4):
+            for bx in [boxes_of(left, 0, most), boxes_of(left, 1, most)]:      # grown by one: never single texels
+                if any((x1 - x0) * (y1 - y0) < 4 for x0, y0, x1, y1 in bx):
+                    continue
+                for above, grow in itertools.product((0, 8, 16, 24, 32, 48), (0, 1)):
+                    trial = dict(op='clear', to=hexed, boxes=bx, above=above, grow=grow)
+                    ops = ops1 + [trial]
+                    now, _ = kf.paint(base, ops)
+                    runs, shipped = runs_of(final, now)
+                    erasure = shipped & to_field & marked & changed
+                    restored = shipped & ~changed
+                    score = (int(erasure.sum()), int(restored.sum()), round(edge_overlap(shipped, base, edges), 4),
+                             int(shipped.sum()))
+                    if score < best[0]:
+                        best = (score, ops + [dict(op='runs', rows=runs)], shipped)
     (restored, erasures, overlap, n), ops, shipped = best
+    if erasure_first:
+        erasures, restored = restored, erasures                # the tuple was (erasure, restored, ...)
     check, _ = kf.paint(base, ops)
     assert np.array_equal(check, final), row['selector']
     return ops, dict(shipped=n, erasure_texels=erasures, restored_texels=restored, edge_overlap=overlap, changed=int(changed.sum()),

@@ -476,6 +476,21 @@ def convert(disc, retail, limit_rows=None):
                 left = lambda ops_: int((gf.derive_digit(base, ops_) != picture).any(-1).sum())
                 if left(alt) < left(lead):                  # only where it spares listed texels
                     lead = alt
+            # ruling 2: no paint texel may equal the glyph the build holds at that texel. The colour under clear texels
+            # comes from the glyph itself by rule where that spares texels; texels the edit leaves as they were are
+            # kept by place (``keep``), never listed with their colour
+            if picture.shape == base.shape and not any(op['op'] == 'clear_rgb' for op in lead):
+                alt = lead + [dict(op='hidden_from_base')]
+                left = lambda ops_: int((gf.derive_digit(base, ops_) != picture).any(-1).sum())
+                if left(alt) < left(lead):
+                    lead = alt
+            if picture.shape == base.shape and lead and lead[0]['op'] != 'thin_letters':
+                now = gf.derive_digit(base, lead)
+                same = (picture == base).all(-1) & (now != picture).any(-1)
+                if same.any():
+                    lead = lead + [dict(op='keep', runs=[[y, x0, len(v) // 8] for y, x0, v in
+                                                         paint_runs(np.where(same[..., None], 255, 0).astype(np.uint8),
+                                                                    np.zeros_like(base))])]
             ops = lead + [dict(op='paint', runs=paint_runs(gf.derive_digit(base, lead), picture))]
             if edge_overlap(base, ops) > EDGE_OVERLAP_LIMIT:
                 fam = 33 if row['chunk'] >= 33 else 13

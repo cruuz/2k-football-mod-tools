@@ -804,7 +804,7 @@ def paint(rgba, ops, donors=None):
         elif kind == "rule":
             # b81-retail-free-art (ruling 2): a build-time rule of its own module (an exact fill, recolour or move of the
             # texture the build holds); only these two modules are reachable
-            require(op.get("module") in ("fill", "recolour"), "2026 kit fixes: unknown rule module")
+            require(op.get("module") in ("fill", "recolour", "emblem"), "2026 kit fixes: unknown rule module")
             import importlib
             rules = importlib.import_module(".nfl2k5_kit_rule_" + op["module"], __package__)
             out = rules.apply(out, op, rgba, donors)

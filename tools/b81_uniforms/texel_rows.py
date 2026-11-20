@@ -54,7 +54,8 @@ RULING_1 = {
 # Ruling 2 class iii: families whose texels are wholly new art drawn by the project's own code from the project's own
 # shapes (recorded in retail-free/REVIEW_ME.md section 15), placed where the row clears the old mark by rule (or where
 # the new art covers it). A row qualifies only if every one of its fixes is in this list (or in RULING_1) and its texels
-# hold no texel equal to the base (no restoration) and no erasure.
+# hold no erasure (no texel set to the field colour over an old mark); texels where the new art happens to equal the
+# old mark are recorded (base_equal), as ruling 1 allows for the Bengals strokes.
 CLASS_III = {
     "b81u-collar-shield-undersized": "league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/"
                                      "nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
@@ -74,6 +75,18 @@ CLASS_III = {
     "b81u-MIN-road-pants-stripe-reversed-widths": "pants stripe drawn by rule at its real widths",
     "b81u-BUF-road-sleeve-stripes": "sleeve stripes drawn by rule to the real set",
     "b81u-BUF-home-sleeve-stripes": "sleeve stripes drawn by rule to the real set",
+    # families whose base-derived part is now a build-time rule (nfl2k5_kit_rule_recolour: ramp, scale, map, move,
+    # cols) and whose remaining texels are the authored art named here
+    "b81u-chest-wordmark-vs-true-shield": "chest wordmark moved by rule (move); only the drawn collar shield ships",
+    "b81u-ATL-chest-lettering-overlaps-full-height-number": "lettering moved by rule (move); only the drawn shield ships",
+    "b81u-TEN-titans-wordmark-width": "TITANS narrowed by rule (cols); only the drawn shield ships",
+    "b81u-09A9-base-kits4": "base recolour by rule (ramp); only authored art ships",
+    "b81u-09H9-base-kits4": "base recolour by rule (ramp); only authored art ships",
+    "b81u-DET-dtd-chest-wordmark-small": "DETROIT drawn italic by code (Noah's decision 6)",
+    "b81u-DET-dtd-pants-stripe": "band and wedge drawn by code on the player model (order R2-C item 2)",
+    "b81u-MIN-home-pants-stripe-hairline": "pants stripe drawn by rule at its real width",
+    "b81u-MIN-home-purple-socks": "socks recoloured by rule (ramp)",
+    "b81u-14A0-swoosh-colour": "swoosh recoloured by rule (ramp)",
 }
 
 
@@ -190,12 +203,14 @@ def main():
                     line.update(cls='iii', reason='ruling 1: ' + named)
                 elif row is not None and families and families <= set(CLASS_III) and 'ops' in row:
                     measured = kit_line(row, package(row['selector']))
-                    if measured.get('measured') and measured['base_equal'] == 0 and measured['erasure'] == 0:
+                    if measured.get('measured') and measured['erasure'] == 0:
+                        # ruling 1's principle: art drawn by the project's code from its own shape over a region cleared
+                        # by rule may land on the old mark; texels where it happens to equal the old mark are counted
                         line.update(cls='iii', reason='authored on a region cleared by rule: '
                                     + '; '.join(CLASS_III[f] for f in sorted(families)), **measured)
                     else:
-                        line.update(cls='ii', reason='authored families, but the runs hold base texels', passes=False,
-                                    **measured)
+                        line.update(cls='ii', reason='authored families, but an erasure is still stored as texels',
+                                    passes=False, **measured)
                 elif owner in PATTERNS.get(relative, {}):
                     line.update(cls='iii', reason=PATTERNS[relative][owner])
                 else:

@@ -22,6 +22,9 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
+ERASURE_FIRST = False
+
+
 def job(args):
     disc, selector, rows = args
     with bw._Image.open(Path(disc), writable=False) as image:
@@ -33,7 +36,7 @@ def job(args):
         c = kf._chunk_for(raw, row['chunk'])
         span = raw[c.offset:c.end_offset]
         assert sha(span) == row['before_sha256'], (selector, row['chunk'], 'input differs from its pin')
-        ops, line = kc.convert_row(row, span, [], [])
+        ops, line = kc.convert_row(row, span, [], [], erasure_first=ERASURE_FIRST)
         new, _detail = kf.compile_texture(span, dict(row, ops=ops))
         assert sha(new) == row['after_sha256'], (selector, row['chunk'], 'compile differs from its output pin')
         out.append((row['chunk'], ops, line))
@@ -41,7 +44,10 @@ def job(args):
 
 
 def main():
+    global ERASURE_FIRST
     disc, args = sys.argv[1], sys.argv[2:]
+    if args and args[0] == '--erasure-first':
+        ERASURE_FIRST, args = True, args[1:]
     source = None
     if args and args[0] == '--from':                    # rows as authored (runs), from an earlier copy of the document
         source, args = json.loads(Path(args[1]).read_text(encoding='utf-8')), args[2:]
@@ -49,7 +55,12 @@ def main():
     path = kf.DATA_B81U
     document = json.loads(path.read_text(encoding='utf-8'))
     pool_rows = (source or document)['textures']
-    rows = [r for r in pool_rows if set(r['defects']) <= families and not any(op['op'] == 'clear' for op in r['ops'])]
+    only = None
+    if args and args[0] == '--rows':
+        only, args = set(args[1].split(',')), args[2:]
+        families = set(args)
+    rows = [r for r in pool_rows if set(r['defects']) <= families and not any(op['op'] == 'clear' for op in r['ops'])
+            and (only is None or f"{r['selector']}:{r['chunk']}" in only)]
     by = {}
     for r in rows:
         by.setdefault(r['selector'], []).append(r)
