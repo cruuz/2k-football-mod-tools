@@ -259,6 +259,9 @@ class StudioControls(unittest.TestCase):
         mode = self.panel.qb_injury_mode
         mode.setCurrentIndex(mode.findData("realistic"))
         self.assertTrue(mod_build._only_sim_qb_changes(self.panel._plan_for_build()))
+        # Looking at another number and leaving it unchanged is not a second edit.
+        self.panel.ceiling_spin.editingFinished.emit()
+        self.assertTrue(mod_build._only_sim_qb_changes(self.panel._plan_for_build()))
         finish = self.panel.helmet_finish_combo
         self.assertEqual(finish.currentData(), mod_build.BuildPlan.helmet_finish)
         finish.activated.emit(finish.currentIndex())
