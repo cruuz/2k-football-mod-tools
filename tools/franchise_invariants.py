@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the franchise invariants I1 to I9 (beta 81 qb34 design, section 4.3) on a save or on live memory.
+"""Check the franchise invariants I1 to I9 and I11 (beta 81 qb34 design, section 4.3) on a save or on live memory.
 
     python3 tools/franchise_invariants.py SIGNED_FOLDER_OR_SAVEGAME.DAT [--strict] [--out report.json]
     python3 tools/franchise_invariants.py --memory IMAGE [--root 0x...] [--ir-store 0x... | --xbe default.xbe]
@@ -50,6 +50,10 @@ I9  the transaction ring cursor is below 600 and every row's kind is in the allo
     11, 12 (the design's list 1, 4, 7, 8, 9, 10, 12 plus 11, written by the native CPU listing at 0x2BBE72 in every
     recorded season, and 2, in the retail year-7 offseason save); ``--allowed-kinds`` sets the control arm's own set.
 
+I11 in stages 8 and 9, every club has at least one healthy quarterback on its active list (healthy = slice 1's
+    fully_healthy: no injured bit and no weeks in +0x20, no status in +0x24 & 0x70000000) -- failure. Added after P0
+    root 2508 ended 2027 week 18 with Dallas's three quarterbacks all on IR (coordinator: release blocker).
+
 Memory images: ``B81MEMv1`` (this tool's ``dump_memory``: magic, region count, then start, size and bytes of each
 region; gzip optional) or a gzip pickle of ``(bounds, regions)`` as Codex's signed_awards.check writes it (read with
 an unpickler that refuses every global, so it cannot run code).
@@ -84,6 +88,7 @@ PS_VERSION, PS_COUNT, PS_MARKER, PS_MARK = 0x19B, 0x1F2, 0x1F3, 0xA5
 POSITIONS = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
 QB, K, P = 0, 1, 2
 INJURED = 0x80000000
+WEEKS_MASK = 0xFF << 22
 STATUS_MASK = 0x70000000
 LEDGER_CAPACITY = 600
 BOARD_SLOTS = 15
@@ -772,6 +777,19 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
                     add("I8", FAIL, "quarterback-for-pick record outlived a week", club=o.club_b, slot=o.slot,
                         player=o.players_a[0])
 
+    # I11 -----------------------------------------------------------------------------------------------------------
+    if "I11" not in skip and regular:
+        for c in clubs:
+            qbs = [i for i in c.active if view.record(i)[0x35] == QB]
+            healthy = [i for i in qbs if not _u32(view.record(i), 0x20) & (INJURED | WEEKS_MASK)
+                       and not _u32(view.record(i), 0x24) & STATUS_MASK]
+            if not healthy:
+                add("I11", FAIL, "no healthy quarterback on the active list", club=c.index, quarterbacks=len(qbs),
+                    on_ir=sum(1 for i, _ in view.ir.clubs[c.index] if view.record(i)[0x35] == QB),
+                    hurt=[{"index": i, "injured": bool(_u32(view.record(i), 0x20) & INJURED),
+                           "weeks": (_u32(view.record(i), 0x20) >> 22) & 0xFF,
+                           "status": (_u32(view.record(i), 0x24) >> 28) & 7} for i in qbs])
+
     # I9 ------------------------------------------------------------------------------------------------------------
     if "I9" not in skip:
         if not 0 <= view.ledger_cursor < LEDGER_CAPACITY:
@@ -813,7 +831,7 @@ def main(argv=None) -> int:
     ap.add_argument("--xbe", type=Path, help="executable: the IR store VA comes from its layout")
     ap.add_argument("--previous", type=Path, help="the previous week's save or memory image (I8 one-week rule)")
     ap.add_argument("--allowed-kinds", default=",".join(map(str, DEFAULT_KINDS)))
-    ap.add_argument("--skip", action="append", default=[], help="I1..I9 or I4.injured_row0 (repeatable)")
+    ap.add_argument("--skip", action="append", default=[], help="I1..I9, I11 or I4.injured_row0 (repeatable)")
     ap.add_argument("--strict", action="store_true", help="warnings count as failures")
     ap.add_argument("--out", type=Path, help="write the JSON here and print only the summary line")
     a = ap.parse_args(argv)

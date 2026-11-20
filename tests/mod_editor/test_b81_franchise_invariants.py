@@ -32,6 +32,7 @@ DUPLICATE_61001 = "baa9c0d2da0abb057c4f45c885f71d8798c138430c4f3898fd89174ec6c8e
 CLEAN_CLOSING = "337b026e1798e8b74003ee97bcc57badf285aa0c63d428a6951a56206e2e1fcf"
 V09_OPENING = "5336bf76e7a95a8acfcb6be0ffc5d2b737d5c0efb22894af0818815c3f151906"
 RETAIL_F0 = "56926604e438bd47f1f94edf844a0ecd00d5a382a647526baec396ead5f1b1b8"
+NO_QB_IMAGE = "fde2c34a02be6d219cf3b2291b0a9ffbe537771ee2dfa79cdc1a06cb479e906a"
 
 
 def pinned(path: Path, digest: str) -> bytes:
@@ -209,6 +210,17 @@ class SignedSaveTests(unittest.TestCase):
             self.assertEqual(fi.check(live).violations, [])
             self.assert_same_league(view, live)
 
+    def test_the_p0_no_quarterback_image_fails_I11(self):
+        """P0 shadow root 2508, 2027 week 18: Dallas's three quarterbacks all on IR (memory image the harness kept)."""
+        path = QB34 / "no-qb-2508-2027-w18.b81mem.gz"
+        pinned(path, NO_QB_IMAGE)
+        memory = fi.load_memory(path)
+        report = fi.check(fi.view_from_memory(memory.read, search=lambda n: memory.find(n, 0x10000, 0x2000000)))
+        self.assertEqual(failing(report), {"I5", "I11"})
+        rows = [v for v in report.violations if v["invariant"] == "I11"]
+        self.assertEqual([(r["club"], r["club_name"], r["values"]["quarterbacks"], r["values"]["on_ir"]) for r in rows],
+                         [(11, "DAL", 0, 3)])
+
     def test_retail_opening_passes(self):
         folder = SAVES / "f0/UDATA/53450030/0B8506889D40"
         pinned(folder / "SAVEGAME.DAT", RETAIL_F0)
@@ -323,6 +335,18 @@ class HandBrokenTests(unittest.TestCase):
         self.assertEqual(failing(report), {"I7"})
         row, = report.violations
         self.assertEqual((row["club"], row["player_index"], row["values"]["active_club"]), (club.index, p, club.index))
+
+    def test_a_club_with_every_quarterback_hurt_fails_I11(self):
+        b, v = self.fresh(), self.view
+        club = next(c for c in v.clubs if not c.human and sum(b.position(i) == fi.QB for i in c.active) >= 2)
+        for i in club.active:
+            if b.position(i) == fi.QB:
+                b.set_word(i, 0x20, b.word(i, 0x20) | fi.INJURED | 3 << 22)     # injured, three weeks left
+        report = b.report()
+        self.assertEqual(failing(report), {"I11"})
+        self.assertEqual(warned(report), set())
+        row, = report.violations
+        self.assertEqual(row["club"], club.index)
 
     def test_a_board_record_naming_a_player_his_club_no_longer_has_fails_I8(self):
         b, v = self.fresh(), self.view
