@@ -361,3 +361,7 @@ class SignedSlice2Exchange(unittest.TestCase):
         moved = [i for i, (a, b) in enumerate(zip(written[0], by_retail[0])) if a != b]
         self.assertEqual([i for i in moved if not ledger <= i < ledger + 8], [],
                          'week 1: Retail\'s write differs from Realistic\'s outside the ledger boundary cursors')
+
+
+if __name__ == "__main__":
+    unittest.main()
