@@ -23,20 +23,22 @@ PAGE_SIZE = 0x3000
 CODE_LIMIT = 0x2000
 # Page data the C code names as extern objects. Offsets are fixed by INTERFACE.md.
 DATA = {"qb_settings": 0x2000, "qb_link_ir_store": 0x2020, "qb_counters": 0x2040, "qb_ring": 0x2400,
-        "qb_ring_cursor": 0x2E00}
+        "qb_ring_cursor": 0x2E00, "qb_menu": 0x2E04}
 COUNTERS_LIMIT = 0x2400
-EXPORTED = ("opening_entry", "room_entry", "opening_pass", "room_pass")
+EXPORTED = ("opening_entry", "room_entry", "opening_pass", "room_pass", "emergency_pass", "sign_entry", "sign_after")
 
 
 def counter_names():
-    source = (HERE / "room.c").read_text(encoding="utf-8")
+    source = (HERE / "room.h").read_text(encoding="utf-8")
     block = re.search(r"/\* COUNTERS BEGIN.*?\*/\s*struct counters \{(.*?)\};\s*/\* COUNTERS END \*/", source, re.S)
     if not block:
-        raise ValueError("room.c has no counters block")
+        raise ValueError("room.h has no counters block")
     fields = [line.strip() for line in block.group(1).splitlines() if line.strip()]
     names = []
     for field in fields:
-        match = re.fullmatch(r"u32 (\w+);(\s*/\*.*\*/)?", field)
+        match = re.fullmatch(r"u32 (\w+);(\s*/\*.*)?", field)
+        if not match and field.startswith("/*"):
+            continue
         if not match:
             raise ValueError(f"counters must be plain u32 fields: {field!r}")
         names.append(match.group(1))
@@ -46,18 +48,22 @@ def counter_names():
 
 
 def compile_page(temp):
-    entry, logic, obj, script = (temp / name for name in ("entry.o", "room.o", "page.o", "page.ld"))
-    script.write_text("SECTIONS { .text 0 : { *(.text*) *(.rodata*) *(.data*) *(COMMON) *(.bss*) } "
+    entry, logic, moves, obj, script = (temp / name for name in ("entry.o", "room.o", "moves.o", "page.o", "page.ld"))
+    # Piece 3 (the two entries, room.c's code and tables) first, exactly as before stage 4a; then moves.c and the
+    # 4a stubs (entry.S section .text.sign), so adding 4a does not move a byte of piece 3.
+    script.write_text("SECTIONS { .text 0 : { *entry.o(.text) *room.o(.text*) *room.o(.rodata*) *moves.o(.text*) "
+                      "*moves.o(.rodata*) *entry.o(.text.sign) *(.text*) *(.rodata*) *(.data*) *(COMMON) *(.bss*) } "
                       "/DISCARD/ : { *(.comment*) *(.note*) *(.eh_frame*) *(.got*) } }")
     subprocess.run(["as", "--32", "-o", entry, HERE / "entry.S"], check=True)
-    subprocess.run(["gcc", *GCC_FLAGS, "-c", HERE / "room.c", "-o", logic], check=True)
-    with logic.open("rb") as stream:
-        elf = ELFFile(stream)
-        for name in (".data", ".bss"):
-            section = elf.get_section_by_name(name)
-            if section is not None and section.data_size:
-                raise ValueError(f"room.c must keep no writable data in the code region ({name})")
-    subprocess.run(["ld", "-r", "-m", "elf_i386", "-T", script, "-o", obj, entry, logic], check=True)
+    for source, output in (("room.c", logic), ("moves.c", moves)):
+        subprocess.run(["gcc", *GCC_FLAGS, "-c", HERE / source, "-o", output], check=True)
+        with output.open("rb") as stream:
+            elf = ELFFile(stream)
+            for name in (".data", ".bss"):
+                section = elf.get_section_by_name(name)
+                if section is not None and section.data_size:
+                    raise ValueError(f"{source} must keep no writable data in the code region ({name})")
+    subprocess.run(["ld", "-r", "-m", "elf_i386", "-T", script, "-o", obj, entry, logic, moves], check=True)
     return obj
 
 

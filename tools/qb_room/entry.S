@@ -28,4 +28,27 @@ room_entry:
     popad
     popfd
     jmp 0x27eb80
+/* Stage 4a (moves.c). 0x248010 `call 0x323870` (the game's weekly signings; on standard economy_week, fastcall
+   ECX = menu with two float stack arguments, ret 8). sign_entry keeps the menu, puts sign_after in place of the return
+   address and jumps on with every register, the flags and both stack arguments untouched; the routine's ret 8 lands
+   in sign_after with ESP exactly where the unhooked call would leave it, and EBX/ESI/EDI/EBP as the routine left them
+   (EBP is still the weekly advance's menu). sign_after keeps them, calls the cdecl pass with the menu, and jumps to
+   0x248015 as the routine's own return would. Placed after room.c and moves.c (section .text.sign) so that piece 3's
+   bytes do not move. */
+.section .text.sign,"ax",@progbits
+.global sign_entry, sign_after
+sign_entry:
+    mov dword ptr [qb_menu], ecx
+    mov dword ptr [esp], OFFSET sign_after
+    jmp 0x323870
+sign_after:
+    pushfd
+    pushad
+    cld
+    push dword ptr [qb_menu]
+    call emergency_pass         /* void __attribute__((cdecl)) emergency_pass(u32 menu) */
+    add esp, 4
+    popad
+    popfd
+    jmp 0x248015
 .section .note.GNU-stack,"",@progbits

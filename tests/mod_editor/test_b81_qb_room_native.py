@@ -36,6 +36,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 import importlib.util
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -58,6 +59,19 @@ CLUB_SIZE, PLAYER_SIZE, COACH_SIZE = 500, 0x54, 0xA8
 LEAGUE_CLUBS = 34                       # 32 league clubs and the two all-star sides
 GENERATORS = ((0xB12680, 448), (0xE5FCA0, 448))
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
+PIECE3_RELOCATIONS = "14975698a55453af2a10ee3b6b523cd0ee3b983db0d4adc6073c4aac262d4053"
+# Stage 4a runs on a real standard Studio build (retail plus every standard owner, slice 1 Realistic): economy_week
+# at 0x323870, the practice-squad guard and economy gate in front of 0x322BB0, the smart cut at 0x2BF9A0.
+STANDARD_XBE = Path(os.environ.get("NFL2K5_B81_QB_STANDARD_XBE",
+                                   "/media/noah/Storage/2K5-project/beta81/evidence/nov19-qb-product/realistic.xbe"))
+STANDARD_SHA256 = "9f435b380a948c976cf4fe1160a8137a157f7bb93cd202b5fb04d49195c42a6a"
+SIGN_SITE, SIGN_RETURN = 0x248010, 0x248015
+SIGN_CLUB = 5
+FREE_AGENTS, IR_STORE, MENU = 0x2040000, 0x2050000, 0x2060000
+LEDGER, LEDGER_CURSOR = 0xE3F070, 0xE3F06C
+# The other 51 of a 53-man club, by position (all at or above the smart cut's minimums; G, DT and DE above its keep).
+LAYOUT = {1: 1, 2: 1, 3: 6, 4: 6, 5: 2, 6: 2, 7: 3, 8: 1, 9: 3, 10: 3, 11: 3, 12: 2, 13: 4, 14: 4, 15: 5, 16: 5}
+ROSTER_CONTRACT, FREE_AGENT_CONTRACT = 0x03000002, 0x01000001
 # QB_ROOM_TEST_OLD_CODE=1 enters every case through the retail call bytes (the old code) to show which tests fail
 # there; the evidence run in .b77-scratch/b81/qb34/evidence/native keeps that output.
 OLD_CODE = os.environ.get("QB_ROOM_TEST_OLD_CODE") == "1"
@@ -157,7 +171,8 @@ class PageInterface(unittest.TestCase):
         self.assertEqual((room.H0_PPM, room.D2_SCALE_MILLI), (15000, 1000))
         self.assertEqual(room.parse_settings(record), {"mode": 1, "stages": 5, "shadow": True, "h0_ppm": 12345,
                                                        "d2_scale_milli": 900})
-        for bad in ({"stages": 32}, {"stages": -1}, {"stages": True}, {"stages": 1, "shadow": 1},
+        self.assertEqual(room.parse_settings(room.settings_record(room.STAGE_SIGN | room.STAGE_E2))["stages"], 40)
+        for bad in ({"stages": 64}, {"stages": -1}, {"stages": True}, {"stages": 1, "shadow": 1},
                     {"stages": 1, "h0_ppm": 1_000_001}, {"stages": 1, "d2_scale_milli": -1},
                     {"stages": 1, "h0_ppm": 1.5}):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
@@ -200,8 +215,24 @@ class PageInterface(unittest.TestCase):
             self.assertEqual(new[0], 0xE8)
             self.assertEqual(at + 5 + struct.unpack("<i", new[1:])[0], VA + room.LABELS[name])
         self.assertEqual(list(room.sites(VA, 0)), listed)
-        with self.assertRaises(ValueError):
-            list(room.sites(VA, room.STAGE_SIGN))
+        signing = list(room.sites(VA, room.STAGE_SIGN))
+        self.assertEqual(signing[:2], listed)
+        name, at, old, new = signing[2]
+        self.assertEqual((name, at, old), ("sign_entry", 0x248010, bytes.fromhex("e85bb80d00")))
+        self.assertEqual(at + 5 + struct.unpack("<i", new[1:])[0], VA + room.LABELS["sign_entry"])
+        self.assertEqual(page[room.MENU_SLOT:room.MENU_SLOT + 4], bytes(4))
+
+    def test_stage_4a_is_linked_after_piece_3_which_keeps_every_byte(self):
+        # 5846655b1's template (piece 3 alone): 0x10BC bytes, sha256 below, and the same relocations inside them.
+        self.assertEqual(room.PIECE3_BYTES, 0x10BC)
+        self.assertEqual(hashlib.sha256(room._TEMPLATE[:room.PIECE3_BYTES]).hexdigest(),
+                         "2441d02a88a943bbe825ce2bfa12140cb333949bc15bb582f943f50c8ee2c619")
+        inside = [r for r in room._RELOCATIONS if r[0] < room.PIECE3_BYTES]
+        self.assertEqual(len(inside), 96)
+        self.assertEqual(hashlib.sha256(repr(inside).encode()).hexdigest(), PIECE3_RELOCATIONS)
+        for label in ("emergency_pass", "sign_entry", "sign_after"):
+            self.assertGreaterEqual(room.LABELS[label], room.PIECE3_BYTES)
+        self.assertLess(room.CODE_BYTES, room.CODE_LIMIT)
 
     def test_authored_template_rebuilds_with_its_development_toolchain(self):
         if not all(shutil.which(tool) for tool in ("gcc", "as", "ld")) or not importlib.util.find_spec("elftools"):
@@ -270,6 +301,45 @@ class RetailFacts(unittest.TestCase):
                 self.assertEqual(bytes(self.image.read(at, len(expected) // 2)).hex(), expected)
 
 
+    def test_signing_routines_have_the_conventions_moves_c_declares(self):
+        """Stage 4a (moves.c). Retail: the stage table of the weekly advance sends stages 1, 2, 6, 7 and 8 to the
+        signing call (8: 0x247E0E, pushes 0.05 then 1.0) and stage 9 (0x247E6E) past it; 0x322BB0 is stdcall with
+        four arguments (ret 0x10) and scans the free-agent list then the offer table 0xE3C600 with the same test:
+        position, a strictly higher 0x246D80(p, 1), and 0x2BD440(ECX p, EDX 0; push 0, 1, 0) in AX below the
+        budget's low word; 0x323870 ends ret 8."""
+        stages = struct.unpack("<9I", self.image.read(0x248088, 36))
+        self.assertEqual(stages, (0x247FBD, 0x247FBD, 0x248015, 0x248015, 0x248015, 0x247FD7, 0x247DEA, 0x247E0E,
+                                  0x247E6E))
+        for at, expected in (
+                (0x247E64, "68cdcc4c3de99b010000"),                         # stage 8: push 0.05; jmp 0x248009
+                (0x248009, "680000803f8bcde85bb80d00"),                     # push 1.0; mov ecx,ebp; call 0x323870
+                (0x247E6E, "e8fdcfe7ff"),                                   # stage 9 path, which ends jmp 0x248015
+                (0x247FBB, "eb58"),
+                (0x322BB0, "81ec14010000"), (0x322DDF, "c21000"),
+                (0x322BC0, "83c538"),                                       # the free-agent list: root + 0x38
+                (0x322C11, "6a006a016a0033d28bcee820a8f9ff663b842430010000"),
+                (0x322C06, "d85c2410dfe0f6c441752b"),                      # fcomp best; skip unless greater
+                (0x322840, "8bc1c1e0040500c6e300c3"),                       # offer entry i: 0xE3C600 + 16 i
+                (0x322BA0, "8a410b2403f6d81bc0f7d8c3"),                     # counted: byte +0xB & 3
+                (0x322C62, "8b510881e20000001c81fa0000000c"),              # state: bits 26..28 of +8 are 3
+                (0x322CCD, "83ff64"),                                       # 100 offer entries
+                (0x323A51, "c20800"),                                       # 0x323870 (retail) ends ret 8
+                (0x2BFA94, "c3"),                                           # 0x2BF9A0 plain ret (fastcall)
+                (0xC3F00, "555657")):
+            with self.subTest(at=hex(at)):
+                self.assertEqual(bytes(self.image.read(at, len(expected) // 2)).hex(), expected)
+
+    def test_the_standard_build_keeps_the_signing_contract(self):
+        """The standard Studio build 9f435b38: economy_week (0x323870) ends ret 8 (0x323A1C); 0x322BB0 jumps to the
+        practice-squad guard and the economy gate (0x3D1610, which re-enters the picker at 0x322BB6); 0x2BD440 is
+        the economy's value, ret 0xC; 0x2BF9A0 jumps to the smart cut 0x3E21D0."""
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(standard_build())
+        for at, expected in ((0x323A1C, "c20800"), (0x322BB0, "e95bea0a00"), (0x2BD659, "c20c00"),
+                             (0x2BF9A0, "e92b281200"), (0x31E63A, "e977450000"), (0x248010, "e85bb80d00")):
+            with self.subTest(at=hex(at)):
+                self.assertEqual(bytes(image.read(at, len(expected) // 2)).hex(), expected)
+
 # ---- the league in Unicorn ----------------------------------------------------------------------------------------
 @lru_cache(maxsize=1)
 def standard_image():
@@ -280,9 +350,12 @@ def standard_image():
 
 
 class QB:
-    def __init__(self, ovr, row, *, years=5, locked=True, line=(0, 0, 0, 0, 0, 0), injury=0, status=0, position=0):
+    def __init__(self, ovr, row=0, *, years=5, locked=True, line=(0, 0, 0, 0, 0, 0), injury=0, status=0, position=0,
+                 contract=0, salary=0):
         self.ovr, self.row, self.years, self.locked = ovr, row, years, locked
         self.line, self.injury, self.status, self.position = tuple(line), injury, status, position
+        # contract: player +0x24 bits 0..3 (years left) and 24..27 (length); salary: the base word at +0xA.
+        self.contract, self.salary = contract, salary
         self.address = self.index = None
 
 
@@ -296,15 +369,20 @@ def stub_record_getter(table):
 class League(unittest.TestCase):
     """The whole standard executable with the room page, a synthetic 34-club league and both entries."""
 
+    def image(self):
+        return standard_image()
+
     def setUp(self):
         from unicorn import Uc, UC_ARCH_X86, UC_MODE_32, UC_PROT_READ, UC_PROT_EXEC, x86_const
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 
-        data = standard_image()
+        data = self.image()
         image = XbeImage(data)
         self.x = x86_const
         self.uc = uc = Uc(UC_ARCH_X86, UC_MODE_32)
-        uc.mem_map(0x10000, 0xFF0000)
+        top = max(0x1000000, (max(s.end for s in image.sections) + 0xFFF) & ~0xFFF)
+        self.assertLessEqual(top, VA)
+        uc.mem_map(0x10000, top - 0x10000)
         for s in image.sections:
             if s.raw_size:
                 uc.mem_write(s.start, data[s.raw:s.raw + s.raw_size])
@@ -357,8 +435,8 @@ class League(unittest.TestCase):
     def events(self):
         return room.events(self.page())
 
-    def install(self, settings):
-        self.uc.mem_write(VA, room.page_bytes(VA, settings))
+    def install(self, settings, *, ir_store_va=0):
+        self.uc.mem_write(VA, room.page_bytes(VA, settings, ir_store_va=ir_store_va))
 
     def settings(self, stages, **kwargs):
         self.uc.mem_write(VA + room.SETTINGS_OFFSET, room.settings_record(stages, **kwargs))
@@ -395,7 +473,8 @@ class League(unittest.TestCase):
     def write_player(self, q):
         raw = bytearray(PLAYER_SIZE)
         struct.pack_into("<I", raw, 0x20, q.injury)
-        struct.pack_into("<I", raw, 0x24, (q.years & 31) << 8 | q.status)
+        struct.pack_into("<H", raw, 0xA, q.salary)
+        struct.pack_into("<I", raw, 0x24, (q.years & 31) << 8 | q.status | q.contract)
         struct.pack_into("<H", raw, 0x28, 0x2A5 | q.row << 10 | 0 << 13)
         struct.pack_into("<I", raw, 0x2C, STATS + 0x100 * q.index)
         raw[0x35] = q.position
@@ -1018,6 +1097,333 @@ class PasserRating(League):
         self.set_line(starter, (17, 584, 371, 3781, 26, 12))
         self.enter("room")
         self.assertEqual(self.last()[9], 883)
+
+
+# ---- T8: stage 4a, emergency signings (DESIGN 4.1) on the real standard executable ------------------------------
+@lru_cache(maxsize=1)
+def standard_build():
+    if not STANDARD_XBE.is_file():
+        raise unittest.SkipTest("the standard Studio build 9f435b38 (beta81 evidence nov19-qb-product) is absent")
+    data = STANDARD_XBE.read_bytes()
+    if hashlib.sha256(data).hexdigest() != STANDARD_SHA256:
+        raise unittest.SkipTest("the standard Studio build differs from 9f435b38")
+    return data
+
+
+def picker_choice(pool, budget):
+    """Python mirror of 0x322BB0's choice: scan order, a strictly higher rating with value below the budget."""
+    chosen, best = None, None
+    for player, rating, value in pool:
+        if (best is not None and rating <= best) or value >= budget:
+            continue
+        chosen, best = player, rating
+    return chosen
+
+
+class SignLeague(League):
+    """The standard build with the room page; club 5 is the CPU club under test, the rest are human (no fill)."""
+
+    def image(self):
+        return standard_build()
+
+    def setUp(self):
+        super().setUp()
+        for club in range(LEAGUE_CLUBS):
+            base = CLUBS + CLUB_SIZE * club
+            self.uc.mem_write(base + 0x19B, b"\x01")                 # the practice-squad owner's reserve marker
+            self.uc.mem_write(base + 0x1F3, b"\xa5")
+            self.write(0xE5775C + 4 * club, 0 if club == SIGN_CLUB else 1)
+        for at, value in ((0xE6013C, 0), (0xE3C278, 200000), (ROOT + 0x38, 0), (ROOT + 0x3C, FREE_AGENTS)):
+            self.write(at, value)
+        # The practice-squad owner's roster extension block (its removal guard refuses without it; real rosters have it),
+        # with its CRC from the owner's own routine 0x14E49EB.
+        block = ROOT + 0xC9C00
+        self.write(0xB72808, 0xCA000)
+        self.uc.mem_write(block, struct.pack("<4I", 0x52354B32, 0x00325653, 0x00200002, 0x00020005))
+        self.uc.mem_write(STOP + 0x10, b"\xe8" + struct.pack("<i", 0x14E49EB - (STOP + 0x15)))
+        self.uc.reg_write(self.x.UC_X86_REG_EAX, block)
+        self.uc.reg_write(self.x.UC_X86_REG_ESP, STACK)
+        self.uc.emu_start(STOP + 0x10, STOP + 0x15, count=100_000)
+        self.write(block + 0x14, self.uc.reg_read(self.x.UC_X86_REG_EAX))
+        self.install(room.settings_record(room.STAGE_SIGN))
+        self.free = []
+
+    def roster(self, qbs, *, club=SIGN_CLUB):
+        """A 53-man club: the given quarterbacks and LAYOUT's other 51, with real contracts."""
+        others = [QB(70 - 3 * k, k, position=position, locked=False) for position, n in LAYOUT.items() for k in range(n)]
+        for q in (*qbs, *others):
+            q.contract = q.contract or ROSTER_CONTRACT
+            q.salary = q.salary or 500
+        self.club(club, [*qbs, *others], others=0)
+        return qbs
+
+    def free_agents(self, fas):
+        for q in fas:
+            q.contract = q.contract or FREE_AGENT_CONTRACT
+            q.salary = q.salary or 400
+            self.add_player(q, None)
+        self.free.extend(fas)
+        self.write(ROOT + 0x38, len(self.free))
+        self.uc.mem_write(FREE_AGENTS, struct.pack(f"<{len(self.free)}I", *(q.address for q in self.free)))
+        return fas
+
+    def club_list(self, club=SIGN_CLUB):
+        base = CLUBS + CLUB_SIZE * club
+        n = self.uc.mem_read(base + 0x11C, 1)[0]
+        return list(struct.unpack(f"<{n}I", self.uc.mem_read(base, 4 * n)))
+
+    def fa_list(self):
+        n = self.word(ROOT + 0x38)
+        return list(struct.unpack(f"<{n}I", self.uc.mem_read(self.word(ROOT + 0x3C), 4 * n)))
+
+    def ledger(self):
+        return [struct.unpack("<3I", self.uc.mem_read(LEDGER + 12 * i, 12)) for i in range(self.word(LEDGER_CURSOR))]
+
+    def snapshot(self):
+        return (self.table(), bytes(self.uc.mem_read(CLUBS, CLUB_SIZE * LEAGUE_CLUBS)), self.fa_list(), self.ledger())
+
+    def call(self, at, ecx=0, edx=0, stack=()):
+        """A fastcall or stdcall into the game that pops its own arguments."""
+        frame = struct.pack(f"<{1 + len(stack)}I", STOP, *stack)
+        self.uc.mem_write(STACK - len(frame), frame)
+        for register, value in ((self.x.UC_X86_REG_ESP, STACK - len(frame)), (self.x.UC_X86_REG_ECX, ecx),
+                                (self.x.UC_X86_REG_EDX, edx)):
+            self.uc.reg_write(register, value)
+        self.uc.emu_start(at, STOP, count=2_000_000)
+        self.assertEqual(self.uc.reg_read(self.x.UC_X86_REG_ESP), STACK)
+        return self.uc.reg_read(self.x.UC_X86_REG_EAX)
+
+    def value(self, q):
+        """0x2BD440 exactly as 0x322BB0 calls it (ECX player, EDX 0, stack 0, 1, 0), low 16 bits."""
+        return self.call(0x2BD440, q.address, 0, (0, 1, 0)) & 0xFFFF
+
+    def payroll(self, club=SIGN_CLUB):
+        team = CLUBS + CLUB_SIZE * club
+        self.call(0xC3F00, team)
+        return self.word(team + 0x124)
+
+    def enter_sign(self, *, installed=True, want=0):
+        """0x248009..0x248015 of the weekly advance: push 1.0 (low), the menu in ECX, `call 0x323870` (installed: the
+        hook's call to sign_entry). want (pushed before, at 0x247E64 for stage 8: 0.05) is 0.0 here so the native
+        5 percent depth draw cannot sign a quarterback of its own."""
+        installed = installed and not OLD_CODE
+        call = dict((at, (old, new)) for _, at, old, new in room.sites(VA, room.STAGE_SIGN))[SIGN_SITE]
+        call = call[1] if installed else call[0]
+        if self.sites.get(SIGN_SITE) != call:
+            self.uc.mem_write(SIGN_SITE, call)
+            self.uc.ctl_flush_tb()
+            self.sites[SIGN_SITE] = call
+        self.uc.mem_write(STACK - 4, struct.pack("<f", want))
+        incoming = (0x11, 0x22, 0x33, 0x44, 0x55, 0x66, MENU, STACK - 4, 0x8D7)
+        for register, value in zip(self.registers, incoming, strict=True):
+            self.uc.reg_write(register, value)
+        self.uc.emu_start(0x248009, SIGN_RETURN, count=50_000_000)
+        self.assertEqual(self.uc.reg_read(self.x.UC_X86_REG_EIP), SIGN_RETURN)
+        return tuple(self.uc.reg_read(r) for r in self.registers)
+
+    def x87(self):
+        return tuple(self.uc.reg_read(r) for r in (self.x.UC_X86_REG_FPCW, self.x.UC_X86_REG_FPSW,
+                                                    self.x.UC_X86_REG_FPTAG))
+
+
+class Signings(SignLeague):
+    def e1_club(self):
+        starter = QB(70, 0, line=(4, 120, 70, 800, 5, 3))
+        hurt = QB(72, 1, injury=0x80000000 | 2 << 22)
+        self.roster([starter, hurt])
+        injured, healthy, cheap = self.free_agents([QB(80, injury=0x80000000 | 5 << 22), QB(75), QB(60)])
+        return starter, hurt, injured, healthy, cheap
+
+    def test_t8_e1_one_healthy_quarterback_at_53_cuts_a_non_quarterback_and_signs_the_next_healthy_free_agent(self):
+        starter, hurt, injured, healthy, cheap = self.e1_club()
+        before = self.club_list()
+        self.enter_sign()
+        after = self.club_list()
+        self.assertEqual(len(after), 53)
+        self.assertIn(healthy.address, after)
+        cut = [p for p in before if p not in after]
+        self.assertEqual(len(cut), 1)
+        self.assertNotEqual(self.uc.mem_read(cut[0] + 0x35, 1)[0], 0)               # never a quarterback
+        self.assertEqual(sorted(self.fa_list()), sorted([injured.address, cheap.address, cut[0]]))
+        team = CLUBS + CLUB_SIZE * SIGN_CLUB
+        self.assertEqual([(row[0] & 31, row[1], row[2]) for row in self.ledger()],
+                         [(9, cut[0], team), (1, healthy.address, team)])               # release, then signing
+        counts = self.counters()
+        self.assertEqual({k: counts[k] for k in ("sign_passes", "e1_tried", "e1_done", "sign_cuts", "sign_failed")},
+                         {"sign_passes": 1, "e1_tried": 1, "e1_done": 1, "sign_cuts": 1, "sign_failed": 0})
+        self.assertEqual(self.events(), [(3, 5, SIGN_CLUB, 5, room.RESULT_APPLIED, starter.index, healthy.index, 0, 0, 0,
+                                          5, 0, 100000)])
+
+    def test_t8_old_code_signs_nobody_the_game_sees_no_need(self):
+        self.e1_club()
+        before = self.club_list(), self.fa_list()
+        self.enter_sign(installed=False)
+        # (The game's own weekly pass still runs: it ticks the free agents' unsigned-weeks bits at +0x25.)
+        self.assertEqual((self.club_list(), self.fa_list(), self.ledger()), (*before, []))
+
+    def test_t8_registers_stack_and_x87_at_0x248015_equal_the_unhooked_call(self):
+        results = {}
+        for installed in (False, True):
+            self.setUp()
+            self.e1_club()
+            self.fninit()
+            self.uc.reg_write(self.x.UC_X86_REG_FPCW, 0x007F)
+            results[installed] = (self.enter_sign(installed=installed), self.x87())
+        self.assertEqual(results[True], results[False])
+        self.assertEqual(results[True][0][7], STACK)                    # the caller's two pushes are gone
+        self.assertEqual(results[True][0][6], MENU)                     # EBP: the weekly advance's menu
+        self.assertEqual(self.counters()["e1_done"], 1)                 # the pass ran (and signed) in the hooked run
+        # Around a stub that only pops its 8 bytes like the real routine, every register comes back as it went in.
+        self.setUp()
+        self.e1_club()
+        self.uc.mem_write(0x323870, bytes.fromhex("c20800"))
+        self.uc.ctl_flush_tb()
+        regs = self.enter_sign()
+        self.assertEqual(regs, (0x11, 0x22, MENU, 0x44, 0x55, 0x66, MENU, STACK, 0x8D7))   # ECX: 0x24800E mov ecx,ebp
+        self.assertEqual(self.counters()["sign_passes"], 1)
+        self.assertEqual(self.word(VA + room.MENU_SLOT), MENU)
+
+    def test_t8_no_cap_room_means_no_cut_and_no_signing(self):
+        # economy_value scales every value by the league cap ([0xE3C278] / 75300), so values are read under the cap
+        # each case sets.
+        starter, hurt, injured, healthy, cheap = self.e1_club()
+        self.write(0xE3C278, self.payroll() + 11)                    # cap room minus 10 is 1
+        self.assertGreater(min(self.value(healthy), self.value(cheap)), 1)
+        before = self.club_list(), self.fa_list()
+        self.enter_sign()
+        self.assertEqual((self.club_list(), self.fa_list(), self.ledger()), (*before, []))
+        counts = self.counters()
+        self.assertEqual((counts["e1_tried"], counts["sign_no_candidate"], counts["sign_cuts"]), (1, 1, 0))
+        self.assertEqual(self.events()[-1][4:7], (room.RESULT_KEPT, starter.index, 0xFFFF))
+        # Room minus 10 just above the cheaper one's value (a fixed point: values follow the cap) and he signs.
+        self.setUp()
+        starter, hurt, injured, healthy, cheap = self.e1_club()
+        payroll, cap = self.payroll(), 0
+        for _ in range(8):
+            self.write(0xE3C278, cap or payroll + 11)
+            cap = payroll + 11 + self.value(cheap)
+        self.write(0xE3C278, cap)
+        self.assertEqual(cap - payroll - 10, self.value(cheap) + 1)
+        self.assertGreater(self.value(healthy), self.value(cheap) + 1)
+        self.enter_sign()
+        self.assertIn(cheap.address, self.club_list())
+        self.assertNotIn(healthy.address, self.club_list())
+
+    def test_t8_the_candidate_avoids_a_cheaper_injured_quarterback_the_picker_would_take(self):
+        starter, hurt = self.roster([QB(66, 0), QB(62, 1, injury=0x80000000 | 3 << 22)])
+        veteran = QB(85, years=22, injury=0x80000000 | 6 << 22)       # injured, old: cheap for his rating
+        prime, young = QB(75, years=5), QB(64, years=2)
+        self.free_agents([veteran, prime, young])
+        values = {q.address: self.value(q) for q in (veteran, prime, young)}
+        pool = [(q.address, q.ovr, values[q.address]) for q in self.free]
+        self.assertLess(values[veteran.address], values[prime.address])
+        # The old way to ask (economy_cover's budget 0xFFFF, or value(prime) + 1) takes the injured veteran.
+        self.assertEqual(picker_choice(pool, 0xFFFF), veteran.address)
+        self.assertEqual(picker_choice(pool, values[prime.address] + 1), veteran.address)
+        expected = next(q for q in sorted((prime, young), key=lambda q: -q.ovr)
+                        if picker_choice(pool, values[q.address] + 1) == q.address)
+        self.assertIs(expected, young)
+        self.enter_sign()
+        roster = self.club_list()
+        self.assertIn(young.address, roster)
+        self.assertNotIn(veteran.address, roster)
+        self.assertNotIn(prime.address, roster)
+
+    def test_t8_a_human_club_without_auto_sign_is_untouched(self):
+        # The economy's own fill would serve 31 human clubs as soon as auto sign/cut is on, so this case stubs
+        # 0x323870 (ret 8) and leaves only club 5 in the league table: the pass's own gate is what is tested.
+        for auto, signs in ((0, False), (1, True)):
+            with self.subTest(auto_sign=auto):
+                self.setUp()
+                self.e1_club()
+                self.write(0xE5775C + 4 * SIGN_CLUB, 1)
+                self.write(0xE6013C, auto)
+                for club in range(LEAGUE_CLUBS):
+                    if club != SIGN_CLUB:
+                        self.write(0xE5786C + 4 * club, 0)
+                self.uc.mem_write(0x323870, bytes.fromhex("c20800"))
+                self.uc.ctl_flush_tb()
+                before = self.snapshot()
+                self.enter_sign()
+                self.assertEqual(self.snapshot() != before, signs)
+                self.assertEqual(self.counters()["sign_skip_human"], 0 if auto else 1)
+                self.assertEqual(self.counters()["sign_passes"], 1)
+
+    def test_t8_stages_7_and_9_and_shadow_change_nothing(self):
+        for case in ("stage 7", "stage 9", "shadow", "stage 8"):
+            with self.subTest(case=case):
+                runs = []
+                for installed in (False, True):
+                    self.setUp()
+                    self.e1_club()
+                    if case.startswith("stage"):
+                        self.write(0xE576A4, int(case[-1]))
+                    if case == "shadow":
+                        self.settings(room.STAGE_SIGN, shadow=True)
+                    self.enter_sign(installed=installed)
+                    runs.append(self.snapshot())
+                self.assertEqual(runs[1] == runs[0], case != "stage 8")
+                counts = self.counters()
+                self.assertEqual(counts["sign_passes"], 1)
+                self.assertEqual(counts["sign_inactive"], int(case in ("stage 7", "stage 9")))
+                if case == "shadow":
+                    self.assertEqual((counts["sign_shadow"], self.events()[-1][4]), (1, room.RESULT_SHADOW))
+
+
+class SecondSignings(SignLeague):
+    """E2: the starter is lost to injured reserve and the market has better."""
+
+    def e2_club(self, *, ir_ovr=80, weeks=4, season=False, market=75, stages=room.STAGE_SIGN | room.STAGE_E2,
+                linked=True):
+        starter = QB(70, 0, line=(5, 150, 90, 1000, 6, 4))
+        backup = QB(66, 1, line=(1, 10, 6, 70, 0, 0))
+        self.roster([starter, backup])
+        lost = QB(ir_ovr, injury=0x80000000 | weeks << 22 if weeks else 0)
+        self.add_player(lost, None)
+        store = bytearray(0x40 + 0xA4 * 32)
+        struct.pack_into("<II", store, 0, 0x52493236, 1)
+        club = 0x40 + 0xA4 * SIGN_CLUB
+        store[club] = 1
+        struct.pack_into("<IhBB", store, club + 4, lost.address, 0, 1 if season else 0, 1)
+        self.uc.mem_write(IR_STORE, bytes(store))
+        self.install(room.settings_record(stages), ir_store_va=IR_STORE if linked else 0)
+        (fa,) = self.free_agents([QB(market)])
+        self.record(SIGN_CLUB, 3, 4, 0)
+        return starter, backup, lost, fa
+
+    def key(self, starter, fa, year):
+        return [6, SIGN_CLUB, year, 3, 4, 0, fa.index, starter.line[1], starter.line[3]]
+
+    def test_t8_e2_signs_on_half_the_draws_and_only_when_every_condition_holds(self):
+        outcomes = []
+        for year in range(12):
+            self.setUp()
+            self.write(0xE576B8, year)
+            starter, backup, lost, fa = self.e2_club()
+            expected = draw(self.key(starter, fa, year)) < 50000
+            self.enter_sign()
+            self.assertEqual(fa.address in self.club_list(), expected, year)
+            event = self.events()[-1]
+            self.assertEqual(event[3:7], (6, room.RESULT_APPLIED if expected else room.RESULT_KEPT,
+                                          starter.index, fa.index))
+            self.assertEqual(event[12], 50000)
+            outcomes.append(expected)
+        self.assertTrue(any(outcomes) and not all(outcomes))
+        year = outcomes.index(True)
+        for case, kwargs, applies in (("3 weeks left", {"weeks": 3}, True), ("2 weeks left", {"weeks": 2}, False),
+                                      ("out for the season", {"weeks": 0, "season": True}, True),
+                                      ("lost man only 2 better", {"ir_ovr": 72}, False),
+                                      ("market only 1 better", {"market": 71}, False),
+                                      ("E2 bit off", {"stages": room.STAGE_SIGN}, False),
+                                      ("store not linked", {"linked": False}, False)):
+            with self.subTest(case=case):
+                self.setUp()
+                self.write(0xE576B8, year)
+                starter, backup, lost, fa = self.e2_club(**kwargs)
+                self.enter_sign()
+                self.assertEqual(fa.address in self.club_list(), applies and draw(self.key(starter, fa, year)) < 50000)
+                self.assertEqual(self.counters()["e2_tried"], int(applies))
+                self.assertEqual(self.counters()["sign_ir_unlinked"], int(case == "store not linked"))
 
 if __name__ == "__main__":
     unittest.main()

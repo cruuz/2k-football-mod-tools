@@ -1,9 +1,10 @@
 """Relocatable page of the quarterback room owner (beta 81 piece 3, owner nfl2k5_qb_room).
 
 Three pages: code and read-only tables at 0x0000..0x1FFF (0xCC after the last byte of code), the settings record at
-0x2000, link words at 0x2020, counters at 0x2040, the event ring at 0x2400 and its cursor at 0x2E00. The file holds
-zeros in the counters, ring and cursor; they change only in RAM. Two whole 5-byte calls of the weekly advance enter
-the page (and a third for signings once stage 4a is built). The byte interface is fixed by
+0x2000, link words at 0x2020 (+0x2020: the IR owner's store, for stage 4a), counters at 0x2040, the event ring at
+0x2400, its cursor at 0x2E00 and the 4a menu slot at 0x2E04. The file holds zeros in the counters, ring, cursor and
+slot; they change only in RAM. Two whole 5-byte calls of the weekly advance enter the page, and with stage bit 8 a
+third (0x248010, the weekly signings) for stage 4a. The byte interface is fixed by
 .b77-scratch/b81/qb34/INTERFACE.md; the rules are DESIGN.md section 2. The template, relocations, labels and counter
 names are generated from tools/qb_room by build.py.
 """
@@ -27,15 +28,17 @@ RING_COUNT = 128
 # d (L - W), g, rating10 of row 0, gap ovr(b) - ovr(a), coach1000 / 10, threshold p100k.
 RING_EVENT = struct.Struct("<HBBBBHHbBHbBI")
 RING_CURSOR = 0x2E00
+MENU_SLOT = 0x2E04                   # RAM only (zero in the file): the menu sign_entry keeps for the 4a pass.
+PIECE3_BYTES = 0x10BC                # piece 3 (both entries, room.c's code and tables); 4a is linked after it.
 
-STAGE_D1, STAGE_D2D3, STAGE_D4, STAGE_SIGN, STAGE_TRADE = 1, 2, 4, 8, 16
-STAGE_MASK = 31
+STAGE_D1, STAGE_D2D3, STAGE_D4, STAGE_SIGN, STAGE_TRADE, STAGE_E2 = 1, 2, 4, 8, 16, 32
+STAGE_MASK = 63                      # 16 (trades, 4b) is not built: the page ignores it; 32 counts only with 8.
 FLAG_SHADOW = 1
 H0_PPM = 15000                       # D3 base 0.015 in millionths until shadow panel P0 fixes it (DESIGN 6.3).
 D2_SCALE_MILLI = 1000                # D2 table scale in thousandths (1000 = the table as written).
 LIMIT_PPM = 1_000_000                # Both are clamped to this in the page (a probability is at most 1).
 
-DECISION_D1, DECISION_D2, DECISION_D3, DECISION_D4 = 1, 2, 3, 4
+DECISION_D1, DECISION_D2, DECISION_D3, DECISION_D4, DECISION_E1, DECISION_E2 = 1, 2, 3, 4, 5, 6
 RESULT_KEPT, RESULT_APPLIED, RESULT_SHADOW, RESULT_LOCK_ONLY = 0, 1, 2, 3
 
 # (site, retail bytes, entry label, stage bit the site needs; 0 = always). Whole 5-byte calls.
@@ -123,7 +126,7 @@ def events(page: bytes) -> list[tuple]:
 
 
 # Generated from tools/qb_room by build.py.
-CODE_BYTES = 0x10bc
+CODE_BYTES = 0x197f
 
 _TEMPLATE = b''.join((
     bytes.fromhex('9c60fce8fcffffff619de91ce02b009c60fce8fcffffff619de97ceb270056538b581085db0f8ea0'),
@@ -233,8 +236,64 @@ _TEMPLATE = b''.join((
     bytes.fromhex('e4f1ffff83f90119c983e10385db7505bb410000005055ff74240c5689da8d44247ce869f0ffff83'),
     bytes.fromhex('c41085ff0f8460fcffffe965ffffff81c41c0200005b5e5f5dc3a10000000040a300000000b80100'),
     bytes.fromhex('0000e960f3ffffa10400000040a30400000031c0e94ef3ffff669090b888000070110100a0860100'),
-    bytes.fromhex('d0fb0100'),
-    b'\xcc' * 3908,
+    bytes.fromhex('d0fb01008b502081e20000c0bf750f8b4024a9000000700f94c00fb6c0c331c0c383ec1c89c1ba01'),
+    bytes.fromhex('000000b8806d2400ffd0d95c240c8b44240c85c0790231c083c41cc389c2c1ea1780fa767637530f'),
+    bytes.fromhex('b6daba640000000fbae01e722b25ffff7f000d000080006bc064b99500000029d9ba01000000d3e2'),
+    bytes.fromhex('01c2b99600000029d9d3eaeb0331c0c389d05bc383ec1089c16a006a016a0031d2b840d42b00ffd0'),
+    bytes.fromhex('0fb7c083c410c35389c18b1d78c2e30081c2d75d39008b14950000000085d274110fb7909c010000'),
+    bytes.fromhex('31c081faffff0000740a31c039da730489d829d08b912401000029d05bc35557565383ec0c89c689'),
+    bytes.fromhex('542404894c24088b4c2428a100000000890424a11829b7008b78048b1c2483e37f8b2db876e5006b'),
+    bytes.fromhex('d3148d82000000006689aa000000008b15b476e50088500289f28850038a5424048850048a542408'),
+    bytes.fromhex('88500583c8ff837c242000740f8b44242029f8be5400000031d2f7f66bd3146689820600000083c8'),
+    bytes.fromhex('ff85c9740d8b0129f8be5400000031d2f7f66bd314668982080000008b44242c88820a0000008b44'),
+    bytes.fromhex('243088820b00000066c7820c000000000031c085c9740c8b4104e895feffff2b4424246bdb148883'),
+    bytes.fromhex('0e000000c6830f000000008b4424348983100000008b042440a300000000a19c00000040a39c0000'),
+    bytes.fromhex('0083c40c5b5e5f5dc35557565381ec6c0400008944240c8954241c894c242889c1b8504c0c00ffd0'),
+    bytes.fromhex('8944240885c00f84ec0500008b44240c05d75d39008b04850000000085c07418a13c01e600487410'),
+    bytes.fromhex('a1c000000040a3c0000000e9c00500008b4424080fb6901c01000080fa410f87ac0500008b442408'),
+    bytes.fromhex('8d0490894424148b74240831ff31c0894424108944241831ed8b44241439c6743a8b1e85db742f8a'),
+    bytes.fromhex('433584c075284589d8e876fdffff85c0741cff44241889d8e884fdffff39c77207837c2410007506'),
+    bytes.fromhex('89c7895c241083c604ebbe83fd020f874405000031c089442414837c241000740b89f8e874fdffff'),
+    bytes.fromhex('89442414837c2418010f8690000000f644241c200f8416050000a10000000085c0746c8b1081fa36'),
+    bytes.fromhex('32495275626954240ca40000008d5c10400fb60383c3043c147605b8140000008d3cc339fb0f84dd'),
+    bytes.fromhex('0400008b3385f6750583c308ebed8a463584c075f489f0e8e5fcffffe803fdffff8b54241429d083'),
+    bytes.fromhex('f8027edd8a4306a80175268b4620c1e8163c0276cceb1aa1cc00000040a3cc000000e991040000c7'),
+    bytes.fromhex('44241805000000eb08c744241806000000a11829b7008b7838897c241c8b503c31ff31db397c241c'),
+    bytes.fromhex('744a8d04ba8b3085f6743e8a463584c075378954242083fb400f849200000089d8c1e0048d6c0460'),
+    bytes.fromhex('89750031c089450c89f0e852fcffff8945044389f0e8b2fcffff8945088b54242047ebb0be00c6e3'),
+    bytes.fromhex('008b3e8a460ba80374478b4608250000001c3d0000000c753885ff74348a473584c0752d83fb4074'),
+    bytes.fromhex('3889d8c1e0048d6c0460897d00c7450c0100000089f8e8f6fbffff8945044389f8e856fcffff8945'),
+    bytes.fromhex('0883c61081fe40cce30075a583fb407610a1c800000040a3c8000000e9a7030000837c242800750b'),
+    bytes.fromhex('8b4c2408b8003f0c00ffd08b54240c8b442408e82ffcffff89442420c1e3048d44246001d8894424'),
+    bytes.fromhex('1c31f631ff8d4c246031db8b44241c39c1744089cd83790c0075218b01e85afbffff85c0741685f6'),
+    bytes.fromhex('74168b51048b470439d0720839cf720839c2750489ddeb0c85db74088b410439430473f083c11089'),
+    bytes.fromhex('ebebb885db74538b530881fafeff00007609be0100000089dfeb9a8b44242083e80a39d07eec428d'),
+    bytes.fromhex('44246031f631ff31c98b6c241c39e8741d85f674053b7804730f395008730a8b088b7804be010000'),
+    bytes.fromhex('0083c010ebdb390b75b88b4c2408b820770c00ffd089c68b4c2408b850770c00ffd0894424208b4c'),
+    bytes.fromhex('2408b880770c00ffd0894424248b6c242029f58b44242001f08b7c242401f88944241c837c241806'),
+    bytes.fromhex('0f853a01000085db0f847a0200008b4304e8b6faffff8b7c241429f8480f8e65020000a1a8000000'),
+    bytes.fromhex('40a3a80000008b3d987fbd0085ff740731c0a3987fbd00ba060000008b4c2410b840ee1400ffd089'),
+    bytes.fromhex('44242cba080000008b4c2410b840ee1400ffd089c185ff7406893d987fbd00c744243c060000008b'),
+    bytes.fromhex('44240c89442440a1b876e50089442444897424488b4424208944244c8b44242489442450a11829b7'),
+    bytes.fromhex('008b50048b0329d0bf5400000031d2f7f7894424548b44242c89442458894c245ca1d000000040a3'),
+    bytes.fromhex('d0000000b83352425131d23344943c89c1c1e91031c869c06bcaeb8589c1c1e90d31c869c035aeb2'),
+    bytes.fromhex('c289c1c1e91031c84283fa0975d5b9a086010031d2f7f1be50c3000081fa4fc30000766da1d40000'),
+    bytes.fromhex('0040a3d400000056566850c30000ff7424285553ff74242cff74242c31c9ba06000000e93c010000'),
+    bytes.fromhex('a1a000000040a3a0000000bea086010085db752da1c400000040a3c4000000535368a0860100ff74'),
+    bytes.fromhex('2428556a00ff74242cff74242c31c9ba05000000e9fb000000837c2428007426a1d800000040a3d8'),
+    bytes.fromhex('000000515156ff7424285553ff74242cff74242cb902000000e9ca0000008b4424088a801c010000'),
+    bytes.fromhex('3c34765bba340000008b4c2408b8a0f92b00ffd0a1dc00000040a3dc0000008b4c2408b8003f0c00'),
+    bytes.fromhex('ffd08b54240c8b442408e840f9ffff83e80a3b43087f20a1e000000040a3e0000000525256ff7424'),
+    bytes.fromhex('285553ff74242cff74242c31c9eb61ffb424800400008b430840506a00ff742414b8b02b3200ffd0'),
+    bytes.fromhex('89c185c07426837c241805750da1a400000040a3a4000000eb0ba1ac00000040a3ac000000b90100'),
+    bytes.fromhex('0000eb0ba1e400000040a3e4000000505056ff7424285553ff74242cff74242c8b5424388b44242c'),
+    bytes.fromhex('e8e9f8ffff83c42081c46c0400005b5e5f5dc3a1b800000040a3b8000000a1000000003d5142524f'),
+    bytes.fromhex('7514a1040000003d4f4d76317508a10800000048740ca10800000040a308000000c35756538b3d0c'),
+    bytes.fromhex('000000f7c7080000007446a1a476e50083f808740da1bc00000040a3bc000000eb2fa11829b70085'),
+    bytes.fromhex('c074268b351000000083e60131db83ec0cff74241c89f189fa89d8e859f9ffff4383c41083fb2075'),
+    bytes.fromhex('e55b5e5fc3890d00000000c7042400000000e96c3832009c60fcff3500000000e8fcffffff83c404'),
+    bytes.fromhex('619de911802400'),
+    b'\xcc' * 1665,
     bytes(4096),
 ))
 
@@ -336,13 +395,76 @@ _RELOCATIONS = (
     (0x1089, False, 'page', 0x2040),
     (0x1098, False, 'page', 0x2044),
     (0x109e, False, 'page', 0x2044),
+    (0x11b4, False, 'page', 0x2e00),
+    (0x11d4, False, 'page', 0x2400),
+    (0x11db, False, 'page', 0x2400),
+    (0x121a, False, 'page', 0x2406),
+    (0x1238, False, 'page', 0x2408),
+    (0x1242, False, 'page', 0x240a),
+    (0x124c, False, 'page', 0x240b),
+    (0x1253, False, 'page', 0x240c),
+    (0x1270, False, 'page', 0x240e),
+    (0x1276, False, 'page', 0x240f),
+    (0x1281, False, 'page', 0x2410),
+    (0x128a, False, 'page', 0x2e00),
+    (0x128f, False, 'page', 0x20dc),
+    (0x1295, False, 'page', 0x20dc),
+    (0x12e9, False, 'page', 0x2100),
+    (0x12ef, False, 'page', 0x2100),
+    (0x13a3, False, 'page', 0x2020),
+    (0x1418, False, 'page', 0x210c),
+    (0x141e, False, 'page', 0x210c),
+    (0x1502, False, 'page', 0x2108),
+    (0x1508, False, 'page', 0x2108),
+    (0x1654, False, 'page', 0x20e8),
+    (0x165a, False, 'page', 0x20e8),
+    (0x16f2, False, 'page', 0x2110),
+    (0x16f8, False, 'page', 0x2110),
+    (0x1745, False, 'page', 0x2114),
+    (0x174b, False, 'page', 0x2114),
+    (0x1771, False, 'page', 0x20e0),
+    (0x1777, False, 'page', 0x20e0),
+    (0x1785, False, 'page', 0x2104),
+    (0x178b, False, 'page', 0x2104),
+    (0x17b9, False, 'page', 0x2118),
+    (0x17bf, False, 'page', 0x2118),
+    (0x17fd, False, 'page', 0x211c),
+    (0x1803, False, 'page', 0x211c),
+    (0x1828, False, 'page', 0x2120),
+    (0x182e, False, 'page', 0x2120),
+    (0x186e, False, 'page', 0x20e4),
+    (0x1874, False, 'page', 0x20e4),
+    (0x187b, False, 'page', 0x20ec),
+    (0x1881, False, 'page', 0x20ec),
+    (0x188d, False, 'page', 0x2124),
+    (0x1893, False, 'page', 0x2124),
+    (0x18c4, False, 'page', 0x20f8),
+    (0x18ca, False, 'page', 0x20f8),
+    (0x18cf, False, 'page', 0x2000),
+    (0x18db, False, 'page', 0x2004),
+    (0x18e7, False, 'page', 0x2008),
+    (0x18ef, False, 'page', 0x2048),
+    (0x18f5, False, 'page', 0x2048),
+    (0x18ff, False, 'page', 0x200c),
+    (0x1916, False, 'page', 0x20fc),
+    (0x191c, False, 'page', 0x20fc),
+    (0x192d, False, 'page', 0x2010),
+    (0x1957, False, 'page', 0x2e04),
+    (0x195e, False, 'page', 0x1967),
+    (0x1963, True, 'stock', 0x32386c),
+    (0x196c, False, 'page', 0x2e04),
+    (0x1971, True, 'page', 0x18bf),
+    (0x197b, True, 'stock', 0x248011),
 )
 
 LABELS = {
+    'emergency_pass': 0x18c3,
     'opening_entry': 0x0,
     'opening_pass': 0x1082,
     'room_entry': 0xf,
     'room_pass': 0x1097,
+    'sign_after': 0x1967,
+    'sign_entry': 0x1955,
 }
 
 # Counter name -> page offset, in the order of struct counters in tools/qb_room/room.c.
@@ -393,4 +515,16 @@ COUNTERS = {
     'e2_done': 0x20ec,
     'trades_posted': 0x20f0,
     'trades_cancelled': 0x20f4,
+    'sign_passes': 0x20f8,
+    'sign_inactive': 0x20fc,
+    'sign_skip_human': 0x2100,
+    'sign_no_candidate': 0x2104,
+    'sign_pool_overflow': 0x2108,
+    'sign_ir_unlinked': 0x210c,
+    'e2_drawn': 0x2110,
+    'e2_kept': 0x2114,
+    'sign_shadow': 0x2118,
+    'sign_cuts': 0x211c,
+    'sign_room_lost': 0x2120,
+    'sign_failed': 0x2124,
 }
