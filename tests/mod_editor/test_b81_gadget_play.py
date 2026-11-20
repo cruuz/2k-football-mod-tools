@@ -57,7 +57,7 @@ QUALIFIED_TABLE_SHA256 = "5e71503f18a514faa70e70d1e1373c0d098d941440f5efe967beb7
 # The qualified code's classifier (select_slot) and the scoped tail after the builder (scope_return), by offset.
 QUALIFIED_SELECT_SLOT, QUALIFIED_ASSIGN, QUALIFIED_SCOPE_RETURN, QUALIFIED_TAPPED = 0x173, 0x502, 0xAD, 0xD6
 # Review F1 added the one-snap restore; this is the whole 2,048-byte allocation with the qualified link values.
-RUNTIME_CODE_SHA256 = "fe6e54a031eafa72e2e4b3e31e784679cddbd57f8dc87f346e477eec5c82af9a"
+RUNTIME_CODE_SHA256 = "fa76b2d54376afecc90fe2c97106fcf11fca49d327def5de695f3fb65e48c920"
 
 
 def _sha(data: bytes) -> str:
@@ -125,9 +125,14 @@ class TemplateTests(unittest.TestCase):
                     delta = (int.from_bytes(moved[at:at + 4], "little") - int.from_bytes(base[at:at + 4], "little"))
                     self.assertEqual(delta & 0xFFFFFFFF, 0x40)
 
-    def test_hooks_enter_the_runtime_from_the_four_native_sites(self):
+    def test_hooks_enter_the_runtime_from_the_five_native_sites(self):
         (_, builder, builder_retail, builder_new), (_, ordinal, ordinal_retail, ordinal_new), \
-            (_, store, store_retail, store_new), (_, check, check_retail, check_new) = gadget._hooks()
+            (_, store, store_retail, store_new), (_, audible, audible_retail, audible_new), \
+            (_, check, check_retail, check_new) = gadget._hooks()
+        self.assertEqual(audible, 0x9FB10)
+        self.assertEqual(audible_retail, bytes.fromhex("e8bb8c0100"))      # call 0xB87D0 inside the audible 0x9FAF0
+        self.assertEqual(audible + 5 + struct.unpack_from("<i", audible_new, 1)[0],
+                         gadget.CODE_VA + template.LABELS["restore_after_audible"])
         self.assertEqual(check, 0x18A6EE)
         self.assertEqual(check_retail, bytes.fromhex("e84dddffff"))          # call 0x188440 in the snap path
         self.assertEqual(check + 5 + struct.unpack_from("<i", check_new, 1)[0],
@@ -810,7 +815,7 @@ class NativeLineupTests(unittest.TestCase):
         def hook(_uc, _pc, _size, _user):
             sp = m.reg("ESP")
             if record is not None:
-                record.append(dict(ecx=m.reg("ECX"), edx=m.reg("EDX"), esp=sp,
+                record.append(dict(pc=_pc, ecx=m.reg("ECX"), edx=m.reg("EDX"), esp=sp,
                                    args=struct.unpack("<4I", bytes(m.uc.mem_read(sp + 4, 16)))))
             m.reg("EIP", m.get(sp))
             m.reg("ESP", sp + 4 + pop)
@@ -819,7 +824,7 @@ class NativeLineupTests(unittest.TestCase):
 
     def test_the_restore_rebuilds_the_offense_lineup_after_a_substitution_only(self):
         """Review F1: when 0x9F990 stores the next play for the offense whose last build substituted (no-huddle,
-        audible, CPU re-pick), the restore runs the play-call offense build exactly as 0x89590 does (0x18AD10 with
+        CPU re-pick), or the offense audible 0x9FAF0 sets it, the restore runs the play-call offense build exactly as 0x89590 does (0x18AD10 with
         the side, its record +4 and the two packed situation values) and that build gives the game's own eleven for
         the new play. The marked side's first store spends the mark. Any other store (no mark, another side's mark,
         the marked side on defense, the huddle play call 0x2074BC that 0x89590 follows) only runs 0xB8790."""
@@ -827,22 +832,29 @@ class NativeLineupTests(unittest.TestCase):
         slot = self.links[314][(3, 147)]
         others = [link.play_index for link in book.formations[3].play_links if (3, link.play_index) not in self.links[314]]
         restore = gadget.CODE_VA + template.LABELS["restore_after_store"]
+        audible = gadget.CODE_VA + template.LABELS["restore_after_audible"]
         marker = gadget.CODE_VA + template.LABELS["gadget_team"]
         m = self.after.m
         sync, builds = [], []
-        hooks = [self._skip(self.after, 0xB8790, record=sync), self._skip(self.after, 0x18AD10, pop=0x10, record=builds)]
+        hooks = [self._skip(self.after, 0xB8790, record=sync), self._skip(self.after, 0xB87D0, record=sync),
+                 self._skip(self.after, 0x18AD10, pop=0x10, record=builds)]
         try:
             no_huddle, huddle = 0xA24EC, 0x2074C1   # 0x9F990's return from the no-huddle handler / the play call
-            for mark, offense, caller, expect, left in (
-                    (SIDES[0], SIDES[0], no_huddle, True, 0), (SIDES[0], SIDES[0], 0xA33F9, True, 0),
-                    (0, SIDES[0], no_huddle, False, 0), (SIDES[1], SIDES[0], no_huddle, False, SIDES[1]),
-                    (SIDES[0], SIDES[1], no_huddle, False, 0), (SIDES[0], SIDES[0], huddle, False, 0)):
-                with self.subTest(mark=hex(mark), offense=hex(offense), caller=hex(caller)):
+            cases = [(mark, offense, caller, expect, left, entry, displaced)
+                     for mark, offense, caller, expect, left in (
+                         (SIDES[0], SIDES[0], no_huddle, True, 0), (SIDES[0], SIDES[0], 0xA33F9, True, 0),
+                         (0, SIDES[0], no_huddle, False, 0), (SIDES[1], SIDES[0], no_huddle, False, SIDES[1]),
+                         (SIDES[0], SIDES[1], no_huddle, False, 0), (SIDES[0], SIDES[0], huddle, False, 0))
+                     for entry, displaced in ((restore, 0xB8790), (audible, 0xB87D0))
+                     if not (entry == audible and caller == huddle)]   # the huddle play call never reaches the audible
+            for mark, offense, caller, expect, left, entry, displaced in cases:
+                with self.subTest(mark=hex(mark), offense=hex(offense), caller=hex(caller), entry=hex(displaced)):
                     sync.clear(), builds.clear()
                     m.put(marker, mark)
                     m.put(0xE60280, offense)
-                    # 0x9F990's frame at its call 0x9F9CB: EDI, ESI, EBX pushed, then its own return address.
-                    m.call(restore, ecx=SIDES[0], edx=0x1234, esi=SIDES[0], args=(0x1234, SIDES[0], 0x11111111, caller))
+                    # 0x9F990's (and 0x9FAF0's) frame at the hooked call: EDI, ESI, EBX pushed, then its return address.
+                    m.call(entry, ecx=SIDES[0], edx=0x1234, esi=SIDES[0], args=(0x1234, SIDES[0], 0x11111111, caller))
+                    self.assertEqual([call["pc"] for call in sync], [displaced])
                     self.assertEqual(len(sync), 1)
                     self.assertEqual((sync[0]["ecx"], sync[0]["edx"]), (SIDES[0], 0x1234))
                     self.assertEqual(m.reg("ESI"), SIDES[0])
@@ -863,28 +875,31 @@ class NativeLineupTests(unittest.TestCase):
                 m.uc.hook_del(h)
         # The real rebuild: after a substituted End Around, a no-huddle-style store of another play rebuilds the
         # offense with the game's own eleven for that play (the build's output, read where line() reads it).
-        sync_only = self._skip(self.after, 0xB8790)
-        try:
-            self.select(book, 3, 147)
-            self.assertEqual(self.outcome(0, slot)[2], "changed")
-            self.select(book, 3, 147)
-            benched = self.before.line(0)[slot]
-            self.assertEqual(self._marker(self.after), SIDES[0])
-            self.select(book, 3, others[0])
-            m.put(0xE602B8, 12)
-            m.put(0xE60280, SIDES[0])
-            m.put(0xE60284, SIDES[1])
-            m.call(restore, ecx=SIDES[0], edx=0, esi=SIDES[0], args=(0, SIDES[0], 0, 0xA24EC), stop=0x18A646,
-                   budget=300000)
-            rebuilt = self.after.words(m.reg("ESP") + 0x74, 11)
-            # During the rebuild the receiver the substitution benched is under the field threshold once.
-            self.assertEqual(self._word(self.after, "gadget_grace"), benched)
-            self.assertEqual(self._word(self.after, "gadget_benched"), 0)
-        finally:
-            m.uc.hook_del(sync_only)
-            m.put(gadget.CODE_VA + template.LABELS["gadget_grace"], 0)
-        self.assertEqual(rebuilt, self.before.line(0))
-        self.assertEqual(self._marker(self.after), 0)
+        for entry, displaced in ((restore, 0xB8790), (audible, 0xB87D0)):
+            with self.subTest(real_rebuild=hex(displaced)):
+                sync_only = self._skip(self.after, displaced)
+                try:
+                    self.select(book, 3, 147)
+                    self.assertEqual(self.outcome(0, slot)[2], "changed")
+                    self.select(book, 3, 147)
+                    benched = self.before.line(0)[slot]
+                    self.assertEqual(self._marker(self.after), SIDES[0])
+                    self.select(book, 3, others[0])
+                    m.put(0xE602B8, 12)
+                    m.put(0xE60280, SIDES[0])
+                    m.put(0xE60284, SIDES[1])
+                    caller = 0xA24EC if entry == restore else 0x18B090    # no-huddle store / the offense audible
+                    m.call(entry, ecx=SIDES[0], edx=0, esi=SIDES[0], args=(0, SIDES[0], 0, caller), stop=0x18A646,
+                           budget=300000)
+                    rebuilt = self.after.words(m.reg("ESP") + 0x74, 11)
+                    # During the rebuild the receiver the substitution benched is under the field threshold once.
+                    self.assertEqual(self._word(self.after, "gadget_grace"), benched)
+                    self.assertEqual(self._word(self.after, "gadget_benched"), 0)
+                finally:
+                    m.uc.hook_del(sync_only)
+                    m.put(gadget.CODE_VA + template.LABELS["gadget_grace"], 0)
+                self.assertEqual(rebuilt, self.before.line(0))
+                self.assertEqual(self._marker(self.after), 0)
 
     def test_the_benched_receiver_is_judged_once_as_if_he_had_stayed_on_the_field(self):
         """Review F1, fatigue: the snap path's availability call 0x18A6EE goes through available_or_kept. For the

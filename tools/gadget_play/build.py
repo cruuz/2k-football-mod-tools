@@ -32,7 +32,7 @@ TEMPLATE = {"native_gate": 0x000E8340, "book_rows": TABLE_VA, "links": TABLE_VA 
             "blobs": TABLE_VA + 0xB00, "pair_info": TABLE_VA + 0x31FC}
 SYMBOLS = tuple(TEMPLATE)
 LABELS = ("scoped_builder", "scope_return", "tapped_ordinal", "select_slot", "assign_if_fast", "restore_after_store",
-          "available_or_kept", "gadget_team", "gadget_benched", "gadget_grace")
+          "restore_after_audible", "available_or_kept", "gadget_team", "gadget_benched", "gadget_grace")
 MOVE = 0x1230
 CFLAGS = ["-m32", "-Os", "-std=c99", "-ffreestanding", "-fno-pic", "-fno-pie", "-fno-stack-protector",
           "-fno-asynchronous-unwind-tables", "-fno-unwind-tables", "-mno-sse", "-mpreferred-stack-boundary=2",

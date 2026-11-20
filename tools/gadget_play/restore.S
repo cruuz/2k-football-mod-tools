@@ -3,7 +3,9 @@
    no-huddle / audible / re-pick handlers (0xA24B0 and others) store the next play
    with 0x9F990 and keep the eleven already on the field, so a GAD put in by this
    rule would stay. 0x9F990 calls 0xB8790 (ECX side, EDX play) right after storing
-   the play; that call comes here. The first store for the side whose last build
+   the play; that call comes here. The offense's audible at the line does not store
+   through 0x9F990: 0x9FAF0 sets the play itself (0x18A1E0) and calls 0xB87D0, and
+   that call comes here too (restore_after_audible). The first store for the side whose last build
    carried a substitution spends the mark. When that store is for the offense and
    is not the huddle play call (0x2074BC, which the play-call build 0x89590 always
    follows), the offense lineup is rebuilt exactly as 0x89590 builds it (0x18AD10
@@ -22,8 +24,9 @@
    field threshold, once; every other check is the game's own. */
 .intel_syntax noprefix
 .text
-.global restore_after_store, available_or_kept, gadget_team, gadget_benched, gadget_grace
+.global restore_after_store, restore_after_audible, available_or_kept, gadget_team, gadget_benched, gadget_grace
 .set formation_sync, 0xb8790
+.set audible_sync, 0xb87d0                /* 0x9FAF0's call after the audible's play is set */
 .set offense_build, 0x18ad10
 .set offense_side, 0xe60280
 .set huddle_store_return, 0x2074c1    /* after 0x2074BC: call 0x9F990 (the play call) */
@@ -34,6 +37,10 @@
 .set bench_away, 0xe601a8
 restore_after_store:
     call formation_sync               /* the displaced call, same registers */
+    jmp restore
+restore_after_audible:                /* replaces call 0xB87D0 at 0x9FB10 inside 0x9FAF0: the same frame (EBX, ESI, EDI pushed; ESI the side) */
+    call audible_sync
+restore:
     cmp esi,dword ptr [gadget_team]   /* ESI: 0x9F990's side */
     jne done
     mov dword ptr [gadget_team],0     /* this side's next store spends the mark */

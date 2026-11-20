@@ -29,8 +29,9 @@ as fast replaces the slot's pick.
 
 One snap only (beta 81 review F1). The rule changes one build's output; the game rebuilds a lineup only on the
 play-call path. The no-huddle, audible and CPU re-pick handlers store the next play with 0x9F990 and keep the eleven
-on the field, so the emulator showed the GAD staying for a no-huddle snap. 0x9F990's call to 0xB8790 (right after the
-store) now runs through a small restore. A substitution marks the offense side; the side's next store, or its next
+on the field, so the emulator showed the GAD staying for a no-huddle snap and for an audible at the line. 0x9F990's call
+to 0xB8790 (right after the store) and the offense audible 0x9FAF0's call to 0xB87D0 (right after it sets the play;
+the audible never stores through 0x9F990) now run through a small restore. A substitution marks the offense side; the side's next store, or its next
 play-call offense build, spends the mark. When that store is for the offense and is not the huddle play call
 (0x2074BC, always followed by the play-call build), the offense lineup is rebuilt exactly as 0x89590 builds it: the
 game's own eleven for the stored play (so after a gadget play a no-huddle or audible snap lines up the normal players
@@ -47,9 +48,9 @@ availability call 0x18A6EE checks that one receiver with the field threshold, on
 
 Placement. The code and table use the fixed gadget slots (nfl2k5_xbe_space.GADGET_REQUESTS: code 0x151F680, 2,048
 bytes; table 0x151FE80, 12,800 bytes, right below the Backfield cards at 0x1523080), which every beta-81 standard
-build reserves, so installing, rebuilding or removing it never moves another owner. Four sites: the builder call
-0x18A641 (5 bytes), the ordinal helper entry 0xE7760 (6 bytes), the play store's call 0x9F9CB (5 bytes) and the snap
-path's availability call 0x18A6EE (5 bytes).
+build reserves, so installing, rebuilding or removing it never moves another owner. Five sites: the builder call
+0x18A641 (5 bytes), the ordinal helper entry 0xE7760 (6 bytes), the play store's call 0x9F9CB (5 bytes), the offense
+audible's call 0x9FB10 (5 bytes) and the snap path's availability call 0x18A6EE (5 bytes).
 """
 from __future__ import annotations
 
@@ -90,6 +91,10 @@ ORDINAL_RETAIL = bytes.fromhex("53558b6c2410")   # push ebx; push ebp; mov ebp,[
 # store; that call goes through the restore, which rebuilds the offense lineup when its last build had a substitution.
 STORE_SITE, FORMATION_SYNC = 0x0009F9CB, 0x000B8790
 STORE_RETAIL = b"\xe8" + struct.pack("<i", FORMATION_SYNC - STORE_SITE - 5)
+# Review F1: the offense's audible at the line (0x9FAF0, reached from 0x2D7010 when the side is the offense) sets the
+# play itself and calls 0xB87D0 instead of storing through 0x9F990; that call goes through the same restore.
+AUDIBLE_SITE, AUDIBLE_SYNC = 0x0009FB10, 0x000B87D0
+AUDIBLE_RETAIL = b"\xe8" + struct.pack("<i", AUDIBLE_SYNC - AUDIBLE_SITE - 5)
 # Review F1: the snap path's availability check of each pick (0x188440); the receiver a substitution benched is
 # checked once more with the field threshold, as if he had stayed on the field.
 AVAILABILITY_SITE, AVAILABILITY = 0x0018A6EE, 0x00188440
@@ -111,6 +116,8 @@ GUARDS = (
     (0x0009F9D0, 0xA8, (), "9c0c03d32d2954adf2e938a39bda7e8b69d7f4a2088c9f7ce1b34f139e6755c4", "play store, after the restore site"),
     (0x000895E4, 0x40, (), "52d3d3f18eda6f9d2e54973aecc3e230ae77c3c90aac6568b0267cac90736b0f", "play-call offense build the restore repeats"),
     (0x002074AD, 0x1B, (), "4b2164592b7b5f25f4c1bcefb1bf188dde46c072edb123a72632f09c25b723d3", "huddle play-call store the restore leaves alone"),
+    (0x0009FAF0, 0x20, (), "02ca713f914ded21fd66ff17b8fd2781e28f8b1c3ad5497881dc3a500127f1c3", "offense audible, before the restore site"),
+    (0x0009FB15, 0x5C, (), "19b2944ca069c48aed3542a59b7b4e48612e670ea51b4f870481ca9a6c709c7d", "offense audible, after the restore site"),
     (0x0018A646, 0xA8, (), "7716083748aa0f5e8b4bb108bba0494b0be378a1215e7e0f1967528bae48923b", "snap path before the availability call"),
     (0x0018A6F3, 0xB4, (), "e08e76002c264de19f8cf944517161237993d69bb6cfac58fdc9b88b12721bc4", "snap path after the availability call"),
     (0x00188440, 0x138, (), "ff2cfb161cec97c8ce2894c9c13e115d2a4ec4fec9ce15082ab84dcb17805f30", "availability test and its thresholds"),
@@ -268,10 +275,12 @@ def _hooks() -> tuple[tuple[str, int, bytes, bytes], ...]:
     ordinal = CODE_VA + template.LABELS["tapped_ordinal"]
     restore = CODE_VA + template.LABELS["restore_after_store"]
     kept = CODE_VA + template.LABELS["available_or_kept"]
+    audible = CODE_VA + template.LABELS["restore_after_audible"]
     return (("gadget_builder", BUILDER_SITE, BUILDER_RETAIL, b"\xe8" + struct.pack("<i", entry - BUILDER_SITE - 5)),
             ("gadget_ordinal", ORDINAL_SITE, ORDINAL_RETAIL,
              b"\xe9" + struct.pack("<i", ordinal - ORDINAL_SITE - 5) + b"\x90"),
             ("gadget_restore", STORE_SITE, STORE_RETAIL, b"\xe8" + struct.pack("<i", restore - STORE_SITE - 5)),
+            ("gadget_audible", AUDIBLE_SITE, AUDIBLE_RETAIL, b"\xe8" + struct.pack("<i", audible - AUDIBLE_SITE - 5)),
             ("gadget_availability", AVAILABILITY_SITE, AVAILABILITY_RETAIL,
              b"\xe8" + struct.pack("<i", kept - AVAILABILITY_SITE - 5)))
 
