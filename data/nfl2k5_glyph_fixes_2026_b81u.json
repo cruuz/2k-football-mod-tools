@@ -174,6 +174,9 @@
    "miamidolphins.com photo gallery 2026-10-25 at NYJ (static.clubs.nfl.com dolphins ids ziwxus5fiwitmifpg8gc: home 85; i3pigbymnr6a6ldp0c4t: home 7; g8y89fpw3p0x3cyqemcc: home 2 and 6; hyjyfwict7jqnupexrn5: home 44 and 92): white block numerals with rounded outer corners and rectangular counters, one orange outline, about 0.59 to 0.65 wide over height on the body",
    "refs/uniforms_2026/MIA/2026-10-11_CIN_primary-away (93, 92, 26, 6 on the white road jersey: the same face in aqua)"
   ],
+  "NE": [
+   "audit/digits/NE.json (batch5 block) + evidence NE_batch5.jpg: 4 digits, 4 players, numbers stand full height"
+  ],
   "NO_alt_b": [
    "NO/alt_17A1: real width over height 0.631, stroke 0.156, 4 digits of 2 players (2026 club game photographs, BATCH5/digits/judged.json); game 0.625 and 0.129",
    "NO/NO_b5_NO_w6_042_wbf2te4yruk0dokio7yp.jpg",
@@ -214,6 +217,11 @@
    "SEA/alt_26H4: real width over height 0.636, stroke 0.156, 3 digits of 3 players (2026 club game photographs, BATCH5/digits/judged.json); game 0.614 and 0.172",
    "SEA/SEA_b5_SEA_w5_046_cxxepu1ritzrmqogjh2i.jpg",
    "SEA/SEA_b5_SEA_w8_028_njixc7ujkoq0v7bzikg8.jpg"
+  ],
+  "TB": [
+   "refs/uniforms_2026/TB/2026-10-08_DAL_primary-home/helmet_back_1423.jpg (PARRISH 25 and 97: white numerals, thin orange inline, black edge)",
+   "refs/uniforms_2026/TB/2026-10-08_DAL_primary-home/helmet_front_0344.jpg (10, front)",
+   "bump/refs/TB/TB_b5_TB_w9_091 and _116 (road 27 and 15: red numerals, orange inline, dark edge)"
   ],
   "TEN": [
    "bump/refs/TEN/TEN_TEN_008_xhd4xwmhgr0wfgtko8a7.jpg (82 square-on: solid light blue, white inline, dark layer offset down-right)",
@@ -7780,149 +7788,157 @@
    ]
   },
   {
-   "after_sha256": "11eaf2d6779fb75bfccb2116124d585574e1bb53eb4e5a16201385a7205cef39",
+   "after_sha256": "1b95089f429f124a0a4ceaa3567cbee4c8b490ebcc2dd023a95b0a663ce293fd",
    "before_sha256": "b969b04fdeec67479dace8ffbe702b3df038ea704c5860d66d8c3a66ee693f53",
    "chunk": 43,
    "defects": [
-    "b81u-JAX-road-nameplate-heavy"
+    "b81u-JAX-road-nameplate-heavy",
+    "b81u-JAX-road-nameplate-thin-his-design"
    ],
    "kind": "names_png",
    "length": 11344,
-   "note": "the road and Bold City name letters redrawn at the real weight (Noah named this plate): stems 2 texels (0.14 of the cap on the player, real 0.16), thin 2-row cross strokes, open counters, a 2-texel letter gap; black #101010 as the numbers",
+   "note": "Noah 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 2 texels across and 2 rows (0.14 and 0.08 of the cap on the player; real 0.16 and 0.10), counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers",
    "offset": 500768,
    "png": "JAX_12A0_names.png",
-   "png_sha256": "88b01fa90f250376b8e2daee12db5327dd7715d4e5e93f1d894ef3757da7744f",
+   "png_sha256": "3098fcc01a455e61336834d739847fcac67f87197df3f5b619d13cb182445d80",
    "reference": [
     "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
     "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
-    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg"
+    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg",
+    "work/fix/DECISIONS/tools/jax_thin.py"
    ],
    "resource_size": 1547856,
    "selector": "12A0",
    "texture": "names"
   },
   {
-   "after_sha256": "0d4052b965bd4ed36073c8b884eee4aee34471af488b9f3ccc65ae4322dc24c2",
+   "after_sha256": "4c5696c513442e773e21ad76c1191709bd352e0721488832ad59e2bed461db06",
    "before_sha256": "e73b6605d52c45074a54b479b75fcb3f8ab83e98c11fa980693dcd477450732a",
    "chunk": 44,
    "defects": [
-    "b81u-JAX-road-nameplate-heavy"
+    "b81u-JAX-road-nameplate-heavy",
+    "b81u-JAX-road-nameplate-thin-his-design"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the road and Bold City name letters redrawn at the real weight (Noah named this plate): stems 2 texels (0.14 of the cap on the player, real 0.16), thin 2-row cross strokes, open counters, a 2-texel letter gap; black #101010 as the numbers",
+   "note": "Noah 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 2 texels across and 2 rows (0.14 and 0.08 of the cap on the player; real 0.16 and 0.10), counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers",
    "offset": 512112,
    "reference": [
     "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
     "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
-    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg"
+    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg",
+    "work/fix/DECISIONS/tools/jax_thin.py"
    ],
    "resource_size": 1547856,
    "selector": "12A0",
    "texture": "NAME",
    "widths": [
-    5,
-    8,
+    6,
+    13,
+    15,
+    13,
+    13,
+    15,
+    12,
+    13,
     14,
+    15,
+    3,
+    11,
     14,
-    14,
+    12,
+    17,
+    15,
+    15,
+    13,
     14,
     14,
     13,
     14,
     14,
-    4,
-    12,
     14,
+    20,
     14,
     16,
-    14,
     15,
-    14,
-    15,
-    14,
-    14,
-    14,
-    14,
-    15,
-    17,
-    14,
-    14,
-    13,
-    11
+    13
    ]
   },
   {
-   "after_sha256": "89a71b65b1ca8ca58aefd813617db4e8c600665b36cf17296c0a40b414ed9588",
+   "after_sha256": "0324e0b6b70b6282e8381d5157f66bc639b4f39f8359941a153cd3bef4fd180c",
    "before_sha256": "247407e7eafffcc445c599c62f5ab3cff0f56e7143a90c808ec7d93643fa4be3",
    "chunk": 43,
    "defects": [
-    "b81u-JAX-road-nameplate-heavy"
+    "b81u-JAX-road-nameplate-heavy",
+    "b81u-JAX-road-nameplate-thin-his-design"
    ],
    "kind": "names_png",
    "length": 11344,
-   "note": "the road and Bold City name letters redrawn at the real weight (Noah named this plate): stems 2 texels (0.14 of the cap on the player, real 0.16), thin 2-row cross strokes, open counters, a 2-texel letter gap; black #101010 as the numbers",
+   "note": "Noah 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 2 texels across and 2 rows (0.14 and 0.08 of the cap on the player; real 0.16 and 0.10), counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers",
    "offset": 504640,
    "png": "JAX_12A0_names.png",
-   "png_sha256": "88b01fa90f250376b8e2daee12db5327dd7715d4e5e93f1d894ef3757da7744f",
+   "png_sha256": "3098fcc01a455e61336834d739847fcac67f87197df3f5b619d13cb182445d80",
    "reference": [
     "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
     "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
-    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg"
+    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg",
+    "work/fix/DECISIONS/tools/jax_thin.py"
    ],
    "resource_size": 1550288,
    "selector": "12A6",
    "texture": "names"
   },
   {
-   "after_sha256": "0d4052b965bd4ed36073c8b884eee4aee34471af488b9f3ccc65ae4322dc24c2",
+   "after_sha256": "4c5696c513442e773e21ad76c1191709bd352e0721488832ad59e2bed461db06",
    "before_sha256": "e73b6605d52c45074a54b479b75fcb3f8ab83e98c11fa980693dcd477450732a",
    "chunk": 44,
    "defects": [
-    "b81u-JAX-road-nameplate-heavy"
+    "b81u-JAX-road-nameplate-heavy",
+    "b81u-JAX-road-nameplate-thin-his-design"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the road and Bold City name letters redrawn at the real weight (Noah named this plate): stems 2 texels (0.14 of the cap on the player, real 0.16), thin 2-row cross strokes, open counters, a 2-texel letter gap; black #101010 as the numbers",
+   "note": "Noah 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 2 texels across and 2 rows (0.14 and 0.08 of the cap on the player; real 0.16 and 0.10), counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers",
    "offset": 515984,
    "reference": [
     "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
     "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
-    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg"
+    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg",
+    "work/fix/DECISIONS/tools/jax_thin.py"
    ],
    "resource_size": 1550288,
    "selector": "12A6",
    "texture": "NAME",
    "widths": [
-    5,
-    8,
+    6,
+    13,
+    15,
+    13,
+    13,
+    15,
+    12,
+    13,
     14,
+    15,
+    3,
+    11,
     14,
-    14,
+    12,
+    17,
+    15,
+    15,
+    13,
     14,
     14,
     13,
     14,
     14,
-    4,
-    12,
     14,
+    20,
     14,
     16,
-    14,
     15,
-    14,
-    15,
-    14,
-    14,
-    14,
-    14,
-    15,
-    17,
-    14,
-    14,
-    13,
-    11
+    13
    ]
   },
   {
@@ -7997,76 +8013,80 @@
    ]
   },
   {
-   "after_sha256": "89a71b65b1ca8ca58aefd813617db4e8c600665b36cf17296c0a40b414ed9588",
+   "after_sha256": "0324e0b6b70b6282e8381d5157f66bc639b4f39f8359941a153cd3bef4fd180c",
    "before_sha256": "247407e7eafffcc445c599c62f5ab3cff0f56e7143a90c808ec7d93643fa4be3",
    "chunk": 43,
    "defects": [
-    "b81u-JAX-road-nameplate-heavy"
+    "b81u-JAX-road-nameplate-heavy",
+    "b81u-JAX-road-nameplate-thin-his-design"
    ],
    "kind": "names_png",
    "length": 11344,
-   "note": "the road and Bold City name letters redrawn at the real weight (Noah named this plate): stems 2 texels (0.14 of the cap on the player, real 0.16), thin 2-row cross strokes, open counters, a 2-texel letter gap; black #101010 as the numbers",
+   "note": "Noah 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 2 texels across and 2 rows (0.14 and 0.08 of the cap on the player; real 0.16 and 0.10), counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers",
    "offset": 504640,
    "png": "JAX_12A0_names.png",
-   "png_sha256": "88b01fa90f250376b8e2daee12db5327dd7715d4e5e93f1d894ef3757da7744f",
+   "png_sha256": "3098fcc01a455e61336834d739847fcac67f87197df3f5b619d13cb182445d80",
    "reference": [
     "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
     "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
-    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg"
+    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg",
+    "work/fix/DECISIONS/tools/jax_thin.py"
    ],
    "resource_size": 1550288,
    "selector": "12H6",
    "texture": "names"
   },
   {
-   "after_sha256": "0d4052b965bd4ed36073c8b884eee4aee34471af488b9f3ccc65ae4322dc24c2",
+   "after_sha256": "4c5696c513442e773e21ad76c1191709bd352e0721488832ad59e2bed461db06",
    "before_sha256": "e73b6605d52c45074a54b479b75fcb3f8ab83e98c11fa980693dcd477450732a",
    "chunk": 44,
    "defects": [
-    "b81u-JAX-road-nameplate-heavy"
+    "b81u-JAX-road-nameplate-heavy",
+    "b81u-JAX-road-nameplate-thin-his-design"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the road and Bold City name letters redrawn at the real weight (Noah named this plate): stems 2 texels (0.14 of the cap on the player, real 0.16), thin 2-row cross strokes, open counters, a 2-texel letter gap; black #101010 as the numbers",
+   "note": "Noah 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 2 texels across and 2 rows (0.14 and 0.08 of the cap on the player; real 0.16 and 0.10), counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers",
    "offset": 515984,
    "reference": [
     "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
     "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
-    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg"
+    "JAX/2026-11-01_IND_rivalries-bold-city/jersey_back_0056.jpg",
+    "work/fix/DECISIONS/tools/jax_thin.py"
    ],
    "resource_size": 1550288,
    "selector": "12H6",
    "texture": "NAME",
    "widths": [
-    5,
-    8,
+    6,
+    13,
+    15,
+    13,
+    13,
+    15,
+    12,
+    13,
     14,
+    15,
+    3,
+    11,
     14,
-    14,
+    12,
+    17,
+    15,
+    15,
+    13,
     14,
     14,
     13,
     14,
     14,
-    4,
-    12,
     14,
+    20,
     14,
     16,
-    14,
     15,
-    14,
-    15,
-    14,
-    14,
-    14,
-    14,
-    15,
-    17,
-    14,
-    14,
-    13,
-    11
+    13
    ]
   },
   {
@@ -9428,6 +9448,346 @@
    "resource_size": 1549392,
    "selector": "14H10",
    "texture": "an57"
+  },
+  {
+   "after_sha256": "6d2a0f8f6d6b78a1cc7b557e24012a3015d2a47a842c8bd5e3a57c9461eea950",
+   "before_sha256": "84ba5c5ed6f986da55788b4e823d604c2770ca430674debdab1bf50e3c7e5bcc",
+   "chunk": 13,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2048,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 430992,
+   "png": "NE_16A0_digit_jersey_0.png",
+   "png_sha256": "14d7bc9ce2ea84c8274f883b9bf3df7dce7d0dfca44c65c1c11edb81b5ad3de0",
+   "resource_size": 1537824,
+   "selector": "16A0",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "2721b6791cebada5c5bcdece7789f367b640efc5991eecf6cf65fc89a764c22e",
+   "before_sha256": "cad6de7e29b8945c034b6947c79ebce938b3014f37f62f18ef32f8953469c594",
+   "chunk": 14,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 1456,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 433040,
+   "png": "NE_16A0_digit_jersey_1.png",
+   "png_sha256": "84c16129ffa3dd301bb4a68ef1f05929d68366e2cbc6ea354ad58e9346203827",
+   "resource_size": 1537824,
+   "selector": "16A0",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "356b8ea4756dbf417cd11dc45cedf5892b2a3fc7e07c62c5dd5982b926ae3a33",
+   "before_sha256": "c7a6adb2fd1d4078db7ffbe32a32bf4d08c8843b47815148e74a2ce7082963b5",
+   "chunk": 15,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2448,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 434496,
+   "png": "NE_16A0_digit_jersey_2.png",
+   "png_sha256": "6a63705c0dcc114305620b11b55cc28a1d617a68826c986f7588adb4306cf35e",
+   "resource_size": 1537824,
+   "selector": "16A0",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "1fe576636788393f5056b2d85da7ef6a60eb850326981d812bda10db6a0c045e",
+   "before_sha256": "a41ebfd5634cc67e2f7c757e6e3dac28e1f2dca3033794767be59b4d5299d359",
+   "chunk": 16,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2768,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 436944,
+   "png": "NE_16A0_digit_jersey_3.png",
+   "png_sha256": "28af6973adb17015e752a575428959703d01d1afdda7dcec3d9940067f3da860",
+   "resource_size": 1537824,
+   "selector": "16A0",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "73d808bcf7038cef49839dec82e1bda632f79eb8f7762565f98ee342a52b9553",
+   "before_sha256": "4d5145aa6dc5d5c6b5a6224f58167732dd7a7887c0e35361d048fa7c04ffad6a",
+   "chunk": 17,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2224,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 439712,
+   "png": "NE_16A0_digit_jersey_4.png",
+   "png_sha256": "749b78896bff567c55b52ae43ba4b926795bb379e5077c54756c6352b76b4f50",
+   "resource_size": 1537824,
+   "selector": "16A0",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "e53d293dd9a8a7479d87ca095d69a84d29422766fb6f0eb4550b139c25bded1d",
+   "before_sha256": "9a8a1487404ae03a24b93c0499459048b16318c0a06446b15e1d73a25e81bd5e",
+   "chunk": 18,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2560,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 441936,
+   "png": "NE_16A0_digit_jersey_5.png",
+   "png_sha256": "07a45a13455ba19e7d663eacbdd87ce9fafe74261e883a2a55362589c804a3bb",
+   "resource_size": 1537824,
+   "selector": "16A0",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "179bdbc9861d4ed0172acd7131b3a5ab35e70e21fa0a3166ca249270c5f5290f",
+   "before_sha256": "87248f0a6119126bbedc135ca6763c3590233e2d9338ebc02c593f221d78f122",
+   "chunk": 19,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2688,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 444496,
+   "png": "NE_16A0_digit_jersey_6.png",
+   "png_sha256": "cd505b51852c91e35cdb71778b65330c3037ddb64a429723515d1a4ffaf66639",
+   "resource_size": 1537824,
+   "selector": "16A0",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "369d38df4fe9e74b05f599263d495eb3b7548c685cc2e5f2a0a8899024807234",
+   "before_sha256": "118afb9e5c5a919df3af30ba548eb3d8df2a20c3af39ab8f6eb383d0aecb774b",
+   "chunk": 20,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2624,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 447184,
+   "png": "NE_16A0_digit_jersey_7.png",
+   "png_sha256": "34f8248e262c4ea3d8874fcdeb9f7d71762e39f899ef9c5b03983578a650bedf",
+   "resource_size": 1537824,
+   "selector": "16A0",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "76d8879ea418e35186823be392c64b8db21324d36b1501c6ab05cd221badbe5b",
+   "before_sha256": "d568d4c8c548aebc570267d8598526d386a93ccbf24e7761ea580ebf34f93be6",
+   "chunk": 21,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2672,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 449808,
+   "png": "NE_16A0_digit_jersey_8.png",
+   "png_sha256": "07e3e0203bbf73b75875ed36daef65ad62ceb272f3551d74e5cf225c3a77bb3d",
+   "resource_size": 1537824,
+   "selector": "16A0",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "37b3e099f27758880c1f5bbb2c255bae7594344514f140e532357a9662aa5d12",
+   "before_sha256": "65d9377623a04e67e4a59e4271830727e637f316e1a6547af54ce910f65a9bc6",
+   "chunk": 22,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2528,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 452480,
+   "png": "NE_16A0_digit_jersey_9.png",
+   "png_sha256": "e4850068561851c9d088231c9dcabe4b1e1500a38321256a0a052bfca4002ed8",
+   "resource_size": 1537824,
+   "selector": "16A0",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "9ea6ac48db6d390a3ee68812b12a81d47e9b6996fa42df377604bf9a19fbb8ff",
+   "before_sha256": "27609087996d0cb94b2f70ceeec259f7f7bdaa96ddc7198f85872809c0033b2b",
+   "chunk": 13,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 1904,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 443680,
+   "png": "NE_16H0_digit_jersey_0.png",
+   "png_sha256": "9221970ed7e83c00c7421d0114de9ed4fe70c3b4db51cd2fc63c1dd0c9dce112",
+   "resource_size": 1544752,
+   "selector": "16H0",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "2a62cca9840b77d8d1a4d51a49fbd2c50b7a300a41191e46aadfa728960c4a01",
+   "before_sha256": "4a5f554d1b7989412343a809c4dc9a4479480e80d291979b931db04524aca1e1",
+   "chunk": 14,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 1392,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 445584,
+   "png": "NE_16H0_digit_jersey_1.png",
+   "png_sha256": "6169a54d73b6b63a555cb50b48dd668b2e8469cd12903f44f75b52750809df03",
+   "resource_size": 1544752,
+   "selector": "16H0",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "295b4430d4624c40658861f4ada9b92fd5814cf1855ff489b904d817c3d986bb",
+   "before_sha256": "2210bc95f71035651d637f694731e1d826c45087b1e0b76c18fe21269f28f828",
+   "chunk": 15,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2336,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 446976,
+   "png": "NE_16H0_digit_jersey_2.png",
+   "png_sha256": "7814d5955592bac35b85edb8c962a469e500bd24bde2917e0d3fda5a851142bf",
+   "resource_size": 1544752,
+   "selector": "16H0",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "39ff961c75be54fb963e0010e810816f3262de7e24e849fbd845b612a66b36f3",
+   "before_sha256": "81e841befb7304027200ed509b94247096776104cb226a74220784429fd01601",
+   "chunk": 16,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2528,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 449312,
+   "png": "NE_16H0_digit_jersey_3.png",
+   "png_sha256": "6e36e970cefe6520cc8e8932627e0314ddd13c30e6354ae03cb5a3a0a2dc4b53",
+   "resource_size": 1544752,
+   "selector": "16H0",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "566ae4a04cd87d176562e3e918c58677acced9073e27a69b45f389bc45a22e18",
+   "before_sha256": "1570129b1d5bff2b7b81e2366a3312a59754720fb0d4f51966189c81ff5c2243",
+   "chunk": 17,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2048,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 451840,
+   "png": "NE_16H0_digit_jersey_4.png",
+   "png_sha256": "38c6f937ed0194d60fb47a73632b206b6de3bb66ebf9464936b03eba620f2346",
+   "resource_size": 1544752,
+   "selector": "16H0",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "d7948dc326193083f5fb93b01032c19bd5b64aed28fb5e5db1582a98253437b0",
+   "before_sha256": "ae77627736f62b3162a215cd3f4316416c5212ed21f50f402de9776aca5369e6",
+   "chunk": 18,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2384,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 453888,
+   "png": "NE_16H0_digit_jersey_5.png",
+   "png_sha256": "5d863be30d5ac25da79ccce5525a8f6a6f1f6b640acbb9ec9f94c8eab9c3414b",
+   "resource_size": 1544752,
+   "selector": "16H0",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "205aa191deeafe8b8cbb810e23b30d6c760159bde9bfd97be8abdf78b1dae234",
+   "before_sha256": "3c146d96ef7304d4fd16e86468f1d9723fc095ca066463383ae70512a753e36f",
+   "chunk": 19,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2432,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 456272,
+   "png": "NE_16H0_digit_jersey_6.png",
+   "png_sha256": "cb9899775442c027c9b93d7e93cfb94a828d9d4284f72d537d2a2fbeae1156eb",
+   "resource_size": 1544752,
+   "selector": "16H0",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "e0e44cb6275da4876dc16d85e958ccb43fc6ea2f8483283d4722814a11fbed8a",
+   "before_sha256": "2cab523882a163e3edb4b76dc84be9e36c499abbba3e8284cf01e489783b38f5",
+   "chunk": 20,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2496,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 458704,
+   "png": "NE_16H0_digit_jersey_7.png",
+   "png_sha256": "8e536f6829a6a0d526df94191c8d45886932685fbf8ef19215df19e26a6918e7",
+   "resource_size": 1544752,
+   "selector": "16H0",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "7d7fd94e7983395c4c0e012a7e0c8a61330d963080e2d5cc3e221dc6206cf4bd",
+   "before_sha256": "8b002c52cea7ce3b4dc68b84bb7184f16c025663aa7f7926fb3e4e9095486a21",
+   "chunk": 21,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2384,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 461200,
+   "png": "NE_16H0_digit_jersey_8.png",
+   "png_sha256": "8eafecc103bccdc8eae30914dcbd2407b05211f718f41dcccf8a22f48630cfff",
+   "resource_size": 1544752,
+   "selector": "16H0",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "817700e1d9c7291f62b82b668647c2c1a74889c7e8c0a66f09930b816bab964c",
+   "before_sha256": "0838592695cded0a3d02d77b7f3c61e78851328a3197fa48ada7d3bea2b23e86",
+   "chunk": 22,
+   "defects": [
+    "b81u-NE-digits-short"
+   ],
+   "kind": "digit_png",
+   "length": 2320,
+   "note": "Noah 11/19 (decision 2, \"switch to the full height\"): the approved prototype: the same three-colour digits (white fill, silver inline, red edge) standing rows 1 to 62 like every approved set (were solid rows 2 to 61 with half-clear rows 1 and 62), two straight rows repeated per glyph (no resampling); width 0.642 against the real 0.643",
+   "offset": 463584,
+   "png": "NE_16H0_digit_jersey_9.png",
+   "png_sha256": "e75452eb6951aae52b7bc894efdee112bf105534f98a42d9b4a22a03d8e35887",
+   "resource_size": 1544752,
+   "selector": "16H0",
+   "texture": "57"
   },
   {
    "after_sha256": "3cef096c077d00ad36ef0af62e97c97d8a0c53cb2bf42f2079d85ecb4caa5676",
@@ -16842,6 +17202,346 @@
    "texture": "an57"
   },
   {
+   "after_sha256": "72ee259900d0d822f887955de7aa698c3a6f2ce755b1b5fb103b44c4cd37b1f9",
+   "before_sha256": "54b54e0e5d7e8911acdcb6e443bdd170fa98fb7b45de6a82fe5a4a95a0887cb7",
+   "chunk": 13,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 1696,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 436112,
+   "png": "TB_27A0_digit_arm_0.png",
+   "png_sha256": "7811450ec36ae6965e6af17958b645459be4b06586b68fe2cb2cd9f49b307485",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "dfd670e7f646f06e93a0da03dc4a6b8eb9bd873c6a9f22a0b7f87142e9b17f31",
+   "before_sha256": "eb059b3bb33dbcdb37fd009ec1719f5ae89d8f2cb84bb570710cef5c5d3b3303",
+   "chunk": 14,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 1328,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 437808,
+   "png": "TB_27A0_digit_arm_1.png",
+   "png_sha256": "6c9379a0aba2c4680fcc28ca4d33b5786850072f833d159cc08063e7204d2172",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "a6c6a932f3f82714272b24aae1f35fe9daebc60eaf001ec871f3ce1556c6deed",
+   "before_sha256": "58312b58f2e062423eaf22b52e27306b2c7ef8b5a6a6323489f5f2e7b54b40c7",
+   "chunk": 15,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2096,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 439136,
+   "png": "TB_27A0_digit_arm_2.png",
+   "png_sha256": "12641ddacd5b58ff78b2e844d8c14c879a41bbdaed1fad3f68ef11a31a1327d3",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "10a0beecfb64db9093590e9c2770da9d17414f80b427b3971679cb4f65c1a5b9",
+   "before_sha256": "70a95c2c4e49957deadb9bc2e6ef49c591d494ac2ac950bd9728552ca59b3866",
+   "chunk": 16,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2208,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 441232,
+   "png": "TB_27A0_digit_arm_3.png",
+   "png_sha256": "1f8cd0a78755cc36b8ad74f5246c802d7a9260e13cac15284a0d8554466e741a",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "311d4dceb785cd774f9bd7273a4ba2ef02d8fbb25094dc1ca6db5b42a6f90b97",
+   "before_sha256": "dc2dd7ee8e68d4d93f1c2e2fbb926bd2afbc2a2cf06c942557d3ff8e15b876dd",
+   "chunk": 17,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2320,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 443440,
+   "png": "TB_27A0_digit_arm_4.png",
+   "png_sha256": "31e5ff858cf9611ad467d478c345980a9fc5d6ba99b007aa7bcbb0b0dbb13ff1",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "ab5c9102377138a5e51460e03aad5693538d2af19fcd7bfd96a988ff992ad4de",
+   "before_sha256": "19080c90102b724d898014d9975836f701a460f398bcb56c40ee1d3ef9068509",
+   "chunk": 18,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 1904,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 445760,
+   "png": "TB_27A0_digit_arm_5.png",
+   "png_sha256": "3e845d839c2f905da1754287e29fdb2c737598ac05cf5bcbea9d4355f26a0aec",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "9c93b5e2eb650f9dbb57ba82d5e3633ec7d0348c8696bf8068a0f73fa99f69c0",
+   "before_sha256": "0a2dd7a2f43cfc1d370cc82b536b0209f03224314fd96d9f668441eff26718e5",
+   "chunk": 19,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2128,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 447664,
+   "png": "TB_27A0_digit_arm_6.png",
+   "png_sha256": "06108ec107d19b9e1ac8f1a93d9b592354bcf4c3bfe254a4ef637c6912ae4ab3",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "6fd3b14eb0551da97457c92824e95de6c571c5d756d9006614f011c127177f35",
+   "before_sha256": "cf4133eb1adfbc087c45e9acbedd44bff57bf2209379bd49d1c4d3b09d2ba0ba",
+   "chunk": 20,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2096,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 449792,
+   "png": "TB_27A0_digit_arm_7.png",
+   "png_sha256": "ee8b787cc0e944ab766a66b09e17512a41ee6fa687246083761cd659a8787fe8",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "153aebf7a2325ac42ded711613508ed3c13b7f78fec4278b7d62795ee9b800a2",
+   "before_sha256": "be328756d3395e1b50ac689e1658a03a615927b8c4ed696ca6849a5fb132fef1",
+   "chunk": 21,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2080,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 451888,
+   "png": "TB_27A0_digit_arm_8.png",
+   "png_sha256": "7cfe3c037a717f4a445e608faea54905dafc29dfd804c1a1ebe1f6ce5cc04a3f",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "f636ad35e9436c754e860b2e62d66647623d1ee7aa55c763fb00f0b92644f4bd",
+   "before_sha256": "50a66c281afe2e23540bfca40dd9cccde2237166f59fbdcb4e172443fa264317",
+   "chunk": 22,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2144,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 453968,
+   "png": "TB_27A0_digit_arm_9.png",
+   "png_sha256": "a63337673fec372bfaec805a29f21a2ad66aaa0a2974beff6a72e34d29ea4cbe",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "c4767d357e2f813b70dc13760ddaf97b2cc2bf919faef3aa0fd80eeb0e56206b",
+   "before_sha256": "c09b164bf72866b3691cdf288ade3008b03e79f4486761ceb6f475cbc737aa02",
+   "chunk": 33,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 1712,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 465408,
+   "png": "TB_27A0_digit_arm_0.png",
+   "png_sha256": "7811450ec36ae6965e6af17958b645459be4b06586b68fe2cb2cd9f49b307485",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "an48"
+  },
+  {
+   "after_sha256": "a9ca65a6a09ad8522b49593799b22d75024c9a188551d8583cd32f7a7b06214c",
+   "before_sha256": "68ed6f1a54ea7e4409f42751adaf8d354db0babe3f18a023fd55a7f5a33f1aa3",
+   "chunk": 34,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 1328,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 467120,
+   "png": "TB_27A0_digit_arm_1.png",
+   "png_sha256": "6c9379a0aba2c4680fcc28ca4d33b5786850072f833d159cc08063e7204d2172",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "an49"
+  },
+  {
+   "after_sha256": "b9513704a4eebbcafa58f13111fc87ff3fe735df819338e8e0107d90f27a978c",
+   "before_sha256": "508458c263b8b2c29cbe8f0ac50b1ad6797e2d449fe07c656eee73596a1a0f07",
+   "chunk": 35,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2096,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 468448,
+   "png": "TB_27A0_digit_arm_2.png",
+   "png_sha256": "12641ddacd5b58ff78b2e844d8c14c879a41bbdaed1fad3f68ef11a31a1327d3",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "an50"
+  },
+  {
+   "after_sha256": "71c3faa3d6f175e91a212bfa66103d358e9c939a3b019a3b756659765b721089",
+   "before_sha256": "c7b54aedfbdf60bb68d3def38cca53ef6c701d1ebf622c6b6abeea3caf63f28a",
+   "chunk": 36,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2224,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 470544,
+   "png": "TB_27A0_digit_arm_3.png",
+   "png_sha256": "1f8cd0a78755cc36b8ad74f5246c802d7a9260e13cac15284a0d8554466e741a",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "an51"
+  },
+  {
+   "after_sha256": "d6843ac9a0ebf6d5a03c85f4d4b86720e01248272b20bd47bf7a2ed91258b03c",
+   "before_sha256": "804b78e7e0a096f6449f318b766b83dff275aad239ecd39738d723e4e4333808",
+   "chunk": 37,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2320,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 472768,
+   "png": "TB_27A0_digit_arm_4.png",
+   "png_sha256": "31e5ff858cf9611ad467d478c345980a9fc5d6ba99b007aa7bcbb0b0dbb13ff1",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "an52"
+  },
+  {
+   "after_sha256": "88114ffc18a6f7cfabbb52b52cad956ce42504083ca9332bc6e1d8ba9714254e",
+   "before_sha256": "02df2e38d1dcd19d01491a8b4a5d6bf03e189903da733208d78f5c8eff97504a",
+   "chunk": 38,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 1920,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 475088,
+   "png": "TB_27A0_digit_arm_5.png",
+   "png_sha256": "3e845d839c2f905da1754287e29fdb2c737598ac05cf5bcbea9d4355f26a0aec",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "an53"
+  },
+  {
+   "after_sha256": "8004a878bf9f9574ea8d654e3e32087c3e4150d760154277a22380e3c3088e41",
+   "before_sha256": "a87e073cff336472074d3ea5bb0c3b2e67896158a17d9bd0b67445d895c85101",
+   "chunk": 39,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2144,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 477008,
+   "png": "TB_27A0_digit_arm_6.png",
+   "png_sha256": "06108ec107d19b9e1ac8f1a93d9b592354bcf4c3bfe254a4ef637c6912ae4ab3",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "an54"
+  },
+  {
+   "after_sha256": "12c963a3ebf03cfc8030da55d902d9ad544e9aca7f80f42d5b57b3501de4a101",
+   "before_sha256": "bea4feb4a30e69b681c4abd17dba5c32cf1c51d99b231953e396d5d47e758410",
+   "chunk": 40,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2112,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 479152,
+   "png": "TB_27A0_digit_arm_7.png",
+   "png_sha256": "ee8b787cc0e944ab766a66b09e17512a41ee6fa687246083761cd659a8787fe8",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "an55"
+  },
+  {
+   "after_sha256": "b9cc389d4a62cf337a6e24736266aa2a32386fc1f4b804911c1389836080e4d9",
+   "before_sha256": "9ec9eccaae866cd9654f19dc0e878d76ed4c68b9bf704272642defc713828168",
+   "chunk": 41,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2096,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 481264,
+   "png": "TB_27A0_digit_arm_8.png",
+   "png_sha256": "7cfe3c037a717f4a445e608faea54905dafc29dfd804c1a1ebe1f6ce5cc04a3f",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "an56"
+  },
+  {
+   "after_sha256": "aa8078282344e7430a5f0bc65ae437cf4e7d7ddcbfed8fc3955f289dd9015eae",
+   "before_sha256": "f660d017d29063b63b528aab4f9d46c75de1bf39ece1730407b93ffe7092299d",
+   "chunk": 42,
+   "defects": [
+    "b81u-TB-road-digits-no-orange-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2144,
+   "note": "Noah 11/19 (decision 1): \"add the orange inline to the Bucs road numbers\": the approved road prototype, a 1 texel orange inline #D96428 (measured #E16D2E / #D15B23 against white in the Week 9 frames) inside the black edge of every jersey digit; red fill, black edge, size and shapes unchanged; the arm digits (the same pictures) alike",
+   "offset": 483360,
+   "png": "TB_27A0_digit_arm_9.png",
+   "png_sha256": "a63337673fec372bfaec805a29f21a2ad66aaa0a2974beff6a72e34d29ea4cbe",
+   "resource_size": 1523504,
+   "selector": "27A0",
+   "texture": "an57"
+  },
+  {
    "after_sha256": "6740713d044341064e90e1b62069d77f9bdb1a28d01ac2a7613793bae3f52b29",
    "before_sha256": "3c55fb34319af4f75d684d68c9a6cb3c1365ef4aa8c7fd7dbc6e06765751060f",
    "chunk": 43,
@@ -16911,6 +17611,346 @@
     10,
     9
    ]
+  },
+  {
+   "after_sha256": "2da51f62e55a6ac8c6de03ca77828ed3f7f353879745a6d9b259b8f891e089df",
+   "before_sha256": "165ab431d80622ed0a74e12ab8b9ef3aee2554fe79d8c91ac1fa5bf935a3cd83",
+   "chunk": 13,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 1856,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 423312,
+   "png": "TB_27H0_digit_arm_0.png",
+   "png_sha256": "4769e904762188f61b8e6e33a8360590f3c6e7dd784009491ce90910bcd0e556",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "8c4165e0964adc2bc431e3540097f9cf6a33f34dbb1646723169f85449a963f2",
+   "before_sha256": "b2131e15a778550d8ec6d760630a4213062710c9f74e7e91a4518b7fbe3eaf3d",
+   "chunk": 14,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 1376,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 425168,
+   "png": "TB_27H0_digit_arm_1.png",
+   "png_sha256": "dc2439855b4e06d759bde7e3f183fd90d1dec5b89bc0fe59d8fa6efd1bb363a2",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "6b152c1fa8f14951087ba82522cb3b36ce7218f73766a7a5adfb6ac23fc218e9",
+   "before_sha256": "a4cc922b1690c14538d801892648768b19bad9d17d001d49574693fcbefc89ca",
+   "chunk": 15,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2288,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 426544,
+   "png": "TB_27H0_digit_arm_2.png",
+   "png_sha256": "78df14a865e6afe46b96847e3e662541c27c67da3f655a1a2c2f80f4d8b3d0f4",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "e2b53d8b8dbc6760ad160bd90aad34a8c3516478c7b937d0bd9b17af7e7ffb33",
+   "before_sha256": "8795e9dcc1e80e3a4c83ea2daa359b76ae8d656ec0118f3181596b09fc49c586",
+   "chunk": 16,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2528,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 428832,
+   "png": "TB_27H0_digit_arm_3.png",
+   "png_sha256": "9ae25db24f484f871791c86124f9ac814c409da1b15de1d83fad58297ee8878e",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "fa35d3774406e9cd81620184822ead5e0feed9a410c1e3397770bdc901f0d460",
+   "before_sha256": "61d3f56d1764e924a1b56e0ff2627b0f8f0c2863a152118c8979205afcacb9f2",
+   "chunk": 17,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2480,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 431360,
+   "png": "TB_27H0_digit_arm_4.png",
+   "png_sha256": "099a5ba156ab595f557952d6070fc641a27d0ee1ce4dc2e8dedd138cb35f5eec",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "d235f60b2e2c0e7baa0096407ac472e1252c292efb0187f79941591f90c33513",
+   "before_sha256": "cd72d1f1ea6239d7ed4f680516fea760c53b334a6aced25c09cf337d3a5c48fc",
+   "chunk": 18,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2320,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 433840,
+   "png": "TB_27H0_digit_arm_5.png",
+   "png_sha256": "d581098a412b141506ac48ce1250ffc9b76ddbd7ffb8a3c6944c7a8ca9de0bd8",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "133a1bb52f452f2b4d794a481c85de380f0819a24f0a0b535b3926252267f655",
+   "before_sha256": "78244e6725b39ae926e0132ce9deeab761a3b8f663fefcf0ca1049694fd353ab",
+   "chunk": 19,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2448,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 436160,
+   "png": "TB_27H0_digit_arm_6.png",
+   "png_sha256": "a5d4b9c3cd25a348db07b44300030f6a313ee3c231dd71f070c16d2a908e9939",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "14d0547164545024f098b64dd1da8d023dd047f60135b5d6622269164320d90b",
+   "before_sha256": "3e5cb2cb934f68db9416c72b270e7abd64acbcfd3271140b1c831ad29ac02fe0",
+   "chunk": 20,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2336,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 438608,
+   "png": "TB_27H0_digit_arm_7.png",
+   "png_sha256": "77d470b217255496a2690dce715fc80057e8bd29dd35ffd53bb1704cc2f9085b",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "b9a53a8e9fae602d71201740568959e23dd02331c28e1a0c7a3b6ce514f71cdf",
+   "before_sha256": "3927b7d40bf88ecaf53e78630d79606e27a3eab77ca3fb3fa75294c911ee4d1c",
+   "chunk": 21,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2352,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 440944,
+   "png": "TB_27H0_digit_arm_8.png",
+   "png_sha256": "81541b236f3a0ff1983dd471fe31515c6be0c2aec1586dc73994c8fad8719f04",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "5e94cfb1deae91cca47b421bfab1cd5ac67561e8fb28e36870cc9b7f4cd60312",
+   "before_sha256": "6e8ce3a6c7beff304cccb36edfe65c8137b5107752f818cca01b2a15aca42acb",
+   "chunk": 22,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2448,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 443296,
+   "png": "TB_27H0_digit_arm_9.png",
+   "png_sha256": "003c3ee041835bbc504d22dc0f401fcd007cb1b5265e4abd114c0acbc6c3a222",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "6306ee8cd9f24defd71505c7dfd3ea585d7b966dff303f00e313200a8b62ce0a",
+   "before_sha256": "2f09305568ec48db2675687a34ad313b0044731bc0ec567aac687b9c304b7134",
+   "chunk": 33,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 1856,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 455040,
+   "png": "TB_27H0_digit_arm_0.png",
+   "png_sha256": "4769e904762188f61b8e6e33a8360590f3c6e7dd784009491ce90910bcd0e556",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "an48"
+  },
+  {
+   "after_sha256": "a4d5dc11b49e4075b56bbf7bb820528128724a14bafd5f5f60ef1eb3ebb2c80d",
+   "before_sha256": "b284447c686a6fcb6db0025eb3dc9fee002f59d366a880e859b8a3d4340fb87f",
+   "chunk": 34,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 1376,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 456896,
+   "png": "TB_27H0_digit_arm_1.png",
+   "png_sha256": "dc2439855b4e06d759bde7e3f183fd90d1dec5b89bc0fe59d8fa6efd1bb363a2",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "an49"
+  },
+  {
+   "after_sha256": "649c6e9f15617819376f83ff8c5040b238f100663714eba83675a810630f6122",
+   "before_sha256": "30bf89bd67e77886c1ab0d5ce209ef0d07a27d7f25356cae086e92e7aff34117",
+   "chunk": 35,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2304,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 458272,
+   "png": "TB_27H0_digit_arm_2.png",
+   "png_sha256": "78df14a865e6afe46b96847e3e662541c27c67da3f655a1a2c2f80f4d8b3d0f4",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "an50"
+  },
+  {
+   "after_sha256": "8b72918d6d63ccec844689d7e5f6a4b84c876d0147ad7c5443af5b2843d62dd1",
+   "before_sha256": "5bdd8e0425f6349227ddb45355ceb52ad4e472d6b95d46c5ccf4d914ed19978c",
+   "chunk": 36,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2544,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 460576,
+   "png": "TB_27H0_digit_arm_3.png",
+   "png_sha256": "9ae25db24f484f871791c86124f9ac814c409da1b15de1d83fad58297ee8878e",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "an51"
+  },
+  {
+   "after_sha256": "bfd1d3b6f90c9efb9af4f3303e14f1d9482db16eec0217eca5ae0631572b7ec6",
+   "before_sha256": "c467142f47f27cf5ee5f2be2566ebb1b62ad4776b3854a3eff2d05e12ad5b6bf",
+   "chunk": 37,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2480,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 463120,
+   "png": "TB_27H0_digit_arm_4.png",
+   "png_sha256": "099a5ba156ab595f557952d6070fc641a27d0ee1ce4dc2e8dedd138cb35f5eec",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "an52"
+  },
+  {
+   "after_sha256": "8befa0fa50140cee9890e76ebf51a4b1693ad8322ec46453dab35f0c930668a6",
+   "before_sha256": "10dd2d88af7373fad8af147fc71540c88ffe33a08ced5ca08279a307375b7670",
+   "chunk": 38,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2320,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 465600,
+   "png": "TB_27H0_digit_arm_5.png",
+   "png_sha256": "d581098a412b141506ac48ce1250ffc9b76ddbd7ffb8a3c6944c7a8ca9de0bd8",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "an53"
+  },
+  {
+   "after_sha256": "262aa5eb9d6a439a66d0996b1392d6988cff6eada5544f06c4d925bbf14ee4e0",
+   "before_sha256": "685613622ab4ce5938e42e9713a9da188c43611ce957707279cb213c27d62d31",
+   "chunk": 39,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2448,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 467920,
+   "png": "TB_27H0_digit_arm_6.png",
+   "png_sha256": "a5d4b9c3cd25a348db07b44300030f6a313ee3c231dd71f070c16d2a908e9939",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "an54"
+  },
+  {
+   "after_sha256": "c4ae2c59862166c6035c9c574bbdf6a843979f7f42d2be5c01a8031f664258bc",
+   "before_sha256": "6f2392520abb6f589bce852f83d80ab5334907d00d231e1ae271e4e895af3ade",
+   "chunk": 40,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2352,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 470368,
+   "png": "TB_27H0_digit_arm_7.png",
+   "png_sha256": "77d470b217255496a2690dce715fc80057e8bd29dd35ffd53bb1704cc2f9085b",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "an55"
+  },
+  {
+   "after_sha256": "f6698cb3dba0ce6e9acce8b32ed0c21e5342b349ff52ccfe493acc29913e3c91",
+   "before_sha256": "556c1643d8aab76b30f6a0e77a97736e15f21f26e8c3e976e391ae70c027c2c1",
+   "chunk": 41,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2352,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 472720,
+   "png": "TB_27H0_digit_arm_8.png",
+   "png_sha256": "81541b236f3a0ff1983dd471fe31515c6be0c2aec1586dc73994c8fad8719f04",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "an56"
+  },
+  {
+   "after_sha256": "187c501090771515a18f8d78b0240adde315c8e1fd207d1cd3ba7eaf906b8a44",
+   "before_sha256": "e998a6905f4680038880669e06c0e049d74f27c3aeb7ba60e3064d8776a67061",
+   "chunk": 42,
+   "defects": [
+    "b81u-TB-home-digits-muddy-inline"
+   ],
+   "kind": "digit_png",
+   "length": 2448,
+   "note": "Noah 11/19 (decision 1, home \"if their home numbers have that too\": the Week 5 photographs show it): white numerals, a clean 1 texel orange inline #D96428 inside the black edge on every side (the released set had a muddy two-texel version: burnt orange #913008 and a peach blend, bright only on some counter edges), white fill; black edge, size and shapes unchanged; jersey and arm digits",
+   "offset": 475072,
+   "png": "TB_27H0_digit_arm_9.png",
+   "png_sha256": "003c3ee041835bbc504d22dc0f401fcd007cb1b5265e4abd114c0acbc6c3a222",
+   "resource_size": 1513168,
+   "selector": "27H0",
+   "texture": "an57"
   },
   {
    "after_sha256": "7c98c1f63aea4ec73aeac2f5b9d0595ac94f909672a8b0b714bda1112d1e7ae7",
@@ -18273,344 +19313,386 @@
    "texture": "an57"
   },
   {
-   "after_sha256": "3a44cf199c818fd0c072023f987c7f8806285264a10afe6e72c1f376266f874d",
+   "after_sha256": "e217d60c48a6549581dd51070d17411dffa6b62e897bdb0f19558ac33ed99655",
    "before_sha256": "b4ef693b2f5e9b39fe843916578d7237505cbbfb940efab90fa4fda0992b6a4c",
    "chunk": 13,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 880,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 444304,
    "png": "CLE_30A0_digit_arm_0.png",
-   "png_sha256": "d3fbdb4f1740218554ad72d60070c82403d5db1560a527604023f1602238edf9",
+   "png_sha256": "d811b99e7142b289afe3ccc716ab39cc45ff81802019bba0b070d3e626bac629",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "48"
   },
   {
-   "after_sha256": "fbc623c1eb5c4ed9016606f84f6c2ffe4980ca080ca754ee7a132d7a9e5b44f4",
+   "after_sha256": "85cd3423c649b155f1dd52e24d5ca1746be563fa5dd64aa811355cd37766e3b1",
    "before_sha256": "2ee895648b88a4b20bbd0500dcd3831c317301d9e9ff42435eb8e39913b61570",
    "chunk": 14,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 720,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 445184,
    "png": "CLE_30A0_digit_arm_1.png",
-   "png_sha256": "71f0e8979b7038ea6cb4ecede7dd726763ce7237ed2b54aef6babc864ecc526d",
+   "png_sha256": "56df0f23cd6c171234730064ab81f2a51f9b46a7f684b5fa586120857c36dd8b",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "49"
   },
   {
-   "after_sha256": "30196deeee5aa7e704a9665904f815ddbb3e96d2e6166578c0ebe0cfa550bb24",
+   "after_sha256": "eb030eaf89cfaded6b18e9dafda74c66d2c3b1766da5c3ed11ee11c4dbcc5ca9",
    "before_sha256": "8aa3270625e6cdbc57f075d1c6623b8be482ad58d93536132f7bc4c916c28bd5",
    "chunk": 15,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1088,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 445904,
    "png": "CLE_30A0_digit_arm_2.png",
-   "png_sha256": "4e2f8146a7931674c5e4d2feb553182f5f7fa1cba4178b152b3945a303c169ab",
+   "png_sha256": "464b3d5149ee34811e960f861af3848160453ba1e4575a12181d09d0247349f2",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "50"
   },
   {
-   "after_sha256": "6d0d51ca93f26959feacc978de8cedd519984e204f673f634e350b309e578c41",
+   "after_sha256": "b6199245605541bcb5dc9cb5c036f888aff64f0815285e6f7df38b119da2a9bf",
    "before_sha256": "da2cc2ddc1c030fb5e42c90d2133c164f709eca416a5b51a411414cfa5f94cdd",
    "chunk": 16,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1136,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 446992,
    "png": "CLE_30A0_digit_arm_3.png",
-   "png_sha256": "cf92ea82ffa9431bffffd2a32ac3bc78964302b72653e64ae7e3ba14ec180c0c",
+   "png_sha256": "ee55079d34dc6f48a2ac4b8c726941086d5c2f2bc8731c7b357492d059e0f708",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "51"
   },
   {
-   "after_sha256": "346a9c21745e0cfaf9a44882aee30723379656f965600896552e060b4ff3e578",
+   "after_sha256": "4cbced92fcbefa9f632dd39929d850061ba2ee4726b5e3bd66a1039ec8e51742",
    "before_sha256": "9d38df5322c07a3045c29c6208af743654ff2b344e116c4f7a3244c5222dd8c7",
    "chunk": 17,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1056,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 448128,
    "png": "CLE_30A0_digit_arm_4.png",
-   "png_sha256": "07cc40c62d1c9264ba799f1230268612af714bb9eed9531abbbf240aa0d54d1d",
+   "png_sha256": "9bf40974431fee251f7091f25c5e96cdd493b0a9dbef528315f8ce7d18c9a314",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "52"
   },
   {
-   "after_sha256": "b73c2cccc36e4fb64a000cd9252da3c2948e9a59d24b8d2d9fc02e03773483d5",
+   "after_sha256": "d250bb3286b59ac9d1250dad3045e0f157d8f5e0ca00285f3c18d1c6609fbd2a",
    "before_sha256": "79f64870982056ff167325be276f6cc508544e7f2e321b9b61c54a32ee4dc4f1",
    "chunk": 18,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1040,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 449184,
    "png": "CLE_30A0_digit_arm_5.png",
-   "png_sha256": "03efff4e8a02f81ff037ff251aee0209737bd8cef1f530c54c47b6cb276e5143",
+   "png_sha256": "3f497bb274ca86f326109fc2129dcadaec79794ce1f744fc07d6c7754750f163",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "53"
   },
   {
-   "after_sha256": "53c1f0eb1795cda6b01c09f0989c0f2391cc7e9fbfa3a919bf1d4f3ae46372b5",
+   "after_sha256": "8f9104bcad77ffcbd54021e6db4f2b0cb961cdc7953f4d92029cd3160ba0942b",
    "before_sha256": "a27da5800affeddf13424bce25033c86e9ce1d487055ed04743c1d764ef68eaf",
    "chunk": 19,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1056,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 450224,
    "png": "CLE_30A0_digit_arm_6.png",
-   "png_sha256": "4b06716b5c29bf84a4cf8d987ec8e4f8c0838f32be590cb1692b2dc1d3b6707c",
+   "png_sha256": "c609bd48401e1aff62ceb934304a489dd6652087ec0accc3b497e5b6cbd6d6f3",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "54"
   },
   {
-   "after_sha256": "8c8850ea6dbb3d4a892359404e1a3c3629614f5312f9e4b6e050dfa88eb6471e",
+   "after_sha256": "56d71c0391b78350fd932cfc8794ba2fc8cb7977ce6ef6d2f1bb7371acf399ec",
    "before_sha256": "7ad5c4ae445cc987788c63eb84186ea415b90bc6f199dc76c60b18e2e61ae944",
    "chunk": 20,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 944,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 451280,
    "png": "CLE_30A0_digit_jersey_7.png",
-   "png_sha256": "82d1edba666b61de43fdf38a65b983d267ff0ca8209b1c3a5a569fd9f08b799e",
+   "png_sha256": "81e47ed856f18a73ba4b44be7259e2c901397de65bc45b54ec061455b1bec086",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "55"
   },
   {
-   "after_sha256": "2513dff8e03091ea5e0c22bdec58ee462445c120e533cad0d1772059f609e4c2",
+   "after_sha256": "9bcb7b57e9238a4dd25d05d5a4d9cd9b0658c2237f3c39223af46914084ee7e4",
    "before_sha256": "41cc903fbde467745ec30e3c725aa7442f275c09c2f048bd0be62513d37860b9",
    "chunk": 21,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1072,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 452224,
    "png": "CLE_30A0_digit_arm_8.png",
-   "png_sha256": "6c8b9d20c08170df70b26e5d712ad289a8e4bf8cb21523613a25dc765ed6bd9c",
+   "png_sha256": "7d91d55792680c7991909973c766fe6cc11b6cfdfb9235d1391bd756e26c6c82",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "56"
   },
   {
-   "after_sha256": "1abf85df3192d61e6426ca34f90010d3f017520414a6737fc4a473739b2480d9",
+   "after_sha256": "c81e2e6df4ba137a81562dbf2c495e136ba13a9b9f23f65e3f0f424e9c1ae39b",
    "before_sha256": "6cc35b89ae52e40b2d8b3bd38b631097e798e33edaff4a11dc6cd6febd4ee57d",
    "chunk": 22,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1040,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 453296,
    "png": "CLE_30A0_digit_arm_9.png",
-   "png_sha256": "01ad940d0377ef7b1976b62ab59bf71a912261d7fdf50f8ed1215dd65126a1d4",
+   "png_sha256": "455aef8aeffb140a30134d22128ba93aab6432ee5387e8dd8d18788c49f35e33",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "57"
   },
   {
-   "after_sha256": "38e9e8fade617a369b59cc24bc94ec9c6ccada1f682398fa527ab82cc0100420",
+   "after_sha256": "371f7731a6776c84e86b80025bf76f078d4998a960095b36fd3e33e3ee2054b6",
    "before_sha256": "518fd5fe84facaff83e080c5da8656f4accabb269de803979ae12fd47e55411c",
    "chunk": 33,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 880,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 463632,
    "png": "CLE_30A0_digit_arm_0.png",
-   "png_sha256": "d3fbdb4f1740218554ad72d60070c82403d5db1560a527604023f1602238edf9",
+   "png_sha256": "d811b99e7142b289afe3ccc716ab39cc45ff81802019bba0b070d3e626bac629",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "an48"
   },
   {
-   "after_sha256": "39c7b51adb236068e344613ecb9e8f8dc89f576e51e42d6910ab6f632723b42b",
+   "after_sha256": "c77e9f95f108102bc1aca50a07520825a7553798249dcb20f40507aff60b3ae9",
    "before_sha256": "fb759055e7c8d25ff774f21ce6036777f02ca58c2319e47d6e861477c72be246",
    "chunk": 34,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 720,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 464512,
    "png": "CLE_30A0_digit_arm_1.png",
-   "png_sha256": "71f0e8979b7038ea6cb4ecede7dd726763ce7237ed2b54aef6babc864ecc526d",
+   "png_sha256": "56df0f23cd6c171234730064ab81f2a51f9b46a7f684b5fa586120857c36dd8b",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "an49"
   },
   {
-   "after_sha256": "95447653b242f6fea715fb6667d1f81efdb4fa8abe3228063571e505d5e12091",
+   "after_sha256": "b0a70284e8b470eec3a3feca09822f688c820ca980a02a319fcb448d10f7890b",
    "before_sha256": "d687d8c3eb38416fb49a6c422e47e55d2c0ec12c3371e28aeb7a23a0271c4404",
    "chunk": 35,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1104,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 465232,
    "png": "CLE_30A0_digit_arm_2.png",
-   "png_sha256": "4e2f8146a7931674c5e4d2feb553182f5f7fa1cba4178b152b3945a303c169ab",
+   "png_sha256": "464b3d5149ee34811e960f861af3848160453ba1e4575a12181d09d0247349f2",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "an50"
   },
   {
-   "after_sha256": "6050d8499b20e54cb495233cc5f687035590760a9821380b169bcf2eae51b750",
+   "after_sha256": "edcf0de05fb23a8aec5590753bb1d38ff033bd0e255107904dbce1bd824adc61",
    "before_sha256": "0f1a49ac437541f4f0f26746919555241eec71b6163fb2ce4ac4ead92b802489",
    "chunk": 36,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1136,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 466336,
    "png": "CLE_30A0_digit_arm_3.png",
-   "png_sha256": "cf92ea82ffa9431bffffd2a32ac3bc78964302b72653e64ae7e3ba14ec180c0c",
+   "png_sha256": "ee55079d34dc6f48a2ac4b8c726941086d5c2f2bc8731c7b357492d059e0f708",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "an51"
   },
   {
-   "after_sha256": "78dea4689d87a2710f8095210be5cb5195522a33e7531f66b94f3c9a8b541902",
+   "after_sha256": "d61a0948881b10e1c2823c4ae6fbdebf97ae0038fc201b27c8beefef83fa0ffb",
    "before_sha256": "5c02d7f1f772e4fae47da3a65a3dd05dfaec545850a59585cd9583f6c4003d38",
    "chunk": 37,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1056,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 467472,
    "png": "CLE_30A0_digit_arm_4.png",
-   "png_sha256": "07cc40c62d1c9264ba799f1230268612af714bb9eed9531abbbf240aa0d54d1d",
+   "png_sha256": "9bf40974431fee251f7091f25c5e96cdd493b0a9dbef528315f8ce7d18c9a314",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "an52"
   },
   {
-   "after_sha256": "f6c1faf159dcdb328e99321d7e0ffa48d3fd17fba5d1c9ef3ce9dcfe48c4833b",
+   "after_sha256": "98d29e1feef00136f791a3decfa8e33e84ebe741041e326798d54832ea68665e",
    "before_sha256": "61cdc1d2ec17aa6c9ec53259cc31bc5a3cae142bda22ab9c67ae9ead17b1e20c",
    "chunk": 38,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1040,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 468528,
    "png": "CLE_30A0_digit_arm_5.png",
-   "png_sha256": "03efff4e8a02f81ff037ff251aee0209737bd8cef1f530c54c47b6cb276e5143",
+   "png_sha256": "3f497bb274ca86f326109fc2129dcadaec79794ce1f744fc07d6c7754750f163",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "an53"
   },
   {
-   "after_sha256": "463b31902079ae6132649911b362757d27057208cab2241036bd1fb492bce5ad",
+   "after_sha256": "3ce6b3a4c52a8f43e28418888a768bfea23130f54f428a4a55c21e90c4334a6e",
    "before_sha256": "cce5b436035fb166d81d7a4bbb8410d138b4904fd191ba651fc777a5e20cf59b",
    "chunk": 39,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1056,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 469568,
    "png": "CLE_30A0_digit_arm_6.png",
-   "png_sha256": "4b06716b5c29bf84a4cf8d987ec8e4f8c0838f32be590cb1692b2dc1d3b6707c",
+   "png_sha256": "c609bd48401e1aff62ceb934304a489dd6652087ec0accc3b497e5b6cbd6d6f3",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "an54"
   },
   {
-   "after_sha256": "d9b7920786ac66090711243644389fa55506509d05d8e6b7efa79ba4d0009c91",
+   "after_sha256": "8672267a9b1b7b667207c5be4a5ff3b2f120794da5ce86f311f880dcec3a2a27",
    "before_sha256": "7ceb458e74a33592868cea76cc4efbe9a94855052a587f4f66ba49f1ab90a313",
    "chunk": 40,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 944,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 470624,
    "png": "CLE_30A0_digit_arm_7.png",
-   "png_sha256": "952a01c37a2396c230aadee41dea5892ef04638682a7aec53cdc3d59873cf836",
+   "png_sha256": "aa2fcc19f8cfe609de4440ee5e13391add769c4dcca3114504ef6fb660c69dba",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "an55"
   },
   {
-   "after_sha256": "60a72107aa8c4a0af3e620c6c5d92bfc16ec77500e452d3205e375671852ed1d",
+   "after_sha256": "f7169276a917341cd9fb8bebdf2602bd1a588b57bc4a6c9e2b761ece5648288e",
    "before_sha256": "6db1c0a7dd17d361965ed20e729b759929e76aacad40a8a6ba8cd0ab521dcc98",
    "chunk": 41,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1072,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 471568,
    "png": "CLE_30A0_digit_arm_8.png",
-   "png_sha256": "6c8b9d20c08170df70b26e5d712ad289a8e4bf8cb21523613a25dc765ed6bd9c",
+   "png_sha256": "7d91d55792680c7991909973c766fe6cc11b6cfdfb9235d1391bd756e26c6c82",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "an56"
   },
   {
-   "after_sha256": "c704ed8b9f51c168f347f440a9543c3d9c79c74f5043163bba68738740d89351",
+   "after_sha256": "521d3e711052ab7ee62a849b190de05df3f581c1a24d95a93b9fd24c12f1e3f1",
    "before_sha256": "2a7de67af22485205c29b7494acfb66f4661a64b18832c6b1bbc466d80a46cf6",
    "chunk": 42,
    "defects": [
-    "b81u-CLE-heavy-jersey-digits"
+    "b81u-CLE-heavy-jersey-digits",
+    "b81u-CLE-road-numbers-brown"
    ],
    "kind": "digit_png",
    "length": 1056,
-   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; the kit colours are unchanged (the colour is a separate open question)",
+   "note": "jersey digits to the 2026 Browns numerals: fill strokes about 3 texels lighter (about 11 where the game had 14), width and height kept (35 columns, rows 1-62), whole texels, no resampling; Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): charcoal #3B3B3B, not the kit brown #311D00 (sharp 2026 stills read the numbers #3B3A34 to #3C3C3C on flat lit patches; the broadcast frames #42424E to #565B54, lifted and blurred); the names alike",
    "offset": 472640,
    "png": "CLE_30A0_digit_arm_9.png",
-   "png_sha256": "01ad940d0377ef7b1976b62ab59bf71a912261d7fdf50f8ed1215dd65126a1d4",
+   "png_sha256": "455aef8aeffb140a30134d22128ba93aab6432ee5387e8dd8d18788c49f35e33",
    "resource_size": 1510320,
    "selector": "30A0",
    "texture": "an57"
+  },
+  {
+   "after_sha256": "9feac12b6e173f4838f225426b8e861f59f48214a41951eda7f2c9d6cde79ef8",
+   "before_sha256": "f0247048fc44e5f914bbc39d0e4f6416e77795837dfa5ea3aaf2e1db233e71cb",
+   "chunk": 43,
+   "defects": [
+    "b81u-CLE-road-names-brown"
+   ],
+   "kind": "names_png",
+   "length": 7728,
+   "note": "Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): the Browns road name letters in charcoal #3B3B3B, the same as the road numbers (WATSON and JOHNSON 77 read one neutral dark with the number in the same frame, not the kit brown #311D00); letters, soft edges and glyph widths as released",
+   "offset": 473696,
+   "png": "CLE_30A0_names.png",
+   "png_sha256": "984e38cefdb74e6f2d3f2813bcc53f1c60ac682cb7b98a9fb0b262da4c6b80a4",
+   "reference": [
+    "refs/uniforms_2026/CLE/2026-10-11_NYJ_primary-away",
+    "refs/uniforms_2026/NYJ/2026-10-11_CLE_primary-home/helmet_back_0340.jpg",
+    "bump/refs/CLE/CLE_b5_CLE_w8_060_rylxfrivghvnq6vkt3gh.jpg"
+   ],
+   "resource_size": 1510320,
+   "selector": "30A0",
+   "texture": "names"
   },
   {
    "after_sha256": "4cad2755a4f7a562d03728b381277f26cde3bcff75415067400720d4d925377f",
@@ -18951,6 +20033,28 @@
    "resource_size": 1528592,
    "selector": "30A3",
    "texture": "an57"
+  },
+  {
+   "after_sha256": "1f2c06778a5fcd5f0d62de633d76e87629aaebb1c311b38c61e4a95d486ec72c",
+   "before_sha256": "28515cdb18b87578117ddd679ba2b42bfe40f80d34faf7059f2ff314c1f885f1",
+   "chunk": 43,
+   "defects": [
+    "b81u-CLE-road-names-brown"
+   ],
+   "kind": "names_png",
+   "length": 7728,
+   "note": "Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): the Browns road name letters in charcoal #3B3B3B, the same as the road numbers (WATSON and JOHNSON 77 read one neutral dark with the number in the same frame, not the kit brown #311D00); letters, soft edges and glyph widths as released",
+   "offset": 473616,
+   "png": "CLE_30A4_names.png",
+   "png_sha256": "878203c70a53f773abe4d498d902aeb29c656506af095ef2c4e82d5c55957a3d",
+   "reference": [
+    "refs/uniforms_2026/CLE/2026-10-11_NYJ_primary-away",
+    "refs/uniforms_2026/NYJ/2026-10-11_CLE_primary-home/helmet_back_0340.jpg",
+    "bump/refs/CLE/CLE_b5_CLE_w8_060_rylxfrivghvnq6vkt3gh.jpg"
+   ],
+   "resource_size": 1508528,
+   "selector": "30A4",
+   "texture": "names"
   },
   {
    "after_sha256": "80a4728ff7fcbbf56198268888148c4876fcdbfe4e2f1beef85c470ec20b515e",
@@ -19631,6 +20735,28 @@
    "resource_size": 1528592,
    "selector": "30H3",
    "texture": "an57"
+  },
+  {
+   "after_sha256": "1f2c06778a5fcd5f0d62de633d76e87629aaebb1c311b38c61e4a95d486ec72c",
+   "before_sha256": "28515cdb18b87578117ddd679ba2b42bfe40f80d34faf7059f2ff314c1f885f1",
+   "chunk": 43,
+   "defects": [
+    "b81u-CLE-road-names-brown"
+   ],
+   "kind": "names_png",
+   "length": 7728,
+   "note": "Noah 11/19 (decision 3, \"switch to the neutral charcoal the photos show\"): the Browns road name letters in charcoal #3B3B3B, the same as the road numbers (WATSON and JOHNSON 77 read one neutral dark with the number in the same frame, not the kit brown #311D00); letters, soft edges and glyph widths as released",
+   "offset": 473616,
+   "png": "CLE_30A4_names.png",
+   "png_sha256": "878203c70a53f773abe4d498d902aeb29c656506af095ef2c4e82d5c55957a3d",
+   "reference": [
+    "refs/uniforms_2026/CLE/2026-10-11_NYJ_primary-away",
+    "refs/uniforms_2026/NYJ/2026-10-11_CLE_primary-home/helmet_back_0340.jpg",
+    "bump/refs/CLE/CLE_b5_CLE_w8_060_rylxfrivghvnq6vkt3gh.jpg"
+   ],
+   "resource_size": 1508528,
+   "selector": "30H4",
+   "texture": "names"
   },
   {
    "after_sha256": "0e745e67a59d6e17cab68f705b9fd0d93decde2140343ef6689f4c02ccfc4c3f",

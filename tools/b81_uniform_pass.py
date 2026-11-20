@@ -20,7 +20,9 @@ document as its last uniform step (``kit_fixes.apply_uniforms_b81``), after the 
 
 ``names`` (batch 4, Noah 11/19: "Jags road nameplate and all nameplates should match real ones") turns redrawn nameplate
 letter strips (``<SELECTOR>_names.png``, 1024x32 RGBA, and ``<SELECTOR>_names.json`` with the 29 glyph widths) into
-rows of the digit document: ``names_png`` (chunk 43) and ``name_widths`` (the NAME chunk 44). Each row is pinned to the
+rows of the digit document: ``names_png`` (chunk 43) and ``name_widths`` (the NAME chunk 44). A strip without its
+``.json`` (a recoloured strip whose letters and widths stay, Noah 11/19: the Browns road names in charcoal) gets the
+``names_png`` row only. Each row is pinned to the
 strip a build holds when the pass runs: the released kit after the nameplate pass (the Jaguars letters on the retail
 structure, read from ``--retail`` as a build does, and every hollow hyphen filled). The other rows stay.
 
@@ -432,7 +434,9 @@ def cmd_names(args) -> int:
             raw = after_nameplate_pass(selector, raw, retail)
             with Image.open(art / f"{selector}_names.png") as image:
                 payload = names_png_bytes(np.asarray(image.convert("RGBA"), np.uint8))
-            widths = [int(w) for w in json.loads((art / f"{selector}_names.json").read_text(encoding="utf-8"))["widths"]]
+            metrics = art / f"{selector}_names.json"        # absent: a recoloured strip, its glyph widths stay
+            widths = ([int(w) for w in json.loads(metrics.read_text(encoding="utf-8"))["widths"]]
+                      if metrics.exists() else None)
             if sha(payload) not in stored:
                 team = notes.get("_team", {}).get(selector[:2], selector[:2])
                 stored[sha(payload)] = f"{team}_{selector}_names.png"
@@ -443,7 +447,10 @@ def cmd_names(args) -> int:
             new_strip, strip_detail = gf.compile_names_png(strip_span, payload)
             name = kf._chunk_for(raw, gf.NAME_CHUNK)
             name_span = raw[name.offset:name.end_offset]
-            new_name, name_detail = gf.compile_name_widths(name_span, widths)
+            if widths is None:
+                new_name, name_detail = name_span, dict(widths_changed=0)
+            else:
+                new_name, name_detail = gf.compile_name_widths(name_span, widths)
             if not kf.layout_fits(kf.atlas_glyph_starts(new_strip), kf.name_metrics(new_name)):
                 raise ValueError("the strip's glyphs do not start at the NAME offsets")
         except Exception as exc:  # noqa: BLE001 - named in the receipt; the other rows are still written
@@ -458,8 +465,10 @@ def cmd_names(args) -> int:
         rows.append(dict(common, chunk=gf.NAMES_CHUNK, kind="names_png", texture="names", offset=int(strip.offset),
                          length=len(strip_span), png=file, png_sha256=sha(payload), before_sha256=sha(strip_span),
                          after_sha256=sha(new_strip)))
-        rows.append(dict(common, chunk=gf.NAME_CHUNK, kind="name_widths", texture="NAME", offset=int(name.offset),
-                         length=len(name_span), widths=widths, before_sha256=sha(name_span), after_sha256=sha(new_name)))
+        if widths is not None:
+            rows.append(dict(common, chunk=gf.NAME_CHUNK, kind="name_widths", texture="NAME", offset=int(name.offset),
+                             length=len(name_span), widths=widths, before_sha256=sha(name_span),
+                             after_sha256=sha(new_name)))
         receipt[selector] = dict(png=file, strip_before_sha256=sha(strip_span), strip_after_sha256=sha(new_strip),
                                  name_before_sha256=sha(name_span), name_after_sha256=sha(new_name),
                                  palette_entries=strip_detail["palette_entries"], mip_grid_step=strip_detail["mip_grid_step"],
