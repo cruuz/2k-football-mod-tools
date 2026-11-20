@@ -1381,7 +1381,7 @@ locks (KR1, KR2, PR), his injury and IR state, his player kind (NFL player, pros
 star tag. Carrying those could give a club two KR1s or a player who claims to be on IR without an IR
 slot. Abilities and their tier stay too unless you tick **Include abilities and tier** in the Paste
 menu. If the paste changes his position, he goes to the bottom of that position's depth order,
-unlocked, the same as a position edit. **Tools ▾** advances years pro for the
+unlocked, the same as a position edit. **Paste exact copy** (Finn's Paste Player-Exact Copy) also copies the first and last name, the college, the play-by-play id and the photo id. Another player who shares his old last name keeps it (Finn's version renames all of them), and he keeps his own career history (Finn's version points both players at one stats stream, so they would share every future stat). **Heal player** and **Heal all N hurt players shown** are in the right-click menu: they clear the injury, the weeks left and the status the way the game's own recovery does, and skip anyone on injured reserve. **Tools ▾** advances years pro for the
 league or the list (Finn's Advance year), restores height, weight and date of birth to what the roster shipped with,
 and sets **Body type from weight** or **from BMI** with Finn's thresholds (Skinny below 200 lb, Normal from 200,
 Large from 270, Extra Large from 300; by BMI 26, 30 and 35), showing every player it would change first. **Open on
@@ -1472,7 +1472,8 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | "PBP Last Only" box | **PBP last name only**, under the jersey number on the Identity tab |
 | Tools > Backup and Restore | **CSV ▾ → .PlayerData backup (Finn's format)** |
 | Place on IR (right-click) | Right-click → **Place on IR…** opens **Franchise → Injured Reserve** with him chosen |
-| Heal Player | Not available. **Activate** on the IR tab returns a player from IR; it does not change an injury |
+| Heal Player(s) | Right-click → **Heal player**, or **Heal all N hurt players shown**. It clears the injury the way the game's own recovery does, so the game stops counting injury weeks (Finn's Heal leaves it counting). A player on injured reserve is skipped: use **Franchise → Injured Reserve → Activate** for him |
+| Paste Player-Exact Copy | **Paste ▾** or right-click → **Paste exact copy (names, college, PBP, photo too)** |
 | Manage Salary Cap | **Franchise → Overview → Salary cap** |
 | Franchise Stats tab (team statistics) | **Franchise → Team Stats**: Finn's 31 columns for every club, plus W-L-T and games played; click a heading to sort |
 | Boxscore | **Franchise → Schedule**: select a played game and press **Box score…** (or double-click it) |

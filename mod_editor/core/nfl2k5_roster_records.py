@@ -2006,26 +2006,85 @@ class RosterDocument:
             player.record.values[key] = int(values[key])
 
     def paste_player(self, target: Player, source: PlayerRecord, *, mode: str = "all",
-                     abilities: bool = False) -> dict[str, Any]:
+                     abilities: bool = False, identity: Mapping[str, Any] | None = None) -> dict[str, Any]:
         """Finn's Paste onto ``target`` without carrying another player's slot (b81 R7).
 
-        ``copy_player`` keeps the target's depth rank/side, lock bits, injury and IR state, player kind,
-        pool kind and star tag.  A pasted position is checked against the loaded scheme first (a retired
-        code refuses the whole paste, nothing changes) and then set the way a position edit sets it: on a
-        club the player goes to the bottom of his new position's chain, unlocked.  Returns
-        ``{"count", "before", "position_changed"}``; ``before`` is the record to restore for undo."""
+        ``copy_player`` keeps the target's depth rank/side, lock bits, injury (id, weeks, status) and IR
+        state, player kind, pool kind and star tag.  A pasted position is checked against the loaded scheme
+        first (a retired code refuses the whole paste, nothing changes) and then set the way a position edit
+        sets it: on a club the player goes to the bottom of his new position's chain, unlocked.
+
+        ``mode="exact"`` is Finn's Paste Player-Exact Copy, tailored: everything ``all`` copies, plus first and
+        last name, college (by name), play-by-play id and photo id.  ``identity`` carries the copied player's
+        ``{"first", "last", "college"}``.  The names go through ``set_name``, which points a shared name string
+        elsewhere instead of renaming every player who shares it (Finn's text edit renames them all).  Finn also
+        points both players at ONE career-history stream, which would make them share every future stat; the
+        Studio keeps the target's own history link.  A bad name or an unknown position refuses the whole paste.
+
+        Returns ``{"count", "before", "position_changed", "identity_before", "identity"}``; ``before`` is the
+        record to restore for undo and ``identity_before`` is ``{"first", "last", "college_index"}``."""
 
         _require(self.by_offset.get(target.offset) is target, "player belongs to another document")
         new_position = None
-        if mode == "all" and source.values["position"] != target.record.values["position"]:
+        if mode in ("all", "exact") and source.values["position"] != target.record.values["position"]:
             new_position = int(source.values["position"])
             check_position_code(new_position, self.scheme)
+        wanted: dict[str, Any] = {}
+        if mode == "exact":
+            _require(identity is not None, "Paste exact copy needs the copied player's names and college")
+            wanted["first"] = validate_name(identity["first"])
+            wanted["last"] = validate_name(identity["last"])
+            college = str(identity.get("college") or "")
+            wanted["college_index"] = self.colleges.index(college) if college and college in self.colleges else None
+            wanted["college_missing"] = bool(college) and wanted["college_index"] is None
         before = target.record.copy()
-        count = copy_player(source, target.record, mode=mode, abilities=abilities)
+        identity_before = {"first": target.first, "last": target.last, "college_index": target.college_index}
+        count = 0
+        identity_result: dict[str, Any] = {}
+        if mode == "exact":
+            changed_first = target.first != wanted["first"]
+            changed_last = target.last != wanted["last"]
+            try:
+                if changed_first:
+                    self.set_name(target, "first", wanted["first"])
+                if changed_last:
+                    self.set_name(target, "last", wanted["last"])
+            except RosterRecordError:
+                if changed_first and target.first != identity_before["first"]:
+                    self.set_name(target, "first", identity_before["first"])
+                raise
+            count += int(changed_first) + int(changed_last)
+            if wanted["college_index"] is not None and wanted["college_index"] != target.college_index:
+                self.set_college(target, wanted["college_index"])
+                count += 1
+            identity_result = {"first": changed_first, "last": changed_last,
+                               "college_missing": wanted["college_missing"],
+                               "college": wanted["college_index"] is not None
+                               and wanted["college_index"] != identity_before["college_index"]}
+        count += copy_player(source, target.record, mode=mode, abilities=abilities)
         if new_position is not None:
             target.record.values["position"] = before.values["position"]
             self.change_position(target, new_position)
-        return {"count": count, "before": before, "position_changed": new_position is not None}
+        return {"count": count, "before": before, "position_changed": new_position is not None,
+                "identity_before": identity_before, "identity": identity_result}
+
+    def restore_pasted_player(self, target: Player, values: Mapping[str, int],
+                              identity: Mapping[str, Any] | None = None) -> None:
+        """Undo or redo of ``paste_player``: the record values put back, except the name and college pointers,
+        which live in the shared string pool and are re-pointed through ``set_name`` and ``set_college`` instead
+        (a stale pointer value would no longer match the body).  ``identity`` is ``{"first", "last",
+        "college_index"}`` for an exact paste, or None."""
+
+        _require(self.by_offset.get(target.offset) is target, "player belongs to another document")
+        skip = {"college_pointer", "first_name_pointer", "last_name_pointer"}
+        target.record.values.update({key: value for key, value in values.items() if key not in skip})
+        if identity is not None:
+            for which in ("first", "last"):
+                if getattr(target, which) != identity[which]:
+                    self.set_name(target, which, identity[which])
+            index = identity.get("college_index")
+            if index is not None and index != target.college_index:
+                self.set_college(target, index)
 
     # ------------------------------------------------------------------ edits
     def _protect_split_name_pool(self) -> None:
@@ -6247,6 +6306,8 @@ def restore_measurements(document: RosterDocument, retail: RosterDocument,
     return count
 
 
+COPY_MODES = ("all", "exact", "attributes", "photo")
+EXACT_EXTRA_FIELDS = ("pbp_id", "photo_id")        # what Paste Player-Exact Copy adds to Paste in the record (+0x04, +0x06)
 COPY_EXCLUDED = frozenset({"college_pointer", "first_name_pointer", "last_name_pointer",
                            "history_pointer", "pbp_id", "photo_id"})
 
@@ -6257,8 +6318,13 @@ COPY_EXCLUDED = frozenset({"college_pointer", "first_name_pointer", "last_name_p
 # it (his record map calls +0x52/+0x53 padding), and the game's own field-by-field player clone
 # (0xC16CD..0xC1DDB) never copies +0x52 or +0x53 either.  So a Paste keeps the target's slot state;
 # abilities and their tier travel only when the user asks; the Guardian cap is gear and travels.
-PASTE_KEEPS_TARGET = ("player_type", "injured_reserve", "unknown_29_low", "depth_rank", "depth_side",
-                      "pool_kind", "star_tag")
+#
+# b81 finn-r2: the injury state is the whole of it, not only +0x28.  The game's weeks-left and injured bit (+0x22/+0x23,
+# Studio field unknown_20_high) and the injury status nibble (+0x27 high, unknown_27_high) belong to the same injury as
+# the id at +0x28 (RE_FACTS section 2), so a Paste that kept the id but copied the other player's weeks would leave a
+# healthy target "injured" for the source's weeks, or an injured one healthy with an injury id.
+PASTE_KEEPS_TARGET = ("player_type", "injured_reserve", "unknown_29_low", "unknown_20_high", "unknown_27_high",
+                      "depth_rank", "depth_side", "pool_kind", "star_tag")
 PASTE_LOCK_MASK = 0x1F           # unknown_52 bits 0..4: rank, side, KR1, KR2, PR locks (nfl2k5_depth_locks)
 PASTE_ABILITY_MASKS = {"unknown_52": 0xE0,         # Speedster, Right-Stick Moves, Juke
                        "unknown_53_high": 0x6F}    # Spin, Truck, Hurdle, Stiff-Arm and the two tier bits
@@ -6301,14 +6367,16 @@ def copy_player(source: PlayerRecord, target: PlayerRecord, *, mode: str = "all"
     """Finn's Paste / Paste-Attributes-Only / Paste-Photo, tailored to a SOFTDRINK roster.
 
     ``all`` copies everything except college, names, PBP and photo (his own rule) and except the slot
-    state in ``PASTE_KEEPS_TARGET`` and the lock bits (b81 R7); ``attributes`` copies the 28 rating
+    state in ``PASTE_KEEPS_TARGET`` and the lock bits (b81 R7); ``exact`` (Finn's Paste Player-Exact Copy) is
+    ``all`` plus the play-by-play id and the photo id here, with the names and the college sent through the
+    document by ``RosterDocument.paste_player``; ``attributes`` copies the 28 rating
     bytes only; ``photo`` copies the portrait id only.  ``abilities`` adds the ability flags and their
     tier (never the locks) to ``all`` or ``attributes``.  Returns how many fields changed.
 
     This is the raw record copy; on a document use ``RosterDocument.paste_player``, which also sends a
     position change through ``change_position`` (bottom of the new chain, unlocked)."""
 
-    _require(mode in ("all", "attributes", "photo"), "mode must be all, attributes or photo")
+    _require(mode in COPY_MODES, "mode must be all, exact, attributes or photo")
     _require(isinstance(abilities, bool), "abilities must be a boolean")
     masks: dict[str, int] = {}
     if mode == "photo":
@@ -6317,6 +6385,8 @@ def copy_player(source: PlayerRecord, target: PlayerRecord, *, mode: str = "all"
         keys = RATING_BYTE_ORDER
     else:
         skip = COPY_EXCLUDED | set(PASTE_KEEPS_TARGET) | set(PASTE_ABILITY_MASKS)
+        if mode == "exact":
+            skip -= set(EXACT_EXTRA_FIELDS)
         keys = tuple(name for name in (f.name for f in FIELDS) if name not in skip)
         masks = dict(PASTE_GEAR_MASKS)
     if abilities and mode != "photo":
