@@ -2855,7 +2855,8 @@ class RosterEditorPanel(QWidget):
     # never a player record or a team's list
     ARENA_ONLY_EDITS = frozenset({"year", "cap", "control", "game", "game_add", "game_remove", "week_clear", "coach",
                                   "box_score", "game_swap_played",                     # b81 R41
-                                  "coach_swap", "coach_hire", "team_option"})
+                                  "coach_swap", "coach_hire", "team_option",
+                                  "coaches_import", "dead_cap_clear"})                 # b81 R2
 
     def _arena_byte_edit(self, edit) -> bool | None:
         """b81 item 6: an edit that changes no roster state is written straight into the live bytes. The composed path

@@ -2919,6 +2919,7 @@ mod_editor/core/nfl2k5_team_transfer.py
 mod_editor/core/nfl2k5_team_stats.py
 mod_editor/core/nfl2k5_depth_file.py
 mod_editor/core/nfl2k5_player_health.py
+mod_editor/core/nfl2k5_coach_file.py
 mod_editor/core/nfl2k5_ps2_rosters.py
 data/nfl2k5_real_portraits/portraits.json
 data/nfl2k5_real_portraits/faces_00.png

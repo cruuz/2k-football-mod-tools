@@ -350,3 +350,33 @@ def scores_csv_text(save: fs.FranchiseSave) -> str:
                          save.team_abbreviation(box.home), *box.away_quarters, *box.home_quarters,
                          box.away_points, box.home_points])
     return buffer.getvalue()
+
+
+# --------------------------------------------------------------------------------------------- dead cap (b81 R2, F9)
+# Finn's *Clear Cap Penalty* zeroes one u32 at team +0x19C.  The game keeps SEVEN u16 dead-cap amounts there, one a season,
+# $1000 units, index 0 = this season (RE_FACTS section 4: the adder 0x13ED30 puts a released player's unamortised bonus in
+# slot [year] for a human-controlled club only; the rollover 0x13ED70 shifts every slot down one and zeroes the last).  The
+# core module calls these seven words ``record_ring`` / ``set_team_record_ring``, a wrong name that stays inside the pinned
+# core file; this module only uses them.  Finn's u32 is slot 0 plus 65536 x slot 1, so his button clears this season and
+# next season's amount and shows a wrong total when next season has dead money; here all seven seasons are cleared and listed.
+DEAD_CAP_SEASONS = fs.TEAM_RECORD_RING_COUNT
+
+
+def dead_cap(save: fs.FranchiseSave, team: int) -> tuple[int, ...]:
+    """A club's dead-cap amount for each of the next seven seasons, $1000 units, this season first."""
+
+    fs._require(type(team) is int and 0 <= team < save.league_team_count, f"team {team!r} is not a league club")
+    return tuple(int(v) for v in save.team_season(team).record_ring)
+
+
+def clear_dead_cap(save: fs.FranchiseSave, team: int) -> dict[str, Any]:
+    """Zero all seven seasons of a club's dead cap; only those 14 bytes can change."""
+
+    before = dead_cap(save, team)
+    for slot in range(DEAD_CAP_SEASONS):
+        if before[slot]:
+            save.set_team_record_ring(team, slot, 0)
+    after = dead_cap(save, team)
+    fs._require(after == (0,) * DEAD_CAP_SEASONS, "the dead cap did not read back as zero")
+    return {"operation": "clear_dead_cap", "team": team, "abbreviation": save.team_abbreviation(team),
+            "before": list(before), "after": list(after)}

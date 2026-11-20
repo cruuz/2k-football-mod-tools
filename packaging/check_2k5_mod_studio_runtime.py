@@ -2061,6 +2061,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_team_stats",                      # b81 R41
         "mod_editor.core.nfl2k5_depth_file",                      # b81 R43 F13
         "mod_editor.core.nfl2k5_player_health",                   # b81 finn-r2 Heal Player
+        "mod_editor.core.nfl2k5_coach_file",                      # b81 R2 (Finn coach file)
         "mod_editor.core.nfl2k5_ps2_rosters",                     # b81 wave 3
         "mod_editor.core.nfl2k5_practice_injuries",               # b778-pi1
         "mod_editor.core.nfl2k5_ball_carrier_ai",                 # b778-ai5
