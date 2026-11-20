@@ -143,20 +143,20 @@ def _recognize(payload):
         sign_va, sign_retail = QB_ROOM_SIGN
         if va <= sign_va and sign_va + len(sign_retail) <= va + size:
             at = sign_va - va
-            if bytes(content[at:at + len(sign_retail)]) == _qb_room_sign_call():
+            if bytes(content[at:at + len(sign_retail)]) in _qb_room_sign_calls():
                 content[at:at + len(sign_retail)] = sign_retail
         require(hashlib.sha256(content).hexdigest() == digest, f"Foreign star retention prerequisite at {va:#x}")
     return next(iter(states))
 
 
-def _qb_room_sign_call():
-    """The quarterback room's own call at 0x248010 (its fixed page and the sign_entry label), or None."""
+def _qb_room_sign_calls():
+    """The quarterback room's own calls at 0x248010 (its fixed page and the sign_entry label, current and earlier page
+    revisions), or an empty set."""
     try:
         from . import nfl2k5_qb_room as room
-        code = room._code()
-        return next(patched for label, at, _o, patched in room._sites(room.VA, code.STAGE_SIGN) if at == QB_ROOM_SIGN[0])
-    except (ImportError, StopIteration, ValueError, KeyError):
-        return None
+        return room.sign_calls()
+    except (ImportError, AttributeError, ValueError, KeyError):
+        return set()
 
 
 def _economy_release():

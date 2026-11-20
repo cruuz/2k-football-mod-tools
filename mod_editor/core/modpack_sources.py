@@ -133,10 +133,12 @@ def prepare(recipe_path, work, *, stack=None, marks_pack=None, patched_image=Non
             from .nfl2k5_build_settings import qb_room_level
             m._require(room is not None and payload is not None, "Cannot verify the disc's quarterback room setting")
             room_state = room.read_settings(payload)
-            m._require(room_state["status"] in ("retail", "applied"), "Cannot verify the disc's quarterback room setting")
+            m._require(room_state["status"] in ("retail", "applied", "previous"),
+                       "Cannot verify the disc's quarterback room setting")
             # The key names piece 3's rules only; the floor follows the injury setting (coordinator's rule).
             piece3 = getattr(room, "PIECE3_BITS", 7)
-            installed = "realistic" if room_state["status"] == "applied" and room_state.get("stages", 0) & piece3 else "retail"
+            installed = ("realistic" if room_state["status"] in ("applied", "previous")
+                         and room_state.get("stages", 0) & piece3 else "retail")
             named = effective.get("qb_room")
             if named is not None:
                 m._require(named == installed, "The disc and source recipe select different quarterback room settings")

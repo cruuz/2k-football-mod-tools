@@ -3916,7 +3916,9 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     injuries = (qb_settings.get("status") == "applied" and (qb_settings.get("mode") == "realistic"
                 or (qb_settings.get("mode") == "custom" and (qb_settings.get("custom_rate") or 0) > 0)))
     floor_bit = getattr(qb_room, "STAGE_FLOOR", 64)
-    out["qb_floor"] = ("applied" if room_settings.get("status") == "applied" and room_settings.get("stages", 0) & floor_bit
+    # An earlier revision's page ("previous") still carries its floor; a Realistic edit upgrades it in place.
+    out["qb_floor"] = ("applied" if room_settings.get("status") in ("applied", "previous")
+                       and room_settings.get("stages", 0) & floor_bit
                        else "missing" if injuries else "not_needed")
     coach_carousel = _core_module("nfl2k5_coach_carousel")  # b780-c6
     out["coach_carousel"] = coach_carousel.status(_xbe_bytes(source)) if coach_carousel is not None else "unavailable"

@@ -397,6 +397,114 @@ class FloorOwnerTests(unittest.TestCase):
         self.assertEqual(room.status(self._changed(floor, 0x322C40, b"\xcc")), "foreign")
 
 
+
+class PreviousRevisionTests(unittest.TestCase):
+    """Pages an earlier revision's Studio wrote ([validator]'s finding at c8683ea7e, lead's request): the floor handover
+    (template 75257128, stage set 192; the P2a candidate c93f6c0d) and the reviewed stage 0 + 3a page (78d3633d3,
+    stage set 1; candidate 4af354d7). They read "previous"; Realistic upgrades them in place to the current template
+    (the bytes of a fresh install on the same source, no allocator row moves); Retail restores the source plus the
+    empty reservation; any other page is still foreign. The previous executables are rebuilt here from the frozen
+    templates and must equal the hashes recorded when those revisions were built."""
+
+    FLOOR_SHA = "c93f6c0d31aa99476b92092d32777f16af8bebe4c3b8fa8256495aa02dbe704b"
+    FLOOR_EMPTY_SHA = "a0a81494513bda2b812793ea9bf9e356a3e5af5988932c973778a852bc207502"
+    STAGE_3A_SHA = "4af354d711604f4fccc4908f36381da31446c734a0d1fdc61ed34ead008d7eeb"
+    STAGE_3A_EMPTY_SHA = "6aef88eb074f455918e015a6109e7373f183ccba9294ec55a30d7bcf44d2edc2"
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_qb_room as room, nfl2k5_sim_qb_injuries as qb
+        cls.room = room
+        source = _private("NFL2K5_B81_REVIEWED_TEST_DISC", HELMET_XBE_SHA)
+        cls.slice1, _ = qb.apply(source, "realistic")
+        cls.base, _ = ir.apply(cls.slice1, "modern", standard_guard=True)
+        cls.floor_empty, cls.floor = cls._written_by("nfl2k5_qb_room_code_b81_floor", cls.base, 192)
+        cls.stage_3a_empty, cls.stage_3a = cls._written_by("nfl2k5_qb_room_code_b81_3a", cls.slice1, 1)
+
+    @classmethod
+    def _written_by(cls, template, source, stages):
+        """(empty reservation, what that revision's Studio wrote): its whole page and its calls, byte for byte."""
+        import importlib
+        old, room = importlib.import_module(f"mod_editor.core.{template}"), cls.room
+        empty = space.extend_scaleout(source, room.REQUESTS)[0]
+        page = old.page_bytes(room.VA, old.settings_record(stages), ir_store_va=0)
+        edits = [(room.VA, b"\xcc" * room.SIZE, page)]
+        edits += [(at, o, p) for _l, at, o, p in old.sites(room.VA, stages | 8 if stages & 64 else stages)]
+        return empty, room._patch(empty, edits)
+
+    @staticmethod
+    def _rows(payload):
+        return [(r["owner"], r["kind"], r["va"], r["size"]) for r in space.layout(payload)["allocations"]]
+
+    def _changed(self, payload, va, data):
+        image, out = XbeImage(payload), bytearray(payload)
+        at = image.offset(va, len(data))
+        out[at:at + len(data)] = data
+        return bytes(out)
+
+    def test_the_rebuilt_previous_executables_are_the_recorded_ones(self):
+        sha = lambda data: hashlib.sha256(data).hexdigest()
+        self.assertEqual((sha(self.floor), sha(self.floor_empty)), (self.FLOOR_SHA, self.FLOOR_EMPTY_SHA))
+        self.assertEqual((sha(self.stage_3a), sha(self.stage_3a_empty)), (self.STAGE_3A_SHA, self.STAGE_3A_EMPTY_SHA))
+
+    def test_status_reads_previous(self):
+        room = self.room
+        for payload, revision, stages in ((self.floor, "b81 floor handover", 192), (self.stage_3a, "b81 stage 3a", 1)):
+            with self.subTest(revision=revision):
+                settings = room.read_settings(payload)
+                self.assertEqual((settings["status"], settings.get("revision"), settings.get("stages")),
+                                 ("previous", revision, stages))
+                self.assertEqual(room.status(payload), "previous")
+
+    def test_realistic_upgrades_the_floor_page_in_place(self):
+        room = self.room
+        for stages in (None, 192):
+            with self.subTest(stages=stages):
+                upgraded, receipt = room.apply(self.floor, "realistic", stages=stages)
+                fresh, _ = room.apply(self.base, "realistic", stages=stages)
+                self.assertEqual(upgraded, fresh)
+                self.assertEqual(receipt["upgraded_from"], "b81 floor handover")
+                self.assertEqual(self._rows(upgraded), self._rows(self.floor))
+                self.assertEqual(room.read_settings(upgraded)["status"], "applied")
+
+    def test_retail_restores_the_floor_page(self):
+        restored, receipt = self.room.apply(self.floor, "retail")
+        self.assertEqual(restored, self.floor_empty)
+        self.assertEqual((receipt["restored_stages"], receipt["restored_revision"]), (192, "b81 floor handover"))
+
+    def test_the_stage_3a_page_upgrades_and_restores(self):
+        room = self.room
+        self.assertEqual(room.apply(self.stage_3a, "retail")[0], self.stage_3a_empty)
+        self.assertEqual(room.apply(self.stage_3a, "realistic", stages=3)[0],
+                         room.apply(self.stage_3a_empty, "realistic", stages=3)[0])
+        # The current Realistic carries the floor, whose needs this executable lacks: refused with the needs.
+        with self.assertRaisesRegex(ValueError, "modern injured reserve"):
+            room.apply(self.stage_3a, "realistic")
+
+    def test_star_retention_accepts_the_floor_pages_signing_call(self):
+        from mod_editor.core import nfl2k5_star_retention as retention
+        self.assertEqual(retention.status(self.base), "applied")
+        self.assertEqual(retention.status(self.floor), "applied")
+        self.assertEqual(retention.apply(self.floor)[1]["status"], "already_applied")
+
+    def test_anything_else_is_still_foreign(self):
+        import importlib
+        room = self.room
+        old = importlib.import_module("mod_editor.core.nfl2k5_qb_room_code_b81_floor")
+        current_calls = {at: p for _l, at, _o, p in room._code().sites(room.VA, 192 | 8)}
+        _empty, unwritten = self._written_by("nfl2k5_qb_room_code_b81_floor", self.base, 64)  # a set no Studio wrote
+        cases = {"page code byte": self._changed(self.floor, room.VA + 0x10, b"\x90"),
+                 "settings record": self._changed(self.floor, room.VA + old.SETTINGS_OFFSET + 8, b"\x41"),
+                 "old page, current call": self._changed(self.floor, 0x248010, current_calls[0x248010]),
+                 "stage set no Studio wrote": unwritten,
+                 "3a page with a changed byte": self._changed(self.stage_3a, room.VA + 0x20, b"\x90")}
+        for name, payload in cases.items():
+            with self.subTest(case=name):
+                self.assertEqual(room.status(payload), "foreign")
+                for level in ("retail", "realistic"):
+                    with self.assertRaisesRegex(ValueError, "not recognized"):
+                        room.apply(payload, level)
+
 class TestOnlyInstallTests(unittest.TestCase):
     """install_stages(test_without_needs=True) replays recorded seasons on executables made before modern IR and the
     ownership page; it skips only the dependency checks, and nothing in the Studio can reach it."""

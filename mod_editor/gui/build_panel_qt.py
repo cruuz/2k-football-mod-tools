@@ -3992,7 +3992,9 @@ class BuildPanel(QWidget):
             return ""
         installed = (self._state or {}).get("sim_qb_injury_settings") or {}
         # b81 qb34: the control also sets the quarterback room rules, so a disc whose rules differ is a change too.
-        room_now = "realistic" if ((self._state or {}).get("qb_room_settings") or {}).get("status") == "applied" else "retail"
+        room_status = ((self._state or {}).get("qb_room_settings") or {}).get("status")
+        # An earlier revision's page ("previous") is always a change: the edit upgrades or removes it.
+        room_now = {"applied": "realistic", "previous": "previous"}.get(room_status, "retail")
         room_wanted = "realistic" if mode in ("realistic", "custom") and self._qb_room_needs_on() else "retail"
         if mode == installed.get("mode", "retail") and room_now == room_wanted and (
                 mode != "custom" or self.qb_injury_rate.value() == installed.get("custom_rate")):

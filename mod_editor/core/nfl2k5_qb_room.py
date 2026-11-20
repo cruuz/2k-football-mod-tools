@@ -4,7 +4,9 @@ Three fixed pages at 0x1529000 (nfl2k5_xbe_space.QB_ROOM_*) hold the native code
 counters and the event ring; whole 5-byte calls of the weekly advance enter them (nfl2k5_qb_room_code.HOOKS). The
 installer authenticates every hook site and the whole page against the exact bytes it expects and refuses anything
 else. Retail restores the sites and fills the pages with 0xCC; the reservation stays, so Realistic then Retail is the
-source plus an empty reservation, byte for byte. The byte interface is .b77-scratch/b81/qb34/INTERFACE.md.
+source plus an empty reservation, byte for byte. A page an earlier revision's Studio wrote (the frozen templates
+nfl2k5_qb_room_code_b81_*) reads "previous": Realistic upgrades it in place to the current template and Retail
+restores it. The byte interface is .b77-scratch/b81/qb34/INTERFACE.md.
 """
 from __future__ import annotations
 
@@ -37,6 +39,7 @@ STAGE_OVER_CAP = 128  # the floor's last rung, signing over the cap (F3 step 8);
 FLOOR_ENTRY, FLOOR_RESUME, FLOOR_END = 0x322BB0, 0x322BB6, 0x322DF1
 FLOOR_FIRST = bytes.fromhex("81ec14010000")  # sub esp, 0x114
 FLOOR_BODY_SHA256 = "95cd45152dd4b3b52243fff6dc7c42ec8a8e3c833af90bc5f1a10a9390fe23be"  # retail 0x322BB6..0x322DF1
+SIGN_SITE = 0x248010  # the weekly advance's stage-6 signing call the floor and stage 4a replace
 SMART_CUT = 0x2BF9A0  # the native cut-down the floor's release rung calls; the economy points it at economy_smart_cut
 # Coordinator's product rule (2026-11-20): quarterback injuries above zero are never installed without the floor. The
 # Studio's stage set is therefore a function of the plan: these bits whenever injuries are above zero (Realistic, or
@@ -106,8 +109,26 @@ def _site_stages(stages):
     return stages | _code().STAGE_SIGN if stages & STAGE_FLOOR else stages
 
 
-def _sites(va, stages):
-    return _code().sites(va, _site_stages(stages))
+def _sites(va, stages, code=None):
+    return (code or _code()).sites(va, _site_stages(stages))
+
+
+def _previous_revisions():
+    """(name, frozen page template, the stage sets that revision's Studio wrote) for each earlier template whose pages a
+    disc may hold ([validator]'s finding at c8683ea7e): the floor handover's (752571283e98, pinned at c16934bee and
+    f34553b06; the Studio wrote 192) and the reviewed stage 0 + 3a page's (b1372b645e46 at 78d3633d3; it wrote 1)."""
+    from . import nfl2k5_qb_room_code_b81_3a as stage_3a, nfl2k5_qb_room_code_b81_floor as floor
+    return (("b81 floor handover", floor, (STAGE_FLOOR | STAGE_OVER_CAP,)), ("b81 stage 3a", stage_3a, (1,)))
+
+
+def sign_calls():
+    """Every call at 0x248010 that is this owner's own: the current page's sign_entry and each earlier revision's where
+    its Studio wrote one. nfl2k5_star_retention accepts exactly these in the caller window it authenticates."""
+    calls = {patched for _label, at, _o, patched in _sites(VA, _code().STAGE_SIGN) if at == SIGN_SITE}
+    for _name, module, stage_sets in _previous_revisions():
+        for stages in stage_sets:
+            calls |= {patched for _label, at, _o, patched in _sites(VA, stages, module) if at == SIGN_SITE}
+    return calls
 
 
 def floor_entry_problem(payload):
@@ -141,11 +162,12 @@ def _floor_problems(payload, stages):
     return [p for p in (floor_entry_problem(payload), floor_economy_problem(payload)) if p]
 
 
-def _sites_state(image, va, stages):
+def _sites_state(image, va, stages, code=None):
     """'retail' when every hook site holds its retail call, 'applied' when exactly the stage set's sites hold the
-    calls into the page at ``va`` and the rest hold retail calls; anything else is foreign."""
-    code = _code()
-    wanted = {at: patched for _label, at, _original, patched in _sites(va, stages)} if va else {}
+    calls into the page at ``va`` (written by ``code``, the current template by default) and the rest hold retail
+    calls; anything else is foreign."""
+    code = code or _code()
+    wanted = {at: patched for _label, at, _original, patched in _sites(va, stages, code)} if va else {}
     states = set()
     for at, original, _label, _need in code.HOOKS:
         found = image.read(at, len(original))
@@ -159,17 +181,35 @@ def _sites_state(image, va, stages):
 
 
 def _state(payload):
-    """(status, settings, allocation) after authenticating every site and the whole page; raises when foreign."""
-    code = _code()
+    """(status, settings, allocation, revision) after authenticating every site and the whole page; raises when
+    foreign. "previous" means the page and its sites are exactly what an earlier revision's Studio wrote; revision is
+    then (name, frozen template), else None."""
     image = XbeImage(payload)
     allocation = _allocation(payload)
     if allocation is None:
         _sites_state(image, 0, 0)
-        return "retail", None, None
+        return "retail", None, None, None
     page = image.read(VA, SIZE)
     if page == b"\xcc" * SIZE:
         _sites_state(image, 0, 0)
-        return "retail", None, allocation
+        return "retail", None, allocation, None
+    try:
+        return "applied", _page_settings(payload, image, page, _code()), allocation, None
+    except ERRORS as exc:
+        current_error = exc
+    for name, module, stage_sets in _previous_revisions():
+        try:
+            settings = _page_settings(payload, image, page, module)
+        except ERRORS:
+            continue
+        written = module.parse_settings(module.settings_record(settings["stages"]))  # that Studio's own record
+        if settings["stages"] in stage_sets and settings == written:
+            return "previous", settings, allocation, (name, module)
+    raise current_error
+
+
+def _page_settings(payload, image, page, code):
+    """The settings of a page written with template ``code``, after authenticating the whole page and its sites."""
     record = page[code.SETTINGS_OFFSET:code.SETTINGS_OFFSET + code.SETTINGS.size]
     settings = code.parse_settings(record)
     link = struct.unpack_from("<I", page, code.LINK_IR_STORE)[0]
@@ -177,22 +217,27 @@ def _state(payload):
     _require(not _floor_problems(payload, settings["stages"]),
              "The quarterback floor's native signing routine or economy routines are not recognized")
     _require(page == code.page_bytes(VA, record, ir_store_va=link), "Foreign quarterback room page")
-    states = _sites_state(image, VA, settings["stages"])
+    states = _sites_state(image, VA, settings["stages"], code)
     _require(states == {"applied"} or (states == {"applied", "retail"}), "Foreign or mixed quarterback room sites")
-    return "applied", settings, allocation
+    return settings
 
 
 def read_settings(payload):
     try:
-        status, settings, allocation = _state(bytes(payload))
+        status, settings, allocation, revision = _state(bytes(payload))
     except ERRORS as exc:
         return {"status": "foreign", "reason": str(exc)}
     if status == "retail":
         return {"status": "retail", "mode": "retail", "reserved": allocation is not None,
                 "va": VA if allocation else None}
-    return {"status": "applied", "mode": "realistic", "stages": settings["stages"],
-            "stage_names": stage_names(settings["stages"]), "shadow": settings["shadow"],
-            "h0_ppm": settings["h0_ppm"], "d2_scale_milli": settings["d2_scale_milli"], "va": VA, "reserved": True}
+    out = {"status": status, "mode": "realistic", "stages": settings["stages"],
+           "stage_names": stage_names(settings["stages"]), "shadow": settings["shadow"],
+           "h0_ppm": settings["h0_ppm"], "d2_scale_milli": settings["d2_scale_milli"], "va": VA, "reserved": True}
+    if revision is not None:
+        # An earlier revision's page; Realistic upgrades it in place, Retail restores it. Its stage names are read
+        # with the current meaning of the bits, which matches for the sets those Studios wrote (192 and 1).
+        out["revision"] = revision[0]
+    return out
 
 
 def status(payload):
@@ -262,12 +307,11 @@ def _patch(payload, edits):
     return bytes(data)
 
 
-def _edits(va, stages, page, *, restoring):
-    """Every byte the owner writes: the sites the stage set needs and the whole page."""
-    code = _code()
+def _edits(va, stages, page, *, restoring, code=None):
+    """Every byte the owner writes: the sites the stage set needs and the whole page (template ``code``)."""
     empty = b"\xcc" * SIZE
     out = [(at, patched, original) if restoring else (at, original, patched)
-           for _label, at, original, patched in _sites(va, stages)]
+           for _label, at, original, patched in _sites(va, stages, code)]
     out.append((va, page, empty) if restoring else (va, empty, page))
     return out
 
@@ -279,25 +323,26 @@ def apply(payload, level="realistic", *, stages=None):
     source = bytes(payload)
     XbeImage(source)
     try:
-        current, settings, allocation = _state(source)
+        current, settings, allocation, revision = _state(source)
     except ERRORS as exc:
         raise QbRoomError(f"The quarterback room bytes are not recognized; refusing to change them ({exc})") from exc
-    code = _code()
     receipt = {"owner": OWNER, "mode": level, "va": hex(VA)}
     if level == "retail":
         if current == "retail":
             return source, {**receipt, "status": "retail", "changed_bytes": 0, "file_growth": 0}
+        code = revision[1] if revision is not None else _code()
         page = code.page_bytes(VA, code.settings_record(settings["stages"], shadow=settings["shadow"],
                                                         h0_ppm=settings["h0_ppm"],
                                                         d2_scale_milli=settings["d2_scale_milli"]),
                                ir_store_va=_ir_store_va(source, settings["stages"]))
-        result = _patch(source, _edits(VA, settings["stages"], page, restoring=True))
+        result = _patch(source, _edits(VA, settings["stages"], page, restoring=True, code=code))
         _require(_state(result)[0] == "retail", "The quarterback room failed Retail readback")
         return result, {**receipt, "status": "retail", "restored_stages": settings["stages"],
+                        **({"restored_revision": revision[0]} if revision is not None else {}),
                         "changed_bytes": space.count_differing_bytes(source, result), "file_growth": 0}
     stages = realistic_stages() if stages is None else stages
     _require(type(stages) is int and stages > 0, "Realistic needs at least one quarterback room stage")
-    return _install(source, current, settings, allocation, receipt, stages, SHADOW_DEFAULT)
+    return _install(source, current, settings, allocation, receipt, stages, SHADOW_DEFAULT, revision)
 
 
 def install_stages(payload, stages, *, shadow=False, test_without_needs=False):
@@ -309,17 +354,18 @@ def install_stages(payload, stages, *, shadow=False, test_without_needs=False):
     source = bytes(payload)
     XbeImage(source)
     try:
-        current, settings, allocation = _state(source)
+        current, settings, allocation, revision = _state(source)
     except ERRORS as exc:
         raise QbRoomError(f"The quarterback room bytes are not recognized; refusing to change them ({exc})") from exc
     _require(type(test_without_needs) is bool, "test_without_needs must be True or False")
     receipt = {"owner": OWNER, "mode": "stages", "va": hex(VA)}
     if test_without_needs:
         receipt["test_without_needs"] = True
-    return _install(source, current, settings, allocation, receipt, stages, shadow, needs=not test_without_needs)
+    return _install(source, current, settings, allocation, receipt, stages, shadow, revision,
+                    needs=not test_without_needs)
 
 
-def _install(source, current, settings, allocation, receipt, stages, shadow, *, needs=True):
+def _install(source, current, settings, allocation, receipt, stages, shadow, revision=None, *, needs=True):
     code = _code()
     if needs:
         missing = requirements(source, stages)
@@ -333,9 +379,12 @@ def _install(source, current, settings, allocation, receipt, stages, shadow, *, 
         return source, {**receipt, "status": "already_applied", "stages": stages,
                         "shadow": shadow, "changed_bytes": 0, "file_growth": 0}
     working = source
-    if current == "applied":
-        # Another stage set or calibration record: back to the empty reservation first, then install.
+    if current in ("applied", "previous"):
+        # Another stage set, calibration record or earlier revision's page: back to the empty reservation first (same
+        # page address, every other row untouched), then install.
         working, _ = apply(source, "retail")
+        if revision is not None:
+            receipt["upgraded_from"] = revision[0]
     elif allocation is None:
         working, receipt["allocation"] = space.extend_scaleout(source, REQUESTS)
     empty = working
