@@ -634,7 +634,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
         "mod_editor/core/nfl2k5_boot_logo.py": "9ee25b1fb49859951ba4780ec2b4a3d71773f7199d5a308338acf51f84bdb257",
         "mod_editor/core/nfl2k5_build_service.py": "cdff75f2ceb2da2ad18d38b7c8f1915193f91075ac2275cb204474765d27dcc7",
-        "mod_editor/core/nfl2k5_build_settings.py": "8fa0282e52e4e8d3331d3337b00deb4c916cda379b91ba569e8acd8d8564ea0c",
+        "mod_editor/core/nfl2k5_build_settings.py": "c82c6623af8b5f3188173dbf8f91aea1db43469ae20e185e5f99f48ce1cf5509",
         "mod_editor/core/nfl2k5_build_service.py": "cdff75f2ceb2da2ad18d38b7c8f1915193f91075ac2275cb204474765d27dcc7",
         "mod_editor/core/nfl2k5_midfield_art.py": "da5ff3541f2d7a7674cd3fc715c831379ecbe17c307951ce547ecaf8d3b4ab89",
         "mod_editor/core/nfl2k5_split_endzone_art.py": "c135625db5663efa13f3f446f98e7cfe8d071148f7b892ea378d18a05d845957",
@@ -989,6 +989,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",  # b780 hunt1: frozen beta-79 roll for the previous state
         "mod_editor/core/nfl2k5_sim_qb_injuries.py": "e8219c52604fe023549411055a7500987d9da4d108bdf2794bac1227a22e18e7",
         "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "ab914dbc3989ecaf33799f95c0e555027c2ae097758e97b425b655227ceded3c",
+        "mod_editor/core/nfl2k5_qb_room.py": "a9874eee6a486733ca031fbf34c36fe1afb14ae43a3d3a2ae8460f4338f9e9fb",  # b81 qb34: mod_build loads it by name
+        "mod_editor/core/nfl2k5_qb_room_code.py": "3fc108b5802217c260a9ee7f2279b422464990e1698ecbf84ad02bbf6728a805",  # b81 qb34: its generated page template
         "mod_editor/core/nfl2k5_sim_realism.py": "6323212af016c4e70ecd36d340a993e16afc9b57550f3bb7ed2647fc6731a248",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_sim_realism_b779.py": "687a35375780ce07948ba555a8c189167586393c5de6f48d954c2902a71010ad",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_standings_records.py": "175712ff8aff730b035aab671bf2208322ba52ec1fef758afad7d24263485c1c",  # b780-j1
@@ -1082,7 +1084,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "0a3a5b9d9d0fc4599bb4d360d5c78bfd46d291f05ae1bb9e7e17871b9c78f2cc",
+        "mod_editor/core/nfl2k5_xbe_space.py": "ef3c58457ab9d8bccb75e0ffa3c10e78b88c416e5f40320bf95ca402d6a3ae21",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "b63521c9b17119b87558aff36a5a914d0c3fdd42e96240cf7de20065ead644d7",
