@@ -5950,9 +5950,12 @@ class RosterEditorPanel(QWidget):
 
         if name == "pbp_id":
             entries = rr.pbp_name_index(self.document)
-            note = (f"Play-by-play name ids this roster uses ({sum(1 for k in entries if k < rr.PBP_NUMBER_BASE)}), "
-                    "the jersey-number call-outs 9000-9099 and the 485-name recorded surname bank at 9300+. "
-                    "Any other id can be typed; the wider audio bank is not decoded.")
+            used = len({p.record.values["pbp_id"] for p in self.document.players if p.pool == "primary"}) \
+                if self.document is not None else 0
+            note = (f"Play-by-play name ids: the {used} this roster uses, the retail roster's other recordings "
+                    "(by the retail player who carries each), the jersey-number call-outs 9000-9099 and the 485-name "
+                    "recorded surname bank at 9300+. Any other id can be typed; the rest of the audio bank has no "
+                    "names on the disc.")
             return entries, note
         entries, meta = rr.portrait_index(self.document)
         if entries:

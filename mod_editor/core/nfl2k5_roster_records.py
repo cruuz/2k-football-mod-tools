@@ -5704,6 +5704,10 @@ def pbp_name_index(document: RosterDocument | None = None) -> dict[int, str]:
                 bucket.append(label)
         for pbp, labels in names.items():
             out[pbp] = " / ".join(labels[:4]) + (f" (+{len(labels) - 4})" if len(labels) > 4 else "")
+    # b81 R43 (B3): the retail roster's own cues name 1,927 more recordings (id -> the one retail player who carries it,
+    # data/nfl2k5_retail_name_cues.json); Finn's list names them the same way (lane receipt RE_FACTS.md section 9)
+    for pbp, (first, last) in retail_name_cues().items():
+        out.setdefault(pbp, f"{last}, {first} (retail recording)".replace(", ,", ","))
     for number in range(100):
         out.setdefault(PBP_NUMBER_BASE + number, f"#{number:02d} (jersey-number call-out)")
     out[PBP_DOUBLE_ZERO] = "Double zero (recorded 00 clip; SOFTDRINK builds retire it: the live number is called)"
