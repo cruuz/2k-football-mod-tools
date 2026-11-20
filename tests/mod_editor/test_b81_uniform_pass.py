@@ -46,6 +46,13 @@ REDRAWN += RAVENS + ("20A0",)
 # 2026 numerals wear (27A0, 27H0), Patriots at full height (16H0, 16A0); the Browns road set (30A0, already redrawn) in
 # the charcoal the photographs show
 REDRAWN += ("27A0", "27H0", "16H0", "16A0")
+# R2 (order R2-B): one Broncos number face on every look that wears it, so the home, road and Christmas navy sets join
+# the alternates (08A5, 08A6, 08H6 already redrawn); the Ravens 4, the Jets 2 and the Raiders road edge change inside
+# sets already listed
+BRONCOS = ("08A0", "08A5", "08A6", "08H0", "08H5", "08H6")
+REDRAWN += ("08H0", "08A0", "08H5")
+#: the Raiders road silver edge measured against the jersey white on the week 8 and week 9 road photographs (R2-B)
+LV_ROAD_SILVER = (0xA5, 0xAD, 0xB0)
 #: the Buccaneers' orange inline (decision 1) and the Browns' road charcoal (decision 3)
 TB_ORANGE = (0xD9, 0x64, 0x28)
 CLE_CHARCOAL = (0x3B, 0x3B, 0x3B)
@@ -138,8 +145,9 @@ class KitDocument(unittest.TestCase):
                           ("01H9", "pants00"),
                           ("02A3", "pants00"), ("02H3", "pants00"),
                           ("03A0", "sleeve00"), ("03H0", "sleeve00"), ("04A2", "pants00"), ("04H2", "pants00"),
-                          ("06A0", "sleeve00"), ("06A5", "sleeve00"), ("06A6", "sleeve00"), ("06H5", "sleeve00"),
-                          ("06H6", "sleeve00"),
+                          ("06A0", "pants00"), ("06A0", "sleeve00"), ("06A5", "pants00"), ("06A5", "sleeve00"),
+                          ("06A6", "pants00"), ("06A6", "sleeve00"), ("06H0", "pants00"), ("06H5", "pants00"),
+                          ("06H5", "sleeve00"), ("06H6", "pants00"), ("06H6", "sleeve00"),
                           ("07A7", "sleeve00"), ("07H0", "sleeve00"), ("07H7", "sleeve00"),
                           ("09A9", "pants00"), ("09H9", "pants00"), ("11A3", "sleeve00"), ("11H3", "sleeve00"),
                           ("14A0", "pants00"), ("14A0", "sleeve00"), ("14A0", "socks00"), ("14H0", "sleeve00"),
@@ -162,6 +170,8 @@ class KitDocument(unittest.TestCase):
         # measured width (25H0)
         # Noah 11/19 (decision 5, "use the prototype"): the Buccaneers pants stripe black, orange, red, orange, black at
         # about 5.8 cm on the white home pants (27H0) and the pewter road pants that wear the same stripe (27A0)
+        # R2 (order R2-C): the Bengals pants tiger strokes, one geometry on all six Bengals pants (06H0 06A0 06H5 06A5
+        # 06H6 06A6), each in its own stroke colour
 
     def test_the_jersey_rows_repaint_only_the_chest_under_the_collar(self):
         # Round 2 (Noah 11/18: "the NY logo on the giants jersey below the nfl patch is too large. There are likely
@@ -287,12 +297,15 @@ class DigitDocument(unittest.TestCase):
                                 # batch 5: real wider than 40 columns allow (two-digit numbers are cut outside 12-51): 40
                                 ("23H0", 40), ("23A0", 40), ("05H0", 30), ("05A0", 30), ("19H0", 38), ("19A0", 38),
                                 ("29H0", 40), ("29A0", 40), ("11H0", 40), ("11A0", 40), ("37H0", 40), ("37A0", 40),
-                                ("30H0", 35), ("30A0", 35), ("08A5", 40), ("08A6", 40), ("08H6", 40), ("09A2", 37),
+                                ("30H0", 35), ("30A0", 35), ("09A2", 37),
                                 ("09H2", 37), ("09A9", 40), ("09H9", 40), ("10A5", 38), ("10H5", 38), ("17A1", 37), ("17H1", 37),
                                 ("19A2", 38), ("19H2", 38), ("19A7", 38), ("19H7", 38), ("26A4", 38), ("26H4", 38), ("30A3", 35),
                                 ("30H3", 35), ("37A2", 40), ("37H2", 40),
                                 # batch 6: the Ravens 0 at 33 (real 0.554; the released 37) and the Raiders road as released
-                                ("02H0", 33), ("02A0", 33), ("02A2", 33), ("02A3", 33), ("02H2", 33), ("02H3", 33), ("20A0", 37)):
+                                ("02H0", 33), ("02A0", 33), ("02A2", 33), ("02A3", 33), ("02H2", 33), ("02H3", 33), ("20A0", 37),
+                                # R2: one Broncos face, the 2026 photographs of the orange, white and navy jerseys pooled
+                                # (15 digits, 0.613); restated from 40 for the alternates (batch 5's separate pool)
+                                *((selector, 36) for selector in BRONCOS)):
             solid = png_rgba(folder / by[(selector, 13)])[0][..., 3] > 127
             cols = np.flatnonzero(solid.any(axis=0))
             self.assertLessEqual(abs(int(cols.max() - cols.min() + 1) - width), 1, selector)
@@ -396,6 +409,75 @@ class DigitDocument(unittest.TestCase):
         for row in rows:
             rgba, _info = png_rgba(folder / row["png"])
             self.assertEqual({tuple(int(v) for v in c) for c in rgba[rgba[..., 3] > 0][:, :3]}, {CLE_CHARCOAL}, row["png"])
+
+    def test_the_ravens_4_has_the_tall_closed_counter(self):
+        # R2: the 2026 Ravens 4 has a tall closed triangular counter, 0.27 and 0.30 of the height on the two photographs;
+        # the released and batch 6 4 had a slit about 3 rows tall (an opening of 11 rows in the fill)
+        from scipy import ndimage
+        folder = gf.art_folder(gf.digits_b81())
+        for row in digit_rows():
+            if row["selector"] not in RAVENS or row["chunk"] not in (17, 37):
+                continue
+            rgba, _info = png_rgba(folder / row["png"])
+            opaque = rgba[..., 3] == 255
+            colours, counts = np.unique(rgba[opaque][:, :3], axis=0, return_counts=True)
+            fill = opaque & (rgba[..., :3] == colours[counts.argmax()]).all(-1)
+            holes, count = ndimage.label(ndimage.binary_fill_holes(fill) & ~fill)
+            self.assertGreaterEqual(count, 1, row["png"])
+            rows = np.flatnonzero((holes == np.bincount(holes.ravel())[1:].argmax() + 1).any(axis=1))
+            self.assertTrue(16 <= len(rows) <= 19, (row["png"], len(rows)))           # 0.26 to 0.31 of 62 rows
+            cols = np.flatnonzero((rgba[..., 3] > 127).any(axis=0))
+            self.assertEqual(len(cols), 31, row["png"])
+
+    def test_the_jets_2_has_one_straight_diagonal(self):
+        # R2: the 2026 Jets 2 (three photographs) is the block 2 with one diagonal from the right stem to the bottom left;
+        # the squared S-shaped 2 had a middle bar, a left stem and a stub on the right above the bottom bar
+        folder = gf.art_folder(gf.digits_b81())
+        seen = 0
+        for row in digit_rows():
+            if not row["selector"].startswith("19") or row["selector"] in ("19A6", "19H6") or row["chunk"] not in (15, 35):
+                continue
+            seen += 1
+            ink = png_rgba(folder / row["png"])[0][..., 3] > 127
+            rows = np.flatnonzero(ink.any(axis=1)); cols = np.flatnonzero(ink.any(axis=0))
+            top, height, left, width = rows.min(), rows.max() - rows.min() + 1, cols.min(), cols.max() - cols.min() + 1
+            lefts = [np.flatnonzero(ink[y]).min() for y in range(top + int(0.42 * height), top + int(0.74 * height))]
+            self.assertTrue(all(b <= a for a, b in zip(lefts, lefts[1:])), row["png"])   # moves only left, row by row
+            self.assertGreaterEqual(lefts[0] - lefts[-1], 0.4 * width, row["png"])
+            stub = ink[top + int(0.66 * height):top + int(0.76 * height), left + int(0.75 * width):]
+            self.assertFalse(stub.any(), row["png"])
+        self.assertEqual(seen, 12)                                # six sets, jersey and arm
+
+    def test_the_broncos_wear_one_face_with_a_thin_edge(self):
+        # R2: home, road and alternates wear the same numerals (photographs of the orange, white and navy jerseys); the
+        # edge is about 1.3 texels on the photographs: one solid texel and a soft one
+        from scipy import ndimage
+        folder = gf.art_folder(gf.digits_b81())
+        by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
+        for chunk in range(13, 23):
+            masks = {s: png_rgba(folder / by[(s, chunk)])[0][..., 3] > 127 for s in BRONCOS}
+            for selector, mask in masks.items():
+                self.assertEqual(int((mask ^ masks["08H0"]).sum()), 0, (selector, chunk))
+            for selector in BRONCOS:
+                rgba, _info = png_rgba(folder / by[(selector, chunk)])
+                opaque = rgba[..., 3] == 255
+                colours, counts = np.unique(rgba[opaque][:, :3], axis=0, return_counts=True)
+                fill = opaque & (rgba[..., :3] == colours[counts.argmax()]).all(-1)
+                ring = opaque & ~fill                             # the solid edge: one texel, touching the fill
+                self.assertFalse((ring & ~ndimage.binary_dilation(fill, np.ones((3, 3), bool))).any(), (selector, chunk))
+                self.assertLess(int(ring.sum()), 0.33 * int(fill.sum()), (selector, chunk))
+                rows = np.flatnonzero((rgba[..., 3] > 127).any(axis=1))
+                self.assertEqual((int(rows.min()), int(rows.max())), (1, 62), (selector, chunk))
+
+    def test_the_raiders_road_edge_is_the_measured_silver(self):
+        # R2: #C8C7C7 could not be seen on the white jersey in the game; the real edge reads 0.41 of the jersey white
+        folder = gf.art_folder(gf.digits_b81())
+        rows = [r for r in digit_rows() if r["selector"] == "20A0"]
+        self.assertEqual(len(rows), 20)
+        for row in rows:
+            rgba, _info = png_rgba(folder / row["png"])
+            colours = {tuple(int(v) for v in c) for c in rgba[rgba[..., 3] > 0][:, :3]}
+            self.assertEqual(colours, {(0, 0, 0), LV_ROAD_SILVER}, row["png"])
 
     def test_a_document_art_folder_must_be_a_plain_glyph_folder_name(self):
         self.assertEqual(gf.art_folder({}), gf.ART)
@@ -668,6 +750,39 @@ class RealDisc(unittest.TestCase):
             self.assertGreaterEqual(left[93] - left[105], 2, selector)              # the top leans right
             self.assertFalse(ink[78:92, 150:176].any(), selector)                   # nothing new at the collar shield
 
+    def test_the_bengals_pants_wear_seven_tiger_strokes_from_one_column(self):
+        # R2 (order R2-C): the club's one pants pattern, read off the 2026 White Bengal photographs: seven strokes from
+        # the waist to the knee, each thick on one column at the front side seam (111 on the left leg, 400 on the right),
+        # sweeping back and up to a point, the third and fifth forked; the same geometry on all six Bengals pants in each
+        # one's own stroke colour (before: seven blunt bars on 06H5, thin dashes on 06H0/06A0, nine claws on the rest)
+        from scipy import ndimage
+        colours = {"06H0": ((0, 0, 0), (0xFB, 0x4F, 0x14)), "06A0": ((255, 255, 255), (0, 0, 0)),
+                   "06H5": ((255, 255, 255), (0x0B, 0x0B, 0x0B)), "06A5": ((255, 255, 255), (0x0F, 0x0F, 0x0F)),
+                   "06H6": ((255, 255, 255), (0xFA, 0x50, 0x14)), "06A6": ((255, 255, 255), (0xFA, 0x50, 0x14))}
+        shapes = {}
+        for selector, (base, stroke) in colours.items():
+            pants = self.after(selector, "pants00")[..., :3].astype(float)
+            b, s = np.array(base, float), np.array(stroke, float)
+            steps = np.round(np.clip(((pants - b) @ (s - b)) / ((s - b) @ (s - b)), 0, 1)[:200] * 4)   # blend steps 0-4
+            ink = steps >= 2
+            for x0, x1, seam in ((108, 200, 111), (312, 404, 400)):
+                lab, n = ndimage.label(ink[:, x0:x1], structure=np.ones((3, 3)))
+                strokes = [q for q in (np.argwhere(lab == i) for i in range(1, n + 1)) if len(q) >= 10]
+                self.assertEqual(len(strokes), 7, (selector, seam))
+                forks = 0
+                for q in strokes:
+                    cols = q[:, 1] + x0
+                    self.assertEqual(int(cols.min() if seam == 111 else cols.max()), seam, selector)   # thick end on the seam
+                    tip = cols.max() if seam == 111 else cols.min()
+                    self.assertLessEqual(int((cols == tip).sum()), 2, selector)                      # a point of 1 or 2 texels
+                    self.assertGreaterEqual(abs(int(tip) - seam), 30, selector)
+                    split = sum(1 for c in np.unique(cols) if (np.diff(np.sort(q[cols == c, 0])) > 1).any())
+                    forks += split >= 2
+                self.assertEqual(forks, 2, (selector, seam))
+            shapes[selector] = steps
+        for selector in colours:
+            self.assertTrue(np.array_equal(shapes[selector][:, 108:404], shapes["06H5"][:, 108:404]), selector)   # one geometry
+
     def test_every_kit_row_is_waiting_on_the_released_disc_and_compiles_to_its_pin(self):
         result = up.states(DISC)
         self.assertEqual((result["before"], result["after"], result["other"], result["absent"]),
@@ -738,20 +853,21 @@ class RealDisc(unittest.TestCase):
 
 
 #: b81-uniforms batch 4 (Noah 11/19: "Jags road nameplate and all nameplates should match real ones"): the nameplate
-#: strips redrawn to this season's measured lettering. selector -> (fill, outline, stem texels, bar rows). The strip is
-#: stretched about 1.7 times across on the player, so a 2 texel stem is 0.14 of the cap there (real 0.12 to 0.16).
+#: strips redrawn to this season's measured lettering. selector -> (fill, outline, stem texels, bar rows). R2 (art
+#: director 11/20): the weight is set from emulator close-ups, not from a stretch sum (2 texel stems read as hairlines
+#: in the game, about 0.10 of the cap; 3 texels about 0.17; the real 2026 names 0.12 to 0.19).
 NAMEPLATES = {
-    **{s: ("#101010", None, 2, 2) for s in ("12A0", "12A6", "12H6")},       # Jaguars road and Bold City: thin horizontals
-    "12H0": ("#FFFFFF", None, 2, 2),                                       # Jaguars home: white, no black outline
-    "00A0": ("#A0233F", None, 2, 4), "00H0": ("#FFFFFF", None, 2, 4),      # Cardinals: cut-corner face
-    "00A6": ("#A0233F", None, 2, 4), "00H6": ("#A0233F", None, 2, 4),      # the black alternate wears red names
-    "01A9": ("#FFFFFF", "#D40038", 2, 4), "01H9": ("#FFFFFF", "#D40038", 2, 4),  # Falcons 1966: white, thin red edge
-    "02H0": ("#FFFFFF", None, 2, 3), "02H2": ("#FFFFFF", None, 2, 3),
-    "11A0": ("#0C3A9C", None, 2, 3), **{s: ("#FFFFFF", None, 2, 3) for s in ("11H0", "11A3", "11A4", "11H3", "11H4")},
-    **{s: ("#0A0A0A", None, 2, 3) for s in ("17A1", "17A8", "17H8")},
-    "18A7": ("#0E2878", None, 2, 3), "18H7": ("#0E2878", None, 2, 3),      # Giants Vintage White: slab serif
-    **{s: ("#145F47", None, 2, 3) for s in ("19A0", "19A7", "19H7")},       # Jets white: green, as the real names
-    "27A0": ("#0E0E0E", None, 2, 3),                                       # Buccaneers road: black, the strip was red
+    **{s: ("#101010", None, 3, 3) for s in ("12A0", "12A6", "12H6")},       # Jaguars road and Bold City: thin horizontals
+    "12H0": ("#FFFFFF", None, 3, 3),                                       # Jaguars home: white, no black outline
+    "00A0": ("#A0233F", None, 3, 3), "00H0": ("#FFFFFF", None, 3, 3),      # Cardinals: cut-corner face
+    "00A6": ("#A0233F", None, 3, 3), "00H6": ("#A0233F", None, 3, 3),      # the black alternate wears red names
+    "01A9": ("#FFFFFF", "#D40038", 3, 4), "01H9": ("#FFFFFF", "#D40038", 3, 4),  # Falcons 1966: white, thin red edge
+    "02H0": ("#FFFFFF", None, 3, 3), "02H2": ("#FFFFFF", None, 3, 3),
+    "11A0": ("#0C3A9C", None, 3, 3), **{s: ("#FFFFFF", None, 3, 3) for s in ("11H0", "11A3", "11A4", "11H3", "11H4")},
+    **{s: ("#0A0A0A", None, 3, 3) for s in ("17A1", "17A8", "17H8")},
+    "18A7": ("#0E2878", None, 3, 3), "18H7": ("#0E2878", None, 3, 3),      # Giants Vintage White: slab serif
+    **{s: ("#145F47", None, 3, 3) for s in ("19A0", "19A7", "19H7")},       # Jets white: green, as the real names
+    "27A0": ("#0E0E0E", None, 3, 3),                                       # Buccaneers road: black, the strip was red
 }
 NAME_GLYPHS = "'-ABCDEFGHIJKLMNOPQRSTUVWXYZc"
 RETAIL = Path(os.environ.get("B81_RETAIL_DISC", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
