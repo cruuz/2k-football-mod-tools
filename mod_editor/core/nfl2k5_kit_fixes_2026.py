@@ -1570,7 +1570,11 @@ def compile_resource(selector, raw, *, strict=True, document=None, kits=None, re
                     # uf3: a texture of another kit package ("SELECTOR:chunk"), read from the same image
                     other, at = str(index).split(":")
                     source_raw = (kits or {}).get(other)
-                    require(source_raw is not None, selector + ": stamp donor kit absent")
+                    if source_raw is None:
+                        # b81 retail-free: a caller that reads no donor kits keeps the row's input (strict refuses)
+                        require(not strict, selector + ": stamp donor kit absent")
+                        missing = True
+                        break
                     key = str(index)
                 else:
                     source_raw, at, key = raw, index, int(index)
