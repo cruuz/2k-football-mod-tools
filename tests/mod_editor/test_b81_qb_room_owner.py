@@ -36,7 +36,8 @@ class AllocatorPlacementTests(unittest.TestCase):
     def test_constants_and_late_owner_order(self):
         self.assertEqual((space.QB_ROOM_OWNER, space.QB_ROOM_VA, space.QB_ROOM_SIZE), (ROOM[0], 0x1529000, 0x3000))
         self.assertEqual(space.QB_ROOM_REQUEST, ROOM)
-        self.assertEqual(space.LATE_OWNERS[-1], ROOM[0])
+        # C20: the trades page (fixed right after the room) is the last late owner; the room comes just before it.
+        self.assertEqual(space.LATE_OWNERS[-2:], (ROOM[0], space.QB_TRADES_OWNER))
         self.assertIn(ROOM, space.dormant_union())
 
     def test_the_room_alone_and_in_the_dormant_union_sits_at_its_fixed_pages(self):

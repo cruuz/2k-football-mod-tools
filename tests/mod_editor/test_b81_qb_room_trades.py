@@ -680,6 +680,32 @@ class TradesImage(unittest.TestCase):
         self.assertEqual(self.counters()["trade_shadow"], 1)
 
 
+    def test_after_the_native_deadline_the_site_is_not_reached(self):
+        """The weekly advance's own stage-8 code from 0x247E0E to 0x247E23 with the site installed in RAM: with the Trade
+        Deadline option on and the week counter at the deadline byte (0x5151C5, 9 with the deadline owner) the native
+        window 0x247D10 is closed and 0x247E15 jumps over the site: no trade pass, no row; one week earlier it runs."""
+        x, m = self.x, self.x.m
+        qs, seller, word = self.ready_buyer(self.BUYER)
+        at, _original, patched = _trades_code().site(TRADES_VA)
+        m.uc.mem_write(at, patched)
+        m.uc.mem_write(0x2BC960, b"\xc3")                 # the native pass itself is not under test here
+        m.uc.ctl_flush_tb()
+        deadline = x.b(0x5151C5)
+        self.assertEqual(deadline, 9)
+        m.put(0xE60124, 1)
+        for week, reached in ((deadline, False), (deadline - 1, True)):
+            with self.subTest(week=week):
+                m.put(WEEK, week)
+                self.bench(self.BUYER)
+                calls, start = self.counters()["trade_calls"], self.cursor()
+                m.uc.mem_write(m.STACK, struct.pack("<I", m.STOP))
+                for k, v in dict(ESP=m.STACK, EBP=m.ARENA + self.MENU_OFFSET, EFLAGS=0x202).items():
+                    m.reg(k, v)
+                m.uc.emu_start(0x247E0E, 0x247E23, count=50_000_000)
+                self.assertEqual(m.reg("EIP"), 0x247E23)
+                self.assertEqual(self.counters()["trade_calls"] - calls, int(reached))
+                self.assertEqual(bool([r for r in self.rows(start) if r[3] & 15 == 8]), reached)
+
     def test_the_trades_page_alone_in_shadow_writes_nothing_while_the_room_acts(self):
         """The 4b shadow panel's setting: the trades page's flag word (+0xF04) set, the room's own shadow flag off."""
         x, m = self.x, self.x.m

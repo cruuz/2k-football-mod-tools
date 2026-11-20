@@ -1,6 +1,6 @@
 """Quarterback trades page for the standard 128 MiB franchise (beta 81 stage 4b; owner nfl2k5_qb_trades; DESIGN_CHANGES
 C20). It is part of the quarterback room's option: the room's stage bit 16 installs it, and only through the room owner
-(nfl2k5_qb_room.install_stages; the Studio's Realistic set does not include bit 16 until the panels pass).
+(its calibration and test path; the Studio's Realistic set does not include bit 16 until the panels pass).
 
 One fixed page at 0x152C000 (nfl2k5_xbe_space.QB_TRADES_*), right after the room's three pages, holds the native code
 (nfl2k5_qb_trades_code) and one link word (the IR owner's store). One whole 5-byte call enters it: 0x247E1E, the weekly
