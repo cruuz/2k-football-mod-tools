@@ -174,8 +174,9 @@ class PageInterface(unittest.TestCase):
     def test_settings_record_layout_and_refusals(self):
         record = room.settings_record(room.STAGE_D1 | room.STAGE_D4, shadow=True, h0_ppm=12345, d2_scale_milli=900)
         self.assertEqual(record, struct.pack("<8sIIIIII", b"QBROOMv1", 1, 5, 1, 12345, 900, 0))
-        self.assertEqual(room.settings_record(0), struct.pack("<8sIIIIII", b"QBROOMv1", 1, 0, 0, 15000, 1000, 0))
-        self.assertEqual((room.H0_PPM, room.D2_SCALE_MILLI), (15000, 1000))
+        # Review F5: the default record carries D3's base from shadow panel P0 (0.0270), which P1 ran at.
+        self.assertEqual(room.settings_record(0), struct.pack("<8sIIIIII", b"QBROOMv1", 1, 0, 0, 27000, 1000, 0))
+        self.assertEqual((room.H0_PPM, room.D2_SCALE_MILLI), (27000, 1000))
         self.assertEqual(room.parse_settings(record), {"mode": 1, "stages": 5, "shadow": True, "h0_ppm": 12345,
                                                        "d2_scale_milli": 900})
         self.assertEqual(room.parse_settings(room.settings_record(room.STAGE_SIGN | room.STAGE_E2))["stages"], 40)

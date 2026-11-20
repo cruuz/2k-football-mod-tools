@@ -37,7 +37,7 @@ STAGE_FLOOR = 64                     # the floor (DESIGN addendum F3): a club wi
 STAGE_OVER_CAP = 128                 # the floor's last rung: sign past the gates, over the cap (only with 64)
 STAGE_MASK = 255                     # 16 (trades, 4b) is not built: the page ignores it; 32 counts only with 8.
 FLAG_SHADOW = 1
-H0_PPM = 15000                       # D3 base 0.015 in millionths until shadow panel P0 fixes it (DESIGN 6.3).
+H0_PPM = 27000                       # D3 base 0.0270 in millionths: shadow panel P0's value, P1 ran at it (review F5).
 D2_SCALE_MILLI = 1000                # D2 table scale in thousandths (1000 = the table as written).
 LIMIT_PPM = 1_000_000                # Both are clamped to this in the page (a probability is at most 1).
 
