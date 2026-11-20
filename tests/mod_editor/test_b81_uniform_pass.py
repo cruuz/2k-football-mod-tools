@@ -46,6 +46,13 @@ REDRAWN += RAVENS + ("20A0",)
 # 2026 numerals wear (27A0, 27H0), Patriots at full height (16H0, 16A0); the Browns road set (30A0, already redrawn) in
 # the charcoal the photographs show
 REDRAWN += ("27A0", "27H0", "16H0", "16A0")
+# R2 (order R2-B): one Broncos number face on every look that wears it, so the home, road and Christmas navy sets join
+# the alternates (08A5, 08A6, 08H6 already redrawn); the Ravens 4, the Jets 2 and the Raiders road edge change inside
+# sets already listed
+BRONCOS = ("08A0", "08A5", "08A6", "08H0", "08H5", "08H6")
+REDRAWN += ("08H0", "08A0", "08H5")
+#: the Raiders road silver edge measured against the jersey white on the week 8 and week 9 road photographs (R2-B)
+LV_ROAD_SILVER = (0xA5, 0xAD, 0xB0)
 #: the Buccaneers' orange inline (decision 1) and the Browns' road charcoal (decision 3)
 TB_ORANGE = (0xD9, 0x64, 0x28)
 CLE_CHARCOAL = (0x3B, 0x3B, 0x3B)
@@ -287,12 +294,15 @@ class DigitDocument(unittest.TestCase):
                                 # batch 5: real wider than 40 columns allow (two-digit numbers are cut outside 12-51): 40
                                 ("23H0", 40), ("23A0", 40), ("05H0", 30), ("05A0", 30), ("19H0", 38), ("19A0", 38),
                                 ("29H0", 40), ("29A0", 40), ("11H0", 40), ("11A0", 40), ("37H0", 40), ("37A0", 40),
-                                ("30H0", 35), ("30A0", 35), ("08A5", 40), ("08A6", 40), ("08H6", 40), ("09A2", 37),
+                                ("30H0", 35), ("30A0", 35), ("09A2", 37),
                                 ("09H2", 37), ("09A9", 40), ("09H9", 40), ("10A5", 38), ("10H5", 38), ("17A1", 37), ("17H1", 37),
                                 ("19A2", 38), ("19H2", 38), ("19A7", 38), ("19H7", 38), ("26A4", 38), ("26H4", 38), ("30A3", 35),
                                 ("30H3", 35), ("37A2", 40), ("37H2", 40),
                                 # batch 6: the Ravens 0 at 33 (real 0.554; the released 37) and the Raiders road as released
-                                ("02H0", 33), ("02A0", 33), ("02A2", 33), ("02A3", 33), ("02H2", 33), ("02H3", 33), ("20A0", 37)):
+                                ("02H0", 33), ("02A0", 33), ("02A2", 33), ("02A3", 33), ("02H2", 33), ("02H3", 33), ("20A0", 37),
+                                # R2: one Broncos face, the 2026 photographs of the orange, white and navy jerseys pooled
+                                # (15 digits, 0.613); restated from 40 for the alternates (batch 5's separate pool)
+                                *((selector, 36) for selector in BRONCOS)):
             solid = png_rgba(folder / by[(selector, 13)])[0][..., 3] > 127
             cols = np.flatnonzero(solid.any(axis=0))
             self.assertLessEqual(abs(int(cols.max() - cols.min() + 1) - width), 1, selector)
@@ -396,6 +406,75 @@ class DigitDocument(unittest.TestCase):
         for row in rows:
             rgba, _info = png_rgba(folder / row["png"])
             self.assertEqual({tuple(int(v) for v in c) for c in rgba[rgba[..., 3] > 0][:, :3]}, {CLE_CHARCOAL}, row["png"])
+
+    def test_the_ravens_4_has_the_tall_closed_counter(self):
+        # R2: the 2026 Ravens 4 has a tall closed triangular counter, 0.27 and 0.30 of the height on the two photographs;
+        # the released and batch 6 4 had a slit about 3 rows tall (an opening of 11 rows in the fill)
+        from scipy import ndimage
+        folder = gf.art_folder(gf.digits_b81())
+        for row in digit_rows():
+            if row["selector"] not in RAVENS or row["chunk"] not in (17, 37):
+                continue
+            rgba, _info = png_rgba(folder / row["png"])
+            opaque = rgba[..., 3] == 255
+            colours, counts = np.unique(rgba[opaque][:, :3], axis=0, return_counts=True)
+            fill = opaque & (rgba[..., :3] == colours[counts.argmax()]).all(-1)
+            holes, count = ndimage.label(ndimage.binary_fill_holes(fill) & ~fill)
+            self.assertGreaterEqual(count, 1, row["png"])
+            rows = np.flatnonzero((holes == np.bincount(holes.ravel())[1:].argmax() + 1).any(axis=1))
+            self.assertTrue(16 <= len(rows) <= 19, (row["png"], len(rows)))           # 0.26 to 0.31 of 62 rows
+            cols = np.flatnonzero((rgba[..., 3] > 127).any(axis=0))
+            self.assertEqual(len(cols), 31, row["png"])
+
+    def test_the_jets_2_has_one_straight_diagonal(self):
+        # R2: the 2026 Jets 2 (three photographs) is the block 2 with one diagonal from the right stem to the bottom left;
+        # the squared S-shaped 2 had a middle bar, a left stem and a stub on the right above the bottom bar
+        folder = gf.art_folder(gf.digits_b81())
+        seen = 0
+        for row in digit_rows():
+            if not row["selector"].startswith("19") or row["selector"] in ("19A6", "19H6") or row["chunk"] not in (15, 35):
+                continue
+            seen += 1
+            ink = png_rgba(folder / row["png"])[0][..., 3] > 127
+            rows = np.flatnonzero(ink.any(axis=1)); cols = np.flatnonzero(ink.any(axis=0))
+            top, height, left, width = rows.min(), rows.max() - rows.min() + 1, cols.min(), cols.max() - cols.min() + 1
+            lefts = [np.flatnonzero(ink[y]).min() for y in range(top + int(0.42 * height), top + int(0.74 * height))]
+            self.assertTrue(all(b <= a for a, b in zip(lefts, lefts[1:])), row["png"])   # moves only left, row by row
+            self.assertGreaterEqual(lefts[0] - lefts[-1], 0.4 * width, row["png"])
+            stub = ink[top + int(0.66 * height):top + int(0.76 * height), left + int(0.75 * width):]
+            self.assertFalse(stub.any(), row["png"])
+        self.assertEqual(seen, 12)                                # six sets, jersey and arm
+
+    def test_the_broncos_wear_one_face_with_a_thin_edge(self):
+        # R2: home, road and alternates wear the same numerals (photographs of the orange, white and navy jerseys); the
+        # edge is about 1.3 texels on the photographs: one solid texel and a soft one
+        from scipy import ndimage
+        folder = gf.art_folder(gf.digits_b81())
+        by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
+        for chunk in range(13, 23):
+            masks = {s: png_rgba(folder / by[(s, chunk)])[0][..., 3] > 127 for s in BRONCOS}
+            for selector, mask in masks.items():
+                self.assertEqual(int((mask ^ masks["08H0"]).sum()), 0, (selector, chunk))
+            for selector in BRONCOS:
+                rgba, _info = png_rgba(folder / by[(selector, chunk)])
+                opaque = rgba[..., 3] == 255
+                colours, counts = np.unique(rgba[opaque][:, :3], axis=0, return_counts=True)
+                fill = opaque & (rgba[..., :3] == colours[counts.argmax()]).all(-1)
+                ring = opaque & ~fill                             # the solid edge: one texel, touching the fill
+                self.assertFalse((ring & ~ndimage.binary_dilation(fill, np.ones((3, 3), bool))).any(), (selector, chunk))
+                self.assertLess(int(ring.sum()), 0.33 * int(fill.sum()), (selector, chunk))
+                rows = np.flatnonzero((rgba[..., 3] > 127).any(axis=1))
+                self.assertEqual((int(rows.min()), int(rows.max())), (1, 62), (selector, chunk))
+
+    def test_the_raiders_road_edge_is_the_measured_silver(self):
+        # R2: #C8C7C7 could not be seen on the white jersey in the game; the real edge reads 0.41 of the jersey white
+        folder = gf.art_folder(gf.digits_b81())
+        rows = [r for r in digit_rows() if r["selector"] == "20A0"]
+        self.assertEqual(len(rows), 20)
+        for row in rows:
+            rgba, _info = png_rgba(folder / row["png"])
+            colours = {tuple(int(v) for v in c) for c in rgba[rgba[..., 3] > 0][:, :3]}
+            self.assertEqual(colours, {(0, 0, 0), LV_ROAD_SILVER}, row["png"])
 
     def test_a_document_art_folder_must_be_a_plain_glyph_folder_name(self):
         self.assertEqual(gf.art_folder({}), gf.ART)
