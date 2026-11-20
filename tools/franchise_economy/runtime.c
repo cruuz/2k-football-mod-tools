@@ -915,3 +915,80 @@ SECTION(".roster_o") unsigned club_level(u8 *team, unsigned pos, float him, unsi
     if (busy || economy_full(team, pos)) return 0;
     return better < n_minimum_at(pos) + depth_step[0][pos] ? 2 : better < n_wanted_at(pos) + depth_step[1][pos] ? 1 : 0;
 }
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * b81 practice squads (revision 8, REMAINING R60; Noah 11/20: "this franchise mode's got to be like the most realistic
+ * NFL simulator"; real clubs keep a full practice squad every season). In every recorded ten-season franchise no player
+ * ever joined a practice squad: beta 76.5 retired the automatic demotion at final cuts and nothing else adds a reserve,
+ * so the 128 shipped reserves only retired away (128 in 2026, 9 by 2035). At the preseason -> regular season gate
+ * (0x2BFAA0, for every club the CPU runs) the cut-down call at 0x2BFAD4 comes here: the same cut, then the club's squad
+ * is topped up to SQUAD from the free-agent list. A 12-slot position mix (squad_mix, in priority order); each current
+ * reserve fills the first open slot of his position; each open slot takes the best-rated healthy free agent at that
+ * position with at most two accrued seasons (years pro 3 or less, a rookie being 1), ties to the earlier list entry.
+ * The signing is the native one without its random contract and jersey draws: off the free-agent list (0x2425C0), onto
+ * the active list (0xC3EE0, the squad's append), then the squad's own demotion ps_demote (its limit, single ownership,
+ * record flags), then a one-year minimum deal (no cap charge while on the squad). No game RNG, no transaction row.
+ * Without the practice-squad runtime (0xC3EE0 not its append) or with foreign reserve bytes the club is only cut.
+ * --------------------------------------------------------------------------------------------------------------------- */
+#define SQUAD 12
+extern unsigned FAST ps_append(u8 *team, u8 *p);                  /* nfl2k5_practice_squad SYMBOLS (bridged by the arena) */
+extern unsigned FAST ps_demote(u8 *team, u8 *p);
+extern unsigned FAST n_fa_remove(u32 *list, u8 *p);               /* 0x2425C0 */
+extern unsigned FAST n_fa_add(u32 *list, u8 *p);                  /* 0x242560 */
+extern unsigned FAST n_append(u8 *team, u8 *p);                   /* 0xC3EE0 */
+extern unsigned FAST n_remove(u8 *team, u8 *p);                   /* 0xC3EB0 */
+/* QB, WR, CB, T, DE, HB, LB (OLB or ILB), C or G, DT, TE, S (FS or SS), WR: position masks by the +0x35 codes. */
+SECTION(".roster_q_rodata") __attribute__((aligned(4))) const u32 squad_mix[SQUAD] = {
+    1u << 0, 1u << 3, 1u << 4, 1u << 14, 1u << 16, 1u << 7, 3u << 10, 3u << 12, 1u << 15, 1u << 9, 3u << 5, 1u << 3};
+
+SECTION(".roster_p") __attribute__((noinline)) static u8 *FAST squad_best(u32 *list, u32 mask) {
+    u8 *p, *best = 0;
+    float top = 0, rate;
+    for (u32 i = 0; i < list[0]; ++i) {
+        p = ((u8 **)list[1])[i];
+        if (p[0x35] >= 17 || !(mask >> p[0x35] & 1) || (p[0x25] & 31) > 3 || (p[8] & 0x1c) != 4 ||
+            p[0x28] == 0xee || (p[0x23] & 0x80)) continue;
+        if ((rate = n_rating(p, 1)) > top || !best) { top = rate; best = p; }
+    }
+    return best;
+}
+
+/* The mix slots the club's current reserves (the 65 physical slots after its active players) already fill. */
+SECTION(".roster_q") __attribute__((noinline)) static u32 FAST squad_used(u8 *team) {
+    u32 used = 0, i, j, a = 0;
+    for (i = team[0x11c]; i < 65u && a < team[0x1f2]; ++i, ++a)
+        for (j = 0; j < SQUAD; ++j)
+            if (!(used >> j & 1) && squad_mix[j] >> ((u8 **)team)[i][0x35] & 1) { used |= 1u << j; break; }
+    return used;
+}
+
+/* Sign the best free agent for one slot to the squad: 1 = go on (signed, or nobody fits), 0 = stop (refused; the
+ * player is back on the free-agent list as he was). */
+SECTION(".roster_r") __attribute__((noinline)) static u32 FAST squad_sign(u8 *team, u32 mask) {
+    u32 *list = FA_LIST;
+    u8 *p = squad_best(list, mask);
+    if (!p || !n_fa_remove(list, p)) return 1;
+    if (n_append(team, p)) {
+        if (ps_demote(team, p)) {
+            *(u16 *)(p + 10) = (u16)((economy_floor(0) + 9) / 10);    /* one year at the rookie minimum */
+            p[0x24] = (p[0x24] & 0xf0) | 1;
+            p[0x27] = (p[0x27] & 0xf0) | 1;
+            p[0x26] = 2;
+            return 1;
+        }
+        n_remove(team, p);
+    }
+    n_fa_add(list, p);
+    return 0;
+}
+
+/* 0x2BFAD4 in the gate 0x2BFAA0 (ECX = team, EDX = the in-season limit): was call 0x2BF9A0. */
+SECTION(".roster_s") void FAST economy_squad(u8 *team, unsigned target) {
+    n_cut_to(team, target);
+    if (*(u8 *)0xC3EE0 != 0xE9 || *(int *)0xC3EE1 != (int)ps_append - 0xC3EE5 ||
+            (team[0x1f3] != 0xa5 && (team[0x19b] | team[0x1f2] | team[0x1f3])))
+        return;
+    u32 used = squad_used(team);
+    for (u32 j = 0; j < SQUAD && team[0x1f2] < SQUAD; ++j)
+        if (!(used >> j & 1) && !squad_sign(team, squad_mix[j])) return;
+}

@@ -29,14 +29,23 @@ WINDOWS = {"value": (0x2BD440, 1082), "contracts": (0x3228A0, 215),
            # record supply and position mix (dead_code.py WINDOWS).
            "roster_f": (0x382200, 192), "roster_g": (0x41E2A0, 192), "roster_h": (0x3A5F20, 192), "roster_i": (0x3BAB20, 192), "roster_j": (0x3E2310, 176), "roster_k": (0x3E9740, 160), "roster_l": (0x3E21D0, 160), "roster_m": (0x3DBC10, 160),
            # b780 econ3 (revision 7): one more unreferenced retail library function (dead_code.py WINDOWS).
-           "roster_n": (0x3C0920, 537), "roster_o": (0x264AC0, 295)}
+           "roster_n": (0x3C0920, 537), "roster_o": (0x264AC0, 295),
+           # b81 practice squads (revision 8): four more unreferenced retail functions (dead_code.py WINDOWS).
+           "roster_p": (0x38D3E0, 143), "roster_q": (0x1C62E0, 156), "roster_r": (0x343040, 159),
+           "roster_s": (0x3E9A90, 142)}
 # b778 fa2: retail routines the C code calls directly (rel32 instead of mov/call reg).
 NATIVE = {"n_rating": 0x246D80, "n_recount": 0xC3F00, "n_human": 0x13EC30, "n_team": 0xC4C50,
           "n_teams": 0xC4BE0, "n_roster_limit": 0x247AF0, "n_salary": 0xE6380, "n_base": 0xE6040,
           "n_prorated": 0xE6020, "n_frand": 0x48B90, "n_rand": 0x48B50, "n_trunc": 0x322260,
           "n_release": 0x2BD900, "n_cpu_sign": 0x322BB0, "n_cut_to": 0x2BF9A0, "n_need_low": 0x2BD880,
           "n_need_want": 0x2BD8C0, "n_at_position": 0xC3CB0, "n_minimum_at": 0x2BD410,
-          "n_wanted_at": 0x2BD400}
+          "n_wanted_at": 0x2BD400,
+          # b81 practice squads (revision 8): the free-agent list's remove-by-value and append, the active list's
+          # append (the squad's ps_append when the practice squad is installed) and remove-by-value.
+          "n_fa_remove": 0x2425C0, "n_fa_add": 0x242560, "n_append": 0xC3EE0, "n_remove": 0xC3EB0}
+# b81 (revision 8): the practice squad's fixed ABI entries (its pinned caves; the roster arena bridges them).
+from mod_editor.core.nfl2k5_practice_squad_runtime import SYMBOLS as _SQUAD  # noqa: E402
+NATIVE.update({"ps_append": _SQUAD["ps_append"], "ps_demote": _SQUAD["ps_demote"]})
 # Entry points that must sit at their window's first byte.
 ENTRIES = {"economy_value": 0x2BD440, "economy_contract": 0x3228A0, "economy_rookie": 0x322980,
            "economy_pick": 0x2BAB20, "economy_money": 0x31E580, "economy_week": 0x323870,
