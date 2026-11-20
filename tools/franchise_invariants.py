@@ -54,8 +54,10 @@ I11 every club the CPU signs for (not human, or auto sign/cut 0xE6013C on; a man
     one healthy quarterback on its active list (healthy = slice 1's fully_healthy: no injured bit and no weeks in
     +0x20, no status in +0x24 & 0x70000000). DESIGN addendum F5: judged at KICK-OFF (``check(view, kickoff=True)``,
     the harness runs it at 0x247DCF, after the IR pass and the floor) as a failure in stages 8 and 9, from week 1
-    through the last playoff game; at the week boundary the same test is a warning. Added after P0 root 2508 ended
-    2027 week 18 with Dallas's three quarterbacks all on IR (coordinator: release blocker).
+    through the last playoff game; on a SAVE in stages 8 and 9 (a closing save is week 18 or the playoffs) it is also
+    a failure (review F9: pos2's signed 2508/2027 save, Dallas with no quarterback, must not pass); at a live week
+    boundary the same test is a warning. Added after P0 root 2508 ended 2027 week 18 with Dallas's three quarterbacks
+    all on IR (coordinator: release blocker).
 W7  the same test in stage 7 (the preseason, kick-off or boundary): a WARNING of its own, "preseason club without a
     healthy quarterback" (coordinator 11/20: the preseason gap is accepted and reported, never folded into I11).
 I3c (F5) a club with a "signed over the cap" signing (``over_cap_signings``: club, player, week boundaries since the
@@ -606,7 +608,8 @@ def is_qb_for_pick(view: LeagueView, offer: Offer) -> bool:
 
 def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds: Iterable[int] = DEFAULT_KINDS,
           skip: Iterable[str] = (), kickoff: bool = False, over_cap_signings: Iterable[dict] = ()) -> Report:
-    """The week-boundary checks; with ``kickoff`` only I11, as a failure (the harness's 0x247DCF check)."""
+    """The week-boundary checks; with ``kickoff`` only I11, as a failure (the harness's 0x247DCF check). I11 is also a
+    failure on a save view (stages 8 and 9); stage 7 gives the warning W7 in every case."""
     skip = set(skip)
     if kickoff:
         skip |= {"I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9"}
@@ -802,6 +805,7 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
     # I11 -----------------------------------------------------------------------------------------------------------
     if "I11" not in skip and playing:
         preseason = stage == 7
+        hard = (kickoff or view.source == "save") and not preseason
         for c in clubs:
             if c.human and not view.auto_sign_cut:
                 continue                               # a manual human club is the user's (F5)
@@ -809,7 +813,7 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
             healthy = [i for i in qbs if not _u32(view.record(i), 0x20) & (INJURED | WEEKS_MASK)
                        and not _u32(view.record(i), 0x24) & STATUS_MASK]
             if not healthy:
-                add("W7" if preseason else "I11", FAIL if kickoff and not preseason else WARN,
+                add("W7" if preseason else "I11", FAIL if hard else WARN,
                     ("preseason club without a healthy quarterback" if preseason else
                      "no healthy quarterback on the active list") + (" at kick-off" if kickoff else ""),
                     club=c.index, quarterbacks=len(qbs),

@@ -34,6 +34,7 @@ V09_OPENING = "5336bf76e7a95a8acfcb6be0ffc5d2b737d5c0efb22894af0818815c3f151906"
 RETAIL_F0 = "56926604e438bd47f1f94edf844a0ecd00d5a382a647526baec396ead5f1b1b8"
 NO_QB_IMAGE = "fde2c34a02be6d219cf3b2291b0a9ffbe537771ee2dfa79cdc1a06cb479e906a"
 MINNESOTA_KICKOFF = "1f725ff50fe01e920bd5043892b597901c8ce0665de8f56ab839522d1bef1b4e"
+DALLAS_SIGNED = "529bdac68b109bc833a2cfa81e63d7d0f2b8959cb993da03402206c06cb4aac6"
 
 
 def pinned(path: Path, digest: str) -> bytes:
@@ -236,6 +237,18 @@ class SignedSaveTests(unittest.TestCase):
         self.assertEqual([(r["club"], r["club_name"]) for r in report.violations if r["invariant"] == "I11"],
                          [(31, "MIN")])
 
+    def test_a_signed_save_with_a_club_without_a_healthy_qb_fails_I11(self):
+        """Review F9: on a save (a closing save is week 18 or the playoffs) I11 is a failure, not a warning. pos2's
+        9f435b38 run of root 2508 signed 2027 with Dallas holding no quarterback (copied to the qb34 fixtures)."""
+        folder = QB34 / "dallas-2508-2027-signed"
+        pinned(folder / "SAVEGAME.DAT", DALLAS_SIGNED)
+        view, facts = fi.load_target(folder)
+        report = fi.check(view)
+        self.assertEqual((view.stage, view.week), (8, 18))
+        self.assertEqual(failing(report), {"I5", "I11"})
+        self.assertEqual([(r["club"], r["club_name"]) for r in report.violations
+                          if r["invariant"] == "I11"], [(11, "DAL")])
+
     def test_retail_opening_passes(self):
         folder = SAVES / "f0/UDATA/53450030/0B8506889D40"
         pinned(folder / "SAVEGAME.DAT", RETAIL_F0)
@@ -361,8 +374,8 @@ class HandBrokenTests(unittest.TestCase):
         self.assertEqual(failing(kickoff), {"I11"})
         row, = kickoff.violations
         self.assertEqual(row["club"], club.index)
-        boundary = b.report()
-        self.assertEqual((failing(boundary), warned(boundary)), (set(), {"I11"}))
+        on_save = b.report()                            # a save at a stage 8 or 9 week: the hard failure (F9)
+        self.assertEqual(failing(on_save), {"I11"})
 
     def test_a_preseason_club_with_every_quarterback_hurt_is_the_W7_warning_not_I11(self):
         b, v = self.fresh(), self.view
