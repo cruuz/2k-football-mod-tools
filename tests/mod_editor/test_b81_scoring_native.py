@@ -230,11 +230,11 @@ class BreakawayStop(unittest.TestCase):
                 self.assertEqual(self.promote(new, 9.67, line_to_goal, 0.01), f32(line_to_goal - 1.0))
                 self.assertEqual(self.promote(old, 9.67, line_to_goal, 0.01), f32(line_to_goal + 1.0))
 
-    def test_the_shipped_rule_stops_breakaways_from_beyond_78_at_the_10(self):
+    def test_the_shipped_rule_stops_breakaways_from_beyond_72_at_the_10(self):
         shipped = dict((name, enabled) for name, _, _, enabled in scoring.edits())["simulated breakaway stop"]
-        self.assertEqual(shipped, scoring.breakaway_bytes(78.0, 10.0))
+        self.assertEqual(shipped, scoring.breakaway_bytes(72.0, 10.0))
         self.assertEqual(self.promote_with_constants(shipped, 9.67, 80.79, 0.01, 10.0), f32(70.79))
-        self.assertEqual(self.promote_with_constants(shipped, 9.67, 78.0, 0.01, 10.0), f32(79.0))
+        self.assertEqual(self.promote_with_constants(shipped, 9.67, 72.0, 0.01, 10.0), f32(73.0))
         self.assertEqual(self.promote_with_constants(shipped, 9.67, 63.25, 0.01, 10.0), f32(64.25))
         self.assertEqual(self.promote(scoring.RETAIL_BREAKAWAY, 9.67, 80.79, 0.01), f32(81.79))
 

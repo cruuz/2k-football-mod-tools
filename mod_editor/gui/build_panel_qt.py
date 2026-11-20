@@ -2076,7 +2076,7 @@ class BuildPanel(QWidget):
         help_text = ("For simulated franchise games, including your club. Realistic uses quarterback Durability and "
                      "adjusts simulated passing. It also gives simulated games modern NFL field goal accuracy by "
                      "distance, CPU clubs try 50-yard field goals about as often as NFL teams, and very long catch-and-run "
-                     "breakaways no longer always score (one from beyond the opponent's 22 is tackled at the 10). Games you play use their "
+                     "breakaways no longer always score (one from beyond the opponent's 28 is tackled at the 10). Games you play use their "
                      "original injuries and passing. "
                      "Realistic and Custom require 128 MB and Simulated season realism.")
         caption = QLabel("Simulated quarterback injuries")
