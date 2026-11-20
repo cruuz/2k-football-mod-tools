@@ -49,7 +49,7 @@ OPTIONAL_STEPS = frozenset({
     "kit_fixes_2026_uf3", "kit_fixes_2026_sea1", "kit_fixes_2026_ov1", "glyph_fixes_2026", "menu_icon_uf3",
     "menu_helmet_w2026", "menu_chiefs_2026", "pants_hem_2026", "kit_fixes_2026_ku1", "kit_fixes_2026_sw1",
     "kit_fixes_2026_names", "sideline_2026", "moment_kits", "nameplate_fixes_2026", "team_sleeves",
-    "kit_fixes_2026_b81", "kit_fixes_2026_b81u", "glyph_fixes_2026_b81u", "relief_2026_b81u",
+    "kit_fixes_2026_b81", "kit_fixes_2026_b81u", "glyph_fixes_2026_b81u", "sideline_2026_b81u", "relief_2026_b81u",
     # stadiums, fields and their colour
     "modern_color_bundles", "modern_arrowhead", "modern_metlife", "modern_venues_2026", "modern_metlife_model",
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant", "modern_mercedes_benz",
@@ -8158,6 +8158,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                              **{k: v for k, v in b81u_digit_receipt.items() if k != "kits"},
                                              "kits": [{k: v for k, v in kit.items() if k != "parts"}
                                                       for kit in b81u_digit_receipt["kits"]]})
+        # b81-uniforms R54 (beta 81): the far-player atlas (chunk 51 splayer) pants and sleeves of each kit the uniform
+        # pass changed, composed from the kit's own finished field texture by the sideline step's compose. After the
+        # uniform pass, whose finished textures each rule pins; pinned to the atlas spans a v0.10 build holds here.
+        with _optional(receipt, target, progress, "sideline_2026_b81u"):
+            far_receipt = b81_helmets.apply_sideline_b81u(target)
+            if far_receipt["state"] == "applied" and far_receipt["kits"]:
+                receipt["steps"].append({"step": "sideline_2026_b81u",
+                                         **{k: v for k, v in far_receipt.items() if k != "kits"},
+                                         "kits": far_receipt["kits"]})
         # b81-uniforms (Noah 11/19, of the three strengths drawn from this season's close-ups: "B. Keep new."): the
         # jersey, sleeve and pants relief of every 2026 kit package, this season's construction at level B, composed
         # from one master per map and small per-kit patches over the kit's own painted shield and swooshes. Pinned to
