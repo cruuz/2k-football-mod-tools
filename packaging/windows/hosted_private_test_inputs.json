@@ -104,6 +104,12 @@
         "private v0.4 extraction not configured"
       ]
     },
+    "v06_disc": {
+      "description": "Released SOFTDRINK v0.6 disc, or its default.xbe and situation.iff",
+      "messages": [
+        "Supply B771_V06_DISC or its B771_V06_XBE and B771_V06_SITU files"
+      ]
+    },
     "v08_xbe": {
       "description": "Extracted SOFTDRINK v0.8 default.xbe",
       "messages": [
@@ -131,6 +137,7 @@
     "test_apf_playcall_research_native.py": {"NativePlaycallTests": "apf_executable"},
     "test_apf_xex_image_retail.py": {"RetailImageTests": "apf_executable"},
     "test_b765_p2_repair.py": {"RepairTests": "v04_extraction"},
+    "test_b771_v1c_native.py": {"NativeRegression": "v06_disc"},
     "test_b778_cs1_choose_side.py": {"AutomaticRebind": "coach_ai_disc"},
     "test_b780_draft_class.py": {"BuildPathTests": "usa_xbe", "ClassOwnerTests": "usa_xbe", "DraftAiHeadTests": "usa_xbe", "NativeClassTurnoverTests": "usa_xbe", "NativeSpecialistCapTests": "signed_franchise"},
     "test_b780_econ3_roster_drift.py": {"NativeTests": "usa_xbe", "SiteTests": "usa_xbe"},
