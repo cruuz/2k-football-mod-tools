@@ -766,6 +766,9 @@ class BuildPlan:
     # b779-sim2 r4: scheduled-sim season realism (play mix, targets, QB runs, interceptions, tackles).
     # A late executable owner plus 16 bytes of hand-off state; EXPERIMENTAL and on in Advanced/Experimental.
     sim_realism: bool = False
+    # None keeps the source as it was. Explicit Retail can undo an installed QB option.
+    sim_qb_injuries: str | None = None
+    sim_qb_injury_rate: float = 0.310
     # b780-c6: the coaching carousel (EXPERIMENTAL): at Advance to offseason CPU clubs may fire their head coach and hire
     # one from the hiring pool the build writes into the roster (real people) or a coach another club let go. The game's
     # Owner Firing option becomes Off / CPU Teams / All Teams. A late executable owner plus the roster's pool block.
@@ -890,7 +893,7 @@ class BuildPlan:
     backfield_cards: bool = False
 
     def wants_xbe_patch(self) -> bool:
-        return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
+        return (self.sim_qb_injuries is not None or self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
                 or self.quick_long_release  # b780-c-release: constants only, in place
                 or self.progression or self.franchise_economy or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
                 or self.season_cap or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
@@ -911,9 +914,29 @@ class BuildPlan:
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
         d.pop("source"); d.pop("target"); d.pop("overwrite")
+        if self.sim_qb_injuries is None:
+            d.pop("sim_qb_injuries")
+        if self.sim_qb_injuries != "custom":
+            d.pop("sim_qb_injury_rate")
         if d.get("console_memory") == 128:  # b780-m64b: a 128 MB recipe stays exactly the recipe it always was
             d.pop("console_memory")
         return d
+
+
+class _InstalledSimQbEdit(BuildPlan):
+    """An explicit single-setting edit. Full project recipes always use BuildPlan."""
+
+
+def sim_qb_disc_edit(source, target, mode, *, custom_rate=BuildPlan.sim_qb_injury_rate,
+                     overwrite=False, name="", author="", notes=""):
+    from .nfl2k5_build_settings import validate_sim_qb_injuries
+    if mode is None:
+        raise ValueError("Choose Retail, Realistic or Custom for this disc copy.")
+    validate_sim_qb_injuries(mode, custom_rate)
+    enabled = mode in ("realistic", "custom")
+    return _InstalledSimQbEdit(str(source), str(target), sim_qb_injuries=mode,
+                               sim_qb_injury_rate=custom_rate, sim_realism=enabled, k128_memory=enabled,
+                               overwrite=overwrite, name=name, author=author, notes=notes)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -1689,6 +1712,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_sim_cb_tackles", "Cornerback tackle credit", lambda p: p.sim_cb_tackles),  # b778-cb1
     ("nfl2k5_sim_rb_injuries", "Simulated RB short injuries", lambda p: p.sim_rb_injuries),  # b779-sim2
     ("nfl2k5_sim_realism", "Simulated season realism", lambda p: p.sim_realism),  # b779-sim2 r4
+    ("nfl2k5_sim_qb_injuries", "Simulated quarterback injuries", lambda p: p.sim_qb_injuries in ("realistic", "custom")),
     ("nfl2k5_coach_carousel", "Coaching carousel", lambda p: p.coach_carousel),  # b780-c6
     ("nfl2k5_history_screen", "Franchise History screen", lambda p: p.history_screen),  # b780-j4
     ("nfl2k5_standings_records", "Team Standings records", lambda p: p.standings_records),  # b780-j1
@@ -2052,7 +2076,7 @@ def _sim_realism_preflight(source: Path, progress) -> None:
         raise ValueError("Simulated season realism is not available in this installation.")
     progress("Checking the franchise simulator for season realism", 0, 0)
     state = module.status(_xbe_bytes(source))
-    if state not in ("retail", "applied"):
+    if state not in ("retail", "applied", "legacy"):
         raise ValueError("A scheduled-simulation site for season realism in this source is not retail. "
                          "Build from an unmodified retail dump.")
 
@@ -2530,6 +2554,77 @@ def _apply_sim_realism(plan: "BuildPlan", target: Path, receipt: dict, progress)
         raise RuntimeError("Simulated season realism: the output does not read back as applied")
     receipt["steps"].append({"step": "sim_realism", **{k: v for k, v in realism_receipt.items() if k != "reservations"}})
     receipt["result"]["sim_realism"] = "applied"
+
+
+def _verify_sim_qb_injuries(plan, module, payload):
+    settings = module.read_settings(payload)
+    expected_status = "retail" if plan.sim_qb_injuries == "retail" else "applied"
+    if (settings["status"] != expected_status or settings["mode"] != plan.sim_qb_injuries
+            or (plan.sim_qb_injuries == "custom" and settings["custom_rate"] != plan.sim_qb_injury_rate)):
+        raise ValueError("Simulated quarterback injuries did not read back with the chosen settings.")
+    return settings
+
+
+@_core_step("sim_qb_injuries")
+def _apply_sim_qb_injuries(plan, target, receipt, progress, *, prepared=None):
+    if plan.sim_qb_injuries is None:
+        return
+    module = _core_module("nfl2k5_sim_qb_injuries")
+    progress("Applying simulated quarterback injuries", 0, 0)
+    original = _xbe_bytes(target)
+    if prepared is None:
+        payload, patch = module.apply(original, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
+    else:
+        source, payload, patch = prepared
+        if original != source:
+            raise ValueError("The source executable changed while the Studio was copying it.")
+    if payload != original:
+        _write_xbe_bytes(target, payload)
+    written = _xbe_bytes(target)
+    if written != payload:
+        raise ValueError("The written quarterback simulator data differs from the requested update.")
+    settings = _verify_sim_qb_injuries(plan, module, written)
+    receipt["steps"].append({"step": "sim_qb_injuries", **{k: v for k, v in patch.items() if k != "reservations"},
+                              "settings": settings})
+    receipt["result"]["sim_qb_injuries"] = settings["mode"]
+
+
+def _only_sim_qb_changes(plan):
+    if not isinstance(plan, _InstalledSimQbEdit) or plan.console_memory != 128 or plan.sim_qb_injuries is None:
+        return False
+    expected = sim_qb_disc_edit(plan.source, plan.target, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
+                                overwrite=plan.overwrite, name=plan.name, author=plan.author, notes=plan.notes)
+    return plan == expected
+
+
+def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *, preflight, consume, reference):
+    """A single option on an already-built standard disc retains every other installed setting."""
+    settings = tt.k128_patch.read_settings(original)
+    simulator = _core_module("nfl2k5_sim_realism")
+    if (settings["status"] != "applied" or not settings["require_128"] or simulator is None
+            or simulator.status(original) != "applied" or (plan.k128_early and not settings["early"])
+            or (plan.k128_roster_heap and not settings["roster_heap"])):
+        return False
+    module = _core_module("nfl2k5_sim_qb_injuries")
+    if module is None:
+        raise ValueError("The simulated quarterback injury option is unavailable.")
+    # The sealed copy may have many more installed owners than the two selected dependencies.
+    # Only this owner can extend its named bank on that layout and verify the shared sites.
+    receipt["installed_sim_qb_only"] = True
+    patched, patch = module.apply(original, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
+    _verify_sim_qb_injuries(plan, module, patched)
+    if preflight:
+        return True
+    _copy_private_build_source(source, target, receipt, progress, consume)
+    receipt["result"] = {}
+    _apply_sim_qb_injuries(plan, target, receipt, progress, prepared=(original, patched, patch))
+    _compact_build_disc(target, reference, receipt, progress)
+    _step("final_checks")
+    inspection = inspect(target, screen_timing=plan.screen_timing)
+    _verify_sim_qb_injuries(plan, module, _xbe_bytes(target))
+    receipt["result"] = {**inspection, **receipt["result"], "path": str(target)}
+    _verify_finished_game_disc(target, receipt, progress)
+    return True
 
 
 def _coach_carousel_preflight(source: Path, progress, roster_edits=None) -> None:
@@ -3139,6 +3234,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("sim_cb_tackles", "nfl2k5_sim_cb_tackles"),  # b778-cb1
                                ("sim_rb_injuries", "nfl2k5_sim_rb_injuries"),  # b779-sim2
                                ("sim_realism", "nfl2k5_sim_realism"),  # b779-sim2 r4
+                               ("sim_qb_injuries", "nfl2k5_sim_qb_injuries"),
                                ("coach_carousel", "nfl2k5_coach_carousel"),  # b780-c6
                                ("history_screen", "nfl2k5_history_screen"),  # b780-j4
                                ("standings_records", "nfl2k5_standings_records"),  # b780-j1
@@ -3451,6 +3547,10 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     out["sim_rb_injuries"] = rb_injuries.status(_xbe_bytes(source)) if rb_injuries is not None else "unavailable"
     sim_realism = _core_module("nfl2k5_sim_realism")  # b779-sim2 r4
     out["sim_realism"] = sim_realism.status(_xbe_bytes(source)) if sim_realism is not None else "unavailable"
+    qb_injuries = _core_module("nfl2k5_sim_qb_injuries")
+    qb_settings = qb_injuries.read_settings(_xbe_bytes(source)) if qb_injuries is not None else {"status": "unavailable"}
+    out["sim_qb_injuries"] = qb_settings["status"]
+    out["sim_qb_injury_settings"] = qb_settings
     coach_carousel = _core_module("nfl2k5_coach_carousel")  # b780-c6
     out["coach_carousel"] = coach_carousel.status(_xbe_bytes(source)) if coach_carousel is not None else "unavailable"
     history_screen = _core_module("nfl2k5_history_screen")  # b780-j4
@@ -4149,6 +4249,43 @@ def _check_playbook_scoring(target: Path, progress: Callable[..., Any]) -> dict[
     return {"status": "applied", "schema": scoring.SCHEMA, "books": len(rows), "faults": 0, "results": rows}
 
 
+def _copy_private_build_source(source, target, receipt, progress, consume):
+    _step("copy")
+    progress("Copying the image", 0, 0)
+    if target.exists():
+        target.unlink()
+    if consume:
+        os.replace(source, target)
+    else:
+        from .build_io import copy_image
+        import hashlib
+        # Hashed as it is copied; the measured outcome never reads the
+        # source again (beta 74).
+        source_hasher = hashlib.sha256()
+        copy_image(source, target, progress, source_hasher)
+        receipt["source_sha256"] = source_hasher.hexdigest()
+        build_steps.fact("source_sha256", receipt["source_sha256"])
+    receipt["steps"].append({"step": "copy"})
+
+
+def _compact_build_disc(target, original, receipt, progress):
+    _step("disc_compaction")
+    # DESIGN: all growth writers have finished. Compact only this disposable
+    # build copy, then run the publication gates through its new directory.
+    from .xdvdfs_compact import finish_private
+    compacted = finish_private(target, original=original, progress=progress)
+    receipt["disc_compaction"] = compacted
+    receipt["result"]["image_size"] = compacted["output_bytes"]
+    receipt["result"].pop("image_sha256", None)
+    return compacted
+
+
+def _verify_finished_game_disc(target, receipt, progress):
+    from .nfl2k5_disc_extents import validate_image
+    receipt["disc_extents"] = validate_image(target)
+    receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+
+
 def _pack0_extent(descriptor: int) -> tuple[int, int]:
     """(absolute byte offset, size) of vc_53450030/0 in the open image, from its XDVDFS directory."""
 
@@ -4294,6 +4431,14 @@ PLAYBOOK_OPTION_LABELS = {
 
 def validate_plan(plan: BuildPlan) -> list[str]:
     """Report incompatible choices before reading game inputs or copying a disc."""
+    from .nfl2k5_build_settings import validate_sim_qb_injuries
+    try:
+        validate_sim_qb_injuries(plan.sim_qb_injuries, plan.sim_qb_injury_rate)
+    except ValueError as exc:
+        return [str(exc)]
+    if plan.sim_qb_injuries in ("realistic", "custom"):
+        if plan.console_memory != 128 or not plan.k128_memory or not plan.sim_realism:
+            return ["Simulated quarterback injuries require the 128 MB target, 128 MB memory (K128) and Simulated season realism."]
     if plan.stock_age_policy not in ("preserve_age", "keep_birthdates"):
         return ["Choose a supported stock roster age policy."]
     if type(plan.official_marks_pack) is not str:
@@ -5051,10 +5196,11 @@ def _verify_play_intents(source, pairs):
 def _r62_plan_options(plan, frozen_setup=None):
     # b76-vb3: the 25th Anniversary gate is decided per build (it rides with the dynamic kickoff on disc images).
     derived = {"read_option_intent_table", "anniversary_kickoff", "anniversary_kickoff_tables", "widescreen_menus",
-               "team_logo_swap", "period_goalposts"}
+               "team_logo_swap", "period_goalposts", "sim_qb_standard"}
     options = {key: (None if key in derived else frozen_setup if key == "my_career_setup"
                      else False if key == "roster_capacity" else getattr(plan, key))
                for key in tt.R62_RUNTIME_KEYS}
+    options["sim_qb_standard"] = plan.sim_qb_injuries in ("realistic", "custom")
     # ui1: Career Home and a jukebox music library (installed after this stack) need the same extra section slot;
     # the music library wins and MyCareer keeps its Classic Apartment.
     options["my_career_home"] = bool(plan.my_career_home and not plan.music_library)
@@ -5569,6 +5715,7 @@ def _apply_roster_refresh(plan, target, receipt, progress):
 def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits=None, r62_options=None, _consume_source=False, _preflight_only=False, _retail_source=None) -> dict[str, Any]:
     progress = progress or (lambda *_a: None)
     _step("preflight")
+    sim_qb_only = _only_sim_qb_changes(plan)
     seven_held = bool(plan.seven_on_seven and not SEVEN_ON_SEVEN_RELEASED)
     if seven_held:
         progress("7-on-7 practice is unavailable until repaired; ignoring the saved opt-in", 0, 0)
@@ -5994,6 +6141,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     except (OSError, ValueError):
         # The selected writer owns malformed/missing executable refusal.
         installed_xbe = None
+    if sim_qb_only:
+        if is_image and installed_xbe is not None and _edit_installed_sim_qb(
+                plan, source, target, installed_xbe, receipt, progress, preflight=_preflight_only,
+                consume=_consume_source, reference=_retail_source or source):
+            return receipt
+        raise ValueError("A single-setting disc update needs a built 128 MB disc with the current simulated season realism.")
     retire_holder = installed_xbe is not None and tt.punter_holder_patch.build_status(installed_xbe) == "previous"
     holder_inherited = None
     if plan.punter_holder and is_image:
@@ -6044,6 +6197,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Return blockers claiming distinct men need the dynamic kickoff on a disc image built from "
                          "the retail disc (the rule rides with the 25th Anniversary kickoff gate)")
     if installed_xbe is not None:
+        if plan.k128_memory and not r62["sim_qb_standard"]:
+            r62["sim_qb_standard"] = tt._has_qb_reservation(installed_xbe)
         tt._check_installed_runtime_settings(installed_xbe, r62)
     if (plan.xbe_space or plan.kickoff_relocated) and not is_image:
         raise ValueError("experimental extra patch space needs a disc image")
@@ -6588,6 +6743,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _injured_reserve_preflight(source, progress)
     if plan.sim_realism:  # b779-sim2 r4: like pi1, before any write
         _sim_realism_preflight(source, progress)
+    if plan.sim_qb_injuries is not None:
+        qb_injuries = _core_module("nfl2k5_sim_qb_injuries")
+        if qb_injuries is None:
+            raise ValueError("Simulated quarterback injuries are unavailable in this Studio installation.")
+        if qb_injuries.status(_xbe_bytes(source)) == "foreign":
+            raise ValueError("Unrecognized simulated quarterback injury data. Choose a verified source disc.")
     if plan.coach_carousel:  # b780-c6: before any write
         _coach_carousel_preflight(source, progress, plan.roster_edits)
     if plan.history_screen:  # b780-j4: before any write
@@ -6778,7 +6939,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
-               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, sportscenter_lineup=False, backfield_cards=False).wants_xbe_patch() or retire_holder or plan.edge_rename or complete_offense_packs or plan.contract_college_guard:
+               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, sportscenter_lineup=False, backfield_cards=False, sim_qb_injuries=None).wants_xbe_patch() or retire_holder or plan.edge_rename or complete_offense_packs or plan.contract_college_guard:
         _step("xbe")
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
@@ -6823,22 +6984,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             build_steps.fact("source_sha256", receipt["source_sha256"])
         receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("forward_pass_ruling_patch", "modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "draft_class", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "franchise_economy", "franchise_economy_patch", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "resource_load_guard_patch", "loader_wakeup_fix", "loader_wakeup_fix_patch", "rb_rename", "rb_rename_patch", "trophy_room", "trophy_room_patch", "name_keyboard_patch", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "punter_holder", "punter_holder_patch", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
     else:
-        _step("copy")
-        progress("Copying the image", 0, 0)
-        if target.exists():
-            target.unlink()
-        if _consume_source:
-            os.replace(source, target)
-        else:
-            from .build_io import copy_image
-            import hashlib
-            # Hashed as it is copied; the measured outcome never reads the
-            # source again (beta 74).
-            source_hasher = hashlib.sha256()
-            copy_image(source, target, progress, source_hasher)
-            receipt["source_sha256"] = source_hasher.hexdigest()
-            build_steps.fact("source_sha256", receipt["source_sha256"])
-        receipt["steps"].append({"step": "copy"})
+        _copy_private_build_source(source, target, receipt, progress, _consume_source)
 
     if retire_seven:
         _step("retire_seven_on_seven")
@@ -8646,21 +8792,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             _write_xbe_bytes(target, native)
         receipt["steps"].append({"step": "backfield_cards", **card_receipt})
         receipt["result"]["backfield_cards"] = "applied"
+    _apply_sim_qb_injuries(plan, target, receipt, progress)
 
     if tt.is_disc_image(target):
-        _step("disc_compaction")
-        # DESIGN: all growth writers have finished. Compact only this disposable
-        # build copy, then run the publication gates through its new directory.
-        from .xdvdfs_compact import finish_private
-        compacted = finish_private(target, original=_retail_source or source, progress=progress)
-        receipt["disc_compaction"] = compacted
-        receipt["result"]["image_size"] = compacted["output_bytes"]
+        compacted = _compact_build_disc(target, _retail_source or source, receipt, progress)
         if plan.trim_intro_videos:
             # The final 64 KiB alignment can consume some staged trim savings.
             # Keep the step plan intact, but report the finished disc reduction.
             receipt["intro_video_disc_bytes_freed"] = cut["plan"]["source_bytes"] - compacted["output_bytes"]
-        # build() records the final image digest in its existing single hash pass.
-        receipt["result"].pop("image_sha256", None)
     _step("final_checks")
     if plan.backfield_cards and cards.status(_xbe_bytes(target)) != "applied":
         raise ValueError("Starting backfield cards did not survive the final archive pass")
@@ -8745,6 +8884,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise RuntimeError("The defender catch snap limit is not in the built executable.")
     if _audible_panel_choice(plan) is not None and _core_module("nfl2k5_audible_legend").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the audible panel legend did not survive the final passes")  # b780-p3
+    if plan.sim_qb_injuries is not None:
+        _verify_sim_qb_injuries(plan, _core_module("nfl2k5_sim_qb_injuries"), _xbe_bytes(target))
     if plan.sim_realism and _core_module("nfl2k5_sim_realism").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated season realism did not survive the final passes")  # b779-sim2 r4
     if plan.coach_carousel and _core_module("nfl2k5_coach_carousel").status(_xbe_bytes(target)) != "applied":
@@ -8795,9 +8936,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if not _ball.enabled() and _ball.image_status(target) != "retail":
             raise ValueError("the era ball is off but the ball scene is not the user's own")
     if is_image:
-        from .nfl2k5_disc_extents import validate_image
-        receipt["disc_extents"] = validate_image(target)
-        receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+        _verify_finished_game_disc(target, receipt, progress)
     return receipt
 
 
@@ -8805,4 +8944,4 @@ def save_receipt(receipt: dict[str, Any], path: Path | str) -> None:
     Path(path).write_text(json.dumps(receipt, indent=1, default=str), encoding="utf-8", newline="\n")
 
 
-__all__ = ["validate_plan", "PLAYBOOK_OPTION_LABELS", "BuildPlan", "CommentarySwap", "PRESETS", "PRESET_TITLES", "apply_preset", "availability", "build", "inspect", "save_receipt"]
+__all__ = ["validate_plan", "PLAYBOOK_OPTION_LABELS", "BuildPlan", "CommentarySwap", "PRESETS", "PRESET_TITLES", "apply_preset", "availability", "build", "sim_qb_disc_edit", "inspect", "save_receipt"]

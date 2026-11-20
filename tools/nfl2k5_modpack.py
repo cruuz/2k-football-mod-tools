@@ -9,6 +9,7 @@
              (or --in-place to patch an existing copy)
     extract  write the bundled assets, recipe and manifest to a folder
     build-sources  run Make my disc with an extracted editable source recipe
+    edit-sim-qb    change only quarterback simulation on a new copy of a built standard disc
 
 Every run is verified against the SHA-256 of the bytes it replaces before
 anything is written; a wrong base is refused, not patched.
@@ -231,7 +232,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
 
 def cmd_build_sources(args: argparse.Namespace) -> int:
     """Use the same source-project builder as the Studio Make my disc button."""
-    from mod_editor.core import modpack_sources
+    from mod_editor.core import modpack_sources, nfl2k5_build_settings
     from mod_editor.core.errors import ModEditorError
     recipe = json.loads(Path(args.recipe).read_text(encoding="utf-8"))
     modpack._require(isinstance(recipe, dict) and recipe.get("schema") == "softdrink_sources/v1"
@@ -240,18 +241,47 @@ def cmd_build_sources(args: argparse.Namespace) -> int:
                      "Choose the materialized SOFTDRINK-build-recipe.json from Extract sources")
     try:
         plan = modpack_sources.build_plan(recipe, args.source, args.out)
+        mode = getattr(args, "sim_qb_injuries", None)
+        if mode is not None:
+            plan.sim_qb_injuries = mode
+            if mode in ("realistic", "custom"):
+                plan.sim_realism = plan.k128_memory = True
+        rate = getattr(args, "qb_injury_rate", None)
+        if rate is not None:
+            modpack._require(plan.sim_qb_injuries == "custom", "--qb-injury-rate requires the Custom injury setting")
+            plan.sim_qb_injury_rate = rate
+        nfl2k5_build_settings.validate_sim_qb_injuries(plan.sim_qb_injuries, plan.sim_qb_injury_rate)
     except KeyError as exc:
         raise modpack.ModpackError(f"Source recipe requires an unsupported Studio preset: {recipe['preset']}") from exc
     try:
         receipt = modpack_sources.build_project(plan, recipe["project"], _progress(not args.json))
     except ModEditorError as exc:
         raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, receipt, (args.recipe, args.source, args.out))
+
+
+def _print_build_result(args, receipt, inputs):
     if args.receipt:
         from mod_editor.core import modpack_files
-        with modpack_files._transaction(args.receipt, (args.recipe, args.source, args.out)) as part:
+        with modpack_files._transaction(args.receipt, inputs) as part:
             part.write_text(json.dumps(receipt, indent=2, default=str) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(receipt, indent=2, default=str))
     return 0
+
+
+def cmd_edit_sim_qb(args):
+    from mod_editor.core import mod_build
+    from mod_editor.core.errors import ModEditorError
+    rate = args.qb_injury_rate
+    if rate is not None and args.mode != "custom":
+        raise ValueError("--qb-injury-rate requires Custom mode.")
+    plan = mod_build.sim_qb_disc_edit(args.source, args.out, args.mode,
+                                      custom_rate=mod_build.BuildPlan.sim_qb_injury_rate if rate is None else rate)
+    try:
+        result = mod_build.build(plan, _progress(not args.json), require_change=True)
+    except ModEditorError as exc:
+        raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, result, (args.source, args.out))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -327,8 +357,21 @@ def main(argv: list[str] | None = None) -> int:
     build.add_argument("--source", required=True, help="your unmodified retail image")
     build.add_argument("--out", required=True, help="new output image")
     build.add_argument("--receipt", help="new JSON receipt file")
+    build.add_argument("--sim-qb-injuries", choices=("retail", "realistic", "custom"),
+                       help="override the source recipe's simulated quarterback injury setting")
+    build.add_argument("--qb-injury-rate", type=float, metavar="PERCENT",
+                       help="Custom base chance per eligible play, from 0.000 to 100.000 percent")
     build.add_argument("--json", action="store_true")
     build.set_defaults(run=cmd_build_sources)
+
+    edit = sub.add_parser("edit-sim-qb", help="change only quarterback simulation on a copy of a built 128 MB disc")
+    edit.add_argument("--source", required=True, help="built 128 MB disc with Simulated season realism")
+    edit.add_argument("--out", required=True, help="new output disc")
+    edit.add_argument("--mode", required=True, choices=("retail", "realistic", "custom"))
+    edit.add_argument("--qb-injury-rate", type=float, metavar="PERCENT", help="base chance in Custom mode")
+    edit.add_argument("--receipt", help="new JSON receipt file")
+    edit.add_argument("--json", action="store_true")
+    edit.set_defaults(run=cmd_edit_sim_qb)
 
     args = parser.parse_args(argv)
     try:
