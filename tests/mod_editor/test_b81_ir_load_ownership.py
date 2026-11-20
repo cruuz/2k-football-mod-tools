@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import binascii
+from contextlib import nullcontext
 import hashlib
 import os
 from pathlib import Path
@@ -365,7 +366,8 @@ class SignedFranchiseTests(unittest.TestCase):
 
         # This pre-release save was captured on a lab XBE with the private QB bank already appended.
         order = tuple(n for n in space.LATE_OWNERS if n != owner.OWNER) + ('private_qb_supplement', owner.OWNER)
-        with patch.object(space, 'LATE_OWNERS', order):
+        # Only the frozen research trial has the private supplemental reservation.
+        with (nullcontext() if reviewed else patch.object(space, 'LATE_OWNERS', order)):
             fixed, _ = ir.apply(original)
             before = load(original, body)
             after, written = load(fixed, body, save=True)

@@ -998,7 +998,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_injured_reserve.py": "bbae9b6833adbeb977e490b69c6e90b490de35f4dfea38860f06b3817b8b3ba7",  # b780 IR1: modern injured reserve (late owner, imported by throw_tuning)
         "mod_editor/core/nfl2k5_injured_reserve_code.py": "6cdccc14900bccbb41d9e1ac00fd776bf964a36faca63c91fafb42b2be70ddb9",  # b780 IR1: its generated runtime template
         "mod_editor/core/nfl2k5_franchise_ownership.py": "c537be5b759dcb27a4dc617a5af61b4cd5512d9bc142e31038afb3f1c54b60d7",
-        "mod_editor/core/nfl2k5_franchise_ownership_code.py": "bf191d25950a02b95e8c5b8869ea9f6db789976870f66059fc4f6e24fd1a5a7b",
+        "mod_editor/core/nfl2k5_franchise_ownership_code.py": "c4758997ba02a2dfcbf33e13bc4ee2847fb8cd58493ed7840b31072292eb6d19",
         "mod_editor/core/nfl2k5_injured_reserve_code_b81_pre_ownership.py": "1e1f421ecfdc6dd9d40de2696d9fa9f146858b0488e46fe31f83d28ef5c4f387",
         "mod_editor/core/nfl2k5_injured_reserve_code_b780.py": "0435e068e930f74a937e075f0f235fc61d951ba7b12873ac2b6fdcfc17f3b78a",
         "mod_editor/core/nfl2k5_injured_reserve_save.py": "cf9111798edbe0fcedfae7cf9894f288223da9f47a315c0f31bfcbfe79d1e6b2",  # b780 IR1: the save extension codec (imported by nfl2k5_franchise_save)
@@ -1079,7 +1079,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "3d2b1776fb8a2869ec0c1cdfa4960579a0765751ac1693e5d0d2fd8c6103f76f",
+        "mod_editor/core/nfl2k5_xbe_space.py": "a614aff8927760aab43675c448b2134c8a652c292ee4717c6b3be093c2b6e3a0",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "b63521c9b17119b87558aff36a5a914d0c3fdd42e96240cf7de20065ead644d7",
