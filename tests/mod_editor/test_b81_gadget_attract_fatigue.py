@@ -63,6 +63,7 @@ from mod_editor.core import nfl2k5_gadget_play_code as template  # noqa: E402
 from mod_editor.core import nfl2k5_playbook_inspector as ip  # noqa: E402
 from tests.mod_editor.test_b81_gadget_play import (  # noqa: E402
     BOOKS, CHOICE, PREVIEW_DISC, PREVIEW_XBE_SHA256, QUALIFIED_XBE, QUALIFIED_XBE_SHA256, SIDES, FIXTURES, Native,
+    QUALIFIED_SELECT_SLOT,
     _have_unicorn, _require_disc)
 
 RUNTIME = FIXTURES / "evidence/q62-gadget/nov19/runtime/speed"
@@ -303,7 +304,9 @@ class AttractFatigueTests(unittest.TestCase):
         return chosen[0]
 
     def test_the_six_attract_snaps_with_the_live_builder_line(self):
-        lookup = gadget.CODE_VA + template.LABELS["select_slot"]
+        # The candidate is the qualified executable 7963a1db: its classifier sits at the qualified offset (review F1's
+        # restore later moved the current template's labels).
+        lookup = gadget.CODE_VA + QUALIFIED_SELECT_SLOT
         for case in CASES:
             attract_play, side, _asset, _form, _play, _category, live, gad_name = case
             with self.subTest(play=attract_play):
