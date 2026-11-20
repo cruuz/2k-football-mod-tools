@@ -84,6 +84,25 @@ def _round_bits(value, bits):
     return round(value / quantum) * quantum
 
 
+
+def rate_with_room(ratings, carrier_rating, nominal, fraction):
+    """The largest Custom rate (0.001 percent units, a multiple of 100, at most `nominal`) at which the nine walked
+    slots' chances at slider 0.5 with these ratings sum to at most `fraction` of certainty, from the module's own
+    constants. Calibration moves base_chance; the walk tests need room under certainty (lead, freeze of 11/20)."""
+    def total(rate):
+        chance = 0.0
+        for (index, _, slot, carrier_only), rating in zip(WALK, ratings):
+            position = rules.POSITION_CLASSES[index]
+            if carrier_only and rating != carrier_rating:
+                continue
+            chance += (position.base_chance / rules.POSITION_SCALE * rate / rules.DEFAULT_RATE
+                       * max(0, position.zero_point - rating) / (position.zero_point - position.reference_durability))
+        return chance
+    rate = nominal
+    while rate > 100 and total(rate) > fraction:
+        rate -= 100
+    return rate
+
 def effective(scale_bits, slider, fpcw=FPCW_64):
     """fld scale; fmul slider; fistp qword under the given control word (round to nearest), then the clamp."""
     scale = Fraction(struct.unpack('<f', struct.pack('<I', scale_bits))[0])
@@ -413,8 +432,8 @@ class PositionDecisions(PositionGate):
         self.assert_isolated()
 
     def test_one_sample_gives_each_of_the_nine_slots_its_own_interval(self):
-        self.load_rate(2_000)
         ratings = (93, 70, 91, 60, 99, 81, 40, 83, 55)
+        self.load_rate(min(rate_with_room(ratings, carrier, 2_000, .8) for carrier in (83, 55)))
         for (_, side, slot, _), rating in zip(WALK, ratings):
             self.place(slot, rating, side=side)
         for carrier_slot in (1, 3):
@@ -740,7 +759,8 @@ class NativeCommit(NativeMachine):
                         self.heal()
 
     def test_no_write_or_draw_outside_the_bank_the_stack_and_the_victims_health(self):
-        self.link(rules, 3_000)
+        ratings = (93, 70, 91, 60, 99, 81, 40, 83, 55)
+        self.link(rules, min(rate_with_room(ratings, carrier, 3_000, .85) for carrier in (83, 55)))
         self.lineup(tuple((side, slot, rating) for (_, side, slot, _), rating
                           in zip(WALK, (93, 70, 91, 60, 99, 81, 40, 83, 55))))
         shared = bytes(self.m.uc.mem_read(SHARED_RNG, RNG_SIZE))

@@ -55,19 +55,20 @@ class PositionClass(NamedTuple):
 
 POSITION_SCALE = 100_000_000
 POSITION_WEEKS = 32               # pos_accept entries per class; longer runs use the last entry
-# Order is the class index in positions.S (pos_slots). Starting values of pos2/DESIGN.md section 5
-# (pos2/work/design-tables/start_tables.json); calibration changes only base_chance and accept.
+# Order is the class index in positions.S (pos_slots). Frozen after calibration round 4 of pos2/DESIGN.md section 7
+# (roots 2501-2507, two seasons each; pos2/calib/round4/constants.json). Calibration changed only base_chance and accept;
+# zero_point and reference_durability are the design's.
 POSITION_CLASSES = (
-    PositionClass("tackle", 568_000, 93, 110,
-                  ((1, .3626), (2, .4317), (3, 1.0), (7, .0531), (15, .2548), (31, .4898))),
-    PositionClass("guard", 471_000, 91, 110,
-                  ((1, .2290), (2, .2726), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.0))),
-    PositionClass("center", 279_000, 91, 110,
-                  ((1, .4842), (2, .5764), (3, 1.0), (7, 0.0), (15, .0562), (31, .9051))),
-    PositionClass("end", 467_000, 81, 100,
-                  ((1, .2057), (2, .2449), (3, 1.0), (7, 0.0), (15, .0151), (31, .3693))),
-    PositionClass("halfback", 1_629_000, 83, 100,
-                  ((1, .2047), (2, .2436), (3, 1.0), (7, .0302), (15, .1270), (31, .3942))),
+    PositionClass("tackle", 1_165_000, 93, 110,
+                  ((1, 0.2398), (2, 0.2855), (3, 1.0), (7, 0.0352), (15, 0.1105), (31, 0.6398))),
+    PositionClass("guard", 823_000, 91, 110,
+                  ((1, 0.1928), (2, 0.2295), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.1918))),
+    PositionClass("center", 509_000, 91, 110,
+                  ((1, 0.3486), (2, 0.4151), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.8324))),
+    PositionClass("end", 784_000, 81, 100,
+                  ((1, 0.0855), (2, 0.1018), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.2531))),
+    PositionClass("halfback", 2_369_000, 83, 100,
+                  ((1, 0.158), (2, 0.1881), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.8385))),
 )
 # False is the cut-line fallback of pos2/DESIGN.md section 8: no per-carry halfback chance, weekly roll left as it is.
 HALFBACK_SUPPLEMENT = True
