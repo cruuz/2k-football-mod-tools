@@ -916,6 +916,34 @@ class BuildPlan:
         return d
 
 
+class _ReleasedV09Update(BuildPlan):
+    """An explicit update of selected options on the published 128 MB disc."""
+
+
+V09_UPDATE_CHOICES = ("modern_injured_reserve", "backfield_cards")
+
+
+def v09_disc_update(source, target, *, modern_injured_reserve=False, backfield_cards=False,
+                    overwrite=False, name="", author="", notes=""):
+    if type(modern_injured_reserve) is not bool or type(backfield_cards) is not bool:
+        raise ValueError("The v0.9 update choices must be on or off.")
+    if not (modern_injured_reserve or backfield_cards):
+        raise ValueError("Select Modern injured reserve, Starting backfield cards, or both.")
+    return _ReleasedV09Update(str(source), str(target), overwrite=overwrite, name=name, author=author,
+                              notes=notes, modern_injured_reserve=modern_injured_reserve,
+                              backfield_cards=backfield_cards)
+
+
+def _v09_reference(source, executable):
+    from .nfl2k5_disc_check import load_releases
+    import hashlib
+    release = next((entry for entry in load_releases() if entry["name"] == "SOFTDRINK 2K28 v0.9"), None)
+    if (release and source.stat().st_size == release["image_size"]
+            and hashlib.sha256(executable).hexdigest() == release["files"]["default.xbe"]["sha256"]):
+        return release
+    return None
+
+
 # ---------------------------------------------------------------------------------------------
 # SOFTDRINK patch presets (Noah, 9/3): one click to start from a known-good set, then customise.
 #   basic    = gameplay/logic fixes only, stock feel — what an official update would have shipped
@@ -2770,6 +2798,62 @@ def _apply_injured_reserve(plan: "BuildPlan", target: Path, receipt: dict, progr
     receipt["result"]["injured_reserve"] = mode
 
 
+def _apply_backfield_cards(target, receipt, progress):
+    cards = _core_module("nfl2k5_backfield_cards")
+    _step("backfield_cards")
+    progress("Updating the starting backfield cards", 0, 0)
+    native, card_receipt = cards.apply(_xbe_bytes(target))
+    if not card_receipt["already_applied"]:
+        _write_xbe_bytes(target, native)
+    receipt["steps"].append({"step": "backfield_cards", **card_receipt})
+    receipt["result"]["backfield_cards"] = "applied"
+
+
+def _update_v09_disc(plan, progress, *, preflight, project):
+    if project or plan != v09_disc_update(
+            plan.source, plan.target, modern_injured_reserve=plan.modern_injured_reserve,
+            backfield_cards=plan.backfield_cards, overwrite=plan.overwrite,
+            name=plan.name, author=plan.author, notes=plan.notes):
+        raise ValueError("Use your retail disc to build a project with additional v0.9 changes.")
+    source, target = Path(plan.source), Path(plan.target)
+    if not tt.is_disc_image(source):
+        raise ValueError("Choose the released SOFTDRINK 2K28 v0.9 standard disc image.")
+    original = _xbe_bytes(source)
+    release = _v09_reference(source, original)
+    ir = _core_module("nfl2k5_injured_reserve")
+    cards = _core_module("nfl2k5_backfield_cards")
+    if not (release and ir and cards and ir.status(original) == "previous" and cards.status(original) == "retail"
+            and (tt.k128_patch.read_settings(original).get("require_128") is True)):
+        raise ValueError("Choose the released SOFTDRINK 2K28 v0.9 standard disc image.")
+
+    # Preflight precisely the normal late-owner order on the existing allocator directory.
+    expected = original
+    if plan.modern_injured_reserve:
+        expected, _ = ir.apply(expected, "modern", standard_guard=True)
+    if plan.backfield_cards:
+        expected, _ = cards.apply(expected)
+    receipt = {"plan": plan.to_recipe(), "source": str(source), "target": str(target), "steps": [],
+               "result": {}, "v09_update": [key for key in V09_UPDATE_CHOICES if getattr(plan, key)]}
+    if preflight:
+        from .modpack import hash_file
+        if hash_file(source, progress=progress) != release["image_sha256"]:
+            raise ValueError("This image differs from the released SOFTDRINK 2K28 v0.9 standard disc.")
+        return receipt
+    _copy_private_build_source(source, target, receipt, progress, False)
+    if receipt.get("source_sha256") != release["image_sha256"] or _xbe_bytes(target) != original:
+        raise ValueError("The copied image differs from the released SOFTDRINK 2K28 v0.9 standard disc.")
+    _apply_injured_reserve(plan, target, receipt, progress)
+    if plan.backfield_cards:
+        _apply_backfield_cards(target, receipt, progress)
+    _compact_build_disc(target, source, receipt, progress)
+    _step("final_checks")
+    if _xbe_bytes(target) != expected:
+        raise ValueError("The v0.9 disc update did not read back with the selected changes.")
+    receipt["result"] = {**inspect(target), **receipt["result"], "path": str(target)}
+    _verify_finished_game_disc(target, receipt, progress)
+    return receipt
+
+
 @_core_step("audible_legend")
 def _apply_audible_legend(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780-p3: the audible panel lift and/or button legend, the last late allocator owner (LATE_OWNERS order)."""
@@ -4069,6 +4153,10 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     custom_intro = _core_module("nfl2k5_custom_intro")
     out["custom_intro"] = (custom_intro.image_status(source)
                            if custom_intro is not None and report.get("container") == "xiso" else "requires image")
+    out["v09_standard_update"] = bool(
+        out.get("container") == "xiso" and out.get("modern_injured_reserve") == "previous"
+        and out.get("backfield_cards") == "retail" and (out.get("k128_settings") or {}).get("require_128")
+        and _v09_reference(source, _xbe_bytes(source)))
     return out
 
 
@@ -4147,6 +4235,43 @@ def _check_playbook_scoring(target: Path, progress: Callable[..., Any]) -> dict[
         raise RuntimeError("Native PLAY scoring found no books in the build")
     progress("Native play scoring complete", len(rows), len(books))
     return {"status": "applied", "schema": scoring.SCHEMA, "books": len(rows), "faults": 0, "results": rows}
+
+
+def _copy_private_build_source(source, target, receipt, progress, consume):
+    _step("copy")
+    progress("Copying the image", 0, 0)
+    if target.exists():
+        target.unlink()
+    if consume:
+        os.replace(source, target)
+    else:
+        from .build_io import copy_image
+        import hashlib
+        # Hashed as it is copied; the measured outcome never reads the
+        # source again (beta 74).
+        source_hasher = hashlib.sha256()
+        copy_image(source, target, progress, source_hasher)
+        receipt["source_sha256"] = source_hasher.hexdigest()
+        build_steps.fact("source_sha256", receipt["source_sha256"])
+    receipt["steps"].append({"step": "copy"})
+
+
+def _compact_build_disc(target, original, receipt, progress):
+    _step("disc_compaction")
+    # DESIGN: all growth writers have finished. Compact only this disposable
+    # build copy, then run the publication gates through its new directory.
+    from .xdvdfs_compact import finish_private
+    compacted = finish_private(target, original=original, progress=progress)
+    receipt["disc_compaction"] = compacted
+    receipt["result"]["image_size"] = compacted["output_bytes"]
+    receipt["result"].pop("image_sha256", None)
+    return compacted
+
+
+def _verify_finished_game_disc(target, receipt, progress):
+    from .nfl2k5_disc_extents import validate_image
+    receipt["disc_extents"] = validate_image(target)
+    receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
 
 
 def _pack0_extent(descriptor: int) -> tuple[int, int]:
@@ -4531,6 +4656,8 @@ def _build_and_publish(plan: BuildPlan, progress: ProgressSink | None = None, *,
     build_steps.fact("target", str(plan.target))
     stage: Path | None = None
     try:
+        if isinstance(plan, _ReleasedV09Update) and _project_builder is not None:
+            raise ValueError("Use your retail disc to include project changes with these v0.9 updates.")
         blockers = validate_plan(plan)
         if blockers:
             raise ValueError("\n".join(blockers))
@@ -5569,6 +5696,9 @@ def _apply_roster_refresh(plan, target, receipt, progress):
 def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits=None, r62_options=None, _consume_source=False, _preflight_only=False, _retail_source=None) -> dict[str, Any]:
     progress = progress or (lambda *_a: None)
     _step("preflight")
+    if isinstance(plan, _ReleasedV09Update):
+        return _update_v09_disc(plan, progress, preflight=_preflight_only,
+                                project=bool(music_edits) or _consume_source)
     seven_held = bool(plan.seven_on_seven and not SEVEN_ON_SEVEN_RELEASED)
     if seven_held:
         progress("7-on-7 practice is unavailable until repaired; ignoring the saved opt-in", 0, 0)
@@ -6823,22 +6953,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             build_steps.fact("source_sha256", receipt["source_sha256"])
         receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("forward_pass_ruling_patch", "modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "draft_class", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "franchise_economy", "franchise_economy_patch", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "resource_load_guard_patch", "loader_wakeup_fix", "loader_wakeup_fix_patch", "rb_rename", "rb_rename_patch", "trophy_room", "trophy_room_patch", "name_keyboard_patch", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "punter_holder", "punter_holder_patch", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
     else:
-        _step("copy")
-        progress("Copying the image", 0, 0)
-        if target.exists():
-            target.unlink()
-        if _consume_source:
-            os.replace(source, target)
-        else:
-            from .build_io import copy_image
-            import hashlib
-            # Hashed as it is copied; the measured outcome never reads the
-            # source again (beta 74).
-            source_hasher = hashlib.sha256()
-            copy_image(source, target, progress, source_hasher)
-            receipt["source_sha256"] = source_hasher.hexdigest()
-            build_steps.fact("source_sha256", receipt["source_sha256"])
-        receipt["steps"].append({"step": "copy"})
+        _copy_private_build_source(source, target, receipt, progress, _consume_source)
 
     if retire_seven:
         _step("retire_seven_on_seven")
@@ -8641,22 +8756,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["result"]["offset_toss_flip"] = "applied"
 
     if plan.backfield_cards:
-        _step("backfield_cards")
-        progress("Updating the starting backfield cards", 0, 0)
-        native, card_receipt = cards.apply(_xbe_bytes(target))
-        if not card_receipt["already_applied"]:
-            _write_xbe_bytes(target, native)
-        receipt["steps"].append({"step": "backfield_cards", **card_receipt})
-        receipt["result"]["backfield_cards"] = "applied"
+        _apply_backfield_cards(target, receipt, progress)
 
     if tt.is_disc_image(target):
-        _step("disc_compaction")
-        # DESIGN: all growth writers have finished. Compact only this disposable
-        # build copy, then run the publication gates through its new directory.
-        from .xdvdfs_compact import finish_private
-        compacted = finish_private(target, original=_retail_source or source, progress=progress)
-        receipt["disc_compaction"] = compacted
-        receipt["result"]["image_size"] = compacted["output_bytes"]
+        compacted = _compact_build_disc(target, _retail_source or source, receipt, progress)
         if plan.trim_intro_videos:
             # The final 64 KiB alignment can consume some staged trim savings.
             # Keep the step plan intact, but report the finished disc reduction.
@@ -8797,9 +8900,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if not _ball.enabled() and _ball.image_status(target) != "retail":
             raise ValueError("the era ball is off but the ball scene is not the user's own")
     if is_image:
-        from .nfl2k5_disc_extents import validate_image
-        receipt["disc_extents"] = validate_image(target)
-        receipt["playbook_scoring"] = _check_playbook_scoring(target, progress)
+        _verify_finished_game_disc(target, receipt, progress)
     return receipt
 
 
