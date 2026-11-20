@@ -215,11 +215,25 @@ class SignedSaveTests(unittest.TestCase):
         path = QB34 / "no-qb-2508-2027-w18.b81mem.gz"
         pinned(path, NO_QB_IMAGE)
         memory = fi.load_memory(path)
-        report = fi.check(fi.view_from_memory(memory.read, search=lambda n: memory.find(n, 0x10000, 0x2000000)))
-        self.assertEqual(failing(report), {"I5", "I11"})
-        rows = [v for v in report.violations if v["invariant"] == "I11"]
+        view = fi.view_from_memory(memory.read, search=lambda n: memory.find(n, 0x10000, 0x2000000))
+        boundary, kickoff = fi.check(view), fi.check(view, kickoff=True)
+        self.assertEqual(failing(boundary), {"I5"})                  # at the week boundary I11 only warns (F5)
+        self.assertIn("I11", warned(boundary))
+        self.assertEqual(failing(kickoff), {"I11"})                  # TF9: judged at kick-off it fails
+        rows = [v for v in kickoff.violations if v["invariant"] == "I11"]
         self.assertEqual([(r["club"], r["club_name"], r["values"]["quarterbacks"], r["values"]["on_ir"]) for r in rows],
                          [(11, "DAL", 0, 3)])
+
+    def test_the_minnesota_week_10_kickoff_image_fails_I11(self):
+        """TF9: P0 root 2505, 2026, the week 10 kick-off: Minnesota's starter hurt, the backup on IR (harness image)."""
+        path = QB34 / "no-qb-2505-2026-w10-kickoff.b81mem.gz"
+        if not path.is_file():
+            self.skipTest("Minnesota kick-off image absent (captured by a qb34 harness run)")
+        memory = fi.load_memory(path)
+        report = fi.check(fi.view_from_memory(memory.read, search=lambda n: memory.find(n, 0x10000, 0x2000000)),
+                          kickoff=True)
+        self.assertEqual([(r["club"], r["club_name"]) for r in report.violations if r["invariant"] == "I11"],
+                         [(31, "MIN")])
 
     def test_retail_opening_passes(self):
         folder = SAVES / "f0/UDATA/53450030/0B8506889D40"
@@ -342,11 +356,36 @@ class HandBrokenTests(unittest.TestCase):
         for i in club.active:
             if b.position(i) == fi.QB:
                 b.set_word(i, 0x20, b.word(i, 0x20) | fi.INJURED | 3 << 22)     # injured, three weeks left
-        report = b.report()
-        self.assertEqual(failing(report), {"I11"})
-        self.assertEqual(warned(report), set())
-        row, = report.violations
+        kickoff = fi.check(fi.view_from_save(b.payload()), kickoff=True)
+        self.assertEqual(failing(kickoff), {"I11"})
+        row, = kickoff.violations
         self.assertEqual(row["club"], club.index)
+        boundary = b.report()
+        self.assertEqual((failing(boundary), warned(boundary)), (set(), {"I11"}))
+
+    def test_a_club_left_over_the_cap_after_an_over_cap_signing_fails_I3c(self):
+        b, v = self.fresh(), self.view
+        club = next(c for c in v.clubs if not c.human)
+        star = club.active[0]
+        cheap = min(club.active, key=lambda i: fi.player_salary(v.record(i)))
+        word = struct.unpack_from("<H", b.buf, b.off(star) + 0x0A)[0]
+        while True:                                    # raise one contract until the club's recount is over the cap
+            word = min(0xFFFF, word + 500)
+            struct.pack_into("<H", b.buf, b.off(star) + 0x0A, word)
+            b.recount(club.index)
+            if fi.view_from_save(b.payload()).clubs[club.index].payroll > v.salary_cap or word == 0xFFFF:
+                break
+        view = fi.view_from_save(b.payload())
+        over = view.clubs[club.index].payroll - view.salary_cap
+        self.assertGreater(over, 0)
+        self.assertEqual(failing(fi.check(view)), set())          # over the cap alone is the I3 warning
+        two = fi.check(view, over_cap_signings=[{"club": club.index, "player": cheap, "boundaries": 2}])
+        self.assertEqual(failing(two), {"I3c"})
+        self.assertGreater(over, fi.player_salary(view.record(cheap)))
+        one_cheap = fi.check(view, over_cap_signings=[{"club": club.index, "player": cheap, "boundaries": 1}])
+        self.assertEqual(failing(one_cheap), {"I3c"})
+        one_star = fi.check(view, over_cap_signings=[{"club": club.index, "player": star, "boundaries": 1}])
+        self.assertEqual(failing(one_star), set())                # over by less than that man's charge: allowed
 
     def test_a_board_record_naming_a_player_his_club_no_longer_has_fails_I8(self):
         b, v = self.fresh(), self.view

@@ -50,9 +50,15 @@ I9  the transaction ring cursor is below 600 and every row's kind is in the allo
     11, 12 (the design's list 1, 4, 7, 8, 9, 10, 12 plus 11, written by the native CPU listing at 0x2BBE72 in every
     recorded season, and 2, in the retail year-7 offseason save); ``--allowed-kinds`` sets the control arm's own set.
 
-I11 in stages 8 and 9, every club has at least one healthy quarterback on its active list (healthy = slice 1's
-    fully_healthy: no injured bit and no weeks in +0x20, no status in +0x24 & 0x70000000) -- failure. Added after P0
-    root 2508 ended 2027 week 18 with Dallas's three quarterbacks all on IR (coordinator: release blocker).
+I11 every club the CPU signs for (not human, or auto sign/cut 0xE6013C on; a manual human club is exempt) has at least
+    one healthy quarterback on its active list (healthy = slice 1's fully_healthy: no injured bit and no weeks in
+    +0x20, no status in +0x24 & 0x70000000). DESIGN addendum F5: judged at KICK-OFF (``check(view, kickoff=True)``,
+    the harness runs it at 0x247DCF, after the IR pass and the floor, stages 7 to 9) as a failure; at the week
+    boundary the same test is a warning. Added after P0 root 2508 ended 2027 week 18 with Dallas's three quarterbacks
+    all on IR (coordinator: release blocker).
+I3c (F5) a club with a "signed over the cap" signing (``over_cap_signings``: club, player, week boundaries since the
+    signing, which the harness tracks from the owner's ring) is still over the cap at the second boundary after it,
+    or over by more than that man's charge at the first -- failure.
 
 Memory images: ``B81MEMv1`` (this tool's ``dump_memory``: magic, region count, then start, size and bytes of each
 region; gzip optional) or a gzip pickle of ``(bounds, regions)`` as Codex's signed_awards.check writes it (read with
@@ -597,8 +603,11 @@ def is_qb_for_pick(view: LeagueView, offer: Offer) -> bool:
 
 
 def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds: Iterable[int] = DEFAULT_KINDS,
-          skip: Iterable[str] = ()) -> Report:
+          skip: Iterable[str] = (), kickoff: bool = False, over_cap_signings: Iterable[dict] = ()) -> Report:
+    """The week-boundary checks; with ``kickoff`` only I11, as a failure (the harness's 0x247DCF check)."""
     skip = set(skip)
+    if kickoff:
+        skip |= {"I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9"}
     out: list[dict] = []
     clubs = view.clubs
 
@@ -667,6 +676,17 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
                     recomputed=total, difference=c.payroll - total)
             if not c.human and c.payroll > view.salary_cap:
                 add("I3", WARN, "club over the salary cap", club=c.index, payroll=c.payroll, cap=view.salary_cap)
+    if "I3c" not in skip:
+        for sig in over_cap_signings:
+            c = clubs[sig["club"]]
+            over = c.payroll - view.salary_cap
+            charge = player_salary(view.record(sig["player"])) if 0 <= sig["player"] < view.player_count else 0
+            if sig["boundaries"] >= 2 and over > 0:
+                add("I3c", FAIL, "still over the cap at the second boundary after a signing over the cap",
+                    club=c.index, player=sig["player"], over=over, boundaries=sig["boundaries"])
+            elif sig["boundaries"] == 1 and over > charge:
+                add("I3c", FAIL, "over the cap by more than the over-cap signing's charge at the first boundary",
+                    club=c.index, player=sig["player"], over=over, charge=charge)
 
     # I4 ------------------------------------------------------------------------------------------------------------
     human_rows = []
@@ -778,13 +798,17 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
                         player=o.players_a[0])
 
     # I11 -----------------------------------------------------------------------------------------------------------
-    if "I11" not in skip and regular:
+    if "I11" not in skip and playing:
         for c in clubs:
+            if c.human and not view.auto_sign_cut:
+                continue                               # a manual human club is the user's (F5)
             qbs = [i for i in c.active if view.record(i)[0x35] == QB]
             healthy = [i for i in qbs if not _u32(view.record(i), 0x20) & (INJURED | WEEKS_MASK)
                        and not _u32(view.record(i), 0x24) & STATUS_MASK]
             if not healthy:
-                add("I11", FAIL, "no healthy quarterback on the active list", club=c.index, quarterbacks=len(qbs),
+                add("I11", FAIL if kickoff else WARN,
+                    "no healthy quarterback on the active list" + (" at kick-off" if kickoff else ""),
+                    club=c.index, quarterbacks=len(qbs),
                     on_ir=sum(1 for i, _ in view.ir.clubs[c.index] if view.record(i)[0x35] == QB),
                     hurt=[{"index": i, "injured": bool(_u32(view.record(i), 0x20) & INJURED),
                            "weeks": (_u32(view.record(i), 0x20) >> 22) & 0xFF,
@@ -831,7 +855,10 @@ def main(argv=None) -> int:
     ap.add_argument("--xbe", type=Path, help="executable: the IR store VA comes from its layout")
     ap.add_argument("--previous", type=Path, help="the previous week's save or memory image (I8 one-week rule)")
     ap.add_argument("--allowed-kinds", default=",".join(map(str, DEFAULT_KINDS)))
-    ap.add_argument("--skip", action="append", default=[], help="I1..I9, I11 or I4.injured_row0 (repeatable)")
+    ap.add_argument("--skip", action="append", default=[], help="I1..I9, I3c, I11 or I4.injured_row0 (repeatable)")
+    ap.add_argument("--kickoff", action="store_true", help="judge I11 alone, as a failure (the state at a kick-off)")
+    ap.add_argument("--over-cap", action="append", default=[], metavar="CLUB:PLAYER:BOUNDARIES",
+                    help="I3c: a signing over the cap, the week boundaries since it (repeatable)")
     ap.add_argument("--strict", action="store_true", help="warnings count as failures")
     ap.add_argument("--out", type=Path, help="write the JSON here and print only the summary line")
     a = ap.parse_args(argv)
@@ -851,8 +878,9 @@ def main(argv=None) -> int:
 
     view = load(a.memory or a.target)
     previous = load(a.previous) if a.previous else None
+    over = [dict(zip(("club", "player", "boundaries"), map(int, x.split(":")))) for x in a.over_cap]
     report = check(view, previous=previous, allowed_kinds=[int(k) for k in a.allowed_kinds.split(",") if k],
-                   skip=a.skip)
+                   skip=a.skip, kickoff=a.kickoff, over_cap_signings=over)
     document = report.document(a.strict)
     text = json.dumps(document, indent=1) + "\n"
     if a.out:
