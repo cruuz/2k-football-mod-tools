@@ -340,7 +340,15 @@ def allocation(payload):
 
 def _recognize(payload):
     from . import nfl2k5_xbe_space as space
+    from . import nfl2k5_sim_qb_injuries as quarterback
     from .nfl2k5_cave_oracle import XbeImage
+    # b81 slice 2: Simulated injuries on Realistic or Custom parks the weekly jump (the game's own tail is back at
+    # WEEKLY_SITE). Judge this owner on the executable with that option restored; when the quarterback option itself
+    # does not read back, judge the raw bytes as before.
+    try:
+        payload = quarterback.physical_view(payload)
+    except quarterback.ERRORS:
+        pass
     image = XbeImage(payload)
     present = any(r["owner"] == OWNER for r in space.layout(payload)["allocations"])
     owned = allocation(payload) if present else None

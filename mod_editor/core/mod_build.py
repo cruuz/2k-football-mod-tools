@@ -2601,6 +2601,9 @@ def _verify_sim_qb_injuries(plan, module, payload):
     if (settings["status"] != expected_status or settings["mode"] != plan.sim_qb_injuries
             or (plan.sim_qb_injuries == "custom" and settings["custom_rate"] != plan.sim_qb_injury_rate)):
         raise ValueError("Simulated quarterback injuries did not read back with the chosen settings.")
+    # b81 slice 2: Realistic and Custom always leave the current revision (a slice 1 install is upgraded in place).
+    if plan.sim_qb_injuries != "retail" and settings.get("revision") != module.REVISION:
+        raise ValueError("Simulated injuries did not read back as the current revision.")
     return settings
 
 

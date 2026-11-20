@@ -51,7 +51,8 @@ class NativeSettingsTests(unittest.TestCase):
         for custom_rate in (0, .309, .310, .311, 100):
             with self.subTest(percent=custom_rate):
                 reviewed, _ = qb.apply(self.enabled, 'custom', custom_rate=custom_rate)
-                self.assertEqual(qb.read_settings(reviewed), {'mode':'custom','status':'applied','custom_rate':custom_rate})
+                self.assertEqual(qb.read_settings(reviewed), {'mode':'custom','status':'applied','custom_rate':custom_rate,
+                                                              'revision':2,'positions':custom_rate > 0})
                 self.assertEqual(qb.physical_view(reviewed), blank)
                 self.assertEqual(qb.apply(reviewed)[0], self.enabled)
                 self.assertEqual(qb.apply(reviewed, 'retail')[0], blank)
