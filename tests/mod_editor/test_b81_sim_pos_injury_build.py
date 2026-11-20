@@ -1,4 +1,5 @@
-"""b81 slice 2 (pos2/DESIGN.md section 6, test 4): Simulated injuries through the real Studio build path.
+"""b81 slices 2 and 3 (pos2/DESIGN.md and pos3/DESIGN.md section 6, test 4): Simulated injuries through the real
+Studio build path, revision 3.
 
 The first pass is the branch's own request expression, evaluated inside mod_build._build on the resolved plan
 (read-only preflight on the private retail disc). Every later step is the real installer: K128, the running-back
@@ -9,8 +10,8 @@ step. The released v0.9 case runs Build's update-v09 route. In every case:
 - the bank is at 0x1524000 and no allocation row moves at any step;
 - 0x133CC9 holds the game's own tail under Realistic and Custom above 0, and the running-back jump otherwise;
 - Realistic (or Custom) then Retail equals the same build with only the empty reservation;
-- a slice 1 install (QBMEDv1, written with the frozen slice 1 code module) upgraded in place equals the fresh slice 2
-  install byte for byte;
+- a slice 1 install (QBMEDv1) and a slice 2 install (QBMEDv2), each written with its frozen code module, upgraded in
+  place equal the fresh revision 3 install byte for byte, and Retail from either equals the empty reservation;
 - the running-back owner, the simulator and the lineup roles read as they do without the option.
 
 Private-disc cases skip without .b77-scratch/b81/env.sh; run them with it.
@@ -81,17 +82,31 @@ def _reserved(payload):
     return payload if _bank(payload) else space.extend_scaleout(payload, qb.REQUESTS)[0]
 
 
-def _slice1_install(physical, mode, rate):
-    """A slice 1 install as d8ceb91e3's settings module wrote it: the frozen code module's bank and edits, QBMEDv1."""
-    from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice1 as frozen
+def _older_install(physical, mode, rate, revision):
+    """An earlier slice's install as its settings module wrote it: the frozen code module's bank and edits, its marker.
+
+    Slice 1 (d8ceb91e3) has no weekly edit. Slice 2 (7b0cb9fcb) passes the running-back cave when that cave is
+    installed; its edits() adds the parked weekly jump only with a rate above zero."""
+    from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice1 as slice1
+    from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice2 as slice2
+    frozen = {1: slice1, 2: slice2}[revision]
     physical = _reserved(physical)
+    image = XbeImage(physical)
     bank, = (r for r in space.layout(physical)["allocations"] if r["owner"] == qb.OWNER)
     sim, data = simulator._allocations(physical)
     addresses = (bank["va"], sim["va"], data["va"], qb._lineup_va(physical))
-    marker = struct.pack("<8sIII", b"QBMEDv1\0", 1 if mode == "realistic" else 2, rate, 0)
-    body = frozen.bank_bytes(XbeImage(physical).read, *addresses, rate=rate, marker=marker)
-    edits = (*frozen.edits(*addresses, rate=rate), ("bank", bank["va"], b"\xcc" * bank["size"], body))
+    marker = struct.pack("<8sIII", b"QBMEDv%d\0" % revision, 1 if mode == "realistic" else 2, rate, 0)
+    body = frozen.bank_bytes(image.read, *addresses, rate=rate, marker=marker)
+    extra = {}
+    if revision == 2:
+        cave, = (r for r in space.layout(physical)["allocations"] if r["owner"] == running_backs.OWNER)
+        extra["rb_va"] = None if image.read(cave["va"], cave["size"]) == b"\xcc" * cave["size"] else cave["va"]
+    edits = (*frozen.edits(*addresses, rate=rate, **extra), ("bank", bank["va"], b"\xcc" * bank["size"], body))
     return qb._transform(physical, edits, restoring=False)
+
+
+def _slice1_install(physical, mode, rate):
+    return _older_install(physical, mode, rate, 1)
 
 
 def _units(plan):
@@ -177,7 +192,7 @@ class _BuildPath(unittest.TestCase):
             "hair": lambda x: faces.apply_hair(x)[0],
             "toss": lambda x: toss.apply(x)[0],
             "cards": lambda x: cards.apply(x)[0],
-            # Build's own step: the installer, the written-file readback and _verify_sim_qb_injuries (revision 2).
+            # Build's own step: the installer, the written-file readback and _verify_sim_qb_injuries (revision 3).
             "option": through_build(lambda t: mod_build._apply_sim_qb_injuries(plan, t, receipt(), quiet)),
         }
 
@@ -192,7 +207,7 @@ class _BuildPath(unittest.TestCase):
         return current
 
     def check_orders(self, start, plan, orders=ORDERS):
-        """Every order: fresh slice 2, the empty reservation only, and a slice 1 install upgraded in place."""
+        """Every order: fresh revision 3, the empty reservation only, and slice 1 and 2 installs upgraded in place."""
         units = _units(plan)
         self.steps = self.studio_steps(plan)
         self.assertEqual(running_backs.status(start), "applied")
@@ -201,9 +216,11 @@ class _BuildPath(unittest.TestCase):
             with self.subTest(order=label):
                 fresh = self.run_order(start, order, self.steps["option"])
                 blank = self.run_order(start, order, _reserved)
-                old = self.run_order(start, order, lambda x: _slice1_install(x, plan.sim_qb_injuries, units))
+                older = {revision: self.run_order(start, order, lambda x, r=revision: _older_install(
+                    x, plan.sim_qb_injuries, units, r)) for revision in (1, 2)}
                 self.assertEqual(_rows(fresh), _rows(blank))
-                self.assertEqual(_rows(old), _rows(blank))
+                for old in older.values():
+                    self.assertEqual(_rows(old), _rows(blank))
                 self.assertEqual(_weekly(fresh), GAME_TAIL if units else _running_back_jump(fresh))
                 self.assertEqual(_weekly(blank), _running_back_jump(blank))
                 # Realistic (or Custom) then Retail: the source plus the empty reservation, byte for byte.
@@ -215,21 +232,26 @@ class _BuildPath(unittest.TestCase):
                     self.assertEqual(reader(fresh), reader(blank), reader.__module__)
                 self.assertEqual(running_backs.status(fresh), "applied")
                 self.assertEqual(simulator.status(fresh), "applied")
-                # A slice 1 install of the same choice is upgraded in place to the fresh bytes.
-                self.assertEqual(_weekly(old), _running_back_jump(old))
-                self.assertEqual(running_backs.status(old), "applied")
-                upgraded, receipt = qb.apply(old, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
-                self.assertEqual(receipt.get("upgraded_from"), "slice1")
-                self.assertEqual(upgraded, fresh)
+                # Slice 1 and slice 2 installs of the same choice are upgraded in place to the fresh bytes. Slice 3
+                # writes other bank bytes than slice 2 at every rate (its piece and tables), the same rows and sites.
+                self.assertNotEqual(older[2], fresh)
+                self.assertEqual(_weekly(older[1]), _running_back_jump(older[1]))
+                self.assertEqual(_weekly(older[2]), _weekly(fresh))
+                for revision, old in older.items():
+                    self.assertEqual(running_backs.status(old), "applied")
+                    upgraded, receipt = qb.apply(old, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
+                    self.assertEqual(receipt.get("upgraded_from"), f"slice{revision}")
+                    self.assertEqual(upgraded, fresh)
+                    self.assertEqual(qb.apply(old, "retail")[0], blank)
+                    self.assertEqual(qb.read_settings(old).get("revision"), revision)
                 settings = qb.read_settings(fresh)
                 self.assertEqual((settings["status"], settings["mode"], settings.get("revision"),
-                                  settings.get("positions")), ("applied", plan.sim_qb_injuries, 2, units > 0))
+                                  settings.get("positions")), ("applied", plan.sim_qb_injuries, 3, units > 0))
                 self.assertEqual(round(settings["custom_rate"] * 1000), units)
-                self.assertEqual(qb.read_settings(old).get("revision"), 1)
-                self.assertEqual(qb.apply(old, "retail")[0], blank)
                 self.assertEqual(qb.apply(restored, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)[0], fresh)
                 finals[label] = fresh
-                self.record(f"{plan.sim_qb_injuries} {units} / {label}", option=fresh, retail=blank, slice1=old)
+                self.record(f"{plan.sim_qb_injuries} {units} / {label}", option=fresh, retail=blank, slice1=older[1],
+                            slice2=older[2])
         # The option's position among the late steps never changes the result (only the other appends may).
         same = [finals[label] for label, order in orders if label in finals and [s for s in order if s != "option"]
                 == [s for s in ORDERS[0][1] if s != "option"]]
@@ -344,16 +366,20 @@ class InPlaceUpgrades(_BuildPath):
                 self.assertEqual(qb.apply(fresh, "retail")[0], blank)
                 for reader in (running_backs.status, simulator.status, lineup.read_settings):
                     self.assertEqual(reader(fresh), reader(blank), reader.__module__)
-                # The same route as slice 1 wrote it, upgraded in place.
-                old = _slice1_install(simulator.apply(without)[0], mode, units)
-                upgraded, receipt = qb.apply(old, mode, custom_rate=rate)
-                self.assertEqual(receipt.get("upgraded_from"), "slice1")
-                self.assertEqual(upgraded, fresh)
+                # The same route as slices 1 and 2 wrote it, upgraded in place; Retail from each.
+                older = {revision: _older_install(simulator.apply(without)[0], mode, units, revision)
+                         for revision in (1, 2)}
+                self.assertNotEqual(older[2], fresh)
+                for revision, old in older.items():
+                    upgraded, receipt = qb.apply(old, mode, custom_rate=rate)
+                    self.assertEqual(receipt.get("upgraded_from"), f"slice{revision}")
+                    self.assertEqual(upgraded, fresh)
+                    self.assertEqual(qb.apply(old, "retail")[0], blank)
+                    self.assertEqual(qb.read_settings(old).get("revision"), revision)
                 settings = qb.read_settings(fresh)
                 self.assertEqual((settings["mode"], settings.get("revision"), settings.get("positions")),
-                                 (mode, 2, units > 0))
-                self.assertEqual(qb.read_settings(old).get("revision"), 1)
-                self.record(f"update-v09 {mode} {units}", option=fresh, retail=blank, slice1=old)
+                                 (mode, 3, units > 0))
+                self.record(f"update-v09 {mode} {units}", option=fresh, retail=blank, slice1=older[1], slice2=older[2])
 
     def test_released_v09_late_steps_in_every_order(self):
         path = self.private_path("NFL2K5_V09_XISO")
@@ -381,15 +407,20 @@ class InPlaceUpgrades(_BuildPath):
         self.assertEqual(receipt.get("upgraded_from"), "slice1")
         settings = qb.read_settings(source)
         self.assertEqual((settings["mode"], settings.get("revision"), settings.get("positions")), ("realistic", 1, False))
-        self.assertEqual(qb.read_settings(upgraded).get("revision"), 2)
+        self.assertEqual(qb.read_settings(upgraded).get("revision"), 3)
         self.assertEqual(qb.apply(retail, "realistic")[0], upgraded)
+        # A slice 2 install on the same executable upgrades to the same bytes.
+        slice2 = _older_install(retail, "realistic", 310, 2)
+        self.assertEqual(qb.read_settings(slice2).get("revision"), 2)
+        self.assertEqual(qb.apply(slice2, "realistic")[0], upgraded)
+        self.assertEqual(qb.apply(slice2, "retail")[0], retail)
         self.assertEqual(qb.apply(upgraded, "realistic")[0], upgraded)
         self.assertEqual(qb.apply(upgraded, "retail")[0], retail)
         self.assertEqual((_weekly(source), _weekly(upgraded), _weekly(retail)),
                          (_running_back_jump(source), GAME_TAIL, _running_back_jump(retail)))
         self.assertEqual(_rows(upgraded), _rows(source))
         self.assertEqual(_bank(upgraded), BANK)
-        self.record("Studio slice 1 9f435b38 upgraded", option=upgraded, retail=retail, slice1=source)
+        self.record("Studio slice 1 9f435b38 upgraded", option=upgraded, retail=retail, slice1=source, slice2=slice2)
         for payload in (source, upgraded, retail):
             self.assertEqual(running_backs.status(payload), "applied")
             self.assertEqual(simulator.status(payload), "applied")
