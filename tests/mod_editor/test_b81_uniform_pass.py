@@ -611,7 +611,7 @@ class BuildHook(unittest.TestCase):
             self.assertIn(step, mod_build.OPTIONAL_STEPS)
             self.assertIn(step, build_steps.STEP_LABELS)
         source = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
-        helmets = source.index("apply_helmets_b81(target)")
+        helmets = source.index("apply_helmets_b81(target, ")
         kits = source.index("apply_uniforms_b81(target)")
         digits = source.index("apply_digits_b81(target)")
         self.assertLess(helmets, kits)

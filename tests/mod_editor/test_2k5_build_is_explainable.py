@@ -261,7 +261,7 @@ class DefenseBuildOrderingTests(unittest.TestCase):
                                                             apply_nameplates=lambda target: {"state": "other_uniform"},
                                                             # beta 81: the helmet cleanup and the uniform pass, the last
                                                             # two uniform writers (a stand-in disc holds none of their kits)
-                                                            apply_helmets_b81=lambda target: {"state": "other_uniform"},
+                                                            apply_helmets_b81=lambda target, retail=None: {"state": "other_uniform"},
                                                             apply_uniforms_b81=lambda target: {"state": "other_uniform"},
                                                             apply_sideline=lambda target: {"state": "other_uniform"},
                                                             # beta 81 R54: the far-player atlas compose rules

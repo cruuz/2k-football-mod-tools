@@ -15,8 +15,10 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
 import b81_helmet_cleanup as hc  # noqa: E402
 from mod_editor.core import build_steps, mod_build, nfl2k5_kit_fixes_2026 as kf  # noqa: E402
+from mod_editor.core import nfl2k5_kit_rule_fill as fill  # noqa: E402
 
 DISC = Path(os.environ.get("B81_ART_DISC", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.9 (2026-11-05).xiso.iso"))
+RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
 #: The texel the modern shell's vents, seams and cuts sample on every team's helmet02 (LOGO_helmet_C detail parts,
 #: data/nfl2k5_modern_helmets/geometry.json): it must stay the near-black ear-hole texel, or the modern vents vanish.
 DETAIL_TEXEL = (70, 220)
@@ -54,13 +56,39 @@ def rows():
 
 
 def run_texels(row):
-    """Every (x, y) a row repaints."""
+    """Every (x, y) a row's runs repaint (a row converted to a fill rule has none: see rule_reach)."""
     out = set()
     for op in row["ops"]:
-        for y, x0, colours in op["rows"]:
+        for y, x0, colours in op.get("rows", ()):
             for i in range(len(colours) // 6):
                 out.add((x0 + i, y))
     return out
+
+
+def is_rule(row):
+    """b81 retail-free (fill family): the row repaints by a build-time fill rule, not by stored runs."""
+    return [op["op"] for op in row["ops"]] == ["rule"]
+
+
+def rule_boxes(spec):
+    """Every box a mask rule names."""
+    if isinstance(spec, dict):
+        return ([spec["box"]] if "box" in spec else []) + [b for v in spec.values() for b in rule_boxes(v)]
+    if isinstance(spec, list):
+        return [b for v in spec for b in rule_boxes(v)]
+    return []
+
+
+def rule_reach(op):
+    """Every (x, y) a helmet fill rule can repaint: its vents' boxes grown by the vent growth, the flag's box grown by
+    its ring, and the boxes of its old-ink and old-square masks."""
+    boxes = [(x0 - 2, y0 - 2, x1 + 2, y1 + 2) for (x0, y0, x1, y1), how in zip(fill.VENT_BOXES, op.get("vents", ""))
+             if how != "-"]
+    if op.get("flag"):
+        x0, y0, x1, y1 = fill.FLAG_BOX
+        boxes.append((x0 - 3, y0 - 3, x1 + 3, y1 + 3))
+    boxes += [tuple(b) for key in ("old", "boxes") for b in rule_boxes(op.get(key))]
+    return {(x, y) for x0, y0, x1, y1 in boxes for x in range(x0, x1) for y in range(y0, y1)}
 
 
 class Document(unittest.TestCase):
@@ -83,9 +111,13 @@ class Document(unittest.TestCase):
             self.assertGreater(row["length"], 32)
             self.assertGreater(row["resource_size"], row["offset"] + row["length"] - 1)
             self.assertTrue(row["note"])
-            self.assertEqual([op["op"] for op in row["ops"]], ["runs"])
-            self.assertNotIn("color", row["ops"][0])          # the compile must ask the palette for nothing new
-            if row["texture"] == "splayer":
+            self.assertIn([op["op"] for op in row["ops"]], (["runs"], ["rule"]))
+            self.assertNotIn("color", json.dumps(row["ops"]))  # the compile must ask the palette for nothing new
+            if is_rule(row):
+                # b81 retail-free: the cleanup is a build-time fill rule over the blank retail shell's vents
+                self.assertEqual(row["ops"][0]["module"], "fill")
+                self.assertIn(row["ops"][0]["hardware"], row["donors"])
+            elif row["texture"] == "splayer":
                 # the patch brings colours the atlas palette only has nearby, so a few texels end as they were
                 self.assertTrue(0 < row["texels"] <= len(run_texels(row)))
             else:
@@ -110,7 +142,7 @@ class Document(unittest.TestCase):
     def test_runs_stay_inside_the_texture_and_are_whole_colours(self):
         for row in rows():
             height = row["size"][1]
-            for y, x0, colours in row["ops"][0]["rows"]:
+            for y, x0, colours in row["ops"][0].get("rows", ()):
                 self.assertEqual(len(colours) % 6, 0)
                 self.assertGreater(len(colours), 0)
                 bytes.fromhex(colours)
@@ -138,10 +170,15 @@ class Document(unittest.TestCase):
         for row in rows():
             if row["texture"] == "helmet02":
                 self.assertFalse(run_texels(row) & guard, row["selector"])
+                if is_rule(row):
+                    self.assertFalse(rule_reach(row["ops"][0]) & guard, row["selector"])
 
     def test_every_revolution_row_repaints_the_painted_vents(self):
         for row in rows():
             if row["texture"] != "helmet02" or f"helmet02_{row['selector']}" in NEW_ART:
+                continue
+            if is_rule(row):
+                self.assertGreaterEqual(sum(how != "-" for how in row["ops"][0]["vents"]), 4, row["selector"])
                 continue
             texels = run_texels(row)
             hit = sum(any(x0 <= x < x1 and y0 <= y < y1 for x, y in texels) for x0, y0, x1, y1 in VENT_BOXES)
@@ -225,7 +262,8 @@ class Document(unittest.TestCase):
     def test_the_jets_white_throwback_loses_the_top_of_the_2004_oval(self):
         by = {(r["selector"], r["texture"]): r for r in rows()}
         for selector in ("19H7", "19A7"):
-            texels = run_texels(by[(selector, "helmet02")])
+            row = by[(selector, "helmet02")]
+            texels = rule_reach(row["ops"][0]) if is_rule(row) else run_texels(row)
             for box in ((50, 147, 100, 161), (46, 93, 100, 107)):
                 inside = sum(1 for x, y in texels if box[0] <= x < box[2] and box[1] <= y < box[3])
                 self.assertGreater(inside, 100, (selector, box))
@@ -300,7 +338,7 @@ class BuildHook(unittest.TestCase):
         self.assertIn("kit_fixes_2026_b81", mod_build.OPTIONAL_STEPS)
         self.assertIn("kit_fixes_2026_b81", build_steps.STEP_LABELS)
         source = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
-        at = source.index("apply_helmets_b81(target)")
+        at = source.index("apply_helmets_b81(target, ")
         for earlier in ("kit_fixes.apply_sideline(target)", "moment_kits.apply_to_image(target",
                         "classic.apply_to_image(target, retail)", "scans.apply_to_image(target, scans_source)"):
             self.assertLess(source.index(earlier), at, earlier)
@@ -343,7 +381,20 @@ class RealDisc(unittest.TestCase):
             chunk = kf._chunk_for(raw, row["chunk"])
             span = raw[chunk.offset:chunk.end_offset]
             self.assertEqual(hc.sha(span), row["before_sha256"], selector)
-            new, detail = kf.compile_texture(span, row)
+            donors = {}
+            for key in row.get("donors", {}):
+                if key.startswith(kf.RETAIL_DONOR):
+                    if not RETAIL.is_file():
+                        self.skipTest("the retail disc is not on this machine")
+                    sel, at = key[len(kf.RETAIL_DONOR):].split(":")
+                    package = kf.read_kits(RETAIL, [sel])[sel]
+                else:
+                    sel, at = key.split(":")
+                    package = hc.read_kits(DISC, [sel])[sel]
+                piece = kf._chunk_for(package, int(at))
+                self.assertEqual(hc.sha(package[piece.offset:piece.end_offset]), row["donors"][key], key)
+                donors[key] = kf.texture_rgba(package[piece.offset:piece.end_offset])
+            new, detail = kf.compile_texture(span, row, donors)
             self.assertEqual(hc.sha(new), row["after_sha256"], selector)
             self.assertEqual(detail["palette_slots_added"], [])
             self.assertEqual(detail["merged_twin_slots"], 0)
@@ -352,11 +403,11 @@ class RealDisc(unittest.TestCase):
             self.assertTrue((palette_before == palette_after).all(), selector)
             self.assertTrue((before[..., 3] == after[..., 3]).all(), selector)
             changed = {(int(x), int(y)) for y, x in np.argwhere((before != after).any(axis=2))}
-            self.assertEqual(changed, run_texels(row) & changed)
+            self.assertEqual(changed, (rule_reach(row["ops"][0]) if is_rule(row) else run_texels(row)) & changed)
             self.assertEqual(len(changed), row["texels"], selector)
             # the replay on the cleaned package is a no-op
             again = raw[:chunk.offset] + new + raw[chunk.end_offset:]
-            replacements, receipt = kf.compile_resource(selector, again, strict=False,
+            replacements, receipt = kf.compile_resource(selector, again, strict=False, retail_kits={},
                                                         document=dict(textures=[r for r in rows() if r["selector"] == selector
                                                                                 and r["texture"] == texture]))
             self.assertEqual((replacements, receipt["state"]), ([], "applied"))
