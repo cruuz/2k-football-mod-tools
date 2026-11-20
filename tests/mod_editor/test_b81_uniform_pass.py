@@ -38,6 +38,12 @@ REDRAWN += ("23H0", "23A0", "05H0", "05A0", "19H0", "19A0", "29H0", "29A0", "11H
 # Rush, Jets black and White Out, Seahawks 26A4 and 26H4, Browns brown, Texans Battle Red
 REDRAWN += ("08A5", "08A6", "08H6", "09A2", "09H2", "09A9", "09H9", "10A5", "10H5", "17A1", "17H1", "19A2", "19H2",
             "19A7", "19H7", "26A4", "26H4", "30A3", "30H3", "37A2", "37H2")
+# batch 6 (BATCH6/digits/judged.json): Ravens, every package of the one shape set (per-digit: only the 0 and the 4,
+# measured 14 and 16 percent wide); Raiders road (silver edge 3 to 4 texels -> 1, black strokes heavier)
+RAVENS = ("02A0", "02A2", "02A3", "02H0", "02H2", "02H3")
+REDRAWN += RAVENS + ("20A0",)
+#: sets redrawn digit by digit: the digits each one carries (every other redrawn set carries all ten)
+PER_DIGIT = {selector: (0, 4) for selector in RAVENS}
 #: batch 4 (KITS4): the only jersey rows that repaint beyond the chest strip under the collar
 WHOLE_JERSEY = ("09A9", "09H9", "26H4")
 
@@ -222,8 +228,9 @@ class DigitDocument(unittest.TestCase):
             by.setdefault(row["selector"], set()).add(row["chunk"])
         self.assertEqual(tuple(sorted(by)), tuple(sorted(REDRAWN)))
         for selector, chunks in by.items():
-            self.assertEqual({c for c in chunks if c < 23}, set(range(13, 23)), selector)
-            self.assertIn({c for c in chunks if c >= 33}, (set(), set(range(33, 43))), selector)
+            digits = PER_DIGIT.get(selector, range(10))
+            self.assertEqual({c for c in chunks if c < 23}, {13 + d for d in digits}, selector)
+            self.assertIn({c for c in chunks if c >= 33}, (set(), {33 + d for d in digits}), selector)
 
     def test_art_is_as_authored_and_in_flat_colours(self):
         from mod_editor.core.nfl2k5_digit_art import REGISTRATION_KEY, registration_mode
@@ -263,7 +270,9 @@ class DigitDocument(unittest.TestCase):
                                 ("30H0", 35), ("30A0", 35), ("08A5", 40), ("08A6", 40), ("08H6", 40), ("09A2", 37),
                                 ("09H2", 37), ("09A9", 40), ("09H9", 40), ("10A5", 38), ("10H5", 38), ("17A1", 37), ("17H1", 37),
                                 ("19A2", 38), ("19H2", 38), ("19A7", 38), ("19H7", 38), ("26A4", 38), ("26H4", 38), ("30A3", 35),
-                                ("30H3", 35), ("37A2", 40), ("37H2", 40)):
+                                ("30H3", 35), ("37A2", 40), ("37H2", 40),
+                                # batch 6: the Ravens 0 at 33 (real 0.554; the released 37) and the Raiders road as released
+                                ("02H0", 33), ("02A0", 33), ("02A2", 33), ("02A3", 33), ("02H2", 33), ("02H3", 33), ("20A0", 37)):
             solid = png_rgba(folder / by[(selector, 13)])[0][..., 3] > 127
             cols = np.flatnonzero(solid.any(axis=0))
             self.assertLessEqual(abs(int(cols.max() - cols.min() + 1) - width), 1, selector)
@@ -630,7 +639,8 @@ class RealDisc(unittest.TestCase):
             replacements, receipt = gf.compile_resource(selector, self.as_built(selector), strict=True, document=document)
             digits = [p for p in receipt["parts"] if p["kind"] == "digit_png"]     # (a kit may also carry nameplate rows)
             self.assertEqual(len(digits), len([r for r in digit_rows() if r["selector"] == selector]), selector)
-            self.assertIn(len(digits), (10, 20), selector)                        # jersey digits, and arm digits where drawn
+            drawn = len(PER_DIGIT.get(selector, range(10)))
+            self.assertIn(len(digits), (drawn, 2 * drawn), selector)              # jersey digits, and arm digits where drawn
             self.assertEqual(len(replacements), len([r for r in document["textures"] if r["selector"] == selector]))
             self.assertEqual(receipt["skipped_textures"], [])
 

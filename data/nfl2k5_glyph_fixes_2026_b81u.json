@@ -70,9 +70,8 @@
    "refs/uniforms_2026/ATL/2026-10-11_BAL_primary-home/jersey_back_0255.jpg (95, 53, 0), jersey_back_1514.jpg (14), helmet_back_1907.jpg (1), jersey_back_1943.jpg (5); 2026-09-24_GB_primary-away/jersey_front_1011.jpg (7), helmet_front_0856.jpg (3), helmet_back_0838.jpg (5)"
   ],
   "BAL": [
-   "refs/uniforms_2026/BAL/2026-10-04_TEN_primary-home/jersey_front_0300.jpg (80) and jersey_front_0550.jpg (89), helmet_back_0707.jpg (14): white Ravens numerals with a thin dark edge on the purple home jersey, whole stroke about 0.18 of the height",
-   "bump/refs/BAL/BAL_BAL_010_m05acogk8dnxavv5kovj.jpg (89, 70, 64), BAL_BAL_018_mphigwu8hdrbeevbswdg.jpg (2), BAL_BAL_025_ts1wtc1fcrmfalhczn1m.jpg (6), baltimoreravens.com 2026-11-16 (Darkness): white numerals with a thin purple outline, the 2 0.63 wide over height, the 4 with a tall triangular counter",
-   "refs/uniforms_2026/BAL/2026-09-20_NO_alternate-white-noise/helmet_front_0120.jpg (22), jersey_back_1042.jpg (17): White Noise numerals plain purple, no outline"
+   "BATCH6 measurement (digits/BAL/pooled.json; judged.json BAL/pooled6): 15 real digits of 10 players on 2026 club game photographs (home purple weeks 4 and 7, road white weeks 2 and 9): set median width over height 0.533; per digit 0: 0.484, 0.554, 0.561 (median 0.554); 4: 0.514, 0.533; 3: 0.432 to 0.534 (median 0.467)",
+   "bump/refs/BAL/BAL_b6_NUM_BAL_HOME_1_BAL_2026-10-04_40.jpg (40), BAL_b6_NUM_BAL_HOME_12_BAL_2026-10-25_60-64-71.jpg (60, 64), BAL_b6_NUM_BAL_HOME_4_BAL_2026-10-04_33.jpg (33), BAL_b6_NUM_BAL_HOME_5_BAL_2026-10-04_4.jpg (4), BAL_b6_NUM_BAL_ROAD_3_BAL_2026-11-01_0.jpg (0)"
   ],
   "CHI": [
    "real median width over height 0.515 from 7 digits of 6 players (2026 club game photographs; BATCH5/digits/judged.json CHI/pooled); game 0.456",
@@ -166,6 +165,10 @@
    "/media/noah/Storage/2K5-project/b81-uniforms/dl/batch5/h1/LAR_w9/full/008_fqnj63r3jtaclnqilxq2.jpg",
    "/media/noah/Storage/2K5-project/b81-uniforms/dl/batch5/h1/LAR_w9/full/010_bm8cfgksvdydexkpuqfr.jpg",
    "/media/noah/Storage/2K5-project/b81-uniforms/dl/digB/LARa/full/015_ysnn541kaore5jgkhtuc.jpg"
+  ],
+  "LV": [
+   "BATCH6 measurement (digits/LV/pooled_road6.json; judged.json LV/road6_blackfill): 7 real digits of 5 players, white road jersey with black numerals (week 8 at NYJ, week 9 at SF): width over height 0.605 (game 0.625, inside the rule); black stroke 0.17 of the height against the game's 0.105; silver edge about 2.2 percent of the height (1.4 texels at 62 rows) against the game's 3 to 4 texel ring",
+   "bump/refs/LV/LV_b6_NUM_LV_ROAD_3_LV_2026-11-01_98-2-23.jpg (98, 2, 23), LV_b6_NUM_LV_ROAD_5_LV_2026-11-08_89.jpg (89), LV_b6_NUM_LV_ROAD_6_LV_2026-11-08_98.jpg (98)"
   ],
   "MIA": [
    "miamidolphins.com photo gallery 2026-10-25 at NYJ (static.clubs.nfl.com dolphins ids ziwxus5fiwitmifpg8gc: home 85; i3pigbymnr6a6ldp0c4t: home 7; g8y89fpw3p0x3cyqemcc: home 2 and 6; hyjyfwict7jqnupexrn5: home 44 and 92): white block numerals with rounded outer corners and rectangular counters, one orange outline, about 0.59 to 0.65 wide over height on the body",
@@ -1857,6 +1860,278 @@
    ]
   },
   {
+   "after_sha256": "8991f4b86ddee696521aad053f28774c3354982bcdc15f7e263e0607c7aed999",
+   "before_sha256": "a1b4c01e749b9c9970180fd91e926b7dcede8a66517675a4d6cf82c3c1dc95c1",
+   "chunk": 13,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 3280,
+   "note": "road white digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 449904,
+   "png": "BAL_02A0_digit_arm_0.png",
+   "png_sha256": "68812b84079d06eac339e4907da96e91f232d3dec8baccf8a99e9837035af8d1",
+   "resource_size": 1564944,
+   "selector": "02A0",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "e86cccebf32e27b67aeb79143214fee0e148fb2e4dd97d83f7f03dafe5ca30a5",
+   "before_sha256": "52ee3f3031b3d7d2c2e60cbf518a9118a9d6e18fb8629ab94f9ab64daea72082",
+   "chunk": 17,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 2640,
+   "note": "road white digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 460400,
+   "png": "BAL_02A0_digit_arm_4.png",
+   "png_sha256": "2b5d29dd4c399fe25a27342c2248b3f07ce1c10aa338683646660bf0f9ca1489",
+   "resource_size": 1564944,
+   "selector": "02A0",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "825a9a856b2ac8065ef1e98452db88904b451e931b2e63377e168e0af3a2a796",
+   "before_sha256": "f986486585b33c3568c863e1a8845c9aae04c465c8c96dd1f54121dd21f0abb1",
+   "chunk": 33,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 3296,
+   "note": "road white digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 495632,
+   "png": "BAL_02A0_digit_arm_0.png",
+   "png_sha256": "68812b84079d06eac339e4907da96e91f232d3dec8baccf8a99e9837035af8d1",
+   "resource_size": 1564944,
+   "selector": "02A0",
+   "texture": "an48"
+  },
+  {
+   "after_sha256": "f3827844a05b87b1df0c00fe03447958a3660a37088819c76f3bafcf797cc924",
+   "before_sha256": "d2dc6f6b318d78e72f6725f99229a784317715917c7675e5e2023a571ff834d6",
+   "chunk": 37,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 2640,
+   "note": "road white digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 506176,
+   "png": "BAL_02A0_digit_arm_4.png",
+   "png_sha256": "2b5d29dd4c399fe25a27342c2248b3f07ce1c10aa338683646660bf0f9ca1489",
+   "resource_size": 1564944,
+   "selector": "02A0",
+   "texture": "an52"
+  },
+  {
+   "after_sha256": "8991f4b86ddee696521aad053f28774c3354982bcdc15f7e263e0607c7aed999",
+   "before_sha256": "a1b4c01e749b9c9970180fd91e926b7dcede8a66517675a4d6cf82c3c1dc95c1",
+   "chunk": 13,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 3280,
+   "note": "White Noise digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 446192,
+   "png": "BAL_02A0_digit_arm_0.png",
+   "png_sha256": "68812b84079d06eac339e4907da96e91f232d3dec8baccf8a99e9837035af8d1",
+   "resource_size": 1560672,
+   "selector": "02A2",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "e86cccebf32e27b67aeb79143214fee0e148fb2e4dd97d83f7f03dafe5ca30a5",
+   "before_sha256": "52ee3f3031b3d7d2c2e60cbf518a9118a9d6e18fb8629ab94f9ab64daea72082",
+   "chunk": 17,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 2640,
+   "note": "White Noise digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 456688,
+   "png": "BAL_02A0_digit_arm_4.png",
+   "png_sha256": "2b5d29dd4c399fe25a27342c2248b3f07ce1c10aa338683646660bf0f9ca1489",
+   "resource_size": 1560672,
+   "selector": "02A2",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "825a9a856b2ac8065ef1e98452db88904b451e931b2e63377e168e0af3a2a796",
+   "before_sha256": "f986486585b33c3568c863e1a8845c9aae04c465c8c96dd1f54121dd21f0abb1",
+   "chunk": 33,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 3296,
+   "note": "White Noise digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 491920,
+   "png": "BAL_02A0_digit_arm_0.png",
+   "png_sha256": "68812b84079d06eac339e4907da96e91f232d3dec8baccf8a99e9837035af8d1",
+   "resource_size": 1560672,
+   "selector": "02A2",
+   "texture": "an48"
+  },
+  {
+   "after_sha256": "f3827844a05b87b1df0c00fe03447958a3660a37088819c76f3bafcf797cc924",
+   "before_sha256": "d2dc6f6b318d78e72f6725f99229a784317715917c7675e5e2023a571ff834d6",
+   "chunk": 37,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 2640,
+   "note": "White Noise digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 502464,
+   "png": "BAL_02A0_digit_arm_4.png",
+   "png_sha256": "2b5d29dd4c399fe25a27342c2248b3f07ce1c10aa338683646660bf0f9ca1489",
+   "resource_size": 1560672,
+   "selector": "02A2",
+   "texture": "an52"
+  },
+  {
+   "after_sha256": "f929e6d12be9a9866b24753b6f1855aba959c40eb96e88dc339dd4963b62b260",
+   "before_sha256": "187a63bb6bb0b4b5851ad2632338c8ab5e2fe6f15224e5022ba90de4b9aa1960",
+   "chunk": 13,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 3104,
+   "note": "black alternate (road) digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 425264,
+   "png": "BAL_02A3_digit_arm_0.png",
+   "png_sha256": "5fd5f6d4442793a37fe13390a76c2e36ac86cc471dab1f31450cb62bcd79ac9d",
+   "resource_size": 1497536,
+   "selector": "02A3",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "f70aa2e8d8dc05d276d91fed2c2b854095a9bf4a52d13955b99f915578d8e345",
+   "before_sha256": "cdfca9abd70bc691cc25e94d43ae998e93ef6cce580d032e152ef806e676fac8",
+   "chunk": 17,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 2400,
+   "note": "black alternate (road) digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 434976,
+   "png": "BAL_02A3_digit_arm_4.png",
+   "png_sha256": "993f0016ad9dc14fc3e49eb6ca603c14a9c34b72887d04f63761b358ced0be41",
+   "resource_size": 1497536,
+   "selector": "02A3",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "457505487afe966ffa5f7dd87775a6d4529f4f07f3d2f0f870c203ce1428e514",
+   "before_sha256": "70add7c02eda649967da77c941d93d8c4272bfbd3828f6920f99521d6d6d41bd",
+   "chunk": 33,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 3120,
+   "note": "black alternate (road) digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 469552,
+   "png": "BAL_02A3_digit_arm_0.png",
+   "png_sha256": "5fd5f6d4442793a37fe13390a76c2e36ac86cc471dab1f31450cb62bcd79ac9d",
+   "resource_size": 1497536,
+   "selector": "02A3",
+   "texture": "an48"
+  },
+  {
+   "after_sha256": "66d9de498e4aa25e0f7a079e88cfde7a16fc46bc9b198d19e8334a94c5f7e943",
+   "before_sha256": "e50e3e2fdbed02fac9fe61d66a68e2fd0cc7ea9fb528fde28996c119101dcd2a",
+   "chunk": 37,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 2400,
+   "note": "black alternate (road) digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 479296,
+   "png": "BAL_02A3_digit_arm_4.png",
+   "png_sha256": "993f0016ad9dc14fc3e49eb6ca603c14a9c34b72887d04f63761b358ced0be41",
+   "resource_size": 1497536,
+   "selector": "02A3",
+   "texture": "an52"
+  },
+  {
+   "after_sha256": "dd60971449dd84f9059a7dcbff58561feb05986f3367dfb698d71e114d27e6c7",
+   "before_sha256": "ac79abed6fd25c0cc369238dfb6db3839f4ec16ae0751523c843fe06a9297f85",
+   "chunk": 13,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 3184,
+   "note": "home purple digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 437536,
+   "png": "BAL_02H0_digit_arm_0.png",
+   "png_sha256": "4273e976a1cfea4e20a14784056a9c72be3cd0b4ef0f0c509ad66754ee0f71ae",
+   "resource_size": 1549744,
+   "selector": "02H0",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "a7b9a8d9cdd88a0abcaa6a829bdf32216f96ffda563fa49236b420cb3836eba4",
+   "before_sha256": "73f5224654ea5e39fe149067a84a7568b9a25df83a2cb81daa0aa07797fe0256",
+   "chunk": 17,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 2624,
+   "note": "home purple digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 447472,
+   "png": "BAL_02H0_digit_arm_4.png",
+   "png_sha256": "fef24d9ad4a93f017e4f198810f94a1fede25d0f174381e5a5008ccec9cdcc58",
+   "resource_size": 1549744,
+   "selector": "02H0",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "1ae948bb5c402aa9aa1e76ff5510d56710fd41b371a2420c453e77d40a7df20e",
+   "before_sha256": "58592d1a930c47b1b28707131078826dd167021622d9dcbf2a8ae3e35e07a59f",
+   "chunk": 33,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 3184,
+   "note": "home purple digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 482656,
+   "png": "BAL_02H0_digit_arm_0.png",
+   "png_sha256": "4273e976a1cfea4e20a14784056a9c72be3cd0b4ef0f0c509ad66754ee0f71ae",
+   "resource_size": 1549744,
+   "selector": "02H0",
+   "texture": "an48"
+  },
+  {
+   "after_sha256": "3fbcecbb7768ae66f04bdfb0737a23943a3694a5d98a6476a0fbeac83ffb402e",
+   "before_sha256": "1d9215505df493fc320f9a937bb4846be257efcfd310bd64fedebbf868180887",
+   "chunk": 37,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 2624,
+   "note": "home purple digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 492608,
+   "png": "BAL_02H0_digit_arm_4.png",
+   "png_sha256": "fef24d9ad4a93f017e4f198810f94a1fede25d0f174381e5a5008ccec9cdcc58",
+   "resource_size": 1549744,
+   "selector": "02H0",
+   "texture": "an52"
+  },
+  {
    "after_sha256": "f0daf3c971ae3ea7ba1e5a81e0fab40b58d600dde3132240b7fb003c080515d1",
    "before_sha256": "45a9260dd9a6e67f45ed3fa9e865aa2781ea7a93ecbf9b0c3fb95c15591e23e5",
    "chunk": 43,
@@ -1930,6 +2205,74 @@
    ]
   },
   {
+   "after_sha256": "8c677f0e65af0f4edeb137f784adf2930e5d21e44ee2e82f4287f0a31291f0bb",
+   "before_sha256": "6f980ab4ca7f0ab0d653931985515e0781eeb4823637712805e919274af79c9e",
+   "chunk": 13,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 3184,
+   "note": "gold-numeral alternate digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 434352,
+   "png": "BAL_02H2_digit_jersey_0.png",
+   "png_sha256": "126241816a5dad969e860de0e7a4a967c8e7d96d0cc2373d7f55d9953e6ba925",
+   "resource_size": 1545552,
+   "selector": "02H2",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "167ca499fd62d96c8a935ceda0dbdd0481f3fedf8ff67789c46db5c0f7c55225",
+   "before_sha256": "922f954b941ff53a4a046e8b14cec452c84cd8057e366ea1d97dfa5ac2561eb2",
+   "chunk": 17,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 2624,
+   "note": "gold-numeral alternate digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 444288,
+   "png": "BAL_02H2_digit_jersey_4.png",
+   "png_sha256": "85f761b9ddb264beebc5fb377ef6ee224f85e07bfd4f52b9c923ceca050e8baf",
+   "resource_size": 1545552,
+   "selector": "02H2",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "c442a444e5184462012c0feda429c4c9bda7a672de34627cf6ac0706af2337cb",
+   "before_sha256": "2d1140d24dc1abf957b946d9c13bf8a21b213092efa8deaa4255b0baf95ede2f",
+   "chunk": 33,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 3184,
+   "note": "gold-numeral alternate digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 479472,
+   "png": "BAL_02H2_digit_arm_0.png",
+   "png_sha256": "0d2ef7af04f57c10c78ad77e7f864e0909e4b350afc484e86ac80755067399da",
+   "resource_size": 1545552,
+   "selector": "02H2",
+   "texture": "an48"
+  },
+  {
+   "after_sha256": "d069976b0bc19eeb5bf2509352a2381218bc827205761b2ac046d0da259cf838",
+   "before_sha256": "1cae7ddb57671e4001e1ef13b68f00e91e3134e63aa4ba83312747e3e9eb28b5",
+   "chunk": 37,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 2624,
+   "note": "gold-numeral alternate digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 489424,
+   "png": "BAL_02H2_digit_arm_4.png",
+   "png_sha256": "61effb9ecc4676aba3f0076886b3ba87df1c3b2d5c777cfa5947acc124b634dc",
+   "resource_size": 1545552,
+   "selector": "02H2",
+   "texture": "an52"
+  },
+  {
    "after_sha256": "f0daf3c971ae3ea7ba1e5a81e0fab40b58d600dde3132240b7fb003c080515d1",
    "before_sha256": "45a9260dd9a6e67f45ed3fa9e865aa2781ea7a93ecbf9b0c3fb95c15591e23e5",
    "chunk": 43,
@@ -2001,6 +2344,74 @@
     12,
     10
    ]
+  },
+  {
+   "after_sha256": "f929e6d12be9a9866b24753b6f1855aba959c40eb96e88dc339dd4963b62b260",
+   "before_sha256": "187a63bb6bb0b4b5851ad2632338c8ab5e2fe6f15224e5022ba90de4b9aa1960",
+   "chunk": 13,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 3104,
+   "note": "black alternate digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 425264,
+   "png": "BAL_02A3_digit_arm_0.png",
+   "png_sha256": "5fd5f6d4442793a37fe13390a76c2e36ac86cc471dab1f31450cb62bcd79ac9d",
+   "resource_size": 1491632,
+   "selector": "02H3",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "f70aa2e8d8dc05d276d91fed2c2b854095a9bf4a52d13955b99f915578d8e345",
+   "before_sha256": "cdfca9abd70bc691cc25e94d43ae998e93ef6cce580d032e152ef806e676fac8",
+   "chunk": 17,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 2400,
+   "note": "black alternate digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 434976,
+   "png": "BAL_02A3_digit_arm_4.png",
+   "png_sha256": "993f0016ad9dc14fc3e49eb6ca603c14a9c34b72887d04f63761b358ced0be41",
+   "resource_size": 1491632,
+   "selector": "02H3",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "457505487afe966ffa5f7dd87775a6d4529f4f07f3d2f0f870c203ce1428e514",
+   "before_sha256": "70add7c02eda649967da77c941d93d8c4272bfbd3828f6920f99521d6d6d41bd",
+   "chunk": 33,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 3120,
+   "note": "black alternate digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 469552,
+   "png": "BAL_02A3_digit_arm_0.png",
+   "png_sha256": "5fd5f6d4442793a37fe13390a76c2e36ac86cc471dab1f31450cb62bcd79ac9d",
+   "resource_size": 1491632,
+   "selector": "02H3",
+   "texture": "an48"
+  },
+  {
+   "after_sha256": "66d9de498e4aa25e0f7a079e88cfde7a16fc46bc9b198d19e8334a94c5f7e943",
+   "before_sha256": "e50e3e2fdbed02fac9fe61d66a68e2fd0cc7ea9fb528fde28996c119101dcd2a",
+   "chunk": 37,
+   "defects": [
+    "b81u-BAL-digit-0-4-wide"
+   ],
+   "kind": "digit_png",
+   "length": 2400,
+   "note": "black alternate digits: the released Ravens set kept, only its 0 and 4 narrowed to the 2026 photographs (per-digit widths): the 0 from 37 to 33 columns by two whole columns out of each side stroke (counter kept at 8, strokes 13 and 12 against the real 12.7), the 4 from 36 to 31 columns by whole columns through its bar and diagonal; jersey and shoulder digits; rows, colours and the other eight digits as released",
+   "offset": 479296,
+   "png": "BAL_02A3_digit_arm_4.png",
+   "png_sha256": "993f0016ad9dc14fc3e49eb6ca603c14a9c34b72887d04f63761b358ced0be41",
+   "resource_size": 1491632,
+   "selector": "02H3",
+   "texture": "an52"
   },
   {
    "after_sha256": "668679311f40c286aa1e4bc0f3045001b9a57f09b45744d5043c2c813b291e0b",
@@ -13709,6 +14120,346 @@
     12,
     10
    ]
+  },
+  {
+   "after_sha256": "9bd0d572734e0f99591ee1bf10512dc020b57b0c7ca66b2d785c8d4e08e38790",
+   "before_sha256": "c1051966e5e7c3775648e52fd740e88a669d71f5082c37ebd7b9e1954f1ecb31",
+   "chunk": 13,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1536,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 461024,
+   "png": "LV_20A0_digit_arm_0.png",
+   "png_sha256": "a49cfb74c0dc8d2c84013ef0fcc81e2e75dfd8ce12ea9de469060bf4d418cfef",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "77b5526b7d78ee667f27a638fe3e0636b1600aa0e18ea886a67d3d77d1b01245",
+   "before_sha256": "cf71c28c92cd686714cfd41ebbc9e15f5d6b7a7040e1df4b733e6c4b11e1cfd2",
+   "chunk": 14,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1312,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 462560,
+   "png": "LV_20A0_digit_arm_1.png",
+   "png_sha256": "f6afccb8a1cf91e61acd3a827a67fba2c35ad60811acd023e7ffe486bae7810c",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "e145c6dfe8d60c969dc4fd0a67cef73aef46f0ec29f4e8726fe0060058f1eb9a",
+   "before_sha256": "af75e5d7dccedf25761bfc92b6627669efd76981a9b182c8ae61d68491ed0675",
+   "chunk": 15,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1968,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 463872,
+   "png": "LV_20A0_digit_arm_2.png",
+   "png_sha256": "b83c55ffa7612651a1ef6a89c0995630b4ef2f9e30d411e4aa165fa31d85833c",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "0c9f44a6c3bb1beb741ea0d954b971719bcd27b6ffebad41287495758fad45f5",
+   "before_sha256": "8765c679e9ad70e9f916ba7aee1244156b86f7fe30972bcb3fd2e3f8919d7697",
+   "chunk": 16,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 2096,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 465840,
+   "png": "LV_20A0_digit_arm_3.png",
+   "png_sha256": "db364a0cc795a4eca56b34e408a7eb71bb1a2b62f67ca567e5e130e976fc2ba8",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "536a8ba1405f9044a54343766599185595f93cab3ca39bc67c53a2fc4bbe02eb",
+   "before_sha256": "109a7a93b24ad64c0ea0305b4ab7857bba6218ca733185fb872d5718df6d06f3",
+   "chunk": 17,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 2112,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 467936,
+   "png": "LV_20A0_digit_arm_4.png",
+   "png_sha256": "180a8c9f5fadc5c00835e53ff083b38f581b28896164c3b5dd2927ca7fa41864",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "f95cf44f948dbef670f19da1920acf886c15e597caeaa0b40c8fe2aae452de01",
+   "before_sha256": "5cf889f2bdaf5f7093f038ce8389b6a611fdd7da1a6b57f9ec6bb689e34ee20b",
+   "chunk": 18,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1808,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 470048,
+   "png": "LV_20A0_digit_arm_5.png",
+   "png_sha256": "b004a305afbd3003a658f6e80a37d3f80da54ff0c98deb0a0a8d19e31734094d",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "c40d172a4e8607575642641cdc152c74ffb84b423bc61fd1e6a7174b8c714c0e",
+   "before_sha256": "f715c169ae8903d021124b23adfccb5961f9e6695d89dd4e52fef26f10f82fc2",
+   "chunk": 19,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1840,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 471856,
+   "png": "LV_20A0_digit_arm_6.png",
+   "png_sha256": "3af9926e9abb6c9ea26af7331738f16a8f623849473965cfec52ae1cf86bc69f",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "d09226bccfba93d95646be285c6966cacb78aba4cfc7a012d4ccb4aa462a59d5",
+   "before_sha256": "499a9bcd0d39faf7c5c74e09d12d9c8ce78cdf77a37aefd52f8acc9f47364670",
+   "chunk": 20,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1888,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 473696,
+   "png": "LV_20A0_digit_arm_7.png",
+   "png_sha256": "c4249f242337564b88c276211b816f9accf0524d79b09f79fb8c7ae2389c3ab5",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "d3186db5adbfc4070daf54a2c164b4fe49151273ac64ed2e11900aecce1232fb",
+   "before_sha256": "2569ff5d5217259d888a805898752d766eaa0d947f4c86c3fa3d66992f5aebe9",
+   "chunk": 21,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 2272,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 475584,
+   "png": "LV_20A0_digit_arm_8.png",
+   "png_sha256": "fecbaa289052aa17a99280bb0308527981f21c0deda7577beb9678e0f5c4acd6",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "32e720360ae5d185ff44999de7d48729e445a18882917c0336ccab31da9aa45f",
+   "before_sha256": "83e47e6de257b648d012c36092a02f7c0039d92d56004f244e4df6d8d1178ea0",
+   "chunk": 22,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1984,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 477856,
+   "png": "LV_20A0_digit_arm_9.png",
+   "png_sha256": "20f785efed1a48b1a2cff0eb4276098a03a57923f66ec9a3eae8b2b964acdb4a",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "fb8b545041874ba16949e389d2e4efbaec760004bc7927217568462957d38194",
+   "before_sha256": "0e3aa9d306dda8e97a64b1af688e462186fbbb27f3b8496f67e5e6c1c3c719ab",
+   "chunk": 33,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1536,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 489136,
+   "png": "LV_20A0_digit_arm_0.png",
+   "png_sha256": "a49cfb74c0dc8d2c84013ef0fcc81e2e75dfd8ce12ea9de469060bf4d418cfef",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "an48"
+  },
+  {
+   "after_sha256": "66447db73fae9ccf49676c802e7fc310d794de5d2f52c11eb8a23a7e48bb7a56",
+   "before_sha256": "5483118a391895c363cc45cfd26665ea80ed2ece023e092e88dfcbf0c497133a",
+   "chunk": 34,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1328,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 490672,
+   "png": "LV_20A0_digit_arm_1.png",
+   "png_sha256": "f6afccb8a1cf91e61acd3a827a67fba2c35ad60811acd023e7ffe486bae7810c",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "an49"
+  },
+  {
+   "after_sha256": "042e1ab80191f3167e7610eef354afc65fd7cdbced02f3e7803368561e3ce146",
+   "before_sha256": "3294bbc1e9c9bdb76cd0fbd0c7107d15494d1ae73943bb687c47f448ae91051b",
+   "chunk": 35,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1984,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 492000,
+   "png": "LV_20A0_digit_arm_2.png",
+   "png_sha256": "b83c55ffa7612651a1ef6a89c0995630b4ef2f9e30d411e4aa165fa31d85833c",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "an50"
+  },
+  {
+   "after_sha256": "2462e24db1e617f10679f01102053264551a089fb90fdcb8d995b2144e833a0a",
+   "before_sha256": "9794c0e0546bf86c017ae1b2159b9360c09dc393beca4c10d137b4c5e5819452",
+   "chunk": 36,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 2096,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 493984,
+   "png": "LV_20A0_digit_arm_3.png",
+   "png_sha256": "db364a0cc795a4eca56b34e408a7eb71bb1a2b62f67ca567e5e130e976fc2ba8",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "an51"
+  },
+  {
+   "after_sha256": "2cdab5c86c7fc13ed68c8ca13253915bcf1b6db1ba58ded36f25186ed7a62bfb",
+   "before_sha256": "c7adf20bf9f75820fa6faf2ff47956268b2f520b6ab53daffa1511561d6cc479",
+   "chunk": 37,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 2112,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 496080,
+   "png": "LV_20A0_digit_arm_4.png",
+   "png_sha256": "180a8c9f5fadc5c00835e53ff083b38f581b28896164c3b5dd2927ca7fa41864",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "an52"
+  },
+  {
+   "after_sha256": "908252af4538ed45b41ed062f20497902e4e54e4447b2e0126c796eaef20258d",
+   "before_sha256": "e29e284b1de27c05c6ebdf2ff41fc8d97c5aa32e4d94914be035ca2ab11fe1de",
+   "chunk": 38,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1824,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 498192,
+   "png": "LV_20A0_digit_arm_5.png",
+   "png_sha256": "b004a305afbd3003a658f6e80a37d3f80da54ff0c98deb0a0a8d19e31734094d",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "an53"
+  },
+  {
+   "after_sha256": "13eeba97c3e4fe0a6f094cc745150098e08e6bb5bf0b3d10e6694dd7247984bc",
+   "before_sha256": "ca8aaa055cf4c03f072ab7097a981c9de1d1b486dc761eefce7eaf81d3060408",
+   "chunk": 39,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1856,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 500016,
+   "png": "LV_20A0_digit_arm_6.png",
+   "png_sha256": "3af9926e9abb6c9ea26af7331738f16a8f623849473965cfec52ae1cf86bc69f",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "an54"
+  },
+  {
+   "after_sha256": "7ba9084ab037210526fd6afc5ae0b81ef3ac755238de70734f2ec7e668c6848e",
+   "before_sha256": "30a776e306db1599e161f4333e0f6e555dd0c09dbfbc38c23c98960e4e358b80",
+   "chunk": 40,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1888,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 501872,
+   "png": "LV_20A0_digit_arm_7.png",
+   "png_sha256": "c4249f242337564b88c276211b816f9accf0524d79b09f79fb8c7ae2389c3ab5",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "an55"
+  },
+  {
+   "after_sha256": "ebc36e9bae0e40b68e0c67ac8186b0be597ae67b4e390b9e5c4f342512174835",
+   "before_sha256": "facb6649e140fc4245aec43124b199879c47f94ed5194b2b453e30e083efb64a",
+   "chunk": 41,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 2272,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 503760,
+   "png": "LV_20A0_digit_arm_8.png",
+   "png_sha256": "fecbaa289052aa17a99280bb0308527981f21c0deda7577beb9678e0f5c4acd6",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "an56"
+  },
+  {
+   "after_sha256": "63a7f3943f9e44f2ddfde6d8cc6f973bc1e3365d9f925004d73972f97f9f599d",
+   "before_sha256": "7991e12fca4ada553a6111619a4f37ed79dfa1a2085bc35b9cf6f055a9aabde3",
+   "chunk": 42,
+   "defects": [
+    "b81u-LV-road-digit-edge-heavy"
+   ],
+   "kind": "digit_png",
+   "length": 1984,
+   "note": "road white jersey digits: black numerals with a 1 texel silver edge (was a 3 to 4 texel silver ring around a thin black core), as the 2026 week 8 and week 9 road photographs show: the inner texels of the ring take the black, so the glyph outline, size, rows and columns stay as released; jersey and shoulder digits",
+   "offset": 506032,
+   "png": "LV_20A0_digit_arm_9.png",
+   "png_sha256": "20f785efed1a48b1a2cff0eb4276098a03a57923f66ec9a3eae8b2b964acdb4a",
+   "resource_size": 1584208,
+   "selector": "20A0",
+   "texture": "an57"
   },
   {
    "after_sha256": "ebd7fab7cb156deade7c045f1ca25671de961363d04a05ff4e267f93dfa48a84",
