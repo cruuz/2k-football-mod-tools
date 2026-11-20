@@ -2048,7 +2048,7 @@ class BuildPanel(QWidget):
                 combo.activated.connect(self._other_sim_qb_choice)
         for spin in (*self.findChildren(QSpinBox), *self.findChildren(QDoubleSpinBox)):
             if spin is not self.qb_injury_rate:
-                spin.editingFinished.connect(self._other_sim_qb_choice)
+                spin.valueChanged.connect(self._edited_sim_qb_neighbor_spin)
         for field in self.findChildren(QLineEdit):
             if (field not in (self.source_field, self.target_field, self.name_field, self.author_field)
                     and not self.qb_injury_rate.isAncestorOf(field)):
@@ -2116,6 +2116,10 @@ class BuildPanel(QWidget):
     def _other_sim_qb_choice(self, *_):
         # An explicit choice still belongs to a full build when its value equals the default.
         self._sim_qb_other_choice = True
+
+    def _edited_sim_qb_neighbor_spin(self, _value):
+        if self.sender().hasFocus():
+            self._other_sim_qb_choice()
 
     @staticmethod
     def _sim_qb_companion_choices(plan):
