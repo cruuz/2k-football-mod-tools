@@ -1737,6 +1737,8 @@ mod_editor/core/nfl2k5_play_intents.py
 mod_editor/core/nfl2k5_playbook_pack.py
 mod_editor/core/nfl2k5_offset_toss.py
 mod_editor/core/nfl2k5_backfield_cards.py
+mod_editor/core/nfl2k5_gadget_play.py
+mod_editor/core/nfl2k5_gadget_play_code.py
 mod_editor/core/nfl2k5_play_scoring.py
 mod_editor/core/nfl2k5_play_scoring_pins.json
 mod_editor/core/nfl2k5_screen_authored_pins.py
@@ -4789,6 +4791,7 @@ tests/mod_editor/test_b780_hunt1_rb_injuries_previous.py
 tests/mod_editor/test_b81_sim_qb_injury_build.py
 tests/mod_editor/test_b81_sim_qb_injury_settings.py
 tests/mod_editor/test_b81_sim_qb_injuries_code.py
+tests/mod_editor/test_b81_gadget_play.py
 tests/mod_editor/test_nfl2k5_sim_realism.py
 tests/mod_editor/test_b780_c6_coach_carousel.py
 tests/mod_editor/test_nfl2k5_standings_records.py

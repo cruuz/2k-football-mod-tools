@@ -347,10 +347,16 @@ class QuarterbackInstallationOrderTests(unittest.TestCase):
         self.assertEqual([row for row in old_rows if row not in rows], [], step)
         return rows
 
+    def books(self, path):
+        from mod_editor.core import nfl2k5_depth_roles as depth, nfl2k5_gadget_play as gadget
+        resources = depth._resources(Path(path))
+        return {key: resources[key] for key in gadget.BOOK_ASSETS}
+
     def both_orders(self, payload, plan):
         from mod_editor.core import nfl2k5_backfield_cards as cards, nfl2k5_injured_reserve as ir
         from mod_editor.core import nfl2k5_offset_toss as toss, nfl2k5_rookie_faces as faces
         from mod_editor.core import nfl2k5_sim_qb_injuries as qb, nfl2k5_xbe_space as space
+        from mod_editor.core import nfl2k5_gadget_play as gadget
 
         def studio_ir(current):
             # Use Build's real mode selection, including the standard-only stock guard.
@@ -362,9 +368,17 @@ class QuarterbackInstallationOrderTests(unittest.TestCase):
         steps = {'IR': studio_ir, 'hair': lambda x: faces.apply_hair(x)[0], 'toss': lambda x: toss.apply(x)[0],
                  'cards': lambda x: cards.apply(x)[0],
                  'QB': lambda x: qb.apply(x, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)[0]}
+        orders = [('IR', 'hair', 'toss', 'cards', 'QB'), ('QB', 'IR', 'hair', 'toss', 'cards')]
+        if plan.gadget_play:
+            # Beta 81 Q62: the gadget rule last (the Studio order), first, and between the late appends. Its code and
+            # table take the fixed slots every time, and every order gives the same allocations and the same bytes.
+            books = self.books(plan.source)
+            steps['gadget'] = lambda x: gadget.apply(x, books)[0]
+            orders = [order + ('gadget',) for order in orders] + [
+                ('gadget', 'IR', 'hair', 'toss', 'cards', 'QB'), ('IR', 'hair', 'gadget', 'toss', 'QB', 'cards')]
         initial = space.layout(payload)['allocations']
-        results = []
-        for order in (('IR', 'hair', 'toss', 'cards', 'QB'), ('QB', 'IR', 'hair', 'toss', 'cards')):
+        results, finals = [], []
+        for order in orders:
             with self.subTest(install_order=order):
                 current, rows = payload, initial
                 for name in order:
@@ -373,13 +387,20 @@ class QuarterbackInstallationOrderTests(unittest.TestCase):
                     if name == 'QB':
                         bank, = (r for r in rows if r['owner'] == qb.OWNER)
                         self.assertEqual((bank['va'], bank['size'], bank['align']), (0x1524000, 16384, 4096))
+                    if name == 'gadget':
+                        slots = {r['kind']: (r['va'], r['size']) for r in rows if r['owner'] == gadget.OWNER}
+                        self.assertEqual(slots, {'code': (0x151F680, 2048), 'read_only': (0x151FE80, 12800)})
                 self.assertEqual(qb.read_settings(current)['mode'], plan.sim_qb_injuries)
                 self.assertEqual((faces.hair_status(current), toss.status(current), cards.status(current)),
                                  ('applied', 'applied', 'applied'))
                 self.assertEqual(ir.status(current), 'applied' if plan.modern_injured_reserve else 'guard')
+                self.assertEqual(gadget.status(current), 'applied' if plan.gadget_play else 'retail')
                 results.append(rows)
-        self.assertEqual(len(results), 2)
-        self.assertEqual(results[0], results[1])
+                finals.append(current)
+        self.assertEqual(len(results), len(orders))
+        self.assertTrue(all(rows == results[0] for rows in results))
+        if plan.gadget_play:
+            self.assertTrue(all(final == finals[0] for final in finals))
 
     def fresh(self, plan):
         from mod_editor.core import nfl2k5_k128 as k128, nfl2k5_lineup_roles as lineup
@@ -417,7 +438,9 @@ class QuarterbackInstallationOrderTests(unittest.TestCase):
         return mod_build.apply_preset(initial, name)
 
     def test_experimental_first_pass_and_late_installation_orders(self):
-        self.fresh(self.preset('softdrink_experimental'))
+        plan = self.preset('softdrink_experimental')
+        self.assertTrue(plan.gadget_play)
+        self.fresh(plan)
 
     def test_basic_custom_zero_with_dependencies_and_late_installation_orders(self):
         self.fresh(replace(self.preset('softdrink_basic'), k128_memory=True, sim_realism=True,
@@ -432,6 +455,7 @@ class QuarterbackInstallationOrderTests(unittest.TestCase):
         plan = modpack_sources.build_plan(recipe, str(self.private_path('NFL2K5_RETAIL_XISO')),
                                           str(self.folder / 'unused.xiso.iso'))
         self.assertEqual(plan.sim_qb_injuries, 'realistic')
+        self.assertTrue(plan.gadget_play)
         self.fresh(plan)
 
     def upgrade(self, variable, xbe_pin):

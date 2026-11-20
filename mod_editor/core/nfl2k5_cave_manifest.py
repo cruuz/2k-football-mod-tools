@@ -71,8 +71,8 @@ class Recorder:
 
     def observe(self, module: ModuleType, function: str, before: bytes, after: bytes, receipt: dict):
         owner = module.__name__.split(".")[-1]
-        if owner in ("nfl2k5_qb_spy_runtime", "nfl2k5_my_career_mode"):
-            owner = module.OWNER  # allocator budget retains the research owner name
+        if owner in ("nfl2k5_qb_spy_runtime", "nfl2k5_my_career_mode", "nfl2k5_gadget_play"):
+            owner = module.OWNER  # allocator budget retains the research owner name (beta 81: the gadget slots' name)
         post_image = XbeImage(after)
         allow_append = False
         if len(before) != len(after):
@@ -80,7 +80,7 @@ class Recorder:
             from . import nfl2k5_xbe_space as space
             allow_append = (owner == "nfl2k5_depth_chart_rows" and storage.state(before) == "retail"
                             and storage.state(after) == "applied")
-            allow_append |= (owner in (space.OWNER, "nfl2k5_backfield_cards", "nfl2k5_offset_toss", "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_xbe_space", "nfl2k5_music_metadata", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_module_loader", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_accelerated_clock", "nfl2k5_franchise_edit_player", "nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai", "nfl2k5_cpu_third_down", "nfl2k5_draft_picks", "nfl2k5_hback", "nfl2k5_team_ratings")
+            allow_append |= (owner in (space.OWNER, "nfl2k5_backfield_cards", "nfl2k5_gadget_proof", "nfl2k5_offset_toss", "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_xbe_space", "nfl2k5_music_metadata", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_module_loader", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_accelerated_clock", "nfl2k5_franchise_edit_player", "nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai", "nfl2k5_cpu_third_down", "nfl2k5_draft_picks", "nfl2k5_hback", "nfl2k5_team_ratings")
                              and space.status(before) == "retail" and space.status(after) == "applied")
             # b778-xs1: a late owner appended to a sealed image may grow the v4 pool (the last section, end of file).
             allow_append |= (space.is_scaleout(after) and space.scale_version(after) == 4
@@ -135,6 +135,10 @@ class Recorder:
         if owner == "nfl2k5_backfield_cards":
             from . import nfl2k5_backfield_cards as cards
             self.reserve(cards.SITE, len(cards.RETAIL), owner, "full owner site")
+        if owner == "nfl2k5_gadget_proof":  # beta 81 Q62: the builder call and the ordinal helper entry, whole
+            from . import nfl2k5_gadget_play as gadget
+            for _label, va, retail_site, _patched in gadget._hooks():
+                self.reserve(va, len(retail_site), owner, "full owner site")
         if owner == "nfl2k5_franchise_ownership":
             from . import nfl2k5_franchise_ownership as custody
             for va, before, _, _ in custody.HOOKS:
@@ -146,7 +150,7 @@ class Recorder:
         if owner == "nfl2k5_offset_toss":
             from . import nfl2k5_offset_toss as toss
             self.reserve(toss.SITE, len(toss.RETAIL), owner, "full owner site")
-        if owner in ("nfl2k5_backfield_cards", "nfl2k5_offset_toss", "nfl2k5_xbe_space", "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_music_metadata", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_module_loader", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_accelerated_clock", "nfl2k5_franchise_edit_player", "nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai", "nfl2k5_cpu_third_down", "nfl2k5_draft_picks", "nfl2k5_hback", "nfl2k5_team_ratings") and space.status(after) == "applied":
+        if owner in ("nfl2k5_backfield_cards", "nfl2k5_gadget_proof", "nfl2k5_offset_toss", "nfl2k5_xbe_space", "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_music_metadata", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_module_loader", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_accelerated_clock", "nfl2k5_franchise_edit_player", "nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai", "nfl2k5_cpu_third_down", "nfl2k5_draft_picks", "nfl2k5_hback", "nfl2k5_team_ratings") and space.status(after) == "applied":
             # Owners that can also run on a retail-space image (seven-on-seven in the
             # gate composition, before the allocator) have no allocator reservations
             # yet; the allocator's planned pages lie outside that image's mapping.
@@ -409,6 +413,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_pass_rush_stats as pass_rush_stats  # b779-st1 (int1): after pass protection, observed on the same probe copy
     from . import nfl2k5_sim_rb_injuries as sim_rb_injuries  # b779-sim2 (int1): a late owner, observed on the same probe copy
     from . import nfl2k5_backfield_cards as backfield_cards
+    from . import nfl2k5_gadget_play as gadget_play  # beta 81 Q62: observed by the preset build and on the late-owner copy
     from . import nfl2k5_offset_toss as offset_toss
     from . import nfl2k5_franchise_ownership as franchise_ownership
     from . import nfl2k5_injured_reserve as injured_reserve  # b780 IR1: modern injured reserve, the last late owner, same probe copy
@@ -544,6 +549,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     hud = importlib.import_module("mod_editor.core.nfl2k5_hud_layout")
     modules[hud.__name__] = hud
     modules[sim_qb_injuries.__name__] = sim_qb_injuries
+    modules[gadget_play.__name__] = gadget_play
     fingerprints = source_fingerprints()
     with tempfile.TemporaryDirectory(prefix="nfl2k5-oracle-", dir=work_dir) as temp:
         target = (Path(temp) / "stack.xiso.iso").resolve()
@@ -637,7 +643,12 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     # b780-int: MEM1's intro auto-skip (on in every preset) is a late allocator owner too; the
                                     # union below reserves it and the probe copy observes it, so the allocator-free probe build
                                     # leaves it off (the a5f08ea81 regen stopped there: "During Intro auto-skip: patch resized")
-                                    intro_autoskip=False, backfield_cards=False),
+                                    intro_autoskip=False, backfield_cards=False,
+                                    # beta 81: the gadget rule (a late owner in the fixed gadget slots) and the standard
+                                    # simulator's quarterback injuries (which need K128 and season realism, both off
+                                    # here) are observed on the copies below; the d8ceb91e3 regen stopped at this build:
+                                    # "Simulated quarterback injuries require the 128 MB target, 128 MB memory (K128)".
+                                    gadget_play=False, sim_qb_injuries=None),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
@@ -838,6 +849,11 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             cpu_ai_probe, _ = injured_reserve.apply(cpu_ai_probe, "modern")  # b780 IR1: twelve hooks, the Pro Bowl guard, owned code and store
             cpu_ai_probe, _ = offset_toss.apply(cpu_ai_probe)
             cpu_ai_probe, _ = backfield_cards.apply(cpu_ai_probe)
+            # beta 81 Q62: the gadget rule in the slots the cards reserved (the copy carries the situational lineup
+            # roles it needs), with the oracle disc's own play books.
+            from . import nfl2k5_depth_roles as depth_roles
+            oracle_books = depth_roles._resources(xiso)
+            cpu_ai_probe, _ = gadget_play.apply(cpu_ai_probe, {k: oracle_books[k] for k in gadget_play.BOOK_ASSETS})
             # The medical option needs the standard memory boot guard. Observe its
             # own sparse standard profile without changing the older CPU probe's layout.
             qb_probe, _ = space.apply(allocation_base, k128.REQUESTS + sim_realism.REQUESTS + lineup_roles.REQUESTS

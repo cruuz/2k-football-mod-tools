@@ -277,7 +277,7 @@ def cmd_update_v09(args: argparse.Namespace) -> int:
     rate = mod_build.BuildPlan.sim_qb_injury_rate if args.qb_injury_rate is None else args.qb_injury_rate
     plan = mod_build.v09_disc_update(args.source, args.out, save_list_type_guard=args.save_list_guard,
                                      modern_injured_reserve=args.modern_ir, backfield_cards=args.backfield_cards,
-                                     sim_qb_injuries=args.sim_qb_injuries, custom_rate=rate, overwrite=args.overwrite)
+                                     gadget_play=args.gadget_play, sim_qb_injuries=args.sim_qb_injuries, custom_rate=rate, overwrite=args.overwrite)
     receipt = mod_build.build(plan, _progress(not args.json), require_change=True)
     print(json.dumps(receipt, indent=2, default=str))
     return 0
@@ -384,6 +384,8 @@ def main(argv: list[str] | None = None) -> int:
     upgrade.add_argument("--save-list-guard", action="store_true", help="repair title-screen freezes when the game lists a malformed save")
     upgrade.add_argument("--modern-ir", action="store_true", help="upgrade the existing modern franchise injured reserve")
     upgrade.add_argument("--backfield-cards", action="store_true", help="add starting backfield cards")
+    upgrade.add_argument("--gadget-play", action="store_true",
+                         help="add the gadget player on gadget plays (the SPECIAL GAD row; experimental)")
     upgrade.add_argument("--sim-qb-injuries", choices=("retail", "realistic", "custom"),
                          help="set the simulated quarterback injury option on the same copy")
     upgrade.add_argument("--qb-injury-rate", type=float, metavar="PERCENT", help="Custom base injury chance per eligible play")

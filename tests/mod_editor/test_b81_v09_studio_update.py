@@ -41,7 +41,7 @@ class ReleasedUpdates(unittest.TestCase):
     def test_v09_native_updates_and_quarterback_setting_share_one_copy(self):
         for mode in ("retail", "realistic", "custom"):
             args = ["update-v09", "--source", "old.iso", "--out", "new.iso", "--modern-ir",
-                    "--save-list-guard", "--backfield-cards", "--sim-qb-injuries", mode, "--json"]
+                    "--save-list-guard", "--backfield-cards", "--gadget-play", "--sim-qb-injuries", mode, "--json"]
             if mode == "custom":
                 args += ["--qb-injury-rate", "0"]
             with self.subTest(mode=mode), patch.object(build, "build", return_value={}) as run:
@@ -140,7 +140,8 @@ class BuildChoices(unittest.TestCase):
         self.addCleanup(self.panel.deleteLater)
         self.state = dict(path=str(self.source), container="xiso", v09_standard_update=True,
                           modern_practice_field="foreign", modern_practice_field_team_logo="applied",
-                          save_list_type_guard="previous", modern_injured_reserve="previous", backfield_cards="retail")
+                          save_list_type_guard="previous", modern_injured_reserve="previous", backfield_cards="retail",
+                          gadget_play="retail")
         self.panel.begin_reading(self.source)
         self.panel.apply_state(self.state)
         self.panel.target_field.setText(str(self.source.with_name("new.iso")))
@@ -163,7 +164,8 @@ class BuildChoices(unittest.TestCase):
                 plan = self.panel._plan_for_build()
                 self.assertIsInstance(plan, build._ReleasedV09Update)
                 self.assertEqual((plan.sim_qb_injuries, plan.sim_realism), ("realistic", True))
-                self.assertEqual(tuple(getattr(plan, k) for k in build.V09_UPDATE_CHOICES), (other_updates,) * 3)
+                self.assertEqual(tuple(getattr(plan, k) for k in build.V09_UPDATE_CHOICES),
+                                 (other_updates,) * len(build.V09_UPDATE_CHOICES))
 
     def test_make_my_disc_selects_the_supported_options_independently(self):
         for flags in itertools.product((False, True), repeat=len(build.V09_UPDATE_CHOICES)):
