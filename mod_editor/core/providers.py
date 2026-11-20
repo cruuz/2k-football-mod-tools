@@ -990,7 +990,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_qb_injuries.py": "e8219c52604fe023549411055a7500987d9da4d108bdf2794bac1227a22e18e7",
         "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "ab914dbc3989ecaf33799f95c0e555027c2ae097758e97b425b655227ceded3c",
         "mod_editor/core/nfl2k5_qb_room.py": "c5d7a251bfd7396bde7cfa8e209ee407af47d5ae08e095120f439d8ec9e2dfc2",  # b81 qb34: mod_build loads it by name
-        "mod_editor/core/nfl2k5_qb_room_code.py": "f06e2696b04432dcf81088891e66a19c5bc209e8e0f9288dc227689fafa961f3",  # b81 qb34: its generated page template
+        "mod_editor/core/nfl2k5_qb_room_code.py": "65259084fc898e93e4760b9f34e049d228d657be85f46691d90a32376b5e947e",  # b81 qb34: its generated page template
         "mod_editor/core/nfl2k5_qb_room_code_b81_floor.py": "fca60cc8cb3b41a8dbb6756110d33ee0ef1ef70581420b7ecf73dbb0c91cbca4",  # b81 qb34: frozen floor handover template ("previous")
         "mod_editor/core/nfl2k5_qb_room_code_b81_3a.py": "892a6ba85e94f55151423b4842825d521b85e54c9dcf7162d41b9344bee513f8",  # b81 qb34: frozen stage 0 + 3a template ("previous")
         "mod_editor/core/nfl2k5_sim_realism.py": "6323212af016c4e70ecd36d340a993e16afc9b57550f3bb7ed2647fc6731a248",  # b779-sim2 r6

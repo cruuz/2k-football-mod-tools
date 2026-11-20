@@ -191,7 +191,9 @@ class RoomWithoutOwnershipTests(RoomInstallationOrderTests):
         retail, requests, plan = self.studio_first_pass(plan)
         self.assertEqual(hashlib.sha256(retail).hexdigest(), RETAIL_SHA256)
         self.assertIn(space.QB_INJURY_REQUEST, requests)
-        self.assertFalse(any(r[0] in ("nfl2k5_franchise_ownership", "nfl2k5_qb_room") for r in requests))
+        self.assertFalse(any(r[0] == "nfl2k5_franchise_ownership" for r in requests))
+        if any(r[0] == "nfl2k5_qb_room" for r in requests):  # Custom 0 reserves the room only for piece 3 (C1a)
+            self.assertTrue(mod_build._piece3_bits())
         current, _ = space.apply(retail, requests, scaleout=True)
         rows = space.layout(current)["allocations"]
         current, _ = k128.apply(current, require=True, early=plan.k128_early, roster_heap=plan.k128_roster_heap)
