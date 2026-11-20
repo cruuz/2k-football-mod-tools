@@ -31,8 +31,17 @@ ownership_release_stub:
     je original_remove
     pushad
     call ownership_prepare_release
-    test eax, eax
-    jz already_released
+    cmp eax, 1
+    je allow_release
+    test eax, eax                   /* Two means a duplicate active slot was detached. */
+    jnz already_released
+    cmp DWORD PTR [esp+36], 0x002BFA73
+    jne already_released
+    /* No active player was removed. The CPU trim loop tests only roster length.
+     * Return through its normal epilogue and allow the next club to proceed. */
+    mov DWORD PTR [esp+36], 0x002BFA8D
+    jmp already_released
+allow_release:
     popad
 original_remove:
     popfd

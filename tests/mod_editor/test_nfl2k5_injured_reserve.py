@@ -110,7 +110,12 @@ class PresetAndMemoryTests(unittest.TestCase):
 
     def test_cost_at_128_and_forced_off_at_64(self):
         self.assertIn("modern_injured_reserve", budget.REQUIRES_128)
-        self.assertEqual(budget.OWNER_BYTES["injured_reserve"], (ir.CODE_SIZE + ir.ownership.CODE_SIZE, 0, 0, 0, ir.STORE_SIZE))
+        self.assertEqual(budget.OWNER_BYTES["injured_reserve"], (ir.CODE_SIZE, 0, 0, 0, ir.STORE_SIZE))
+        self.assertEqual(budget.OWNER_BYTES["franchise_ownership"], (ir.ownership.CODE_SIZE, 0, 0, 0, 0))
+        basic = {"injured_reserve_guard": True}
+        self.assertIn("franchise_ownership", budget.owners(basic, 128))
+        self.assertNotIn("injured_reserve", budget.owners(basic, 128))
+        self.assertNotIn("franchise_ownership", budget.owners(basic, 64))
         for preset in ("softdrink_advanced", "softdrink_experimental"):
             on = budget.predict({"preset": preset, "overrides": {"modern_injured_reserve": True}}, 128)
             off = budget.predict({"preset": preset, "overrides": {"modern_injured_reserve": False}}, 128)

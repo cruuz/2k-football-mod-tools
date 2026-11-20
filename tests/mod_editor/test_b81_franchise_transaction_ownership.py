@@ -16,13 +16,13 @@ class NativeOwnership:
     STACK = 0x860800
     STOP = 0x870000
 
-    def __init__(self):
+    def __init__(self, *, modern=True):
         from unicorn import Uc, UC_ARCH_X86, UC_MODE_32, UC_HOOK_CODE
         from unicorn import x86_const
         self.regs = x86_const
         self.uc = Uc(UC_ARCH_X86, UC_MODE_32)
         self.uc.mem_map(0x10000,0x1200000)
-        self.uc.mem_write(self.CODE,owner.code_for(self.CODE,self.IR))
+        self.uc.mem_write(self.CODE,owner.code_for(self.CODE,self.IR if modern else 0))
         self.put(0xB72918,self.ROOT)
         self.put(0xE576A0,2)
         self.put(self.ROOT,1024)
@@ -173,7 +173,7 @@ class FranchiseOwnershipTests(unittest.TestCase):
         self.assertEqual(bytes(m.uc.mem_read(other,500)), other_before)
         self.assertEqual(m.visits, [0x2BD906])
 
-    def test_invalid_ancillary_table_cannot_block_an_identified_active_cut_or_trade(self):
+    def test_damaged_ancillary_table_blocks_its_club_trade_and_allows_identified_active_cuts(self):
         for damaged in (7, 13, 19):
             for kind in ('practice', 'IR'):
                 with self.subTest(club=damaged, kind=kind):
@@ -188,10 +188,59 @@ class FranchiseOwnershipTests(unittest.TestCase):
                     m.put(m.OFFER + 12, outgoing)
                     m.put(m.OFFER + 36, m.player(19, 2))
                     before = m.domain()
-                    self.assertEqual(m.call('ownership_trade_stub', ecx=m.OFFER, arguments=(0,0)),42)
+                    expected = 0 if damaged in (7, 19) else 42
+                    self.assertEqual(m.call('ownership_trade_stub', ecx=m.OFFER, arguments=(0,0)),expected)
                     self.assertEqual(m.domain(),before)
                     self.assertEqual(m.call('ownership_release_stub', ecx=m.club(7), edx=outgoing, arguments=(1,1)),43)
                     self.assertEqual(m.visits,[0x2BD906])
+
+    def test_native_cut_to_53_returns_when_a_damaged_lineup_supplies_no_cuttable_player(self):
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        from unicorn import UC_HOOK_CODE
+
+        m = self.m
+        source = XbeImage(retail_bytes())
+        m.uc.mem_write(0x2BF9A0, source.read(0x2BF9A0, 0xF5))
+        m.uc.mem_write(0x2BD900, bytes.fromhex('e9') + struct.pack('<i',
+                       m.CODE + owner.runtime.LABELS['ownership_release_stub'] - 0x2BD905))
+        # Model a corrupt position lookup returning no eligible player on a 54-player club.
+        # The complete stock trim loop, call frame and release owner execute normally.
+        m.uc.mem_write(0x2BD880, bytes.fromhex('c3'))
+        m.uc.mem_write(0xC3CB0, bytes.fromhex('31c0c3'))
+        club=m.club(7)
+        m.uc.mem_write(club+0x11C, bytes([54]))
+        m.uc.mem_write(club+0x19B, bytes([2]))
+        m.uc.mem_write(club+0x1F2, bytes([1,0xA5]))
+        calls=[]
+        for address in (0x2BFA6E,0x2BFA73,0x2BFA8D):
+            m.uc.hook_add(UC_HOOK_CODE, lambda u, addr, n, _: calls.append(addr),
+                          begin=address,end=address)
+        before=m.domain()
+        for name,value in [('ECX',club),('EDX',53),('ESP',m.STACK),('EBX',0x1357),('EBP',0x2468)]:
+            m.uc.reg_write(m.reg(name),value)
+        m.put(m.STACK,m.STOP)
+        m.uc.emu_start(0x2BF9A0,m.STOP,count=50000)
+        self.assertEqual(m.uc.reg_read(m.reg('EIP')),m.STOP)
+        self.assertEqual(m.uc.reg_read(m.reg('ESP')),m.STACK+4)
+        self.assertEqual((m.uc.reg_read(m.reg('EBX')),m.uc.reg_read(m.reg('EBP'))),(0x1357,0x2468))
+        self.assertEqual(calls,[0x2BFA6E,0x2BFA8D])
+        self.assertEqual(m.domain(),before)
+
+    def test_guard_only_trades_read_stock_ir_in_all_five_slots_and_all_clubs(self):
+        m = NativeOwnership(modern=False)
+        player = m.player(7, 1)
+        m.put(m.OFFER + 12, player)
+        self.assertEqual(m.call('ownership_trade_stub', ecx=m.OFFER, arguments=(0, 0)), 42)
+        for club in range(32):
+            for index in range(5):
+                with self.subTest(club=club, index=index):
+                    at = 0xE421E0 + 4*(5*club+index)
+                    m.put(at, player)
+                    before = m.domain()
+                    self.assertEqual(m.call('ownership_trade_stub', ecx=m.OFFER, arguments=(0, 0)), 0)
+                    self.assertEqual(m.domain(), before)
+                    m.put(at, 0)
 
     def test_stale_posted_offers_are_withdrawn_and_interactive_users_receive_the_reason(self):
         from unicorn import UC_HOOK_CODE
@@ -248,4 +297,57 @@ class FranchiseOwnershipTests(unittest.TestCase):
                 self.assertEqual(m.domain(),before)
 
 
-if __name__=='__main__':unittest.main()
+
+
+class StandardFranchiseGuardTests(unittest.TestCase):
+    def test_every_standard_preset_selects_the_guards_and_keeps_their_page_disjoint(self):
+        from mod_editor.core import mod_build, nfl2k5_throw_tuning as tuning
+        from mod_editor.core import nfl2k5_xbe_space as space
+        from mod_editor.core import nfl2k5_offset_toss as toss, nfl2k5_backfield_cards as cards
+        from mod_editor.core import nfl2k5_injured_reserve as ir
+
+        for preset in mod_build.PRESETS:
+            with self.subTest(preset=preset):
+                plan=mod_build.apply_preset(mod_build.BuildPlan('', ''),preset)
+                self.assertTrue(plan.injured_reserve_guard)
+                selected=tuning._selected_space_requests(injured_reserve=plan.modern_injured_reserve,
+                    ownership_guard=plan.console_memory==128 and plan.injured_reserve_guard)
+                self.assertEqual(sum(r[0]==owner.OWNER for r in selected),1)
+                self.assertEqual(any(r[0]==ir.OWNER for r in selected),plan.modern_injured_reserve)
+                for extras in ((),toss.REQUESTS,cards.REQUESTS,toss.REQUESTS + cards.REQUESTS):
+                    rows=space.plan(selected+extras)['allocations']
+                    guard=next(r for r in rows if r['owner']==owner.OWNER)
+                    self.assertEqual((guard['va'],guard['size']),(space.FRANCHISE_OWNERSHIP_VA,owner.CODE_SIZE))
+                    self.assertTrue(all(r==guard or r['va']+r['size']<=guard['va'] or
+                                        r['va']>=guard['va']+guard['size'] for r in rows))
+
+    def test_stock_franchise_guards_upgrade_to_the_same_modern_image_in_either_order(self):
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes
+        from mod_editor.core import nfl2k5_injured_reserve as ir
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+
+        stock=retail_bytes()
+        old_guard,_=ir.apply(stock,'guard')
+        self.assertEqual(owner.status(old_guard),'retail')
+        guarded,receipt=ir.apply(old_guard,'guard',standard_guard=True)
+        self.assertEqual(ir.status(guarded),'guard')
+        self.assertEqual(owner.status(guarded),'guard')
+        self.assertEqual({row['va'] for row in receipt['franchise_ownership']['edits']},
+                         {hex(0x2BC688),hex(0x2BCF60)})
+        self.assertEqual(XbeImage(guarded).read(owner.RELEASE_SITE,5),XbeImage(stock).read(owner.RELEASE_SITE,5))
+        self.assertEqual(ir.apply(guarded,'guard',standard_guard=True)[0],guarded)
+        direct,_=ir.apply(stock,'modern')
+        converted,_=ir.apply(guarded,'modern')
+        self.assertEqual(converted,direct)
+        self.assertEqual(ir.apply(converted,'guard',standard_guard=True)[0],direct)
+        for at,old,symbol,kind in owner.HOOKS:
+            with self.subTest(instruction=hex(at)):
+                image=XbeImage(guarded)
+                corrupt=bytearray(guarded)
+                corrupt[image.offset(at,1)]^=1
+                self.assertEqual(owner.status(bytes(corrupt)),'foreign')
+                with self.assertRaises(ValueError):ir.apply(bytes(corrupt),'modern')
+
+
+if __name__ == "__main__":
+    unittest.main()

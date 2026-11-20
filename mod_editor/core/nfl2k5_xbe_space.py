@@ -802,7 +802,10 @@ BACKFIELD_REQUEST = ("nfl2k5_backfield_cards", "code", 176, 16)
 GADGET_CODE_VA = 0x151F680
 BACKFIELD_VA = 0x1523080
 FRANCHISE_OWNERSHIP = "nfl2k5_franchise_ownership"
-FRANCHISE_OWNERSHIP_MIN_VA = BACKFIELD_VA + BACKFIELD_REQUEST[2]
+# Keep this optional page independent of the shipped gadget/cards slots and the
+# reviewed standard simulator page (0x1524000 through 0x1527FFF).
+FRANCHISE_OWNERSHIP_VA = 0x1528000
+FRANCHISE_OWNERSHIP_SIZE = PAGE
 LINEUP_SLOT_VA = {GADGET_REQUESTS[0][:2]: GADGET_CODE_VA,
                   GADGET_REQUESTS[1][:2]: GADGET_CODE_VA + GADGET_REQUESTS[0][2],
                   BACKFIELD_REQUEST[:2]: BACKFIELD_VA}
@@ -1049,6 +1052,10 @@ def _scale_allocations(requests):
     # their protected manifest extents. Existing request sets pack identically.
     requests = sorted(_requests(requests), key=lambda r: (r[0] == 'nfl2k5_roster_arena_growth', r))
     original_requests = tuple(requests)
+    ownership = tuple(r for r in requests if r[0] == FRANCHISE_OWNERSHIP)
+    if ownership:
+        _require(ownership == ((FRANCHISE_OWNERSHIP, "code", FRANCHISE_OWNERSHIP_SIZE, 16),),
+                 "the standard franchise ownership code has a fixed page")
     gadget = tuple(r for r in requests if r[0] == GADGET_OWNER)
     if gadget:
         _require(gadget == GADGET_REQUESTS, "incomplete or foreign gadget allocation")
@@ -1085,22 +1092,23 @@ def _scale_allocations(requests):
     pool = [POOL_DOC]  # b778-xs1: the v4 pool cursor (after its directory page), shared by every kind
 
     def to_pool(owner, kind, size, align):
-        cursor = pool[0]
-        if owner == FRANCHISE_OWNERSHIP:
-            # IR can precede rookie hair, toss and cards, including on an existing v0.9 disc.
-            # Leave their original addresses available even when none is installed yet.
-            cursor = max(cursor, FRANCHISE_OWNERSHIP_MIN_VA - POOL_VA)
-        at = (cursor + align - 1) & -align
+        at = (pool[0] + align - 1) & -align
         if gadget:
             fixed = LINEUP_SLOT_VA.get((owner, kind))
             if fixed is not None:
                 at = fixed - POOL_VA
             elif POOL_VA + at < BACKFIELD_VA + BACKFIELD_REQUEST[2] and POOL_VA + at + size > GADGET_CODE_VA:
                 at = (BACKFIELD_VA + BACKFIELD_REQUEST[2] - POOL_VA + align - 1) & -align
+        protected = FRANCHISE_OWNERSHIP_VA - POOL_VA
+        if owner == FRANCHISE_OWNERSHIP:
+            at = protected
+        elif ownership and at < protected + FRANCHISE_OWNERSHIP_SIZE and at + size > protected:
+            at = (protected + FRANCHISE_OWNERSHIP_SIZE + align - 1) & -align
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))
-        pool[0] = max(pool[0], at + size)
+        if owner != FRANCHISE_OWNERSHIP:
+            pool[0] = max(pool[0], at + size)
 
     for owner, kind, size, align in requests:
         if owner in LEGACY_OWNERS:

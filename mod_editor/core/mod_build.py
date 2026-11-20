@@ -2761,7 +2761,7 @@ def _apply_injured_reserve(plan: "BuildPlan", target: Path, receipt: dict, progr
         raise RuntimeError("Modern injured reserve needs nfl2k5_injured_reserve.")
     mode = "modern" if plan.modern_injured_reserve else "guard"
     progress("Franchise injured reserve" if mode == "modern" else "Franchise injured reserve: the Pro Bowl guard", 0, 0)
-    payload, ir_receipt = module.apply(_xbe_bytes(target), mode)
+    payload, ir_receipt = module.apply(_xbe_bytes(target), mode, standard_guard=plan.console_memory == 128)
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
     if final != payload or module.status(final) not in (("applied",) if mode == "modern" else ("guard", "previous", "applied")):
@@ -7218,7 +7218,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         audible_legend=_audible_panel_choice(plan) is not None,  # b780-p3
         lineup_roles=plan.depth_chart_rows,  # b780 sub1: the SPECIAL third-down back rides with the SPECIAL rows
         intro_autoskip=plan.intro_autoskip,  # b780-mem1
-        injured_reserve=plan.modern_injured_reserve)  # b780 IR1
+        injured_reserve=plan.modern_injured_reserve,
+        ownership_guard=plan.console_memory == 128 and plan.injured_reserve_guard)  # b780 IR1
     if plan.read_option_runtime or plan.qb_spy:
         _step("play_intents")
         resolver = _core_module("nfl2k5_play_intents")
@@ -7311,6 +7312,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             lineup_roles=plan.depth_chart_rows,  # b780 sub1
             intro_autoskip=plan.intro_autoskip,  # b780-mem1
             injured_reserve=plan.modern_injured_reserve,  # b780 IR1
+            ownership_guard=plan.console_memory == 128 and plan.injured_reserve_guard,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,

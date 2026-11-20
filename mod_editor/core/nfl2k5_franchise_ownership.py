@@ -1,4 +1,4 @@
-"""Install the trade, release and signed-load ownership safeguards used by modern franchise IR."""
+"""Install the trade, release and signed-load ownership safeguards for standard franchises, including modern IR recovery."""
 from __future__ import annotations
 
 import struct
@@ -9,13 +9,14 @@ from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = 'nfl2k5_franchise_ownership'
-CODE_SIZE = 3328
+CODE_SIZE = space.FRANCHISE_OWNERSHIP_SIZE
 REQUESTS = ((OWNER, 'code', CODE_SIZE, 16),)
 # The trade validator call is downstream of both roster-capacity owner variants, before either
 # club gives up a pick or player. A release and a proration are also public native routines.
+RELEASE_SITE = 0x2BD900
 HOOKS = (
     (0x2BC688, bytes.fromhex('e8f3fcffff'), 'ownership_trade_stub', 0xE8),
-    (0x2BD900, bytes.fromhex('56578bf28bf9'), 'ownership_release_stub', 0xE9),
+    (RELEASE_SITE, bytes.fromhex('56578bf28bf9'), 'ownership_release_stub', 0xE9),
     (0x2BCF60, bytes.fromhex('0fb74e0ae88790e2ff'), 'ownership_contract_stub', 0xE9),
 )
 
@@ -38,7 +39,7 @@ def load_entry(payload: bytes) -> int:
 
 
 def code_for(va: int, store_va: int) -> bytes:
-    if not 0 < store_va <= 0xFFFFFFFF or len(runtime.CODE) > CODE_SIZE:
+    if not 0 <= store_va <= 0xFFFFFFFF or len(runtime.CODE) > CODE_SIZE:
         raise ValueError('Invalid franchise ownership code or IR store')
     data = bytearray(runtime.CODE)
     for offset, kind, symbol, value in runtime.RELOCATIONS:
@@ -67,9 +68,15 @@ def status(payload: bytes, store_va: int = 0) -> str:
         raw = image.read(va, CODE_SIZE)
         if raw == b'\xCC' * CODE_SIZE:
             return 'retail' if all(image.read(at, len(old)) == old for at, old, _, _ in HOOKS) else 'foreign'
-        if raw != code_for(va, store_va) or any(image.read(at, len(patched)) != patched for at, _, patched in sites(va)):
-            return 'foreign'
-        return 'applied'
+        for mode, address in (('guard', 0), ('applied', store_va)):
+            if (mode == 'applied' and not address) or raw != code_for(va, address):
+                continue
+            for at, original, patched in sites(va):
+                expected = original if mode == 'guard' and at == RELEASE_SITE else patched
+                if image.read(at, len(expected)) != expected:
+                    return 'foreign'
+            return mode
+        return 'foreign'
     except (TypeError, ValueError, KeyError, IndexError, struct.error, OverflowError):
         return 'foreign'
 
@@ -79,17 +86,23 @@ def apply(payload: bytes, store_va: int) -> tuple[bytes, dict]:
     current = status(payload, store_va)
     if current == 'foreign':
         raise ValueError('The franchise ownership routines contain unrecognized changes')
-    if current == 'applied':
+    target = 'applied' if store_va else 'guard'
+    if current == target:
         return payload, {'owner': OWNER, 'status': 'already_applied', 'changed_bytes': 0}
     row = _allocation(payload)
     if row is None:
-        raise ValueError('The modern IR installer must reserve the franchise ownership code first')
+        raise ValueError('The standard franchise installer must reserve its ownership code first')
     va = row['va']
-    filled, _ = space.install_code(payload, OWNER, code_for(va, store_va))
+    previous = code_for(va, 0) if current == 'guard' else None
+    filled, _ = space.install_code(payload, OWNER, code_for(va, store_va), previous=previous)
     image = XbeImage(filled)
     output = bytearray(filled)
     edits = []
     for at, old, patched in sites(va):
+        if not store_va and at == RELEASE_SITE:
+            continue
+        if current == 'guard' and at != RELEASE_SITE:
+            continue
         offset = image.offset(at, len(old))
         if output[offset:offset+len(old)] != old:
             raise ValueError(f'Unexpected franchise ownership hook at {at:#x}')
@@ -98,7 +111,10 @@ def apply(payload: bytes, store_va: int) -> tuple[bytes, dict]:
     for section in _sections(output):
         output[section.header_offset+36:section.header_offset+56] = section_digest(output, section)
     result = bytes(output)
-    if status(result, store_va) != 'applied':
+    if status(result, store_va) != target:
         raise ValueError('Franchise ownership installation failed verification')
-    return result, {'owner': OWNER, 'status': 'applied', 'code_va': hex(va), 'load_entry': hex(load_entry(result)),
-                    'edits': edits, 'changed_bytes': space.count_differing_bytes(payload, result)}
+    receipt = {'owner': OWNER, 'status': 'applied', 'mode': target, 'code_va': hex(va),
+               'edits': edits, 'changed_bytes': space.count_differing_bytes(payload, result)}
+    if store_va:
+        receipt['load_entry'] = hex(load_entry(result))
+    return result, receipt

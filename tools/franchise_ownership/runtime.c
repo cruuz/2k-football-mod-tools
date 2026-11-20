@@ -38,10 +38,18 @@ static int exclusive_outgoing(u8 *source, u8 *p, u8 *block) {
         u8 *team=load_club(i);
         if (!team) continue;
         if (team!=source && team[0x11C]<=65 && count_pointer((u8 **)team,team[0x11C],p)) return 0;
-        if (load_reserve_holds(LEAGUE,block,team,p)>0) return 0;
-        struct load_ir_club *ir=&ownership_store->clubs[i];
-        if (ir->count>20) continue;
-        for (u32 j=0; j<ir->count; ++j) if (ir->entries[j].player==p) return 0;
+        int reserve=load_reserve_holds(LEAGUE,block,team,p);
+        if (reserve>0 || (reserve<0 && team==source)) return 0;
+        if (ownership_store) {
+            struct load_ir_club *ir=&ownership_store->clubs[i];
+            if (ir->count>20) {
+                if (team==source) return 0;
+                continue;
+            }
+            for (u32 j=0; j<ir->count; ++j) if (ir->entries[j].player==p) return 0;
+        } else if (count_pointer(IR_MIRROR+i*5,5,p)) {
+            return 0;
+        }
     }
     return 1;
 }
@@ -128,9 +136,10 @@ u32 FC ownership_prepare_release(u8 *source, u8 *p) {
     if (!active && !detached) return 0; /* Already cut or no longer belongs to this club. */
     if (held_elsewhere) {
         /* An active or reserve owner at a different club keeps the player's original contract. */
+        u32 removed_active=active;
         while (active) { NATIVE_REMOVE(source,p); --active; }
         RECOUNT(source);
-        return 0;
+        return removed_active ? 2 : 0;
     }
     while (active>1) { NATIVE_REMOVE(source,p); --active; }
     for (u32 i=0; i<32; ++i)

@@ -138,7 +138,8 @@ OWNER_BYTES = {
     "playbook_pair": (8192, 0, 4096, 0, 512), "senior_bowl": (4096, 0, 0, 0, 65536),
     "franchise_2026": (5120, 0, 0, 0, 4096), "dynamic_kickoff_relocated": (1939, 0, 0, 0, 10),
     "guardian_overlay": (496, 0, 0, 0, 0),
-    "injured_reserve": (6144 + 3328, 0, 0, 0, 5312),  # Modern IR, franchise ownership checks and the 32-club IR store.
+    "franchise_ownership": (space.FRANCHISE_OWNERSHIP_SIZE, 0, 0, 0, 0),
+    "injured_reserve": (6144, 0, 0, 0, 5312),  # Modern IR, franchise ownership checks and the 32-club IR store.
 }
 
 # Keep the calibrated release layout for comparisons against the actual RC executable.
@@ -472,8 +473,10 @@ def _roster_heap(opts, target_mb) -> bool:
     return target_mb == 128 and on(opts, "k128_memory") and on(opts, "k128_roster_heap")
 
 
-def owners(opts: dict) -> list:
+def owners(opts: dict, target_mb: int = 64) -> list:
     out = [o for o, fs in OWNER_FIELDS.items() if any(on(opts, f) for f in fs)]
+    if target_mb == 128 and (on(opts, "injured_reserve_guard") or on(opts, "modern_injured_reserve")):
+        out.append("franchise_ownership")
     return out + list(INFRASTRUCTURE) if out else out
 
 
@@ -483,7 +486,7 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
     extra = XTLID_PRELOAD if on(opts, "depth_chart_rows") else 0
     if on(opts, "my_career") and on(opts, "my_career_home") and not on(opts, "module_loader"):
         extra += 3 * PAGE                      # Career Home's section is preloaded without the on-demand loader
-    found = owners(opts)
+    found = owners(opts, target_mb)
     if not found:
         return RETAIL_RESIDENT + extra
     code = sum(BUILD_OWNER_BYTES[o][0] + BUILD_OWNER_BYTES[o][1] for o in found)
@@ -499,6 +502,9 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
     pool = POOL_DOC + math.ceil(overflow / PAGE) * PAGE if overflow else 0
     if "backfield_cards" in found:
         last = space.BACKFIELD_VA + space.BACKFIELD_REQUEST[2] - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "franchise_ownership" in found:
+        last = space.FRANCHISE_OWNERSHIP_VA + space.FRANCHISE_OWNERSHIP_SIZE - space.POOL_VA
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     return RETAIL_RESIDENT + LEGACY_SPACE + SCALEOUT_V3 + pool + extra
 

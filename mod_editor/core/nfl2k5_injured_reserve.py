@@ -168,7 +168,7 @@ def _recognize(payload: bytes):
         others = {("retail" if image.read(va, len(before)) == before else "foreign")
                   for _l, va, before, _p in sites(0) if va != GUARD_VA}
         _require(others == {"retail"} and guard in ("retail", "guard"), "foreign or partial injured reserve sites")
-        _require(bank == "retail", "partial franchise ownership installation")
+        _require(bank in ("retail", "guard"), "partial franchise ownership installation")
         return guard, None
     code_va, store_va = rows["code"]["va"], rows["data"]["va"]
     _require(guard == "hooked", "the Pro Bowl guard is missing under the modern install")
@@ -176,7 +176,7 @@ def _recognize(payload: bytes):
     if bank == "applied":
         revision = runtime if code == code_for(code_va, store_va, load_entry=ownership.load_entry(payload)) else None
     else:
-        _require(bank == "retail", "foreign franchise ownership installation")
+        _require(bank in ("retail", "guard"), "foreign franchise ownership installation")
         revision = next((rev for rev in (pre_ownership_runtime, previous_runtime)
                          if code == code_for(code_va, store_va, revision=rev)), None)
     _require(revision is not None, "injured reserve code is foreign")
@@ -212,14 +212,27 @@ def _repin(buf: bytearray) -> None:
         buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
 
 
-def apply(payload: bytes, mode: str = "modern") -> tuple[bytes, dict]:
+def _reserve(payload, requests):
+    if space.status(payload) == "retail":
+        return space.apply(payload, requests, scaleout=True)
+    _require(space.is_scaleout(payload), "standard franchise ownership needs the scale-out allocator")
+    existing = {(row["owner"], row["kind"]) for row in space.layout(payload)["allocations"]}
+    missing = [row for row in requests if row[:2] not in existing]
+    return space.extend_scaleout(payload, missing) if missing else (payload, {})
+
+
+def apply(payload: bytes, mode: str = "modern", *, standard_guard: bool = False) -> tuple[bytes, dict]:
     """Install the guard (mode "guard") or modern IR (mode "modern", which includes the guard). Idempotent; the guard
     asked of a modern install is already there (already_applied)."""
     _require(mode in MODES, f"injured reserve mode must be one of {MODES}")
     state = status(payload)
     _require(state != "foreign", "the source executable's injured reserve sites are foreign or partially patched")
     common = dict(owner=OWNER, mode=mode, experimental=True, runtime_witnessed=False)
-    if state == "applied" or (mode == "guard" and state in ("guard", "previous")):
+    if standard_guard and mode == "guard" and state == "previous":
+        mode = "modern"  # Preserve and upgrade a source that already has modern IR.
+        common["mode"] = mode
+    if state == "applied" or (mode == "guard" and state in ("guard", "previous") and
+                              (not standard_guard or ownership.status(payload) == "guard")):
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
     before = payload
     edits = []
@@ -231,19 +244,16 @@ def apply(payload: bytes, mode: str = "modern") -> tuple[bytes, dict]:
         edits.append(dict(label="probowl_guard", va=hex(GUARD_VA), before=GUARD_RETAIL.hex(), after=GUARD.hex()))
         _repin(buf)
         result = bytes(buf)
-        _require(status(result) == "guard", "injured reserve guard postcondition failed")
+        guard_receipt = {}
+        if standard_guard:
+            result, _ = _reserve(result, ownership.REQUESTS)
+            result, guard_receipt = ownership.apply(result, 0)
+            _require(ownership.status(result) == "guard", "standard franchise guards failed verification")
+        _require(status(result) == "guard", "Pro Bowl guard postcondition failed")
         return result, dict(common, status="applied", changed_bytes=space.count_differing_bytes(before, result),
-                            edits=edits)
-    receipt = {}
+                            edits=edits, franchise_ownership=guard_receipt)
     prior = installed_revision(payload) if state == "previous" else None
-    if space.status(payload) == "retail":
-        payload, receipt = space.apply(payload, REQUESTS, scaleout=True)
-    else:
-        _require(space.is_scaleout(payload), "modern injured reserve needs the scale-out allocator")
-        taken = {(row["owner"], row["kind"]) for row in space.layout(payload)["allocations"]}
-        missing = [row for row in REQUESTS if row[:2] not in taken]
-        if missing:
-            payload, receipt = space.extend_scaleout(payload, missing)
+    payload, receipt = _reserve(payload, REQUESTS)
     rows = allocations(payload)
     code_va, store_va = rows["code"]["va"], rows["data"]["va"]
     old_code = code_for(code_va, store_va, revision=prior) if prior is not None else None
