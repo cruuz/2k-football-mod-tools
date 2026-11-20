@@ -378,6 +378,8 @@ class InPlacePreflightTests(unittest.TestCase):
         update = receipt["qb_room_source_update"]
         self.assertEqual((update["level"], update["result_sha256"]), ("realistic", hashlib.sha256(expected).hexdigest()))
         self.assertEqual((update["settings"]["status"], update["settings"]["va"]), ("applied", 0x1529000))
+        # Stage 3a handover: the Studio's Realistic is D1 with shadow off.
+        self.assertEqual((update["settings"]["stages"], update["settings"]["shadow"]), (room._code().STAGE_D1, False))
         self.assertNotIn("user_notes", receipt)
 
 

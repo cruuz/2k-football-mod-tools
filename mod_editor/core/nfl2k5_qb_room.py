@@ -19,10 +19,11 @@ REQUESTS = (space.QB_ROOM_REQUEST,)
 VA = space.QB_ROOM_VA
 SIZE = space.QB_ROOM_SIZE
 LEVELS = ("retail", "realistic")
-# Stage 0 handover: the hooks run and every pass only counts (and logs) in shadow. The stage bits move here, one
-# stage at a time, after each stage's tests and panel (BUILD_ORDERS order 3). Shadow is on only while no stage is.
-REALISTIC_STAGES = 0
-SHADOW_DEFAULT = REALISTIC_STAGES == 0
+# The stage bits move here one stage at a time, after each stage's tests and panel (BUILD_ORDERS order 3).
+# Stage 0 (hooks in place, shadow only) ended with the stage 3a handover (lead, 2026-11-20): D1 (veteran or rookie at
+# the start of the season; T1, T2 and the full-image T16) is live and shadow is off. 3b, 3c and 4a stay off.
+REALISTIC_STAGES = 1  # nfl2k5_qb_room_code.STAGE_D1
+SHADOW_DEFAULT = False
 ERRORS = (ValueError, TypeError, IndexError, KeyError, OverflowError, struct.error)
 
 

@@ -143,7 +143,9 @@ class OwnerTests(unittest.TestCase):
         settings = room.read_settings(self.applied)
         self.assertEqual((settings["status"], settings["stages"], settings["shadow"], settings["va"]),
                          ("applied", room.REALISTIC_STAGES, room.SHADOW_DEFAULT, 0x1529000))
-        self.assertEqual(room.SHADOW_DEFAULT, room.REALISTIC_STAGES == 0)
+        # Stage 3a handover: D1 only, shadow off (3b, 3c and 4a stay off).
+        self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT), (self.code.STAGE_D1, False))
+        self.assertEqual((settings["stages"], settings["shadow"]), (1, False))
         row = _room_row(space.layout(self.applied)["allocations"])
         self.assertEqual((row["va"], row["size"]), (0x1529000, 0x3000))
 
