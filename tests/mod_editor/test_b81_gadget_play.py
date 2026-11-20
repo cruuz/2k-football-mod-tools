@@ -57,7 +57,7 @@ QUALIFIED_TABLE_SHA256 = "5e71503f18a514faa70e70d1e1373c0d098d941440f5efe967beb7
 # The qualified code's classifier (select_slot) and the scoped tail after the builder (scope_return), by offset.
 QUALIFIED_SELECT_SLOT, QUALIFIED_ASSIGN, QUALIFIED_SCOPE_RETURN, QUALIFIED_TAPPED = 0x173, 0x502, 0xAD, 0xD6
 # Review F1 added the one-snap restore; this is the whole 2,048-byte allocation with the qualified link values.
-RUNTIME_CODE_SHA256 = "76b4698a112fc44f01e39cd0126dd70f0d3d87d43d0d5702620f3fbbf02cb46f"
+RUNTIME_CODE_SHA256 = "88dcc86b592046c4ac106295d841511365b02d74bf4302e0133bd19eb01a194d"
 
 
 def _sha(data: bytes) -> str:
@@ -802,7 +802,8 @@ class NativeLineupTests(unittest.TestCase):
         """Review F1: when 0x9F990 stores the next play for the offense whose last build substituted (no-huddle,
         audible, CPU re-pick), the restore runs the play-call offense build exactly as 0x89590 does (0x18AD10 with
         the side, its record +4 and the two packed situation values) and that build gives the game's own eleven for
-        the new play. Any other store (no mark, the other side, the defense) only runs the displaced 0xB8790."""
+        the new play. The marked side's first store spends the mark. Any other store (no mark, another side's mark,
+        the marked side on defense, the huddle play call 0x2074BC that 0x89590 follows) only runs 0xB8790."""
         book = self.setup_book(314)
         slot = self.links[314][(3, 147)]
         others = [link.play_index for link in book.formations[3].play_links if (3, link.play_index) not in self.links[314]]
@@ -812,18 +813,22 @@ class NativeLineupTests(unittest.TestCase):
         sync, builds = [], []
         hooks = [self._skip(self.after, 0xB8790, record=sync), self._skip(self.after, 0x18AD10, pop=0x10, record=builds)]
         try:
-            for mark, offense, expect in ((SIDES[0], SIDES[0], True), (0, SIDES[0], False), (SIDES[1], SIDES[0], False),
-                                          (SIDES[0], SIDES[1], False)):
-                with self.subTest(mark=hex(mark), offense=hex(offense)):
+            no_huddle, huddle = 0xA24EC, 0x2074C1   # 0x9F990's return from the no-huddle handler / the play call
+            for mark, offense, caller, expect, left in (
+                    (SIDES[0], SIDES[0], no_huddle, True, 0), (SIDES[0], SIDES[0], 0xA33F9, True, 0),
+                    (0, SIDES[0], no_huddle, False, 0), (SIDES[1], SIDES[0], no_huddle, False, SIDES[1]),
+                    (SIDES[0], SIDES[1], no_huddle, False, 0), (SIDES[0], SIDES[0], huddle, False, 0)):
+                with self.subTest(mark=hex(mark), offense=hex(offense), caller=hex(caller)):
                     sync.clear(), builds.clear()
                     m.put(marker, mark)
                     m.put(0xE60280, offense)
-                    m.call(restore, ecx=SIDES[0], edx=0x1234, esi=SIDES[0])
+                    # 0x9F990's frame at its call 0x9F9CB: EDI, ESI, EBX pushed, then its own return address.
+                    m.call(restore, ecx=SIDES[0], edx=0x1234, esi=SIDES[0], args=(0x1234, SIDES[0], 0x11111111, caller))
                     self.assertEqual(len(sync), 1)
                     self.assertEqual((sync[0]["ecx"], sync[0]["edx"]), (SIDES[0], 0x1234))
                     self.assertEqual(m.reg("ESI"), SIDES[0])
                     self.assertEqual(len(builds), int(expect))
-                    self.assertEqual(m.get(marker), 0 if expect else mark)
+                    self.assertEqual(m.get(marker), left)
                     if expect:
                         record = m.get(SIDES[0] + 0xC)
                         packed = m.get(record + 0xC8)
@@ -847,7 +852,8 @@ class NativeLineupTests(unittest.TestCase):
             m.put(0xE602B8, 12)
             m.put(0xE60280, SIDES[0])
             m.put(0xE60284, SIDES[1])
-            m.call(restore, ecx=SIDES[0], edx=0, esi=SIDES[0], stop=0x18A646, budget=300000)
+            m.call(restore, ecx=SIDES[0], edx=0, esi=SIDES[0], args=(0, SIDES[0], 0, 0xA24EC), stop=0x18A646,
+                   budget=300000)
             rebuilt = self.after.words(m.reg("ESP") + 0x74, 11)
         finally:
             m.uc.hook_del(sync_only)

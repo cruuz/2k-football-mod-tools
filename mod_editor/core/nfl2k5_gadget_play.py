@@ -30,10 +30,13 @@ as fast replaces the slot's pick.
 One snap only (beta 81 review F1). The rule changes one build's output; the game rebuilds a lineup only on the
 play-call path. The no-huddle, audible and CPU re-pick handlers store the next play with 0x9F990 and keep the eleven
 on the field, so the emulator showed the GAD staying for a no-huddle snap. 0x9F990's call to 0xB8790 (right after the
-store) now runs through a small restore: when the stored side is the offense and its last build carried a
-substitution (a marker the substitution sets and every play-call offense build clears), the offense lineup is
-rebuilt exactly as 0x89590 builds it, which gives the game's own eleven for the new play. The marker is a word in
-the owner's code allocation, which lies in the writable scale-out pool section (as the QB bank's state does).
+store) now runs through a small restore. A substitution marks the offense side; the side's next store, or its next
+play-call offense build, spends the mark. When that store is for the offense and is not the huddle play call
+(0x2074BC, always followed by the play-call build), the offense lineup is rebuilt exactly as 0x89590 builds it: the
+game's own eleven for the stored play (so after a gadget play a no-huddle or audible snap lines up the normal players
+for the new play, as a huddle call of it would, rather than the same eleven; retail no-huddle keeps the eleven).
+The marker is a word in the owner's code allocation, which lies in the writable scale-out pool section (as the QB
+bank's state does).
 
 Placement. The code and table use the fixed gadget slots (nfl2k5_xbe_space.GADGET_REQUESTS: code 0x151F680, 2,048
 bytes; table 0x151FE80, 12,800 bytes, right below the Backfield cards at 0x1523080), which every beta-81 standard
@@ -95,6 +98,7 @@ GUARDS = (
     (0x0009F990, 0x3B, (), "99150b8c6d835d4a46916383f88eddfd66f58a587e7ea0fdc7d19b19bdce5c33", "play store, before the restore site"),
     (0x0009F9D0, 0xA8, (), "9c0c03d32d2954adf2e938a39bda7e8b69d7f4a2088c9f7ce1b34f139e6755c4", "play store, after the restore site"),
     (0x000895E4, 0x40, (), "52d3d3f18eda6f9d2e54973aecc3e230ae77c3c90aac6568b0267cac90736b0f", "play-call offense build the restore repeats"),
+    (0x002074AD, 0x1B, (), "4b2164592b7b5f25f4c1bcefb1bf188dde46c072edb123a72632f09c25b723d3", "huddle play-call store the restore leaves alone"),
 )
 
 

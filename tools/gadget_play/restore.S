@@ -3,25 +3,30 @@
    no-huddle / audible / re-pick handlers (0xA24B0 and others) store the next play
    with 0x9F990 and keep the eleven already on the field, so a GAD put in by this
    rule would stay. 0x9F990 calls 0xB8790 (ECX side, EDX play) right after storing
-   the play; that call comes here. When the stored side is the offense whose last
-   build carried a substitution, the offense lineup is rebuilt exactly as 0x89590
-   builds it (0x18AD10 with the play-call record and the two packed situation
-   values), which gives the game's own eleven for the new play. Every other store
-   (the defense, a side without a substitution) only runs 0xB8790. */
+   the play; that call comes here. The first store for the side whose last build
+   carried a substitution spends the mark. When that store is for the offense and
+   is not the huddle play call (0x2074BC, which the play-call build 0x89590 always
+   follows), the offense lineup is rebuilt exactly as 0x89590 builds it (0x18AD10
+   with the play-call record and the two packed situation values), which gives the
+   game's own eleven for the stored play; the rule does not act on that rebuild (it
+   acts only under 0x89624). Every other store only runs 0xB8790. */
 .intel_syntax noprefix
 .text
 .global restore_after_store, gadget_team
 .set formation_sync, 0xb8790
 .set offense_build, 0x18ad10
 .set offense_side, 0xe60280
+.set huddle_store_return, 0x2074c1    /* after 0x2074BC: call 0x9F990 (the play call) */
 restore_after_store:
     call formation_sync               /* the displaced call, same registers */
     cmp esi,dword ptr [gadget_team]   /* ESI: 0x9F990's side */
     jne done
+    mov dword ptr [gadget_team],0     /* this side's next store spends the mark */
     cmp esi,dword ptr [offense_side]
     jne done
+    cmp dword ptr [esp+0x10],huddle_store_return   /* 0x9F990's return: ebx, esi, edi pushed */
+    je done
     pushad
-    mov dword ptr [gadget_team],0
     mov ecx,esi
     mov edx,dword ptr [ecx+0xc]       /* the side's play-call record */
     sub esp,8
