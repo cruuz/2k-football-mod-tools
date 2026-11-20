@@ -48,6 +48,7 @@ OPTIONAL_STEPS = frozenset({
     "kit_fixes_2026_uf3", "kit_fixes_2026_sea1", "kit_fixes_2026_ov1", "glyph_fixes_2026", "menu_icon_uf3",
     "menu_helmet_w2026", "menu_chiefs_2026", "pants_hem_2026", "kit_fixes_2026_ku1", "kit_fixes_2026_sw1",
     "kit_fixes_2026_names", "sideline_2026", "moment_kits", "nameplate_fixes_2026", "team_sleeves",
+    "kit_fixes_2026_b81",
     # stadiums, fields and their colour
     "modern_color_bundles", "modern_arrowhead", "modern_metlife", "modern_venues_2026", "modern_metlife_model",
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant", "modern_mercedes_benz",
@@ -7837,6 +7838,22 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["result"]["moment_scans"] = scans.image_status(target, scans_source)
         if receipt["result"]["moment_scans"] != "applied":
             raise ValueError("the moment face scans failed their read-back on the copy")
+    if is_image:
+        # b81-art (Noah 11/18: "Helmets also have duplicate holes/spots for the modernized design", and the old logo
+        # showing beside the new one): the finished 2026 helmets lose the 2004 Revolution vents painted beside the
+        # modern shell's own vents, the 2004 flag's outline and the old-logo pieces. The last uniform writer: the
+        # Anniversary and classic kits above have read their donor kits, so nothing else sees the cleaned textures.
+        # Pinned to the known finished spans; any other art (a user's own helmet) is left alone.
+        b81_helmets = _core_module("nfl2k5_kit_fixes_2026")
+        if b81_helmets is None:
+            raise RuntimeError("the 2026 kit art repair module is not available in this build")
+        with _optional(receipt, target, progress, "kit_fixes_2026_b81"):
+            b81_receipt = b81_helmets.apply_helmets_b81(target)
+            if b81_receipt["state"] == "applied":
+                receipt["steps"].append({"step": "kit_fixes_2026_b81",
+                                         **{k: v for k, v in b81_receipt.items() if k != "kits"},
+                                         "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                                  for kit in b81_receipt["kits"]]})
     if loaded_weather_plan is not None:
         _step("weather_plan")
         weather = _core_module("nfl2k5_weather")

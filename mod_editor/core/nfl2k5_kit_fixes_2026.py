@@ -47,6 +47,16 @@ of the letter atlas it actually carries, atlas offsets included (``data/nfl2k5_k
 hyphen 32 texels apart, A at 96) over the retail 1994 metrics (wide hyphen, A at 128), so every letter of a name
 was copied from its neighbour's cell. A ``relayout`` name row is applied only when the kit's own atlas, measured
 column by column, has exactly the donor's glyph layout and not its own (``nameplate_layout``).
+
+Job b81-art (beta 81, Noah 11/18: "Helmets also have duplicate holes/spots for the modernized design, needs cleaned
+up", and the old logo still showing beside the new one) finishes the in-game helmets in
+``data/nfl2k5_kit_fixes_2026_b81.json`` (``apply_helmets_b81``, the last uniform writer of a build, after the
+Anniversary and classic kits have read their donors). The Revolution shell art (``helmet02``) still carried the 2004
+shell's painted vents (four crown crescents, two rear slits) beside the vents the modern shell draws as geometry, the
+dotted outline of the 2004 flag on the back, and on some teams pieces of the 2004 logo beside the 2026 one; both
+shells carried a few old-logo pieces. Each row is pinned to the finished texture of the released build and repaints
+only the listed texels with colours the texture's own palette already holds at that texel's alpha (``runs``), so no
+palette entry moves and every other texel, mip rule, wrapper and allocation stays as it was.
 """
 from __future__ import annotations
 
@@ -72,6 +82,7 @@ DATA_OV1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_ov1
 DATA_KU1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_ku1.json"
 DATA_SW1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_sw1.json"
 DATA_NAMES = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_names.json"
+DATA_B81 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_b81.json"
 DATA_SIDELINE = Path(__file__).resolve().parents[2] / "data/nfl2k5_sideline_2026.json"
 KINDS = ("tset", "txtr", "copy_video", "palette", "clear", "unif", "name")
 SIDELINE_SCHEMA = "nfl2k5_sideline_2026/v1"
@@ -752,6 +763,16 @@ def paint(rgba, ops, donors=None):
             out[pts[:, 1], pts[:, 0], :3] = np.array(hex_rgb(op["color"]), np.uint8)
             if "alpha" in op:
                 out[pts[:, 1], pts[:, 0], 3] = int(op["alpha"])
+        elif kind == "runs":
+            # b81-art: rows of texels, each with its own colour: [y, x0, "RRGGBBRRGGBB..."] (a repainted piece of
+            # shell keeps its shading). No ``color`` key, so the compile asks the palette for nothing new; the
+            # authoring step only writes colours the palette already holds at each texel's alpha.
+            for y, x0, colours in op["rows"]:
+                data = bytes.fromhex(colours)
+                count = len(data) // 3
+                require(len(data) == 3 * count and count > 0 and 0 <= y < h and 0 <= x0 and x0 + count <= w,
+                        "texel run outside the texture")
+                out[y, x0:x0 + count, :3] = np.frombuffer(data, np.uint8).reshape(count, 3)
         elif kind == "stamp":
             donor = op.get("donor", "self")
             # a chunk of the same kit (an integer) or, uf3, of another kit ("SELECTOR:chunk")
@@ -1606,6 +1627,17 @@ def seattle():
 def apply_seattle(path, *, strict=False):
     """Studio uniform finish pass for sea1 (after ``apply_finish``): pinned spans only."""
     return apply_to_image(path, strict=strict, document=seattle())
+
+
+def helmets_b81():
+    """The b81-art document: painted 2004 vents, the old flag outline and old-logo pieces on the finished helmets."""
+    return spec(DATA_B81)
+
+
+def apply_helmets_b81(path, *, strict=False):
+    """Studio uniform finish pass for b81-art, the last uniform writer (after the Anniversary and classic kits):
+    pinned spans only."""
+    return apply_to_image(path, strict=strict, document=helmets_b81())
 
 
 def overlaps():
