@@ -55,20 +55,21 @@ class PositionClass(NamedTuple):
 
 POSITION_SCALE = 100_000_000
 POSITION_WEEKS = 32               # pos_accept entries per class; longer runs use the last entry
-# Order is the class index in positions.S (pos_slots). Frozen after calibration round 4 of pos2/DESIGN.md section 7
-# (roots 2501-2507, two seasons each; pos2/calib/round4/constants.json). Calibration changed only base_chance and accept;
-# zero_point and reference_durability are the design's.
+# Order is the class index in positions.S (pos_slots). Refit after the independent review (rev-pos2 H1): absences are
+# counted by the NFL study's rule (a listed injured player who did not play counts, whatever the status code); frozen
+# after refit round R3 on roots 2501-2508 (pos2/refit/r3/constants.json). Calibration changed only base_chance and
+# accept; zero_point and reference_durability are the design's.
 POSITION_CLASSES = (
-    PositionClass("tackle", 1_165_000, 93, 110,
-                  ((1, 0.2398), (2, 0.2855), (3, 1.0), (7, 0.0352), (15, 0.1105), (31, 0.6398))),
-    PositionClass("guard", 823_000, 91, 110,
-                  ((1, 0.1928), (2, 0.2295), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.1918))),
-    PositionClass("center", 509_000, 91, 110,
-                  ((1, 0.3486), (2, 0.4151), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.8324))),
-    PositionClass("end", 784_000, 81, 100,
-                  ((1, 0.0855), (2, 0.1018), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.2531))),
-    PositionClass("halfback", 2_369_000, 83, 100,
-                  ((1, 0.158), (2, 0.1881), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.8385))),
+    PositionClass("tackle", 637_000, 93, 110,
+                  ((1, 0.226), (2, 0.269), (3, 0.6139), (7, 0.0545), (15, 0.1845), (31, 1.0))),
+    PositionClass("guard", 287_000, 91, 110,
+                  ((1, 0.1177), (2, 0.1401), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.1151))),
+    PositionClass("center", 322_000, 91, 110,
+                  ((1, 0.1778), (2, 0.2117), (3, 0.4419), (7, 0.0), (15, 0.0271), (31, 1.0))),
+    PositionClass("end", 220_000, 81, 100,
+                  ((1, 0.0925), (2, 0.1101), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.8354))),
+    PositionClass("halfback", 1_852_000, 83, 100,
+                  ((1, 0.098), (2, 0.1166), (3, 0.8052), (7, 0.023), (15, 0.0414), (31, 1.0))),
 )
 # False is the cut-line fallback of pos2/DESIGN.md section 8: no per-carry halfback chance, weekly roll left as it is.
 HALFBACK_SUPPLEMENT = True

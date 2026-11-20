@@ -98,10 +98,11 @@ def rate_with_room(ratings, carrier_rating, nominal, fraction):
             chance += (position.base_chance / rules.POSITION_SCALE * rate / rules.DEFAULT_RATE
                        * max(0, position.zero_point - rating) / (position.zero_point - position.reference_durability))
         return chance
-    rate = nominal
-    while rate > 100 and total(rate) > fraction:
-        rate -= 100
-    return rate
+    # The chance is linear in the rate, so take the largest multiple of 100 that keeps the sum at or under `fraction`
+    # (between 100 and Custom 100 percent). `nominal` is kept for the callers' readability; refit constants of 11/20 made
+    # a cap at the nominal rate leave too few proposals for the coverage checks.
+    rate = int(fraction / total(1) // 100 * 100)
+    return max(100, min(100_000, rate))
 
 def effective(scale_bits, slider, fpcw=FPCW_64):
     """fld scale; fmul slider; fistp qword under the given control word (round to nearest), then the clamp."""
@@ -760,7 +761,7 @@ class NativeCommit(NativeMachine):
 
     def test_no_write_or_draw_outside_the_bank_the_stack_and_the_victims_health(self):
         ratings = (93, 70, 91, 60, 99, 81, 40, 83, 55)
-        self.link(rules, min(rate_with_room(ratings, carrier, 3_000, .85) for carrier in (83, 55)))
+        self.link(rules, min(rate_with_room(ratings, carrier, 3_000, .95) for carrier in (83, 55)))
         self.lineup(tuple((side, slot, rating) for (_, side, slot, _), rating
                           in zip(WALK, (93, 70, 91, 60, 99, 81, 40, 83, 55))))
         shared = bytes(self.m.uc.mem_read(SHARED_RNG, RNG_SIZE))
