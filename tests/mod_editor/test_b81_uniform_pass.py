@@ -63,6 +63,9 @@ FOUR_LAYERS = ("27A0",)
 PER_DIGIT = {selector: (0, 4) for selector in RAVENS}
 #: batch 4 (KITS4): the only jersey rows that repaint beyond the chest strip under the collar
 WHOLE_JERSEY = ("09A9", "09H9", "26H4")
+#: R2 (order R2-C): the Commanders road shoulder swoosh, drawn by the game across the torso texture's front/back seam:
+#: (first column, first row, last column + 1, last row + 1) of the hook on the front panel and the tail on the back panel
+WAS_ROAD_SWOOSH = ((54, 9, 72, 22), (250, 9, 268, 22), (283, 14, 298, 40), (483, 14, 496, 40))
 
 
 def kit_rows():
@@ -152,7 +155,9 @@ class KitDocument(unittest.TestCase):
                           ("09A9", "pants00"), ("09H9", "pants00"), ("11A3", "sleeve00"), ("11H3", "sleeve00"),
                           ("14A0", "pants00"), ("14A0", "sleeve00"), ("14A0", "socks00"), ("14H0", "sleeve00"),
                           ("15A0", "pants00"), ("15H0", "pants00"), ("15H0", "socks00"),
-                          ("17A8", "pants00"), ("17H8", "pants00"), ("19A2", "pants00"), ("19H2", "pants00"),
+                          ("17A0", "sleeve00"), ("17A3", "sleeve00"), ("17A8", "pants00"), ("17A8", "sleeve00"),
+                          ("17H0", "sleeve00"), ("17H3", "sleeve00"), ("17H8", "pants00"), ("17H8", "sleeve00"),
+                          ("19A2", "pants00"), ("19H2", "pants00"),
                           ("21A4", "sleeve00"), ("21H4", "sleeve00"), ("23A0", "pants00"), ("25H0", "pants00"),
                           ("26A4", "pants00"), ("26A4", "socks00"), ("26H4", "sleeve00"), ("27A0", "pants00"),
                           ("27H0", "pants00")])
@@ -170,8 +175,9 @@ class KitDocument(unittest.TestCase):
         # measured width (25H0)
         # Noah 11/19 (decision 5, "use the prototype"): the Buccaneers pants stripe black, orange, red, orange, black at
         # about 5.8 cm on the white home pants (27H0) and the pewter road pants that wear the same stripe (27A0)
-        # R2 (order R2-C): the Bengals pants tiger strokes, one geometry on all six Bengals pants (06H0 06A0 06H5 06A5
-        # 06H6 06A6), each in its own stroke colour
+        # R2 (order R2-C): the Saints sleeve fleur-de-lis at the emblem's own proportions (17H0 17A0, and 17H3 17A3 17H8
+        # 17A8, which carry the same fleur art at the same squat size); the Bengals pants tiger strokes, one geometry on all six Bengals pants (06H0 06A0 06H5 06A5
+        # 06H6 06A6), each in its own stroke colour; the Lions Defend the Den side stripe (09H9/09A9, rows already listed)
 
     def test_the_jersey_rows_repaint_only_the_chest_under_the_collar(self):
         # Round 2 (Noah 11/18: "the NY logo on the giants jersey below the nfl patch is too large. There are likely
@@ -181,6 +187,7 @@ class KitDocument(unittest.TestCase):
         # Batch 3 added: wordmarks redrawn at their real width (Eagles, Titans, Broncos), the Saints 60th patch at its
         # real size, the Texans memorial oval, the Panthers alternate and Bills Nickel City shields.
         # Batch 4 (KITS4) named the only jerseys repainted beyond that strip: see test_the_batch_4_whole_jersey_rows.
+        # R2 (order R2-C): the Commanders road 29A0 also repaints its two shoulder swooshes (WAS_ROAD_SWOOSH).
         jerseys = [r for r in kit_rows() if r["texture"] == "jersey00"]
         self.assertEqual(len(jerseys), 170)
         self.assertEqual(len({r["selector"] for r in jerseys}), 170)
@@ -189,6 +196,9 @@ class KitDocument(unittest.TestCase):
             if row["selector"] in WHOLE_JERSEY:
                 continue
             for run in [op for op in row["ops"] if op["op"] == "runs"][0]["rows"]:   # [row, first column, colours]
+                if row["selector"] == "29A0" and any(x0 <= run[1] and run[1] + len(run[2]) // 6 <= x1 and y0 <= run[0] < y1
+                                                     for x0, y0, x1, y1 in WAS_ROAD_SWOOSH):
+                    continue
                 self.assertTrue(58 <= run[0] <= 112, (row["selector"], run[:2]))   # down to the old lettering some kits lose
                 self.assertTrue(90 <= run[1] and run[1] + len(run[2]) // 6 <= 216, (row["selector"], run[:2]))
         for selector in ("25H7", "25A7", "28H7", "28A7", "11H4", "11A4", "07H9", "07A9"):
@@ -782,6 +792,95 @@ class RealDisc(unittest.TestCase):
             shapes[selector] = steps
         for selector in colours:
             self.assertTrue(np.array_equal(shapes[selector][:, 108:404], shapes["06H5"][:, 108:404]), selector)   # one geometry
+
+    def test_the_lions_defend_the_den_pants_wear_the_black_band_and_blue_wedge(self):
+        # R2 (order R2-C): the 2026 Defend the Den pants carry one black band on the side seam that starts as a slanted
+        # point below the hip and widens slowly to the hem, and a kit blue wedge on its front side from a point about
+        # two thirds down (picture DET 2026-11-01 4-5: black 0.076 of the thigh depth at mid-thigh, black : blue at the
+        # knee 28 : 17). Flat colours, no piping; the base colour is not touched. The game had no stripe.
+        black, blue, base = (0x18, 0x19, 0x1B), (0x00, 0x76, 0xB6), (0xB6, 0xC1, 0xDB)
+        def cols(pants, y, colour):
+            return [x for x in range(100, 412) if near(tuple(int(v) for v in pants[y, x, :3]), colour, 6)]
+        for selector in ("09H9", "09A9"):
+            pants = self.after(selector, "pants00")
+            for y in range(30, 59):
+                self.assertEqual(cols(pants, y, black), [], (selector, y))                     # nothing above the start
+            self.assertEqual(cols(pants, 60, black), [144, 367], selector)                     # the point, both legs
+            self.assertEqual(cols(pants, 61, black), [143, 144, 367, 368], selector)
+            self.assertEqual(cols(pants, 120, black), [*range(138, 145), *range(367, 374)], selector)   # 7 texels, 1.7 cm
+            self.assertEqual(cols(pants, 120, blue), [], selector)
+            self.assertEqual(cols(pants, 190, black), [*range(136, 145), *range(367, 376)], selector)   # 9 full + a blend
+            self.assertEqual(cols(pants, 190, blue), [*range(129, 135), *range(377, 383)], selector)    # 6 texels, 1.4 cm
+            for y in range(100, 156):
+                self.assertEqual(cols(pants, y, blue), [], (selector, y))                      # the wedge starts lower
+            for x in (126, 145, 366, 385):                                                       # the base on both sides
+                self.assertTrue(near(tuple(int(v) for v in pants[190 if x in (126, 385) else 120, x, :3]), base, 12), (selector, x))
+
+    def test_the_commanders_road_shoulder_swoosh_is_one_solid_mark(self):
+        # R2 (order R2-C, art director's ruling): the game draws the road shoulder swoosh across the torso texture's
+        # front/back seam: a hook of 13 or 14 solid texels on the front panel and a faint sliver of a tail on the back
+        # (6 and 9 solid texels), white notches at the seam. Redrawn on the player model as one solid kit-burgundy swoosh,
+        # hook to the front, tail to the back, 5.5 cm tip to tip (5.61 and 5.54 cm): the tail is solid down the back panel.
+        burgundy = np.array((0x5E, 0x15, 0x19))
+        torso = self.after("29A0", "jersey00")[..., :3].astype(int)
+        solid = np.abs(torso - burgundy).max(-1) <= 6
+        counts, spans = [], []
+        for x0, y0, x1, y1 in WAS_ROAD_SWOOSH:
+            box = solid[y0:y1, x0:x1]
+            rows = np.flatnonzero(box.any(axis=1)) + y0
+            counts.append(int(box.sum()))
+            spans.append((int(rows.min()), int(rows.max()), bool((np.diff(rows) == 1).all())))
+        self.assertEqual(counts, [23, 24, 30, 28])
+        self.assertEqual(spans, [(12, 17, True), (12, 17, True), (17, 34, True), (17, 33, True)])
+        for x0, y0, x1, y1 in WAS_ROAD_SWOOSH:
+            self.assertFalse(solid[y1:y1 + 16, x0:x1].any())                     # nothing below the swoosh boxes
+
+    def test_the_saints_sleeve_fleur_stands_taller_than_wide(self):
+        # R2 (order R2-C): the game's sleeve fleur was squat (29 to 33 texels wide, 7.6 to 8.6 cm on the body against
+        # 5.8 to 6.2 cm tall: w/h 1.23 to 1.50; the 2026 pictures read 0.78 and 0.86, the club emblem 0.83). Redrawn from
+        # the repo's emblem at the old height and centre: 18 to 20 texels wide, w/h 0.84 to 0.86 on the body (the sleeve
+        # texel is 0.26 cm across and 0.21 cm down there).
+        from scipy import ndimage
+        want = {"17H0": [(51, 9, 20, 30), (58, 73, 19, 30)], "17A0": [(52, 9, 19, 28), (58, 73, 18, 28)]}
+        want.update({"17H3": want["17H0"], "17A3": want["17H0"], "17H8": want["17A0"], "17A8": want["17A0"]})
+        for selector, boxes in want.items():
+            sleeve = self.after(selector, "sleeve00")[..., :3].astype(int)
+            colours, counts = np.unique(sleeve.reshape(-1, 3), axis=0, return_counts=True)
+            base = colours[counts.argmax()]
+            ink = np.abs(sleeve - base).sum(-1) > 24
+            found = []
+            for rows in (slice(0, 64), slice(64, 128)):
+                half = np.zeros(ink.shape, bool)
+                half[rows] = ink[rows]
+                lab, n = ndimage.label(half, structure=np.ones((3, 3)))
+                for i in range(1, n + 1):
+                    ys, xs = np.nonzero(lab == i)
+                    if ys.max() - ys.min() >= 20 and xs.max() - xs.min() < 60:          # the fleur, not the swoosh or a stripe
+                        found.append((int(xs.min()), int(ys.min()), int(xs.max() - xs.min() + 1), int(ys.max() - ys.min() + 1)))
+            self.assertEqual(found, boxes, selector)
+
+    def test_the_bengals_strokes_are_blades_that_hold_their_thickness(self):
+        # R2 (order R2-C, second pass, art director): the real strokes are blades that keep nearly their full thickness
+        # for most of their length and taper over the last third (2026 White Bengal pictures 3 and 5: thickness at half
+        # length 0.83 of the seam end, band about half ink). The first pass thinned at once (0.56 to 0.67 on four strokes).
+        from scipy import ndimage
+        pants = self.after("06H5", "pants00")[..., :3].astype(float)
+        b, s = np.array((255.0, 255.0, 255.0)), np.array((11.0, 11.0, 11.0))
+        ink = np.round(np.clip(((pants - b) @ (s - b)) / ((s - b) @ (s - b)), 0, 1)[:200] * 4) >= 2
+        ratios = []
+        for x0, x1, seam, step in ((108, 200, 111, 1), (312, 404, 400, -1)):
+            lab, n = ndimage.label(ink[:, x0:x1], structure=np.ones((3, 3)))
+            for q in (np.argwhere(lab == i) for i in range(1, n + 1)):
+                if len(q) < 10:
+                    continue
+                cols = q[:, 1] + x0
+                tip = cols.max() if step > 0 else cols.min()
+                at_seam = int((cols == seam + step).sum())
+                at_half = int((cols == int(round(seam + (tip - seam) / 2))).sum())
+                ratios.append(at_half / at_seam)
+        self.assertEqual(len(ratios), 14)
+        self.assertGreaterEqual(min(ratios), 0.75, ratios)
+        self.assertGreaterEqual(float(np.mean(ratios)), 0.85, ratios)
 
     def test_every_kit_row_is_waiting_on_the_released_disc_and_compiles_to_its_pin(self):
         result = up.states(DISC)
