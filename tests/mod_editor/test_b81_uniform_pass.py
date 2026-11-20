@@ -145,8 +145,9 @@ class KitDocument(unittest.TestCase):
                           ("01H9", "pants00"),
                           ("02A3", "pants00"), ("02H3", "pants00"),
                           ("03A0", "sleeve00"), ("03H0", "sleeve00"), ("04A2", "pants00"), ("04H2", "pants00"),
-                          ("06A0", "sleeve00"), ("06A5", "sleeve00"), ("06A6", "sleeve00"), ("06H5", "sleeve00"),
-                          ("06H6", "sleeve00"),
+                          ("06A0", "pants00"), ("06A0", "sleeve00"), ("06A5", "pants00"), ("06A5", "sleeve00"),
+                          ("06A6", "pants00"), ("06A6", "sleeve00"), ("06H0", "pants00"), ("06H5", "pants00"),
+                          ("06H5", "sleeve00"), ("06H6", "pants00"), ("06H6", "sleeve00"),
                           ("07A7", "sleeve00"), ("07H0", "sleeve00"), ("07H7", "sleeve00"),
                           ("09A9", "pants00"), ("09H9", "pants00"), ("11A3", "sleeve00"), ("11H3", "sleeve00"),
                           ("14A0", "pants00"), ("14A0", "sleeve00"), ("14A0", "socks00"), ("14H0", "sleeve00"),
@@ -169,6 +170,8 @@ class KitDocument(unittest.TestCase):
         # measured width (25H0)
         # Noah 11/19 (decision 5, "use the prototype"): the Buccaneers pants stripe black, orange, red, orange, black at
         # about 5.8 cm on the white home pants (27H0) and the pewter road pants that wear the same stripe (27A0)
+        # R2 (order R2-C): the Bengals pants tiger strokes, one geometry on all six Bengals pants (06H0 06A0 06H5 06A5
+        # 06H6 06A6), each in its own stroke colour
 
     def test_the_jersey_rows_repaint_only_the_chest_under_the_collar(self):
         # Round 2 (Noah 11/18: "the NY logo on the giants jersey below the nfl patch is too large. There are likely
@@ -746,6 +749,39 @@ class RealDisc(unittest.TestCase):
             left = {y: int(np.flatnonzero(ink[y, 120:200]).min()) for y in (93, 105)}
             self.assertGreaterEqual(left[93] - left[105], 2, selector)              # the top leans right
             self.assertFalse(ink[78:92, 150:176].any(), selector)                   # nothing new at the collar shield
+
+    def test_the_bengals_pants_wear_seven_tiger_strokes_from_one_column(self):
+        # R2 (order R2-C): the club's one pants pattern, read off the 2026 White Bengal photographs: seven strokes from
+        # the waist to the knee, each thick on one column at the front side seam (111 on the left leg, 400 on the right),
+        # sweeping back and up to a point, the third and fifth forked; the same geometry on all six Bengals pants in each
+        # one's own stroke colour (before: seven blunt bars on 06H5, thin dashes on 06H0/06A0, nine claws on the rest)
+        from scipy import ndimage
+        colours = {"06H0": ((0, 0, 0), (0xFB, 0x4F, 0x14)), "06A0": ((255, 255, 255), (0, 0, 0)),
+                   "06H5": ((255, 255, 255), (0x0B, 0x0B, 0x0B)), "06A5": ((255, 255, 255), (0x0F, 0x0F, 0x0F)),
+                   "06H6": ((255, 255, 255), (0xFA, 0x50, 0x14)), "06A6": ((255, 255, 255), (0xFA, 0x50, 0x14))}
+        shapes = {}
+        for selector, (base, stroke) in colours.items():
+            pants = self.after(selector, "pants00")[..., :3].astype(float)
+            b, s = np.array(base, float), np.array(stroke, float)
+            steps = np.round(np.clip(((pants - b) @ (s - b)) / ((s - b) @ (s - b)), 0, 1)[:200] * 4)   # blend steps 0-4
+            ink = steps >= 2
+            for x0, x1, seam in ((108, 200, 111), (312, 404, 400)):
+                lab, n = ndimage.label(ink[:, x0:x1], structure=np.ones((3, 3)))
+                strokes = [q for q in (np.argwhere(lab == i) for i in range(1, n + 1)) if len(q) >= 10]
+                self.assertEqual(len(strokes), 7, (selector, seam))
+                forks = 0
+                for q in strokes:
+                    cols = q[:, 1] + x0
+                    self.assertEqual(int(cols.min() if seam == 111 else cols.max()), seam, selector)   # thick end on the seam
+                    tip = cols.max() if seam == 111 else cols.min()
+                    self.assertLessEqual(int((cols == tip).sum()), 2, selector)                      # a point of 1 or 2 texels
+                    self.assertGreaterEqual(abs(int(tip) - seam), 30, selector)
+                    split = sum(1 for c in np.unique(cols) if (np.diff(np.sort(q[cols == c, 0])) > 1).any())
+                    forks += split >= 2
+                self.assertEqual(forks, 2, (selector, seam))
+            shapes[selector] = steps
+        for selector in colours:
+            self.assertTrue(np.array_equal(shapes[selector][:, 108:404], shapes["06H5"][:, 108:404]), selector)   # one geometry
 
     def test_every_kit_row_is_waiting_on_the_released_disc_and_compiles_to_its_pin(self):
         result = up.states(DISC)
