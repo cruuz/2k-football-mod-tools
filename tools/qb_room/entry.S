@@ -45,10 +45,47 @@ sign_after:
     pushfd
     pushad
     cld
+    push 0                      /* pregame = 0: the post-game call */
     push dword ptr [qb_menu]
-    call emergency_pass         /* void __attribute__((cdecl)) emergency_pass(u32 menu) */
-    add esp, 4
+    call emergency_pass         /* void __attribute__((cdecl)) emergency_pass(u32 menu, u32 pregame) */
+    add esp, 8
     popad
     popfd
     jmp 0x248015
+/* The floor (DESIGN addendum F3, F8): the pre-game call 0x247DCA points here. opening_pass runs as in opening_entry; with
+   stage bit 64 clear the stub then jumps to 0x2BE020 exactly as opening_entry does. With it set it CALLS the IR pass
+   0x2BE020 with the registers and flags the call site left, runs emergency_pass(menu, 1) with the weekly advance's menu (EBP,
+   loaded at 0x247D50 and not written again before 0x247DCA), restores everything the IR pass left and returns to
+   0x247DCF. sign_ungated is the native signing 0x322BB0 entered past its gates (stdcall, the same four arguments,
+   ret 0x10): its own first instruction, then the rest of the routine, as the practice-squad guard and the economy
+   gate enter it; the installer authenticates 0x322BB0 `81ec14010000` and the bytes from 0x322BB6 on. */
+.section .text.floor,"ax",@progbits
+.global pregame_entry, sign_ungated
+pregame_entry:
+    pushfd
+    pushad
+    cld
+    call opening_pass           /* void __attribute__((cdecl)) opening_pass(void) */
+    test byte ptr [qb_settings + 12], 64
+    jnz 1f
+    popad
+    popfd
+    jmp 0x2be020
+1:
+    popad
+    popfd
+    call 0x2be020
+    pushfd
+    pushad
+    cld
+    push 1                      /* pregame = 1 */
+    push ebp
+    call emergency_pass         /* void __attribute__((cdecl)) emergency_pass(u32 menu, u32 pregame) */
+    add esp, 8
+    popad
+    popfd
+    ret
+sign_ungated:
+    sub esp, 0x114
+    jmp 0x322bb6
 .section .note.GNU-stack,"",@progbits

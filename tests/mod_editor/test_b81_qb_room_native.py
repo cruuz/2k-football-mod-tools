@@ -179,7 +179,8 @@ class PageInterface(unittest.TestCase):
         self.assertEqual(room.parse_settings(record), {"mode": 1, "stages": 5, "shadow": True, "h0_ppm": 12345,
                                                        "d2_scale_milli": 900})
         self.assertEqual(room.parse_settings(room.settings_record(room.STAGE_SIGN | room.STAGE_E2))["stages"], 40)
-        for bad in ({"stages": 64}, {"stages": -1}, {"stages": True}, {"stages": 1, "shadow": 1},
+        self.assertEqual(room.parse_settings(room.settings_record(room.STAGE_FLOOR | room.STAGE_OVER_CAP))["stages"], 192)
+        for bad in ({"stages": 256}, {"stages": -1}, {"stages": True}, {"stages": 1, "shadow": 1},
                     {"stages": 1, "h0_ppm": 1_000_001}, {"stages": 1, "d2_scale_milli": -1},
                     {"stages": 1, "h0_ppm": 1.5}):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
@@ -216,13 +217,14 @@ class PageInterface(unittest.TestCase):
                 room.page_bytes(*bad)
         listed = list(room.sites(VA, 7))
         self.assertEqual([(name, at, old) for name, at, old, _ in listed],
-                         [("opening_entry", OPENING_SITE, bytes.fromhex("e851620700")),
+                         [("pregame_entry", OPENING_SITE, bytes.fromhex("e851620700")),
                           ("room_entry", ROOM_SITE, bytes.fromhex("e8016b0300"))])
         for name, at, old, new in listed:
             self.assertEqual(new[0], 0xE8)
             self.assertEqual(at + 5 + struct.unpack("<i", new[1:])[0], VA + room.LABELS[name])
         self.assertEqual(list(room.sites(VA, 0)), listed)
         signing = list(room.sites(VA, room.STAGE_SIGN))
+        self.assertEqual(list(room.sites(VA, room.STAGE_FLOOR)), signing)
         self.assertEqual(signing[:2], listed)
         name, at, old, new = signing[2]
         self.assertEqual((name, at, old), ("sign_entry", 0x248010, bytes.fromhex("e85bb80d00")))

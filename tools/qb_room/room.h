@@ -44,6 +44,8 @@ typedef signed char i8;
 #define STAGE_D4 4u
 #define STAGE_SIGN 8u                /* stage 4a: the signing pass and E1 */
 #define STAGE_E2 32u                 /* E2 as well (only with STAGE_SIGN) */
+#define STAGE_FLOOR 64u              /* the floor (DESIGN addendum F3) */
+#define STAGE_OVER_CAP 128u          /* the floor's last rung: sign past the gates, over the cap */
 #define FLAG_SHADOW 1u
 #define LIMIT_PPM 1000000u
 
@@ -126,6 +128,25 @@ struct counters {
     u32 sign_cuts;               /* smart cuts 0x2BF9A0(club, 52) made first */
     u32 sign_room_lost;          /* cap room after the cut no longer above value(F): no signing */
     u32 sign_failed;             /* 0x322BB0 returned 0 */
+    u32 floor_pregame_passes;    /* the floor (bit 64): every pre-game call, whatever the settings */
+    u32 floor_runs;              /* a club the CPU signs for with H = 0 */
+    u32 floor_post_deferred;     /* post-game call, A >= 3: left for the pre-game call */
+    u32 floor_no_free_agent;     /* step 1 */
+    u32 floor_pool_overflow;
+    u32 floor_shadow;
+    u32 floor_swaps;             /* step 2 releases of an injured quarterback */
+    u32 floor_swap_stuck;
+    u32 floor_cuts;              /* step 3 */
+    u32 floor_candidate;         /* step 4 */
+    u32 floor_no_target;         /* step 5 found nobody the picker would take */
+    u32 floor_restructures;      /* step 6 */
+    u32 floor_releases;          /* step 7 */
+    u32 floor_gated;             /* step 8, through the gates after rungs 6 and 7 */
+    u32 floor_over_cap;          /* step 8, past the gates (result code 5) */
+    u32 floor_no_room;           /* step 8 impossible (over-cap rung off, or 53 active) */
+    u32 floor_sign_failed;
+    u32 floor_seated;            /* step 9 */
+    u32 floor_failed;            /* step 10: still H = 0 */
 };
 /* COUNTERS END */
 extern volatile struct counters qb_counters;          /* page + 0x2040 */

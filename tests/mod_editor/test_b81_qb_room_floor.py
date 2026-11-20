@@ -175,6 +175,17 @@ class Floor(FloorLeague):
         self.assertEqual((counts["floor_restructures"], counts["floor_releases"], counts["floor_over_cap"]), (0, 1, 0))
 
     def test_tf1c_at_50_signed_over_the_cap_and_reconcile_keeps_him(self):
+        # Without bit 128 the last rung is off: nobody is signed and floor_no_room / floor_failed are counted.
+        others, fas, _, _ = self.dallas(50)
+        before = self.club_list()
+        self.enter_pregame()
+        self.assertEqual(self.club_list(), before)
+        if FLOOR:
+            counts = self.counters()
+            self.assertEqual((counts["floor_no_room"], counts["floor_failed"]), (1, 1))
+        # With it: signed past the gates (0x322BB0's gate jump on standard, then sub esp,0x114; jmp 0x322BB6).
+        self.setUp()
+        self.floor_settings(stages=room.STAGE_SIGN | FLOOR | getattr(room, "STAGE_OVER_CAP", 0))
         others, fas, _, _ = self.dallas(50)
         values = {q.address: self.value(q) for q in fas}
         room_before, payroll_before = self.room_now(), self.payroll()

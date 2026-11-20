@@ -1,4 +1,5 @@
-/* Quarterback room, stage 4a (beta 81 piece 4): emergency quarterback signings. DESIGN.md 4.1 is the contract.
+/* Quarterback room, stage 4a (beta 81 piece 4): emergency quarterback signings (DESIGN.md 4.1), and the floor
+   (DESIGN addendum F1 to F8, stage bit 64): a club with no healthy quarterback gets one before every game week.
 
    Entry: sign_after (entry.S, section .text.sign) after the game's own weekly signings 0x323870 return, once per
    weekly advance, with the menu that 0x248010 passed in ECX. Stage bit 8 gates the pass and E1; E2 needs bit 32 too.
@@ -28,10 +29,27 @@
    - 0xC3F00 payroll recount: fastcall ECX = club (club + 0x124 = payroll). */
 #include "room.h"
 
+/* moves.c is the only writer of its counters and ring rows and nothing runs concurrently with a pass, so plain
+   (non-volatile) accesses are exact here; every call into the game is a compiler barrier for memory, so values are
+   reloaded after it. This keeps stage 4a and the floor inside the code region (room.c keeps its volatile accesses). */
+#undef B
+#undef W
+#undef D
+#define B(a) (*(u8 *)(a))
+#define W(a) (*(u16 *)(a))
+#define D(a) (*(u32 *)(a))
+extern struct counters qb_counters_plain;              /* page + 0x2040 as well (build.py): plain accesses */
+extern u32 qb_ring_cursor_plain;                       /* page + 0x2E00 as well */
+#define qb_counters qb_counters_plain
+#define qb_ring_cursor qb_ring_cursor_plain
+
 #define VALUE ((u32 (FC *)(u32, u32, u32, u32, u32))0x002BD440)
 #define CUT_TO ((void (FC *)(u32, u32))0x002BF9A0)
 #define SIGN ((u32 (__attribute__((stdcall)) *)(u32, u32, u32, u32))0x00322BB0)
 #define RECOUNT ((void (FC *)(u32))0x000C3F00)
+#define RELEASE ((void (FC *)(u32, u32, u32, u32))0x002BD900)      /* club, player, to the list, log: ret 8 */
+#define RESTRUCTURE ((i32 (FC *)(u32, u32))0x003B9F60)             /* economy_restructure(player, apply) */
+extern u32 __attribute__((stdcall)) sign_ungated(u32 team, u32 position, u32 budget, u32 menu);   /* entry.S */
 
 #define AUTO_SIGN 0x00E6013Cu        /* "CPU signs and cuts for my club" */
 #define CAP 0x00E3C278u              /* the league cap, game thousands */
@@ -40,6 +58,8 @@
 #define POOL_MAX 64u
 #define E1 5u
 #define E2 6u
+#define FLOOR_EVENT 7u
+#define OVER_CAP 5u                  /* ring result: signed over the cap */
 #define IR_MAGIC 0x52493236u         /* "62IR", struct store in tools/injured_reserve/runtime.c */
 #define IR_CLUBS 0x40u               /* offset of store.c[] */
 #define IR_CLUB_SIZE 0xA4u           /* u8 n, u8 returns, u8 pad[2], 20 x {player, i16 base, u8 flags, u8 how} */
@@ -71,10 +91,6 @@ static i32 overall_of(u32 key) {
     return (i32)((((key & 0x7FFFFFu) | 0x800000u) * 100u + (1u << (s - 1))) >> s);
 }
 
-static u32 value_of(u32 p) {
-    return VALUE(p, 0, 0, 1, 0) & 0xFFFFu;          /* exactly as 0x322BB0 calls it */
-}
-
 /* Cap room as economy_fill_room computes it after its recount: economy_cap(team, 1, 0) - payroll. */
 static i32 room_of(u32 team, u32 index) {
     u32 cap = D(CAP), used = 0;
@@ -84,27 +100,50 @@ static i32 room_of(u32 team, u32 index) {
     return (i32)cap - (i32)D(team + 0x124);
 }
 
+static int prove_it(u32 p) {                     /* PROVE_IT_FREE_AGENT: no contract years, 2+ unsigned weeks */
+    return !(B(p + 0x24) & 15) && (B(p + 0x25) >> 5) >= 2;
+}
+
+/* A (quarterbacks on the active list), H (the healthy ones) and S' (the best-rated healthy one, with its key). */
+static u32 scan(u32 team, u32 *healthy, u32 *starter, u32 *best) {
+    u32 a = 0, h = 0, s = 0, k = 0;
+    for (u32 i = 0; i < B(team + 0x11C); i++) {
+        u32 p = D(team + 4 * i);
+        if (!p || B(p + 0x35) != 0) continue;
+        a++;
+        if (!fully_healthy(p)) continue;
+        h++;
+        u32 key = rating_key(p);
+        if (!s || key > k) {
+            s = p;
+            k = key;
+        }
+    }
+    *healthy = h;
+    *starter = s;
+    *best = k;
+    return a;
+}
+
+static __attribute__((noinline)) int listed(u32 team, u32 p) {
+    for (u32 i = 0; i < B(team + 0x11C); i++)
+        if (D(team + 4 * i) == p) return 1;
+    return 0;
+}
+
 /* Every quarterback the native picker can see: the free-agent list, then the counted entries of the offer table. */
 static u32 collect(struct pick *pool) {
-    u32 n = 0, root = D(LEAGUE_ROOT);
-    u32 count = D(root + 0x38), list = D(root + 0x3C);
-    for (u32 i = 0; i < count; i++) {
-        u32 p = D(list + 4 * i);
+    u32 n = 0, root = D(LEAGUE_ROOT), count = D(root + 0x38), list = D(root + 0x3C);
+    for (u32 i = 0; i < count + OFFER_COUNT; i++) {
+        u32 offer = i >= count, entry = OFFERS + 16 * (i - count), p;
+        if (offer && (!(B(entry + 0xB) & 3) || (D(entry + 8) & 0x1C000000u) != 0x0C000000u)) continue;
+        p = offer ? D(entry) : D(list + 4 * i);
         if (!p || B(p + 0x35) != 0) continue;
         if (n == POOL_MAX) return POOL_MAX + 1;
         pool[n].p = p;
-        pool[n].pool = 0;
+        pool[n].pool = offer;
         pool[n].key = rating_key(p);
-        pool[n++].value = value_of(p);
-    }
-    for (u32 i = 0; i < OFFER_COUNT; i++) {
-        u32 entry = OFFERS + 16 * i, p = D(entry);
-        if (!(B(entry + 0xB) & 3) || (D(entry + 8) & 0x1C000000u) != 0x0C000000u || !p || B(p + 0x35) != 0) continue;
-        if (n == POOL_MAX) return POOL_MAX + 1;
-        pool[n].p = p;
-        pool[n].pool = 1;
-        pool[n].key = rating_key(p);
-        pool[n++].value = value_of(p);
+        pool[n++].value = VALUE(p, 0, 0, 1, 0) & 0xFFFFu;      /* exactly as 0x322BB0 calls it */
     }
     return n;
 }
@@ -121,24 +160,22 @@ static u32 picker(const struct pick *pool, u32 n, u32 budget) {
     return chosen;
 }
 
-/* The candidate F of DESIGN 4.1, or 0. */
-static const struct pick *candidate(const struct pick *pool, u32 n, i32 room) {
-    const struct pick *f = 0;
-    u32 tried = 0;
-    for (;;) {
-        /* the best-rated healthy free agent below the last one tried (ties: list order) */
-        const struct pick *next = 0;
-        for (u32 i = 0; i < n; i++) {
-            const struct pick *q = &pool[i];
-            if (q->pool || !fully_healthy(q->p)) continue;
-            if (tried && (q->key > f->key || (q->key == f->key && q <= f))) continue;
-            if (!next || q->key > next->key) next = q;
-        }
-        if (!next) return 0;
-        f = next;
-        tried = 1;
-        if (f->value < 0xFFFFu && room - 10 > (i32)f->value && picker(pool, n, f->value + 1) == f->p) return f;
+/* A healthy free agent (list, not offer table) whom the picker takes at value + 1 and nobody else:
+   mode 0, the candidate F of 4.1 and F3 step 4: the best-rated whose value is below room minus 10;
+   mode 1 and 2, the target T of F3 step 5: the cheapest (ties: the higher rating) prove-it man, then any. Ties of the
+   deciding key go to list order. */
+static const struct pick *choose(const struct pick *pool, u32 n, i32 room, u32 mode) {
+    const struct pick *best = 0;
+    for (u32 i = 0; i < n; i++) {
+        const struct pick *q = &pool[i];
+        if (q->pool || q->value >= 0xFFFFu || !fully_healthy(q->p)) continue;
+        if (mode == 0 ? room - 10 <= (i32)q->value || (best && q->key <= best->key)
+                      : (mode == 1 && !prove_it(q->p)) ||
+                        (best && (q->value > best->value || (q->value == best->value && q->key <= best->key))))
+            continue;
+        if (picker(pool, n, q->value + 1) == q->p) best = q;
     }
+    return best;
 }
 
 /* E2's injured-reserve test: a quarterback on this club's IR, 3 or more better than S', out 3 weeks or more or for
@@ -156,49 +193,39 @@ static i32 long_starter(u32 index, i32 best) {
     return 0;
 }
 
-static void log_sign(u32 index, u32 decision, u32 result, u32 starter, i32 starter_ovr, const struct pick *f, i32 d,
-                     i32 g, u32 threshold) {
+/* One ring row (INTERFACE.md). a and b are player records (0: none); r10 is clamped to 0..65535. */
+static void put(u32 index, u32 decision, u32 result, u32 a, u32 b, u32 d, u32 g, i32 r10, u32 gap, u32 coach,
+                u32 threshold) {
     u32 n = qb_ring_cursor, table = D(D(LEAGUE_ROOT) + 4);
-    volatile struct event *e = &qb_ring[n % 128u];
-    e->year = (u16)D(YEAR);
-    e->week = (u8)D(WEEK);
-    e->club = (u8)index;
-    e->decision = (u8)decision;
-    e->result = (u8)result;
-    e->a = starter ? (u16)((starter - table) / PLAYER_SIZE) : 0xFFFFu;
-    e->b = f ? (u16)((f->p - table) / PLAYER_SIZE) : 0xFFFFu;
-    e->d = (i8)d;
-    e->g = (u8)g;
-    e->rating10 = 0;
-    e->gap = (i8)(f ? overall_of(f->key) - starter_ovr : 0);
-    e->coach = 0;
-    e->threshold = threshold;
+    union { struct event e; u32 w[5]; } row;
+    row.e.year = (u16)D(YEAR);
+    row.e.week = (u8)D(WEEK);
+    row.e.club = (u8)index;
+    row.e.decision = (u8)decision;
+    row.e.result = (u8)result;
+    row.e.a = a ? (u16)((a - table) / PLAYER_SIZE) : 0xFFFFu;
+    row.e.b = b ? (u16)((b - table) / PLAYER_SIZE) : 0xFFFFu;
+    row.e.d = (i8)d;
+    row.e.g = (u8)g;
+    row.e.rating10 = (u16)(r10 < 0 ? 0 : r10 > 65535 ? 65535 : r10);
+    row.e.gap = (i8)gap;
+    row.e.coach = (u8)coach;
+    row.e.threshold = threshold;
+    u32 *to = (u32 *)&qb_ring[n % 128u];
+    for (u32 k = 0; k < 5; k++) to[k] = row.w[k];
     qb_ring_cursor = n + 1;
     qb_counters.events_logged++;
 }
 
+/* ---- E1 and E2 (DESIGN 4.1) ---------------------------------------------------------------------------------- */
 static void club_signing(u32 index, u32 stages, u32 shadow, u32 menu) {
-    u32 team = CLUB_AT(index);
+    u32 team = CLUB_AT(index), h, starter, best;
     if (!team) return;
     if (D(USER_FLAG + 4 * index) && D(AUTO_SIGN) != 1) {
         qb_counters.sign_skip_human++;
         return;
     }
-    u32 slots = B(team + 0x11C), a = 0, h = 0, starter = 0, best = 0;
-    if (slots > SLOTS) return;
-    for (u32 i = 0; i < slots; i++) {
-        u32 p = D(team + 4 * i);
-        if (!p || B(p + 0x35) != 0) continue;
-        a++;
-        if (!fully_healthy(p)) continue;
-        h++;
-        u32 key = rating_key(p);
-        if (!starter || key > best) {
-            starter = p;
-            best = key;
-        }
-    }
-    if (a > 2) return;
+    if (B(team + 0x11C) > SLOTS || scan(team, &h, &starter, &best) > 2) return;
     i32 starter_ovr = starter ? overall_of(best) : 0;
     u32 decision = 0;
     if (h <= 1) {
@@ -216,11 +243,11 @@ static void club_signing(u32 index, u32 stages, u32 shadow, u32 menu) {
         return;
     }
     if (!shadow) RECOUNT(team);                     /* the gate recounts before its room test; so does this */
-    const struct pick *f = candidate(pool, n, room_of(team, index));
-    u32 w = WINS(team), l = LOSSES(team), t = TIES(team);
-    i32 d = (i32)l - (i32)w, g = (i32)(w + l + t);
+    const struct pick *f = choose(pool, n, room_of(team, index), 0);
+    u32 w = WINS(team), l = LOSSES(team), t = TIES(team), threshold = decision == E1 ? 100000u : 50000u;
+    u32 d = l - w, g = w + l + t, gap = f ? (u32)(overall_of(f->key) - starter_ovr) : 0, result = KEPT;
     if (decision == E2) {
-        if (!f || overall_of(f->key) - starter_ovr < 2) return;      /* the market has nothing better: no need */
+        if (!f || (i32)gap < 2) return;             /* the market has nothing better: no need */
         qb_counters.e2_tried++;
         u32 saved = D(STAT_CLASS);
         if (saved) D(STAT_CLASS) = 0;
@@ -230,22 +257,19 @@ static void club_signing(u32 index, u32 stages, u32 shadow, u32 menu) {
         qb_counters.e2_drawn++;
         if (draw(key, 9) >= 50000u) {
             qb_counters.e2_kept++;
-            log_sign(index, E2, KEPT, starter, starter_ovr, f, d, g, 50000u);
-            return;
+            goto log;
         }
     } else {
         qb_counters.e1_tried++;
         if (!f) {
             qb_counters.sign_no_candidate++;
-            log_sign(index, E1, KEPT, starter, starter_ovr, 0, d, g, 100000u);
-            return;
+            goto log;
         }
     }
-    u32 threshold = decision == E1 ? 100000u : 50000u;
     if (shadow) {
         qb_counters.sign_shadow++;
-        log_sign(index, decision, WOULD, starter, starter_ovr, f, d, g, threshold);
-        return;
+        result = WOULD;
+        goto log;
     }
     if (B(team + 0x11C) >= 53) {
         CUT_TO(team, 52);
@@ -253,33 +277,194 @@ static void club_signing(u32 index, u32 stages, u32 shadow, u32 menu) {
         RECOUNT(team);
         if (room_of(team, index) - 10 <= (i32)f->value) {
             qb_counters.sign_room_lost++;
-            log_sign(index, decision, KEPT, starter, starter_ovr, f, d, g, threshold);
-            return;
+            goto log;
         }
     }
-    u32 signed_ = SIGN(team, 0, f->value + 1, menu);
-    if (signed_) {
+    if (SIGN(team, 0, f->value + 1, menu)) {
+        result = APPLIED;
         if (decision == E1) qb_counters.e1_done++;
         else qb_counters.e2_done++;
     } else {
         qb_counters.sign_failed++;
     }
-    log_sign(index, decision, signed_ ? APPLIED : KEPT, starter, starter_ovr, f, d, g, threshold);
+log:
+    put(index, decision, result, starter, f ? f->p : 0, d, g, 0, gap, 0, threshold);
 }
 
-void CDECL emergency_pass(u32 menu) {
-    qb_counters.sign_passes++;
+/* ---- The floor (DESIGN addendum F1 to F8, stage bit 64): a club the CPU signs for with no healthy quarterback on its
+   active list (H = 0) gets one. Pre-game (pregame_entry, after the IR pass 0x2BE020 returns, stages 7 to 9, every club)
+   and post-game (this pass, after E1, when A <= 2). F3's steps, in order:
+    1 no healthy free-agent quarterback in the picker's pools: stop, count, sign nobody;
+    2 pre-game only, while A >= 3: release the lowest-rated (injured) quarterback with the native release
+      0x2BD900(club, p, 1, 1); if he is still listed, stop: never a fourth;
+    3 at 53 active: the smart cut 0x2BF9A0(club, 52);
+    4 the candidate rule of E1 (best healthy man the picker takes within room minus 10): the gated signing;
+    5 else the target T: the cheapest healthy prove-it free agent (no contract years, 2+ unsigned weeks; ties to the
+      higher rating), else the cheapest healthy one, that the picker takes at value(T) + 1;
+    6 while room minus 10 is not above value(T), up to 3: restructure the contract with the largest dry-run saving
+      above 250 (economy_restructure 0x3B9F60, as restructure_best) and recount;
+    7 while still short and 51+ active, up to 2: 0x2BF9A0(club, count - 1) and recount;
+    8 room fits: the gated signing; else, with 52 or fewer active and bit 128 set, the native signing entered past
+      its gates (sign_ungated: sub esp,0x114; jmp 0x322BB6), result code 5 "signed over the cap";
+    9 pre-game only: seat him (floor_seat);
+   10 H >= 1, else floor_failed.
+   Ring row: decision 7, a = the injured man released (step 2), b = the man signed (or T), d = restructures,
+   g = releases, rating10 = room at the start (clamped 0..65535), gap = rung (1 candidate, 2 gated after 6-7,
+   3 over the cap), coach = swaps, threshold = value(F or T). */
+static u32 restructure_once(u32 team) {
+    u32 best = 0;
+    i32 most = 250;
+    for (u32 i = 0; i < B(team + 0x11C); i++) {
+        u32 p = D(team + 4 * i);
+        i32 saving = p ? RESTRUCTURE(p, 0) : 0;
+        if (saving > most) {
+            most = saving;
+            best = p;
+        }
+    }
+    if (best) RESTRUCTURE(best, 1);
+    return best;
+}
+
+/* F3 step 9: the new man on row 0, the others one row down in their old order, rank and side locks (bits 0 and 1 of
+   +0x52) cleared on each injured man moved down; no lock on the new man. Exported for TF7. */
+void __attribute__((noinline, cdecl)) floor_seat(u32 team, u32 newman) {
+    u32 slots = B(team + 0x11C), order[8], n = 0;
+    for (u32 row = 0; row < 8; row++)                  /* the old order first, then the new rows */
+        for (u32 i = 0; i < slots && n < 8; i++) {
+            u32 p = D(team + 4 * i);
+            if (p && p != newman && B(p + 0x35) == 0 && ((W(p + 0x28) >> 10) & 7) == row) order[n++] = p;
+        }
+    for (u32 k = 0; k < n; k++) {
+        u32 p = order[k];
+        W(p + 0x28) = (W(p + 0x28) & ~ROW_MASK) | (k < 6 ? k + 1 : 7) << 10;
+        if (!fully_healthy(p)) B(p + 0x52) &= ~3u;
+    }
+    W(newman + 0x28) &= ~ROW_MASK;
+    qb_counters.floor_seated++;
+}
+
+static void floor_club(u32 index, u32 pregame, u32 stages, u32 shadow, u32 menu) {
+    u32 team = CLUB_AT(index), h, s, k;
+    if (!team || B(team + 0x11C) > SLOTS || (D(USER_FLAG + 4 * index) && D(AUTO_SIGN) != 1)) return;
+    u32 a = scan(team, &h, &s, &k);
+    if (h) return;
+    if (!pregame && a > 2) {
+        qb_counters.floor_post_deferred++;             /* left for the pre-game call */
+        return;
+    }
+    qb_counters.floor_runs++;
+    struct pick pool[POOL_MAX];
+    const struct pick *f = 0;
+    u32 n = collect(pool), out = 0, swaps = 0, restructures = 0, releases = 0, rung = 0, result = KEPT, any = 0;
+    i32 room = room_of(team, index);
+    if (n > POOL_MAX) {
+        qb_counters.floor_pool_overflow++;
+        goto done;
+    }
+    for (u32 i = 0; i < n; i++) any |= !pool[i].pool && fully_healthy(pool[i].p);
+    if (!any) {                                                       /* 1 */
+        qb_counters.floor_no_free_agent++;
+        goto done;
+    }
+    if (shadow) {
+        qb_counters.floor_shadow++;
+        result = WOULD;
+        goto log;
+    }
+    while (pregame && a >= 3) {                                       /* 2 */
+        u32 worst = 0, low = 0;
+        for (u32 i = 0; i < B(team + 0x11C); i++) {
+            u32 p = D(team + 4 * i);
+            if (!p || B(p + 0x35) != 0) continue;
+            u32 key = rating_key(p);
+            if (!worst || key <= low) {
+                worst = p;
+                low = key;
+            }
+        }
+        RELEASE(team, worst, 1, 1);
+        if (listed(team, worst)) {
+            qb_counters.floor_swap_stuck++;
+            goto done;
+        }
+        out = worst;
+        swaps++;
+        qb_counters.floor_swaps++;
+        a--;
+    }
+    if (swaps && (n = collect(pool)) > POOL_MAX) {                    /* a released man is a free agent now */
+        qb_counters.floor_pool_overflow++;
+        goto done;
+    }
+    if (B(team + 0x11C) >= 53) {                                      /* 3 */
+        CUT_TO(team, 52);
+        qb_counters.floor_cuts++;
+    }
+    RECOUNT(team);
+    if ((f = choose(pool, n, room_of(team, index), 0))) {             /* 4 */
+        rung = 1;
+        qb_counters.floor_candidate++;
+    } else {
+        if (!(f = choose(pool, n, 0, 1)) && !(f = choose(pool, n, 0, 2))) {      /* 5 */
+            qb_counters.floor_no_target++;
+            goto done;
+        }
+        while (restructures < 3 && room_of(team, index) - 10 <= (i32)f->value && restructure_once(team)) {   /* 6 */
+            restructures++;
+            qb_counters.floor_restructures++;
+            RECOUNT(team);
+        }
+        while (releases < 2 && room_of(team, index) - 10 <= (i32)f->value && B(team + 0x11C) >= 51) {          /* 7 */
+            CUT_TO(team, B(team + 0x11C) - 1u);
+            releases++;
+            qb_counters.floor_releases++;
+            RECOUNT(team);
+        }
+        if (room_of(team, index) - 10 > (i32)f->value) {              /* 8 */
+            rung = 2;
+            qb_counters.floor_gated++;
+        } else if (B(team + 0x11C) <= 52 && (stages & STAGE_OVER_CAP)) {
+            rung = 3;
+            qb_counters.floor_over_cap++;
+        } else {
+            qb_counters.floor_no_room++;
+            goto done;
+        }
+    }
+    u32 (__attribute__((stdcall)) *sign)(u32, u32, u32, u32) = rung == 3 ? sign_ungated : SIGN;
+    if (sign(team, 0, f->value + 1, menu) && listed(team, f->p)) {
+        result = rung == 3 ? OVER_CAP : APPLIED;
+        if (pregame) floor_seat(team, f->p);                          /* 9 */
+    } else {
+        qb_counters.floor_sign_failed++;
+    }
+done:
+    scan(team, &h, &s, &k);                                           /* 10 */
+    if (!h) qb_counters.floor_failed++;
+log:
+    put(index, FLOOR_EVENT | (D(STAGE) == 7 ? PRESEASON : 0), result, out, f ? f->p : 0, restructures, releases,
+        room, rung, swaps, f ? f->value : 0);
+}
+
+/* Both calls. Pre-game (pregame_entry, after the IR pass 0x2BE020 returned, pregame = 1): the floor (bit 64, stages 7 to
+   9) for every club. Post-game (sign_after, after the game's own weekly signings 0x323870, pregame = 0): E1 and E2
+   (bit 8, stage 8), then the floor (bit 64, stages 7 to 9, A <= 2) for each club. */
+void CDECL emergency_pass(u32 menu, u32 pregame) {
+    if (pregame) qb_counters.floor_pregame_passes++;
+    else qb_counters.sign_passes++;
     if (qb_settings.magic[0] != 0x4F524251u || qb_settings.magic[1] != 0x31764D4Fu || qb_settings.mode != 1) {
-        qb_counters.passes_bad_settings++;
+        if (!pregame) qb_counters.passes_bad_settings++;
         return;
     }
-    u32 stages = qb_settings.stages;
-    if (!(stages & STAGE_SIGN)) return;
-    if (D(STAGE) != 8) {
-        qb_counters.sign_inactive++;
-        return;
-    }
-    if (!D(LEAGUE_ROOT)) return;
+    u32 stages = qb_settings.stages, stage = D(STAGE);
+    u32 sign = !pregame && (stages & STAGE_SIGN) && stage == 8;
+    u32 floor = (stages & STAGE_FLOOR) && stage >= 7 && stage <= 9;
+    if (!pregame && (stages & STAGE_SIGN) && stage != 8) qb_counters.sign_inactive++;
+    if ((!sign && !floor) || !D(LEAGUE_ROOT)) return;
     u32 shadow = qb_settings.flags & FLAG_SHADOW;
-    for (u32 index = 0; index < CLUBS; index++) club_signing(index, stages, shadow, menu);
+    for (u32 index = 0; index < CLUBS; index++) {
+        if (sign) club_signing(index, stages, shadow, menu);
+        if (floor) floor_club(index, pregame, stages, shadow, menu);
+    }
 }

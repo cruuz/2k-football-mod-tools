@@ -23,9 +23,12 @@ PAGE_SIZE = 0x3000
 CODE_LIMIT = 0x2000
 # Page data the C code names as extern objects. Offsets are fixed by INTERFACE.md.
 DATA = {"qb_settings": 0x2000, "qb_link_ir_store": 0x2020, "qb_counters": 0x2040, "qb_ring": 0x2400,
-        "qb_ring_cursor": 0x2E00, "qb_menu": 0x2E04}
+        "qb_ring_cursor": 0x2E00, "qb_menu": 0x2E04,
+        # moves.c's plain (non-volatile) names for the same counters and cursor (it is their only writer in a pass).
+        "qb_counters_plain": 0x2040, "qb_ring_cursor_plain": 0x2E00}
 COUNTERS_LIMIT = 0x2400
-EXPORTED = ("opening_entry", "room_entry", "opening_pass", "room_pass", "emergency_pass", "sign_entry", "sign_after")
+EXPORTED = ("opening_entry", "room_entry", "opening_pass", "room_pass", "emergency_pass", "sign_entry", "sign_after",
+            "pregame_entry", "floor_seat", "sign_ungated")
 
 
 def counter_names():
@@ -52,7 +55,8 @@ def compile_page(temp):
     # Piece 3 (the two entries, room.c's code and tables) first, exactly as before stage 4a; then moves.c and the
     # 4a stubs (entry.S section .text.sign), so adding 4a does not move a byte of piece 3.
     script.write_text("SECTIONS { .text 0 : { *entry.o(.text) *room.o(.text*) *room.o(.rodata*) *moves.o(.text*) "
-                      "*moves.o(.rodata*) *entry.o(.text.sign) *(.text*) *(.rodata*) *(.data*) *(COMMON) *(.bss*) } "
+                      "*moves.o(.rodata*) *entry.o(.text.sign) *entry.o(.text.floor) *(.text*) *(.rodata*) *(.data*) *(COMMON) "
+                      "*(.bss*) } "
                       "/DISCARD/ : { *(.comment*) *(.note*) *(.eh_frame*) *(.got*) } }")
     subprocess.run(["as", "--32", "-o", entry, HERE / "entry.S"], check=True)
     for source, output in (("room.c", logic), ("moves.c", moves)):
