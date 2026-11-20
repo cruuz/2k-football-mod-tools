@@ -211,6 +211,7 @@ STEP_LABELS: dict[str, str] = {
     "sim_rb_injuries": "Simulated RB short injuries",
     "sim_realism": "Simulated season realism",
     "sim_qb_injuries": "Simulated quarterback injuries",
+    "qb_room": "the quarterback room rules",  # b81 qb34
     # b780 rev1: the beta-80 late owners and the coaching staff's playbook copy (they had no step, so a failure in one
     # was reported under the step before it, "During the rookie faces: invalid SizeOfHeaders")
     "coach_staff_playbooks": "the playbooks your new head coaches bring",

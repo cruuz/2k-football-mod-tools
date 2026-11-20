@@ -127,6 +127,25 @@ def prepare(recipe_path, work, *, stack=None, marks_pack=None, patched_image=Non
                 effective.update(sim_qb_injuries=state["mode"], sim_realism=True, k128_memory=True)
                 if state["mode"] == "custom":
                     effective["sim_qb_injury_rate"] = state["custom_rate"]
+        room = mod_build._core_module("nfl2k5_qb_room")  # b81 qb34: record the disc's quarterback room rules
+        if effective.get("qb_room") is not None or (room is not None and payload is not None):
+            from .nfl2k5_build_settings import qb_room_level
+            m._require(room is not None and payload is not None, "Cannot verify the disc's quarterback room setting")
+            room_state = room.read_settings(payload)
+            m._require(room_state["status"] in ("retail", "applied"), "Cannot verify the disc's quarterback room setting")
+            installed = "realistic" if room_state["status"] == "applied" else "retail"
+            named = effective.get("qb_room")
+            if named is not None:
+                m._require(named == installed, "The disc and source recipe select different quarterback room settings")
+            else:
+                # What a rebuild of this recipe would install without the key (the rule needs the preset's fields).
+                try:
+                    follows = mod_build._qb_room_level(build_plan(
+                        {"preset": recipe["preset"], "overrides": {k: v for k, v in effective.items() if k != "qb_room"}}))
+                except (KeyError, ValueError):
+                    follows = qb_room_level(None, effective.get("sim_qb_injuries"))
+                if follows != installed and not (follows is None and installed == "retail"):
+                    effective["qb_room"] = installed
     if marks_pack:
         effective["official_marks_pack"] = str(marks_pack)
     from . import nfl2k5_official_marks as marks
@@ -270,11 +289,15 @@ def build_plan(recipe, source="", target=""):
         # Older source recipes predate the quarterback setting and the experimental preset's heap default.
         plan.sim_qb_injuries = None
         plan.k128_memory = initial.k128_memory
+    if "qb_room" not in recipe["overrides"]:
+        # b81 qb34 (DESIGN_CHANGES C1): a recipe that does not name the room follows its quarterback injury setting.
+        plan.qb_room = None
     known = {field.name for field in fields(plan)} - {"source", "target", "overwrite"}
     for key, value in recipe["overrides"].items():
         m._require(key in known, f"Recipe requires an unknown Studio option: {key}")
         setattr(plan, key, tuple(value) if isinstance(getattr(plan, key), tuple) and isinstance(value, list) else value)
     nfl2k5_build_settings.validate_sim_qb_injuries(plan.sim_qb_injuries, plan.sim_qb_injury_rate)
+    nfl2k5_build_settings.validate_qb_room(plan.qb_room)
     return plan
 
 

@@ -2073,7 +2073,9 @@ class BuildPanel(QWidget):
     def _add_sim_qb_injuries(self, layout):
         help_text = ("For simulated franchise games, including your club. Realistic uses quarterback Durability and "
                      "adjusts simulated passing. Games you play use their original injuries and passing. "
-                     "Realistic and Custom require 128 MB and Simulated season realism.")
+                     "Realistic and Custom require 128 MB and Simulated season realism. "
+                     "The rules for who starts at quarterback ride with Realistic and Custom when depth chart locks "
+                     "and SPECIAL rows are on, and Retail removes them.")
         caption = QLabel("Simulated quarterback injuries")
         self.qb_injury_mode = QComboBox()
         caption.setBuddy(self.qb_injury_mode)
@@ -2135,7 +2137,8 @@ class BuildPanel(QWidget):
     @staticmethod
     def _sim_qb_companion_choices(plan):
         values = plan.to_recipe()
-        for name in ("sim_qb_injuries", "sim_qb_injury_rate", "sim_realism", "k128_memory", "name", "author", "notes"):
+        for name in ("sim_qb_injuries", "sim_qb_injury_rate", "qb_room", "sim_realism", "k128_memory", "name", "author",
+                     "notes"):
             values.pop(name, None)
         return values
 
@@ -3449,6 +3452,9 @@ class BuildPanel(QWidget):
             setattr(plan, key, getattr(self, key + "_check").isChecked())
         if self.qb_injury_mode.isEnabled():
             plan.sim_qb_injuries = self.qb_injury_mode.currentData()
+            # b81 qb34: this control also sets the quarterback room rules: the plan leaves them unnamed, so they follow
+            # this choice (Realistic and Custom where depth chart locks and SPECIAL rows are on, Retail off).
+            plan.qb_room = None
             if plan.sim_qb_injuries == "custom":
                 plan.sim_qb_injury_rate = self.qb_injury_rate.value()
             if plan.sim_qb_injuries in ("realistic", "custom"):
@@ -3520,7 +3526,8 @@ class BuildPanel(QWidget):
             return mod_build.v09_disc_update(plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
                                              modern_injured_reserve=plan.modern_injured_reserve,
                                              backfield_cards=plan.backfield_cards, sim_qb_injuries=plan.sim_qb_injuries,
-                                             custom_rate=plan.sim_qb_injury_rate, overwrite=plan.overwrite,
+                                             custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
+                                             overwrite=plan.overwrite,
                                              name=plan.name, author=plan.author, notes=plan.notes)
         if (self._sim_qb_injury_change() and not self._sim_qb_other_choice and not self._sim_qb_authored
                 and not self.softdrink_project_field.text().strip()
@@ -3528,7 +3535,8 @@ class BuildPanel(QWidget):
                 and ((self._state or {}).get("k128_settings") or {}).get("require_128") is True
                 and self._sim_qb_source_choices == self._sim_qb_companion_choices(plan)):
             return mod_build.sim_qb_disc_edit(plan.source, plan.target, plan.sim_qb_injuries,
-                                              custom_rate=plan.sim_qb_injury_rate, overwrite=plan.overwrite,
+                                              custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
+                                              overwrite=plan.overwrite,
                                               name=plan.name, author=plan.author, notes=plan.notes)
         for name in KEPT_WHEN_INSTALLED:
             if getattr(plan, name, True) is False and self._installed(name):
@@ -3558,7 +3566,7 @@ class BuildPanel(QWidget):
     @staticmethod
     def _v09_companion_choices(plan):
         values = plan.to_recipe()
-        for key in (*mod_build.V09_UPDATE_CHOICES, "sim_qb_injuries", "sim_qb_injury_rate",
+        for key in (*mod_build.V09_UPDATE_CHOICES, "sim_qb_injuries", "sim_qb_injury_rate", "qb_room",
                     "sim_realism", "k128_memory", "name", "author", "notes"):
             values.pop(key, None)
         return values
@@ -3936,6 +3944,11 @@ class BuildPanel(QWidget):
                     # standalone steps of mod_build the list above never named: ticked alone, each was refused as "nothing is selected"
                     or p.espn25_rosters or bool(p.honors_history) or p.trophy_room)
 
+    def _qb_room_needs_on(self):
+        """b81 qb34: depth chart locks and SPECIAL rows ticked or already on the disc (the room's plan needs)."""
+        return all(getattr(self, key + "_check").isChecked() or self._installed(key)
+                   for key in ("depth_locks", "depth_chart_rows"))
+
     def _sim_qb_injury_change(self):
         if not self.qb_injury_mode.isEnabled():
             return ""
@@ -3943,7 +3956,10 @@ class BuildPanel(QWidget):
         if mode is None:
             return ""
         installed = (self._state or {}).get("sim_qb_injury_settings") or {}
-        if mode == installed.get("mode", "retail") and (
+        # b81 qb34: the control also sets the quarterback room rules, so a disc whose rules differ is a change too.
+        room_now = "realistic" if ((self._state or {}).get("qb_room_settings") or {}).get("status") == "applied" else "retail"
+        room_wanted = "realistic" if mode in ("realistic", "custom") and self._qb_room_needs_on() else "retail"
+        if mode == installed.get("mode", "retail") and room_now == room_wanted and (
                 mode != "custom" or self.qb_injury_rate.value() == installed.get("custom_rate")):
             return ""
         detail = mode.title()
@@ -4227,6 +4243,8 @@ class BuildPanel(QWidget):
                 reason = "Open a full Xbox disc image to configure simulated quarterback injuries."
             elif state.get("sim_qb_injuries") == "foreign":
                 reason = "This executable has unrecognized quarterback data. Open a verified source disc."
+            elif state.get("qb_room") == "foreign":  # b81 qb34
+                reason = "This executable has unrecognized quarterback room data. Open a verified source disc."
             elif (state.get("k128_memory") == "applied"
                   and (state.get("k128_settings") or {}).get("require_128") is False):
                 reason = ("This disc allows a 64 MB boot. Build from your retail disc to select the 128 MB "

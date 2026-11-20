@@ -598,8 +598,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "22a50b66cece72046d84de5ed34f3d04c71c6ac921dba125cf9b08505e71efac",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/build_steps.py": "dc3cc5177445c4b700c9a160f267520126f553854dcb6a68c074ef8d35bfa13c",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "4acf958911f6222f42127f572dce1bd996352310361e8cf6c1a810d1723d7e9d",
+        "mod_editor/core/build_steps.py": "28654d2b6e2e782837e6367338dc10621d6eadce9958fb1a4f4037f4faf6308d",  # b791-h3: step context and optional steps
+        "mod_editor/core/mod_build.py": "beff3ed39bdf072e7709554d21e2f366717bc3f48acdcadc632b1a611e263f94",
         "mod_editor/core/nfl2k5_console_memory.py": "6ea4889a87c02c49c0850efa27a11706457dfd9cd438051f307587b469541758",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -634,7 +634,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
         "mod_editor/core/nfl2k5_boot_logo.py": "9ee25b1fb49859951ba4780ec2b4a3d71773f7199d5a308338acf51f84bdb257",
         "mod_editor/core/nfl2k5_build_service.py": "cdff75f2ceb2da2ad18d38b7c8f1915193f91075ac2275cb204474765d27dcc7",
-        "mod_editor/core/nfl2k5_build_settings.py": "c82c6623af8b5f3188173dbf8f91aea1db43469ae20e185e5f99f48ce1cf5509",
+        "mod_editor/core/nfl2k5_build_settings.py": "b24499ee86696ad0ebd4b26313edd75764381c4812c1c61f49dff40ceb000aba",
         "mod_editor/core/nfl2k5_build_service.py": "cdff75f2ceb2da2ad18d38b7c8f1915193f91075ac2275cb204474765d27dcc7",
         "mod_editor/core/nfl2k5_midfield_art.py": "da5ff3541f2d7a7674cd3fc715c831379ecbe17c307951ce547ecaf8d3b4ab89",
         "mod_editor/core/nfl2k5_split_endzone_art.py": "c135625db5663efa13f3f446f98e7cfe8d071148f7b892ea378d18a05d845957",
@@ -989,8 +989,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",  # b780 hunt1: frozen beta-79 roll for the previous state
         "mod_editor/core/nfl2k5_sim_qb_injuries.py": "e8219c52604fe023549411055a7500987d9da4d108bdf2794bac1227a22e18e7",
         "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "ab914dbc3989ecaf33799f95c0e555027c2ae097758e97b425b655227ceded3c",
-        "mod_editor/core/nfl2k5_qb_room.py": "a9874eee6a486733ca031fbf34c36fe1afb14ae43a3d3a2ae8460f4338f9e9fb",  # b81 qb34: mod_build loads it by name
-        "mod_editor/core/nfl2k5_qb_room_code.py": "3fc108b5802217c260a9ee7f2279b422464990e1698ecbf84ad02bbf6728a805",  # b81 qb34: its generated page template
+        "mod_editor/core/nfl2k5_qb_room.py": "f4ccbac40b417b60bfdfeb4aeeb61c93d151068b6f47dcdaf8db01ea04e10056",  # b81 qb34: mod_build loads it by name
+        "mod_editor/core/nfl2k5_qb_room_code.py": "b1372b645e4635217350e744487f83091b55a1769519a0913d59f0de64b9bebd",  # b81 qb34: its generated page template
         "mod_editor/core/nfl2k5_sim_realism.py": "6323212af016c4e70ecd36d340a993e16afc9b57550f3bb7ed2647fc6731a248",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_sim_realism_b779.py": "687a35375780ce07948ba555a8c189167586393c5de6f48d954c2902a71010ad",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_standings_records.py": "175712ff8aff730b035aab671bf2208322ba52ec1fef758afad7d24263485c1c",  # b780-j1

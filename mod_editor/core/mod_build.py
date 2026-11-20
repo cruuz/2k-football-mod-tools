@@ -770,6 +770,12 @@ class BuildPlan:
     # None keeps the source as it was. Explicit Retail can undo an installed QB option.
     sim_qb_injuries: str | None = None
     sim_qb_injury_rate: float = 0.310
+    # b81 qb34: the quarterback room rules (who starts the season, the kid's turn, benched for poor play, the returning
+    # starter). None follows sim_qb_injuries (Realistic or Custom -> Realistic, Retail -> Retail, None keeps the
+    # source), and a followed Realistic is installed only where its needs are met (128 MB standard, depth chart locks,
+    # SPECIAL rows); otherwise the build leaves it out with a note. An explicit "realistic" or "retail" wins and an
+    # explicit Realistic without its needs is refused (qb34 DESIGN_CHANGES C1, lead 2026-11-20). No Custom level.
+    qb_room: str | None = None
     # b780-c6: the coaching carousel (EXPERIMENTAL): at Advance to offseason CPU clubs may fire their head coach and hire
     # one from the hiring pool the build writes into the roster (real people) or a coach another club let go. The game's
     # Owner Firing option becomes Off / CPU Teams / All Teams. A late executable owner plus the roster's pool block.
@@ -894,7 +900,7 @@ class BuildPlan:
     backfield_cards: bool = False
 
     def wants_xbe_patch(self) -> bool:
-        return (self.sim_qb_injuries is not None or self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
+        return (self.sim_qb_injuries is not None or self.qb_room is not None or self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
                 or self.quick_long_release  # b780-c-release: constants only, in place
                 or self.progression or self.franchise_economy or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
                 or self.season_cap or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
@@ -919,6 +925,8 @@ class BuildPlan:
             d.pop("sim_qb_injuries")
         if self.sim_qb_injuries != "custom":
             d.pop("sim_qb_injury_rate")
+        if self.qb_room is None:  # b81 qb34: a recipe without the key follows sim_qb_injuries
+            d.pop("qb_room")
         if d.get("console_memory") == 128:  # b780-m64b: a 128 MB recipe stays exactly the recipe it always was
             d.pop("console_memory")
         return d
@@ -932,20 +940,22 @@ V09_UPDATE_CHOICES = ("save_list_type_guard", "modern_injured_reserve", "backfie
 
 
 def v09_disc_update(source, target, *, save_list_type_guard=False, modern_injured_reserve=False, backfield_cards=False,
-                    sim_qb_injuries=None, custom_rate=BuildPlan.sim_qb_injury_rate,
+                    sim_qb_injuries=None, custom_rate=BuildPlan.sim_qb_injury_rate, qb_room=None,
                     overwrite=False, name="", author="", notes=""):
-    from .nfl2k5_build_settings import validate_sim_qb_injuries
+    from .nfl2k5_build_settings import validate_qb_room, validate_sim_qb_injuries
     validate_sim_qb_injuries(sim_qb_injuries, custom_rate)
+    validate_qb_room(qb_room)
     choices = (save_list_type_guard, modern_injured_reserve, backfield_cards)
     if any(type(choice) is not bool for choice in choices):
         raise ValueError("The v0.9 update choices must be on or off.")
-    if not any(choices) and sim_qb_injuries is None:
+    if not any(choices) and sim_qb_injuries is None and qb_room is None:
         raise ValueError("Select a v0.9 update for the boot save list, modern injured reserve, starting backfield cards or simulated quarterback injuries.")
     needs_simulator = sim_qb_injuries in ("realistic", "custom")
     return _ReleasedV09Update(str(source), str(target), overwrite=overwrite, name=name, author=author,
                               notes=notes, save_list_type_guard=save_list_type_guard, modern_injured_reserve=modern_injured_reserve,
                               backfield_cards=backfield_cards, sim_qb_injuries=sim_qb_injuries,
-                              sim_qb_injury_rate=custom_rate, sim_realism=needs_simulator, k128_memory=needs_simulator)
+                              sim_qb_injury_rate=custom_rate, sim_realism=needs_simulator, k128_memory=needs_simulator,
+                              qb_room=qb_room)
 
 
 def _v09_reference(source, executable):
@@ -962,16 +972,53 @@ class _InstalledSimQbEdit(BuildPlan):
     """An explicit single-setting edit. Full project recipes always use BuildPlan."""
 
 
-def sim_qb_disc_edit(source, target, mode, *, custom_rate=BuildPlan.sim_qb_injury_rate,
+def sim_qb_disc_edit(source, target, mode, *, custom_rate=BuildPlan.sim_qb_injury_rate, qb_room=None,
                      overwrite=False, name="", author="", notes=""):
-    from .nfl2k5_build_settings import validate_sim_qb_injuries
+    """b81 qb34: ``qb_room`` None follows ``mode`` (the quarterback room rules ride with Realistic and Custom)."""
+    from .nfl2k5_build_settings import validate_qb_room, validate_sim_qb_injuries
     if mode is None:
         raise ValueError("Choose Retail, Realistic or Custom for this disc copy.")
     validate_sim_qb_injuries(mode, custom_rate)
+    validate_qb_room(qb_room)
     enabled = mode in ("realistic", "custom")
     return _InstalledSimQbEdit(str(source), str(target), sim_qb_injuries=mode,
                                sim_qb_injury_rate=custom_rate, sim_realism=enabled, k128_memory=enabled,
-                               overwrite=overwrite, name=name, author=author, notes=notes)
+                               qb_room=qb_room, overwrite=overwrite, name=name, author=author, notes=notes)
+
+
+_QB_ROOM_NEEDS = ("The who-starts quarterback rules need the 128 MB target, 128 MB memory (K128), depth chart locks "
+                  "and the SPECIAL depth chart rows (all on in the Experimental preset). Turn those on, or choose Retail "
+                  "for these rules.")
+_QB_ROOM_LEFT_OUT = ("The who-starts quarterback rules need the 128 MB standard edition, depth chart locks and SPECIAL "
+                     "rows, so they were not added.")
+
+
+def _qb_room_resolution(plan, payload=None):
+    """b81 qb34: (level, note) for a plan. An explicit level wins. A level that follows sim_qb_injuries is Realistic
+    only when the room's needs are met: in the plan for a full build, in the source executable (``payload``) for the
+    in-place edit and the v0.9 update; otherwise None (nothing changes) with one plain note. Without ``payload`` an
+    in-place plan reports what it asks for (callers that write always pass the executable)."""
+    from .nfl2k5_build_settings import qb_room_level, qb_room_needs_met
+    level = qb_room_level(plan.qb_room, plan.sim_qb_injuries)
+    if plan.qb_room is not None or level != "realistic":
+        return level, None
+    if isinstance(plan, (_InstalledSimQbEdit, _ReleasedV09Update)):
+        if payload is None:
+            return level, None
+        room = _core_module("nfl2k5_qb_room")
+        ready = room is not None and not room.requirements(payload)
+    else:
+        ready = qb_room_needs_met(lambda name: getattr(plan, name))
+    return (level, None) if ready else (None, _QB_ROOM_LEFT_OUT)
+
+
+def _qb_room_level(plan, payload=None):
+    return _qb_room_resolution(plan, payload)[0]
+
+
+def _note_qb_room_left_out(receipt, note):
+    if note and note not in receipt.setdefault("user_notes", []):
+        receipt["user_notes"].append(note)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -1385,8 +1432,9 @@ for _preset in PRESETS.values():
     _preset["k128_roster_heap"] = False
     _preset["k128_early"] = False
     _preset["sim_qb_injuries"] = None
+    _preset["qb_room"] = None  # b81 qb34
 del _preset
-PRESETS["softdrink_experimental"].update(k128_memory=True, sim_qb_injuries="realistic")
+PRESETS["softdrink_experimental"].update(k128_memory=True, sim_qb_injuries="realistic", qb_room="realistic")
 # b77-f4: letter grades in Franchise (Noah, 2026-10-07): Basic keeps the 2004 numbers; Modern and Experimental grade.
 for _preset in PRESETS:
     PRESETS[_preset]["team_ratings"] = _preset in ("softdrink_advanced", "softdrink_experimental")
@@ -1470,6 +1518,7 @@ def apply_preset(plan: BuildPlan, name: str) -> BuildPlan:
     if plan.console_memory == 64:
         values["backfield_cards"] = False
         values["sim_qb_injuries"] = None
+        values["qb_room"] = None  # b81 qb34: 128 MB standard only
         values["k128_memory"] = False
     values["modern_naming"] = tt.modern_naming_patch.preset_enabled(name.removeprefix("softdrink_"))
     if not values.get("name"):
@@ -1752,6 +1801,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_sim_rb_injuries", "Simulated RB short injuries", lambda p: p.sim_rb_injuries),  # b779-sim2
     ("nfl2k5_sim_realism", "Simulated season realism", lambda p: p.sim_realism),  # b779-sim2 r4
     ("nfl2k5_sim_qb_injuries", "Simulated quarterback injuries", lambda p: p.sim_qb_injuries in ("realistic", "custom")),
+    ("nfl2k5_qb_room", "Quarterback room rules", lambda p: _qb_room_level(p) == "realistic"),  # b81 qb34
     ("nfl2k5_coach_carousel", "Coaching carousel", lambda p: p.coach_carousel),  # b780-c6
     ("nfl2k5_history_screen", "Franchise History screen", lambda p: p.history_screen),  # b780-j4
     ("nfl2k5_standings_records", "Team Standings records", lambda p: p.standings_records),  # b780-j1
@@ -2628,11 +2678,61 @@ def _apply_sim_qb_injuries(plan, target, receipt, progress, *, prepared=None):
     receipt["result"]["sim_qb_injuries"] = settings["mode"]
 
 
+def _verify_qb_room(plan, module, payload):
+    """b81 qb34: the executable holds exactly the level the plan asks for."""
+    level, settings = _qb_room_level(plan, payload), module.read_settings(payload)
+    if level == "realistic":
+        ok = (settings["status"] == "applied" and settings["stages"] == module.REALISTIC_STAGES
+              and settings["shadow"] == module.SHADOW_DEFAULT)
+    else:
+        ok = level is None or settings["status"] == "retail"
+    if not ok:
+        raise ValueError("The quarterback room rules did not read back with the chosen setting.")
+    return settings
+
+
+@_core_step("qb_room")
+def _apply_qb_room(plan, target, receipt, progress, *, prepared=None):
+    """b81 qb34: right after the simulated quarterback injuries step, the last executable writer before compaction.
+    The owner places its fixed pages itself (nfl2k5_xbe_space.QB_ROOM_VA), so no earlier owner can move."""
+    from .nfl2k5_build_settings import qb_room_level
+    if qb_room_level(plan.qb_room, plan.sim_qb_injuries) is None:
+        return
+    original = _xbe_bytes(target)
+    level, note = _qb_room_resolution(plan, original)
+    if level is None:
+        _note_qb_room_left_out(receipt, note)
+        if note:
+            receipt["steps"].append({"step": "qb_room", "status": "left_out", "user_notes": [note]})
+            receipt["result"]["qb_room"] = "left_out"
+        return
+    module = _core_module("nfl2k5_qb_room")
+    if module is None:
+        raise ValueError("The quarterback room rules are unavailable in this Studio installation.")
+    progress("Applying the quarterback room rules" if level == "realistic" else "Removing the quarterback room rules", 0, 0)
+    if prepared is None:
+        payload, patch = module.apply(original, level)
+    else:
+        source, payload, patch = prepared
+        if original != source:
+            raise ValueError("The source executable changed while the Studio was copying it.")
+    if payload != original:
+        _write_xbe_bytes(target, payload)
+    written = _xbe_bytes(target)
+    if written != payload:
+        raise ValueError("The written quarterback room data differs from the requested update.")
+    settings = _verify_qb_room(plan, module, written)
+    receipt["steps"].append({"step": "qb_room", **{k: v for k, v in patch.items() if k != "allocation"},
+                              "allocated": "allocation" in patch, "settings": settings})
+    receipt["result"]["qb_room"] = settings["mode"]
+
+
 def _only_sim_qb_changes(plan):
     if not isinstance(plan, _InstalledSimQbEdit) or plan.console_memory != 128 or plan.sim_qb_injuries is None:
         return False
     expected = sim_qb_disc_edit(plan.source, plan.target, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
-                                overwrite=plan.overwrite, name=plan.name, author=plan.author, notes=plan.notes)
+                                qb_room=plan.qb_room, overwrite=plan.overwrite, name=plan.name, author=plan.author,
+                                notes=plan.notes)
     return plan == expected
 
 
@@ -2659,10 +2759,32 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
         simulator_input, dependency = simulator.apply(original)
     patched, patch = module.apply(simulator_input, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
     settings = _verify_sim_qb_injuries(plan, module, patched)
+    # b81 qb34: the quarterback room rules ride with this option (DESIGN_CHANGES C1) on the same executable.
+    room_level, room_note = _qb_room_resolution(plan, patched)
+    room_prepared = None
+    _note_qb_room_left_out(receipt, room_note)
+    if room_level is not None:
+        room = _core_module("nfl2k5_qb_room")
+        if room is None:
+            raise ValueError("The quarterback room rules are unavailable in this Studio installation.")
+        if room_level == "realistic":
+            missing = room.requirements(patched)
+            if missing:
+                raise ValueError(" ".join(missing))
+        roomed, room_patch = room.apply(patched, room_level)
+        room_prepared = (patched, roomed, room_patch)
+    final = room_prepared[1] if room_prepared else patched
     receipt["sim_qb_source_update"] = {
         "source_sha256": sha256(original).hexdigest(), "result_sha256": sha256(patched).hexdigest(),
         "source_simulator": simulator_state, "simulator_upgraded": dependency is not None, "settings": settings,
     }
+    if room_level is not None or room_note:
+        # b81 qb34: the quarterback room on the same copy, after the quarterback option above.
+        receipt["qb_room_source_update"] = {
+            "level": room_level, "result_sha256": sha256(final).hexdigest(),
+            "settings": _verify_qb_room(plan, room, final) if room_prepared else None,
+            **({"user_notes": [room_note]} if room_note else {}),
+        }
     if preflight:
         return True
     _copy_private_build_source(source, target, receipt, progress, consume)
@@ -2670,10 +2792,15 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     if dependency is not None:
         receipt["steps"].append({"step": "sim_realism", **{k: v for k, v in dependency.items() if k != "reservations"}})
     _apply_sim_qb_injuries(plan, target, receipt, progress, prepared=(original, patched, patch))
+    _apply_qb_room(plan, target, receipt, progress, prepared=room_prepared)
     _compact_build_disc(target, reference, receipt, progress)
     _step("final_checks")
     inspection = inspect(target, screen_timing=plan.screen_timing)
     _verify_sim_qb_injuries(plan, module, _xbe_bytes(target))
+    if room_prepared:
+        _verify_qb_room(plan, room, _xbe_bytes(target))
+        if _xbe_bytes(target) != final:
+            raise ValueError("The quarterback edit did not read back as the prepared executable.")
     receipt["result"] = {**inspection, **receipt["result"], "path": str(target)}
     _verify_finished_game_disc(target, receipt, progress)
     return True
@@ -2932,8 +3059,8 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     if project or plan != v09_disc_update(
             plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
             modern_injured_reserve=plan.modern_injured_reserve, backfield_cards=plan.backfield_cards,
-            sim_qb_injuries=plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate, overwrite=plan.overwrite,
-            name=plan.name, author=plan.author, notes=plan.notes):
+            sim_qb_injuries=plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
+            overwrite=plan.overwrite, name=plan.name, author=plan.author, notes=plan.notes):
         raise ValueError("Use your retail disc to build a project with additional v0.9 changes.")
     source, target = Path(plan.source), Path(plan.target)
     if not tt.is_disc_image(source):
@@ -2966,6 +3093,19 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         expected, _ = medical.apply(expected, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
         _verify_sim_qb_injuries(plan, medical, expected)
         receipt["v09_update"].append("sim_qb_injuries")
+    room_level, room_note = _qb_room_resolution(plan, expected)  # b81 qb34: rides with the quarterback option (C1)
+    _note_qb_room_left_out(receipt, room_note)
+    if room_level is not None:
+        room = _core_module("nfl2k5_qb_room")
+        if room is None:
+            raise ValueError("The quarterback room rules are unavailable in this Studio installation.")
+        if room_level == "realistic":
+            missing = room.requirements(expected)
+            if missing:
+                raise ValueError(" ".join(missing))
+        expected, _ = room.apply(expected, room_level)
+        _verify_qb_room(plan, room, expected)
+        receipt["v09_update"].append("qb_room")
     if preflight:
         from .modpack import hash_file
         if hash_file(source, progress=progress) != release["image_sha256"]:
@@ -2981,6 +3121,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     if plan.sim_qb_injuries is not None:
         _apply_sim_realism(plan, target, receipt, progress)
         _apply_sim_qb_injuries(plan, target, receipt, progress)
+    _apply_qb_room(plan, target, receipt, progress)  # b81 qb34
     _compact_build_disc(target, source, receipt, progress)
     _step("final_checks")
     if _xbe_bytes(target) != expected:
@@ -3360,6 +3501,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("sim_rb_injuries", "nfl2k5_sim_rb_injuries"),  # b779-sim2
                                ("sim_realism", "nfl2k5_sim_realism"),  # b779-sim2 r4
                                ("sim_qb_injuries", "nfl2k5_sim_qb_injuries"),
+                               ("qb_room", "nfl2k5_qb_room"),  # b81 qb34
                                ("coach_carousel", "nfl2k5_coach_carousel"),  # b780-c6
                                ("history_screen", "nfl2k5_history_screen"),  # b780-j4
                                ("standings_records", "nfl2k5_standings_records"),  # b780-j1
@@ -3676,6 +3818,10 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     qb_settings = qb_injuries.read_settings(_xbe_bytes(source)) if qb_injuries is not None else {"status": "unavailable"}
     out["sim_qb_injuries"] = qb_settings["status"]
     out["sim_qb_injury_settings"] = qb_settings
+    qb_room = _core_module("nfl2k5_qb_room")  # b81 qb34
+    room_settings = qb_room.read_settings(_xbe_bytes(source)) if qb_room is not None else {"status": "unavailable"}
+    out["qb_room"] = room_settings["status"]
+    out["qb_room_settings"] = room_settings
     coach_carousel = _core_module("nfl2k5_coach_carousel")  # b780-c6
     out["coach_carousel"] = coach_carousel.status(_xbe_bytes(source)) if coach_carousel is not None else "unavailable"
     history_screen = _core_module("nfl2k5_history_screen")  # b780-j4
@@ -4568,6 +4714,16 @@ def validate_plan(plan: BuildPlan) -> list[str]:
     if plan.sim_qb_injuries in ("realistic", "custom"):
         if plan.console_memory != 128 or not plan.k128_memory or not plan.sim_realism:
             return ["Simulated quarterback injuries require the 128 MB target, 128 MB memory (K128) and Simulated season realism."]
+    from .nfl2k5_build_settings import qb_room_needs_met, validate_qb_room
+    try:
+        validate_qb_room(plan.qb_room)
+    except ValueError as exc:
+        return [str(exc)]
+    if (plan.qb_room == "realistic" and not isinstance(plan, (_InstalledSimQbEdit, _ReleasedV09Update))
+            and not qb_room_needs_met(lambda name: getattr(plan, name))):
+        # b81 qb34: only a named Realistic is refused; a followed one is left out with a note. The in-place edits
+        # check the executable instead (nfl2k5_qb_room.requirements).
+        return [_QB_ROOM_NEEDS]
     if plan.stock_age_policy not in ("preserve_age", "keep_birthdates"):
         return ["Choose a supported stock roster age policy."]
     if type(plan.official_marks_pack) is not str:
@@ -6883,6 +7039,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError("Simulated quarterback injuries are unavailable in this Studio installation.")
         if qb_injuries.status(_xbe_bytes(source)) == "foreign":
             raise ValueError("Unrecognized simulated quarterback injury data. Choose a verified source disc.")
+    if _qb_room_level(plan, _xbe_bytes(source)) is not None:  # b81 qb34: before any write
+        qb_room = _core_module("nfl2k5_qb_room")
+        if qb_room is None:
+            raise ValueError("The quarterback room rules are unavailable in this Studio installation.")
+        if qb_room.status(_xbe_bytes(source)) == "foreign":
+            raise ValueError("Unrecognized quarterback room data. Choose a verified source disc.")
     if plan.coach_carousel:  # b780-c6: before any write
         _coach_carousel_preflight(source, progress, plan.roster_edits)
     if plan.history_screen:  # b780-j4: before any write
@@ -8956,6 +9118,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.backfield_cards:
         _apply_backfield_cards(target, receipt, progress)
     _apply_sim_qb_injuries(plan, target, receipt, progress)
+    _apply_qb_room(plan, target, receipt, progress)  # b81 qb34: right after the quarterback injury step
 
     if tt.is_disc_image(target):
         compacted = _compact_build_disc(target, _retail_source or source, receipt, progress)
@@ -9049,6 +9212,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the audible panel legend did not survive the final passes")  # b780-p3
     if plan.sim_qb_injuries is not None:
         _verify_sim_qb_injuries(plan, _core_module("nfl2k5_sim_qb_injuries"), _xbe_bytes(target))
+    if _qb_room_level(plan, _xbe_bytes(target)) is not None:  # b81 qb34
+        _verify_qb_room(plan, _core_module("nfl2k5_qb_room"), _xbe_bytes(target))
     if plan.sim_realism and _core_module("nfl2k5_sim_realism").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated season realism did not survive the final passes")  # b779-sim2 r4
     if plan.coach_carousel and _core_module("nfl2k5_coach_carousel").status(_xbe_bytes(target)) != "applied":

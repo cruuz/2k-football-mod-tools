@@ -359,6 +359,8 @@ The 128 MB SOFTDRINK Experimental preset and the v0.10 standard pack's source re
 
 Choose **Retail (original 2K5 simulation)** for the source simulator's passing and injuries. Choose **Custom (realistic passing, your injury rate)** to set the extra injury chance per eligible simulated play. Realistic uses **0.310%** at the base setting. Durability, the Injury slider and sack or escape plays change the chance. Custom **0%** uses the game's original injury roll and keeps realistic passing. **Keep the source setting** preserves the setting on an existing disc. If you manage your depth chart manually, you choose when a recovered quarterback gets his job back.
 
+Realistic and Custom also install the rules for who starts at quarterback in simulated franchise weeks: a veteran or a close rookie at the start of the season, a struggling starter benched, and a starter back from injury. They need the 128 MB target, depth chart locks and the SPECIAL depth chart rows, which the Experimental preset selects; without those the build leaves them out and says so. Retail removes them and restores the original executable bytes.
+
 To change only this setting on a built standard disc, open the disc in Build, choose the mode and save a new copy. The command-line equivalent is `edit-sim-qb --source built.iso --out copy.iso --mode realistic`. For a full recipe rebuild, open the pack's editable sources in Build or add `--sim-qb-injuries custom --qb-injury-rate 0.310` to `build-sources`. The percent accepts steps of 0.001. The recommended 64 MB setup uses the original quarterback simulation.
 
 ## Can I check bad colleges or edit historic player names?

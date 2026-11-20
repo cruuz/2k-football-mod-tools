@@ -161,11 +161,19 @@ def validate_qb_room(level):
 
 def qb_room_level(qb_room, sim_qb_injuries):
     """b81 qb34 (DESIGN_CHANGES C1): an explicit Retail or Realistic wins; otherwise the room follows the simulated
-    quarterback injury option (Realistic or Custom -> Realistic, Retail -> Retail, keep the source -> keep)."""
+    quarterback injury option (Realistic or Custom -> Realistic, Retail -> Retail, keep the source -> keep). A followed
+    Realistic is installed only where the room's needs are met (see qb_room_needs_met and mod_build)."""
     validate_qb_room(qb_room)
     if qb_room is not None:
         return qb_room
     return {"realistic": "realistic", "custom": "realistic", "retail": "retail"}.get(sim_qb_injuries)
+
+
+def qb_room_needs_met(get):
+    """b81 qb34: a plan (``get(field)``) that installs the room's needs: the 128 MB standard target with K128, depth
+    chart locks and the SPECIAL depth chart rows (which carry the lineup roles). A missing console_memory is 128."""
+    return (get("console_memory") in (None, 128) and bool(get("k128_memory")) and bool(get("depth_locks"))
+            and bool(get("depth_chart_rows")))
 
 
 def build_settings(value):

@@ -95,16 +95,18 @@ class AllocatorPlacementTests(unittest.TestCase):
 
 class MemoryBudgetTests(unittest.TestCase):
     def test_the_room_row_follows_the_quarterback_option_unless_named(self):
-        cases = (({"sim_qb_injuries": "realistic"}, True), ({"sim_qb_injuries": "custom"}, True),
-                 ({"sim_qb_injuries": "retail"}, False), ({}, False),
-                 ({"sim_qb_injuries": "realistic", "qb_room": "retail"}, False), ({"qb_room": "realistic"}, True))
+        needs = {"k128_memory": True, "depth_locks": True, "depth_chart_rows": True}
+        cases = (({"sim_qb_injuries": "realistic", **needs}, True), ({"sim_qb_injuries": "custom", **needs}, True),
+                 ({"sim_qb_injuries": "realistic", "k128_memory": True}, False),  # followed, needs missing: left out
+                 ({"sim_qb_injuries": "retail", **needs}, False), (needs, False),
+                 ({"sim_qb_injuries": "realistic", "qb_room": "retail", **needs}, False), ({"qb_room": "realistic"}, True))
         for opts, expected in cases:
             with self.subTest(opts=opts):
                 self.assertEqual("qb_room" in budget.owners(opts, 128), expected)
         self.assertEqual(budget.BUILD_OWNER_BYTES["qb_room"], (0x3000, 0, 0, 0, 0))
 
     def test_the_resident_executable_reaches_the_end_of_the_room(self):
-        base = {"k128_memory": True, "sim_qb_injuries": "realistic"}
+        base = {"k128_memory": True, "sim_qb_injuries": "realistic", "depth_locks": True, "depth_chart_rows": True}
         with_room = budget.xbe_resident(base, 128)
         without = budget.xbe_resident(dict(base, qb_room="retail"), 128)
         # The quarterback bank ends at 0x1528000; the room's pages end at 0x152C000.
@@ -178,6 +180,33 @@ class OwnerTests(unittest.TestCase):
         self.assertEqual((settings["status"], settings["stages"], settings["shadow"], settings["h0_ppm"]),
                          ("applied", 3, False, 12500))
         self.assertEqual(room.apply(custom, "realistic")[0], self.applied)
+
+    def test_a_signing_stage_page_links_the_ir_store_and_retail_restores_all_three_sites(self):
+        from mod_editor.core import nfl2k5_injured_reserve as ir
+        room, code = self.room, self.code
+        stages = code.STAGE_D1 | code.STAGE_SIGN
+        store = ir.store_va(self.applied)
+        self.assertTrue(store)
+        record = code.settings_record(stages, shadow=True)
+        page = code.page_bytes(0x1529000, record, ir_store_va=store)
+        self.assertEqual(page[code.LINK_IR_STORE:code.LINK_IR_STORE + 4], store.to_bytes(4, "little"))
+        image = XbeImage(self.applied)
+        edits = [(0x1529000, image.read(0x1529000, 0x3000), page)]
+        edits += [(at, original, patched) for label, at, original, patched in code.sites(0x1529000, stages)
+                  if label == "sign_entry"]
+        self.assertEqual(len(edits), 2)
+        signing = room._patch(self.applied, edits)
+        settings = room.read_settings(signing)
+        self.assertEqual((settings["status"], settings["stages"]), ("applied", stages))
+        unlinked = code.page_bytes(0x1529000, record, ir_store_va=0)
+        self.assertEqual(room.status(room._patch(signing, [(0x1529000, page, unlinked)])), "foreign")
+        retail, _ = room.apply(signing, "retail")
+        self.assertEqual(retail, room.apply(self.applied, "retail")[0])
+        sign_at, sign_retail = next((h[0], h[1]) for h in code.HOOKS if h[2] == "sign_entry")
+        self.assertEqual(XbeImage(retail).read(sign_at, 5), sign_retail)
+        self.assertTrue(room.requirements(self.applied, stages))  # 4a needs modern IR and ownership applied
+        with self.assertRaisesRegex(ValueError, "trade stage"):
+            room.requirements(self.applied, code.STAGE_TRADE)
 
     def test_foreign_site_bytes_are_refused_with_and_without_the_page(self):
         room = self.room

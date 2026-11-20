@@ -481,8 +481,10 @@ def owners(opts: dict, target_mb: int = 64) -> list:
     out = [o for o, fs in OWNER_FIELDS.items() if any(on(opts, f) for f in fs)]
     if target_mb == 128 and (on(opts, "injured_reserve_guard") or on(opts, "modern_injured_reserve")):
         out.append("franchise_ownership")
-    from .nfl2k5_build_settings import qb_room_level  # b81 qb34: follows the quarterback injury option unless named
-    if qb_room_level(opts.get("qb_room"), opts.get("sim_qb_injuries")) == "realistic":
+    from .nfl2k5_build_settings import qb_room_level, qb_room_needs_met  # b81 qb34
+    # Named, or following the quarterback injury option where its needs are in the plan (DESIGN_CHANGES C1).
+    if qb_room_level(opts.get("qb_room"), opts.get("sim_qb_injuries")) == "realistic" and (
+            opts.get("qb_room") is not None or (target_mb == 128 and qb_room_needs_met(opts.get))):
         out.append("qb_room")
     return out + list(INFRASTRUCTURE) if out else out
 

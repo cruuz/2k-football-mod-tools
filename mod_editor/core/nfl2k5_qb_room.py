@@ -55,9 +55,12 @@ def _allocation(payload):
 
 
 def _ir_store_va(payload, stages):
-    """The IR store the signing pass reads (stage 4a only). Not built yet: refuse rather than link a guess."""
-    _require(not stages & _code().STAGE_SIGN, "The quarterback room signing stage is not available in this build")
-    return 0
+    """The link word at +0x2020: the modern IR owner's store, which the signing pass (stage 4a) reads; 0 otherwise.
+    0 with stage 4a means E2 never fires (the page counts sign_ir_unlinked)."""
+    if not stages & _code().STAGE_SIGN:
+        return 0
+    from . import nfl2k5_injured_reserve as ir
+    return ir.store_va(payload) or 0
 
 
 def _sites_state(image, va, stages):
@@ -115,10 +118,15 @@ def status(payload):
     return read_settings(payload)["status"]
 
 
-def requirements(payload):
+def requirements(payload, stages=None):
     """Plain reasons this executable cannot take Realistic (empty when it can): 128 MiB standard, depth locks and
-    lineup roles applied. A stage whose needs are missing is an error, never a silent skip."""
+    lineup roles applied; for the signing stage (4a) also the economy, the practice squad, modern IR and the ownership
+    page. A stage whose needs are missing is an error, never a silent skip."""
     from . import nfl2k5_depth_locks as locks, nfl2k5_k128 as memory, nfl2k5_lineup_roles as lineup
+    code = _code()
+    stages = REALISTIC_STAGES if stages is None else stages
+    _require(not stages & code.STAGE_TRADE, "The quarterback room trade stage is not available in this build")
+    _require(not stages & code.STAGE_E2 or stages & code.STAGE_SIGN, "The quarterback room E2 stage needs stage 4a")
     missing = []
     try:
         standard = bool(memory.read_settings(payload).get("require_128"))
@@ -130,8 +138,17 @@ def requirements(payload):
         missing.append("The quarterback room rules need depth chart locks.")
     if lineup.status(payload) != "applied":
         missing.append("The quarterback room rules need the situational lineup roles.")
-    _require(not REALISTIC_STAGES & ~(_code().STAGE_D1 | _code().STAGE_D2D3 | _code().STAGE_D4),
-             "The quarterback room emergency-move stages are not available in this build")
+    if stages & code.STAGE_SIGN:
+        from . import nfl2k5_franchise_economy as economy, nfl2k5_franchise_ownership as ownership
+        from . import nfl2k5_injured_reserve as ir, nfl2k5_practice_squad as squad
+        if economy.status(payload) != "applied":
+            missing.append("Emergency quarterback signings need the franchise economy.")
+        if squad.status(payload) != "applied":
+            missing.append("Emergency quarterback signings need the practice squad.")
+        if ir.status(payload) != "applied":
+            missing.append("Emergency quarterback signings need modern injured reserve.")
+        if ownership.status(payload, ir.store_va(payload) or 0) != "applied":
+            missing.append("Emergency quarterback signings need the franchise ownership safeguards.")
     return missing
 
 
