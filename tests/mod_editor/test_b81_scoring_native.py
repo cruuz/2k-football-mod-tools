@@ -230,6 +230,27 @@ class BreakawayStop(unittest.TestCase):
                 self.assertEqual(self.promote(new, 9.67, line_to_goal, 0.01), f32(line_to_goal - 1.0))
                 self.assertEqual(self.promote(old, 9.67, line_to_goal, 0.01), f32(line_to_goal + 1.0))
 
+    def test_the_stop_distance_comes_from_the_chosen_retail_constant(self):
+        for stop_at in (5.0, 10.0, 20.0):
+            code = scoring.breakaway_bytes(60.0, stop_at)
+            m_value = self.promote_with_constants(code, 9.67, 72.5, 0.01, stop_at)
+            with self.subTest(stop_at=stop_at):
+                self.assertEqual(m_value, f32(72.5 - stop_at))
+                self.assertEqual(self.promote_with_constants(code, 6.0, 45.0, 0.01, stop_at), f32(46.0))
+        with self.assertRaises(scoring.SimScoringError):
+            scoring.breakaway_bytes(60.0, 7.0)
+        with self.assertRaises(scoring.SimScoringError):
+            scoring.breakaway_bytes(8.0, 10.0)
+
+    def promote_with_constants(self, code, gain, line_to_goal, u, stop_at):
+        original = CONSTANTS.copy()
+        CONSTANTS[scoring.STOP_AT[stop_at]] = stop_at
+        try:
+            return self.promote(code, gain, line_to_goal, u)
+        finally:
+            CONSTANTS.clear()
+            CONSTANTS.update(original)
+
     def test_the_chance_and_eligibility_are_unchanged(self):
         new, old = scoring.breakaway_bytes(40.0), scoring.RETAIL_BREAKAWAY
         for args in ((6.0, 60.0, 0.074), (6.0, 60.0, 0.076), (6.0, 30.0, 0.5), (6.0, 30.0, 0.0749),

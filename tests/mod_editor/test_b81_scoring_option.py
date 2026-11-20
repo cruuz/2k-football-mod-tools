@@ -27,6 +27,10 @@ class RetailPins(unittest.TestCase):
                 self.assertEqual(image.read(va, len(before)), before)
         self.assertEqual(aim.status(retail), "retail")
         self.assertEqual(scoring.status(retail), "retail")
+        import struct
+        for value, va in scoring.STOP_AT.items():
+            self.assertEqual(struct.unpack("<f", image.read(va, 4))[0], value)
+        self.assertEqual(image.read(scoring.BREAKAWAY_VA, scoring.BREAKAWAY_SIZE), scoring.RETAIL_BREAKAWAY)
 
     def test_cpu_aim_owner_round_trip_on_retail(self):
         retail = retail_bytes()
