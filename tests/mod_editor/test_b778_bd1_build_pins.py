@@ -188,9 +188,20 @@ class UncBowlKitStateTests(unittest.TestCase):
 class WiringTests(unittest.TestCase):
     def test_the_source_check_runs_before_the_first_copy_and_notes_reach_the_receipt(self):
         text = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
-        check = text.index("unc.preflight_source(")
-        self.assertLess(check, text.index('receipt["steps"].append({"step": "copy"})'))
-        self.assertLess(check, text.index("progress(\"Applying ESPN Anniversary edits\", 0, 0)"))
+
+        def top_level(name):
+            start = text.index("\ndef " + name + "(")
+            return text[start:text.index("\ndef ", start + 1)]
+
+        # Beta 81 moved the plain copy into _copy_private_build_source (shared with the single-option QB and
+        # v0.9 update routes, which never take an ESPN 25 plan). The full build must still check the Unc Bowl
+        # kits before either of its two copies (first-pass write_copy or the plain copy) and the Anniversary edits.
+        self.assertIn('receipt["steps"].append({"step": "copy"})', top_level("_copy_private_build_source"))
+        body = top_level("_build")
+        check = body.index("unc.preflight_source(")
+        self.assertLess(check, body.index("tt.write_copy(source, target"))
+        self.assertLess(check, body.index("_copy_private_build_source(source, target, receipt, progress, _consume_source)"))
+        self.assertLess(check, body.index("progress(\"Applying ESPN Anniversary edits\", 0, 0)"))
         self.assertIn("uniforms_receipt.get(\"user_notes\"", text)
 
 

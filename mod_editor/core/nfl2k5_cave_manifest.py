@@ -637,7 +637,11 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     # b780-int: MEM1's intro auto-skip (on in every preset) is a late allocator owner too; the
                                     # union below reserves it and the probe copy observes it, so the allocator-free probe build
                                     # leaves it off (the a5f08ea81 regen stopped there: "During Intro auto-skip: patch resized")
-                                    intro_autoskip=False, backfield_cards=False),
+                                    intro_autoskip=False, backfield_cards=False,
+                                    # b81: the Experimental preset now selects Realistic quarterback injuries, which
+                                    # needs K128 and sim realism (both off here). Its fixed bank is a late allocator
+                                    # owner that the separate QB probe below observes, so the probe build leaves it off.
+                                    sim_qb_injuries=None),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
