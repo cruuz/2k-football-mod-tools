@@ -49,6 +49,13 @@ import unittest
 from mod_editor.core import nfl2k5_qb_room_code as room
 from tests.nfl2k5_supersim_draft_fixture import HAVE_UC, retail_bytes
 
+if os.environ.get("QB_ROOM_TEST_MODULE"):
+    # Run every case against another code module file (e.g. an older commit's template) to show what fails there.
+    import importlib.util as _util
+    _spec = _util.spec_from_file_location("qb_room_code_under_test", os.environ["QB_ROOM_TEST_MODULE"])
+    room = _util.module_from_spec(_spec)
+    _spec.loader.exec_module(room)
+
 VA = 0x1529000
 OPENING_SITE, ROOM_SITE = 0x247DCA, 0x24807A
 OPENING_TARGET, ROOM_TARGET = 0x2BE020, 0x27EB80
