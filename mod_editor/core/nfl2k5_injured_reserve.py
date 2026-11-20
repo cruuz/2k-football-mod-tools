@@ -30,7 +30,7 @@ What this owner does
   original payroll recount. The companion franchise ownership bank supplies this code and the native transfer guards.
 * Save format: ``nfl2k5_injured_reserve_save`` (the high halves of the retail IR block; no size change).
 
-Memory: 6,144 B IR code + 3,328 B shared ownership code + 5,312 B IR data in the scale-out (``REQUESTS``). Not at 64 MB: the 64 MB profile is the legacy
+Memory: 6,144 B IR code + 4,096 B shared ownership code + 5,312 B IR data in the scale-out (``REQUESTS``). Not at 64 MB: the 64 MB profile is the legacy
 layout, which has no room for it (``nfl2k5_memory_budget``); a 64 MB build keeps the 2004 IR with the guard.
 """
 from __future__ import annotations

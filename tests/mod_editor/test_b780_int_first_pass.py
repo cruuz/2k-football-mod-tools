@@ -190,10 +190,10 @@ class LateOwnerReservationTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_offset_toss as toss, nfl2k5_rookie_faces as faces, nfl2k5_xbe_space as space
         from mod_editor.core import nfl2k5_franchise_ownership as custody
 
-        # A direct request uses the same floor, even with no other owner requesting scale-out.
+        # A direct request uses the same fixed page as every standard preset.
         bare = space.plan(custody.REQUESTS, scaleout=False)['allocations']
         alone, = (row for row in bare if row['owner'] == custody.OWNER)
-        self.assertEqual((alone['va'], alone['size']), (0x1523130, 3328))
+        self.assertEqual((alone['va'], alone['size']), (0x1528000, 4096))
         for preset in mod_build.PRESETS:
             initial = tuple(_disc_first_pass_requests(preset))
             initial_rows = space.plan(initial)["allocations"]
@@ -220,11 +220,8 @@ class LateOwnerReservationTests(unittest.TestCase):
                             self.assertEqual(by_slot[req[:2]]['va'], space.LINEUP_SLOT_VA[req[:2]])
                     if cards:
                         self.assertEqual(by_slot[space.BACKFIELD_REQUEST[:2]]['va'], space.BACKFIELD_VA)
-                    modern = mod_build.PRESETS[preset]['modern_injured_reserve']
-                    self.assertEqual(custody.REQUESTS[0][:2] in by_slot, modern)
-                    if modern:
-                        row = by_slot[custody.REQUESTS[0][:2]]
-                        self.assertEqual((row['va'], row['size']), (0x1523130, 3328))
+                    row = by_slot[custody.REQUESTS[0][:2]]
+                    self.assertEqual((row['va'], row['size']), (0x1528000, 4096))
 
     def test_experimental_installs_actual_rookie_hair_then_toss_then_backfield_cards(self):
         from mod_editor.core import nfl2k5_backfield_cards as cards, nfl2k5_injured_reserve as ir
