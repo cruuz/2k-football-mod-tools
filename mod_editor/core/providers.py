@@ -989,12 +989,14 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",  # b780 hunt1: frozen beta-79 roll for the previous state
         "mod_editor/core/nfl2k5_sim_qb_injuries.py": "e8219c52604fe023549411055a7500987d9da4d108bdf2794bac1227a22e18e7",
         "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "ab914dbc3989ecaf33799f95c0e555027c2ae097758e97b425b655227ceded3c",
-        "mod_editor/core/nfl2k5_qb_room.py": "7a9c335746a11b53ef60034a44f45c755bec2a9bbc77e4e67623e55e95a0a1e0",  # b81 qb34: mod_build loads it by name
-        "mod_editor/core/nfl2k5_qb_room_code.py": "c7067bacabf4b4091233ffc75486a5f769a7d0430bedf30731a941a3efad5f36",  # b81 qb34: its generated page template
+        "mod_editor/core/nfl2k5_qb_room.py": "432c9048ad00031c8fccb23dfc617a6bc89602fc86b01750f5374b03a7f0d22d",  # b81 qb34: mod_build loads it by name
+        "mod_editor/core/nfl2k5_qb_room_code.py": "4cc42e28986731145ecedbf5416e96484d58e07a9fd18c34a2ca64860bf0729f",  # b81 qb34: its generated page template
         "mod_editor/core/nfl2k5_qb_room_code_b81_floor.py": "fca60cc8cb3b41a8dbb6756110d33ee0ef1ef70581420b7ecf73dbb0c91cbca4",  # b81 qb34: frozen floor handover template ("previous")
         "mod_editor/core/nfl2k5_qb_room_code_b81_3a.py": "892a6ba85e94f55151423b4842825d521b85e54c9dcf7162d41b9344bee513f8",  # b81 qb34: frozen stage 0 + 3a template ("previous")
         "mod_editor/core/nfl2k5_qb_room_code_b81_d1d2.py": "f01e39ac2a6fbf29595a28d7092d7dcc8fa7060081430f88d6295e9c5ac2ef32",  # b81 qb34: frozen D1 + D2 template ("previous")
         "mod_editor/core/nfl2k5_qb_room_code_b81_floor_review.py": "1c95004a4f47f2fd83d3235644c061a336a7ffec5d662604b47c31e1996be8f0",  # b81 qb34: frozen floor review template ("previous")
+        "mod_editor/core/nfl2k5_qb_trades.py": "62d7a6cc80e56a094832158406b9468f5cf8c792b95a6bd10c738f0535abde3e",  # b81 qb34 4b (C20): the room owner loads it with bit 16
+        "mod_editor/core/nfl2k5_qb_trades_code.py": "1724b5979886782a4ebf5e730c97e6aef9efbc11c01cbc9e5287b2629213362c",  # b81 qb34 4b: its generated page template
         "mod_editor/core/nfl2k5_sim_realism.py": "6323212af016c4e70ecd36d340a993e16afc9b57550f3bb7ed2647fc6731a248",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_sim_realism_b779.py": "687a35375780ce07948ba555a8c189167586393c5de6f48d954c2902a71010ad",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_standings_records.py": "175712ff8aff730b035aab671bf2208322ba52ec1fef758afad7d24263485c1c",  # b780-j1
@@ -1088,7 +1090,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "ef3c58457ab9d8bccb75e0ffa3c10e78b88c416e5f40320bf95ca402d6a3ae21",
+        "mod_editor/core/nfl2k5_xbe_space.py": "f2ef98519c74e411f2d23e6552917cb136deed1ec87403da28e4b200ed85ed4e",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "b63521c9b17119b87558aff36a5a914d0c3fdd42e96240cf7de20065ead644d7",

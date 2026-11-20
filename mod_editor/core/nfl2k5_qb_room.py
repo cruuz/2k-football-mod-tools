@@ -7,6 +7,11 @@ else. Retail restores the sites and fills the pages with 0xCC; the reservation s
 source plus an empty reservation, byte for byte. A page an earlier revision's Studio wrote (the frozen templates
 nfl2k5_qb_room_code_b81_*) reads "previous": Realistic upgrades it in place to the current template and Retail
 restores it. The byte interface is .b77-scratch/b81/qb34/INTERFACE.md.
+
+Stage bit 16 (4b trades, DESIGN_CHANGES C20) brings a second owner with it: nfl2k5_qb_trades, one fixed page at 0x152C000
+and the site 0x247E1E. This owner installs and restores it together with the room (never one without the other: the
+room's state authenticates it, Retail restores the trades site and page first, then the room). The Studio's Realistic set
+does not include bit 16 (REALISTIC_STAGES); only install_stages writes it, for panels and tests.
 """
 from __future__ import annotations
 
@@ -89,6 +94,31 @@ def _allocation(payload):
     section = XbeImage(payload).section(VA, SIZE)
     _require(section.writable and section.executable, "The quarterback room needs a writable executable pool")
     return rows[0]
+
+
+STAGE_TRADE = 16
+
+
+def _trades():
+    from . import nfl2k5_qb_trades as trades
+    return trades
+
+
+def _trades_link(payload):
+    """The trades page's link word: the modern IR owner's store (E2's lost starter), 0 without one."""
+    from . import nfl2k5_injured_reserve as ir
+    return ir.store_va(payload) or 0
+
+
+def _trades_check(payload, stages):
+    """With bit 16 the trades page must be applied with this executable's IR link; without it, retail. Returns the
+    trades page's own shadow flag (None without bit 16)."""
+    status, link, shadow = _trades().state(payload)
+    if stages & STAGE_TRADE:
+        _require(status == "applied" and link == _trades_link(payload), "The quarterback trades page is not as installed")
+    else:
+        _require(status == "retail", "Quarterback trades bytes without the room's trade stage")
+    return shadow
 
 
 def _ir_store_va(payload, stages):
@@ -178,13 +208,17 @@ def _state(payload):
     allocation = _allocation(payload)
     if allocation is None:
         _sites_state(image, 0, 0)
+        _trades_check(payload, 0)
         return "retail", None, None, None
     page = image.read(VA, SIZE)
     if page == b"\xcc" * SIZE:
         _sites_state(image, 0, 0)
+        _trades_check(payload, 0)
         return "retail", None, allocation, None
     try:
-        return "applied", _page_settings(payload, image, page, _code()), allocation, None
+        settings = _page_settings(payload, image, page, _code())
+        _trades_check(payload, settings["stages"])
+        return "applied", settings, allocation, None
     except ERRORS as exc:
         current_error = exc
     for name, module, stage_sets in _previous_revisions():
@@ -194,6 +228,7 @@ def _state(payload):
             continue
         written = module.parse_settings(module.settings_record(settings["stages"]))  # that Studio's own record
         if settings["stages"] in stage_sets and settings == written:
+            _trades_check(payload, 0)
             return "previous", settings, allocation, (name, module)
     raise current_error
 
@@ -230,7 +265,10 @@ def read_settings(payload):
                 "va": VA if allocation else None}
     out = {"status": status, "mode": "realistic", "stages": settings["stages"],
            "stage_names": stage_names(settings["stages"]), "shadow": settings["shadow"],
-           "h0_ppm": settings["h0_ppm"], "d2_scale_milli": settings["d2_scale_milli"], "va": VA, "reserved": True}
+           "h0_ppm": settings["h0_ppm"], "d2_scale_milli": settings["d2_scale_milli"], "va": VA, "reserved": True,
+           "trades": "applied" if settings["stages"] & STAGE_TRADE else "retail"}
+    if settings["stages"] & STAGE_TRADE:
+        out["trades_shadow"] = _trades().state(bytes(payload))[2]
     if revision is not None:
         # An earlier revision's page; Realistic upgrades it in place, Retail restores it. Its stage names are read
         # with the current meaning of the bits, which matches for the sets those Studios wrote (192 and 1).
@@ -244,7 +282,6 @@ def status(payload):
 
 def _check_stage_set(stages):
     code = _code()
-    _require(not stages & code.STAGE_TRADE, "The quarterback room trade stage is not available in this build")
     _require(not stages & code.STAGE_E2 or stages & code.STAGE_SIGN, "The quarterback room E2 stage needs stage 4a")
     _require(not stages & STAGE_OVER_CAP,
              "Signing over the cap is retired: the quarterback floor never goes over the cap")
@@ -282,6 +319,19 @@ def requirements(payload, stages=None):
             missing.append("Emergency quarterback signings need modern injured reserve.")
         if ownership.status(payload, ir.store_va(payload) or 0) != "applied":
             missing.append("Emergency quarterback signings need the franchise ownership safeguards.")
+    if stages & STAGE_TRADE:
+        # 4b (C20): the native trade pass it wraps must be the deadline owner's, the executor must run the ownership
+        # guard and the practice-squad room test, the price is the economy's, and the lost-starter test reads modern IR.
+        from . import nfl2k5_franchise_economy as economy, nfl2k5_franchise_ownership as ownership
+        from . import nfl2k5_injured_reserve as ir, nfl2k5_practice_squad as squad, nfl2k5_trade_deadline as deadline
+        for ok, what in ((deadline.status(payload) == "applied", "the NFL week 9 trade deadline"),
+                         (economy.status(payload) == "applied", "the franchise economy"),
+                         (squad.status(payload) == "applied", "the practice squad"),
+                         (ir.status(payload) == "applied", "modern injured reserve"),
+                         (ownership.status(payload, ir.store_va(payload) or 0) == "applied",
+                          "the franchise ownership safeguards")):
+            if not ok:
+                missing.append(f"Quarterback trades need {what}.")
     return missing
 
 
@@ -305,11 +355,13 @@ def _patch(payload, edits):
     return bytes(data)
 
 
-def _edits(va, stages, page, *, restoring, code=None):
-    """Every byte the owner writes: the sites the stage set needs and the whole page (template ``code``)."""
+def _edits(va, stages, page, *, restoring, code=None, trades_link=0, trades_shadow=False):
+    """Every byte the owner writes: the sites the stage set needs and the whole page (template ``code``); with bit 16
+    the trades site and page first (C20: restored before the room)."""
     empty = b"\xcc" * SIZE
-    out = [(at, patched, original) if restoring else (at, original, patched)
-           for _label, at, original, patched in _sites(va, stages, code)]
+    out = _trades().edits(trades_link, restoring=restoring, shadow=trades_shadow) if stages & STAGE_TRADE else []
+    out += [(at, patched, original) if restoring else (at, original, patched)
+            for _label, at, original, patched in _sites(va, stages, code)]
     out.append((va, page, empty) if restoring else (va, empty, page))
     return out
 
@@ -333,7 +385,9 @@ def apply(payload, level="realistic", *, stages=None):
                                                         h0_ppm=settings["h0_ppm"],
                                                         d2_scale_milli=settings["d2_scale_milli"]),
                                ir_store_va=_ir_store_va(source, settings["stages"]))
-        result = _patch(source, _edits(VA, settings["stages"], page, restoring=True, code=code))
+        trades_shadow = bool(_trades().state(source)[2]) if settings["stages"] & STAGE_TRADE else False
+        result = _patch(source, _edits(VA, settings["stages"], page, restoring=True, code=code,
+                                       trades_link=_trades_link(source), trades_shadow=trades_shadow))
         _require(_state(result)[0] == "retail", "The quarterback room failed Retail readback")
         return result, {**receipt, "status": "retail", "restored_stages": settings["stages"],
                         **({"restored_revision": revision[0]} if revision is not None else {}),
@@ -343,12 +397,14 @@ def apply(payload, level="realistic", *, stages=None):
     return _install(source, current, settings, allocation, receipt, stages, SHADOW_DEFAULT, revision)
 
 
-def install_stages(payload, stages, *, shadow=False, test_without_needs=False):
+def install_stages(payload, stages, *, shadow=False, test_without_needs=False, trades_shadow=False):
     """Calibration and test path only (season panels, owner tests): install a named stage set with the same
     authentication, needs and readback as Realistic. Nothing in the Studio calls it; the Studio writes only
     studio_stages() sets through apply() (a test pins both). ``test_without_needs`` skips only the dependency checks (the
     128 MB standard, locks, roles, economy, practice squad, modern IR, ownership), never the byte authentication of
-    the routines the floor enters: it exists to replay recorded seasons on executables made before those owners."""
+    the routines the floor enters: it exists to replay recorded seasons on executables made before those owners.
+    ``trades_shadow`` (bit 16 only) puts 4b alone in shadow through the trades page's flag word, while the room's other
+    stages act: the 4b shadow panel."""
     source = bytes(payload)
     XbeImage(source)
     try:
@@ -356,14 +412,17 @@ def install_stages(payload, stages, *, shadow=False, test_without_needs=False):
     except ERRORS as exc:
         raise QbRoomError(f"The quarterback room bytes are not recognized; refusing to change them ({exc})") from exc
     _require(type(test_without_needs) is bool, "test_without_needs must be True or False")
+    _require(type(trades_shadow) is bool and (not trades_shadow or stages & STAGE_TRADE),
+             "The trades shadow flag needs stage bit 16")
     receipt = {"owner": OWNER, "mode": "stages", "va": hex(VA)}
     if test_without_needs:
         receipt["test_without_needs"] = True
     return _install(source, current, settings, allocation, receipt, stages, shadow, revision,
-                    needs=not test_without_needs)
+                    needs=not test_without_needs, trades_shadow=trades_shadow)
 
 
-def _install(source, current, settings, allocation, receipt, stages, shadow, revision=None, *, needs=True):
+def _install(source, current, settings, allocation, receipt, stages, shadow, revision=None, *, needs=True,
+             trades_shadow=False):
     code = _code()
     if needs:
         missing = requirements(source, stages)
@@ -373,7 +432,8 @@ def _install(source, current, settings, allocation, receipt, stages, shadow, rev
     _require(not missing, " ".join(missing))
     record = code.settings_record(stages, shadow=shadow)
     wanted = code.parse_settings(record)
-    if current == "applied" and settings == wanted:
+    if current == "applied" and settings == wanted and (
+            not stages & STAGE_TRADE or _trades().state(source)[2] == trades_shadow):
         return source, {**receipt, "status": "already_applied", "stages": stages,
                         "shadow": shadow, "changed_bytes": 0, "file_growth": 0}
     working = source
@@ -385,14 +445,19 @@ def _install(source, current, settings, allocation, receipt, stages, shadow, rev
             receipt["upgraded_from"] = revision[0]
     elif allocation is None:
         working, receipt["allocation"] = space.extend_scaleout(source, REQUESTS)
+    if stages & STAGE_TRADE and _trades().allocation(working) is None:
+        working, receipt["trades_allocation"] = space.extend_scaleout(working, _trades().REQUESTS)
     empty = working
     page = code.page_bytes(VA, record, ir_store_va=_ir_store_va(working, stages))
-    result = _patch(working, _edits(VA, stages, page, restoring=False))
+    result = _patch(working, _edits(VA, stages, page, restoring=False, trades_link=_trades_link(working),
+                                    trades_shadow=trades_shadow))
     confirmed = _state(result)
     _require(confirmed[0] == "applied" and confirmed[1] == wanted, "The quarterback room failed Realistic readback")
     restored, _ = apply(result, "retail")
     _require(restored == empty, "The quarterback room Retail restore does not reproduce the empty reservation")
     return result, {**receipt, "status": "applied", "stages": stages, "stage_names": stage_names(stages), "shadow": shadow,
-                    "sites": [hex(at) for _label, at, _o, _p in _sites(VA, stages)],
+                    **({"trades_shadow": trades_shadow} if stages & STAGE_TRADE else {}),
+                    "sites": [hex(at) for _label, at, _o, _p in _sites(VA, stages)]
+                    + ([hex(_trades().edits(0, restoring=False)[0][0])] if stages & STAGE_TRADE else []),
                     "changed_bytes": space.count_differing_bytes(source, result),
                     "file_growth": len(result) - len(source)}

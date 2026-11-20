@@ -45,10 +45,12 @@ class AllocatorPlacementTests(unittest.TestCase):
                 report = space.plan([ROOM], scaleout=False) if requests is None else space.plan(requests)
                 row = _room_row(report["allocations"])
                 self.assertEqual((row["va"], row["size"], row["align"]), (0x1529000, 0x3000, 0x1000))
-                self.assertEqual(report["file_size"] - space.SCALE3_FILE_SIZE, 0x152C000 - space.POOL_VA)
+                # C20: the dormant union also carries the trades page right after the room (0x152C000..0x152CFFF).
+                end = 0x152D000 if name == "dormant union" else 0x152C000
+                self.assertEqual(report["file_size"] - space.SCALE3_FILE_SIZE, end - space.POOL_VA)
 
     def test_adding_the_room_moves_no_row_and_does_not_advance_the_cursor(self):
-        union = [r for r in space.dormant_union() if r[0] != ROOM[0]]
+        union = [r for r in space.dormant_union() if r[0] not in (ROOM[0], space.QB_TRADES_OWNER)]
         before = space.plan(union)["allocations"]
         after = space.plan(union + [ROOM])["allocations"]
         self.assertEqual([r for r in before if r["owner"] != space.DIRECTORY_OWNER and r not in after], [])
@@ -63,6 +65,7 @@ class AllocatorPlacementTests(unittest.TestCase):
     def test_every_other_pool_owner_steps_over_the_range_even_without_the_room(self):
         # An owner that would straddle 0x1529000 is placed after the room's pages whether or not the room is requested,
         # so an owner installed first can never take the room's address. (On the old code it straddled the range.)
+        # C20: the span stepped over is the room's three pages and the trades page, 0x1529000..0x152CFFF.
         filler = ("aa_synthetic_filler", "code", 0x1529000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
         # Both are larger than the v3 code run holds, so both go whole to the pool, in name order.
         straddle = ("ab_synthetic_straddle", "code", 0x20000, 16)
@@ -70,17 +73,17 @@ class AllocatorPlacementTests(unittest.TestCase):
             with self.subTest(room=ROOM in requests):
                 rows = space.plan(requests)["allocations"]
                 placed = next(r for r in rows if r["owner"] == straddle[0])
-                self.assertEqual(placed["va"], 0x152C000)
+                self.assertEqual(placed["va"], 0x152D000)
                 for row in rows:
                     if row["owner"] != ROOM[0]:
-                        self.assertFalse(row["va"] < 0x152C000 and row["va"] + row["size"] > 0x1529000, row)
+                        self.assertFalse(row["va"] < 0x152D000 and row["va"] + row["size"] > 0x1529000, row)
 
     def test_an_owner_bumped_over_the_ownership_page_also_steps_over_the_room(self):
         ownership = (space.FRANCHISE_OWNERSHIP, "code", space.FRANCHISE_OWNERSHIP_SIZE, 16)
         filler = ("aa_synthetic_filler", "code", 0x1528000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
         bumped = ("ab_synthetic_bumped", "code", 0x20000, 16)
         rows = space.plan([filler, bumped, ownership])["allocations"]
-        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x152C000)
+        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x152D000)   # C20: past trades too
 
     def test_a_foreign_room_request_is_refused(self):
         for request in (("nfl2k5_qb_room", "code", 0x2000, 0x1000), ("nfl2k5_qb_room", "data", 0x3000, 0x1000)):
@@ -221,8 +224,9 @@ class OwnerTests(unittest.TestCase):
         sign_at, sign_retail = next((h[0], h[1]) for h in code.HOOKS if h[2] == "sign_entry")
         self.assertEqual(XbeImage(retail).read(sign_at, 5), sign_retail)
         self.assertTrue(room.requirements(self.applied, stages))  # 4a needs modern IR and ownership applied
-        with self.assertRaisesRegex(ValueError, "trade stage"):
-            room.requirements(self.applied, code.STAGE_TRADE)
+        # C20: bit 16 is installable (its own page, nfl2k5_qb_trades); its needs are named, never skipped.
+        self.assertTrue(all(m.startswith("Quarterback trades need") or "128 MB" in m
+                            for m in room.requirements(self.applied, code.STAGE_TRADE)))
 
     def test_foreign_site_bytes_are_refused_with_and_without_the_page(self):
         room = self.room
