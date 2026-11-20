@@ -989,11 +989,12 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",  # b780 hunt1: frozen beta-79 roll for the previous state
         "mod_editor/core/nfl2k5_sim_qb_injuries.py": "e8219c52604fe023549411055a7500987d9da4d108bdf2794bac1227a22e18e7",
         "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "ab914dbc3989ecaf33799f95c0e555027c2ae097758e97b425b655227ceded3c",
-        "mod_editor/core/nfl2k5_qb_room.py": "d4f7c762a07eb4b4136459e205d29154ea5f04fd918da4ad823b1c2e46ff518b",  # b81 qb34: mod_build loads it by name
-        "mod_editor/core/nfl2k5_qb_room_code.py": "420fbe08976484001e70c2e7965d04b43def0b5530394b2a896b2d0d3eef2eb2",  # b81 qb34: its generated page template
+        "mod_editor/core/nfl2k5_qb_room.py": "7a9c335746a11b53ef60034a44f45c755bec2a9bbc77e4e67623e55e95a0a1e0",  # b81 qb34: mod_build loads it by name
+        "mod_editor/core/nfl2k5_qb_room_code.py": "c7067bacabf4b4091233ffc75486a5f769a7d0430bedf30731a941a3efad5f36",  # b81 qb34: its generated page template
         "mod_editor/core/nfl2k5_qb_room_code_b81_floor.py": "fca60cc8cb3b41a8dbb6756110d33ee0ef1ef70581420b7ecf73dbb0c91cbca4",  # b81 qb34: frozen floor handover template ("previous")
         "mod_editor/core/nfl2k5_qb_room_code_b81_3a.py": "892a6ba85e94f55151423b4842825d521b85e54c9dcf7162d41b9344bee513f8",  # b81 qb34: frozen stage 0 + 3a template ("previous")
         "mod_editor/core/nfl2k5_qb_room_code_b81_d1d2.py": "f01e39ac2a6fbf29595a28d7092d7dcc8fa7060081430f88d6295e9c5ac2ef32",  # b81 qb34: frozen D1 + D2 template ("previous")
+        "mod_editor/core/nfl2k5_qb_room_code_b81_floor_review.py": "1c95004a4f47f2fd83d3235644c061a336a7ffec5d662604b47c31e1996be8f0",  # b81 qb34: frozen floor review template ("previous")
         "mod_editor/core/nfl2k5_sim_realism.py": "6323212af016c4e70ecd36d340a993e16afc9b57550f3bb7ed2647fc6731a248",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_sim_realism_b779.py": "687a35375780ce07948ba555a8c189167586393c5de6f48d954c2902a71010ad",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_standings_records.py": "175712ff8aff730b035aab671bf2208322ba52ec1fef758afad7d24263485c1c",  # b780-j1
