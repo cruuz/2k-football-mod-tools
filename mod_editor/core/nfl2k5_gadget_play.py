@@ -57,7 +57,9 @@ TABLE_VA = CODE_VA + CODE_SIZE
 BUILD_CAPTION = "Gadget player on gadget plays (experimental)"
 HELP_TEXT = ("EXPERIMENTAL. On an end around, reverse or WB sweep that hands a wide receiver the ball, your SPECIAL GAD "
              "player takes that receiver's spot for that snap, if he is healthy, not already on the field and at least "
-             "as fast. Every other play keeps your normal receivers.")
+             "as fast. Every other play keeps your normal receivers. A disc that already has it keeps it when you build "
+             "on it again with this box unticked; to take it out, build again from your retail disc or run "
+             "tools/nfl2k5_modpack.py edit-gadget-play --mode off on a copy.")
 BOOK_ASSETS = tuple(str(asset) for asset in range(307, 344))   # 32 club books, Editor, GEN, PRACTICE, reference, WCO
 WR_CODE = 9
 

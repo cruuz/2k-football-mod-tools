@@ -332,6 +332,9 @@ class BuildWiringTests(unittest.TestCase):
             self.assertEqual(target.read_bytes(), source)
             with self.assertRaisesRegex(ValueError, "build a disc image"):
                 build._apply_gadget_play(plan, target, receipt, lambda *_: None)
+        # Review F6: the Studio says so where the box is.
+        self.assertIn("keeps it when you build on it again with this box unticked", gadget.HELP_TEXT)
+        self.assertIn("edit-gadget-play --mode off", gadget.HELP_TEXT)
         # On a disc the installed rule is refreshed for the disc's books even when the plan does not ask for it.
         with mock.patch.object(build.tt, "is_disc_image", return_value=True), \
                 mock.patch.object(build, "_xbe_bytes", return_value=installed), \
@@ -422,14 +425,25 @@ class Native:
         assert p == book + ip.PLAY_BASE + link.play_index * ip.PLAY_SIZE, "native menu returned another play"
         return c, f, p
 
-    def commit(self, side, c, f, p, *, human=False, secondary=None):
-        """Publish the selection the way the game does: the user's play call or the CPU's offense choice."""
+    def commit(self, side, c, f, p, *, human=False, secondary=None, offense=True):
+        """Publish the selection the way the game does: the user's play call, the CPU's offense choice, or (for kicking
+        and defensive formations, offense=False) the defensive chooser's publication at 0x20B977."""
         m, s = self.m, SIDES[side]
         m.put(0xE602B8, 11)
-        m.put(0xE60280, s)
-        m.put(0xE60284, SIDES[1 - side])
+        m.put(0xE60280, s if offense else SIDES[1 - side])
+        m.put(0xE60284, SIDES[1 - side] if offense else s)
         second = p if secondary is None else secondary
-        if human:
+        if not offense:
+            m.reg("ESP", m.STACK)
+            m.reg("EBX", s)
+            m.reg("EBP", second)
+            m.reg("EDI", c)
+            m.reg("ESI", f)
+            m.put(m.STACK + 0x10, p)
+            m.put(m.STACK + 0x14, 0)
+            m.uc.emu_start(0x20B977, 0x20B9A0, count=100)
+            assert m.reg("EIP") == 0x20B9A0, "defensive selection did not publish"
+        elif human:
             menu = MARK + 0x400
             for off, value in ((0x4C, c), (0x50, f), (0x54, p), (0x58, p), (0x5C, second)):
                 m.put(menu + off, value)
@@ -441,19 +455,20 @@ class Native:
             m.call(0x15318E, esi=s, stop=0x2074A8, budget=1000)
         assert self.words(CHOICE[side] + 4, 4) == (c, f, p, second), "native commit mismatch"
 
-    def line(self, side):
-        """The snap path: 0x9F3B7 -> 0x89624 -> 0x18AD10 -> 0x18A5D0 -> the builder call 0x18A641."""
+    def line(self, side, offense=True):
+        """The snap path: 0x9F3B7 -> 0x89624 -> 0x18AD10 -> 0x18A5D0 -> the builder call 0x18A641 (the offense's build);
+        offense=False: the defense's build, entered at 0x89624 with the sides swapped."""
         m = self.m
         m.put(0xE602B8, 12)
-        m.put(0xE60280, SIDES[side])
-        m.put(0xE60284, SIDES[1 - side])
-        m.call(0x9F3B7, ecx=1, ebx=1, stop=0x18A646, budget=300000)
+        m.put(0xE60280, SIDES[side] if offense else SIDES[1 - side])
+        m.put(0xE60284, SIDES[1 - side] if offense else SIDES[side])
+        m.call(0x9F3B7 if offense else 0x89624, ecx=1, ebx=1, stop=0x18A646, budget=300000)
         return self.words(m.reg("ESP") + 0x74, 11)
 
-    def line_with_picker(self, side, slot):
+    def line_with_picker(self, side, slot, offense=True):
         self.observe_slot, self.observations = slot, []
         try:
-            return self.line(side), list(self.observations)
+            return self.line(side, offense), list(self.observations)
         finally:
             self.observe_slot = None
 
@@ -527,13 +542,13 @@ class NativeLineupTests(unittest.TestCase):
             n.club(self.clubs.get(book.book_name, self.clubs["CLE"]), side, human)
         return book
 
-    def select(self, book, form, play, side=0, human=False, secondary=None):
+    def select(self, book, form, play, side=0, human=False, secondary=None, offense=True):
         f = book.formations[form]
         link = next(i for i in f.play_links if i.play_index == play)
         chosen = self.before.menu(side, f, link)
         self.assertEqual(chosen, self.after.menu(side, f, link))
         for n in (self.before, self.after):
-            n.commit(side, *chosen, human=human, secondary=secondary)
+            n.commit(side, *chosen, human=human if offense else False, secondary=secondary, offense=offense)
         return chosen
 
     def outcome(self, side, slot):
@@ -571,6 +586,44 @@ class NativeLineupTests(unittest.TestCase):
         self.assertGreater(reasons.get("ineligible", 0), 1000)
         self.assertGreater(sum(v for k, v in reasons.items() if k != "ineligible"), 0)
 
+    @unittest.skipUnless(os.environ.get("NFL2K5_GADGET_FULL_SWEEP") == "1", "slow (about 10 min): set NFL2K5_GADGET_FULL_SWEEP=1")
+    def test_every_link_of_all_37_books_home_and_away_cpu_and_user(self):
+        """Review F4: the all-books sweep, in the repo. Every formation-play link of the 37 books, both sides, CPU and
+        user; offensive formations through the offense's snap build, kicking and defensive formations through the
+        defense's (Codex's convention). Only a table link may change a lineup, only at its carrier slot, exactly as the
+        oracle says; everything else is the game's lineup byte for byte."""
+        from collections import Counter
+        from mod_editor.core import nfl2k5_play_library as lib
+        totals = Counter()
+        for b in self.receipt["books"]:
+            asset = b["asset"]
+            raw = self.books[str(asset)]
+            for side in (0, 1):
+                for human in (False, True):
+                    book = self.setup_book(asset, side, human)
+                    for form in book.formations:
+                        offense = lib.formation_record(raw[32:], form.index).type_code not in (4, 5, 6, 7, 9, 11, 13)
+                        for link in form.play_links:
+                            self.select(book, form.index, link.play_index, side, human, offense=offense)
+                            slot = self.links[asset].get((form.index, link.play_index)) if offense else None
+                            if slot is None:
+                                self.assertEqual(self.after.line(side, offense), self.before.line(side, offense),
+                                                 (asset, form.index, link.play_index, side, human))
+                                totals["unchanged" if offense else "kick_or_defense_unchanged"] += 1
+                                continue
+                            normal, observations = self.before.line_with_picker(side, slot)
+                            want, reason = expectation(self.before, side, slot, normal, observations, self.gate,
+                                                       self.before.gad(side))
+                            got = self.after.line(side)
+                            self.assertEqual(got, want, (asset, form.index, link.play_index, side, human, reason))
+                            self.assertIn([j for j in range(11) if normal[j] != got[j]], ([], [slot]))
+                            totals[reason] += 1
+        self.assertEqual(totals["changed"] + totals["on_field_elsewhere"] + totals["voluntary_substitution"]
+                         + totals["already_carrier"] + totals["slower_than_original"], 444)
+        self.assertGreater(totals["changed"], 200)
+        self.assertGreater(totals["unchanged"], 60000)
+        self.assertGreater(totals["kick_or_defense_unchanged"], 1000)
+
     def test_the_gadget_player_takes_the_carrier_slot_and_the_rules_limits_hold(self):
         """Cleveland's play 147 in formation 3 hands slot 8 the ball; the GAD's Speed decides, an injury refuses."""
         book = self.setup_book(314)
@@ -597,6 +650,69 @@ class NativeLineupTests(unittest.TestCase):
         for n in (self.before, self.after):
             n.commit(0, c, f, p, secondary=p + 96)
         self.assertEqual(self.after.line(0), self.before.line(0))
+
+    def _memory(self, native):
+        """Every mapped byte except the stack page (where the builder's output array lives)."""
+        out = {}
+        for begin, end, _perms in native.m.uc.mem_regions():
+            if not 0x3000000 <= begin < 0x3010000:
+                out[begin] = bytes(native.m.uc.mem_read(begin, end - begin + 1))
+        return out
+
+    def _differences(self):
+        import numpy
+        a, b = self._memory(self.before), self._memory(self.after)
+        self.assertEqual(sorted(a), sorted(b))
+        found = set()
+        for begin in a:
+            size = min(len(a[begin]), len(b[begin]))   # the image region grows by the gadget pool pages
+            left, right = numpy.frombuffer(a[begin][:size], numpy.uint8), numpy.frombuffer(b[begin][:size], numpy.uint8)
+            found.update(int(begin + i) for i in numpy.nonzero(left != right)[0])
+            found.update(range(begin + size, begin + max(len(a[begin]), len(b[begin]))))
+        return found - set(range(MARK + 32, MARK + 36))   # the harness's own scratch word (Native.gad, before only)
+
+    def test_a_substitution_lasts_one_snap_and_leaves_no_state_behind(self):
+        """Review F1: the rule writes only into one builder call's output (on the stack). After a substituted snap,
+        nothing the game keeps (team and player records, depth contexts, the published selection, the books) differs
+        from the same game without the rule; so the next normal huddle snap, the same gadget play called again, and the
+        type-12 set-up path (used outside the snap path) all come from a fresh build with the game's own result."""
+        book = self.setup_book(314)
+        baseline = self._differences()          # the installed rule's own bytes (code, table, hooks, allocator)
+        self.select(book, 3, 147)
+        slot = self.links[314][(3, 147)]
+        normal, got, reason = self.outcome(0, slot)
+        self.assertEqual(reason, "changed")
+        self.assertEqual(got[slot], self.before.gad(0))
+        self.assertEqual(self._differences(), baseline)  # nothing outside the stack was written differently
+        # The next snap through a normal huddle: a non-gadget play in the same formation, then another formation.
+        others = [link.play_index for link in book.formations[3].play_links if (3, link.play_index) not in self.links[314]]
+        for play in others[:3]:
+            self.select(book, 3, play)
+            self.assertEqual(self.after.line(0), self.before.line(0))
+        self.select(book, 0, book.formations[0].play_links[0].play_index)
+        self.assertEqual(self.after.line(0), self.before.line(0))
+        # The same gadget play called again: a fresh decision, the GAD in again; then a normal snap again.
+        self.select(book, 3, 147)
+        self.assertEqual(self.outcome(0, slot)[2], "changed")
+        self.select(book, 3, others[0])
+        self.assertEqual(self.after.line(0), self.before.line(0))
+        # The type-12 set-up build right after a substituted snap keeps the game's lineup.
+        self.select(book, 3, 147)
+        self.assertEqual(self.outcome(0, slot)[2], "changed")
+        lines = []
+        for n in (self.before, self.after):
+            m, root = n.m, BOOKS[0]
+            form = m.call(0xE0660, ecx=root, edx=3)
+            category = m.call(0xE05E0, ecx=root, edx=m.get(m.call(0xE0830, ecx=root, edx=3, budget=32) + 72) & 63)
+            m.reg("ESP", m.STACK)
+            m.reg("ECX", SIDES[0])
+            m.reg("EDX", category)
+            m.uc.mem_write(m.STACK, struct.pack("<6I", form, m.STACK + 0x80, 0, 0, 1, 0))
+            m.uc.emu_start(0x18B184, 0x18A646, count=300000)
+            self.assertEqual(m.reg("EIP"), 0x18A646)
+            lines.append(n.words(m.reg("ESP") + 0x74, 11))
+        self.assertEqual(lines[0], lines[1])
+        self.assertEqual(self._differences(), baseline)
 
     def test_the_classifier_refuses_malformed_selections(self):
         book = self.setup_book(314)
@@ -627,6 +743,11 @@ class NativeLineupTests(unittest.TestCase):
         47/104, 23/100, 47/109): none is a table link, so the classifier refuses them and the lineup is the game's,
         on both controls. Whatever put the GAD there, it was not this rule's snap-time decision."""
         lookup = gadget.CODE_VA + template.LABELS["select_slot"]
+        # Review F3: the attract game ran the preview disc (303b97d10750); these are its ARZ and ATL books (sha256 from
+        # the qualified candidate's receipt). The v0.9 books used here must be those same bytes.
+        for asset, sha in ((307, "07af112c13b4a59ae3f87b3e10f3c954f9d246cca53ee21461a0bfaaac43943a"),
+                           (308, "d5b334229980ec4972f1fa7b4bf840191d6d3c6306dcd629ba9e2216bbcf85d5")):
+            self.assertEqual(_sha(self.books[str(asset)]), sha)
         for asset, form, play in ((308, 45, 105), (307, 47, 132), (307, 47, 151), (307, 47, 104), (307, 23, 100),
                                   (307, 47, 109)):
             self.assertNotIn((form, play), self.links[asset])
