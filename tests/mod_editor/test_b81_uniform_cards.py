@@ -40,7 +40,9 @@ class ProjectInputs(unittest.TestCase):
                 'png': 'card.png',
             }
             project.write_text(json.dumps({'edits': [row]}))
-            self.assertEqual(cards_unif.project_cards(project, project.parent), {'27H0': pic})
+            # The temporary root is deliberately left unresolved (macOS /var is a symlink, Windows TEMP can be an
+            # 8.3 name); project_cards returns the card's canonical path.
+            self.assertEqual(cards_unif.project_cards(project, project.parent), {'27H0': pic.resolve()})
             other = root / 'other.png'
             Image.new('RGBA', (2, 2)).save(other)
             project.write_text(json.dumps({'edits': [dict(row, png='../other.png')]}))

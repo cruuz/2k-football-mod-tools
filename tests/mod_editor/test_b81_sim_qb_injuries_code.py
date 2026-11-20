@@ -230,3 +230,7 @@ class LocalGameInputs(unittest.TestCase):
                         return data
                     with self.assertRaisesRegex(ValueError, 'Unrecognized native'):
                         rules.bank_bytes(read, BANK, SIM, DATA, LINEUP)
+
+
+if __name__ == "__main__":
+    unittest.main()

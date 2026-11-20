@@ -78,7 +78,11 @@ class BuildIntegrationTests(unittest.TestCase):
                                                             apply_chiefs=lambda target: {'state': 'retail'},
                                                             apply_swooshes=lambda target: {'state': 'retail'},
                                                             apply_nameplates=lambda target: {'state': 'retail'},
-                                                            apply_sideline=lambda target: {'state': 'retail'}),
+                                                            apply_sideline=lambda target: {'state': 'retail'},
+                                                            # b81-art/b81-uniforms: the helmet cleanup and the kit
+                                                            # textures, pinned spans a synthetic image does not hold
+                                                            apply_helmets_b81=lambda target: {'state': 'retail'},
+                                                            apply_uniforms_b81=lambda target: {'state': 'retail'}),
                            'nfl2k5_nameplate_fixes_2026':SimpleNamespace(apply_to_image=lambda target, retail=None: {'state': 'retail'})}
                 selected = build.BuildPlan(str(source), str(target), overwrite=True,
                                             scorebug_runtime=True, music_library='recipe.json')
@@ -103,6 +107,8 @@ class BuildIntegrationTests(unittest.TestCase):
                         receipt = build.build(selected)
                         self.assertEqual(target.read_bytes(), b'original runtime music')
                         self.assertEqual([r['step'] for r in receipt['steps']], ['copy','scorebug_runtime','music_library','unc_bowl_uniforms','nameplate_fixes_2026','menu_icon_orientation'])
+                        # every step ran: none was left out (a stale stand-in module above would be)
+                        self.assertNotIn('left_out', receipt)
                         # macOS temp paths resolve under /private/var: compare resolved paths.
                         self.assertEqual(Path(receipt['source']).resolve(), source.resolve())
                         self.assertTrue(receipt['plan']['scorebug'] and receipt['plan']['xbe_space'])
