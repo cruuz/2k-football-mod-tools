@@ -73,7 +73,10 @@ class BytesTests(unittest.TestCase):
         retail = retail_bytes()
         image = XbeImage(retail)
         self.assertAlmostEqual(struct.unpack("<f", image.read(pp.SIM_GAIN_VA, 4))[0], 0.75, places=6)
-        self.assertAlmostEqual(struct.unpack("<f", image.read(pp.SIM_CENTRE_VA, 4))[0], 0.866, places=4)
+        # b81 combined calibration: the centre is the owner's own float (SIM_CENTRE at SIM_CENTRE_VA); its default is
+        # exactly the retail .rdata float earlier releases read (test_b81_combined_levers)
+        self.assertAlmostEqual(struct.unpack("<f", image.read(pp.LEGACY_CENTRE_VA, 4))[0], 0.866, places=4)
+        self.assertEqual(struct.pack("<f", pp.SIM_CENTRE), image.read(pp.LEGACY_CENTRE_VA, 4))
         self.assertAlmostEqual(struct.unpack("<f", image.read(pp.SIM_NORM_VA, 4))[0], 0.25, places=6)
         self.assertAlmostEqual(struct.unpack("<f", image.read(0x4F6BD4, 4))[0], 0.875, places=6)   # the shared one stays
         self.assertAlmostEqual(struct.unpack("<f", image.read(0x4E6D5C, 4))[0], 0.1, places=6)

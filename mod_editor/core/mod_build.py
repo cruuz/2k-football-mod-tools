@@ -2660,11 +2660,15 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     dependency = None
     if simulator_state == "legacy" and plan.sim_qb_injuries in ("realistic", "custom"):
         simulator_input, dependency = simulator.apply(original)
+    pressure = None
+    if plan.sim_qb_injuries in ("realistic", "custom"):
+        simulator_input, pressure = _upgrade_legacy_pass_protection(simulator_input)
     patched, patch = module.apply(simulator_input, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
     settings = _verify_sim_qb_injuries(plan, module, patched)
     receipt["sim_qb_source_update"] = {
         "source_sha256": sha256(original).hexdigest(), "result_sha256": sha256(patched).hexdigest(),
         "source_simulator": simulator_state, "simulator_upgraded": dependency is not None, "settings": settings,
+        "pass_protection_upgraded": pressure is not None,
     }
     if preflight:
         return True
@@ -2672,6 +2676,8 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     receipt["result"] = {}
     if dependency is not None:
         receipt["steps"].append({"step": "sim_realism", **{k: v for k, v in dependency.items() if k != "reservations"}})
+    if pressure is not None:
+        receipt["steps"].append({"step": "pass_protection", **{k: v for k, v in pressure.items() if k != "reservations"}})
     _apply_sim_qb_injuries(plan, target, receipt, progress, prepared=(original, patched, patch))
     _compact_build_disc(target, reference, receipt, progress)
     _step("final_checks")
@@ -2931,6 +2937,35 @@ def _apply_backfield_cards(target, receipt, progress):
     receipt["result"]["backfield_cards"] = "applied"
 
 
+def _upgrade_legacy_pass_protection(payload):
+    """b81 combined calibration: Realistic and Custom simulated injuries are calibrated at this release's simulated
+    pass-pressure centre, which the pass-protection owner holds (nfl2k5_pass_protection.SIM_CENTRE). An install of that
+    owner from v0.8, v0.9 or beta 80 reads "legacy" and is updated in place; a disc without it (or with any other state)
+    is returned unchanged, so a single-setting route never adds pass protection. Returns (payload, receipt or None)."""
+    module = _core_module("nfl2k5_pass_protection")
+    if module is None or module.status(payload) != "legacy":
+        return payload, None
+    return module.apply(payload)
+
+
+@_core_step("pass_protection")
+def _upgrade_pass_protection_in_place(plan, target, receipt, progress):
+    """The in-place routes' half of _upgrade_legacy_pass_protection: Realistic and Custom only (Retail keeps the disc's
+    simulated sacks as they are, like the simulator, which Retail does not update either)."""
+    if plan.sim_qb_injuries not in ("realistic", "custom"):
+        return
+    payload, upgrade = _upgrade_legacy_pass_protection(_xbe_bytes(target))
+    if upgrade is None:
+        return
+    progress("Pass protection: updating the simulated pass-pressure centre", 0, 0)
+    _write_xbe_bytes(target, payload)
+    module = _core_module("nfl2k5_pass_protection")
+    if _xbe_bytes(target) != payload or module.status(payload) != "applied":
+        raise RuntimeError("Pass protection: the executable does not read back as applied")
+    receipt["steps"].append({"step": "pass_protection", **{k: v for k, v in upgrade.items() if k != "reservations"}})
+    receipt["result"]["pass_protection"] = "applied"
+
+
 def _update_v09_disc(plan, progress, *, preflight, project):
     if project or plan != v09_disc_update(
             plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
@@ -2965,6 +3000,8 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     if plan.sim_qb_injuries is not None:
         if plan.sim_realism:
             expected, _ = _core_module("nfl2k5_sim_realism").apply(expected)
+        if plan.sim_qb_injuries in ("realistic", "custom"):
+            expected, _ = _upgrade_legacy_pass_protection(expected)
         medical = _core_module("nfl2k5_sim_qb_injuries")
         expected, _ = medical.apply(expected, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
         _verify_sim_qb_injuries(plan, medical, expected)
@@ -2983,6 +3020,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         _apply_backfield_cards(target, receipt, progress)
     if plan.sim_qb_injuries is not None:
         _apply_sim_realism(plan, target, receipt, progress)
+        _upgrade_pass_protection_in_place(plan, target, receipt, progress)
         _apply_sim_qb_injuries(plan, target, receipt, progress)
     _compact_build_disc(target, source, receipt, progress)
     _step("final_checks")

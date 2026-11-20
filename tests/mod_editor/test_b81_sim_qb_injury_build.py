@@ -62,6 +62,7 @@ class ProjectSettings(unittest.TestCase):
     def test_standard_setting_upgrades_the_released_and_reviewed_simulators(self):
         from mod_editor.core import nfl2k5_sim_realism as simulator, nfl2k5_sim_qb_injuries as medical
         from mod_editor.core import nfl2k5_xbe_space as space
+        from mod_editor.core import nfl2k5_pass_protection as pressure
 
         cases = (("NFL2K5_V09_XISO", "d78088f9ba47c6197e99ea540d0bc3d2c9255f7cd49152a77946be70dacab866", "legacy"),
                  ("NFL2K5_B81_REVIEWED_TEST_DISC", "98dd732945fb665a8d7fe771650d61c1098015cda4917ac83037059db477008e", "applied"))
@@ -75,6 +76,10 @@ class ProjectSettings(unittest.TestCase):
                 self.assertEqual(simulator.status(before), source_state)
                 mod_build._sim_realism_preflight(source, lambda *_: None)
                 modern, _ = simulator.apply(before)
+                # b81 combined calibration: both discs carry the older pass protection (its centre read the retail
+                # .rdata float); Realistic updates it in place to this release's centre float.
+                self.assertEqual(pressure.status(modern), "legacy")
+                modern, _ = pressure.apply(modern)
                 mode = mod_build.apply_preset(mod_build.BuildPlan(str(source), "copy.iso"),
                                               "softdrink_experimental").sim_qb_injuries
                 current, _ = medical.apply(modern, mode)
@@ -90,7 +95,7 @@ class ProjectSettings(unittest.TestCase):
                     self.assertEqual(receipt["sim_qb_source_update"], {
                         "source_sha256": digest, "result_sha256": hashlib.sha256(current).hexdigest(),
                         "source_simulator": source_state, "simulator_upgraded": source_state == "legacy",
-                        "settings": medical.read_settings(current),
+                        "settings": medical.read_settings(current), "pass_protection_upgraded": True,
                     })
                     self.assertFalse(target.exists())
 
@@ -201,12 +206,12 @@ class ProjectSettings(unittest.TestCase):
         solo.backfield_cards = True
         self.assertFalse(mod_build._only_sim_qb_changes(solo))
         solo.backfield_cards = False
-        base, qb = Mock(), Mock()
+        base, qb = Mock(), Mock()      # then no pass-protection module (b81 combined: the route asks for it third)
         base.status.return_value = "applied"
         qb.apply.side_effect = ValueError("unrecognized quarterback helper")
         with patch.object(mod_build.tt.k128_patch, "read_settings",
                           return_value={"status": "applied", "require_128": True, "early": True, "roster_heap": True}), \
-                patch.object(mod_build, "_core_module", side_effect=[base, qb]), \
+                patch.object(mod_build, "_core_module", side_effect=[base, qb, None]), \
                 patch.object(mod_build, "_copy_private_build_source") as copy:
             with self.assertRaisesRegex(ValueError, "unrecognized"):
                 mod_build._edit_installed_sim_qb(solo, solo.source, solo.target, b"foreign", {}, lambda *_: None,
