@@ -57,7 +57,7 @@ QUALIFIED_TABLE_SHA256 = "5e71503f18a514faa70e70d1e1373c0d098d941440f5efe967beb7
 # The qualified code's classifier (select_slot) and the scoped tail after the builder (scope_return), by offset.
 QUALIFIED_SELECT_SLOT, QUALIFIED_ASSIGN, QUALIFIED_SCOPE_RETURN, QUALIFIED_TAPPED = 0x173, 0x502, 0xAD, 0xD6
 # Review F1 added the one-snap restore; this is the whole 2,048-byte allocation with the qualified link values.
-RUNTIME_CODE_SHA256 = "88dcc86b592046c4ac106295d841511365b02d74bf4302e0133bd19eb01a194d"
+RUNTIME_CODE_SHA256 = "fe6e54a031eafa72e2e4b3e31e784679cddbd57f8dc87f346e477eec5c82af9a"
 
 
 def _sha(data: bytes) -> str:
@@ -125,9 +125,13 @@ class TemplateTests(unittest.TestCase):
                     delta = (int.from_bytes(moved[at:at + 4], "little") - int.from_bytes(base[at:at + 4], "little"))
                     self.assertEqual(delta & 0xFFFFFFFF, 0x40)
 
-    def test_hooks_enter_the_runtime_from_the_three_native_sites(self):
+    def test_hooks_enter_the_runtime_from_the_four_native_sites(self):
         (_, builder, builder_retail, builder_new), (_, ordinal, ordinal_retail, ordinal_new), \
-            (_, store, store_retail, store_new) = gadget._hooks()
+            (_, store, store_retail, store_new), (_, check, check_retail, check_new) = gadget._hooks()
+        self.assertEqual(check, 0x18A6EE)
+        self.assertEqual(check_retail, bytes.fromhex("e84dddffff"))          # call 0x188440 in the snap path
+        self.assertEqual(check + 5 + struct.unpack_from("<i", check_new, 1)[0],
+                         gadget.CODE_VA + template.LABELS["available_or_kept"])
         self.assertEqual(store, 0x9F9CB)
         self.assertEqual(store_retail, bytes.fromhex("e8c08d0100"))          # call 0xB8790 inside 0x9F990
         self.assertEqual(store + 5 + struct.unpack_from("<i", store_new, 1)[0],
@@ -726,7 +730,7 @@ class NativeLineupTests(unittest.TestCase):
         # Nothing outside the stack was written differently, except the restore marker (review F1), which now names
         # the offense side and is cleared by its next play-call build.
         marker = gadget.CODE_VA + template.LABELS["gadget_team"]
-        self.assertLessEqual(self._differences() - baseline, set(range(marker, marker + 4)))
+        self.assertLessEqual(self._differences() - baseline, self._runtime_words())
         self.assertEqual(self._marker(self.after), SIDES[0])
         # The next snap through a normal huddle: a non-gadget play in the same formation, then another formation.
         others = [link.play_index for link in book.formations[3].play_links if (3, link.play_index) not in self.links[314]]
@@ -757,10 +761,18 @@ class NativeLineupTests(unittest.TestCase):
             self.assertEqual(m.reg("EIP"), 0x18A646)
             lines.append(n.words(m.reg("ESP") + 0x74, 11))
         self.assertEqual(lines[0], lines[1])
-        self.assertLessEqual(self._differences() - baseline, set(range(marker, marker + 4)))
+        self.assertLessEqual(self._differences() - baseline, self._runtime_words())
 
     def _marker(self, native):
         return native.m.get(gadget.CODE_VA + template.LABELS["gadget_team"])
+
+    def _word(self, native, label):
+        return native.m.get(gadget.CODE_VA + template.LABELS[label])
+
+    @staticmethod
+    def _runtime_words():
+        """The runtime's three RAM words (restore marker, benched receiver, his one-build grace)."""
+        return set(range(gadget.CODE_VA + template.LABELS["gadget_team"], gadget.CODE_VA + template.LABELS["gadget_grace"] + 4))
 
     def test_the_restore_marker_follows_the_substitution(self):
         """Review F1: a substitution marks the offense side; the next play-call offense build clears the mark; a
@@ -771,9 +783,16 @@ class NativeLineupTests(unittest.TestCase):
         self.select(book, 3, 147)
         self.assertEqual(self.outcome(0, slot)[2], "changed")
         self.assertEqual(self._marker(self.after), SIDES[0])
+        benched = self.before.line(0)[slot]
+        self.assertEqual(self._word(self.after, "gadget_benched"), benched)
         self.select(book, 3, others[0])
         self.after.line(0)
         self.assertEqual(self._marker(self.after), 0)
+        # The next play-call build of that side judges the benched receiver as if he had stayed on the field.
+        self.assertEqual((self._word(self.after, "gadget_benched"), self._word(self.after, "gadget_grace")), (0, benched))
+        self.after.line(0)
+        self.assertEqual(self._word(self.after, "gadget_grace"), 0)
+        self.after.m.put(gadget.CODE_VA + template.LABELS["gadget_grace"], 0)
         self.select(book, 3, 147)
         native = self.before.line(0)
         player = self.before.gad(0)
@@ -829,6 +848,7 @@ class NativeLineupTests(unittest.TestCase):
                     self.assertEqual(m.reg("ESI"), SIDES[0])
                     self.assertEqual(len(builds), int(expect))
                     self.assertEqual(m.get(marker), left)
+                    self.assertEqual(self._word(self.after, "gadget_grace"), 0)
                     if expect:
                         record = m.get(SIDES[0] + 0xC)
                         packed = m.get(record + 0xC8)
@@ -847,6 +867,8 @@ class NativeLineupTests(unittest.TestCase):
         try:
             self.select(book, 3, 147)
             self.assertEqual(self.outcome(0, slot)[2], "changed")
+            self.select(book, 3, 147)
+            benched = self.before.line(0)[slot]
             self.assertEqual(self._marker(self.after), SIDES[0])
             self.select(book, 3, others[0])
             m.put(0xE602B8, 12)
@@ -855,10 +877,62 @@ class NativeLineupTests(unittest.TestCase):
             m.call(restore, ecx=SIDES[0], edx=0, esi=SIDES[0], args=(0, SIDES[0], 0, 0xA24EC), stop=0x18A646,
                    budget=300000)
             rebuilt = self.after.words(m.reg("ESP") + 0x74, 11)
+            # During the rebuild the receiver the substitution benched is under the field threshold once.
+            self.assertEqual(self._word(self.after, "gadget_grace"), benched)
+            self.assertEqual(self._word(self.after, "gadget_benched"), 0)
         finally:
             m.uc.hook_del(sync_only)
+            m.put(gadget.CODE_VA + template.LABELS["gadget_grace"], 0)
         self.assertEqual(rebuilt, self.before.line(0))
         self.assertEqual(self._marker(self.after), 0)
+
+    def test_the_benched_receiver_is_judged_once_as_if_he_had_stayed_on_the_field(self):
+        """Review F1, fatigue: the snap path's availability call 0x18A6EE goes through available_or_kept. For the
+        receiver the last substitution benched (gadget_grace, set for the next build of his side) it runs the game's
+        own test 0x188440 with the bench threshold set to the field threshold for that one call, then restores both
+        thresholds and spends the grace; for every other player it is the game's test unchanged."""
+        m = self.after.m
+        kept = gadget.CODE_VA + template.LABELS["available_or_kept"]
+        grace = gadget.CODE_VA + template.LABELS["gadget_grace"]
+        base = MARK + 0x800
+        player, obj, record = base, base + 0x100, base + 0x200
+        m.uc.mem_write(player, bytes(0x80))
+        m.uc.mem_write(obj, bytes(0x40))
+        m.uc.mem_write(record, bytes(0x10))
+        m.put(player + 0x30, obj)
+        m.put(obj + 4, record)
+        m.uc.mem_write(player + 0x34, bytes([1, 3]))     # home side; a position the stamina test applies to
+        m.put(player + 0x24, 0)                          # healthy
+        thresholds = {0xE60194: 5, 0xE60198: 16, 0xE601A4: 5, 0xE601A8: 16, 0xE6019C: 0, 0xE601AC: 0}
+        for address, value in thresholds.items():
+            m.put(address, value)
+
+        def check(address, stamina, on_field, graced):
+            m.f32(record + 4, stamina)
+            m.put(obj + 0x10, 0x1234 if on_field else 0)
+            m.put(grace, player if graced else 0)
+            result = m.call(address, edx=player, args=(1,), budget=5000)
+            self.assertEqual({a: m.get(a) for a in thresholds}, thresholds)   # the game's thresholds are untouched
+            self.assertEqual(m.get(grace), 0 if graced else 0)
+            return bool(result)
+
+        for stamina, on_field, native in ((0.5, False, False), (0.9, False, True), (0.5, True, True), (0.2, True, False),
+                                          (0.2, False, False)):
+            with self.subTest(stamina=stamina, on_field=on_field):
+                self.assertEqual(check(0x188440, stamina, on_field, False), native)
+                self.assertEqual(check(kept, stamina, on_field, False), native)
+                # The benched receiver comes back at the field threshold (0.25), exactly as if he were on the field.
+                self.assertEqual(check(kept, stamina, on_field, True), stamina >= 0.25)
+        m.put(player + 0x24, 7 << 28)                    # an injury status over the side's limit still refuses him
+        self.assertFalse(check(kept, 0.9, False, True))
+        m.put(player + 0x24, 0)
+        # Another player while the grace is set: the game's test, and the grace stays for its receiver.
+        m.put(grace, player + 4)
+        m.f32(record + 4, 0.5)
+        m.put(obj + 0x10, 0)
+        self.assertFalse(m.call(kept, edx=player, args=(1,), budget=5000))
+        self.assertEqual(m.get(grace), player + 4)
+        m.put(grace, 0)
 
     def test_the_classifier_refuses_malformed_selections(self):
         book = self.setup_book(314)

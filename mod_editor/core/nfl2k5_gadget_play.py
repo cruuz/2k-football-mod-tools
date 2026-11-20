@@ -38,10 +38,18 @@ for the new play, as a huddle call of it would, rather than the same eleven; ret
 The marker is a word in the owner's code allocation, which lies in the writable scale-out pool section (as the QB
 bank's state does).
 
+Fatigue after a substitution (review F1). The snap path keeps a pick already on the field at the field stamina
+threshold (0.25 by default) but brings a benched one in only at the bench threshold (0.80). Without the rule the
+receiver the GAD replaced would have played the gadget snap and kept his place; benched for that one snap he could fall
+under 0.80, and the game's fallback (0x189360) would then put another receiver, usually the GAD row player, in his
+place for several snaps. So in the next build of that side (the play-call build or the restore's rebuild) the
+availability call 0x18A6EE checks that one receiver with the field threshold, once; every other check is the game's.
+
 Placement. The code and table use the fixed gadget slots (nfl2k5_xbe_space.GADGET_REQUESTS: code 0x151F680, 2,048
 bytes; table 0x151FE80, 12,800 bytes, right below the Backfield cards at 0x1523080), which every beta-81 standard
-build reserves, so installing, rebuilding or removing it never moves another owner. Three sites: the builder call
-0x18A641 (5 bytes), the ordinal helper entry 0xE7760 (6 bytes) and the play store's call 0x9F9CB (5 bytes).
+build reserves, so installing, rebuilding or removing it never moves another owner. Four sites: the builder call
+0x18A641 (5 bytes), the ordinal helper entry 0xE7760 (6 bytes), the play store's call 0x9F9CB (5 bytes) and the snap
+path's availability call 0x18A6EE (5 bytes).
 """
 from __future__ import annotations
 
@@ -82,6 +90,10 @@ ORDINAL_RETAIL = bytes.fromhex("53558b6c2410")   # push ebx; push ebp; mov ebp,[
 # store; that call goes through the restore, which rebuilds the offense lineup when its last build had a substitution.
 STORE_SITE, FORMATION_SYNC = 0x0009F9CB, 0x000B8790
 STORE_RETAIL = b"\xe8" + struct.pack("<i", FORMATION_SYNC - STORE_SITE - 5)
+# Review F1: the snap path's availability check of each pick (0x188440); the receiver a substitution benched is
+# checked once more with the field threshold, as if he had stayed on the field.
+AVAILABILITY_SITE, AVAILABILITY = 0x0018A6EE, 0x00188440
+AVAILABILITY_RETAIL = b"\xe8" + struct.pack("<i", AVAILABILITY - AVAILABILITY_SITE - 5)
 
 BOOK_RECORD = struct.Struct("<12sHH")
 LINK = struct.Struct("<HHBBBBII")
@@ -99,6 +111,9 @@ GUARDS = (
     (0x0009F9D0, 0xA8, (), "9c0c03d32d2954adf2e938a39bda7e8b69d7f4a2088c9f7ce1b34f139e6755c4", "play store, after the restore site"),
     (0x000895E4, 0x40, (), "52d3d3f18eda6f9d2e54973aecc3e230ae77c3c90aac6568b0267cac90736b0f", "play-call offense build the restore repeats"),
     (0x002074AD, 0x1B, (), "4b2164592b7b5f25f4c1bcefb1bf188dde46c072edb123a72632f09c25b723d3", "huddle play-call store the restore leaves alone"),
+    (0x0018A646, 0xA8, (), "7716083748aa0f5e8b4bb108bba0494b0be378a1215e7e0f1967528bae48923b", "snap path before the availability call"),
+    (0x0018A6F3, 0xB4, (), "e08e76002c264de19f8cf944517161237993d69bb6cfac58fdc9b88b12721bc4", "snap path after the availability call"),
+    (0x00188440, 0x138, (), "ff2cfb161cec97c8ce2894c9c13e115d2a4ec4fec9ce15082ab84dcb17805f30", "availability test and its thresholds"),
 )
 
 
@@ -252,10 +267,13 @@ def _hooks() -> tuple[tuple[str, int, bytes, bytes], ...]:
     entry = CODE_VA + template.LABELS["scoped_builder"]
     ordinal = CODE_VA + template.LABELS["tapped_ordinal"]
     restore = CODE_VA + template.LABELS["restore_after_store"]
+    kept = CODE_VA + template.LABELS["available_or_kept"]
     return (("gadget_builder", BUILDER_SITE, BUILDER_RETAIL, b"\xe8" + struct.pack("<i", entry - BUILDER_SITE - 5)),
             ("gadget_ordinal", ORDINAL_SITE, ORDINAL_RETAIL,
              b"\xe9" + struct.pack("<i", ordinal - ORDINAL_SITE - 5) + b"\x90"),
-            ("gadget_restore", STORE_SITE, STORE_RETAIL, b"\xe8" + struct.pack("<i", restore - STORE_SITE - 5)))
+            ("gadget_restore", STORE_SITE, STORE_RETAIL, b"\xe8" + struct.pack("<i", restore - STORE_SITE - 5)),
+            ("gadget_availability", AVAILABILITY_SITE, AVAILABILITY_RETAIL,
+             b"\xe8" + struct.pack("<i", kept - AVAILABILITY_SITE - 5)))
 
 
 def _allocations(payload: bytes) -> dict[str, dict] | None:
