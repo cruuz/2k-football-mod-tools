@@ -439,8 +439,8 @@ class QuarterbackInstallationOrderTests(unittest.TestCase):
 
     def test_experimental_first_pass_and_late_installation_orders(self):
         plan = self.preset('softdrink_experimental')
-        self.assertTrue(plan.gadget_play)
-        self.fresh(plan)
+        self.assertEqual(plan.gadget_play, mod_build.GADGET_PLAY_IN_STANDARD_PRESET)
+        self.fresh(replace(plan, gadget_play=True))     # on, by the preset or ticked on the Build tab
 
     def test_basic_custom_zero_with_dependencies_and_late_installation_orders(self):
         self.fresh(replace(self.preset('softdrink_basic'), k128_memory=True, sim_realism=True,
@@ -455,8 +455,8 @@ class QuarterbackInstallationOrderTests(unittest.TestCase):
         plan = modpack_sources.build_plan(recipe, str(self.private_path('NFL2K5_RETAIL_XISO')),
                                           str(self.folder / 'unused.xiso.iso'))
         self.assertEqual(plan.sim_qb_injuries, 'realistic')
-        self.assertTrue(plan.gadget_play)
-        self.fresh(plan)
+        self.assertEqual(plan.gadget_play, mod_build.GADGET_PLAY_IN_STANDARD_PRESET)
+        self.fresh(replace(plan, gadget_play=True))     # on, by the preset or ticked on the Build tab
 
     def upgrade(self, variable, xbe_pin):
         from mod_editor.core import nfl2k5_sim_realism as sim, nfl2k5_xbe_space as space

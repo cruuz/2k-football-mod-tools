@@ -254,8 +254,8 @@ One late allocator owner, applied with the SPECIAL rows. It hooks two 5-byte cal
   When the formation also asks for the power back (an RB ordinal-1 slot), he keeps his own slot and the next back
   plays fullback. When no back is free, the next tier (a tight end) does. The scheduled simulator's own lineup is
   unchanged, so its calibrated carry shares hold.
-* **Rule 3, GAD (beta 81: its own owner, `nfl2k5_gadget_play`, Build option "Gadget player on gadget plays", on in
-  the standard preset).** Beta 80's version froze a MyCareer punt (FC1, `0x151CCB1`) and a CPU attract game (FC2,
+* **Rule 3, GAD (beta 81: its own owner, `nfl2k5_gadget_play`, Build option "Gadget player on gadget plays",
+  experimental; in the standard preset when `mod_build.GADGET_PLAY_IN_STANDARD_PRESET` is on).** Beta 80's version froze a MyCareer punt (FC1, `0x151CCB1`) and a CPU attract game (FC2,
   `0x151CCCA`): at the builder call `0x18A641` the first two stack arguments are the category and the formation, and
   it read the formation as the called play (FC2: Tennessee resource 341, Gun Empty, whose -302 cm alignment has the
   low bits `0xFED2`). The redo never treats a builder argument as a play. At build time it compiles a table of every
@@ -266,9 +266,11 @@ One late allocator owner, applied with the SPECIAL rows. It hooks two 5-byte cal
   byte-compares the published script. Only then is the GAD offered to that slot (the builder's ordinal helper call at
   `0xE8AFC`, which runs only when the user made no explicit substitution); after the builder he replaces the slot's
   pick if he is not already on the field and his Speed (`+0x36`) is at least the pick's. Code 2,048 bytes at
-  `0x151F680`, table 12,800 bytes at `0x151FE80` (fixed slots ahead of the Backfield cards). The machine code is Codex's
-  qualified Q62 candidate unchanged (`tools/gadget_play/`): the Studio owner on the preview those games used is the
-  qualified executable `7963a1db` byte for byte. When a disc's books hold more gadget links than the table, whole
+  `0x151F680`, table 12,800 bytes at `0x151FE80` (fixed slots ahead of the Backfield cards). The classifier is Codex's
+  qualified Q62 candidate unchanged (`tools/gadget_play/`). After the beta 81 review a restore was added: the game
+  keeps the eleven on the field for no-huddle, audible and re-pick snaps, so after a substituted snap the play store's
+  call `0x9F9CB` and the offense audible's call `0x9FB10` rebuild the offense lineup the play-call way (the GAD leaves),
+  and inside that rebuild the receiver he replaced is judged once at the on-field stamina threshold (`0x18A6EE`). When a disc's books hold more gadget links than the table, whole
   books are left out (shared books first) and their gadget plays keep the normal receivers.
 
 * **Rule 4, injured players on CPU depth charts** (MC1's finding). The weekly CPU auto-depth `0x2BDCF0` ranks by

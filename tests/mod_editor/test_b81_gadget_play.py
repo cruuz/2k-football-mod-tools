@@ -310,17 +310,19 @@ class ReleasedV09Tests(unittest.TestCase):
 
 
 class BuildWiringTests(unittest.TestCase):
-    """The option rides with the SPECIAL rows in the presets and recipes; the build refuses what it cannot do."""
+    """The option rides with the SPECIAL rows in the standard preset when GADGET_PLAY_IN_STANDARD_PRESET is on (off
+    everywhere otherwise), is selectable on the Build tab as experimental, and the build refuses what it cannot do."""
 
-    def test_presets_turn_it_on_with_the_special_rows_only(self):
+    def test_presets_follow_the_standard_preset_flag_and_the_build_tab_offers_it_as_experimental(self):
         from mod_editor.core import mod_build as build
         for name in build.PRESETS:
             with self.subTest(preset=name):
                 plan = build.apply_preset(build.BuildPlan("a.iso", "b.iso"), name)
-                self.assertEqual(plan.gadget_play, plan.depth_chart_rows)
-        self.assertTrue(build.apply_preset(build.BuildPlan("a.iso", "b.iso"), "softdrink_experimental").gadget_play)
+                self.assertEqual(plan.gadget_play, build.GADGET_PLAY_IN_STANDARD_PRESET and plan.depth_chart_rows)
         self.assertFalse(build.apply_preset(build.BuildPlan("a.iso", "b.iso", console_memory=64),
                                             "softdrink_experimental").gadget_play)
+        self.assertIn("experimental", gadget.BUILD_CAPTION)
+        self.assertTrue(gadget.HELP_TEXT.startswith("EXPERIMENTAL"))
         self.assertIn("gadget_play", build.V09_UPDATE_CHOICES)
         self.assertTrue(build.v09_disc_update("a.iso", "b.iso", gadget_play=True).gadget_play)
         from mod_editor.core import nfl2k5_build_settings as settings
@@ -334,7 +336,7 @@ class BuildWiringTests(unittest.TestCase):
             self.skipTest("the retail disc is absent")
         plan = build.apply_preset(build.BuildPlan(str(source), str(ROOT / "never-written.xiso.iso")), "softdrink_experimental")
         with self.assertRaisesRegex(ValueError, "needs the SPECIAL depth chart rows"):
-            build.preflight_plan(replace(plan, depth_chart_rows=False))
+            build.preflight_plan(replace(plan, gadget_play=True, depth_chart_rows=False))
         self.assertFalse((ROOT / "never-written.xiso.iso").exists())
 
     def test_the_single_setting_edit_of_a_built_disc(self):
@@ -372,7 +374,8 @@ class BuildWiringTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             target = Path(folder) / "default.xbe"
             target.write_bytes(installed)
-            plan = build.apply_preset(build.BuildPlan(str(V09_DISC), str(target)), "softdrink_experimental")
+            plan = replace(build.apply_preset(build.BuildPlan(str(V09_DISC), str(target)), "softdrink_experimental"),
+                           gadget_play=True)   # ticked by the user
             receipt = {"steps": [], "result": {}}
             build._apply_gadget_play(replace(plan, gadget_play=False), target, receipt, lambda *_: None)
             self.assertEqual((target.read_bytes(), receipt["result"]), (installed, {}))
@@ -946,6 +949,87 @@ class NativeLineupTests(unittest.TestCase):
                 self.assertNotIn("returned", seen, "the site returned without rebuilding the offense lineup")
                 self.assertEqual(seen.get("line"), self.before.line(0))
                 self.assertNotEqual(seen["line"][slot], self.before.gad(0))
+
+    def _run_site(self, site, displaced, back, caller):
+        """Execute from a hooked native call site in a frame like its routine's; return the builder picks if the
+        offense lineup was rebuilt, else None (the site returned)."""
+        m = self.after.m
+        u = m.u
+        seen = {}
+
+        def stop(_uc, pc, _size, _user):
+            if pc == 0x18A646:
+                seen["line"] = self.after.words(m.reg("ESP") + 0x74, 11)
+            m.uc.emu_stop()
+
+        hooks = [self._skip(self.after, displaced),
+                 m.uc.hook_add(u.UC_HOOK_CODE, stop, begin=0x18A646, end=0x18A646),
+                 m.uc.hook_add(u.UC_HOOK_CODE, stop, begin=back, end=back)]
+        try:
+            m.uc.mem_write(m.STACK, struct.pack("<4I", 0, SIDES[0], 0, caller))
+            for name, value in dict(ECX=SIDES[0], EDX=0, ESI=SIDES[0], EDI=0, EBX=0, EBP=0x44444444,
+                                    ESP=m.STACK, EFLAGS=0x202).items():
+                m.reg(name, value)
+            m.uc.emu_start(site, 0xFFFFFFFF, count=400000)
+        finally:
+            for h in hooks:
+                m.uc.hook_del(h)
+            m.put(gadget.CODE_VA + template.LABELS["gadget_grace"], 0)
+        return seen.get("line")
+
+    def test_the_next_snap_after_a_substitution_in_every_way_the_game_goes_on(self):
+        """Review F1, the reviewer's list. After an End Around put the GAD in (ATL book, Empty Trey, slot 8), the next
+        snap's offense lineup is the game's own (the same build without the rule) and the runtime words are spent:
+        - huddle: the next play is called in the huddle (store 0x2074BC, which the restore leaves alone, then the
+          play-call build 0x89590);
+        - repeat play: the same gadget play called again is a fresh decision (the GAD in again), then normal;
+        - timeout: nothing stores or builds during a timeout; the next play is a huddle call;
+        - penalty replay: the down is replayed from the huddle (store 0x2074BC, then the play-call build);
+        - blown dead before the handoff: the substituted build happened but no snap; the next call is a huddle call;
+        - no-huddle: the play store's call 0x9F9CB from the no-huddle handler rebuilds the offense the play-call way;
+        - audible: the offense audible's call 0x9FB10 does the same."""
+        book = self.setup_book(314)
+        slot = self.links[314][(3, 147)]
+        others = [link.play_index for link in book.formations[3].play_links if (3, link.play_index) not in self.links[314]]
+        nxt = others[0]
+
+        def substitute():
+            self.select(book, 3, 147)
+            self.assertEqual(self.outcome(0, slot)[2], "changed")
+            self.assertEqual(self._marker(self.after), SIDES[0])
+
+        def normal_now(line):
+            self.assertEqual(line, self.before.line(0))
+            self.assertNotEqual(line[slot], self.before.gad(0))
+
+        def huddle_call():
+            self.select(book, 3, nxt)
+            self.assertIsNone(self._run_site(0x9F9CB, 0xB8790, 0x9F9D0, 0x2074C1))   # the huddle store: no rebuild
+            normal_now(self.after.line(0))                                           # the play-call build
+
+        def words():
+            return tuple(self._word(self.after, k) for k in ("gadget_team", "gadget_benched", "gadget_grace"))
+
+        cases = {
+            "huddle": huddle_call,
+            "timeout": huddle_call,
+            "blown dead before the handoff": huddle_call,
+            "penalty replay": huddle_call,
+            "no-huddle": lambda: (self.select(book, 3, nxt),
+                                  normal_now(self._run_site(0x9F9CB, 0xB8790, 0x9F9D0, 0xA24EC))),
+            "audible": lambda: (self.select(book, 3, nxt),
+                                normal_now(self._run_site(0x9FB10, 0xB87D0, 0x9FB15, 0x18B090))),
+        }
+        for name, then in cases.items():
+            with self.subTest(case=name):
+                substitute()
+                then()
+                self.assertEqual(words(), (0, 0, 0))
+        with self.subTest(case="repeat play"):
+            substitute()
+            substitute()                                   # the same call again: a fresh decision, GAD in again
+            huddle_call()
+            self.assertEqual(words(), (0, 0, 0))
 
     def test_the_benched_receiver_is_judged_once_as_if_he_had_stayed_on_the_field(self):
         """Review F1, fatigue: the snap path's availability call 0x18A6EE goes through available_or_kept. For the

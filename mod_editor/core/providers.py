@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "dc3cc5177445c4b700c9a160f267520126f553854dcb6a68c074ef8d35bfa13c",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "df1c9012b959d10c5412894f95dab1d262434b5d269268692188e07e82fe8225",
+        "mod_editor/core/mod_build.py": "c8f05b254e79d5c478786d36399584df8cfba9fcec78f60eed2713786cd06330",
         "mod_editor/core/nfl2k5_console_memory.py": "6ea4889a87c02c49c0850efa27a11706457dfd9cd438051f307587b469541758",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -715,7 +715,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_deep_zone.py": "59fb0d2b1f5be90d90692d7f143d00d8091ceac2d9ba1ee9bd40c0f9f626cbf7",
         "mod_editor/core/nfl2k5_deep_zone_code.py": "421d08aa91966fb43667cdcc44813ff8cd2d898b8c47191bfa9050930e9667cc",
         "mod_editor/core/nfl2k5_defensive_try.py": "230382d2e3b59076d1ae496a7585ac7505e2a2099b3ebb471a905759405b3f66",
-        "mod_editor/core/nfl2k5_depth_chart_rows.py": "3449c2ceb09347e3881288a856a9757ee23dcbd78c98b5091682498ccbd1a929",
+        "mod_editor/core/nfl2k5_depth_chart_rows.py": "1254f317a88563888660f6ff125d1cee25904fdfb260832747fc73e22acdcd76",
         "mod_editor/core/nfl2k5_depth_chart_storage.py": "c401fdcae11af49b17245bf6b430f2c078ad33cc4f1452f18d648b88d8c3d52a",
         "mod_editor/core/nfl2k5_depth_locks.py": "e4be02224f8d575cbf49d6f593ee3ad37d8c46c0143b1da1f191620b4147a13b",
         "mod_editor/core/nfl2k5_depth_roles.py": "92a11e038973a1c421fe7f3162064bb62a9fd8cefd6bfb4bd9cc5765d3f3a19d",

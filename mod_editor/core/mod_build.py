@@ -1231,9 +1231,11 @@ for _preset in PRESETS.values():
     _preset["sportscenter_lineup"] = True
     _preset["backfield_cards"] = True
 # Beta 81 (Q62 redo, Noah 11/03 "Rest looks good"): the GAD player on gadget plays rides with the SPECIAL rows, which only
-# the Experimental (standard 128 MB) preset turns on.
+# the Experimental (standard 128 MB) preset turns on. Coordinator 11/20: on in that preset only when the full proof is
+# clean, otherwise off there too (still selectable on the Build tab as an experimental option). This flag is that choice.
+GADGET_PLAY_IN_STANDARD_PRESET = True
 for _preset in PRESETS.values():
-    _preset["gadget_play"] = bool(_preset.get("depth_chart_rows"))
+    _preset["gadget_play"] = GADGET_PLAY_IN_STANDARD_PRESET and bool(_preset.get("depth_chart_rows"))
 # b778-dr1: the broadcast-paced franchise draft, on with the other SOFTDRINK franchise features (Advanced, Experimental).
 for _preset in PRESETS.values():
     _preset["franchise_draft_clock"] = False
