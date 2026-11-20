@@ -485,6 +485,8 @@ class DigitDocument(unittest.TestCase):
             self.assertEqual({tuple(int(v) for v in c) for c in rgba[rgba[..., 3] > 0][:, :3]}, {CLE_CHARCOAL}, row["png"])
 
     def test_the_ravens_4_has_the_tall_closed_counter(self):
+        if not DISC.is_file():                 # hosted runners: the derived picture needs the released disc
+            self.skipTest("the released SOFTDRINK v0.9 disc is not on this machine")
         # R2: the 2026 Ravens 4 has a tall closed triangular counter, 0.27 and 0.30 of the height on the two photographs;
         # the released and batch 6 4 had a slit about 3 rows tall (an opening of 11 rows in the fill)
         # R2-G (retail-free): the 4 ships as the lane's remap on the glyph the build holds plus a paint of the texels
@@ -550,6 +552,8 @@ class DigitDocument(unittest.TestCase):
                 self.assertEqual((int(rows.min()), int(rows.max())), (1, 62), (selector, chunk))
 
     def test_the_raiders_road_edge_is_the_measured_silver(self):
+        if not DISC.is_file():                 # hosted runners: the derived picture needs the released disc
+            self.skipTest("the released SOFTDRINK v0.9 disc is not on this machine")
         # R2: #C8C7C7 could not be seen on the white jersey in the game; the real edge reads 0.41 of the jersey white
         # R2-G (retail-free): the set ships as the lane's edge + remap + recolour on the glyph the build holds
         rows = [r for r in all_digit_rows() if r["selector"] == "20A0"]
