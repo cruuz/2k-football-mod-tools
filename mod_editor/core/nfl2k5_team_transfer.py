@@ -112,7 +112,7 @@ def write_package(path: Path | str, package: Mapping[str, Any]) -> Path:
     target = Path(path)
     if target.suffix.lower() != SUFFIX:
         target = target.with_name(target.name + SUFFIX)
-    target.write_text(json.dumps(package, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    target.write_text(json.dumps(package, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     return target
 
 
