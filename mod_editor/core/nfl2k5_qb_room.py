@@ -173,6 +173,14 @@ def status(payload):
     return read_settings(payload)["status"]
 
 
+def _check_stage_set(stages):
+    code = _code()
+    _require(not stages & code.STAGE_TRADE, "The quarterback room trade stage is not available in this build")
+    _require(not stages & code.STAGE_E2 or stages & code.STAGE_SIGN, "The quarterback room E2 stage needs stage 4a")
+    _require(not stages & STAGE_OVER_CAP or stages & STAGE_FLOOR,
+             "Signing over the cap is the floor's last rung and needs the floor")
+
+
 def requirements(payload, stages=None):
     """Plain reasons this executable cannot take Realistic (empty when it can): 128 MiB standard, depth locks and
     lineup roles applied; for the signing stage (4a) and the floor (64) also the economy, the practice squad, modern IR
@@ -181,10 +189,7 @@ def requirements(payload, stages=None):
     from . import nfl2k5_depth_locks as locks, nfl2k5_k128 as memory, nfl2k5_lineup_roles as lineup
     code = _code()
     stages = REALISTIC_STAGES if stages is None else stages
-    _require(not stages & code.STAGE_TRADE, "The quarterback room trade stage is not available in this build")
-    _require(not stages & code.STAGE_E2 or stages & code.STAGE_SIGN, "The quarterback room E2 stage needs stage 4a")
-    _require(not stages & STAGE_OVER_CAP or stages & STAGE_FLOOR,
-             "Signing over the cap is the floor's last rung and needs the floor")
+    _check_stage_set(stages)
     missing = []
     try:
         standard = bool(memory.read_settings(payload).get("require_128"))
@@ -266,23 +271,32 @@ def apply(payload, level="realistic"):
     return _install(source, current, settings, allocation, receipt, REALISTIC_STAGES, SHADOW_DEFAULT)
 
 
-def install_stages(payload, stages, *, shadow=False):
+def install_stages(payload, stages, *, shadow=False, test_without_needs=False):
     """Calibration and test path only (season panels, owner tests): install a named stage set with the same
     authentication, needs and readback as Realistic. Nothing in the Studio calls it; the Studio writes only
-    REALISTIC_STAGES through apply()."""
+    REALISTIC_STAGES through apply() (a test pins both). ``test_without_needs`` skips only the dependency checks (the
+    128 MB standard, locks, roles, economy, practice squad, modern IR, ownership), never the byte authentication of
+    the routines the floor enters: it exists to replay recorded seasons on executables made before those owners."""
     source = bytes(payload)
     XbeImage(source)
     try:
         current, settings, allocation = _state(source)
     except ERRORS as exc:
         raise QbRoomError(f"The quarterback room bytes are not recognized; refusing to change them ({exc})") from exc
-    return _install(source, current, settings, allocation, {"owner": OWNER, "mode": "stages", "va": hex(VA)},
-                    stages, shadow)
+    _require(type(test_without_needs) is bool, "test_without_needs must be True or False")
+    receipt = {"owner": OWNER, "mode": "stages", "va": hex(VA)}
+    if test_without_needs:
+        receipt["test_without_needs"] = True
+    return _install(source, current, settings, allocation, receipt, stages, shadow, needs=not test_without_needs)
 
 
-def _install(source, current, settings, allocation, receipt, stages, shadow):
+def _install(source, current, settings, allocation, receipt, stages, shadow, *, needs=True):
     code = _code()
-    missing = requirements(source, stages)
+    if needs:
+        missing = requirements(source, stages)
+    else:
+        _check_stage_set(stages)
+        missing = _floor_problems(source, stages)
     _require(not missing, " ".join(missing))
     record = code.settings_record(stages, shadow=shadow)
     wanted = code.parse_settings(record)

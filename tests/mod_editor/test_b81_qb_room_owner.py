@@ -371,6 +371,40 @@ class FloorOwnerTests(unittest.TestCase):
         self.assertEqual(room.status(self._changed(floor, 0x322C40, b"\xcc")), "foreign")
 
 
+class TestOnlyInstallTests(unittest.TestCase):
+    """install_stages(test_without_needs=True) replays recorded seasons on executables made before modern IR and the
+    ownership page; it skips only the dependency checks, and nothing in the Studio can reach it."""
+
+    def test_the_studio_never_reaches_the_calibration_path(self):
+        import re
+        hits = []
+        for path in [*(ROOT / "mod_editor").rglob("*.py"), ROOT / "tools/nfl2k5_modpack.py"]:
+            if path.name in ("nfl2k5_qb_room.py",):
+                continue
+            text = path.read_text(encoding="utf-8", errors="replace")
+            if re.search(r"install_stages|test_without_needs", text):
+                hits.append(str(path.relative_to(ROOT)))
+        self.assertEqual(hits, [])
+
+    def test_the_floor_without_its_needs_on_9f435b38(self):
+        from mod_editor.core import nfl2k5_qb_room as room, nfl2k5_sim_qb_injuries as qb
+        source = _private("NFL2K5_B81_REVIEWED_TEST_DISC", HELMET_XBE_SHA)
+        slice1, _ = qb.apply(source, "realistic")
+        stages = room.STAGE_FLOOR | room.STAGE_OVER_CAP
+        with self.assertRaisesRegex(ValueError, "modern injured reserve"):
+            room.install_stages(slice1, stages)
+        replay, receipt = room.install_stages(slice1, stages, test_without_needs=True)
+        self.assertTrue(receipt["test_without_needs"])
+        self.assertEqual((room.read_settings(replay)["stages"], room.read_settings(replay)["shadow"]), (192, False))
+        self.assertEqual(room.apply(replay, "retail")[0], space.extend_scaleout(slice1, room.REQUESTS)[0])
+        with self.assertRaisesRegex(ValueError, "needs the floor"):
+            room.install_stages(slice1, room.STAGE_OVER_CAP, test_without_needs=True)
+        # Authentication still applies (the byte is changed with resealed digests, so only the routine differs).
+        changed = room._patch(slice1, [(0x322C40, XbeImage(slice1).read(0x322C40, 1), b"\xcc")])
+        with self.assertRaisesRegex(ValueError, "native signing routine"):
+            room.install_stages(changed, stages, test_without_needs=True)
+
+
 class ReleasedV09OwnerTests(unittest.TestCase):
     def test_the_released_v09_executable_takes_and_returns_the_room(self):
         from mod_editor.core import nfl2k5_qb_room as room
