@@ -147,7 +147,9 @@ class RoomInstallationOrderTests(first_pass.QuarterbackInstallationOrderTests):
                                  ("applied", "applied", "applied"))
                 retail, _ = room.apply(current, "retail")
                 self.assertEqual(room.read_settings(retail)["reserved"], True)
-                self.assertEqual(room.apply(retail, "realistic")[0], current)
+                again = (room.apply(retail, "realistic", stages=stages) if studio
+                         else room.install_stages(retail, stages))[0]
+                self.assertEqual(again, current)
                 if order[-1] == "ROOM":
                     self.assertEqual(_neighbour_status(retail), _neighbour_status(current))
                 finals.append((rows, current))
