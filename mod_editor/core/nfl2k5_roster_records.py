@@ -2635,7 +2635,8 @@ class RosterDocument:
             assert player is not None
             flags = player.record.values["player_type"]
             ps._require(bool(flags & 4) and not flags & 0x18, 'player is inactive, retired, or a draft prospect')
-            ps._require(player.record.values["injured_reserve"] != 0xEE, 'player is marked injured reserve')
+            ps._require(player.record.values["injured_reserve"] != 0xEE,     # the game's own screen test (b81 finn-r2)
+                        "the game's practice squad screen will not move him: his injury code ends in the byte the game also uses to mark injured reserve (0xEE). Activate him from injured reserve, or heal him, first")
             team = self.teams[team_index]
             reserves = list(self.reserves.get(team_index, ()))
             if promote:

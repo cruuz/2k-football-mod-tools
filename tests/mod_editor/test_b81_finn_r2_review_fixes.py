@@ -393,3 +393,41 @@ class F1LegacyIrTests(unittest.TestCase):
         self.assertFalse(panel.document.is_on_injured_reserve(clements))
         self.assertFalse(panel._depth_text(clements).endswith(" IR"))
         self.assertIn("older", panel.ir_place_reason(clements))
+
+
+# --------------------------------------------------------------------------------------------- follow-ups after bd08d4b8b
+@unittest.skipUnless(SEASON_2026.is_dir(), f"simulated SOFTDRINK 2026 season absent: {SEASON_2026}")
+class FollowUpTests(unittest.TestCase):
+    """Copy/Paste Team and the practice-squad wording use the shared IR test (coordinator follow-up to F1)."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.document = rr.load_save(SEASON_2026, detect=True)
+        cls.edwards = next(p for p in cls.document.players if p.display == "T.J. Edwards" and p.pool == "primary")
+
+    def test_chicago_copies_and_takes_a_paste_with_an_injury_750_player(self) -> None:
+        from mod_editor.core import nfl2k5_team_transfer as tt
+        chicago = tt.team_package(self.document, 1)
+        entry = next(e for e in chicago["players"] if (e["first"], e["last"]) == ("T.J.", "Edwards"))
+        self.assertFalse(entry["on_ir"])
+        for team, package in ((0, chicago), (1, tt.team_package(self.document, 1))):
+            refusals = tt.plan(self.document, team, package)["refusals"]
+            self.assertFalse([r for r in refusals if "injured reserve" in r], refusals)
+
+    def test_the_practice_squad_refusal_says_what_is_true(self) -> None:
+        with self.assertRaises(rr.RosterRecordError) as caught:
+            self.document.reserve_move_precheck(1, self.edwards.index, promote=False)
+        words = str(caught.exception)
+        self.assertNotIn("marked injured reserve", words)
+        self.assertIn("practice squad screen", words)
+        self.assertIn("heal him", words)
+
+
+class LineEndingTests(unittest.TestCase):
+    def test_the_team_package_is_written_with_lf_newlines(self) -> None:
+        import ast
+        tree = ast.parse((ROOT / "mod_editor/core/nfl2k5_team_transfer.py").read_text(encoding="utf-8"))
+        writes = [n for n in ast.walk(tree) if isinstance(n, ast.Call) and getattr(n.func, "attr", "") == "write_text"]
+        self.assertTrue(writes)
+        for call in writes:
+            self.assertIn("newline", {k.arg for k in call.keywords}, call.lineno)
