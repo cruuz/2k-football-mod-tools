@@ -1344,12 +1344,14 @@ del _preset
 for _preset in PRESETS.values():
     _preset["number_kerning"] = False
 del _preset
-# b76-k1: 128 MB memory (K128) and the roster block in the extra heap are experimental: off in every preset.
+# Only the standard SOFTDRINK simulator needs the expanded console heap.
 for _preset in PRESETS.values():
     _preset["k128_memory"] = False
     _preset["k128_roster_heap"] = False
     _preset["k128_early"] = False
+    _preset["sim_qb_injuries"] = None
 del _preset
+PRESETS["softdrink_experimental"].update(k128_memory=True, sim_qb_injuries="realistic")
 # b77-f4: letter grades in Franchise (Noah, 2026-10-07): Basic keeps the 2004 numbers; Modern and Experimental grade.
 for _preset in PRESETS:
     PRESETS[_preset]["team_ratings"] = _preset in ("softdrink_advanced", "softdrink_experimental")
@@ -1432,6 +1434,8 @@ def apply_preset(plan: BuildPlan, name: str) -> BuildPlan:
     values.update(PRESETS[name])
     if plan.console_memory == 64:
         values["backfield_cards"] = False
+        values["sim_qb_injuries"] = None
+        values["k128_memory"] = False
     values["modern_naming"] = tt.modern_naming_patch.preset_enabled(name.removeprefix("softdrink_"))
     if not values.get("name"):
         values["name"] = PRESET_TITLES[name]

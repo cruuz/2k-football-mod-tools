@@ -266,6 +266,10 @@ def build_plan(recipe, source="", target=""):
     from . import mod_build, nfl2k5_build_settings
     initial = mod_build.BuildPlan(str(source), str(target), console_memory=recipe["overrides"].get("console_memory", 128))
     plan = mod_build.apply_preset(initial, recipe["preset"])
+    if "sim_qb_injuries" not in recipe["overrides"]:
+        # Older source recipes predate the quarterback setting and the experimental preset's heap default.
+        plan.sim_qb_injuries = None
+        plan.k128_memory = initial.k128_memory
     known = {field.name for field in fields(plan)} - {"source", "target", "overwrite"}
     for key, value in recipe["overrides"].items():
         m._require(key in known, f"Recipe requires an unknown Studio option: {key}")

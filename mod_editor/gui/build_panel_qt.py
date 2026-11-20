@@ -2066,8 +2066,8 @@ class BuildPanel(QWidget):
         caption = QLabel("Simulated quarterback injuries")
         self.qb_injury_mode = QComboBox()
         caption.setBuddy(self.qb_injury_mode)
-        for name, value in (("Keep the source setting", None), ("Retail", "retail"),
-                            ("Realistic", "realistic"), ("Custom", "custom")):
+        for name, value in (("Keep the source setting", None), ("Retail (original 2K5 simulation)", "retail"),
+                            ("Realistic", "realistic"), ("Custom (realistic passing, your injury rate)", "custom")):
             self.qb_injury_mode.addItem(name, value)
         self.qb_injury_mode.setAccessibleName(caption.text())
         self.qb_injury_mode.setToolTip(help_text)
@@ -3103,7 +3103,8 @@ class BuildPanel(QWidget):
             self.abilities_locks_changed.emit(self.abilities_lock_settings())
         self._apply_abilities_access(values.get("abilities_star_access", tt.abilities_patch.DEFAULT_STAR_ACCESS))
         self._team_number_scale = dict(values.get("team_number_scale") or {})
-        self.qb_injury_mode.setCurrentIndex(0)
+        qb_mode = values.get("sim_qb_injuries") if self.console_memory() == 128 and self.qb_injury_mode.isEnabled() else None
+        self.qb_injury_mode.setCurrentIndex(self.qb_injury_mode.findData(qb_mode))
         self.qb_injury_rate.setValue(mod_build.BuildPlan.sim_qb_injury_rate)
         self.stock_age_combo.setCurrentIndex(self.stock_age_combo.findData(values.get("stock_age_policy", "preserve_age")))
         boxes = self._boxes()

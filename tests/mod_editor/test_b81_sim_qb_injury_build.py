@@ -1,5 +1,6 @@
 """The scheduled-QB setting through projects, Build, Share sources and the rebuild CLI."""
 import contextlib
+import hashlib
 import io
 import json
 import os
@@ -19,7 +20,7 @@ from tools import nfl2k5_modpack as cli
 
 
 class ProjectSettings(unittest.TestCase):
-    def test_old_sources_and_generic_presets_preserve_existing_simulator(self):
+    def test_old_source_files_preserve_existing_simulator(self):
         for preset in mod_build.PRESETS:
             for target in (64, 128):
                 overrides = {"console_memory": target}
@@ -29,6 +30,59 @@ class ProjectSettings(unittest.TestCase):
                     self.assertNotIn("sim_qb_injuries", plan.to_recipe())
                     self.assertNotIn("sim_qb_injury_rate", plan.to_recipe())
         self.assertIsNone(saved.to_plan({}, "src", "dst").sim_qb_injuries)
+
+    def test_preset_defaults_by_edition_and_explicit_choices(self):
+        for preset in mod_build.PRESETS:
+            for memory_target in (64, 128):
+                initial = mod_build.BuildPlan("src", "dst", console_memory=memory_target)
+                plan = mod_build.apply_preset(initial, preset)
+                with self.subTest(preset=preset, memory=memory_target):
+                    enabled = preset == "softdrink_experimental" and memory_target == 128
+                    self.assertEqual(plan.sim_qb_injuries, "realistic" if enabled else None)
+                    self.assertEqual(plan.k128_memory, enabled)
+                    if enabled:
+                        self.assertTrue(plan.sim_realism)
+        for mode in ("retail", "custom"):
+            overrides = {"console_memory": 128, "sim_qb_injuries": mode, "sim_qb_injury_rate": 0}
+            plan = modpack_sources.build_plan({"preset": "softdrink_experimental", "overrides": overrides})
+            self.assertEqual((plan.sim_qb_injuries, plan.sim_qb_injury_rate), (mode, 0))
+
+    def test_real_standard_source_documents_freeze_the_same_128_mb_default(self):
+        directory = os.environ.get("NFL2K5_B81_STANDARD_SOURCES")
+        if not directory:
+            self.skipTest("private SOFTDRINK standard source documents are absent")
+        for name in ("SOFTDRINK-build-recipe.json", "recipe.json", "assets/documents/frozen-recipe.json"):
+            with self.subTest(document=name):
+                recipe = json.loads((Path(directory)/name).read_text(encoding="utf-8"))
+                self.assertEqual(recipe["overrides"]["sim_qb_injuries"], "realistic")
+                plan = modpack_sources.build_plan(recipe)
+                self.assertEqual((plan.console_memory, plan.k128_memory, plan.sim_realism, plan.sim_qb_injuries),
+                                 (128, True, True, "realistic"))
+
+    def test_standard_setting_upgrades_the_released_and_reviewed_simulators(self):
+        from mod_editor.core import nfl2k5_sim_realism as simulator, nfl2k5_sim_qb_injuries as medical
+        from mod_editor.core import nfl2k5_xbe_space as space
+
+        cases = (("NFL2K5_V09_XISO", "d78088f9ba47c6197e99ea540d0bc3d2c9255f7cd49152a77946be70dacab866", "legacy"),
+                 ("NFL2K5_B81_REVIEWED_TEST_DISC", "98dd732945fb665a8d7fe771650d61c1098015cda4917ac83037059db477008e", "applied"))
+        if any(not os.environ.get(variable) for variable, _, _ in cases):
+            self.skipTest("private released and reviewed standard disc images are absent")
+        for variable, digest, source_state in cases:
+            source = Path(os.environ[variable])
+            with self.subTest(source=variable):
+                before = mod_build._xbe_bytes(source)
+                self.assertEqual(hashlib.sha256(before).hexdigest(), digest)
+                self.assertEqual(simulator.status(before), source_state)
+                mod_build._sim_realism_preflight(source, lambda *_: None)
+                modern, _ = simulator.apply(before)
+                mode = mod_build.apply_preset(mod_build.BuildPlan(str(source), "copy.iso"),
+                                              "softdrink_experimental").sim_qb_injuries
+                current, _ = medical.apply(modern, mode)
+                self.assertEqual(medical.read_settings(current)["mode"], "realistic")
+                self.assertEqual(medical.apply(current, mode)[0], current)
+                prior_rows = space.layout(modern)["allocations"]
+                surviving = [row for row in space.layout(current)["allocations"] if row["owner"] != medical.OWNER]
+                self.assertEqual(surviving, prior_rows)
 
     def test_pack_freezes_the_disc_setting_and_rejects_a_conflicting_recipe(self):
         with tempfile.TemporaryDirectory() as t:
@@ -180,8 +234,26 @@ class StudioControls(unittest.TestCase):
                                  sim_qb_injury_settings={"status": "retail", "mode": "retail", "custom_rate": .310})
         self.panel.apply_state(dict(self.retail_state))
 
+    def test_experimental_button_enables_realistic_on_a_fresh_or_upgradeable_standard_disc(self):
+        for state_name in ("retail", "legacy"):
+            with self.subTest(simulator=state_name):
+                self.panel.apply_state(dict(self.retail_state, sim_realism=state_name))
+                self.panel.apply_preset("softdrink_experimental")
+                plan = self.panel._plan_for_build()
+                self.assertEqual((plan.sim_qb_injuries, plan.sim_realism, plan.k128_memory),
+                                 ("realistic", True, True))
+        self.panel.apply_preset("softdrink_basic")
+        self.assertIsNone(self.panel._plan_for_build().sim_qb_injuries)
+        self.panel.set_console_memory(64)
+        self.panel.apply_preset("softdrink_experimental")
+        compact = self.panel._plan_for_build()
+        self.assertEqual((compact.console_memory, compact.sim_qb_injuries, compact.k128_memory), (64, None, False))
+
     def test_modes_tell_the_user_the_scope_and_dependencies(self):
         panel = self.panel
+        mode = panel.qb_injury_mode
+        self.assertIn("original 2K5 simulation", mode.itemText(mode.findData("retail")))
+        self.assertIn("realistic passing, your injury rate", mode.itemText(mode.findData("custom")))
         panel.qb_injury_mode.setCurrentIndex(panel.qb_injury_mode.findData("custom"))
         panel.qb_injury_rate.setValue(.411)
         plan = panel._plan_for_build()
