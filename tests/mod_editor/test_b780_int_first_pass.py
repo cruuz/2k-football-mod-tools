@@ -159,10 +159,15 @@ class LateOwnerReservationTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_throw_tuning as tt, nfl2k5_xbe_space as space
         owners = {row[0] for row in tt._selected_space_requests(**self.WAVE)}
         late = list(space.LATE_OWNERS)
-        # The image appends the optional rookie hair helper first, then the authored book's toss helper.
-        # Both follow the owners reserved by the first pass.
-        self.assertEqual(late[-2:], ["nfl2k5_rookie_faces_hair", "nfl2k5_offset_toss"])
-        wave = late[late.index("nfl2k5_sim_realism_state") + 1:late.index("nfl2k5_rookie_faces_hair")]
+        # Hair and toss still follow these original wave owners. The separately placed
+        # gadget, cards and quarterback banks can now coexist after the toss helper.
+        hair = late.index("nfl2k5_rookie_faces_hair")
+        toss = late.index("nfl2k5_offset_toss")
+        self.assertEqual(toss, hair + 1)
+        later = [late.index(space.GADGET_OWNER), late.index(space.BACKFIELD_REQUEST[0]),
+                 late.index(space.QB_INJURY_REQUEST[0])]
+        self.assertEqual([toss, *later], sorted([toss, *later]))
+        wave = late[late.index("nfl2k5_sim_realism_state") + 1:hair]
         self.assertEqual(sorted(set(wave) - owners), [])
 
     def test_speed_after_a_later_owner_does_not_move_it(self):

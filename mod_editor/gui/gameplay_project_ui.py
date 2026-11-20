@@ -63,6 +63,10 @@ def restore(panel, state):
         panel.arc_spin.setValue(round(choices["arc"] * 100))
         if hasattr(panel, "speed_threshold_spin"):  # b780-cv5: the Build page's Speed separation strength
             panel.speed_threshold_spin.setValue(choices["speed_threshold"])
+        if hasattr(panel, "qb_injury_mode"):
+            mode = choices.get("sim_qb_injuries")
+            panel.qb_injury_mode.setCurrentIndex(0 if mode is None else panel.qb_injury_mode.findData(mode))
+            panel.qb_injury_rate.setValue(choices.get("sim_qb_injury_rate", saved.defaults()["sim_qb_injury_rate"]))
         panel._momentum_last_positive = choices["momentum"] or 50
         panel._collision_last_positive = choices["momentum_collision_level"] or 50
         for field, value in (("scorebug_watermark_combo", choices["scorebug_watermark"]),

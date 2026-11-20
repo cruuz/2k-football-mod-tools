@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import (
     QApplication,
     QCheckBox,
     QComboBox,
+    QDoubleSpinBox,
     QFileDialog,
     QGridLayout,
     QGroupBox,
@@ -542,6 +543,9 @@ class BuildPanel(QWidget):
         self._heartbeat_timer.timeout.connect(self._heartbeat)
 
         self._state: dict[str, object] | None = None
+        self._sim_qb_source_choices = None
+        self._sim_qb_other_choice = False
+        self._sim_qb_authored = False
         self._preset_applying = False         # fx1: apply_preset holds the child-ticks-parent cascade
         self._keep_selection_on_state = False # recovering a vanished build copy keeps the user's ticks
         self._available = mod_build.availability() if available is None else available
@@ -1039,6 +1043,10 @@ class BuildPanel(QWidget):
         for key, caption, help_text in BUILD_OPTIONS:
             setattr(self, key + "_check", self._option(g, key, caption, help_text,
                     badge="EXPERIMENTAL / UNWITNESSED", needs_image=True))
+            if key == "sim_realism":
+                self._add_sim_qb_injuries(g)
+        for parent in (self.sim_realism_check, self.k128_memory_check):
+            parent.clicked.connect(self._sim_qb_injury_dependency_changed)
         self.speed_threshold_spin = speed_threshold_ui.add_control(g, self._refresh)  # b780-cv5
         self.cpu_money_downs_level = QComboBox()
         for caption, value in r62_ui.LEVELS["cpu_money_downs"]:
@@ -2034,11 +2042,87 @@ class BuildPanel(QWidget):
                 combo.setMinimumWidth(COMBO_FLOOR_WIDTH)
         for box in self.findChildren(QCheckBox):
             box.toggled.connect(lambda _c: self._refresh())
+            box.clicked.connect(self._other_sim_qb_choice)
+        for combo in self.findChildren(QComboBox):
+            if combo is not self.qb_injury_mode:
+                combo.activated.connect(self._other_sim_qb_choice)
+        for spin in (*self.findChildren(QSpinBox), *self.findChildren(QDoubleSpinBox)):
+            if spin is not self.qb_injury_rate:
+                spin.editingFinished.connect(self._other_sim_qb_choice)
+        for field in self.findChildren(QLineEdit):
+            if (field not in (self.source_field, self.target_field, self.name_field, self.author_field)
+                    and not self.qb_injury_rate.isAncestorOf(field)):
+                field.textEdited.connect(self._other_sim_qb_choice)
         self.ceiling_spin.valueChanged.connect(lambda _v: self._refresh())
         for field in (self.team_history_field, self.career_stats_field, self.prospect_names_field, self.roster_edits_field,
                       self.espn25_plan_field, self.honors_history_field):
             field.textChanged.connect(lambda _t: self._refresh())
         self._refresh()
+
+    def _add_sim_qb_injuries(self, layout):
+        help_text = ("For simulated franchise games, including your club. Realistic uses quarterback Durability and "
+                     "adjusts simulated passing. Games you play use their original injuries and passing. "
+                     "Realistic and Custom require 128 MB and Simulated season realism.")
+        caption = QLabel("Simulated quarterback injuries")
+        self.qb_injury_mode = QComboBox()
+        caption.setBuddy(self.qb_injury_mode)
+        for name, value in (("Keep the source setting", None), ("Retail", "retail"),
+                            ("Realistic", "realistic"), ("Custom", "custom")):
+            self.qb_injury_mode.addItem(name, value)
+        self.qb_injury_mode.setAccessibleName(caption.text())
+        self.qb_injury_mode.setToolTip(help_text)
+        self.qb_injury_mode.setAccessibleDescription(help_text)
+        row = QHBoxLayout()
+        row.addWidget(caption)
+        row.addWidget(self.qb_injury_mode)
+        layout.addLayout(row)
+        self.qb_injury_help = WrappedLabel(help_text)
+        layout.addWidget(self.qb_injury_help)
+        self.qb_injury_rate_label = QLabel("Base chance per eligible simulated play")
+        self.qb_injury_rate = QDoubleSpinBox()
+        self.qb_injury_rate.setDecimals(3)
+        self.qb_injury_rate.setRange(0.0, 100.0)
+        self.qb_injury_rate.setSingleStep(0.001)
+        self.qb_injury_rate.setSuffix(" %")
+        self.qb_injury_rate.setValue(mod_build.BuildPlan.sim_qb_injury_rate)
+        self.qb_injury_rate_label.setBuddy(self.qb_injury_rate)
+        self.qb_injury_rate.setAccessibleName(self.qb_injury_rate_label.text())
+        rate_help = ("Realistic uses 0.310%. Durability, the Injury slider and the type of play change each chance. "
+                     "Custom 0% keeps the original injury roll and the updated simulated passing model.")
+        self.qb_injury_rate.setToolTip(rate_help)
+        self.qb_injury_rate.setAccessibleDescription(rate_help)
+        self.qb_injury_rate_help = WrappedLabel(rate_help)
+        rate = QHBoxLayout()
+        rate.addWidget(self.qb_injury_rate_label)
+        rate.addWidget(self.qb_injury_rate)
+        layout.addLayout(rate)
+        layout.addWidget(self.qb_injury_rate_help)
+        self.qb_injury_mode.currentIndexChanged.connect(self._sim_qb_injury_mode_changed)
+        self.qb_injury_rate.valueChanged.connect(lambda _value: self._refresh())
+
+    def _sim_qb_injury_mode_changed(self):
+        needs_simulator = self.qb_injury_mode.currentData() in ("realistic", "custom")
+        if needs_simulator and self.console_memory() == 128 and self.qb_injury_mode.isEnabled():
+            for parent in (self.sim_realism_check, self.k128_memory_check):
+                if parent.isEnabled():
+                    parent.setChecked(True)
+        self._refresh()
+
+    def _sim_qb_injury_dependency_changed(self, value):
+        if (not value and not self._preset_applying and self.qb_injury_mode.currentData() in ("realistic", "custom")
+                and self.console_memory() == 128):
+            self.qb_injury_mode.setCurrentIndex(0)
+
+    def _other_sim_qb_choice(self, *_):
+        # An explicit choice still belongs to a full build when its value equals the default.
+        self._sim_qb_other_choice = True
+
+    @staticmethod
+    def _sim_qb_companion_choices(plan):
+        values = plan.to_recipe()
+        for name in ("sim_qb_injuries", "sim_qb_injury_rate", "sim_realism", "k128_memory", "name", "author", "notes"):
+            values.pop(name, None)
+        return values
 
     def _option(self, layout: QVBoxLayout, key: str, label: str, helper: str = "", *, badge: str = "",
                 needs_image: bool = False, details: str = "") -> QCheckBox:
@@ -2264,6 +2348,10 @@ class BuildPanel(QWidget):
                      and platform_compat.paths_alias(previous_path, incoming_path))
         keep_selection = ((self._reading and (self._state is None or same_disc))
                           or self._keep_selection_on_state)
+        if previous_path and not same_disc:
+            self._sim_qb_source_choices = None
+            if not keep_selection:
+                self._sim_qb_other_choice = False
         softdrink_choices = self._softdrink_build_settings() if self.softdrink_project_field.text().strip() else None
         combo = self.screen_timing_combo
         if combo is not None and state.get("container") == "xiso" and (
@@ -2284,6 +2372,14 @@ class BuildPanel(QWidget):
         self.speed_threshold_spin.blockSignals(True)  # b780-cv5: a new disc starts at 0, like the check boxes
         self.speed_threshold_spin.setValue(0)
         self.speed_threshold_spin.blockSignals(False)
+        if not keep_selection:
+            blocked = self.qb_injury_mode.blockSignals(True)
+            self.qb_injury_mode.setCurrentIndex(0)
+            self.qb_injury_mode.blockSignals(blocked)
+            installed_qb = state.get("sim_qb_injury_settings") or {}
+            blocked = self.qb_injury_rate.blockSignals(True)
+            self.qb_injury_rate.setValue(installed_qb.get("custom_rate", mod_build.BuildPlan.sim_qb_injury_rate))
+            self.qb_injury_rate.blockSignals(blocked)
         # The two throw sub-options are not feature toggles; a new disc starts at their defaults.
         self.realistic_check.setChecked(True)
         self.arc_by_distance_check.setChecked(False)
@@ -2901,6 +2997,10 @@ class BuildPanel(QWidget):
         self.suggest_target()
         self._official_marks_pack_changed()
         self._refresh()
+        if keep_selection and self.qb_injury_mode.currentData() in ("realistic", "custom"):
+            self._sim_qb_injury_mode_changed()
+        if not self._sim_qb_other_choice and self._sim_qb_source_choices is None:
+            self._sim_qb_source_choices = self._sim_qb_companion_choices(self.plan())
         pending, self.pending_preset = self.pending_preset, None
         if pending:
             self.apply_preset_if_fresh(pending)
@@ -2922,7 +3022,8 @@ class BuildPanel(QWidget):
         if self._state is None:
             self.pending_preset = name
             return False
-        if any(box.isChecked() for box in self._toggle_boxes()) or self.speed_threshold_spin.value():
+        if (any(box.isChecked() for box in self._toggle_boxes()) or self.speed_threshold_spin.value()
+                or self.qb_injury_mode.currentData() is not None):
             self.preset_note.setText("Your current choices were kept; press a preset button to replace them.")
             return False
         self.apply_preset(name)
@@ -2950,6 +3051,7 @@ class BuildPanel(QWidget):
     def apply_preset(self, name: str) -> dict[str, list[str]]:
         """Tick the preset's toggles (only those the source can still take); returns what was skipped."""
 
+        self._sim_qb_authored = True
         self._momentum_legacy_disabled = False
         self._momentum_last_positive = 50
         self.momentum_level.blockSignals(True)
@@ -2997,6 +3099,8 @@ class BuildPanel(QWidget):
             self.abilities_locks_changed.emit(self.abilities_lock_settings())
         self._apply_abilities_access(values.get("abilities_star_access", tt.abilities_patch.DEFAULT_STAR_ACCESS))
         self._team_number_scale = dict(values.get("team_number_scale") or {})
+        self.qb_injury_mode.setCurrentIndex(0)
+        self.qb_injury_rate.setValue(mod_build.BuildPlan.sim_qb_injury_rate)
         self.stock_age_combo.setCurrentIndex(self.stock_age_combo.findData(values.get("stock_age_policy", "preserve_age")))
         boxes = self._boxes()
         applied, skipped = [], []
@@ -3320,6 +3424,13 @@ class BuildPanel(QWidget):
             plan.depth_roles = plan.depth_roles or state.get("depth_roles") != "applied"
         for key in BUILD_KEYS:
             setattr(plan, key, getattr(self, key + "_check").isChecked())
+        if self.qb_injury_mode.isEnabled():
+            plan.sim_qb_injuries = self.qb_injury_mode.currentData()
+            if plan.sim_qb_injuries == "custom":
+                plan.sim_qb_injury_rate = self.qb_injury_rate.value()
+            if plan.sim_qb_injuries in ("realistic", "custom"):
+                plan.sim_realism |= self._installed("sim_realism")
+                plan.k128_memory |= self._installed("k128_memory")
         for key in VENUE_BUILD_KEYS:
             box = getattr(self, key + "_check")
             setattr(plan, key, box.isChecked() and box.isEnabled())
@@ -3382,6 +3493,13 @@ class BuildPanel(QWidget):
         Studio, including the released v0.8 disc, every build was refused at its first check (era rules without their
         bases, widescreen menus, the kickoff gate ...). An installed option is replayed as already applied."""
         plan = self.plan()
+        if (self._sim_qb_injury_change() and not self._sim_qb_other_choice and not self._sim_qb_authored
+                and not self.softdrink_project_field.text().strip() and self._installed("sim_realism")
+                and ((self._state or {}).get("k128_settings") or {}).get("require_128") is True
+                and self._sim_qb_source_choices == self._sim_qb_companion_choices(plan)):
+            return mod_build.sim_qb_disc_edit(plan.source, plan.target, plan.sim_qb_injuries,
+                                              custom_rate=plan.sim_qb_injury_rate, overwrite=plan.overwrite,
+                                              name=plan.name, author=plan.author, notes=plan.notes)
         for name in KEPT_WHEN_INSTALLED:
             if getattr(plan, name, True) is False and self._installed(name):
                 # a sub-option is kept only with its parent in the plan (the build refuses the logo without the facility)
@@ -3729,6 +3847,8 @@ class BuildPanel(QWidget):
 
     def has_work(self) -> bool:
         p = self.plan()
+        if self._sim_qb_injury_change():
+            return True
         if any(getattr(p, key) for key in VENUE_BUILD_KEYS):
             return True
         if p.custom_intro:  # b76-i1
@@ -3759,6 +3879,21 @@ class BuildPanel(QWidget):
                     or bool(self._speed_separation_chosen())
                     # standalone steps of mod_build the list above never named: ticked alone, each was refused as "nothing is selected"
                     or p.espn25_rosters or bool(p.honors_history) or p.trophy_room)
+
+    def _sim_qb_injury_change(self):
+        if not self.qb_injury_mode.isEnabled():
+            return ""
+        mode = self.qb_injury_mode.currentData()
+        if mode is None:
+            return ""
+        installed = (self._state or {}).get("sim_qb_injury_settings") or {}
+        if mode == installed.get("mode", "retail") and (
+                mode != "custom" or self.qb_injury_rate.value() == installed.get("custom_rate")):
+            return ""
+        detail = mode.title()
+        if mode == "custom":
+            detail += f", {self.qb_injury_rate.value():.3f}%"
+        return f"Simulated quarterback injuries ({detail})"
 
     def _speed_separation_chosen(self) -> int:
         """The Speed separation strength the player set (0 = off).
@@ -3860,6 +3995,9 @@ class BuildPanel(QWidget):
         if self._modern_color_changed() and not self.modern_color_check.isChecked():
             labels.append("Retail colour & lighting (choose the original retail source)")
         strength = self._speed_separation_chosen()
+        qb_label = self._sim_qb_injury_change()
+        if qb_label:
+            labels.append(qb_label)
         if strength:
             labels.append(f"{speed_threshold_ui.CAPTION} ({strength})")
         if self.cpu_scrambles_level.currentData() == "modern":
@@ -4020,6 +4158,41 @@ class BuildPanel(QWidget):
         self._refresh()
 
     def _refresh(self) -> None:
+        if hasattr(self, "qb_injury_mode"):
+            state = self._state or {}
+            reason = ""
+            if self.console_memory() != 128:
+                reason = "The 64 MB profile uses the original quarterback simulation."
+            elif state.get("container") not in (None, "xiso"):
+                reason = "Open a full Xbox disc image to configure simulated quarterback injuries."
+            elif state.get("sim_qb_injuries") == "foreign":
+                reason = "This executable has unrecognized quarterback data. Open a verified source disc."
+            elif (state.get("k128_memory") == "applied"
+                  and (state.get("k128_settings") or {}).get("require_128") is False):
+                reason = ("This disc allows a 64 MB boot. Build from your retail disc to select the 128 MB "
+                          "memory requirement for simulated quarterback injuries.")
+            elif state.get("sim_realism") in ("foreign", "previous") or state.get("k128_memory") == "foreign":
+                reason = "This disc's simulator or 128 MB memory settings cannot be updated. Open a verified source disc."
+            elif not all(self._available.get(key, True) and state.get(key) != "unavailable"
+                         for key in ("sim_realism", "k128_memory")):
+                reason = "Simulated season realism and the 128 MB memory option must be available in this Studio installation."
+            elif not self._available.get("sim_qb_injuries", True) or state.get("sim_qb_injuries") == "unavailable":
+                reason = "The quarterback simulator option is unavailable in this Studio installation."
+            available = not reason
+            self.qb_injury_mode.setEnabled(available)
+            help_text = reason or self.qb_injury_mode.toolTip()
+            if self.qb_injury_help.text() != help_text:
+                self.qb_injury_help.setText(help_text)
+            selected = (state.get("sim_qb_injury_settings") or {}).get("mode")
+            label = "Keep the source setting"
+            if selected in ("retail", "realistic", "custom"):
+                rate = state["sim_qb_injury_settings"].get("custom_rate")
+                label += f" (Custom, {rate:.3f}%)" if selected == "custom" and rate is not None else f" ({selected.title()})"
+            if self.qb_injury_mode.itemText(0) != label:
+                self.qb_injury_mode.setItemText(0, label)
+            custom = available and self.qb_injury_mode.currentData() == "custom"
+            for control in (self.qb_injury_rate_label, self.qb_injury_rate, self.qb_injury_rate_help):
+                control.setVisible(custom)
         if hasattr(self, "stock_age_combo") and hasattr(self, "season_check"):
             self.stock_age_combo.setVisible(self.progression_check.isChecked() and self.season_check.isChecked())
         if hasattr(self, "uniform_choice_mode"):
@@ -4911,10 +5084,12 @@ class BuildPanel(QWidget):
         from .gameplay_project_ui import restore
         from mod_editor.core import nfl2k5_build_settings as saved
         choices = saved.build_settings(state)
+        self._sim_qb_authored = bool(state)
         self._my_career_home = choices.get("my_career_home", mod_build.BuildPlan.my_career_home)
         self.official_marks_pack_field.setText(choices.get("official_marks_pack") or "")
         self.super_bowl_user_art_field.setText(choices.get("super_bowl_user_art") or "")
         restore(self, state)
+        self._sim_qb_injury_mode_changed()
         for key, field, box in (("custom_intro", self.custom_intro_field, self.custom_intro_check),
                                 ("modern_venues_2026", self.modern_venues_field, self.modern_venues_check)):
             path = choices.get(key) or ""

@@ -3987,6 +3987,7 @@ tests/mod_editor/test_nfl2k5_sim_cb_tackles.py
 tests/mod_editor/test_nfl2k5_option_defaults.py
 tests/mod_editor/test_nfl2k5_sim_rb_injuries.py
 tests/mod_editor/test_b780_hunt1_rb_injuries_previous.py
+tests/mod_editor/test_b81_sim_qb_injury_build.py
 tests/mod_editor/test_b81_sim_qb_injury_settings.py
 tests/mod_editor/test_b81_sim_qb_injuries_code.py
 tests/mod_editor/test_nfl2k5_sim_realism.py

@@ -1,5 +1,6 @@
 """Portable, typed Build choices saved beside project edits, never game state."""
 from copy import deepcopy
+from decimal import Decimal
 import math
 
 FEATURE_KEYS = (
@@ -98,6 +99,7 @@ FEATURE_KEYS += ("history_pool",)  # b780 hist1: career history pool (no wrapped
 FEATURE_KEYS += ("sim_cb_tackles",)  # b778-cb1: cornerback tackle credit, late executable owner
 FEATURE_KEYS += ("sim_rb_injuries",)  # b779-sim2: weekly RB injury roll and simulated-game carry guard
 FEATURE_KEYS += ("sim_realism",)  # b779-sim2 r4: scheduled-sim season realism, late executable owner
+FEATURE_KEYS += ("sim_qb_injuries", "sim_qb_injury_rate")
 FEATURE_KEYS += ("coach_carousel",)  # b780-c6: the coaching carousel, late executable owner + roster pool
 FEATURE_KEYS += ("standings_records",)  # b780-j1: Team Standings division / conference / home / road records, late executable owner
 FEATURE_KEYS += ("catch_snap_limit",)  # b780-cv4: CPU defenders cannot slide to the ball for a pick, late executable owner
@@ -136,6 +138,16 @@ def defaults():
     plan = BuildPlan("", "")
     return {key: deepcopy(getattr(plan, key)) for key in FEATURE_KEYS}
 
+def validate_sim_qb_injuries(mode, rate):
+    if mode not in (None, "retail", "realistic", "custom"):
+        raise ValueError("Choose Retail, Realistic or Custom for simulated quarterback injuries.")
+    if mode == "custom":
+        if type(rate) not in (float, int) or not 0 <= rate <= 100:
+            raise ValueError("Custom quarterback injury chance must be between 0.000 and 100.000 percent.")
+        thousandths = Decimal(str(rate)) * 1000
+        if thousandths != thousandths.to_integral_value():
+            raise ValueError("Use increments of 0.001 percentage points for the custom quarterback injury chance.")
+
 
 def build_settings(value):
     from . import nfl2k5_music_playlist as music, nfl2k5_throw_tuning as tt
@@ -147,7 +159,11 @@ def build_settings(value):
         if key in value:
             tt._require(type(value[key]) is expected_type, f"Invalid league artwork setting: {key}")
             result[key] = value[key]
-    choices = {**defaults(), **deepcopy({key: value[key] for key in FEATURE_KEYS if key in value})}
+    expected = defaults()
+    choices = {**expected, **deepcopy({key: value[key] for key in FEATURE_KEYS if key in value})}
+    if choices["sim_qb_injuries"] != "custom":
+        choices["sim_qb_injury_rate"] = expected["sim_qb_injury_rate"]
+    validate_sim_qb_injuries(choices["sim_qb_injuries"], choices["sim_qb_injury_rate"])
     tt._require(choices["helmet_finish"] in ("glossy", "matte"), "Helmet finish must be glossy or matte")
     from . import nfl2k5_modern_color as colour
     colour.normalize_settings(choices["modern_color_settings"])
@@ -155,7 +171,6 @@ def build_settings(value):
     choices["team_number_scale"] = number_scale.normalize(choices["team_number_scale"])
     tt._require(choices["scorebug_watermark"] in ("auto", "mnf", "off"), "ESPN watermark must be auto, mnf or off")
     tt._require(choices["stock_age_policy"] in ("preserve_age", "keep_birthdates"), "Unknown stock roster age policy")
-    expected = defaults()
     for key in FEATURE_KEYS:
         item, default = choices[key], expected[key]
         if type(default) is bool:
@@ -243,6 +258,7 @@ REQUIRES = {
 # b780 m64prof: values that mean something only with another option on; the build refuses them otherwise
 # (nfl2k5_momentum._settings: "a collision level requires momentum_collisions", "contact requires a nonzero momentum level").
 VALUE_REQUIRES = {
+    "sim_qb_injuries": ("sim_realism", "k128_memory"),
     "momentum_collision_level": ("momentum_collisions",),
     "momentum_contact": ("momentum",),
 }

@@ -106,8 +106,11 @@ class PlanField(unittest.TestCase):
                                                     for name in sorted(mod_build.PRESETS)]
         for plan in plans:
             with self.subTest(name=plan.name or "bare"):
+                # The optional QB mode and custom rate were added in beta 81. Neither
+                # belongs to a generic recipe written before the option existed.
                 before = {key: value for key, value in asdict(plan).items()
-                          if key not in ("source", "target", "overwrite", "console_memory")}
+                          if key not in ("source", "target", "overwrite", "console_memory",
+                                         "sim_qb_injuries", "sim_qb_injury_rate")}
                 self.assertEqual(plan.to_recipe(), before)
                 self.assertEqual(json.dumps(plan.to_recipe(), sort_keys=True, default=str),
                                  json.dumps(before, sort_keys=True, default=str))
