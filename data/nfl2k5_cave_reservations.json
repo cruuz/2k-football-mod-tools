@@ -3401,6 +3401,7 @@
     "team_sleeves",
     "team_ratings",
     "holder_defaults",
+    "kit_fixes_2026_b81",
     "modern_coaches",
     "modern_fans",
     "modern_officials",
@@ -3462,7 +3463,7 @@
     "all_stadiums"
   ],
   "source_sha256": {
-    "mod_editor/core/mod_build.py": "840bd11d3dd3eea2408b276a3a235d1ac0dc3a2028395a5de2b442c699821cd0",
+    "mod_editor/core/mod_build.py": "abeae2219b261120f182e107bab6362d3850d91e395759334fc61d84a8c0c5a7",
     "mod_editor/core/nfl2k5_abilities_runtime.py": "97092be1e9c457950822e7ee734a90a52341cf20412ac610712d0f03f5886e1d",
     "mod_editor/core/nfl2k5_abilities_runtime_code.py": "efb55d5e000379eea7ab1e48f5810256a18d0534125de20f9884c723aa4f554b",
     "mod_editor/core/nfl2k5_accel_ramp.py": "95014c753d46faed2e75e545d992794bb62965a9bbe6407057d3626395c6e862",
@@ -3642,7 +3643,7 @@
     "mod_editor/core/nfl2k5_kick_rules.py": "885525ea94351521fc5e22c1c40c17ef3f374d665862e5920c4d9a644cd53be2",
     "mod_editor/core/nfl2k5_kickoff_blocking.py": "310ef53a004045f4daaedf8502100f60b050f0ae76a005eac0807b20e0090707",
     "mod_editor/core/nfl2k5_kickoff_returns.py": "d1f30bac8fd709f64be20e060027649a43fc04b82c7bd09b48082e8e66e5220f",
-    "mod_editor/core/nfl2k5_kit_fixes_2026.py": "41dcaedff104bc93ed26a51081a77946539fe7c5be3fdd62f2668dd28dc6d937",
+    "mod_editor/core/nfl2k5_kit_fixes_2026.py": "eb6745202adaffc0c45ee4e5df77be69b7bccc68a697bb0a681f086fc036d0fb",
     "mod_editor/core/nfl2k5_lambeau_model.py": "3aad96173fbf2b9f5caf10eb80b7e7cc0b2a1b3552be33f1024cff8cb324e217",
     "mod_editor/core/nfl2k5_lambeau_venue.py": "6e66f5f4872438c13d3d77df0980e5b3b76c7851601b449a093d546482b39af8",
     "mod_editor/core/nfl2k5_late_steps.py": "b2ac23b707cfd2173211f921aceec6cc98a7673ee52d959fd7e679475a56ac4c",
