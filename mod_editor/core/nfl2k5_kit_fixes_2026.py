@@ -91,7 +91,6 @@ DATA_NAMES = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_n
 DATA_B81 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_b81.json"
 DATA_B81U = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_b81u.json"
 DATA_SIDELINE = Path(__file__).resolve().parents[2] / "data/nfl2k5_sideline_2026.json"
-DATA_SIDELINE_B81U = Path(__file__).resolve().parents[2] / "data/nfl2k5_sideline_2026_b81u.json"
 KINDS = ("tset", "txtr", "copy_video", "palette", "clear", "unif", "name")
 SIDELINE_SCHEMA = "nfl2k5_sideline_2026/v1"
 SIDELINE_PARTS = ("pants", "sleeve", "helmet", "torso")
@@ -2613,22 +2612,3 @@ def apply_sideline(path, *, strict=False, document=None):
 def apply_sideline_pack(path, *, strict=False):
     """Alias used by the build receipt: the pinned 2026 alternate sideline-atlas pass."""
     return apply_sideline(path, strict=strict)
-
-
-# b81-uniforms R54 (beta 81): the far-player atlas follows the 2026 uniform pass. The pass corrects the full-size pants,
-# jersey and sleeve textures of about 170 kit packages and leaves each package's chunk 51 ``splayer`` atlas alone, so
-# bench and far-away players kept the old stripes, hems and marks. ``data/nfl2k5_sideline_2026_b81u.json`` (written by
-# tools/b81_uniforms/far_atlas.py) holds one row per kit in the kit-fix format: runs of the atlas texels that change,
-# the reduced new texture lit by the atlas's own baked shading inside the changed area, every other texel and palette
-# entry a protected texel uses kept. Each row is pinned to the atlas the build holds here and to the compile's output,
-# and names the finished field textures it mirrors as ``donors`` pins: a kit whose pants, jersey or sleeve is a user's
-# own art (the uniform pass left it) keeps its atlas.
-
-def sideline_b81u():
-    """The R54 document: far-player atlas rows that mirror the 2026 uniform pass."""
-    return spec(DATA_SIDELINE_B81U)
-
-
-def apply_sideline_b81u(path, *, strict=False):
-    """Studio uniform finish pass for R54, after the uniform pass and its numbers: pinned splayer spans only."""
-    return apply_to_image(path, strict=strict, document=sideline_b81u())

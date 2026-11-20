@@ -263,9 +263,7 @@ class DefenseBuildOrderingTests(unittest.TestCase):
                                                             # two uniform writers (a stand-in disc holds none of their kits)
                                                             apply_helmets_b81=lambda target: {"state": "other_uniform"},
                                                             apply_uniforms_b81=lambda target: {"state": "other_uniform"},
-                                                            apply_sideline=lambda target: {"state": "other_uniform"},
-                                                            # beta 81 R54: the far-player atlas rows
-                                                            apply_sideline_b81u=lambda target: {"state": "other_uniform"}),
+                                                            apply_sideline=lambda target: {"state": "other_uniform"}),
                    "nfl2k5_nameplate_fixes_2026": SimpleNamespace(
                        apply_to_image=lambda target, retail=None: {"state": "other_uniform"}),
                    # beta 81: the 2026 jersey relief (a stand-in disc holds none of its kits)
