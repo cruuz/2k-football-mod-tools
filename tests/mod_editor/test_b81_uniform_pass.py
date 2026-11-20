@@ -859,6 +859,29 @@ class RealDisc(unittest.TestCase):
                         found.append((int(xs.min()), int(ys.min()), int(xs.max() - xs.min() + 1), int(ys.max() - ys.min() + 1)))
             self.assertEqual(found, boxes, selector)
 
+    def test_the_bengals_strokes_are_blades_that_hold_their_thickness(self):
+        # R2 (order R2-C, second pass, art director): the real strokes are blades that keep nearly their full thickness
+        # for most of their length and taper over the last third (2026 White Bengal pictures 3 and 5: thickness at half
+        # length 0.83 of the seam end, band about half ink). The first pass thinned at once (0.56 to 0.67 on four strokes).
+        from scipy import ndimage
+        pants = self.after("06H5", "pants00")[..., :3].astype(float)
+        b, s = np.array((255.0, 255.0, 255.0)), np.array((11.0, 11.0, 11.0))
+        ink = np.round(np.clip(((pants - b) @ (s - b)) / ((s - b) @ (s - b)), 0, 1)[:200] * 4) >= 2
+        ratios = []
+        for x0, x1, seam, step in ((108, 200, 111, 1), (312, 404, 400, -1)):
+            lab, n = ndimage.label(ink[:, x0:x1], structure=np.ones((3, 3)))
+            for q in (np.argwhere(lab == i) for i in range(1, n + 1)):
+                if len(q) < 10:
+                    continue
+                cols = q[:, 1] + x0
+                tip = cols.max() if step > 0 else cols.min()
+                at_seam = int((cols == seam + step).sum())
+                at_half = int((cols == int(round(seam + (tip - seam) / 2))).sum())
+                ratios.append(at_half / at_seam)
+        self.assertEqual(len(ratios), 14)
+        self.assertGreaterEqual(min(ratios), 0.75, ratios)
+        self.assertGreaterEqual(float(np.mean(ratios)), 0.85, ratios)
+
     def test_every_kit_row_is_waiting_on_the_released_disc_and_compiles_to_its_pin(self):
         result = up.states(DISC)
         self.assertEqual((result["before"], result["after"], result["other"], result["absent"]),
