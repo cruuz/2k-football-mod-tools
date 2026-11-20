@@ -83,6 +83,16 @@ class ProjectSettings(unittest.TestCase):
                 prior_rows = space.layout(modern)["allocations"]
                 surviving = [row for row in space.layout(current)["allocations"] if row["owner"] != medical.OWNER]
                 self.assertEqual(surviving, prior_rows)
+                with tempfile.TemporaryDirectory() as directory:
+                    target = Path(directory) / "private-copy.iso"
+                    plan = mod_build.sim_qb_disc_edit(str(source), str(target), mode)
+                    receipt = mod_build.preflight_plan(plan)
+                    self.assertEqual(receipt["sim_qb_source_update"], {
+                        "source_sha256": digest, "result_sha256": hashlib.sha256(current).hexdigest(),
+                        "source_simulator": source_state, "simulator_upgraded": source_state == "legacy",
+                        "settings": medical.read_settings(current),
+                    })
+                    self.assertFalse(target.exists())
 
     def test_pack_freezes_the_disc_setting_and_rejects_a_conflicting_recipe(self):
         with tempfile.TemporaryDirectory() as t:
@@ -329,6 +339,9 @@ class StudioControls(unittest.TestCase):
                  "k128_memory": "applied", "k128_settings": {"require_128": True, "early": True, "roster_heap": True}}
         self.panel.apply_state(state)
         mode = self.panel.qb_injury_mode
+        mode.setCurrentIndex(mode.findData("realistic"))
+        self.assertTrue(mod_build._only_sim_qb_changes(self.panel._plan_for_build()))
+        self.panel.apply_state({**state, "sim_realism": "legacy"})
         mode.setCurrentIndex(mode.findData("realistic"))
         self.assertTrue(mod_build._only_sim_qb_changes(self.panel._plan_for_build()))
         # Looking at another number and leaving it unchanged is not a second edit.

@@ -3499,7 +3499,8 @@ class BuildPanel(QWidget):
         bases, widescreen menus, the kickoff gate ...). An installed option is replayed as already applied."""
         plan = self.plan()
         if (self._sim_qb_injury_change() and not self._sim_qb_other_choice and not self._sim_qb_authored
-                and not self.softdrink_project_field.text().strip() and self._installed("sim_realism")
+                and not self.softdrink_project_field.text().strip()
+                and (self._state or {}).get("sim_realism") in ("applied", "legacy")
                 and ((self._state or {}).get("k128_settings") or {}).get("require_128") is True
                 and self._sim_qb_source_choices == self._sim_qb_companion_choices(plan)):
             return mod_build.sim_qb_disc_edit(plan.source, plan.target, plan.sim_qb_injuries,

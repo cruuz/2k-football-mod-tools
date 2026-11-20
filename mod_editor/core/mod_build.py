@@ -25,6 +25,7 @@ import sys
 import tempfile
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import asdict, dataclass, field, replace
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
@@ -2606,8 +2607,11 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     settings = tt.k128_patch.read_settings(original)
     simulator = _core_module("nfl2k5_sim_realism")
     if (settings["status"] != "applied" or not settings["require_128"] or simulator is None
-            or simulator.status(original) != "applied" or (plan.k128_early and not settings["early"])
+            or (plan.k128_early and not settings["early"])
             or (plan.k128_roster_heap and not settings["roster_heap"])):
+        return False
+    simulator_state = simulator.status(original)
+    if simulator_state not in ("applied", "legacy"):
         return False
     module = _core_module("nfl2k5_sim_qb_injuries")
     if module is None:
@@ -2615,12 +2619,22 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     # The sealed copy may have many more installed owners than the two selected dependencies.
     # Only this owner can extend its named bank on that layout and verify the shared sites.
     receipt["installed_sim_qb_only"] = True
-    patched, patch = module.apply(original, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
-    _verify_sim_qb_injuries(plan, module, patched)
+    simulator_input = original
+    dependency = None
+    if simulator_state == "legacy" and plan.sim_qb_injuries in ("realistic", "custom"):
+        simulator_input, dependency = simulator.apply(original)
+    patched, patch = module.apply(simulator_input, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
+    settings = _verify_sim_qb_injuries(plan, module, patched)
+    receipt["sim_qb_source_update"] = {
+        "source_sha256": sha256(original).hexdigest(), "result_sha256": sha256(patched).hexdigest(),
+        "source_simulator": simulator_state, "simulator_upgraded": dependency is not None, "settings": settings,
+    }
     if preflight:
         return True
     _copy_private_build_source(source, target, receipt, progress, consume)
     receipt["result"] = {}
+    if dependency is not None:
+        receipt["steps"].append({"step": "sim_realism", **{k: v for k, v in dependency.items() if k != "reservations"}})
     _apply_sim_qb_injuries(plan, target, receipt, progress, prepared=(original, patched, patch))
     _compact_build_disc(target, reference, receipt, progress)
     _step("final_checks")
@@ -6150,7 +6164,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 plan, source, target, installed_xbe, receipt, progress, preflight=_preflight_only,
                 consume=_consume_source, reference=_retail_source or source):
             return receipt
-        raise ValueError("A single-setting disc update needs a built 128 MB disc with the current simulated season realism.")
+        raise ValueError("A single-setting disc update needs a built 128 MB disc with a supported version of simulated season realism.")
     retire_holder = installed_xbe is not None and tt.punter_holder_patch.build_status(installed_xbe) == "previous"
     holder_inherited = None
     if plan.punter_holder and is_image:
