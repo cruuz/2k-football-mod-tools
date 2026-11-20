@@ -91,6 +91,7 @@ DATA_NAMES = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_n
 DATA_B81 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_b81.json"
 DATA_B81U = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_b81u.json"
 DATA_SIDELINE = Path(__file__).resolve().parents[2] / "data/nfl2k5_sideline_2026.json"
+DATA_SIDELINE_B81U = Path(__file__).resolve().parents[2] / "data/nfl2k5_sideline_2026_b81u.json"
 KINDS = ("tset", "txtr", "copy_video", "palette", "clear", "unif", "name")
 SIDELINE_SCHEMA = "nfl2k5_sideline_2026/v1"
 SIDELINE_PARTS = ("pants", "sleeve", "helmet", "torso")
@@ -706,6 +707,33 @@ def warp(rgba, op, source):
     return out, hit
 
 
+def clear_marks(rgba, op):
+    """b81-retail-free-art: inside the ``boxes`` ([x0, y0, x1, y1], ends exclusive) and outside the ``keep`` boxes, every
+    texel whose largest RGB channel distance from ``to`` is above ``above`` takes ``to``; then, ``grow`` times, the
+    texels next to those (4-neighbours) that differ from ``to`` at all take it too. Integers only. ``to`` is not a
+    ``color`` key: a clear asks the palette for nothing (the colour is the field the mark sits on)."""
+    out = rgba.copy()
+    h, w = out.shape[:2]
+    zone = np.zeros((h, w), bool)
+    for x0, y0, x1, y1 in op["boxes"]:
+        require(0 <= x0 < x1 <= w and 0 <= y0 < y1 <= h, "clear box outside the texture")
+        zone[y0:y1, x0:x1] = True
+    for x0, y0, x1, y1 in op.get("keep", ()):
+        zone[y0:y1, x0:x1] = False
+    colour = np.array(hex_rgb(op["to"]), np.int64)
+    dist = np.abs(out[..., :3].astype(np.int64) - colour[None, None, :]).max(axis=-1)
+    hit = zone & (dist > int(op.get("above", 0)))
+    for _ in range(int(op.get("grow", 0))):
+        near = hit.copy()
+        near[1:] |= hit[:-1]
+        near[:-1] |= hit[1:]
+        near[:, 1:] |= hit[:, :-1]
+        near[:, :-1] |= hit[:, 1:]
+        hit = hit | (near & zone & (dist > 0))
+    out[..., :3][hit] = colour.astype(np.uint8)
+    return out, hit
+
+
 def paint(rgba, ops, donors=None):
     """Apply the authored operations in order; returns the new level 0 and the changed scope."""
     out = rgba.copy()
@@ -770,6 +798,10 @@ def paint(rgba, ops, donors=None):
             out[pts[:, 1], pts[:, 0], :3] = np.array(hex_rgb(op["color"]), np.uint8)
             if "alpha" in op:
                 out[pts[:, 1], pts[:, 0], 3] = int(op["alpha"])
+        elif kind == "clear":
+            # b81-retail-free-art (review rule: erasures are instructions, additions are texels): an old mark is
+            # cleared by rule, never by listing its texels; see clear_marks
+            out, _ = clear_marks(out, op)
         elif kind == "runs":
             # b81-art: rows of texels, each with its own colour: [y, x0, "RRGGBBRRGGBB..."] (a repainted piece of
             # shell keeps its shading). No ``color`` key, so the compile asks the palette for nothing new; the
@@ -2355,10 +2387,21 @@ def _sideline_rows(document=None):
             require(part in SIDELINE_COMPOSE and isinstance(op, dict)
                     and all(_sideline_inside(b, SIDELINE_BOXES[part]) for b in op.get("keep", ())),
                     selector + ": bad " + part + " compose")
+            # b81-uniforms R54: the crop of the field texture the island shows, whole texels
+            require("crop" not in op or _sideline_inside(op["crop"], (0, 0) + SIDELINE_TEXTURE_SIZE[part]),
+                    selector + ": a " + part + " compose crop must be four integers inside the field texture")
             # b780-b12: a fold source lights the compose only; it must be another kit of the SAME team
             require("folds" not in op or (_sideline_selector(op["folds"]) and op["folds"][:2] == selector[:2]
                                           and op["folds"] != selector),
                     selector + ": a " + part + " fold source must be another NN[HA]N kit of the same team")
+        # b81-uniforms R54: optional SHA-256 pins of the atlas found (before), the field textures read and the atlas
+        # written (after); a row with pins acts only on exactly those bytes
+        for key in ("before_sha256", "after_sha256"):
+            require(key not in row or _sideline_hex(row[key]), selector + ": bad " + key)
+        require("field_sha256" not in row or (isinstance(row["field_sha256"], dict)
+                                              and sorted(row["field_sha256"]) == sorted(parts)
+                                              and all(_sideline_hex(v) for v in row["field_sha256"].values())),
+                selector + ": field_sha256 must pin every repaired part's field texture")
         for part, op in (row.get("shell") or {}).items():
             decal = op.get("decal") if isinstance(op, dict) else None
             require(part == "helmet" and isinstance(op, dict) and part not in (row.get("compose") or {})
@@ -2386,6 +2429,13 @@ def _sideline_rows(document=None):
             require(isinstance(boxes, list) and boxes and all(_sideline_inside(b, SIDELINE_BOXES[part]) for b in boxes),
                     selector + ": a " + part + " fill box must sit inside the part")
     return rows
+
+
+SIDELINE_TEXTURE_SIZE = {"pants": (512, 256), "torso": (512, 256), "sleeve": (128, 128)}
+
+
+def _sideline_hex(value):
+    return isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value)
 
 
 def _sideline_selector(value):
@@ -2421,6 +2471,13 @@ def _sideline_field_textures(raw, chunks, selector, parts):
 def _sideline_measured_plan(row, entry, raw, chunks, splayer, alt, package):
     """Plan one vk2 (measured) row: guard on the audited field colours, repair, compile and check the result."""
     selector = row["selector"]
+    if row.get("field_sha256"):
+        index = {"torso": 1, "pants": 2, "sleeve": 3}
+        found = {p: sha(raw[chunks[index[p]].offset:chunks[index[p]].end_offset]) for p in row["parts"]
+                 if p in index and index[p] in chunks}
+        if found != {p: row["field_sha256"][p] for p in found} or len(found) != len(row["parts"]):
+            # the finished field texture is not the pinned one (a user's own kit art): the atlas stays as it is
+            return (entry, [], dict(selector=selector, state="field_differs"))
     textures = _sideline_field_textures(raw, chunks, selector, row["parts"])
     field = {part: _sideline_field_mode(textures[part], part) for part in row["parts"]}
     drift = {part: int(np.abs(field[part] - np.asarray(row["field"][part])).max()) for part in row["parts"]}
@@ -2446,6 +2503,10 @@ def _sideline_measured_plan(row, entry, raw, chunks, splayer, alt, package):
         return (entry, [], dict(selector=selector, state="unchanged", changed_texels=changed, **extra))
     with build_steps.resource(selector + ".IFF splayer"):
         new_span, fit = _sideline_compile(splayer, repaired)
+    if row.get("after_sha256") and sha(new_span) != row["after_sha256"]:
+        # b81-uniforms R54: the compose did not give the pinned bytes (another platform's arithmetic): nothing is
+        # written for this kit and the receipt says so
+        return (entry, [], dict(selector=selector, state="after_differs"))
     check = _sideline_rgba(new_span, "txtr", "splayer")
     for part in row["parts"]:
         now = _sideline_part_colour(check, part)
@@ -2548,6 +2609,10 @@ def apply_sideline(path, *, strict=False, document=None):
             chunks = {chunk.index: chunk for chunk in parse_chunks(raw)}
             require(51 in chunks and chunks[51].kind == "TXTR", selector + ": splayer chunk absent")
             splayer = raw[chunks[51].offset:chunks[51].end_offset]
+            if row.get("before_sha256") and sha(splayer) != row["before_sha256"]:
+                state = "applied" if sha(splayer) == row.get("after_sha256") else "other_atlas"
+                plans.append((entry, [], dict(selector=selector, state=state)))
+                continue
             alt = _sideline_rgba(splayer, "txtr", "splayer")
             if "field" in row:
                 plan = _sideline_measured_plan(row, entry, raw, chunks, splayer, alt, package)
@@ -2612,3 +2677,27 @@ def apply_sideline(path, *, strict=False, document=None):
 def apply_sideline_pack(path, *, strict=False):
     """Alias used by the build receipt: the pinned 2026 alternate sideline-atlas pass."""
     return apply_sideline(path, strict=strict)
+
+
+# b81-uniforms R54 (beta 81): the far-player atlas pants and sleeves follow the 2026 uniform pass. The pass corrects the
+# full-size pants and sleeve textures of many kits and leaves each package's chunk 51 ``splayer`` atlas alone, so bench
+# and far-away players kept the old stripes, hems and sleeve marks. ``data/nfl2k5_sideline_2026_b81u.json`` is a second
+# rule list of the same kind as the sideline document (written by tools/b81_uniforms/far_compose.py): per kit only the
+# parts, the field colours, the pants crop the island shows and SHA-256 pins. The step composes each listed piece at
+# build time from the kit's own finished field texture, lit by the island's own folds, exactly as ``sideline_2026``
+# does; it runs after the uniform pass so it reads the finished textures. No atlas texel is stored in the document.
+
+def sideline_b81u():
+    """The R54 rule list (schema nfl2k5_sideline_2026/v1, pinned compose rows)."""
+    path = DATA_SIDELINE_B81U
+    require(path.is_file(), "the far-player atlas rule list is missing")
+    document = json.loads(path.read_text(encoding="utf-8"))
+    require(document.get("schema") == SIDELINE_SCHEMA, "unexpected far-player atlas schema")
+    require(all("compose" in row and "after_sha256" in row and "before_sha256" in row and "field_sha256" in row
+                for row in document.get("kits") or []), "every far-player atlas row is a pinned compose rule")
+    return document
+
+
+def apply_sideline_b81u(path, *, strict=False):
+    """Studio uniform finish pass for R54, after the uniform pass and its numbers: the pinned compose rules."""
+    return apply_sideline(path, strict=strict, document=sideline_b81u())

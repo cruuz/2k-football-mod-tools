@@ -62,7 +62,7 @@ ART = ROOT / "data/nfl2k5_glyph_fixes_2026"
 #: released v0.9 build and applied as the last uniform step (``apply_digits_b81``). The document names its own art folder.
 DATA_B81U = ROOT / "data/nfl2k5_glyph_fixes_2026_b81u.json"
 KINDS = ("names_retint", "digit_png", "digit_retint", "names_png", "name_widths", "digit_derived", "names_derived")
-DERIVE_OPS = ("remap", "embolden", "edge", "inline_fill", "inline_dark", "recolour", "paint", "thin_letters")
+DERIVE_OPS = ("remap", "embolden", "edge", "inline_fill", "inline_dark", "recolour", "paint", "thin_letters", "clear_rgb")
 NAMES_CHUNK = 43
 NAME_CHUNK = 44                         # the raw NAME chunk: 29 (atlas offset, glyph width) pairs for ' - A..Z c
 NAME_METRICS = slice(0x2C, 0xA0)
@@ -324,13 +324,19 @@ def derive_digit(before_rgba, ops):
             is_edge = opaque & (np.abs(a[..., :3].astype(np.int64) - _colour(op["edge"])).sum(-1) <= 24)
             a[is_edge & (depth > int(op["keep"])), :3] = _colour(op["fill"])
         elif kind == "recolour":
-            # exact colour swaps (a club colour corrected): every visible texel of a listed colour takes the new one
+            # exact colour swaps (a club colour corrected): every visible texel of a listed colour takes the new one;
+            # b81-retail-free-art: with ``hidden`` the colour stored under clear texels moves too (as a picture editor
+            # swaps it), so no texel of the glyph's clear surround is listed
             rgb = a[..., :3].copy()
+            seen = np.ones(a.shape[:2], bool) if op.get("hidden") else a[..., 3] > 0
             for old, new in op["pairs"]:
-                hit = (a[..., 3] > 0) & (rgb == _colour(old)).all(-1)
+                hit = seen & (rgb == _colour(old)).all(-1)
                 a[hit, :3] = _colour(new)
         elif kind == "thin_letters":
             a = thin_letters(a, op)
+        elif kind == "clear_rgb":
+            # b81-retail-free-art: the colour stored under every clear texel (alpha 0), by rule, never by listing them
+            a[a[..., 3] == 0, :3] = _colour(op["colour"])
         elif kind == "paint":
             # the texels that differ from the glyph the build holds: [row, first column, "RRGGBBAA" per texel]
             for y, x0, values in op["runs"]:

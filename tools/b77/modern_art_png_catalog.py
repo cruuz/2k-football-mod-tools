@@ -101,7 +101,8 @@ CLASSIFICATION = ("b779 pt1's real portrait atlases are the official NFL.com / E
                   "retail donor are listed in NOT_AUTHORED and do not ship: their edits are shipped as operations and applied at "
                   "build time to the glyph the user's disc gives (digit_derived), or, where no operation list rebuilds "
                   "them, only the texels that differ from that glyph (or from the strip the nameplate pass "
-                  "leaves) ship (paint); none was withdrawn.")
+                  "leaves) ship (paint); none was withdrawn."
+                  " Round 2 (R2-G): the Jets 2 (six pictures drawn new by code with the straight diagonal) and the Broncos one face (an edit of the project's own Broncos glyph art) ship as pictures; round 2's edits of retail-derived glyphs ship as operations on what the build holds (review round 3: no texel of a clear surround or of an erasure is listed): the Ravens 4 as remap + the colour under its clear texels by rule (clear_rgb) + paint of the 221 to 243 texels round 2 drew; the Raiders road edge as edge + remap + recolour (hidden: the colour under its clear texels moves with it); the Jaguars road name strip (round 2's 3-texel letters) as thin_letters, no texel.")
 
 # Reviewed by i3 on 2026-10-14 (contact sheets in the i3 scratch png_review/). Not authored art, so not catalogued.
 # path or (folder, name) -> (SHA-256 of the reviewed bytes, reason). A different SHA-256 at the path needs a new review.
@@ -111,15 +112,15 @@ CLASSIFICATION = ("b779 pt1's real portrait atlases are the official NFL.com / E
 # (retail-free/glyphs/SUMMARY.md); none ships, and a file put back at one of these paths is refused.
 NOT_AUTHORED: dict[str, tuple[str, str]] = {
     "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02A0_digit_arm_0.png": ("68812b84079d06eac339e4907da96e91f232d3dec8baccf8a99e9837035af8d1", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
-    "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02A0_digit_arm_4.png": ("2b5d29dd4c399fe25a27342c2248b3f07ce1c10aa338683646660bf0f9ca1489", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
+    "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02A0_digit_arm_4.png": ("2b5d29dd4c399fe25a27342c2248b3f07ce1c10aa338683646660bf0f9ca1489", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph plus the texels round 2 drew (paint, at most a quarter of the base's edges)"),
     "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02A3_digit_arm_0.png": ("5fd5f6d4442793a37fe13390a76c2e36ac86cc471dab1f31450cb62bcd79ac9d", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
-    "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02A3_digit_arm_4.png": ("993f0016ad9dc14fc3e49eb6ca603c14a9c34b72887d04f63761b358ced0be41", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
+    "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02A3_digit_arm_4.png": ("993f0016ad9dc14fc3e49eb6ca603c14a9c34b72887d04f63761b358ced0be41", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph plus the texels round 2 drew (paint, at most a quarter of the base's edges)"),
     "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02H0_digit_arm_0.png": ("4273e976a1cfea4e20a14784056a9c72be3cd0b4ef0f0c509ad66754ee0f71ae", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
-    "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02H0_digit_arm_4.png": ("fef24d9ad4a93f017e4f198810f94a1fede25d0f174381e5a5008ccec9cdcc58", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
+    "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02H0_digit_arm_4.png": ("fef24d9ad4a93f017e4f198810f94a1fede25d0f174381e5a5008ccec9cdcc58", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph plus the texels round 2 drew (paint, at most a quarter of the base's edges)"),
     "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02H2_digit_arm_0.png": ("0d2ef7af04f57c10c78ad77e7f864e0909e4b350afc484e86ac80755067399da", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
-    "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02H2_digit_arm_4.png": ("61effb9ecc4676aba3f0076886b3ba87df1c3b2d5c777cfa5947acc124b634dc", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
+    "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02H2_digit_arm_4.png": ("61effb9ecc4676aba3f0076886b3ba87df1c3b2d5c777cfa5947acc124b634dc", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph plus the texels round 2 drew (paint, at most a quarter of the base's edges)"),
     "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02H2_digit_jersey_0.png": ("126241816a5dad969e860de0e7a4a967c8e7d96d0cc2373d7f55d9953e6ba925", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
-    "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02H2_digit_jersey_4.png": ("85f761b9ddb264beebc5fb377ef6ee224f85e07bfd4f52b9c923ceca050e8baf", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
+    "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02H2_digit_jersey_4.png": ("85f761b9ddb264beebc5fb377ef6ee224f85e07bfd4f52b9c923ceca050e8baf", "b81-retail-free-art unsure (b81u-BAL-digit-0-4-wide): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph plus the texels round 2 drew (paint, at most a quarter of the base's edges)"),
     "data/nfl2k5_glyph_fixes_2026_b81u/CHI_05A0_digit_arm_0.png": ("9962a0f9f62d821e2110065e0c672c3c1d23f80cee329e66b532c5dd02549c31", "b81-retail-free-art C (b81u-CHI-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/CHI_05A0_digit_arm_1.png": ("510847c5ed44ba6758fa3b38a936cf96beebb66f3631685d0b54f3c1fb3d026d", "b81-retail-free-art C (b81u-CHI-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/CHI_05A0_digit_arm_2.png": ("24c4d272a2c2ed6661c93103752a02d9b5b141baaf82a005767352457837119c", "b81-retail-free-art C (b81u-CHI-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
@@ -243,7 +244,6 @@ NOT_AUTHORED: dict[str, tuple[str, str]] = {
     "data/nfl2k5_glyph_fixes_2026_b81u/NYG_18H0_digit_arm_9.png": ("b2dbf7971f0ec5715a0d8fa83dcc9b5d8a591e6a69dd03f7098b34e76e1e79b1", "b81-retail-free-art unsure (b81u-NYG-narrow-2004-digits): edit of a glyph the Studio builds from a retail donor; operations on the build's glyph plus the few texels they leave (paint, at most a quarter of the base's edges)"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_arm_0.png": ("d8c71476316d4c2962cca23b97697d6df1174f0334081afd2ce15cc1ea5a5ade", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_arm_1.png": ("185aac0f5bb0bfe8f9e268289776e84e4c899b1ca6b654a05da8164b333a3169", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
-    "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_arm_2.png": ("9c74362d2669472415232f8aa89ec94204f0003a936157c2b53df44a962a4773", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_arm_3.png": ("1cf755a0471513cb91a9188cfdd3355577b35e883cd91930582c9fabbebaa2ea", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_arm_4.png": ("f87f6931ef812b2595ebbbc1016d34b5d3fb52eecd7c30ed31b6de0bd4d1bb02", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_arm_5.png": ("d4c418f2ce363cb30ae4eb4fb3f285e96457ee9c0588f41e1ccc90319828bb91", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
@@ -253,7 +253,6 @@ NOT_AUTHORED: dict[str, tuple[str, str]] = {
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_arm_9.png": ("1d6e012cb70806ffdb548e00c5e94b30767f2857ea17145d0ebd56a25110fbbf", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_jersey_0.png": ("976668f370c0075514ec8b13d79eba669c52593d8f77658370685c278d09a261", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_jersey_1.png": ("95a32b2529ee3228e3c5edf899640d82c38711c55bd03c5a67c7e6831267df0d", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
-    "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_jersey_2.png": ("34248988b4d7d2a059281b1ba1b32f25666f6911d05682ff0387bd0d7f79878d", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_jersey_3.png": ("32f4dd515a5154eec565159632c643d4457ed8f04eeacae177b87faa5289cdb9", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_jersey_4.png": ("b7298ec077051b0f76abb1a5317e7699fb842aaf421713a55d421619a639f98b", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_jersey_5.png": ("4afa8f5b09895635c4b1095ee99c4e4e21a4d5bdb5f4a324fe16b5c7f6f0950a", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
@@ -263,7 +262,6 @@ NOT_AUTHORED: dict[str, tuple[str, str]] = {
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_jersey_9.png": ("7c7807d85767e5fe74f1c5010f4ec9ef0e59deedeaf8ec40a89a8002fb1b7596", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A2_digit_arm_0.png": ("7eb0c719756335fa0ff211f7f3c1d5bf828a87e69c4b352b4cf9e7bc2e837c88", "b81-retail-free-art C (b81u-NYJ-black-light-narrow-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A2_digit_arm_1.png": ("fe7899a53f105af7337cb997725bfcadbb1b5f08cd431a735d13303dab91e933", "b81-retail-free-art C (b81u-NYJ-black-light-narrow-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
-    "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A2_digit_arm_2.png": ("fc34970735f9e34172973e8e0697cdf22b1ab5ed95c0fd16a9c406d779e7e29d", "b81-retail-free-art C (b81u-NYJ-black-light-narrow-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A2_digit_arm_3.png": ("74df0fb3a45876b375fd9bf0dc8537c19abd673f1ea84c5b0d3bf58bbd0062d8", "b81-retail-free-art C (b81u-NYJ-black-light-narrow-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A2_digit_arm_4.png": ("bdb7912e6a568705edfcb44937500c462ec95b6adbbb5fd092e65fa40d477dd5", "b81-retail-free-art C (b81u-NYJ-black-light-narrow-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A2_digit_arm_5.png": ("f65985cfaf41f01b69c9c417a10f42eff7e472a906ab0c27eaed6b89f28e8484", "b81-retail-free-art C (b81u-NYJ-black-light-narrow-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
@@ -273,7 +271,6 @@ NOT_AUTHORED: dict[str, tuple[str, str]] = {
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A2_digit_arm_9.png": ("095cdf5451fb1858a4be054e387ffc0a1d7bfd1da1e891a4b780b6ac20992ab9", "b81-retail-free-art C (b81u-NYJ-black-light-narrow-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A7_digit_arm_0.png": ("1e1a665780b5350d6093f815c25d9b2b927e4859ca1cbc705232ea4767a63eae", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A7_digit_arm_1.png": ("91e66510704c007724c1dd952c59e35184d6cc84aa40b60581be4df6ad634309", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
-    "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A7_digit_arm_2.png": ("da672d8d5366ab6fc302f6210b475e6fb0ce83a0866f81edf0567fcd5493fbe2", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A7_digit_arm_3.png": ("f5c44d1438f1af62a239a85e89d0eddfd3c69392c069cdba1ca1f4473052e80a", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A7_digit_arm_4.png": ("2159cde9bf6eb06292ec2c1b1a4fbaeebbc775e1f7627b9158bfa34d4a85e64d", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A7_digit_arm_5.png": ("a029ded1591a652c267fe5ffe945e1ba1e9f1fc88a919f5182f5c7ac85245ac3", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
@@ -283,7 +280,6 @@ NOT_AUTHORED: dict[str, tuple[str, str]] = {
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A7_digit_arm_9.png": ("5e7be7cd17f49a1c353f5873fc8ebe8015ede99b46cf3571abfb58105a97f091", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_arm_0.png": ("defc5a4913ec3c5d3669a4a5c303fe300ada7e315383df2c799690802f025892", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_arm_1.png": ("c2bb4b22afbb86ecf38af8b91dd982ab1dacfe19c84efdd04fefbcecd4313d08", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
-    "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_arm_2.png": ("f44453e04c035395a883b9f5a1cff0d29a38f240d3f1a7398b9d6e6e272214ec", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_arm_3.png": ("8ff3b9211228d4d3696c1ce644146783eb4138f2118459878a92f11101cad47a", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_arm_4.png": ("be0409e9b4c6912c01d818d264965678d8270a2b9ed9bedbf5cabb7df2217fdd", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_arm_5.png": ("4f3d4e0f0d7d0bdf5b566f4640ab0c3d604cfce76eef1c63e8897a0efe5fad99", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
@@ -293,7 +289,6 @@ NOT_AUTHORED: dict[str, tuple[str, str]] = {
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_arm_9.png": ("8c7c11ad05ec95b28efc81815904a8957d1bc526197d9832716d37498efe19c1", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_jersey_0.png": ("d2efc95238eb0c4ebfa08f00fb4e22515205991542d8006c0040778f5bca1070", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_jersey_1.png": ("55b8fe8fa5892fc16540e7874b70e1d1b153476b938151d1cef899b566655a93", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
-    "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_jersey_2.png": ("e5295329d5174fb4236d5b672bfdac0812950f51225bfc614e1bfae2f9b551b8", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_jersey_3.png": ("05197e1124c1364bf22e71cb72363b5ef9e6baf8a03092af1be66f98336c1a1b", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_jersey_4.png": ("b4b9d42bf01e8a27ca32864407e511f0d12bf349204bd593e7413a1c96afe30d", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_jersey_5.png": ("7518cea0798df82f54f84047e7bde5972163fa0193737a619f8b6c03f42fb028", "b81-retail-free-art C (b81u-NYJ-2004-narrow-jersey-digits): edit of a glyph the Studio builds from a retail donor; the edit ships as operations on the build's glyph"),
@@ -409,27 +404,59 @@ def excluded(relative: str, digest: str) -> str | None:
 #: b81-retail-free-art (review F5): data documents that may carry texel data (``paint`` operations: the texels a
 #: redraw adds over the glyph the build holds). Every paint operation is listed in the catalog by row with its SHA-256
 #: and texel count, so the release gate refuses any texel data in a data file that was not reviewed here.
-PAINT_DOCUMENTS = ("data/nfl2k5_glyph_fixes_2026_b81u.json",)
+TEXEL_OPS = {"paint": "runs", "runs": "rows", "texels": "points"}
 
 
-def paint_digest(op: dict) -> str:
-    return sha256(json.dumps(op["runs"], separators=(",", ":")).encode("ascii"))
-
-
-def paint_rows(document: dict) -> dict:
-    """{"<selector>:<chunk>": {"sha256", "texels"}} of every paint operation in a glyph document."""
+def texel_rows(document) -> dict:
+    """b81-retail-free-art (review F5): {"<selector>:<chunk>:<kind>": [texel operations]} of a data document: every
+    operation that stores texels (a glyph ``paint`` with ``runs``, a kit-fix ``runs`` with ``rows``, a kit-fix
+    ``texels`` with ``points``), grouped by the row that holds it ("-" outside a row). Same walk as the release check."""
     out = {}
-    for row in document.get("textures", []):
-        for i, op in enumerate(row.get("derive") or []):
-            if op.get("op") != "paint":
+    pending = [(document, "-")]
+    while pending:
+        value, owner = pending.pop()
+        if isinstance(value, dict):
+            key = TEXEL_OPS.get(value.get("op"))
+            if key is not None and key in value:
+                out.setdefault(owner, []).append(value)
                 continue
-            texels = 0
-            for y, x0, values in op["runs"]:
-                if not (isinstance(y, int) and isinstance(x0, int) and isinstance(values, str) and values
-                        and len(values) % 8 == 0 and all(c in "0123456789ABCDEF" for c in values)):
-                    raise SystemExit(f"malformed paint run in {row.get('selector')}:{row.get('chunk')}")
-                texels += len(values) // 8
-            out[f"{row['selector']}:{row['chunk']}:{i}"] = dict(sha256=paint_digest(op), texels=texels)
+            if "selector" in value and "chunk" in value:
+                owner = f"{value['selector']}:{value['chunk']}:{value.get('kind', '')}"
+            pending.extend((item, owner) for item in reversed(list(value.values())))
+        elif isinstance(value, list):
+            pending.extend((item, owner) for item in reversed(value))
+    return out
+
+
+def texel_count(op: dict) -> int:
+    if op["op"] == "texels":
+        return len(op["points"])
+    width = 8 if op["op"] == "paint" else 6
+    total = 0
+    for y, x0, values in op[TEXEL_OPS[op["op"]]]:
+        if not (isinstance(y, int) and isinstance(x0, int) and isinstance(values, str) and values
+                and len(values) % width == 0 and all(c in "0123456789ABCDEF" for c in values.upper())):
+            raise SystemExit("malformed texel run")
+        total += len(values) // width
+    return total
+
+
+def paint_section(repo: Path) -> dict:
+    """{data document: {"rows": {row: {"sha256", "texels"}}}} of every shipped data document that stores texels; the
+    release check refuses texel data that is not exactly this (review F5: no pixel data rides in a JSON document past
+    the PNG gate). The digest is SHA-256 of the row's texel operations as compact sorted JSON."""
+    out = {}
+    for path in sorted((repo / "data").rglob("*.json")):
+        try:
+            document = json.loads(path.read_text(encoding="utf-8"))
+        except (ValueError, UnicodeDecodeError):
+            continue
+        rows = texel_rows(document)
+        if rows:
+            out[path.relative_to(repo).as_posix()] = {"rows": {
+                owner: dict(sha256=sha256(json.dumps(ops, sort_keys=True, separators=(",", ":")).encode("ascii")),
+                            texels=sum(texel_count(op) for op in ops))
+                for owner, ops in sorted(rows.items())}}
     return out
 
 
@@ -451,11 +478,7 @@ def build(repo: Path) -> tuple[dict, dict]:
     undeclared = sorted(set(on_disk) - set(files) - set(refused))
     if undeclared:
         raise SystemExit("PNG files under the reviewed folders are not in the release allowlist: " + ", ".join(undeclared))
-    paint = {}
-    for relative in PAINT_DOCUMENTS:
-        rows = paint_rows(json.loads((repo / relative).read_text(encoding="utf-8")))
-        if rows:
-            paint[relative] = dict(rows=rows, texels=sum(r["texels"] for r in rows.values()))
+    paint = paint_section(repo)
     return dict(classification=CLASSIFICATION, files=files, paint=paint, schema=SCHEMA), refused
 
 

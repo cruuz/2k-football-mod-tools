@@ -298,7 +298,8 @@ EDGE_OVERLAP_LIMIT = 0.25
 
 
 def base_edges(a):
-    """Texels of the base's ink whose colour or alpha differs from a 4-neighbour (its outlines and colour boundaries)."""
+    """Texels whose colour or alpha differs from a 4-neighbour: both sides of the base's outlines and colour boundaries
+    (a clear texel next to ink counts, so a paint of the clear surround is measured too)."""
     a = np.asarray(a)
     key = (a[..., 0].astype(np.int64) << 24) | (a[..., 1].astype(np.int64) << 16) | (a[..., 2].astype(np.int64) << 8) | a[..., 3]
     key = np.where(a[..., 3] == 0, -1, key)
@@ -307,7 +308,7 @@ def base_edges(a):
     edge[:-1] |= key[:-1] != key[1:]
     edge[:, 1:] |= key[:, 1:] != key[:, :-1]
     edge[:, :-1] |= key[:, :-1] != key[:, 1:]
-    return edge & (a[..., 3] > 0)
+    return edge
 
 
 def paint_positions(ops, shape):
@@ -456,12 +457,33 @@ def convert(disc, retail, limit_rows=None):
                     break
             assert ops, (row['selector'], 'no thinning rule rebuilds this strip')
         else:
-            fam = 33 if row['chunk'] >= 33 else 13
-            ops = find_ops(base, picture, gf.digit_level0(span_of(row['selector'], fam)))
-            if ops is None:
+            # the operations before the paint stay (round 2's own Ravens and Raiders operations); a row that is all
+            # paint (the Giants and Cowboys navy redraws as first restored) takes the remap that explains most of it
+            lead = [op for op in row['derive'] if op['op'] != 'paint']
+            if not lead:
                 rows_, cols_, _left = solve_remap(picture, base)
-                remap = [dict(op='remap', rows=rows_, cols=cols_)]
-                ops = remap + [dict(op='paint', runs=paint_runs(gf.derive_digit(base, remap), picture))]
+                lead = [dict(op='remap', rows=rows_, cols=cols_)]
+            # the colour stored under clear texels, by rule: a recolour that moves it too (as the picture editor did),
+            # or one colour under every clear texel (``clear_rgb``); never a list of the clear surround's texels
+            clear = picture[..., 3] == 0
+            if any(op['op'] == 'recolour' for op in lead):
+                alt = [dict(op, hidden=True) if op['op'] == 'recolour' else op for op in lead]
+                if np.array_equal(gf.derive_digit(base, alt)[clear], picture[clear]):
+                    lead = alt
+            hidden = np.unique(picture[clear][:, :3], axis=0)
+            if len(hidden) == 1 and not any(op['op'] == 'clear_rgb' for op in lead):
+                alt = lead + [dict(op='clear_rgb', colour='#%02X%02X%02X' % tuple(int(v) for v in hidden[0]))]
+                left = lambda ops_: int((gf.derive_digit(base, ops_) != picture).any(-1).sum())
+                if left(alt) < left(lead):                  # only where it spares listed texels
+                    lead = alt
+            ops = lead + [dict(op='paint', runs=paint_runs(gf.derive_digit(base, lead), picture))]
+            if edge_overlap(base, ops) > EDGE_OVERLAP_LIMIT:
+                fam = 33 if row['chunk'] >= 33 else 13
+                found = find_ops(base, picture, gf.digit_level0(span_of(row['selector'], fam)))
+                if found is not None:
+                    ops = found
+            if ops[-1]['op'] == 'paint' and not ops[-1]['runs']:
+                ops = ops[:-1]
         assert np.array_equal(gf.derive_digit(base, ops), picture), (row['selector'], row['chunk'])
         overlap = edge_overlap(base, ops)
         new_row = dict(row, derive=ops)

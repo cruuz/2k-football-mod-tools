@@ -24,6 +24,9 @@ from mod_editor.core import nfl2k5_relief_2026 as rl  # noqa: E402
 
 #: pinned on the authoring machine (Linux x86-64, CPython 3.12.3, numpy 1.26.4); see retail-free/REVIEW_ME.md
 PINS = {
+    "clear_rgb_31x33": "9e7d7b9c75213972f86141a8fc036eee6ffe1fda36c0f04ee3b0e735ebbf1274",
+    "clear_rgb_32x32": "7a5edc907766b988225fd6043df5f1d62fc30f4722d524713b34b5ee6c8a58f4",
+    "clear_rgb_64x64": "15980bed239226ee8b58116ce51d6a8b44445df44a34357b731ab34481fecbb4",
     "collar_opening": "d52d11ff9a2d5addbbcb87d4515bfc40063e3cd06439b57a1f0980cfbadd4615",
     "composed_mips": "87c50339f0064a79ca2bf41dcc08d798121f4f805aa9ce0b70fe1b9ef158e6c5",
     "edge_31x33": "9b63684a8e282a9ca4bf1eb04e3e4973de794a7cdd2c460dc50892382d8d475b",
@@ -41,6 +44,9 @@ PINS = {
     "embolden_2_True_31x33": "3793c95f9382b3e35053776ef5715d84887c31a48703ecc963ecc4a6fd3c42b3",
     "embolden_2_True_32x32": "df5e2ef3433de770fe782d7371b4f5c0c72ee9ab0d0aadf975a689798d3f3e4f",
     "embolden_2_True_64x64": "3eac4c6fa815ad67b7721d256fc17c49551168e3600c5f36a3def2d5c8ad6376",
+    "far_compose": "60a11e128bbca9da8ace186fb550806a0d5d1c309aa81d4498a1846a1e94a108",
+    "far_compose_mips": "c216acee9a9f5f3c8ff8b2c4afcebcfa2e2e6eec350e03e2a2792c289e97c7e5",
+    "far_compose_palette": "312e8a6c3d267f6f8a828a6d51e23508826d98dabf75a0c268a42ca76e0cbe58",
     "gauss_1.6": "2d49df4d46064df6076574cc24383e073e22fd81029c4d64dc6865bc1b720103",
     "gauss_10.0": "7566dfcc24ae03a802d04ed00c05092cf288fc3d8d646a4581ea18898173d1e7",
     "gauss_3.0": "faa5d937b558a8e001ba212a93fbf2f092b9586a0507d45ada73fd358fde3c70",
@@ -59,6 +65,7 @@ PINS = {
     "jersey_base": "994996c3141dddf98a97386fef5be64532c95427740201f464d55a0cd0853d3f",
     "jersey_base_odd": "d5d2e1ef804b93fab2c686577ea1a46085f8b7b4a78e338a67d5da946459cde4",
     "jersey_folds": "b8a925e688d4582ff03bca23e67e78fbc37204ae470e4eb633733b6387f4e846",
+    "kit_clear": "83363279a89b09b3803da9476b5160fb440a7725e6cde9ff69177901d03c1443",
     "old_construction": "a4d79abc3160641730becf6441649efac94adedf754dbdd43b9a9c9bade7eabb",
     "paint_31x33": "300481b60fc80b2eddde9c8895937756b98f5c2948e64f92239083b0f913f4a7",
     "paint_32x32": "0777876215f1d47ff7dd0ec6762932eeae46cf4f792b195f5ae4e85ea99c50e8",
@@ -71,6 +78,9 @@ PINS = {
     "recolour_31x33": "c731be63189a8cf08bcc94bd232041aa7c3849b53a7ce5eccf2f5b7a314d77c4",
     "recolour_32x32": "01fb0061347c9f0445cde1310ee975409ae2c940301090185dc88f558f37c5ca",
     "recolour_64x64": "f01ded9ee8469d532003379feeaf3206161c7d757141f434f9f3077a8998bf40",
+    "recolour_hidden_31x33": "73887e3de01d8797f5122c78306b2ebcc7d285944c2c2999852745147892907a",
+    "recolour_hidden_32x32": "8560d9601a2df4279993327848df2d09a6887730f51b3d01999854c0a764df3c",
+    "recolour_hidden_64x64": "1b7af4a7a5a2e6f2e934674ea08ddac530a81b7ed2b633baaffe64c9a435e5f2",
     "remap_31x33": "4f135c760d02136ef8b3f3d20f6991546d28673a220d20f1056cf96f3267ca50",
     "remap_32x32": "be3a394310ff4543c07a3b15d7d5b8516bbbfff0f0195dfbffebde58239a5b20",
     "remap_64x64": "cfec48e75804cdf11385b72256249833fc6e81e3101822e0f1b39619d8f25df6",
@@ -304,6 +314,93 @@ class GlyphInstructions(unittest.TestCase):
             self.run_ops("inline_dark_" + tag, a, [dict(op="inline_dark", colour="#D96428")])
             self.run_ops("recolour_" + tag, a, [dict(op="recolour", pairs=[["#141414", "#A5ADB0"], ["#FAFAFA", "#0E2878"]])])
             self.run_ops("paint_" + tag, a, [dict(op="paint", runs=[[0, 0, "00000000FFFFFFFF"], [h - 1, w - 2, "D9642880FF00FF00"]])])
+            self.run_ops("recolour_hidden_" + tag, a, [dict(op="recolour", pairs=[["#141414", "#A5ADB0"]], hidden=True)])
+            self.run_ops("clear_rgb_" + tag, a, [dict(op="clear_rgb", colour="#102030")])
+
+    def test_kit_clear_marks(self):
+        """The kit-fix ``clear`` (an old mark removed by rule): integer distances and a 4-neighbour grow."""
+        from mod_editor.core import nfl2k5_kit_fixes_2026 as kf
+        h, w = 64, 128
+        tex = np.zeros((h, w, 4), np.uint8)
+        tex[...] = (250, 250, 250, 255)
+        tex[..., :3] = np.clip(250 - (noise(h, w, 7) % 9), 0, 255).astype(np.uint8)[..., None]
+        tex[10:30, 20:26, :3] = (0, 0, 0)                      # a dark mark
+        tex[9, 20:26, :3] = (230, 230, 230)                    # its soft edge (within 20 of the field)
+        tex[40:50, 60:100, :3] = (251, 79, 20)                 # another mark, kept by ``keep``
+        op = dict(op="clear", to="#FAFAFA", boxes=[[16, 4, 40, 36], [56, 36, 104, 56]], keep=[[58, 38, 102, 52]],
+                  above=20, grow=1)
+        out, hit = kf.clear_marks(tex, op)
+        self.assertTrue((out[10:30, 20:26, :3] == 250).all() and (out[40:50, 60:100, :3] == (251, 79, 20)).all())
+        digest = hashlib.sha256(out.tobytes() + np.packbits(hit).tobytes()).hexdigest()
+        if "kit_clear" not in PINS:
+            self.fail("no pin for kit_clear: %s" % digest)
+        self.assertEqual(digest, PINS["kit_clear"], "kit_clear")
+
+
+def far_atlas(salt):
+    """A synthetic far-player atlas (the 256 x 128 splayer): a light fabric with integer fold waves and palette-like
+    noise, a stripe down the pants island, a mark on the sleeve island, a dark helmet side and saturated texels."""
+    h, w = 128, 256
+    y = np.arange(h, dtype=np.int64)[:, None]
+    x = np.arange(w, dtype=np.int64)[None, :]
+    fold = ((x * 5 + y * 3) % 37) - 18 + (noise(h, w, salt) % 5) - 2
+    a = np.zeros((h, w, 4), np.int64)
+    a[..., 0] = 222 + fold
+    a[..., 1] = 218 + fold
+    a[..., 2] = 210 + fold
+    a[..., 3] = 255
+    a[0:90, 46:66, :3] = (120, 30, 30)                       # the pants stripe the uniform pass changed
+    a[104:116, 200:212, :3] = (40, 40, 160)                  # a sleeve mark
+    a[91:128, 38:126, :3] = (30, 30, 34)                     # the helmet side
+    a[0, :4] = (0, 0, 0, 255)
+    a[1, :4] = (255, 255, 255, 255)
+    return np.clip(a, 0, 255).astype(np.uint8)
+
+
+def field_texture(h, w, colour, salt, stripes=()):
+    """A finished field texture: one kit colour with a little noise, stripe bands and a shield-like block."""
+    t = np.zeros((h, w, 4), np.int64)
+    t[..., :3] = np.asarray(colour, np.int64) + ((noise(h, w, salt) % 7) - 3)[..., None]
+    t[..., 3] = 255
+    for x0, x1, c in stripes:
+        t[:, x0:x1, :3] = c
+    t[h // 6:h // 6 + 12, w // 5:w // 5 + 14, :3] = (250, 250, 250)
+    return np.clip(t, 0, 255).astype(np.uint8)
+
+
+class FarPlayerAtlasCompose(unittest.TestCase):
+    """R2-G (art director, rule 4 of retail-free/REVIEW_ME.md section 8): the far-player atlas step
+    (``sideline_2026_b81u``, data/nfl2k5_sideline_2026_b81u.json) composes pants and sleeve pieces at build time with
+    the shipped sideline compose: area reduction of the field texture's crop, fold lighting from the island, settle,
+    the integer mip chain and the integer palette fit. One pants rule with the R54 crop and one sleeve rule, from
+    synthetic inputs, hash for hash. The compose itself is the shipped b779/b780 code and uses float32 arithmetic and
+    Pillow's BOX resampling (not rule 4's integer or ordered-IEEE form); a platform where these pins differ would see
+    that step leave the atlas as it is (``after_differs``), never a wrong span."""
+
+    def test_a_pants_rule_with_its_crop_and_a_sleeve_rule(self):
+        from mod_editor.core import nfl2k5_kit_fixes_2026 as kf
+        import nfl_tset_png_import as palette_tools
+        atlas = far_atlas(21)
+        orange = (233, 92, 30)                                  # the pants stripe bands sit where the shipped mask expects
+        textures = {"pants": field_texture(256, 512, (20, 34, 88), 22, ((130, 155, orange), (357, 382, orange))),
+                    "sleeve": field_texture(128, 128, (228, 92, 28), 23)}
+        field = {part: kf._sideline_field_mode(textures[part], part) for part in textures}
+        row = {"selector": "06A0", "parts": ["pants", "sleeve"], "field": {p: [int(v) for v in c] for p, c in field.items()},
+               "compose": {"pants": {"crop": [23, 0, 297, 230]}, "sleeve": {}}}
+        out, changed = kf.sideline_measured_repair(atlas, {}, field, row, textures)
+        self.assertGreater(changed["pants"], 1000)
+        self.assertGreater(changed["sleeve"], 500)
+        self.assertCheck("far_compose", out)
+        levels = kf._sideline_mips(out, 256, 128, 4)
+        self.assertCheck("far_compose_mips", b"".join(level.rgba for level in levels))
+        palette, indices, _quality = palette_tools.quantize_levels(levels, 256)
+        self.assertCheck("far_compose_palette", bytes(v for colour in palette for v in colour) + b"".join(indices))
+
+    def assertCheck(self, name, value):
+        digest = hashlib.sha256(value if isinstance(value, bytes) else np.ascontiguousarray(value).tobytes()).hexdigest()
+        if name not in PINS:
+            self.fail("no pin for %s: %s" % (name, digest))
+        self.assertEqual(digest, PINS[name], name)
 
 
 if __name__ == "__main__":

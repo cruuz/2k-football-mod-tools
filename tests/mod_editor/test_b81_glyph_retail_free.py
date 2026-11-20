@@ -35,6 +35,10 @@ def withdrawn():
     return {path: row for path, row in catalog.NOT_AUTHORED.items() if path.startswith(ART)}
 
 
+PAINTED_ROWS = 112   # rows that list texels: Giants 80 and Cowboys navy 20 (remap + paint), Ravens 4 12 (remap +
+                     # clear_rgb + paint of the visible redraw); the Raiders road edge and the Jaguars strip list none
+
+
 class Document(unittest.TestCase):
     def setUp(self):
         self.doc = gf.digits_b81()
@@ -54,7 +58,7 @@ class Document(unittest.TestCase):
 
     def test_derived_rows_carry_operations_and_no_picture(self):
         derived = [r for r in self.doc["textures"] if r["kind"] in DERIVED]
-        self.assertEqual(len(derived), 507)                 # every row of the 231 withdrawn pictures; none dropped
+        self.assertEqual(len(derived), 495)                 # R2-G: the lane's 507 less the 12 Jets 2 rows round 2 redrew as new pictures (rated A)
         self.assertEqual(sum(r["kind"] == "names_derived" for r in derived), 3)
         for row in derived:
             if row["kind"] == "names_derived":                   # the Jaguars strip: an instruction, no texel (F3)
@@ -77,8 +81,9 @@ class Document(unittest.TestCase):
 
 
 class ReviewedPaint(unittest.TestCase):
-    """Review F5: texel data inside a data file is gated like a picture: every paint operation of the glyph document
-    is listed (row, SHA-256, texel count) in the pinned modern-art catalog, and the release check refuses any other."""
+    """Review F5: texel data inside a data file is gated like a picture: every operation that stores texels (glyph
+    ``paint`` runs, kit-fix ``runs`` and ``texels``) in any data document is listed per row (SHA-256, texel count) in
+    the pinned modern-art catalog, and the release check refuses any other or any change."""
 
     def setUp(self):
         import importlib.util
@@ -87,32 +92,59 @@ class ReviewedPaint(unittest.TestCase):
         spec.loader.exec_module(self.release)
         self.catalog = json.loads((ROOT / catalog.CATALOG).read_text(encoding="utf-8"))
 
-    def test_the_catalog_lists_exactly_the_documents_paint(self):
-        rows = catalog.paint_rows(gf.digits_b81())
-        self.assertEqual(self.catalog["paint"]["data/nfl2k5_glyph_fixes_2026_b81u.json"]["rows"], rows)
-        self.assertEqual(len(rows), 100)                          # the Giants and Cowboys navy redraws only
+    def test_the_catalog_lists_exactly_the_texel_data_of_every_data_document(self):
+        self.assertEqual(self.catalog["paint"], catalog.paint_section(ROOT))
+        glyph = self.catalog["paint"]["data/nfl2k5_glyph_fixes_2026_b81u.json"]["rows"]
+        self.assertEqual(len(glyph), PAINTED_ROWS)
+        for name in ("kit_fixes_2026_b81u", "kit_fixes_2026_b81", "kit_fixes_2026_sea1", "kit_fixes_2026_sw1",
+                     "kit_fixes_2026_uf3"):
+            self.assertIn("data/nfl2k5_%s.json" % name, self.catalog["paint"])
+        for relative in self.catalog["paint"]:                      # the release check's walk finds the same rows
+            document = json.loads((ROOT / relative).read_text(encoding="utf-8"))
+            self.assertEqual(sorted(self.release._texel_rows(document)), sorted(self.catalog["paint"][relative]["rows"]))
 
     def test_the_gate_refuses_unreviewed_or_changed_texel_data(self):
         import tempfile
         reviewed = self.catalog["paint"]
-        document = json.loads((ROOT / "data/nfl2k5_glyph_fixes_2026_b81u.json").read_text(encoding="utf-8"))
-        relative = "data/nfl2k5_glyph_fixes_2026_b81u.json"
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "doc.json"
-            path.write_text(json.dumps(document), encoding="utf-8")
-            self.release._check_paint(relative, path, reviewed)                         # as shipped: passes
-            row = next(r for r in document["textures"] if any(op["op"] == "paint" for op in r.get("derive", [])))
-            op = next(op for op in row["derive"] if op["op"] == "paint")
-            op["runs"].append([0, 0, "FFFFFFFF"])                                         # one more texel
-            path.write_text(json.dumps(document), encoding="utf-8")
-            with self.assertRaises(self.release.ReleaseCheckError):
-                self.release._check_paint(relative, path, reviewed)
-            path.write_text(json.dumps({"rows": [{"op": "paint", "runs": [[1, 2, "00000000"]]}]}), encoding="utf-8")
-            with self.assertRaises(self.release.ReleaseCheckError):                       # paint in any other file
-                self.release._check_paint("data/other.json", path, reviewed)
+            for relative, kind in (("data/nfl2k5_glyph_fixes_2026_b81u.json", "paint"),
+                                   ("data/nfl2k5_kit_fixes_2026_b81u.json", "texels")):
+                document = json.loads((ROOT / relative).read_text(encoding="utf-8"))
+                path.write_text(json.dumps(document), encoding="utf-8")
+                self.release._check_paint(relative, path, reviewed)                     # as shipped: passes
+                rows = document["textures"]
+                op = next(o for r in rows for o in (r.get("derive") or r.get("ops") or []) if o["op"] == kind)
+                if kind == "paint":
+                    op["runs"].append([0, 0, "FFFFFFFF"])                                 # one more texel
+                else:
+                    op["points"].append([0, 0])
+                path.write_text(json.dumps(document), encoding="utf-8")
+                with self.assertRaises(self.release.ReleaseCheckError):
+                    self.release._check_paint(relative, path, reviewed)
+            for stray in ({"rows": [{"op": "paint", "runs": [[1, 2, "00000000"]]}]},
+                          {"textures": [{"selector": "00H0", "chunk": 1, "ops": [{"op": "runs", "rows": [[0, 0, "000000"]]}]}]},
+                          {"x": {"op": "texels", "color": "#000000", "points": [[0, 0]]}}):
+                path.write_text(json.dumps(stray), encoding="utf-8")
+                with self.assertRaises(self.release.ReleaseCheckError):                   # texels in any other file
+                    self.release._check_paint("data/other.json", path, reviewed)
 
 
 class Operations(unittest.TestCase):
+    def test_clear_rgb_and_hidden_recolour_touch_only_what_they_say(self):
+        """Review rule: the colour stored under clear texels moves by rule (``clear_rgb``, ``recolour`` with ``hidden``),
+        never by listing the clear surround's texels (round 2's Raiders and Ravens rows listed about 2,400 each)."""
+        a = np.zeros((8, 8, 4), np.uint8)
+        a[..., :3] = (200, 199, 199)
+        a[2:6, 2:6] = (200, 199, 199, 255)
+        a[3:5, 3:5] = (10, 10, 10, 255)
+        out = gf.derive_digit(a, [dict(op="clear_rgb", colour="#000000")])
+        self.assertTrue((out[a[..., 3] == 0, :3] == 0).all() and np.array_equal(out[a[..., 3] > 0], a[a[..., 3] > 0]))
+        seen = gf.derive_digit(a, [dict(op="recolour", pairs=[["#C8C7C7", "#A5ADB0"]])])
+        both = gf.derive_digit(a, [dict(op="recolour", pairs=[["#C8C7C7", "#A5ADB0"]], hidden=True)])
+        self.assertTrue((seen[0, 0, :3] == (200, 199, 199)).all() and (both[0, 0, :3] == (165, 173, 176)).all())
+        self.assertTrue(np.array_equal(seen[a[..., 3] > 0], both[a[..., 3] > 0]))
+
     def glyph(self):
         a = np.zeros((16, 16, 4), np.uint8)
         a[3:13, 5:11] = (20, 20, 20, 255)          # outline
@@ -201,17 +233,20 @@ class ReleasedDisc(unittest.TestCase):
             if row["kind"] == "names_derived":
                 self.assertEqual([op["op"] for op in ops], ["thin_letters"])
                 continue
-            at = [i for i, op in enumerate(ops) if op["op"] == "paint"]
-            if not at:
+            if not any(op["op"] == "paint" for op in ops):
                 continue
             base = self.base(row, self.span(row))
-            before = gf.derive_digit(base, ops[:at[0]])
-            for y, x0, values in ops[at[0]]["runs"]:
-                shipped = np.frombuffer(bytes.fromhex(values), np.uint8).reshape(-1, 4)
-                self.assertTrue((shipped != before[y, x0:x0 + len(shipped)]).any(-1).all(), (row["selector"], y, x0))
+            for at, op in enumerate(ops):                   # a paint after other operations (the Ravens 4) differs
+                if op["op"] != "paint":                     # from the picture those operations make
+                    continue
+                before = gf.derive_digit(base, ops[:at])
+                for y, x0, values in op["runs"]:
+                    shipped = np.frombuffer(bytes.fromhex(values), np.uint8).reshape(-1, 4)
+                    here = before[y, x0:x0 + len(shipped)]
+                    self.assertTrue((shipped != here).any(-1).all(), (row["selector"], row["chunk"], y, x0))
             self.assertLessEqual(tool.edge_overlap(base, ops), tool.EDGE_OVERLAP_LIMIT, (row["selector"], row["chunk"]))
             painted += 1
-        self.assertEqual(painted, 100)                           # the Giants and Cowboys navy redraws
+        self.assertEqual(painted, PAINTED_ROWS)
 
     def test_a_sample_of_each_operation_kind_compiles_to_its_output_pin(self):
         seen = {}

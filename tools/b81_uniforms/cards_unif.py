@@ -94,7 +94,7 @@ def item(materials, phase, view, out, cache):
             'views':[U.view(view,'H',out)]}
 
 
-def render_layers(kits, models, out, batch_size):
+def render_layers(kits, models, out, batch_size, software=False):
     cache = out / 'work'
     cache.mkdir(parents=True, exist_ok=True)
     dependencies = [
@@ -110,7 +110,14 @@ def render_layers(kits, models, out, batch_size):
     version = subprocess.check_output(['blender', '--version'], text=True).splitlines()[0]
     driver = subprocess.check_output(['glxinfo', '-B'], text=True)
     gpu = next((s.strip() for s in driver.splitlines() if s.startswith('OpenGL renderer string:')), '')
-    if 'NVIDIA' not in gpu:
+    if software:
+        # R2-F (11/20): the only NVIDIA X server on the authoring machine is Noah's own display, which agents must not
+        # use. --software-gl renders on a private X display with Mesa llvmpipe instead (measured against the nov20 GPU
+        # renders of the same views: mean 0.23 and 0.14 levels per channel, p99 at most 4). The renderer string is part
+        # of every cache key, so the old and new views of a run always come from the same renderer.
+        if os.environ.get('DISPLAY', '') in ('', ':0', ':0.0') or 'llvmpipe' not in gpu:
+            raise ValueError(f'--software-gl needs a private X display with Mesa llvmpipe, found {gpu}')
+    elif 'NVIDIA' not in gpu:
         raise ValueError(f'Expected headless NVIDIA OpenGL, found {gpu}')
     context = json.dumps([version, gpu, source_pins], sort_keys=True)
     pending, layers = {}, {}
@@ -147,7 +154,8 @@ def render_layers(kits, models, out, batch_size):
             fcntl.flock(lock, fcntl.LOCK_EX)
             # Headless EEVEE uses the host's NVIDIA OpenGL driver. No interactive Blender window is opened.
             env = dict(os.environ)
-            env.pop('LIBGL_ALWAYS_SOFTWARE', None)
+            if not software:
+                env.pop('LIBGL_ALWAYS_SOFTWARE', None)
             for start in range(0, len(views), batch_size):
                 batch = views[start : start + batch_size]
                 name = 'batch-' + batch[0][0][:16]
@@ -198,6 +206,7 @@ def render_layers(kits, models, out, batch_size):
         'opengl': gpu,
         'new_views': len(views),
         'unique_views': len({p for k in layers.values() for phase in k.values() for p in phase.values()}),
+        **({'software_gl': True} if software else {}),
     }
 
 
@@ -348,6 +357,7 @@ def main():
     parser.add_argument('--asset-root', type=lambda s: Path(s).resolve())
     parser.add_argument('--kits', nargs='+')
     parser.add_argument('--batch-size', type=int, default=16)
+    parser.add_argument('--software-gl', action='store_true')
     args = parser.parse_args()
     asset_root = args.asset_root or args.project.parent
     if args.out.is_relative_to(asset_root) or args.batch_size < 1:
@@ -376,7 +386,7 @@ def main():
             baseline[sel] = source, stored, mask, masks
     args.out.mkdir(parents=True, exist_ok=True)
     layers, render = render_layers(
-        {sel: kits[sel] for sel in selected}, args.models, args.out, args.batch_size
+        {sel: kits[sel] for sel in selected}, args.models, args.out, args.batch_size, args.software_gl
     )
     files, masters = args.out / 'assets/files', args.out / 'masters'
     files.mkdir(parents=True, exist_ok=True)
