@@ -171,7 +171,7 @@ class KitDocument(unittest.TestCase):
         # Noah 11/19 (decision 5, "use the prototype"): the Buccaneers pants stripe black, orange, red, orange, black at
         # about 5.8 cm on the white home pants (27H0) and the pewter road pants that wear the same stripe (27A0)
         # R2 (order R2-C): the Bengals pants tiger strokes, one geometry on all six Bengals pants (06H0 06A0 06H5 06A5
-        # 06H6 06A6), each in its own stroke colour
+        # 06H6 06A6), each in its own stroke colour; the Lions Defend the Den side stripe (09H9/09A9, rows already listed)
 
     def test_the_jersey_rows_repaint_only_the_chest_under_the_collar(self):
         # Round 2 (Noah 11/18: "the NY logo on the giants jersey below the nfl patch is too large. There are likely
@@ -782,6 +782,29 @@ class RealDisc(unittest.TestCase):
             shapes[selector] = steps
         for selector in colours:
             self.assertTrue(np.array_equal(shapes[selector][:, 108:404], shapes["06H5"][:, 108:404]), selector)   # one geometry
+
+    def test_the_lions_defend_the_den_pants_wear_the_black_band_and_blue_wedge(self):
+        # R2 (order R2-C): the 2026 Defend the Den pants carry one black band on the side seam that starts as a slanted
+        # point below the hip and widens slowly to the hem, and a kit blue wedge on its front side from a point about
+        # two thirds down (picture DET 2026-11-01 4-5: black 0.076 of the thigh depth at mid-thigh, black : blue at the
+        # knee 28 : 17). Flat colours, no piping; the base colour is not touched. The game had no stripe.
+        black, blue, base = (0x18, 0x19, 0x1B), (0x00, 0x76, 0xB6), (0xB6, 0xC1, 0xDB)
+        def cols(pants, y, colour):
+            return [x for x in range(100, 412) if near(tuple(int(v) for v in pants[y, x, :3]), colour, 6)]
+        for selector in ("09H9", "09A9"):
+            pants = self.after(selector, "pants00")
+            for y in range(30, 59):
+                self.assertEqual(cols(pants, y, black), [], (selector, y))                     # nothing above the start
+            self.assertEqual(cols(pants, 60, black), [144, 367], selector)                     # the point, both legs
+            self.assertEqual(cols(pants, 61, black), [143, 144, 367, 368], selector)
+            self.assertEqual(cols(pants, 120, black), [*range(138, 145), *range(367, 374)], selector)   # 7 texels, 1.7 cm
+            self.assertEqual(cols(pants, 120, blue), [], selector)
+            self.assertEqual(cols(pants, 190, black), [*range(136, 145), *range(367, 376)], selector)   # 9 full + a blend
+            self.assertEqual(cols(pants, 190, blue), [*range(129, 135), *range(377, 383)], selector)    # 6 texels, 1.4 cm
+            for y in range(100, 156):
+                self.assertEqual(cols(pants, y, blue), [], (selector, y))                      # the wedge starts lower
+            for x in (126, 145, 366, 385):                                                       # the base on both sides
+                self.assertTrue(near(tuple(int(v) for v in pants[190 if x in (126, 385) else 120, x, :3]), base, 12), (selector, x))
 
     def test_every_kit_row_is_waiting_on_the_released_disc_and_compiles_to_its_pin(self):
         result = up.states(DISC)
