@@ -38,6 +38,22 @@ class ReleasedUpdates(unittest.TestCase):
                 else:
                     run.assert_not_called()
 
+    def test_v09_native_updates_and_quarterback_setting_share_one_copy(self):
+        for mode in ("retail", "realistic", "custom"):
+            args = ["update-v09", "--source", "old.iso", "--out", "new.iso", "--modern-ir",
+                    "--save-list-guard", "--backfield-cards", "--sim-qb-injuries", mode, "--json"]
+            if mode == "custom":
+                args += ["--qb-injury-rate", "0"]
+            with self.subTest(mode=mode), patch.object(build, "build", return_value={}) as run:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(cli.main(args), 0)
+                plan = run.call_args.args[0]
+                self.assertIsInstance(plan, build._ReleasedV09Update)
+                self.assertTrue(all(getattr(plan, key) for key in build.V09_UPDATE_CHOICES))
+                self.assertEqual((plan.sim_qb_injuries, plan.sim_realism), (mode, mode != "retail"))
+                if mode == "custom":
+                    self.assertEqual(plan.sim_qb_injury_rate, 0)
+
     def test_share_and_mixed_plans_keep_the_complete_recipe(self):
         recipe = {"preset": "softdrink_experimental", "overrides": {"modern_injured_reserve": True,
                                                                     "backfield_cards": True, "helmet_finish": "glossy"}}

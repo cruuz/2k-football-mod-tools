@@ -15,10 +15,14 @@ from pathlib import Path
 sys.path[:0] = [str(Path(__file__).resolve().parents[2]), str(Path(__file__).resolve().parents[1])]
 
 import ast
+from dataclasses import replace
 import hashlib
+import inspect
+import json
 import os
 import tempfile
 import unittest
+from unittest.mock import patch
 from itertools import product
 
 from mod_editor.core import mod_build
@@ -179,12 +183,18 @@ class LateOwnerReservationTests(unittest.TestCase):
     def test_the_first_pass_reserves_every_wave_owner(self):
         from mod_editor.core import nfl2k5_throw_tuning as tt, nfl2k5_xbe_space as space
         owners = {row[0] for row in tt._selected_space_requests(**self.WAVE)}
-        late = space.LATE_OWNERS
-        # The Build tab adds hair, authored-book toss and cards after the first pass. Cards reserve the gadget slots.
-        appended = ("nfl2k5_rookie_faces_hair", "nfl2k5_offset_toss", space.GADGET_OWNER, space.BACKFIELD_REQUEST[0])
-        self.assertEqual(tuple(owner for owner in late if owner in appended), appended)
-        wave = late[late.index("nfl2k5_sim_realism_state") + 1:late.index("nfl2k5_rookie_faces_hair")]
-        self.assertTrue(set(wave) | {space.FRANCHISE_OWNERSHIP} <= owners)
+        late = list(space.LATE_OWNERS)
+        # Hair and toss still follow these original wave owners. The separately placed
+        # gadget, cards and quarterback banks can now coexist after the toss helper.
+        hair = late.index("nfl2k5_rookie_faces_hair")
+        toss = late.index("nfl2k5_offset_toss")
+        self.assertEqual(toss, hair + 1)
+        later = [late.index(space.GADGET_OWNER), late.index(space.BACKFIELD_REQUEST[0]),
+                 late.index(space.QB_INJURY_REQUEST[0])]
+        self.assertEqual([toss, *later], sorted([toss, *later]))
+        wave = late[late.index("nfl2k5_sim_realism_state") + 1:hair]
+        self.assertEqual(sorted(set(wave) - owners), [])
+        self.assertIn(space.FRANCHISE_OWNERSHIP, owners)
 
     def test_late_choices_preserve_each_presets_first_pass_and_the_gadget_slots(self):
         from mod_editor.core import nfl2k5_offset_toss as toss, nfl2k5_rookie_faces as faces, nfl2k5_xbe_space as space
@@ -283,6 +293,164 @@ class LateOwnerReservationTests(unittest.TestCase):
         after = {r["owner"]: r["va"] for r in space.layout(payload)["allocations"]}
         self.assertEqual({k: after[k] for k in placed}, placed)
         self.assertEqual((calls.status(payload), speed.verify(payload, value=35)["value"]), ("applied", 35))
+
+
+class QuarterbackInstallationOrderTests(unittest.TestCase):
+    """Standard console builds reserve the same quarterback page before or after the late writers."""
+
+    def setUp(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.folder = Path(temp.name)
+
+    def private_path(self, variable):
+        path = Path(os.environ.get(variable, ''))
+        if not path.is_file():
+            self.skipTest(f'private disc fixture {variable} is absent')
+        return path
+
+    def studio_first_pass(self, plan):
+        from mod_editor.core import nfl2k5_throw_tuning as tt
+
+        # Use the live build's resolved plan and options. Roster growth and several disc
+        # options do not exist in the preset dictionary passed into preflight.
+        build = inspect.unwrap(mod_build._build)
+        body = ast.parse(inspect.getsource(build)).body[0].body
+        assignment, = (statement for statement in body if isinstance(statement, ast.Assign)
+                       and any(isinstance(t, ast.Name) and t.id == 'all_requests' for t in statement.targets))
+        self.assertEqual(ast.unparse(assignment.value.func), 'tt._selected_space_requests')
+        expression = compile(ast.Expression(assignment.value), mod_build.__file__, 'eval')
+        verify = tt._check_installed_runtime_settings
+
+        class Captured(Exception):
+            pass
+
+        def capture(payload, options):
+            verify(payload, options)
+            frame = sys._getframe(1)
+            if frame.f_code is build.__code__:
+                self.assertIs(frame.f_locals['r62'], options)
+                requests = eval(expression, frame.f_globals, frame.f_locals)
+                raise Captured(payload, requests, frame.f_locals['plan'])
+
+        # The unrelated one-team playbook compile has no effect on allocator inputs.
+        # Stop in read-only preflight, ahead of every disc writer.
+        with patch.object(mod_build, 'check_playbook_pack_fit', return_value=None), \
+                patch.object(tt, '_check_installed_runtime_settings', new=capture), self.assertRaises(Captured) as found:
+            mod_build._build(plan, _preflight_only=True)
+        self.assertFalse(Path(plan.target).exists())
+        return found.exception.args
+
+    def preserved(self, old_rows, payload, step):
+        from mod_editor.core import nfl2k5_xbe_space as space
+        rows = space.layout(payload)['allocations']
+        self.assertEqual([row for row in old_rows if row not in rows], [], step)
+        return rows
+
+    def both_orders(self, payload, plan):
+        from mod_editor.core import nfl2k5_backfield_cards as cards, nfl2k5_injured_reserve as ir
+        from mod_editor.core import nfl2k5_offset_toss as toss, nfl2k5_rookie_faces as faces
+        from mod_editor.core import nfl2k5_sim_qb_injuries as qb, nfl2k5_xbe_space as space
+
+        def studio_ir(current):
+            # Use Build's real mode selection, including the standard-only stock guard.
+            target = self.folder / 'working.xbe'
+            target.write_bytes(current)
+            mod_build._apply_injured_reserve(plan, target, {'steps': [], 'result': {}}, lambda *_: None)
+            return target.read_bytes()
+
+        steps = {'IR': studio_ir, 'hair': lambda x: faces.apply_hair(x)[0], 'toss': lambda x: toss.apply(x)[0],
+                 'cards': lambda x: cards.apply(x)[0],
+                 'QB': lambda x: qb.apply(x, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)[0]}
+        initial = space.layout(payload)['allocations']
+        results = []
+        for order in (('IR', 'hair', 'toss', 'cards', 'QB'), ('QB', 'IR', 'hair', 'toss', 'cards')):
+            with self.subTest(install_order=order):
+                current, rows = payload, initial
+                for name in order:
+                    current = steps[name](current)
+                    rows = self.preserved(rows, current, name)
+                    if name == 'QB':
+                        bank, = (r for r in rows if r['owner'] == qb.OWNER)
+                        self.assertEqual((bank['va'], bank['size'], bank['align']), (0x1524000, 16384, 4096))
+                self.assertEqual(qb.read_settings(current)['mode'], plan.sim_qb_injuries)
+                self.assertEqual((faces.hair_status(current), toss.status(current), cards.status(current)),
+                                 ('applied', 'applied', 'applied'))
+                self.assertEqual(ir.status(current), 'applied' if plan.modern_injured_reserve else 'guard')
+                results.append(rows)
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0], results[1])
+
+    def fresh(self, plan):
+        from mod_editor.core import nfl2k5_k128 as k128, nfl2k5_lineup_roles as lineup
+        from mod_editor.core import nfl2k5_modern_positions as positions, nfl2k5_position_pools as pools
+        from mod_editor.core import nfl2k5_rookie_faces as faces, nfl2k5_sim_realism as sim, nfl2k5_xbe_space as space
+        from tests.nfl2k5_supersim_draft_fixture import RETAIL_SHA256, retail_roster
+
+        retail, requests, plan = self.studio_first_pass(plan)
+        self.assertEqual(hashlib.sha256(retail).hexdigest(), RETAIL_SHA256)
+        self.assertIn(space.QB_INJURY_REQUEST, requests)
+        self.assertFalse(any(r in requests for r in faces.HAIR_REQUESTS))
+        current, _ = space.apply(retail, requests, scaleout=True)
+        rows = space.layout(current)['allocations']
+        bank, = (r for r in rows if r['owner'] == space.QB_INJURY_REQUEST[0])
+        self.assertEqual((bank['va'], bank['size'], bank['align']), (0x1524000, 16384, 4096))
+        if 'nfl2k5_franchise_ownership' in space.LATE_OWNERS:
+            guard, = (r for r in rows if r['owner'] == 'nfl2k5_franchise_ownership')
+            self.assertEqual((guard['va'], guard['size']), (0x1528000, 4096))
+        current, _ = k128.apply(current, require=True, early=plan.k128_early, roster_heap=plan.k128_roster_heap)
+        current, _ = sim.apply(current)
+        if plan.depth_chart_rows:
+            current, _ = positions.apply(current)
+            current, _ = pools.apply(current)
+            current, _ = lineup.apply(current)
+        # Install the real generator against the retail roster before testing its optional
+        # hair add-on. This also exercises adding it later to an originally Basic build.
+        table = faces.tables(*faces.pool_names(retail_roster()), faces.load_bank())
+        current, _ = faces.xbe_apply(current, table)
+        self.preserved(rows, current, 'base simulator, selected lineup roles and rookie faces')
+        self.both_orders(current, plan)
+
+    def preset(self, name):
+        initial = mod_build.BuildPlan(str(self.private_path('NFL2K5_RETAIL_XISO')),
+                                      str(self.folder / 'unused.xiso.iso'), console_memory=128)
+        return mod_build.apply_preset(initial, name)
+
+    def test_experimental_first_pass_and_late_installation_orders(self):
+        self.fresh(self.preset('softdrink_experimental'))
+
+    def test_basic_custom_zero_with_dependencies_and_late_installation_orders(self):
+        self.fresh(replace(self.preset('softdrink_basic'), k128_memory=True, sim_realism=True,
+                           sim_qb_injuries='custom', sim_qb_injury_rate=0.0))
+
+    def test_actual_standard_recipe_first_pass_and_late_installation_orders(self):
+        from mod_editor.core import modpack_sources
+        root = os.environ.get('NFL2K5_B81_STANDARD_SOURCES')
+        if not root:
+            self.skipTest('private standard source recipe is absent')
+        recipe = json.loads((Path(root) / 'SOFTDRINK-build-recipe.json').read_bytes())
+        plan = modpack_sources.build_plan(recipe, str(self.private_path('NFL2K5_RETAIL_XISO')),
+                                          str(self.folder / 'unused.xiso.iso'))
+        self.assertEqual(plan.sim_qb_injuries, 'realistic')
+        self.fresh(plan)
+
+    def upgrade(self, variable, xbe_pin):
+        from mod_editor.core import nfl2k5_sim_realism as sim, nfl2k5_xbe_space as space
+
+        path = self.private_path(variable)
+        original = mod_build._xbe_bytes(path)
+        self.assertEqual(hashlib.sha256(original).hexdigest(), xbe_pin)
+        current, _ = sim.apply(original)
+        self.preserved(space.layout(original)['allocations'], current, 'source simulator upgrade')
+        plan = mod_build.apply_preset(mod_build.BuildPlan(str(path), str(self.folder / 'unused.xiso.iso')),
+                                      'softdrink_experimental')
+        self.both_orders(current, plan)
+
+    def test_released_v09_standard_upgrades_in_either_order(self):
+        self.upgrade('NFL2K5_V09_XISO', 'd78088f9ba47c6197e99ea540d0bc3d2c9255f7cd49152a77946be70dacab866')
+
+    def test_reviewed_v10_standard_upgrades_in_either_order(self):
+        self.upgrade('NFL2K5_B81_REVIEWED_TEST_DISC', '98dd732945fb665a8d7fe771650d61c1098015cda4917ac83037059db477008e')
 
 
 if __name__ == "__main__":

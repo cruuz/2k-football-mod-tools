@@ -353,6 +353,14 @@ and its limits. Weather artwork or a stored environment field alone does not pro
 weather, footprints, franchise weather selection, wind gameplay, or a clock-concession rule.
 Do not infer those features from a texture browser or an unrelated accelerated-clock option.
 
+## How do quarterback injuries work when I simulate a franchise game?
+
+The 128 MB SOFTDRINK Experimental preset and the v0.10 standard pack's source recipe select **Realistic** under **Build → Simulated quarterback injuries**. Your team's simulated games use the same rules as CPU games. Quarterbacks face different chances according to Durability and the type of play. Seasons can be healthy or injury-heavy. Games you play use their original injury and passing rules.
+
+Choose **Retail (original 2K5 simulation)** for the source simulator's passing and injuries. Choose **Custom (realistic passing, your injury rate)** to set the extra injury chance per eligible simulated play. Realistic uses **0.310%** at the base setting. Durability, the Injury slider and sack or escape plays change the chance. Custom **0%** uses the game's original injury roll and keeps realistic passing. **Keep the source setting** preserves the setting on an existing disc. If you manage your depth chart manually, you choose when a recovered quarterback gets his job back.
+
+To change only this setting on a built standard disc, open the disc in Build, choose the mode and save a new copy. The command-line equivalent is `edit-sim-qb --source built.iso --out copy.iso --mode realistic`. For a full recipe rebuild, open the pack's editable sources in Build or add `--sim-qb-injuries custom --qb-injury-rate 0.310` to `build-sources`. The percent accepts steps of 0.001. The recommended 64 MB setup uses the original quarterback simulation.
+
 ## Can I check bad colleges or edit historic player names?
 
 Use **★ Rosters > Checks > Check my rosters…** to scan for missing or invalid college references.

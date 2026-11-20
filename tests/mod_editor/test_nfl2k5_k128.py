@@ -557,10 +557,10 @@ class BuildWiringTests(unittest.TestCase):
         self.assertFalse(self._plan().k128_early)
         self.assertTrue(self._plan(k128_memory=True).wants_xbe_patch())
 
-    def test_every_preset_keeps_both_off(self) -> None:
+    def test_only_the_standard_experimental_simulator_enables_128_mb_memory(self) -> None:
         for name in mod_build.PRESETS:
             plan = mod_build.apply_preset(self._plan(), name)
-            self.assertFalse(plan.k128_memory, name)
+            self.assertEqual(plan.k128_memory, name == "softdrink_experimental", name)
             self.assertFalse(plan.k128_roster_heap, name)
             self.assertFalse(plan.k128_early, name)
 

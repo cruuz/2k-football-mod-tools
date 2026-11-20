@@ -338,6 +338,14 @@ def _guard_digest(payload: bytes, va: int, size: int, edits) -> str:
 
 def read_settings(payload: bytes) -> dict[str, object]:
     """status (retail | applied | foreign) and third_down (rule 1 installed)."""
+    from . import nfl2k5_sim_qb_injuries as quarterback
+    try:
+        return _read_physical_settings(quarterback.physical_view(payload))
+    except _ERRORS as exc:
+        return {"status": "foreign", "reason": str(exc)}
+
+
+def _read_physical_settings(payload: bytes) -> dict[str, object]:
     try:
         from . import nfl2k5_xbe_space as space
         from .nfl2k5_cave_oracle import XbeImage
@@ -381,6 +389,16 @@ def apply(payload: bytes, *, third_down: bool = True) -> tuple[bytes, dict[str, 
         _require(settings["third_down"] == third_down, "lineup roles are installed with other settings; rebuild "
                                                        "from the source executable to change them")
         return payload, dict(common, status="applied", already_applied=True, changed_bytes=0, edits=[])
+    # Installing SPECIAL on a treated disc also arms its QB recovery hook. Prove and
+    # lift the current QB option before changing the shared code, then reapply it.
+    from . import nfl2k5_sim_qb_injuries as quarterback
+    physical = quarterback.physical_view(payload)
+    if physical != payload:
+        saved = quarterback.read_settings(payload)
+        with_lineup, receipt = apply(physical, third_down=third_down)
+        result, restored = quarterback.apply(with_lineup, saved['mode'], custom_rate=saved['custom_rate'])
+        return result, {**receipt, 'restored_sim_qb_injuries': restored,
+                        'changed_bytes': space.count_differing_bytes(payload, result), 'file_growth': len(result) - len(payload)}
     rank_list, side_list = struct.unpack("<II", XbeImage(payload).read(LIST_TABLE + RB_KIND * 8, 8))
     _require(rank_list != side_list, "lineup roles need the paired running back orders (one-pool positions)")
     before = payload

@@ -107,11 +107,26 @@ def prepare(recipe_path, work, *, stack=None, marks_pack=None, patched_image=Non
     if patched_image is not None:
         from . import mod_build, nfl2k5_backfield_cards
         try:
-            card_state = nfl2k5_backfield_cards.status(mod_build._xbe_bytes(Path(patched_image)))
+            payload = mod_build._xbe_bytes(Path(patched_image))
+            card_state = nfl2k5_backfield_cards.status(payload)
         except (OSError, ValueError):
+            payload = None
             card_state = "unavailable"
         if card_state in ("retail", "applied"):
             effective["backfield_cards"] = card_state == "applied"
+        qb = mod_build._core_module("nfl2k5_sim_qb_injuries")
+        if effective.get("sim_qb_injuries") is not None or (qb is not None and payload is not None):
+            m._require(qb is not None and payload is not None, "Cannot verify the disc's simulated quarterback injury setting")
+            state = qb.read_settings(payload)
+            mode = effective.get("sim_qb_injuries")
+            if mode is not None:
+                m._require(state.get("mode") == mode and (mode != "custom" or
+                           state["custom_rate"] == effective.get("sim_qb_injury_rate", mod_build.BuildPlan.sim_qb_injury_rate)),
+                           "The disc and source recipe select different simulated quarterback injury settings")
+            if state["status"] == "applied":
+                effective.update(sim_qb_injuries=state["mode"], sim_realism=True, k128_memory=True)
+                if state["mode"] == "custom":
+                    effective["sim_qb_injury_rate"] = state["custom_rate"]
     if marks_pack:
         effective["official_marks_pack"] = str(marks_pack)
     from . import nfl2k5_official_marks as marks
@@ -248,13 +263,18 @@ def extract_bundle(bundle, directory, expected, *, resume=False, progress=None):
 
 def build_plan(recipe, source="", target=""):
     from dataclasses import fields
-    from . import mod_build
+    from . import mod_build, nfl2k5_build_settings
     initial = mod_build.BuildPlan(str(source), str(target), console_memory=recipe["overrides"].get("console_memory", 128))
     plan = mod_build.apply_preset(initial, recipe["preset"])
+    if "sim_qb_injuries" not in recipe["overrides"]:
+        # Older source recipes predate the quarterback setting and the experimental preset's heap default.
+        plan.sim_qb_injuries = None
+        plan.k128_memory = initial.k128_memory
     known = {field.name for field in fields(plan)} - {"source", "target", "overwrite"}
     for key, value in recipe["overrides"].items():
         m._require(key in known, f"Recipe requires an unknown Studio option: {key}")
         setattr(plan, key, tuple(value) if isinstance(getattr(plan, key), tuple) and isinstance(value, list) else value)
+    nfl2k5_build_settings.validate_sim_qb_injuries(plan.sim_qb_injuries, plan.sim_qb_injury_rate)
     return plan
 
 

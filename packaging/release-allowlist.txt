@@ -620,6 +620,8 @@ mod_editor/core/nfl2k5_option_defaults.py
 mod_editor/core/nfl2k5_profile_defaults.py
 mod_editor/core/nfl2k5_sim_rb_injuries.py
 mod_editor/core/nfl2k5_sim_rb_injuries_b779.py
+mod_editor/core/nfl2k5_sim_qb_injuries.py
+mod_editor/core/nfl2k5_sim_qb_injuries_code.py
 mod_editor/core/nfl2k5_sim_realism.py
 mod_editor/core/nfl2k5_sim_realism_b779.py
 mod_editor/core/nfl2k5_coach_carousel.py
@@ -4784,6 +4786,9 @@ tests/mod_editor/test_nfl2k5_sim_cb_tackles.py
 tests/mod_editor/test_nfl2k5_option_defaults.py
 tests/mod_editor/test_nfl2k5_sim_rb_injuries.py
 tests/mod_editor/test_b780_hunt1_rb_injuries_previous.py
+tests/mod_editor/test_b81_sim_qb_injury_build.py
+tests/mod_editor/test_b81_sim_qb_injury_settings.py
+tests/mod_editor/test_b81_sim_qb_injuries_code.py
 tests/mod_editor/test_nfl2k5_sim_realism.py
 tests/mod_editor/test_b780_c6_coach_carousel.py
 tests/mod_editor/test_nfl2k5_standings_records.py

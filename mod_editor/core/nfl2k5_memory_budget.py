@@ -144,6 +144,7 @@ OWNER_BYTES = {
 
 # Keep the calibrated release layout for comparisons against the actual RC executable.
 BUILD_OWNER_BYTES = {**OWNER_BYTES, "backfield_cards": (space.BACKFIELD_REQUEST[2], 0, 0, 0, 0),
+                     "sim_qb_injuries": (4 * PAGE, 0, 0, 0, 0),
                      "gadget_reservation": (space.GADGET_REQUESTS[0][2], 0, space.GADGET_REQUESTS[1][2], 0, 0),
                      "pass_rush_stats": (
     0, pass_rush_stats.CODE_SIZE, pass_rush_stats.READ_ONLY_SIZE, 0, pass_rush_stats.DATA_SIZE)}
@@ -159,6 +160,7 @@ def _modern(value):
 
 # owner -> the plan fields that install it (any of them); INFRASTRUCTURE rides with any space owner
 OWNER_FIELDS = {
+    "sim_qb_injuries": ("sim_qb_injuries",),
     "backfield_cards": ("backfield_cards",),
     "gadget_reservation": ("backfield_cards",),
     "history_screen": ("history_screen",), "player_progress_screen": ("player_progress",), "my_career": ("my_career",),
@@ -320,6 +322,7 @@ RC_VALUES = {"momentum": 50, "momentum_collision_level": 50, "cpu_money_downs": 
 # Options a 64 MB build cannot have. A plan field, except roster_capacity: roster edits whose document asks for the
 # capacity arena (free_agent_capacity; see roster_capacity_records).
 REQUIRES_128 = {
+    "sim_qb_injuries": "The updated simulated quarterback injuries and passing model require 128 MB.",
     "backfield_cards": "This option is available in the standard preset. The compact preset keeps the original display.",
     "k128_memory": "It teaches the Xbox's 4627 kernel to use 128 MB at start-up. A 64 MB console has nothing to add, "
                    "hakuX has no real kernel to patch, and with the 128 MB start-up check the disc refuses to start "
@@ -349,7 +352,7 @@ GROUPS = {"momentum": ("momentum_contact", "momentum_collisions"), "weekly_prep"
           "player_progress": ("player_progress_visible",), "scorebug": ("scorebug_runtime",)}
 # b780 m64prof: each value is the BuildPlan's own off value (the build refuses None for modern_venues_2026 and
 # team_number_scale: "Jersey number sizes must be an object of kit: scale").
-OFF_VALUES = {"cpu_money_downs": "retail", "cpu_scrambles": "retail", "momentum": 0, "created_teams_extra": 0,
+OFF_VALUES = {"cpu_money_downs": "retail", "sim_qb_injuries": None, "cpu_scrambles": "retail", "momentum": 0, "created_teams_extra": 0,
               "speed_threshold": 0, "modern_venues_2026": "", "team_number_scale": {}, "momentum_collision_level": 0}
 
 
@@ -500,9 +503,11 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
             return RETAIL_RESIDENT + pages + extra
     overflow = max(0, code - CODE_V3_CAP) + max(0, read_only - RO_V3_CAP) + max(0, data - DATA_V3_CAP)
     pool = POOL_DOC + math.ceil(overflow / PAGE) * PAGE if overflow else 0
-    if "backfield_cards" in found:
+    if "backfield_cards" in found or "sim_qb_injuries" in found:
         last = space.BACKFIELD_VA + space.BACKFIELD_REQUEST[2] - space.POOL_VA
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
+        if "sim_qb_injuries" in found:
+            pool = max(pool, math.ceil(last / PAGE) * PAGE + BUILD_OWNER_BYTES["sim_qb_injuries"][0])
     if "franchise_ownership" in found:
         last = space.FRANCHISE_OWNERSHIP_VA + space.FRANCHISE_OWNERSHIP_SIZE - space.POOL_VA
         pool = max(pool, math.ceil(last / PAGE) * PAGE)

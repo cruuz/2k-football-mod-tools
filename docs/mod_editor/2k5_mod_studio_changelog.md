@@ -17,6 +17,7 @@
 
 ### Playing SOFTDRINK 2K28 v0.10
 
+- The 128 MB standard pack and the SOFTDRINK Experimental preset use quarterback Durability when rolling injuries in simulated franchise games, including your club. The updated passing model applies in those games. Across eight signed seasons, 150 quarterback injuries cost at least one game in 4,352 club-games. **Retail** restores the original simulation. **Custom** keeps realistic passing at your chosen injury rate, including 0%. Studio can also upgrade the simulated-season settings on a v0.9 standard disc.
 The standard 128 MiB edition includes Team History, modern injured reserve and MyCareer. The v0.10 standard edition includes the save-browser repair, simulated Games Played, the Owner Firing fix and the offset-toss correction.
 
 - Team History navigation and box scores work with the native menus and audio. Career records show the holder once, with long names fitting before the Year column. Record and award lists retain joint holders. Championship history keeps scores above 63. Linemen appear in Player Stats and Rookie Watch. For current-season League Leaders, a lineman qualifies by playing at least half of his club’s completed games. The screen ranks all qualifiers before selecting the top 40.
