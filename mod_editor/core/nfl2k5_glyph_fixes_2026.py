@@ -62,7 +62,7 @@ ART = ROOT / "data/nfl2k5_glyph_fixes_2026"
 #: released v0.9 build and applied as the last uniform step (``apply_digits_b81``). The document names its own art folder.
 DATA_B81U = ROOT / "data/nfl2k5_glyph_fixes_2026_b81u.json"
 KINDS = ("names_retint", "digit_png", "digit_retint", "names_png", "name_widths", "digit_derived", "names_derived")
-DERIVE_OPS = ("remap", "embolden", "edge", "inline_fill", "inline_dark", "recolour", "paint")
+DERIVE_OPS = ("remap", "embolden", "edge", "inline_fill", "inline_dark", "recolour", "paint", "thin_letters")
 NAMES_CHUNK = 43
 NAME_CHUNK = 44                         # the raw NAME chunk: 29 (atlas offset, glyph width) pairs for ' - A..Z c
 NAME_METRICS = slice(0x2C, 0xA0)
@@ -329,6 +329,8 @@ def derive_digit(before_rgba, ops):
             for old, new in op["pairs"]:
                 hit = (a[..., 3] > 0) & (rgb == _colour(old)).all(-1)
                 a[hit, :3] = _colour(new)
+        elif kind == "thin_letters":
+            a = thin_letters(a, op)
         elif kind == "paint":
             # the texels that differ from the glyph the build holds: [row, first column, "RRGGBBAA" per texel]
             for y, x0, values in op["runs"]:
@@ -349,6 +351,220 @@ def derive_digit(before_rgba, ops):
             a[ring, :3] = _colour(op["colour"])
             a[inner & ~ring, :3] = 255
     return a
+
+
+# -- the Jaguars road strip (Noah's decision 8, "Thin them to match"): work/fix/DECISIONS/tools/jax_thin.py as an
+# instruction. Each letter keeps the silhouette of the strip the build holds and comes down to bands 2 texels across and
+# 2 rows; the per-letter rules are the lane's. The only float steps are basic IEEE operations; the diagonal weights
+# (jax_thin's arctan2/cos) are stored per letter as float64 hex, so no transcendental function runs at build time.
+
+_THIN_GLYPHS = "'-ABCDEFGHIJKLMNOPQRSTUVWXYZc"
+
+
+def _silhouette(m):
+    rows = np.zeros_like(m)
+    for y in range(m.shape[0]):
+        xs = np.flatnonzero(m[y])
+        if len(xs):
+            rows[y, xs[0]:xs[-1] + 1] = True
+    cols = np.zeros_like(m)
+    for x in range(m.shape[1]):
+        ys = np.flatnonzero(m[:, x])
+        if len(ys):
+            cols[ys[0]:ys[-1] + 1, x] = True
+    return rows & cols
+
+
+def _bands(S, s, b):
+    H, W = S.shape
+    L = np.zeros_like(S); R = np.zeros_like(S); T = np.zeros_like(S); B = np.zeros_like(S)
+    for y in range(H):
+        xs = np.flatnonzero(S[y])
+        if len(xs):
+            L[y, xs[0]:xs[0] + s] = True
+            R[y, max(0, xs[-1] - s + 1):xs[-1] + 1] = True
+    for x in range(W):
+        ys = np.flatnonzero(S[:, x])
+        if len(ys):
+            T[ys[0]:ys[0] + b, x] = True
+            B[max(0, ys[-1] - b + 1):ys[-1] + 1, x] = True
+    return L & S, R & S, T & S, B & S
+
+
+def _straight(S, side, s):
+    H, W = S.shape
+    edges = []
+    for y in range(6, H - 6):
+        xs = np.flatnonzero(S[y])
+        if len(xs):
+            edges.append(xs[0] if side == "L" else xs[-1])
+    e = sorted(edges)
+    k = len(e)
+    e = e[k // 2] if k % 2 else (e[k // 2 - 1] + e[k // 2]) / 2      # np.median, exactly
+    e = int(e)
+    out = np.zeros_like(S)
+    if side == "L":
+        out[:, e:e + s] = True
+    else:
+        out[:, e - s + 1:e + 1] = True
+    return out & S
+
+
+def _rows(S, y0, y1):
+    out = np.zeros_like(S)
+    out[max(0, y0):max(0, y1)] = True
+    return out
+
+
+def _hbar(S, y0, b, x0=None, x1=None):
+    out = np.zeros_like(S)
+    out[y0:y0 + b, (x0 or 0):(x1 if x1 is not None else S.shape[1])] = True
+    return out & S
+
+
+def _diag(S, s, xa, ya, xb, yb, t):
+    H, W = S.shape
+    n = max(s, int(round(t)))
+    out = np.zeros_like(S)
+    for y in range(H):
+        yc = y + 0.5
+        if not (min(ya, yb) <= yc <= max(ya, yb)):
+            continue
+        x0 = int(round(xa + (yc - ya) * (xb - xa) / (yb - ya)))
+        out[y, max(0, x0):max(0, x0 + n)] = True
+    return out & S
+
+
+def _thin_letter(ch, m, s, b, t):
+    """jax_thin.thin: one glyph (its ink mask, cap rows, from column 0) -> the thinned mask. ``t``: the stored diagonal
+    weights of this letter, in the order jax_thin computes them."""
+    S = _silhouette(m)
+    H, W = S.shape
+    L, R, T, B = _bands(S, s, b)
+    SL, SR = _straight(S, "L", s), _straight(S, "R", s)
+    mid = 11
+    t = list(t)
+    if ch == "O":
+        return L | R | T | B
+    if ch == "D":
+        return SL | R | T | B
+    if ch == "Q":
+        return (L | R | T | B) | _diag(S, s, W * 0.48, H * 0.66, W - 2.0, H, 2)
+    if ch == "B":
+        return SL | R | T | B | _hbar(S, mid, b)
+    if ch == "C":
+        return L | T | B | (R & (_rows(S, 0, 4) | _rows(S, H - 4, H)))
+    if ch == "c":
+        top = int(np.flatnonzero(S.any(1))[0])
+        return L | T | B | (R & (_rows(S, top, top + 3) | _rows(S, H - 3, H)))
+    if ch in "EF":
+        xs = np.flatnonzero(m[mid + 1])
+        xe = (int(xs[-1]) if len(xs) else -1) + 1
+        return SL | T | (B if ch == "E" else np.zeros_like(S)) | _hbar(S, mid, b, 0, xe)
+    if ch == "G":
+        jaw = 10
+        return L | T | B | (R & (_rows(S, 0, 4) | _rows(S, jaw, H))) | _hbar(S, jaw, b, W - 6, W)
+    if ch == "H":
+        return SL | SR | _hbar(S, mid, b)
+    if ch in "IT":
+        x0 = int(round((W - s) / 2))
+        stem = np.zeros_like(S)
+        stem[:, x0:x0 + s] = True
+        return (T if ch == "T" else np.zeros_like(S)) | (stem & S)
+    if ch == "J":
+        return R | (B & ~_rows(S, 0, H - 6)) | (L & _rows(S, H - 7, H))
+    if ch == "L":
+        return SL | B
+    if ch == "U":
+        return (SL | SR) & _rows(S, 0, H - 6) | L & _rows(S, H - 6, H) | R & _rows(S, H - 6, H) | B
+    if ch in "PR":
+        yb = 12
+        out = SL | T | (R & _rows(S, 0, yb + 1)) | _hbar(S, yb - b + 1, b, 0, W)
+        return out | (R & _rows(S, yb, H)) if ch == "R" else out
+    if ch == "A":
+        return L | R | T | _hbar(S, 14, b)
+    if ch == "V":
+        return L | R | B
+    # diagonal letters: ``t`` lists, in jax_thin's order, the position weight(s) it computes first and then the weight
+    # of each diagonal (jax_thin's diag() default), all stored at authoring time
+    if ch == "W":
+        q1, q3 = W * 0.30, W * 0.70
+        w, d1, d2 = t
+        return L | R | _diag(S, s, W / 2 - w / 2, H * 0.22, q1 - w / 2, H, d1) | \
+            _diag(S, s, W / 2 - w / 2, H * 0.22, q3 - w / 2, H, d2)
+    if ch == "M":
+        depth = H * 0.70
+        w, d1, d2 = t
+        stems = np.zeros_like(S)
+        stems[:, :s] = True
+        stems[:, W - s:] = True
+        return stems | _diag(S | stems, s, 0, 0, W / 2 - w / 2, depth, d1) | \
+            _diag(S | stems, s, W - w, 0, W / 2 - w / 2, depth, d2)
+    if ch == "N":
+        w, d1 = t
+        return SL | SR | _diag(S, s, 0, 0, W - w, H, d1)
+    if ch == "K":
+        w, d1, w2, d2 = t
+        yk = H * 0.58
+        arm = _diag(S, s, W - w, 0, s, yk, d1)
+        ya = yk - 4.0
+        xa = (W - w) + (ya / yk) * (s - (W - w)) + 1.0
+        leg = _diag(S, s, xa, ya, W - round(w2), H, d2)
+        return SL | arm | leg
+    if ch == "X":
+        w, d1, d2 = t
+        return _diag(S, s, 0, 0, W - w, H, d1) | _diag(S, s, W - w, 0, 0, H, d2)
+    if ch == "Y":
+        w, d1, d2 = t
+        yj = H * 0.52
+        x0 = int(round((W - s) / 2))
+        stem = np.zeros_like(S)
+        stem[int(yj) - 1:, x0:x0 + s] = True
+        return _diag(S, s, 0, 0, x0, yj, d1) | _diag(S, s, W - w, 0, x0 + s - w, yj, d2) | (stem & S)
+    if ch == "Z":
+        w, d1 = t
+        return T | B | _diag(S, s, W - w, b - 0.5, 0, H - b + 0.5, d1)
+    if ch == "S":
+        sp = mid
+        up = (L & _rows(S, 0, sp + 2)) | (R & _rows(S, 0, 4))
+        lo = (R & _rows(S, sp, H)) | (L & _rows(S, H - 4, H))
+        return T | B | up | lo | _hbar(S, sp, b)
+    if ch == "'":
+        out = np.zeros_like(S)
+        for y in range(H):
+            xs = np.flatnonzero(S[y])
+            if len(xs):
+                c = int(round((xs[0] + xs[-1]) / 2))
+                out[y, max(xs[0], c - 1):min(xs[-1], c + 1) + 1] = True
+        return out
+    if ch == "-":
+        ys = np.flatnonzero(S.any(1))
+        y0 = int(round((ys[0] + ys[-1]) / 2)) - 1
+        return _hbar(S, y0, 3)
+    raise ValueError("2026 glyph fixes: no thinning rule for " + repr(ch))
+
+
+def thin_letters(strip, op):
+    """The ``thin_letters`` operation on a nameplate strip (32 x 1024 RGBA): every glyph cell of the strip the build
+    holds (``offsets``: the 29 atlas columns) thinned by its letter's rule, moved to its cell's column 0, in the colour
+    ``fill`` on a clear strip of that colour (the old letters are cleared by the instruction, never by shipped texels)."""
+    rgba = np.asarray(strip, np.uint8)
+    fill = _colour(op["fill"]).astype(np.uint8)
+    top, cap, cell = int(op["top"]), int(op["cap"]), 32
+    out = np.zeros(rgba.shape, np.uint8)
+    out[..., :3] = fill
+    weights = op["weights"]
+    for i, ch in enumerate(_THIN_GLYPHS):
+        x0 = int(op["offsets"][i])
+        m = rgba[top:top + cap, x0:x0 + cell, 3] >= 128
+        cols = np.flatnonzero(m.any(0))
+        m = m[:, cols[0]:cols[-1] + 1]
+        new = _thin_letter(ch, m, int(op["stem"]), int(op["bar"]), [float.fromhex(w) for w in weights.get(ch, [])])
+        ncols = np.flatnonzero(new.any(0))
+        new = new[:, ncols[0]:ncols[-1] + 1]
+        region = out[top:top + cap, x0:x0 + new.shape[1]]
+        region[new, 3] = 255
+    return out
 
 
 def digit_level0(span):

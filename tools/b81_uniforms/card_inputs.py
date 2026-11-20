@@ -98,7 +98,9 @@ def prepare(export, compiled, receipts, released_disc, output, retail):
                     checked(
                         meta['span_sha256'], row['before_sha256'], sel + ' ' + material + ' original span'
                     )
-                    rgba = relief.authored_map(rel, row, retail_maps, base)
+                    # review F2: a jersey's collar opening comes from the kit's torso as the build holds it
+                    torso = png(Path(materials['torso']['new'])) if material == 'bump_jersey' else None
+                    rgba = relief.authored_map(rel, row, retail_maps, base, torso)
                     after_hash = sha(rgba.tobytes())
                     checked(after_hash, row['composed_sha256'], sel + ' ' + material + ' relief RGBA')
                     after = output / 'relief' / (after_hash + '.png')

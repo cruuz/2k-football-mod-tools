@@ -292,6 +292,103 @@ def find_ops(old, new, digit0):
     return None
 
 
+#: review F4 (coordinator, 2026-11-20): a difference may never encode the base's shape. Erasures are instructions,
+#: additions are pixels; the shipped texels of a ``paint`` op may cover at most this share of the base's edge texels.
+EDGE_OVERLAP_LIMIT = 0.25
+
+
+def base_edges(a):
+    """Texels of the base's ink whose colour or alpha differs from a 4-neighbour (its outlines and colour boundaries)."""
+    a = np.asarray(a)
+    key = (a[..., 0].astype(np.int64) << 24) | (a[..., 1].astype(np.int64) << 16) | (a[..., 2].astype(np.int64) << 8) | a[..., 3]
+    key = np.where(a[..., 3] == 0, -1, key)
+    edge = np.zeros(key.shape, bool)
+    edge[1:] |= key[1:] != key[:-1]
+    edge[:-1] |= key[:-1] != key[1:]
+    edge[:, 1:] |= key[:, 1:] != key[:, :-1]
+    edge[:, :-1] |= key[:, :-1] != key[:, 1:]
+    return edge & (a[..., 3] > 0)
+
+
+def paint_positions(ops, shape):
+    out = np.zeros(shape[:2], bool)
+    for op in ops:
+        if op['op'] == 'paint':
+            for y, x0, values in op['runs']:
+                out[y, x0:x0 + len(values) // 8] = True
+    return out
+
+
+def edge_overlap(base, ops):
+    """Share of the base's edge texels that the shipped paint texels cover (0 when nothing is painted)."""
+    edges = base_edges(base)
+    if not edges.any():
+        return 0.0
+    return float((paint_positions(ops, base.shape) & edges).sum()) / float(edges.sum())
+
+
+def dthick(dx, dy, s=2, stretch=1.7, dk=0.95):
+    """jax_thin / font._dthick: the horizontal weight of a diagonal (authoring time only; stored as float64 hex)."""
+    ang = np.arctan2(abs(dx) * stretch, abs(dy))
+    return max(float(s), s * dk / max(np.cos(ang), 0.35))
+
+
+def thin_weights(ch, W, H, s=2, b=2):
+    """The diagonal weights jax_thin.thin computes for one letter, in its order (see nfl2k5_glyph_fixes_2026)."""
+    if ch == 'W':
+        t = dthick(W * 0.2, H * 0.8, s)
+        q1, q3 = W * 0.30, W * 0.70
+        xa = W / 2 - t / 2
+        return [t, dthick(q1 - t / 2 - xa, H - H * 0.22, s), dthick(q3 - t / 2 - xa, H - H * 0.22, s)]
+    if ch == 'M':
+        depth = H * 0.70
+        t = dthick(W / 2, depth, s)
+        return [t, dthick(W / 2 - t / 2, depth, s), dthick(W / 2 - t / 2 - (W - t), depth, s)]
+    if ch == 'N':
+        t = dthick(W - s, H, s)
+        return [t, dthick(W - t, H, s)]
+    if ch == 'K':
+        yk = H * 0.58
+        t = dthick(W - s, yk, s)
+        d1 = dthick(s - (W - t), yk, s)
+        ya = yk - 4.0
+        xa = (W - t) + (ya / yk) * (s - (W - t)) + 1.0
+        t2 = dthick(W - xa, H - ya, s)
+        return [t, d1, t2, dthick(W - round(t2) - xa, H - ya, s)]
+    if ch == 'X':
+        t = dthick(W, H, s)
+        return [t, dthick(W - t, H, s), dthick(0 - (W - t), H, s)]
+    if ch == 'Y':
+        yj = H * 0.52
+        x0 = int(round((W - s) / 2))
+        t = dthick(W / 2, yj, s)
+        return [t, dthick(x0, yj, s), dthick(x0 + s - t - (W - t), yj, s)]
+    if ch == 'Z':
+        t = dthick(W, H - 2 * b, s)
+        return [t, dthick(0 - (W - t), H - b + 0.5 - (b - 0.5), s)]
+    return []
+
+
+def thin_op(base_strip, name_span, new, stem=2, bar=2, top=4, cap=24):
+    """The ``thin_letters`` instruction that rebuilds ``new`` from the strip the build holds, or None."""
+    sys.path.insert(0, str(ROOT))
+    from mod_editor.core import nfl2k5_kit_fixes_2026 as kf
+    offsets = [int(x) for x, _w in kf.name_metrics(name_span)]
+    opaque = new[new[..., 3] == 255][:, :3]
+    if not len(opaque):
+        return None
+    fill = hexc(np.unique(opaque, axis=0)[0])
+    weights = {}
+    for i, ch in enumerate(gf._THIN_GLYPHS):
+        m = base_strip[top:top + cap, offsets[i]:offsets[i] + 32, 3] >= 128
+        cols = np.flatnonzero(m.any(0))
+        w = thin_weights(ch, int(cols[-1] - cols[0] + 1), cap, stem, bar)
+        if w:
+            weights[ch] = [float(v).hex() for v in w]
+    op = dict(op='thin_letters', stem=stem, bar=bar, top=top, cap=cap, fill=fill, offsets=offsets, weights=weights)
+    return [op] if np.array_equal(gf.derive_digit(base_strip, [op]), new) else None
+
+
 def paint_runs(base, new):
     """The texels of ``new`` that differ from ``base`` as [row, first column, "RRGGBBAA" per texel] runs."""
     differ = (np.asarray(base) != np.asarray(new)).any(-1)
@@ -316,6 +413,79 @@ def _find_job(job):
     return find_ops(old, new, digit0)
 
 
+def convert(disc, retail, limit_rows=None):
+    """Review F3/F4: re-express every derived row that ships texels (``paint``) under the rule "a difference may never
+    encode the base's shape": a nameplate strip as ``thin_letters`` (no texel), a digit as operations, or a remap plus a
+    residual paint whose texels cover at most EDGE_OVERLAP_LIMIT of the base's edges. The picture (``rgba_sha256``) and
+    the compiled span (``after_sha256``) of every row stay exactly as they are (checked)."""
+    import b81_uniform_pass as up
+    path = gf.DATA_B81U
+    document = json.loads(path.read_text(encoding='utf-8'))
+    rows = [r for r in document['textures'] if r['kind'] in ('digit_derived', 'names_derived')
+            and any(op['op'] == 'paint' for op in r['derive'])]
+    if limit_rows:
+        rows = [r for r in rows if f"{r['selector']}:{r['chunk']}" in limit_rows]
+    with bw._Image.open(Path(disc), writable=False) as image:
+        index = bw._parsed_index(image)
+        entries = {bw.logical_name_for(e.name_id): e for e in index.entries}
+        raws = {s_: image.read_segments(index.sub_extents(entries[s_ + '.IFF'], 0, entries[s_ + '.IFF'].size))
+                for s_ in sorted({r['selector'] for r in rows})}
+    strips = sorted({r['selector'] for r in rows if r['kind'] == 'names_derived'})
+    if strips:
+        kits = up.retail_kits_for_nameplates(retail)
+        for s_ in strips:
+            raws[s_] = up.after_nameplate_pass(s_, raws[s_], kits)
+
+    def span_of(sel, chunk):
+        c = gf._chunk_for(raws[sel], chunk)
+        return raws[sel][c.offset:c.end_offset]
+
+    report = {}
+    for row in rows:
+        span = span_of(row['selector'], row['chunk'])
+        assert sha(span) == row['before_sha256'], (row['selector'], row['chunk'], 'input differs from its pin')
+        names = row['kind'] == 'names_derived'
+        base = gf.names_level0(span) if names else gf.digit_level0(span)
+        picture = gf.derive_digit(base, row['derive'])
+        assert sha(picture.tobytes()) == row['rgba_sha256'], (row['selector'], row['chunk'], 'picture pin')
+        ops = None
+        if names:
+            for stem, bar in ((3, 3), (2, 2), (3, 2), (2, 3)):
+                ops = thin_op(base, span_of(row['selector'], 44), picture, stem, bar)
+                if ops:
+                    break
+            assert ops, (row['selector'], 'no thinning rule rebuilds this strip')
+        else:
+            fam = 33 if row['chunk'] >= 33 else 13
+            ops = find_ops(base, picture, gf.digit_level0(span_of(row['selector'], fam)))
+            if ops is None:
+                rows_, cols_, _left = solve_remap(picture, base)
+                remap = [dict(op='remap', rows=rows_, cols=cols_)]
+                ops = remap + [dict(op='paint', runs=paint_runs(gf.derive_digit(base, remap), picture))]
+        assert np.array_equal(gf.derive_digit(base, ops), picture), (row['selector'], row['chunk'])
+        overlap = edge_overlap(base, ops)
+        new_row = dict(row, derive=ops)
+        compiled, _detail = (gf.compile_derived_names if names else gf.compile_derived_digit)(span, new_row)
+        assert sha(compiled) == row['after_sha256'], (row['selector'], row['chunk'], 'compile differs')
+        key = '+'.join(o['op'] for o in ops)
+        line = report.setdefault(row['defects'][0] if row.get('defects') else row['selector'], dict(rows=0, ops={}))
+        line['rows'] += 1
+        line['ops'][key] = line['ops'].get(key, 0) + 1
+        line['painted_texels'] = line.get('painted_texels', 0) + int(paint_positions(ops, base.shape).sum())
+        line['max_edge_overlap'] = max(line.get('max_edge_overlap', 0.0), round(overlap, 3))
+        if overlap > EDGE_OVERLAP_LIMIT:
+            line.setdefault('refused', []).append(f"{row['selector']}:{row['chunk']} {overlap:.2f}")
+            continue
+        row['derive'] = ops
+    path.write_text(json.dumps(document, indent=1, sort_keys=True) + '\n', encoding='utf-8')
+    gf.spec(path)
+    for family, line in sorted(report.items()):
+        print(family, json.dumps(line, sort_keys=True))
+    refused = [r for line in report.values() for r in line.get('refused', [])]
+    print('rows', len(rows), 'refused (texels would trace the base):', refused)
+    return 1 if refused else 0
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument('disc')
@@ -324,7 +494,10 @@ def main():
     parser.add_argument('--paint', nargs='*', default=[], help='families redrawn by code: skip the operation search, '
                         'ship the texels that differ from the base')
     parser.add_argument('--drop', nargs='*', default=[], help='families to withdraw instead (not used for beta 81)')
+    parser.add_argument('--convert', action='store_true', help='re-express derived rows that ship texels (review F3/F4)')
     args = parser.parse_args()
+    if args.convert:
+        raise SystemExit(convert(args.disc, args.retail))
     path = gf.DATA_B81U
     document = json.loads(path.read_text(encoding='utf-8'))
     folder = gf.art_folder(document)
@@ -386,12 +559,16 @@ def main():
         if row['kind'] == 'names_png':
             base = gf.names_level0(span)
             new = picture(row, base.shape)
-            ops = None
+            ops = thin_op(base, span_of(row['selector'], 44), new)    # the old letters cleared by instruction (F3)
             kind = 'names_derived'
         elif family in paint_families:
+            # drawn by code: the remap of the build's glyph that explains most of it, then only the texels that
+            # still differ (review F4: the old outline is never shipped as texels)
             base = gf.digit_level0(span)
             new = picture(row, base.shape)
-            ops = None
+            rows_, cols_, _left = solve_remap(new, base)
+            remap = [dict(op='remap', rows=rows_, cols=cols_)]
+            ops = remap + [dict(op='paint', runs=paint_runs(gf.derive_digit(base, remap), new))]
             kind = 'digit_derived'
         else:
             fam = 'arm' if '_digit_arm_' in row['png'] else 'jersey'
@@ -402,8 +579,14 @@ def main():
         if ops is None:
             # no operation list rebuilds it: ship only the texels that differ from what the build holds here
             ops = [dict(op='paint', runs=paint_runs(base, new))]
+        painted = int(paint_positions(ops, np.asarray(base).shape).sum())
+        if painted:
+            overlap = edge_overlap(base, ops)
+            assert overlap <= EDGE_OVERLAP_LIMIT, (row['selector'], row['chunk'], 'shipped texels cover %.2f of the '
+                                                   'base edges: the difference would encode the base shape' % overlap)
             line['painted'] += 1
-            line['painted_texels'] += int((np.asarray(base) != np.asarray(new)).any(-1).sum())
+            line['painted_texels'] += painted
+            line['max_edge_overlap'] = max(line.get('max_edge_overlap', 0.0), round(overlap, 3))
         else:
             line['operations'] += 1
         derived = dict(row, kind=kind, derive=ops, rgba_sha256=sha(np.ascontiguousarray(new).tobytes()))

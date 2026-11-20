@@ -80,6 +80,14 @@ class Document(unittest.TestCase):
 
     def test_the_bases_are_pinned_retail_maps_and_the_kernels_are_stored(self):
         self.assertEqual(set(self.doc["bases"]), {"bump_jersey", "bump_sleeve"})
+        jersey = self.doc["bases"]["bump_jersey"]                 # review F1: the islands come from the disc's mesh
+        self.assertEqual(len(jersey["mesh_span_sha256"]), 64)
+        self.assertEqual(len(jersey["islands_sha256"]), 64)
+        self.assertNotIn("islands", jersey)
+        self.assertNotIn("openings", jersey)
+        for row in self.doc["slots"]:                            # review F2: each opening from the kit's torso
+            if row["slot"] == "bump_jersey":
+                self.assertEqual(len(row["opening_sha256"]), 64)
         for slot, entry in self.doc["bases"].items():
             self.assertEqual((entry["selector"], entry["chunk"]), ("18H0", {"bump_jersey": 45, "bump_sleeve": 46}[slot]))
             self.assertEqual(len(entry["span_sha256"]), 64)
@@ -89,16 +97,15 @@ class Document(unittest.TestCase):
             self.assertLess(abs(float(weights.sum()) - 1.0), 1e-12, sigma)
             self.assertEqual(int(np.argmax(weights)), len(weights) // 2, sigma)
 
-    def test_the_art_is_two_difference_masters_the_island_mask_and_small_patches_each_stored_once(self):
+    def test_the_art_is_two_difference_masters_and_small_patches_each_stored_once(self):
         folder = rl.art_folder(self.doc)
         self.assertEqual(folder, ROOT / "data/nfl2k5_relief_2026_b81u")
         self.assertEqual(set(self.doc["masters"]), {"bump_jersey", "bump_sleeve"})     # pants: patches only
         for name, entry in self.doc["masters"].items():
             self.assertEqual((entry["width"], entry["height"]), SIZES[name])
         files = sorted(p.name for p in folder.glob("*.png"))
-        named = sorted([m["png"] for m in self.doc["masters"].values()] + [p["png"] for p in self.doc["patches"].values()]
-                       + [self.doc["bases"]["bump_jersey"][m]["png"] for m in ("islands", "openings")])
-        self.assertEqual(files, named)
+        named = sorted([m["png"] for m in self.doc["masters"].values()] + [p["png"] for p in self.doc["patches"].values()])
+        self.assertEqual(files, named)                           # no layout mask ships (review F1, F2)
         self.assertEqual(len(set(p["sha256"] for p in self.doc["patches"].values())), len(self.doc["patches"]))
         self.assertLess(sum((folder / f).stat().st_size for f in files), 1024 * 1024)
         used = {r["patch"] for r in self.doc["slots"] if r["patch"]}
@@ -110,13 +117,6 @@ class Document(unittest.TestCase):
             self.assertLessEqual(entry["y"] + entry["height"], h)
             self.assertTrue(set(np.unique(patch[..., 3])) <= {0, 255}, key)
             self.assertLess(int((patch[..., 3] == 255).sum()), 6000, key)              # a patch, not a map
-        island = rl.islands(self.doc)
-        self.assertEqual(island.shape, (512, 1024))
-        collars = rl.openings(self.doc)
-        self.assertEqual(len(collars), self.doc["bases"]["bump_jersey"]["openings"]["count"])
-        self.assertEqual({r["opening"] for r in self.doc["slots"] if r["slot"] == "bump_jersey"}, set(range(len(collars))))
-        for mask in collars:
-            self.assertTrue(mask[:, :125].sum() == 0 and mask[158:].sum() == 0 and mask.any())     # inside the neck
 
     def test_a_pinned_png_that_changed_is_refused(self):
         entry = dict(next(iter(self.doc["masters"].values())))
@@ -158,9 +158,11 @@ class RetailFree(unittest.TestCase):
         patch = np.zeros((40, 60, 4), np.uint8)
         patch[5:35, 5:55] = normal_map(rng, 30, 50)
         self.assertIsNotNone(catalog.relief_problem(ART + "pants_0123456789abcdef.png", png(patch)))
-        grey = np.full((8, 8, 4), 255, np.uint8)
-        grey[..., :3] = 128
-        self.assertIsNotNone(catalog.relief_problem(ART + "islands_jersey.png", png(grey)))
+        mask = np.zeros((16, 16, 4), np.uint8)                   # review F1, F2: no layout mask may ship, by any name
+        mask[..., 3] = 255
+        mask[4:12, 2:9, :3] = 255
+        self.assertIsNotNone(catalog.relief_problem(ART + "islands_jersey.png", png(mask)))
+        self.assertIsNotNone(catalog.relief_problem(ART + "jersey_0123456789abcdef.png", png(mask)))
         diff = np.zeros((256, 512, 4), np.uint8)
         diff[..., 3] = 255
         diff[100:110, 100:110, :3] = (3, 251, 254)
@@ -312,11 +314,22 @@ class BuildHook(unittest.TestCase):
             with self.assertRaises((ValueError, OSError)):
                 rl.apply_relief_b81u(path, strict=True)
 
-    def test_a_disc_without_the_pinned_retail_maps_gives_no_base(self):
+    def test_a_disc_without_the_pinned_retail_maps_gives_no_base_and_says_why(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "not_a_disc.iso"
             path.write_bytes(b"\0" * 4096)
-            self.assertIsNone(rl.retail_maps(rl.relief_b81u(), path))
+            problems = []
+            self.assertIsNone(rl.retail_maps(rl.relief_b81u(), path, problems))
+            self.assertEqual(len(problems), 1)
+            self.assertIn("not_a_disc.iso", problems[0])
+
+    def test_a_wrong_disc_leaves_the_relief_out_with_a_plain_sentence_never_silently(self):
+        """Review F7: the build's optional-step wrapper turns this error into a left-out step with a user note."""
+        source = (ROOT / "mod_editor/core/nfl2k5_relief_2026.py").read_text(encoding="utf-8")
+        at = source.index("maps = retail_maps(document, source, problems)")
+        block = source[at:at + 700]
+        self.assertIn("raise ValueError(\"2026 jersey relief left out", block)
+        self.assertNotIn("return dict(state=\"no_retail_base\"", source)
 
 
 @unittest.skipUnless(DISC.is_file() and RETAIL.is_file(), "the released v0.9 disc or the retail disc is not on this machine")
@@ -343,18 +356,35 @@ class ReleasedDisc(unittest.TestCase):
             states.setdefault(state, []).append((row["selector"], row["slot"]))
         self.assertEqual(sorted(states), ["before"], {k: v[:5] for k, v in states.items()})
 
+    def as_built(self, selector):
+        """The kit package as a build holds it at this step: the released one with the b81 helmet and uniform passes
+        (they change colour textures, so the torso the collar opening is read from)."""
+        from mod_editor.core import nfl2k5_kit_fixes_2026 as kf
+        raw = self.kits[selector]
+        for document in (kf.helmets_b81(), kf.uniforms_b81()):
+            if not any(r["selector"] == selector for r in document["textures"]):
+                continue
+            replacements, _receipt = kf.compile_resource(selector, raw, strict=False, document=document)
+            out = bytearray(raw)
+            for offset, data in replacements:
+                out[offset:offset + len(data)] = data
+            raw = bytes(out)
+        return raw
+
     def test_the_retail_disc_holds_the_pinned_base_maps(self):
         self.assertIsNotNone(self.retail)
         self.assertEqual(self.retail["bump_jersey"].shape, (256, 512, 4))
         self.assertEqual(self.retail["bump_sleeve"].shape, (128, 128, 4))
+        self.assertEqual(self.retail["islands"].shape, (512, 1024))      # derived from the disc's hi_body mesh
 
     def test_a_sample_compiles_from_the_retail_base_to_its_pins_and_decodes_to_the_composed_map(self):
         from nfl_txtr import decode_chunk, parse_chunks, parse_texture, texture_to_rgba
         rows = [r for r in self.doc["slots"] if r["selector"] in SAMPLE]
-        spans = {}
+        spans, torsos = {}, {}
         for row in rows:
             spans[(row["selector"], row["slot"])] = rl.state_of(row, self.kits[row["selector"]])[2]
-        results = rl.compile_slots(rows, spans, self.doc, retail=self.retail, count=1)
+            torsos[row["selector"]] = rl.torso_rgba(self.as_built(row["selector"]))
+        results = rl.compile_slots(rows, spans, self.doc, retail=self.retail, torsos=torsos, count=1)
         for row in rows:
             new, detail = results[(row["selector"], row["slot"])]
             self.assertEqual(sha(new), row["after_sha256"], row["selector"] + " " + row["slot"])
@@ -380,8 +410,9 @@ class ReleasedDisc(unittest.TestCase):
                 base = rl.sleeve_base(gauss, self.retail[slot])
             else:
                 row = next(r for r in self.doc["slots"] if r["selector"] == "18H0" and r["slot"] == "bump_jersey")
-                opening = rl.openings(self.doc)[row["opening"]]
-                base = rl.jersey_base(gauss, self.retail[slot], opening, rl.islands(self.doc))
+                row = next(r for r in self.doc["slots"] if r["selector"] == "18H0" and r["slot"] == "bump_jersey")
+                opening = rl.kit_opening(row, rl.torso_rgba(self.as_built("18H0")))
+                base = rl.jersey_base(gauss, self.retail[slot], opening, self.retail["islands"])
             for reference in (self.retail[slot][..., :3], base[..., :3]):
                 same = (difference == reference).all(-1)
                 self.assertLess(float(same.mean()), 0.001, slot)

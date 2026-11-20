@@ -24,6 +24,7 @@ from mod_editor.core import nfl2k5_relief_2026 as rl  # noqa: E402
 
 #: pinned on the authoring machine (Linux x86-64, CPython 3.12.3, numpy 1.26.4); see retail-free/REVIEW_ME.md
 PINS = {
+    "collar_opening": "d52d11ff9a2d5addbbcb87d4515bfc40063e3cd06439b57a1f0980cfbadd4615",
     "composed_mips": "87c50339f0064a79ca2bf41dcc08d798121f4f805aa9ce0b70fe1b9ef158e6c5",
     "edge_31x33": "9b63684a8e282a9ca4bf1eb04e3e4973de794a7cdd2c460dc50892382d8d475b",
     "edge_32x32": "3ea76b7e7e979e7d1a241037bc06ed54483e86f04d49227f1796d3a40d7c6692",
@@ -40,6 +41,15 @@ PINS = {
     "embolden_2_True_31x33": "3793c95f9382b3e35053776ef5715d84887c31a48703ecc963ecc4a6fd3c42b3",
     "embolden_2_True_32x32": "df5e2ef3433de770fe782d7371b4f5c0c72ee9ab0d0aadf975a689798d3f3e4f",
     "embolden_2_True_64x64": "3eac4c6fa815ad67b7721d256fc17c49551168e3600c5f36a3def2d5c8ad6376",
+    "gauss_1.6": "2d49df4d46064df6076574cc24383e073e22fd81029c4d64dc6865bc1b720103",
+    "gauss_10.0": "7566dfcc24ae03a802d04ed00c05092cf288fc3d8d646a4581ea18898173d1e7",
+    "gauss_3.0": "faa5d937b558a8e001ba212a93fbf2f092b9586a0507d45ada73fd358fde3c70",
+    "gauss_3.2": "0c73df3ee548908d678d547244ee7cd4ca004dbbeb06ad9baec08e342848b9af",
+    "gauss_3.6": "e82fc0618c7749800aa475589cc8dcb61d9791782c734289ec8a5e4e5926bea1",
+    "gauss_4.0": "db0c4ff101c8279201a567ce2ed5dfd4aed1d5b5fce045f506d8bd670143d9e3",
+    "gauss_4.6": "eb0a007e9a83f6976378b0e4a2cab339776fa1ce6395dbdac6501bace42a4954",
+    "gauss_6.0": "3eb0b9c48179972ba1c9c7075fea7d08705290105eab739b90c43899190a432e",
+    "gauss_9.0": "481251e46681e64efdf7ed7c7b9beaffadd386f1aca872be25381083958fe931",
     "inline_dark_31x33": "71e64e6efb55df426a0820ecb3eb7ac1b4dcf79a34a6e53a62e38b799615515c",
     "inline_dark_32x32": "950043b0cf2f09931b4b2b0a9007c1489584a9456c8410e4ba2028448e6d4e0e",
     "inline_dark_64x64": "d0722f204f59d4038cb5a3a56d595a73ae932fbebea9b111488638e97e759280",
@@ -48,12 +58,16 @@ PINS = {
     "inline_fill_64x64": "3dcd2cacb3a617ded7679961ce78448fb52186e1912c602b95ed163aba547749",
     "jersey_base": "994996c3141dddf98a97386fef5be64532c95427740201f464d55a0cd0853d3f",
     "jersey_base_odd": "d5d2e1ef804b93fab2c686577ea1a46085f8b7b4a78e338a67d5da946459cde4",
+    "jersey_folds": "b8a925e688d4582ff03bca23e67e78fbc37204ae470e4eb633733b6387f4e846",
     "old_construction": "a4d79abc3160641730becf6441649efac94adedf754dbdd43b9a9c9bade7eabb",
     "paint_31x33": "300481b60fc80b2eddde9c8895937756b98f5c2948e64f92239083b0f913f4a7",
     "paint_32x32": "0777876215f1d47ff7dd0ec6762932eeae46cf4f792b195f5ae4e85ea99c50e8",
     "paint_64x64": "c2b47df1e746ace4839e5c485c90e7e2c5bcf900da1c8e49f68717913c18b8a6",
     "pairwise_mean": "d1e92a813d4c3b78778e3bc9624e60df79f1f87f349444d868bfbeb5c9d3aa60",
     "pants_base": "496a802de9ecac074b9d299d387725f697a89b2fe1eee5425a9e1b8d4d1b9053",
+    "pants_lifted": "f81f67906ca704c2e8e60880ae5b87f7ad1b8c5cf5cae7122b8856d5234615e2",
+    "raster_islands": "4e29ccc4365161d7e1f5ac2349f215d1104ad006d5d28a894c4f9e9580d827d8",
+    "raster_islands_dilated": "b48d0735a4e1baf76417be0418c293afceb1f8c7f2f98a49ab06fa26ecf9a0b8",
     "recolour_31x33": "c731be63189a8cf08bcc94bd232041aa7c3849b53a7ce5eccf2f5b7a314d77c4",
     "recolour_32x32": "01fb0061347c9f0445cde1310ee975409ae2c940301090185dc88f558f37c5ca",
     "recolour_64x64": "f01ded9ee8469d532003379feeaf3206161c7d757141f434f9f3077a8998bf40",
@@ -61,6 +75,10 @@ PINS = {
     "remap_32x32": "be3a394310ff4543c07a3b15d7d5b8516bbbfff0f0195dfbffebde58239a5b20",
     "remap_64x64": "cfec48e75804cdf11385b72256249833fc6e81e3101822e0f1b39619d8f25df6",
     "sleeve_base": "ad0e97c9c8b84b7416167dfe6a2eeae4d871bec31d29ec471b1427e6d0883851",
+    "sleeve_folds": "44464e37c5fe13e95f5f295a63c5491790d0eeb8b4a10b83c71a8063a6fd46e5",
+    "slopes": "c3da6eb49aa5cf1f7faee20e9dba748651344a16c5a92a1a628f7b86bf38b627",
+    "thin_letters_2_2": "7129b34b02079c016c8cc955c3ab9bd282ae1941c90aef2c94b43c3eb3d2a67b",
+    "thin_letters_3_3": "e22191b39a4510020811b7ed696f1c788c8a210331cdee792f7eecf33570b62f",
 }
 
 
@@ -161,6 +179,42 @@ class ReliefDerivation(unittest.TestCase):
         worked = [tuple(b) for b in rl.OLD_PANTS] + [(80, 22, 116, 40), (402, 26, 420, 42)]
         self.assertCheck("pants_base", rl.pants_base(self.gauss, before, worked))
 
+    def test_the_float_stages_bit_for_bit(self):
+        """Review F6: the uint8 maps hide most last-bit float differences (rounding absorbs them), so the float64
+        stages are pinned themselves: every Gaussian, the slopes, the folds before reduction, the membrane fill. A
+        changed summation order or a fused multiply-add on any platform changes these hashes."""
+        field = (noise(96, 160, 11).astype(np.float64) - 127.5) / 97.0 + (noise(96, 160, 12).astype(np.float64) / 1e5)
+        for sigma in rl.SIGMAS:
+            self.assertCheck("gauss_%r" % float(sigma), self.gauss(field, sigma))
+        retail = normal_map(256, 512, 1, mesh=(60, 160, 40, 200))
+        self.assertCheck("slopes", rl.slopes(rl.decode_map(retail)[..., :2]))
+        self.assertCheck("jersey_folds", rl.jersey_folds(self.gauss, retail, collar(256, 512), rl.dilate(islands(512, 1024), 6)))
+        self.assertCheck("sleeve_folds", rl.sleeve_folds(self.gauss, normal_map(128, 128, 3)))
+        self.assertCheck("pants_lifted", rl.pants_lifted(self.gauss, normal_map(256, 512, 4)))
+
+    def test_island_rasteriser(self):
+        """Review F1: the UV coverage rule the build applies to the game mesh, on triangles that share edges and
+        vertices, and vertices placed exactly on texel centres and on texel corners."""
+        w, h = 64, 32
+        uv = np.array([[2.5, 1.5], [30.5, 1.5], [30.5, 29.5], [2.5, 29.5], [16.0, 16.0], [61.0, 3.0], [40.0, 30.0],
+                       [33.0, 2.0], [47.25, 17.75]], np.float64) / np.array([float(w), float(h)])
+        uv = np.frombuffer(np.asarray(uv, "<f4").tobytes(), "<f4").reshape(-1, 2).astype(np.float64)   # as the export
+        tris = np.array([[0, 1, 4], [1, 2, 4], [2, 3, 4], [3, 0, 4], [5, 6, 7], [5, 8, 6], [0, 0, 1]], np.int64)
+        mask = rl.raster_islands(uv, tris, w, h)
+        self.assertTrue(mask[16, 16] and mask[2, 3] and not mask[31, 63])
+        self.assertCheck("raster_islands", np.packbits(mask).tobytes())
+        self.assertCheck("raster_islands_dilated", np.packbits(rl.dilate(mask, 6)).tobytes())
+
+    def test_collar_opening(self):
+        """Review F2: the opening the build reads from a kit's torso texture (seeded flood fill, integers only)."""
+        torso = np.zeros((256, 512, 4), np.uint8)
+        torso[..., :3] = 40
+        torso[..., 3] = 255
+        torso[collar(256, 512)] = (220, 220, 220, 255)
+        torso[10:12, 150:170] = (226, 221, 219, 255)               # within 14 levels: part of the opening
+        torso[30:33, 155:160] = (240, 200, 200, 255)               # not within 14: a notch
+        self.assertCheck("collar_opening", np.packbits(rl.collar_opening(torso)).tobytes())
+
     def test_pairwise_mean(self):
         values = (noise(37, 23, 9).astype(np.float64) - 127.5) / 3.0
         means = [float(rl.pairwise_mean(values.ravel()[:n])).hex() for n in (1, 7, 8, 9, 127, 128, 129, 300, 851)]
@@ -213,6 +267,25 @@ class GlyphInstructions(unittest.TestCase):
             self.fail("no pin for %s: %s" % (name, digest))
         self.assertEqual(digest, PINS[name], name)
         return out
+
+    def test_thin_letters(self):
+        """Review F3: the Jaguars strip rule on a synthetic strip: 29 glyph cells of letter-like shapes."""
+        strip = np.zeros((32, 1024, 4), np.uint8)
+        strip[..., :3] = (200, 30, 30)
+        offsets = [32 * (i + 1) for i in range(29)]
+        for i, x0 in enumerate(offsets):
+            w = 9 + (i % 7)
+            strip[4:28, x0 + (i % 2):x0 + (i % 2) + w, 3] = 255
+            strip[10:12, x0 + 3:x0 + w - 2, 3] = 0                  # a counter slit
+            strip[4:6, x0:x0 + 2, 3] = 140 if i % 3 else 90          # soft corners (alpha 128 is the ink line)
+        weights = {"W": ["0x1.8p+1", "0x1.4p+1", "0x1.4p+1"], "M": ["0x1.8p+1", "0x1.2p+1", "0x1.2p+1"],
+                   "N": ["0x1.4p+1", "0x1.6p+1"], "K": ["0x1.4p+1", "0x1.4p+1", "0x1.2p+1", "0x1.1p+1"],
+                   "X": ["0x1.4p+1", "0x1.4p+1", "0x1.4p+1"], "Y": ["0x1.4p+1", "0x1.4p+1", "0x1.4p+1"],
+                   "Z": ["0x1.4p+1", "0x1.4p+1"]}
+        for stem, bar in ((2, 2), (3, 3)):
+            op = dict(op="thin_letters", stem=stem, bar=bar, top=4, cap=24, fill="#101010", offsets=offsets,
+                      weights=weights)
+            self.run_ops("thin_letters_%d_%d" % (stem, bar), strip, [op])
 
     def test_each_operation_kind(self):
         for size in ((64, 64), (32, 32), (31, 33)):

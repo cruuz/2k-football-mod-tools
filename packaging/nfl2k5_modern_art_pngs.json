@@ -1,5 +1,5 @@
 {
-  "classification": "b779 pt1's real portrait atlases are the official NFL.com / ESPN headshot photographs of the created real free agents, cropped and reduced to the game's 128 x 128 P8 portrait format (Noah 2026-10-28: the card shows the real picture, like the NFL roster does); the original photo files never ship, only these game-format portraits. b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), reviewed face by face; no photograph or retail-extracted pixels. b778 ss1's Seamen card, field and face art is drawn from the video references and the authored kit. b778 ee1/ee2's gray alien portrait and face textures are authored from a generated headshot. b778 pg2's TROPHY ROOM emblem is authored (gold cup, navy banner, white type). Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. b775 hs1's nine 64 x 64 hair textures (locs, twists, braids, strands, curls, bun) are drawn procedurally by tools/nfl2k5_hair_styles_generate.py. b778 cf1 and its follow-up jobs scanned the head.png of every club with a recipe in tools/b77/cf1_recipes (tools/b77/cf1_face_scan.py): each is the coach's reference photo projected onto the 2004 head mesh, relit, symmetrised and blended into a painted base, so these head.png files are photo-derived likeness textures shipped under Noah's 2026-10-12 rule (as co2's photo-warped faces were); the reference photos and their cleaned copies never ship. Apart from those coach likeness textures, no photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time. sb1's Super Bowl field flank marks (data/nfl2k5_super_bowl_fields/marks) are drawn by tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design system (no logo is copied, traced or read); LXII to LXV are generic current-system marks for franchise seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 team logos at mark size or a plain club roundel. b776 fn2's four Titans 7 digit textures (data/nfl2k5_glyph_fixes_2026) are flat two-colour shapes drawn from measurements of 2026 club photos (constant-width stem, block foot), not traced from a font file or photo pixels. b780's scorebug digit sheet glyph layer (data/nfl2k5_scorebug_digit_glyphs.png) is rendered text: the digits 0-9, the colon and FINAL drawn by tools/nfl2k5_scorebug_espn_art.py (digits_from_font) with DejaVu Sans Bold through Pillow 10.2.0 / FreeType 2.13.2, white glyph coverage on transparent, and the retail bolt cell cleared; it holds no font file data, no photograph and no retail pixel. DejaVu is under the Bitstream Vera license (DejaVu's changes are public domain), which allows reproducing and distributing the fonts; the release ships only this rendering of those characters, not the font. b81-retail-free-art: the 2026 jersey relief (data/nfl2k5_relief_2026_b81u) ships only the project's own layer: per texel the authored level B relief minus the base the Studio derives at build time from the user's own disc (the 2004 folds softened, the 2004 construction lifted out: mod_editor/core/nfl2k5_relief_2026.py), modulo 256, so its difference files hold this season's seams, collar band, vents, pin holes and embosses and are zero elsewhere; islands_jersey.png and openings_jersey.png are one-bit layout masks of where the jersey's UV islands and the kits' collar openings lie (where the folds stop and soften), with no texel value of any map. The earlier absolute relief masters and patches (85 and 93 percent byte-equal to a transform of the retail maps) were withdrawn, and this tool refuses any relief file that decodes as an absolute normal map. b81-retail-free-art: the b81u digit and nameplate pictures (data/nfl2k5_glyph_fixes_2026_b81u) that ship are measured (retail-free/glyphs/SUMMARY.md: remap, mask and structure tests against the v0.9 glyph and every retail glyph) as drawn new by code from 2026 photographs (ARI, ATL, CIN, LAC, TEN digits; 11 name strips) or as edits of the project's own glyph art (glyph_shapes traced from photographs, or renders of fan-made fonts: CLE, DEN, DET, HOU, LAR, MIA, NE, SEA digits; CLE names). The pictures that edited a glyph the Studio builds from a retail donor are listed in NOT_AUTHORED and do not ship: their edits are shipped as operations and applied at build time to the glyph the user's disc gives (digit_derived), or, where no operation list rebuilds them, only the texels that differ from that glyph (or from the strip the nameplate pass leaves) ship (paint); none was withdrawn.",
+  "classification": "b779 pt1's real portrait atlases are the official NFL.com / ESPN headshot photographs of the created real free agents, cropped and reduced to the game's 128 x 128 P8 portrait format (Noah 2026-10-28: the card shows the real picture, like the NFL roster does); the original photo files never ship, only these game-format portraits. b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), reviewed face by face; no photograph or retail-extracted pixels. b778 ss1's Seamen card, field and face art is drawn from the video references and the authored kit. b778 ee1/ee2's gray alien portrait and face textures are authored from a generated headshot. b778 pg2's TROPHY ROOM emblem is authored (gold cup, navy banner, white type). Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. b775 hs1's nine 64 x 64 hair textures (locs, twists, braids, strands, curls, bun) are drawn procedurally by tools/nfl2k5_hair_styles_generate.py. b778 cf1 and its follow-up jobs scanned the head.png of every club with a recipe in tools/b77/cf1_recipes (tools/b77/cf1_face_scan.py): each is the coach's reference photo projected onto the 2004 head mesh, relit, symmetrised and blended into a painted base, so these head.png files are photo-derived likeness textures shipped under Noah's 2026-10-12 rule (as co2's photo-warped faces were); the reference photos and their cleaned copies never ship. Apart from those coach likeness textures, no photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time. sb1's Super Bowl field flank marks (data/nfl2k5_super_bowl_fields/marks) are drawn by tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design system (no logo is copied, traced or read); LXII to LXV are generic current-system marks for franchise seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 team logos at mark size or a plain club roundel. b776 fn2's four Titans 7 digit textures (data/nfl2k5_glyph_fixes_2026) are flat two-colour shapes drawn from measurements of 2026 club photos (constant-width stem, block foot), not traced from a font file or photo pixels. b780's scorebug digit sheet glyph layer (data/nfl2k5_scorebug_digit_glyphs.png) is rendered text: the digits 0-9, the colon and FINAL drawn by tools/nfl2k5_scorebug_espn_art.py (digits_from_font) with DejaVu Sans Bold through Pillow 10.2.0 / FreeType 2.13.2, white glyph coverage on transparent, and the retail bolt cell cleared; it holds no font file data, no photograph and no retail pixel. DejaVu is under the Bitstream Vera license (DejaVu's changes are public domain), which allows reproducing and distributing the fonts; the release ships only this rendering of those characters, not the font. b81-retail-free-art: the 2026 jersey relief (data/nfl2k5_relief_2026_b81u) ships only the project's own layer: per texel the authored level B relief minus the base the Studio derives at build time from the user's own disc (the 2004 folds softened, the 2004 construction lifted out: mod_editor/core/nfl2k5_relief_2026.py), modulo 256, so its difference files hold this season's seams, collar band, vents, pin holes and embosses and are zero elsewhere; the jersey's UV islands and each kit's collar opening are derived on the user's machine too (from the game's player mesh and the kit's torso texture), so no layout mask ships. The earlier absolute relief masters and patches (85 and 93 percent byte-equal to a transform of the retail maps) were withdrawn, and this tool refuses any relief file that decodes as an absolute normal map. b81-retail-free-art: the b81u digit and nameplate pictures (data/nfl2k5_glyph_fixes_2026_b81u) that ship are measured (retail-free/glyphs/SUMMARY.md: remap, mask and structure tests against the v0.9 glyph and every retail glyph) as drawn new by code from 2026 photographs (ARI, ATL, CIN, LAC, TEN digits; 11 name strips) or as edits of the project's own glyph art (glyph_shapes traced from photographs, or renders of fan-made fonts: CLE, DEN, DET, HOU, LAR, MIA, NE, SEA digits; CLE names). The pictures that edited a glyph the Studio builds from a retail donor are listed in NOT_AUTHORED and do not ship: their edits are shipped as operations and applied at build time to the glyph the user's disc gives (digit_derived), or, where no operation list rebuilds them, only the texels that differ from that glyph (or from the strip the nameplate pass leaves) ship (paint); none was withdrawn.",
   "files": {
     "data/nfl2k5_alien_prospect/face_f.png": {
       "height": 256,
@@ -6153,8 +6153,8 @@
     },
     "data/nfl2k5_relief_2026_b81u/difference_jersey.png": {
       "height": 256,
-      "sha256": "e35c342db7db747d2d056fa8d8020c728ccb9d33ce163e40b57aa2cf04404a17",
-      "size": 35998,
+      "sha256": "f4d24e2c69457b2b08c9ffb9fd9e3c023bea9d41e342842907b8286323f28387",
+      "size": 36000,
       "width": 512
     },
     "data/nfl2k5_relief_2026_b81u/difference_sleeve.png": {
@@ -6163,35 +6163,17 @@
       "size": 1391,
       "width": 128
     },
-    "data/nfl2k5_relief_2026_b81u/islands_jersey.png": {
-      "height": 512,
-      "sha256": "2b792ec6f8978775ec489243dbcff53d73b462d82e0b9155255b42fdaf2d76d8",
-      "size": 2696,
-      "width": 1024
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_0229ca40ee8cc884.png": {
-      "height": 93,
-      "sha256": "a52fce334e3d4a315bc67e01eaeea7ecaf3930e346ed92c7ec5c7d4158df4acb",
-      "size": 5881,
+    "data/nfl2k5_relief_2026_b81u/jersey_08692d8525216e39.png": {
+      "height": 75,
+      "sha256": "83de69541844bb9855916ae0c42cd42c006832a7df90d14a94b29a9e4c9fd8a4",
+      "size": 950,
       "width": 433
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_064793229a179c8e.png": {
-      "height": 76,
-      "sha256": "1c3645cffbed55278a883a13b9fafd1de114d9e80dff9d4c37cd3e934590f216",
-      "size": 3331,
-      "width": 288
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_095745fcc5d9c316.png": {
-      "height": 92,
-      "sha256": "b6e34f7c43f70d56b68d5425a7ca73af325ca7b41832361a7507ea8eaf16e853",
-      "size": 2963,
-      "width": 433
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_0a5b80afd7425af9.png": {
-      "height": 93,
-      "sha256": "bf044c3bf886004d0139d46af764cacb953f7c27773cb8f7df0a5d0fa0288060",
-      "size": 3033,
-      "width": 452
+    "data/nfl2k5_relief_2026_b81u/jersey_0ba7a3e6d1c29068.png": {
+      "height": 80,
+      "sha256": "fd95bef1d517f2ba2050407639c5f27c37cac2293f55044a43ee2af9d6a3355f",
+      "size": 3633,
+      "width": 339
     },
     "data/nfl2k5_relief_2026_b81u/jersey_0d21204f5c3849c3.png": {
       "height": 90,
@@ -6205,23 +6187,17 @@
       "size": 3555,
       "width": 432
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_11171bbd4a9aefb7.png": {
-      "height": 93,
-      "sha256": "8adee4fcdab2882040737f91c4837e31e2e3aa7315c1914fb2d45367f3797b89",
-      "size": 5890,
-      "width": 433
-    },
     "data/nfl2k5_relief_2026_b81u/jersey_12de006ac81dc5c6.png": {
       "height": 76,
       "sha256": "77446def5f08837e66fd46ed189c761971eca60ed9da018fd359b385eb57c2b6",
       "size": 4061,
       "width": 433
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_131a163a9e1459d6.png": {
-      "height": 93,
-      "sha256": "2caffafc4187e9a86097600d20f7c5fdb0bf94f6c43c248099b1e63f8d85d725",
-      "size": 4849,
-      "width": 365
+    "data/nfl2k5_relief_2026_b81u/jersey_131b6886dc0f5f18.png": {
+      "height": 74,
+      "sha256": "1ebdc48fc64cb73c7acb8bd40df15133a02248e2ee3d95e59ce92db247ccedf8",
+      "size": 882,
+      "width": 452
     },
     "data/nfl2k5_relief_2026_b81u/jersey_140fb7b1f9f97f4d.png": {
       "height": 76,
@@ -6229,35 +6205,59 @@
       "size": 4009,
       "width": 452
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_14b0ec6fe221fb24.png": {
-      "height": 90,
-      "sha256": "0fd857ca6741aea025c0eb50bce2bfba39c257ae2ff1b9aa4f0a287aa52ad96e",
-      "size": 2836,
-      "width": 167
-    },
     "data/nfl2k5_relief_2026_b81u/jersey_14e5040f10a441ef.png": {
       "height": 95,
       "sha256": "be07a96ee806e048cec7663b6078c7d18c41504579041b7eda7ef8d2182f5e32",
       "size": 3730,
       "width": 435
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_2055a14c53ae5b09.png": {
+    "data/nfl2k5_relief_2026_b81u/jersey_1678f894fb8eee04.png": {
+      "height": 93,
+      "sha256": "1fd33565a5cebb7b3c417f7a89e225136454d6fdc57045c23dd081e54b944e9b",
+      "size": 4850,
+      "width": 365
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_16826bc7e52e00a4.png": {
+      "height": 70,
+      "sha256": "4ca77721612f2103e2ddf4183f5b63c16a1e80c2168c8a8357605c7e60580d22",
+      "size": 624,
+      "width": 262
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_18516cd4b1a96ca6.png": {
       "height": 90,
-      "sha256": "08909241dc516cd8a8794245a99f6f1e49f3e759f23164ffa63e7414fa713d8b",
-      "size": 2663,
+      "sha256": "2089b8550fa77fe11a7e44c5969924e99a368052a13f371eebb73578f74460dd",
+      "size": 1957,
+      "width": 167
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_18989c0dacb5150c.png": {
+      "height": 93,
+      "sha256": "b56d09a20b7512d91aa8af2d67535e31635e0c9b37a4f03651d8d316730c27ce",
+      "size": 5882,
+      "width": 433
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_19b9ed41c01633f8.png": {
+      "height": 90,
+      "sha256": "fefb8748276e57e2dcf56197a26dad1d7888bd650d0e8e716e2818c0bfd8a3ff",
+      "size": 2702,
       "width": 341
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_21ff2a578a8cb52b.png": {
+    "data/nfl2k5_relief_2026_b81u/jersey_1ef55d30f6acf6d9.png": {
       "height": 95,
-      "sha256": "080eb464dde02cfa12a11c1015d177f0b5da2cf9a1d6fd75be778ca0b9eb559e",
-      "size": 3152,
-      "width": 217
+      "sha256": "74acaaf643fadf7702f967c636cb10824b8e193fb1fbd3a0fd29a02e2956ada4",
+      "size": 2557,
+      "width": 167
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_2d0af00a5ee31ee9.png": {
-      "height": 75,
-      "sha256": "7a819518130e2c7c377fec47a9bf5aaab077647027f5527eadd1806a0e2d02fa",
-      "size": 950,
-      "width": 434
+    "data/nfl2k5_relief_2026_b81u/jersey_22b824c01d021eab.png": {
+      "height": 74,
+      "sha256": "0f71596d2c4225c48476e1e89a47e55901436c39bb4db9327cfc7ba9bb5097f7",
+      "size": 768,
+      "width": 452
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_244f0201ac6384be.png": {
+      "height": 82,
+      "sha256": "351249e2cc40ad7f432e314a09122f4497d7ec5c281b0c1ca5a3cb615a6ab3c6",
+      "size": 3374,
+      "width": 340
     },
     "data/nfl2k5_relief_2026_b81u/jersey_2d8277456186c227.png": {
       "height": 90,
@@ -6265,17 +6265,35 @@
       "size": 2785,
       "width": 167
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_31705a573ff41efd.png": {
-      "height": 77,
-      "sha256": "a3bdfec71ffa71c1a5d5ecb9e5ad915f572a23472fa72eab088d1827bf7b9302",
-      "size": 2814,
-      "width": 340
-    },
     "data/nfl2k5_relief_2026_b81u/jersey_320adf1f2d864ca9.png": {
       "height": 69,
       "sha256": "ae0c58584b531f3f00fe8a5235664a02319614a5f52933f506a9d88f24d365e2",
       "size": 2665,
       "width": 288
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_35bd82ac1b9b62a0.png": {
+      "height": 74,
+      "sha256": "a89e443e79900a70b6ea27eba6a4ae01bedffe2356d17a00aaa0f1829738f99d",
+      "size": 1736,
+      "width": 362
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_384e4b887440dff4.png": {
+      "height": 93,
+      "sha256": "a01809417fe1942df7ce76a9587d3b462ef4c02ab4d9e04e2da6bafe316788ed",
+      "size": 3033,
+      "width": 452
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_3948f848caecb780.png": {
+      "height": 92,
+      "sha256": "3d575cdfa6c145cd8b48ae15bc45c7e6f2b126eec2421025353d18616104803c",
+      "size": 2964,
+      "width": 433
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_3e22a07846126ecd.png": {
+      "height": 94,
+      "sha256": "16344fd6160801b49cb4e24f29d4984175242b6824b531205c8c816a82ce3fc8",
+      "size": 2331,
+      "width": 167
     },
     "data/nfl2k5_relief_2026_b81u/jersey_3e713ba1b55e838d.png": {
       "height": 76,
@@ -6283,11 +6301,11 @@
       "size": 3373,
       "width": 288
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_469a3ea1334056bf.png": {
-      "height": 95,
-      "sha256": "8735de34ab825ae06cc5e1e81d5c3706fe4cb3ea7ebf2e7488956aaa8b864ac0",
-      "size": 3514,
-      "width": 434
+    "data/nfl2k5_relief_2026_b81u/jersey_461ac369e3dcb21c.png": {
+      "height": 91,
+      "sha256": "53500bb36fa3e4abc2fa09465e86fef8434f8a0519b2c07c5c5dc65c327795cd",
+      "size": 2968,
+      "width": 167
     },
     "data/nfl2k5_relief_2026_b81u/jersey_4726bbd20e019079.png": {
       "height": 76,
@@ -6295,41 +6313,41 @@
       "size": 3454,
       "width": 288
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_49038145fc3e7dad.png": {
+    "data/nfl2k5_relief_2026_b81u/jersey_4c6cd8beee2e6267.png": {
       "height": 74,
-      "sha256": "df21550107422f46961be14b9bb8858e47477c015bed633ad459038a5b633b88",
-      "size": 857,
+      "sha256": "05238b3d5542e2601ec9207fb3ca1544e4be7aa0e1b322120a3aeafabc134ead",
+      "size": 854,
       "width": 451
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_49ca50a66156baad.png": {
-      "height": 95,
-      "sha256": "054242c8ba3fe174883c0aff159cc4c77d49adea08afef4b18dafce9ba00311a",
-      "size": 2597,
-      "width": 167
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_51aeb659095af367.png": {
-      "height": 91,
-      "sha256": "5f7a3f133045f910ebcc354e56b726f7868638fc907c6dff0be9549a09ef4d2d",
-      "size": 2099,
-      "width": 167
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_6545e4b0d2fedf7c.png": {
+    "data/nfl2k5_relief_2026_b81u/jersey_4dce2a9c3ecb966d.png": {
       "height": 93,
-      "sha256": "19b8d8688ef00e65cf58932817393c04335687c6bfe5cf7207f9545d7febc3e0",
-      "size": 2227,
+      "sha256": "f8817b1e8401ac750d35f1970d26b426fea597fb34a5e279c9117048a48e315e",
+      "size": 5891,
+      "width": 433
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_5082c749b41055eb.png": {
+      "height": 91,
+      "sha256": "77874c83d059678ccad5c5aedd3c6b668c3ddcce76b3e411d72d8621ff62cced",
+      "size": 2094,
       "width": 167
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_69ea1085fd904228.png": {
-      "height": 82,
-      "sha256": "4fc2fb290cdd5c194cc2349369806a8db89def6e2caf9b666d44a9683437b5a4",
-      "size": 3333,
-      "width": 340
+    "data/nfl2k5_relief_2026_b81u/jersey_595e1efe763da2ca.png": {
+      "height": 93,
+      "sha256": "829f12e137102e83ce4b50755b89797c7ddbd03dab1a22205ad1acb367419496",
+      "size": 2329,
+      "width": 342
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_6bf777c7189987e6.png": {
-      "height": 90,
-      "sha256": "614d53482349f9934cad8cb7c9d94e8344559873b73a15e96b2bc99915866524",
-      "size": 3130,
-      "width": 214
+    "data/nfl2k5_relief_2026_b81u/jersey_5e48e191aea80550.png": {
+      "height": 46,
+      "sha256": "b4737607b7e543e476fa79c1113463a83af2e8f016030ab980f4ee35ee71409d",
+      "size": 329,
+      "width": 245
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_6ca7bb7f91efbbb8.png": {
+      "height": 76,
+      "sha256": "5522d3f54f7ea5ae7eff696f4f15158eb9aed1486c486262c9c355d171f31c2b",
+      "size": 428,
+      "width": 236
     },
     "data/nfl2k5_relief_2026_b81u/jersey_6d0cdd7cec29664f.png": {
       "height": 76,
@@ -6337,41 +6355,23 @@
       "size": 3306,
       "width": 288
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_72def078331857b7.png": {
-      "height": 82,
-      "sha256": "63593f97ca3514aea7fe286e3c62dcd61f2ff2db33446677eba497de54f86fcc",
-      "size": 3379,
-      "width": 340
-    },
     "data/nfl2k5_relief_2026_b81u/jersey_736cc9431ce86755.png": {
       "height": 90,
       "sha256": "b2492704215af0af65266a34670f2a89e0b93b07169d495977a054bc213630a3",
       "size": 3292,
       "width": 452
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_7775d55a05f9e176.png": {
-      "height": 81,
-      "sha256": "12887578e58b3327bbd2801710508714a857e27dcf8bd78c4cd1d70569b48d5a",
-      "size": 3482,
-      "width": 370
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_79418b5110625a01.png": {
-      "height": 59,
-      "sha256": "3ca928fdd0fb7de924f336baf73e6f1a2335a0328ac6693a325a3fcd19f87846",
-      "size": 393,
-      "width": 221
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_797bf5c31adaa9e8.png": {
+    "data/nfl2k5_relief_2026_b81u/jersey_77e4974464b42d48.png": {
       "height": 93,
-      "sha256": "bde20a14b7a6eacb2588acbe44430138bbc597e844b9f91c751a8ceb3d06d8ea",
-      "size": 2885,
-      "width": 366
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_79cc15b11e2c3c38.png": {
-      "height": 75,
-      "sha256": "56452470ced7a585008dcf4f919ce00226a4403cd18d573685ed07a3c6288e23",
-      "size": 952,
+      "sha256": "2d3cfff639cf4d93e381338d65d001eabc3acc3d3720d503c054730226f36448",
+      "size": 5881,
       "width": 433
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_7b41ddd869297400.png": {
+      "height": 90,
+      "sha256": "a760fec25172752548bce8e802b3b47d51f198fbb0ff9a697abc94fbd7464ac3",
+      "size": 2663,
+      "width": 341
     },
     "data/nfl2k5_relief_2026_b81u/jersey_82a495e1861f6c8a.png": {
       "height": 76,
@@ -6379,41 +6379,47 @@
       "size": 3918,
       "width": 452
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_876d29a1b39e313e.png": {
-      "height": 93,
-      "sha256": "2caa059b074da6895cb3a92c33a3303291cb4d1c92e10c2c493966379cce139e",
-      "size": 5881,
-      "width": 433
+    "data/nfl2k5_relief_2026_b81u/jersey_8c564671b7b541b8.png": {
+      "height": 90,
+      "sha256": "7c1dd45aa94b4fde006a06d9b082242cc10aaa28b3af522e694dd1248184ae61",
+      "size": 2838,
+      "width": 167
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_8815c42018f7f828.png": {
-      "height": 74,
-      "sha256": "3eb5c2b240f86b1e17183e227987fcf888f8ae040fa3a23b4e29066113a7cc8f",
-      "size": 1740,
-      "width": 362
+    "data/nfl2k5_relief_2026_b81u/jersey_92d27871d7a6867f.png": {
+      "height": 37,
+      "sha256": "ec83d1bd95dcdd1fe22d85de030d7e9283b0b15fbc076672473ef3be2e7e7513",
+      "size": 188,
+      "width": 34
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_919533e9f579d4c1.png": {
+    "data/nfl2k5_relief_2026_b81u/jersey_9790a6c43112c18d.png": {
       "height": 74,
-      "sha256": "c290df814cf8522e7f528df387dad2302c76a9c0b4bffff71b88a8df81c80570",
-      "size": 772,
+      "sha256": "9e928b1ecdad1affa3dd6f7d10688515ca855a3c108dde0afff6de48b09f4a90",
+      "size": 767,
+      "width": 217
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_9dcaf7ebd3674e85.png": {
+      "height": 82,
+      "sha256": "95318cf2429790141183eb45e63a6147b1cbf5347a1e2a312bb4571bd0f9c203",
+      "size": 3332,
+      "width": 340
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_9ee009193f88bcc6.png": {
+      "height": 95,
+      "sha256": "3c14fce3c86c40c3e41741b0a4587afef08906ab50f1aa2f4cb723ed65b74bb8",
+      "size": 3152,
+      "width": 217
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_a561ebc9412ab5c1.png": {
+      "height": 74,
+      "sha256": "ff46ef835507321526696244236511123ac9a51ab753098267f1463c6676a260",
+      "size": 790,
       "width": 452
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_94b7aecb98e57a77.png": {
+    "data/nfl2k5_relief_2026_b81u/jersey_a8fb9eeecb09fdb5.png": {
       "height": 93,
-      "sha256": "9c7e50b8a725447ee6d2abd476e133bc9794ec09d9aef6ec0fae393a03affb99",
-      "size": 5706,
-      "width": 448
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_a302f10850ab24f5.png": {
-      "height": 95,
-      "sha256": "c7fedcd485b51b0caa168b14413fb2333b7d3d60724e24c94af2563c1e096bab",
-      "size": 2625,
-      "width": 167
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_aa9401458550964b.png": {
-      "height": 91,
-      "sha256": "47eef805f3ee1bf0bbfb43674e3c0eff1e8502b995c49c855340c7ad599261ab",
-      "size": 2973,
-      "width": 167
+      "sha256": "6a1c2b59b0ef51b7fdc18066e95240745e03f95f0d2df618ff2f1b1f0d7a4858",
+      "size": 2885,
+      "width": 366
     },
     "data/nfl2k5_relief_2026_b81u/jersey_ab25a27ee05818f1.png": {
       "height": 76,
@@ -6421,21 +6427,39 @@
       "size": 3967,
       "width": 440
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_b0e50d831aa1b65b.png": {
-      "height": 74,
-      "sha256": "3bbf7e22cf5c0cd388776b3254dd168b8d871da2afc32ab584c8c4378a98cd91",
-      "size": 886,
-      "width": 452
+    "data/nfl2k5_relief_2026_b81u/jersey_ad5fb03606e3394d.png": {
+      "height": 96,
+      "sha256": "e4e6b213d386b8779c1f8e2da64c37e6775363644ad9f3a2d7845323ed0e9b00",
+      "size": 6289,
+      "width": 433
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_b2c282f3e6e2aa15.png": {
-      "height": 94,
-      "sha256": "70f4f2c1a2e04269b749e80685cc490f82753e603e5dc410b07e41184dbb897e",
-      "size": 2333,
-      "width": 167
+    "data/nfl2k5_relief_2026_b81u/jersey_ad9fc377a2f57258.png": {
+      "height": 95,
+      "sha256": "fe3ce300bd2761325b6986fdfbba32a1f3a6d0d298023707e887d76bde6b5f6b",
+      "size": 3514,
+      "width": 434
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_bbff2c0cf974621d.png": {
+    "data/nfl2k5_relief_2026_b81u/jersey_af59448ec91c9f16.png": {
+      "height": 76,
+      "sha256": "35dc1a939225bdb5690c12eb986e5f894eac481b6229b43c1b43ca20750c4768",
+      "size": 3398,
+      "width": 288
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_b042398fa43cb6a2.png": {
       "height": 98,
-      "sha256": "c6ccc5acea061df22338f2a480c3dcef6dab08a2ee6b94fa4a1d91712f061f02",
+      "sha256": "7dd5eb9a90c6e1240c6c0c6fdbfb8be2a7cf8ca21ff2845735fe56dea96f0593",
+      "size": 5172,
+      "width": 433
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_b053e944ef9dd7af.png": {
+      "height": 81,
+      "sha256": "e6f9b5599564821ae38cd991b5585fb8a41712528145074a23bd4b444fe54432",
+      "size": 3480,
+      "width": 370
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_b9c3cc83469e54c3.png": {
+      "height": 98,
+      "sha256": "dec1279b3e1755ce13218ac94351b79c33cb2e065a9e5032b417b6bb3788d616",
       "size": 5164,
       "width": 433
     },
@@ -6445,16 +6469,16 @@
       "size": 4078,
       "width": 439
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_bfd15229938334c7.png": {
-      "height": 37,
-      "sha256": "01ad70fb7f6b8a37b222777a22ba837db3d88ff3e5a1abdddb017605865139b9",
-      "size": 193,
-      "width": 34
+    "data/nfl2k5_relief_2026_b81u/jersey_bf95f005f2aae3fa.png": {
+      "height": 95,
+      "sha256": "ec93099d2ac9918237b7b31cd500586dea6baabaa1c440746aac6a4d5bb73d78",
+      "size": 2596,
+      "width": 167
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_c07975c211529aa5.png": {
+    "data/nfl2k5_relief_2026_b81u/jersey_c3b21bf558b898b7.png": {
       "height": 37,
-      "sha256": "120c0e5dbc7213de144beb4853c42bbee18b743ebc5c5f9821b3a219eeb0382d",
-      "size": 333,
+      "sha256": "8416e71b9c8535249cc759da50208439aa7057fc5bed759b2d4fcaee9cfde094",
+      "size": 328,
       "width": 36
     },
     "data/nfl2k5_relief_2026_b81u/jersey_c3bf78e3a90dcf07.png": {
@@ -6463,17 +6487,17 @@
       "size": 3983,
       "width": 369
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_c4d103fe752abc19.png": {
-      "height": 96,
-      "sha256": "d709cc8549722a5ee5fc20fc6a74b8ba31d6b377fd8fbcdaebff16c4e11d69a7",
-      "size": 6288,
-      "width": 433
+    "data/nfl2k5_relief_2026_b81u/jersey_cab3c2d38af44be7.png": {
+      "height": 93,
+      "sha256": "649fade05c6ada8926273c39b766c11de91f0ced09dff53c7ca3188c448e8e7d",
+      "size": 5707,
+      "width": 448
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_cc702af6eb77501e.png": {
-      "height": 76,
-      "sha256": "fc04bce97be8b2a630d0354eb1554df9944e687d6858e5ea8b3645e9da62d5eb",
-      "size": 430,
-      "width": 236
+    "data/nfl2k5_relief_2026_b81u/jersey_cda2033cea659c2d.png": {
+      "height": 95,
+      "sha256": "5ddf74cf733b2a3dc6c171094997797ff5e0763c6f0614aa18dbba4f26b0e3ee",
+      "size": 2623,
+      "width": 167
     },
     "data/nfl2k5_relief_2026_b81u/jersey_ce2801115170ec67.png": {
       "height": 100,
@@ -6481,35 +6505,47 @@
       "size": 3787,
       "width": 433
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_d1bd04defc7b1e4b.png": {
+    "data/nfl2k5_relief_2026_b81u/jersey_cedc13e8672f341c.png": {
+      "height": 75,
+      "sha256": "a416a2f54d0861a25323e275d517888cb0fab32f36d3c2238c61bcf103239b23",
+      "size": 945,
+      "width": 434
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_d6bd4fcd200880b9.png": {
+      "height": 76,
+      "sha256": "9aea6a2fd005871d7a3ccbd7bca1f8a434e6576f8482ec7fb35635a72c91c8bf",
+      "size": 3329,
+      "width": 288
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_d7892f3ec43f37ae.png": {
       "height": 90,
-      "sha256": "653ae8f0de31fbee1ee51754b1914053a313fde2ff6ab2846cd5fb0a9940d5f9",
+      "sha256": "5c7bbe83e05c839b08acf114ef17d8aa1458e53da907973adda8ecbabebd3258",
       "size": 2833,
       "width": 167
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_d30960bf5ecb398c.png": {
+    "data/nfl2k5_relief_2026_b81u/jersey_da9e396ab9e4aab2.png": {
+      "height": 93,
+      "sha256": "9b66f4fdb0e72ba66c9ee6d8fa2a744fd8d1b6d0bed85b7409e48ac5ced7e2ad",
+      "size": 2227,
+      "width": 167
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_dabc0ecf69e73826.png": {
+      "height": 77,
+      "sha256": "902046f7975b9bebcaff78ba0b77059c91b36cec27c41f7a0430a674689fa1ed",
+      "size": 2813,
+      "width": 340
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_df00cf5771c47901.png": {
+      "height": 95,
+      "sha256": "33f3d263e9305eadcc18cabc567e0e7fc7d66fb5dcbfa2bdb87267ebe5ef13d2",
+      "size": 5803,
+      "width": 342
+    },
+    "data/nfl2k5_relief_2026_b81u/jersey_df32c3595bcf208a.png": {
       "height": 90,
-      "sha256": "bea92f430e045724b7899b16d1de61876d14171a1897eaa3f847fbe72eb74ab9",
-      "size": 2702,
-      "width": 341
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_d802741e0b99da79.png": {
-      "height": 76,
-      "sha256": "6ea4a1fcd00043d3ea87cc26ad2bd032a6e617546a95cf18fcd9038c1144754b",
-      "size": 3399,
-      "width": 288
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_d85d58334109f6d1.png": {
-      "height": 46,
-      "sha256": "8e594b7242d8a7e75d39e3720532d137951c52d9776549c28555cb0348458e1d",
-      "size": 332,
-      "width": 245
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_e07de367d7957387.png": {
-      "height": 70,
-      "sha256": "9dd38a0d1dd3682217437aa3e2633d2c177e64a9e1676e1e932c619d79d31935",
-      "size": 626,
-      "width": 262
+      "sha256": "293a2a097c63fba292ae4dbf211d20c46d7e296f9c5e716337db835d6e36e938",
+      "size": 3130,
+      "width": 214
     },
     "data/nfl2k5_relief_2026_b81u/jersey_e195a0de3ece9c53.png": {
       "height": 76,
@@ -6517,29 +6553,17 @@
       "size": 4161,
       "width": 433
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_e3680e1b562908ea.png": {
-      "height": 74,
-      "sha256": "7d5bbce97ac0c30a8f3fe7403f86366434d8ab28aa0396a80e98e094ed8a7703",
-      "size": 794,
-      "width": 452
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_e3ae507c62765427.png": {
-      "height": 80,
-      "sha256": "f7c06845a831cf30e1009ee2010178338b38dce01c9570439383bc2c87adf1d5",
-      "size": 3634,
-      "width": 339
-    },
     "data/nfl2k5_relief_2026_b81u/jersey_e52aceef5be0387e.png": {
       "height": 76,
       "sha256": "425ccbd3f53f5da90bc74b718686e8e444b42f34a41c518e53730f2889211729",
       "size": 3966,
       "width": 369
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_ef24a50352838d3b.png": {
-      "height": 95,
-      "sha256": "df221dda6a145e1c57b8ed133509004b6cb91471bbed13fd8ab669323dabca4a",
-      "size": 2557,
-      "width": 167
+    "data/nfl2k5_relief_2026_b81u/jersey_ec4fb0e9601298c4.png": {
+      "height": 59,
+      "sha256": "536aea9b59b71cf190511cf153ba1166aee43849edf2735f7a7d4448876298a0",
+      "size": 389,
+      "width": 221
     },
     "data/nfl2k5_relief_2026_b81u/jersey_f5f0e580bbefbd3f.png": {
       "height": 71,
@@ -6547,41 +6571,11 @@
       "size": 2853,
       "width": 287
     },
-    "data/nfl2k5_relief_2026_b81u/jersey_f9b5fed2b55a4ddb.png": {
-      "height": 98,
-      "sha256": "930af187c55439ecafeb4087cd19d0ccfdf29afddcb27d578beaa609df495fcd",
-      "size": 5173,
-      "width": 433
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_fdcb14f17c21886f.png": {
-      "height": 74,
-      "sha256": "25d8ced259419f385f35cf7bd0f49badca9938a5fca0ed5ca0d3e362c35418a6",
-      "size": 771,
-      "width": 217
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_fdd86753f8467a9c.png": {
-      "height": 95,
-      "sha256": "d0fc33b960d995cd513605f29bb99582a1b31a405dfd383fc2bbd346c8f4211d",
-      "size": 5803,
-      "width": 342
-    },
     "data/nfl2k5_relief_2026_b81u/jersey_fe829803ff5ecba8.png": {
       "height": 80,
       "sha256": "6f9498d9f3b61b8b26b222ecf7d4663ac84deef4c74235f2ab0fe6afaf47db86",
       "size": 3824,
       "width": 451
-    },
-    "data/nfl2k5_relief_2026_b81u/jersey_feab7ceed4f3a96e.png": {
-      "height": 90,
-      "sha256": "0a3e61c36c30359297fcbabea793271bd9b0b829c9854fe84a0250026eebdf8b",
-      "size": 1955,
-      "width": 167
-    },
-    "data/nfl2k5_relief_2026_b81u/openings_jersey.png": {
-      "height": 7680,
-      "sha256": "cb311f0d56392edf7b8125b50baab3dc7afcc409f37e2a5116a8874dc535ba9c",
-      "size": 12049,
-      "width": 512
     },
     "data/nfl2k5_relief_2026_b81u/pants_1411994e5bb854ab.png": {
       "height": 11,
@@ -8838,6 +8832,413 @@
       "sha256": "975c1ab03f800f336962f2360f508b57333c057910b89df37a3dabc194057293",
       "size": 11937,
       "width": 128
+    }
+  },
+  "paint": {
+    "data/nfl2k5_glyph_fixes_2026_b81u.json": {
+      "rows": {
+        "07H0:13:1": {
+          "sha256": "df22a1620ed7a9002e3b6e1423afd8958e17304eb32d767deb0f65173fe843a8",
+          "texels": 52
+        },
+        "07H0:14:1": {
+          "sha256": "e4ea080f9a1c19ad2c70bbd003d1feb474027d95f510727217d12637a05104b9",
+          "texels": 55
+        },
+        "07H0:15:1": {
+          "sha256": "d33ffca9388f1d365a2963459ff4e607ea15feccb68b272ad5cd95cbccd1d7b2",
+          "texels": 95
+        },
+        "07H0:16:1": {
+          "sha256": "15ab84d6e740ce1870d3e2a56284a7f4e1c47025df7c383dd25d2498ef3e0301",
+          "texels": 83
+        },
+        "07H0:17:1": {
+          "sha256": "1e74a0c75b880a6299d1639c6e38824ed55d2b82e317fca3ca48ef9be95118c2",
+          "texels": 248
+        },
+        "07H0:18:1": {
+          "sha256": "24ddbba1792a2127323e704205697a90aadc80f6224e1fdebe828d336e847d6f",
+          "texels": 60
+        },
+        "07H0:19:1": {
+          "sha256": "b08097873c6d593a44f6aa6af6f268ae32cf35d93708e72f45fce7b155711a3b",
+          "texels": 77
+        },
+        "07H0:20:1": {
+          "sha256": "af04f054ab271b9b5dfa953cc6ea001b6ecd78cfa094e7966a374ce2454c7fb0",
+          "texels": 223
+        },
+        "07H0:21:1": {
+          "sha256": "4a6246cad201044de031db60b94bf55ddc68edf447e69d5ee2910ac91c5c5dcb",
+          "texels": 71
+        },
+        "07H0:22:1": {
+          "sha256": "4f93c69a7d3341e8fbcaec3208bb13d0c8cee2f2de8f5b868e8e16e337089ce4",
+          "texels": 84
+        },
+        "07H0:33:1": {
+          "sha256": "df22a1620ed7a9002e3b6e1423afd8958e17304eb32d767deb0f65173fe843a8",
+          "texels": 52
+        },
+        "07H0:34:1": {
+          "sha256": "e4ea080f9a1c19ad2c70bbd003d1feb474027d95f510727217d12637a05104b9",
+          "texels": 55
+        },
+        "07H0:35:1": {
+          "sha256": "d33ffca9388f1d365a2963459ff4e607ea15feccb68b272ad5cd95cbccd1d7b2",
+          "texels": 95
+        },
+        "07H0:36:1": {
+          "sha256": "15ab84d6e740ce1870d3e2a56284a7f4e1c47025df7c383dd25d2498ef3e0301",
+          "texels": 83
+        },
+        "07H0:37:1": {
+          "sha256": "1e74a0c75b880a6299d1639c6e38824ed55d2b82e317fca3ca48ef9be95118c2",
+          "texels": 248
+        },
+        "07H0:38:1": {
+          "sha256": "24ddbba1792a2127323e704205697a90aadc80f6224e1fdebe828d336e847d6f",
+          "texels": 60
+        },
+        "07H0:39:1": {
+          "sha256": "b08097873c6d593a44f6aa6af6f268ae32cf35d93708e72f45fce7b155711a3b",
+          "texels": 77
+        },
+        "07H0:40:1": {
+          "sha256": "af04f054ab271b9b5dfa953cc6ea001b6ecd78cfa094e7966a374ce2454c7fb0",
+          "texels": 223
+        },
+        "07H0:41:1": {
+          "sha256": "4a6246cad201044de031db60b94bf55ddc68edf447e69d5ee2910ac91c5c5dcb",
+          "texels": 71
+        },
+        "07H0:42:1": {
+          "sha256": "4f93c69a7d3341e8fbcaec3208bb13d0c8cee2f2de8f5b868e8e16e337089ce4",
+          "texels": 84
+        },
+        "18A0:13:1": {
+          "sha256": "53411a6399cb03800934c41fa3f513e1a7102ff4e57d17c51d76ef447443c8df",
+          "texels": 48
+        },
+        "18A0:14:1": {
+          "sha256": "40d83962ba8918256a995d9f3ca7223be9e6d3fa2bb09c9ba7d5ca3b4d5eda1a",
+          "texels": 9
+        },
+        "18A0:15:1": {
+          "sha256": "c929704f83bcf4901e55bf881262763551655c15812e25c475ea2297114301a9",
+          "texels": 57
+        },
+        "18A0:16:1": {
+          "sha256": "9bba07c577ed293057f42813bb99c2427c82e4281252ba7d2620ff9656120deb",
+          "texels": 67
+        },
+        "18A0:17:1": {
+          "sha256": "e632f18b2eed0fe6712f1fbb9339a5c4f947f6feab0aed0cbcecb6e380cc5e3c",
+          "texels": 85
+        },
+        "18A0:18:1": {
+          "sha256": "cf26fea99a4a387b70ef4a51c74acf131c35947f5464fc5d5844997f22277219",
+          "texels": 40
+        },
+        "18A0:19:1": {
+          "sha256": "9ca222bdbcf01b1198b655c29b2406427a0b8b45ed2a0e7e5392cc50115bea45",
+          "texels": 61
+        },
+        "18A0:20:1": {
+          "sha256": "009f7c50389f87fdf41a3815d8dfeb99b41db3e0acafb5fae97bd2a5d93ef25f",
+          "texels": 135
+        },
+        "18A0:21:1": {
+          "sha256": "a3cd0e4ced5098f7e7b41c0e8bd6a24442642c983e69af9e39488e96a212019d",
+          "texels": 70
+        },
+        "18A0:22:1": {
+          "sha256": "e984faaa7f369f8b92a36704c9eb8f9b2fc1eb47f3d59fcbafdc73356eb5db54",
+          "texels": 61
+        },
+        "18A0:33:1": {
+          "sha256": "53411a6399cb03800934c41fa3f513e1a7102ff4e57d17c51d76ef447443c8df",
+          "texels": 48
+        },
+        "18A0:34:1": {
+          "sha256": "40d83962ba8918256a995d9f3ca7223be9e6d3fa2bb09c9ba7d5ca3b4d5eda1a",
+          "texels": 9
+        },
+        "18A0:35:1": {
+          "sha256": "c929704f83bcf4901e55bf881262763551655c15812e25c475ea2297114301a9",
+          "texels": 57
+        },
+        "18A0:36:1": {
+          "sha256": "9bba07c577ed293057f42813bb99c2427c82e4281252ba7d2620ff9656120deb",
+          "texels": 67
+        },
+        "18A0:37:1": {
+          "sha256": "e632f18b2eed0fe6712f1fbb9339a5c4f947f6feab0aed0cbcecb6e380cc5e3c",
+          "texels": 85
+        },
+        "18A0:38:1": {
+          "sha256": "cf26fea99a4a387b70ef4a51c74acf131c35947f5464fc5d5844997f22277219",
+          "texels": 40
+        },
+        "18A0:39:1": {
+          "sha256": "9ca222bdbcf01b1198b655c29b2406427a0b8b45ed2a0e7e5392cc50115bea45",
+          "texels": 61
+        },
+        "18A0:40:1": {
+          "sha256": "009f7c50389f87fdf41a3815d8dfeb99b41db3e0acafb5fae97bd2a5d93ef25f",
+          "texels": 135
+        },
+        "18A0:41:1": {
+          "sha256": "a3cd0e4ced5098f7e7b41c0e8bd6a24442642c983e69af9e39488e96a212019d",
+          "texels": 70
+        },
+        "18A0:42:1": {
+          "sha256": "e984faaa7f369f8b92a36704c9eb8f9b2fc1eb47f3d59fcbafdc73356eb5db54",
+          "texels": 61
+        },
+        "18A7:13:1": {
+          "sha256": "0d553a113a8c1813b00c5c4602d2383441a8d3e3034a5efd1857f767a9b8de4c",
+          "texels": 72
+        },
+        "18A7:14:1": {
+          "sha256": "96643a855084420f41a8e6ebd902acb762a859190153875e4a61cb6cc1dea16e",
+          "texels": 21
+        },
+        "18A7:15:1": {
+          "sha256": "212759f27f33ce2b58780db444b6b732cbc0e40ce0d96938ff971cb625d7c4f7",
+          "texels": 86
+        },
+        "18A7:16:1": {
+          "sha256": "f05029890b63494a741168e10280802d479761de99d6cd373527c67ab1723a74",
+          "texels": 100
+        },
+        "18A7:17:1": {
+          "sha256": "ae881edba95d20ebda7600d43632397379c52bba7bfb7800b2bfb47143417aec",
+          "texels": 127
+        },
+        "18A7:18:1": {
+          "sha256": "f97ad47b6c537563236f83d416958f24f2804965e506a8b638e4532f49232b11",
+          "texels": 62
+        },
+        "18A7:19:1": {
+          "sha256": "365a7d330c51c038d10fd95c90427b08e9ee5fbf4b73fbb6af1e6a917e3d669f",
+          "texels": 103
+        },
+        "18A7:20:1": {
+          "sha256": "621c2004a78c2e3ba829ab010c58aec546605181ff7063ddaa80252b845fb8f6",
+          "texels": 161
+        },
+        "18A7:21:1": {
+          "sha256": "42ef9ba49ba89d9e3d6819f0558c156f4ace4b3e4bef40cdd65681d66b9b98b5",
+          "texels": 123
+        },
+        "18A7:22:1": {
+          "sha256": "3166431eec508e76db7347b984cc398cc0226e0a358e1d1260bb7cf05f9eadd5",
+          "texels": 88
+        },
+        "18A7:33:1": {
+          "sha256": "0d553a113a8c1813b00c5c4602d2383441a8d3e3034a5efd1857f767a9b8de4c",
+          "texels": 72
+        },
+        "18A7:34:1": {
+          "sha256": "96643a855084420f41a8e6ebd902acb762a859190153875e4a61cb6cc1dea16e",
+          "texels": 21
+        },
+        "18A7:35:1": {
+          "sha256": "212759f27f33ce2b58780db444b6b732cbc0e40ce0d96938ff971cb625d7c4f7",
+          "texels": 86
+        },
+        "18A7:36:1": {
+          "sha256": "f05029890b63494a741168e10280802d479761de99d6cd373527c67ab1723a74",
+          "texels": 100
+        },
+        "18A7:37:1": {
+          "sha256": "ae881edba95d20ebda7600d43632397379c52bba7bfb7800b2bfb47143417aec",
+          "texels": 127
+        },
+        "18A7:38:1": {
+          "sha256": "f97ad47b6c537563236f83d416958f24f2804965e506a8b638e4532f49232b11",
+          "texels": 62
+        },
+        "18A7:39:1": {
+          "sha256": "365a7d330c51c038d10fd95c90427b08e9ee5fbf4b73fbb6af1e6a917e3d669f",
+          "texels": 103
+        },
+        "18A7:40:1": {
+          "sha256": "621c2004a78c2e3ba829ab010c58aec546605181ff7063ddaa80252b845fb8f6",
+          "texels": 161
+        },
+        "18A7:41:1": {
+          "sha256": "42ef9ba49ba89d9e3d6819f0558c156f4ace4b3e4bef40cdd65681d66b9b98b5",
+          "texels": 123
+        },
+        "18A7:42:1": {
+          "sha256": "3166431eec508e76db7347b984cc398cc0226e0a358e1d1260bb7cf05f9eadd5",
+          "texels": 88
+        },
+        "18H0:13:1": {
+          "sha256": "989d06e33dcdf7a92a4a2c1b07a6963c03e5b631590924a52662455a85d22bab",
+          "texels": 48
+        },
+        "18H0:14:1": {
+          "sha256": "1ffa1c4b71bb3d6e6695da6dab3f645208916ac802dad76dfb1158aa77fa74db",
+          "texels": 9
+        },
+        "18H0:15:1": {
+          "sha256": "4af4db9c8d2f34f9beb2143c9a959d7ad859416df2ac67c260accda2a99deef5",
+          "texels": 57
+        },
+        "18H0:16:1": {
+          "sha256": "d6cd7c6dfeb6dd72a49c983cdca9d15e8cd0cbeb918f5feea44297bbf4f8de29",
+          "texels": 67
+        },
+        "18H0:17:1": {
+          "sha256": "4d173bea409df9f69fff18c2a21f1f1a54c0f00eac517f599b0f267e50931e69",
+          "texels": 85
+        },
+        "18H0:18:1": {
+          "sha256": "95ce1e593fba1cf942a7242837a5ec185d47052ec655401f7376f384402e8099",
+          "texels": 40
+        },
+        "18H0:19:1": {
+          "sha256": "cae9fafd1fd3ab36011cb4e6ae410b4bf77f73176e37f01e07ca302549084568",
+          "texels": 61
+        },
+        "18H0:20:1": {
+          "sha256": "c3f4d0c0f6ebce8ed91fa831aebf5b26d492e8df0d77a094bb17c422686181e9",
+          "texels": 135
+        },
+        "18H0:21:1": {
+          "sha256": "6bc6ac16558146835dca072f9adab445913f3063242e32445429193d345e2c63",
+          "texels": 70
+        },
+        "18H0:22:1": {
+          "sha256": "df863a7d212b1e24cc7fda474416a372b666ebaec9aee69b05b3b8e45a646791",
+          "texels": 61
+        },
+        "18H0:33:1": {
+          "sha256": "989d06e33dcdf7a92a4a2c1b07a6963c03e5b631590924a52662455a85d22bab",
+          "texels": 48
+        },
+        "18H0:34:1": {
+          "sha256": "1ffa1c4b71bb3d6e6695da6dab3f645208916ac802dad76dfb1158aa77fa74db",
+          "texels": 9
+        },
+        "18H0:35:1": {
+          "sha256": "4af4db9c8d2f34f9beb2143c9a959d7ad859416df2ac67c260accda2a99deef5",
+          "texels": 57
+        },
+        "18H0:36:1": {
+          "sha256": "d6cd7c6dfeb6dd72a49c983cdca9d15e8cd0cbeb918f5feea44297bbf4f8de29",
+          "texels": 67
+        },
+        "18H0:37:1": {
+          "sha256": "4d173bea409df9f69fff18c2a21f1f1a54c0f00eac517f599b0f267e50931e69",
+          "texels": 85
+        },
+        "18H0:38:1": {
+          "sha256": "95ce1e593fba1cf942a7242837a5ec185d47052ec655401f7376f384402e8099",
+          "texels": 40
+        },
+        "18H0:39:1": {
+          "sha256": "cae9fafd1fd3ab36011cb4e6ae410b4bf77f73176e37f01e07ca302549084568",
+          "texels": 61
+        },
+        "18H0:40:1": {
+          "sha256": "c3f4d0c0f6ebce8ed91fa831aebf5b26d492e8df0d77a094bb17c422686181e9",
+          "texels": 135
+        },
+        "18H0:41:1": {
+          "sha256": "6bc6ac16558146835dca072f9adab445913f3063242e32445429193d345e2c63",
+          "texels": 70
+        },
+        "18H0:42:1": {
+          "sha256": "df863a7d212b1e24cc7fda474416a372b666ebaec9aee69b05b3b8e45a646791",
+          "texels": 61
+        },
+        "18H7:13:1": {
+          "sha256": "0d553a113a8c1813b00c5c4602d2383441a8d3e3034a5efd1857f767a9b8de4c",
+          "texels": 72
+        },
+        "18H7:14:1": {
+          "sha256": "96643a855084420f41a8e6ebd902acb762a859190153875e4a61cb6cc1dea16e",
+          "texels": 21
+        },
+        "18H7:15:1": {
+          "sha256": "212759f27f33ce2b58780db444b6b732cbc0e40ce0d96938ff971cb625d7c4f7",
+          "texels": 86
+        },
+        "18H7:16:1": {
+          "sha256": "f05029890b63494a741168e10280802d479761de99d6cd373527c67ab1723a74",
+          "texels": 100
+        },
+        "18H7:17:1": {
+          "sha256": "ae881edba95d20ebda7600d43632397379c52bba7bfb7800b2bfb47143417aec",
+          "texels": 127
+        },
+        "18H7:18:1": {
+          "sha256": "f97ad47b6c537563236f83d416958f24f2804965e506a8b638e4532f49232b11",
+          "texels": 62
+        },
+        "18H7:19:1": {
+          "sha256": "365a7d330c51c038d10fd95c90427b08e9ee5fbf4b73fbb6af1e6a917e3d669f",
+          "texels": 103
+        },
+        "18H7:20:1": {
+          "sha256": "621c2004a78c2e3ba829ab010c58aec546605181ff7063ddaa80252b845fb8f6",
+          "texels": 161
+        },
+        "18H7:21:1": {
+          "sha256": "42ef9ba49ba89d9e3d6819f0558c156f4ace4b3e4bef40cdd65681d66b9b98b5",
+          "texels": 123
+        },
+        "18H7:22:1": {
+          "sha256": "3166431eec508e76db7347b984cc398cc0226e0a358e1d1260bb7cf05f9eadd5",
+          "texels": 88
+        },
+        "18H7:33:1": {
+          "sha256": "0d553a113a8c1813b00c5c4602d2383441a8d3e3034a5efd1857f767a9b8de4c",
+          "texels": 72
+        },
+        "18H7:34:1": {
+          "sha256": "96643a855084420f41a8e6ebd902acb762a859190153875e4a61cb6cc1dea16e",
+          "texels": 21
+        },
+        "18H7:35:1": {
+          "sha256": "212759f27f33ce2b58780db444b6b732cbc0e40ce0d96938ff971cb625d7c4f7",
+          "texels": 86
+        },
+        "18H7:36:1": {
+          "sha256": "f05029890b63494a741168e10280802d479761de99d6cd373527c67ab1723a74",
+          "texels": 100
+        },
+        "18H7:37:1": {
+          "sha256": "ae881edba95d20ebda7600d43632397379c52bba7bfb7800b2bfb47143417aec",
+          "texels": 127
+        },
+        "18H7:38:1": {
+          "sha256": "f97ad47b6c537563236f83d416958f24f2804965e506a8b638e4532f49232b11",
+          "texels": 62
+        },
+        "18H7:39:1": {
+          "sha256": "365a7d330c51c038d10fd95c90427b08e9ee5fbf4b73fbb6af1e6a917e3d669f",
+          "texels": 103
+        },
+        "18H7:40:1": {
+          "sha256": "621c2004a78c2e3ba829ab010c58aec546605181ff7063ddaa80252b845fb8f6",
+          "texels": 161
+        },
+        "18H7:41:1": {
+          "sha256": "42ef9ba49ba89d9e3d6819f0558c156f4ace4b3e4bef40cdd65681d66b9b98b5",
+          "texels": 123
+        },
+        "18H7:42:1": {
+          "sha256": "3166431eec508e76db7347b984cc398cc0226e0a358e1d1260bb7cf05f9eadd5",
+          "texels": 88
+        }
+      },
+      "texels": 8400
     }
   },
   "schema": "nfl2k5_modern_art_pngs/v1"

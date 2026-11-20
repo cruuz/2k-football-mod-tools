@@ -251,10 +251,10 @@ if __name__ == '__main__' and sys.argv[1] == 'document':
 def document_v2(out, marks_dir, retail, disc, doc_path, art_dir):
     """b81-retail-free-art: the composed maps of OUT (maps/, composed.json) as differences against the base the Studio
     derives from the user's disc. RETAIL is the retail disc (the 18H0 jersey and sleeve maps), DISC the v0.10 state
-    at the relief step (each slot's input span). The collar openings are the rollout's own masks (MARKS/masks: the
-    openings the art was drawn for; three kits' torsos changed after the rollout, so they are not re-read from the
-    disc). Every composed map is rebuilt as base + difference and checked, and every slot is compiled to its output
-    pin.
+    at the relief step (each slot's input span, each kit's torso). Each kit's collar opening is derived from its torso
+    on DISC (as the Studio derives it at build time) and must equal the mask the art was drawn with (MARKS/masks);
+    only its SHA-256 is written (review F2). Every composed map is rebuilt as base + difference and checked, and every
+    slot is compiled to its output pin.
     """
     import time
     sys.path[:0] = [str(HERE.parents[1]), str(HERE.parents[1] / 'tools')]
@@ -276,16 +276,20 @@ def document_v2(out, marks_dir, retail, disc, doc_path, art_dir):
         chunk = rl._chunk_for(raw, chunk_index)
         span = raw[chunk.offset:chunk.end_offset]
         bases[slot] = dict(selector='18H0', chunk=chunk_index, span_sha256=sha(span))
-    retail_maps = rl.retail_maps(dict(bases=bases), retail)
-    assert retail_maps is not None
+    # the jersey's UV islands: derived from the disc's player mesh (review F1), equal to the mask the art was drawn with
     import bump_true as bt
-    island = rl.dilate(np.load(bt.UV / 'uvpos_UNIF_jersey.npz')['mask'], 3 * rl.S)
+    with bw._Image.open(Path(retail), writable=False) as image:
+        index = bw._parsed_index(image)
+        mesh = rl._mesh_span(image, index)
+    uv, tris, _decoded = rl._jersey_triangles(mesh)
+    island = rl.dilate(rl.raster_islands(uv, tris, 512 * rl.S, 256 * rl.S), 3 * rl.S)
+    assert np.array_equal(island, rl.dilate(np.load(bt.UV / 'uvpos_UNIF_jersey.npz')['mask'], 3 * rl.S))
+    bases['bump_jersey'].update(mesh_span_sha256=sha(mesh), islands_sha256=sha(np.packbits(island).tobytes()))
+    retail_maps = rl.retail_maps(dict(bases=bases), retail)
+    assert retail_maps is not None and np.array_equal(retail_maps['islands'], island)
     art_dir.mkdir(parents=True, exist_ok=True)
     for old in art_dir.glob('*.png'):
         old.unlink()
-    Image.fromarray((island * 255).astype(np.uint8), 'L').save(art_dir / 'islands_jersey.png', optimize=True)
-    bases['bump_jersey']['islands'] = dict(png='islands_jersey.png', sha256=sha((art_dir / 'islands_jersey.png').read_bytes()),
-                                           width=island.shape[1], height=island.shape[0])
     # each kit's input spans and torso, from the disc at the relief step
     raws = {}
     with bw._Image.open(Path(disc), writable=False) as image:
@@ -297,15 +301,16 @@ def document_v2(out, marks_dir, retail, disc, doc_path, art_dir):
             (e,) = entries[sel + '.IFF']
             raws[sel] = image.read_segments(index.sub_extents(e, 0, e.size))
     sleeve_base = rl.sleeve_base(gauss, retail_maps['bump_sleeve'])
-    jersey_bases, rows, spans, diffs, opening_ids, opening_list = {}, [], {}, {name: {} for name in SLOTS}, {}, []
+    jersey_bases, rows, spans, diffs, torsos = {}, [], {}, {name: {} for name in SLOTS}, {}
     for sel in kits:
-        opening = np.load(marks_dir / 'masks' / f'{sel}.npz')['opening']
-        key = sha(np.packbits(opening).tobytes())
-        if key not in opening_ids:
-            opening_ids[key] = len(opening_list)
-            opening_list.append(opening)
-            jersey_bases[key] = rl.jersey_base(gauss, retail_maps['bump_jersey'], opening, island)
         raw = raws[sel]
+        torsos[sel] = rl.torso_rgba(raw)
+        opening = rl.collar_opening(torsos[sel])
+        assert np.array_equal(opening, np.load(marks_dir / 'masks' / f'{sel}.npz')['opening']), (
+            sel, 'the collar opening on the disc differs from the one the art was drawn with: re-author this kit')
+        key = rl.opening_sha256(opening)
+        if key not in jersey_bases:
+            jersey_bases[key] = rl.jersey_base(gauss, retail_maps['bump_jersey'], opening, island)
         k = kit_masks(marks_dir, sel, marks[sel])
         worked = [list(b) for b in OLD_PANTS] + [b for b in (bbox(k['pants_mark']), bbox(k['pants_shield'])) if b]
         for name in SLOTS:
@@ -328,13 +333,9 @@ def document_v2(out, marks_dir, retail, disc, doc_path, art_dir):
             if name == 'bump_pants':
                 row['worked'] = worked
             if name == 'bump_jersey':
-                row['opening'] = opening_ids[key]
+                row['opening_sha256'] = key
             rows.append(row)
             spans[(sel, name)] = span
-    stack = (np.concatenate(opening_list, 0) * 255).astype(np.uint8)
-    Image.fromarray(stack, 'L').save(art_dir / 'openings_jersey.png', optimize=True)
-    bases['bump_jersey']['openings'] = dict(png='openings_jersey.png', sha256=sha((art_dir / 'openings_jersey.png').read_bytes()),
-                                            width=stack.shape[1], height=stack.shape[0], count=len(opening_list))
     masters, patches = {}, {}
     for name in SLOTS:
         maps = np.stack([diffs[name][s] for s in kits])
@@ -391,7 +392,7 @@ def document_v2(out, marks_dir, retail, disc, doc_path, art_dir):
                level=LEVEL, art=art_dir.name, gauss_kernels=table, bases=bases, masters=masters, patches=patches,
                slots=rows)
     t0 = time.time()
-    results = rl.compile_slots(rows, spans, doc, retail=retail_maps, count=3)
+    results = rl.compile_slots(rows, spans, doc, retail=retail_maps, torsos=torsos, count=3)
     pack = []
     for row in rows:
         new, detail = results[(row['selector'], row['slot'])]
@@ -399,7 +400,7 @@ def document_v2(out, marks_dir, retail, disc, doc_path, art_dir):
         pack.append(dict(selector=row['selector'], slot=row['slot'], **detail))
     Path(doc_path).write_text(json.dumps(doc, indent=1) + '\n', encoding='utf-8')
     rl.spec(doc_path)
-    print('slots', len(rows), 'distinct collar openings', len(opening_list), 'masters', sorted(masters), 'patches',
+    print('slots', len(rows), 'distinct collar openings', len(jersey_bases), 'masters', sorted(masters), 'patches',
           len(patches), 'files', len(list(art_dir.glob('*.png'))), 'compile seconds %.1f' % (time.time() - t0))
 
 

@@ -333,7 +333,7 @@ ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "c621d94c4f48f26ab6c44e912dd5d5ff7a36d070
 # (b778 cf1-cf4: photo-derived likeness textures, Noah 2026-10-12; see the catalog's classification). It grants no general PNG
 # exception inside those folders; tools/b77/modern_art_png_catalog.py regenerates it and prints the digest below.
 MODERN_ART_PNG_CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
-MODERN_ART_PNG_CATALOG_SHA256 = "56b940dfb1fd61f395d9a5ebe7e4749595ad01df93c2371513420f2ab430d7af"  # b81-retail-free-art: + the 2026 relief as differences (147 files: no retail-derived map) and the 387 b81u glyph pictures drawn new or edited from project art (the 231 retail-derived ones ship as build-time operations or as the texels that differ from the build's glyph); b780 pillowfont: + the scorebug digit glyph layer (939 files); b780-rst2: + 121 more real portraits (faces_03 filled, a fifth atlas pair faces_04: the 119 players the 11/03 refresh creates, Thorson and Masses); b780-b9: + 49 more real portraits in faces_03 (the no-photo players the pt1 target list missed); b779-int1: rf3 + pt1 regenerated together (936 files); b779-pt1: + the 8 real free-agent portrait atlases; b779-rf3: + new rookie face atlases (faces_14..16); b778 cf5: seven scanned coach heads (ARI BUF DEN HOU LV NO SEA); b778 3d1: classification names the scanned heads as photo-derived; b778-pg2: + the TROPHY ROOM emblem; b778-ee1: + the 4 gray alien PNGs; b778-ss1: + the 15 Seamen card/field/face PNGs; b778-rh1/rh2: + the 18 rookie face bank atlases; b778 cf1: four scanned coach heads; b778 cf2: seven scanned coach heads and the PIT rescan; b778 cf3: seven scanned coach heads; b778 cf4: seven scanned coach heads, KC head.png in place of head_mask + head_overlay; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
+MODERN_ART_PNG_CATALOG_SHA256 = "5ea5e7d6d70756f7d1ec19f27dae1efdd9944ac42aa144b4e0ea3240a5ef8fc4"  # b81-retail-free-art round 3: no layout mask ships (146 relief files), the reviewed paint of the glyph document is listed; b81-retail-free-art: + the 2026 relief as differences (147 files: no retail-derived map) and the 387 b81u glyph pictures drawn new or edited from project art (the 231 retail-derived ones ship as build-time operations or as the texels that differ from the build's glyph); b780 pillowfont: + the scorebug digit glyph layer (939 files); b780-rst2: + 121 more real portraits (faces_03 filled, a fifth atlas pair faces_04: the 119 players the 11/03 refresh creates, Thorson and Masses); b780-b9: + 49 more real portraits in faces_03 (the no-photo players the pt1 target list missed); b779-int1: rf3 + pt1 regenerated together (936 files); b779-pt1: + the 8 real free-agent portrait atlases; b779-rf3: + new rookie face atlases (faces_14..16); b778 cf5: seven scanned coach heads (ARI BUF DEN HOU LV NO SEA); b778 3d1: classification names the scanned heads as photo-derived; b778-pg2: + the TROPHY ROOM emblem; b778-ee1: + the 4 gray alien PNGs; b778-ss1: + the 15 Seamen card/field/face PNGs; b778-rh1/rh2: + the 18 rookie face bank atlases; b778 cf1: four scanned coach heads; b778 cf2: seven scanned coach heads and the PIT rescan; b778 cf3: seven scanned coach heads; b778 cf4: seven scanned coach heads, KC head.png in place of head_mask + head_overlay; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
 
 # sb3: Noah (2026-10-28) cleared real logos for this free fan mod, so his real Super Bowl event logos, network marks
 # and team-season logos ship as the bundled default. This is a separate exact catalog, not an authored-art exception:
@@ -389,6 +389,53 @@ def _modern_art_pngs(root: Path) -> dict:
     if document.get("schema") != "nfl2k5_modern_art_pngs/v1":
         raise ReleaseCheckError("reviewed modern-art PNG catalog schema changed")
     return document["files"]
+
+
+def _reviewed_paint(root: Path) -> dict:
+    """b81-retail-free-art (review F5): the reviewed texel data of data documents, from the pinned modern-art catalog."""
+    catalog = root / MODERN_ART_PNG_CATALOG
+    if not catalog.exists():
+        return {}
+    return json.loads(catalog.read_text(encoding="utf-8")).get("paint", {})
+
+
+def _paint_operations(value: object):
+    """Every ``paint`` operation (texel runs) anywhere inside a JSON value, with its row identity when it has one."""
+    pending = [(value, None)]
+    while pending:
+        current, owner = pending.pop()
+        if isinstance(current, dict):
+            if current.get("op") == "paint" and "runs" in current:
+                yield owner, current
+                continue
+            if "derive" in current and isinstance(current["derive"], list):
+                for i, op in enumerate(current["derive"]):
+                    pending.append((op, f"{current.get('selector')}:{current.get('chunk')}:{i}"))
+                continue
+            pending.extend((item, owner) for item in current.values())
+        elif isinstance(current, list):
+            pending.extend((item, owner) for item in current)
+
+
+def _check_paint(relative: str, path: Path, reviewed: dict) -> None:
+    """Texel data inside a data file must be exactly the reviewed paint of the catalog (no other pixel data may ride
+    in a JSON document past the PNG gate)."""
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError, UnicodeDecodeError):
+        return
+    found = {}
+    for owner, op in _paint_operations(document):
+        runs = op.get("runs")
+        if not isinstance(runs, list):
+            raise ReleaseCheckError(f"malformed texel data in a data file: {relative}")
+        digest = hashlib.sha256(json.dumps(runs, separators=(",", ":")).encode("ascii")).hexdigest()
+        found[owner] = digest
+    expected = reviewed.get(relative, {}).get("rows", {})
+    if not found and not expected:
+        return
+    if set(found) != set(expected) or any(found[k] != expected[k]["sha256"] for k in found):
+        raise ReleaseCheckError(f"texel data in a data file is not the reviewed paint: {relative}")
 
 
 def _super_bowl_logo_pngs(root: Path) -> dict:
@@ -661,6 +708,7 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
     anniversary_pngs = _anniversary_field_pngs(release_root)
     modern_art_pngs = _modern_art_pngs(release_root)
     super_bowl_logo_pngs = _super_bowl_logo_pngs(release_root)
+    reviewed_paint = _reviewed_paint(release_root)
     if (set(modern_art_pngs) & (set(scorebug_pngs) | set(anniversary_pngs))
             or set(super_bowl_logo_pngs) & (set(scorebug_pngs) | set(anniversary_pngs) | set(modern_art_pngs))):
         raise ReleaseCheckError("a PNG is listed in more than one reviewed catalog")
@@ -818,6 +866,9 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
         seen_files.add(relative)
         total_bytes += info.st_size
 
+    for relative in sorted(seen_files):
+        if relative.endswith(".json") and relative.startswith("data/"):
+            _check_paint(relative, release_root / relative, reviewed_paint)
     missing_files = sorted(exact - seen_files)
     missing_prefixes = sorted(prefix for prefix in prefixes if prefix not in seen_directories)
     if missing_files or missing_prefixes:

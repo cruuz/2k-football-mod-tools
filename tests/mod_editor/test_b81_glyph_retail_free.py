@@ -57,6 +57,9 @@ class Document(unittest.TestCase):
         self.assertEqual(len(derived), 507)                 # every row of the 231 withdrawn pictures; none dropped
         self.assertEqual(sum(r["kind"] == "names_derived" for r in derived), 3)
         for row in derived:
+            if row["kind"] == "names_derived":                   # the Jaguars strip: an instruction, no texel (F3)
+                self.assertEqual([op["op"] for op in row["derive"]], ["thin_letters"])
+        for row in derived:
             self.assertNotIn("png", row)
             self.assertEqual(len(row["rgba_sha256"]), 64)
             for op in row["derive"]:
@@ -71,6 +74,42 @@ class Document(unittest.TestCase):
         self.assertEqual(listed, sorted(ART + p.name for p in gf.art_folder(self.doc).glob("*.png")))
         used = sorted({r["png"] for r in self.doc["textures"] if "png" in r})
         self.assertEqual([p[len(ART):] for p in listed], used)
+
+
+class ReviewedPaint(unittest.TestCase):
+    """Review F5: texel data inside a data file is gated like a picture: every paint operation of the glyph document
+    is listed (row, SHA-256, texel count) in the pinned modern-art catalog, and the release check refuses any other."""
+
+    def setUp(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("release_check", ROOT / "packaging/check_2k5_mod_studio_release.py")
+        self.release = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.release)
+        self.catalog = json.loads((ROOT / catalog.CATALOG).read_text(encoding="utf-8"))
+
+    def test_the_catalog_lists_exactly_the_documents_paint(self):
+        rows = catalog.paint_rows(gf.digits_b81())
+        self.assertEqual(self.catalog["paint"]["data/nfl2k5_glyph_fixes_2026_b81u.json"]["rows"], rows)
+        self.assertEqual(len(rows), 100)                          # the Giants and Cowboys navy redraws only
+
+    def test_the_gate_refuses_unreviewed_or_changed_texel_data(self):
+        import tempfile
+        reviewed = self.catalog["paint"]
+        document = json.loads((ROOT / "data/nfl2k5_glyph_fixes_2026_b81u.json").read_text(encoding="utf-8"))
+        relative = "data/nfl2k5_glyph_fixes_2026_b81u.json"
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "doc.json"
+            path.write_text(json.dumps(document), encoding="utf-8")
+            self.release._check_paint(relative, path, reviewed)                         # as shipped: passes
+            row = next(r for r in document["textures"] if any(op["op"] == "paint" for op in r.get("derive", [])))
+            op = next(op for op in row["derive"] if op["op"] == "paint")
+            op["runs"].append([0, 0, "FFFFFFFF"])                                         # one more texel
+            path.write_text(json.dumps(document), encoding="utf-8")
+            with self.assertRaises(self.release.ReleaseCheckError):
+                self.release._check_paint(relative, path, reviewed)
+            path.write_text(json.dumps({"rows": [{"op": "paint", "runs": [[1, 2, "00000000"]]}]}), encoding="utf-8")
+            with self.assertRaises(self.release.ReleaseCheckError):                       # paint in any other file
+                self.release._check_paint("data/other.json", path, reviewed)
 
 
 class Operations(unittest.TestCase):
@@ -150,16 +189,29 @@ class ReleasedDisc(unittest.TestCase):
             rgba = gf.derive_digit(self.base(row, span), row["derive"])
             self.assertEqual(sha(rgba.tobytes()), row["rgba_sha256"], (row["selector"], row["chunk"]))
 
-    def test_a_paint_ships_no_texel_equal_to_the_base(self):
-        """The rule for a redraw no operation list rebuilds: only texels that differ from what the build holds."""
+    def test_a_paint_ships_no_texel_equal_to_the_base_and_never_traces_its_shape(self):
+        """Review F3/F4: erasures are instructions, additions are pixels. A paint texel always differs from what the
+        operations before it made, and the shipped texels cover at most a quarter of the base's edge texels (the
+        generator's EDGE_OVERLAP_LIMIT); the Jaguars strip ships no texel at all (``thin_letters``)."""
+        sys.path.insert(0, str(ROOT / "tools/b81_uniforms"))
+        import glyph_derive as tool
+        painted = 0
         for row in self.rows:
-            if row["derive"][0]["op"] != "paint" or (row["kind"] == "names_derived" and not RETAIL.is_file()):
+            ops = row["derive"]
+            if row["kind"] == "names_derived":
+                self.assertEqual([op["op"] for op in ops], ["thin_letters"])
+                continue
+            at = [i for i, op in enumerate(ops) if op["op"] == "paint"]
+            if not at:
                 continue
             base = self.base(row, self.span(row))
-            for y, x0, values in row["derive"][0]["runs"]:
+            before = gf.derive_digit(base, ops[:at[0]])
+            for y, x0, values in ops[at[0]]["runs"]:
                 shipped = np.frombuffer(bytes.fromhex(values), np.uint8).reshape(-1, 4)
-                here = base[y, x0:x0 + len(shipped)]
-                self.assertTrue((shipped != here).any(-1).all(), (row["selector"], row["chunk"], y, x0))
+                self.assertTrue((shipped != before[y, x0:x0 + len(shipped)]).any(-1).all(), (row["selector"], y, x0))
+            self.assertLessEqual(tool.edge_overlap(base, ops), tool.EDGE_OVERLAP_LIMIT, (row["selector"], row["chunk"]))
+            painted += 1
+        self.assertEqual(painted, 100)                           # the Giants and Cowboys navy redraws
 
     def test_a_sample_of_each_operation_kind_compiles_to_its_output_pin(self):
         seen = {}

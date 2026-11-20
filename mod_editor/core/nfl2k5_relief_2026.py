@@ -23,10 +23,10 @@ Retail-free storage (job b81-retail-free-art, schema v2). Each map is two layers
   and channel the authored map minus the base, modulo 256, where this season's seams, collar band, vents, pin holes
   and embosses sit, and zero everywhere else. One difference master for the jersey and one for the sleeve, small
   per-kit difference patches (alpha 255 takes the patch texel, alpha 0 keeps the master's), each distinct patch once.
-  The jersey also ships two one-bit layout masks, the inputs of its base that are not read from the disc: its UV
-  island coverage (``islands_jersey.png``, 1024 x 512: where the folds stop) and the collar openings the art was
-  drawn for (``openings_jersey.png``, one 512 x 256 mask per distinct opening, stacked: where the folds soften
-  toward the collar). They hold no texel value of any map.
+  The base's layout inputs are derived on the user's machine too: each kit's collar opening from the kit's torso
+  texture as the build holds it at this step (``collar_opening``), pinned per slot by ``opening_sha256``; the jersey's
+  UV island coverage from the game's player mesh on the user's disc (``jersey_islands``), pinned by
+  ``bases.bump_jersey.islands_sha256``. Neither ships.
 
 A map is composed with numpy only, its mip chain is the Studio bump writer's box filter, it is swizzled and packed into
 the kit's own fixed compressed span (the retail packer first, the tighter optimal parse only when a span needs it), each
@@ -62,6 +62,8 @@ BASES = ("retail", "before")
 S = 2                                                   # the art is drawn on twice the native grid
 FOLD_GAIN, FOLD_BLUR = 0.80, 1.8                        # level B (bump_true.LEVELS["B"])
 OLD_PANTS = ((86, 36, 110, 56), (398, 36, 426, 56))     # the 2004 shield and Reebok embosses on every pants map
+TORSO_CHUNK = 1                                         # jersey00: the kit's torso colour texture
+OPENING_SEEDS = (((4, 161), (125, 200)), ((4, 390), (350, 432)))   # (row, column) inside the front V / back neck
 
 
 def require(ok, message):
@@ -85,8 +87,8 @@ def spec(path=None):
         require((row["base"] == "retail") == (row["slot"] != "bump_pants"), "jersey and sleeve start from retail")
         require(row["base"] != "retail" or row["slot"] in document["masters"], "slot without its difference master")
         require(row["patch"] is None or document["patches"][row["patch"]]["slot"] == row["slot"], "patch of another slot")
-        require(row["slot"] != "bump_jersey" or 0 <= row["opening"] < document["bases"]["bump_jersey"]["openings"]["count"],
-                "jersey row without its collar opening")
+        require(row["slot"] != "bump_jersey" or len(row.get("opening_sha256", "")) == 64,
+                "jersey row without its collar opening pin")
     for slot in document["masters"]:
         require(slot in document["bases"], "difference master without its retail base")
     return document
@@ -151,19 +153,12 @@ def difference_of(authored, base):
     return out
 
 
-def islands(document, folder=None):
-    entry = document["bases"]["bump_jersey"]["islands"]
-    mask = read_art(folder or art_folder(document), entry)[..., 0] > 127
-    require(mask.shape == (256 * S, 512 * S), "island mask size")
+def jersey_islands_for(document, retail, folder=None):
+    """The jersey's UV island coverage on the 2x grid, derived from the game's player mesh on the user's disc by
+    ``retail_maps`` (``retail["islands"]``) and checked there against ``bases.bump_jersey.islands_sha256``."""
+    mask = (retail or {}).get("islands")
+    require(mask is not None, "the jersey's UV islands were not derived from the disc")
     return mask
-
-
-def openings(document, folder=None):
-    """The collar openings the jersey art was drawn for: a list of native 256 x 512 masks."""
-    entry = document["bases"]["bump_jersey"]["openings"]
-    stack = read_art(folder or art_folder(document), entry)[..., 0] > 127
-    require(stack.shape == (256 * entry["count"], 512), "collar opening masks size")
-    return [stack[256 * i:256 * (i + 1)] for i in range(entry["count"])]
 
 
 # -- the base: an exact numpy port of bump_true's level B on the retail maps -------------------------------------------
@@ -378,8 +373,35 @@ def old_construction(gauss, xy):
     return fill_holes(erode(dilate(mesh, 3 * S), 3 * S))
 
 
+def collar_opening(torso_rgba):
+    """The kit's collar opening in native texels (tools/b81_uniforms/relief_marks.opening): the 4-connected region of
+    texels within 14 levels of the colour at a seed inside the front V and the back neck, any fill colour, kept to the
+    opening's own columns and the top 62 percent of the rows. Integer only."""
+    t = np.asarray(torso_rgba)[..., :3].astype(np.int64)
+    height = t.shape[0]
+    out = np.zeros(t.shape[:2], bool)
+    for (r, c), (c0, c1) in OPENING_SEEDS:
+        near = np.abs(t - t[r, c]).max(-1) < 14
+        near[:, :c0] = False
+        near[:, c1:] = False
+        near[int(height * 0.62):] = False
+        labels, _sizes = components(near)
+        if labels[r, c]:
+            out |= labels == labels[r, c]
+    return out
+
+
+def opening_sha256(opening):
+    return sha(np.packbits(np.asarray(opening, bool)).tobytes())
+
+
 def jersey_base(gauss, retail_rgba, opening, island):
     """Level B folds of the retail jersey sculpt with the 2004 construction lifted out, flat outside the islands."""
+    return reduce(jersey_folds(gauss, retail_rgba, opening, island))
+
+
+def jersey_folds(gauss, retail_rgba, opening, island):
+    """The float64 slopes ``jersey_base`` reduces (exposed so the platform test can pin the float stage itself)."""
     r = decode_map(retail_rgba)
     xy = r[..., :2]
     sl = slopes(xy)
@@ -395,11 +417,16 @@ def jersey_base(gauss, retail_rgba, opening, island):
     sculpt = sculpt * (1 - collar_zone)[..., None] + gauss.pair(sl, 5.0) * 0.6 * collar_zone[..., None]
     folds = gauss.pair(sculpt, FOLD_BLUR) * FOLD_GAIN
     folds[~island] = 0
-    return reduce(folds)
+    return folds
 
 
 def sleeve_base(gauss, retail_rgba):
     """The retail sleeve's folds softened, faded out above each island's hem."""
+    return reduce(sleeve_folds(gauss, retail_rgba))
+
+
+def sleeve_folds(gauss, retail_rgba):
+    """The float64 slopes ``sleeve_base`` reduces."""
     r = decode_map(retail_rgba)
     sl = gauss.pair(slopes(r[..., :2]), max(FOLD_BLUR, 1.6)) * FOLD_GAIN
     size = 128 * S
@@ -408,7 +435,7 @@ def sleeve_base(gauss, retail_rgba):
         t = (rows - top) / S
         island = (t >= 0) & (t < 64)
         sl = sl * np.clip((59.0 - t) / 3.0, 0, 1)[..., None] * island[..., None] + sl * (~island)[..., None]
-    return reduce(sl)
+    return sl
 
 
 def pairwise_mean(values):
@@ -457,6 +484,17 @@ def _membrane(field, region, iterations=4000):
 def pants_base(gauss, before_rgba, worked):
     """The kit's own pants map with the 2004 shield and Reebok embosses lifted out (the surrounding folds laid
     through), its own bytes kept outside the worked boxes."""
+    lifted = reduce(pants_lifted(gauss, before_rgba))
+    out = np.array(before_rgba, np.uint8, copy=True)
+    for x0, y0, x1, y1 in worked:
+        box = (slice(max(y0 - 4, 0), y1 + 4), slice(max(x0 - 4, 0), x1 + 4))
+        out[box] = lifted[box]
+    out[..., 3] = 255
+    return out
+
+
+def pants_lifted(gauss, before_rgba):
+    """The float64 slopes of the pants map with the two 2004 embosses filled over (``pants_base`` reduces them)."""
     height, width = 256 * S, 512 * S
     require(np.asarray(before_rgba).shape == (256, 512, 4), "pants map size")
     sl = slopes(decode_map(before_rgba)[..., :2])
@@ -468,13 +506,7 @@ def pants_base(gauss, before_rgba, worked):
         region[max(y0 - 3, 0) * S:(y1 + 3) * S, max(x0 - 3, 0) * S:(x1 + 3) * S] = True
         filled = np.stack([_membrane(sl[..., i], region) for i in range(2)], -1)
         sl = sl * (1 - soft) + filled * soft
-    lifted = reduce(sl)
-    out = np.array(before_rgba, np.uint8, copy=True)
-    for x0, y0, x1, y1 in worked:
-        box = (slice(max(y0 - 4, 0), y1 + 4), slice(max(x0 - 4, 0), x1 + 4))
-        out[box] = lifted[box]
-    out[..., 3] = 255
-    return out
+    return sl
 
 
 def _texture(span):
@@ -484,9 +516,116 @@ def _texture(span):
     return np.frombuffer(texture_to_rgba(decoded, chunk, texture), np.uint8).reshape(texture.height, texture.width, 4)
 
 
-def retail_maps(document, retail):
+# -- the jersey's UV islands, from the game's player mesh on the user's disc (review F1) ----------------------------
+# tools/b81_uniforms/uvpos.py rasterised the UNIF_jersey triangles of the Studio's Models export of hi_body (GLOBAL.IFF,
+# outer 3, chunk 114) at twice the jersey texture size; the relief stops its folds 3 native texels outside them. The
+# same triangles and float32 UVs are read here with the exporter's own calls, and rasterised with uvpos's rule in
+# float64 +, -, *, / only (helper retail-free/islands/jersey_islands.py, checked equal to uvpos's mask).
+
+MESH_PACKAGE, MESH_KEY, MESH_MATERIAL = "GLOBAL.IFF", "o3c114", "UNIF_jersey"
+
+
+def _mesh_span(image, index):
+    from . import nfl2k5_models as models
+    found = [e for e in index.entries if bump.logical_name_for(e.name_id) == MESH_PACKAGE]
+    require(len(found) == 1, MESH_PACKAGE + " is not a single package on this disc")
+    raw = image.read_segments(index.sub_extents(found[0], 0, found[0].size))
+    _outer, chunk_index = models.parse_model_key(MESH_KEY)
+    chunk = parse_chunks(raw, allow_trailing=True)[chunk_index]
+    return bytes(raw[chunk.offset:chunk.end_offset])
+
+
+def _jersey_triangles(span):
+    """(uv float64 [n, 2], triangles int64 [t, 3], decoded sha256) of hi_body's UNIF_jersey part, as the Models export
+    writes them (float32 UVs) and uvpos.py read them."""
+    import struct
+    from . import nfl2k5_models as models
+    gltf_tool = models._tools_module("nfl_scne_gltf")
+    _resource, decoded, scene = models.ModelSpanSource({MESH_KEY: span}).parse(MESH_KEY)
+    require(scene["name"] == "hi_body", MESH_KEY + " is not hi_body")
+    names = {i: str(m.get("name") or f"material_{i}") for i, m in enumerate(scene["materials"])}
+    uv_parts, tri_parts, base = [], [], 0
+    for shape in scene["shapes"]:
+        lanes = models._shape_lanes(scene, shape, decoded)
+        if lanes.vertex_count <= 0 or lanes.position_format not in ("FLOAT3", "NORMSHORT3") or lanes.texcoord is None:
+            continue
+        submeshes = [m for m in scene["submeshes"]
+                     if int(m["shape_index"]) == lanes.index and names[int(m["material_index"])] == MESH_MATERIAL]
+        if not submeshes:
+            continue
+        pairs = models.read_lane_2h(decoded, shape, lanes.texcoord, lanes.vertex_count)
+        flat = [c for u, v in pairs for c in models.uv_to_gltf(u, v, lanes.uv_scale, lanes.uv_offset)]
+        uv = np.frombuffer(struct.pack("<%df" % len(flat), *flat), dtype="<f4").reshape(-1, 2).astype(np.float64)
+        for submesh in submeshes:
+            for xbox_mode, raw_indices in gltf_tool.decode_batches(decoded, int(submesh["command_offset"]),
+                                                                   int(submesh["primary_command_word_count"])):
+                mode, indices, _conversion = gltf_tool.gltf_topology(xbox_mode, raw_indices)
+                if not indices:
+                    continue
+                if mode == 4:
+                    tris = [tuple(indices[i:i + 3]) for i in range(0, len(indices) - len(indices) % 3, 3)]
+                else:
+                    tris = [(indices[i], indices[i + 1], indices[i + 2]) if i % 2 == 0
+                            else (indices[i + 1], indices[i], indices[i + 2]) for i in range(len(indices) - 2)]
+                uv_parts.append(uv)
+                tri_parts.append(np.array(tris, np.int64).reshape(-1, 3) + base)
+                base += len(uv)
+    require(tri_parts, "hi_body has no %s triangles" % MESH_MATERIAL)
+    return np.concatenate(uv_parts), np.concatenate(tri_parts), sha(decoded)
+
+
+def raster_islands(uv, tris, w, h):
+    """uvpos.raster's coverage rule: a texel is covered when its centre's barycentric coordinates are all >= -0.02."""
+    import math
+    mask = np.zeros((h, w), bool)
+    uv = uv * np.array([float(w), float(h)])
+    for t in tris:
+        a0, a1 = float(uv[t[0], 0]), float(uv[t[0], 1])
+        b0, b1 = float(uv[t[1], 0]), float(uv[t[1], 1])
+        c0, c1 = float(uv[t[2], 0]), float(uv[t[2], 1])
+        x0, x1 = math.floor(min(a0, b0, c0)), math.ceil(max(a0, b0, c0))
+        y0, y1 = math.floor(min(a1, b1, c1)), math.ceil(max(a1, b1, c1))
+        x0, y0, x1, y1 = max(x0, 0), max(y0, 0), min(x1, w - 1), min(y1, h - 1)
+        if x1 < x0 or y1 < y0:
+            continue
+        xs, ys = np.meshgrid(np.arange(x0, x1 + 1) + 0.5, np.arange(y0, y1 + 1) + 0.5)
+        d = (b1 - c1) * (a0 - c0) + (c0 - b0) * (a1 - c1)
+        if abs(d) < 1e-12:
+            continue
+        l0 = ((b1 - c1) * (xs - c0) + (c0 - b0) * (ys - c1)) / d
+        l1 = ((c1 - a1) * (xs - c0) + (a0 - c0) * (ys - c1)) / d
+        l2 = 1 - l0 - l1
+        mask[y0:y1 + 1, x0:x1 + 1] |= (l0 >= -0.02) & (l1 >= -0.02) & (l2 >= -0.02)
+    return mask
+
+
+def jersey_islands(image, index, entry, problems=None):
+    """The dilated UV island coverage (512 x 1024) from the disc's hi_body mesh, checked against its pins."""
+    say = problems.append if problems is not None else (lambda _text: None)
+    span = _mesh_span(image, index)
+    if sha(span) != entry["mesh_span_sha256"]:
+        say("its player body mesh (%s %s) is not the one the relief was made for (SHA-256 %s, expected %s)"
+            % (MESH_PACKAGE, MESH_KEY, sha(span)[:12], entry["mesh_span_sha256"][:12]))
+        return None
+    uv, tris, _decoded = _jersey_triangles(span)
+    mask = dilate(raster_islands(uv, tris, 512 * S, 256 * S), 3 * S)
+    if sha(np.packbits(mask).tobytes()) != entry["islands_sha256"]:
+        say("the jersey's UV islands read from its player mesh differ from the ones the relief was made with")
+        return None
+    return mask
+
+
+def torso_rgba(raw):
+    """The kit's torso colour texture (level 0 RGBA of chunk 1, a TSET) from its package bytes."""
+    from .nfl2k5_kit_fixes_2026 import texture_rgba
+    chunk = _chunk_for(raw, TORSO_CHUNK)
+    return texture_rgba(raw[chunk.offset:chunk.end_offset])
+
+
+def retail_maps(document, retail, problems=None):
     """The retail maps the jersey and sleeve bases start from, read from the user's retail disc and checked against
-    their pins; None when the disc does not hold them."""
+    their pins; None when the disc does not hold them (``problems`` then gets one plain sentence saying why)."""
+    say = problems.append if problems is not None else (lambda _text: None)
     want = document["bases"]
     selector = {entry["selector"] for entry in want.values()}
     require(len(selector) == 1, "one retail package")
@@ -496,17 +635,25 @@ def retail_maps(document, retail):
             index = bump._parsed_index(image)
             found = [e for e in index.entries if bump.logical_name_for(e.name_id) == selector + ".IFF"]
             if len(found) != 1:
+                say("the disc %s holds no single %s.IFF kit package" % (Path(retail).name, selector))
                 return None
             raw = image.read_segments(index.sub_extents(found[0], 0, found[0].size))
-    except (ValueError, OSError):
+            island = jersey_islands(image, index, want["bump_jersey"], problems) if "bump_jersey" in want else None
+            if "bump_jersey" in want and island is None:
+                return None
+    except (ValueError, OSError) as exc:
+        say("the disc %s could not be read as an NFL 2K5 image (%s)" % (Path(retail).name, exc))
         return None
     out = {}
     for slot, entry in want.items():
         chunk = _chunk_for(raw, entry["chunk"])
         span = raw[chunk.offset:chunk.end_offset]
         if sha(span) != entry["span_sha256"]:
+            say("its %s %s map (chunk %d) is not the one the relief was made from (SHA-256 %s, expected %s): a "
+                "different disc revision" % (selector, slot[5:], entry["chunk"], sha(span)[:12], entry["span_sha256"][:12]))
             return None
         out[slot] = _texture(span)
+    out["islands"] = island
     return out
 
 
@@ -631,22 +778,31 @@ def _pool_map(function, jobs, count):
         yield from map(function, jobs)
 
 
-def compose_maps(rows, spans, document, retail, *, count=None, progress=None):
-    """{(selector, slot): before span} for the given rows and the retail maps (``retail_maps``) ->
-    {(selector, slot): composed level-0 RGBA}: the base derived from the disc plus the shipped difference. Every
-    composed map is checked against its pin."""
+def kit_opening(row, torso):
+    """The collar opening derived from the kit's torso texture as the build holds it, checked against its pin."""
+    opening = collar_opening(torso)
+    require(opening_sha256(opening) == row["opening_sha256"],
+            "%s: the kit's collar opening is not the one its relief was drawn for (the kit's torso texture changed "
+            "since the relief was made)" % row["selector"])
+    return opening
+
+
+def compose_maps(rows, spans, document, retail, torsos=None, *, count=None, progress=None):
+    """{(selector, slot): before span} for the given rows, the retail maps (``retail_maps``, with the derived
+    ``islands``) and each jersey kit's torso RGBA -> {(selector, slot): composed level-0 RGBA}: the base derived from
+    the disc plus the shipped difference. Every collar opening and composed map is checked against its pin."""
     folder = art_folder(document)
     table = document["gauss_kernels"]
     masters = {name: read_art(folder, entry) for name, entry in document["masters"].items()}
     jersey = any(r["slot"] == "bump_jersey" for r in rows)
-    island = islands(document, folder) if jersey else None
-    collars = openings(document, folder) if jersey else None
+    island = jersey_islands_for(document, retail, folder) if jersey else None
     keys, jobs, base_of = {}, [], {}
     for row in rows:
         key = (row["selector"], row["slot"])
         if row["slot"] == "bump_jersey":
-            job_key = ("bump_jersey", row["opening"])
-            payload = (retail["bump_jersey"], collars[row["opening"]], island)
+            opening = kit_opening(row, torsos[row["selector"]])
+            job_key = ("bump_jersey", row["opening_sha256"])
+            payload = (retail["bump_jersey"], opening, island)
         elif row["slot"] == "bump_sleeve":
             job_key, payload = ("bump_sleeve",), retail["bump_sleeve"]
         else:
@@ -685,14 +841,15 @@ def compose_maps(rows, spans, document, retail, *, count=None, progress=None):
     return out
 
 
-def authored_map(document, row, retail, before_rgba=None):
+def authored_map(document, row, retail, before_rgba=None, torso=None):
     """One slot's authored level-0 map outside a build (the Team Select card tools): the base derived from the retail
-    maps (``retail_maps``) or, for pants, from ``before_rgba`` (the slot's input map), plus the shipped difference;
-    checked against its pin."""
+    maps (``retail_maps``) and, for a jersey, the kit's ``torso`` texture as the build holds it, or, for pants, from
+    ``before_rgba`` (the slot's input map), plus the shipped difference; checked against its pin."""
     gauss = Kernels(document["gauss_kernels"])
     folder = art_folder(document)
     if row["slot"] == "bump_jersey":
-        base = jersey_base(gauss, retail["bump_jersey"], openings(document, folder)[row["opening"]], islands(document, folder))
+        base = jersey_base(gauss, retail["bump_jersey"], kit_opening(row, torso),
+                           jersey_islands_for(document, retail, folder))
     elif row["slot"] == "bump_sleeve":
         base = sleeve_base(gauss, retail["bump_sleeve"])
     else:
@@ -710,11 +867,11 @@ def authored_map(document, row, retail, before_rgba=None):
     return composed
 
 
-def compile_slots(rows, spans, document=None, *, retail=None, count=None, progress=None):
+def compile_slots(rows, spans, document=None, *, retail=None, torsos=None, count=None, progress=None):
     """{(selector, slot): before span} for the given document rows -> {(selector, slot): (after span, detail)}.
     Rows that take the same composed map share one compressed stream."""
     document = document or relief_b81u()
-    composed = compose_maps(rows, spans, document, retail, count=count, progress=progress)
+    composed = compose_maps(rows, spans, document, retail, torsos, count=count, progress=progress)
     groups, maps = {}, {}
     for row in rows:
         key = (row["selector"], row["slot"])
@@ -771,7 +928,7 @@ def apply_to_image(path, retail=None, *, strict=False, document=None, count=None
     by_selector = {}
     for row in document["slots"]:
         by_selector.setdefault(row["selector"], []).append(row)
-    written, written_bytes, skipped, todo, spans, places, kits = 0, 0, [], [], {}, {}, {}
+    written, written_bytes, skipped, todo, spans, places, kits, torsos = 0, 0, [], [], {}, {}, {}, {}
     with bump._Image.open(Path(path), writable=True) as image:
         index = bump._parsed_index(image)
         entries = {}
@@ -799,16 +956,22 @@ def apply_to_image(path, retail=None, *, strict=False, document=None, count=None
                     todo.append(row)
                     spans[key] = span
                     places[key] = (entry, chunk.offset)
+                    if row["slot"] == "bump_jersey":
+                        torsos[selector] = torso_rgba(raw)
         if todo:
             maps = None
             if any(r["base"] == "retail" for r in todo):
+                # b81-retail-free-art (review F7): a wrong or missing retail disc leaves the relief out, never
+                # silently: the build's optional-step wrapper restores the copy and puts this sentence in the
+                # build report (a strict build stops on it)
                 source = retail() if callable(retail) else retail
-                maps = retail_maps(document, source) if source is not None else None
+                problems = []
+                maps = retail_maps(document, source, problems) if source is not None else None
                 if maps is None:
-                    require(not strict, "the retail disc does not hold the pinned 18H0 jersey and sleeve maps")
-                    return dict(state="no_retail_base", written_spans=0, written_bytes=0,
-                                skipped_slots=["%s:%s" % (r["selector"], r["slot"]) for r in todo], kits=[])
-            results = compile_slots(todo, spans, document, retail=maps, count=count, progress=progress)
+                    raise ValueError("2026 jersey relief left out: the base it is drawn on comes from your retail "
+                                     "ESPN NFL 2K5 disc, and " + (problems[0] if problems else "no retail disc was given")
+                                     + ". The kits keep their 2004 relief.")
+            results = compile_slots(todo, spans, document, retail=maps, torsos=torsos, count=count, progress=progress)
             for row in todo:
                 key = (row["selector"], row["slot"])
                 new, _detail = results[key]
