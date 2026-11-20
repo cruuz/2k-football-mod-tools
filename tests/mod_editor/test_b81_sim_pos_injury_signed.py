@@ -23,6 +23,12 @@ nfl2k5_roster_records.verify_extra. Retail's write equals Realistic's own write 
 differs only in the transaction-ledger boundary cursors (front office +0x3324), which the simulating machine keeps
 and a cold load restarts at 0 on either executable.
 
+Slice 3 (pos3/DESIGN.md section 6, test 5): the same exchange after native regular-season weeks whose save holds a
+slice 3 injury (receiver, tight end, fullback, defensive tackle, linebacker, cornerback or safety) on each side of the
+ball, still hurt when saved, and one in slot 28 (the second free safety). The slot 28 condition depends on the frozen
+constants; until a week range that reaches it is chosen after calibration, that one condition skips with the counts
+(TODO for the build lead, see SLICE3_WEEKS).
+
 Private inputs come from /home/noah/2k-worktrees/.b77-scratch/b81/env.sh: NFL2K5_B81_REVIEWED_TEST_DISC (the
 standard executable, 98dd7329) and NFL2K5_B81_OWNERSHIP_FIXTURES (roster d5e02a52 and the signed opening 8bc786af).
 The test skips when they are absent and fails when they are present but differ from their pins.
@@ -30,6 +36,7 @@ The test skips when they are absent and fails when they are present but differ f
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 from pathlib import Path
 import struct
@@ -57,6 +64,10 @@ COMMIT_PC = 0x10285F                      # the game's injury commit (health wri
 SELECTOR_RETURN = 0x34                    # [ESP+0x34] at COMMIT_PC: return address of the selector frame
 SIDE = 0x14                               # [ESP+0x14] at COMMIT_PC: the match side; EBP is the player's match copy
 RECORD = 84
+# Slice 3: classes 5 to 11 of code.POSITION_CLASSES are new; these are read from the defensive side.
+DEFENSIVE_CLASSES = {'end', 'defensive_tackle', 'linebacker', 'cornerback', 'safety'}
+SECOND_FREE_SAFETY = 28
+SLICE3_WEEKS = 4      # TODO(build lead): set after the freeze to a range in which the seed's save holds a slot 28 injury
 
 
 def sha256(data):
@@ -154,7 +165,13 @@ class SignedSlice2Exchange(unittest.TestCase):
         return raw, extra
 
     def simulate_week(self, machine):
-        """One native franchise week; return the master index of every player hurt by a slice 2 commit."""
+        """One native franchise week; return the master index of every player hurt by a positions-piece commit."""
+        commits, other = self.simulate_weeks(machine, 1)
+        return [index for index, _, _ in commits], other
+
+    def simulate_weeks(self, machine, weeks, *, enough=None):
+        """Native franchise weeks (stop early once enough(commits) holds); every positions-piece commit as (master
+        index, class index, lineup slot) and the selector return address of every other injury commit."""
         start, end = code.LABELS.get('positions'), code.LABELS.get('depth_hook')
         slice2, other = [], []
 
@@ -173,7 +190,11 @@ class SignedSlice2Exchange(unittest.TestCase):
             master = machine.get(master_club + 4 * copies.index(copy))
             same = bytes(machine.uc.mem_read(copy + 0x10, 8)) == bytes(machine.uc.mem_read(master + 0x10, 8))
             pool = machine.get(machine.get(PLAYERS_ROOT) + 4)
-            slice2.append((master - pool) // RECORD if same else None)
+            klass = slot = None
+            if 'pos_class' in code.LABELS:   # the piece sets both before it calls its copy of the selector
+                klass = machine.get(self.bank + code.LABELS['pos_class'])
+                slot = machine.get(self.bank + code.LABELS['victim_slot'])
+            slice2.append(((master - pool) // RECORD if same else None, klass, slot))
 
         def decision(*_):
             raise RuntimeError(f'unexpected decision dialog from {machine.get(machine.reg("ESP")):#x}')
@@ -183,11 +204,19 @@ class SignedSlice2Exchange(unittest.TestCase):
         machine.uc.hook_add(machine.u.UC_HOOK_CODE, decision, begin=0x14E440, end=0x14E440)
         machine.uc.hook_add(machine.u.UC_HOOK_CODE, commit, begin=COMMIT_PC, end=COMMIT_PC)
         machine.uc.ctl_flush_tb()
-        machine.call(WEEKLY_SCHEDULER, ecx=machine.manager, budget=0)
-        self.assertNotIn(None, slice2, 'a slice 2 commit hurt a match copy with no master record')
+        for _ in range(weeks):
+            machine.call(WEEKLY_SCHEDULER, ecx=machine.manager, budget=0)
+            if enough is not None and enough(slice2):
+                break
+        self.assertNotIn(None, [index for index, _, _ in slice2], 'a positions commit hurt a match copy with no master')
         if 'pos_commits' in code.LABELS:
-            counters = struct.unpack('<5I', bytes(machine.uc.mem_read(self.bank + code.LABELS['pos_commits'], 20)))
-            self.assertEqual(sum(counters), len(slice2), 'hooked slice 2 commits differ from the bank counters')
+            classes = len(code.POSITION_CLASSES)
+            counters = struct.unpack(f'<{classes}I', bytes(machine.uc.mem_read(self.bank + code.LABELS['pos_commits'],
+                                                                                4 * classes)))
+            self.assertEqual(sum(counters), len(slice2), 'hooked positions commits differ from the bank counters')
+            for klass in range(classes):
+                self.assertEqual(counters[klass], sum(1 for _, c, _ in slice2 if c == klass),
+                                 f'class {code.POSITION_CLASSES[klass].name}: hooked commits differ from its counter')
         return slice2, other
 
     # -- comparison -------------------------------------------------------------------------------------------------
@@ -275,3 +304,44 @@ class SignedSlice2Exchange(unittest.TestCase):
         moved = [i for i, (a, b) in enumerate(zip(written[0], by_retail[0])) if a != b]
         self.assertEqual([i for i in moved if not ledger <= i < ledger + 8], [],
                          'week 1: Retail\'s write differs from Realistic\'s outside the ledger boundary cursors')
+
+    def test_weeks_with_slice_3_injuries_on_both_sides_and_slot_28_cross_both_ways(self):
+        names = [position.name for position in code.POSITION_CLASSES]
+        self.assertEqual(len(names), 12, 'slice 3 has twelve position classes')
+        machine = self.boot(self.realistic, self.opening)
+        record = lambda state, i: state['players'][RECORD * i:RECORD * (i + 1)]
+        try:
+            opening = census(machine, self.realistic)
+            hurt_at_opening = {i for i in range(opening['count']) if not healthy(record(opening, i))}
+            new = lambda commits: [(i, names[c], slot) for i, c, slot in commits if c is not None and c >= 5
+                                   and i not in hurt_at_opening]
+            sides = lambda commits: {name in DEFENSIVE_CLASSES for _, name, _ in new(commits)}
+            enough = lambda commits: sides(commits) == {False, True} and any(
+                slot == SECOND_FREE_SAFETY for _, _, slot in new(commits))
+            commits, native = self.simulate_weeks(machine, SLICE3_WEEKS, enough=enough)
+            weeks = census(machine, self.realistic)
+            written = self.sign(machine)
+        finally:
+            machine.close()
+        still = [(i, name, slot) for i, name, slot in new(commits) if not healthy(record(weeks, i))]
+        counts = f'{len(commits)} positions commits, {len(new(commits))} slice 3, {len(native)} other, ' \
+                 f'{weeks["state"]["week"]} weeks: {sorted({name for _, name, _ in new(commits)})}'
+        self.assertTrue(any(name not in DEFENSIVE_CLASSES for _, name, _ in still),
+                        f'no offensive slice 3 injury is in the save ({counts})')
+        self.assertTrue(any(name in DEFENSIVE_CLASSES for _, name, _ in still),
+                        f'no defensive slice 3 injury is in the save ({counts})')
+        self.assertTrue(weeks['ir'], 'the franchise has no IR entry')
+        target = os.environ.get('NFL2K5_B81_POS_SIGNED_RECORD')   # optional evidence: what the save holds
+        if target:
+            Path(target).write_text(json.dumps({
+                'weeks': weeks['state']['week'], 'positions_commits': len(commits), 'other_commits': len(native),
+                'slice3_commits': new(commits), 'slice3_still_hurt_when_saved': still,
+                'save_sha256': sha256(written[0])}, indent=1) + '\n', encoding='utf-8')
+        by_retail = self.exchange(written[0], weeks, 'slice 3 weeks')
+        ledger = saves.FranchiseSave(written[0]).front_office_block + saves.F_LEDGER_BOUNDARIES
+        moved = [i for i, (a, b) in enumerate(zip(written[0], by_retail[0])) if a != b]
+        self.assertEqual([i for i in moved if not ledger <= i < ledger + 8], [],
+                         'slice 3 weeks: Retail\'s write differs from Realistic\'s outside the ledger boundary cursors')
+        if not any(slot == SECOND_FREE_SAFETY for _, _, slot in still):
+            self.skipTest(f'TODO(build lead): no slot 28 injury in the save within {SLICE3_WEEKS} weeks at these '
+                          f'constants ({counts}); choose SLICE3_WEEKS after the freeze')
