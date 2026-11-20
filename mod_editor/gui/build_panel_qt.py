@@ -2078,6 +2078,9 @@ class BuildPanel(QWidget):
                      "line, the defensive line, linebackers, cornerbacks and safeties. Each simulated play has a small "
                      "chance that depends on the player's "
                      "Durability and the Injury slider. Nothing is scripted: some seasons are healthy and some are not. "
+                     "From a franchise's third season on, the chances follow the league's Durability ratings as they "
+                     "change, so injuries neither creep up nor die out over a long franchise; a more durable player is "
+                     "still hurt less often than a less durable one. "
                      "While it is on, the weekly running back roll is replaced by the per-carry chance, and your own club "
                      "is treated like every other club in the games you simulate. Games you play are not changed. "
                      "Realistic and Custom require 128 MB and Simulated season realism.")
