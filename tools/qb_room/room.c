@@ -376,6 +376,26 @@ static void club_pass(struct room *r) {
         qb_counters.skip_row0_unhealthy++;
         return;
     }
+    /* The pre-game pass leaves slice 1's capture alone (DESIGN 2.1). Slice 1's depth hook inside the lineup owner's
+       pass (tools/qb_sim_injuries/recovery.c, before_partition) captures a managed room whose row 0 is injured with
+       exactly one week left while every other quarterback is fully healthy; the medical partition then moves that
+       man down, and at the match prepare_match puts him back on row 0 for the match copy only if every rank and lock
+       is as the partition left them. This pass runs between the two, so a hold or a promotion here would cost him
+       that start. The shape is mirrored, not slice 1's state read: exactly one quarterback not fully healthy, and he
+       is injured with one week left. Every other room is passed, including one with a hurt third quarterback, so a
+       D1 hold stays the last word before each game (addendum 2, R1). Counted as skip_opening_injured. */
+    if (r->opening) {
+        u32 hurt = 0, medical = 0;
+        for (u32 i = 0; i < n; i++)
+            if (!r->q[i].healthy) {
+                hurt++;
+                medical = D(r->q[i].p + 0x20);
+            }
+        if (hurt == 1 && (medical & INJURED) && ((medical >> 22) & 255) == 1) {
+            qb_counters.skip_opening_injured++;
+            return;
+        }
+    }
     u32 table = D(D(LEAGUE_ROOT) + 4);
     for (u32 i = 0; i < n; i++) {
         struct qb *q = &r->q[i];

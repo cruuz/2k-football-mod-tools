@@ -529,6 +529,101 @@ class MyCareerPin(FloorLeague):
         self.assertGreater(counts["skip_unmanaged"], 0)
         self.assertEqual((counts["floor_runs"], counts["e1_tried"], counts["locks_written"]), (0, 0, 0))
 
+@unittest.skipUnless(base.HAVE_UC, "Unicorn is required")
+class PregameSkip(FloorLeague):
+    """The pre-game pass and slice 1 (QB injury recovery, tools/qb_sim_injuries/recovery.c), on 9f435b38 with its real
+    code. Slice 1's depth hook inside the lineup owner's weekly pass (0x247D5C) captures a managed room whose row 0 is
+    injured with exactly one week left while every other quarterback is fully healthy; at the match its prepare_match
+    puts the healed starter back on row 0 for the match copy, only if every rank and lock is as it left them. The
+    pre-game pass runs between the two, so it must leave such a room alone (DESIGN 2.1). It skips exactly that shape
+    (addendum 2's holds are written in every other room, including one with a hurt third quarterback)."""
+
+    def setUp(self):
+        super().setUp()
+        self.floor_settings(stages=room.STAGE_D1)
+        hook_site = 0x151CE00 + 0x44B                                          # slice 1's call in the lineup owner
+        raw = bytes(self.uc.mem_read(hook_site, 5))
+        self.assertEqual(raw[0], 0xE8)
+        depth_hook = hook_site + 5 + struct.unpack("<i", raw[1:])[0]
+        self.assertEqual(bytes(self.uc.mem_read(depth_hook, 5)), bytes.fromhex("9c605756e8"))
+        match_hook = depth_hook + 0x22
+        head = bytes(self.uc.mem_read(match_hook, 14))
+        self.assertEqual(head[:10], bytes.fromhex("9c608d442424505251e8"))   # pushfd; pushad; ...; call prepare_match
+        self.prepare_match = match_hook + 14 + struct.unpack("<i", head[10:14])[0]
+
+    def lineup_pass(self):
+        """0x247D5C: the lineup owner's weekly depth pass (slice 1's capture runs inside it), as TF7 runs it."""
+        self.uc.reg_write(self.x.UC_X86_REG_ESP, STACK)
+        self.uc.reg_write(self.x.UC_X86_REG_EBP, MENU)
+        self.uc.emu_start(LINEUP_PASS_SITE, LINEUP_PASS_SITE + 5, count=100_000_000)
+        self.assertEqual(self.uc.reg_read(self.x.UC_X86_REG_EIP), LINEUP_PASS_SITE + 5)
+
+    def match(self, home, away):
+        """Slice 1's prepare_match(home, away, sp) as the scheduled fixture's chain reaches it (sp[7] = 0x10B9E0,
+        sp[13] = 0xC7B58, game mode 4); cdecl."""
+        frame = STACK - 0x400
+        words = [0] * 16
+        words[7], words[13] = 0x10B9E0, 0xC7B58
+        self.uc.mem_write(frame, struct.pack("<16I", *words))
+        self.write(0xE5FF80, 4)
+        self.uc.mem_write(STACK - 16, struct.pack("<4I", base.STOP, home, away, frame))
+        self.uc.reg_write(self.x.UC_X86_REG_ESP, STACK - 16)
+        self.uc.emu_start(self.prepare_match, base.STOP, count=10_000_000)
+        self.assertEqual(self.uc.reg_read(self.x.UC_X86_REG_EIP), base.STOP)
+
+    def room_bytes(self, qbs):
+        return [bytes(self.uc.mem_read(q.address, 0x54)) for q in qbs]
+
+    def capture_room(self, installed, year=None):
+        """Starter 85 hurt with one week left on row 0, an unlocked backup 76 and an unlocked rookie 78, all others
+        healthy: slice 1's capture shape (its prepare reseats only unlocked men). The year is a key for which D1 would
+        write in this room after the medical partition: a hold if the sort put the rookie ahead of the incumbent, a
+        promotion before the first game if the incumbent is ahead."""
+        self.setUp()
+        starter = QB(85, 0, injury=hurt(1), locked=False)
+        backup, rookie = QB(76, 1, years=6, locked=False), QB(78, 2, years=1, locked=False)
+        self.squad([starter, backup, rookie], 46)
+        if year is None:
+            self.lineup_pass()
+            rookie_ahead = self.rows([rookie])[0] < self.rows([backup])[0]
+            wanted = (lambda d: d < 75000) if rookie_ahead else (lambda d: d >= 75000)
+            return next(y for y in range(5000) if wanted(base.draw([1, SIGN_CLUB, y, backup.index, rookie.index])))
+        self.write(0xE576B8, year)
+        self.lineup_pass()
+        self.assertNotEqual(self.rows([starter])[0], 0)                       # the medical partition moved him
+        before = self.room_bytes([starter, backup, rookie])
+        self.enter("opening", installed=installed)
+        untouched = self.room_bytes([starter, backup, rookie]) == before
+        skipped = self.counters()["skip_opening_injured"]
+        self.write(starter.address + 0x20, 0)                                 # the week's tick: he has healed
+        self.match(self.team(), self.team(SIGN_CLUB + 1))
+        return untouched, self.rows([starter, backup, rookie]), skipped
+
+    def test_a_room_in_slice_1s_capture_shape_is_left_alone_and_its_match_copy_is_as_before(self):
+        year = self.capture_room(installed=True)
+        untouched, rows, skipped = self.capture_room(installed=True, year=year)
+        control_untouched, control_rows, _ = self.capture_room(installed=False, year=year)
+        self.assertTrue(control_untouched)
+        self.assertEqual(control_rows[0], 0)                                  # slice 1 seats the healed starter
+        self.assertTrue(untouched)
+        self.assertEqual(rows, control_rows)
+        self.assertEqual(skipped, 1)
+
+    def test_a_hold_with_a_hurt_third_quarterback_stands_through_the_next_game(self):
+        veteran, rookie = QB(80, 0), QB(84, 1, years=1, locked=False)
+        third = QB(60, 2, years=9, injury=hurt(3))
+        self.squad([veteran, rookie, third], 46)
+        year = next(y for y in range(5000) if base.draw([1, SIGN_CLUB, y, veteran.index, rookie.index]) < 65000)
+        self.write(0xE576B8, year)
+        for week in range(2):
+            self.write(0xE576B4, 5 + week)
+            self.lineup_pass()
+            self.enter("opening")                                             # the pre-game pass: the last word
+            self.assertEqual(self.rows([veteran])[0], 0, week)
+            self.enter("room")
+        self.assertEqual(self.locks([rookie]), [0])
+        self.assertEqual(self.counters()["skip_opening_injured"], 0)
+
 P2A = Path(os.environ.get("QB_ROOM_P2A_REPLAY", "/home/noah/2k-worktrees/.b77-scratch/b81/qb34/evidence/p2a-replay"))
 P2A_IMAGE = ("00-sign_after-y1-st7-w2-ENTER.b81mem.gz", "c76828e9931eaebdfebd837b5cbe5bf3cf36adb8070618f1f247cdb9d518cd8e")
 P2A_XBE = ("p2-candidate-9edd1353.xbe", "9edd1353bedfbca6b4ce35faa2acc3cb68b8a74521d3313e3b1873e6b12c7c3d")

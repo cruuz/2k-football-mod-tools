@@ -81,7 +81,7 @@ struct counters {
     u32 skip_unmanaged;          /* human club with manual depth */
     u32 skip_room_shape;         /* not 2..7 quarterbacks on rows exactly 0..n-1 */
     u32 skip_row0_unhealthy;
-    u32 skip_opening_injured;    /* opening pass: some quarterback not fully healthy */
+    u32 skip_opening_injured;    /* pre-game pass: slice 1's capture shape (one man hurt, one week left) */
     u32 coach_missing;           /* club + 0x14C was 0: leadership 83 used */
     u32 newcomers;               /* unlocked healthy quarterbacks judged */
     u32 newcomer_locked;         /* case (c): no decision needed (since addendum 2 nothing is written) */

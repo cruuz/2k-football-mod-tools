@@ -66,7 +66,7 @@ CLUB_SIZE, PLAYER_SIZE, COACH_SIZE = 500, 0x54, 0xA8
 LEAGUE_CLUBS = 34                       # 32 league clubs and the two all-star sides
 GENERATORS = ((0xB12680, 448), (0xE5FCA0, 448))
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
-PIECE3_RELOCATIONS = "ba6d1d9e97b885cb7915b42d69513d51e76e3ef04da1db9fc7011999095a8531"   # D1 after review
+PIECE3_RELOCATIONS = "43e5ec55f4b596898beb8235e8edd3bfbfec772547432e881c90705d0f1f6c99"   # D1 after review
 # Stage 4a runs on a real standard Studio build (retail plus every standard owner, slice 1 Realistic): economy_week
 # at 0x323870, the practice-squad guard and economy gate in front of 0x322BB0, the smart cut at 0x2BF9A0.
 STANDARD_XBE = Path(os.environ.get("NFL2K5_B81_QB_STANDARD_XBE",
@@ -245,14 +245,14 @@ class PageInterface(unittest.TestCase):
 
     def test_stage_4a_is_linked_after_piece_3_which_keeps_every_byte(self):
         # Piece 3 as reworked after the review (DESIGN addendum 2): its main part (both entries, room.c's code and
-        # tables) is 0xEEC bytes with the sha256 and relocations below; D1 sits in the middle piece (page + 0x2200)
+        # tables) is 0xF3C bytes with the sha256 and relocations below; D1 sits in the middle piece (page + 0x2200)
         # and its row shift in the tail. 4a and the floor are linked after the main part, so they move none of it.
         # (Before the review, 5846655b1's piece 3 was 0x10BC bytes, sha256 2441d02a..., 96 relocations.)
-        self.assertEqual(room.PIECE3_BYTES, 0xEEC)
+        self.assertEqual(room.PIECE3_BYTES, 0xF3C)
         self.assertEqual(hashlib.sha256(room._TEMPLATE[:room.PIECE3_BYTES]).hexdigest(),
-                         "5888c70e4a7c207ffd4af86daeb48c774c2753048d7b1b5325a0d8adb6d52b47")
+                         "566cbb8d0303d16068a188e635c0f008b4c7fe42bef7b13382266625bf0ec425")
         inside = [r for r in room._RELOCATIONS if r[0] < room.PIECE3_BYTES]
-        self.assertEqual(len(inside), 86)
+        self.assertEqual(len(inside), 88)
         self.assertEqual(hashlib.sha256(repr(inside).encode()).hexdigest(), PIECE3_RELOCATIONS)
         for label in ("emergency_pass", "sign_entry", "sign_after"):
             self.assertGreaterEqual(room.LABELS[label], room.PIECE3_BYTES)
