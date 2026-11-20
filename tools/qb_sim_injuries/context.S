@@ -70,6 +70,7 @@ ordered:
     cmp edi,[CACHED_AWAY]
     jne admitted
     mov dword ptr [CACHED_YEAR],-1
+    mov dword ptr [POS_CACHED_YEAR],-1
 admitted:
     cmp dword ptr [esp+36],offset GAMECAST_RETURN
     je gamecast

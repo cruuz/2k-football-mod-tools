@@ -44,6 +44,7 @@ ordered:
     cmp edx,[CACHED_CLUB_B]
     jne finish
     mov dword ptr [CACHED_YEAR],-1
+    mov dword ptr [POS_CACHED_YEAR],-1
 finish:
     popad
     popfd

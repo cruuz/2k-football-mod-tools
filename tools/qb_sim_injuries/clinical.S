@@ -135,6 +135,7 @@ evaluate_gate:
     push 0                              # status scratch, following arg is the LEN1 draw
     call descriptor
 finished:
+    call POSITIONS                      # slice 2: the line, edge and halfback check (positions.S)
     fxrstor [esp]
     mov esp, [esp+512]
     popad
