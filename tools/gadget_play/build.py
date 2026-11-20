@@ -5,8 +5,9 @@ The generated ``mod_editor/core/nfl2k5_gadget_play_code.py`` is checked in, so S
 ``--check`` fails when the checked-in template differs from a fresh build (gcc 13.3, binutils 2.42).
 
 The sources (``lineup.S``, ``lookup.c``, ``speed.S``) are the runtime of Codex's private Q62 candidate
-(job/b81-gadget-proof f9df9acc5, qualified as XBE 7963a1db on 20 CPU games, the attract game and a MyCareer game),
-unchanged. The code always sits at the fixed gadget slot (``nfl2k5_xbe_space.GADGET_CODE_VA``). Five link-time
+(job/b81-gadget-proof f9df9acc5, qualified as XBE 7963a1db on 20 CPU games, the attract game and a MyCareer game).
+Beta 81 review F1 added ``restore.S`` and two stores of its marker (one in ``lineup.S``, one in ``speed.S``); the
+classifier ``lookup.c`` is unchanged. The code always sits at the fixed gadget slot (``nfl2k5_xbe_space.GADGET_CODE_VA``). Five link-time
 values change from build to build: the native gate (the target of the picker's gate call 0xE8864, which a later
 owner may own) and four addresses inside the gadget table (its layout depends on the disc's play books). The
 generator links the runtime once with template values and once more per value with only that value moved, and
@@ -30,7 +31,8 @@ TABLE_VA = CODE_VA + 2048
 TEMPLATE = {"native_gate": 0x000E8340, "book_rows": TABLE_VA, "links": TABLE_VA + 0x250,
             "blobs": TABLE_VA + 0xB00, "pair_info": TABLE_VA + 0x31FC}
 SYMBOLS = tuple(TEMPLATE)
-LABELS = ("scoped_builder", "scope_return", "tapped_ordinal", "select_slot", "assign_if_fast")
+LABELS = ("scoped_builder", "scope_return", "tapped_ordinal", "select_slot", "assign_if_fast", "restore_after_store",
+          "gadget_team")
 MOVE = 0x1230
 CFLAGS = ["-m32", "-Os", "-std=c99", "-ffreestanding", "-fno-pic", "-fno-pie", "-fno-stack-protector",
           "-fno-asynchronous-unwind-tables", "-fno-unwind-tables", "-mno-sse", "-mpreferred-stack-boundary=2",
@@ -47,12 +49,13 @@ def link(values: dict[str, int]) -> tuple[bytes, dict[str, int]]:
     """The runtime linked at CODE_VA with the given symbol values (Codex's candidate.assemble, unchanged)."""
     with tempfile.TemporaryDirectory(prefix="gadget-play-") as folder:
         obj = Path(folder)
-        for name in ("lineup", "speed"):
+        for name in ("lineup", "speed", "restore"):
             _run("as", "--32", "-o", str(obj / f"{name}.o"), str(SOURCE / f"{name}.S"))
         _run("gcc", *CFLAGS, "-c", str(SOURCE / "lookup.c"), "-o", str(obj / "lookup.o"))
         defs = [f"--defsym={k}={v:#x}" for k, v in values.items()]
         _run("ld", "-m", "elf_i386", "--build-id=none", "-e", "scoped_builder", f"-Ttext={CODE_VA:#x}", *defs,
-             "-o", str(obj / "runtime.elf"), str(obj / "lineup.o"), str(obj / "lookup.o"), str(obj / "speed.o"))
+             "-o", str(obj / "runtime.elf"), str(obj / "lineup.o"), str(obj / "lookup.o"), str(obj / "speed.o"),
+             str(obj / "restore.o"))
         symbols = {}
         for row in _run("nm", "--defined-only", "-n", str(obj / "runtime.elf")).splitlines():
             address, _, name = row.split()

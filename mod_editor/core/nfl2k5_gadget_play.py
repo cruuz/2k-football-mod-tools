@@ -16,7 +16,7 @@ called play. At the builder call 0x18A641 the first two stack arguments are the 
 record. On the type-12 set-up path (return 0x18B189) a punt formation's word there is zero; on the snap path a Gun
 Empty formation's lateral alignment of -302 cm (low 16 bits 0xFED2) was taken for a pointer.
 
-How this one decides (Codex's private Q62 candidate, job/b81-gadget-proof f9df9acc5, unchanged machine code; sources in
+How this one decides (Codex's private Q62 candidate, job/b81-gadget-proof f9df9acc5; its classifier unchanged; sources in
 tools/gadget_play/). A build-time table lists every (book, formation, play) link of the disc's 37 play books whose play
 hands one wide receiver slot the ball, with the play's whole script as the game relocates it. At run time it acts only
 on the snap path (0x18A5D0 returning to 0x18AD4B, called from 0x89624), only for the team that has the ball, only with
@@ -27,10 +27,18 @@ ordinal helper's call for the matched slot (0xE8AFC, the only call that runs whe
 substitution) also reads the GAD row; after the builder returns, a GAD player who is not on the field and is at least
 as fast replaces the slot's pick.
 
+One snap only (beta 81 review F1). The rule changes one build's output; the game rebuilds a lineup only on the
+play-call path. The no-huddle, audible and CPU re-pick handlers store the next play with 0x9F990 and keep the eleven
+on the field, so the emulator showed the GAD staying for a no-huddle snap. 0x9F990's call to 0xB8790 (right after the
+store) now runs through a small restore: when the stored side is the offense and its last build carried a
+substitution (a marker the substitution sets and every play-call offense build clears), the offense lineup is
+rebuilt exactly as 0x89590 builds it, which gives the game's own eleven for the new play. The marker is a word in
+the owner's code allocation, which lies in the writable scale-out pool section (as the QB bank's state does).
+
 Placement. The code and table use the fixed gadget slots (nfl2k5_xbe_space.GADGET_REQUESTS: code 0x151F680, 2,048
 bytes; table 0x151FE80, 12,800 bytes, right below the Backfield cards at 0x1523080), which every beta-81 standard
-build reserves, so installing, rebuilding or removing it never moves another owner. Two 5/6-byte sites: the builder
-call 0x18A641 and the ordinal helper entry 0xE7760.
+build reserves, so installing, rebuilding or removing it never moves another owner. Three sites: the builder call
+0x18A641 (5 bytes), the ordinal helper entry 0xE7760 (6 bytes) and the play store's call 0x9F9CB (5 bytes).
 """
 from __future__ import annotations
 
@@ -67,6 +75,10 @@ BUILDER_SITE, BUILDER = 0x0018A641, 0x000E89F0
 ORDINAL_SITE = 0x000E7760
 BUILDER_RETAIL = b"\xe8" + struct.pack("<i", BUILDER - BUILDER_SITE - 5)
 ORDINAL_RETAIL = bytes.fromhex("53558b6c2410")   # push ebx; push ebp; mov ebp,[esp+0x10] (continues at 0xE7766)
+# Review F1: 0x9F990 (store the next play: play call, no-huddle, audible, CPU re-pick) calls 0xB8790 right after the
+# store; that call goes through the restore, which rebuilds the offense lineup when its last build had a substitution.
+STORE_SITE, FORMATION_SYNC = 0x0009F9CB, 0x000B8790
+STORE_RETAIL = b"\xe8" + struct.pack("<i", FORMATION_SYNC - STORE_SITE - 5)
 
 BOOK_RECORD = struct.Struct("<12sHH")
 LINK = struct.Struct("<HHBBBBII")
@@ -80,6 +92,9 @@ GUARDS = (
     (0x000E7766, 0x2A, (), "ac2e67b18b974c67fd4c0b95466809f3484c3f8a0e99479fb0a09eda1e7babfa", "ordinal helper body"),
     (0x000E8AF0, 0x11, (), "08b44aba82c6e70edad55ad647dacc4cdd4bd618fed93df0ab87a93e01881601", "builder's ordinal helper call"),
     (0x000E89F0, 0x150, ((0x000E8B21, 4),), "82c6b3a4e62b22508d0492801a68e5634270563bb368d6fea4efa2d0eda52334", "lineup builder"),
+    (0x0009F990, 0x3B, (), "99150b8c6d835d4a46916383f88eddfd66f58a587e7ea0fdc7d19b19bdce5c33", "play store, before the restore site"),
+    (0x0009F9D0, 0xA8, (), "9c0c03d32d2954adf2e938a39bda7e8b69d7f4a2088c9f7ce1b34f139e6755c4", "play store, after the restore site"),
+    (0x000895E4, 0x40, (), "52d3d3f18eda6f9d2e54973aecc3e230ae77c3c90aac6568b0267cac90736b0f", "play-call offense build the restore repeats"),
 )
 
 
@@ -232,9 +247,11 @@ def code_for(offsets: Mapping[str, int], native_gate: int) -> bytes:
 def _hooks() -> tuple[tuple[str, int, bytes, bytes], ...]:
     entry = CODE_VA + template.LABELS["scoped_builder"]
     ordinal = CODE_VA + template.LABELS["tapped_ordinal"]
+    restore = CODE_VA + template.LABELS["restore_after_store"]
     return (("gadget_builder", BUILDER_SITE, BUILDER_RETAIL, b"\xe8" + struct.pack("<i", entry - BUILDER_SITE - 5)),
             ("gadget_ordinal", ORDINAL_SITE, ORDINAL_RETAIL,
-             b"\xe9" + struct.pack("<i", ordinal - ORDINAL_SITE - 5) + b"\x90"))
+             b"\xe9" + struct.pack("<i", ordinal - ORDINAL_SITE - 5) + b"\x90"),
+            ("gadget_restore", STORE_SITE, STORE_RETAIL, b"\xe8" + struct.pack("<i", restore - STORE_SITE - 5)))
 
 
 def _allocations(payload: bytes) -> dict[str, dict] | None:

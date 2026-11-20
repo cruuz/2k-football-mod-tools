@@ -2,7 +2,7 @@
 .intel_syntax noprefix
 .text
 .global scoped_builder, tapped_ordinal, scope_return
-.extern select_slot, native_gate, assign_if_fast
+.extern select_slot, native_gate, assign_if_fast, gadget_team
 .set native_builder, 0xe89f0
 .set ordinal, 0xe7530
 .set list_length, 0xe75a0
@@ -16,6 +16,9 @@ scoped_builder:
     jne native_builder
     cmp dword ptr [esp+0xdc],0x89624
     jne native_builder
+    /* Beta 81 review F1: every offense build on the play-call path starts with the
+       game's own lineup; the restore marker of an earlier substitution is spent. */
+    mov dword ptr [gadget_team],0
     cmp esi,dword ptr [0xe60280]
     jne native_builder
     cmp esi,0xe5fc20

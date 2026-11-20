@@ -3,13 +3,17 @@
 .intel_syntax noprefix
 .text
 .global assign_if_fast
+.extern gadget_team
 assign_if_fast:
     mov ecx,[ebp-4]                   /* the designated receiving slot */
+    push esi                          /* ESI is the offense's side (team) */
     mov esi,[edx+ecx*4]               /* the native pick for that slot */
     mov bl,[eax+0x36]                 /* unsigned native Speed attribute */
     cmp bl,[esi+0x36]
+    pop esi
     jb slower
     mov [edx+ecx*4],eax
+    mov dword ptr [gadget_team],esi   /* beta 81 review F1: this side's lineup carries a substitution */
 slower:
     ret
 .section .note.GNU-stack,"",@progbits

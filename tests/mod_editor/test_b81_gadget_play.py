@@ -53,6 +53,11 @@ V09_XBE_SHA256 = "d78088f9ba47c6197e99ea540d0bc3d2c9255f7cd49152a77946be70dacab8
 QUALIFIED_OFFSETS = {"book_rows": 0, "links": 592, "blobs": 2368, "pair_info": 12796}
 QUALIFIED_GATE = 0x14F13E0
 QUALIFIED_CODE_SHA256 = "b6d4c7fd6005d2bf892d88c01d99f4c1e01a306f3d9605e28d2082448705bd0f"
+QUALIFIED_TABLE_SHA256 = "5e71503f18a514faa70e70d1e1373c0d098d941440f5efe967beb7b6782e9c24"
+# The qualified code's classifier (select_slot) and the scoped tail after the builder (scope_return), by offset.
+QUALIFIED_SELECT_SLOT, QUALIFIED_ASSIGN, QUALIFIED_SCOPE_RETURN, QUALIFIED_TAPPED = 0x173, 0x502, 0xAD, 0xD6
+# Review F1 added the one-snap restore; this is the whole 2,048-byte allocation with the qualified link values.
+RUNTIME_CODE_SHA256 = "76b4698a112fc44f01e39cd0126dd70f0d3d87d43d0d5702620f3fbbf02cb46f"
 
 
 def _sha(data: bytes) -> str:
@@ -84,11 +89,26 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(template.CODE_VA, gadget.CODE_VA)
         self.assertIn(gadget.OWNER, space.LATE_OWNERS)
 
-    def test_code_for_reproduces_the_qualified_runtime_byte_for_byte(self):
+    def test_the_classifier_is_the_qualified_one_byte_for_byte(self):
+        """The qualified runtime (XBE 7963a1db, its code allocation sha b6d4c7fd) plus review F1's restore: the
+        classifier and the post-builder substitution tail are the qualified bytes; only the restore marker's two
+        stores, the restore routine and the position of the native jumps differ."""
         code = gadget.code_for(QUALIFIED_OFFSETS, QUALIFIED_GATE)
         self.assertEqual(len(code), gadget.CODE_SIZE)
-        self.assertEqual(_sha(code), QUALIFIED_CODE_SHA256)
+        self.assertEqual(_sha(code), RUNTIME_CODE_SHA256)
         self.assertEqual(code[len(template.TEMPLATE):], bytes(gadget.CODE_SIZE - len(template.TEMPLATE)))
+        if QUALIFIED_XBE.is_file():
+            from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+            qualified = XbeImage(QUALIFIED_XBE.read_bytes()).read(gadget.CODE_VA, gadget.CODE_SIZE)
+            self.assertEqual(_sha(qualified), QUALIFIED_CODE_SHA256)
+            labels = template.LABELS
+            self.assertEqual(code[labels["select_slot"]:labels["assign_if_fast"]],
+                             qualified[QUALIFIED_SELECT_SLOT:QUALIFIED_ASSIGN])
+            self.assertEqual(code[labels["scope_return"]:labels["tapped_ordinal"]],
+                             qualified[QUALIFIED_SCOPE_RETURN:QUALIFIED_TAPPED])
+        # The restore marker sits in the code allocation, zero on disc.
+        at = template.LABELS["gadget_team"]
+        self.assertEqual(code[at:at + 4], bytes(4))
 
     def test_only_the_recorded_fields_move_with_their_symbol(self):
         base = gadget.code_for(QUALIFIED_OFFSETS, QUALIFIED_GATE)
@@ -105,8 +125,13 @@ class TemplateTests(unittest.TestCase):
                     delta = (int.from_bytes(moved[at:at + 4], "little") - int.from_bytes(base[at:at + 4], "little"))
                     self.assertEqual(delta & 0xFFFFFFFF, 0x40)
 
-    def test_hooks_enter_the_runtime_from_the_two_native_sites(self):
-        (_, builder, builder_retail, builder_new), (_, ordinal, ordinal_retail, ordinal_new) = gadget._hooks()
+    def test_hooks_enter_the_runtime_from_the_three_native_sites(self):
+        (_, builder, builder_retail, builder_new), (_, ordinal, ordinal_retail, ordinal_new), \
+            (_, store, store_retail, store_new) = gadget._hooks()
+        self.assertEqual(store, 0x9F9CB)
+        self.assertEqual(store_retail, bytes.fromhex("e8c08d0100"))          # call 0xB8790 inside 0x9F990
+        self.assertEqual(store + 5 + struct.unpack_from("<i", store_new, 1)[0],
+                         gadget.CODE_VA + template.LABELS["restore_after_store"])
         self.assertEqual((builder, ordinal), (0x18A641, 0xE7760))
         self.assertEqual(builder_retail, bytes.fromhex("e8aae3f5ff"))          # call 0xE89F0
         self.assertEqual(ordinal_retail, bytes.fromhex("53558b6c2410"))
@@ -164,23 +189,38 @@ class ClassifierTests(unittest.TestCase):
 
 
 class QualifiedCandidateTests(unittest.TestCase):
-    """The Studio owner on the preview the 20 CPU games used is the qualified executable itself."""
+    """The Studio owner on the preview the 20 CPU games used: the qualified table, classifier and hook entries, plus
+    the restore."""
 
-    def test_the_owner_on_the_preview_is_the_qualified_executable(self):
+    def test_the_owner_on_the_preview_carries_the_qualified_table_and_classifier(self):
         if not QUALIFIED_XBE.is_file():
             self.skipTest("the qualified candidate executable is absent")
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
         source, books = _require_disc(PREVIEW_DISC, PREVIEW_XBE_SHA256)
         qualified = QUALIFIED_XBE.read_bytes()
         self.assertEqual(_sha(qualified), QUALIFIED_XBE_SHA256)
         self.assertEqual(gadget.status(source), "retail")
         result, receipt = gadget.apply(source, books)
-        self.assertEqual(_sha(result), QUALIFIED_XBE_SHA256)
         self.assertEqual((receipt["table_bytes"], receipt["eligible_links"], receipt["left_out_books"]), (12800, 111, []))
         self.assertEqual(gadget.read_settings(result, books)["status"], "applied")
+        mine, theirs = XbeImage(result), XbeImage(qualified)
+        self.assertEqual(_sha(mine.read(gadget.TABLE_VA, gadget.TABLE_SIZE)), QUALIFIED_TABLE_SHA256)
+        self.assertEqual(theirs.read(gadget.TABLE_VA, gadget.TABLE_SIZE), mine.read(gadget.TABLE_VA, gadget.TABLE_SIZE))
+        labels = template.LABELS
+        self.assertEqual(mine.read(gadget.CODE_VA + labels["select_slot"], QUALIFIED_ASSIGN - QUALIFIED_SELECT_SLOT),
+                         theirs.read(gadget.CODE_VA + QUALIFIED_SELECT_SLOT, QUALIFIED_ASSIGN - QUALIFIED_SELECT_SLOT))
+        # Outside the code allocation and the hook sites, the two executables differ only in the section digests and
+        # the allocator seals (the code bytes changed): every other byte of the 12 MB file is the same.
+        changed = [i for i in range(len(result)) if result[i] != qualified[i]]
+        code = mine.offset(gadget.CODE_VA, gadget.CODE_SIZE)
+        sites = [mine.offset(va, len(retail)) for _l, va, retail, _p in gadget._hooks()]
+        outside = [i for i in changed if not code <= i < code + gadget.CODE_SIZE
+                   and not any(at <= i < at + 6 for at in sites)]
+        self.assertLess(len(outside), 200)
         # Off again: the sites are retail, the slots stay reserved and empty; on again: the same executable.
         off, _ = gadget.remove(result)
         self.assertEqual(gadget.status(off), "retail")
-        self.assertEqual(gadget.apply(off, books)[0], qualified)
+        self.assertEqual(gadget.apply(off, books)[0], result)
 
 
 class ReleasedV09Tests(unittest.TestCase):
@@ -683,12 +723,17 @@ class NativeLineupTests(unittest.TestCase):
         normal, got, reason = self.outcome(0, slot)
         self.assertEqual(reason, "changed")
         self.assertEqual(got[slot], self.before.gad(0))
-        self.assertEqual(self._differences(), baseline)  # nothing outside the stack was written differently
+        # Nothing outside the stack was written differently, except the restore marker (review F1), which now names
+        # the offense side and is cleared by its next play-call build.
+        marker = gadget.CODE_VA + template.LABELS["gadget_team"]
+        self.assertLessEqual(self._differences() - baseline, set(range(marker, marker + 4)))
+        self.assertEqual(self._marker(self.after), SIDES[0])
         # The next snap through a normal huddle: a non-gadget play in the same formation, then another formation.
         others = [link.play_index for link in book.formations[3].play_links if (3, link.play_index) not in self.links[314]]
         for play in others[:3]:
             self.select(book, 3, play)
             self.assertEqual(self.after.line(0), self.before.line(0))
+            self.assertEqual(self._marker(self.after), 0)
         self.select(book, 0, book.formations[0].play_links[0].play_index)
         self.assertEqual(self.after.line(0), self.before.line(0))
         # The same gadget play called again: a fresh decision, the GAD in again; then a normal snap again.
@@ -712,7 +757,102 @@ class NativeLineupTests(unittest.TestCase):
             self.assertEqual(m.reg("EIP"), 0x18A646)
             lines.append(n.words(m.reg("ESP") + 0x74, 11))
         self.assertEqual(lines[0], lines[1])
-        self.assertEqual(self._differences(), baseline)
+        self.assertLessEqual(self._differences() - baseline, set(range(marker, marker + 4)))
+
+    def _marker(self, native):
+        return native.m.get(gadget.CODE_VA + template.LABELS["gadget_team"])
+
+    def test_the_restore_marker_follows_the_substitution(self):
+        """Review F1: a substitution marks the offense side; the next play-call offense build clears the mark; a
+        slower GAD (no substitution) leaves no mark."""
+        book = self.setup_book(314)
+        slot = self.links[314][(3, 147)]
+        others = [link.play_index for link in book.formations[3].play_links if (3, link.play_index) not in self.links[314]]
+        self.select(book, 3, 147)
+        self.assertEqual(self.outcome(0, slot)[2], "changed")
+        self.assertEqual(self._marker(self.after), SIDES[0])
+        self.select(book, 3, others[0])
+        self.after.line(0)
+        self.assertEqual(self._marker(self.after), 0)
+        self.select(book, 3, 147)
+        native = self.before.line(0)
+        player = self.before.gad(0)
+        with ExitStack() as stack:
+            for n in (self.before, self.after):
+                stack.enter_context(poke(n, native[slot] + 0x36, b"\x50"))
+                stack.enter_context(poke(n, player + 0x36, b"\x4f"))
+            self.assertEqual(self.outcome(0, slot)[2], "slower_than_original")
+            self.assertEqual(self._marker(self.after), 0)
+
+    def _skip(self, native, address, pop=0, record=None):
+        """Make a native routine return at once (callee pops ``pop`` bytes); ``record`` gets its registers and args."""
+        m = native.m
+
+        def hook(_uc, _pc, _size, _user):
+            sp = m.reg("ESP")
+            if record is not None:
+                record.append(dict(ecx=m.reg("ECX"), edx=m.reg("EDX"), esp=sp,
+                                   args=struct.unpack("<4I", bytes(m.uc.mem_read(sp + 4, 16)))))
+            m.reg("EIP", m.get(sp))
+            m.reg("ESP", sp + 4 + pop)
+
+        return m.uc.hook_add(m.u.UC_HOOK_CODE, hook, begin=address, end=address)
+
+    def test_the_restore_rebuilds_the_offense_lineup_after_a_substitution_only(self):
+        """Review F1: when 0x9F990 stores the next play for the offense whose last build substituted (no-huddle,
+        audible, CPU re-pick), the restore runs the play-call offense build exactly as 0x89590 does (0x18AD10 with
+        the side, its record +4 and the two packed situation values) and that build gives the game's own eleven for
+        the new play. Any other store (no mark, the other side, the defense) only runs the displaced 0xB8790."""
+        book = self.setup_book(314)
+        slot = self.links[314][(3, 147)]
+        others = [link.play_index for link in book.formations[3].play_links if (3, link.play_index) not in self.links[314]]
+        restore = gadget.CODE_VA + template.LABELS["restore_after_store"]
+        marker = gadget.CODE_VA + template.LABELS["gadget_team"]
+        m = self.after.m
+        sync, builds = [], []
+        hooks = [self._skip(self.after, 0xB8790, record=sync), self._skip(self.after, 0x18AD10, pop=0x10, record=builds)]
+        try:
+            for mark, offense, expect in ((SIDES[0], SIDES[0], True), (0, SIDES[0], False), (SIDES[1], SIDES[0], False),
+                                          (SIDES[0], SIDES[1], False)):
+                with self.subTest(mark=hex(mark), offense=hex(offense)):
+                    sync.clear(), builds.clear()
+                    m.put(marker, mark)
+                    m.put(0xE60280, offense)
+                    m.call(restore, ecx=SIDES[0], edx=0x1234, esi=SIDES[0])
+                    self.assertEqual(len(sync), 1)
+                    self.assertEqual((sync[0]["ecx"], sync[0]["edx"]), (SIDES[0], 0x1234))
+                    self.assertEqual(m.reg("ESI"), SIDES[0])
+                    self.assertEqual(len(builds), int(expect))
+                    self.assertEqual(m.get(marker), 0 if expect else mark)
+                    if expect:
+                        record = m.get(SIDES[0] + 0xC)
+                        packed = m.get(record + 0xC8)
+                        signed = lambda v: struct.unpack("<i", struct.pack("<I", v & 0xFFFFFFFF))[0]
+                        build = builds[0]
+                        self.assertEqual((build["ecx"], build["edx"]), (SIDES[0], record + 4))
+                        self.assertEqual(build["args"][:3], (0, 0, 1))
+                        self.assertEqual(struct.unpack("<2i", bytes(m.uc.mem_read(build["args"][3], 8))),
+                                         (signed(packed << 0x16) >> 0x1D, signed(packed << 0x13) >> 0x1D))
+        finally:
+            for h in hooks:
+                m.uc.hook_del(h)
+        # The real rebuild: after a substituted End Around, a no-huddle-style store of another play rebuilds the
+        # offense with the game's own eleven for that play (the build's output, read where line() reads it).
+        sync_only = self._skip(self.after, 0xB8790)
+        try:
+            self.select(book, 3, 147)
+            self.assertEqual(self.outcome(0, slot)[2], "changed")
+            self.assertEqual(self._marker(self.after), SIDES[0])
+            self.select(book, 3, others[0])
+            m.put(0xE602B8, 12)
+            m.put(0xE60280, SIDES[0])
+            m.put(0xE60284, SIDES[1])
+            m.call(restore, ecx=SIDES[0], edx=0, esi=SIDES[0], stop=0x18A646, budget=300000)
+            rebuilt = self.after.words(m.reg("ESP") + 0x74, 11)
+        finally:
+            m.uc.hook_del(sync_only)
+        self.assertEqual(rebuilt, self.before.line(0))
+        self.assertEqual(self._marker(self.after), 0)
 
     def test_the_classifier_refuses_malformed_selections(self):
         book = self.setup_book(314)
