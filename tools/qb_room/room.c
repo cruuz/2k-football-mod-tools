@@ -294,9 +294,7 @@ static u32 decide_d3(struct room *r) {
         qb_counters.d3_fired++;
         exchange(r, c, s);
     } else {
-        qb_counters.d3_kept++;
-        lock(r, s);
-        lock(r, c);
+        qb_counters.d3_kept++;                      /* kept: nothing written (addendum 2, R1: no lock to mark "seen") */
     }
     log_event(r, D3 | (fire ? B_AHEAD : 0), outcome(r, fire, 1), s, c, p);
     return fire;
@@ -327,9 +325,7 @@ static u32 decide_d2(struct room *r) {
         qb_counters.d2_fired++;
         exchange(r, k, s);
     } else {
-        qb_counters.d2_kept++;
-        lock(r, s);
-        lock(r, k);
+        qb_counters.d2_kept++;                      /* kept: nothing written (addendum 2, R1) */
     }
     log_event(r, D2 | (fire ? B_AHEAD : 0), outcome(r, fire, 1), s, k, p);
     return fire;

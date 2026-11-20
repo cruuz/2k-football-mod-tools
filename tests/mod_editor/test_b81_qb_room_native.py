@@ -66,7 +66,7 @@ CLUB_SIZE, PLAYER_SIZE, COACH_SIZE = 500, 0x54, 0xA8
 LEAGUE_CLUBS = 34                       # 32 league clubs and the two all-star sides
 GENERATORS = ((0xB12680, 448), (0xE5FCA0, 448))
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
-PIECE3_RELOCATIONS = "43e5ec55f4b596898beb8235e8edd3bfbfec772547432e881c90705d0f1f6c99"   # D1 after review
+PIECE3_RELOCATIONS = "5ae3c4b63a1c33ce7aff8cb68aa19cb605e60c8fb7d7666cf768084080dfb87c"   # D1 after review
 # Stage 4a runs on a real standard Studio build (retail plus every standard owner, slice 1 Realistic): economy_week
 # at 0x323870, the practice-squad guard and economy gate in front of 0x322BB0, the smart cut at 0x2BF9A0.
 STANDARD_XBE = Path(os.environ.get("NFL2K5_B81_QB_STANDARD_XBE",
@@ -245,12 +245,12 @@ class PageInterface(unittest.TestCase):
 
     def test_stage_4a_is_linked_after_piece_3_which_keeps_every_byte(self):
         # Piece 3 as reworked after the review (DESIGN addendum 2): its main part (both entries, room.c's code and
-        # tables) is 0xF3C bytes with the sha256 and relocations below; D1 sits in the middle piece (page + 0x2200)
+        # tables) is 0xF00 bytes with the sha256 and relocations below; D1 sits in the middle piece (page + 0x2200)
         # and its row shift in the tail. 4a and the floor are linked after the main part, so they move none of it.
         # (Before the review, 5846655b1's piece 3 was 0x10BC bytes, sha256 2441d02a..., 96 relocations.)
-        self.assertEqual(room.PIECE3_BYTES, 0xF3C)
+        self.assertEqual(room.PIECE3_BYTES, 0xF00)
         self.assertEqual(hashlib.sha256(room._TEMPLATE[:room.PIECE3_BYTES]).hexdigest(),
-                         "566cbb8d0303d16068a188e635c0f008b4c7fe42bef7b13382266625bf0ec425")
+                         "a6dc21e08cb6173a29109a4626cf8c42bf52d613a0b400302a88d951e57f7ebe")
         inside = [r for r in room._RELOCATIONS if r[0] < room.PIECE3_BYTES]
         self.assertEqual(len(inside), 88)
         self.assertEqual(hashlib.sha256(repr(inside).encode()).hexdigest(), PIECE3_RELOCATIONS)
@@ -1047,6 +1047,45 @@ class SeasonRules(League):
             self.assertEqual(self.table(), after)
             outcomes.append(fire)
         self.assertTrue(20 < sum(outcomes) < 100)
+
+
+class KeptWritesNoLock(League):
+    """DESIGN addendum 2, R1: the owner locks only when it has moved a man ahead of another by choice. A D2 or D3 draw
+    that keeps the order writes nothing (P6 on 7dd3482a9: 44 of 54 locks came from these kept branches); a fire is a
+    move and locks both men, as before."""
+
+    def test_d3_kept_writes_no_lock_and_a_fire_locks_both(self):
+        for h0, fire in ((0, False), (1_000_000, True)):
+            with self.subTest(fire=fire):
+                self.setUp()
+                self.settings(STAGE_D3, h0_ppm=h0)
+                self.record(CLUB, 1, 6, 0)
+                self.coach(CLUB, 61)
+                starter = QB(80, 0, line=LINES[500], locked=False)
+                backup = QB(80, 1, line=(1, 5, 3, 30, 0, 0), locked=False)
+                self.club(CLUB, [starter, backup, QB(55, 2, years=9, locked=False)])
+                self.enter("room")
+                event = self.last()
+                self.assertEqual((event[3] & 0x0F, event[4]), (3, room.RESULT_APPLIED if fire else room.RESULT_KEPT))
+                self.assertEqual(self.counters()["d3_drawn"], 1)
+                self.assertEqual(self.locks([starter, backup]), [1, 1] if fire else [0, 0])
+                self.assertEqual(self.counters()["locks_written"], 2 if fire else 0)
+
+    def test_d2_kept_writes_no_lock_and_a_fire_locks_both(self):
+        for scale, fire in ((0, False), (1_000_000, True)):
+            with self.subTest(fire=fire):
+                self.setUp()
+                self.settings(room.STAGE_D2D3, d2_scale_milli=scale)
+                self.record(CLUB, 1, 6, 0)
+                starter = QB(80, 0, line=(3, 40, 20, 300, 1, 1), locked=False)
+                kid = QB(75, 2, years=1, locked=False)
+                self.club(CLUB, [starter, QB(70, 1, locked=False), kid])
+                self.enter("room")
+                event = self.last()
+                self.assertEqual((event[3] & 0x0F, event[4]), (2, room.RESULT_APPLIED if fire else room.RESULT_KEPT))
+                self.assertEqual(self.counters()["d2_drawn"], 1)
+                self.assertEqual(self.locks([starter, kid]), [1, 1] if fire else [0, 0])
+                self.assertEqual(self.counters()["locks_written"], 2 if fire else 0)
 
 
 # ---- T5, T6: what a change writes ----------------------------------------------------------------------------------
