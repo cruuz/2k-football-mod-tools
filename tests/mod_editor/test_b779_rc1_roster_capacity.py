@@ -158,7 +158,8 @@ def _revision_three(current, retail):
         import json
         from pathlib import Path
         for site in economy.sites():
-            if site.va in economy.REVISION_7_NEW:
+            # b81: revision 8's new sites (the practice-squad fill) are retail in a revision-3 image too
+            if site.va in economy.REVISION_7_NEW or site.va in getattr(economy, "REVISION_8_NEW", ()):
                 offset = image.offset(site.va, len(site.patched))
                 out[offset:offset + len(site.patched)] = source.read(site.va, len(site.patched))
         fixture = Path(__file__).resolve().parent / "fixtures" / "econ3_revision6_windows.json"
