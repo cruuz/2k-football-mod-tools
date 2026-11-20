@@ -1040,6 +1040,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_glyph_fixes_2026_b81u/WSH_29H0_digit_arm_9.png": "51cd74bd3634716544a044af9dee863f8bed2352b99eab29322f8207e329ce17",
                 "data/nfl2k5_kit_fixes_2026_b81.json": "7bad3d0d201b402697cfd4a8359a60b86ea0d73438e7f5bee670348e994cd9f1",
                 "data/nfl2k5_kit_fixes_2026_b81u.json": "a10a38220ef5c9b38402da5f54a700f9d97908c6cbf745c9142f0fb44957468c",
+                "data/nfl2k5_sideline_2026_b81u.json": "6693da9406b97d4b8d26761dc4ca0acab912175dcde72f6e061a6dcbb3a748a4",
                 "data/nfl2k5_relief_2026_b81u.json": "72008c5b3dd33fecbd49415e2e39b933f0516823565931a517e4e555200a6a01",
                 "data/nfl2k5_relief_2026_b81u/jersey_07455b0dd674a0c7.png": "210cd1b39674be73cf77f263270cf8aa12747392450c78f22a9192d30982f8c8",
                 "data/nfl2k5_relief_2026_b81u/jersey_077652704ac938c0.png": "283c5051208549c001756dfb3da7324682c787baa8ca1d8211ee84e759f44b50",

@@ -598,8 +598,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "22a50b66cece72046d84de5ed34f3d04c71c6ac921dba125cf9b08505e71efac",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/build_steps.py": "dc3cc5177445c4b700c9a160f267520126f553854dcb6a68c074ef8d35bfa13c",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "4acf958911f6222f42127f572dce1bd996352310361e8cf6c1a810d1723d7e9d",
+        "mod_editor/core/build_steps.py": "3d9f56f7354b6267f8d85db20ffa63cbbc21b6dcb349948babd62e037cd49ad1",  # b791-h3: step context and optional steps
+        "mod_editor/core/mod_build.py": "44f9cb9d5d017ff3a62ac4a4cec9243ed28defe1921cacfca7513796fe8a379a",
         "mod_editor/core/nfl2k5_console_memory.py": "6ea4889a87c02c49c0850efa27a11706457dfd9cd438051f307587b469541758",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -897,7 +897,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_moment_scans.py": "99445768a0d0ff24576aab37c5cae3d9ffcb2816034f447cd93d3092d18c616c",
         "mod_editor/core/nfl2k5_unc_bowl_uniforms.py": "639af055c4943c2578955885f4ccc9a7d65f0bd4c632487f56934bdcb1968e1c",
         "mod_editor/core/nfl2k5_nyg_numbers.py": "812f042c6293db1e66567d940228af53acf0955ab9eeec0ff936f64bc243587b",
-        "mod_editor/core/nfl2k5_kit_fixes_2026.py": "4f5d3aada1e2de0e2db7a9cd17d32616ec70f0ff72e09ed5a1f826abff49838f",
+        "mod_editor/core/nfl2k5_kit_fixes_2026.py": "b15d64147e936c8e0788505aed2a01687905fdfc4f98228fab7c53ba6e2b770d",
         "mod_editor/core/nfl2k5_relief_2026.py": "a3a3a70b8f7e07407de7e98a0ea3316c0ea04916007a9bf57a1a2f59d4f4d95e",
         "mod_editor/core/nfl2k5_position_row.py": "0df78f0d7e3af61be8738afe5373925f48ef8a309a35bfcb31ab62008b6be85b",
         "mod_editor/core/nfl2k5_practice_reserves.py": "787e84ba5d4e1316e3bef58a82305366bf8e3d5f084cb0fe242fb68f77ecbbb6",
@@ -1842,6 +1842,7 @@ class Nfl2k5UnifiedVisualProvider:
         "data/nfl2k5_glyph_fixes_2026_b81u/WSH_29H0_digit_arm_9.png": "51cd74bd3634716544a044af9dee863f8bed2352b99eab29322f8207e329ce17",
         "data/nfl2k5_kit_fixes_2026_b81.json": "7bad3d0d201b402697cfd4a8359a60b86ea0d73438e7f5bee670348e994cd9f1",
         "data/nfl2k5_kit_fixes_2026_b81u.json": "a10a38220ef5c9b38402da5f54a700f9d97908c6cbf745c9142f0fb44957468c",
+        "data/nfl2k5_sideline_2026_b81u.json": "6693da9406b97d4b8d26761dc4ca0acab912175dcde72f6e061a6dcbb3a748a4",
         "data/nfl2k5_relief_2026_b81u.json": "72008c5b3dd33fecbd49415e2e39b933f0516823565931a517e4e555200a6a01",
         "data/nfl2k5_relief_2026_b81u/jersey_07455b0dd674a0c7.png": "210cd1b39674be73cf77f263270cf8aa12747392450c78f22a9192d30982f8c8",
         "data/nfl2k5_relief_2026_b81u/jersey_077652704ac938c0.png": "283c5051208549c001756dfb3da7324682c787baa8ca1d8211ee84e759f44b50",

@@ -69,6 +69,8 @@ def chunk_of(texture: str) -> tuple[int, str]:
     """(chunk index, kit-fix kind) of a kit texture name."""
     if texture in TSET:
         return TSET[texture], "tset"
+    if texture == "splayer":            # R54: the far-player atlas (tools/b81_uniforms/far_atlas.py)
+        return 51, "txtr"
     for prefix, first in (("hn", 23), ("an", 33), ("", 13)):
         digits = texture[len(prefix):]
         if texture.startswith(prefix) and digits.isdigit() and 48 <= int(digits) <= 57:
