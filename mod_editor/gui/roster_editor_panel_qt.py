@@ -74,7 +74,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
-from PyQt5.QtCore import QObject, QRunnable, QSignalBlocker, QSize, Qt, QThreadPool, pyqtSignal
+from PyQt5.QtCore import QItemSelectionModel, QObject, QRunnable, QSignalBlocker, QSize, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtGui import QColor, QFont, QImage, QKeySequence, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -808,8 +808,16 @@ class GlobalEditDialog(QDialog):
             scope_layout.addWidget(box, code // 6, code % 6)
         layout.addWidget(scope)
         self.current_team_only = QCheckBox("This team only")
+        # b81 M3: Finn's Global Edit on the selected rows; offered when more than one player is selected
+        selected_count = self._selected_count = len(panel.selected_players()) if panel.document is not None else 0
+        self.selected_only = QCheckBox(f"Only the selected players ({selected_count})")
+        self.selected_only.setEnabled(selected_count > 1)
+        self.selected_only.setToolTip("Applies the rule to the players selected in the list." if selected_count > 1
+                                      else "Select more than one player in the list (Shift or Ctrl click, or "
+                                           "Ctrl+A) to use this.")
         scope_row = QHBoxLayout()
         scope_row.addWidget(self.current_team_only)
+        scope_row.addWidget(self.selected_only)
         self.scope_label = QLabel("")
         scope_row.addWidget(self.scope_label, 1)
         layout.addLayout(scope_row)
@@ -868,8 +876,8 @@ class GlobalEditDialog(QDialog):
             combo.currentIndexChanged.connect(self._invalidate_preview)
         for spin in (self.value, self.minimum, self.maximum, self.where_value):
             spin.valueChanged.connect(self._invalidate_preview)
-        for check in (self.large_values, self.rookies_only, self.current_team_only, self.where_enabled,
-                      *self.positions.values()):
+        for check in (self.large_values, self.rookies_only, self.current_team_only, self.selected_only,
+                      self.where_enabled, *self.positions.values()):
             check.toggled.connect(self._invalidate_preview)
         self.more_attributes.itemChanged.connect(self._invalidate_preview)
         self.team_checks.itemChanged.connect(self._invalidate_preview)
@@ -892,7 +900,9 @@ class GlobalEditDialog(QDialog):
         if picked and self._panel.document is not None:
             names = [self._panel.document.teams[i].abbreviation for i in picked]
             team = ", ".join(names[:6]) + (f" and {len(names) - 6} more" if len(names) > 6 else "")
-        if self.current_team_only.isChecked():
+        if self.selected_only.isChecked():
+            team = f"the {self._selected_count} selected players"
+        elif self.current_team_only.isChecked():
             kind, index = getattr(self._panel, "_group", ("all", 0))
             document = self._panel.document
             if kind == "team" and document is not None and 0 <= index < len(document.teams):
@@ -920,7 +930,8 @@ class GlobalEditDialog(QDialog):
                 "mode": str(self.mode.currentData()), "value": float(self.value.value()),
                 "positions": chosen, "rookies_only": self.rookies_only.isChecked(),
                 "minimum": self.minimum.value(), "maximum": self.maximum.value(), "where": where,
-                "current_team_only": self.current_team_only.isChecked(), "attributes": more,
+                "current_team_only": self.current_team_only.isChecked(),
+                "selected_only": self.selected_only.isChecked(), "attributes": more,
                 "teams": [int(team) for team in self._checked(self.team_checks)]}
 
     def refresh_preview(self) -> list[dict[str, Any]]:
@@ -2002,6 +2013,17 @@ class CollegeCheckDialog(QDialog):
             self.show_session(self.panel.college_check_path(chosen))
 
 
+class _PlayerGrid(QTableWidget):
+    """The player grid (b81 M3: Shift/Ctrl click and Ctrl+A select several players). A move of the current row made by
+    the program (setCurrentCell: a Find, the depth arrows, a refresh) means that one row, whatever modifier keys the
+    keyboard state remembers; mouse and key events keep Qt's own Shift/Ctrl rules."""
+
+    def selectionCommand(self, index, event=None):                      # noqa: N802 (Qt's name)
+        if event is None:
+            return QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows
+        return super().selectionCommand(index, event)
+
+
 class RosterEditorPanel(QWidget):
     """The ★ Rosters workspace."""
 
@@ -2011,6 +2033,8 @@ class RosterEditorPanel(QWidget):
     espn25_plan_changed = pyqtSignal(str)           # path of the saved ESPN Anniversary plan (Build's espn25_plan)
     abilities_lock_settings_changed = pyqtSignal(object)  # rules v2 lock settings from the Abilities page (Build pending settings)
     ESPN25_RECOVERY_SCHEMA = "2k5_mod_studio_espn25_recovery/v1"
+    _selected_count = 0                             # b81 M3: how many grid rows are selected
+    MANY_SELECTED_TIP = "{count} players are selected. Choose one player to use this."
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -2366,14 +2390,15 @@ class RosterEditorPanel(QWidget):
         self._rebuild_chips()
         box.addWidget(self.chip_box)
 
-        self.player_table = QTableWidget(0, len(GRID_BASE_COLUMNS))
+        self.player_table = _PlayerGrid(0, len(GRID_BASE_COLUMNS))
         self._apply_grid_headers()
         header = self.player_table.horizontalHeader()
         header.setSectionsClickable(True)
         header.setSortIndicatorShown(False)
         header.sectionClicked.connect(self._header_clicked)
         self.player_table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.player_table.setSelectionMode(QAbstractItemView.SingleSelection)
+        # b81 M3: Shift/Ctrl click and Ctrl+A select several players; the card shows the current row
+        self.player_table.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.player_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.player_table.verticalHeader().setVisible(False)
         self.player_table.setAccessibleName("Players")
@@ -2383,6 +2408,7 @@ class RosterEditorPanel(QWidget):
         self.player_table.customContextMenuRequested.connect(self._show_grid_menu)
         self.player_table.currentCellChanged.connect(
             lambda row, _c, _pr, _pc: self._select_row(row))
+        self.player_table.itemSelectionChanged.connect(self._selection_changed)
         box.addWidget(self.player_table, 1)
 
         # b81: the depth tools wrap instead of squeezing (arrows, order box, Special teams, Unlock, Columns)
@@ -2717,7 +2743,7 @@ class RosterEditorPanel(QWidget):
 
     def unlock_selected(self) -> bool:
         player = self.selected_player()
-        if player is None or self.document is None:
+        if player is None or self.document is None or self._refuse_many():
             return False
         before = player.record.values['unknown_52'] & 0x1f
         if not before:
@@ -2909,7 +2935,7 @@ class RosterEditorPanel(QWidget):
 
     def reserve_selected(self, promote: bool) -> bool:
         player = self.selected_player()
-        if self.document is None or player is None:
+        if self.document is None or player is None or self._refuse_many():
             return False
         team = self.document.club_of(player)
         if team is None:
@@ -3870,6 +3896,47 @@ class RosterEditorPanel(QWidget):
         row = self.player_table.currentRow()
         return self._rows[row] if 0 <= row < len(self._rows) else None
 
+    def selected_players(self) -> list[rr.Player]:
+        """Every selected player in grid order (b81 M3). The grid is rebuilt in its sorted order, so a row is
+        always the player in ``_rows[row]``. ``selected_player()`` stays the current row the card shows."""
+
+        model = self.player_table.selectionModel()
+        if model is None:
+            return []
+        rows: set[int] = set()
+        for chosen in model.selection():
+            rows.update(range(chosen.top(), chosen.bottom() + 1))
+        return [self._rows[row] for row in sorted(rows) if 0 <= row < len(self._rows)]
+
+    def select_all_players(self) -> int:
+        """Finn's Edit > Select All (Ctrl+A on the grid): every player shown in the list."""
+
+        self.player_table.selectAll()
+        return len(self.selected_players())
+
+    def _multi_selection(self) -> list[rr.Player]:
+        chosen = self.selected_players()
+        return chosen if len(chosen) > 1 else []
+
+    def _refuse_many(self) -> bool:
+        """True (with a plain status line) when several players are selected: the single-player commands are
+        refused then, so none of them quietly acts on the current row alone."""
+
+        count = len(self.selected_players())
+        if count > 1:
+            self._set_status(f"{count} players are selected. Choose one player to use this.")
+            return True
+        return False
+
+    def _selection_changed(self) -> None:
+        count = len(self.selected_players())
+        before, self._selected_count = self._selected_count, count
+        if count > 1 or before > 1:
+            self._refresh_actions()
+        if count > 1 and count != before:
+            self._set_status(f"{count} players selected. Release, Clear career stats and the Global editor "
+                             "act on all of them. The card shows the one you clicked last.")
+
     def select_player(self, player: rr.Player) -> bool:
         for row, candidate in enumerate(self._rows):
             if candidate is player:
@@ -4220,16 +4287,21 @@ class RosterEditorPanel(QWidget):
         menu = QMenu(self.player_table)
         player = self.selected_player()
         loaded = self.document is not None and player is not None
+        chosen = self.selected_players() if loaded else []
+        many = len(chosen) > 1                  # b81 M3: the one-player commands wait while several are selected
+        single_tip = self.MANY_SELECTED_TIP.format(count=len(chosen)) if many else ""
         action = menu.addAction("Copy player", self.copy_player)
         action.setShortcut(QKeySequence("Ctrl+C"))
-        action.setEnabled(loaded)
+        action.setEnabled(loaded and not many)
+        action.setToolTip(single_tip)
         for text, mode, key in (("Paste player", "all", "Ctrl+V"),
                                 ("Paste attributes only", "attributes", "Ctrl+Alt+A"),
                                 ("Paste photo only", "photo", "")):
             action = menu.addAction(text, lambda kind=mode: self.paste_player(kind))
             if key:
                 action.setShortcut(QKeySequence(key))
-            action.setEnabled(loaded and self._clipboard is not None)
+            action.setEnabled(loaded and not many and self._clipboard is not None)
+            action.setToolTip(single_tip)
         menu.addSeparator()
         menu.addAction("Find player… (every team)", self.studio_find).setShortcut(QKeySequence("Ctrl+F"))
         action = menu.addAction("Only his position", self.show_position_players)
@@ -4241,8 +4313,8 @@ class RosterEditorPanel(QWidget):
         # b81 R9: Finn's Clear Stats, the way the game survives it
         reason = self.clear_stats_reason([player] if player is not None else [])
         action = menu.addAction("Clear his career stats…", self.clear_career_stats)
-        action.setEnabled(not reason)
-        action.setToolTip(reason or "Empties his season and career stats, the clubs on his history card and his own "
+        action.setEnabled(not reason and not many)
+        action.setToolTip(single_tip or reason or "Empties his season and career stats, the clubs on his history card and his own "
                                     "honors. League records and award lists are kept. Undo takes it back.")
         shown = self.visible_players() if self.document is not None else []
         reason_all = self.clear_stats_reason(shown)
@@ -4250,10 +4322,22 @@ class RosterEditorPanel(QWidget):
                                 lambda: self.clear_career_stats(self.visible_players()))
         action.setEnabled(not reason_all and len(shown) > 1)
         action.setToolTip(reason_all or "Every player in the list as it is filtered now.")
+        # b81 M3: Finn's Select All and the commands that act on the selection
+        action = menu.addAction(f"Select all {len(shown)} shown", self.select_all_players)
+        action.setShortcut(QKeySequence("Ctrl+A"))
+        action.setEnabled(bool(shown))
+        if many:
+            reason_chosen = self.clear_stats_reason(chosen)
+            action = menu.addAction(f"Clear career stats of the {len(chosen)} selected…",
+                                    lambda: self.clear_career_stats(self.selected_players()))
+            action.setEnabled(not reason_chosen)
+            action.setToolTip(reason_chosen or "Every selected player. Undo takes it back in one step.")
         place = menu.addAction("Place on IR…", self.place_selected_on_ir)
-        place.setEnabled(self.ir_place_reason(player) == "")
-        place.setToolTip(self.ir_place_reason(player) or "Opens Franchise > Injured Reserve with him chosen.")
-        release = menu.addAction("Release to free agency", self.release_selected)
+        place_reason = single_tip or self.ir_place_reason(player)
+        place.setEnabled(place_reason == "")
+        place.setToolTip(place_reason or "Opens Franchise > Injured Reserve with him chosen.")
+        release = menu.addAction(f"Release the {len(chosen)} selected to free agency" if many
+                                 else "Release to free agency", self.release_selected)
         release.setEnabled(self.release_button.isEnabled())
         menu.setToolTipsVisible(True)
         for action in menu.actions():
@@ -4262,7 +4346,10 @@ class RosterEditorPanel(QWidget):
 
     def _show_grid_menu(self, position) -> None:
         row = self.player_table.rowAt(position.y())
-        if row >= 0:
+        selection = self.player_table.selectionModel()
+        keeps_selection = (row >= 0 and selection is not None and len(self.selected_players()) > 1
+                           and selection.isRowSelected(row, self.player_table.rootIndex()))
+        if row >= 0 and not keeps_selection:     # b81 M3: a right-click inside the selection keeps all of it
             self.player_table.setCurrentCell(row, max(0, self.player_table.columnAt(position.x())))
         self.grid_menu().exec_(self.player_table.viewport().mapToGlobal(position))
 
@@ -4463,6 +4550,8 @@ class RosterEditorPanel(QWidget):
         """Finn's Clear Stats in the form the game survives (Codex's native witness): each player gets a new six-word
         neutral history instead of Finn's null link, which crashes the game's yardage averages. One undo."""
 
+        if players is None and self._refuse_many():
+            return False, "Several players are selected."
         chosen = [self.selected_player()] if players is None else list(players)
         chosen = [p for p in chosen if p is not None]
         reason = self.clear_stats_reason(chosen)
@@ -4531,6 +4620,8 @@ class RosterEditorPanel(QWidget):
         """Finn's right-click Place on IR: jump to Franchise > Injured Reserve on his club with him chosen."""
 
         player = self.selected_player()
+        if self._refuse_many():
+            return False
         reason = self.ir_place_reason(player)
         if reason:
             self._set_status(reason)
@@ -4978,6 +5069,8 @@ class RosterEditorPanel(QWidget):
         that order's lock, as the game's own chart swap does. One undo; Show my changes lists it."""
 
         player = self.selected_player()
+        if self._refuse_many():
+            return False
         club, reason = self._depth_context(player)
         if club is None:
             if player is not None:
@@ -5113,7 +5206,91 @@ class RosterEditorPanel(QWidget):
         return any(m["pool"] == player.pool and m["index"] == player.index
                    for m in self.document.membership_changes())
 
+    def release_problems(self, players: Sequence[rr.Player], context: Mapping[str, Any] | None = None
+                         ) -> tuple[list[tuple[rr.Player, int]], list[str]]:
+        """b81 M3: check a whole batch of releases before anything changes. Returns the ``(player, team)`` plan and
+        every reason the batch is refused: players already free agents or otherwise refused by name, each club
+        that would fall under the minimum, and the free-agent list ceiling."""
+
+        document = self.document
+        assert document is not None
+        context = document.membership_context() if context is None else context
+        kind, team_index = self._group
+        plan: list[tuple[rr.Player, int]] = []
+        problems: list[str] = []
+        for player in {p.offset: p for p in players}.values():
+            source = team_index if kind == "team" else document.team_of(player)
+            if source is None or not 0 <= source < len(document.teams):
+                problems.append(f"{player.display} is already a free agent" if document.is_free_agent(player)
+                                else f"{player.display} is not on a team")
+                continue
+            try:
+                team = document._team_for_membership(source)
+                document.check_operation(player, "release", context=context)
+            except rr.RosterRecordError as exc:
+                problems.append(f"{player.display}: {plain_error(exc)}")
+                continue
+            if player.offset not in team.slots:
+                problems.append(f"{player.display} is not on {team.display}")
+                continue
+            plan.append((player, source))
+        leaving: dict[int, set[int]] = {}
+        for player, source in plan:
+            leaving.setdefault(source, set()).add(player.offset)
+        for source, offsets in leaving.items():
+            team = document.teams[source]
+            left = document.active_count(source, [o for o in team.slots if o not in offsets])
+            if left < rr.TEAM_MIN_PLAYERS:
+                problems.append(f"{rr.MSG_RELEASE_MINIMUM.format(team=team.display, minimum=rr.TEAM_MIN_PLAYERS)} "
+                                f"Releasing {len(offsets)} would leave {team.display} with {left}.")
+        entering = sum(1 for player, source in plan
+                       if document.teams[source].is_club and not document.is_free_agent(player))
+        room = document.free_agent_capacity - len(document.free_agents)
+        if entering > room:
+            problems.append(f"{rr.MSG_RELEASE_MAX_FREE_AGENTS} The free-agent list has room for {max(room, 0)} "
+                            f"more and {entering} would join it.")
+        return plan, problems
+
+    def release_players(self, players: Sequence[rr.Player]) -> dict[str, Any] | None:
+        """b81 M3: release several players to free agency, all or none. The whole batch is checked first (each club
+        keeps at least 42, the free-agent list has room, nobody is already free or on injured reserve); one undo
+        puts every player back exactly."""
+
+        if self.document is None or not players:
+            return None
+        document = self.document
+        context = document.membership_context()
+        plan, problems = self.release_problems(players, context)
+        if problems:
+            shown = "\n".join(problems[:8]) + (f"\nand {len(problems) - 8} more" if len(problems) > 8 else "")
+            message = f"Nothing was released. {shown}"
+            self._set_status(message)
+            if self.isVisible():
+                QMessageBox.warning(self, "Couldn't finish that", message)
+            return None
+
+        def operation() -> dict[str, Any]:
+            receipts = [document.release(player, source, context=context) for player, source in plan]
+            invalid = document.membership_context()["invalid"]          # the reserve lists still hold together
+            if invalid:
+                raise rr.MembershipRefused(invalid)
+            return {"operation": "release", "count": len(receipts), "receipts": receipts,
+                    "players": [r["player"] for r in receipts], "free_agents": len(document.free_agents)}
+
+        receipt = self._membership_edit(f"release {len(plan)} players", operation, [p for p, _ in plan])
+        if receipt is not None:
+            clubs: dict[str, int] = {}
+            for each in receipt["receipts"]:
+                clubs[each["from"]["team"]] = clubs.get(each["from"]["team"], 0) + 1
+            where = ", ".join(f"{abbreviation} {count}" for abbreviation, count in clubs.items())
+            self._set_status(f"Released {receipt['count']} players to free agency ({where}). "
+                             f"{receipt['free_agents']} free agents now. One undo puts all of them back.")
+        return receipt
+
     def release_selected(self) -> dict[str, Any] | None:
+        chosen = self._multi_selection()
+        if chosen:
+            return self.release_players(chosen)
         player = self.selected_player()
         if player is None or self.document is None:
             return None
@@ -5130,7 +5307,7 @@ class RosterEditorPanel(QWidget):
         """Sign a free agent to ``team_index``, or move a rostered player there."""
 
         player = self.selected_player()
-        if player is None or self.document is None:
+        if player is None or self.document is None or self._refuse_many():
             return None
         document = self.document
         target = document.teams[team_index]
@@ -5151,7 +5328,7 @@ class RosterEditorPanel(QWidget):
 
     def swap_selected_with(self, other: rr.Player) -> dict[str, Any] | None:
         player = self.selected_player()
-        if player is None or self.document is None:
+        if player is None or self.document is None or self._refuse_many():
             return None
         document = self.document
         receipt = self._membership_edit(f"swap {player.display} <-> {other.display}",
@@ -5163,7 +5340,7 @@ class RosterEditorPanel(QWidget):
 
     def open_swap_dialog(self) -> SwapPlayerDialog | None:
         player = self.selected_player()
-        if player is None or self.document is None:
+        if player is None or self.document is None or self._refuse_many():
             return None
         dialog = SwapPlayerDialog(self, player, self)
         if dialog.exec_() == QDialog.Accepted:
@@ -5207,13 +5384,20 @@ class RosterEditorPanel(QWidget):
                             minimum: int = 0, maximum: int = rr.RATING_MAX,
                             where: tuple[str, str, int] | None = None,
                             current_team_only: bool = False, attributes: Sequence[str] = (),
-                            teams: Sequence[int] = ()) -> list[dict[str, Any]]:
+                            teams: Sequence[int] = (), selected_only: bool = False) -> list[dict[str, Any]]:
         """Finn's Global Attribute Editor preview. ``attributes`` adds more attributes to the same rule and scope
-        (b81 R12; rows then carry ``attribute``); ``teams`` keeps those clubs and their reserves."""
+        (b81 R12; rows then carry ``attribute``); ``teams`` keeps those clubs and their reserves;
+        ``selected_only`` (b81 M3) keeps the players selected in the list."""
 
         if self.document is None:
             return []
         scope = self.visible_players() if current_team_only else None
+        if selected_only:
+            chosen = self.selected_players()
+            if scope is not None:
+                shown = {p.offset for p in scope}
+                chosen = [p for p in chosen if p.offset in shown]
+            scope = chosen
         settings = dict(mode=mode, value=value, positions=positions, rookies_only=rookies_only, minimum=minimum,
                         maximum=maximum, where=where, players=scope, teams=tuple(teams))
         names = list(dict.fromkeys([attribute, *attributes]))
@@ -5255,7 +5439,7 @@ class RosterEditorPanel(QWidget):
 
     def copy_player(self) -> bool:
         player = self.selected_player()
-        if player is None:
+        if player is None or self._refuse_many():
             return False
         self._clipboard = player.record.copy()
         self._set_status(f"Copied {player.display}.")
@@ -5271,7 +5455,7 @@ class RosterEditorPanel(QWidget):
         edit's rule (bottom of the new chain, unlocked) and is refused when the scheme retired it."""
 
         player = self.selected_player()
-        if player is None or self._clipboard is None or self.document is None:
+        if player is None or self._clipboard is None or self.document is None or self._refuse_many():
             return 0
         if abilities is None:
             abilities = self.paste_abilities_action.isChecked()
@@ -5538,7 +5722,7 @@ class RosterEditorPanel(QWidget):
         """Write one template onto the selected player with undo."""
 
         player = self.selected_player()
-        if player is None or self.document is None:
+        if player is None or self.document is None or self._refuse_many():
             return {}
         before = dict(player.record.values)
         changes = rr.apply_template(player.record, template)
@@ -6512,11 +6696,42 @@ class RosterEditorPanel(QWidget):
         self.swap_button.setEnabled(on_team)
         self.team_menu_button.setEnabled(movable)
         self.team_menu_button.setText("Move to ▾" if on_team else "Sign to ▾")
+        self._refresh_multi_selection()
         if self.document is not None:
             self._refresh_pool_label()
         if hasattr(self, "franchise_panel") and self.franchise_panel.active:
             self.franchise_panel.undo_button.setEnabled(self.undo_stack.can_undo())
             self.franchise_panel.redo_button.setEnabled(self.undo_stack.can_redo())
+
+    def _refresh_multi_selection(self) -> None:
+        """b81 M3: with several players selected the one-player commands are off (with the reason as their tip) and
+        Release acts on the whole selection; with one selected everything is as it was."""
+
+        chosen = self.selected_players() if self.document is not None else []
+        many = len(chosen) > 1
+        saved = self.__dict__.setdefault("_multi_saved", {})
+        static = (self.copy_button, self.paste_button, self.template_button, self.swap_button,
+                  self.team_menu_button, self.unlock_button, self.release_button)
+        if not many:
+            for widget in static:
+                if widget in saved:
+                    text, tip = saved.pop(widget)
+                    widget.setToolTip(tip)
+                    if widget is self.release_button:
+                        widget.setText(text)
+            return
+        note = self.MANY_SELECTED_TIP.format(count=len(chosen))
+        for widget in static:
+            if widget not in saved:
+                saved[widget] = (widget.text(), widget.toolTip())
+        for widget in (*static[:-1], self.up_button, self.down_button, self.promote_button, self.demote_button):
+            widget.setEnabled(False)
+            widget.setToolTip(note)
+        self.release_button.setEnabled(True)
+        self.release_button.setText(f"Release {len(chosen)} selected")
+        self.release_button.setToolTip(
+            f"Release all {len(chosen)} selected players to free agency, or none of them: every club must keep "
+            f"{rr.TEAM_MIN_PLAYERS} players and the free-agent list must have room. One undo.")
 
     def _set_status(self, text: str) -> None:
         warning = self.document.college_warning if self.document is not None else ""
