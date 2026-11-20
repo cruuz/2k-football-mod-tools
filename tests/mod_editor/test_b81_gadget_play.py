@@ -252,6 +252,12 @@ class ReleasedV09Tests(unittest.TestCase):
             gadget.preflight(foreign)
         with self.assertRaises(gadget.GadgetPlayError):
             gadget.remove(foreign)
+        # Native lineup code the runtime's stack offsets rely on, changed by someone else: refused before any write.
+        changed = gadget._write_sites(self.source, [("other", 0x18A62E, b"\x90")])
+        with self.assertRaisesRegex(gadget.GadgetPlayError, "native lineup code"):
+            gadget.apply(changed, self.books)
+        with self.assertRaisesRegex(gadget.GadgetPlayError, "native lineup code"):
+            gadget.preflight(changed)
 
 
 class BuildWiringTests(unittest.TestCase):

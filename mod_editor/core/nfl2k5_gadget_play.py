@@ -372,6 +372,7 @@ def apply(payload: bytes, resources: Mapping[str, bytes]) -> tuple[bytes, dict[s
         return payload, {**receipt, "already_applied": True, "changed_bytes": 0}
     _require(lineup.status(payload) == "applied",
              "the gadget rule needs the SPECIAL situational lineup roles (nfl2k5_lineup_roles) applied first")
+    _require(_guards_ok(XbeImage(payload)), "this executable's native lineup code differs from the game's")
     gate = lineup._gate_target(payload)
     payload = _reserve(payload)
     code = code_for(offsets, gate)
