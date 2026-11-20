@@ -257,6 +257,83 @@ class OwnerTests(unittest.TestCase):
         self.assertEqual(self.room.apply(payload, "retail")[0], payload)
 
 
+class FloorOwnerTests(unittest.TestCase):
+    """The floor's owner side (DESIGN addendum F1 to F8): stage bit 64, the 0x248010 site for bit 8 or 64, the native
+    signing routine the last resort enters (F7.5) authenticated, the floor's needs, Retail restoring everything."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_qb_room as room, nfl2k5_sim_qb_injuries as qb
+        cls.room, cls.code = room, room._code()
+        cls.source = _private("NFL2K5_B81_REVIEWED_TEST_DISC", HELMET_XBE_SHA)
+        cls.slice1, _ = qb.apply(cls.source, "realistic")
+
+    def _changed(self, payload, va, data):
+        image, out = XbeImage(payload), bytearray(payload)
+        at = image.offset(va, len(data))
+        out[at:at + len(data)] = data
+        return bytes(out)
+
+    def test_the_floor_bit_and_its_site(self):
+        room, code = self.room, self.code
+        self.assertEqual(room.STAGE_FLOOR, 64)
+        self.assertEqual(getattr(code, "STAGE_FLOOR", 64), room.STAGE_FLOOR)  # the template's name, once it has one
+        self.assertEqual(room._site_stages(room.STAGE_FLOOR) & code.STAGE_SIGN, code.STAGE_SIGN)
+        self.assertEqual(room._site_stages(code.STAGE_D1), code.STAGE_D1)
+        self.assertFalse(room.REALISTIC_STAGES & room.STAGE_FLOOR)  # set only at the floor handover, by the lead
+
+    def test_the_native_signing_routine_is_authenticated(self):
+        room = self.room
+        retail = Path(os.environ.get("NFL2K5_RETAIL_XBE", ""))
+        if retail.is_file():
+            payload = retail.read_bytes()
+            image = XbeImage(payload)
+            self.assertEqual(image.read(room.FLOOR_ENTRY, 6), room.FLOOR_FIRST)
+            body = image.read(room.FLOOR_RESUME, room.FLOOR_END - room.FLOOR_RESUME)
+            self.assertEqual(hashlib.sha256(body).hexdigest(), room.FLOOR_BODY_SHA256)
+            self.assertEqual(body[-9:], bytes.fromhex("81c414010000c21000"))  # add esp, 0x114; ret 0x10
+            self.assertIsNone(room.floor_entry_problem(payload))
+        # Standard builds enter through the practice-squad gate, which performs the same first instruction.
+        self.assertEqual(XbeImage(self.slice1).read(room.FLOOR_ENTRY, 6), bytes.fromhex("e95bea0a0090"))
+        self.assertIsNone(room.floor_entry_problem(self.slice1))
+        for name, va, data in (("foreign entry", room.FLOOR_ENTRY, bytes.fromhex("e900000000" "90")),
+                               ("foreign body start", room.FLOOR_RESUME, b"\x90"),
+                               ("foreign body", 0x322C40, b"\xcc"), ("foreign return", room.FLOOR_END - 3, b"\x0c")):
+            with self.subTest(case=name):
+                self.assertIn("native signing routine", room.floor_entry_problem(self._changed(self.slice1, va, data)))
+
+    def test_the_floors_needs(self):
+        room, code = self.room, self.code
+        self.assertEqual(room.requirements(self.slice1, code.STAGE_D1), [])
+        needs = room.requirements(self.slice1, code.STAGE_D1 | room.STAGE_FLOOR)
+        # The helmet test executable has the economy and the practice squad but not modern IR or the ownership page.
+        self.assertEqual(needs, ["Emergency quarterback signings need modern injured reserve.",
+                                 "Emergency quarterback signings need the franchise ownership safeguards."])
+        foreign = self._changed(self.slice1, 0x322C40, b"\xcc")
+        self.assertIn("The quarterback floor found unrecognized code in the native signing routine (from 0x322BB6).",
+                      room.requirements(foreign, code.STAGE_D1 | room.STAGE_FLOOR))
+        # Without the floor bit the routine is not the owner's business (the changed byte also breaks the section
+        # digest the other owners check, so only the floor's own line is compared).
+        self.assertFalse(any("native signing routine" in line for line in room.requirements(foreign, code.STAGE_D1)))
+
+    def test_a_floor_page_installs_the_signing_site_and_retail_restores_everything(self):
+        room, code = self.room, self.code
+        if not hasattr(code, "STAGE_FLOOR"):
+            self.skipTest("the page template has no floor yet ([native] commits it)")
+        applied, _ = room.apply(self.slice1, "realistic")
+        stages = code.STAGE_D1 | room.STAGE_FLOOR
+        record = code.settings_record(stages)
+        page = code.page_bytes(0x1529000, record, ir_store_va=room._ir_store_va(applied, stages))
+        edits = [(0x1529000, XbeImage(applied).read(0x1529000, 0x3000), page)]
+        edits += [(at, original, patched) for label, at, original, patched in room._sites(0x1529000, stages)
+                  if label == "sign_entry"]
+        self.assertEqual(len(edits), 2)
+        floor = room._patch(applied, edits)
+        self.assertEqual((room.read_settings(floor)["status"], room.read_settings(floor)["stages"]), ("applied", stages))
+        self.assertEqual(room.apply(floor, "retail")[0], room.apply(applied, "retail")[0])
+        self.assertEqual(room.status(self._changed(floor, 0x322C40, b"\xcc")), "foreign")
+
+
 class ReleasedV09OwnerTests(unittest.TestCase):
     def test_the_released_v09_executable_takes_and_returns_the_room(self):
         from mod_editor.core import nfl2k5_qb_room as room

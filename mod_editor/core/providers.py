@@ -989,7 +989,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",  # b780 hunt1: frozen beta-79 roll for the previous state
         "mod_editor/core/nfl2k5_sim_qb_injuries.py": "e8219c52604fe023549411055a7500987d9da4d108bdf2794bac1227a22e18e7",
         "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "ab914dbc3989ecaf33799f95c0e555027c2ae097758e97b425b655227ceded3c",
-        "mod_editor/core/nfl2k5_qb_room.py": "c029c8a143db1bdfaca5d9267fb7fee3998d63e817013fdde18e72f8f53e80f8",  # b81 qb34: mod_build loads it by name
+        "mod_editor/core/nfl2k5_qb_room.py": "6e868ff98289cce45cb871181dcf5c9a17a5a66a0fa54d81f4724c8c5036aea1",  # b81 qb34: mod_build loads it by name
         "mod_editor/core/nfl2k5_qb_room_code.py": "b1372b645e4635217350e744487f83091b55a1769519a0913d59f0de64b9bebd",  # b81 qb34: its generated page template
         "mod_editor/core/nfl2k5_sim_realism.py": "6323212af016c4e70ecd36d340a993e16afc9b57550f3bb7ed2647fc6731a248",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_sim_realism_b779.py": "687a35375780ce07948ba555a8c189167586393c5de6f48d954c2902a71010ad",  # b780 n6: frozen beta-79 revision

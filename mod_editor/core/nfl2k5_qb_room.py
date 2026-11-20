@@ -8,6 +8,7 @@ source plus an empty reservation, byte for byte. The byte interface is .b77-scra
 """
 from __future__ import annotations
 
+import hashlib
 import struct
 
 from . import nfl2k5_xbe_space as space
@@ -25,6 +26,15 @@ LEVELS = ("retail", "realistic")
 REALISTIC_STAGES = 1  # nfl2k5_qb_room_code.STAGE_D1
 SHADOW_DEFAULT = False
 ERRORS = (ValueError, TypeError, IndexError, KeyError, OverflowError, struct.error)
+# The floor (DESIGN addendum F1 to F8): stage bit 64, Realistic only, in REALISTIC_STAGES from its handover on and never
+# on a cut list. Its site is the signing call at 0x248010 (installed for bit 8 or 64). Its last resort enters the native
+# signing routine past the gates the way both gates do: `sub esp, 0x114`, then `jmp 0x322BB6` (F3 step 8). So the
+# routine's first instruction must be that one (retail) or one of the recognized gate jumps that perform it, and its
+# body from 0x322BB6 through `add esp, 0x114; ret 0x10` must be the retail bytes (F7.5); anything else is refused.
+STAGE_FLOOR = 64
+FLOOR_ENTRY, FLOOR_RESUME, FLOOR_END = 0x322BB0, 0x322BB6, 0x322DF1
+FLOOR_FIRST = bytes.fromhex("81ec14010000")  # sub esp, 0x114
+FLOOR_BODY_SHA256 = "95cd45152dd4b3b52243fff6dc7c42ec8a8e3c833af90bc5f1a10a9390fe23be"  # retail 0x322BB6..0x322DF1
 
 
 class QbRoomError(ValueError):
@@ -64,11 +74,31 @@ def _ir_store_va(payload, stages):
     return ir.store_va(payload) or 0
 
 
+def _site_stages(stages):
+    """The stage set the hook table is asked for: the 0x248010 call serves both stage 4a and the floor."""
+    return stages | _code().STAGE_SIGN if stages & STAGE_FLOOR else stages
+
+
+def _sites(va, stages):
+    return _code().sites(va, _site_stages(stages))
+
+
+def floor_entry_problem(payload):
+    """None when the floor's last resort may enter the native signing routine past the gates; else a plain reason."""
+    from . import nfl2k5_roster_fill_composition as composition
+    image = XbeImage(payload)
+    if image.read(FLOOR_ENTRY, len(FLOOR_FIRST)) not in (FLOOR_FIRST, composition.ECONOMY_ENTRY, composition.SQUAD_ENTRY):
+        return "The quarterback floor found unrecognized code at the start of the native signing routine (0x322BB0)."
+    if hashlib.sha256(image.read(FLOOR_RESUME, FLOOR_END - FLOOR_RESUME)).hexdigest() != FLOOR_BODY_SHA256:
+        return "The quarterback floor found unrecognized code in the native signing routine (from 0x322BB6)."
+    return None
+
+
 def _sites_state(image, va, stages):
     """'retail' when every hook site holds its retail call, 'applied' when exactly the stage set's sites hold the
     calls into the page at ``va`` and the rest hold retail calls; anything else is foreign."""
     code = _code()
-    wanted = {at: patched for _label, at, _original, patched in code.sites(va, stages)} if va else {}
+    wanted = {at: patched for _label, at, _original, patched in _sites(va, stages)} if va else {}
     states = set()
     for at, original, _label, _need in code.HOOKS:
         found = image.read(at, len(original))
@@ -97,6 +127,8 @@ def _state(payload):
     settings = code.parse_settings(record)
     link = struct.unpack_from("<I", page, code.LINK_IR_STORE)[0]
     _require(link == _ir_store_va(payload, settings["stages"]), "Foreign quarterback room link words")
+    _require(not settings["stages"] & STAGE_FLOOR or floor_entry_problem(payload) is None,
+             "The quarterback floor's entry into the native signing routine is not recognized")
     _require(page == code.page_bytes(VA, record, ir_store_va=link), "Foreign quarterback room page")
     states = _sites_state(image, VA, settings["stages"])
     _require(states == {"applied"} or (states == {"applied", "retail"}), "Foreign or mixed quarterback room sites")
@@ -121,8 +153,9 @@ def status(payload):
 
 def requirements(payload, stages=None):
     """Plain reasons this executable cannot take Realistic (empty when it can): 128 MiB standard, depth locks and
-    lineup roles applied; for the signing stage (4a) also the economy, the practice squad, modern IR and the ownership
-    page. A stage whose needs are missing is an error, never a silent skip."""
+    lineup roles applied; for the signing stage (4a) and the floor (64) also the economy, the practice squad, modern IR
+    and the ownership page, and for the floor a recognized native signing routine (F7.5). A stage whose needs are
+    missing is an error, never a silent skip."""
     from . import nfl2k5_depth_locks as locks, nfl2k5_k128 as memory, nfl2k5_lineup_roles as lineup
     code = _code()
     stages = REALISTIC_STAGES if stages is None else stages
@@ -139,7 +172,11 @@ def requirements(payload, stages=None):
         missing.append("The quarterback room rules need depth chart locks.")
     if lineup.status(payload) != "applied":
         missing.append("The quarterback room rules need the situational lineup roles.")
-    if stages & code.STAGE_SIGN:
+    if stages & STAGE_FLOOR:
+        problem = floor_entry_problem(payload)
+        if problem:
+            missing.append(problem)
+    if stages & (code.STAGE_SIGN | STAGE_FLOOR):
         from . import nfl2k5_franchise_economy as economy, nfl2k5_franchise_ownership as ownership
         from . import nfl2k5_injured_reserve as ir, nfl2k5_practice_squad as squad
         if economy.status(payload) != "applied":
@@ -178,7 +215,7 @@ def _edits(va, stages, page, *, restoring):
     code = _code()
     empty = b"\xcc" * SIZE
     out = [(at, patched, original) if restoring else (at, original, patched)
-           for _label, at, original, patched in code.sites(va, stages)]
+           for _label, at, original, patched in _sites(va, stages)]
     out.append((va, page, empty) if restoring else (va, empty, page))
     return out
 
@@ -226,6 +263,6 @@ def apply(payload, level="realistic"):
     restored, _ = apply(result, "retail")
     _require(restored == empty, "The quarterback room Retail restore does not reproduce the empty reservation")
     return result, {**receipt, "status": "applied", "stages": REALISTIC_STAGES, "shadow": SHADOW_DEFAULT,
-                    "sites": [hex(at) for _label, at, _o, _p in code.sites(VA, REALISTIC_STAGES)],
+                    "sites": [hex(at) for _label, at, _o, _p in _sites(VA, REALISTIC_STAGES)],
                     "changed_bytes": space.count_differing_bytes(source, result),
                     "file_growth": len(result) - len(source)}
