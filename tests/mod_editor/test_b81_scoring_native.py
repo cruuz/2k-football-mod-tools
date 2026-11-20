@@ -193,6 +193,58 @@ class SimulatedLongAttempts(unittest.TestCase):
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is required to execute the kicking blocks")
+class BreakawayStop(unittest.TestCase):
+    """The optional breakaway rule (off by default): same eligibility and draw, long promotions stop at the 1."""
+    END = scoring.BREAKAWAY_VA + scoring.BREAKAWAY_SIZE    # 0x10949F, unchanged next instruction
+    RATING = bytes.fromhex("d905") + struct.pack("<I", 0x00A97310) + bytes.fromhex("c20400")   # st0 = trait; ret 4
+    # stdcall chance(p): eax = (u < p) with u from a test word (the native 0x102030 reads the match RNG).
+    CHANCE = (bytes.fromhex("d905") + struct.pack("<I", 0x00A97314)
+              + bytes.fromhex("d85c2404dfe0f6c4057a08b801000000c2040033c0c20400"))
+
+    def promote(self, code, gain, line_to_goal, u, positive=1.0, trait=0.75):
+        m = _Machine(scoring.BREAKAWAY_VA, code)
+        m.put(scoring.FN_RATING, self.RATING)
+        m.put(scoring.FN_CHANCE, self.CHANCE)
+        m.f(0x00A97310, trait)
+        m.f(0x00A97314, u)
+        for at, value in ((0x004E6D5C, 0.10), (0x004E419C, 1.0), (0x004E4180, 0.0), (0x004E6D40, 4.0)):
+            m.f(at, value)
+        m.f(scoring.LINE_TO_GOAL, line_to_goal)
+        esp = STACK - 0x100
+        m.reg("ESP", esp)
+        m.f(esp + 0x10, gain)
+        m.f(esp + 0x18, positive)
+        m.reg("ESI", 0x00300000)
+        self.assertEqual(m.run(scoring.BREAKAWAY_VA, (self.END,)), self.END)
+        self.assertEqual(m.reg("ESP"), esp)
+        return m.get_f(esp + 0x10)
+
+    def test_long_promotions_stop_at_the_1_and_short_ones_still_score(self):
+        new, old = scoring.breakaway_bytes(40.0), scoring.RETAIL_BREAKAWAY
+        for line_to_goal in (12.0, 25.5, 39.9, 40.0):
+            with self.subTest(line_to_goal=line_to_goal):
+                self.assertEqual(self.promote(new, 6.0, line_to_goal, 0.01), f32(line_to_goal + 1.0))
+                self.assertEqual(self.promote(old, 6.0, line_to_goal, 0.01), f32(line_to_goal + 1.0))
+        for line_to_goal in (40.5, 63.25, 88.0):
+            with self.subTest(line_to_goal=line_to_goal):
+                self.assertEqual(self.promote(new, 9.67, line_to_goal, 0.01), f32(line_to_goal - 1.0))
+                self.assertEqual(self.promote(old, 9.67, line_to_goal, 0.01), f32(line_to_goal + 1.0))
+
+    def test_the_chance_and_eligibility_are_unchanged(self):
+        new, old = scoring.breakaway_bytes(40.0), scoring.RETAIL_BREAKAWAY
+        for args in ((6.0, 60.0, 0.074), (6.0, 60.0, 0.076), (6.0, 30.0, 0.5), (6.0, 30.0, 0.0749),
+                     (6.0, 60.0, 0.01, 0.0), (6.0, 60.0, 0.01, -2.0), (61.0, 60.0, 0.01), (-3.0, 60.0, 0.01)):
+            with self.subTest(args=args):
+                kept = args[0]
+                expected_old = self.promote(old, *args)
+                got = self.promote(new, *args)
+                if expected_old == f32(kept):
+                    self.assertEqual(got, f32(kept))          # no breakaway in either version
+                else:
+                    self.assertIn(got, (f32(args[1] + 1.0), f32(args[1] - 1.0)))
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is required to execute the kicking blocks")
 class CpuKickAim(unittest.TestCase):
     END = aim.RESUME_VA
 

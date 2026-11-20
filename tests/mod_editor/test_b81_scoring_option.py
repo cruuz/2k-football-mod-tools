@@ -119,6 +119,17 @@ class SimulatorOption(unittest.TestCase):
         self.assertEqual(qb.read_settings(bytes(data))["status"], "foreign")
         with self.assertRaises(ValueError):
             qb.apply(bytes(data), "retail")
+        # Kicking bytes without the option (or beside its empty reservation after Retail) are foreign too.
+        retail, _ = qb.apply(current, "retail")
+        for image in (source, retail):
+            stray = bytearray(image)
+            for _, va, _, enabled in scoring.edits():
+                at = XbeImage(image).offset(va, len(enabled))
+                stray[at:at + len(enabled)] = enabled
+            self.assertEqual(scoring.status(bytes(stray)), "applied")
+            self.assertEqual(qb.read_settings(bytes(stray))["status"], "foreign")
+            with self.assertRaises(ValueError):
+                qb.apply(bytes(stray), "realistic")
 
 
 if __name__ == "__main__":

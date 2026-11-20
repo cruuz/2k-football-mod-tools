@@ -65,6 +65,18 @@ TAIL_PER_YARD = 0.0225
 CAP = 0.98
 RAMP_LOW = 36.0
 RAMP_HIGH = 41.5
+# (d) Breakaway receiver roll (``0x109446..0x10949E``, 89 bytes): off unless calibration needs it.  A promoted
+# breakaway that starts beyond ``BREAKAWAY_STOP_BEYOND`` yards to goal stops at the 1 instead of scoring.
+BREAKAWAY_VA = 0x00109446
+BREAKAWAY_SIZE = 0x59
+RETAIL_BREAKAWAY = bytes.fromhex(
+    "d9442418d81d80414e00dfe0f6c4417548d9442410d8250072a900d81d406d4e00dfe0f6c4057a316a0aba010000008bcee804d6"
+    "1300d80d5c6d4e0051d91c24e8a58bffff85c07410d9050072a900d8059c414e00d95c2410")
+BREAKAWAY_STOP_BEYOND = None
+FN_RATING = 0x00246A80             # thiscall(ecx=player, edx=1, [esp]=category) -> st0
+FN_CHANCE = 0x00102030             # stdcall(float p) -> eax = draw below p
+BREAKAWAY_SCALE = 0x004E6D5C       # 0.10
+ONE = 0x004E419C                   # 1.0
 
 
 class SimScoringError(ValueError):
@@ -137,13 +149,50 @@ def ramp_bytes(*, low=RAMP_LOW, high=RAMP_HIGH) -> bytes:
     return bytes(code)
 
 
+def breakaway_bytes(stop_beyond: float) -> bytes:
+    """The 89 bytes at ``BREAKAWAY_VA``: the same eligibility (a positive generated value and a gain short of the goal),
+    the same receiver-trait chance and draw, then a breakaway from beyond ``stop_beyond`` yards to goal stops at the 1."""
+    _require(1.0 < stop_beyond < 100.0, "the breakaway stop distance must be between 1 and 100 yards to goal")
+    here = BREAKAWAY_VA
+    code = bytearray()
+    code += bytes.fromhex("837c241800") + b"\x7e\x00"                            # cmp [esp+0x18], 0 ; jle .skip
+    skip_fixups = [len(code) - 1]
+    code += bytes.fromhex("8b442410") + b"\x3b\x05" + struct.pack("<I", LINE_TO_GOAL)  # gain bits vs line to goal
+    code += b"\x7d\x00"                                                            # jge .skip (signed)
+    skip_fixups.append(len(code) - 1)
+    code += bytes.fromhex("6a0a" "ba01000000" "8bce")                             # push 10 ; mov edx, 1 ; mov ecx, esi
+    code += b"\xe8" + _rel32(here + len(code) + 5, FN_RATING)
+    code += b"\xd8\x0d" + struct.pack("<I", BREAKAWAY_SCALE)                      # fmul 0.10
+    code += bytes.fromhex("51" "d91c24")                                         # push ecx ; fstp [esp]
+    code += b"\xe8" + _rel32(here + len(code) + 5, FN_CHANCE)
+    code += bytes.fromhex("85c0") + b"\x74\x00"                                    # test eax, eax ; je .skip
+    skip_fixups.append(len(code) - 1)
+    code += b"\xd9\x05" + struct.pack("<I", LINE_TO_GOAL)                         # fld line to goal
+    code += b"\x81\x3d" + struct.pack("<I", LINE_TO_GOAL) + _f32(stop_beyond)      # cmp [ltg], stop_beyond
+    code += b"\x76\x08"                                                            # jbe .score
+    code += b"\xd8\x25" + struct.pack("<I", ONE) + b"\xeb\x06"                    # fsub 1.0 ; jmp .store
+    code += b"\xd8\x05" + struct.pack("<I", ONE)                                   # .score: fadd 1.0
+    code += bytes.fromhex("d95c2410")                                            # .store: fstp [esp+0x10]
+    skip = len(code)
+    code += b"\x90" * (BREAKAWAY_SIZE - len(code))
+    for at in skip_fixups:
+        code[at] = skip - (at + 1)
+    _require(len(code) == BREAKAWAY_SIZE, "the breakaway rule does not fit its site")
+    return bytes(code)
+
+
 def edits(**parameters) -> tuple[tuple[str, int, bytes, bytes], ...]:
     """(name, address, retail bytes, enabled bytes) for the simulator option's edit list."""
     accuracy = {k: parameters[k] for k in ("gain", "tail_start", "tail_per_yard", "bases") if k in parameters}
     ramp = {k: parameters[k] for k in ("low", "high") if k in parameters}
-    _require(set(parameters) <= set(accuracy) | set(ramp), "unknown simulated scoring parameter")
-    return (("simulated field-goal chance", ACCURACY_VA, RETAIL_ACCURACY, accuracy_bytes(**accuracy)),
-            ("simulated long field-goal attempts", RAMP_VA, RETAIL_RAMP, ramp_bytes(**ramp)))
+    stop = parameters.get("breakaway_stop_beyond", BREAKAWAY_STOP_BEYOND)
+    _require(set(parameters) <= set(accuracy) | set(ramp) | {"breakaway_stop_beyond"},
+             "unknown simulated scoring parameter")
+    result = (("simulated field-goal chance", ACCURACY_VA, RETAIL_ACCURACY, accuracy_bytes(**accuracy)),
+              ("simulated long field-goal attempts", RAMP_VA, RETAIL_RAMP, ramp_bytes(**ramp)))
+    if stop is not None:
+        result += (("simulated breakaway stop", BREAKAWAY_VA, RETAIL_BREAKAWAY, breakaway_bytes(stop)),)
+    return result
 
 
 def status(payload: bytes) -> str:

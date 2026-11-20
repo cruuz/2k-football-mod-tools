@@ -141,6 +141,7 @@ def _validate_simulation(payload):
 def _state(payload: bytes):
     """Return the physical simulator only after the entire installed option matches its authored bytes."""
     if not space.is_scaleout(payload) or not any(r[0] == OWNER for r in space._scale_directory_requests(payload)):
+        _require(scoring.status(payload) == 'retail', 'Simulated kicking bytes without the simulator option')
         return None, payload
     from . import nfl2k5_sim_qb_injuries_code as code
     allocation = _bank_allocation(payload)
@@ -152,6 +153,7 @@ def _state(payload: bytes):
                 target = address + 5 + struct.unpack_from('<i', entry, 1)[0]
                 _require(not allocation['va'] <= target < allocation['va'] + allocation['size'],
                          f'Simulated QB injury entry at {address:#x} points into an empty allocation')
+        _require(scoring.status(payload) == 'retail', 'Simulated kicking bytes beside an empty simulator option')
         return None, payload
     marker = image.read(allocation['va'] + code.MARK_OFFSET, MARK.size)
     setting = _Setting.from_marker(marker)
