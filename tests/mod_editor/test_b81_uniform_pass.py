@@ -738,20 +738,21 @@ class RealDisc(unittest.TestCase):
 
 
 #: b81-uniforms batch 4 (Noah 11/19: "Jags road nameplate and all nameplates should match real ones"): the nameplate
-#: strips redrawn to this season's measured lettering. selector -> (fill, outline, stem texels, bar rows). The strip is
-#: stretched about 1.7 times across on the player, so a 2 texel stem is 0.14 of the cap there (real 0.12 to 0.16).
+#: strips redrawn to this season's measured lettering. selector -> (fill, outline, stem texels, bar rows). R2 (art
+#: director 11/20): the weight is set from emulator close-ups, not from a stretch sum (2 texel stems read as hairlines
+#: in the game, about 0.10 of the cap; 3 texels about 0.17; the real 2026 names 0.12 to 0.19).
 NAMEPLATES = {
-    **{s: ("#101010", None, 2, 2) for s in ("12A0", "12A6", "12H6")},       # Jaguars road and Bold City: thin horizontals
-    "12H0": ("#FFFFFF", None, 2, 2),                                       # Jaguars home: white, no black outline
-    "00A0": ("#A0233F", None, 2, 4), "00H0": ("#FFFFFF", None, 2, 4),      # Cardinals: cut-corner face
-    "00A6": ("#A0233F", None, 2, 4), "00H6": ("#A0233F", None, 2, 4),      # the black alternate wears red names
-    "01A9": ("#FFFFFF", "#D40038", 2, 4), "01H9": ("#FFFFFF", "#D40038", 2, 4),  # Falcons 1966: white, thin red edge
-    "02H0": ("#FFFFFF", None, 2, 3), "02H2": ("#FFFFFF", None, 2, 3),
-    "11A0": ("#0C3A9C", None, 2, 3), **{s: ("#FFFFFF", None, 2, 3) for s in ("11H0", "11A3", "11A4", "11H3", "11H4")},
-    **{s: ("#0A0A0A", None, 2, 3) for s in ("17A1", "17A8", "17H8")},
-    "18A7": ("#0E2878", None, 2, 3), "18H7": ("#0E2878", None, 2, 3),      # Giants Vintage White: slab serif
-    **{s: ("#145F47", None, 2, 3) for s in ("19A0", "19A7", "19H7")},       # Jets white: green, as the real names
-    "27A0": ("#0E0E0E", None, 2, 3),                                       # Buccaneers road: black, the strip was red
+    **{s: ("#101010", None, 3, 3) for s in ("12A0", "12A6", "12H6")},       # Jaguars road and Bold City: thin horizontals
+    "12H0": ("#FFFFFF", None, 3, 3),                                       # Jaguars home: white, no black outline
+    "00A0": ("#A0233F", None, 3, 3), "00H0": ("#FFFFFF", None, 3, 3),      # Cardinals: cut-corner face
+    "00A6": ("#A0233F", None, 3, 3), "00H6": ("#A0233F", None, 3, 3),      # the black alternate wears red names
+    "01A9": ("#FFFFFF", "#D40038", 3, 4), "01H9": ("#FFFFFF", "#D40038", 3, 4),  # Falcons 1966: white, thin red edge
+    "02H0": ("#FFFFFF", None, 3, 3), "02H2": ("#FFFFFF", None, 3, 3),
+    "11A0": ("#0C3A9C", None, 3, 3), **{s: ("#FFFFFF", None, 3, 3) for s in ("11H0", "11A3", "11A4", "11H3", "11H4")},
+    **{s: ("#0A0A0A", None, 3, 3) for s in ("17A1", "17A8", "17H8")},
+    "18A7": ("#0E2878", None, 3, 3), "18H7": ("#0E2878", None, 3, 3),      # Giants Vintage White: slab serif
+    **{s: ("#145F47", None, 3, 3) for s in ("19A0", "19A7", "19H7")},       # Jets white: green, as the real names
+    "27A0": ("#0E0E0E", None, 3, 3),                                       # Buccaneers road: black, the strip was red
 }
 NAME_GLYPHS = "'-ABCDEFGHIJKLMNOPQRSTUVWXYZc"
 RETAIL = Path(os.environ.get("B81_RETAIL_DISC", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
