@@ -60,14 +60,21 @@ def hurt(record: Any) -> bool:
 
 
 def on_ir_marker(record: Any) -> bool:
-    return int(_values(record)["injured_reserve"]) == IR_MARKER
+    """Finn's IR marker as a save without an IR list shows it: +0x28 exactly 0x00EE on a player whose injured bit is
+    clear (``nfl2k5_roster_records.finn_ir_marker``). The game's own injury id 750 (0x2EE) also ends in 0xEE, so the
+    low byte alone sent genuinely hurt players to Injured Reserve > Activate (review F1)."""
+
+    values = _values(record)
+    return (int(values["injured_reserve"]) == IR_MARKER and int(values["unknown_29_low"]) == 0
+            and not int(values["unknown_20_high"]) & INJURED_BIT)
 
 
-def heal_refusal(record: Any, *, on_listed_ir: bool = False) -> str:
+def heal_refusal(record: Any, *, on_listed_ir: bool = False, franchise: bool = False) -> str:
     """Why this player cannot be healed here ('' when he can).  ``on_listed_ir``: the franchise save's injured
-    reserve lists him (legacy cell or modern extension)."""
+    reserve lists him (legacy cell or modern extension); in a franchise save that list alone decides.  Elsewhere (a
+    roster save or a disc roster, which have no IR list) Finn's exact marker does."""
 
-    if on_listed_ir or on_ir_marker(record):
+    if on_listed_ir or (not franchise and on_ir_marker(record)):
         return REASON_IR
     if not hurt(record):
         return REASON_HEALTHY

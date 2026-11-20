@@ -64,9 +64,10 @@ def export_depth_chart(document: rr.RosterDocument, team_index: int) -> bytes:
 @dataclass
 class DepthImportPlan:
     team: int
-    rows: list[dict[str, Any]] = field(default_factory=list)       # one per player whose rank or side changes
+    rows: list[dict[str, Any]] = field(default_factory=list)       # one per player whose rank or side WILL change
+    targets: dict[int, tuple[int, int, int]] = field(default_factory=dict)   # record offset -> (position, rank, side)
     skipped: list[str] = field(default_factory=list)              # players Finn's rule leaves alone, and why
-    roles: dict[str, int] = field(default_factory=dict)           # file's role byte per role key
+    roles: dict[str, int] = field(default_factory=dict)           # file's role byte per role key that CHANGES
     role_changes: list[str] = field(default_factory=list)
     problems: list[str] = field(default_factory=list)             # anything here refuses the whole import
 
@@ -105,17 +106,34 @@ def plan_depth_import(document: rr.RosterDocument, team_index: int, data: bytes)
             plan.skipped.append(f"{player.display} (place {k + 1}): the file has a "
                                 f"{rr.position_name(position, document.scheme)} there")
             continue
+        if position not in rr.PAIRED_DEPTH_CODES:
+            side = values["depth_side"]        # one order here: the side byte is not a chart row (review F4)
         if (rank, side) != (values["depth_rank"], values["depth_side"]):
-            plan.rows.append({"player": player, "offset": offset, "position": position,
-                              "rank": (values["depth_rank"], rank), "side": (values["depth_side"], side)})
+            plan.targets[offset] = (position, rank, side)
+    if plan.targets:
+        # what the seating writes is what the preview lists (review F4): seat on the document, read, put it back
+        snapshot = document.special_teams_snapshot(team_index)
+        try:
+            _seat(document, team_index, plan.targets)
+            for player in document.team_players(team_index):
+                rank_before, side_before, _flags = snapshot["players"][player.offset]
+                values = player.record.values
+                if (values["depth_rank"], values["depth_side"]) != (rank_before, side_before):
+                    plan.rows.append({"player": player, "offset": player.offset, "position": values["position"],
+                                      "rank": (rank_before, values["depth_rank"]),
+                                      "side": (side_before, values["depth_side"])})
+        except rr.RosterRecordError as exc:
+            plan.problems.append(str(exc))
+        finally:
+            document.restore_special_teams(snapshot)
     current = document._specialists(team)
     for key, value, now in zip(ROLE_ORDER, roles, current):
         if value != NOBODY and value >= len(team.slots):
             plan.problems.append(f"the file's {key.upper()} points at place {value + 1}; "
                                  f"{team.display} has {len(team.slots)} players")
             continue
-        plan.roles[key] = value
-        if value != now:
+        if value != now:                   # only a role that changes is written (review F4: no new lock claims)
+            plan.roles[key] = value
             who = document.by_offset[team.slots[value]].display if value != NOBODY else "nobody"
             plan.role_changes.append(f"{_ROLE_WORDS[key]}: {who}")
     for key in rr.RosterDocument.RETURNER_ROLES:
@@ -126,6 +144,33 @@ def plan_depth_import(document: rr.RosterDocument, team_index: int, data: bytes)
                 plan.problems.append(f"the file makes {player.display} ({player.record.position_name}) "
                                      f"{_ROLE_WORDS[key]}; returners are WR, CB, FS, SS, HB or FB")
     return plan
+
+
+def _seat(document: rr.RosterDocument, team_index: int, targets: dict[int, tuple[int, int, int]]) -> None:
+    """Seat each position the file changes: rows unique and gap-free from 0 (row 7 is the game's shared overflow row),
+    as ``settle_depth`` seats them; a player whose row changed gets that order's lock bit (the weekly pass keeps it).
+    A one-order position takes only the rank. Refuses a paired position whose starter would hold both sides."""
+
+    codes = sorted({position for position, _rank, _side in targets.values()})
+    for code in codes:
+        fields = rr.DEPTH_FIELDS if code in rr.PAIRED_DEPTH_CODES else ("depth_rank",)
+        for name in fields:
+            column = 1 if name == "depth_rank" else 2
+            order = document.depth_order(team_index, code, name)
+            place = {p.offset: i for i, p in enumerate(order)}
+            target = {p.offset: (targets[p.offset][column] if p.offset in targets else p.record.values[name])
+                      for p in order}
+            seated = sorted(order, key=lambda p: (target[p.offset], place[p.offset]))
+            for row_number, player in enumerate(seated):
+                new = min(row_number, rr.DEPTH_ROW_CAP)
+                if player.record.values[name] != new:
+                    player.record.values[name] = new
+                    player.record.values["unknown_52"] |= rr.DEPTH_LOCK_BITS[name]
+        if code in rr.PAIRED_DEPTH_CODES:
+            ranks, sides = (document.depth_order(team_index, code, name) for name in rr.DEPTH_FIELDS)
+            _require(len(ranks) < 2 or ranks[0] is not sides[0],
+                     f"the file would start {ranks[0].display if ranks else ''} on both sides at "
+                     f"{rr.position_name(code, document.scheme)}; nothing was changed")
 
 
 _ROLE_WORDS = {"h": "holder", "kr1": "KR1", "kr2": "KR2", "k": "stored kicker", "ls": "stored long snapper",
@@ -141,30 +186,7 @@ def apply_depth_import(document: rr.RosterDocument, plan: DepthImportPlan) -> di
     team = _club(document, plan.team)
     snapshot = document.special_teams_snapshot(plan.team)
     try:
-        by_code: dict[int, list[dict[str, Any]]] = {}
-        for row in plan.rows:
-            by_code.setdefault(row["position"], []).append(row)
-        for code, rows in by_code.items():
-            wanted = {row["offset"]: row for row in rows}
-            fields = rr.DEPTH_FIELDS if code in rr.PAIRED_DEPTH_CODES else ("depth_rank",)
-            for name in fields:
-                column = 0 if name == "depth_rank" else 1
-                order = document.depth_order(plan.team, code, name)
-                place = {p.offset: i for i, p in enumerate(order)}
-                target = {p.offset: (wanted[p.offset]["rank" if column == 0 else "side"][1] if p.offset in wanted
-                                     else p.record.values[name]) for p in order}
-                # rows unique and gap-free from 0 (row 7 is the game's shared overflow row), as settle_depth seats them
-                seated = sorted(order, key=lambda p: (target[p.offset], place[p.offset]))
-                for row_number, player in enumerate(seated):
-                    new = min(row_number, rr.DEPTH_ROW_CAP)
-                    if player.record.values[name] != new:
-                        player.record.values[name] = new
-                        player.record.values["unknown_52"] |= rr.DEPTH_LOCK_BITS[name]   # kept by the weekly pass
-            if code in rr.PAIRED_DEPTH_CODES:
-                ranks, sides = (document.depth_order(plan.team, code, name) for name in rr.DEPTH_FIELDS)
-                _require(len(ranks) < 2 or ranks[0] is not sides[0],
-                         f"the file would start {ranks[0].display if ranks else ''} on both sides at "
-                         f"{rr.position_name(code, document.scheme)}; nothing was changed")
+        _seat(document, plan.team, plan.targets)
         for key in ("h",) + rr.RosterDocument.RETURNER_ROLES:
             if key in plan.roles:
                 value = plan.roles[key]

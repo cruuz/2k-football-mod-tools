@@ -242,7 +242,8 @@ class ImportPlan:
         if not self.changes:
             return "Nothing in the file differs from this save."
         clubs = len({c.team for c in self.changes})
-        return f"{len(self.changes)} change{'s' if len(self.changes) != 1 else ''} to {clubs} club{'s' if clubs != 1 else ''}' coach"
+        whose = "club's" if clubs == 1 else "clubs'"
+        return f"{len(self.changes)} change{'s' if len(self.changes) != 1 else ''} to {clubs} {whose} coach{'es' if clubs != 1 else ''}"
 
 
 def _whole_number(text: str) -> int | None:

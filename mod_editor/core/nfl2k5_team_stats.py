@@ -25,12 +25,15 @@ Box scores
 A played cell's ten quarter-score bytes sit at ``season block + 0x107A + 10 * (17 * row + slot)``: home Q1-Q4 and
 overtime, then away Q1-Q4 and overtime (FACTS: all 16 Week 1 results of the signed played save agreed with the
 simulation; the standings getters above read the halves that way).  ``set_box_score`` writes those ten bytes.  Because
-the standings are counted from them, the game's records follow the edit.  The season counters do not: they are running
-totals the game added when the game was played.  By default the edit also moves both clubs' points scored (``+0x1D8``)
-and points allowed (``+0x1DA``) by the change, which keeps them equal to the sum of the club's box scores, as the
-game's own saves are (all 32 clubs of a simulated SOFTDRINK 2026 regular season); yards and the other counters are left
-alone.  A playoff box score may change its quarters but not its winner (the bracket has already moved the winner on),
-and its season points are not moved (whether playoff games count in the season totals has not been checked).
+the standings are counted from them, the game's records follow the edit.  By default the counters the game itself moves
+with every game follow too (``plan_box_score`` lists them before anything is written; independent review rev-finn F2,
+F3): both clubs' points scored, points allowed and games played (``+0x1D8`` / ``+0x1DA`` / ``+0x1DC``) are recounted
+from all their box scores, playoffs included (in two postseason saves every club's stored totals equal the sums over
+all its games); the win streak byte ``+0x1F1`` is recounted; and when a regular-season result changes, both head
+coaches' season and career W-L-T move by one (the native Week 1 of the signed 2026 franchise moved exactly those, for
+every club; evidence ``finn-r2/evidence/f3/``).  A counter that does not match the box scores before the edit is left
+alone and named.  Yards and the other counters are left alone.  A playoff box score may change its quarters but not its
+winner (the bracket has already moved the winner on); a regular-season change does not re-seed a bracket.
 
 Every write is bounded, validated before any byte changes, and leaves every other byte of the save as it was.  Nothing
 here has been watched in the game yet.
@@ -77,6 +80,7 @@ class StatColumn:
     caption: str                # Finn's caption
     title: str                  # the plain-words heading tooltip
     kind: str                   # "count", "yards", "average" or "percent"
+    # (an "average" is the Studio's own arithmetic: its heading reads "<caption> (Studio)")
     numerator: tuple[int, ...]  # stat ids added together
     denominator: tuple[int, ...] = ()
     note: str = ""
@@ -91,10 +95,12 @@ FINN_COLUMNS: tuple[StatColumn, ...] = (
                note="Passing plus rushing yards, the game's own total offense."),
     _count("PASS", "PASS", 0x4C, "yards"),
     StatColumn("AVGPASS", "AVG PASS", "Passing yards per pass play", "average", (0x4C,), (0x25,),
-               note="The season record keeps pass plays, not attempts, so this divides by pass plays."),
+               note="Computed by the Studio: the season record keeps pass plays, not attempts, so this divides by "
+                    "pass plays; Finn's own rounding is not known."),
     _count("RUSH", "RUSH", 0x50, "yards"),
     StatColumn("AVGRUSH", "AVG RUSH", "Rushing yards per rushing play", "average", (0x50,), (0x26,),
-               note="The season record keeps rushing plays, not carries, so this divides by rushing plays."),
+               note="Computed by the Studio: the season record keeps rushing plays, not carries, so this divides by "
+                    "rushing plays; Finn's own rounding is not known."),
     StatColumn("TYD", "TYD", "Total yards allowed (defense)", "yards", (0x45, 0x46),
                note="Passing plus rushing yards allowed, the game's own yards allowed."),
     _count("DPA", "DPA", 0x46, "yards"),
@@ -210,7 +216,8 @@ def csv_text(save: fs.FranchiseSave, columns: Sequence[StatColumn] = FINN_COLUMN
 
     buffer = io.StringIO()
     writer = csv.writer(buffer, lineterminator="\n")
-    writer.writerow(["Team", "W-L-T", "GP"] + [column.caption for column in columns])
+    writer.writerow(["Team", "W-L-T", "GP"] + [column.caption + (" (Studio)" if column.kind == "average" else "")
+                                               for column in columns])
     for row in league_table(save, columns):
         writer.writerow([row.abbreviation, row.record_text, row.games_played]
                         + [format_value(row.values[column.key], column) for column in columns])
@@ -270,11 +277,58 @@ def _quarters(values: Sequence[int], side: str) -> tuple[int, ...]:
     return out
 
 
-def set_box_score(save: fs.FranchiseSave, row: int, slot: int, home_quarters: Sequence[int],
-                  away_quarters: Sequence[int], *, season_points: bool = True) -> dict[str, Any]:
-    """Write one played game's quarter scores; refusals change nothing.
+TEAM_GAMES_PLAYED = fs.TEAM_GAMES_PLAYED
+WIN_STREAK = fs.TEAM_STREAK_BYTES[3]           # team +0x1F1: the club's current winning streak (all played games)
+OUTCOME_FIELDS = {"W": ("season_wins", "wins"), "L": ("season_losses", "losses"), "T": ("season_ties", "ties")}
+_OUTCOME_WORDS = {"W": "win", "L": "loss", "T": "tie"}
 
-    ``season_points`` also moves both clubs' points scored / allowed by the change (regular season only)."""
+
+def _outcome(mine: int, theirs: int) -> str:
+    return "W" if mine > theirs else "L" if mine < theirs else "T"
+
+
+def _club_games(save: fs.FranchiseSave, team: int, replace: BoxScore | None) -> list[tuple[int, int, int, int]]:
+    """(row, slot, points scored, points allowed) of every played game of ``team`` in grid order, with ``replace`` in
+    place of the saved quarters of its own cell."""
+
+    out = []
+    for box in box_scores(save):
+        if replace is not None and (box.row, box.slot) == (replace.row, replace.slot):
+            box = replace
+        if team == box.home:
+            out.append((box.row, box.slot, box.home_points, box.away_points))
+        elif team == box.away:
+            out.append((box.row, box.slot, box.away_points, box.home_points))
+    return sorted(out)
+
+
+def _win_streak(games: Sequence[tuple[int, int, int, int]]) -> int:
+    run = 0
+    for _row, _slot, mine, theirs in games:
+        run = run + 1 if mine > theirs else 0
+    return run
+
+
+def plan_box_score(save: fs.FranchiseSave, row: int, slot: int, home_quarters: Sequence[int],
+                   away_quarters: Sequence[int], *, season_points: bool = True) -> dict[str, Any]:
+    """What ``set_box_score`` would write, in bytes and in words, and what it leaves as it is; nothing is written.
+
+    With ``season_points`` (the default) the counters the game itself moves with every played game follow the edit
+    (review F2, F3; evidence finn-r2/evidence/f3/ and rev-finn/REVIEW.md):
+
+    * both clubs' points scored, points allowed and games played (team +0x1D8 / +0x1DA / +0x1DC) are recomputed from
+      ALL their box scores: in both postseason saves examined the stored totals equal the sums over every played
+      game, playoffs included, for all 32 clubs;
+    * a regular-season result that changes moves each head coach's season W-L-T (coach +0x26/+0x28/+0x2A) and career
+      W-L-T (+0x20/+0x22/+0x24) by one: across the native Week 1 of the signed 2026 franchise every club's coach moved
+      both by exactly that club's result, and the season fields equal the regular-season record in five saves; it is
+      done only when the coach's season record equals the club's regular-season record from its box scores (he coached
+      every game) and he heads no other club, otherwise he is left alone and the plan says so;
+    * the club's win streak (team +0x1F1) is recomputed from its played games in grid order: it equals that run for all
+      32 clubs in five saves and moved +1 / to 0 with every Week 1 result; only when the stored value equals the run
+      before the edit.
+    A playoff game keeps its winner, so no coach record or bracket depends on it; the Pro Bowl (teams 32 and 33) counts
+    in no club's totals."""
 
     current = box_score(save, row, slot)
     home_q, away_q = _quarters(home_quarters, "home"), _quarters(away_quarters, "away")
@@ -283,38 +337,106 @@ def set_box_score(save: fs.FranchiseSave, row: int, slot: int, home_quarters: Se
         fs._require(new.winner is not None, "a playoff game cannot end in a tie")
         fs._require(new.winner == current.winner,
                     "a playoff game keeps its winner: the bracket has already moved the winner on")
-    moves: list[tuple[int, int, int, int]] = []     # (offset, before, after, team)
-    apply_points = season_points and not current.postseason
-    if apply_points:
-        for team in (current.home, current.away):
-            fs._require(0 <= team < save.league_team_count, f"team {team} is not a league club")
-        home_delta = new.home_points - current.home_points
-        away_delta = new.away_points - current.away_points
-        for team, scored, allowed in ((current.home, home_delta, away_delta), (current.away, away_delta, home_delta)):
+    words: list[dict[str, Any]] = []                # {"offset", "width", "before", "after", "kind", "team", "text"}
+    changes: list[str] = []
+    kept: list[str] = ["Yards and the other season numbers stay as the game added them."]
+    clubs = [t for t in (current.home, current.away) if 0 <= t < save.league_team_count]
+    if not season_points:
+        kept.insert(0, "Season totals, the head coaches' records and the win streaks are not changed (the option is off).")
+    elif not clubs:
+        kept.insert(0, "Pro Bowl scores count in no club's season totals.")
+    else:
+        coaches = {c.index: c for c in save.coaches()}
+        regular = row < save.regular_season_weeks
+        for team in clubs:
+            name = save.team_abbreviation(team)
             base = save.team_offset(team)
-            for rel, delta in ((TEAM_POINTS_FOR, scored), (TEAM_POINTS_AGAINST, allowed)):
-                if delta:
-                    before = save.u16(base + rel)
-                    after = before + delta
-                    fs._require(0 <= after <= 0xFFFF, f"{save.team_abbreviation(team)} season points would be {after}, "
-                                                      "outside 0..65535; untick the season points option")
-                    moves.append((base + rel, before, after, team))
+            before_games, after_games = _club_games(save, team, None), _club_games(save, team, new)
+            totals = (sum(g[2] for g in after_games), sum(g[3] for g in after_games), len(after_games))
+            for rel, value, label in ((TEAM_POINTS_FOR, totals[0], "points scored"),
+                                      (TEAM_POINTS_AGAINST, totals[1], "points allowed"),
+                                      (TEAM_GAMES_PLAYED, totals[2], "games played")):
+                stored = save.u16(base + rel)
+                fs._require(0 <= value <= 0xFFFF, f"{name} {label} would be {value}")
+                if stored != value:
+                    words.append({"offset": base + rel, "width": 2, "before": stored, "after": value, "kind": "team",
+                                  "team": team, "text": f"{name} {label} {stored} -> {value}"})
+            stored_streak = save.u8(base + WIN_STREAK)
+            streak_before, streak_after = _win_streak(before_games), _win_streak(after_games)
+            if streak_after != streak_before:
+                if stored_streak == streak_before and streak_after <= 0xFF:
+                    words.append({"offset": base + WIN_STREAK, "width": 1, "before": stored_streak,
+                                  "after": streak_after, "kind": "streak", "team": team,
+                                  "text": f"{name} win streak {stored_streak} -> {streak_after}"})
+                else:
+                    kept.append(f"{name}'s win streak stays {stored_streak}: it does not match the club's box scores "
+                                f"({streak_before}), so the Studio cannot tell what the game counted.")
+            if not regular:
+                continue
+            mine = [g for g in before_games if g[0] < save.regular_season_weeks]
+            game_before = next(g for g in before_games if g[:2] == (row, slot))
+            game_after = next(g for g in after_games if g[:2] == (row, slot))
+            was, now = _outcome(*game_before[2:]), _outcome(*game_after[2:])
+            if was == now:
+                continue
+            record = tuple(sum(1 for g in mine if _outcome(*g[2:]) == r) for r in "WLT")
+            index = save.head_coach_index(team)
+            coach = coaches.get(index) if index is not None else None
+            if coach is None:
+                kept.append(f"{name} has no head coach record to update.")
+                continue
+            season = tuple(coach.fields[f] for f in ("season_wins", "season_losses", "season_ties"))
+            if season != record or tuple(coach.teams) != (team,):
+                why = ("his season record does not match the club's box scores, so he did not coach every game"
+                       if season != record else "his coach record also leads another club")
+                kept.append(f"{coach.name}'s ({name}) records stay as they are: {why}.")
+                continue
+            offset = save._coach_offset(coach.index)
+            for outcome, step in ((was, -1), (now, +1)):
+                for field_name in OUTCOME_FIELDS[outcome]:
+                    rel, _fmt = fs.COACH_FIELDS[field_name]
+                    stored = save.u16(offset + rel)
+                    value = stored + step
+                    fs._require(0 <= value <= 0xFFFF, f"{coach.name}'s {field_name} would be {value}")
+                    words.append({"offset": offset + rel, "width": 2, "before": stored, "after": value,
+                                  "kind": "coach", "team": team, "text": ""})
+            changes.append(f"{coach.name} ({name}): one {_OUTCOME_WORDS[was]} becomes a {_OUTCOME_WORDS[now]} "
+                           f"in his season and career records")
+        if regular and save.games(rows=range(save.regular_season_weeks, fs.GRID_ROWS)):
+            kept.append("The playoff bracket stays as it is: it was set from the standings before this change.")
+    changes = [w["text"] for w in words if w["text"]] + changes
     offset = _score_offset(save, row, slot)
-    before_bytes = bytes(save.buffer[offset:offset + fs.SCORE_BYTES])
+    return {"current": current, "new": new, "score_offset": offset,
+            "score_bytes_before": bytes(save.buffer[offset:offset + fs.SCORE_BYTES]),
+            "score_bytes_after": bytes(home_q + away_q), "words": words, "changes": changes, "kept": kept}
+
+
+def set_box_score(save: fs.FranchiseSave, row: int, slot: int, home_quarters: Sequence[int],
+                  away_quarters: Sequence[int], *, season_points: bool = True) -> dict[str, Any]:
+    """Write one played game's quarter scores and, with ``season_points``, what ``plan_box_score`` lists; refusals
+    change nothing."""
+
+    plan = plan_box_score(save, row, slot, home_quarters, away_quarters, season_points=season_points)
+    current, new, offset = plan["current"], plan["new"], plan["score_offset"]
     # every check is done; the writes follow
-    save.buffer[offset:offset + fs.SCORE_BYTES] = bytes(home_q + away_q)
-    for at, _before, after, _team in moves:
-        struct.pack_into("<H", save.buffer, at, after)
+    save.buffer[offset:offset + fs.SCORE_BYTES] = plan["score_bytes_after"]
+    for word in plan["words"]:
+        struct.pack_into("<H" if word["width"] == 2 else "<B", save.buffer, word["offset"], word["after"])
     after_box = box_score(save, row, slot)
-    fs._require((after_box.home_quarters, after_box.away_quarters) == (home_q, away_q), "the box score did not read back")
+    fs._require((after_box.home_quarters, after_box.away_quarters) == (new.home_quarters, new.away_quarters),
+                "the box score did not read back")
+    def rows(kind: str) -> list[dict[str, Any]]:
+        return [{"team": save.team_abbreviation(w["team"]), "offset": w["offset"], "before": w["before"],
+                 "after": w["after"]} for w in plan["words"] if w["kind"] == kind]
     return {"operation": "set_box_score", "row": row, "slot": slot,
             "home": save.team_abbreviation(current.home), "away": save.team_abbreviation(current.away),
             "before": [current.away_points, current.home_points], "after": [new.away_points, new.home_points],
-            "score_offset": offset, "score_bytes_before": before_bytes.hex(),
-            "score_bytes_after": bytes(home_q + away_q).hex(),
-            "season_points": [{"team": save.team_abbreviation(team), "offset": at, "before": before, "after": after}
-                              for at, before, after, team in moves],
-            "season_points_skipped": bool(season_points and current.postseason)}
+            "score_offset": offset, "score_bytes_before": plan["score_bytes_before"].hex(),
+            "score_bytes_after": plan["score_bytes_after"].hex(),
+            "season_points": rows("team"), "streaks": rows("streak"), "coaches": rows("coach"),
+            "changes": plan["changes"], "kept": plan["kept"],
+            "season_points_skipped": not season_points or not any(0 <= t < save.league_team_count
+                                                                  for t in (current.home, current.away))}
 
 
 def swap_played_sides(save: fs.FranchiseSave, row: int, slot: int) -> dict[str, Any]:

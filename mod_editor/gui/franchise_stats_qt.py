@@ -39,9 +39,12 @@ STATS_NOTE = ("AVG PASS and AVG RUSH divide by pass plays and rushing plays (the
               "they can differ a little from the game's own box score, which divides by attempts and carries. "
               "A dash means there is nothing to divide by yet.")
 BOX_NOTE = ("The game counts each club's wins, losses and ties from these numbers, so the standings follow this "
-            "change. Yards and the other season numbers stay as the game added them.")
-BOX_PLAYOFF_NOTE = ("A playoff game keeps its winner: the bracket has already moved the winner on. Its season "
-                    "points are not changed.")
+            "change.")
+BOX_PLAYOFF_NOTE = "A playoff game keeps its winner: the bracket has already moved the winner on."
+SEASON_TOTALS_TIP = ("Keeps what the game itself moves with every game in step: each club's points scored, points "
+                     "allowed and games played (recounted from all its box scores, playoffs included), its win "
+                     "streak, and when a regular-season result changes, both head coaches' season and career "
+                     "records. The list below says what will change and what will not.")
 
 
 class _SortItem(QTableWidgetItem):
@@ -88,11 +91,13 @@ class TeamStatsPage(QWidget):
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table.verticalHeader().setVisible(False)
-        headers = list(self.LEAD) + [column.caption for column in self.COLUMNS]
+        headers = list(self.LEAD) + [column.caption + (" (Studio)" if column.kind == "average" else "")
+                                     for column in self.COLUMNS]
         self.table.setHorizontalHeaderLabels(headers)
         self.table.horizontalHeader().setSortIndicator(0, Qt.AscendingOrder)
         self.table.horizontalHeader().setSortIndicatorShown(True)
-        tips = ["Club", "Wins, losses and ties, counted from the box scores the way the game's standings count them",
+        tips = ["Club", "Wins, losses and ties, counted from the box scores the way the game's standings count them; "
+                        "it includes playoff games (a coach card shows the regular season only)",
                 "Games played (the game's own counter)"]
         tips += [column.title + (f". {column.note}" if column.note else "") for column in self.COLUMNS]
         for index, tip in enumerate(tips):
@@ -158,7 +163,12 @@ class TeamStatsPage(QWidget):
                 return None
             path = chosen
         target = Path(path)
-        target.write_text(ts.csv_text(self._save, self.COLUMNS), encoding="utf-8", newline="")
+        try:
+            target.write_text(ts.csv_text(self._save, self.COLUMNS), encoding="utf-8", newline="")
+        except OSError as exc:                       # review F5: a folder that cannot be written is said, not a crash
+            self.note_label.setText(f"Not exported: {exc.strerror or exc} ({target}).")
+            return None
+        self.note_label.setText(STATS_NOTE + f" Exported to {target.name}.")
         return target
 
 
@@ -166,9 +176,11 @@ class BoxScoreDialog(QDialog):
     """Finn's Boxscore: both clubs' five quarter scores and finals, editable for a played game."""
 
     def __init__(self, box: ts.BoxScore, away_name: str, home_name: str, title: str,
-                 parent: QWidget | None = None) -> None:
+                 parent: QWidget | None = None, *,
+                 planner: Callable[[Sequence[int], Sequence[int], bool], dict] | None = None) -> None:
         super().__init__(parent)
         self.box = box
+        self._planner = planner          # ts.plan_box_score for this game: what else the edit changes, in words
         self.setWindowTitle(f"Box score: {title}")
         layout = QVBoxLayout(self)
         layout.setSizeConstraint(QLayout.SetFixedSize)         # its own size hint: large text never squeezes a row
@@ -203,12 +215,13 @@ class BoxScoreDialog(QDialog):
             grid.addWidget(final, line, len(ts.QUARTERS) + 1)
             self.finals[side] = final
         layout.addLayout(grid)
-        self.season_points_check = QCheckBox("Also change both clubs' season points (Team Stats TPS and TPSA)")
-        self.season_points_check.setChecked(not box.postseason)
-        self.season_points_check.setEnabled(not box.postseason)
-        self.season_points_check.setToolTip(
-            "Moves each club's points scored and points allowed by the change, so the season totals stay equal to "
-            "the sum of the club's box scores, as the game keeps them." if not box.postseason else BOX_PLAYOFF_NOTE)
+        pro_bowl = box.home >= fs.NFL_TEAMS and box.away >= fs.NFL_TEAMS
+        self.season_points_check = QCheckBox("Also keep season totals, win streaks and head coaches' records in step")
+        self.season_points_check.setChecked(not pro_bowl)
+        self.season_points_check.setEnabled(not pro_bowl)
+        self.season_points_check.setToolTip(SEASON_TOTALS_TIP if not pro_bowl else
+                                            "Pro Bowl scores count in no club's season totals.")
+        self.season_points_check.toggled.connect(lambda _checked: self._update())
         layout.addWidget(self.season_points_check)
         note = QLabel(BOX_NOTE + (" " + BOX_PLAYOFF_NOTE if box.postseason else ""))
         note.setWordWrap(True)
@@ -217,6 +230,10 @@ class BoxScoreDialog(QDialog):
         self.result_label.setWordWrap(True)
         self.result_label.setAccessibleName("Box score result")
         layout.addWidget(self.result_label)
+        self.effects_label = QLabel("")                    # review F3: what else changes, and what stays, before Apply
+        self.effects_label.setWordWrap(True)
+        self.effects_label.setAccessibleName("What else this changes")
+        layout.addWidget(self.effects_label)
         self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttons.button(QDialogButtonBox.Ok).setText("Apply")
         self.buttons.accepted.connect(self.accept)
@@ -263,5 +280,15 @@ class BoxScoreDialog(QDialog):
             result = f"{self._names[winner]} win {max(away, home)}-{min(away, home)}."
         problem = self.problem()
         self.result_label.setText(result + ("" if not problem or problem == "No change yet." else f" {problem}"))
+        effects = ""
+        if not problem and self._planner is not None:
+            try:
+                plan = self._planner(self.quarters("home"), self.quarters("away"), self.season_points())
+            except ValueError as exc:
+                problem = str(exc)
+            else:
+                effects = ("Also changes: " + "; ".join(plan["changes"]) + "." if plan["changes"] else
+                           "Nothing else changes.") + " Stays as it is: " + " ".join(plan["kept"])
+        self.effects_label.setText(effects)
         self.buttons.button(QDialogButtonBox.Ok).setEnabled(not problem)
         self.buttons.button(QDialogButtonBox.Ok).setToolTip(problem)

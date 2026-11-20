@@ -76,7 +76,6 @@ from typing import Any, Callable, Mapping, Sequence
 
 from PyQt5.QtCore import QItemSelectionModel, QObject, QRunnable, QSignalBlocker, QSize, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtGui import QColor, QFont, QImage, QKeySequence, QPainter, QPen, QPixmap, QTextDocument
-from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QApplication,
@@ -4084,7 +4083,7 @@ class RosterEditorPanel(QWidget):
             return
         self._set_status(f"Wrote {chosen} ({len(self._rows)} players).")
 
-    def print_list(self, printer: QPrinter) -> bool:
+    def print_list(self, printer: "QPrinter") -> bool:
         """Finn's File > Print: the same table the HTML export writes, sent to ``printer`` (a test passes a PDF one)."""
 
         if self.document is None:
@@ -4098,6 +4097,7 @@ class RosterEditorPanel(QWidget):
         if self.document is None:
             self._set_status("Load a roster first, then print its list.")
             return
+        from PyQt5.QtPrintSupport import QPrintDialog, QPrinter     # review F6: only when printing
         printer = QPrinter(QPrinter.HighResolution)
         printer.setOrientation(QPrinter.Landscape)           # the grid is wide
         printer.setDocName("Player list")
@@ -4635,7 +4635,11 @@ class RosterEditorPanel(QWidget):
                 return None
             path = chosen
         target = Path(path)
-        target.write_bytes(df.export_depth_chart(self.document, index))
+        try:
+            target.write_bytes(df.export_depth_chart(self.document, index))
+        except OSError as exc:                       # review F5
+            self._set_status(f"Not exported: {exc.strerror or exc} ({target}).")
+            return None
         self._set_status(f"Exported {team.abbreviation}'s depth chart to {target.name} (Finn's format).")
         return target
 
@@ -4697,7 +4701,11 @@ class RosterEditorPanel(QWidget):
                 return None
             path = chosen
         target = Path(path)
-        target.write_bytes(df.export_punt_returners(self.document).encode("ascii"))
+        try:
+            target.write_bytes(df.export_punt_returners(self.document).encode("ascii"))
+        except OSError as exc:                       # review F5
+            self._set_status(f"Not exported: {exc.strerror or exc} ({target}).")
+            return None
         self._set_status(f"Backed up every club's punt returner to {target.name}.")
         return target
 
@@ -5858,7 +5866,8 @@ class RosterEditorPanel(QWidget):
             return "Select a player first."
         if listed_ir is None:
             listed_ir = self.listed_ir_indices()
-        return player_health.heal_refusal(player.record, on_listed_ir=player.pool == "primary" and player.index in listed_ir)
+        return player_health.heal_refusal(player.record, on_listed_ir=player.pool == "primary" and player.index in listed_ir,
+                                          franchise=self.franchise_panel.active)
 
     def hurt_players_shown(self) -> list[rr.Player]:
         """The hurt players in the list as it is filtered now that Heal can act on (injured reserve excluded)."""

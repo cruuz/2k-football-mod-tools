@@ -1901,7 +1901,7 @@ class FranchisePanel(QWidget):
             return False
         label = (f"{self._save.schedule_row_name(row).title()}: box score {self._team_short(box.away)} "
                  f"{box.away_points}-{box.home_points} {self._team_short(box.home)} -> {sum(away)}-{sum(home)}"
-                 + ("" if season_points and not box.postseason else " (season points unchanged)"))
+                 + ("" if season_points else " (season totals unchanged)"))
         return self.push(FranchiseEdit("box_score", label, {"row": row, "slot": slot, "home": home, "away": away,
                                                             "season_points": bool(season_points)}))
 
@@ -1916,7 +1916,10 @@ class FranchisePanel(QWidget):
             self._set_status(f"No box score: {exc}")
             return None
         title = f"{self._save.schedule_row_name(row).title()}, game {slot + 1}"
-        return BoxScoreDialog(box, self._team_label(box.away), self._team_label(box.home), title, self)
+        save = self._save
+        return BoxScoreDialog(box, self._team_label(box.away), self._team_label(box.home), title, self,
+                              planner=lambda home, away, totals: ts.plan_box_score(save, row, slot, home, away,
+                                                                                  season_points=totals))
 
     def _box_score_clicked(self) -> None:
         game = self._selected_game()
@@ -2184,7 +2187,8 @@ class FranchisePanel(QWidget):
             return False
         clubs = len({c.team for c in plan.changes})
         label = (f"Import coaches: {receipt['changes_written']} change{'s' if receipt['changes_written'] != 1 else ''} "
-                 f"to {clubs} club{'s' if clubs != 1 else ''}' head coach{'es' if clubs != 1 else ''}")
+                 f"to {clubs} club{'s' if clubs != 1 else ''}' head coach{'es' if clubs != 1 else ''}"
+                 .replace("1 club' head", "1 club's head"))
         if receipt["names_skipped"]:
             label += f" ({len(receipt['names_skipped'])} name change{'s' if len(receipt['names_skipped']) != 1 else ''} skipped)"
         self.last_import_receipt = receipt

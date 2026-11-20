@@ -105,6 +105,14 @@ class _Synthetic(unittest.TestCase):
         values["depth_rank"] = depth & 7
         values["depth_side"] = (depth >> 3) & 7
 
+    @staticmethod
+    def finn_ir(player: rr.Player) -> None:
+        """Finn's IR marker as a roster save shows it (review F1): +0x28 exactly 0x00EE, the injured bit clear."""
+
+        values = player.record.values
+        values["injured_reserve"], values["unknown_29_low"] = ph.IR_MARKER, 0
+        values["unknown_20_high"] &= ~ph.INJURED_BIT
+
 
 # ------------------------------------------------------------------------------------------------ heal: core rule
 class HealCoreTests(_Synthetic):
@@ -173,7 +181,11 @@ class HealCoreTests(_Synthetic):
         self.assertEqual(ph.heal_refusal(player.record), "")
         self.assertEqual(ph.heal_refusal(player.record, on_listed_ir=True), ph.REASON_IR)
         player.record.values["injured_reserve"] = ph.IR_MARKER
+        self.assertEqual(ph.heal_refusal(player.record), "")       # review F1: a hurt player's id may end in 0xEE
+        player.record.values["unknown_20_high"] = 0                   # Finn's marker on a player who is not hurt
+        player.record.values["unknown_29_low"] = 0
         self.assertEqual(ph.heal_refusal(player.record), ph.REASON_IR)
+        self.assertEqual(ph.heal_refusal(player.record, franchise=True), "")   # a franchise save's IR list decides
         self.assertIn("Franchise > Injured Reserve > Activate", ph.REASON_IR)
         self.assertNotIn("—", ph.REASON_IR + ph.REASON_HEALTHY)
 
@@ -191,7 +203,9 @@ class HealPanelTests(_Synthetic):
         self.assertEqual(action.toolTip(), ph.REASON_HEALTHY)
         self.hurt(player)
         self.assertTrue(self.menu()["Heal player"].isEnabled())
-        player.record.values["injured_reserve"] = ph.IR_MARKER
+        player.record.values["injured_reserve"] = ph.IR_MARKER            # review F1: a hurt player's id ending in EE
+        self.assertTrue(self.menu()["Heal player"].isEnabled())
+        self.finn_ir(player)
         action = self.menu()["Heal player"]
         self.assertFalse(action.isEnabled())
         self.assertIn("Franchise > Injured Reserve > Activate", action.toolTip())
@@ -228,7 +242,7 @@ class HealPanelTests(_Synthetic):
         self.assertEqual(self.panel.status_label.text().splitlines()[0], ph.REASON_HEALTHY)
         marker = self.by_last["Harrison"]
         self.hurt(marker)
-        marker.record.values["injured_reserve"] = ph.IR_MARKER
+        self.finn_ir(marker)
         listed = self.by_last["James"]
         self.hurt(listed)
         before_all = {p.last: raw_record(self.document, p) for p in (marker, listed)}
@@ -254,7 +268,7 @@ class HealPanelTests(_Synthetic):
         names = ("Manning", "Harrison", "James")
         for last in names:
             self.hurt(self.by_last[last])
-        self.by_last["James"].record.values["injured_reserve"] = ph.IR_MARKER
+        self.finn_ir(self.by_last["James"])
         self.panel.refresh_grid()
         shown = self.panel.visible_players()
         wanted = [p for p in shown if p.last in ("Manning", "Harrison")]

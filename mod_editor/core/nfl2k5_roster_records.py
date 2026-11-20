@@ -1091,6 +1091,16 @@ def franchise_reference_year(payload: bytes | bytearray, preamble: int,
     return None
 
 
+def finn_ir_marker(values: Mapping[str, int]) -> bool:
+    """Finn's injured-reserve marker in a save without an IR list (b81 finn-r2 review F1): +0x28 is exactly 0x00EE (the
+    low byte Finn writes over a healthy player's empty injury id) and the game's injured bit (+0x20 bit 31) is clear.
+    A low byte of 0xEE alone is not enough: the game's own injury id 750 (0x2EE) ends in it (T.J. Edwards on the
+    SOFTDRINK 2026 season). In a franchise save the IR list decides, never this byte."""
+
+    return (int(values["injured_reserve"]) == 0xEE and int(values["unknown_29_low"]) == 0
+            and not int(values["unknown_20_high"]) & 0x200)
+
+
 class PlayerRecord:
     """A decoded 0x54 record with typed access to every field and to the composites."""
 
@@ -2746,7 +2756,7 @@ class RosterDocument:
                 validate_save(self.to_body())
             except ValueError as exc:
                 invalid = str(exc)
-        return {"ir_players": ir_players, "invalid": invalid}
+        return {"ir_players": ir_players, "invalid": invalid, "franchise": is_franchise_save(bytes(self.body))}
 
     def check_operation(self, player: Player, operation: str, *, context: Mapping[str, Any] | None = None) -> None:
         """Finn's refusals, before any list is touched."""
@@ -2760,7 +2770,8 @@ class RosterDocument:
             raise MembershipRefused("Activate this player from injured reserve first")
         if context["invalid"]:
             raise MembershipRefused(context["invalid"])
-        if player.record.on_injured_reserve:
+        # b81 finn-r2 review F1: a franchise save's IR list (checked above) decides; elsewhere only Finn's exact marker
+        if not context.get("franchise") and finn_ir_marker(player.record.values):
             raise MembershipRefused("Activate this player from injured reserve first")
         if self.is_draft_class(player):
             raise MembershipRefused(f"{MSG_DRAFT_CLASS} {player.display}: {DRAFT_CLASS_WHY}.")
@@ -6787,7 +6798,7 @@ __all__ = [
     "SHOES", "SIG_KEY", "SLEEVES", "TURTLENECKS", "WRISTS", "YES_NO", "Allocation", "Field",
     "Player", "PlayerRecord", "RosterDocument", "RosterPoolFull", "RosterRecordError",
     "SaveContainer", "StringPool", "TeamRecord", "MembershipRefused", "TEAM_MIN_PLAYERS",
-    "TEAM_MAX_PLAYERS", "TEAM_SLOTS", "CLUB_TEAM_COUNT", "FLAG_PROSPECT", "FLAG_NFL_PLAYER",
+    "TEAM_MAX_PLAYERS", "TEAM_SLOTS", "CLUB_TEAM_COUNT", "FLAG_PROSPECT", "FLAG_NFL_PLAYER", "finn_ir_marker",
     "MSG_DRAFT_CLASS", "MSG_FREE_AGENT_IR", "MSG_RELEASE_MAX_FREE_AGENTS", "MSG_RELEASE_MINIMUM",
     "MSG_SIGN_MAX_PLAYERS", "DRAFT_CLASS_WHY", "FREE_AGENT_LIST_CAP", "replay_moves", "validate_membership",
     "REPAIR_KINDS", "plan_repairs", "apply_repairs", "PLAYER_DATA_ENTRY_SIZE", "PLAYER_DATA_TRAILER",

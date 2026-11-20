@@ -1531,10 +1531,14 @@ date or time and press **Apply to this game**, or **Swap home/away**. A game tha
 refused with the reason unless you tick **Allow editing played games**. **Box score…** (or a double-click on a
 played game) is Finn's Boxscore: both clubs' points in each quarter and overtime, with the finals. Change a number
 and press **Apply**. The game counts every club's wins, losses and ties from these numbers, so the standings follow
-the change. **Also change both clubs' season points** (ticked by default) moves the clubs' points scored and allowed
-on **Team Stats** by the same amount, which keeps them equal to their box scores the way the game keeps them; yards
-and the other season numbers stay as the game added them. A playoff game can change its quarters but not its
-winner, because the bracket has already moved the winner on. **Swap home/away** on a played game swaps the two
+the change. **Also keep season totals, win streaks and head coaches' records in step** (ticked by default) does what
+the game itself does after every game: both clubs' points scored, points allowed and games played are counted again
+from all their box scores (playoff games count too), each club's win streak is counted again, and when a
+regular-season result changes, both head coaches' season and career records move by one game. Before you press
+**Apply** the dialog lists everything else that changes and what stays as it is: yards and the other season numbers,
+a counter that already disagreed with the box scores (it is named), and the playoff bracket, which a regular-season
+change does not re-seed. A playoff game can change its quarters but not its winner, because the bracket has already
+moved the winner on. **Swap home/away** on a played game swaps the two
 score lines too, so each club keeps its own points. Finn's week tools are there too, for
 regular-season weeks: **Add game to this week** (the teams, date and kick-off set above; refused if either team
 already plays that week or the week is full), **Remove this game** (the week's later games move up one place) and
@@ -1556,9 +1560,11 @@ it; a free agent or a draft prospect is refused in Finn's words. **Team Stats** 
 with its W-L-T (counted from the box scores, the way the game's standings count it), games played and Finn's 31
 season columns in his order (total yards, passing and rushing yards and averages, yards allowed, first downs,
 third and fourth downs, red zone, penalties, turnovers, points scored and allowed, pass and run plays), then the
-two-point counters. It is read-only, as Finn's is, and **Export as CSV…** saves it. The two averages divide by the
-season's pass plays and rushing plays, the numbers the save keeps, so they can differ a little from the game's own
-box score, which divides by attempts and carries. **Checks** prints the file map by
+two-point counters. It is read-only, as Finn's is, and **Export as CSV…** saves it. W-L-T includes playoff games, as
+the game's standings count them (a coach card shows the regular season only). The two averages, marked **(Studio)**,
+are the Studio's own arithmetic: they divide by the season's pass plays and rushing plays, the numbers the save
+keeps, so they can differ a little from the game's own box score, which divides by attempts and carries, and from
+Finn's, whose rounding is not known. **Checks** prints the file map by
 PROVED / HYPOTHESIS / OPAQUE, what the page may edit, and every franchise edit since load in plain words
 with the byte ranges it touched. Each tab undoes per action and the header counts the unwritten edits.
 **Save Xbox save copy…** writes one re-signed copy carrying the roster edits first and the franchise edits on

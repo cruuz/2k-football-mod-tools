@@ -74,9 +74,12 @@ def synthetic_with_playoff() -> bytes:
     data[block + fs.S_GRID + 8 * cell:block + fs.S_GRID + 8 * cell + 8] = bytes([3, 2, 1, 1, 9, 0x0A, 1, 0])
     struct.pack_into("<H", data, block + fs.S_GRID_FLAGS + 2 * cell, 0x0101)
     data[block + fs.S_SCORES + 10 * cell:block + fs.S_SCORES + 10 * cell + 10] = bytes([7, 7, 0, 7, 0, 3, 0, 7, 0, 0])
-    for team, points in ((0, (17, 17)), (1, (17, 17))):          # the season totals agree with the Week 1 tie
+    # the counters the game keeps in step with the box scores (review F2, F3): points for / against and games played
+    # over every played game, playoffs included, and the current win streak (team +0x1F1)
+    for team, (scored, allowed, played, streak) in ((0, (17, 17, 1, 0)), (1, (27, 38, 2, 0)), (2, (21, 10, 1, 1))):
         base = save.team_offset(team)
-        struct.pack_into("<HH", data, base + ts.TEAM_POINTS_FOR, *points)
+        struct.pack_into("<HHH", data, base + ts.TEAM_POINTS_FOR, scored, allowed, played)
+        data[base + ts.WIN_STREAK] = streak
     return bytes(data)
 
 
@@ -123,14 +126,16 @@ class BoxScoreCoreTests(unittest.TestCase):
         score_at = self.save.season_block + fs.S_SCORES
         points = {self.save.team_offset(t) + rel + k for t in (0, 1) for rel in (ts.TEAM_POINTS_FOR, ts.TEAM_POINTS_AGAINST)
                   for k in (0, 1)}
-        self.assertTrue(set(_changed(self.payload, after)) <= set(range(score_at, score_at + 10)) | points)
+        streak = {self.save.team_offset(0) + ts.WIN_STREAK}                   # team 0 now wins its last game
+        self.assertTrue(set(_changed(self.payload, after)) <= set(range(score_at, score_at + 10)) | points | streak)
+        self.assertEqual(after[self.save.team_offset(0) + ts.WIN_STREAK], 1)
         self.assertEqual(after[score_at:score_at + 10], bytes([7, 0, 3, 7, 0, 0, 7, 7, 3, 7]))
         self.assertEqual(ts.standings(self.save)[0], (1, 0, 0))
         self.assertEqual(ts.standings(self.save)[1], (0, 2, 0))
         self.assertEqual((_team_word(self.save, 0, ts.TEAM_POINTS_FOR), _team_word(self.save, 0, ts.TEAM_POINTS_AGAINST)),
                          (24, 17))
         self.assertEqual((_team_word(self.save, 1, ts.TEAM_POINTS_FOR), _team_word(self.save, 1, ts.TEAM_POINTS_AGAINST)),
-                         (17, 24))
+                         (27, 45))                                          # its wild-card game counts too
         self.assertEqual(receipt["before"], [17, 17])
         self.assertEqual(receipt["after"], [24, 17])
 
@@ -146,19 +151,20 @@ class BoxScoreCoreTests(unittest.TestCase):
             ((0, 1, [0] * 5, [0] * 5), "has not been played"),
             ((17, 0, [0] * 5, [0] * 5), "tie"),
             ((17, 0, [0] * 5, [21, 0, 0, 0, 0]), "keeps its winner"),
-            ((0, 0, [0] * 5, [0] * 5), "outside 0..65535"),     # team 2 has no points to give back
         )
-        struct.pack_into("<H", self.save.buffer, self.save.team_offset(1) + ts.TEAM_POINTS_FOR, 3)
         start = self.save.to_bytes()
         for (row, slot, home, away), words in cases:
             with self.subTest(words=words), self.assertRaisesRegex(fs.FranchiseSaveError, words):
                 ts.set_box_score(self.save, row, slot, home, away)
             self.assertEqual(self.save.to_bytes(), start)
 
-    def test_a_playoff_game_keeps_its_winner_and_its_season_points(self) -> None:
+    def test_a_playoff_game_keeps_its_winner_and_its_totals_follow(self) -> None:
+        # review F2: playoff games count in points for / against (two postseason saves, all 32 clubs)
         receipt = ts.set_box_score(self.save, 17, 0, [7, 7, 0, 7, 3], [3, 0, 7, 0, 0])
-        self.assertTrue(receipt["season_points_skipped"])
-        self.assertEqual(receipt["season_points"], [])
+        self.assertFalse(receipt["season_points_skipped"])
+        self.assertEqual({(r["team"], r["after"]) for r in receipt["season_points"]},
+                         {(self.save.team_abbreviation(2), 24), (self.save.team_abbreviation(1), 41)})
+        self.assertEqual(receipt["coaches"], [])                              # a playoff winner never changes
         self.assertTrue(ts.box_score(self.save, 17, 0).postseason)
 
     def test_the_pro_bowl_box_score_changes_its_quarters_only(self) -> None:
@@ -261,11 +267,12 @@ class StatsScreenTests(unittest.TestCase):
         table = self.page.stats_page.table
         self.assertEqual(table.rowCount(), self.page.save.league_team_count)
         self.assertEqual(table.columnCount(), 3 + len(ts.FINN_COLUMNS) + len(ts.EXTRA_COLUMNS))
-        self.assertEqual([table.horizontalHeaderItem(i).text() for i in range(3, 34)], [c for _k, c in FINN_INI_COLUMNS])
+        self.assertEqual([table.horizontalHeaderItem(i).text().replace(" (Studio)", "") for i in range(3, 34)],
+                         [c for _k, c in FINN_INI_COLUMNS])                 # the two averages say the Studio computes them
         texts = self.page.stats_page.row_texts()
         self.assertEqual([row[1] for row in texts], ["0-0-1", "0-1-1", "1-0-0"])
         tps = 3 + [key for key, _caption in FINN_INI_COLUMNS].index("TPS")
-        self.assertEqual(texts[1][tps], "17")
+        self.assertEqual(texts[1][tps], "27")
         self.assertFalse(table.item(0, 5).flags() & Qt.ItemIsEditable)
 
     def test_sorting_is_numeric_and_survives_a_refresh(self) -> None:
@@ -303,12 +310,13 @@ class StatsScreenTests(unittest.TestCase):
         self.assertEqual(_team_word(back, 0, ts.TEAM_POINTS_FOR), 20)
         self.assertTrue(set(_changed(self.payload, container.savegame)) <=
                         set(range(back.season_block + fs.S_SCORES, back.season_block + fs.S_SCORES + 10))
-                        | {back.team_offset(t) + r + k for t in (0, 1) for r in (0x1D8, 0x1DA) for k in (0, 1)})
+                        | {back.team_offset(t) + r + k for t in (0, 1) for r in (0x1D8, 0x1DA) for k in (0, 1)}
+                        | {back.team_offset(1) + ts.WIN_STREAK, back.team_offset(0) + ts.WIN_STREAK})
 
     def test_a_playoff_box_score_refuses_a_new_winner_in_the_dialog(self) -> None:
         dialog = self.page.box_score_dialog(17, 0)
         ok = dialog.buttons.button(QDialogButtonBox.Ok)
-        self.assertFalse(dialog.season_points_check.isEnabled())
+        self.assertTrue(dialog.season_points_check.isEnabled())             # review F2: playoff totals follow too
         dialog.set_quarters("away", [21, 0, 0, 0, 0])
         self.assertIn("cannot end in a tie", dialog.problem())
         dialog.set_quarters("away", [22, 0, 0, 0, 0])
