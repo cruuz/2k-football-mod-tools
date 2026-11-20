@@ -16,7 +16,7 @@ HERE = Path(__file__).resolve().parent
 TARGET = HERE.parents[1] / "mod_editor/core/nfl2k5_sim_qb_injuries_code.py"
 DIVIDER = "# Generated from tools/qb_sim_injuries by build.py.\n"
 PIECES = (
-    ("clinical", 0), ("recovery", 0x2000), ("fixture_start", 0x3100),
+    ("clinical", 0), ("positions", 0x1400), ("recovery", 0x2000), ("fixture_start", 0x3100),
     ("clinical_return", 0x3200), ("contest", 0x3300), ("redzone", 0x3500),
     ("context", 0x3600), ("completed_entry", 0x3840), ("duration", 0x3900),
     ("passing", 0x3A00), ("completed_pass", 0x3D00),
@@ -35,6 +35,7 @@ LOCAL = {
     "CONTEST_ENTRY": "contest.fit", "REDZONE_ENTRY": "redzone.adjust", "GAIN_ENTRY": "passing.passing_scale",
     "FIXTURE_ACTIVE": "context.active", "COMPLETED_PASS": "completed_pass.completed_catch_scale",
     "REDZONE_GAIN": "redzone.adjust", "COMPLETED_GAIN": "passing.passing_scale",
+    "POSITIONS": "positions.positions", "POS_CACHED_YEAR": "positions.pos_year", "QB_PRIVATE_RNG": "clinical.private_rng",
 }
 EXTERNAL = {
     "qb_depth_helper": ("depth", 0), "RATING_TABLE": ("bank", 0x3B00),
@@ -58,6 +59,10 @@ EXPORTED = {
     "recovery": ("depth_hook", "match_hook"), "duration": ("revise",),
     "redzone": ("adjust",), "passing": ("passing_scale",),
     "completed_entry": ("route_completed_pass",), "completed_pass": ("completed_catch_scale",),
+    "positions": ("positions", "pos_sampled", "pos_descriptor", "pos_duration", "pos_duration_accept", "pos_enabled",
+                  "pos_scale", "pos_zero", "pos_accept", "pos_slots", "pos_year", "pos_week", "pos_club_a", "pos_club_b",
+                  "pos_key", "pos_seq", "pos_hash", "pos_sample", "pos_wide", "pos_class", "victim_side",
+                  "victim_slot", "accept_ptr", "pos_plays", "pos_hits", "pos_commits", "pos_effective"),
 }
 
 
