@@ -1486,6 +1486,8 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Manage Salary Cap | **Franchise → Overview → Salary cap** |
 | Franchise Stats tab (team statistics) | **Franchise → Team Stats**: Finn's 31 columns for every club, plus W-L-T and games played; click a heading to sort |
 | Boxscore | **Franchise → Schedule**: select a played game and press **Box score…** (or double-click it) |
+| Tools > Backup and Restore > Export Coaches / Import Coaches | **Franchise → Coaches → Export coaches… / Import coaches…** (also on a roster save's Coaches tab); the same `.Coaches` file |
+| Clear Cap Penalty | **Franchise → Overview**: pick a club in the salary table and press **Clear cap penalty…** |
 | Save (writes the zip back) | **Save Xbox save copy…** writes a new signed copy; your original is never changed |
 
 Ctrl+Z and Ctrl+Y undo and redo on this page (Finn had no undo). Ctrl+/ lists the keys.
@@ -1559,6 +1561,21 @@ coach's numbers, the 23 ratings, the ten formation shares, and the head-coach mo
 Each change undoes with the page's Undo, is listed by **Show my changes**, and is written by **Save Xbox save copy…**
 together with your player edits into one signed copy. Not yet tested in the game. (For a game disc, the **Coaches**
 tab is the build's staff plan instead.)
+
+**Coach files (Finn's Export and Import Coaches).** On the Coaches tab, **Export coaches…** writes every club's head coach
+to a `.Coaches` file in Finn's own format: a text file with one `[Nickname]` section a club (First, Last, Body, Photo,
+the career numbers, the 23 ratings and the ten formation shares). **Import coaches…** reads a `.Coaches` or `.2k5Coaches`
+file and shows every change (club, coach, field, now, becomes) before you press **Apply**. Apply is one step in Undo.
+A section goes to the club's head coach as he is now, not to a list position, so it still works after coaches have
+moved. A missing section or key changes nothing. A number that is not a whole number or is out of range (ratings 0 to 99,
+formation shares 0 to 100) refuses the whole file and names the club and the key. A coach that two clubs lead is listed
+and left alone. Names are written the way **Fire and hire** writes them; if this save's coach text cannot be rewritten,
+the numbers still apply and the names are listed as skipped. Not yet tested in the game.
+
+**Clear cap penalty.** On **Franchise → Overview** the salary table has a **Dead cap** column (this season; hover for all
+seven seasons). Pick a club and press **Clear cap penalty…** to zero its dead cap in every season after you confirm the
+amounts. It is one step in Undo. Only clubs a person controls ever pile up dead cap in the game. The button is greyed out
+when the club has none. Finn's button clears only this season and next season; this one clears all seven.
 
 ## ★ Models: every model out to Blender and back
 
