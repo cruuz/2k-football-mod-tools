@@ -57,6 +57,12 @@ dotted outline of the 2004 flag on the back, and on some teams pieces of the 200
 shells carried a few old-logo pieces. Each row is pinned to the finished texture of the released build and repaints
 only the listed texels with colours the texture's own palette already holds at that texel's alpha (``runs``), so no
 palette entry moves and every other texel, mip rule, wrapper and allocation stays as it was.
+
+Job b81-uniforms (beta 81, Noah 11/18: "some uniforms need work to look better and closer to irl ... goal is to match
+irl as close as possible") corrects jersey, pants, sleeve, sock and digit textures against this season's
+game-highlight frames in ``data/nfl2k5_kit_fixes_2026_b81u.json`` (``apply_uniforms_b81``, right after the helmet
+cleanup). Its rows are ``runs`` too, written by ``tools/b81_uniform_pass.py`` from finished level-0 pictures; here the
+runs may bring colours the palette lacks, which take unused entries as in every earlier pass.
 """
 from __future__ import annotations
 
@@ -83,6 +89,7 @@ DATA_KU1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_ku1
 DATA_SW1 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_sw1.json"
 DATA_NAMES = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_names.json"
 DATA_B81 = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_b81.json"
+DATA_B81U = Path(__file__).resolve().parents[2] / "data/nfl2k5_kit_fixes_2026_b81u.json"
 DATA_SIDELINE = Path(__file__).resolve().parents[2] / "data/nfl2k5_sideline_2026.json"
 KINDS = ("tset", "txtr", "copy_video", "palette", "clear", "unif", "name")
 SIDELINE_SCHEMA = "nfl2k5_sideline_2026/v1"
@@ -1638,6 +1645,17 @@ def apply_helmets_b81(path, *, strict=False):
     """Studio uniform finish pass for b81-art, the last uniform writer (after the Anniversary and classic kits):
     pinned spans only."""
     return apply_to_image(path, strict=strict, document=helmets_b81())
+
+
+def uniforms_b81():
+    """The b81-uniforms document: 2026 kit textures corrected against this season's game-highlight frames."""
+    return spec(DATA_B81U)
+
+
+def apply_uniforms_b81(path, *, strict=False):
+    """Studio uniform finish pass for b81-uniforms, after the helmet cleanup (the last uniform writer of a build):
+    pinned spans only."""
+    return apply_to_image(path, strict=strict, document=uniforms_b81())
 
 
 def overlaps():
