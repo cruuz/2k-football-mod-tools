@@ -188,6 +188,26 @@ class Document(unittest.TestCase):
             self.assertGreater(there, 2500, side)
             self.assertIn(slot("helmet00", "27_6", side), NEW_ART)
 
+    def test_the_hail_raiser_spearhead_points_to_the_facemask_on_both_sides(self):
+        # R55 (beta 81): Washington's Hail Raiser (style 9) had its right-side logo (the upper atlas island) laid as a
+        # half turn of the left side's, so the right spearhead pointed to the back of the helmet; the club's helmet has
+        # both spearheads toward the facemask. The row now lays the upper island as the mirror image of the lower one
+        # (tools/b81_art overrides "29_9:helmet02" mirror_upper): the whole upper logo is repainted, with the gold
+        # arrowhead at the front end of the island, and the Standard shell follows as new source art
+        by = {(r["selector"], r["texture"]): r for r in rows()}
+        for side in "HA":
+            row = by[("29" + side + "9", "helmet02")]
+            colours = {}
+            for op in row["ops"]:
+                for y, x0, hexes in op["rows"]:
+                    for i in range(len(hexes) // 6):
+                        colours[(x0 + i, y)] = tuple(int(hexes[6 * i + 2 * j:6 * i + 2 * j + 2], 16) for j in range(3))
+            upper = [t for t in colours if 20 <= t[0] < 142 and 50 <= t[1] < 100]
+            self.assertGreater(len(upper), 2000, side)
+            head = [t for t in upper if t[0] < 45 and colours[t][0] > 200 and colours[t][1] > 130 and colours[t][2] < 80]
+            self.assertGreater(len(head), 50, side)
+            self.assertIn(slot("helmet00", "29_9", side), NEW_ART)
+
     def test_the_steelers_throwback_mark_is_turned_on_both_shells(self):
         # one-sided logo (the right side): its word read backwards in game; only the logo's own disc is repainted on
         # the modern shell, and the Standard shell takes that logo from the modern shell
