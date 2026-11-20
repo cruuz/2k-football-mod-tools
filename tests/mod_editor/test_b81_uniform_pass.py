@@ -155,7 +155,9 @@ class KitDocument(unittest.TestCase):
                           ("09A9", "pants00"), ("09H9", "pants00"), ("11A3", "sleeve00"), ("11H3", "sleeve00"),
                           ("14A0", "pants00"), ("14A0", "sleeve00"), ("14A0", "socks00"), ("14H0", "sleeve00"),
                           ("15A0", "pants00"), ("15H0", "pants00"), ("15H0", "socks00"),
-                          ("17A8", "pants00"), ("17H8", "pants00"), ("19A2", "pants00"), ("19H2", "pants00"),
+                          ("17A0", "sleeve00"), ("17A3", "sleeve00"), ("17A8", "pants00"), ("17A8", "sleeve00"),
+                          ("17H0", "sleeve00"), ("17H3", "sleeve00"), ("17H8", "pants00"), ("17H8", "sleeve00"),
+                          ("19A2", "pants00"), ("19H2", "pants00"),
                           ("21A4", "sleeve00"), ("21H4", "sleeve00"), ("23A0", "pants00"), ("25H0", "pants00"),
                           ("26A4", "pants00"), ("26A4", "socks00"), ("26H4", "sleeve00"), ("27A0", "pants00"),
                           ("27H0", "pants00")])
@@ -173,7 +175,8 @@ class KitDocument(unittest.TestCase):
         # measured width (25H0)
         # Noah 11/19 (decision 5, "use the prototype"): the Buccaneers pants stripe black, orange, red, orange, black at
         # about 5.8 cm on the white home pants (27H0) and the pewter road pants that wear the same stripe (27A0)
-        # R2 (order R2-C): the Bengals pants tiger strokes, one geometry on all six Bengals pants (06H0 06A0 06H5 06A5
+        # R2 (order R2-C): the Saints sleeve fleur-de-lis at the emblem's own proportions (17H0 17A0, and 17H3 17A3 17H8
+        # 17A8, which carry the same fleur art at the same squat size); the Bengals pants tiger strokes, one geometry on all six Bengals pants (06H0 06A0 06H5 06A5
         # 06H6 06A6), each in its own stroke colour; the Lions Defend the Den side stripe (09H9/09A9, rows already listed)
 
     def test_the_jersey_rows_repaint_only_the_chest_under_the_collar(self):
@@ -831,6 +834,30 @@ class RealDisc(unittest.TestCase):
         self.assertEqual(spans, [(12, 17, True), (12, 17, True), (17, 34, True), (17, 33, True)])
         for x0, y0, x1, y1 in WAS_ROAD_SWOOSH:
             self.assertFalse(solid[y1:y1 + 16, x0:x1].any())                     # nothing below the swoosh boxes
+
+    def test_the_saints_sleeve_fleur_stands_taller_than_wide(self):
+        # R2 (order R2-C): the game's sleeve fleur was squat (29 to 33 texels wide, 7.6 to 8.6 cm on the body against
+        # 5.8 to 6.2 cm tall: w/h 1.23 to 1.50; the 2026 pictures read 0.78 and 0.86, the club emblem 0.83). Redrawn from
+        # the repo's emblem at the old height and centre: 18 to 20 texels wide, w/h 0.84 to 0.86 on the body (the sleeve
+        # texel is 0.26 cm across and 0.21 cm down there).
+        from scipy import ndimage
+        want = {"17H0": [(51, 9, 20, 30), (58, 73, 19, 30)], "17A0": [(52, 9, 19, 28), (58, 73, 18, 28)]}
+        want.update({"17H3": want["17H0"], "17A3": want["17H0"], "17H8": want["17A0"], "17A8": want["17A0"]})
+        for selector, boxes in want.items():
+            sleeve = self.after(selector, "sleeve00")[..., :3].astype(int)
+            colours, counts = np.unique(sleeve.reshape(-1, 3), axis=0, return_counts=True)
+            base = colours[counts.argmax()]
+            ink = np.abs(sleeve - base).sum(-1) > 24
+            found = []
+            for rows in (slice(0, 64), slice(64, 128)):
+                half = np.zeros(ink.shape, bool)
+                half[rows] = ink[rows]
+                lab, n = ndimage.label(half, structure=np.ones((3, 3)))
+                for i in range(1, n + 1):
+                    ys, xs = np.nonzero(lab == i)
+                    if ys.max() - ys.min() >= 20 and xs.max() - xs.min() < 60:          # the fleur, not the swoosh or a stripe
+                        found.append((int(xs.min()), int(ys.min()), int(xs.max() - xs.min() + 1), int(ys.max() - ys.min() + 1)))
+            self.assertEqual(found, boxes, selector)
 
     def test_every_kit_row_is_waiting_on_the_released_disc_and_compiles_to_its_pin(self):
         result = up.states(DISC)
