@@ -261,6 +261,8 @@ def build_plan(recipe, source="", target=""):
 def build_project(plan, project, progress):
     """Full Studio authoring path, deliberately separate from fast installation."""
     from . import mod_build
+    if isinstance(plan, mod_build._ReleasedV09Update):
+        raise ValueError("Use your retail disc to include league artwork with these v0.9 updates.")
     from .nfl2k5_source_cache import Nfl2k5SourceCache
     from .nfl2k5_build_service import Nfl2k5BuildService
     service = Nfl2k5BuildService()
