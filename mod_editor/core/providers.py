@@ -598,7 +598,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "22a50b66cece72046d84de5ed34f3d04c71c6ac921dba125cf9b08505e71efac",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "0f20bd43d2742a5a0916f590649e5df66529233a5538356b3a5ed17946f3c819",
+        "mod_editor/core/mod_build.py": "921c93b8fd85ea264d0d844d4c7a8607213fc2a5d752b1e48a7c0a8c0a44a098",
         "mod_editor/core/nfl2k5_console_memory.py": "b991d0a7bc3a9211e38045066ba4ef916fd9f714ae9e3f9c54da983978b0f40d",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/build_steps.py": "e948addf15903d2ee9146e8bfac32982cadd5acd3b28f98630261b06df093087",  # b791-h3: step context and optional steps
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
@@ -1056,7 +1056,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_senior_bowl_code.py": "000abee8fc9bf5d382d4c8934a0509c32de7976805eadabb5c4aed3ccb0812da",
         "mod_editor/core/nfl2k5_seven_on_seven.py": "8d0da9680a0481ee861c45b0dc8f9e785015bd43e472796a3b6e781597244269",
         "mod_editor/core/nfl2k5_seven_on_seven_book.py": "4cb148bd14f33bc67eab092220156206565dbbde9f75a217712fdf98ece3a80a",
-        "mod_editor/core/nfl2k5_source_cache.py": "9562d31cea0cd096e90fc7569121af794376705b38b4685f1125378b70b49dee",
+        "mod_editor/core/nfl2k5_source_cache.py": "04c9f2189947546d6bc124da57d02b7d3d22df7b39c292a0dae8662637bc594a",
         "mod_editor/core/nfl2k5_special_roles.py": "ebaec1af405b5ede1f931a0f825b5702d4e44b0e79cd7067ed51d631969aa943",
         "mod_editor/core/nfl2k5_stadium_cache.py": "af3f8983f4312f755f27456684e6e27505d41eda07539ebcd813b90c81a88762",
         "mod_editor/core/nfl2k5_stadium_studio.py": "6b4456f70acaa620f36a2496b2e2af75948cd83f93dae49e3c189b0e3edb8988",
