@@ -8,6 +8,7 @@ game's primary diagnosis, seeding, diagnosis proposal, depth partition and match
 """
 import hashlib
 import struct
+import unittest
 
 from mod_editor.core import nfl2k5_sim_qb_injuries_code as rules
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
@@ -353,3 +354,7 @@ class HealedQuarterback(NativeFixture):
                        {'new_lock': True}, {'manual': True}, {'later_week': True}, {'roster_change': True}):
             with self.subTest(change=change):
                 self.run_case(self.GAMECAST, correcting=False, **change)
+
+
+if __name__ == "__main__":
+    unittest.main()

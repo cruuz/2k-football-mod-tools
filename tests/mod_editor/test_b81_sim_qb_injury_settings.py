@@ -114,3 +114,7 @@ class NativeSettingsTests(unittest.TestCase):
         enabled=qb.apply(foreign)[0]
         self.assertEqual(senior.status(enabled),'foreign')
         self.assertEqual(qb.apply(enabled,'retail')[0],foreign)
+
+
+if __name__ == "__main__":
+    unittest.main()
