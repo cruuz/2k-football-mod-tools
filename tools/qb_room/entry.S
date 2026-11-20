@@ -56,11 +56,9 @@ sign_after:
    stage bit 64 clear the stub then jumps to 0x2BE020 exactly as opening_entry does. With it set it CALLS the IR pass
    0x2BE020 with the registers and flags the call site left, runs emergency_pass(menu, 1) with the weekly advance's menu (EBP,
    loaded at 0x247D50 and not written again before 0x247DCA), restores everything the IR pass left and returns to
-   0x247DCF. sign_ungated is the native signing 0x322BB0 entered past its gates (stdcall, the same four arguments,
-   ret 0x10): its own first instruction, then the rest of the routine, as the practice-squad guard and the economy
-   gate enter it; the installer authenticates 0x322BB0 `81ec14010000` and the bytes from 0x322BB6 on. */
+   0x247DCF. (The over-cap entry sign_ungated is retired with the over-cap rung, floor review F1.) */
 .section .text.floor,"ax",@progbits
-.global pregame_entry, sign_ungated
+.global pregame_entry
 pregame_entry:
     pushfd
     pushad
@@ -85,7 +83,4 @@ pregame_entry:
     popad
     popfd
     ret
-sign_ungated:
-    sub esp, 0x114
-    jmp 0x322bb6
 .section .note.GNU-stack,"",@progbits

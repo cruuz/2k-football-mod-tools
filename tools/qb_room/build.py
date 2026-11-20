@@ -29,10 +29,10 @@ RESERVED_CODE = (0x2200, 0x2400)              # the middle piece: .text.mid (D1 
 DATA = {"qb_settings": 0x2000, "qb_link_ir_store": 0x2020, "qb_counters": 0x2040, "qb_ring": 0x2400,
         "qb_ring_cursor": 0x2E00, "qb_menu": 0x2E04,
         # moves.c's plain (non-volatile) names for the same counters and cursor (it is their only writer in a pass).
-        "qb_counters_plain": 0x2040, "qb_ring_cursor_plain": 0x2E00}
+        "qb_counters_plain": 0x2040, "qb_ring_cursor_plain": 0x2E00, "qb_seen_healthy": 0x2E08}
 COUNTERS_LIMIT = RESERVED_CODE[0]
 EXPORTED = ("opening_entry", "room_entry", "opening_pass", "room_pass", "emergency_pass", "sign_entry", "sign_after",
-            "pregame_entry", "floor_seat", "sign_ungated")
+            "pregame_entry", "floor_seat")
 
 
 def counter_names():

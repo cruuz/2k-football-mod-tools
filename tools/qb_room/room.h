@@ -47,7 +47,7 @@ typedef signed char i8;
 #define STAGE_SIGN 8u                /* stage 4a: the signing pass and E1 */
 #define STAGE_E2 32u                 /* E2 as well (only with STAGE_SIGN) */
 #define STAGE_FLOOR 64u              /* the floor (DESIGN addendum F3) */
-#define STAGE_OVER_CAP 128u          /* the floor's last rung: sign past the gates, over the cap */
+#define STAGE_OVER_CAP 128u          /* retired (floor review F1): ignored by the page */
 #define FLAG_SHADOW 1u
 #define LIMIT_PPM 1000000u
 
@@ -152,6 +152,10 @@ struct counters {
     u32 d1_held;                 /* addendum 2, R1: the veteran put back on the rookie's row (rows only) */
     u32 d1_promoted;             /* R3/R4: an opening promotion by choice (the rookie on V's row, both locked) */
     u32 season_resets;           /* R1 (bit 256): from year index 1, week 0, a man 6+ better took row 0 */
+    u32 floor_no_fit;            /* floor review F1(b): nobody fits after every restructure and release (result 6) */
+    u32 floor_extra_releases;    /* releases beyond the first in one act */
+    u32 floor_lost_since;        /* the club had a healthy QB earlier in this advance (decision bit 0x10) */
+    u32 floor_unseated;          /* F4: signed for a user club whose chart the user manages: not seated */
 };
 /* COUNTERS END */
 extern volatile struct counters qb_counters;          /* page + 0x2040 */

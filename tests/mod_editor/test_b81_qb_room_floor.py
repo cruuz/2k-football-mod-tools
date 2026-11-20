@@ -178,54 +178,60 @@ class Floor(FloorLeague):
         counts = self.counters()
         self.assertEqual((counts["floor_restructures"], counts["floor_releases"], counts["floor_over_cap"]), (0, 1, 0))
 
-    def test_tf1c_at_50_signed_over_the_cap_and_reconcile_keeps_him(self):
-        # Without bit 128 the last rung is off: nobody is signed and floor_no_room / floor_failed are counted.
-        others, fas, _, _ = self.dallas(50)
-        before = self.club_list()
-        self.enter_pregame()
-        self.assertEqual(self.club_list(), before)
-        if FLOOR:
-            counts = self.counters()
-            self.assertEqual((counts["floor_no_room"], counts["floor_failed"]), (1, 1))
-        # With it: signed past the gates (0x322BB0's gate jump on standard, then sub esp,0x114; jmp 0x322BB6).
-        self.setUp()
-        self.floor_settings(stages=room.STAGE_SIGN | FLOOR | getattr(room, "STAGE_OVER_CAP", 0))
-        others, fas, _, _ = self.dallas(50)
-        values = {q.address: self.value(q) for q in fas}
-        room_before, payroll_before = self.room_now(), self.payroll()
-        before = set(self.club_list())
-        self.enter_pregame()
-        after = self.club_list()
-        signed = [p for p in after if p not in before]
-        self.assertEqual(len(signed), 1)
-        self.assertTrue(before <= set(after))
-        charge = self.payroll() - payroll_before
-        over = -self.room_now()
-        self.assertEqual(over, charge - room_before)
-        self.assertGreater(over, 0)
-        self.assertLessEqual(charge, values[signed[0]] + 9)              # F4: this season's charge <= value + 9
-        event = self.events()[-1]
-        self.assertEqual((event[3] & 0x0F, event[4]), (7, 5))            # floor, signed over the cap
-        self.assertEqual(self.counters()["floor_over_cap"], 1)
-        # The weekly advance's own end loop calls the economy's reconcile 0x2BFBE0 for a club over the cap.
-        self.call(0x2BFBE0, self.team())
-        self.assertGreaterEqual(self.room_now(), 0)
-        self.assertIn(signed[0], self.club_list())
+    def test_tf1c_no_room_releases_until_the_prove_it_contract_fits_never_over_the_cap(self):
+        # Floor review F1: no over-cap rung. With no restructurable contract, the floor releases (lowest value, healthy,
+        # above the position minimums) until a free agent fits within room minus 10, signs him on the one-year prove-it
+        # contract and leaves the club under the cap, so the end loop's reconcile 0x2BFBE0 (the economy's trim) keeps
+        # him. Also with two hurt quarterbacks on the list: the swap leaves one, so he is one of two (the trim keeps two).
+        for hurt_qbs in (0, 2):
+            with self.subTest(hurt_qbs=hurt_qbs):
+                self.setUp()
+                self.floor_settings(stages=FLOOR | getattr(room, "STAGE_OVER_CAP", 0))
+                if hurt_qbs:
+                    qbs = [QB(80, 0, injury=hurt(2)), QB(74, 1, injury=hurt(3))]
+                    others = self.squad(qbs, 50)
+                    for q in others:
+                        q.ovr = max(q.ovr, 66)
+                        self.write_player(q)
+                    self.free_market(58, 54, 62, 60, 57, 56)
+                    self.give_room(235)
+                else:
+                    self.dallas(50)
+                before = set(self.club_list())
+                self.enter_pregame()
+                signed = [p for p in self.club_list() if p not in before]
+                self.assertEqual(len(signed), 1)
+                self.assertTrue(self.healthy(signed[0]))
+                self.assertGreaterEqual(self.room_now(), 0)                       # never over the cap
+                self.assertEqual((self.word(signed[0] + 0x24) & 15, self.uc.mem_read(signed[0] + 0x27, 1)[0] & 15),
+                                 (1, 1))                                          # F3: one year
+                counts = self.counters()
+                if hurt_qbs:
+                    self.assertEqual(counts["floor_swaps"], 1)                    # his salary made part of the room
+                else:
+                    self.assertGreaterEqual(counts["floor_releases"], 1)
+                self.assertEqual(counts["floor_over_cap"], 0)
+                self.assertEqual(len(self.quarterbacks()), 2 if hurt_qbs else 1)
+                self.call(0x2BFBE0, self.team())                                  # the end loop's reconcile
+                self.assertIn(signed[0], self.club_list())
+                self.assertEqual(sum(self.healthy(p) for p in self.quarterbacks()), 1)
 
-    def test_tf2_three_hurt_quarterbacks_at_53_swap_the_lowest_never_four(self):
+    def test_tf2_three_hurt_quarterbacks_at_53_swap_down_to_one_then_sign(self):
+        # Floor review F1(c): the swap leaves one hurt quarterback (the best-rated), so the new man is one of two.
         qbs = [QB(78, 0, injury=hurt(1)), QB(70, 1, injury=hurt(3)), QB(62, 2, injury=hurt(2))]
         self.squad(qbs, 53)
         self.free_market(60, 64)
         self.give_room(20000)
         self.enter_pregame()
         after = self.quarterbacks()
-        self.assertNotIn(qbs[2].address, after)                                # the lowest-rated injured one
-        self.assertEqual(len(after), 3)
-        self.assertEqual(len(self.club_list()), 53)
+        self.assertNotIn(qbs[2].address, after)                                # the two lowest-rated hurt ones go
+        self.assertNotIn(qbs[1].address, after)
+        self.assertIn(qbs[0].address, after)
+        self.assertEqual(len(after), 2)
+        self.assertEqual(len(self.club_list()), 52)
         self.assertEqual(sum(self.healthy(p) for p in after), 1)
-        self.assertIn(self.ledger_kinds()[0], (8, 9))
         self.assertEqual(self.ledger_kinds()[-1], 1)
-        self.assertEqual(self.counters()["floor_swaps"], 1)
+        self.assertEqual(self.counters()["floor_swaps"], 2)
 
     def test_tf5_opening_week_zero_a_healthy_quarterback_on_row_0_before_the_first_fixture(self):
         self.write(0xE576B4, 0)
@@ -240,7 +246,7 @@ class Floor(FloorLeague):
         self.assertTrue(self.healthy(new[0]))
         rows = self.chart(after)
         self.assertEqual(rows[after.index(new[0])][0], 0)
-        self.assertEqual(sorted(r[0] for r in rows), [0, 1, 2])
+        self.assertEqual(sorted(r[0] for r in rows), [0, 1])                 # the swap released the lower hurt man
         self.assertEqual(len(self.club_list()), 53)
 
     def test_tf6_playoffs_stage_9_signed_at_the_pre_game_call(self):
@@ -295,7 +301,7 @@ class Floor(FloorLeague):
         self.free_market(61)
         self.give_room(20000)
         self.enter_pregame()
-        self.assertEqual(len(self.quarterbacks()), 3)
+        self.assertEqual(len(self.quarterbacks()), 2)                            # one hurt man swapped out
         snapshot = self.table(), bytes(self.uc.mem_read(self.team(), CLUB_SIZE)), self.fa_list(), self.ledger()
         self.enter_pregame()                                                    # the same week again
         self.assertEqual((self.table(), bytes(self.uc.mem_read(self.team(), CLUB_SIZE)), self.fa_list(), self.ledger()),
@@ -322,6 +328,166 @@ class Floor(FloorLeague):
         counts = self.counters()
         self.assertEqual((counts["floor_no_free_agent"], counts["floor_failed"]), (1, 1))
 
+
+@unittest.skipUnless(base.HAVE_UC, "Unicorn is required")
+class FloorReview(FloorLeague):
+    """The floor's independent review (rev-qb34/REVIEW_FLOOR.md, at f34553b06) and the coordinator's rulings (route A:
+    the page only). Each case fails on f34553b06 (evidence qb34/evidence/floor/review-tests-on-f34553b06.txt)."""
+    STUDIO = FLOOR | getattr(room, "STAGE_OVER_CAP", 0)     # what the Studio installed at f34553b06 (64 | 128)
+
+    def setUp(self):
+        super().setUp()
+        self.floor_settings(stages=self.STUDIO)
+
+    def two_hurt(self, units=235):
+        qbs = [QB(80, 0, injury=hurt(2)), QB(74, 1, injury=hurt(3))]
+        others = self.squad(qbs, 50)
+        for q in others:                                        # a veteran roster: everyone rated 66 or more
+            q.ovr = max(q.ovr, 66)
+            self.write_player(q)
+        self.free_market(58, 54, 62, 60, 57, 56)
+        self.give_room(units)
+        return qbs
+
+    def test_fp6_two_hurt_quarterbacks_no_sign_then_release_and_a_healthy_one_at_the_end(self):
+        # The reviewer's probe FP6: one whole advance, the pre-game call, the trim, the post-game call, the end loop's
+        # reconcile. f34553b06 signed over the cap and the trim released him, twice.
+        self.two_hurt()
+        start = set(self.club_list())
+        self.enter_pregame()
+        signed = [p for p in self.club_list() if p not in start]
+        self.assertEqual(len(signed), 1)                        # (c): one act, one man
+        self.assertGreaterEqual(self.room_now(), 0)
+        self.call(0x2BFBE0, self.team())
+        self.site(0x248010)
+        self.enter_sign()
+        self.call(0x2BFBE0, self.team())
+        self.assertIn(signed[0], self.club_list())             # nobody released the man the floor signed
+        self.assertEqual([p for p in self.quarterbacks() if self.healthy(p)], signed)
+        counts = self.counters()
+        self.assertEqual((counts["floor_over_cap"], counts["floor_runs"]), (0, 1))
+
+    def test_a_named_failure_when_no_release_can_make_room(self):
+        # Every position at its minimum, every player healthy, no restructurable contract, free agents dearer than the
+        # room: the floor releases nobody, signs nobody, counts floor_no_fit and logs result 6.
+        mins = {1: 1, 2: 1, 3: 5, 4: 5, 5: 2, 6: 2, 7: 3, 9: 3, 10: 3, 11: 2, 12: 2, 13: 3, 14: 3, 15: 3, 16: 4}
+        roster = [QB(70, 0, injury=hurt(3))] + [QB(70 - k, k, position=position, locked=False, contract=SHORT,
+                                                    salary=500) for position, n in mins.items() for k in range(n)]
+        self.club(SIGN_CLUB, roster, others=0)
+        self.free_market(70, 66)
+        self.give_room(20)
+        before = self.club_list()
+        self.enter_pregame()
+        self.assertEqual(self.club_list(), before)
+        counts = self.counters()
+        self.assertEqual((counts["floor_no_fit"], counts["floor_releases"], counts["floor_failed"]), (1, 0, 1))
+        event = self.events()[-1]
+        self.assertEqual((event[3] & 0x0F, event[4]), (7, getattr(room, "RESULT_NO_FIT", 6)))
+
+    def test_releases_beyond_the_first_are_counted(self):
+        self.floor_settings(stages=FLOOR)
+        for q in self.squad([], 50):
+            q.salary = 60
+            self.write_player(q)
+        self.free_market(58, 54, 62, 66)
+        self.give_room(50)
+        self.enter_pregame()
+        counts = self.counters()
+        self.assertEqual((counts["floor_releases"], counts["floor_extra_releases"]), (2, 1))
+        self.assertEqual(self.events()[-1][8], 2)              # g = releases in the act
+        self.assertGreaterEqual(self.room_now(), 0)
+
+    def test_f3_a_free_agent_who_is_not_a_prove_it_man_signs_the_one_year_deal(self):
+        # The reviewer's probe FP5: no contract years and no unsigned weeks (released this week); f34553b06 left the
+        # native signing's five-year contract.
+        self.squad([QB(75, 0, injury=hurt(2))], 52)
+        fas = self.free_market(70, 66, prove_it=False)
+        for q in fas:
+            self.uc.mem_write(q.address + 0x24, struct.pack("<I", q.years << 8))
+        self.give_room(20000)
+        before = set(self.club_list())
+        self.enter_pregame()
+        signed = [p for p in self.club_list() if p not in before]
+        self.assertEqual(len(signed), 1)
+        value = self.events()[-1][12]
+        self.assertEqual((self.word(signed[0] + 0x24) & 15, self.uc.mem_read(signed[0] + 0x27, 1)[0] & 15), (1, 1))
+        self.assertEqual(struct.unpack("<H", self.uc.mem_read(signed[0] + 0xA, 2))[0], (value + 9) // 10)
+
+    def test_f4_a_user_club_with_auto_sign_on_is_signed_for_but_its_chart_is_left_alone(self):
+        # The reviewer's probe FP2: human club, auto sign/cut on, "CPU manages my depth chart" off.
+        for cpu_depth in (0, 1):
+            with self.subTest(cpu_depth=cpu_depth):
+                self.setUp()
+                self.write(0xE5775C + 4 * SIGN_CLUB, 1)
+                self.write(0xE6013C, 1)
+                self.write(0xE60140, cpu_depth)
+                qbs = [QB(80, 0, injury=hurt(2))]
+                self.squad(qbs, 52)
+                self.free_market(*([61] * 40))                  # the harness's empty human clubs take one each
+                self.give_room(20000)
+                user_before = self.chart([qbs[0].address])
+                self.enter_pregame()
+                after = self.quarterbacks()
+                new = [p for p in after if p != qbs[0].address]
+                self.assertEqual(len(new), 1)
+                if cpu_depth:                                    # seated: the new man on row 0, the hurt man below
+                    self.assertEqual((self.chart(new)[0][0], self.chart([qbs[0].address])[0][0]), (0, 1))
+                else:                                            # the user's man keeps his row and his locks
+                    self.assertEqual(self.chart([qbs[0].address]), user_before)
+                    self.assertGreaterEqual(self.counters()["floor_unseated"], 1)
+                    self.assertEqual(self.counters()["floor_seated"], 0)
+
+    def test_f5_make_room_never_leaves_a_position_without_its_healthy_minimum(self):
+        # Two punters, the healthy one the cheapest player on the club: the make-room releases someone else.
+        self.floor_settings(stages=FLOOR)
+        others = self.squad([], 49)
+        punter = next(q for q in others if q.position == 2)
+        punter.ovr, punter.salary = 40, 60
+        self.write_player(punter)
+        hurt_punter = QB(70, 1, position=2, locked=False, injury=hurt(4), contract=SHORT, salary=500)
+        self.add_player(hurt_punter, SIGN_CLUB)
+        base_club = CLUBS + CLUB_SIZE * SIGN_CLUB
+        n = self.uc.mem_read(base_club + 0x11C, 1)[0]
+        self.uc.mem_write(base_club + 4 * n, struct.pack("<I", hurt_punter.address))
+        self.uc.mem_write(base_club + 0x11C, bytes([n + 1]))
+        self.free_market(58, 54, 62, 66)
+        self.give_room(235)
+        self.enter_pregame()
+        self.assertIn(punter.address, self.club_list())
+        self.assertGreaterEqual(self.counters()["floor_releases"], 1)
+
+    def test_a_club_that_had_a_healthy_quarterback_earlier_in_the_advance_is_logged(self):
+        # (6): healthy at the pre-game call, hurt in the game, signed for at the post-game call: decision bit 0x10.
+        self.floor_settings(stages=FLOOR)
+        starter = QB(78, 0)
+        self.squad([starter], 52)
+        self.free_market(61, 58)
+        self.give_room(20000)
+        self.enter_pregame()
+        self.assertEqual(self.counters()["floor_runs"], 0)
+        self.write(starter.address + 0x20, hurt(2))
+        # The post-game call itself (sign_after: after the game's own weekly signings, which here would sign a man of
+        # their own first), with the menu sign_entry keeps.
+        self.write(VA + room.MENU_SLOT, MENU)
+        self.uc.reg_write(self.x.UC_X86_REG_ESP, STACK)
+        self.uc.emu_start(VA + room.LABELS["sign_after"], 0x248015, count=200_000_000)
+        self.assertEqual(self.uc.reg_read(self.x.UC_X86_REG_EIP), 0x248015)
+        event = self.events()[-1]
+        self.assertEqual((event[3] & 0x1F, event[4]), (0x17, 1))
+        self.assertEqual(self.counters()["floor_lost_since"], 1)
+
+    def test_two_hurt_quarterbacks_at_the_post_game_call_swap_first(self):
+        self.floor_settings(stages=FLOOR)
+        qbs = [QB(80, 0, injury=hurt(2)), QB(70, 1, injury=hurt(3))]
+        self.squad(qbs, 52)
+        self.free_market(61, 58)
+        self.give_room(20000)
+        self.site(0x248010)
+        self.enter_sign()
+        after = self.quarterbacks()
+        self.assertEqual(len(after), 2)
+        self.assertIn(qbs[0].address, after)
+        self.assertEqual(self.counters()["floor_swaps"], 1)
 
 @unittest.skipUnless(base.HAVE_UC, "Unicorn is required")
 class Camp(FloorLeague):
@@ -429,8 +595,8 @@ class Repricing(FloorLeague):
     value + 1: P2a 2502/2027's Chargers got Matt Barkley, not Hunter Dekkers. Here the stale budget lets the picker take
     an injured man (no injury test in 0x322BB0). The fix collects and chooses again after every room-changing step."""
 
-    def market(self):
-        qbs = [QB(78, 0, injury=hurt(3)), QB(70, 1, injury=hurt(4))]
+    def market(self, hurt_qbs=2):
+        qbs = [QB(78, 0, injury=hurt(3)), QB(70, 1, injury=hurt(4))][:hurt_qbs]
         self.squad(qbs, 53)
         fas = self.free_market(80, 60)                                      # F (prove-it, priced by this club), H
         hurt_man = QB(74, years=4, injury=hurt(6), contract=0x01000001)     # G: one contract year, fixed price
@@ -445,13 +611,16 @@ class Repricing(FloorLeague):
     def test_c11_the_floors_cut_reprices_the_candidate_the_pickers_own_choice_is_signed(self):
         # The post-game call with the floor alone (no E1), so the IR owner's pre-game pass moves nobody first.
         self.floor_settings(stages=FLOOR)
-        qbs, f, h, g = self.market()
+        # One hurt man (no swap; 52 active, so the room is made by the floor's own steps, which reprice F the same way;
+        # the cut at 53 is ReplayP2a2502's in-season case).
+        qbs, f, h, g = self.market(hurt_qbs=1)
         self.enter_sign()
         signed = [p for p in self.quarterbacks() if p not in (q.address for q in qbs)]
-        self.assertEqual(signed, [f.address])                                 # not the injured G
+        self.assertEqual(len(signed), 1)
+        self.assertNotEqual(signed[0], g.address)                             # not the injured G
         self.assertTrue(self.healthy(signed[0]))
-        self.assertEqual(self.counters()["floor_cuts"], 1)
         event = self.events()[-1]
+        self.assertEqual(event[6], (signed[0] - base.PLAYERS) // base.PLAYER_SIZE)   # the man the floor chose
         self.assertEqual((event[3], event[4]), (7, 1))
         self.assertEqual(self.counters()["floor_sign_failed"], 0)
 
