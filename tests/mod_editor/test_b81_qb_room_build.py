@@ -185,7 +185,9 @@ class RoomWithoutOwnershipTests(RoomInstallationOrderTests):
         from mod_editor.core import nfl2k5_rookie_faces as faces, nfl2k5_sim_realism as sim, nfl2k5_xbe_space as space
         from tests.nfl2k5_supersim_draft_fixture import RETAIL_SHA256, retail_roster
 
-        plan = replace(plan, injured_reserve_guard=False, modern_injured_reserve=False)
+        # Custom 0 from the start: injuries above zero would pull modern IR and its ownership page back in (C7).
+        plan = replace(plan, injured_reserve_guard=False, modern_injured_reserve=False, sim_qb_injuries="custom",
+                       sim_qb_injury_rate=0.0)
         retail, requests, plan = self.studio_first_pass(plan)
         self.assertEqual(hashlib.sha256(retail).hexdigest(), RETAIL_SHA256)
         self.assertIn(space.QB_INJURY_REQUEST, requests)
