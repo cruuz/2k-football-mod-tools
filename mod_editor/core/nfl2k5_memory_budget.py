@@ -138,7 +138,7 @@ OWNER_BYTES = {
     "playbook_pair": (8192, 0, 4096, 0, 512), "senior_bowl": (4096, 0, 0, 0, 65536),
     "franchise_2026": (5120, 0, 0, 0, 4096), "dynamic_kickoff_relocated": (1939, 0, 0, 0, 10),
     "guardian_overlay": (496, 0, 0, 0, 0),
-    "injured_reserve": (6144, 0, 0, 0, 5312),   # b780 IR1: the runtime and its 32 x 20 store (nfl2k5_injured_reserve.REQUESTS)
+    "injured_reserve": (6144 + 3328, 0, 0, 0, 5312),  # Modern IR, franchise ownership checks and the 32-club IR store.
 }
 
 # Keep the calibrated release layout for comparisons against the actual RC executable.

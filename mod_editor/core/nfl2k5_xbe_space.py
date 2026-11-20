@@ -805,6 +805,7 @@ LINEUP_SLOT_VA = {GADGET_REQUESTS[0][:2]: GADGET_CODE_VA,
                   GADGET_REQUESTS[1][:2]: GADGET_CODE_VA + GADGET_REQUESTS[0][2],
                   BACKFIELD_REQUEST[:2]: BACKFIELD_VA}
 LATE_OWNERS += (GADGET_OWNER, BACKFIELD_REQUEST[0])
+LATE_OWNERS += ("nfl2k5_franchise_ownership",)  # Trade, release and signed-load safeguards for modern IR.
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
