@@ -770,6 +770,9 @@ class BuildPlan:
     # None keeps the source as it was. Explicit Retail can undo an installed QB option.
     sim_qb_injuries: str | None = None
     sim_qb_injury_rate: float = 0.310
+    # b81 scoring: simulated breakaways from beyond this many yards to goal stop at the 10 (the one adjustable value
+    # of the simulator scoring change; whole yards 20-99; only written to a recipe when it differs from 72).
+    sim_breakaway_stop: int = 72
     # b780-c6: the coaching carousel (EXPERIMENTAL): at Advance to offseason CPU clubs may fire their head coach and hire
     # one from the hiring pool the build writes into the roster (real people) or a coach another club let go. The game's
     # Owner Firing option becomes Off / CPU Teams / All Teams. A late executable owner plus the roster's pool block.
@@ -919,6 +922,8 @@ class BuildPlan:
             d.pop("sim_qb_injuries")
         if self.sim_qb_injuries != "custom":
             d.pop("sim_qb_injury_rate")
+        if self.sim_qb_injuries not in ("realistic", "custom") or self.sim_breakaway_stop == 72:
+            d.pop("sim_breakaway_stop")
         if d.get("console_memory") == 128:  # b780-m64b: a 128 MB recipe stays exactly the recipe it always was
             d.pop("console_memory")
         return d
@@ -933,6 +938,7 @@ V09_UPDATE_CHOICES = ("save_list_type_guard", "modern_injured_reserve", "backfie
 
 def v09_disc_update(source, target, *, save_list_type_guard=False, modern_injured_reserve=False, backfield_cards=False,
                     sim_qb_injuries=None, custom_rate=BuildPlan.sim_qb_injury_rate,
+                    breakaway_stop=BuildPlan.sim_breakaway_stop,
                     overwrite=False, name="", author="", notes=""):
     from .nfl2k5_build_settings import validate_sim_qb_injuries
     validate_sim_qb_injuries(sim_qb_injuries, custom_rate)
@@ -945,7 +951,8 @@ def v09_disc_update(source, target, *, save_list_type_guard=False, modern_injure
     return _ReleasedV09Update(str(source), str(target), overwrite=overwrite, name=name, author=author,
                               notes=notes, save_list_type_guard=save_list_type_guard, modern_injured_reserve=modern_injured_reserve,
                               backfield_cards=backfield_cards, sim_qb_injuries=sim_qb_injuries,
-                              sim_qb_injury_rate=custom_rate, sim_realism=needs_simulator, k128_memory=needs_simulator)
+                              sim_qb_injury_rate=custom_rate, sim_breakaway_stop=breakaway_stop,
+                              sim_realism=needs_simulator, k128_memory=needs_simulator)
 
 
 def _v09_reference(source, executable):
@@ -963,6 +970,7 @@ class _InstalledSimQbEdit(BuildPlan):
 
 
 def sim_qb_disc_edit(source, target, mode, *, custom_rate=BuildPlan.sim_qb_injury_rate,
+                     breakaway_stop=BuildPlan.sim_breakaway_stop,
                      overwrite=False, name="", author="", notes=""):
     from .nfl2k5_build_settings import validate_sim_qb_injuries
     if mode is None:
@@ -970,7 +978,8 @@ def sim_qb_disc_edit(source, target, mode, *, custom_rate=BuildPlan.sim_qb_injur
     validate_sim_qb_injuries(mode, custom_rate)
     enabled = mode in ("realistic", "custom")
     return _InstalledSimQbEdit(str(source), str(target), sim_qb_injuries=mode,
-                               sim_qb_injury_rate=custom_rate, sim_realism=enabled, k128_memory=enabled,
+                               sim_qb_injury_rate=custom_rate, sim_breakaway_stop=breakaway_stop,
+                               sim_realism=enabled, k128_memory=enabled,
                                overwrite=overwrite, name=name, author=author, notes=notes)
 
 
@@ -2604,6 +2613,9 @@ def _verify_sim_qb_injuries(plan, module, payload):
     # b81 slice 2: Realistic and Custom always leave the current revision (a slice 1 install is upgraded in place).
     if plan.sim_qb_injuries != "retail" and settings.get("revision") != module.REVISION:
         raise ValueError("Simulated injuries did not read back as the current revision.")
+    kicking = _core_module("nfl2k5_sim_scoring")
+    if kicking is not None and kicking.status(payload) != expected_status:
+        raise ValueError("Simulated kicking did not read back with the chosen simulator setting.")
     return settings
 
 
@@ -2615,7 +2627,8 @@ def _apply_sim_qb_injuries(plan, target, receipt, progress, *, prepared=None):
     progress("Applying simulated quarterback injuries", 0, 0)
     original = _xbe_bytes(target)
     if prepared is None:
-        payload, patch = module.apply(original, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
+        payload, patch = module.apply(original, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
+                                      breakaway_stop=plan.sim_breakaway_stop)
     else:
         source, payload, patch = prepared
         if original != source:
@@ -2635,6 +2648,7 @@ def _only_sim_qb_changes(plan):
     if not isinstance(plan, _InstalledSimQbEdit) or plan.console_memory != 128 or plan.sim_qb_injuries is None:
         return False
     expected = sim_qb_disc_edit(plan.source, plan.target, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
+                                breakaway_stop=plan.sim_breakaway_stop,
                                 overwrite=plan.overwrite, name=plan.name, author=plan.author, notes=plan.notes)
     return plan == expected
 
@@ -2660,7 +2674,12 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     dependency = None
     if simulator_state == "legacy" and plan.sim_qb_injuries in ("realistic", "custom"):
         simulator_input, dependency = simulator.apply(original)
-    patched, patch = module.apply(simulator_input, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
+    patched, patch = module.apply(simulator_input, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
+                                  breakaway_stop=plan.sim_breakaway_stop)
+    # b81 scoring: an in-place copy gets the same kicking as a full build of a disc with the kicking fixes.
+    patched, aim_receipt = _cpu_kick_aim_with_kicking(patched)
+    if aim_receipt is not None:
+        patch = {**patch, "cpu_kick_aim": aim_receipt}
     settings = _verify_sim_qb_injuries(plan, module, patched)
     receipt["sim_qb_source_update"] = {
         "source_sha256": sha256(original).hexdigest(), "result_sha256": sha256(patched).hexdigest(),
@@ -2931,11 +2950,37 @@ def _apply_backfield_cards(target, receipt, progress):
     receipt["result"]["backfield_cards"] = "applied"
 
 
+def _cpu_kick_aim_with_kicking(payload):
+    """b81 scoring: the CPU place-kick aim repair travels with the kicking fixes, so an in-place copy of a built disc
+    (update-v09, edit-sim-qb) gets the same kicking bytes as a full build of the same choices."""
+    aim = _core_module("nfl2k5_cpu_kick_aim")
+    kick_rules = _core_module("nfl2k5_kick_rules")
+    if aim is None or kick_rules is None or kick_rules.status(payload) not in ("applied", "power_only"):
+        return payload, None
+    if aim.status(payload) == "applied":
+        return payload, {"owner": aim.OWNER, "already_applied": True, "changed_bytes": 0}
+    return aim.apply(payload)            # refuses bytes that are neither retail nor the repair
+
+
+def _apply_cpu_kick_aim_in_place(target, receipt, progress):
+    patched, aim_receipt = _cpu_kick_aim_with_kicking(_xbe_bytes(target))
+    if aim_receipt is None:
+        return
+    progress("Repairing CPU place-kick aim", 0, 0)
+    if aim_receipt["changed_bytes"]:
+        _write_xbe_bytes(target, patched)
+        if _xbe_bytes(target) != patched:
+            raise ValueError("The CPU place-kick aim repair did not read back.")
+    receipt["steps"].append({"step": "cpu_kick_aim", **aim_receipt})
+    receipt["result"]["cpu_kick_aim"] = "applied"
+
+
 def _update_v09_disc(plan, progress, *, preflight, project):
     if project or plan != v09_disc_update(
             plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
             modern_injured_reserve=plan.modern_injured_reserve, backfield_cards=plan.backfield_cards,
-            sim_qb_injuries=plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate, overwrite=plan.overwrite,
+            sim_qb_injuries=plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
+            breakaway_stop=plan.sim_breakaway_stop, overwrite=plan.overwrite,
             name=plan.name, author=plan.author, notes=plan.notes):
         raise ValueError("Use your retail disc to build a project with additional v0.9 changes.")
     source, target = Path(plan.source), Path(plan.target)
@@ -2966,9 +3011,11 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         if plan.sim_realism:
             expected, _ = _core_module("nfl2k5_sim_realism").apply(expected)
         medical = _core_module("nfl2k5_sim_qb_injuries")
-        expected, _ = medical.apply(expected, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
+        expected, _ = medical.apply(expected, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
+                                    breakaway_stop=plan.sim_breakaway_stop)
         _verify_sim_qb_injuries(plan, medical, expected)
         receipt["v09_update"].append("sim_qb_injuries")
+    expected, _ = _cpu_kick_aim_with_kicking(expected)  # b81 scoring: as a full build with the kicking fixes
     if preflight:
         from .modpack import hash_file
         if hash_file(source, progress=progress) != release["image_sha256"]:
@@ -2984,6 +3031,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     if plan.sim_qb_injuries is not None:
         _apply_sim_realism(plan, target, receipt, progress)
         _apply_sim_qb_injuries(plan, target, receipt, progress)
+    _apply_cpu_kick_aim_in_place(target, receipt, progress)
     _compact_build_disc(target, source, receipt, progress)
     _step("final_checks")
     if _xbe_bytes(target) != expected:
@@ -3555,7 +3603,7 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
         "returner_fix": report.get("returner_fix", "unknown"), "progression": report.get("progression", "unknown"),
         "franchise_economy": report.get("franchise_economy", "unknown"),
         "scheme_labels": report.get("scheme_labels", "unknown"), "camera": report.get("camera", "unknown"),
-        "kick_rules": report.get("kick_rules", "unknown"), "dynamic_kickoff": report.get("dynamic_kickoff", "unknown"), "dynamic_kickoff_settings": report.get("dynamic_kickoff_settings"), "playoff_picture": report.get("playoff_picture", "unknown"), "depth_chart_rows": report.get("depth_chart_rows", "unknown"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
+        "kick_rules": report.get("kick_rules", "unknown"), "cpu_kick_aim": report.get("cpu_kick_aim", "unknown"), "dynamic_kickoff": report.get("dynamic_kickoff", "unknown"), "dynamic_kickoff_settings": report.get("dynamic_kickoff_settings"), "playoff_picture": report.get("playoff_picture", "unknown"), "depth_chart_rows": report.get("depth_chart_rows", "unknown"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
         "overtime": report.get("overtime", "unknown"), "team_column": report.get("team_column", "unknown"),
         "position_row": report.get("position_row", "unknown"), "probowl_order": report.get("probowl_order", "unknown"),
         "elbow_options": report.get("elbow_options", "unknown"),
@@ -3679,6 +3727,8 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     qb_settings = qb_injuries.read_settings(_xbe_bytes(source)) if qb_injuries is not None else {"status": "unavailable"}
     out["sim_qb_injuries"] = qb_settings["status"]
     out["sim_qb_injury_settings"] = qb_settings
+    sim_scoring = _core_module("nfl2k5_sim_scoring")  # b81 scoring: simulated kicking, part of the option above
+    out["sim_scoring"] = sim_scoring.status(_xbe_bytes(source)) if sim_scoring is not None else "unavailable"
     coach_carousel = _core_module("nfl2k5_coach_carousel")  # b780-c6
     out["coach_carousel"] = coach_carousel.status(_xbe_bytes(source)) if coach_carousel is not None else "unavailable"
     history_screen = _core_module("nfl2k5_history_screen")  # b780-j4
@@ -4563,9 +4613,10 @@ PLAYBOOK_OPTION_LABELS = {
 
 def validate_plan(plan: BuildPlan) -> list[str]:
     """Report incompatible choices before reading game inputs or copying a disc."""
-    from .nfl2k5_build_settings import validate_sim_qb_injuries
+    from .nfl2k5_build_settings import validate_sim_breakaway_stop, validate_sim_qb_injuries
     try:
         validate_sim_qb_injuries(plan.sim_qb_injuries, plan.sim_qb_injury_rate)
+        validate_sim_breakaway_stop(plan.sim_breakaway_stop)
     except ValueError as exc:
         return [str(exc)]
     if plan.sim_qb_injuries in ("realistic", "custom"):

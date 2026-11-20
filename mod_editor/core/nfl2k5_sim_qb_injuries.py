@@ -15,6 +15,7 @@ from . import nfl2k5_k128 as memory
 from . import nfl2k5_lineup_roles as lineup
 from . import nfl2k5_sim_rb_injuries as running_backs
 from . import nfl2k5_sim_realism as simulator
+from . import nfl2k5_sim_scoring as scoring
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
@@ -135,7 +136,13 @@ def _running_back_va(payload):
     return row['va']
 
 
-def _edits(payload, bank, setting):
+def _edits(payload, bank, setting, *, kicking=None):
+    """The option's whole edit list.
+
+    The in-place simulated scoring sites (beta 81 scoring slice) ride with it: ``kicking`` None writes the current
+    defaults, a dict writes those parameters (``nfl2k5_sim_scoring.parameters``), False leaves the sites out (an
+    install from before the scoring slice).
+    """
     code = _runtime(setting.revision)
     image = XbeImage(payload)
     sim, data = simulator._allocations(payload)
@@ -147,7 +154,8 @@ def _edits(payload, bank, setting):
     # Slice 2: with a rate above zero the weekly running-back jump is the expected byte run and the game's own tail
     # is installed (code.edits adds it only then). The usual authentication refuses anything else at that site.
     extra = {} if setting.revision == 1 else {'rb_va': _running_back_va(payload)}
-    return (*code.edits(*addresses, rate=setting.rate, **extra),
+    scoring_sites = () if kicking is False else scoring.edits(**(kicking or {}))
+    return (*code.edits(*addresses, rate=setting.rate, **extra), *scoring_sites,
             ('simulated QB injury bank', base, b'\xcc' * bank['size'], body))
 
 
@@ -186,6 +194,7 @@ def _validate_simulation(payload):
 def _state(payload: bytes):
     """Return the physical simulator only after the entire installed option matches its authored bytes."""
     if not space.is_scaleout(payload) or not any(r[0] == OWNER for r in space._scale_directory_requests(payload)):
+        _require(scoring.installed(payload)[0] == 'retail', 'Simulated kicking bytes without the simulator option')
         return None, payload
     from . import nfl2k5_sim_qb_injuries_code as code
     allocation = _bank_allocation(payload)
@@ -197,10 +206,15 @@ def _state(payload: bytes):
                 target = address + 5 + struct.unpack_from('<i', entry, 1)[0]
                 _require(not allocation['va'] <= target < allocation['va'] + allocation['size'],
                          f'Simulated QB injury entry at {address:#x} points into an empty allocation')
+        _require(scoring.installed(payload)[0] == 'retail', 'Simulated kicking bytes beside an empty simulator option')
         return None, payload
     marker = image.read(allocation['va'] + code.MARK_OFFSET, MARK.size)
     setting = _Setting.from_marker(marker)
-    restored = _transform(payload, _edits(payload, allocation, setting), restoring=True)
+    # An option installed before the scoring slice has retail scoring sites; apply() upgrades it in place.
+    kicking, installed = scoring.installed(payload)
+    _require(kicking in ('applied', 'retail'), 'Foreign or mixed simulated kicking bytes')
+    restored = _transform(payload, _edits(payload, allocation, setting,
+                                          kicking=installed if kicking == 'applied' else False), restoring=True)
     _validate_simulation(restored)
     return setting, restored
 
@@ -226,18 +240,19 @@ def status(payload):
     return read_settings(payload)['status']
 
 
-def apply(payload, level='realistic', *, custom_rate=0.310):
+def apply(payload, level='realistic', *, custom_rate=0.310, breakaway_stop=None):
     """Install, retune or restore on an existing standard executable without moving installed owners.
 
     A slice 1 or slice 2 install is reversed exactly and the current revision written fresh, even at the same mode
     and rate.
     """
     wanted = _setting(level, custom_rate)
+    kick = scoring.parameters(breakaway_stop_beyond=breakaway_stop)   # validated; None = the shipped default
     source = bytes(payload)
     XbeImage(source)
     original, physical = _state(source)
     receipt = {'owner':OWNER, 'mode':level, 'custom_rate':wanted.rate / 1000 if wanted else None}
-    if original == wanted:
+    if original == wanted and (wanted is None or scoring.installed(source) == ('applied', kick)):
         return source, {**receipt, 'status':'already_applied' if wanted else 'retail', 'changed_bytes':0}
     if wanted is None:
         result = physical
@@ -247,11 +262,14 @@ def apply(payload, level='realistic', *, custom_rate=0.310):
         if bank is None:
             physical, receipt['allocation'] = space.extend_scaleout(physical, REQUESTS)
             bank = _bank_allocation(physical)
-        result = _transform(physical, _edits(physical, bank, wanted), restoring=False)
+        result = _transform(physical, _edits(physical, bank, wanted, kicking=kick), restoring=False)
+        receipt['breakaway_stop'] = kick['breakaway_stop_beyond']
         receipt['revision'] = wanted.revision
         if original is not None and original.revision != wanted.revision:
             receipt['upgraded_from'] = f'slice{original.revision}'
     confirmed, restored = _state(result)
     _require(confirmed == wanted and restored == physical, 'Simulated QB injury settings failed readback')
+    _require(scoring.installed(result) == (('applied', kick) if wanted else ('retail', None)),
+             'Simulated kicking failed readback')
     return result, {**receipt, 'status':'applied' if wanted else 'retail', 'changed_bytes':space.count_differing_bytes(source,result),
                     'file_growth':len(result) - len(source)}

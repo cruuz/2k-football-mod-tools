@@ -119,7 +119,9 @@ PATCHES = (
      "touchback 35 (2026 rule), PAT snapped from the 15 (two-point tries stay at the 2), and the meter and kicker "
      "curves re-spaced as a scale so a 99 leg reaches 65-69 yards while mid-power kickers gain 2-3. "
      "Kickoff and return formations follow the ball; onside and safety kicks are untouched; the CPU keeps "
-     "its retail field-goal range for fourth-down decisions."),
+     "its retail field-goal range for fourth-down decisions. CPU kickers aim with two thirds of their original "
+     "error, so they make modern extra points and mid-range field goals about as often as NFL kickers; your own "
+     "kicks are unchanged."),
     ("dynamic_kickoff", "Dynamic kickoff: nobody moves until the ball comes down, landing zone, CPU kicks and touchbacks (disc images only, experimental)",
      "Retail: on a kickoff everyone sprints at the kick, the ball is kicked wherever the CPU meter lands and a returner brings "
      "most kicks out. Patch: the 2024/2025 rule. The ten coverage men and nine setup blockers hold still until the ball touches the "

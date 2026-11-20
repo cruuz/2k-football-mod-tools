@@ -143,6 +143,12 @@ class Recorder:
             from . import nfl2k5_sim_qb_injuries_code as qb_runtime
             for va, width in qb_runtime.FIXED_SPANS:
                 self.reserve(va, width, owner, "full scheduled quarterback instruction")
+            from . import nfl2k5_sim_scoring as kicking  # b81 scoring: in-place simulated kicking, installed by this owner
+            for name, va, retail, _ in kicking.edits():
+                self.reserve(va, len(retail), owner, "full in-place site: " + name)
+        if owner == "nfl2k5_cpu_kick_aim":
+            from . import nfl2k5_cpu_kick_aim as kick_aim  # b81 scoring: in-place CPU place-kick aim
+            self.reserve(kick_aim.SITE_VA, kick_aim.SITE_SIZE, owner, "full owner site")
         if owner == "nfl2k5_offset_toss":
             from . import nfl2k5_offset_toss as toss
             self.reserve(toss.SITE, len(toss.RETAIL), owner, "full owner site")
