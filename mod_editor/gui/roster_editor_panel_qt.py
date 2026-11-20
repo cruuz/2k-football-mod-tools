@@ -114,6 +114,7 @@ from PyQt5.QtWidgets import (
 from mod_editor.core import nfl2k5_roster_records as rr
 from mod_editor.core import nfl2k5_abilities_editor as abilities_editor
 from mod_editor.core import nfl2k5_college_check as college_check
+from mod_editor.core import nfl2k5_player_health as player_health
 from mod_editor.gui.abilities_panel_qt import AbilitiesPanel
 from mod_editor.gui.coaches_panel_qt import CoachesPanel
 from mod_editor.gui.espn25_panel_qt import Espn25Panel
@@ -205,6 +206,12 @@ def _roster_settings():
 
     from PyQt5.QtCore import QSettings
     return QSettings(QSettings.IniFormat, QSettings.UserScope, *ROSTER_SETTINGS)
+
+
+EXACT_PASTE_TEXT = "Paste exact copy (names, college, PBP, photo too)"
+EXACT_PASTE_TIP = ("Finn's Paste Player-Exact Copy: Paste player, plus the first and last name, the college, the "
+                   "play-by-play id and the photo id. Another player who shares his old last name keeps it. His depth "
+                   "place, locks, injury, IR state, player kind, star tag and career history stay his own.")
 
 
 # --------------------------------------------------------------------------------------------- undo
@@ -2048,6 +2055,7 @@ class RosterEditorPanel(QWidget):
         self._source_kind = ""
         self._appearance_bundle = None
         self._clipboard: rr.PlayerRecord | None = None
+        self._clipboard_identity: dict[str, Any] | None = None   # b81 finn-r2: the copied player's names and college
         self._team_clipboard: dict[str, Any] | None = None    # b81 wave 3: Copy team
         self._team_pastes: list[str] = []                       # what Show my changes lists for team pastes
         self._dirty: set[tuple[str, int]] = set()
@@ -2208,6 +2216,8 @@ class RosterEditorPanel(QWidget):
         paste_menu.addAction("Paste player", lambda: self.paste_player("all"))
         paste_menu.addAction("Paste attributes only", lambda: self.paste_player("attributes"))
         paste_menu.addAction("Paste photo only", lambda: self.paste_player("photo"))
+        self.paste_exact_action = paste_menu.addAction(EXACT_PASTE_TEXT, lambda: self.paste_player("exact"))
+        self.paste_exact_action.setToolTip(EXACT_PASTE_TIP)
         paste_menu.addSeparator()
         self.paste_abilities_action = paste_menu.addAction("Include abilities and tier")
         self.paste_abilities_action.setCheckable(True)
@@ -3223,6 +3233,7 @@ class RosterEditorPanel(QWidget):
         self._dirty.clear()
         self.undo_stack.clear()
         self._clipboard = None
+        self._clipboard_identity = None
         self._team_pastes = []              # the team clipboard is a self-contained package; it outlives the roster
         self._college_repairs = {}
         self._college_generation += 1
@@ -4347,12 +4358,16 @@ class RosterEditorPanel(QWidget):
         action.setToolTip(single_tip)
         for text, mode, key in (("Paste player", "all", "Ctrl+V"),
                                 ("Paste attributes only", "attributes", "Ctrl+Alt+A"),
-                                ("Paste photo only", "photo", "")):
+                                ("Paste photo only", "photo", ""),
+                                (EXACT_PASTE_TEXT, "exact", "")):
             action = menu.addAction(text, lambda kind=mode: self.paste_player(kind))
             if key:
                 action.setShortcut(QKeySequence(key))
+            if mode == "exact":
+                action.setToolTip(EXACT_PASTE_TIP)
             action.setEnabled(loaded and not many and self._clipboard is not None)
-            action.setToolTip(single_tip)
+            if single_tip:
+                action.setToolTip(single_tip)
         action = menu.addAction("Clear photo", lambda: self.clear_photo())     # b81 R42: Finn's Edit > Clear Photo
         cleared = loaded and player.record.values["photo_id"] == rr.PHOTO_CLEARED
         action.setEnabled(loaded and not many and not cleared)
@@ -4392,6 +4407,7 @@ class RosterEditorPanel(QWidget):
         place_reason = single_tip or self.ir_place_reason(player)
         place.setEnabled(place_reason == "")
         place.setToolTip(place_reason or "Opens Franchise > Injured Reserve with him chosen.")
+        self._add_heal_actions(menu, player)
         release = menu.addAction(f"Release the {len(chosen)} selected to free agency" if many
                                  else "Release to free agency", self.release_selected)
         release.setEnabled(self.release_button.isEnabled())
@@ -5750,12 +5766,18 @@ class RosterEditorPanel(QWidget):
         if player is None or self._refuse_many():
             return False
         self._clipboard = player.record.copy()
+        self._clipboard_identity = {"first": player.first, "last": player.last, "college": player.college}
         self._set_status(f"Copied {player.display}.")
         self._refresh_actions()
         return True
 
     def paste_player(self, mode: str = "all", *, abilities: bool | None = None) -> int:
-        """Finn's Paste (Ctrl+V), Paste attributes only (Ctrl+Alt+A) and Paste photo only.
+        """Finn's Paste (Ctrl+V), Paste attributes only (Ctrl+Alt+A), Paste photo only and Paste exact copy.
+
+        Paste exact copy (Finn's Paste Player-Exact Copy, b81 finn-r2) adds the first and last name, the college,
+        the play-by-play id and the photo id.  The names are set through the shared name pool, so another player who
+        shares the target's old last name keeps it; and the target keeps his own career-history link (Finn points both
+        players at one stats stream, which would make them share every future stat).
 
         The target keeps his own depth place, locks, injury and IR state, player kind, pool and star tag
         (b81 R7: carrying them could give a club two KR1s or a phantom IR player). Abilities travel only
@@ -5770,7 +5792,8 @@ class RosterEditorPanel(QWidget):
         source = self._clipboard
         document = self.document
         try:
-            result = document.paste_player(player, source, mode=mode, abilities=abilities)
+            result = document.paste_player(player, source, mode=mode, abilities=abilities,
+                                           identity=self._clipboard_identity if mode == "exact" else None)
         except rr.RosterRecordError as exc:
             self._set_status(f"Nothing was pasted. {plain_error(exc)}")
             return 0
@@ -5780,30 +5803,135 @@ class RosterEditorPanel(QWidget):
             return 0
         before = result["before"]
         after = player.record.copy()
+        names_before = result["identity_before"] if mode == "exact" else None
+        names_after = ({"first": player.first, "last": player.last, "college_index": player.college_index}
+                       if mode == "exact" else None)
 
         def undo(snapshot: rr.PlayerRecord = before) -> None:
-            player.record.values.update(snapshot.values)
+            document.restore_pasted_player(player, snapshot.values, names_before)
             self._after_edit(player)
             self.refresh_grid()
 
         def redo(snapshot: rr.PlayerRecord = after) -> None:
-            player.record.values.update(snapshot.values)
+            document.restore_pasted_player(player, snapshot.values, names_after)
             self._after_edit(player)
             self.refresh_grid()
 
-        label = {"all": "paste", "attributes": "paste attributes", "photo": "paste photo"}[mode]
+        label = {"all": "paste", "exact": "paste exact copy", "attributes": "paste attributes",
+                 "photo": "paste photo"}[mode]
         self.undo_stack.push(UndoEntry(f"{label} onto {player.display}", undo, redo))
         self._after_edit(player)
         if result["position_changed"]:
             self.refresh_grid()
         kept = ""
-        if mode == "all":
+        if mode == "exact":
+            kept = (f" Names, college, play-by-play id and photo id came too. Kept {rr.PASTE_KEPT_TEXT}, and his own "
+                    "career history (Finn's version points both players at one stats stream, so they would share "
+                    "every future stat).")
+            if result["identity"].get("college_missing"):
+                kept += " The copied player's college is not in this roster's college list, so his college stayed."
+            kept += "" if abilities else " His abilities stayed (tick Include abilities and tier to copy them)."
+            if result["position_changed"]:
+                kept += " His position changed, so he moved to the bottom of that position's depth order, unlocked."
+        elif mode == "all":
             kept = f" Kept {rr.PASTE_KEPT_TEXT}"
             kept += "." if abilities else ", and his abilities (tick Include abilities and tier to copy them)."
             if result["position_changed"]:
                 kept += " His position changed, so he moved to the bottom of that position's depth order, unlocked."
         self._set_status(f"Pasted {count} field{'s' if count != 1 else ''} onto {player.display}.{kept}")
         return count
+
+    # ------------------------------------------------------------------ b81 finn-r2: Heal Player(s) (Finn's HealAction)
+    def listed_ir_indices(self) -> set[int]:
+        """Primary-pool indices the open franchise save lists on injured reserve (legacy cells and the modern extension)."""
+
+        page = self.franchise_panel
+        if not page.active or page.save is None:
+            return set()
+        return {entry.player_index for entry in page.save.injured_reserve()}
+
+    def heal_reason(self, player: rr.Player | None, listed_ir: set[int] | None = None) -> str:
+        """Why Heal player is not offered for ``player`` ('' when it is)."""
+
+        if player is None or self.document is None:
+            return "Select a player first."
+        if listed_ir is None:
+            listed_ir = self.listed_ir_indices()
+        return player_health.heal_refusal(player.record, on_listed_ir=player.pool == "primary" and player.index in listed_ir)
+
+    def hurt_players_shown(self) -> list[rr.Player]:
+        """The hurt players in the list as it is filtered now that Heal can act on (injured reserve excluded)."""
+
+        if self.document is None:
+            return []
+        listed_ir = self.listed_ir_indices()
+        return [p for p in self.visible_players() if not self.heal_reason(p, listed_ir)]
+
+    def _add_heal_actions(self, menu: QMenu, player: rr.Player | None) -> None:
+        loaded = self.document is not None and player is not None
+        chosen = self.selected_players() if loaded else []
+        if len(chosen) > 1:                    # Finn's "Heal Player(s)" on the selection (b81 M3)
+            listed_ir = self.listed_ir_indices()
+            hurt_chosen = [p for p in chosen if not self.heal_reason(p, listed_ir)]
+            action = menu.addAction(f"Heal the {len(hurt_chosen)} hurt of the {len(chosen)} selected",
+                                    lambda: self.heal_players(hurt_chosen))
+            action.setEnabled(bool(hurt_chosen))
+            action.setToolTip("Clears their injuries the way the game's own recovery does. Players on injured reserve "
+                              "and healthy players are skipped." if hurt_chosen else
+                              "None of the selected players is hurt (or the hurt ones are on injured reserve).")
+        else:
+            reason = self.heal_reason(player)
+            action = menu.addAction("Heal player", lambda: self.heal_players([player] if player is not None else []))
+            action.setEnabled(loaded and not reason)
+            action.setToolTip(reason or f"Clears his injury the way the game's own recovery does "
+                                        f"({player_health.describe(player.record)}).")
+        hurt = self.hurt_players_shown() if self.document is not None else []
+        action = menu.addAction(f"Heal all {len(hurt)} hurt player{'' if len(hurt) == 1 else 's'} shown",
+                                lambda: self.heal_players(self.hurt_players_shown()))
+        action.setEnabled(bool(hurt))
+        action.setToolTip("Every hurt player in the list as it is filtered now. Players on injured reserve are skipped."
+                          if hurt else "Nobody in this list is hurt (or the hurt ones are on injured reserve).")
+
+    def heal_players(self, players: Sequence[rr.Player] | None = None) -> int:
+        """Finn's Heal, done the game's way (parity row E8): exactly what the game's own recovery routine writes
+        (nfl2k5_player_health), one undo entry however many players.  Players who are healthy or on injured reserve
+        are skipped, with the reason when nobody can be healed.  Returns how many were healed."""
+
+        if self.document is None:
+            return 0
+        chosen = list(players) if players is not None else ([self.selected_player()] if self.selected_player() else [])
+        listed_ir = self.listed_ir_indices()
+        healable = []
+        skipped_ir = 0
+        for player in chosen:
+            reason = self.heal_reason(player, listed_ir)
+            if not reason:
+                healable.append(player)
+            elif reason == player_health.REASON_IR:
+                skipped_ir += 1
+        if not healable:
+            self._set_status(self.heal_reason(chosen[0], listed_ir) if chosen else "Select a player first.")
+            return 0
+        franchise = bool(self.franchise_panel.active)
+        before = {id(p): {key: p.record.values[key] for key in player_health.HEAL_FIELDS} for p in healable}
+        after = {id(p): player_health.heal_values(p.record, franchise) for p in healable}
+
+        def put(values: dict[int, dict[str, int]]) -> None:
+            for player in healable:
+                for key, value in values[id(player)].items():
+                    player.record.set(key, value)
+                self._after_edit(player)
+            if len(healable) > 1:
+                self.refresh_grid()
+
+        put(after)
+        label = (f"{healable[0].display}: heal" if len(healable) == 1 else f"heal {len(healable)} hurt players")
+        self.undo_stack.push(UndoEntry(label, lambda: put(before), lambda: put(after)))
+        names = healable[0].display if len(healable) == 1 else f"{len(healable)} players"
+        self._set_status(f"Healed {names}: injury, weeks left and status cleared, as the game's own recovery does."
+                         + (f" {skipped_ir} on injured reserve skipped (use Franchise > Injured Reserve > Activate)."
+                            if skipped_ir else ""))
+        return len(healable)
 
     @staticmethod
     def age_shift_text(receipt: dict[str, Any]) -> str:
@@ -6400,6 +6528,16 @@ class RosterEditorPanel(QWidget):
                         lines.append(f"    Depth and returner locks: {locks(was)} -> {locks(now)}")
                     if (was ^ now) & 0xE0:
                         lines.append(f"    Ability flags (+0x52): {was & 0xE0} -> {now & 0xE0}")
+                elif key in player_health.HEAL_FIELDS and not (key == "injured_reserve"
+                                                               and player_health.IR_MARKER in (was, now)):
+                    player = lookup.get((entry["pool"], entry["index"]))
+                    if player is not None and "_injury_done" not in entry:
+                        entry["_injury_done"] = True
+                        was_values = {k: entry["changes"].get(k, (player.record.values[k],))[0]
+                                      for k in player_health.HEAL_FIELDS}
+                        lines.append(f"    Injury: {player_health.describe(was_values)} -> "
+                                     f"{player_health.describe(player.record)}"
+                                     + (" (healed the game's way)" if not player_health.hurt(player.record) else ""))
                 elif key == "player_type" and {was, now} <= {rr.PBP_FULL_NAME_WORD, rr.PBP_LAST_ONLY_WORD}:
                     lines.append(f"    {caption}: {was} -> {now} (play-by-play last name only: "
                                  f"{'on' if now == rr.PBP_LAST_ONLY_WORD else 'off'})")

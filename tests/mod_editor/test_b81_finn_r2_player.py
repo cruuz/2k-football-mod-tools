@@ -204,7 +204,8 @@ class ClearPhotoTests(_Case):
 
     def test_the_menu_entry_sits_with_the_paste_entries(self) -> None:
         texts = [a.text() for a in self.panel.grid_menu().actions()]
-        self.assertEqual(texts[texts.index("Paste photo only") + 1], "Clear photo")
+        # b81 finn-r2: "Paste exact copy" now sits right after "Paste photo only", so Clear photo follows that
+        self.assertEqual(texts[texts.index("Paste photo only") + 2], "Clear photo")
         self.menu_action().trigger()
         self.assertEqual(self.player.record.values["photo_id"], 65535)
 
