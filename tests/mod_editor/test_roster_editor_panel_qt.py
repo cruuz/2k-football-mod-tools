@@ -404,11 +404,14 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.assertIn("recorded surname bank", note)
         dialog = IdPickerDialog("Play-by-play name", entries, player.record.values["pbp_id"], self.panel, note=note)
         self.assertEqual(dialog.chosen(), 1000)
-        self.assertEqual(dialog.list.currentRow(), 0)
+        self.assertEqual(dialog.list.currentRow(), sorted(entries).index(1000))    # his own id is the one selected
         dialog.search.setText("vick")
-        self.assertEqual(dialog.list.count(), 1)
-        self.assertEqual(dialog.count_label.text().split(" of ")[0], "1")
-        dialog.list.setCurrentRow(0)
+        # b81 R43 (B3): the retail roster's own recordings are named too, so a retail Vick can sit beside the roster's
+        hits = sorted(k for k, label in entries.items() if "vick" in label.lower())
+        self.assertIn(1003, hits)
+        self.assertEqual(dialog.list.count(), len(hits))
+        self.assertEqual(dialog.count_label.text().split(" of ")[0], str(len(hits)))
+        dialog.list.setCurrentRow(hits.index(1003))
         self.assertEqual(dialog.chosen(), 1003)
         dialog.search.setText("9300")
         self.assertEqual(dialog.list.item(0).text().strip(), "9300 · Smith (recorded surname bank)")
