@@ -1182,7 +1182,8 @@ class FranchiseSave:
         _require(type(legacy_marker) is bool, "legacy_marker must be boolean")
         _require(type(finn_roles) is bool, "finn_roles must be boolean")
         _require(not legacy_marker or self.buffer[target + 0x28] != IR_MARK,
-                 f"player {player_index} is already marked injured reserve")
+                 f"player {player_index}'s injury code already ends in 0xEE, the byte this older injured reserve "
+                 "writes as its marker (an injury such as id 750 ends in it too)")
         free = None
         for slot in range(IR_SLOTS):
             offset = self.front_office_block + F_INJURED_RESERVE + (team * IR_SLOTS + slot) * IR_ENTRY

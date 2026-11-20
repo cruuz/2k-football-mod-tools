@@ -387,7 +387,9 @@ def reserve_transaction(payload: bytes, team_index: int, primary_index: int, *, 
     reserves = list(squads[team_index])
     flags = payload[player.offset + 8]
     _require(bool(flags & 4) and not flags & 0x18, 'player is inactive, retired, or a draft prospect')
-    _require(payload[player.offset + 0x28] != 0xee, 'player is marked injured reserve')
+    # the game's own practice-squad screen makes this test (``cmp byte [ebx+0x28],0xee``); it also catches an injury
+    # whose id ends in that byte, such as 750, so the words say what is true for both (b81 finn-r2)
+    _require(payload[player.offset + 0x28] != 0xee, "the game's practice squad screen will not move him: his injury code ends in the byte the game also uses to mark injured reserve (0xEE). Activate him from injured reserve, or heal him, first")
     if promote:
         _require(primary_index in reserves, 'player is not a reserve owned by this team')
         _require(len(active) < ACTIVE_LIMIT, 'promotion requires fewer than 53 active players')

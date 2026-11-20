@@ -165,7 +165,8 @@ def ramp_bytes(*, low=RAMP_LOW, high=RAMP_HIGH) -> bytes:
 
 def breakaway_bytes(stop_beyond: float, stop_at: float = BREAKAWAY_STOP_AT) -> bytes:
     """The 89 bytes at ``BREAKAWAY_VA``: the same eligibility (a positive generated value and a gain short of the goal),
-    the same receiver-trait chance and draw, then a breakaway from beyond ``stop_beyond`` yards to goal stops at the 1."""
+    the same receiver-trait chance and draw, then a breakaway from beyond ``stop_beyond`` yards to goal ends
+    ``stop_at`` yards from goal (the shipped rule: beyond 72, that is inside the offense's own 28, it ends at the 10)."""
     _require(1.0 < stop_beyond < 100.0, "the breakaway stop distance must be between 1 and 100 yards to goal")
     _require(stop_at in STOP_AT and stop_at < stop_beyond, "a stopped breakaway ends at the 1, 2, 5, 10 or 20")
     here = BREAKAWAY_VA
@@ -211,26 +212,59 @@ def edits(**parameters) -> tuple[tuple[str, int, bytes, bytes], ...]:
     return result
 
 
-def status(payload: bytes) -> str:
-    """``retail`` (both sites retail), ``applied`` (both sites this version), otherwise ``foreign``."""
+BREAKAWAY_STOP_RANGE = (20, 99)     # the one adjustable value (recipe ``sim_breakaway_stop``): whole yards to goal
+
+
+def parameters(*, breakaway_stop_beyond=None) -> dict[str, float]:
+    """The adjustable simulator scoring parameters, validated; None means the shipped default."""
+    value = BREAKAWAY_STOP_BEYOND if breakaway_stop_beyond is None else breakaway_stop_beyond
+    low, high = BREAKAWAY_STOP_RANGE
+    _require(type(value) in (int, float) and float(value).is_integer() and low <= value <= high,
+             f"the breakaway stop must be a whole number of yards to goal from {low} to {high}")
+    return {"breakaway_stop_beyond": float(value)}
+
+
+def _installed_threshold(block: bytes):
+    marker = b"\x81\x3d" + struct.pack("<I", LINE_TO_GOAL)
+    at = block.find(marker)
+    if at < 0 or block.find(marker, at + 1) >= 0:
+        return None
+    return struct.unpack_from("<f", block, at + len(marker))[0]
+
+
+def installed(payload: bytes) -> tuple[str, dict[str, float] | None]:
+    """(``retail``, None), (``applied``, the installed parameters) or (``foreign``, None) for the three sites."""
     try:
         image = XbeImage(payload)
-        states = set()
-        for _, va, retail, enabled in edits():
-            value = image.read(va, len(retail))
-            states.add("retail" if value == retail else "applied" if value == enabled else "foreign")
+        values = tuple(image.read(va, len(retail)) for _, va, retail, _ in edits())
     except Exception:  # noqa: BLE001 - an unreadable image is foreign
-        return "foreign"
-    return states.pop() if len(states) == 1 else "foreign"
+        return "foreign", None
+    if values == (RETAIL_ACCURACY, RETAIL_RAMP, RETAIL_BREAKAWAY):
+        return "retail", None
+    if values[0] != accuracy_bytes() or values[1] != ramp_bytes():
+        return "foreign", None
+    threshold = _installed_threshold(values[2])
+    try:
+        kick = parameters(breakaway_stop_beyond=threshold)
+    except SimScoringError:
+        return "foreign", None
+    if values[2] != breakaway_bytes(kick["breakaway_stop_beyond"]):
+        return "foreign", None
+    return "applied", kick
+
+
+def status(payload: bytes) -> str:
+    """``retail`` (every site retail), ``applied`` (this version at any allowed breakaway stop), else ``foreign``."""
+    return installed(payload)[0]
 
 
 def read_settings(payload: bytes) -> Mapping[str, object]:
-    state = status(payload)
+    state, kick = installed(payload)
     if state != "applied":
         return {"status": state}
     return {"status": state, "gain_per_yard": GAIN_PER_YARD, "tail_start": TAIL_START,
             "tail_per_yard": TAIL_PER_YARD, "bases": list(BASES), "ramp_low": RAMP_LOW, "ramp_high": RAMP_HIGH,
-            "breakaway_stop_beyond": BREAKAWAY_STOP_BEYOND, "breakaway_stop_at": BREAKAWAY_STOP_AT}
+            "breakaway_stop_beyond": kick["breakaway_stop_beyond"], "breakaway_stop_at": BREAKAWAY_STOP_AT}
 
 
 def lab_overlay(**parameters) -> list[dict[str, str]]:
@@ -240,4 +274,5 @@ def lab_overlay(**parameters) -> list[dict[str, str]]:
 
 
 __all__ = ["ACCURACY_SIZE", "ACCURACY_VA", "OWNER", "RAMP_SIZE", "RAMP_VA", "RETAIL_ACCURACY", "RETAIL_RAMP",
-           "SimScoringError", "accuracy_bytes", "edits", "lab_overlay", "ramp_bytes", "read_settings", "status"]
+           "SimScoringError", "accuracy_bytes", "breakaway_bytes", "edits", "installed", "lab_overlay", "parameters",
+           "ramp_bytes", "read_settings", "status"]

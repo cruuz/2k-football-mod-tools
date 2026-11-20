@@ -118,7 +118,7 @@ _CAPTIONS = {
     "k128_memory": "128 MB memory (K128, xemu set to 128 MB)",
     "k128_roster_heap": "Roster block in the extra memory",
     "k128_early": "Bigger graphics memory (K128 early form)",
-    "sim_qb_injuries": "Simulated quarterback injuries",
+    "sim_qb_injuries": "Simulated injuries (all positions)",
     "guardian_overlay": "Guardian caps (experimental)",
     "reserves_16": "16 reserves (experimental)",
     "created_teams_extra": "Two extra created teams (experimental)",

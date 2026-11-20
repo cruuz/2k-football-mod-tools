@@ -100,6 +100,7 @@ FEATURE_KEYS += ("sim_cb_tackles",)  # b778-cb1: cornerback tackle credit, late 
 FEATURE_KEYS += ("sim_rb_injuries",)  # b779-sim2: weekly RB injury roll and simulated-game carry guard
 FEATURE_KEYS += ("sim_realism",)  # b779-sim2 r4: scheduled-sim season realism, late executable owner
 FEATURE_KEYS += ("sim_qb_injuries", "sim_qb_injury_rate")
+FEATURE_KEYS += ("sim_breakaway_stop",)  # b81 scoring: the simulated breakaway stop, yards to goal (default 72)
 FEATURE_KEYS += ("coach_carousel",)  # b780-c6: the coaching carousel, late executable owner + roster pool
 FEATURE_KEYS += ("standings_records",)  # b780-j1: Team Standings division / conference / home / road records, late executable owner
 FEATURE_KEYS += ("catch_snap_limit",)  # b780-cv4: CPU defenders cannot slide to the ball for a pick, late executable owner
@@ -149,6 +150,11 @@ def validate_sim_qb_injuries(mode, rate):
             raise ValueError("Use increments of 0.001 percentage points for the custom quarterback injury chance.")
 
 
+def validate_sim_breakaway_stop(value):
+    if type(value) is not int or not 20 <= value <= 99:
+        raise ValueError("The simulated breakaway stop is a whole number of yards to goal from 20 to 99.")
+
+
 def build_settings(value):
     from . import nfl2k5_music_playlist as music, nfl2k5_throw_tuning as tt
     from . import nfl2k5_senior_bowl as bowl, nfl2k5_hires_pack as hires
@@ -164,6 +170,7 @@ def build_settings(value):
     if choices["sim_qb_injuries"] != "custom":
         choices["sim_qb_injury_rate"] = expected["sim_qb_injury_rate"]
     validate_sim_qb_injuries(choices["sim_qb_injuries"], choices["sim_qb_injury_rate"])
+    validate_sim_breakaway_stop(choices["sim_breakaway_stop"])
     tt._require(choices["helmet_finish"] in ("glossy", "matte"), "Helmet finish must be glossy or matte")
     from . import nfl2k5_modern_color as colour
     colour.normalize_settings(choices["modern_color_settings"])

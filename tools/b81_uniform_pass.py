@@ -60,6 +60,28 @@ def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def shipped_json(document, **options) -> str:
+    """The text of a document the release ships, refused where the retail-free release gate would refuse it.
+
+    The gate refuses a text file that names a private host path (the reference notes are copied verbatim; beta 81 CI:
+    the digit document named its photographs by their absolute download path, so name them relative to the project)
+    or that holds a whitespace-free run over 4,096 characters (beta 81 CI: the kit document was written compact).
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("check_2k5_mod_studio_release",
+                                                  ROOT / "packaging/check_2k5_mod_studio_release.py")
+    gate = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(gate)
+    text = json.dumps(document, **options) + "\n"
+    if any(fragment.casefold() in text.casefold() for fragment in gate.FORBIDDEN_PRIVATE_TEXT_FRAGMENTS):
+        raise ValueError("a shipped uniform document may not name a private host path; "
+                         "write its references relative to the project")
+    if max(map(len, text.split()), default=0) > 4096:
+        raise ValueError("a shipped uniform document may not hold a whitespace-free run over 4,096 characters "
+                         "(the release gate reads it as an embedded binary blob)")
+    return text
+
+
 def modules():
     from mod_editor.core import nfl2k5_kit_fixes_2026 as kf
     return kf, kf.bump
@@ -267,8 +289,7 @@ def cmd_build(args) -> int:
               flush=True)
     rows.sort(key=lambda r: (r["selector"], r["chunk"]))
     document = dict(schema="nfl2k5_kit_fixes_2026/v1", source=SOURCE, method=METHOD, textures=rows)
-    Path(args.out).write_text(json.dumps(document, separators=(",", ":"), sort_keys=True) + "\n", encoding="utf-8",
-                              newline="\n")
+    Path(args.out).write_text(shipped_json(document, sort_keys=True), encoding="utf-8", newline="\n")
     if args.receipt:
         Path(args.receipt).write_text(json.dumps(receipt, indent=1, sort_keys=True) + "\n", encoding="utf-8",
                                       newline="\n")
@@ -363,7 +384,7 @@ def cmd_digits(args) -> int:
     for key in ("names_purpose", "names_references"):
         if key in previous:
             document[key] = previous[key]
-    Path(args.out).write_text(json.dumps(document, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+    Path(args.out).write_text(shipped_json(document, indent=1, sort_keys=True), encoding="utf-8", newline="\n")
     if args.receipt:
         Path(args.receipt).write_text(json.dumps(receipt, indent=1, sort_keys=True) + "\n", encoding="utf-8",
                                       newline="\n")
@@ -485,7 +506,7 @@ def cmd_names(args) -> int:
     document["textures"] = sorted(keep + rows, key=lambda r: (r["selector"], r["chunk"]))
     document["names_purpose"] = NAMES_SOURCE
     document["names_references"] = notes.get("_references", {})
-    out.write_text(json.dumps(document, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+    out.write_text(shipped_json(document, indent=1, sort_keys=True), encoding="utf-8", newline="\n")
     if args.receipt:
         Path(args.receipt).write_text(json.dumps(receipt, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(dict(rows=len(rows), pictures=len(used), failed=failed, selectors=len({r["selector"] for r in rows}))))

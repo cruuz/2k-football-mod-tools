@@ -27,6 +27,13 @@
         "NFL2K5_B775_XBE (the extracted b775 test-disc default.xbe) is not set"
       ]
     },
+    "b81_signed_standard": {
+      "description": "Private beta 81 standard executable, roster and signed franchise opening (env.sh)",
+      "messages": [
+        "private standard executable, roster and signed opening are absent (env.sh)",
+        "private inputs are absent: *"
+      ]
+    },
     "coach_ai_disc": {
       "description": "Matching NFL2K5_COACH_AI_XBE and NFL2K5_COACH_AI_IMAGE",
       "messages": [
@@ -104,6 +111,12 @@
         "private v0.4 extraction not configured"
       ]
     },
+    "v06_disc": {
+      "description": "Released SOFTDRINK v0.6 disc, or its default.xbe and situation.iff",
+      "messages": [
+        "Supply B771_V06_DISC or its B771_V06_XBE and B771_V06_SITU files"
+      ]
+    },
     "v08_xbe": {
       "description": "Extracted SOFTDRINK v0.8 default.xbe",
       "messages": [
@@ -131,10 +144,12 @@
     "test_apf_playcall_research_native.py": {"NativePlaycallTests": "apf_executable"},
     "test_apf_xex_image_retail.py": {"RetailImageTests": "apf_executable"},
     "test_b765_p2_repair.py": {"RepairTests": "v04_extraction"},
+    "test_b771_v1c_native.py": {"NativeRegression": "v06_disc"},
     "test_b778_cs1_choose_side.py": {"AutomaticRebind": "coach_ai_disc"},
     "test_b780_draft_class.py": {"BuildPathTests": "usa_xbe", "ClassOwnerTests": "usa_xbe", "DraftAiHeadTests": "usa_xbe", "NativeClassTurnoverTests": "usa_xbe", "NativeSpecialistCapTests": "signed_franchise"},
     "test_b780_econ3_roster_drift.py": {"NativeTests": "usa_xbe", "SiteTests": "usa_xbe"},
     "test_b780_n4_defense_playcall_sweep.py": {"DefensePlayCallSweepTests": "softdrink_disc"},
+    "test_b81_sim_pos_injury_signed.py": {"SignedSlice2Exchange": "b81_signed_standard"},
     "test_b791_h7_numbers_real.py": {"RealSlotTests": "digit_templates"},
     "test_franchise_colleges.py": {"CollegeTests": "usa_roster"},
     "test_franchise_economy_composition.py": {"CompositionTests": "usa_xbe"},

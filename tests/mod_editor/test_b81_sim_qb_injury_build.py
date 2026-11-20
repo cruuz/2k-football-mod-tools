@@ -87,8 +87,10 @@ class ProjectSettings(unittest.TestCase):
                     target = Path(directory) / "private-copy.iso"
                     plan = mod_build.sim_qb_disc_edit(str(source), str(target), mode)
                     receipt = mod_build.preflight_plan(plan)
+                    # b81 scoring: an in-place copy also gets the CPU kick-aim repair that rides with the kicking fixes.
+                    from mod_editor.core import nfl2k5_cpu_kick_aim as aim
                     self.assertEqual(receipt["sim_qb_source_update"], {
-                        "source_sha256": digest, "result_sha256": hashlib.sha256(current).hexdigest(),
+                        "source_sha256": digest, "result_sha256": hashlib.sha256(aim.apply(current)[0]).hexdigest(),
                         "source_simulator": source_state, "simulator_upgraded": source_state == "legacy",
                         "settings": medical.read_settings(current),
                     })
@@ -108,6 +110,9 @@ class ProjectSettings(unittest.TestCase):
             with patch.object(mod_build, "_xbe_bytes", return_value=b"private standard executable"), \
                     patch.object(cards, "status", return_value="retail"), patch.object(mod_build, "_core_module") as core:
                 core.return_value.read_settings.return_value = state
+                # b81 scoring: the exporter also reads the installed simulator scoring sites (here: an install from
+                # before the scoring slice, so the recipe carries no breakaway setting).
+                core.return_value.installed.return_value = ("retail", None)
                 portable, assets = modpack_sources.prepare(recipe, root / "work", patched_image=root / "copy.iso")
                 bundle = root / "sources.2k5sources"
                 info = modpack_sources.write_bundle(bundle, portable, assets)
@@ -270,9 +275,11 @@ class StudioControls(unittest.TestCase):
         self.assertTrue(plan.sim_realism and plan.k128_memory)
         self.assertEqual((plan.sim_qb_injuries, plan.sim_qb_injury_rate), ("custom", .411))
         self.assertTrue(panel.has_work())
-        self.assertIn("Simulated quarterback injuries (Custom, 0.411%)", panel.selected_labels())
-        self.assertIn("including your club", panel.qb_injury_help.text())
-        self.assertIn("Games you play", panel.qb_injury_help.text())
+        self.assertIn("Simulated injuries (Custom, 0.411%)", panel.selected_labels())
+        self.assertIn("your own club is treated like every other club", panel.qb_injury_help.text())
+        self.assertIn("every position except kickers and punters", panel.qb_injury_help.text())
+        self.assertIn("cornerbacks and safeties", panel.qb_injury_help.text())
+        self.assertIn("Games you play are not changed", panel.qb_injury_help.text())
         self.assertFalse(panel.qb_injury_rate.isHidden())
         panel.sim_realism_check.click()
         self.assertIsNone(panel.plan().sim_qb_injuries)
@@ -305,7 +312,14 @@ class StudioControls(unittest.TestCase):
         panel.qb_injury_mode.setCurrentIndex(panel.qb_injury_mode.findData("retail"))
         self.assertEqual(panel.plan().sim_qb_injuries, "retail")
         self.assertTrue(panel.has_work())
-        self.assertIn("Simulated quarterback injuries (Retail)", panel.selected_labels())
+        self.assertIn("Simulated injuries (Retail)", panel.selected_labels())
+        # A slice 1 or slice 2 install (revision 1 or 2) at the same mode is still a change: Build upgrades it in place.
+        for revision, labelled in ((1, True), (2, True), (3, False)):
+            with self.subTest(installed_revision=revision):
+                panel.apply_state({**self.retail_state, "sim_qb_injuries": "applied", "sim_qb_injury_settings": {
+                    "status": "applied", "mode": "realistic", "custom_rate": .310, "revision": revision}})
+                panel.qb_injury_mode.setCurrentIndex(panel.qb_injury_mode.findData("realistic"))
+                self.assertEqual("Simulated injuries (Realistic)" in panel.selected_labels(), labelled)
         panel.apply_state({**self.retail_state, "sim_qb_injuries": "foreign", "sim_qb_injury_settings": {"status": "foreign"}})
         self.assertFalse(panel.qb_injury_mode.isEnabled())
         self.assertIsNone(panel.plan().sim_qb_injuries)

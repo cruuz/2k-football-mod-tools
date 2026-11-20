@@ -148,7 +148,7 @@ class TabVisibilityTests(_PanelCase):
 
     def test_the_tabs_are_finns_screens_in_our_words(self) -> None:
         titles = [self.page.tabs.tabText(i) for i in range(self.page.tabs.count())]
-        self.assertEqual(titles, ["Overview", "Schedule", "Coaches", "Injured Reserve", "Checks"])
+        self.assertEqual(titles, ["Overview", "Schedule", "Coaches", "Injured Reserve", "Checks", "Team Stats"])
         self.assertEqual(money(88_113), "$88.1M")
         self.assertEqual([name for name, _caption in COACH_STATS][:3], ["wins", "losses", "ties"])
 
@@ -299,7 +299,8 @@ class ScheduleTests(_PanelCase):
         self.assertEqual(page.schedule_table.rowCount(), 2)
         self.assertEqual(page.schedule_table.item(0, 5).text(), "yes")
         self.assertEqual(page.schedule_table.item(0, 6).text(), "17-17")
-        self.assertIn("HYPOTHESIS", page.schedule_table.item(0, 6).toolTip())
+        # b81 R41: the first five quarter bytes are the home side's (FACTS; the standings getters read them so)
+        self.assertIn("IND 0-7-7-3-0 = 17, ATL 7-0-3-7-0 = 17", page.schedule_table.item(0, 6).toolTip())
         self.assertEqual(page.schedule_table.item(1, 5).text(), "")
         self.assertEqual(page.week_label.text(), "2 games, 1 played")
         # the played cell: refused with the reason
@@ -639,7 +640,9 @@ class RealFranchise1PanelTests(_PanelCase):
         expected.set_user_control(19, True)
         expected.set_game(0, 0, day=6, allow_played=True)
         game = expected.game(0, 1)
-        expected.set_game(0, 1, home=game.away, away=game.home, allow_played=True)
+        # b81 R41: swapping a played game's sides moves its score halves with them (each club keeps its points)
+        from mod_editor.core import nfl2k5_team_stats as ts
+        ts.swap_played_sides(expected, 0, 1)
         expected.set_coach_field(coach.index, "wins", wins + 1)
         expected.set_coach_field(coach.index, "motivation", 77)
         expected.place_on_injured_reserve(18, first)

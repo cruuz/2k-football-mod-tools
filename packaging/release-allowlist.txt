@@ -428,6 +428,7 @@ mod_editor/gui/create_play_wizard_qt.py
 mod_editor/gui/crib_panel_qt.py
 mod_editor/gui/disc_check_qt.py
 mod_editor/gui/franchise_panel_qt.py
+mod_editor/gui/franchise_stats_qt.py
 mod_editor/gui/coaches_panel_qt.py
 mod_editor/gui/franchise_upgrade_dialog_qt.py
 mod_editor/core/nfl2k5_franchise_upgrade.py
@@ -622,6 +623,8 @@ mod_editor/core/nfl2k5_sim_rb_injuries.py
 mod_editor/core/nfl2k5_sim_rb_injuries_b779.py
 mod_editor/core/nfl2k5_sim_qb_injuries.py
 mod_editor/core/nfl2k5_sim_qb_injuries_code.py
+mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice1.py
+mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice2.py
 mod_editor/core/nfl2k5_sim_scoring.py
 mod_editor/core/nfl2k5_cpu_kick_aim.py
 mod_editor/core/nfl2k5_sim_realism.py
@@ -2917,6 +2920,10 @@ data/nfl2k5_alien_prospect/face_n.png
 mod_editor/core/nfl2k5_real_portraits.py
 mod_editor/core/nfl2k5_portrait_preview.py
 mod_editor/core/nfl2k5_team_transfer.py
+mod_editor/core/nfl2k5_team_stats.py
+mod_editor/core/nfl2k5_depth_file.py
+mod_editor/core/nfl2k5_player_health.py
+mod_editor/core/nfl2k5_coach_file.py
 mod_editor/core/nfl2k5_ps2_rosters.py
 data/nfl2k5_real_portraits/portraits.json
 data/nfl2k5_real_portraits/faces_00.png

@@ -643,7 +643,11 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     # b780-int: MEM1's intro auto-skip (on in every preset) is a late allocator owner too; the
                                     # union below reserves it and the probe copy observes it, so the allocator-free probe build
                                     # leaves it off (the a5f08ea81 regen stopped there: "During Intro auto-skip: patch resized")
-                                    intro_autoskip=False, backfield_cards=False),
+                                    intro_autoskip=False, backfield_cards=False,
+                                    # b81: the Experimental preset now selects Realistic quarterback injuries, which
+                                    # needs K128 and sim realism (both off here). Its fixed bank is a late allocator
+                                    # owner that the separate QB probe below observes, so the probe build leaves it off.
+                                    sim_qb_injuries=None),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
@@ -846,9 +850,12 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             cpu_ai_probe, _ = backfield_cards.apply(cpu_ai_probe)
             # The medical option needs the standard memory boot guard. Observe its
             # own sparse standard profile without changing the older CPU probe's layout.
-            qb_probe, _ = space.apply(allocation_base, k128.REQUESTS + sim_realism.REQUESTS + lineup_roles.REQUESTS
-                                      + sim_qb_injuries.REQUESTS, scaleout=True)
+            # b81 slice 2: with the running-back owner installed first (the Build order), the medical option parks
+            # its weekly jump at 0x133CC9, so the probe observes that write too (FIXED_SPANS reserves the site).
+            qb_probe, _ = space.apply(allocation_base, k128.REQUESTS + sim_rb_injuries.REQUESTS + sim_realism.REQUESTS
+                                      + lineup_roles.REQUESTS + sim_qb_injuries.REQUESTS, scaleout=True)
             qb_probe, _ = k128.apply(qb_probe, require=True)
+            qb_probe, _ = sim_rb_injuries.apply(qb_probe)
             qb_probe, _ = sim_realism.apply(qb_probe)
             qb_probe, _ = lineup_roles.apply(qb_probe)
             qb_probe, _ = sim_qb_injuries.apply(qb_probe)
