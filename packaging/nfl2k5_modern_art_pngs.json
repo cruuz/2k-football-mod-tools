@@ -1,5 +1,5 @@
 {
-  "classification": "b779 pt1's real portrait atlases are the official NFL.com / ESPN headshot photographs of the created real free agents, cropped and reduced to the game's 128 x 128 P8 portrait format (Noah 2026-10-28: the card shows the real picture, like the NFL roster does); the original photo files never ship, only these game-format portraits. b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), reviewed face by face; no photograph or retail-extracted pixels. b778 ss1's Seamen card, field and face art is drawn from the video references and the authored kit. b778 ee1/ee2's gray alien portrait and face textures are authored from a generated headshot. b778 pg2's TROPHY ROOM emblem is authored (gold cup, navy banner, white type). Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. b775 hs1's nine 64 x 64 hair textures (locs, twists, braids, strands, curls, bun) are drawn procedurally by tools/nfl2k5_hair_styles_generate.py. b778 cf1 and its follow-up jobs scanned the head.png of every club with a recipe in tools/b77/cf1_recipes (tools/b77/cf1_face_scan.py): each is the coach's reference photo projected onto the 2004 head mesh, relit, symmetrised and blended into a painted base, so these head.png files are photo-derived likeness textures shipped under Noah's 2026-10-12 rule (as co2's photo-warped faces were); the reference photos and their cleaned copies never ship. Apart from those coach likeness textures, no photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time. sb1's Super Bowl field flank marks (data/nfl2k5_super_bowl_fields/marks) are drawn by tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design system (no logo is copied, traced or read); LXII to LXV are generic current-system marks for franchise seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 team logos at mark size or a plain club roundel. b776 fn2's four Titans 7 digit textures (data/nfl2k5_glyph_fixes_2026) are flat two-colour shapes drawn from measurements of 2026 club photos (constant-width stem, block foot), not traced from a font file or photo pixels. b780's scorebug digit sheet glyph layer (data/nfl2k5_scorebug_digit_glyphs.png) is rendered text: the digits 0-9, the colon and FINAL drawn by tools/nfl2k5_scorebug_espn_art.py (digits_from_font) with DejaVu Sans Bold through Pillow 10.2.0 / FreeType 2.13.2, white glyph coverage on transparent, and the retail bolt cell cleared; it holds no font file data, no photograph and no retail pixel. DejaVu is under the Bitstream Vera license (DejaVu's changes are public domain), which allows reproducing and distributing the fonts; the release ships only this rendering of those characters, not the font. b81-retail-free-art: the 2026 jersey relief (data/nfl2k5_relief_2026_b81u) ships only the project's own layer: per texel the authored level B relief minus the base the Studio derives at build time from the user's own disc (the 2004 folds softened, the 2004 construction lifted out: mod_editor/core/nfl2k5_relief_2026.py), modulo 256, so its difference files hold this season's seams, collar band, vents, pin holes and embosses and are zero elsewhere; islands_jersey.png and openings_jersey.png are one-bit layout masks of where the jersey's UV islands and the kits' collar openings lie (where the folds stop and soften), with no texel value of any map. The earlier absolute relief masters and patches (85 and 93 percent byte-equal to a transform of the retail maps) were withdrawn, and this tool refuses any relief file that decodes as an absolute normal map. b81-retail-free-art: the b81u digit and nameplate pictures (data/nfl2k5_glyph_fixes_2026_b81u) that ship are measured (retail-free/glyphs/SUMMARY.md: remap, mask and structure tests against the v0.9 glyph and every retail glyph) as drawn new by code from 2026 photographs (ARI, ATL, CIN, LAC, TEN digits; 11 name strips) or as edits of the project's own glyph art (glyph_shapes traced from photographs, or renders of fan-made fonts: CLE, DEN, DET, HOU, LAR, MIA, NE, SEA digits; CLE names). The pictures that edited a glyph the Studio builds from a retail donor are listed in NOT_AUTHORED and do not ship: their edits are shipped as operations and applied at build time to the glyph the user's disc gives (digit_derived), or, where no operation list rebuilds them, only the texels that differ from that glyph (or from the strip the nameplate pass leaves) ship (paint); none was withdrawn.",
+  "classification": "b779 pt1's real portrait atlases are the official NFL.com / ESPN headshot photographs of the created real free agents, cropped and reduced to the game's 128 x 128 P8 portrait format (Noah 2026-10-28: the card shows the real picture, like the NFL roster does); the original photo files never ship, only these game-format portraits. b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), reviewed face by face; no photograph or retail-extracted pixels. b778 ss1's Seamen card, field and face art is drawn from the video references and the authored kit. b778 ee1/ee2's gray alien portrait and face textures are authored from a generated headshot. b778 pg2's TROPHY ROOM emblem is authored (gold cup, navy banner, white type). Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. b775 hs1's nine 64 x 64 hair textures (locs, twists, braids, strands, curls, bun) are drawn procedurally by tools/nfl2k5_hair_styles_generate.py. b778 cf1 and its follow-up jobs scanned the head.png of every club with a recipe in tools/b77/cf1_recipes (tools/b77/cf1_face_scan.py): each is the coach's reference photo projected onto the 2004 head mesh, relit, symmetrised and blended into a painted base, so these head.png files are photo-derived likeness textures shipped under Noah's 2026-10-12 rule (as co2's photo-warped faces were); the reference photos and their cleaned copies never ship. Apart from those coach likeness textures, no photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time. sb1's Super Bowl field flank marks (data/nfl2k5_super_bowl_fields/marks) are drawn by tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design system (no logo is copied, traced or read); LXII to LXV are generic current-system marks for franchise seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 team logos at mark size or a plain club roundel. b776 fn2's four Titans 7 digit textures (data/nfl2k5_glyph_fixes_2026) are flat two-colour shapes drawn from measurements of 2026 club photos (constant-width stem, block foot), not traced from a font file or photo pixels. b780's scorebug digit sheet glyph layer (data/nfl2k5_scorebug_digit_glyphs.png) is rendered text: the digits 0-9, the colon and FINAL drawn by tools/nfl2k5_scorebug_espn_art.py (digits_from_font) with DejaVu Sans Bold through Pillow 10.2.0 / FreeType 2.13.2, white glyph coverage on transparent, and the retail bolt cell cleared; it holds no font file data, no photograph and no retail pixel. DejaVu is under the Bitstream Vera license (DejaVu's changes are public domain), which allows reproducing and distributing the fonts; the release ships only this rendering of those characters, not the font. b81-retail-free-art: the 2026 jersey relief (data/nfl2k5_relief_2026_b81u) ships only the project's own layer: per texel the authored level B relief minus the base the Studio derives at build time from the user's own disc (the 2004 folds softened, the 2004 construction lifted out: mod_editor/core/nfl2k5_relief_2026.py), modulo 256, so its difference files hold this season's seams, collar band, vents, pin holes and embosses and are zero elsewhere; islands_jersey.png and openings_jersey.png are one-bit layout masks of where the jersey's UV islands and the kits' collar openings lie (where the folds stop and soften), with no texel value of any map. The earlier absolute relief masters and patches (85 and 93 percent byte-equal to a transform of the retail maps) were withdrawn, and this tool refuses any relief file that decodes as an absolute normal map. b81-retail-free-art: the b81u digit and nameplate pictures (data/nfl2k5_glyph_fixes_2026_b81u) that ship are measured (retail-free/glyphs/SUMMARY.md: remap, mask and structure tests against the v0.9 glyph and every retail glyph) as drawn new by code from 2026 photographs (ARI, ATL, CIN, LAC, TEN digits; 11 name strips) or as edits of the project's own glyph art (glyph_shapes traced from photographs, or renders of fan-made fonts: CLE, DEN, DET, HOU, LAR, MIA, NE, SEA digits; CLE names). The pictures that edited a glyph the Studio builds from a retail donor are listed in NOT_AUTHORED and do not ship: their edits are shipped as operations and applied at build time to the glyph the user's disc gives (digit_derived), or, where no operation list rebuilds them, only the texels that differ from that glyph (or from the strip the nameplate pass leaves) ship (paint); none was withdrawn. Round 2 (R2-G): the Jets 2 (six pictures drawn new by code with the straight diagonal) and the Broncos one face (an edit of the project's own Broncos glyph art) ship as pictures; round 2's edits of retail-derived glyphs (the Ravens 4: remap + paint of the texels round 2 drew; the Raiders road edge: edge + remap + recolour, plus a paint of the colour stored under its clear texels; the Jaguars road name strip: paint on the strip the nameplate pass leaves) ship as operations on what the build holds.",
   "files": {
     "data/nfl2k5_alien_prospect/face_f.png": {
       "height": 256,
@@ -207,8 +207,8 @@
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_names.png": {
       "height": 32,
-      "sha256": "c7c86cea517436f4638c7a9bd60e317835810b2fb135b5ad1050d9b214178158",
-      "size": 1178,
+      "sha256": "3e9ebb153c98e87789d4af4fe38536fd0f63cb951ecd496e37113066d9e156f8",
+      "size": 1131,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_0.png": {
@@ -333,8 +333,8 @@
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_names.png": {
       "height": 32,
-      "sha256": "a6259d3a059663c282b48f71f7f14ff76f572ce802fab605fd2a5d8b89cc4906",
-      "size": 1129,
+      "sha256": "4a9dfcfbb5130175d671d38ea92c314a079d4c4b88d0eb90ed620971f9dc8084",
+      "size": 1086,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_0.png": {
@@ -459,8 +459,8 @@
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A9_names.png": {
       "height": 32,
-      "sha256": "2cf3c06d4f0a4b05565ebe63c70b0c470eda0273f43574d0286bb0c748b50b1a",
-      "size": 1661,
+      "sha256": "ef7150b4981adffaa52ab28979e503446a460778c46cad619a375aaacf347773",
+      "size": 1500,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_0.png": {
@@ -585,8 +585,8 @@
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02H0_names.png": {
       "height": 32,
-      "sha256": "7336813b2fe924f2a041e9e40fd289f7acc913c7be1f82935081b9aa12551057",
-      "size": 976,
+      "sha256": "7c92873ffa51961497ad79519d9f2da8928d379ca944c358d77cd4167e24dfef",
+      "size": 882,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_0.png": {
@@ -967,124 +967,184 @@
       "size": 331,
       "width": 64
     },
-    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_0.png": {
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A0_digit_jersey_0.png": {
       "height": 64,
-      "sha256": "a35f809dd809329417a3dcf94bcf9262b458a553c5e1deb93098762a486c30e9",
-      "size": 389,
+      "sha256": "087aafa95d4db334554c0278e1187c4bee8a9fb2c636aa62760467ff83b37d3c",
+      "size": 497,
       "width": 64
     },
-    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_1.png": {
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A0_digit_jersey_1.png": {
       "height": 64,
-      "sha256": "236a970f7dde3874b9473a0124945d4b3062693eedcd97a8e703d76ced8f3b0f",
-      "size": 299,
+      "sha256": "37614986b15c6728c5acce734fa965a0574d6b96122f02819b9e1c6b4047588c",
+      "size": 318,
       "width": 64
     },
-    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_2.png": {
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A0_digit_jersey_2.png": {
       "height": 64,
-      "sha256": "b11771be64b397faf40faade12e0ff547ffb0169d79c5fe16f9148801043e0ab",
-      "size": 543,
+      "sha256": "09b743810d97190e3b9b1f4f4f19485d9155f1e5bc6c2313bd65daf98518a7e3",
+      "size": 690,
       "width": 64
     },
-    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_3.png": {
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A0_digit_jersey_3.png": {
       "height": 64,
-      "sha256": "dc6305fb117de650b8ef477c1dade98650b3e8d516ae7a2e804bc96f13f7f28a",
-      "size": 517,
+      "sha256": "163d36e0f77a90e5a423767033dca1240fc9dbeb346fd262d00d71bc6bbaccef",
+      "size": 713,
       "width": 64
     },
-    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_4.png": {
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A0_digit_jersey_4.png": {
       "height": 64,
-      "sha256": "33239526f5eee671408d0182dcd16620729b4c9be071a486b6faa6ace5757c7e",
-      "size": 492,
+      "sha256": "d9436b69d4b45ec3054fb09731d402ce40aba39d5eaf30d968e687d2e7abd91c",
+      "size": 634,
       "width": 64
     },
-    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_5.png": {
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A0_digit_jersey_5.png": {
       "height": 64,
-      "sha256": "8e833cbb5c4c99152665404573c3c9c5158e3dd03350d401e020cd76eadf1acf",
-      "size": 512,
+      "sha256": "61a56ec85ad07babb6d44edcf8f76cac74d5d30ce1371c5925d2be6688d043ed",
+      "size": 612,
       "width": 64
     },
-    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_6.png": {
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A0_digit_jersey_6.png": {
       "height": 64,
-      "sha256": "9ea8f84eb6732ba07122280f1e9d5a88f25d133a965188f73580e38c05912909",
-      "size": 482,
+      "sha256": "bf54b933cc35f87b6bcfdd1f0319b3b2f98918eb711bd0c09b1925565e4f064f",
+      "size": 683,
       "width": 64
     },
-    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_7.png": {
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A0_digit_jersey_7.png": {
       "height": 64,
-      "sha256": "782e213695fc09c88a4c6d0367adf90cedb913b8c7519d488f010aa24fd67439",
-      "size": 442,
+      "sha256": "efd37e6217f22d7bed9bff84440535010c156a4be7e772a50f2b4b7dc3e38ae2",
+      "size": 563,
       "width": 64
     },
-    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_8.png": {
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A0_digit_jersey_8.png": {
       "height": 64,
-      "sha256": "3ed12456713d753d1b2f88b58f0a94d1a3483497a6294aa87de95bde50d85ab2",
-      "size": 415,
+      "sha256": "a603b160589c21a94b618c9367254ecdc8cf317f8f00113e120503b2c67a8ebb",
+      "size": 586,
       "width": 64
     },
-    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_9.png": {
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A0_digit_jersey_9.png": {
       "height": 64,
-      "sha256": "eb8a14c40290dfcf9c78c103809074774b4fc9abed316ebbf8c3911ad354ccd3",
-      "size": 459,
+      "sha256": "87a8d19328352ba9988abc02247cfede3cee6d996dfc835d940ffa8a220dc213",
+      "size": 673,
       "width": 64
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_0.png": {
       "height": 64,
-      "sha256": "c528e533a29867baba6b7516b6f280f089004b43854ce03d6c069efc921e7c8b",
-      "size": 381,
+      "sha256": "c159415c33b7b7d3d253e2aaa2b98825e6d9f4ca273cadd577c71b5cf97d7e41",
+      "size": 493,
       "width": 64
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_1.png": {
       "height": 64,
-      "sha256": "25e82a6cdec3c400dad83aaccdeded0b8b89bff16e5d0490268c15777f2b4cc7",
-      "size": 278,
+      "sha256": "279a544b62f7df432f9dee042712b38b42400959b4d86889c2bd0169e5ab6251",
+      "size": 314,
       "width": 64
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_2.png": {
       "height": 64,
-      "sha256": "ad31e5725264e8fb4c91b00405206c159ed2c069382e5f973398ceef0ed19056",
-      "size": 523,
+      "sha256": "d138edc910eaa61115619e88fb84f30368633481bb2e980f7fc3349f7dad452b",
+      "size": 685,
       "width": 64
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_3.png": {
       "height": 64,
-      "sha256": "bce8204113f859f9a07d733b7c331e0a2a4c31a2b35bfb126e28be5ed6c97c9f",
-      "size": 506,
+      "sha256": "a15d7b1f29aa1fa87b5781de155629546b5d6242fcfb2c1896e799770e4b1140",
+      "size": 702,
       "width": 64
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_4.png": {
       "height": 64,
-      "sha256": "9ff74e2cd2a066877f842c8f727e2ead6e04db739bb2bb0d9c408727a84d3c74",
-      "size": 480,
+      "sha256": "ca2395a59f2f36b93ea4ca365b586dbefc9eb9b3b344449424b260884911e992",
+      "size": 631,
       "width": 64
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_5.png": {
       "height": 64,
-      "sha256": "00ed17de473b4d096d28d92b2299eb58fce0d7e58be51e5ca000c18f500b25bc",
-      "size": 503,
+      "sha256": "c0501aac463c1c3a73cb2320d537a12a33f56463ef729b1370be855602e6c52a",
+      "size": 607,
       "width": 64
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_6.png": {
       "height": 64,
-      "sha256": "b60b1fd87929aeb378fd978015b8d601b9012f93759091ded45f81056b339922",
-      "size": 473,
+      "sha256": "2e81428478a173719d899dd2ee4bcc25c28fe3b4c685dc1f8f1f9ecf7926b79e",
+      "size": 670,
       "width": 64
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_7.png": {
       "height": 64,
-      "sha256": "771cd13dba66c8e3583d805f02ecb6989282a39129e9a71be79e5d7a0a0284e7",
-      "size": 418,
+      "sha256": "128938dd3bc9717e41d13afc2c6ef23d7429e8a7d2ba8f1df89087e196d48c57",
+      "size": 559,
       "width": 64
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_8.png": {
       "height": 64,
-      "sha256": "99ac0fa47c037c891cc0407a3ddfbdb6a55d2c20bc9ee06224e83e7227b0dbaf",
-      "size": 407,
+      "sha256": "ceee47ec4b11018a0a317794c7e1ab92a2a787acb9b5f0c826825ab22d46c616",
+      "size": 575,
       "width": 64
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_9.png": {
       "height": 64,
-      "sha256": "9e1f30b65928b965945c89b10095fe62a602449fbc639b296a7a6719d7200bc5",
-      "size": 454,
+      "sha256": "6ea4adbc3e5ea452b9ea24c7dedb4dde4d4c66525c5a6368eee70a2f84d128ed",
+      "size": 668,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08H0_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "fc8c60726c927611deded784d6123f8f62e36d33b2e62c3cb600b02f638b0e8b",
+      "size": 507,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08H0_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "2d8e36693d7263353d7ff8181409892f1afba809e47f6182b84714055f384484",
+      "size": 318,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08H0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "86615891f7f645e58758272cbcb86bd3c16344cd600ee53cdae9d04e9a6dd63e",
+      "size": 694,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08H0_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "093eb921054c2d33bd8fd7937344bb3e6d6a0573f6564b90a7afcb6fb6c7c77f",
+      "size": 705,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08H0_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "211d6f8726a27dc0ccaf59e7d83206ffdf377e4680096d30cc6046cc4ace527f",
+      "size": 632,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08H0_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "df224577f908039be787545213c2cda549210846e99c02b417f58f5128cdbc4c",
+      "size": 608,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08H0_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "699c970c8891be4f8a1fcd6b8f2bd375d4d25dc364de3695ae27d714408835a3",
+      "size": 673,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08H0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "ff5a7e7fa99d9111b4bf0dcc342d862575dfe8dbdc87a8afbe0a876efe2527bd",
+      "size": 561,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08H0_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "8f1a65c76f9fa3c2e8fca5beeb5c07067f46f63a71aaf10faa271656f952b45e",
+      "size": 579,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08H0_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "8c0988c9eeefb4d69e876c7706bad9c88ed51f6877ee49d94950b492f0f63bb3",
+      "size": 677,
       "width": 64
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_arm_0.png": {
@@ -1461,20 +1521,20 @@
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/IND_11A0_names.png": {
       "height": 32,
-      "sha256": "105fc446ecf9168f0ba01e0baae141ff9b4aba910df95327e23c9f60bdae31ce",
-      "size": 1144,
+      "sha256": "067984292236ef1c3ac36e33977586e874f4bb5f0ad8b940d613d1e7a91c9708",
+      "size": 1071,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/IND_11A3_names.png": {
       "height": 32,
-      "sha256": "4a723c3c1a1dd9f635ecef88135ad1ac49a553ef218d0bb045b0e7ca78686d7b",
-      "size": 1092,
+      "sha256": "18d1ebe9316a8d88bdbf5f55c1fcc6f673a8c3c02ba23ff5e3ce117cf81a1260",
+      "size": 1024,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/JAX_12H0_names.png": {
       "height": 32,
-      "sha256": "a3e1801c762755899fc9915b77af70dd23b6753262bf34ffe72439805f4cb90d",
-      "size": 1118,
+      "sha256": "d143fe34ceca0e3cd387b6fd8774bcbb217947738d448566a4a7ae1360d85bcf",
+      "size": 1018,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_0.png": {
@@ -2139,21 +2199,57 @@
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/NO_17A1_names.png": {
       "height": 32,
-      "sha256": "0ea0b1b33bb2990f60786670b08022be2f3b22790068c864eed713b90e562b38",
-      "size": 1060,
+      "sha256": "b654602b173cb9cfbd30c29abcf77e7382e1d071f19073b7f2204a0b25bd8010",
+      "size": 961,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/NYG_18A7_names.png": {
       "height": 32,
-      "sha256": "25ddb97de1d977bf31ce46ab0fc2092466b88442cd1e43e558ced81bd5b49860",
-      "size": 1148,
+      "sha256": "abaf4243785a5f6f0b715323e91f713c118120c79dee39f9afe325f5a568c2a6",
+      "size": 1089,
       "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_arm_2.png": {
+      "height": 32,
+      "sha256": "d0fed3bb15c042590817430138497a70df7ace7c56163d32044afcf503ad2fef",
+      "size": 390,
+      "width": 32
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "8e472e5e68e0aefbff4aff04c3e75cb3439d9e40af6a8ae3e7ba797308954ff5",
+      "size": 484,
+      "width": 64
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_names.png": {
       "height": 32,
-      "sha256": "451db8b57f45e39014cdc6c567dc104ec2433ee38b69f61b9cfff72ff19bf0f5",
-      "size": 1030,
+      "sha256": "a076b14e9f2a5c4c80124083477c1b176c58e6168d77a95e4bbc766586b86986",
+      "size": 934,
       "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A2_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "30b5d5c522f0c98bd5a08fc32e77f1b6fd73597bdcb9ad22523b03ce4debac3d",
+      "size": 448,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A7_digit_arm_2.png": {
+      "height": 32,
+      "sha256": "4f028b55a539218e791db196e5e96b89f183f24a1336f83e220f2db61f0da4c5",
+      "size": 371,
+      "width": 32
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_arm_2.png": {
+      "height": 32,
+      "sha256": "bd2db48b4fee62302330357d048cedb586a12d8b647ccfd8d140bf93c9884f2f",
+      "size": 360,
+      "width": 32
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19H0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "65bbaf358df77e73d73665ff23c3783a74af3d57c0b7c868265cf7245de5402f",
+      "size": 556,
+      "width": 64
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26A4_digit_arm_0.png": {
       "height": 64,
@@ -2343,8 +2439,8 @@
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/TB_27A0_names.png": {
       "height": 32,
-      "sha256": "928ee9dac1d2a42c060ae59d0d6635e989e718c1cd5915c66b30109ef15fa0e2",
-      "size": 940,
+      "sha256": "3865b3c9a807267820d78b99a297046baaf10581e0d64e1cfdfa5f821aafc139",
+      "size": 849,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_0.png": {

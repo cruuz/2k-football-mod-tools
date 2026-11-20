@@ -54,7 +54,7 @@ class Document(unittest.TestCase):
 
     def test_derived_rows_carry_operations_and_no_picture(self):
         derived = [r for r in self.doc["textures"] if r["kind"] in DERIVED]
-        self.assertEqual(len(derived), 507)                 # every row of the 231 withdrawn pictures; none dropped
+        self.assertEqual(len(derived), 495)                 # R2-G: the lane's 507 less the 12 Jets 2 rows round 2 redrew as new pictures (rated A)
         self.assertEqual(sum(r["kind"] == "names_derived" for r in derived), 3)
         for row in derived:
             self.assertNotIn("png", row)
@@ -153,13 +153,17 @@ class ReleasedDisc(unittest.TestCase):
     def test_a_paint_ships_no_texel_equal_to_the_base(self):
         """The rule for a redraw no operation list rebuilds: only texels that differ from what the build holds."""
         for row in self.rows:
-            if row["derive"][0]["op"] != "paint" or (row["kind"] == "names_derived" and not RETAIL.is_file()):
+            if not any(op["op"] == "paint" for op in row["derive"]) or (row["kind"] == "names_derived" and not RETAIL.is_file()):
                 continue
             base = self.base(row, self.span(row))
-            for y, x0, values in row["derive"][0]["runs"]:
-                shipped = np.frombuffer(bytes.fromhex(values), np.uint8).reshape(-1, 4)
-                here = base[y, x0:x0 + len(shipped)]
-                self.assertTrue((shipped != here).any(-1).all(), (row["selector"], row["chunk"], y, x0))
+            for at, op in enumerate(row["derive"]):        # R2-G: a paint after other operations (the Ravens 4)
+                if op["op"] != "paint":                    # differs from the picture those operations make
+                    continue
+                before = gf.derive_digit(base, row["derive"][:at])
+                for y, x0, values in op["runs"]:
+                    shipped = np.frombuffer(bytes.fromhex(values), np.uint8).reshape(-1, 4)
+                    here = before[y, x0:x0 + len(shipped)]
+                    self.assertTrue((shipped != here).any(-1).all(), (row["selector"], row["chunk"], y, x0))
 
     def test_a_sample_of_each_operation_kind_compiles_to_its_output_pin(self):
         seen = {}
