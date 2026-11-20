@@ -315,3 +315,81 @@ class LowFindingTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# --------------------------------------------------------------------------------------------- F1, re-check: the screens
+RETAIL_2501 = Path(os.environ.get(
+    "NFL2K5_RETAIL_FRANCHISE_2501",
+    "/media/noah/Storage/2K5-project/beta81/qb-system/evidence/phase1-scheduled-nov19/runs/retail/2501"))
+
+
+def _select(panel: RosterEditorPanel, team: int, player: rr.Player) -> None:
+    for row in range(panel.team_list.count()):
+        if tuple(panel.team_list.item(row).data(Qt.UserRole) or ()) == ("team", team):
+            panel.team_list.setCurrentRow(row)
+            break
+    panel.refresh_grid()
+    assert panel.select_player(player), player.display
+
+
+@unittest.skipUnless(SEASON_2026.is_dir(), f"simulated SOFTDRINK 2026 season absent: {SEASON_2026}")
+class F1ScreenTests(unittest.TestCase):
+    """Injury id 750 on a franchise save is an injury, not injured reserve, on the Rosters screen too (re-check F1)."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.application = _app()
+
+    def setUp(self) -> None:
+        self.panel = RosterEditorPanel()
+        self.addCleanup(lambda: (self.panel.deleteLater(), self.application.processEvents()))
+        self.assertTrue(self.panel.load_save(SEASON_2026))
+        document = self.panel.document
+        self.edwards = next(p for p in document.players if p.display == "T.J. Edwards" and p.pool == "primary")
+        self.assertEqual((self.edwards.record.values["injured_reserve"], self.edwards.record.values["unknown_29_low"]),
+                         (0xEE, 2))
+        _select(self.panel, 1, self.edwards)
+
+    def test_release_swap_and_move_are_enabled(self) -> None:
+        self.assertIs(self.panel.selected_player(), self.edwards)
+        for button in (self.panel.release_button, self.panel.swap_button):
+            self.assertTrue(button.isEnabled(), button.text())
+        self.assertFalse(self.panel.document.is_on_injured_reserve(self.edwards))
+
+    def test_place_on_ir_is_offered(self) -> None:
+        self.assertEqual(self.panel.ir_place_reason(self.edwards), "")
+        place = next(a for a in self.panel.grid_menu().actions() if a.text().startswith("Place on IR"))
+        self.assertTrue(place.isEnabled())
+
+    def test_the_grid_shows_the_injury_not_ir(self) -> None:
+        self.assertFalse(self.panel._depth_text(self.edwards).endswith(" IR"))
+
+    def test_show_my_changes_calls_his_heal_an_injury(self) -> None:
+        self.assertEqual(self.panel.heal_players([self.edwards]), 1)
+        self.panel.refresh_diff()
+        text = self.panel.report.toPlainText()
+        self.assertIn("Injury:", text)
+        self.assertNotIn("Injured Reserve: 238", text)
+
+    def test_a_listed_ir_player_still_reads_ir(self) -> None:
+        document = self.panel.document
+        listed = self.panel.listed_ir_indices()
+        player = next(p for p in document.players if p.pool == "primary" and p.index in listed)
+        self.assertTrue(document.is_on_injured_reserve(player))
+        self.assertTrue(self.panel._depth_text(player).endswith(" IR"))
+        self.assertIn("already on injured reserve", self.panel.ir_place_reason(player))
+
+
+@unittest.skipUnless(RETAIL_2501.is_dir(), f"retail-size franchise 2501 absent: {RETAIL_2501}")
+class F1LegacyIrTests(unittest.TestCase):
+    """A 5-slot (legacy) IR save marks a placed player with 0xEE in the same byte injury id 750 ends in."""
+
+    def test_the_older_save_says_why_it_cannot_place_him(self) -> None:
+        application = _app()
+        panel = RosterEditorPanel()
+        self.addCleanup(lambda: (panel.deleteLater(), application.processEvents()))
+        self.assertTrue(panel.load_save(RETAIL_2501))
+        clements = next(p for p in panel.document.players if p.display == "Nate Clements" and p.pool == "primary")
+        self.assertFalse(panel.document.is_on_injured_reserve(clements))
+        self.assertFalse(panel._depth_text(clements).endswith(" IR"))
+        self.assertIn("older", panel.ir_place_reason(clements))

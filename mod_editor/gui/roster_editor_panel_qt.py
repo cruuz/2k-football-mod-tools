@@ -2031,6 +2031,23 @@ class _PlayerGrid(QTableWidget):
         return super().selectionCommand(index, event)
 
 
+def legacy_ir_mark() -> int:
+    """The byte the older 5-slot injured reserve writes at +0x28 (``nfl2k5_franchise_save.IR_MARK``)."""
+
+    from mod_editor.core import nfl2k5_franchise_save as fs
+    return fs.IR_MARK
+
+
+def has_modern_ir(save) -> bool:
+    """True when the franchise save carries modern injured reserve (20 slots), which writes no +0x28 marker."""
+
+    from mod_editor.core import nfl2k5_injured_reserve_save as irs
+    try:
+        return bool(irs.read_state(save).extension)
+    except ValueError:
+        return False
+
+
 class RosterEditorPanel(QWidget):
     """The ★ Rosters workspace."""
 
@@ -2725,7 +2742,11 @@ class RosterEditorPanel(QWidget):
             text = f"{left} #{rank + 1} · {right} #{side + 1}"
         else:
             text = f"#{rank + 1}"
-        return text + (" IR" if record.on_injured_reserve else "")
+        if self.document is None:
+            return text
+        # b81 finn-r2 review F1: the document's IR test (the IR list in a franchise save), read once per grid refresh
+        context = getattr(self, "_grid_ir_context", None) or self.document.injured_reserve_context()
+        return text + (" IR" if self.document.is_on_injured_reserve(player, context) else "")
 
     def _locks_widget(self, player: rr.Player) -> QWidget:
         host = QWidget()
@@ -3724,6 +3745,7 @@ class RosterEditorPanel(QWidget):
                 p.record.values[field if p.record.values["position"] in rr.PAIRED_DEPTH_CODES else "depth_rank"],
                 slot.get(p.offset, 0)))
         self._rows = players
+        self._grid_ir_context = self.document.injured_reserve_context() if self.document is not None else None
         chart = self._depth_chart()
         columns = self._grid_columns
         table = self.player_table
@@ -4874,8 +4896,16 @@ class RosterEditorPanel(QWidget):
             return rr.MSG_DRAFT_CLASS
         if (player.pool, player.index) in self.document.reserve_owner:
             return "Promote this reserve to the active roster first."
-        if player.record.on_injured_reserve:
+        if self.document.is_on_injured_reserve(player):           # b81 finn-r2 review F1: the IR list decides
             return f"{player.display} is already on injured reserve."
+        save = self.franchise_panel.save
+        if (player.record.values["injured_reserve"] == legacy_ir_mark() and save is not None
+                and not has_modern_ir(save)):
+            # the older 5-slot IR marks a placed player by writing 0xEE over the low byte of his injury id, and
+            # Activate clears it; for an injury id that already ends in 0xEE (the game's 750) that loses the id, and
+            # the core refuses (FranchiseSave.place_on_injured_reserve)
+            return (f"{player.display}'s injury id ends in the byte this older save's injured reserve uses as its "
+                    "marker. Load the save and save it once in a build with modern injured reserve, then place him.")
         club = self.document.club_of(player)
         if club is None or player.pool != "primary":
             return rr.MSG_FREE_AGENT_IR
@@ -6538,8 +6568,11 @@ class RosterEditorPanel(QWidget):
                         lines.append(f"    Depth and returner locks: {locks(was)} -> {locks(now)}")
                     if (was ^ now) & 0xE0:
                         lines.append(f"    Ability flags (+0x52): {was & 0xE0} -> {now & 0xE0}")
-                elif key in player_health.HEAL_FIELDS and not (key == "injured_reserve"
-                                                               and player_health.IR_MARKER in (was, now)):
+                # the injury fields read as one injury line; +0x28 alone moving to or from 0xEE is the older IR marker
+                # (review F1: with another injury field changing, an id ending in 0xEE is an injury, e.g. 750)
+                elif key in player_health.HEAL_FIELDS and not (
+                        key == "injured_reserve" and player_health.IR_MARKER in (was, now)
+                        and not any(k in player_health.HEAL_FIELDS and k != "injured_reserve" for k in entry["changes"])):
                     player = lookup.get((entry["pool"], entry["index"]))
                     if player is not None and "_injury_done" not in entry:
                         entry["_injury_done"] = True
@@ -7138,7 +7171,7 @@ class RosterEditorPanel(QWidget):
         player = self.selected_player()
         movable = bool(loaded and player is not None and self.document is not None
                        and not self.document.is_draft_class(player)
-                       and not player.record.on_injured_reserve
+                       and not self.document.is_on_injured_reserve(player)     # b81 finn-r2 review F1
                        and (player.pool, player.index) not in self.document.reserve_owner)
         on_team = bool(movable and player is not None and player.teams)
         self.unlock_button.setEnabled(bool(player and any(player.record.depth_locks.values())))

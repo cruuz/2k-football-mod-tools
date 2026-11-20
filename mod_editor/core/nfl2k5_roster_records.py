@@ -1371,6 +1371,9 @@ class PlayerRecord:
 
     @property
     def on_injured_reserve(self) -> bool:
+        """The low byte Finn writes on IR (any id ending in 0xEE, which includes the game's injury 750). Not the
+        Studio's IR test: use ``RosterDocument.is_on_injured_reserve`` (b81 finn-r2 review F1). Kept for the callers
+        that only become more cautious with it (save-to-disc, team transfer); see finn-r2/REVIEW_ME.md."""
         return self.values["injured_reserve"] == 0xEE
 
     @property
@@ -2745,10 +2748,7 @@ class RosterDocument:
         and ``release`` instead of re-reading the document for each player (about half a second each on the
         SOFTDRINK roster)."""
 
-        from .nfl2k5_franchise_save import FranchiseSave, is_franchise_save
-        ir_players: frozenset[int] = frozenset()
-        if is_franchise_save(bytes(self.body)):
-            ir_players = frozenset(e.player_index for e in FranchiseSave(bytes(self.body)).injured_reserve())
+        context = self.injured_reserve_context()
         invalid = ""
         if any(self.reserves.values()):
             from .nfl2k5_practice_squad import validate_save
@@ -2756,7 +2756,29 @@ class RosterDocument:
                 validate_save(self.to_body())
             except ValueError as exc:
                 invalid = str(exc)
-        return {"ir_players": ir_players, "invalid": invalid, "franchise": is_franchise_save(bytes(self.body))}
+        return {**context, "invalid": invalid}
+
+    def injured_reserve_context(self) -> dict[str, Any]:
+        """Who is on injured reserve, read once (b81 finn-r2 review F1): ``{"franchise", "ir_players"}``. Pass it to
+        ``is_on_injured_reserve`` for many players (the Rosters grid, a batch)."""
+
+        from .nfl2k5_franchise_save import FranchiseSave, is_franchise_save
+        franchise = is_franchise_save(bytes(self.body))
+        ir_players: frozenset[int] = frozenset()
+        if franchise:
+            ir_players = frozenset(e.player_index for e in FranchiseSave(bytes(self.body)).injured_reserve())
+        return {"franchise": franchise, "ir_players": ir_players}
+
+    def is_on_injured_reserve(self, player: Player, context: Mapping[str, Any] | None = None) -> bool:
+        """THE injured-reserve test of the Studio (b81 finn-r2 review F1): in a franchise save the IR list (the legacy
+        cells and the modern extension) decides; in a roster save or a disc roster, which have no IR list, only Finn's
+        exact marker (``finn_ir_marker``). ``PlayerRecord.on_injured_reserve`` (any low byte 0xEE) is not this test:
+        the game's own injury id 750 (0x2EE) ends in that byte."""
+
+        context = self.injured_reserve_context() if context is None else context
+        if context["franchise"]:
+            return player.pool == "primary" and player.index in context["ir_players"]
+        return finn_ir_marker(player.record.values)
 
     def check_operation(self, player: Player, operation: str, *, context: Mapping[str, Any] | None = None) -> None:
         """Finn's refusals, before any list is touched."""
@@ -2766,13 +2788,10 @@ class RosterDocument:
             raise MembershipRefused("Promote this team's reserve before signing, moving, releasing, swapping or placing on IR")
         if context is None:
             context = self.membership_context()
-        if player.pool == "primary" and player.index in context["ir_players"]:
+        if self.is_on_injured_reserve(player, context):            # b81 finn-r2 review F1: the IR list, or Finn's marker
             raise MembershipRefused("Activate this player from injured reserve first")
         if context["invalid"]:
             raise MembershipRefused(context["invalid"])
-        # b81 finn-r2 review F1: a franchise save's IR list (checked above) decides; elsewhere only Finn's exact marker
-        if not context.get("franchise") and finn_ir_marker(player.record.values):
-            raise MembershipRefused("Activate this player from injured reserve first")
         if self.is_draft_class(player):
             raise MembershipRefused(f"{MSG_DRAFT_CLASS} {player.display}: {DRAFT_CLASS_WHY}.")
         if operation == "injured_reserve" and self.is_free_agent(player) and self.club_of(player) is None:
