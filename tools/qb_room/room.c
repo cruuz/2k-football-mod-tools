@@ -185,15 +185,18 @@ static i32 overall(u32 p) {
     return (i32)((((v.u & 0x7FFFFFu) | 0x800000u) * 100u + (1u << (s - 1))) >> s);
 }
 
-/* Season passer rating times 10, the NFL formula with its clamps (DESIGN 2.2); 0 without attempts. */
+/* Season passer rating times 10, the NFL formula with its clamps (DESIGN 2.2 as corrected by DESIGN_CHANGES C4:
+   each component in thousandths with one truncating divide, the sum rounded); 0 without attempts. The stat getter
+   returns signed 16-bit values, so the largest product is 32768 * 25000 = 8.2e8 < 2^31 (likewise 5000, 250 and
+   20000), and the sum is at most 4 * 2375 + 3. */
 static i32 clamp2375(i32 v) { return v < 0 ? 0 : v > 2375 ? 2375 : v; }
 static i32 rating10(const struct qb *q) {
     if (q->att <= 0) return 0;
-    i32 a = clamp2375((q->cmp * 1000 / q->att - 300) * 5);
-    i32 b = clamp2375((q->yds * 1000 / q->att - 3000) / 4);
+    i32 a = clamp2375(q->cmp * 5000 / q->att - 1500);
+    i32 b = clamp2375(q->yds * 250 / q->att - 750);
     i32 c = clamp2375(q->td * 20000 / q->att);
     i32 e = clamp2375(2375 - q->ints * 25000 / q->att);
-    return (a + b + c + e) / 6;
+    return (a + b + c + e + 3) / 6;
 }
 
 static int starter_usage(const struct qb *q) {

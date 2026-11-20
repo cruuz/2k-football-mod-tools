@@ -86,6 +86,19 @@ def tdiv(a, b):
 
 
 def rating10(att, cmp, yds, td, ints):
+    """DESIGN 2.2 as corrected by DESIGN_CHANGES C4: one truncating divide per component, the sum rounded."""
+    if att <= 0:
+        return 0
+    clamp = lambda v: max(0, min(2375, v))
+    a = clamp(tdiv(cmp * 5000, att) - 1500)
+    b = clamp(tdiv(yds * 250, att) - 750)
+    c = clamp(tdiv(td * 20000, att))
+    e = clamp(2375 - tdiv(ints * 25000, att))
+    return (a + b + c + e + 3) // 6
+
+
+def rating10_design_v1(att, cmp, yds, td, ints):
+    """The first integer form of DESIGN 2.2 (cmp * 1000 / att truncated before the x5, the sum floored)."""
     if att <= 0:
         return 0
     clamp = lambda v: max(0, min(2375, v))
@@ -201,8 +214,13 @@ class PageInterface(unittest.TestCase):
         subprocess.run([sys.executable, str(tool), "--check"], check=True)
 
     def test_reference_rating_and_coach_against_the_design_examples(self):
-        self.assertEqual(rating10(584, 371, 3781, 26, 12), 882)        # Purdy 88.278 (DESIGN 2.2)
-        self.assertEqual(rating10(436, 244, 2337, 16, 20), 641)        # McCarthy 64.17 (FRANCHISE.md: 64.2)
+        self.assertEqual(rating10(584, 371, 3781, 26, 12), 883)        # Purdy 88.278 (DESIGN 2.2 said 882)
+        self.assertEqual(rating10(436, 244, 2337, 16, 20), 642)        # McCarthy 64.17 (FRANCHISE.md: 64.2)
+        self.assertEqual(rating10_design_v1(584, 371, 3781, 26, 12), 882)
+        # The largest products the page forms from signed 16-bit stats stay below 2^31.
+        self.assertLess(max(32768 * f for f in (5000, 250, 20000, 25000)), 2**31)
+        self.assertEqual(rating10(1, 32767, 32767, 32767, 0), (4 * 2375 + 3) // 6)
+        self.assertEqual(rating10(1, -32768, -32768, -32768, 32767), 0)
         self.assertEqual([coach1000(x) for x in (40, 61, 83, 99, 120)], [1350, 1350, 1003, 750, 750])
 
 
@@ -579,7 +597,7 @@ class D4Return(League):
         self.settings(room.STAGE_D4)
 
     def room_for(self, x, hot):
-        line = (8, 260, 180, 2300, 20, 3) if hot else (8, 260, 150, 1700, 8, 9)     # rating 116.0 / 70.7
+        line = (8, 260, 180, 2300, 20, 3) if hot else (8, 260, 150, 1700, 8, 9)     # rating 117.5 / 73.2
         starter = QB(80, 0, line=line)
         returning = QB(80 + x, 1, locked=False, line=(6, 200, 120, 1400, 9, 6))
         third = QB(60, 2, years=3)
@@ -623,11 +641,11 @@ class D4Return(League):
 
 # ---- T4: D3 and D2 ----------------------------------------------------------------------------------------------
 # (apps, att, cmp, yds, TD, INT) with the season rating x10 on each side of every form boundary.
-LINES = {500: (4, 100, 40, 310, 3, 2), 649: (4, 100, 40, 308, 5, 0), 650: (4, 100, 40, 310, 5, 0),
-         700: (4, 100, 40, 350, 6, 0), 749: (4, 100, 40, 308, 8, 0), 750: (4, 100, 40, 310, 8, 0),
-         800: (4, 100, 40, 430, 8, 0), 849: (4, 100, 40, 548, 8, 0), 850: (4, 100, 40, 550, 8, 0),
-         900: (4, 100, 40, 670, 8, 0), 949: (4, 100, 40, 788, 8, 0), 950: (4, 100, 40, 790, 8, 0),
-         1100: (4, 100, 40, 1150, 8, 0)}
+LINES = {500: (4, 100, 40, 309, 3, 2), 649: (4, 100, 40, 307, 5, 0), 650: (4, 100, 40, 309, 5, 0),
+         700: (4, 100, 40, 349, 6, 0), 749: (4, 100, 40, 307, 8, 0), 750: (4, 100, 40, 309, 8, 0),
+         800: (4, 100, 40, 429, 8, 0), 849: (4, 100, 40, 547, 8, 0), 850: (4, 100, 40, 549, 8, 0),
+         900: (4, 100, 40, 669, 8, 0), 949: (4, 100, 40, 787, 8, 0), 950: (4, 100, 40, 789, 8, 0),
+         1100: (4, 100, 40, 1149, 8, 0)}
 D3_RECORDS = ((2, 0, 0), (1, 1, 0), (1, 2, 0), (0, 3, 0), (6, 2, 0), (4, 4, 0), (3, 4, 1), (2, 6, 0), (1, 6, 0),
               (0, 16, 0), (8, 8, 0))
 D2_RECORDS = ((1, 0, 0), (0, 1, 0), (0, 0, 1), (3, 1, 0), (2, 2, 0), (1, 2, 0), (1, 3, 0), (1, 4, 0), (1, 5, 0),
@@ -977,7 +995,7 @@ class PasserRating(League):
         self.write(0xBD7F98, 1)
         self.enter("room", installed=False)
         self.assertEqual(self.events(), [])
-        rated, errors = 0, []
+        rated, first = 0, []
         for apps, att, cmp, yds, td, ints, rating in lines:
             with self.subTest(line=(att, cmp, yds, td, ints)):
                 self.set_line(starter, (apps, att, cmp, yds, td, ints))
@@ -989,18 +1007,17 @@ class PasserRating(League):
                     self.assertEqual((att, event[9]), (0, 0))
                 else:
                     rated += 1
-                    errors.append((event[9] * 100 - rating) / 1000)
+                    self.assertLessEqual(abs(event[9] * 100 - rating), 100)     # DESIGN 6.1: within 0.1 points
+                    first.append(abs(rating10_design_v1(att, cmp, yds, td, ints) * 100 - rating) / 1000)
                 self.assertEqual(self.word(0xBD7F98), 1)
         self.assertEqual(rated, 37)
-        # DESIGN 6.1 asks for 0.1 points. The design's own integer formula (2.2: cmp * 1000 / att is truncated
-        # before the x5, and the sum is floored) reads low by up to 0.179 points here and misses 0.1 on 18 of
-        # the 37 rated lines; reported to the lead (STATUS.md, 11/20). The page implements 2.2 exactly.
-        self.assertLess(max(map(abs, errors)), 0.18)
-        self.assertLessEqual(max(errors), 0)
-        self.assertEqual(sum(abs(e) > .1 for e in errors), 18)
+        # Why DESIGN_CHANGES C4: the first integer form of 2.2 read low by up to 0.179 points and missed 0.1 on 18
+        # of these 37 lines.
+        self.assertEqual(sum(error > .1 for error in first), 18)
+        self.assertAlmostEqual(max(first), .179, places=3)
         self.set_line(starter, (17, 584, 371, 3781, 26, 12))
         self.enter("room")
-        self.assertEqual(self.last()[9], 882)
+        self.assertEqual(self.last()[9], 883)
 
 if __name__ == "__main__":
     unittest.main()
