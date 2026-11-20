@@ -115,14 +115,14 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "4680eebd79ecf7f2d121a79eeeb6cfd0d6d937ecc4cd36e17d47b184104c942c",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "f54dbceae6a00d4f5011a608c606c914faad3fd1e4820242c656bf3ff1c89b7d",
+    "mod_editor/gui/build_panel_qt.py": "4c0b347a9cd49e2d6b414f3645dfd9afe92cd1b6c7ecbc7025b5d1e856cd392a",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "2c658a513d0c8abc17f29038ad47a4513c60667ccc860865dc1379d03b74eeed",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "1e29191fb9537c14f5e846d49ed68397107851b6bb43dcb16e3975d4d88800d8",
     "mod_editor/gui/beta62_options.py": "009c389062334a451c15c8e9b312c02e5521b1516bc706c2a48b127ecbcfa858",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "4680eebd79ecf7f2d121a79eeeb6cfd0d6d937ecc4cd36e17d47b184104c942c",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "f54dbceae6a00d4f5011a608c606c914faad3fd1e4820242c656bf3ff1c89b7d",
+    "mod_editor/gui/build_panel_qt.py": "4c0b347a9cd49e2d6b414f3645dfd9afe92cd1b6c7ecbc7025b5d1e856cd392a",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "2c658a513d0c8abc17f29038ad47a4513c60667ccc860865dc1379d03b74eeed",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "1e29191fb9537c14f5e846d49ed68397107851b6bb43dcb16e3975d4d88800d8",
     "mod_editor/gui/beta62_options.py": "009c389062334a451c15c8e9b312c02e5521b1516bc706c2a48b127ecbcfa858",
@@ -1922,6 +1922,7 @@ def main() -> int:
         "mod_editor.gui.roster_editor_panel_qt",
         "mod_editor.gui.espn25_panel_qt",
         "mod_editor.gui.franchise_panel_qt",
+        "mod_editor.gui.franchise_stats_qt",                     # b81 R41 Team Stats and Box score
         "mod_editor.gui.coaches_panel_qt",                       # b780-c4 Rosters > Coaches
         "mod_editor.gui.task_delivery",
         "mod_editor.gui.ux_text",
@@ -2057,6 +2058,10 @@ def main() -> int:
         "mod_editor.core.nfl2k5_real_portraits",                  # b779-pt1
         "mod_editor.core.nfl2k5_portrait_preview",                # b81 R11
         "mod_editor.core.nfl2k5_team_transfer",                   # b81 wave 3
+        "mod_editor.core.nfl2k5_team_stats",                      # b81 R41
+        "mod_editor.core.nfl2k5_depth_file",                      # b81 R43 F13
+        "mod_editor.core.nfl2k5_player_health",                   # b81 finn-r2 Heal Player
+        "mod_editor.core.nfl2k5_coach_file",                      # b81 R2 (Finn coach file)
         "mod_editor.core.nfl2k5_ps2_rosters",                     # b81 wave 3
         "mod_editor.core.nfl2k5_practice_injuries",               # b778-pi1
         "mod_editor.core.nfl2k5_ball_carrier_ai",                 # b778-ai5

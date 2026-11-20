@@ -87,8 +87,10 @@ class ProjectSettings(unittest.TestCase):
                     target = Path(directory) / "private-copy.iso"
                     plan = mod_build.sim_qb_disc_edit(str(source), str(target), mode)
                     receipt = mod_build.preflight_plan(plan)
+                    # b81 scoring: an in-place copy also gets the CPU kick-aim repair that rides with the kicking fixes.
+                    from mod_editor.core import nfl2k5_cpu_kick_aim as aim
                     self.assertEqual(receipt["sim_qb_source_update"], {
-                        "source_sha256": digest, "result_sha256": hashlib.sha256(current).hexdigest(),
+                        "source_sha256": digest, "result_sha256": hashlib.sha256(aim.apply(current)[0]).hexdigest(),
                         "source_simulator": source_state, "simulator_upgraded": source_state == "legacy",
                         "settings": medical.read_settings(current),
                     })
@@ -108,6 +110,9 @@ class ProjectSettings(unittest.TestCase):
             with patch.object(mod_build, "_xbe_bytes", return_value=b"private standard executable"), \
                     patch.object(cards, "status", return_value="retail"), patch.object(mod_build, "_core_module") as core:
                 core.return_value.read_settings.return_value = state
+                # b81 scoring: the exporter also reads the installed simulator scoring sites (here: an install from
+                # before the scoring slice, so the recipe carries no breakaway setting).
+                core.return_value.installed.return_value = ("retail", None)
                 portable, assets = modpack_sources.prepare(recipe, root / "work", patched_image=root / "copy.iso")
                 bundle = root / "sources.2k5sources"
                 info = modpack_sources.write_bundle(bundle, portable, assets)

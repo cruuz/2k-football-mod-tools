@@ -523,3 +523,6 @@ class SignedThirdSeasonExchange(_NativeExchange):
         by_retail = self.exchange(written[0], league, 'third season')
         self.assertEqual(by_retail, written, 'third season: Retail wrote the franchise differently from Realistic')
 
+
+if __name__ == "__main__":
+    unittest.main()

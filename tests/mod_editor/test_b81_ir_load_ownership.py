@@ -394,3 +394,7 @@ class SignedFranchiseTests(unittest.TestCase):
                 expected_ir[0] = 0
                 expected_ir[4:12] = bytes(8)
             self.assertEqual(new, expected_ir, club)
+
+
+if __name__ == "__main__":
+    unittest.main()

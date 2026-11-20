@@ -462,6 +462,36 @@ class BuildHook(unittest.TestCase):
         self.assertEqual(kf.DATA_B81U, ROOT / "data/nfl2k5_kit_fixes_2026_b81u.json")
         self.assertEqual(gf.DATA_B81U, ROOT / "data/nfl2k5_glyph_fixes_2026_b81u.json")
 
+    def test_the_shipped_documents_pass_the_release_gate_text_checks(self):
+        # Beta 81 CI: the retail-free release gate refused the digit document, whose references named photographs by
+        # their absolute download path, and then the compact kit documents, whose whitespace-free runs read as
+        # embedded binary blobs. Every shipped b81 document goes through the gate's own text check here, and the
+        # generator's writer refuses both faults.
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("check_2k5_mod_studio_release",
+                                                      ROOT / "packaging/check_2k5_mod_studio_release.py")
+        gate = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(gate)
+        allow = set((ROOT / "packaging/release-allowlist.txt").read_text(encoding="utf-8").splitlines())
+        documents = sorted(f"data/{path.name}" for path in (ROOT / "data").glob("*_b81*.json"))
+        self.assertTrue({"data/nfl2k5_kit_fixes_2026_b81.json", "data/nfl2k5_kit_fixes_2026_b81u.json",
+                         "data/nfl2k5_glyph_fixes_2026_b81u.json"} <= set(documents) & allow)
+        for relative in documents:
+            with self.subTest(document=relative):
+                path = ROOT / relative
+                limit = gate.REVIEWED_METADATA.get(relative, (gate.MAX_RELEASE_FILE_BYTES,))[0]
+                gate._hash_and_validate_text(path, relative, path.stat().st_size, limit)
+        private = gate.FORBIDDEN_PRIVATE_TEXT_FRAGMENTS[1] + "/Storage/project/photo.jpg"
+        with self.assertRaisesRegex(ValueError, "private host path"):
+            up.shipped_json({"references": {"CHI": [private]}}, indent=1, sort_keys=True)
+        runs = {"textures": [{"runs": [[row, 0, "09" * 1500] for row in range(3)]}]}
+        with self.assertRaisesRegex(ValueError, "4,096"):
+            up.shipped_json(runs, separators=(",", ":"), sort_keys=True)
+        self.assertEqual(up.shipped_json(runs, sort_keys=True), json.dumps(runs, sort_keys=True) + "\n")
+        document = {"references": {"CHI": ["dl/batch5/photo.jpg"]}}
+        self.assertEqual(up.shipped_json(document, indent=1, sort_keys=True),
+                         json.dumps(document, indent=1, sort_keys=True) + "\n")
+
 
 class _FakeEntry:
     def __init__(self, name_id):

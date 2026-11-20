@@ -568,12 +568,17 @@ class StudioWiring(unittest.TestCase):
         self.assertFalse(mod_build._period_goalposts_wanted(SimpleNamespace(modern_goalposts=True), False))
         self.assertFalse(mod_build._period_goalposts_wanted(SimpleNamespace(modern_goalposts=False), True))
         self.assertIn("period_goalposts", mod_build.tt.R62_SPACE_KEYS)
-        self.assertIsNone(mod_build._r62_plan_options(SimpleNamespace(**{k: None for k in mod_build.tt.R62_RUNTIME_KEYS}))["period_goalposts"])
+        # d75921d84: the options also derive sim_qb_standard from the plan's sim_qb_injuries choice
+        plan = SimpleNamespace(**{k: None for k in mod_build.tt.R62_RUNTIME_KEYS}, sim_qb_injuries=None)
+        self.assertIsNone(mod_build._r62_plan_options(plan)["period_goalposts"])
 
     def test_the_manifest_generator_knows_the_owner(self):
         text = (ROOT / "mod_editor/core/nfl2k5_cave_manifest.py").read_text()
         self.assertGreaterEqual(text.count("nfl2k5_period_goalposts"), 2)
-        self.assertIn("+ period.REQUESTS", text)
+        # f2338d527: the generator allocates space.dormant_union(), the one request list its allocator proof shares
+        import inspect
+        self.assertIn("all_requests = space.dormant_union()", text)
+        self.assertIn("+ period.REQUESTS", inspect.getsource(space.dormant_union))
         self.assertIn("final, _ = period.apply(final)", text)
 
 

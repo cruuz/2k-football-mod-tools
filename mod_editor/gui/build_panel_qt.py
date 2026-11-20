@@ -1125,9 +1125,11 @@ class BuildPanel(QWidget):
                                              "Kickoff: 35 · touchback: 35 · PAT snap: 15.",
                                              details="These describe the shipped patch, not a newly verified NFL ruleset. Two-point tries stay at the 2; "
                                                      "the kick meter and kicker curves are re-spaced so a 99 leg reaches 65-69 yards; onside and safety "
-                                                     "kicks are untouched; the CPU keeps its original field-goal range for fourth-down decisions.")
+                                                     "kicks are untouched; the CPU keeps its original field-goal range for fourth-down decisions. "
+                                                     "CPU kickers aim with two thirds of their original error (your own kicks are unchanged).")
         self.kick_power_check = self._option(g, "kick_power", "More kicking power; keep 2004 kick spots",
-                                             "The Basic preset's kicking fix: ~70-yard legs for elite kickers, original kick spots.")
+                                             "The Basic preset's kicking fix: ~70-yard legs for elite kickers, original kick spots. "
+                                             "CPU kickers also aim with two thirds of their original error.")
         self.kickoff_alignment_check = self._option(g, "kickoff_alignment", "Dynamic kickoff alignment",
                                                     "Coverage on the receiving 40, return setup zone 35-30, two returners deep.",
                                                     badge=NOT_TESTED, needs_image=True)
@@ -2082,7 +2084,10 @@ class BuildPanel(QWidget):
                      "change, so injuries neither creep up nor die out over a long franchise; a more durable player is "
                      "still hurt less often than a less durable one. "
                      "While it is on, the weekly running back roll is replaced by the per-carry chance, and your own club "
-                     "is treated like every other club in the games you simulate. Games you play are not changed. "
+                     "is treated like every other club in the games you simulate. Simulated games also get modern NFL "
+                     "field goal accuracy by distance, CPU clubs try 50-yard field goals about as often as NFL teams, and a "
+                     "catch-and-run breakaway that starts inside the offense's own 28 is tackled at the 10 instead of always "
+                     "scoring. Games you play are not changed. "
                      "Realistic and Custom require 128 MB and Simulated season realism.")
         caption = QLabel("Simulated injuries (all positions)")
         self.qb_injury_mode = QComboBox()
