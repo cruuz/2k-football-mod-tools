@@ -482,9 +482,15 @@ def owners(opts: dict, target_mb: int = 64) -> list:
     if target_mb == 128 and (on(opts, "injured_reserve_guard") or on(opts, "modern_injured_reserve")):
         out.append("franchise_ownership")
     from .nfl2k5_build_settings import qb_room_level, qb_room_needs_met  # b81 qb34
-    # Named, or following the quarterback injury option where its needs are in the plan (DESIGN_CHANGES C1).
-    if qb_room_level(opts.get("qb_room"), opts.get("sim_qb_injuries")) == "realistic" and (
-            opts.get("qb_room") is not None or (target_mb == 128 and qb_room_needs_met(opts.get))):
+    from . import nfl2k5_qb_room as room
+    # The floor whenever quarterback injuries are above zero (coordinator's rule); piece 3's handed-over bits where
+    # named or where their needs are in the plan (DESIGN_CHANGES C1).
+    injuries = (opts.get("sim_qb_injuries") == "realistic"
+                or (opts.get("sim_qb_injuries") == "custom" and opts.get("sim_qb_injury_rate", 0.310) > 0))
+    piece3 = (room.REALISTIC_STAGES & room.PIECE3_BITS
+              and qb_room_level(opts.get("qb_room"), opts.get("sim_qb_injuries")) == "realistic"
+              and (opts.get("qb_room") is not None or (target_mb == 128 and qb_room_needs_met(opts.get))))
+    if (target_mb == 128 and injuries) or piece3:
         out.append("qb_room")
     return out + list(INFRASTRUCTURE) if out else out
 

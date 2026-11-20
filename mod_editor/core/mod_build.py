@@ -1004,16 +1004,22 @@ def _qb_room_resolution(plan, payload=None):
     in-place plan reports what it asks for (callers that write always pass the executable)."""
     from .nfl2k5_build_settings import qb_room_level, qb_room_needs_met
     level = qb_room_level(plan.qb_room, plan.sim_qb_injuries)
-    if plan.qb_room is not None or level != "realistic":
-        return level, None
+    if plan.qb_room is not None or level != "realistic" or not _piece3_bits():
+        return level, None  # with no piece 3 bit handed over there is nothing to leave out
     if isinstance(plan, (_InstalledSimQbEdit, _ReleasedV09Update)):
         if payload is None:
             return level, None
         room = _core_module("nfl2k5_qb_room")
-        ready = room is not None and not room.requirements(payload)
+        ready = room is not None and not room.requirements(payload, _piece3_bits())
     else:
         ready = qb_room_needs_met(lambda name: getattr(plan, name))
     return (level, None) if ready else (None, _QB_ROOM_LEFT_OUT)
+
+
+def _piece3_bits():
+    """b81 qb34: piece 3's bits the Studio installs (REALISTIC_STAGES); 0 while none is handed over."""
+    room = _core_module("nfl2k5_qb_room")
+    return room.REALISTIC_STAGES & room.PIECE3_BITS if room is not None else 0
 
 
 def _qb_room_level(plan, payload=None):
@@ -4809,7 +4815,7 @@ def validate_plan(plan: BuildPlan) -> list[str]:
         validate_qb_room(plan.qb_room)
     except ValueError as exc:
         return [str(exc)]
-    if (plan.qb_room == "realistic" and not isinstance(plan, (_InstalledSimQbEdit, _ReleasedV09Update))
+    if (plan.qb_room == "realistic" and _piece3_bits() and not isinstance(plan, (_InstalledSimQbEdit, _ReleasedV09Update))
             and not qb_room_needs_met(lambda name: getattr(plan, name))):
         # b81 qb34: only a named Realistic is refused; a followed one is left out with a note. The in-place edits
         # check the executable instead (nfl2k5_qb_room.requirements).

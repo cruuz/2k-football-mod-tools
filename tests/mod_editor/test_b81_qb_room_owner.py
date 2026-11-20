@@ -95,11 +95,13 @@ class AllocatorPlacementTests(unittest.TestCase):
 
 class MemoryBudgetTests(unittest.TestCase):
     def test_the_room_row_follows_the_quarterback_option_unless_named(self):
+        # The floor rides with injuries above zero (coordinator's rule); no piece 3 bit ships at the floor handover.
         needs = {"k128_memory": True, "depth_locks": True, "depth_chart_rows": True}
         cases = (({"sim_qb_injuries": "realistic", **needs}, True), ({"sim_qb_injuries": "custom", **needs}, True),
-                 ({"sim_qb_injuries": "realistic", "k128_memory": True}, False),  # followed, needs missing: left out
+                 ({"sim_qb_injuries": "realistic", "k128_memory": True}, True),
+                 ({"sim_qb_injuries": "custom", "sim_qb_injury_rate": 0.0, **needs}, False),
                  ({"sim_qb_injuries": "retail", **needs}, False), (needs, False),
-                 ({"sim_qb_injuries": "realistic", "qb_room": "retail", **needs}, False), ({"qb_room": "realistic"}, True))
+                 ({"sim_qb_injuries": "realistic", "qb_room": "retail", **needs}, True), ({"qb_room": "realistic"}, False))
         for opts, expected in cases:
             with self.subTest(opts=opts):
                 self.assertEqual("qb_room" in budget.owners(opts, 128), expected)
@@ -108,7 +110,7 @@ class MemoryBudgetTests(unittest.TestCase):
     def test_the_resident_executable_reaches_the_end_of_the_room(self):
         base = {"k128_memory": True, "sim_qb_injuries": "realistic", "depth_locks": True, "depth_chart_rows": True}
         with_room = budget.xbe_resident(base, 128)
-        without = budget.xbe_resident(dict(base, qb_room="retail"), 128)
+        without = budget.xbe_resident(dict(base, sim_qb_injuries="custom", sim_qb_injury_rate=0.0), 128)
         # The quarterback bank ends at 0x1528000; the room's pages end at 0x152C000.
         self.assertEqual(with_room - without, 0x152C000 - 0x1528000)
 
@@ -133,7 +135,9 @@ class OwnerTests(unittest.TestCase):
         cls.room, cls.code = room, room._code()
         cls.source = _private("NFL2K5_B81_REVIEWED_TEST_DISC", HELMET_XBE_SHA)
         cls.slice1, _ = qb.apply(cls.source, "realistic")
-        cls.applied, cls.receipt = room.apply(cls.slice1, "realistic")
+        # Page mechanics on a D1 page through the calibration path (the Studio installs no piece 3 bit at the floor
+        # handover, and its Realistic needs modern IR, which this executable lacks).
+        cls.applied, cls.receipt = room.install_stages(cls.slice1, cls.code.STAGE_D1)
 
     def test_settings_and_status(self):
         room = self.room
@@ -142,18 +146,19 @@ class OwnerTests(unittest.TestCase):
                                                            "va": None})
         settings = room.read_settings(self.applied)
         self.assertEqual((settings["status"], settings["stages"], settings["shadow"], settings["va"]),
-                         ("applied", room.REALISTIC_STAGES, room.SHADOW_DEFAULT, 0x1529000))
-        # Stage 3a handover: D1 only, shadow off (3b, 3c and 4a stay off).
-        self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT), (self.code.STAGE_D1, False))
-        self.assertEqual((settings["stages"], settings["shadow"]), (1, False))
+                         ("applied", self.code.STAGE_D1, False, 0x1529000))
+        # Floor handover (designer's addendum 2): no piece 3 bit ships; the floor comes from the injury level.
+        self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT), (0, False))
+        self.assertEqual(room.realistic_stages(), room.STAGE_FLOOR | room.STAGE_OVER_CAP)
+        self.assertEqual(settings["stage_names"], ["D1 veteran or rookie"])
         row = _room_row(space.layout(self.applied)["allocations"])
         self.assertEqual((row["va"], row["size"]), (0x1529000, 0x3000))
 
     def test_the_page_and_sites_hold_exactly_the_linked_template(self):
         code, image = self.code, XbeImage(self.applied)
-        record = code.settings_record(self.room.REALISTIC_STAGES, shadow=self.room.SHADOW_DEFAULT)
+        record = code.settings_record(code.STAGE_D1, shadow=False)
         self.assertEqual(image.read(0x1529000, 0x3000), code.page_bytes(0x1529000, record))
-        for label, at, original, patched in code.sites(0x1529000, self.room.REALISTIC_STAGES):
+        for label, at, original, patched in code.sites(0x1529000, code.STAGE_D1):
             self.assertEqual(image.read(at, 5), patched, label)
             self.assertEqual(XbeImage(self.slice1).read(at, 5), original, label)
         sign = next(h for h in code.HOOKS if h[2] == "sign_entry")
@@ -167,10 +172,10 @@ class OwnerTests(unittest.TestCase):
         self.assertEqual(receipt["status"], "retail")
         self.assertEqual(XbeImage(retail).read(0x1529000, 0x3000), b"\xcc" * 0x3000)
         self.assertEqual(room.read_settings(retail)["reserved"], True)
-        self.assertEqual(room.apply(retail, "realistic")[0], self.applied)
+        self.assertEqual(room.install_stages(retail, self.code.STAGE_D1)[0], self.applied)
         self.assertEqual(room.apply(self.slice1, "retail"), (self.slice1, room.apply(self.slice1, "retail")[1]))
         self.assertEqual(room.apply(self.slice1, "retail")[1]["changed_bytes"], 0)
-        again, receipt = room.apply(self.applied, "realistic")
+        again, receipt = room.install_stages(self.applied, self.code.STAGE_D1)
         self.assertEqual((again, receipt["status"]), (self.applied, "already_applied"))
 
     def test_a_calibration_record_is_recognized_and_replaced_by_the_studio_record(self):
@@ -181,7 +186,7 @@ class OwnerTests(unittest.TestCase):
         settings = room.read_settings(custom)
         self.assertEqual((settings["status"], settings["stages"], settings["shadow"], settings["h0_ppm"]),
                          ("applied", 3, False, 12500))
-        self.assertEqual(room.apply(custom, "realistic")[0], self.applied)
+        self.assertEqual(room.install_stages(custom, code.STAGE_D1)[0], self.applied)
 
     def test_a_signing_stage_page_links_the_ir_store_and_retail_restores_all_three_sites(self):
         from mod_editor.core import nfl2k5_injured_reserve as ir
@@ -251,7 +256,7 @@ class OwnerTests(unittest.TestCase):
         if not retail.is_file():
             self.skipTest("the private retail default.xbe is absent")
         payload = retail.read_bytes()
-        self.assertEqual(len(self.room.requirements(payload)), 3)
+        self.assertEqual(len(self.room.requirements(payload, self.code.STAGE_D1)), 3)
         self.assertEqual(self.room.status(payload), "retail")
         with self.assertRaisesRegex(ValueError, "128 MB standard executable"):
             self.room.apply(payload, "realistic")
@@ -370,7 +375,7 @@ class FloorOwnerTests(unittest.TestCase):
         room, code = self.room, self.code
         if not hasattr(code, "STAGE_FLOOR"):
             self.skipTest("the page template has no floor yet ([native] commits it)")
-        applied, _ = room.apply(self.slice1, "realistic")
+        applied, _ = room.install_stages(self.slice1, code.STAGE_D1)
         stages = code.STAGE_D1 | room.STAGE_FLOOR
         record = code.settings_record(stages)
         page = code.page_bytes(0x1529000, record, ir_store_va=room._ir_store_va(applied, stages))
@@ -422,8 +427,8 @@ class ReleasedV09OwnerTests(unittest.TestCase):
     def test_the_released_v09_executable_takes_and_returns_the_room(self):
         from mod_editor.core import nfl2k5_qb_room as room
         source = _private("NFL2K5_V09_XISO", V09_XBE_SHA)
-        self.assertEqual(room.requirements(source), [])
-        applied, receipt = room.apply(source, "realistic")
+        self.assertEqual(room.requirements(source, room._code().STAGE_D1), [])
+        applied, receipt = room.install_stages(source, room._code().STAGE_D1)
         self.assertEqual(room.status(applied), "applied")
         before = space.layout(source)["allocations"]
         after = space.layout(applied)["allocations"]

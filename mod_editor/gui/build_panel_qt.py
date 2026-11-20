@@ -2081,10 +2081,11 @@ class BuildPanel(QWidget):
         help_text = ("For simulated franchise games, including your club. Realistic uses quarterback Durability and "
                      "adjusts simulated passing. Games you play use their original injuries and passing. "
                      "Realistic and Custom require 128 MB and Simulated season realism. "
-                     "The rules for who starts at quarterback ride with Realistic and Custom when depth chart locks "
-                     "and SPECIAL rows are on, and Retail removes them. Realistic and Custom above 0 percent also add "
-                     "modern injured reserve, the franchise economy and reserve save compatibility, so a club is never "
-                     "left without a quarterback.")
+                     "Realistic and Custom above 0 percent also add modern injured reserve, the franchise economy and "
+                     "reserve save compatibility, so a club is never left without a quarterback.")
+        if mod_build._piece3_bits():  # b81 qb34: said only once piece 3's rules are handed over to the Studio
+            help_text += (" The rules for who starts at quarterback ride with Realistic and Custom when depth chart "
+                          "locks and SPECIAL rows are on, and Retail removes them.")
         caption = QLabel("Simulated quarterback injuries")
         self.qb_injury_mode = QComboBox()
         caption.setBuddy(self.qb_injury_mode)

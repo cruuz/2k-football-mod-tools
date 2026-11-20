@@ -128,7 +128,8 @@ def prepare(recipe_path, work, *, stack=None, marks_pack=None, patched_image=Non
                 if state["mode"] == "custom":
                     effective["sim_qb_injury_rate"] = state["custom_rate"]
         room = mod_build._core_module("nfl2k5_qb_room")  # b81 qb34: record the disc's quarterback room rules
-        if effective.get("qb_room") is not None or (room is not None and payload is not None):
+        # The key names piece 3's rules only; until a piece 3 bit is handed over there is nothing to record.
+        if mod_build._piece3_bits() and (effective.get("qb_room") is not None or (room is not None and payload is not None)):
             from .nfl2k5_build_settings import qb_room_level
             m._require(room is not None and payload is not None, "Cannot verify the disc's quarterback room setting")
             room_state = room.read_settings(payload)

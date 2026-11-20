@@ -20,14 +20,14 @@ REQUESTS = (space.QB_ROOM_REQUEST,)
 VA = space.QB_ROOM_VA
 SIZE = space.QB_ROOM_SIZE
 LEVELS = ("retail", "realistic")
-# The stage bits move here one stage at a time, after each stage's tests and panel (BUILD_ORDERS order 3).
-# Stage 0 (hooks in place, shadow only) ended with the stage 3a handover (lead, 2026-11-20): D1 (veteran or rookie at
-# the start of the season; T1, T2 and the full-image T16) is live and shadow is off. 3b, 3c and 4a stay off.
-REALISTIC_STAGES = 1  # nfl2k5_qb_room_code.STAGE_D1
+# Piece 3's stage bits for the Studio move here one stage at a time, after each stage's tests and panel (BUILD_ORDERS
+# order 3). Floor handover (lead, after the designer's addendum 2, R1 to R7): no piece 3 bit ships yet; the floor
+# (FLOOR_STUDIO_STAGES below) ships alone, from the injury level. Later handovers set D1 | D2, then D3, then D4.
+REALISTIC_STAGES = 0
 SHADOW_DEFAULT = False
 ERRORS = (ValueError, TypeError, IndexError, KeyError, OverflowError, struct.error)
-# The floor (DESIGN addendum F1 to F8): stage bit 64, Realistic only, in REALISTIC_STAGES from its handover on and never
-# on a cut list. Its site is the signing call at 0x248010 (installed for bit 8 or 64). Its last resort enters the native
+# The floor (DESIGN addendum F1 to F8): stage bit 64, Realistic only, installed from the injury level (C7 below) and
+# never on a cut list. Its site is the signing call at 0x248010 (installed for bit 8 or 64). Its last resort enters the native
 # signing routine past the gates the way both gates do: `sub esp, 0x114`, then `jmp 0x322BB6` (F3 step 8). So the
 # routine's first instruction must be that one (retail) or one of the recognized gate jumps that perform it, and its
 # body from 0x322BB6 through `add esp, 0x114; ret 0x10` must be the retail bytes (F7.5); anything else is refused.
@@ -55,6 +55,11 @@ def stage_names(stages):
 def studio_stages(injuries_above_zero, piece3):
     """The stage set the Studio installs: the floor whenever injuries are above zero, piece 3 where C1a allows it."""
     return (FLOOR_STUDIO_STAGES if injuries_above_zero else 0) | ((REALISTIC_STAGES & PIECE3_BITS) if piece3 else 0)
+
+
+def realistic_stages():
+    """apply(payload, "realistic") with no stage set: what the Studio installs for Realistic injuries with piece 3."""
+    return studio_stages(True, True)
 
 
 class QbRoomError(ValueError):
@@ -207,7 +212,7 @@ def requirements(payload, stages=None):
     missing is an error, never a silent skip."""
     from . import nfl2k5_depth_locks as locks, nfl2k5_k128 as memory, nfl2k5_lineup_roles as lineup
     code = _code()
-    stages = REALISTIC_STAGES if stages is None else stages
+    stages = realistic_stages() if stages is None else stages
     _check_stage_set(stages)
     missing = []
     try:
@@ -267,7 +272,7 @@ def _edits(va, stages, page, *, restoring):
 
 def apply(payload, level="realistic", *, stages=None):
     """Install or restore on an existing standard executable without moving any installed owner. ``stages`` is the
-    Studio's set for Realistic (studio_stages); None means REALISTIC_STAGES."""
+    Studio's set for Realistic (studio_stages); None means realistic_stages()."""
     _require(level in LEVELS, "Choose Retail or Realistic for the quarterback room rules")
     source = bytes(payload)
     XbeImage(source)
@@ -288,7 +293,7 @@ def apply(payload, level="realistic", *, stages=None):
         _require(_state(result)[0] == "retail", "The quarterback room failed Retail readback")
         return result, {**receipt, "status": "retail", "restored_stages": settings["stages"],
                         "changed_bytes": space.count_differing_bytes(source, result), "file_growth": 0}
-    stages = REALISTIC_STAGES if stages is None else stages
+    stages = realistic_stages() if stages is None else stages
     _require(type(stages) is int and stages > 0, "Realistic needs at least one quarterback room stage")
     return _install(source, current, settings, allocation, receipt, stages, SHADOW_DEFAULT)
 
@@ -296,7 +301,7 @@ def apply(payload, level="realistic", *, stages=None):
 def install_stages(payload, stages, *, shadow=False, test_without_needs=False):
     """Calibration and test path only (season panels, owner tests): install a named stage set with the same
     authentication, needs and readback as Realistic. Nothing in the Studio calls it; the Studio writes only
-    REALISTIC_STAGES through apply() (a test pins both). ``test_without_needs`` skips only the dependency checks (the
+    studio_stages() sets through apply() (a test pins both). ``test_without_needs`` skips only the dependency checks (the
     128 MB standard, locks, roles, economy, practice squad, modern IR, ownership), never the byte authentication of
     the routines the floor enters: it exists to replay recorded seasons on executables made before those owners."""
     source = bytes(payload)
