@@ -23,8 +23,9 @@ Kinds (``do``):
             ramp, read from ``rgba``) are copied by ``by`` [dx, dy]. The texels they leave (members not covered by the
             moved art) first take ``vacate``: {"to": "#RRGGBB"} (a flat field colour) or {"copy_by": [dx, dy]} (the
             input's plain cloth that far away: a strip of the same fabric below the chest marks).
-``map``     a short exact colour table inside boxes (``pairs`` [[old, new], ...], matched on the texture so far):
-            only where nothing parametric is exact.
+``map``     an exact colour table inside boxes (``pairs`` [[old, new], ...], matched on the texture so far; colour
+            pairs only, no positions): only where nothing parametric is exact, e.g. a donor's art stamped 1:1 and
+            requantised to this kit's palette the way the round-1 compile did (26H4 from 26H0).
 ``cols``    narrow a mark by taking whole columns out: inside rows ``rows`` [y0, y1) of the input, the columns of
             ``src`` (a list of runs [x0, x1)) are laid side by side from column ``at`` (rows shifted by ``dy``),
             copying only member texels of ``boxes``; the members of the old mark not covered are first vacated as for
@@ -180,8 +181,9 @@ def _scale(out, op, rgba):
 
 
 def _map(out, op, rgba):
-    """A short exact colour table inside boxes: texels whose colour is exactly ``pairs``[i][0] take ``pairs``[i][1].
-    Used only where no parametric rule is exact (a texel the compile's palette-twin merge moved by one level)."""
+    """An exact colour table inside boxes: texels whose colour is exactly ``pairs``[i][0] take ``pairs``[i][1] (every
+    pair is matched on the texture as it was before this op, so pairs never chain). Used only where no parametric
+    rule is exact: texels the compile's palette-twin merge moved by one level, a donor copy requantised to this kit."""
     zone = _boxes(out.shape, op["boxes"], op.get("keep", ()))
     c = out[..., :3].astype(np.int64)
     new = out.copy()
