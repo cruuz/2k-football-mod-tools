@@ -598,6 +598,22 @@ class NativeLineupTests(unittest.TestCase):
                 self.assertEqual(direct(), 0xFFFFFFFF)
         self.assertEqual(direct(), self.links[314][(3, 147)])
 
+    def test_the_six_unresolved_attract_selections_are_not_gadget_plays(self):
+        """Q62's six attract-game snaps whose field showed the GAD at WR slot 9 (ATL 45/105; ARZ 47/132, 47/151,
+        47/104, 23/100, 47/109): none is a table link, so the classifier refuses them and the lineup is the game's,
+        on both controls. Whatever put the GAD there, it was not this rule's snap-time decision."""
+        lookup = gadget.CODE_VA + template.LABELS["select_slot"]
+        for asset, form, play in ((308, 45, 105), (307, 47, 132), (307, 47, 151), (307, 47, 104), (307, 23, 100),
+                                  (307, 47, 109)):
+            self.assertNotIn((form, play), self.links[asset])
+            for human in (False, True):
+                with self.subTest(asset=asset, formation=form, play=play, human=human):
+                    book = self.setup_book(asset, 0, human)
+                    c, f, _p = self.select(book, form, play, 0, human)
+                    self.assertEqual(self.after.m.call(lookup, args=(BOOKS[0], CHOICE[0] + 4, c, f), budget=20000),
+                                     0xFFFFFFFF)
+                    self.assertEqual(self.after.line(0), self.before.line(0))
+
     def test_fc1_punt_set_up_frames_keep_the_games_lineup(self):
         """The type-12 set-up (0x18B184) with the punt formations recovered from FC1's crash frames."""
         for asset, fi, ci in ((312, 38, 14), (315, 38, 14), (325, 40, 15)):
