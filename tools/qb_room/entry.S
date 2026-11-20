@@ -83,4 +83,48 @@ pregame_entry:
     popad
     popfd
     ret
+/* The end of the weekly advance (floor review F2; qb34/evidence/floor/F2-hook-points.md): 0x24807A `call 0x27EB80`
+   points here. room_pass runs as in room_entry (still in the template, unused), then the news routine 0x27EB80 itself,
+   then, with stage bit 64, emergency_pass(the kept menu, 2): the floor is the last thing the weekly advance does. The
+   return lands at 0x24807F (its epilogue) with the registers 0x27EB80 left; the flags are the floor's to keep too. */
+.global end_entry, stage_entry
+end_entry:
+    pushfd
+    pushad
+    cld
+    call room_pass              /* void __attribute__((cdecl)) room_pass(void) */
+    popad
+    popfd
+    call 0x27eb80
+    pushfd
+    pushad
+    cld
+    test byte ptr [qb_settings + 12], 64
+    jz 1f
+    push 2                      /* point = 2 */
+    push dword ptr [qb_menu]
+    call emergency_pass
+    add esp, 8
+1:
+    popad
+    popfd
+    ret
+/* The end of the stage advance: 0x248687 `call 0x27EDF0` (installed with bit 64) points here: 0x27EDF0, then the floor
+   for the new stage (point 3), after both camp cuts to 53 (0x2485DB, 0x24867B) and every stage change; only the
+   lineup owner's 0x151D489 runs after it. */
+stage_entry:
+    call 0x27edf0
+    pushfd
+    pushad
+    cld
+    test byte ptr [qb_settings + 12], 64
+    jz 1f
+    push 3                      /* point = 3 */
+    push dword ptr [qb_menu]
+    call emergency_pass
+    add esp, 8
+1:
+    popad
+    popfd
+    ret
 .section .note.GNU-stack,"",@progbits

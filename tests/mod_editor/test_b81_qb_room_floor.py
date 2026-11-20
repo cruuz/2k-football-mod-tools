@@ -34,10 +34,20 @@ def hurt(weeks):
     return 0x80000000 | weeks << 22
 
 
+GRID = 0xE57C40                                   # the schedule grid: 374 cells of (status, home, away, ...)
+
+
 class FloorLeague(SignLeague):
     def setUp(self):
         super().setUp()
         self.floor_settings()
+        self.write(0xE576B0, 18)                      # the stage's week count (regular-season rows 0..17)
+        self.schedule(SIGN_CLUB, SIGN_CLUB + 1)       # F6: the club under test has a next game (cell 1, unplayed)
+
+    def schedule(self, home, away, *, cell=1, status=0):
+        """One schedule cell (kind, home, away, month) with both sides known (flags at 0xE57954)."""
+        self.uc.mem_write(GRID + 8 * cell, bytes([status, home, away, 9]))
+        self.uc.mem_write(0xE57954 + 2 * cell, b"\x01\x01")
 
     # -- settings and entries
     def floor_settings(self, *, stages=None, shadow=False):
@@ -490,6 +500,78 @@ class FloorReview(FloorLeague):
         self.assertEqual(self.counters()["floor_swaps"], 1)
 
 @unittest.skipUnless(base.HAVE_UC, "Unicorn is required")
+class AdvancePoints(FloorLeague):
+    """Floor review F2 and F6 (evidence qb34/evidence/floor/F2-hook-points.md). The end-of-advance point: 0x24807A, the
+    weekly advance's last call (`call 0x27EB80`, then the epilogue), in every stage. The stage advance's end: 0x248687
+    (`call 0x27EDF0`), reached after both camp cuts to 53 and every stage change. Here the news routine 0x27EB80 and the
+    switch 0x27EDF0 are leaves (ret): the synthetic league has no news state; the full-image proof runs them."""
+    END_SITE, END_RETURN = 0x24807A, 0x24807F
+    STAGE_SITE, STAGE_RETURN = 0x248687, 0x24868C
+
+    def setUp(self):
+        super().setUp()
+        self.floor_settings(stages=FLOOR)
+        for at in (0x27EB80, 0x27EDF0):
+            self.uc.mem_write(at, b"\xc3")
+        self.uc.ctl_flush_tb()
+
+    def enter_point(self, site, back):
+        """The call at `site` as installed (or retail on a template without it), run to the instruction after it."""
+        calls = {at: new for _, at, _, new in room.sites(VA, self.stages)}
+        call = calls.get(site, dict((at, old) for at, old, _l, _n in room.HOOKS).get(site))
+        if call is None:
+            call = bytes(self.uc.mem_read(site, 5))
+        self.uc.mem_write(site, call)
+        self.uc.ctl_flush_tb()
+        self.write(VA + room.MENU_SLOT, MENU)
+        self.uc.reg_write(self.x.UC_X86_REG_ESP, STACK)
+        self.uc.emu_start(site, back, count=300_000_000)
+        self.assertEqual(self.uc.reg_read(self.x.UC_X86_REG_EIP), back)
+        self.assertEqual(self.uc.reg_read(self.x.UC_X86_REG_ESP), STACK)      # the call returned
+
+    def lost_after_the_games(self, stage=8):
+        self.write(0xE576A4, stage)
+        starter = QB(78, 0)
+        self.squad([starter], 52)
+        self.free_market(61, 58)
+        self.give_room(20000)
+        self.write(starter.address + 0x20, hurt(2))                 # hurt in the last game; nothing ran since
+        return starter
+
+    def test_f2_the_end_of_the_advance_leaves_a_healthy_quarterback(self):
+        for stage in (8, 9):                                        # stage 9: the post-game call is never reached
+            with self.subTest(stage=stage):
+                self.setUp()
+                self.lost_after_the_games(stage)
+                self.enter_point(self.END_SITE, self.END_RETURN)
+                self.assertEqual(sum(self.healthy(p) for p in self.quarterbacks()), 1)
+                self.assertEqual(self.counters()["room_passes"], 1)     # room_pass still runs first
+
+    def test_f2_the_stage_advance_end_leaves_a_healthy_quarterback(self):
+        # Out of camp: stage 8, week 0, after the cut to 53; nothing else runs before a user's week 1 game.
+        self.lost_after_the_games(8)
+        self.write(0xE576B4, 0)
+        self.enter_point(self.STAGE_SITE, self.STAGE_RETURN)
+        self.assertEqual(sum(self.healthy(p) for p in self.quarterbacks()), 1)
+
+    def test_f6_a_club_with_no_next_game_does_not_act_and_a_club_on_its_bye_does(self):
+        for scheduled in (False, True):
+            with self.subTest(scheduled=scheduled):
+                self.setUp()
+                self.lost_after_the_games(9)
+                if not scheduled:
+                    self.schedule(SIGN_CLUB, SIGN_CLUB + 1, status=3)    # its only game played: eliminated
+                else:
+                    self.schedule(SIGN_CLUB + 2, SIGN_CLUB, cell=200)    # a later game (a bye this week)
+                before = self.club_list()
+                self.enter_pregame()
+                if scheduled:
+                    self.assertEqual(sum(self.healthy(p) for p in self.quarterbacks()), 1)
+                else:
+                    self.assertEqual(self.club_list(), before)
+                    self.assertEqual(self.counters()["floor_no_game"], 1)
+
+@unittest.skipUnless(base.HAVE_UC, "Unicorn is required")
 class Camp(FloorLeague):
     """Stage 7 (the coordinator's rule, 2026-11-20): the floor tries only the plain gated signing (F3 step 4, the gates
     decide) and releases nobody: no swap, no make-room cut, no release rung, no restructure, no over-cap signing.
@@ -792,6 +874,67 @@ class PregameSkip(FloorLeague):
             self.enter("room")
         self.assertEqual(self.locks([rookie]), [0])
         self.assertEqual(self.counters()["skip_opening_injured"], 0)
+
+PLAYOFFS = Path(os.environ.get("QB_ROOM_PLAYOFF_IMAGE", "/home/noah/2k-worktrees/.b77-scratch/b81/qb34/evidence/validator/"
+                                                          "playoffs-2508-2026-w19.b81mem.gz"))
+PLAYOFFS_SHA = "7a3ac0eca31be817a3a29b9b0b800082a507dcd2e1a80d43de108350f4c001aa"
+
+
+@unittest.skipUnless(base.HAVE_UC, "Unicorn is required")
+class PlayoffImage(unittest.TestCase):
+    """F2 and F6 on [validator]'s kept image (P1 root 2508, 2026, stage 9 week 19, after the wildcard round; the
+    divisional games are in the grid): NE (21) won and plays next, LAC (8) lost, SF (0) missed the playoffs. Every
+    quarterback of the three is made hurt, the page under test is installed over the image's (settings: the floor), and
+    the end-of-advance floor (emergency_pass(menu, 2)) runs: NE gets a quarterback, LAC and SF are left alone."""
+
+    def setUp(self):
+        for path, digest in ((PLAYOFFS, PLAYOFFS_SHA), (P2A / P2A_XBE[0], P2A_XBE[1])):
+            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                raise unittest.SkipTest(f"the playoff image input {path.name} is absent or differs")
+        from tests.nfl2k5_supersim_draft_fixture import Machine
+        from tools import franchise_invariants as fi
+        memory = fi.load_memory(PLAYOFFS)
+        self.m = m = Machine((P2A / P2A_XBE[0]).read_bytes(), trace_writes=False)
+        for lo, data in memory.regions:
+            if lo < 0x3000000:
+                m.uc.mem_write(lo, data)
+        link = m.get(VA + room.LINK_IR_STORE)
+        page = room.page_bytes(VA, room.settings_record(FLOOR), ir_store_va=link)
+        m.uc.mem_write(VA, page[:room.CODE_LIMIT])
+        m.uc.mem_write(VA + room.SETTINGS_OFFSET, page[room.SETTINGS_OFFSET:room.SETTINGS_OFFSET + room.SETTINGS.size])
+        for start, size in (getattr(room, "CODE_MID", (0, 0)), getattr(room, "CODE_TAIL", (0, 0))):
+            m.uc.mem_write(VA + start, page[start:start + size])
+        m.uc.ctl_flush_tb()
+        self.root = m.get(0xB72918)
+        self.table = m.get(self.root + 4)
+        self.assertEqual((m.get(0xE576A4), m.get(0xE576B4)), (9, 19))
+
+    def team(self, club):
+        return self.m.get(self.root + 0x1C) + 500 * club
+
+    def quarterbacks(self, club):
+        team = self.team(club)
+        players = [self.m.get(team + 4 * i) for i in range(self.m.uc.mem_read(team + 0x11C, 1)[0])]
+        return [p for p in players if self.m.uc.mem_read(p + 0x35, 1)[0] == 0]
+
+    def healthy(self, p):
+        return not self.m.get(p + 0x20) & 0xBFC00000 and not self.m.get(p + 0x24) & 0x70000000
+
+    def test_the_end_of_a_playoff_advance_signs_for_a_club_still_alive_only(self):
+        m = self.m
+        for club in (21, 8, 0):
+            for p in self.quarterbacks(club):
+                m.put(p + 0x20, m.get(p + 0x20) | 0x80000000 | 3 << 22)
+        lists = {club: bytes(m.uc.mem_read(self.team(club), 0x120)) for club in (8, 0)}
+        m.uc.mem_write(m.STACK, struct.pack("<III", m.STOP, m.ARENA + 0x1A0000, 2))
+        m.reg("ESP", m.STACK)
+        m.uc.emu_start(VA + room.LABELS["emergency_pass"], m.STOP, count=2_000_000_000)
+        self.assertEqual(m.reg("EIP"), m.STOP)
+        self.assertEqual(sum(self.healthy(p) for p in self.quarterbacks(21)), 1)
+        for club in (8, 0):
+            self.assertEqual(bytes(m.uc.mem_read(self.team(club), 0x120)), lists[club])
+        counts = room.counters(bytes(m.uc.mem_read(VA, room.PAGE_SIZE)))
+        self.assertGreaterEqual(counts["floor_no_game"], 2)
 
 P2A = Path(os.environ.get("QB_ROOM_P2A_REPLAY", "/home/noah/2k-worktrees/.b77-scratch/b81/qb34/evidence/p2a-replay"))
 P2A_IMAGE = ("00-sign_after-y1-st7-w2-ENTER.b81mem.gz", "c76828e9931eaebdfebd837b5cbe5bf3cf36adb8070618f1f247cdb9d518cd8e")

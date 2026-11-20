@@ -395,13 +395,38 @@ static __attribute__((noinline)) u32 release_one(u32 team) {
     return !listed(team, best);
 }
 
-/* The floor (DESIGN addendum F3, floor review F1 to F6). One act per club per point. `stages` is 0 in camp. */
-static void floor_club(u32 shadow, u32 stages, u32 index, u32 pregame, u32 menu) {
+/* Floor review F6: does the club have a next game? The validator's rule (tools/franchise_invariants.py,
+   next_game_state), so the floor and I11 agree: an unplayed schedule cell (0xE57C40, 22 x 17 cells of 8 bytes: kind 0,
+   not all of home, away and month 0) naming the club on a known side: a regular-season row in stage 8 (row below the
+   stage's week count [0xE576B0]), or a side whose flag byte is set (0xE57954, u16 a cell: low byte home, high byte
+   away; the playoff bracket's unknown sides carry team 0 and flag 0). In stage 8 with every regular-season cell played
+   the bracket is not built yet (it appears at the 8 -> 9 stage advance), so every club counts. A club on its bye
+   has one. */
+static __attribute__((noinline)) u32 next_game(u32 index) {
+    u32 stage = D(STAGE), weeks = D(0x00E576B0u), regular_left = 0;
+    for (u32 i = 0; i < 22u * 17u; i++) {
+        u32 cell = 0x00E57C40u + 8 * i, side = W(0x00E57954u + 2 * i);
+        if (B(cell) || !(B(cell + 1) | B(cell + 2) | B(cell + 3))) continue;
+        u32 regular = stage == 8 && i / 17u < weeks;
+        regular_left |= regular;
+        if ((B(cell + 1) == index && (regular || (side & 0xFFu))) || (B(cell + 2) == index && (regular || side >> 8)))
+            return 1;
+    }
+    return stage == 8 && !regular_left;
+}
+
+/* The floor (DESIGN addendum F3, floor review F1 to F6). One act per club per point (0 post-game, 1 pre-game, 2 the end
+   of the weekly advance, 3 the end of the stage advance). `stages` is 0 in camp. */
+static void floor_club(u32 shadow, u32 stages, u32 index, u32 point, u32 menu) {
     u32 team = CLUB_AT(index), h, s, k, bit = 1u << index;
     if (!team || B(team + 0x11C) > SLOTS || (D(USER_FLAG + 4 * index) && D(AUTO_SIGN) != 1)) return;
     u32 a = scan(team, &h, &s, &k);
     if (h) {
         qb_seen_healthy |= bit;                        /* (6): it had one at this point of this advance */
+        return;
+    }
+    if (stages && !next_game(index)) {                 /* F6: eliminated, or the season over (stages 8 and 9) */
+        qb_counters.floor_no_game++;
         return;
     }
     u32 lost = qb_seen_healthy & bit ? LOST_SINCE : 0;
@@ -482,8 +507,8 @@ static void floor_club(u32 shadow, u32 stages, u32 index, u32 pregame, u32 menu)
         RECOUNT(team);
         result = APPLIED;
         if (room_of(team, index) < 0) qb_counters.floor_over_cap++;  /* never expected: the gate checked the room */
-        if (pregame && (!D(USER_FLAG + 4 * index) || D(CPU_DEPTH))) floor_seat(team, p);   /* 9, F4 */
-        else if (pregame) qb_counters.floor_unseated++;
+        if (point && (!D(USER_FLAG + 4 * index) || D(CPU_DEPTH))) floor_seat(team, p);     /* 9, F4 */
+        else if (point) qb_counters.floor_unseated++;
     } else {
         qb_counters.floor_sign_failed++;
     }
@@ -495,26 +520,35 @@ log:
         room, restructures || releases ? 2 : 1, swaps, f ? f->value : 0);
 }
 
-/* Both calls. Pre-game (pregame_entry, after the IR pass 0x2BE020 returned, pregame = 1): the floor (bit 64, stages 7 to
-   9) for every club. Post-game (sign_after, after the game's own weekly signings 0x323870, pregame = 0): E1 and E2
-   (bit 8, stage 8), then the floor (bit 64, stages 7 to 9, A <= 2) for each club. */
-void CDECL emergency_pass(u32 menu, u32 pregame) {
-    if (pregame) qb_counters.floor_pregame_passes++;
-    else qb_counters.sign_passes++;
+/* Four points (floor review F2). Pre-game (pregame_entry, after the IR pass 0x2BE020, point 1): the floor for every
+   club; it also keeps the weekly advance's menu (EBP there) in the page's menu slot, since EBP is gone by the end.
+   Post-game (sign_after, after the game's own weekly signings 0x323870, point 0): E1 and E2 (bit 8, stage 8), then the
+   floor. The end of the weekly advance (end_entry at 0x24807A, after room_pass and the news 0x27EB80, point 2) and
+   the end of the stage advance (stage_entry at 0x248687, after both camp cuts to 53 and every stage change, point 3):
+   the floor alone, with the kept menu. The floor runs in stages 7 to 9 (bit 64). */
+void CDECL emergency_pass(u32 menu, u32 point) {
+    if (point == 1) {
+        qb_counters.floor_pregame_passes++;
+        qb_menu = menu;
+    } else if (!point) {
+        qb_counters.sign_passes++;
+    } else {
+        qb_counters.floor_end_passes++;
+    }
     if (qb_settings.magic[0] != 0x4F524251u || qb_settings.magic[1] != 0x31764D4Fu || qb_settings.mode != 1) {
-        if (!pregame) qb_counters.passes_bad_settings++;
+        if (!point) qb_counters.passes_bad_settings++;
         return;
     }
     u32 stages = qb_settings.stages, stage = D(STAGE);
-    u32 sign = !pregame && (stages & STAGE_SIGN) && stage == 8;
+    u32 sign = !point && (stages & STAGE_SIGN) && stage == 8;
     u32 floor = (stages & STAGE_FLOOR) && stage >= 7 && stage <= 9;
-    if (!pregame && (stages & STAGE_SIGN) && stage != 8) qb_counters.sign_inactive++;
+    if (!point && (stages & STAGE_SIGN) && stage != 8) qb_counters.sign_inactive++;
     if ((!sign && !floor) || !D(LEAGUE_ROOT)) return;
     u32 shadow = qb_settings.flags & FLAG_SHADOW;
-    if (pregame) qb_seen_healthy = 0;                 /* the pre-game call opens a weekly advance's points */
+    if (point == 1) qb_seen_healthy = 0;              /* the pre-game call opens a weekly advance's points */
     if (stage == 7) stages = 0;                       /* camp: the floor tries rung 1 only, releases nobody */
     for (u32 index = 0; index < CLUBS; index++) {
         if (sign) club_signing(menu, shadow, index, stages);
-        if (floor) floor_club(shadow, stages, index, pregame, menu);
+        if (floor) floor_club(shadow, stages, index, point, menu);
     }
 }

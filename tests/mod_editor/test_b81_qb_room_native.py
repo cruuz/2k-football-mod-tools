@@ -230,13 +230,16 @@ class PageInterface(unittest.TestCase):
         listed = list(room.sites(VA, 7))
         self.assertEqual([(name, at, old) for name, at, old, _ in listed],
                          [("pregame_entry", OPENING_SITE, bytes.fromhex("e851620700")),
-                          ("room_entry", ROOM_SITE, bytes.fromhex("e8016b0300"))])
+                          ("end_entry", ROOM_SITE, bytes.fromhex("e8016b0300"))])
         for name, at, old, new in listed:
             self.assertEqual(new[0], 0xE8)
             self.assertEqual(at + 5 + struct.unpack("<i", new[1:])[0], VA + room.LABELS[name])
         self.assertEqual(list(room.sites(VA, 0)), listed)
         signing = list(room.sites(VA, room.STAGE_SIGN))
-        self.assertEqual(list(room.sites(VA, room.STAGE_FLOOR)), signing)
+        floor = list(room.sites(VA, room.STAGE_FLOOR))
+        self.assertEqual(floor[:3], signing)
+        self.assertEqual([(name, at, old) for name, at, old, _ in floor[3:]],
+                         [("stage_entry", 0x248687, bytes.fromhex("e864670300"))])   # floor review F2
         self.assertEqual(signing[:2], listed)
         name, at, old, new = signing[2]
         self.assertEqual((name, at, old), ("sign_entry", 0x248010, bytes.fromhex("e85bb80d00")))
@@ -550,6 +553,11 @@ class League(unittest.TestCase):
         self.assertEqual(self.uc.reg_read(self.x.UC_X86_REG_EIP), target)
         expected = list(incoming)
         expected[7] -= 4
+        # end_entry (floor review F2) CALLS 0x27EB80 after room_pass, where room_entry jumped: one more return address.
+        nested = installed and entry == "room" and "end_entry" in room.LABELS
+        if nested:
+            expected[7] -= 4
+            self.assertTrue(VA < self.word(STACK - 8) < VA + room.PAGE_SIZE)
         self.assertEqual(tuple(self.uc.reg_read(r) for r in self.registers), tuple(expected))
         self.assertEqual(self.word(STACK - 4), site + 5)
 
