@@ -35,7 +35,7 @@ def checked(actual, expected, label):
         raise ValueError(f'{label}: expected {expected}, found {actual}')
 
 
-def prepare(export, compiled, receipts, released_disc, output):
+def prepare(export, compiled, receipts, released_disc, output, retail):
     docs = {
         key: ROOT / 'data' / f'nfl2k5_{key}_2026_b81u.json' for key in ('kit_fixes', 'glyph_fixes', 'relief')
     }
@@ -48,8 +48,10 @@ def prepare(export, compiled, receipts, released_disc, output):
     cloth = read(receipts / 'kits_receipt.json')
     digits = read(receipts / 'digits_receipt.json')
     rel = records['relief']
-    folder = relief.art_folder(rel)
-    masters = {slot: relief.read_art(folder, meta) for slot, meta in rel['masters'].items()}
+    # b81-retail-free-art: the relief ships as differences; the base comes from the retail disc (jersey, sleeve)
+    retail_maps = relief.retail_maps(rel, retail)
+    if retail_maps is None:
+        raise ValueError(f'{retail}: not the retail disc the relief base is pinned to')
     output.mkdir(parents=True, exist_ok=True)
     material_names = (
         'torso',
@@ -96,12 +98,7 @@ def prepare(export, compiled, receipts, released_disc, output):
                     checked(
                         meta['span_sha256'], row['before_sha256'], sel + ' ' + material + ' original span'
                     )
-                    patch = rel['patches'].get(row['patch'])
-                    rgba = relief.compose(
-                        masters[material] if row['base'] == 'master' else base,
-                        relief.read_art(folder, patch) if patch else None,
-                        (patch['x'], patch['y']) if patch else (0, 0),
-                    )
+                    rgba = relief.authored_map(rel, row, retail_maps, base)
                     after_hash = sha(rgba.tobytes())
                     checked(after_hash, row['composed_sha256'], sel + ' ' + material + ' relief RGBA')
                     after = output / 'relief' / (after_hash + '.png')
@@ -158,7 +155,7 @@ def prepare(export, compiled, receipts, released_disc, output):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
-    for name in ('export', 'compiled', 'receipts', 'released-disc', 'output'):
+    for name in ('export', 'compiled', 'receipts', 'released-disc', 'output', 'retail'):
         p.add_argument('--' + name, required=True, type=lambda s: Path(s).resolve())
     a = p.parse_args()
-    prepare(a.export, a.compiled, a.receipts, a.released_disc, a.output)
+    prepare(a.export, a.compiled, a.receipts, a.released_disc, a.output, a.retail)

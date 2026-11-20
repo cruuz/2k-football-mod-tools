@@ -4,7 +4,13 @@
   relief_rollout.py compose BASE MARKS OUT      level B jersey, sleeve and pants map of every kit -> OUT/maps/
   relief_rollout.py split OUT                   one master per map kind + per-kit patches -> OUT/art/, OUT/split.json
   relief_rollout.py document OUT DISC DOC ART   pin every slot against DISC (the v0.10 state after the two other passes):
-                                                writes the Studio document DOC and its art folder ART
+                                                writes the Studio document DOC and its art folder ART (schema v1,
+                                                withdrawn: its masters and patches held retail-derived texels)
+  relief_rollout.py difference OUT MARKS RETAIL DISC DOC ART
+                                                the retail-free document (schema v2, b81-retail-free-art): the same
+                                                composed maps as differences against the base the Studio derives from
+                                                the user's disc (RETAIL = the retail disc, DISC = the v0.10 state at
+                                                the relief step); only the differences and the island mask ship
 
 Stage 1 (relief_marks.py) reads each kit's final colour textures. Here:
   * jersey: bump_true.jersey at level B on the retail 18H0 sculpt with the kit's own collar opening, painted collar
@@ -12,9 +18,13 @@ Stage 1 (relief_marks.py) reads each kit's final colour textures. Here:
   * sleeve: bump_true.sleeve at level B on the retail 18H0 sleeve with the kit's painted sleeve marks;
   * pants: bump_true.pants at level B on the kit's own pants map with its painted pants mark and shield; outside the
     worked boxes the kit's own bytes stay (keep_exact).
-What ships: the jersey and sleeve masters are the most common value of each texel over all 178 composed maps; a kit's
-patch is every texel where its map differs from the master (alpha 255 = take the patch, 0 = keep). Pants ship no
-master: the Studio reads each kit's own pants map from the disc (it is retail-derived art) and lays the patch over it.
+What shipped in schema v1 (split + document): the jersey and sleeve masters as the most common value of each texel over
+all 178 composed maps and per-kit patches of the composed texels. Those masters are the retail 18H0 sculpt transformed
+(b81-retail-free-art measured 85 percent of the jersey master and 93 percent of the sleeve master byte-equal to the
+folds-only transform of the retail maps), so v1 must not ship. What ships now (difference, schema v2): per texel the
+composed map minus the base the Studio derives at build time from the user's own disc (mod_editor/core/
+nfl2k5_relief_2026.py: jersey_base, sleeve_base, pants_base, an exact numpy port of bump_true's retail steps): one
+difference master per map kind (the most common difference), per-kit difference patches, the jersey island mask.
 Identical patches are stored once.
 """
 import sys, json, hashlib
@@ -168,7 +178,7 @@ if __name__ == '__main__':
         compose(Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4]))
     elif cmd == 'split':
         split(Path(sys.argv[2]))
-    elif cmd != 'document':
+    elif cmd not in ('document', 'difference'):
         raise SystemExit(__doc__)
 
 
@@ -236,3 +246,162 @@ def document(out, disc, doc_path, art_dir):
 
 if __name__ == '__main__' and sys.argv[1] == 'document':
     document(Path(sys.argv[2]), sys.argv[3], sys.argv[4], sys.argv[5])
+
+
+def document_v2(out, marks_dir, retail, disc, doc_path, art_dir):
+    """b81-retail-free-art: the composed maps of OUT (maps/, composed.json) as differences against the base the Studio
+    derives from the user's disc. RETAIL is the retail disc (the 18H0 jersey and sleeve maps), DISC the v0.10 state
+    at the relief step (each slot's input span). The collar openings are the rollout's own masks (MARKS/masks: the
+    openings the art was drawn for; three kits' torsos changed after the rollout, so they are not re-read from the
+    disc). Every composed map is rebuilt as base + difference and checked, and every slot is compiled to its output
+    pin.
+    """
+    import time
+    sys.path[:0] = [str(HERE.parents[1]), str(HERE.parents[1] / 'tools')]
+    from mod_editor.core import nfl2k5_bump_texture_writer as bw
+    from mod_editor.core import nfl2k5_relief_2026 as rl
+    out, marks_dir, art_dir = Path(out), Path(marks_dir), Path(art_dir)
+    composed = json.load(open(out / 'composed.json'))
+    marks = json.load(open(marks_dir / 'marks.json'))
+    kits = sorted(composed)
+    table = rl.kernel_table(rl.SIGMAS)
+    gauss = rl.Kernels(table)
+    # the retail maps the jersey and sleeve bases start from
+    bases = {}
+    with bw._Image.open(Path(retail), writable=False) as image:
+        index = bw._parsed_index(image)
+        (entry,) = [e for e in index.entries if bw.logical_name_for(e.name_id) == '18H0.IFF']
+        raw = image.read_segments(index.sub_extents(entry, 0, entry.size))
+    for slot, chunk_index in (('bump_jersey', 45), ('bump_sleeve', 46)):
+        chunk = rl._chunk_for(raw, chunk_index)
+        span = raw[chunk.offset:chunk.end_offset]
+        bases[slot] = dict(selector='18H0', chunk=chunk_index, span_sha256=sha(span))
+    retail_maps = rl.retail_maps(dict(bases=bases), retail)
+    assert retail_maps is not None
+    import bump_true as bt
+    island = rl.dilate(np.load(bt.UV / 'uvpos_UNIF_jersey.npz')['mask'], 3 * rl.S)
+    art_dir.mkdir(parents=True, exist_ok=True)
+    for old in art_dir.glob('*.png'):
+        old.unlink()
+    Image.fromarray((island * 255).astype(np.uint8), 'L').save(art_dir / 'islands_jersey.png', optimize=True)
+    bases['bump_jersey']['islands'] = dict(png='islands_jersey.png', sha256=sha((art_dir / 'islands_jersey.png').read_bytes()),
+                                           width=island.shape[1], height=island.shape[0])
+    # each kit's input spans and torso, from the disc at the relief step
+    raws = {}
+    with bw._Image.open(Path(disc), writable=False) as image:
+        index = bw._parsed_index(image)
+        entries = {}
+        for e in index.entries:
+            entries.setdefault(bw.logical_name_for(e.name_id), []).append(e)
+        for sel in kits:
+            (e,) = entries[sel + '.IFF']
+            raws[sel] = image.read_segments(index.sub_extents(e, 0, e.size))
+    sleeve_base = rl.sleeve_base(gauss, retail_maps['bump_sleeve'])
+    jersey_bases, rows, spans, diffs, opening_ids, opening_list = {}, [], {}, {name: {} for name in SLOTS}, {}, []
+    for sel in kits:
+        opening = np.load(marks_dir / 'masks' / f'{sel}.npz')['opening']
+        key = sha(np.packbits(opening).tobytes())
+        if key not in opening_ids:
+            opening_ids[key] = len(opening_list)
+            opening_list.append(opening)
+            jersey_bases[key] = rl.jersey_base(gauss, retail_maps['bump_jersey'], opening, island)
+        raw = raws[sel]
+        k = kit_masks(marks_dir, sel, marks[sel])
+        worked = [list(b) for b in OLD_PANTS] + [b for b in (bbox(k['pants_mark']), bbox(k['pants_shield'])) if b]
+        for name in SLOTS:
+            chunk = rl._chunk_for(raw, {'bump_jersey': 45, 'bump_sleeve': 46, 'bump_pants': 47}[name])
+            span = raw[chunk.offset:chunk.end_offset]
+            authored = np.asarray(Image.open(out / 'maps' / f'{sel}_{name}.png').convert('RGBA'))
+            assert sha(authored.tobytes()) == composed[sel][name], (sel, name)
+            if name == 'bump_jersey':
+                base = jersey_bases[key]
+            elif name == 'bump_sleeve':
+                base = sleeve_base
+            else:
+                base = rl.pants_base(gauss, rl._texture(span), worked)
+            difference = rl.difference_of(authored, base)
+            assert np.array_equal(rl.add_difference(base, difference), authored), (sel, name)
+            diffs[name][sel] = difference
+            row = dict(selector=sel, slot=name, chunk=chunk.index, resource_size=len(raw), offset=chunk.offset,
+                       length=len(span), base='before' if name == 'bump_pants' else 'retail', patch=None,
+                       composed_sha256=composed[sel][name], before_sha256=sha(span), after_sha256=None)
+            if name == 'bump_pants':
+                row['worked'] = worked
+            if name == 'bump_jersey':
+                row['opening'] = opening_ids[key]
+            rows.append(row)
+            spans[(sel, name)] = span
+    stack = (np.concatenate(opening_list, 0) * 255).astype(np.uint8)
+    Image.fromarray(stack, 'L').save(art_dir / 'openings_jersey.png', optimize=True)
+    bases['bump_jersey']['openings'] = dict(png='openings_jersey.png', sha256=sha((art_dir / 'openings_jersey.png').read_bytes()),
+                                            width=stack.shape[1], height=stack.shape[0], count=len(opening_list))
+    masters, patches = {}, {}
+    for name in SLOTS:
+        maps = np.stack([diffs[name][s] for s in kits])
+        if name == 'bump_pants':
+            master_img = np.zeros(maps.shape[1:], np.uint8)
+            master_img[..., 3] = 255
+        else:
+            words = maps.view('<u4')[..., 0].reshape(len(kits), -1)
+            values = []
+            for col in range(0, words.shape[1], 8192):
+                block = words[:, col:col + 8192]
+                order = np.sort(block, axis=0)
+                change = np.vstack([np.ones((1, block.shape[1]), bool), order[1:] != order[:-1]])
+                run = np.cumsum(change, axis=0)
+                best = np.zeros(block.shape[1], np.int64)
+                bestv = order[0].copy()
+                for r in range(1, int(run.max()) + 1):
+                    hit = run == r
+                    count = hit.sum(0)
+                    better = count > best
+                    if better.any():
+                        val = np.where(hit, order, 0).max(0)
+                        bestv[better] = val[better]
+                        best[better] = count[better]
+                values.append(bestv)
+            master_img = np.concatenate(values).view(np.uint8).reshape(maps.shape[1:])
+            fname = f'difference_{name[5:]}.png'
+            Image.fromarray(master_img, 'RGBA').save(art_dir / fname, optimize=True)
+            masters[name] = dict(png=fname, sha256=sha((art_dir / fname).read_bytes()), width=master_img.shape[1],
+                                 height=master_img.shape[0])
+        for i, sel in enumerate(kits):
+            mine = maps[i]
+            diff = (mine != master_img).any(-1)
+            row = next(r for r in rows if r['selector'] == sel and r['slot'] == name)
+            if not diff.any():
+                continue
+            x0, y0, x1, y1 = bbox(diff)
+            patch = np.zeros((y1 - y0, x1 - x0, 4), np.uint8)
+            sub = diff[y0:y1, x0:x1]
+            patch[sub] = mine[y0:y1, x0:x1][sub]
+            patch[sub, 3] = 255
+            key = sha(patch.tobytes() + bytes(f'{name}{x0},{y0}', 'ascii'))[:16]
+            if key not in patches:
+                fname = f'{name[5:]}_{key}.png'
+                Image.fromarray(patch, 'RGBA').save(art_dir / fname, optimize=True)
+                patches[key] = dict(png=fname, sha256=sha((art_dir / fname).read_bytes()), slot=name, x=x0, y=y0,
+                                    width=x1 - x0, height=y1 - y0)
+            row['patch'] = key
+    doc = dict(schema=rl.SCHEMA,
+               job='b81-uniforms relief rollout (Noah 2026-11-19: "B. Keep new."): level B of tools/b81_uniforms/'
+                   'bump_true.py on every SOFTDRINK 2026 kit package; authored by tools/b81_uniforms/relief_marks.py '
+                   'and relief_rollout.py; stored retail-free by b81-retail-free-art (relief_rollout.py difference): '
+                   'the base is derived from the user\'s disc at build time, only the differences ship',
+               level=LEVEL, art=art_dir.name, gauss_kernels=table, bases=bases, masters=masters, patches=patches,
+               slots=rows)
+    t0 = time.time()
+    results = rl.compile_slots(rows, spans, doc, retail=retail_maps, count=3)
+    pack = []
+    for row in rows:
+        new, detail = results[(row['selector'], row['slot'])]
+        row['after_sha256'] = sha(new)
+        pack.append(dict(selector=row['selector'], slot=row['slot'], **detail))
+    Path(doc_path).write_text(json.dumps(doc, indent=1) + '\n', encoding='utf-8')
+    rl.spec(doc_path)
+    print('slots', len(rows), 'distinct collar openings', len(opening_list), 'masters', sorted(masters), 'patches',
+          len(patches), 'files', len(list(art_dir.glob('*.png'))), 'compile seconds %.1f' % (time.time() - t0))
+
+
+if __name__ == '__main__' and sys.argv[1] == 'difference':
+    document_v2(*sys.argv[2:8])

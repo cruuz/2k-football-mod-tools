@@ -29,6 +29,7 @@ FOLDERS = ("data/nfl2k5_modern_coaches", "data/nfl2k5_modern_fans", "data/nfl2k5
            "data/nfl2k5_alien_prospect",  # b778-ee1
            "data/trophy_room_logo",  # b778-pg2
            "data/nfl2k5_glyph_fixes_2026",  # b776-fn2 (int2)
+           "data/nfl2k5_relief_2026_b81u",  # b81-retail-free-art: relief differences and layout masks
            "data/nfl2k5_scorebug_digit_glyphs.png")  # b780: one file, not a folder
 
 
@@ -75,7 +76,7 @@ class ModernArtReleaseTests(unittest.TestCase):
         document, refused = tool.build(ROOT)
         self.assertEqual(refused, {})
         self.assertEqual((tool.NOT_AUTHORED, tool.NOT_AUTHORED_BY_NAME), ({}, {}))
-        self.assertEqual(len(document["files"]), 939)   # b780 pillowfont: + the scorebug digit glyph layer; b780-int (rst2 dc437e4b2): + the real portrait atlas faces_04 and its palette for the 119 players the 11/03 refresh creates; b779-int1: rf3 + pt1; b779-pt1: + 8 real free-agent portrait atlases; b779-rf3: + new rookie face atlases (faces_14..16); b778 cf4: KC head.png in place of head_mask + head_overlay; b778 int2: + classic teams, 28 rookie face atlases, alien, Trophy Room; keeps fn2 four Titans 7 digits and hs1 nine hair textures
+        self.assertEqual(len(document["files"]), 1086)   # b81-retail-free-art: + 147 relief difference layers and layout masks (data/nfl2k5_relief_2026_b81u); b780 pillowfont: + the scorebug digit glyph layer; b780-int (rst2 dc437e4b2): + the real portrait atlas faces_04 and its palette for the 119 players the 11/03 refresh creates; b779-int1: rf3 + pt1; b779-pt1: + 8 real free-agent portrait atlases; b779-rf3: + new rookie face atlases (faces_14..16); b778 cf4: KC head.png in place of head_mask + head_overlay; b778 int2: + classic teams, 28 rookie face atlases, alien, Trophy Room; keeps fn2 four Titans 7 digits and hs1 nine hair textures
         for relative in ("data/nfl2k5_modern_coaches/portraits/7031.png",
                          "data/nfl2k5_modern_coaches/portraits/7034.png",
                          "data/nfl2k5_modern_coaches/DAL/headset.png"):
