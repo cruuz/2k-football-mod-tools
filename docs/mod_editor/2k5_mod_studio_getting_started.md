@@ -1272,6 +1272,14 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    holders it preserves. Rebuilding an older SOFTDRINK disc upgrades its holder rule. Releasing, signing, moving
    or swapping players keeps every role on the same player. A role becomes empty when its player leaves the club. One undo takes the whole change back.
 
+   **Export depth chart / Import depth chart** (right-click a club, or **Tools ▾**) read and write Finn's own `.2k5dc`
+   file, so a chart moves between his editor and the Studio. Like Finn's editor, the file matches players by their place
+   in the club's list and their position, so it belongs to the club it came from; the import lists every change, and
+   players whose position no longer matches are left alone. The Studio applies it through its own depth chart and
+   special teams rules: rows stay unique, a moved player keeps his new row through the weekly roster pass, and a
+   returner from the file takes his returner lock with him. **Back up punt returners / Restore punt returners** do the
+   same with Finn's `.NFL2k5PR` file for every club (a returner must be a WR, CB, FS, SS or RB, as in Finn's editor).
+
    **Team settings…** is Finn's Options tab for a club in an Xbox roster or franchise save: the **stadium** it
    plays home games in, its **default jersey** (only the club's own styles), its **playbook**, the **team
    play-by-play** name call and the **defensive front** (4-3, 3-4 or both, which decides the depth chart pages).
@@ -1468,6 +1476,9 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Team > Options (stadium, playbook, default jersey, team play-by-play, defensive front) | **Team settings…** in Xbox saves and PS2 roster saves |
 | Clear Stats | Right-click **Clear his career stats…** or **Clear career stats of all … shown…** in an Xbox save or PS2 roster save |
 | Team menu: Copy Team, Paste Team, Export Team, Import Team | Right-click a club: the same four, with a preview of what converts or refuses |
+| Depth Chart > Export / Import (`.2k5dc`) | Right-click a club (or **Tools ▾**): **Export depth chart** / **Import depth chart**, in Finn's own file format |
+| Tools > Backup and Restore > Backup / Restore Punt Returners (`.NFL2k5PR`) | Right-click a club (or **Tools ▾**): **Back up punt returners** / **Restore punt returners**, Finn's file |
+| Tools > Auto-update > Clear Rookie Stats | **Tools ▾ → Clear rookie stats (every club)…**: Finn's choice of players (years pro 0 or 1), the Studio's safe clear |
 | Open a PS2 save (`.max`, `.psu`) | **Open PS2 save…**: `.psu`, a `BASLUS-20919` folder or a `.ps2` card (roster saves; `.max` not yet) |
 | The player grid (every rating as a column, click to sort) | **Columns ▾**, then click a heading |
 | Copy Player (Ctrl+C), Paste Player (Ctrl+V), Paste Attributes Only (Ctrl+Alt+A) | Same keys, or **Copy player** and **Paste ▾** |

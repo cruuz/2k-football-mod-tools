@@ -2248,6 +2248,11 @@ class RosterEditorPanel(QWidget):
         passes_menu.addAction("Paste team onto this club…", self.open_paste_team)
         passes_menu.addAction("Export team…", self.export_team)
         passes_menu.addAction("Import team onto this club…", self.import_team)
+        passes_menu.addAction("Clear rookie stats (every club)…", lambda: self.clear_rookie_stats())   # b81 R43 (J6)
+        passes_menu.addAction("Export depth chart (Finn's .2k5dc)…", self.export_depth_chart)       # b81 R43 (F13)
+        passes_menu.addAction("Import depth chart onto this club…", self.import_depth_chart)
+        passes_menu.addAction("Back up punt returners (Finn's .NFL2k5PR)…", self.export_punt_returners)
+        passes_menu.addAction("Restore punt returners…", self.restore_punt_returners)
         passes_menu.addSeparator()
         self.save_roster_to_disc_action = passes_menu.addAction(
             "Use this save's roster on the disc...", self._use_save_roster_on_disc)
@@ -4585,7 +4590,160 @@ class RosterEditorPanel(QWidget):
         action.setEnabled(club is not None)
         action = menu.addAction(f"Import team onto {name or 'this club'}…", self.import_team)
         action.setEnabled(club is not None)
+        menu.addSeparator()                     # b81 R43 (F13): Finn's depth chart and punt returner files
+        action = menu.addAction(f"Export depth chart {name} (Finn's .2k5dc)…".replace("  ", " "), self.export_depth_chart)
+        action.setEnabled(club is not None)
+        action = menu.addAction(f"Import depth chart onto {name or 'this club'}…", self.import_depth_chart)
+        action.setEnabled(club is not None)
+        action = menu.addAction("Back up punt returners (every club)…", self.export_punt_returners)
+        action.setEnabled(self.document is not None)
+        action = menu.addAction("Restore punt returners…", self.restore_punt_returners)
+        action.setEnabled(self.document is not None)
         return menu
+
+    # ------------------------------------------------------------------ b81 R43 (F13): Finn's depth chart and PR files
+    def export_depth_chart(self, path: Path | str | None = None) -> Path | None:
+        """Finn's Depth Chart > Export: the club's rows and special-teams bytes as his ``.2k5dc`` file."""
+
+        from mod_editor.core import nfl2k5_depth_file as df
+        index = self._selected_club()
+        if index is None or self.document is None:
+            self._set_status("Choose a club in the list first.")
+            return None
+        team = self.document.teams[index]
+        if path is None:
+            chosen, _ = QFileDialog.getSaveFileName(self, "Export depth chart", f"{team.abbreviation}{df.DEPTH_SUFFIX}",
+                                                    f"Finn depth chart (*{df.DEPTH_SUFFIX})")
+            if not chosen:
+                return None
+            path = chosen
+        target = Path(path)
+        target.write_bytes(df.export_depth_chart(self.document, index))
+        self._set_status(f"Exported {team.abbreviation}'s depth chart to {target.name} (Finn's format).")
+        return target
+
+    def import_depth_chart(self, path: Path | str | None = None, *, confirm: bool = True) -> bool:
+        """Finn's Depth Chart > Import, through the Studio's depth and special-teams writers; one undo."""
+
+        from mod_editor.core import nfl2k5_depth_file as df
+        index = self._selected_club()
+        if index is None or self.document is None:
+            self._set_status("Choose the club to import onto first.")
+            return False
+        if path is None:
+            chosen, _ = QFileDialog.getOpenFileName(self, "Import depth chart", "",
+                                                    f"Finn depth chart (*{df.DEPTH_SUFFIX})")
+            if not chosen:
+                return False
+            path = chosen
+        document = self.document
+        try:
+            plan = df.plan_depth_import(document, index, Path(path).read_bytes())
+        except (OSError, rr.RosterRecordError) as exc:
+            self._set_status(f"Not imported: {plain_error(exc)}")
+            return False
+        preview = df.depth_import_text(document, plan)
+        if plan.problems:
+            self._set_status("Not imported: " + "; ".join(plan.problems))
+            if confirm and self.isVisible():
+                QMessageBox.warning(self, "Import depth chart", preview)
+            return False
+        if not plan.changes:
+            self._set_status(f"Nothing to change: {document.teams[index].abbreviation}'s chart already matches the file.")
+            return False
+        if confirm and QMessageBox.question(self, "Import depth chart", preview + "\n\nApply these changes?") \
+                != QMessageBox.Yes:
+            return False
+        before = document.special_teams_snapshot(index)
+        try:
+            df.apply_depth_import(document, plan)
+        except rr.RosterRecordError as exc:
+            self._set_status(f"Not imported: {plain_error(exc)}")
+            return False
+        after = document.special_teams_snapshot(index)
+        self._push_special_teams_change(f"{document.teams[index].abbreviation}: import depth chart", [before], [after])
+        self._set_status(f"Imported the depth chart onto {document.teams[index].abbreviation}: {len(plan.rows)} row "
+                         f"change(s), {len(plan.role_changes)} special-teams role(s). Undo takes it back.")
+        return True
+
+    def export_punt_returners(self, path: Path | str | None = None) -> Path | None:
+        """Finn's Backup Punt Returners: every club's PR as his ``.NFL2k5PR`` text."""
+
+        from mod_editor.core import nfl2k5_depth_file as df
+        if self.document is None:
+            self._set_status("Load a roster first.")
+            return None
+        if path is None:
+            chosen, _ = QFileDialog.getSaveFileName(self, "Back up punt returners", f"punt-returners{df.PR_SUFFIX}",
+                                                    f"Finn punt returners (*{df.PR_SUFFIX})")
+            if not chosen:
+                return None
+            path = chosen
+        target = Path(path)
+        target.write_bytes(df.export_punt_returners(self.document).encode("ascii"))
+        self._set_status(f"Backed up every club's punt returner to {target.name}.")
+        return target
+
+    def restore_punt_returners(self, path: Path | str | None = None, *, confirm: bool = True) -> bool:
+        """Finn's Restore Punt Returners: each club's PR back, through the Studio's returner writer (the claim moves)."""
+
+        from mod_editor.core import nfl2k5_depth_file as df
+        if self.document is None:
+            self._set_status("Load a roster first.")
+            return False
+        if path is None:
+            chosen, _ = QFileDialog.getOpenFileName(self, "Restore punt returners", "",
+                                                    f"Finn punt returners (*{df.PR_SUFFIX})")
+            if not chosen:
+                return False
+            path = chosen
+        document = self.document
+        try:
+            plan = df.plan_punt_returner_restore(document, Path(path).read_text(encoding="latin-1"))
+        except OSError as exc:
+            self._set_status(f"Not restored: {plain_error(exc)}")
+            return False
+        refused = "\n".join(plan["refused"])
+        if not plan["restore"]:
+            self._set_status("No punt returner to change." + (f" Unable to correct: {'; '.join(plan['refused'])}"
+                                                             if plan["refused"] else ""))
+            return False
+        words = [f"{document.teams[i].abbreviation}: {document.by_offset[document.teams[i].slots[v]].display}"
+                 for i, v in plan["restore"]]
+        if confirm and QMessageBox.question(
+                self, "Restore punt returners", "New punt returners:\n" + "\n".join(words)
+                + (f"\n\nUnable to correct the following:\n{refused}" if refused else "") + "\n\nApply?") \
+                != QMessageBox.Yes:
+            return False
+        clubs = [i for i, _v in plan["restore"]]
+        before = [document.special_teams_snapshot(i) for i in clubs]
+        try:
+            df.apply_punt_returner_restore(document, plan)
+        except rr.RosterRecordError as exc:
+            self._set_status(f"Not restored: {plain_error(exc)}")
+            return False
+        after = [document.special_teams_snapshot(i) for i in clubs]
+        self._push_special_teams_change(f"restore {len(clubs)} punt returner(s)", before, after)
+        self._set_status(f"Restored {len(clubs)} punt returner(s): {', '.join(words)}."
+                         + (f" Unable to correct: {'; '.join(plan['refused'])}." if plan["refused"] else ""))
+        return True
+
+    def _push_special_teams_change(self, label: str, before: Sequence[Mapping[str, Any]],
+                                   after: Sequence[Mapping[str, Any]]) -> None:
+        assert self.document is not None
+        touched = [self.document.by_offset[offset] for b, a in zip(before, after)
+                   for offset, values in a["players"].items() if b["players"].get(offset) != values]
+
+        def put(snapshots) -> None:
+            assert self.document is not None
+            for snapshot in snapshots:
+                self.document.restore_special_teams(snapshot)
+            for player in touched:
+                self._after_edit(player)
+            self.refresh_grid()
+
+        self.undo_stack.push(UndoEntry(label, lambda: put(before), lambda: put(after)))
+        put(after)
 
     # ------------------------------------------------------------------ b81 R9: Clear Stats
     def clear_stats_reason(self, players: Sequence[rr.Player]) -> str:
@@ -4648,6 +4806,37 @@ class RosterEditorPanel(QWidget):
                    f"{receipt['capacity']:,} used{skipped}).")
         self._set_status(message)
         return True, message
+
+    def rookie_players(self) -> list[rr.Player]:
+        """b81 R43 (J6): Finn's Clear Rookie Stats selection, every club player whose whole byte at +0x25 is below 2
+        (years pro 0 or 1 with the three bits above it clear; Finn reads the whole byte, lane receipt RE_FACTS.md 6)."""
+
+        if self.document is None:
+            return []
+        found: dict[int, rr.Player] = {}
+        for index, team in enumerate(self.document.teams):
+            if not team.is_club:
+                continue
+            for player in self.document.team_players(index):
+                values = player.record.values
+                if (values["years_pro"] | (values["unknown_25_high"] << 5)) < 2:
+                    found.setdefault(player.offset, player)
+        return list(found.values())
+
+    def clear_rookie_stats(self, *, confirm: bool = True) -> tuple[bool, str]:
+        """Finn's Tools > Auto-update > Clear Rookie Stats, with the Studio's safe clear (a new six-word history per
+        player; Finn's null link crashes the game, and his clear also wiped the injury byte +0x23). One undo."""
+
+        rookies = self.rookie_players()
+        # a rookie with no history link has no stats: that null link is the game's own state before his first credit
+        # (all 1,623 rookies of the SOFTDRINK roster save), so he is skipped instead of spending six pool words on him
+        targets = [p for p in rookies if p.record.values["history_pointer"]]
+        if not targets:
+            message = (f"No rookie has career stats to clear ({len(rookies)} rookies on the clubs, none with a "
+                       "career history yet)." if rookies else "No rookies on the clubs (years pro 0 or 1).")
+            self._set_status(message)
+            return False, message
+        return self.clear_career_stats(targets, confirm=confirm)
 
     def ir_place_reason(self, player: rr.Player | None) -> str:
         """Why Place on IR… is not offered for ``player`` ('' when it is)."""
