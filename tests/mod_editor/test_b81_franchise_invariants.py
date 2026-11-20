@@ -33,6 +33,7 @@ CLEAN_CLOSING = "337b026e1798e8b74003ee97bcc57badf285aa0c63d428a6951a56206e2e1fc
 V09_OPENING = "5336bf76e7a95a8acfcb6be0ffc5d2b737d5c0efb22894af0818815c3f151906"
 RETAIL_F0 = "56926604e438bd47f1f94edf844a0ecd00d5a382a647526baec396ead5f1b1b8"
 NO_QB_IMAGE = "fde2c34a02be6d219cf3b2291b0a9ffbe537771ee2dfa79cdc1a06cb479e906a"
+MINNESOTA_KICKOFF = "1f725ff50fe01e920bd5043892b597901c8ce0665de8f56ab839522d1bef1b4e"
 
 
 def pinned(path: Path, digest: str) -> bytes:
@@ -225,10 +226,10 @@ class SignedSaveTests(unittest.TestCase):
                          [(11, "DAL", 0, 3)])
 
     def test_the_minnesota_week_10_kickoff_image_fails_I11(self):
-        """TF9: P0 root 2505, 2026, the week 10 kick-off: Minnesota's starter hurt, the backup on IR (harness image)."""
+        """TF9: root 2505, 2026, the week 10 kick-off on the P0 Retail arm 6aef88eb: Minnesota's one active quarterback
+        hurt, the other on IR (kept by the qb34 harness's kick-off check at 0x247DCF, runs/capture-min)."""
         path = QB34 / "no-qb-2505-2026-w10-kickoff.b81mem.gz"
-        if not path.is_file():
-            self.skipTest("Minnesota kick-off image absent (captured by a qb34 harness run)")
+        pinned(path, MINNESOTA_KICKOFF)
         memory = fi.load_memory(path)
         report = fi.check(fi.view_from_memory(memory.read, search=lambda n: memory.find(n, 0x10000, 0x2000000)),
                           kickoff=True)
