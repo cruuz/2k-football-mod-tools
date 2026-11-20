@@ -644,11 +644,11 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     # union below reserves it and the probe copy observes it, so the allocator-free probe build
                                     # leaves it off (the a5f08ea81 regen stopped there: "During Intro auto-skip: patch resized")
                                     intro_autoskip=False, backfield_cards=False,
-                                    # beta 81: the gadget rule (a late owner in the fixed gadget slots) and the standard
-                                    # simulator's quarterback injuries (which need K128 and season realism, both off
-                                    # here) are observed on the copies below; the d8ceb91e3 regen stopped at this build:
-                                    # "Simulated quarterback injuries require the 128 MB target, 128 MB memory (K128)".
-                                    gadget_play=False, sim_qb_injuries=None),
+                                    # b81: the Experimental preset now selects Realistic quarterback injuries, which
+                                    # needs K128 and sim realism (both off here). Its fixed bank is a late allocator
+                                    # owner that the separate QB probe below observes, so the probe build leaves it off.
+                                    # beta 81 Q62: the gadget rule (fixed gadget slots) is observed on the late-owner copy.
+                                    sim_qb_injuries=None, gadget_play=False),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
