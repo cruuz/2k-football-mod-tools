@@ -18,10 +18,11 @@ OWNER = space.QB_INJURY_OWNER
 REQUESTS = (space.QB_INJURY_REQUEST,)
 REALISTIC_RATE = 310
 MARK = struct.Struct('<8sIII')
-# Slice 1 (QBMEDv1) is read and reversed through its frozen code module; every apply writes the current revision.
-# Slice 2 (QBMEDv2) adds the line, edge and ball-carrier checks and parks the weekly running-back roll.
-SIGNATURES = {1: b'QBMEDv1\0', 2: b'QBMEDv2\0'}
-REVISION = 2
+# Slices 1 (QBMEDv1) and 2 (QBMEDv2) are read and reversed through their frozen code modules; every apply writes the
+# current revision. Slice 2 added the line, edge and ball-carrier checks and parks the weekly running-back roll;
+# slice 3 (QBMEDv3) adds receivers, tight ends, fullbacks, defensive tackles, linebackers and defensive backs.
+SIGNATURES = {1: b'QBMEDv1\0', 2: b'QBMEDv2\0', 3: b'QBMEDv3\0'}
+REVISION = 3
 SIGNATURE = SIGNATURES[REVISION]
 ERRORS = (ValueError, TypeError, IndexError, KeyError, OverflowError, struct.error)
 
@@ -55,11 +56,15 @@ class _Setting:
 
 
 def _runtime(revision):
-    """The code module that authored this revision's bank and edits (slice 1 is a frozen copy)."""
+    """The code module that authored this revision's bank and edits (slices 1 and 2 are frozen copies)."""
     if revision == 1:
         from . import nfl2k5_sim_qb_injuries_code_b81_slice1 as code
+    elif revision == 2:
+        from . import nfl2k5_sim_qb_injuries_code_b81_slice2 as code
     else:
         from . import nfl2k5_sim_qb_injuries_code as code
+    _require(code.MARK_SIGNATURE == SIGNATURES[revision] if revision > 1 else not hasattr(code, 'MARK_SIGNATURE'),
+             'Simulated QB injury code module does not match its settings revision')
     return code
 
 
@@ -219,7 +224,8 @@ def status(payload):
 def apply(payload, level='realistic', *, custom_rate=0.310):
     """Install, retune or restore on an existing standard executable without moving installed owners.
 
-    A slice 1 install is reversed exactly and the current revision written fresh, even at the same mode and rate.
+    A slice 1 or slice 2 install is reversed exactly and the current revision written fresh, even at the same mode
+    and rate.
     """
     wanted = _setting(level, custom_rate)
     source = bytes(payload)
@@ -239,7 +245,7 @@ def apply(payload, level='realistic', *, custom_rate=0.310):
         result = _transform(physical, _edits(physical, bank, wanted), restoring=False)
         receipt['revision'] = wanted.revision
         if original is not None and original.revision != wanted.revision:
-            receipt['upgraded_from'] = 'slice1'
+            receipt['upgraded_from'] = f'slice{original.revision}'
     confirmed, restored = _state(result)
     _require(confirmed == wanted and restored == physical, 'Simulated QB injury settings failed readback')
     return result, {**receipt, 'status':'applied' if wanted else 'retail', 'changed_bytes':space.count_differing_bytes(source,result),
