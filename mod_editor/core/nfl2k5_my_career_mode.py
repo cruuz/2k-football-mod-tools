@@ -811,9 +811,8 @@ def check_context(payload, edits, *, installed=False, real=None):
     from . import nfl2k5_injured_reserve as injured_reserve
     ir_sites = [site for site in injured_reserve.sites(0) if site[1] != injured_reserve.GUARD_VA]
     if any(image.read(va, len(before)) != before for _, va, before, _ in ir_sites):
-        state = injured_reserve.status(companions)
-        legacy.require(state in ("applied", "previous"), "foreign injured reserve companion")
-        revision = injured_reserve.previous_runtime if state == "previous" else injured_reserve.runtime
+        revision = injured_reserve.installed_revision(companions)
+        legacy.require(revision is not None, "foreign injured reserve companion")
         ir_code = injured_reserve.allocations(payload)["code"]["va"]
         camera_edits.extend(site for site in injured_reserve.sites(ir_code, revision=revision) if site[1] != injured_reserve.GUARD_VA)
     for va, size, digest in GUARDS:

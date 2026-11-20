@@ -26,9 +26,11 @@ What this owner does
   the store's versions, the CPU pass, the IR button handler, the front office writer and loader tails, the franchise
   start. The retail table stays as a mirror of each club's first five entries, so its other readers (the practice
   squad's "listed" checks, the arena owner, the native writer) need no change.
+* Franchise load: remove duplicate player ownership across active, practice-squad, free-agent and IR lists before the
+  original payroll recount. The companion franchise ownership bank supplies this code and the native transfer guards.
 * Save format: ``nfl2k5_injured_reserve_save`` (the high halves of the retail IR block; no size change).
 
-Memory: 6,144 B code + 5,312 B data in the scale-out (``REQUESTS``). Not at 64 MB: the 64 MB profile is the legacy
+Memory: 6,144 B IR code + 3,328 B shared ownership code + 5,312 B IR data in the scale-out (``REQUESTS``). Not at 64 MB: the 64 MB profile is the legacy
 layout, which has no room for it (``nfl2k5_memory_budget``); a 64 MB build keeps the 2004 IR with the guard.
 """
 from __future__ import annotations
@@ -38,6 +40,8 @@ import struct
 
 from . import nfl2k5_injured_reserve_code as runtime
 from . import nfl2k5_injured_reserve_code_b780 as previous_runtime
+from . import nfl2k5_injured_reserve_code_b81_pre_ownership as pre_ownership_runtime
+from . import nfl2k5_franchise_ownership as ownership
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
@@ -58,7 +62,7 @@ GUARD_HELP = ("A fix: in the postseason the CPU's weekly injured reserve pass al
 MODES = ("guard", "modern")
 CODE_SIZE = 6144
 STORE_SIZE = 5312                    # struct store: 64-byte header + 32 x (4 + 20 x 8)
-REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", STORE_SIZE, 16))
+REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", STORE_SIZE, 16)) + ownership.REQUESTS
 CONFIG_AT = runtime.LABELS["ir_config"]
 CONFIG_MAGIC, CONFIG_VERSION = 0x434D5249, 1    # "IRMC"
 CAP, LEGACY_SLOTS, EXTENDED_CAP, MIN_GAMES, RETURNS, LONG_WEEKS = 20, 5, 102, 4, 8, 4
@@ -99,7 +103,7 @@ def _require(ok, message):
         raise InjuredReserveOwnerError(message)
 
 
-def code_for(code_va: int, store_va: int, *, revision=runtime) -> bytes:
+def code_for(code_va: int, store_va: int, *, revision=runtime, load_entry: int = 0) -> bytes:
     """The owned RX content: the template with its relocations applied and the config filled."""
     out = bytearray(revision.CODE)
     for offset, kind, symbol, value in revision.RELOCATIONS:
@@ -108,7 +112,7 @@ def code_for(code_va: int, store_va: int, *, revision=runtime) -> bytes:
         if kind == 2:
             target -= code_va + offset
         struct.pack_into("<I", out, offset, target & 0xFFFFFFFF)
-    struct.pack_into("<4I", out, revision.LABELS["ir_config"], CONFIG_MAGIC, CONFIG_VERSION, store_va, 0)
+    struct.pack_into("<4I", out, revision.LABELS["ir_config"], CONFIG_MAGIC, CONFIG_VERSION, store_va, load_entry)
     _require(len(out) <= CODE_SIZE, "the injured reserve runtime exceeds its allocation")
     return bytes(out).ljust(CODE_SIZE, b"\xcc")
 
@@ -149,7 +153,7 @@ def _guard_state(image: XbeImage) -> str:
     return "foreign"
 
 
-def _recognize(payload: bytes) -> str:
+def _recognize(payload: bytes):
     image = XbeImage(payload)
     guard = _guard_state(image)
     rows = allocations(payload)
@@ -159,33 +163,48 @@ def _recognize(payload: bytes) -> str:
     # b780 IR1 (rehearsal1): the build's first space pass reserves every selected owner's allocation before any owner
     # runs, so at this owner's step the allocation exists with its unwritten 0xCC code: that is not an install yet.
     reserved = bool(rows) and image.read(rows["code"]["va"], CODE_SIZE) == b"\xcc" * CODE_SIZE
+    bank = ownership.status(payload, rows["data"]["va"] if rows else 0)
     if not rows or reserved:
         others = {("retail" if image.read(va, len(before)) == before else "foreign")
                   for _l, va, before, _p in sites(0) if va != GUARD_VA}
         _require(others == {"retail"} and guard in ("retail", "guard"), "foreign or partial injured reserve sites")
-        return guard
+        _require(bank == "retail", "partial franchise ownership installation")
+        return guard, None
     code_va, store_va = rows["code"]["va"], rows["data"]["va"]
     _require(guard == "hooked", "the Pro Bowl guard is missing under the modern install")
     code = image.read(code_va, CODE_SIZE)
-    revision = next((rev for rev in (runtime, previous_runtime) if code == code_for(code_va, store_va, revision=rev)), None)
+    if bank == "applied":
+        revision = runtime if code == code_for(code_va, store_va, load_entry=ownership.load_entry(payload)) else None
+    else:
+        _require(bank == "retail", "foreign franchise ownership installation")
+        revision = next((rev for rev in (pre_ownership_runtime, previous_runtime)
+                         if code == code_for(code_va, store_va, revision=rev)), None)
     _require(revision is not None, "injured reserve code is foreign")
     for _label, va, _before, patched in sites(code_va, revision=revision):
         _require(image.read(va, len(patched)) == patched, f"injured reserve site {va:#x} is foreign")
-    if revision is previous_runtime:
-        previous_vas = {va for _, va, _, _ in sites(code_va, revision=previous_runtime)}
+    if revision is not runtime:
+        previous_vas = {va for _, va, _, _ in sites(code_va, revision=revision)}
         for _, va, original, _ in sites(code_va):
             if va not in previous_vas:
                 _require(image.read(va, len(original)) == original, f"foreign injured reserve extension at {va:#x}")
-        return "previous"
-    return "applied"
+        return "previous", revision
+    return "applied", runtime
 
 
 def status(payload: bytes) -> str:
-    """retail (2004 IR), guard (2004 IR + the Pro Bowl guard), applied (modern IR) or foreign."""
+    """Identify retail, guard, either supported previous modern revision, applied or foreign."""
     try:
-        return _recognize(payload)
+        return _recognize(payload)[0]
     except _ERRORS:
         return "foreign"
+
+
+def installed_revision(payload: bytes):
+    """Return the validated revision whose hook offsets are present on this image."""
+    try:
+        return _recognize(payload)[1]
+    except _ERRORS:
+        return None
 
 
 def _repin(buf: bytearray) -> None:
@@ -216,17 +235,22 @@ def apply(payload: bytes, mode: str = "modern") -> tuple[bytes, dict]:
         return result, dict(common, status="applied", changed_bytes=space.count_differing_bytes(before, result),
                             edits=edits)
     receipt = {}
-    if not any(r["owner"] == OWNER for r in space.layout(payload)["allocations"]):
-        if space.status(payload) == "retail":
-            payload, receipt = space.apply(payload, REQUESTS, scaleout=True)
-        else:
-            _require(space.is_scaleout(payload), "modern injured reserve needs the scale-out allocator")
-            payload, receipt = space.extend_scaleout(payload, REQUESTS)
+    prior = installed_revision(payload) if state == "previous" else None
+    if space.status(payload) == "retail":
+        payload, receipt = space.apply(payload, REQUESTS, scaleout=True)
+    else:
+        _require(space.is_scaleout(payload), "modern injured reserve needs the scale-out allocator")
+        taken = {(row["owner"], row["kind"]) for row in space.layout(payload)["allocations"]}
+        missing = [row for row in REQUESTS if row[:2] not in taken]
+        if missing:
+            payload, receipt = space.extend_scaleout(payload, missing)
     rows = allocations(payload)
     code_va, store_va = rows["code"]["va"], rows["data"]["va"]
-    old_code = code_for(code_va, store_va, revision=previous_runtime) if state == "previous" else None
-    old_sites = {va: after for _, va, _, after in sites(code_va, revision=previous_runtime)}
-    payload, _ = space.install_code(payload, OWNER, code_for(code_va, store_va), previous=old_code)
+    old_code = code_for(code_va, store_va, revision=prior) if prior is not None else None
+    old_sites = {va: after for _, va, _, after in sites(code_va, revision=prior)} if prior is not None else {}
+    payload, ownership_receipt = ownership.apply(payload, store_va)
+    current = code_for(code_va, store_va, load_entry=ownership.load_entry(payload))
+    payload, _ = space.install_code(payload, OWNER, current, previous=old_code)
     image = XbeImage(payload)
     buf = bytearray(payload)
     off = image.offset(GUARD_VA, len(GUARD))
@@ -243,8 +267,8 @@ def apply(payload: bytes, mode: str = "modern") -> tuple[bytes, dict]:
     return result, dict(common, status="applied", code_va=hex(code_va), store_va=hex(store_va), stamp=STAMP,
                         before_sha256=hashlib.sha256(before).hexdigest(), after_sha256=hashlib.sha256(result).hexdigest(),
                         changed_bytes=space.count_differing_bytes(before, result), file_growth=len(result) - len(before),
-                        allocation=receipt, edits=edits,
-                        reservations=[r for r in space.reservations(result) if r["owner"] == OWNER])
+                        allocation=receipt, edits=edits, franchise_ownership=ownership_receipt,
+                        reservations=[r for r in space.reservations(result) if r["owner"] in (OWNER, ownership.OWNER)])
 
 
 def store_va(payload: bytes) -> int | None:
@@ -254,4 +278,4 @@ def store_va(payload: bytes) -> int | None:
 
 __all__ = ["OWNER", "EVIDENCE", "BUILD_CAPTION", "HELP_TEXT", "GUARD_CAPTION", "GUARD_HELP", "MODES", "CODE_SIZE", "STORE_SIZE", "REQUESTS", "CAP",
            "LEGACY_SLOTS", "EXTENDED_CAP", "MIN_GAMES", "RETURNS", "LONG_WEEKS", "GUARD_VA", "GUARD_RETAIL", "GUARD",
-           "HOOKS", "code_for", "sites", "allocations", "status", "apply", "store_va", "InjuredReserveOwnerError"]
+           "HOOKS", "code_for", "sites", "allocations", "status", "installed_revision", "apply", "store_va", "InjuredReserveOwnerError"]
