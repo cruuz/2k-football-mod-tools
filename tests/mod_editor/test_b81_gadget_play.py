@@ -57,7 +57,7 @@ QUALIFIED_TABLE_SHA256 = "5e71503f18a514faa70e70d1e1373c0d098d941440f5efe967beb7
 # The qualified code's classifier (select_slot) and the scoped tail after the builder (scope_return), by offset.
 QUALIFIED_SELECT_SLOT, QUALIFIED_ASSIGN, QUALIFIED_SCOPE_RETURN, QUALIFIED_TAPPED = 0x173, 0x502, 0xAD, 0xD6
 # Review F1 added the one-snap restore; this is the whole 2,048-byte allocation with the qualified link values.
-RUNTIME_CODE_SHA256 = "fa76b2d54376afecc90fe2c97106fcf11fca49d327def5de695f3fb65e48c920"
+RUNTIME_CODE_SHA256 = "5e8cf63a508578911056d5144f025c0beaac1af06c52adf3adc6c200615c3a07"
 
 
 def _sha(data: bytes) -> str:
@@ -793,11 +793,9 @@ class NativeLineupTests(unittest.TestCase):
         self.select(book, 3, others[0])
         self.after.line(0)
         self.assertEqual(self._marker(self.after), 0)
-        # The next play-call build of that side judges the benched receiver as if he had stayed on the field.
-        self.assertEqual((self._word(self.after, "gadget_benched"), self._word(self.after, "gadget_grace")), (0, benched))
-        self.after.line(0)
-        self.assertEqual(self._word(self.after, "gadget_grace"), 0)
-        self.after.m.put(gadget.CODE_VA + template.LABELS["gadget_grace"], 0)
+        # The next play-call build of that side spends the benched receiver too and grants no grace: it judges every
+        # pick the game's own way (only the restore's rebuild, with the offense on the field, graces him).
+        self.assertEqual((self._word(self.after, "gadget_benched"), self._word(self.after, "gadget_grace")), (0, 0))
         self.select(book, 3, 147)
         native = self.before.line(0)
         player = self.before.gad(0)
@@ -903,7 +901,7 @@ class NativeLineupTests(unittest.TestCase):
 
     def test_the_benched_receiver_is_judged_once_as_if_he_had_stayed_on_the_field(self):
         """Review F1, fatigue: the snap path's availability call 0x18A6EE goes through available_or_kept. For the
-        receiver the last substitution benched (gadget_grace, set for the next build of his side) it runs the game's
+        receiver the last substitution benched (gadget_grace, set only during the restore's rebuild) it runs the game's
         own test 0x188440 with the bench threshold set to the field threshold for that one call, then restores both
         thresholds and spends the grace; for every other player it is the game's test unchanged."""
         m = self.after.m

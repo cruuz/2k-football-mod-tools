@@ -14,14 +14,16 @@
    acts only under 0x89624). Every other store only runs 0xB8790.
 
    Fatigue. The snap path checks every pick with 0x188440 (call 0x18A6EE): a player on
-   the field stays if his stamina is at least the field threshold ([0xE60194]/20 home,
-   [0xE601A4]/20 away; 0.25 by default), a benched one comes in only at the bench
-   threshold ([0xE60198]/20, [0xE601A8]/20; 0.80). Without the rule the receiver the GAD
-   replaced would have stayed on the field and kept his place at 0.25; benched for one
-   snap he would need 0.80, and the game's fallback (0x189360) would put another
-   receiver, usually the GAD row player, in his place. So in the next build of that side
-   (the play-call build or the restore's rebuild) that one receiver is checked with the
-   field threshold, once; every other check is the game's own. */
+   the field ([obj+0x10] set) stays if his stamina is at least the field threshold
+   ([0xE60194]/20 home, [0xE601A4]/20 away; 0.25 by default), a benched one comes in only
+   at the bench threshold ([0xE60198]/20, [0xE601A8]/20; 0.80). The restore's rebuild runs
+   with the offense on the field. Without the rule, the receiver the GAD replaced would
+   simply have stayed in the eleven for a no-huddle or audible snap; benched for one snap
+   he would now need 0.80, and the game's fallback (0x189360) would put another receiver,
+   usually the GAD row player, in his place. So during the restore's rebuild that one
+   receiver is checked with the field threshold, once; every other check is the game's
+   own. The huddle play-call build is left alone: the emulator showed it refusing players
+   who had just played at 0.70 and 0.75, so it judges them at the bench threshold anyway. */
 .intel_syntax noprefix
 .text
 .global restore_after_store, restore_after_audible, available_or_kept, gadget_team, gadget_benched, gadget_grace

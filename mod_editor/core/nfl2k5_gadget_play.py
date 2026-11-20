@@ -39,12 +39,14 @@ for the new play, as a huddle call of it would, rather than the same eleven; ret
 The marker is a word in the owner's code allocation, which lies in the writable scale-out pool section (as the QB
 bank's state does).
 
-Fatigue after a substitution (review F1). The snap path keeps a pick already on the field at the field stamina
-threshold (0.25 by default) but brings a benched one in only at the bench threshold (0.80). Without the rule the
-receiver the GAD replaced would have played the gadget snap and kept his place; benched for that one snap he could fall
-under 0.80, and the game's fallback (0x189360) would then put another receiver, usually the GAD row player, in his
-place for several snaps. So in the next build of that side (the play-call build or the restore's rebuild) the
+Fatigue after a substitution (review F1). The snap path keeps a pick that is on the field at the field stamina
+threshold (0.25 by default) but brings a benched one in only at the bench threshold (0.80). The restore's rebuild runs
+with the offense on the field: without the rule the receiver the GAD replaced would simply have stayed in the eleven
+for that no-huddle or audible snap, but benched for one snap he would need 0.80, and the game's fallback (0x189360)
+would put another receiver, usually the GAD row player, in his place. So during the restore's rebuild the
 availability call 0x18A6EE checks that one receiver with the field threshold, once; every other check is the game's.
+The huddle play-call build is left alone (the emulator showed it refusing players who had just played at 0.70 and
+0.75, so it judges them at the bench threshold anyway).
 
 Placement. The code and table use the fixed gadget slots (nfl2k5_xbe_space.GADGET_REQUESTS: code 0x151F680, 2,048
 bytes; table 0x151FE80, 12,800 bytes, right below the Backfield cards at 0x1523080), which every beta-81 standard
