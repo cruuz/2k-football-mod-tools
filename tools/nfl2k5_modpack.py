@@ -254,6 +254,17 @@ def cmd_build_sources(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_update_v09(args: argparse.Namespace) -> int:
+    """Make the same verified copy as selecting these options on the Build page."""
+    from mod_editor.core import mod_build
+    plan = mod_build.v09_disc_update(args.source, args.out, save_list_type_guard=args.save_list_guard,
+                                     modern_injured_reserve=args.modern_ir, backfield_cards=args.backfield_cards,
+                                     overwrite=args.overwrite)
+    receipt = mod_build.build(plan, _progress(not args.json), require_change=True)
+    print(json.dumps(receipt, indent=2, default=str))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -329,6 +340,16 @@ def main(argv: list[str] | None = None) -> int:
     build.add_argument("--receipt", help="new JSON receipt file")
     build.add_argument("--json", action="store_true")
     build.set_defaults(run=cmd_build_sources)
+
+    upgrade = sub.add_parser("update-v09", help="update selected features on a copy of the released v0.9 standard disc")
+    upgrade.add_argument("--source", required=True, help="original SOFTDRINK 2K28 v0.9 standard image")
+    upgrade.add_argument("--out", required=True, help="updated disc copy")
+    upgrade.add_argument("--save-list-guard", action="store_true", help="repair title-screen freezes when the game lists a malformed save")
+    upgrade.add_argument("--modern-ir", action="store_true", help="upgrade the existing modern franchise injured reserve")
+    upgrade.add_argument("--backfield-cards", action="store_true", help="add starting backfield cards")
+    upgrade.add_argument("--overwrite", action="store_true")
+    upgrade.add_argument("--json", action="store_true", help="omit progress and print only the resulting receipt")
+    upgrade.set_defaults(run=cmd_update_v09)
 
     args = parser.parse_args(argv)
     try:

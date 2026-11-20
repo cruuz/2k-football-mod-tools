@@ -111,6 +111,11 @@ class PresetAndMemoryTests(unittest.TestCase):
     def test_cost_at_128_and_forced_off_at_64(self):
         self.assertIn("modern_injured_reserve", budget.REQUIRES_128)
         self.assertEqual(budget.OWNER_BYTES["injured_reserve"], (ir.CODE_SIZE, 0, 0, 0, ir.STORE_SIZE))
+        self.assertEqual(budget.OWNER_BYTES["franchise_ownership"], (ir.ownership.CODE_SIZE, 0, 0, 0, 0))
+        basic = {"injured_reserve_guard": True}
+        self.assertIn("franchise_ownership", budget.owners(basic, 128))
+        self.assertNotIn("injured_reserve", budget.owners(basic, 128))
+        self.assertNotIn("franchise_ownership", budget.owners(basic, 64))
         for preset in ("softdrink_advanced", "softdrink_experimental"):
             on = budget.predict({"preset": preset, "overrides": {"modern_injured_reserve": True}}, 128)
             off = budget.predict({"preset": preset, "overrides": {"modern_injured_reserve": False}}, 128)
@@ -499,6 +504,10 @@ class GameTests(unittest.TestCase):
         m = self.boot(human=0)
         c = 20
         players = self.roster(m, c)[:3]
+        # A retail IR placement removes the player from the club before its low-five pointers are saved.
+        for player in players:
+            m.call(0xC3EB0, ecx=self.club(m, c), edx=player)
+        self.assertFalse(set(players).intersection(self.roster(m, c)))
         buf, office = self.office(m)
         table = m.get(m.root + 4)
         clubs = [[] for _ in range(32)]

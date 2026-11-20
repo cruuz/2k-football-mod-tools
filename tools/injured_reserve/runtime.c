@@ -518,6 +518,7 @@ void ir_load_ext(u8 *office) {
     }
     if (ext) S->loads_extended++; else S->loads_legacy++;
     if (MODE_GET() == 2) {
+        if (ir_config.flags) ((void (FC *)(u8 *, struct store *))ir_config.flags)(r, S);
         for (u32 c = 0; c < CLUBS; c++) {
             u8 *club = CLUB_AT(c);
             if (club) RECOUNT(club);
