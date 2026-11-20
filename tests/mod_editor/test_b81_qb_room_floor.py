@@ -936,6 +936,86 @@ class PlayoffImage(unittest.TestCase):
         counts = room.counters(bytes(m.uc.mem_read(VA, room.PAGE_SIZE)))
         self.assertGreaterEqual(counts["floor_no_game"], 2)
 
+TF3_SIGNED, TF4_SIGNED = 2171, 2459              # the men the floor signs (TF4: Blaine Gabbert, as in the TF4 season)
+TF_IMAGES = Path(os.environ.get("QB_ROOM_TF_IMAGES", "/home/noah/2k-worktrees/.b77-scratch/b81/qb34/evidence/validator"))
+TF_IMAGE_PINS = {"no-qb-2505-2026-w10-kickoff.b81mem.gz": "1f725ff50fe01e920bd5043892b597901c8ce0665de8f56ab839522d1bef1b4e",
+                 "no-qb-2508-2027-w18.b81mem.gz": "fde2c34a02be6d219cf3b2291b0a9ffbe537771ee2dfa79cdc1a06cb479e906a"}
+
+
+@unittest.skipUnless(base.HAVE_UC, "Unicorn is required")
+class TF34(unittest.TestCase):
+    """TF3 and TF4 (DESIGN addendum F6) in the repo, deterministic, from [validator]'s small kept images (env
+    QB_ROOM_TF_IMAGES, skipped when absent): the page under test, settings the floor alone, written over the image's
+    page (whole page: code pieces, settings, zeroed counters and ring), then the floor at the point the image stands.
+    TF4: P0 Retail root 2505, 2026, the week 10 kick-off at 0x247DCF: Minnesota's one active quarterback hurt, the other
+    on IR (the control started a punter); the pre-game floor. TF3: P0 shadow root 2508, 2027 after the week 18 advance:
+    Dallas's three quarterbacks on IR (the control started a punter); the end-of-advance floor."""
+
+    def load(self, name):
+        path = TF_IMAGES / name
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != TF_IMAGE_PINS[name]:
+            raise unittest.SkipTest(f"the kept image {name} is absent or differs")
+        xbe = P2A / P2A_XBE[0]
+        if not xbe.is_file() or hashlib.sha256(xbe.read_bytes()).hexdigest() != P2A_XBE[1]:
+            raise unittest.SkipTest("the mapping executable is absent")
+        from tests.nfl2k5_supersim_draft_fixture import Machine
+        from tools import franchise_invariants as fi
+        memory = fi.load_memory(path)
+        self.m = m = Machine(xbe.read_bytes(), trace_writes=False)
+        for lo, data in memory.regions:
+            if lo < 0x3000000:
+                m.uc.mem_write(lo, data)
+        m.uc.mem_write(VA, room.page_bytes(VA, room.settings_record(FLOOR)))
+        m.uc.ctl_flush_tb()
+        self.root = m.get(0xB72918)
+        self.table = m.get(self.root + 4)
+
+    def team(self, club):
+        return self.m.get(self.root + 0x1C) + 500 * club
+
+    def roster(self, club):
+        team = self.team(club)
+        return [self.m.get(team + 4 * i) for i in range(self.m.uc.mem_read(team + 0x11C, 1)[0])]
+
+    def healthy_qbs(self, club):
+        return [p for p in self.roster(club) if self.m.uc.mem_read(p + 0x35, 1)[0] == 0
+                and not self.m.get(p + 0x20) & 0xBFC00000 and not self.m.get(p + 0x24) & 0x70000000]
+
+    def room_now(self, club):
+        team = self.team(club)
+        self.m.call(0xC3F00, ecx=team, budget=50_000_000)                           # the payroll recount
+        return struct.unpack("<i", struct.pack("<I", (self.m.get(0xE3C278) - self.m.get(team + 0x124)) & 0xFFFFFFFF))[0]
+
+    def floor(self, point):
+        m = self.m
+        m.uc.mem_write(m.STACK, struct.pack("<III", m.STOP, m.ARENA + 0x1A0000, point))
+        m.reg("ESP", m.STACK)
+        m.uc.emu_start(VA + room.LABELS["emergency_pass"], m.STOP, count=2_000_000_000)
+        self.assertEqual(m.reg("EIP"), m.STOP)
+        return room.events(bytes(m.uc.mem_read(VA, room.PAGE_SIZE)))
+
+    def check(self, club, events, signed_index):
+        mine = [e for e in events if e[2] == club and e[3] & 0x0F == 7]
+        self.assertEqual(len(mine), 1)
+        event = mine[0]
+        self.assertEqual((event[4], event[6]), (1, signed_index))                  # applied, the man pinned below
+        healthy = self.healthy_qbs(club)
+        self.assertEqual([(p - self.table) // 0x54 for p in healthy], [signed_index])
+        p = healthy[0]
+        self.assertEqual((self.m.get(p + 0x24) & 15, self.m.uc.mem_read(p + 0x27, 1)[0] & 15), (1, 1))   # F3
+        self.assertGreaterEqual(self.room_now(club), 0)                             # never over the cap
+        return event
+
+    def test_tf4_minnesota_2026_week_10_the_pre_game_floor(self):
+        self.load("no-qb-2505-2026-w10-kickoff.b81mem.gz")
+        self.assertEqual(self.healthy_qbs(31), [])
+        self.check(31, self.floor(1), TF4_SIGNED)
+
+    def test_tf3_dallas_2027_week_18_the_end_of_the_advance(self):
+        self.load("no-qb-2508-2027-w18.b81mem.gz")
+        self.assertEqual(self.healthy_qbs(11), [])
+        self.check(11, self.floor(2), TF3_SIGNED)
+
 P2A = Path(os.environ.get("QB_ROOM_P2A_REPLAY", "/home/noah/2k-worktrees/.b77-scratch/b81/qb34/evidence/p2a-replay"))
 P2A_IMAGE = ("00-sign_after-y1-st7-w2-ENTER.b81mem.gz", "c76828e9931eaebdfebd837b5cbe5bf3cf36adb8070618f1f247cdb9d518cd8e")
 P2A_XBE = ("p2-candidate-9edd1353.xbe", "9edd1353bedfbca6b4ce35faa2acc3cb68b8a74521d3313e3b1873e6b12c7c3d")
