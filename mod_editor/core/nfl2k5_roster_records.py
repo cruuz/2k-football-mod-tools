@@ -2670,23 +2670,37 @@ class RosterDocument:
     def is_draft_class(self, player: Player) -> bool:
         return player.group in ("draft_class", "draft_slot", "draft_capacity")
 
-    def check_operation(self, player: Player, operation: str) -> None:
-        """Finn's refusals, before any list is touched."""
+    def membership_context(self) -> dict[str, Any]:
+        """The whole-document part of ``check_operation``, read once: the injured-reserve players of a franchise
+        save and the reserve lists' validity. A batch of operations (b81 M3) passes it to every ``check_operation``
+        and ``release`` instead of re-reading the document for each player (about half a second each on the
+        SOFTDRINK roster)."""
 
-        _require(self.by_offset.get(player.offset) is player, "player belongs to another document")
-        if (player.pool, player.index) in self.reserve_owner:
-            raise MembershipRefused("Promote this team's reserve before signing, moving, releasing, swapping or placing on IR")
         from .nfl2k5_franchise_save import FranchiseSave, is_franchise_save
+        ir_players: frozenset[int] = frozenset()
         if is_franchise_save(bytes(self.body)):
-            ir = FranchiseSave(bytes(self.body)).injured_reserve()
-            if player.pool == "primary" and any(e.player_index == player.index for e in ir):
-                raise MembershipRefused("Activate this player from injured reserve first")
+            ir_players = frozenset(e.player_index for e in FranchiseSave(bytes(self.body)).injured_reserve())
+        invalid = ""
         if any(self.reserves.values()):
             from .nfl2k5_practice_squad import validate_save
             try:
                 validate_save(self.to_body())
             except ValueError as exc:
-                raise MembershipRefused(str(exc)) from exc
+                invalid = str(exc)
+        return {"ir_players": ir_players, "invalid": invalid}
+
+    def check_operation(self, player: Player, operation: str, *, context: Mapping[str, Any] | None = None) -> None:
+        """Finn's refusals, before any list is touched."""
+
+        _require(self.by_offset.get(player.offset) is player, "player belongs to another document")
+        if (player.pool, player.index) in self.reserve_owner:
+            raise MembershipRefused("Promote this team's reserve before signing, moving, releasing, swapping or placing on IR")
+        if context is None:
+            context = self.membership_context()
+        if player.pool == "primary" and player.index in context["ir_players"]:
+            raise MembershipRefused("Activate this player from injured reserve first")
+        if context["invalid"]:
+            raise MembershipRefused(context["invalid"])
         if player.record.on_injured_reserve:
             raise MembershipRefused("Activate this player from injured reserve first")
         if self.is_draft_class(player):
@@ -2791,12 +2805,12 @@ class RosterDocument:
         return at
 
     def release(self, player: Player, team_index: int | None = None, *,
-                minimum: int = TEAM_MIN_PLAYERS) -> dict[str, Any]:
+                minimum: int = TEAM_MIN_PLAYERS, context: Mapping[str, Any] | None = None) -> dict[str, Any]:
         """Release a player to free agency: compact the team's pointer list, drop its count, append
         him to the free-agent list.  His record is not touched (retail free agents keep the rank and
         side bits of their last team, so the game does not need them cleared)."""
 
-        self.check_operation(player, "release")
+        self.check_operation(player, "release", context=context)
         if team_index is None:
             team_index = self.team_of(player)
         _require(team_index is not None, f"{player.display} is not on a team")

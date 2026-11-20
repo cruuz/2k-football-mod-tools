@@ -1288,6 +1288,15 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    gives him a new six-word history with zero yards, the same words the game itself writes, so he reads zero
    everywhere and earns new stats as he plays. Each player uses six words of the save's career-stat pool (50,000
    words in a 32-club league). The same command repairs a selected player's damaged history link. Use Undo to restore his previous history.
+
+   **Several players at once.** Shift-click or Ctrl-click players in the grid, or press Ctrl+A (or right-click →
+   **Select all … shown**) to take every player in the list. With more than one selected, **Release … selected**
+   (under the grid or right-click) frees all of them in one step: it is checked for the whole group first, so if
+   any club would fall under 42, the free-agent list has no room, or someone is already a free agent or on injured
+   reserve, nothing changes and the message names who or which club. One Undo puts every player back. Right-click →
+   **Clear career stats of the … selected…** does the same for the selection, and the Global Attribute Editor has
+   **Only the selected players (…)**. The one-player buttons (Copy, Paste, Swap, Move, the arrows, Place on IR) wait
+   until one player is selected, and their tips say so.
    The Studio checks for enough free space before it changes the save.
 
    **Copy team, Paste team, Export team, Import team** (right-click a club in the list, or **Tools ▾**) move a
@@ -1463,6 +1472,7 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | The player grid (every rating as a column, click to sort) | **Columns ▾**, then click a heading |
 | Copy Player (Ctrl+C), Paste Player (Ctrl+V), Paste Attributes Only (Ctrl+Alt+A) | Same keys, or **Copy player** and **Paste ▾** |
 | Tools > Global Editor | **Global Attribute Editor…** |
+| Edit > Select All (Ctrl+A), then Global Edit or Release on the selection | Ctrl+A or Shift/Ctrl click in the grid, then **Global Attribute Editor… → Only the selected players** or **Release … selected** |
 | Tools > Auto-update > Advance year | **Tools ▾ → Add a year pro to everyone (Advance year)** |
 | Tools > Auto-update > Body type from weight / from BMI | **Tools ▾ → Body type from weight / from BMI (Auto-update)…** |
 | Tools > Options > Default Team | **Tools ▾ → Open on this list next time** |
