@@ -706,6 +706,7 @@ data/nfl2k5_kit_fixes_2026_sw1.json
 data/nfl2k5_kit_fixes_2026_names.json
 data/nfl2k5_kit_fixes_2026_b81.json
 data/nfl2k5_kit_fixes_2026_b81u.json
+data/nfl2k5_sideline_2026_b81u.json
 data/nfl2k5_glyph_fixes_2026_b81u.json
 data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_0.png
 data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_1.png

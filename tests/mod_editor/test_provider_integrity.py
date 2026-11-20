@@ -815,6 +815,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_9.png": "c75073a37930a06be156832835ba4c8bf6821a5cb4342f3514b288d40c316add",
                 "data/nfl2k5_kit_fixes_2026_b81.json": "b7425ecdbf65f56599d0706360687f165493d180c0554b274cc8d88e32cf511f",
                 "data/nfl2k5_kit_fixes_2026_b81u.json": "d4aca34bf6c7be326943016464469550474129a2e7d4ec25f19d9b2f883576a6",
+                "data/nfl2k5_sideline_2026_b81u.json": "aeaad3daa71d56fce5a320216453339e7576d43befc10f29818e1bcca28e1f56",
                 "data/nfl2k5_relief_2026_b81u.json": "1ae9271e67671cc3b9d4bb664e804f4fb93f881e9dc105036d032cb20d9b89d0",
                 "data/nfl2k5_relief_2026_b81u/difference_jersey.png": "e35c342db7db747d2d056fa8d8020c728ccb9d33ce163e40b57aa2cf04404a17",
                 "data/nfl2k5_relief_2026_b81u/difference_sleeve.png": "31bb10e5979ee53b022816f1311b4d53d949c606d888186ac85103104b1a7983",
