@@ -77,22 +77,22 @@ POSITION_CLASSES = (
                   ((1, 0.0925), (2, 0.1101), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.8354))),
     PositionClass("halfback", 1_852_000, 83, 100,
                   ((1, 0.098), (2, 0.1166), (3, 0.8052), (7, 0.023), (15, 0.0414), (31, 1.0))),
-    # Slice 3: starting values of pos3/DESIGN.md section 5 (pos3/work/design-tables/start_tables.json; the defensive
-    # tackle's last pair is 0.0 as section 5 has it). Calibration changes only base_chance and accept.
-    PositionClass("receiver", 694_000, 78, 100,
-                  ((1, .1817), (2, .2164), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.0))),
-    PositionClass("tight_end", 512_000, 80, 100,
-                  ((1, .1812), (2, .2157), (3, 1.0), (7, 0.0), (15, 0.0), (31, .4625))),
-    PositionClass("fullback", 1_129_000, 85, 105,
-                  ((1, .0318), (2, .0378), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.0))),
-    PositionClass("defensive_tackle", 563_000, 80, 100,
-                  ((1, .2051), (2, .2442), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.0))),
-    PositionClass("linebacker", 783_000, 79, 100,
-                  ((1, .0982), (2, .1169), (3, 1.0), (7, 0.0), (15, 0.0), (31, .1508))),
-    PositionClass("cornerback", 990_000, 78, 100,
-                  ((1, .1973), (2, .2349), (3, 1.0), (7, 0.0), (15, 0.0), (31, .2934))),
-    PositionClass("safety", 926_000, 78, 100,
-                  ((1, .1481), (2, .1763), (3, 1.0), (7, 0.0), (15, 0.0), (31, .2722))),
+    # Slice 3: frozen after its new round 2 on the refit slice 2, absences counted by the NFL study's rule
+    # (pos3/calib/nr2/constants.json; pos3/DESIGN_CHANGES.md). Calibration changed only base_chance and accept.
+    PositionClass("receiver", 253_000, 78, 100,
+                  ((1, 0.2932), (2, 0.349), (3, 1.0), (7, 0.0), (15, 0.0), (31, 0.9481))),
+    PositionClass("tight_end", 355_000, 80, 100,
+                  ((1, 0.1076), (2, 0.1281), (3, 0.5404), (7, 0.0), (15, 0.0), (31, 1.0))),
+    PositionClass("fullback", 148_000, 85, 105,
+                  ((1, 0.2179), (2, 0.2594), (3, 1.0), (7, 0.0043), (15, 0.0531), (31, 0.1907))),
+    PositionClass("defensive_tackle", 227_000, 80, 100,
+                  ((1, 0.1443), (2, 0.1718), (3, 0.582), (7, 0.0), (15, 0.0111), (31, 1.0))),
+    PositionClass("linebacker", 315_000, 79, 100,
+                  ((1, 0.1493), (2, 0.1778), (3, 0.7243), (7, 0.0), (15, 0.0), (31, 1.0))),
+    PositionClass("cornerback", 415_000, 78, 100,
+                  ((1, 0.2413), (2, 0.2872), (3, 0.7744), (7, 0.0), (15, 0.097), (31, 1.0))),
+    PositionClass("safety", 316_000, 78, 100,
+                  ((1, 0.2948), (2, 0.351), (3, 0.9101), (7, 0.0), (15, 0.0), (31, 1.0))),
 )
 # False is the cut-line fallback of pos2/DESIGN.md section 8: no per-carry halfback chance, weekly roll left as it is.
 HALFBACK_SUPPLEMENT = True

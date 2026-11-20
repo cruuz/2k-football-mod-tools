@@ -139,6 +139,24 @@ def rate_with_room(ratings, nominal, fraction, *, carrier=None):
     return lo * 100
 
 
+
+def plays_for_coverage(ratings, rate, *, carriers=(7, 8), least=6):
+    """Plays (a multiple of 6, at least 240) after which every class expects at least `least` proposals in the
+    rush/pass/sack and carrier rotation of the coverage test, from the module's own constants (lead, slice 3 freeze:
+    calibrated constants made a fixed 240 plays leave the fullback, exposed only on rush plays, without a proposal)."""
+    per_class = [0.0] * len(rules.POSITION_CLASSES)
+    for number in range(6):
+        site, carrier = (RUSH, PASS, SACK_ESCAPE)[number % 3], carriers[number % 2]
+        for walk_index, ((index, _, _, flags), rating) in enumerate(zip(WALK, ratings)):
+            if rating is None or not exposed_on(flags, site, walk_index, carrier):
+                continue
+            position = rules.POSITION_CLASSES[index]
+            value = (position.base_chance / rules.POSITION_SCALE * rate / rules.DEFAULT_RATE
+                     * max(0, position.zero_point - rating) / (position.zero_point - position.reference_durability))
+            per_class[index] += min(value, 1.0) * ((flags >> 4) or 16) / 16 / 6
+    needed = max(least / chance for chance in per_class if chance > 0)
+    return max(240, -(-int(needed) // 6) * 6 + 6)
+
 def effective(scale_bits, slider, fpcw=FPCW_64):
     """fld scale; fmul slider; fistp qword under the given control word (round to nearest), then the clamp."""
     scale = Fraction(struct.unpack('<f', struct.pack('<I', scale_bits))[0])
@@ -917,14 +935,15 @@ class NativeCommit(NativeMachine):
     def test_no_write_or_draw_outside_the_bank_the_stack_and_the_victims_health(self):
         ratings = (93, 70, 91, 60, 99, 81, 40, 83, 55, 78, 66, 90, 50, 80, 85, 70, 88, 62, 79, 95, 58, 74, 81, 64, 78,
                    92, 45)
-        self.link(rules, min(rate_with_room(ratings, 3_000, .95, carrier=carrier) for carrier in (7, 8)))
+        rate = min(rate_with_room(ratings, 3_000, .95, carrier=carrier) for carrier in (7, 8))
+        self.link(rules, rate)
         self.lineup(tuple((side, slot, rating) for (_, side, slot, _), rating in zip(WALK, ratings)))
         shared = bytes(self.m.uc.mem_read(SHARED_RNG, RNG_SIZE))
         league = bytes(self.m.uc.mem_read(LEAGUE_RNG, RNG_SIZE))
         bank, stack = range(self.BANK, self.BANK + rules.CODE_SIZE), range(0x3000000, 0x3010000)
         health = {player + offset for player in self.players.values() for offset in range(0x20, 0x2C)}
         commits = 0
-        for number in range(240):
+        for number in range(plays_for_coverage(ratings, rate)):
             self.m.put(CARRIER, self.players[(OFFENSE, (1, 3)[number % 2])])
             self.writes.clear()
             events = self.play((RUSH, PASS, SACK_ESCAPE)[number % 3])
