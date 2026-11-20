@@ -20,6 +20,7 @@ import unittest
 from mod_editor.core import nfl2k5_sim_qb_injuries_code as rules
 from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice1 as frozen
 from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice2 as frozen2
+from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice3 as frozen3
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from tests.mod_editor.test_b81_sim_qb_injuries_code import BANK, DATA, SIM, NativeFixture
 from tests.nfl2k5_supersim_draft_fixture import HAVE_UC, Machine, retail_bytes, sim_machine
@@ -68,8 +69,9 @@ ROLL_ANSWER, MASTER_ANSWER = 0x3003800, 0x3003804
 
 
 def piece(bank):
-    """Addresses of the positions piece in a bank at `bank` (it must end before the recovery piece at 0x2000)."""
-    return range(bank + rules.LABELS['positions'], bank + 0x2000)
+    """Addresses of the positions piece in a bank at `bank`. It ends before the stability piece at 0x1C00 (before
+    the long-franchise stability piece the range ran to the recovery piece at 0x2000 and held only this piece)."""
+    return range(bank + rules.LABELS['positions'], bank + rules.LABELS['stability'])
 
 
 def mix32(value):
@@ -1197,6 +1199,606 @@ class SlotTwentyEight(unittest.TestCase):
         self.assertTrue(m.get(victim + 0x20) & 0x80000000)
         self.assertGreaterEqual(m.uc.mem_read(victim + 0x27, 1)[0] >> 4 & 7, 2)
         self.assertEqual(m.get(offense + 0xDC), 0)
+
+
+# Long-franchise stability (pos3/DESIGN.md addendum "Long-franchise stability", A.2 the mechanism and A.6 test 1;
+# tools/qb_sim_injuries/stability.S). The rule below is the design's, written out here independently of the piece.
+ONE, FLOOR, CEILING = 0x3F800000, 0x3F000000, 0x3FA00000
+STABILITY_CLASSES = 13                  # slices 2 and 3's twelve classes in order, then the quarterback
+QUARTERBACK = 12
+# stored position -> (class, starters counted): QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE; K and P are not counted
+POSITION_RULE = {0: (12, 1), 3: (5, 3), 4: (10, 3), 5: (11, 1), 6: (11, 1), 7: (4, 2), 8: (7, 1), 9: (6, 1),
+                 10: (9, 3), 11: (9, 3), 12: (2, 1), 13: (1, 2), 14: (0, 2), 15: (8, 2), 16: (3, 2)}
+ZERO_K = ZERO_POINTS + (100,)
+LEAGUE, RECORD = 0x2400000, 0x40        # synthetic league player records (each stability fixture maps them)
+RETURN_STUB = 0x3003100                 # return address of a direct call of the piece (mapped by NativeFixture)
+PRECISION = {0: 24, 2: 53, 3: 64}
+
+
+def f32(bits):
+    return struct.unpack('<f', struct.pack('<I', bits))[0]
+
+
+def bits32(value):
+    return struct.unpack('<I', struct.pack('<f', value))[0]
+
+
+def factor_bits(count, total, reference, fpcw=FPCW_64):
+    """fild count; fmul R; fidiv sum; fstp, under the control word's precision, then both clamps on the bit pattern."""
+    if count < 8 or total == 0:
+        return ONE
+    precision = PRECISION[fpcw >> 8 & 3]
+    value = _round_bits(_round_bits(count * Fraction(f32(bits32(reference))), precision) / total, precision)
+    return min(max(bits32(float(_round_bits(value, 24))), FLOOR), CEILING)
+
+
+def scaled(first, second, factor, fpcw=FPCW_64):
+    """fld first; fmul second; fmul factor (all single floats), as the extended value the next instruction sees."""
+    precision = PRECISION[fpcw >> 8 & 3]
+    product = _round_bits(Fraction(f32(first)) * Fraction(f32(second)), precision)
+    return _round_bits(product * Fraction(f32(factor)), precision)
+
+
+def effective_scaled(scale, slider, factor, fpcw=FPCW_64):
+    """positions.S `effective` with the class factor: fistp of scale x slider x factor, then the clamp."""
+    whole = round(scaled(scale, bits32(slider), factor, fpcw))
+    return 0 if whole < 0 else min(whole, M32)
+
+
+class League:
+    """A loaded league: 32 records in the franchise club table, each with its active list of player pointers and the
+    count byte at +0x11C. Records after the count stand for players off the list (IR, released)."""
+
+    def __init__(self):
+        self.lists = [[] for _ in range(32)]
+        self.after = [[] for _ in range(32)]
+        self.counts = {}
+        self.used = set()
+
+    def player(self, club, position, rank, durability, *, noise=0, listed=True):
+        record = {'position': position, 'word': (noise & ~0x1C00 | rank << 10) & 0xFFFF, 'durability': durability}
+        (self.lists if listed else self.after)[club].append(record)
+        self.used.add((club, position, rank))
+        return record
+
+    def starters(self, index, gaps, *, noise=0):
+        """Starters of class `index` with these K - Durability values, spread over the clubs, positions and ranks."""
+        positions = [position for position, (owner, _) in sorted(POSITION_RULE.items()) if owner == index]
+        free = [(club, position, rank) for rank in range(3) for club in range(32) for position in positions
+                if rank < POSITION_RULE[position][1] and (club, position, rank) not in self.used]
+        assert len(free) >= len(gaps)
+        return [self.player(club, position, rank, ZERO_K[index] - gap, noise=noise)
+                for gap, (club, position, rank) in zip(gaps, free)]
+
+    def install(self, write, teams):
+        address = LEAGUE
+        for club in range(32):
+            record = bytearray(500)
+            for number, entry in enumerate(self.lists[club] + self.after[club]):
+                pointer = 0
+                if entry is not None:
+                    body = bytearray(RECORD)
+                    struct.pack_into('<H', body, 0x28, entry['word'])
+                    body[0x35], body[0x3B] = entry['position'], entry['durability']
+                    write(address, bytes(body))
+                    pointer, address = address, address + RECORD
+                struct.pack_into('<I', record, 4 * number, pointer)
+            record[0x11C] = self.counts.get(club, len(self.lists[club]))
+            write(teams + 500 * club, bytes(record))
+
+    def model(self, *, off=()):
+        """Per class (sum of max(0, K - Durability), number) over listed starters by the design's rule."""
+        sums, counts = [0] * STABILITY_CLASSES, [0] * STABILITY_CLASSES
+        for club in range(32):
+            for entry in self.lists[club]:
+                rule = None if entry is None else POSITION_RULE.get(entry['position'])
+                if rule is None or rule[0] in off or (entry['word'] >> 10 & 7) >= rule[1]:
+                    continue
+                sums[rule[0]] += max(0, ZERO_K[rule[0]] - entry['durability'])
+                counts[rule[0]] += 1
+        return sums, counts
+
+    def factors(self, reference=None, fpcw=FPCW_64, *, off=()):
+        reference = rules.STABILITY_REFERENCE if reference is None else reference
+        if any(count > 0x41 for count in self.counts.values()):
+            return [ONE] * STABILITY_CLASSES
+        sums, counts = self.model(off=off)
+        return [factor_bits(n, total, r, fpcw) for n, total, r in zip(counts, sums, reference)]
+
+
+def gaps_for(factor):
+    """Ten starters per class whose league mean of K - Durability is about R / factor."""
+    return {index: [round(reference / factor)] * 10 for index, reference in enumerate(rules.STABILITY_REFERENCE)}
+
+
+class StabilityGate(PositionGate):
+    """The stability piece on a synthetic league, called directly or through the two new-game blocks."""
+
+    def setUp(self):
+        super().setUp()
+        from unicorn import UC_HOOK_MEM_READ
+
+        self.uc.mem_map(LEAGUE, 0x40000)
+        self.league = League()
+        self.generator_reads = []
+        self.uc.hook_add(UC_HOOK_MEM_READ, lambda uc, access, at, size, value, data: self.generator_reads.append(
+            (uc.reg_read(self.x.UC_X86_REG_EIP), at)), begin=SHARED_RNG, end=SHARED_RNG + RNG_SIZE - 1)
+
+    def load_rate(self, rate, **stability):
+        super().load_rate(rate)
+        if stability:
+            bank = bytearray(self.uc.mem_read(BANK, rules.CODE_SIZE))
+            rules._configure_stability(bank, rate, **stability)
+            self.uc.mem_write(BANK, bytes(bank))
+            self.uc.ctl_remove_cache(BANK, BANK + rules.CODE_SIZE)
+
+    def install(self):
+        self.league.install(self.uc.mem_write, self.teams)
+
+    def factors(self):
+        return list(self.table('stab_factor', STABILITY_CLASSES))
+
+    def poison(self, value=0x3F19999A):   # 0.6: what an earlier fixture in a later season could have left
+        self.uc.mem_write(BANK + rules.LABELS['stab_factor'], struct.pack('<I', value) * STABILITY_CLASSES)
+
+    def stability(self, season=None, *, fpcw=FPCW_64):
+        """Call the piece once, as the new-game blocks do, and check what it must keep."""
+        from unicorn import UC_HOOK_CODE
+
+        if season is not None:
+            self.write(0xE576B8, season)
+        self.write(self.STACK, RETURN_STUB)
+        incoming = (0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0x7777, self.STACK, 0x202)
+        for register, value in zip(self.registers, incoming, strict=True):
+            self.uc.reg_write(register, value)
+        self.uc.reg_write(self.x.UC_X86_REG_FPCW, fpcw)
+        top = self.uc.reg_read(self.x.UC_X86_REG_FPSW) >> 11 & 7
+        depth = []
+        start = BANK + rules.LABELS['stability']
+        handle = self.uc.hook_add(UC_HOOK_CODE, lambda uc, pc, size, data: depth.append(
+            (top - (uc.reg_read(self.x.UC_X86_REG_FPSW) >> 11 & 7)) & 7), begin=start, end=start + 0x400)
+        self.writes.clear()
+        try:
+            self.uc.emu_start(start, RETURN_STUB, count=200_000)
+        finally:
+            self.uc.hook_del(handle)
+        self.assertEqual(self.uc.reg_read(self.x.UC_X86_REG_EIP), RETURN_STUB)
+        state = tuple(self.uc.reg_read(r) for r in self.registers)
+        self.assertEqual(state[:8], incoming[:7] + (self.STACK + 4,))      # every general register kept
+        self.assertLessEqual(max(depth), 1)                                 # one x87 slot
+        self.assertEqual(self.uc.reg_read(self.x.UC_X86_REG_FPSW) >> 11 & 7, top)
+        tables = range(BANK + rules.LABELS['stab_factor'], BANK + rules.LABELS['stab_count'] + 4 * STABILITY_CLASSES)
+        stack = range(self.STACK - 0x100, self.STACK)
+        foreign = [(hex(pc), hex(at)) for pc, at, size in self.writes
+                   if not all(byte in tables or byte in stack for byte in range(at, at + size))]
+        self.assertEqual(foreign, [])
+        self.assertEqual(self.generator_reads, [])
+        return self.factors()
+
+    def gate_address(self):
+        """The quarterback's gate sample and the instruction that loads it (fild directly after the factor multiply)."""
+        gate = BANK + rules.LABELS['private_rng'] - 20
+        bank = bytes(self.uc.mem_read(BANK, 0x1400))
+        load = b'\xdb\x05' + struct.pack('<I', gate)
+        multiply = b'\xd8\x0d' + struct.pack('<I', BANK + rules.LABELS['stab_factor'] + 48)
+        self.assertEqual(bank.count(load), 1)
+        self.assertEqual(bank.count(multiply + load), 1)
+        return gate, BANK + bank.index(load)
+
+    def quarterback_play(self, site, forced, *, slider=.5, fpcw=FPCW_64):
+        """One play on which only the quarterback can be proposed; True when his gate fired at this gate sample."""
+        from unicorn import UC_HOOK_CODE
+
+        gate, load = self.gate_address()
+        handle = self.uc.hook_add(UC_HOOK_CODE, lambda uc, pc, size, data: self.write(gate, forced),
+                                  begin=load, end=load)
+        hits = BANK + rules.LABELS['private_rng'] - 8
+        before = self.word(hits)
+        try:
+            self.assertIsNone(self.play(site, slider=slider, fpcw=fpcw))
+        finally:
+            self.uc.hook_del(handle)
+        self.assertEqual(self.word(gate), forced)
+        return self.word(hits) - before == 1
+
+
+class StabilityFactors(StabilityGate):
+    def test_seasons_one_and_two_leave_every_factor_exactly_one_whatever_was_left_before(self):
+        for index, gaps in gaps_for(.8).items():
+            self.league.starters(index, gaps)
+        self.install()
+        expected = self.league.factors()
+        self.assertNotIn(ONE, expected)
+        for mode in ('adaptive', 'year'):
+            self.load_rate(rules.DEFAULT_RATE, mode=mode)
+            for season in (0, 1):
+                with self.subTest(mode=mode, season=season):
+                    self.poison()
+                    self.assertEqual(self.stability(season), [ONE] * STABILITY_CLASSES)
+            self.poison()
+            later = self.stability(2)
+            self.assertEqual(later, expected if mode == 'adaptive' else [bits32(rules.stability_year_factors()[2])] * 13)
+        self.assert_isolated()
+
+    def test_a_league_at_one_and_a_quarter_times_the_reference_gives_0_8_in_every_class(self):
+        reference = (20.0,) * STABILITY_CLASSES
+        for index in range(STABILITY_CLASSES):
+            self.league.starters(index, [25, 30, 20, 25, 27, 23, 25, 25])       # mean 25 = 1.25 x 20
+        self.install()
+        for fpcw in (FPCW_64, FPCW_24):
+            with self.subTest(fpcw=hex(fpcw)):
+                self.load_rate(rules.DEFAULT_RATE, reference=reference)
+                self.assertEqual(self.stability(5, fpcw=fpcw), [bits32(.8)] * STABILITY_CLASSES)
+        self.assertEqual(bits32(.8), 0x3F4CCCCD)
+
+    def test_the_shipped_references_on_a_varied_league_match_the_model_bit_for_bit(self):
+        generator = random.Random(81041)
+        for index in range(STABILITY_CLASSES):
+            capacity = 32 * sum(POSITION_RULE[p][1] for p in POSITION_RULE if POSITION_RULE[p][0] == index)
+            count = generator.randrange(8, min(capacity, 70))
+            self.league.starters(index, [generator.randrange(-5, 40) for _ in range(count)],
+                                 noise=generator.randrange(1 << 16))
+        self.install()
+        sums, counts = self.league.model()
+        self.assertTrue(all(n >= 8 for n in counts))
+        for fpcw in (FPCW_64, FPCW_24):
+            with self.subTest(fpcw=hex(fpcw)):
+                factors = self.stability(4, fpcw=fpcw)
+                self.assertEqual(factors, self.league.factors(fpcw=fpcw))
+                self.assertEqual(list(self.table('stab_sum', 13)), sums)
+                self.assertEqual(list(self.table('stab_count', 13)), counts)
+        self.assertGreater(len(set(factors)), 8)
+
+    def test_position_thresholds_are_scaled_by_the_factor_to_the_unit(self):
+        reference = (20.0,) * STABILITY_CLASSES
+        for index in range(STABILITY_CLASSES):
+            self.league.starters(index, [25] * 8)
+        self.install()
+        for fpcw in (FPCW_64, FPCW_24):
+            for slider in (.25, .5, 1.0):
+                self.load_rate(rules.DEFAULT_RATE, reference=reference)
+                scales = self.table('pos_scale', CLASSES)
+                zeros = self.table('pos_zero', CLASSES)
+                for index, slot in CLASS_SLOT.items():
+                    with self.subTest(fpcw=hex(fpcw), slider=slider, index=index):
+                        self.clear()
+                        player = self.place(slot, 60)
+                        self.write(CARRIER, player)
+                        self.write(0xE576B4, 100 + index)       # a new fixture: its first play computes the factors
+                        limit = threshold(effective_scaled(scales[index], slider, bits32(.8), fpcw), zeros[index], 60)
+                        unscaled = threshold(effective(scales[index], slider, fpcw), zeros[index], 60)
+                        self.assertLess(limit, unscaled)
+                        self.assert_proposed(self.play(slider=slider, force=limit - 1, fpcw=fpcw), slot)
+                        self.assertEqual(self.factors(), [bits32(.8)] * STABILITY_CLASSES)
+                        self.assertEqual(self.table('pos_effective', CLASSES)[index],
+                                         effective_scaled(scales[index], slider, bits32(.8), fpcw))
+                        self.assertIsNone(self.play(slider=slider, force=limit, fpcw=fpcw))
+        self.assert_isolated()
+
+    def test_quarterback_threshold_is_scaled_by_its_own_factor_to_the_unit(self):
+        # The quarterback's starters at 2 x R: his factor is the floor 0.5; every other class at 0.8. With the
+        # positions check switched off the clinical piece's own new-game call computes the factors.
+        gaps = gaps_for(.8)
+        gaps[QUARTERBACK] = [round(2 * rules.STABILITY_REFERENCE[QUARTERBACK])] * 10
+        for index, values in gaps.items():
+            self.league.starters(index, values)
+        self.install()
+        self.assertEqual(self.league.factors()[QUARTERBACK], FLOOR)
+        tables = {RUSH: 'ordinary_thresholds', SACK_ESCAPE: 'special_thresholds'}
+        for fpcw in (FPCW_64, FPCW_24):
+            for site, name in tables.items():
+                for durability in (40, 59, 84):
+                    with self.subTest(fpcw=hex(fpcw), site=hex(site), durability=durability):
+                        self.load_rate(rules.DEFAULT_RATE)
+                        self.uc.mem_write(BANK + rules.LABELS['pos_enabled'], b'\0')
+                        self.clear()
+                        self.place(0, durability)
+                        self.write(0xE576B4, 200 + durability)
+                        table = struct.unpack_from('<I', self.uc.mem_read(BANK + rules.LABELS[name] + 4 * durability, 4))[0]
+                        limit = scaled(table, bits32(.5), FLOOR, fpcw)
+                        whole = -(-limit.numerator // limit.denominator)          # first sample that is not below
+                        self.assertTrue(self.quarterback_play(site, whole - 1, fpcw=fpcw))
+                        self.assertEqual(self.factors(), self.league.factors(fpcw=fpcw))
+                        self.assertFalse(self.quarterback_play(site, whole, fpcw=fpcw))
+                        unscaled = scaled(table, bits32(.5), ONE, fpcw)
+                        self.assertLess(whole, unscaled)    # this sample is a hit for slice 3's threshold
+        self.assert_isolated()
+
+    def test_only_listed_starters_of_the_class_positions_are_summed(self):
+        # One case per exclusion. A Durability of 0 would move the factor a long way if the player were counted.
+        cases = (('wrong position (a guard is not a tackle)', 0, dict(position=13, rank=0), 1),
+                 ('rank equal to the starter count', 0, dict(position=14, rank=2), None),
+                 ('rank 7', 9, dict(position=10, rank=7), None),
+                 ('not on a list (IR, released)', 0, dict(position=14, rank=0, listed=False), None),
+                 ('kicker', None, dict(position=1, rank=0), None), ('punter', None, dict(position=2, rank=0), None),
+                 ('position byte above 16', None, dict(position=17, rank=0), None),
+                 ('position byte 255', None, dict(position=255, rank=0), None))
+        for name, index, extra, owner in cases:
+            with self.subTest(name):
+                self.league = League()
+                for each in range(STABILITY_CLASSES):
+                    self.league.starters(each, [20] * 9)
+                base = self.league.factors()
+                self.league.player(31, extra['position'], extra['rank'], 0, listed=extra.get('listed', True))
+                self.league.lists[30].append(None)                  # an empty pointer inside a count is skipped
+                self.install()
+                factors = self.stability(3)
+                self.assertEqual(factors, self.league.factors())
+                if index is not None:
+                    self.assertEqual(factors[index], base[index])
+                if owner is not None:
+                    self.assertNotEqual(factors[owner], base[owner])  # counted for his own class
+                else:
+                    self.assertEqual(factors, base)
+        # The positive control: the same player inside the rule moves his class.
+        self.league = League()
+        for each in range(STABILITY_CLASSES):
+            self.league.starters(each, [20] * 9)
+        base = self.league.factors()
+        self.league.player(31, 14, 1, 0, noise=0xE3FF)              # rank 1 at tackle; side and low bits set
+        self.install()
+        factors = self.stability(3)
+        self.assertNotEqual(factors[0], base[0])
+        self.assertEqual(factors, self.league.factors())
+
+    def test_durability_at_or_above_the_zero_point_counts_as_zero(self):
+        for index in range(STABILITY_CLASSES):
+            k = ZERO_K[index]
+            for durability, gap in ((k - 1, 1), (k, 0), (k + 1, 0), (255, 0)):
+                with self.subTest(index=index, durability=durability):
+                    self.league = League()
+                    self.league.starters(index, [10] * 8)
+                    self.league.starters(index, [k - durability])
+                    self.install()
+                    self.stability(2)
+                    self.assertEqual(self.table('stab_sum', 13)[index], 80 + gap)
+                    self.assertEqual(self.table('stab_count', 13)[index], 9)
+
+    def test_both_clamps(self):
+        # Exactly at 0.5 and 1.25 (reference 20: means 40 and 16) the factor is the bound itself; beyond them it is
+        # held there; just inside it is the model's value.
+        reference = (20.0,) * STABILITY_CLASSES
+        self.load_rate(rules.DEFAULT_RATE, reference=reference)
+        for index in range(STABILITY_CLASSES):
+            for gaps, expected in (([40] * 8, FLOOR), ([41] * 8, FLOOR), ([90] * 8, FLOOR), ([16] * 8, CEILING),
+                                   ([15] * 8, CEILING), ([1] * 8, CEILING), ([39] * 8, factor_bits(8, 312, 20.0)),
+                                   ([17] * 8, factor_bits(8, 136, 20.0))):
+                with self.subTest(index=index, mean=gaps[0]):
+                    self.league = League()
+                    self.league.starters(index, gaps)
+                    self.install()
+                    factors = self.stability(6)
+                    self.assertEqual(factors[index], expected)
+                    self.assertEqual(factors, self.league.factors(reference))
+        self.assertTrue(FLOOR < factor_bits(8, 312, 20.0) < factor_bits(8, 136, 20.0) < CEILING)
+
+    def test_fewer_than_eight_starters_a_zero_sum_or_a_bad_club_count_leave_one(self):
+        for index in range(STABILITY_CLASSES):
+            with self.subTest(index=index):
+                self.league = League()
+                self.league.starters(index, [40] * 7)
+                self.install()
+                self.poison()
+                self.assertEqual(self.stability(3)[index], ONE)        # seven starters
+                self.league.starters(index, [40])
+                self.install()
+                self.assertNotEqual(self.stability(3)[index], ONE)     # eight
+                self.league = League()
+                self.league.starters(index, [0, -3, -20, 0, 0, 0, 0, 0, 0])
+                self.install()
+                self.assertEqual(self.stability(3)[index], ONE)        # every starter at or above K: sum 0
+        self.league = League()
+        for index, gaps in gaps_for(.8).items():
+            self.league.starters(index, gaps)
+        self.install()
+        good = self.stability(3)
+        self.assertNotIn(ONE, good)
+        for club, count in ((31, 0x41), (31, 0x42), (0, 0x42), (16, 0xFF)):
+            with self.subTest(club=club, count=count):
+                self.league.counts = {club: count}                      # a count of 0x41 is a club record
+                self.install()
+                self.poison()
+                self.assertEqual(self.stability(3), good if count <= 0x41 else [ONE] * STABILITY_CLASSES)
+        self.league.counts = {}
+        self.write(self.ROOT + 0x1C, 0)                                # no club table
+        self.poison()
+        self.assertEqual(self.stability(3), [ONE] * STABILITY_CLASSES)
+        self.write(0xB72918, 0)                                        # no franchise loaded
+        self.poison()
+        self.assertEqual(self.stability(3), [ONE] * STABILITY_CLASSES)
+
+    def test_a_fresh_bank_on_the_same_league_gives_the_same_factors(self):
+        for index, gaps in gaps_for(.9).items():
+            self.league.starters(index, [gap + n % 5 for n, gap in enumerate(gaps)])
+        self.install()
+        self.place(12, 70)
+        self.play()                                                    # the fixture's first play computes them
+        first = self.factors()
+        self.assertEqual(first, self.league.factors())
+        self.assertNotIn(ONE, first)
+        for _ in range(5):
+            self.play()
+        self.load_rate(rules.DEFAULT_RATE)                             # a load: a fresh bank, all factors 1.0
+        self.assertEqual(self.factors(), [ONE] * STABILITY_CLASSES)
+        self.play()
+        self.assertEqual(self.factors(), first)
+        self.assert_isolated()
+
+    def test_a_changed_league_gives_new_factors_at_the_next_fixture_and_not_before(self):
+        records = {index: self.league.starters(index, gaps) for index, gaps in gaps_for(.8).items()}
+        self.install()
+        self.place(12, 70)
+        self.place(0, 70)
+        self.play()
+        before = self.factors()
+        effective_before = self.table('pos_effective', CLASSES)
+        for entries in records.values():
+            for entry in entries:
+                entry['durability'] += 6                                # the league grows more durable
+        self.install()
+        changed = self.league.factors()
+        self.assertTrue(all(new != old for new, old in zip(changed, before)))
+        for site in (RUSH, PASS, SACK_ESCAPE) * 3:
+            self.play(site)
+            self.assertEqual(self.factors(), before)                   # same fixture: same factors
+            self.assertEqual(self.table('pos_effective', CLASSES), effective_before)
+        self.write(0xE576B4, 8)                                        # the next fixture
+        self.play()
+        self.assertEqual(self.factors(), changed)
+        self.assert_isolated()
+
+    def test_year_mode_off_mode_rate_zero_and_switched_off_classes(self):
+        for index, gaps in gaps_for(.8).items():
+            self.league.starters(index, gaps)
+        self.install()
+        year = [bits32(value) for value in rules.stability_year_factors()]
+        self.assertEqual(year[:2], [ONE, ONE])
+        self.assertEqual([round(f32(value), 3) for value in year[2:]], [.924, .879] + [.839] * 6)
+        self.assertEqual(bytes(self.uc.mem_read(BANK + rules.LABELS['stab_year'], 40)), struct.pack('<10I', *year))
+        self.load_rate(rules.DEFAULT_RATE, mode='year')
+        for season in range(0, 14):
+            with self.subTest(mode='year', season=season):
+                self.poison()
+                self.assertEqual(self.stability(season), [year[min(season, 9)]] * STABILITY_CLASSES)
+        for mode, rate in (('off', rules.DEFAULT_RATE), ('adaptive', 0), ('year', 0)):
+            with self.subTest(mode=mode, rate=rate):
+                self.load_rate(rate, mode=mode)
+                self.assertEqual(self.uc.mem_read(BANK + rules.LABELS['stab_mode'], 1), b'\0')
+                self.poison()
+                self.assertEqual(self.stability(5), [ONE] * STABILITY_CLASSES)
+        for name in rules.STABILITY_CLASS_NAMES:
+            with self.subTest(off=name):
+                index = rules.STABILITY_CLASS_NAMES.index(name)
+                self.load_rate(rules.DEFAULT_RATE, classes_off=(name,))
+                factors = self.stability(5)
+                self.assertEqual(factors, self.league.factors(off=(index,)))
+                self.assertEqual(factors[index], ONE)
+                self.assertEqual(sum(f == ONE for f in factors), 1)
+        self.assert_isolated()
+
+
+class StabilityIdentity(NativeMachine):
+    """A.6 test 1, the identity case: at season index 0 and 1 every factor is exactly 1.0 and an identical script of
+    plays gives the same samples, thresholds, proposals and commits as the frozen slice 3 bank, the quarterback
+    included, on a league whose factors from season index 2 are not 1.0 and with stab_factor left at 0.6 by an
+    earlier fixture. Season index 2 on the same script is the control: there the two banks must differ."""
+    RATINGS = QuarterbackUnchanged.EVERY_SLOT
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.m.uc.mem_map(LEAGUE, 0x40000)
+
+    def script(self, module, rate, season):
+        from unicorn import UC_HOOK_CODE
+
+        self.link(module, rate)
+        stability = 'stab_factor' in module.LABELS
+        if stability:
+            self.m.uc.mem_write(self.label('stab_factor'), struct.pack('<I', 0x3F19999A) * STABILITY_CLASSES)
+        for at, value in ((0xE576B8, season), (0xE576B4, 3), (SHARED_RNG + 8, 0xC051A496),
+                          (SHARED_RNG + 16, 0xE770EDAD)):
+            self.m.put(at, value)
+        self.lineup(((OFFENSE, 0, 59),) + tuple((side, slot, rating) for (_, side, slot, _), rating
+                                                 in zip(WALK, self.RATINGS)))
+        quarterback = self.players[(OFFENSE, 0)]
+        L, bank = module.LABELS, bytes(self.m.uc.mem_read(self.BANK, 0x1400))
+        gate = self.BANK + L['private_rng'] - 20
+        load = bank.index(b'\xdb\x05' + struct.pack('<I', gate))
+        self.assertEqual(bank.count(b'\xdb\x05' + struct.pack('<I', gate)), 1)
+        compare = self.BANK + load + 6
+        self.assertEqual(bank[load + 6:load + 8], b'\xde\xd9')                 # fcompp
+        rows, samples, thresholds, proposals = [], [], [], []
+        rng = self.label('private_rng')
+        positions = range(self.BANK + L['positions'], self.BANK + 0x1C00)
+
+        def at_sampled(uc, pc, size, data):
+            samples.append(self.m.get(self.label('pos_sample')))
+
+        def at_compare(uc, pc, size, data):
+            top = self.m.reg('FPSW') >> 11 & 7
+            thresholds.append((uc.reg_read(getattr(self.m.x, f'UC_X86_REG_FP{(top + 1) & 7}')),
+                               self.m.get(gate)))
+
+        def at_quarterback(uc, pc, size, data):
+            proposals.append(('quarterback', self.m.get(self.m.reg('ESP') + 8)))
+
+        def at_position(uc, pc, size, data):
+            proposals.append((self.m.get(self.label('victim_side')), self.m.get(self.label('victim_slot')),
+                              self.m.get(self.label('pos_class')), self.m.get(self.m.reg('ESP') + 8)))
+
+        handles = [self.m.uc.hook_add(UC_HOOK_CODE, callback, begin=at, end=at) for at, callback in (
+            (self.label('pos_sampled'), at_sampled), (compare, at_compare),
+            (self.label('descriptor'), at_quarterback), (self.label('pos_descriptor'), at_position))]
+        self.m.uc.ctl_remove_cache(self.BANK, self.BANK + rules.CODE_SIZE)
+        try:
+            for number in range(240):
+                a, b = (1000, 3000) if number % 2 else (3000, 1000)
+                self.m.put(self.side, self.teams + a)
+                self.m.put(self.other, self.teams + b)
+                self.m.put(CARRIER, self.players[(OFFENSE, (1, 3)[number % 3 == 0])])
+                self.draws.clear()
+                events = self.play((RUSH, PASS, RUSH, SACK_ESCAPE)[number % 4])
+                draws = [(pc, ecx - rng, edx, 'positions' if back in positions else 'clinical')
+                         for pc, ecx, edx, back in self.draws]
+                health = [bytes(self.m.uc.mem_read(player + 0x20, 12)) for player in self.players.values()]
+                counters = struct.unpack('<4I', self.m.uc.mem_read(rng - 16, 16))
+                rows.append((number, [e for e in events if e[0] in ('decide', 'commit', 'substitute')], draws,
+                             health, counters, bytes(self.m.uc.mem_read(self.label('pos_effective'), 48))))
+                self.heal()
+        finally:
+            for handle in handles:
+                self.m.uc.hook_del(handle)
+        factors = (struct.unpack('<13I', self.m.uc.mem_read(self.label('stab_factor'), 52)) if stability else None)
+        result = (rows, samples, thresholds, proposals, list(self.counters('pos_hits')),
+                  list(self.counters('pos_commits')))
+        return result, factors, quarterback
+
+    def league(self):
+        gaps = gaps_for(.8)
+        gaps[QUARTERBACK] = [round(2 * rules.STABILITY_REFERENCE[QUARTERBACK])] * 10
+        league = League()
+        for index, values in gaps.items():
+            league.starters(index, values)
+        league.install(self.m.uc.mem_write, self.teams)
+        return league
+
+    def test_seasons_one_and_two_play_exactly_as_the_frozen_slice_3_bank_quarterback_included(self):
+        league = self.league()
+        later = league.factors(fpcw=self.m.reg('FPCW'))
+        self.assertEqual(later[QUARTERBACK], FLOOR)
+        self.assertNotIn(ONE, later)
+        busy = min(rate_with_room(self.RATINGS, 3_000, .6, carrier=carrier) for carrier in (7, 8))
+        for rate in (rules.DEFAULT_RATE, busy):
+            for season in (0, 1):
+                with self.subTest(rate=rate, season=season):
+                    reference, _, _ = self.script(frozen3, rate, season)
+                    current, factors, _ = self.script(rules, rate, season)
+                    self.assertEqual(factors, (ONE,) * STABILITY_CLASSES)
+                    self.assertEqual(current, reference)
+                    rows, samples, thresholds, proposals, hits, commits = reference
+                    self.assertEqual(len(samples), 240)
+                    self.assertGreater(len(thresholds), 100)                       # the quarterback's gate ran
+                    if rate == busy:
+                        self.assertGreater(sum(hits), 40)
+                        self.assertGreater(sum(commits), 5)
+                        self.assertTrue(any(p[0] == 'quarterback' for p in proposals))
+        # The control: season index 2 on the same script. The factors are the league's and the thresholds differ.
+        reference, _, _ = self.script(frozen3, busy, 2)
+        current, factors, _ = self.script(rules, busy, 2)
+        control = self.m.reg('FPCW')                     # the game's own control word in this machine
+        self.assertEqual(control & 0xC00, 0)
+        self.assertEqual(list(factors), league.factors(fpcw=control))
+        self.assertNotEqual(current[0], reference[0])
+        self.assertEqual(current[1], reference[1])                       # the same samples: only thresholds moved
+        self.assertEqual(len(current[2]), len(reference[2]))
+        for (new, sample), (old, same) in zip(current[2], reference[2]):
+            self.assertEqual(sample, same)                                # the quarterback's gate sample
+            self.assertEqual(new, (old[0], old[1] - 1))                   # his threshold x 0.5 exactly
+        positions = [struct.unpack('<12I', row[5]) for row in current[0]]
+        unscaled = [struct.unpack('<12I', row[5]) for row in reference[0]]
+        self.assertTrue(all(new[i] < old[i] for new, old in zip(positions, unscaled) for i in range(12) if old[i]))
+
 
 if __name__ == '__main__':
     unittest.main()
