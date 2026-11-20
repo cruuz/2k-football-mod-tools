@@ -368,7 +368,7 @@
   "seven_on_seven_book": "applied",
   "disc_size": 6300499968,
   "disc_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
-  "preset_xbe_sha256": "e7a71bc117ed230b4bc24fd4ce6a09e815d418e7393b416486ba58654ec65bf0",
+  "preset_xbe_sha256": "c85c53dc7523caa5ada8a88f251e0801053cc9ba910a34da77e74740fa25fa6e",
   "stack_xbe_sha256": "d7782baac45c752145b229320df83e839b0563f717e7e13a27ad9447a02364a2",
   "section_digests_verified": true,
   "allocator_layout": {
@@ -3907,8 +3907,8 @@
     "mod_editor/core/nfl2k5_seven_on_seven.py": "8d0da9680a0481ee861c45b0dc8f9e785015bd43e472796a3b6e781597244269",
     "mod_editor/core/nfl2k5_seven_on_seven_book.py": "4cb148bd14f33bc67eab092220156206565dbbde9f75a217712fdf98ece3a80a",
     "mod_editor/core/nfl2k5_sim_cb_tackles.py": "0b5655021e33a2c28bff7523399321f588aa4f925cf84823b9603c474c94f7a7",
-    "mod_editor/core/nfl2k5_sim_qb_injuries.py": "72f139d57bff6c66c2b22aad1c3f2da14e5b9f3babf86605ab23878092c36cab",
-    "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "ef780b72844b03d1efb311b6cdeea548bc49c5d650b4f9f8d3a54c236db0dfc8",
+    "mod_editor/core/nfl2k5_sim_qb_injuries.py": "59ef91d5f95533286ead970d16d87c14d272670c797990dde8962d651aeefeff",
+    "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "392af556f5f034cc72da325931885b7a5b109f34d3e7112a8c5792b8f7e23329",
     "mod_editor/core/nfl2k5_sim_rb_injuries.py": "777a337e2ba22559c0b77ae5bc22b3df94a1392da07217a76d7a3a02063ebed0",
     "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",
     "mod_editor/core/nfl2k5_sim_realism.py": "6323212af016c4e70ecd36d340a993e16afc9b57550f3bb7ed2647fc6731a248",
@@ -31826,7 +31826,7 @@
       "owner": "nfl2k5_sim_qb_injuries",
       "function": "apply",
       "before_sha256": "8cf4d791f7c975d3ea92dbe5c886725b53c6f0ee62d15241d329ffadb811e65e",
-      "after_sha256": "e7a71bc117ed230b4bc24fd4ce6a09e815d418e7393b416486ba58654ec65bf0",
+      "after_sha256": "c85c53dc7523caa5ada8a88f251e0801053cc9ba910a34da77e74740fa25fa6e",
       "changed_bytes": 12986,
       "file_runs": [
         [
@@ -74077,7 +74077,7 @@
       "owner": "nfl2k5_sim_qb_injuries",
       "function": "apply",
       "before_sha256": "e69dfb3b21cc5e1cd959f14affcbda0d00ddd92606c6be7784cea46db2949748",
-      "after_sha256": "a03f3aab5a847efcf469671f5d1889ac003779bafaf8adae9d844336fad405fc",
+      "after_sha256": "f7d766ca43d59e3418e5ac923f30068719697281dd8b05b26f2ce2aa7a12c9e1",
       "changed_bytes": 12986,
       "file_runs": [
         [
