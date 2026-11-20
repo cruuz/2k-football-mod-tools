@@ -1,5 +1,5 @@
-/* Cold-load reconciliation for franchise player ownership. Source order breaks ties between
- * equal owners. The 32 franchise clubs rank above free agency and injured reserve; display
+/* Cold-load reconciliation for franchise player ownership. A retained acquisition breaks an active
+ * club tie; lower club order is the fallback. The 32 franchise clubs rank above free agency and injured reserve; display
  * teams legitimately alias the same players. Keep player records, depth locks and contracts intact. */
 typedef unsigned char load_u8;
 typedef unsigned int load_u32;
@@ -117,6 +117,28 @@ static void load_remove_slot(struct load_slots *s, load_u32 at, load_u32 end, in
     load_write_slot(s, at, 0);
 }
 
+#include "transaction_history.h"
+
+/* Called only on an existing duplicate active reference. If the current club acquired the
+ * player, stably remove the other club's earlier copy. Same-club duplicates keep their first slot. */
+static int load_keep_acquirer(load_u8 *league, load_u8 *block, load_u32 current,
+                              load_u8 *club, load_u8 *player, int *overflow_changed) {
+    if (!current || !load_acquired_by(league, player, club)) return 0;
+    for (load_u32 i = 0; i < current; ++i) {
+        load_u8 *earlier = load_club(i);
+        struct load_slots slots;
+        if (!earlier || !load_open_slots(league, block, earlier, &slots)) continue;
+        for (load_u32 at = 0; at < slots.active; ++at) {
+            if (load_slot(&slots, at) != player) continue;
+            load_u32 total = slots.active + slots.reserve;
+            if (total > 65) *overflow_changed = 1;
+            load_remove_slot(&slots, at, total, 0);
+            return 1;
+        }
+    }
+    return 0;
+}
+
 static int load_rosters(struct load_window *window, load_u8 *league, load_u8 *block, int reserve) {
     int overflow_changed = 0;
     for (load_u32 club_id = 0; club_id < 32; ++club_id) {
@@ -126,7 +148,9 @@ static int load_rosters(struct load_window *window, load_u8 *league, load_u8 *bl
         load_u32 active = slots.active, total = active + slots.reserve;
         load_u32 slot = reserve ? active : 0, end = reserve ? total : active;
         while (slot < end) {
-            if (load_already_owned(window, load_slot(&slots, slot))) {
+            load_u8 *player = load_slot(&slots, slot);
+            if (load_already_owned(window, player) &&
+                (reserve || !load_keep_acquirer(league, block, club_id, club, player, &overflow_changed))) {
                 if (total > 65) overflow_changed = 1;
                 load_remove_slot(&slots, slot, total, reserve);
                 --total;

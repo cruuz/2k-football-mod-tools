@@ -31,9 +31,11 @@ class LoadedLeague:
 
         self.cpu = Uc(UC_ARCH_X86, UC_MODE_32)
         self.block = self.ROOT + size - 0x400
-        for address, length in ((self.CODE, 0x1000), (self.STORE, 0x2000), (self.ROOT, 0x100000),
+        code_span = (len(owner.runtime.CODE) + 0xFFF) & ~0xFFF
+        for address, length in ((self.CODE, code_span), (self.STORE, 0x2000), (self.ROOT, 0x100000),
                                 (self.CLUBS, 0x1000), (self.STOP, 0x1000), (self.STACK, 0x4000),
-                                (0xC4000, 0x1000), (0xE42000, 0x1000), (0xB72000, 0x1000)):
+                                (0xC4000, 0x1000), (0xE42000, 0x1000), (0xB72000, 0x1000),
+                                (0xE3F000, 0x2000)):
             self.cpu.mem_map(address, length)
         self.put(self.CODE, owner.code_for(self.CODE, self.STORE))
         # Sole substituted retail leaf: get club by league slot (ECX). Display teams can alias the players.
