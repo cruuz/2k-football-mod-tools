@@ -147,8 +147,16 @@ def part_change(atlas: np.ndarray, old: np.ndarray, new: np.ndarray, part: str, 
     cov = reduce(mask.astype(np.float64), box, size)
     ro, rn = reduce(o, box, size), reduce(n, box, size)
     shade, gain = shading(atlas, a, ro, part)
-    ideal = shade[..., None] * rn
     residual = a - shade[..., None] * ro
+    lit = shade
+    if gain > 1.0:
+        # an atlas palette lighter than its texture (gain above 1) is a colour difference, not shading: only colours the
+        # old kit wore keep it; a colour the old kit never had (the Rams' new gold) is not brightened past the texture
+        colours, counts = np.unique(o.reshape(-1, 3).astype(np.int64), axis=0, return_counts=True)
+        seen = colours[np.argsort(-counts, kind="stable")[:12]].astype(np.float64)
+        known = np.min([np.abs(rn - c).max(axis=2) for c in seen], axis=0) <= 24
+        lit = np.where(known, shade, shade / gain)
+    ideal = lit[..., None] * rn
     belt = np.zeros(cov.shape, bool)
     if part == "pants" and mapping == "retail":
         # the renderer's belt: in rows 0-5 a texel the old texture does not explain (a dark waistband over white
