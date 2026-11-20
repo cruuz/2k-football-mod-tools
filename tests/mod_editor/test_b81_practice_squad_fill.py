@@ -198,7 +198,7 @@ class KeptPreseasonImage(unittest.TestCase):
         cpu = [c for c, club in enumerate(after) if club["cpu"]]
         self.assertGreaterEqual(len(cpu), 31)
         full = [c for c in cpu if after[c]["count"] == SQUAD_LIMIT]
-        self.assertGreaterEqual(len(full), int(0.95 * len(cpu)), [after[c]["count"] for c in cpu])
+        self.assertEqual(len(full), len(cpu), [after[c]["count"] for c in cpu])   # a short slot is made up in round two
         self.assertTrue(all(club["count"] <= SQUAD_LIMIT for club in after))
         self.assertTrue(all(len(club["active"]) <= ACTIVE_LIMIT for club in after))
         # (in camp a club's reserves past the 65 physical slots sit in the arena's overflow block, so "before" is read
@@ -241,7 +241,7 @@ class KeptPreseasonImage(unittest.TestCase):
         users = [c for c, club in enumerate(before) if not club["cpu"]]
         self.assertEqual(users, [15])
         self.assertEqual(after[15]["record"], before[15]["record"])
-        self.assertGreaterEqual(sum(after[c]["count"] == SQUAD_LIMIT for c in range(32) if c != 15), 29)
+        self.assertEqual(sum(after[c]["count"] == SQUAD_LIMIT for c in range(32) if c != 15), 31)
 
     def test_without_the_practice_squad_runtime_the_gate_only_cuts(self):
         m = self.machine(squad_runtime=False)
