@@ -61,13 +61,15 @@ def span_of(raw: bytes, index: int) -> bytes:
     return raw[chunk.offset:chunk.end_offset]
 
 
-def finished(released: bytes, selector: str) -> bytes:
-    """The released package after the 2026 uniform pass (its rows are pinned to the released textures)."""
+def finished(released: bytes, selector: str, kits=None) -> bytes:
+    """The released package after the 2026 uniform pass (its rows are pinned to the released textures). ``kits`` maps
+    a donor kit selector to its package bytes (b81-retail-free-art: rules that read another kit, e.g. the Saints sleeve
+    emblem reads 24H0's swoosh template); without them such rows keep their input."""
     kf, _ = modules()
     document = kf.uniforms_b81()
     if not any(r["selector"] == selector for r in document["textures"]):
         return released
-    replacements, _ = kf.compile_resource(selector, released, strict=False, document=document)
+    replacements, _ = kf.compile_resource(selector, released, strict=False, document=document, kits=kits)
     out = bytearray(released)
     for offset, data in replacements:
         out[offset:offset + len(data)] = data

@@ -101,6 +101,7 @@ WET_NUM, WET_DEN = 93, 100     # w1's mud rule: mud = clean * 0.93, rounded
 ADD_COLOUR_DISTANCE = 48       # squared RGB distance above which a scope colour earns a spare slot
 ALPHA_DRIFT = 2                # helmet reflection alpha may move this far inside the art (as the uni helmet job)
 MERGE_LEVELS = 1               # near-identical palette twins may be folded together (protected texels move <= 1 level)
+RETAIL_DONOR = "retail:"        # b81 retail-free: a donor texture read from the user's retail disc ("retail:SEL:chunk")
 
 
 def require(ok, message):
@@ -1483,9 +1484,10 @@ def known_pairs(row) -> dict:
     return pairs
 
 
-def compile_resource(selector, raw, *, strict=True, document=None, kits=None):
+def compile_resource(selector, raw, *, strict=True, document=None, kits=None, retail_kits=None):
     """Compile every pinned texture of one kit package; refuses partial or unknown inputs when strict. ``kits`` maps
-    a donor kit selector to its package bytes (the uf3 ``name`` rows)."""
+    a donor kit selector to its package bytes (the uf3 ``name`` rows); ``retail_kits`` maps a selector to its package
+    bytes on the user's retail disc (``retail:SELECTOR:chunk`` donors of the fill rules)."""
     document = document or spec()
     rows = [r for r in document["textures"] if r["selector"] == selector]
     require(rows, "no entries for " + selector)
@@ -1554,11 +1556,25 @@ def compile_resource(selector, raw, *, strict=True, document=None, kits=None):
         else:
             donors, missing = {}, False
             for index, pin in sorted((row.get("donors") or {}).items()):
-                if ":" in str(index):
+                if str(index).startswith(RETAIL_DONOR):
+                    # b81 retail-free (fill rules): a texture of the user's own retail disc ("retail:SELECTOR:chunk"),
+                    # e.g. the blank retail shell whose painted vents the helmet cleanup removes
+                    other, at = str(index)[len(RETAIL_DONOR):].split(":")
+                    source_raw = (retail_kits or {}).get(other)
+                    if source_raw is None:
+                        require(not strict, selector + ": retail donor kit absent")
+                        missing = True
+                        break
+                    key = str(index)
+                elif ":" in str(index):
                     # uf3: a texture of another kit package ("SELECTOR:chunk"), read from the same image
                     other, at = str(index).split(":")
                     source_raw = (kits or {}).get(other)
-                    require(source_raw is not None, selector + ": stamp donor kit absent")
+                    if source_raw is None:
+                        # b81 retail-free: a caller that reads no donor kits keeps the row's input (strict refuses)
+                        require(not strict, selector + ": stamp donor kit absent")
+                        missing = True
+                        break
                     key = str(index)
                 else:
                     source_raw, at, key = raw, index, int(index)
@@ -1587,8 +1603,32 @@ def compile_resource(selector, raw, *, strict=True, document=None, kits=None):
 def donor_kits(document):
     """Kit packages read as donors (uf3): nameplate rows' ``donor_selector`` and cross-kit stamp sources."""
     out = {r["donor_selector"] for r in document["textures"] if r.get("donor_selector")}
-    out |= {str(k).split(":")[0] for r in document["textures"] for k in (r.get("donors") or {}) if ":" in str(k)}
+    out |= {str(k).split(":")[0] for r in document["textures"] for k in (r.get("donors") or {})
+            if ":" in str(k) and not str(k).startswith(RETAIL_DONOR)}
     return sorted(out)
+
+
+def retail_donor_kits(document):
+    """Kit packages read from the user's retail disc (``retail:SELECTOR:chunk`` donors of the fill rules)."""
+    return sorted({str(k)[len(RETAIL_DONOR):].split(":")[0] for r in document["textures"]
+                   for k in (r.get("donors") or {}) if str(k).startswith(RETAIL_DONOR)})
+
+
+def read_kits(path, selectors_):
+    """{selector: package bytes} of the named kit packages of a disc image (read only); absent ones are left out."""
+    out = {}
+    if not selectors_ or path is None:
+        return out
+    with bump._Image.open(Path(path), writable=False) as source:
+        index = bump._parsed_index(source)
+        by_name = {}
+        for entry in index.entries:
+            by_name.setdefault(bump.logical_name_for(entry.name_id), []).append(entry)
+        for selector in selectors_:
+            entries = by_name.get(selector + ".IFF", [])
+            if len(entries) == 1:
+                out[selector] = source.read_segments(index.sub_extents(entries[0], 0, entries[0].size))
+    return out
 
 
 def selectors(document=None):
@@ -1596,8 +1636,10 @@ def selectors(document=None):
     return sorted({r["selector"] for r in document["textures"]})
 
 
-def apply_to_image(path, *, strict=False, document=None):
-    """Studio uniform finish pass: only the pinned kit chunk spans are written."""
+def apply_to_image(path, *, strict=False, document=None, retail=None):
+    """Studio uniform finish pass: only the pinned kit chunk spans are written. ``retail`` (the user's retail disc, a
+    path or a callable giving it) is read only when a row names a ``retail:`` donor; without it those rows are kept
+    as they are (strict refuses)."""
     document = document or spec()
     try:
         with bump._Image.open(Path(path), writable=False) as source:
@@ -1622,6 +1664,14 @@ def apply_to_image(path, *, strict=False, document=None):
             entries = by_name.get(selector + ".IFF", [])
             require(len(entries) == 1, selector + " donor kit package absent or duplicated")
             donors[selector] = image.read_segments(index.sub_extents(entries[0], 0, entries[0].size))
+        retail_kits = {}
+        if retail_donor_kits(document) and retail is not None:
+            try:
+                retail_kits = read_kits(retail() if callable(retail) else retail, retail_donor_kits(document))
+            except (OSError, ValueError):
+                # the retail disc is gone (a consumed source): the rows that read it keep their input (strict refuses)
+                if strict:
+                    raise
         plans = []
         for selector in wanted:
             entries = by_name.get(selector + ".IFF", [])
@@ -1629,7 +1679,8 @@ def apply_to_image(path, *, strict=False, document=None):
             entry = entries[0]
             raw = image.read_segments(index.sub_extents(entry, 0, entry.size))
             with build_steps.resource(selector + ".IFF"):
-                replacements, receipt = compile_resource(selector, raw, strict=strict, document=document, kits=donors)
+                replacements, receipt = compile_resource(selector, raw, strict=strict, document=document, kits=donors,
+                                                         retail_kits=retail_kits)
             plans.append((entry, replacements, receipt))
         states = {p[2]["state"] for p in plans}
         if states == {"other_uniform"}:
@@ -1683,10 +1734,11 @@ def helmets_b81():
     return spec(DATA_B81)
 
 
-def apply_helmets_b81(path, *, strict=False):
+def apply_helmets_b81(path, retail=None, *, strict=False):
     """Studio uniform finish pass for b81-art, the last uniform writer (after the Anniversary and classic kits):
-    pinned spans only."""
-    return apply_to_image(path, strict=strict, document=helmets_b81())
+    pinned spans only. ``retail`` (the user's retail disc, or a callable giving it): the blank retail shell the
+    helmet fill rules read their vent outlines from (b81 retail-free)."""
+    return apply_to_image(path, strict=strict, document=helmets_b81(), retail=retail)
 
 
 def uniforms_b81():

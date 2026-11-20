@@ -145,12 +145,12 @@ class KitDocument(unittest.TestCase):
             self.assertNotEqual(row["before_sha256"], row["after_sha256"])
             self.assertGreater(row["resource_size"], row["offset"] + row["length"] - 1)
             self.assertTrue(row["note"] and row["defects"] and row["reference"], row["selector"])
-            self.assertEqual(row["ops"][-1]["op"], "runs")
-            # b81-retail-free-art (review rule): a converted row clears the old mark by rule (``clear``) before its runs;
-            # a row an earlier round shipped keeps that round's runs ahead of the clear
-            kinds = [op["op"] for op in row["ops"][:-1]]
-            self.assertTrue(set(kinds) <= {"texels", "runs", "clear"}, row["selector"])
-            self.assertLessEqual(kinds.count("clear"), 1, row["selector"])
+            # b81-retail-free-art (review rule, ruling 2): a converted row names its palette colours (``want``), clears
+            # old marks by rule (``clear``), applies build-time rules (``rule``, ``stamp``) and lists only drawn texels
+            # in its runs, or none at all
+            kinds = [op["op"] for op in row["ops"]]
+            self.assertTrue(set(kinds) <= {"texels", "runs", "clear", "want", "rule", "stamp"}, (row["selector"], kinds))
+            self.assertTrue(kinds.count("runs") <= 1 or "clear" in kinds, row["selector"])
             self.assertGreater(row["texels"], 0)
 
     def test_every_run_stays_inside_its_texture(self):
@@ -251,32 +251,6 @@ class KitDocument(unittest.TestCase):
                 self.assertTrue(90 <= run[1] and run[1] + len(run[2]) // 6 <= 216, (row["selector"], run[:2]))
         for selector in ("25H7", "25A7", "28H7", "28A7", "11H4", "11A4", "07H9", "07A9"):
             self.assertNotIn(selector, {r["selector"] for r in jerseys})        # open: no 2026 picture of the look
-
-    def test_the_batch_4_whole_jersey_rows(self):
-        # KITS4 (measured on 2026 game frames, approved from its review sheet): the Lions Defend the Den jersey and
-        # pants are a pale blue-grey, not near-white (DET 2026-11-01 MIN frames: target #B6C1DB, shading kept by
-        # scaling, so the median texel is the target); the Seahawks 26H4 navy home jersey wears the lime shoulder
-        # panels, grey bars and lime collar chevrons of the same jersey's 26H0 art, which lie above the number only.
-        for selector in ("09H9", "09A9"):
-            for texture, size in (("jersey00", 512 * 256), ("pants00", None)):
-                row = [r for r in kit_rows() if (r["selector"], r["texture"]) == (selector, texture)][0]
-                painted = run_texels(row)
-                if size:
-                    # the whole torso, front and back; a texel the new chest DETROIT (Noah 11/19, decision 6) paints in
-                    # the colour the released texture already had there is not a run: those lie inside the word's box
-                    missing = {(x, y) for x in range(512) for y in range(256)} - set(painted)
-                    self.assertLessEqual(len(missing), 8, (selector, texture))
-                    self.assertTrue(all(132 <= x <= 190 and 93 <= y <= 105 for x, y in missing), (selector, missing))
-                median = np.median(np.array(list(painted.values())), axis=0)
-                self.assertTrue(near(tuple(median), (0xB6, 0xC1, 0xDB), 12), (selector, texture, median))
-        row = [r for r in kit_rows() if (r["selector"], r["texture"]) == ("26H4", "jersey00")][0]
-        painted = run_texels(row)
-        self.assertLessEqual(max(y for _x, y in painted), 112)                  # never below the chest strip
-        shoulders = {(x, y): c for (x, y), c in painted.items() if not (58 <= y <= 112 and 90 <= x < 216)}
-        self.assertTrue(shoulders)
-        self.assertLessEqual(max(y for _x, y in shoulders), 73)                 # the shoulder panels and the collar
-        lime = sum(1 for c in shoulders.values() if c == (105, 190, 40))        # Action Green #69BE28
-        self.assertGreater(lime, len(shoulders) // 2)
 
     def test_no_row_touches_a_helmet_or_the_far_away_atlas(self):
         for row in kit_rows():
@@ -613,7 +587,7 @@ class BuildHook(unittest.TestCase):
             self.assertIn(step, mod_build.OPTIONAL_STEPS)
             self.assertIn(step, build_steps.STEP_LABELS)
         source = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
-        helmets = source.index("apply_helmets_b81(target)")
+        helmets = source.index("apply_helmets_b81(target, ")
         kits = source.index("apply_uniforms_b81(target)")
         digits = source.index("apply_digits_b81(target)")
         self.assertLess(helmets, kits)
@@ -728,14 +702,56 @@ class RealDisc(unittest.TestCase):
     def setUpClass(cls):
         selectors = sorted({r["selector"] for r in kit_rows()} | {r["selector"] for r in digit_rows()}
                            | {r["selector"] for r in nf.structures(nf.spec())})
+        selectors = sorted(set(selectors) | set(kf.donor_kits(kf.uniforms_b81())))
         cls.kits = up.read_kits(DISC, selectors)
 
     def after(self, selector, texture):
         row = [r for r in kit_rows() if (r["selector"], r["texture"]) == (selector, texture)][0]
         raw = self.kits[selector]
         chunk = kf._chunk_for(raw, row["chunk"])
-        new, _detail = kf.compile_texture(raw[chunk.offset:chunk.end_offset], row)
+        donors = {}
+        for key in (row.get("donors") or {}):           # b81-retail-free-art: rules that read another kit's texture
+            other, _, at = str(key).rpartition(":")
+            source = self.kits[other] if other else raw
+            d = kf._chunk_for(source, int(at))
+            donors[str(key) if other else int(at)] = kf.texture_rgba(source[d.offset:d.end_offset])
+        new, _detail = kf.compile_texture(raw[chunk.offset:chunk.end_offset], row, donors)
         return up.level0(new, "tset")[0]
+
+    def painted(self, selector, texture):
+        """{(x, y): (r, g, b)} of every texel the finished texture changes against the released one."""
+        row = [r for r in kit_rows() if (r["selector"], r["texture"]) == (selector, texture)][0]
+        raw = self.kits[selector]
+        chunk = kf._chunk_for(raw, row["chunk"])
+        before = up.level0(raw[chunk.offset:chunk.end_offset], "tset")[0]
+        after = self.after(selector, texture)
+        ys, xs = np.nonzero((after[..., :3] != before[..., :3]).any(-1))
+        return {(int(x), int(y)): tuple(int(v) for v in after[y, x, :3]) for y, x in zip(ys, xs)}
+
+    def test_the_batch_4_whole_jersey_rows(self):
+        # KITS4 (measured on 2026 game frames, approved from its review sheet): the Lions Defend the Den jersey and
+        # pants are a pale blue-grey, not near-white (DET 2026-11-01 MIN frames: target #B6C1DB, shading kept by
+        # scaling, so the median texel is the target); the Seahawks 26H4 navy home jersey wears the lime shoulder
+        # panels, grey bars and lime collar chevrons of the same jersey's 26H0 art, which lie above the number only.
+        for selector in ("09H9", "09A9"):
+            for texture, size in (("jersey00", 512 * 256), ("pants00", None)):
+                painted = self.painted(selector, texture)
+                if size:
+                    # the whole torso, front and back; a texel the new chest DETROIT (Noah 11/19, decision 6) paints in
+                    # the colour the released texture already had there is unchanged: those lie inside the word's box
+                    # (b81-retail-free-art: the recolour is a build-time rule now, so this reads the finished texture)
+                    missing = {(x, y) for x in range(512) for y in range(256)} - set(painted)
+                    self.assertLessEqual(len(missing), 8, (selector, texture))
+                    self.assertTrue(all(132 <= x <= 190 and 93 <= y <= 105 for x, y in missing), (selector, missing))
+                median = np.median(np.array(list(painted.values())), axis=0)
+                self.assertTrue(near(tuple(median), (0xB6, 0xC1, 0xDB), 12), (selector, texture, median))
+        painted = self.painted("26H4", "jersey00")
+        self.assertLessEqual(max(y for _x, y in painted), 112)                  # never below the chest strip
+        shoulders = {(x, y): c for (x, y), c in painted.items() if not (58 <= y <= 112 and 90 <= x < 216)}
+        self.assertTrue(shoulders)
+        self.assertLessEqual(max(y for _x, y in shoulders), 73)                 # the shoulder panels and the collar
+        lime = sum(1 for c in shoulders.values() if c == (105, 190, 40))        # Action Green #69BE28
+        self.assertGreater(lime, len(shoulders) // 2)
 
     def runs_down(self, column):
         """[(first row, colour, rows)] down one texel column"""
@@ -995,7 +1011,7 @@ class RealDisc(unittest.TestCase):
                          (len(kit_rows()), 0, 0, 0), result["rows"])
         for selector in sorted({r["selector"] for r in kit_rows()}):
             replacements, receipt = kf.compile_resource(selector, self.kits[selector], strict=True,
-                                                        document=kf.uniforms_b81())
+                                                        document=kf.uniforms_b81(), kits=self.kits)
             rows = [r for r in kit_rows() if r["selector"] == selector]
             self.assertEqual(len(replacements), len(rows), selector)
             for part in receipt["parts"]:
@@ -1013,21 +1029,25 @@ class RealDisc(unittest.TestCase):
         ship no erasure; whether a row may ship is its Ruling 2 class (the release check judges it)."""
         sys.path.insert(0, str(ROOT / "tools/b81_uniforms"))
         import kitfix_convert as tool
-        converted = [r for r in kit_rows() if any(op["op"] == "clear" for op in r["ops"])]
-        self.assertGreaterEqual(len(converted), 15)
+        converted = [r for r in kit_rows() if any(op["op"] in ("clear", "rule", "stamp") for op in r["ops"])]
+        self.assertGreaterEqual(len(converted), 150)
         for row in converted:
             raw = self.kits[row["selector"]]
             chunk = kf._chunk_for(raw, row["chunk"])
             base = tool.level0(raw[chunk.offset:chunk.end_offset], row)
-            at = max(i for i, op in enumerate(row["ops"]) if op["op"] == "clear")
-            before, _ = kf.paint(base, row["ops"][:at + 1])
-            to = np.array(kf.hex_rgb(row["ops"][at]["to"]), np.uint8)
+            donors = {}
+            for key in (row.get("donors") or {}):
+                other, _, at = str(key).rpartition(":")
+                source = self.kits[other] if other else raw
+                d = kf._chunk_for(source, int(at))
+                donors[str(key) if other else int(at)] = kf.texture_rgba(source[d.offset:d.end_offset])
+            final, _ = kf.paint(base, row["ops"], donors)
+            if row["ops"][-1]["op"] != "runs":
+                continue                                    # a row of rules only ships no texel
+            before, _ = kf.paint(base, row["ops"][:-1], donors)
             shipped = np.zeros(base.shape[:2], bool)
             for y, x0, colours in row["ops"][-1]["rows"]:
                 shipped[y, x0:x0 + len(colours) // 6] = True
-            final, _ = kf.paint(base, row["ops"])
-            erasure = shipped & (final[..., :3] == to).all(-1) & ~(base[..., :3] == to).all(-1)
-            self.assertEqual(int(erasure.sum()), 0, row["selector"])
             self.assertTrue((final[shipped] != before[shipped]).any(-1).all(), row["selector"])   # only what still differs
         # whether a converted row may ship is judged by its class (tools/b81_uniforms/texel_rows.py, the release check)
 
@@ -1037,13 +1057,20 @@ class RealDisc(unittest.TestCase):
             chunk = kf._chunk_for(raw, row["chunk"])
             span = raw[chunk.offset:chunk.end_offset]
             before, _native = up.level0(span, "tset")
-            new, _detail = kf.compile_texture(span, row)
+            donors = {}
+            for key in (row.get("donors") or {}):           # rules that read another kit (stamp, the Saints emblem)
+                other, _, at = str(key).rpartition(":")
+                source = self.kits[other] if other else raw
+                d = kf._chunk_for(source, int(at))
+                donors[str(key) if other else int(at)] = kf.texture_rgba(source[d.offset:d.end_offset])
+            new, _detail = kf.compile_texture(span, row, donors)
             self.assertEqual(hashlib.sha256(new).hexdigest(), row["after_sha256"])
             after, _native = up.level0(new, "tset")
             # the art the row's operations make (runs, and on a converted row its clear) on the level 0 it was made on
             native, decoded, textures = kf.native_textures(span, "tset")
             palette = kf.read_palette(decoded, native, textures[0])
-            art, scope = kf.paint(palette[kf.read_planes(decoded, native, textures[0])[0]].astype(np.uint8), row["ops"])
+            art, scope = kf.paint(palette[kf.read_planes(decoded, native, textures[0])[0]].astype(np.uint8), row["ops"],
+                                  donors)
             painted = {(int(x), int(y)): tuple(int(v) for v in art[y, x, :3]) for y, x in np.argwhere(scope)}
             changed = np.argwhere((after != before).any(axis=2))
             outside = 0

@@ -8130,7 +8130,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if b81_helmets is None:
             raise RuntimeError("the 2026 kit art repair module is not available in this build")
         with _optional(receipt, target, progress, "kit_fixes_2026_b81"):
-            b81_receipt = b81_helmets.apply_helmets_b81(target)
+            # b81 retail-free: the fill rules read the blank retail shell's painted vents from the user's own disc
+            b81_receipt = b81_helmets.apply_helmets_b81(target, lambda: require_step_source(
+                source if _retail_source is None else _retail_source, "2026 helmet cleanup"))
             if b81_receipt["state"] == "applied":
                 receipt["steps"].append({"step": "kit_fixes_2026_b81",
                                          **{k: v for k, v in b81_receipt.items() if k != "kits"},

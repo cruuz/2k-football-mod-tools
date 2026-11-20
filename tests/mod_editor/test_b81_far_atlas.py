@@ -155,6 +155,8 @@ class RealDisc(unittest.TestCase):
     def setUpClass(cls):
         cls.rows = {row["selector"]: row for row in rows()}
         cls.kits = up.read_kits(DISC, [s for s in WORST if s in cls.rows])
+        # b81-retail-free-art: donor kits the uniform pass reads (the Saints sleeve emblem's 24H0 swoosh template)
+        cls.donors = up.read_kits(DISC, kf.donor_kits(kf.uniforms_b81()))
 
     def built(self, selector):
         raw = self.kits[selector]
@@ -164,7 +166,7 @@ class RealDisc(unittest.TestCase):
             reps, _ = kf.compile_resource(selector, raw, strict=True, document=cleanup)
             for off, data in reps:
                 raw = raw[:off] + data + raw[off + len(data):]
-        return fc.finished(raw, selector)
+        return fc.finished(raw, selector, kits=self.donors)
 
     def test_the_worst_kits_compose_to_their_pins(self):
         for selector in WORST:

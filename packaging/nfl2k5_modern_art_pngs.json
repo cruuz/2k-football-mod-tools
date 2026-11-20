@@ -9962,229 +9962,95 @@
     },
     "data/nfl2k5_kit_fixes_2026_b81.json": {
       "reasons": [
-        "the base is built from the user's retail disc at build time"
+        "a helmet piece repainted from the shell's own shading or a mark redrawn from game art, not yet a build-time rule"
       ],
       "rows": {
         "00A0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.4188,
           "passes": false,
           "sha256": "63e247fa111de542c1b73afa7b167d351b77c54cb11c7eaf6b56d64f1ba16635",
           "texels": 1112,
-          "why": 0
-        },
-        "00A6:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2744,
-          "passes": false,
-          "sha256": "dece236ff9335253d06b619e34a3c7c3a59edb53d06e98c5723c62d2340c7dea",
-          "texels": 570,
-          "why": 0
-        },
-        "00A7:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3167,
-          "passes": false,
-          "sha256": "4ef51d37f286c421aaea83f104046028e1fd8fe3cae9000d78cb3913b28df75c",
-          "texels": 816,
           "why": 0
         },
         "00H0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.4188,
           "passes": false,
           "sha256": "63e247fa111de542c1b73afa7b167d351b77c54cb11c7eaf6b56d64f1ba16635",
           "texels": 1112,
           "why": 0
         },
-        "00H6:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2744,
-          "passes": false,
-          "sha256": "dece236ff9335253d06b619e34a3c7c3a59edb53d06e98c5723c62d2340c7dea",
-          "texels": 570,
-          "why": 0
-        },
-        "00H7:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3167,
-          "passes": false,
-          "sha256": "4ef51d37f286c421aaea83f104046028e1fd8fe3cae9000d78cb3913b28df75c",
-          "texels": 816,
-          "why": 0
-        },
         "01A0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.2629,
           "passes": false,
           "sha256": "4fb4d6ff2c08c1f21ef4abdb93e6e77f65286bab56b30f04df47f32af19f9f7e",
           "texels": 940,
-          "why": 0
-        },
-        "01A9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4449,
-          "passes": false,
-          "sha256": "eabc77bdef3244eb8ce74576f62838e4a01929e0ce1bbf54f1f7a7c15053713b",
-          "texels": 666,
           "why": 0
         },
         "01H0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.2629,
           "passes": false,
           "sha256": "4fb4d6ff2c08c1f21ef4abdb93e6e77f65286bab56b30f04df47f32af19f9f7e",
           "texels": 940,
           "why": 0
         },
-        "01H9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4449,
-          "passes": false,
-          "sha256": "eabc77bdef3244eb8ce74576f62838e4a01929e0ce1bbf54f1f7a7c15053713b",
-          "texels": 666,
-          "why": 0
-        },
         "02A0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.3664,
           "passes": false,
           "sha256": "1e6a18761212ffabcb140b253a45148cc4baffd5da21563ba4c0e355c6f4ff1b",
           "texels": 1557,
           "why": 0
         },
-        "02A1:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.1402,
-          "passes": true,
-          "sha256": "f8ab5cee0e1f7e398d8928108d5441b0a7a7398c12367e5da7846c0922f6379d",
-          "texels": 442,
-          "why": 0
-        },
         "02A2:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.303,
           "passes": false,
           "sha256": "207f7c8bdefa272657515e8d8920c7eb6c2640c806186e86b2770771610729af",
           "texels": 3224,
           "why": 0
         },
         "02A3:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.4305,
           "passes": false,
           "sha256": "dc6a06641636688ddc0eda4426e0cdf99727be81960080c30284722847959c0f",
           "texels": 5977,
           "why": 0
         },
         "02H0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.3664,
           "passes": false,
           "sha256": "1e6a18761212ffabcb140b253a45148cc4baffd5da21563ba4c0e355c6f4ff1b",
           "texels": 1557,
           "why": 0
         },
-        "02H1:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.1402,
-          "passes": true,
-          "sha256": "f8ab5cee0e1f7e398d8928108d5441b0a7a7398c12367e5da7846c0922f6379d",
-          "texels": 442,
-          "why": 0
-        },
         "02H2:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.303,
           "passes": false,
           "sha256": "207f7c8bdefa272657515e8d8920c7eb6c2640c806186e86b2770771610729af",
           "texels": 3224,
           "why": 0
         },
         "02H3:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.4305,
           "passes": false,
           "sha256": "dc6a06641636688ddc0eda4426e0cdf99727be81960080c30284722847959c0f",
           "texels": 5977,
           "why": 0
         },
         "03A0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.4909,
           "passes": false,
           "sha256": "b80f8344cba9bad2eea5681cea6527b1135b00f1d65d7cc6e19c26a377da73f6",
           "texels": 837,
-          "why": 0
-        },
-        "03A3:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4688,
-          "passes": false,
-          "sha256": "c881da3c9dd08607202de7bdcc28db7cb8aaa7fdb10f21db12427b9d80b8622b",
-          "texels": 868,
-          "why": 0
-        },
-        "03A9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4776,
-          "passes": false,
-          "sha256": "cc741e489ab5811debcc1b717c6420073995d8639c35204900b82e8695f0b9ab",
-          "texels": 852,
           "why": 0
         },
         "03H0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.4909,
           "passes": false,
           "sha256": "b80f8344cba9bad2eea5681cea6527b1135b00f1d65d7cc6e19c26a377da73f6",
           "texels": 837,
           "why": 0
         },
-        "03H3:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4688,
-          "passes": false,
-          "sha256": "c881da3c9dd08607202de7bdcc28db7cb8aaa7fdb10f21db12427b9d80b8622b",
-          "texels": 868,
-          "why": 0
-        },
-        "03H9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4776,
-          "passes": false,
-          "sha256": "cc741e489ab5811debcc1b717c6420073995d8639c35204900b82e8695f0b9ab",
-          "texels": 852,
-          "why": 0
-        },
         "04A0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.2689,
           "passes": false,
           "sha256": "6ff61610ad10dd0c7e8667e1c910cb9664c2473925c48b937c6f9bb757eca8f5",
           "texels": 1334,
@@ -10198,9 +10064,7 @@
           "why": 0
         },
         "04A2:51:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.7788,
           "passes": false,
           "sha256": "744fe26931d8c3cc0065e9b195a0c4edaf39cd0212f2bb4b3c7ab49946d4f2b1",
           "texels": 3458,
@@ -10221,372 +10085,52 @@
           "why": 0
         },
         "04H2:51:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.7788,
           "passes": false,
           "sha256": "744fe26931d8c3cc0065e9b195a0c4edaf39cd0212f2bb4b3c7ab49946d4f2b1",
           "texels": 3458,
           "why": 0
         },
-        "05A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.421,
-          "passes": false,
-          "sha256": "ecc2d2d8ac2aa04f5667d02011c59e1d32ca63ff58417c0b76ab2ebf790dec05",
-          "texels": 1012,
-          "why": 0
-        },
-        "05A4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4475,
-          "passes": false,
-          "sha256": "dc29222523e75b3fe753d135053fdafad601d8b9ead0855948b9f92b3353eb3b",
-          "texels": 707,
-          "why": 0
-        },
-        "05H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.421,
-          "passes": false,
-          "sha256": "ecc2d2d8ac2aa04f5667d02011c59e1d32ca63ff58417c0b76ab2ebf790dec05",
-          "texels": 1012,
-          "why": 0
-        },
-        "05H4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4475,
-          "passes": false,
-          "sha256": "dc29222523e75b3fe753d135053fdafad601d8b9ead0855948b9f92b3353eb3b",
-          "texels": 707,
-          "why": 0
-        },
-        "06A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.32,
-          "passes": false,
-          "sha256": "b24188cd0bd23a0f2d00c6b875330e5f6aea33b2a0c0120ca12773f978cbe407",
-          "texels": 1766,
-          "why": 0
-        },
-        "06A5:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.272,
-          "passes": false,
-          "sha256": "8fc196d53c8c5e6ebafb426103c6f2d6b4c6a4811c67e2c481eb3e190e1934f5",
-          "texels": 744,
-          "why": 0
-        },
-        "06A6:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3289,
-          "passes": false,
-          "sha256": "f8638f9ab372e270ae0342302bc5fdcb3f92f33e6cb2b3290968af73f0beaa49",
-          "texels": 1566,
-          "why": 0
-        },
-        "06H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.32,
-          "passes": false,
-          "sha256": "b24188cd0bd23a0f2d00c6b875330e5f6aea33b2a0c0120ca12773f978cbe407",
-          "texels": 1766,
-          "why": 0
-        },
-        "06H5:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.272,
-          "passes": false,
-          "sha256": "8fc196d53c8c5e6ebafb426103c6f2d6b4c6a4811c67e2c481eb3e190e1934f5",
-          "texels": 744,
-          "why": 0
-        },
-        "06H6:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3289,
-          "passes": false,
-          "sha256": "f8638f9ab372e270ae0342302bc5fdcb3f92f33e6cb2b3290968af73f0beaa49",
-          "texels": 1566,
-          "why": 0
-        },
-        "07A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6465,
-          "passes": false,
-          "sha256": "c48e35bc80bbb71c98aca9c5fcf9a7a5fc6539fe504965a7cf1b53dc6a06aade",
-          "texels": 1134,
-          "why": 0
-        },
-        "07A7:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6168,
-          "passes": false,
-          "sha256": "c1188754bc8042cc86d4acecab5880b54909d1c2c5d8bb1925e1e58a7ec3088b",
-          "texels": 1041,
-          "why": 0
-        },
-        "07A9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6104,
-          "passes": false,
-          "sha256": "bb4a51f4e3baae53b43d6729af3b6598daed298a45fcee2855f1d3d7cf37f226",
-          "texels": 716,
-          "why": 0
-        },
-        "07H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6465,
-          "passes": false,
-          "sha256": "c48e35bc80bbb71c98aca9c5fcf9a7a5fc6539fe504965a7cf1b53dc6a06aade",
-          "texels": 1134,
-          "why": 0
-        },
-        "07H7:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6168,
-          "passes": false,
-          "sha256": "c1188754bc8042cc86d4acecab5880b54909d1c2c5d8bb1925e1e58a7ec3088b",
-          "texels": 1041,
-          "why": 0
-        },
-        "07H9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6104,
-          "passes": false,
-          "sha256": "bb4a51f4e3baae53b43d6729af3b6598daed298a45fcee2855f1d3d7cf37f226",
-          "texels": 716,
-          "why": 0
-        },
         "08A0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.2991,
           "passes": false,
           "sha256": "83f81ac30863e25c6c79b9eea229c5b0bf1f13539b3ca37ec2171900cf15b9af",
           "texels": 862,
           "why": 0
         },
         "08A6:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.3384,
           "passes": false,
           "sha256": "29d5da4b73c433efd009f25aa6e661e91099c5ce5ae8fd632b3e7bd1dbbad616",
           "texels": 870,
           "why": 0
         },
         "08H0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.2991,
           "passes": false,
           "sha256": "83f81ac30863e25c6c79b9eea229c5b0bf1f13539b3ca37ec2171900cf15b9af",
           "texels": 862,
           "why": 0
         },
         "08H6:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.3384,
           "passes": false,
           "sha256": "29d5da4b73c433efd009f25aa6e661e91099c5ce5ae8fd632b3e7bd1dbbad616",
           "texels": 870,
           "why": 0
         },
         "09A0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.3534,
           "passes": false,
           "sha256": "d1e54c0e55b1f39ba679141c02b87e0470c7731befaa62e8d1c0f8c0d36eebf1",
           "texels": 2511,
-          "why": 0
-        },
-        "09A2:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5334,
-          "passes": false,
-          "sha256": "431d5c17acda04399a6a2eabdc4c300b34a80b922bc48104ddb4ee7f6828a1e7",
-          "texels": 689,
-          "why": 0
-        },
-        "09A9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5334,
-          "passes": false,
-          "sha256": "431d5c17acda04399a6a2eabdc4c300b34a80b922bc48104ddb4ee7f6828a1e7",
-          "texels": 689,
           "why": 0
         },
         "09H0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.3534,
           "passes": false,
           "sha256": "d1e54c0e55b1f39ba679141c02b87e0470c7731befaa62e8d1c0f8c0d36eebf1",
           "texels": 2511,
-          "why": 0
-        },
-        "09H2:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5334,
-          "passes": false,
-          "sha256": "431d5c17acda04399a6a2eabdc4c300b34a80b922bc48104ddb4ee7f6828a1e7",
-          "texels": 689,
-          "why": 0
-        },
-        "09H9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5334,
-          "passes": false,
-          "sha256": "431d5c17acda04399a6a2eabdc4c300b34a80b922bc48104ddb4ee7f6828a1e7",
-          "texels": 689,
-          "why": 0
-        },
-        "10A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2494,
-          "passes": true,
-          "sha256": "dec6ad2f22202cbb4a5f87d26248367fe2291b95d67ff76c26b938dfd7afaf3f",
-          "texels": 526,
-          "why": 0
-        },
-        "10A5:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2229,
-          "passes": true,
-          "sha256": "bffc5c1c47b09f9c77f8507f85aeb0ef09d66de8175d7460dc958b3e3053fc29",
-          "texels": 368,
-          "why": 0
-        },
-        "10A6:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4912,
-          "passes": false,
-          "sha256": "d071379bada58f70dcfcc2e83b97fb2d813e2dafe2f51cef40b65e3db755a9a4",
-          "texels": 272,
-          "why": 0
-        },
-        "10H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2494,
-          "passes": true,
-          "sha256": "dec6ad2f22202cbb4a5f87d26248367fe2291b95d67ff76c26b938dfd7afaf3f",
-          "texels": 526,
-          "why": 0
-        },
-        "10H5:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2229,
-          "passes": true,
-          "sha256": "bffc5c1c47b09f9c77f8507f85aeb0ef09d66de8175d7460dc958b3e3053fc29",
-          "texels": 368,
-          "why": 0
-        },
-        "10H6:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4912,
-          "passes": false,
-          "sha256": "d071379bada58f70dcfcc2e83b97fb2d813e2dafe2f51cef40b65e3db755a9a4",
-          "texels": 272,
-          "why": 0
-        },
-        "11A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.512,
-          "passes": false,
-          "sha256": "ab014d81ef4c5a176f222db03182428e4d5b43b178d7015d0a98ee60799fd94c",
-          "texels": 1127,
-          "why": 0
-        },
-        "11A3:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.441,
-          "passes": false,
-          "sha256": "1d7d8c8d2b9ac37dbc5ea700d9aef21e4cb8f35b6be729a38f1d1d8765a99ec4",
-          "texels": 709,
-          "why": 0
-        },
-        "11A4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.0,
-          "passes": true,
-          "sha256": "b2ed1868a0383043c7df35c8cf0f1347b246c23af7fe0848511c8d6f53be72d6",
-          "texels": 415,
-          "why": 0
-        },
-        "11H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.512,
-          "passes": false,
-          "sha256": "ab014d81ef4c5a176f222db03182428e4d5b43b178d7015d0a98ee60799fd94c",
-          "texels": 1127,
-          "why": 0
-        },
-        "11H3:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.441,
-          "passes": false,
-          "sha256": "1d7d8c8d2b9ac37dbc5ea700d9aef21e4cb8f35b6be729a38f1d1d8765a99ec4",
-          "texels": 709,
-          "why": 0
-        },
-        "11H4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.0,
-          "passes": true,
-          "sha256": "b2ed1868a0383043c7df35c8cf0f1347b246c23af7fe0848511c8d6f53be72d6",
-          "texels": 415,
-          "why": 0
-        },
-        "12A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.1749,
-          "passes": true,
-          "sha256": "2ebb6f6d54d34135ffe3c4a08e6600e8532606f7f62c96ecf502ee94c74cdc83",
-          "texels": 870,
-          "why": 0
-        },
-        "12A5:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.1766,
-          "passes": true,
-          "sha256": "c3ae0b818efb8a52f4fb5e019569011d19d5c975f4c4f981d6fc7cd3320d06d0",
-          "texels": 408,
           "why": 0
         },
         "12A6:12:txtr": {
@@ -10596,24 +10140,6 @@
           "texels": 3,
           "why": 0
         },
-        "12H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.1749,
-          "passes": true,
-          "sha256": "2ebb6f6d54d34135ffe3c4a08e6600e8532606f7f62c96ecf502ee94c74cdc83",
-          "texels": 870,
-          "why": 0
-        },
-        "12H5:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.1766,
-          "passes": true,
-          "sha256": "c3ae0b818efb8a52f4fb5e019569011d19d5c975f4c4f981d6fc7cd3320d06d0",
-          "texels": 408,
-          "why": 0
-        },
         "12H6:12:txtr": {
           "cls": "ii",
           "passes": false,
@@ -10621,1120 +10147,144 @@
           "texels": 3,
           "why": 0
         },
-        "13A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3846,
-          "passes": false,
-          "sha256": "5c2fe345a4b3a275318e93df963c98ce0f675a014985149dc5ee34d8bce0b335",
-          "texels": 1154,
-          "why": 0
-        },
-        "13H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3846,
-          "passes": false,
-          "sha256": "5c2fe345a4b3a275318e93df963c98ce0f675a014985149dc5ee34d8bce0b335",
-          "texels": 1154,
-          "why": 0
-        },
         "14A0:11:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.8897,
           "passes": false,
           "sha256": "8578fde154bfccfd8797f4edfd341844b2319369f4483f744ab278245eacc54e",
           "texels": 2254,
-          "why": 0
-        },
-        "14A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6929,
-          "passes": false,
-          "sha256": "7f3e4ec20240b06503036d35be0b379adf30aa646683b9a3e0026abfc1fb3eba",
-          "texels": 1106,
-          "why": 0
-        },
-        "14A10:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.0938,
-          "passes": true,
-          "sha256": "3b445fbf95e6f6fa0e01b964257a52358280b5189e6bf8413310544fdddef8d3",
-          "texels": 524,
           "why": 0
         },
         "14H0:11:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.8897,
           "passes": false,
           "sha256": "8578fde154bfccfd8797f4edfd341844b2319369f4483f744ab278245eacc54e",
           "texels": 2254,
           "why": 0
         },
-        "14H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6929,
-          "passes": false,
-          "sha256": "7f3e4ec20240b06503036d35be0b379adf30aa646683b9a3e0026abfc1fb3eba",
-          "texels": 1106,
-          "why": 0
-        },
-        "14H10:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.0938,
-          "passes": true,
-          "sha256": "3b445fbf95e6f6fa0e01b964257a52358280b5189e6bf8413310544fdddef8d3",
-          "texels": 524,
-          "why": 0
-        },
         "15A0:11:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.0571,
-          "passes": true,
+          "passes": false,
           "sha256": "31e80c73bbb758c23c9a60d29956c76f3fa8bf000e1c14a290ed5be28129b203",
           "texels": 746,
           "why": 0
         },
         "15A0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.1273,
-          "passes": true,
+          "passes": false,
           "sha256": "3b317c20edbb13e98ae2b6f865c92ba7ea6588bb4aa9059fefea44b05a6cde96",
           "texels": 1642,
           "why": 0
         },
-        "15A5:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5499,
-          "passes": false,
-          "sha256": "36a52574ffcd50bbe344155d08964ead1103ef685de2ed73b992a63789e6012d",
-          "texels": 888,
-          "why": 0
-        },
-        "15A6:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3785,
-          "passes": false,
-          "sha256": "4ec06dea14dcdee919bf198aa69da2f63b3ceb9be42c66bc8bc9adc5488ac7a1",
-          "texels": 723,
-          "why": 0
-        },
         "15H0:11:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.0571,
-          "passes": true,
+          "passes": false,
           "sha256": "31e80c73bbb758c23c9a60d29956c76f3fa8bf000e1c14a290ed5be28129b203",
           "texels": 746,
           "why": 0
         },
         "15H0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.1273,
-          "passes": true,
+          "passes": false,
           "sha256": "3b317c20edbb13e98ae2b6f865c92ba7ea6588bb4aa9059fefea44b05a6cde96",
           "texels": 1642,
           "why": 0
         },
-        "15H5:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5499,
-          "passes": false,
-          "sha256": "36a52574ffcd50bbe344155d08964ead1103ef685de2ed73b992a63789e6012d",
-          "texels": 888,
-          "why": 0
-        },
-        "15H6:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3785,
-          "passes": false,
-          "sha256": "4ec06dea14dcdee919bf198aa69da2f63b3ceb9be42c66bc8bc9adc5488ac7a1",
-          "texels": 723,
-          "why": 0
-        },
-        "16A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3758,
-          "passes": false,
-          "sha256": "996bcae0f695e75b31d441b61c388438a9d1bec1efab64069ec34b0de4dfa46e",
-          "texels": 1113,
-          "why": 0
-        },
-        "16A11:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2352,
-          "passes": true,
-          "sha256": "187c6c61f8e71e995e177d741aa6ff26494e12188014d12f8524e2c30fdb324e",
-          "texels": 660,
-          "why": 0
-        },
-        "16A4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4225,
-          "passes": false,
-          "sha256": "4e04c15b31384abfc59a5a454103e43beb53f62dea03be9899a27b2f51dbe7ee",
-          "texels": 734,
-          "why": 0
-        },
-        "16A9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5753,
-          "passes": false,
-          "sha256": "ab3e7b78accbefb37ed6114cead16775113dcbd142a5f7d83b1b83a289be53c3",
-          "texels": 858,
-          "why": 0
-        },
-        "16H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3758,
-          "passes": false,
-          "sha256": "996bcae0f695e75b31d441b61c388438a9d1bec1efab64069ec34b0de4dfa46e",
-          "texels": 1113,
-          "why": 0
-        },
-        "16H11:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2352,
-          "passes": true,
-          "sha256": "187c6c61f8e71e995e177d741aa6ff26494e12188014d12f8524e2c30fdb324e",
-          "texels": 660,
-          "why": 0
-        },
-        "16H4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4225,
-          "passes": false,
-          "sha256": "4e04c15b31384abfc59a5a454103e43beb53f62dea03be9899a27b2f51dbe7ee",
-          "texels": 734,
-          "why": 0
-        },
-        "16H9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5753,
-          "passes": false,
-          "sha256": "ab3e7b78accbefb37ed6114cead16775113dcbd142a5f7d83b1b83a289be53c3",
-          "texels": 858,
-          "why": 0
-        },
-        "17A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4838,
-          "passes": false,
-          "sha256": "a8b4053cd1e3376f65bc0f077726051f2d86b842fe12e6528630c1dbea8bfcd3",
-          "texels": 980,
-          "why": 0
-        },
-        "17A1:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5538,
-          "passes": false,
-          "sha256": "8281238316a55df66a694edab2c5b6a9a06934af0a8a1fbdab6276317058d86e",
-          "texels": 794,
-          "why": 0
-        },
-        "17A3:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.7524,
-          "passes": false,
-          "sha256": "0719f485db93077bf989b2b1fa5f3c92020eb619ef29d015dc1e5a8e9041794a",
-          "texels": 888,
-          "why": 0
-        },
-        "17A6:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4838,
-          "passes": false,
-          "sha256": "a8b4053cd1e3376f65bc0f077726051f2d86b842fe12e6528630c1dbea8bfcd3",
-          "texels": 980,
-          "why": 0
-        },
-        "17A8:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.7577,
-          "passes": false,
-          "sha256": "9447b434710feac5094a93fa3b3ee50d76080fe68773a69f4ba25cabaa3a7b04",
-          "texels": 886,
-          "why": 0
-        },
-        "17H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4838,
-          "passes": false,
-          "sha256": "a8b4053cd1e3376f65bc0f077726051f2d86b842fe12e6528630c1dbea8bfcd3",
-          "texels": 980,
-          "why": 0
-        },
-        "17H1:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5538,
-          "passes": false,
-          "sha256": "8281238316a55df66a694edab2c5b6a9a06934af0a8a1fbdab6276317058d86e",
-          "texels": 794,
-          "why": 0
-        },
-        "17H3:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.7524,
-          "passes": false,
-          "sha256": "0719f485db93077bf989b2b1fa5f3c92020eb619ef29d015dc1e5a8e9041794a",
-          "texels": 888,
-          "why": 0
-        },
-        "17H6:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4838,
-          "passes": false,
-          "sha256": "a8b4053cd1e3376f65bc0f077726051f2d86b842fe12e6528630c1dbea8bfcd3",
-          "texels": 980,
-          "why": 0
-        },
-        "17H8:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.7577,
-          "passes": false,
-          "sha256": "9447b434710feac5094a93fa3b3ee50d76080fe68773a69f4ba25cabaa3a7b04",
-          "texels": 886,
-          "why": 0
-        },
-        "18A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5453,
-          "passes": false,
-          "sha256": "95e9e7da6bf818333728fadd29c27b0ace781c238ff685d2e484e3ad1ac9770e",
-          "texels": 988,
-          "why": 0
-        },
-        "18A7:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4828,
-          "passes": false,
-          "sha256": "cebb7ce8f006e89d368ba796dbc0dd81d2152096a7c5f5869236508ca043adf3",
-          "texels": 683,
-          "why": 0
-        },
-        "18H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5453,
-          "passes": false,
-          "sha256": "95e9e7da6bf818333728fadd29c27b0ace781c238ff685d2e484e3ad1ac9770e",
-          "texels": 988,
-          "why": 0
-        },
-        "18H7:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4828,
-          "passes": false,
-          "sha256": "cebb7ce8f006e89d368ba796dbc0dd81d2152096a7c5f5869236508ca043adf3",
-          "texels": 683,
-          "why": 0
-        },
         "19A0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.9291,
           "passes": false,
           "sha256": "f1fa8a2d9b00a71bcea1b2f9c491d5b1fdd98685678f0e4a5307f6e27c941582",
           "texels": 1105,
-          "why": 0
-        },
-        "19A2:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.8216,
-          "passes": false,
-          "sha256": "5a9871277636f11cddad145b6ed157d81e975a28bc14e1a1a2cedcc3c6d0f136",
-          "texels": 694,
-          "why": 0
-        },
-        "19A6:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.8291,
-          "passes": false,
-          "sha256": "f8261a20c1a0d1bcb56f9866dbd038a7d113d756dc6a3bd87127450e96417e23",
-          "texels": 761,
-          "why": 0
-        },
-        "19A7:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6019,
-          "passes": false,
-          "sha256": "fef95a386daa595b862d2bf8a588618ca458e38af1e1872921113d7940257c14",
-          "texels": 1824,
           "why": 0
         },
         "19H0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.9291,
           "passes": false,
           "sha256": "f1fa8a2d9b00a71bcea1b2f9c491d5b1fdd98685678f0e4a5307f6e27c941582",
           "texels": 1105,
           "why": 0
         },
-        "19H2:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.8216,
-          "passes": false,
-          "sha256": "5a9871277636f11cddad145b6ed157d81e975a28bc14e1a1a2cedcc3c6d0f136",
-          "texels": 694,
-          "why": 0
-        },
-        "19H6:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.8291,
-          "passes": false,
-          "sha256": "f8261a20c1a0d1bcb56f9866dbd038a7d113d756dc6a3bd87127450e96417e23",
-          "texels": 761,
-          "why": 0
-        },
-        "19H7:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6019,
-          "passes": false,
-          "sha256": "fef95a386daa595b862d2bf8a588618ca458e38af1e1872921113d7940257c14",
-          "texels": 1824,
-          "why": 0
-        },
-        "20A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3601,
-          "passes": false,
-          "sha256": "032afaf909203cbf47e5bfcc60525f3059a39724492292eff288b5d5c70f4390",
-          "texels": 1118,
-          "why": 0
-        },
-        "20A4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.351,
-          "passes": false,
-          "sha256": "e464ad3a04492768b2aebd49d0f42ec3231f93c7558617410dd3c26fee533439",
-          "texels": 1119,
-          "why": 0
-        },
-        "20H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3601,
-          "passes": false,
-          "sha256": "032afaf909203cbf47e5bfcc60525f3059a39724492292eff288b5d5c70f4390",
-          "texels": 1118,
-          "why": 0
-        },
-        "20H4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.351,
-          "passes": false,
-          "sha256": "e464ad3a04492768b2aebd49d0f42ec3231f93c7558617410dd3c26fee533439",
-          "texels": 1119,
-          "why": 0
-        },
-        "21A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2932,
-          "passes": false,
-          "sha256": "557048b29e3ce7f1fae8a13f9a365b291da32a256fbe421fbb1ee5e8fcd8f238",
-          "texels": 966,
-          "why": 0
-        },
-        "21A10:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3105,
-          "passes": false,
-          "sha256": "0bdf90f0d976d0c20c4fb7b12e459f0322f063454d3eae90874ae19d98374c3d",
-          "texels": 698,
-          "why": 0
-        },
-        "21A12:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.182,
-          "passes": true,
-          "sha256": "86e911e5580e7fe380f55d414d8f7c9cda06159a86b012f72f55a7aca7dbf1cf",
-          "texels": 630,
-          "why": 0
-        },
-        "21A13:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.182,
-          "passes": true,
-          "sha256": "86e911e5580e7fe380f55d414d8f7c9cda06159a86b012f72f55a7aca7dbf1cf",
-          "texels": 630,
-          "why": 0
-        },
-        "21A14:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2932,
-          "passes": false,
-          "sha256": "557048b29e3ce7f1fae8a13f9a365b291da32a256fbe421fbb1ee5e8fcd8f238",
-          "texels": 966,
-          "why": 0
-        },
-        "21A4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3572,
-          "passes": false,
-          "sha256": "85ab1b720d4e3def2dc862fc917655b6dc1cc1c031665d896b9ea719d82f8b20",
-          "texels": 622,
-          "why": 0
-        },
-        "21H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2932,
-          "passes": false,
-          "sha256": "557048b29e3ce7f1fae8a13f9a365b291da32a256fbe421fbb1ee5e8fcd8f238",
-          "texels": 966,
-          "why": 0
-        },
-        "21H10:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3105,
-          "passes": false,
-          "sha256": "0bdf90f0d976d0c20c4fb7b12e459f0322f063454d3eae90874ae19d98374c3d",
-          "texels": 698,
-          "why": 0
-        },
-        "21H12:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.182,
-          "passes": true,
-          "sha256": "86e911e5580e7fe380f55d414d8f7c9cda06159a86b012f72f55a7aca7dbf1cf",
-          "texels": 630,
-          "why": 0
-        },
-        "21H13:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.182,
-          "passes": true,
-          "sha256": "86e911e5580e7fe380f55d414d8f7c9cda06159a86b012f72f55a7aca7dbf1cf",
-          "texels": 630,
-          "why": 0
-        },
-        "21H14:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2932,
-          "passes": false,
-          "sha256": "557048b29e3ce7f1fae8a13f9a365b291da32a256fbe421fbb1ee5e8fcd8f238",
-          "texels": 966,
-          "why": 0
-        },
-        "21H4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3572,
-          "passes": false,
-          "sha256": "85ab1b720d4e3def2dc862fc917655b6dc1cc1c031665d896b9ea719d82f8b20",
-          "texels": 622,
-          "why": 0
-        },
-        "22A0:11:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.8209,
-          "passes": false,
-          "sha256": "7ca3e948de7f6b2b0e2f6eac94c3230e4ec2580001dec2a097313a228d04a3ce",
-          "texels": 112,
-          "why": 0
-        },
-        "22A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6326,
-          "passes": false,
-          "sha256": "1809fc49d7cb16f82db954d2d6e7ad420bf08f9e2276a0337d2e18a662850c2f",
-          "texels": 708,
-          "why": 0
-        },
-        "22A4:11:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.8209,
-          "passes": false,
-          "sha256": "7ca3e948de7f6b2b0e2f6eac94c3230e4ec2580001dec2a097313a228d04a3ce",
-          "texels": 112,
-          "why": 0
-        },
-        "22A4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6326,
-          "passes": false,
-          "sha256": "1809fc49d7cb16f82db954d2d6e7ad420bf08f9e2276a0337d2e18a662850c2f",
-          "texels": 708,
-          "why": 0
-        },
         "22A5:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.4194,
           "passes": false,
           "sha256": "50028567c5988c984898deb4f40b0c3002db53c6bae19b4268d228e17855fd81",
           "texels": 1079,
-          "why": 0
-        },
-        "22H0:11:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.8209,
-          "passes": false,
-          "sha256": "7ca3e948de7f6b2b0e2f6eac94c3230e4ec2580001dec2a097313a228d04a3ce",
-          "texels": 112,
-          "why": 0
-        },
-        "22H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6326,
-          "passes": false,
-          "sha256": "1809fc49d7cb16f82db954d2d6e7ad420bf08f9e2276a0337d2e18a662850c2f",
-          "texels": 708,
-          "why": 0
-        },
-        "22H4:11:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.8209,
-          "passes": false,
-          "sha256": "7ca3e948de7f6b2b0e2f6eac94c3230e4ec2580001dec2a097313a228d04a3ce",
-          "texels": 112,
-          "why": 0
-        },
-        "22H4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6326,
-          "passes": false,
-          "sha256": "1809fc49d7cb16f82db954d2d6e7ad420bf08f9e2276a0337d2e18a662850c2f",
-          "texels": 708,
           "why": 0
         },
         "22H5:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.4194,
           "passes": false,
           "sha256": "50028567c5988c984898deb4f40b0c3002db53c6bae19b4268d228e17855fd81",
           "texels": 1079,
           "why": 0
         },
-        "23A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.459,
-          "passes": false,
-          "sha256": "a5f32332e86fa4a41424588f3267599aa1c6693113f5b8c856acd0ed68f6069c",
-          "texels": 1290,
-          "why": 0
-        },
-        "23A10:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4259,
-          "passes": false,
-          "sha256": "3ccb5bd07d4e2f8403bce76cfe44a74e4f29c866f8d9d4a58bfb335c2f80b580",
-          "texels": 1090,
-          "why": 0
-        },
-        "23A11:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4177,
-          "passes": false,
-          "sha256": "fb211be59874e7c0f39bedf374f5fee947c832b1aee57c4cf0d501f14693c2d6",
-          "texels": 1052,
-          "why": 0
-        },
-        "23A12:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4134,
-          "passes": false,
-          "sha256": "03693e1d45fc5df44c289f508e562fe8ba87be558c938d905abeadef90ea8edc",
-          "texels": 1202,
-          "why": 0
-        },
-        "23H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.459,
-          "passes": false,
-          "sha256": "a5f32332e86fa4a41424588f3267599aa1c6693113f5b8c856acd0ed68f6069c",
-          "texels": 1290,
-          "why": 0
-        },
-        "23H10:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4259,
-          "passes": false,
-          "sha256": "3ccb5bd07d4e2f8403bce76cfe44a74e4f29c866f8d9d4a58bfb335c2f80b580",
-          "texels": 1090,
-          "why": 0
-        },
-        "23H11:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4177,
-          "passes": false,
-          "sha256": "fb211be59874e7c0f39bedf374f5fee947c832b1aee57c4cf0d501f14693c2d6",
-          "texels": 1052,
-          "why": 0
-        },
-        "23H12:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4134,
-          "passes": false,
-          "sha256": "03693e1d45fc5df44c289f508e562fe8ba87be558c938d905abeadef90ea8edc",
-          "texels": 1202,
-          "why": 0
-        },
-        "24A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2552,
-          "passes": false,
-          "sha256": "f8ade7617c5a949c93418fc8c965e4ad6df59d72057370d646bd282cc7cb9020",
-          "texels": 251,
-          "why": 0
-        },
-        "24A10:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2581,
-          "passes": false,
-          "sha256": "4d7c01df651ca041ad2cb4a53b66e5e706d9a8bc79a23eafb3aadf5db3048d1b",
-          "texels": 243,
-          "why": 0
-        },
-        "24A11:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2217,
-          "passes": true,
-          "sha256": "03bb6f95757b981ab936b42f44064ece69d641c3fd6485781f94ab6067f048fe",
-          "texels": 860,
-          "why": 0
-        },
-        "24A9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2581,
-          "passes": false,
-          "sha256": "4d7c01df651ca041ad2cb4a53b66e5e706d9a8bc79a23eafb3aadf5db3048d1b",
-          "texels": 243,
-          "why": 0
-        },
-        "24H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2552,
-          "passes": false,
-          "sha256": "f8ade7617c5a949c93418fc8c965e4ad6df59d72057370d646bd282cc7cb9020",
-          "texels": 251,
-          "why": 0
-        },
-        "24H10:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2581,
-          "passes": false,
-          "sha256": "4d7c01df651ca041ad2cb4a53b66e5e706d9a8bc79a23eafb3aadf5db3048d1b",
-          "texels": 243,
-          "why": 0
-        },
-        "24H11:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2217,
-          "passes": true,
-          "sha256": "03bb6f95757b981ab936b42f44064ece69d641c3fd6485781f94ab6067f048fe",
-          "texels": 860,
-          "why": 0
-        },
-        "24H9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.2581,
-          "passes": false,
-          "sha256": "4d7c01df651ca041ad2cb4a53b66e5e706d9a8bc79a23eafb3aadf5db3048d1b",
-          "texels": 243,
-          "why": 0
-        },
         "25A0:11:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.1545,
-          "passes": true,
+          "passes": false,
           "sha256": "65bdd9b6af12c290675f764186a3160c23feb190485c4d307c364bb6aef1071c",
           "texels": 660,
           "why": 0
         },
         "25A0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.2692,
           "passes": false,
           "sha256": "b20152d062c7664ed76b9c0630c0ef2c294318c5aaee1e4157d41b548934b109",
           "texels": 1668,
           "why": 0
         },
         "25A7:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.2038,
-          "passes": true,
+          "passes": false,
           "sha256": "a823f349cc2218673128f422f50f1cc229354d0366855071ad183bc79dc06427",
           "texels": 1241,
           "why": 0
         },
         "25H0:11:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.1545,
-          "passes": true,
+          "passes": false,
           "sha256": "65bdd9b6af12c290675f764186a3160c23feb190485c4d307c364bb6aef1071c",
           "texels": 660,
           "why": 0
         },
         "25H0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.2692,
           "passes": false,
           "sha256": "b20152d062c7664ed76b9c0630c0ef2c294318c5aaee1e4157d41b548934b109",
           "texels": 1668,
           "why": 0
         },
         "25H7:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.2038,
-          "passes": true,
+          "passes": false,
           "sha256": "a823f349cc2218673128f422f50f1cc229354d0366855071ad183bc79dc06427",
           "texels": 1241,
           "why": 0
         },
-        "26A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4267,
-          "passes": false,
-          "sha256": "17217abdf57b9ac48b1023b8728b2f193019f8c7ed86112fbc07a8082752a1ed",
-          "texels": 1026,
-          "why": 0
-        },
-        "26A3:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6177,
-          "passes": false,
-          "sha256": "8060b45c41cb7dce1f470c850e64ca0c54ab2556da5a7cf74d08377dd18f72fc",
-          "texels": 911,
-          "why": 0
-        },
-        "26A4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4146,
-          "passes": false,
-          "sha256": "ef08a6505b0784cd64ac158e5d529c676b150c302fccb799bc3ef39b7b246ea8",
-          "texels": 942,
-          "why": 0
-        },
-        "26H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4267,
-          "passes": false,
-          "sha256": "17217abdf57b9ac48b1023b8728b2f193019f8c7ed86112fbc07a8082752a1ed",
-          "texels": 1026,
-          "why": 0
-        },
-        "26H3:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6177,
-          "passes": false,
-          "sha256": "8060b45c41cb7dce1f470c850e64ca0c54ab2556da5a7cf74d08377dd18f72fc",
-          "texels": 911,
-          "why": 0
-        },
-        "26H4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.4146,
-          "passes": false,
-          "sha256": "ef08a6505b0784cd64ac158e5d529c676b150c302fccb799bc3ef39b7b246ea8",
-          "texels": 942,
-          "why": 0
-        },
         "27A0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.3288,
           "passes": false,
           "sha256": "9fbfce749f7de60f559f2ce9afff780255d861019afd52d8075e5c94779f2d4d",
           "texels": 1007,
           "why": 0
         },
-        "27A2:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3613,
-          "passes": false,
-          "sha256": "fb9dfae1f057d73cca9287075c358da834875365ac41eeb9a8a98ce900cf1459",
-          "texels": 680,
-          "why": 0
-        },
         "27A6:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.6196,
           "passes": false,
           "sha256": "63857bb44168688cf2a6839f150acb09291db1c809080ad8a1e895435d765267",
           "texels": 3615,
           "why": 0
         },
         "27H0:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.3288,
           "passes": false,
           "sha256": "9fbfce749f7de60f559f2ce9afff780255d861019afd52d8075e5c94779f2d4d",
           "texels": 1007,
           "why": 0
         },
-        "27H2:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3613,
-          "passes": false,
-          "sha256": "fb9dfae1f057d73cca9287075c358da834875365ac41eeb9a8a98ce900cf1459",
-          "texels": 680,
-          "why": 0
-        },
         "27H6:12:txtr": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.6196,
           "passes": false,
           "sha256": "63857bb44168688cf2a6839f150acb09291db1c809080ad8a1e895435d765267",
           "texels": 3615,
-          "why": 0
-        },
-        "28A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5594,
-          "passes": false,
-          "sha256": "68a43e2acf057485a52baa9ad13283573c3f63d88e493f933ed154f686f2c857",
-          "texels": 1141,
-          "why": 0
-        },
-        "28A7:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3408,
-          "passes": false,
-          "sha256": "8cc289d13a2e04d815878bb8325fc25d29aa2d9fb88ad0685575cefa15270c2f",
-          "texels": 835,
-          "why": 0
-        },
-        "28H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5594,
-          "passes": false,
-          "sha256": "68a43e2acf057485a52baa9ad13283573c3f63d88e493f933ed154f686f2c857",
-          "texels": 1141,
-          "why": 0
-        },
-        "28H7:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3408,
-          "passes": false,
-          "sha256": "8cc289d13a2e04d815878bb8325fc25d29aa2d9fb88ad0685575cefa15270c2f",
-          "texels": 835,
-          "why": 0
-        },
-        "29A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6278,
-          "passes": false,
-          "sha256": "833996ebf779634fbc11a8271e6704a99ea3ce14c3c29bebc7f739380251db17",
-          "texels": 1153,
-          "why": 0
-        },
-        "29A9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3662,
-          "passes": false,
-          "sha256": "b4d760491c007c444947fe847fd4210f03f2532fafd2dbc04e4bd49a55f4af37",
-          "texels": 813,
-          "why": 0
-        },
-        "29H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6278,
-          "passes": false,
-          "sha256": "833996ebf779634fbc11a8271e6704a99ea3ce14c3c29bebc7f739380251db17",
-          "texels": 1153,
-          "why": 0
-        },
-        "29H9:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3662,
-          "passes": false,
-          "sha256": "b4d760491c007c444947fe847fd4210f03f2532fafd2dbc04e4bd49a55f4af37",
-          "texels": 813,
-          "why": 0
-        },
-        "30A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3054,
-          "passes": false,
-          "sha256": "5fe2f5deae14b406340189b219741e0260d9ab96a260a95ee307b7755862db09",
-          "texels": 287,
-          "why": 0
-        },
-        "30A3:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.0933,
-          "passes": true,
-          "sha256": "8627f96c34c703b82a2671f374e77cb061658cca71ff5b4112df4509d95463c5",
-          "texels": 563,
-          "why": 0
-        },
-        "30A4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3982,
-          "passes": false,
-          "sha256": "14b21cea61e858aa65d8adfb1b9fac228d2790c87ee3ba00fce7d724f38bf6ba",
-          "texels": 529,
-          "why": 0
-        },
-        "30H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3054,
-          "passes": false,
-          "sha256": "5fe2f5deae14b406340189b219741e0260d9ab96a260a95ee307b7755862db09",
-          "texels": 287,
-          "why": 0
-        },
-        "30H3:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.0933,
-          "passes": true,
-          "sha256": "8627f96c34c703b82a2671f374e77cb061658cca71ff5b4112df4509d95463c5",
-          "texels": 563,
-          "why": 0
-        },
-        "30H4:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.3982,
-          "passes": false,
-          "sha256": "14b21cea61e858aa65d8adfb1b9fac228d2790c87ee3ba00fce7d724f38bf6ba",
-          "texels": 529,
-          "why": 0
-        },
-        "37A0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.327,
-          "passes": false,
-          "sha256": "991602a86ff2fc317c31798b94dc2c9a850f1356683da5c662ab742dc1306529",
-          "texels": 913,
-          "why": 0
-        },
-        "37A2:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.7639,
-          "passes": false,
-          "sha256": "5978d3f8cd4509cecb40ae726cb3d19d1cdc82011e2acfbe48dbf455daa7ba40",
-          "texels": 618,
-          "why": 0
-        },
-        "37H0:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.327,
-          "passes": false,
-          "sha256": "991602a86ff2fc317c31798b94dc2c9a850f1356683da5c662ab742dc1306529",
-          "texels": 913,
-          "why": 0
-        },
-        "37H2:12:txtr": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.7639,
-          "passes": false,
-          "sha256": "5978d3f8cd4509cecb40ae726cb3d19d1cdc82011e2acfbe48dbf455daa7ba40",
-          "texels": 618,
           "why": 0
         }
       }
@@ -11742,20 +10292,27 @@
     "data/nfl2k5_kit_fixes_2026_b81u.json": {
       "reasons": [
         "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-        "the base is built from the user's retail disc at build time",
+        "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+        "authored on a region cleared by rule: lettering moved by rule (move); only the drawn shield ships",
         "authored on a region cleared by rule: sleeve stripes drawn by rule to the real set",
         "authored on a region cleared by rule: the league shield drawn from the repo's shield art below the collar point",
         "authored on a region cleared by rule: the standard league shield drawn from the repo's shield art",
         "ruling 1: Bengals pants strokes: drawn by work/fix/R2C/tools/cinpaint.py on the player model from the geometry read off the 2026 White Bengal photographs (strokes.py, inkband2.py) and order R2-C item 1; the old marks are cleared by rule (clear) first",
+        "the base is built from the user's retail disc at build time",
         "authored on a region cleared by rule: BRONCOS drawn from nothing by code (7 letters 6 x 6, 2-texel stems, one colour)",
+        "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; DETROIT drawn italic by code (Noah's decision 6)",
+        "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; band and wedge drawn by code on the player model (order R2-C item 2)",
         "authored families, but an erasure is still stored as texels",
         "authored on a region cleared by rule: pants stripe drawn by rule at its real widths",
+        "authored on a region cleared by rule: pants stripe drawn by rule at its real width; socks recoloured by rule (ramp)",
         "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
         "authored on a region cleared by rule: chest ny drawn from the repo's NYG logo at 12 x 10 beside the redrawn shield; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
         "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
         "authored on a region cleared by rule: sol band and white band drawn by rule at their 2026 place and width",
         "authored on a region cleared by rule: pants stripe drawn by rule at the widths read off 2026 photographs",
         "authored on a region cleared by rule: pants stripe drawn by rule in the real order and widths (decision 5)",
+        "authored on a region cleared by rule: TITANS narrowed by rule (cols); only the drawn shield ships",
+        "the road shoulder swoosh is the 29H0 sleeve swoosh art (a texture the build makes from the retail disc) redrawn on the body by work/fix/R2C/tools/waspaint.py; its texels still ship",
         "authored on a region cleared by rule: memorial oval drawn by code (navy oval, light rim, a row of marks)"
       ],
       "rows": {
@@ -11779,11 +10336,11 @@
         },
         "00A7:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5274,
-          "passes": false,
-          "sha256": "d0aa31b3f2b6dfe76b0565a466d0860c2e830905e65ea30eb3cb13ce327d6042",
-          "texels": 159,
+          "cls": "iii",
+          "edge_overlap": 0.5068,
+          "passes": true,
+          "sha256": "dda8fee120ad7afc3fec9117c727e9cc0f0c95241e94fd9153e0058623bb054c",
+          "texels": 156,
           "why": 1
         },
         "00H0:1:tset": {
@@ -11806,21 +10363,21 @@
         },
         "00H7:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5274,
-          "passes": false,
-          "sha256": "d0aa31b3f2b6dfe76b0565a466d0860c2e830905e65ea30eb3cb13ce327d6042",
-          "texels": 159,
+          "cls": "iii",
+          "edge_overlap": 0.5068,
+          "passes": true,
+          "sha256": "dda8fee120ad7afc3fec9117c727e9cc0f0c95241e94fd9153e0058623bb054c",
+          "texels": 156,
           "why": 1
         },
         "01A0:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.8293,
-          "passes": false,
+          "passes": true,
           "sha256": "7266334de6ea398b514ff4e033c1be1624ebcd43b517dd88e599d5bc2bd5df95",
           "texels": 156,
-          "why": 1
+          "why": 2
         },
         "01A9:1:tset": {
           "base_equal": 0,
@@ -11833,12 +10390,12 @@
         },
         "01H0:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.7455,
-          "passes": false,
+          "passes": true,
           "sha256": "ee5a8b4615411c3dad1790909886d9f715a03914d406c9a0f130d1a93a8ea95a",
           "texels": 156,
-          "why": 1
+          "why": 2
         },
         "01H9:1:tset": {
           "base_equal": 0,
@@ -11860,18 +10417,18 @@
         },
         "02A2:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.5035,
-          "passes": false,
+          "passes": true,
           "sha256": "072f8b5ed00aeceeb3eb0bb865bb9ec0870daf219abddfa1f59cd9e2ee784afd",
           "texels": 156,
           "why": 1
         },
         "02A3:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.5732,
-          "passes": false,
+          "passes": true,
           "sha256": "eb0a7e4f37a12e38be554263288d3d73318f50a4bcaadae8296423dba9df5455",
           "texels": 156,
           "why": 1
@@ -11887,18 +10444,18 @@
         },
         "02H2:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.5161,
-          "passes": false,
+          "passes": true,
           "sha256": "53e9dc31f4a91afcda93a81e765cdae0c33024aa69a641b678a95cb4405a9440",
           "texels": 156,
           "why": 1
         },
         "02H3:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.5732,
-          "passes": false,
+          "passes": true,
           "sha256": "eb0a7e4f37a12e38be554263288d3d73318f50a4bcaadae8296423dba9df5455",
           "texels": 156,
           "why": 1
@@ -11919,7 +10476,7 @@
           "passes": true,
           "sha256": "e8aec85fc77639c47ab5374727851bba6d731e2909c8853c91e77d956961087d",
           "texels": 6400,
-          "why": 2
+          "why": 3
         },
         "03A3:1:tset": {
           "base_equal": 0,
@@ -11937,15 +10494,15 @@
           "passes": true,
           "sha256": "66b03311c6d5bcca32bb4fc00f3e4604f1ca0b39d5624554344ff4327b60b386",
           "texels": 157,
-          "why": 3
+          "why": 4
         },
         "03A9:1:tset": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5238,
-          "passes": false,
-          "sha256": "214ff008f1094920c6b2897f8f80d58376f786204d25a02e554781ede56e9673",
-          "texels": 159,
+          "base_equal": 2,
+          "cls": "iii",
+          "edge_overlap": 0.4881,
+          "passes": true,
+          "sha256": "c603f7c9449f0432161299b986ea4d012a0ac3f08be4493420e6430c63a83e82",
+          "texels": 154,
           "why": 1
         },
         "03H0:1:tset": {
@@ -11964,7 +10521,7 @@
           "passes": true,
           "sha256": "4eb88f0851a6cc19e8ffb1a35bff273995ea20b2687146f4c4c2f98113c9eb13",
           "texels": 5376,
-          "why": 2
+          "why": 3
         },
         "03H3:1:tset": {
           "base_equal": 0,
@@ -11982,15 +10539,15 @@
           "passes": true,
           "sha256": "66b03311c6d5bcca32bb4fc00f3e4604f1ca0b39d5624554344ff4327b60b386",
           "texels": 157,
-          "why": 3
+          "why": 4
         },
         "03H9:1:tset": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5238,
-          "passes": false,
-          "sha256": "214ff008f1094920c6b2897f8f80d58376f786204d25a02e554781ede56e9673",
-          "texels": 159,
+          "base_equal": 2,
+          "cls": "iii",
+          "edge_overlap": 0.4881,
+          "passes": true,
+          "sha256": "c603f7c9449f0432161299b986ea4d012a0ac3f08be4493420e6430c63a83e82",
+          "texels": 154,
           "why": 1
         },
         "04A0:1:tset": {
@@ -12009,7 +10566,7 @@
           "passes": true,
           "sha256": "e1beefb7e347a9246bf86c12812b91bc9e621e3cf69ae2313aa345172e7b5451",
           "texels": 156,
-          "why": 4
+          "why": 5
         },
         "04A2:2:tset": {
           "base_equal": 2,
@@ -12018,7 +10575,7 @@
           "passes": true,
           "sha256": "7e8a63c74eb2e62f2480abe48833e28546a4273364e161c65039cd64597276db",
           "texels": 982,
-          "why": 4
+          "why": 5
         },
         "04H0:1:tset": {
           "base_equal": 0,
@@ -12036,7 +10593,7 @@
           "passes": true,
           "sha256": "e1beefb7e347a9246bf86c12812b91bc9e621e3cf69ae2313aa345172e7b5451",
           "texels": 156,
-          "why": 4
+          "why": 5
         },
         "04H2:2:tset": {
           "base_equal": 2,
@@ -12045,7 +10602,7 @@
           "passes": true,
           "sha256": "7e8a63c74eb2e62f2480abe48833e28546a4273364e161c65039cd64597276db",
           "texels": 982,
-          "why": 4
+          "why": 5
         },
         "05A0:1:tset": {
           "base_equal": 0,
@@ -12097,7 +10654,7 @@
           "passes": true,
           "sha256": "a701d63237e3cdbf0044f58b0b1c024c4ab78500ff8332ca69840f8f53794b5a",
           "texels": 8916,
-          "why": 5
+          "why": 6
         },
         "06A5:1:tset": {
           "base_equal": 0,
@@ -12113,7 +10670,7 @@
           "passes": true,
           "sha256": "5c837717bea2d104e20f1bb3532715dfa691799b481c677aab27c73ff72ab30e",
           "texels": 8347,
-          "why": 5
+          "why": 6
         },
         "06A6:1:tset": {
           "base_equal": 0,
@@ -12129,7 +10686,7 @@
           "passes": true,
           "sha256": "338fc816c895b0693c9a661638078f5929ac0986310376d80e38da36deb0cda4",
           "texels": 8771,
-          "why": 5
+          "why": 6
         },
         "06H0:1:tset": {
           "base_equal": 0,
@@ -12145,7 +10702,7 @@
           "passes": true,
           "sha256": "4c89940750a4ebff92b0534b343295c1f5b42d85dc4b053ac63e1f521dd16f73",
           "texels": 8909,
-          "why": 5
+          "why": 6
         },
         "06H5:1:tset": {
           "base_equal": 0,
@@ -12161,7 +10718,7 @@
           "passes": true,
           "sha256": "2025a6df9296bd1b574fcc223cb6f4ca2a738742d6790488bdd3f59c846481f9",
           "texels": 8313,
-          "why": 5
+          "why": 6
         },
         "06H6:1:tset": {
           "base_equal": 0,
@@ -12177,7 +10734,7 @@
           "passes": true,
           "sha256": "338fc816c895b0693c9a661638078f5929ac0986310376d80e38da36deb0cda4",
           "texels": 8771,
-          "why": 5
+          "why": 6
         },
         "07A0:1:tset": {
           "base_equal": 0,
@@ -12197,15 +10754,6 @@
           "texels": 156,
           "why": 0
         },
-        "07A7:3:tset": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5106,
-          "passes": false,
-          "sha256": "6050a1d92ab260efe8e8ebe25f327e1bd599381a84dc173bc3667675d27d3f78",
-          "texels": 365,
-          "why": 1
-        },
         "07H0:1:tset": {
           "base_equal": 0,
           "cls": "iii",
@@ -12222,7 +10770,7 @@
           "passes": false,
           "sha256": "850c70f2ebc4dea809be914919af52b6dbd5947dfb1407a859fd309bba3dc852",
           "texels": 1229,
-          "why": 1
+          "why": 7
         },
         "07H7:1:tset": {
           "base_equal": 0,
@@ -12233,15 +10781,6 @@
           "texels": 156,
           "why": 0
         },
-        "07H7:3:tset": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5106,
-          "passes": false,
-          "sha256": "6050a1d92ab260efe8e8ebe25f327e1bd599381a84dc173bc3667675d27d3f78",
-          "texels": 365,
-          "why": 1
-        },
         "08A0:1:tset": {
           "base_equal": 4,
           "cls": "iii",
@@ -12249,7 +10788,7 @@
           "passes": true,
           "sha256": "3e807788fd11d0c71f47679b1db0f5f835e2a96a886164fd6cc6b0c2a2213a8d",
           "texels": 311,
-          "why": 6
+          "why": 8
         },
         "08A5:1:tset": {
           "base_equal": 0,
@@ -12258,7 +10797,7 @@
           "passes": true,
           "sha256": "d657fc432334fdc4f36d42345c010ea22f7fa105aee289ba14c4110986823046",
           "texels": 309,
-          "why": 6
+          "why": 8
         },
         "08A6:1:tset": {
           "base_equal": 0,
@@ -12267,7 +10806,7 @@
           "passes": true,
           "sha256": "8c33eedadf0abcc0380ddd74bae4b25dddbc89ea3b4ff298f9e094334909b005",
           "texels": 309,
-          "why": 6
+          "why": 8
         },
         "08H0:1:tset": {
           "base_equal": 2,
@@ -12276,7 +10815,7 @@
           "passes": true,
           "sha256": "10a92a9a0ecf2d46a3bfd304524568420b492ddd47759c875b582677bb3242b2",
           "texels": 309,
-          "why": 6
+          "why": 8
         },
         "08H5:1:tset": {
           "base_equal": 0,
@@ -12285,7 +10824,7 @@
           "passes": true,
           "sha256": "8c33eedadf0abcc0380ddd74bae4b25dddbc89ea3b4ff298f9e094334909b005",
           "texels": 309,
-          "why": 6
+          "why": 8
         },
         "08H6:1:tset": {
           "base_equal": 0,
@@ -12294,7 +10833,7 @@
           "passes": true,
           "sha256": "8c33eedadf0abcc0380ddd74bae4b25dddbc89ea3b4ff298f9e094334909b005",
           "texels": 309,
-          "why": 6
+          "why": 8
         },
         "09A0:1:tset": {
           "base_equal": 0,
@@ -12316,21 +10855,21 @@
         },
         "09A9:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.3152,
-          "passes": false,
+          "passes": true,
           "sha256": "3542f549528d84554894e090956e89b0528fb4c5e3ea150bfe1ac56ec51f9e90",
           "texels": 678,
-          "why": 1
+          "why": 9
         },
         "09A9:2:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.0083,
           "passes": true,
           "sha256": "41e96a51e4795d9c1df5122f6f7fbbe7d0ec84b6bdecce5df2f35078edb1a24a",
           "texels": 2974,
-          "why": 1
+          "why": 10
         },
         "09H0:1:tset": {
           "base_equal": 0,
@@ -12352,21 +10891,21 @@
         },
         "09H9:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.3152,
-          "passes": false,
+          "passes": true,
           "sha256": "3542f549528d84554894e090956e89b0528fb4c5e3ea150bfe1ac56ec51f9e90",
           "texels": 678,
-          "why": 1
+          "why": 9
         },
         "09H9:2:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.0083,
           "passes": true,
           "sha256": "41e96a51e4795d9c1df5122f6f7fbbe7d0ec84b6bdecce5df2f35078edb1a24a",
           "texels": 2974,
-          "why": 1
+          "why": 10
         },
         "10A0:1:tset": {
           "base_equal": 0,
@@ -12522,13 +11061,13 @@
           "why": 0
         },
         "14A0:3:tset": {
-          "base_equal": 0,
+          "base_equal": 61,
           "cls": "ii",
-          "edge_overlap": 0.3076,
+          "edge_overlap": 0.3267,
           "passes": false,
-          "sha256": "b92a65feaf9091edd3c2cc6652b64846a1f4a38aba1d86afa79486bcc844cde2",
-          "texels": 522,
-          "why": 1
+          "sha256": "4a9b9c8bea138c9430f7c85064cfc102e17de422d9e599e5bed98e87f9ff61c4",
+          "texels": 595,
+          "why": 11
         },
         "14A10:1:tset": {
           "base_equal": 3,
@@ -12555,7 +11094,7 @@
           "passes": false,
           "sha256": "3c60919051b65ef103e91c2769c9d7dd0fb19a3a2f7264f0301757b140e28023",
           "texels": 786,
-          "why": 7
+          "why": 11
         },
         "14H10:1:tset": {
           "base_equal": 3,
@@ -12582,7 +11121,7 @@
           "passes": true,
           "sha256": "52f9e4ed47449b0c163a7fd08a688da43fa98246e35c32a44879f18180d0d88f",
           "texels": 8697,
-          "why": 8
+          "why": 12
         },
         "15A5:1:tset": {
           "base_equal": 0,
@@ -12613,12 +11152,12 @@
         },
         "15H0:2:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.4904,
-          "passes": false,
+          "passes": true,
           "sha256": "1764b84f193556069146b3a9ea1ec00d15d0501d1b0290794ab69ee9b29acfb3",
           "texels": 8980,
-          "why": 1
+          "why": 13
         },
         "15H5:1:tset": {
           "base_equal": 0,
@@ -12699,7 +11238,7 @@
           "passes": true,
           "sha256": "72e30ae49d7ef25c4dee62e8ef51e6e2ca598447e5cfa1ea06778e9b5cde52af",
           "texels": 745,
-          "why": 9
+          "why": 14
         },
         "17A1:1:tset": {
           "base_equal": 0,
@@ -12717,7 +11256,7 @@
           "passes": true,
           "sha256": "7eaa14b77a17cd86bdf478ca128e88157b6896af3d2477ab0cdb6bb9108a5305",
           "texels": 739,
-          "why": 9
+          "why": 14
         },
         "17A8:1:tset": {
           "base_equal": 0,
@@ -12726,7 +11265,7 @@
           "passes": true,
           "sha256": "508d4b0e6e35be55d45507f339e66700380448c5c51be153c25b876e6f83d8b1",
           "texels": 738,
-          "why": 9
+          "why": 14
         },
         "17H0:1:tset": {
           "base_equal": 3,
@@ -12735,7 +11274,7 @@
           "passes": true,
           "sha256": "315f08998dc14b833139ab2378c116df415520f300de70d1b0ea294dca8f0428",
           "texels": 742,
-          "why": 9
+          "why": 14
         },
         "17H1:1:tset": {
           "base_equal": 0,
@@ -12753,7 +11292,7 @@
           "passes": true,
           "sha256": "7eaa14b77a17cd86bdf478ca128e88157b6896af3d2477ab0cdb6bb9108a5305",
           "texels": 739,
-          "why": 9
+          "why": 14
         },
         "17H8:1:tset": {
           "base_equal": 0,
@@ -12762,7 +11301,7 @@
           "passes": true,
           "sha256": "508d4b0e6e35be55d45507f339e66700380448c5c51be153c25b876e6f83d8b1",
           "texels": 738,
-          "why": 9
+          "why": 14
         },
         "18A0:1:tset": {
           "base_equal": 3,
@@ -12771,7 +11310,7 @@
           "passes": true,
           "sha256": "0351547652397404c9acbb0d6230164e3cbbc6aa195a5cdc9322c632af5a43be",
           "texels": 245,
-          "why": 10
+          "why": 15
         },
         "18A7:1:tset": {
           "base_equal": 5,
@@ -12780,7 +11319,7 @@
           "passes": true,
           "sha256": "b098d9c00dc0fb710269dc0af3d729e9e523fd52ec2db1425b544b5803e13c9a",
           "texels": 252,
-          "why": 10
+          "why": 15
         },
         "18H0:1:tset": {
           "base_equal": 3,
@@ -12789,7 +11328,7 @@
           "passes": true,
           "sha256": "f43fbe20d42d0f8de60054b894f41b82901f9c8baf81ed7cf913b54f0121751a",
           "texels": 245,
-          "why": 10
+          "why": 15
         },
         "18H7:1:tset": {
           "base_equal": 5,
@@ -12798,7 +11337,7 @@
           "passes": true,
           "sha256": "b098d9c00dc0fb710269dc0af3d729e9e523fd52ec2db1425b544b5803e13c9a",
           "texels": 252,
-          "why": 10
+          "why": 15
         },
         "19A0:1:tset": {
           "base_equal": 0,
@@ -12817,15 +11356,6 @@
           "sha256": "587f5fe09da19454ee7b2c594c732366e1358eefaf74a98537cd86a072e21db6",
           "texels": 156,
           "why": 0
-        },
-        "19A2:2:tset": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6646,
-          "passes": false,
-          "sha256": "120f6dc28bb22af926c6153e31c145fa8cc62ae7eb8fccd1cb5a29dacb6c52a4",
-          "texels": 6350,
-          "why": 1
         },
         "19A6:1:tset": {
           "base_equal": 0,
@@ -12862,15 +11392,6 @@
           "sha256": "587f5fe09da19454ee7b2c594c732366e1358eefaf74a98537cd86a072e21db6",
           "texels": 156,
           "why": 0
-        },
-        "19H2:2:tset": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.6646,
-          "passes": false,
-          "sha256": "120f6dc28bb22af926c6153e31c145fa8cc62ae7eb8fccd1cb5a29dacb6c52a4",
-          "texels": 6350,
-          "why": 1
         },
         "19H6:1:tset": {
           "base_equal": 0,
@@ -12933,7 +11454,7 @@
           "passes": true,
           "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5",
           "texels": 418,
-          "why": 11
+          "why": 16
         },
         "21A10:1:tset": {
           "base_equal": 2,
@@ -12942,7 +11463,7 @@
           "passes": true,
           "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5",
           "texels": 418,
-          "why": 11
+          "why": 16
         },
         "21A12:1:tset": {
           "base_equal": 2,
@@ -12951,13 +11472,13 @@
           "passes": true,
           "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5",
           "texels": 418,
-          "why": 11
+          "why": 16
         },
         "21A13:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.6517,
-          "passes": false,
+          "passes": true,
           "sha256": "ee81a5240b5e33745e864518879d05f835ffd402f84edd8340815e4d25e5665d",
           "texels": 155,
           "why": 1
@@ -12969,7 +11490,7 @@
           "passes": false,
           "sha256": "ee3b493e9c66bf95bb5e51b2dfa357a8756cf5dde6e24a40e79c674ad32c738c",
           "texels": 158,
-          "why": 7
+          "why": 11
         },
         "21A4:3:tset": {
           "base_equal": 0,
@@ -12978,7 +11499,7 @@
           "passes": false,
           "sha256": "f4b1c98cf73d9daa72a05efe9d947f4482214941b11e5de980e1393fa0e55279",
           "texels": 2485,
-          "why": 1
+          "why": 7
         },
         "21H0:1:tset": {
           "base_equal": 25,
@@ -12987,7 +11508,7 @@
           "passes": true,
           "sha256": "ff7e0ba261e1161a89ecfa4b30629378a6d0655f5425ea29739701033a59ef0f",
           "texels": 417,
-          "why": 11
+          "why": 16
         },
         "21H10:1:tset": {
           "base_equal": 2,
@@ -12996,7 +11517,7 @@
           "passes": true,
           "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5",
           "texels": 418,
-          "why": 11
+          "why": 16
         },
         "21H12:1:tset": {
           "base_equal": 2,
@@ -13005,13 +11526,13 @@
           "passes": true,
           "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5",
           "texels": 418,
-          "why": 11
+          "why": 16
         },
         "21H13:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.6517,
-          "passes": false,
+          "passes": true,
           "sha256": "ee81a5240b5e33745e864518879d05f835ffd402f84edd8340815e4d25e5665d",
           "texels": 155,
           "why": 1
@@ -13023,7 +11544,7 @@
           "passes": false,
           "sha256": "ee3b493e9c66bf95bb5e51b2dfa357a8756cf5dde6e24a40e79c674ad32c738c",
           "texels": 158,
-          "why": 7
+          "why": 11
         },
         "21H4:3:tset": {
           "base_equal": 0,
@@ -13032,7 +11553,7 @@
           "passes": false,
           "sha256": "f4b1c98cf73d9daa72a05efe9d947f4482214941b11e5de980e1393fa0e55279",
           "texels": 2485,
-          "why": 1
+          "why": 7
         },
         "22A0:1:tset": {
           "base_equal": 0,
@@ -13086,7 +11607,7 @@
           "passes": true,
           "sha256": "fed38bcf097f13db58d420b6a055465c9eef22b35ef762095e6f22accfdda222",
           "texels": 7280,
-          "why": 12
+          "why": 17
         },
         "23A10:1:tset": {
           "base_equal": 0,
@@ -13248,7 +11769,7 @@
           "passes": true,
           "sha256": "f49b8a9eeed4ccce627a1b73d030ba033805757e8a420c797d2a9a73a3cde96b",
           "texels": 6310,
-          "why": 13
+          "why": 18
         },
         "26A0:1:tset": {
           "base_equal": 0,
@@ -13298,20 +11819,11 @@
         "26H4:1:tset": {
           "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.5246,
+          "edge_overlap": 0.5546,
           "passes": false,
-          "sha256": "c2a94971e0f96503953a4f0940add5dbbd3fc6523195adf9644db8ede1f4c480",
-          "texels": 14166,
-          "why": 1
-        },
-        "26H4:3:tset": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.9727,
-          "passes": false,
-          "sha256": "d61cfb2de52d78fe08cb46c32b194d6a436f577223d8af6e0b8bcb857c587337",
-          "texels": 4281,
-          "why": 1
+          "sha256": "56fe1f5264101e07d33aef7bfa0aef6ec097a9307a783656b1fa49be78de46cc",
+          "texels": 202,
+          "why": 11
         },
         "27A0:1:tset": {
           "base_equal": 0,
@@ -13329,7 +11841,7 @@
           "passes": true,
           "sha256": "89480263790ca7362ce4cc3aac084c55ba05c0b9afaee207d51aca98c6d93c82",
           "texels": 4317,
-          "why": 14
+          "why": 19
         },
         "27A2:1:tset": {
           "base_equal": 0,
@@ -13342,9 +11854,9 @@
         },
         "27A6:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.5215,
-          "passes": false,
+          "passes": true,
           "sha256": "bd4614c27fc9522573d0eb6e0f351923fce39fe9538251a1b1915db7c47f519d",
           "texels": 156,
           "why": 1
@@ -13365,7 +11877,7 @@
           "passes": true,
           "sha256": "34607fcb29aef5f3f5e774d07d63eef12b2f8181856a0216fcc281b4513f9113",
           "texels": 6312,
-          "why": 14
+          "why": 19
         },
         "27H2:1:tset": {
           "base_equal": 0,
@@ -13378,39 +11890,37 @@
         },
         "27H6:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.5215,
-          "passes": false,
+          "passes": true,
           "sha256": "bd4614c27fc9522573d0eb6e0f351923fce39fe9538251a1b1915db7c47f519d",
           "texels": 156,
           "why": 1
         },
         "28A0:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.5,
-          "passes": false,
+          "passes": true,
           "sha256": "754542336ee1f76a065a366509e6742b69b93e4c9b161eb09fe4aff6934420d2",
           "texels": 156,
           "why": 1
         },
         "28H0:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
+          "cls": "iii",
           "edge_overlap": 0.5322,
-          "passes": false,
+          "passes": true,
           "sha256": "ba1d28f22903c224c668c9e5648114ec18a449d6d5eee6b05732dfdc9e4e2c63",
           "texels": 155,
-          "why": 1
+          "why": 20
         },
         "29A0:1:tset": {
-          "base_equal": 0,
           "cls": "ii",
-          "edge_overlap": 0.1214,
-          "passes": true,
+          "passes": false,
           "sha256": "c2891154df46399fb4c2774d89caa79d3cf117791361bd217af17809d2207d72",
           "texels": 325,
-          "why": 1
+          "why": 21
         },
         "29A9:1:tset": {
           "base_equal": 0,
@@ -13500,7 +12010,7 @@
           "passes": true,
           "sha256": "a38db7926cfd9f0065a5c1b77151fdfbca1b13ed4061ca15412b80a671c43114",
           "texels": 433,
-          "why": 15
+          "why": 22
         },
         "37A2:1:tset": {
           "base_equal": 0,
@@ -13518,7 +12028,7 @@
           "passes": true,
           "sha256": "ced83466099e0751e7c5c4a9a0c7fc0940e2779184ca4ee1dee75294b448e44c",
           "texels": 433,
-          "why": 15
+          "why": 22
         },
         "37H2:1:tset": {
           "base_equal": 0,

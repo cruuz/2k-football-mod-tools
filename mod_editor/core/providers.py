@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "3d9f56f7354b6267f8d85db20ffa63cbbc21b6dcb349948babd62e037cd49ad1",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "f583ec68557f5f58215cc7b317d0c088e98b5caeae96036538dbeeef0dc77809",
+        "mod_editor/core/mod_build.py": "bc0f1a3cb5aadf31d38ffee0827cb7c194af8f433e484b3af993a2005f29123d",
         "mod_editor/core/nfl2k5_console_memory.py": "6ea4889a87c02c49c0850efa27a11706457dfd9cd438051f307587b469541758",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -897,9 +897,10 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_moment_scans.py": "99445768a0d0ff24576aab37c5cae3d9ffcb2816034f447cd93d3092d18c616c",
         "mod_editor/core/nfl2k5_unc_bowl_uniforms.py": "639af055c4943c2578955885f4ccc9a7d65f0bd4c632487f56934bdcb1968e1c",
         "mod_editor/core/nfl2k5_nyg_numbers.py": "812f042c6293db1e66567d940228af53acf0955ab9eeec0ff936f64bc243587b",
-        "mod_editor/core/nfl2k5_kit_fixes_2026.py": "eb074246847c21912a59816483ef6da434e72597d77a301727f883767b0c6c1e",
+        "mod_editor/core/nfl2k5_kit_fixes_2026.py": "4ab097d8d4cd650676cc302636864c42c5fe9f9b4dc4af7e553b504a95dbe50f",
         "mod_editor/core/nfl2k5_kit_rule_emblem.py": "5950b7fabb434f2aeaa59c7495db380593c600a1aa0d2c89af319a2903f268c8",
-        "mod_editor/core/nfl2k5_kit_rule_recolour.py": "c69771d63ab30088cfeb4018cdd908855648b7911e591222f76ffa61a6f14b28",
+        "mod_editor/core/nfl2k5_kit_rule_fill.py": "b86fabc24b04dfada5beb166f441078225ab55971ab2e3967fe1a30b2eb3891f",
+        "mod_editor/core/nfl2k5_kit_rule_recolour.py": "c28f755dd32ac520e34c56fc037172f96e461dde5abba46455bb986d50ff8b52",
         "mod_editor/core/nfl2k5_relief_2026.py": "b76e160ce29190b31dbf8dd6d0e10f2febbd5994b19be43b073e9af4f651f22e",
         "mod_editor/core/nfl2k5_position_row.py": "0df78f0d7e3af61be8738afe5373925f48ef8a309a35bfcb31ab62008b6be85b",
         "mod_editor/core/nfl2k5_practice_reserves.py": "787e84ba5d4e1316e3bef58a82305366bf8e3d5f084cb0fe242fb68f77ecbbb6",
@@ -1617,8 +1618,8 @@ class Nfl2k5UnifiedVisualProvider:
         "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_7.png": "34fc69d02c88c01d0d63d01821885e4e8ce5387e44378169ff72166c596dc87f",
         "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_8.png": "5c1385b458f26e11bc5d04bf9884ca1936f74fbe42144c0a0f7a03c4fdeb93ec",
         "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_9.png": "c75073a37930a06be156832835ba4c8bf6821a5cb4342f3514b288d40c316add",
-        "data/nfl2k5_kit_fixes_2026_b81.json": "b7425ecdbf65f56599d0706360687f165493d180c0554b274cc8d88e32cf511f",
-        "data/nfl2k5_kit_fixes_2026_b81u.json": "a68d07994bd398b000dcef855be947be1fc7c7f3458ed556bee9cab823160553",
+        "data/nfl2k5_kit_fixes_2026_b81.json": "c89fc03d5fc637c379fcdf8fc6f832937eb9fe934e9ec83772f02dabe2199610",
+        "data/nfl2k5_kit_fixes_2026_b81u.json": "4acfe3aab317bc9a50880cc0abb22a3633eacd52de440d89a43a81cca43d8ff4",
         "data/nfl2k5_sideline_2026_b81u.json": "aeaad3daa71d56fce5a320216453339e7576d43befc10f29818e1bcca28e1f56",
         "data/nfl2k5_relief_2026_b81u.json": "e7bf44e4360bb5a34a198937abb9b3df74d2dc1bb478bc65e966bc39384b6372",
         "data/nfl2k5_relief_2026_b81u/difference_jersey.png": "f4d24e2c69457b2b08c9ffb9fd9e3c023bea9d41e342842907b8286323f28387",

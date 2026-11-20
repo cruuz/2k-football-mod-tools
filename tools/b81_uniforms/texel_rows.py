@@ -87,6 +87,22 @@ CLASS_III = {
     "b81u-MIN-home-pants-stripe-hairline": "pants stripe drawn by rule at its real width",
     "b81u-MIN-home-purple-socks": "socks recoloured by rule (ramp)",
     "b81u-14A0-swoosh-colour": "swoosh recoloured by rule (ramp)",
+    "b81u-26H4-panels-kits4": "26H0's panels copied by rule (stamp of the pinned donor + a colour-pair map); only the "
+                              "drawn collar shield ships",
+}
+# documents whose rows still storing texels are known to hold base content whatever the measures say: the b81-art
+# helmet rows the fill rule does not yet reproduce are shell shading filled from the texels around a piece, or marks
+# redrawn from game art (helpers/fill/REVIEW_ME.md)
+REFUSE_DOCUMENTS = {
+    "data/nfl2k5_kit_fixes_2026_b81.json": ("a helmet piece repainted from the shell's own shading or a mark redrawn "
+                                            "from game art, not yet a build-time rule"),
+}
+# rows whose remaining texels are known to come from game art even though the measures pass: refused by name
+REFUSE = {
+    "data/nfl2k5_kit_fixes_2026_b81u.json": {
+        "29A0:1:tset": ("the road shoulder swoosh is the 29H0 sleeve swoosh art (a texture the build makes from the retail "
+                        "disc) redrawn on the body by work/fix/R2C/tools/waspaint.py; its texels still ship"),
+    },
 }
 
 
@@ -128,6 +144,9 @@ def follows(base, final, shipped):
     return bool(np.corrcoef(b, f)[0, 1] >= 0.9)
 
 
+PACKAGE = None          # set by main: selector -> package bytes on the disc
+
+
 def kit_line(row, raw):
     c = kf._chunk_for(raw, row['chunk'])
     span = raw[c.offset:c.end_offset]
@@ -136,8 +155,13 @@ def kit_line(row, raw):
     base = kc.level0(span, row)
     donors = {}
     for k, pin in sorted((row.get('donors') or {}).items()):
-        d = kf._chunk_for(raw, int(k))
-        donors[int(k)] = kf.texture_rgba(raw[d.offset:d.end_offset])
+        k = str(k)
+        if k.startswith('retail:'):
+            return dict(measured=False)                 # a donor from the retail disc: measured by the rule's own tests
+        other, at = (k.split(':') if ':' in k else (None, k))
+        source = raw if other is None else PACKAGE(other)
+        d = kf._chunk_for(source, int(at))
+        donors[k if other else int(at)] = kf.texture_rgba(source[d.offset:d.end_offset])
     final, _scope = kf.paint(base, row['ops'], donors)
     shipped = np.zeros(base.shape[:2], bool)
     for op in row['ops']:
@@ -180,6 +204,8 @@ def main():
         entries = {bw.logical_name_for(e.name_id): e for e in index.entries}
         cache = {}
 
+        global PACKAGE
+
         def package(selector):
             if selector not in cache:
                 cache.clear()
@@ -187,6 +213,11 @@ def main():
                 cache[selector] = image.read_segments(index.sub_extents(e, 0, e.size))
             return cache[selector]
 
+        def other_package(selector):                    # a donor package, read without disturbing the cache
+            e = entries[selector + '.IFF']
+            return image.read_segments(index.sub_extents(e, 0, e.size))
+
+        PACKAGE = other_package
         for relative in sorted(section):
             document = json.loads((ROOT / relative).read_text(encoding='utf-8'))
             owners = catalog.texel_rows(document)
@@ -196,10 +227,13 @@ def main():
             for owner in sorted(owners, key=lambda k: (k.split(':')[0], k)):
                 ops = owners[owner]
                 line = dict(sha256=digest(ops))
+                refused = REFUSE.get(relative, {}).get(owner) or REFUSE_DOCUMENTS.get(relative)
                 named = RULING_1.get(relative, {}).get(owner)
                 row = rows.get(owner)
                 families = set(row.get('defects', ())) if row is not None else set()
-                if named:
+                if refused:
+                    line.update(cls='ii', reason=refused, passes=False, measured=True)
+                elif named:
                     line.update(cls='iii', reason='ruling 1: ' + named)
                 elif row is not None and families and families <= set(CLASS_III) and 'ops' in row:
                     measured = kit_line(row, package(row['selector']))
