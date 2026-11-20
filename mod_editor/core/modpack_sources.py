@@ -133,15 +133,17 @@ def prepare(recipe_path, work, *, stack=None, marks_pack=None, patched_image=Non
             m._require(room is not None and payload is not None, "Cannot verify the disc's quarterback room setting")
             room_state = room.read_settings(payload)
             m._require(room_state["status"] in ("retail", "applied"), "Cannot verify the disc's quarterback room setting")
-            installed = "realistic" if room_state["status"] == "applied" else "retail"
+            # The key names piece 3's rules only; the floor follows the injury setting (coordinator's rule).
+            piece3 = getattr(room, "PIECE3_BITS", 7)
+            installed = "realistic" if room_state["status"] == "applied" and room_state.get("stages", 0) & piece3 else "retail"
             named = effective.get("qb_room")
             if named is not None:
                 m._require(named == installed, "The disc and source recipe select different quarterback room settings")
             else:
                 # What a rebuild of this recipe would install without the key (the rule needs the preset's fields).
                 try:
-                    follows = mod_build._qb_room_level(build_plan(
-                        {"preset": recipe["preset"], "overrides": {k: v for k, v in effective.items() if k != "qb_room"}}))
+                    follows = mod_build._qb_room_resolution(build_plan(
+                        {"preset": recipe["preset"], "overrides": {k: v for k, v in effective.items() if k != "qb_room"}}))[0]
                 except (KeyError, ValueError):
                     follows = qb_room_level(None, effective.get("sim_qb_injuries"))
                 if follows != installed and not (follows is None and installed == "retail"):

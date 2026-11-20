@@ -1373,6 +1373,13 @@ class BuildPanel(QWidget):
                                                          "Use Studio's save tools to promote or demote an existing reserve. Final cuts use native "
                                                          "free agency instead of creating new reserves. Modern practice-squad eligibility and CPU "
                                                          "signings are unavailable. Only use reserve saves with this compatibility patch.")
+        # b81 qb34 (coordinator's rule): unticking what the quarterback floor needs while injuries are above zero turns
+        # the injuries to Retail and says why.
+        self._qb_floor_message = ""
+        for key in ("modern_injured_reserve", "franchise_economy", "practice_squad"):
+            box = getattr(self, key + "_check", None)
+            if box is not None:
+                box.clicked.connect(self._qb_floor_need_changed)
         self.depth_locks_check = self._option(f, "depth_locks", "Depth chart locks (LT/RT, LG/RG, KR/PR)",
                                               "Your depth chart moves and returner picks stay put through the weekly auto-depth.",
                                               badge=NOT_TESTED,
@@ -2075,7 +2082,9 @@ class BuildPanel(QWidget):
                      "adjusts simulated passing. Games you play use their original injuries and passing. "
                      "Realistic and Custom require 128 MB and Simulated season realism. "
                      "The rules for who starts at quarterback ride with Realistic and Custom when depth chart locks "
-                     "and SPECIAL rows are on, and Retail removes them.")
+                     "and SPECIAL rows are on, and Retail removes them. Realistic and Custom above 0 percent also add "
+                     "modern injured reserve, the franchise economy and reserve save compatibility, so a club is never "
+                     "left without a quarterback.")
         caption = QLabel("Simulated quarterback injuries")
         self.qb_injury_mode = QComboBox()
         caption.setBuddy(self.qb_injury_mode)
@@ -2101,7 +2110,8 @@ class BuildPanel(QWidget):
         self.qb_injury_rate_label.setBuddy(self.qb_injury_rate)
         self.qb_injury_rate.setAccessibleName(self.qb_injury_rate_label.text())
         rate_help = ("Realistic uses 0.310%. Durability, the Injury slider and the type of play change each chance. "
-                     "Custom 0% keeps the original injury roll and the updated simulated passing model.")
+                     "Custom 0% keeps the original injury roll and the updated simulated passing model, and needs "
+                     "no injured reserve or economy changes.")
         self.qb_injury_rate.setToolTip(rate_help)
         self.qb_injury_rate.setAccessibleDescription(rate_help)
         self.qb_injury_rate_help = WrappedLabel(rate_help)
@@ -2111,7 +2121,7 @@ class BuildPanel(QWidget):
         layout.addLayout(rate)
         layout.addWidget(self.qb_injury_rate_help)
         self.qb_injury_mode.currentIndexChanged.connect(self._sim_qb_injury_mode_changed)
-        self.qb_injury_rate.valueChanged.connect(lambda _value: self._refresh())
+        self.qb_injury_rate.valueChanged.connect(lambda _value: (self._qb_floor_ticks(), self._refresh()))
 
     def _sim_qb_injury_mode_changed(self):
         needs_simulator = self.qb_injury_mode.currentData() in ("realistic", "custom")
@@ -2119,6 +2129,30 @@ class BuildPanel(QWidget):
             for parent in (self.sim_realism_check, self.k128_memory_check):
                 if parent.isEnabled():
                     parent.setChecked(True)
+        self._qb_floor_message = ""
+        self._qb_floor_ticks()
+        self._refresh()
+
+    def _qb_injuries_above_zero(self):
+        mode = self.qb_injury_mode.currentData() if self.qb_injury_mode.isEnabled() else None
+        return mode == "realistic" or (mode == "custom" and self.qb_injury_rate.value() > 0)
+
+    def _qb_floor_ticks(self):
+        """b81 qb34 (coordinator's rule): injuries above zero tick what the quarterback floor needs."""
+        if not self._qb_injuries_above_zero() or self.console_memory() != 128:
+            return
+        for key in ("modern_injured_reserve", "franchise_economy", "practice_squad"):
+            box = getattr(self, key + "_check", None)
+            if box is not None and box.isEnabled() and not box.isChecked() and not self._installed(key):
+                box.setChecked(True)
+
+    def _qb_floor_need_changed(self, value):
+        if value or self._preset_applying or not self._qb_injuries_above_zero() or self.console_memory() != 128:
+            return
+        self.qb_injury_mode.setCurrentIndex(self.qb_injury_mode.findData("retail"))
+        self._qb_floor_message = ("Simulated quarterback injuries changed to Retail: injuries above 0 percent need modern "
+                                  "injured reserve, the franchise economy and reserve save compatibility so a club is "
+                                  "never left without a quarterback.")
         self._refresh()
 
     def _sim_qb_injury_dependency_changed(self, value):
@@ -2138,7 +2172,7 @@ class BuildPanel(QWidget):
     def _sim_qb_companion_choices(plan):
         values = plan.to_recipe()
         for name in ("sim_qb_injuries", "sim_qb_injury_rate", "qb_room", "sim_realism", "k128_memory", "name", "author",
-                     "notes"):
+                     "notes", "modern_injured_reserve", "franchise_economy", "practice_squad"):  # b81 qb34: floor needs
             values.pop(name, None)
         return values
 
@@ -4258,7 +4292,7 @@ class BuildPanel(QWidget):
                 reason = "The quarterback simulator option is unavailable in this Studio installation."
             available = not reason
             self.qb_injury_mode.setEnabled(available)
-            help_text = reason or self.qb_injury_mode.toolTip()
+            help_text = reason or getattr(self, "_qb_floor_message", "") or self.qb_injury_mode.toolTip()
             if self.qb_injury_help.text() != help_text:
                 self.qb_injury_help.setText(help_text)
             selected = (state.get("sim_qb_injury_settings") or {}).get("mode")

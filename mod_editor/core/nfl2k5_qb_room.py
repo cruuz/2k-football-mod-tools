@@ -37,6 +37,24 @@ FLOOR_ENTRY, FLOOR_RESUME, FLOOR_END = 0x322BB0, 0x322BB6, 0x322DF1
 FLOOR_FIRST = bytes.fromhex("81ec14010000")  # sub esp, 0x114
 FLOOR_BODY_SHA256 = "95cd45152dd4b3b52243fff6dc7c42ec8a8e3c833af90bc5f1a10a9390fe23be"  # retail 0x322BB6..0x322DF1
 SMART_CUT = 0x2BF9A0  # the native cut-down the floor's release rung calls; the economy points it at economy_smart_cut
+# Coordinator's product rule (2026-11-20): quarterback injuries above zero are never installed without the floor. The
+# Studio's stage set is therefore a function of the plan: these bits whenever injuries are above zero (Realistic, or
+# Custom above 0 percent), plus piece 3's bits from REALISTIC_STAGES where rule C1a allows them.
+FLOOR_STUDIO_STAGES = STAGE_FLOOR | STAGE_OVER_CAP  # the over-cap rung rides with the floor; drop it here to cut it
+PIECE3_BITS = 1 | 2 | 4  # STAGE_D1 | STAGE_D2D3 | STAGE_D4
+STAGE_NAMES = ((1, "D1 veteran or rookie"), (2, "D2 and D3 benching"), (4, "D4 returning starter"),
+               (8, "emergency signings (4a)"), (16, "trades (4b)"), (32, "E2 return from IR"),
+               (STAGE_FLOOR, "floor"), (STAGE_OVER_CAP, "over-cap signing"))
+
+
+def stage_names(stages):
+    """The installed stage set by name, for receipts and reviewers."""
+    return [name for bit, name in STAGE_NAMES if stages & bit]
+
+
+def studio_stages(injuries_above_zero, piece3):
+    """The stage set the Studio installs: the floor whenever injuries are above zero, piece 3 where C1a allows it."""
+    return (FLOOR_STUDIO_STAGES if injuries_above_zero else 0) | ((REALISTIC_STAGES & PIECE3_BITS) if piece3 else 0)
 
 
 class QbRoomError(ValueError):
@@ -165,7 +183,8 @@ def read_settings(payload):
     if status == "retail":
         return {"status": "retail", "mode": "retail", "reserved": allocation is not None,
                 "va": VA if allocation else None}
-    return {"status": "applied", "mode": "realistic", "stages": settings["stages"], "shadow": settings["shadow"],
+    return {"status": "applied", "mode": "realistic", "stages": settings["stages"],
+            "stage_names": stage_names(settings["stages"]), "shadow": settings["shadow"],
             "h0_ppm": settings["h0_ppm"], "d2_scale_milli": settings["d2_scale_milli"], "va": VA, "reserved": True}
 
 
@@ -197,9 +216,9 @@ def requirements(payload, stages=None):
         standard = False
     if not standard:
         missing.append("The quarterback room rules need a 128 MB standard executable (the 128 MB start-up check).")
-    if locks.status(payload) != "applied":
+    if stages & PIECE3_BITS and locks.status(payload) != "applied":
         missing.append("The quarterback room rules need depth chart locks.")
-    if lineup.status(payload) != "applied":
+    if stages & PIECE3_BITS and lineup.status(payload) != "applied":
         missing.append("The quarterback room rules need the situational lineup roles.")
     missing += _floor_problems(payload, stages)
     if stages & (code.STAGE_SIGN | STAGE_FLOOR | STAGE_OVER_CAP):
@@ -246,8 +265,9 @@ def _edits(va, stages, page, *, restoring):
     return out
 
 
-def apply(payload, level="realistic"):
-    """Install or restore on an existing standard executable without moving any installed owner."""
+def apply(payload, level="realistic", *, stages=None):
+    """Install or restore on an existing standard executable without moving any installed owner. ``stages`` is the
+    Studio's set for Realistic (studio_stages); None means REALISTIC_STAGES."""
     _require(level in LEVELS, "Choose Retail or Realistic for the quarterback room rules")
     source = bytes(payload)
     XbeImage(source)
@@ -268,7 +288,9 @@ def apply(payload, level="realistic"):
         _require(_state(result)[0] == "retail", "The quarterback room failed Retail readback")
         return result, {**receipt, "status": "retail", "restored_stages": settings["stages"],
                         "changed_bytes": space.count_differing_bytes(source, result), "file_growth": 0}
-    return _install(source, current, settings, allocation, receipt, REALISTIC_STAGES, SHADOW_DEFAULT)
+    stages = REALISTIC_STAGES if stages is None else stages
+    _require(type(stages) is int and stages > 0, "Realistic needs at least one quarterback room stage")
+    return _install(source, current, settings, allocation, receipt, stages, SHADOW_DEFAULT)
 
 
 def install_stages(payload, stages, *, shadow=False, test_without_needs=False):
@@ -316,7 +338,7 @@ def _install(source, current, settings, allocation, receipt, stages, shadow, *, 
     _require(confirmed[0] == "applied" and confirmed[1] == wanted, "The quarterback room failed Realistic readback")
     restored, _ = apply(result, "retail")
     _require(restored == empty, "The quarterback room Retail restore does not reproduce the empty reservation")
-    return result, {**receipt, "status": "applied", "stages": stages, "shadow": shadow,
+    return result, {**receipt, "status": "applied", "stages": stages, "stage_names": stage_names(stages), "shadow": shadow,
                     "sites": [hex(at) for _label, at, _o, _p in _sites(VA, stages)],
                     "changed_bytes": space.count_differing_bytes(source, result),
                     "file_growth": len(result) - len(source)}

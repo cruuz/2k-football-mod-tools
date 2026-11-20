@@ -275,6 +275,19 @@ class FloorOwnerTests(unittest.TestCase):
         out[at:at + len(data)] = data
         return bytes(out)
 
+    def test_star_retention_reads_the_same_with_the_signing_call(self):
+        # nfl2k5_star_retention authenticates the weekly advance's stage-6 caller window 0x247FD7..0x248015, which holds
+        # the 0x248010 call the floor (and stage 4a) replaces; only the room's own call into its page is accepted.
+        from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_star_retention as retention
+        room = self.room
+        base, _ = ir.apply(self.slice1, "modern", standard_guard=True)
+        floor, _ = room.apply(base, "realistic", stages=room.STAGE_FLOOR | room.STAGE_OVER_CAP | 1)
+        self.assertEqual(retention.status(base), retention.status(floor))
+        self.assertEqual(retention.status(floor), "applied")
+        self.assertEqual(retention.apply(floor)[1]["status"], "already_applied")
+        other = room._patch(floor, [(0x248010, XbeImage(floor).read(0x248010, 5), bytes.fromhex("e800000000"))])
+        self.assertEqual(retention.status(other), "foreign")
+
     def test_the_floor_bit_and_its_site(self):
         room, code = self.room, self.code
         self.assertEqual((room.STAGE_FLOOR, room.STAGE_OVER_CAP), (64, 128))

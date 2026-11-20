@@ -63,8 +63,17 @@ class RoomInstallationOrderTests(first_pass.QuarterbackInstallationOrderTests):
         from mod_editor.core import nfl2k5_qb_room as room, nfl2k5_sim_qb_injuries as qb
         from mod_editor.core import nfl2k5_xbe_space as space
 
-        self.assertEqual(mod_build._qb_room_level(plan), "realistic")
-        payload, _ = locks.apply(payload)  # an in-place owner the Studio installs long before these late steps
+        from mod_editor.core import nfl2k5_franchise_economy as economy, nfl2k5_practice_squad as squad
+        level, stages, _note = mod_build._qb_room_plan(plan, payload)
+        self.assertEqual(level, "realistic")
+        # Coordinator's rule: injuries above zero always carry the floor; Custom 0 does not.
+        floor = room.STAGE_FLOOR | room.STAGE_OVER_CAP
+        self.assertEqual(stages & floor, floor if mod_build._qb_injuries_above_zero(plan) else 0)
+        # In-place owners the Studio installs long before these late steps (the floor needs the economy and squad).
+        payload, _ = locks.apply(payload)
+        if stages & floor:
+            payload, _ = squad.apply(payload)
+            payload, _ = economy.apply(payload)
 
         def studio_ir(current):
             target = self.folder / "working.xbe"
@@ -85,7 +94,10 @@ class RoomInstallationOrderTests(first_pass.QuarterbackInstallationOrderTests):
                  "cards": lambda x: cards.apply(x)[0],
                  "QB": lambda x: qb.apply(x, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)[0],
                  "ROOM": studio_room}
-        orders = (("IR", "hair", "toss", "cards", "QB", "ROOM"), ("ROOM", "IR", "hair", "toss", "cards", "QB"),
+        # The floor needs modern IR and the ownership page first, so with injuries above zero the earliest place for the
+        # room is right after IR; without the floor (Custom 0) it also goes first of all.
+        first = ("IR", "ROOM") if stages & floor else ("ROOM", "IR")
+        orders = (("IR", "hair", "toss", "cards", "QB", "ROOM"), (*first, "hair", "toss", "cards", "QB"),
                   ("IR", "hair", "toss", "ROOM", "cards", "QB"))
         if not self.with_ir:
             orders = tuple(tuple(s for s in order if s != "IR") for order in orders)
@@ -116,6 +128,7 @@ class RoomInstallationOrderTests(first_pass.QuarterbackInstallationOrderTests):
                 if ownership:
                     self.assertEqual((ownership[0]["va"], ownership[0]["size"]), (0x1528000, 4096))
                 self.assertEqual(room.status(current), "applied")
+                self.assertEqual(room.read_settings(current)["stages"], stages)
                 self.assertEqual(qb.read_settings(current)["mode"], plan.sim_qb_injuries)
                 self.assertEqual((faces.hair_status(current), toss.status(current), cards.status(current)),
                                  ("applied", "applied", "applied"))
@@ -142,6 +155,12 @@ class RoomWithoutOwnershipTests(RoomInstallationOrderTests):
 
     def preset(self, name):
         return replace(super().preset(name), injured_reserve_guard=False, modern_injured_reserve=False)
+
+    def both_orders(self, payload, plan):
+        # Without the ownership page there is no floor (it needs modern IR and that page), so these cases are Custom 0:
+        # piece 3 only, placed before every other owner, IR included.
+        super().both_orders(payload, replace(plan, sim_qb_injuries="custom", sim_qb_injury_rate=0.0,
+                                             injured_reserve_guard=False, modern_injured_reserve=False))
 
     def fresh(self, plan):
         # The base fresh() asserts the ownership page; this copy asserts its absence and is otherwise the same.
@@ -207,7 +226,9 @@ class StudioRuleTests(unittest.TestCase):
                       "overrides": {"sim_qb_injuries": "realistic", "qb_room": explicit}}
             with self.subTest(explicit=explicit):
                 plan = modpack_sources.build_plan(recipe)
-                self.assertEqual(mod_build._qb_room_level(plan), explicit)
+                # The key names piece 3's rules; the floor follows the injuries (coordinator's rule, 2026-11-20).
+                self.assertEqual(mod_build._qb_room_resolution(plan)[0], explicit)
+                self.assertEqual(mod_build._qb_room_plan(plan)[:2], ("realistic", 192 | (1 if explicit == "realistic" else 0)))
                 self.assertEqual(plan.to_recipe()["qb_room"], explicit)
         old = {"preset": "softdrink_experimental", "overrides": {}}
         self.assertIsNone(mod_build._qb_room_level(modpack_sources.build_plan(old)))
@@ -229,7 +250,8 @@ class StudioRuleTests(unittest.TestCase):
                                               "inputs": {"teams_2026": {"project": str(root / "league.json")}}}))
                 qb, room = MagicMock(), MagicMock()
                 qb.read_settings.return_value = qb_state
-                room.read_settings.return_value = {"status": room_status}
+                room.read_settings.return_value = {"status": room_status, "stages": 1 if room_status == "applied" else 0}
+                room.PIECE3_BITS = 7
                 modules = {"nfl2k5_sim_qb_injuries": qb, "nfl2k5_qb_room": room}
                 with patch.object(mod_build, "_xbe_bytes", return_value=b"standard executable"), \
                         patch.object(cards, "status", return_value="retail"), \
@@ -280,14 +302,15 @@ class StudioRuleTests(unittest.TestCase):
         if not retail.is_file():
             self.skipTest("the private retail default.xbe is absent")
         basic = mod_build.apply_preset(mod_build.BuildPlan("s", "t"), "softdrink_basic")
-        plan = replace(basic, k128_memory=True, sim_realism=True, sim_qb_injuries="realistic")
+        # Custom 0: no floor (coordinator's rule), and piece 3's needs are missing, so nothing is installed.
+        plan = replace(basic, k128_memory=True, sim_realism=True, sim_qb_injuries="custom", sim_qb_injury_rate=0.0)
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / "default.xbe"
             target.write_bytes(retail.read_bytes())
             receipt = {"steps": [], "result": {}}
             mod_build._apply_qb_room(plan, target, receipt, lambda *_: None)
             self.assertEqual(target.read_bytes(), retail.read_bytes())
-        self.assertEqual(receipt["result"]["qb_room"], "left_out")
+        self.assertEqual(receipt["result"]["qb_room"], "retail")
         self.assertEqual(len(receipt["user_notes"]), 1)
         self.assertIn("who-starts quarterback rules", receipt["user_notes"][0])
 
@@ -308,7 +331,8 @@ class StudioRuleTests(unittest.TestCase):
                 if field != "k128_memory":
                     followed = replace(plan, **{field: False}, sim_realism=True, qb_room=None)
                     self.assertEqual(mod_build.validate_plan(followed), [])
-                    self.assertIsNone(mod_build._qb_room_level(followed))
+                    self.assertIsNone(mod_build._qb_room_resolution(followed)[0])  # piece 3 left out
+                    self.assertEqual(mod_build._qb_room_plan(followed)[:2], ("realistic", 192))  # the floor stays
                 self.assertNotIn("—", message)
         self.assertEqual(mod_build.validate_plan(replace(plan, depth_locks=False, qb_room="retail")), [])
         self.assertTrue(mod_build.validate_plan(replace(plan, qb_room="custom")))
@@ -319,7 +343,8 @@ class StudioRuleTests(unittest.TestCase):
         self.assertTrue(mod_build._only_sim_qb_changes(edit))
         self.assertEqual(mod_build.validate_plan(edit), [])
         named = mod_build.sim_qb_disc_edit("s.iso", "t.iso", "realistic", qb_room="retail")
-        self.assertEqual(mod_build._qb_room_level(named), "retail")
+        self.assertEqual(mod_build._qb_room_resolution(named)[0], "retail")
+        self.assertEqual(mod_build._qb_room_plan(named)[:2], ("realistic", 192))  # the floor rides with the injuries
         self.assertTrue(mod_build._only_sim_qb_changes(named))
         update = mod_build.v09_disc_update("s.iso", "t.iso", sim_qb_injuries="custom")
         self.assertEqual(mod_build._qb_room_level(update), "realistic")
@@ -358,6 +383,146 @@ class StudioRuleTests(unittest.TestCase):
                 self.assertEqual(between, [])
 
 
+class FloorRuleTests(unittest.TestCase):
+    """Coordinator's product rule (2026-11-20): quarterback injuries above zero are never installed without the floor.
+    Each Studio path either completes the floor's needs or refuses in plain words; the installed stage set is pinned."""
+
+    FLOOR = 64 | 128
+
+    def plan_set(self, plan, payload=None):
+        return mod_build._qb_room_plan(plan, payload)[:2]
+
+    def test_full_builds_pull_in_the_floors_needs(self):
+        basic = mod_build.apply_preset(mod_build.BuildPlan("s", "t"), "softdrink_basic")
+        experimental = mod_build.apply_preset(mod_build.BuildPlan("s", "t"), "softdrink_experimental")
+        cases = (("Basic Realistic", replace(basic, k128_memory=True, sim_realism=True, sim_qb_injuries="realistic"),
+                  ["modern injured reserve", "the franchise economy", "reserve save compatibility (the practice squad)"],
+                  ("realistic", self.FLOOR)),
+                 ("Basic Custom 0.5", replace(basic, k128_memory=True, sim_realism=True, sim_qb_injuries="custom",
+                                              sim_qb_injury_rate=0.5),
+                  ["modern injured reserve", "the franchise economy", "reserve save compatibility (the practice squad)"],
+                  ("realistic", self.FLOOR)),
+                 ("Experimental Realistic", experimental, ["the franchise economy"], ("realistic", self.FLOOR | 1)),
+                 ("Experimental, rules named Retail", replace(experimental, qb_room="retail"), ["the franchise economy"],
+                  ("realistic", self.FLOOR)))
+        for name, plan, added, expected in cases:
+            with self.subTest(case=name):
+                self.assertEqual(mod_build.validate_plan(plan), [])
+                completed, note = mod_build._with_qb_floor_needs(plan)
+                self.assertTrue(completed.modern_injured_reserve and completed.franchise_economy and completed.practice_squad)
+                for label in added:
+                    self.assertIn(label, note)
+                self.assertIn("so a club is never left without a quarterback", note)
+                self.assertNotIn("\u2014", note)
+                self.assertEqual(self.plan_set(completed), expected)
+                from mod_editor.core import nfl2k5_qb_room as room
+                self.assertEqual(room.stage_names(expected[1])[-2:], ["floor", "over-cap signing"])
+
+    def test_no_floor_without_injuries(self):
+        basic = mod_build.apply_preset(mod_build.BuildPlan("s", "t"), "softdrink_basic")
+        experimental = mod_build.apply_preset(mod_build.BuildPlan("s", "t"), "softdrink_experimental")
+        cases = (("Basic Custom 0", replace(basic, k128_memory=True, sim_realism=True, sim_qb_injuries="custom",
+                                            sim_qb_injury_rate=0.0), ("retail", 0)),
+                 ("Experimental Custom 0", replace(experimental, sim_qb_injuries="custom", sim_qb_injury_rate=0.0),
+                  ("realistic", 1)),
+                 ("Experimental Retail", replace(experimental, sim_qb_injuries="retail", qb_room=None), ("retail", 0)),
+                 ("Basic, keep the source", basic, (None, 0)))
+        for name, plan, expected in cases:
+            with self.subTest(case=name):
+                completed, note = mod_build._with_qb_floor_needs(plan)
+                self.assertIsNone(note)
+                self.assertEqual(completed, plan)
+                self.assertEqual(self.plan_set(plan), expected)
+
+    def test_a_need_the_studio_cannot_add_is_refused_in_plain_words(self):
+        from unittest.mock import patch
+        basic = mod_build.apply_preset(mod_build.BuildPlan("s", "t"), "softdrink_basic")
+        plan = replace(basic, k128_memory=True, sim_realism=True, sim_qb_injuries="realistic")
+        offered = dict(mod_build.availability(), franchise_economy=False)
+        with patch.object(mod_build, "availability", return_value=offered):
+            message, = mod_build.validate_plan(plan)
+            self.assertIn("the franchise economy", message)
+            self.assertIn("Choose Retail or Custom 0 percent", message)
+            self.assertEqual(mod_build.validate_plan(replace(plan, sim_qb_injuries="custom", sim_qb_injury_rate=0.0)), [])
+        self.assertIn("128 MB", mod_build.validate_plan(replace(plan, console_memory=64))[0])
+
+    def _private(self):
+        disc = Path(os.environ.get("NFL2K5_B81_REVIEWED_TEST_DISC", ""))
+        if not disc.is_file():
+            self.skipTest("the private reviewed test disc is absent")
+        return mod_build._xbe_bytes(disc)
+
+    def _edit(self, plan, original):
+        receipt = {"steps": [], "result": {}}
+        self.assertTrue(mod_build._edit_installed_sim_qb(plan, Path("source.iso"), Path("copy.iso"), original, receipt,
+                                                         lambda *_: None, preflight=True, consume=False, reference=None))
+        return receipt
+
+    def test_an_in_place_edit_brings_slice_1_up_to_the_floor(self):
+        import hashlib
+        from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_qb_room as room
+        from mod_editor.core import nfl2k5_sim_qb_injuries as qb
+        source = self._private()
+        slice1, _ = qb.apply(source, "realistic")  # 9f435b38: slice 1 without the floor (an earlier private test disc)
+        expected, _ = room.apply(ir.apply(slice1, "modern", standard_guard=True)[0], "realistic", stages=self.FLOOR | 1)
+        for name, original in (("98dd7329", source), ("9f435b38", slice1)):
+            with self.subTest(source=name):
+                receipt = self._edit(mod_build.sim_qb_disc_edit("s.iso", "t.iso", "realistic"), original)
+                update = receipt["qb_room_source_update"]
+                self.assertEqual((update["level"], update["stages"]), ("realistic", self.FLOOR | 1))
+                self.assertEqual(update["result_sha256"], hashlib.sha256(expected).hexdigest())
+                self.assertIn("added modern injured reserve", update["added"][0])
+                self.assertIn(update["added"][0], receipt["user_notes"])
+                self.assertEqual(update["settings"]["stage_names"],
+                                 ["D1 veteran or rookie", "floor", "over-cap signing"])
+                self.assertEqual(receipt["sim_qb_source_update"]["result_sha256"], hashlib.sha256(slice1).hexdigest())
+        receipt = self._edit(mod_build.sim_qb_disc_edit("s.iso", "t.iso", "custom", custom_rate=0.0), source)
+        self.assertEqual(receipt["qb_room_source_update"]["stages"], 1)  # Custom 0: piece 3 only, no floor, no IR added
+
+    def test_inspect_reports_a_build_with_injuries_but_no_floor(self):
+        from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_qb_room as room
+        from mod_editor.core import nfl2k5_sim_qb_injuries as qb
+        slice1, _ = qb.apply(self._private(), "realistic")
+        floor, _ = room.apply(ir.apply(slice1, "modern", standard_guard=True)[0], "realistic", stages=self.FLOOR | 1)
+        with tempfile.TemporaryDirectory() as directory:
+            for name, payload, expected in (("9f435b38", slice1, "missing"), ("floor", floor, "applied")):
+                with self.subTest(executable=name):
+                    path = Path(directory) / f"{name}.xbe"
+                    path.write_bytes(payload)
+                    self.assertEqual(mod_build.inspect(path)["qb_floor"], expected)
+
+    def test_an_in_place_edit_without_the_economy_is_refused(self):
+        from mod_editor.core import nfl2k5_k128 as k128, nfl2k5_sim_realism as sim, nfl2k5_sim_qb_injuries as qb
+        from mod_editor.core import nfl2k5_xbe_space as space
+        retail = Path(os.environ.get("NFL2K5_RETAIL_XBE", ""))
+        if not retail.is_file():
+            self.skipTest("the private retail default.xbe is absent")
+        image, _ = space.apply(retail.read_bytes(), k128.REQUESTS + sim.REQUESTS + qb.REQUESTS, scaleout=True)
+        image, _ = k128.apply(image, require=True)
+        image, _ = sim.apply(image)
+        for mode, rate in (("realistic", 0.31), ("custom", 0.2)):
+            with self.subTest(mode=mode), self.assertRaisesRegex(ValueError, "Choose Retail or Custom 0 percent"):
+                self._edit(mod_build.sim_qb_disc_edit("s.iso", "t.iso", mode, custom_rate=rate), image)
+        receipt = self._edit(mod_build.sim_qb_disc_edit("s.iso", "t.iso", "custom", custom_rate=0.0), image)
+        self.assertEqual(receipt["qb_room_source_update"]["level"], "retail")
+
+    def test_the_v09_update_ticks_modern_ir_and_installs_the_floor(self):
+        from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_sim_realism as sim
+        from mod_editor.core import nfl2k5_sim_qb_injuries as qb
+        for mode, rate, ticked in (("realistic", 0.31, True), ("custom", 0.5, True), ("custom", 0.0, False),
+                                   ("retail", 0.31, False)):
+            with self.subTest(mode=mode, rate=rate):
+                plan = mod_build.v09_disc_update("s.iso", "t.iso", sim_qb_injuries=mode, custom_rate=rate)
+                self.assertIs(plan.modern_injured_reserve, ticked)
+        disc = Path(os.environ.get("NFL2K5_V09_XISO", ""))
+        if not disc.is_file():
+            self.skipTest("the released v0.9 disc is absent")
+        v09 = mod_build._xbe_bytes(disc)
+        expected = qb.apply(sim.apply(ir.apply(v09, "modern", standard_guard=True)[0])[0], "realistic")[0]
+        plan = mod_build.v09_disc_update("s.iso", "t.iso", sim_qb_injuries="realistic")
+        self.assertEqual(self.plan_set(plan, expected), ("realistic", self.FLOOR | 1))
+
+
 class InPlacePreflightTests(unittest.TestCase):
     """The real in-place Studio path (sim_qb_disc_edit, preflight only: no disc is written) on the helmet test disc."""
 
@@ -368,8 +533,10 @@ class InPlacePreflightTests(unittest.TestCase):
         if not disc.is_file():
             self.skipTest("the private reviewed test disc is absent")
         source = mod_build._xbe_bytes(disc)
+        from mod_editor.core import nfl2k5_injured_reserve as ir
         slice1, _ = qb.apply(source, "realistic")
-        expected, _ = room.apply(slice1, "realistic")
+        # The helmet disc has the economy and the practice squad; the edit adds modern IR for the floor.
+        expected, _ = room.apply(ir.apply(slice1, "modern", standard_guard=True)[0], "realistic", stages=193)
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / "copy.iso"
             receipt = mod_build.preflight_plan(mod_build.sim_qb_disc_edit(str(disc), str(target), "realistic"))
@@ -378,9 +545,9 @@ class InPlacePreflightTests(unittest.TestCase):
         update = receipt["qb_room_source_update"]
         self.assertEqual((update["level"], update["result_sha256"]), ("realistic", hashlib.sha256(expected).hexdigest()))
         self.assertEqual((update["settings"]["status"], update["settings"]["va"]), ("applied", 0x1529000))
-        # Stage 3a handover: the Studio's Realistic is D1 with shadow off.
-        self.assertEqual((update["settings"]["stages"], update["settings"]["shadow"]), (room._code().STAGE_D1, False))
-        self.assertNotIn("user_notes", receipt)
+        # Stage 3a handover plus the coordinator's floor rule: D1, floor and over-cap, shadow off.
+        self.assertEqual((update["settings"]["stages"], update["settings"]["shadow"]), (room._code().STAGE_D1 | 192, False))
+        self.assertEqual(receipt["user_notes"], update["added"])
 
 
 class InPlaceWithoutDependenciesTests(unittest.TestCase):
@@ -397,17 +564,20 @@ class InPlaceWithoutDependenciesTests(unittest.TestCase):
         image, _ = k128.apply(image, require=True)
         image, _ = sim.apply(image)
         self.assertEqual(len(room.requirements(image)), 2)  # no depth chart locks, no lineup roles
-        plan = mod_build.sim_qb_disc_edit("source.iso", "copy.iso", "realistic")
+        # Custom 0 (no floor, coordinator's rule); Realistic here is refused for the floor (FloorRuleTests).
+        plan = mod_build.sim_qb_disc_edit("source.iso", "copy.iso", "custom", custom_rate=0.0)
         self.assertEqual(mod_build._qb_room_resolution(plan, image)[0], None)
         receipt = {"steps": [], "result": {}}
         self.assertTrue(mod_build._edit_installed_sim_qb(plan, Path("source.iso"), Path("copy.iso"), image, receipt,
                                                          lambda *_: None, preflight=True, consume=False, reference=None))
-        slice1, _ = qb.apply(image, "realistic")
+        slice1, _ = qb.apply(image, "custom", custom_rate=0.0)
         self.assertEqual(receipt["sim_qb_source_update"]["result_sha256"], hashlib.sha256(slice1).hexdigest())
         update = receipt["qb_room_source_update"]
-        self.assertEqual((update["level"], update["result_sha256"]), (None, hashlib.sha256(slice1).hexdigest()))
+        # Nothing to install and no page to remove: Retail on a source without the room changes nothing.
+        self.assertEqual((update["level"], update["stages"], update["result_sha256"]),
+                         ("retail", 0, hashlib.sha256(slice1).hexdigest()))
         self.assertEqual(receipt["user_notes"], update["user_notes"])
-        named = mod_build.sim_qb_disc_edit("source.iso", "copy.iso", "realistic", qb_room="realistic")
+        named = mod_build.sim_qb_disc_edit("source.iso", "copy.iso", "custom", custom_rate=0.0, qb_room="realistic")
         with self.assertRaisesRegex(ValueError, "depth chart locks"):
             mod_build._edit_installed_sim_qb(named, Path("source.iso"), Path("copy.iso"), image, {"steps": []},
                                              lambda *_: None, preflight=True, consume=False, reference=None)
@@ -446,7 +616,9 @@ class BuildPageTests(unittest.TestCase):
         self.panel.apply_preset("softdrink_basic")
         mode.setCurrentIndex(mode.findData("realistic"))
         plan = self.panel._plan_for_build()
-        self.assertEqual((plan.sim_qb_injuries, mod_build._qb_room_level(plan)), ("realistic", None))
+        # Basic + Realistic: the floor (needs ticked by the control), no piece 3 (no locks or SPECIAL rows).
+        self.assertEqual((plan.sim_qb_injuries, mod_build._qb_room_plan(plan)[:2]), ("realistic", ("realistic", 192)))
+        self.assertTrue(plan.modern_injured_reserve and plan.franchise_economy)
         self.assertEqual(mod_build.validate_plan(plan), [])
 
     def test_one_sentence_of_help_and_a_foreign_room_disables_the_control(self):
@@ -476,11 +648,49 @@ class BuildPageTests(unittest.TestCase):
         self.assertFalse(self.panel._sim_qb_injury_change())
 
 
+class FloorBuildPageTests(BuildPageTests):
+    def test_injuries_above_zero_tick_the_floors_needs_and_unticking_one_turns_them_to_retail(self):
+        panel, mode = self.panel, self.panel.qb_injury_mode
+        boxes = [getattr(panel, key + "_check") for key in ("modern_injured_reserve", "franchise_economy", "practice_squad")]
+        panel.apply_preset("softdrink_basic")
+        for box in boxes:
+            box.setChecked(False)
+        panel.qb_injury_rate.setValue(0.0)
+        mode.setCurrentIndex(mode.findData("custom"))
+        self.assertFalse(any(box.isChecked() for box in boxes if box.isEnabled()))  # Custom 0 needs no floor
+        mode.setCurrentIndex(mode.findData("realistic"))
+        self.assertTrue(all(box.isChecked() for box in boxes if box.isEnabled()))
+        enabled = [box for box in boxes if box.isEnabled()]
+        self.assertTrue(enabled)
+        enabled[0].click()  # untick a floor need while injuries are on
+        self.assertEqual(mode.currentData(), "retail")
+        self.assertIn("never left without a quarterback", panel.qb_injury_help.text())
+        self.assertIn("modern injured reserve, the franchise economy and reserve save compatibility",
+                      panel.qb_injury_mode.toolTip())
+
+
 class FaqTests(unittest.TestCase):
+    def test_the_faq_claims_only_what_the_studio_installs(self):
+        # Review F4 (rev-qb34): the text must match the installed stage set and say what Retail leaves behind.
+        from mod_editor.core import nfl2k5_qb_room as room
+        text = (ROOT / "docs/mod_editor/2k5_mod_studio_faq.md").read_text(encoding="utf-8")
+        paragraph, = [p for p in text.split("\n\n") if "who starts at quarterback" in p]
+        claims = {"benched": 2, "back from injury": 4, "returning starter": 4, "kid's turn": 2}
+        for words, bit in claims.items():
+            with self.subTest(claim=words):
+                self.assertEqual(words in paragraph, bool(room.REALISTIC_STAGES & bit))
+        self.assertIn("start of the season", paragraph)
+        self.assertIn("keeps the empty space reserved", paragraph)
+        self.assertNotIn("restores the original executable bytes", text)
+        self.assertNotIn("restores the original executable byte for byte", text)
+
     def test_one_plain_faq_paragraph(self):
         text = (ROOT / "docs/mod_editor/2k5_mod_studio_faq.md").read_text(encoding="utf-8")
         paragraph, = [p for p in text.split("\n\n") if "who starts at quarterback" in p]
-        self.assertIn("Retail removes them", paragraph)
+        self.assertIn("Retail removes these rules", paragraph)
+        floor, = [p for p in text.split("\n\n") if "never left without a quarterback" in p]
+        self.assertIn("Custom 0 percent, which needs no floor", floor)
+        self.assertNotIn("\u2014", floor)
         self.assertNotIn("—", paragraph)
 
 
