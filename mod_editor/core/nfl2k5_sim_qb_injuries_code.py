@@ -9,6 +9,11 @@ tackles, guards, center, defensive ends and the ball-carrying halfback, through 
 diagnosis and duration code and the game's own health write (pos2/DESIGN.md sections 2 and 4.1). Slice 3 extends the
 same check to receivers, tight ends, fullbacks, defensive tackles, linebackers, cornerbacks and safeties, with an
 exposure rule and weight per walked slot and acceptance stored by week group (pos3/DESIGN.md sections 1 and 2).
+
+Long-franchise stability (stability.S at bank offset 0x1C00; pos3/DESIGN.md addendum "Long-franchise stability")
+multiplies each class's threshold, the quarterback's included, by a factor that is exactly 1.0 in a franchise's first
+two seasons and from its third follows the league's Durability ratings (mode "adaptive") or the season index (mode
+"year", the interim). The factor lives in bank RAM only; no save byte depends on it.
 """
 from __future__ import annotations
 
@@ -19,7 +24,7 @@ from typing import Callable, NamedTuple
 CODE_SIZE = 0x4000
 MARK_OFFSET = 0x3FC0
 MARK_SIZE = struct.calcsize("<8sIII")
-MARK_SIGNATURE = b"QBMEDv3\0"      # Settings record <8sIII> (signature, mode, rate, 0). Slices 1 and 2 wrote v1 and v2.
+MARK_SIGNATURE = b"QBMEDv4\0"      # Settings record <8sIII> (signature, mode, rate, 0). Slices 1, 2, 3 wrote v1, v2, v3.
 DEFAULT_RATE = 310                  # Base probability numerator per 100,000 eligible opportunities.
 RATE_DENOMINATOR = 100_000
 REFERENCE_DURABILITY = 74.72222222222223
@@ -96,6 +101,25 @@ POSITION_CLASSES = (
 )
 # False is the cut-line fallback of pos2/DESIGN.md section 8: no per-carry halfback chance, weekly roll left as it is.
 HALFBACK_SUPPLEMENT = True
+
+# Long-franchise stability (pos3/DESIGN.md addendum A.2, A.4, A.6). Thirteen classes: POSITION_CLASSES in order, then
+# the quarterback (its gate in clinical.S reads the thirteenth factor).
+STABILITY_MODES = {"off": 0, "year": 1, "adaptive": 2}
+STABILITY_MODE = "adaptive"
+STABILITY_CLASS_NAMES = tuple(position.name for position in POSITION_CLASSES) + ("quarterback",)
+QUARTERBACK_ZERO_POINT = 100        # the quarterback tables scale with max(0, 100 - Durability)
+STABILITY_ZERO_POINTS = tuple(position.zero_point for position in POSITION_CLASSES) + (QUARTERBACK_ZERO_POINT,)
+# R per class: the league mean of max(0, K - Durability) over depth-chart starters (stored position in the class,
+# stored depth rank below the starter count) at the confirmed calibration. Measured by order S0 on the slice 3
+# confirmation candidate seasons, roots 64001 to 64004, 2026 and 2027, Durability from each season's signed save
+# (pos3/work/stability/reference.py, reference.json, reference.txt).
+STABILITY_REFERENCE = (17.627, 18.847, 18.803, 19.526, 17.703, 22.138, 20.803, 21.261, 20.343, 20.551, 23.144, 21.840,
+                       25.807)
+STABILITY_YEAR_SLOPE = 0.055        # mode "year": the supplement's measured 24 to 25 percent over four offseasons
+STABILITY_SEASONS = 10              # stab_year entries by season index; later seasons use the last
+STABILITY_CLASSES_OFF = ()          # class names left at 1.0 by the tracking gate (adaptive mode only)
+# stab_class in stability.S, by stored position QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE (0xFF: not counted).
+STABILITY_POSITION_CLASS = (12, None, None, 5, 10, 11, 11, 4, 7, 6, 9, 9, 2, 1, 0, 8, 3)
 
 # These native checks cover the master Injury option, selector stack contract, switch tables and shared constants.
 # Four routines are also pinned independently before they are linked into the reserved space.
@@ -195,6 +219,7 @@ def _configure_tables(bank, rate):
         struct.pack_into("<f", bank, GAIN_TABLE + 4 * accuracy, gain)
     struct.pack_into("<ff", bank, GAIN_CONSTANTS, .77, .982)
     _configure_positions(bank, rate)
+    _configure_stability(bank, rate)
 
 
 def position_accept_thresholds(position):
@@ -225,6 +250,35 @@ def _configure_positions(bank, rate):
         struct.pack_into(f"<{groups}I", bank, LABELS["pos_accept"] + 4 * groups * index,
                          *position_accept_thresholds(position))
     bank[LABELS["pos_enabled"]] = 1 if rate > 0 else 0
+
+
+def stability_year_factors(slope=STABILITY_YEAR_SLOPE):
+    """Mode "year": 1.0 at season index 0 and 1, 1 / (1 + slope x (index - 0.5)) at 2, 3 and 4, index 4's after."""
+    values = [1.0, 1.0] + [1 / (1 + slope * (index - 0.5)) for index in (2, 3, 4)]
+    return tuple(values + [values[-1]] * (STABILITY_SEASONS - len(values)))
+
+
+def _configure_stability(bank, rate, *, mode=None, reference=None, classes_off=None, slope=None):
+    mode = STABILITY_MODE if mode is None else mode
+    reference = STABILITY_REFERENCE if reference is None else tuple(reference)
+    classes_off = STABILITY_CLASSES_OFF if classes_off is None else tuple(classes_off)
+    slope = STABILITY_YEAR_SLOPE if slope is None else slope
+    if mode not in STABILITY_MODES:
+        raise ValueError(f"Unknown stability mode {mode!r}")
+    if len(reference) != len(STABILITY_CLASS_NAMES) or not all(
+            isinstance(value, (int, float)) and 0 < value < 256 for value in reference):
+        raise ValueError("The stability reference needs thirteen positive values")
+    if not set(classes_off) <= set(STABILITY_CLASS_NAMES):
+        raise ValueError(f"Unknown stability classes {sorted(set(classes_off) - set(STABILITY_CLASS_NAMES))}")
+    if not 0 <= slope < 1:
+        raise ValueError("The stability year slope must be from 0 to 1")
+    struct.pack_into(f"<{len(reference)}f", bank, LABELS["stab_reference"], *reference)
+    bank[LABELS["stab_zero"]:LABELS["stab_zero"] + len(STABILITY_ZERO_POINTS)] = bytes(STABILITY_ZERO_POINTS)
+    struct.pack_into(f"<{STABILITY_SEASONS}f", bank, LABELS["stab_year"], *stability_year_factors(slope))
+    off = {STABILITY_CLASS_NAMES.index(name) for name in classes_off}
+    for position, index in enumerate(STABILITY_POSITION_CLASS):
+        bank[LABELS["stab_class"] + position] = 0xFF if index is None or index in off else index
+    bank[LABELS["stab_mode"]] = 0 if rate == 0 else STABILITY_MODES[mode]
 
 
 def _link_authored(bank_va: int, sim_code_va: int, sim_data_va: int, depth: int) -> bytearray:
@@ -371,7 +425,23 @@ _TEMPLATE = b''.join((
     bytes.fromhex('0a0001000b000200090003010f000301100004000101040003010500040005000500050006000500'),
     bytes.fromhex('074006000800070002020801110008011200090113000901140009011500090116400a0118000a01'),
     bytes.fromhex('19000a011a000b0117000b011b000b011c4000'),
-    b'\xcc' * 1291,
+    b'\xcc' * 267,
+    bytes.fromhex('60b90c000000c7048d600100000000803f4979f20fb6058702000085c00f843b0100008b1db876e5'),
+    bytes.fromhex('0083fb020f822c01000083f801752583fb097605bb090000008b049d30020000b90c00000089048d'),
+    bytes.fromhex('600100004979f6e902010000a11829b70085c00f84f50000008b701c85f60f84ea00000031c0b919'),
+    bytes.fromhex('00000089048d940100004979f6bd200000000fb68e1c01000083f9410f87c400000031db39cb7357'),
+    bytes.fromhex('8b3c9e4385ff74f40fb6473583f81077eb0fb6905802000081faff00000074dc510fb74f28c1e90a'),
+    bytes.fromhex('83e1073a88690200005973c80fb6473b510fb68a7a02000029c1730231c9010c9594010000ff0495'),
+    bytes.fromhex('c801000059eba581c6f40100004d758a31c9833c8dc801000008724c833c8d94010000007442db04'),
+    bytes.fromhex('8dc8010000d80c8dfc010000da348d94010000d91c8d600100008b048d600100003d0000003f7305'),
+    bytes.fromhex('b80000003f3d0000a03f7605b80000a03f89048d600100004183f90d72a461c30000803f0000803f'),
+    bytes.fromhex('0000803f0000803f0000803f0000803f0000803f0000803f0000803f0000803f0000803f0000803f'),
+    bytes.fromhex('0000803f'),
+    bytes(158),
+    bytes.fromhex('803f0000803f0000803f0000803f0000803f0000803f0000803f0000803f0000803f0000803f0cff'),
+    bytes.fromhex('ff050a0b0b040706090902010008030100000303010102010103030102020202'),
+    bytes(14),
+    b'\xcc' * 376,
     bytes.fromhex('9c605756e8fcffffff83c408619de8fcffffff9c605756e8fcffffff83c408619dc39c608d442424'),
     bytes.fromhex('505251e8fcffffff83c40c619dc7042400000000e97cb210009c60e8fcffffff619de95bb910008b'),
     bytes.fromhex('502081e20000c0bf750f8b4024a9000000700f94c00fb6c0c331c0c38b0d1829b70085c90f84ef01'),
@@ -542,6 +612,24 @@ _RELOCATIONS = (
     (0x180c, False, 'bank', 0x1844),
     (0x1813, False, 'bank', 0x1888),
     (0x1818, True, 'stock', 0x1027e4),
+    (0x1c09, False, 'bank', 0x1d60),
+    (0x1c17, False, 'bank', 0x1e87),
+    (0x1c44, False, 'bank', 0x1e30),
+    (0x1c50, False, 'bank', 0x1d60),
+    (0x1c7e, False, 'bank', 0x1d94),
+    (0x1cb4, False, 'bank', 0x1e58),
+    (0x1ccd, False, 'bank', 0x1e69),
+    (0x1cdc, False, 'bank', 0x1e7a),
+    (0x1ce9, False, 'bank', 0x1d94),
+    (0x1cf0, False, 'bank', 0x1dc8),
+    (0x1d05, False, 'bank', 0x1dc8),
+    (0x1d0f, False, 'bank', 0x1d94),
+    (0x1d19, False, 'bank', 0x1dc8),
+    (0x1d20, False, 'bank', 0x1dfc),
+    (0x1d27, False, 'bank', 0x1d94),
+    (0x1d2e, False, 'bank', 0x1d60),
+    (0x1d35, False, 'bank', 0x1d60),
+    (0x1d54, False, 'bank', 0x1d60),
     (0x2005, True, 'bank', 0x2266),
     (0x200f, True, 'depth', -0x4),
     (0x2018, True, 'bank', 0x23c1),
@@ -725,6 +813,16 @@ LABELS = {
     'route_completed_pass': 0x3840,
     'slope': 0x37b9,
     'special_thresholds': 0xbb0,
+    'stab_class': 0x1e58,
+    'stab_count': 0x1dc8,
+    'stab_factor': 0x1d60,
+    'stab_mode': 0x1e87,
+    'stab_reference': 0x1dfc,
+    'stab_starters': 0x1e69,
+    'stab_sum': 0x1d94,
+    'stab_year': 0x1e30,
+    'stab_zero': 0x1e7a,
+    'stability': 0x1c00,
     'supplement': 0x0,
     'victim_side': 0x1848,
     'victim_slot': 0x184c,
