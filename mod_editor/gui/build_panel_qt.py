@@ -423,7 +423,7 @@ def rebuild_only_reason(state: Mapping[str, object]) -> str:
     offer Needs update boxes on such a disc and then let the engine refuse. Both Build and Game Fixes ask this one function."""
 
     if state.get("v09_standard_update"):
-        return ("On this v0.9 standard disc you can select the boot save-list repair, modern injured reserve or starting backfield cards. "
+        return ("On this v0.9 standard disc you can select the boot save-list repair, modern injured reserve, starting backfield cards or simulated quarterback injuries. "
                 "Choose the changes you want. Use your retail disc for other changes or a league project.")
     if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") not in ("applied", "retail"):
         what = "disc" if state.get("container") == "xiso" else "executable"
@@ -3568,7 +3568,7 @@ class BuildPanel(QWidget):
                 or self.softdrink_project_field.text().strip() or self._include_session_project()):
             return False
         boxes = self._boxes()
-        return (any(boxes[key].isChecked() for key in mod_build.V09_UPDATE_CHOICES)
+        return ((any(boxes[key].isChecked() for key in mod_build.V09_UPDATE_CHOICES) or bool(self._sim_qb_injury_change()))
                 and self._v09_companion_choices(plan or self.plan()) == self._v09_source_choices)
 
     # ------------------------------------------------------------- b780-m64b: console memory
