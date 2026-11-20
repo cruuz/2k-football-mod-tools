@@ -36,6 +36,7 @@ V09_OPENING = "5336bf76e7a95a8acfcb6be0ffc5d2b737d5c0efb22894af0818815c3f151906"
 RETAIL_F0 = "56926604e438bd47f1f94edf844a0ecd00d5a382a647526baec396ead5f1b1b8"
 NO_QB_IMAGE = "fde2c34a02be6d219cf3b2291b0a9ffbe537771ee2dfa79cdc1a06cb479e906a"
 MINNESOTA_KICKOFF = "1f725ff50fe01e920bd5043892b597901c8ce0665de8f56ab839522d1bef1b4e"
+PLAYOFF_IMAGE = "7a3ac0eca31be817a3a29b9b0b800082a507dcd2e1a80d43de108350f4c001aa"
 SECOND_SEASON = "2a7fa4ccef31f7f58872248b32e8a4b2aa2f1555e7c739f8b986f4501be33638"
 DALLAS_SIGNED = "529bdac68b109bc833a2cfa81e63d7d0f2b8959cb993da03402206c06cb4aac6"
 
@@ -222,8 +223,9 @@ class SignedSaveTests(unittest.TestCase):
         memory = fi.load_memory(path)
         view = fi.view_from_memory(memory.read, search=lambda n: memory.find(n, 0x10000, 0x2000000))
         boundary, kickoff = fi.check(view), fi.check(view, kickoff=True)
-        self.assertEqual(failing(boundary), {"I5"})                  # at the week boundary I11 only warns (F5)
-        self.assertIn("I11", warned(boundary))
+        # review of the floor F2: the end of an advance is judged like a kick-off for a club with a next game; at week 18
+        # the bracket is not built yet, so every club the CPU signs for may still play and counts
+        self.assertEqual(failing(boundary), {"I5", "I11"})
         self.assertEqual(failing(kickoff), {"I11"})                  # TF9: judged at kick-off it fails
         rows = [v for v in kickoff.violations if v["invariant"] == "I11"]
         self.assertEqual([(r["club"], r["club_name"], r["values"]["quarterbacks"], r["values"]["on_ir"]) for r in rows],
@@ -239,6 +241,49 @@ class SignedSaveTests(unittest.TestCase):
                           kickoff=True)
         self.assertEqual([(r["club"], r["club_name"]) for r in report.violations if r["invariant"] == "I11"],
                          [(31, "MIN")])
+        # the same state as an end-of-advance state (review of the floor F2): Minnesota has a next game, so it fails
+        boundary = fi.check(fi.view_from_memory(memory.read, search=lambda n: memory.find(n, 0x10000, 0x2000000)))
+        self.assertEqual([(r["club"], r["severity"]) for r in boundary.violations if r["invariant"] == "I11"],
+                         [(31, fi.FAIL)])
+
+    def playoff_view(self, *hurt_clubs):
+        """P1 root 2508 after the 2026 wildcard round (stage 9 week 19; the bracket's divisional games are known): the
+        quarterbacks of ``hurt_clubs`` made injured (3 weeks) in a copy of the image."""
+        path = QB34 / "playoffs-2508-2026-w19.b81mem.gz"
+        pinned(path, PLAYOFF_IMAGE)
+        memory = fi.load_memory(path)
+        view = fi.view_from_memory(memory.read, search=lambda n: memory.find(n, 0x10000, 0x2000000))
+        root = struct.unpack("<I", memory.read(0xB72918, 4))[0]
+        table = struct.unpack("<I", memory.read(root + 4, 4))[0]
+        regions = [(a, bytearray(b)) for a, b in memory.regions]
+        for club in hurt_clubs:
+            for i in view.clubs[club].active:
+                if view.record(i)[0x35] != fi.QB:
+                    continue
+                at = table + fi.PLAYER_SIZE * i + 0x20
+                for start, data in regions:
+                    if start <= at < start + len(data):
+                        word = struct.unpack_from("<I", data, at - start)[0]
+                        struct.pack_into("<I", data, at - start, word | fi.INJURED | 3 << 22)
+        patched = fi.Regions((a, bytes(b)) for a, b in regions)
+        return fi.view_from_memory(patched.read, search=lambda n: patched.find(n, 0x10000, 0x2000000))
+
+    def i11(self, report):
+        return {(r["club_name"], r["severity"]) for r in report.violations if r["invariant"] == "I11"}
+
+    def test_an_end_of_advance_club_with_a_next_game_and_no_healthy_qb_fails_I11(self):
+        view = self.playoff_view(21)                                  # NE: won its wildcard game, divisional game known
+        self.assertEqual((view.stage, view.week), (9, 19))
+        self.assertIn(("NE", fi.FAIL), self.i11(fi.check(view)))
+        self.assertIn(("NE", fi.FAIL), self.i11(fi.check(view, kickoff=True)))
+
+    def test_a_club_without_a_next_game_does_not_fail_I11(self):
+        # LAC lost its wildcard game to NE; SF missed the playoffs (team 0 also fills the bracket's unknown cells);
+        # MIN missed them too and is already without a healthy quarterback in the image
+        view = self.playoff_view(8, 0)
+        for report in (fi.check(view), fi.check(view, kickoff=True)):
+            self.assertEqual({c for c, sev in self.i11(report) if sev == fi.FAIL}, set())
+            self.assertEqual(self.i11(report), {("LAC", fi.WARN), ("SF", fi.WARN), ("MIN", fi.WARN)})
 
     def test_a_signed_save_with_a_club_without_a_healthy_qb_fails_I11(self):
         """Review F9: on a save (a closing save is week 18 or the playoffs) I11 is a failure, not a warning. pos2's

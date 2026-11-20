@@ -53,12 +53,19 @@ I9  the transaction ring cursor is below 600 and every row's kind is in the allo
 
 I11 every club the CPU signs for (not human, or auto sign/cut 0xE6013C on; a manual human club is exempt) has at least
     one healthy quarterback on its active list (healthy = slice 1's fully_healthy: no injured bit and no weeks in
-    +0x20, no status in +0x24 & 0x70000000). DESIGN addendum F5: judged at KICK-OFF (``check(view, kickoff=True)``,
-    the harness runs it at 0x247DCF, after the IR pass and the floor) as a failure in stages 8 and 9, from week 1
-    through the last playoff game; on a SAVE in stages 8 and 9 (a closing save is week 18 or the playoffs) it is also
-    a failure (review F9: pos2's signed 2508/2027 save, Dallas with no quarterback, must not pass); at a live week
-    boundary the same test is a warning. Added after P0 root 2508 ended 2027 week 18 with Dallas's three quarterbacks
-    all on IR (coordinator: release blocker).
+    +0x20, no status in +0x24 & 0x70000000). Stages 8 and 9, a FAILURE for every such club that has a NEXT GAME,
+    wherever it is judged: at KICK-OFF (``check(view, kickoff=True)``, the harness's 0x247DCF, after the IR pass and the
+    floor; DESIGN addendum F5), at the END OF EVERY ADVANCE from the state before week 1 (after the camp cut to 53)
+    through the last playoff game (review of the floor F2: a game the user plays happens between advances), and on a
+    SAVE (review F9). A club with no next game (eliminated in the playoffs, or at the season's end) gets a warning.
+    "Next game" is read from the schedule grid (RAM 0xE57C40 / the save's S_GRID, 22 x 17 cells of 8 bytes; side flags
+    at 0xE57954 / S_GRID_FLAGS): an unplayed cell that names the club on a known side (a regular-season row, or a
+    playoff side whose flag byte is set; the bracket's unknown cells carry team 0 and flag 0); a club on its bye has
+    one. At the end of the regular season (stage 8, every regular-season cell played) the bracket is not built until
+    the next stage advance (seen in P1 2508's kept images: rows 18-21 empty at week 18, the divisional games known
+    right after the wildcard round), so every club the CPU signs for may still play and counts as having a next game.
+    Added after P0 root 2508 ended 2027 week 18 with Dallas's three quarterbacks all on IR (coordinator: release
+    blocker).
 W7  the same test in stage 7 (the preseason, kick-off or boundary): a WARNING of its own, "preseason club without a
     healthy quarterback" (coordinator 11/20: the preseason gap is accepted and reported, never folded into I11).
 W12 (DESIGN addendum 2, R2 and TD10; scope by the coordinator's ruling of 11/20) from YEAR INDEX 1 on, on a club
@@ -225,6 +232,28 @@ def _u32(raw, at):
 
 
 # ------------------------------------------------------------------------------------------------- saves
+GRID, GRID_FLAGS, STAGE_WEEKS = 0xE57C40, 0xE57954, 0xE576B0     # RAM; the save keeps both at S_GRID / S_GRID_FLAGS
+GRID_ROWS, GRID_SLOTS = 22, 17
+
+
+def next_game_state(grid: bytes, flags: bytes, stage: int, stage_weeks: int) -> dict:
+    """Clubs with an unplayed game on a known side of the schedule grid, and whether the bracket is still unbuilt
+    (stage 8 with every regular-season cell played: everyone may still play)."""
+    clubs, regular_left = set(), False
+    for i in range(GRID_ROWS * GRID_SLOTS):
+        kind, home, away, month = grid[8 * i], grid[8 * i + 1], grid[8 * i + 2], grid[8 * i + 3]
+        if kind != 0 or not (home or away or month):
+            continue                                   # played (3), filler (7) or empty
+        row, fl = i // GRID_SLOTS, _u16(flags, 2 * i)
+        regular = stage == 8 and row < stage_weeks
+        regular_left |= regular
+        if regular or fl & 0xFF:
+            clubs.add(home)
+        if regular or fl >> 8:
+            clubs.add(away)
+    return {"clubs": sorted(c for c in clubs if c < 32), "bracket_pending": stage == 8 and not regular_left}
+
+
 def view_from_save(payload: bytes, *, label: str = "save") -> LeagueView:
     """League view of a franchise SAVEGAME.DAT (relative pointers; IR and board in their serialized forms)."""
     from mod_editor.core import nfl2k5_franchise_save as fs
@@ -355,9 +384,13 @@ def view_from_save(payload: bytes, *, label: str = "save") -> LeagueView:
         if kind:
             kinds.append((slot, kind))
     prefix = lambda va: _u32(buf, va - SETTINGS_BASE)
+    sb = s.season_block
+    schedule = next_game_state(bytes(buf[sb + fs.S_GRID:sb + fs.S_GRID + 8 * GRID_ROWS * GRID_SLOTS]),
+                               bytes(buf[sb + fs.S_GRID_FLAGS:sb + fs.S_GRID_FLAGS + 2 * GRID_ROWS * GRID_SLOTS]),
+                               header.stage, header.stage_weeks)
     return LeagueView("save", label, header.mode, header.stage, header.week, header.year_field, count, record, name,
                       clubs, bool(prefix(CPU_DEPTH)), bool(prefix(AUTO_SIGN_CUT)), s.salary_cap, free, ir, board,
-                      cursor, kinds, structural, {"save_bytes": len(payload)})
+                      cursor, kinds, structural, {"save_bytes": len(payload), "next_game": schedule})
 
 
 # ------------------------------------------------------------------------------------------------- memory
@@ -574,7 +607,10 @@ def view_from_memory(read: Callable[[int, int], bytes], *, root: int | None = No
     return LeagueView("memory", label, u32(MODE), u32(STAGE), u32(WEEK), u32(YEAR), count, record, name, clubs,
                       bool(u32(CPU_DEPTH)), bool(u32(AUTO_SIGN_CUT)), u32(SALARY_CAP), free, ir, board,
                       u32(LEDGER_CURSOR), kinds, structural,
-                      {"root": hex(root), "ir_store": hex(store) if store else None, "arena_size": hex(arena_size)})
+                      {"root": hex(root), "ir_store": hex(store) if store else None, "arena_size": hex(arena_size),
+                       "next_game": next_game_state(read(GRID, 8 * GRID_ROWS * GRID_SLOTS),
+                                                    read(GRID_FLAGS, 2 * GRID_ROWS * GRID_SLOTS),
+                                                    u32(STAGE), u32(STAGE_WEEKS))})
 
 
 # ------------------------------------------------------------------------------------------------- the checks
@@ -867,7 +903,7 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
     # I11 -----------------------------------------------------------------------------------------------------------
     if "I11" not in skip and playing:
         preseason = stage == 7
-        hard = (kickoff or view.source == "save") and not preseason
+        schedule = view.info.get("next_game")
         for c in clubs:
             if c.human and not view.auto_sign_cut:
                 continue                               # a manual human club is the user's (F5)
@@ -875,10 +911,17 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
             healthy = [i for i in qbs if not _u32(view.record(i), 0x20) & (INJURED | WEEKS_MASK)
                        and not _u32(view.record(i), 0x24) & STATUS_MASK]
             if not healthy:
-                add("W7" if preseason else "I11", FAIL if hard else WARN,
+                if schedule is None:
+                    nxt = True                         # no schedule in this view: judge as before F2, every club
+                else:
+                    nxt = c.index in schedule["clubs"] or schedule["bracket_pending"]
+                add("W7" if preseason else "I11", FAIL if nxt and not preseason else WARN,
                     ("preseason club without a healthy quarterback" if preseason else
-                     "no healthy quarterback on the active list") + (" at kick-off" if kickoff else ""),
+                     "no healthy quarterback on the active list" + ("" if nxt else " (no next game)"))
+                    + (" at kick-off" if kickoff else ""),
                     club=c.index, quarterbacks=len(qbs),
+                    next_game=None if schedule is None else ("bracket not built yet" if schedule["bracket_pending"]
+                                                             and c.index not in schedule["clubs"] else nxt),
                     on_ir=sum(1 for i, _ in view.ir.clubs[c.index] if view.record(i)[0x35] == QB),
                     hurt=[{"index": i, "injured": bool(_u32(view.record(i), 0x20) & INJURED),
                            "weeks": (_u32(view.record(i), 0x20) >> 22) & 0xFF,
