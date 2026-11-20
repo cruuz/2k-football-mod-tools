@@ -982,13 +982,15 @@ SECTION(".roster_r") __attribute__((noinline)) static u32 FAST squad_sign(u8 *te
     return 0;
 }
 
-/* 0x2BFAD4 in the gate 0x2BFAA0 (ECX = team, EDX = the in-season limit): was call 0x2BF9A0. */
+/* 0x2BFAD4 in the gate 0x2BFAA0 (ECX = team, EDX = the in-season limit): was call 0x2BF9A0. The first round fills the
+ * mix's open slots; a slot with no eligible free agent left (the clubs before it took them) leaves the squad short, so
+ * a second round goes over the mix again without the quarterback slot until the squad is full or nobody fits. */
 SECTION(".roster_s") void FAST economy_squad(u8 *team, unsigned target) {
     n_cut_to(team, target);
     if (*(u8 *)0xC3EE0 != 0xE9 || *(int *)0xC3EE1 != (int)ps_append - 0xC3EE5 ||
             (team[0x1f3] != 0xa5 && (team[0x19b] | team[0x1f2] | team[0x1f3])))
         return;
     u32 used = squad_used(team);
-    for (u32 j = 0; j < SQUAD && team[0x1f2] < SQUAD; ++j)
-        if (!(used >> j & 1) && !squad_sign(team, squad_mix[j])) return;
+    for (u32 j = 0; j < 2 * SQUAD - 1 && team[0x1f2] < SQUAD; ++j)
+        if (!(j < SQUAD && used >> j & 1) && !squad_sign(team, squad_mix[j < SQUAD ? j : j - SQUAD + 1])) return;
 }
