@@ -36,6 +36,7 @@ V09_OPENING = "5336bf76e7a95a8acfcb6be0ffc5d2b737d5c0efb22894af0818815c3f151906"
 RETAIL_F0 = "56926604e438bd47f1f94edf844a0ecd00d5a382a647526baec396ead5f1b1b8"
 NO_QB_IMAGE = "fde2c34a02be6d219cf3b2291b0a9ffbe537771ee2dfa79cdc1a06cb479e906a"
 MINNESOTA_KICKOFF = "1f725ff50fe01e920bd5043892b597901c8ce0665de8f56ab839522d1bef1b4e"
+SECOND_SEASON = "2a7fa4ccef31f7f58872248b32e8a4b2aa2f1555e7c739f8b986f4501be33638"
 DALLAS_SIGNED = "529bdac68b109bc833a2cfa81e63d7d0f2b8959cb993da03402206c06cb4aac6"
 
 
@@ -65,9 +66,8 @@ def warned(report) -> set[str]:
 class Breaker:
     """Hand edits of a franchise save in its own (relative pointer) form."""
 
-    def __init__(self, payload: bytes, *, skip=()):
+    def __init__(self, payload: bytes):
         from mod_editor.core import nfl2k5_franchise_save as fs
-        self.skip = list(skip)
         self.fs = fs
         self.save = fs.FranchiseSave(payload)
         self.buf = self.save.buffer
@@ -124,7 +124,7 @@ class Breaker:
         struct.pack_into("<I", self.buf, self.save.team_offset(club) + fi.PAYROLL, total)
 
     def report(self):
-        return fi.check(fi.view_from_save(self.payload()), skip=self.skip)
+        return fi.check(fi.view_from_save(self.payload()))
 
 
 class OfflineTests(unittest.TestCase):
@@ -206,18 +206,13 @@ class SignedSaveTests(unittest.TestCase):
         report = fi.check(view)
         self.assertEqual(facts["signature"], "verified")
         self.assertEqual((view.stage, view.week), (8, 0))
-        self.assertEqual(failing(report), set())
-        # W12 (addendum 2, R2): the shipped 2026 roster locks every club player, and three CPU clubs' rooms ship with
-        # a locked healthy quarterback 6+ better than the locked row 0 man; NYG's pair is on the manual human club
-        shipped = {(r["club_name"], r["player_name"], r["values"]["row"], r["values"]["lead"]) for r in report.violations}
-        self.assertEqual(shipped, {("ARI", "Jacoby Brissett", 2, 25), ("ARI", "Carson Beck", 1, 6),
-                                   ("PHI", "Joe Milton", 1, 9)})
-        self.assertEqual(warned(report), {"W12"})
+        self.assertEqual(report.violations, [])
+        self.assertEqual(report.status(strict=True), 0)
         image = folder.parent / "memory.b81mem.gz"
         if image.is_file():
             memory = fi.load_memory(image)
             live = fi.view_from_memory(memory.read, search=lambda n: memory.find(n, 0x10000, 0x2000000))
-            self.assertEqual(fi.check(live).violations, report.violations)
+            self.assertEqual(fi.check(live).violations, [])
             self.assert_same_league(view, live)
 
     def test_the_p0_no_quarterback_image_fails_I11(self):
@@ -269,22 +264,29 @@ class SignedSaveTests(unittest.TestCase):
 
 
 class RankLockTests(unittest.TestCase):
-    """TD10 (DESIGN addendum 2, R2): W12 and its repair. The D3-style room is built on the clean closing save (CPU
-    clubs; its shipped Arizona pair is W12 already and stays the background); the retail opening f0 (no depth lock
-    anywhere) is the clean save the repair must leave alone."""
+    """TD10 (DESIGN addendum 2, R2; coordinator's scope ruling 11/20): W12 and its repair apply from year index 1 on,
+    never to a club whose depth chart the user manages, and the repair writes only when confirmed. The second-season
+    save is the P2a paired control's root 2506 2027 closing save (no QB-room owner; evidence/validator/
+    second-season-2506-2027/PROVENANCE.txt), holding a frozen shipped pair: IND Riley Leonard 78 at row 1 behind
+    Anthony Richardson 70 at row 0, both rank-locked by the shipped 2026 roster."""
 
     @classmethod
     def setUpClass(cls):
-        cls.folder = owned("qb-system/evidence/phase1-scheduled-nov19/runs/standard/2501/signed")
-        cls.closing = pinned(cls.folder / "SAVEGAME.DAT", CLEAN_CLOSING)
-        cls.background = {r["player_index"] for r in fi.rank_lock_pairs(fi.view_from_save(cls.closing))}
+        cls.folder = QB34 / "second-season-2506-2027/signed"
+        cls.second = pinned(cls.folder / "SAVEGAME.DAT", SECOND_SEASON)
+        cls.view = fi.view_from_save(cls.second)
 
-    def benched(self, *, lock_better=True):
+    def w12(self, report):
+        return [(r["club_name"], r["player_name"], r["values"]["row"], r["values"]["overall"],
+                 r["values"]["row0_name"], r["values"]["row0_overall"], r["values"]["row0_locked"])
+                for r in report.violations if r["invariant"] == "W12"]
+
+    def benched(self, payload):
         """A D3-style room: a CPU club's healthy starter moved behind a healthy backup he leads by 6 or more, both
         rank-locked (bit 0 of +0x52), their rows swapped."""
-        b = Breaker(self.closing)
+        b = Breaker(payload)
         for c in b.view.clubs:
-            if c.human or c.name == "ARI":
+            if c.human or c.name in ("IND", "ARI"):
                 continue
             qbs = sorted((i for i in c.active if b.position(i) == fi.QB), key=b.row)
             if len(qbs) < 2 or any(b.word(i, 0x20) & (fi.INJURED | fi.WEEKS_MASK) or b.word(i, 0x24) & fi.STATUS_MASK
@@ -293,96 +295,122 @@ class RankLockTests(unittest.TestCase):
             best, second = qbs[0], qbs[1]
             if fi.native_overall(b.view.record(best)) - fi.native_overall(b.view.record(second)) >= 6:
                 break
+        else:
+            self.fail("no room to bench")
         b.set_row(best, b.row(second))
         b.set_row(second, 0)
         for i in (best, second):
-            if lock_better or i == second:
-                b.buf[b.off(i) + 0x52] |= 1
-            else:
-                b.buf[b.off(i) + 0x52] &= 0xFE
+            b.buf[b.off(i) + 0x52] |= 1
         return b, c, best, second
 
-    def signed(self, folder, payload, where):
-        """A signed copy of ``folder`` holding ``payload``."""
+    def signed(self, payload, where):
         from mod_editor.core import nfl2k5_roster_records as rr
-        shutil.copytree(folder, where)
+        shutil.copytree(self.folder, where)
         (where / "SAVEGAME.DAT").write_bytes(payload)
         (where / "EXTRA").write_bytes(rr.sign_save(payload))
         return where
 
-    def w12(self, report):
-        return {r["player_index"] for r in report.violations if r["invariant"] == "W12"}
+    def test_the_second_season_save_warns_on_its_frozen_shipped_pair(self):
+        self.assertEqual((self.view.year_index, self.view.stage, self.view.week), (1, 8, 18))
+        report = fi.check(self.view)
+        self.assertEqual(self.w12(report), [("IND", "Riley Leonard", 1, 78, "Anthony Richardson", 70, True)])
+        self.assertIn("W12", warned(report))
+        self.assertNotIn("W12", failing(report))
 
-    def test_a_better_quarterback_locked_behind_row_0_warns_W12(self):
-        self.assertEqual(len(self.background), 2)                       # ARI's shipped pair
-        b, club, best, second = self.benched()
-        report = b.report()
-        self.assertEqual((failing(report), warned(report)), (set(), {"W12"}))
-        self.assertEqual(self.w12(report), self.background | {best})
-        row, = [r for r in report.violations if r["player_index"] == best]
+    def test_year_one_saves_are_never_warned_or_repaired(self):
+        folder = QB34 / "v09-opening-2501/signed"
+        payload = pinned(folder / "SAVEGAME.DAT", V09_OPENING)
+        view = fi.view_from_save(payload)
+        self.assertEqual(view.year_index, 0)
+        self.assertEqual(self.w12(fi.check(view)), [])                  # its shipped ARI/PHI pairs stand
+        with tempfile.TemporaryDirectory() as tmp:
+            receipt = fi.repair_rank_locks(folder, Path(tmp) / "repaired", confirm=True)
+            self.assertEqual((receipt["pairs"], receipt["written"]), ([], None))
+            self.assertFalse((Path(tmp) / "repaired").exists())
+        b, club, best, second = self.benched(owned_or_skip_clean_closing())   # a year-one D3-style room: no W12
+        self.assertEqual(self.w12(b.report()), [])
+
+    def test_a_benched_better_quarterback_warns_from_the_second_season(self):
+        b, club, best, second = self.benched(self.second)
+        names = {r[1] for r in self.w12(b.report())}
+        self.assertEqual(names, {"Riley Leonard", self.view.name(best)})
+        row, = [r for r in b.report().violations if r.get("player_index") == best]
         self.assertEqual((row["club"], row["values"]["row"], row["values"]["row0_player"]), (club.index, 1, second))
         self.assertGreaterEqual(row["values"]["lead"], 6)
-        self.assertTrue(row["values"]["row0_locked"])
-        self.assertEqual(report.status(), 1)
-        # the same room with the better man unlocked: the native release rule handles it, no warning for him
-        b, *_ = self.benched(lock_better=False)
-        self.assertEqual(self.w12(b.report()), self.background)
-        # and a manual human club's chart is the user's
-        b, club, *_ = self.benched()
-        view = fi.view_from_save(b.payload())
-        view.clubs[club.index].human = True
-        self.assertEqual(self.w12(fi.check(view)), self.background)
 
-    def test_the_repair_clears_exactly_that_bit_and_the_copy_verifies(self):
-        b, club, best, second = self.benched()
-        broken = b.payload()
+    def test_a_club_whose_chart_the_user_manages_is_never_warned_or_repaired(self):
+        # the save's own user club: NYG (manual chart, 0xE60140 off) holds Jameis Winston 77, healthy and rank-locked
+        # at row 1, behind J.J. McCarthy 70 at row 0 -- a W12 shape the user chose and the tool must leave alone
+        view = fi.view_from_save(self.second)
+        nyg = next(c for c in view.clubs if c.name == "NYG")
+        self.assertTrue(nyg.human)
+        self.assertFalse(view.cpu_manages_depth)
+        rows = {view.name(i): (fi._row(fi._u16(view.record(i), 0x28)), fi.native_overall(view.record(i)),
+                               view.record(i)[0x52] & 1) for i in nyg.active if view.record(i)[0x35] == fi.QB}
+        self.assertEqual((rows["Jameis Winston"], rows["J.J. McCarthy"][:2]), ((1, 77, 1), (0, 70)))
+        self.assertNotIn("NYG", {r[0] for r in self.w12(fi.check(view))})
+        view.cpu_manages_depth = True                   # had the user handed the chart to the computer: warned
+        self.assertIn(("NYG", "Jameis Winston"), {r[:2] for r in self.w12(fi.check(view))})
+        b = Breaker(self.second)
         with tempfile.TemporaryDirectory() as tmp:
-            source = self.signed(self.folder, broken, Path(tmp) / "broken")
+            receipt = fi.repair_rank_locks(self.folder, Path(tmp) / "repaired", confirm=True)
+            self.assertEqual([p["club_name"] for p in receipt["pairs"]], ["IND"])
+            after = (Path(tmp) / "repaired" / "SAVEGAME.DAT").read_bytes()
+            for i in nyg.active:
+                self.assertEqual(after[b.off(i) + 0x52], self.second[b.off(i) + 0x52], view.name(i))
+
+    def test_without_confirm_the_repair_only_lists(self):
+        with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp) / "repaired"
-            receipt = fi.repair_rank_locks(source, target)
-            cleared = sorted(r["player_index"] for r in receipt["cleared"])
-            self.assertEqual(cleared, sorted(self.background | {best}))
+            receipt = fi.repair_rank_locks(self.folder, target)
+            self.assertIs(receipt["confirmed"], False)
+            self.assertEqual(receipt["written"], None)
+            self.assertFalse(target.exists())
+            pair, = receipt["pairs"]
+            self.assertEqual((pair["club_name"], pair["player_name"], pair["overall"], pair["row"], pair["row0_name"],
+                              pair["row0_overall"]), ("IND", "Riley Leonard", 78, 1, "Anthony Richardson", 70))
+            self.assertEqual((self.folder / "SAVEGAME.DAT").read_bytes(), self.second)
+
+    def test_the_confirmed_repair_clears_exactly_that_bit_and_the_copy_verifies(self):
+        leonard = next(r["player_index"] for r in fi.check(self.view).violations if r["invariant"] == "W12")
+        richardson = next(r["values"]["row0_player"] for r in fi.check(self.view).violations if r["invariant"] == "W12")
+        b = Breaker(self.second)
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "repaired"
+            receipt = fi.repair_rank_locks(self.folder, target, confirm=True)
             self.assertIs(receipt["verified"], True)
+            self.assertEqual([p["player_index"] for p in receipt["pairs"]], [leonard])
             view, facts = fi.load_target(target)
             self.assertEqual(facts["signature"], "verified")
             after = (target / "SAVEGAME.DAT").read_bytes()
-            diff = [k for k in range(len(broken)) if broken[k] != after[k]]
-            self.assertEqual(diff, sorted(b.off(i) + 0x52 for i in cleared))
-            self.assertEqual({broken[k] ^ after[k] for k in diff}, {1})
-            self.assertEqual(after[b.off(second) + 0x52] & 1, 1)        # the row 0 man keeps his lock
-            self.assertEqual(fi.check(view).violations, [])
-            self.assertEqual((source / "SAVEGAME.DAT").read_bytes(), broken)  # the source is never written
-            for member in self.folder.rglob("*"):
-                if member.is_file() and member.name not in ("SAVEGAME.DAT", "EXTRA"):
-                    rel = member.relative_to(self.folder)
-                    self.assertEqual((target / rel).read_bytes(), member.read_bytes(), rel)
+            diff = [k for k in range(len(self.second)) if self.second[k] != after[k]]
+            self.assertEqual(diff, [b.off(leonard) + 0x52])
+            self.assertEqual(self.second[diff[0]] ^ after[diff[0]], 1)
+            self.assertEqual(after[b.off(richardson) + 0x52] & 1, 1)     # the row 0 man keeps his lock
+            before_rows = [r for r in fi.check(self.view).violations if r["invariant"] != "W12"]
+            self.assertEqual(fi.check(view).violations, before_rows)
+            self.assertEqual((self.folder / "SAVEGAME.DAT").read_bytes(), self.second)  # the source is never written
 
-    def test_the_repair_leaves_a_clean_save_untouched(self):
-        folder = SAVES / "f0/UDATA/53450030/0B8506889D40"
-        clean = pinned(folder / "SAVEGAME.DAT", RETAIL_F0)
-        self.assertEqual(fi.rank_lock_pairs(fi.view_from_save(clean)), [])
+    def test_the_command_line(self):
         with tempfile.TemporaryDirectory() as tmp:
-            target = Path(tmp) / "repaired"
-            receipt = fi.repair_rank_locks(folder, target)
-            self.assertEqual((receipt["cleared"], receipt["written"]), ([], None))
+            target, out = Path(tmp) / "repaired", Path(tmp) / "receipt.json"
+            self.assertEqual(fi.main([str(self.folder), "--repair-rank-locks", str(target), "--out", str(out)]), 0)
             self.assertFalse(target.exists())
-            self.assertEqual((folder / "SAVEGAME.DAT").read_bytes(), clean)
+            self.assertEqual(json.loads(out.read_text())["confirmed"], False)
+            self.assertEqual(fi.main([str(self.folder), "--repair-rank-locks", str(target), "--confirm",
+                                      "--out", str(out)]), 0)
+            self.assertEqual(fi.check(fi.load_target(target)[0], skip=["I6"]).violations,
+                             [r for r in fi.check(self.view, skip=["I6"]).violations if r["invariant"] != "W12"])
+            self.assertEqual(fi.main([str(self.folder), "--repair-rank-locks", str(target), "--confirm"]), 2)
 
-    def test_the_cli_repair(self):
-        b, club, best, second = self.benched()
-        with tempfile.TemporaryDirectory() as tmp:
-            source = self.signed(self.folder, b.payload(), Path(tmp) / "broken")
-            target = Path(tmp) / "repaired"
-            out = Path(tmp) / "receipt.json"
-            self.assertEqual(fi.main([str(source), "--repair-rank-locks", str(target), "--out", str(out)]), 0)
-            self.assertIn(best, [r["player_index"] for r in json.loads(out.read_text())["cleared"]])
-            self.assertEqual(fi.check(fi.load_target(target)[0]).violations, [])
-            self.assertEqual(fi.main([str(source), "--repair-rank-locks", str(target)]), 2)   # never over a copy
+
+def owned_or_skip_clean_closing() -> bytes:
+    folder = owned("qb-system/evidence/phase1-scheduled-nov19/runs/standard/2501/signed")
+    return pinned(folder / "SAVEGAME.DAT", CLEAN_CLOSING)
 
 
 class HandBrokenTests(unittest.TestCase):
-    """Each copy of the clean closing save breaks one invariant and must fail exactly that one. W12 is judged apart
-    (RankLockTests): the save's shipped Arizona pair is a W12 warning in every copy, so these reports skip it."""
+    """Each copy of the clean closing save breaks one invariant and must fail exactly that one."""
 
     @classmethod
     def setUpClass(cls):
@@ -391,16 +419,12 @@ class HandBrokenTests(unittest.TestCase):
         cls.view = fi.view_from_save(cls.clean)
 
     def fresh(self):
-        return Breaker(self.clean, skip=["W12"])
+        return Breaker(self.clean)
 
     def test_the_clean_save_is_clean(self):
         report = fi.check(self.view)
-        self.assertEqual(failing(report), set())
-        # only the shipped Arizona pair (W12) after a whole native season: every ARI quarterback is locked, so the
-        # release rule never fires and the shipped order stands
-        self.assertEqual(warned(report), {"W12"})
-        self.assertEqual({r["club_name"] for r in report.violations}, {"ARI"})
-        self.assertEqual(fi.check(self.view, skip=["W12"]).status(strict=True), 0)
+        self.assertEqual(report.violations, [])
+        self.assertEqual(report.status(strict=True), 0)
 
     def board_players(self):
         return {p for o in self.view.board if o.kind for p in o.players_a + o.players_b if p is not None}
@@ -511,7 +535,7 @@ class HandBrokenTests(unittest.TestCase):
         view = fi.view_from_save(b.payload())
         view.stage = 7                                 # the same room in the preseason
         for kickoff in (True, False):
-            report = fi.check(view, kickoff=kickoff, skip=["W12"])
+            report = fi.check(view, kickoff=kickoff)
             self.assertEqual(failing(report), set(), kickoff)
             self.assertEqual(warned(report), {"W7"}, kickoff)
             self.assertEqual([r["club"] for r in report.violations], [club.index])
@@ -565,10 +589,9 @@ class HandBrokenTests(unittest.TestCase):
             b.recount(club.index)
             (warn / "SAVEGAME.DAT").write_bytes(b.payload())
             out = Path(tmp) / "r.json"
-            self.assertEqual(fi.main([str(clean), "--skip", "W12", "--out", str(out)]), 0)
-            self.assertEqual(fi.main([str(clean), "--out", str(out)]), 1)       # the shipped ARI pair (W12)
-            self.assertEqual(fi.main([str(warn), "--skip", "W12", "--out", str(out)]), 1)
-            self.assertEqual(fi.main([str(warn), "--skip", "W12", "--strict", "--out", str(out)]), 2)
+            self.assertEqual(fi.main([str(clean), "--out", str(out)]), 0)
+            self.assertEqual(fi.main([str(warn), "--out", str(out)]), 1)
+            self.assertEqual(fi.main([str(warn), "--strict", "--out", str(out)]), 2)
             import json
             document = json.loads(out.read_text())
             self.assertEqual((document["status"], document["counts"]), (2, {"failures": 0, "warnings": 1}))

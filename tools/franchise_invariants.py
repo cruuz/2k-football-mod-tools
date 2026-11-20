@@ -3,7 +3,7 @@
 
     python3 tools/franchise_invariants.py SIGNED_FOLDER_OR_SAVEGAME.DAT [--strict] [--out report.json]
     python3 tools/franchise_invariants.py --memory IMAGE [--root 0x...] [--ir-store 0x... | --xbe default.xbe]
-    python3 tools/franchise_invariants.py SIGNED_FOLDER --repair-rank-locks NEW_FOLDER [--out receipt.json]
+    python3 tools/franchise_invariants.py SIGNED_FOLDER --repair-rank-locks NEW_FOLDER [--confirm] [--out receipt.json]
 
 Both inputs become one small *league view* (``view_from_save`` / ``view_from_memory``) and every check is written
 once, over that view (``check``). Pure Python; no game code runs. Output: a JSON document with one row per violation
@@ -61,22 +61,25 @@ I11 every club the CPU signs for (not human, or auto sign/cut 0xE6013C on; a man
     all on IR (coordinator: release blocker).
 W7  the same test in stage 7 (the preseason, kick-off or boundary): a WARNING of its own, "preseason club without a
     healthy quarterback" (coordinator 11/20: the preseason gap is accepted and reported, never folded into I11).
-W12 (DESIGN addendum 2, R2 and TD10) on a club whose depth chart the CPU manages (not human, or "CPU manages my
-    depth chart" 0xE60140 on): a healthy quarterback (no injury bit, no weeks, no status) who is rank-locked (bit 0
-    of +0x52) on a row below 0 while he leads the row 0 quarterback by 6 or more overall points -- warning. Under
-    Retail nothing re-seats such a pair. Overall is the game's 0x246D80 integer, computed here in Python
-    (``native_overall``: nfl2k5_my_career_prospects.native_overall, the unboosted EDX=0 form); for healthy
-    quarterbacks it equals 0x246D80(p, 1) run natively on three kept memory images (251 of 251: the 2502/2027
-    preseason sign_after image, P0 2508/2027 week 18, the 2505/2026 week 10 kick-off). Found on 11/20: the shipped
-    2026 roster locks every club player, so released saves already hold such pairs (the v0.9 opening: ARI Brissett
-    89 at row 2 and Carson Beck 70 at row 1 behind Minshew 64, PHI Joe Milton 76 behind Tanner McKee 67; 385 of 415
-    signed harness saves have one). W12 cannot tell a shipped pin from an owner's lock.
-    REPAIR (``--repair-rank-locks NEW_FOLDER``, ``repair_rank_locks``): clears bit 0 of +0x52 on exactly the W12 men
-    (nothing else; the row 0 man keeps his lock, and on a CPU club the native release rule then frees him at the next
-    weekly sort because a better unlocked man now exists), writes a new signed copy through FranchiseSave.write
-    (never over the source), and verifies on reload: the EXTRA verifies, the only changed bytes are those +0x52
-    bytes and each differs by bit 0, no cleared man is still W12, and every other invariant's rows are unchanged.
-    A save with no W12 pair is left alone and no copy is written.
+W12 (DESIGN addendum 2, R2 and TD10; scope by the coordinator's ruling of 11/20) from YEAR INDEX 1 on, on a club
+    whose depth chart the CPU manages (not human, or "CPU manages my depth chart" 0xE60140 on): a healthy quarterback
+    (no injury bit, no weeks, no status) who is rank-locked (bit 0 of +0x52) on a row below 0 while he leads the row 0
+    quarterback by 6 or more overall points -- warning. Under Retail nothing re-seats such a pair. A year-one save
+    (year index 0) is never warned: the shipped charts are real post-deadline choices (the released v0.9 opening
+    holds ARI Brissett 89 and Carson Beck 70 behind Minshew 64 and PHI Joe Milton 76 behind Tanner McKee 67, all
+    shipped locks, and they stand). A club whose chart the user manages is never warned, in any year. Overall is the
+    game's 0x246D80 integer, computed here in Python (``native_overall``: nfl2k5_my_career_prospects.native_overall,
+    the unboosted EDX=0 form); for healthy quarterbacks it equals 0x246D80(p, 1) run natively on three kept memory
+    images (251 of 251: the 2502/2027 preseason sign_after image, P0 2508/2027 week 18, the 2505/2026 week 10
+    kick-off).
+    REPAIR (``--repair-rank-locks NEW_FOLDER [--confirm]``, ``repair_rank_locks``): offered, never silent. Without
+    ``--confirm`` it lists each pair it would unpin (club, both players, ratings, rows) and writes nothing. With it, it
+    clears bit 0 of +0x52 on exactly the W12 men (nothing else; the row 0 man keeps his lock, and the native release
+    rule frees him at the next weekly sort because a better unlocked man now exists), writes a new signed copy
+    through FranchiseSave.write (never over the source or an existing folder) and verifies it on reload: the EXTRA
+    verifies, the only changed bytes are those +0x52 bytes and each differs by bit 0, no cleared man is still W12,
+    and every other invariant's rows are unchanged. It never touches a lock on a club whose chart the user manages
+    and never changes a year-one save; with no pair it writes nothing.
 I3c (F5) a club with a "signed over the cap" signing (``over_cap_signings``: club, player, week boundaries since the
     signing, which the harness tracks from the owner's ring) is still over the cap at the second boundary after it,
     or over by more than that man's charge at the first -- failure.
@@ -628,9 +631,11 @@ def _fully_healthy(record: bytes) -> bool:
 
 
 def rank_lock_pairs(view: LeagueView) -> list[dict]:
-    """W12's cases: on each club whose chart the CPU manages, every healthy quarterback rank-locked below row 0 who
-    leads the (single) row 0 quarterback by W12_LEAD or more overall points."""
+    """W12's cases: from year index 1 on, on each club whose chart the CPU manages, every healthy quarterback
+    rank-locked below row 0 who leads the (single) row 0 quarterback by W12_LEAD or more overall points."""
     out = []
+    if view.year_index < 1:
+        return out                                     # year one: the shipped charts stand (coordinator, 11/20)
     for c in view.clubs:
         if not view.managed(c.index):
             continue
@@ -923,8 +928,9 @@ class RepairError(RuntimeError):
     pass
 
 
-def repair_rank_locks(source: Path, target: Path, *, overwrite: bool = False) -> dict:
-    """Clear bit 0 of +0x52 on exactly W12's men and write a new signed copy at ``target``, verified on reload."""
+def repair_rank_locks(source: Path, target: Path, *, confirm: bool = False, overwrite: bool = False) -> dict:
+    """W12's repair. Lists the pairs; only with ``confirm`` clears bit 0 of +0x52 on exactly W12's men and writes a new
+    signed copy at ``target``, verified on reload."""
     import hashlib
     from mod_editor.core import nfl2k5_franchise_save as fs
     from mod_editor.core import nfl2k5_roster_records as rr
@@ -933,12 +939,23 @@ def repair_rank_locks(source: Path, target: Path, *, overwrite: bool = False) ->
     before = save.to_bytes()
     view = view_from_save(before, label=str(source))
     pairs = rank_lock_pairs(view)
+    for pair in pairs:
+        if not view.managed(pair["club"]):             # never a club whose chart the user manages
+            raise RepairError(f"{pair['club_name']}: the user manages this depth chart")
     receipt = {"tool": "franchise_invariants --repair-rank-locks", "source": str(source),
-               "source_sha256": hashlib.sha256(before).hexdigest(), "cleared": pairs, "written": None,
-               "verified": None}
-    if not pairs:
-        receipt["note"] = "no W12 pair: nothing to repair, no copy written"
+               "source_sha256": hashlib.sha256(before).hexdigest(), "year_index": view.year_index,
+               "confirmed": bool(confirm), "pairs": pairs, "target": str(target), "written": None, "verified": None}
+    if view.year_index < 1:
+        receipt["note"] = "first season: the shipped depth charts stand; nothing listed or written"
         return receipt
+    if not pairs:
+        receipt["note"] = "no W12 pair: nothing to repair, nothing written"
+        return receipt
+    if not confirm:
+        receipt["note"] = "listed only: nothing written (confirm to write the repaired copy)"
+        return receipt
+    if target.exists() and not overwrite:
+        raise RepairError(f"{target} already exists; choose a new folder for the repaired copy")
     offsets = []
     for pair in pairs:
         at = save.player_offset(pair["player_index"])
@@ -961,14 +978,37 @@ def repair_rank_locks(source: Path, target: Path, *, overwrite: bool = False) ->
     still = {p["player_index"] for p in rank_lock_pairs(again)} & {p["player_index"] for p in pairs}
     if still:
         problems.append(f"still W12 after the repair: {sorted(still)}")
-    rows = lambda v: [r for r in check(v, skip=["W12"]).violations]
-    if rows(again) != rows(view):
+    if check(again, skip=["W12"]).violations != check(view, skip=["W12"]).violations:
         problems.append("another invariant's rows changed")
     receipt.update(target_sha256=hashlib.sha256(after).hexdigest(), changed_bytes=[hex(k) for k in changed],
                    verified=not problems, problems=problems)
     if problems:
         raise RepairError("; ".join(problems) + f" (the copy at {target} must not be used)")
     return receipt
+
+
+def repair_text(receipt: dict) -> str:
+    """The user-visible lines of the repair (evidence/owner/USER_TEXT.md lists them)."""
+    pairs, target = receipt["pairs"], receipt["target"]
+    if receipt["year_index"] < 1:
+        return ("Rank-lock repair: this save is in its first season. The shipped depth charts stand, so nothing is "
+                "listed or changed.")
+    if not pairs:
+        return ("Rank-lock repair: no quarterback is locked behind a starter he outrates by 6 or more. "
+                "Nothing to change.")
+    done = receipt["written"] is not None
+    count = f"{len(pairs)} quarterback" + ("s" if len(pairs) != 1 else "")
+    lines = [f"Rank-lock repair: unlocked {count} and wrote a new signed copy to {target}. "
+             "The copy was read back and verified. Your original save was not changed." if done else
+             f"Rank-lock repair (nothing written yet): {count} would be unlocked:"]
+    for p in pairs:
+        lines.append(f"  {p['club_name']}: {p['player_name']} ({p['overall']} overall, No. {p['row'] + 1} on the "
+                     f"depth chart) is locked behind the starter {p['row0_name']} ({p['row0_overall']} overall). "
+                     + ("His depth chart lock was cleared." if done else "His depth chart lock would be cleared."))
+    if not done:
+        lines.append(f"To write a repaired copy to {target}, run the same command with --confirm. Your original "
+                     "save is never changed, and clubs whose depth chart you manage are never touched.")
+    return "\n".join(lines)
 
 
 def main(argv=None) -> int:
@@ -987,25 +1027,30 @@ def main(argv=None) -> int:
                     help="I3c: a signing over the cap, the week boundaries since it (repeatable)")
     ap.add_argument("--strict", action="store_true", help="warnings count as failures")
     ap.add_argument("--repair-rank-locks", type=Path, metavar="NEW_FOLDER",
-                    help="W12 repair: clear bit 0 of +0x52 on exactly the W12 men and write a new signed copy here")
+                    help="list quarterbacks whose depth chart lock keeps them behind a starter they outrate by 6 or "
+                         "more (from the second season, clubs the computer manages); with --confirm, write a "
+                         "repaired copy of the save to NEW_FOLDER (your original save is never changed)")
+    ap.add_argument("--confirm", action="store_true",
+                    help="with --repair-rank-locks: write the repaired copy; without it the quarterbacks are only "
+                         "listed and nothing is written")
     ap.add_argument("--out", type=Path, help="write the JSON here and print only the summary line")
     a = ap.parse_args(argv)
     if bool(a.target) == bool(a.memory):
         ap.error("give a save target or --memory, not both")
+    if a.confirm and not a.repair_rank_locks:
+        ap.error("--confirm goes with --repair-rank-locks")
     if a.repair_rank_locks:
         if not a.target:
             ap.error("--repair-rank-locks repairs a signed save folder, not a memory image")
         try:
-            receipt = repair_rank_locks(a.target, a.repair_rank_locks)
+            receipt = repair_rank_locks(a.target, a.repair_rank_locks, confirm=a.confirm)
         except Exception as exc:                       # RepairError, FranchiseSaveError, RosterRecordError
-            print(f"franchise_invariants repair-rank-locks: REFUSED: {exc}", file=sys.stderr)
+            print(f"Rank-lock repair refused: {exc}. Nothing was written." if "must not be used" not in str(exc)
+                  else f"Rank-lock repair failed its read-back check: {exc}.")
             return 2
-        text = json.dumps(receipt, indent=1) + "\n"
-        (a.out.write_text(text) if a.out else sys.stdout.write(text))
-        line = (f"franchise_invariants repair-rank-locks: cleared {len(receipt['cleared'])} rank lock(s), "
-                f"verified, wrote {receipt['written']}" if receipt["written"] else
-                "franchise_invariants repair-rank-locks: no W12 pair, nothing written")
-        print(line, file=sys.stderr if not a.out else sys.stdout)
+        if a.out:
+            a.out.write_text(json.dumps(receipt, indent=1) + "\n")
+        print(repair_text(receipt))
         return 0
 
     def load(path):
