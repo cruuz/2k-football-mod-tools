@@ -368,7 +368,7 @@
   "seven_on_seven_book": "applied",
   "disc_size": 6300499968,
   "disc_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
-  "preset_xbe_sha256": "e7a71bc117ed230b4bc24fd4ce6a09e815d418e7393b416486ba58654ec65bf0",
+  "preset_xbe_sha256": "c468be20d0f13c34da0ebbae13f756aa1eb2338e8c59708bc736cccbbe9222ec",
   "stack_xbe_sha256": "d7782baac45c752145b229320df83e839b0563f717e7e13a27ad9447a02364a2",
   "section_digests_verified": true,
   "allocator_layout": {
@@ -3542,7 +3542,7 @@
     "all_stadiums"
   ],
   "source_sha256": {
-    "mod_editor/core/mod_build.py": "3ac6ea2406fa08814236d389aaa866ed32e98a785644b0b6cb67d9f1b224fab4",
+    "mod_editor/core/mod_build.py": "f0acf616321ec95af6f78493cfb7d2db73e97399434cc44b9a31174800c22c8b",
     "mod_editor/core/nfl2k5_abilities_runtime.py": "97092be1e9c457950822e7ee734a90a52341cf20412ac610712d0f03f5886e1d",
     "mod_editor/core/nfl2k5_abilities_runtime_code.py": "efb55d5e000379eea7ab1e48f5810256a18d0534125de20f9884c723aa4f554b",
     "mod_editor/core/nfl2k5_accel_ramp.py": "95014c753d46faed2e75e545d992794bb62965a9bbe6407057d3626395c6e862",
@@ -3907,8 +3907,8 @@
     "mod_editor/core/nfl2k5_seven_on_seven.py": "8d0da9680a0481ee861c45b0dc8f9e785015bd43e472796a3b6e781597244269",
     "mod_editor/core/nfl2k5_seven_on_seven_book.py": "4cb148bd14f33bc67eab092220156206565dbbde9f75a217712fdf98ece3a80a",
     "mod_editor/core/nfl2k5_sim_cb_tackles.py": "0b5655021e33a2c28bff7523399321f588aa4f925cf84823b9603c474c94f7a7",
-    "mod_editor/core/nfl2k5_sim_qb_injuries.py": "72f139d57bff6c66c2b22aad1c3f2da14e5b9f3babf86605ab23878092c36cab",
-    "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "ef780b72844b03d1efb311b6cdeea548bc49c5d650b4f9f8d3a54c236db0dfc8",
+    "mod_editor/core/nfl2k5_sim_qb_injuries.py": "d44f9297ab1697f3ea85a1dcaf56d5d1c4821072475ee250c6f740c9d40fea8c",
+    "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "9e89155caeffcdfb64f206e6ed6fe3d8ea7a81fc1df23349b7beef5f3478aa60",
     "mod_editor/core/nfl2k5_sim_rb_injuries.py": "777a337e2ba22559c0b77ae5bc22b3df94a1392da07217a76d7a3a02063ebed0",
     "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",
     "mod_editor/core/nfl2k5_sim_realism.py": "6323212af016c4e70ecd36d340a993e16afc9b57550f3bb7ed2647fc6731a248",
@@ -31826,8 +31826,8 @@
       "owner": "nfl2k5_sim_qb_injuries",
       "function": "apply",
       "before_sha256": "8cf4d791f7c975d3ea92dbe5c886725b53c6f0ee62d15241d329ffadb811e65e",
-      "after_sha256": "e7a71bc117ed230b4bc24fd4ce6a09e815d418e7393b416486ba58654ec65bf0",
-      "changed_bytes": 12986,
+      "after_sha256": "c468be20d0f13c34da0ebbae13f756aa1eb2338e8c59708bc736cccbbe9222ec",
+      "changed_bytes": 13582,
       "file_runs": [
         [
           "0x394",
@@ -31843,6 +31843,10 @@
         ],
         [
           "0x9b4",
+          "0x9c6"
+        ],
+        [
+          "0x9c7",
           "0x9c8"
         ],
         [
@@ -31915,43 +31919,51 @@
         ],
         [
           "0xbd4000",
-          "0xbd40fb"
+          "0xbd410b"
         ],
         [
-          "0xbd40fc",
-          "0xbd411a"
+          "0xbd410c",
+          "0xbd412b"
         ],
         [
-          "0xbd411b",
-          "0xbd47e9"
+          "0xbd412c",
+          "0xbd47f1"
         ],
         [
-          "0xbd47ea",
-          "0xbd4876"
+          "0xbd47f2",
+          "0xbd487e"
         ],
         [
-          "0xbd4877",
-          "0xbd4895"
+          "0xbd487f",
+          "0xbd489d"
         ],
         [
-          "0xbd4896",
-          "0xbd4be9"
+          "0xbd489e",
+          "0xbd4bf1"
         ],
         [
-          "0xbd4bea",
-          "0xbd4c76"
+          "0xbd4bf2",
+          "0xbd4c7e"
         ],
         [
-          "0xbd4c77",
-          "0xbd4c95"
+          "0xbd4c7f",
+          "0xbd4c9d"
         ],
         [
-          "0xbd4c96",
-          "0xbd53b0"
+          "0xbd4c9e",
+          "0xbd53b8"
         ],
         [
           "0xbd5400",
-          "0xbd5b39"
+          "0xbd591d"
+        ],
+        [
+          "0xbd591e",
+          "0xbd5b01"
+        ],
+        [
+          "0xbd5c00",
+          "0xbd5e88"
         ],
         [
           "0xbd6000",
@@ -31959,10 +31971,14 @@
         ],
         [
           "0xbd7100",
-          "0xbd7182"
+          "0xbd7145"
         ],
         [
-          "0xbd7183",
+          "0xbd7146",
+          "0xbd7192"
+        ],
+        [
+          "0xbd7193",
           "0xbd71ab"
         ],
         [
@@ -31987,10 +32003,14 @@
         ],
         [
           "0xbd7600",
-          "0xbd76e0"
+          "0xbd76c5"
         ],
         [
-          "0xbd76e1",
+          "0xbd76c6",
+          "0xbd76f0"
+        ],
+        [
+          "0xbd76f1",
           "0xbd7807"
         ],
         [
@@ -74077,8 +74097,8 @@
       "owner": "nfl2k5_sim_qb_injuries",
       "function": "apply",
       "before_sha256": "e69dfb3b21cc5e1cd959f14affcbda0d00ddd92606c6be7784cea46db2949748",
-      "after_sha256": "a03f3aab5a847efcf469671f5d1889ac003779bafaf8adae9d844336fad405fc",
-      "changed_bytes": 12986,
+      "after_sha256": "dc0655db372a453bcf5dcfaf4bdd668b32adbf09eece950d8e1e2d0994e427ca",
+      "changed_bytes": 13583,
       "file_runs": [
         [
           "0x394",
@@ -74166,43 +74186,51 @@
         ],
         [
           "0xbd4000",
-          "0xbd40fb"
+          "0xbd410b"
         ],
         [
-          "0xbd40fc",
-          "0xbd411a"
+          "0xbd410c",
+          "0xbd412b"
         ],
         [
-          "0xbd411b",
-          "0xbd47e9"
+          "0xbd412c",
+          "0xbd47f1"
         ],
         [
-          "0xbd47ea",
-          "0xbd4876"
+          "0xbd47f2",
+          "0xbd487e"
         ],
         [
-          "0xbd4877",
-          "0xbd4895"
+          "0xbd487f",
+          "0xbd489d"
         ],
         [
-          "0xbd4896",
-          "0xbd4be9"
+          "0xbd489e",
+          "0xbd4bf1"
         ],
         [
-          "0xbd4bea",
-          "0xbd4c76"
+          "0xbd4bf2",
+          "0xbd4c7e"
         ],
         [
-          "0xbd4c77",
-          "0xbd4c95"
+          "0xbd4c7f",
+          "0xbd4c9d"
         ],
         [
-          "0xbd4c96",
-          "0xbd53b0"
+          "0xbd4c9e",
+          "0xbd53b8"
         ],
         [
           "0xbd5400",
-          "0xbd5b39"
+          "0xbd591d"
+        ],
+        [
+          "0xbd591e",
+          "0xbd5b01"
+        ],
+        [
+          "0xbd5c00",
+          "0xbd5e88"
         ],
         [
           "0xbd6000",
@@ -74210,10 +74238,14 @@
         ],
         [
           "0xbd7100",
-          "0xbd7182"
+          "0xbd7145"
         ],
         [
-          "0xbd7183",
+          "0xbd7146",
+          "0xbd7192"
+        ],
+        [
+          "0xbd7193",
           "0xbd71ab"
         ],
         [
@@ -74238,10 +74270,14 @@
         ],
         [
           "0xbd7600",
-          "0xbd76e0"
+          "0xbd76c5"
         ],
         [
-          "0xbd76e1",
+          "0xbd76c6",
+          "0xbd76f0"
+        ],
+        [
+          "0xbd76f1",
           "0xbd7807"
         ],
         [
@@ -102084,6 +102120,13 @@
     },
     {
       "start": "0x109b4",
+      "end": "0x109c6",
+      "size": 18,
+      "owner": "nfl2k5_sim_qb_injuries",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x109b4",
       "end": "0x109c8",
       "size": 20,
       "owner": "nfl2k5_backfield_cards",
@@ -102143,6 +102186,13 @@
       "end": "0x10a0e",
       "size": 75,
       "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x109c7",
+      "end": "0x109c8",
+      "size": 1,
+      "owner": "nfl2k5_sim_qb_injuries",
       "basis": "observed byte diff"
     },
     {
@@ -229078,8 +229128,8 @@
     },
     {
       "start": "0x1524000",
-      "end": "0x15240fb",
-      "size": 251,
+      "end": "0x152410b",
+      "size": 267,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
@@ -229098,57 +229148,57 @@
       "basis": "named code allocation"
     },
     {
-      "start": "0x15240fc",
-      "end": "0x152411a",
-      "size": 30,
+      "start": "0x152410c",
+      "end": "0x152412b",
+      "size": 31,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x152411b",
-      "end": "0x15247e9",
-      "size": 1742,
+      "start": "0x152412c",
+      "end": "0x15247f1",
+      "size": 1733,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x15247ea",
-      "end": "0x1524876",
+      "start": "0x15247f2",
+      "end": "0x152487e",
       "size": 140,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x1524877",
-      "end": "0x1524895",
+      "start": "0x152487f",
+      "end": "0x152489d",
       "size": 30,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x1524896",
-      "end": "0x1524be9",
+      "start": "0x152489e",
+      "end": "0x1524bf1",
       "size": 851,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x1524bea",
-      "end": "0x1524c76",
+      "start": "0x1524bf2",
+      "end": "0x1524c7e",
       "size": 140,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x1524c77",
-      "end": "0x1524c95",
+      "start": "0x1524c7f",
+      "end": "0x1524c9d",
       "size": 30,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x1524c96",
-      "end": "0x15253b0",
+      "start": "0x1524c9e",
+      "end": "0x15253b8",
       "size": 1818,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
@@ -229162,8 +229212,22 @@
     },
     {
       "start": "0x1525400",
-      "end": "0x1525b39",
-      "size": 1849,
+      "end": "0x152591d",
+      "size": 1309,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x152591e",
+      "end": "0x1525b01",
+      "size": 483,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1525c00",
+      "end": "0x1525e88",
+      "size": 648,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
@@ -229190,15 +229254,22 @@
     },
     {
       "start": "0x1527100",
-      "end": "0x1527182",
-      "size": 130,
+      "end": "0x1527145",
+      "size": 69,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x1527183",
+      "start": "0x1527146",
+      "end": "0x1527192",
+      "size": 76,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1527193",
       "end": "0x15271ab",
-      "size": 40,
+      "size": 24,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
@@ -229239,15 +229310,22 @@
     },
     {
       "start": "0x1527600",
-      "end": "0x15276e0",
-      "size": 224,
+      "end": "0x15276c5",
+      "size": 197,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x15276e1",
+      "start": "0x15276c6",
+      "end": "0x15276f0",
+      "size": 42,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15276f1",
       "end": "0x1527807",
-      "size": 294,
+      "size": 278,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
