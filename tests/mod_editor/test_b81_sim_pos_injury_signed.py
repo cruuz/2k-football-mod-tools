@@ -38,6 +38,12 @@ classes and the defensive side for defensive ones; a halfback's victim is the pl
 rush play's injury call; and after a commit with status 2 or more the game's own substitution (0x102360) has put
 another player in that slot.
 
+Long-franchise stability (pos3/DESIGN.md addendum A.6, test 4): a signed franchise in its third season (season index 2,
+from a stored ten-season run) is loaded on the revision 4 Realistic executable; the stability piece is called on that
+league so its factors are live (not 1.0), and the franchise is then signed. That save must equal byte for byte the save
+the same executable writes without the factor ever computed, and it crosses to Retail and back as above. Inputs:
+NFL2K5_B81_STABILITY_FIXTURES (default.xbe bda1e4a4, rost.body 70813bd9, third-season/ save b836dcef).
+
 Private inputs come from /home/noah/2k-worktrees/.b77-scratch/b81/env.sh: NFL2K5_B81_REVIEWED_TEST_DISC (the
 standard executable, 98dd7329) and NFL2K5_B81_OWNERSHIP_FIXTURES (roster d5e02a52 and the signed opening 8bc786af).
 The test skips when they are absent and fails when they are present but differ from their pins.
@@ -135,43 +141,8 @@ def census(machine, executable):
     }
 
 
-@unittest.skipUnless(HAVE_UC, 'Unicorn is required for the native franchise save, load and week')
-class SignedSlice2Exchange(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        from mod_editor.core import mod_build
-        from tests.nfl2k5_my_career_fixture import XBE as RETAIL_XBE
-
-        disc = os.environ.get('NFL2K5_B81_REVIEWED_TEST_DISC')
-        fixtures = os.environ.get('NFL2K5_B81_OWNERSHIP_FIXTURES')
-        if not disc or not fixtures:
-            raise unittest.SkipTest('private standard executable, roster and signed opening are absent (env.sh)')
-        root = Path(fixtures)
-        needed = (Path(disc), root / ROSTER, root / OPENING / 'SAVEGAME.DAT', root / OPENING / 'EXTRA', RETAIL_XBE)
-        missing = [str(path) for path in needed if not path.is_file()]
-        if missing:
-            raise unittest.SkipTest(f'private inputs are absent: {missing}')
-        cls.source = mod_build._xbe_bytes(Path(disc))
-        cls.roster = (root / ROSTER).read_bytes()
-        cls.opening = (root / OPENING / 'SAVEGAME.DAT').read_bytes()
-        pins = {'source': (sha256(cls.source), SOURCE_SHA256), 'roster': (sha256(cls.roster), ROSTER_SHA256),
-                'opening': (sha256(cls.opening), OPENING_SHA256)}
-        wrong = {name: got for name, (got, pin) in pins.items() if got != pin}
-        if wrong:
-            raise AssertionError(f'private inputs differ from their pins: {wrong}')
-        if not records.verify_extra(cls.opening, (root / OPENING / 'EXTRA').read_bytes()):
-            raise AssertionError('the opening franchise is not signed by the game')
-        # The branch's own Studio route, on bytes read from the private disc; nothing is patched by hand.
-        cls.realistic, _ = medical.apply(cls.source, 'realistic')
-        cls.retail, _ = medical.apply(cls.realistic, 'retail')
-        cls.bank = next(row['va'] for row in space.layout(cls.realistic)['allocations']
-                        if row['owner'] == medical.OWNER and row['kind'] == 'code')
-        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
-        image = XbeImage(cls.realistic)
-        moved = {hex(va): image.read(va, len(raw) // 2).hex() for va, raw in NATIVE_SITES.items()
-                 if image.read(va, len(raw) // 2).hex() != raw}
-        if moved:
-            raise AssertionError(f'the hooked native instructions differ: {moved}')
+class _NativeExchange(unittest.TestCase):
+    """The native machine and the signed exchange both cases below use (no tests of its own)."""
 
     # -- native machine ---------------------------------------------------------------------------------------------
 
@@ -349,6 +320,45 @@ class SignedSlice2Exchange(unittest.TestCase):
         self.assertEqual(again, by_retail, f'{label}: Realistic re-wrote Retail\'s save differently')
         return by_retail
 
+
+@unittest.skipUnless(HAVE_UC, 'Unicorn is required for the native franchise save, load and week')
+class SignedSlice2Exchange(_NativeExchange):
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import mod_build
+        from tests.nfl2k5_my_career_fixture import XBE as RETAIL_XBE
+
+        disc = os.environ.get('NFL2K5_B81_REVIEWED_TEST_DISC')
+        fixtures = os.environ.get('NFL2K5_B81_OWNERSHIP_FIXTURES')
+        if not disc or not fixtures:
+            raise unittest.SkipTest('private standard executable, roster and signed opening are absent (env.sh)')
+        root = Path(fixtures)
+        needed = (Path(disc), root / ROSTER, root / OPENING / 'SAVEGAME.DAT', root / OPENING / 'EXTRA', RETAIL_XBE)
+        missing = [str(path) for path in needed if not path.is_file()]
+        if missing:
+            raise unittest.SkipTest(f'private inputs are absent: {missing}')
+        cls.source = mod_build._xbe_bytes(Path(disc))
+        cls.roster = (root / ROSTER).read_bytes()
+        cls.opening = (root / OPENING / 'SAVEGAME.DAT').read_bytes()
+        pins = {'source': (sha256(cls.source), SOURCE_SHA256), 'roster': (sha256(cls.roster), ROSTER_SHA256),
+                'opening': (sha256(cls.opening), OPENING_SHA256)}
+        wrong = {name: got for name, (got, pin) in pins.items() if got != pin}
+        if wrong:
+            raise AssertionError(f'private inputs differ from their pins: {wrong}')
+        if not records.verify_extra(cls.opening, (root / OPENING / 'EXTRA').read_bytes()):
+            raise AssertionError('the opening franchise is not signed by the game')
+        # The branch's own Studio route, on bytes read from the private disc; nothing is patched by hand.
+        cls.realistic, _ = medical.apply(cls.source, 'realistic')
+        cls.retail, _ = medical.apply(cls.realistic, 'retail')
+        cls.bank = next(row['va'] for row in space.layout(cls.realistic)['allocations']
+                        if row['owner'] == medical.OWNER and row['kind'] == 'code')
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(cls.realistic)
+        moved = {hex(va): image.read(va, len(raw) // 2).hex() for va, raw in NATIVE_SITES.items()
+                 if image.read(va, len(raw) // 2).hex() != raw}
+        if moved:
+            raise AssertionError(f'the hooked native instructions differ: {moved}')
+
     # -- tests ------------------------------------------------------------------------------------------------------
 
     def test_studio_route_makes_the_two_executables(self):
@@ -454,3 +464,62 @@ class SignedSlice2Exchange(unittest.TestCase):
         moved = [i for i, (a, b) in enumerate(zip(written[0], by_retail[0])) if a != b]
         self.assertEqual([i for i in moved if not ledger <= i < ledger + 8], [],
                          'slice 3 weeks: Retail\'s write differs from Realistic\'s outside the ledger boundary cursors')
+
+
+THIRD_SEASON = {'default.xbe': 'bda1e4a408f19cc30f0916e03b158b0accc46e0ccb6a39e134c1ce79ba3ab6ea',
+                'rost.body': '70813bd95d1265b40009fb611569e2e1ffcce02bf17a5f73476e8f55ffa3d157',
+                'third-season/SAVEGAME.DAT': 'b836dcef8c6c5e67092d0d595e175ea43c2912fe96b4a45cfd065009ff09d305'}
+
+
+@unittest.skipUnless(HAVE_UC, 'Unicorn is required for the native franchise save and load')
+class SignedThirdSeasonExchange(_NativeExchange):
+    @classmethod
+    def setUpClass(cls):
+        fixtures = os.environ.get('NFL2K5_B81_STABILITY_FIXTURES')
+        if not fixtures:
+            raise unittest.SkipTest('private third-season franchise inputs are absent (NFL2K5_B81_STABILITY_FIXTURES)')
+        root = Path(fixtures)
+        missing = [name for name in (*THIRD_SEASON, 'third-season/EXTRA') if not (root / name).is_file()]
+        if missing:
+            raise unittest.SkipTest(f'private inputs are absent: {missing}')
+        data = {name: (root / name).read_bytes() for name in THIRD_SEASON}
+        wrong = {name: sha256(raw) for name, raw in data.items() if sha256(raw) != THIRD_SEASON[name]}
+        if wrong:
+            raise AssertionError(f'private inputs differ from their pins: {wrong}')
+        cls.roster, cls.save = data['rost.body'], data['third-season/SAVEGAME.DAT']
+        if not records.verify_extra(cls.save, (root / 'third-season/EXTRA').read_bytes()):
+            raise AssertionError('the third-season franchise is not signed by the game')
+        cls.realistic, _ = medical.apply(data['default.xbe'], 'realistic')
+        cls.retail, _ = medical.apply(cls.realistic, 'retail')
+        cls.bank = next(row['va'] for row in space.layout(cls.realistic)['allocations']
+                        if row['owner'] == medical.OWNER and row['kind'] == 'code')
+
+    def factors(self, machine):
+        classes = len(code.POSITION_CLASSES) + 1   # the position classes, then the quarterback
+        return struct.unpack(f'<{classes}f', bytes(machine.uc.mem_read(self.bank + code.LABELS['stab_factor'],
+                                                                         4 * classes)))
+
+    def test_third_season_save_does_not_depend_on_the_factor(self):
+        self.assertEqual(medical.read_settings(self.realistic)['revision'], 4)
+        machine = self.boot(self.realistic, self.save)
+        try:
+            league = census(machine, self.realistic)
+            self.assertEqual(league['state']['year'], 2, 'the franchise is not in its third season')
+            plain = self.sign(machine)               # the factor has not been computed in this machine
+        finally:
+            machine.close()
+        machine = self.boot(self.realistic, self.save)
+        try:
+            self.assertEqual(self.factors(machine), (1.0,) * (len(code.POSITION_CLASSES) + 1))
+            machine.call(self.bank + code.LABELS['stability'], budget=50_000_000)
+            live = self.factors(machine)
+            self.assertTrue(any(value != 1.0 for value in live), f'the factor is not live in season index 2: {live}')
+            self.assertTrue(all(.5 <= value <= 1.25 for value in live), live)
+            self.assertSameFranchise(league, census(machine, self.realistic), 'third season after the factor')
+            written = self.sign(machine)
+        finally:
+            machine.close()
+        self.assertEqual(written, plain, 'a save byte depends on the stability factor')
+        by_retail = self.exchange(written[0], league, 'third season')
+        self.assertEqual(by_retail, written, 'third season: Retail wrote the franchise differently from Realistic')
+
