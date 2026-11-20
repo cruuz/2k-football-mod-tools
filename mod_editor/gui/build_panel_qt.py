@@ -2072,15 +2072,16 @@ class BuildPanel(QWidget):
         self._refresh()
 
     def _add_sim_qb_injuries(self, layout):
-        # b81 slice 2 (pos2/DESIGN.md 3.5): the same option now covers the line, the edge and ball-carrying backs.
-        help_text = ("Realistic adds the injuries simulated franchise games were missing: quarterbacks, offensive tackles "
-                     "(who could never be hurt in a simulated game), guards, centers, defensive ends, and running backs "
-                     "by how much they carry. Each simulated play has a small chance that depends on the player's "
+        # b81 slices 2 and 3 (pos2/DESIGN.md 3.5, pos3/DESIGN.md 3): one option for every position but the kickers.
+        help_text = ("Realistic adds the injuries simulated franchise games were missing, for every position except "
+                     "kickers and punters: quarterbacks, running backs, fullbacks, receivers, tight ends, the offensive "
+                     "line, the defensive line, linebackers, cornerbacks and safeties. Each simulated play has a small "
+                     "chance that depends on the player's "
                      "Durability and the Injury slider. Nothing is scripted: some seasons are healthy and some are not. "
                      "While it is on, the weekly running back roll is replaced by the per-carry chance, and your own club "
                      "is treated like every other club in the games you simulate. Games you play are not changed. "
                      "Realistic and Custom require 128 MB and Simulated season realism.")
-        caption = QLabel("Simulated injuries (quarterback, running back, line, edge)")
+        caption = QLabel("Simulated injuries (all positions)")
         self.qb_injury_mode = QComboBox()
         caption.setBuddy(self.qb_injury_mode)
         for name, value in (("Keep the source setting", None), ("Retail (original 2K5 simulation)", "retail"),
