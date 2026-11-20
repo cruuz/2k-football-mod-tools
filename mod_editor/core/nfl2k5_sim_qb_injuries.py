@@ -1,4 +1,9 @@
-"""Reversible 128 MiB simulated quarterback injuries and the matched scheduled passing model."""
+"""Reversible 128 MiB simulated quarterback injuries and the matched scheduled passing model.
+
+Install the running-back owner before this option: installed after it, that owner's weekly jump lands where this
+option expects the game's own tail and the option reads foreign (Retail and re-apply refuse); a route that turns the
+running-back owner on later must restore Retail first, install it, then apply the option again.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
