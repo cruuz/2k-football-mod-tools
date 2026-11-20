@@ -1,5 +1,5 @@
 {
-  "classification": "b779 pt1's real portrait atlases are the official NFL.com / ESPN headshot photographs of the created real free agents, cropped and reduced to the game's 128 x 128 P8 portrait format (Noah 2026-10-28: the card shows the real picture, like the NFL roster does); the original photo files never ship, only these game-format portraits. b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), reviewed face by face; no photograph or retail-extracted pixels. b778 ss1's Seamen card, field and face art is drawn from the video references and the authored kit. b778 ee1/ee2's gray alien portrait and face textures are authored from a generated headshot. b778 pg2's TROPHY ROOM emblem is authored (gold cup, navy banner, white type). Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. b775 hs1's nine 64 x 64 hair textures (locs, twists, braids, strands, curls, bun) are drawn procedurally by tools/nfl2k5_hair_styles_generate.py. b778 cf1 and its follow-up jobs scanned the head.png of every club with a recipe in tools/b77/cf1_recipes (tools/b77/cf1_face_scan.py): each is the coach's reference photo projected onto the 2004 head mesh, relit, symmetrised and blended into a painted base, so these head.png files are photo-derived likeness textures shipped under Noah's 2026-10-12 rule (as co2's photo-warped faces were); the reference photos and their cleaned copies never ship. Apart from those coach likeness textures, no photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time. sb1's Super Bowl field flank marks (data/nfl2k5_super_bowl_fields/marks) are drawn by tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design system (no logo is copied, traced or read); LXII to LXV are generic current-system marks for franchise seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 team logos at mark size or a plain club roundel. b776 fn2's four Titans 7 digit textures (data/nfl2k5_glyph_fixes_2026) are flat two-colour shapes drawn from measurements of 2026 club photos (constant-width stem, block foot), not traced from a font file or photo pixels. b780's scorebug digit sheet glyph layer (data/nfl2k5_scorebug_digit_glyphs.png) is rendered text: the digits 0-9, the colon and FINAL drawn by tools/nfl2k5_scorebug_espn_art.py (digits_from_font) with DejaVu Sans Bold through Pillow 10.2.0 / FreeType 2.13.2, white glyph coverage on transparent, and the retail bolt cell cleared; it holds no font file data, no photograph and no retail pixel. DejaVu is under the Bitstream Vera license (DejaVu's changes are public domain), which allows reproducing and distributing the fonts; the release ships only this rendering of those characters, not the font. b81-retail-free-art: the 2026 jersey relief (data/nfl2k5_relief_2026_b81u) ships only the project's own layer: per texel the authored level B relief minus the base the Studio derives at build time from the user's own disc (the 2004 folds softened, the 2004 construction lifted out: mod_editor/core/nfl2k5_relief_2026.py), modulo 256, so its difference files hold this season's seams, collar band, vents, pin holes and embosses and are zero elsewhere; islands_jersey.png and openings_jersey.png are one-bit layout masks of where the jersey's UV islands and the kits' collar openings lie (where the folds stop and soften), with no texel value of any map. The earlier absolute relief masters and patches (85 and 93 percent byte-equal to a transform of the retail maps) were withdrawn, and this tool refuses any relief file that decodes as an absolute normal map.",
+  "classification": "b779 pt1's real portrait atlases are the official NFL.com / ESPN headshot photographs of the created real free agents, cropped and reduced to the game's 128 x 128 P8 portrait format (Noah 2026-10-28: the card shows the real picture, like the NFL roster does); the original photo files never ship, only these game-format portraits. b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), reviewed face by face; no photograph or retail-extracted pixels. b778 ss1's Seamen card, field and face art is drawn from the video references and the authored kit. b778 ee1/ee2's gray alien portrait and face textures are authored from a generated headshot. b778 pg2's TROPHY ROOM emblem is authored (gold cup, navy banner, white type). Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. b775 hs1's nine 64 x 64 hair textures (locs, twists, braids, strands, curls, bun) are drawn procedurally by tools/nfl2k5_hair_styles_generate.py. b778 cf1 and its follow-up jobs scanned the head.png of every club with a recipe in tools/b77/cf1_recipes (tools/b77/cf1_face_scan.py): each is the coach's reference photo projected onto the 2004 head mesh, relit, symmetrised and blended into a painted base, so these head.png files are photo-derived likeness textures shipped under Noah's 2026-10-12 rule (as co2's photo-warped faces were); the reference photos and their cleaned copies never ship. Apart from those coach likeness textures, no photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time. sb1's Super Bowl field flank marks (data/nfl2k5_super_bowl_fields/marks) are drawn by tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design system (no logo is copied, traced or read); LXII to LXV are generic current-system marks for franchise seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 team logos at mark size or a plain club roundel. b776 fn2's four Titans 7 digit textures (data/nfl2k5_glyph_fixes_2026) are flat two-colour shapes drawn from measurements of 2026 club photos (constant-width stem, block foot), not traced from a font file or photo pixels. b780's scorebug digit sheet glyph layer (data/nfl2k5_scorebug_digit_glyphs.png) is rendered text: the digits 0-9, the colon and FINAL drawn by tools/nfl2k5_scorebug_espn_art.py (digits_from_font) with DejaVu Sans Bold through Pillow 10.2.0 / FreeType 2.13.2, white glyph coverage on transparent, and the retail bolt cell cleared; it holds no font file data, no photograph and no retail pixel. DejaVu is under the Bitstream Vera license (DejaVu's changes are public domain), which allows reproducing and distributing the fonts; the release ships only this rendering of those characters, not the font. b81-retail-free-art: the 2026 jersey relief (data/nfl2k5_relief_2026_b81u) ships only the project's own layer: per texel the authored level B relief minus the base the Studio derives at build time from the user's own disc (the 2004 folds softened, the 2004 construction lifted out: mod_editor/core/nfl2k5_relief_2026.py), modulo 256, so its difference files hold this season's seams, collar band, vents, pin holes and embosses and are zero elsewhere; islands_jersey.png and openings_jersey.png are one-bit layout masks of where the jersey's UV islands and the kits' collar openings lie (where the folds stop and soften), with no texel value of any map. The earlier absolute relief masters and patches (85 and 93 percent byte-equal to a transform of the retail maps) were withdrawn, and this tool refuses any relief file that decodes as an absolute normal map. b81-retail-free-art: the b81u digit and nameplate pictures (data/nfl2k5_glyph_fixes_2026_b81u) that ship are measured (retail-free/glyphs/SUMMARY.md: remap, mask and structure tests against the v0.9 glyph and every retail glyph) as drawn new by code from 2026 photographs (ARI, ATL, CIN, LAC, TEN digits; 11 name strips) or as edits of the project's own glyph art (glyph_shapes traced from photographs, or renders of fan-made fonts: CLE, DEN, DET, HOU, LAR, MIA, NE, SEA digits; CLE names). The pictures that edited a glyph the Studio builds from a retail donor are listed in NOT_AUTHORED and do not ship: their edits are shipped as operations and applied at build time to the glyph the user's disc gives (digit_derived), or the row was withdrawn.",
   "files": {
     "data/nfl2k5_alien_prospect/face_f.png": {
       "height": 256,
@@ -143,6 +143,2328 @@
       "height": 64,
       "sha256": "25727ec3a92a703131e11766c4da6a781a63855be44d10a0a961e451cad02de6",
       "size": 1082,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "26d9a687f3d5b42b484cee12564b93815034384654dcc5e137e69957f89e20c9",
+      "size": 412,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "6388edb77bb69daddeebda1b96d96b2cf0532b7314a02492ea5f78290cff195c",
+      "size": 282,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "5dc0b5217b5df5da541acb6e87b9a9bbe4d953d7c505db3753f09124901b9ca8",
+      "size": 475,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "06b923bbc3f0ef44f2e3a87e2d0c69bd5a33d8f9e5a63fd6fb2812224827118f",
+      "size": 486,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "ec60757a89eec56eb4cb51296d1279dcb48165d981a8e4390712dd65490d971e",
+      "size": 443,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "0007ea69c17c4aa5f5ea826527de17280ca9e0716855d2161d01f5262857b3ed",
+      "size": 436,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "0c8ebbb3b2fdde5db4d21ef558cb1f44c8137a3acafcbcc3b6a91e8281f115c8",
+      "size": 483,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "aea9b035bc6002a1fc8edacbd90bf92efbbe7d45f89a78431abdf2dc1cfa14ac",
+      "size": 408,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "af14b2106f6660fa732d7f81db9f527a9cd9391bdd13b76b2ef3dbc26887b88d",
+      "size": 484,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "1ae468d59da7633fb677373729d2df4a2f31cb5701d5799893e8cf4dd20e38a8",
+      "size": 490,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_names.png": {
+      "height": 32,
+      "sha256": "c7c86cea517436f4638c7a9bd60e317835810b2fb135b5ad1050d9b214178158",
+      "size": 1178,
+      "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_0.png": {
+      "height": 64,
+      "sha256": "09f227a1463e3d3e07c0b8ed96383c16e40c575f7772d452643eeebc6acd2acd",
+      "size": 420,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_1.png": {
+      "height": 64,
+      "sha256": "c08191d18d99abe876117a12253c73623b5fd9f30688e6c2f1db9523cf5842ee",
+      "size": 262,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "322d2a8d0cfa36059ccb5cc40e429d44dc1efe0926b1903640ae9512ce4ad208",
+      "size": 488,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_3.png": {
+      "height": 64,
+      "sha256": "033230579b3a60ff8f05a0a8bbd28e2e99280935d3156feaf29763e815a814c5",
+      "size": 464,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_4.png": {
+      "height": 64,
+      "sha256": "080799f8c2149dff351d098c735dbcd420aaeb49e5cbe61c75ca4d17f3ac4162",
+      "size": 422,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_5.png": {
+      "height": 64,
+      "sha256": "8ca26204d08dea440b6df16e9c799a4bad70a9be9130bc6fbb8a1cedf2c1a4ef",
+      "size": 407,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_6.png": {
+      "height": 64,
+      "sha256": "3c4724ac12b20e524f19d6a85479c88bf1537b7f56602a4f7869283b49eb1300",
+      "size": 470,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "fa0712421aaac076cdd7e2b118c02e4e072a9473226b657de435889c0670251f",
+      "size": 430,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_8.png": {
+      "height": 64,
+      "sha256": "02644868de5a98b9cfbfc0664ed438f933acc44fe514900a0af51fa5a78fa12e",
+      "size": 472,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_9.png": {
+      "height": 64,
+      "sha256": "14692c0b48a2dd55dfab879ec17e4a77da77a324996e2fcd35d9e4a289f88126",
+      "size": 485,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "a6d6bda51977a867ec996d373a2cfcb87a3e580062acda7652ac63ab3cf6d695",
+      "size": 442,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "9584deda3afb984cade02e04c98498d48b74d1896afd788a5b8bf4113227eaba",
+      "size": 263,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "1f39c157d2b84aa27315a1764f102bfa4bda9e134f1289183b2d8159a97087b6",
+      "size": 459,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "aa67380b3dbb2f7c8fb4ca650329725b455cc867d01b9a6da0282530d77d026b",
+      "size": 464,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "ee8e48efc1c022b6a39f6044f66fc497e8d17813301790d33651640719c21db5",
+      "size": 427,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "3d58a4e266b667414390fb816e4224ad68e840d4083c9b8cfcbdc8851eb06537",
+      "size": 406,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "5e283dc43f81aae07001535dc0a9f378c11f60207d36080055bc62020adef510",
+      "size": 493,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "169bcb26af7ee1616ca306329781145a2fc8ea8e7c878bd9ebd271a1aec7e745",
+      "size": 409,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "cad9475458bb6594dad79becfac37dbb71f80bcf58c5ec38f879802d4da4622a",
+      "size": 472,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "2111dbed90563a3c2b5743ecdae254795d0c6ad223d726a8198a718803b48400",
+      "size": 506,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_names.png": {
+      "height": 32,
+      "sha256": "a6259d3a059663c282b48f71f7f14ff76f572ce802fab605fd2a5d8b89cc4906",
+      "size": 1129,
+      "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_0.png": {
+      "height": 64,
+      "sha256": "7c3fb48feb6e6480fbf744c5c0bfc154bbf3fafda84c8263ecaf2f04bf9c4149",
+      "size": 359,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_1.png": {
+      "height": 64,
+      "sha256": "e4640a7373c0ba2e62aeda635f1258360f6e26a29b652c8aaead0d9332df704c",
+      "size": 304,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "337b9eb1b206df48964a422d0944ade9632b7e4826c46b76daad880bed58ba59",
+      "size": 467,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_3.png": {
+      "height": 64,
+      "sha256": "2fa0be382626d61438abbf7a32d77da01f86b28fda222c814598e68da98b44e2",
+      "size": 447,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_4.png": {
+      "height": 64,
+      "sha256": "8019ebbfda672c4aac4426bf7ff6a65369f77c93f38578814fe07b5de16dc160",
+      "size": 423,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_5.png": {
+      "height": 64,
+      "sha256": "1a8180d458fe91bcbffc600c7f1578e6b8a55051fe33bec018225413b4180c39",
+      "size": 390,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_6.png": {
+      "height": 64,
+      "sha256": "a326e1603b276057083eaadc51d3b4bf41db807c823d90a4e19ee35e92f611f9",
+      "size": 401,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "075fd2507cd18438075e3799478bc848f8f38712bb6efb58e559426a7daf0fa4",
+      "size": 457,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_8.png": {
+      "height": 64,
+      "sha256": "ff7f83e7d21c9f0aaa66a1dee9a0ce79dbb370e7b505f710ec7276a55a6cb672",
+      "size": 421,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_arm_9.png": {
+      "height": 64,
+      "sha256": "68f46d4905f9b311419f3916228814a33a9bfe18cde2385ff457169e4b1565be",
+      "size": 402,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "bcb2adf17bba979cfec68040598a5985731b08ad24573ba6edbda2ebbd30cfc6",
+      "size": 363,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "5376522be2fa0f22877b8c184cf95621aeece6e76b5cc550c82d1088540593be",
+      "size": 305,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "3b8e9edf21fd3134626b7ee4be228537f1336c0cd68f2ae2096f9cc1af5c5d82",
+      "size": 473,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "4525f5054b0e75bc28bf9ca04578926b6a4d902351945079921e93549b5efb5d",
+      "size": 452,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "9cab4abb576a0cfd1a46971bff686aff15be32bd834e53f0513ca6e709797628",
+      "size": 443,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "2ae9d765544da06f84f908a3bf56f79252136e05fdfdce3bc9a70024a7aba15f",
+      "size": 393,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "88b31457034133ebb817bba8ead4c97d335c0c1351e91f15f0140cd87e4d0478",
+      "size": 406,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "990242dfcf1d6ae005529b552395b517397e73edbc4937585a47867ebfa7e4d3",
+      "size": 453,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "995ac7a99ff340d7d68979de8e16a547d4c56a0985ced838bba00f885cf180ec",
+      "size": 423,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A0_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "736123f280f441d770e9616396c1fba73934f3fc92598e7cb2fa61a25cfee22b",
+      "size": 405,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A9_names.png": {
+      "height": 32,
+      "sha256": "2cf3c06d4f0a4b05565ebe63c70b0c470eda0273f43574d0286bb0c748b50b1a",
+      "size": 1661,
+      "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_0.png": {
+      "height": 64,
+      "sha256": "388d52adab164b1405dabcf2dcc5166bc75b7d8a463df58a6d1b4b139bced813",
+      "size": 349,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_1.png": {
+      "height": 64,
+      "sha256": "7e9f50520338a94e98614fab5001344ac6a9cf66f557e751e9c3c91e10e031c5",
+      "size": 305,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "5ba6685c3519cf82cc0192b30c9503e5e8b002519eab0728d96eaeeb812f3b44",
+      "size": 456,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_3.png": {
+      "height": 64,
+      "sha256": "5fdb6ee0ad5419ac5bbc5a9d0ba8a76480075dd644e69072d18663646724bd1e",
+      "size": 446,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_4.png": {
+      "height": 64,
+      "sha256": "2fb1a3053b8aeb6ae64f1124afd28b9b32e118201ed9bec80b65c0b4f82f5bd7",
+      "size": 410,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_5.png": {
+      "height": 64,
+      "sha256": "dda26ea19fdb40fe6cccf600d656f552be351b68b91ab9ffad8c8637a802d02d",
+      "size": 383,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_6.png": {
+      "height": 64,
+      "sha256": "0deae7e063d4ef545e67f0202ec85a0365c337779f08b90b49e68329ef1767ad",
+      "size": 396,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "04f77779d69a79335747553074c9ef4f753a60e8079467b06a0f650ee2565496",
+      "size": 449,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_8.png": {
+      "height": 64,
+      "sha256": "68fd036a98ec42cdec9d9f2e93867dfd5b5c64d0bc1dbf5ac25f7c19cc8cfe1b",
+      "size": 414,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_arm_9.png": {
+      "height": 64,
+      "sha256": "3adc476de43dca022c0b3b4ac150581cb879d5948e531e117fb4344453320a16",
+      "size": 395,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "5400c59dd8179d7bbb0e198c43e3574939291f778f565915edbcec23c243d2ca",
+      "size": 354,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "9a9ba2888d66e365e201cc9d6c28ca3573b783c381f7cdcb6b0ba85883abc410",
+      "size": 308,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "389ddfd589b89c6f279cb6c68c5227e98762f7fb3af92241b7592151ddd70be7",
+      "size": 465,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "3659e3d034a0c1c5a8352da04c3e5d3106f5be6f301bf0cd375bf5b5dd275c31",
+      "size": 444,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "c44edb53e9829308b888978cf6165fd21bee79e01c50db837364e1882d8240e9",
+      "size": 442,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "8cb249662869e69e8cbacf23b511ce6a512aa0dca8be6d5b95f89488fb338e2f",
+      "size": 384,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "b2ddbc80df58e583e43f3497bb990116b77872cc44d645dc6a148893475d33fc",
+      "size": 400,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "518e2fb3a422522d8988469d80035130206e00c5e607c6d51ac3132be55f3af8",
+      "size": 459,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "0c907841ea5e07af4572d54541e51123c8a0037bf3fcedc9801248861e49bdc7",
+      "size": 414,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01H0_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "22bb6b31501e2efc6b83c6f5d937a94843740ba2f34dc0110bfdb162f3dff130",
+      "size": 401,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02H0_names.png": {
+      "height": 32,
+      "sha256": "7336813b2fe924f2a041e9e40fd289f7acc913c7be1f82935081b9aa12551057",
+      "size": 976,
+      "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "61e9da3ab8ce47fd9a890cc4d52a2c908f2879cb4e27d95c2354177c4dc4d85f",
+      "size": 513,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "0a8c6bc62019b01b4305aca62a58172d79f0e709653002851432f35e06e5a605",
+      "size": 325,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "507e919d33fcc7bca5a4c2f4219e7514d9ed1a6d80c5ec76bb908b790b4e7716",
+      "size": 655,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "93f2b2e0f069307bdfaeacde7aa57388132e4220b487e2861aad99b321dd4a07",
+      "size": 721,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "8d9e91694ea2669c851c6535d20be2bc2487ac4c7e5388bdf90a79e6d4d60b82",
+      "size": 514,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "2215d3a226d052e06af9edc28a50bcc37ae802100c9d7f35157a7365dc1c1003",
+      "size": 599,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "96c1c3442ecaf830eb8604e0eccda36adcd065c1a06f4be91c6d98fb72144ed7",
+      "size": 638,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "4e37e04eca4f20c1954807109455ab6ae73b72ed6733237a62367ca2db986566",
+      "size": 550,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "e8cfeb929dd6f7a02f5735caa2175384c4bad21e488cf72eb6e4bd907d7e73b3",
+      "size": 642,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "53a00b7580e29273056eee83c9c80c57ea9de64aaef02ae01d9bcd8dc2d82d4a",
+      "size": 662,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A6_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "b5718082f98c797a7fa898206ba16d9cdebc90f7ded9882d95f83b68f7afba08",
+      "size": 475,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A6_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "274d448e230b332b23dd28a75e52c236d434232685f5a10641e2678188b2e1f7",
+      "size": 310,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A6_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "187a49149dc9258f8c7f561fea586c49c36649b35dddae7cd2ac0f2a767a225a",
+      "size": 652,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A6_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "e7fc4a827f9eb992ba0adb82a8ec6b1eed1bc3bf3cfc9dc165ba69e25423b805",
+      "size": 707,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A6_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "4570e803f941f61a5600791d73d6e2348b2eb1cf03c6e1f8b03c8d4b6e4a8072",
+      "size": 501,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A6_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "eb2ff73767c8178138119c077cd5b99d18684962b051e221672bb4434fd50e36",
+      "size": 602,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A6_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "c3988982ab65b2d64e9a5100f8c2a72a8802f5de4f2b727b5283ef0a927d2fed",
+      "size": 607,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A6_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "689be4f67880e1a0daac08742b14769dc19e89b154439316609e4a7fa6c438fb",
+      "size": 561,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A6_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "90d4382bddfcd3bf1abe18873f6055e10e94f8d68630d53f2b9af460a7aeb482",
+      "size": 593,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A6_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "bd30d6dc0aa9809b541a02cead224ba1c1be27512a6a6ca10dd498d01e45cca0",
+      "size": 670,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06H0_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "d597388ea3e36cd969f07f5bf840061b807ba009300eb46ff96d834488b30bc0",
+      "size": 519,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06H0_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "475d73a0255c53cd55db99932baeb9ab5d53f3e4d320e609eefe2f57a5116001",
+      "size": 326,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06H0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "e1c030b881a7a2567b3863d30d06240ea0c7a52274d9fc2f3c491c6184bf417d",
+      "size": 658,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06H0_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "1c40d008a39c9bc4b4d8ac18776cba77073401264a35593dfcf4d8ed5b40e9dc",
+      "size": 725,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06H0_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "c73e7f3f79f83cc3fe0636e1a0d73e9219ecfb377e88a8505e6062dc81fc8d95",
+      "size": 515,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06H0_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "4d33a106f7b343d1c269ca9ed4242c174dbb2421db7d9a30056df8c4f284d8c4",
+      "size": 605,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06H0_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "5323f273946798c07752e0ca5b2330bc602643a3ca983f84e1f7cf9669d7faa8",
+      "size": 643,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06H0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "1045f20f28d463c3d552b7cd8d5bc21921690c79f1c444046fbdd943b14a3436",
+      "size": 551,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06H0_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "ab28eb6c42358ed32e908c22fd4f0832766f3c805199418069b23092d8da3a17",
+      "size": 645,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06H0_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "805172b0bcb36e9292d0eda74161876aed5293ac60e5fda5d779c5711015109d",
+      "size": 665,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A0_digit_arm_0.png": {
+      "height": 64,
+      "sha256": "d811b99e7142b289afe3ccc716ab39cc45ff81802019bba0b070d3e626bac629",
+      "size": 306,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A0_digit_arm_1.png": {
+      "height": 64,
+      "sha256": "56df0f23cd6c171234730064ab81f2a51f9b46a7f684b5fa586120857c36dd8b",
+      "size": 233,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A0_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "464b3d5149ee34811e960f861af3848160453ba1e4575a12181d09d0247349f2",
+      "size": 316,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A0_digit_arm_3.png": {
+      "height": 64,
+      "sha256": "ee55079d34dc6f48a2ac4b8c726941086d5c2f2bc8731c7b357492d059e0f708",
+      "size": 353,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A0_digit_arm_4.png": {
+      "height": 64,
+      "sha256": "9bf40974431fee251f7091f25c5e96cdd493b0a9dbef528315f8ce7d18c9a314",
+      "size": 357,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A0_digit_arm_5.png": {
+      "height": 64,
+      "sha256": "3f497bb274ca86f326109fc2129dcadaec79794ce1f744fc07d6c7754750f163",
+      "size": 336,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A0_digit_arm_6.png": {
+      "height": 64,
+      "sha256": "c609bd48401e1aff62ceb934304a489dd6652087ec0accc3b497e5b6cbd6d6f3",
+      "size": 338,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A0_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "aa2fcc19f8cfe609de4440ee5e13391add769c4dcca3114504ef6fb660c69dba",
+      "size": 310,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A0_digit_arm_8.png": {
+      "height": 64,
+      "sha256": "7d91d55792680c7991909973c766fe6cc11b6cfdfb9235d1391bd756e26c6c82",
+      "size": 356,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A0_digit_arm_9.png": {
+      "height": 64,
+      "sha256": "455aef8aeffb140a30134d22128ba93aab6432ee5387e8dd8d18788c49f35e33",
+      "size": 341,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "81e47ed856f18a73ba4b44be7259e2c901397de65bc45b54ec061455b1bec086",
+      "size": 309,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A0_names.png": {
+      "height": 32,
+      "sha256": "984e38cefdb74e6f2d3f2813bcc53f1c60ac682cb7b98a9fb0b262da4c6b80a4",
+      "size": 4329,
+      "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A3_digit_arm_0.png": {
+      "height": 64,
+      "sha256": "450db341a94e8228d430c07c699fa40225766ee58f7c2bdf0565c4bf30ce7a47",
+      "size": 303,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A3_digit_arm_1.png": {
+      "height": 64,
+      "sha256": "4e24ceda5cc3b9cb94bc0d81e87edeab333034b8985172e525ed12b3d0746193",
+      "size": 231,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A3_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "7b306efe73ec733023f96a7ef9af5a410f43fca3c832e66b8c039beb48efc789",
+      "size": 328,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A3_digit_arm_3.png": {
+      "height": 64,
+      "sha256": "6ce7667b12d9c9dce3a868232c5acf21fc7d27182c995b1f8dda580a2b02f106",
+      "size": 356,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A3_digit_arm_4.png": {
+      "height": 64,
+      "sha256": "b58dc3aa7e3ee202f96f9992140ae687ac57be4f58d69c0aaf5c5519686823c9",
+      "size": 355,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A3_digit_arm_5.png": {
+      "height": 64,
+      "sha256": "6fb0291e349cf454e8f88c30ba35f8c0645e9595e39ad0babe02e083500a0dfd",
+      "size": 352,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A3_digit_arm_6.png": {
+      "height": 64,
+      "sha256": "bfb24f6ee20b705ce1d1c68768cdac8bfb40bb297dc084edb25810d2266a803a",
+      "size": 338,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A3_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "361f245dda513ec2e3d6bcf0ce56875c1ea2c3982c882e0e5de8911e178df671",
+      "size": 290,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A3_digit_arm_8.png": {
+      "height": 64,
+      "sha256": "260ffbe835f6da1a225a862f5da61b0beda69d36069171abd6b8ebe6750c32f0",
+      "size": 354,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A3_digit_arm_9.png": {
+      "height": 64,
+      "sha256": "7466584d3eb5e12b14da1661a95e78e7de2d390f748e3431d62ffc1752ce2b38",
+      "size": 334,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30A4_names.png": {
+      "height": 32,
+      "sha256": "878203c70a53f773abe4d498d902aeb29c656506af095ef2c4e82d5c55957a3d",
+      "size": 4306,
+      "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30H0_digit_arm_0.png": {
+      "height": 64,
+      "sha256": "a416d97958375a8d58174841ce26ac0788ee220ca938583ee46bc309d3f4c7cc",
+      "size": 300,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30H0_digit_arm_1.png": {
+      "height": 64,
+      "sha256": "1c31c3ed12ddcfb4131015e1427a2e01fd9041846a76ae61073933e583924279",
+      "size": 229,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30H0_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "0d5139910d02c57d15a79d3de473295160d5ceb5b3c8f168a5c451da700e4d2e",
+      "size": 325,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30H0_digit_arm_3.png": {
+      "height": 64,
+      "sha256": "cbcc2a9307dd7bfc0002c60f75795b28138aa168bf62b3b829fe36487b1f3429",
+      "size": 356,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30H0_digit_arm_4.png": {
+      "height": 64,
+      "sha256": "a2617d53698860bf182316c98d3c827543fb5c45506fbc788b61c2341dd5b48a",
+      "size": 353,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30H0_digit_arm_5.png": {
+      "height": 64,
+      "sha256": "4be3802af88352c775ceeb3e05085022bddbc75c5f4a8fd7e36bdad15689e3e9",
+      "size": 349,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30H0_digit_arm_6.png": {
+      "height": 64,
+      "sha256": "68d2b9b76c47997ab2c6f8c95b09cb157add5ca6c49fa0815f01f0b3796ec6ff",
+      "size": 335,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30H0_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "5d22200ac32961d1285576cdc46a507964ef5a6113fe5b7558407b9b6ea26b18",
+      "size": 288,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30H0_digit_arm_8.png": {
+      "height": 64,
+      "sha256": "8dd716f8547bacc55120b43e96dbcda118128897406dc6fdc773ae1f761bb01c",
+      "size": 351,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/CLE_30H0_digit_arm_9.png": {
+      "height": 64,
+      "sha256": "659c919ac0fe52f2d304c6199cfc288fe031a938fced3ac84e6fffa5770d941c",
+      "size": 331,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "a35f809dd809329417a3dcf94bcf9262b458a553c5e1deb93098762a486c30e9",
+      "size": 389,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "236a970f7dde3874b9473a0124945d4b3062693eedcd97a8e703d76ced8f3b0f",
+      "size": 299,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "b11771be64b397faf40faade12e0ff547ffb0169d79c5fe16f9148801043e0ab",
+      "size": 543,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "dc6305fb117de650b8ef477c1dade98650b3e8d516ae7a2e804bc96f13f7f28a",
+      "size": 517,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "33239526f5eee671408d0182dcd16620729b4c9be071a486b6faa6ace5757c7e",
+      "size": 492,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "8e833cbb5c4c99152665404573c3c9c5158e3dd03350d401e020cd76eadf1acf",
+      "size": 512,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "9ea8f84eb6732ba07122280f1e9d5a88f25d133a965188f73580e38c05912909",
+      "size": 482,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "782e213695fc09c88a4c6d0367adf90cedb913b8c7519d488f010aa24fd67439",
+      "size": 442,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "3ed12456713d753d1b2f88b58f0a94d1a3483497a6294aa87de95bde50d85ab2",
+      "size": 415,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A5_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "eb8a14c40290dfcf9c78c103809074774b4fc9abed316ebbf8c3911ad354ccd3",
+      "size": 459,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "c528e533a29867baba6b7516b6f280f089004b43854ce03d6c069efc921e7c8b",
+      "size": 381,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "25e82a6cdec3c400dad83aaccdeded0b8b89bff16e5d0490268c15777f2b4cc7",
+      "size": 278,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "ad31e5725264e8fb4c91b00405206c159ed2c069382e5f973398ceef0ed19056",
+      "size": 523,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "bce8204113f859f9a07d733b7c331e0a2a4c31a2b35bfb126e28be5ed6c97c9f",
+      "size": 506,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "9ff74e2cd2a066877f842c8f727e2ead6e04db739bb2bb0d9c408727a84d3c74",
+      "size": 480,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "00ed17de473b4d096d28d92b2299eb58fce0d7e58be51e5ca000c18f500b25bc",
+      "size": 503,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "b60b1fd87929aeb378fd978015b8d601b9012f93759091ded45f81056b339922",
+      "size": 473,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "771cd13dba66c8e3583d805f02ecb6989282a39129e9a71be79e5d7a0a0284e7",
+      "size": 418,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "99ac0fa47c037c891cc0407a3ddfbdb6a55d2c20bc9ee06224e83e7227b0dbaf",
+      "size": 407,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DEN_08A6_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "9e1f30b65928b965945c89b10095fe62a602449fbc639b296a7a6719d7200bc5",
+      "size": 454,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_arm_0.png": {
+      "height": 64,
+      "sha256": "f90a52f074f8eabc78d24ef2fcc908358c1761d938783afa6d2e82a29b22728c",
+      "size": 832,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_arm_1.png": {
+      "height": 64,
+      "sha256": "22e360031f7b86a7d062e4211a3888e60e28cef6f89d114cae6743a92add0c50",
+      "size": 601,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "8982eba2316206eb3646bd92072ef4527fd35848e42df2c58c5ea514e3d9c309",
+      "size": 917,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_arm_3.png": {
+      "height": 64,
+      "sha256": "45977a8720abbfcc031582e0e974435bdc8ff72223ae03d4987ce409948c80c7",
+      "size": 1115,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_arm_4.png": {
+      "height": 64,
+      "sha256": "83f897256eac0ee6224cdf76a9552e0d6cda1ccf4dca407cacb80a74fd1d29fa",
+      "size": 1006,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_arm_5.png": {
+      "height": 64,
+      "sha256": "5464f2adfd2c239573c8baa4450c421b99c08d1b03834c3bb173f3513578b5e3",
+      "size": 916,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_arm_6.png": {
+      "height": 64,
+      "sha256": "4fcae551d99890b51b29ed6c759984af84819ca11da473c37e94550e998d1bb9",
+      "size": 925,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "e92b3c715797cf18b7103a4292f33af0c3ca3ccd53416628d368899a4d935de2",
+      "size": 1071,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_arm_8.png": {
+      "height": 64,
+      "sha256": "d6b344c48be9fdab22c0ef42c677125b77a75b9edead0a35a52c4cd8db823ca3",
+      "size": 917,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_arm_9.png": {
+      "height": 64,
+      "sha256": "fe2b01056596363b0d94903b61c50106b42833144a6e4b81f261b1d53c29edc9",
+      "size": 1033,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "cb41b4bc2dee5bcbe3b99ea1b1baf358fd5675a17ce78cd59a850fdd67a29e8d",
+      "size": 738,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "5f90d02ee52de8451e7e533ed1cf79b3a5ae7f20a788854432e9a99b3ec65b21",
+      "size": 540,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "e280eb6b4732a86fbb0f85627b8f3e5be235f75400fa887c131a4605942c3fff",
+      "size": 827,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "fb9c1737a110128637bc11c9fb1db5ffd5832cda669d9eed417587c7889144d5",
+      "size": 952,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "b3d647bedfa451c1e30d9cfd5c942e59f63be452f21624591f6fbadcf9578eb4",
+      "size": 931,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "94315f0e8891a0524772e63324560b572ffcaa3be691baf2095e1b58ea101f78",
+      "size": 858,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "a333d402986396a7e87c94de6d40211343445d62026c7f065675c34e0f6913af",
+      "size": 858,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "6328121511c2e0cd5dcf890771b09c8d0efd95ae6d5e1e974bfe4649b57ebf99",
+      "size": 922,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "ed6227aec8297228d3aefba71fb064ccbbcde1f49797e4a7fb3e6159f364b48e",
+      "size": 870,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A2_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "eca7b850edd4756b0806f69cee7e2f972bac1cd915aec37f38b40cda564eb830",
+      "size": 915,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A9_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "efa81f56a2e92cf563a3630e6d064533c4af84971474f54f8f6ca160789ff265",
+      "size": 404,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A9_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "aa0c44cc91698e05aa5b008e9f7e0e3dd6d1637a0c7bf94975f06952588d5789",
+      "size": 337,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A9_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "a62ff5c5fe04f8af05fb210a2db44beb91622d086e6b78a77543f5495fd99d74",
+      "size": 431,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A9_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "75f684ca4ff90e14c5c38dd44df87d4ec3fe6a5a34843cff79d7c8d70f57f33a",
+      "size": 435,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A9_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "1b52f6529fa25e26c8cfe50e890249db3c8e88064961da80e7a62a635dabc91e",
+      "size": 422,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A9_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "c1d6b4750b1f72185291aef4695a4398cb318f4c3fcce7c4462039465828935c",
+      "size": 436,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A9_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "8bd786a68260915a67236a8ca2500583b0317f12234bbee49c5bfaca9ccf7033",
+      "size": 427,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A9_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "3b403075cd67327b5f6e25aa0bce3e7a858ae0fd360efaae1bb8c27d71900bbb",
+      "size": 442,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A9_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "98d841237d395c4248b555fc57910452d034da9f43a66ce71e5a4ef892a77094",
+      "size": 420,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09A9_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "455b8d996d1b7e555857c69c23c04c466668acbf4d55d0d60686e31cc8387839",
+      "size": 415,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09H2_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "e8aa701b948e5668cab133fce6dfd4566ebaeb77ad7d5e9d480e16363d7dcde8",
+      "size": 1035,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/DET_09H2_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "a772a53be2788b16a985c59a95f68ad1f7f6c4d849dafa3f4462c9d0241bca18",
+      "size": 950,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A0_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "6f0f017ed10b02f39a8d3e2f00f506554b157b3f15fb2d837313047dce29cecc",
+      "size": 780,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A0_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "398afa1b21343d7b0180e7e050d298e2caccd3b356e636b96090c92eb5d875cc",
+      "size": 599,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "43b6f5e4a09e0e942290a67c768027daf2844882c93c7bab33d98a8fb044922b",
+      "size": 1143,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A0_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "5a02d4159dc9e270d28adb164bd68625b35be538194146c841cb84f1686d4657",
+      "size": 1124,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A0_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "c43db61ccd315cd4af7283fdf10231f5eebb03f1bcd232109f22d257b18b92f7",
+      "size": 993,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A0_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "797ba17c0e68f7ee3351f5735a0655d06b80d595bdf4271776ccef24361d4077",
+      "size": 1045,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A0_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "b732288575d6ea488874bfb0695fbfbdbff7830989187c96d6eafd3604fb1ce0",
+      "size": 1013,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "00f98a0b1543acda87258f45c8ee5aa49e70a6551b32191ac09124aa4752a75f",
+      "size": 1143,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A0_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "487d7b0bd5631166e67a3393ca8d5175dbc5b3ebdbd6402642a9c232659abcb6",
+      "size": 779,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A0_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "48d35cddad6dcf680a645a811d60f30a3fed300496d44282b0616602fde956a2",
+      "size": 1089,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A2_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "427e465484f7f12fb4eb807a588b75cf1d8cc46679360e6a5588daddc0b23cab",
+      "size": 627,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A2_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "d0e72f7a06048799301019e025e25df5da9e586451a37419b9c1154bffd8264e",
+      "size": 547,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A2_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "8377e116db9adcef776b69465ab0d086117927333443a43242baadb854a94ef0",
+      "size": 928,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A2_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "e210ce7bedb46aa93cad556180370badef70ab0e943077dd5001b98b589996ca",
+      "size": 910,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A2_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "63b7269bafddf7cea2d5162c0bff515d8e5d2fc327cd8e247b240ea8cb523d9b",
+      "size": 807,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A2_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "12448842ec326ed63d94988e611f38f2c70085bbcfd860bec4ff31b8950c6509",
+      "size": 857,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A2_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "07b1be4e5ce446bcbc8250ceeef1abbf542ed287c9062c5357972cfe5d0aa94d",
+      "size": 843,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A2_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "2aad01d948d273ff2a60d48d75e4ccb26a7b04472888c57af46c29c228302e6e",
+      "size": 888,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A2_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "a71c12a0bd27758aa7e9a27efe687aab431c9a1ba0262ad7d614d91a3078eed4",
+      "size": 789,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37A2_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "709d31acaecd6d25719201b361b1adeea9265aced2382ce9acc16f8872c97915",
+      "size": 880,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37H0_digit_arm_0.png": {
+      "height": 64,
+      "sha256": "356707bf751f14b5562ee63c609786b0dbd4a6e30ad2d730056eb611f61fc183",
+      "size": 627,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37H0_digit_arm_1.png": {
+      "height": 64,
+      "sha256": "9ca3b703130062fb82ed362f5c59883960f1870cf5c7279bb01845a87bea84e2",
+      "size": 599,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37H0_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "58986bfe4953a90518ded7624a1cfe31cd5775c1d5e965571dd5e62c8956747c",
+      "size": 911,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37H0_digit_arm_3.png": {
+      "height": 64,
+      "sha256": "ededef44e83b31ab7a45373f782b3199ad7e797c36829a8a1dd2340f6fcc825e",
+      "size": 911,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37H0_digit_arm_4.png": {
+      "height": 64,
+      "sha256": "1e2c0eda0df750cdfe81cc94c081052d42570f3cfdd8c26797e7f75ff42a4e66",
+      "size": 803,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37H0_digit_arm_5.png": {
+      "height": 64,
+      "sha256": "2d8bb1543358c2233442e3ae01ed56b70a20c410073bd1dd82c2347c4cf868c5",
+      "size": 859,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37H0_digit_arm_6.png": {
+      "height": 64,
+      "sha256": "756a48146b244ab9d8c1e41454356babb338ab33fea0add0238ce97354348ed9",
+      "size": 833,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37H0_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "e994f3f01511cdb6a43dc561894675f47b0faa274f472b0b4b145746583c9793",
+      "size": 1132,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37H0_digit_arm_8.png": {
+      "height": 64,
+      "sha256": "0d7a07e20a2a72642aef817e8d987a390f6fa6a257dc1d526ae5c1fad52b9a9a",
+      "size": 782,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/HOU_37H0_digit_arm_9.png": {
+      "height": 64,
+      "sha256": "f3adf550497bf40962291275edc4fd05a1db57b77e256756d560c07fb1266f35",
+      "size": 882,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/IND_11A0_names.png": {
+      "height": 32,
+      "sha256": "105fc446ecf9168f0ba01e0baae141ff9b4aba910df95327e23c9f60bdae31ce",
+      "size": 1144,
+      "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/IND_11A3_names.png": {
+      "height": 32,
+      "sha256": "4a723c3c1a1dd9f635ecef88135ad1ac49a553ef218d0bb045b0e7ca78686d7b",
+      "size": 1092,
+      "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/JAX_12H0_names.png": {
+      "height": 32,
+      "sha256": "a3e1801c762755899fc9915b77af70dd23b6753262bf34ffe72439805f4cb90d",
+      "size": 1118,
+      "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "c7e9c2ad6f6627e218ac20b7a48eda7e399024f0bf69503eadffaf26313c377d",
+      "size": 504,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "f0bc47f43dfd489a4cc395949d54b22649da075b0252ccd1c63007ad36eb1430",
+      "size": 334,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "e3c85317a9e7b68ed1dd23f3550a4f9e37dcbf83ee5fe25e7a792dee31657894",
+      "size": 596,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "ba1ef3c3f52b55b54442f7c21624bbe022643588b0ff33ec426284bb85595505",
+      "size": 584,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "3a8073698f9386db6ed665bd10c48992b8a4b0ed5675370032e54f2d26328307",
+      "size": 582,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "640f61c426a28285f80a4e461e125a30bd861df3030419e36bc9ed63d87da9d2",
+      "size": 533,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "df2f8e75d7fd710b6549fa71616337bfcb3ea40c73c83bb76a70592d94c0fecc",
+      "size": 599,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "174da3383a812e8863bf3af06a2624c580fe08b8ccbd0789bb8c2889d060a096",
+      "size": 613,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "816cd56c016040df21b91d0672a9aade28267ed5bc9487b6934993f8c318b122",
+      "size": 591,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A0_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "e49547aa7122169d2279cb5d1851029c78d4fbf9c5e2888a38b6d748c21f44cd",
+      "size": 612,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A11_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "30e5f82f6f66acb8a2750217bdf0d892d55e004e87146dde2976d97d8643d57d",
+      "size": 502,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A11_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "4e857a7bc4e95fab93de87f7eeaa5dc2f6781ff02c65647b74410a7ba32ecb66",
+      "size": 327,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A11_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "e970b7c8dc23dd2fff48ba660d11a76097a21b280bb1f89183abec45023e2ecc",
+      "size": 590,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A11_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "d7489b7fb45398bce4e291762fe3a5eda324aac67e4005e8e25956cd2ea93131",
+      "size": 593,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A11_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "8b4bceb268da3adac44458fd8a8084091f0bf5e0f1ba99975fb4f636857c4c65",
+      "size": 587,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A11_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "440b380bf807c9305404816725a73473b825eafebd6c75aab67fb09d807dd9b4",
+      "size": 534,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A11_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "aa31841208f13c29a35cd814a8e6c0111305c08fd36d60ff0978072228ea13f0",
+      "size": 611,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A11_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "3ef47d4cddf8711ace37a71e0f9e7e2496b159f325962ddc6ca3a0f6fe2591a2",
+      "size": 603,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A11_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "8ae02d7d511e1d947a54fdd50067d3f12b500043351db6afba84514a5fb855b0",
+      "size": 593,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A11_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "a025cdc1426d68e0f3111dec784c9a0071131711c4776046a4eeea27e9e388dd",
+      "size": 613,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A9_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "04d33386eba32921c5128dc22ab7d092809f8d20d3368e34cc07c85e7745a865",
+      "size": 515,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A9_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "ba003fc0d1211593809df3ee979bb383b6ad7919e0895a9329ab03ba074c6cc9",
+      "size": 327,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A9_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "e0c718124b172600aaf604ee69d88953899acbdc278a1f0a191d3f189a7374f8",
+      "size": 601,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A9_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "040b2ca0f6dabfa1c16b4fc887b55eb36a6a651d05281b9304ed5f0d57f9dc59",
+      "size": 608,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A9_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "81b9cc4a49734b3a3e9ac404f2babf263119835f4a3e3bf1203ae7bcddb76736",
+      "size": 584,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A9_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "5db922ee79541c352726fb1fac961281f2b46fc6bb249d2455e657497e46d0fe",
+      "size": 543,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A9_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "688d76dfc90cd8e495bc476394c427cef2159e5f041ec816dc5c05799ea1e635",
+      "size": 615,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A9_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "ca1da35bbf9f4c504f93eae4a63f0f50a3c1e4cef660039fe823d28fc0afeb5f",
+      "size": 605,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A9_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "7470db6e31a5d7bf0a4646f1d7a6aa3ff81b48ef5d9545ce8b562a1d9d318fe9",
+      "size": 595,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAC_24A9_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "0076e6280cdaffc7aa2bd3847312c9a498f4447af36f089e7b5f9aca9e90d0a4",
+      "size": 613,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23A0_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "b745bf3e187db7a8ee0218394c169c6f47fee649444ab91b056d6ffed25a85f1",
+      "size": 1483,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23A0_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "b6d9485d036b614e1f8e5bc647d5acb3cc51fea843bbd393574357e8390a8ad5",
+      "size": 442,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23A0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "0f4b4a17970cb683f02ec44024ae0336ce021f8758173ac4e7280b3e197b7c7c",
+      "size": 1314,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23A0_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "244396e1ceae798f82719b280abafe606ca94e4c2d43483b5aa7dd3f4af8960e",
+      "size": 1601,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23A0_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "41a351809a1e58feb3c1628dac78054f2d8bd016dd9aa76add548754de10dd9b",
+      "size": 994,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23A0_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "878e06f4cbe30d9e0068dc5c03eae3a81ebe38e6560cc2cd9edc7d582dad7466",
+      "size": 1359,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23A0_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "2a114c64ce213d6335eb025c426503fa52e386fd0fb279fd65e2349389b29ea3",
+      "size": 1708,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23A0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "f0bce44ad4f7c2dd835cc00a2fb7745292695baa37a18c926b572c47865ad37b",
+      "size": 1047,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23A0_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "ee61670689d5a6ab91cc54c81951b4e991edada28e22f9662670d24abd9fdc5a",
+      "size": 1626,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23A0_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "eacd48b39ff514c6cc36ad47fbec8c6f15d68bf17166ac8c81b75ee262760ff1",
+      "size": 1742,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23H0_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "f6dfc0659b04bf1321d5349d450351d4a703d2eb2bc94db4a0b06bb5d9cdc06c",
+      "size": 1431,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23H0_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "9878e2094173792e57936a6c07d2bd0a094e1c674be1bf495e2540074629c8d9",
+      "size": 414,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23H0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "005011530c34aab6a99d125c1a4cd2d0203e092bdcedefe61ff45d0e6182d781",
+      "size": 1311,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23H0_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "8f8049059f43fd7440fbf5cb0cfeaa073791c56e2b6fe9efbfe5b0927922823d",
+      "size": 1499,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23H0_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "aa1b5e9ca147ceb36a8d779499ee2a6d9bfe5f8a693a845ed2a7295b58c6b9a5",
+      "size": 964,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23H0_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "ed09c31bc5420d2d5589bdd12e89681fc0988668245ad5aeb58e4bb81b7627d9",
+      "size": 1224,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23H0_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "f411b5b6edff08c8ef0ca57fa0bbee4d99eeac2131e5994ba9a02b63b258591f",
+      "size": 1647,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23H0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "1a65c061bfe4d2a8d162d4f2b95a44fa364bc050a2023d707b8aa04de611c477",
+      "size": 1038,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23H0_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "2ec43fa6f2154312e867c07b3da30b6b016ad3d3f00a3594cb236a1c4dc6234c",
+      "size": 1636,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/LAR_23H0_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "328646455fb499e693005c36654b9ba0f850525a97465f1c01084d99ac8cb9ff",
+      "size": 1642,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A0_digit_arm_0.png": {
+      "height": 64,
+      "sha256": "df30c08289246a6e105082d0ff92dd64296dc942b2839dde9ac85347ac55f0b3",
+      "size": 488,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A0_digit_arm_1.png": {
+      "height": 64,
+      "sha256": "582fda688af42947136b2f28c736557372a225db64317ae07d1413d7e1765f4a",
+      "size": 331,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A0_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "676940567e5f2966d1d0963f6e57b26e961acd6c0b6ea80ebd49cad5de9b0b62",
+      "size": 780,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A0_digit_arm_3.png": {
+      "height": 64,
+      "sha256": "72850693bccdf09040724524cde133f7a85f06b4368fa47fa33e8e326a1f60d5",
+      "size": 618,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A0_digit_arm_4.png": {
+      "height": 64,
+      "sha256": "65f7f8b602fa538acd678b524d717aa4042c54f6b60418e8af9adcc0c33c3a52",
+      "size": 546,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A0_digit_arm_5.png": {
+      "height": 64,
+      "sha256": "052710e271f82e248fd40534423de2550dcabf2e142d8b425a0b2c7a1d40e416",
+      "size": 518,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A0_digit_arm_6.png": {
+      "height": 64,
+      "sha256": "529f4a9b0671ed57defe64db2f9c1222df73b7bdbcf3a0795a8a4ce39508dcc7",
+      "size": 560,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A0_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "c33c20fc31071d7adb4deb92d9bae973926dc48d47ed3de5e04193eb3d2224ec",
+      "size": 700,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A0_digit_arm_8.png": {
+      "height": 64,
+      "sha256": "99159e9f8692cec8c14d20b242f36a163633bec6666802db9cfe47e765088889",
+      "size": 651,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A0_digit_arm_9.png": {
+      "height": 64,
+      "sha256": "05bace00b1bf59690dfd09266a03c2b0b81f8df15cc81edb2da2f0cf4e606942",
+      "size": 561,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_arm_0.png": {
+      "height": 64,
+      "sha256": "79c27fcac02295e0d9b6e12c64084d8aa96834fc29cc73f4a8571ef7d270a741",
+      "size": 514,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_arm_1.png": {
+      "height": 64,
+      "sha256": "d33f93cd409003d5491a201b71805571bc0e119c65e94885a53ff50c366bef5b",
+      "size": 326,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "c36498e49d7325c7d8287f1e4ce7c11fd431920b2bf7f7e3b429077f3ca7b825",
+      "size": 783,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_arm_3.png": {
+      "height": 64,
+      "sha256": "6d738c37655dd9687ac92d1e6417215a1bd7a9e5e9108bebd3b4c0d93e07e540",
+      "size": 640,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_arm_4.png": {
+      "height": 64,
+      "sha256": "528b34b0ddeeb3f63177294b8147f30a01dc03f9655feaf6363bf818e6b962d6",
+      "size": 545,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_arm_5.png": {
+      "height": 64,
+      "sha256": "f3b2932a9cb8bc49e2ddb2fbdfeffbe2d5f18594921da7c5b9f1c34f5979fe9d",
+      "size": 519,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_arm_6.png": {
+      "height": 64,
+      "sha256": "870c3fbd0e8ae2fc77e4b4737957152a17f0d2aa250d10f07712e606a2a1e1f6",
+      "size": 570,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "3f6d2536d47e67e58e13dbec013b9a6b09fae12ce467747abe58325aaea399bd",
+      "size": 700,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_arm_8.png": {
+      "height": 64,
+      "sha256": "e180371cf9055760753377f678f4e7e3f6064fb982c85843825803c3959f92a2",
+      "size": 675,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_arm_9.png": {
+      "height": 64,
+      "sha256": "209ecd834a389f6affe39069fcc6dcc0ba535681c19435b120f2a84285f72739",
+      "size": 584,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "798047099ea9567df15357d59ea49b170f2a6d10416226905ddb58b92dc22593",
+      "size": 489,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "7b2afd39c1c5001ff380de7f919dbe33854a9fdc39b1ef91a79008138b01d144",
+      "size": 330,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "fb0993ae0f4fdb2a3a970208156dfcc89bc2353a94cebe356735567e6ec3ac6f",
+      "size": 776,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "727f18bc633ad1c4e5a00c6487375eb98640eb93bfa58ee6eca34d3eb5da7741",
+      "size": 602,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "78f30b94836db615dbe4ec0177959db094b651e71be0342921feaaa0297e41c1",
+      "size": 548,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "9993b755f53a1ac61960721c0bd9474bdf39882b397b487ef61dd8539e70b38f",
+      "size": 525,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "583faedd0ac7b6279427c94c56045404812986ab2cebdc81ad68c1869ed40875",
+      "size": 561,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "30f2f2f5a6bc77ef5caab74b5891effcb5e7681b08899e0feb2086889b4ee8fc",
+      "size": 711,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "01c9f06ea6e706d6a7360464fd3871d727e9f2829b58fd91742c41767ab36d99",
+      "size": 666,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A10_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "1f4a7e4f109abdbd4b9f6e3f75431ed4961512937c80b49ac95dd1f7a948674d",
+      "size": 563,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_0.png": {
+      "height": 64,
+      "sha256": "99cfa85fa74913c9f36306e1479cb7058d16c5cc188102c5105250b8a3ef66c4",
+      "size": 490,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_1.png": {
+      "height": 64,
+      "sha256": "1caf83398bf8e49574792a3ef76b1a03b2144a8bbbfcd1550caeed5a47a22b87",
+      "size": 326,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "b455dc62952803db1df4a401ddb00bb2fb7bd5ffa7ca2e65742c4c336e721be2",
+      "size": 774,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_3.png": {
+      "height": 64,
+      "sha256": "ff4ccfe390b84081a52a690187c4438654c5614116f45004dddba3bf1c0b7cdf",
+      "size": 617,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_4.png": {
+      "height": 64,
+      "sha256": "f42b979abd993139887fac033415ba94e46d151c6ae136d068802e7603e255b5",
+      "size": 545,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_5.png": {
+      "height": 64,
+      "sha256": "b0c26390b23dd258dfacb58ac012f067ed9a0268021c3e9e307b4095db7cf38d",
+      "size": 520,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_6.png": {
+      "height": 64,
+      "sha256": "e4c468be954bccf283227858c37455e1f9ae4aded723c54a4f2075e907809c20",
+      "size": 562,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "754f8ee1b7fa4ce4ca1fc74a26d9ca7b0919472dee584a538608551ebf8bf653",
+      "size": 701,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_8.png": {
+      "height": 64,
+      "sha256": "0996e6a6174a93a955a6b53fa55bbfcf3a7438b052557b82abf7dce235b4bb31",
+      "size": 654,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14H0_digit_arm_9.png": {
+      "height": 64,
+      "sha256": "d3bae739e0900d2174aa75a1815f75c9ae85fbfab7b18e6e0cda049fdc2a91c4",
+      "size": 563,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16A0_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "14d7bc9ce2ea84c8274f883b9bf3df7dce7d0dfca44c65c1c11edb81b5ad3de0",
+      "size": 579,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16A0_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "84c16129ffa3dd301bb4a68ef1f05929d68366e2cbc6ea354ad58e9346203827",
+      "size": 544,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16A0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "6a63705c0dcc114305620b11b55cc28a1d617a68826c986f7588adb4306cf35e",
+      "size": 1131,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16A0_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "28af6973adb17015e752a575428959703d01d1afdda7dcec3d9940067f3da860",
+      "size": 979,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16A0_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "749b78896bff567c55b52ae43ba4b926795bb379e5077c54756c6352b76b4f50",
+      "size": 1230,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16A0_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "07a45a13455ba19e7d663eacbdd87ce9fafe74261e883a2a55362589c804a3bb",
+      "size": 980,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16A0_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "cd505b51852c91e35cdb71778b65330c3037ddb64a429723515d1a4ffaf66639",
+      "size": 901,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16A0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "34f8248e262c4ea3d8874fcdeb9f7d71762e39f899ef9c5b03983578a650bedf",
+      "size": 925,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16A0_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "07e3e0203bbf73b75875ed36daef65ad62ceb272f3551d74e5cf225c3a77bb3d",
+      "size": 846,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16A0_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "e4850068561851c9d088231c9dcabe4b1e1500a38321256a0a052bfca4002ed8",
+      "size": 864,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16H0_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "9221970ed7e83c00c7421d0114de9ed4fe70c3b4db51cd2fc63c1dd0c9dce112",
+      "size": 674,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16H0_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "6169a54d73b6b63a555cb50b48dd668b2e8469cd12903f44f75b52750809df03",
+      "size": 522,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16H0_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "7814d5955592bac35b85edb8c962a469e500bd24bde2917e0d3fda5a851142bf",
+      "size": 1075,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16H0_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "6e36e970cefe6520cc8e8932627e0314ddd13c30e6354ae03cb5a3a0a2dc4b53",
+      "size": 950,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16H0_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "38c6f937ed0194d60fb47a73632b206b6de3bb66ebf9464936b03eba620f2346",
+      "size": 1139,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16H0_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "5d863be30d5ac25da79ccce5525a8f6a6f1f6b640acbb9ec9f94c8eab9c3414b",
+      "size": 950,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16H0_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "cb9899775442c027c9b93d7e93cfb94a828d9d4284f72d537d2a2fbeae1156eb",
+      "size": 922,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16H0_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "8e536f6829a6a0d526df94191c8d45886932685fbf8ef19215df19e26a6918e7",
+      "size": 886,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16H0_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "8eafecc103bccdc8eae30914dcbd2407b05211f718f41dcccf8a22f48630cfff",
+      "size": 899,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NE_16H0_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "e75452eb6951aae52b7bc894efdee112bf105534f98a42d9b4a22a03d8e35887",
+      "size": 898,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NO_17A1_names.png": {
+      "height": 32,
+      "sha256": "0ea0b1b33bb2990f60786670b08022be2f3b22790068c864eed713b90e562b38",
+      "size": 1060,
+      "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NYG_18A7_names.png": {
+      "height": 32,
+      "sha256": "25ddb97de1d977bf31ce46ab0fc2092466b88442cd1e43e558ced81bd5b49860",
+      "size": 1148,
+      "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_names.png": {
+      "height": 32,
+      "sha256": "451db8b57f45e39014cdc6c567dc104ec2433ee38b69f61b9cfff72ff19bf0f5",
+      "size": 1030,
+      "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26A4_digit_arm_0.png": {
+      "height": 64,
+      "sha256": "d8052fc3c0cf0843fb217986b0aa8a279a7dae73161079bf6441c48efe8bcec0",
+      "size": 649,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26A4_digit_arm_1.png": {
+      "height": 64,
+      "sha256": "8f6ed15ccb5471d732cb41fc07cc18db05d10c56d3bcee3e4b5e66d8b78a93a7",
+      "size": 553,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26A4_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "f724bca72f4fbd1793b56131570540e86d64a80e8957aa25f9ab877ae6a957c7",
+      "size": 962,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26A4_digit_arm_3.png": {
+      "height": 64,
+      "sha256": "26898b22a69f5a620b5d1e54cd5c48525255395acdbddfa4b0a07936ef6096e3",
+      "size": 885,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26A4_digit_arm_4.png": {
+      "height": 64,
+      "sha256": "8308fb922965d82261c3b1621b56307be3dd1e6ccf75982ad55345fbc8f90e7d",
+      "size": 575,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26A4_digit_arm_5.png": {
+      "height": 64,
+      "sha256": "bc9c451d71b966df65cd766d2c621ee1e7a383e05fb301464e4b208303819d6a",
+      "size": 757,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26A4_digit_arm_6.png": {
+      "height": 64,
+      "sha256": "46512c10e320ae191b0eaadea422e856e9b84456acfc738f9a4c4b9e3ccf52df",
+      "size": 830,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26A4_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "198610b383d437df4217486df069d35bc53b98ad67ecb28445a03172e636b7d4",
+      "size": 1131,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26A4_digit_arm_8.png": {
+      "height": 64,
+      "sha256": "905fc164624b7f43d88ab5fca9b332e5fe58e5c2fe5475a0b4c8e17518695cd9",
+      "size": 1026,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26A4_digit_arm_9.png": {
+      "height": 64,
+      "sha256": "7c6e79163b93f9a98d13bd88d5d3307ef5a8647d3bb242e19b403091e0fc5351",
+      "size": 841,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26A4_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "83ceb532e12991ffa1dcf5f4a18514a3f28bb9c8bf85c7dae45c9ff2c6372c1a",
+      "size": 1058,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_arm_0.png": {
+      "height": 64,
+      "sha256": "5522da470f2f4dccc70ddc2d25c3caa1149cbdfc628cca43f385fde77f846046",
+      "size": 507,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_arm_1.png": {
+      "height": 64,
+      "sha256": "2858a2994c4b1913722aa54eba83c439d5b066d68d1ad4e3071759a22461b454",
+      "size": 394,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_arm_2.png": {
+      "height": 64,
+      "sha256": "e3755591b979848e81213048475056bde74659218ef9c42c9c4e1df77eb7295f",
+      "size": 758,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_arm_3.png": {
+      "height": 64,
+      "sha256": "e81fed2a5ee6e8dfeaac10efc0e98bfed082888101ae2d38060fbb5022426a24",
+      "size": 630,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_arm_4.png": {
+      "height": 64,
+      "sha256": "784dcd24db3181bc389f155b598122c8a2e18155a29359dd322ec1b83b35c03f",
+      "size": 512,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_arm_5.png": {
+      "height": 64,
+      "sha256": "1c3c86a7ee9fda8ed58f184446db0b43bf1b82ff897207e4b725dad1512dd23a",
+      "size": 559,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_arm_6.png": {
+      "height": 64,
+      "sha256": "ac2de5f689909a731cc6f3d857f95df3e35ea3d0339f13227052b544f3e45432",
+      "size": 598,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_arm_7.png": {
+      "height": 64,
+      "sha256": "a809e73126f928a52c2fd38da40e97a2b23707c6f88dc3d6f8ec100a2cc1ae3e",
+      "size": 778,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_arm_8.png": {
+      "height": 64,
+      "sha256": "697e998527e61adac578b5e307902e403e2703bb8fe6a7a9b0f8e578568c6fb8",
+      "size": 700,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_arm_9.png": {
+      "height": 64,
+      "sha256": "ce5afdb2cd5487bba8a50b46136573987e6e7eca50fec522d2b26d5f93490aa2",
+      "size": 604,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "083c88a07c7e3dc3bac301d6832b83a54834ad4cd1600a6e8007a2a483eb03ee",
+      "size": 582,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "ce37992056399981e2592c3f63a400360d23ded3dda420dd76055489764c1b35",
+      "size": 559,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "d8529485d373855b105f693bdb295e98f8d86f256ea87e242371305c89155879",
+      "size": 1027,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "425f789068362904e8dd5aebbba7d6bb63dc76b104ca3f18eea703b8667dc187",
+      "size": 906,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "c104c1bf9cd5b1d83650e1a7805817c97289d63cb4d737158aff8a0eea5127e7",
+      "size": 576,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "817ea382ab901864c9110fffd4b97784d01d2e2009774b98d902205d936ef1a8",
+      "size": 772,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "55fc9f0b1c3f5352171c52c073ba320a1aa528681e1d5b1da4ee1607298bb4e5",
+      "size": 818,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "59744929167340b0595a2a14b97f9c63232170a7d10e8e15b6e63defdb64acdb",
+      "size": 1082,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "70fa0e77275476d2e70c4e03020d57cb1b5d2ea23b15d4de8f08ab41b4c5c7c1",
+      "size": 1035,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/SEA_26H4_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "9223e1b060917d1157298f098815af7d63feee1ce589a2b2330044e1c49c3473",
+      "size": 850,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TB_27A0_names.png": {
+      "height": 32,
+      "sha256": "928ee9dac1d2a42c060ae59d0d6635e989e718c1cd5915c66b30109ef15fa0e2",
+      "size": 940,
+      "width": 1024
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_0.png": {
+      "height": 32,
+      "sha256": "6aa01acc5a56e677cdbcdc72da1b28ea516c97e1a9ced5d245702016edf8ebb7",
+      "size": 390,
+      "width": 32
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_1.png": {
+      "height": 32,
+      "sha256": "64fd06af6bb93bc40b7df2bb5fd1054b9944e7c0ae25be42f1eadab0d8ad94d1",
+      "size": 251,
+      "width": 32
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_2.png": {
+      "height": 32,
+      "sha256": "94af7fef0df5af8927e649ff0cad3cdeb9eed269fe668c1d32f9203cad2f6bc2",
+      "size": 420,
+      "width": 32
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_3.png": {
+      "height": 32,
+      "sha256": "c8c0247de22449de33370d03979984b72bf14633ce771b6824d29dd4c8476135",
+      "size": 449,
+      "width": 32
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_4.png": {
+      "height": 32,
+      "sha256": "6940c97d59e6afbc359cb3b5160450884d9f5b473ccf522a76b2ef9dbd80bcad",
+      "size": 321,
+      "width": 32
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_5.png": {
+      "height": 32,
+      "sha256": "1714febcf1e12de93c7deb92f2c1314077d41e46a12a0325261b6b45033317ad",
+      "size": 385,
+      "width": 32
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_6.png": {
+      "height": 32,
+      "sha256": "3c24484eaee1593bd3816fb7b3b6b92d84ac5a06c12bd705d7881dd934f41c1b",
+      "size": 417,
+      "width": 32
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_7.png": {
+      "height": 32,
+      "sha256": "05f6edd7aa8ac85aa00a958f4103eac28cfe7e04871cd7c9ffbe07e11eabde83",
+      "size": 334,
+      "width": 32
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_8.png": {
+      "height": 32,
+      "sha256": "82a45cb22b7d7da34afeacc1497ee048ce170325b878ceb3f89d9e18a7e24c5a",
+      "size": 463,
+      "width": 32
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_9.png": {
+      "height": 32,
+      "sha256": "7ada4d852ee5b84106294425387973457f13cc02311802e0a2a05478798353d3",
+      "size": 439,
+      "width": 32
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_0.png": {
+      "height": 64,
+      "sha256": "a2d641093d145247f216de24083b7d1438dc871ed27dd577e9181c042c043914",
+      "size": 699,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_1.png": {
+      "height": 64,
+      "sha256": "83a530465269c88986635f3e7ee0713332148ad16094628d299b952f9f70f9b4",
+      "size": 354,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_2.png": {
+      "height": 64,
+      "sha256": "e1aad4fad0034f4e42c14d16add8f09b5626bf9a47b49b489456ee5ef45cc4dd",
+      "size": 662,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_3.png": {
+      "height": 64,
+      "sha256": "8742d99fb28cdb9a73be8c26a46175d95572c5ef08a2ff75874f94cc8036422e",
+      "size": 815,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_4.png": {
+      "height": 64,
+      "sha256": "1d1fa9e4d5bc779add22fdb6730a570787ba54ce29e8a9efe025920a891aea63",
+      "size": 473,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_5.png": {
+      "height": 64,
+      "sha256": "ab86fb70d41064d0c01a74a491b4116def644e5d65bbef6593ab0dbde424afde",
+      "size": 659,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_6.png": {
+      "height": 64,
+      "sha256": "c13bf9cddb161ab75bdbfa1375969d55b8ea0acc370b34db63c40eaa4da01ed4",
+      "size": 768,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_7.png": {
+      "height": 64,
+      "sha256": "34fc69d02c88c01d0d63d01821885e4e8ce5387e44378169ff72166c596dc87f",
+      "size": 503,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_8.png": {
+      "height": 64,
+      "sha256": "5c1385b458f26e11bc5d04bf9884ca1936f74fbe42144c0a0f7a03c4fdeb93ec",
+      "size": 809,
+      "width": 64
+    },
+    "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_9.png": {
+      "height": 64,
+      "sha256": "c75073a37930a06be156832835ba4c8bf6821a5cb4342f3514b288d40c316add",
+      "size": 781,
       "width": 64
     },
     "data/nfl2k5_hair_styles/art/braids_dark.png": {

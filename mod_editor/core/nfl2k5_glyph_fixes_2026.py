@@ -26,6 +26,13 @@
    the atlas offsets stay). The rows ride in the b81-uniforms digit document and are pinned to the strip a build holds
    when that step runs (after the nameplate pass).
 
+5. b81-retail-free-art (``digit_derived``): b81u digits that the uniform lane made by editing a glyph the Studio itself
+   builds from a retail donor (whole rows and columns repeated or removed, fill strokes grown or thinned with the
+   outline rebuilt, an edge ring or an inline recoloured) do not ship as pictures. The row carries the edit as
+   operations with their parameters (``derive``); the Studio applies them at build time to the glyph the build holds
+   (the retail-derived v0.9 digit, made from the user's own disc) and compiles the result through the same route as
+   ``digit_png``. ``rgba_sha256`` pins the derived picture, ``after_sha256`` the compiled span, both unchanged.
+
 The Studio runs this after its uniform layers. Exact input and output pins limit it to the known SOFTDRINK spans:
 retail kits and textures a user's own recipe replaced are left alone (strict refuses them).
 """
@@ -41,7 +48,7 @@ import struct
 import numpy as np
 
 from . import nfl2k5_bump_texture_writer as bump
-from nfl_txtr import TxtrError, decode_chunk, parse_chunks, parse_texture, swizzle_2d
+from nfl_txtr import TxtrError, decode_chunk, parse_chunks, parse_texture, swizzle_2d, texture_to_rgba
 from nfl_vc_lz_fill import rebuild_fixed_span_filled
 
 SCHEMA = "nfl2k5_glyph_fixes_2026/v1"
@@ -51,7 +58,8 @@ ART = ROOT / "data/nfl2k5_glyph_fixes_2026"
 #: b81-uniforms (beta 81): digits redrawn against this season's game highlights, pinned to the finished digits of the
 #: released v0.9 build and applied as the last uniform step (``apply_digits_b81``). The document names its own art folder.
 DATA_B81U = ROOT / "data/nfl2k5_glyph_fixes_2026_b81u.json"
-KINDS = ("names_retint", "digit_png", "digit_retint", "names_png", "name_widths")
+KINDS = ("names_retint", "digit_png", "digit_retint", "names_png", "name_widths", "digit_derived")
+DERIVE_OPS = ("remap", "embolden", "edge", "inline_fill", "inline_dark", "recolour")
 NAMES_CHUNK = 43
 NAME_CHUNK = 44                         # the raw NAME chunk: 29 (atlas offset, glyph width) pairs for ' - A..Z c
 NAME_METRICS = slice(0x2C, 0xA0)
@@ -173,15 +181,26 @@ def compile_names(span, retail_span, row, *, name="names", storage="VC_P8_LINEAR
 
 def compile_digit(span, png_payload):
     """Authored digit PNG -> the pinned digit span, through the Studio's digit preparation and fixed-span fit."""
-    from PIL import Image
-    from nfl_tset_png_import import decode_rgba_png, palette_bytes
-    from nfl_txtr import rebuild_compressed_chunk_fixed_span
-    from .nfl2k5_digit_art import fit_digit, registration_mode
+    from nfl_tset_png_import import decode_rgba_png
+    from .nfl2k5_digit_art import registration_mode
     chunk, decoded, info, texture = _one_txtr(span)
-    require(texture.format_name == "P8", "digit textures are swizzled P8")
     width, height, rgba = decode_rgba_png(png_payload, (texture.width, texture.height))
     require((width, height) == (texture.width, texture.height), "digit PNG size differs")
     require(registration_mode(png_payload) == "as_authored", "fixed digits are placed As authored")
+    return compile_digit_rgba(span, rgba)
+
+
+def compile_digit_rgba(span, rgba):
+    """A digit picture (level-0 RGBA bytes, placed As authored) -> the pinned digit span (``compile_digit``'s route)."""
+    from PIL import Image
+    from nfl_tset_png_import import palette_bytes
+    from nfl_txtr import rebuild_compressed_chunk_fixed_span
+    from .nfl2k5_digit_art import fit_digit
+    chunk, decoded, info, texture = _one_txtr(span)
+    require(texture.format_name == "P8", "digit textures are swizzled P8")
+    width, height = texture.width, texture.height
+    rgba = bytes(rgba)
+    require(len(rgba) == width * height * 4, "digit picture size differs")
     sizes = [(max(texture.width >> i, 1), max(texture.height >> i, 1)) for i in range(texture.mip_levels)]
     chain = sum(w * h for w, h in sizes)
     video = decoded[chunk.system_bytes:]
@@ -211,6 +230,128 @@ def compile_digit(span, png_payload):
             "digit round trip differs")
     return rebuilt_span, dict(texture=texture.name, palette_entries=len(bounded.palette),
                               registration=receipt["registration"]["mode"])
+
+
+# -- digits derived at build time from the glyph the build holds (b81-retail-free-art) --------------------------------
+# The uniform lane's edits as operations (tools/b81_uniforms/glyph_derive.py finds their parameters): BATCH5 reshape.py
+# (whole rows and columns repeated or removed, then placed: ``remap``), BATCH5 embolden.py (``embolden``), BATCH6
+# edge6.py (``edge``), BATCH5 inline3.py / DECISIONS tb_four.py (``inline_fill``) and tb_home_inline.py (``inline_dark``).
+
+def _grow(mask, n=1, eight=False):
+    m = np.asarray(mask, bool)
+    for _ in range(n):
+        o = m.copy()
+        o[1:] |= m[:-1]
+        o[:-1] |= m[1:]
+        o[:, 1:] |= m[:, :-1]
+        o[:, :-1] |= m[:, 1:]
+        if eight:
+            o[1:, 1:] |= m[:-1, :-1]
+            o[1:, :-1] |= m[:-1, 1:]
+            o[:-1, 1:] |= m[1:, :-1]
+            o[:-1, :-1] |= m[1:, 1:]
+        m = o
+    return m
+
+
+def _shrink(mask, n=1):
+    m = np.asarray(mask, bool)
+    for _ in range(n):
+        o = m.copy()
+        o[1:] &= m[:-1]
+        o[0] = False
+        o[:-1] &= m[1:]
+        o[-1] = False
+        o[:, 1:] &= m[:, :-1]
+        o[:, 0] = False
+        o[:, :-1] &= m[:, 1:]
+        o[:, -1] = False
+        m = o
+    return m
+
+
+def _taxicab_depth(mask):
+    """Taxicab distance of each texel of ``mask`` to the nearest texel outside it (0 outside)."""
+    depth = np.zeros(mask.shape, np.int64)
+    current = np.asarray(mask, bool)
+    k = 0
+    while current.any():
+        k += 1
+        depth[current] = k
+        current = _shrink(current)
+    return depth
+
+
+def _colour(text):
+    return None if text is None else np.array(hex_rgb(text), np.int64)
+
+
+def derive_digit(before_rgba, ops):
+    """The digit picture an op list makes from the glyph the build holds (level-0 RGBA, uint8 h x w x 4)."""
+    a = np.array(before_rgba, np.uint8, copy=True)
+    for op in ops:
+        kind = op["op"]
+        require(kind in DERIVE_OPS, "unknown digit operation " + repr(kind))
+        if kind == "remap":
+            pad = np.zeros((a.shape[0] + 1, a.shape[1] + 1, 4), np.uint8)
+            pad[:a.shape[0], :a.shape[1]] = a
+            rows = np.array([r if r >= 0 else a.shape[0] for r in op["rows"]])
+            cols = np.array([c if c >= 0 else a.shape[1] for c in op["cols"]])
+            require(rows.max() <= a.shape[0] and cols.max() <= a.shape[1], "remap outside the glyph")
+            a = pad[rows][:, cols]
+        elif kind == "embolden":
+            b = np.pad(a.astype(np.int64), ((8, 8), (8, 8), (0, 0)))
+            fill_c, out_c, k = _colour(op["fill"]), _colour(op["outline"]), int(op["k"])
+            glyph = b[..., 3] >= 128
+            fill = glyph & (np.abs(b[..., :3] - fill_c).max(-1) <= 40)
+            nf = fill.copy() if k == 0 else _grow(fill, k) if k > 0 else _shrink(fill, -k)
+            if op["extra"] and k > 0:
+                nf = nf | np.roll(nf, 1, axis=1) | np.roll(nf, 1, axis=0)
+            elif op["extra"]:
+                nf = nf & np.roll(nf, -1, axis=1) & np.roll(nf, -1, axis=0)
+            ng = _grow(nf, int(op["ring"])) if op["ring"] else nf
+            out = np.zeros_like(b)
+            out[ng, 3] = 255
+            out[ng, :3] = out_c if out_c is not None else fill_c
+            out[nf, :3] = fill_c
+            a = out.astype(np.uint8)
+        elif kind == "edge":
+            opaque = a[..., 3] >= 128
+            depth = _taxicab_depth(np.pad(opaque, 1))[1:-1, 1:-1]
+            is_edge = opaque & (np.abs(a[..., :3].astype(np.int64) - _colour(op["edge"])).sum(-1) <= 24)
+            a[is_edge & (depth > int(op["keep"])), :3] = _colour(op["fill"])
+        elif kind == "recolour":
+            # exact colour swaps (a club colour corrected): every visible texel of a listed colour takes the new one
+            rgb = a[..., :3].copy()
+            for old, new in op["pairs"]:
+                hit = (a[..., 3] > 0) & (rgb == _colour(old)).all(-1)
+                a[hit, :3] = _colour(new)
+        elif kind == "inline_fill":
+            opaque = a[..., 3] == 255
+            fill = opaque & (np.abs(a[..., :3].astype(np.int64) - _colour(op["fill"])).max(-1) <= 24)
+            a[fill & _grow(~fill, 1, eight=True), :3] = _colour(op["colour"])
+        else:
+            opaque = a[..., 3] == 255
+            soft = (a[..., 3] > 0) & ~opaque
+            dark = opaque & (a[..., :3].max(-1) < 0x60)
+            inner = opaque & ~dark
+            ring = inner & _grow(dark | soft | (a[..., 3] == 0), 1, eight=True)
+            a[ring, :3] = _colour(op["colour"])
+            a[inner & ~ring, :3] = 255
+    return a
+
+
+def digit_level0(span):
+    """Level 0 of a digit span as RGBA (the glyph the build holds)."""
+    chunk, decoded, _info, texture = _one_txtr(span)
+    return np.frombuffer(texture_to_rgba(decoded, chunk, texture), np.uint8).reshape(texture.height, texture.width, 4)
+
+
+def compile_derived_digit(span, row):
+    """A ``digit_derived`` row: its operations on the glyph the build holds, then the ``digit_png`` route."""
+    rgba = derive_digit(digit_level0(span), row["derive"])
+    require(sha(rgba.tobytes()) == row["rgba_sha256"], "the derived digit differs from its pin")
+    return compile_digit_rgba(span, rgba.tobytes())
 
 
 # -- authored nameplate letters (b81-uniforms batch 4) ---------------------------------------------------------------
@@ -416,6 +557,8 @@ def compile_resource(selector, raw, *, strict=True, document=None, retail_kits=N
                 new, detail = compile_names(span, donor_span, row, name=row["texture"], storage="P8")
         elif row["kind"] == "name_widths":
             new, detail = compile_name_widths(span, row["widths"])
+        elif row["kind"] == "digit_derived":
+            new, detail = compile_derived_digit(span, row)
         else:
             payload = (art_folder(document) / row["png"]).read_bytes()
             require(sha(payload) == row["png_sha256"], selector + ": authored " +

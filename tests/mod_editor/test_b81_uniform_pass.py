@@ -46,6 +46,11 @@ REDRAWN += RAVENS + ("20A0",)
 # 2026 numerals wear (27A0, 27H0), Patriots at full height (16H0, 16A0); the Browns road set (30A0, already redrawn) in
 # the charcoal the photographs show
 REDRAWN += ("27A0", "27H0", "16H0", "16A0")
+# b81-retail-free-art: sets whose redraw edited a glyph the Studio builds from a retail donor and that no operation list
+# rebuilds exactly (or that were drawn from features measured on that glyph) are withdrawn; those kits keep the digits
+# the build holds (retail-free/REVIEW_ME.md)
+RETAIL_FREE_WITHDRAWN = ("18H0", "18A0", "18H7", "18A7", "07H0", "10A5", "10H5")
+REDRAWN = tuple(s for s in REDRAWN if s not in RETAIL_FREE_WITHDRAWN)
 #: the Buccaneers' orange inline (decision 1) and the Browns' road charcoal (decision 3)
 TB_ORANGE = (0xD9, 0x64, 0x28)
 CLE_CHARCOAL = (0x3B, 0x3B, 0x3B)
@@ -64,6 +69,35 @@ def kit_rows():
 
 def digit_rows():
     return [r for r in gf.digits_b81()["textures"] if r["kind"] == "digit_png"]
+
+
+def all_digit_rows():
+    """b81-retail-free-art: the shipped pictures and the ``digit_derived`` rows made at build time."""
+    return [r for r in gf.digits_b81()["textures"] if r["kind"] in ("digit_png", "digit_derived")]
+
+
+_KITS = {}
+
+
+def picture(row):
+    """A digit row's picture: its PNG, or for a ``digit_derived`` row its operations on the glyph the released disc
+    holds (None without the disc: the picture exists only at build time)."""
+    if row["kind"] == "digit_png":
+        return png_rgba(gf.art_folder(gf.digits_b81()) / row["png"])[0]
+    if not DISC.is_file():
+        return None
+    if not _KITS:
+        from mod_editor.core import nfl2k5_bump_texture_writer as bump
+        wanted = {r["selector"] for r in all_digit_rows()}
+        with bump._Image.open(DISC, writable=False) as image:
+            index = bump._parsed_index(image)
+            for entry in index.entries:
+                name = bump.logical_name_for(entry.name_id)
+                if name and name[:-4] in wanted:
+                    _KITS[name[:-4]] = image.read_segments(index.sub_extents(entry, 0, entry.size))
+    raw = _KITS[row["selector"]]
+    chunk = gf._chunk_for(raw, row["chunk"])
+    return gf.derive_digit(gf.digit_level0(raw[chunk.offset:chunk.end_offset]), row["derive"])
 
 
 def run_texels(row):
@@ -229,7 +263,11 @@ class DigitDocument(unittest.TestCase):
             key = (row["selector"], row["chunk"])
             self.assertNotIn(key, seen)
             seen.add(key)
-            self.assertIn(row["kind"], ("digit_png", "names_png", "name_widths"))
+            self.assertIn(row["kind"], ("digit_png", "names_png", "name_widths", "digit_derived"))
+            if row["kind"] == "digit_derived":              # b81-retail-free-art: no picture ships
+                self.assertNotIn("png", row)
+                self.assertEqual(len(row["rgba_sha256"]), 64)
+                continue
             if row["kind"] != "digit_png":
                 continue                                    # the nameplate rows: see NameplateDocument
             self.assertEqual(row["texture"], str(48 + row["chunk"] - 13) if row["chunk"] < 23
@@ -243,7 +281,7 @@ class DigitDocument(unittest.TestCase):
 
     def test_the_redrawn_sets_are_whole_ten_jersey_digits_and_arm_digits_where_the_kit_has_them(self):
         by = {}
-        for row in digit_rows():
+        for row in all_digit_rows():
             by.setdefault(row["selector"], set()).add(row["chunk"])
         self.assertEqual(tuple(sorted(by)), tuple(sorted(REDRAWN)))
         for selector, chunks in by.items():
@@ -254,15 +292,20 @@ class DigitDocument(unittest.TestCase):
     def test_art_is_as_authored_and_in_flat_colours(self):
         from mod_editor.core.nfl2k5_digit_art import REGISTRATION_KEY, registration_mode
         folder = gf.art_folder(gf.digits_b81())
-        for path in sorted({folder / r["png"] for r in digit_rows()}):
+        for path in sorted({folder / r["png"] for r in digit_rows() if "png" in r}):
             rgba, info = png_rgba(path)
-            self.assertIn(rgba.shape, ((64, 64, 4), (32, 32, 4)), path.name)
             self.assertEqual(info.get(REGISTRATION_KEY), "as_authored", path.name)
             self.assertEqual(registration_mode(path.read_bytes()), "as_authored")
+        for row in all_digit_rows():
+            rgba = picture(row)
+            if rgba is None:
+                continue
+            path = Path(row.get("png") or "%s_%s_%d" % (row["selector"], row["texture"], row["chunk"]))
+            self.assertIn(rgba.shape, ((64, 64, 4), (32, 32, 4)), path.name)
             solid = rgba[rgba[..., 3] == 255][:, :3]
             colours, counts = np.unique(solid, axis=0, return_counts=True)
             self.assertGreater(len(solid), 500 if rgba.shape[0] == 64 else 100, path.name)
-            layers = 4 if path.name.split("_")[1] in FOUR_LAYERS else 3
+            layers = 4 if row["selector"] in FOUR_LAYERS else 3
             top = counts.argsort()[::-1][:layers]
             self.assertGreater(counts[top].sum(), 0.8 * len(solid), path.name)        # a fill, an outline, at most an inline
 
@@ -270,18 +313,22 @@ class DigitDocument(unittest.TestCase):
         # batch 3: a number is 62 rows of its 64 cell (22.2 cm on the player, the collar shield 0.141 of that as on the
         # real jersey). The pack drew several sets 50 to 56 rows tall. Two-digit numbers are cut outside columns 12-51.
         folder = gf.art_folder(gf.digits_b81())
-        for row in digit_rows():
+        for row in all_digit_rows():
             if row["chunk"] > 22:
                 continue
-            solid = png_rgba(folder / row["png"])[0][..., 3] > 127
+            rgba = picture(row)
+            if rgba is None:
+                continue
+            solid = rgba[..., 3] > 127
             rows = np.flatnonzero(solid.any(axis=1)); cols = np.flatnonzero(solid.any(axis=0))
-            self.assertGreaterEqual(int(rows.max() - rows.min() + 1), 61, row["png"])
-            self.assertTrue(12 <= cols.min() and cols.max() <= 51, (row["png"], int(cols.min()), int(cols.max())))
+            name = row.get("png", (row["selector"], row["chunk"]))
+            self.assertGreaterEqual(int(rows.max() - rows.min() + 1), 61, name)
+            self.assertTrue(12 <= cols.min() and cols.max() <= 51, (name, int(cols.min()), int(cols.max())))
 
     def test_number_widths_follow_the_measured_real_numbers(self):
         # width of the 0 in texels at 62 rows = real width over height x 62 / 1.048 (the cell is 23.8 by 22.7 cm)
         folder = gf.art_folder(gf.digits_b81())
-        by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
+        by = {(r["selector"], r["chunk"]): r for r in all_digit_rows()}
         for selector, width in (("18H0", 37), ("18A0", 37), ("18H7", 37), ("24A0", 35), ("00H0", 37), ("00A0", 37),
                                 ("01H0", 39), ("06H0", 31), ("14H0", 37), ("07H0", 35), ("28H7", 36),   # 28H7: 34 and its 2 texel dark layer
                                 # batch 5: real wider than 40 columns allow (two-digit numbers are cut outside 12-51): 40
@@ -293,7 +340,12 @@ class DigitDocument(unittest.TestCase):
                                 ("30H3", 35), ("37A2", 40), ("37H2", 40),
                                 # batch 6: the Ravens 0 at 33 (real 0.554; the released 37) and the Raiders road as released
                                 ("02H0", 33), ("02A0", 33), ("02A2", 33), ("02A3", 33), ("02H2", 33), ("02H3", 33), ("20A0", 37)):
-            solid = png_rgba(folder / by[(selector, 13)])[0][..., 3] > 127
+            if selector in RETAIL_FREE_WITHDRAWN:
+                continue
+            rgba = picture(by[(selector, 13)])
+            if rgba is None:
+                continue
+            solid = rgba[..., 3] > 127
             cols = np.flatnonzero(solid.any(axis=0))
             self.assertLessEqual(abs(int(cols.max() - cols.min() + 1) - width), 1, selector)
 
@@ -368,17 +420,19 @@ class DigitDocument(unittest.TestCase):
         # ground: an orange texel always lies between them, on every digit, jersey and arm.
         from scipy import ndimage
         folder = gf.art_folder(gf.digits_b81())
-        for row in digit_rows():
+        for row in all_digit_rows():
             if row["selector"] not in ("27A0", "27H0"):
                 continue
-            rgba, _info = png_rgba(folder / row["png"])
+            rgba = picture(row)
+            if rgba is None:
+                continue
             opaque = rgba[..., 3] == 255
             colours, counts = np.unique(rgba[opaque][:, :3], axis=0, return_counts=True)
             fill = opaque & (rgba[..., :3] == colours[counts.argmax()]).all(-1)
             edge = ~opaque | (opaque & (rgba[..., :3].max(-1) < 0x60))
-            self.assertFalse((ndimage.binary_dilation(fill, np.ones((3, 3), bool)) & edge).any(), row["png"])
+            self.assertFalse((ndimage.binary_dilation(fill, np.ones((3, 3), bool)) & edge).any(), (row["selector"], row["chunk"]))
             orange = opaque & (rgba[..., :3] == TB_ORANGE).all(-1)
-            self.assertGreater(int(orange.sum()), 100, row["png"])
+            self.assertGreater(int(orange.sum()), 100, (row["selector"], row["chunk"]))
 
     def test_the_patriots_numbers_stand_rows_1_to_62(self):
         # Noah 11/19 (decision 2): "switch to the full height" (the game drew solid rows 2 to 61)
@@ -751,8 +805,8 @@ class RealDisc(unittest.TestCase):
         document = gf.digits_b81()
         for selector in REDRAWN:
             replacements, receipt = gf.compile_resource(selector, self.as_built(selector), strict=True, document=document)
-            digits = [p for p in receipt["parts"] if p["kind"] == "digit_png"]     # (a kit may also carry nameplate rows)
-            self.assertEqual(len(digits), len([r for r in digit_rows() if r["selector"] == selector]), selector)
+            digits = [p for p in receipt["parts"] if p["kind"] in ("digit_png", "digit_derived")]  # (and nameplate rows)
+            self.assertEqual(len(digits), len([r for r in all_digit_rows() if r["selector"] == selector]), selector)
             drawn = len(PER_DIGIT.get(selector, range(10)))
             self.assertIn(len(digits), (drawn, 2 * drawn), selector)              # jersey digits, and arm digits where drawn
             self.assertEqual(len(replacements), len([r for r in document["textures"] if r["selector"] == selector]))
@@ -783,6 +837,10 @@ NAMEPLATES = {
     **{s: ("#145F47", None, 2, 3) for s in ("19A0", "19A7", "19H7")},       # Jets white: green, as the real names
     "27A0": ("#0E0E0E", None, 2, 3),                                       # Buccaneers road: black, the strip was red
 }
+# b81-retail-free-art: the Jaguars road strip was thinned inside the retail-structure strip the nameplate pass puts on
+# these kits; withdrawn (with its widths), so those kits keep the strip the build holds
+for _selector in ("12A0", "12A6", "12H6"):
+    NAMEPLATES.pop(_selector)
 NAME_GLYPHS = "'-ABCDEFGHIJKLMNOPQRSTUVWXYZc"
 RETAIL = Path(os.environ.get("B81_RETAIL_DISC", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
 #: Noah 11/19 (decision 3): the Browns road name strips recoloured to the charcoal of the road numbers; letters, soft
@@ -930,7 +988,7 @@ class RealDiscNameplates(unittest.TestCase):
             name = kf._chunk_for(bytes(out), 44)
             moved = np.flatnonzero(np.frombuffer(bytes(out), np.uint8) != np.frombuffer(raw, np.uint8))
             digits = [(kf._chunk_for(raw, r["chunk"]).offset, kf._chunk_for(raw, r["chunk"]).end_offset)
-                      for r in digit_rows() if r["selector"] == row["selector"]]
+                      for r in all_digit_rows() if r["selector"] == row["selector"]]
             for at in moved:
                 inside = (chunk.offset <= at < chunk.end_offset or name.offset <= at < name.end_offset
                           or any(a <= at < b for a, b in digits))
