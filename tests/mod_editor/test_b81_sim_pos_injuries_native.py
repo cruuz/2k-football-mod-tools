@@ -126,10 +126,17 @@ def rate_with_room(ratings, nominal, fraction, *, carrier=None):
                      * max(0, position.zero_point - rating) / (position.zero_point - position.reference_durability))
             chance += min(value, 1.0) * ((flags >> 4) or 16) / 16
         return chance
-    rate = nominal
-    while rate > 100 and total(rate) > fraction:
-        rate -= 100
-    return rate
+    # total() never falls as the rate rises, so take the largest multiple of 100 between 100 and Custom 100 percent
+    # that keeps it at or under `fraction`. `nominal` stays for the callers' readability; since slice 2's refit of
+    # 11/20 (lower constants) a cap at the nominal rate left too few proposals for the coverage checks.
+    lo, hi = 1, 1000
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        if total(mid * 100) <= fraction:
+            lo = mid
+        else:
+            hi = mid - 1
+    return lo * 100
 
 
 def effective(scale_bits, slider, fpcw=FPCW_64):
@@ -910,7 +917,7 @@ class NativeCommit(NativeMachine):
     def test_no_write_or_draw_outside_the_bank_the_stack_and_the_victims_health(self):
         ratings = (93, 70, 91, 60, 99, 81, 40, 83, 55, 78, 66, 90, 50, 80, 85, 70, 88, 62, 79, 95, 58, 74, 81, 64, 78,
                    92, 45)
-        self.link(rules, min(rate_with_room(ratings, 3_000, .85, carrier=carrier) for carrier in (7, 8)))
+        self.link(rules, min(rate_with_room(ratings, 3_000, .95, carrier=carrier) for carrier in (7, 8)))
         self.lineup(tuple((side, slot, rating) for (_, side, slot, _), rating in zip(WALK, ratings)))
         shared = bytes(self.m.uc.mem_read(SHARED_RNG, RNG_SIZE))
         league = bytes(self.m.uc.mem_read(LEAGUE_RNG, RNG_SIZE))

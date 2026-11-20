@@ -85,7 +85,7 @@ def _reserved(payload):
 def _older_install(physical, mode, rate, revision):
     """An earlier slice's install as its settings module wrote it: the frozen code module's bank and edits, its marker.
 
-    Slice 1 (d8ceb91e3) has no weekly edit. Slice 2 (7b0cb9fcb) passes the running-back cave when that cave is
+    Slice 1 (d8ceb91e3) has no weekly edit. Slice 2 (d2abd00a5, the refit) passes the running-back cave when that cave is
     installed; its edits() adds the parked weekly jump only with a rate above zero."""
     from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice1 as slice1
     from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice2 as slice2

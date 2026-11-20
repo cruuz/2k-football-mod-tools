@@ -987,10 +987,10 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "0b5655021e33a2c28bff7523399321f588aa4f925cf84823b9603c474c94f7a7",  # b778-cb1
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "777a337e2ba22559c0b77ae5bc22b3df94a1392da07217a76d7a3a02063ebed0",  # b779-sim2
         "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",  # b780 hunt1: frozen beta-79 roll for the previous state
-        "mod_editor/core/nfl2k5_sim_qb_injuries.py": "165485b69ad30fe426c9eb686280647eb4d208654b0ff0bb4e97ce2d562b76e7",
-        "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "c2b1f7ffc98d690d9cb60a3f4d4db40f1e8a11a428236909223596ae6f1bb059",
+        "mod_editor/core/nfl2k5_sim_qb_injuries.py": "55681e956bd511133674e5c5c9db81f7a75d30be32b91539b61b3278c192d1bc",
+        "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "9412d996a5938002ba22cc07a9561d5eba0f72b9d05baa04c260f1dafbeff074",
         "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice1.py": "bb25da81abf8bd62c615d1cc676401a5050f4ab0f982fff243dea14af53cdfd0",  # b81 slice 2: frozen slice 1 bank, read to reverse a QBMEDv1 install
-        "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice2.py": "11655535e39a8c384fb7539f7b470240fecfa4f36c7abf554c3f1250f55625d6",  # b81 slice 3: frozen slice 2 bank, read to reverse a QBMEDv2 install
+        "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice2.py": "a893ed713c2a16ec9a4fbf33d8e3cdc330d6f80578cd3d3eefe04dd9ee211873",  # b81 slice 3: frozen slice 2 bank, read to reverse a QBMEDv2 install
         "mod_editor/core/nfl2k5_sim_realism.py": "6323212af016c4e70ecd36d340a993e16afc9b57550f3bb7ed2647fc6731a248",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_sim_realism_b779.py": "687a35375780ce07948ba555a8c189167586393c5de6f48d954c2902a71010ad",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_standings_records.py": "175712ff8aff730b035aab671bf2208322ba52ec1fef758afad7d24263485c1c",  # b780-j1

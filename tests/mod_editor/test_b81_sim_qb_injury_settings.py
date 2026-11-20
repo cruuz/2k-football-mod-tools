@@ -105,6 +105,32 @@ class NativeSettingsTests(unittest.TestCase):
         emptied=qb._transform(self.enabled,[('cleared bank',base,image.read(base,code.CODE_SIZE),b'\xcc'*code.CODE_SIZE)],restoring=False)
         self.assertEqual(qb.status(emptied),'foreign')
 
+    def test_running_back_owner_installed_after_the_option_fails_closed(self):
+        """Build installs the running-back owner first. Installed after the option, its weekly jump lands where the
+        option expects the game's tail (0x133CC9): the option reads foreign and Retail and re-apply refuse instead of
+        guessing (review rev-pos2 L2). Restoring Retail first, then the owner, then the option is the way through."""
+        from mod_editor.core import nfl2k5_sim_rb_injuries as running_backs
+        clean = retail_bytes()
+        paired = pools.apply(positions.apply(edge.apply(clean)[0])[0], roster_has_olb=True)[0]
+        base = space.apply(paired, (*memory.REQUESTS, *running_backs.REQUESTS, *simulator.REQUESTS, *lineup.REQUESTS),
+                           scaleout=True)[0]
+        base = lineup.apply(simulator.apply(memory.apply(base, require=True)[0])[0], third_down=False)[0]
+        tail, site = bytes.fromhex('5f5e5bc390'), code.WEEKLY_HALFBACK_SITE
+        built = qb.apply(running_backs.apply(base)[0])[0]           # Build's order
+        self.assertEqual((qb.status(built), running_backs.status(built)), ('applied', 'applied'))
+        self.assertEqual(XbeImage(built).read(site, 5), tail)
+        option_first = qb.apply(base)[0]                             # the running-back cave is still empty
+        self.assertEqual(XbeImage(option_first).read(site, 5), tail)
+        late = running_backs.apply(option_first)[0]
+        self.assertNotEqual(XbeImage(late).read(site, 5), tail)      # the owner's jump
+        self.assertEqual(running_backs.status(late), 'applied')
+        self.assertEqual(qb.status(late), 'foreign')
+        for mode, rate in (('retail', .310), ('realistic', .310), ('custom', 0), ('custom', 100)):
+            with self.subTest(mode=mode, rate=rate), self.assertRaises(qb.SimQbInjuriesError):
+                qb.apply(late, mode, custom_rate=rate)
+        through = qb.apply(running_backs.apply(qb.apply(option_first, 'retail')[0])[0])[0]
+        self.assertEqual(through, built)
+
     def test_option_preserves_entire_foreign_span_outside_its_sites(self):
         src=qb.physical_view(self.enabled)
         image=XbeImage(src)

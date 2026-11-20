@@ -29,8 +29,8 @@ TOOLS = ROOT / 'tools/qb_sim_injuries'
 BANK, SIM, DATA, LINEUP, RB = 0x1524000, 0x150E000, 0x14FD650, 0x151CE00, 0x1519A80
 # The bytes of `git show d8ceb91e3:mod_editor/core/nfl2k5_sim_qb_injuries_code.py` (sha256sum of that output).
 SLICE1_SHA256 = 'ab914dbc3989ecaf33799f95c0e555027c2ae097758e97b425b655227ceded3c'
-# The bytes of `git show 7b0cb9fcb:mod_editor/core/nfl2k5_sim_qb_injuries_code.py`, the slice 2 head slice 3 extends.
-SLICE2_SHA256 = 'ef780b72844b03d1efb311b6cdeea548bc49c5d650b4f9f8d3a54c236db0dfc8'
+# The bytes of `git show d2abd00a5:mod_editor/core/nfl2k5_sim_qb_injuries_code.py`, the refit slice 2 head slice 3 extends.
+SLICE2_SHA256 = '392af556f5f034cc72da325931885b7a5b109f34d3e7112a8c5792b8f7e23329'
 # The only template bytes that differ from the frozen slice 2 template: inside the positions piece, which now ends at
 # 0x1AF5 (slice 2's ended at 0x1B39; the rest of both is 0xCC fill up to 0x2000).
 CHANGED_FROM_SLICE2 = (0x1402, 0x1B39)
