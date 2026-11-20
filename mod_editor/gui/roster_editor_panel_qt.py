@@ -75,7 +75,8 @@ from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
 from PyQt5.QtCore import QObject, QRunnable, QSignalBlocker, QSize, Qt, QThreadPool, pyqtSignal
-from PyQt5.QtGui import QColor, QFont, QImage, QKeySequence, QPainter, QPen, QPixmap
+from PyQt5.QtGui import QColor, QFont, QImage, QKeySequence, QPainter, QPen, QPixmap, QTextDocument
+from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QApplication,
@@ -2243,6 +2244,7 @@ class RosterEditorPanel(QWidget):
         csv_menu.addAction("Export this list…", lambda: self._export_csv(False))
         csv_menu.addAction("Export every player…", lambda: self._export_csv(True))
         csv_menu.addAction("Export this list as a web page (HTML)…", self._export_html)
+        csv_menu.addAction("Print this list…", self.print_this_list)
         csv_menu.addAction("Import players from CSV…", self._import_csv)
         csv_menu.addAction("CSV format and Excel help…",
                            lambda: QMessageBox.information(self, "Player CSV format", rr.CSV_HELP))
@@ -2500,7 +2502,17 @@ class RosterEditorPanel(QWidget):
         self.header_photo.setObjectName("portraitPreview")
         self.header_photo.setAccessibleName("Player photo")
         self.header_photo.hide()
-        header_row.addWidget(self.header_photo, 0, Qt.AlignTop)
+        photo_column = QVBoxLayout()                     # b81 R42: the photo, with Finn's Clear Photo under it
+        photo_column.setContentsMargins(0, 0, 0, 0)
+        photo_column.setSpacing(2)
+        photo_column.addWidget(self.header_photo, 0, Qt.AlignTop)
+        self.clear_photo_button = QToolButton()
+        self.clear_photo_button.setText("Clear photo")
+        self.clear_photo_button.setAccessibleName("Clear photo")
+        self.clear_photo_button.clicked.connect(lambda _c=False: self.clear_photo())
+        photo_column.addWidget(self.clear_photo_button, 0, Qt.AlignHCenter)
+        photo_column.addStretch(1)
+        header_row.addLayout(photo_column, 0)
         header_box = QVBoxLayout()
         header_box.setContentsMargins(0, 0, 0, 0)
         header_box.setSpacing(2)
@@ -3015,6 +3027,11 @@ class RosterEditorPanel(QWidget):
         if tooltip:
             card.setToolTip(tooltip)
             card.caption.setToolTip(tooltip)
+        if name == "jersey":                              # b81 R42: Finn put "PBP Last Only" beside the number
+            self.pbp_last_check = QCheckBox("PBP last name only")
+            self.pbp_last_check.setAccessibleName("PBP last name only")
+            self.pbp_last_check.clicked.connect(self._pbp_last_clicked)
+            card.layout().addWidget(self.pbp_last_check)
         return card
 
     def _build_report_page(self) -> QWidget:
@@ -3983,6 +4000,34 @@ class RosterEditorPanel(QWidget):
             return
         self._set_status(f"Wrote {chosen} ({len(self._rows)} players).")
 
+    def print_list(self, printer: QPrinter) -> bool:
+        """Finn's File > Print: the same table the HTML export writes, sent to ``printer`` (a test passes a PDF one)."""
+
+        if self.document is None:
+            return False
+        page = QTextDocument()
+        page.setHtml(self.export_html_text())
+        page.print_(printer)
+        return True
+
+    def print_this_list(self) -> None:
+        if self.document is None:
+            self._set_status("Load a roster first, then print its list.")
+            return
+        printer = QPrinter(QPrinter.HighResolution)
+        printer.setOrientation(QPrinter.Landscape)           # the grid is wide
+        printer.setDocName("Player list")
+        dialog = QPrintDialog(printer, self)
+        dialog.setWindowTitle("Print this list")
+        if dialog.exec_() != QDialog.Accepted:
+            return
+        try:
+            self.print_list(printer)
+        except Exception as exc:  # noqa: BLE001 - a printer problem is reported, never a crash
+            show_operation_error(self, "print the list", plain_error(exc))
+            return
+        self._set_status(f"Sent the list to the printer ({len(self._rows)} players).")
+
     # ------------------------------------------------------------------ team settings (b81 R13)
     def team_options_reason(self) -> str:
         kind, index = self._group
@@ -4231,6 +4276,10 @@ class RosterEditorPanel(QWidget):
             if key:
                 action.setShortcut(QKeySequence(key))
             action.setEnabled(loaded and self._clipboard is not None)
+        action = menu.addAction("Clear photo", lambda: self.clear_photo())     # b81 R42: Finn's Edit > Clear Photo
+        action.setEnabled(loaded and player.record.values["photo_id"] != rr.PHOTO_CLEARED)
+        action.setToolTip("Already cleared (65535)." if loaded and player.record.values["photo_id"] == rr.PHOTO_CLEARED
+                          else "Writes 65535 into his Photo id; the game then shows its no-photo picture.")
         menu.addSeparator()
         menu.addAction("Find player… (every team)", self.studio_find).setShortcut(QKeySequence("Ctrl+F"))
         action = menu.addAction("Only his position", self.show_position_players)
@@ -4578,10 +4627,17 @@ class RosterEditorPanel(QWidget):
         return pixmap, picture.note
 
     def _show_header_photo(self, player: rr.Player | None) -> None:
+        self.clear_photo_button.setVisible(player is not None)
         if player is None:
             self.header_photo.hide()
             return
         photo = player.record.values["photo_id"]
+        cleared = photo == rr.PHOTO_CLEARED
+        self.clear_photo_button.setEnabled(not cleared)
+        self.clear_photo_button.setToolTip(
+            "This player's photo is already cleared (65535): the game shows its no-photo picture." if cleared else
+            "Finn's Clear Photo: writes 65535 into his Photo id and changes nothing else. The game then shows its "
+            "no-photo picture for him. Undo puts the old id back.")
         pixmap, note = self.portrait_pixmap(photo, self.HEADER_PHOTO)
         if pixmap is None and note.startswith("No photo"):
             pixmap = self._no_photo_pixmap()          # what the game shows; drawn at a fixed size so large text fits
@@ -4616,6 +4672,7 @@ class RosterEditorPanel(QWidget):
         self.guardian_cap_check.blockSignals(False)
         self.guardian_bulk_button.setEnabled(player is not None)
         self._show_header_photo(player)
+        self._refresh_pbp_last_check(player)
         if player is None:
             self.header_name.setText("-")
             self.header_stats.setText("")
@@ -4815,6 +4872,66 @@ class RosterEditorPanel(QWidget):
 
         do()
         self.undo_stack.push(UndoEntry(f"{player.display}: {name}", undo, do))
+
+    # ------------------------------------------------------------------ b81 R42: PBP last name only, Clear Photo
+    def _refresh_pbp_last_check(self, player: rr.Player | None) -> None:
+        check = self.pbp_last_check
+        with QSignalBlocker(check):
+            if player is None:
+                check.setChecked(False)
+                check.setEnabled(False)
+                return
+            checked, can_change, tooltip = rr.pbp_last_only_state(player.record)
+            check.setChecked(checked)
+            check.setEnabled(can_change)
+            check.setToolTip(tooltip)
+
+    def _pbp_last_clicked(self, checked: bool) -> None:
+        player = self.selected_player()
+        if player is not None:
+            self.set_pbp_last_only(player, bool(checked))
+
+    def set_pbp_last_only(self, player: rr.Player, on: bool) -> bool:
+        """Finn's setter: only a word of 4 or 5 changes (checked writes 5, unchecked 4); one undo entry."""
+
+        if self.document is None:
+            return False
+        _checked, can_change, _tip = rr.pbp_last_only_state(player.record)
+        if not can_change:
+            self._refresh_pbp_last_check(player)
+            return False
+        wanted = rr.PBP_LAST_ONLY_WORD if on else rr.PBP_FULL_NAME_WORD
+        before = player.record.values["player_type"]
+        if before == wanted:
+            return False
+
+        def put(value: int) -> None:
+            player.record.set("player_type", value)
+            self._after_edit(player, "player_type")
+
+        put(wanted)
+        self.undo_stack.push(UndoEntry(f"{player.display}: play-by-play last name only {'on' if on else 'off'}",
+                                       lambda: put(before), lambda: put(wanted)))
+        return True
+
+    def clear_photo(self, player: rr.Player | None = None) -> bool:
+        """Finn's Clear Photo: 65535 into the Photo id (+0x06) and nothing else; one undo entry."""
+
+        player = player or self.selected_player()
+        if player is None or self.document is None:
+            return False
+        before = player.record.values["photo_id"]
+        if before == rr.PHOTO_CLEARED:
+            return False
+
+        def put(value: int) -> None:
+            player.record.set("photo_id", value)
+            self._after_edit(player, "photo_id")
+
+        put(rr.PHOTO_CLEARED)
+        self.undo_stack.push(UndoEntry(f"{player.display}: clear photo", lambda: put(before),
+                                       lambda: put(rr.PHOTO_CLEARED)))
+        return True
 
     def _after_edit(self, player: rr.Player, name: str = "") -> None:
         baseline = self._baseline_record(player)
@@ -5906,6 +6023,11 @@ class RosterEditorPanel(QWidget):
                         lines.append(f"    Depth and returner locks: {locks(was)} -> {locks(now)}")
                     if (was ^ now) & 0xE0:
                         lines.append(f"    Ability flags (+0x52): {was & 0xE0} -> {now & 0xE0}")
+                elif key == "player_type" and {was, now} <= {rr.PBP_FULL_NAME_WORD, rr.PBP_LAST_ONLY_WORD}:
+                    lines.append(f"    {caption}: {was} -> {now} (play-by-play last name only: "
+                                 f"{'on' if now == rr.PBP_LAST_ONLY_WORD else 'off'})")
+                elif key == "photo_id" and now == rr.PHOTO_CLEARED:
+                    lines.append(f"    {caption}: {was} -> {now} (cleared: the game shows its no-photo picture)")
                 else:
                     lines.append(f"    {caption}: {was} -> {now}")
         if self._team_pastes:         # b81 wave 3: team settings and the coach are club bytes the player list does not show
