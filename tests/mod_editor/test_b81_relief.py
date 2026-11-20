@@ -85,7 +85,9 @@ class Document(unittest.TestCase):
             self.assertEqual(len(entry["span_sha256"]), 64)
         kernels = rl.Kernels(self.doc["gauss_kernels"])
         self.assertEqual(sorted(kernels.table), sorted(float(s) for s in rl.SIGMAS))
-        self.assertEqual(rl.kernel_table(rl.SIGMAS), self.doc["gauss_kernels"])
+        for sigma, weights in kernels.table.items():        # stored, so no platform exp() is used at build time
+            self.assertLess(abs(float(weights.sum()) - 1.0), 1e-12, sigma)
+            self.assertEqual(int(np.argmax(weights)), len(weights) // 2, sigma)
 
     def test_the_art_is_two_difference_masters_the_island_mask_and_small_patches_each_stored_once(self):
         folder = rl.art_folder(self.doc)
@@ -182,9 +184,15 @@ try:
     from scipy import ndimage as ndi
 except ImportError:      # the Studio runtime has no scipy; the port is checked where the authoring tools run
     ndi = None
+import platform  # noqa: E402
+
+#: the port reproduces the scipy and Pillow builds the art was authored with (x86-64 Linux, scipy 1.11.4, Pillow
+#: 10.2.0). Other builds of those libraries (an arm64 scipy may fuse multiply-adds) are not what the Studio runs, so
+#: the parity checks run only on x86-64; test_b81_retail_free_platforms pins the port's own output on every platform.
+AUTHORING_LIKE = platform.machine().lower() in ("x86_64", "amd64")
 
 
-@unittest.skipIf(ndi is None, "scipy is not installed (authoring machines only)")
+@unittest.skipIf(ndi is None or not AUTHORING_LIKE, "scipy parity: x86-64 with scipy installed (authoring machines)")
 class BasePortEqualsScipy(unittest.TestCase):
     """The build-time base is bump_true's scipy arithmetic to the bit."""
 
@@ -219,7 +227,10 @@ class BasePortEqualsScipy(unittest.TestCase):
         self.assertTrue((mine[~near] >= 28).all())
 
     def test_bilinear_enlargement(self):
+        import PIL
         from PIL import Image
+        if PIL.__version__ != "10.2.0":
+            self.skipTest("Pillow parity is checked against the authoring Pillow 10.2.0, not " + PIL.__version__)
         rgb = self.rng.integers(0, 256, (32, 48, 3), dtype=np.uint8)
         theirs = np.asarray(Image.fromarray(rgb).resize((96, 64), Image.BILINEAR)).astype(np.float64) / 127.5 - 1.0
         self.assertTrue(np.array_equal(rl.decode_map(np.dstack([rgb, rgb[..., :1]])), theirs))

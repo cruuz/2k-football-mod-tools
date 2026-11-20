@@ -46,11 +46,6 @@ REDRAWN += RAVENS + ("20A0",)
 # 2026 numerals wear (27A0, 27H0), Patriots at full height (16H0, 16A0); the Browns road set (30A0, already redrawn) in
 # the charcoal the photographs show
 REDRAWN += ("27A0", "27H0", "16H0", "16A0")
-# b81-retail-free-art: sets whose redraw edited a glyph the Studio builds from a retail donor and that no operation list
-# rebuilds exactly (or that were drawn from features measured on that glyph) are withdrawn; those kits keep the digits
-# the build holds (retail-free/REVIEW_ME.md)
-RETAIL_FREE_WITHDRAWN = ("18H0", "18A0", "18H7", "18A7", "07H0", "10A5", "10H5")
-REDRAWN = tuple(s for s in REDRAWN if s not in RETAIL_FREE_WITHDRAWN)
 #: the Buccaneers' orange inline (decision 1) and the Browns' road charcoal (decision 3)
 TB_ORANGE = (0xD9, 0x64, 0x28)
 CLE_CHARCOAL = (0x3B, 0x3B, 0x3B)
@@ -263,8 +258,8 @@ class DigitDocument(unittest.TestCase):
             key = (row["selector"], row["chunk"])
             self.assertNotIn(key, seen)
             seen.add(key)
-            self.assertIn(row["kind"], ("digit_png", "names_png", "name_widths", "digit_derived"))
-            if row["kind"] == "digit_derived":              # b81-retail-free-art: no picture ships
+            self.assertIn(row["kind"], ("digit_png", "names_png", "name_widths", "digit_derived", "names_derived"))
+            if row["kind"] in ("digit_derived", "names_derived"):   # b81-retail-free-art: no picture ships
                 self.assertNotIn("png", row)
                 self.assertEqual(len(row["rgba_sha256"]), 64)
                 continue
@@ -340,8 +335,6 @@ class DigitDocument(unittest.TestCase):
                                 ("30H3", 35), ("37A2", 40), ("37H2", 40),
                                 # batch 6: the Ravens 0 at 33 (real 0.554; the released 37) and the Raiders road as released
                                 ("02H0", 33), ("02A0", 33), ("02A2", 33), ("02A3", 33), ("02H2", 33), ("02H3", 33), ("20A0", 37)):
-            if selector in RETAIL_FREE_WITHDRAWN:
-                continue
             rgba = picture(by[(selector, 13)])
             if rgba is None:
                 continue
@@ -837,10 +830,6 @@ NAMEPLATES = {
     **{s: ("#145F47", None, 2, 3) for s in ("19A0", "19A7", "19H7")},       # Jets white: green, as the real names
     "27A0": ("#0E0E0E", None, 2, 3),                                       # Buccaneers road: black, the strip was red
 }
-# b81-retail-free-art: the Jaguars road strip was thinned inside the retail-structure strip the nameplate pass puts on
-# these kits; withdrawn (with its widths), so those kits keep the strip the build holds
-for _selector in ("12A0", "12A6", "12H6"):
-    NAMEPLATES.pop(_selector)
 NAME_GLYPHS = "'-ABCDEFGHIJKLMNOPQRSTUVWXYZc"
 RETAIL = Path(os.environ.get("B81_RETAIL_DISC", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
 #: Noah 11/19 (decision 3): the Browns road name strips recoloured to the charcoal of the road numbers; letters, soft
@@ -849,8 +838,29 @@ RECOLOURED_NAMES = {s: CLE_CHARCOAL for s in ("30A0", "30A4", "30H4")}
 
 
 def names_rows(kind=None):
-    return [r for r in gf.digits_b81()["textures"] if r["kind"] in ("names_png", "name_widths")
-            and (kind is None or r["kind"] == kind)]
+    """b81-retail-free-art: ``names_png`` also yields the ``names_derived`` strips (the Jaguars road strip, made at
+    build time from the strip the nameplate pass leaves; see strip_picture)."""
+    kinds = ("names_png", "names_derived") if kind == "names_png" else (kind,) if kind else (
+        "names_png", "names_derived", "name_widths")
+    return [r for r in gf.digits_b81()["textures"] if r["kind"] in kinds]
+
+
+_STRIPS = {}
+
+
+def strip_picture(row):
+    """A strip row's picture: its PNG, or a ``names_derived`` row's operations on the strip the released disc holds
+    after the nameplate pass (None without the released and retail discs)."""
+    if row["kind"] == "names_png":
+        return png_rgba(gf.art_folder(gf.digits_b81()) / row["png"])[0]
+    if not (DISC.is_file() and RETAIL.is_file()):
+        return None
+    if row["selector"] not in _STRIPS:
+        raw = up.after_nameplate_pass(row["selector"], up.read_kits(DISC, [row["selector"]])[row["selector"]],
+                                      up.retail_kits_for_nameplates(RETAIL))
+        chunk = gf._chunk_for(raw, row["chunk"])
+        _STRIPS[row["selector"]] = gf.names_level0(raw[chunk.offset:chunk.end_offset])
+    return gf.derive_digit(_STRIPS[row["selector"]], row["derive"])
 
 
 def hex_rgb(text):
@@ -894,7 +904,10 @@ class NameplateDocument(unittest.TestCase):
         folder = gf.art_folder(gf.digits_b81())
         for selector, row in strips.items():
             self.assertEqual((row["chunk"], row["texture"]), (43, "names"))
-            self.assertEqual(hashlib.sha256((folder / row["png"]).read_bytes()).hexdigest(), row["png_sha256"], selector)
+            if row["kind"] == "names_derived":                # b81-retail-free-art: made at build time
+                self.assertNotIn("png", row)
+            else:
+                self.assertEqual(hashlib.sha256((folder / row["png"]).read_bytes()).hexdigest(), row["png_sha256"], selector)
             self.assertNotEqual(row["before_sha256"], row["after_sha256"])
             self.assertTrue(row["note"] and row["defects"], selector)
             if selector in RECOLOURED_NAMES:
@@ -911,13 +924,16 @@ class NameplateDocument(unittest.TestCase):
             if row["selector"] in RECOLOURED_NAMES:
                 continue
             fill, outline, _stem, _bar = NAMEPLATES[row["selector"]]
-            rgba, _info = png_rgba(folder / row["png"])
+            rgba = strip_picture(row)
+            if rgba is None:
+                continue
+            name = row.get("png", row["selector"])
             self.assertEqual(rgba.shape, (32, 1024, 4))
-            self.assertEqual(set(np.unique(rgba[..., 3]).tolist()), {0, 255}, row["png"])        # no soft edges
+            self.assertEqual(set(np.unique(rgba[..., 3]).tolist()), {0, 255}, name)        # no soft edges
             opaque = {tuple(int(v) for v in c) for c in np.unique(rgba[rgba[..., 3] == 255][:, :3], axis=0)}
-            self.assertEqual(opaque, {hex_rgb(fill)} | ({hex_rgb(outline)} if outline else set()), row["png"])
+            self.assertEqual(opaque, {hex_rgb(fill)} | ({hex_rgb(outline)} if outline else set()), name)
             clear = {tuple(int(v) for v in c) for c in np.unique(rgba[rgba[..., 3] == 0][:, :3], axis=0)}
-            self.assertEqual(clear, {hex_rgb(outline or fill)}, row["png"])     # a filtered edge never fades to black
+            self.assertEqual(clear, {hex_rgb(outline or fill)}, name)     # a filtered edge never fades to black
 
     def test_every_glyph_starts_on_its_offset_and_fits_its_stored_width(self):
         folder = gf.art_folder(gf.digits_b81())
@@ -925,7 +941,10 @@ class NameplateDocument(unittest.TestCase):
         for row in names_rows("names_png"):
             if row["selector"] in RECOLOURED_NAMES:
                 continue
-            ink = png_rgba(folder / row["png"])[0][..., 3] >= kf.NAME_ATLAS_ALPHA
+            rgba = strip_picture(row)
+            if rgba is None:
+                continue
+            ink = rgba[..., 3] >= kf.NAME_ATLAS_ALPHA
             for i, width in enumerate(widths[row["selector"]]):
                 cols = np.flatnonzero(ink[:, 32 * (i + 1):32 * (i + 2)].any(0))
                 self.assertEqual(int(cols[0]), 0, (row["selector"], NAME_GLYPHS[i]))
@@ -940,7 +959,10 @@ class NameplateDocument(unittest.TestCase):
             if row["selector"] in RECOLOURED_NAMES:
                 continue
             fill, _outline, stem, bar = NAMEPLATES[row["selector"]]
-            got = measure_strip(png_rgba(folder / row["png"])[0], widths[row["selector"]], hex_rgb(fill))
+            rgba = strip_picture(row)
+            if rgba is None:
+                continue
+            got = measure_strip(rgba, widths[row["selector"]], hex_rgb(fill))
             self.assertEqual(got["cap"], (4, 27), row["selector"])                   # 24 rows, as every 2026 strip
             self.assertEqual(got["stem"], {stem}, row["selector"])
             self.assertEqual(got["bar"], bar, row["selector"])
@@ -971,7 +993,8 @@ class RealDiscNameplates(unittest.TestCase):
         document = gf.digits_b81()
         for selector in sorted(set(NAMEPLATES) | set(RECOLOURED_NAMES)):
             replacements, receipt = gf.compile_resource(selector, self.kits[selector], strict=True, document=document)
-            kinds = sorted(p["kind"] for p in receipt["parts"] if p["kind"] in ("names_png", "name_widths"))
+            kinds = sorted("names_png" if p["kind"] == "names_derived" else p["kind"]  # a strip made at build time counts
+                           for p in receipt["parts"] if p["kind"] in ("names_png", "names_derived", "name_widths"))
             self.assertEqual(kinds, ["names_png"] if selector in RECOLOURED_NAMES else ["name_widths", "names_png"],
                              selector)
             self.assertEqual(receipt["skipped_textures"], [], selector)
@@ -994,7 +1017,7 @@ class RealDiscNameplates(unittest.TestCase):
                           or any(a <= at < b for a, b in digits))
                 self.assertTrue(inside, (row["selector"], int(at)))
             compiled = gf.names_level0(bytes(out)[chunk.offset:chunk.end_offset])
-            self.assertTrue((compiled == png_rgba(folder / row["png"])[0]).all(), row["selector"])
+            self.assertTrue((compiled == strip_picture(row)).all(), row["selector"])
             if row["selector"] in RECOLOURED_NAMES:                 # the released letters, only the colour moves
                 before = gf.names_level0(raw[chunk.offset:chunk.end_offset])
                 self.assertTrue((compiled[..., 3] == before[..., 3]).all(), row["selector"])

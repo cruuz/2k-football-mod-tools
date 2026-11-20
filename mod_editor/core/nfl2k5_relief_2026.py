@@ -343,7 +343,8 @@ def distance_within(feature, cap):
 
 
 def slopes(nxy):
-    nz = np.sqrt(np.clip(1.0 - (nxy ** 2).sum(-1), 0.04, 1.0))
+    x, y = nxy[..., 0], nxy[..., 1]
+    nz = np.sqrt(np.clip(1.0 - (x * x + y * y), 0.04, 1.0))
     return nxy / nz[..., None]
 
 
@@ -355,11 +356,12 @@ def encode(nx, ny):
 
 
 def reduce(slope):
-    """Slopes on the 2x grid -> the native A8R8G8B8 map (bump_nike.reduce)."""
-    rgb = encode(slope[..., 0], slope[..., 1]).astype(np.float64)
+    """Slopes on the 2x grid -> the native A8R8G8B8 map (bump_nike.reduce). The 2x2 mean is an integer sum (exact),
+    the length a sum in a fixed order."""
+    rgb = encode(slope[..., 0], slope[..., 1]).astype(np.int64)
     h, w = rgb.shape[0] // S, rgb.shape[1] // S
-    v = rgb.reshape(h, S, w, S, 3).mean(axis=(1, 3)) / 127.5 - 1.0
-    v /= np.sqrt((v ** 2).sum(-1, keepdims=True)) + 1e-9
+    v = rgb.reshape(h, S, w, S, 3).sum(axis=(1, 3)).astype(np.float64) / (S * S) / 127.5 - 1.0
+    v /= np.sqrt(v[..., 0:1] * v[..., 0:1] + v[..., 1:2] * v[..., 1:2] + v[..., 2:3] * v[..., 2:3]) + 1e-9
     rgb = np.clip(np.round(v * 127.5 + 127.5), 0, 255).astype(np.uint8)
     return np.dstack([rgb, np.full(rgb.shape[:2], 255, np.uint8)])
 
@@ -367,7 +369,8 @@ def reduce(slope):
 def old_construction(gauss, xy):
     """Where the 2004 map carries mesh, piping and collar ribs (bump_nike.old_construction)."""
     lo = np.stack([gauss(xy[..., i], 1.6 * S) for i in range(2)], -1)
-    energy = gauss(((xy - lo) ** 2).sum(-1), 3.0 * S)
+    dx, dy = xy[..., 0] - lo[..., 0], xy[..., 1] - lo[..., 1]
+    energy = gauss(dx * dx + dy * dy, 3.0 * S)
     mesh = dilate(erode(energy > 0.035, 2 * S), 2 * S)
     labels, sizes = components(mesh)
     big = np.nonzero(sizes > 2500 * S * S)[0]
@@ -408,12 +411,41 @@ def sleeve_base(gauss, retail_rgba):
     return reduce(sl)
 
 
+def pairwise_mean(values):
+    """numpy's float64 mean (add.reduce's pairwise summation: blocks of 128, eight running sums), written out in
+    Python floats so that its rounding does not depend on the numpy build. Equal to numpy 1.26's np.mean."""
+    def total(a):
+        n = len(a)
+        if n < 8:
+            res = 0.0
+            for x in a:
+                res += x
+            return res
+        if n <= 128:
+            r = list(a[:8])
+            i = 8
+            while i < n - n % 8:
+                for j in range(8):
+                    r[j] += a[i + j]
+                i += 8
+            res = ((r[0] + r[1]) + (r[2] + r[3])) + ((r[4] + r[5]) + (r[6] + r[7]))
+            while i < n:
+                res += a[i]
+                i += 1
+            return res
+        half = n // 2
+        half -= half % 8
+        return total(a[:half]) + total(a[half:])
+    values = [float(v) for v in np.asarray(values, np.float64).ravel()]
+    return total(values) / len(values)
+
+
 def _membrane(field, region, iterations=4000):
     ys, xs = np.nonzero(region)
     y0, y1, x0, x1 = ys.min() - 1, ys.max() + 2, xs.min() - 1, xs.max() + 2
     f = field[y0:y1, x0:x1].astype(np.float64).copy()
     inside = region[y0:y1, x0:x1]
-    f[inside] = f[~inside].mean()
+    f[inside] = pairwise_mean(f[~inside])
     for _ in range(iterations):
         avg = 0.25 * (np.roll(f, 1, 0) + np.roll(f, -1, 0) + np.roll(f, 1, 1) + np.roll(f, -1, 1))
         f[inside] = avg[inside]

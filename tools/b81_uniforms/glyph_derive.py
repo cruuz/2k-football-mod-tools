@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """b81-retail-free-art: take the retail-derived b81u digit pictures out of the package.
 
-  glyph_derive.py DISC VERDICTS [--drop FAMILY ...]
+  glyph_derive.py DISC VERDICTS --retail RETAIL [--paint FAMILY ...] [--drop FAMILY ...]
 
 DISC is the released v0.9 disc (every b81u digit row is pinned to its spans). VERDICTS is a JSON object
 {png name: {"verdict": "A"|"B"|"C"|"unsure", "families": [...]}} (the provenance measurement of the lane,
@@ -12,8 +12,9 @@ retail-free/glyphs/glyph_provenance.json "round1"). For every row whose picture 
   columns repeated or removed, fill grown or thinned with the outline rebuilt, an edge ring or an inline recoloured)
   whose result is the picture texel for texel, checks that the Studio compiles it to the row's output pin, and turns
   the row into a ``digit_derived`` row (no picture ships);
-* a row whose picture no operation list rebuilds, or whose family is named with --drop, leaves the document (the kit
-  keeps the digit the build holds, the released v0.9 one), together with its family's nameplate widths.
+* a row whose picture no operation list rebuilds (a redraw drawn by code, a nameplate strip) ships as ``paint``: only
+  the texels that differ from the glyph or strip the build holds at that point, with their places; a texel equal to
+  it is never shipped (coordinator, 2026-11-20). ``--drop FAMILY`` withdraws a family instead (not used for beta 81).
 
 Pictures no row uses any more are deleted from the art folder. Prints a line per family.
 """
@@ -144,9 +145,10 @@ def _linear(n_len, ink_n, ink_o):
     return out
 
 
-def solve_remap(new, old, key=None):
+def solve_remap(new, old, key=None, exhaustive=False):
     """Monotone row and column maps of ``old`` onto ``new`` (alternating exact dynamic programs, started from the rows
     and from the columns); (rows, cols, texels left over under ``key``)."""
+    full = key is None
     key = key or (lambda x: x)
     h, w = new.shape[:2]
     best = None
@@ -164,6 +166,40 @@ def solve_remap(new, old, key=None):
                 rows = _monotone(_cost(new, apply_remap(old, list(range(old.shape[0])), cols), key))
             left = int((key(apply_remap(old, rows, cols)) != key(new)).reshape(h, w, -1).any(-1).sum())
             if best is None or left < best[2]:
+                best = (rows, cols, left)
+            if left == 0:
+                return best
+    if not exhaustive or not full or best[2] > 16:  # the fallback is for near misses in full colour only
+        return best
+    return _search_rows(new, old, best)
+
+
+def _search_rows(new, old, best):
+    """The exhaustive fallback (the alternating programs can stop in a local optimum): the old ink rows, with up to two
+    rows repeated or one removed anywhere, at every nearby vertical offset; the column map exact for each."""
+    h = new.shape[0]
+    ink_n = np.nonzero((new[..., 3] > 0).any(1))[0]
+    ink_o = np.nonzero((old[..., 3] > 0).any(1))[0]
+    if not len(ink_n) or not len(ink_o):
+        return best
+    base = list(range(ink_o[0], ink_o[-1] + 1))
+    seqs = [base]
+    for i in range(len(base)):
+        seqs.append(base[:i] + base[i:i + 1] + base[i:])
+        seqs.append(base[:i] + base[i + 1:])
+    for i in range(len(base)):
+        for j in range(i, len(base)):
+            seqs.append(base[:i] + base[i:i + 1] + base[i:j] + base[j:j + 1] + base[j:])
+    for seq in seqs:
+        for top in range(max(0, ink_n[0] - 2), ink_n[0] + 3):
+            rows = [-1] * h
+            for k, v in enumerate(seq):
+                if 0 <= top + k < h:
+                    rows[top + k] = v
+            cols = _monotone(_cost(np.swapaxes(new, 0, 1),
+                                   np.swapaxes(apply_remap(old, rows, list(range(old.shape[1]))), 0, 1), lambda x: x))
+            left = int((apply_remap(old, rows, cols) != new).any(-1).sum())
+            if left < best[2]:
                 best = (rows, cols, left)
             if left == 0:
                 return best
@@ -201,6 +237,7 @@ def recolour_to(got, new):
 
 
 def find_ops(old, new, digit0):
+    misses = []
     for pre in candidates(old, digit0):
         src = gf.derive_digit(old, pre)
         rows, cols, left = solve_remap(new, src)
@@ -208,8 +245,18 @@ def find_ops(old, new, digit0):
             ops = pre + [dict(op='remap', rows=rows, cols=cols)]
             if np.array_equal(gf.derive_digit(old, ops), new):
                 return ops
+        misses.append((left, len(misses), pre, src))
+    # near misses: the alternating programs stopped in a local optimum; search the rows exhaustively (best first)
+    for left, _i, pre, src in sorted(misses, key=lambda m: m[:2])[:2]:
+        if 0 < left <= 16:
+            rows, cols, left = solve_remap(new, src, exhaustive=True)
+            ops = pre + [dict(op='remap', rows=rows, cols=cols)]
+            if left == 0 and np.array_equal(gf.derive_digit(old, ops), new):
+                return ops
+    # the same geometry with colours swapped afterwards (a club colour corrected): the alpha alone fixes the maps
+    for _left, _i, pre, src in sorted(misses, key=lambda m: m[:2])[:4]:
         rows, cols, left = solve_remap(new, src, key=lambda x: x[..., 3:])
-        if left == 0:                               # same geometry, colours swapped afterwards (a club colour change)
+        if left == 0:
             ops = pre + [dict(op='remap', rows=rows, cols=cols)]
             swap = recolour_to(gf.derive_digit(old, ops), new)
             if swap is not None:
@@ -245,6 +292,25 @@ def find_ops(old, new, digit0):
     return None
 
 
+def paint_runs(base, new):
+    """The texels of ``new`` that differ from ``base`` as [row, first column, "RRGGBBAA" per texel] runs."""
+    differ = (np.asarray(base) != np.asarray(new)).any(-1)
+    runs = []
+    for y in range(differ.shape[0]):
+        xs = np.flatnonzero(differ[y])
+        if not len(xs):
+            continue
+        start = prev = int(xs[0])
+        for x in [int(v) for v in xs[1:]] + [None]:
+            if x is not None and x == prev + 1:
+                prev = x
+                continue
+            runs.append([y, start, new[y, start:prev + 1].tobytes().hex().upper()])
+            if x is not None:
+                start = prev = x
+    return runs
+
+
 def _find_job(job):
     old, new, digit0 = job
     return find_ops(old, new, digit0)
@@ -254,7 +320,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument('disc')
     parser.add_argument('verdicts')
-    parser.add_argument('--drop', nargs='*', default=[])
+    parser.add_argument('--retail', help='the retail disc (the nameplate strips are pinned after the nameplate pass)')
+    parser.add_argument('--paint', nargs='*', default=[], help='families redrawn by code: skip the operation search, '
+                        'ship the texels that differ from the base')
+    parser.add_argument('--drop', nargs='*', default=[], help='families to withdraw instead (not used for beta 81)')
     args = parser.parse_args()
     path = gf.DATA_B81U
     document = json.loads(path.read_text(encoding='utf-8'))
@@ -269,71 +338,91 @@ def main():
         for sel in sorted({r['selector'] for r in rows}):
             e = entries[sel + '.IFF']
             raws[sel] = image.read_segments(index.sub_extents(e, 0, e.size))
+    if any(r['kind'] == 'names_png' for r in rows):
+        # the strip rows are pinned to the strip a build holds after the nameplate pass (b81_uniform_pass helpers)
+        import b81_uniform_pass as up
+        retail_kits = up.retail_kits_for_nameplates(args.retail)
+        for sel in sorted({r['selector'] for r in rows if r['kind'] == 'names_png'}):
+            raws[sel] = up.after_nameplate_pass(sel, raws[sel], retail_kits)
 
     def span_of(sel, chunk):
         c = gf._chunk_for(raws[sel], chunk)
         return raws[sel][c.offset:c.end_offset]
 
+    def picture(row, shape):
+        payload = (folder / row['png']).read_bytes()
+        if row['kind'] == 'names_png':
+            return gf.names_png_rgba(payload)
+        w, h, rgba = decode_rgba_png(payload, (shape[1], shape[0]))
+        return np.frombuffer(rgba, np.uint8).reshape(h, w, 4)
+
     drop_families = set(args.drop)
+    paint_families = set(args.paint)
     drop, report, jobs, keys = set(), {}, [], {}
     for row in rows:
         family = verdicts[row['png']]['families'][0]
-        if row['kind'] == 'digit_png' and family not in drop_families:
-            span = span_of(row['selector'], row['chunk'])
-            assert sha(span) == row['before_sha256'], (row['selector'], row['chunk'])
+        span = span_of(row['selector'], row['chunk'])
+        assert sha(span) == row['before_sha256'], (row['selector'], row['chunk'])
+        if row['kind'] == 'digit_png' and family not in drop_families | paint_families:
             fam = 'arm' if '_digit_arm_' in row['png'] else 'jersey'
             digit0 = span_of(row['selector'], (33 if fam == 'arm' else 13))
             key = (row['before_sha256'], row['png_sha256'], sha(digit0))
             if key not in keys:
                 old = gf.digit_level0(span)
-                payload = (folder / row['png']).read_bytes()
-                w, h, rgba = decode_rgba_png(payload, (old.shape[1], old.shape[0]))
                 keys[key] = len(jobs)
-                jobs.append((old, np.frombuffer(rgba, np.uint8).reshape(h, w, 4), gf.digit_level0(digit0)))
+                jobs.append((old, picture(row, old.shape), gf.digit_level0(digit0)))
     from concurrent.futures import ProcessPoolExecutor
     with ProcessPoolExecutor(max_workers=3) as pool:
         found = list(pool.map(_find_job, jobs, chunksize=1))
     for row in rows:
         family = verdicts[row['png']]['families'][0]
-        line = report.setdefault(family, dict(rows=0, derived=0, dropped=0, ops={}))
+        line = report.setdefault(family, dict(rows=0, operations=0, painted=0, painted_texels=0, dropped=0, ops={}))
         line['rows'] += 1
-        ops = None
-        if row['kind'] == 'digit_png' and family not in drop_families:
-            span = span_of(row['selector'], row['chunk'])
+        if family in drop_families:
+            drop.add((row['selector'], row['chunk']))
+            line['dropped'] += 1
+            continue
+        span = span_of(row['selector'], row['chunk'])
+        if row['kind'] == 'names_png':
+            base = gf.names_level0(span)
+            new = picture(row, base.shape)
+            ops = None
+            kind = 'names_derived'
+        elif family in paint_families:
+            base = gf.digit_level0(span)
+            new = picture(row, base.shape)
+            ops = None
+            kind = 'digit_derived'
+        else:
             fam = 'arm' if '_digit_arm_' in row['png'] else 'jersey'
             key = (row['before_sha256'], row['png_sha256'], sha(span_of(row['selector'], (33 if fam == 'arm' else 13))))
-            old, new, _d0 = jobs[keys[key]]
+            base, new, _d0 = jobs[keys[key]]
             ops = found[keys[key]]
-            if ops is not None:
-                derived = dict(row, kind='digit_derived', derive=ops, rgba_sha256=sha(new.tobytes()), _family=family)
-                for key in ('png', 'png_sha256'):
-                    derived.pop(key)
-                compiled, _detail = gf.compile_derived_digit(span, derived)
-                assert sha(compiled) == row['after_sha256'], (row['selector'], row['chunk'], 'compile differs')
-                row.clear()
-                row.update(derived)
-                line['derived'] += 1
-                kinds = '+'.join(o['op'] for o in ops)
-                line['ops'][kinds] = line['ops'].get(kinds, 0) + 1
-                continue
-        drop.add((row['selector'], row['chunk']))
-        line['dropped'] += 1
-    # a family is derived whole or not at all: a set with some digits new and some as released would not match itself
-    partial = {verdicts[r['png']]['families'][0] for r in rows if (r['selector'], r['chunk']) in drop}
-    for row in rows:
-        family = verdicts[row.get('png', '')]['families'][0] if 'png' in row else row.get('_family')
-        if family in partial and (row['selector'], row['chunk']) not in drop:
-            drop.add((row['selector'], row['chunk']))
-            report[family]['derived'] -= 1
-            report[family]['dropped'] += 1
-    # a dropped nameplate strip takes its glyph widths with it (they were set for those letters)
+            kind = 'digit_derived'
+        if ops is None:
+            # no operation list rebuilds it: ship only the texels that differ from what the build holds here
+            ops = [dict(op='paint', runs=paint_runs(base, new))]
+            line['painted'] += 1
+            line['painted_texels'] += int((np.asarray(base) != np.asarray(new)).any(-1).sum())
+        else:
+            line['operations'] += 1
+        derived = dict(row, kind=kind, derive=ops, rgba_sha256=sha(np.ascontiguousarray(new).tobytes()))
+        for name in ('png', 'png_sha256'):
+            derived.pop(name)
+        assert np.array_equal(gf.derive_digit(base, ops), new), (row['selector'], row['chunk'], 'derivation differs')
+        compile_row = gf.compile_derived_names if kind == 'names_derived' else gf.compile_derived_digit
+        compiled, _detail = compile_row(span, derived)
+        assert sha(compiled) == row['after_sha256'], (row['selector'], row['chunk'], 'compile differs')
+        row.clear()
+        row.update(derived)
+        kinds = '+'.join(o['op'] for o in ops)
+        line['ops'][kinds] = line['ops'].get(kinds, 0) + 1
+    # a withdrawn nameplate strip takes its glyph widths with it (they were set for those letters)
     strips = {r['selector'] for r in document['textures'] if (r['selector'], r['chunk']) in drop and r['kind'] == 'names_png'}
     for r in document['textures']:
         if r['kind'] == 'name_widths' and r['selector'] in strips:
             drop.add((r['selector'], r['chunk']))
     document['textures'] = [r for r in document['textures'] if (r['selector'], r['chunk']) not in drop]
-    for r in document['textures']:
-        r.pop('_family', None)
     used = {r['png'] for r in document['textures'] if 'png' in r}
     removed = 0
     for png in sorted(p.name for p in folder.glob('*.png')):
@@ -344,7 +433,7 @@ def main():
     gf.spec(path)
     for family, line in sorted(report.items()):
         print(family, json.dumps(line, sort_keys=True))
-    print('rows now', len(document['textures']), 'dropped', len(drop), 'pictures deleted', removed, 'pictures left', len(used))
+    print('rows now', len(document['textures']), 'withdrawn', len(drop), 'pictures deleted', removed, 'pictures left', len(used))
 
 
 if __name__ == '__main__':

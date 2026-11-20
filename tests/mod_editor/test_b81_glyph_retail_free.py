@@ -22,6 +22,8 @@ from mod_editor.core import nfl2k5_glyph_fixes_2026 as gf  # noqa: E402
 import modern_art_png_catalog as catalog  # noqa: E402
 
 DISC = Path(os.environ.get("B81_UNIFORM_DISC", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.9 (2026-11-05).xiso.iso"))
+RETAIL = Path(os.environ.get("B81_RETAIL_DISC", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
+DERIVED = ("digit_derived", "names_derived")
 ART = "data/nfl2k5_glyph_fixes_2026_b81u/"
 
 
@@ -51,14 +53,17 @@ class Document(unittest.TestCase):
             self.assertNotIn(sha(picture.read_bytes()), digests, picture.name)
 
     def test_derived_rows_carry_operations_and_no_picture(self):
-        derived = [r for r in self.doc["textures"] if r["kind"] == "digit_derived"]
-        self.assertGreater(len(derived), 300)
+        derived = [r for r in self.doc["textures"] if r["kind"] in DERIVED]
+        self.assertEqual(len(derived), 507)                 # every row of the 231 withdrawn pictures; none dropped
+        self.assertEqual(sum(r["kind"] == "names_derived" for r in derived), 3)
         for row in derived:
             self.assertNotIn("png", row)
             self.assertEqual(len(row["rgba_sha256"]), 64)
-            self.assertEqual(row["derive"][-1]["op"] in ("remap", "inline_fill", "inline_dark", "edge"), True)
             for op in row["derive"]:
                 self.assertIn(op["op"], gf.DERIVE_OPS)
+                if op["op"] == "paint":
+                    for y, x0, values in op["runs"]:
+                        self.assertEqual(len(values) % 8, 0)        # RRGGBBAA per texel, nothing else
 
     def test_every_shipped_picture_is_catalogued(self):
         document = json.loads((ROOT / catalog.CATALOG).read_text(encoding="utf-8"))
@@ -113,7 +118,7 @@ class ReleasedDisc(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.doc = gf.digits_b81()
-        cls.rows = [r for r in cls.doc["textures"] if r["kind"] == "digit_derived"]
+        cls.rows = [r for r in cls.doc["textures"] if r["kind"] in DERIVED]
         cls.kits = {}
         wanted = {r["selector"] for r in cls.rows}
         with bump._Image.open(DISC, writable=False) as image:
@@ -125,22 +130,46 @@ class ReleasedDisc(unittest.TestCase):
 
     def span(self, row):
         raw = self.kits[row["selector"]]
+        if row["kind"] == "names_derived":                  # pinned to the strip the nameplate pass leaves
+            import b81_uniform_pass as up
+            if not hasattr(type(self), "_retail"):
+                type(self)._retail = up.retail_kits_for_nameplates(RETAIL)
+            raw = up.after_nameplate_pass(row["selector"], raw, self._retail)
         chunk = gf._chunk_for(raw, row["chunk"])
         return raw[chunk.offset:chunk.end_offset]
 
+    def base(self, row, span):
+        return gf.names_level0(span) if row["kind"] == "names_derived" else gf.digit_level0(span)
+
     def test_every_derived_row_rebuilds_its_picture(self):
         for row in self.rows:
+            if row["kind"] == "names_derived" and not RETAIL.is_file():
+                continue
             span = self.span(row)
             self.assertEqual(sha(span), row["before_sha256"], row["selector"])
-            rgba = gf.derive_digit(gf.digit_level0(span), row["derive"])
+            rgba = gf.derive_digit(self.base(row, span), row["derive"])
             self.assertEqual(sha(rgba.tobytes()), row["rgba_sha256"], (row["selector"], row["chunk"]))
+
+    def test_a_paint_ships_no_texel_equal_to_the_base(self):
+        """The rule for a redraw no operation list rebuilds: only texels that differ from what the build holds."""
+        for row in self.rows:
+            if row["derive"][0]["op"] != "paint" or (row["kind"] == "names_derived" and not RETAIL.is_file()):
+                continue
+            base = self.base(row, self.span(row))
+            for y, x0, values in row["derive"][0]["runs"]:
+                shipped = np.frombuffer(bytes.fromhex(values), np.uint8).reshape(-1, 4)
+                here = base[y, x0:x0 + len(shipped)]
+                self.assertTrue((shipped != here).any(-1).all(), (row["selector"], row["chunk"], y, x0))
 
     def test_a_sample_of_each_operation_kind_compiles_to_its_output_pin(self):
         seen = {}
         for row in self.rows:
-            seen.setdefault("+".join(op["op"] for op in row["derive"]), row)
+            seen.setdefault(row["kind"] + ":" + "+".join(op["op"] for op in row["derive"]), row)
         for kinds, row in seen.items():
-            new, _detail = gf.compile_derived_digit(self.span(row), row)
+            if row["kind"] == "names_derived" and not RETAIL.is_file():
+                continue
+            compile_row = gf.compile_derived_names if row["kind"] == "names_derived" else gf.compile_derived_digit
+            new, _detail = compile_row(self.span(row), row)
             self.assertEqual(sha(new), row["after_sha256"], kinds)
 
 

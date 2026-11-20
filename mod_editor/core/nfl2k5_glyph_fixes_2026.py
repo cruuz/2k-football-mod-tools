@@ -32,6 +32,9 @@
    operations with their parameters (``derive``); the Studio applies them at build time to the glyph the build holds
    (the retail-derived v0.9 digit, made from the user's own disc) and compiles the result through the same route as
    ``digit_png``. ``rgba_sha256`` pins the derived picture, ``after_sha256`` the compiled span, both unchanged.
+   A redraw no operation list rebuilds ships as ``paint``: only the texels that differ from the glyph the build holds
+   at that point (row, first column, the new RGBA values); a texel equal to that glyph is never shipped. The same
+   holds for a nameplate strip (``names_derived``, on the strip the build holds after the nameplate pass).
 
 The Studio runs this after its uniform layers. Exact input and output pins limit it to the known SOFTDRINK spans:
 retail kits and textures a user's own recipe replaced are left alone (strict refuses them).
@@ -58,8 +61,8 @@ ART = ROOT / "data/nfl2k5_glyph_fixes_2026"
 #: b81-uniforms (beta 81): digits redrawn against this season's game highlights, pinned to the finished digits of the
 #: released v0.9 build and applied as the last uniform step (``apply_digits_b81``). The document names its own art folder.
 DATA_B81U = ROOT / "data/nfl2k5_glyph_fixes_2026_b81u.json"
-KINDS = ("names_retint", "digit_png", "digit_retint", "names_png", "name_widths", "digit_derived")
-DERIVE_OPS = ("remap", "embolden", "edge", "inline_fill", "inline_dark", "recolour")
+KINDS = ("names_retint", "digit_png", "digit_retint", "names_png", "name_widths", "digit_derived", "names_derived")
+DERIVE_OPS = ("remap", "embolden", "edge", "inline_fill", "inline_dark", "recolour", "paint")
 NAMES_CHUNK = 43
 NAME_CHUNK = 44                         # the raw NAME chunk: 29 (atlas offset, glyph width) pairs for ' - A..Z c
 NAME_METRICS = slice(0x2C, 0xA0)
@@ -326,6 +329,13 @@ def derive_digit(before_rgba, ops):
             for old, new in op["pairs"]:
                 hit = (a[..., 3] > 0) & (rgb == _colour(old)).all(-1)
                 a[hit, :3] = _colour(new)
+        elif kind == "paint":
+            # the texels that differ from the glyph the build holds: [row, first column, "RRGGBBAA" per texel]
+            for y, x0, values in op["runs"]:
+                count = len(values) // 8
+                require(len(values) == 8 * count and count and 0 <= y < a.shape[0] and 0 <= x0 and
+                        x0 + count <= a.shape[1], "paint run outside the picture")
+                a[y, x0:x0 + count] = np.frombuffer(bytes.fromhex(values), np.uint8).reshape(count, 4)
         elif kind == "inline_fill":
             opaque = a[..., 3] == 255
             fill = opaque & (np.abs(a[..., :3].astype(np.int64) - _colour(op["fill"])).max(-1) <= 24)
@@ -345,6 +355,13 @@ def digit_level0(span):
     """Level 0 of a digit span as RGBA (the glyph the build holds)."""
     chunk, decoded, _info, texture = _one_txtr(span)
     return np.frombuffer(texture_to_rgba(decoded, chunk, texture), np.uint8).reshape(texture.height, texture.width, 4)
+
+
+def compile_derived_names(span, row):
+    """A ``names_derived`` row: its operations on the strip the build holds, then the ``names_png`` route."""
+    rgba = derive_digit(names_level0(span), row["derive"])
+    require(sha(rgba.tobytes()) == row["rgba_sha256"], "the derived nameplate strip differs from its pin")
+    return compile_names_rgba(span, rgba)
 
 
 def compile_derived_digit(span, row):
@@ -448,10 +465,16 @@ def compile_names_png(span, png_payload):
     smaller levels average it (``_names_levels``), the palette holds level 0's colours exactly; the native format,
     size, mip count, descriptor, wrapper and stored allocation stay. A palette whose stream does not fit the stored
     span is tried again with the smaller levels' blends on a coarser grid."""
+    return compile_names_rgba(span, names_png_rgba(png_payload))
+
+
+def compile_names_rgba(span, rgba):
+    """A nameplate strip picture (32 x 1024 RGBA array) -> the pinned chunk 43 span (``compile_names_png``'s route)."""
     chunk, decoded, _info, texture = _one_txtr(span)
     require(texture.name == "names" and texture.format_name == "VC_P8_LINEAR" and
             (texture.width, texture.height) == NAMES_SIZE, "not a 1024 x 32 linear nameplate strip")
-    rgba = names_png_rgba(png_payload)
+    rgba = np.asarray(rgba, np.uint8)
+    require(rgba.shape == (NAMES_SIZE[1], NAMES_SIZE[0], 4), "the nameplate strip picture is not 1024 x 32")
     levels = _names_levels(rgba, texture.mip_levels)
     video = decoded[chunk.system_bytes:chunk.system_bytes + chunk.video_bytes]
     chain = sum(level.shape[0] * level.shape[1] for level in levels)
@@ -559,6 +582,9 @@ def compile_resource(selector, raw, *, strict=True, document=None, retail_kits=N
             new, detail = compile_name_widths(span, row["widths"])
         elif row["kind"] == "digit_derived":
             new, detail = compile_derived_digit(span, row)
+        elif row["kind"] == "names_derived":
+            new, detail = compile_derived_names(span, row)
+            detail = {k: v for k, v in detail.items() if k != "fit"}
         else:
             payload = (art_folder(document) / row["png"]).read_bytes()
             require(sha(payload) == row["png_sha256"], selector + ": authored " +
