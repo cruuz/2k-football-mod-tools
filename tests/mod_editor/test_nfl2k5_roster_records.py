@@ -328,8 +328,13 @@ class RecordCodecTests(unittest.TestCase):
         self.assertAlmostEqual(record.contract_penalty_millions, 1.885)
         record.set("injured_reserve", 0xEE)
         self.assertTrue(record.on_injured_reserve)
+        # Finn's "PBP Last Only" is the whole word at +0x08 equal to 5; 4 is only the NFL player marker
         record.set("player_type", 4)
+        self.assertFalse(record.pbp_last_name_only)
+        record.set("player_type", 5)
         self.assertTrue(record.pbp_last_name_only)
+        record.set("unknown_09", 1)
+        self.assertFalse(record.pbp_last_name_only)
 
 
 # --------------------------------------------------------------------------------------------- document

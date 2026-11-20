@@ -228,6 +228,9 @@ FREE_AGENT_LIST_CAP = 0x9C4          # the game's append helper (0x242560): cmp 
 # same records as the clubs -- 364 retail players are on a club and an all-star side at once.
 CLUB_TEAM_COUNT = 34
 FLAG_NFL_PLAYER = 0x04           # +0x08 bit 2: every rostered / free-agent retail record carries it
+PBP_FULL_NAME_WORD = 4           # Finn's "PBP Last Only" unchecked: the word at +0x08 is 4
+PBP_LAST_ONLY_WORD = 5           # Finn's "PBP Last Only" checked: the word at +0x08 is 5 (0x04 stays set)
+PHOTO_CLEARED = 0xFFFF           # Finn's Clear Photo: the game asks its global "nophoto" picture for this id
 FLAG_PROSPECT = 0x10             # +0x08 bit 4: the class generator's mark (or byte [esi+8],0x10 @ 0x2BE8D7)
 MSG_RELEASE_MINIMUM = "Unable to release player! {team} must maintain at least {minimum} players."
 MSG_RELEASE_MAX_FREE_AGENTS = "Unable to release player! Max free agents reached."
@@ -866,7 +869,10 @@ FIELDS: tuple[Field, ...] = (
     _f("college_pointer", 0x00, 4, 0, 32, "College pointer", "relative pointer to the 8-byte college record"),
     _f("pbp_id", 0x04, 2, 0, 16, "Play-By-Play Name", "index into the recorded name bank"),
     _f("photo_id", 0x06, 2, 0, 16, "Photo", "portrait id (f%04d)"),
-    _f("player_type", 0x08, 1, 0, 8, "Player Type", "4 = NFL player, 0 = draft class; bit 2 = announce last name only"),
+    _f("player_type", 0x08, 1, 0, 8, "Player Type",
+       "4 = NFL player, 0 = draft class. Bit 2 (0x04) is the game's NFL player marker (it keeps him eligible), "
+       "not a name setting. Finn's play-by-play last-name-only setting is the whole word at +0x08 (this byte "
+       "and +0x09) equal to 5"),
     _f("unknown_09", 0x09, 1, 0, 8, "Unknown +0x09"),
     _f("contract_value", 0x0A, 2, 0, 16, "Contract Value", "in $10,000 units: 377 = $3.77m"),
     _f("left_shoe", 0x0C, 1, 0, 3, "Left Shoe"),
@@ -1342,8 +1348,16 @@ class PlayerRecord:
         return rating_profile(self.values["position"])
 
     @property
+    def player_type_word(self) -> int:
+        """The little-endian word at +0x08 that Finn's player form reads (player_type, then unknown_09)."""
+
+        return self.values["player_type"] | (self.values["unknown_09"] << 8)
+
+    @property
     def pbp_last_name_only(self) -> bool:
-        return bool(self.values["player_type"] & 0x04)
+        """Finn's "PBP Last Only" checkbox: checked exactly when the whole word at +0x08 equals 5."""
+
+        return self.player_type_word == PBP_LAST_ONLY_WORD
 
     @property
     def on_injured_reserve(self) -> bool:
@@ -5685,10 +5699,31 @@ def pbp_name_index(document: RosterDocument | None = None) -> dict[int, str]:
     return dict(sorted(out.items()))
 
 
+def pbp_last_only_state(record: "PlayerRecord") -> tuple[bool, bool, str]:
+    """(checked, can_change, tooltip) for Finn's "PBP Last Only" box, read from the word at +0x08.
+
+    Finn's setter acts only when the word is 4 or 5, so any other word leaves the box disabled."""
+
+    word = record.player_type_word
+    if word in (PBP_FULL_NAME_WORD, PBP_LAST_ONLY_WORD):
+        return word == PBP_LAST_ONLY_WORD, True, (
+            "Finn's play-by-play setting. Checked writes 5 into the player type word at +0x08, unchecked writes 4, "
+            "nothing else changes. The player stays an NFL player. The game then asks for a different recording "
+            "of his name in the commentary (variation 4 instead of 1). What the two recordings actually say has "
+            "not been heard, so this does not promise that the announcer says only his last name.")
+    return False, False, (
+        f"Unavailable: this player's type word is {word} (0x{word:04X}). Finn's box only works when the word is 4 "
+        "or 5, and the Studio does the same so it never overwrites a value it does not understand. "
+        "Change Player Type on the Identity tab if you mean to.")
+
+
 def portrait_confirmation(document: RosterDocument, player: Player,
                           report_path: Path | str | None = None) -> str:
     """Confirm the stored selector without claiming art has been written or played."""
     photo = player.record.values["photo_id"]
+    if photo == PHOTO_CLEARED:
+        return (f"{player.display}: Photo 65535 is Finn's Clear Photo value. The game finds no portrait under it "
+                "and shows its own \"no photo\" picture.")
     entries, meta = portrait_index(document, report_path)
     prefix = f"{player.display}: Photo {photo:04d} is staged in the roster. "
     if meta["reason"]:

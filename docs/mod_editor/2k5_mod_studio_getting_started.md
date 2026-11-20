@@ -1427,6 +1427,15 @@ play-by-play and photo ids, college. **Roster spot** (depth rows, depth and retu
 is off unless you tick it: a backup from another time or another save would bring back an old team's depth and a
 kick returner lock another player holds now. **CSV ▾ → Export this list as a web page** is Finn's Export as HTML: the
 list shown, with the grid's columns, in its current order.
+**CSV ▾ → Print this list…** is Finn's File > Print: it sends that same table to your printer.
+**Clear photo** (right-click a player, or the small button under his photo at the top) is Finn's Clear Photo: it writes
+65535 into his Photo id and changes nothing else, and the game then shows its own no-photo picture. Undo puts the old
+id back. Finn's "Clear User Photos" for the whole league is not here on purpose, because it would wipe the SOFTDRINK
+portraits. **PBP last name only** is the box Finn put beside the jersey number (on the Identity tab, under the number).
+Checked writes 5 into the player type word and unchecked writes 4; nothing else changes and he stays an NFL player.
+The game does ask for a different recording of his name when it is checked, but nobody has listened to what that
+recording says, so the Studio does not promise that the announcer says only his last name. If the word is anything
+other than 4 or 5 the box is greyed out and its tooltip tells you the value, the same as Finn's editor.
 
 **Moving a roster between projects.** Open the source disc and choose **Tools ▾ → Export complete
 roster with faces…**. Open the destination disc, choose **Tools ▾ → Load complete roster with
@@ -1458,6 +1467,9 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Tools > Auto-update > Body type from weight / from BMI | **Tools ▾ → Body type from weight / from BMI (Auto-update)…** |
 | Tools > Options > Default Team | **Tools ▾ → Open on this list next time** |
 | File > Export as HTML | **CSV ▾ → Export this list as a web page (HTML)…** |
+| File > Print | **CSV ▾ → Print this list…** |
+| Edit > Clear Photo | Right-click → **Clear photo**, or the **Clear photo** button under his photo |
+| "PBP Last Only" box | **PBP last name only**, under the jersey number on the Identity tab |
 | Tools > Backup and Restore | **CSV ▾ → .PlayerData backup (Finn's format)** |
 | Place on IR (right-click) | Right-click → **Place on IR…** opens **Franchise → Injured Reserve** with him chosen |
 | Heal Player | Not available. **Activate** on the IR tab returns a player from IR; it does not change an injury |
