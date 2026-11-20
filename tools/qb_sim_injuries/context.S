@@ -84,7 +84,7 @@ gamecast:
     mov dword ptr [UNDO],0
     cmp dword ptr [LEAGUE_STAGE],8
     jb gamecast_init
-    # prepare(ax) applies the same managed-team, clean-recovery and lock checks used for a week simulation.
+    # prepare has the i386 regparm(1) ABI. Its first argument is the complete club pointer in EAX.
     mov eax,[esp+24]  # saved ECX
     call PREPARE
     mov eax,[esp+20]  # saved EDX

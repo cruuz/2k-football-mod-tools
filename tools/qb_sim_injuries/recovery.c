@@ -102,7 +102,8 @@ void after_partition(u32 index, u32 team) {
     eligible_count++;
 }
 
-static void prepare(u32 team) {
+/* context.S calls this symbol directly with the club pointer in EAX. */
+static __attribute__((noinline, regparm(1))) void prepare(u32 team) {
     u32 root = D(MASTER);
     if (!root) return;
     u32 base = D(root + 28);

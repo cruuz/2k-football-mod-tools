@@ -27,7 +27,9 @@ class LinkedRules(unittest.TestCase):
         self.assertEqual(len(absolute), 8)
         self.assertEqual(len(edits), 14)
         self.assertEqual(len(rules.edits(BANK, SIM, DATA)), 13)
-        self.assertEqual(rules.edits(BANK, SIM, DATA, LINEUP, rate=0), rules.edits(BANK, SIM, DATA, rate=0))
+        zero = rules.edits(BANK, SIM, DATA, LINEUP, rate=0)
+        self.assertEqual(zero, rules.edits(BANK, SIM, DATA, rate=0))
+        self.assertEqual(zero, tuple(edit for edit in edits if edit[0] != 'recovery'))
         by_name = {name: (at, old, new) for name, at, old, new in edits}
         self.assertEqual(by_name['completed_pass'][0], 0x1094E4)
         self.assertTrue({at for at, _ in simulator.PASS_SITES if at != 0x1094E4}.isdisjoint(dict(absolute)))
@@ -84,7 +86,7 @@ class LinkedRules(unittest.TestCase):
 
 
 @unittest.skipUnless(HAVE_UC, 'Unicorn is required for the native branch witnesses')
-class NativeBranches(unittest.TestCase):
+class NativeFixture(unittest.TestCase):
     """Execute the actual authored instructions on public synthetic state. Native service entry PCs are the stop points."""
     ROOT, STACK = 0x2100000, 0x3001000
 
@@ -121,6 +123,8 @@ class NativeBranches(unittest.TestCase):
         self.assertEqual(self.uc.reg_read(self.x.UC_X86_REG_EIP), end)
         return tuple(self.uc.reg_read(r) for r in self.registers)
 
+
+class NativeBranches(NativeFixture):
     def test_scheduled_and_whole_user_gamecast_admission_partial_play_and_stale_state(self):
         incoming = (0x1234, 0x2345, self.teams, self.teams + 1500, 0x77, 0x88, 0x99, self.STACK, 0x246)
         for caller, outer, mode, stage, admitted in (
@@ -167,10 +171,16 @@ class NativeBranches(unittest.TestCase):
             return bytes(self.uc.mem_read(result, 4))
 
         gain32 = lambda value: struct.unpack('<f', struct.pack('<f', value))[0]
-        for accuracy in range(101):
-            position = max(0, min(1, (accuracy - 92) / 6))
-            scale = gain32(.982 * (.935 + .130 * position**4))
-            self.assertEqual(measure(accuracy, 16), struct.pack('<f', 16 * scale), accuracy)
+        for rate in (310, 0):
+            with self.subTest(medical_rate=rate):
+                # Realistic and Custom 0% install the same completed-pass routing and gain.
+                bank = rules._link_authored(BANK, SIM, DATA, LINEUP + 0x455)
+                rules._configure_tables(bank, rate)
+                self.uc.mem_write(BANK, bytes(bank))
+                for accuracy in range(101):
+                    position = max(0, min(1, (accuracy - 92) / 6))
+                    scale = gain32(.982 * (.935 + .130 * position**4))
+                    self.assertEqual(measure(accuracy, 16), struct.pack('<f', 16 * scale), accuracy)
         for other in ({'injury': 0x80000000}, {'injury': 1 << 22}, {'status': 1 << 28}, {'position': 1}):
             self.assertEqual(measure(99, 16, **other), struct.pack('<f', 16 * gain32(.982)))
         self.assertEqual(measure(101, 16), struct.pack('<f', 16 * gain32(.982)))
