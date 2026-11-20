@@ -190,6 +190,15 @@ def _cleanup(name):
         if ov2.get('lower_from_modern'):
             res, _m = fixes7.lower_from_modern(res, name)
         masks['reoriented'] = (res[..., :3] != before[..., :3]).any(axis=2)
+        if ov2.get('mirror_lower') and ov2.get('erase_after_mirror'):
+            # reviewed by eye: pieces of the old left-side logo just outside the mirrored copy (the left side is meant to be
+            # the right side's mirror image there): texels in the box that differ strongly from the mirrored right side
+            # take its value
+            res = res.copy(); rgb = res[..., :3].astype(np.float64); mir = rgb[::-1]
+            for x0, y0, x1, y1 in ov2['erase_after_mirror']:
+                m = np.zeros((256, 256), bool); m[y0:y1, x0:x1] = True; m &= np.linalg.norm(rgb - mir, axis=2) > 45.0
+                res[m, :3] = res[::-1][m, :3]
+            masks['reoriented'] |= (res[..., :3] != before[..., :3]).any(axis=2)
     rf = ov2.get('refine')
     if rf:
         import refine

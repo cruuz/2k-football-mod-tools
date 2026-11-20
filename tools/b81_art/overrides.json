@@ -469,7 +469,15 @@
   }
  },
  "27_6:helmet02": {
-  "mirror_lower": true
+  "mirror_lower": true,
+  "erase_after_mirror": [
+   [
+    104,
+    140,
+    120,
+    160
+   ]
+  ]
  },
  "10_5:helmet00": {
   "keep_placement": true

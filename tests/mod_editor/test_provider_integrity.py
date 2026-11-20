@@ -408,7 +408,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_kit_fixes_2026_ku1.json": "2811ee1e688df9b388544d335106df651eedef26e4bedf69c0e3b914a8d08c97",
                 "data/nfl2k5_kit_fixes_2026_sw1.json": "4f7052e03fd8d23dceef19de010459e552d3f4b63fd2335e575d13bd1e0de18e",
                 "data/nfl2k5_kit_fixes_2026_names.json": "cb354c62aa6b6e8de0ff01e9f25937f0a2e54169bfc37932bd689599529693fb",
-                "data/nfl2k5_kit_fixes_2026_b81.json": "17605ece200ba4f5da4c34cc89e5f4d39cafd38ca206f82ececa9260331a2268",
+                "data/nfl2k5_kit_fixes_2026_b81.json": "7bad3d0d201b402697cfd4a8359a60b86ea0d73438e7f5bee670348e994cd9f1",
                 "data/nfl2k5_menu_chiefs_2026.json": "8b4a86d2bb6893d6e23546ebddc3ff1626e029fcf3b8ed4a14fbee6fd1748eb2",
                 "data/nfl2k5_menu_helmet_w2026.json": "ae19a9a2d032d25312fea3114ae530b137a0f437629f56c5ff484f08ac5626b6",
                 "data/nfl2k5_indicator_names/atlas.png": "2693d6044962f9f59f4390b3e578d3575d9d3f0c081ae668510c83399c3197f7",

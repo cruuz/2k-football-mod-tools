@@ -9,6 +9,28 @@ def sha(a): return hashlib.sha256(np.ascontiguousarray(a).tobytes()).hexdigest()
 def save(rgba, path):
     Image.fromarray(np.ascontiguousarray(rgba), 'RGBA').save(path, optimize=False, compress_level=9)
     assert (C.load(path) == rgba).all()
+#: kits whose stored cards showed palette specks after the cleanup (the Studio's 256-colour median cut ran short of
+#: the shell's greys where the old flag had been, and gave them a reddish grey): their PNGs ship already mapped to that
+#: palette refined by k-means, which the Studio then stores as it is (at most 256 colours)
+REFINE_PALETTE = {('27', '6')}
+def refine_palette(rgba, iters=12):
+    """The Studio's own 256-entry median-cut palette of this card, refined by Lloyd (k-means) passes over the card's
+    RGBA colours (each pass can only lower the total error), and the card mapped to it."""
+    from scipy.spatial import cKDTree
+    sys.path.insert(0, str(C.WT / 'tools'))
+    import nfl_tset_png_import as pt
+    h, w = rgba.shape[:2]
+    pal, _idx, _q = pt.quantize_levels([pt.MipLevel(0, w, h, np.ascontiguousarray(rgba).tobytes())])
+    P = np.array(pal, float); cols, inv, cnt = np.unique(rgba.reshape(-1, 4).astype(float), axis=0, return_inverse=True, return_counts=True)
+    for _ in range(iters):
+        lab = cKDTree(P).query(cols)[1]
+        for k in range(len(P)):
+            m = lab == k
+            if m.any(): P[k] = (cols[m] * cnt[m, None]).sum(0) / cnt[m].sum()
+    P = np.clip(np.round(P), 0, 255); lab = cKDTree(P).query(cols)[1]
+    out = P[lab][inv.ravel()].reshape(h, w, 4).astype(np.uint8)
+    assert (C.quantize(out) == out).all()          # the Studio stores it unchanged
+    return out
 def kits():
     return sorted({(n.split('_')[1][1:], n.split('_')[1][0], n.split('_')[2]) for n in C.index()})
 def ready(code, s, style):
@@ -30,6 +52,8 @@ def one(args):
             for name, before, after, info in todo:
                 changed = int((before != after).any(axis=2).sum())
                 assert (before[..., 3] == after[..., 3]).all(), name
+                if changed and (code, style) in REFINE_PALETTE:
+                    after = refine_palette(after); changed = int((before != after).any(axis=2).sum())
                 fn = f'b81art_{name}.png'
                 if changed: save(after, FILES / fn)
                 q = C.quantize(after)
