@@ -32,9 +32,11 @@ ERRORS = (ValueError, TypeError, IndexError, KeyError, OverflowError, struct.err
 # routine's first instruction must be that one (retail) or one of the recognized gate jumps that perform it, and its
 # body from 0x322BB6 through `add esp, 0x114; ret 0x10` must be the retail bytes (F7.5); anything else is refused.
 STAGE_FLOOR = 64
+STAGE_OVER_CAP = 128  # the floor's last rung, signing over the cap (F3 step 8); separate so it can be cut; needs 64
 FLOOR_ENTRY, FLOOR_RESUME, FLOOR_END = 0x322BB0, 0x322BB6, 0x322DF1
 FLOOR_FIRST = bytes.fromhex("81ec14010000")  # sub esp, 0x114
 FLOOR_BODY_SHA256 = "95cd45152dd4b3b52243fff6dc7c42ec8a8e3c833af90bc5f1a10a9390fe23be"  # retail 0x322BB6..0x322DF1
+SMART_CUT = 0x2BF9A0  # the native cut-down the floor's release rung calls; the economy points it at economy_smart_cut
 
 
 class QbRoomError(ValueError):
@@ -66,9 +68,9 @@ def _allocation(payload):
 
 
 def _ir_store_va(payload, stages):
-    """The link word at +0x2020: the modern IR owner's store, which the signing pass (stage 4a) reads; 0 otherwise.
-    0 with stage 4a means E2 never fires (the page counts sign_ir_unlinked)."""
-    if not stages & _code().STAGE_SIGN:
+    """The link word at +0x2020: the modern IR owner's store, which only E2 (stage bit 32) reads; 0 otherwise.
+    0 with E2 means E2 never fires (the page counts sign_ir_unlinked)."""
+    if not stages & _code().STAGE_E2:
         return 0
     from . import nfl2k5_injured_reserve as ir
     return ir.store_va(payload) or 0
@@ -92,6 +94,26 @@ def floor_entry_problem(payload):
     if hashlib.sha256(image.read(FLOOR_RESUME, FLOOR_END - FLOOR_RESUME)).hexdigest() != FLOOR_BODY_SHA256:
         return "The quarterback floor found unrecognized code in the native signing routine (from 0x322BB6)."
     return None
+
+
+def floor_economy_problem(payload):
+    """None when the economy routines the floor calls are the economy's own (F3 steps 6 and 7): economy_restructure at
+    0x3B9F60 and the native cut-down 0x2BF9A0 sending its call to economy_smart_cut; else a plain reason."""
+    from .nfl2k5_franchise_economy_code import SYMBOLS, WINDOWS
+    image = XbeImage(payload)
+    restructure, smart = SYMBOLS["economy_restructure"], SYMBOLS["economy_smart_cut"]
+    if image.read(restructure, len(WINDOWS[restructure])) != WINDOWS[restructure]:
+        return "The quarterback floor found unrecognized code in the economy's restructure (0x3B9F60)."
+    cut = b"\xe9" + struct.pack("<i", smart - (SMART_CUT + 5))
+    if image.read(SMART_CUT, len(cut)) != cut or image.read(smart, len(WINDOWS[smart])) != WINDOWS[smart]:
+        return "The quarterback floor found unrecognized code in the economy's smart cut (0x2BF9A0)."
+    return None
+
+
+def _floor_problems(payload, stages):
+    if not stages & (STAGE_FLOOR | STAGE_OVER_CAP):
+        return []
+    return [p for p in (floor_entry_problem(payload), floor_economy_problem(payload)) if p]
 
 
 def _sites_state(image, va, stages):
@@ -127,8 +149,8 @@ def _state(payload):
     settings = code.parse_settings(record)
     link = struct.unpack_from("<I", page, code.LINK_IR_STORE)[0]
     _require(link == _ir_store_va(payload, settings["stages"]), "Foreign quarterback room link words")
-    _require(not settings["stages"] & STAGE_FLOOR or floor_entry_problem(payload) is None,
-             "The quarterback floor's entry into the native signing routine is not recognized")
+    _require(not _floor_problems(payload, settings["stages"]),
+             "The quarterback floor's native signing routine or economy routines are not recognized")
     _require(page == code.page_bytes(VA, record, ir_store_va=link), "Foreign quarterback room page")
     states = _sites_state(image, VA, settings["stages"])
     _require(states == {"applied"} or (states == {"applied", "retail"}), "Foreign or mixed quarterback room sites")
@@ -161,6 +183,8 @@ def requirements(payload, stages=None):
     stages = REALISTIC_STAGES if stages is None else stages
     _require(not stages & code.STAGE_TRADE, "The quarterback room trade stage is not available in this build")
     _require(not stages & code.STAGE_E2 or stages & code.STAGE_SIGN, "The quarterback room E2 stage needs stage 4a")
+    _require(not stages & STAGE_OVER_CAP or stages & STAGE_FLOOR,
+             "Signing over the cap is the floor's last rung and needs the floor")
     missing = []
     try:
         standard = bool(memory.read_settings(payload).get("require_128"))
@@ -172,11 +196,8 @@ def requirements(payload, stages=None):
         missing.append("The quarterback room rules need depth chart locks.")
     if lineup.status(payload) != "applied":
         missing.append("The quarterback room rules need the situational lineup roles.")
-    if stages & STAGE_FLOOR:
-        problem = floor_entry_problem(payload)
-        if problem:
-            missing.append(problem)
-    if stages & (code.STAGE_SIGN | STAGE_FLOOR):
+    missing += _floor_problems(payload, stages)
+    if stages & (code.STAGE_SIGN | STAGE_FLOOR | STAGE_OVER_CAP):
         from . import nfl2k5_franchise_economy as economy, nfl2k5_franchise_ownership as ownership
         from . import nfl2k5_injured_reserve as ir, nfl2k5_practice_squad as squad
         if economy.status(payload) != "applied":
@@ -242,13 +263,32 @@ def apply(payload, level="realistic"):
         _require(_state(result)[0] == "retail", "The quarterback room failed Retail readback")
         return result, {**receipt, "status": "retail", "restored_stages": settings["stages"],
                         "changed_bytes": space.count_differing_bytes(source, result), "file_growth": 0}
-    missing = requirements(source)
+    return _install(source, current, settings, allocation, receipt, REALISTIC_STAGES, SHADOW_DEFAULT)
+
+
+def install_stages(payload, stages, *, shadow=False):
+    """Calibration and test path only (season panels, owner tests): install a named stage set with the same
+    authentication, needs and readback as Realistic. Nothing in the Studio calls it; the Studio writes only
+    REALISTIC_STAGES through apply()."""
+    source = bytes(payload)
+    XbeImage(source)
+    try:
+        current, settings, allocation = _state(source)
+    except ERRORS as exc:
+        raise QbRoomError(f"The quarterback room bytes are not recognized; refusing to change them ({exc})") from exc
+    return _install(source, current, settings, allocation, {"owner": OWNER, "mode": "stages", "va": hex(VA)},
+                    stages, shadow)
+
+
+def _install(source, current, settings, allocation, receipt, stages, shadow):
+    code = _code()
+    missing = requirements(source, stages)
     _require(not missing, " ".join(missing))
-    record = code.settings_record(REALISTIC_STAGES, shadow=SHADOW_DEFAULT)
+    record = code.settings_record(stages, shadow=shadow)
     wanted = code.parse_settings(record)
     if current == "applied" and settings == wanted:
-        return source, {**receipt, "status": "already_applied", "stages": REALISTIC_STAGES,
-                        "shadow": SHADOW_DEFAULT, "changed_bytes": 0, "file_growth": 0}
+        return source, {**receipt, "status": "already_applied", "stages": stages,
+                        "shadow": shadow, "changed_bytes": 0, "file_growth": 0}
     working = source
     if current == "applied":
         # Another stage set or calibration record: back to the empty reservation first, then install.
@@ -256,13 +296,13 @@ def apply(payload, level="realistic"):
     elif allocation is None:
         working, receipt["allocation"] = space.extend_scaleout(source, REQUESTS)
     empty = working
-    page = code.page_bytes(VA, record, ir_store_va=_ir_store_va(working, REALISTIC_STAGES))
-    result = _patch(working, _edits(VA, REALISTIC_STAGES, page, restoring=False))
+    page = code.page_bytes(VA, record, ir_store_va=_ir_store_va(working, stages))
+    result = _patch(working, _edits(VA, stages, page, restoring=False))
     confirmed = _state(result)
     _require(confirmed[0] == "applied" and confirmed[1] == wanted, "The quarterback room failed Realistic readback")
     restored, _ = apply(result, "retail")
     _require(restored == empty, "The quarterback room Retail restore does not reproduce the empty reservation")
-    return result, {**receipt, "status": "applied", "stages": REALISTIC_STAGES, "shadow": SHADOW_DEFAULT,
-                    "sites": [hex(at) for _label, at, _o, _p in _sites(VA, REALISTIC_STAGES)],
+    return result, {**receipt, "status": "applied", "stages": stages, "shadow": shadow,
+                    "sites": [hex(at) for _label, at, _o, _p in _sites(VA, stages)],
                     "changed_bytes": space.count_differing_bytes(source, result),
                     "file_growth": len(result) - len(source)}

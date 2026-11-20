@@ -186,7 +186,7 @@ class OwnerTests(unittest.TestCase):
     def test_a_signing_stage_page_links_the_ir_store_and_retail_restores_all_three_sites(self):
         from mod_editor.core import nfl2k5_injured_reserve as ir
         room, code = self.room, self.code
-        stages = code.STAGE_D1 | code.STAGE_SIGN
+        stages = code.STAGE_D1 | code.STAGE_SIGN | code.STAGE_E2  # only E2 reads the IR store link
         store = ir.store_va(self.applied)
         self.assertTrue(store)
         record = code.settings_record(stages, shadow=True)
@@ -197,6 +197,7 @@ class OwnerTests(unittest.TestCase):
         edits += [(at, original, patched) for label, at, original, patched in code.sites(0x1529000, stages)
                   if label == "sign_entry"]
         self.assertEqual(len(edits), 2)
+        self.assertEqual(room._ir_store_va(self.applied, code.STAGE_D1 | code.STAGE_SIGN), 0)
         signing = room._patch(self.applied, edits)
         settings = room.read_settings(signing)
         self.assertEqual((settings["status"], settings["stages"]), ("applied", stages))
@@ -276,8 +277,12 @@ class FloorOwnerTests(unittest.TestCase):
 
     def test_the_floor_bit_and_its_site(self):
         room, code = self.room, self.code
-        self.assertEqual(room.STAGE_FLOOR, 64)
-        self.assertEqual(getattr(code, "STAGE_FLOOR", 64), room.STAGE_FLOOR)  # the template's name, once it has one
+        self.assertEqual((room.STAGE_FLOOR, room.STAGE_OVER_CAP), (64, 128))
+        self.assertEqual((code.STAGE_FLOOR, code.STAGE_OVER_CAP, code.STAGE_MASK), (64, 128, 255))
+        labels = {label: at for label, at, _o, _p in room._sites(0x1529000, code.STAGE_D1)}
+        self.assertEqual(labels, {"pregame_entry": 0x247DCA, "room_entry": 0x24807A})
+        self.assertEqual({label for label, *_ in room._sites(0x1529000, room.STAGE_FLOOR)},
+                         {"pregame_entry", "room_entry", "sign_entry"})
         self.assertEqual(room._site_stages(room.STAGE_FLOOR) & code.STAGE_SIGN, code.STAGE_SIGN)
         self.assertEqual(room._site_stages(code.STAGE_D1), code.STAGE_D1)
         self.assertFalse(room.REALISTIC_STAGES & room.STAGE_FLOOR)  # set only at the floor handover, by the lead
@@ -302,6 +307,18 @@ class FloorOwnerTests(unittest.TestCase):
             with self.subTest(case=name):
                 self.assertIn("native signing routine", room.floor_entry_problem(self._changed(self.slice1, va, data)))
 
+    def test_the_economy_routines_the_floor_calls_are_authenticated(self):
+        room = self.room
+        self.assertIsNone(room.floor_economy_problem(self.slice1))
+        retail = Path(os.environ.get("NFL2K5_RETAIL_XBE", ""))
+        if retail.is_file():
+            self.assertIn("restructure", room.floor_economy_problem(retail.read_bytes()))
+        for name, va, data, word in (("restructure", 0x3B9F60, b"\xc3", "restructure"),
+                                     ("cut-down jump", room.SMART_CUT + 1, b"\x00", "smart cut"),
+                                     ("smart cut body", 0x3E21D4, b"\xcc", "smart cut")):
+            with self.subTest(case=name):
+                self.assertIn(word, room.floor_economy_problem(self._changed(self.slice1, va, data)))
+
     def test_the_floors_needs(self):
         room, code = self.room, self.code
         self.assertEqual(room.requirements(self.slice1, code.STAGE_D1), [])
@@ -315,6 +332,26 @@ class FloorOwnerTests(unittest.TestCase):
         # Without the floor bit the routine is not the owner's business (the changed byte also breaks the section
         # digest the other owners check, so only the floor's own line is compared).
         self.assertFalse(any("native signing routine" in line for line in room.requirements(foreign, code.STAGE_D1)))
+        with self.assertRaisesRegex(ValueError, "needs the floor"):
+            room.requirements(self.slice1, code.STAGE_D1 | room.STAGE_OVER_CAP)
+        self.assertEqual(room.requirements(self.slice1, code.STAGE_D1 | room.STAGE_FLOOR | room.STAGE_OVER_CAP), needs)
+
+    def test_install_stages_needs_modern_ir_and_ownership_and_round_trips(self):
+        from mod_editor.core import nfl2k5_injured_reserve as ir
+        room, code = self.room, self.code
+        stages = code.STAGE_D1 | room.STAGE_FLOOR | room.STAGE_OVER_CAP
+        with self.assertRaisesRegex(ValueError, "modern injured reserve"):
+            room.install_stages(self.slice1, stages)
+        upgraded, _ = ir.apply(self.slice1, "modern", standard_guard=True)  # the real IR installer adds ownership
+        floor, receipt = room.install_stages(upgraded, stages)
+        settings = room.read_settings(floor)
+        self.assertEqual((settings["status"], settings["stages"], settings["shadow"]), ("applied", stages, False))
+        self.assertEqual(receipt["sites"], ["0x247dca", "0x24807a", "0x248010"])
+        empty = space.extend_scaleout(upgraded, room.REQUESTS)[0]
+        self.assertEqual(room.apply(floor, "retail")[0], empty)
+        self.assertEqual(room.install_stages(empty, stages)[0], floor)
+        self.assertEqual(room.apply(floor, "realistic")[0], room.apply(empty, "realistic")[0])  # Studio record wins
+        self.assertEqual(room.status(self._changed(floor, 0x3B9F60, b"\xc3")), "foreign")
 
     def test_a_floor_page_installs_the_signing_site_and_retail_restores_everything(self):
         room, code = self.room, self.code
