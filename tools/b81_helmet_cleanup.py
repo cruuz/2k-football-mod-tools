@@ -253,7 +253,9 @@ def cmd_build(args) -> int:
             Image.fromarray(after, "RGBA").save(Path(args.decoded) / f"{key}.png")
     rows.sort(key=lambda r: (r["selector"], r["chunk"]))
     document = dict(schema="nfl2k5_kit_fixes_2026/v1", source=SOURCE, method=METHOD, textures=rows)
-    Path(args.out).write_text(json.dumps(document, separators=(",", ":"), sort_keys=True) + "\n", encoding="utf-8",
+    # The default ", " separators keep every whitespace-free run short: the retail-free release gate refuses a
+    # shipped text file with a run over 4,096 characters as an embedded binary blob (beta 81 CI).
+    Path(args.out).write_text(json.dumps(document, sort_keys=True) + "\n", encoding="utf-8",
                               newline="\n")
     if args.receipt:
         Path(args.receipt).write_text(json.dumps(receipt, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
