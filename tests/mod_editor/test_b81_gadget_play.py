@@ -899,6 +899,54 @@ class NativeLineupTests(unittest.TestCase):
                 self.assertEqual(rebuilt, self.before.line(0))
                 self.assertEqual(self._marker(self.after), 0)
 
+    def test_from_the_native_sites_a_store_or_audible_after_a_substitution_rebuilds_the_game_lineup(self):
+        """Review F1, behaviour only (no runtime labels, so this fails on code without the restore): after an End
+        Around put the GAD in, execution from the play store's call 0x9F9CB (no-huddle, re-pick) and from the offense
+        audible's call 0x9FB10 must rebuild the offense through 0x18AD10, and that build must give the game's own
+        picks for the new play (no GAD at the carrier slot). Without the restore both sites just run their displaced
+        call and return, leaving the substituted eleven on the field."""
+        book = self.setup_book(314)
+        slot = self.links[314][(3, 147)]
+        others = [link.play_index for link in book.formations[3].play_links if (3, link.play_index) not in self.links[314]]
+        m = self.after.m
+        u = m.u
+        for site, displaced, back, caller in ((0x9F9CB, 0xB8790, 0x9F9D0, 0xA24EC), (0x9FB10, 0xB87D0, 0x9FB15, 0x18B090)):
+            with self.subTest(site=hex(site)):
+                self.select(book, 3, 147)
+                self.assertEqual(self.outcome(0, slot)[2], "changed")
+                self.select(book, 3, others[0])
+                m.put(0xE602B8, 12)
+                m.put(0xE60280, SIDES[0])
+                m.put(0xE60284, SIDES[1])
+                seen = {}
+
+                def stop(_uc, pc, _size, _user):
+                    if pc == 0x18A646:
+                        seen["line"] = self.after.words(m.reg("ESP") + 0x74, 11)
+                    else:
+                        seen["returned"] = True
+                    m.uc.emu_stop()
+
+                hooks = [self._skip(self.after, displaced),
+                         m.uc.hook_add(u.UC_HOOK_CODE, stop, begin=0x18A646, end=0x18A646),
+                         m.uc.hook_add(u.UC_HOOK_CODE, stop, begin=back, end=back)]
+                try:
+                    # The routine's frame at its call: EDI, ESI, EBX pushed, then its own return address.
+                    m.uc.mem_write(m.STACK, struct.pack("<4I", 0, SIDES[0], 0, caller))
+                    for name, value in dict(ECX=SIDES[0], EDX=0, ESI=SIDES[0], EDI=0, EBX=0, EBP=0x44444444,
+                                            ESP=m.STACK, EFLAGS=0x202).items():
+                        m.reg(name, value)
+                    m.uc.emu_start(site, 0xFFFFFFFF, count=400000)
+                finally:
+                    for h in hooks:
+                        m.uc.hook_del(h)
+                    for label in ("gadget_team", "gadget_benched", "gadget_grace"):
+                        if label in template.LABELS:
+                            m.put(gadget.CODE_VA + template.LABELS[label], 0)
+                self.assertNotIn("returned", seen, "the site returned without rebuilding the offense lineup")
+                self.assertEqual(seen.get("line"), self.before.line(0))
+                self.assertNotEqual(seen["line"][slot], self.before.gad(0))
+
     def test_the_benched_receiver_is_judged_once_as_if_he_had_stayed_on_the_field(self):
         """Review F1, fatigue: the snap path's availability call 0x18A6EE goes through available_or_kept. For the
         receiver the last substitution benched (gadget_grace, set only during the restore's rebuild) it runs the game's
