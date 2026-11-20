@@ -108,7 +108,8 @@ HELP_TEXT = ("EXPERIMENTAL. Simulated franchise games give running backs the sho
              "or MyCareer club) are left alone: their backs get hurt only on the field. A fullback keeps about 1 in "
              "16 of the simulated carries the original game gives him, close to the handful modern fullbacks get; the "
              "others are drawn again among the halfbacks and the quarterback. Played games and every rating are "
-             "unchanged.")
+             "unchanged. With Simulated injuries on Realistic or Custom, the weekly roll is replaced by a per-carry "
+             "chance in simulated games.")
 
 # The franchise week injury tick FUN_00133c50 ends with pop edi; pop esi; pop ebx; ret. It runs once per
 # advance and walks every club player, so its tail is the once-a-week point after the game's own clear.
@@ -340,7 +341,15 @@ def allocation(payload):
 
 def _recognize(payload):
     from . import nfl2k5_xbe_space as space
+    from . import nfl2k5_sim_qb_injuries as quarterback
     from .nfl2k5_cave_oracle import XbeImage
+    # b81 slice 2: Simulated injuries on Realistic or Custom parks the weekly jump (the game's own tail is back at
+    # WEEKLY_SITE). Judge this owner on the executable with that option restored; when the quarterback option itself
+    # does not read back, judge the raw bytes as before.
+    try:
+        payload = quarterback.physical_view(payload)
+    except quarterback.ERRORS:
+        pass
     image = XbeImage(payload)
     present = any(r["owner"] == OWNER for r in space.layout(payload)["allocations"])
     owned = allocation(payload) if present else None

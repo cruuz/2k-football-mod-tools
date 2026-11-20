@@ -59,6 +59,9 @@ def card_name(sel):
 
 
 def project_cards(project, asset_root):
+    # Compare canonical paths: a temporary or user folder can sit behind a symlink (macOS /var) or a
+    # short 8.3 name (Windows), and every card path below is resolved before the containment check.
+    root = Path(asset_root).resolve(strict=True)
     cards = {}
     for edit in json.loads(project.read_text(encoding='utf-8'))['edits']:
         if (edit.get('kind'), edit.get('family'), edit.get('resolution')) != ('team_select', 'unif', 256):
@@ -67,8 +70,8 @@ def project_cards(project, asset_root):
         key = f"{edit['asset_code']}{side}{int(edit['style'])}"
         if key in cards:
             raise ValueError(f'Duplicate Team Select uniform card {key}')
-        path = (asset_root / edit['png']).resolve(strict=True)
-        if not path.is_relative_to(asset_root) or not path.is_file():
+        path = (root / edit['png']).resolve(strict=True)
+        if not path.is_relative_to(root) or not path.is_file():
             raise ValueError(f'{key} card leaves the supplied project assets: {path}')
         cards[key] = path
     return cards

@@ -1,4 +1,9 @@
-"""Reversible 128 MiB simulated quarterback injuries and the matched scheduled passing model."""
+"""Reversible 128 MiB simulated quarterback injuries and the matched scheduled passing model.
+
+Install the running-back owner before this option: installed after it, that owner's weekly jump lands where this
+option expects the game's own tail and the option reads foreign (Retail and re-apply refuse); a route that turns the
+running-back owner on later must restore Retail first, install it, then apply the option again.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -8,6 +13,7 @@ import struct
 
 from . import nfl2k5_k128 as memory
 from . import nfl2k5_lineup_roles as lineup
+from . import nfl2k5_sim_rb_injuries as running_backs
 from . import nfl2k5_sim_realism as simulator
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
@@ -17,7 +23,12 @@ OWNER = space.QB_INJURY_OWNER
 REQUESTS = (space.QB_INJURY_REQUEST,)
 REALISTIC_RATE = 310
 MARK = struct.Struct('<8sIII')
-SIGNATURE = b'QBMEDv1\0'
+# Slices 1 (QBMEDv1) and 2 (QBMEDv2) are read and reversed through their frozen code modules; every apply writes the
+# current revision. Slice 2 added the line, edge and ball-carrier checks and parks the weekly running-back roll;
+# slice 3 (QBMEDv3) adds receivers, tight ends, fullbacks, defensive tackles, linebackers and defensive backs.
+SIGNATURES = {1: b'QBMEDv1\0', 2: b'QBMEDv2\0', 3: b'QBMEDv3\0'}
+REVISION = 3
+SIGNATURE = SIGNATURES[REVISION]
 ERRORS = (ValueError, TypeError, IndexError, KeyError, OverflowError, struct.error)
 
 
@@ -34,17 +45,32 @@ def _require(condition, message):
 class _Setting:
     mode: str
     rate: int
+    revision: int = REVISION
 
     def marker(self):
         mode = 1 if self.mode == 'realistic' else 2
-        return MARK.pack(SIGNATURE, mode, self.rate, 0)
+        return MARK.pack(SIGNATURES[self.revision], mode, self.rate, 0)
 
     @classmethod
     def from_marker(cls, raw):
         signature, mode, rate, reserved = MARK.unpack(raw)
-        _require(signature == SIGNATURE and reserved == 0 and mode in (1, 2), 'Unknown simulated QB injury settings marker')
+        revision = next((number for number, known in SIGNATURES.items() if known == signature), None)
+        _require(revision is not None and reserved == 0 and mode in (1, 2), 'Unknown simulated QB injury settings marker')
         _require(rate <= 100000 and (mode != 1 or rate == REALISTIC_RATE), 'Unknown simulated QB injury rate')
-        return cls('realistic' if mode == 1 else 'custom', rate)
+        return cls('realistic' if mode == 1 else 'custom', rate, revision)
+
+
+def _runtime(revision):
+    """The code module that authored this revision's bank and edits (slices 1 and 2 are frozen copies)."""
+    if revision == 1:
+        from . import nfl2k5_sim_qb_injuries_code_b81_slice1 as code
+    elif revision == 2:
+        from . import nfl2k5_sim_qb_injuries_code_b81_slice2 as code
+    else:
+        from . import nfl2k5_sim_qb_injuries_code as code
+    _require(code.MARK_SIGNATURE == SIGNATURES[revision] if revision > 1 else not hasattr(code, 'MARK_SIGNATURE'),
+             'Simulated QB injury code module does not match its settings revision')
+    return code
 
 
 def _setting(mode, percent):
@@ -93,8 +119,24 @@ def _lineup_va(payload):
     return None
 
 
+def _running_back_va(payload):
+    """The running-back owner's weekly entry when its cave is installed, decided by bytes alone.
+
+    Never asks running_backs.status here: that reads through physical_view, which calls back into this module.
+    """
+    rows = [r for r in space.layout(payload)['allocations'] if r['owner'] == running_backs.OWNER]
+    if not rows:
+        return None
+    _require(len(rows) == 1 and tuple(rows[0][k] for k in ('owner','kind','size','align')) == running_backs.REQUESTS[0],
+             'Unknown simulated running-back injury allocation')
+    row = rows[0]
+    if XbeImage(payload).read(row['va'], row['size']) == b'\xcc' * row['size']:
+        return None
+    return row['va']
+
+
 def _edits(payload, bank, setting):
-    from . import nfl2k5_sim_qb_injuries_code as code
+    code = _runtime(setting.revision)
     image = XbeImage(payload)
     sim, data = simulator._allocations(payload)
     _require(sim['size'] == simulator.CODE_SIZE, 'Update simulated season realism before enabling QB injuries')
@@ -102,7 +144,11 @@ def _edits(payload, bank, setting):
     addresses = (base, sim['va'], data['va'], _lineup_va(payload))
     body = code.bank_bytes(image.read, *addresses, rate=setting.rate, marker=setting.marker())
     _require(len(body) == bank['size'], 'Incorrect simulated QB injury runtime size')
-    return (*code.edits(*addresses, rate=setting.rate), ('simulated QB injury bank', base, b'\xcc' * bank['size'], body))
+    # Slice 2: with a rate above zero the weekly running-back jump is the expected byte run and the game's own tail
+    # is installed (code.edits adds it only then). The usual authentication refuses anything else at that site.
+    extra = {} if setting.revision == 1 else {'rb_va': _running_back_va(payload)}
+    return (*code.edits(*addresses, rate=setting.rate, **extra),
+            ('simulated QB injury bank', base, b'\xcc' * bank['size'], body))
 
 
 def _transform(payload, edits, *, restoring):
@@ -131,6 +177,9 @@ def _validate_simulation(payload):
     _require(simulator._recognize_physical(payload) == 'applied', 'Enable the current simulated season realism before QB injuries')
     roles = lineup._read_physical_settings(payload)
     _require(roles['status'] in ('applied','retail'), 'Simulated QB injuries found an unknown lineup patch')
+    # Only on the restored executable, where the weekly running-back site holds that owner's own bytes again.
+    _require(running_backs.status(payload) in ('retail', 'applied', 'previous'),
+             'Simulated QB injuries found an unknown running-back injury patch')
 
 
 @lru_cache(maxsize=1)
@@ -167,7 +216,8 @@ def read_settings(payload):
         setting, _ = _state(bytes(payload))
         if setting is None:
             return {'status':'retail', 'mode':'retail', 'custom_rate':REALISTIC_RATE / 1000}
-        return {'status':'applied', 'mode':setting.mode, 'custom_rate':setting.rate / 1000}
+        return {'status':'applied', 'mode':setting.mode, 'custom_rate':setting.rate / 1000, 'revision':setting.revision,
+                'positions':setting.revision >= 2 and setting.rate > 0}
     except ERRORS as exc:
         return {'status':'foreign', 'reason':str(exc)}
 
@@ -177,7 +227,11 @@ def status(payload):
 
 
 def apply(payload, level='realistic', *, custom_rate=0.310):
-    """Install, retune or restore on an existing standard executable without moving installed owners."""
+    """Install, retune or restore on an existing standard executable without moving installed owners.
+
+    A slice 1 or slice 2 install is reversed exactly and the current revision written fresh, even at the same mode
+    and rate.
+    """
     wanted = _setting(level, custom_rate)
     source = bytes(payload)
     XbeImage(source)
@@ -194,6 +248,9 @@ def apply(payload, level='realistic', *, custom_rate=0.310):
             physical, receipt['allocation'] = space.extend_scaleout(physical, REQUESTS)
             bank = _bank_allocation(physical)
         result = _transform(physical, _edits(physical, bank, wanted), restoring=False)
+        receipt['revision'] = wanted.revision
+        if original is not None and original.revision != wanted.revision:
+            receipt['upgraded_from'] = f'slice{original.revision}'
     confirmed, restored = _state(result)
     _require(confirmed == wanted and restored == physical, 'Simulated QB injury settings failed readback')
     return result, {**receipt, 'status':'applied' if wanted else 'retail', 'changed_bytes':space.count_differing_bytes(source,result),

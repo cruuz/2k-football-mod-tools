@@ -319,10 +319,19 @@ class BallData(unittest.TestCase):
 
     def test_build_runs_the_ball_after_every_global_writer(self):
         source = (ROOT / 'mod_editor/core/mod_build.py').read_text()
-        at = source.index('era_ball.apply_to_image(target)')
+
+        def top_level(name):
+            start = source.index('\ndef ' + name + '(')
+            return source[start:source.index('\ndef ', start + 1)]
+
+        # Beta 81 moved the disc compaction into _compact_build_disc (shared with the single-option QB and
+        # v0.9 update routes). The full build must still run every global writer, then the ball, then compaction.
+        self.assertIn('finish_private(target', top_level('_compact_build_disc'))
+        body = top_level('_build')
+        at = body.index('era_ball.apply_to_image(target)')
         for writer in ('apply_fields_to_image', 'helmets.apply_to_image', 'wipes.apply_to_image'):
-            self.assertLess(source.index(writer), at, writer)
-        self.assertLess(at, source.index('finish_private(target'))
+            self.assertLess(body.index(writer), at, writer)
+        self.assertLess(at, body.index('_compact_build_disc(target'))
 
 
 @unittest.skipUnless(HAVE_UNICORN, 'Unicorn required to execute the selector')
