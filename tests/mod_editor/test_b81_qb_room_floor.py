@@ -463,6 +463,72 @@ class Repricing(FloorLeague):
         self.assertEqual(signed, [f.address])
         self.assertEqual(self.counters()["sign_cuts"], 1)
 
+@unittest.skipUnless(base.HAVE_UC, "Unicorn is required")
+class MyCareerPin(FloorLeague):
+    """TD11 (DESIGN addendum 2, R6): the room and the floor read the native human array 0xE5775C, so a loaded MyCareer
+    club (marked human there by MyCareer) is untouched while "CPU manages my depth chart" (0xE60140) and "auto sign
+    and cut" (0xE6013C) are off, although MyCareer's inline hook on 0xC4D50 (standard build: jmp 0x14E705E) tells
+    every caller outside the launch and the menu enumerators that a computer owns it. A pin: it already holds."""
+    STATE, CLUB = 0x14F26B0, 0x14F30CC                 # the inline state's magic words and stage, and its club
+
+    def load_career(self):
+        self.assertEqual(bytes(self.uc.mem_read(0xC4D50, 5)), bytes.fromhex("e909234201"))
+        self.assertEqual(bytes(self.uc.mem_read(0x14E69B0, 10)), bytes.fromhex("813db0264f014d435142"))
+        for at, value in ((self.STATE, 0x4251434D), (self.STATE + 4, 0x31303030), (self.STATE + 0x18, 3),
+                          (self.CLUB, self.team())):
+            self.write(at, value)
+        self.write(0xE5775C + 4 * SIGN_CLUB, 1)
+        self.write(0xE60140, 0)
+        self.write(0xE6013C, 0)
+        self.assertEqual(self.call(0x13EC30, self.team()), 0)         # the hook: a computer club to this caller
+        self.write(self.CLUB, 0)
+        self.assertEqual(self.call(0x13EC30, self.team()), 0)         # (not the career club: the array is not read)
+        self.write(self.CLUB, self.team())
+
+    def test_td11_the_career_club_is_untouched_by_every_pass_and_the_floor(self):
+        everything = room.STAGE_D1 | room.STAGE_D2D3 | room.STAGE_D4 | room.STAGE_SIGN | FLOOR | \
+            getattr(room, "STAGE_OVER_CAP", 0) | getattr(room, "STAGE_D3", 0)
+        self.floor_settings(stages=everything)
+        # A room every rule would act on (a rookie 10 better behind the incumbent before the first game), then one
+        # with no healthy quarterback for the floor and E1. The game itself may manage the club under MyCareer's
+        # hook; the pin is that the page writes nothing to it and calls no move for it.
+        veteran, rookie = QB(70, 0), QB(80, 1, years=1, locked=False)
+        self.squad([veteran, rookie, QB(60, 2, years=8)], 50)
+        self.free_market(61, 58)
+        self.give_room(20000)
+        self.load_career()
+        team, players = self.team(), [q.address for q in self.clubs[SIGN_CLUB]]
+        writes, moves, native = [], [], set()
+        from unicorn import UC_HOOK_CODE, UC_HOOK_MEM_WRITE
+
+        def written(uc, access, address, size, value, _):
+            if VA <= uc.reg_read(self.x.UC_X86_REG_EIP) < VA + room.PAGE_SIZE:
+                writes.append(hex(address))
+
+        def moved(uc, address, size, _):
+            sp = uc.reg_read(self.x.UC_X86_REG_ESP)
+            caller, first = struct.unpack("<II", uc.mem_read(sp, 8))
+            if VA <= caller < VA + room.PAGE_SIZE and team in (first, uc.reg_read(self.x.UC_X86_REG_ECX)):
+                moves.append(hex(address))
+            elif team in (first, uc.reg_read(self.x.UC_X86_REG_ECX)):
+                native.add(hex(address))                              # the game's own management of the club
+
+        for lo, size in [(team, CLUB_SIZE)] + [(p, 0x54) for p in players]:
+            self.uc.hook_add(UC_HOOK_MEM_WRITE, written, begin=lo, end=lo + size - 1)
+        for at in (0x322BB0, 0x322BB6, 0x2BF9A0, 0x2BD900, 0x3B9F60, 0x242CA0):
+            self.uc.hook_add(UC_HOOK_CODE, moved, begin=at, end=at)
+        for hurt_them in (False, True):
+            if hurt_them:
+                for q in (veteran, rookie):
+                    self.write(q.address + 0x20, hurt(3))
+            self.enter_pregame()                                      # the opening pass, the IR pass, the floor
+            self.enter("room")
+            self.enter_sign(budget=2_000_000_000)                     # the game's weekly signings, then E1 and the floor
+        self.assertEqual((writes, moves), ([], []))
+        counts = self.counters()
+        self.assertGreater(counts["skip_unmanaged"], 0)
+        self.assertEqual((counts["floor_runs"], counts["e1_tried"], counts["locks_written"]), (0, 0, 0))
+
 P2A = Path(os.environ.get("QB_ROOM_P2A_REPLAY", "/home/noah/2k-worktrees/.b77-scratch/b81/qb34/evidence/p2a-replay"))
 P2A_IMAGE = ("00-sign_after-y1-st7-w2-ENTER.b81mem.gz", "c76828e9931eaebdfebd837b5cbe5bf3cf36adb8070618f1f247cdb9d518cd8e")
 P2A_XBE = ("p2-candidate-9edd1353.xbe", "9edd1353bedfbca6b4ce35faa2acc3cb68b8a74521d3313e3b1873e6b12c7c3d")

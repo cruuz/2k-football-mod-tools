@@ -134,23 +134,47 @@ static u32 outcome(const struct room *r, u32 exchanged, u32 drawn) {
     return exchanged ? (r->shadow ? WOULD : APPLIED) : drawn ? KEPT : LOCK_ONLY;
 }
 
-/* ---- D1: veteran or rookie at the start (DESIGN 2.3). Returns 1 when rows were exchanged. ----------------------
-   Key: D1, club, year, week, V index, U index, V ovr, U ovr, row 0 attempts, row 0 yards, both generator words.
-   threshold = the chance the veteran starts, in hundred-thousandths. */
-static u32 decide_d1(struct room *r, struct qb *u) {
+/* ---- D1 after review (DESIGN addendum 2, R1 to R4), in the middle code piece (page + 0x2200, build.py). ----------
+   Recomputed in every pass from a key that does not change during the season: draw(D1, club, year, V index, U index)
+   against today's gap x = ovr(U) - ovr(V). V is the incumbent: the first healthy non-rookie in row order. The veteran
+   is wanted when x <= -1, or x is 0 to 5 and the draw is below 0.85 - 0.05 x (always the rookie at x >= 6).
+   - Veteran wanted, rookie ahead: a hold, rows only: V takes U's row, U and everyone between move down one. No lock;
+     the next native sort may undo it and the next pass writes it again (the pre-game pass is the last word).
+   - Rookie wanted, V ahead, x 0 to 5, before the club's first game (stage 7, or stage 8 with W + L + T = 0): a
+     promotion by choice: U takes V's row, V and everyone between move down one, and the two are locked (the one lock
+     D1 may write). After the first game D1 never moves a rookie ahead; the native 3-point rule, D2 and D3 do that.
+   - Otherwise nothing is written. Ring row: on every write, and on the pre-game pass also when nothing is written.
+   threshold = the chance the veteran starts, in hundred-thousandths. Returns 1 when rows were written. */
+#define MID __attribute__((noinline, section(".text.mid")))
+#define TAIL __attribute__((noinline, section(".text.tail")))
+
+/* Man m to row `to` (above his own), everyone from `to` down to m's old row moves down one; rows only. In the tail
+   piece (page + 0x2E10) with moves.c's put(): decide_d1 alone fills most of the middle one. */
+static TAIL void lift(struct room *r, struct qb *m, u32 to) {
+    for (u32 i = 0; i < r->n; i++) {
+        struct qb *q = &r->q[i];
+        u32 row = q == m ? to : q->row >= to && q->row < m->row ? q->row + 1 : q->row;
+        if (row == q->row) continue;
+        if (!r->shadow) W(q->p + 0x28) = (u16)((W(q->p + 0x28) & ~ROW_MASK) | row << 10);
+        q->row = row;
+    }
+    if (r->shadow) qb_counters.shadow_exchanges++;
+    else qb_counters.exchanges_written++;
+}
+
+static MID u32 decide_d1(struct room *r, struct qb *u) {
     struct qb *v = 0;
     for (u32 i = 0; i < r->n; i++) {
         struct qb *q = &r->q[i];
-        if (q->healthy && !q->rookie && (!v || q->ovr > v->ovr)) v = q;
+        if (q->healthy && !q->rookie && (!v || q->row < v->row)) v = q;
     }
     qb_counters.d1_evaluated++;
     if (!v) {
         qb_counters.d1_no_veteran++;
-        lock(r, u);
         return 0;
     }
     i32 x = u->ovr - v->ovr;
-    u32 p, drawn = 0, veteran;
+    u32 p, veteran, result = KEPT;
     if (x <= -1) {
         p = 100000u;
         veteran = 1;
@@ -159,31 +183,52 @@ static u32 decide_d1(struct room *r, struct qb *u) {
         veteran = 0;
     } else {
         p = (u32)(85 - 5 * x) * 1000u;
-        u32 key[12] = {D1, r->index, D(YEAR), D(WEEK), v->index, u->index, (u32)v->ovr, (u32)u->ovr,
-                       (u32)r->q[0].att, (u32)r->q[0].yds, D(GENERATOR_A), D(GENERATOR_B)};
-        veteran = draw(key, 12) < p;
-        drawn = 1;
+        u32 key[5] = {D1, r->index, D(YEAR), v->index, u->index};
+        veteran = draw(key, 5) < p;
         qb_counters.d1_drawn++;
     }
     if (veteran) qb_counters.d1_veteran_first++;
     else qb_counters.d1_rookie_first++;
-    u32 swap = veteran ? v->row > u->row : u->row > v->row;
-    if (swap) {
-        exchange(r, u, v);
-        qb_counters.d1_exchanged++;
-    } else {
+    if (veteran && u->row < v->row) {
+        lift(r, v, u->row);
+        qb_counters.d1_held++;
+        result = r->shadow ? WOULD : APPLIED;
+    } else if (!veteran && v->row < u->row && x <= 5 && (r->stage == 7 || r->g == 0)) {
+        lift(r, u, v->row);
         lock(r, u);
         lock(r, v);
+        qb_counters.d1_promoted++;
+        result = r->shadow ? WOULD : APPLIED;
     }
-    log_event(r, D1 | (veteran ? 0 : B_AHEAD), outcome(r, swap, drawn), v, u, p);
-    return swap;
+    if (result != KEPT) qb_counters.d1_exchanged++;
+    if (result != KEPT || r->opening) log_event(r, D1 | (veteran ? 0 : B_AHEAD), result, v, u, p);
+    return result != KEPT;
 }
 
-/* ---- D4: the returning starter (DESIGN 2.6). U is not on row 0; S = row 0. -------------------------------------
-   Key: D4, club, year, week, S index, U index, S ovr, U ovr, S attempts, S yards, both generator words.
-   threshold = the chance U takes the job. */
+/* R1's season reset (stage 3b, bit 256): at the first pre-game pass of a season with year index 1 or more (stage 8,
+   week 0), a healthy quarterback who leads the healthy row 0 man by 6 or more takes row 0 (rows only; the best-rated
+   such man, ties to the upper row). Year index 0 is exempt, so the real opening chart stands. */
+static u32 season_reset(struct room *r) {
+    struct qb *top = 0, *first = 0;
+    for (u32 i = 0; i < r->n; i++) {
+        struct qb *q = &r->q[i];
+        if (!q->row) first = q;
+        if (q->healthy && (!top || q->ovr > top->ovr || (q->ovr == top->ovr && q->row < top->row))) top = q;
+    }
+    if (!first || !first->healthy || top->ovr - first->ovr < 6) return 0;
+    lift(r, top, 0);
+    qb_counters.season_resets++;
+    return 1;
+}
+
+/* ---- D4: the returning starter (DESIGN 2.6; addendum 2, R1). U is not on row 0; S = row 0. ----------------------
+   Recomputed in every room pass from draw(D4, club, year, U index, S index) against today's gap and today's "hot"
+   test; U takes the job (an exchange: rows and both locks) in the week the draw falls below the table's chance.
+   Until then nothing is written. threshold = the chance U takes the job. */
 static u32 decide_d4(struct room *r, struct qb *u) {
-    struct qb *s = &r->q[0];
+    struct qb *s = 0;
+    for (u32 i = 0; i < r->n; i++)
+        if (!r->q[i].row) s = &r->q[i];
     i32 x = u->ovr - s->ovr;
     u32 hot = s->att >= 90 && rating10(s) >= 900 && r->w >= r->l;
     u32 flags = D4 | (hot ? HOT : 0);
@@ -191,22 +236,17 @@ static u32 decide_d4(struct room *r, struct qb *u) {
     if (hot) qb_counters.d4_hot++;
     if (x >= 3 || x <= -3) {
         qb_counters.d4_lock_only++;
-        lock(r, u);
-        log_event(r, flags, LOCK_ONLY, s, u, 0);
         return 0;
     }
     u32 p = x >= 0 ? (hot ? 30000u : 80000u) : (hot ? 10000u : 35000u);
-    u32 key[12] = {D4, r->index, D(YEAR), D(WEEK), s->index, u->index, (u32)s->ovr, (u32)u->ovr,
-                   (u32)s->att, (u32)s->yds, D(GENERATOR_A), D(GENERATOR_B)};
-    u32 fire = draw(key, 12) < p;
+    u32 key[5] = {D4, r->index, D(YEAR), u->index, s->index};
+    u32 fire = draw(key, 5) < p;
     qb_counters.d4_drawn++;
     if (fire) {
         qb_counters.d4_fired++;
         exchange(r, u, s);
     } else {
         qb_counters.d4_kept++;
-        lock(r, u);
-        lock(r, s);
     }
     log_event(r, flags | (fire ? B_AHEAD : 0), outcome(r, fire, 1), s, u, p);
     return fire;
@@ -327,19 +367,13 @@ static void club_pass(struct room *r) {
         return;
     }
     r->n = n;
-    u32 healthy = 0;
     for (u32 i = 0; i < n; i++) {
         struct qb *q = &r->q[i];
         q->row = i;
         q->healthy = fully_healthy(q->p);
-        healthy += q->healthy;
     }
     if (!r->q[0].healthy) {
         qb_counters.skip_row0_unhealthy++;
-        return;
-    }
-    if (r->opening && healthy != n) {
-        qb_counters.skip_opening_injured++;
         return;
     }
     u32 table = D(D(LEAGUE_ROOT) + 4);
@@ -368,6 +402,8 @@ static void club_pass(struct room *r) {
     if (leadership > 99) leadership = 99;
     r->coach1000 = 1350 - 600 * (leadership - 61) / 38;
 
+    /* 0. The season reset (addendum 2, R1; bit 256): the first pre-game pass of a season from year index 1. */
+    if (r->opening && (r->stages & STAGE_D3) && r->stage == 8 && !D(WEEK) && D(YEAR) && season_reset(r)) return;
     /* 1. Newcomers: healthy, rank lock clear, best-rated first (ties: the upper row first). */
     if (r->stages & (STAGE_D1 | STAGE_D4)) {
         u32 order[QB_MAX], count = 0;
@@ -383,7 +419,7 @@ static void club_pass(struct room *r) {
         for (u32 k = 0; k < count; k++) {
             struct qb *u = &r->q[order[k]];
             if (u->locked) continue;                    /* locked as the other man of an earlier decision */
-            u32 a = u->rookie && u->att == 0 && (r->stage == 7 || r->stage == 8);
+            u32 a = u->rookie && !starter_usage(u) && (r->stage == 7 || r->stage == 8);
             u32 b = !a && u->row != 0 && !u->rookie && starter_usage(u) && r->stage >= 8;
             if (r->opening && !a) continue;             /* the opening pass does D1 only */
             if ((a && !(r->stages & STAGE_D1)) || (b && !(r->stages & STAGE_D4))) {
@@ -396,15 +432,14 @@ static void club_pass(struct room *r) {
             } else if (b) {
                 if (decide_d4(r, u)) return;
             } else {
-                qb_counters.newcomer_locked++;
-                lock(r, u);
+                qb_counters.newcomer_locked++;          /* case (c): nothing written (addendum 2, R1) */
             }
         }
     }
-    /* 2. D3 then D2: stage 8, after games 1 to 16, only if step 1 exchanged nothing. */
-    if (r->opening || r->stage != 8 || !(r->stages & STAGE_D2D3) || r->g < 1 || r->g > 16) return;
-    if (decide_d3(r)) return;
-    decide_d2(r);
+    /* 2. D3 then D2 (each on its own bit, R5): stage 8, after games 1 to 16, only if step 1 wrote nothing. */
+    if (r->opening || r->stage != 8 || !(r->stages & (STAGE_D2 | STAGE_D3)) || r->g < 1 || r->g > 16) return;
+    if ((r->stages & STAGE_D3) && decide_d3(r)) return;
+    if (r->stages & STAGE_D2) decide_d2(r);
 }
 
 static void pass(u32 opening) {
@@ -415,7 +450,7 @@ static void pass(u32 opening) {
     struct room r;
     r.stages = qb_settings.stages;
     r.opening = opening;
-    if (!(r.stages & (opening ? STAGE_D1 : STAGE_D1 | STAGE_D2D3 | STAGE_D4))) return;
+    if (!(r.stages & (opening ? STAGE_D1 | STAGE_D3 : STAGE_D1 | STAGE_D2 | STAGE_D3 | STAGE_D4))) return;
     r.stage = D(STAGE);
     if (r.stage < 7 || r.stage > 9) {
         qb_counters.passes_inactive++;

@@ -24,7 +24,7 @@ CODE_LIMIT = 0x2000
 # Further code pieces (INTERFACE.md): the tail of page 3 after the cursor and the menu slot holds .text.tail; page +
 # 0x2200..0x23FF is reserved for code (zero until used), so the counters must end by 0x2200.
 TAIL_START, TAIL_LIMIT = 0x2E10, 0x3000
-RESERVED_CODE = (0x2200, 0x2400)
+RESERVED_CODE = (0x2200, 0x2400)              # the middle piece: .text.mid (D1 after review, addendum 2)
 # Page data the C code names as extern objects. Offsets are fixed by INTERFACE.md.
 DATA = {"qb_settings": 0x2000, "qb_link_ir_store": 0x2020, "qb_counters": 0x2040, "qb_ring": 0x2400,
         "qb_ring_cursor": 0x2E00, "qb_menu": 0x2E04,
@@ -60,10 +60,11 @@ def compile_page(temp):
     # 4a stubs (entry.S section .text.sign), so adding 4a does not move a byte of piece 3. One output section: the
     # tail piece (functions marked TAIL in moves.c) is placed at page + 0x2E10 in it, so every label and relocation
     # stays page-relative; the bytes between the two pieces are not code and are never copied.
-    script.write_text("SECTIONS { .text 0 : { *entry.o(.text) *room.o(.text*) *room.o(.rodata*) "
+    script.write_text("SECTIONS { .text 0 : { *entry.o(.text) *room.o(.text) *room.o(.rodata*) qb_piece3_end = .; "
                       "*moves.o(.text) *moves.o(.rodata*) "
                       "*entry.o(.text.sign) *entry.o(.text.floor) *(.rodata*) *(.data*) *(COMMON) *(.bss*) "
-                      f"qb_main_end = .; . = {TAIL_START:#x}; *(.text.tail) qb_tail_end = .; }} "
+                      f"qb_main_end = .; . = {RESERVED_CODE[0]:#x}; *(.text.mid) qb_mid_end = .; "
+                      f". = {TAIL_START:#x}; *(.text.tail) qb_tail_end = .; }} "
                       "/DISCARD/ : { *(.comment*) *(.note*) *(.eh_frame*) *(.got*) } }")
     subprocess.run(["as", "--32", "-o", entry, HERE / "entry.S"], check=True)
     for source, output in (("room.c", logic), ("moves.c", moves)):
@@ -90,13 +91,17 @@ def collect(temp):
             raise ValueError(f"code or data outside the page's .text: {stray}")
         data = text.data()
         syms = elf.get_section_by_name(".symtab")
-        ends = {s.name: s["st_value"] for s in syms.iter_symbols() if s.name in ("qb_main_end", "qb_tail_end")}
-        main_end, tail_end = ends["qb_main_end"], ends["qb_tail_end"]
+        ends = {s.name: s["st_value"] for s in syms.iter_symbols()
+                if s.name in ("qb_piece3_end", "qb_main_end", "qb_mid_end", "qb_tail_end")}
+        main_end, mid_end, tail_end = ends["qb_main_end"], ends["qb_mid_end"], ends["qb_tail_end"]
         if main_end >= CODE_LIMIT:
             raise ValueError("the code does not fit below the settings record")
+        if mid_end > RESERVED_CODE[1]:
+            raise ValueError("the middle piece does not fit page + 0x2200..0x23FF")
         if tail_end > TAIL_LIMIT or len(data) != tail_end:
             raise ValueError("the tail piece does not fit page + 0x2E10..0x2FFF")
         body[:main_end] = data[:main_end]
+        body[RESERVED_CODE[0]:mid_end] = data[RESERVED_CODE[0]:mid_end]
         body[TAIL_START:tail_end] = data[TAIL_START:tail_end]
         for symbol in syms.iter_symbols():
             if symbol.name and symbol["st_shndx"] == index and symbol["st_info"]["type"] in ("STT_FUNC", "STT_NOTYPE"):
@@ -104,7 +109,8 @@ def collect(temp):
         rel = elf.get_section_by_name(".rel.text")
         for fixup in rel.iter_relocations() if rel else ():
             field = fixup["r_offset"]
-            if not (field + 4 <= main_end or TAIL_START <= field and field + 4 <= tail_end):
+            if not (field + 4 <= main_end or RESERVED_CODE[0] <= field and field + 4 <= mid_end
+                    or TAIL_START <= field and field + 4 <= tail_end):
                 raise ValueError(f"relocation outside the code pieces at {field:#x}")
             symbol = syms.get_symbol(fixup["r_info_sym"])
             section, value = symbol["st_shndx"], symbol["st_value"]
@@ -121,15 +127,19 @@ def collect(temp):
             if kind not in (1, 2):
                 raise ValueError(f"Unsupported i386 relocation {kind}")
             relocations.append((field, kind == 2, family, addend & 0xFFFFFFFF))
-    return body, (main_end, tail_end - TAIL_START), sorted(relocations), {name: labels[name] for name in EXPORTED}
+    return body, (main_end, mid_end - RESERVED_CODE[0], tail_end - TAIL_START, ends["qb_piece3_end"]), \
+        sorted(relocations), \
+        {name: labels[name] for name in EXPORTED}
 
 
 def render():
     with tempfile.TemporaryDirectory(prefix="2k5-qb-room-") as folder:
-        raw, (code_bytes, tail_bytes), fixes, labels = collect(Path(folder))
+        raw, (code_bytes, mid_bytes, tail_bytes, piece3), fixes, labels = collect(Path(folder))
     lines = [DIVIDER.rstrip(), f"CODE_BYTES = {code_bytes:#x}",
+             f"PIECE3_BYTES = {piece3:#x}             # piece 3's main part (the entries, room.c's code and tables)",
              f"CODE_TAIL = ({TAIL_START:#x}, {tail_bytes:#x})             # (page offset, bytes): the second code piece",
-             f"CODE_RESERVED = ({RESERVED_CODE[0]:#x}, {RESERVED_CODE[1]:#x})        # reserved for code, zero until used",
+             f"CODE_MID = ({RESERVED_CODE[0]:#x}, {mid_bytes:#x})              # (page offset, bytes): the third piece",
+             f"CODE_RESERVED = ({RESERVED_CODE[0]:#x}, {RESERVED_CODE[1]:#x})        # the middle piece's range",
              "", "_TEMPLATE = b''.join(("]
     pos = 0
 

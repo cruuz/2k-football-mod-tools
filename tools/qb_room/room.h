@@ -40,7 +40,9 @@ typedef signed char i8;
 #define WEEKS_MASK (255u << 22)
 
 #define STAGE_D1 1u
-#define STAGE_D2D3 2u
+#define STAGE_D2D3 2u                /* D2 alone since the review (addendum 2, R5); the name is kept */
+#define STAGE_D2 2u
+#define STAGE_D3 256u                /* D3 and the season reset, on their own bit (R5) */
 #define STAGE_D4 4u
 #define STAGE_SIGN 8u                /* stage 4a: the signing pass and E1 */
 #define STAGE_E2 32u                 /* E2 as well (only with STAGE_SIGN) */
@@ -82,14 +84,14 @@ struct counters {
     u32 skip_opening_injured;    /* opening pass: some quarterback not fully healthy */
     u32 coach_missing;           /* club + 0x14C was 0: leadership 83 used */
     u32 newcomers;               /* unlocked healthy quarterbacks judged */
-    u32 newcomer_locked;         /* case (c): locked where he is */
+    u32 newcomer_locked;         /* case (c): no decision needed (since addendum 2 nothing is written) */
     u32 newcomer_stage_off;      /* branch (a) or (b) whose stage bit is clear: left alone */
     u32 d1_evaluated;
-    u32 d1_no_veteran;           /* no healthy non-rookie: rookie locked where he is */
+    u32 d1_no_veteran;           /* no healthy non-rookie: nothing written */
     u32 d1_drawn;
     u32 d1_veteran_first;
     u32 d1_rookie_first;
-    u32 d1_exchanged;            /* rows exchanged (or would be, in shadow) */
+    u32 d1_exchanged;            /* rows written (held or promoted; or would be, in shadow) */
     u32 d2_evaluated;
     u32 d2_drawn;
     u32 d2_fired;
@@ -102,7 +104,7 @@ struct counters {
     u32 d3_exposure_hi;          /* the same integer steps with H0 = 1; 64-bit (lo, hi) */
     u32 d4_evaluated;
     u32 d4_hot;
-    u32 d4_lock_only;            /* gap >= 3 or <= -3: no draw */
+    u32 d4_lock_only;            /* gap >= 3 or <= -3: no draw, nothing written (since addendum 2) */
     u32 d4_drawn;
     u32 d4_fired;
     u32 d4_kept;
@@ -147,6 +149,9 @@ struct counters {
     u32 floor_sign_failed;
     u32 floor_seated;            /* step 9 */
     u32 floor_failed;            /* step 10: still H = 0 */
+    u32 d1_held;                 /* addendum 2, R1: the veteran put back on the rookie's row (rows only) */
+    u32 d1_promoted;             /* R3/R4: an opening promotion by choice (the rookie on V's row, both locked) */
+    u32 season_resets;           /* R1 (bit 256): from year index 1, week 0, a man 6+ better took row 0 */
 };
 /* COUNTERS END */
 extern volatile struct counters qb_counters;          /* page + 0x2040 */
