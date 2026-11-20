@@ -801,11 +801,13 @@ GADGET_REQUESTS = ((GADGET_OWNER, "code", 2048, 16), (GADGET_OWNER, "read_only",
 BACKFIELD_REQUEST = ("nfl2k5_backfield_cards", "code", 176, 16)
 GADGET_CODE_VA = 0x151F680
 BACKFIELD_VA = 0x1523080
+FRANCHISE_OWNERSHIP = "nfl2k5_franchise_ownership"
+FRANCHISE_OWNERSHIP_MIN_VA = BACKFIELD_VA + BACKFIELD_REQUEST[2]
 LINEUP_SLOT_VA = {GADGET_REQUESTS[0][:2]: GADGET_CODE_VA,
                   GADGET_REQUESTS[1][:2]: GADGET_CODE_VA + GADGET_REQUESTS[0][2],
                   BACKFIELD_REQUEST[:2]: BACKFIELD_VA}
 LATE_OWNERS += (GADGET_OWNER, BACKFIELD_REQUEST[0])
-LATE_OWNERS += ("nfl2k5_franchise_ownership",)  # Trade, release and signed-load safeguards for modern IR.
+LATE_OWNERS += (FRANCHISE_OWNERSHIP,)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -945,6 +947,8 @@ def _requests(requests):
 
 def _needs_scaleout(requests):
     normalized = _requests(requests)
+    if any(r[0] == FRANCHISE_OWNERSHIP for r in normalized):
+        return True
     # Unknown beta-62 owners never sort ahead of a shipped owner in its pages.
     if any(r[0] not in LEGACY_OWNERS for r in normalized) and any(
             r[0] in LEGACY_OWNERS - {LOGO_REQUEST[0]} for r in normalized):
@@ -1081,7 +1085,12 @@ def _scale_allocations(requests):
     pool = [POOL_DOC]  # b778-xs1: the v4 pool cursor (after its directory page), shared by every kind
 
     def to_pool(owner, kind, size, align):
-        at = (pool[0] + align - 1) & -align
+        cursor = pool[0]
+        if owner == FRANCHISE_OWNERSHIP:
+            # IR can precede rookie hair, toss and cards, including on an existing v0.9 disc.
+            # Leave their original addresses available even when none is installed yet.
+            cursor = max(cursor, FRANCHISE_OWNERSHIP_MIN_VA - POOL_VA)
+        at = (cursor + align - 1) & -align
         if gadget:
             fixed = LINEUP_SLOT_VA.get((owner, kind))
             if fixed is not None:
@@ -1150,7 +1159,7 @@ def _scale_allocations(requests):
             # it fit in packs exactly as before; only a plan that used to be refused here changes.
             to_pool(owner, kind, size, align)
     for owner, kind, size, align in late:
-        if gadget and (owner, kind) in LINEUP_SLOT_VA:
+        if owner == FRANCHISE_OWNERSHIP or (gadget and (owner, kind) in LINEUP_SLOT_VA):
             to_pool(owner, kind, size, align)
             continue
         for r in regions:
