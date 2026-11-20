@@ -161,17 +161,71 @@ class FranchiseOwnershipTests(unittest.TestCase):
         self.assertEqual(bytes(m.uc.mem_read(club + 0x1F2, 2)), bytes([1, 0xA5]))
         self.assertEqual(m.call('ownership_release_stub', ecx=club, edx=target, arguments=(1, 1)), 0)
 
-    def test_invalid_squad_metadata_leaves_the_source_ir_and_contract_together(self):
+    def test_unreadable_practice_metadata_on_another_club_leaves_a_verified_ir_release_available(self):
         m = self.m
         player = m.PLAYERS + 299 * 84
         m.set_ir(26, 0, player)
         other = m.club(13)
         m.uc.mem_write(other + 0x19B, bytes([2]))
         m.uc.mem_write(other + 0x1F2, bytes([1, 0xA5]))
-        before = m.domain()
-        self.assertEqual(m.call('ownership_release_stub', ecx=m.club(26), edx=player, arguments=(1, 1)), 0)
-        self.assertEqual(m.domain(), before)
-        self.assertEqual(m.visits, [])
+        other_before = bytes(m.uc.mem_read(other,500))
+        self.assertEqual(m.call('ownership_release_stub', ecx=m.club(26), edx=player, arguments=(1, 1)), 43)
+        self.assertEqual(bytes(m.uc.mem_read(other,500)), other_before)
+        self.assertEqual(m.visits, [0x2BD906])
+
+    def test_invalid_ancillary_table_cannot_block_an_identified_active_cut_or_trade(self):
+        for damaged in (7, 13, 19):
+            for kind in ('practice', 'IR'):
+                with self.subTest(club=damaged, kind=kind):
+                    m = NativeOwnership()
+                    club = m.club(damaged)
+                    if kind == 'practice':
+                        m.uc.mem_write(club + 0x19B, b'\x02')
+                        m.uc.mem_write(club + 0x1F2, b'\x01\xA5')
+                    else:
+                        m.uc.mem_write(m.IR + 64 + damaged*164, b'\x15')
+                    outgoing = m.player(7, 1)
+                    m.put(m.OFFER + 12, outgoing)
+                    m.put(m.OFFER + 36, m.player(19, 2))
+                    before = m.domain()
+                    self.assertEqual(m.call('ownership_trade_stub', ecx=m.OFFER, arguments=(0,0)),42)
+                    self.assertEqual(m.domain(),before)
+                    self.assertEqual(m.call('ownership_release_stub', ecx=m.club(7), edx=outgoing, arguments=(1,1)),43)
+                    self.assertEqual(m.visits,[0x2BD906])
+
+    def test_stale_posted_offers_are_withdrawn_and_interactive_users_receive_the_reason(self):
+        from unicorn import UC_HOOK_CODE
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(retail_bytes())
+        clear = 0x2BB660
+        notice = 0x14E520
+        start = 0xE3C27C
+        for index,interactive in ((0,1),(1,0),(7,1),(14,0)):
+            with self.subTest(index=index,interactive=interactive):
+                m=NativeOwnership()
+                m.uc.mem_write(clear,image.read(clear,0x73))
+                m.uc.mem_write(notice,b'\xc3')
+                seen=[]
+                def message(uc,at,width,user):
+                    address=uc.reg_read(m.reg('EDX'))
+                    text=bytes(uc.mem_read(address,128)).decode('utf-16le',errors='replace').split('\0',1)[0]
+                    seen.append((uc.reg_read(m.reg('ECX')),text))
+                m.uc.hook_add(UC_HOOK_CODE,message,begin=notice,end=notice)
+                offer=start+index*60
+                raw=bytearray(m.uc.mem_read(m.OFFER,60))
+                struct.pack_into('<I',raw,0,2)
+                struct.pack_into('<I',raw,12,m.player(4,0))  # The offering club is 7.
+                m.uc.mem_write(offer,bytes(raw))
+                before=bytes(m.uc.mem_read(start,15*60))
+                club_data=m.domain()
+                self.assertEqual(m.call('ownership_trade_stub',ecx=offer,arguments=(interactive,0x20200)),0)
+                after=bytes(m.uc.mem_read(start,15*60))
+                self.assertEqual(after[:index*60],before[:index*60])
+                self.assertEqual(after[(index+1)*60:],before[(index+1)*60:])
+                self.assertEqual(struct.unpack_from('<I',after,index*60)[0],0)
+                self.assertEqual(seen,[(0x20200,'Trade canceled. A player is no longer available.')] if interactive else [])
+                self.assertEqual(m.domain(),club_data)
 
     def test_existing_free_agent_aliases_are_removed_before_the_single_native_release(self):
         m = self.m

@@ -14,6 +14,10 @@ ownership_trade_stub:
     push 0x002BC380
     ret
 invalid_trade:
+    mov ecx, [esp+24]        /* ECX before PUSHAD is the offer passed to the executor. */
+    mov edx, [esp+40]        /* Original validator's interactive argument. */
+    push DWORD PTR [esp+44]  /* Its menu context. */
+    call ownership_decline
     popad
     popfd
     xor eax, eax

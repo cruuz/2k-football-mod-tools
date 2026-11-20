@@ -37,10 +37,10 @@ static int exclusive_outgoing(u8 *source, u8 *p, u8 *block) {
     for (u32 i=0; i<32; ++i) {
         u8 *team=load_club(i);
         if (!team) continue;
-        if (team!=source && count_pointer((u8 **)team,team[0x11C],p)) return 0;
-        if (load_reserve_holds(LEAGUE,block,team,p)) return 0;
+        if (team!=source && team[0x11C]<=65 && count_pointer((u8 **)team,team[0x11C],p)) return 0;
+        if (load_reserve_holds(LEAGUE,block,team,p)>0) return 0;
         struct load_ir_club *ir=&ownership_store->clubs[i];
-        if (ir->count>20) return 0;
+        if (ir->count>20) continue;
         for (u32 j=0; j<ir->count; ++j) if (ir->entries[j].player==p) return 0;
     }
     return 1;
@@ -65,11 +65,22 @@ u32 FC ownership_trade_valid(u32 *offer) {
     return 1;
 }
 
+void FC ownership_decline(u32 *offer, u32 interactive, void *menu) {
+    /* The weekly processor and trade menu share 15 persistent 60-byte offer slots.
+     * A private proposal elsewhere may need a message, but only posted offers are cleared. */
+    u32 offset=(u32)offer-0x00E3C27C;
+    if (offset<0x384 && offset%60==0 && offer[0]==2)
+        ((void (FC *)(u32 *,u32,u32,u32))0x002BB660)(offer,0,1,1);
+    if (interactive && menu)
+        ((void (FC *)(void *,const unsigned short *))0x0014E520)(menu,u"Trade canceled. A player is no longer available.");
+}
+
 /* Explicit free-agent releases can originate on IR. Preserve its remaining players' clocks,
  * flags and order and leave the owner's mirror ready for the native payroll recalculation. */
 static int withdraw_ir(u32 id, u8 *player) {
     struct load_ir_club *club=&ownership_store->clubs[id];
     u32 n=0, old=club->count;
+    if (old>20) return 0;
     for (u32 i=0; i<old; ++i) {
         if (club->entries[i].player==player) continue;
         if (n!=i) club->entries[n]=club->entries[i];
@@ -89,17 +100,22 @@ u32 FC ownership_prepare_release(u8 *source, u8 *p) {
     if (!p) return 0;
     u8 *block=load_reserve_block(LEAGUE);
     struct load_slots source_slots;
-    if (!load_open_slots(LEAGUE,block,source,&source_slots)) return 0;
-    u32 active=count_pointer((u8 **)source,source_slots.active,p);
+    u32 active_count=source[0x11C];
+    /* Retail owns an invalid primary roster. Its preseason loop requires each real cut to make progress. */
+    if (active_count>65) return 1;
+    u32 active=count_pointer((u8 **)source,active_count,p);
+    if (!load_open_slots(LEAGUE,block,source,&source_slots)) {
+        /* The fixed active pointers are independent of the optional practice-squad footer. */
+        source_slots.active=active_count;
+        source_slots.reserve=0;
+    }
     int held_elsewhere=0;
     for (u32 i=0; i<32; ++i) {
         u8 *club=load_club(i);
         if (!club || club==source) continue;
         int reserve=load_reserve_holds(LEAGUE,block,club,p);
-        if (reserve<0 || ownership_store->clubs[i].count>20) return 0;
-        if (reserve || count_pointer((u8 **)club,club[0x11C],p)) held_elsewhere=1;
+        if (reserve>0 || (club[0x11C]<=65 && count_pointer((u8 **)club,club[0x11C],p))) held_elsewhere=1;
     }
-    if (ownership_store->clubs[from].count>20) return 0;
     int detached=withdraw_ir((u32)from,p);
     u32 total=source_slots.active+source_slots.reserve;
     for (u32 i=source_slots.active; i<total;) {
