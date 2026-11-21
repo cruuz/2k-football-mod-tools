@@ -25,7 +25,7 @@ LEVELS = ("retail", "realistic")
 # order 3). The floor handover shipped the floor alone (FLOOR_STUDIO_STAGES below, from the injury level). D1 + D2
 # handover (lead, after the designer's addendum 2): D1 (veteran or rookie at the opening) and D2 (the kid's turn, by
 # record). D3 (bit 256, benched for poor play) and D4 (bit 4) stay off until their own handovers.
-REALISTIC_STAGES = 1 | 2  # nfl2k5_qb_room_code.STAGE_D1 | STAGE_D2
+REALISTIC_STAGES = 1 | 2 | 4 | 256  # STAGE_D1 | STAGE_D2 | STAGE_D4 | STAGE_D3 (D3/D4 hand-over; 1 | 2 at the floor hand-over)
 SHADOW_DEFAULT = False
 ERRORS = (ValueError, TypeError, IndexError, KeyError, OverflowError, struct.error)
 # The floor (DESIGN addendum F1 to F8): stage bit 64, Realistic only, installed from the injury level (C7 below) and

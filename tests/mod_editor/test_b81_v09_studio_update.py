@@ -146,15 +146,21 @@ class BuildChoices(unittest.TestCase):
         self.panel.target_field.setText(str(self.source.with_name("new.iso")))
 
     def test_released_disc_allows_the_quarterback_choice_alone_or_with_the_other_updates(self):
+        # b81 qb34 (DESIGN_CHANGES C7, the coordinator's rule): injuries above 0 percent need the quarterback floor, and
+        # the floor needs modern injured reserve, so on this route the quarterback choice comes with the reserve update
+        # (the panel ticks it) and "alone" means without the save-list repair and the backfield cards. Unticking the
+        # reserve sets the injuries back to Retail with a note (test_the_floor_need_unticked_sets_retail below).
         self.panel.apply_state({**self.state, "sim_realism": "legacy", "k128_memory": "applied",
                                 "k128_settings": {"require_128": True, "early": True, "roster_heap": True},
                                 "sim_qb_injury_settings": {"status": "retail", "mode": "retail"}})
         mode = self.panel.qb_injury_mode
         mode.setCurrentIndex(mode.findData("realistic"))
+        self.assertTrue(self.panel._boxes()["modern_injured_reserve"].isChecked())
         for other_updates in (False, True):
             for key in build.V09_UPDATE_CHOICES:
                 box = self.panel._boxes()[key]
-                if box.isChecked() != other_updates:
+                wanted = other_updates or key == "modern_injured_reserve"
+                if box.isChecked() != wanted:
                     box.click()
             with self.subTest(other_updates=other_updates):
                 self.assertFalse(self.panel.blocker())
@@ -163,8 +169,21 @@ class BuildChoices(unittest.TestCase):
                 plan = self.panel._plan_for_build()
                 self.assertIsInstance(plan, build._ReleasedV09Update)
                 self.assertEqual((plan.sim_qb_injuries, plan.sim_realism), ("realistic", True))
-                self.assertEqual(tuple(getattr(plan, k) for k in build.V09_UPDATE_CHOICES), (other_updates,) * 3)
+                self.assertEqual(tuple(getattr(plan, k) for k in build.V09_UPDATE_CHOICES),
+                                 tuple(other_updates or k == "modern_injured_reserve" for k in build.V09_UPDATE_CHOICES))
 
+    def test_the_floor_need_unticked_sets_retail(self):
+        """b81 qb34: unticking modern injured reserve while injuries are above 0 percent sets them back to Retail
+        and says why; the injury choice is then no change of its own."""
+        self.panel.apply_state({**self.state, "sim_realism": "legacy", "k128_memory": "applied",
+                                "k128_settings": {"require_128": True, "early": True, "roster_heap": True},
+                                "sim_qb_injury_settings": {"status": "retail", "mode": "retail"}})
+        mode = self.panel.qb_injury_mode
+        mode.setCurrentIndex(mode.findData("realistic"))
+        self.panel._boxes()["modern_injured_reserve"].click()
+        self.assertEqual(mode.currentData(), "retail")
+        self.assertIn("need modern injured reserve", self.panel.qb_injury_help.text())
+        self.assertNotIn("Simulated injuries (Realistic)", self.panel.selected_labels())
     def test_make_my_disc_selects_the_supported_options_independently(self):
         for flags in itertools.product((False, True), repeat=len(build.V09_UPDATE_CHOICES)):
             with self.subTest(flags=flags):
