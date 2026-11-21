@@ -95,8 +95,10 @@ DEFENSIVE_CLASSES = {'end', 'defensive_tackle', 'linebacker', 'cornerback', 'saf
 SECOND_FREE_SAFETY = 28
 # Measured at the frozen constants (76edddaf2): from the signed opening, the save first holds a slice 3 injury on each
 # side and one in slot 28 after week 7 (181 positions commits, 108 of them slice 3; the slot 28 victim is a safety).
-# The run is deterministic; if the constants change, measure again (the case fails rather than skips).
-SLICE3_WEEKS = 7
+# Measured again after scoring merged (0a14a79a6; its simulated plays move the match random stream): week 12 (236
+# positions commits, 139 of them slice 3). The run stops at the first week that has all three, so the cap only bounds it.
+# The run is deterministic; if the constants or the simulator change, measure again (the case fails rather than skips).
+SLICE3_WEEKS = 12
 
 
 def sha256(data):
