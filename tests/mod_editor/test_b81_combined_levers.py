@@ -39,7 +39,9 @@ except ImportError:  # pragma: no cover
     uc = x86 = None
 
 BASE_XBE = "bda1e4a408f19cc30f0916e03b158b0accc46e0ccb6a39e134c1ce79ba3ab6ea"         # slice 1 base, shared base disc
-STABILITY_XBE = "dff6cbc5501450bad9b1c252c3fd78cfdb7b3e0567a100193e8e495ce57f6e81"    # Realistic on it, revision 4
+# Realistic on it, revision 4: 12f2776dd's own (lever-free) result. It was dff6cbc5 before the 7c64ec2ca merge, which
+# adds scoring's bytes and the 0.35 floor immediates only (pos3/work/combined-A/merge/classify.txt).
+REALISTIC_XBE = "33cd2a36a81b20d86ddd50417bbb71212be933fc20bee68d58645d4e3e01eb50"
 LEGACY_INSTALLS = (("NFL2K5_B81_STABILITY_FIXTURES", "default.xbe", BASE_XBE),
                    ("NFL2K5_V08_XBE", None, "5f987568"),
                    ("NFL2K5_V09_XBE", None, "1a476d94"))
@@ -304,9 +306,9 @@ class PassingLevel(unittest.TestCase):
 
 
 class RevisionFourBank(unittest.TestCase):
-    """At the default levers the quarterback owner writes the stability handover's executable byte for byte."""
+    """At the default levers the quarterback owner writes the lever-free head's executable byte for byte."""
 
-    def test_realistic_on_the_base_is_still_dff6cbc5(self):
+    def test_realistic_on_the_base_equals_the_lever_free_build(self):
         root = os.environ.get("NFL2K5_B81_STABILITY_FIXTURES")
         path = Path(root or "") / "default.xbe"
         if not root or not path.is_file():
@@ -316,7 +318,7 @@ class RevisionFourBank(unittest.TestCase):
         from mod_editor.core import nfl2k5_sim_qb_injuries as qb
         self.assertEqual((code.QB_CHANCE_SCALE, code.PASSING_LEVEL), (1.0, .982))
         realistic = qb.apply(base, "realistic")[0]
-        self.assertEqual(_sha(realistic), STABILITY_XBE)
+        self.assertEqual(_sha(realistic), REALISTIC_XBE)
         # and the in-place route's extra step changes only pass protection's own bytes
         upgraded = pp.apply(realistic)[0]
         self.assertEqual(qb.read_settings(upgraded), qb.read_settings(realistic))
@@ -328,6 +330,7 @@ class StudioRoutes(unittest.TestCase):
 
     def test_edit_route_upgrades_the_legacy_owner_for_realistic_and_custom_only(self):
         from mod_editor.core import mod_build, nfl2k5_sim_qb_injuries as qb, nfl2k5_sim_realism as simulator
+        from mod_editor.core import nfl2k5_cpu_kick_aim as aim
         root = os.environ.get("NFL2K5_B81_STABILITY_FIXTURES")
         path = Path(root or "") / "default.xbe"
         if not root or not path.is_file():
@@ -348,6 +351,9 @@ class StudioRoutes(unittest.TestCase):
                 expected = simulator.apply(base)[0] if simulator.status(base) == "legacy" and upgrade else base
                 expected = pp.apply(expected)[0] if upgrade else expected
                 expected = qb.apply(expected, mode, custom_rate=rate)[0]
+                # since 7c64ec2ca the route adds the CPU kick aim repair in every mode (the base carries the kicking fixes)
+                self.assertEqual(aim.status(expected), "retail")
+                expected = aim.apply(expected)[0]
                 self.assertEqual(update["result_sha256"], _sha(expected))
                 self.assertEqual(pp.status(expected), "applied" if upgrade else "legacy")
 

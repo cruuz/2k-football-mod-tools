@@ -148,7 +148,9 @@ class InPlaceRoutes(unittest.TestCase):
         if not disc or not Path(disc).is_file():
             self.skipTest("the private reviewed standard test disc is absent")
         from mod_editor.core import mod_build, nfl2k5_kick_rules as kick_rules, nfl2k5_sim_qb_injuries as qb
+        from mod_editor.core import nfl2k5_pass_protection as pressure
         source = mod_build._xbe_bytes(Path(disc))
+        self.assertEqual(pressure.status(source), "legacy")
         self.assertEqual((kick_rules.status(source), aim.status(source)), ("applied", "retail"))
         repaired, receipt = mod_build._cpu_kick_aim_with_kicking(source)
         self.assertEqual(repaired, aim.apply(source)[0])
@@ -158,7 +160,9 @@ class InPlaceRoutes(unittest.TestCase):
             for mode in ("realistic", "retail"):
                 plan = mod_build.sim_qb_disc_edit(disc, str(Path(folder) / f"{mode}.iso"), mode)
                 result = mod_build.preflight_plan(plan)["sim_qb_source_update"]["result_sha256"]
-                expected = aim.apply(qb.apply(source, mode)[0])[0]
+                # Realistic also updates the disc's legacy pass protection (combined lever 1, nine bytes)
+                upgraded = pressure.apply(source)[0] if mode == "realistic" else source
+                expected = aim.apply(qb.apply(upgraded, mode)[0])[0]
                 with self.subTest(mode=mode):
                     self.assertEqual(result, hashlib.sha256(expected).hexdigest())
                     self.assertEqual(XbeImage(expected).read(aim.SITE_VA, aim.SITE_SIZE), aim.site_bytes())
