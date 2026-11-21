@@ -13,9 +13,15 @@ Reached as ``{"op": "rule", "module": "fill", "kind": ..., ...}`` from ``nfl2k5_
 kind "helmet"  the b81-art cleanup of a finished modern-shell helmet (helmet02): the 2004 Revolution vents painted
                beside the modern vents (their outline is the blank retail Cleveland shell's hardware, donor
                ``hardware``), the 2004 flag's outline (the texture's own transparent diamond, or a donor's), old logo
-               pieces and old shell squares given as mask rules; harmonic or nearest-texel fill, the texture's own
-               colours, then the palette entry of each texel's alpha.
+               pieces and old shell squares given as mask rules or found by the art lane's old-logo detector
+               (``old_ink``: the user's own retail helmets of the club against the texture, beside the 2026 logo's
+               footprint ``foot``); harmonic or nearest-texel fill, the texture's own colours; then the logo moves the
+               art lane made after the cleanup (``after``: mirror_box, mirror_side, turn_upper, mirror_off, outline),
+               colour only, from the texture itself; then the palette entry of each texel's alpha.
 kind "row"     each masked texel takes the colour of the nearest unmasked texel on its own row (ties to the left).
+kind "far_helmet"  the far-away player atlas's helmet side composed from the kit's own near-view helmet (the two
+               Carolina blue-alternate rows): its shell colour lit by the island's folds and its logo laid in by an
+               exact area average (see that section).
 
 Arithmetic: integers, or IEEE float64 + - * / in a written-out order (the harmonic fill is a fixed number of Jacobi
 sweeps with explicit neighbour sums; medians are exact middle values of sorted integers; the nearest-texel fill is
@@ -427,6 +433,13 @@ def helmet(out, op, donors):
     keep = mask_of(op["keep"], texture) if op.get("keep") else np.zeros(shape, bool)
     old = mask_of(op["old"], texture) if op.get("old") else np.zeros(shape, bool)
     boxes = mask_of(op["boxes"], texture) if op.get("boxes") else np.zeros(shape, bool)
+    foot = footprint(op["foot"], texture, donors) if op.get("foot") else None
+    if foot is not None:
+        keep = dilate4(foot, 1)                     # the 2026 logo's footprint, grown by one: kept out of every fill
+    if op.get("old_ink"):
+        rule = op["old_ink"]
+        old, boxes = old_ink(texture, blank, zone, [_donor(donors, k) for k in rule["refs"]],
+                             foot if foot is not None else np.zeros(shape, bool), rule)
     soft = old | boxes
     changed = np.zeros(shape, bool)
     how = op.get("vents", "------")
@@ -468,6 +481,8 @@ def helmet(out, op, donors):
         res[changed, :3] = nearest_colour(work[changed], pal).astype(np.uint8)
         if soft.any():
             res = _shell_palette(res, texture, work, changed, blank, zone)
+    for step in op.get("after", ()):
+        res = _after(res, step, blank, zone)
     moved = (res[..., :3] != texture[..., :3]).any(axis=2)
     if moved.any():
         snapped = snap_to_alpha(res[moved][:, :3].astype(np.int64), texture[moved][:, 3], texture, op.get("snap", []))
@@ -509,6 +524,516 @@ def _shell_palette(res, texture, work, changed, blank, zone_box=ZONE):
     return res
 
 
+# ------------------------------------------------------------------------------- the 2026 logo's footprint
+# The art lane's registered official-logo footprint (fixtex2.old_ink 'foot') and keyline band (keyline.remove
+# 'changed'), recomputed exactly without PIL, scipy or libm.
+#
+# What the art lane computes (b81/art/work/reg.py, fixtex2.py, keyline.py):
+#     logo = league PNG, cropped to its alpha > 8 box (reg.official)
+#     al   = PIL 'F' LANCZOS resize of float32(alpha / 255.0) of ORI[ori](logo) to (w, h), as float64, clipped to [0, 1]
+#     foot = OR over the panels used of  (al > 0.04)  placed at (x0, y0)
+#     keyline band = OR over every registered panel of  (al(logo) - al(without_keyline(logo))) > 0.03  placed at (x0, y0)
+#
+# Here Pillow 10.2's Resample.c is written out for the float32 ('F') path: precompute_coeffs (double coefficients,
+# the same bounds rounding, k /= sum in tap order), the horizontal pass then the vertical pass, each output a double
+# sum of (float32 input) * (double coefficient) in tap order, stored as float32. Rules followed:
+#   * sin() is not libm: _sin() evaluates sin of the double argument with integer fixed-point arithmetic (320 bits,
+#     Machin pi, Taylor series) and rounds once to the nearest double (Python's int / int true division is correctly
+#     rounded); it refuses if the error bound straddles a rounding boundary. Every other step is one IEEE double
+#     + - * / in Pillow's order.
+#   * no float32 arithmetic and no float32 arrays: "store as float32" is _f32(), an exact round-to-nearest-even onto
+#     the float32 grid (frexp / ldexp / rint on doubles; equal to numpy's astype(float32) - checked by check.py).
+#   * numpy is used only element-wise (each texel's sum is written out tap by tap, in Pillow's order); no reductions.
+# The inputs are integers (the logo's 8-bit alpha, and for the keyline its 8-bit RGB), so the output is the same
+# bytes on every IEEE-754 platform.
+
+
+# ------------------------------------------------------------------------------------------------ exact sin
+_P = 320                       # fixed-point fraction bits
+_GUARD = 24
+
+
+def _machin_pi(bits):
+    one = 1 << (bits + _GUARD)
+
+    def arctan_inv(n):
+        power = one // n
+        total = power
+        n2, k, sign = n * n, 3, -1
+        while True:
+            power //= n2
+            if power == 0:
+                return total
+            total += sign * (power // k)
+            sign, k = -sign, k + 2
+
+    return (4 * (4 * arctan_inv(5) - arctan_inv(239))) >> _GUARD   # |error| < 2 units of 2^-bits
+
+
+_PI_FIXED = _machin_pi(_P)
+_PI_DOUBLE = float.fromhex('0x1.921fb54442d18p+1')   # M_PI (C) == math.pi, the double Pillow multiplies by
+_SIN_CACHE: dict = {}
+
+
+def _sin(x: float) -> float:
+    """sin(x) rounded to the nearest double, for a double |x| <= 16 (Lanczos-3 never passes more than 3*pi)."""
+    r = _SIN_CACHE.get(x)
+    if r is not None:
+        return r
+    if x == 0.0:
+        return 0.0
+    if not (abs(x) <= 16.0 and abs(x) >= 2.0 ** -200):
+        raise ValueError("footprint: sin argument out of the supported range")
+    n, d = x.as_integer_ratio()                      # d is a power of two <= 2^(1074)
+    X = n * ((1 << _P) // d)                         # exact: |x| >= 2^-200 has no bits below 2^-252
+    k = (2 * X + _PI_FIXED) // (2 * _PI_FIXED)       # nearest multiple of pi
+    R = X - k * _PI_FIXED                            # |R| <= pi/2 + 2^-300; error <= 2|k| <= 12 units
+    one = 1 << _P
+    R2 = (R * R) >> _P
+    term, total, i = R, R, 1
+    while term:
+        term = -(term * R2 >> _P) // ((i + 1) * (i + 2))
+        total += term
+        i += 2
+    if k & 1:
+        total = -total
+    # error: R's <= 12 units (|cos| <= 1), R2's floor and each term's two floors (<= 3 units per term, < 70 terms)
+    err = 1024
+    lo, hi = (total - err) / one, (total + err) / one     # int / int: correctly rounded to the nearest double
+    if lo != hi:
+        raise ValueError("footprint: sin rounding not decided at 320 bits")
+    _SIN_CACHE[x] = lo
+    return lo
+
+
+def _sinc(x: float) -> float:                        # Resample.c sinc_filter
+    if x == 0.0:
+        return 1.0
+    x = x * _PI_DOUBLE
+    return _sin(x) / x
+
+
+def _lanczos(x: float) -> float:                     # Resample.c lanczos_filter (support 3)
+    if -3.0 <= x and x < 3.0:
+        return _sinc(x) * _sinc(x / 3)
+    return 0.0
+
+
+_COEFFS: dict = {}
+
+
+def coeffs(in_size: int, out_size: int):
+    """Resample.c precompute_coeffs(in_size, 0.0f, (float)in_size, out_size, LANCZOS): [(xmin, [k...]), ...]."""
+    key = (in_size, out_size)
+    if key in _COEFFS:
+        return _COEFFS[key]
+    if not (0 < in_size < 1 << 24 and 0 < out_size < 1 << 24):
+        raise ValueError("footprint: resize size out of range")
+    scale = float(in_size) / out_size                 # (double)(in1 - in0) / outSize, in0 = 0
+    filterscale = scale if scale >= 1.0 else 1.0
+    support = 3.0 * filterscale
+    ss = 1.0 / filterscale
+    out = []
+    for xx in range(out_size):
+        center = 0.0 + (xx + 0.5) * scale
+        xmin = int(center - support + 0.5)            # C (int) truncates toward zero, as int() does
+        if xmin < 0:
+            xmin = 0
+        xmax = int(center + support + 0.5)
+        if xmax > in_size:
+            xmax = in_size
+        xmax -= xmin
+        k, ww = [], 0.0
+        for x in range(xmax):
+            w = _lanczos(((x + xmin) - center + 0.5) * ss)
+            k.append(w)
+            ww += w
+        if ww != 0.0:
+            k = [w / ww for w in k]
+        out.append((xmin, k))
+    _COEFFS[key] = out
+    return out
+
+
+# ------------------------------------------------------------------------------------------------ float32 grid
+def _f32(v):
+    """Each double rounded to the nearest float32 value (ties to even), kept as float64. Exact steps only."""
+    v = np.asarray(v, np.float64)
+    out = np.zeros(v.shape, np.float64)
+    nz = v != 0.0
+    if nz.any():
+        vals = v[nz]
+        _m, e = np.frexp(vals)                        # vals = m * 2^e, 0.5 <= |m| < 1
+        q = np.maximum(e - 24, -149)                  # float32 quantum: 24 significant bits, or 2^-149 below 2^-126
+        r = np.ldexp(np.rint(np.ldexp(vals, -q)), q)  # |vals * 2^-q| < 2^24: rint is exact ties-to-even
+        if not np.all(np.abs(r) < 2.0 ** 128):
+            raise ValueError("footprint: float32 overflow")
+        out[nz] = r
+    return out
+
+
+def resize_lanczos_f(plane, width: int, height: int):
+    """Image.fromarray(plane.astype(float32), 'F').resize((width, height), Image.LANCZOS), written out.
+    ``plane`` holds float32 values (as float64); returns float64 holding float32 values, shape (height, width)."""
+    a = np.asarray(plane, np.float64)
+    h, w = a.shape
+    if width != w:                                    # need_horizontal (default box)
+        tmp = np.zeros((h, width), np.float64)
+        for xx, (xmin, k) in enumerate(coeffs(w, width)):
+            ss = np.zeros(h, np.float64)
+            for x, kx in enumerate(k):
+                ss = ss + a[:, xmin + x] * kx         # double += float32 * double, tap order
+            tmp[:, xx] = _f32(ss)
+        a = tmp
+    if height != h:                                   # need_vertical
+        tmp = np.zeros((height, a.shape[1]), np.float64)
+        for yy, (ymin, k) in enumerate(coeffs(h, height)):
+            ss = np.zeros(a.shape[1], np.float64)
+            for y, ky in enumerate(k):
+                ss = ss + a[ymin + y] * ky
+            tmp[yy] = _f32(ss)
+        a = tmp
+    return a
+
+
+# ------------------------------------------------------------------------------------------------ the logo
+LOGO_ORI = {'id': lambda a: a, 'fh': lambda a: a[:, ::-1], 'fv': lambda a: a[::-1], 'r180': lambda a: a[::-1, ::-1]}
+
+
+def crop_box(alpha_u8):
+    """reg.official: the box of alpha > 8 (x0, y0, x1, y1)."""
+    ys, xs = np.nonzero(np.asarray(alpha_u8) > 8)
+    if not len(xs):
+        raise ValueError("footprint: the logo is empty")
+    return int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1
+
+
+def logo_alpha(alpha_u8, ori: str, width: int, height: int):
+    """reg.resized(...)[1] for an already cropped logo: float32(alpha / 255.0), oriented, resized, clipped to [0, 1]."""
+    a = np.asarray(alpha_u8)
+    if a.dtype != np.uint8 or a.ndim != 2:
+        raise ValueError("footprint: the logo alpha must be a 2-D uint8 plane")
+    plane = _f32(LOGO_ORI[ori](a).astype(np.float64) / 255.0)
+    return np.clip(resize_lanczos_f(plane, width, height), 0.0, 1.0)
+
+
+def _check_placements(regs, shape):
+    for v in regs:
+        if v['ori'] not in LOGO_ORI or not (0 <= v['x0'] and 0 <= v['y0'] and v['x0'] + v['w'] <= shape[1]
+                                       and v['y0'] + v['h'] <= shape[0] and v['w'] > 0 and v['h'] > 0):
+            raise ValueError("footprint: placement outside the texture")
+
+
+def logo_footprint(texture_rgba, logo_alpha_u8, regs, threshold=0.04, crop=None):
+    """fixtex2.old_ink(...)['foot']: ``logo_alpha_u8`` is the logo's full 8-bit alpha plane (it is cropped to its
+    alpha > 8 box here, as reg.official does); ``regs`` the panels the stored decision uses, each
+    {ori, w, h, x0, y0}. ``texture_rgba`` gives the shape only (the registration re-check is a stored decision)."""
+    shape = np.asarray(texture_rgba).shape[:2]
+    _check_placements(regs, shape)
+    x0, y0, x1, y1 = crop_box(logo_alpha_u8) if crop is None else (int(v) for v in crop)
+    a = np.ascontiguousarray(np.asarray(logo_alpha_u8)[y0:y1, x0:x1])
+    foot = np.zeros(shape, bool)
+    for v in regs:
+        al = logo_alpha(a, v['ori'], v['w'], v['h'])
+        foot[v['y0']:v['y0'] + v['h'], v['x0']:v['x0'] + v['w']] |= al > threshold
+    return foot
+
+
+def footprint(spec, texture, donors):
+    """The 2026 logo's footprint (fixtex2.old_ink 'foot'): the league logo as the build holds it (donor
+    ``spec["logo"]``, a logos.cdf slot written by the league project step), cropped to its alpha above 8, turned as
+    registered and resized exactly (Pillow's LANCZOS written out) to each registered placement ``spec["regs"]``
+    [{panel, ori, w, h, x0, y0}] of the panels the art lane kept; coverage above ``above`` (0.04: the art lane's
+    value; a row whose logo the P8 import changed may name the value at which the cleanup comes out the same) and,
+    optionally, the logo's ``crop`` box [x0, y0, x1, y1] (the league PNG's own alpha box, which the import can move)."""
+    logo = _donor(donors, spec["logo"])
+    return logo_footprint(texture, np.ascontiguousarray(logo[..., 3]), spec["regs"], float(spec.get("above", 0.04)),
+                          spec.get("crop"))
+
+
+# ----------------------------------------------------------------------------------- old logo ink (detector)
+PANELS = {"upper": (8, 18, 146, 128), "lower": (8, 128, 146, 238)}     # x0, y0, x1, y1 of the two side islands
+NEAR = 24                                       # old ink is looked for this close to the 2026 logo (texels)
+
+
+def _norm(d):
+    """Euclidean length of float64 RGB differences, summed R, G then B (numpy's order), IEEE square root."""
+    return np.sqrt(d[..., 0] * d[..., 0] + d[..., 1] * d[..., 1] + d[..., 2] * d[..., 2])
+
+
+def _explained(cur, ret, shell_cur, shell_ret, thr=40.0, tol=22.0):
+    """texdet2.explained: how much of the retail decal texel is left at each texel (0..1.2), and whether the texel
+    is that decal at some strength over today's shell (float64, sums written out)."""
+    d_ret = ret - shell_cur
+    d_cur = cur - shell_cur
+    n2 = d_ret[..., 0] * d_ret[..., 0] + d_ret[..., 1] * d_ret[..., 1] + d_ret[..., 2] * d_ret[..., 2]
+    dot = d_cur[..., 0] * d_ret[..., 0] + d_cur[..., 1] * d_ret[..., 1] + d_cur[..., 2] * d_ret[..., 2]
+    alpha = np.clip(dot / np.maximum(n2, 1e-6), 0.0, 1.2)
+    resid = _norm(d_cur - alpha[..., None] * d_ret)
+    decal = _norm(ret - shell_ret) > thr
+    cur_dev = _norm(d_cur)
+    ok = decal & (n2 > thr * thr) & (alpha > 0.12) & (resid <= np.maximum(tol * 0.5, 0.18 * cur_dev)) & (cur_dev > 14.0)
+    return alpha, ok
+
+
+def _sizes(label, n, weight):
+    return np.bincount(label.ravel(), weights=weight.ravel().astype(np.int64), minlength=n + 1)[1:].astype(np.int64)
+
+
+def old_ink(texture, blank, zone, refs, foot, rule):
+    """The art lane's old-logo detector (fixtex2.old_ink) on the texture the build holds: ink of the retail decals of
+    this club (``refs``: the user's own retail helmets of this slot and the club's home and away kit) left beside the
+    2026 logo (``foot``: its footprint), plus the reviewed boxes of ``rule``. Returns (paint, boxes)."""
+    shape = texture.shape[:2]
+    inside = box_mask(shape, zone)
+    hw = hardware_mask_raw(blank, zone)
+    hwz = hw.copy()
+    if rule.get("vents_free", True):
+        for v in vent_masks(blank):
+            hwz &= ~dilate4(v, 2)
+    z = inside & ~hwz
+    cur = texture[..., :3].astype(np.float64)
+    shell_cur = _median_rows(cur[inside & ~hw])
+    cur_dev = _norm(cur - shell_cur)
+    ink = z & (cur_dev > 30.0)
+    exp = np.zeros(shape, bool)
+    intact = np.zeros(shape, bool)
+    for ref in refs:
+        ret = ref[..., :3].astype(np.float64)
+        shell_ret = _median_rows(ret[inside & ~hw])
+        a, ok = _explained(cur, ret, shell_cur, shell_ret)
+        ok &= z
+        rdecal = z & (_norm(ret - shell_ret) > 40.0)
+        label, sizes = _label8(rdecal)
+        if sizes:
+            kept = _sizes(label, len(sizes), ok & (a >= 0.8))
+            whole = [i + 1 for i, (sz, k) in enumerate(zip(sizes, kept)) if sz >= 24 and k / sz >= 0.8]
+            intact |= np.isin(label, whole)
+        exp |= ok
+    intact = dilate4(intact, 1)
+    footg = dilate4(foot, 1)
+    pz = np.zeros(shape, bool)
+    for panel in rule.get("panels", ()):
+        pz |= box_mask(shape, PANELS[panel])
+    near = dilate4(foot, NEAR) & pz
+    near[:, LOGO_X1:] = False
+    left = ink & exp & ~footg & ~intact & near
+    label, sizes = _label8(left)
+    if sizes:
+        drop = [i + 1 for i, sz in enumerate(sizes) if sz <= 2 and cur_dev[label == i + 1].max() < 60]
+        left &= ~np.isin(label, drop)
+    if not rule.get("reviewed"):
+        left[:] = False
+    for box in rule.get("add", ()):
+        left |= box_mask(shape, box) & (cur_dev > float(rule.get("add_dev", 30.0))) & ~foot & inside
+    for box in rule.get("keep", ()):
+        left &= ~box_mask(shape, box)
+    loose = ink & ~footg & near
+    label, sizes = _label8(loose)
+    if sizes and left.any():
+        old = _sizes(label, len(sizes), left)
+        whole = [i + 1 for i, (sz, o) in enumerate(zip(sizes, old)) if o >= 3 and o / sz >= 0.3 and sz <= 400]
+        left = left | np.isin(label, whole)
+    grown = dilate4(left, int(rule.get("grow", 2))) & ~footg & (cur_dev > float(rule.get("grow_dev", 8.0))) & z
+    if rule.get("despeckle") or rule.get("gold"):
+        box = box_mask(shape, (20, 20, 142, 236)) & inside & ~hw
+        r, g, b = cur[..., 0], cur[..., 1], cur[..., 2]
+        extra = np.zeros(shape, bool)
+        if rule.get("despeckle"):
+            white = box & (cur.min(axis=2) > 105) & (cur.max(axis=2) - cur.min(axis=2) < 40)
+            label, sizes = _label8(white)
+            extra |= np.isin(label, [i + 1 for i, sz in enumerate(sizes) if sz <= 5])
+        if rule.get("gold"):
+            extra |= dilate4(box & (r - b > 55) & (r > 95) & (g > 60), 1) & box & ~((r > 140) & (g < 70))
+        left |= extra
+        grown |= extra
+    boxes = np.zeros(shape, bool)
+    for bx in rule.get("shell_boxes", ()):
+        boxes |= box_mask(shape, bx) & (cur.max(axis=2) < 30.0)
+    for bx in rule.get("erase", ()):
+        m = box_mask(shape, bx)
+        boxes |= m & (cur_dev > 4.0) & ~foot & inside
+        if rule.get("erase_edge_neutral"):
+            band = foot & ~erode4(foot, int(rule["erase_edge_neutral"]))
+            lum = cur[..., 0] * 0.299 + cur[..., 1] * 0.587 + cur[..., 2] * 0.114
+            shell_l = shell_cur[0] * 0.299 + shell_cur[1] * 0.587 + shell_cur[2] * 0.114
+            boxes |= m & band & (cur.max(axis=2) - cur.min(axis=2) < 45.0) & (lum < shell_l - 14.0) & inside
+    left = left | boxes
+    return left | grown | boxes, boxes
+
+
+# ------------------------------------------------------------------------------- logo moves after the cleanup
+AXIS = 255                                      # both helmet atlases mirror their two side islands about y + y' = 255
+LOGO_ABOVE = 40                                 # logo ink: farther than this from the 2026 shell colour
+LOGO_X1 = 142                                   # the crown stripes start here
+
+
+def _label8(mask):
+    """8-connected pieces in raster order of their first texel: (labels, sizes)."""
+    h, w = mask.shape
+    label = np.zeros((h, w), np.int64)
+    sizes = []
+    for y0, x0 in zip(*np.nonzero(mask)):
+        if label[y0, x0]:
+            continue
+        n = len(sizes) + 1
+        label[y0, x0] = n
+        stack, size = [(int(y0), int(x0))], 0
+        while stack:
+            y, x = stack.pop()
+            size += 1
+            for dy, dx in NEIGHBOURS8:
+                v, u = y + dy, x + dx
+                if 0 <= v < h and 0 <= u < w and mask[v, u] and not label[v, u]:
+                    label[v, u] = n
+                    stack.append((v, u))
+        sizes.append(size)
+    return label, sizes
+
+
+def logo_ink(res, blank, zone, upper):
+    """The logo of one side island (fixes7.logo_box): ink farther than LOGO_ABOVE from the shell colour on the panels
+    off the blank shell's hardware, its largest 8-connected piece and the pieces of 3 or more texels within 6 steps of
+    it. Returns the ink mask (empty when the island holds none)."""
+    x0, y0, x1, y1 = zone
+    inside = np.zeros(res.shape[:2], bool)
+    inside[y0:y1, x0:x1] = True
+    panel = inside & ~hardware_mask_raw(blank, zone)
+    rgb = res[..., :3].astype(np.int64)
+    shell2 = _median_int(rgb[panel])
+    d = 2 * rgb - shell2
+    m = panel & ((d[..., 0] * d[..., 0] + d[..., 1] * d[..., 1] + d[..., 2] * d[..., 2]) > 4 * LOGO_ABOVE * LOGO_ABOVE)
+    rows = np.arange(res.shape[0])[:, None]
+    m &= (rows < 128) if upper else (rows >= 128)
+    m[:, LOGO_X1:] = False
+    label, sizes = _label8(m)
+    if not sizes:
+        return m
+    big = label == 1 + max(range(len(sizes)), key=lambda i: (sizes[i], -i))
+    near = dilate4(big, 6)
+    keep = [i + 1 for i in range(len(sizes)) if sizes[i] >= 3 and (near & (label == i + 1)).any()]
+    return np.isin(label, keep)
+
+
+def _fill_holes4(mask):
+    """Unset texels not 4-connected to the edge through unset texels are set (scipy binary_fill_holes)."""
+    h, w = mask.shape
+    outside = np.zeros((h, w), bool)
+    stack = [(y, x) for y in range(h) for x in (0, w - 1)] + [(y, x) for x in range(w) for y in (0, h - 1)]
+    for y, x in stack:
+        if not mask[y, x]:
+            outside[y, x] = True
+    stack = [(y, x) for y, x in stack if outside[y, x]]
+    while stack:
+        y, x = stack.pop()
+        for dy, dx in NEIGHBOURS4:
+            v, u = y + dy, x + dx
+            if 0 <= v < h and 0 <= u < w and not mask[v, u] and not outside[v, u]:
+                outside[v, u] = True
+                stack.append((v, u))
+    return ~outside
+
+
+def _after(res, step, blank, zone):
+    """A logo move after the cleanup (the art lane's fixes7 steps), colour only, from the texture so far:
+    mirror_box   the ``box`` takes the mirror image about the atlas axis of the same columns (fixes7
+                 mirror_upper_from_lower, the box being the two logos' boxes as that step measured them);
+    mirror_side  one island's logo becomes the other's mirror image inside the two logos' shapes grown by 3
+                 (fixes7.mirror_panel; ``to_upper``);
+    turn_upper   the right-side logo is turned half round inside its own filled shape (fixtex2 rot180_upper);
+    mirror_off   inside ``boxes``, texels farther than 45 from their mirror image take it (erase_after_mirror)."""
+    do = step["do"]
+    out = res.copy()
+    h = res.shape[0]
+    rows = np.arange(h)[:, None]
+    if do == "mirror_box":
+        x0, y0, x1, y1 = (int(v) for v in step["box"])
+        _require(0 <= x0 < x1 <= res.shape[1] and 0 <= y0 < y1 <= h and AXIS - y1 + 1 >= 0 and AXIS - y0 + 1 <= h,
+                 "mirror box outside the texture")
+        out[y0:y1, x0:x1, :3] = res[AXIS - y1 + 1:AXIS - y0 + 1, x0:x1, :3][::-1]
+        return out
+    if do == "mirror_side":
+        to_upper = bool(step["to_upper"])
+        lower, upper = logo_ink(res, blank, zone, False), logo_ink(res, blank, zone, True)
+        src, dst = (lower, upper) if to_upper else (upper, lower)
+        m = dilate4(dst | src[::-1], 3)
+        m &= (rows < 128) if to_upper else (rows >= 128)
+        m &= box_mask(res.shape, zone)
+        m[:, LOGO_X1:] = False
+        out[m, :3] = res[::-1][m][:, :3]
+        return out
+    if do == "turn_upper":
+        keep = logo_ink(res, blank, zone, True)
+        ys, xs = np.nonzero(keep)
+        _require(len(ys) > 0, "no right-side logo to turn")
+        y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+        shape = _fill_holes4(erode4(dilate4(keep[y0:y1, x0:x1], 2), 2))
+        both = shape & shape[::-1, ::-1]
+        block = res[y0:y1, x0:x1, :3]
+        out[y0:y1, x0:x1, :3] = np.where(both[..., None], block[::-1, ::-1], block)
+        return out
+    if do == "mirror_off":
+        rgb = res[..., :3].astype(np.int64)
+        d = rgb - rgb[::-1]
+        far = (d[..., 0] * d[..., 0] + d[..., 1] * d[..., 1] + d[..., 2] * d[..., 2]) > 45 * 45
+        for box in step["boxes"]:
+            m = box_mask(res.shape, box) & far
+            out[m, :3] = out[::-1][m][:, :3]
+        return out
+    if do == "outline":
+        return _outline(res, step, blank, zone)
+    raise ValueError("2026 kit fill rule: unknown step " + repr(do))
+
+
+#: outline coverage beside the logo (refine.outline: clip(1.7 - d, 0, 1) * 0.9 at the Euclidean distance d from the
+#: white mark), as float64 bit patterns: d = 1 (4-neighbour) and d = sqrt(2) (diagonal); farther texels get none
+OUTLINE_COVER = {1: float.fromhex("0x1.428f5c28f5c29p-1"), 2: float.fromhex("0x1.07617adbb143cp-2")}
+
+
+def _outline(res, step, blank, zone):
+    """A thin soft outline of colour ``ink`` round the project's white mark (refine.outline: the Vikings' horn has the
+    thin black outline the 2026 helmet shows): the white pieces of at least 250 texels (luminance 0.299 R + 0.587 G +
+    0.114 B above 200, channel spread below 40) are the mark; texels beside it, off gold and off the blank shell's
+    hardware, take ink over their own colour at OUTLINE_COVER, then the nearest colour the texture already holds."""
+    rgb = res[..., :3].astype(np.int64)
+    lum1000 = 299 * rgb[..., 0] + 587 * rgb[..., 1] + 114 * rgb[..., 2]
+    white = (lum1000 > 200000) & (rgb.max(axis=2) - rgb.min(axis=2) < 40)
+    h, w = white.shape
+    label = np.zeros((h, w), np.int64)
+    horn = np.zeros((h, w), bool)
+    count = 0
+    for y0, x0 in zip(*np.nonzero(white)):
+        if label[y0, x0]:
+            continue
+        count += 1
+        label[y0, x0] = count
+        stack, piece = [(int(y0), int(x0))], []
+        while stack:
+            y, x = stack.pop()
+            piece.append((y, x))
+            for dy, dx in NEIGHBOURS4:
+                v, u = y + dy, x + dx
+                if 0 <= v < h and 0 <= u < w and white[v, u] and not label[v, u]:
+                    label[v, u] = count
+                    stack.append((v, u))
+        if len(piece) >= 250:
+            ys, xs = zip(*piece)
+            horn[list(ys), list(xs)] = True
+    side = dilate4(horn, 1) & ~horn
+    corner = dilate8(horn, 1) & ~horn & ~side
+    cover = np.where(side, OUTLINE_COVER[1], np.where(corner, OUTLINE_COVER[2], 0.0))
+    gold = (rgb[..., 0] - rgb[..., 2]) > 70
+    _shell2, dev2 = shell_hardware(blank, zone)
+    region = (cover > 0.03) & ~horn & ~gold & ~dilate4(gold, 1) & ~(dev2 > 2 * HARDWARE_ABOVE)
+    ink = _hex(step["ink"]).astype(np.float64)
+    a = cover[region][:, None]
+    painted = rgb[region].astype(np.float64) * (1 - a) + ink * a
+    out = res.copy()
+    pal, _ = unique_colours(res[..., :3])
+    out[region, :3] = nearest_colour(painted, pal).astype(np.uint8)
+    return out
+
+
 # --------------------------------------------------------------------------------------------------- row fill
 def row_fill(out, op):
     """Every texel of the mask takes the colour of the nearest texel off the mask on its own row (ties to the
@@ -533,6 +1058,223 @@ def row_fill(out, op):
     return res
 
 
+# ------------------------------------------------------------------------- far-away atlas helmet (Carolina)
+# Fill rule kind "far_helmet": the far-away player atlas's helmet side composed at build time from the kit's own
+# near-view helmet (b81 retail-free, the two Carolina blue-alternate rows 04H2:51 / 04A2:51). Every name here is
+# prefixed far_ / FAR_, so the file can be pasted into nfl2k5_kit_rule_fill.py beside the helmet and row kinds.
+#
+# This is the Studio's own sideline "shell" repaint with a decal (nfl2k5_kit_fixes_2026._sideline_shell_repaint, the
+# path the 05H4/05A4, 18H7, 19H2/19A2, 25H7/25A7 and 27A6 sideline rows use) restated in exact arithmetic:
+#
+# 1. shell colour  = the near helmet's field colour, measured as the sideline step measures it
+#                    (_sideline_field_mode(texture, "helmet")): the columns x < 100 of helmet02, texels with alpha > 128,
+#                    the most frequent 24-level colour cell (np.unique order, first maximum), the per-channel median of
+#                    its members (integers; an even count takes the floor of the two middle values' mean).
+# 2. folds         = the island's own painted folds as a brightness ratio (_sideline_folds, strength 0.7): the island's
+#                    fabric is its own most frequent colour cell; a texel is fabric when it is a near shade of it
+#                    (luma ratio 0.6..1.6 and squared RGB distance to the scaled fabric < 0.09^2; near-black fabric:
+#                    plain squared distance), eroded by one texel when that keeps over a fifth of the island; ratio =
+#                    (luma + 0.05) / median over fabric, 1.0 elsewhere; faded by 0.7 x clip(fabric luma / 0.25, 0.25, 1);
+#                    two passes of the separable [1, 2, 1] / 4 blur with clamped edges; three times divided by its
+#                    median and clipped to 0.75..1.2.
+# 3. shell         = shell / 255 x ratio, clipped to 0..1 (a light shell, R+G+B > 612, keeps 45% of the contrast).
+# 4. decal         = the near helmet's logo box [x0, y0, x1, y1] laid onto the atlas rectangle [u0, v0, u1, v1] by an
+#                    exact area average: source texel k covers [k*W, (k+1)*W) and target texel i covers
+#                    [i*B, (i+1)*B) on a common integer axis (B = box width, W = target width; the same for rows), so
+#                    every weight is an integer overlap. Each source texel's coverage is a40 = clip(max channel
+#                    |colour - shell| - 24, 0, 40) (the sideline decal's alpha, times 40). Per target texel:
+#                    A = min(2 sum(w a40) / (40 B H), 1) (coverage doubled: the near logo's 2-3 texel outline is
+#                    under a texel wide at far size and would otherwise fade into the shell),
+#                    colour = sum(w a40 rgb) / sum(w a40) / 255 (premultiplied, so the shell around the logo does not
+#                    tint it), lit by clip(1 - (1 - ratio) / 2, 0.85, 1.1), laid as shell (1 - A) + colour A.
+#                    ``flip`` mirrors the box first.
+# 5. result        = floor(value x 255 + 0.5) into the island's RGB; alpha and every texel outside the island stay.
+#
+# Arithmetic: integers, and IEEE float64 + - * / in the written order (numpy elementwise; the only reductions are
+# exact integer sums and medians of sorted values). No sqrt (distances are compared squared), no float32, no library
+# resampling, no libm call. The luma weights 0.299 / 0.587 / 0.114 and the other constants are decimal literals,
+# parsed to the same float64 everywhere.
+#
+# Operation (no "color" key; the compile adds palette entries for the new blends itself, max_blend_slots 64):
+#   {"op": "rule", "module": "fill", "kind": "far_helmet", "near": 12,
+#    "island": [38, 91, 126, 128], "decal": {"box": [34, 148, 132, 202], "to": [99, 107, 121, 119]}}
+#   "near" is the donor key: 12 = the kit's own chunk 12 (row "donors": {"12": <sha256>}), or "SEL:chunk".
+# Dispatch in nfl2k5_kit_rule_fill.apply:  if kind == "far_helmet": return far_helmet(out, op, rgba, donors)
+FAR_FIELD_COLUMNS = 100             # helmet02 columns x < 100 * width / 256: the shell side (sideline field mode)
+FAR_CELL = 24                           # colour cells of the mode (sideline _sideline_mode)
+FAR_NEAR_SHADE = (0.6, 1.6)             # fabric shades: luma ratio range (sideline narrow membership)
+FAR_NEAR_D2 = 0.0081                    # fabric shades: squared distance below (0.18 / 2) ** 2 (membership > 0.5)
+FAR_NEAR_BLACK = 0.1                    # a fabric darker than this luma is matched by plain distance
+FAR_FOLD_STRENGTH = 0.7                 # sideline shell repaint
+FAR_FOLD_OFFSET = 0.05
+FAR_FOLD_DARK = 0.25                    # folds of a fabric darker than this luma are faded (down to a quarter)
+FAR_FOLD_CLIP = (0.75, 1.2)
+FAR_LIGHT_SUM = 612                     # R + G + B above this: a light shell keeps 45% of the contrast
+FAR_DECAL_FLOOR, FAR_DECAL_RANGE = 24, 40   # a near texel this far from the shell starts to be logo, fully at +40
+FAR_SHADE_CLIP = (0.85, 1.1)
+FAR_COVERAGE_GAIN = 2               # the averaged coverage times this, clipped to 1 (thin outlines keep colour)
+
+
+def _far_require(ok, message):
+    if not ok:
+        raise ValueError("2026 kit fill rule far_helmet: " + message)
+
+
+def _far_box(value, w, h, name):
+    _far_require(isinstance(value, (list, tuple)) and len(value) == 4 and all(isinstance(v, int) for v in value),
+             name + " must be four integers")
+    x0, y0, x1, y1 = value
+    _far_require(0 <= x0 < x1 <= w and 0 <= y0 < y1 <= h, name + " outside the texture")
+    return x0, y0, x1, y1
+
+
+def _far_median_int(values):
+    v = np.sort(np.asarray(values, np.int64))
+    n = len(v)
+    return int(v[n // 2]) if n % 2 else int((v[n // 2 - 1] + v[n // 2]) // 2)
+
+
+def _far_median_f64(values):
+    v = np.sort(np.asarray(values, np.float64).ravel())
+    n = len(v)
+    return float(v[n // 2]) if n % 2 else float((v[n // 2 - 1] + v[n // 2]) / 2.0)
+
+
+def far_mode_colour(rgba, mask):
+    """The most frequent 24-level colour cell inside ``mask`` (opaque texels), as the per-channel median of its
+    members (integers)."""
+    px = rgba[..., :3][mask & (rgba[..., 3] > 128)].astype(np.int64)
+    _far_require(len(px) > 0, "no opaque texels to measure")
+    cells = px // FAR_CELL
+    values, inverse, counts = np.unique(cells, axis=0, return_inverse=True, return_counts=True)
+    members = px[inverse.reshape(-1) == int(np.argmax(counts))]
+    return np.array([_far_median_int(members[:, c]) for c in range(3)], np.int64)
+
+
+def _far_luma(r, g, b):
+    return r * 0.299 + g * 0.587 + b * 0.114
+
+
+def _far_blur121(a):
+    out = a
+    for _ in range(2):
+        p = np.pad(out, 1, mode="edge")
+        out = ((p[1:-1, :-2] + 2.0 * p[1:-1, 1:-1]) + p[1:-1, 2:]) / 4.0
+        p = np.pad(out, 1, mode="edge")
+        out = ((p[:-2, 1:-1] + 2.0 * p[1:-1, 1:-1]) + p[2:, 1:-1]) / 4.0
+    return out
+
+
+def far_folds(rgba, box):
+    """The island's painted folds as a brightness ratio (about 1.0), measured on its fabric only."""
+    x0, y0, x1, y1 = box
+    mask = np.zeros(rgba.shape[:2], bool)
+    mask[y0:y1, x0:x1] = True
+    fabric = far_mode_colour(rgba, mask)
+    sub = rgba[y0:y1, x0:x1, :3].astype(np.float64) / 255.0
+    r, g, b = sub[..., 0], sub[..., 1], sub[..., 2]
+    luma = _far_luma(r, g, b)
+    sr, sg, sb = (float(v) / 255.0 for v in fabric)
+    src_luma = _far_luma(sr, sg, sb)
+    if src_luma < FAR_NEAR_BLACK:
+        d2 = ((r - sr) * (r - sr) + (g - sg) * (g - sg)) + (b - sb) * (b - sb)
+        known = d2 < FAR_NEAR_D2
+    else:
+        ratio = luma / src_luma
+        k = np.clip(ratio, FAR_NEAR_SHADE[0], FAR_NEAR_SHADE[1])
+        dr, dg, db = r - sr * k, g - sg * k, b - sb * k
+        d2 = (dr * dr + dg * dg) + db * db
+        known = (d2 < FAR_NEAR_D2) & (ratio >= FAR_NEAR_SHADE[0]) & (ratio <= FAR_NEAR_SHADE[1])
+    core = known.copy()
+    core[1:, :] &= known[:-1, :]
+    core[:-1, :] &= known[1:, :]
+    core[:, 1:] &= known[:, :-1]
+    core[:, :-1] &= known[:, 1:]
+    if int(core.sum()) * 5 > core.size:
+        known = core
+    lum = luma + FAR_FOLD_OFFSET
+    out = np.ones_like(lum)
+    if known.any():
+        out[known] = lum[known] / _far_median_f64(lum[known])
+    strength = FAR_FOLD_STRENGTH * min(max(src_luma / FAR_FOLD_DARK, 0.25), 1.0)
+    out = 1.0 + (_far_blur121(out) - 1.0) * strength
+    for _ in range(3):
+        out = np.clip(out / _far_median_f64(out), FAR_FOLD_CLIP[0], FAR_FOLD_CLIP[1])
+    return out
+
+
+def _far_weights(source, target):
+    """Integer overlaps: row i (target texel) x column k (source texel) on a common axis of source * target units."""
+    w = np.zeros((target, source), np.int64)
+    for i in range(target):
+        lo, hi = i * source, (i + 1) * source
+        for k in range(source):
+            a, b = max(lo, k * target), min(hi, (k + 1) * target)
+            if b > a:
+                w[i, k] = b - a
+    return w
+
+
+def far_decal(near, shell, box, flip=False):
+    """(a40 coverage, premultiplied sums) of the near helmet's logo box: integers."""
+    x0, y0, x1, y1 = box
+    crop = near[y0:y1, x0:x1, :3].astype(np.int64)
+    if flip:
+        crop = crop[:, ::-1]
+    diff = np.abs(crop - np.asarray(shell, np.int64)[None, None, :]).max(axis=2)
+    a40 = np.clip(diff - FAR_DECAL_FLOOR, 0, FAR_DECAL_RANGE)
+    return a40, crop * a40[..., None]
+
+
+def far_helmet(out, op, rgba, donors):
+    """The far atlas helmet side of ``out``: the near helmet's shell colour lit by the island's folds of ``rgba``
+    (the row's input), with the near helmet's logo laid in by an exact area average."""
+    h, w = out.shape[:2]
+    key = op.get("near")
+    near = (donors or {}).get(key)
+    _far_require(near is not None, "near-view helmet donor %r absent" % (key,))
+    near = np.asarray(near)
+    nh, nw = near.shape[:2]
+    x0, y0, x1, y1 = _far_box(op.get("island"), w, h, "island")
+    spec = op.get("decal")
+    _far_require(isinstance(spec, dict), "decal {box, to} missing")
+    bx0, by0, bx1, by1 = _far_box(spec.get("box"), nw, nh, "decal box")
+    u0, v0, u1, v1 = _far_box(spec.get("to"), w, h, "decal target")
+    _far_require(x0 <= u0 and u1 <= x1 and y0 <= v0 and v1 <= y1, "decal target outside the island")
+    _far_require(bx1 - bx0 >= u1 - u0 and by1 - by0 >= v1 - v0, "the decal is a downsample: target larger than box")
+    columns = np.zeros((nh, nw), bool)
+    columns[:, :(FAR_FIELD_COLUMNS * nw) // 256] = True
+    shell = far_mode_colour(near, columns)
+    ratio = far_folds(rgba, (x0, y0, x1, y1))
+    rs, gs, bs = (int(v) for v in shell)
+    base = np.stack([float(rs) / 255.0 * ratio, float(gs) / 255.0 * ratio, float(bs) / 255.0 * ratio], axis=-1)
+    if rs + gs + bs > FAR_LIGHT_SUM:
+        k = 1.0 - (1.0 - ratio) * 0.45
+        base = np.stack([float(rs) / 255.0 * k, float(gs) / 255.0 * k, float(bs) / 255.0 * k], axis=-1)
+    new = np.clip(base, 0.0, 1.0)
+    a40, pre = far_decal(near, shell, (bx0, by0, bx1, by1), bool(spec.get("flip", False)))
+    wx = _far_weights(bx1 - bx0, u1 - u0)          # (target w, source w)
+    wy = _far_weights(by1 - by0, v1 - v0)          # (target h, source h)
+    cov = wy @ a40 @ wx.T                      # exact integer sums (int64)
+    sums = [wy @ pre[..., c] @ wx.T for c in range(3)]
+    total = FAR_DECAL_RANGE * (bx1 - bx0) * (by1 - by0)
+    for ty in range(v1 - v0):
+        for tx in range(u1 - u0):
+            c = int(cov[ty, tx])
+            if c == 0:
+                continue
+            a = min(float(c * FAR_COVERAGE_GAIN) / float(total), 1.0)
+            iy, ix = v0 - y0 + ty, u0 - x0 + tx
+            shade = min(max(1.0 - (1.0 - float(ratio[iy, ix])) / 2.0, FAR_SHADE_CLIP[0]), FAR_SHADE_CLIP[1])
+            for ch in range(3):
+                colour = float(int(sums[ch][ty, tx])) / float(c) / 255.0
+                lit = min(max(colour * shade, 0.0), 1.0)
+                new[iy, ix, ch] = new[iy, ix, ch] * (1.0 - a) + lit * a
+    result = np.array(out, np.uint8, copy=True)
+    result[y0:y1, x0:x1, :3] = np.floor(new * 255.0 + 0.5).astype(np.uint8)
+    return result
+
+
 def apply(out, op, rgba, donors):
     """The fill rule ``op`` on ``out`` (the texture so far); ``rgba`` is the row's input level 0, ``donors`` its
     donor textures by key."""
@@ -541,4 +1283,6 @@ def apply(out, op, rgba, donors):
         return helmet(out, op, donors)
     if kind == "row":
         return row_fill(out, op)
+    if kind == "far_helmet":
+        return far_helmet(out, op, rgba, donors)
     raise ValueError("2026 kit fill rule: unknown kind " + repr(kind))

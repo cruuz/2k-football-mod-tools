@@ -171,20 +171,20 @@ class FillRuleArithmetic(unittest.TestCase):
 class ConvertedDocument(unittest.TestCase):
     def test_converted_rows_carry_one_rule_and_the_retail_shell_pin(self):
         document = kf.helmets_b81()
-        rules = [r for r in document["textures"] if any(op["op"] == "rule" for op in r["ops"])]
+        rules = [r for r in document["textures"] if any(op["op"] == "rule" for op in r["ops"])
+                 and r["ops"][0].get("kind") == "helmet"]
         self.assertGreater(len(rules), 100)
         for row in rules:
             kinds = [op["op"] for op in row["ops"]]
-            # the Hail Raiser rows (R55) add the mirror rule and the texels their recompiled art differs from it
-            self.assertTrue(kinds == ["rule"] or (kinds == ["rule", "rule", "runs"] and row["ops"][1].get("do") == "mirror"),
-                            (row["selector"], kinds))
+            # a rule, or a rule and the runs of the project's own drawing it does not make (keyline, real mark)
+            self.assertIn(kinds, (["rule"], ["rule", "runs"]), row["selector"])
             op = row["ops"][0]
             self.assertEqual((op["module"], op["kind"]), ("fill", "helmet"))
             # the blank retail Cleveland shell of the row's family, read from the user's disc (pinned retail bytes)
             self.assertEqual(op["hardware"], "retail:30H0:%d" % row["chunk"])
             self.assertEqual(row["donors"][op["hardware"]], RETAIL_SHELLS[row["chunk"]])
             self.assertNotIn("color", json.dumps(op))
-        self.assertEqual(kf.retail_donor_kits(document), ["30H0"])
+        self.assertIn("30H0", kf.retail_donor_kits(document))
         self.assertNotIn("retail", kf.donor_kits(document))
 
     def test_converted_rows_compile_to_their_pins_from_the_discs(self):
@@ -203,12 +203,159 @@ class ConvertedDocument(unittest.TestCase):
         selectors = sorted({r["selector"] for r in picked})
         kits = kf.read_kits(disc, sorted(set(selectors) | set(kf.donor_kits(document))))
         retail_kits = kf.read_kits(retail, kf.retail_donor_kits(document))
+        logos = kf.read_logos(disc, kf.logo_donor_names(document))
         for selector in selectors:
             sub = dict(document, textures=[r for r in document["textures"] if r["selector"] == selector])
             replacements, receipt = kf.compile_resource(selector, kits[selector], strict=True, document=sub,
-                                                        kits=kits, retail_kits=retail_kits)
+                                                        kits=kits, retail_kits=retail_kits, logos=logos)
             self.assertEqual(receipt["state"], "applied", selector)
             self.assertEqual(len(replacements), len(sub["textures"]), selector)
+
+
+#: far_helmet on synthetic textures (integers only)
+FAR_PINS = {
+    "far_helmet": "03e5524636343bffb562036bbb84803cb71c54b98d09343cd9357f43d7a4d22c",
+    "far_helmet_black_fabric": "9212a0451a80ab5262ea5d2911aa422088c50494fb1343d21860213ab5374d6b",
+    "far_helmet_flip": "c088ffb21f3d8eae4a55f68aa21cd37cff89cfbb1d79a5b67011ba51960f5033",
+    "far_helmet_light": "c205643a6d8f03550b188d1c4cc04a5c7a774ca577df779dd2081e891b0c7538",
+    "far_weights": "acbae245ba023876c7fc46e752ec6aa48e7d09b415cc1c0e9b30b51cdb854470",
+}
+#: the new after of 04H2:51 and 04A2:51 (kf.compile_texture of the far_helmet row on the released v0.9 span)
+FAR_AFTER = "f2478f281fc36d8ea6d37c2bd8eba6c54f377031be06c8fb6cc3902bff561513"
+#: the old rows' after (runs copying the v0.9-only 04H0 far helmet): must never come back
+FAR_OLD_AFTER = "7870638bc1fa30f699d9d3ff1ce2210b5ea978bf115432d848437dcb93624a12"
+#: digest() of the level 0 the rule reads as its near helmet: the league project's import of the black 2012 helmet into
+#: 04H2/04A2 chunk 12 (span 30b66cc3...), whose level 0 equals the released v0.9 disc's 04H0 chunk 12 level 0
+FAR_NEAR_LEVEL0 = "91cf21287ccb4bb3a7bfcf2d5b0ae6896dec2653d49982c5c30f8202b1acc54e"
+FAR_OP = {"op": "rule", "module": "fill", "kind": "far_helmet", "near": 12, "island": [38, 91, 126, 128],
+          "decal": {"box": [34, 148, 132, 202], "to": [99, 107, 121, 119]}}
+
+
+def far_atlas(fabric=(60, 62, 66)):
+    """A 256 x 128 splayer-sized atlas: a helmet island of ``fabric`` with integer folds, its border, a dark crown
+    band at the top right and an old logo (light oval in a blue ring) where the retail panther sits."""
+    y, x = np.mgrid[0:128, 0:256].astype(np.int64)
+    rgb = np.zeros((128, 256, 3), np.int64)
+    rgb[...] = (90, 120, 60)
+    island = (x >= 38) & (x < 126) & (y >= 91)
+    wave = (x * 5 + y * 3) % 13 - 6 - 12 * (((x + 2 * y) % 17) < 3)
+    for c in range(3):
+        rgb[..., c] = np.where(island, fabric[c] + wave, rgb[..., c])
+    rgb[90, 37:128] = (120, 190, 90)
+    rgb[90:128, 37] = (120, 190, 90)
+    rgb[island & (x >= 80) & (y < 97) & ((x - 80) > 6 * (y - 91))] = (8, 8, 8)
+    inner = ((x - 110) * (x - 110) * 4 + (y - 113) * (y - 113) * 16) <= 400
+    outer = ((x - 110) * (x - 110) * 4 + (y - 113) * (y - 113) * 16) <= 640
+    rgb[island & inner] = (200, 200, 200)
+    rgb[island & outer & ~inner] = (0, 120, 200)
+    out = np.zeros((128, 256, 4), np.uint8)
+    out[..., :3] = np.clip(rgb, 0, 255)
+    out[..., 3] = 255
+    return out
+
+
+def far_near(shell=(18, 18, 25)):
+    """A 256 x 256 helmet02-sized near helmet: a shell with a 3-level ripple and, in the lower logo box, a dark oval
+    body inside a blue ring with a white eye and teeth; a few alpha-254 texels."""
+    y, x = np.mgrid[0:256, 0:256].astype(np.int64)
+    rgb = np.zeros((256, 256, 3), np.int64)
+    for c in range(3):
+        rgb[..., c] = shell[c] + (x + y) % 3
+    body = ((x - 83) * (x - 83) * 576 + (y - 175) * (y - 175) * 2025) <= 1166400
+    ring = ((x - 83) * (x - 83) * 729 + (y - 175) * (y - 175) * 2304) <= 1679616
+    rgb[ring & ~body] = (0, 133, 202)
+    rgb[body] = (2, 2, 2)
+    rgb[((x - 55) * (x - 55) + (y - 170) * (y - 170)) <= 9] = (240, 240, 240)
+    rgb[(x >= 50) & (x < 60) & (y >= 180) & (y < 184)] = (230, 230, 230)
+    out = np.zeros((256, 256, 4), np.uint8)
+    out[..., :3] = np.clip(rgb, 0, 255)
+    out[..., 3] = np.where((x * y) % 97 == 0, 254, 255)
+    return out
+
+
+def far_cases():
+    near, atlas = far_near(), far_atlas()
+    out = {"far_helmet": rf.apply(atlas.copy(), FAR_OP, atlas, {12: near})}
+    flip = dict(FAR_OP, decal=dict(FAR_OP["decal"], flip=True))
+    out["far_helmet_flip"] = rf.apply(atlas.copy(), flip, atlas, {12: near})
+    light, light_near = far_atlas((200, 200, 205)), far_near((230, 230, 228))
+    out["far_helmet_light"] = rf.apply(light.copy(), FAR_OP, light, {12: light_near})
+    black = far_atlas((12, 12, 14))
+    out["far_helmet_black_fabric"] = rf.apply(black.copy(), FAR_OP, black, {12: near})
+    out["far_weights"] = np.concatenate([rf._far_weights(98, 22).ravel(), rf._far_weights(54, 12).ravel()])
+    return out
+
+
+class FarHelmetRule(unittest.TestCase):
+    def test_outputs_match_the_authoring_machine(self):
+        got = {name: digest(array) for name, array in far_cases().items()}
+        if not FAR_PINS:
+            self.skipTest("pins not written yet: " + json.dumps(got, sort_keys=True))
+        self.assertEqual(got, FAR_PINS)
+
+    def test_area_weights_are_whole_overlaps(self):
+        for source, target in ((98, 22), (54, 12), (8, 2), (7, 7), (5, 3)):
+            w = rf._far_weights(source, target)
+            self.assertEqual(w.dtype, np.int64)
+            self.assertTrue((w.sum(axis=1) == source).all(), (source, target))    # each target texel: B units
+            self.assertTrue((w.sum(axis=0) == target).all(), (source, target))    # each source texel: W units
+        self.assertEqual(rf._far_weights(8, 2).tolist(), [[2, 2, 2, 2, 0, 0, 0, 0], [0, 0, 0, 0, 2, 2, 2, 2]])
+
+    def test_only_the_island_rgb_changes(self):
+        near, atlas = far_near(), far_atlas()
+        got = rf.apply(atlas.copy(), FAR_OP, atlas, {12: near})
+        x0, y0, x1, y1 = FAR_OP["island"]
+        outside = np.ones(atlas.shape[:2], bool)
+        outside[y0:y1, x0:x1] = False
+        self.assertTrue((got[outside] == atlas[outside]).all())
+        self.assertTrue((got[..., 3] == atlas[..., 3]).all())
+        self.assertGreater(int((got[~outside] != atlas[~outside]).any(axis=1).sum()), 2000)
+        # the old logo is gone: its oval takes the shell (near black), the decal sits in its target only
+        self.assertLess(int(got[113, 110, :3].max()), 60)
+
+    def test_refusals(self):
+        near, atlas = far_near(), far_atlas()
+        with self.assertRaises(ValueError):
+            rf.apply(atlas.copy(), FAR_OP, atlas, {})                               # the near helmet is absent
+        with self.assertRaises(ValueError):
+            rf.apply(atlas.copy(), dict(FAR_OP, decal={"box": [34, 148, 132, 202], "to": [99, 80, 121, 119]}),
+                     atlas, {12: near})                                              # target outside the island
+        with self.assertRaises(ValueError):
+            rf.apply(atlas.copy(), dict(FAR_OP, decal={"box": [34, 148, 44, 158], "to": [99, 107, 121, 119]}),
+                     atlas, {12: near})                                              # not a downsample
+        self.assertNotIn("color", json.dumps(FAR_OP))
+
+
+class CarolinaFarHelmetRows(unittest.TestCase):
+    def test_the_rows_are_one_far_helmet_rule_on_the_kits_own_near_helmet(self):
+        rows = {(r["selector"], r["chunk"]): r for r in kf.helmets_b81()["textures"]}
+        for selector in ("04H2", "04A2"):
+            row = rows[(selector, 51)]
+            self.assertEqual([op["op"] for op in row["ops"]], ["rule"], selector)      # no runs, no texels
+            self.assertEqual(row["ops"][0], FAR_OP, selector)
+            # the donor is the kit's own chunk 12 as the helmet pass finds it: the league import its own row starts from
+            self.assertEqual(row["donors"], {"12": rows[(selector, 12)]["before_sha256"]}, selector)
+            self.assertEqual(row["after_sha256"], FAR_AFTER, selector)
+            self.assertNotEqual(row["after_sha256"], FAR_OLD_AFTER, selector)
+            self.assertEqual(row.get("max_blend_slots"), 64, selector)
+
+    def test_the_rows_compile_to_their_pin_from_the_released_disc(self):
+        disc = os.environ.get("NFL2K5_V09_XISO", "")
+        if not (disc and Path(disc).is_file()):
+            self.skipTest("the released v0.9 disc is absent")
+        rows = {(r["selector"], r["chunk"]): r for r in kf.helmets_b81()["textures"]}
+        kits = kf.read_kits(disc, ["04H0", "04H2", "04A2"])
+        # the level 0 the rule reads (the league import in 04H2/04A2 chunk 12) is the released 04H0 chunk 12 level 0
+        c = kf._chunk_for(kits["04H0"], 12)
+        near = kf.texture_rgba(kits["04H0"][c.offset:c.end_offset])
+        self.assertEqual(digest(near), FAR_NEAR_LEVEL0)
+        for selector in ("04H2", "04A2"):
+            row = rows[(selector, 51)]
+            c = kf._chunk_for(kits[selector], 51)
+            span = kits[selector][c.offset:c.end_offset]
+            self.assertEqual(hashlib.sha256(span).hexdigest(), row["before_sha256"], selector)
+            new, _detail = kf.compile_texture(span, row, {12: near})
+            self.assertEqual(hashlib.sha256(new).hexdigest(), FAR_AFTER, selector)
 
 
 if __name__ == "__main__":
