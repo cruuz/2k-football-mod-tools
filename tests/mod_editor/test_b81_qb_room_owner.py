@@ -153,12 +153,15 @@ class OwnerTests(unittest.TestCase):
         settings = room.read_settings(self.applied)
         self.assertEqual((settings["status"], settings["stages"], settings["shadow"], settings["va"]),
                          ("applied", self.code.STAGE_D1, False, 0x1529000))
-        # D1 + D2 handover (designer's addendum 2): D1 and D2 ship, D3 (256) and D4 stay off; the floor comes from the
-        # injury level and is bit 64 alone since the floor review (F1(b): no over-cap rung), so Realistic installs 67.
-        self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT), (self.code.STAGE_D1 | self.code.STAGE_D2, False))
-        self.assertEqual((room.FLOOR_STUDIO_STAGES, room.realistic_stages()), (64, 67))
-        self.assertEqual(room.stage_names(67), ["D1 veteran or rookie", "D2 the kid's turn", "floor"])
-        self.assertFalse(room.REALISTIC_STAGES & (self.code.STAGE_D3 | self.code.STAGE_D4))
+        # D3/D4 hand-over: D1, D2, D3 (256) and D4 (4) ship; the floor comes from the injury level and is bit 64 alone
+        # since the floor review (F1(b): no over-cap rung), so Realistic installs 327 (67 at the floor hand-over).
+        c = self.code
+        self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT),
+                         (c.STAGE_D1 | c.STAGE_D2 | c.STAGE_D4 | c.STAGE_D3, False))
+        self.assertEqual((room.FLOOR_STUDIO_STAGES, room.realistic_stages()), (64, 327))
+        self.assertEqual(room.stage_names(327), ["D1 veteran or rookie", "D2 the kid's turn", "D3 benched for poor play",
+                                                 "D4 returning starter", "floor"])
+        self.assertFalse(room.REALISTIC_STAGES & (c.STAGE_SIGN | c.STAGE_E2 | c.STAGE_TRADE))
         self.assertEqual(settings["stage_names"], ["D1 veteran or rookie"])
         row = _room_row(space.layout(self.applied)["allocations"])
         self.assertEqual((row["va"], row["size"]), (0x1529000, 0x3000))
