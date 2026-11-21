@@ -27,6 +27,12 @@
         "NFL2K5_B775_XBE (the extracted b775 test-disc default.xbe) is not set"
       ]
     },
+    "b81_gadget_disc": {
+      "description": "Private released SOFTDRINK v0.9 standard disc (NFL2K5_V09_XISO) for the gadget rule's native lineup cases",
+      "messages": [
+        "private disc fixture absent: *"
+      ]
+    },
     "b81_signed_standard": {
       "description": "Private beta 81 standard executable, roster and signed franchise opening (env.sh)",
       "messages": [
@@ -156,6 +162,7 @@
     "test_b780_draft_class.py": {"BuildPathTests": "usa_xbe", "ClassOwnerTests": "usa_xbe", "DraftAiHeadTests": "usa_xbe", "NativeClassTurnoverTests": "usa_xbe", "NativeSpecialistCapTests": "signed_franchise"},
     "test_b780_econ3_roster_drift.py": {"NativeTests": "usa_xbe", "SiteTests": "usa_xbe"},
     "test_b780_n4_defense_playcall_sweep.py": {"DefensePlayCallSweepTests": "softdrink_disc"},
+    "test_b81_gadget_pair_path.py": {"PairedGadgetPathTests": "b81_gadget_disc"},
     "test_b81_sim_pos_injury_signed.py": {"SignedSlice2Exchange": "b81_signed_standard", "SignedThirdSeasonExchange": "b81_stability_third_season"},
     "test_b791_h7_numbers_real.py": {"RealSlotTests": "digit_templates"},
     "test_franchise_colleges.py": {"CollegeTests": "usa_roster"},
