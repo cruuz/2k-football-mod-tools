@@ -319,6 +319,18 @@ class Routes(unittest.TestCase):
         document = roster_with_lower_durability(body)
         return document, qb.roster_stability(document)[1]
 
+    def _assert_copy(self, copy, receipt, expected):
+        """b81 integration (qb34 merged): the edit also installs the quarterback room on the copy (injuries above zero
+        carry its floor), so the copy is the route's quarterback executable (``expected``, checked by its hash) plus
+        the room, and it holds the same injury references as ``expected``."""
+        written = copy.read_bytes()
+        self.assertEqual(receipt["sim_qb_source_update"]["result_sha256"], _sha(expected))
+        room = receipt["qb_room_source_update"]
+        self.assertEqual(room["level"], "realistic")
+        self.assertEqual(_sha(written), room["result_sha256"])
+        self.assertEqual(qb.installed_reference(written), qb.installed_reference(expected))
+        self.assertIsNotNone(qb.installed_reference(written))
+
     def fake_disc(self, disc, document):
         asked = []
 
@@ -379,14 +391,15 @@ class Routes(unittest.TestCase):
         def copied(src, dst, receipt, *_):
             Path(dst).write_bytes(xbe)
             receipt.setdefault("steps", [])
+        full = {}
         with seam, patch.object(mod_build, "_copy_private_build_source", side_effect=copied), \
                 patch.object(mod_build, "_compact_build_disc", side_effect=lambda *args: compaction.append(args)), \
                 patch.object(mod_build, "inspect", return_value={}), \
                 patch.object(mod_build, "_verify_finished_game_disc", return_value=None):
-            self.assertTrue(mod_build._edit_installed_sim_qb(plan, source, copy, xbe, {}, lambda *_: None,
+            self.assertTrue(mod_build._edit_installed_sim_qb(plan, source, copy, xbe, full, lambda *_: None,
                                                              preflight=False, consume=False,
                                                              reference=retail_reference))
-        self.assertEqual(copy.read_bytes(), expected)
+        self._assert_copy(copy, full, expected)
         self.assertEqual([args[:2] for args in compaction], [(copy, retail_reference)])
 
     def test_update_v09_measures_the_released_disc(self):
@@ -518,7 +531,7 @@ class Routes(unittest.TestCase):
                 patch.object(mod_build, "_verify_finished_game_disc", return_value=None):
             self.assertTrue(mod_build._edit_installed_sim_qb(plan, source, copy, treated, receipt, lambda *_: None,
                                                              preflight=False, consume=False, reference=None))
-        self.assertEqual(copy.read_bytes(), mod_build._cpu_kick_aim_with_kicking(frozen)[0])
+        self._assert_copy(copy, receipt, mod_build._cpu_kick_aim_with_kicking(frozen)[0])
         self.assertEqual(receipt["user_notes"], [note])
         self.assertEqual(receipt["sim_qb_source_update"]["stability_reference"]["note"], note)
         # update-v09 (released disc, preflight): the expected bytes carry the frozen references and the receipt says so.
