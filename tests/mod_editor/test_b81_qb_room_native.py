@@ -1581,10 +1581,11 @@ class Signings(SignLeague):
         self.assertNotIn(veteran.address, roster)
         self.assertNotIn(prime.address, roster)
 
-    def test_t8_a_human_club_without_auto_sign_is_untouched(self):
+    def test_t8_a_human_club_is_untouched_with_auto_sign_on_or_off(self):
+        # C21 rule 5 (coordinator 11/20): E1/E2 never act on a user's club, auto sign/cut or not (the floor keeps F4).
         # The economy's own fill would serve 31 human clubs as soon as auto sign/cut is on, so this case stubs
         # 0x323870 (ret 8) and leaves only club 5 in the league table: the pass's own gate is what is tested.
-        for auto, signs in ((0, False), (1, True)):
+        for auto, signs in ((0, False), (1, False)):
             with self.subTest(auto_sign=auto):
                 self.setUp()
                 self.e1_club()
@@ -1598,7 +1599,7 @@ class Signings(SignLeague):
                 before = self.snapshot()
                 self.enter_sign()
                 self.assertEqual(self.snapshot() != before, signs)
-                self.assertEqual(self.counters()["sign_skip_human"], 0 if auto else 1)
+                self.assertEqual(self.counters()["sign_skip_human"], 1)
                 self.assertEqual(self.counters()["sign_passes"], 1)
 
     def test_t8_stages_7_and_9_and_shadow_change_nothing(self):
@@ -1676,6 +1677,155 @@ class SecondSignings(SignLeague):
                 self.assertEqual(fa.address in self.club_list(), applies and draw(self.key(starter, fa, year)) < 50000)
                 self.assertEqual(self.counters()["e2_tried"], int(applies))
                 self.assertEqual(self.counters()["sign_ir_unlinked"], int(case == "store not linked"))
+
+
+# ---- C21 (coordinator's ruling 11/20): E1/E2's make-room release protects stars ---------------------------------
+HALF = 0x246C40                       # a float 0.5 next to the injury-aware rating stub below
+
+
+def injury_aware_rating(uc):
+    """0x246D80 as the game rates: flag 1 (EDX) discounts an injured man (+0x23 bit 7; here by half, P5's images show
+    a hurt 90 CB at 63), flag 0 does not. jmp 0x246C00: fld [ecx+0x36]; test edx,edx; jz ret; test byte [ecx+0x23],0x80;
+    jz ret; fmul [HALF]; ret."""
+    uc.mem_write(0x246D80, b"\xe9" + struct.pack("<i", 0x246C00 - 0x246D85))
+    uc.mem_write(0x246C00, bytes.fromhex("d9413685d2740cf64123807406d80d") + struct.pack("<I", HALF) + b"\xc3")
+    uc.mem_write(HALF, struct.pack("<f", 0.5))
+    uc.ctl_flush_tb()
+
+
+class ProtectedRelease(SignLeague):
+    """E1 at 53 releases the lowest-rated man among the ten lowest (QB, K and P left out), never one first on his
+    position's chart and never one his position needs to keep its minimum of healthy men; nobody: no signing."""
+
+    def setUp(self):
+        super().setUp()
+        injury_aware_rating(self.uc)
+
+    def e1_star_club(self):
+        starter, hurt = self.roster([QB(70, 0, line=(4, 120, 70, 800, 5, 3)), QB(72, 1, injury=0x80000000 | 2 << 22)])
+        roster = self.clubs[SIGN_CLUB]
+        star = [q for q in roster if q.position == 13][1]               # a guard on row 1, hurt for 4 weeks
+        star.ovr, star.injury, star.salary = 95, 0x80000000 | 4 << 22, 3000
+        self.write_player(star)
+        lowest = [q for q in roster if q.position == 3][5]              # WR row 5, 55: first of the two 55s listed
+        (fa,) = self.free_agents([QB(75)])
+        return starter, hurt, star, lowest, fa
+
+    def released(self, before):
+        return [p for p in before if p not in self.club_list()]
+
+    def test_c21_the_smart_cut_would_release_the_hurt_95_guard(self):
+        # The scenario: the economy's smart cut (0x2BF9A0, what E1 called before C21) rates by 0x246D80(p, 1), so the
+        # hurt 95 guard rates 47.5, the lowest at a position above its keep target (4 guards, keep 3): he goes.
+        starter, hurt, star, lowest, fa = self.e1_star_club()
+        before = self.club_list()
+        self.call(0x2BF9A0, CLUBS + CLUB_SIZE * SIGN_CLUB, 52)
+        self.assertEqual(self.released(before), [star.address])
+
+    def test_c21_e1_releases_the_lowest_rated_eligible_man_not_the_star(self):
+        starter, hurt, star, lowest, fa = self.e1_star_club()
+        before = self.club_list()
+        self.enter_sign()
+        self.assertEqual(self.released(before), [lowest.address])
+        self.assertIn(star.address, self.club_list())
+        self.assertIn(fa.address, self.club_list())
+        self.assertEqual(len(self.club_list()), 53)
+        counts = self.counters()
+        self.assertEqual((counts["e1_done"], counts["sign_cuts"], counts["sign_skip_protected"]), (1, 1, 0))
+
+    def test_c21_never_a_quarterback_kicker_or_punter_even_rated_lowest(self):
+        starter, hurt, star, lowest, fa = self.e1_star_club()
+        roster = self.clubs[SIGN_CLUB]
+        spare = [q for q in roster if q.position == 15][4]               # DT row 4 becomes a second kicker, row 1
+        spare.position, spare.row, spare.ovr = 1, 1, 5
+        punter = next(q for q in roster if q.position == 2)
+        punter.ovr = 5
+        hurt.ovr = 5
+        for q in (spare, punter, hurt):
+            self.write_player(q)
+        before = self.club_list()
+        self.enter_sign()
+        (gone,) = self.released(before)
+        self.assertNotIn(self.uc.mem_read(gone + 0x35, 1)[0], (0, 1, 2))
+        self.assertEqual(gone, lowest.address)
+
+    def test_c21_no_release_and_no_signing_when_the_ten_lowest_are_starters_or_needed(self):
+        starter, hurt, star, lowest, fa = self.e1_star_club()
+        roster = self.clubs[SIGN_CLUB]
+        for q in roster:                     # every row 0 man rates 50, every other man 90: the ten lowest all start
+            if q.position not in (0, 1, 2):
+                q.ovr, q.injury = (50 if q.row == 0 else 90), 0
+                self.write_player(q)
+        before = self.club_list(), self.fa_list()
+        self.enter_sign()
+        self.assertEqual((self.club_list(), self.fa_list(), self.ledger()), (*before, []))
+        counts = self.counters()
+        self.assertEqual((counts["e1_tried"], counts["e1_done"], counts["sign_cuts"], counts["sign_skip_protected"]),
+                         (1, 0, 0, 1))
+        self.assertEqual(self.events()[-1][3:7], (5, room.RESULT_KEPT, starter.index, fa.index))
+        # A man below the ten lowest whose position sits at its minimum of healthy men stays as well: the four safeties
+        # (FS and SS minimum 2 each) and the two centers are the lowest rated and not first on their charts.
+        self.setUp()
+        starter, hurt, star, lowest, fa = self.e1_star_club()
+        roster = self.clubs[SIGN_CLUB]
+        for q in roster:
+            if q.position not in (0, 1, 2):
+                q.ovr, q.injury = (40 if q.position in (5, 6, 12) else 50 if q.row == 0 else 90), 0
+                self.write_player(q)
+        before = self.club_list(), self.fa_list()
+        self.enter_sign()
+        self.assertEqual((self.club_list(), self.fa_list()), before)
+        self.assertEqual(self.counters()["sign_skip_protected"], 1)
+
+
+class ProtectedReleaseE2(SignLeague):
+    """C21 rule 4: E2 releases under the same rule. (The plain rating stub here: E2's own test of L, gap(L, S') >= 3,
+    rates the man on injured reserve by 0x246D80(p, 1), which the injury-aware stub would discount. Without the
+    discount the smart cut would take the lowest-rated man at a position above its keep target, a DT on row 4.)"""
+    e2_club = SecondSignings.e2_club
+    key = SecondSignings.key
+
+    def fire_year(self):
+        for year in range(12):
+            self.setUp()
+            self.write(0xE576B8, year)
+            starter, backup, lost, fa = self.e2_club()
+            if draw(self.key(starter, fa, year)) < 50000:
+                return year
+        self.fail("no E2 draw fired in 12 years")
+
+    def star_e2_club(self, year):
+        self.setUp()
+        self.write(0xE576B8, year)
+        starter, backup, lost, fa = self.e2_club()
+        roster = self.clubs[SIGN_CLUB]
+        star = [q for q in roster if q.position == 13][1]
+        star.ovr, star.injury, star.salary = 95, 0x80000000 | 4 << 22, 3000
+        self.write_player(star)
+        return starter, fa, star, [q for q in roster if q.position == 3][5], roster
+
+    def test_c21_e2_releases_the_lowest_rated_eligible_man_not_the_star(self):
+        year = self.fire_year()
+        starter, fa, star, lowest, roster = self.star_e2_club(year)
+        before = self.club_list()
+        self.enter_sign()
+        self.assertEqual([p for p in before if p not in self.club_list()], [lowest.address])
+        self.assertIn(fa.address, self.club_list())
+        self.assertEqual((self.counters()["e2_done"], self.counters()["sign_skip_protected"]), (1, 0))
+
+    def test_c21_e2_signs_nobody_when_nobody_may_go(self):
+        year = self.fire_year()
+        starter, fa, star, lowest, roster = self.star_e2_club(year)
+        for q in roster:
+            if q.position not in (0, 1, 2):
+                q.ovr, q.injury = (50 if q.row == 0 else 90), 0
+                self.write_player(q)
+        before = self.club_list(), self.fa_list()
+        self.enter_sign()
+        self.assertEqual((self.club_list(), self.fa_list()), before)
+        counts = self.counters()
+        self.assertEqual((counts["e2_tried"], counts["e2_done"], counts["sign_skip_protected"]), (1, 0, 1))
+        self.assertEqual(self.events()[-1][3:7], (6, room.RESULT_KEPT, starter.index, fa.index))
 
 if __name__ == "__main__":
     unittest.main()
