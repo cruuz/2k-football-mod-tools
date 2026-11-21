@@ -712,7 +712,8 @@ def warp(rgba, op, source):
 def clear_marks(rgba, op):
     """b81-retail-free-art: inside the ``boxes`` ([x0, y0, x1, y1], ends exclusive) and outside the ``keep`` boxes, every
     texel whose largest RGB channel distance from ``to`` is above ``above`` takes ``to``; then, ``grow`` times, the
-    texels next to those (4-neighbours) that differ from ``to`` at all take it too. Integers only. ``to`` is not a
+    texels next to those (4-neighbours) that differ from ``to`` at all take it too; ``alpha``, when given, is the alpha
+    every cleared texel takes. Integers only. ``to`` is not a
     ``color`` key: a clear asks the palette for nothing (the colour is the field the mark sits on)."""
     out = rgba.copy()
     h, w = out.shape[:2]
@@ -733,6 +734,10 @@ def clear_marks(rgba, op):
         near[:, :-1] |= hit[:, 1:]
         hit = hit | (near & zone & (dist > 0))
     out[..., :3][hit] = colour.astype(np.uint8)
+    if "alpha" in op:
+        # b81-retail-free-art (round 3): the uf3 helmet rows also set the cleared texels' reflection alpha
+        require(0 <= int(op["alpha"]) <= 255, "clear alpha outside 0-255")
+        out[..., 3][hit] = int(op["alpha"])
     return out, hit
 
 

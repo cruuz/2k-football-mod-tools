@@ -897,7 +897,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_moment_scans.py": "99445768a0d0ff24576aab37c5cae3d9ffcb2816034f447cd93d3092d18c616c",
         "mod_editor/core/nfl2k5_unc_bowl_uniforms.py": "639af055c4943c2578955885f4ccc9a7d65f0bd4c632487f56934bdcb1968e1c",
         "mod_editor/core/nfl2k5_nyg_numbers.py": "812f042c6293db1e66567d940228af53acf0955ab9eeec0ff936f64bc243587b",
-        "mod_editor/core/nfl2k5_kit_fixes_2026.py": "a0c7a78d5725595c4c9a6b82c060af7dbe312f40ebcf4b650ca7fd277d35e4b8",
+        "mod_editor/core/nfl2k5_kit_fixes_2026.py": "6abf1c9f59db063646c4c6ecb651f26ae314ec1e959d0b18d30d3e8a707b39be",
         "mod_editor/core/nfl2k5_kit_rule_emblem.py": "5950b7fabb434f2aeaa59c7495db380593c600a1aa0d2c89af319a2903f268c8",
         "mod_editor/core/nfl2k5_kit_rule_fill.py": "cc53076d5a2f8015bf0503ba39b995226eac848a95afbc334a523827b40ffe5a",
         "mod_editor/core/nfl2k5_kit_rule_recolour.py": "d7a1b47d1c2fb0460243a32e15f9f815d46d60b42b31b85bcfacd92eb0f10bec",
