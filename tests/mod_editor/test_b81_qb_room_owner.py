@@ -132,7 +132,8 @@ def _private(variable, sha):
 
 
 class OwnerTests(unittest.TestCase):
-    """Owner level on the reviewed v0.10 helmet test executable (98dd7329) with slice 1 Realistic (9f435b38)."""
+    """Owner level on the reviewed v0.10 helmet test executable (98dd7329) with the injury option Realistic (slices 1 to 3
+    since the merge of 5854e5144: 501b8412; slice 1 alone gave 9f435b38)."""
 
     @classmethod
     def setUpClass(cls):
@@ -146,7 +147,7 @@ class OwnerTests(unittest.TestCase):
 
     def test_settings_and_status(self):
         room = self.room
-        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "9f435b38")
+        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "501b8412")  # b81 merge: slices 1-3 (was 9f435b38)
         self.assertEqual(room.read_settings(self.slice1), {"status": "retail", "mode": "retail", "reserved": False,
                                                            "va": None})
         settings = room.read_settings(self.applied)
@@ -438,13 +439,17 @@ class PreviousRevisionTests(unittest.TestCase):
     empty reservation; any other page is still foreign. The previous executables are rebuilt here from the frozen
     templates and must equal the hashes recorded when those revisions were built."""
 
-    D1D2_SHA = "72a78fcebfb9b057a897d9925cd93180822f55e08bbfecf084fb90c70bd9eb60"  # P6 candidate at 692062151
-    REVIEW_67_SHA = "9e1f2b830528a5007ab272b58875934d166c6bd6d5620571466bf0e7e997f0b6"  # P6-final at 66d8a7e1b
-    REVIEW_64_SHA = "58462a62f5b09d838faf394bb3bb96f3ba067f648874158801eeb78f9f976f7d"  # P2a-final at 66d8a7e1b
-    FLOOR_SHA = "c93f6c0d31aa99476b92092d32777f16af8bebe4c3b8fa8256495aa02dbe704b"
-    FLOOR_EMPTY_SHA = "a0a81494513bda2b812793ea9bf9e356a3e5af5988932c973778a852bc207502"
-    STAGE_3A_SHA = "4af354d711604f4fccc4908f36381da31446c734a0d1fdc61ed34ead008d7eeb"
-    STAGE_3A_EMPTY_SHA = "6aef88eb074f455918e015a6109e7373f183ccba9294ec55a30d7bcf44d2edc2"
+    # b81 merge of 5854e5144 (slices 2 and 3): the injury option's Realistic now writes slices 1 to 3, so every rebuilt
+    # previous executable differs from the one its panel ran (on slice 1 alone). Re-pinned to the rebuilds at the merged
+    # head; the panel executables were, in order: 72a78fce (P6 candidate at 692062151), 9e1f2b83 (P6-final at
+    # 66d8a7e1b), 58462a62 (P2a-final at 66d8a7e1b), c93f6c0d / a0a81494 (floor handover), 4af354d7 / 6aef88eb (3a).
+    D1D2_SHA = "52f4d9fec9afe88b62bcacde2a0c179541da8b5d0de85590a46b0a445c986906"
+    REVIEW_67_SHA = "1c68a15fcf47025cc60055aca7a1210af69955199eb69aa0c58c37d590f23871"
+    REVIEW_64_SHA = "e6928bafc31b730bcdcd6984341be25023bd5cf2a5d99b7115f8db528344aa5d"
+    FLOOR_SHA = "ab2920569c77140a68c9302b6f4faec9fde2d3f87405dacb05b1bf16ebe612ee"
+    FLOOR_EMPTY_SHA = "6e14638a53dfbd45d9860aceaae951496c89a651b4eb902cc428d8db92777a33"
+    STAGE_3A_SHA = "449e651ed6d12509565f65e27afd440bd4ff7318f709ec300e292595fd5accb6"
+    STAGE_3A_EMPTY_SHA = "e3270c1b26ef94b697098ff351d63500adb120c4aa86d3e1a73111ea243804e8"
 
     @classmethod
     def setUpClass(cls):

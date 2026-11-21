@@ -2086,7 +2086,7 @@ class BuildPanel(QWidget):
                      "chance that depends on the player's "
                      "Durability and the Injury slider. Nothing is scripted: some seasons are healthy and some are not. "
                      "While it is on, the weekly running back roll is replaced by the per-carry chance, and your own club "
-                     "is treated like every other club in the games you simulate. Games you play are not changed. "
+                     "is treated like every other club in the games you simulate. Injuries in games you play are not changed. "
                      "Realistic and Custom require 128 MB and Simulated season realism. "
                      "Realistic and Custom above 0 percent also add modern injured reserve, the franchise economy and "
                      "reserve save compatibility, so a club is never left without a quarterback.")  # b81 qb34: the floor
