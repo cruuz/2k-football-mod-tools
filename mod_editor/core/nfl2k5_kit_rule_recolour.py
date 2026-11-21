@@ -249,7 +249,21 @@ def _cols(out, op, rgba):
     return new
 
 
-_KINDS = {"ramp": _ramp, "scale": _scale, "map": _map, "move": _move, "cols": _cols}
+def _mirror(out, op, rgba):
+    """b81 R55 (the Hail Raiser): the box ``box`` takes, colour only, the mirror image of the build's own texture about
+    the atlas axis ``axis`` (rows y and axis - y swap: the helmet atlas's two side islands), as the art lane's
+    fixes7.mirror_upper_from_lower lays one side's logo from the other's."""
+    h, w = out.shape[:2]
+    x0, y0, x1, y1 = (int(v) for v in op["box"])
+    axis = int(op["axis"])
+    _require(0 <= x0 < x1 <= w and 0 <= y0 < y1 <= h and 0 <= axis - y1 + 1 and axis - y0 + 1 <= h,
+             "mirror box outside the texture")
+    new = out.copy()
+    new[y0:y1, x0:x1, :3] = rgba[axis - y1 + 1:axis - y0 + 1, x0:x1, :3][::-1]
+    return new
+
+
+_KINDS = {"ramp": _ramp, "scale": _scale, "map": _map, "move": _move, "cols": _cols, "mirror": _mirror}
 
 
 def apply(out, op, rgba, donors):

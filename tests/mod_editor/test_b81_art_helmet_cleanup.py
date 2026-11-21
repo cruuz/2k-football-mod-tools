@@ -66,8 +66,14 @@ def run_texels(row):
 
 
 def is_rule(row):
-    """b81 retail-free (fill family): the row repaints by a build-time fill rule, not by stored runs."""
-    return [op["op"] for op in row["ops"]] == ["rule"]
+    """b81 retail-free (fill family): the row repaints by a build-time fill rule, not by stored runs (the Hail Raiser
+    rows add the R55 mirror rule and the texels the recompiled art differs from it)."""
+    ops = row["ops"]
+    return bool(ops) and ops[0]["op"] == "rule" and ops[0].get("module") == "fill"
+
+
+def is_r55(row):
+    return [op["op"] for op in row["ops"]] == ["rule", "rule", "runs"] and row["ops"][1].get("do") == "mirror"
 
 
 def rule_boxes(spec):
@@ -111,7 +117,7 @@ class Document(unittest.TestCase):
             self.assertGreater(row["length"], 32)
             self.assertGreater(row["resource_size"], row["offset"] + row["length"] - 1)
             self.assertTrue(row["note"])
-            self.assertIn([op["op"] for op in row["ops"]], (["runs"], ["rule"]))
+            self.assertTrue([op["op"] for op in row["ops"]] in (["runs"], ["rule"]) or is_r55(row), row["selector"])
             self.assertNotIn("color", json.dumps(row["ops"]))  # the compile must ask the palette for nothing new
             if is_rule(row):
                 # b81 retail-free: the cleanup is a build-time fill rule over the blank retail shell's vents
@@ -224,6 +230,24 @@ class Document(unittest.TestCase):
             there = sum(1 for x, y in texels if 20 <= x < 142 and y >= 128)
             self.assertGreater(there, 2500, side)
             self.assertIn(slot("helmet00", "27_6", side), NEW_ART)
+
+    def test_the_hail_raiser_spearhead_points_to_the_facemask_on_both_sides(self):
+        # R55 (beta 81): Washington's Hail Raiser (style 9) had its right-side logo (the upper atlas island) laid as a
+        # half turn of the left side's, so the right spearhead pointed to the back of the helmet; the club's helmet has
+        # both spearheads toward the facemask. The row now lays the upper island as the mirror image of the lower one
+        # (tools/b81_art overrides "29_9:helmet02" mirror_upper): the whole upper logo is repainted, with the gold
+        # arrowhead at the front end of the island, and the Standard shell follows as new source art
+        by = {(r["selector"], r["texture"]): r for r in rows()}
+        for side in "HA":
+            row = by[("29" + side + "9", "helmet02")]
+            # b81 retail-free (ruling 2): the vents by the fill rule, the upper logo laid by rule as the lower one's mirror
+            # image about the atlas axis (no texel of it stored), then the texels the recompiled art differs from that
+            self.assertTrue(is_r55(row), side)
+            mirror = row["ops"][1]
+            x0, y0, x1, y1 = mirror["box"]
+            self.assertEqual((mirror["module"], mirror["axis"]), ("recolour", 255))
+            self.assertTrue(20 <= x0 and x1 <= 142 and 50 <= y0 and y1 <= 100 and (x1 - x0) * (y1 - y0) > 2000, side)
+            self.assertIn(slot("helmet00", "29_9", side), NEW_ART)
 
     def test_the_steelers_throwback_mark_is_turned_on_both_shells(self):
         # one-sided logo (the right side): its word read backwards in game; only the logo's own disc is repainted on

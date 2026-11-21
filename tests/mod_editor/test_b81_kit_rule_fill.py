@@ -174,7 +174,10 @@ class ConvertedDocument(unittest.TestCase):
         rules = [r for r in document["textures"] if any(op["op"] == "rule" for op in r["ops"])]
         self.assertGreater(len(rules), 100)
         for row in rules:
-            self.assertEqual([op["op"] for op in row["ops"]], ["rule"])
+            kinds = [op["op"] for op in row["ops"]]
+            # the Hail Raiser rows (R55) add the mirror rule and the texels their recompiled art differs from it
+            self.assertTrue(kinds == ["rule"] or (kinds == ["rule", "rule", "runs"] and row["ops"][1].get("do") == "mirror"),
+                            (row["selector"], kinds))
             op = row["ops"][0]
             self.assertEqual((op["module"], op["kind"]), ("fill", "helmet"))
             # the blank retail Cleveland shell of the row's family, read from the user's disc (pinned retail bytes)

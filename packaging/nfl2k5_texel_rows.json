@@ -1453,6 +1453,20 @@
     "passes": false,
     "reason": "a helmet piece repainted from the shell's own shading or a mark redrawn from game art, not yet a build-time rule",
     "sha256": "63857bb44168688cf2a6839f150acb09291db1c809080ad8a1e895435d765267"
+   },
+   "29A9:12:txtr": {
+    "cls": "ii",
+    "measured": true,
+    "passes": false,
+    "reason": "a helmet piece repainted from the shell's own shading or a mark redrawn from game art, not yet a build-time rule",
+    "sha256": "624a0d75d8367510031bd34c5e63ba8b7425f1f243245d2d1e948ac685c28f90"
+   },
+   "29H9:12:txtr": {
+    "cls": "ii",
+    "measured": true,
+    "passes": false,
+    "reason": "a helmet piece repainted from the shell's own shading or a mark redrawn from game art, not yet a build-time rule",
+    "sha256": "624a0d75d8367510031bd34c5e63ba8b7425f1f243245d2d1e948ac685c28f90"
    }
   },
   "data/nfl2k5_kit_fixes_2026_b81u.json": {

@@ -172,6 +172,20 @@ class KitRuleRecolourTest(unittest.TestCase):
         out, _ = kf.paint(base, [op])
         self.assertEqual(out[1, :, 0].tolist(), [255, 1, 2, 4, 5, 255, 255, 255])
 
+    def test_mirror_lays_the_other_islands_image_colour_only(self):
+        """b81 R55: the Hail Raiser upper logo as the lower one's mirror image about the atlas axis (rows y, 255 - y)."""
+        a = np.zeros((256, 64, 4), np.uint8)
+        a[..., 0] = (np.arange(256)[:, None] * 7 + np.arange(64)[None, :] * 3) % 251
+        a[..., 1] = (np.arange(256)[:, None] * 5) % 253
+        a[..., 3] = (np.arange(64)[None, :] * 4) % 256
+        op = {"op": "rule", "module": "recolour", "do": "mirror", "box": [8, 40, 50, 90], "axis": 255}
+        out, _ = kf.paint(a, [op])
+        self.assertTrue(np.array_equal(out[40:90, 8:50, :3], a[166:216, 8:50, :3][::-1]))
+        self.assertTrue(np.array_equal(out[..., 3], a[..., 3]))                   # alpha never moves
+        self.assertTrue(np.array_equal(out[:40], a[:40]) and np.array_equal(out[90:], a[90:]))
+        self.assertEqual(hashlib.sha256(out.tobytes()).hexdigest(),
+                         "10bf9957f7800cd410705e80de5256164f759024f05678c817ed14687d92d366")
+
     def test_rules_name_no_palette_colour(self):
         base = kit(8, 8, 1)
         with self.assertRaises(ValueError):

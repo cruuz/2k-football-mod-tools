@@ -892,13 +892,13 @@
    "source_rgba_sha256": "b5417c144e1740d8759428809c5dc5cbafedc4d7794be28f2f96627e25fd0dd5"
   },
   "helm_a29_9_128": {
-   "changed_pixels": 904,
-   "new_rgba_sha256": "aa15af071cddf4dbb79a6f22da314f716c03c2ed09196c9bcb425ffe42e0faf9",
+   "changed_pixels": 2710,
+   "new_rgba_sha256": "92061d03f0ed71400fdf7d6f64a91bc81653eab3fc1f198eeda6bd8d9de8807d",
    "source_rgba_sha256": "980dd73adf4d72079f3e87b2724340d65b2ee161d91538c1cc4846061c0738f5"
   },
   "helm_a29_9_256": {
-   "changed_pixels": 3361,
-   "new_rgba_sha256": "009ec4ca9ad30d8e22812baac48bf175ef4a47620d11b60ee694630996c65426",
+   "changed_pixels": 10367,
+   "new_rgba_sha256": "8442453ba5ca8aee43c5572fe61bba55ef79416da1937aeb06f636385d8dc56f",
    "source_rgba_sha256": "3d9a63dc8195f0dd870f09b31053a073375cc5a147bfc657c7f9a1220969a818"
   },
   "helm_a30_0_128": {
@@ -2347,8 +2347,8 @@
    "source_rgba_sha256": "e5074a76a4b966a777dc9e214e5d2257c64280422869a9722e8560d241b03254"
   },
   "unif_a29_9_256": {
-   "changed_pixels": 1516,
-   "new_rgba_sha256": "a9c9b6f049775e098c5e2af886f436edfec59ef39622dc9a8bb0385174e8203a",
+   "changed_pixels": 4302,
+   "new_rgba_sha256": "93f2d88161dd053d99448e27793dfa60055b4f4a13a3a41b6497640ca8d41aef",
    "source_rgba_sha256": "a9abdbadd9e551d4d9bddc7b4925e3987e1f3f9ee2ffa4aefd9a1ff69945aae6"
   },
   "unif_a30_0_256": {
@@ -2822,8 +2822,8 @@
    "source_rgba_sha256": "9edbd12246418249c918a93c2cf1bd8fcd62ad38d4cbc599d98bf9c7470ab266"
   },
   "unif_h29_9_256": {
-   "changed_pixels": 1516,
-   "new_rgba_sha256": "a9c9b6f049775e098c5e2af886f436edfec59ef39622dc9a8bb0385174e8203a",
+   "changed_pixels": 4302,
+   "new_rgba_sha256": "93f2d88161dd053d99448e27793dfa60055b4f4a13a3a41b6497640ca8d41aef",
    "source_rgba_sha256": "a9abdbadd9e551d4d9bddc7b4925e3987e1f3f9ee2ffa4aefd9a1ff69945aae6"
   },
   "unif_h30_0_256": {
@@ -3131,11 +3131,11 @@
    "source_rgba_sha256": "f7bb3215716410a6c320e9c8fa8410edb12e1f3af2e49eeb82d98d73b7ba7233"
   },
   "helmet00_29A9": {
-   "new_rgba_sha256": "71cca8afa66f1712aa8e53e62fa874c99932a52ef8dbbad447ae0cc9b4e8e1cd",
+   "new_rgba_sha256": "a0038e910a72bb19b245776fc9670774a6406f3bd3ff7a4081e583dd6a20edfb",
    "source_rgba_sha256": "40b01274b1635af14eeca5be3f2a66a316957904cf6f911fccb8c10fdd0ae25e"
   },
   "helmet00_29H9": {
-   "new_rgba_sha256": "71cca8afa66f1712aa8e53e62fa874c99932a52ef8dbbad447ae0cc9b4e8e1cd",
+   "new_rgba_sha256": "a0038e910a72bb19b245776fc9670774a6406f3bd3ff7a4081e583dd6a20edfb",
    "source_rgba_sha256": "40b01274b1635af14eeca5be3f2a66a316957904cf6f911fccb8c10fdd0ae25e"
   },
   "helmet00_37A2": {
