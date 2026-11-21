@@ -98,9 +98,12 @@ class ReviewedPaint(unittest.TestCase):
                          {r: e["rows"] for r, e in catalog.paint_section(ROOT).items()})
         glyph = self.catalog["paint"]["data/nfl2k5_glyph_fixes_2026_b81u.json"]["rows"]
         self.assertEqual(len(glyph), PAINTED_ROWS)
-        for name in ("kit_fixes_2026_b81u", "kit_fixes_2026_b81", "kit_fixes_2026_sea1", "kit_fixes_2026_sw1",
-                     "kit_fixes_2026_uf3"):
+        for name in ("kit_fixes_2026_b81u", "kit_fixes_2026_sea1", "kit_fixes_2026_sw1", "kit_fixes_2026_uf3"):
             self.assertIn("data/nfl2k5_%s.json" % name, self.catalog["paint"])
+        # ruling 2, round 3: every helmet row is a build-time rule; the helmet document stores no texel at all
+        helmets = json.loads((ROOT / "data/nfl2k5_kit_fixes_2026_b81.json").read_text(encoding="utf-8"))
+        self.assertEqual(self.release._texel_rows(helmets), {})
+        self.assertNotIn("data/nfl2k5_kit_fixes_2026_b81.json", self.catalog["paint"])
         for relative in self.catalog["paint"]:                      # the release check's walk finds the same rows
             document = json.loads((ROOT / relative).read_text(encoding="utf-8"))
             self.assertEqual(sorted(self.release._texel_rows(document)), sorted(self.catalog["paint"][relative]["rows"]))
