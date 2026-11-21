@@ -2962,6 +2962,16 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         expected, _ = cards.apply(expected)
     receipt = {"plan": plan.to_recipe(), "source": str(source), "target": str(target), "steps": [],
                "result": {}, "v09_update": [key for key in V09_UPDATE_CHOICES if getattr(plan, key)]}
+    # beta 81 (R60, coordinator 11/20: "A player who upgrades a v0.9 disc in the Studio must get the same franchise as a
+    # full build"): every v0.9 update also upgrades the released 2026 franchise economy (revision 7) in place to the
+    # current revision (practice squads refilled each preseason and released at the season's end), as a full build has it.
+    economy = _core_module("nfl2k5_franchise_economy")
+    if economy is None or economy.status(original) not in ("legacy", "applied"):
+        raise ValueError("The 2026 franchise economy on this disc differs from the released v0.9 version.")
+    upgrade_economy = economy.status(original) == "legacy"
+    if upgrade_economy:
+        expected, _ = economy.apply(expected)
+        receipt["v09_update"].append("franchise_economy")
     if plan.sim_qb_injuries is not None:
         if plan.sim_realism:
             expected, _ = _core_module("nfl2k5_sim_realism").apply(expected)
@@ -2981,6 +2991,8 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     _apply_injured_reserve(plan, target, receipt, progress)
     if plan.backfield_cards:
         _apply_backfield_cards(target, receipt, progress)
+    if upgrade_economy:
+        _upgrade_v09_economy(economy, target, receipt, progress)
     if plan.sim_qb_injuries is not None:
         _apply_sim_realism(plan, target, receipt, progress)
         _apply_sim_qb_injuries(plan, target, receipt, progress)
@@ -2991,6 +3003,18 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     receipt["result"] = {**inspect(target), **receipt["result"], "path": str(target)}
     _verify_finished_game_disc(target, receipt, progress)
     return receipt
+
+
+def _upgrade_v09_economy(economy, target: Path, receipt: dict, progress) -> None:
+    """beta 81 (R60): the released v0.9 economy (revision 7) upgraded in place to the current revision."""
+    progress("Franchise: practice squads refilled each preseason (economy update)", 0, 0)
+    xbe, result = economy.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, xbe)
+    if economy.status(_xbe_bytes(target)) != "applied":
+        raise RuntimeError("Franchise economy: the executable does not read back as applied")
+    receipt["steps"].append({"step": "franchise_economy_upgrade", **{k: v for k, v in result.items() if k != "edits"},
+                             "edits": result.get("edits", [])})
+    receipt["result"]["franchise_economy"] = "applied"
 
 
 @_core_step("audible_legend")
