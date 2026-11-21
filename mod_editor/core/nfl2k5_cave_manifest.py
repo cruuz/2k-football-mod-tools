@@ -647,7 +647,11 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     # b81: the Experimental preset now selects Realistic quarterback injuries, which
                                     # needs K128 and sim realism (both off here). Its fixed bank is a late allocator
                                     # owner that the separate QB probe below observes, so the probe build leaves it off.
-                                    sim_qb_injuries=None),
+                                    sim_qb_injuries=None,
+                                    # b81 qb34: the preset names the quarterback room Realistic, whose needs (K128, depth
+                                    # chart locks, SPECIAL rows) are off here; the preset build above observed the room's
+                                    # fixed page and sites, so the allocator-free probe leaves it out.
+                                    qb_room=None),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
