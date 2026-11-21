@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "00af9a9dfdf0b84b7854c0ae7a93e4aca16f72cc93026cb6e5da83a8c7dc0813",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "4a5e300f0657d3edf6f634b1406c69f846d7fcfc683377e1929c2157e50a01d7",
+        "mod_editor/core/mod_build.py": "de408f0205b9760bcc14fd59f380094c7ef1741a219bb53aefb4bcd7a20d8669",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -987,8 +987,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "0b5655021e33a2c28bff7523399321f588aa4f925cf84823b9603c474c94f7a7",  # b778-cb1
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "777a337e2ba22559c0b77ae5bc22b3df94a1392da07217a76d7a3a02063ebed0",  # b779-sim2
         "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",  # b780 hunt1: frozen beta-79 roll for the previous state
-        "mod_editor/core/nfl2k5_sim_qb_injuries.py": "326700fd83aa6c42a72034d3dfe115cf0ea62cdd948ed63281ded95684f9a22d",
-        "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "c5d5cb2b345552a08655047126f2461d04e0c126d09f4a30bda8d043bb6fa03a",
+        "mod_editor/core/nfl2k5_sim_qb_injuries.py": "28dfc5967147f662c9d41c2e9ad2585507d699ee092b9b1636dbc8f271363fd9",
+        "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "f3e2bbb1355fb216cf0e3f9af075cbb263b48a18527f4f9051889c8da9a14e7d",
         "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice1.py": "bb25da81abf8bd62c615d1cc676401a5050f4ab0f982fff243dea14af53cdfd0",  # b81 slice 2: frozen slice 1 bank, read to reverse a QBMEDv1 install
         "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice2.py": "a893ed713c2a16ec9a4fbf33d8e3cdc330d6f80578cd3d3eefe04dd9ee211873",  # b81 slice 3: frozen slice 2 bank, read to reverse a QBMEDv2 install
         "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice3.py": "ec6737ce9bab5695714c7956c932272af6fe33a63b8f4411cbe1f8de6497aff3",  # b81 stability: frozen slice 3 bank, read to reverse a QBMEDv3 install
