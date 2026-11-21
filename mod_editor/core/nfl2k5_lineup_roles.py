@@ -27,9 +27,10 @@ back goes to fullback; when no back is free, a TE (the next tier) plays fullback
 (0x102472..) keeps retail's, so its calibrated carry lottery is unchanged (HUNT1, DB2). Every other fallback keeps the
 retail order.
 
-Rule 3 (the GAD row on gadget plays) is OFF in beta-80 (coordinator 11/05): its model of the builder's second argument
+Rule 3 (the GAD row on gadget plays) was OFF in beta-80 (coordinator 11/05): its model of the builder's second argument
 did not hold even on the snap path (EMU1, FC2 attract demo: a node pointer of 0xFED2 at 0x151CCCA), so no code of this
-owner reads that argument. The GAD row works through the planner's personnel groups again (nfl2k5_special_roles).
+owner reads that argument. Beta 81 brings it back as its own owner, nfl2k5_gadget_play (a build-time table of the
+disc's gadget plays, checked against the play the game published at the snap); see that module.
 
 Rule 4, injured players on CPU depth charts (MC1's finding; coordinator 11/04). The weekly CPU auto-depth 0x2BDCF0
 ranks by rating and never tests the injury bit (player +0x20 bit 31), so after one pass CPU charts listed injured
@@ -396,7 +397,9 @@ def apply(payload: bytes, *, third_down: bool = True) -> tuple[bytes, dict[str, 
     if physical != payload:
         saved = quarterback.read_settings(payload)
         with_lineup, receipt = apply(physical, third_down=third_down)
-        result, restored = quarterback.apply(with_lineup, saved['mode'], custom_rate=saved['custom_rate'])
+        # b81 stability: keep the installed roster references (the restored image no longer holds them).
+        result, restored = quarterback.apply(with_lineup, saved['mode'], custom_rate=saved['custom_rate'],
+                                             reference=quarterback.installed_reference(payload))
         return result, {**receipt, 'restored_sim_qb_injuries': restored,
                         'changed_bytes': space.count_differing_bytes(payload, result), 'file_growth': len(result) - len(payload)}
     rank_list, side_list = struct.unpack("<II", XbeImage(payload).read(LIST_TABLE + RB_KIND * 8, 8))

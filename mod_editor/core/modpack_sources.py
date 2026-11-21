@@ -127,6 +127,16 @@ def prepare(recipe_path, work, *, stack=None, marks_pack=None, patched_image=Non
                 effective.update(sim_qb_injuries=state["mode"], sim_realism=True, k128_memory=True)
                 if state["mode"] == "custom":
                     effective["sim_qb_injury_rate"] = state["custom_rate"]
+                # b81 scoring: an install from before the scoring slice has retail scoring sites (a rebuild adds them).
+                kicking = mod_build._core_module("nfl2k5_sim_scoring")
+                installed = kicking.installed(payload) if kicking is not None else ("foreign", None)
+                m._require(installed[0] in ("applied", "retail"), "Cannot verify the disc's simulated scoring setting")
+                if installed[0] == "applied":
+                    stop = int(installed[1]["breakaway_stop_beyond"])
+                    m._require(effective.get("sim_breakaway_stop", stop) == stop,
+                               "The disc and source recipe select different simulated breakaway stops")
+                    if stop != mod_build.BuildPlan.sim_breakaway_stop:
+                        effective["sim_breakaway_stop"] = stop
         room = mod_build._core_module("nfl2k5_qb_room")  # b81 qb34: record the disc's quarterback room rules
         # The key names piece 3's rules only; until a piece 3 bit is handed over there is nothing to record.
         if mod_build._piece3_bits() and (effective.get("qb_room") is not None or (room is not None and payload is not None)):
@@ -302,6 +312,7 @@ def build_plan(recipe, source="", target=""):
         m._require(key in known, f"Recipe requires an unknown Studio option: {key}")
         setattr(plan, key, tuple(value) if isinstance(getattr(plan, key), tuple) and isinstance(value, list) else value)
     nfl2k5_build_settings.validate_sim_qb_injuries(plan.sim_qb_injuries, plan.sim_qb_injury_rate)
+    nfl2k5_build_settings.validate_sim_breakaway_stop(plan.sim_breakaway_stop)
     nfl2k5_build_settings.validate_qb_room(plan.qb_room)
     return plan
 

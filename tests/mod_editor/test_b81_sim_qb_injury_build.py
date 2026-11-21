@@ -63,11 +63,16 @@ class ProjectSettings(unittest.TestCase):
         from mod_editor.core import nfl2k5_sim_realism as simulator, nfl2k5_sim_qb_injuries as medical
         from mod_editor.core import nfl2k5_xbe_space as space
 
-        cases = (("NFL2K5_V09_XISO", "d78088f9ba47c6197e99ea540d0bc3d2c9255f7cd49152a77946be70dacab866", "legacy"),
-                 ("NFL2K5_B81_REVIEWED_TEST_DISC", "98dd732945fb665a8d7fe771650d61c1098015cda4917ac83037059db477008e", "applied"))
-        if any(not os.environ.get(variable) for variable, _, _ in cases):
+        from mod_editor.core import nfl2k5_sim_qb_injuries_code as code
+
+        # b81 stability: the main roster of each disc (both have the calibration roster's starters and Durability).
+        cases = (("NFL2K5_V09_XISO", "d78088f9ba47c6197e99ea540d0bc3d2c9255f7cd49152a77946be70dacab866", "legacy",
+                  "8d2b2f50aa19679e4e3a6a783d7137acef96a5975b2ce22bef8ede037c26f42c"),
+                 ("NFL2K5_B81_REVIEWED_TEST_DISC", "98dd732945fb665a8d7fe771650d61c1098015cda4917ac83037059db477008e", "applied",
+                  "70813bd95d1265b40009fb611569e2e1ffcce02bf17a5f73476e8f55ffa3d157"))
+        if any(not os.environ.get(variable) for variable, _, _, _ in cases):
             self.skipTest("private released and reviewed standard disc images are absent")
-        for variable, digest, source_state in cases:
+        for variable, digest, source_state, roster in cases:
             source = Path(os.environ[variable])
             with self.subTest(source=variable):
                 before = mod_build._xbe_bytes(source)
@@ -87,10 +92,15 @@ class ProjectSettings(unittest.TestCase):
                     target = Path(directory) / "private-copy.iso"
                     plan = mod_build.sim_qb_disc_edit(str(source), str(target), mode)
                     receipt = mod_build.preflight_plan(plan)
+                    # b81 scoring: an in-place copy also gets the CPU kick-aim repair that rides with the kicking fixes.
+                    from mod_editor.core import nfl2k5_cpu_kick_aim as aim
                     self.assertEqual(receipt["sim_qb_source_update"], {
-                        "source_sha256": digest, "result_sha256": hashlib.sha256(current).hexdigest(),
+                        "source_sha256": digest, "result_sha256": hashlib.sha256(aim.apply(current)[0]).hexdigest(),
                         "source_simulator": source_state, "simulator_upgraded": source_state == "legacy",
                         "settings": medical.read_settings(current),
+                        "stability_reference": {"source": "disc roster", "roster_sha256": roster,
+                                                "starters": [list(row) for row in code.STABILITY_CALIBRATION],
+                                                "reference": list(code.STABILITY_REFERENCE)},
                     })
                     self.assertFalse(target.exists())
 
@@ -108,6 +118,9 @@ class ProjectSettings(unittest.TestCase):
             with patch.object(mod_build, "_xbe_bytes", return_value=b"private standard executable"), \
                     patch.object(cards, "status", return_value="retail"), patch.object(mod_build, "_core_module") as core:
                 core.return_value.read_settings.return_value = state
+                # b81 scoring: the exporter also reads the installed simulator scoring sites (here: an install from
+                # before the scoring slice, so the recipe carries no breakaway setting).
+                core.return_value.installed.return_value = ("retail", None)
                 portable, assets = modpack_sources.prepare(recipe, root / "work", patched_image=root / "copy.iso")
                 bundle = root / "sources.2k5sources"
                 info = modpack_sources.write_bundle(bundle, portable, assets)
@@ -308,8 +321,8 @@ class StudioControls(unittest.TestCase):
         self.assertEqual(panel.plan().sim_qb_injuries, "retail")
         self.assertTrue(panel.has_work())
         self.assertIn("Simulated injuries (Retail)", panel.selected_labels())
-        # A slice 1 or slice 2 install (revision 1 or 2) at the same mode is still a change: Build upgrades it in place.
-        for revision, labelled in ((1, True), (2, True), (3, False)):
+        # An earlier revision (slices 1, 2 and 3) at the same mode is still a change: Build upgrades it in place.
+        for revision, labelled in ((1, True), (2, True), (3, True), (4, False)):
             with self.subTest(installed_revision=revision):
                 panel.apply_state({**self.retail_state, "sim_qb_injuries": "applied", "sim_qb_injury_settings": {
                     "status": "applied", "mode": "realistic", "custom_rate": .310, "revision": revision}})

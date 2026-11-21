@@ -9,6 +9,11 @@ tackles, guards, center, defensive ends and the ball-carrying halfback, through 
 diagnosis and duration code and the game's own health write (pos2/DESIGN.md sections 2 and 4.1). Slice 3 extends the
 same check to receivers, tight ends, fullbacks, defensive tackles, linebackers, cornerbacks and safeties, with an
 exposure rule and weight per walked slot and acceptance stored by week group (pos3/DESIGN.md sections 1 and 2).
+
+Long-franchise stability (stability.S at bank offset 0x1C00; pos3/DESIGN.md addendum "Long-franchise stability")
+multiplies each class's threshold, the quarterback's included, by a factor that is exactly 1.0 in a franchise's first
+two seasons and from its third follows the league's Durability ratings (mode "adaptive") or the season index (mode
+"year", the interim). The factor lives in bank RAM only; no save byte depends on it.
 """
 from __future__ import annotations
 
@@ -19,7 +24,7 @@ from typing import Callable, NamedTuple
 CODE_SIZE = 0x4000
 MARK_OFFSET = 0x3FC0
 MARK_SIZE = struct.calcsize("<8sIII")
-MARK_SIGNATURE = b"QBMEDv3\0"      # Settings record <8sIII> (signature, mode, rate, 0). Slices 1 and 2 wrote v1 and v2.
+MARK_SIGNATURE = b"QBMEDv4\0"      # Settings record <8sIII> (signature, mode, rate, 0). Slices 1, 2, 3 wrote v1, v2, v3.
 DEFAULT_RATE = 310                  # Base probability numerator per 100,000 eligible opportunities.
 RATE_DENOMINATOR = 100_000
 REFERENCE_DURABILITY = 74.72222222222223
@@ -96,6 +101,115 @@ POSITION_CLASSES = (
 )
 # False is the cut-line fallback of pos2/DESIGN.md section 8: no per-carry halfback chance, weekly roll left as it is.
 HALFBACK_SUPPLEMENT = True
+
+# Long-franchise stability (pos3/DESIGN.md addendum A.2, A.4, A.6). Thirteen classes: POSITION_CLASSES in order, then
+# the quarterback (its gate in clinical.S reads the thirteenth factor).
+STABILITY_MODES = {"off": 0, "year": 1, "adaptive": 2}
+STABILITY_MODE = "adaptive"
+STABILITY_CLASS_NAMES = tuple(position.name for position in POSITION_CLASSES) + ("quarterback",)
+QUARTERBACK_ZERO_POINT = 100        # the quarterback tables scale with max(0, 100 - Durability)
+STABILITY_ZERO_POINTS = tuple(position.zero_point for position in POSITION_CLASSES) + (QUARTERBACK_ZERO_POINT,)
+# R per class: the league mean of max(0, K - Durability) over depth-chart starters (stored position in the class,
+# stored depth rank below the starter count) at the confirmed calibration. Measured by order S0 on the slice 3
+# confirmation candidate seasons, roots 64001 to 64004, 2026 and 2027, Durability from each season's signed save
+# (pos3/work/stability/reference.py, reference.json, reference.txt).
+# R and STABILITY_CALIBRATION below are one pair: re-measure STABILITY_CALIBRATION on the same roster in the same commit
+# whenever R is re-measured (test_b81_stability_roster_refs pins the pair). STABILITY_REFERENCE_ROSTER is the roster of
+# the seasons R was measured on (reference.json sources: ROST body 70813bd9, executable e714aecf).
+STABILITY_REFERENCE = (17.627, 18.847, 18.803, 19.526, 17.703, 22.138, 20.803, 21.261, 20.343, 20.551, 23.144, 21.840,
+                       25.807)
+STABILITY_REFERENCE_ROSTER = "70813bd95d1265b40009fb611569e2e1ffcce02bf17a5f73476e8f55ffa3d157"
+STABILITY_YEAR_SLOPE = 0.055        # mode "year": the supplement's measured 24 to 25 percent over four offseasons
+STABILITY_SEASONS = 10              # stab_year entries by season index; later seasons use the last
+STABILITY_CLASSES_OFF = ()          # class names left at 1.0 by the tracking gate (adaptive mode only)
+# stab_class in stability.S, by stored position QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE (0xFF: not counted).
+STABILITY_POSITION_CLASS = (12, None, None, 5, 10, 11, 11, 4, 7, 6, 9, 9, 2, 1, 0, 8, 3)
+# The references follow the roster on the disc (stability review rev-pos3/REVIEW_STABILITY.md, Medium finding). R above
+# is the level of one roster, the base disc's (ROST body sha256 70813bd9). A disc built with another roster (a player's
+# edits, a total conversion, a roster update) would otherwise get a step at season 3 that is the roster difference, not
+# drift. So the Studio measures each class's static statistic on the disc's own roster with stability.S's starter rule
+# (clubs 0-31, listed players, stored position in the class, stored depth rank below the count; mean of
+# max(0, K - Durability)) and writes R x static(disc) / static(calibration roster) per class. STABILITY_CALIBRATION is
+# that static statistic of roster 70813bd9 as (sum, starters) per class; on that roster every reference is exactly R.
+STABILITY_CALIBRATION_ROSTER = "70813bd95d1265b40009fb611569e2e1ffcce02bf17a5f73476e8f55ffa3d157"
+STABILITY_CALIBRATION = ((1077, 64), (1253, 64), (576, 32), (1210, 64), (1060, 64), (2168, 96), (654, 32), (385, 19),
+                         (1288, 64), (2011, 96), (2147, 96), (1369, 64), (821, 32))
+STABILITY_CLUBS = 32                # stability.S CLUBS
+STABILITY_MAX_LISTED = 0x41         # stability.S MAX_LISTED: a larger count is not a club record
+STABILITY_MIN_STARTERS = 8          # stability.S MIN_STARTERS: fewer starters leave the class at 1.0
+# A derived reference outside this factor of the frozen R is a sanity failure (the Studio then installs the frozen R and
+# says so). It is wide on purpose (stability review rev-pos3/REVIEW_REFS.md finding 2): the factor clamp (0.35 to 1.25)
+# already limits what any reference can do, and on the shipped roster an even Durability change from about -49 to +16
+# points stays inside.
+STABILITY_REFERENCE_BOUND = (0.25, 4.0)
+
+
+class StabilityOutOfRange(ValueError):
+    """The roster was measured, but a derived reference is outside STABILITY_REFERENCE_BOUND x R."""
+
+
+def stability_starters(clubs) -> tuple[tuple[int, int], ...]:
+    """stability.S's walk over a roster at rest: (sum of max(0, K - Durability), starters) for each of the 13 classes.
+
+    ``clubs`` holds the 32 clubs in club-table order, each a sequence of (stored position, stored depth rank, Durability)
+    for the players on its list, in list order. Raises ValueError where the walk would leave every factor at 1.0."""
+    clubs = list(clubs)
+    if len(clubs) != STABILITY_CLUBS:
+        raise ValueError(f"The stability walk needs {STABILITY_CLUBS} clubs, not {len(clubs)}")
+    at = LABELS["stab_starters"]
+    starters = _TEMPLATE[at:at + len(STABILITY_POSITION_CLASS)]
+    sums, counts = [0] * len(STABILITY_CLASS_NAMES), [0] * len(STABILITY_CLASS_NAMES)
+    for club in clubs:
+        club = list(club)
+        if len(club) > STABILITY_MAX_LISTED:
+            raise ValueError(f"A club lists {len(club)} players; the stability walk stops above {STABILITY_MAX_LISTED}")
+        for position, rank, durability in club:
+            if not 0 <= position < len(STABILITY_POSITION_CLASS) or STABILITY_POSITION_CLASS[position] is None:
+                continue
+            if rank >= starters[position]:
+                continue
+            index = STABILITY_POSITION_CLASS[position]
+            sums[index] += max(0, STABILITY_ZERO_POINTS[index] - durability)
+            counts[index] += 1
+    return tuple(zip(sums, counts))
+
+
+def stability_reference_for(starters) -> tuple[float, ...]:
+    """R x static(roster) / static(calibration roster) per class, from stability_starters() of the disc's roster.
+
+    A class with the calibration roster's exact statistic keeps its frozen R, so that roster builds the executable
+    unchanged. So does a class the game leaves at 1.0 (no starters, 1 to 7 starters, or every starter at or above K: a
+    zero sum); the other classes are still derived. Raises ValueError for a league with no starters in any class or a
+    class mean that is not finite or above K, and StabilityOutOfRange for a derived reference outside
+    STABILITY_REFERENCE_BOUND x R."""
+    from fractions import Fraction
+    import math
+
+    starters = tuple(tuple(row) for row in starters)
+    if len(starters) != len(STABILITY_CLASS_NAMES):
+        raise ValueError("The stability statistic needs thirteen classes")
+    if not any(count > 0 for _, count in starters):
+        raise ValueError("The roster has no starters in any class")
+    low, high = STABILITY_REFERENCE_BOUND
+    out = []
+    for name, zero, frozen, (total, count), (total0, count0) in zip(
+            STABILITY_CLASS_NAMES, STABILITY_ZERO_POINTS, STABILITY_REFERENCE, starters, STABILITY_CALIBRATION):
+        if count < 0:
+            raise ValueError(f"The {name} starter count is negative")
+        if count == 0:
+            out.append(frozen)
+            continue
+        mean = total / count
+        if not (math.isfinite(mean) and 0 <= mean <= zero):
+            raise ValueError(f"The {name} mean of K - Durability ({mean!r}) is out of range")
+        if (total, count) == (total0, count0) or count < STABILITY_MIN_STARTERS or total == 0:
+            out.append(frozen)
+            continue
+        value = float(Fraction(frozen) * Fraction(total) * count0 / (Fraction(count) * total0))
+        if not (math.isfinite(value) and low <= value / frozen <= high):
+            raise StabilityOutOfRange(f"The {name} reference {value:.3f} is outside {low} to {high} times {frozen}")
+        out.append(value)
+    return tuple(out)
 
 # These native checks cover the master Injury option, selector stack contract, switch tables and shared constants.
 # Four routines are also pinned independently before they are linked into the reserved space.
@@ -195,6 +309,7 @@ def _configure_tables(bank, rate):
         struct.pack_into("<f", bank, GAIN_TABLE + 4 * accuracy, gain)
     struct.pack_into("<ff", bank, GAIN_CONSTANTS, .77, .982)
     _configure_positions(bank, rate)
+    _configure_stability(bank, rate)
 
 
 def position_accept_thresholds(position):
@@ -227,6 +342,35 @@ def _configure_positions(bank, rate):
     bank[LABELS["pos_enabled"]] = 1 if rate > 0 else 0
 
 
+def stability_year_factors(slope=STABILITY_YEAR_SLOPE):
+    """Mode "year": 1.0 at season index 0 and 1, 1 / (1 + slope x (index - 0.5)) at 2, 3 and 4, index 4's after."""
+    values = [1.0, 1.0] + [1 / (1 + slope * (index - 0.5)) for index in (2, 3, 4)]
+    return tuple(values + [values[-1]] * (STABILITY_SEASONS - len(values)))
+
+
+def _configure_stability(bank, rate, *, mode=None, reference=None, classes_off=None, slope=None):
+    mode = STABILITY_MODE if mode is None else mode
+    reference = STABILITY_REFERENCE if reference is None else tuple(reference)
+    classes_off = STABILITY_CLASSES_OFF if classes_off is None else tuple(classes_off)
+    slope = STABILITY_YEAR_SLOPE if slope is None else slope
+    if mode not in STABILITY_MODES:
+        raise ValueError(f"Unknown stability mode {mode!r}")
+    if len(reference) != len(STABILITY_CLASS_NAMES) or not all(
+            isinstance(value, (int, float)) and 0 < value < 256 for value in reference):
+        raise ValueError("The stability reference needs thirteen positive values")
+    if not set(classes_off) <= set(STABILITY_CLASS_NAMES):
+        raise ValueError(f"Unknown stability classes {sorted(set(classes_off) - set(STABILITY_CLASS_NAMES))}")
+    if not 0 <= slope < 1:
+        raise ValueError("The stability year slope must be from 0 to 1")
+    struct.pack_into(f"<{len(reference)}f", bank, LABELS["stab_reference"], *reference)
+    bank[LABELS["stab_zero"]:LABELS["stab_zero"] + len(STABILITY_ZERO_POINTS)] = bytes(STABILITY_ZERO_POINTS)
+    struct.pack_into(f"<{STABILITY_SEASONS}f", bank, LABELS["stab_year"], *stability_year_factors(slope))
+    off = {STABILITY_CLASS_NAMES.index(name) for name in classes_off}
+    for position, index in enumerate(STABILITY_POSITION_CLASS):
+        bank[LABELS["stab_class"] + position] = 0xFF if index is None or index in off else index
+    bank[LABELS["stab_mode"]] = 0 if rate == 0 else STABILITY_MODES[mode]
+
+
 def _link_authored(bank_va: int, sim_code_va: int, sim_data_va: int, depth: int) -> bytearray:
     from . import nfl2k5_sim_realism as sim
 
@@ -245,7 +389,8 @@ def _link_authored(bank_va: int, sim_code_va: int, sim_data_va: int, depth: int)
 
 
 def bank_bytes(read_game: Callable[[int, int], bytes], bank_va: int, sim_code_va: int, sim_data_va: int,
-               lineup_va: int | None = None, *, rate: int = DEFAULT_RATE, marker: bytes = b"") -> bytes:
+               lineup_va: int | None = None, *, rate: int = DEFAULT_RATE, marker: bytes = b"",
+               reference=None) -> bytes:
     """Link against the installed simulator, optional lineup owner and four verified local functions."""
     from . import nfl2k5_lineup_roles as roles
 
@@ -270,6 +415,8 @@ def bank_bytes(read_game: Callable[[int, int], bytes], bank_va: int, sim_code_va
             where = offset + field
             _set32(bank, where, target - (bank_va + where + 4) if relative else target)
     _configure_tables(bank, rate)
+    if reference is not None:       # the disc roster's references (stability_reference_for); None keeps the frozen R
+        _configure_stability(bank, rate, reference=reference)
     if not recovery:
         start, end = LABELS["depth_hook"], LABELS["match_hook"]
         bank[start:end] = b"\xc3" + b"\xcc" * (end - start - 1)
@@ -318,60 +465,76 @@ def edits(bank_va: int, sim_code_va: int, sim_data_va: int, lineup_va: int | Non
 # Generated from tools/qb_sim_injuries by build.py.
 _TEMPLATE = b''.join((
     bytes.fromhex('50a19c71a90085c074038b4008870424ff742410ff742410ff742410e8ac281000e9fcffffff9090'),
-    bytes.fromhex('90909083e4f00fae0424898c2400020000837934000f85db0100008b359c71a90085f60f84cd0100'),
-    bytes.fromhex('0083bedc000000000f85c00100008b6e0885ed0f84b50100008b9424000200003b6a240f85a50100'),
-    bytes.fromhex('00807d35000f859b010000f64523800f8591010000f64527700f8587010000e89c25060085c00f84'),
-    bytes.fromhex('7a0100008b3da071a90085ff0f846c0100008b0d1829b70085c90f845e0100008b491c8b068b1729'),
-    bytes.fromhex('c829ca3d8c3c00000f874801000081fa8c3c00000f873c01000039d00f84340100007201928b0db8'),
-    bytes.fromhex('76e5008b1db476e5003b05cc05000075183b15d005000075103b0dc405000075083b1dc805000074'),
-    bytes.fromhex('57a3cc0500008915d0050000890dc4050000891dc8050000c1c01031d03531494251e8f800000031'),
-    bytes.fromhex('c8c1c31031d8e8ec0000003305a8fce500e8e10000003305b0fce500e8d6000000a3d4050000c705'),
-    bytes.fromhex('d805000000000000ff05d8050000a1d805000069c0b979379e0305d4050000e8ab00000089c33545'),
-    bytes.fromhex('544147e89f00000025ffffff7fa3dc0500000fb64d3bbab0070000ff05e00500008b842400020000'),
-    bytes.fromhex('817828078a10007511ff0de0050000ff05e4050000bab00b0000d9048ad80d0402e600db05dc0500'),
-    bytes.fromhex('00ded9dfe0f6c4017434ff05e805000089d835314e454ce83b000000d1e85089d8353154414ee82c'),
-    bytes.fromhex('00000089c2b9f0050000e8dc8b04006a00e83b000000e8fcffffff0fae0c248ba42400020000619d'),
-    bytes.fromhex('8d642404c20c0089c2c1ea1031d069c06bcaeb8589c2c1ea0d31d069c035aeb2c289c2c1ea1031d0'),
-    bytes.fromhex('c3'),
+    bytes.fromhex('90909083e4f00fae0424898c2400020000837934000f85e60100008b359c71a90085f60f84d80100'),
+    bytes.fromhex('0083bedc000000000f85cb0100008b6e0885ed0f84c00100008b9424000200003b6a240f85b00100'),
+    bytes.fromhex('00807d35000f85a6010000f64523800f859c010000f64527700f8592010000e89c25060085c00f84'),
+    bytes.fromhex('850100008b3da071a90085ff0f84770100008b0d1829b70085c90f84690100008b491c8b068b1729'),
+    bytes.fromhex('c829ca3d8c3c00000f875301000081fa8c3c00000f874701000039d00f843f0100007201928b0db8'),
+    bytes.fromhex('76e5008b1db476e5003b05d405000075183b15d805000075103b0dcc05000075083b1dd005000074'),
+    bytes.fromhex('5ce8fcffffffa3d40500008915d8050000890dcc050000891dd0050000c1c01031d03531494251e8'),
+    bytes.fromhex('fe00000031c8c1c31031d8e8f20000003305a8fce500e8e70000003305b0fce500e8dc000000a3dc'),
+    bytes.fromhex('050000c705e005000000000000ff05e0050000a1e005000069c0b979379e0305dc050000e8b10000'),
+    bytes.fromhex('0089c33545544147e8a500000025ffffff7fa3e40500000fb64d3bbab8070000ff05e80500008b84'),
+    bytes.fromhex('2400020000817828078a10007511ff0de8050000ff05ec050000bab80b0000d9048ad80d0402e600'),
+    bytes.fromhex('d80d30000000db05e4050000ded9dfe0f6c4017434ff05f005000089d835314e454ce83b000000d1'),
+    bytes.fromhex('e85089d8353154414ee82c00000089c2b9f8050000e8dc8b04006a00e83b000000e8fcffffff0fae'),
+    bytes.fromhex('0c248ba42400020000619d8d642404c20c0089c2c1ea1031d069c06bcaeb8589c2c1ea0d31d069c0'),
+    bytes.fromhex('35aeb2c289c2c1ea1031d0c3'),
     bytes(139),
     bytes.fromhex('8b7c2410a19c71a90089442414c7442418'),
     bytes(97),
-    bytes.fromhex('89d83dff0000000f876a2810008b54243c3b1485b00f00000f836a281000ff05ec050000e9fcffff'),
+    bytes.fromhex('89d83dff0000000f876a2810008b54243c3b1485b80f00000f836a281000ff05f4050000e9fcffff'),
     bytes.fromhex('ff'),
     bytes(578),
-    bytes.fromhex('906690ffffffffffffffffffffffffffffffff'),
+    bytes.fromhex('ffffffffffffffffffffffffffffffff'),
     bytes(3548),
-    b'\xcc' * 80,
-    bytes.fromhex('803df4060000000f84480200008b9c2404020000837b1c000f8537020000837b34000f852d020000'),
-    bytes.fromhex('e89c25060085c00f84200200008b9c24040200008b359c71a90085f60f840b0200008b3da071a900'),
-    bytes.fromhex('85ff0f84fd0100008b0d1829b70085c90f84ef0100008b491c85c90f84e40100008b068b1729c829'),
-    bytes.fromhex('ca3d8c3c00000f87d101000081fa8c3c00000f87c501000039d00f84bd0100007201928b0db876e5'),
-    bytes.fromhex('008b2db476e5003b052404000075183b152804000075103b0d1c04000075083b2d200400007457a3'),
-    bytes.fromhex('24040000891528040000890d1c040000892d20040000c1c01031d035504f5332e8d801000031c8c1'),
-    bytes.fromhex('c51031e8e8cc0100003305a8fce500e8c10100003305b0fce500e8b6010000a32c040000c7053004'),
-    bytes.fromhex('000000000000ff0530040000ff0554040000a13004000069c0b979379e03052c040000e885010000'),
-    bytes.fromhex('a3340400003550475432e87601000025ffffff7fa33804000031c9d9048de8040000d80d0402e600'),
-    bytes.fromhex('df3d3c040000a13c0400008b154004000085d2740b7807b8ffffffffeb0231c089048db804000041'),
-    bytes.fromhex('83f90c72c631ed0fb604ad8906000089f185c0740289f983b9dc000000000f85970000000fb604ad'),
-    bytes.fromhex('8a0600008b54810885d20f8483000000f742200000c0bf757af642277075740fb604ad8b06000083'),
-    bytes.fromhex('e0037414817b28e8811000755e4875083b15a471a90075530fb6423b510fb60cad880600008b148d'),
-    bytes.fromhex('1805000029c2764689d0f7248db80400005985d275073d000000807605b8000000800fb614ad8b06'),
-    bytes.fromhex('0000c1ea047406f7e20facd00439053804000072142905380400004583fd1b0f8242ffffffc359eb'),
-    bytes.fromhex('f2890d480400000fb604ad8a060000a34c0400000fb604ad88060000a344040000ff048558040000'),
-    bytes.fromhex('8d0440c1e0030548050000a350040000a13404000035504c4e32e826000000d1e850a13404000035'),
-    bytes.fromhex('504e5432e81400000089c2b900000000e8dc8b04006a00e823000000c389c2c1ea1031d069c06bca'),
-    bytes.fromhex('eb8589c2c1ea0d31d069c035aeb2c289c2c1ea1031d0c3'),
+    b'\xcc' * 72,
+    bytes.fromhex('803d00070000000f84540200008b9c2404020000837b1c000f8543020000837b34000f8539020000'),
+    bytes.fromhex('e89c25060085c00f842c0200008b9c24040200008b359c71a90085f60f84170200008b3da071a900'),
+    bytes.fromhex('85ff0f84090200008b0d1829b70085c90f84fb0100008b491c85c90f84f00100008b068b1729c829'),
+    bytes.fromhex('ca3d8c3c00000f87dd01000081fa8c3c00000f87d101000039d00f84c90100007201928b0db876e5'),
+    bytes.fromhex('008b2db476e5003b053004000075183b153404000075103b0d2804000075083b2d2c040000745ce8'),
+    bytes.fromhex('fcffffffa330040000891534040000890d28040000892d2c040000c1c01031d035504f5332e8df01'),
+    bytes.fromhex('000031c8c1c51031e8e8d30100003305a8fce500e8c80100003305b0fce500e8bd010000a3380400'),
+    bytes.fromhex('00c7053c04000000000000ff053c040000ff0560040000a13c04000069c0b979379e030538040000'),
+    bytes.fromhex('e88c010000a3400400003550475432e87d01000025ffffff7fa34404000031c9d9048df4040000d8'),
+    bytes.fromhex('0d0402e600d80c8d00000000df3d48040000a1480400008b154c04000085d2740b7807b8ffffffff'),
+    bytes.fromhex('eb0231c089048dc40400004183f90c72bf31ed0fb604ad9506000089f185c0740289f983b9dc0000'),
+    bytes.fromhex('00000f85970000000fb604ad960600008b54810885d20f8483000000f742200000c0bf757af64227'),
+    bytes.fromhex('7075740fb604ad9706000083e0037414817b28e8811000755e4875083b15a471a90075530fb6423b'),
+    bytes.fromhex('510fb60cad940600008b148d2405000029c2764689d0f7248dc40400005985d275073d0000008076'),
+    bytes.fromhex('05b8000000800fb614ad97060000c1ea047406f7e20facd004390544040000721429054404000045'),
+    bytes.fromhex('83fd1b0f8242ffffffc359ebf2890d540400000fb604ad96060000a3580400000fb604ad94060000'),
+    bytes.fromhex('a350040000ff0485640400008d0440c1e0030554050000a35c040000a14004000035504c4e32e826'),
+    bytes.fromhex('000000d1e850a14004000035504e5432e81400000089c2b900000000e8dc8b04006a00e823000000'),
+    bytes.fromhex('c389c2c1ea1031d069c06bcaeb8589c2c1ea0d31d069c035aeb2c289c2c1ea1031d0c3'),
     bytes(139),
-    bytes.fromhex('8b7c2410a14804000089442414a14c04000089442418'),
+    bytes.fromhex('8b7c2410a15404000089442414a15804000089442418'),
     bytes(93),
-    bytes.fromhex('89d883f81f7605b81f0000000fb680680600008b54243c8b0d500400003b14810f836a281000a144'),
-    bytes.fromhex('040000ff048588040000e9e4271000ffffffffffffffffffffffffffffffff'),
+    bytes.fromhex('89d883f81f7605b81f0000000fb680740600008b54243c8b0d5c0400003b14810f836a281000a150'),
+    bytes.fromhex('040000ff048594040000e9e4271000ffffffffffffffffffffffffffffffff'),
     bytes(574),
     bytes.fromhex('01020303030304040404040404040505050505050505050505050505050500000c0000000d000100'),
     bytes.fromhex('0a0001000b000200090003010f000301100004000101040003010500040005000500050006000500'),
     bytes.fromhex('074006000800070002020801110008011200090113000901140009011500090116400a0118000a01'),
     bytes.fromhex('19000a011a000b0117000b011b000b011c4000'),
-    b'\xcc' * 1291,
+    b'\xcc' * 255,
+    bytes.fromhex('60b90c000000c7048d600100000000803f4979f20fb6058702000085c00f843b0100008b1db876e5'),
+    bytes.fromhex('0083fb020f822c01000083f801752583fb097605bb090000008b049d30020000b90c00000089048d'),
+    bytes.fromhex('600100004979f6e902010000a11829b70085c00f84f50000008b701c85f60f84ea00000031c0b919'),
+    bytes.fromhex('00000089048d940100004979f6bd200000000fb68e1c01000083f9410f87c400000031db39cb7357'),
+    bytes.fromhex('8b3c9e4385ff74f40fb6473583f81077eb0fb6905802000081faff00000074dc510fb74f28c1e90a'),
+    bytes.fromhex('83e1073a88690200005973c80fb6473b510fb68a7a02000029c1730231c9010c9594010000ff0495'),
+    bytes.fromhex('c801000059eba581c6f40100004d758a31c9833c8dc801000008724c833c8d94010000007442db04'),
+    bytes.fromhex('8dc8010000d80c8dfc010000da348d94010000d91c8d600100008b048d600100003d3333b33e7305'),
+    bytes.fromhex('b83333b33e3d0000a03f7605b80000a03f89048d600100004183f90d72a461c30000803f0000803f'),
+    bytes.fromhex('0000803f0000803f0000803f0000803f0000803f0000803f0000803f0000803f0000803f0000803f'),
+    bytes.fromhex('0000803f'),
+    bytes(158),
+    bytes.fromhex('803f0000803f0000803f0000803f0000803f0000803f0000803f0000803f0000803f0000803f0cff'),
+    bytes.fromhex('ff050a0b0b040706090902010008030100000303010102010103030102020202'),
+    bytes(14),
+    b'\xcc' * 376,
     bytes.fromhex('9c605756e8fcffffff83c408619de8fcffffff9c605756e8fcffffff83c408619dc39c608d442424'),
     bytes.fromhex('505251e8fcffffff83c40c619dc7042400000000e97cb210009c60e8fcffffff619de95bb910008b'),
     bytes.fromhex('502081e20000c0bf750f8b4024a9000000700f94c00fb6c0c331c0c38b0d1829b70085c90f84ef01'),
@@ -461,87 +624,109 @@ _RELOCATIONS = (
     (0x001d, True, 'stock', 0x1028ac),
     (0x0022, True, 'bank', 0x31fc),
     (0x0098, True, 'stock', 0x6259c),
-    (0x00fb, False, 'bank', 0x5cc),
-    (0x0103, False, 'bank', 0x5d0),
-    (0x010b, False, 'bank', 0x5c4),
-    (0x0113, False, 'bank', 0x5c8),
-    (0x011a, False, 'bank', 0x5cc),
-    (0x0120, False, 'bank', 0x5d0),
-    (0x0126, False, 'bank', 0x5c4),
-    (0x012c, False, 'bank', 0x5c8),
-    (0x0162, False, 'bank', 0x5d4),
-    (0x0168, False, 'bank', 0x5d8),
-    (0x0172, False, 'bank', 0x5d8),
-    (0x0177, False, 'bank', 0x5d8),
-    (0x0183, False, 'bank', 0x5d4),
-    (0x019e, False, 'bank', 0x5dc),
-    (0x01a7, False, 'bank', 0x7b0),
-    (0x01ad, False, 'bank', 0x5e0),
-    (0x01c3, False, 'bank', 0x5e0),
-    (0x01c9, False, 'bank', 0x5e4),
-    (0x01ce, False, 'bank', 0xbb0),
-    (0x01dd, False, 'bank', 0x5dc),
-    (0x01ec, False, 'bank', 0x5e8),
-    (0x020e, False, 'bank', 0x5f0),
-    (0x0213, True, 'stock', 0x48bdc),
-    (0x021f, True, 'bank', 0x13fc),
-    (0x035f, True, 'stock', 0x10286a),
-    (0x036a, False, 'bank', 0xfb0),
-    (0x0370, True, 'stock', 0x10286a),
-    (0x0376, False, 'bank', 0x5ec),
-    (0x037b, True, 'bank', 0x38fc),
-    (0x1402, False, 'bank', 0x1af4),
+    (0x00fb, False, 'bank', 0x5d4),
+    (0x0103, False, 'bank', 0x5d8),
+    (0x010b, False, 'bank', 0x5cc),
+    (0x0113, False, 'bank', 0x5d0),
+    (0x011a, True, 'bank', 0x1bfc),
+    (0x011f, False, 'bank', 0x5d4),
+    (0x0125, False, 'bank', 0x5d8),
+    (0x012b, False, 'bank', 0x5cc),
+    (0x0131, False, 'bank', 0x5d0),
+    (0x0167, False, 'bank', 0x5dc),
+    (0x016d, False, 'bank', 0x5e0),
+    (0x0177, False, 'bank', 0x5e0),
+    (0x017c, False, 'bank', 0x5e0),
+    (0x0188, False, 'bank', 0x5dc),
+    (0x01a3, False, 'bank', 0x5e4),
+    (0x01ac, False, 'bank', 0x7b8),
+    (0x01b2, False, 'bank', 0x5e8),
+    (0x01c8, False, 'bank', 0x5e8),
+    (0x01ce, False, 'bank', 0x5ec),
+    (0x01d3, False, 'bank', 0xbb8),
+    (0x01e2, False, 'bank', 0x1d90),
+    (0x01e8, False, 'bank', 0x5e4),
+    (0x01f7, False, 'bank', 0x5f0),
+    (0x0219, False, 'bank', 0x5f8),
+    (0x021e, True, 'stock', 0x48bdc),
+    (0x022a, True, 'bank', 0x13fc),
+    (0x036a, True, 'stock', 0x10286a),
+    (0x0375, False, 'bank', 0xfb8),
+    (0x037b, True, 'stock', 0x10286a),
+    (0x0381, False, 'bank', 0x5f4),
+    (0x0386, True, 'bank', 0x38fc),
+    (0x1402, False, 'bank', 0x1b00),
     (0x1429, True, 'stock', 0x6259c),
-    (0x14a9, False, 'bank', 0x1824),
-    (0x14b1, False, 'bank', 0x1828),
-    (0x14b9, False, 'bank', 0x181c),
-    (0x14c1, False, 'bank', 0x1820),
-    (0x14c8, False, 'bank', 0x1824),
-    (0x14ce, False, 'bank', 0x1828),
-    (0x14d4, False, 'bank', 0x181c),
-    (0x14da, False, 'bank', 0x1820),
-    (0x1510, False, 'bank', 0x182c),
-    (0x1516, False, 'bank', 0x1830),
-    (0x1520, False, 'bank', 0x1830),
-    (0x1526, False, 'bank', 0x1854),
-    (0x152b, False, 'bank', 0x1830),
-    (0x1537, False, 'bank', 0x182c),
-    (0x1541, False, 'bank', 0x1834),
-    (0x1555, False, 'bank', 0x1838),
-    (0x155e, False, 'bank', 0x18e8),
-    (0x156a, False, 'bank', 0x183c),
-    (0x156f, False, 'bank', 0x183c),
-    (0x1575, False, 'bank', 0x1840),
-    (0x158b, False, 'bank', 0x18b8),
-    (0x159b, False, 'bank', 0x1a89),
-    (0x15b8, False, 'bank', 0x1a8a),
-    (0x15db, False, 'bank', 0x1a8b),
-    (0x1601, False, 'bank', 0x1a88),
-    (0x1608, False, 'bank', 0x1918),
-    (0x1615, False, 'bank', 0x18b8),
-    (0x162e, False, 'bank', 0x1a8b),
-    (0x163f, False, 'bank', 0x1838),
-    (0x1647, False, 'bank', 0x1838),
-    (0x165b, False, 'bank', 0x1848),
-    (0x1663, False, 'bank', 0x1a8a),
-    (0x1668, False, 'bank', 0x184c),
-    (0x1670, False, 'bank', 0x1a88),
-    (0x1675, False, 'bank', 0x1844),
-    (0x167c, False, 'bank', 0x1858),
-    (0x1687, False, 'bank', 0x1948),
-    (0x168c, False, 'bank', 0x1850),
-    (0x1691, False, 'bank', 0x1834),
-    (0x16a3, False, 'bank', 0x1834),
-    (0x16b4, False, 'bank', 0x5f0),
-    (0x16b9, True, 'stock', 0x48bdc),
-    (0x1777, False, 'bank', 0x1848),
-    (0x1780, False, 'bank', 0x184c),
-    (0x17f4, False, 'bank', 0x1a68),
-    (0x17fe, False, 'bank', 0x1850),
-    (0x1807, True, 'stock', 0x10286a),
-    (0x180c, False, 'bank', 0x1844),
-    (0x1813, False, 'bank', 0x1888),
-    (0x1818, True, 'stock', 0x1027e4),
+    (0x14a9, False, 'bank', 0x1830),
+    (0x14b1, False, 'bank', 0x1834),
+    (0x14b9, False, 'bank', 0x1828),
+    (0x14c1, False, 'bank', 0x182c),
+    (0x14c8, True, 'bank', 0x1bfc),
+    (0x14cd, False, 'bank', 0x1830),
+    (0x14d3, False, 'bank', 0x1834),
+    (0x14d9, False, 'bank', 0x1828),
+    (0x14df, False, 'bank', 0x182c),
+    (0x1515, False, 'bank', 0x1838),
+    (0x151b, False, 'bank', 0x183c),
+    (0x1525, False, 'bank', 0x183c),
+    (0x152b, False, 'bank', 0x1860),
+    (0x1530, False, 'bank', 0x183c),
+    (0x153c, False, 'bank', 0x1838),
+    (0x1546, False, 'bank', 0x1840),
+    (0x155a, False, 'bank', 0x1844),
+    (0x1563, False, 'bank', 0x18f4),
+    (0x1570, False, 'bank', 0x1d60),
+    (0x1576, False, 'bank', 0x1848),
+    (0x157b, False, 'bank', 0x1848),
+    (0x1581, False, 'bank', 0x184c),
+    (0x1597, False, 'bank', 0x18c4),
+    (0x15a7, False, 'bank', 0x1a95),
+    (0x15c4, False, 'bank', 0x1a96),
+    (0x15e7, False, 'bank', 0x1a97),
+    (0x160d, False, 'bank', 0x1a94),
+    (0x1614, False, 'bank', 0x1924),
+    (0x1621, False, 'bank', 0x18c4),
+    (0x163a, False, 'bank', 0x1a97),
+    (0x164b, False, 'bank', 0x1844),
+    (0x1653, False, 'bank', 0x1844),
+    (0x1667, False, 'bank', 0x1854),
+    (0x166f, False, 'bank', 0x1a96),
+    (0x1674, False, 'bank', 0x1858),
+    (0x167c, False, 'bank', 0x1a94),
+    (0x1681, False, 'bank', 0x1850),
+    (0x1688, False, 'bank', 0x1864),
+    (0x1693, False, 'bank', 0x1954),
+    (0x1698, False, 'bank', 0x185c),
+    (0x169d, False, 'bank', 0x1840),
+    (0x16af, False, 'bank', 0x1840),
+    (0x16c0, False, 'bank', 0x5f8),
+    (0x16c5, True, 'stock', 0x48bdc),
+    (0x1783, False, 'bank', 0x1854),
+    (0x178c, False, 'bank', 0x1858),
+    (0x1800, False, 'bank', 0x1a74),
+    (0x180a, False, 'bank', 0x185c),
+    (0x1813, True, 'stock', 0x10286a),
+    (0x1818, False, 'bank', 0x1850),
+    (0x181f, False, 'bank', 0x1894),
+    (0x1824, True, 'stock', 0x1027e4),
+    (0x1c09, False, 'bank', 0x1d60),
+    (0x1c17, False, 'bank', 0x1e87),
+    (0x1c44, False, 'bank', 0x1e30),
+    (0x1c50, False, 'bank', 0x1d60),
+    (0x1c7e, False, 'bank', 0x1d94),
+    (0x1cb4, False, 'bank', 0x1e58),
+    (0x1ccd, False, 'bank', 0x1e69),
+    (0x1cdc, False, 'bank', 0x1e7a),
+    (0x1ce9, False, 'bank', 0x1d94),
+    (0x1cf0, False, 'bank', 0x1dc8),
+    (0x1d05, False, 'bank', 0x1dc8),
+    (0x1d0f, False, 'bank', 0x1d94),
+    (0x1d19, False, 'bank', 0x1dc8),
+    (0x1d20, False, 'bank', 0x1dfc),
+    (0x1d27, False, 'bank', 0x1d94),
+    (0x1d2e, False, 'bank', 0x1d60),
+    (0x1d35, False, 'bank', 0x1d60),
+    (0x1d54, False, 'bank', 0x1d60),
     (0x2005, True, 'bank', 0x2266),
     (0x200f, True, 'depth', -0x4),
     (0x2018, True, 'bank', 0x23c1),
@@ -585,12 +770,12 @@ _RELOCATIONS = (
     (0x24b8, False, 'bank', 0x24f0),
     (0x24bf, False, 'bank', 0x2500),
     (0x24cb, False, 'bank', 0x2504),
-    (0x3145, False, 'bank', 0x5c4),
-    (0x3152, False, 'bank', 0x5c8),
-    (0x3182, False, 'bank', 0x5cc),
-    (0x318a, False, 'bank', 0x5d0),
-    (0x3192, False, 'bank', 0x5c4),
-    (0x319c, False, 'bank', 0x181c),
+    (0x3145, False, 'bank', 0x5cc),
+    (0x3152, False, 'bank', 0x5d0),
+    (0x3182, False, 'bank', 0x5d4),
+    (0x318a, False, 'bank', 0x5d8),
+    (0x3192, False, 'bank', 0x5cc),
+    (0x319c, False, 'bank', 0x1828),
     (0x31a7, True, 'bank', 0x201e),
     (0x321b, True, 'bank', 0x27),
     (0x3356, False, 'bank', 0x33b8),
@@ -613,13 +798,13 @@ _RELOCATIONS = (
     (0x3667, False, 'stock', 0xb72918),
     (0x36b9, False, 'bank', 0x3818),
     (0x36bf, False, 'stock', 0xe576b8),
-    (0x36c5, False, 'bank', 0x5c4),
+    (0x36c5, False, 'bank', 0x5cc),
     (0x36cc, False, 'stock', 0xe576b4),
-    (0x36d2, False, 'bank', 0x5c8),
-    (0x36e0, False, 'bank', 0x5cc),
-    (0x36e8, False, 'bank', 0x5d0),
-    (0x36f0, False, 'bank', 0x5c4),
-    (0x36fa, False, 'bank', 0x181c),
+    (0x36d2, False, 'bank', 0x5d0),
+    (0x36e0, False, 'bank', 0x5d4),
+    (0x36e8, False, 'bank', 0x5d8),
+    (0x36f0, False, 'bank', 0x5cc),
+    (0x36fa, False, 'bank', 0x1828),
     (0x3706, False, 'stock', 0xec00c),
     (0x370f, True, 'bank', 0x201e),
     (0x3716, True, 'stock', 0x10b27c),
@@ -674,7 +859,7 @@ _RELOCATIONS = (
 )
 
 LABELS = {
-    'accept_ptr': 0x1850,
+    'accept_ptr': 0x185c,
     'active': 0x3818,
     'adjust': 0x3500,
     'before_primary': 0xd,
@@ -683,50 +868,60 @@ LABELS = {
     'contest': 0x3771,
     'continue_capture': 0x2b,
     'depth_hook': 0x2000,
-    'descriptor': 0x259,
-    'duration': 0x2f9,
-    'finished': 0x21e,
+    'descriptor': 0x264,
+    'duration': 0x304,
+    'finished': 0x229,
     'flat': 0x37ed,
     'gamecast_screen_entry': 0x381c,
-    'group': 0x37f,
-    'length_thresholds': 0xfb0,
+    'group': 0x38a,
+    'length_thresholds': 0xfb8,
     'match_entry': 0x3600,
     'match_hook': 0x2022,
     'medical': 0x375b,
-    'ordinary_thresholds': 0x7b0,
+    'ordinary_thresholds': 0x7b8,
     'passing_scale': 0x3a00,
-    'pos_accept': 0x1948,
-    'pos_class': 0x1844,
-    'pos_club_a': 0x1824,
-    'pos_club_b': 0x1828,
-    'pos_commits': 0x1888,
-    'pos_descriptor': 0x16e7,
-    'pos_duration': 0x1788,
-    'pos_duration_accept': 0x17e5,
-    'pos_effective': 0x18b8,
-    'pos_enabled': 0x1af4,
-    'pos_hash': 0x1834,
-    'pos_hits': 0x1858,
-    'pos_key': 0x182c,
-    'pos_plays': 0x1854,
-    'pos_sample': 0x1838,
-    'pos_sampled': 0x1559,
-    'pos_scale': 0x18e8,
-    'pos_seq': 0x1830,
-    'pos_slots': 0x1a88,
-    'pos_week': 0x1820,
-    'pos_week_group': 0x1a68,
-    'pos_wide': 0x183c,
-    'pos_year': 0x181c,
-    'pos_zero': 0x1918,
+    'pos_accept': 0x1954,
+    'pos_class': 0x1850,
+    'pos_club_a': 0x1830,
+    'pos_club_b': 0x1834,
+    'pos_commits': 0x1894,
+    'pos_descriptor': 0x16f3,
+    'pos_duration': 0x1794,
+    'pos_duration_accept': 0x17f1,
+    'pos_effective': 0x18c4,
+    'pos_enabled': 0x1b00,
+    'pos_hash': 0x1840,
+    'pos_hits': 0x1864,
+    'pos_key': 0x1838,
+    'pos_plays': 0x1860,
+    'pos_sample': 0x1844,
+    'pos_sampled': 0x155e,
+    'pos_scale': 0x18f4,
+    'pos_seq': 0x183c,
+    'pos_slots': 0x1a94,
+    'pos_week': 0x182c,
+    'pos_week_group': 0x1a74,
+    'pos_wide': 0x1848,
+    'pos_year': 0x1828,
+    'pos_zero': 0x1924,
     'positions': 0x1400,
-    'private_rng': 0x5f0,
+    'private_rng': 0x5f8,
     'revise': 0x3900,
     'route_completed_pass': 0x3840,
     'slope': 0x37b9,
-    'special_thresholds': 0xbb0,
+    'special_thresholds': 0xbb8,
+    'stab_class': 0x1e58,
+    'stab_count': 0x1dc8,
+    'stab_factor': 0x1d60,
+    'stab_mode': 0x1e87,
+    'stab_reference': 0x1dfc,
+    'stab_starters': 0x1e69,
+    'stab_sum': 0x1d94,
+    'stab_year': 0x1e30,
+    'stab_zero': 0x1e7a,
+    'stability': 0x1c00,
     'supplement': 0x0,
-    'victim_side': 0x1848,
-    'victim_slot': 0x184c,
-    'weeks': 0x41c,
+    'victim_side': 0x1854,
+    'victim_slot': 0x1858,
+    'weeks': 0x427,
 }
