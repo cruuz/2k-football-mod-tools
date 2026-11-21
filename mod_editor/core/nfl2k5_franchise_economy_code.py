@@ -289,13 +289,26 @@ WINDOWS = {
             "b801000000eb1489da89f9e8e80dd8ff89da89f1e88ff4efff31c08d65f45b5e5f5dc3"
         ).ljust(159, b"\xcc")
     ),
-    0x3e9a90: (  # roster_s: 127/142 bytes
+    0x3e9a90: (  # roster_s: 91/142 bytes
         bytes.fromhex(
-            "5589e557565389cbe8035fedff803de03e0c00e97564813de13e0c0023692f0075588a83f3010000"
-            "8a93f20100003ca5740a09d00a839b010000753e89d931f6e80bc8ddff89c780bbf20100000b772a"
-            "8d46f583fe0b770a0fa3f7730346ebe789f08b148544631c0089d9e84095f5ff85c074064683fe17"
-            "75cd5b5e5f5dc3"
+            "5589e5575689ce53e8035fedff89f1e80c86f3ff85c0743e89f131dbe82fc8ddff89c780bef20100"
+            "000b772a8d43f583fb0b770a0fa3df730343ebe789d88b148544631c0089f1e86495f5ff85c07406"
+            "4383fb1775cd5b5e5f5dc3"
         ).ljust(142, b"\xcc")
+    ),
+    0x3e9cd0: (  # roster_t: 111/134 bytes
+        bytes.fromhex(
+            "5589e557565389cbe8d383f3ff85c074538a83f201000084c074490fb6931c010000488883f20100"
+            "000fb6c001d08d3c8331c08b378907a11829b70089f28d4838e84a88e5ff85c0750a8937fe83f201"
+            "0000eb10806624f0806627f066c7460a0000ebad89d95b5e5f5de921a2cdff"
+        ).ljust(134, b"\xcc")
+    ),
+    0x3220b0: (  # roster_u: 103/131 bytes
+        bytes.fromhex(
+            "5589e55389cbe875cbe1ff85c0740b31d2833d3c01e60001754831d2803de03e0c00e9753d813de1"
+            "3e0c0023692f00753180bbf3010000a50fb683f201000075153c0c771d0fb6931c01000001d083f8"
+            "410f9ec2eb090a839b0100000f94c20fb6d289d05b5dc3"
+        ).ljust(131, b"\xcc")
     ),
 }
 ROOKIE_TABLE_VA = 0x521598
@@ -307,4 +320,4 @@ ROOKIE_TABLE = bytes.fromhex(
     "fc567100fd5671000000000000000000000000000000000000000000000000000000000000000000"
     "000000000000000000000000000000000000000000000000"
 )
-SYMBOLS = {'economy_draft_min': 2509504, 'economy_full': 2509529, 'economy_offer_both': 2509591, 'economy_pick': 2861856, 'economy_txn_years': 2861978, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_contract': 3287200, 'economy_offer_gate': 3287364, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291679, 'economy_stage6': 3291695, 'economy_class_free': 3678720, 'economy_class_position': 3678801, 'economy_class_slot': 3678877, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_fa_retire': 3765897, 'economy_class_topup': 3825440, 'economy_floor_protected': 3825551, 'economy_cover': 3825552, 'economy_restructure': 3907424, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908968, 'economy_vet_short': 3934496, 'economy_vet_pick': 3934554, 'economy_best_room': 4008080, 'economy_need': 4008337, 'economy_camp_limit': 4045923, 'economy_vet_release': 4045943, 'economy_smart_cut': 4071888, 'economy_squad': 4102800, 'economy_preseason_gate': 4317856}
+SYMBOLS = {'economy_draft_min': 2509504, 'economy_full': 2509529, 'economy_offer_both': 2509591, 'economy_pick': 2861856, 'economy_txn_years': 2861978, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_contract': 3287200, 'economy_offer_gate': 3287364, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291679, 'economy_stage6': 3291695, 'economy_class_free': 3678720, 'economy_class_position': 3678801, 'economy_class_slot': 3678877, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_fa_retire': 3765897, 'economy_class_topup': 3825440, 'economy_floor_protected': 3825551, 'economy_cover': 3825552, 'economy_restructure': 3907424, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908968, 'economy_vet_short': 3934496, 'economy_vet_pick': 3934554, 'economy_best_room': 4008080, 'economy_need': 4008337, 'economy_camp_limit': 4045923, 'economy_vet_release': 4045943, 'economy_smart_cut': 4071888, 'economy_squad': 4102800, 'economy_squad_expire': 4103376, 'economy_preseason_gate': 4317856}

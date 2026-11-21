@@ -928,7 +928,9 @@ SECTION(".roster_o") unsigned club_level(u8 *team, unsigned pos, float him, unsi
  * The signing is the native one without its random contract and jersey draws: off the free-agent list (0x2425C0), onto
  * the active list (0xC3EE0, the squad's append), then the squad's own demotion ps_demote (its limit, single ownership,
  * record flags), then a one-year minimum deal (no cap charge while on the squad). No game RNG, no transaction row.
- * Without the practice-squad runtime (0xC3EE0 not its append) or with foreign reserve bytes the club is only cut.
+ * Without the practice-squad runtime (0xC3EE0 not its append) or with foreign reserve bytes the club is only cut. At the
+ * rollover the squad's one-year deals expire (economy_squad_expire): the reserves of a club the CPU runs go back to the
+ * free-agent list, so squads re-form every year from young players and camps keep their full offseason roster.
  * --------------------------------------------------------------------------------------------------------------------- */
 #define SQUAD 12
 extern unsigned FAST ps_append(u8 *team, u8 *p);                  /* nfl2k5_practice_squad SYMBOLS (bridged by the arena) */
@@ -937,6 +939,7 @@ extern unsigned FAST n_fa_remove(u32 *list, u8 *p);               /* 0x2425C0 */
 extern unsigned FAST n_fa_add(u32 *list, u8 *p);                  /* 0x242560 */
 extern unsigned FAST n_append(u8 *team, u8 *p);                   /* 0xC3EE0 */
 extern unsigned FAST n_remove(u8 *team, u8 *p);                   /* 0xC3EB0 */
+extern void FAST n_stats_reset(u8 *team);                         /* 0xC3F60 the club's season statistics */
 /* QB, WR, CB, T, DE, HB, LB (OLB or ILB), C or G, DT, TE, S (FS or SS), WR: position masks by the +0x35 codes. */
 SECTION(".roster_q_rodata") __attribute__((aligned(4))) const u32 squad_mix[SQUAD] = {
     1u << 0, 1u << 3, 1u << 4, 1u << 14, 1u << 16, 1u << 7, 3u << 10, 3u << 12, 1u << 15, 1u << 9, 3u << 5, 1u << 3};
@@ -982,14 +985,38 @@ SECTION(".roster_r") __attribute__((noinline)) static u32 FAST squad_sign(u8 *te
     return 0;
 }
 
+/* The squad's storage as the fill and the release may change it: the practice-squad runtime installed (0xC3EE0 is its
+ * append), the club run by the CPU (the gate tests that too), and its reserve bytes in the squad's own form (none yet, or
+ * the A5 marker with at most SQUAD reserves), every reserve in the 65 physical slots. */
+SECTION(".roster_u") __attribute__((noinline)) static u32 FAST squad_ok(u8 *team) {
+    return CPU(team) && *(u8 *)0xC3EE0 == 0xE9 && *(int *)0xC3EE1 == (int)ps_append - 0xC3EE5 &&
+           (team[0x1f3] == 0xa5 ? team[0x1f2] <= SQUAD && team[0x11c] + team[0x1f2] <= 65u : !(team[0x19b] | team[0x1f2]));
+}
+
+/* 0x247BCD in the rollover's club loop (ECX = team): was call 0xC3F60 (the club's season statistics reset). Real squad
+ * deals last one season: a club the CPU runs lets them expire here, every reserve back on the free-agent list with no
+ * contract (as the native release leaves a player), so camp has the full offseason roster again and the next gate forms
+ * a new squad. Holding 12 reserves through the offseason caps a camp at 53 (65 physical slots), and the first ten-season
+ * panel then opened 7 seasons with a club that could not sign a kicker or punter in camp. */
+SECTION(".roster_t") void FAST economy_squad_expire(u8 *team) {
+    if (squad_ok(team))
+        while (team[0x1f2]) {
+            u8 **slot = (u8 **)team + team[0x11c] + --team[0x1f2], *p = *slot;
+            *slot = 0;                                        /* the squad's own form: the slots past the last are null */
+            if (!n_fa_add(FA_LIST, p)) { *slot = p; ++team[0x1f2]; break; }
+            *(u16 *)(p + 10) = 0;
+            p[0x24] &= 0xf0;
+            p[0x27] &= 0xf0;
+        }
+    n_stats_reset(team);
+}
+
 /* 0x2BFAD4 in the gate 0x2BFAA0 (ECX = team, EDX = the in-season limit): was call 0x2BF9A0. The first round fills the
  * mix's open slots; a slot with no eligible free agent left (the clubs before it took them) leaves the squad short, so
  * a second round goes over the mix again without the quarterback slot until the squad is full or nobody fits. */
 SECTION(".roster_s") void FAST economy_squad(u8 *team, unsigned target) {
     n_cut_to(team, target);
-    if (*(u8 *)0xC3EE0 != 0xE9 || *(int *)0xC3EE1 != (int)ps_append - 0xC3EE5 ||
-            (team[0x1f3] != 0xa5 && (team[0x19b] | team[0x1f2] | team[0x1f3])))
-        return;
+    if (!squad_ok(team)) return;
     u32 used = squad_used(team);
     for (u32 j = 0; j < 2 * SQUAD - 1 && team[0x1f2] < SQUAD; ++j)
         if (!(j < SQUAD && used >> j & 1) && !squad_sign(team, squad_mix[j < SQUAD ? j : j - SQUAD + 1])) return;
