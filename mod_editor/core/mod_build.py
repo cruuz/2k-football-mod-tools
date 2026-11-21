@@ -895,6 +895,8 @@ class BuildPlan:
     console_memory: int = 128
     stock_age_policy: str = "preserve_age"
     backfield_cards: bool = False
+    # Beta 81 (Q62 redo): the SPECIAL GAD player on gadget plays (needs the SPECIAL rows' situational lineup owner).
+    gadget_play: bool = False
 
     def wants_xbe_patch(self) -> bool:
         return (self.sim_qb_injuries is not None or self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
@@ -908,7 +910,7 @@ class BuildPlan:
                 or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star or self.star_career
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page
-                or self.sportscenter_lineup or self.backfield_cards or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
+                or self.sportscenter_lineup or self.backfield_cards or self.gadget_play or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.contract_college_guard or self.coach_career_fix or self.history_pool
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism or self.coach_carousel or self.history_screen
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
@@ -933,25 +935,26 @@ class _ReleasedV09Update(BuildPlan):
     """An explicit update of selected options on the published 128 MB disc."""
 
 
-V09_UPDATE_CHOICES = ("save_list_type_guard", "modern_injured_reserve", "backfield_cards")
+V09_UPDATE_CHOICES = ("save_list_type_guard", "modern_injured_reserve", "backfield_cards", "gadget_play")
 
 
 def v09_disc_update(source, target, *, save_list_type_guard=False, modern_injured_reserve=False, backfield_cards=False,
-                    sim_qb_injuries=None, custom_rate=BuildPlan.sim_qb_injury_rate,
+                    gadget_play=False, sim_qb_injuries=None, custom_rate=BuildPlan.sim_qb_injury_rate,
                     breakaway_stop=BuildPlan.sim_breakaway_stop,
                     overwrite=False, name="", author="", notes=""):
     from .nfl2k5_build_settings import validate_sim_qb_injuries
     validate_sim_qb_injuries(sim_qb_injuries, custom_rate)
-    choices = (save_list_type_guard, modern_injured_reserve, backfield_cards)
+    choices = (save_list_type_guard, modern_injured_reserve, backfield_cards, gadget_play)
     if any(type(choice) is not bool for choice in choices):
         raise ValueError("The v0.9 update choices must be on or off.")
     if not any(choices) and sim_qb_injuries is None:
-        raise ValueError("Select a v0.9 update for the boot save list, modern injured reserve, starting backfield cards or simulated quarterback injuries.")
+        raise ValueError("Select a v0.9 update for the boot save list, modern injured reserve, starting backfield cards, "
+                         "the gadget player on gadget plays or simulated quarterback injuries.")
     needs_simulator = sim_qb_injuries in ("realistic", "custom")
     return _ReleasedV09Update(str(source), str(target), overwrite=overwrite, name=name, author=author,
                               notes=notes, save_list_type_guard=save_list_type_guard, modern_injured_reserve=modern_injured_reserve,
                               backfield_cards=backfield_cards, sim_qb_injuries=sim_qb_injuries,
-                              sim_qb_injury_rate=custom_rate, sim_breakaway_stop=breakaway_stop,
+                              gadget_play=gadget_play, sim_qb_injury_rate=custom_rate, sim_breakaway_stop=breakaway_stop,
                               sim_realism=needs_simulator, k128_memory=needs_simulator)
 
 
@@ -981,6 +984,19 @@ def sim_qb_disc_edit(source, target, mode, *, custom_rate=BuildPlan.sim_qb_injur
                                sim_qb_injury_rate=custom_rate, sim_breakaway_stop=breakaway_stop,
                                sim_realism=enabled, k128_memory=enabled,
                                overwrite=overwrite, name=name, author=author, notes=notes)
+
+
+class _InstalledGadgetEdit(BuildPlan):
+    """Beta 81 Q62: an explicit single-setting edit of the gadget rule on an already-built standard disc."""
+
+
+def gadget_disc_edit(source, target, *, enabled=True, overwrite=False, name="", author="", notes=""):
+    """Add (or take out) the gadget player on gadget plays on a new copy of a built 128 MB standard disc that has the
+    SPECIAL rows: only default.xbe changes; the rule's table comes from the books already on that disc."""
+    if type(enabled) is not bool:
+        raise ValueError("The gadget player on gadget plays must be Off or On.")
+    return _InstalledGadgetEdit(str(source), str(target), gadget_play=enabled, overwrite=overwrite,
+                                name=name, author=author, notes=notes)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -1223,6 +1239,12 @@ PRESETS["softdrink_experimental"]["alien_prospect"] = True
 for _preset in PRESETS.values():
     _preset["sportscenter_lineup"] = True
     _preset["backfield_cards"] = True
+# Beta 81 (Q62 redo, Noah 11/03 "Rest looks good"): the GAD player on gadget plays rides with the SPECIAL rows, which only
+# the Experimental (standard 128 MB) preset turns on. Coordinator 11/20: on in that preset only when the full proof is
+# clean, otherwise off there too (still selectable on the Build tab as an experimental option). This flag is that choice.
+GADGET_PLAY_IN_STANDARD_PRESET = True
+for _preset in PRESETS.values():
+    _preset["gadget_play"] = GADGET_PLAY_IN_STANDARD_PRESET and bool(_preset.get("depth_chart_rows"))
 # b778-dr1: the broadcast-paced franchise draft, on with the other SOFTDRINK franchise features (Advanced, Experimental).
 for _preset in PRESETS.values():
     _preset["franchise_draft_clock"] = False
@@ -1478,6 +1500,7 @@ def apply_preset(plan: BuildPlan, name: str) -> BuildPlan:
     values.update(PRESETS[name])
     if plan.console_memory == 64:
         values["backfield_cards"] = False
+        values["gadget_play"] = False
         values["sim_qb_injuries"] = None
         values["k128_memory"] = False
     values["modern_naming"] = tt.modern_naming_patch.preset_enabled(name.removeprefix("softdrink_"))
@@ -2740,6 +2763,63 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     return True
 
 
+def _only_gadget_changes(plan):
+    if not isinstance(plan, _InstalledGadgetEdit) or plan.console_memory != 128:
+        return False
+    return plan == gadget_disc_edit(plan.source, plan.target, enabled=plan.gadget_play, overwrite=plan.overwrite,
+                                    name=plan.name, author=plan.author, notes=plan.notes)
+
+
+def _edit_installed_gadget(plan, source, target, original, receipt, progress, *, preflight, consume, reference):
+    """Beta 81 Q62: the gadget rule alone on an already-built standard disc; every other installed setting is kept.
+    The code goes into the fixed gadget slots (reserved by the cards on every standard build, or appended there)."""
+    gadget = _core_module("nfl2k5_gadget_play")
+    lineup = _core_module("nfl2k5_lineup_roles")
+    if gadget is None or lineup is None:
+        raise ValueError("The gadget player on gadget plays is unavailable.")
+    if (tt.k128_patch.read_settings(original).get("require_128") is not True or not space_is_scaleout(original)
+            or lineup.status(original) != "applied"):
+        raise ValueError("The gadget player on gadget plays needs a built 128 MB standard disc with the SPECIAL rows.")
+    gadget.preflight(original)
+    books = _gadget_resources(source)
+    if plan.gadget_play:
+        patched, patch = gadget.apply(original, books)
+    else:
+        patched, patch = gadget.remove(original)
+    receipt["installed_gadget_only"] = True
+    receipt["gadget_source_update"] = {"source_sha256": sha256(original).hexdigest(),
+                                       "result_sha256": sha256(patched).hexdigest(),
+                                       "source_state": gadget.status(original, books)}
+    if preflight:
+        return True
+    _copy_private_build_source(source, target, receipt, progress, consume)
+    receipt["result"] = {}
+    _step("gadget_play")
+    progress("Depth chart: gadget player on gadget plays", 0, 0)
+    if _xbe_bytes(target) != original:
+        raise ValueError("The copied image's executable differs from the source.")
+    if patched != original:
+        _write_xbe_bytes(target, patched)
+    if _xbe_bytes(target) != patched:
+        raise RuntimeError("Gadget player on gadget plays: the output does not read back as written")
+    receipt["steps"].append({"step": "gadget_play", **{k: v for k, v in patch.items() if k != "books"}})
+    receipt["result"]["gadget_play"] = "applied" if plan.gadget_play else "retail"
+    _compact_build_disc(target, reference, receipt, progress)
+    _step("final_checks")
+    final_state = gadget.read_settings(_xbe_bytes(target), _gadget_resources(target))["status"]
+    if final_state != ("applied" if plan.gadget_play else "retail"):
+        raise ValueError(f"The gadget player on gadget plays did not survive the final archive pass ({final_state})")
+    inspection = inspect(target, screen_timing=plan.screen_timing)
+    receipt["result"] = {**inspection, **receipt["result"], "path": str(target)}
+    _verify_finished_game_disc(target, receipt, progress)
+    return True
+
+
+def space_is_scaleout(payload):
+    space = _core_module("nfl2k5_xbe_space")
+    return space is not None and space.is_scaleout(payload)
+
+
 def _coach_carousel_preflight(source: Path, progress, roster_edits=None) -> None:
     """b780-c6: refuse a source whose Advance to offseason, owner check or Owner Firing row is foreign, before any write."""
     module = _core_module("nfl2k5_coach_carousel")
@@ -3014,10 +3094,77 @@ def _apply_cpu_kick_aim_in_place(target, receipt, progress):
     receipt["result"]["cpu_kick_aim"] = "applied"
 
 
+def _gadget_play_preflight(source, progress):
+    """Beta 81 Q62: refuse, before any write, a source whose gadget sites or slot another build changed."""
+    gadget = _core_module("nfl2k5_gadget_play")
+    if gadget is None:
+        raise RuntimeError("The gadget player on gadget plays needs nfl2k5_gadget_play.")
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError):
+        return
+    progress("Checking the gadget-play sites", 0, 0)
+    gadget.preflight(payload)
+
+
+def _gadget_resources(target):
+    from . import nfl2k5_depth_roles as depth
+    resources = depth._resources(target)
+    gadget = _core_module("nfl2k5_gadget_play")
+    return {key: resources[key] for key in gadget.BOOK_ASSETS if key in resources}
+
+
+def _apply_gadget_play(plan, target, receipt, progress):
+    """Beta 81 Q62: the SPECIAL GAD player on gadget plays, with its table compiled from the books on the finished
+    disc. Like every other installed owner, a rule already on the source is replayed (the Build tab shows it greyed
+    out): its table is refreshed for this disc's books and the current gate. Turning it off means building again
+    from the retail disc."""
+    gadget = _core_module("nfl2k5_gadget_play")
+    if gadget is None:
+        if plan.gadget_play:
+            raise RuntimeError("The gadget player on gadget plays needs nfl2k5_gadget_play.")
+        return
+    original = None
+    if not plan.gadget_play:
+        try:
+            original = _xbe_bytes(target)
+            installed = gadget.status(original) in ("applied", "stale")
+        except (OSError, ValueError, KeyError, IndexError):
+            installed = False
+        if not installed or not tt.is_disc_image(target):
+            return  # an executable-only build has no books to refresh the installed table from: kept as it is
+    _step("gadget_play")
+    if not tt.is_disc_image(target):
+        raise ValueError("The gadget player on gadget plays reads the disc's play books; build a disc image.")
+    progress("Depth chart: gadget player on gadget plays", 0, 0)
+    original = _xbe_bytes(target) if original is None else original
+    payload, patch = gadget.apply(original, _gadget_resources(target))
+    if payload != original:
+        _write_xbe_bytes(target, payload)
+    if _xbe_bytes(target) != payload:
+        raise RuntimeError("Gadget player on gadget plays: the output does not read back as written")
+    receipt["steps"].append({"step": "gadget_play", **{k: v for k, v in patch.items() if k != "books"},
+                              "replayed_installed_option": not plan.gadget_play,
+                              "books": [{k: b[k] for k in ("asset", "name", "eligible_links")} for b in patch["books"]]})
+    receipt["result"]["gadget_play"] = "applied"
+    receipt.setdefault("user_notes", []).extend(patch.get("user_notes", []))
+
+
+def _verify_gadget_play(plan, target, receipt):
+    """Beta 81 Q62: the finished disc's executable and books agree (after the last archive pass)."""
+    gadget = _core_module("nfl2k5_gadget_play")
+    if gadget is None or receipt.get("result", {}).get("gadget_play") != "applied":
+        return
+    settings = gadget.read_settings(_xbe_bytes(target), _gadget_resources(target))
+    if settings["status"] != "applied":
+        raise ValueError(f"The gadget player on gadget plays did not survive the final archive pass ({settings})")
+
+
 def _update_v09_disc(plan, progress, *, preflight, project):
     if project or plan != v09_disc_update(
             plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
             modern_injured_reserve=plan.modern_injured_reserve, backfield_cards=plan.backfield_cards,
+            gadget_play=plan.gadget_play,
             sim_qb_injuries=plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
             breakaway_stop=plan.sim_breakaway_stop, overwrite=plan.overwrite,
             name=plan.name, author=plan.author, notes=plan.notes):
@@ -3032,6 +3179,10 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     if not (release and ir and cards and ir.status(original) == "previous" and cards.status(original) == "retail"
             and (tt.k128_patch.read_settings(original).get("require_128") is True)):
         raise ValueError("Choose the released SOFTDRINK 2K28 v0.9 standard disc image.")
+    gadget = _core_module("nfl2k5_gadget_play")
+    if plan.gadget_play and (gadget is None or gadget.status(original) != "retail"
+                             or _core_module("nfl2k5_lineup_roles").status(original) != "applied"):
+        raise ValueError("The gadget player on gadget plays needs the released v0.9 situational lineup roles.")
 
     # Apply the same title, injured-reserve and card writers in the order of a standard Build.
     expected = original
@@ -3057,6 +3208,9 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         _verify_sim_qb_injuries(plan, medical, expected)
         receipt["v09_update"].append("sim_qb_injuries")
     expected, _ = _cpu_kick_aim_with_kicking(expected)  # b81 scoring: as a full build with the kicking fixes
+    if plan.gadget_play:
+        # After every other v0.9 update, as in a standard Build; the books are the released disc's own.
+        expected, _ = gadget.apply(expected, _gadget_resources(source))
     if preflight:
         from .modpack import hash_file
         if hash_file(source, progress=progress) != release["image_sha256"]:
@@ -3073,10 +3227,13 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         _apply_sim_realism(plan, target, receipt, progress)
         _apply_sim_qb_injuries(plan, target, receipt, progress)
     _apply_cpu_kick_aim_in_place(target, receipt, progress)
+    if plan.gadget_play:
+        _apply_gadget_play(plan, target, receipt, progress)
     _compact_build_disc(target, source, receipt, progress)
     _step("final_checks")
     if _xbe_bytes(target) != expected:
         raise ValueError("The v0.9 disc update did not read back with the selected changes.")
+    _verify_gadget_play(plan, target, receipt)
     receipt["result"] = {**inspect(target), **receipt["result"], "path": str(target)}
     _verify_finished_game_disc(target, receipt, progress)
     return receipt
@@ -3442,6 +3599,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("scramble_blocking", "nfl2k5_scramble_blocking"),  # b780-cv7
                                ("sportscenter_lineup", "nfl2k5_sportscenter_lineup"),
                                ("backfield_cards", "nfl2k5_backfield_cards"),
+                               ("gadget_play", "nfl2k5_gadget_play"),  # beta 81 Q62
                                ("franchise_draft_clock", "nfl2k5_draft_clock"),  # b778-dr1
                                ("weekly_progression", "nfl2k5_weekly_progression"),  # b778-pg1
                                ("player_progress", "nfl2k5_player_progress_screen"),  # b778-pg2
@@ -3740,6 +3898,8 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     out["return_coverage"] = return_coverage.status(_xbe_bytes(source)) if return_coverage is not None else "unavailable"
     cards = _core_module("nfl2k5_backfield_cards")
     out["backfield_cards"] = cards.status(_xbe_bytes(source)) if cards is not None else "unavailable"
+    gadget = _core_module("nfl2k5_gadget_play")  # beta 81 Q62
+    out["gadget_play"] = gadget.status(_xbe_bytes(source)) if gadget is not None else "unavailable"
     sportscenter = _core_module("nfl2k5_sportscenter_lineup")
     out["sportscenter_lineup"] = sportscenter.status(_xbe_bytes(source)) if sportscenter is not None else "unavailable"
     draft_clock = _core_module("nfl2k5_draft_clock")  # b778-dr1
@@ -5945,6 +6105,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         return _update_v09_disc(plan, progress, preflight=_preflight_only,
                                 project=bool(music_edits) or _consume_source)
     sim_qb_only = _only_sim_qb_changes(plan)
+    gadget_only = _only_gadget_changes(plan)  # beta 81 Q62
     seven_held = bool(plan.seven_on_seven and not SEVEN_ON_SEVEN_RELEASED)
     if seven_held:
         progress("7-on-7 practice is unavailable until repaired; ignoring the saved opt-in", 0, 0)
@@ -6160,6 +6321,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Receivers block for a scrambling QB must be Off or On.")
     if type(plan.backfield_cards) is not bool:
         raise ValueError("Starting backfield cards must be Off or On.")
+    if type(plan.gadget_play) is not bool:  # beta 81 Q62
+        raise ValueError("The gadget player on gadget plays must be Off or On.")
+    if plan.gadget_play and not plan.depth_chart_rows and not isinstance(plan, (_ReleasedV09Update, _InstalledGadgetEdit)):
+        # (The released v0.9 standard disc already carries the SPECIAL rows; its update checks them on the disc.)
+        raise ValueError("The gadget player on gadget plays needs the SPECIAL depth chart rows (its GAD row).")
+    if plan.gadget_play and plan.console_memory != 128:
+        raise ValueError("The gadget player on gadget plays needs the 128 MB standard edition.")
     if type(plan.sportscenter_lineup) is not bool:
         raise ValueError("SportsCenter highlight lineups must be Off or On.")
     if type(plan.franchise_draft_clock) is not bool:  # b778-dr1
@@ -6376,6 +6544,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 consume=_consume_source, reference=_retail_source or source):
             return receipt
         raise ValueError("A single-setting disc update needs a built 128 MB disc with a supported version of simulated season realism.")
+    if gadget_only:
+        if not (is_image and installed_xbe is not None):
+            raise ValueError("The gadget player on gadget plays edits a built 128 MB standard disc image.")
+        _edit_installed_gadget(plan, source, target, installed_xbe, receipt, progress, preflight=_preflight_only,
+                               consume=_consume_source, reference=_retail_source or source)
+        return receipt
     retire_holder = installed_xbe is not None and tt.punter_holder_patch.build_status(installed_xbe) == "previous"
     holder_inherited = None
     if plan.punter_holder and is_image:
@@ -7004,6 +7178,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         cards = _core_module("nfl2k5_backfield_cards")
         if cards is None or cards.status(_xbe_bytes(source)) not in ("retail", "applied"):
             raise ValueError("Starting backfield cards needs a supported Coach Matchup player lineup on the source.")
+    if plan.gadget_play:  # beta 81 Q62: before any write
+        _gadget_play_preflight(source, progress)
     if plan.sportscenter_lineup:
         _sportscenter_lineup_preflight(source, progress)
     if plan.franchise_draft_clock:  # b778-dr1: like fo1, before any write
@@ -7168,7 +7344,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
-               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, sportscenter_lineup=False, backfield_cards=False, sim_qb_injuries=None).wants_xbe_patch() or retire_holder or plan.edge_rename or complete_offense_packs or plan.contract_college_guard:
+               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, sportscenter_lineup=False, backfield_cards=False, gadget_play=False, sim_qb_injuries=None).wants_xbe_patch() or retire_holder or plan.edge_rename or complete_offense_packs or plan.contract_college_guard:
         _step("xbe")
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
@@ -9051,6 +9227,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.backfield_cards:
         _apply_backfield_cards(target, receipt, progress)
     _apply_sim_qb_injuries(plan, target, receipt, progress)
+    # Beta 81 Q62: after every play-book writer and every other owner, so its table matches the books on the disc and
+    # its gate call is the final one. Its code and table sit in the fixed gadget slots ahead of the cards.
+    _apply_gadget_play(plan, target, receipt, progress)
 
     if tt.is_disc_image(target):
         compacted = _compact_build_disc(target, _retail_source or source, receipt, progress)
@@ -9061,6 +9240,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _step("final_checks")
     if plan.backfield_cards and cards.status(_xbe_bytes(target)) != "applied":
         raise ValueError("Starting backfield cards did not survive the final archive pass")
+    _verify_gadget_play(plan, target, receipt)
     if receipt["result"].get("offset_toss_flip") == "applied" and nfl2k5_offset_toss.status(_xbe_bytes(target)) != "applied":
         raise ValueError("The offset toss control did not survive the final archive pass")
     # Publication gate: inspect the actual finished archive and executable,

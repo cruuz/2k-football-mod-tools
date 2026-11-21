@@ -27,9 +27,10 @@ back goes to fullback; when no back is free, a TE (the next tier) plays fullback
 (0x102472..) keeps retail's, so its calibrated carry lottery is unchanged (HUNT1, DB2). Every other fallback keeps the
 retail order.
 
-Rule 3 (the GAD row on gadget plays) is OFF in beta-80 (coordinator 11/05): its model of the builder's second argument
+Rule 3 (the GAD row on gadget plays) was OFF in beta-80 (coordinator 11/05): its model of the builder's second argument
 did not hold even on the snap path (EMU1, FC2 attract demo: a node pointer of 0xFED2 at 0x151CCCA), so no code of this
-owner reads that argument. The GAD row works through the planner's personnel groups again (nfl2k5_special_roles).
+owner reads that argument. Beta 81 brings it back as its own owner, nfl2k5_gadget_play (a build-time table of the
+disc's gadget plays, checked against the play the game published at the snap); see that module.
 
 Rule 4, injured players on CPU depth charts (MC1's finding; coordinator 11/04). The weekly CPU auto-depth 0x2BDCF0
 ranks by rating and never tests the injury bit (player +0x20 bit 31), so after one pass CPU charts listed injured

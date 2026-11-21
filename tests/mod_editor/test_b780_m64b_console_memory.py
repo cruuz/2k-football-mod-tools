@@ -114,12 +114,19 @@ class PlanField(unittest.TestCase):
                     omitted.add("sim_qb_injuries")
                 if plan.sim_qb_injuries != "custom":
                     omitted.add("sim_qb_injury_rate")
+                # The simulator's breakaway stop (beta 81 scoring) is carried only with the option on and off its default.
+                if plan.sim_qb_injuries not in ("realistic", "custom") or plan.sim_breakaway_stop == 72:
+                    omitted.add("sim_breakaway_stop")
                 before = {key: value for key, value in asdict(plan).items() if key not in omitted}
                 self.assertEqual(plan.to_recipe(), before)
                 self.assertEqual(plan.to_recipe().get("sim_qb_injuries"),
                                  "realistic" if plan.name.startswith("SOFTDRINK patch: experimental") else None)
                 self.assertEqual(json.dumps(plan.to_recipe(), sort_keys=True, default=str),
                                  json.dumps(before, sort_keys=True, default=str))
+                self.assertNotIn("sim_breakaway_stop", plan.to_recipe())
+        moved = mod_build.apply_preset(mod_build.BuildPlan("s", "t"), "softdrink_experimental")
+        moved.sim_breakaway_stop = 20
+        self.assertEqual(moved.to_recipe()["sim_breakaway_stop"], 20)
 
     def test_presets_leave_the_target_alone(self):
         for name, values in mod_build.PRESETS.items():

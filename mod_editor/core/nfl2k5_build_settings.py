@@ -84,6 +84,7 @@ FEATURE_KEYS += ("star_career",)  # b778-st2: rookie stars and stars earned/lost
 FEATURE_KEYS += ("rookie_faces",)  # b778-rh1: new draft headshots matched to skin tone, build and name (image only)
 FEATURE_KEYS += ("alien_prospect",)  # b778-ee1: the once-in-a-century gray alien prospect (needs rookie faces)
 FEATURE_KEYS += ("backfield_cards",)
+FEATURE_KEYS += ("gadget_play",)  # beta 81 Q62: the SPECIAL GAD player on gadget plays
 FEATURE_KEYS += ("sportscenter_lineup",)  # b778-sc2: featured-player identity lookup, no allocation
 FEATURE_KEYS += ("franchise_draft_clock",)  # b778-dr1: broadcast-paced franchise draft, late executable owner
 FEATURE_KEYS += ("weekly_progression",)  # b778-pg1: franchise weekly progression, late executable owner
