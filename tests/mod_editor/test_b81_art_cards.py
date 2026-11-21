@@ -89,10 +89,21 @@ class SourceFolder(unittest.TestCase):
 
     def test_every_card_and_mini_is_the_pinned_picture(self):
         doc = pins()
+        # b81 integration (ruling 11/21): the uniform pass re-renders the kit on top of the art lane's card, so a
+        # unif_*_256 slot may hold the uniform pass's picture instead, but only one made from this pin's picture: the
+        # uniform pin's source is the art pin's new picture. Anything else (a stale or foreign card) still fails.
+        uniform = json.loads((ROOT / "data/nfl2k5_b81_uniform_cards.json").read_text(encoding="utf-8"))["cards"]
         seen = 0
         for edit in self.project["edits"]:
             if edit.get("kind") == "team_select":
-                self.assertEqual(rgba_sha(edit["png"]), doc["cards"][card_name(edit)]["new_rgba_sha256"], card_name(edit))
+                name, picture = card_name(edit), rgba_sha(edit["png"])
+                art = doc["cards"][name]["new_rgba_sha256"]
+                layered = uniform.get(name) if edit["family"] == "unif" else None
+                if picture != art and layered is not None:
+                    self.assertEqual(layered["source_rgba_sha256"], art, f"{name}: the uniform card is not made from the art")
+                    self.assertEqual(picture, layered["new_rgba_sha256"], name)
+                else:
+                    self.assertEqual(picture, art, name)
                 seen += 1
             elif edit.get("kind") == "p8_texture" and edit["asset_id"].split(":")[-1] in doc["minis"]:
                 name = edit["asset_id"].split(":")[-1]

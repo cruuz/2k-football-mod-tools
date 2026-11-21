@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -71,6 +73,37 @@ class ProjectInputs(unittest.TestCase):
             if row['selector'] not in requested:
                 self.assertIsNone(row['replacement_sha256'], name)
                 self.assertEqual(row['new_slot_sha256'], row['reviewed_slot_sha256'], name)
+
+
+STANDARD_SOURCES = Path(os.environ.get("NFL2K5_B81_STANDARD_SOURCES", "") or "missing-NFL2K5_B81_STANDARD_SOURCES")
+
+
+@unittest.skipUnless((STANDARD_SOURCES / "SOFTDRINK-league-project.json").is_file(),
+                     "private release sources absent: NFL2K5_B81_STANDARD_SOURCES")
+class StandardSources(unittest.TestCase):
+    """The release build's league project (b81/env.sh NFL2K5_B81_STANDARD_SOURCES) references, for each of the 190 uniform
+    card slots, exactly the pinned picture, by pixels and by file. Added 11/21, when 22 round 2 cards were missing from the
+    release folder although every pin was right; a stale release folder fails here."""
+
+    def test_every_uniform_card_of_the_release_sources_is_its_pinned_file(self):
+        project = json.loads((STANDARD_SOURCES / "SOFTDRINK-league-project.json").read_text(encoding="utf-8"))
+        rows = apply_cards.load_pins()
+        seen = set()
+        for edit in project["edits"]:
+            if edit.get("kind") != "team_select" or edit.get("family") != "unif":
+                continue
+            side = "h" if edit["side"] == "home" else "a"
+            name = f"unif_{side}{edit['asset_code']}_{int(edit['style'])}_{int(edit['resolution'])}"
+            path = Path(edit["png"].replace("@pack/", f"{STANDARD_SOURCES}/"))
+            row = rows[name]
+            with self.subTest(card=name), Image.open(path) as image:
+                pixels = np.ascontiguousarray(np.asarray(image.convert("RGBA"), dtype=np.uint8)).tobytes()
+                self.assertEqual(hashlib.sha256(pixels).hexdigest(), row["new_rgba_sha256"])
+                # a card the uniform pass left unchanged keeps the art lane's file (its pin has no new file)
+                self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),
+                                 row["new_file_sha256"] or row["source_file_sha256"])
+            seen.add(name)
+        self.assertEqual(seen, set(rows))
 
 
 class NativeColors(unittest.TestCase):
