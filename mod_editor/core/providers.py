@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "509ccd09e08798b69219d17ebfb6c877e046e3d11d3266a5ed943000e29908ea",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "60a1eba5043668389c053dff177b11d7cd614d5d16ed31851767ad834f0432d7",
+        "mod_editor/core/mod_build.py": "d4c94bd8b169659019ec8fb3b729b06e7a68520baf8520a58f9f9da5df4ab8fd",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -908,8 +908,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_preseason.py": "5e18c2bba83005798237cc3c85b0e10ee9f7dd8f4e179f52a430f46ed02c951b",
         "mod_editor/core/nfl2k5_probowl_order.py": "6e61b983f57f7e01695c7626b51854aea2242e1c7879049f8bb3a85a44b3cf9f",
         "mod_editor/core/nfl2k5_roster_fill_composition.py": "96547bdc1c66889f68f44deb147bd5f6095ee169d343d53aaa4f532d12ee53e8",
-        "mod_editor/core/nfl2k5_franchise_economy.py": "ce3edc2e63bae7097c777353a9dc741a2f0a5add4251b3909885f23fa0b71ebe",
-        "mod_editor/core/nfl2k5_franchise_economy_code.py": "75267c3a0d34619acd16583fc7e947d9a7c52925aa749710c73d0dc0af5584f9",
+        "mod_editor/core/nfl2k5_franchise_economy.py": "db9d6a995233af83a516b805201125649525c02ca01f5df629f7223c0e84a970",
+        "mod_editor/core/nfl2k5_franchise_economy_code.py": "9a7b580e27009b2cdb3b01db9cda210e40214e5d911e80ce7feea31ce4dd61b2",
         "mod_editor/core/nfl2k5_progression.py": "5ff9ab5b8b5a9b38e6acba0526464838abee667c957596368673f26ff88eaf50",
         "mod_editor/core/nfl2k5_prospect_names.py": "6f48b67a3b00b72b8bc51ca35527037ceca27c4137b9bb0e1d4542f27c39e7ac",
         "mod_editor/core/nfl2k5_qb_spy_runtime.py": "094e1ed86847a0b78e9ead41b44aea476f6f2f313ff6c986b1db722940553a2c",
