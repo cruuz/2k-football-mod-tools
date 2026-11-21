@@ -194,6 +194,18 @@ import platform  # noqa: E402
 AUTHORING_LIKE = platform.machine().lower() in ("x86_64", "amd64")
 
 
+def exact_gaussian_kernel(sigma, radius):
+    """scipy's _gaussian_kernel1d (order 0) with a correctly rounded exp: each tap's exp is taken to 40 digits and
+    rounded once to the nearest double, then divided by the taps' numpy sum as scipy does."""
+    import decimal
+    sd = float(sigma)
+    x = np.arange(-radius, radius + 1)
+    with decimal.localcontext() as context:
+        context.prec = 40
+        phi = np.array([float(decimal.Decimal(float(t)).exp()) for t in -0.5 / (sd * sd) * x ** 2])
+    return phi / phi.sum()
+
+
 @unittest.skipIf(ndi is None or not AUTHORING_LIKE, "scipy parity: x86-64 with scipy installed (authoring machines)")
 class BasePortEqualsScipy(unittest.TestCase):
     """The build-time base is bump_true's scipy arithmetic to the bit."""
@@ -203,9 +215,32 @@ class BasePortEqualsScipy(unittest.TestCase):
         self.gauss = rl.Kernels(rl.relief_b81u()["gauss_kernels"])
 
     def test_gaussian_filter(self):
+        """scipy.ndimage.gaussian_filter is _gaussian_kernel1d's weights (np.exp of the taps, divided by their sum) and
+        then correlate1d along each axis (mode reflect). The document stores the authoring run's weights so that no
+        platform's exp() is involved at build time; scipy computes them again with this machine's np.exp, which is not
+        the same function everywhere: on an x86-64 runner with AVX-512, numpy's float64 exp is its own SIMD routine
+        and can differ from the authoring glibc exp in the last bit (hosted run 44923189204: sigma 3.0 differed on two
+        Ubuntu jobs and on no AVX2 machine). So the weights are checked to the bit against the same recipe with a
+        correctly rounded exp, and the filter to the bit against scipy's own correlation with those weights. Where this
+        machine's exp gives the stored weights, scipy's gaussian_filter itself must match to the bit as well."""
         for sigma in rl.SIGMAS:
             a = self.rng.standard_normal((96, 160))
-            self.assertTrue(np.array_equal(self.gauss(a, sigma), ndi.gaussian_filter(a, sigma)), sigma)
+            weights = self.gauss.table[float(sigma)]
+            radius = len(weights) // 2
+            self.assertTrue(np.array_equal(weights, exact_gaussian_kernel(sigma, radius)), sigma)
+            ours = self.gauss(a, sigma)
+            theirs = a
+            for axis in range(a.ndim):
+                theirs = ndi.correlate1d(theirs, weights[::-1], axis, mode="reflect")
+            self.assertTrue(np.array_equal(ours, theirs), sigma)
+            impulse = np.zeros(2 * radius + 1)
+            impulse[radius] = 1.0
+            here = ndi.gaussian_filter1d(impulse, sigma, mode="constant")     # this machine's scipy weights, exactly
+            if np.array_equal(here, weights):
+                self.assertTrue(np.array_equal(ours, ndi.gaussian_filter(a, sigma)), sigma)
+            else:
+                np.testing.assert_array_max_ulp(here, weights, maxulp=4)
+                np.testing.assert_allclose(ours, ndi.gaussian_filter(a, sigma), rtol=1e-13, atol=1e-14)
 
     def test_morphology_components_and_holes(self):
         m = self.rng.random((120, 200)) > 0.55

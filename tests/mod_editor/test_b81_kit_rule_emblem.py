@@ -41,6 +41,31 @@ def synthetic_sleeve():
     return a, template
 
 
+def pillow_box(image, width, height, fused):
+    """Pillow's ImagingResampleHorizontal/Vertical_32bpc for mode F with em._coeffs (precompute_coeffs, BOX): each
+    output texel is ``ss += pixel * k`` over its taps in double, stored as float32; horizontal pass first. With
+    ``fused`` each step is one rounding of ss + pixel * k (a fused multiply-add, computed exactly with Fractions)."""
+    from fractions import Fraction
+
+    def run(rows, n_in, n_out):
+        out = np.zeros((rows.shape[0], n_out), np.float32)
+        for xx, (xmin, k) in enumerate(em._coeffs(n_in, n_out)):
+            for r in range(rows.shape[0]):
+                ss = 0.0
+                for x, kx in enumerate(k):
+                    p = float(rows[r, xmin + x])
+                    ss = float(Fraction(p) * Fraction(kx) + Fraction(ss)) if fused else ss + p * kx
+                out[r, xx] = ss
+        return out
+
+    a = np.asarray(image, np.float32)
+    if width != a.shape[1]:
+        a = run(a, a.shape[1], width)
+    if height != a.shape[0]:
+        a = run(a.T, a.shape[0], height).T
+    return a
+
+
 class EmblemRule(unittest.TestCase):
     def check(self, name, data):
         digest = hashlib.sha256(data).hexdigest()
@@ -49,18 +74,34 @@ class EmblemRule(unittest.TestCase):
         self.assertEqual(digest, PINS[name], name)
 
     def test_box_resize_is_pillows_box(self):
+        """Pillow's float resample adds ``pixel * k`` into a double per tap. The authoring Pillow (x86-64, and the
+        Windows and Linux wheels) rounds the product and the sum separately; a build compiled with floating-point
+        contraction fuses them into one multiply-add (clang's default on arm64: the macOS wheels), which changes the
+        last bit of a float32 texel at (7, 9) and (12, 30) here (hosted run 44923189204 failed at (7, 9) on all three
+        macOS jobs; a local Pillow 13.0.0 built with clang -mfma -ffp-contract=on fails the same way). So the port is
+        checked to the bit against Pillow's loop written out with separate roundings, and the installed Pillow against
+        the same loop with the arithmetic its build uses, on every size: a Pillow whose algorithm changed fails on
+        every platform, and the pin holds the port's own bytes everywhere."""
         rng = np.arange(57 * 41, dtype=np.float64).reshape(57, 41)
         m = ((rng * 0.6180339887) % 1.0).astype(np.float32)
-        outs = []
+        try:
+            from PIL import Image
+        except ImportError:
+            Image = None
+        outs, separate, fused, tells = [], [], [], False
         for w, h in ((19, 28), (22, 34), (7, 9), (41, 57), (12, 30)):
             ours = em._box_resize(m, w, h)
             outs.append(ours.tobytes())
-            try:
-                from PIL import Image
+            plain, fma = pillow_box(m, w, h, fused=False), pillow_box(m, w, h, fused=True)
+            self.assertTrue(np.array_equal(ours, plain), (w, h))
+            tells = tells or not np.array_equal(plain, fma)
+            if Image is not None:
                 theirs = np.asarray(Image.fromarray(m, "F").resize((w, h), Image.BOX))
-                self.assertTrue(np.array_equal(ours, theirs), (w, h))
-            except ImportError:
-                pass
+                separate.append(np.array_equal(theirs, plain))
+                fused.append(np.array_equal(theirs, fma))
+        self.assertTrue(tells, "no size tells separate roundings from a fused multiply-add any more")
+        if Image is not None:
+            self.assertTrue(all(separate) or all(fused), ("Pillow BOX", separate, fused))
         self.check("box_resize", b"".join(outs))
 
     def test_the_rule_on_a_synthetic_sleeve(self):
