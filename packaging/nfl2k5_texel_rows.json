@@ -1950,17 +1950,6 @@
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
     "sha256": "b41f50d6676c48cea1be026b7818e6f01584c7981090f45b5111c16d5e07f2fc"
    },
-   "07H0:3:tset": {
-    "base_equal": 0,
-    "cls": "ii",
-    "edge_overlap": 0.5889,
-    "erasure": 253,
-    "follows_base": false,
-    "measured": true,
-    "passes": false,
-    "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "850c70f2ebc4dea809be914919af52b6dbd5947dfb1407a859fd309bba3dc852"
-   },
    "07H7:1:tset": {
     "base_equal": 0,
     "cls": "iii",
@@ -2282,15 +2271,14 @@
     "sha256": "4d281b6d6f364a8c8965b003877ef404ebe40d703ea062fc1ba1bfd6adc60052"
    },
    "14A0:3:tset": {
-    "base_equal": 61,
-    "cls": "ii",
-    "edge_overlap": 0.3267,
-    "erasure": 26,
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.2677,
+    "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "passes": false,
-    "reason": "authored families, but an erasure is still stored as texels",
-    "sha256": "4a9b9c8bea138c9430f7c85064cfc102e17de422d9e599e5bed98e87f9ff61c4"
+    "reason": "authored on a region cleared by rule: swoosh recoloured by rule (ramp); Dolphins sleeve logo drawn from the repo's data/nfl2k5_scorebug_assets/logos/mia.png (the mod's own logo) at its 2026 size",
+    "sha256": "cdd3315381f06d8c352acdad1ec7814da47b75c7b1a61afc37fb1afa169d32e3"
    },
    "14A10:1:tset": {
     "base_equal": 3,
@@ -2313,15 +2301,14 @@
     "sha256": "8b180730bd522b5872fdb7e0e07749865ad757c9971d291cd5b41ac42ce3c9fd"
    },
    "14H0:3:tset": {
-    "base_equal": 98,
-    "cls": "ii",
-    "edge_overlap": 0.3832,
-    "erasure": 106,
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.3085,
+    "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "passes": false,
-    "reason": "authored families, but an erasure is still stored as texels",
-    "sha256": "3c60919051b65ef103e91c2769c9d7dd0fb19a3a2f7264f0301757b140e28023"
+    "reason": "authored on a region cleared by rule: Dolphins sleeve logo drawn from the repo's data/nfl2k5_scorebug_assets/logos/mia.png (the mod's own logo) at its 2026 size",
+    "sha256": "cdabc2a8eed239372f0b15f7f7228dffca294bf3dcf7b0cab0d24c57c0827b89"
    },
    "14H10:1:tset": {
     "base_equal": 3,
@@ -2755,25 +2742,13 @@
    },
    "21A4:1:tset": {
     "base_equal": 0,
-    "cls": "ii",
-    "edge_overlap": 0.7636,
-    "erasure": 2,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "passes": false,
-    "reason": "authored families, but an erasure is still stored as texels",
-    "sha256": "ee3b493e9c66bf95bb5e51b2dfa357a8756cf5dde6e24a40e79c674ad32c738c"
-   },
-   "21A4:3:tset": {
-    "base_equal": 0,
-    "cls": "ii",
-    "edge_overlap": 0.8991,
-    "erasure": 1104,
-    "follows_base": false,
-    "measured": true,
-    "passes": false,
-    "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "f4b1c98cf73d9daa72a05efe9d947f4482214941b11e5de980e1393fa0e55279"
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "43872b27c872438f8beaa453cd1acf908067fe89161ad1dcc77da57a76753659"
    },
    "21H0:1:tset": {
     "base_equal": 25,
@@ -2817,25 +2792,13 @@
    },
    "21H4:1:tset": {
     "base_equal": 0,
-    "cls": "ii",
-    "edge_overlap": 0.7636,
-    "erasure": 2,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "passes": false,
-    "reason": "authored families, but an erasure is still stored as texels",
-    "sha256": "ee3b493e9c66bf95bb5e51b2dfa357a8756cf5dde6e24a40e79c674ad32c738c"
-   },
-   "21H4:3:tset": {
-    "base_equal": 0,
-    "cls": "ii",
-    "edge_overlap": 0.8991,
-    "erasure": 1104,
-    "follows_base": false,
-    "measured": true,
-    "passes": false,
-    "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "f4b1c98cf73d9daa72a05efe9d947f4482214941b11e5de980e1393fa0e55279"
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "43872b27c872438f8beaa453cd1acf908067fe89161ad1dcc77da57a76753659"
    },
    "22A0:1:tset": {
     "base_equal": 0,
@@ -3129,14 +3092,13 @@
    },
    "26H4:1:tset": {
     "base_equal": 0,
-    "cls": "ii",
-    "edge_overlap": 0.5546,
-    "erasure": 5,
+    "cls": "iii",
+    "edge_overlap": 0.5328,
+    "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "passes": false,
-    "reason": "authored families, but an erasure is still stored as texels",
-    "sha256": "56fe1f5264101e07d33aef7bfa0aef6ec097a9307a783656b1fa49be78de46cc"
+    "reason": "authored on a region cleared by rule: 26H0's panels copied by rule (stamp of the pinned donor + a colour-pair map); only the drawn collar shield ships",
+    "sha256": "9ab6283dc227c2953696d793791f6052b83a51a0090498f1cf7ea159b51be5f0"
    },
    "27A0:1:tset": {
     "base_equal": 0,
@@ -3239,10 +3201,8 @@
     "sha256": "ba1d28f22903c224c668c9e5648114ec18a449d6d5eee6b05732dfdc9e4e2c63"
    },
    "29A0:1:tset": {
-    "cls": "ii",
-    "measured": true,
-    "passes": false,
-    "reason": "the road shoulder swoosh is the 29H0 sleeve swoosh art (a texture the build makes from the retail disc) redrawn on the body by work/fix/R2C/tools/waspaint.py; its texels still ship",
+    "cls": "iii",
+    "reason": "ruling 1: Commanders road shoulder swoosh, added to this list by ruling: retail 29H0 and 29A0 carry no swoosh; the shape is the project's own swoosh from its 29H0 sleeve art, laid on the body by work/fix/R2C/tools/waspaint.py through the game jersey mesh; it sits where the project's own v0.9 swoosh was, which a clear rule removes; its colours blend white with the kit burgundy. Measured (retail-free/REVIEW_ME.md section 18): the swoosh texels' edge overlap 0.047 against the retail torso and 0.165 against the base the build holds at this step, none equal to either. The row's collar shield is drawn from data/nfl2k5_espn25_fields/source/nfl_2008.png (class iii family b81u-collar-shield-undersized)",
     "sha256": "c2891154df46399fb4c2774d89caa79d3cf117791361bd217af17809d2207d72"
    },
    "29A9:1:tset": {

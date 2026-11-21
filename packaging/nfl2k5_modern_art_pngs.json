@@ -10312,11 +10312,11 @@
         "authored on a region cleared by rule: the league shield drawn from the repo's shield art below the collar point",
         "authored on a region cleared by rule: the standard league shield drawn from the repo's shield art",
         "ruling 1: Bengals pants strokes: drawn by work/fix/R2C/tools/cinpaint.py on the player model from the geometry read off the 2026 White Bengal photographs (strokes.py, inkband2.py) and order R2-C item 1; the old marks are cleared by rule (clear) first",
-        "the base is built from the user's retail disc at build time",
         "authored on a region cleared by rule: BRONCOS drawn from nothing by code (7 letters 6 x 6, 2-texel stems, one colour)",
         "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; DETROIT drawn italic by code (Noah's decision 6)",
         "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; band and wedge drawn by code on the player model (order R2-C item 2)",
-        "authored families, but an erasure is still stored as texels",
+        "authored on a region cleared by rule: swoosh recoloured by rule (ramp); Dolphins sleeve logo drawn from the repo's data/nfl2k5_scorebug_assets/logos/mia.png (the mod's own logo) at its 2026 size",
+        "authored on a region cleared by rule: Dolphins sleeve logo drawn from the repo's data/nfl2k5_scorebug_assets/logos/mia.png (the mod's own logo) at its 2026 size",
         "authored on a region cleared by rule: pants stripe drawn by rule at its real widths",
         "authored on a region cleared by rule: pants stripe drawn by rule at its real width; socks recoloured by rule (ramp)",
         "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
@@ -10324,9 +10324,10 @@
         "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
         "authored on a region cleared by rule: sol band and white band drawn by rule at their 2026 place and width",
         "authored on a region cleared by rule: pants stripe drawn by rule at the widths read off 2026 photographs",
+        "authored on a region cleared by rule: 26H0's panels copied by rule (stamp of the pinned donor + a colour-pair map); only the drawn collar shield ships",
         "authored on a region cleared by rule: pants stripe drawn by rule in the real order and widths (decision 5)",
         "authored on a region cleared by rule: TITANS narrowed by rule (cols); only the drawn shield ships",
-        "the road shoulder swoosh is the 29H0 sleeve swoosh art (a texture the build makes from the retail disc) redrawn on the body by work/fix/R2C/tools/waspaint.py; its texels still ship",
+        "ruling 1: Commanders road shoulder swoosh, added to this list by ruling: retail 29H0 and 29A0 carry no swoosh; the shape is the project's own swoosh from its 29H0 sleeve art, laid on the body by work/fix/R2C/tools/waspaint.py through the game jersey mesh; it sits where the project's own v0.9 swoosh was, which a clear rule removes; its colours blend white with the kit burgundy. Measured (retail-free/REVIEW_ME.md section 18): the swoosh texels' edge overlap 0.047 against the retail torso and 0.165 against the base the build holds at this step, none equal to either. The row's collar shield is drawn from data/nfl2k5_espn25_fields/source/nfl_2008.png (class iii family b81u-collar-shield-undersized)",
         "authored on a region cleared by rule: memorial oval drawn by code (navy oval, light rim, a row of marks)"
       ],
       "rows": {
@@ -10777,15 +10778,6 @@
           "texels": 156,
           "why": 0
         },
-        "07H0:3:tset": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5889,
-          "passes": false,
-          "sha256": "850c70f2ebc4dea809be914919af52b6dbd5947dfb1407a859fd309bba3dc852",
-          "texels": 1229,
-          "why": 7
-        },
         "07H7:1:tset": {
           "base_equal": 0,
           "cls": "iii",
@@ -10802,7 +10794,7 @@
           "passes": true,
           "sha256": "3e807788fd11d0c71f47679b1db0f5f835e2a96a886164fd6cc6b0c2a2213a8d",
           "texels": 311,
-          "why": 8
+          "why": 7
         },
         "08A5:1:tset": {
           "base_equal": 0,
@@ -10811,7 +10803,7 @@
           "passes": true,
           "sha256": "d657fc432334fdc4f36d42345c010ea22f7fa105aee289ba14c4110986823046",
           "texels": 309,
-          "why": 8
+          "why": 7
         },
         "08A6:1:tset": {
           "base_equal": 0,
@@ -10820,7 +10812,7 @@
           "passes": true,
           "sha256": "8c33eedadf0abcc0380ddd74bae4b25dddbc89ea3b4ff298f9e094334909b005",
           "texels": 309,
-          "why": 8
+          "why": 7
         },
         "08H0:1:tset": {
           "base_equal": 2,
@@ -10829,7 +10821,7 @@
           "passes": true,
           "sha256": "10a92a9a0ecf2d46a3bfd304524568420b492ddd47759c875b582677bb3242b2",
           "texels": 309,
-          "why": 8
+          "why": 7
         },
         "08H5:1:tset": {
           "base_equal": 0,
@@ -10838,7 +10830,7 @@
           "passes": true,
           "sha256": "8c33eedadf0abcc0380ddd74bae4b25dddbc89ea3b4ff298f9e094334909b005",
           "texels": 309,
-          "why": 8
+          "why": 7
         },
         "08H6:1:tset": {
           "base_equal": 0,
@@ -10847,7 +10839,7 @@
           "passes": true,
           "sha256": "8c33eedadf0abcc0380ddd74bae4b25dddbc89ea3b4ff298f9e094334909b005",
           "texels": 309,
-          "why": 8
+          "why": 7
         },
         "09A0:1:tset": {
           "base_equal": 0,
@@ -10874,7 +10866,7 @@
           "passes": true,
           "sha256": "3542f549528d84554894e090956e89b0528fb4c5e3ea150bfe1ac56ec51f9e90",
           "texels": 678,
-          "why": 9
+          "why": 8
         },
         "09A9:2:tset": {
           "base_equal": 0,
@@ -10883,7 +10875,7 @@
           "passes": true,
           "sha256": "41e96a51e4795d9c1df5122f6f7fbbe7d0ec84b6bdecce5df2f35078edb1a24a",
           "texels": 2974,
-          "why": 10
+          "why": 9
         },
         "09H0:1:tset": {
           "base_equal": 0,
@@ -10910,7 +10902,7 @@
           "passes": true,
           "sha256": "3542f549528d84554894e090956e89b0528fb4c5e3ea150bfe1ac56ec51f9e90",
           "texels": 678,
-          "why": 9
+          "why": 8
         },
         "09H9:2:tset": {
           "base_equal": 0,
@@ -10919,7 +10911,7 @@
           "passes": true,
           "sha256": "41e96a51e4795d9c1df5122f6f7fbbe7d0ec84b6bdecce5df2f35078edb1a24a",
           "texels": 2974,
-          "why": 10
+          "why": 9
         },
         "10A0:1:tset": {
           "base_equal": 0,
@@ -11075,13 +11067,13 @@
           "why": 0
         },
         "14A0:3:tset": {
-          "base_equal": 61,
-          "cls": "ii",
-          "edge_overlap": 0.3267,
-          "passes": false,
-          "sha256": "4a9b9c8bea138c9430f7c85064cfc102e17de422d9e599e5bed98e87f9ff61c4",
-          "texels": 595,
-          "why": 11
+          "base_equal": 0,
+          "cls": "iii",
+          "edge_overlap": 0.2677,
+          "passes": true,
+          "sha256": "cdd3315381f06d8c352acdad1ec7814da47b75c7b1a61afc37fb1afa169d32e3",
+          "texels": 470,
+          "why": 10
         },
         "14A10:1:tset": {
           "base_equal": 3,
@@ -11102,12 +11094,12 @@
           "why": 0
         },
         "14H0:3:tset": {
-          "base_equal": 98,
-          "cls": "ii",
-          "edge_overlap": 0.3832,
-          "passes": false,
-          "sha256": "3c60919051b65ef103e91c2769c9d7dd0fb19a3a2f7264f0301757b140e28023",
-          "texels": 786,
+          "base_equal": 0,
+          "cls": "iii",
+          "edge_overlap": 0.3085,
+          "passes": true,
+          "sha256": "cdabc2a8eed239372f0b15f7f7228dffca294bf3dcf7b0cab0d24c57c0827b89",
+          "texels": 582,
           "why": 11
         },
         "14H10:1:tset": {
@@ -11499,21 +11491,12 @@
         },
         "21A4:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.7636,
-          "passes": false,
-          "sha256": "ee3b493e9c66bf95bb5e51b2dfa357a8756cf5dde6e24a40e79c674ad32c738c",
-          "texels": 158,
-          "why": 11
-        },
-        "21A4:3:tset": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.8991,
-          "passes": false,
-          "sha256": "f4b1c98cf73d9daa72a05efe9d947f4482214941b11e5de980e1393fa0e55279",
-          "texels": 2485,
-          "why": 7
+          "cls": "iii",
+          "edge_overlap": 0.7455,
+          "passes": true,
+          "sha256": "43872b27c872438f8beaa453cd1acf908067fe89161ad1dcc77da57a76753659",
+          "texels": 156,
+          "why": 0
         },
         "21H0:1:tset": {
           "base_equal": 25,
@@ -11553,21 +11536,12 @@
         },
         "21H4:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.7636,
-          "passes": false,
-          "sha256": "ee3b493e9c66bf95bb5e51b2dfa357a8756cf5dde6e24a40e79c674ad32c738c",
-          "texels": 158,
-          "why": 11
-        },
-        "21H4:3:tset": {
-          "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.8991,
-          "passes": false,
-          "sha256": "f4b1c98cf73d9daa72a05efe9d947f4482214941b11e5de980e1393fa0e55279",
-          "texels": 2485,
-          "why": 7
+          "cls": "iii",
+          "edge_overlap": 0.7455,
+          "passes": true,
+          "sha256": "43872b27c872438f8beaa453cd1acf908067fe89161ad1dcc77da57a76753659",
+          "texels": 156,
+          "why": 0
         },
         "22A0:1:tset": {
           "base_equal": 0,
@@ -11832,12 +11806,12 @@
         },
         "26H4:1:tset": {
           "base_equal": 0,
-          "cls": "ii",
-          "edge_overlap": 0.5546,
-          "passes": false,
-          "sha256": "56fe1f5264101e07d33aef7bfa0aef6ec097a9307a783656b1fa49be78de46cc",
-          "texels": 202,
-          "why": 11
+          "cls": "iii",
+          "edge_overlap": 0.5328,
+          "passes": true,
+          "sha256": "9ab6283dc227c2953696d793791f6052b83a51a0090498f1cf7ea159b51be5f0",
+          "texels": 197,
+          "why": 19
         },
         "27A0:1:tset": {
           "base_equal": 0,
@@ -11855,7 +11829,7 @@
           "passes": true,
           "sha256": "89480263790ca7362ce4cc3aac084c55ba05c0b9afaee207d51aca98c6d93c82",
           "texels": 4317,
-          "why": 19
+          "why": 20
         },
         "27A2:1:tset": {
           "base_equal": 0,
@@ -11891,7 +11865,7 @@
           "passes": true,
           "sha256": "34607fcb29aef5f3f5e774d07d63eef12b2f8181856a0216fcc281b4513f9113",
           "texels": 6312,
-          "why": 19
+          "why": 20
         },
         "27H2:1:tset": {
           "base_equal": 0,
@@ -11927,14 +11901,14 @@
           "passes": true,
           "sha256": "ba1d28f22903c224c668c9e5648114ec18a449d6d5eee6b05732dfdc9e4e2c63",
           "texels": 155,
-          "why": 20
+          "why": 21
         },
         "29A0:1:tset": {
-          "cls": "ii",
-          "passes": false,
+          "cls": "iii",
+          "passes": true,
           "sha256": "c2891154df46399fb4c2774d89caa79d3cf117791361bd217af17809d2207d72",
           "texels": 325,
-          "why": 21
+          "why": 22
         },
         "29A9:1:tset": {
           "base_equal": 0,
@@ -12024,7 +11998,7 @@
           "passes": true,
           "sha256": "a38db7926cfd9f0065a5c1b77151fdfbca1b13ed4061ca15412b80a671c43114",
           "texels": 433,
-          "why": 22
+          "why": 23
         },
         "37A2:1:tset": {
           "base_equal": 0,
@@ -12042,7 +12016,7 @@
           "passes": true,
           "sha256": "ced83466099e0751e7c5c4a9a0c7fc0940e2779184ca4ee1dee75294b448e44c",
           "texels": 433,
-          "why": 22
+          "why": 23
         },
         "37H2:1:tset": {
           "base_equal": 0,

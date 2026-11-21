@@ -47,7 +47,16 @@ RULING_1 = {
         f"{sel}:2:tset": ("Bengals pants strokes: drawn by work/fix/R2C/tools/cinpaint.py on the player model from the "
                           "geometry read off the 2026 White Bengal photographs (strokes.py, inkband2.py) and order R2-C "
                           "item 1; the old marks are cleared by rule (clear) first")
-        for sel in ("06H0", "06A0", "06H5", "06A5", "06H6", "06A6")},
+        for sel in ("06H0", "06A0", "06H5", "06A5", "06H6", "06A6")} | {
+        # added by ruling (coordinator, 2026-11-20 19:4x, the lane's question 2, answer (a)); examined on its own
+        "29A0:1:tset": ("Commanders road shoulder swoosh, added to this list by ruling: retail 29H0 and 29A0 carry no "
+                        "swoosh; the shape is the project's own swoosh from its 29H0 sleeve art, laid on the body by "
+                        "work/fix/R2C/tools/waspaint.py through the game jersey mesh; it sits where the project's own "
+                        "v0.9 swoosh was, which a clear rule removes; its colours blend white with the kit burgundy. "
+                        "Measured (retail-free/REVIEW_ME.md section 18): the swoosh texels' edge overlap 0.047 against "
+                        "the retail torso and 0.165 against the base the build holds at this step, none equal to either. "
+                        "The row's collar shield is drawn from data/nfl2k5_espn25_fields/source/nfl_2008.png "
+                        "(class iii family b81u-collar-shield-undersized)")},
 }
 
 
@@ -98,12 +107,7 @@ REFUSE_DOCUMENTS = {
                                             "from game art, not yet a build-time rule"),
 }
 # rows whose remaining texels are known to come from game art even though the measures pass: refused by name
-REFUSE = {
-    "data/nfl2k5_kit_fixes_2026_b81u.json": {
-        "29A0:1:tset": ("the road shoulder swoosh is the 29H0 sleeve swoosh art (a texture the build makes from the retail "
-                        "disc) redrawn on the body by work/fix/R2C/tools/waspaint.py; its texels still ship"),
-    },
-}
+REFUSE = {}          # rows refused outright by name (29A0:1 left this list by ruling: RULING_1)
 
 
 # class iii patterns by rule (no base content): named per document and row

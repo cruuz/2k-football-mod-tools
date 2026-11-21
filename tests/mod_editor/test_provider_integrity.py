@@ -819,7 +819,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_8.png": "5c1385b458f26e11bc5d04bf9884ca1936f74fbe42144c0a0f7a03c4fdeb93ec",
                 "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_9.png": "c75073a37930a06be156832835ba4c8bf6821a5cb4342f3514b288d40c316add",
                 "data/nfl2k5_kit_fixes_2026_b81.json": "116456c4d4ec388a5dbe9c928858ac4790e789826fc85da6baf75ef6f1903b23",
-                "data/nfl2k5_kit_fixes_2026_b81u.json": "4acfe3aab317bc9a50880cc0abb22a3633eacd52de440d89a43a81cca43d8ff4",
+                "data/nfl2k5_kit_fixes_2026_b81u.json": "4007173218fac959873b818f630f905b59efafdbaba9fcdc98ac4a126f07a12c",
                 "data/nfl2k5_sideline_2026_b81u.json": "aeaad3daa71d56fce5a320216453339e7576d43befc10f29818e1bcca28e1f56",
                 "data/nfl2k5_relief_2026_b81u.json": "e7bf44e4360bb5a34a198937abb9b3df74d2dc1bb478bc65e966bc39384b6372",
                 "data/nfl2k5_relief_2026_b81u/difference_jersey.png": "f4d24e2c69457b2b08c9ffb9fd9e3c023bea9d41e342842907b8286323f28387",

@@ -108,14 +108,16 @@ class ReviewedPaint(unittest.TestCase):
     def test_every_texel_row_carries_its_class_and_the_gate_judges_it(self):
         """Ruling 2: each listed row has its provenance class (i, ii, iii), the reason, and for class ii the measures
         taken on the released disc; the release check refuses a class ii row that does not pass and lets class i and
-        iii rows pass with their reason. Ruling 1's exception list is exactly the six Bengals pants rows."""
+        iii rows pass with their reason. Ruling 1's exception list is exactly the six Bengals pants rows and the
+        Commanders road torso 29A0:1 (its shoulder swoosh, added by the coordinator's ruling of 2026-11-20)."""
         import tempfile
         sys.path.insert(0, str(ROOT / "tools/b81_uniforms"))
         import texel_rows as judge
         self.assertEqual(self.catalog["paint"], catalog.judged_paint_section(ROOT))
         self.assertEqual({k: sorted(v) for k, v in judge.RULING_1.items()},
-                         {"data/nfl2k5_kit_fixes_2026_b81u.json": sorted("%s:2:tset" % s for s in
-                                                                         ("06H0", "06A0", "06H5", "06A5", "06H6", "06A6"))})
+                         {"data/nfl2k5_kit_fixes_2026_b81u.json": sorted(["%s:2:tset" % s for s in
+                                                                          ("06H0", "06A0", "06H5", "06A5", "06H6", "06A6")]
+                                                                         + ["29A0:1:tset"])})
         for relative, entry in self.catalog["paint"].items():
             for owner, row in entry["rows"].items():
                 self.assertIn(row["cls"], ("i", "ii", "iii"), (relative, owner))
