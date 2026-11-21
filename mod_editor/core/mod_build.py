@@ -1522,7 +1522,9 @@ for _preset in PRESETS.values():
     _preset["sim_qb_injuries"] = None
     _preset["qb_room"] = None  # b81 qb34
 del _preset
-PRESETS["softdrink_experimental"].update(k128_memory=True, sim_qb_injuries="realistic", qb_room="realistic")
+PRESETS["softdrink_experimental"].update(k128_memory=True, sim_qb_injuries="realistic")
+# b81 qb34 (C1): the Experimental preset leaves qb_room unnamed, so the room follows the injury option: Realistic
+# where its needs are met, left out with a note where they are not (the 64 MB set, BN style) instead of refusing.
 # b77-f4: letter grades in Franchise (Noah, 2026-10-07): Basic keeps the 2004 numbers; Modern and Experimental grade.
 for _preset in PRESETS:
     PRESETS[_preset]["team_ratings"] = _preset in ("softdrink_advanced", "softdrink_experimental")
@@ -7506,7 +7508,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError("Simulated quarterback injuries are unavailable in this Studio installation.")
         if qb_injuries.status(_xbe_bytes(source)) == "foreign":
             raise ValueError("Unrecognized simulated quarterback injury data. Choose a verified source disc.")
-    if _qb_room_level(plan, _xbe_bytes(source)) is not None:  # b81 qb34: before any write
+    # b81 qb34: before any write; read the source only when the plan names a quarterback setting (a plan without one
+    # leaves the room as it is and never needs the executable here).
+    if (plan.qb_room is not None or plan.sim_qb_injuries is not None) and _qb_room_level(plan, _xbe_bytes(source)) is not None:
         qb_room = _core_module("nfl2k5_qb_room")
         if qb_room is None:
             raise ValueError("The quarterback room rules are unavailable in this Studio installation.")
@@ -9685,7 +9689,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the audible panel legend did not survive the final passes")  # b780-p3
     if plan.sim_qb_injuries is not None:
         _verify_sim_qb_injuries(plan, _core_module("nfl2k5_sim_qb_injuries"), _xbe_bytes(target))
-    if _qb_room_level(plan, _xbe_bytes(target)) is not None:  # b81 qb34
+    if (plan.qb_room is not None or plan.sim_qb_injuries is not None) and _qb_room_level(plan, _xbe_bytes(target)) is not None:  # b81 qb34
         _verify_qb_room(plan, _core_module("nfl2k5_qb_room"), _xbe_bytes(target))
     if plan.sim_realism and _core_module("nfl2k5_sim_realism").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated season realism did not survive the final passes")  # b779-sim2 r4

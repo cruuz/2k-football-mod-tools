@@ -108,7 +108,8 @@ class BuildPlanCoverageTests(unittest.TestCase):
             "sim_qb_injuries",  # b81 (d75921d84): the Simulated quarterback injuries combo (qb_injury_mode)
             "sim_qb_injury_rate",  # b81 (d75921d84): the Base chance per eligible simulated play spin box (qb_injury_rate)
             "sim_breakaway_stop",  # b81 scoring: one recipe value (yards to goal, default 72), no Build tab control by design
-            "qb_room",  # b81 qb34: the simulated injuries control sets it (the plan leaves it None to follow that choice); recipes and the CLI can name it
+            "qb_room",  # b81 qb34 (DESIGN_CHANGES C1): the quarterback room rules follow the Simulated injuries combo
+                        # (Realistic/Custom -> Realistic, Retail -> Retail); an explicit level is a recipe/project/CLI key only
         }
         self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
         self.assertEqual(bound - fields, set(), "controls that name a field BuildPlan no longer has")
