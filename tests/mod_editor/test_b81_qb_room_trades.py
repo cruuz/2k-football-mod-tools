@@ -994,15 +994,15 @@ class TradesImage(unittest.TestCase):
 class TradesPage(unittest.TestCase):
     def test_the_room_page_is_byte_for_byte_the_room_branchs(self):
         """C20: 4b does not change the room page (only counter names were appended to room.h). The room's own head is
-        b1d283e79 (job/b81-qb34-e, merged here: the C23 relayout); before, a3c8ff69c and b2672e398."""
+        665b04995 (job/b81-qb34-e, merged here: the C23 follow-up); before, b1d283e79, a3c8ff69c and b2672e398."""
         try:
-            old = subprocess.run(["git", "-C", str(ROOT), "show", "b1d283e79:mod_editor/core/nfl2k5_qb_room_code.py"],
+            old = subprocess.run(["git", "-C", str(ROOT), "show", "665b04995:mod_editor/core/nfl2k5_qb_room_code.py"],
                                  check=True, capture_output=True).stdout
         except (OSError, subprocess.CalledProcessError):
             raise unittest.SkipTest("git history is not available")
-        spec = importlib.util.spec_from_loader("room_b1d283e79", loader=None)
+        spec = importlib.util.spec_from_loader("room_665b04995", loader=None)
         module = importlib.util.module_from_spec(spec)
-        exec(compile(old, "room_b1d283e79", "exec"), module.__dict__)
+        exec(compile(old, "room_665b04995", "exec"), module.__dict__)
         room = _room_code()
         self.assertEqual(room._TEMPLATE, module._TEMPLATE)
         self.assertEqual(room._RELOCATIONS, module._RELOCATIONS)
