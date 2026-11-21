@@ -939,7 +939,7 @@ extern unsigned FAST n_fa_remove(u32 *list, u8 *p);               /* 0x2425C0 */
 extern unsigned FAST n_fa_add(u32 *list, u8 *p);                  /* 0x242560 */
 extern unsigned FAST n_append(u8 *team, u8 *p);                   /* 0xC3EE0 */
 extern unsigned FAST n_remove(u8 *team, u8 *p);                   /* 0xC3EB0 */
-extern void FAST n_stats_reset(u8 *team);                         /* 0xC3F60 the club's season statistics */
+extern void n_ir_return(void);                                    /* 0x246F90 the rollover's return from injured reserve */
 /* QB, WR, CB, T, DE, HB, LB (OLB or ILB), C or G, DT, TE, S (FS or SS), WR: position masks by the +0x35 codes. */
 SECTION(".roster_q_rodata") __attribute__((aligned(4))) const u32 squad_mix[SQUAD] = {
     1u << 0, 1u << 3, 1u << 4, 1u << 14, 1u << 16, 1u << 7, 3u << 10, 3u << 12, 1u << 15, 1u << 9, 3u << 5, 1u << 3};
@@ -993,28 +993,32 @@ SECTION(".roster_u") __attribute__((noinline)) static u32 FAST squad_ok(u8 *team
            (team[0x1f3] == 0xa5 ? team[0x1f2] <= SQUAD && team[0x11c] + team[0x1f2] <= 65u : !(team[0x19b] | team[0x1f2]));
 }
 
-/* 0x247BCD in the rollover's club loop (ECX = team): was call 0xC3F60 (the club's season statistics reset). Real squad
- * deals last one season: a club the CPU runs lets them expire here, every reserve back on the free-agent list with no
- * contract (as the native release leaves a player), so camp has the full offseason roster again and the next gate forms
- * a new squad. Holding 12 reserves through the offseason caps a camp at 53 (65 physical slots), and the first ten-season
- * panel then opened 7 seasons with a club that could not sign a kicker or punter in camp. */
-SECTION(".roster_t") void FAST economy_squad_expire(u8 *team) {
-    if (squad_ok(team))
-        while (team[0x1f2]) {
-            u8 **slot = (u8 **)team + team[0x11c] + --team[0x1f2], *p = *slot;
-            *slot = 0;                                        /* the squad's own form: the slots past the last are null */
-            if (!n_fa_add(FA_LIST, p)) { *slot = p; ++team[0x1f2]; break; }
-            *(u16 *)(p + 10) = 0;
-            p[0x24] &= 0xf0;
-            p[0x27] &= 0xf0;
-        }
-    n_stats_reset(team);
+/* 0x247B79 in the rollover 0x247B40, after the retirements and before the injured players return (ECX/EDX unused): was
+ * call 0x246F90 (the return from injured reserve). Real squad deals last one season: every club the CPU runs lets them
+ * expire here, every reserve back on the free-agent list with no contract (as the native release leaves a player), so
+ * camp has the full offseason roster again and the next gate forms a new squad. At this point a club holds its 53 and at
+ * most SQUAD reserves, all in physical slots. Holding 12 reserves through the offseason caps a camp at 53 (65 physical
+ * slots): the second ten-season panel then opened 7 seasons with a club that could not sign a kicker or punter in camp. */
+SECTION(".roster_s") void FAST economy_squad_expire(void) {
+    for (unsigned t = 0; t < n_teams(); ++t) {
+        u8 *team = n_team(t);
+        if (squad_ok(team))
+            while (team[0x1f2]) {
+                u8 **slot = (u8 **)team + team[0x11c] + --team[0x1f2], *p = *slot;
+                *slot = 0;                                    /* the squad's own form: the slots past the last are null */
+                if (!n_fa_add(FA_LIST, p)) { *slot = p; ++team[0x1f2]; break; }
+                *(u16 *)(p + 10) = 0;
+                p[0x24] &= 0xf0;
+                p[0x27] &= 0xf0;
+            }
+    }
+    n_ir_return();
 }
 
 /* 0x2BFAD4 in the gate 0x2BFAA0 (ECX = team, EDX = the in-season limit): was call 0x2BF9A0. The first round fills the
  * mix's open slots; a slot with no eligible free agent left (the clubs before it took them) leaves the squad short, so
  * a second round goes over the mix again without the quarterback slot until the squad is full or nobody fits. */
-SECTION(".roster_s") void FAST economy_squad(u8 *team, unsigned target) {
+SECTION(".roster_t") void FAST economy_squad(u8 *team, unsigned target) {
     n_cut_to(team, target);
     if (!squad_ok(team)) return;
     u32 used = squad_used(team);

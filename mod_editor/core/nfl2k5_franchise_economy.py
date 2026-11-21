@@ -309,17 +309,18 @@ SQUAD_WINDOWS = {                   # retail sha256 of each window's bytes (dead
     0x38D3E0: "56f4e445ce5f93581e0676bc3308fd7c203a05e8fddee8c76ee6a0120522daeb",   # roster_p: the best young free agent
     0x1C62E0: "b062e461131d35405759a1b89f6b58e0c8390f8532a73526113350ebb480c992",   # roster_q: the mix slots in use
     0x343040: "cdf33bb1c95a330336a8dc9b1f8b1f324fa382da4bab96c5b20e06692cb86acc",   # roster_r: one squad signing
-    0x3E9A90: "04343c196ca45460668f254456e50e0e97f8950c728aa6c52384a47339c1cb4f",   # roster_s: economy_squad (the gate call)
-    0x3E9CD0: "5d5df93f0747d8134d1c4c2502c4350caea4f033b513626ad5d08f2325f90a84",   # roster_t: the expiry at the rollover
+    0x3E9A90: "04343c196ca45460668f254456e50e0e97f8950c728aa6c52384a47339c1cb4f",   # roster_s: economy_squad_expire (the rollover call)
+    0x3E9CD0: "5d5df93f0747d8134d1c4c2502c4350caea4f033b513626ad5d08f2325f90a84",   # roster_t: economy_squad (the gate call)
     0x3220B0: "91cf637d17206732620e7706abdb4f7fab2b0b4269de74921a0f05ae3eacde72",   # roster_u: the squad storage test
 }
 for _va, _digest in SQUAD_WINDOWS.items():
     PINS[_va] = _digest
-# The same revision lets the squad's one-year deals expire at the rollover: the club loop's statistics reset call (0x247BCD,
-# retail call 0xC3F60, ECX = club) goes to economy_squad_expire, which first returns the reserves of a club the CPU runs to
-# the free-agent list (no contract), so camps keep the full offseason roster and squads re-form every year.
-SQUAD_EXPIRE = 0x247BCD
-PINS[SQUAD_EXPIRE] = "3fb15d2d583ced770ed353387576332a26049e5e01c0115d20663ca115fcd656"
+# The same revision lets the squad's one-year deals expire at the rollover: the rollover's call of the injured-reserve
+# return (0x247B79, retail call 0x246F90, after the retirements, while each club holds its 53 and its reserves) goes to
+# economy_squad_expire, which first returns the reserves of every club the CPU runs to the free-agent list (no contract),
+# so camps keep the full offseason roster and squads re-form every year.
+SQUAD_EXPIRE = 0x247B79
+PINS[SQUAD_EXPIRE] = "9fc06df982b634efc45adf0d757738512d523c30cbabb7f2c067cbcd01b75ad0"
 REVISION_8_NEW = frozenset({SQUAD_GATE, SQUAD_EXPIRE}) | frozenset(SQUAD_WINDOWS)
 REVISION = 8
 

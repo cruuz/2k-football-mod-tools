@@ -67,8 +67,8 @@ class SiteTests(unittest.TestCase):
         self.assertEqual(XbeImage(self.retail).read(economy.SQUAD_GATE, 5), bytes.fromhex("e8c7feffff"))   # call 0x2BF9A0
         gate = next(s.patched for s in economy.sites() if s.va == economy.SQUAD_GATE)
         self.assertEqual(gate, b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad"] - economy.SQUAD_GATE - 5))
-        self.assertEqual(SYMBOLS["economy_squad"], 0x3E9A90)       # the gate stub starts its window
-        self.assertEqual(XbeImage(self.retail).read(economy.SQUAD_EXPIRE, 5), bytes.fromhex("e88ec3e7ff"))  # call 0xC3F60
+        self.assertEqual((SYMBOLS["economy_squad"], SYMBOLS["economy_squad_expire"]), (0x3E9CD0, 0x3E9A90))   # each starts its window
+        self.assertEqual(XbeImage(self.retail).read(economy.SQUAD_EXPIRE, 5), bytes.fromhex("e812f4ffff"))  # call 0x246F90
         expire = next(s.patched for s in economy.sites() if s.va == economy.SQUAD_EXPIRE)
         self.assertEqual(expire, b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_expire"] - economy.SQUAD_EXPIRE - 5))
 
@@ -250,9 +250,8 @@ class KeptPreseasonImage(unittest.TestCase):
         from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
         m = self.machine()
         filled, _ = self.gate(m)
-        root = m.get(0xB72918)
-        for c in range(32):                    # the rollover's club loop calls the expiry with each club in ECX
-            m.call(SYMBOLS["economy_squad_expire"], ecx=m.get(root + 0x1C) + 500 * c, budget=200_000_000)
+        m.leaf(0x246F90, lambda: m.ret(), reason="the injured-reserve return the expiry hands on to is not under test")
+        m.call(SYMBOLS["economy_squad_expire"], budget=400_000_000)      # once per rollover, every club
         after, free = self.state(m)
         released = [p for club in filled for p in club["squad"]]
         self.assertEqual([club["count"] for club in after], [0] * 32)
@@ -266,12 +265,12 @@ class KeptPreseasonImage(unittest.TestCase):
     def test_the_expiry_leaves_a_manual_user_club_alone(self):
         from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
         m = self.machine(auto_sign_cut=0)
-        root = m.get(0xB72918)
-        user = m.get(root + 0x1C) + 500 * 15
-        before = bytes(m.uc.mem_read(user, 500))
-        m.call(SYMBOLS["economy_squad_expire"], ecx=user, budget=200_000_000)
-        self.assertEqual(bytes(m.uc.mem_read(user, 0x1AA)), before[:0x1AA])          # the lists (stats reset may differ)
-        self.assertEqual(bytes(m.uc.mem_read(user + 0x1F2, 2)), before[0x1F2:0x1F4])
+        m.leaf(0x246F90, lambda: m.ret(), reason="the injured-reserve return the expiry hands on to is not under test")
+        before, _ = self.gate(m)          # the CPU clubs at 53 with full squads, as at the end of a season
+        m.call(SYMBOLS["economy_squad_expire"], budget=400_000_000)
+        after, _ = self.state(m)
+        self.assertEqual(after[15]["record"], before[15]["record"])
+        self.assertEqual([after[c]["count"] for c in range(32) if c != 15], [0] * 31)
 
     def test_without_the_practice_squad_runtime_the_gate_only_cuts(self):
         m = self.machine(squad_runtime=False)
