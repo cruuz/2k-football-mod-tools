@@ -20,9 +20,15 @@ from mod_editor.core import nfl2k5_kit_fixes_2026 as kf  # noqa: E402
 
 #: pinned on the authoring machine (Linux x86-64, CPython 3.12, numpy 1.26.4)
 PINS = {
+    "boxres_31x33": "661d39b8c61cd63a73bc5c73436b8efeb0f057a0f22669c43cca5d02b77835f5",
+    "boxres_32x32": "c9d937082d69b669e54b356af77fbce8a62770c14ba4ac811fb7c582ed06cab6",
+    "boxres_64x64": "4822fd07b3379b05a3db1d7ac21dd64f71053f1cccec945cb339fbd9d1a4975b",
     "cols_31x33": "e9e5373523bba4a7a1f4cc2e299bc800a67220884c7abb26a936beb6f5597bad",
     "cols_32x32": "25ca52b625713ad13f4e8ebe455a38fb3919cdd37b77cdbfd1ea508ad75674ab",
     "cols_64x64": "d5fdf875264ac35268cbd5526ae447434b3e3fbd91db4a05bed2671f16a06388",
+    "erase_31x33": "cf2f3e3bae10909132c78e95eedd098cb43a06115458e20552e63bd390e4c78e",
+    "erase_32x32": "5f9af58d0dd39141f47521cb750e07c289c1d2b21cf4fd86ec123f5dd630e5e5",
+    "erase_64x64": "a9fa6a14c281faca5375617c395957f9ef1718e5dbf2cb824256137c682f3bc0",
     "map_31x33": "b69da070eaed4e9f30fa10aa0b25f1158fbef3955b5f422f9078fd38030fe469",
     "map_32x32": "b4f0c02d905a6d90661e962b5d4a38194515af9d19f39e2349b2415ae08a751b",
     "map_64x64": "f5a79065f745c2f45047c074dbca274b240933a920f4a775257f183e03151d53",
@@ -44,6 +50,9 @@ PINS = {
     "ramp_seeded_31x33": "a64c883034d991c41e76985feaa0796df4682d8169324a307abadb0c3d49a0a0",
     "ramp_seeded_32x32": "069115e4ffee550c87127f42acf66bac40d10248486637cc9ea5f601e0205b92",
     "ramp_seeded_64x64": "685c391c8f3c0ee0150e05314b6bf83ef06a4a813bcb689721537a655d566033",
+    "rowfill_31x33": "27929dc8af4716e941bed938da8bd04e8544d5ecebc570613c5a5b5b94d28668",
+    "rowfill_32x32": "47eef0f4f121e9e6f05fd50c55798570d53c11df6ce5de5838850b64e636c016",
+    "rowfill_64x64": "d24c690dea84e7d560f7995e135c1183061a35898af99e58cfae9183589485ec",
     "scale_31x33": "6278ae6a286ef0465780bb8726aef53aff0487ed9acca406725d766f269771ac",
     "scale_32x32": "6ab38b02dcfe8eea375557b92003572719d4f64909ffea83ceba260b6956ea0e",
     "scale_64x64": "baab14d377ae4f1053a23c500ad3336e8893ede3789f94677718ddf64ed4e29e",
@@ -114,6 +123,11 @@ def cases(h, w):
                            off=16, vacate={"copy_by": [0, 2]}),
         "cols": rule(do="cols", rows=[2, h // 2], dy=1, at=3, src=[[1, 4], [6, w // 2]], boxes=[[1, 2, w // 2, h // 2]],
                      far=["#E3E5E7"], far_tolerance=30, vacate={"to": "#E3E5E7"}),
+        "rowfill": rule(do="rowfill", boxes=[[w // 4, 2, w // 2, h - 2]], from_x=w // 4 - 1,
+                        levels=["#FFFFFF", "#B9BDC1", "#002244", "#4B2E9A"]),
+        "erase": rule(do="erase", boxes=[[2, 2, w - 2, h - 2]], to="#E3E5E7", far=32, dilate=1),
+        "boxres": rule(do="boxres", src=[1, 1, w - 1, h - 1], dst=[3, 4, 3 + (w - 2) * 4 // 5, 4 + (h - 2) * 4 // 5],
+                       field="#E3E5E7", far=24, pairs=[["#4B2E9A", "#121212"], ["#E3E5E7", "#FFFFFF"]]),
     }
 
 

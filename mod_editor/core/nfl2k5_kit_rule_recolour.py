@@ -26,6 +26,12 @@ Kinds (``do``):
 ``map``     an exact colour table inside boxes (``pairs`` [[old, new], ...], matched on the texture so far; colour
             pairs only, no positions): only where nothing parametric is exact, e.g. a donor's art stamped 1:1 and
             requantised to this kit's palette the way the round-1 compile did (26H4 from 26H0).
+``erase``   an old mark back to its cloth: input texels in ``boxes`` farther than ``far`` from ``to``, grown
+            ``dilate`` times over their 8 neighbours (inside the boxes), take ``to``.
+``boxres``  resize the build's own mark (box filter at texel centres, exact integers) into a new box, its cloth
+            held out, then a colour-pair table onto the kit's palette; laid down where the mark reaches.
+``rowfill`` continue a band through a removed mark: member texels take the input's colour at column ``from_x`` on
+            their own row, snapped to the nearest of ``levels`` (squared RGB distance, first on ties).
 ``cols``    narrow a mark by taking whole columns out: inside rows ``rows`` [y0, y1) of the input, the columns of
             ``src`` (a list of runs [x0, x1)) are laid side by side from column ``at`` (rows shifted by ``dy``),
             copying only member texels of ``boxes``; the members of the old mark not covered are first vacated as for
@@ -263,7 +269,96 @@ def _mirror(out, op, rgba):
     return new
 
 
-_KINDS = {"ramp": _ramp, "scale": _scale, "map": _map, "move": _move, "cols": _cols, "mirror": _mirror}
+def _snap(c, levels):
+    """Nearest of ``levels`` by squared RGB distance (the first on ties), exact integers."""
+    lv = np.stack([_rgb(v) for v in levels])
+    d = ((c[:, None, :] - lv[None, :, :]) ** 2).sum(axis=-1)
+    return lv[d.argmin(axis=1)]
+
+
+def _rowfill(out, op, rgba):
+    """Continue a band through a removed mark: every member texel takes, on its own row, the input's colour at
+    column ``from_x``, snapped to the nearest of ``levels`` (the band's flat colours)."""
+    zone = _boxes(out.shape, op["boxes"], op.get("keep", ()))
+    member = _members(out, op, zone)
+    sx = int(op["from_x"])
+    _require(0 <= sx < out.shape[1], "source column outside the texture")
+    new = out.copy()
+    ys, xs = np.nonzero(member)
+    if len(ys):
+        new[ys, xs, :3] = _snap(rgba[ys, sx, :3].astype(np.int64), op["levels"]).astype(np.uint8)
+    return new
+
+
+def _erase(out, op, rgba):
+    """An old mark back to its cloth: inside ``boxes``, the input's texels farther than ``far`` (largest channel step)
+    from ``to``, grown ``dilate`` times by their 8 neighbours and kept inside the boxes, take ``to``."""
+    zone = _boxes(out.shape, op["boxes"])
+    to = _rgb(op["to"])
+    mark = zone & (np.abs(rgba[..., :3].astype(np.int64) - to).max(axis=-1) > int(op["far"]))
+    h, w = mark.shape
+    for _ in range(int(op.get("dilate", 0))):
+        grown = mark.copy()
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                if dy or dx:
+                    grown[max(dy, 0):h + min(dy, 0), max(dx, 0):w + min(dx, 0)] |= \
+                        mark[max(-dy, 0):h + min(-dy, 0), max(-dx, 0):w + min(-dx, 0)]
+        mark = grown & zone
+    new = out.copy()
+    new[..., :3][mark] = to.astype(np.uint8)
+    return new
+
+
+def _box_taps(n_src, n_dst):
+    """For each output index, the source indices whose centres fall inside its footprint (a box filter at texel
+    centres): i * n_src <= s + 1/2 < (i + 1) * n_src, in units of n_dst; exact integers."""
+    return [[s for s in range(n_src) if 2 * i * n_src <= (2 * s + 1) * n_dst < 2 * (i + 1) * n_src]
+            for i in range(n_dst)]
+
+
+def _box_pass(a, taps, axis):
+    """One separable pass: each output is the mean of its taps, in 22-bit fixed point rounded half up (the 1- and
+    2-tap means of a downscale under 2x are exact)."""
+    out = []
+    for js in taps:
+        _require(len(js) > 0, "a box filter output has no source texel")
+        coeff = (1 << 22) // len(js)
+        acc = np.take(a, js, axis=axis).sum(axis=axis) * coeff
+        out.append(np.minimum((acc + (1 << 21)) >> 22, 255))
+    return np.stack(out, axis=axis)
+
+
+def _boxres(out, op, rgba):
+    """Resize the build's own mark: the ``src`` box of the input, its cloth (texels within ``far`` of ``field``) set to
+    ``field``, is box-filtered (two separable passes, horizontal first) into the ``dst`` box; texels whose footprint
+    held any of the mark are laid down, through ``pairs`` (resampled colour -> palette colour, exact matches)."""
+    sx0, sy0, sx1, sy1 = (int(v) for v in op["src"])
+    dx0, dy0, dx1, dy1 = (int(v) for v in op["dst"])
+    h, w = out.shape[:2]
+    _require(0 <= sx0 < sx1 <= w and 0 <= sy0 < sy1 <= h and 0 <= dx0 < dx1 <= w and 0 <= dy0 < dy1 <= h,
+             "box outside the texture")
+    field = _rgb(op["field"])
+    block = rgba[sy0:sy1, sx0:sx1, :3].astype(np.int64)
+    mark = np.abs(block - field).max(axis=-1) > int(op["far"])
+    block[~mark] = field
+    tx = _box_taps(sx1 - sx0, dx1 - dx0)
+    ty = _box_taps(sy1 - sy0, dy1 - dy0)
+    colours = _box_pass(_box_pass(block, tx, 1), ty, 0)
+    cover = _box_pass(_box_pass(mark.astype(np.int64)[..., None] * 255, tx, 1), ty, 0)[..., 0] > 0
+    flat = colours.reshape(-1, 3)
+    mapped = flat.copy()
+    for old, to in op.get("pairs", ()):
+        mapped[(flat == _rgb(old)).all(axis=-1)] = _rgb(to)
+    colours = mapped.reshape(colours.shape)
+    new = out.copy()
+    region = new[dy0:dy1, dx0:dx1]
+    region[cover, :3] = colours[cover].astype(np.uint8)
+    return new
+
+
+_KINDS = {"ramp": _ramp, "scale": _scale, "map": _map, "move": _move, "cols": _cols, "mirror": _mirror,
+          "rowfill": _rowfill, "boxres": _boxres, "erase": _erase}
 
 
 def apply(out, op, rgba, donors):
