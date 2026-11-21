@@ -2820,7 +2820,12 @@ def restabilize_sim_qb_disc(disc) -> dict | None:
     if module is None:
         return None
     disc = Path(disc)
-    payload = _xbe_bytes(disc)
+    try:
+        payload = _xbe_bytes(disc)
+    except (OSError, ValueError):
+        # An executable this release cannot read (another tool's disc, a damaged image) has no Simulated injuries
+        # option to update; the roster copy is saved as before.
+        return None
     settings = module.read_settings(payload)
     if settings.get("status") != "applied" or settings.get("revision") != module.REVISION:
         return None
