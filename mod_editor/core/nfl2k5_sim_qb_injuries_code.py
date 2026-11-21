@@ -113,13 +113,103 @@ STABILITY_ZERO_POINTS = tuple(position.zero_point for position in POSITION_CLASS
 # stored depth rank below the starter count) at the confirmed calibration. Measured by order S0 on the slice 3
 # confirmation candidate seasons, roots 64001 to 64004, 2026 and 2027, Durability from each season's signed save
 # (pos3/work/stability/reference.py, reference.json, reference.txt).
+# R and STABILITY_CALIBRATION below are one pair: re-measure STABILITY_CALIBRATION on the same roster in the same commit
+# whenever R is re-measured (test_b81_stability_roster_refs pins the pair). STABILITY_REFERENCE_ROSTER is the roster of
+# the seasons R was measured on (reference.json sources: ROST body 70813bd9, executable e714aecf).
 STABILITY_REFERENCE = (17.627, 18.847, 18.803, 19.526, 17.703, 22.138, 20.803, 21.261, 20.343, 20.551, 23.144, 21.840,
                        25.807)
+STABILITY_REFERENCE_ROSTER = "70813bd95d1265b40009fb611569e2e1ffcce02bf17a5f73476e8f55ffa3d157"
 STABILITY_YEAR_SLOPE = 0.055        # mode "year": the supplement's measured 24 to 25 percent over four offseasons
 STABILITY_SEASONS = 10              # stab_year entries by season index; later seasons use the last
 STABILITY_CLASSES_OFF = ()          # class names left at 1.0 by the tracking gate (adaptive mode only)
 # stab_class in stability.S, by stored position QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE (0xFF: not counted).
 STABILITY_POSITION_CLASS = (12, None, None, 5, 10, 11, 11, 4, 7, 6, 9, 9, 2, 1, 0, 8, 3)
+# The references follow the roster on the disc (stability review rev-pos3/REVIEW_STABILITY.md, Medium finding). R above
+# is the level of one roster, the base disc's (ROST body sha256 70813bd9). A disc built with another roster (a player's
+# edits, a total conversion, a roster update) would otherwise get a step at season 3 that is the roster difference, not
+# drift. So the Studio measures each class's static statistic on the disc's own roster with stability.S's starter rule
+# (clubs 0-31, listed players, stored position in the class, stored depth rank below the count; mean of
+# max(0, K - Durability)) and writes R x static(disc) / static(calibration roster) per class. STABILITY_CALIBRATION is
+# that static statistic of roster 70813bd9 as (sum, starters) per class; on that roster every reference is exactly R.
+STABILITY_CALIBRATION_ROSTER = "70813bd95d1265b40009fb611569e2e1ffcce02bf17a5f73476e8f55ffa3d157"
+STABILITY_CALIBRATION = ((1077, 64), (1253, 64), (576, 32), (1210, 64), (1060, 64), (2168, 96), (654, 32), (385, 19),
+                         (1288, 64), (2011, 96), (2147, 96), (1369, 64), (821, 32))
+STABILITY_CLUBS = 32                # stability.S CLUBS
+STABILITY_MAX_LISTED = 0x41         # stability.S MAX_LISTED: a larger count is not a club record
+STABILITY_MIN_STARTERS = 8          # stability.S MIN_STARTERS: fewer starters leave the class at 1.0
+# A derived reference outside this factor of the frozen R is a sanity failure (the Studio then installs the frozen R and
+# says so). It is wide on purpose (stability review rev-pos3/REVIEW_REFS.md finding 2): the factor clamp (0.35 to 1.25)
+# already limits what any reference can do, and on the shipped roster an even Durability change from about -49 to +16
+# points stays inside.
+STABILITY_REFERENCE_BOUND = (0.25, 4.0)
+
+
+class StabilityOutOfRange(ValueError):
+    """The roster was measured, but a derived reference is outside STABILITY_REFERENCE_BOUND x R."""
+
+
+def stability_starters(clubs) -> tuple[tuple[int, int], ...]:
+    """stability.S's walk over a roster at rest: (sum of max(0, K - Durability), starters) for each of the 13 classes.
+
+    ``clubs`` holds the 32 clubs in club-table order, each a sequence of (stored position, stored depth rank, Durability)
+    for the players on its list, in list order. Raises ValueError where the walk would leave every factor at 1.0."""
+    clubs = list(clubs)
+    if len(clubs) != STABILITY_CLUBS:
+        raise ValueError(f"The stability walk needs {STABILITY_CLUBS} clubs, not {len(clubs)}")
+    at = LABELS["stab_starters"]
+    starters = _TEMPLATE[at:at + len(STABILITY_POSITION_CLASS)]
+    sums, counts = [0] * len(STABILITY_CLASS_NAMES), [0] * len(STABILITY_CLASS_NAMES)
+    for club in clubs:
+        club = list(club)
+        if len(club) > STABILITY_MAX_LISTED:
+            raise ValueError(f"A club lists {len(club)} players; the stability walk stops above {STABILITY_MAX_LISTED}")
+        for position, rank, durability in club:
+            if not 0 <= position < len(STABILITY_POSITION_CLASS) or STABILITY_POSITION_CLASS[position] is None:
+                continue
+            if rank >= starters[position]:
+                continue
+            index = STABILITY_POSITION_CLASS[position]
+            sums[index] += max(0, STABILITY_ZERO_POINTS[index] - durability)
+            counts[index] += 1
+    return tuple(zip(sums, counts))
+
+
+def stability_reference_for(starters) -> tuple[float, ...]:
+    """R x static(roster) / static(calibration roster) per class, from stability_starters() of the disc's roster.
+
+    A class with the calibration roster's exact statistic keeps its frozen R, so that roster builds the executable
+    unchanged. So does a class the game leaves at 1.0 (no starters, 1 to 7 starters, or every starter at or above K: a
+    zero sum); the other classes are still derived. Raises ValueError for a league with no starters in any class or a
+    class mean that is not finite or above K, and StabilityOutOfRange for a derived reference outside
+    STABILITY_REFERENCE_BOUND x R."""
+    from fractions import Fraction
+    import math
+
+    starters = tuple(tuple(row) for row in starters)
+    if len(starters) != len(STABILITY_CLASS_NAMES):
+        raise ValueError("The stability statistic needs thirteen classes")
+    if not any(count > 0 for _, count in starters):
+        raise ValueError("The roster has no starters in any class")
+    low, high = STABILITY_REFERENCE_BOUND
+    out = []
+    for name, zero, frozen, (total, count), (total0, count0) in zip(
+            STABILITY_CLASS_NAMES, STABILITY_ZERO_POINTS, STABILITY_REFERENCE, starters, STABILITY_CALIBRATION):
+        if count < 0:
+            raise ValueError(f"The {name} starter count is negative")
+        if count == 0:
+            out.append(frozen)
+            continue
+        mean = total / count
+        if not (math.isfinite(mean) and 0 <= mean <= zero):
+            raise ValueError(f"The {name} mean of K - Durability ({mean!r}) is out of range")
+        if (total, count) == (total0, count0) or count < STABILITY_MIN_STARTERS or total == 0:
+            out.append(frozen)
+            continue
+        value = float(Fraction(frozen) * Fraction(total) * count0 / (Fraction(count) * total0))
+        if not (math.isfinite(value) and low <= value / frozen <= high):
+            raise StabilityOutOfRange(f"The {name} reference {value:.3f} is outside {low} to {high} times {frozen}")
+        out.append(value)
+    return tuple(out)
 
 # These native checks cover the master Injury option, selector stack contract, switch tables and shared constants.
 # Four routines are also pinned independently before they are linked into the reserved space.
@@ -299,7 +389,8 @@ def _link_authored(bank_va: int, sim_code_va: int, sim_data_va: int, depth: int)
 
 
 def bank_bytes(read_game: Callable[[int, int], bytes], bank_va: int, sim_code_va: int, sim_data_va: int,
-               lineup_va: int | None = None, *, rate: int = DEFAULT_RATE, marker: bytes = b"") -> bytes:
+               lineup_va: int | None = None, *, rate: int = DEFAULT_RATE, marker: bytes = b"",
+               reference=None) -> bytes:
     """Link against the installed simulator, optional lineup owner and four verified local functions."""
     from . import nfl2k5_lineup_roles as roles
 
@@ -324,6 +415,8 @@ def bank_bytes(read_game: Callable[[int, int], bytes], bank_va: int, sim_code_va
             where = offset + field
             _set32(bank, where, target - (bank_va + where + 4) if relative else target)
     _configure_tables(bank, rate)
+    if reference is not None:       # the disc roster's references (stability_reference_for); None keeps the frozen R
+        _configure_stability(bank, rate, reference=reference)
     if not recovery:
         start, end = LABELS["depth_hook"], LABELS["match_hook"]
         bank[start:end] = b"\xc3" + b"\xcc" * (end - start - 1)

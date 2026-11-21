@@ -397,7 +397,9 @@ def apply(payload: bytes, *, third_down: bool = True) -> tuple[bytes, dict[str, 
     if physical != payload:
         saved = quarterback.read_settings(payload)
         with_lineup, receipt = apply(physical, third_down=third_down)
-        result, restored = quarterback.apply(with_lineup, saved['mode'], custom_rate=saved['custom_rate'])
+        # b81 stability: keep the installed roster references (the restored image no longer holds them).
+        result, restored = quarterback.apply(with_lineup, saved['mode'], custom_rate=saved['custom_rate'],
+                                             reference=quarterback.installed_reference(payload))
         return result, {**receipt, 'restored_sim_qb_injuries': restored,
                         'changed_bytes': space.count_differing_bytes(payload, result), 'file_growth': len(result) - len(payload)}
     rank_list, side_list = struct.unpack("<II", XbeImage(payload).read(LIST_TABLE + RB_KIND * 8, 8))

@@ -2749,6 +2749,94 @@ def _verify_sim_qb_injuries(plan, module, payload):
     return settings
 
 
+def _disc_roster(disc):
+    """The main roster of a disc image or pack folder (read only); None for a bare executable."""
+    disc = Path(disc)
+    if not (disc.is_dir() or tt.is_disc_image(disc)):
+        return None
+    from . import nfl2k5_roster_records as rosters
+    return rosters.load_image(disc)
+
+
+# b81 stability (fail safe, coordinator 2026-11-20 22:1x; wording after the review rev-pos3/REVIEW_REFS.md finding 5): the
+# one sentence a build report gets when the frozen calibrated references were installed instead of the disc roster's.
+SIM_QB_STABILITY_NOTES = {
+    "unreadable": "Simulated injuries: the roster on this disc could not be read for the long-franchise injury balance, "
+                  "so from a franchise's third season injury rates follow the standard roster's level and may step up "
+                  "or down at that point on this roster.",
+    "out_of_range": "Simulated injuries: the roster on this disc is too far from the standard roster for the "
+                    "long-franchise injury balance, so from a franchise's third season injury rates follow the standard "
+                    "roster's level and may step up or down at that point on this roster.",
+}
+
+
+def _sim_qb_stability(plan, module, disc):
+    """b81 stability references for the roster on this disc (stability review, Medium finding): (reference, record).
+
+    Realistic and Custom on a disc image (or a pack folder) measure the disc's own main roster with the game's starter
+    rule (module.roster_stability), so the season-3 factor corrects drift, not a roster difference. Fail safe: when
+    the roster cannot be read (an unreadable roster or club list, any exception in the replica) or a derived reference
+    is outside the accepted range, the build goes on with the frozen calibrated references and the record carries the
+    matching sentence of SIM_QB_STABILITY_NOTES for the build report. A bare executable (no disc, no roster) and Custom
+    0 percent (the stage is off) get the frozen references without a sentence. Retail measures nothing: (None, None).
+    """
+    if plan.sim_qb_injuries not in ("realistic", "custom"):
+        return None, None
+    try:
+        document = _disc_roster(disc)
+        if document is None:
+            kind, why = "bare_executable", "no roster beside a bare executable"
+        else:
+            starters, reference = module.roster_stability(document)
+            reference = tuple(float(value) for value in reference)
+            module._reference32(reference)
+            return reference, {"source": "disc roster", "roster_sha256": sha256(bytes(document.body)).hexdigest(),
+                               "starters": [list(row) for row in starters], "reference": list(reference)}
+    except module.StabilityRosterOutOfRange as exc:
+        kind, why = "out_of_range", str(exc)
+    except Exception as exc:  # noqa: BLE001 - never fail the build here and never install a doubtful measurement
+        kind, why = "unreadable", f"{type(exc).__name__}: {exc}"
+    from . import nfl2k5_sim_qb_injuries_code as code
+    frozen = tuple(code.STABILITY_REFERENCE)
+    record = {"source": "frozen calibration references", "kind": kind, "reason": why, "reference": list(frozen)}
+    stage_on = not (plan.sim_qb_injuries == "custom" and float(plan.sim_qb_injury_rate) == 0)
+    if stage_on and kind in SIM_QB_STABILITY_NOTES:
+        record["note"] = SIM_QB_STABILITY_NOTES[kind]
+    return frozen, record
+
+
+SIM_QB_STABILITY_NOT_UPDATED = ("Simulated injuries: this copy's long-franchise injury balance could not be updated for "
+                                "the edited roster; run the Simulated injuries update on this copy.")
+
+
+def restabilize_sim_qb_disc(disc) -> dict | None:
+    """b81 stability (review rev-pos3/REVIEW_REFS.md finding 1): after a disc copy's roster changed (the roster editor's
+    Save disc copy), measure the copy's roster again and rewrite only the thirteen references of its installed
+    Simulated injuries option, with the same measurement and fail safe as the build routes. Returns the record for
+    the save's receipt and message, or None when the copy has no current Simulated injuries option (nothing to do).
+    The executable keeps its size; nothing else in it changes."""
+    from types import SimpleNamespace
+    module = _core_module("nfl2k5_sim_qb_injuries")
+    if module is None:
+        return None
+    disc = Path(disc)
+    payload = _xbe_bytes(disc)
+    settings = module.read_settings(payload)
+    if settings.get("status") != "applied" or settings.get("revision") != module.REVISION:
+        return None
+    plan = SimpleNamespace(sim_qb_injuries=settings["mode"], sim_qb_injury_rate=settings["custom_rate"])
+    references, record = _sim_qb_stability(plan, module, disc)
+    try:
+        updated = module.restabilize(payload, references)
+    except module.ERRORS as exc:
+        return {"source": "unchanged", "reason": str(exc), "note": SIM_QB_STABILITY_NOT_UPDATED}
+    if updated != payload:
+        _write_xbe_bytes(disc, updated)
+        if _xbe_bytes(disc) != updated:
+            raise ValueError("The simulated injury references did not read back on the disc copy.")
+    return {**record, "changed": updated != payload}
+
+
 @_core_step("sim_qb_injuries")
 def _apply_sim_qb_injuries(plan, target, receipt, progress, *, prepared=None):
     if plan.sim_qb_injuries is None:
@@ -2757,8 +2845,11 @@ def _apply_sim_qb_injuries(plan, target, receipt, progress, *, prepared=None):
     progress("Applying simulated quarterback injuries", 0, 0)
     original = _xbe_bytes(target)
     if prepared is None:
+        references, stability = _sim_qb_stability(plan, module, target)
         payload, patch = module.apply(original, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
-                                      breakaway_stop=plan.sim_breakaway_stop)
+                                      breakaway_stop=plan.sim_breakaway_stop, reference=references)
+        if stability is not None:
+            patch = {**patch, "stability_reference": stability}
     else:
         source, payload, patch = prepared
         if original != source:
@@ -2769,8 +2860,13 @@ def _apply_sim_qb_injuries(plan, target, receipt, progress, *, prepared=None):
     if written != payload:
         raise ValueError("The written quarterback simulator data differs from the requested update.")
     settings = _verify_sim_qb_injuries(plan, module, written)
-    receipt["steps"].append({"step": "sim_qb_injuries", **{k: v for k, v in patch.items() if k != "reservations"},
-                              "settings": settings})
+    step = {"step": "sim_qb_injuries", **{k: v for k, v in patch.items() if k != "reservations"}, "settings": settings}
+    note = (patch.get("stability_reference") or {}).get("note")
+    if note:                      # the frozen references were installed (fail safe): one sentence in the build report
+        progress(note, 0, 0)
+        step["user_notes"] = [note]
+        receipt.setdefault("user_notes", []).append(note)
+    receipt["steps"].append(step)
     receipt["result"]["sim_qb_injuries"] = settings["mode"]
 
 
@@ -2873,8 +2969,12 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     dependency = None
     if simulator_state == "legacy" and plan.sim_qb_injuries in ("realistic", "custom"):
         simulator_input, dependency = simulator.apply(original)
+    # The copy keeps this disc's roster. (`reference` here is the compaction's reference disc: do not reuse the name.)
+    references, stability = _sim_qb_stability(plan, module, source)
     patched, patch = module.apply(simulator_input, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
-                                  breakaway_stop=plan.sim_breakaway_stop)
+                                  breakaway_stop=plan.sim_breakaway_stop, reference=references)
+    if stability is not None:
+        patch = {**patch, "stability_reference": stability}
     # b81 scoring: an in-place copy gets the same kicking as a full build of a disc with the kicking fixes.
     patched, aim_receipt = _cpu_kick_aim_with_kicking(patched)
     if aim_receipt is not None:
@@ -2904,6 +3004,7 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     receipt["sim_qb_source_update"] = {
         "source_sha256": sha256(original).hexdigest(), "result_sha256": sha256(patched).hexdigest(),
         "source_simulator": simulator_state, "simulator_upgraded": dependency is not None, "settings": settings,
+        "stability_reference": stability,
     }
     if room_level is not None or room_note:
         # b81 qb34: the quarterback room on the same copy, after the quarterback option above.
@@ -3372,8 +3473,10 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         if plan.sim_realism:
             expected, _ = _core_module("nfl2k5_sim_realism").apply(expected)
         medical = _core_module("nfl2k5_sim_qb_injuries")
+        # The released disc's own roster; _apply_sim_qb_injuries measures the same roster again on the copy.
+        references, receipt["v09_stability_reference"] = _sim_qb_stability(plan, medical, source)
         expected, _ = medical.apply(expected, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
-                                    breakaway_stop=plan.sim_breakaway_stop)
+                                    breakaway_stop=plan.sim_breakaway_stop, reference=references)
         _verify_sim_qb_injuries(plan, medical, expected)
         receipt["v09_update"].append("sim_qb_injuries")
     expected, _ = _cpu_kick_aim_with_kicking(expected)  # b81 scoring: as a full build with the kicking fixes
