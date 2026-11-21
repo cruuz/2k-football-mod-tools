@@ -850,9 +850,12 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             cpu_ai_probe, _ = backfield_cards.apply(cpu_ai_probe)
             # The medical option needs the standard memory boot guard. Observe its
             # own sparse standard profile without changing the older CPU probe's layout.
-            qb_probe, _ = space.apply(allocation_base, k128.REQUESTS + sim_realism.REQUESTS + lineup_roles.REQUESTS
-                                      + sim_qb_injuries.REQUESTS, scaleout=True)
+            # b81 slice 2: with the running-back owner installed first (the Build order), the medical option parks
+            # its weekly jump at 0x133CC9, so the probe observes that write too (FIXED_SPANS reserves the site).
+            qb_probe, _ = space.apply(allocation_base, k128.REQUESTS + sim_rb_injuries.REQUESTS + sim_realism.REQUESTS
+                                      + lineup_roles.REQUESTS + sim_qb_injuries.REQUESTS, scaleout=True)
             qb_probe, _ = k128.apply(qb_probe, require=True)
+            qb_probe, _ = sim_rb_injuries.apply(qb_probe)
             qb_probe, _ = sim_realism.apply(qb_probe)
             qb_probe, _ = lineup_roles.apply(qb_probe)
             qb_probe, _ = sim_qb_injuries.apply(qb_probe)

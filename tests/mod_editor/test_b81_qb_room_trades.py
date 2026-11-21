@@ -864,16 +864,17 @@ class TradesImage(unittest.TestCase):
 
 
 class TradesPage(unittest.TestCase):
-    def test_the_room_page_is_byte_for_byte_b2672e398s(self):
-        """C20: the room page does not change (only counter names were appended to room.h)."""
+    def test_the_room_page_is_byte_for_byte_the_room_branchs(self):
+        """C20: 4b does not change the room page (only counter names were appended to room.h). The room's own head is
+        C21's a3c8ff69c (job/b81-qb34-e, merged here); before the merge it was b2672e398."""
         try:
-            old = subprocess.run(["git", "-C", str(ROOT), "show", "b2672e398:mod_editor/core/nfl2k5_qb_room_code.py"],
+            old = subprocess.run(["git", "-C", str(ROOT), "show", "a3c8ff69c:mod_editor/core/nfl2k5_qb_room_code.py"],
                                  check=True, capture_output=True).stdout
         except (OSError, subprocess.CalledProcessError):
             raise unittest.SkipTest("git history is not available")
-        spec = importlib.util.spec_from_loader("room_b2672e398", loader=None)
+        spec = importlib.util.spec_from_loader("room_a3c8ff69c", loader=None)
         module = importlib.util.module_from_spec(spec)
-        exec(compile(old, "room_b2672e398", "exec"), module.__dict__)
+        exec(compile(old, "room_a3c8ff69c", "exec"), module.__dict__)
         room = _room_code()
         self.assertEqual(room._TEMPLATE, module._TEMPLATE)
         self.assertEqual(room._RELOCATIONS, module._RELOCATIONS)
@@ -995,7 +996,8 @@ class TradesAllocation(unittest.TestCase):
 class TradesOwner(unittest.TestCase):
     def test_bit_16_installs_the_trades_page_at_0x152c000_and_retail_restores_both(self):
         from mod_editor.core import nfl2k5_qb_room as room, nfl2k5_qb_trades as trades, nfl2k5_xbe_space as space
-        source = _candidate()
+        # f5270f4d carries b2672e398's page, a previous revision since C21: Realistic brings it to this page first.
+        source, _ = room.apply(_candidate(), "realistic", stages=67)
         self.assertEqual((room.status(source), trades.status(source)), ("applied", "retail"))
         out, receipt = room.install_stages(source, 67 | 16, shadow=True)
         self.assertEqual(room.read_settings(out)["trades"], "applied")

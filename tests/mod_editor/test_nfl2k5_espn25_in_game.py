@@ -53,9 +53,14 @@ class PublicationTests(unittest.TestCase):
             bn = replace(full, position_pools=False, position_pools_keep_olb=False, depth_roles=False,
                          edge_rename=False, depth_chart_rows=False,
                          team_ratings=False)   # b773 tr1: modern team ratings need the modern position pools this plan turns off
+            # Beta 81 (64916bc7d): with the punter holder option on, the build first reads the source roster for the
+            # holders it inherits. Like the other image readers here, that read is stubbed for the synthetic source.
+            roster = object()
             with patch.object(tuning, "is_disc_image", return_value=True), \
                     patch.object(tuning, "_naming_source_preflight", return_value=None), \
                     patch.object(scorebar, "image_plan", return_value={}), \
+                    patch.object(rr, "load_image", return_value=roster) as load_roster, \
+                    patch.object(tuning.punter_holder_patch, "inherited_holder_ids", return_value={}) as holders, \
                     patch.object(tuning, "write_copy", side_effect=AssertionError("must not copy")), \
                     patch.object(build.shutil, "copyfile", side_effect=AssertionError("must not copy")), \
                     patch.object(e, "read_resources", return_value={}):
@@ -63,6 +68,9 @@ class PublicationTests(unittest.TestCase):
                     with self.subTest(configuration=label), \
                             self.assertRaisesRegex(ValueError, "missing, mixed or foreign resources"):
                         build.build(plan)
+                    self.assertTrue(plan.punter_holder)
+            load_roster.assert_called_with(source)
+            holders.assert_called_with(roster)
             self.assertFalse(target.exists())
             self.assertEqual(source.read_bytes(), b"synthetic preflight boundary")
             self.assertFalse(list(Path(folder).glob(".studio-build-*")))

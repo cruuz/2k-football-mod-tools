@@ -147,6 +147,14 @@ W12 (DESIGN addendum 2, R2 and TD10; scope by the coordinator's ruling of 11/20)
 I3c (F5) a club with a "signed over the cap" signing (``over_cap_signings``: club, player, week boundaries since the
     signing, which the harness tracks from the owner's ring) is still over the cap at the second boundary after it,
     or over by more than that man's charge at the first -- failure.
+PR1 (DESIGN_CHANGES C21, coordinator 11/20: E1/E2 never cut a star to sign a backup quarterback) an E1 or E2
+    make-room release (``protected_releases``: the club as it stood at the page's release call, which the harness
+    snapshots there) whose man is not all of (a) one of the club's ten lowest-rated players leaving out QB, K and P
+    (fewer than ten of them rate strictly lower), (b) not first (row 0) on his position's chart, (c) a man whose
+    position keeps at least its minimum of healthy players without him (the economy's cut_min, OLB and ILB one pool:
+    QB 2, K 1, P 1, WR 5, CB 5, FS 2, SS 2, HB 3, FB 0, TE 3, LB 5, C 2, G 3, T 3, DT 3, DE 4); and never a QB, K or P
+    -- failure. The rating is the game's unadjusted 0x246D80(p, 0) (flag 1 discounts an injured man; injured or
+    healthy makes no difference to the protection), which the harness computes natively; this tool only compares.
 
 Memory images: ``B81MEMv1`` (this tool's ``dump_memory``: magic, region count, then start, size and bytes of each
 region; gzip optional) or a gzip pickle of ``(bounds, regions)`` as Codex's signed_awards.check writes it (read with
@@ -820,6 +828,42 @@ def player_salary(record: bytes, *, active: bool = True) -> int:
     return charge(record, active=active)
 
 
+PR1_LOWEST = 10
+PR1_MINIMUMS = (2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 0, 5, 2, 3, 3, 3, 4)   # cut_min by position; OLB (10) pools with ILB (11)
+
+
+def protected_release_problems(snapshot: dict) -> list[dict]:
+    """PR1's verdict on one E1/E2 make-room release. ``snapshot``: {"club", "released" (player index), "players": the
+    club's whole active list at the release call, each {"index", "position" (+0x35), "row" (+0x28 bits 10..12),
+    "rating" (0x246D80(p, 0), unadjusted), "healthy" (no injury bit, weeks or status)}}. Returns one row per rule
+    broken ({"check", ...values}); empty when the release keeps rule 1."""
+    players = {p["index"]: p for p in snapshot["players"]}
+    man = players.get(snapshot["released"])
+    if man is None:
+        return [{"check": "the released man is not on the club's active list at the release call"}]
+    out = []
+    pos = man["position"]
+    if pos in (QB, 1, 2):
+        out.append({"check": "a quarterback, kicker or punter released to make room",
+                    "position": POSITIONS[pos] if 0 <= pos < len(POSITIONS) else pos})
+    rated = [p for p in players.values() if 3 <= p["position"] <= 16]
+    lower = sum(1 for p in rated if p["rating"] < man["rating"])
+    if lower >= PR1_LOWEST:
+        out.append({"check": "not one of the club's ten lowest-rated players (QB, K and P left out)",
+                    "rating": man["rating"], "rated_lower": lower})
+    if man["row"] == 0:
+        out.append({"check": "first (row 0) on his position's depth chart", "position": pos})
+    if 0 <= pos <= 16:
+        pool = 11 if pos == 10 else pos
+        healthy = sum(1 for p in players.values()
+                      if p["healthy"] and (11 if p["position"] == 10 else p["position"]) == pool)
+        left = healthy - (1 if man["healthy"] else 0)
+        if left < PR1_MINIMUMS[pool]:
+            out.append({"check": "his position falls below its minimum of healthy players without him",
+                        "healthy_left": left, "minimum": PR1_MINIMUMS[pool]})
+    return out
+
+
 def is_qb_for_pick(view: LeagueView, offer: Offer) -> bool:
     """Kind 2, one A player who is a quarterback, no B player, one B pick. A pick is a word whose round (bits 0-5) is
     nonzero: a cancelled pick keeps its slot and year bits with round 0."""
@@ -884,7 +928,7 @@ def trades_since(previous: LeagueView, view: LeagueView) -> dict:
 
 def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds: Iterable[int] = DEFAULT_KINDS,
           skip: Iterable[str] = (), kickoff: bool = False, over_cap_signings: Iterable[dict] = (),
-          boundary: bool | None = None) -> Report:
+          boundary: bool | None = None, protected_releases: Iterable[dict] = ()) -> Report:
     """The week-boundary checks; with ``kickoff`` only I11, as a failure (the harness's 0x247DCF check). I11 is also a
     failure on a save view (stages 8 and 9); stage 7 gives the warning W7 in every case. ``boundary``: the view is a
     week boundary (after 0x247D40 returns), where I8.boundary allows no quarterback-for-pick record; default True for
@@ -975,6 +1019,11 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
             elif sig["boundaries"] == 1 and over > charge:
                 add("I3c", FAIL, "over the cap by more than the over-cap signing's charge at the first boundary",
                     club=c.index, player=sig["player"], over=over, charge=charge)
+
+    if "PR1" not in skip:
+        for snapshot in protected_releases:
+            for row in protected_release_problems(snapshot):
+                add("PR1", FAIL, row.pop("check"), club=snapshot["club"], player=snapshot["released"], **row)
 
     # I4 ------------------------------------------------------------------------------------------------------------
     human_rows = []

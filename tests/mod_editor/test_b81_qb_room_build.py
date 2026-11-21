@@ -29,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "tests")]
 
 from mod_editor.core import mod_build, modpack_sources  # noqa: E402
+from mod_editor.core import nfl2k5_sim_qb_injuries as _sim_qb_injuries  # noqa: E402  b81 merge
 from mod_editor.core import nfl2k5_build_settings as settings  # noqa: E402
 import tests.mod_editor.test_b780_int_first_pass as first_pass  # noqa: E402
 
@@ -694,7 +695,9 @@ class BuildPageTests(unittest.TestCase):
     def test_a_disc_with_slice_1_but_no_room_counts_as_a_change(self):
         self.panel.apply_state(dict(self.state, sim_qb_injuries="applied",
                                     sim_qb_injury_settings={"status": "applied", "mode": "realistic",
-                                                            "custom_rate": .310}))
+                                                            "custom_rate": .310,
+                                                            # b81 merge: the current slice revision, so only the room differs
+                                                            "revision": _sim_qb_injuries.REVISION}))
         mode = self.panel.qb_injury_mode
         self.panel.depth_locks_check.setChecked(True)
         self.panel.depth_chart_rows_check.setChecked(True)
@@ -702,7 +705,9 @@ class BuildPageTests(unittest.TestCase):
         self.assertTrue(self.panel._sim_qb_injury_change())
         self.panel.apply_state(dict(self.state, sim_qb_injuries="applied",
                                     sim_qb_injury_settings={"status": "applied", "mode": "realistic",
-                                                            "custom_rate": .310},
+                                                            "custom_rate": .310,
+                                                            # b81 merge: the current slice revision, so only the room differs
+                                                            "revision": _sim_qb_injuries.REVISION},
                                     qb_room="applied", qb_room_settings={"status": "applied", "mode": "realistic"},
                                     depth_locks="applied", depth_chart_rows="applied"))
         mode.setCurrentIndex(mode.findData("realistic"))
