@@ -10,7 +10,8 @@
    A = quarterbacks on the active list, H = the healthy ones, S' = the best-rated healthy one.
    - E1: H <= 1 and A <= 2. Sign (probability 1).
    - E2: A <= 2, a quarterback L on this club's injured reserve (the IR owner's live store, linked at page + 0x2020)
-     with ovr(L) - ovr(S') >= 3 and 3 or more weeks left or flagged out for the season, and the candidate F has
+     with ovr(L) - ovr(S') >= 3 (L rated by 0x246D80(p, 0), C21 addendum: flag 1 discounts the hurt man it is about)
+     and 3 or more weeks left or flagged out for the season, and the candidate F has
      ovr(F) - ovr(S') >= 2. Sign with probability 0.5 (key: 6, club, year, W, L, T, F index, S' attempts, yards).
    The candidate F: the best-rated healthy free-agent quarterback such that the native picker 0x322BB0, given
    budget = value(F) + 1, takes F and nobody else (simulated exactly over both of its pools, below), and cap room
@@ -88,6 +89,13 @@ static int fully_healthy(u32 p) {
 static u32 rating_key(u32 p) {
     union { float f; u32 u; } v;
     v.f = RATING(p, 1);
+    return v.u >> 31 ? 0 : v.u;
+}
+
+/* 0x246D80(p, 0): the rating without the injury discount flag 1 applies (C21: the protected release; E2's L). */
+static __attribute__((noinline)) u32 unhurt_key(u32 p) {
+    union { float f; u32 u; } v;
+    v.f = RATING(p, 0);                             /* flag 0: no injury discount (healthy men: equal to flag 1) */
     return v.u >> 31 ? 0 : v.u;
 }
 
@@ -194,7 +202,7 @@ static i32 long_starter(u32 index, i32 best) {
     if (n > IR_CAP) n = IR_CAP;
     for (u32 i = 0; i < n; i++) {
         u32 entry = club + 4 + 8 * i, p = D(entry);
-        if (!p || B(p + 0x35) != 0 || overall_of(rating_key(p)) - best < 3) continue;
+        if (!p || B(p + 0x35) != 0 || overall_of(unhurt_key(p)) - best < 3) continue;     /* C21: L unhurt */
         if ((B(entry + 6) & F_SEASON) || ((D(p + 0x20) >> 22) & 255) >= 3) return 1;
     }
     return 0;
@@ -237,12 +245,6 @@ static const u8 floor_min[17] = {2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 0, 5, 2, 3, 3, 3,
    rates 63), and the hurt stars the smart cut released (every 90+ cut in P5-r3 and P5-E2) would rate low here. The
    lowest-rated man meeting (b) and (c) is the only one that can meet (a) as well; he goes by the native release
    0x2BD900. Nobody: 0, and E1/E2 sign nobody this week. The floor's release_one is untouched. */
-static __attribute__((noinline)) u32 unhurt_key(u32 p) {
-    union { float f; u32 u; } v;
-    v.f = RATING(p, 0);                             /* flag 0: no injury discount (healthy men: equal to flag 1) */
-    return v.u >> 31 ? 0 : v.u;
-}
-
 static __attribute__((noinline)) u32 protected_release(u32 team) {
     u8 fit[17] = {0};
     u32 n = B(team + 0x11C), best = 0, best_key = 0, lower = 0;

@@ -1827,5 +1827,31 @@ class ProtectedReleaseE2(SignLeague):
         self.assertEqual((counts["e2_tried"], counts["e2_done"], counts["sign_skip_protected"]), (1, 0, 1))
         self.assertEqual(self.events()[-1][3:7], (6, room.RESULT_KEPT, starter.index, fa.index))
 
+
+class E2NeedRatesTheHurtStarterUnhurt(SignLeague):
+    """C21 addendum (lead 11/20): E2's need test rates the man on injured reserve, L, by 0x246D80(p, 0). With flag 1
+    (the injury-aware stub halves a hurt man) "L is 3+ better than S'" almost never held for a hurt L."""
+    e2_club = SecondSignings.e2_club
+
+    def setUp(self):
+        super().setUp()
+        injury_aware_rating(self.uc)
+
+    def test_c21_a_hurt_90_starter_behind_an_80_is_a_need(self):
+        starter, backup, lost, fa = self.e2_club(ir_ovr=90, market=85)
+        starter.ovr = 80
+        self.write_player(starter)
+        self.enter_sign()
+        counts = self.counters()
+        self.assertEqual((counts["e2_tried"], counts["e2_drawn"]), (1, 1))
+        self.assertEqual(self.events()[-1][3], 6)
+
+    def test_c21_a_hurt_82_starter_behind_an_80_is_not(self):
+        starter, backup, lost, fa = self.e2_club(ir_ovr=82, market=85)
+        starter.ovr = 80
+        self.write_player(starter)
+        self.enter_sign()
+        self.assertEqual(self.counters()["e2_tried"], 0)
+
 if __name__ == "__main__":
     unittest.main()
