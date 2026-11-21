@@ -19,10 +19,13 @@
    the previous advance's room pass (logged with this week), or A <= 2 and a quarterback L on its IR 3+ better than S'
    is out 3+ weeks or for the season (E2's L). Seller: not human, not named, not a buyer, 51 to 65 active, 3+
    quarterbacks of whom 3+ healthy (it keeps 2 healthy ones).
-   Package: the best-rated Qs over every seller: fully healthy, not on row 0, 4+ years pro, 1+ contract years, not named
-   by a live record, ovr(Qs) - ovr(S') >= 3, buyer's cap room - Qs's charge > 10. Price: the buyer's OWN pick of the coming
-   draft, word round | buyer << 6 (year 0; round one-based, slot = original club in season; RISKS.md (b)): round 4 at
-   82+, 5 at 76-81, 6 at 70-75, 7 below; the next later round when the buyer does not own that one; none after the 7th.
+   Package: the best-rated Qs over every seller: fully healthy, not on row 0, rated below the seller's best healthy
+   quarterback (C22 (a): a seller never gives up its best man), 4+ years pro, 1+ contract years, not named by a live
+   record, ovr(Qs) - ovr(S') >= 3, buyer's cap room - Qs's charge > 10. Price: the buyer's OWN pick of the coming draft,
+   word round | buyer << 6 (year 0; round one-based, slot = original club in season; RISKS.md (b)): round 3 at 90+
+   (C22 (b)), 4 at 82-89, 5 at 76-81, 6 at 70-75, 7 below; the next later round when the buyer does not own that one;
+   none after the 7th. Only before the native deadline week (C22 (c): the week counter below the stage table's byte
+   0x5151C5, 9 with the deadline owner), whatever the Trade Deadline option says.
    Post with probability 0.35 (key: 8, buyer, year, W, L, T, Qs index, S' attempts and yards) if the native evaluator
    0x2BAE90 accepts the record as built, into the first kind-0 slot of 1 to 14, kind written last. Shadow (the room's
    flags bit 0, or this page's own flag word +0xF04 bit 0, which puts 4b alone in shadow while the room's other stages
@@ -65,6 +68,8 @@ extern u32 qb_trade_flags;                             /* this page + 0xF04: bit
 #define IR_CAP 20u
 #define F_SEASON 1u
 #define POST_P 35000u
+#define DEADLINE_WEEK 0x005151C5u                        /* stage_table[8].byte5: the window test's week (9 with the
+                                                            deadline owner); C22 (c) posts only before it, always */
 
 #define SALARY ((u32 (FC *)(u32))0x000E6380)            /* this season's base charge (fastcall ECX) */
 #define CANCEL ((void (FC *)(u32, u32, u32, u32))0x002BB660)   /* (offer, new kind, clear A, clear B), ret 8 */
@@ -214,7 +219,8 @@ static u32 post(struct posted *out) {
                 u32 p = D(t + 4 * j);
                 i32 o;
                 if (!p || B(p + 0x35) != 0 || !healthy(p) || !(W(p + 0x28) & ROW_MASK) || (B(p + 0x25) & 31) < 4
-                        || !(B(p + 0x24) & 15) || (o = ovr(p)) <= top || room - (i32)SALARY(p) <= 10 || named(p))
+                        || !(B(p + 0x24) & 15) || (o = ovr(p)) <= top || o >= c[i].best   /* C22 (a) */
+                        || room - (i32)SALARY(p) <= 10 || named(p))
                     continue;
                 qs = p;
                 top = o;
@@ -225,7 +231,7 @@ static u32 post(struct posted *out) {
             qb_counters.trade_no_package++;
             continue;
         }
-        for (u32 round = top >= 82 ? 4 : top >= 76 ? 5 : top >= 70 ? 6 : 7; round <= 7 && !word; round++)
+        for (u32 round = top >= 90 ? 3 : top >= 82 ? 4 : top >= 76 ? 5 : top >= 70 ? 6 : 7; round <= 7 && !word; round++)
             if (B(PICKS + 32 * round + b) == b) word = round | b << 6;
         if (!word) {
             qb_counters.trade_no_pick++;
@@ -294,8 +300,9 @@ void __attribute__((noinline, cdecl)) trade_call(u32 proposers, u32 menu) {
     qb_counters.trade_calls++;
     if (qb_settings_plain.magic[0] == 0x4F524251u && qb_settings_plain.magic[1] == 0x31764D4Fu
             && qb_settings_plain.mode == 1 && (qb_settings_plain.stages & STAGE_TRADE) && D(LEAGUE_ROOT)) {
-        if (D(STAGE) == 8) count = post(done);
-        else qb_counters.trade_inactive++;
+        if (D(STAGE) != 8) qb_counters.trade_inactive++;
+        else if (D(WEEK) >= B(DEADLINE_WEEK)) qb_counters.trade_past_deadline++;     /* C22 (c) */
+        else count = post(done);
     }
     NATIVE_PASS(proposers, menu);
     for (u32 i = 0; i < count; i++) {

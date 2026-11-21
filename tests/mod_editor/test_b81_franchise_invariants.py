@@ -902,8 +902,12 @@ class TradeExecutionTests(unittest.TestCase):
         before = Ram(cls.image)
         before.post(cls.SELLER, cls.qb, cls.BUYER, cls.word)
         cls.after = before.native_pending_scan()
-        cls.previous = Ram(cls.image).view()
-        cls.after.put(fi.WEEK, cls.previous.week + 1)       # the weekly advance's own week + 1: one advance apart
+        # The pair is one weekly advance apart and before the native deadline week (C22 (c)): the image's week counter
+        # is 9, the deadline byte 9; previous = week 8, after = week 9 (the advance's own week + 1).
+        prior = Ram(cls.image)
+        prior.put(fi.WEEK, Ram(cls.image).view().week - 1)
+        cls.previous = prior.view()
+        cls.after.put(fi.WEEK, cls.previous.week + 1)
         cls.after_view = cls.after.view()
         cls.after_base = fi.check(cls.after_view)                                     # the state after, alone
 
@@ -926,15 +930,17 @@ class TradeExecutionTests(unittest.TestCase):
 
     def test_trades_in_an_advance_without_a_cpu_trade_tick_fail_T1_window(self):
         closed = Ram(self.image)
-        closed.put(TRADE_OPTION, 1)                                                   # week 9 is past the deadline
-        report, _ = self.judged(previous=closed.view())
-        self.assertEqual(new_failures(report, self.after_base), {"T1.window"})
+        closed.put(TRADE_OPTION, 1)
+        closed.put(fi.WEEK, self.previous.week)
+        report, _ = self.judged(previous=closed.view(deadline_week=self.previous.week))   # week 8 at a deadline of 8
+        self.assertEqual(new_failures(report, self.after_base), {"T1.window", "T1.deadline"})  # deadline: the QB one
         self.assertEqual(len([r for r in report.violations if r["invariant"] == "T1.window"]), 5)   # every group
         report, _ = self.judged(previous=closed.view(deadline_week=10))                # open: nothing
         self.assertEqual(new_failures(report, self.after_base), set())
         for stage, judged in ((7, False), (9, True)):   # 0x247D40's stage 7 case runs the tick with no window test;
             other = Ram(self.image)                         # stage 9 (the playoffs) runs none
             other.put(fi.STAGE, stage)
+            other.put(fi.WEEK, self.previous.week)
             after = Ram(self.after.regions)
             after.put(fi.STAGE, stage)
             report, _ = self.judged(previous=other.view(), after=after)
@@ -952,6 +958,18 @@ class TradeExecutionTests(unittest.TestCase):
         self.assertNotIn("T1.window", failing(report))
         self.assertIn("T1.window not judged: the views are not one weekly advance apart",
                       view.info["trades_since_previous"]["notes"])
+
+    def test_a_trade_at_or_after_the_deadline_week_fails_T1_deadline_whatever_the_option(self):
+        """C22 (c): with the Trade Deadline option OFF the native window is open all season, but 4b follows the real
+        deadline: a quarterback-for-pick trade in the advance from week 9 (the deadline byte) fails T1.deadline."""
+        late = Ram(self.image)                                   # option off in this image, week 9 = the deadline byte
+        self.assertEqual(late.view().trade_option, 0)
+        after = Ram(self.after.regions)
+        after.put(fi.WEEK, late.view().week + 1)
+        report, _ = self.judged(previous=late.view(), after=after)
+        self.assertEqual(new_failures(report, fi.check(after.view())), {"T1.deadline"})
+        report, _ = self.judged(previous=late.view(deadline_week=10), after=after)
+        self.assertNotIn("T1.deadline", failing(report))
 
     def test_a_trade_naming_a_human_club_fails_T1_human(self):
         after = Ram(self.after.regions)

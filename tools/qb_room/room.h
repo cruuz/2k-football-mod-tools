@@ -172,6 +172,7 @@ struct counters {
     u32 trades_executed;         /* after the native pass: Qs on the buyer's list (the trade happened) */
     u32 trades_gone;             /* after the native pass: the record gone, no trade (the pruner or the ownership guard) */
     u32 trade_ir_unlinked;       /* the IR store link of the trades page is 0: lost starters on IR are not seen */
+    u32 trade_past_deadline;     /* C22 (c): the week counter at or past the deadline byte 0x5151C5: nothing posted */
 };
 /* COUNTERS END */
 extern volatile struct counters qb_counters;          /* page + 0x2040 */

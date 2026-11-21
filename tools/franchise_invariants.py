@@ -85,6 +85,9 @@ T1  trades since ``previous`` (the view one weekly advance earlier): the ring ro
                    on it refuses stage 9 and stage 8 past the deadline, and allows the preseason and offseason) and is
                    listed in info, not judged here.
     T1.human       a quarterback-for-pick group with a human club on either side -- failure.
+    T1.deadline    a quarterback-for-pick group in an advance from a week at or after the native deadline week
+                   (stage_table[8].byte5, 0x5151C5), whatever the Trade Deadline option says (DESIGN_CHANGES C22 (c):
+                   4b follows the real deadline even with the option off) -- failure; judged one weekly advance apart.
     T1.counts      after a quarterback-for-pick group the seller's or the buyer's active count outside 50..53 -- failure
                    (the native evaluator lets side B finish at 44, 0x2BB161).
     T1.seller_depth after a quarterback-for-pick group the seller has fewer than 2 quarterbacks on its active list, or
@@ -1153,6 +1156,12 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
             if (human(seller) or human(buyer)) and not skipped("T1.human"):
                 add("T1.human", FAIL, "quarterback-for-pick trade with a human club", club=buyer if human(buyer)
                     else seller, player=q["player"], seller=seller, buyer=buyer, rows=q["rows"])
+            # C22 (c): 4b posts only before the native deadline week, whatever the Trade Deadline option says
+            if (one_advance and previous.deadline_week is not None and previous.week >= previous.deadline_week
+                    and not skipped("T1.deadline")):
+                add("T1.deadline", FAIL, "quarterback-for-pick trade at or after the deadline week (C22 (c))",
+                    club=buyer, player=q["player"], seller=seller, week=previous.week,
+                    deadline_week=previous.deadline_week, option=previous.trade_option, rows=q["rows"])
             if not skipped("T1.counts"):
                 for c in (seller, buyer):
                     if 0 <= c < CLUBS and not 50 <= clubs[c].count <= 53:

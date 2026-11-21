@@ -260,6 +260,7 @@ class TradesImage(unittest.TestCase):
         self.x = x = ImageMachine("no-qb-2505-2026-w10-kickoff.b81mem.gz")
         m = x.m
         self.assertEqual((m.get(STAGE), m.get(WEEK), m.get(0xE60124)), (8, 9, 0))
+        m.put(WEEK, 8)                    # C22 (c): before the native deadline week (the image is at its byte, 9)
         m.uc.mem_map(TRADES_VA, 0x1000)
         from tools import franchise_invariants as fi
         read = lambda a, n: bytes(m.uc.mem_read(a, n))
@@ -350,17 +351,18 @@ class TradesImage(unittest.TestCase):
             ros, qbs = x.roster(c), x.qbs(c)
             if not 51 <= len(ros) <= 65 or len(qbs) < 3 or sum(map(x.healthy, qbs)) < 3:
                 continue
+            seller_best = max(x.ovr(q) for q in qbs if x.healthy(q))          # C22 (a): never the seller's best man
             for p in ros:
                 if (x.b(p + 0x35) or not x.healthy(p) or not x.row(p) or x.b(p + 0x25) & 31 < 4
                         or not x.b(p + 0x24) & 15 or p in named_players):
                     continue
                 o = x.ovr(p)
-                if o <= top or room - m.call(0xE6380, ecx=p) <= 10:
+                if o <= top or o >= seller_best or room - m.call(0xE6380, ecx=p) <= 10:
                     continue
                 top, choice = o, (p, c)
         if choice is None:
             return None
-        rnd = 4 if top >= 82 else 5 if top >= 76 else 6 if top >= 70 else 7
+        rnd = 3 if top >= 90 else 4 if top >= 82 else 5 if top >= 76 else 6 if top >= 70 else 7       # C22 (b)
         while rnd <= 7 and x.pick_owner(rnd | buyer << 6) != buyer:
             rnd += 1
         return (*choice, rnd | buyer << 6 if rnd <= 7 else 0)
@@ -657,6 +659,81 @@ class TradesImage(unittest.TestCase):
         self.assertEqual(sorted(r[2] for r in before_pass if r[4] == 1), [min(self.BUYER, second)])
         self.assertEqual(self.counters()["trade_no_package"], 1)
         self.assertEqual(self.counters()["trades_cancelled"], 1)
+
+    # -- C22 (lead's rulings, 2026-11-20): each fails on 9b1a13342
+    def test_c22a_a_seller_never_gives_up_its_best_healthy_quarterback(self):
+        """A seller whose best healthy quarterback would pass every other test (4+ years, a contract, 3+ better than the
+        buyer's best, within the buyer's cap room) is given a chart with that man on row 1 (rows exchanged with its row
+        1 man; native rows can sit a better man lower). With it the only seller, the old rule ("not row 0") posts its best
+        man; C22 (a) never offers him."""
+        x, m = self.x, self.x.m
+        team = x.club(self.BUYER)
+        room = m.get(0xE3C278) - m.get(team + 0x124)
+        floor = max(x.ovr(p) for p in x.qbs(self.BUYER) if x.healthy(p)) + 3
+        named = self.named_clubs()
+        found = None
+        for c in range(32):
+            qbs = x.qbs(c)
+            if (c == self.BUYER or c in named or m.get(USER_FLAG + 4 * c) or not 51 <= len(x.roster(c)) <= 65
+                    or len(qbs) < 3 or sum(map(x.healthy, qbs)) < 3):
+                continue
+            best = max((p for p in qbs if x.healthy(p)), key=x.ovr)
+            if (x.b(best + 0x25) & 31 >= 4 and x.b(best + 0x24) & 15 and x.ovr(best) >= floor
+                    and room - m.call(0xE6380, ecx=best) > 10):
+                found = (c, best)
+                break
+        if found is None:
+            self.skipTest("no seller on this image has a tradable best man")
+        seller, best = found
+        second = next(p for p in x.qbs(seller) if x.row(p) == (1 if x.row(best) == 0 else 0))
+        if x.row(best) == 0:                                    # put the best man on row 1, the other on row 0
+            wb, ws = x.h(best + 0x28), x.h(second + 0x28)
+            m.uc.mem_write(best + 0x28, struct.pack("<H", (wb & ~0x1C00) | 1 << 10))
+            m.uc.mem_write(second + 0x28, struct.pack("<H", ws & ~0x1C00))
+        self.close_other_sellers(seller)
+        self.buyers = {self.BUYER}
+        self.bench(self.BUYER)
+        m.put(YEAR, self.year_that_fires(self.BUYER, best))     # the old rule's package would be posted
+        self.bench(self.BUYER)
+        start = self.cursor()
+        m.uc.mem_write(0x2BC960, b"\xc3")
+        m.uc.ctl_flush_tb()
+        self.enter()
+        named_rows = [r for r in self.rows(start) if r[3] & 15 == 8]
+        self.assertNotIn((best - x.table) // 0x54, [r[5] for r in named_rows])
+        self.assertIn(best, x.roster(seller))
+
+    def test_c22b_a_quarterback_rated_90_or_more_costs_the_buyers_3rd(self):
+        x, m = self.x, self.x.m
+        seller = 25
+        backup = next(p for p in x.qbs(seller) if x.row(p) == 1)             # Mariota, 85, behind a 100
+        while x.ovr(backup) < 90:                                            # +0x42 raises his overall
+            m.uc.mem_write(backup + 0x42, bytes([x.b(backup + 0x42) + 1]))
+        self.assertLess(x.ovr(backup), max(x.ovr(p) for p in x.qbs(seller) if x.healthy(p)))
+        qs, chosen, word = self.ready_buyer(self.BUYER)
+        self.assertEqual((qs, chosen, word & 0x3F), (backup, seller, 3))
+        self.enter()
+        self.assertIn(backup, x.roster(self.BUYER))
+        self.assertEqual(x.pick_owner(word), seller)
+
+    def test_c22c_no_posting_from_the_deadline_week_even_with_the_option_off(self):
+        """The image's Trade Deadline option is off, so the native window is open in every week; 4b posts only while
+        the week counter is below the deadline byte 0x5151C5 (9)."""
+        x, m = self.x, self.x.m
+        self.assertEqual((m.get(0xE60124), x.b(0x5151C5)), (0, 9))
+        for week, posted in ((9, 0), (8, 1)):
+            with self.subTest(week=week):
+                self.setUp()
+                x, m = self.x, self.x.m
+                qs, seller, word = self.ready_buyer(self.BUYER)
+                m.put(WEEK, week)
+                self.bench(self.BUYER)
+                m.uc.mem_write(0x2BC960, b"\xc3")
+                m.uc.ctl_flush_tb()
+                self.enter()
+                c = self.counters()
+                self.assertEqual(c["trades_posted"], posted)
+                self.assertEqual(c.get("trade_past_deadline"), 1 - posted)
 
     def test_must_never_10_a_buyer_never_cuts(self):
         x, m = self.x, self.x.m
