@@ -623,6 +623,12 @@ mod_editor/core/nfl2k5_sim_rb_injuries.py
 mod_editor/core/nfl2k5_sim_rb_injuries_b779.py
 mod_editor/core/nfl2k5_sim_qb_injuries.py
 mod_editor/core/nfl2k5_sim_qb_injuries_code.py
+mod_editor/core/nfl2k5_qb_room.py
+mod_editor/core/nfl2k5_qb_room_code.py
+mod_editor/core/nfl2k5_qb_room_code_b81_3a.py
+mod_editor/core/nfl2k5_qb_room_code_b81_d1d2.py
+mod_editor/core/nfl2k5_qb_room_code_b81_floor.py
+mod_editor/core/nfl2k5_qb_room_code_b81_floor_review.py
 mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice1.py
 mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice2.py
 mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice3.py
@@ -4806,6 +4812,9 @@ tests/mod_editor/test_b81_scoring_option.py
 tests/mod_editor/test_b81_gadget_play.py
 tests/mod_editor/test_b81_gadget_pair_path.py
 tests/mod_editor/test_b81_gadget_attract_fatigue.py
+tests/mod_editor/test_b81_qb_room_owner.py
+tests/mod_editor/test_b81_qb_room_build.py
+tests/mod_editor/test_b81_qb_room_native.py
 tests/mod_editor/test_nfl2k5_sim_realism.py
 tests/mod_editor/test_b780_c6_coach_carousel.py
 tests/mod_editor/test_nfl2k5_standings_records.py

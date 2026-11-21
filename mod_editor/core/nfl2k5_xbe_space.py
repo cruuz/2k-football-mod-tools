@@ -814,6 +814,15 @@ QB_INJURY_OWNER = "nfl2k5_sim_qb_injuries"
 QB_INJURY_REQUEST = (QB_INJURY_OWNER, "code", 4 * PAGE, PAGE)
 LATE_OWNERS += (QB_INJURY_OWNER,)
 LATE_OWNERS += (FRANCHISE_OWNERSHIP,)
+# b81 qb34: the quarterback room (who starts, emergency moves) has three fixed pages right after the ownership page. Like
+# that page it is placed at an absolute address and never advances the pool cursor. Every other pool owner steps over
+# this range whether or not the room is requested, so the room can be added later, in any install order, and an owner
+# installed before it can never take its address. No shipped or tested layout reaches 0x1529000 (qb34 evidence/owner).
+QB_ROOM_OWNER = "nfl2k5_qb_room"
+QB_ROOM_VA = 0x1529000
+QB_ROOM_SIZE = 3 * PAGE
+QB_ROOM_REQUEST = (QB_ROOM_OWNER, "code", QB_ROOM_SIZE, PAGE)
+LATE_OWNERS += (QB_ROOM_OWNER,)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -903,7 +912,8 @@ def dormant_union():
             + third_down.REQUESTS  # b778-ai8
             + classic_teams.REQUESTS  # b775-ct1 after b775-mo2
             + return_coverage.REQUESTS  # b779-fixD: matches build_manifest's all_requests so allocation_evidence() needs no allocated=
-            + module_loader.REQUESTS + seven.REQUESTS + GADGET_REQUESTS + (BACKFIELD_REQUEST, QB_INJURY_REQUEST))
+            + module_loader.REQUESTS + seven.REQUESTS + GADGET_REQUESTS + (BACKFIELD_REQUEST, QB_INJURY_REQUEST)
+            + (QB_ROOM_REQUEST,))  # b81 qb34: the fixed quarterback room pages
 
 
 def is_scaleout(payload):
@@ -953,7 +963,7 @@ def _requests(requests):
 
 def _needs_scaleout(requests):
     normalized = _requests(requests)
-    if any(r[0] == FRANCHISE_OWNERSHIP for r in normalized):
+    if any(r[0] in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER) for r in normalized):
         return True
     # Unknown beta-62 owners never sort ahead of a shipped owner in its pages.
     if any(r[0] not in LEGACY_OWNERS for r in normalized) and any(
@@ -1059,6 +1069,8 @@ def _scale_allocations(requests):
     if ownership:
         _require(ownership == ((FRANCHISE_OWNERSHIP, "code", FRANCHISE_OWNERSHIP_SIZE, 16),),
                  "the standard franchise ownership code has a fixed page")
+    _require(all(r == QB_ROOM_REQUEST for r in requests if r[0] == QB_ROOM_OWNER),
+             "the quarterback room has three fixed pages")
     gadget = tuple(r for r in requests if r[0] == GADGET_OWNER)
     if gadget:
         _require(gadget == GADGET_REQUESTS, "incomplete or foreign gadget allocation")
@@ -1107,10 +1119,16 @@ def _scale_allocations(requests):
             at = protected
         elif ownership and at < protected + FRANCHISE_OWNERSHIP_SIZE and at + size > protected:
             at = (protected + FRANCHISE_OWNERSHIP_SIZE + align - 1) & -align
+        # b81 qb34: unconditional, after the ownership step-over (an owner bumped over that page lands here next).
+        room = QB_ROOM_VA - POOL_VA
+        if owner == QB_ROOM_OWNER:
+            at = room
+        elif at < room + QB_ROOM_SIZE and at + size > room:
+            at = (room + QB_ROOM_SIZE + align - 1) & -align
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))
-        if owner != FRANCHISE_OWNERSHIP:
+        if owner not in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER):
             pool[0] = max(pool[0], at + size)
 
     for owner, kind, size, align in requests:
@@ -1177,7 +1195,7 @@ def _scale_allocations(requests):
             pool[0] = max(pool[0], BACKFIELD_VA + BACKFIELD_REQUEST[2] - POOL_VA)
             to_pool(owner, kind, size, align)
             continue
-        if owner == FRANCHISE_OWNERSHIP or (gadget and (owner, kind) in LINEUP_SLOT_VA):
+        if owner in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER) or (gadget and (owner, kind) in LINEUP_SLOT_VA):
             to_pool(owner, kind, size, align)
             continue
         for r in regions:

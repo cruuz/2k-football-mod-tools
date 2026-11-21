@@ -117,6 +117,9 @@ class PlanField(unittest.TestCase):
                 # The simulator's breakaway stop (beta 81 scoring) is carried only with the option on and off its default.
                 if plan.sim_qb_injuries not in ("realistic", "custom") or plan.sim_breakaway_stop == 72:
                     omitted.add("sim_breakaway_stop")
+                # b81 qb34: the quarterback room key, like the mode, only when a preset or the user named it.
+                if plan.qb_room is None:
+                    omitted.add("qb_room")
                 before = {key: value for key, value in asdict(plan).items() if key not in omitted}
                 self.assertEqual(plan.to_recipe(), before)
                 self.assertEqual(plan.to_recipe().get("sim_qb_injuries"),

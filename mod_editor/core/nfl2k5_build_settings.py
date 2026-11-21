@@ -102,6 +102,7 @@ FEATURE_KEYS += ("sim_rb_injuries",)  # b779-sim2: weekly RB injury roll and sim
 FEATURE_KEYS += ("sim_realism",)  # b779-sim2 r4: scheduled-sim season realism, late executable owner
 FEATURE_KEYS += ("sim_qb_injuries", "sim_qb_injury_rate")
 FEATURE_KEYS += ("sim_breakaway_stop",)  # b81 scoring: the simulated breakaway stop, yards to goal (default 72)
+FEATURE_KEYS += ("qb_room",)  # b81 qb34: None follows sim_qb_injuries (DESIGN_CHANGES C1)
 FEATURE_KEYS += ("coach_carousel",)  # b780-c6: the coaching carousel, late executable owner + roster pool
 FEATURE_KEYS += ("standings_records",)  # b780-j1: Team Standings division / conference / home / road records, late executable owner
 FEATURE_KEYS += ("catch_snap_limit",)  # b780-cv4: CPU defenders cannot slide to the ball for a pick, late executable owner
@@ -154,6 +155,30 @@ def validate_sim_qb_injuries(mode, rate):
 def validate_sim_breakaway_stop(value):
     if type(value) is not int or not 20 <= value <= 99:
         raise ValueError("The simulated breakaway stop is a whole number of yards to goal from 20 to 99.")
+QB_ROOM_LEVELS = (None, "retail", "realistic")
+
+
+def validate_qb_room(level):
+    """b81 qb34: the quarterback room has no Custom level."""
+    if level not in QB_ROOM_LEVELS:
+        raise ValueError("Choose Retail or Realistic for the quarterback room rules.")
+
+
+def qb_room_level(qb_room, sim_qb_injuries):
+    """b81 qb34 (DESIGN_CHANGES C1): an explicit Retail or Realistic wins; otherwise the room follows the simulated
+    quarterback injury option (Realistic or Custom -> Realistic, Retail -> Retail, keep the source -> keep). A followed
+    Realistic is installed only where the room's needs are met (see qb_room_needs_met and mod_build)."""
+    validate_qb_room(qb_room)
+    if qb_room is not None:
+        return qb_room
+    return {"realistic": "realistic", "custom": "realistic", "retail": "retail"}.get(sim_qb_injuries)
+
+
+def qb_room_needs_met(get):
+    """b81 qb34: a plan (``get(field)``) that installs the room's needs: the 128 MB standard target with K128, depth
+    chart locks and the SPECIAL depth chart rows (which carry the lineup roles). A missing console_memory is 128."""
+    return (get("console_memory") in (None, 128) and bool(get("k128_memory")) and bool(get("depth_locks"))
+            and bool(get("depth_chart_rows")))
 
 
 def build_settings(value):
@@ -172,6 +197,7 @@ def build_settings(value):
         choices["sim_qb_injury_rate"] = expected["sim_qb_injury_rate"]
     validate_sim_qb_injuries(choices["sim_qb_injuries"], choices["sim_qb_injury_rate"])
     validate_sim_breakaway_stop(choices["sim_breakaway_stop"])
+    validate_qb_room(choices["qb_room"])
     tt._require(choices["helmet_finish"] in ("glossy", "matte"), "Helmet finish must be glossy or matte")
     from . import nfl2k5_modern_color as colour
     colour.normalize_settings(choices["modern_color_settings"])

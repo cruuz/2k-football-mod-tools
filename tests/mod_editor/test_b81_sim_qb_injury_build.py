@@ -284,7 +284,7 @@ class StudioControls(unittest.TestCase):
         self.assertIn("your own club is treated like every other club", panel.qb_injury_help.text())
         self.assertIn("every position except kickers and punters", panel.qb_injury_help.text())
         self.assertIn("cornerbacks and safeties", panel.qb_injury_help.text())
-        self.assertIn("Games you play are not changed", panel.qb_injury_help.text())
+        self.assertIn("Injuries in games you play are not changed", panel.qb_injury_help.text())  # b81 qb34 review item 4
         self.assertFalse(panel.qb_injury_rate.isHidden())
         panel.sim_realism_check.click()
         self.assertIsNone(panel.plan().sim_qb_injuries)
