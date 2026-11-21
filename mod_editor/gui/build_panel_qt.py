@@ -296,6 +296,7 @@ from mod_editor.core import nfl2k5_star_retention as _star_retention  # noqa: E4
 from mod_editor.core import nfl2k5_alien_prospect as _alien_prospect  # noqa: E402
 from mod_editor.core import nfl2k5_star_career as _star_career  # noqa: E402  b778-st2
 from mod_editor.core import nfl2k5_backfield_cards as _backfield_cards  # noqa: E402
+from mod_editor.core import nfl2k5_gadget_play as _gadget_play  # noqa: E402  beta 81 Q62
 from mod_editor.core import nfl2k5_sportscenter_lineup as _sportscenter_lineup  # noqa: E402
 from mod_editor.core import nfl2k5_inbox_standings as _inbox_standings  # noqa: E402  b778-pc3
 # b778-dr1: the broadcast-paced franchise draft (on in the Advanced and Experimental presets).
@@ -359,6 +360,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("scramble_blocking", _scramble_blocking.BUILD_CAPTION, _scramble_blocking.HELP_TEXT),  # b780-cv7
                  ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
                  ("backfield_cards", _backfield_cards.BUILD_CAPTION, _backfield_cards.HELP_TEXT),
+                 ("gadget_play", _gadget_play.BUILD_CAPTION, _gadget_play.HELP_TEXT),  # beta 81 Q62
                  ("sportscenter_lineup", _sportscenter_lineup.BUILD_CAPTION, _sportscenter_lineup.HELP_TEXT),  # b778-sc2
                  ("inbox_standings", _inbox_standings.BUILD_CAPTION, _inbox_standings.HELP_TEXT),  # b778-pc3
                  # b778 ci2: the tab caption stays short; the full wording is the module help.
@@ -424,7 +426,7 @@ def rebuild_only_reason(state: Mapping[str, object]) -> str:
     offer Needs update boxes on such a disc and then let the engine refuse. Both Build and Game Fixes ask this one function."""
 
     if state.get("v09_standard_update"):
-        return ("On this v0.9 standard disc you can select the boot save-list repair, modern injured reserve, starting backfield cards or simulated quarterback injuries. "
+        return ("On this v0.9 standard disc you can select the boot save-list repair, modern injured reserve, starting backfield cards, the gadget player on gadget plays or simulated quarterback injuries. "
                 "Choose the changes you want. Use your retail disc for other changes or a league project.")
     if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") not in ("applied", "retail"):
         what = "disc" if state.get("container") == "xiso" else "executable"
@@ -3531,7 +3533,8 @@ class BuildPanel(QWidget):
         if self._v09_selected(plan):
             return mod_build.v09_disc_update(plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
                                              modern_injured_reserve=plan.modern_injured_reserve,
-                                             backfield_cards=plan.backfield_cards, sim_qb_injuries=plan.sim_qb_injuries,
+                                             backfield_cards=plan.backfield_cards, gadget_play=plan.gadget_play,
+                                             sim_qb_injuries=plan.sim_qb_injuries,
                                              custom_rate=plan.sim_qb_injury_rate, overwrite=plan.overwrite,
                                              name=plan.name, author=plan.author, notes=plan.notes)
         if (self._sim_qb_injury_change() and not self._sim_qb_other_choice and not self._sim_qb_authored

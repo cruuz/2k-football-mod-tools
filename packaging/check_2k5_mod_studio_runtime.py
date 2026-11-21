@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "58c9f6376d6d393b3666d2407f1755b189d57d16d12bf97e938240ff0d992db2",
+    "mod_editor/gui/build_panel_qt.py": "620654eb63ba7cfc0f10d5c8b09227b77d90b62fb65cdbd8cc3c839bbe6d5501",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "2c658a513d0c8abc17f29038ad47a4513c60667ccc860865dc1379d03b74eeed",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "1e29191fb9537c14f5e846d49ed68397107851b6bb43dcb16e3975d4d88800d8",
     "mod_editor/gui/beta62_options.py": "009c389062334a451c15c8e9b312c02e5521b1516bc706c2a48b127ecbcfa858",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "58c9f6376d6d393b3666d2407f1755b189d57d16d12bf97e938240ff0d992db2",
+    "mod_editor/gui/build_panel_qt.py": "620654eb63ba7cfc0f10d5c8b09227b77d90b62fb65cdbd8cc3c839bbe6d5501",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "2c658a513d0c8abc17f29038ad47a4513c60667ccc860865dc1379d03b74eeed",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "1e29191fb9537c14f5e846d49ed68397107851b6bb43dcb16e3975d4d88800d8",
@@ -2073,6 +2073,8 @@ def main() -> int:
         "mod_editor.core.nfl2k5_cpu_third_down",                   # b778-ai8
         "mod_editor.core.nfl2k5_alien_prospect",                  # b778-ee1
         "mod_editor.core.nfl2k5_backfield_cards",
+        "mod_editor.core.nfl2k5_gadget_play",                     # beta 81 Q62
+        "mod_editor.core.nfl2k5_gadget_play_code",                # beta 81 Q62
         "mod_editor.core.nfl2k5_sportscenter_lineup",             # b778-sc2, in-place
         "mod_editor.core.nfl2k5_draft_clock",                     # b778-dr1
         "mod_editor.core.nfl2k5_weekly_progression",              # b778-pg1
