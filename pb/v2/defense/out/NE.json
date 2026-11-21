@@ -2231,7 +2231,7 @@
  "receipt": {
   "team": "NE",
   "offense_pack": "data/playbooks/softdrink_ne_modern.2k5book",
-  "offense_pack_sha256": "f1ecc7b0194f8bf46f2b051749db63c64c40a5002f71b554cf1130c4f8ebf3de",
+  "offense_pack_sha256": "0d2899813cf6873a6cb4fea8791d580079fe13901f31ed5e45d4b1d53a726ae6",
   "source_fingerprint": "a605289cdab22ef2215a8e2d66417b62bcbc42dc6415c947e0a054a8d7f0920f",
   "replacement_sha256": "7cdece534d575d177f6027e49d737a38486caf491b0f1459433744c9371a8907",
   "semantic_sha256": "0377df6dbcf395c5aa51f4177e403704454fb61afb57fe861989e191a59bb23d",

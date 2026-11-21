@@ -2,10 +2,14 @@
 from __future__ import annotations
 from pathlib import Path
 import re
+import sys
 import unittest
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+from mod_editor.core.update_check import BUILD_RELEASE_TAG
+
 DOCS = [ROOT / 'docs/mod_editor' / (product + '_mod_studio_' + kind + '.md')
         for product in ('2k5', 'apf2k8') for kind in ('getting_started', 'faq')]
 LINK = re.compile(r'(?<!!)\[[^\]]+\]\(([^)]+)\)')
@@ -28,7 +32,7 @@ class DocLinkTests(unittest.TestCase):
         for doc in DOCS:
             text = doc.read_text(encoding='utf-8')
             with self.subTest(doc=doc.name):
-                self.assertIn('beta 80', text)
+                self.assertIn(BUILD_RELEASE_TAG.replace('-', ' '), text)
                 self.assertNotRegex(text, r'\b[Bb]eta[ -]6[0-8]\b|\bRC8[0-9]\b')
                 self.assertNotIn('WIRING.md', text)
                 self.assertNotIn('ASTRA_REPORT.md', text)

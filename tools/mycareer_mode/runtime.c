@@ -49,6 +49,7 @@ static NI void player_star(u8 *p) {
 }
 extern const u8 menu_template[];
 extern const u8 text_template[], text_bytes[], text2_template[], text2_bytes[];
+extern u16 text2_base[];
 static NI void unpack_menu(const u8 *p,u8 *dst) {
     const u8 *q; u32 i;
     while((i=*p++)) {
@@ -61,8 +62,7 @@ static NI void unpack_menu(const u8 *p,u8 *dst) {
 static NI void init_menus(void) {
     u32 i;
     for(i=0;i<(u32)text_bytes;i++) ((u16 *)(state+1408))[i]=text_template[i];
-    /* mc2: second ASCII pool in unused M3 RW (+2160..+2699). */
-    for(i=0;i<(u32)text2_bytes;i++) ((u16 *)(m3+2160))[i]=text2_template[i];
+    for(i=0;i<(u32)text2_bytes;i++) text2_base[i]=text2_template[i];
     unpack_menu(menu_template,state+200);
     unpack_menu(m3_menu_template,m3+256);
     settings_labels();

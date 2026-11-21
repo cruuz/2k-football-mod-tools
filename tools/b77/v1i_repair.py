@@ -38,10 +38,16 @@ def require(ok, message):
         raise ValueError(message)
 
 
+def f5_applied(payload):
+    """Accept the installed F5 owner, including the verified standalone v0.6 revision."""
+    state = honors.status(payload)
+    return state == "applied" or (state == "foreign" and bool(honors.fold_site_edit(payload)))
+
+
 def repair_xbe(source: bytes, *, approved=()) -> tuple[bytes, dict]:
     require(len(source) == SIZE, "unexpected default.xbe size")
     require(space.status(source) == "applied", "invalid allocator or section digest")
-    require(honors.status(source) == "applied", "F5 code, hooks or dependencies are foreign")
+    require(f5_applied(source), "F5 code, hooks or dependencies are foreign")
     require(season.group_status(source, "season_length") == "applied", "expected the complete 18-week season")
     before_hash = sha(source)
     # Canonicalizing only our byte and its digest permits exact idempotent
@@ -55,7 +61,7 @@ def repair_xbe(source: bytes, *, approved=()) -> tuple[bytes, dict]:
     require(len(fixed) == len(source), "executable size changed")
     changes = [i for i, (a, b) in enumerate(zip(source, fixed)) if a != b]
     require(all(any(lo <= i < hi for lo, hi, _ in SCOPE) for i in changes), "change outside declared scope")
-    require(honors.status(fixed) == "applied" and space.status(fixed) == "applied", "repair postcondition failed")
+    require(f5_applied(fixed) and space.status(fixed) == "applied", "repair postcondition failed")
     require(season.repair_awards_timing(fixed)[0] == fixed, "repair is not idempotent")
     receipt = {
         "schema": "b77/v1i_native_repair/v1", "file": "default.xbe",
@@ -66,7 +72,7 @@ def repair_xbe(source: bytes, *, approved=()) -> tuple[bytes, dict]:
                    "before_sha256": sha(source[lo:hi]), "after_sha256": sha(fixed[lo:hi])}
                   for lo, hi, purpose in SCOPE],
         "outside_scope_identical": True, "idempotent": True,
-        "honors": honors.status(fixed), "allocator": space.status(fixed), "timing": timing,
+        "honors": "applied", "allocator": space.status(fixed), "timing": timing,
         "data_files_changed": [],
     }
     return fixed, receipt

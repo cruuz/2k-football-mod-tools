@@ -26,6 +26,25 @@ from tests.nfl2k5_my_career_mode_fixture import Machine
 from tests.mod_editor.test_nfl2k5_my_career_inline import block_for
 
 
+SETTINGS_FOOTER = "Supersim to your snaps. Save at home."
+
+
+class SettingsTextTests(unittest.TestCase):
+    def test_settings_footer_in_each_native_text_pool(self):
+        # init_menus expands the packed ASCII pool to UTF-16 at state + 1408.
+        code_va, data_va = 0x14DC000, 0x14F2000
+        previous_footer = "Supersim runs while you wait. B returns to Apartment."
+        for revision, expected in ((False, SETTINGS_FOOTER), ("beta-80", previous_footer), ("beta-79", previous_footer)):
+            with self.subTest(revision=revision):
+                code, labels = mode.code_for(code_va, data_va, previous=revision)
+                start = labels["text_template"] - code_va
+                pool = code[start:start + labels["text_bytes"]]
+                offset, remainder = divmod(labels["m3_settings_note"] - (data_va + 1408), 2)
+                self.assertEqual(remainder, 0)
+                self.assertTrue(0 <= offset < len(pool))
+                self.assertEqual(pool[offset:pool.index(b"\0", offset)].decode("ascii"), expected)
+
+
 class SaveChoiceTests(unittest.TestCase):
     def test_playcall_round_trip_preserves_every_other_preference_and_tier(self):
         source = draft_save()
@@ -237,8 +256,12 @@ class SettingsTests(unittest.TestCase):
             self.assertEqual(m.top(), m.labels['m3_settings_menu'])
             texts = checker.rendered(m)
             self.assertIn("MyPlayer stat line: On",[r["text"] for r in m.native_rows])
-            self.assertIn('Supersim runs while you wait. B returns to Apartment.', texts)
-            for index, expected in ((0, 'First Person Football: On'), (1, 'Supersim: Off'), (2, 'MyPlayer star: Off'), (3, 'MyPlayer stat line: Off'), (4, 'By position'), (4, 'Coach calls the plays'), (4, 'You call every play')):
+            self.assertIn(SETTINGS_FOOTER, texts)
+            for index, expected in ((0, 'First Person Football: On'),
+                                    (1, 'Supersim: Off'), (1, 'Supersim: Skip presentation'),
+                                    (1, 'Supersim: Fast forward'), (2, 'MyPlayer star: Off'),
+                                    (3, 'MyPlayer stat line: Off'), (4, 'By position'),
+                                    (4, 'Coach calls the plays'), (4, 'You call every play')):
                 m.select(index)
                 m.native_rows.clear(); checker.rendered(m)
                 selected = [r['text'] for r in m.native_rows if r['color'] & 0xFFFFFF == 0xFFFF00]

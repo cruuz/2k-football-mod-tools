@@ -1,9 +1,8 @@
 """Super Bowls before the franchise starts, for the champions history (job hn1, beta 79).
 
-The native owner ``nfl2k5_champions`` keeps the last 22 Super Bowls in one checked 270-byte block right after the
+The native owner ``nfl2k5_champions`` keeps the last 22 Super Bowls in one checked 270- or 292-byte block right after the
 practice-squad reserve block ("2K5RSV2", 352 bytes) at the end of the roster arena. A franchise save's auxiliary tail (up
-to 366 bytes) occupies the last bytes of the arena, so the block is kept inside the 306 free bytes between the two (it
-ends 0x192 bytes before the arena's end; the tail starts 0x16E before it). The arena is saved whole with every franchise,
+to 366 bytes) occupies the last bytes of the arena, so the block is kept inside the 306 free bytes between the two. The arena is saved whole with every franchise,
 so the history costs no save size, an old save has no block (an empty history) and the history-pool fold never sees it.
 The layout is documented in ``tools/nfl2k5_champions/runtime.c``:
 
@@ -13,6 +12,9 @@ The layout is documented in ``tools/nfl2k5_champions/runtime.c``:
 * +28 twenty-two 11-byte entries, entry ``n % 22`` holding Super Bowl number n:
   ``[0]`` n, ``[1..3]`` champion + 1, runner-up + 1, champion points, runner-up points (6 bits each, little endian),
   ``[4..10]`` Super Bowl MVP (55 bits as above).
+* A score over 63 promotes the block to version 3. Marked rows use two 5-bit team indices and two 7-bit low scores
+  in the first three bytes after the season. The spare MVP bit marks this format and a per-slot byte at +270 supplies
+  four more bits per score. Existing entries retain their encoding. The checksum covers all 292 bytes.
 
 This module writes the real Super Bowls XXXIX (February 2005) to LX (February 2026) into a 2026 roster so that a new
 franchise shows who won the Super Bowl before it began. The data is ``data/nfl2k5_champions_2026.json``
@@ -43,7 +45,8 @@ RESERVE_BLOCK = 352
 FROM_END = 0x400                                      # the reserve region starts 0x400 bytes before the arena's end
 AUX_TAIL = 366                                        # the most a franchise save's auxiliary tail holds (its last bytes)
 FREE = FROM_END - RESERVE_BLOCK - AUX_TAIL            # 306 bytes between the reserve block and the auxiliary tail
-assert USED <= FREE
+MAX_USED = USED + RING
+assert MAX_USED <= FREE
 POSITIONS = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
 # The arena order of the 32 clubs (alphabetical by the 2004 nicknames; a relocated or renamed franchise keeps its place)
 CLUBS = ("49ers", "Bears", "Bengals", "Bills", "Broncos", "Browns", "Buccaneers", "Cardinals", "Chargers", "Chiefs",
@@ -129,12 +132,18 @@ def club_index(name: str) -> int:
 def entry_bytes(n: int, champion: int, runner_up: int, champion_points: int, runner_points: int,
                 sb_mvp: tuple[str, str] | None) -> bytes:
     _require(1 <= n <= 255 and 0 <= champion < 32 and 0 <= runner_up < 32 and champion != runner_up, "bad season")
-    t = (champion + 1) | (runner_up + 1) << 6 | min(champion_points, 63) << 12 | min(runner_points, 63) << 18
+    _require(all(type(s) is int and 0 <= s <= 5 * 255 for s in (champion_points, runner_points)), "bad final score")
+    t = (champion + 1) | (runner_up + 1) << 6 | (champion_points & 63) << 12 | (runner_points & 63) << 18
     out = bytearray(ENTRY)
     out[0] = n
     out[1:4] = t.to_bytes(3, "little")
     if sb_mvp:
         out[4:11] = pack_person(*sb_mvp)
+    if max(champion_points, runner_points) > 63:
+        out[10] |= 0x80
+        t = champion | runner_up << 5 | (champion_points & 127) << 10 | (runner_points & 127) << 17
+        out[1:4] = t.to_bytes(3, "little")
+        out.append((champion_points >> 7) | (runner_points >> 7) << 4)
     return bytes(out)
 
 
@@ -150,18 +159,23 @@ def mvp_slot(n: int, mvp: tuple[str, str] | None, club: int | None) -> bytes:
 
 
 def checksum(block: bytes) -> int:
-    return zlib.adler32(block[MVP_AT:USED], zlib.adler32(block[:12]))
+    return zlib.adler32(block[MVP_AT:MAX_USED if block[8] == 3 else USED], zlib.adler32(block[:12]))
 
 
 def block_bytes(entries: Mapping[int, bytes], mvp: bytes | None = None) -> bytes:
     """The 270-byte history block holding these entries (Super Bowl number -> 11 bytes) and the newest MVP field."""
 
-    out = bytearray(USED)
-    out[:8], out[8], out[9] = MAGIC, 2, RING
+    extended = any(len(row) == ENTRY + 1 for row in entries.values())
+    out = bytearray(MAX_USED if extended else USED)
+    out[:8], out[8], out[9] = MAGIC, 3 if extended else 2, RING
     if mvp:
         out[MVP_AT:MVP_AT + 9] = mvp
     for n in sorted(entries):
-        out[ENTRIES_AT + (n % RING) * ENTRY:ENTRIES_AT + (n % RING + 1) * ENTRY] = entries[n]
+        row = entries[n]
+        _require(len(row) in (ENTRY, ENTRY + 1) and bool(row[10] & 0x80) == (len(row) > ENTRY), "invalid score entry")
+        out[ENTRIES_AT + (n % RING) * ENTRY:ENTRIES_AT + (n % RING + 1) * ENTRY] = row[:ENTRY]
+        if extended:
+            out[USED + n % RING] = row[ENTRY] if len(row) > ENTRY else 0
     out[12:16] = checksum(bytes(out)).to_bytes(4, "little")
     return bytes(out)
 
@@ -169,20 +183,22 @@ def block_bytes(entries: Mapping[int, bytes], mvp: bytes | None = None) -> bytes
 def read_block(raw: bytes) -> list[dict]:
     """The valid seasons of a block, newest first; [] for an absent, foreign or damaged block."""
 
-    if len(raw) < USED or raw[:8] != MAGIC or raw[8] != 2 or raw[9] != RING:
-        return []
-    if int.from_bytes(raw[12:16], "little") != checksum(raw):
+    if not block_ok(raw):
         return []
     rows = []
     slot = raw[MVP_AT:MVP_AT + 9]
     for i in range(RING):
-        e = raw[ENTRIES_AT + i * ENTRY:ENTRIES_AT + (i + 1) * ENTRY]
+        e = _slot(raw, i)
+        if not _slot_ok(e, i):
+            continue
         t = int.from_bytes(e[1:4], "little")
         champion, runner = (t & 63) - 1, (t >> 6 & 63) - 1
-        if not e[0] or e[0] % RING != i or not (0 <= champion < 32 and 0 <= runner < 32):
-            continue
-        rows.append({"super_bowl": e[0], "champion": champion, "runner_up": runner, "champion_points": t >> 12 & 63,
-                     "runner_up_points": t >> 18 & 63, "super_bowl_mvp": unpack_person(e[4:11]),
+        high, low = t >> 12 & 63, t >> 18
+        if len(e) == ENTRY + 1:
+            champion, runner = t & 31, t >> 5 & 31
+            high, low = (t >> 10 & 127) | ((e[ENTRY] & 15) << 7), (t >> 17) | ((e[ENTRY] >> 4) << 7)
+        rows.append({"super_bowl": e[0], "champion": champion, "runner_up": runner, "champion_points": high,
+                     "runner_up_points": low, "super_bowl_mvp": unpack_person(e[4:11]),
                      "season_mvp": unpack_person(slot[1:8]) if slot[0] == e[0] else None,
                      "season_mvp_club": slot[8] - 1 if slot[0] == e[0] and slot[8] else None})
     return sorted(rows, key=lambda r: -r["super_bowl"])
@@ -201,20 +217,22 @@ def roman(n: int) -> str:
 
 
 def _slot(raw: bytes, i: int) -> bytes:
-    return raw[ENTRIES_AT + i * ENTRY:ENTRIES_AT + (i + 1) * ENTRY]
+    e = raw[ENTRIES_AT + i * ENTRY:ENTRIES_AT + (i + 1) * ENTRY]
+    return e + raw[USED + i:USED + i + 1] if raw[8] == 3 and e[10] & 0x80 else e
 
 
 def _slot_ok(e: bytes, i: int) -> bool:
     """The native ``entry_at`` test: the entry's number belongs in slot ``i`` and both clubs are real."""
 
     t = int.from_bytes(e[1:4], "little")
-    return bool(e[0]) and e[0] % RING == i and 1 <= (t & 63) <= 32 and 1 <= (t >> 6 & 63) <= 32
+    clubs_ok = len(e) == ENTRY + 1 if e[10] & 0x80 else 1 <= (t & 63) <= 32 and 1 <= (t >> 6 & 63) <= 32
+    return bool(e[0]) and e[0] % RING == i and clubs_ok
 
 
 def block_ok(raw: bytes) -> bool:
-    """True for a 270-byte block the game's own reader accepts (magic, version 2, ring 22, checksum)."""
+    """Validate the native v2 or v3 magic, size, ring count and checksum."""
 
-    return (len(raw) >= USED and raw[:8] == MAGIC and raw[8] == 2 and raw[9] == RING
+    return (len(raw) >= USED and raw[:8] == MAGIC and (raw[8] == 2 or raw[8] == 3 and len(raw) >= MAX_USED) and raw[9] == RING
             and int.from_bytes(raw[12:16], "little") == checksum(raw))
 
 
@@ -243,7 +261,7 @@ def merge_blocks(own: bytes | None, seed: bytes, newest_allowed: int | None = No
     _require(block_ok(own), "the save's spare bytes hold something other than a champions history")
     own_entries = {e[0]: e for i in range(RING) for e in [_slot(own, i)] if _slot_ok(e, i)}
     newest_own = max(own_entries, default=0)
-    out = bytearray(own[:USED])
+    out = bytearray(own[:MAX_USED if own[8] == 3 else USED])
     added, skipped = [], []
     for n in sorted(seed_numbers):
         i = n % RING
@@ -255,7 +273,13 @@ def merge_blocks(own: bytes | None, seed: bytes, newest_allowed: int | None = No
             if n not in own_entries:
                 skipped.append((n, "its slot is taken"))
         else:
-            out[ENTRIES_AT + i * ENTRY:ENTRIES_AT + (i + 1) * ENTRY] = seed_numbers[n]
+            row = seed_numbers[n]
+            if len(row) > ENTRY:
+                if out[8] == 2:
+                    out.extend(bytes(RING))
+                    out[8] = 3
+                out[USED + i] = row[ENTRY]
+            out[ENTRIES_AT + i * ENTRY:ENTRIES_AT + (i + 1) * ENTRY] = row[:ENTRY]
             added.append(n)
     best = max(list(own_entries) + added, default=0)
     if not any(own[MVP_AT:MVP_AT + 9]) and best and seed[MVP_AT] == best and best in added:
@@ -284,7 +308,7 @@ def validate(data: Mapping) -> None:
         _require(row.get("champion") and row.get("runner_up") and row["champion"] != row["runner_up"], f"Super Bowl {n}: clubs")
         _require(row.get("sources") and all(s in sources for s in row["sources"]), f"Super Bowl {n}: unlisted source")
         for key in ("champion_points", "runner_up_points"):
-            _require(type(row.get(key)) is int and 0 <= row[key] <= 63, f"Super Bowl {n}: {key}")
+            _require(type(row.get(key)) is int and 0 <= row[key] <= 5 * 255, f"Super Bowl {n}: {key}")
         for key in ("super_bowl_mvp", "season_mvp"):
             person = row.get(key)
             _require(person is None or (person.get("name") and person.get("position") in POSITIONS), f"Super Bowl {n}: {key}")
@@ -336,16 +360,16 @@ def apply_body(body: bytes, data: Mapping | None = None) -> tuple[bytes, dict]:
     block = block_bytes(entries, newest_mvp(data))
     at = gap_offset(body)
     current = body[at:at + FREE]
-    _require(not any(current) or current[:USED] == block, f"the free bytes at 0x{at:x} are in use")
+    _require(not any(current) or current[:len(block)] == block, f"the free bytes at 0x{at:x} are in use")
     out = bytearray(body)
-    out[at:at + USED] = block
+    out[at:at + len(block)] = block
     return bytes(out), {"seasons": len(entries), "newest_super_bowl": max(entries), "oldest_super_bowl": min(entries),
                         "offset": hex(at), "unchanged": bytes(out) == body, "sources": sorted(data["sources"])}
 
 
 def read_body(body: bytes) -> list[dict]:
     at = gap_offset(body)
-    return read_block(body[at:at + USED])
+    return read_block(body[at:at + MAX_USED])
 
 
 # b779 ch2: the disc's main roster (outer entry 5: a 0x20-byte resource wrapper, then the body, which ends with the arena)

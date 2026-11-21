@@ -1,4 +1,7 @@
-"""The punter holds on field goals and extra points (executable patch, xemu-only).
+"""Stored holders on field goals and extra points, plus recognition of the older punter override.
+
+Current builds use the original holder reader and set the punter default in the disc roster.
+The following describes the historical H1 writer used by the standalone beta 77 repair tool.
 
 Retail (proved offline in the retail and v0.5 ``default.xbe``, B77 job H1, 2026-10-08):
 
@@ -32,6 +35,8 @@ the player's position.  EXPERIMENTAL / UNWITNESSED in a played game.
 
 from __future__ import annotations
 
+import hashlib
+from pathlib import Path
 import struct
 from typing import Mapping
 
@@ -173,8 +178,10 @@ def status(payload: bytes) -> str:
     try:
         if not _pins_are_retail(payload):
             return "foreign"
-        hook = payload[_offset(payload, HOOK_VA):][:HOOK_SIZE]
-        cave = payload[_offset(payload, CAVE_VA):][:CAVE_SIZE]
+        hook_off = _offset(payload, HOOK_VA)
+        cave_off = _offset(payload, CAVE_VA)
+        hook = payload[hook_off:hook_off + HOOK_SIZE]
+        cave = payload[cave_off:cave_off + CAVE_SIZE]
     except (PunterHolderError, ValueError, struct.error):
         return "foreign"
     hook_state = "retail" if hook == RETAIL_HOOK else "applied" if hook == PATCHED_HOOK else "foreign"
@@ -186,8 +193,52 @@ def status(payload: bytes) -> str:
     return "foreign"
 
 
+def build_status(payload: bytes) -> str:
+    """The native retail reader accepts saved holders. The former H1 override needs migration."""
+    state = status(payload)
+    return "previous" if state == "applied" else state
+
+
+def _rewrite_sites(payload: bytes, *, restore: bool) -> tuple[bytes, dict]:
+    buf = bytearray(payload)
+    sections = _sections(payload)
+    touched: set[int] = set()
+    edits = []
+    for label, va, before, after in sites():
+        if restore:
+            before, after = after, before
+        off = _offset(payload, va)
+        _require(payload[off: off + len(before)] == before, f"{label}: expected bytes missing")
+        buf[off: off + len(after)] = after
+        touched.add(_section_for_offset(sections, off).index)
+        edits.append({"label": label, "va": f"0x{va:x}", "file_offset": f"0x{off:x}", "bytes": len(after),
+                      "before": before.hex(), "after": after.hex()})
+    for section in sections:
+        if section.index in touched:
+            d = section.header_offset + 36
+            if restore:
+                _require(payload[d: d + 20] == section_digest(payload, section),
+                         "The executable section containing the older holder override failed its checksum.")
+            buf[d: d + 20] = section_digest(bytes(buf), section)
+    patched = bytes(buf)
+    expected = "retail" if restore else "applied"
+    _require(status(patched) == expected, "holder read-back failed")
+    changed = sum(1 for a, b in zip(payload, patched) if a != b)
+    return patched, {"edits": edits, "changed_bytes": changed, "sections_repinned": sorted(touched), "status": expected}
+
+
+def use_stored_holder(payload: bytes) -> tuple[bytes, dict]:
+    """Restore the native holder reader on older discs, preserving unrelated executable bytes."""
+    state = build_status(payload)
+    _require(state in ("retail", "previous"), "Unrecognized holder code. The saved-holder reader cannot be verified.")
+    if state == "retail":
+        return payload, {"already_applied": True, "status": "stored_holder", "changed_bytes": 0, "edits": []}
+    patched, receipt = _rewrite_sites(payload, restore=True)
+    return patched, {**receipt, "status": "stored_holder", "upgraded_from": "punter_override"}
+
+
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
-    """Return the patched XBE bytes plus a receipt; refuses anything but retail sites.
+    """Reproduce the historical H1 executable for the beta 77 repair and its audit.
 
     An applied image is returned unchanged with ``already_applied``.
     """
@@ -196,26 +247,9 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     if state == "applied":
         return payload, {"already_applied": True, "edits": [], "changed_bytes": 0, "status": "applied"}
     _require(state == "retail", f"punter-holder sites are {state}, not retail; refusing")
-    buf = bytearray(payload)
-    sections = _sections(payload)
-    touched: set[int] = set()
-    edits = []
-    for label, va, before, after in sites():
-        off = _offset(payload, va)
-        _require(payload[off: off + len(before)] == before, f"{label}: retail bytes missing")
-        buf[off: off + len(after)] = after
-        touched.add(_section_for_offset(sections, off).index)
-        edits.append({"label": label, "va": f"0x{va:x}", "file_offset": f"0x{off:x}", "bytes": len(after),
-                      "before": before.hex(), "after": after.hex()})
-    for section in sections:
-        if section.index in touched:
-            d = section.header_offset + 36
-            buf[d: d + 20] = section_digest(bytes(buf), section)
-    patched = bytes(buf)
-    _require(status(patched) == "applied", "post-apply verification failed")
-    changed = sum(1 for a, b in zip(payload, patched) if a != b)
+    patched, receipt = _rewrite_sites(payload, restore=False)
     return patched, {
-        "edits": edits, "changed_bytes": changed, "sections_repinned": sorted(touched), "status": "applied",
+        **receipt,
         "hook_va": f"0x{HOOK_VA:x}", "hook_bytes": PATCHED_HOOK.hex(),
         "cave_va": f"0x{CAVE_VA:x}", "cave_size": CAVE_SIZE, "cave_code_bytes": CODE_SIZE,
         "cave_labels": {name: f"0x{va:x}" for name, va in CAVE_LABELS.items()},
@@ -223,7 +257,82 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     }
 
 
+def inherited_holder_ids(roster) -> dict:
+    """Recognize the stock USA defaults and the punter defaults already written on other sources."""
+    from . import nfl2k5_roster_records as records
+
+    stock = hashlib.sha256(roster.original).hexdigest() == records.RETAIL_BODY_SHA256
+    inherited = {}
+    for team in roster.teams:
+        if team.is_club and team.slots:
+            roles = roster.special_teams(team.index)
+            holder = roles["holder"]
+            if holder is not None and (stock or holder is roles["punter"]):
+                inherited[team.index] = (holder.pool, holder.index)
+    return inherited
+
+
+def authored_holder_clubs(edits: Mapping) -> set[int]:
+    """Both the specialist editor and a dated roster refresh can assign the final holder."""
+    explicit = {row["team_index"] for row in edits.get("special_teams", ()) if "h" in row["roles"]}
+    refresh = edits.get("roster_refresh") or {}
+    explicit.update(row["index"] for row in refresh.get("teams", ()) if "h" in row["specialists"])
+    return explicit
+
+
+def default_club_holders(roster, inherited: Mapping, authored: set[int]) -> dict:
+    """Set P1 only for an empty or positively identified inherited assignment."""
+    changed, preserved, unavailable = [], [], []
+    for team in roster.teams:
+        if not team.is_club or not team.slots:
+            continue
+        roles = roster.special_teams(team.index)
+        punter, holder = roles["punter"], roles["holder"]
+        if punter is None:
+            unavailable.append({"club": team.abbreviation, "reason": "no punter on the depth chart"})
+            continue
+        if holder is punter:
+            continue
+        slot = roles["bytes"]["h"]
+        can_default = (slot == 0xFF or (holder is not None and team.index not in authored
+                       and inherited.get(team.index) == (holder.pool, holder.index)))
+        if can_default:
+            roster.set_special_role(team.index, "holder", punter)
+            changed.append({"club": team.abbreviation, "before": slot, "after": team.slots.index(punter.offset),
+                            "holder": punter.display})
+        elif holder is not None:
+            preserved.append({"club": team.abbreviation, "holder": holder.display, "punter": punter.display})
+        else:
+            unavailable.append({"club": team.abbreviation, "reason": f"unrecognized stored holder slot {slot}"})
+    notes = []
+    if preserved:
+        names = ", ".join(f"{row['club']} ({row['holder']})" for row in preserved)
+        notes.append(f"Kept the existing field-goal holder for {names}.")
+    for row in unavailable:
+        notes.append(f"{row['club']} kept its holder assignment: {row['reason']}.")
+    return {"changed": changed, "preserved": preserved, "unavailable": unavailable, "user_notes": notes}
+
+
+def apply_roster_defaults(path: Path, inherited: Mapping, authored: set[int]) -> dict:
+    """Apply the setting to the final main roster and verify the replacement on the build copy."""
+    from . import nfl2k5_roster_records as records
+
+    with records._outer_image()(path, writable=True) as archive:
+        entry = records._entry(archive)
+        before = archive.read(entry.virtual_offset, entry.size)
+        _require(before[:4] == b"ROST", "Missing main roster on the build copy.")
+        roster = records.load_body(before[records.RESOURCE_HEADER_SIZE:])
+        result = default_club_holders(roster, inherited, authored)
+        if result["changed"]:
+            after = before[:records.RESOURCE_HEADER_SIZE] + bytes(roster.body)
+            _require(len(after) == len(before), "Holder defaults changed the size of the roster.")
+            _require(archive.write(entry.virtual_offset, after) == len(after), "Short write of holder defaults.")
+            _require(archive.read(entry.virtual_offset, entry.size) == after, "Holder defaults failed read-back.")
+    return {"status": "applied", **result}
+
+
 __all__ = ["CAVE_LABELS", "CAVE_SIZE", "CAVE_VA", "CODE", "CODE_SIZE", "HOOK_SIZE", "HOOK_VA", "LOCAL_HOLDER",
            "LOCAL_KICKER", "LOCAL_PUNTER", "NEXT_ROUTINE_VA", "OWNER", "PATCHED_HOOK", "PINS", "PunterHolderError",
            "RESUME_VA", "RETAIL_CAVE", "RETAIL_HOOK", "RETAIL_TAIL", "STORE_DONE_VA", "apply", "cave_bytes", "sites",
-           "status"]
+           "status", "build_status", "use_stored_holder", "inherited_holder_ids", "authored_holder_clubs",
+           "default_club_holders", "apply_roster_defaults"]

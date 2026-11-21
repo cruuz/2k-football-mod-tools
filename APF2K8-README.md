@@ -15,71 +15,36 @@ remain research; no team assignment patch is included.
 
 ## Install
 
-APF 2K8 Mod Studio needs **Python 3, PyQt5, and Pillow** when you run it from a
-source ZIP or portable archive. The Windows Setup.exe includes them.
-
-Download the release asset from the [Releases](https://github.com/cruuz/2k-football-mod-tools/releases)
-page. Do **not** use the green **Code > Download ZIP** button: that is the
-source code, not the ready-to-run Studio.
-
-- **Linux** (Mint/Ubuntu) — install the operating-system packages:
-  ```bash
-  sudo apt install python3 python3-pyqt5 python3-pil
-  ```
-- **Windows / macOS** (the `apt` line above is Linux-only) — install Python 3
-  from https://www.python.org/downloads/, then:
-  ```bash
-  pip install PyQt5 Pillow
-  ```
-
-That command installs libraries only; the Mod Studio installer itself never
-requests administrator access.
-
-### Linux (per-user install)
-
-Open a terminal in this extracted folder and run:
-
-```bash
-./install.sh
-```
-
-Do **not** use `sudo`. The installer puts the program and shortcut only in your
-user account. After it finishes, open **APF 2K8 Mod Studio** from the
-application menu. You can also run `~/.local/bin/apf2k8-mod-studio`.
+Choose the APF download for your computer. Windows Setup includes Python and all required packages. The portable archive uses Python 3.11, 3.12 or 3.13 and needs an internet connection for the first setup. [APF Studio downloads](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-81)
 
 ### Windows
 
-Run **`APF-2K8-Mod-Studio-*-Setup.exe`**, or extract the portable archive and
-double-click **`APF-2K8-Mod-Studio.bat`**. The `.bat` launcher runs from its own
-folder (paths containing spaces and a source ZIP extracted into a second folder
-of the same name are fine). On the first run it creates a private `.venv`
-beside the launcher and installs `packaging/requirements-studio.txt`
-automatically (about 110 MB to download, about 400 MB on disk). It needs 64-bit
-Python 3.11 or 3.12 from https://www.python.org/downloads/windows/ and an
-internet connection. Later runs start immediately. Run
-`APF-2K8-Mod-Studio.bat --setup` to repair the private runtime. No
-administrator rights are needed.
+Run **`APF-2K8-Mod-Studio-*-Setup.exe`**, then open APF 2K8 Mod Studio from the Start Menu. Installation uses your own Windows account.
+
+For a portable install, extract the whole archive and double-click **`APF-2K8-Mod-Studio.bat`**. It finds a supported 64-bit Python and sets up a private runtime beside the launcher. If prompted for Python, install 3.11, 3.12 or 3.13 and reopen the launcher. You can repeat setup with `APF-2K8-Mod-Studio.bat --setup`. [Python for Windows](https://www.python.org/downloads/windows/)
+
+### Linux and Steam Deck
+
+Extract the archive. In a terminal in the extracted folder, run:
+
+```bash
+./APF-2K8-Mod-Studio.sh --setup
+./APF-2K8-Mod-Studio.sh
+```
+
+Setup installs PyQt5, Pillow, NumPy, Capstone and Unicorn into the private runtime. Later launches use the second command. Debian, Ubuntu and Mint users whose Python lacks `venv` can install the `python3-venv` package.
+
+For an application-menu shortcut on a machine whose system Python already has the required Studio packages, run `./install.sh` from a freshly extracted archive. This installs under your user account and provides `~/.local/bin/apf2k8-mod-studio`.
 
 ### macOS
 
-Extract the archive and double-click **`APF-2K8-Mod-Studio.command`** (the first
-time, right-click it and choose **Open** to clear Gatekeeper). It resolves its
-own folder and runs the same dependency check.
+Extract the whole archive. In Finder, right-click **`APF-2K8-Mod-Studio.command`** and choose **Open**. If prompted for Python, install 3.11, 3.12 or 3.13 and reopen the launcher. On first use it prepares the dependencies and opens Studio. To prepare it from Terminal, run `./APF-2K8-Mod-Studio.command --setup` in the extracted folder. [Python for macOS](https://www.python.org/downloads/macos/)
 
-**Platform support.** CI is configured to run the suite on Linux, Windows, and
-macOS with Python 3.11 and 3.12. Linux is the locally exercised release path;
-the Windows and macOS jobs are automated compatibility targets. Retail-dependent
-tests and release gates skip with an explicit reason when their private game
-data or generated build inputs are unavailable.
-
-**Linux remains the most exercised platform**: the desktop app has been
-smoke-tested end to end there, and the GUI has not been manually driven on
-Windows or macOS, so treat those as well-tested code with a less-tested window
-on top.
+**Platform support.** The test suite runs on Linux, Windows and macOS with Python 3.11, 3.12 and 3.13. The release checks open the Linux GUI and the installed Windows application under Wine. The macOS suite opens the Finder launcher. Tests that require private game data report a skip when those inputs are unavailable.
 
 The bundled `extract-xiso` extractor ships as **both** a Linux binary and a
 Windows `.exe`, built from the same vendored 2.7.1 source, so handing the app an
-**ISO** works on either. **macOS has no bundled build** — point it at an
+**ISO** works on either. **macOS has no bundled build**: point it at an
 **already-extracted game folder** there, or build extract-xiso yourself
 (`brew install extract-xiso`, or `cmake` on the vendored source) and pass it as
 `SourceManager(extract_xiso=...)`. `tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md`
@@ -103,7 +68,7 @@ sudo apt install ffmpeg
 The Audio tab inventories all 2,261 standalone sounds, all 45,514 addressable
 substreams, both 15-track soundtrack encodings, and all 19 named physical XMA1
 banks. Original XMA1/WAV export and exact raw-bank export are available. The
-current release candidate, **`0.1.0-alpha.111`**, gives the 2,261 standalone
+current release candidate, **`0.1.0-alpha.112`**, gives the 2,261 standalone
 rows and all 45,514 individually addressed AUSB rows an advanced exact-slot
 replacement route, selected-sound PCM16 authoring through a separately
 installed encoder, and v1 XMA1 plus v2 exact-PCM16 folder/ZIP batch hand-off.
@@ -262,7 +227,7 @@ bounded timeout stay in local application settings and never enter a mod
 project. External output is untrusted until the existing XMA1 RIFF, allocation,
 packet, complete-decode, duration, alias, and cross-family exact-source-packet
 checks all pass. The build environment had no real XMA1 encoder, so synthetic
-tests prove the bridge and cleanup only—not third-party-tool compatibility or
+tests prove the bridge and cleanup only: not third-party-tool compatibility or
 in-game audibility. Read the
 [PCM encoder guide](docs/mod_editor/apf2k8_external_xma1_encoder.md).
 
@@ -270,7 +235,7 @@ The private Track 12 runtime candidate booted, selected the requested track,
 and remained stable, but the completed objective capture was honestly
 negative/inconclusive for modified-stream causality. The final sustained
 segment matched neither the mutated candidate nor decoded stock Track 12, so
-the experiment proves boot/selection/stability—not authored-audio consumption
+the experiment proves boot/selection/stability: not authored-audio consumption
 or stock fallback. Read the
 [AUSB exact-slot contract](docs/product/APF_AUSB_EXACT_SLOT_FEASIBILITY.md).
 
@@ -336,7 +301,7 @@ attributes, skins, changed topology, and runtime visibility remain unproved or
 locked. The source game is never modified.
 
 The current Alpha.54 source carries forward Alpha.21's exact team **Display
-name**, player **First name** / **Last name**, and true native 0–99 base-rating
+name**, player **First name** / **Last name**, and true native 0-99 base-rating
 editing through the bounded ROST route. **Rosters & Players** exposes all 3,273 mapped UTF-16BE identity
 allocations and all 2,254 on-disc player records, while authoring admits exactly
 3,191 player-name allocations serving 4,482 writable first/last references plus
@@ -397,7 +362,7 @@ Builds now use a token-preserving H7A route instead of relocating every decoded
 token. A bounded `Americans` → `CODEXTEAM` build booted through first-run team
 construction and rendered the authored name in Logo Selection, Team Summary,
 and Team Select. A separate bounded `Marino` → `CODEX` build visibly rendered
-**Dan CODEX #13 QB** in player selection and **QB #13 DAN CODEX — GOLD STAR**
+**Dan CODEX #13 QB** in player selection and **QB #13 DAN CODEX: GOLD STAR**
 on the Star Card without the old startup crash. These results support only
 exact player first/last names and team display names; they do not grant
 permission to neighboring packed fields. Read the positive
@@ -414,10 +379,10 @@ fields into a new verified `Roster.ROS` handoff.
 Alpha.26 carries forward Alpha.23's 32-team × 53-row roster surface as an
 honest planner, not a
 53-active-player game writer. Stock APF currently consumes the first 42
-membership rows per populated team; rows 43–53 are eleven project-only reserve
-choices, and Build does not apply them. True runtime slots 43–53 still require
+membership rows per populated team; rows 43-53 are eleven project-only reserve
+choices, and Build does not apply them. True runtime slots 43-53 still require
 a version-pinned emulator-target XEX accessor/consumer patch plus owned
-side-table storage. Teams 25–32 use populated online-placeholder records whose
+side-table storage. Teams 25-32 use populated online-placeholder records whose
 offline selector ownership remains unproved. The completed
 [true-53 runtime consumer inventory](docs/product/APF_TRUE_53_RUNTIME_CONSUMER_INVENTORY.md)
 maps the current lower bound: 93 central-helper calls, at least 25 direct roster
@@ -427,10 +392,10 @@ eleven-slot side table plus coordinated consumer hooks as the viable route.
 
 Player selection opens a searchable **Base Ratings** editor containing the
 game's 31 independent stored values: 27 semantic attributes plus four distinct
-untranslated fields labeled by their stored offsets—**Unknown Rating (0xD4)**,
+untranslated fields labeled by their stored offsets-**Unknown Rating (0xD4)**,
 **Unknown Rating (0xBD)**, **Unknown Rating (0xC5)**, and **Unknown Rating
 (0xD2)**. Every attribute is authored as a true native
-integer from 0 through 99—there is no Madden-style scale conversion, hidden
+integer from 0 through 99: there is no Madden-style scale conversion, hidden
 compression, or shared overall value. Apply and Revert operate on one player
 and one semantic attribute at a time, modified badges make the project delta
 obvious, and team-name plus rating changes compose into one token-preserving
@@ -478,7 +443,7 @@ positionally. PBP is the play-by-play announcer ID, not a playbook field.
 
 **Playbooks & Plays → Save Assignments** edits the separate roster-save pointer
 table, not `playbook_master.iff`. A raw save lists all **40 team slots** and all
-**69 named books**—36 offense and 33 defense—and stages both assignments before
+**69 named books**-36 offense and 33 defense: and stages both assignments before
 writing a new save plus manifest. The inspected source SHA-256 is rechecked,
 the source is never opened for writing, output paths cannot alias or overwrite,
 and an independent pass verifies the exact changed bytes while confirming the
@@ -513,7 +478,7 @@ visor tint that APF does not carry.
 
 **Uniforms & Equipment → Custom Team Appearance → Raw Roster Save** edits the
 appearance graph carried by an accepted custom team's raw `Roster.ROS`.
-User-facing team IDs 24–31 map to ROST slots 32–39. HOME/AWAY palettes and exact
+User-facing team IDs 24-31 map to ROST slots 32-39. HOME/AWAY palettes and exact
 helmet/crest selectors are bounded to a 112-byte union per selected team; the
 source is SHA-bound and read-only, output and receipt are new/no-overwrite, and
 an independent pass reopens both files and verifies pointer ownership and the
@@ -555,10 +520,10 @@ independent verifier proves that no byte outside the selected package changed.
 A square Team Logo crest is never silently squeezed into this rectangular
 wordmark family. Runtime consumption remains unproved.
 
-Select **Full-shell crest wrap — entire helmet shell** to build the fixed
+Select **Full-shell crest wrap: entire helmet shell** to build the fixed
 `front_crown_to_rear_v1` shell-atlas route into the copied `0A` itself. The
 project keeps the semantic 512×512 design. Full-shell import has two explicit modes:
-**Normal logo — convert to APF regions (recommended)** contains ordinary art at
+**Normal logo: convert to APF regions (recommended)** contains ordinary art at
 512×512, requires confirmation of the rendered shell plus two detail colours,
 and shows the palette-mapped material preview; **APF region mask (advanced)**
 accepts only exact four-bit red/green weights with blue fixed to zero, no hidden
@@ -636,13 +601,19 @@ gates, independent extraction, deterministic rebuild, and isolated-display
 visual QA. The adjacent `.sha256` sidecar is authoritative for the archive you
 received. See [STATUS](docs/mod_editor/APF2K8_STATUS.md) for versioned receipts.
 
+## Help and community
+
+Report bugs on the [issue tracker](https://github.com/cruuz/2k-football-mod-tools/issues)
+(**Help → Report a bug…**). Ask questions or share patches on the community Discord:
+<https://discord.gg/FkNSKRAKch> (**Help → Join the Discord…**).
+
 ## Run without installing
 
 Keep this entire folder together and run the launcher for your platform:
 
-- **Linux** — `./APF-2K8-Mod-Studio.sh`
-- **Windows** — double-click `APF-2K8-Mod-Studio.bat`
-- **macOS** — double-click `APF-2K8-Mod-Studio.command`
+- **Linux**: `./APF-2K8-Mod-Studio.sh`
+- **Windows**: double-click `APF-2K8-Mod-Studio.bat`
+- **macOS**: double-click `APF-2K8-Mod-Studio.command`
 
 Each portable launcher resolves everything relative to this folder. Moving or
 renaming the folder is fine; moving only the launcher is not.

@@ -106,6 +106,9 @@ class ContextTests(unittest.TestCase):
     def setUpClass(cls):
         cls.patched, _ = playlist.apply(XBE.read_bytes())
 
+    def assert_screen_descriptor(self, image, table, expected_sha256):
+        self.assertEqual(hashlib.sha256(image.read(table, 40)).hexdigest(), expected_sha256)
+
     def test_each_named_policy_transition(self):
         matrix = json.loads((ROOT / 'reports/music_playlist_contexts.v1.json').read_text())
         self.assertTrue(matrix['all_modes_proved'])
@@ -119,7 +122,7 @@ class ContextTests(unittest.TestCase):
                 for screen in row.get('screen_tables', []):
                     table = int(screen['va'], 0)
                     with self.subTest(screen=hex(table)):
-                        self.assertEqual(hashlib.sha256(image.read(table, 40)).hexdigest(), screen['sha256'])
+                        self.assert_screen_descriptor(image, table, screen['sha256'])
                         in_game = row['context'] in ('Replay', 'Pause menu')
                         vm = ContextMachine(self.patched)
                         if in_game:

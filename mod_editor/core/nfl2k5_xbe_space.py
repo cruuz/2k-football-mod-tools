@@ -793,6 +793,36 @@ LATE_OWNERS += ("nfl2k5_rookie_faces_hair",)  # b780 GEN1 Q81: rookie hair style
 # rookie faces image step only when Hair styles is on (so 64 MB builds never take it); last, so it moves nothing
 # b780-int: the hair owner stays after lineup_roles, intro_autoskip and injured_reserve: all are reserved by the first space pass, the hair owner
 # is appended at the rookie faces image step, so an earlier place would move them and extend_scaleout refuses.
+LATE_OWNERS += ("nfl2k5_offset_toss",)  # Installed after every other owner, including the rookie hair pass.
+# These standard-edition slots were witnessed together in the Xbox. Keeping the vacant gadget
+# slots ahead of Coach Matchup also permits a later in-place install on an existing disc.
+GADGET_OWNER = "nfl2k5_gadget_proof"
+GADGET_REQUESTS = ((GADGET_OWNER, "code", 2048, 16), (GADGET_OWNER, "read_only", 12800, 16))
+BACKFIELD_REQUEST = ("nfl2k5_backfield_cards", "code", 176, 16)
+GADGET_CODE_VA = 0x151F680
+BACKFIELD_VA = 0x1523080
+FRANCHISE_OWNERSHIP = "nfl2k5_franchise_ownership"
+# Keep this optional page independent of the shipped gadget/cards slots and the
+# reviewed standard simulator page (0x1524000 through 0x1527FFF).
+FRANCHISE_OWNERSHIP_VA = 0x1528000
+FRANCHISE_OWNERSHIP_SIZE = PAGE
+LINEUP_SLOT_VA = {GADGET_REQUESTS[0][:2]: GADGET_CODE_VA,
+                  GADGET_REQUESTS[1][:2]: GADGET_CODE_VA + GADGET_REQUESTS[0][2],
+                  BACKFIELD_REQUEST[:2]: BACKFIELD_VA}
+LATE_OWNERS += (GADGET_OWNER, BACKFIELD_REQUEST[0])
+QB_INJURY_OWNER = "nfl2k5_sim_qb_injuries"
+QB_INJURY_REQUEST = (QB_INJURY_OWNER, "code", 4 * PAGE, PAGE)
+LATE_OWNERS += (QB_INJURY_OWNER,)
+LATE_OWNERS += (FRANCHISE_OWNERSHIP,)
+# b81 qb34: the quarterback room (who starts, emergency moves) has three fixed pages right after the ownership page. Like
+# that page it is placed at an absolute address and never advances the pool cursor. Every other pool owner steps over
+# this range whether or not the room is requested, so the room can be added later, in any install order, and an owner
+# installed before it can never take its address. No shipped or tested layout reaches 0x1529000 (qb34 evidence/owner).
+QB_ROOM_OWNER = "nfl2k5_qb_room"
+QB_ROOM_VA = 0x1529000
+QB_ROOM_SIZE = 3 * PAGE
+QB_ROOM_REQUEST = (QB_ROOM_OWNER, "code", QB_ROOM_SIZE, PAGE)
+LATE_OWNERS += (QB_ROOM_OWNER,)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -811,7 +841,7 @@ SCALE_TAG = EXT_MAGIC + b"SP03"
 
 
 def dormant_union():
-    """Every allocator owner the manifest builder installs on its disposable disc (beta 61 through beta 63)."""
+    """The requests shared by the manifest generator and its default allocator proof."""
     from . import nfl2k5_dynamic_kickoff_relocated as relocated
     from . import nfl2k5_momentum as momentum, nfl2k5_defensive_try as defensive_try
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_zone_drop as zone_drop
@@ -856,6 +886,7 @@ def dormant_union():
     from . import nfl2k5_classic_teams as classic_teams  # b775-ct1: late, last read-only owner
     from . import nfl2k5_return_coverage as return_coverage  # b778-kr1: in build_manifest's all_requests (verification tooling)
     from . import nfl2k5_module_loader as module_loader  # b778-xs1: the last late owner
+    from . import nfl2k5_seven_on_seven as seven
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
             + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
@@ -881,7 +912,8 @@ def dormant_union():
             + third_down.REQUESTS  # b778-ai8
             + classic_teams.REQUESTS  # b775-ct1 after b775-mo2
             + return_coverage.REQUESTS  # b779-fixD: matches build_manifest's all_requests so allocation_evidence() needs no allocated=
-            + module_loader.REQUESTS)
+            + module_loader.REQUESTS + seven.REQUESTS + GADGET_REQUESTS + (BACKFIELD_REQUEST, QB_INJURY_REQUEST)
+            + (QB_ROOM_REQUEST,))  # b81 qb34: the fixed quarterback room pages
 
 
 def is_scaleout(payload):
@@ -931,6 +963,8 @@ def _requests(requests):
 
 def _needs_scaleout(requests):
     normalized = _requests(requests)
+    if any(r[0] in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER) for r in normalized):
+        return True
     # Unknown beta-62 owners never sort ahead of a shipped owner in its pages.
     if any(r[0] not in LEGACY_OWNERS for r in normalized) and any(
             r[0] in LEGACY_OWNERS - {LOGO_REQUEST[0]} for r in normalized):
@@ -1031,6 +1065,17 @@ def _scale_allocations(requests):
     # their protected manifest extents. Existing request sets pack identically.
     requests = sorted(_requests(requests), key=lambda r: (r[0] == 'nfl2k5_roster_arena_growth', r))
     original_requests = tuple(requests)
+    ownership = tuple(r for r in requests if r[0] == FRANCHISE_OWNERSHIP)
+    if ownership:
+        _require(ownership == ((FRANCHISE_OWNERSHIP, "code", FRANCHISE_OWNERSHIP_SIZE, 16),),
+                 "the standard franchise ownership code has a fixed page")
+    _require(all(r == QB_ROOM_REQUEST for r in requests if r[0] == QB_ROOM_OWNER),
+             "the quarterback room has three fixed pages")
+    gadget = tuple(r for r in requests if r[0] == GADGET_OWNER)
+    if gadget:
+        _require(gadget == GADGET_REQUESTS, "incomplete or foreign gadget allocation")
+        _require(all(r == BACKFIELD_REQUEST for r in requests if r[0] == BACKFIELD_REQUEST[0]),
+                 "foreign Backfield card allocation")
     _directory_code_size(requests)  # Validate every named slot before placement.
     requests = [r for r in requests if r[0] not in DIRECTORY_CODE_OWNERS]
     # b76-k1: the K128 owner is placed after every other owner, the promoted MyCareer code and the grown
@@ -1063,10 +1108,28 @@ def _scale_allocations(requests):
 
     def to_pool(owner, kind, size, align):
         at = (pool[0] + align - 1) & -align
+        if gadget:
+            fixed = LINEUP_SLOT_VA.get((owner, kind))
+            if fixed is not None:
+                at = fixed - POOL_VA
+            elif POOL_VA + at < BACKFIELD_VA + BACKFIELD_REQUEST[2] and POOL_VA + at + size > GADGET_CODE_VA:
+                at = (BACKFIELD_VA + BACKFIELD_REQUEST[2] - POOL_VA + align - 1) & -align
+        protected = FRANCHISE_OWNERSHIP_VA - POOL_VA
+        if owner == FRANCHISE_OWNERSHIP:
+            at = protected
+        elif ownership and at < protected + FRANCHISE_OWNERSHIP_SIZE and at + size > protected:
+            at = (protected + FRANCHISE_OWNERSHIP_SIZE + align - 1) & -align
+        # b81 qb34: unconditional, after the ownership step-over (an owner bumped over that page lands here next).
+        room = QB_ROOM_VA - POOL_VA
+        if owner == QB_ROOM_OWNER:
+            at = room
+        elif at < room + QB_ROOM_SIZE and at + size > room:
+            at = (room + QB_ROOM_SIZE + align - 1) & -align
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))
-        pool[0] = at + size
+        if owner not in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER):
+            pool[0] = max(pool[0], at + size)
 
     for owner, kind, size, align in requests:
         if owner in LEGACY_OWNERS:
@@ -1125,6 +1188,16 @@ def _scale_allocations(requests):
             # it fit in packs exactly as before; only a plan that used to be refused here changes.
             to_pool(owner, kind, size, align)
     for owner, kind, size, align in late:
+        if owner == QB_INJURY_OWNER:
+            _require((owner, kind, size, align) == QB_INJURY_REQUEST, "foreign simulated quarterback injury allocation")
+            # Fixture state and code share this bank. The legacy code pages are read-only.
+            # Keep the released gadget and card slots available on sparse custom builds.
+            pool[0] = max(pool[0], BACKFIELD_VA + BACKFIELD_REQUEST[2] - POOL_VA)
+            to_pool(owner, kind, size, align)
+            continue
+        if owner in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER) or (gadget and (owner, kind) in LINEUP_SLOT_VA):
+            to_pool(owner, kind, size, align)
+            continue
         for r in regions:
             if r["kind"] != kind:
                 continue

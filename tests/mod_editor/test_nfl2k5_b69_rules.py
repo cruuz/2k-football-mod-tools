@@ -211,6 +211,82 @@ class CoinTests(unittest.TestCase):
         m.toss(draw=0, period=5)
         self.assertEqual(m.get(self.state), 0)
 
+    def test_rejected_unsigned_draw_uses_the_next_accepted_draw_on_either_side(self):
+        places = common.allocations(self.payload, coin)
+        # The CMP immediately following the native random-word call in the draw loop.
+        compare = places["code"]["va"] + coin.assembly.LABELS["draw"] + 10
+        for human, outcome in ((1, 0), (2, 1)):
+            m = Machine(self.payload)
+            draws = []
+            m.uc.hook_add(uc.UC_HOOK_CODE, lambda emulator, *_: draws.append(
+                emulator.reg_read(x86.UC_X86_REG_EAX)), begin=compare, end=compare)
+            m.toss(outcome=outcome, human_side=human, draw=0xFFFFFFFF)
+            self.assertGreater(len(draws), 1)
+            self.assertEqual(set(draws[:-1]), {0xFFFFFFFF})
+            self.assertLess(draws[-1], 0xFFFFFFFF)
+            self.assertEqual(bool(m.get(self.state)), draws[-1] % 17 < 15)
+
+    def test_deferred_menu_starts_on_receive_for_every_stock_preference_and_keeps_kick(self):
+        for human, outcome in ((1, 0), (2, 1)):
+            for mode, kicks, receives in ((0, 1, 0), (2, 0, 0), (2, 1, 0), (2, 0, 1), (2, 5, 5)):
+                for move_to_kick in (False, True):
+                    with self.subTest(human=human, mode=mode, counts=(kicks, receives), kick=move_to_kick):
+                        m = Machine(self.payload)
+                        profile = 0x2008000
+                        m.put(0xBA04B0 if human == 1 else 0xBA04B4, profile)
+                        m.put(profile+0x38, mode)
+                        m.put(profile+0xE9C, receives | (kicks << 16))
+                        m.toss(human_side=human, outcome=outcome)
+                        winner = m.get(0xB72684)
+                        self.assertEqual((m.get(self.state), m.get(0xB72688)), (winner, m.get(winner)))
+                        self.assertEqual(m.get(m.MENU+0x45C), human)
+                        self.assertEqual(m.text(0xC38334), coin.NOTICE)
+                        initial, current = m.get(m.MENU+0x460), m.get(m.MENU+4)
+                        self.assertEqual((initial, current, m.row(0), m.row(1)), (1, 1, 0x25E580, 0x25E660))
+                        self.finish_choices(m, 0 if move_to_kick else current)
+                        self.assertEqual(m.get(0xE60284), winner if move_to_kick else m.get(winner))
+                        m.next_half()
+                        self.assertEqual(m.get(0xE60284), winner)
+
+    def test_opening_period_phase_and_controller_gates(self):
+        for period, phase in itertools.product(range(7), range(3)):
+            for human, others in ((1, ()), (2, ()), (0, ()), (1, (2,))):
+                for outcome in (0, 1):
+                    with self.subTest(period=period, phase=phase, sides=(human, *others), outcome=outcome):
+                        m = Machine(self.payload)
+                        m.toss(period=period, phase=phase, human_side=human,
+                               other_controllers=others, outcome=outcome)
+                        winner = m.get(0xB72684)
+                        winning_side = 1 if winner == Machine.HOME else 2
+                        deferred = (period == phase == 0 and winning_side not in (human, *others))
+                        self.assertEqual(m.get(self.state), winner if deferred else 0)
+
+    def test_no_deferral_preserves_full_menu_and_both_kickoffs_with_a_kick_preference(self):
+        def selection(payload, human, outcome, draw):
+            m = Machine(payload)
+            for side, pointer in enumerate((0x2008000, 0x200A000)):
+                m.put(0xBA04B0 + side*4, pointer)
+                m.put(pointer+0x38, 2)
+                m.put(pointer+0xE9C, 3 << 16)
+            m.toss(human_side=human, outcome=outcome, draw=draw)
+            menu = bytes(m.uc.mem_read(m.MENU, 0x468))
+            text = bytes(m.uc.mem_read(0xC382B4, 0x180))
+            sides = tuple(m.get(a) for a in (0xB72680, 0xB72684, 0xB72688))
+            self.assertEqual((m.get(m.MENU+0x460), m.get(m.MENU+4)), (0, 0))
+            self.finish_choices(m, m.get(m.MENU+4))
+            def kickoff():
+                return tuple(m.get(a) for a in (0xE60280, 0xE60284, 0xE602B4, 0xE602C4, 0xE602F0))
+            first = kickoff()
+            m.next_half()
+            return menu, text, sides, first, kickoff()
+
+        for human, outcome in itertools.product((1, 2), (0, 1)):
+            cpu_won = (outcome == 0) == (human == 1)
+            for draw in ((15, 16) if cpu_won else (0, 14, 15, 16)):
+                with self.subTest(human=human, outcome=outcome, draw=draw):
+                    self.assertEqual(selection(self.payload, human, outcome, draw),
+                                     selection(self.retail, human, outcome, draw))
+
     def test_third_retail_row_overwrites_controller_at_exact_instruction(self):
         m = Machine(self.retail)
         m.toss()
@@ -246,7 +322,8 @@ class B780Modes2CoinTests(unittest.TestCase):
 
     def game_b(self, payload):
         a = Machine(payload)
-        a.toss(outcome=0, human_side=1)                  # game A: the away CPU wins and defers
+        # Isolate the reset with a prior deferral. Revision 1 only takes that branch at supplied period 1.
+        a.toss(outcome=0, human_side=1, period=int(payload is self.previous))
         deferred = a.get(self.state) if payload is not self.retail else None
         a.run(0x55DD0, count=5_000_000)                  # game B starts: the game's own match reset
         carried = a.get(self.state) if payload is not self.retail else 0
@@ -271,6 +348,22 @@ class B780Modes2CoinTests(unittest.TestCase):
         self.assertEqual([e["label"] for e in receipt["edits"]], ["game_init"])
         self.assertEqual(coin.apply(up)[1]["changed_bytes"], 0)
         self.assertNotIn(coin.INIT_HOOK, coin.HOOKS)     # the era rules wrap HOOKS only
+
+    def test_five_hook_beta80_upgrades_without_moving_era_entry_points(self):
+        places = common.allocations(self.current, coin)
+        code, old_sites = coin.previous(places)[1]
+        self.assertEqual(old_sites, coin.sites(places))
+        previous = space.install_code(self.current, coin.OWNER, code, previous=coin.code_for(places))[0]
+        self.assertEqual(coin.status(previous), "previous")
+        self.assertEqual(coin.verify(previous)["status"], "previous")
+        upgrade, receipt = coin.apply(previous)
+        self.assertEqual((upgrade, receipt["upgraded"], receipt["edits"]), (self.current, True, []))
+        before = Machine(previous)
+        before.toss()
+        self.assertEqual(before.get(self.state), 0)
+        after = Machine(upgrade)
+        after.toss()
+        self.assertEqual(after.get(self.state), Machine.AWAY)
 
     def test_the_previous_games_deferral_no_longer_decides_the_second_half(self):
         retail = self.game_b(self.retail)
@@ -360,7 +453,7 @@ class EscapeMachine(Machine):
             self.stop_at = va
         super()._code(u, va, size, data)
 
-    def escape(self, bucket, *, cpu=True, position=0, timer=.5, pressure=.9, attempt=True, phase=4, state=14):
+    def escape(self, bucket, *, cpu=True, position=0, timer=.5, pressure=.9, attempt=True, phase=4, state=14, elapsed=1.0):
         self.put(self.PLAYER+12, self.COMMAND)
         self.put(self.PLAYER+0x3C, self.ROSTER)
         self.put(self.COMMAND, -1 if cpu else 0)
@@ -369,6 +462,9 @@ class EscapeMachine(Machine):
         self.put(0xE602B8, state)
         self.f32(self.STACK+12, timer)
         self.f32(self.STACK+16, pressure)
+        self.f32(0xBE47C0, pressure)                       # native smoothed pocket pressure
+        self.put(0xE6029C, self.ROSTER + 0x100)
+        self.f32(self.ROSTER + 0x110, elapsed)              # seconds since snap
         self.f32(self.STACK+32, .8)  # effective Scramble supplied by upstream rating helper
         rng = 0xE5FCA0
         self.uc.mem_write(rng, bytes(8+55*8))
@@ -387,13 +483,37 @@ class ScrambleTests(unittest.TestCase):
         cls.retail = retail_xbe()
         cls.payload = scrambles.apply(cls.retail)[0]
 
+    def test_verified_beta80_factor_and_code_upgrade_together(self):
+        from mod_editor.core import nfl2k5_xbe_space as space
+        from mod_editor.core import nfl2k5_rules_patch as patch
+        places = patch.allocations(self.payload, scrambles)
+        legacy_code, _ = scrambles.previous(places)[0]
+        old, _ = space.install_code(self.payload, scrambles.OWNER, legacy_code, previous=scrambles.code_for(places))
+        self.assertEqual(scrambles.status(old), "foreign")
+        old, _ = space._install_scaleout(old, scrambles.OWNER, scrambles.BETA80_FACTOR, "read_only",
+                                         previous=scrambles.encode_options())
+        self.assertEqual(scrambles.verify(old)["modern_factor"], 0.5)
+        upgraded, receipt = scrambles.apply(old)
+        self.assertTrue(receipt["upgraded"])
+        self.assertEqual(upgraded, self.payload)
+
     def test_more_native_escape_branches_under_identical_inputs(self):
         m, p = EscapeMachine(self.retail), EscapeMachine(self.payload)
         before = [m.escape(i) for i in range(100)]
         after = [p.escape(i) for i in range(100)]
         self.assertGreater(sum(after), sum(before))
         self.assertTrue(all(not b or a for b, a in zip(before, after)))
-        self.assertEqual((sum(before), sum(after)), (21, 41))
+        self.assertEqual((sum(before), sum(after)), (21, 25))
+
+    def test_clean_pocket_reads_then_uses_retail_and_early_native_gate(self):
+        m, p = EscapeMachine(self.retail), EscapeMachine(self.payload)
+        for settings, expected in ((dict(pressure=0.0, elapsed=1.0), (21, 0)),
+                                   (dict(pressure=0.69, elapsed=2.49), (21, 0)),
+                                   (dict(pressure=0.0, elapsed=2.5), (21, 21)),
+                                   (dict(pressure=0.7, elapsed=1.0), (21, 25)),
+                                   (dict(timer=.25), (0, 0)), (dict(attempt=False), (0, 0))):
+            self.assertEqual(tuple(sum(machine.escape(i, **settings) for i in range(100))
+                                   for machine in (m, p)), expected, settings)
 
     def test_human_non_qb_and_non_live_inputs_keep_retail(self):
         for settings in (dict(cpu=False), dict(position=3), dict(phase=2), dict(state=13)):

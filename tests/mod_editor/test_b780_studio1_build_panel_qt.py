@@ -81,7 +81,28 @@ class SpeedSeparationIsCountedTests(_PanelCase):
 
 
 class NeedsUpdateWordingTests(_PanelCase):
-    """A beta-79 install that this build updates in place: the badge, the box and its tooltip must agree."""
+    """The badge, locked checkbox and recipe should agree about an installed option."""
+
+    def test_older_coin_clock_and_historical_teams_stay_in_the_build_recipe(self) -> None:
+        keys = ("coin_defer", "decided_clock", "historic_teams_quick_game")
+        settings = dict(status="previous", settings=dict(margin=25, seconds=30))
+        panel = self.panel(**dict.fromkeys(keys, "previous"), decided_clock_settings=settings)
+        plan = panel._plan_for_build()
+        for key in keys:
+            box = panel._boxes()[key]
+            self.assertTrue(box.isChecked() and not box.isEnabled(), key)
+            self.assertEqual(panel._badges[key].text(), "Needs update")
+            self.assertTrue(getattr(plan, key))
+        self.assertEqual((plan.decided_clock_margin, plan.decided_clock_seconds), (25, 30))
+
+    def test_previous_franchise_loader_can_be_updated_in_the_shared_build_recipe(self) -> None:
+        panel = self.panel(load_user_team_guard="previous")
+        box = panel._boxes()["load_user_team_guard"]
+        self.assertTrue(box.isEnabled())
+        self.assertEqual(panel._badges["load_user_team_guard"].text(), "Needs update")
+        self.assertIn("saved coaching gameplans", box.text())
+        box.setChecked(True)
+        self.assertTrue(panel._plan_for_build().to_recipe()["load_user_team_guard"])
 
     def test_boxes_that_stay_ticked_do_not_tell_the_player_to_select_them(self) -> None:
         panel = self.panel(honors_page="previous", k128_memory="previous", camera="previous")
@@ -226,7 +247,8 @@ class V08DiscStatesTests(_PanelCase):
             box = getattr(panel, key + "_check", None)
             if box is None:
                 continue                                            # my_career_home has no box of its own
-            self.assertIn(panel._badges[key].text(), ("Needs update", "Beta 79 version: rebuild from retail"), key)
+            rebuild_label = "Earlier version: rebuild from retail" if key == "pass_rush_stats" else "Beta 79 version: rebuild from retail"
+            self.assertIn(panel._badges[key].text(), ("Needs update", rebuild_label), key)
             if panel._badges[key].text() != "Needs update":
                 self.assertFalse(box.isEnabled(), key)
                 self.assertIn("build from your retail game", box.toolTip(), key)
@@ -431,6 +453,30 @@ class GameFixesNeedsUpdateTests(unittest.TestCase):
         state.update(overrides)
         panel.apply_state(state)
         return panel
+
+    def test_older_coin_clock_and_historical_teams_stay_in_the_game_fixes_recipe(self) -> None:
+        keys = ("coin_defer", "decided_clock", "historic_teams_quick_game")
+        settings = dict(status="previous", settings=dict(margin=25, seconds=30))
+        panel = self.fixes(**dict.fromkeys(keys, "previous"), decided_clock_settings=settings)
+        plan = panel.plan()
+        summary = panel.source_status.text()
+        self.assertIn("Earlier revisions are installed for", summary)
+        for key in keys:
+            self.assertTrue(panel.checks[key].isChecked() and not panel.checks[key].isEnabled(), key)
+            self.assertTrue(getattr(plan, key))
+            self.assertEqual(panel.badges[key].text(), "Needs update")
+            self.assertIn(next(label for name, label, _help in panel._patches if name == key), summary)
+        self.assertEqual((plan.decided_clock_margin, plan.decided_clock_seconds), (25, 30))
+
+    def test_previous_franchise_loader_updates_in_game_fixes(self) -> None:
+        panel = self.fixes(load_user_team_guard="previous")
+        box = panel.checks["load_user_team_guard"]
+        self.assertTrue(box.isEnabled())
+        self.assertEqual(panel.badges["load_user_team_guard"].text(), "Needs update")
+        box.setChecked(True)
+        self.assertTrue(panel.plan().to_recipe()["load_user_team_guard"])
+        panel = self.fixes(load_user_team_guard="foreign")
+        self.assertFalse(panel.checks["load_user_team_guard"].isEnabled())
 
     def test_each_beta_79_state_is_an_update_a_locked_update_or_a_rebuild(self) -> None:
         panel = self.fixes(catch_slider="previous", camera="previous", draft_ai="legacy", progression="legacy",

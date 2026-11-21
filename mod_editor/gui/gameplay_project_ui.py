@@ -6,24 +6,30 @@ No writer runs here. Synchronization only changes the effective BuildPlan.
 from contextlib import contextmanager
 from copy import deepcopy
 
-from PyQt5.QtCore import QObject, QSignalBlocker
+from PyQt5 import sip
+from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QCheckBox, QComboBox, QLineEdit, QSpinBox, QDoubleSpinBox, QPlainTextEdit
 from mod_editor.core import nfl2k5_build_settings as saved
 
 
 @contextmanager
 def quiet(panel):
-    blockers = [QSignalBlocker(widget) for widget in panel.findChildren(QObject)]
+    children = [(child, child.blockSignals(True)) for child in panel.findChildren(QObject)]
     try:
         yield
     finally:
-        for blocker in blockers:
-            blocker.unblock()
+        # Restoring project controls can replace their Qt-owned children.
+        for child, was_blocked in children:
+            if not sip.isdeleted(child):
+                child.blockSignals(was_blocked)
 
 
 def capture(panel):
     state = saved.from_plan(panel.plan())
     state.update(panel.music_build_settings())
+    artwork = panel.softdrink_project_field.text().strip()
+    if artwork or panel.softdrink_project_check.isChecked():
+        state.update(softdrink_project=artwork, include_softdrink_project=panel.softdrink_project_check.isChecked())
     state.update(deepcopy(panel._senior_bowl_options))
     # A prepared file can exist before its option is enabled.
     state["my_career_setup"] = panel.my_career_setup_field.text().strip() or None
@@ -57,6 +63,10 @@ def restore(panel, state):
         panel.arc_spin.setValue(round(choices["arc"] * 100))
         if hasattr(panel, "speed_threshold_spin"):  # b780-cv5: the Build page's Speed separation strength
             panel.speed_threshold_spin.setValue(choices["speed_threshold"])
+        if hasattr(panel, "qb_injury_mode"):
+            mode = choices.get("sim_qb_injuries")
+            panel.qb_injury_mode.setCurrentIndex(0 if mode is None else panel.qb_injury_mode.findData(mode))
+            panel.qb_injury_rate.setValue(choices.get("sim_qb_injury_rate", saved.defaults()["sim_qb_injury_rate"]))
         panel._momentum_last_positive = choices["momentum"] or 50
         panel._collision_last_positive = choices["momentum_collision_level"] or 50
         for field, value in (("scorebug_watermark_combo", choices["scorebug_watermark"]),
@@ -76,6 +86,16 @@ def restore(panel, state):
         panel.screen_timing_combo.setCurrentText(choices["screen_timing"] or "D")
         for key, box in getattr(panel, "abilities_lock_checks", {}).items():
             box.setChecked(bool(choices.get(key, True)))
+        panel._apply_abilities_star_boxes(choices)
+        panel._apply_abilities_access(choices["abilities_star_access"])
+        panel._team_number_scale = deepcopy(choices["team_number_scale"])
+        _combo(panel.stock_age_combo, choices["stock_age_policy"])
+        panel.honors_history_field.setText("" if choices["honors_history"] == "builtin" else choices["honors_history"])
+        artwork = choices.get("softdrink_project", "")
+        panel.softdrink_project_field.setText(artwork)
+        panel.softdrink_project_check.setChecked(choices.get("include_softdrink_project", bool(artwork)))
+        for widget in (panel.softdrink_project_field, panel.softdrink_project_check, panel.softdrink_art_button):
+            widget.setVisible(bool(artwork) or panel.softdrink_project_check.isChecked())
         for key in ("team_history", "career_stats", "prospect_names", "roster_edits", "espn25_plan", "weather_plan", "music_project",
                     "music_library", "hires_folder", "scorebug_folder", "my_career_setup", "name", "author"):
             getattr(panel, key + "_field").setText(choices[key] or "")

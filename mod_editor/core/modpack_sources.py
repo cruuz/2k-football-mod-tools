@@ -47,7 +47,7 @@ def compose_project(document):
     return dict(document, edits=result)
 
 
-def prepare(recipe_path, work, *, stack=None, marks_pack=None):
+def prepare(recipe_path, work, *, stack=None, marks_pack=None, patched_image=None):
     """Capture effective overrides and every referenced league PNG, preserving originals."""
     recipe_path, work = f._path(recipe_path), f._output_path(work)
     stack = f._path(stack or Path(m.platform_compat.absolute_path(__file__)).parents[2])
@@ -104,6 +104,63 @@ def prepare(recipe_path, work, *, stack=None, marks_pack=None):
         return value
 
     effective = dict(recipe["overrides"])
+    if patched_image is not None:
+        from . import mod_build, nfl2k5_backfield_cards
+        try:
+            payload = mod_build._xbe_bytes(Path(patched_image))
+            card_state = nfl2k5_backfield_cards.status(payload)
+        except (OSError, ValueError):
+            payload = None
+            card_state = "unavailable"
+        if card_state in ("retail", "applied"):
+            effective["backfield_cards"] = card_state == "applied"
+        qb = mod_build._core_module("nfl2k5_sim_qb_injuries")
+        if effective.get("sim_qb_injuries") is not None or (qb is not None and payload is not None):
+            m._require(qb is not None and payload is not None, "Cannot verify the disc's simulated quarterback injury setting")
+            state = qb.read_settings(payload)
+            mode = effective.get("sim_qb_injuries")
+            if mode is not None:
+                m._require(state.get("mode") == mode and (mode != "custom" or
+                           state["custom_rate"] == effective.get("sim_qb_injury_rate", mod_build.BuildPlan.sim_qb_injury_rate)),
+                           "The disc and source recipe select different simulated quarterback injury settings")
+            if state["status"] == "applied":
+                effective.update(sim_qb_injuries=state["mode"], sim_realism=True, k128_memory=True)
+                if state["mode"] == "custom":
+                    effective["sim_qb_injury_rate"] = state["custom_rate"]
+                # b81 scoring: an install from before the scoring slice has retail scoring sites (a rebuild adds them).
+                kicking = mod_build._core_module("nfl2k5_sim_scoring")
+                installed = kicking.installed(payload) if kicking is not None else ("foreign", None)
+                m._require(installed[0] in ("applied", "retail"), "Cannot verify the disc's simulated scoring setting")
+                if installed[0] == "applied":
+                    stop = int(installed[1]["breakaway_stop_beyond"])
+                    m._require(effective.get("sim_breakaway_stop", stop) == stop,
+                               "The disc and source recipe select different simulated breakaway stops")
+                    if stop != mod_build.BuildPlan.sim_breakaway_stop:
+                        effective["sim_breakaway_stop"] = stop
+        room = mod_build._core_module("nfl2k5_qb_room")  # b81 qb34: record the disc's quarterback room rules
+        # The key names piece 3's rules only; until a piece 3 bit is handed over there is nothing to record.
+        if mod_build._piece3_bits() and (effective.get("qb_room") is not None or (room is not None and payload is not None)):
+            from .nfl2k5_build_settings import qb_room_level
+            m._require(room is not None and payload is not None, "Cannot verify the disc's quarterback room setting")
+            room_state = room.read_settings(payload)
+            m._require(room_state["status"] in ("retail", "applied", "previous"),
+                       "Cannot verify the disc's quarterback room setting")
+            # The key names piece 3's rules only; the floor follows the injury setting (coordinator's rule).
+            piece3 = getattr(room, "PIECE3_BITS", 7)
+            installed = ("realistic" if room_state["status"] in ("applied", "previous")
+                         and room_state.get("stages", 0) & piece3 else "retail")
+            named = effective.get("qb_room")
+            if named is not None:
+                m._require(named == installed, "The disc and source recipe select different quarterback room settings")
+            else:
+                # What a rebuild of this recipe would install without the key (the rule needs the preset's fields).
+                try:
+                    follows = mod_build._qb_room_resolution(build_plan(
+                        {"preset": recipe["preset"], "overrides": {k: v for k, v in effective.items() if k != "qb_room"}}))[0]
+                except (KeyError, ValueError):
+                    follows = qb_room_level(None, effective.get("sim_qb_injuries"))
+                if follows != installed and not (follows is None and installed == "retail"):
+                    effective["qb_room"] = installed
     if marks_pack:
         effective["official_marks_pack"] = str(marks_pack)
     from . import nfl2k5_official_marks as marks
@@ -153,7 +210,7 @@ def resolve(document, root):
     return document
 
 
-def materialize(recipe, directory):
+def materialize(recipe, directory, *, resume=False, console_target=None):
     """Create editable absolute-path working copies; frozen assets remain intact."""
     m._require(recipe.get("schema") == "softdrink_sources/v1", "Pack has no portable Studio sources")
     root = f._path(m.platform_compat.absolute_path(f._output_path(directory)))
@@ -161,12 +218,43 @@ def materialize(recipe, directory):
     project = compose_project(resolve(json.loads(Path(local["project"]).read_text(encoding="utf-8")), root))
     project_path = f._contained_path(root, "SOFTDRINK-league-project.json")
     recipe_path = f._contained_path(root, "SOFTDRINK-build-recipe.json")
-    m._require(not project_path.exists() and not recipe_path.exists(), "Choose a new source folder to preserve your edits")
-    with f._transaction(project_path) as part:
-        part.write_text(json.dumps(project, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     local["project"] = str(project_path)
-    with f._transaction(recipe_path) as part:
-        part.write_text(json.dumps(local, indent=2), encoding="utf-8", newline="\n")
+
+    def matches(path, data):
+        return path.is_file() and path.stat().st_size == len(data) and path.read_bytes() == data
+
+    if console_target is not None:
+        from . import nfl2k5_console_memory as memory
+        value = memory.normalize(console_target)
+        original_memory = memory.of(recipe)
+        overrides = dict(local.get("overrides", {}))
+        if value == 64 and original_memory != 64:
+            # The builder installs the calendar and 128-season cap together when either is enabled.
+            source_plan = build_plan(local)
+            source_plan.calendar_engine = source_plan.season_cap or source_plan.calendar_engine
+            profile = memory.recommended_profile(source_plan)
+            if profile.get("calendar_engine") is False:
+                profile["season_cap"] = False
+            overrides.update(profile)
+        elif value == 128 and original_memory == 64:
+            # A compact game's save warning would direct a player on standard back to standard.
+            overrides.pop("edition_save_notes", None)
+        # A CLI extraction already has the authored target, without the GUI's extra target field.
+        from_cli = value == original_memory and resume and matches(recipe_path, json.dumps(local, indent=2).encode("utf-8"))
+        if not from_cli:
+            local[memory.FIELD] = value
+            local["overrides"] = {**overrides, memory.FIELD: value}
+    files = ((project_path, (json.dumps(project, indent=2, sort_keys=True) + "\n").encode("utf-8")),
+             (recipe_path, json.dumps(local, indent=2).encode("utf-8")))
+    # Verify both destinations before writing. An interruption between files is resumable.
+    for path, data in files:
+        if path.exists():
+            m._require(resume and matches(path, data),
+                       f"Choose a new source folder to preserve your edits in {path.name}")
+    for path, data in files:
+        if not path.exists():
+            with f._transaction(path) as part:
+                part.write_bytes(data)
     return local
 
 
@@ -185,10 +273,10 @@ def write_bundle(output, recipe, assets, *, overwrite=False):
                 asset_count=len(rows), assets_bytes=sum(r["length"] for r in rows), compressed_bytes=sum(r["compressed_bytes"] for r in rows))
 
 
-def extract_bundle(bundle, directory, expected):
+def extract_bundle(bundle, directory, expected, *, resume=False, progress=None):
     bundle = f._path(bundle)
     m._require(isinstance(expected, dict) and {"size", "sha256"} <= expected.keys(), "The pack does not declare an optional sources file")
-    m._require(Path(bundle).stat().st_size == expected["size"] and m.hash_file(bundle) == expected["sha256"],
+    m._require(Path(bundle).stat().st_size == expected["size"] and m.hash_file(bundle, progress=progress) == expected["sha256"],
                "This sources file does not match the finished pack")
     m._zip_directory_guard(f._path(bundle))
     with zipfile.ZipFile(bundle) as z:
@@ -203,24 +291,37 @@ def extract_bundle(bundle, directory, expected):
         m._require(sum(a["length"] for a in doc["assets"]) <= 8 * 1024**3, "Sources exceed 8 GiB")
     # Same streamed SHA-256 and safe-path extractor as embedded sources.
     manifest = m.Manifest("sources", "", "", "", "", {}, {}, {}, {}, (), recipe=doc["recipe"], raw=doc)
-    f.extract_assets(m.Pack(Path(bundle), manifest, Path(bundle).stat().st_size), directory)
+    f.extract_assets(m.Pack(Path(bundle), manifest, Path(bundle).stat().st_size), directory, resume=resume, progress=progress)
     return doc["recipe"]
 
 
 def build_plan(recipe, source="", target=""):
     from dataclasses import fields
-    from . import mod_build
-    plan = mod_build.apply_preset(mod_build.BuildPlan(str(source), str(target)), recipe["preset"])
+    from . import mod_build, nfl2k5_build_settings
+    initial = mod_build.BuildPlan(str(source), str(target), console_memory=recipe["overrides"].get("console_memory", 128))
+    plan = mod_build.apply_preset(initial, recipe["preset"])
+    if "sim_qb_injuries" not in recipe["overrides"]:
+        # Older source recipes predate the quarterback setting and the experimental preset's heap default.
+        plan.sim_qb_injuries = None
+        plan.k128_memory = initial.k128_memory
+    if "qb_room" not in recipe["overrides"]:
+        # b81 qb34 (DESIGN_CHANGES C1): a recipe that does not name the room follows its quarterback injury setting.
+        plan.qb_room = None
     known = {field.name for field in fields(plan)} - {"source", "target", "overwrite"}
     for key, value in recipe["overrides"].items():
         m._require(key in known, f"Recipe requires an unknown Studio option: {key}")
         setattr(plan, key, tuple(value) if isinstance(getattr(plan, key), tuple) and isinstance(value, list) else value)
+    nfl2k5_build_settings.validate_sim_qb_injuries(plan.sim_qb_injuries, plan.sim_qb_injury_rate)
+    nfl2k5_build_settings.validate_sim_breakaway_stop(plan.sim_breakaway_stop)
+    nfl2k5_build_settings.validate_qb_room(plan.qb_room)
     return plan
 
 
 def build_project(plan, project, progress):
     """Full Studio authoring path, deliberately separate from fast installation."""
     from . import mod_build
+    if isinstance(plan, mod_build._ReleasedV09Update):
+        raise ValueError("Use your retail disc to include league artwork with these v0.9 updates.")
     from .nfl2k5_source_cache import Nfl2k5SourceCache
     from .nfl2k5_build_service import Nfl2k5BuildService
     service = Nfl2k5BuildService()
@@ -230,8 +331,9 @@ def build_project(plan, project, progress):
     mod_build.preflight_project_options(plan, document)
     mod_build.preflight_board_source(plan, progress)
     if not document["edits"]:
-        return mod_build.build(plan, progress)
-    cache = Nfl2k5SourceCache().index(Path(plan.source))
+        return mod_build.build(plan, progress, require_change=True)
+    cache = Nfl2k5SourceCache().index(Path(plan.source), progress=progress)
     def project_progress(event):
         progress(getattr(event, "message", str(event)), getattr(event, "completed", 0), getattr(event, "total", 0))
-    return mod_build.build(plan, progress, _project_builder=lambda output: service.build(cache, Path(project), output, project_progress))
+    return mod_build.build(plan, progress, require_change=True,
+                           _project_builder=lambda output: service.build(cache, Path(project), output, project_progress))

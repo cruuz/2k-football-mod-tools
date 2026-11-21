@@ -43,7 +43,8 @@ def _repin(out: bytearray) -> bytes:
 
 def revision_six(payload: bytes, *, keep: frozenset = frozenset()) -> bytes:
     """``payload`` (revision 7) as revision 6 installed it: the seven rewritten windows with their revision-6 bytes and
-    revision 7's new sites retail; the sites in ``keep`` keep their revision-7 bytes (to build mixed images)."""
+    revision 7's new sites retail; the sites in ``keep`` keep their revision-7 bytes (to build mixed images). b81: revision
+    8's new sites (the practice-squad fill) are retail as well, as on every image older than revision 8."""
     retail = XbeImage(retail_bytes())
     image, out = XbeImage(payload), bytearray(payload)
     for va_hex, code in json.loads(FIXTURE.read_text())["windows"].items():
@@ -52,7 +53,7 @@ def revision_six(payload: bytes, *, keep: frozenset = frozenset()) -> bytes:
             at = image.offset(va, len(body))
             out[at:at + len(body)] = body
     for site in economy.sites():
-        if site.va in economy.REVISION_7_NEW and site.va not in keep:
+        if (site.va in economy.REVISION_7_NEW and site.va not in keep) or site.va in getattr(economy, "REVISION_8_NEW", ()):
             at = image.offset(site.va, len(site.patched))
             out[at:at + len(site.patched)] = retail.read(site.va, len(site.patched))
     return _repin(out)
@@ -65,8 +66,8 @@ class SiteTests(unittest.TestCase):
         cls.after, cls.receipt = economy.apply(cls.retail)
 
     def test_revision_seven_applies(self):
-        self.assertEqual(economy.REVISION, 7)
-        self.assertEqual(self.receipt["revision"], 7)
+        self.assertIn(economy.REVISION, (7, 8))           # b81: revision 8 (practice squads) keeps every revision-7 site
+        self.assertEqual(self.receipt["revision"], economy.REVISION)
         self.assertEqual(economy.status(self.after), "applied")
         call = next(s.patched for s in economy.sites() if s.va == economy.DRAFT_NEED_MINIMUM)
         self.assertEqual(call, b"\xe8" + struct.pack("<i", SYMBOLS["economy_draft_min"] - economy.DRAFT_NEED_MINIMUM - 5))
@@ -98,7 +99,7 @@ class SiteTests(unittest.TestCase):
             payload = path.read_bytes()
             self.assertEqual(economy.status(payload), "legacy", name)
             upgraded, receipt = economy.apply(payload)
-            self.assertEqual((economy.status(upgraded), receipt["revision"]), ("applied", 7), name)
+            self.assertEqual((economy.status(upgraded), receipt["revision"]), ("applied", economy.REVISION), name)
         if not found:
             self.skipTest("no released pack executable here")
 

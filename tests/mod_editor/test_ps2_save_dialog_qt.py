@@ -9,6 +9,7 @@ memory card are required.
 from __future__ import annotations
 
 import os
+import struct
 from pathlib import Path
 import sys
 import tempfile
@@ -154,6 +155,60 @@ class SuggestedNameTests(unittest.TestCase):
         self.assertTrue(suggested_psu_name("").endswith(".psu"))
 
 
+def _two_save_card(path: Path, *, different_first_game: bool = False) -> tuple[str, str]:
+    """Create two independent, sealed saves on a small FAT-backed ECC card."""
+    cluster_size = 1024
+    clusters = [bytearray(cluster_size) for _ in range(3)]
+    directory_mode, file_mode = 0x8427, 0x8417
+    fat = [0xFFFFFFFF] * 256
+
+    def store(data):
+        start = len(clusters) - 3
+        for offset in range(0, len(data), cluster_size):
+            cluster = data[offset:offset + cluster_size]
+            if offset:
+                fat[len(clusters) - 4] = 0x80000000 | (len(clusters) - 3)
+            clusters.append(bytearray(cluster.ljust(cluster_size, b"\0")))
+        return start
+
+    def entry(name, mode, length, first):
+        row = bytearray(512)
+        struct.pack_into("<II", row, 0, mode, length)
+        struct.pack_into("<I", row, 0x10, first)
+        row[0x40:0x40 + len(name)] = name.encode("ascii")
+        return row
+
+    dirs = []
+    for label in ("First", "Second"):
+        save = save_lib._synthetic_save()
+        payload = save.files.pop(save.directory)
+        save.directory = save_lib.SAVE_PREFIX + label
+        save.files[save.directory] = payload
+        if label == "Second":
+            save_lib.set_player_name(save, 0, "first", "Delta")
+        save.reseal()
+        if different_first_game and label == "First":
+            save.files["game.dat"] = save.files.pop(save.directory)
+            save.directory = "OTHER-GAME"
+        files = [entry(key, file_mode, len(data), store(data)) for key, data in save.files.items()]
+        dirs.append((save.directory, len(files), store(b"".join(files))))
+    root = store(entry(".", directory_mode, len(dirs) + 1, 0) + b"".join(
+        entry(name, directory_mode, length, first) for name, length, first in dirs))
+    clusters[0][:27] = b"Sony PS2 Memory Card Format"
+    struct.pack_into("<H", clusters[0], 0x2A, 2)
+    struct.pack_into("<III", clusters[0], 0x34, 3, len(clusters) - 3, root)
+    struct.pack_into("<I", clusters[0], 0x50, 1)
+    clusters[1][:] = struct.pack("<256I", 2, *([0xFFFFFFFF] * 255))
+    clusters[2][:] = struct.pack("<256I", *fat)
+    with path.open("wb") as out:
+        for cluster in clusters:
+            for offset in (0, 512):
+                page = cluster[offset:offset + 512]
+                out.write(page + b"".join(save_lib.chunk_ecc(page[n:n + 128])
+                                          for n in range(0, 512, 128)) + bytes(4))
+    return dirs[0][0], dirs[1][0]
+
+
 class ServiceTests(unittest.TestCase):
     """Drive the real service the dialog binds to, on a synthesized save."""
 
@@ -207,6 +262,97 @@ class ServiceTests(unittest.TestCase):
         self.service.open(self.source_path)
         with self.assertRaises(ValidationError):
             self.service.write(self.root / "unchanged.psu")
+
+    def test_repeated_name_edits_keep_original_allocation_and_verify(self) -> None:
+        self.service.open(self.source_path)
+        self.service.set_name(0, "first", "Al")
+        self.assertEqual(self.service.players()[0].first_capacity, 5)
+        self.service.set_name(0, "first", "D")
+        self.assertTrue(self.service.write(self.root / "short.psu").verified)
+        self.service.set_name(0, "first", "Delta")
+        self.assertTrue(self.service.write(self.root / "restored.psu").verified)
+        self.service.set_name(0, "first", "Alpha")
+        self.assertFalse(self.service.dirty)
+
+    def test_utf16_capacity_is_shared_by_the_dialog_and_writer(self) -> None:
+        self.service.open(self.source_path)
+        self.assertIsNotNone(self.service.validate_name(0, "first", "🏈🏈🏈"))
+        row = _row(first="Alpha")
+        self.assertFalse(name_capacity(row, "first", "🏈🏈🏈").valid)
+        self.service.set_name(0, "first", "A🏈🏈")
+        self.assertTrue(self.service.write(self.root / "unicode.psu").verified)
+
+    def test_pcsx2_card_checksum_and_other_game_files_survive_verified_name_edit(self):
+        source = self.root / "pcsx2.ps2"
+        other, selected = _two_save_card(source, different_first_game=True)
+        image = bytearray(source.read_bytes())
+        marker = b"save-tag" + b"\xff" * 504
+        image[528:2 * 528] = marker + save_lib.page_spare(b"\xff" * 512)
+        selected_pages = verify_lib.decode_memcard(source, selected).card_pages[selected]
+        for page in selected_pages:
+            image[page * 528 + 524:page * 528 + 528] = b"keep"
+        source.write_bytes(image)
+        self.service.open(source, selected)
+        self.service.set_name(0, "first", "Al")
+        self.service.set_name(0, "first", "Echo")
+        output = self.root / "verified.ps2"
+        result = self.service.write(output)
+        self.assertTrue(result.verified, result.detail)
+        saved = output.read_bytes()
+        self.assertEqual(saved[528:2 * 528], image[528:2 * 528])
+        self.assertEqual(source.read_bytes(), image)
+        for page in selected_pages:
+            self.assertEqual(saved[page * 528 + 524:page * 528 + 528], b"keep")
+        checks = verify_lib.verify_memcard_write(source, output, selected)
+        self.assertEqual(checks["ecc"]["pcsx2_checksum_pages"], 1)
+        self.assertEqual(checks["other_saves_untouched"], [other])
+        self.assertTrue(checks["changed_card_pages"])
+
+        altered = bytearray(saved)
+        altered[528] ^= 1
+        output.write_bytes(altered)
+        with self.assertRaisesRegex(verify_lib.VerifyError, "outside the selected save"):
+            verify_lib.verify_memcard_write(source, output, selected)
+        altered = bytearray(saved)
+        altered[528 + 200] ^= 1
+        output.write_bytes(altered)
+        with self.assertRaisesRegex(verify_lib.VerifyError, "wrong ECC"):
+            verify_lib.verify_memcard_write(source, output, selected)
+
+    def test_second_directory_survives_revert_psu_and_card_copy(self):
+        card = self.root / "two-saves.ps2"
+        first, second = _two_save_card(card)
+        self.assertEqual(self.service.card_directories(card), (first, second))
+        self.service.open(card, second)
+        self.assertEqual(self.service.players()[0].first, "Delta")
+        self.service.set_name(0, "first", "Al")
+        self.service.revert()
+        self.assertEqual(self.service.players()[0].first, "Delta")
+        self.service.set_name(0, "first", "Echo")
+        self.assertTrue(self.service.write(self.root / "second.psu").verified)
+        copy = self.root / "new-card.ps2"
+        self.assertTrue(self.service.write(copy).verified)
+        self.service.open(copy, first)
+        self.assertEqual(self.service.players()[0].first, "Alpha")
+        self.service.open(copy, second)
+        self.assertEqual(self.service.players()[0].first, "Echo")
+
+    def test_names_that_share_storage_are_refused_before_editing(self):
+        save = save_lib._synthetic_save()
+        body = bytearray(save.payload)
+        pointer_one = save_lib.WRAPPER_SIZE + 0x110
+        pointer_two = pointer_one + 0x54
+        distance, = struct.unpack_from("<i", body, pointer_one)
+        struct.pack_into("<i", body, pointer_two, distance - 0x54)
+        save.files[save.directory] = bytes(body)
+        save.reseal()
+        path = self.root / "shared.psu"
+        save_lib.write_psu(save, path)
+        self.service.open(path)
+        self.assertEqual([row.first for row in self.service.players()], ["Alpha", "Alpha"])
+        with self.assertRaises(ValidationError):
+            self.service.set_name(0, "first", "Al")
+        self.assertFalse(self.service.dirty)
 
     def test_revert_restores_the_file_on_disk(self) -> None:
         self.service.open(self.source_path)
@@ -338,6 +484,18 @@ class ServiceVerifiesTheFileTests(unittest.TestCase):
             service_module.save_lib.write_psu = real
         self.assertFalse(result.verified)
         self.assertIn("verification failed", result.detail)
+        self.assertFalse((self.root / "bad.psu").exists())
+        self.assertTrue(self.service.write(self.root / "bad.psu").verified)
+
+    def test_a_destination_claimed_during_verification_survives(self) -> None:
+        output = self.root / "claimed.psu"
+        def create_other_file(stage):
+            if "Verifying" in stage:
+                output.write_bytes(b"another export")
+        with self.assertRaisesRegex(ValidationError, "output appeared|existing file"):
+            self.service.write(output, create_other_file)
+        self.assertEqual(output.read_bytes(), b"another export")
+        self.assertTrue(self.service.dirty)
 
     def test_the_write_announces_each_stage_it_reaches(self) -> None:
         # The GUI has nothing else to show during a multi-second card write.
@@ -570,6 +728,21 @@ class WriteIsAsynchronousTests(unittest.TestCase):
         self.assertIn("try again", warnings[0])
         self.assertNotIn("RuntimeError:", warnings[0])
         self.assertIn("write protected", dialog.status_label.text())
+
+    def test_verification_failure_offers_the_same_filename_again(self) -> None:
+        self.host.write = lambda output, progress=None: SimpleNamespace(
+            verified=False, detail="The selected directory failed verification.", output=output,
+        )
+        warnings = []
+        self.dialog_module.QMessageBox.warning = staticmethod(
+            lambda parent, title, body: warnings.append((title, body))
+        )
+        self.dialog._write_save()
+        self._settle()
+        self.assertEqual(len(warnings), 1)
+        self.assertEqual(warnings[0][0], "PS2 save verification failed")
+        self.assertIn("retry the same filename", warnings[0][1])
+        self.assertIn("selected directory", self.dialog.status_label.text())
 
     def test_closing_is_allowed_again_once_the_write_finishes(self) -> None:
         rejections = []

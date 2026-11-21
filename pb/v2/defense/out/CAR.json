@@ -1893,7 +1893,7 @@
  "receipt": {
   "team": "CAR",
   "offense_pack": "data/playbooks/softdrink_car_modern.2k5book",
-  "offense_pack_sha256": "7c94fe06f4f6d3598f163dfce8821a8bb3b634251bbbbc6479ff153288274cda",
+  "offense_pack_sha256": "59e6b0d2d38825ab98f51a88dc3ae5daf0d4d27765f47aac833330fe18f19523",
   "source_fingerprint": "82948ef2a151e4bf468ce6d5d138d7a12823f9f14c2577a9914214d8e1c3a46f",
   "replacement_sha256": "85ecc408ddb159e4d431f003c87c5b08089cf65c88bc30218a9f012c509dfbcf",
   "semantic_sha256": "b5852f6d039789d72f0f666ed93a8028414e77e08115b1569d330c0c21efbd1c",

@@ -28,7 +28,7 @@ class Machine(BaseMachine):
         settings = patch.read_settings(payload)
         self.level = settings["level"] if settings else "retail"
         variant = settings.get("variant") if settings else None
-        if variant == "b778_late":
+        if variant in patch.LATE_VARIANTS:
             self.labels = patch.assembly.LABELS2_LATE
         elif self.level == "modern2":
             self.labels = patch.assembly.LABELS2

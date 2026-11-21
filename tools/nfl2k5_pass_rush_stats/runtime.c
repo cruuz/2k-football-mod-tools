@@ -73,6 +73,8 @@ typedef struct {
     u8 beaten[NCODE];
     u16 tag[NCODE];
     u16 text[8];                         /* b780 b5-sim: the Player Card cell text (one cell, drawn before the next) */
+    u32 view_key;                        /* qualifying linemen: the view whose busiest lineman is cached */
+    u32 view_games;                      /* completed grid games (low 16) and his games (high 16) */
 } State;
 
 extern volatile State prs_state;
@@ -417,10 +419,14 @@ static i32 bank_int(u32 player, u32 field, u32 bank) {
     if (bank == 8 || bank == 9) {
         /* career: every live word of this field in the current class (the native search 0x14E800's filter) */
         const volatile u32 *w = (const volatile u32 *)G(player + 0x2C);
-        u32 cls = G(CLASS);
+        u32 cls = G(CLASS), years_pro = (G(player + 0x24) >> 8) & 31;
+        u32 elapsed = G(SEASONS);
+        /* Games played qualifies zero-allowed linemen only in seasons tracked by this franchise. */
+        u32 first_slot = field == 0 && years_pro > elapsed ? years_pro - elapsed : 0;
         for (u32 n = 0; w && n < 50000; n++, w++) {
             u32 word = *w;
-            if (((word >> 16) & 0x7F) == field && ((word >> 29) & 1) == cls && !(word & 0x10000000))
+            if (((word >> 16) & 0x7F) == field && ((word >> 29) & 1) == cls && !(word & 0x10000000)
+                && ((word >> 23) & 31) >= first_slot)
                 v += (i32)(short)(word & 0xFFFF);
             if (word & 0x80000000)
                 break;
@@ -466,4 +472,117 @@ const u16 *FC prs_card_text(u32 row, u32 field) {
    106..110, which have no history field and read 0. */
 float FC prs_leader_value(u32 player, u32 field, u32 bank) {
     return bank_value(player, field, bank);
+}
+
+/* The League Leaders builder keeps the largest 40 keys before the spreadsheet can sort its rows.
+   For allowed stats a smaller number is better. The actual column getter still returns the number shown. */
+#define SHEET_HAS_STAT ((float (FC *)(u32, u32, u32))0x003216A0)
+#define SHEET_SORT_KEY ((float (FC *)(u32, u32, u32))0x003216C0)
+float FC prs_shortlist_value(u32 player, u32 field, u32 bank) {
+    if (field >= FIELD0 + S_PA && field <= FIELD0 + S_SA)
+        return -(float)bank_int(player, field, bank);
+    return SHEET_SORT_KEY(player, field, bank);
+}
+
+/* Qualifying linemen. The save keeps one opportunity count for a lineman: games played (history field 0); there
+   are no snaps. A lineman qualifies with at least half of the games he could have played in the view, at least one:
+   * this season (banks 10, 11): his club's completed games in the shown class, counted on the schedule grid
+     (regular-season rows for the season, the later rows for the playoffs);
+   * a past season or the career (banks 8, 9, 12..26), or a lineman with no club: the most games any lineman has
+     in that view (the grid of that season is gone). Computed once per view and kept while no game completes. */
+#define TEAM_AT    ((u32 (FC *)(u32))0x000C4C50)
+#define LEAGUE_TEAMS ((u32 (*)(void))0x000C7D40)       /* the count the League Leaders builder walks */
+#define GRID 0x00E57C40u                           /* 22 rows x 17 cells x 8 bytes: state, home, away, ... */
+#define WEEKS_BYTE 0x005151C4u                     /* regular-season weeks (rows) of this image */
+#define GRID_PLAYED 3u
+
+static u32 is_lineman(u32 player) {
+    return player && GB(player + 0x35) >= 12 && GB(player + 0x35) <= 14;
+}
+
+/* the league index of the club whose list holds this player (the native membership test 0xC4060), or 0xFF */
+static u32 clubs(void) {
+    u32 n = LEAGUE_TEAMS();
+    return n < 32 ? n : 32;
+}
+
+static u32 club_of(u32 player) {
+    for (u32 i = 0, n = clubs(); i < n; i++) {
+        u32 team = TEAM_AT(i);
+        for (u32 j = 0; team && j < GB(team + 0x11C); j++)
+            if (G(team + 4 * j) == player)
+                return i;
+    }
+    return 0xFF;
+}
+
+/* completed games of a club (any club with club == 0xFF) in the class's rows */
+static u32 grid_games(u32 club, u32 playoffs) {
+    const volatile u8 *cell = (const volatile u8 *)GRID;
+    u32 weeks = GB(WEEKS_BYTE), n = 0;
+    for (u32 row = 0; row < 22; row++)
+        for (u32 k = 0; k < 17; k++, cell += 8)
+            if (cell[0] == GRID_PLAYED && (club == 0xFF || cell[1] == club || cell[2] == club)
+                && (row >= weeks) == playoffs)
+                n++;
+    return n;
+}
+
+static u32 most_lineman_games(u32 bank) {
+    u32 cls = G(CLASS) & 1;
+    u32 key = (bank & 31) | cls << 5 | (STAGE() & 255) << 8 | (G(SEASONS) & 0xFFFF) << 16;
+    u32 done = grid_games(0xFF, 0) + grid_games(0xFF, 1);
+    if (prs_state.view_key == key && (prs_state.view_games & 0xFFFF) == done)
+        return prs_state.view_games >> 16;
+    u32 most = 0;
+    for (u32 i = 0, n = clubs(); i < n; i++) {
+        u32 team = TEAM_AT(i);
+        for (u32 j = 0; team && j < GB(team + 0x11C); j++) {
+            u32 p = G(team + 4 * j);
+            if (is_lineman(p)) {
+                i32 g = bank_int(p, 0, bank);
+                if (g > (i32)most)
+                    most = (u32)g;
+            }
+        }
+    }
+    prs_state.view_key = key;
+    prs_state.view_games = done | (most > 0xFFFF ? 0xFFFF : most) << 16;
+    return most;
+}
+
+static u32 games_floor(u32 player, u32 bank) {
+    u32 possible;
+    if (bank == 10 || bank == 11) {
+        u32 club = club_of(player);
+        possible = club < 32 ? grid_games(club, G(CLASS) & 1) : most_lineman_games(bank);
+    } else {
+        possible = most_lineman_games(bank);
+    }
+    return possible > 1 ? (possible + 1) / 2 : 1;
+}
+
+float FC prs_shortlist_eligible(u32 player, u32 field, u32 bank) {
+    if (field < FIELD0 + S_PA || field > FIELD0 + S_SA)
+        return SHEET_HAS_STAT(player, field, bank);
+    if (!is_lineman(player))
+        return 0;
+    /* A lineman can play without allowing a pressure, hit or sack. Field 0 is games played.
+       Imported seasons before the franchise began do not contain the tracked blocking stats. */
+    if (bank >= 12 && bank <= 26 && bank - 11 > G(SEASONS))
+        return 0;
+    i32 games = bank_int(player, 0, bank);
+    return games > 0 && (u32)games >= games_floor(player, bank);
+}
+
+/* The retail button toggles an already-selected sort, but defaults each new column to descending.
+   A new allowed-stat selection starts with the lowest displayed counts. */
+#define SORT_COLUMN ((void (FC *)(u32, u32, u32))0x00170320)
+#define TOGGLE_SORT ((void (FC *)(u32))0x00170380)
+void FC prs_sort_allowed(u32 sheet) {
+    u32 selected = G(sheet + 0xC0);
+    if (selected == G(sheet + 0xD4))
+        TOGGLE_SORT(sheet);
+    else
+        SORT_COLUMN(sheet, selected, 0);
 }

@@ -111,6 +111,11 @@ class PresetAndMemoryTests(unittest.TestCase):
     def test_cost_at_128_and_forced_off_at_64(self):
         self.assertIn("modern_injured_reserve", budget.REQUIRES_128)
         self.assertEqual(budget.OWNER_BYTES["injured_reserve"], (ir.CODE_SIZE, 0, 0, 0, ir.STORE_SIZE))
+        self.assertEqual(budget.OWNER_BYTES["franchise_ownership"], (ir.ownership.CODE_SIZE, 0, 0, 0, 0))
+        basic = {"injured_reserve_guard": True}
+        self.assertIn("franchise_ownership", budget.owners(basic, 128))
+        self.assertNotIn("injured_reserve", budget.owners(basic, 128))
+        self.assertNotIn("franchise_ownership", budget.owners(basic, 64))
         for preset in ("softdrink_advanced", "softdrink_experimental"):
             on = budget.predict({"preset": preset, "overrides": {"modern_injured_reserve": True}}, 128)
             off = budget.predict({"preset": preset, "overrides": {"modern_injured_reserve": False}}, 128)
@@ -289,6 +294,54 @@ class GameTests(unittest.TestCase):
         self.assertIn(p, self.roster(m, c))
         self.assertLessEqual(len(self.roster(m, c)), 53)
 
+    def test_preseason_placement_uses_four_regular_games_with_or_without_a_cold_load(self):
+        for reload in (False, True):
+            with self.subTest(reload=reload):
+                c = 5
+                m = self.boot(human=0)
+                p = self.roster(m, c)[0]
+                self.play(m, c, 2)
+                m.put(0xE576A4, 7)
+                self.hurt(m, p, 8)
+                self.assertEqual(m.call(0x246FF0, ecx=p, edx=self.club(m, c)), 1)
+                # Opening week swaps out the preseason fixture grid. Preserve the regular fixtures and clear scores.
+                for i in range(374):
+                    at = 0xE57C40 + i * 8
+                    if m.uc.mem_read(at, 1)[0] == 3:
+                        m.uc.mem_write(at, b"\0")
+                m.put(0xE576A4, 8)
+                if reload:
+                    buf, _ = self.office(m)
+                    m.call(0x2D0CE0, ecx=buf, budget=400_000_000)
+                self.heal(m, p)
+                self.play(m, c, 3)
+                self.week(m)
+                self.assertNotIn(p, self.roster(m, c))
+                self.play(m, c, 1)
+                self.week(m)
+                self.assertIn(p, self.roster(m, c))
+
+    def test_cap_manager_and_contracts_keep_the_same_ir_salary_after_placement_and_load(self):
+        m = self.boot(human=5)
+        c = 5
+        team = self.club(m, c)
+        p = self.roster(m, c)[0]
+        def forecast(year):
+            return m.call(0x347CA0, ecx=year, edx=team, args=(0, 0))
+        m.call(0xC3F00, ecx=team)
+        baseline = [forecast(year) for year in range(4)]
+        self.assertEqual(baseline[0], m.get(team + 0x124))
+        self.hurt(m, p, 8)
+        m.call(0x246FF0, ecx=p, edx=team)
+        self.assertEqual([forecast(year) for year in range(4)], baseline)
+        buf, _ = self.office(m)
+        m.put(team + 0x124, 0)
+        m.call(0x2D0CE0, ecx=buf, budget=400_000_000)
+        self.assertEqual((forecast(0), m.get(team + 0x124)), (baseline[0], baseline[0]))
+        self.assertEqual(m.call(0x13E190, ecx=p), 4)
+        m.call(0x133BD0, ecx=p)
+        self.assertEqual((m.get(p + 0x24) >> 28) & 7, 4)
+
     def test_a_short_injury_and_the_human_club_stay_off_ir(self):
         m = self.boot(human=0)
         short, mine = self.roster(m, 6)[0], self.roster(m, 0)[0]
@@ -451,6 +504,10 @@ class GameTests(unittest.TestCase):
         m = self.boot(human=0)
         c = 20
         players = self.roster(m, c)[:3]
+        # A retail IR placement removes the player from the club before its low-five pointers are saved.
+        for player in players:
+            m.call(0xC3EB0, ecx=self.club(m, c), edx=player)
+        self.assertFalse(set(players).intersection(self.roster(m, c)))
         buf, office = self.office(m)
         table = m.get(m.root + 4)
         clubs = [[] for _ in range(32)]
@@ -615,6 +672,18 @@ class StudioPayrollTests(unittest.TestCase):
         stored = m.get(club + 0x124)
         m.call(0xC3F00, ecx=club, budget=50_000_000)
         return stored, m.get(club + 0x124)
+
+    def test_save_editor_discards_preseason_credits_from_beta80(self):
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        save = fs.FranchiseSave(self.save)
+        team = 6
+        player = save.team_player_indices(team)[3]
+        clubs = irsave._clubs_of(irsave.read_state(save))
+        clubs[team].append((player, 4, False))
+        marked = fs.FranchiseSave(irsave.write_state(save, clubs, [0] * 32, extension=True))
+        marked.buffer[marked.season_block + fs.S_STAGE] = 7
+        entry = next(e for e in irsave.read_state(marked).club(team) if e.player_index == player)
+        self.assertEqual((entry.games_missed, entry.can_return, entry.reason), (0, False, irsave.REASONS["too_soon"]))
 
     def test_a_studio_place_and_activate_leave_the_games_own_payroll(self):
         from mod_editor.core import nfl2k5_franchise_save as fs

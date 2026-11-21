@@ -1778,7 +1778,7 @@
  "receipt": {
   "team": "HOU",
   "offense_pack": "data/playbooks/softdrink_hou_modern.2k5book",
-  "offense_pack_sha256": "eadec85530233678bd86b68d69f4ab059c43059cd7cdadab20aac6c0353902b9",
+  "offense_pack_sha256": "e96c554b785923e308ed061f79c1ed246e5d2473cdaffe6aa06f2474723e48e3",
   "source_fingerprint": "441cac34ea97fef1a3faafd7b9af7465c6d53a996848daa8a62116103c23fd56",
   "replacement_sha256": "c9fd94258b71a7452a671aa5eb88f8255882ae8d29a42fb3eabc42dfb0b343df",
   "semantic_sha256": "3d5156f12839762838d90466bf219921ca4ecefa9157957a802320d8f9cf7506",

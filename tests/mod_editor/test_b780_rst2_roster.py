@@ -152,9 +152,8 @@ class InjuredReservePolicyTests(unittest.TestCase):
         with self.assertRaises(rr.RosterRecordError):
             refresh.long_injury_words(0, 0, 3)                               # under four weeks is not a long injury
 
-    def test_a_body_part_names_the_game_injury_type_and_nothing_else_changes(self):
-        """b780 rst2: the row's nflverse body part becomes the type in the +0x28 halfword; the weeks and status words, the
-        depth rank and side are the same as without it (the game's weekly advance only counts the weeks down)."""
+    def test_a_documented_diagnosis_names_the_game_injury_type_and_preserves_other_fields(self):
+        """A supported diagnosis sets the type in the +0x28 halfword and preserves the duration, rank and side."""
         import struct
         plan, injured = self.full_club(weeks=8)
         plan["room_policy"] = "ir"
@@ -162,7 +161,8 @@ class InjuredReservePolicyTests(unittest.TestCase):
         for part, name, key in (("Ankle", "broken ankle", (20, 23)), ("knee", "broken kneecap", (18, 23)),
                                 ("Hamstring", "torn hamstring", (17, 13))):
             typed = copy.deepcopy(plan)
-            next(r for r in typed["players"] if r["index"] == injured)["ir_injury"] = part
+            row = next(r for r in typed["players"] if r["index"] == injured)
+            row.update(ir_injury=part, ir_diagnosis=name)
             out, receipt = refresh.apply_body(self.body, typed)
             doc, player, words = self.words(out, injured)
             _d, plain_player, plain_words = self.words(plain, injured)
@@ -179,7 +179,7 @@ class InjuredReservePolicyTests(unittest.TestCase):
         plan, injured = self.full_club(weeks=8)
         plan["room_policy"] = "ir"
         plain, _r = refresh.apply_body(self.body, plan)
-        for part in ("Concussion", "Groin", None):
+        for part in ("Ankle", "Knee", "Hamstring", "Biceps", "Concussion", "Groin", None):
             typed = copy.deepcopy(plan)
             if part:
                 next(r for r in typed["players"] if r["index"] == injured)["ir_injury"] = part

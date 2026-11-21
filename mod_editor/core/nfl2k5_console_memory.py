@@ -68,13 +68,14 @@ RECOMMENDED_HELP = ("Applies the recommended 64 MB selection from the memory mod
 #: The badge of an option the 64 MB target turns off ("Off at 64 MB: <reason>").
 LOCK_PREFIX = "Off at 64 MB: "
 NEXT_STEPS_64 = (f"This is the 64 MB build for an original Xbox or the Android emulator hakuX: {STATUS_64}. To try it in "
-                 "xemu the way a console runs it, set System Memory to 64 MiB; for the full SOFTDRINK experience build the "
-                 "128 MB target and play it in xemu at 128 MiB.")
-SHARE_NOTE = ("The ready-made SOFTDRINK 2K28 pack is the full 128 MB build for xemu (System Memory 128 MiB). For the "
-              f"64 MB build (original Xbox, Android hakuX; {STATUS_64}): choose Customize SOFTDRINK 2K28 "
-              "with Build for: 64 MB, then make the disc on the Build tab, which starts from the recommended 64 MB set. That "
-              "route keeps the pack's art, the options that fit and the 2026 rosters, fitted to the original game's roster "
-              "size (free agents beyond the original game's count are left out).")
+                 "xemu the way a console runs it, set System Memory to 64 MiB.")
+PACK_DOWNLOAD_LINKS = (
+    '<a href="https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10">v0.10 for 128 MiB</a> or the '
+    '<a href="https://github.com/cruuz/softdrink-2k28/releases/download/v0.9/'
+    'SOFTDRINK-2K28-v0.9-64MB.2k5patch">v0.9 experimental pack for 64 MiB</a>')
+SHARE_NOTE = ("Choose v0.10 for xemu at 128 MiB with Complex 4627. For a 64 MiB setup, use the "
+              f"published v0.9 64 MB pack ({STATUS_64}). Install either directly. Customize SOFTDRINK 2K28 lets you change "
+              "the build target and features. The 64 MB roster fits the original game's roster size.")
 SHARE_CHOICE_CAPTION = "Build for"
 SHARE_CHOICE_HELP = ("Customize SOFTDRINK 2K28 loads the pack's sources into the Build tab. 64 MB sets the Build tab's "
                      "Console memory to the experimental 64 MB target and turns off what needs 128 MB.")
@@ -117,6 +118,7 @@ _CAPTIONS = {
     "k128_memory": "128 MB memory (K128, xemu set to 128 MB)",
     "k128_roster_heap": "Roster block in the extra memory",
     "k128_early": "Bigger graphics memory (K128 early form)",
+    "sim_qb_injuries": "Simulated injuries (all positions)",
     "guardian_overlay": "Guardian caps (experimental)",
     "reserves_16": "16 reserves (experimental)",
     "created_teams_extra": "Two extra created teams (experimental)",

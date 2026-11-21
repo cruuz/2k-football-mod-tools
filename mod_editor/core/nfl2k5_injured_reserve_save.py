@@ -235,14 +235,16 @@ def read_state(save) -> IrState:
     """Every club's IR list, returns used and each player's standing (games missed, can he return now and why not)."""
     save = _save(save)
     off = _block_offset(save)
-    try:
-        players = save.roster.tables["primary"].count
-    except (AttributeError, KeyError):
-        players = None
+    # b81: ``save.roster`` is a Rosters document, which has no codec ``tables``, so this count was always None; asking
+    # for it parsed all 4,164 records of a SOFTDRINK save (0.6 s) on every read, three reads an edit
+    players = None
     extension, returns, clubs = decode(bytes(save.buffer[off:off + CELLS * 4]), players=players)
     entries = []
+    preseason = save.header.stage < 8
     for c, rows in enumerate(clubs):
         for slot, (index, games, season) in enumerate(rows):
+            if preseason:
+                games = 0  # The native reader also discards preseason credits written by beta 80.
             hurt, weeks = injury(save, index)
             reason = _why(save, games, season, returns[c], index) if extension else REASONS["legacy_full"]
             name = save.player_name(index) if c < save.league_team_count else ""

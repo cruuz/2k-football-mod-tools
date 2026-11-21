@@ -13,7 +13,7 @@ the same as the base engine: every chain uses grammar the retail 2004 books alre
   ``RUN_SCHEMES``) and is re-aimed for the formation's strength.
 * Pass concepts are combinations: a strong-side combo, a backside combo, a back job and a drop.  The
   generator (``pb/v2``) picks which combinations a team carries; each is a normal registered concept.
-* No pre-snap motion, no RPO, no read option.  Nothing here is a gameplay witness.
+* The plays use player-controlled motion and do not script RPOs or read options.  Nothing here is a gameplay witness.
 """
 from __future__ import annotations
 

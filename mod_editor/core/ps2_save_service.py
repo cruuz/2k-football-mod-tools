@@ -15,12 +15,15 @@ widget layer.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from copy import deepcopy
+from dataclasses import dataclass, replace
+import errno
 from pathlib import Path
 from typing import Callable
 import sys
 
 from .errors import ValidationError
+from .platform_compat import publish_no_replace
 
 ROOT = Path(__file__).resolve().parents[2]
 TOOLS = ROOT / "tools"
@@ -45,7 +48,7 @@ class SaveSummary:
     def headline(self) -> str:
         state = "checksum OK" if self.checksum_valid else "checksum MISMATCH"
         return (
-            f"{self.directory} — {self.kind} · "
+            f"{self.directory}: {self.kind} · "
             f"{self.player_count:,} players · {state}"
         )
 
@@ -130,13 +133,19 @@ class Ps2SaveService:
     def open(self, path: Path, directory: str | None = None) -> SaveSummary:
         """Load a save from a .psu, an extracted folder, or a card image."""
         try:
-            self._original = save_lib.load_save(Path(path), directory)
-            self._working = save_lib.load_save(Path(path), directory)
+            original = save_lib.load_save(Path(path), directory)
+            report = save_lib.inspect(original)
         except save_lib.SaveError as exc:
             raise ValidationError(str(exc)) from exc
+        self._working = deepcopy(original)
+        self._original = original
         self._source = Path(path)
         self._edits.clear()
-        return self.summary()
+        return self._summary(original, report)
+
+    @staticmethod
+    def card_directories(path: Path) -> tuple[str, ...]:
+        return tuple(save.directory for save in save_lib.read_memcard(path))
 
     def close(self) -> None:
         self._source = None
@@ -153,7 +162,10 @@ class Ps2SaveService:
 
     def summary(self) -> SaveSummary:
         save = self._require_open()
-        report = save_lib.inspect(save)
+        return self._summary(save, save_lib.inspect(save))
+
+    @staticmethod
+    def _summary(save, report) -> SaveSummary:
         roster = report.get("roster") or {}
         tables = roster.get("tables") or {}
         return SaveSummary(
@@ -198,16 +210,22 @@ class Ps2SaveService:
             return f"Unknown name field {field!r}."
         if "\x00" in value:
             return "A name cannot contain a null character."
-        rows = {row.index: row for row in self.players()}
-        row = rows.get(index)
-        if row is None:
-            return f"There is no player {index} in this save."
-        capacity = row.capacity_for(field)
+        slots = save_lib.player_name_slots(self._require_open())
+        slot = next((slot for slot in slots if slot["player"] == index and slot["field"] == field), None)
+        if slot is None:
+            return f"Player {index} has no editable {field} name in this save."
+        if slot.get("shared") and value != slot["value"]:
+            return "This name shares storage with another name. Changing it would rename both."
+        capacity = _characters(int(slot["capacity_bytes"]))
         if capacity <= 0:
             return "This player has no editable slot for that name."
-        if len(value) > capacity:
+        try:
+            units = len(value.encode("utf-16le")) // 2
+        except UnicodeEncodeError:
+            return "This name contains an incomplete Unicode character."
+        if units > capacity:
             return (
-                f"That name is {len(value)} characters; this slot holds "
+                f"That name needs {units} UTF-16 units; this slot holds "
                 f"{capacity}. PS2 saves are fixed size, so a replacement has "
                 "to fit the space the old name used."
             )
@@ -223,13 +241,18 @@ class Ps2SaveService:
             change = save_lib.set_player_name(save, index, field, value)
         except save_lib.SaveError as exc:
             raise ValidationError(str(exc)) from exc
-        self._edits[(index, field)] = change
+        key = (index, field)
+        baseline = self._edits.get(key, change)["previous"]
+        if value == baseline:
+            self._edits.pop(key, None)
+        else:
+            self._edits[key] = dict(change, previous=baseline)
 
     def revert(self) -> SaveSummary:
         """Discard every edit by reloading from the source file."""
         if self._source is None:
             raise ValidationError("No PS2 save is open.")
-        return self.open(self._source)
+        return self.open(self._source, self._require_open().directory)
 
     # -- writing -------------------------------------------------------
 
@@ -241,7 +264,7 @@ class Ps2SaveService:
     def write(
         self, output: Path, progress: Callable[[str], None] | None = None
     ) -> WriteResult:
-        """Reseal, write the save, then verify it against the original.
+        """Reseal and independently verify a staged save, then publish the copy.
 
         A ``.psu`` destination produces a standalone save file; a ``.ps2``
         destination produces a copy of the memory card this save came from
@@ -274,20 +297,42 @@ class Ps2SaveService:
                 "one. Open a .ps2 card first, or save as .psu instead."
             )
 
-        save.reseal()
+        if output.exists() or output.is_symlink():
+            raise ValidationError(f"Refusing to overwrite an existing file: {output}. Choose a new filename.")
         try:
-            if to_card:
-                announce("Writing the memory-card image…")
-                save_lib.write_into_memcard(
-                    self._source, save, output, save.directory
-                )
-            else:
-                announce("Writing the save file…")
-                save_lib.write_psu(save, output)
-        except save_lib.SaveError as exc:
-            raise ValidationError(str(exc)) from exc
-        except OSError as exc:
+            output.parent.mkdir(parents=True, exist_ok=True)
+            from .image_use import studio_staging
+            with studio_staging(output.parent, ".studio-ps2-") as stage:
+                staged = stage.path / output.name
+                result = self._write_and_verify(staged, save, declared, to_card, announce)
+                if result.verified:
+                    try:
+                        publish_no_replace(staged, output)
+                    except OSError as exc:
+                        # macOS gives ENOTSUP (45), not EOPNOTSUPP (102), for link() on exFAT, FAT and SMB.
+                        if exc.errno not in {errno.ENOSYS, errno.EOPNOTSUPP, errno.EPERM,
+                                             getattr(errno, "ENOTSUP", errno.EOPNOTSUPP)}:
+                            raise
+                        # Some removable filesystems have no exclusive rename or hard links.
+                        # Use the writer's exclusive, flushed output path for the verified bytes.
+                        save_lib._write_reserved(output, staged.read_bytes(), (self._source,))
+                return replace(result, output=output)
+        except FileExistsError as exc:
+            raise ValidationError(f"The output appeared during verification. Choose a new filename: {output}.") from exc
+        except (OSError, save_lib.SaveError) as exc:
             raise ValidationError(f"Could not write {output}: {exc}") from exc
+
+    def _write_and_verify(
+        self, output: Path, save: save_lib.Ps2Save, declared: list[dict], to_card: bool,
+        announce: Callable[[str], None],
+    ) -> WriteResult:
+        save.reseal()
+        if to_card:
+            announce("Writing the memory-card image…")
+            save_lib.write_into_memcard(self._source, save, output, save.directory)
+        else:
+            announce("Writing the save file…")
+            save_lib.write_psu(save, output)
 
         try:
             if to_card:
@@ -306,14 +351,14 @@ class Ps2SaveService:
                 # in-memory save would only prove the editor agrees with
                 # itself, and would miss a serialization bug or a short write.
                 report = verify_lib.verify(
-                    verify_lib.decode_save(self._source),
+                    verify_lib.decode_save(self._source, save.directory),
                     verify_lib.decode_psu(output),
                     declared,
                 )
                 extra = ""
         except verify_lib.VerifyError as exc:
             return WriteResult(output, False, 0, len(declared),
-                               f"Saved, but verification failed: {exc}")
+                               f"Save verification failed: {exc}")
 
         changed = int(report.get("changed_bytes") or 0)
         return WriteResult(
@@ -321,6 +366,6 @@ class Ps2SaveService:
             True,
             changed,
             len(declared),
-            f"Saved and verified — {len(declared)} change(s), "
+            f"Saved and verified: {len(declared)} change(s), "
             f"{changed} bytes, roster tables intact.{extra}",
         )

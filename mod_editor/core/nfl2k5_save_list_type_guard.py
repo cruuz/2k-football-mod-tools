@@ -1,33 +1,11 @@
-"""Boot save list: a saved game whose stored name or type string is absent no longer stops the game at the title.
+"""Validate Xbox save-directory names and types while building the title-screen save list.
 
-Report (b780 EMU1 crash_boot, triage MC1, corrected 2026-11-04): on the v0.9 final candidate, and identically on the
-released v0.8, the title screen stopped while the boot save browser built its list (bugcheck 0x1E). The trigger is a
-saved game whose stored name does not match its save folder id (the folder id is derived from the name). The save-list
-entry builder 0x16AC40 copies the enumerated record's fields and dereferences two of them:
-
-* its type string, at 0x16A600 via the wide-string compare 0x30C40 (``mov ecx,edi`` at 0x16A617; faults with ECX = 0);
-* its name string, at the wide-string length 0x30A60 called from 0x16AD0D (``cmp word ptr [ecx], 0`` with ECX = 0).
-
-When the name and folder id disagree the resolve leaves one of those pointers NULL, and whichever the builder reaches
-first faults. All callers assume non-NULL strings.
-
-Reachability: the game derives the folder id from the save name, so a save the game writes always matches, including a
-cut free-agent MyCareer save, which does NOT crash. The mismatch comes from saves copied or renamed outside the game,
-or produced by save tools (the IR1 witness and GEN1 show saves are named out of step with their folders).
-
-What this owner changes (in place: no allocation, no section, nothing at 64 MB)
--------------------------------------------------------------------------------
-Two call sites in the one builder are made NULL-safe, each through a routine in retail .text alignment padding
-(0x90 runs before the next function; nothing falls through or jumps into them):
-
-* 0x16A600's five-byte prologue (``push esi; xor esi,esi; jmp 0x16A610``) jumps to a 15-byte routine at 0x160771 that
-  returns 0 (no type match, the builder's own default) when the type string (EDI) is NULL, else runs the displaced
-  prologue and continues into 0x16A610.
-* 0x16AD0D's ``call 0x30A60`` (the name length) goes to a 12-byte routine at 0x160354 that returns 0 (empty name) when
-  the name string (ECX) is NULL, else tail-calls 0x30A60.
-
-Every save whose name and type resolve lists exactly as before (both routines run the same bytes and reach the same
-code); a save with a NULL name or type is listed untyped or unnamed instead of stopping the game.
+The first guard handled null pointers. A renamed, imported save can also return
+a nonzero invalid pointer. The native reader checks the title's existing memory
+protection API as it crosses each page and bounds the UTF-16 name. The listing
+uses an empty name or type for an unreadable entry. Failed folder lookups use
+the normal damaged-entry path and enumeration continues with the next save.
+The reader never writes the user's save.
 """
 from __future__ import annotations
 
@@ -36,7 +14,7 @@ import struct
 from . import nfl2k5_rdata_sites as rdata
 
 OWNER = "nfl2k5_save_list_type_guard"
-REVISION = 1
+REVISION = 4
 MATCH_FN = 0x0016A600            # the save-type matcher whose prologue is redirected
 MATCH_BODY = 0x0016A610          # where the matcher's loop continues after the prologue
 CAVE_VA = 0x00160771            # 15 bytes of retail .text alignment padding (type guard)
@@ -50,8 +28,7 @@ RETAIL_CAVE2 = b"\x90" * 12
 BUILD_CAPTION = "Boot save list: no freeze on a save with a bad name"
 HELP_TEXT = ("Fixes a freeze at the title screen while the game lists saved games, when a save's stored name or type "
              "does not match its save folder (a save copied in or renamed outside the game, or made by save tools). "
-             "Such a save is now listed with an empty name or untyped instead of stopping the game; every other save "
-             "lists as before.")
+             "The browser marks an unreadable save as damaged and continues to list the other saves.")
 
 
 def _rel(at: int, target: int, size: int = 5) -> bytes:
@@ -85,12 +62,73 @@ def _build_sites():
             ("NULL save-name guard in .text alignment padding", CAVE2_VA, RETAIL_CAVE2, bytes(cave2)))
 
 
-SITES = _build_sites()
+# The eight aligned RET instructions remain live game entry points. Only their
+# following padding is owned here. See tools/nfl2k5_save_list_guard.S.
+PAD_BASE = 0x294960
+PROTECT_IMPORT = 0x4E3BA0
+PAD_BODIES = (
+    "515231d2f6c101754785c97443eb01",
+    "515251ff15a03b4e005a59eb039090",
+    "f6c401752ba8ee7427eb0590909090",
+    "66833900741c80fa807315eb039090",
+    "4283c10266f7c1ff0f74c5ebe39090",
+    "31d289d05a59c39090909090909090",
+    "89f9e899ffffff85c07505c3909090",
+    "5631f6e9375cedff90909090909090",
+)
+BETA80_SITES = _build_sites()
+_type_hook, _type_pad, _name_hook, _name_pad = BETA80_SITES
+
+
+def _reader_jump(site, target):
+    label, va, before, _ = site
+    after = (b"\xe9" + _rel(va, target)).ljust(len(before), b"\x90")
+    return label, va, before, after
+
+
+READER_SITES = (_type_hook, _reader_jump(_type_pad, PAD_BASE + 0x61),
+         _name_hook, _reader_jump(_name_pad, PAD_BASE + 1)) + tuple(
+    (f"checked UTF-16 reader, span {index + 1}", PAD_BASE + index * 16 + 1,
+     b"\x90" * 15, bytes.fromhex(body)) for index, body in enumerate(PAD_BODIES))
+# The game counts all save directories before filling its browser records.
+# Either failed lookup used to close the search and publish the first count,
+# leaving every later row uninitialized. Keep the real row constructor and
+# damaged flag, and let XFindNextSaveGame enumerate the healthy siblings.
+ENUMERATION_SITES = (
+    ("unresolved save path uses the native zero-size record", 0x4CA6C,
+     bytes.fromhex("0f840c010000"), bytes.fromhex("0f841b000000")),
+    ("missing companion marks this save damaged and continues", 0x4CB23,
+     bytes.fromhex("7455"), bytes.fromhex("7432")),
+)
+SITES = READER_SITES + ENUMERATION_SITES
+_prior_bytes = {va: after for _label, va, _before, after in BETA80_SITES}
+UPGRADE_SITES = tuple(
+    (label, va, _prior_bytes.get(va, before), after)
+    for label, va, before, after in SITES if _prior_bytes.get(va, before) != after
+)
+# The first page-checking reader used a signed jump. Live Xbox save metadata
+# can reside in a readable high-address kernel pool. Accept only the complete
+# previous install when upgrading that single instruction.
+_reader_label, _reader_va, _reader_retail, _reader_current = READER_SITES[4]
+_signed_reader = bytes.fromhex("515231d2f6c101754785c97e43eb01")
+REVISION2_SITES = (READER_SITES[:4] + ((_reader_label, _reader_va, _reader_retail, _signed_reader),)
+                   + READER_SITES[5:])
+# These fixed dependencies are read-only. The user may supply an already modified executable.
+READER_DEPENDENCIES = (("MmQueryAddressProtect import", PROTECT_IMPORT, struct.pack("<I", 0x800000B3)),) + tuple(
+    (f"preserved game return {index}", PAD_BASE + index * 16, b"\xc3") for index in range(len(PAD_BODIES))
+)
 
 
 def status(payload: bytes) -> str:
-    """``retail`` | ``applied`` | ``foreign``."""
-    return rdata.status(payload, SITES)
+    if rdata.status(payload, [(name, va, expected, expected) for name, va, expected in READER_DEPENDENCIES]) != "retail":
+        return "foreign"
+    state = rdata.status(payload, SITES)
+    if state == "foreign" and rdata.status(payload, ENUMERATION_SITES) == "retail":
+        if any(rdata.status(payload, sites) == "applied" for sites in (READER_SITES, REVISION2_SITES)):
+            return "previous"
+        if rdata.status(payload, BETA80_SITES) == "applied" and rdata.status(payload, READER_SITES[4:]) == "retail":
+            return "previous"
+    return state
 
 
 def read_settings(payload: bytes) -> dict:
@@ -103,14 +141,22 @@ def apply(payload: bytes):
     state = status(payload)
     if state == "foreign":
         raise ValueError("the boot save-list type guard: the matcher or its padding is not retail")
-    patched, receipt = rdata.apply(payload, SITES, "boot save-list type guard")
-    return patched, {**receipt, "revision": REVISION, "code_bytes": 15}
+    sites = SITES
+    if state == "previous":
+        if rdata.status(payload, READER_SITES) == "applied":
+            sites = ENUMERATION_SITES
+        elif rdata.status(payload, REVISION2_SITES) == "applied":
+            sites = ((_reader_label, _reader_va, _signed_reader, _reader_current),) + ENUMERATION_SITES
+        else:
+            sites = UPGRADE_SITES
+    patched, receipt = rdata.apply(payload, sites, "boot save-list type guard")
+    return patched, {**receipt, "revision": REVISION, "code_bytes": sum(len(row[3]) for row in SITES)}
 
 
 def verify(payload: bytes) -> dict:
     return {"owner": OWNER, "status": status(payload),
             "sites": [{"label": s[0], "va": f"0x{s[1]:x}"} for s in SITES],
-            "experimental": False, "runtime_witnessed": False}
+            "experimental": False, "runtime_witnessed": True}
 
 
 __all__ = ["OWNER", "REVISION", "SITES", "MATCH_FN", "MATCH_BODY", "CAVE_VA", "NAME_CALL", "NAME_FN", "CAVE2_VA",

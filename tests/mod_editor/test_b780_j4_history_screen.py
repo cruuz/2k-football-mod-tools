@@ -24,6 +24,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -33,7 +34,7 @@ from mod_editor.core import nfl2k5_history_screen as hist  # noqa: E402
 from mod_editor.core import nfl2k5_history_screen_code as runtime  # noqa: E402
 from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage  # noqa: E402
-from tests.mod_editor.test_nfl2k5_honors import HAVE_UC, LEAGUE_MODE, SCORES, SEASONS, Machine, _retail  # noqa: E402
+from tests.mod_editor.test_nfl2k5_honors import HAVE_UC, LEAGUE_MODE, SCORES, SEASONS, XBE, Machine, _retail  # noqa: E402
 
 from mod_editor.core import nfl2k5_champions_history as champions_history  # noqa: E402
 
@@ -303,10 +304,24 @@ class StaticTests(unittest.TestCase):
         seasons, awards, book, hof, _records, _leaders = hist._seed_tables(doc)
         self.assertEqual(seasons["SEA"][0]["playoff"], 5)
         self.assertEqual(awards["sbmvp"][0]["name"], "Kenneth Walker")
-        self.assertEqual(len(book), 1)                   # points have no footer category
+        self.assertEqual([(r["name"], r["coholder"]) for r in book],
+                         [("Michael Strahan", False), ("T. J. Watt", True), ("X", False)])
+        self.assertEqual(book[-1]["category"], hist.BOOK_CATEGORIES.index("points"))
         self.assertEqual((book[0]["value"], book[0]["year"], book[0]["name"], book[0]["club"]),
                          (45, 2001, "Michael Strahan", "NYG"))
         self.assertEqual((hof[0]["year"], hof[0]["name"], hof[0]["pos"]), (2026, "Drew Brees", 0))
+
+    def test_full_seed_keeps_all_record_holders_and_award_winners_within_allocation(self):
+        seed = hist.load_seed()
+        if seed is None:
+            self.skipTest("real-history seed is unavailable")
+        _s, awards, book, _h, _r, _l = hist._seed_tables(seed)
+        self.assertEqual(len({(r["category"], r["kind"]) for r in book}), 42)
+        self.assertEqual(len(book), sum(len(r["holders"]) for r in seed["nfl_records"]))
+        self.assertEqual(sum(map(len, awards.values())), sum(len(r["winners"]) for r in seed["awards"]["winners"]))
+        ro, dropped = hist.build_ro_fitting(0x1800000, 0x1600000, bytes(624), seed)
+        self.assertEqual(dropped, [])
+        self.assertEqual(hist.ro_field(ro, "book_count"), 55)
 
     def test_j5b_leaders_document(self):
         """j5b-leaders' document (nfl2k5_franchise_leaders/v1): career top three, the season and game record holders,
@@ -388,7 +403,8 @@ class NativeTests(unittest.TestCase):
             mm.rects.append(tuple(mm.float_at(sp + 4 + 4 * i) for i in range(5)))
         m.hook(0x6BBE0, rect, 20)
         m.sounds = []
-        m.hook(0x14D390, lambda mm: mm.sounds.append(1))
+        m.put(0xAA26B4, 1)       # sound enabled: the real player hashes the UTF-16 cue passed in ECX
+        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: m.sounds.append(m.reg("ECX")), begin=0x89DA0, end=0x89DA0)
         m.uc.mem_map(self.WORDS, 0x1000)
         m.uc.mem_map(self.FOOTER, 0x20000)
         if footer is not None:
@@ -473,6 +489,82 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(m.rects[9][:2], (40.0, 358.0))
         self.assertIn("SEASONS", texts)
         self.assertIn("HALL OF FAME", texts)
+
+    def test_a_beta80_install_is_recognized_and_a_mixed_install_is_foreign(self):
+        from mod_editor.core import nfl2k5_history_screen_code_b780 as old
+        from mod_editor.core import nfl2k5_rdata_sites as rdata
+        payload = self.retail
+        if space.status(payload) != "applied":
+            payload, _ = space.apply(payload, hist.REQUESTS, scaleout=True)
+        alloc = hist.allocations(payload)
+        cv, rv, dv = [alloc[k]["va"] for k in ("code", "read_only", "data")]
+        item_rows = XbeImage(payload).read(hist.ESPN_ROWS, hist.ESPN_ROW_SIZE * hist.ESPN_RETAIL_ROWS)
+        with mock.patch.object(hist, "labels", return_value=hist.labels(cv, template=old)):
+            ro = hist.build_ro(rv, cv, item_rows, seed_document())
+        payload, _ = space.install_read_only(payload, hist.OWNER, ro)
+        payload, _ = space.install_code(payload, hist.OWNER, hist.code_for(cv, dv, rv, template=old))
+        payload, _ = rdata.apply(payload, hist.sites(cv, rv, hist.ro_rows_offset(ro), template=old), hist.OWNER)
+        self.assertEqual(hist.status(payload), "previous")
+        with self.assertRaisesRegex(ValueError, "beta 80"):
+            hist.install(payload)
+        damaged = bytearray(payload)
+        damaged[XbeImage(payload).offset(cv)+256] ^= 1
+        self.assertEqual(hist.status(bytes(damaged)), "foreign")
+
+    def test_elapsed_seasons_without_saved_club_totals(self):
+        for elapsed, expected in ((1, "1 SEASON COMPLETED"), (5, "5 SEASONS COMPLETED")):
+            with self.subTest(elapsed=elapsed):
+                m = self.machine(seasons=elapsed)
+                self.assertEqual(self.draw_rows(m)[0], ["SINCE 2026: " + expected])
+
+    def test_headers_fit_with_the_retail_menu_fonts(self):
+        pack = XBE.parent / "vc_53450030/0"
+        if not pack.is_file():
+            self.skipTest("retail FONT archive is unavailable")
+        from tools.nfl2k5_scorebug_projection import read_fonts
+        m = self.machine()
+        # Load the screen's three real fonts and leave selection, measurement, alignment and positioning native.
+        m._hooks.clear()
+        arena = 0x3200000
+        m.uc.mem_map(arena, 0x40000)
+        fonts = {}
+        for font in read_fonts(pack):
+            if font.slot not in (3, 4, 8):
+                continue
+            obj = arena + font.object_offset
+            m.uc.mem_write(arena, font.decoded)
+            m.put(obj + 8, arena + font.range_offset)
+            for row in font.ranges:
+                m.put(arena + row["record_offset"] + 4, arena + row["glyph_records_offset"])
+            m.put(0xA90ECC + 4 * font.slot, obj)
+            fonts[obj] = font, {g.codepoint: g for g in font.glyphs}
+            arena += (len(font.decoded) + 4095) & -4096
+        m.hook(0x6BBE0, lambda mm: None, 20)
+        extents = {}
+        def capture(mm):
+            ctx = mm.reg("ECX")
+            label = mm.wide(mm.reg("EDX"))
+            font, glyphs = fonts[mm.get(ctx)]
+            x = mm.float_at(ctx + 16)
+            pen, left, right = 0, 0, 0
+            for char in label:
+                glyph = glyphs.get(ord(char))
+                if char == " " or glyph is None:
+                    pen += font.space_advance
+                else:
+                    left, right = min(left, pen + glyph.left), max(right, pen + glyph.right)
+                    pen += glyph.advance
+            if mm.get(ctx + 0x64) == 2:
+                x -= pen
+            extents[label] = (x + left, x + right)
+        m.hook(0xF1C70, capture)
+        for page, labels in ((0, ("YEAR", "W-L-T", "DIV", "PLAYOFFS", "HEAD COACH")),
+                             (2, ("ALL-TIME LEADERS", "TOTAL", "PLAYER")),
+                             (5, ("CLASS", "MEMBER", "POS", "CLUB"))):
+            extents.clear()
+            self.draw(m, page=page)
+            for left, right in zip(labels, labels[1:]):
+                self.assertLess(extents[left][1], extents[right][0], (page, left, right, extents))
 
     def test_rams_seed_found_by_a_retail_label(self):
         m = self.machine()
@@ -802,6 +894,18 @@ class NativeTests(unittest.TestCase):
         m.uc.mem_write(GRID + 8 * (17 * 2 + 3), bytes((1,)))
         self.assertEqual(self.box(m), [])
 
+    def test_scoreless_overtime_is_shown_only_for_a_finished_regular_season_tie(self):
+        m = self.machine()
+        self.game(m, quarters=((7, 3, 7, 7, 0), (0, 10, 0, 14, 0)))
+        m.put(0xE576A4, 8)                              # regular season
+        self.box(m)
+        self.assertEqual(self.rows(m)[0][-2:], ["OT", "T"])
+        self.assertEqual(self.rows(m)[1][-2:], ["0", "24"])
+        self.assertEqual(self.rows(m)[2][-2:], ["0", "24"])
+        m.put(0xE576A4, 7)                              # preseason may end after regulation
+        self.box(m)
+        self.assertNotIn("OT", self.rows(m)[0])
+
     def test_box_score_with_kept_stats(self):
         m = self.machine(self.box_footer())
         self.roster_players(m)
@@ -854,6 +958,25 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(m.call(self.at["hist_schedule_x"], ecx=m.manager, edx=0), 0)
         self.assertEqual(legends[-1], (1, 0))
         self.assertEqual(len(pushes), 1)
+
+    def test_real_menu_push_and_cursor_sound_for_history_and_box_score(self):
+        m = self.machine()
+        del m._hooks[0xEF850]                            # real font slot lookup while the menu context refreshes
+        self.game(m)
+        m.hook(0x24B680, lambda mm: 2)
+        m.hook(0x24B6C0, lambda mm: 3)
+        self.assertEqual(m.wide(0xEB3C54), "Ambient: Menu Move Cursor")
+        cursor = m.call(0x38650, ecx=0xEB3C54)
+        m.call(self.at["hist_enter"], ecx=m.manager)
+        self.press(m, pressed=0x1000)
+        self.press(m, repeat=0x2000000)
+        m.put(PADS + 8, 0x400)
+        self.assertEqual(m.call(self.at["hist_schedule_x"], ecx=m.manager), 1)
+        self.assertEqual(m.get(m.manager + 0x100), 1)
+        self.assertEqual(m.get(m.manager + 8), self.ro + hist.ro_field(self.content, "box_descriptor"))
+        m.put(PADS + 12, 0x2000000)
+        m.call(self.at["box_input"], ecx=m.manager)
+        self.assertEqual(m.sounds, [cursor] * 4)
 
     def test_schedule_hook_keeps_the_retail_back_test(self):
         m = self.machine()
@@ -951,10 +1074,43 @@ class NativeTests(unittest.TestCase):
             self.draw(m, page=3)
             book = self.rows(m)
             self.assertIn(["PASS YARDS", "SEASON", "5,477", "P. MANNING (DEN)", "2013"], list(book.values()))
+            self.draw(m, page=3, scroll=50)
+            last = list(self.rows(m).values())
+            # a career record has no year cell; a holder too wide for its column with the club drops the club
+            self.assertIn(["POINTS", "CAREER", "2,673", "A. VINATIERI"], last)
+            self.assertIn(["FIELD GOALS", "SEASON", "44", "K. FAIRBAIRN", "2025"], last)
+            self.assertTrue(any(r[:4] == ["FIELD GOALS", "SEASON", "44", "D. AKERS (SF)"] for r in last))
+            self.draw(m, page=4, award=0, scroll=22)
+            self.assertTrue({"P. MANNING", "S. MCNAIR"}.issubset({r[1] for r in self.rows(m).values() if r[0] == "2003"}))
+            self.draw(m, page=4, award=5, scroll=20)
+            self.assertTrue({"T. BRUSCHI", "S. SMITH SR."}.issubset({r[1] for r in self.rows(m).values() if r[0] == "2005"}))
             self.draw(m, page=5)
             self.assertTrue(any(r[:2] == ["2026", "D. BREES"] for r in self.rows(m).values()))
         finally:
             type(self).payload = saved
+
+    def test_tied_record_replaced_once_and_records_after_row_64_are_accessible(self):
+        # More than a screen and more than the old 64-row index. Imported ties out of order span the franchise start.
+        seed = dict(nfl_records=[dict(category="passing_td", scope="game", value=7,
+                                      holders=[dict(name=f"QB Holder{i}", season=2000-i) for i in range(70)]),
+                                 dict(category="points", scope="game", value=40, name="Last Holder", year=1929)])
+        payload, _ = hist.install(self.retail, seed=seed, xtnd_ptr_va=self.WORDS)
+        self.payload = payload
+        m = self.machine()
+        rows = list(self.draw_rows(m, page=3, scroll=65).values())
+        self.assertIn(["POINTS", "GAME", "40", "L. HOLDER", "1929"], rows)
+        m = self.machine(base=1990)
+        before = list(self.draw_rows(m, page=3).values())
+        self.assertTrue(all(row[-1] < "1990" for row in before[1:]))
+
+        records = bytearray(9520)
+        e = 9232 + 12 * (1 * 2)                         # league single-game passing TD
+        records[e:e + 7] = person("A", "NEW")
+        struct.pack_into("<BHBB", records, e + 7, 1, 8, 2028 - 1900, 0)
+        m = self.machine(j23_body({3: bytes(records)}), at_end=True)
+        self.assertEqual(list(self.draw_rows(m, page=3).values())[1:],
+                         [["PASS TD", "GAME", "8", "A. NEW (NYG)", "NEW 2028"],
+                          ["POINTS", "GAME", "40", "L. HOLDER", "1929"]])
 
     def test_card_cycle_through_the_champions_owner(self):
         """Honors (with champions) and this owner on one image: the card cycles card, honors, champions, game log

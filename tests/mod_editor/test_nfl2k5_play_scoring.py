@@ -14,7 +14,7 @@ import os
 import struct
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from mod_editor.core import nfl2k5_play_scoring as scoring
 from mod_editor.core import nfl2k5_play_codec as codec
@@ -40,6 +40,48 @@ class Authoring(unittest.TestCase):
     def test_missing_executable_refuses_instead_of_skipping(self):
         with patch.dict(os.environ, {}, clear=True), self.assertRaises(scoring.ScoringError):
             scoring.executable_bytes()
+
+
+class BuildProgress(unittest.TestCase):
+    def test_reports_completed_books_and_archive_total_even_when_scoring_fails(self):
+        for total, fail_after in ((3, None), (69, None), (69, 54), (0, None)):
+            with self.subTest(total=total, fail_after=fail_after):
+                indices = [307 + 2 * position for position in range(total)]
+                archive = MagicMock()
+                archive.__enter__.return_value = archive
+                archive.entries_with_head.return_value = [SimpleNamespace(index=index) for index in indices]
+                archive.read_entry.side_effect = lambda index: index.to_bytes(2, 'little')
+                results = [{'fault_count': 0} for _ in indices]
+                if fail_after is not None:
+                    results[fail_after] = scoring.ScoringError('rejected book')
+                updates = []
+
+                def progress(label, done, book_count):
+                    updates.append((label, done, book_count))
+
+                with patch.object(packs._outer_image(), 'OuterImage', return_value=archive), \
+                        patch.object(mod_build, '_xbe_bytes', return_value=b'XBEH'), \
+                        patch.dict(os.environ, {'NFL2K5_BUILD_WORKERS': '1', 'NFL2K5_DISABLE_COMPILE_CACHE': '1'}), \
+                        patch.object(scoring, '_WORKER_XBE', None), \
+                        patch.object(scoring, 'require_safe', side_effect=results):
+                    if not total:
+                        with self.assertRaisesRegex(RuntimeError, 'found no books'):
+                            mod_build._check_playbook_scoring(Path('progress.iso'), progress)
+                    elif fail_after is None:
+                        receipt = mod_build._check_playbook_scoring(Path('progress.iso'), progress)
+                        rows = [{'entry': index, 'fault_count': 0} for index in indices]
+                        self.assertEqual(receipt, {'status': 'applied', 'schema': scoring.SCHEMA,
+                                                   'books': total, 'faults': 0, 'results': rows})
+                    else:
+                        with self.assertRaisesRegex(scoring.ScoringError, 'rejected book'):
+                            mod_build._check_playbook_scoring(Path('progress.iso'), progress)
+                # require_safe_many reports the number already complete before consuming each book.
+                started = indices if fail_after is None else indices[:fail_after + 1]
+                expected = [(f'Checking native play scoring: book {index}', done, total)
+                            for done, index in enumerate(started)]
+                if total and fail_after is None:
+                    expected.append(('Native play scoring complete', total, total))
+                self.assertEqual(updates, expected)
 
 
 @unittest.skipUnless(IMAGE.is_file() and XBE.is_file(), 'Retail fixtures unavailable')

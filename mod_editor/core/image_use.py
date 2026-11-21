@@ -6,6 +6,9 @@ Windows asks the kernel for a temporary read handle with no sharing.
 """
 from __future__ import annotations
 
+from contextlib import contextmanager
+import hashlib
+import json
 import os
 from pathlib import Path
 import shutil
@@ -155,6 +158,257 @@ def _publish_when_released(publish, target: Path) -> None:
                     "minute: pause it for this folder or choose another output folder, then make the disc again. "
                     "Nothing was published.") from exc
             time.sleep(PUBLISH_HELD_WAIT_SECONDS)
+
+
+def _file_state(info):
+    return None if info is None else [info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns]
+
+
+def receipt_states(target, suffixes):
+    """Snapshot the paths that a completed build will publish or retire."""
+    states = {}
+    for suffix in suffixes:
+        path = io_path(str(target) + suffix)
+        try:
+            info = path.lstat()
+        except FileNotFoundError:
+            states[suffix] = None
+            continue
+        if not stat.S_ISREG(info.st_mode) or getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT:
+            raise ValidationError(f"The output receipt must be a regular file: {path}. Choose another output filename.")
+        states[suffix] = _file_state(info)
+    return states
+
+
+@contextmanager
+def _publication_lock(target):
+    from . import platform_compat
+    from .nfl2k5_source_cache import default_cache_root
+    key = hashlib.sha256(os.fsencode(os.path.normcase(os.path.realpath(target)))).hexdigest()
+    locks = default_cache_root() / "publication-locks"
+    locks.mkdir(mode=0o700, parents=True, exist_ok=True)
+    with (locks / key).open("a+b") as lock:
+        try:
+            platform_compat.exclusive_nonblocking_lock(lock.fileno())
+        except BlockingIOError as exc:
+            raise ValidationError("Another build is publishing this destination. Choose a different output filename.") from exc
+        try:
+            yield target.parent / (".2k5-publish-" + key[:24])
+        finally:
+            platform_compat.release_lock(lock.fileno())
+
+
+def _finish_publication(target, journal, suffixes):
+    """Reconcile a failed or interrupted commit. The disc rename occurs after every sidecar."""
+    if not journal.exists():
+        return
+    if journal.is_symlink() or not journal.is_dir():
+        raise ValidationError(f"A publication recovery path is occupied: {journal}")
+    manifest = journal / "commit.json"
+    if not manifest.exists():
+        # No receipt can have moved before the journal is finalized.
+        if {f.name for f in journal.iterdir()} <= {"commit.tmp"}:
+            (journal / "commit.tmp").unlink(missing_ok=True)
+            journal.rmdir()
+            return
+        raise ValidationError(f"Unrecognized files in publication recovery folder: {journal}")
+    if manifest.is_symlink() or manifest.stat().st_size > 16384:
+        raise ValidationError(f"Unreadable publication recovery record: {manifest}")
+    doc = json.loads(manifest.read_bytes())
+    if set(doc["old"]) != set(suffixes) or set(doc["new"]) != set(suffixes) or doc["target"] != target.name:
+        raise ValidationError(f"The publication recovery record does not belong to {target.name}.")
+    committed = receipt_states(target, ("",))[""] == doc["disc_after"]
+    states = receipt_states(target, suffixes)
+    for number, suffix in enumerate(sorted(suffixes)):
+        backup = journal / str(number)
+        old, new, current = doc["old"][suffix], doc["new"][suffix], states[suffix]
+        if not committed:
+            dest = io_path(str(target) + suffix)
+            if current not in (None, old, new):
+                raise ValidationError(f"The output receipt changed during recovery. Your previous receipt is in {journal}.")
+            if backup.exists():
+                if receipt_states(backup, ("",))[""] != old:
+                    raise ValidationError(f"Previous receipt changed in {journal}.")
+                _publish_when_released(lambda: os.replace(backup, dest), dest)
+            elif old is None and current is not None:
+                _publish_when_released(dest.unlink, dest)
+            elif current != old:
+                raise ValidationError(f"Cannot verify the previous receipt for {target.name}. Recovery files are in {journal}.")
+        else:
+            backup.unlink(missing_ok=True)
+    manifest.unlink()
+    journal.rmdir()
+
+
+#: Every private staging folder Studio makes beside an output carries this marker, opened and locked for as long as the
+#: folder is in use. A folder with an unlocked marker was left by a Studio that stopped (a crash, a kill or a power cut)
+#: and is removed by the next operation in the same output folder. Nothing without the exact marker is ever touched.
+STAGING_MARKER = ".2k5-studio-staging"
+STAGING_MARKER_TEXT = (b"2K5 Mod Studio private staging folder. Studio removes it when no Studio is using it.\n")
+#: A folder that holds a user's previous file (the save writers' rollback copy) is renamed to this marker instead and
+#: is never removed automatically: it may be the only copy left after an interrupted replacement.
+RECOVERY_MARKER = ".2k5-studio-recovery"
+#: The file name the save writers use for the previous output they may restore. A stale folder holding one is kept.
+ROLLBACK_NAME = "original"
+
+
+class StudioStaging:
+    """One marked staging folder. Set ``keep`` (with a reason) to leave it on disk for the user."""
+
+    def __init__(self, path: Path):
+        self.path = path
+        self.keep = False
+
+
+def _stale_staging_folder(entry: Path) -> bool:
+    try:
+        info = entry.lstat()
+    except OSError:
+        return False
+    if not stat.S_ISDIR(info.st_mode) or getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT:
+        return False
+    marker = entry / STAGING_MARKER
+    try:
+        marker_info = marker.lstat()
+        if not stat.S_ISREG(marker_info.st_mode) or marker_info.st_size != len(STAGING_MARKER_TEXT):
+            return False
+        if any(child.name == ROLLBACK_NAME for child in entry.iterdir()):
+            return False
+        from . import platform_compat
+        with open(marker, "r+b") as handle:
+            try:
+                platform_compat.exclusive_nonblocking_lock(handle.fileno())
+            except BlockingIOError:
+                return False            # a running Studio owns it
+            try:
+                return handle.read(len(STAGING_MARKER_TEXT) + 1) == STAGING_MARKER_TEXT
+            finally:
+                platform_compat.release_lock(handle.fileno())
+    except OSError:
+        return False
+
+
+def recover_studio_staging(parent, prefix: str) -> list[str]:
+    """Remove stale marked staging folders named ``prefix*`` directly inside ``parent``. Returns their names."""
+    removed = []
+    try:
+        entries = sorted(Path(parent).iterdir())
+    except OSError:
+        return removed
+    for entry in entries:
+        if not entry.name.startswith(prefix) or not _stale_staging_folder(entry):
+            continue
+        try:
+            _remove_staging(entry)
+        except OSError:
+            continue
+        removed.append(entry.name)
+    return removed
+
+
+def _remove_staging(entry: Path) -> None:
+    """Remove a staging folder's contents, then its marker, then the folder: a partial removal is retried later."""
+    for child in entry.iterdir():
+        if child.name == STAGING_MARKER:
+            continue
+        if child.is_dir() and not child.is_symlink():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
+    (entry / STAGING_MARKER).unlink(missing_ok=True)
+    entry.rmdir()
+
+
+@contextmanager
+def studio_staging(parent, prefix: str):
+    """A private, marked staging folder on the output's own volume (so the final rename never crosses volumes).
+
+    Stale folders with the same prefix are recovered first. The folder is removed afterwards unless ``keep`` is set,
+    in which case it is marked for the user and never removed automatically."""
+    from . import platform_compat
+    parent = Path(parent)
+    recover_studio_staging(parent, prefix)
+    stage = StudioStaging(Path(tempfile.mkdtemp(prefix=prefix, dir=parent)))
+    marker = stage.path / STAGING_MARKER
+    handle = None
+    locked = False
+    try:
+        handle = open(marker, "xb")
+        handle.write(STAGING_MARKER_TEXT)
+        handle.flush()
+        try:
+            platform_compat.exclusive_nonblocking_lock(handle.fileno())
+            locked = True
+        except OSError:
+            # Some network volumes have no advisory locks. Recovery cannot lock there either, so it never removes this.
+            pass
+        yield stage
+    finally:
+        if handle is not None:
+            if locked:
+                try:
+                    platform_compat.release_lock(handle.fileno())
+                except OSError:
+                    pass
+            handle.close()
+        if stage.keep:
+            try:
+                os.replace(marker, stage.path / RECOVERY_MARKER)
+            except OSError:
+                pass
+        else:
+            try:
+                _remove_staging(stage.path)
+            except OSError:
+                pass    # Windows can hold a just-closed file for a moment; the unlocked marker lets the next run finish
+
+
+def recover_image_publication(target, suffixes):
+    """Recover an interrupted build before taking a fresh snapshot of the destination."""
+    with _publication_lock(target) as journal:
+        _finish_publication(target, journal, suffixes)
+
+
+def publish_image_with_receipts(staging, target, previous, previous_receipts):
+    """Commit the verified files together. Keep rollback data until the new disc has its final name."""
+    from . import platform_compat
+    with _publication_lock(target) as journal:
+        _finish_publication(target, journal, previous_receipts)
+        if receipt_states(target, previous_receipts) != previous_receipts:
+            raise ValidationError("The output receipts changed while building. Choose another output filename.")
+        staged = receipt_states(staging, previous_receipts)
+        if not any(previous_receipts.values()) and not any(staged.values()):
+            publish_image(staging, target, previous)
+            return
+        doc = dict(target=target.name, disc_after=_file_state(staging.stat()), old=previous_receipts, new=staged)
+        journal.mkdir(mode=0o700)
+        try:
+            draft = journal / "commit.tmp"
+            with draft.open("xb") as writer:
+                writer.write(json.dumps(doc).encode())
+                writer.flush()
+                os.fsync(writer.fileno())
+            os.replace(draft, journal / "commit.json")
+            platform_compat.fsync_directory(journal)
+            platform_compat.fsync_directory(target.parent)
+            for number, suffix in enumerate(sorted(previous_receipts)):
+                dest = io_path(str(target) + suffix)
+                if previous_receipts[suffix] is not None:
+                    _publish_when_released(lambda: os.replace(dest, journal / str(number)), dest)
+                if staged[suffix] is not None:
+                    new = io_path(str(staging) + suffix)
+                    _publish_when_released(lambda: publish_no_replace(new, dest), dest)
+            platform_compat.fsync_directory(journal)
+            platform_compat.fsync_directory(target.parent)
+            publish_image(staging, target, previous)
+        except BaseException:
+            _finish_publication(target, journal, previous_receipts)
+            raise
+        # An OS lock on a backup may delay housekeeping. The committed image and its receipts are already usable.
+        try:
+            _finish_publication(target, journal, previous_receipts)
+        except OSError:
+            pass
 
 
 def publish_image(staging: Path, target: Path, previous) -> None:

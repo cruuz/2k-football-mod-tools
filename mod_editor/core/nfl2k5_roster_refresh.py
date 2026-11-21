@@ -165,47 +165,34 @@ INJURY_TYPES = (
     (22, 14, 'turf toe', 2, 3, None),
     (22, 19, 'turf toe', 8, 9, 24),
 )
-_GROUP_OF = lambda *groups: tuple((g, i) for g, i, *_ in INJURY_TYPES if g in groups)
-_NAMED = lambda *pairs: tuple(pairs)
-# nflverse injury report body part (lower case) -> the game types that part can take. A part the game has no type for
-# (neck, head, concussion, chest, ribs, abdomen, glute, illness, ...) stays untyped, as before.
-INJURY_PARTS = {
-    "ankle": tuple(t for t in _GROUP_OF(20) if t[1] not in (19, 20)),
-    "achilles": _NAMED((20, 19), (20, 20)),
-    "foot": _GROUP_OF(21), "heel": _GROUP_OF(21), "toe": _GROUP_OF(22),
-    "knee": _GROUP_OF(18),
-    "hamstring": _NAMED((17, 12), (17, 13)),
-    "quadricep": _NAMED((17, 9), (17, 23)), "thigh": _NAMED((17, 9), (17, 23)),
-    "calf": _NAMED((19, 9), (19, 12), (19, 13)),
-    "shin": _NAMED((19, 22), (19, 23), (19, 24)), "fibula": _NAMED((19, 22), (19, 23), (19, 24)),
-    "hip": _GROUP_OF(16),
-    "shoulder": _GROUP_OF(9),
-    "biceps": _GROUP_OF(10), "triceps": _GROUP_OF(10),
-    "elbow": _GROUP_OF(13), "forearm": _GROUP_OF(11), "wrist": _GROUP_OF(12),
-    "hand": _GROUP_OF(14), "thumb": _GROUP_OF(14), "finger": _GROUP_OF(15),
-    "back": _GROUP_OF(8),
-}
 
 
-def injury_type(body_part, weeks):
-    """(group, index, name) of the game injury type for a nflverse body part and the weeks he is out, or None.
+def injury_type(body_part, weeks, diagnosis=None):
+    """Use only a documented game diagnosis which stays Out at the requested duration."""
+    text = str(diagnosis or body_part or "").strip().casefold()
+    aliases = {"acl tear": "torn acl", "mcl tear": "torn mcl", "achilles tear": "torn achilles",
+               "achilles rupture": "ruptured achilles", "hamstring tear": "torn hamstring"}
+    text = aliases.get(text, text)
+    for group, index, name, _normal_weeks, out_from, career_above in INJURY_TYPES:
+        if (name.casefold() == text and out_from is not None and weeks >= out_from
+                and (career_above is None or weeks <= career_above)):
+            return group, index, name
+    return None
 
-    Among the types the part can take, those whose status is Out at that many weeks (the injury is not a nick he plays
-    through) and that do not end a career at that many weeks; the one whose normal duration is closest to the weeks wins
-    (a tie goes to the type listed first in the game's table)."""
-    allowed = INJURY_PARTS.get(str(body_part or "").strip().lower())
-    if not allowed:
-        return None
-    best = None
-    for order, (group, index, name, duration, out_from, career_above) in enumerate(INJURY_TYPES):
-        if (group, index) not in allowed or out_from is None or weeks < out_from:
-            continue
-        if career_above is not None and weeks > career_above:
-            continue
-        key = (abs(duration - weeks), order)
-        if best is None or key < best[0]:
-            best = (key, (group, index, name))
-    return None if best is None else best[1]
+
+def injury_summary(document):
+    """Count the final, rostered players the native franchise-start pass actually moves."""
+    diagnoses = {(group, index): name for group, index, name, *_ in INJURY_TYPES}
+    clubs, named = {}, 0
+    for team in document.teams[:32]:
+        placed = document.projected_ir_players(team.index)
+        clubs[team.abbreviation] = len(placed)
+        for offset in placed:
+            rec = document.by_offset[offset].record.values
+            kind = rec["injured_reserve"] | rec["unknown_29_low"] << 8
+            named += (kind & 31, kind >> 5) in diagnoses
+    total = sum(clubs.values())
+    return {"total": total, "named_diagnoses": named, "unspecified": total - named, "by_club": clubs}
 
 
 def with_injury_type(halfword, group, index):
@@ -675,12 +662,14 @@ def apply_body(body, plan):
             struct.pack_into("<II", buffer, offset, *long_injury_words(word20, word24, weeks))
             mark = {"player": by[index].display, "club": weeks_of[index].get("team"), "weeks": weeks}
             part = weeks_of[index].get("ir_injury")
-            choice = injury_type(part, weeks)
+            choice = injury_type(part, weeks, weeks_of[index].get("ir_diagnosis"))
             if part:
                 mark["injury"] = part
-            if choice is not None:                    # b780 rst2: the type, so the Injury Report names the injury
-                (halfword,) = struct.unpack_from("<H", buffer, by[index].offset + 0x28)
-                struct.pack_into("<H", buffer, by[index].offset + 0x28, with_injury_type(halfword, choice[0], choice[1]))
+            at = by[index].offset + 0x28
+            halfword = struct.unpack_from("<H", buffer, at)[0]
+            group, kind = choice[:2] if choice else (0, 0)
+            struct.pack_into("<H", buffer, at, with_injury_type(halfword, group, kind))
+            if choice:
                 mark["type"] = choice[2]
             ir_marked.append(mark)
         result = bytes(buffer)
@@ -691,7 +680,7 @@ def apply_body(body, plan):
     if plan.get("special_row_defaults") is True:
         from .nfl2k5_third_down_back import default_special_rows
         result, special_rows = default_special_rows(result)
-    checked = rr.RosterDocument(result, scheme="one_pool", reference_year=2026)
+    checked = rr.RosterDocument(result, scheme="one_pool", reference_year=2026, modern_ir=room_policy == "ir")
     errors = [r for r in rr.validate_membership(checked) if r["level"] == "error"]
     rr._require(not errors, f"Refreshed membership failed validation: {errors}")
     ps.validate_roster(result, strict_owners=True)
@@ -712,7 +701,7 @@ def apply_body(body, plan):
                     "free_agent_contracts_cleared": len(cleared),
                     "free_agent_contracts_cleared_players": sorted(by[i].display for i in cleared),
                     # b780 b4-economy (D6)
-                    "injured_reserve": {"policy": room_policy, "marked_to_start_on_ir": ir_marked,
+                    "injured_reserve": {"policy": room_policy, "marked_to_start_on_ir": ir_marked, "final_roster": injury_summary(checked),
                                         "rejoined": len(rejoined), "released_for_room": len(released),
                                         "to_free_agents": len(injured_free),
                                         "rejoined_players": sorted(by[i].display for i in rejoined),

@@ -2336,7 +2336,7 @@
  "receipt": {
   "team": "BUF",
   "offense_pack": "data/playbooks/softdrink_buf_modern.2k5book",
-  "offense_pack_sha256": "5715507b0f810e369a91056ac0a0050953b8532c30db3948b9586f243fb5dae4",
+  "offense_pack_sha256": "a10d9474067c69423df9fbe73d481b10dea53e94eb3b02069afc6548ac01d2de",
   "source_fingerprint": "4ca432ed6412bf147941ec56aab8f20d8a60fd8ca6685276154d2e8d1642e79e",
   "replacement_sha256": "e6538a28ab7a2f93890d40668507cce5ac0db837fe3559cc9899fb21df1e902f",
   "semantic_sha256": "090cbfd2f2bd872fb470af7182e4d54f6d1820f9f8aa6c02c20dcd413cd4bc38",

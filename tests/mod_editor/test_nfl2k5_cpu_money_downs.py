@@ -46,7 +46,10 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=121, score_margin=-9, distance=4), "go")
         self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=120, score_margin=-4, distance=6), "go")
         self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=120, score_margin=-4, distance=7), "go")
-        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=240, score_margin=9, distance=2), "go")
+        # Modern 2 has no blanket late-lead protection: up 9 with 4:00 left it still goes on 4th-and-1 at the 50. The beta 81
+        # table (5 at the 50, minus 4 when leading by 9 or more) no longer goes on 4th-and-2 there.
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=240, score_margin=9, distance=1), "go")
+        self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=240, score_margin=9, distance=2), "retail")
         # The rare punt needs all three timeouts, more than 1:30, a defense that allowed 7 or fewer second-half
         # points and a one-in-three roll; otherwise it is go.
         self.assertEqual(patch.decision(level="modern2", quarter=4, seconds=120, score_margin=-7, distance=27,
@@ -90,6 +93,20 @@ class PolicyTests(unittest.TestCase):
             self.skipTest("GNU as with ELF32 output is required for assembly reproduction")
         subprocess.run([sys.executable, str(ROOT/"tools/nfl2k5_cpu_money_downs_assemble.py"), "--check"],
                        cwd=ROOT, capture_output=True, text=True, check=True)
+
+    def test_assembly_check_preserves_stale_and_missing_tables(self):
+        from tools import nfl2k5_cpu_money_downs_assemble as assembler
+
+        with tempfile.TemporaryDirectory() as directory:
+            include = Path(directory) / "tables.inc"
+            with mock.patch.object(assembler, "TABLES_INC", include), mock.patch.object(sys, "argv", ["assembler", "--check"]):
+                with self.assertRaisesRegex(SystemExit, "table include is stale"):
+                    assembler.main()
+                self.assertFalse(include.exists())
+                include.write_bytes(b"previous table\n")
+                with self.assertRaisesRegex(SystemExit, "table include is stale"):
+                    assembler.main()
+                self.assertEqual(include.read_bytes(), b"previous table\n")
 
     def test_capability_structure_and_paths(self):
         from mod_editor.capabilities import validate_registry as registry

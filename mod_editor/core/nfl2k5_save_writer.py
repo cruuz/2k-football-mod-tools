@@ -33,9 +33,12 @@ FATX support is ported from the A4 research tool (attachments/A4).
 from __future__ import annotations
 
 from dataclasses import dataclass
+from contextlib import ExitStack
+import errno
 import hashlib
 import hmac
 import os
+import shutil
 import stat
 import struct
 from pathlib import Path
@@ -247,6 +250,7 @@ def apply_slider_edits(
 # A1b: game options in the same block (b780 b10-profile)
 # ---------------------------------------------------------------------------
 
+OWNER_FIRING_VA = 0xE60144
 OPTION_BLOCK_VA = 0xE5FF80
 #: name -> (RAM address, lowest, highest) of the three options a build can change the defaults of (b779 df1). The block
 #: is an image of RAM from OPTION_BLOCK_VA, so an option sits at ``address - OPTION_BLOCK_VA`` in a Settings save and in
@@ -272,15 +276,19 @@ def apply_option_edits(payload: bytearray, options: dict[str, int] | None) -> li
     if not options:
         return []
     _require(len(payload) >= SETTINGS_BLOCK_SIZE, "save is smaller than the 0x2E0 settings block")
+    fields = OPTION_FIELDS
+    if "owner_firing" in options:
+        _require(save_kind(bytes(payload)) == "franchise", "Owner Firing requires a franchise save")
+        fields = {**OPTION_FIELDS, "owner_firing": (OWNER_FIRING_VA, 0, 2)}
     for name, value in options.items():
-        _require(name in OPTION_FIELDS,
-                 f"unknown option {name!r}; expected one of {', '.join(OPTION_FIELDS)}")
-        _address, low, high = OPTION_FIELDS[name]
+        _require(name in fields,
+                 f"unknown option {name!r}; expected one of {', '.join(fields)}")
+        _address, low, high = fields[name]
         _require(type(value) is int and low <= value <= high,
                  f"{name} must be a whole number from {low} to {high}")
     rows: list[dict[str, object]] = []
     for name, value in options.items():
-        address = OPTION_FIELDS[name][0]
+        address = fields[name][0]
         offset = address - OPTION_BLOCK_VA
         before = struct.unpack_from("<I", payload, offset)[0]
         if before == value:
@@ -341,6 +349,7 @@ def read_franchise_fields(payload: bytes, *, base_year: int = FRANCHISE_DISPLAY_
     validate_franchise_base_year(base_year)
     year_field = payload[FRANCHISE_YEAR_OFFSET + shift]
     return {
+        "owner_firing": struct.unpack_from("<I", payload, OWNER_FIRING_VA - OPTION_BLOCK_VA)[0],
         "state_bytes": state.hex(),
         "stage_weeks": payload[FRANCHISE_STAGE_WEEKS_OFFSET + shift],
         "week": payload[FRANCHISE_WEEK_OFFSET + shift],
@@ -404,6 +413,238 @@ def read_save(savegame_path: Path | str, *, base_year: int = FRANCHISE_DISPLAY_Y
     return result
 
 
+def suggested_save_copy(source: Path) -> Path:
+    """A new sibling folder holding the two filenames the Xbox expects."""
+    folder = source.absolute().parent
+    label = f"{folder.name} edited" if folder.name else "Edited save"
+    parent = folder.parent
+    if not os.access(parent, os.W_OK):
+        parent, label = folder, "Edited save"
+    destination = parent / label
+    number = 2
+    while os.path.lexists(destination):
+        destination = parent / f"{label} {number}"
+        number += 1
+    return destination / "SAVEGAME.DAT"
+
+
+def _output_state(path: Path):
+    try:
+        info = path.lstat()
+    except FileNotFoundError:
+        return None
+    _require(stat.S_ISREG(info.st_mode) and not getattr(info, "st_reparse_tag", 0),
+             f"target is not a regular file: {path}")
+    return info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns
+
+
+def _write_staged_save(path: Path, data: bytes) -> None:
+    with path.open("xb") as stream:
+        stream.write(data)
+        stream.flush()
+        os.fsync(stream.fileno())
+    _require(path.read_bytes() == data, f"Staged save file did not verify: {path.name}")
+
+
+def output_state(path: Path):
+    """The identity of an existing output file, or None. Anything but a regular file is refused."""
+    return _output_state(path)
+
+
+def _verify_published(files) -> None:
+    for path, data in files.items():
+        _require(path.read_bytes() == data, f"The written save file did not read back: {path}")
+
+
+def _make_parents(path: Path, created: dict[Path, os.stat_result]) -> None:
+    """Remember the identities of the folders created here, outermost first."""
+    missing = []
+    folder = path.parent
+    while not folder.exists():
+        missing.append(folder)
+        folder = folder.parent
+    for folder in reversed(missing):
+        folder.mkdir()
+        created[folder] = folder.lstat()
+
+
+def _withdraw_save_file(path, expected, captured) -> None:
+    """Move the editor's file out of the way and preserve any replacement at the same name."""
+    current = _output_state(path)
+    if current is None:
+        return
+    _require(current == expected, "the destination changed during verification")
+    os.replace(path, captured)
+    try:
+        same = _output_state(captured) == expected
+    except SaveWriterError:
+        same = False
+    if not same:
+        # A replacement arrived between the check and rename. Give it its name back if free.
+        info = captured.lstat()
+        if stat.S_ISLNK(info.st_mode) or getattr(info, "st_reparse_tag", 0):
+            raise SaveWriterError("a replacement link was retained for recovery")
+        platform_compat.publish_no_replace(captured, path, is_directory=stat.S_ISDIR(info.st_mode))
+        raise SaveWriterError("the destination changed during rollback")
+
+
+def _rollback_save_files(published, written, stages, previous, cause) -> None:
+    """Restore prior files and give exact recovery paths when a name is occupied or a restore fails."""
+    from .image_use import ROLLBACK_NAME
+
+    problems = []
+    # An interruption during rollback must leave captured entries and previous copies available.
+    retained = {stages[path]: stages[path].keep for path in published}
+    for stage in retained:
+        stage.keep = True
+    for index, path in enumerate(reversed(published)):
+        stage = stages[path]
+        original = stage.path / ROLLBACK_NAME
+        backup = original if previous[path] is not None else None
+        captured = stage.path / f"unverified-{index}"
+        try:
+            if backup is None:
+                # Staging recovery retains folders containing "original" after an interruption.
+                original.mkdir(exist_ok=True)
+                captured = original / captured.name
+            _withdraw_save_file(path, written[path], captured)
+            if backup is not None:
+                platform_compat.publish_no_replace(backup, path)
+        except (OSError, SaveWriterError, platform_compat.NoReplacePublishUnavailable) as exc:
+            keep = []
+            for item in (backup, captured):
+                if item is None:
+                    continue
+                try:
+                    item.lstat()
+                except FileNotFoundError:
+                    continue
+                except OSError:
+                    pass  # An unreadable recovery file may still be the only copy.
+                keep.append(item)
+            if keep:
+                retained[stage] = True
+            recovery = ". Recovery files are at " + ", ".join(map(str, keep)) if keep else ""
+            problems.append(f"{path} ({exc}){recovery}")
+    for stage, keep_stage in retained.items():
+        stage.keep = keep_stage
+    if problems:
+        raise SaveWriterError(f"{cause}. The save could not be fully restored. " + "\n".join(problems)) from cause
+
+
+def publish_save_files(files, previous, *, new_root: Path | None = None) -> None:
+    """Publish a set of verified save files together: staged, read back, then renamed into place.
+
+    ``files`` maps each output path to its bytes and ``previous`` to the identity it had when the caller checked it
+    (None for a new file). When ``new_root`` does not exist yet and holds every output, the whole folder is staged
+    beside it and published in one no-replace rename. Otherwise each file is staged on its own volume, an existing
+    output is copied aside first. Readback failures roll back either route. A concurrent edit or unsuccessful restore
+    reports the affected output and any retained copies. The loose writer and signed save copies share this transaction."""
+    from .image_use import ROLLBACK_NAME, _publication_lock, studio_staging
+
+    targets = tuple(files)
+    with ExitStack() as locks:
+        for target in sorted(targets, key=platform_compat.path_key):
+            locks.enter_context(_publication_lock(target))
+        _require(all(_output_state(path) == previous[path] for path in targets),
+                 "The save destination changed. Choose a new folder or retry.")
+        created = {}
+        if new_root is not None and not os.path.lexists(new_root):
+            _require(all(platform_compat.path_is_within(path, new_root) for path in targets),
+                     "Every save file must be inside the new folder.")
+            try:
+                _make_parents(new_root, created)
+                with studio_staging(new_root.parent, ".2k5-save-") as stage:
+                    staged = stage.path / "pair"
+                    staged.mkdir()
+                    staged_dirs = {staged: staged.lstat()}
+                    written = {}
+                    for path, data in files.items():
+                        item = staged / path.relative_to(new_root)
+                        _make_parents(item, staged_dirs)
+                        _write_staged_save(item, data)
+                        written[path] = _output_state(item)
+                    try:
+                        platform_compat.publish_no_replace(staged, new_root, is_directory=True)
+                    except platform_compat.NoReplacePublishUnavailable:
+                        # Linux ntfs-3g, other FUSE folders and some network or removable volumes have no atomic
+                        # no-replace folder rename. Create the new folder exclusively and publish each file into it
+                        # with the same verification and rollback as explicit destinations.
+                        pass
+                    else:
+                        created.update((new_root / folder.relative_to(staged), state)
+                                       for folder, state in staged_dirs.items())
+                        try:
+                            _verify_published(files)
+                        except BaseException as exc:
+                            _rollback_save_files(targets, written, dict.fromkeys(targets, stage), previous, exc)
+                            raise
+                        return
+                new_root.mkdir()
+                created[new_root] = new_root.lstat()
+            except BaseException as exc:
+                _remove_empty(created, exc)
+                raise
+
+        published = []
+        try:
+            with ExitStack() as stages:
+                work = {}
+                written = {}
+                for path, data in files.items():
+                    _make_parents(path, created)
+                    work[path] = stages.enter_context(studio_staging(path.parent, ".2k5-save-"))
+                    item = work[path].path / "new"
+                    _write_staged_save(item, data)
+                    written[path] = _output_state(item)
+                    if previous[path] is not None:
+                        shutil.copy2(path, work[path].path / ROLLBACK_NAME)
+                try:
+                    for path in targets:
+                        _require(_output_state(path) == previous[path], f"The output changed while editing: {path}")
+                        if previous[path] is None:
+                            item = work[path].path / "new"
+                            try:
+                                platform_compat.publish_no_replace(item, path)
+                            except OSError:
+                                # On POSIX the hard link can succeed before unlinking the staging name fails.
+                                if platform_compat.paths_alias(item, path):
+                                    published.append(path)
+                                raise
+                        else:
+                            os.replace(work[path].path / "new", path)
+                        published.append(path)
+                    _verify_published(files)
+                except BaseException as exc:
+                    _rollback_save_files(published, written, work, previous, exc)
+                    raise
+        except BaseException as exc:
+            _remove_empty(created, exc)
+            raise
+
+
+def _remove_empty(folders: dict[Path, os.stat_result], cause) -> None:
+    problems = []
+    for folder, state in reversed(folders.items()):
+        try:
+            if os.path.samestat(folder.lstat(), state):
+                folder.rmdir()
+        except FileNotFoundError:
+            pass
+        except OSError as exc:
+            if exc.errno not in (errno.ENOTEMPTY, errno.EEXIST):
+                problems.append(f"{folder} ({exc})")
+    if problems:
+        raise SaveWriterError(f"{cause}. Could not clean up the save folders. " + "\n".join(problems)) from cause
+
+
+def _publish_save_pair(files, previous):
+    targets = tuple(files)
+    directory = targets[0].parent
+    same_folder = all(path.parent == directory for path in targets)
+    publish_save_files(files, previous, new_root=directory if same_folder else None)
+
+
 def edit_save_file(
     source_dat: Path | str,
     target_dat: Path | str,
@@ -426,26 +667,31 @@ def edit_save_file(
     source is always refused.
     """
 
-    source = Path(source_dat).expanduser().resolve(strict=True)
-    target = Path(target_dat).expanduser()
-    extra_target = Path(target_extra).expanduser()
-    source_info = _regular_non_link(source)
-    for candidate in (target, extra_target):
-        if not candidate.exists():
-            continue
-        _require(overwrite,
-                 f"target already exists; pass overwrite=True to replace it: "
-                 f"{candidate}")
-        candidate_info = candidate.lstat()
-        _require(
-            (source_info.st_dev, source_info.st_ino)
-            != (candidate_info.st_dev, candidate_info.st_ino),
-            "source and target are the same file; the target must be a copy",
-        )
-        _require(stat.S_ISREG(candidate_info.st_mode),
-                 f"target is not a regular file: {candidate}")
-        candidate.unlink()
-    payload = bytearray(source.read_bytes())
+    selected = platform_compat.io_path(platform_compat.absolute_path(source_dat))
+    source = selected.resolve(strict=True)
+    _regular_non_link(source)
+    xbe = platform_compat.io_path(xbe_path).resolve(strict=True)
+    target, extra_target = (platform_compat.io_path(platform_compat.absolute_path(p)) for p in (target_dat, target_extra))
+    protected = [source, xbe]
+    companions = []
+    for folder in {selected.parent, source.parent}:
+        companions.extend(path for path in folder.iterdir() if path.name.casefold() == "extra")
+    protected.extend(companions)
+    if selected.name.casefold() == "savegame.dat" or source.name.casefold() == "savegame.dat":
+        protected.extend((selected.with_name("EXTRA"), source.with_name("EXTRA")))
+    previous = {}
+    for path in (target, extra_target):
+        platform_compat.validate_output_path(path)
+        _require(not any(platform_compat.paths_alias(path, item) or path.resolve() == item.resolve() for item in protected),
+                 "Choose a separate edited save folder to preserve the source save and its EXTRA.")
+        previous[path] = _output_state(path)
+        _require(previous[path] is None or overwrite, f"target already exists; pass overwrite=True to replace it: {path}")
+    _require(not platform_compat.paths_alias(target, extra_target) and target.resolve() != extra_target.resolve(),
+             "The output save and EXTRA must be two different files.")
+    _require(target.resolve() not in extra_target.resolve().parents and extra_target.resolve() not in target.resolve().parents,
+             "Neither output file can be the other file's folder.")
+    original = source.read_bytes()
+    payload = bytearray(original)
     kind = save_kind(bytes(payload))
     _require(kind in ("settings", "franchise"),
              f"save size {len(payload)} is neither Settings1 (736) nor "
@@ -461,17 +707,17 @@ def edit_save_file(
     _require(bool(slider_changes) or year_change is not None or bool(option_changes),
              "no edits were requested")
 
-    xbe_payload = Path(xbe_path).expanduser().resolve(strict=True).read_bytes()
-    sig_key = derive_sig_key(xbe_payload)
-    extra = sign_save(sig_key, bytes(payload))
-
-    target.parent.mkdir(parents=True, exist_ok=True)
-    extra_target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_bytes(bytes(payload))
-    extra_target.write_bytes(extra)
+    sig_key = derive_sig_key(xbe.read_bytes())
+    if selected.name.casefold() == "savegame.dat" or source.name.casefold() == "savegame.dat":
+        for companion in companions:
+            _require(companion.is_file() and verify_extra(sig_key, original, companion.read_bytes()),
+                     "The source SAVEGAME.DAT and EXTRA signature do not match the selected game.")
+    edited = bytes(payload)
+    extra = sign_save(sig_key, edited)
+    _publish_save_pair({target: edited, extra_target: extra}, previous)
     return {
         "schema": EDIT_SCHEMA,
-        "source": {"path": str(source), "sha256": _digest(source.read_bytes()),
+        "source": {"path": str(source), "sha256": _digest(original),
                    "kind": kind},
         "target": {"path": str(target), "sha256": _digest(bytes(payload)),
                    "kind": kind},
@@ -780,7 +1026,7 @@ def _argument_parser():
                              default="consistent")
     edit_parser.add_argument("--option", action="append", default=[], nargs=2,
                              metavar=("NAME", "VALUE"),
-                             help="a game option: quarter_minutes, sim_minutes or chop_block (0 or 1)")
+                             help="quarter_minutes, sim_minutes, chop_block, or franchise owner_firing (0 Off, 1 On, 2 carousel All Teams)")
     edit_parser.add_argument("--franchise-year", type=int, default=None)
     edit_parser.add_argument("--overwrite", action="store_true",
                              help="replace existing output files")
@@ -803,7 +1049,7 @@ def _argument_parser():
                                   default="consistent")
     writeback_parser.add_argument("--option", action="append", default=[], nargs=2,
                                   metavar=("NAME", "VALUE"),
-                                  help="a game option: quarter_minutes, sim_minutes or chop_block (0 or 1)")
+                                  help="quarter_minutes, sim_minutes, chop_block, or franchise owner_firing (0 Off, 1 On, 2 carousel All Teams)")
     writeback_parser.add_argument("--franchise-year", type=int, default=None)
     return parser
 

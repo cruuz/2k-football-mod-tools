@@ -179,14 +179,14 @@ def apply(block: bytearray, position: int, offset: int, replacement: bytes) -> N
         ]
 
 
-def read_plan(path: Path) -> tuple[Path, bytes, list[dict[str, str]]]:
+def read_plan(path: Path, source_root: Path = ROOT) -> tuple[Path, bytes, list[dict[str, str]]]:
     raw, value = read_canonical_pin(path, PLAN_PIN, "portrait proof plan")
     require(
         set(value) == {"schema", "purpose", "edits"}
         and value["schema"] == "nfl2k5_player_portrait_plan/v1"
         and value["purpose"] == "deterministic non-retail numeric roster portrait copy-only proof"
         and value["edits"] == [{
-            "png": str((ROOT / "assets/fixtures/nfl2k5/player_portrait/portrait_0124_nonretail.png").resolve()),
+            "png": str((source_root / "assets/fixtures/nfl2k5/player_portrait/portrait_0124_nonretail.png").resolve()),
             "portrait_id": "0124",
         }],
         "portrait proof plan differs",
@@ -197,6 +197,7 @@ def read_plan(path: Path) -> tuple[Path, bytes, list[dict[str, str]]]:
 def reconstruct_historical_compatibility(
     payload: bytes, source: Path, index: Path,
 ) -> str:
+    """Restore the recorded input labels under the historical source tree, independent of the verifier's checkout."""
     value = json.loads(payload)
     require(payload == canonical_json(value),
             "current compatibility report is not canonical JSON")
@@ -212,16 +213,11 @@ def reconstruct_historical_compatibility(
         "current compatibility provenance labels differ",
     )
     inputs["canonical_index"]["path"] = str(index)
-    inputs["default_xbe"]["path"] = str(
-        (ROOT / "extracted/ESPN NFL 2K5 (USA)/default.xbe").resolve(strict=True)
-    )
+    inputs["default_xbe"]["path"] = str((index.parent.parent / "default.xbe").resolve(strict=True))
     inputs["retail_xiso"]["path"] = str(source)
-    inputs["roster_players"]["path"] = str(
-        (ROOT / "reports/assets/nfl2k5_roster_players.tsv").resolve(strict=True)
-    )
-    inputs["txtr_inventory"]["path"] = str(
-        (ROOT / "reports/assets/nfl2k5_all_txtr_inventory_v2.json").resolve(strict=True)
-    )
+    historical_reports = source.parent / "reports" / "assets"
+    inputs["roster_players"]["path"] = str((historical_reports / "nfl2k5_roster_players.tsv").resolve(strict=True))
+    inputs["txtr_inventory"]["path"] = str((historical_reports / "nfl2k5_all_txtr_inventory_v2.json").resolve(strict=True))
     historical = digest(canonical_json(value))
     require(historical == HISTORICAL_COMPATIBILITY_SHA256,
             "historical absolute-path compatibility receipt cannot be reconstructed")
@@ -267,7 +263,7 @@ def verify(
     index = open_regular(index_path, "canonical extracted index", INDEX_SIZE)
     compatibility = open_regular(compatibility_path, "portrait compatibility report")
     try:
-        plan, plan_payload, edits = read_plan(plan_path)
+        plan, plan_payload, edits = read_plan(plan_path, source.path.parent)
         require(common.sha256_fd(index.descriptor) == INDEX_SHA256,
                 "canonical extracted index SHA-256 differs")
         compatibility_payload = common.read_exact(

@@ -124,14 +124,12 @@ class Native(unittest.TestCase):
         print('NATIVE_DEPTH 32 teams, 1472 slot reads, 32 header reads; shared table unchanged')
 
     def test_foreign_sites_masks_readers_and_replay(self):
-        from mod_editor.core import nfl2k5_my_career_mode as career
         self.assertEqual(hb.apply(self.payload,self.plan)[0],self.payload)
-        self.assertEqual(career.status(self.payload),'applied')
-        self.assertEqual(career.apply(self.payload)[0],self.payload)
+        self.assertEqual(hb.status(self.payload),'applied')
         for at in (0x243AF4,0x243E2C,0x243AE0,0x4F26F0,hb.allocation(self.payload)['va']+hb.MASK_OFFSET):
             b=bytearray(self.payload);b[self.image.offset(at)]^=0x40
             with self.assertRaises(ValueError):hb.apply(bytes(b),self.plan)
-            self.assertEqual(career.status(bytes(b)),'foreign')
+            self.assertEqual(hb.status(bytes(b)),'foreign')
         other=copy.deepcopy(self.plan)
         other['teams'][0]['role']='H-B' if other['teams'][0]['role']!='H-B' else 'FB'
         with self.assertRaises(ValueError):hb.apply(self.payload,other)
@@ -196,5 +194,30 @@ class Native(unittest.TestCase):
             uc.mem_write(0xCB8830,struct.pack('<I',i));m.call(0x343460);m.call(0x343FA0)
             self.assertEqual(text(uc.reg_read(x.UC_X86_REG_EAX)),name)
         print('NATIVE_CARD_CAP player abbreviation, common long name, CAP/MyCareer long name, 3 templates, both 16-position cycles passed')
+
+class MyCareerContext(unittest.TestCase):
+    def test_current_career_accepts_only_intact_hback_roles(self):
+        from mod_editor.core import nfl2k5_my_career_mode as career, nfl2k5_rdata_sites as rdata
+        from tests.nfl2k5_retail_fixtures import read_nfl_retail_xbe
+
+        payload = read_nfl_retail_xbe()
+        # The October fixture in Native carries the October MyCareer writer.
+        for writer in (modern, pools, career):
+            payload, _ = writer.apply(payload)
+        self.assertEqual(career.status(payload), 'applied')
+        plan_path = os.environ.get('B77_RO1_HBACK')
+        plan = json.loads(Path(plan_path).read_bytes()) if plan_path else sample()
+        payload, _ = hb.apply(payload, plan)
+        self.assertEqual(career.status(payload), 'applied')
+        self.assertEqual(career.apply(payload)[0], payload)
+        image = XbeImage(payload)
+        mask = hb.allocation(payload)['va'] + hb.MASK_OFFSET
+        for va in (0x243AF4, 0x243E2C, 0x243AE0, 0x4F26F0, mask):
+            with self.subTest(va=hex(va)):
+                original = image.read(va, 1)
+                damaged = bytes([original[0] ^ 0x40])
+                changed, _ = rdata.apply(payload, [('damaged H-back site', va, original, damaged)], 'test')
+                self.assertEqual(career.status(changed), 'foreign')
+
 
 if __name__=='__main__':unittest.main()

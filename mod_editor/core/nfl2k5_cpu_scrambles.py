@@ -1,27 +1,31 @@
 """One CPU pocket escape lottery threshold. EXPERIMENTAL / UNWITNESSED.
 
 At 0x19C36C in the passing AI 0x19BB60, the timer-gated pressure branch
-uses 0.25 * effective Scramble as its escape probability. Modern uses 0.50
-for CPU QBs in live scrimmage only. This is not calibrated to NFL game averages.
+uses 0.25 * effective Scramble as its escape probability. The game reaches that lottery only when its own threat
+value is between 0.8125 and 0.925 and an earlier lottery passed (0x19C09D, 0x19C12F, 0x19C352). Modern then reads the
+game's smoothed pocket pressure (0xBE47C0): below 0.70 in the first 2.5 seconds after the snap, while that reading is
+still building, there is no escape lottery; at 0.70 or more the factor is 0.3125; below 0.70 after 2.5 seconds it is
+the original 0.25. It is not a clean-pocket rule. This is not calibrated to NFL game averages.
 Neither the roster parity bit nor the slow-QB acceleration owner is changed.
 """
 from __future__ import annotations
 import struct
 import sys
+from types import SimpleNamespace
 from . import nfl2k5_rules_patch as patch
 from . import nfl2k5_cpu_scrambles_code as assembly
 
 OWNER = "nfl2k5_cpu_scrambles"
 REQUESTS = ((OWNER, "code", 128, 16), (OWNER, "read_only", 4, 4))
 DEFAULTS = {}
-RETAIL_FACTOR, MODERN_FACTOR = 0.25, 0.50
+RETAIL_FACTOR, MODERN_FACTOR = 0.25, 0.3125
+BETA80_FACTOR = struct.pack("<f", 0.50)
 BUILD_CAPTION = "CPU QB scrambles: retail / modern (experimental)"
-HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. Retail in every preset. Modern doubles "
-             "one existing CPU pocket escape lottery threshold from 0.25 to 0.50 "
-             "times effective Scramble. Its pressure and timer conditions remain. "
-             "More branch hits are proved under identical native inputs; NFL-average "
-             "scrambles per game are not established. Human steering and acceleration "
-             "are unchanged.")
+HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. Changes only the CPU quarterback's escape chance when the game already "
+             "judges the rush dangerous. In the first 2.5 seconds after the snap, while the game's own pressure reading "
+             "is still building, there is no escape lottery. Once that reading is high the chance rises from 0.25 to 0.3125 "
+             "times effective Scramble. After 2.5 seconds with the reading still building it stays at the original 0.25. "
+             "Human quarterbacks are unchanged. NFL-average scrambles per game are not established.")
 HOOKS = (("threshold", 0x19C36C, bytes.fromhex("d80d6c694e00"), b"\xe8"),)
 GUARDS = (
     (0x19bb60, 2510, "fdc6a3131d3475c3583cbbc91857d24c02599ef3b29772f8b3e9dedd15cb7aef"),
@@ -59,7 +63,7 @@ def encode_options():
 
 
 def decode_options(content):
-    if content != encode_options():
+    if content not in (encode_options(), BETA80_FACTOR):
         raise ValueError("Foreign CPU scramble threshold")
     return {}
 
@@ -72,15 +76,46 @@ def sites(places):
     return patch.hook_sites(HOOKS, assembly, places)
 
 
+def previous(places):
+    legacy = SimpleNamespace(CODE=assembly.CODE_BETA80, RELOCATIONS=assembly.RELOCATIONS_BETA80)
+    return [(patch.relocate(legacy, places, dict(factor=places["read_only"]["va"])), sites(places))]
+
+
+def _revision(payload):
+    from .nfl2k5_cave_oracle import XbeImage
+    module = sys.modules[__name__]
+    revision = patch.installed_revision(payload, module)
+    if revision:
+        row = patch.allocations(payload, module)["read_only"]
+        expected = BETA80_FACTOR if revision == "previous" else encode_options()
+        if XbeImage(payload).read(row["va"], 4) != expected:
+            raise ValueError("Mixed CPU scramble revision and threshold")
+    return revision
+
+
 def status(payload):
-    return patch.status(payload, sys.modules[__name__])
+    try:
+        return "applied" if _revision(payload) else "retail"
+    except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError):
+        return "foreign"
 
 
 def verify(payload):
-    return dict(**patch.verify(payload, sys.modules[__name__]),
-                retail_factor=RETAIL_FACTOR, modern_factor=MODERN_FACTOR,
+    revision = _revision(payload)
+    return dict(status="applied" if revision else "retail", settings={} if revision else None,
+                experimental=True, runtime_witnessed=False, option_source="build_time",
+                retail_factor=RETAIL_FACTOR, modern_factor=0.50 if revision == "previous" else MODERN_FACTOR,
                 nfl_average_calibrated=False)
 
 
 def apply(payload):
-    return patch.apply(payload, sys.modules[__name__])
+    from . import nfl2k5_xbe_space as space
+    module = sys.modules[__name__]
+    if _revision(payload) == "previous":
+        places = patch.allocations(payload, module)
+        old_code, _ = previous(places)[0]
+        result, code = space.install_code(payload, OWNER, code_for(places), previous=old_code)
+        result, factor = space._install_scaleout(result, OWNER, encode_options(), "read_only", previous=BETA80_FACTOR)
+        return result, dict(**verify(result), owner=OWNER, upgraded=True, edits=code["edits"] + factor["edits"],
+                            changed_bytes=space.count_differing_bytes(payload, result))
+    return patch.apply(payload, module)

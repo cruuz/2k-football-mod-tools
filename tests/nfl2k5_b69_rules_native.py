@@ -44,8 +44,8 @@ class Machine(ClockMachine):
         for index in range(8):
             self.run(0x77200, ecx=index, edx=sides[index] if index < len(sides) else 0)
 
-    def toss(self, *, outcome=0, draw=0, human_side=1, period=1):
-        self.controllers(human_side)
+    def toss(self, *, outcome=0, draw=0, human_side=1, period=0, phase=0, other_controllers=()):
+        self.controllers(human_side, *other_controllers)
         self.put(0xE602C4, period)
         self.run(0xB8170, ecx=self.AUX)
         # Accepted away heads/tails input: tails (0). No winner is supplied.
@@ -58,6 +58,8 @@ class Machine(ClockMachine):
         self.put(rng+4, 1)
         self.put(rng+8, outcome)
         self.put(rng+8+54*8, draw-outcome)
+        # The played opener reaches the winner's menu at period 0, phase 0.
+        self.put(0xE602B4, phase)
         self.run(0x25E9B0, count=100000)
 
     def row(self, index):

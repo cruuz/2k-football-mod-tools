@@ -403,6 +403,7 @@ class PackBook:
     license: str
     targets: tuple[str, ...] = ()        # empty = just ``team``; ("ALL",) = the 32 team books
     notes: str = ""
+    offset_toss_flip: bool = False
 
     def to_json(self) -> dict[str, Any]:
         out = {"team": self.team, "name": self.name, "author": self.author,
@@ -411,13 +412,15 @@ class PackBook:
             out["targets"] = list(self.targets)
         if self.notes:
             out["notes"] = self.notes
+        if self.offset_toss_flip:
+            out["offset_toss_flip"] = True
         return out
 
     @classmethod
     def from_json(cls, value: object) -> "PackBook":
         if not isinstance(value, Mapping):
             raise PlaybookPackError("“book” must be an object with team / name / author / version / license.")
-        extra = set(value) - {"team", "name", "author", "version", "license", "targets", "notes"}
+        extra = set(value) - {"team", "name", "author", "version", "license", "targets", "notes", "offset_toss_flip"}
         if extra:
             raise PlaybookPackError(f"“book” has unsupported fields {sorted(extra)}.")
         team = _text(value.get("team"), "book team")
@@ -438,6 +441,7 @@ class PackBook:
             _text(value.get("license"), "book license"),
             targets,
             _text(value.get("notes", ""), "book notes", allow_empty=True, max_chars=2000),
+            _boolean(value.get("offset_toss_flip", False), "book offset_toss_flip"),
         )
 
     def resolved_targets(self) -> tuple[str, ...]:
@@ -960,7 +964,7 @@ def check_pack(
                 schema_errors.append("Option source fingerprint changed; regenerate and review the intended test fixture")
             notes.append(
                 "the supplied book is not the one this pack was authored on "
-                f"(fingerprint {digest[:12]}… vs {pack.base.book_fingerprint[:12]}…) — "
+                f"(fingerprint {digest[:12]}… vs {pack.base.book_fingerprint[:12]}…), "
                 "indices are re-resolved by name on retarget"
             )
         else:
@@ -993,7 +997,7 @@ def check_pack(
         notes.append("Authored unique nodes only; complete retained-pool budget requires the compile stage")
     if totals["net_play_growth"] or totals["net_formation_growth"]:
         notes.append(
-            "this pack grows the book — eight retail books are already at the 270-play cap, "
+            "this pack grows the book: eight retail books are already at the 270-play cap, "
             "so it will not fit every team"
         )
     seen_f: set[int] = set()
@@ -1116,7 +1120,7 @@ def check_pack(
         if actual != wanted:
             errors.append(
                 f"play “{p.id}”: the QB chain is a {signature} but the header's class nibble says "
-                f"{actual} (0x{flags & lib.PLAY_CLASS_MASK:04x}) — a pass under a run header is "
+                f"{actual} (0x{flags & lib.PLAY_CLASS_MASK:04x}), a pass under a run header is "
                 "played as a run: the receiver icons vanish at the snap and the QB cannot throw"
             )
     stages.append(CheckStage("class_flags", CHECK_ORDER[3][1], not errors,
@@ -1186,7 +1190,7 @@ def check_pack(
         elif authored is not None and donor_class != authored:
             errors.append(
                 f"play “{p.id}”: the play is a {authored} but its donor “{p.donor.name}” is a "
-                f"{donor_class} — take the donor from reference_play_for, not the book's first play"
+                f"{donor_class}: take the donor from reference_play_for, not the book's first play"
             )
         if book is not None and body is not None and (
             book_fingerprint(body) == pack.base.book_fingerprint
@@ -1217,7 +1221,7 @@ def check_pack(
     # 7. dry compile -------------------------------------------------------------
     if resource is None:
         stages.append(CheckStage("compile", CHECK_ORDER[6][1], True, True,
-                                 notes=("no book body supplied — run the check again with --book "
+                                 notes=("no book body supplied: run the check again with --book "
                                         "or --image to compile it for real",)))
     else:
         errors, notes = [], []
@@ -2290,15 +2294,9 @@ def _compile_install_step(before: bytes, pack: PlaybookPack, team: str, xbe):
 
 
 def _warm_worker_count(chains: int) -> int:
-    import os
-    configured = os.environ.get("NFL2K5_BUILD_WORKERS", "").strip()
-    try:
-        workers = int(configured) if configured else (os.cpu_count() or 1) - 1
-    except ValueError:
-        workers = (os.cpu_count() or 1) - 1
-    if os.name == "nt":
-        workers = min(workers, 61)
-    return max(1, min(workers, chains))
+    from .nfl2k5_late_steps import worker_count
+
+    return worker_count(chains)
 
 
 def prewarm_install_steps(archive: Any, packs: Sequence[tuple[str, PlaybookPack]],

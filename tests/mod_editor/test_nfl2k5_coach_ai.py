@@ -79,7 +79,10 @@ class PrivateResources(unittest.TestCase):
         self.assertEqual(tagged[:lo], self.book[:lo])
         self.assertEqual(tagged[lo + ai.PROFILE_SIZE:], self.book[lo + ai.PROFILE_SIZE:])
         info = ai.inspect_profile(tagged)
-        self.assertEqual(info["book_sha256"], hashlib.sha256(self.book).hexdigest())
+        # A released book may already have a coach tag. The stored provenance hashes the original book.
+        original = ai.strip_profile(self.book)
+        self.assertEqual(info["book_sha256"], hashlib.sha256(original).hexdigest())
+        self.assertEqual(ai.strip_profile(tagged), original)
         self.assertEqual(info["book_index"], 15)
         self.assertEqual(ai.build_profile(tagged, self.target)[0], tagged)
         payload = ai.expand_profile(tagged)

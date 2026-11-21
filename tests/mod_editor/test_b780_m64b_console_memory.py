@@ -106,11 +106,30 @@ class PlanField(unittest.TestCase):
                                                     for name in sorted(mod_build.PRESETS)]
         for plan in plans:
             with self.subTest(name=plan.name or "bare"):
-                before = {key: value for key, value in asdict(plan).items()
-                          if key not in ("source", "target", "overwrite", "console_memory")}
+                # The optional QB mode and custom rate were added in beta 81. A recipe carries the mode only
+                # when a preset or the user selected one (the 128 MB Experimental preset selects Realistic),
+                # and the rate only for Custom.
+                omitted = {"source", "target", "overwrite", "console_memory"}
+                if plan.sim_qb_injuries is None:
+                    omitted.add("sim_qb_injuries")
+                if plan.sim_qb_injuries != "custom":
+                    omitted.add("sim_qb_injury_rate")
+                # The simulator's breakaway stop (beta 81 scoring) is carried only with the option on and off its default.
+                if plan.sim_qb_injuries not in ("realistic", "custom") or plan.sim_breakaway_stop == 72:
+                    omitted.add("sim_breakaway_stop")
+                # b81 qb34: the quarterback room key, like the mode, only when a preset or the user named it.
+                if plan.qb_room is None:
+                    omitted.add("qb_room")
+                before = {key: value for key, value in asdict(plan).items() if key not in omitted}
                 self.assertEqual(plan.to_recipe(), before)
+                self.assertEqual(plan.to_recipe().get("sim_qb_injuries"),
+                                 "realistic" if plan.name.startswith("SOFTDRINK patch: experimental") else None)
                 self.assertEqual(json.dumps(plan.to_recipe(), sort_keys=True, default=str),
                                  json.dumps(before, sort_keys=True, default=str))
+                self.assertNotIn("sim_breakaway_stop", plan.to_recipe())
+        moved = mod_build.apply_preset(mod_build.BuildPlan("s", "t"), "softdrink_experimental")
+        moved.sim_breakaway_stop = 20
+        self.assertEqual(moved.to_recipe()["sim_breakaway_stop"], 20)
 
     def test_presets_leave_the_target_alone(self):
         for name, values in mod_build.PRESETS.items():
@@ -597,7 +616,9 @@ class Model(unittest.TestCase):
         self.assertEqual(cm.LABELS[128], "128 MB, xemu (full SOFTDRINK)")
         self.assertEqual(cm.LABELS[64], "64 MB, original Xbox and Android hakuX (experimental, estimated, not yet "
                                         "tested on a real Xbox or hakuX)")
-        self.assertIn("the 2026 rosters, fitted to the original game's roster size", cm.SHARE_NOTE)
+        self.assertIn("64 MB pack", cm.SHARE_NOTE)
+        self.assertIn("Install either directly", cm.SHARE_NOTE)
+        self.assertIn("original game's roster size", cm.SHARE_NOTE)
         for text in (cm.ROSTER_FIT_NOTE, cm.SHARE_NOTE):
             self.assertNotIn("\u2014", text)
 

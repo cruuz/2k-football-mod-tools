@@ -250,13 +250,36 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.assertEqual(self.panel.last_field.text(), "Vick")
         self.assertIn("full", self.panel.status_label.text())
 
-    def test_depth_reorder_moves_the_player_in_the_list(self) -> None:
-        self.assertTrue(self.panel.move_selected(1))
-        self.assertEqual([p.display for p in self.panel.visible_players()],
-                         ["Marvin Harrison", "Peyton Manning", "Edgerrin James"])
+    def test_the_arrows_move_the_stored_depth_rank_not_the_team_list(self) -> None:
+        # b81 R4, Codex's native witness: the game's depth chart and starters follow +0x28 bits 10-12 (the stored
+        # rank); the club's pointer order changes neither, so the arrows edit the rank of the player's position
+        document = self.panel.document
+        assert document is not None
+        manning = next(p for p in document.players if p.last == "Manning")
+        self.panel.select_player(manning)
+        self.assertFalse(self.panel.move_selected(1), "the only QB has nobody to swap with")
+        self.assertIn("already last", self.panel.status_label.text())
+        harrison = next(p for p in document.players if p.last == "Harrison")
+        james = next(p for p in document.players if p.last == "James")
+        document.set_position(james, 3)                      # two receivers: LWR (rank) and RWR (side)
+        harrison.record.values.update(depth_rank=0, depth_side=1)
+        james.record.values.update(depth_rank=1, depth_side=0)
+        self.panel.refresh_grid()
+        self.assertEqual(self.panel._depth_text(james), "RWR")
+        self.panel.select_player(james)
+        slots = list(document.teams[0].slots)
+        self.assertTrue(self.panel.move_selected(-1))
+        self.assertEqual((james.record.values["depth_rank"], harrison.record.values["depth_rank"]), (0, 1))
+        self.assertEqual((james.record.values["depth_side"], harrison.record.values["depth_side"]), (1, 0),
+                         "he cannot start on both sides: the two starters swapped sides")
+        self.assertEqual(document.teams[0].slots, slots, "the team list order did not change")
+        self.assertTrue(james.record.depth_locks["rank"] and harrison.record.depth_locks["rank"])
+        self.assertEqual((self.panel._depth_text(james), self.panel._depth_text(harrison)), ("LWR", "RWR"))
         self.panel.undo()
-        self.assertEqual([p.display for p in self.panel.visible_players()],
-                         ["Peyton Manning", "Marvin Harrison", "Edgerrin James"])
+        self.assertEqual((james.record.values["depth_rank"], james.record.values["depth_side"],
+                          james.record.values["unknown_52"]), (1, 0, 0))
+        self.panel.redo()
+        self.assertEqual(james.record.values["depth_rank"], 0)
 
     def test_copy_and_paste_modes(self) -> None:
         self.assertTrue(self.panel.copy_player())
@@ -269,6 +292,39 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.assertEqual(target.last, "Harrison", "names never travel with a paste")
         self.panel.undo()
         self.assertEqual(target.record.values["speed"], 88)
+
+    def test_paste_from_a_locked_returner_keeps_the_targets_slot_and_undoes(self) -> None:
+        # b81 R7: Harrison (WR) holds KR1 and PR; James is made a WR behind him, then gets Harrison pasted on
+        document = self.panel.document
+        assert document is not None
+        harrison = next(p for p in document.players if p.last == "Harrison")
+        james = next(p for p in document.players if p.last == "James")
+        document.set_position(james, 3)
+        document.set_depth_lock(harrison, "kr1")
+        document.set_depth_lock(harrison, "pr")
+        harrison.record.set_ability("speedster", True)
+        self.panel.refresh_grid()
+        self.assertTrue(self.panel.select_player(harrison))
+        self.assertTrue(self.panel.copy_player())
+        self.assertTrue(self.panel.select_player(james))
+        before = dict(james.record.values)
+        self.assertFalse(self.panel.paste_abilities_action.isChecked(), "abilities are opt-in")
+        self.assertGreater(self.panel.paste_player("all"), 0)
+        self.assertEqual(james.record.values["speed"], harrison.record.values["speed"])
+        self.assertEqual(james.record.values["unknown_52"], before["unknown_52"], "no KR1/PR lock, no Speedster")
+        self.assertEqual((james.record.values["depth_rank"], james.record.values["depth_side"]),
+                         (before["depth_rank"], before["depth_side"]))
+        self.assertEqual(document.depth_lock_conflicts(0), [])
+        self.assertIn("Kept his depth place and locks", self.panel.status_label.text())
+        self.assertIn((james.pool, james.index), self.panel._dirty)
+        self.panel.undo()
+        self.assertEqual(james.record.values, before)
+        self.panel.redo()
+        self.assertEqual(james.record.values["speed"], harrison.record.values["speed"])
+        self.panel.paste_abilities_action.setChecked(True)
+        self.panel.paste_player("all")
+        self.assertTrue(james.record.abilities["speedster"])
+        self.assertFalse(james.record.depth_locks["kr1"], "the tick copies abilities, never returner locks")
 
     # ------------------------------------------------------------------ passes
     def test_global_edit_preview_and_apply(self) -> None:
@@ -317,7 +373,7 @@ class RosterEditorPanelTests(unittest.TestCase):
         findings = self.panel.run_validation()
         self.assertTrue(any(item["check"] == "jersey" for item in findings))
         self.assertIn("outside this check's", self.panel.report.toPlainText())
-        self.assertIn("Editor check —", self.panel.report.toPlainText())
+        self.assertIn("Editor check:", self.panel.report.toPlainText())
         entries = self.panel.refresh_diff()
         self.assertEqual(len(entries), 1)
         self.assertIn("1 player differs", self.panel.report.toPlainText())
@@ -348,11 +404,14 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.assertIn("recorded surname bank", note)
         dialog = IdPickerDialog("Play-by-play name", entries, player.record.values["pbp_id"], self.panel, note=note)
         self.assertEqual(dialog.chosen(), 1000)
-        self.assertEqual(dialog.list.currentRow(), 0)
+        self.assertEqual(dialog.list.currentRow(), sorted(entries).index(1000))    # his own id is the one selected
         dialog.search.setText("vick")
-        self.assertEqual(dialog.list.count(), 1)
-        self.assertEqual(dialog.count_label.text().split(" of ")[0], "1")
-        dialog.list.setCurrentRow(0)
+        # b81 R43 (B3): the retail roster's own recordings are named too, so a retail Vick can sit beside the roster's
+        hits = sorted(k for k, label in entries.items() if "vick" in label.lower())
+        self.assertIn(1003, hits)
+        self.assertEqual(dialog.list.count(), len(hits))
+        self.assertEqual(dialog.count_label.text().split(" of ")[0], str(len(hits)))
+        dialog.list.setCurrentRow(hits.index(1003))
         self.assertEqual(dialog.chosen(), 1003)
         dialog.search.setText("9300")
         self.assertEqual(dialog.list.item(0).text().strip(), "9300 · Smith (recorded surname bank)")

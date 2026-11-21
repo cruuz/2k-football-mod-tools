@@ -108,10 +108,11 @@ def status(payload, module):
 
 
 def verify(payload, module, expected=None):
-    settings = inspect(payload, module)
+    settings, revision = _inspect(payload, module)
     if expected is not None:
         space._require(settings == expected, "Rules options differ from requested build")
-    return dict(status="applied" if settings is not None else "retail", settings=settings,
+    state = {"current": "applied", "previous": "previous", None: "retail"}[revision]
+    return dict(status=state, settings=settings,
                 experimental=True, runtime_witnessed=False, option_source="build_time")
 
 

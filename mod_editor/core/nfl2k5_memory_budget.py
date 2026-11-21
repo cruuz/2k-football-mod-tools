@@ -46,6 +46,9 @@ import os
 import zlib
 from dataclasses import fields as _dc_fields, is_dataclass
 
+from . import nfl2k5_pass_rush_stats as pass_rush_stats
+from . import nfl2k5_xbe_space as space
+
 EVIDENCE = "MODELLED"
 TARGETS = (64, 128)
 
@@ -135,8 +138,18 @@ OWNER_BYTES = {
     "playbook_pair": (8192, 0, 4096, 0, 512), "senior_bowl": (4096, 0, 0, 0, 65536),
     "franchise_2026": (5120, 0, 0, 0, 4096), "dynamic_kickoff_relocated": (1939, 0, 0, 0, 10),
     "guardian_overlay": (496, 0, 0, 0, 0),
-    "injured_reserve": (6144, 0, 0, 0, 5312),   # b780 IR1: the runtime and its 32 x 20 store (nfl2k5_injured_reserve.REQUESTS)
+    "franchise_ownership": (space.FRANCHISE_OWNERSHIP_SIZE, 0, 0, 0, 0),
+    "injured_reserve": (6144, 0, 0, 0, 5312),  # Modern IR, franchise ownership checks and the 32-club IR store.
 }
+
+# Keep the calibrated release layout for comparisons against the actual RC executable.
+BUILD_OWNER_BYTES = {**OWNER_BYTES, "backfield_cards": (space.BACKFIELD_REQUEST[2], 0, 0, 0, 0),
+                     "sim_qb_injuries": (4 * PAGE, 0, 0, 0, 0),
+                     "qb_room": (space.QB_ROOM_SIZE, 0, 0, 0, 0),  # b81 qb34: the fixed quarterback room pages
+                     "gadget_reservation": (space.GADGET_REQUESTS[0][2], 0, space.GADGET_REQUESTS[1][2], 0, 0),
+                     "pass_rush_stats": (
+    0, pass_rush_stats.CODE_SIZE, pass_rush_stats.READ_ONLY_SIZE, 0, pass_rush_stats.DATA_SIZE)}
+
 FRANCHISE_STATIC_BODY = 98_352 - 64    # without the 128 MB roster heap the franchise history body is XBE data
 # the scale-out's own owners (counted only with the scale-out; the legacy layout carries the boot logo itself)
 INFRASTRUCTURE = ("xbe_space_directory", "boot_logo", "moment_context")
@@ -148,6 +161,9 @@ def _modern(value):
 
 # owner -> the plan fields that install it (any of them); INFRASTRUCTURE rides with any space owner
 OWNER_FIELDS = {
+    "sim_qb_injuries": ("sim_qb_injuries",),
+    "backfield_cards": ("backfield_cards",),
+    "gadget_reservation": ("backfield_cards",),
     "history_screen": ("history_screen",), "player_progress_screen": ("player_progress",), "my_career": ("my_career",),
     "my_career_m3": ("my_career",), "roster_arena_growth": ("reserves_16", "created_teams_extra", "roster_capacity"),
     "pass_rush_stats": ("pass_rush_stats",), "star_career": ("star_career",), "defensive_try_stats": ("defensive_try",),
@@ -201,7 +217,7 @@ SCALEOUT_FIELDS = ("camera", "franchise_autosave", "weekly_prep", "weekly_prep_c
                    "coin_defer", "decided_clock", "cpu_scrambles", "sim_rb_injuries", "sim_realism", "coach_carousel",
                    "standings_records", "history_screen", "franchise_history", "speed_threshold", "cpu_clock2",
                    "cpu_runner_vision", "catch_snap_limit", "scramble_blocking", "audible_legend", "team_ratings",
-                   "roster_draft_pick_ownership", "roster_hback_roles", "modern_injured_reserve")
+                   "roster_draft_pick_ownership", "roster_hback_roles", "modern_injured_reserve", "backfield_cards")
 
 # --- disc resources the options add to the main heap (inventory of the RC disc against retail, decoded charges) ------
 RESOURCE_BYTES = {
@@ -307,6 +323,9 @@ RC_VALUES = {"momentum": 50, "momentum_collision_level": 50, "cpu_money_downs": 
 # Options a 64 MB build cannot have. A plan field, except roster_capacity: roster edits whose document asks for the
 # capacity arena (free_agent_capacity; see roster_capacity_records).
 REQUIRES_128 = {
+    "sim_qb_injuries": "The updated simulated quarterback injuries and passing model require 128 MB.",
+    "backfield_cards": "This option is available in the standard preset. The compact preset keeps the original display.",
+    "gadget_play": "The gadget player is a SPECIAL depth chart row, which only the standard 128 MB preset installs.",
     "k128_memory": "It teaches the Xbox's 4627 kernel to use 128 MB at start-up. A 64 MB console has nothing to add, "
                    "hakuX has no real kernel to patch, and with the 128 MB start-up check the disc refuses to start "
                    "below 128 MB.",
@@ -335,7 +354,7 @@ GROUPS = {"momentum": ("momentum_contact", "momentum_collisions"), "weekly_prep"
           "player_progress": ("player_progress_visible",), "scorebug": ("scorebug_runtime",)}
 # b780 m64prof: each value is the BuildPlan's own off value (the build refuses None for modern_venues_2026 and
 # team_number_scale: "Jersey number sizes must be an object of kit: scale").
-OFF_VALUES = {"cpu_money_downs": "retail", "cpu_scrambles": "retail", "momentum": 0, "created_teams_extra": 0,
+OFF_VALUES = {"cpu_money_downs": "retail", "sim_qb_injuries": None, "cpu_scrambles": "retail", "momentum": 0, "created_teams_extra": 0,
               "speed_threshold": 0, "modern_venues_2026": "", "team_number_scale": {}, "momentum_collision_level": 0}
 
 
@@ -459,8 +478,21 @@ def _roster_heap(opts, target_mb) -> bool:
     return target_mb == 128 and on(opts, "k128_memory") and on(opts, "k128_roster_heap")
 
 
-def owners(opts: dict) -> list:
+def owners(opts: dict, target_mb: int = 64) -> list:
     out = [o for o, fs in OWNER_FIELDS.items() if any(on(opts, f) for f in fs)]
+    if target_mb == 128 and (on(opts, "injured_reserve_guard") or on(opts, "modern_injured_reserve")):
+        out.append("franchise_ownership")
+    from .nfl2k5_build_settings import qb_room_level, qb_room_needs_met  # b81 qb34
+    from . import nfl2k5_qb_room as room
+    # The floor whenever quarterback injuries are above zero (coordinator's rule); piece 3's handed-over bits where
+    # named or where their needs are in the plan (DESIGN_CHANGES C1).
+    injuries = (opts.get("sim_qb_injuries") == "realistic"
+                or (opts.get("sim_qb_injuries") == "custom" and opts.get("sim_qb_injury_rate", 0.310) > 0))
+    piece3 = (room.REALISTIC_STAGES & room.PIECE3_BITS
+              and qb_room_level(opts.get("qb_room"), opts.get("sim_qb_injuries")) == "realistic"
+              and (opts.get("qb_room") is not None or (target_mb == 128 and qb_room_needs_met(opts.get))))
+    if (target_mb == 128 and injuries) or piece3:
+        out.append("qb_room")
     return out + list(INFRASTRUCTURE) if out else out
 
 
@@ -470,12 +502,12 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
     extra = XTLID_PRELOAD if on(opts, "depth_chart_rows") else 0
     if on(opts, "my_career") and on(opts, "my_career_home") and not on(opts, "module_loader"):
         extra += 3 * PAGE                      # Career Home's section is preloaded without the on-demand loader
-    found = owners(opts)
+    found = owners(opts, target_mb)
     if not found:
         return RETAIL_RESIDENT + extra
-    code = sum(OWNER_BYTES[o][0] + OWNER_BYTES[o][1] for o in found)
-    read_only = sum(OWNER_BYTES[o][2] + OWNER_BYTES[o][3] for o in found)
-    data = sum(OWNER_BYTES[o][4] for o in found)
+    code = sum(BUILD_OWNER_BYTES[o][0] + BUILD_OWNER_BYTES[o][1] for o in found)
+    read_only = sum(BUILD_OWNER_BYTES[o][2] + BUILD_OWNER_BYTES[o][3] for o in found)
+    data = sum(BUILD_OWNER_BYTES[o][4] for o in found)
     if "franchise_footer" in found and not _roster_heap(opts, target_mb):
         data += FRANCHISE_STATIC_BODY
     if not any(on(opts, f) for f in SCALEOUT_FIELDS):
@@ -484,6 +516,17 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
             return RETAIL_RESIDENT + pages + extra
     overflow = max(0, code - CODE_V3_CAP) + max(0, read_only - RO_V3_CAP) + max(0, data - DATA_V3_CAP)
     pool = POOL_DOC + math.ceil(overflow / PAGE) * PAGE if overflow else 0
+    if "backfield_cards" in found or "sim_qb_injuries" in found:
+        last = space.BACKFIELD_VA + space.BACKFIELD_REQUEST[2] - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+        if "sim_qb_injuries" in found:
+            pool = max(pool, math.ceil(last / PAGE) * PAGE + BUILD_OWNER_BYTES["sim_qb_injuries"][0])
+    if "franchise_ownership" in found:
+        last = space.FRANCHISE_OWNERSHIP_VA + space.FRANCHISE_OWNERSHIP_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "qb_room" in found:
+        last = space.QB_ROOM_VA + space.QB_ROOM_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
     return RETAIL_RESIDENT + LEGACY_SPACE + SCALEOUT_V3 + pool + extra
 
 
@@ -727,7 +770,9 @@ PROFILE_64_TRIM = ("scorebug", "scorebug_runtime", "hair_styles", "kick_meter_20
 # cost nothing at 64 MB). The career history pool fix keeps a long franchise's totals whole and its pool collecting in
 # 6,000-word chunks (nfl2k5_history_pool: six sites inside the history engine's own bytes).
 # b780 mc1: the Franchise load user-team guard (three in-place sites, a retail crash path on a save with no human club).
-PROFILE_64_ON = ("history_pool", "load_user_team_guard", "save_list_type_guard")
+# beta 81 review M1: the save messages that keep a player from deleting a franchise saved by the 128 MB edition
+# (nfl2k5_edition_save_notes: two strings in place). Only this profile turns it on; the presets leave it off.
+PROFILE_64_ON = ("history_pool", "load_user_team_guard", "save_list_type_guard", "edition_save_notes")
 PSEUDO_FIELDS = frozenset(("roster_capacity", "roster_draft_pick_ownership", "roster_hback_roles",
                            "cpu_money_downs_modern2"))
 PROFILE_64_ROSTER = ("roster edits at retail capacity without the draft_pick_ownership and hback_roles sections: "

@@ -171,7 +171,8 @@ class HelpMenuAndWelcomeText(unittest.TestCase):
         self.assertNotIn("\u2014", tip)
         label = next(w for w in window.findChildren(QLabel) if w.accessibleName() == "Community help link")
         self.assertIn("Questions and answers", label.text())
-        self.assertIn("Ask on the Discord", label.text())
+        self.assertIn("Report a bug", label.text())
+        self.assertIn("github.com/cruuz/2k-football-mod-tools/issues", label.text())
         self.assertTrue(label.wordWrap())            # the longer sentence wraps instead of widening the page
         self.assertNotIn("\u2014", label.text())
 

@@ -158,21 +158,24 @@ def flash_unit_fingerprint(path: Path):
     return len(raw), hashlib.sha256(raw).hexdigest()
 
 
-def play_problems(config: Path, *, hash_file=None) -> tuple[str, ...]:
-    """Name the xemu settings a 128 MB SOFTDRINK build needs. Reads only; the caller never writes xemu.toml."""
+def play_problems(config: Path, *, hash_file=None, target_mb: int | None = 128) -> tuple[str, ...]:
+    """Check settings against a known target. An arbitrary disc has no implied memory or kernel requirement."""
 
+    if target_mb not in (64, 128):
+        return ()
+    setup = ("set System Memory to 64 MiB for the 64 MB pack" if target_mb == 64 else
+             "set System Memory to 128 MiB and Flash ROM (BIOS) to Complex 4627")
     path = Path(config)
     hasher = _sha256 if hash_file is None else hash_file
     try:
         raw = path.read_bytes()
     except OSError:
         return ("xemu settings were not found at " + os.fspath(path)
-                + "; set System Memory to 128 MiB and Flash ROM (BIOS) to Complex 4627.",)
+                + ". In xemu's System settings, " + setup + ".",)
     try:
         document = tomllib.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, tomllib.TOMLDecodeError):
-        return ("xemu settings at " + os.fspath(path) + " could not be read; set System Memory to 128 MiB "
-                "and Flash ROM (BIOS) to Complex 4627 in xemu's System settings.",)
+        return ("xemu settings at " + os.fspath(path) + " could not be read. In xemu's System settings, " + setup + ".",)
     system = document.get("sys")
     if not isinstance(system, dict):
         system = {}
@@ -181,10 +184,12 @@ def play_problems(config: Path, *, hash_file=None) -> tuple[str, ...]:
         files = {}
     problems = []
     memory = system.get("mem_limit")
-    if str(memory).strip().strip("'\"") != "128":
+    if str(memory).strip().strip("'\"") != str(target_mb):
         problems.append("System Memory is " + (repr(memory) if memory is not None else "not set")
-                        + "; set it to 128 MiB (xemu.toml [sys] mem_limit = '128'), then close xemu completely and "
+                        + f"; set it to {target_mb} MiB (xemu.toml [sys] mem_limit = '{target_mb}'), then close xemu completely and "
                         "open it again, because xemu only reads this setting when it starts.")
+    if target_mb == 64:
+        return tuple(problems)
     flash = files.get("flashrom_path")
     if not isinstance(flash, str) or not flash.strip():
         problems.append("Flash ROM (BIOS) is not set; choose the Complex 4627 image in xemu's System settings.")
@@ -220,10 +225,10 @@ def play_problems(config: Path, *, hash_file=None) -> tuple[str, ...]:
     return tuple(problems)
 
 
-def play_warning(config: Path, *, hash_file=None) -> str:
+def play_warning(config: Path, *, hash_file=None, target_mb: int | None = 128) -> str:
     """One sentence for the launch screen; empty when the settings match what 128 MB builds need."""
 
-    problems = play_problems(config, hash_file=hash_file)
+    problems = play_problems(config, hash_file=hash_file, target_mb=target_mb)
     if not problems:
         return ""
     return "xemu settings need attention: " + " ".join(problems)

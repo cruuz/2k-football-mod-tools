@@ -7,7 +7,7 @@ quick check keeps its clock but reports "fit pending"; Build and Refit finish
 every search, and Build applies exactly the Refit equipment result to art the
 complete measurement proves cannot fit.
 """
-from contextlib import ExitStack
+from contextlib import ExitStack, contextmanager
 from dataclasses import replace
 import hashlib
 import json
@@ -279,8 +279,20 @@ class BuildRefitTests(unittest.TestCase):
         _, mud_png = f.png(1, independent=False, rgba=bytes((90, 20, 10, 255)) * 1024)
         edits = [(normal.asset_id, normal_png), (mud.asset_id, mud_png)]
         fresh_caches()
-        with f.context(), tempfile.TemporaryDirectory() as folder:
-            rows, substitutes, refits = writer.auto_refit_group(f.pack, edits, Path(folder))
+        notes = []
+        uncapped = lz.uncapped_optimal_fit
+
+        @contextmanager
+        def long_search(heartbeat=None):
+            with uncapped(heartbeat):
+                if heartbeat is not None:
+                    heartbeat()
+                yield
+
+        with f.context(), tempfile.TemporaryDirectory() as folder, patch.object(lz, "uncapped_optimal_fit", long_search):
+            rows, substitutes, refits = writer.auto_refit_group(f.pack, edits, Path(folder), heartbeat=notes.append)
+        self.assertIn("Checking equipment fit", notes)
+        self.assertTrue(any(note.startswith("Refitting ") for note in notes))
         self.assertEqual(sorted(substitutes), [normal.asset_id])
         self.assertEqual([row["asset_id"] for row in refits], [normal.asset_id])
         self.assertEqual({row["fit_status"] for row in rows}, {"fits"})

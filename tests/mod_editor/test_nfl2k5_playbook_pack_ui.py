@@ -51,7 +51,7 @@ class PackUiModelTests(unittest.TestCase):
         choices = ui.team_choices(self.pack, ("ARZ", "ATL", "GB"))
         labels = [label for label, _value in choices]
         values = [value for _label, value in choices]
-        self.assertEqual(labels[0], "As authored — ATL")
+        self.assertEqual(labels[0], "As authored: ATL")
         self.assertEqual(values[0], "ATL")
         self.assertIn("Retarget to GB", labels)
         self.assertEqual(labels[-1], "All 3 team books")
@@ -82,7 +82,7 @@ class PackUiModelTests(unittest.TestCase):
         self.assertIn("already replaced by a staged edit", blockers[0])
 
     def test_engine_limits_are_stated_on_every_install(self) -> None:
-        for phrase in ("pre-snap motion", "give-or-throw RPO", "tempo", "never been witnessed"):
+        for phrase in ("manual pre-snap motion", "up/down", "left/right", "Give-or-throw RPO", "tempo", "on-field verification"):
             self.assertIn(phrase, ui.ENGINE_LIMITS_TEXT)
 
 

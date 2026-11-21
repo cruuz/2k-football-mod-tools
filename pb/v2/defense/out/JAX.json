@@ -1877,7 +1877,7 @@
  "receipt": {
   "team": "JAX",
   "offense_pack": "data/playbooks/softdrink_jax_modern.2k5book",
-  "offense_pack_sha256": "38dc9d4dc0678c74d8384030759791683474c43ffe057e5a227eaa747022f122",
+  "offense_pack_sha256": "023655204c8947f912f4d3ec5028088867fc10f6a63a2a00a1157b4b02c2a87e",
   "source_fingerprint": "5ef6fdc0b22733cfca0b397aecc50c1b99deb9ae5ac3cc242f4c47698d172fc8",
   "replacement_sha256": "e3a18599a4acd5c7c895dec8eea42d2448b393134ac50bfead72d5d75cc63b0b",
   "semantic_sha256": "7bc9cde48e4d65d3676c6991a821126fd2de84e9d394ce6ce34ef5aad2d8ed46",

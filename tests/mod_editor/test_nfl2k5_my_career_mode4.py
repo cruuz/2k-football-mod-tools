@@ -236,15 +236,18 @@ class Mode4Tests(unittest.TestCase):
             self.assertEqual(struct.unpack('<II', image.read(0x4F0430, 8)), (0x1B, 0xA88460))
             focus = m.BODIES + 0x1D000
             original = (0x3C888889, focus, focus + 16, focus + 32, focus + 48, 0x3F800000)
-            for phase in (7, 9, 11, 14, 16):
-                m.put(0xB616C0, phase)
-                m.call('mode_camera_focus', args=original, stop=0x5F760)
-                sp = m.reg('ESP')
-                actual = tuple(m.get(sp + 4 + 4*i) for i in range(6))
-                expected = list(original)
-                if phase != 7:
-                    expected[1] = m.get(body + 0x18) + 0x30
-                self.assertEqual(actual, tuple(expected))
+            for game in (0, 11, 12, 13, 14, 15, 16, 20, 21):
+                for camera in (7, 9, 11, 14, 16, 23):
+                    with self.subTest(game=game, camera=camera):
+                        m.put(0xE602B8, game)
+                        m.put(0xB616C0, camera)
+                        m.call('mode_camera_focus', args=original, stop=0x5F760)
+                        sp = m.reg('ESP')
+                        actual = tuple(m.get(sp + 4 + 4*i) for i in range(6))
+                        expected = list(original)
+                        if game == 14 and camera != 7:
+                            expected[1] = m.get(body + 0x18) + 0x30
+                        self.assertEqual(actual, tuple(expected))
 
     def test_native_camera_choice_uses_human_branch_only_while_present(self):
         for away in (False, True):

@@ -2291,11 +2291,13 @@ def refit_items(index: Path, items, siblings: Iterable[tuple[str, Path]], direct
     directory = Path(directory)
     names = ", ".join(by_id[other].name for other, _payload, _rgba in items)
     last = None
-    with uncapped_optimal_fit(heartbeat):
+    note = f"Refitting {target.set_selector} / {names}"
+    with uncapped_optimal_fit((lambda: heartbeat(note)) if heartbeat is not None else None):
         for scale, limit, candidate, reduced in _refit_ladder(target, payload, rgba):
             if heartbeat is not None:
-                heartbeat(f"Refitting {target.set_selector} / {names}: trying "
-                          f"{target.width // scale} x {target.height // scale}, up to {limit} colours")
+                note = (f"Refitting {target.set_selector} / {names}: trying "
+                        f"{target.width // scale} x {target.height // scale}, up to {limit} colours")
+                heartbeat(note)
             staged: dict[str, tuple[Path, bytes]] = {}
             for other, _payload, _rgba in items:
                 # The first item's PNG keeps the historical name, which Refit
@@ -2348,7 +2350,7 @@ def auto_refit_group(index: Path, edits: Iterable[tuple[str, Path]], directory: 
     current = {str(asset_id): Path(path) for asset_id, path in edits}
     substitutes: dict[str, bytes] = {}
     refits: list[dict[str, Any]] = []
-    with uncapped_optimal_fit(heartbeat):
+    with uncapped_optimal_fit((lambda: heartbeat("Checking equipment fit")) if heartbeat is not None else None):
         def measure(paths):
             # Fit status never depends on the size-suggestion search; Build
             # does not show suggestions, so it does not pay for them.

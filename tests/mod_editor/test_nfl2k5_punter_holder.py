@@ -293,6 +293,26 @@ class BuilderEmulationTests(unittest.TestCase):
 
     ROSTER = [("QB", 0, 0), ("QB", 1, 0), ("K", 0, 0), ("P", 0, 0), ("P", 1, 0), ("WR", 0, 0), ("WR", 1, 0), ("RB", 0, 0)]
 
+    def test_upgraded_game_fields_the_stored_holder_on_both_kinds_of_team(self) -> None:
+        upgraded, receipt = ph.use_stored_holder(self.patched)
+        self.assertEqual(upgraded, self.retail)
+        self.assertEqual(receipt["upgraded_from"], "punter_override")
+        self.assertEqual(ph.use_stored_holder(upgraded)[1]["changed_bytes"], 0)
+        for stored in (1, 3):
+            uc, ptr, _ = self._build(upgraded, self.ROSTER, holder_byte=stored)
+            self.assertEqual(self._formation_player(uc, HOLDER_LIST), self.PLAYERS + stored * 0x54)
+            self.assertEqual(self._row0(uc, ptr, PUNTER_LIST), 3)
+        partial = bytearray(self.patched)
+        start = ph._offset(partial, ph.CAVE_VA)
+        partial[start:start + ph.CAVE_SIZE] = ph.RETAIL_CAVE
+        with self.assertRaises(ph.PunterHolderError):
+            ph.use_stored_holder(bytes(partial))
+        damaged = bytearray(self.patched)
+        section = next(s for s in _sections(damaged) if s.index in receipt["sections_repinned"])
+        damaged[section.header_offset + 36] ^= 1
+        with self.assertRaisesRegex(ph.PunterHolderError, "checksum"):
+            ph.use_stored_holder(bytes(damaged))
+
     def test_retail_holder_is_the_team_record_byte_and_patched_holder_is_the_first_punter(self) -> None:
         uc, ptr, _ = self._build(self.retail, self.ROSTER, holder_byte=1)
         self.assertEqual(self._row0(uc, ptr, HOLDER_LIST), 1)                      # the second quarterback
@@ -386,6 +406,66 @@ class BuilderEmulationTests(unittest.TestCase):
                 self.assertEqual(uc.reg_read(UC_X86_REG_EIP), ph.STORE_DONE_VA)
             else:
                 self.assertEqual(stored, 0xFF)       # the retail rule found a null player and stored nothing
+
+
+class BuildDefaultTests(unittest.TestCase):
+    def setUp(self):
+        from mod_editor.core import nfl2k5_roster_records as records
+        from tests.mod_editor.test_nfl2k5_roster_records import league_body
+        self.roster = records.load_body(league_body())
+        self.team = self.roster.teams[0]
+        self.qb = self.roster.depth_order(0, 0)[0]
+        self.punter = self.roster.depth_order(0, 2)[0]
+
+    def test_explicit_default_and_missing_assignments(self):
+        self.roster.set_special_role(0, "holder", self.qb)
+        inherited = {0: (self.qb.pool, self.qb.index)}
+        for explicit in ({"special_teams": [{"team_index": 0, "roles": {"h": {}}}]},
+                         {"roster_refresh": {"teams": [{"index": 0, "specialists": {"h": 1}}]}}):
+            result = ph.default_club_holders(self.roster, inherited, ph.authored_holder_clubs(explicit))
+            self.assertIs(self.roster.special_teams(0)["holder"], self.qb)
+            self.assertTrue(any(self.qb.display in note for note in result["user_notes"]))
+        self.assertNotIn(0, ph.inherited_holder_ids(self.roster))
+        result = ph.default_club_holders(self.roster, inherited, set())
+        self.assertIs(self.roster.special_teams(0)["holder"], self.punter)
+        self.assertTrue(any(row["club"] == self.team.abbreviation for row in result["changed"]))
+        self.roster.set_special_role(0, "holder", None)
+        before = bytes(self.roster.body)
+        ph.default_club_holders(self.roster, {}, {0})
+        diff = [i for i, (a, b) in enumerate(zip(before, self.roster.body)) if a != b]
+        self.assertEqual(diff, [self.team.offset + ph.TEAM_HOLDER_BYTE])
+        self.assertIs(self.roster.special_teams(0)["holder"], self.punter)
+        self.assertFalse(ph.default_club_holders(self.roster, {}, set())["changed"])
+
+    def test_disc_readback_fills_only_the_empty_holder(self):
+        import tempfile
+        from mod_editor.core import nfl2k5_roster_records as records
+        from tests.mod_editor.test_roster_save_to_disc import image_fixture
+
+        for club in (0, 1):
+            punter = self.roster.special_teams(club)["punter"]
+            self.roster.set_special_role(club, "holder", punter)
+        self.roster.set_special_role(0, "holder", None)
+        with tempfile.TemporaryDirectory() as temp:
+            image = image_fixture(Path(temp), self.roster.to_body()).path
+            before = image.read_bytes()
+            report = ph.apply_roster_defaults(image, {}, set())
+            after = image.read_bytes()
+            self.assertEqual(len(report["changed"]), 1)
+            self.assertEqual(len(before), len(after))
+            self.assertEqual(sum(a != b for a, b in zip(before, after)), 1)
+            loaded = records.load_image(image)
+            roles = loaded.special_teams(0)
+            self.assertIs(roles["holder"], roles["punter"])
+            self.assertFalse(ph.apply_roster_defaults(image, {}, set())["changed"])
+            self.assertEqual(image.read_bytes(), after)
+
+    def test_custom_source_without_authorship_metadata_preserves_its_holder(self):
+        self.roster.set_special_role(0, "holder", self.qb)
+        result = ph.default_club_holders(self.roster, ph.inherited_holder_ids(self.roster), set())
+        self.assertIs(self.roster.special_teams(0)["holder"], self.qb)
+        self.assertIn({"club": self.team.abbreviation, "holder": self.qb.display,
+                       "punter": self.punter.display}, result["preserved"])
 
 
 if __name__ == "__main__":

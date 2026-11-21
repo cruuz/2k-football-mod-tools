@@ -17,6 +17,8 @@ b780 pres2 revision 17 draws the 2026 bar on the pause screen: the Paused menu's
 frozen game and the retail play-call panel (0x8CA00, which this owner keeps off) but never the HUD draw, so no score showed
 while paused. One owned hook takes the backdrop's call to 0x8CA00 (0x65092), and the engine draws the bar there, moved into
 the band above the menu so the PAUSED banner and the menu stay untouched; CODE_SIZE 5920 -> 6336 for it.
+Revision 18 runs the overlay after the native backdrop only when the actual top menu is the root Paused descriptor.
+The shared Game Plan, Options and Quit backdrops show their native titles without the overlaid score.
 
 Private textures are resolved in GAMEDATA, the resident HUD collection.
 Reserve the union of REQUESTS and other owners before applying either patch.
@@ -53,11 +55,15 @@ GAMECAST_PANEL_GATE = (0x8C465, bytes.fromhex("0f8417050000"))
 # above zero and [0xA83F14] is 1) ends with one call to the retail play-call panel draw 0x8CA00. The owner's stub makes that call
 # (the 0x8CA18 jump above still turns the panel off) and then draws the 2026 bar through the engine (sprite_pause_draw).
 PAUSE_HOOK_NAME = "sprite_pause_hook"
-PAUSE_HOOK = (0x65092, bytes.fromhex("e869790200"))   # call 0x8CA00
+PAUSE_HOOK_R17 = (0x65092, bytes.fromhex("e869790200"))   # call 0x8CA00
+# At this tail jump the retail dispatcher still has the actual manager (ECX) and its current stack
+# index (EAX). The background is shared by the root pause menu, Options, Game Plan and the quit submenu.
+PAUSE_HOOK = (0x6C096, bytes.fromhex("e935ffffff"))       # jmp 0x6BFD0
+ROOT_PAUSE_MENU = 0x4E9078
 # b780 pres2: earlier revisions that sat in a 5,920-byte allocation (15: b780 p2, 16: b780 gc1) read "previous": this
 # release's body is larger, so an install of either cannot be updated in place. Their engines are frozen in
 # nfl2k5_scorebug_sprite_code_r15 and _r16. Revision 15 also had the Gamecast panel jump (0x8C465) in place.
-EARLIER_CODE_SIZE, EARLIER_REVISIONS = 5920, (16, 15)
+EARLIER_CODE_SIZE, EARLIER_REVISIONS = 5920, (17, 16, 15)
 GAMECAST_PANEL_OFF_R15 = (0x8C465, GAMECAST_PANEL_GATE[1], bytes.fromhex("e91805000090"), "sb play-call bar off (0x8C450)")
 
 
@@ -76,10 +82,10 @@ def hooks(earlier=None):
         rows[playcall_layout.HOOK_NAME] = playcall_layout.HOOK
         rows[playcall_layout.STRIP_HOOK_NAME] = playcall_layout.STRIP_HOOK  # b780 p2: the page strip fits long menus
         rows[playcall_layout.STRIP_ENTRY_HOOK_NAME] = playcall_layout.STRIP_ENTRY_HOOK
-        if earlier is None:
-            rows[PAUSE_HOOK_NAME] = PAUSE_HOOK
+        if earlier in (None, 17):
+            rows[PAUSE_HOOK_NAME] = PAUSE_HOOK_R17 if earlier == 17 else PAUSE_HOOK
     return rows
-REVISION = 17  # b780 pres2: the pause screen draws the 2026 bar (one hook, the engine moves the bar above the menu); was 16 (b780 gc1: the franchise Gamecast's score panel (0x8C450) stays retail and the play-call guard reads 0x8CA18; was 15 (b780 p2: the ball spot (nwostar 10/24) and the page strip fit); 14 (hd1: sprite camera retains full picture clip for the corner watermark)
+REVISION = 18  # The root Paused screen draws the bar. Every child screen has its own unobstructed title.
 # State (128 bytes): scene, populated, two wing materials, the plate material,
 # two wing textures, two scores, two flash timers, down, possession, ball/line,
 # phase, red cell, wing colours and plate colours. All state stays in the owned RW page.
@@ -407,15 +413,22 @@ def _legacy_code_for(code_va, data_va):
     return bytes(content).ljust(1408, b"\xcc"), {k: code_va + v for k, v in a.labels.items()}
 
 
-def _pause_code_for(start, data_va, draw_va):
-    """b780 pres2: the stub the paused backdrop's call to 0x8CA00 goes to. The retail panel draw runs first and returns as it
-    always did (the owner keeps it off); then the engine draws the bar. Every register and the FPU/SSE state survive."""
+def _pause_code_for(start, data_va, draw_va, earlier=None):
+    """Keep the retail background and overlay the root pause score. Revision 17 hooked the shared panel draw."""
     a = _Asm(start)
-    a.call(0x8CA00)
+    if earlier == 17:
+        a.call(0x8CA00)
+    else:
+        # The native target's first instruction is SUB ESP, 0x10, which sets the condition flags.
+        a.b("813cc1" + _u(ROOT_PAUSE_MENU))          # cmp dword [ecx+eax*8], Paused
+        a.j8("74", "root_pause")
+        a.jmp_abs(0x6BFD0)                          # other menus: native background and return
+        a.label("root_pause")
+        a.call(0x6BFD0)                             # native background first, before the menu title and rows
     _save(a)
     a.b('68' + _u(data_va))
     a.call(draw_va)
-    a.b('83c404')
+    a.b('83c404' if earlier == 17 else '59')         # discard State*; _restore restores ECX
     _restore(a)
     a.b('c3')
     return a.assemble()
@@ -434,7 +447,7 @@ def code_for(code_va, data_va, earlier=None):
     elif earlier == 15:
         from . import nfl2k5_scorebug_sprite_code_r15 as engine
     else:
-        space._require(earlier is None, "unknown scorebug revision")
+        space._require(earlier in (None, 17), "unknown scorebug revision")
         from . import nfl2k5_scorebug_sprite_code as engine
     legacy, labels = _legacy_code_for(code_va, data_va)
     engine_va = code_va + len(legacy)
@@ -483,10 +496,10 @@ def code_for(code_va, data_va, earlier=None):
         result += playcall_layout.strip_entry_code_for(code_va + len(result), data_va)
         labels[playcall_layout.STRIP_HOOK_NAME] = code_va + len(result)
         result += playcall_layout.strip_code_for(code_va + len(result), data_va)
-        if earlier is None:
+        if earlier in (None, 17):
             labels[PAUSE_HOOK_NAME] = code_va + len(result)
-            result += _pause_code_for(code_va + len(result), data_va, engine_va + engine.LABELS['sprite_pause_draw'])
-    size = CODE_SIZE if earlier is None else EARLIER_CODE_SIZE
+            result += _pause_code_for(code_va + len(result), data_va, engine_va + engine.LABELS['sprite_pause_draw'], earlier)
+    size = CODE_SIZE if earlier in (None, 17) else EARLIER_CODE_SIZE
     if len(result)>size:
         raise ValueError('sprite owner exceeds its named RX allocation: '+str(len(result)))
     labels.update({name:start+offset for name,offset in a.labels.items()})
@@ -497,14 +510,15 @@ def code_for(code_va, data_va, earlier=None):
 def sites(payload, earlier=None):
     owned = {a["kind"]: a for a in space.layout(payload)["allocations"] if a["owner"] == OWNER}
     space._require(set(owned) == {"code", "data"}, "missing scorebug allocations; reserve the owner union first")
-    for kind, size, align in (("code", CODE_SIZE if earlier is None else EARLIER_CODE_SIZE, 16), ("data", DATA_SIZE, 16)):
+    for kind, size, align in (("code", CODE_SIZE if earlier in (None, 17) else EARLIER_CODE_SIZE, 16), ("data", DATA_SIZE, 16)):
         space._require((owned[kind]["size"], owned[kind]["align"]) == (size, align), "foreign scorebug allocation")
     return owned["code"], owned["data"]
 
 
 def hook_bytes(name, labels, earlier=None):
     va, original = hooks(earlier)[name]
-    return b"\xe8" + struct.pack("<i", labels[name] - va - 5)
+    opcode = b"\xe9" if name == PAUSE_HOOK_NAME and earlier is None else b"\xe8"
+    return opcode + struct.pack("<i", labels[name] - va - 5)
 
 
 def override_edits(earlier=None):
@@ -573,9 +587,8 @@ def _abi_valid(payload):
 # engine), reads "previous"; this release's code does not fit that allocation, so apply() refuses to update it in place.
 PREVIOUS_REVISION = "beta-79"
 # b780 pres2: the same holds for the beta-80 test builds before the pause screen (revisions 15 and 16, 5,920 bytes).
-PREVIOUS_REFUSAL = ("The scorebug effects on this disc are an earlier revision (beta 79, or a beta 80 test build from before "
-                    "the pause screen score). This release's version is larger than the room the earlier build gave it, so it "
-                    "cannot be updated in place. Rebuild from your retail game.")
+PREVIOUS_REFUSAL = ("The scorebug effects on this disc are from beta 79 or beta 80. "
+                    "The native menu hook cannot be updated in place. Rebuild from your retail game.")
 
 
 def status(payload):
@@ -599,7 +612,7 @@ def _status(payload, earlier=None):
         ss = space.status(payload)
         if ss == "foreign" or scene.xbe_status(payload) == "foreign" or not _abi_valid(payload):
             return "foreign"
-        size = CODE_SIZE if earlier is None else EARLIER_CODE_SIZE
+        size = CODE_SIZE if earlier in (None, 17) else EARLIER_CODE_SIZE
         expected = {name: original for name, (_, original) in hooks(earlier).items()}
         code_state = "retail"
         if ss == "applied" and any(a["owner"] == OWNER for a in space.layout(payload)["allocations"]):
@@ -615,6 +628,11 @@ def _status(payload, earlier=None):
             off = scene.layout.sbpos.va_to_off(payload, va)
             if payload[off:off + len(original)] != expected[name]:
                 return "foreign"
+        for va, original in (PAUSE_HOOK_R17, PAUSE_HOOK):
+            if (va, original) != hooks(earlier).get(PAUSE_HOOK_NAME):
+                off = scene.layout.sbpos.va_to_off(payload, va)
+                if payload[off:off + len(original)] != original:
+                    return "foreign"
         if not playcall_layout.valid(payload, applied=code_state == "applied" and playcall()):
             return "foreign"
         if not playcall():

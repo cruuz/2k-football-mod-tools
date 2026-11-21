@@ -253,7 +253,7 @@ _GAMEPLAY_SNAPSHOT = (
 )
 _GAMEPLAY_SNAPSHOT_SIZE = 22_874
 _GAMEPLAY_SNAPSHOT_SHA256 = (
-    "e613180ecb825187aabd0ece2c70d3fc42fa01756a7920981d2c2bccbe53feb7"
+    "19ad4f892c3ddd4d534b6778dab5c6b2e4545ae5ba4832b15dd046e2f7c8116e"
 )
 _GAMEPLAY_SNAPSHOT_SCHEMA = "nfl2k5_mod_studio_gameplay_inspection/v1"
 _MENU_SNAPSHOT = _PRODUCT_ROOT / "mod_editor/data/nfl2k5_main_menu_inspection.v1.json"
@@ -611,9 +611,33 @@ def _project_open_change(before, before_hash, after, after_hash, *, cause=""):
 
 @dataclass(frozen=True)
 class ExternalBuild:
-    """A disc written outside the texture-project build (Build & Share); only the path matters to Launch."""
+    """A finished disc and its known console target for the launch screen."""
 
     output_xiso: Path
+    console_memory: int | None = None
+
+
+def launch_memory_target(result: object) -> int | None:
+    """The console memory to check before Play latest disc starts a disc Studio made.
+
+    An install or Build-tab disc carries its target (64 or 128). A ★ Rosters copy and a texture-project build do not,
+    so the disc answers for itself: when its executable carries the 128 MB memory patch it needs 128 MiB and Complex
+    4627, which beta 80 checked before every launch. A disc without that patch runs at either setting, so a 64 MB
+    edition copied through ★ Rosters is not told to switch to 128 MiB. An unreadable executable is checked as 128.
+    """
+
+    known = getattr(result, "console_memory", None)
+    if known in (64, 128):
+        return known
+    image = getattr(result, "output_xiso", None)
+    if image is None:
+        return None
+    try:
+        from mod_editor.core import mod_build, nfl2k5_k128
+        state = nfl2k5_k128.status(mod_build._xbe_bytes(Path(image)))
+    except Exception:  # noqa: BLE001 - a settings reminder must never stop the launch
+        return 128
+    return None if state == "retail" else 128
 
 
 @dataclass(frozen=True)
@@ -1125,7 +1149,7 @@ class Nfl2k5StudioFacade:
     def can_launch_xemu(self) -> bool:
         return not self.xemu_blocker
 
-    def register_external_build(self, image: Path) -> None:
+    def register_external_build(self, image: Path, *, console_memory: int | None = None) -> None:
         """Make a disc written by Build & Share the build that Launch starts.
 
         Until now only the texture-project build counted as "the latest build", so a
@@ -1137,7 +1161,7 @@ class Nfl2k5StudioFacade:
         if not image.is_file() or image.is_symlink():
             raise ValidationError(f"The built copy is not a regular file: {image}")
         with self._lock:
-            self._last_build = ExternalBuild(output_xiso=image)
+            self._last_build = ExternalBuild(output_xiso=image, console_memory=console_memory)
 
     @property
     def xemu_blocker(self) -> str:
@@ -1158,7 +1182,7 @@ class Nfl2k5StudioFacade:
             result = self._last_build
         if result is None:
             return (
-                "Build a modded XISO first — Launch starts the most recent "
+                "Build a modded XISO first: Launch starts the most recent "
                 "build, and there is not one yet in this session."
             )
         if not result.output_xiso.is_file() or result.output_xiso.is_symlink():
@@ -1427,7 +1451,7 @@ class Nfl2k5StudioFacade:
             self._stadium_cache_result = stadium_result
         progress("Complete asset browser ready", 1, 1)
         return StudioOperationResult(
-            f"Game ready — {cache.resource_count:,} assets indexed from your copy."
+            f"Game ready: {cache.resource_count:,} assets indexed from your copy."
         )
 
     @property
@@ -2076,7 +2100,7 @@ class Nfl2k5StudioFacade:
             )
             if not 1 <= page.total <= 256 or len(page.assets) != page.total:
                 raise ValidationError(
-                    "Export matching audio requires 1–256 rows. Narrow the current "
+                    "Export matching audio requires 1-256 rows. Narrow the current "
                     "search, family, or status filters."
                 )
             session = self._require_session()
@@ -2788,7 +2812,7 @@ class Nfl2k5StudioFacade:
             changed = session.create_formation(request)
         progress("Formation created", 2, 2)
         return StudioOperationResult(
-            "Formation created as clone — new formation appears at end of book."
+            "Formation created as clone: new formation appears at end of book."
             if changed else "That formation clone is already staged."
         )
 
@@ -2814,7 +2838,7 @@ class Nfl2k5StudioFacade:
             changed = session.create_play(request)
         progress("Play created", 2, 2)
         return StudioOperationResult(
-            "Play created as clone — new play appears at end of book."
+            "Play created as clone: new play appears at end of book."
             if changed else "That play clone is already staged."
         )
 
@@ -3093,7 +3117,7 @@ class Nfl2k5StudioFacade:
                 first = blocked[0] if blocked else None
                 reason = first.detail if first is not None else preview.plan.blocked[0]
                 raise ValidationError(
-                    f"{team}: “{first.name}” cannot be installed — {reason}"
+                    f"{team}: “{first.name}” cannot be installed, {reason}"
                     if first is not None else f"{team}: {reason}"
                 )
             if not preview.check.ok:
@@ -3232,7 +3256,7 @@ class Nfl2k5StudioFacade:
             self._stadium_studio = studio
             self._stadium_cache_result = result
         return StudioOperationResult(
-            f"Stadium Studio ready — {result.scene_count:,} private scenes indexed."
+            f"Stadium Studio ready: {result.scene_count:,} private scenes indexed."
         )
 
     def stadium_scenes(self, search: str, progress: ProgressSink) -> object:
@@ -3452,6 +3476,13 @@ class Nfl2k5StudioFacade:
         )
         progress("Stadium people and sideline textures ready", 1, 1)
         return result
+
+    def staged_portrait_path(self, photo: int) -> Path | None:
+        """The open project's active replacement, including reverts and undo at the same asset id."""
+        with self._read_lock():
+            if self._session is None:
+                return None
+            return self._session.staged_path(f"nfl2k5.portrait.{photo:04d}")
 
     def preview_asset(self, asset: UniformAsset, progress: ProgressSink) -> Path:
         progress(f"Preparing {asset.label}", 0, 1)
@@ -3725,7 +3756,7 @@ class Nfl2k5StudioFacade:
             identity = project_target_identity(path)
         progress("Project saved", 1, 1)
         return StudioOperationResult(
-            f"Project saved — {path.name}. No retail game data was included.",
+            f"Project saved: {path.name}. No retail game data was included.",
             path,
             identity,
         )
@@ -3999,7 +4030,9 @@ class Nfl2k5StudioFacade:
         assert_image_available(result.output_xiso)
         settings_warning = ""
         try:
-            settings_warning = xemu_settings.play_warning(xemu_settings.config_path(command))
+            settings_warning = xemu_settings.play_warning(
+                xemu_settings.config_path(command), target_mb=launch_memory_target(result)
+            )
         except (OSError, ValueError, TypeError):
             settings_warning = ""
         if settings_warning:

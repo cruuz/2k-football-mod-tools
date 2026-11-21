@@ -252,12 +252,14 @@ class HostBudgetTests(unittest.TestCase):
             # b780 mc1: mode_play opens Choose team / Sign over Career Home for a MyPlayer without a club, a loaded
             # free-agent career opens Career Home, and mode_loaded resumes the draft screen only for a rookie in his
             # own draft (test_nfl2k5_my_career_mc1).
+            # Beta 81 initializes the second UTF-16 menu pool at its assigned linker address.
             'tools/mycareer_mode/runtime.c':
-                'a117be3bcfce2c6cc6920abd344da36bca0605845c2860b416fdcad85763c725',  # b780 mc1 on b780-int (b8 + j23 + n2)
+                '454c3ec1f6a4ebe723fd5559604738a434fe0fb8ac447b0eed62d86fad28608f',
             'tools/mycareer_mode/runtime.S':
                 # b780 n1: mode_camera_dir (the defensive camera read) and five byte-identical size rewrites.
                 # b780 mc1: start_player leaves an injured MyPlayer (+0x20 bit 31) where the game's order has him.
-                'f76373e1df0b38b6a2eb0773e861329d88bc1d2198e1acba0d4685bd9137cc79',
+                # Beta 81 tracks MyPlayer only during a live play and opens Team Rosters on the saved club.
+                'f00f2dbc497bfdaac7454e6d177bd614bf5e997a780be2fbdee949b658098d11',
             'mod_editor/core/nfl2k5_my_career_mode.py':
                 # Integrated era/context and CP companion validation. CP2 only
                 # refreshes this host pin. v1h also repairs the reviewed native C
@@ -267,7 +269,9 @@ class HostBudgetTests(unittest.TestCase):
                 # mo2: guard view accepts the moment context hook over the pinned 0xCB240 span.
                 # b778 bd3: recognition views for the star-career class-loop hooks and the Player Progress
                 # screen chained over the inline footer hooks (runtime code unchanged).
-                '3c82e41999502ce5d0003dada780f57a84e6d6ffe9f7151908049bb78143d9c1',  # b780-int: b8 + j23 + n1 (defensive camera read and its five byte-identical rewrites)
+                # b780-int: b8 + j23 + n1 (defensive camera read and its five byte-identical rewrites).
+                # D11: the native Settings footer explains Supersim and where to save.
+                '6bc271bc88b0d59bcd459bfcc4b149439ef02c0ab75448ec32620f1d4bc10411',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

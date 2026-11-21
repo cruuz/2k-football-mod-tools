@@ -25,45 +25,83 @@ def document(save, *, name):
 
 
 def _names(roster, entries):
-    """Repack the existing player string allocations together, after alias checks."""
-    from . import nfl2k5_save_rost as codec, nfl2k5_roster_arena as arena
+    """Reuse existing strings or repack only storage actually occupied by player names."""
     pool = roster.names
-    cursor = pool.start
-    for offset, block in sorted(pool.blocks.items()):
-        rr._require(offset == cursor, "Player names are not one contiguous pool; use the Xbox save instead.")
-        cursor += block.capacity
-    parsed = codec.decode(bytes(roster.body))
-    fields = {p.offset + rr.FIELD_BY_NAME[k].offset for p in roster.players
-              for k in ("first_name_pointer", "last_name_pointer")}
-    for field in arena.pointer_fields(parsed):
-        target = parsed.rel(field)
-        rr._require(field in fields or target is None or not pool.start <= target < pool.end,
-                    "Another roster table shares player name storage; use the Xbox save instead.")
-    for table in parsed.tables.values():
-        if table.count and table.offset is not None:
-            rr._require(table.offset + table.count * table.stride <= pool.start or table.offset >= pool.end,
-                        "A roster table overlaps player names.")
-    strings = {}
-    packed = bytearray()
-    for entry in entries:
-        for which in ("first", "last"):
-            text = entry[which]
-            rr._require(type(text) is str and (not text or text in pool._by_text
-                        or rr.validate_name(text) == text),
+    fields = ("first", "last")
+    requested = {}
+    for row in entries:
+        for field in fields:
+            text = row[field]
+            rr._require(type(text) is str and (not text or text in pool._by_text or rr.validate_name(text) == text),
                         "Save player names must fit without shortening or normalization.")
-            if text and text not in strings:
-                strings[text] = pool.start + len(packed)
-                packed.extend(text.encode("utf-16-le") + b"\0\0")
-    rr._require(len(packed) <= pool.capacity_bytes,
-                f"The save's player names need {len(packed)} bytes; the disc has {pool.capacity_bytes}. "
-                "Use the Xbox save instead; no players were skipped.")
-    roster.body[pool.start:pool.end] = packed + bytes(pool.capacity_bytes - len(packed))
+            if text:
+                requested[text] = None
+    # A snapshot of this disc (including a staff or face edit) leaves its string storage intact.
+    locations = {text: pool._by_text[text][0] for text in requested if text in pool._by_text}
+    repacked = len(locations) < len(requested)
+    if repacked:
+        locations = _repack_names(roster, requested)
+
     for player, entry in zip(roster.players, entries):
-        for which, key in (("first", "first_name_pointer"), ("last", "last_name_pointer")):
+        for which in fields:
+            key = which + "_name_pointer"
             text = entry[which]
+            if text and getattr(player, which) == text and pool.offsets_for(text):
+                old = roster._pointer_target(player.offset, key)
+                if not repacked:
+                    continue
+                encoded = text.encode("utf-16-le") + b"\0\0"
+                if roster.body[old:old + len(encoded)] == encoded:
+                    continue
             field = player.offset + rr.FIELD_BY_NAME[key].offset
-            player.record.values[key] = ((strings[text] - field + 1) & 0xFFFFFFFF) if text else 0
+            player.record.values[key] = ((locations[text] - field + 1) & 0xFFFFFFFF) if text else 0
             setattr(player, which, text)
+
+
+def _repack_names(roster, requested):
+    from bisect import bisect_left
+    from . import nfl2k5_save_rost as codec, nfl2k5_roster_arena as arena
+
+    parsed = codec.decode(bytes(roster.body))
+    owned_fields = {p.offset + rr.FIELD_BY_NAME[k].offset for p in roster.players
+                    for k in ("first_name_pointer", "last_name_pointer")}
+    other_targets = sorted(target for field in arena.pointer_fields(parsed) if field not in owned_fields
+                           and (target := parsed.rel(field)) is not None)
+    tables = [(t.offset, t.offset + t.count * t.stride) for t in parsed.tables.values() if t.count and t.offset is not None]
+    available = []
+    locations = {}
+    # An overlapping/suffix reference shares the underlying string. Group these before
+    # checking aliases. Intervening gaps can contain coach, college or franchise data.
+    groups = []
+    for start, block in sorted(roster.names.blocks.items()):
+        end = start + block.capacity
+        if groups and start < groups[-1][1]:
+            groups[-1][1] = max(groups[-1][1], end)
+            groups[-1][2].append(block)
+        else:
+            groups.append([start, end, [block]])
+    for start, end, blocks in groups:
+        at = bisect_left(other_targets, start)
+        if ((at < len(other_targets) and other_targets[at] < end)
+                or any(left < end and start < right for left, right in tables)):
+            for block in blocks:
+                locations[block.text] = block.offset
+        elif available and start == available[-1][1]:
+            available[-1][1] = end
+        else:
+            available.append([start, end])
+
+    additions = [(text, text.encode("utf-16-le") + b"\0\0") for text in requested if text not in locations]
+    # Best-fit, longest first, so a short name cannot consume the only span that holds a long one.
+    for text, raw in sorted(additions, key=lambda item: -len(item[1])):
+        span = min((s for s in available if s[1] - s[0] >= len(raw)), key=lambda s: s[1] - s[0], default=None)
+        rr._require(span is not None, "Player names do not fit in the destination's verified name allocations. "
+                    "Use the Xbox save instead; no players were skipped.")
+        start = span[0]
+        roster.body[start:start + len(raw)] = raw
+        locations[text] = start
+        span[0] += len(raw)
+    return locations
 
 
 def apply_body(body, doc, *, scheme=None):
@@ -140,6 +178,8 @@ def apply_body(body, doc, *, scheme=None):
     roster._reindex_membership()
     _check_structure(roster, "Save roster")
     roster.check_depth_locks()
+    log = []
+    coach = rr.apply_coach_edits(roster.body, roster.teams, doc, log, obj_base=roster.obj_base)
     result = roster.to_body()
     # Parsing the complete serialized result checks reserve ownership as well.
     verified = rr.RosterDocument(result)
@@ -148,4 +188,4 @@ def apply_body(body, doc, *, scheme=None):
                     "fields_written": len(entries) * len(CARRIED_FIELDS),
                     "players_moved": sum(p.teams != q.teams for p, q in
                                          zip(rr.RosterDocument(body).players, verified.players)),
-                    "history_links_cleared": history_cleared, "log": []}
+                    "history_links_cleared": history_cleared, **coach, "log": log}

@@ -167,7 +167,13 @@ def require_no_symlink_components(path: Path, *, missing_tail_ok: bool = False) 
     absolute = path if path.is_absolute() else Path.cwd() / path
     current = Path(absolute.anchor)
     parts = absolute.parts[1:] if absolute.anchor else absolute.parts
+    # The leading system-owned prefix may hold the operating system's own aliases (macOS /var and /tmp,
+    # merged-/usr /bin and /lib): a root-owned symlink in a root-owned directory nobody else may write is
+    # resolved once and the walk continues from its target.  From the first directory an ordinary user can
+    # write into, every component must be a real directory or file, so a planted symlink is still refused.
+    system_prefix = True
     for index, component in enumerate(parts):
+        parent = current
         current /= component
         try:
             info = current.lstat()
@@ -175,8 +181,25 @@ def require_no_symlink_components(path: Path, *, missing_tail_ok: bool = False) 
             require(missing_tail_ok,
                     f"pinned path component is unavailable: {current}")
             return
-        require(not stat.S_ISLNK(info.st_mode),
-                f"pinned path component is a symlink: {current}")
+        if stat.S_ISLNK(info.st_mode):
+            require(system_prefix and _system_owned(parent.lstat()) and info.st_uid == 0,
+                    f"pinned path component is a symlink: {current}")
+            current = Path(os.path.realpath(current))
+            try:
+                info = current.lstat()
+            except FileNotFoundError:
+                require(missing_tail_ok,
+                        f"pinned path component is unavailable: {current}")
+                return
+        system_prefix = system_prefix and _system_owned(info)
+
+
+def _system_owned(info: os.stat_result) -> bool:
+    """POSIX only: owned by root and not writable by group or others.  Windows reports st_uid 0 for every
+    file, so nothing counts as system-owned there and every symlink component stays refused."""
+
+    return (os.name == "posix" and info.st_uid == 0
+            and not info.st_mode & (stat.S_IWGRP | stat.S_IWOTH))
 
 
 def open_pinned(path: Path, expected_size: int,

@@ -223,20 +223,14 @@
   {
    "selector": "04H0",
    "parts": [
-    "pants",
-    "helmet"
+    "pants"
    ],
-   "reason": "vk2: silver pants and helmet side; the field 2026 home pants and helmet are black; quality pass: pants rebuilt from the field textures",
+   "reason": "vk2: silver pants; the field 2026 home pants are black; quality pass: pants rebuilt from the field textures. b81-art (Noah 11/18: the Panthers wear the silver helmet by default): the helmet side stays the atlas's own silver helmet, as the close-up helmet now is",
    "compose": {
     "pants": {}
    },
    "field": {
     "pants": [
-     17,
-     17,
-     24
-    ],
-    "helmet": [
      17,
      17,
      24

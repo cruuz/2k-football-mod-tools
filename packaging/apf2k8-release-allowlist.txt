@@ -41,6 +41,7 @@ docs/product/APF_TRUE_099_PLAYER_RATINGS.md
 docs/product/APF_TRUE_53_RUNTIME_CONSUMER_INVENTORY.md
 docs/product/APF_UNIFORM_EQUIPMENT_COLORS.md
 install.sh
+mod_editor/__main__.py
 mod_editor/apf_studio/__init__.py
 mod_editor/apf_studio/__main__.py
 mod_editor/apf_studio/asset_io.py
@@ -125,6 +126,7 @@ mod_editor/data/apf2k8_stadium_position_recipe.v2.schema.json
 mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json
 mod_editor/data/apf2k8_textlogo_targets.v1.json
 mod_editor/data/apf2k8_uniform_targets.v1.json
+mod_editor/gui/__init__.py
 mod_editor/gui/apf_audio_waveform_qt.py
 mod_editor/gui/branding.py
 mod_editor/gui/crash_report.py
@@ -325,6 +327,8 @@ mod_editor/apf_studio/community_patches_qt.py
 mod_editor/core/runtime_dependencies.py
 packaging/runtime_dependencies.py
 packaging/requirements-studio.txt
+packaging/posix_studio.sh
+packaging/posix_studio_setup.py
 packaging/windows/studio_bootstrap.py
 
 packaging/check_packaged_runtime.py

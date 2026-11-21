@@ -137,11 +137,8 @@ class VerifierRetailEndToEndTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        scratch_root = ROOT / ".codex-tmp"
-        scratch_root.mkdir(parents=True, exist_ok=True)
-        cls.temporary = tempfile.TemporaryDirectory(
-            prefix=".upper-deck-verifier-tests-", dir=scratch_root
-        )
+        cls.temporary = tempfile.TemporaryDirectory(prefix="upper-deck-verifier-tests-")
+        cls.addClassCleanup(cls.temporary.cleanup)
         cls.root = Path(cls.temporary.name)
         cls.outputs = {
             "identity_noop": cls.root / "identity",
@@ -175,11 +172,6 @@ class VerifierRetailEndToEndTests(unittest.TestCase):
             BOUNDARY,
             RECIPE_SCHEMA,
         )
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        cls.temporary.cleanup()
-        super().tearDownClass()
 
     def verify_output(
         self,

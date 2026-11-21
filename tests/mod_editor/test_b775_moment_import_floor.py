@@ -3,10 +3,11 @@
 Native (Unicorn) replay of the game's own select handler 20CB30, Load Historic Team 2D17B0 and the practice-squad
 importer on a built disc's executable, SITU and team files, with its main ROST as built and after the import floor.
 Also the Studio's roster path: the dated refresh plan on the Oct 13 pack roster, with and without the floor.
-Private inputs (read only): the played discs and the refresh plan; every test skips without them.
+The Studio writer checks can also use the original Oct 13 roster body. The i4 checks need the played disc.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -114,13 +115,21 @@ class PlayedDiscTests(unittest.TestCase):
                 self.assertEqual((away, home), ROWS[row])
 
 
-@unittest.skipUnless(OCT13_DISC.is_file() and REFRESH_PLAN.is_file(), "Oct 13 disc or the dated refresh plan absent")
+@unittest.skipUnless(REFRESH_PLAN.is_file(), "The Oct 14 refresh plan is required (NFL2K5_REFRESH_PLAN)")
 class StudioRosterPathTests(unittest.TestCase):
     """The build's own roster writer on the Oct 13 pack roster (the refresh's pinned base)."""
 
     @classmethod
     def setUpClass(cls):
-        cls.base = body_of(main_rost(OCT13_DISC))
+        if OCT13_DISC.is_file():
+            cls.base = body_of(main_rost(OCT13_DISC))
+        else:
+            path = os.environ.get("B775_OCT13_ROST_BODY")
+            if not path:
+                raise unittest.SkipTest("Supply the Oct 13 disc or its B775_OCT13_ROST_BODY")
+            cls.base = Path(path).read_bytes()
+            if hashlib.sha256(cls.base).hexdigest() != "12701297fd05f86ff513acad4363dbe059cdb499d95d13976acb16dd87f8c98e":
+                raise AssertionError("B775_OCT13_ROST_BODY is not the original Oct 13 roster body")
         plan = json.loads(REFRESH_PLAN.read_text(encoding="utf-8"))["roster_refresh"]
         cls.directive = {"schema": rr.EDITS_SCHEMA, "edits": [], "roster_refresh": plan}
 

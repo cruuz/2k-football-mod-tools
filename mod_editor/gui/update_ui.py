@@ -251,6 +251,10 @@ class UpdateBanner(QFrame):
     def install(self) -> self_update.InstallKind:
         return self._install
 
+    @property
+    def update_in_progress(self) -> bool:
+        return self._task is not None
+
     def can_self_update(self, status: update_check.UpdateStatus) -> bool:
         """Whether ``Update now`` would have something to do for this status."""
         if not status.available or not status.latest_tag:
@@ -372,6 +376,10 @@ class UpdateBanner(QFrame):
         task.signals.done.connect(self._on_done)
         task.signals.done.connect(lambda *_a, task=task: _LIVE_UPDATES.discard(task))
         self._task = task
+        if self.window() is not self:
+            # The user has just settled all unsaved work. Keep the workspace
+            # read-only until the installer takes over or the download fails.
+            self.window().setEnabled(False)
         _LIVE_UPDATES.add(task)
         QThreadPool.globalInstance().start(task)
 
@@ -395,6 +403,8 @@ class UpdateBanner(QFrame):
             self.last_error = error
             self.message.setText(self._update_failure(error))
             self._set_busy(False)
+            if self.window() is not self:
+                self.window().setEnabled(True)
             return
         self.plan = plan
         if plan.install.kind == "windows-installer":

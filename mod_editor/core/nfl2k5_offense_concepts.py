@@ -21,7 +21,7 @@ Ground truth (all offline, nothing here is a gameplay witness):
   the game mirrors them when flipped (the CPU also scores mirrored copies).
 * A pass target must finish in front of the QB's release (job p13's
   ``CHECKDOWN_BACKWARD`` rule): every back route here gains depth first.
-* There is no pre-snap motion in this engine (Start nodes sit at 0,0), so no
+* Generated Start nodes do not script pre-snap motion. Players can motion manually, so no
   jet motion is faked; an end around is a QB-direct exchange with a slot
   receiver inside the retail exchange envelope.
 """

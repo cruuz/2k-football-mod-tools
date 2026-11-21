@@ -10,9 +10,11 @@ if str(_REPO_ROOT) not in sys.path:
 
 import hashlib
 import json
+import os
 import unittest
 
 from mod_editor.core.errors import ValidationError
+from mod_editor.core.nfl2k5_source_cache import default_cache_root
 from mod_editor.core.nfl2k5_safe_text_banks import (
     SAFE_TEXT_PROVIDER_KIND,
     SafeTextCatalog,
@@ -21,18 +23,12 @@ from mod_editor.core.nfl2k5_safe_text_banks import (
 
 
 SOURCE_SHA256 = "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
-CACHE = Path.home() / ".cache" / "2k5-mod-studio" / SOURCE_SHA256
+CACHE = Path(os.environ.get("NFL2K5_SOURCE_CACHE_ROOT", default_cache_root() / SOURCE_SHA256))
 PACK0 = CACHE / "extracted/ESPN NFL 2K5 (USA)/vc_53450030/0"
 INVENTORY = CACHE / "indexes/nfl2k5_resource_chunks_v2.json"
 
 
-class SafeTextBankTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        if not PACK0.is_file() or not INVENTORY.is_file():
-            raise unittest.SkipTest("recognized private NFL 2K5 cache is not present")
-        cls.catalog = SafeTextCatalog.from_paths(PACK0, INVENTORY)
-
+class FixedTextEncoderTests(unittest.TestCase):
     def test_fixed_utf16_encoder_preserves_exact_allocation(self) -> None:
         result = encode_fixed_utf16le("AB", 10, "Example")
         self.assertEqual(result, b"A\0B\0\0\0\0\0\0\0")
@@ -41,6 +37,14 @@ class SafeTextBankTests(unittest.TestCase):
             encode_fixed_utf16le("", 10, "Example")
         with self.assertRaisesRegex(ValidationError, "allows 4"):
             encode_fixed_utf16le("ABCDE", 10, "Example")
+
+
+class SafeTextBankTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        if not PACK0.is_file() or not INVENTORY.is_file():
+            raise unittest.SkipTest("recognized private NFL 2K5 cache is not present")
+        cls.catalog = SafeTextCatalog.from_paths(PACK0, INVENTORY)
 
     def test_real_cache_audit_matches_the_bounded_unlock(self) -> None:
         catalog = self.catalog

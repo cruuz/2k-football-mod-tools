@@ -202,15 +202,17 @@ def labels(code_va: int) -> dict[str, int]:
     return {name: code_va + offset for name, offset in runtime.LABELS.items()}
 
 
-def sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
-    """Every executable edit as (label, VA, retail bytes, patched bytes)."""
-
-    at = labels(code_va)
+def _sites_for_labels(at) -> list[tuple[str, int, bytes, bytes]]:
     out = []
     for label, va, before, entry, opcode, length in SITE_TABLE:
         after = bytes([opcode]) + _rel32(va + 5, at[entry]) + b"\x90" * (length - 5)
         out.append((label, va, before, after))
     return out
+
+
+def sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
+    """Every executable edit as (label, VA, retail bytes, patched bytes)."""
+    return _sites_for_labels(labels(code_va))
 
 
 def _guard_digest(image: XbeImage, va: int, size: int, checked_sites) -> str:
@@ -290,12 +292,9 @@ def _owned_state(payload: bytes):
         _check_guards(image, edits)
         _require(champions_state == "retail", "honors and champions installations differ")
         return "retail", found
-    if code == code_for(code_va, data_va, champs_va):
-        state = "applied"
-    else:
-        _require(bool(champs_va) and code == code_for(code_va, data_va, champs_va, champions_previous=True),
-                 "foreign honors code")
-        state = "previous"
+    revision = champions.installed_revision(payload, champs_va) if champs_va else False
+    _require(code == code_for(code_va, data_va, champs_va, champions_previous=revision), "foreign honors code")
+    state = "previous" if revision else "applied"
     edits = sites(code_va)
     _require(rdata.status(payload, edits) == "applied", "mixed honors sites")
     _check_guards(image, edits)
@@ -310,9 +309,30 @@ def status(payload: bytes) -> str:
         return "foreign"
 
 
+def _standalone_sites(payload):
+    """The pre-Champions F5 install in b775, for readers of the shared fold only."""
+    found = allocations(payload)
+    if not found or (found["code"]["va"], found["data"]["va"]) != (0x14E0050, 0x14BBFF0):
+        return []
+    code_va = found["code"]["va"]
+    image = XbeImage(payload)
+    # The original F5 writer at 741cc3c6d reproduces all 2,560 relocated bytes at these two VAs.
+    if hashlib.sha256(image.read(code_va, CODE_SIZE)).hexdigest() != "ec0b2658457dd4b21d8682ae3762bd8f64f504b0e49cf6cae6c981407683891a":
+        return []
+    if champions.owned_state(payload) != ("retail", None):
+        return []
+    offsets = {"honors_page_input": 0, "honors_page_enter": 0x3D, "honors_page_ratings": 0x4E,
+               "honors_page_bio": 0x62, "honors_season_hook": 0x76, "honors_sb_hook": 0x85,
+               "honors_fold_rule": 0x94}
+    edits = _sites_for_labels({name: code_va + offset for name, offset in offsets.items()})
+    _require(rdata.status(payload, edits) == "applied", "mixed standalone honors sites")
+    _check_guards(image, edits)
+    return edits
+
+
 def fold_site_edit(payload: bytes) -> list[tuple[int, bytes]]:
     """[(VA, retail bytes)] of the history-fold edit while this owner is *exactly* applied (this release's install or
-    the exact beta-79 one, whose fold hook is the same code), else [].
+    the beta-79 or standalone b775 installs), else [].
 
     b77-f5b: ``nfl2k5_defensive_try`` pins the whole history engine (0x14E7E0, 3,216 bytes) because it writes field 59
     through the engine's writer. This owner's only edit inside that span is the 7-byte rule-table load of the fold
@@ -321,17 +341,28 @@ def fold_site_edit(payload: bytes) -> list[tuple[int, bytes]]:
     these retail bytes before it hashes its context, and only when the whole honors installation validates here.
     """
 
-    if status(payload) not in ("applied", "previous"):
+    state = status(payload)
+    try:
+        if state in ("applied", "previous"):
+            edits = sites(allocations(payload)["code"]["va"])
+        elif state == "foreign":
+            edits = _standalone_sites(payload)
+        else:
+            return []
+    except (ValueError, IndexError, KeyError, TypeError, struct.error, OverflowError):
         return []
-    return [(va, before) for label, va, before, _after in sites(allocations(payload)["code"]["va"]) if label == "history_fold"]
+    return [(va, before) for label, va, before, _after in edits if label == "history_fold"]
 
 
 def read_settings(payload: bytes) -> dict:
     state = status(payload)
     installed = state in ("applied", "previous")   # b780 n6: "previous" = the beta-79 install (upgraded by apply)
+    prior = {}
+    if state == "previous":
+        revision = champions.installed_revision(payload, champions.allocations(payload)["code"]["va"])
+        prior = {"revision": champions.PREVIOUS_REVISION if revision is True else revision, "needs_update": True}
     return {"status": state, "honors_page": installed, "fields": dict(FIELDS) if installed else None,
-            "champions": installed, "award_rule": champions.AWARD_RULE if installed else None,
-            **({"revision": champions.PREVIOUS_REVISION, "needs_update": True} if state == "previous" else {})}
+            "champions": installed, "award_rule": champions.AWARD_RULE if installed else None, **prior}
 
 
 def reservations(payload: bytes) -> list[dict]:
@@ -360,10 +391,10 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
         champs_va = _champions_va(payload, found)
         relinked, code_receipt = space.install_code(
             payload, OWNER, code_for(code_va, data_va, champs_va),
-            previous=code_for(code_va, data_va, champs_va, champions_previous=True))
+            previous=XbeImage(payload).read(code_va, CODE_SIZE))
         result, champions_receipt = champions.install(relinked)
         _require(status(result) == "applied", "honors upgrade postcondition failed")
-        return result, {**common, "already_applied": False, "upgraded_from": champions.PREVIOUS_REVISION,
+        return result, {**common, "already_applied": False, "upgraded_from": champions_receipt["upgraded_from"],
                         "code_install": code_receipt, "code_va": hex(code_va), "data_va": hex(data_va),
                         "changed_bytes": sum(a != b for a, b in zip(before, result)) + abs(len(result) - len(before)),
                         "champions": champions_receipt,

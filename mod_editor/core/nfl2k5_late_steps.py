@@ -27,6 +27,8 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
+import subprocess
 import sys
 import zlib
 
@@ -54,6 +56,14 @@ def _available_memory() -> int | None:
             for line in Path("/proc/meminfo").read_text().splitlines():
                 if line.startswith("MemAvailable:"):
                     return int(line.split()[1]) * 1024
+        if sys.platform == "darwin":
+            stats = subprocess.run(["/usr/bin/vm_stat"], capture_output=True, text=True, timeout=3, check=True,
+                                   env={**os.environ, "LC_ALL": "C"}).stdout
+            page_size = re.search(r"page size of (\d+) bytes", stats)
+            pages = dict(re.findall(r"^Pages (free|inactive):\s*(\d+)\.\s*$", stats, re.MULTILINE))
+            if page_size and pages.keys() == {"free", "inactive"}:
+                return int(page_size[1]) * (int(pages["free"]) + int(pages["inactive"]))
+            return None
         if os.name == "nt":
             import ctypes
 
@@ -69,7 +79,7 @@ def _available_memory() -> int | None:
                 return None
             return int(status.available_physical)
         return os.sysconf("SC_AVPHYS_PAGES") * os.sysconf("SC_PAGE_SIZE")
-    except (AttributeError, OSError, ValueError, IndexError):
+    except (AttributeError, OSError, ValueError, IndexError, subprocess.SubprocessError):
         return None
 
 

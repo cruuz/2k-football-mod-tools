@@ -2254,7 +2254,7 @@
  "receipt": {
   "team": "WAS",
   "offense_pack": "data/playbooks/softdrink_was_modern.2k5book",
-  "offense_pack_sha256": "9685fb207521df0f6a209c92b66f6e107f7497a6ae588fd2496ea4ee10d26008",
+  "offense_pack_sha256": "d8e20be9de60a6452707599bee7a72c9507678d2e90d54c23667bd91ee38e60a",
   "source_fingerprint": "36d20abc9695cb9c18ff3ef6dbe044e097ad3d72931332e3b0e95946d8e52027",
   "replacement_sha256": "5af28c89548343e9969f6c731169b487f0b23d7585512a356217e52e7bc185cc",
   "semantic_sha256": "9e9804269d0ec458807cc64336b77527740f1ed39338e90fb2f21cc2292c6f88",

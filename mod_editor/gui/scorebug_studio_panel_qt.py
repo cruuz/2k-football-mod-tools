@@ -475,7 +475,7 @@ class ScorebugStudioPanel(QWidget):
         folder_layout.addWidget(self.save_as_button)
         self.build_button = QPushButton("Use in Build")
         self.build_button.setAccessibleName("Use this scorebar folder in Build")
-        self.build_button.setToolTip("Saves the folder and fills in the scorebar folder on the Build tab")
+        self.build_button.setToolTip("Save this design and enable the Experimental ESPN scorebar in Build")
         self.build_button.clicked.connect(self.use_in_build)
         folder_layout.addWidget(self.build_button)
         self.dirty_label = QLabel()
@@ -920,8 +920,7 @@ class ScorebugStudioPanel(QWidget):
             self._report(str(exc), error=True)
             return
         self.folder_chosen.emit(str(self.folder))
-        self._report(f"Handed to Build: {self.folder}. On the Build tab, tick Experimental ESPN scorebar; "
-                     "the scorebar folder is filled in.")
+        self._report(f"Experimental ESPN scorebar is enabled in Build with {self.folder}.")
 
     # ------------------------------------------------------------- preview
     def _show_sprite_preview(self):

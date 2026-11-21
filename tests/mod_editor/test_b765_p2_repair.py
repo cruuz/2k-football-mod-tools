@@ -8,6 +8,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from tools.b765 import p1_repair, p2_repair
 from mod_editor.core import nfl2k5_rdata_sites as sites
+from mod_editor.core import nfl2k5_practice_squad as ps
+from mod_editor.core import nfl2k5_practice_squad_screen as screen
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 
 
@@ -31,6 +33,15 @@ class RepairTests(unittest.TestCase):
         replay, replay_receipt = p2_repair.repair(fixed)
         self.assertEqual(replay, fixed)
         self.assertEqual(replay_receipt['changed_bytes'], 0)
+
+    def test_resumes_only_the_original_cut_intermediate(self):
+        cut, _ = sites.apply(self.before, [p1_repair.SITES[0]], 'historical cut')
+        self.assertEqual(p1_repair.digest(cut), ps.V04_CUTS_RETIRED_SHA256)
+        repaired, _ = p2_repair.repair(cut)
+        self.assertEqual(p1_repair.digest(repaired), p1_repair.FIXED_SHA256)
+        # Historical retirement never advertises a complete modern runtime to other owners.
+        self.assertEqual(ps.status(repaired), 'foreign')
+        self.assertEqual(screen.status(repaired), 'foreign')
 
     def test_recorded_hash_cannot_authorize_foreign_screen_prerequisite(self):
         image = XbeImage(self.before)

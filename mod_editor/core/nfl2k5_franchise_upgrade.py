@@ -1423,7 +1423,7 @@ def sync_champions(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
 
     if not hist.has_room(disc_body):
         return unchanged("the disc's roster keeps the game's own roster size, which has no room for a champions history")
-    seed = disc_body[hist.gap_offset(disc_body):hist.gap_offset(disc_body) + hist.USED]
+    seed = disc_body[hist.gap_offset(disc_body):hist.gap_offset(disc_body) + hist.MAX_USED]
     if not hist.block_ok(seed) or not hist.read_block(seed):
         return unchanged("the disc's champions history is empty")
     if payload[block_at:block_at + 8] != hist.RESERVE_MAGIC:
@@ -1432,9 +1432,10 @@ def sync_champions(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
     if auxiliary > hist.AUX_TAIL:
         return unchanged(f"the save's auxiliary tail is {auxiliary} bytes, longer than the {hist.AUX_TAIL} the history leaves")
     spare = payload[gap_at:gap_at + hist.FREE]
-    if any(spare[hist.USED:]):
+    own_size = hist.MAX_USED if spare[8] == 3 else hist.USED
+    if any(spare[own_size:]):
         return unchanged("the spare bytes behind the champions history hold something else")
-    own = spare[:hist.USED]
+    own = spare[:own_size]
     try:
         merged, info = hist.merge_blocks(own if any(own) else None, seed, newest_allowed)
     except hist.ChampionsHistoryError as exc:
@@ -1444,11 +1445,11 @@ def sync_champions(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
     if merged == own:
         return unchanged("the save already holds these seasons" if info["kept"] else "nothing to add")
     out = bytearray(payload)
-    out[gap_at:gap_at + hist.USED] = merged
-    masks = {offset: 255 for offset in range(gap_at, gap_at + hist.USED)}
+    out[gap_at:gap_at + len(merged)] = merged
+    masks = {offset: 255 for offset in range(gap_at, gap_at + len(merged))}
     result = bytes(out)
     scope = prove_scope(payload, result, masks)
-    check = hist.read_block(result[gap_at:gap_at + hist.USED])
+    check = hist.read_block(result[gap_at:gap_at + len(merged)])
     require([row["super_bowl"] for row in check] == sorted(set(info["added"]) | set(info["kept"]), reverse=True)[:hist.RING],
             "the champions history does not read back as written")
     sr.decode(result, base_year=BASE_YEAR)
@@ -1458,7 +1459,7 @@ def sync_champions(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
                 "runner_up_points": rows[n]["runner_up_points"]} for n in info["added"] if n in rows]
     return result, {**base, "after_sha256": sha(result), "reason": "", "changes": changes,
                     "seasons_in_history": len(check), "newest_super_bowl": check[0]["super_bowl"] if check else None,
-                    "storage_spans": [{"field": "champions_history", "offset": gap_at, "size": hist.USED}], **scope}
+                    "storage_spans": [{"field": "champions_history", "offset": gap_at, "size": len(merged)}], **scope}
 
 
 # --- b780-b10: the new build's default game settings in the franchise's own copy of the options -------------------

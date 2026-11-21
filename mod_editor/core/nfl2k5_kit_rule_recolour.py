@@ -1,0 +1,456 @@
+"""b81-retail-free-art (ruling 2): exact build-time recolour and move rules for the 2026 kit fixes.
+
+Reached from ``nfl2k5_kit_fixes_2026.paint`` as ``{"op": "rule", "module": "recolour", "do": <kind>, ...}``. Each rule
+reads only what the build holds (``out``: the texture so far; ``rgba``: the row's input level 0 from the user's own
+disc; ``donors``: the row's pinned donor textures) and writes a new RGBA uint8 array. No rule stores a base texel: the
+parameters are boxes, a few seed points, colour axes and the TARGET colours of a recolour. Integers only (numpy
+int64, no floats, no unordered reductions), so the bytes are the same on every platform.
+
+Kinds (``do``):
+
+``ramp``    recolour keeping each texel's own shade or mix. Each texel colour c in the region is placed on the axis
+            ``ends`` = [A, B] at t = clip((c - A).(B - A) / |B - A|^2, 0, 1) (an exact rational) and takes
+            ``levels``[k]: k = the number of ``cuts`` [num, den] with t >= num/den, or, without cuts, t * (L - 1)
+            rounded half to even (L = number of levels). Membership: inside ``boxes`` and outside ``keep``; optional
+            ``min`` [num, den] (t >= num/den), ``off`` (largest RGB distance from the A-B segment, in levels;
+            ``off_above``: farther than that), ``near`` / ``tolerance`` (largest channel distance to any listed
+            colour), ``far`` / ``far_tolerance`` (never a texel that close to a listed colour) and ``seeds``
+            [[x, y], ...]: only the 8-connected pieces of the member texels that hold a seed. Colours are read from
+            the texture so far.
+``scale``   recolour keeping shading by scaling: each member texel's channel c becomes round(c * T / F) (half up,
+            exact integers, at most 255) for ``from`` F and ``to`` T; membership as for a ramp.
+``move``    move the build's own art: the member texels of the ``src`` box of the INPUT texture (members as for a
+            ramp, read from ``rgba``) are copied by ``by`` [dx, dy]. The texels they leave (members not covered by the
+            moved art) first take ``vacate``: {"to": "#RRGGBB"} (a flat field colour) or {"copy_by": [dx, dy]} (the
+            input's plain cloth that far away: a strip of the same fabric below the chest marks).
+``map``     an exact colour table inside boxes (``pairs`` [[old, new], ...], matched on the texture so far; colour
+            pairs only, no positions): only where nothing parametric is exact, e.g. a donor's art stamped 1:1 and
+            requantised to this kit's palette the way the round-1 compile did (26H4 from 26H0).
+``erase``   an old mark back to its cloth: input texels in ``boxes`` farther than ``far`` from ``to``, grown
+            ``dilate`` times over their 8 neighbours (inside the boxes), take ``to``.
+``boxres``  resize the build's own mark (box filter at texel centres, exact integers) into a new box, its cloth
+            held out, then a colour-pair table onto the kit's palette; laid down where the mark reaches.
+``rowfill`` continue a band through a removed mark: member texels take the input's colour at column ``from_x`` on
+            their own row, snapped to the nearest of ``levels`` (squared RGB distance, first on ties).
+``cols``    narrow a mark by taking whole columns out: inside rows ``rows`` [y0, y1) of the input, the columns of
+            ``src`` (a list of runs [x0, x1)) are laid side by side from column ``at`` (rows shifted by ``dy``),
+            copying only member texels of ``boxes``; the members of the old mark not covered are first vacated as for
+            ``move``.
+"""
+from __future__ import annotations
+
+import numpy as np
+
+__all__ = ["apply"]
+
+
+def _rgb(text):
+    text = str(text).lstrip("#")
+    if len(text) != 6:
+        raise ValueError("kit rule: colour must be #RRGGBB: " + repr(text))
+    return np.array([int(text[i:i + 2], 16) for i in (0, 2, 4)], np.int64)
+
+
+def _require(ok, message):
+    if not ok:
+        raise ValueError("kit rule (recolour): " + message)
+
+
+def _boxes(shape, boxes, keep=()):
+    h, w = shape[:2]
+    zone = np.zeros((h, w), bool)
+    for box in boxes:
+        x0, y0, x1, y1 = (int(v) for v in box)
+        _require(0 <= x0 < x1 <= w and 0 <= y0 < y1 <= h, "box outside the texture")
+        zone[y0:y1, x0:x1] = True
+    for box in keep:
+        x0, y0, x1, y1 = (int(v) for v in box)
+        zone[max(y0, 0):y1, max(x0, 0):x1] = False
+    return zone
+
+
+def _axis(c, ends):
+    """(num, den, off2den2): t = num / den on the A-B axis (clipped to [0, 1]) and the squared distance from the
+    segment times den^2, all exact integers."""
+    a = _rgb(ends[0])
+    d = _rgb(ends[1]) - a
+    den = int((d * d).sum())
+    _require(den > 0, "axis ends must differ")
+    rel = c - a
+    num = np.clip((rel * d).sum(axis=-1), 0, den)
+    off = rel * den - d * num[..., None]
+    return num, den, (off * off).sum(axis=-1)
+
+
+def _ge(num, den, frac):
+    """num/den >= p/q, exactly."""
+    p, q = (int(v) for v in frac)
+    _require(q > 0, "fraction denominator must be positive")
+    return num * q >= p * den
+
+
+def _pieces(member, seeds):
+    """The 8-connected pieces of ``member`` that hold a seed (an explicit stack, deterministic)."""
+    h, w = member.shape
+    keep = np.zeros_like(member)
+    stack = []
+    for x, y in seeds:
+        x, y = int(x), int(y)
+        _require(0 <= x < w and 0 <= y < h, "seed outside the texture")
+        _require(bool(member[y, x]), "seed (%d, %d) is not a member texel" % (x, y))
+        stack.append((y, x))
+    while stack:
+        y, x = stack.pop()
+        if keep[y, x] or not member[y, x]:
+            continue
+        keep[y, x] = True
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                ny, nx = y + dy, x + dx
+                if (dy or dx) and 0 <= ny < h and 0 <= nx < w and member[ny, nx] and not keep[ny, nx]:
+                    stack.append((ny, nx))
+    return keep
+
+
+def _members(src, op, zone):
+    """Texels of ``zone`` that the op's membership tests accept, read from ``src`` (RGBA)."""
+    c = src[..., :3].astype(np.int64)
+    member = zone.copy()
+    if op.get("near"):
+        tol = int(op.get("tolerance", 0))
+        hit = np.zeros_like(member)
+        for colour in op["near"]:
+            hit |= np.abs(c - _rgb(colour)).max(axis=-1) <= tol
+        member &= hit
+    if op.get("far"):
+        # texels within ``far_tolerance`` of these colours are never members
+        tol = int(op.get("far_tolerance", 0))
+        for colour in op["far"]:
+            member &= ~(np.abs(c - _rgb(colour)).max(axis=-1) <= tol)
+    if "ends" in op and any(k in op for k in ("min", "off", "off_above")):
+        num, den, off2 = _axis(c, op["ends"])
+        if "min" in op:
+            member &= _ge(num, den, op["min"])
+        if "off" in op:
+            member &= off2 <= (int(op["off"]) * den) ** 2
+        if "off_above" in op:
+            member &= off2 > (int(op["off_above"]) * den) ** 2
+    if op.get("seeds"):
+        member = _pieces(member, op["seeds"])
+    return member
+
+
+def _levels(c, op):
+    num, den, _ = _axis(c, op["ends"])
+    levels = [_rgb(v) for v in op["levels"]]
+    _require(len(levels) >= 1, "a ramp needs levels")
+    if len(levels) == 1:
+        k = np.zeros(num.shape, np.int64)
+    elif op.get("cuts") is not None:
+        cuts = op["cuts"]
+        _require(len(cuts) == len(levels) - 1, "a ramp needs one cut fewer than levels")
+        k = np.zeros(num.shape, np.int64)
+        for frac in cuts:
+            k += _ge(num, den, frac).astype(np.int64)
+    else:
+        n = len(levels) - 1
+        q, r = np.divmod(num * n, den)           # t * n = q + r / den
+        twice = 2 * r
+        up = (twice > den) | ((twice == den) & (q % 2 == 1))
+        k = q + up.astype(np.int64)
+    return np.stack(levels)[k]
+
+
+def _ramp(out, op, rgba):
+    src = out
+    zone = _boxes(out.shape, op["boxes"], op.get("keep", ()))
+    member = _members(src, op, zone)
+    new = out.copy()
+    if member.any():
+        colours = _levels(src[..., :3].astype(np.int64)[member], op)
+        new[..., :3][member] = colours.astype(np.uint8)
+    return new
+
+
+def _scale(out, op, rgba):
+    src = out
+    zone = _boxes(out.shape, op["boxes"], op.get("keep", ()))
+    member = _members(src, op, zone)
+    num = _rgb(op["to"])
+    den = _rgb(op["from"])
+    _require(bool((den > 0).all()), "a scale needs a non-zero source colour")
+    new = out.copy()
+    if member.any():
+        c = src[..., :3].astype(np.int64)[member]
+        new[..., :3][member] = np.minimum((c * num + den // 2) // den, 255).astype(np.uint8)
+    return new
+
+
+def _map(out, op, rgba):
+    """An exact colour table inside boxes: texels whose colour is exactly ``pairs``[i][0] take ``pairs``[i][1] (every
+    pair is matched on the texture as it was before this op, so pairs never chain). Used only where no parametric
+    rule is exact: texels the compile's palette-twin merge moved by one level, a donor copy requantised to this kit."""
+    zone = _boxes(out.shape, op["boxes"], op.get("keep", ()))
+    c = out[..., :3].astype(np.int64)
+    new = out.copy()
+    for old, to in op["pairs"]:
+        hit = zone & (c == _rgb(old)).all(axis=-1)
+        new[..., :3][hit] = _rgb(to).astype(np.uint8)
+    return new
+
+
+def _vacate(new, gone, spec, rgba):
+    """Fill the texels a move leaves: a flat colour (``to``) or the input texture's cloth ``copy_by`` [dx, dy] away."""
+    if "to" in spec:
+        new[..., :3][gone] = _rgb(spec["to"]).astype(np.uint8)
+        return new
+    if "copy_by" in spec:
+        h, w = gone.shape
+        dx, dy = (int(v) for v in spec["copy_by"])
+        ys, xs = np.nonzero(gone)
+        inside = (ys + dy >= 0) & (ys + dy < h) & (xs + dx >= 0) & (xs + dx < w)
+        _require(bool(inside.all()), "vacate source outside the texture")
+        new[ys, xs, :3] = rgba[ys + dy, xs + dx, :3]
+        return new
+    _require(False, "unknown vacate rule")
+
+
+def _move(out, op, rgba):
+    h, w = out.shape[:2]
+    x0, y0, x1, y1 = (int(v) for v in op["src"])
+    dx, dy = (int(v) for v in op["by"])
+    _require(0 <= x0 + dx and x1 + dx <= w and 0 <= y0 + dy and y1 + dy <= h, "move target outside the texture")
+    zone = _boxes(out.shape, [op["src"]])
+    member = _members(rgba, op, zone)
+    landed = np.zeros_like(member)
+    landed[y0 + dy:y1 + dy, x0 + dx:x1 + dx] = member[y0:y1, x0:x1]
+    new = out.copy()
+    if op.get("vacate"):
+        new = _vacate(new, member & ~landed, op["vacate"], rgba)
+    new[landed, :3] = rgba[y0:y1, x0:x1][member[y0:y1, x0:x1]][:, :3]
+    return new
+
+
+def _cols(out, op, rgba):
+    h, w = out.shape[:2]
+    y0, y1 = (int(v) for v in op["rows"])
+    dy = int(op.get("dy", 0))
+    at = int(op["at"])
+    src_cols = [x for a, b in op["src"] for x in range(int(a), int(b))]
+    _require(0 <= y0 < y1 <= h and 0 <= y0 + dy and y1 + dy <= h, "rows outside the texture")
+    _require(0 <= at and at + len(src_cols) <= w, "columns land outside the texture")
+    zone = _boxes(out.shape, op["boxes"])
+    member = _members(rgba, op, zone)
+    landed = np.zeros_like(member)
+    sx = np.array(src_cols, np.int64)
+    dxs = np.arange(at, at + len(src_cols))
+    landed[y0 + dy:y1 + dy, dxs] = member[y0:y1][:, sx]
+    new = out.copy()
+    if op.get("vacate"):
+        new = _vacate(new, member & ~landed, op["vacate"], rgba)
+    block = rgba[y0:y1][:, sx]
+    hit = member[y0:y1][:, sx]
+    region = new[y0 + dy:y1 + dy, at:at + len(src_cols)]
+    region[hit, :3] = block[hit][:, :3]
+    return new
+
+
+def _mirror(out, op, rgba):
+    """b81 R55 (the Hail Raiser): the box ``box`` takes, colour only, the mirror image of the build's own texture about
+    the atlas axis ``axis`` (rows y and axis - y swap: the helmet atlas's two side islands), as the art lane's
+    fixes7.mirror_upper_from_lower lays one side's logo from the other's."""
+    h, w = out.shape[:2]
+    x0, y0, x1, y1 = (int(v) for v in op["box"])
+    axis = int(op["axis"])
+    _require(0 <= x0 < x1 <= w and 0 <= y0 < y1 <= h and 0 <= axis - y1 + 1 and axis - y0 + 1 <= h,
+             "mirror box outside the texture")
+    new = out.copy()
+    new[y0:y1, x0:x1, :3] = rgba[axis - y1 + 1:axis - y0 + 1, x0:x1, :3][::-1]
+    return new
+
+
+def _snap(c, levels):
+    """Nearest of ``levels`` by squared RGB distance (the first on ties), exact integers."""
+    lv = np.stack([_rgb(v) for v in levels])
+    d = ((c[:, None, :] - lv[None, :, :]) ** 2).sum(axis=-1)
+    return lv[d.argmin(axis=1)]
+
+
+def _rowfill(out, op, rgba):
+    """Continue a band through a removed mark: every member texel takes, on its own row, the input's colour at
+    column ``from_x``, snapped to the nearest of ``levels`` (the band's flat colours)."""
+    zone = _boxes(out.shape, op["boxes"], op.get("keep", ()))
+    member = _members(out, op, zone)
+    sx = int(op["from_x"])
+    _require(0 <= sx < out.shape[1], "source column outside the texture")
+    new = out.copy()
+    ys, xs = np.nonzero(member)
+    if len(ys):
+        new[ys, xs, :3] = _snap(rgba[ys, sx, :3].astype(np.int64), op["levels"]).astype(np.uint8)
+    return new
+
+
+def _erase(out, op, rgba):
+    """An old mark back to its cloth: inside ``boxes``, the input's texels farther than ``far`` (largest channel step)
+    from ``to``, grown ``dilate`` times by their 8 neighbours and kept inside the boxes, take ``to``."""
+    zone = _boxes(out.shape, op["boxes"])
+    to = _rgb(op["to"])
+    mark = zone & (np.abs(rgba[..., :3].astype(np.int64) - to).max(axis=-1) > int(op["far"]))
+    h, w = mark.shape
+    for _ in range(int(op.get("dilate", 0))):
+        grown = mark.copy()
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                if dy or dx:
+                    grown[max(dy, 0):h + min(dy, 0), max(dx, 0):w + min(dx, 0)] |= \
+                        mark[max(-dy, 0):h + min(-dy, 0), max(-dx, 0):w + min(-dx, 0)]
+        mark = grown & zone
+    new = out.copy()
+    new[..., :3][mark] = to.astype(np.uint8)
+    return new
+
+
+def _box_taps(n_src, n_dst):
+    """For each output index, the source indices whose centres fall inside its footprint (a box filter at texel
+    centres): i * n_src <= s + 1/2 < (i + 1) * n_src, in units of n_dst; exact integers."""
+    return [[s for s in range(n_src) if 2 * i * n_src <= (2 * s + 1) * n_dst < 2 * (i + 1) * n_src]
+            for i in range(n_dst)]
+
+
+def _box_pass(a, taps, axis):
+    """One separable pass: each output is the mean of its taps, in 22-bit fixed point rounded half up (the 1- and
+    2-tap means of a downscale under 2x are exact)."""
+    out = []
+    for js in taps:
+        _require(len(js) > 0, "a box filter output has no source texel")
+        coeff = (1 << 22) // len(js)
+        acc = np.take(a, js, axis=axis).sum(axis=axis) * coeff
+        out.append(np.minimum((acc + (1 << 21)) >> 22, 255))
+    return np.stack(out, axis=axis)
+
+
+def _boxres(out, op, rgba):
+    """Resize the build's own mark: the ``src`` box of the input, its cloth (texels within ``far`` of ``field``) set to
+    ``field``, is box-filtered (two separable passes, horizontal first) into the ``dst`` box; texels whose footprint
+    held any of the mark are laid down, through ``pairs`` (resampled colour -> palette colour, exact matches)."""
+    sx0, sy0, sx1, sy1 = (int(v) for v in op["src"])
+    dx0, dy0, dx1, dy1 = (int(v) for v in op["dst"])
+    h, w = out.shape[:2]
+    _require(0 <= sx0 < sx1 <= w and 0 <= sy0 < sy1 <= h and 0 <= dx0 < dx1 <= w and 0 <= dy0 < dy1 <= h,
+             "box outside the texture")
+    field = _rgb(op["field"])
+    block = rgba[sy0:sy1, sx0:sx1, :3].astype(np.int64)
+    mark = np.abs(block - field).max(axis=-1) > int(op["far"])
+    block[~mark] = field
+    tx = _box_taps(sx1 - sx0, dx1 - dx0)
+    ty = _box_taps(sy1 - sy0, dy1 - dy0)
+    colours = _box_pass(_box_pass(block, tx, 1), ty, 0)
+    cover = _box_pass(_box_pass(mark.astype(np.int64)[..., None] * 255, tx, 1), ty, 0)[..., 0] > 0
+    flat = colours.reshape(-1, 3)
+    mapped = flat.copy()
+    for old, to in op.get("pairs", ()):
+        mapped[(flat == _rgb(old)).all(axis=-1)] = _rgb(to)
+    colours = mapped.reshape(colours.shape)
+    new = out.copy()
+    region = new[dy0:dy1, dx0:dx1]
+    region[cover, :3] = colours[cover].astype(np.uint8)
+    return new
+
+
+def _dilate4(m, n):
+    """Grow a mask ``n`` times by its 4-neighbours (scipy's default binary dilation), in place of scipy."""
+    for _ in range(int(n)):
+        g = m.copy()
+        g[1:] |= m[:-1]
+        g[:-1] |= m[1:]
+        g[:, 1:] |= m[:, :-1]
+        g[:, :-1] |= m[:, 1:]
+        m = g
+    return m
+
+
+def _shift(m, dx, dy):
+    out = np.zeros_like(m)
+    h, w = m.shape
+    out[max(dy, 0):min(h, h + dy), max(dx, 0):min(w, w + dx)] = m[max(-dy, 0):min(h, h - dy), max(-dx, 0):min(w, w - dx)]
+    return out
+
+
+def _inpaint(out, op, rgba, donors):
+    """b81-retail-free-art round 3 (coordinator's ruling on sw1, 2026-11-20): the old sleeve swoosh's remnants filled
+    from the art around them, nothing stored. The footprint is the old swoosh's own rendering: the build's clean donor
+    swoosh (``footprint.donor``, the texture every sw1 warp reads) where its coverage on the donor's field-to-mark line
+    is above ``above_milli``/1000, inside the donor grid's ``box``, moved by the kit's ``offset`` and cut to ``rows``.
+    The kit's own mark is the per-channel lower median of the input over the donor's core (coverage above 9/10), its
+    field the commonest input colour in the ring two texels round coverage 2/100. A footprint texel is filled when the
+    rules before it left it as the input holds it and it is the mark or on the field-to-mark line (sw1's own test:
+    within 40 levels of the mark, or 0.15 < t < 1.2 and 30 levels or less off the line); it takes the input colour of
+    the nearest texel outside the footprint (squared distance, then row, then column). Integers only."""
+    fp = op["footprint"]
+    _require(donors is not None and fp["donor"] in donors, "inpaint donor texture absent")
+    src = np.asarray(donors[fp["donor"]], np.uint8)
+    h, w = out.shape[:2]
+    _require(src.shape[:2] == (h, w), "inpaint donor of another size")
+    f0, m0 = _rgb(fp["field"]), _rgb(fp["mark"])
+    d0 = m0 - f0
+    den = int((d0 * d0).sum())
+    _require(den > 0, "inpaint donor line has no length")
+    num = ((src[..., :3].astype(np.int64) - f0) * d0).sum(-1)
+    x0, y0, x1, y1 = (int(v) for v in fp["box"])
+    box = np.zeros((h, w), bool)
+    box[max(0, y0):min(h, y1), max(0, x0):min(w, x1)] = True
+    dx, dy = (int(v) for v in fp["offset"])
+    above = int(fp["above_milli"])
+    _require(0 <= above < 1000, "inpaint coverage threshold outside 0-999/1000")
+    cover = _shift(box & (num * 1000 > above * den), dx, dy)
+    core = _shift(box & (num * 10 > 9 * den), dx, dy)
+    cov02 = _shift(box & (num * 1000 > 20 * den), dx, dy)
+    r0, r1 = (int(v) for v in op["rows"])
+    footprint = cover.copy()
+    footprint[:r0] = False
+    footprint[r1:] = False
+    c = rgba[..., :3].astype(np.int64)
+    if not footprint.any() or not core.any():
+        return out
+    mark = np.sort(c[core], axis=0)[(int(core.sum()) - 1) // 2]
+    ring = _dilate4(cov02, 2) & ~cov02
+    if not ring.any():
+        return out
+    colours, counts = np.unique(c[ring], axis=0, return_counts=True)
+    field = colours[int(np.argmax(counts))]
+    d = mark - field
+    dd = int((d * d).sum())
+    near_mark = np.abs(c - mark).max(-1) <= 40
+    if dd > 0:
+        tn = ((c - field) * d).sum(-1)
+        resid = (c - field) * dd - tn[..., None] * d
+        on_line = (100 * tn > 15 * dd) & (10 * tn < 12 * dd) & ((resid * resid).sum(-1) < 900 * dd * dd)
+        swooshlike = near_mark | on_line
+    else:
+        swooshlike = near_mark
+    untouched = (np.asarray(out)[..., :3] == rgba[..., :3]).all(-1)
+    ys_out, xs_out = np.nonzero(~footprint)
+    new = np.asarray(out, np.uint8).copy()
+    for y, x in zip(*np.nonzero(footprint & untouched & swooshlike)):
+        d2 = (ys_out - y) ** 2 + (xs_out - x) ** 2
+        k = int(np.lexsort((xs_out, ys_out, d2))[0])
+        colour = rgba[ys_out[k], xs_out[k], :3]
+        if (colour != rgba[y, x, :3]).any():
+            new[y, x, :3] = colour
+    return new
+
+
+_KINDS = {"ramp": _ramp, "scale": _scale, "map": _map, "move": _move, "cols": _cols, "mirror": _mirror,
+          "rowfill": _rowfill, "boxres": _boxres, "erase": _erase}
+
+
+def apply(out, op, rgba, donors):
+    """One recolour rule over ``out`` (the texture so far); returns the new RGBA uint8 array."""
+    kind = op.get("do")
+    _require(kind in _KINDS or kind == "inpaint", "unknown rule " + repr(kind))
+    _require("color" not in op, "a rule names no palette colour (use a want op)")
+    if kind == "inpaint":
+        new = _inpaint(np.asarray(out, np.uint8), op, np.asarray(rgba, np.uint8), donors)
+        return np.ascontiguousarray(new, np.uint8)
+    new = _KINDS[kind](np.asarray(out, np.uint8), op, np.asarray(rgba, np.uint8))
+    return np.ascontiguousarray(new, np.uint8)

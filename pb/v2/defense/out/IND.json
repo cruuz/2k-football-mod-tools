@@ -1952,7 +1952,7 @@
  "receipt": {
   "team": "IND",
   "offense_pack": "data/playbooks/softdrink_ind_modern.2k5book",
-  "offense_pack_sha256": "8db7799183324e094940215501cee91b36038af8f64f21bbf525d084d6f6be57",
+  "offense_pack_sha256": "0b95d73133f3289da3f44bab13985feda6378909a5189abf5ac5bf2f0823908d",
   "source_fingerprint": "c2993ebcbbd2beab4a429a4615e7352cb8076028f7b3bfcfc30426d81d00efc3",
   "replacement_sha256": "9f70ea11230297db0763f2747760f8e15131ed05d7657d869d02ae64aa318fff",
   "semantic_sha256": "3b13db7df3349f6df246aa67a5d4debd203f4d43c95b0d33bf59a0225dfe9584",

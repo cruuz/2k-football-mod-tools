@@ -1952,7 +1952,7 @@
  "receipt": {
   "team": "CHI",
   "offense_pack": "data/playbooks/softdrink_chi_modern.2k5book",
-  "offense_pack_sha256": "ed65ec2441a2422a6948ab272511736d29a7f48cff99793af3f4e4039eaa06a0",
+  "offense_pack_sha256": "f57fc5ca962d1a60896ae797718ce4cf06a6f9f95c6129bf6ecb9ec5ca9d06b9",
   "source_fingerprint": "b9362e4a16c829ea881efa10ed24c911aea4c23926e95ab3d37e4b35a48d20e7",
   "replacement_sha256": "beb88bf39dea07cef6a09f6d2fefadc428ba3c1caf9a7d8ab82601956e9d6c12",
   "semantic_sha256": "9049c072583ab47d6504065f83bb5021316072800f994108c92bb6f5a01f67c6",

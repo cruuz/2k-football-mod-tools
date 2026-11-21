@@ -360,7 +360,8 @@ class CampTests(unittest.TestCase):
         # b780 hunt1: revision 6 adds the veteran cut's release guard call (roster_m is a revision-5 window already)
         self.assertEqual(sorted(int(e["va"], 16) for e in self.receipt["edits"]),
                          sorted(self.economy.REVISION_5_SITES | getattr(self.economy, "REVISION_6_SITES", frozenset())
-                                | getattr(self.economy, "REVISION_7_SITES", frozenset())))   # b780 econ3: revision 7
+                                | getattr(self.economy, "REVISION_7_SITES", frozenset())   # b780 econ3: revision 7
+                                | getattr(self.economy, "REVISION_8_NEW", frozenset())))  # b81: the practice-squad fill
         self.assertEqual(self.economy.status(self.fixed), "applied")
 
     def _camp(self, payload, stage, size):

@@ -119,7 +119,9 @@ PATCHES = (
      "touchback 35 (2026 rule), PAT snapped from the 15 (two-point tries stay at the 2), and the meter and kicker "
      "curves re-spaced as a scale so a 99 leg reaches 65-69 yards while mid-power kickers gain 2-3. "
      "Kickoff and return formations follow the ball; onside and safety kicks are untouched; the CPU keeps "
-     "its retail field-goal range for fourth-down decisions."),
+     "its retail field-goal range for fourth-down decisions. CPU kickers aim with two thirds of their original "
+     "error, so they make modern extra points and mid-range field goals about as often as NFL kickers; your own "
+     "kicks are unchanged."),
     ("dynamic_kickoff", "Dynamic kickoff: nobody moves until the ball comes down, landing zone, CPU kicks and touchbacks (disc images only, experimental)",
      "Retail: on a kickoff everyone sprints at the kick, the ball is kicked wherever the CPU meter lands and a returner brings "
      "most kicks out. Patch: the 2024/2025 rule. The ten coverage men and nine setup blockers hold still until the ball touches the "
@@ -176,13 +178,11 @@ PATCHES = (
      "kickoffs and scrimmage carries are not), then turns the ball 180 degrees about its own long axis with "
      "the game's quaternion product, so the laces face the posts through the hold and the kick. A fake field "
      "goal carries the rolled ball for that play only. Unwitnessed in game."),
-    ("punter_holder", "Punter holds on field goals and PATs",
-     "Retail: the Field Goal formation has a holder slot (kind H) that the depth-chart builder fills from a "
-     "hidden team-record byte, usually the second quarterback; the depth chart has no holder row and nothing "
-     "keeps that byte up to date. Patch: a hook in that builder and a 47-byte cave in a dead routine make the "
-     "depth chart's first punter the holder on every field goal and PAT, for user and CPU teams in every mode; "
-     "the old rule runs only when a team has no punter (or the kicker would fill both slots). A fake field goal "
-     "run or throw is now the punter's. Unwitnessed in game."),
+    ("punter_holder", "Use the punter as the default holder",
+     "Retail reads the club's saved holder for field goals, extra points and fakes. This option fills empty "
+     "or inherited assignments with the first punter when building a disc roster. A player chosen in "
+     "Special Teams keeps the job and appears in the build summary. Patching an older executable restores "
+     "the saved holder rule. A complete disc is needed to set roster defaults."),
     ("prospect_names", "Modern draft-prospect names (disc images only)",
      "Retail: rookies and free agents are named from the 1990 US Census lists (James, Harold, Walter... Smith, "
      "Garcia, Martinez), drawn independently, so a fifth of every draft class carries a Hispanic-origin name and no "
@@ -277,7 +277,8 @@ PATCHES = (
 # never pass a Boolean through the BuildPlan (the field is a plan path chosen on Rosters / Build).
 from mod_editor.core import nfl2k5_weather as weather
 from mod_editor.core import nfl2k5_weather_haze as haze
-PATCHES += (("weather_plan", weather.BUILD_CAPTION, weather.HELP_TEXT),
+PATCHES += (("load_user_team_guard", tt.load_user_team_guard_patch.BUILD_CAPTION, tt.load_user_team_guard_patch.HELP_TEXT),
+            ("weather_plan", weather.BUILD_CAPTION, weather.HELP_TEXT),
             ("weather_haze", haze.BUILD_CAPTION, haze.HELP_TEXT),
             ("cpu_scrambles", tt.cpu_scrambles_patch.BUILD_CAPTION, tt.cpu_scrambles_patch.HELP_TEXT))
 INFORMATIONAL = {"espn25_plan", "weather_plan", "cpu_scrambles"}
@@ -341,7 +342,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
         "Choice form only here. Build also offers a fixed rule. Preview art shows era only.",
         "Reported not working; bounded checks pass / UNWITNESSED"),
     "kick_laces": ("Laces face the posts on kicks", "On field goals and PATs the held ball is turned so the laces face the posts.", NOT_TESTED),
-    "punter_holder": ("Punter holds on field goals and PATs", "The first punter on the depth chart holds, as in the modern NFL.", NOT_TESTED),
+    "punter_holder": ("Use the punter as the default holder", "Fills empty and inherited assignments in the disc roster. The player you choose in Special Teams holds the ball.", ""),
     "prospect_names": ("Modern draft-prospect names", "New franchises only; some new surnames are announced by number.", "New franchises only"),
     "franchise_practice": ("Practice below Schedule in Franchise", r62_ui.PRACTICE_HELP, NOT_TESTED),
     "seven_on_seven": ("7-on-7 practice (experimental)", "Retail line positions with passing sets and a delayed end rush. UNWITNESSED.", NOT_TESTED),
@@ -710,16 +711,18 @@ class GameplayPatchesPanel(QWidget):
             # b780 studio1: the Build tab's Needs update treatment, which this page lacked: on the released v0.8 disc these
             # read "Unknown state." or, for a legacy draft AI, a tooltip about the beta 58-60 star, and no badge.
             from mod_editor.gui.build_panel_qt import (
-                LEGACY_UPGRADE_KEYS, PREVIOUS_REBUILD_KEYS, PREVIOUS_UPGRADE_KEYS, rebuild_only_reason)
-            locked_on = key in ("honors_page", "k128_memory")      # Build keeps these ticked and greyed out; so does this page
+                KEPT_PREVIOUS, LEGACY_UPGRADE_KEYS, PREVIOUS_REBUILD_KEYS, PREVIOUS_MULTIPLE_RELEASES,
+                PREVIOUS_UPGRADE_KEYS, rebuild_only_reason)
+            locked_on = key in KEPT_PREVIOUS
             update = ((value == "previous" and key in PREVIOUS_UPGRADE_KEYS)
                       or (value == "legacy" and (key in LEGACY_UPGRADE_KEYS or key in ("draft_ai", "depth_locks"))))
+            previous_label = "Earlier" if key in PREVIOUS_MULTIPLE_RELEASES else "Beta 79"
             rebuild = value == "previous" and key in PREVIOUS_REBUILD_KEYS
             # b780 studio1 (Q69): on a disc this release cannot build on, an in-place update is not an offer (same rule as Build)
             declined_reason = rebuild_only_reason(state) if (update or upgrade) else ""
             check.setEnabled((value == "retail" or (not declined_reason and (upgrade or (update and not locked_on))))
                              and not needs_image and key not in r62_ui.UNAVAILABLE)
-            check.setChecked(False)
+            check.setChecked(locked_on and value == "previous")
             tip = {"applied": "Already installed on this source.",
                    "needs_fix": "Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.",
                    "foreign": "Not recognised: the bytes at this change's sites are neither retail nor this patch "
@@ -731,19 +734,19 @@ class GameplayPatchesPanel(QWidget):
             # carry a playbook patch, so inspect says n/a) should say what the user needs instead
             full_disc = needs_image and value not in ("applied", "foreign", "partial", "previous", "legacy")
             if declined_reason:
-                tip = "An older revision of this change is installed (beta 79 or earlier). " + declined_reason
+                tip = "An older revision of this change is installed. " + declined_reason
             elif update:
-                tip = ("An older revision of this change is installed (beta 79 or earlier). "
+                tip = ("An older revision of this change is installed. "
                        + ("This build brings it up to date in place, so it stays ticked." if locked_on else
                           "Select to update it to this release's revision (in place)."))
             elif rebuild:
-                tip = ("The beta 79 version of this change is installed. This release cannot update it in place; build from "
+                tip = (f"The {previous_label.lower()} version of this change is installed. This release cannot update it in place; build from "
                        "your retail game to get this release's version.")
             check.setToolTip("Full disc required (not a bare default.xbe)." if full_disc else tip)
             badge = ("Full disc required" if full_disc else
                      "Older revision: rebuild from retail" if declined_reason else
                      "Needs update" if update else
-                     "Beta 79 version: rebuild from retail" if rebuild else
+                     previous_label + " version: rebuild from retail" if rebuild else
                      {"applied": "Already installed", "foreign": "Unrecognized source data",
                       "needs_fix": "Needs CPU lineup fix",
                       "partial": "Unrecognized source data"}.get(value, self._static_badges.get(key, "")))
@@ -756,13 +759,14 @@ class GameplayPatchesPanel(QWidget):
                                  "is neither retail nor this patch, so they can't be added here.")
             self.badges["depth_chart_rows"].setText("Unrecognized source data")
             self.badges["depth_chart_rows"].setVisible(True)
-        applied = [LABELS.get(k, (k, "", ""))[0] for k, _l, _e in self._patches if state.get(k) == "applied"]
-        foreign = [LABELS.get(k, (k, "", ""))[0] for k, _l, _e in self._patches if state.get(k) in ("foreign", "partial")]
-        text = ("Already on this source: " + ", ".join(applied) + "." if applied
-                else "No recognized changes found; everything listed is original.")
-        if foreign:
-            text += " Not recognized (changed by another tool): " + ", ".join(foreign) + "."
-        self.source_status.setText(text)
+        descriptions = []
+        for states, prefix in ((("applied",), "Installed changes include "),
+                               (("previous", "legacy", "needs_fix"), "Earlier revisions are installed for "),
+                               (("foreign", "partial"), "Unrecognized source data was found for ")):
+            names = [label for key, label, _help in self._patches if state.get(key) in states]
+            if names:
+                descriptions.append(prefix + ", ".join(names) + ".")
+        self.source_status.setText(" ".join(descriptions) or "No installed changes were identified on this source.")
         self.source_status.setToolTip("Read: " + "; ".join(f"{k}: {state.get(k)}" for k, _l, _e in self._patches))
         self.suggest_target()
         self._refresh()
@@ -1022,13 +1026,13 @@ class GameplayPatchesPanel(QWidget):
             cutoff = installed.get("settings") or {}
             for widget, key in ((self.decided_clock_margin, "margin"),
                                 (self.decided_clock_seconds, "seconds")):
-                if installed.get("status") == "applied":
+                if installed.get("status") in ("applied", "previous"):
                     widget.blockSignals(True)
                     widget.setCurrentIndex(widget.findData(cutoff[key]))
                     widget.blockSignals(False)
                 widget.setEnabled(self.checks["decided_clock"].isEnabled()
                                   and self.checks["decided_clock"].isChecked()
-                                  and installed.get("status") != "applied")
+                                  and installed.get("status") not in ("applied", "previous"))
         if hasattr(self, "cpu_scrambles_level"):
             mode = state.get("cpu_scrambles", "unknown")
             if mode == "applied":

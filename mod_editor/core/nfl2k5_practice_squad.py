@@ -41,6 +41,14 @@ MARKER = 0xA5
 EMPTY = 0
 ACTIVE_COUNT = 0x11C
 RETAIL_SHA256 = '73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9'
+# Historical P1 retirement is scoped to the released XBE, its cut-only intermediate,
+# and its final two-edit image. None of these implies the current reserve hooks.
+V04_CUTS_RETIRED_SHA256 = '806186c38f153c6873fadb85a755bee3ff703227b5d92a9eb9cdbb7d953e9d84'
+V04_RETIRED_SHA256 = '16f312e4a5de98ea5be0c7bb9e909f2a10e5794c714bfdfbfd771f7aa9b6d00f'
+_V04_RETIREMENT_HASHES = frozenset((
+    '5a9dc534b50c7f13b5124bfff9e39c99f96f62be4cc1de33309895c330c75f29',
+    V04_CUTS_RETIRED_SHA256, V04_RETIRED_SHA256,
+))
 CAVE_PINS = {
     0x374111: '17750d4dd2974aaa113b8be392dae37f3829e6b1d62c63331335fb26fedb7325',
     0x3BA610: '61574f4d1e18a37f9f14d2860cf8068cb958986bd16dd6f227686d6cf23ae1ac',
@@ -379,7 +387,9 @@ def reserve_transaction(payload: bytes, team_index: int, primary_index: int, *, 
     reserves = list(squads[team_index])
     flags = payload[player.offset + 8]
     _require(bool(flags & 4) and not flags & 0x18, 'player is inactive, retired, or a draft prospect')
-    _require(payload[player.offset + 0x28] != 0xee, 'player is marked injured reserve')
+    # the game's own practice-squad screen makes this test (``cmp byte [ebx+0x28],0xee``); it also catches an injury
+    # whose id ends in that byte, such as 750, so the words say what is true for both (b81 finn-r2)
+    _require(payload[player.offset + 0x28] != 0xee, "the game's practice squad screen will not move him: his injury code ends in the byte the game also uses to mark injured reserve (0xEE). Activate him from injured reserve, or heal him, first")
     if promote:
         _require(primary_index in reserves, 'player is not a reserve owned by this team')
         _require(len(active) < ACTIVE_LIMIT, 'promotion requires fewer than 53 active players')
@@ -546,9 +556,17 @@ def status(xbe: bytes) -> str:
         return 'foreign'
 
 
+def is_v04_retirement(xbe: bytes) -> bool:
+    return len(xbe) == 12_300_288 and hashlib.sha256(xbe).hexdigest() in _V04_RETIREMENT_HASHES
+
+
+def retirement_status(xbe: bytes) -> str:
+    return 'applied' if is_v04_retirement(xbe) else status(xbe)
+
+
 def apply(xbe: bytes) -> tuple[bytes, dict[str, object]]:
     """Apply atomically to a copy and repair each changed XBE section digest."""
-    state = status(xbe)
+    state = retirement_status(xbe)
     _require(state != 'foreign', 'practice-squad sites are foreign or partially patched')
     receipt: dict[str, object] = {'status': 'applied', 'active_limit': ACTIVE_LIMIT,
         'reserve_limit': RESERVE_LIMIT, 'storage_version': VERSION,
@@ -568,7 +586,7 @@ def apply(xbe: bytes) -> tuple[bytes, dict[str, object]]:
         at = section.header_offset + 36
         out[at:at + 20] = section_digest(out, section)
         result = bytes(out)
-        _require(status(result) == 'applied', 'reserve compatibility postcondition failed')
+        _require(retirement_status(result) == 'applied', 'reserve compatibility postcondition failed')
         receipt['changed_bytes'] = sum(a != b for a, b in zip(xbe, result))
         receipt['sections_repinned'] = [section.index] if result != xbe else []
         return result, receipt

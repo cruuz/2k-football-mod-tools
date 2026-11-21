@@ -110,7 +110,8 @@ class StadiumDryRun(unittest.TestCase):
                 for n, (o, d) in self.BUNDLES.items()]
         self.archive = FakeArchive({o: d for o, d in self.BUNDLES.values()})
         self.calls = []
-        for patch in (mock.patch.object(colour, "_pins", return_value={"bundles": pins}),
+        # Replace just the stadium bundles. Settings use the pinned light tables on a cold run.
+        for patch in (mock.patch.object(colour, "_pins", return_value=dict(colour._pins(), bundles=pins)),
                       mock.patch.object(colour, "_outer_image", return_value=lambda *_a, **_k: self.archive),
                       mock.patch.object(colour, "bundle_plan", return_value=[("field", 0, 4), ("tint", 4, 4)]),
                       mock.patch.object(colour, "_refit_fields", return_value={}),

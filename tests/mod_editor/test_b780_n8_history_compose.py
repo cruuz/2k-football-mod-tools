@@ -21,10 +21,14 @@ own reroute still works, and with a career active the History screen still opens
 and quits natively; the playlist queues music on events 1 and 3 of the History screens; the playlist's 24 named native
 routes (``test_nfl2k5_music_playlist_contexts``) run in the composed executable.
 
-``NFL2K5_N8_BUILT_XBE`` (optional): the default.xbe of a real Studio build; the same status and native checks run on it.
+``NFL2K5_N8_BUILT_XBE`` takes the real all-owner build's default.xbe for the strict status and native checks.
+``NFL2K5_N8_STANDARD_RECEIPT`` takes a standard Studio build receipt. Its recorded image and final PLAY scores
+identify the executable for the standard profile and, when the all-owner XBE is absent, the shared native checks.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 import struct
 import sys
@@ -99,6 +103,27 @@ def built_xbe() -> bytes:
     if len(data) > 16 * 1024 ** 2:
         raise AssertionError("NFL2K5_N8_BUILT_XBE must be a default.xbe, not a disc image")
     return data
+
+
+def standard_build():
+    from mod_editor.core import mod_build
+    path = os.environ.get("NFL2K5_N8_STANDARD_RECEIPT")
+    if not path:
+        raise unittest.SkipTest("NFL2K5_N8_STANDARD_RECEIPT (the standard Studio build receipt) is not set")
+    receipt = json.loads(Path(path).read_text(encoding="utf-8"))
+    payload = mod_build._xbe_bytes(Path(receipt["target"]))
+    scores = receipt["playbook_scoring"]
+    if not (receipt["result"]["container"] == "xiso" and scores["status"] == "applied" and scores["faults"] == 0
+            and scores["books"] == len(scores["results"]) and scores["results"]
+            and {row["xbe_sha256"] for row in scores["results"]} == {hashlib.sha256(payload).hexdigest()}):
+        raise AssertionError("The Studio receipt must identify the scored executable in its final image")
+    return receipt["plan"], payload
+
+
+def built_native_xbe():
+    if not os.environ.get("NFL2K5_N8_BUILT_XBE") and os.environ.get("NFL2K5_N8_STANDARD_RECEIPT"):
+        return standard_build()[1]
+    return built_xbe()
 
 
 class CompositionTests(unittest.TestCase):
@@ -424,22 +449,75 @@ class BuiltExecutableTests(unittest.TestCase):
                          ["mycareer_screen_push", "module_loader_screen_push", "playlist_screen_event"])
 
 
+class BuiltStandardExecutableTests(unittest.TestCase):
+    def test_selected_owners_and_pause_scorebar_match_the_standard_build(self):
+        plan, payload = standard_build()
+        for option in ("my_career", "music_shuffle", "defensive_try", "honors_page", "my_career_home",
+                       "player_progress", "module_loader", "history_screen", "scorebug_runtime", "k128_memory"):
+            self.assertIs(plan[option], True, option)
+        self.assertIs(plan["franchise_history"], False)
+        owners = _modules()
+        expected = {name: "applied" for name in BUILD_ORDER}
+        expected.update(footer="retail", capture="retail")
+        self.assertEqual({name: owners[name].status(payload) for name in BUILD_ORDER}, expected)
+        self.assertEqual(hist.footer_pointer_va(payload), 0)
+        self.assertEqual([label for label, *_ in hist.companion_sites(payload)],
+                         ["mycareer_screen_push", "module_loader_screen_push", "playlist_screen_event",
+                          "scorebar_pause_background"])
+
+
 class BuiltNativeTests(NativeTests):
     @classmethod
     def payload(cls) -> bytes:
-        return built_xbe()
+        return built_native_xbe()
 
 
 class BuiltPlaylistRoutes(_playlist_routes()):
     @classmethod
     def setUpClass(cls):
-        cls.patched = built_xbe()
+        cls.patched = built_native_xbe()
 
-    @unittest.skip("its context matrix pins the retail Franchise desk table (0x522190), which Franchise Practice "
-                   "repoints in every SOFTDRINK build (event list 0x522194, rows 0x5221A0); the 24 routes run on the "
-                   "composed executable in PlaylistRoutesInTheComposedExecutable")
+    def assert_screen_descriptor(self, image, table, expected_sha256):
+        from mod_editor.core import nfl2k5_franchise_practice as practice
+        if table != practice.COACH_DESK_DESCRIPTOR_VA:
+            return super().assert_screen_descriptor(image, table, expected_sha256)
+        state = practice.status(self.patched)
+        if state == "retail":
+            return super().assert_screen_descriptor(image, table, expected_sha256)
+        self.assertEqual(state, "applied")
+        expected = bytearray(XbeImage(retail_xbe()).read(table, 40))
+        self.assertEqual(hashlib.sha256(expected).hexdigest(), expected_sha256)
+        owned = {"coach_desk_hook_pointer", "coach_desk_row_pointer"}
+        descriptor_sites = [(key, at, before, after) for key, at, before, after in practice.sites()
+                            if table <= at < table + len(expected)]
+        self.assertEqual({key for key, *_ in descriptor_sites}, owned)
+        for _, at, before, after in descriptor_sites:
+            offset = at - table
+            self.assertEqual(expected[offset:offset + len(before)], before)
+            expected[offset:offset + len(before)] = after
+        self.assertEqual(image.read(table, len(expected)), expected)
+
     def test_each_named_policy_transition(self):
-        pass
+        self.patched = built_xbe()
+        super().test_each_named_policy_transition()
+
+    def test_standard_build_named_policy_transitions(self):
+        _, self.patched = standard_build()
+        super().test_each_named_policy_transition()
+
+    def test_standard_desk_rejects_changed_title_pointers_and_events(self):
+        from mod_editor.core import nfl2k5_franchise_practice as practice
+        _, standard = standard_build()
+        image = XbeImage(standard)
+        table = practice.COACH_DESK_DESCRIPTOR_VA
+        pin = hashlib.sha256(XbeImage(retail_xbe()).read(table, 40)).hexdigest()
+        for at in (table, practice.COACH_DESK_HOOKS_PTR_VA, practice.COACH_DESK_ROWS_PTR_VA, practice.CAVE_HOOKS_VA):
+            with self.subTest(address=hex(at)):
+                changed = bytearray(standard)
+                changed[image.offset(at)] ^= 1
+                self.patched = bytes(changed)
+                with self.assertRaises(AssertionError):
+                    self.assert_screen_descriptor(XbeImage(self.patched), table, pin)
 
 
 if __name__ == "__main__":

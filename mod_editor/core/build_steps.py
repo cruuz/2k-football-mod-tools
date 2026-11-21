@@ -118,6 +118,11 @@ STEP_LABELS: dict[str, str] = {
     "kit_fixes_2026_ku1": "the 2026 Chiefs kit repair",
     "kit_fixes_2026_sw1": "the 2026 sleeve swoosh repair",
     "kit_fixes_2026_names": "the 2026 nameplate spacing repair",
+    "kit_fixes_2026_b81": "the 2026 helmet cleanup",
+    "kit_fixes_2026_b81u": "the 2026 uniform pass",
+    "glyph_fixes_2026_b81u": "the 2026 uniform pass numbers",
+    "sideline_2026_b81u": "the 2026 far-player uniforms",
+    "relief_2026_b81u": "the 2026 jersey relief",
     "sideline_2026": "the 2026 sideline uniform repair",
     "moment_kits": "the Anniversary moment kit pass",
     "nameplate_fixes_2026": "the 2026 nameplate fix",
@@ -185,6 +190,7 @@ STEP_LABELS: dict[str, str] = {
     "formation_art_spacing": "the play art icon spacing",
     "force_out": "Modern sideline catches",
     "practice_injuries": "Franchise practice injuries",
+    "backfield_cards": "the starting backfield cards",
     "sportscenter_lineup": "SportsCenter highlight lineups",
     "ball_carriers": "CPU ball carriers",
     "star_retention": "CPU clubs keep their stars",
@@ -196,7 +202,7 @@ STEP_LABELS: dict[str, str] = {
     "coach_career_fix": "the coach career counter fix",
     "history_pool": "the career history pool fix",
     "sim_cb_tackles": "Cornerback tackle credit",
-    "sim_stats": "the franchise sim pace fix",
+    "sim_stats": "franchise sim pace and Games Played",
     "option_defaults": "the SOFTDRINK default options",
     "clock_led": "Modern clock digits",
     "inbox_standings": "Inbox standings",
@@ -205,6 +211,9 @@ STEP_LABELS: dict[str, str] = {
     "preseason_warning": "the pre-season roster warning",
     "sim_rb_injuries": "Simulated RB short injuries",
     "sim_realism": "Simulated season realism",
+    "sim_qb_injuries": "Simulated injuries (all positions)",
+    "qb_room": "the quarterback room rules",  # b81 qb34
+    "gadget_play": "the gadget player on gadget plays",  # beta 81 Q62 (its step had no label)
     # b780 rev1: the beta-80 late owners and the coaching staff's playbook copy (they had no step, so a failure in one
     # was reported under the step before it, "During the rookie faces: invalid SizeOfHeaders")
     "coach_staff_playbooks": "the playbooks your new head coaches bring",
@@ -226,10 +235,12 @@ STEP_LABELS: dict[str, str] = {
     "injured_reserve": "Modern injured reserve",
     "load_user_team_guard": "the Franchise load user-team guard",
     "save_list_type_guard": "the boot save-list type guard",
+    "edition_save_notes": "the 64 MB edition's save messages",
     "quick_long_release": "Quicker deep and rollout throws",
     "coach_carousel_pool": "the coaching carousel's hiring pool",
     "indicator_names": "the player name label",
     "champions_history": "the champions history",
+    "offset_toss_flip": "aligning the back and pitch on flipped offset tosses",
     "disc_compaction": "compacting the finished disc",
     "final_checks": "the final checks of the finished disc",
     "music_check": "the check of the music playlist",
@@ -280,7 +291,9 @@ KEPT: dict[str, str] = {
     **{step: "Your disc keeps those uniforms as they were." for step in (
         "era_kits", "unc_bowl_uniforms", "nyg_shoulder_numbers", "kit_fixes_2026", "kit_fixes_2026_alts",
         "kit_fixes_2026_uf3", "kit_fixes_2026_sea1", "kit_fixes_2026_ov1", "glyph_fixes_2026", "pants_hem_2026",
-        "kit_fixes_2026_ku1", "kit_fixes_2026_sw1", "kit_fixes_2026_names", "sideline_2026", "nameplate_fixes_2026")},
+        "kit_fixes_2026_ku1", "kit_fixes_2026_sw1", "kit_fixes_2026_names", "sideline_2026", "nameplate_fixes_2026",
+        "kit_fixes_2026_b81", "kit_fixes_2026_b81u", "glyph_fixes_2026_b81u", "sideline_2026_b81u",
+        "relief_2026_b81u")},
     **{step: "Your disc keeps those menu pictures as they were." for step in (
         "menu_icon_uf3", "menu_helmet_w2026", "menu_chiefs_2026")},
 }

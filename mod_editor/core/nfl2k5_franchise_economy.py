@@ -293,7 +293,38 @@ REVISION_7_SITES = REVISION_7_NEW | frozenset(PREVIOUS_REVISION_6)
 # The smart cut's modern maxima (runtime.c cut_rows row 0) by position code, for readers that predict the cut (MyCareer's
 # draft advisory reads the native maximum table, whose QB 4 the cut no longer keeps when the economy is installed).
 CUT_MAXIMUM = {0: 3, 8: 2}
-REVISION = 7
+# b81 practice squads (revision 8, REMAINING R60). In every recorded ten-season franchise (2 organic dynasties and the 8
+# qb34 P5 roots, 65 season transitions) no player ever joined a practice squad: beta 76.5 retired the automatic demotion
+# at final cuts and nothing else adds a reserve, so the shipped 128 reserves only retired away (9 left by 2035). In the
+# stage-7 action, right after the preseason -> regular season gate (0x2485DB, unchanged), its call of the next draft class
+# (0x2485E0, retail call 0x2BF8B0) goes to economy_squad_gate (tools/franchise_economy/runtime.c): every club no person
+# manages tops its practice squad up to 12 from the free-agent list, then the class is made. Round by round over a
+# 12-slot position mix without a QB, the clubs in an order that turns with the slot and the season (review 11/20: no club
+# favoured by its index), each slot a hash-chosen healthy free agent with years pro <= 3 (not the best-rated); the native
+# free-agent removal, the squad's append and its own ps_demote; a one-year minimum deal; no RNG, no transaction row. Code:
+# six more unreferenced retail functions (dead_code.py WINDOWS roster_p..roster_u). A revision-7 image (released v0.9,
+# every beta 81 disc so far) reads "legacy" and upgrades in place. (The gate's own call 0x2485DB lies in
+# nfl2k5_progression's guarded "Preseason calls" span 0x2485B6 + 0x2A; 0x2485E0 is outside every guard and span.)
+SQUAD_GATE = 0x2485E0               # call 0x2BF8B0 (the next draft class) right after the gate in the stage-7 action
+PINS[SQUAD_GATE] = "e9493963a6cb9526a85b7b338e4fc98da1f30f0ff845cdc77c6d2566d96caa64"
+SQUAD_WINDOWS = {                   # retail sha256 of each window's bytes (dead_code.py WINDOWS)
+    0x38D3E0: "56f4e445ce5f93581e0676bc3308fd7c203a05e8fddee8c76ee6a0120522daeb",   # roster_p: the hash pick of a young free agent
+    0x1C62E0: "b062e461131d35405759a1b89f6b58e0c8390f8532a73526113350ebb480c992",   # roster_q: the three rounds' position mix
+    0x343040: "cdf33bb1c95a330336a8dc9b1f8b1f324fa382da4bab96c5b20e06692cb86acc",   # roster_r: one squad signing
+    0x3E9A90: "04343c196ca45460668f254456e50e0e97f8950c728aa6c52384a47339c1cb4f",   # roster_s: economy_squad_expire (the rollover call)
+    0x3E9CD0: "5d5df93f0747d8134d1c4c2502c4350caea4f033b513626ad5d08f2325f90a84",   # roster_t: economy_squad_gate (the gate call)
+    0x3220B0: "91cf637d17206732620e7706abdb4f7fab2b0b4269de74921a0f05ae3eacde72",   # roster_u: the squad storage test
+}
+for _va, _digest in SQUAD_WINDOWS.items():
+    PINS[_va] = _digest
+# The same revision lets the squad's one-year deals expire at the rollover: the rollover's call of the injured-reserve
+# return (0x247B79, retail call 0x246F90, after the retirements, while each club holds its 53 and its reserves) goes to
+# economy_squad_expire, which first returns the reserves of every club the CPU runs to the free-agent list (no contract),
+# so camps keep the full offseason roster and squads re-form every year.
+SQUAD_EXPIRE = 0x247B79
+PINS[SQUAD_EXPIRE] = "9fc06df982b634efc45adf0d757738512d523c30cbabb7f2c067cbcd01b75ad0"
+REVISION_8_NEW = frozenset({SQUAD_GATE, SQUAD_EXPIRE}) | frozenset(SQUAD_WINDOWS)
+REVISION = 8
 
 
 class EconomyError(ValueError):
@@ -308,11 +339,11 @@ class Site:
 
 
 def sites(revision: int = REVISION) -> tuple[Site, ...]:
-    if revision not in (1, 2, 3, 4, 5, 6, 7):
+    if revision not in (1, 2, 3, 4, 5, 6, 7, 8):
         raise EconomyError("unknown economy revision")
     windows = {va: code for va, code in WINDOWS.items()
                if (revision >= 3 or va not in REVISION_3_SITES) and (revision >= 4 or va not in REVISION_4_SITES)
-               and (revision >= 7 or va not in REVISION_7_NEW)}
+               and (revision >= 7 or va not in REVISION_7_NEW) and (revision >= 8 or va not in REVISION_8_NEW)}
     replacements = {**windows, ROOKIE_TABLE_VA: ROOKIE_TABLE,
                     0x13EF17: bytes.fromhex("c70578c2e300") + struct.pack("<I", GAME_CAP),
                     0x4FE7A0: struct.pack("<f", CAP_GROWTH),
@@ -353,6 +384,9 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
         replacements[VETERAN_CUT_RELEASE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_vet_release"] - VETERAN_CUT_RELEASE - 5)
     if revision >= 7:
         replacements[DRAFT_NEED_MINIMUM] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_draft_min"] - DRAFT_NEED_MINIMUM - 5)
+    if revision >= 8:
+        replacements[SQUAD_GATE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_gate"] - SQUAD_GATE - 5)
+        replacements[SQUAD_EXPIRE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_expire"] - SQUAD_EXPIRE - 5)
     return tuple(Site(a, b, PINS[a]) for a, b in sorted(replacements.items()))
 
 
@@ -363,7 +397,24 @@ def _site_state(image: XbeImage, site: Site) -> str:
 
 
 def _standalone_status(payload: bytes) -> str:
-    """retail | applied | legacy | foreign. b780 econ3 (revision 7): an image with every revision-7 site applied reads
+    """retail | applied | legacy | foreign. b81 (revision 8): an image with every revision-8 site applied reads as the
+    revision-7 rules read the rest of it; an image with none of them (the four squad windows and the gate call retail)
+    reads "legacy" where those rules read "applied" or "legacy" (it upgrades in place); a mix of the two is foreign."""
+    try:
+        image = XbeImage(payload)
+        eight = {_site_state(image, site) for site in sites() if site.va in REVISION_8_NEW}
+        rest = _status_before_8(payload)
+        if eight == {"applied"}:
+            return rest if rest == "applied" else "foreign"
+        if eight == {"retail"}:
+            return "legacy" if rest in ("applied", "legacy") else rest
+        return "foreign"
+    except (ValueError, struct.error, IndexError):
+        return "foreign"
+
+
+def _status_before_8(payload: bytes) -> str:
+    """The revision-7 rules (revision 8's new sites left out). b780 econ3 (revision 7): an image with every revision-7 site applied reads
     as the rules below read the rest of it; an image with none of them (the new windows and the draft-need call
     retail, the rewritten windows as revision 6 or an older revision left them) reads "legacy" where those rules read
     "applied" or "legacy" (it upgrades in place); a mix of the two is foreign."""
@@ -371,7 +422,7 @@ def _standalone_status(payload: bytes) -> str:
         image = XbeImage(payload)
         seven = {}
         for site in sites():
-            if site.va in REVISION_7_SITES:
+            if site.va in REVISION_7_SITES and site.va not in REVISION_8_NEW:
                 state = _site_state(image, site)
                 if state == "foreign" and site.va in PREVIOUS_REVISION_6 and hashlib.sha256(
                         image.read(site.va, len(site.patched))).hexdigest() == PREVIOUS_REVISION_6[site.va]:
@@ -398,7 +449,7 @@ def _status_before_7(image: XbeImage, revision_6: frozenset) -> str:
     try:
         states = {}
         for site in sites():
-            if site.va in REVISION_7_NEW:
+            if site.va in REVISION_7_NEW or site.va in REVISION_8_NEW:
                 continue
             state = "applied" if site.va in revision_6 else _site_state(image, site)
             if state == "foreign" and site.va in PREVIOUS and \

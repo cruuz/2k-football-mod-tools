@@ -670,9 +670,102 @@ def _transaction(target, inputs=(), overwrite=False):
         _retry_locked(lambda: part.unlink(missing_ok=True))
 
 
+def export_for_share(base, built, output, meta, *, overwrite=False, progress=None):
+    """Keep legacy operations for in-place edits. Rebuild moved layouts by file, and any pair the legacy writer refuses,
+    so manual Export succeeds wherever Quick Export of the same pair does."""
+    with _path(base).open("rb") as before, _path(built).open("rb") as after:
+        try:
+            old, new = xc.read_layout(before), xc.read_layout(after)
+        except ValueError:
+            # Previous formats support equal-sized images without a readable directory.
+            moved = False
+        else:
+            moved = (old.base != new.base or old.size > new.size or
+                     {p: a for p, (a, _) in old.directories.items()} !=
+                     {p: a for p, (a, _) in new.directories.items()} or
+                     any(p in new.entries and e.byte_offset != new.entries[p].byte_offset and
+                         new.entries[p].byte_offset < old.size for p, e in old.entries.items()))
+    if not moved and not meta.get("file_based"):
+        from . import modpack_ops
+        output_path = _path(output)
+        part = output_path.with_name(output_path.name + ".part")
+
+        def outputs():
+            states = []
+            for path in (output_path, part):
+                try:
+                    info = path.lstat()
+                except FileNotFoundError:
+                    states.append(None)
+                else:
+                    states.append((info.st_ino, info.st_size, info.st_mtime_ns))
+            return states
+
+        before = outputs()
+        try:
+            operations = modpack_ops.changed_file_operations(base, built)
+            return m.export(base, built, output, meta, overwrite=overwrite, progress=progress, file_operations=operations)
+        except m.ModpackError as legacy:
+            # The byte-run format cannot describe every in-place growth (a last file that grew past the old end, a
+            # resized directory). Quick Export of the same pair writes file-based packs, so manual Export does too.
+            # The legacy writer refuses before it creates any output; never fall back over something it left.
+            if outputs() != before:
+                raise
+            refused = legacy
+    else:
+        refused = None
+    try:
+        return _export_by_files(base, built, output, meta, overwrite=overwrite, progress=progress)
+    except m.ModpackError as exc:
+        if refused is not None:
+            raise exc from refused
+        raise
+
+
+def _export_by_files(base, built, output, meta, *, overwrite=False, progress=None):
+    """The format-3 export behind export_for_share."""
+
+    staged = m._stage_assets(meta.get("assets") or (), ())
+    project_members, project = m._stage_project(meta.get("project"))
+    members = staged + project_members
+    require(len(members) == len({item.member.casefold() for item in members}), "Duplicate attachment names")
+    reference = meta.get("retail_image")
+    inputs = [base, built, *(meta.get("assets") or ())]
+    inputs.extend(path for path in (reference, meta.get("project")) if path)
+    require(not any(_alias(_path(output), _path(p)) for p in inputs), "Output must differ from every input")
+    with tempfile.TemporaryDirectory(dir=_path(output).parent, prefix=".2k5-attachments-") as folder:
+        attachments = {}
+        for number, item in enumerate(members):
+            path = Path(folder) / str(number)
+            path.write_bytes(item.data)
+            attachments[item.member] = path
+        recipe = {"project": project} if project else {}
+        if meta.get("console_settings"):
+            recipe["overrides"] = dict(meta["console_settings"])
+        return export(base, built, output, name=meta["name"], author=meta.get("author", ""),
+                      version=meta.get("version", ""), description=meta.get("description", ""),
+                      recipe=recipe, source_assets=attachments,
+                      overwrite=overwrite, progress=progress, require_retail=bool(reference) or _retail_base(base),
+                      retail_reference=reference)
+
+
+def _retail_base(base) -> bool:
+    """Whether a share's starting disc identifies as the clean USA game, so the pack asks installers for a clean dump.
+
+    The identity check reads the executable and the roster template (not the whole image). The export then pins every
+    base file by hash, and require_retail re-checks the executable, so a modified base still cannot pass as clean."""
+    from . import nfl2k5_disc_identity as identity
+    try:
+        kind = identity.identify(_path(base)).kind
+    except (OSError, ValueError):
+        return False
+    return kind in (identity.KIND_RETAIL_XISO, identity.KIND_RETAIL_RAW, identity.KIND_REPACK)
+
+
 def export(base_iso, built_iso, output, *, name="SOFTDRINK 2K28", recipe=None,
-           source_assets=None, overwrite=False, progress=None, require_retail=True):
-    """Export from finished files. Only synthetic tests opt out of retail XBE identity."""
+           author="SOFTDRINKTV", version="2K28", description="Finished disc files; layout-independent install",
+           source_assets=None, overwrite=False, progress=None, require_retail=True, retail_reference=None):
+    """Export finished files, pinning the required starting contents independently of disc layout."""
     started = time.monotonic()
     progress = progress or m._no_progress
     output = _output_path(output)
@@ -738,8 +831,9 @@ def export(base_iso, built_iso, output, *, name="SOFTDRINK 2K28", recipe=None,
                 progress("Hashing finished image", 0, tl.size)
                 author_sha = _digest(built, 0, tl.size, lambda n: progress("Hashing finished image", n, tl.size))
                 doc = dict(format=3, min_reader_version=READER_VERSION, file_contract=FILE_CONTRACT, kind=m.KIND, game=m.GAME,
-                           name=name, author="SOFTDRINKTV", version="2K28", description="Finished disc files; layout-independent install",
-                           base=dict(size=bl.size, sha256=None, partition_base=bl.base, label="Clean ESPN NFL 2K5 USA files",
+                           name=m._text(name, "name", required=True), author=m._text(author, "author"),
+                           version=m._text(version, "version"), description=m._text(description, "description"),
+                           base=dict(size=bl.size, sha256=None, partition_base=bl.base, label="Clean ESPN NFL 2K5 USA files" if require_retail else "Author’s starting game files",
                                      is_retail=False, is_retail_equivalent=require_retail),
                            result=dict(size=plan["output_bytes"], sha256=author_sha, author_size=tl.size),
                            files=rows, metadata=metadata, assets=assets, recipe=recipe or {},
@@ -752,6 +846,9 @@ def export(base_iso, built_iso, output, *, name="SOFTDRINK 2K28", recipe=None,
             doc = _refine_literals(part, doc, base, sources, progress)
             verified = load(part, doc)
             replay = verify_against(verified, base_path, built_path, progress=progress)
+            if retail_reference:
+                with _open_source(retail_reference) as retail:
+                    _validate_source(verified, retail, progress)
     result = inspect(m.load(output))
     result.update(pack=str(output), elapsed_seconds=round(time.monotonic() - started, 3), replay=replay)
     return result
@@ -922,7 +1019,7 @@ def inspect(pack):
                 created="", tool=d["tool"], base=d["base"], result=d["result"], files=rows,
                 runs=len(changed), bytes=sum(b["length"] for r in rows for b in _payloads(r)),
                 regions=[], patch_operations=[], recipe=d["recipe"],
-                recipe_lines=["SOFTDRINK finished files. Extract sources to customize in the full Studio builder."] if d["recipe"] else [],
+                recipe_lines=["SOFTDRINK finished files. Extract sources to customize in the full Studio builder."] if d["recipe"].get("schema") == "softdrink_sources/v1" else [],
                 assets=[dict(path=a["member"], size=a["length"], sha256=a["sha256"]) for a in assets],
                 assets_bytes=sum(a["length"] for a in assets), sources_deflated_bytes=sum(a["compressed_bytes"] for a in assets),
                 payload_deflated_bytes=sum(b.get("compressed_bytes", 0) for r in rows for b in _payloads(r)),
@@ -948,9 +1045,12 @@ def _validate_source(pack, stream, progress):
         actual = _digest(stream, e.byte_offset, e.size,
                          lambda n: progress("Checking clean game files", done + n, total)) if e.size == expected["size"] else "size differs"
         if e.size != expected["size"] or actual != expected["sha256"]:
+            required_disc = ("Select an unmodified ESPN NFL 2K5 USA Xbox dump. An already modded disc cannot be upgraded with this pack."
+                             if pack.manifest.base.get("is_retail_equivalent") else
+                             "Select the starting disc used by this patch author. Its game file contents must match.")
             raise failure("Xbox disc with changed or incompatible game files",
                           f"{row['path']}: expected {expected['size']} bytes / SHA-256 {expected['sha256']}; found {e.size} bytes / {actual}.",
-                          "Select an unmodified ESPN NFL 2K5 USA Xbox dump. An already modded disc cannot be upgraded with this pack.")
+                          required_disc)
         done += e.size
     return layout
 
@@ -1128,28 +1228,50 @@ def apply(pack, source_iso, target_iso, *, overwrite=False, progress=None, **_kw
                 files_verified=len(rows), format=3, source_metadata_changed=source_metadata_changed)
 
 
-def extract_assets(pack, directory, *, overwrite=False):
+def extract_assets(pack, directory, *, overwrite=False, resume=False, progress=None):
     root = _path(m.platform_compat.absolute_path(_output_path(directory)))
+    progress = progress or m._no_progress
+    assets = pack.manifest.raw["assets"]
     names = set()
-    for asset in pack.manifest.raw["assets"]:
+    for asset in assets:
         _asset_name(asset["member"])
         key = asset["member"].casefold()
         require(key not in names, "Duplicate source asset")
         names.add(key)
     root.mkdir(parents=True, exist_ok=True)
+    total, done = sum(a["length"] for a in assets), 0
     written = []
     with zipfile.ZipFile(pack.path) as archive:
-        for asset in pack.manifest.raw["assets"]:
-            target = _contained_path(root, asset["member"])
+        for asset in assets:
+            member, size = asset["member"], asset["length"]
+            target = _contained_path(root, member)
             target.parent.mkdir(parents=True, exist_ok=True)
-            with _transaction(target, (pack.path,), overwrite) as part:
-                with archive.open(asset["member"]) as src, part.open("wb") as dst:
-                    reader = _Payload(src, asset)
-                    for at in range(0, asset["length"], BLOCK):
-                        dst.write(reader.read(min(BLOCK, asset["length"] - at)))
-                    reader.finish()
+            def advance(amount):
+                progress(f"Extracting or verifying {member}", done + amount, total)
+            advance(0)
+            if resume and target.exists():
+                matches = (target.is_file() and target.stat().st_size == size and
+                           m.hash_file(target, progress=lambda _, n, _t: advance(n)) == asset["sha256"])
+                require(matches, f"Existing source has different contents: {member}. Choose a different folder to keep your edits.")
+            else:
+                with _transaction(target, (pack.path,), overwrite) as part:
+                    with archive.open(member) as src, part.open("wb") as dst:
+                        reader = _Payload(src, asset)
+                        for at in range(0, size, BLOCK):
+                            end = min(at + BLOCK, size)
+                            dst.write(reader.read(end - at))
+                            advance(end)
+                        reader.finish()
+            done += size
             written.append(str(target))
     for name, data in (("recipe.json", pack.manifest.recipe), ("manifest.json", pack.manifest.raw)):
-        with _transaction(_contained_path(root, name), (pack.path,), overwrite) as part:
-            part.write_text(json.dumps(data, indent=2), encoding="utf-8", newline="\n")
+        target = _contained_path(root, name)
+        encoded = json.dumps(data, indent=2).encode("utf-8")
+        progress(f"Verifying {name}", done, total)
+        if resume and target.exists():
+            require(target.is_file() and target.stat().st_size == len(encoded) and target.read_bytes() == encoded,
+                    f"Existing {name} belongs to a different export. Choose another folder.")
+        else:
+            with _transaction(target, (pack.path,), overwrite) as part:
+                part.write_bytes(encoded)
     return dict(directory=str(root), files=written, assets=len(written))

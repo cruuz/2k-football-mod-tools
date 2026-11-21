@@ -103,13 +103,19 @@ class ScheduleStaticTests(unittest.TestCase):
         b780 mc1 spends 28 more: Play next game opens Choose team / Sign over Career Home for a MyPlayer without a club,
         a loaded free-agent career opens Career Home, only a rookie in his own draft resumes the draft screen (never
         reading through a lost career's empty identity), an injured MyPlayer is not made the starter, and the career
-        club has CPU depth management on (7 / 1)."""
-        code, data = mode.legacy.allocations(self.career17)
-        alone = mode.TAG_OFFSET - (mode.code_for(code['va'], data['va'])[1]['content_end'] - code['va'])
-        with_home = home.check_static(self.p17)['mycareer_spare_bytes']
-        self.assertEqual((alone, with_home), (7, 1))
-        self.assertEqual(alone - with_home, 6)       # Career Home's three addresses cost 6 bytes, as at ui1 and on the beta-78 base
-        self.assertGreaterEqual(home.check_static(self.p18)['mycareer_spare_bytes'], 0)
+        club has CPU depth management on (7 / 1). The beta-81 menu layout left 35 / 26 before the revised D11
+        Settings footer. With that text it leaves 23 / 14 on both schedule lengths. The extra week lives in
+        Career Home's own section."""
+        for n, payload in ((17, self.p17), (18, self.p18)):
+            with self.subTest(weeks=n):
+                code, data = mode.legacy.allocations(payload)
+                _, labels = mode.code_for(code['va'], data['va'])
+                alone = code['va'] + mode.TAG_OFFSET - labels['content_end']
+                receipt = home.check_static(payload)
+                with_home = receipt['mycareer_spare_bytes']
+                self.assertEqual((alone, with_home), (23, 14))
+                self.assertEqual(alone - with_home, 9)  # The three Career Home addresses in the compressed menu.
+                self.assertLessEqual(home.HEADER + receipt['content_bytes'], home.SIZE)
 
     def test_runtime_reads_the_same_season_byte(self):
         """The runtime counts rows from the stage table's Season row byte +4, the byte the builder read."""
@@ -296,13 +302,14 @@ class ScheduleNativeTests(unittest.TestCase):
         m = self.machine()
         with m:
             team = m.get(m.state + 56)
+            m.live_league_prng()
             m.replace_stub(0x177990, lambda: m.ret(pop=4))  # league-advance progress renderer only
             m.replace_stub(m.labels['career_fixture'], lambda: m.ret(0))
-            m.call(0x247D40, ecx=m.manager, budget=3_000_000_000)
+            scores = self.advance_week(m)
             m.replace_stub(m.labels['career_fixture'], None)
             slot, cell = self.own(m, 0)
             self.assertEqual(cell[0], 3)
-            home_score, away_score = m.call(0xC5110, ecx=0, edx=slot), m.call(0xC5150, ecx=0, edx=slot)
+            home_score, away_score = scores[slot]
             own, other = (home_score, away_score) if cell[1] == team else (away_score, home_score)
             mark = 'W' if own > other else 'L' if own < other else 'T'
             self.open_schedule(m)
@@ -314,6 +321,57 @@ class ScheduleNativeTests(unittest.TestCase):
             self.assertIn(f'{mark} {own}-{other}', texts)
             record = {'W': '1-0', 'L': '0-1', 'T': '0-0-1'}[mark]
             self.assertEqual(texts[-2], f'New York Giants  {record}')
+
+    def advance_week(self, m, phase_budget=500_000_000):
+        """Resume the native week across each game and history write, preserving the original call stack."""
+        simulate, commit = 0xC7A20, 0x1356D0
+        grid = bytearray(m.uc.mem_read(GRID, 8 * 17))
+        scores = bytearray(m.uc.mem_read(SCORES, 10 * 17))
+        self.assertEqual(list(grid[::8]), [0] * 16 + [7])
+        self.assertEqual((m.get(0xE6000C), m.get(0xE60010)), (15, 15))
+        self.assertEqual(m.get(0xE576B4), 0)
+        m.call(0x247D40, ecx=m.manager, stop=simulate, budget=500_000_000)
+        for slot in range(16):
+            self.assertEqual((m.reg('ECX'), m.reg('EDX')), (0, slot))
+            for target in (commit, simulate if slot < 15 else m.STOP):
+                # The same address is reached for every game. Stop on its native callback even when
+                # Unicorn already translated that block under an earlier emulation endpoint.
+                hook = None
+                if target != m.STOP:
+                    hook = m.uc.hook_add(m.u.UC_HOOK_CODE, lambda uc, *_: uc.emu_stop(), begin=target, end=target)
+                try:
+                    m.uc.emu_start(m.reg('EIP'), m.STOP, count=phase_budget)
+                finally:
+                    if hook is not None:
+                        m.uc.hook_del(hook)
+                pc = m.reg('EIP')
+                self.assertEqual(pc, target, f'week 1 slot {slot} stopped at {pc:#x} before {target:#x}')
+                if target == commit:
+                    self.assertEqual((m.get(0xE576B4), m.get(0xE576BC)), (0, slot))
+            grid[slot * 8] = 3
+            self.assertEqual(m.uc.mem_read(GRID, len(grid)), grid)
+            start = slot * 10
+            scores[start:start + 10] = m.uc.mem_read(SCORES + start, 10)
+            self.assertEqual(m.uc.mem_read(SCORES, len(scores)), scores)
+        self.assertEqual((m.get(0xE576B4), m.reg('ESP')), (1, m.STACK + 4))
+        totals = []
+        for slot in range(16):
+            periods = scores[slot * 10:(slot + 1) * 10]
+            game = m.call(0xC5110, ecx=0, edx=slot), m.call(0xC5150, ecx=0, edx=slot)
+            self.assertEqual(game, (sum(periods[:5]), sum(periods[5:])), f'week 1 slot {slot}')
+            totals.append(game)
+        return totals
+
+    def test_week_advance_rejects_a_game_that_never_commits(self):
+        with self.machine() as m:
+            m.live_league_prng()
+            m.replace_stub(0x177990, lambda: m.ret(pop=4))
+            m.replace_stub(m.labels['career_fixture'], lambda: m.ret(0))
+            m.uc.mem_write(0xC7A20, b'\xeb\xfe')  # the test machine spins at the first game
+            with self.assertRaisesRegex(AssertionError, 'slot 0 stopped at 0xc7a20'):
+                self.advance_week(m, phase_budget=1000)
+            self.assertEqual(m.get(0xE576B4), 0)
+            self.assertEqual(list(m.uc.mem_read(GRID, 8 * 17)[::8]), [0] * 16 + [7])
 
     def test_preseason_stage_cards_say_preseason(self):
         """With the franchise Preseason setting on, the grid holds the preseason games (stage 7) in its first rows; the

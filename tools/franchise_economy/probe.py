@@ -45,9 +45,7 @@ def start(body, payload):
     m = Machine(payload, trace_writes=False)
     m.uc.mem_write(m.ARENA + 0x300, body)
     m.fixup_roster(m.ARENA + 0x340)
-    m.seed(12345)
-    for a, v in ((0xE5FF80, 4), (0xE60120, 0), (0xE6000C, 5), (0xE60010, 5)):
-        m.put(a, v)
+    m.configure_fresh_franchise(seed=12345, quarter_minutes=5)
     m.call(0x13EE10, budget=150_000_000)
     return m
 

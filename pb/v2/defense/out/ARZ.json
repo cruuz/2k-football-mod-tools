@@ -1979,7 +1979,7 @@
  "receipt": {
   "team": "ARZ",
   "offense_pack": "data/playbooks/softdrink_arz_modern.2k5book",
-  "offense_pack_sha256": "7fcde0bede95064574d0542a3e7d603171930883425621578335d852471f1a41",
+  "offense_pack_sha256": "9dbdb390c5bfb43cdf23496f9010f9ad4f6a286a2640fab4e2e2960666d81138",
   "source_fingerprint": "da4d6643ef48aa63e984379700ab0237ecf0ab40f41b200f5fc32c5cf0e03236",
   "replacement_sha256": "a7a01eba86ecf8bc43f3e394c4872b9b7f6920a380811855ddb44af06d092e1d",
   "semantic_sha256": "c218c6131e01eb9c6b43a2bf0eb0c1919e06f4a8958d0f92daa6afc337ae9d31",

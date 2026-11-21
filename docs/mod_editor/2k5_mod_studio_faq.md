@@ -1,8 +1,6 @@
-# 2K5 Mod Studio FAQ, beta 80
+# 2K5 Mod Studio FAQ, beta 81
 
-Start with the [Getting Started guide](2k5_mod_studio_getting_started.md).
-These answers combine the previous release FAQ and the community reports for beta 71.1.
-A successful offline check does not establish how every change plays in a game.
+To play SOFTDRINK 2K28 v0.10, follow the five-step installation guide. To build your own mod, start with the Studio walkthrough. [Install the game](install_softdrink_2k28.md) · [Getting Started in Studio](2k5_mod_studio_getting_started.md)
 
 ## Which studio and emulator do I need?
 
@@ -48,13 +46,8 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
 1. **Does the original game start?** Load your untouched retail disc image in the same xemu. If that does not start either,
    the problem is xemu's own setup, and nothing in the Studio will fix it. xemu needs its own boot ROM, BIOS and hard disk
    image: see xemu's [required files](https://xemu.app/docs/required-files/).
-2. **Memory.** Set xemu's **System Memory** to **128 MiB** (Machine, then Settings, then the System tab). Quit xemu completely
-   and open it again, because xemu applies this only after a restart. The current SOFTDRINK 2K28 disc does not run at 64 MiB.
-   (A disc you built yourself with **Console memory** set to 64 MB is the one exception; see the next question.)
-3. **BIOS.** xemu needs a debug BIOS or a modified retail BIOS that can start unsigned games, and SOFTDRINK 2K28's start-up
-   patch needs the modified retail **COMPLEX 4627** one. Choose it under Machine, then Settings, then System, then Flash ROM
-   (BIOS). With any other BIOS the patch stays asleep and the game stops with a BIOS message. The Studio and this project do
-   not supply BIOS files.
+2. **Memory.** For the standard pack, select **Machine → Settings → System → System Memory → 128 MiB**. For the v0.9 `-64MB` pack, select **64 MiB**. Quit and reopen xemu after a change.
+3. **BIOS.** The standard pack's memory patch runs on kernel 4627. Select your **COMPLEX 4627** under **Flash ROM (BIOS)**. If the startup check stops the game, its screen shows the detected kernel and a code. The v0.9 64 MB pack omits those checks. xemu still needs its own compatible firmware.
 4. **The right disc.** In xemu choose **Machine**, then **Load Disc**, and pick the new disc the Studio saved, not your
    original and not an older SOFTDRINK disc. It must be the whole image file, not a shortcut, a zip or a folder.
 5. **Paths and folders.** Keep the disc image and xemu's files (BIOS, boot ROM, hard disk image) in plain folders you can read
@@ -62,25 +55,24 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
    file was when you chose it: if you moved or renamed one, choose it again. Keep at least 8 GB free where the new disc is
    saved.
 6. **Stuck on the Xbox logo?** Quit xemu completely, not just the game, open it again and load the disc again.
-7. **Still stuck?** Ask in the Discord and say your Studio version, the SOFTDRINK pack version, your xemu version, the
+7. **Still stuck?** Ask in the Discord (<https://discord.gg/FkNSKRAKch>) and say your Studio version, the SOFTDRINK pack version, your xemu version, the
    memory setting, the BIOS name and exactly where it stops (Xbox logo, black screen, a message), with a screenshot. For a disc
    you built yourself, also post **Copy Build summary**.
 
 ## Can I play SOFTDRINK 2K28 on Android, in hakuX?
 
-Not the ready-made pack, but you can try a **64 MB build** (experimental, estimated, not yet tested on a real Xbox or
-hakuX). The SOFTDRINK 2K28 pack that **Install SOFTDRINK 2K28** puts on your disc is the full build for xemu on a Windows,
-Linux or macOS computer (and the Steam Deck), with 128 MiB of memory and the COMPLEX 4627 BIOS. hakuX is a separate Android emulator, not xemu: by its own requirements it runs without
-an Xbox BIOS, because it reimplements the Xbox kernel instead of running the real one. The pack's start-up check needs the
-real 4627 kernel and 128 MiB, so the pack is not expected to start there, and a black screen without the message is what to
-expect.
+The published **v0.9 experimental** pack targets 64 MiB. Download it and choose **Install SOFTDRINK 2K28** in Studio. v0.10 is the standard 128 MiB release for xemu with the 4627 BIOS. A later 64 MiB update is planned for selected improvements. Physical Xbox, Android hakuX and XBased compatibility still need device testing. [Download v0.9 for 64 MiB](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.9)
 
-The Studio can make a disc for 64 MB machines, such as an original Xbox console and hakuX:
+If you already have a franchise from the standard edition with **Player Progress**, keep using the 128 MiB edition for that save. The standard game opened the 987,836-byte expanded franchise. If a 64 MiB game displays **Damaged**, keep both signed files and cancel the delete prompt. Reopen the franchise in the 128 MiB standard game. The compact game can read smaller franchise saves. A custom disc built with beta 81’s recommended 64 MiB profile includes a reminder on the Delete and load-error screens.
 
-1. In **Build & Share**, open the **Share** tab. Set **Build for** to **64 MB, original Xbox and Android hakuX
-   (experimental, estimated, not yet tested on a real Xbox or hakuX)**, then click **Customize SOFTDRINK 2K28…**. The **Build**
-   tab opens with the pack's art and options and the recommended 64 MB set already applied. (To start from your own
-   selection instead, open the **Build** tab and set **Console memory** there.)
+If a Super Bowl in your franchise ends with a team scoring more than 63 points, v0.10 keeps the real score and stores the Super Bowl champions history in a newer format. v0.9 cannot read that format. If you take that save back to v0.9, its champions history starts again from empty the next time a season ends there. Keep playing that franchise on v0.10 or later.
+
+To customize a 64 MB disc:
+
+1. In **Build & Share → Install & Share**, leave **Build for** on **Use the selected pack's edition**.
+   Click **Customize SOFTDRINK 2K28…**, select the published v0.9 64 MB pack and choose a folder for its sources.
+   The **Build** tab opens with the pack's artwork and its 64 MB settings. To customize a standard pack
+   for 64 MB, select the explicit 64 MB target under **Build for** before clicking **Customize**.
 2. On the **Build** tab, **Console memory** now reads 64 MB. Every option that needs 128 MB or the real Xbox kernel is off
    and greyed out, with the reason beside it, for example the three 128 MB memory options, Guardian caps, 16 reserves, the
    two extra created teams and the Hi-res pack. The start-up checks for 128 MB and the 4627 BIOS are left out too.
@@ -329,6 +321,12 @@ missing-file explanation on **★ Models**. Check the build selection before com
 with other changes; the [changelog](2k5_mod_studio_changelog.md) describes the model workflow
 included in your installed build.
 
+## Can I change how often my franchise runs the ball when I simulate?
+
+Open **Coaching Gameplan** for the team you control. Move **Offense: Run/Pass** toward the low end for more team rushing attempts or toward the high end for more passes. The setting changes the team’s play selection. The game distributes carries among players.
+
+In matched 17-game Giants seasons on the standard edition, moving the slider toward the run gave Cam Skattebo more carries. Moving it toward the pass gave him fewer. The release notes give his totals at all three settings. If you see a 420-carry season, include the signed franchise save, team, week and Coaching Gameplan settings. [SOFTDRINK v0.10 game notes](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10)
+
 ## Can the CPU go for it more often on fourth down?
 
 **CPU fourth downs, two-point tries and overtime (experimental)** offers **Retail**,
@@ -354,6 +352,18 @@ your installed build and the [beta 77 changelog](2k5_mod_studio_changelog.md) fo
 and its limits. Weather artwork or a stored environment field alone does not provide dynamic
 weather, footprints, franchise weather selection, wind gameplay, or a clock-concession rule.
 Do not infer those features from a texture browser or an unrelated accelerated-clock option.
+
+## How do quarterback injuries work when I simulate a franchise game?
+
+The 128 MB SOFTDRINK Experimental preset and the v0.10 standard pack's source recipe select **Realistic** under **Build → Simulated injuries (all positions)**. Your team's simulated games use the same rules as CPU games. Quarterbacks face different chances according to Durability and the type of play. Realistic covers every position except kickers and punters: quarterbacks, running backs, fullbacks, receivers, tight ends, the offensive line, the defensive line, linebackers, cornerbacks and safeties; while it is on, a per-carry chance replaces the weekly running back roll. Seasons can be healthy or injury-heavy. From a franchise's third season on, the chances follow the league's Durability ratings as they change, so injuries neither creep up nor die out over a long franchise; a more durable player is still hurt less often than a less durable one. The same setting gives simulated games modern NFL field goal accuracy by distance (about 80% from 40 to 49 yards and 68% from 50 and beyond) and lets CPU clubs try long field goals on fourth down: always inside the opponent's 36, less often out to the 41. A simulated catch-and-run breakaway that starts inside the offense's own 28 (more than 72 yards from goal) is now tackled at the opponent's 10 instead of always scoring, so the longest touchdown passes are rarer; most simulated passing touchdowns still come on long plays. Extra points keep their original simulated rule. Retail restores the original simulated kicking and breakaways with everything else. Games you play use their original injury and passing rules.
+
+Choose **Retail (original 2K5 simulation)** for the source simulator's passing and injuries. Choose **Custom (realistic passing, your injury rate)** to set the extra injury chance per eligible simulated play. Realistic uses **0.310%** at the base setting. Durability, the Injury slider and sack or escape plays change the chance. Custom scales the chances of every other position by the same factor as the quarterback chance. Custom **0%** uses the game's original injury rolls, the weekly running back roll included, and keeps realistic passing. **Keep the source setting** preserves the setting on an existing disc. If you manage your depth chart manually, you choose when a recovered quarterback gets his job back.
+
+Realistic and Custom also install rules for who starts at quarterback for the computer clubs in simulated franchise weeks. At the start of the season, a veteran usually keeps the job over a rookie close to him in rating, but not always. During the season, a club whose record turns bad may give a young quarterback who is close in rating his turn (the kid's turn); the worse the record, the likelier the switch. From a franchise's second season, the computer clubs' quarterback depth chart locks are cleared once at the start of each season, so last year's order does not hold a club back; a club you manage is never touched. These rules need the 128 MB target, depth chart locks and the SPECIAL depth chart rows, which the Experimental preset selects; without those the build leaves them out and says so. Retail removes them together with the floor below.
+
+Realistic, and Custom above 0 percent, also install a floor: a computer club that has no healthy quarterback signs one before its next game, so a club is never left without a quarterback. To make room it may release an injured quarterback or a low-value player, or restructure contracts, and it never takes a club over the cap. A club you control is included only when its automatic signings are on, and the new quarterback goes on your depth chart only if the computer manages your depth chart. The floor needs modern injured reserve, the franchise economy and reserve save compatibility; the Studio adds them and tells you. On a disc that cannot take them, choose Retail or Custom 0 percent, which needs no floor. Retail removes the floor: it restores the original code and call bytes, and the executable keeps the empty space reserved for it, so it is not byte for byte the file it was before the floor was first added.
+
+To change only this setting on a built standard disc, open the disc in Build, choose the mode and save a new copy. The command-line equivalent is `edit-sim-qb --source built.iso --out copy.iso --mode realistic`. For a full recipe rebuild, open the pack's editable sources in Build or add `--sim-qb-injuries custom --qb-injury-rate 0.310` to `build-sources`. The percent accepts steps of 0.001. The recommended 64 MB setup uses the original quarterback simulation.
 
 ## Can I check bad colleges or edit historic player names?
 
@@ -395,7 +405,7 @@ players' content, not proof of a new studio feature.
 
 ## The game stops on a black screen and says it needs 128 MB or the 4627 BIOS. I set both.
 
-SOFTDRINK checks two things when it starts. xemu's **System Memory** must be 128 MiB, and the
+The standard 128 MiB game checks two things when it starts. xemu's **System Memory** must be 128 MiB, and the
 **Flash ROM (BIOS)** must have the 4627 kernel (the **Complex 4627** image is the one it was
 tested with). If either is wrong it stops on a black screen with white letters and names the one
 to fix. It does this on purpose, because the game would otherwise fail later at the pregame
@@ -419,13 +429,13 @@ intro.
   tested one (2: the memory tables are already in use, 3: a kernel routine the patch needs is
   not where it expects, 4: the memory page count is unusual). If you see that, post a photo of
   the screen and the MD5 hash that xemu shows under **Flash ROM (BIOS)** (Machine, Settings,
-  System), or the SHA-256 start that Studio's note showed, in the Discord bugs channel, so we can
+  System), or the SHA-256 start that Studio's note showed, in the Discord bugs channel (<https://discord.gg/FkNSKRAKch>), so we can
   tell which BIOS it is.
 
 ## Does Studio check my xemu settings and BIOS?
 
 Only when you start xemu from Studio (**Play latest disc in xemu**). It reads `xemu.toml` and
-shows a note if System Memory is not 128 MiB or the Flash ROM is not set. The check only reads:
+checks the memory target of a Studio install or build. The standard 128 MB pack also checks the Flash ROM. The check only reads:
 it never changes your BIOS or your memory setting and never stops the launch (the one thing
 Studio writes to `xemu.toml` is the path of your new disc, so xemu remembers it). It recognises
 the tested Complex 4627 image by its contents, so the same BIOS saved as a 256 KB, 512 KB or
@@ -440,9 +450,7 @@ game's own screen is the check.
 
 Run Studio in **Desktop Mode** (the Linux and Steam Deck steps are in [Start here](../START_HERE.md)).
 EmuDeck installs xemu as a Flatpak, so its settings are in
-`~/.var/app/app.xemu.xemu/data/xemu/xemu/xemu.toml`. Set System Memory to 128 MiB and the Complex
-4627 BIOS in Desktop Mode, close xemu normally, then start it again, from Desktop Mode or Game
-Mode, and check the memory still says 128 MiB before you load the disc.
+`~/.var/app/app.xemu.xemu/data/xemu/xemu/xemu.toml`. Choose the memory setting for your pack in Desktop Mode. For the standard pack use 128 MiB and Complex 4627. For the 64 MB pack choose 64 MiB. Restart xemu and confirm the setting before loading the disc.
 
 A freeze while scrolling Contracts or Free Agents has one known cause: players with no college
 on the screen's info panel. Franchises saved on SOFTDRINK 0.6.1 can still hold such players, and
@@ -476,3 +484,67 @@ lt9608's performance question concerns **emulator settings**. Compare your origi
 xemu, then use xemu's settings and emulator community support. The studio does not set emulator
 resolution or guarantee performance. Include emulator version and settings when reporting a
 played issue; keep that separate from a build failure.
+
+## Why does Finn’s editor show a blank name?
+
+Open your Xbox save in **★ Rosters → Open Xbox save…**, select the team and use the **CSV** menu to export its players. On a signed v0.9 roster, Finn’s GameSave Editor 4.0.0.41 showed 57 Giants and left 39 first- or last-name cells blank across 28 players. J.J. McCarthy and Jevon Holland lost both names on screen. Abdul Carter, Patrick Ricard, Greg Newsome, Cam Skattebo and Chris Manhertz lost their surnames. Studio read and exported both names for all 57 players from the same save.
+
+Finn 4.0.0.41 reads only some of the name locations an expanded roster can use. In a signed test copy, it showed the same four-letter first name in one location and left it blank in two others. Finn's program contains a prompt that offers to auto-repair names, and it may show it when opening an expanded roster; nobody has yet recorded what that repair does to a SOFTDRINK roster. If it appears, choose **No**. Keep the original save and use the Studio export to check the players before making changes.
+
+## I changed the depth chart in an editor but the game still starts the same player
+
+The game's depth chart and its starters follow each player's stored depth rank, not the order of the team list. Moving a player in the team list (what Flying Finn's arrows and older Studio betas did) changes neither. From beta 81, **★ Rosters → ↑ Move up / ↓ Move down** change the depth rank itself: pick the position chip, select the player and move him. On SOFTDRINK the moved players are locked to their rows so the weekly roster pass keeps them; a computer-run team still promotes a clearly better unlocked player.
+
+## Is it safe to clear a player's stats?
+
+Use the Studio for this, not Flying Finn's Clear Stats. Finn's version erases the player's link to his history. When the game later averaged his passing, receiving or rushing yards, it divided by zero and crashed (seen in the game's own code on a signed save). **★ Rosters → right-click → Clear his career stats…** gives him a fresh, empty history the game can read instead: his stats show zero and new games add to them. League records and award lists keep his name. It needs six free words in the save's career-stat pool for each player; if the pool is full the Studio refuses and changes nothing. Undo takes it back until you save the copy.
+
+## Why won't the Studio paste one team onto another?
+
+**★ Rosters → right-click a club → Paste team** copies player for player into the club's own records, so both clubs need the same number of active players and the same number of reserves. When they differ, the preview says both counts and how many players to release or sign first. It also refuses while either club has a player on injured reserve, because the IR place lives in the club's IR list, which a paste does not rewrite. Activate him first, paste, then place him again.
+
+## I used Flying Finn's editor. Where is everything in the Studio?
+
+Open **★ Rosters** and press **Open Xbox save (Finn's zip)…**: it takes the same Action Replay `.zip`. Ctrl+F (or **Find…**) is Finn's Find Player and searches every team, the reserves, the free agents and the draft class. Ctrl+C, Ctrl+V and Ctrl+Alt+A copy, paste and paste attributes only, as in Finn; PgUp and PgDn in the editor move to the previous or next player; right-click a player for Place on IR and the rest of Finn's player menu. The guide's **Coming from Flying Finn's editor** table lists every place.
+
+Coaches in a roster save are on the **Coaches** tab beside **Roster**, and a franchise save's schedule has Finn's Add Game, Remove Game, Clear Week and Home/Away check on **Franchise → Schedule**.
+
+Two things work differently on purpose. **Save Xbox save copy…** writes a new signed copy in a folder you choose and never changes the zip you opened (Finn saved over it), so use the new zip in place of the old one. And **Paste player** keeps the target's depth place, returner locks, injury and IR state and star tag, because on a SOFTDRINK roster copying those can give a team two kick returners or a player marked on IR without an IR slot.
+
+## Which files help diagnose a franchise freeze or an unexpected portrait?
+
+Keep a copy of the failing save including its companion files, the pack filename, the output from **Check disc**, and **Copy Build summary** from a custom build. Record the team, season, week, screen and last input. For portraits include the player's full name and a screenshot. An existing franchise carries its own photo assignments. Comparing that save with a new franchise from the same disc identifies which data to inspect.
+
+For a play-call or audible freeze, record the last offensive and defensive calls, input sequence and whether commentary continued. For weekly SportsCenter, include the week and whether the franchise had been reloaded. Players have reported disappearing models in the Super Bowl moments with the Rams and Bengals and with the 49ers and Ravens. Include the play, position, camera and renderer, any equipment edits, and whether it happens when entering that moment directly from a fresh boot. A short clip can show whether the missing player still blocks or carries the ball. The Studio can collect a freeze capture on xemu. [Freeze capture and disc check](freeze_capture_and_disc_check.md)
+
+## Can I keep coaching my team after an owner warning?
+
+For a new MyNFL franchise, set **Owner Firing** to **Off** during setup. The standard 128 MiB v0.10 game honors that choice after a final warning. To change an existing franchise, use a save from before the dismissal.
+
+1. In Studio, open **Gameplay → Saves & Sliders**. Choose your game disc or its `default.xbe`, then the franchise’s `SAVEGAME.DAT`. Keep its matching `EXTRA` in the same folder.
+2. Select **Turn off Owner Firing in the signed franchise copy**. If the panel says **Owner Firing is Off in this franchise**, you can load that save directly with v0.10. To change only Owner Firing, clear any selected changes under **Game defaults** and leave the sliders as they are.
+3. Choose **Make a signed save copy…**. The suggested destination is a new folder. Use its `SAVEGAME.DAT` and `EXTRA` together when returning the copy to your save container, then load it with v0.10.
+
+## How do I edit one roster on a PCSX2 memory card?
+
+Open **File → PS2 Save Editor…** and choose the `.ps2` card. If it has multiple supported saves, select the roster's directory. After editing, choose a new `.ps2` filename to keep a complete card copy, or a `.psu` filename to export just that save. Studio verifies the change and the other saves before publishing a card copy. If a write fails verification, your edits stay open for a retry.
+
+From beta 81 the whole roster can be edited, not only names: **★ Rosters → Open PS2 save…** opens a PS2 roster save (a `.psu`, an extracted `BASLUS-20919…` folder, or one save on a `.ps2` card) on the same pages as an Xbox save: ratings, positions, depth chart, special teams, reserves, team settings, coaches, team copy and the rest. **Save PS2 save copy…** writes a new `.psu`, or a copy of the card when the save came from one, with the PS2 checksum. Before the copy is published, the Studio's independent verifier rereads it: the same files, the checksum, every roster table where it was, and for a card every page's error check and every other save byte for byte. PS2 franchise saves are not opened there yet. How the PS2 game reads these edits has not been checked in PCSX2; until it has, keep your original save.
+
+## Which fixes can I select on my existing v0.9 standard disc?
+
+Open your original SOFTDRINK 2K28 v0.9 standard disc in **Build**. Choose any combination of **Boot save list: no freeze on a save with a bad name**, **Modern injured reserve (franchise)**, **Starting backfield cards**, **Gadget player on gadget plays (experimental)** and **Simulated injuries (all positions)**. The boot repair lets the game list healthy saves when another entry has a damaged name or type. Choose a new output file and click **Make my disc**. The Studio copies the released image and writes only the selected game changes. You can also run `tools/nfl2k5_modpack.py update-v09 --source ORIGINAL --out COPY` with the corresponding `--save-list-guard`, `--modern-ir`, `--backfield-cards` or `--gadget-play` flags. For other gameplay choices or a league artwork project, open your retail game disc and use **Build** or **Share → Customize**.
+
+## Why does an older franchise show tackles before Week 1 or fewer draft prospects?
+
+An older cornerback-stat patch could award regular-season tackles during preseason, in the playoffs or to a corner who sat out. The current patch checks the season stage and whether the game credited that player with playing. A saved Player Card can still contain the old totals. If you kept a save from before those games, load a copy on the updated disc and replay or simulate forward. Once regular-season games have been played, the season total alone cannot identify which tackles came from the older patch.
+
+Injured reserve has a similar carry-over on the standard edition. If a v0.9 franchise was saved during the regular season while a player it moved to injured reserve in the preseason was still out, v0.10 keeps the older count for him. He can need as many extra regular-season games before returning as the preseason games already played when he was placed. Players placed on injured reserve on v0.10 are counted from the first regular-season game.
+
+In **★ Rosters**, open the signed franchise save and select **Draft Class** to see its named prospects. The overview lists empty draft slots separately. **Franchise → Upgrade** can add room for future classes, including when the game already resized the save. Choose your current disc, preview the changes and write a new signed save folder. The preview reports how many draft-class records it can add. Already-generated prospects and picks stay with that franchise. To regenerate a particular class with the updated disc, start from a backup made before the game generated it.
+
+## I use the native PC or Android port or a separate Mod Manager
+
+Those programs have their own version numbers. In a report, include the program name and version, pack filename, platform, renderer, a screenshot and whether it also happens with a clean game. For a Manager-built disc, include the Manager version and the roster and calendar options. Trophy Room music is a selectable build setting.
+
+The native Windows port's 0.8.1 hotfix covers controller icons appearing on uniforms, music startup, fullscreen and renderer recovery. One player who saw a blank frame in Direct3D 12 got a picture using Vulkan. The port lists its Windows log folder and gives separate Android update instructions. Its release notes identify v0.9 as a supported pack. Android save-space, overwrite or delete failures need the Android port version and its own save location. Keep a separate copy of the save before testing. [Native port hotfix and log locations](https://github.com/MatthewJeff2002/2K5Remade/releases/tag/v0.8.1)

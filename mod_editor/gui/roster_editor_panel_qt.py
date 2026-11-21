@@ -12,8 +12,9 @@ Layout, left to right:
 * **Left** -- the 32 NFL clubs, the game's own extra squads (Pro Bowl, all-time, user teams), then
   Free Agents, the Draft Class and the leftover pools.  Selecting one fills the grid.
 * **Middle** -- search (name, years pro or college), position chips, and the player grid: position
-  badge, number, name, years pro, an OVR estimate and the depth slot, with ↑ ↓ that reorder the
-  team's own pointer list -- which *is* the depth chart, exactly as Finn's arrows behave.
+  badge, number, name, years pro, an OVR estimate and the depth slot, with ↑ ↓ that move the player in
+  his position's depth chart: the stored depth rank (or side) the game's chart and starters follow
+  (b81 R4; the team's pointer order changes neither, which is what Finn's arrows moved).
 * **Right** -- the black header card (name, position, number, height, weight, age, years pro,
   college, contract) over the cards: **Athletic / Skills / Mental / Style / Appearance / Identity /
   Contract**.  A numeric card is a value plus a proportional bar: click or drag the bar to set it,
@@ -63,6 +64,7 @@ from __future__ import annotations
 from mod_editor.gui.ux_text import failure_body, plain_error
 
 import json
+import os
 import shutil
 import struct
 import copy
@@ -72,8 +74,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
-from PyQt5.QtCore import QObject, QRunnable, QSignalBlocker, QSize, Qt, QThreadPool, pyqtSignal
-from PyQt5.QtGui import QColor, QFont, QPainter, QPen
+from PyQt5.QtCore import QItemSelectionModel, QObject, QRunnable, QSignalBlocker, QSize, Qt, QThreadPool, pyqtSignal
+from PyQt5.QtGui import QColor, QFont, QImage, QKeySequence, QPainter, QPen, QPixmap, QTextDocument
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QApplication,
@@ -96,6 +98,7 @@ from PyQt5.QtWidgets import (
     QProgressDialog,
     QPushButton,
     QScrollArea,
+    QShortcut,
     QSizePolicy,
     QSpinBox,
     QSplitter,
@@ -110,14 +113,16 @@ from PyQt5.QtWidgets import (
 from mod_editor.core import nfl2k5_roster_records as rr
 from mod_editor.core import nfl2k5_abilities_editor as abilities_editor
 from mod_editor.core import nfl2k5_college_check as college_check
+from mod_editor.core import nfl2k5_player_health as player_health
 from mod_editor.gui.abilities_panel_qt import AbilitiesPanel
 from mod_editor.gui.coaches_panel_qt import CoachesPanel
 from mod_editor.gui.espn25_panel_qt import Espn25Panel
 from mod_editor.gui.franchise_panel_qt import FranchisePanel
-from mod_editor.gui.ux_text import Details, show_operation_error, suggest_copy_name
+from mod_editor.gui.ux_text import Details, FlowLayout, show_operation_error, suggest_copy_name
 
 DISC_FILTER = "Disc images (*.iso *.xiso *.xiso.iso);;All files (*)"
 SAVE_FILTER = "Xbox saves (*.zip SAVEGAME.DAT);;All files (*)"
+PS2_SAVE_FILTER = "PS2 saves (*.psu *.ps2);;All files (*)"
 EDITS_FILTER = "Roster edits (*.json);;All files (*)"
 CSV_FILTER = "Spreadsheets (*.csv *.txt);;All files (*)"
 PLAYER_DATA_FILTER = "Finn's player backups (*.PlayerData);;All files (*)"
@@ -129,6 +134,83 @@ TOGGLE_STYLE = (
     "QToolButton:checked { background: #f0b429; color: #0c1220; border-color: #f0b429;"
     " font-weight: bold; }"
 )
+
+
+# --------------------------------------------------------------------------------------------- grid (b81 R2)
+# The seven columns the page always shows (tests and the depth tools address them by index), then the bands of
+# Finn's grid a user can add from Columns ▾: his 27 attributes in his own order (plus Kicking Style), body,
+# gear and contract.
+GRID_BASE_COLUMNS = (("pos", "POS"), ("jersey", "#"), ("player", "Player"), ("years", "Yrs"),
+                     ("ovr", "Est. OVR"), ("depth", "Depth"), ("locks", "Locks"))
+GRID_BANDS: dict[str, tuple[str, ...]] = {
+    "Ratings": rr.RATING_UI_ORDER + ("kicking_style",),
+    "Body": ("height", "weight", "age", "hand", "body", "skin", "face", "dreads", "hair_style", "college"),
+    "Gear": ("helmet", "face_mask", "face_shield", "eye_black", "mouthpiece", "turtleneck", "sleeves", "neck_roll",
+             "left_glove", "right_glove", "left_wrist", "right_wrist", "left_elbow", "right_elbow", "left_shoe",
+             "right_shoe", "guardian_cap"),
+    "Contract": ("contract_value", "contract_length", "contract_remaining", "contract_type", "contract_bonus"),
+}
+GRID_SHORT_LABELS = {
+    "speed": "SPD", "agility": "AGI", "strength": "STR", "jumping": "JMP", "coverage": "COV", "pass_rush": "PRS",
+    "run_coverage": "RCV", "pass_blocking": "PBK", "run_blocking": "RBK", "catch": "CTH", "run_route": "RTE",
+    "break_tackle": "BTK", "hold_onto_ball": "HLD", "power_run_style": "PRSt", "pass_accuracy": "ACC",
+    "pass_arm_strength": "ARM", "pass_read_coverage": "READ", "tackle": "TAK", "kick_power": "KPW",
+    "kick_accuracy": "KAC", "stamina": "STA", "durability": "DUR", "leadership": "LDR", "scramble": "SCR",
+    "composure": "CMP", "consistency": "CON", "aggressiveness": "AGG", "kicking_style": "KSt",
+    "height": "Ht", "weight": "Wt", "age": "Age", "hand": "Hand", "body": "Body", "skin": "Skin", "face": "Face",
+    "dreads": "Dreads", "hair_style": "Hair", "college": "College", "helmet": "Helmet", "face_mask": "Mask",
+    "face_shield": "Visor", "eye_black": "Eye blk", "mouthpiece": "Mouth", "turtleneck": "Turtle",
+    "sleeves": "Sleeves", "neck_roll": "Neck", "left_glove": "L glove", "right_glove": "R glove",
+    "left_wrist": "L wrist", "right_wrist": "R wrist", "left_elbow": "L elbow", "right_elbow": "R elbow",
+    "left_shoe": "L shoe", "right_shoe": "R shoe", "guardian_cap": "Guardian", "contract_value": "Contract",
+    "contract_length": "Len", "contract_remaining": "Left", "contract_type": "Type", "contract_bonus": "Bonus",
+}
+# the first click on these sorts the highest first, the way a ratings column is read
+GRID_HIGH_FIRST = frozenset(GRID_BANDS["Ratings"]) | {"ovr", "years", "height", "weight", "age", "contract_value",
+                                                      "contract_length", "contract_remaining"}
+
+
+def grid_column_label(key: str) -> str:
+    """The long name of a grid column (its header tooltip and its Columns ▾ entry)."""
+
+    for base, label in GRID_BASE_COLUMNS:
+        if base == key:
+            return label
+    if key == "age":
+        return "Age (season year)"
+    if key == "college":
+        return "College"
+    if key == "contract_value":
+        return "Contract value ($M)"
+    label = rr.RATING_LABELS.get(key) or (rr.FIELD_BY_NAME[key].label if key in rr.FIELD_BY_NAME
+                                          else key.replace("_", " ").title())
+    return label
+
+
+def _available_geometry(widget: QWidget):
+    """The free area of the screen ``widget`` is on (its own screen where Qt can tell, else the primary)."""
+
+    screen = widget.screen() if hasattr(widget, "screen") else None
+    screen = screen or QApplication.primaryScreen()
+    return screen.availableGeometry() if screen is not None else None
+
+
+# --------------------------------------------------------------------------------------------- preferences (b81 R17)
+ROSTER_SETTINGS = ("2K Football Mod Tools", "rosters")
+DEFAULT_LIST_KEY = "default_list"
+
+
+def _roster_settings():
+    """The Rosters page's own preferences (Finn's Default Team). Tests replace this with a private file."""
+
+    from PyQt5.QtCore import QSettings
+    return QSettings(QSettings.IniFormat, QSettings.UserScope, *ROSTER_SETTINGS)
+
+
+EXACT_PASTE_TEXT = "Paste exact copy (names, college, PBP, photo too)"
+EXACT_PASTE_TIP = ("Finn's Paste Player-Exact Copy: Paste player, plus the first and last name, the college, the "
+                   "play-by-play id and the photo id. Another player who shares his old last name keeps it. His depth "
+                   "place, locks, injury, IR state, player kind, star tag and career history stay his own.")
 
 
 # --------------------------------------------------------------------------------------------- undo
@@ -632,7 +714,16 @@ class GlobalEditDialog(QDialog):
         self.setWindowTitle("Global Attribute Editor")
         self._panel = panel
         self.preview_rows: list[dict[str, Any]] = []
-        layout = QVBoxLayout(self)
+        # b81: everything but Apply and Close scrolls, so the buttons stay on a 768-px screen with large text and
+        # the More attributes and Teams lists open
+        outer = QVBoxLayout(self)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
+        body = QWidget()
+        layout = QVBoxLayout(body)
+        scroll.setWidget(body)
+        outer.addWidget(scroll, 1)
         helper = QLabel("Edit many players at once: pick an attribute, a rule and a scope, preview, then apply. "
                         "Ratings stop at 99 unless you allow more.")
         helper.setWordWrap(True)
@@ -659,6 +750,32 @@ class GlobalEditDialog(QDialog):
         self.value.setValue(1)
         top.addWidget(self.value)
         layout.addLayout(top)
+        # b81 R12: Finn's editor ticked several attributes and several teams for one pass
+        self.more_details = Details("More attributes (the same rule)")
+        self.more_attributes = QListWidget()
+        self.more_attributes.setAccessibleName("More attributes")
+        self.more_attributes.setMaximumHeight(130)
+        for index in range(self.attribute.count()):
+            item = QListWidgetItem(self.attribute.itemText(index))
+            item.setData(Qt.UserRole, self.attribute.itemData(index))
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Unchecked)
+            self.more_attributes.addItem(item)
+        self.more_details.content.addWidget(self.more_attributes)
+        layout.addWidget(self.more_details)
+        self.teams_details = Details("Teams (none ticked = every team; a club includes its reserves)")
+        self.team_checks = QListWidget()
+        self.team_checks.setAccessibleName("Teams")
+        self.team_checks.setMaximumHeight(130)
+        for team in (panel.document.teams if panel.document is not None else ()):
+            item = QListWidgetItem(f"{team.abbreviation} · {team.display}" if team.display != team.abbreviation
+                                   else team.abbreviation)
+            item.setData(Qt.UserRole, team.index)
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Unchecked)
+            self.team_checks.addItem(item)
+        self.teams_details.content.addWidget(self.team_checks)
+        layout.addWidget(self.teams_details)
 
         limits = QHBoxLayout()
         self.minimum = QSpinBox()
@@ -681,7 +798,7 @@ class GlobalEditDialog(QDialog):
         layout.addLayout(limits)
 
         scheme = panel.scheme
-        scope = QGroupBox(f"Positions (none ticked = every position) — {rr.SCHEME_TITLES[scheme]}")
+        scope = QGroupBox(f"Positions (none ticked = every position): {rr.SCHEME_TITLES[scheme]}")
         scope_layout = QGridLayout(scope)
         # named in the loaded scheme, and a code the scheme retired is offered greyed out so a
         # sweep cannot be aimed at a pool no player is in
@@ -692,14 +809,22 @@ class GlobalEditDialog(QDialog):
             box.setToolTip(f"{rr.position_long_name(code, scheme)} (code {code})")
             if rr.is_retired_position(code, scheme):
                 box.setEnabled(False)
-                box.setToolTip(f"{rr.position_long_name(code, scheme)} (code {code}) — retired on "
+                box.setToolTip(f"{rr.position_long_name(code, scheme)} (code {code}): retired on "
                                f"this roster; nobody carries it")
             self.positions[label] = box
             scope_layout.addWidget(box, code // 6, code % 6)
         layout.addWidget(scope)
         self.current_team_only = QCheckBox("This team only")
+        # b81 M3: Finn's Global Edit on the selected rows; offered when more than one player is selected
+        selected_count = self._selected_count = len(panel.selected_players()) if panel.document is not None else 0
+        self.selected_only = QCheckBox(f"Only the selected players ({selected_count})")
+        self.selected_only.setEnabled(selected_count > 1)
+        self.selected_only.setToolTip("Applies the rule to the players selected in the list." if selected_count > 1
+                                      else "Select more than one player in the list (Shift or Ctrl click, or "
+                                           "Ctrl+A) to use this.")
         scope_row = QHBoxLayout()
         scope_row.addWidget(self.current_team_only)
+        scope_row.addWidget(self.selected_only)
         self.scope_label = QLabel("")
         scope_row.addWidget(self.scope_label, 1)
         layout.addLayout(scope_row)
@@ -743,21 +868,48 @@ class GlobalEditDialog(QDialog):
         buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Close)
         buttons.button(QDialogButtonBox.Apply).clicked.connect(self._apply)
         buttons.rejected.connect(self.reject)
-        layout.addWidget(buttons)
+        outer.addWidget(buttons)
+        body.adjustSize()
+        screen = _available_geometry(self)
+        wanted = body.sizeHint()
+        width = wanted.width() + scroll.verticalScrollBar().sizeHint().width() + 24
+        height = wanted.height() + buttons.sizeHint().height() + 32
+        if screen is not None:
+            width, height = min(width, screen.width() - 32), min(height, screen.height() - 48)
+        self.resize(width, height)
         # any change to a setting invalidates the preview: Apply always recalculates from the
         # current settings, so old before/after values can never be applied to a new attribute (M07)
         for combo in (self.attribute, self.mode, self.where_attribute, self.where_operator):
             combo.currentIndexChanged.connect(self._invalidate_preview)
         for spin in (self.value, self.minimum, self.maximum, self.where_value):
             spin.valueChanged.connect(self._invalidate_preview)
-        for check in (self.large_values, self.rookies_only, self.current_team_only, self.where_enabled,
-                      *self.positions.values()):
+        for check in (self.large_values, self.rookies_only, self.current_team_only, self.selected_only,
+                      self.where_enabled, *self.positions.values()):
             check.toggled.connect(self._invalidate_preview)
+        self.more_attributes.itemChanged.connect(self._invalidate_preview)
+        self.team_checks.itemChanged.connect(self._invalidate_preview)
         self._refresh_scope_label()
+
+    @staticmethod
+    def _checked(widget: QListWidget) -> list[Any]:
+        return [widget.item(row).data(Qt.UserRole) for row in range(widget.count())
+                if widget.item(row).checkState() == Qt.Checked]
+
+    def set_checked(self, widget: QListWidget, values: Sequence[Any]) -> None:
+        wanted = set(values)
+        for row in range(widget.count()):
+            item = widget.item(row)
+            item.setCheckState(Qt.Checked if item.data(Qt.UserRole) in wanted else Qt.Unchecked)
 
     def _refresh_scope_label(self) -> None:
         team = ""
-        if self.current_team_only.isChecked():
+        picked = self._checked(self.team_checks) if hasattr(self, "team_checks") else []
+        if picked and self._panel.document is not None:
+            names = [self._panel.document.teams[i].abbreviation for i in picked]
+            team = ", ".join(names[:6]) + (f" and {len(names) - 6} more" if len(names) > 6 else "")
+        if self.selected_only.isChecked():
+            team = f"the {self._selected_count} selected players"
+        elif self.current_team_only.isChecked():
             kind, index = getattr(self._panel, "_group", ("all", 0))
             document = self._panel.document
             if kind == "team" and document is not None and 0 <= index < len(document.teams):
@@ -770,7 +922,7 @@ class GlobalEditDialog(QDialog):
         self._refresh_scope_label()
         if self.preview_rows:
             self.preview_rows = []
-            self.count_label.setText("Settings changed — press Show affected players again.")
+            self.count_label.setText("Settings changed: press Show affected players again.")
 
     # ------------------------------------------------------------------ behaviour
     def settings(self) -> dict[str, Any]:
@@ -779,20 +931,30 @@ class GlobalEditDialog(QDialog):
         if self.where_enabled.isChecked():
             where = (str(self.where_attribute.currentData()), str(self.where_operator.currentData()),
                      int(self.where_value.value()))
-        return {"attribute": str(self.attribute.currentData()),
+        main = str(self.attribute.currentData())
+        more = [str(name) for name in self._checked(self.more_attributes) if str(name) != main]
+        return {"attribute": main,
                 "mode": str(self.mode.currentData()), "value": float(self.value.value()),
                 "positions": chosen, "rookies_only": self.rookies_only.isChecked(),
                 "minimum": self.minimum.value(), "maximum": self.maximum.value(), "where": where,
-                "current_team_only": self.current_team_only.isChecked()}
+                "current_team_only": self.current_team_only.isChecked(),
+                "selected_only": self.selected_only.isChecked(), "attributes": more,
+                "teams": [int(team) for team in self._checked(self.team_checks)]}
 
     def refresh_preview(self) -> list[dict[str, Any]]:
         self.preview_rows = self._panel.global_edit_preview(**self.settings())
-        lines = [f"{row['name']} ({row['position']}): {row['before']} -> {row['after']}"
+        several = any("attribute" in row for row in self.preview_rows)
+        lines = [f"{row['name']} ({row['position']}): "
+                 + (f"{_target_label(row['attribute'])} " if several else "")
+                 + f"{row['before']} -> {row['after']}"
                  for row in self.preview_rows[:400]]
         if len(self.preview_rows) > 400:
             lines.append(f"... and {len(self.preview_rows) - 400} more")
         self.preview.setPlainText("\n".join(lines) or "No player would change.")
-        self.count_label.setText(f"{len(self.preview_rows)} player{'s' if len(self.preview_rows) != 1 else ''} would change.")
+        players = len({(row["pool"], row["index"]) for row in self.preview_rows})
+        changes = len(self.preview_rows)
+        self.count_label.setText(f"{players} player{'s' if players != 1 else ''} would change"
+                                 + (f" ({changes} changes)." if changes != players else "."))
         return self.preview_rows
 
     def _apply(self) -> None:
@@ -802,6 +964,442 @@ class GlobalEditDialog(QDialog):
         self.preview.setPlainText(f"Applied to {count} players.")
         self.count_label.setText(f"Applied to {count} players.")
         self.preview_rows = []
+
+
+# ------------------------------------------------------------------------------------------- b81 R10, R15
+def fit_dialog_to_text(dialog: QDialog, chars: int = 72) -> None:
+    """Size a dialog of wrapped text for the font it is shown with: about ``chars`` characters wide and as tall as its
+    wrapped labels need, never bigger than the screen (large text otherwise clipped the labels or stacked the
+    buttons over the list)."""
+
+    layout = dialog.layout()
+    if layout is None:
+        return
+    metrics = dialog.fontMetrics()
+    width = max(dialog.minimumSizeHint().width(), metrics.averageCharWidth() * chars)
+    screen = _available_geometry(dialog)
+    if screen is not None:
+        width = min(width, screen.width() - 32)
+    height = layout.totalHeightForWidth(width) if layout.hasHeightForWidth() else layout.totalSizeHint().height()
+    height = max(height, layout.totalMinimumSize().height())
+    if screen is not None:
+        height = min(height, screen.height() - 48)
+    dialog.resize(width, height)
+
+
+class BodyTypeDialog(QDialog):
+    """Finn's Tools > Auto-update > Body type from weight / from BMI, previewed before anything changes."""
+
+    def __init__(self, panel: "RosterEditorPanel", method: str = "weight") -> None:
+        super().__init__(panel)
+        self._panel = panel
+        self.rows: list[dict[str, Any]] = []
+        self.setWindowTitle("Body type from weight" if method == "weight" else "Body type from BMI")
+        layout = QVBoxLayout(self)
+        self.method = QComboBox()
+        self.method.addItem("From weight", "weight")
+        self.method.addItem("From BMI (weight x 703 / height squared)", "bmi")
+        self.method.setCurrentIndex(0 if method == "weight" else 1)
+        self.method.setAccessibleName("Body type method")
+        layout.addWidget(self.method)
+        self.rule = QLabel("")
+        self.rule.setWordWrap(True)
+        layout.addWidget(self.rule)
+        self.list_only = QCheckBox("Only the players in the list shown")
+        layout.addWidget(self.list_only)
+        self.count_label = QLabel("")
+        layout.addWidget(self.count_label)
+        self.preview = QPlainTextEdit()
+        self.preview.setReadOnly(True)
+        self.preview.setMinimumHeight(180)
+        layout.addWidget(self.preview, 1)
+        buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Close)
+        buttons.button(QDialogButtonBox.Apply).setText("Apply to these players")
+        buttons.button(QDialogButtonBox.Apply).clicked.connect(self.apply)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+        self.method.currentIndexChanged.connect(lambda _i: self.refresh())
+        self.list_only.toggled.connect(lambda _on: self.refresh())
+        self.preview.setMinimumHeight(120)
+        self.refresh()
+
+    def showEvent(self, event) -> None:  # noqa: N802 - Qt naming
+        super().showEvent(event)
+        fit_dialog_to_text(self, 64)
+
+    def refresh(self) -> list[dict[str, Any]]:
+        method = str(self.method.currentData())
+        low, mid, high = rr.BODY_TYPE_THRESHOLDS[method]
+        unit = " lb" if method == "weight" else ""
+        self.rule.setText(f"{rr.BODIES[0]} below {low:g}{unit}, {rr.BODIES[1]} from {low:g}, {rr.BODIES[2]} from "
+                          f"{mid:g}, {rr.BODIES[3]} from {high:g}{unit} (Finn's thresholds). "
+                          "Nothing changes until you apply.")
+        self.rows = self._panel.body_type_preview(method, current_list_only=self.list_only.isChecked())
+        lines = [f"{row['name']} ({row['position']}, {row['weight']} lb"
+                 + (f", BMI {row['bmi']:g}" if method == "bmi" and row["bmi"] is not None else "")
+                 + f"): {rr.BODIES[row['before']]} -> {rr.BODIES[row['after']]}" for row in self.rows[:400]]
+        if len(self.rows) > 400:
+            lines.append(f"... and {len(self.rows) - 400} more")
+        self.preview.setPlainText("\n".join(lines) or "No player would change.")
+        self.count_label.setText(f"{len(self.rows)} player{'s' if len(self.rows) != 1 else ''} would change.")
+        return self.rows
+
+    def apply(self) -> int:
+        self.refresh()                       # never a stale preview
+        count = self._panel.apply_body_type(self.rows)
+        self.count_label.setText(f"Applied to {count} player{'s' if count != 1 else ''}.")
+        self.preview.setPlainText("")
+        self.rows = []
+        return count
+
+
+class PlayerDataRestoreDialog(QDialog):
+    """Finn's Restore Player Data options: which kinds of fields come back from a .PlayerData backup."""
+
+    def __init__(self, panel: "RosterEditorPanel", entries: int, *, attributes_only: bool = False) -> None:
+        super().__init__(panel)
+        self.setWindowTitle("Restore from a .PlayerData backup")
+        layout = QVBoxLayout(self)
+        intro = QLabel(f"{entries} players in the backup. Each one is matched by last and first name and the "
+                       "play-by-play index; a name that fits several players is skipped, never guessed. "
+                       "Choose what comes back:")
+        intro.setWordWrap(True)
+        layout.addWidget(intro)
+        self.groups: dict[str, QCheckBox] = {}
+        for name, label in rr.PLAYER_DATA_GROUP_LABELS.items():
+            box = QCheckBox(label)
+            box.setChecked(name == "ratings" if attributes_only else name in rr.PLAYER_DATA_DEFAULT_GROUPS)
+            self.groups[name] = box
+            layout.addWidget(box)
+        spot = self.groups["spot"]
+        spot.setToolTip("Off unless you need the exact old spot: a backup made at another time or from another "
+                        "save would give back an old team's depth rows, a returner lock another player holds now, "
+                        "or an injured reserve mark with no IR slot.")
+        self.spot_note = QLabel("Roster spot is off by default: on a SOFTDRINK roster those bytes belong to where "
+                                "the player is now, and an old copy can give a team two kick returners.")
+        self.spot_note.setWordWrap(True)
+        layout.addWidget(self.spot_note)
+        self.list_only = QCheckBox("Only the players in the list shown")
+        layout.addWidget(self.list_only)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.button(QDialogButtonBox.Ok).setText("Restore")
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+    def showEvent(self, event) -> None:  # noqa: N802 - Qt naming
+        super().showEvent(event)
+        fit_dialog_to_text(self, 76)
+
+    def chosen_groups(self) -> list[str]:
+        return [name for name, box in self.groups.items() if box.isChecked()]
+
+
+# ------------------------------------------------------------------------------------------- b81 dialogs
+class ScrollBodyDialog(QDialog):
+    """A dialog whose content scrolls when large text makes it taller than the screen, with its buttons always shown
+    below. Subclasses build into ``self.body_layout`` and pass their button box to ``set_buttons``."""
+
+    TEXT_WIDTH = 84                       # characters
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self._outer = QVBoxLayout(self)
+        self._scroll = QScrollArea()
+        self._scroll.setWidgetResizable(True)
+        self._scroll.setFrameShape(QFrame.NoFrame)
+        self._body = QWidget()
+        self.body_layout = QVBoxLayout(self._body)
+        self._scroll.setWidget(self._body)
+        self._outer.addWidget(self._scroll, 1)
+        self._buttons: QWidget | None = None
+
+    def set_buttons(self, buttons: QWidget) -> None:
+        self._buttons = buttons
+        self._outer.addWidget(buttons)
+
+    def showEvent(self, event) -> None:  # noqa: N802 - Qt naming
+        super().showEvent(event)
+        metrics = self.fontMetrics()
+        screen = _available_geometry(self)
+        width = metrics.averageCharWidth() * self.TEXT_WIDTH
+        if screen is not None:
+            width = min(width, screen.width() - 32)
+        margins = self._outer.contentsMargins()
+        inner = width - margins.left() - margins.right() - self._scroll.verticalScrollBar().sizeHint().width()
+        body = self.body_layout
+        height = body.totalHeightForWidth(inner) if body.hasHeightForWidth() else body.totalSizeHint().height()
+        height += (self._buttons.sizeHint().height() if self._buttons is not None else 0)
+        height += 2 * self._outer.spacing() + margins.top() + margins.bottom()
+        if screen is not None:
+            height = min(height, screen.height() - 48)
+        self.resize(width, height)
+
+
+# ------------------------------------------------------------------------------------------- b81 R3
+class SpecialTeamsDialog(ScrollBodyDialog):
+    """Finn's Special Teams tab for one club, with the game's own rules (Codex's native witness):
+    returners and holder are team bytes (a returner's lock claim moves with him), kicker, punter and long snapper are
+    depth chart rows."""
+
+    ROLES = (("kr1", "Kick returner 1", "Writes the club's KR1 slot and moves the KR1 lock to him, so SOFTDRINK's "
+                                        "weekly pass keeps him."),
+             ("kr2", "Kick returner 2", "Writes the KR2 slot and moves the KR2 lock to him."),
+             ("pr", "Punt returner", "Writes the PR slot and moves the PR lock to him."),
+             ("holder", "Holder", "On beta 81 this player holds on field goals and extra points. "
+                                  "Rebuild an older SOFTDRINK disc to upgrade its punter override."),
+             ("kicker", "Kicker", "The game's kicker is K #1 in the depth chart: choosing him moves him there."),
+             ("punter", "Punter", "The game's punter is P #1 in the depth chart: choosing him moves him there."),
+             ("long_snapper", "Long snapper", "On punts and kicks the snap comes from the center at C #2 in the depth "
+                                              "chart: choosing a center moves him there."))
+
+    def __init__(self, panel: "RosterEditorPanel", team_index: int) -> None:
+        super().__init__(panel)
+        self._panel = panel
+        self.team_index = team_index
+        document = panel.document
+        assert document is not None
+        team = document.teams[team_index]
+        self.setWindowTitle(f"Special teams: {team.display}")
+        layout = self.body_layout
+        intro = QLabel("Pick each role from this club's active players. Kicker, punter and long snapper are chosen by "
+                       "the depth chart, so those three change depth rows. Nothing changes until you press Apply; "
+                       "Undo takes it all back.")
+        intro.setWordWrap(True)
+        layout.addWidget(intro)
+        grid = QGridLayout()
+        self.combos: dict[str, QComboBox] = {}
+        self.notes: dict[str, QLabel] = {}
+        current = document.special_teams(team_index)
+        players = document.team_players(team_index)
+        eligible = {"kr1": document.RETURNER_CODES, "kr2": document.RETURNER_CODES, "pr": document.RETURNER_CODES,
+                    "kicker": (1,), "punter": (2,), "long_snapper": (12,)}
+        for row, (role, label, note) in enumerate(self.ROLES):
+            combo = QComboBox()
+            combo.setAccessibleName(label)
+            if role in ("kr1", "kr2", "pr", "holder"):
+                combo.addItem("(nobody)", None)
+            chosen = current.get(role)
+            for player in players:
+                codes = eligible.get(role)
+                if codes is not None and player.record.values["position"] not in codes and player is not chosen:
+                    continue                     # the present holder always stays choosable, so Apply never clears him
+                combo.addItem(f"{player.record.position_name} #{player.record.values['jersey']} {player.display}",
+                              player.offset)
+            combo.setCurrentIndex(max(0, combo.findData(chosen.offset if chosen is not None else None)))
+            combo.setToolTip(note)
+            caption = QLabel(label)
+            caption.setToolTip(note)
+            grid.addWidget(caption, row * 2, 0)
+            grid.addWidget(combo, row * 2, 1)
+            hint = QLabel(note)
+            hint.setWordWrap(True)
+            hint.setObjectName("throwMuted")
+            grid.addWidget(hint, row * 2 + 1, 1)
+            self.combos[role] = combo
+            self.notes[role] = hint
+        grid.setColumnStretch(1, 1)
+        layout.addLayout(grid)
+        stored = []
+        for key, name in (("stored_kicker", "kicker"), ("stored_long_snapper", "long snapper")):
+            who = current.get(key)
+            stored.append(f"stored {name} slot: {who.display if who else 'nobody'}")
+        self.stored_label = QLabel("Also in the club record, not used to pick who plays: " + "; ".join(stored) + ".")
+        self.stored_label.setWordWrap(True)
+        layout.addWidget(self.stored_label)
+        self.status = QLabel("")
+        self.status.setWordWrap(True)
+        layout.addWidget(self.status)
+        buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Close)
+        buttons.button(QDialogButtonBox.Apply).clicked.connect(self.apply)
+        buttons.rejected.connect(self.reject)
+        self.set_buttons(buttons)
+
+    def choices(self) -> dict[str, int | None]:
+        return {role: combo.currentData() for role, combo in self.combos.items()}
+
+    def apply(self) -> bool:
+        ok, message = self._panel.apply_special_teams(self.team_index, self.choices())
+        self.status.setText(message)
+        return ok
+
+
+# ------------------------------------------------------------------------------------------- b81 R13
+def stadium_label(entry: Mapping[str, Any]) -> str:
+    """``s25 Levi's Stadium · home of SF``: the asset number the game loads, its SOFTDRINK 2026 venue name."""
+
+    from mod_editor.core.nfl2k5_memory_budget import VENUES
+    code = f"s{int(entry['id']):02d}"
+    name = VENUES.get(code, (f"stadium {int(entry['id'])}",))[0]
+    home = f" · home of {', '.join(entry['home_of'])}" if entry.get("home_of") else ""
+    return f"{code} {name}{home}"
+
+
+class TeamOptionsDialog(ScrollBodyDialog):
+    """Finn's Options tab for one club in an Xbox save: stadium, default jersey, playbook, team play-by-play and the
+    defensive front, as the game reads them (Codex's native witness, TEAM_AND_HISTORY.md). The logo is shown, not
+    edited: it also switches the club's whole uniform and helmet set to the donor club's."""
+
+    def __init__(self, panel: "RosterEditorPanel", team_index: int) -> None:
+        super().__init__(panel)
+        self._panel = panel
+        self.team_index = team_index
+        save = panel.franchise_panel.save
+        assert save is not None
+        document = panel.document
+        assert document is not None
+        team = document.teams[team_index]
+        self.setWindowTitle(f"Team settings: {team.display}")
+        options = save.team_options(team_index)
+        layout = self.body_layout
+        self.TEXT_WIDTH = 88
+        intro = QLabel("These settings live in the save's club record. Each was checked in the game after a signed "
+                       "save loaded (stadium, uniforms on the menus, playbook file, announcer id, depth chart front). "
+                       "Choose from what the save already holds. Nothing changes until Apply; one Undo takes it back.")
+        intro.setWordWrap(True)
+        layout.addWidget(intro)
+        grid = QGridLayout()
+        self.combos: dict[str, QComboBox] = {}
+
+        def row(key: str, label: str, items: Sequence[tuple[str, int]], current: int | None, note: str) -> None:
+            combo = QComboBox()
+            combo.setAccessibleName(label)
+            for text, value in items:
+                combo.addItem(text, value)
+            combo.setCurrentIndex(max(0, combo.findData(current)))
+            combo.setToolTip(note)
+            caption = QLabel(label)
+            caption.setToolTip(note)
+            at = grid.rowCount()
+            grid.addWidget(caption, at, 0)
+            grid.addWidget(combo, at, 1)
+            hint = QLabel(note)
+            hint.setWordWrap(True)
+            hint.setObjectName("throwMuted")
+            grid.addWidget(hint, at + 1, 1)
+            self.combos[key] = combo
+
+        stadium = options["stadium"]
+        row("stadium", "Stadium", [(stadium_label(entry), entry["index"]) for entry in save.stadium_choices()],
+            stadium["index"] if stadium else None,
+            "Home games are played here. Names are the SOFTDRINK 2026 venues; a retail disc shows its own stadium "
+            "for the same number.")
+        row("jersey", "Default jersey", [(f"Style {style}" + (" (home)" if style == 0 else ""), style)
+                                          for style in options["jersey_styles"]], options["jersey"],
+            "The style the menus show for this club. Only the club's own styles are offered.")
+        book = options["playbook"]
+        row("playbook", "Playbook", [(f"{entry['name']} ({entry['key']})"
+                                      + (f" · used by {', '.join(entry['used_by'])}" if entry["used_by"] else ""),
+                                      entry["index"]) for entry in save.playbook_choices()],
+            book["index"] if book else None,
+            "The club points at one of the save's playbooks; the playbook itself is not changed, so clubs sharing "
+            "it keep it.")
+        row("pbp", "Team play-by-play", [(f"Id {entry['id']} · as {', '.join(entry['clubs'])}", entry["id"])
+                                         for entry in save.pbp_choices()], options["pbp"],
+            "The announcer's name call for this club, taken from another club. Which line plays is not yet heard in "
+            "the game.")
+        row("front", "Defensive front", [(name, value) for value, name in enumerate(save.FRONTS)],
+            options["front"] if options["front"] in (0, 1, 2) else None,
+            "Which defensive depth chart pages the game shows (4-3, 3-4 or both). Play calling is not measured.")
+        grid.setColumnStretch(1, 1)
+        layout.addLayout(grid)
+        self.logo_label = QLabel(f"Logo: {options['logo'] or '(none)'} (shown only). Changing it also switches the "
+                                 "club's whole uniform and helmet set to the donor club's, so it is not offered here; "
+                                 "use the Studio's team identity and uniform tools for a disc.")
+        self.logo_label.setWordWrap(True)
+        layout.addWidget(self.logo_label)
+        self.status = QLabel("")
+        self.status.setWordWrap(True)
+        layout.addWidget(self.status)
+        buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Close)
+        buttons.button(QDialogButtonBox.Apply).clicked.connect(self.apply)
+        buttons.rejected.connect(self.reject)
+        self.set_buttons(buttons)
+        self._initial = self.choices()
+
+    def choices(self) -> dict[str, int | None]:
+        return {key: combo.currentData() for key, combo in self.combos.items()}
+
+    def apply(self) -> bool:
+        changes = {key: value for key, value in self.choices().items()
+                   if value is not None and value != self._initial.get(key)}
+        ok, message = self._panel.apply_team_options(self.team_index, changes, labels={
+            key: self.combos[key].currentText() for key in changes})
+        self.status.setText(message)
+        if ok:
+            self._initial = self.choices()
+        return ok
+
+
+# ------------------------------------------------------------------------------------------- b81 wave 3
+class TeamPasteDialog(ScrollBodyDialog):
+    """Paste team / Import team: what lands on the club, what converts, and anything that refuses."""
+
+    def __init__(self, panel: "RosterEditorPanel", team_index: int, package: dict[str, Any]) -> None:
+        super().__init__(panel)
+        self._panel = panel
+        self.team_index = team_index
+        self.package = package
+        document = panel.document
+        assert document is not None
+        team = document.teams[team_index]
+        source = package.get("source") or {}
+        counts = package.get("counts") or {}
+        self.setWindowTitle(f"Paste team onto {team.display}")
+        layout = self.body_layout
+        intro = QLabel(
+            f"{source.get('display') or source.get('abbreviation') or 'The team'} ({counts.get('active', '?')} active, "
+            f"{counts.get('reserve', '?')} reserves) goes onto {team.display}, player for player: names, ratings, "
+            "contracts, appearance, depth chart rows and locks, and special teams. Each record keeps its own player "
+            "kind, pool, injury and IR state and star tag. One Undo takes it all back.")
+        intro.setWordWrap(True)
+        layout.addWidget(intro)
+        self.settings_check = QCheckBox("Team settings (stadium, playbook, default jersey, team play-by-play, front)")
+        self.coach_check = QCheckBox("Head coach (name, ratings, play-calling)")
+        for box, key in ((self.settings_check, "settings"), (self.coach_check, "coach")):
+            box.setChecked(package.get(key) is not None and panel._source_kind == "save")
+            box.setEnabled(package.get(key) is not None and panel._source_kind == "save")
+            box.toggled.connect(lambda _on: self.refresh())
+            layout.addWidget(box)
+        self.report = QLabel("")
+        self.report.setWordWrap(True)
+        self.report.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        layout.addWidget(self.report)
+        layout.addStretch(1)
+        self.status = QLabel("")
+        self.status.setWordWrap(True)
+        layout.addWidget(self.status)
+        buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Close)
+        self.apply_button = buttons.button(QDialogButtonBox.Apply)
+        self.apply_button.setText("Paste")
+        self.apply_button.clicked.connect(self.apply)
+        buttons.rejected.connect(self.reject)
+        self.set_buttons(buttons)
+        self.refresh()
+
+    def refresh(self) -> dict[str, Any]:
+        plan = self._panel.plan_team_paste(self.team_index, self.package, settings=self.settings_check.isChecked(),
+                                           coach=self.coach_check.isChecked())
+        lines = []
+        if plan["refusals"]:
+            lines.append("Refused, nothing will change:")
+            lines += [f"• {text}." for text in plan["refusals"]]
+        if plan["notes"]:
+            lines.append("Converted or left as it is:")
+            lines += [f"• {text}." for text in plan["notes"]]
+        lines.append("A copied lock that would collide on a Pro Bowl or legends squad with the original player is "
+                     "left off the copy and listed after the paste.")
+        self.report.setText("\n".join(lines))
+        self.apply_button.setEnabled(not plan["refusals"])
+        return plan
+
+    def apply(self) -> bool:
+        ok, message = self._panel.paste_team(self.team_index, self.package, settings=self.settings_check.isChecked(),
+                                             coach=self.coach_check.isChecked())
+        self.status.setText(message)
+        if ok:
+            self.apply_button.setEnabled(False)
+        return ok
 
 
 # ------------------------------------------------------------------------------------------- pickers
@@ -868,12 +1466,16 @@ class AgeShiftDialog(QDialog):
 class IdPickerDialog(QDialog):
     """A searchable id list (play-by-play names, portraits) with a spin box for any id the list lacks."""
 
+    PREVIEW = 128                         # the portrait's own size, drawn 1:1
+
     def __init__(self, title: str, entries: Mapping[int, str], current: int, parent: QWidget | None = None,
-                 *, note: str = "", maximum: int = 65535) -> None:
+                 *, note: str = "", maximum: int = 65535,
+                 preview: Callable[[int], tuple[QPixmap | None, str]] | None = None) -> None:
         super().__init__(parent)
         self.setWindowTitle(title)
         self._entries = list(entries.items())
         self._shown: list[int] = []
+        self._preview = preview
         layout = QVBoxLayout(self)
         if note:
             caption = QLabel(note)
@@ -888,13 +1490,38 @@ class IdPickerDialog(QDialog):
         self.list.setAccessibleName(f"{title}: choices")
         self.list.currentRowChanged.connect(self._row_changed)
         self.list.itemDoubleClicked.connect(lambda _i: self.accept())
-        layout.addWidget(self.list, 1)
+        self.preview_label: QLabel | None = None
+        self.preview_note: QLabel | None = None
+        if preview is None:
+            layout.addWidget(self.list, 1)
+        else:                             # b81 R11: Finn's photo box beside the list
+            body = QHBoxLayout()
+            body.addWidget(self.list, 1)
+            side = QVBoxLayout()
+            self.preview_label = QLabel()
+            self.preview_label.setFixedSize(self.PREVIEW, self.PREVIEW)
+            self.preview_label.setAlignment(Qt.AlignCenter)
+            self.preview_label.setObjectName("portraitPreview")
+            self.preview_label.setAccessibleName(f"{title}: picture")
+            side.addWidget(self.preview_label, 0, Qt.AlignHCenter)
+            self.preview_note = QLabel("")
+            self.preview_note.setWordWrap(True)
+            self.preview_note.setObjectName("throwMuted")
+            side_width = max(self.PREVIEW + 40, self.fontMetrics().averageCharWidth() * 24)   # grows with large text
+            self.preview_note.setMinimumWidth(side_width)
+            self.preview_note.setMaximumWidth(side_width)
+            side.addWidget(self.preview_note)
+            side.addStretch(1)
+            body.addLayout(side)
+            layout.addLayout(body, 1)
         row = QHBoxLayout()
         row.addWidget(QLabel("Id"))
         self.spin = QSpinBox()
         self.spin.setRange(0, maximum)
         self.spin.setValue(int(current))
         self.spin.setAccessibleName(f"{title}: id")
+        if preview is not None:
+            self.spin.valueChanged.connect(self._show_preview)
         row.addWidget(self.spin)
         self.count_label = QLabel("")
         row.addWidget(self.count_label, 1)
@@ -903,9 +1530,33 @@ class IdPickerDialog(QDialog):
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
-        self.resize(460, 520)
+        self.resize(460 if preview is None else 640, 520)
         self._filter("")
         self.select_id(int(current))
+        self._show_preview(int(current))
+
+    def showEvent(self, event) -> None:  # noqa: N802 - Qt naming
+        super().showEvent(event)
+        # b81 R11: sized by the text, so 200% text keeps the note and the list readable; never past the screen
+        metrics = self.fontMetrics()
+        width = metrics.averageCharWidth() * (56 if self._preview is None else 84)
+        height = metrics.lineSpacing() * 26
+        screen = _available_geometry(self)
+        if screen is not None:
+            width, height = min(width, screen.width() - 32), min(height, screen.height() - 48)
+        self.resize(max(width, 460), max(height, 420))
+
+    def _show_preview(self, number: int) -> None:
+        if self._preview is None or self.preview_label is None or self.preview_note is None:
+            return
+        pixmap, note = self._preview(int(number))
+        if pixmap is None:
+            self.preview_label.clear()
+            self.preview_label.setText("No picture")
+        else:
+            self.preview_label.setPixmap(pixmap)
+        self.preview_note.setText(note)
+        self.preview_label.setToolTip(note)
 
     def _filter(self, text: str) -> None:
         needle = text.strip().casefold()
@@ -933,6 +1584,145 @@ class IdPickerDialog(QDialog):
 
     def chosen(self) -> int:
         return int(self.spin.value())
+
+
+# --------------------------------------------------------------------------------------------- find (b81 R1)
+class FindPlayerDialog(QDialog):
+    """Finn's Search > Find Player(s) (Ctrl+F): every club, the reserves, free agents, the draft class and
+    the other pools at once. Go to player selects his list on the left and the player in the grid."""
+
+    COLUMNS = ("Player", "POS", "#", "Yrs", "College", "Where")
+    LIMIT = 500
+
+    def __init__(self, panel: "RosterEditorPanel") -> None:
+        super().__init__(panel)
+        self.setWindowTitle("Find player")
+        self._panel = panel
+        self._rows: list[dict[str, Any]] = []
+        layout = QVBoxLayout(self)
+        hint = QLabel("Searches every team, the reserves, free agents and the draft class. Type a name "
+                      "(Last, First works too) or a college.")
+        hint.setWordWrap(True)
+        layout.addWidget(hint)
+        row = QHBoxLayout()
+        self.text = QLineEdit()
+        self.text.setPlaceholderText("Name or college")
+        self.text.setAccessibleName("Find player: name or college")
+        self.text.setClearButtonEnabled(True)
+        self.text.textChanged.connect(lambda _t: self.refresh())
+        self.text.returnPressed.connect(self.go)
+        row.addWidget(self.text, 1)
+        self.position_combo = QComboBox()
+        self.position_combo.setAccessibleName("Find player: position")
+        self.position_combo.currentIndexChanged.connect(lambda _i: self.refresh())
+        row.addWidget(self.position_combo)
+        self.years_combo = QComboBox()
+        self.years_combo.setAccessibleName("Find player: years pro")
+        self.years_combo.addItem("Any years pro", None)
+        self.years_combo.addItem("Rookies (R)", rr.ROOKIE_YEARS_PRO)
+        for years in range(2, rr.FIELD_BY_NAME["years_pro"].maximum + 1):
+            self.years_combo.addItem(f"{years} yrs pro", years)
+        self.years_combo.currentIndexChanged.connect(lambda _i: self.refresh())
+        row.addWidget(self.years_combo)
+        layout.addLayout(row)
+        self.table = QTableWidget(0, len(self.COLUMNS))
+        self.table.setHorizontalHeaderLabels(list(self.COLUMNS))
+        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table.verticalHeader().setVisible(False)
+        self.table.setAccessibleName("Find player: results")
+        self.table.horizontalHeader().setStretchLastSection(True)
+        self.table.cellDoubleClicked.connect(lambda _r, _c: self.go())
+        layout.addWidget(self.table, 1)
+        bottom = QHBoxLayout()
+        self.count_label = QLabel("")
+        bottom.addWidget(self.count_label, 1)
+        self.go_button = QPushButton("Go to player")
+        self.go_button.setDefault(True)
+        self.go_button.clicked.connect(self.go)
+        close = QPushButton("Close")
+        close.clicked.connect(self.reject)
+        bottom.addWidget(self.go_button)
+        bottom.addWidget(close)
+        layout.addLayout(bottom)
+        self.resize(720, 520)
+        self.reset_positions()
+
+    def reset_positions(self) -> None:
+        """The position filter in the loaded scheme's own names (a one-pool roster offers EDGE, never OLB)."""
+
+        scheme = self._panel.scheme
+        current = self.position_combo.currentData()
+        with QSignalBlocker(self.position_combo):
+            self.position_combo.clear()
+            self.position_combo.addItem("Any position", ())
+            for code in rr.live_position_codes(scheme):
+                self.position_combo.addItem(rr.position_name(code, scheme), (code,))
+            index = self.position_combo.findData(current) if current is not None else 0
+            self.position_combo.setCurrentIndex(max(0, index))
+
+    def refresh(self) -> list[dict[str, Any]]:
+        document = self._panel.document
+        if document is None:
+            self._rows = []
+        else:
+            filtered = bool(self.text.text().strip() or self.position_combo.currentData()
+                            or self.years_combo.currentData() is not None)
+            self._rows = rr.find_players(document, self.text.text(),
+                                         positions=self.position_combo.currentData() or (),
+                                         years_pro=self.years_combo.currentData()) if filtered else []
+        shown = self._rows[:self.LIMIT]
+        self.table.setUpdatesEnabled(False)
+        self.table.setRowCount(len(shown))
+        for row, hit in enumerate(shown):
+            player = hit["player"]
+            record = player.record
+            cells = (player.display, record.position_name, str(record.values["jersey"]),
+                     rr.years_pro_label(record.values["years_pro"]), player.college or "-", hit["where"])
+            for column, text in enumerate(cells):
+                item = QTableWidgetItem(text)
+                if column in (2, 3):
+                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                self.table.setItem(row, column, item)
+        self.table.resizeColumnsToContents()
+        self.table.setUpdatesEnabled(True)
+        if shown:
+            self.table.setCurrentCell(0, 0)
+        total = len(self._rows)
+        if not (self.text.text().strip() or self.position_combo.currentData()
+                or self.years_combo.currentData() is not None):
+            self.count_label.setText("Type a name to search the whole league.")
+        elif total > len(shown):
+            self.count_label.setText(f"{total} players match; the first {len(shown)} are listed. Type more to narrow it.")
+        else:
+            self.count_label.setText(f"{total} player{'s' if total != 1 else ''} found")
+        self.go_button.setEnabled(bool(shown))
+        self._fit_width()
+        return self._rows
+
+    def _fit_width(self) -> None:
+        """Grow (never shrink) to show every column, within the screen: large text widens the columns."""
+
+        screen = _available_geometry(self)
+        margins = self.layout().contentsMargins()
+        needed = (self.table.horizontalHeader().length() + self.table.verticalScrollBar().sizeHint().width()
+                  + 2 * self.table.frameWidth() + margins.left() + margins.right() + 4)
+        if screen is not None:
+            needed = min(needed, screen.width() - 32)
+        if needed > self.width():
+            self.resize(needed, self.height())
+
+    def chosen(self) -> rr.Player | None:
+        row = self.table.currentRow()
+        return self._rows[row]["player"] if 0 <= row < min(len(self._rows), self.LIMIT) else None
+
+    def go(self) -> bool:
+        player = self.chosen()
+        if player is None or not self._panel.go_to_player(player):
+            return False
+        self.accept()
+        return True
 
 
 # --------------------------------------------------------------------------------------------- swap
@@ -1230,6 +2020,34 @@ class CollegeCheckDialog(QDialog):
             self.show_session(self.panel.college_check_path(chosen))
 
 
+class _PlayerGrid(QTableWidget):
+    """The player grid (b81 M3: Shift/Ctrl click and Ctrl+A select several players). A move of the current row made by
+    the program (setCurrentCell: a Find, the depth arrows, a refresh) means that one row, whatever modifier keys the
+    keyboard state remembers; mouse and key events keep Qt's own Shift/Ctrl rules."""
+
+    def selectionCommand(self, index, event=None):                      # noqa: N802 (Qt's name)
+        if event is None:
+            return QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows
+        return super().selectionCommand(index, event)
+
+
+def legacy_ir_mark() -> int:
+    """The byte the older 5-slot injured reserve writes at +0x28 (``nfl2k5_franchise_save.IR_MARK``)."""
+
+    from mod_editor.core import nfl2k5_franchise_save as fs
+    return fs.IR_MARK
+
+
+def has_modern_ir(save) -> bool:
+    """True when the franchise save carries modern injured reserve (20 slots), which writes no +0x28 marker."""
+
+    from mod_editor.core import nfl2k5_injured_reserve_save as irs
+    try:
+        return bool(irs.read_state(save).extension)
+    except ValueError:
+        return False
+
+
 class RosterEditorPanel(QWidget):
     """The ★ Rosters workspace."""
 
@@ -1239,20 +2057,25 @@ class RosterEditorPanel(QWidget):
     espn25_plan_changed = pyqtSignal(str)           # path of the saved ESPN Anniversary plan (Build's espn25_plan)
     abilities_lock_settings_changed = pyqtSignal(object)  # rules v2 lock settings from the Abilities page (Build pending settings)
     ESPN25_RECOVERY_SCHEMA = "2k5_mod_studio_espn25_recovery/v1"
+    _selected_count = 0                             # b81 M3: how many grid rows are selected
+    MANY_SELECTED_TIP = "{count} players are selected. Choose one player to use this."
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._facade = facade
+        self.portrait_pack0: Path | None = None      # b81 R11: tests point this at a source cache's pack 0
+        self.portrait_build_choices: Callable[[], tuple[Path | None, bool | None]] = lambda: (None, None)
         self.document: rr.RosterDocument | None = None
         self._baseline: rr.RosterDocument | None = None
         self._source_path: Path | None = None
         self._source_kind = ""
         self._appearance_bundle = None
         self._clipboard: rr.PlayerRecord | None = None
+        self._clipboard_identity: dict[str, Any] | None = None   # b81 finn-r2: the copied player's names and college
+        self._team_clipboard: dict[str, Any] | None = None    # b81 wave 3: Copy team
+        self._team_pastes: list[str] = []                       # what Show my changes lists for team pastes
         self._dirty: set[tuple[str, int]] = set()
         self.auto_filled = False        # the document came from the shell's open disc, not a button here
-        self._reserve_legality_cache = {}
-        self._reserve_legality_state = None
         self._rows: list[rr.Player] = []
         self._group: tuple[str, int] = ("team", 0)
         self._chip = "All"
@@ -1282,7 +2105,12 @@ class RosterEditorPanel(QWidget):
         self.cards: dict[str, AttributeCard] = {}
         self._card_order: list[str] = []
         self._page_cards: dict[int, list[str]] = {}
+        self._find_dialog: FindPlayerDialog | None = None
+        self._grid_columns: list[str] = [key for key, _label in GRID_BASE_COLUMNS]      # b81 R2
+        self._sort: tuple[str, bool] | None = None          # (column key, highest/last first) or the list's own order
+        self.shortcuts: dict[str, QShortcut] = {}
         self._build()
+        self._install_shortcuts()
         self._refresh_actions()
 
     @property
@@ -1306,18 +2134,32 @@ class RosterEditorPanel(QWidget):
         self.open_disc_button = QPushButton("Open disc roster…")
         self.open_disc_button.setToolTip("Read the roster out of any game disc file (.iso).")
         self.open_disc_button.clicked.connect(self._choose_disc)
-        self.open_save_button = QPushButton("Open Xbox save…")
-        self.open_save_button.setToolTip("Read a roster or franchise save (SAVEGAME.DAT) from your Xbox. No disc needed.")
+        self.open_save_button = QPushButton("Open Xbox save (Finn's zip)…")
+        self.open_save_button.setAccessibleName("Open Xbox save")
+        self.open_save_button.setToolTip(
+            "Read a roster or franchise save from your Xbox: the Action Replay .zip that Flying Finn's editor "
+            "opened, an extracted save folder, or SAVEGAME.DAT with its EXTRA. No disc needed. Your file is "
+            "never changed: saving writes a new signed copy.")
         self.open_save_button.clicked.connect(self._choose_save)
+        self.open_ps2_button = QPushButton("Open PS2 save…")          # b81 wave 3: the whole roster, not only names
+        self.open_ps2_button.setToolTip(
+            "Read a PS2 roster save (SLUS-20919): a .psu, an extracted BASLUS-20919 save folder, or a .ps2 memory card "
+            "image. Every page here works on it; saving writes a new .psu (or a copy of the card) with the PS2 "
+            "checksum, checked by the Studio's independent save verifier. How the PS2 game reads the edits has not "
+            "been checked in PCSX2 yet.")
+        self.open_ps2_button.clicked.connect(self._choose_ps2_save)
         self.use_loaded_button = QPushButton("Use the open disc")
         self.use_loaded_button.setToolTip("Read the roster of the disc opened at the top right. Replaces what is loaded here.")
         self.use_loaded_button.clicked.connect(self._use_open_disc)
         self.source_label = QLabel("No roster loaded.")
         self.source_label.setWordWrap(True)
-        for widget in (self.open_disc_button, self.open_save_button, self.use_loaded_button):
-            source_row.addWidget(widget)
-        source_row.addWidget(self.source_label, 1)
+        source_buttons = QWidget()                                    # wraps at large text instead of clipping
+        flow = FlowLayout(source_buttons, spacing=6, pin_parent_height=True)
+        for widget in (self.open_disc_button, self.open_save_button, self.open_ps2_button, self.use_loaded_button):
+            flow.addWidget(widget)
+        source_row.addWidget(source_buttons, 1)
         layout.addLayout(source_row)
+        layout.addWidget(self.source_label)
         arena = Details("Migrate a signed save for a larger roster")
         arena.add_text("EXPERIMENTAL / UNWITNESSED. Create a separately signed save copy and use it with the matching Build options. The original save stays intact. The league remains 32 teams.")
         self.arena_reserves_check = QCheckBox("16 reserves")
@@ -1383,9 +2225,22 @@ class RosterEditorPanel(QWidget):
         self.paste_button.setText("Paste ▾")
         self.paste_button.setPopupMode(QToolButton.InstantPopup)
         paste_menu = QMenu(self.paste_button)
+        self.paste_button.setToolTip(
+            "Paste the copied player's ratings, gear, body and contract onto the selected player. "
+            "Names, college, photo and play-by-play name stay. So do his depth place and locks, "
+            "injury and IR state, player kind and star tag, which belong to his roster spot.")
         paste_menu.addAction("Paste player", lambda: self.paste_player("all"))
         paste_menu.addAction("Paste attributes only", lambda: self.paste_player("attributes"))
         paste_menu.addAction("Paste photo only", lambda: self.paste_player("photo"))
+        self.paste_exact_action = paste_menu.addAction(EXACT_PASTE_TEXT, lambda: self.paste_player("exact"))
+        self.paste_exact_action.setToolTip(EXACT_PASTE_TIP)
+        paste_menu.addSeparator()
+        self.paste_abilities_action = paste_menu.addAction("Include abilities and tier")
+        self.paste_abilities_action.setCheckable(True)
+        self.paste_abilities_action.setToolTip(
+            "Also copy Speedster, Juke and the other ability flags with their tier. Off by default: "
+            "abilities are often set by hand or by the auto-assign pass.")
+        paste_menu.setToolTipsVisible(True)
         self.paste_button.setMenu(paste_menu)
         self.template_button = QToolButton()
         self.template_button.setText("Template ▾")
@@ -1403,12 +2258,28 @@ class RosterEditorPanel(QWidget):
         self.passes_button.setToolTip("One-off passes over many players.")
         self.passes_button.setPopupMode(QToolButton.InstantPopup)
         passes_menu = QMenu(self.passes_button)
-        passes_menu.addAction("Add a year pro to everyone", lambda: self.advance_years_pro(False))
+        passes_menu.addAction("Add a year pro to everyone (Advance year)", lambda: self.advance_years_pro(False))
         passes_menu.addAction("Add a year pro to this list", lambda: self.advance_years_pro(True))
         passes_menu.addAction("Restore height / weight / birth date", self.restore_measurements)
+        passes_menu.addAction("Body type from weight (Auto-update)…", lambda: self.open_body_type("weight"))
+        passes_menu.addAction("Body type from BMI (Auto-update)…", lambda: self.open_body_type("bmi"))
+        passes_menu.addSeparator()
+        passes_menu.addAction("Open on this list next time", self.remember_default_list)
+        passes_menu.addAction("Open on the first list next time", self.forget_default_list)
         passes_menu.addAction("Shift ages to season year...", self.open_age_shift)
         passes_menu.addAction("Show age shift receipt", self.show_age_shift_receipt)
         passes_menu.addAction("Export age shift receipt...", lambda: self.export_age_shift_receipt())
+        passes_menu.addSeparator()
+        passes_menu.addAction("Copy team", self.copy_team)
+        passes_menu.addAction("Paste team onto this club…", self.open_paste_team)
+        passes_menu.addAction("Export team…", self.export_team)
+        passes_menu.addAction("Import team onto this club…", self.import_team)
+        passes_menu.addAction("Clear rookie stats (every club)…", lambda: self.clear_rookie_stats())   # b81 R43 (J6)
+        passes_menu.addAction("Export depth chart (Finn's .2k5dc)…", self.export_depth_chart)       # b81 R43 (F13)
+        passes_menu.addAction("Import depth chart onto this club…", self.import_depth_chart)
+        passes_menu.addAction("Back up punt returners (Finn's .NFL2k5PR)…", self.export_punt_returners)
+        passes_menu.addAction("Restore punt returners…", self.restore_punt_returners)
+        passes_menu.addSeparator()
         self.save_roster_to_disc_action = passes_menu.addAction(
             "Use this save's roster on the disc...", self._use_save_roster_on_disc)
         self.save_roster_to_disc_action.setToolTip(
@@ -1427,6 +2298,8 @@ class RosterEditorPanel(QWidget):
         csv_menu = QMenu(self.csv_button)
         csv_menu.addAction("Export this list…", lambda: self._export_csv(False))
         csv_menu.addAction("Export every player…", lambda: self._export_csv(True))
+        csv_menu.addAction("Export this list as a web page (HTML)…", self._export_html)
+        csv_menu.addAction("Print this list…", self.print_this_list)
         csv_menu.addAction("Import players from CSV…", self._import_csv)
         csv_menu.addAction("CSV format and Excel help…",
                            lambda: QMessageBox.information(self, "Player CSV format", rr.CSV_HELP))
@@ -1453,8 +2326,9 @@ class RosterEditorPanel(QWidget):
         self.save_edits_button.clicked.connect(self._save_edits)
         self.write_button = QPushButton("Save disc copy…")
         self.write_button.setToolTip("Write a copy you can reopen in ★ Rosters. Your loaded disc or save stays unchanged. "
-                                     "Disc roster: writes a separate disc copy. Xbox save: writes a signed save "
-                                     "container in the folder you choose.")
+                                     "Disc roster: writes a separate disc copy. Xbox save: writes a new signed save "
+                                     "(a new .zip for a zip) in the folder you choose. Finn's editor saved over "
+                                     "the original; this never does.")
         self.write_button.clicked.connect(self._write_copy)
         tools.addWidget(self.save_edits_button)
         tools.addWidget(self.write_button)
@@ -1470,7 +2344,8 @@ class RosterEditorPanel(QWidget):
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(self._build_team_pane())
         splitter.addWidget(self._build_grid_pane())
-        splitter.addWidget(self._build_editor_pane())
+        self.editor_pane = self._build_editor_pane()
+        splitter.addWidget(self.editor_pane)
         splitter.setStretchFactor(0, 0)
         splitter.setStretchFactor(1, 2)
         splitter.setStretchFactor(2, 4)          # the cards are the widest thing on the page
@@ -1511,6 +2386,8 @@ class RosterEditorPanel(QWidget):
         self.team_list = QListWidget()
         self.team_list.setAccessibleName("Teams and player lists")
         self.team_list.currentRowChanged.connect(self._team_changed)
+        self.team_list.setContextMenuPolicy(Qt.CustomContextMenu)        # b81 wave 3: Finn's team menu
+        self.team_list.customContextMenuRequested.connect(self._show_team_menu)
         box.addWidget(self.team_list, 1)
         self.pool_label = QLabel("")
         self.pool_label.setWordWrap(True)
@@ -1519,56 +2396,115 @@ class RosterEditorPanel(QWidget):
 
     def _build_grid_pane(self) -> QWidget:
         pane = QWidget()
+        # b81: wide enough for the grid's position, name and Depth columns; its button rows wrap below this
+        pane.setMinimumWidth(440)
         box = QVBoxLayout(pane)
         box.setContentsMargins(0, 0, 0, 0)
         self.search = QLineEdit()
-        self.search.setPlaceholderText("Search name, years pro (R = rookie) or college")
+        self.search.setPlaceholderText("Search this list. Ctrl+F searches every team")
         self.search.setAccessibleName("Search players")
+        self.search.setToolTip("Filters the list on the left by name, years pro (R = rookie) or college. "
+                               "Ctrl+F (Find player) searches every team, the free agents and the draft class.")
         self.search.textChanged.connect(lambda _t: self.refresh_grid())
-        box.addWidget(self.search)
+        search_row = QHBoxLayout()
+        search_row.addWidget(self.search, 1)
+        self.find_button = QPushButton("Find…")
+        self.find_button.setToolTip("Find player (Ctrl+F): search every team, the reserves, the free agents and "
+                                    "the draft class, then go to him.")
+        self.find_button.clicked.connect(self.studio_find)
+        search_row.addWidget(self.find_button)
+        box.addLayout(search_row)
 
-        self.chip_row = QHBoxLayout()
-        self.chip_row.setSpacing(2)
+        # b81: the chips wrap instead of eliding; under one pool eleven chips did not fit a 1366-px window and
+        # EDGE and K/P were drawn as "..."
+        self.chip_box = QWidget()
+        self.chip_row = FlowLayout(self.chip_box, spacing=2, pin_parent_height=True)
         self.chips: dict[str, QToolButton] = {}
         self._rebuild_chips()
-        box.addLayout(self.chip_row)
+        box.addWidget(self.chip_box)
 
-        self.player_table = QTableWidget(0, 7)
-        self.player_table.setHorizontalHeaderLabels(["POS", "#", "Player", "Yrs", "Est. OVR", "Depth", "Locks"])
-        header_item = self.player_table.horizontalHeaderItem(4)
-        if header_item is not None:
-            header_item.setToolTip("Editor estimate. The overall shown in-game may differ.")
-        depth_item = self.player_table.horizontalHeaderItem(5)
-        if depth_item is not None:
-            depth_item.setToolTip("Stored depth rank / side. The arrows move a player in the team list; "
-                                  "stored depth rank and side are separate.")
+        self.player_table = _PlayerGrid(0, len(GRID_BASE_COLUMNS))
+        self._apply_grid_headers()
+        header = self.player_table.horizontalHeader()
+        header.setSectionsClickable(True)
+        header.setSortIndicatorShown(False)
+        header.sectionClicked.connect(self._header_clicked)
         self.player_table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.player_table.setSelectionMode(QAbstractItemView.SingleSelection)
+        # b81 M3: Shift/Ctrl click and Ctrl+A select several players; the card shows the current row
+        self.player_table.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.player_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.player_table.verticalHeader().setVisible(False)
         self.player_table.setAccessibleName("Players")
+        self.player_table.setToolTip("Select a player to edit him on the right. Right-click for copy, paste, "
+                                     "Place on IR and Finn's other player commands.")
+        self.player_table.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.player_table.customContextMenuRequested.connect(self._show_grid_menu)
         self.player_table.currentCellChanged.connect(
             lambda row, _c, _pr, _pc: self._select_row(row))
+        self.player_table.itemSelectionChanged.connect(self._selection_changed)
         box.addWidget(self.player_table, 1)
 
-        order = QHBoxLayout()
+        # b81: the depth tools wrap instead of squeezing (arrows, order box, Special teams, Unlock, Columns)
+        self.depth_tools = QWidget()
+        order = FlowLayout(self.depth_tools, spacing=6, pin_parent_height=True)
         self.up_button = QPushButton("↑ Move up")
-        self.up_button.setToolTip("Move this player in the team list. Stored depth rank and side are separate.")
         self.up_button.clicked.connect(lambda: self.move_selected(-1))
         self.down_button = QPushButton("↓ Move down")
-        self.down_button.setToolTip("Move this player in the team list. Stored depth rank and side are separate.")
         self.down_button.clicked.connect(lambda: self.move_selected(1))
+        # b81 R4: a paired position (tackles, guards, receivers, corners, ends ...) has two orders, LT and RT
+        self.depth_order_combo = QComboBox()
+        self.depth_order_combo.setAccessibleName("Depth chart order")
+        self.depth_order_combo.setToolTip("A paired position has two depth chart orders, left (the stored rank) and "
+                                          "right (the stored side). The arrows move him in the one chosen here.")
+        self.depth_order_combo.setVisible(False)
+        self.depth_order_combo.currentIndexChanged.connect(lambda _i: self._refresh_grid_order())
         order.addWidget(self.up_button)
         order.addWidget(self.down_button)
+        order.addWidget(self.depth_order_combo)
+        self.special_teams_button = QPushButton("Special teams…")
+        self.special_teams_button.setToolTip("Finn's Special Teams: returners, holder, kicker, punter and long "
+                                             "snapper for the club shown.")
+        self.special_teams_button.clicked.connect(self.open_special_teams)
+        order.addWidget(self.special_teams_button)
+        self.team_options_button = QPushButton("Team settings…")
+        self.team_options_button.setToolTip("Finn's Options tab: stadium, default jersey, playbook, team play-by-play "
+                                            "and defensive front of the club shown, in an Xbox save or PS2 roster save.")
+        self.team_options_button.clicked.connect(self.open_team_options)
+        order.addWidget(self.team_options_button)
         self.unlock_button = QPushButton("Unlock")
         self.unlock_button.clicked.connect(self.unlock_selected)
         order.addWidget(self.unlock_button)
-        order.addStretch(1)
+        self.columns_button = QToolButton()
+        self.columns_button.setText("Columns ▾")
+        self.columns_button.setPopupMode(QToolButton.InstantPopup)
+        self.columns_button.setToolTip("Add Finn's grid columns: every rating, body, gear and contract. "
+                                       "Click a column heading to sort by it.")
+        self.columns_menu = QMenu(self.columns_button)
+        self.columns_menu.aboutToShow.connect(self._fill_columns_menu)
+        self.columns_button.setMenu(self.columns_menu)
+        order.addWidget(self.columns_button)
         self.count_label = QLabel("")
-        order.addWidget(self.count_label)
-        box.addLayout(order)
+        box.addWidget(self.depth_tools)
+        box.addWidget(self.count_label)
+        # b81 R2: a sorted grid is not the team's order, so the arrows wait until it is back
+        sort_row = QHBoxLayout()
+        self.sort_note = QLabel("")
+        self.sort_note.setWordWrap(True)
+        self.sort_note.setAccessibleName("Grid sort")
+        sort_row.addWidget(self.sort_note, 1)
+        self.team_order_button = QPushButton("Team order")
+        self.team_order_button.setToolTip("Show the list in its own order again (the order Move up and Move down "
+                                          "change).")
+        self.team_order_button.clicked.connect(lambda: self.sort_by(None))
+        sort_row.addWidget(self.team_order_button)
+        self.sort_box = QWidget()
+        self.sort_box.setLayout(sort_row)
+        sort_row.setContentsMargins(0, 0, 0, 0)
+        self.sort_box.setVisible(False)
+        box.addWidget(self.sort_box)
 
-        membership = QHBoxLayout()
+        self.membership_tools = QWidget()
+        membership = FlowLayout(self.membership_tools, spacing=6, pin_parent_height=True)
         self.release_button = QPushButton("Release to free agency")
         self.release_button.setToolTip(
             f"Take the player off this team's pointer list and add him to the free-agent list. "
@@ -1588,8 +2524,7 @@ class RosterEditorPanel(QWidget):
         self.swap_button.clicked.connect(self.open_swap_dialog)
         for widget in (self.release_button, self.team_menu_button, self.swap_button):
             membership.addWidget(widget)
-        membership.addStretch(1)
-        box.addLayout(membership)
+        box.addWidget(self.membership_tools)
         moves = QHBoxLayout()
         self.promote_button = QPushButton("Promote")
         self.demote_button = QPushButton("Demote")
@@ -1615,10 +2550,31 @@ class RosterEditorPanel(QWidget):
         header = QFrame()
         header.setObjectName("playerHeaderCard")
         header.setFrameShape(QFrame.StyledPanel)
-        header_box = QVBoxLayout(header)
-        header_box.setContentsMargins(10, 8, 10, 8)
+        header_row = QHBoxLayout(header)                 # b81 R11: Finn's header portrait, then the text
+        header_row.setContentsMargins(10, 8, 10, 8)
+        header_row.setSpacing(10)
+        self.header_photo = QLabel()
+        self.header_photo.setFixedSize(self.HEADER_PHOTO, self.HEADER_PHOTO)
+        self.header_photo.setAlignment(Qt.AlignCenter)
+        self.header_photo.setObjectName("portraitPreview")
+        self.header_photo.setAccessibleName("Player photo")
+        self.header_photo.hide()
+        photo_column = QVBoxLayout()                     # b81 R42: the photo, with Finn's Clear Photo under it
+        photo_column.setContentsMargins(0, 0, 0, 0)
+        photo_column.setSpacing(2)
+        photo_column.addWidget(self.header_photo, 0, Qt.AlignTop)
+        self.clear_photo_button = QToolButton()
+        self.clear_photo_button.setText("Clear photo")
+        self.clear_photo_button.setAccessibleName("Clear photo")
+        self.clear_photo_button.clicked.connect(lambda _c=False: self.clear_photo())
+        photo_column.addWidget(self.clear_photo_button, 0, Qt.AlignHCenter)
+        photo_column.addStretch(1)
+        header_row.addLayout(photo_column, 0)
+        header_box = QVBoxLayout()
+        header_box.setContentsMargins(0, 0, 0, 0)
         header_box.setSpacing(2)
-        self.header_name = QLabel("—")
+        header_row.addLayout(header_box, 1)
+        self.header_name = QLabel("-")
         name_font = QFont()
         name_font.setPointSizeF(name_font.pointSizeF() + 3)
         name_font.setBold(True)
@@ -1771,18 +2727,26 @@ class RosterEditorPanel(QWidget):
         return len(rows)
 
     def _depth_text(self, player: rr.Player) -> str:
+        """The Depth cell: the depth chart slot he starts in (LT, QB ...) or his rows (LT #2 · RT #3), from the stored
+        rank and side the game reads."""
+
         if self.document is not None and (player.pool, player.index) in self.document.reserve_owner:
             return self.document.membership_text(player)
         record = player.record
         rank, side = record.values['depth_rank'], record.values['depth_side']
-        labels = []
-        if record.position_code in (13, 14):
-            suffix = 'G' if record.position_code == 13 else 'T'
-            if rank == 0:
-                labels.append('L' + suffix)
-            if side == 0:
-                labels.append('R' + suffix)
-        return f"{rank}/{side}" + (" " + " + ".join(labels) if labels else "") + (" IR" if record.on_injured_reserve else "")
+        left, right = rr.depth_slot_names(record.values["position"], self._scheme)
+        starts = [label for label, row in ((left, rank), (right, side)) if label and row == 0]
+        if starts:
+            text = " + ".join(starts)
+        elif right:
+            text = f"{left} #{rank + 1} · {right} #{side + 1}"
+        else:
+            text = f"#{rank + 1}"
+        if self.document is None:
+            return text
+        # b81 finn-r2 review F1: the document's IR test (the IR list in a franchise save), read once per grid refresh
+        context = getattr(self, "_grid_ir_context", None) or self.document.injured_reserve_context()
+        return text + (" IR" if self.document.is_on_injured_reserve(player, context) else "")
 
     def _locks_widget(self, player: rr.Player) -> QWidget:
         host = QWidget()
@@ -1826,7 +2790,7 @@ class RosterEditorPanel(QWidget):
 
     def unlock_selected(self) -> bool:
         player = self.selected_player()
-        if player is None or self.document is None:
+        if player is None or self.document is None or self._refuse_many():
             return False
         before = player.record.values['unknown_52'] & 0x1f
         if not before:
@@ -1845,10 +2809,18 @@ class RosterEditorPanel(QWidget):
     def _team_count_label(self, team: rr.TeamRecord) -> str:
         name = team.abbreviation or team.nickname or f'Team {team.index}'
         if team.index < 32:
-            return f"{name} · {len(team.slots)} active + {len(self.document.reserves[team.index])}/{self.document.reserve_limit(team.index)} reserve"
+            on_ir = self.document.projected_ir_count(team.index)
+            ir_label = f" + {on_ir} IR" if on_ir else ""
+            return (f"{name} · {len(team.slots) - on_ir} active{ir_label}"
+                    f" + {len(self.document.reserves[team.index])}/{self.document.reserve_limit(team.index)} reserve")
         return f"{name} · {len(team.slots)}"
 
     def _restore_composed(self, payload: bytes, edits) -> None:
+        from mod_editor.core import nfl2k5_save_rost as codec
+        with codec.shared_decodes():
+            self._restore_composed_now(payload, edits)
+
+    def _restore_composed_now(self, payload: bytes, edits) -> None:
         self.document.adopt_body(payload)
         self.abilities_panel.set_document(self.document)
         page = self.franchise_panel
@@ -1863,13 +2835,24 @@ class RosterEditorPanel(QWidget):
 
     def _franchise_edit(self, edit) -> bool:
         """Shared chronological undo: publish a fully composed candidate once."""
+        from mod_editor.core import nfl2k5_save_rost as codec
+        with codec.shared_decodes():         # b81 wave 3: the composed path validated the same two payloads 7 times
+            return self._franchise_edit_composed(edit)
+
+    def _franchise_edit_composed(self, edit) -> bool:
         from mod_editor.core import nfl2k5_franchise_save as fs
         if self.document is None:
             return False
+        if edit.kind == "coach" and self.franchise_panel.coaches_only:
+            return self._coach_number_edit(edit)
+        if edit.kind in self.ARENA_ONLY_EDITS:
+            done = self._arena_byte_edit(edit)
+            if done is not None:
+                return done
         before = self.document.to_body()
         old_edits = self.franchise_panel._edits[:self.franchise_panel._cursor]
-        candidate = fs.FranchiseSave(before)
         try:
+            candidate = self.franchise_panel._new_save(before)      # a franchise save, or a roster save's coaches (R5)
             edit.apply(candidate)
             # the roster codec is consulted only when the edit touched roster state (beta-63.1)
             from mod_editor.core.nfl2k5_practice_squad import validate_save_edit
@@ -1886,6 +2869,95 @@ class RosterEditorPanel(QWidget):
             lambda: self._restore_composed(after, old_edits + [edit])))
         self.franchise_panel._refresh_all()
         self.franchise_panel._set_status(edit.label)
+        return True
+
+    # b81 item 6: franchise and coach edits that write the season, the front office, coach records or team settings,
+    # never a player record or a team's list
+    ARENA_ONLY_EDITS = frozenset({"year", "cap", "control", "game", "game_add", "game_remove", "week_clear", "coach",
+                                  "box_score", "game_swap_played",                     # b81 R41
+                                  "coach_swap", "coach_hire", "team_option",
+                                  "coaches_import", "dead_cap_clear"})                 # b81 R2
+
+    def _arena_byte_edit(self, edit) -> bool | None:
+        """b81 item 6: an edit that changes no roster state is written straight into the live bytes. The composed path
+        re-encoded and re-read all 4,164 records two or three times (3 to 4 s an edit on a SOFTDRINK franchise); here
+        the edit runs on the current bytes, the byte ranges it changed are checked against every player record and team
+        list (any overlap falls back to the composed path, returning None), then patched in, and Undo puts exactly those
+        bytes back. Save Xbox save copy encodes the roster over the same bytes as before."""
+
+        assert self.document is not None
+        page = self.franchise_panel
+        document = self.document
+        before = document.to_body()                     # cheap now: unchanged records come from the encode cache
+        try:
+            candidate = page._new_save(before)
+            edit.apply(candidate)
+        except ValueError as exc:
+            page._last_error = str(exc)
+            page._set_status(f"Refused: {exc}")
+            self._set_status(f"Refused: {exc}")
+            return False
+        after = candidate.to_bytes()
+        ranges = rr.changed_ranges(before, after)
+        if not ranges:
+            page._set_status(f"Nothing changed: {edit.label}")
+            return False
+        if rr.ranges_touch(ranges, document.roster_state_ranges()):
+            return None
+        old = [(start, bytes(before[start:end])) for start, end in ranges]
+        new = [(start, bytes(after[start:end])) for start, end in ranges]
+        old_edits = page._edits[:page._cursor]
+
+        def put(chunks, edits) -> None:
+            assert self.document is not None
+            for start, data in chunks:
+                self.document.body[start:start + len(data)] = data
+            page._edits = list(edits)
+            page._cursor = len(edits)
+            page._checks_stale = True
+            page.sync_from_roster()
+
+        put(new, old_edits + [edit])
+        self.undo_stack.push(UndoEntry(edit.label, lambda: put(old, old_edits), lambda: put(new, old_edits + [edit])))
+        page._set_status(edit.label)
+        return True
+
+    def _coach_number_edit(self, edit) -> bool:
+        """b81 R5: one coach number, rating or play-calling share in a ROSTER save, written straight into the coach
+        record inside the live arena. The composed path re-encodes and re-decodes all 4,164 records twice (about 3 s
+        an edit on the SOFTDRINK save, and a coach bar sends one edit per step); a coach record holds no player data,
+        so only its 0xA8 bytes change, and Undo puts exactly those back. Save Xbox save copy encodes the roster over
+        the same arena, so the coach bytes ride along and the copy is signed as usual."""
+
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        assert self.document is not None
+        page = self.franchise_panel
+        body = self.document.body
+        try:
+            probe = page._new_save(bytes(body))
+            offset = probe._coach_offset(int(edit.args["coach"]))
+            edit.apply(probe)
+        except ValueError as exc:
+            page._last_error = str(exc)
+            page._set_status(f"Refused: {exc}")
+            self._set_status(f"Refused: {exc}")
+            return False
+        before = bytes(body[offset:offset + fs.COACH_SIZE])
+        after = bytes(probe.buffer[offset:offset + fs.COACH_SIZE])
+        if before == after:
+            return False
+        old_edits = page._edits[:page._cursor]
+
+        def put(record: bytes, edits) -> None:
+            assert self.document is not None
+            self.document.body[offset:offset + fs.COACH_SIZE] = record
+            page._edits = list(edits)
+            page._cursor = len(edits)
+            page.sync_from_roster()
+            page._set_status(edits[-1].label if edits else "No coach changes.")
+
+        put(after, old_edits + [edit])
+        self.undo_stack.push(UndoEntry(edit.label, lambda: put(before, old_edits), lambda: put(after, old_edits + [edit])))
         return True
 
     def _show_coaches_tab(self, enabled: bool, state: str) -> None:
@@ -1912,7 +2984,7 @@ class RosterEditorPanel(QWidget):
 
     def reserve_selected(self, promote: bool) -> bool:
         player = self.selected_player()
-        if self.document is None or player is None:
+        if self.document is None or player is None or self._refuse_many():
             return False
         team = self.document.club_of(player)
         if team is None:
@@ -2017,6 +3089,11 @@ class RosterEditorPanel(QWidget):
         if tooltip:
             card.setToolTip(tooltip)
             card.caption.setToolTip(tooltip)
+        if name == "jersey":                              # b81 R42: Finn put "PBP Last Only" beside the number
+            self.pbp_last_check = QCheckBox("PBP last name only")
+            self.pbp_last_check.setAccessibleName("PBP last name only")
+            self.pbp_last_check.clicked.connect(self._pbp_last_clicked)
+            card.layout().addWidget(self.pbp_last_check)
         return card
 
     def _build_report_page(self) -> QWidget:
@@ -2081,7 +3158,6 @@ class RosterEditorPanel(QWidget):
             button.clicked.connect(lambda _c=False, name=label: self._chip_clicked(name))
             self.chips[label] = button
             self.chip_row.addWidget(button)
-        self.chip_row.addStretch(1)
 
     def _refresh_position_card(self) -> None:
         """Name the Position picker in the loaded scheme and grey out any code it retired."""
@@ -2096,8 +3172,8 @@ class RosterEditorPanel(QWidget):
             name = rr.position_name(code, self._scheme)
             retired = rr.is_retired_position(code, self._scheme)
             labels.append(f"{name} (retired)" if retired else name)
-            tooltips[code] = (f"{rr.position_long_name(code, self._scheme)} — code {code}"
-                              + (" — this roster's scheme retired it; the picker will not write it"
+            tooltips[code] = (f"{rr.position_long_name(code, self._scheme)}: code {code}"
+                              + (": this roster's scheme retired it; the picker will not write it"
                                  if retired else ""))
         card.set_choices(labels, codes, disabled=rr.retired_position_codes(self._scheme),
                          tooltips=tooltips)
@@ -2130,17 +3206,17 @@ class RosterEditorPanel(QWidget):
         detection = self._scheme_detection
         title = rr.SCHEME_TITLES[self._scheme]
         if not detection:
-            self.scheme_label.setText(f"Position names: {title} — nothing loaded yet.")
+            self.scheme_label.setText(f"Position names: {title}, nothing loaded yet.")
             return
         detected = str(detection.get("scheme", "retail"))
-        lead = (f"Position names: {title} — detected from the {detection.get('source', 'roster data')}"
+        lead = (f"Position names: {title}, detected from the {detection.get('source', 'roster data')}"
                 if self._scheme_choice == "auto"
-                else f"Position names: {title} — chosen by you (detection said {rr.SCHEME_TITLES[detected]})")
+                else f"Position names: {title}, chosen by you (detection said {rr.SCHEME_TITLES[detected]})")
         parts = [f"{lead}: {detection.get('why', '')}."]
         if detection.get("note"):
             parts.append(f"⚠ {detection['note']}.")
         if detection.get("confidence") == "low" and self._scheme_choice == "auto":
-            parts.append("Low confidence — set it under Change position scheme if you know the disc.")
+            parts.append("Low confidence: set it under Change position scheme if you know the disc.")
         if self._source_kind == "save":
             parts.append("Check the position scheme against the disc you play with.")
         self.scheme_label.setText(" ".join(parts))
@@ -2172,11 +3248,14 @@ class RosterEditorPanel(QWidget):
         self.franchise_panel.clear()
         self.coaches_panel.set_roster(document, kind=kind or "disc")
         self._show_coaches_tab(self.coaches_panel.state == "disc", self.coaches_panel.state)
+        self.pages.setTabVisible(self._coaches_index, True)          # load_save hides it again for a roster save
         # an explicit load replaces the Anniversary catalog too (a routine refresh never reaches here)
         self._reload_espn25(source if kind == "disc" else None)
         self._dirty.clear()
         self.undo_stack.clear()
         self._clipboard = None
+        self._clipboard_identity = None
+        self._team_pastes = []              # the team clipboard is a self-contained package; it outlives the roster
         self._college_repairs = {}
         self._college_generation += 1
         self._college_check_container = None
@@ -2191,6 +3270,7 @@ class RosterEditorPanel(QWidget):
         self.college_combo.addItems(document.colleges)
         self.college_combo.blockSignals(False)
         self._populate_teams()
+        self._apply_default_list()
         self.refresh_grid()
         self._refresh_pool_label()
         self._replan_repairs()
@@ -2199,7 +3279,7 @@ class RosterEditorPanel(QWidget):
                    f"available on the Checks tab" if self._repair_plans else "")
         self._set_status(
             f"{summary['players']:,} players · {summary['teams']} teams · {summary['free_agents']} free "
-            f"agents · {summary['draft_class']} draft prospects{repairs}")
+            f"agents · {summary['draft_class']} named draft prospects · {summary['draft_slots']} open draft slots{repairs}")
         self._edits_snapshot = None
         self._offer_college_repair(document)
         if self._repair_plans:
@@ -2257,7 +3337,8 @@ class RosterEditorPanel(QWidget):
     def is_dirty(self) -> bool:
         """Whether this roster (or its Anniversary tab) carries edits the user would lose on a reload."""
 
-        return bool(self._dirty) or self.undo_stack.can_undo() or self.espn25_dirty()
+        return (bool(self._dirty) or self.undo_stack.can_undo() or self.espn25_dirty()
+                or self._appearance_bundle is not None or self.coaches_panel.has_changes())
 
     # ------------------------------------------------------------------ ESPN Anniversary
     @staticmethod
@@ -2418,9 +3499,12 @@ class RosterEditorPanel(QWidget):
                            kind="disc", detection=self.detect_scheme(document, Path(path)))
         return True
 
-    def load_save(self, path: Path | str) -> bool:
+    def load_save(self, path: Path | str, *, directory: str | None = None) -> bool:
+        from mod_editor.core import nfl2k5_ps2_rosters as ps2
         try:
-            container = rr.SaveContainer.load(path)
+            # b81 wave 3: a PS2 roster save opens on the same pages through a container of the same shape
+            container = (ps2.Ps2SaveContainer.load(path, directory=directory) if ps2.is_ps2_path(path)
+                         else rr.SaveContainer.load(path))
         except Exception as exc:  # noqa: BLE001
             self._set_status(f"Could not read the save: {plain_error(exc)}")
             return False
@@ -2433,10 +3517,22 @@ class RosterEditorPanel(QWidget):
                              "(Check my rosters… on the Checks tab can still list its college references, read-only)")
             return False
         # a save carries no executable, so the scheme can only come from the records
-        self.load_document(document, label=f"{Path(path).name} (signature verified)",
-                           source=Path(path), kind="save", detection=self.detect_scheme(document))
+        ps2_save = getattr(container, "platform", "") == "ps2"
+        label = (f"{Path(path).name}: {container.directory} (PS2, checksum OK)" if ps2_save
+                 else f"{Path(path).name} (signature verified)")
+        self.load_document(document, label=label, source=Path(path), kind="save",
+                           detection=self.detect_scheme(document))
         self._show_franchise(self._franchise_summary(container.savegame))
         self.franchise_panel.load(container, document)
+        # b81 R5: a roster save's coaches are edited on the Coaches page beside Roster; the build staff plan (also
+        # called Coaches) is for discs, so it steps aside instead of showing a second, disabled Coaches tab
+        self.pages.setTabVisible(self._coaches_index, not self.franchise_panel.coaches_only)
+        if ps2_save:
+            self.write_button.setText("Save PS2 save copy…")
+            self._set_status("PS2 roster save opened. Edits are written into a new .psu (or a copy of the card) with the "
+                             "PS2 checksum and checked by the Studio's save verifier. How the PS2 game reads them has "
+                             "not been checked in PCSX2 yet.")
+        self._refresh_actions()                       # the club settings and coaches need the loaded franchise view
         return True
 
     @staticmethod
@@ -2493,14 +3589,18 @@ class RosterEditorPanel(QWidget):
         lost = (f"{len(self._dirty)} player{'s' if len(self._dirty) != 1 else ''} edited here" if self._dirty else "")
         if staff:
             lost += (" and " if lost else "") + f"{staff} staff change{'s' if staff != 1 else ''}"
-        box.setText(f"{lost or 'Your edits'} would be lost."
-                    f"{anniversary}\n\n"
-                    "Export roster edits (.json)… or Save disc copy… first to keep them.")
+        save_hint = ("Use Save Xbox save copy to keep coach changes." if self.franchise_panel.edits
+                     and self.franchise_panel.coaches_only else
+                     "Use Save Xbox save copy to keep franchise changes."
+                     if self.franchise_panel.edits else
+                     "Export roster edits or save a copy first to keep them.")
+        box.setText(f"{lost or 'Your edits'} would be lost.{anniversary}\n\n{save_hint}")
         keep = box.addButton("Keep editing", QMessageBox.RejectRole)
-        box.addButton("Discard roster changes", QMessageBox.DestructiveRole)
+        discard = box.addButton("Discard roster changes", QMessageBox.DestructiveRole)
         box.setDefaultButton(keep)
+        box.setEscapeButton(keep)
         box.exec_()
-        return box.clickedButton() is not keep
+        return box.clickedButton() is discard
 
     def _choose_disc(self) -> None:
         if not self._confirm_replace():
@@ -2514,6 +3614,29 @@ class RosterEditorPanel(QWidget):
             return
         chosen, _f = QFileDialog.getOpenFileName(self, "Open an Xbox NFL 2K5 save", "", SAVE_FILTER)
         if chosen and self.load_save(chosen):
+            self.auto_filled = False
+
+    def _choose_ps2_save(self) -> None:
+        if not self._confirm_replace():
+            return
+        chosen, _f = QFileDialog.getOpenFileName(self, "Open a PS2 NFL 2K5 roster save", "", PS2_SAVE_FILTER)
+        if not chosen:
+            return
+        directory = None
+        if chosen.lower().endswith(".ps2"):
+            from mod_editor.core import nfl2k5_ps2_rosters as ps2
+            try:
+                rosters = ps2.card_saves(chosen)
+            except Exception as exc:  # noqa: BLE001
+                self._set_status(f"Could not read the card: {plain_error(exc)}")
+                return
+            if len(rosters) > 1:
+                from PyQt5.QtWidgets import QInputDialog
+                directory, ok = QInputDialog.getItem(self, "Choose a save", "2K5 roster saves on this card:",
+                                                     rosters, 0, False)
+                if not ok:
+                    return
+        if self.load_save(chosen, directory=directory):
             self.auto_filled = False
 
     def _use_open_disc(self) -> None:
@@ -2596,48 +3719,279 @@ class RosterEditorPanel(QWidget):
         group = chart.get(code, [])
         for position, candidate in enumerate(group):
             if candidate is player:
+                left, right = rr.depth_slot_names(code, self._scheme)
+                both = (right is not None and player.record.values["depth_rank"] == 0
+                        and player.record.values["depth_side"] == 0)
                 return (f"{rr.position_long_name(code, self._scheme)} #{position + 1} of "
                         f"{len(group)} on this team. Stored depth rank {player.record.values['depth_rank']} / "
-                        f"side {player.record.values['depth_side']}.")
+                        f"side {player.record.values['depth_side']}: the game's depth chart and starters follow these "
+                        f"rows, not the team list order."
+                        + (f" He starts in both {left} and {right}; move one of them." if both else ""))
         return ""
 
     def refresh_grid(self) -> None:
+        previous = self.selected_player()
         players = self.visible_players()
+        if self._sort is not None:
+            players = self._sorted(players)
+        elif self._chip != "All" and self._group[0] == "team":
+            # b81 R4: one position group of a club reads as its depth chart, in the order the game uses
+            field = self.depth_field()
+            slot = {offset: i for i, offset in enumerate(self.document.teams[self._group[1]].slots)} \
+                if self.document is not None and 0 <= self._group[1] < len(self.document.teams) else {}
+            codes = list(dict.fromkeys(p.record.values["position"] for p in players))
+            players = sorted(players, key=lambda p: (
+                codes.index(p.record.values["position"]),
+                p.record.values[field if p.record.values["position"] in rr.PAIRED_DEPTH_CODES else "depth_rank"],
+                slot.get(p.offset, 0)))
         self._rows = players
+        self._grid_ir_context = self.document.injured_reserve_context() if self.document is not None else None
         chart = self._depth_chart()
-        self.player_table.blockSignals(True)
-        self.player_table.setRowCount(len(players))
+        columns = self._grid_columns
+        table = self.player_table
+        table.setUpdatesEnabled(False)
+        table.blockSignals(True)
+        if table.columnCount() != len(columns):
+            table.setColumnCount(len(columns))
+            self._apply_grid_headers()
+        table.clearContents()
+        table.setRowCount(len(players))
+        team_list = self._group[0] == "team"
+        locks_at = columns.index("locks") if "locks" in columns else -1
         for row, player in enumerate(players):
-            record = player.record
-            marker = "● " if (player.pool, player.index) in self._dirty else ""
-            cells = (record.position_name, str(record.values["jersey"]), f"{marker}{player.display}",
-                     rr.years_pro_label(record.values["years_pro"]), str(record.overall()),
-                     self._depth_text(player))
-            note = self._depth_note(chart, player) if chart else ""
-            for column, text in enumerate(cells):
-                item = QTableWidgetItem(text)
-                if column in (1, 3, 4):
-                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
-                if column == 0:
-                    item.setToolTip(f"{record.position_long_name} (code {record.values['position']})")
-                elif column == 5 and note:
-                    item.setToolTip(note)
-                self.player_table.setItem(row, column, item)
-            self.player_table.setCellWidget(row, 6, self._locks_widget(player))
-        self.player_table.resizeColumnsToContents()
-        self.player_table.blockSignals(False)
+            for column, item in enumerate(self._row_items(player, chart)):
+                if item is not None:
+                    table.setItem(row, column, item)
+            # lock check boxes where they can do something: a team list, or a stale lock to clear (b81: 871
+            # free agents built 4,355 check boxes and opening the list took most of a second)
+            if locks_at >= 0 and (team_list or any(player.record.depth_locks.values())):
+                table.setCellWidget(row, locks_at, self._locks_widget(player))
+        table.resizeColumnsToContents()
+        table.blockSignals(False)
+        table.setUpdatesEnabled(True)
         self.count_label.setText(f"{len(players)} shown · {len(self._dirty)} edited")
+        self._refresh_sort_note()
         if players:
-            row = self.player_table.currentRow()
-            self.player_table.setCurrentCell(min(row if row >= 0 else 0, len(players) - 1), 0)
-            self._select_row(self.player_table.currentRow())
+            row = next((i for i, p in enumerate(players) if p is previous), -1)
+            if row < 0:
+                row = table.currentRow()
+            table.setCurrentCell(min(row if row >= 0 else 0, len(players) - 1), 0)
+            self._select_row(table.currentRow())
         else:
             self._show_player(None)
         self._refresh_actions()
 
+    # ------------------------------------------------------------------ grid columns and sorting (b81 R2)
+    def _apply_grid_headers(self) -> None:
+        tips = {"ovr": "Editor estimate. The overall shown in-game may differ.",
+                "depth": "His depth chart slot or rows (LT #2 · RT #3), from the stored depth rank and side the game "
+                         "reads. Move up and Move down change them."}
+        for column, key in enumerate(self._grid_columns):
+            label = dict(GRID_BASE_COLUMNS).get(key) or GRID_SHORT_LABELS.get(key) or grid_column_label(key)
+            item = QTableWidgetItem(label)
+            item.setToolTip(tips.get(key) or f"{grid_column_label(key)}. Click to sort; click again to reverse.")
+            self.player_table.setHorizontalHeaderItem(column, item)
+
+    def _cell(self, player: rr.Player, key: str) -> tuple[str, Any]:
+        """The text a grid column shows for ``player`` and the value it sorts by."""
+
+        record = player.record
+        values = record.values
+        if key == "pos":
+            return record.position_name, (values["position"], player.index)
+        if key == "jersey":
+            return str(values["jersey"]), values["jersey"]
+        if key == "player":
+            marker = "● " if (player.pool, player.index) in self._dirty else ""
+            return f"{marker}{player.display}", (player.last.casefold(), player.first.casefold())
+        if key == "years":
+            return rr.years_pro_label(values["years_pro"]), values["years_pro"]
+        if key == "ovr":
+            overall = record.overall()
+            return str(overall), overall
+        if key == "depth":
+            return self._depth_text(player), (values["position"], values["depth_rank"], values["depth_side"])
+        if key == "locks":
+            locks = record.depth_locks
+            return "", sum(1 << n for n, on in enumerate(locks.values()) if on)
+        if key == "age":
+            birth = record.birth_date
+            if birth is None:
+                return "", -1
+            year = (self.document.reference_year if self.document is not None else None) or 2004
+            age = year - birth.year - ((9, 1) < (birth.month, birth.day))
+            return str(age), age
+        if key == "college":
+            return player.college, player.college.casefold()
+        if key == "height":
+            return record.height_text, values["height"]
+        if key == "weight":
+            return str(record.weight), record.weight
+        if key == "contract_value":
+            return f"{record.contract_millions:.2f}", values["contract_value"]
+        value = record.get(key)
+        choices = rr.ENUMS.get(key)
+        if choices is not None and 0 <= value < len(choices):
+            return str(choices[value]), value
+        return str(value), value
+
+    def _row_items(self, player: rr.Player, chart: dict[int, list[rr.Player]]) -> list[QTableWidgetItem | None]:
+        items: list[QTableWidgetItem | None] = []
+        record = player.record
+        for key in self._grid_columns:
+            text, _sort_key = self._cell(player, key)
+            if key == "locks" and not any(record.depth_locks.values()):
+                items.append(None)
+                continue
+            item = QTableWidgetItem(text)
+            if key not in ("pos", "player", "depth", "college") and key not in rr.ENUMS:
+                item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            if key == "pos":
+                item.setToolTip(f"{record.position_long_name} (code {record.values['position']})")
+            elif key == "depth" and chart:
+                note = self._depth_note(chart, player)
+                if note:
+                    item.setToolTip(note)
+            items.append(item)
+        return items
+
+    def _sorted(self, players: list[rr.Player]) -> list[rr.Player]:
+        assert self._sort is not None
+        key, descending = self._sort
+        if key not in self._grid_columns:
+            return players
+        # a stable sort over the list's own order, so equal values keep the team order
+        return sorted(players, key=lambda p: self._cell(p, key)[1], reverse=descending)
+
+    def sort_by(self, key: str | None, descending: bool | None = None) -> None:
+        """Sort the grid by a column (Finn's grid header), or ``None`` for the list's own order. A ratings or
+        number column sorts highest first on the first click. The selected player stays selected."""
+
+        if key is None:
+            self._sort = None
+        else:
+            if key not in self._grid_columns:
+                self.set_grid_columns([*self._grid_columns, key], refresh=False)
+            if descending is None:
+                descending = key in GRID_HIGH_FIRST
+            self._sort = (key, bool(descending))
+        self.refresh_grid()
+
+    def _header_clicked(self, column: int) -> None:
+        if not 0 <= column < len(self._grid_columns):
+            return
+        key = self._grid_columns[column]
+        if self._sort is not None and self._sort[0] == key:
+            self.sort_by(key, not self._sort[1])
+        else:
+            self.sort_by(key)
+
+    def set_grid_columns(self, keys: Sequence[str], *, refresh: bool = True) -> list[str]:
+        """Show the base columns plus ``keys`` from Finn's bands, in band order. Unknown keys are ignored."""
+
+        known = {key for band in GRID_BANDS.values() for key in band}
+        wanted = [key for key in keys if key in known]
+        extra = [key for band in GRID_BANDS.values() for key in band if key in wanted]
+        self._grid_columns = [key for key, _label in GRID_BASE_COLUMNS] + list(dict.fromkeys(extra))
+        if self._sort is not None and self._sort[0] not in self._grid_columns:
+            self._sort = None
+        self.player_table.setColumnCount(len(self._grid_columns))
+        self._apply_grid_headers()
+        if refresh:
+            self.refresh_grid()
+        return list(self._grid_columns)
+
+    def _toggle_grid_column(self, key: str, shown: bool) -> None:
+        extra = [k for k in self._grid_columns if k not in dict(GRID_BASE_COLUMNS)]
+        if shown and key not in extra:
+            extra.append(key)
+        elif not shown and key in extra:
+            extra.remove(key)
+        self.set_grid_columns(extra)
+
+    def _show_band(self, band: str, shown: bool) -> None:
+        extra = [k for k in self._grid_columns if k not in dict(GRID_BASE_COLUMNS)]
+        members = GRID_BANDS[band]
+        extra = [k for k in extra if k not in members] + (list(members) if shown else [])
+        self.set_grid_columns(extra)
+
+    def _fill_columns_menu(self) -> None:
+        menu = self.columns_menu
+        menu.clear()
+        for band, keys in GRID_BANDS.items():
+            sub = menu.addMenu(band)
+            sub.addAction(f"Show all {band.lower()}", lambda b=band: self._show_band(b, True))
+            sub.addAction(f"Hide all {band.lower()}", lambda b=band: self._show_band(b, False))
+            sub.addSeparator()
+            for key in keys:
+                action = sub.addAction(grid_column_label(key))
+                action.setCheckable(True)
+                action.setChecked(key in self._grid_columns)
+                action.toggled.connect(lambda on, k=key: self._toggle_grid_column(k, on))
+        menu.addSeparator()
+        menu.addAction("Fewer columns (the usual seven)", lambda: self.set_grid_columns([]))
+
+    def _refresh_sort_note(self) -> None:
+        if self._sort is None:
+            self.sort_box.setVisible(False)
+            self.player_table.horizontalHeader().setSortIndicatorShown(False)
+            return
+        key, descending = self._sort
+        column = self._grid_columns.index(key) if key in self._grid_columns else -1
+        header = self.player_table.horizontalHeader()
+        header.setSortIndicatorShown(column >= 0)
+        if column >= 0:
+            header.setSortIndicator(column, Qt.DescendingOrder if descending else Qt.AscendingOrder)
+        direction = "highest first" if descending else "lowest first"
+        if key in ("player", "college", "pos") or key in rr.ENUMS:
+            direction = "Z to A" if descending else "A to Z"
+        self.sort_note.setText(f"Sorted by {grid_column_label(key)}, {direction}. Team order puts the list back.")
+        self.sort_box.setVisible(True)
+
     def selected_player(self) -> rr.Player | None:
         row = self.player_table.currentRow()
         return self._rows[row] if 0 <= row < len(self._rows) else None
+
+    def selected_players(self) -> list[rr.Player]:
+        """Every selected player in grid order (b81 M3). The grid is rebuilt in its sorted order, so a row is
+        always the player in ``_rows[row]``. ``selected_player()`` stays the current row the card shows."""
+
+        model = self.player_table.selectionModel()
+        if model is None:
+            return []
+        rows: set[int] = set()
+        for chosen in model.selection():
+            rows.update(range(chosen.top(), chosen.bottom() + 1))
+        return [self._rows[row] for row in sorted(rows) if 0 <= row < len(self._rows)]
+
+    def select_all_players(self) -> int:
+        """Finn's Edit > Select All (Ctrl+A on the grid): every player shown in the list."""
+
+        self.player_table.selectAll()
+        return len(self.selected_players())
+
+    def _multi_selection(self) -> list[rr.Player]:
+        chosen = self.selected_players()
+        return chosen if len(chosen) > 1 else []
+
+    def _refuse_many(self) -> bool:
+        """True (with a plain status line) when several players are selected: the single-player commands are
+        refused then, so none of them quietly acts on the current row alone."""
+
+        count = len(self.selected_players())
+        if count > 1:
+            self._set_status(f"{count} players are selected. Choose one player to use this.")
+            return True
+        return False
+
+    def _selection_changed(self) -> None:
+        count = len(self.selected_players())
+        before, self._selected_count = self._selected_count, count
+        if count > 1 or before > 1:
+            self._refresh_actions()
+        if count > 1 and count != before:
+            self._set_status(f"{count} players selected. Release, Clear career stats and the Global editor "
+                             "act on all of them. The card shows the one you clicked last.")
 
     def select_player(self, player: rr.Player) -> bool:
         for row, candidate in enumerate(self._rows):
@@ -2649,6 +4003,1002 @@ class RosterEditorPanel(QWidget):
     def _select_row(self, row: int) -> None:
         self._show_player(self._rows[row] if 0 <= row < len(self._rows) else None)
 
+    # ------------------------------------------------------------------ Finn's one-shot passes and options (b81)
+    def body_type_preview(self, method: str, *, current_list_only: bool = False) -> list[dict[str, Any]]:
+        if self.document is None:
+            return []
+        return rr.body_type_preview(self.document, method, self.visible_players() if current_list_only else None)
+
+    def apply_body_type(self, rows: Sequence[dict[str, Any]]) -> int:
+        """Through the Global editor's undoable apply, so Undo and Show my changes cover it."""
+
+        if not rows:
+            return 0
+        return self.apply_global_edit([{**row, "attribute": "body"} for row in rows], "body")
+
+    def open_body_type(self, method: str = "weight") -> BodyTypeDialog | None:
+        if self.document is None:
+            self._set_status("Load a roster first.")
+            return None
+        dialog = BodyTypeDialog(self, method)
+        dialog.exec_()
+        return dialog
+
+    def _list_key(self) -> str:
+        kind, index = self._group
+        if kind in ("team", "reserve") and self.document is not None and 0 <= index < len(self.document.teams):
+            return f"{kind}:{self.document.teams[index].abbreviation}"
+        return kind
+
+    def remember_default_list(self) -> str:
+        """Finn's Default Team: open on this list (a club by its abbreviation, Free Agents, the Draft Class...)."""
+
+        key = self._list_key()
+        try:
+            _roster_settings().setValue(DEFAULT_LIST_KEY, key)
+        except Exception as exc:  # noqa: BLE001 - a preference must never break the page
+            self._set_status(f"Could not remember the list: {plain_error(exc)}")
+            return ""
+        item = self.team_list.currentItem()
+        self._set_status(f"Rosters will open on {item.text().split(' · ')[0] if item else key} next time.")
+        return key
+
+    def forget_default_list(self) -> None:
+        try:
+            _roster_settings().remove(DEFAULT_LIST_KEY)
+        except Exception:  # noqa: BLE001
+            pass
+        self._set_status("Rosters will open on the first list next time.")
+
+    def _apply_default_list(self) -> None:
+        try:
+            key = str(_roster_settings().value(DEFAULT_LIST_KEY, "") or "")
+        except Exception:  # noqa: BLE001
+            return
+        if not key or self.document is None:
+            return
+        kind, _sep, abbreviation = key.partition(":")
+        index = -1
+        if abbreviation:
+            index = next((t.index for t in self.document.teams if t.abbreviation == abbreviation), -2)
+        row = self._team_list_row(kind, index)
+        if row >= 0:
+            with QSignalBlocker(self.team_list):
+                self.team_list.setCurrentRow(row)
+            self._group = (kind, index)
+
+    def export_html_text(self) -> str:
+        """Finn's Export as HTML: the list shown, with the grid's columns, in its current order."""
+
+        import html
+        from datetime import date
+        columns = [key for key in self._grid_columns if key != "locks"]
+        heads = "".join(f"<th>{html.escape(grid_column_label(key))}</th>" for key in columns)
+        body = []
+        for player in self._rows:
+            cells = []
+            for key in columns:
+                text, _sort = self._cell(player, key)
+                cells.append(f"<td>{html.escape(text.lstrip('● '))}</td>")
+            body.append("<tr>" + "".join(cells) + "</tr>")
+        item = self.team_list.currentItem()
+        title = html.escape(item.text().split(" · ")[0].strip() if item else "Players")
+        return ("<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\">"
+                f"<title>{title}</title>"
+                "<style>body{font-family:sans-serif;margin:16px}table{border-collapse:collapse}"
+                "th,td{border:1px solid #999;padding:2px 6px;text-align:left}th{background:#eee}</style>"
+                f"</head><body><h1>{title}</h1><p>{len(self._rows)} players · exported by 2K5 Mod Studio on "
+                f"{date.today().isoformat()}</p><table><thead><tr>{heads}</tr></thead><tbody>\n"
+                + "\n".join(body) + "\n</tbody></table></body></html>\n")
+
+    def _export_html(self) -> None:
+        if self.document is None:
+            return
+        chosen, _f = QFileDialog.getSaveFileName(self, "Export this list as a web page", "players.html",
+                                                 "Web pages (*.html *.htm);;All files (*)")
+        if not chosen:
+            return
+        try:
+            Path(chosen).write_text(self.export_html_text(), encoding="utf-8", newline="\n")
+        except OSError as exc:
+            show_operation_error(self, "write the web page", plain_error(exc))
+            return
+        self._set_status(f"Wrote {chosen} ({len(self._rows)} players).")
+
+    def print_list(self, printer: "QPrinter") -> bool:
+        """Finn's File > Print: the same table the HTML export writes, sent to ``printer`` (a test passes a PDF one)."""
+
+        if self.document is None:
+            return False
+        page = QTextDocument()
+        page.setHtml(self.export_html_text())
+        page.print_(printer)
+        return True
+
+    def print_this_list(self) -> None:
+        if self.document is None:
+            self._set_status("Load a roster first, then print its list.")
+            return
+        from PyQt5.QtPrintSupport import QPrintDialog, QPrinter     # review F6: only when printing
+        printer = QPrinter(QPrinter.HighResolution)
+        printer.setOrientation(QPrinter.Landscape)           # the grid is wide
+        printer.setDocName("Player list")
+        dialog = QPrintDialog(printer, self)
+        dialog.setWindowTitle("Print this list")
+        if dialog.exec_() != QDialog.Accepted:
+            return
+        try:
+            self.print_list(printer)
+        except Exception as exc:  # noqa: BLE001 - a printer problem is reported, never a crash
+            show_operation_error(self, "print the list", plain_error(exc))
+            return
+        self._set_status(f"Sent the list to the printer ({len(self._rows)} players).")
+
+    # ------------------------------------------------------------------ team settings (b81 R13)
+    def team_options_reason(self) -> str:
+        kind, index = self._group
+        if self.document is None or kind != "team" or not 0 <= index < len(self.document.teams) \
+                or not self.document.teams[index].is_club:
+            return "Open a club to change its team settings."
+        if self._source_kind != "save":
+            return ("Team settings are edited in an Xbox save or PS2 roster save. On a disc, the Studio's "
+                    "Build steps set stadiums and uniforms.")
+        if self.franchise_panel.save is None:
+            return "This save has no club settings the Studio can read."
+        return ""
+
+    def open_team_options(self) -> TeamOptionsDialog | None:
+        reason = self.team_options_reason()
+        if reason:
+            self._set_status(reason)
+            return None
+        dialog = TeamOptionsDialog(self, self._group[1])
+        dialog.exec_()
+        return dialog
+
+    def apply_team_options(self, team_index: int, changes: Mapping[str, int],
+                           *, labels: Mapping[str, str] | None = None) -> tuple[bool, str]:
+        """One journal edit (one undo) for any number of a club's settings, through the franchise page's journal."""
+
+        if not changes:
+            return False, "Nothing to change."
+        from mod_editor.gui.franchise_panel_qt import FranchiseEdit
+        team = self.document.teams[team_index] if self.document is not None else None
+        words = {"stadium": "stadium", "jersey": "default jersey", "playbook": "playbook", "pbp": "team play-by-play",
+                 "front": "defensive front"}
+        detail = "; ".join(f"{words.get(key, key)} {(labels or {}).get(key, value)}" for key, value in changes.items())
+        label = f"{team.abbreviation if team else team_index} settings: {detail}"
+        ok = self.franchise_panel.push(FranchiseEdit("team_option", label, {"team": team_index,
+                                                                           "changes": dict(changes)}))
+        message = label if ok else (self.franchise_panel.last_error or "Refused.")
+        self._set_status(message)
+        return ok, message
+
+    # ------------------------------------------------------------------ special teams (b81 R3)
+    def open_special_teams(self) -> SpecialTeamsDialog | None:
+        kind, index = self._group
+        if self.document is None or kind != "team" or not 0 <= index < len(self.document.teams) \
+                or not self.document.teams[index].is_club:
+            self._set_status("Open a club to set its special teams.")
+            return None
+        dialog = SpecialTeamsDialog(self, index)
+        dialog.exec_()
+        return dialog
+
+    def apply_special_teams(self, team_index: int, choices: Mapping[str, int | None]) -> tuple[bool, str]:
+        """Apply the Special teams choices as one undo: role bytes and returner locks, then the depth rows."""
+
+        if self.document is None:
+            return False, "Load a roster first."
+        document = self.document
+        current = document.special_teams(team_index)
+        before = document.special_teams_snapshot(team_index)
+        changed = []
+        try:
+            for role in ("holder", "kr1", "kr2", "pr", "kicker", "punter", "long_snapper"):
+                if role not in choices:
+                    continue
+                wanted = choices[role]
+                now = current.get(role)
+                if (now.offset if now is not None else None) == wanted:
+                    continue
+                player = document.by_offset.get(wanted) if wanted is not None else None
+                if role in ("kicker", "punter", "long_snapper"):
+                    if player is None:
+                        continue
+                    document.set_depth_role(team_index, role, player)
+                else:
+                    document.set_special_role(team_index, role, player)
+                changed.append(role)
+        except rr.RosterRecordError as exc:
+            document.restore_special_teams(before)
+            self._set_status(f"Nothing changed: {exc}")
+            return False, f"Nothing changed: {exc}"
+        if not changed:
+            return False, "Nothing to change."
+        after = document.special_teams_snapshot(team_index)
+        touched = [document.by_offset[offset] for offset, values in after["players"].items()
+                   if before["players"].get(offset) != values]
+        team = document.teams[team_index]
+
+        def put(snapshot) -> None:
+            assert self.document is not None
+            self.document.restore_special_teams(snapshot)
+            for player in touched:
+                self._after_edit(player)
+            self.refresh_grid()
+
+        self.undo_stack.push(UndoEntry(f"{team.abbreviation}: special teams", lambda: put(before), lambda: put(after)))
+        put(after)
+        words = {"kr1": "KR1", "kr2": "KR2", "pr": "PR", "holder": "holder", "kicker": "kicker", "punter": "punter",
+                 "long_snapper": "long snapper"}
+        message = f"{team.abbreviation} special teams set: {', '.join(words[r] for r in changed)}."
+        self._set_status(message)
+        return True, message
+
+    # ------------------------------------------------------------------ find and keys (b81 R1, R6)
+    def studio_find(self) -> bool:
+        """The studio's Ctrl+F on this page: Finn's Find Player over the whole league once a roster is loaded,
+        else the list search box. Returns True when it handled the key."""
+
+        if self.document is None:
+            self.search.setFocus(Qt.ShortcutFocusReason)
+            return True
+        self.open_find_dialog()
+        return True
+
+    def open_find_dialog(self) -> FindPlayerDialog | None:
+        if self.document is None:
+            self._set_status("Load a roster first.")
+            return None
+        if self._find_dialog is None or self._find_dialog.parent() is not self:
+            self._find_dialog = FindPlayerDialog(self)
+        dialog = self._find_dialog
+        dialog.reset_positions()
+        dialog.refresh()
+        dialog.show()
+        dialog.raise_()
+        dialog.activateWindow()
+        dialog.text.setFocus(Qt.ShortcutFocusReason)
+        dialog.text.selectAll()
+        return dialog
+
+    def _team_list_row(self, kind: str, index: int) -> int:
+        for row in range(self.team_list.count()):
+            data = self.team_list.item(row).data(Qt.UserRole)
+            if data is not None and tuple(data) == (kind, index):
+                return row
+        return -1
+
+    def go_to_player(self, player: rr.Player) -> bool:
+        """Show the list that holds ``player`` (his club, its Reserves, Free Agents, the Draft Class or Other
+        pools), clear the chip and search filters if they would hide him, and select him."""
+
+        if self.document is None or self.document.by_offset.get(player.offset) is not player:
+            return False
+        kind, index = rr.player_location(self.document, player)
+        row = self._team_list_row(kind, index) if kind else -1
+        if row < 0:
+            self._set_status(f"{player.display} is not on any list this page shows.")
+            return False
+        self.pages.setCurrentIndex(0)
+        for label, button in self.chips.items():
+            button.setChecked(label == "All")
+        self._chip = "All"
+        with QSignalBlocker(self.search):
+            self.search.clear()
+        with QSignalBlocker(self.team_list):
+            self.team_list.setCurrentRow(row)
+        self._group = (kind, index)
+        self.refresh_grid()
+        if not self.select_player(player):
+            return False
+        item = self.player_table.item(self.player_table.currentRow(), 0)
+        if item is not None:
+            self.player_table.scrollToItem(item, QAbstractItemView.PositionAtCenter)
+        self.player_table.setFocus(Qt.OtherFocusReason)
+        self._set_status(f"Found {player.display}: {self.document.membership_text(player)}.")
+        return True
+
+    def step_player(self, delta: int) -> bool:
+        """Finn's PgUp / PgDn in Edit Player: the previous or next player of the list, keeping the open tab."""
+
+        if not self._rows:
+            return False
+        row = self.player_table.currentRow()
+        target = max(0, min(len(self._rows) - 1, (row if row >= 0 else 0) + int(delta)))
+        if target == row:
+            return False
+        self.player_table.setCurrentCell(target, max(0, self.player_table.currentColumn()))
+        return True
+
+    def show_position_players(self) -> bool:
+        """Finn's Depth Chart key (Ctrl+D): narrow the grid to the selected player's position group on his
+        list and keep him selected, so Move up / Move down work on that position."""
+
+        player = self.selected_player()
+        if player is None:
+            return False
+        code = player.record.values["position"]
+        chip = next((name for name, codes in rr.position_groups(self._scheme).items()
+                     if code in codes and name in self.chips), None)
+        if chip is None:
+            return False
+        self._chip_clicked(chip)
+        self.select_player(player)
+        self._set_status(f"Showing only the {chip} players of this list. Choose All to see everyone again.")
+        return True
+
+    def _install_shortcuts(self) -> None:
+        """Finn's keys on this page (b81 R6). Copy, paste and Ctrl+D act on the Roster tab only; PgUp/PgDn step
+        to the previous or next player while the editor (Finn's Edit Player) has the focus, so the grid keeps
+        its own page jump; undo and redo also serve the Franchise and Coaches tabs, which share this page's
+        history. Ctrl+F is the studio's own key and arrives through ``studio_find``. A text box keeps its own
+        Ctrl+C/V/Z."""
+
+        def add(keys: Sequence[str], parent: QWidget, slot: Callable[[], Any], name: str) -> None:
+            for key in keys:
+                shortcut = QShortcut(QKeySequence(key), parent)
+                shortcut.setContext(Qt.WidgetWithChildrenShortcut)
+                shortcut.activated.connect(slot)
+                self.shortcuts[f"{name}:{key}"] = shortcut
+
+        roster = self.pages.widget(0)
+        add(["Ctrl+C"], roster, self.copy_player, "copy")
+        add(["Ctrl+V"], roster, lambda: self.paste_player("all"), "paste")
+        add(["Ctrl+Alt+A"], roster, lambda: self.paste_player("attributes"), "paste_attributes")
+        add(["Ctrl+D"], roster, self.show_position_players, "depth")
+        add(["PgDown"], self.editor_pane, lambda: self.step_player(1), "next")
+        add(["PgUp"], self.editor_pane, lambda: self.step_player(-1), "previous")
+        add(["Ctrl+Z"], self, self._shortcut_undo, "undo")
+        add(["Ctrl+Y", "Ctrl+Shift+Z"], self, self._shortcut_redo, "redo")
+
+    def _history_tab(self) -> bool:
+        current = self.pages.currentWidget()
+        return current is not self.espn25_panel
+
+    def _shortcut_undo(self) -> None:
+        if self._history_tab() and self.undo_stack.can_undo():
+            self.undo()
+
+    def _shortcut_redo(self) -> None:
+        if self._history_tab() and self.undo_stack.can_redo():
+            self.redo()
+
+    # ------------------------------------------------------------------ right-click menu (Finn's popup)
+    def grid_menu(self) -> QMenu:
+        """The grid's right-click menu: Finn's player popup in this page's words, with his keys shown."""
+
+        menu = QMenu(self.player_table)
+        player = self.selected_player()
+        loaded = self.document is not None and player is not None
+        chosen = self.selected_players() if loaded else []
+        many = len(chosen) > 1                  # b81 M3: the one-player commands wait while several are selected
+        single_tip = self.MANY_SELECTED_TIP.format(count=len(chosen)) if many else ""
+        action = menu.addAction("Copy player", self.copy_player)
+        action.setShortcut(QKeySequence("Ctrl+C"))
+        action.setEnabled(loaded and not many)
+        action.setToolTip(single_tip)
+        for text, mode, key in (("Paste player", "all", "Ctrl+V"),
+                                ("Paste attributes only", "attributes", "Ctrl+Alt+A"),
+                                ("Paste photo only", "photo", ""),
+                                (EXACT_PASTE_TEXT, "exact", "")):
+            action = menu.addAction(text, lambda kind=mode: self.paste_player(kind))
+            if key:
+                action.setShortcut(QKeySequence(key))
+            if mode == "exact":
+                action.setToolTip(EXACT_PASTE_TIP)
+            action.setEnabled(loaded and not many and self._clipboard is not None)
+            if single_tip:
+                action.setToolTip(single_tip)
+        action = menu.addAction("Clear photo", lambda: self.clear_photo())     # b81 R42: Finn's Edit > Clear Photo
+        cleared = loaded and player.record.values["photo_id"] == rr.PHOTO_CLEARED
+        action.setEnabled(loaded and not many and not cleared)
+        action.setToolTip(single_tip or ("Already cleared (65535)." if cleared else
+                                         "Writes 65535 into his Photo id; the game then shows its no-photo picture."))
+        menu.addSeparator()
+        menu.addAction("Find player… (every team)", self.studio_find).setShortcut(QKeySequence("Ctrl+F"))
+        action = menu.addAction("Only his position", self.show_position_players)
+        action.setShortcut(QKeySequence("Ctrl+D"))
+        action.setEnabled(loaded)
+        action = menu.addAction("Special teams…", self.open_special_teams)
+        action.setEnabled(self.special_teams_button.isEnabled())
+        menu.addSeparator()
+        # b81 R9: Finn's Clear Stats, the way the game survives it
+        reason = self.clear_stats_reason([player] if player is not None else [])
+        action = menu.addAction("Clear his career stats…", self.clear_career_stats)
+        action.setEnabled(not reason and not many)
+        action.setToolTip(single_tip or reason or "Empties his season and career stats, the clubs on his history card and his own "
+                                    "honors. League records and award lists are kept. Undo takes it back.")
+        shown = self.visible_players() if self.document is not None else []
+        reason_all = self.clear_stats_reason(shown)
+        action = menu.addAction(f"Clear career stats of all {len(shown)} shown…",
+                                lambda: self.clear_career_stats(self.visible_players()))
+        action.setEnabled(not reason_all and len(shown) > 1)
+        action.setToolTip(reason_all or "Every player in the list as it is filtered now.")
+        # b81 M3: Finn's Select All and the commands that act on the selection
+        action = menu.addAction(f"Select all {len(shown)} shown", self.select_all_players)
+        action.setShortcut(QKeySequence("Ctrl+A"))
+        action.setEnabled(bool(shown))
+        if many:
+            reason_chosen = self.clear_stats_reason(chosen)
+            action = menu.addAction(f"Clear career stats of the {len(chosen)} selected…",
+                                    lambda: self.clear_career_stats(self.selected_players()))
+            action.setEnabled(not reason_chosen)
+            action.setToolTip(reason_chosen or "Every selected player. Undo takes it back in one step.")
+        place = menu.addAction("Place on IR…", self.place_selected_on_ir)
+        place_reason = single_tip or self.ir_place_reason(player)
+        place.setEnabled(place_reason == "")
+        place.setToolTip(place_reason or "Opens Franchise > Injured Reserve with him chosen.")
+        self._add_heal_actions(menu, player)
+        release = menu.addAction(f"Release the {len(chosen)} selected to free agency" if many
+                                 else "Release to free agency", self.release_selected)
+        release.setEnabled(self.release_button.isEnabled())
+        menu.setToolTipsVisible(True)
+        for action in menu.actions():
+            action.setShortcutVisibleInContextMenu(True)
+        return menu
+
+    def _show_grid_menu(self, position) -> None:
+        row = self.player_table.rowAt(position.y())
+        selection = self.player_table.selectionModel()
+        keeps_selection = (row >= 0 and selection is not None and len(self.selected_players()) > 1
+                           and selection.isRowSelected(row, self.player_table.rootIndex()))
+        if row >= 0 and not keeps_selection:     # b81 M3: a right-click inside the selection keeps all of it
+            self.player_table.setCurrentCell(row, max(0, self.player_table.columnAt(position.x())))
+        self.grid_menu().exec_(self.player_table.viewport().mapToGlobal(position))
+
+    # ------------------------------------------------------------------ b81 wave 3: Copy / Paste / Export / Import team
+    def _selected_club(self) -> int | None:
+        kind, index = self._group
+        if self.document is None or kind != "team" or not 0 <= index < len(self.document.teams) \
+                or not self.document.teams[index].is_club:
+            return None
+        return index
+
+    def _team_save(self, payload: bytes):
+        """A FranchiseSave over ``payload`` when an Xbox save is open (team settings and coach), else None."""
+
+        if self._source_kind != "save" or self.franchise_panel.save is None:
+            return None
+        return self.franchise_panel._new_save(payload)
+
+    def team_package(self, team_index: int) -> dict[str, Any]:
+        from mod_editor.core import nfl2k5_team_transfer as tt
+        assert self.document is not None
+        return tt.team_package(self.document, team_index, save=self._team_save(self.document.to_body()))
+
+    def copy_team(self) -> bool:
+        index = self._selected_club()
+        if index is None:
+            self._set_status("Choose a club in the list first.")
+            return False
+        try:
+            self._team_clipboard = self.team_package(index)
+        except rr.RosterRecordError as exc:
+            self._set_status(f"Not copied: {exc}.")
+            return False
+        counts = self._team_clipboard["counts"]
+        self._set_status(f"Copied {self.document.teams[index].abbreviation}: {counts['active']} active, "
+                         f"{counts['reserve']} reserves" + (", team settings and head coach"
+                                                            if self._team_clipboard.get("settings") else "")
+                         + ". Choose a club and Paste team.")
+        return True
+
+    def export_team(self, path: Path | str | None = None) -> Path | None:
+        from mod_editor.core import nfl2k5_team_transfer as tt
+        index = self._selected_club()
+        if index is None:
+            self._set_status("Choose a club in the list first.")
+            return None
+        if path is None:
+            chosen, _ = QFileDialog.getSaveFileName(self, "Export team",
+                                                    f"{self.document.teams[index].abbreviation}{tt.SUFFIX}",
+                                                    f"Studio team (*{tt.SUFFIX})")
+            if not chosen:
+                return None
+            path = chosen
+        written = tt.write_package(path, self.team_package(index))
+        self._set_status(f"Exported {self.document.teams[index].abbreviation} to {written.name}.")
+        return written
+
+    def import_team(self, path: Path | str | None = None) -> bool:
+        from mod_editor.core import nfl2k5_team_transfer as tt
+        if self._selected_club() is None:
+            self._set_status("Choose the club to import onto first.")
+            return False
+        if path is None:
+            chosen, _ = QFileDialog.getOpenFileName(self, "Import team", "", f"Studio team (*{tt.SUFFIX})")
+            if not chosen:
+                return False
+            path = chosen
+        try:
+            package = tt.read_package(path)
+        except rr.RosterRecordError as exc:
+            self._set_status(f"Not imported: {exc}.")
+            return False
+        return self.open_paste_team(package) is not None
+
+    def open_paste_team(self, package: dict[str, Any] | None = None):
+        index = self._selected_club()
+        package = package if package is not None else self._team_clipboard
+        if index is None or package is None:
+            self._set_status("Copy a team first, then choose the club to paste onto." if package is None
+                             else "Choose the club to paste onto first.")
+            return None
+        dialog = TeamPasteDialog(self, index, package)
+        dialog.exec_()
+        return dialog
+
+    def plan_team_paste(self, team_index: int, package: dict[str, Any], *, settings: bool = True,
+                        coach: bool = True) -> dict[str, Any]:
+        from mod_editor.core import nfl2k5_team_transfer as tt
+        assert self.document is not None
+        return tt.plan(self.document, team_index, package, save=self._team_save(self.document.to_body()),
+                       settings=settings, coach=coach)
+
+    def paste_team(self, team_index: int, package: dict[str, Any], *, settings: bool = True,
+                   coach: bool = True) -> tuple[bool, str]:
+        """Put ``package`` onto the club as one edit and one undo (players, depth chart, special teams, and in an Xbox
+        save the team settings and head coach). Anything refused changes nothing."""
+
+        from mod_editor.core import nfl2k5_practice_squad as ps, nfl2k5_team_transfer as tt
+        document = self.document
+        if document is None:
+            return False, "No roster is loaded."
+        page = self.franchise_panel
+        from mod_editor.core import nfl2k5_save_rost as codec
+        with codec.shared_decodes():
+            return self._paste_team_now(document, page, team_index, package, settings=settings, coach=coach)
+
+    def _paste_team_now(self, document, page, team_index: int, package: dict[str, Any], *, settings: bool,
+                        coach: bool) -> tuple[bool, str]:
+        from mod_editor.core import nfl2k5_practice_squad as ps, nfl2k5_team_transfer as tt
+        try:
+            before = self._college_composed()
+            plan = tt.plan(document, team_index, package, save=self._team_save(before), settings=settings, coach=coach)
+        except (rr.RosterRecordError, ValueError) as exc:
+            message = f"Nothing changed: {exc}."
+            self._set_status(message)
+            return False, message
+        if plan["refusals"]:
+            message = "Nothing changed: " + "; ".join(plan["refusals"]) + "."
+            self._set_status(message)
+            return False, message
+        team = document.teams[team_index]
+        source = (package.get("source") or {}).get("abbreviation") or "the team"
+        try:
+            receipt = tt.apply_players(document, team_index, package, plan)
+            after = document.to_body()
+            parts: list[str] = []
+            if any(plan["parts"].values()):
+                candidate = self._team_save(after)
+                parts = tt.apply_team_parts(candidate, team_index, package, plan)
+                after = candidate.to_bytes()
+            if page.active:
+                ps.validate_save_edit(before, after)
+            elif self._source_kind == "save":
+                ps.validate_save(after)
+        except (rr.RosterRecordError, ValueError) as exc:
+            document.adopt_body(before)
+            self.refresh_grid()
+            message = f"Nothing changed: {exc}."
+            self._set_status(message)
+            return False, message
+        journal = page._edits[:page._cursor] if page.active else []
+        label = f"{source} pasted onto {team.abbreviation} ({receipt['players']} players"
+        label += (f"; {', '.join(parts)}" if parts else "") + ")"
+        pastes_before = list(self._team_pastes)
+        pastes_after = pastes_before + [label]
+
+        def install(payload: bytes, pastes: list[str]) -> None:
+            self._team_pastes = list(pastes)
+            self._restore_composed(payload, journal)
+            self._show_player(self.selected_player())
+            self._refresh_actions()
+
+        self.undo_stack.push(UndoEntry(label, lambda: install(before, pastes_before),
+                                       lambda: install(after, pastes_after)))
+        install(after, pastes_after)
+        extra = ""
+        if receipt["locks_dropped"]:
+            extra = (f" {len(receipt['locks_dropped'])} copied lock(s) left off because the player is also on an "
+                     f"exhibition squad with the original: {', '.join(receipt['locks_dropped'][:3])}"
+                     + (" …" if len(receipt["locks_dropped"]) > 3 else "") + ".")
+        message = label + "." + extra
+        self._set_status(message)
+        return True, message
+
+    def _show_team_menu(self, position) -> None:
+        row = self.team_list.indexAt(position).row()
+        if row >= 0:
+            self.team_list.setCurrentRow(row)
+        self.club_menu().exec_(self.team_list.viewport().mapToGlobal(position))
+
+    def club_menu(self) -> QMenu:
+        menu = QMenu(self.team_list)
+        club = self._selected_club()
+        name = self.document.teams[club].abbreviation if club is not None and self.document is not None else ""
+        action = menu.addAction(f"Copy team {name}".strip(), self.copy_team)
+        action.setEnabled(club is not None)
+        source = (self._team_clipboard or {}).get("source", {}).get("abbreviation", "")
+        action = menu.addAction(f"Paste {source or 'team'} onto {name or 'this club'}…", self.open_paste_team)
+        action.setEnabled(club is not None and self._team_clipboard is not None)
+        menu.addSeparator()
+        action = menu.addAction(f"Export team {name}…".replace("  ", " "), self.export_team)
+        action.setEnabled(club is not None)
+        action = menu.addAction(f"Import team onto {name or 'this club'}…", self.import_team)
+        action.setEnabled(club is not None)
+        menu.addSeparator()                     # b81 R43 (F13): Finn's depth chart and punt returner files
+        action = menu.addAction(f"Export depth chart {name} (Finn's .2k5dc)…".replace("  ", " "), self.export_depth_chart)
+        action.setEnabled(club is not None)
+        action = menu.addAction(f"Import depth chart onto {name or 'this club'}…", self.import_depth_chart)
+        action.setEnabled(club is not None)
+        action = menu.addAction("Back up punt returners (every club)…", self.export_punt_returners)
+        action.setEnabled(self.document is not None)
+        action = menu.addAction("Restore punt returners…", self.restore_punt_returners)
+        action.setEnabled(self.document is not None)
+        return menu
+
+    # ------------------------------------------------------------------ b81 R43 (F13): Finn's depth chart and PR files
+    def export_depth_chart(self, path: Path | str | None = None) -> Path | None:
+        """Finn's Depth Chart > Export: the club's rows and special-teams bytes as his ``.2k5dc`` file."""
+
+        from mod_editor.core import nfl2k5_depth_file as df
+        index = self._selected_club()
+        if index is None or self.document is None:
+            self._set_status("Choose a club in the list first.")
+            return None
+        team = self.document.teams[index]
+        if path is None:
+            chosen, _ = QFileDialog.getSaveFileName(self, "Export depth chart", f"{team.abbreviation}{df.DEPTH_SUFFIX}",
+                                                    f"Finn depth chart (*{df.DEPTH_SUFFIX})")
+            if not chosen:
+                return None
+            path = chosen
+        target = Path(path)
+        try:
+            target.write_bytes(df.export_depth_chart(self.document, index))
+        except OSError as exc:                       # review F5
+            self._set_status(f"Not exported: {exc.strerror or exc} ({target}).")
+            return None
+        self._set_status(f"Exported {team.abbreviation}'s depth chart to {target.name} (Finn's format).")
+        return target
+
+    def import_depth_chart(self, path: Path | str | None = None, *, confirm: bool = True) -> bool:
+        """Finn's Depth Chart > Import, through the Studio's depth and special-teams writers; one undo."""
+
+        from mod_editor.core import nfl2k5_depth_file as df
+        index = self._selected_club()
+        if index is None or self.document is None:
+            self._set_status("Choose the club to import onto first.")
+            return False
+        if path is None:
+            chosen, _ = QFileDialog.getOpenFileName(self, "Import depth chart", "",
+                                                    f"Finn depth chart (*{df.DEPTH_SUFFIX})")
+            if not chosen:
+                return False
+            path = chosen
+        document = self.document
+        try:
+            plan = df.plan_depth_import(document, index, Path(path).read_bytes())
+        except (OSError, rr.RosterRecordError) as exc:
+            self._set_status(f"Not imported: {plain_error(exc)}")
+            return False
+        preview = df.depth_import_text(document, plan)
+        if plan.problems:
+            self._set_status("Not imported: " + "; ".join(plan.problems))
+            if confirm and self.isVisible():
+                QMessageBox.warning(self, "Import depth chart", preview)
+            return False
+        if not plan.changes:
+            self._set_status(f"Nothing to change: {document.teams[index].abbreviation}'s chart already matches the file.")
+            return False
+        if confirm and QMessageBox.question(self, "Import depth chart", preview + "\n\nApply these changes?") \
+                != QMessageBox.Yes:
+            return False
+        before = document.special_teams_snapshot(index)
+        try:
+            df.apply_depth_import(document, plan)
+        except rr.RosterRecordError as exc:
+            self._set_status(f"Not imported: {plain_error(exc)}")
+            return False
+        after = document.special_teams_snapshot(index)
+        self._push_special_teams_change(f"{document.teams[index].abbreviation}: import depth chart", [before], [after])
+        self._set_status(f"Imported the depth chart onto {document.teams[index].abbreviation}: {len(plan.rows)} row "
+                         f"change(s), {len(plan.role_changes)} special-teams role(s). Undo takes it back.")
+        return True
+
+    def export_punt_returners(self, path: Path | str | None = None) -> Path | None:
+        """Finn's Backup Punt Returners: every club's PR as his ``.NFL2k5PR`` text."""
+
+        from mod_editor.core import nfl2k5_depth_file as df
+        if self.document is None:
+            self._set_status("Load a roster first.")
+            return None
+        if path is None:
+            chosen, _ = QFileDialog.getSaveFileName(self, "Back up punt returners", f"punt-returners{df.PR_SUFFIX}",
+                                                    f"Finn punt returners (*{df.PR_SUFFIX})")
+            if not chosen:
+                return None
+            path = chosen
+        target = Path(path)
+        try:
+            target.write_bytes(df.export_punt_returners(self.document).encode("ascii"))
+        except OSError as exc:                       # review F5
+            self._set_status(f"Not exported: {exc.strerror or exc} ({target}).")
+            return None
+        self._set_status(f"Backed up every club's punt returner to {target.name}.")
+        return target
+
+    def restore_punt_returners(self, path: Path | str | None = None, *, confirm: bool = True) -> bool:
+        """Finn's Restore Punt Returners: each club's PR back, through the Studio's returner writer (the claim moves)."""
+
+        from mod_editor.core import nfl2k5_depth_file as df
+        if self.document is None:
+            self._set_status("Load a roster first.")
+            return False
+        if path is None:
+            chosen, _ = QFileDialog.getOpenFileName(self, "Restore punt returners", "",
+                                                    f"Finn punt returners (*{df.PR_SUFFIX})")
+            if not chosen:
+                return False
+            path = chosen
+        document = self.document
+        try:
+            plan = df.plan_punt_returner_restore(document, Path(path).read_text(encoding="latin-1"))
+        except OSError as exc:
+            self._set_status(f"Not restored: {plain_error(exc)}")
+            return False
+        refused = "\n".join(plan["refused"])
+        if not plan["restore"]:
+            self._set_status("No punt returner to change." + (f" Unable to correct: {'; '.join(plan['refused'])}"
+                                                             if plan["refused"] else ""))
+            return False
+        words = [f"{document.teams[i].abbreviation}: {document.by_offset[document.teams[i].slots[v]].display}"
+                 for i, v in plan["restore"]]
+        if confirm and QMessageBox.question(
+                self, "Restore punt returners", "New punt returners:\n" + "\n".join(words)
+                + (f"\n\nUnable to correct the following:\n{refused}" if refused else "") + "\n\nApply?") \
+                != QMessageBox.Yes:
+            return False
+        clubs = [i for i, _v in plan["restore"]]
+        before = [document.special_teams_snapshot(i) for i in clubs]
+        try:
+            df.apply_punt_returner_restore(document, plan)
+        except rr.RosterRecordError as exc:
+            self._set_status(f"Not restored: {plain_error(exc)}")
+            return False
+        after = [document.special_teams_snapshot(i) for i in clubs]
+        self._push_special_teams_change(f"restore {len(clubs)} punt returner(s)", before, after)
+        self._set_status(f"Restored {len(clubs)} punt returner(s): {', '.join(words)}."
+                         + (f" Unable to correct: {'; '.join(plan['refused'])}." if plan["refused"] else ""))
+        return True
+
+    def _push_special_teams_change(self, label: str, before: Sequence[Mapping[str, Any]],
+                                   after: Sequence[Mapping[str, Any]]) -> None:
+        assert self.document is not None
+        touched = [self.document.by_offset[offset] for b, a in zip(before, after)
+                   for offset, values in a["players"].items() if b["players"].get(offset) != values]
+
+        def put(snapshots) -> None:
+            assert self.document is not None
+            for snapshot in snapshots:
+                self.document.restore_special_teams(snapshot)
+            for player in touched:
+                self._after_edit(player)
+            self.refresh_grid()
+
+        self.undo_stack.push(UndoEntry(label, lambda: put(before), lambda: put(after)))
+        put(after)
+
+    # ------------------------------------------------------------------ b81 R9: Clear Stats
+    def clear_stats_reason(self, players: Sequence[rr.Player]) -> str:
+        if self.document is None or not players:
+            return "Select a player first."
+        if self._source_kind != "save":
+            return ("Career stats are cleared in an Xbox save or PS2 roster save. On a disc, career history comes "
+                    "from the Build step's team history.")
+        return ""
+
+    def clear_career_stats(self, players: Sequence[rr.Player] | None = None, *,
+                           confirm: bool = True) -> tuple[bool, str]:
+        """Finn's Clear Stats in the form the game survives (Codex's native witness): each player gets a new six-word
+        neutral history instead of Finn's null link, which crashes the game's yardage averages. One undo."""
+
+        if players is None and self._refuse_many():
+            return False, "Several players are selected."
+        chosen = [self.selected_player()] if players is None else list(players)
+        chosen = [p for p in chosen if p is not None]
+        reason = self.clear_stats_reason(chosen)
+        if reason:
+            self._set_status(reason)
+            return False, reason
+        document = self.document
+        assert document is not None
+        who = chosen[0].display if len(chosen) == 1 else f"{len(chosen)} players"
+        if confirm and self.isVisible():
+            answer = QMessageBox.question(
+                self, "Clear career stats",
+                f"Clear the career stats of {who}?\n\nThis empties season and career stats, the clubs listed on the "
+                "history card and the player's own honors. League records, award lists and other players are kept. "
+                "Each player uses six words of the save's career-stat pool. Undo takes it back.")
+            if answer != QMessageBox.Yes:
+                return False, "Not cleared."
+        try:
+            receipt = document.clear_history(chosen)
+        except rr.RosterRecordError as exc:
+            message = f"Nothing changed: {exc}."
+            self._set_status(message)
+            return False, message
+        cleared = [p.offset for p in receipt["cleared"]]
+        if not cleared:
+            message = f"Already clear: {who}."
+            self._set_status(message)
+            return False, message
+        before, after = receipt["before"], receipt["after"]
+
+        def put(state) -> None:
+            assert self.document is not None
+            self.document.restore_history(state)
+            for offset in cleared:
+                self._after_edit(self.document.by_offset[offset])
+
+        label = (f"{receipt['cleared'][0].display}: career stats cleared" if len(cleared) == 1
+                 else f"career stats cleared for {len(cleared)} players")
+        self.undo_stack.push(UndoEntry(label, lambda: put(before), lambda: put(after)))
+        put(after)
+        skipped = f"; {len(receipt['already'])} already clear" if receipt["already"] else ""
+        message = (f"{label} ({receipt['words']} pool words, {receipt['used_after']:,} of "
+                   f"{receipt['capacity']:,} used{skipped}).")
+        self._set_status(message)
+        return True, message
+
+    def rookie_players(self) -> list[rr.Player]:
+        """b81 R43 (J6): Finn's Clear Rookie Stats selection, every club player whose whole byte at +0x25 is below 2
+        (years pro 0 or 1 with the three bits above it clear; Finn reads the whole byte, lane receipt RE_FACTS.md 6)."""
+
+        if self.document is None:
+            return []
+        found: dict[int, rr.Player] = {}
+        for index, team in enumerate(self.document.teams):
+            if not team.is_club:
+                continue
+            for player in self.document.team_players(index):
+                values = player.record.values
+                if (values["years_pro"] | (values["unknown_25_high"] << 5)) < 2:
+                    found.setdefault(player.offset, player)
+        return list(found.values())
+
+    def clear_rookie_stats(self, *, confirm: bool = True) -> tuple[bool, str]:
+        """Finn's Tools > Auto-update > Clear Rookie Stats, with the Studio's safe clear (a new six-word history per
+        player; Finn's null link crashes the game, and his clear also wiped the injury byte +0x23). One undo."""
+
+        rookies = self.rookie_players()
+        # a rookie with no history link has no stats: that null link is the game's own state before his first credit
+        # (all 1,623 rookies of the SOFTDRINK roster save), so he is skipped instead of spending six pool words on him
+        targets = [p for p in rookies if p.record.values["history_pointer"]]
+        if not targets:
+            message = (f"No rookie has career stats to clear ({len(rookies)} rookies on the clubs, none with a "
+                       "career history yet)." if rookies else "No rookies on the clubs (years pro 0 or 1).")
+            self._set_status(message)
+            return False, message
+        return self.clear_career_stats(targets, confirm=confirm)
+
+    def ir_place_reason(self, player: rr.Player | None) -> str:
+        """Why Place on IR… is not offered for ``player`` ('' when it is)."""
+
+        if player is None or self.document is None:
+            return "Select a player first."
+        if not self.franchise_panel.active:
+            return "Injured reserve is part of a franchise save. Open one to use it."
+        if self.document.is_draft_class(player):
+            return rr.MSG_DRAFT_CLASS
+        if (player.pool, player.index) in self.document.reserve_owner:
+            return "Promote this reserve to the active roster first."
+        if self.document.is_on_injured_reserve(player):           # b81 finn-r2 review F1: the IR list decides
+            return f"{player.display} is already on injured reserve."
+        save = self.franchise_panel.save
+        if (player.record.values["injured_reserve"] == legacy_ir_mark() and save is not None
+                and not has_modern_ir(save)):
+            # the older 5-slot IR marks a placed player by writing 0xEE over the low byte of his injury id, and
+            # Activate clears it; for an injury id that already ends in 0xEE (the game's 750) that loses the id, and
+            # the core refuses (FranchiseSave.place_on_injured_reserve)
+            return (f"{player.display}'s injury id ends in the byte this older save's injured reserve uses as its "
+                    "marker. Load the save and save it once in a build with modern injured reserve, then place him.")
+        club = self.document.club_of(player)
+        if club is None or player.pool != "primary":
+            return rr.MSG_FREE_AGENT_IR
+        return ""
+
+    def place_selected_on_ir(self) -> bool:
+        """Finn's right-click Place on IR: jump to Franchise > Injured Reserve on his club with him chosen."""
+
+        player = self.selected_player()
+        if self._refuse_many():
+            return False
+        reason = self.ir_place_reason(player)
+        if reason:
+            self._set_status(reason)
+            return False
+        assert player is not None and self.document is not None
+        club = self.document.club_of(player)
+        assert club is not None
+        if not self.franchise_panel.show_injured_reserve(club):
+            self._set_status("This franchise save has no injured reserve list for that team.")
+            return False
+        return self.franchise_panel._place_ir_clicked(selected=player.index)
+
+    # ------------------------------------------------------------------ b81 R11: photos
+    HEADER_PHOTO = 96
+
+    def portrait_previews(self):
+        """The pictures for Photo ids: the open disc's source cache for catalogue ids, the shipped sets for the rest."""
+
+        from mod_editor.core import nfl2k5_portrait_preview as pp
+        pack0 = self.portrait_pack0
+        if pack0 is None:
+            try:
+                paths = getattr(self._facade, "models_source_paths", None)
+            except Exception:  # noqa: BLE001 - no disc open is an ordinary state
+                paths = None
+            pack0 = paths[0] if paths else None
+        return pp.previews_for(pack0)
+
+    def portrait_pixmap(self, photo: int, size: int = 128) -> tuple[QPixmap | None, str]:
+        try:
+            project, rookie_faces = self.portrait_build_choices()
+            staged = getattr(self._facade, "staged_portrait_path", None)
+            staged_png = staged(photo) if callable(staged) and 0 <= photo <= 9999 else None
+            picture = self.portrait_previews().picture(int(photo), league_project=project,
+                                                      staged_png=staged_png, rookie_faces=rookie_faces)
+        except Exception as exc:  # noqa: BLE001 - a preview never blocks editing
+            return None, f"Photo {photo}: no preview ({plain_error(exc)})."
+        if picture.rgba is None:
+            return None, picture.note
+        image = QImage(picture.rgba, 128, 128, 128 * 4, QImage.Format_RGBA8888).copy()
+        pixmap = QPixmap.fromImage(image)
+        if size != 128:
+            pixmap = pixmap.scaled(size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        return pixmap, picture.note
+
+    def _show_header_photo(self, player: rr.Player | None) -> None:
+        self.clear_photo_button.setVisible(player is not None)
+        if player is None:
+            self.header_photo.hide()
+            return
+        photo = player.record.values["photo_id"]
+        cleared = photo == rr.PHOTO_CLEARED
+        self.clear_photo_button.setEnabled(not cleared)
+        self.clear_photo_button.setToolTip(
+            "This player's photo is already cleared (65535): the game shows its no-photo picture." if cleared else
+            "Finn's Clear Photo: writes 65535 into his Photo id and changes nothing else. The game then shows its "
+            "no-photo picture for him. Undo puts the old id back.")
+        pixmap, note = self.portrait_pixmap(photo, self.HEADER_PHOTO)
+        if pixmap is None and note.startswith("No photo"):
+            pixmap = self._no_photo_pixmap()          # what the game shows; drawn at a fixed size so large text fits
+        if pixmap is None:                            # a disc portrait while no disc is open: say so on hover only
+            self.header_photo.hide()
+            self.header_name.setToolTip(f"Photo {photo}. {note}")
+            return
+        self.header_photo.setPixmap(pixmap)
+        self.header_photo.setToolTip(f"Photo {photo}. {note}")
+        self.header_name.setToolTip("")
+        self.header_photo.show()
+
+    def _no_photo_pixmap(self) -> QPixmap:
+        size = self.HEADER_PHOTO
+        pixmap = QPixmap(size, size)
+        pixmap.fill(QColor(60, 66, 80))
+        painter = QPainter(pixmap)
+        font = QFont()
+        font.setPixelSize(13)
+        painter.setFont(font)
+        painter.setPen(QColor(200, 205, 215))
+        painter.drawText(pixmap.rect(), Qt.AlignCenter, "No photo")
+        painter.end()
+        return pixmap
+
     # ------------------------------------------------------------------ editor pane
     def _show_player(self, player: rr.Player | None) -> None:
         self.abilities_panel.set_player(player)
@@ -2657,8 +5007,10 @@ class RosterEditorPanel(QWidget):
         self.guardian_cap_check.setEnabled(player is not None)
         self.guardian_cap_check.blockSignals(False)
         self.guardian_bulk_button.setEnabled(player is not None)
+        self._show_header_photo(player)
+        self._refresh_pbp_last_check(player)
         if player is None:
-            self.header_name.setText("—")
+            self.header_name.setText("-")
             self.header_stats.setText("")
             self.header_contract.setText("")
             self.header_profile.setText("")
@@ -2684,7 +5036,7 @@ class RosterEditorPanel(QWidget):
         experience = ("rookie (R)" if years_pro == rr.ROOKIE_YEARS_PRO else f"{years_pro} yrs pro")   # as the card prints it
         self.header_stats.setText(
             f"{record.position_name} · #{record.values['jersey']} · {record.height_text} · "
-            f"{record.weight} lb{age} · {experience} · {player.college or '—'} · "
+            f"{record.weight} lb{age} · {experience} · {player.college or '-'} · "
             f"{rr.HANDS[record.values['hand']]} hand · "
             f"{rr.POWER_RUN_STYLES[record.power_run_style_bucket]} · {family}")
         code = record.values["position"]
@@ -2744,10 +5096,12 @@ class RosterEditorPanel(QWidget):
             if users > 1:
                 shared.append(f"{which} name shared with {users - 1} other player(s)")
         if pool.free_bytes <= 0:
-            lead = "Name space is full. Reuse an existing name; a unique name may also fit in its own slot."
+            lead = ("Name space is full. Typing a name that already exists shares it (this replaces Finn's name "
+                    "picker); a unique name may also fit in its own slot.")
         else:
             lead = (f"Name space: {pool.free_bytes} of {pool.capacity_bytes} bytes free · {len(pool.blocks)} names. "
-                    "A longer name needs free space or an existing name.")
+                    "A longer name needs free space. Typing a name that already exists shares it and needs none "
+                    "(this replaces Finn's name picker).")
         self.name_pool_label.setText(lead + (" · " + "; ".join(shared) if shared else ""))
 
     def _baseline_record(self, player: rr.Player) -> rr.PlayerRecord | None:
@@ -2783,7 +5137,35 @@ class RosterEditorPanel(QWidget):
         if name == "position":
             self.set_position(player, int(value))
             return
+        if name in ("contract_length", "contract_remaining"):
+            self.set_contract_years(player, name, int(value))
+            return
         self.set_field(player, name, value)
+
+    def set_contract_years(self, player: rr.Player, name: str, value: int) -> bool:
+        """b81 R16: Finn's guard. Remaining above the length is refused and the card goes back; a shorter length
+        takes the remaining down with it, as one undo."""
+
+        try:
+            change = rr.contract_years_change(player.record, name, value)
+        except rr.RosterRecordError as exc:
+            self._set_status(str(exc))
+            card = self.cards.get(name)
+            if card is not None:
+                card.set_value(player.record.values[name])
+            return False
+        before = {key: player.record.values[key] for key in change}
+
+        def put(values: Mapping[str, int]) -> None:
+            for key, number in values.items():
+                player.record.set(key, number)
+            self._after_edit(player, name)
+
+        put(change)
+        self.undo_stack.push(UndoEntry(f"{player.display}: {name}", lambda: put(before), lambda: put(change)))
+        if len(change) > 1:
+            self._set_status(f"{player.display}: years remaining follows the contract length down to {value}.")
+        return True
 
     def set_position(self, player: rr.Player, value: int) -> None:
         """A position change with undo: the player is unlocked and moves to the bottom of his new position's depth
@@ -2827,11 +5209,71 @@ class RosterEditorPanel(QWidget):
         do()
         self.undo_stack.push(UndoEntry(f"{player.display}: {name}", undo, do))
 
+    # ------------------------------------------------------------------ b81 R42: PBP last name only, Clear Photo
+    def _refresh_pbp_last_check(self, player: rr.Player | None) -> None:
+        check = self.pbp_last_check
+        with QSignalBlocker(check):
+            if player is None:
+                check.setChecked(False)
+                check.setEnabled(False)
+                return
+            checked, can_change, tooltip = rr.pbp_last_only_state(player.record)
+            check.setChecked(checked)
+            check.setEnabled(can_change)
+            check.setToolTip(tooltip)
+
+    def _pbp_last_clicked(self, checked: bool) -> None:
+        player = self.selected_player()
+        if player is not None:
+            self.set_pbp_last_only(player, bool(checked))
+
+    def set_pbp_last_only(self, player: rr.Player, on: bool) -> bool:
+        """Finn's setter: only a word of 4 or 5 changes (checked writes 5, unchecked 4); one undo entry."""
+
+        if self.document is None:
+            return False
+        _checked, can_change, _tip = rr.pbp_last_only_state(player.record)
+        if not can_change:
+            self._refresh_pbp_last_check(player)
+            return False
+        wanted = rr.PBP_LAST_ONLY_WORD if on else rr.PBP_FULL_NAME_WORD
+        before = player.record.values["player_type"]
+        if before == wanted:
+            return False
+
+        def put(value: int) -> None:
+            player.record.set("player_type", value)
+            self._after_edit(player, "player_type")
+
+        put(wanted)
+        self.undo_stack.push(UndoEntry(f"{player.display}: play-by-play last name only {'on' if on else 'off'}",
+                                       lambda: put(before), lambda: put(wanted)))
+        return True
+
+    def clear_photo(self, player: rr.Player | None = None) -> bool:
+        """Finn's Clear Photo: 65535 into the Photo id (+0x06) and nothing else; one undo entry."""
+
+        player = player or self.selected_player()
+        if player is None or self.document is None:
+            return False
+        before = player.record.values["photo_id"]
+        if before == rr.PHOTO_CLEARED:
+            return False
+
+        def put(value: int) -> None:
+            player.record.set("photo_id", value)
+            self._after_edit(player, "photo_id")
+
+        put(rr.PHOTO_CLEARED)
+        self.undo_stack.push(UndoEntry(f"{player.display}: clear photo", lambda: put(before),
+                                       lambda: put(rr.PHOTO_CLEARED)))
+        return True
+
     def _after_edit(self, player: rr.Player, name: str = "") -> None:
         baseline = self._baseline_record(player)
         changed = baseline is not None and any(
             baseline.values[key] != player.record.values[key]
-            for key in player.record.values if key not in rr.POINTER_FIELDS)
+            for key in player.record.values if key not in rr.POINTER_FIELDS or key == "history_pointer")
         key = (player.pool, player.index)
         if changed or self._name_changed(player) or self._membership_changed(player) or key in self._college_repairs:
             self._dirty.add(key)
@@ -2866,24 +5308,23 @@ class RosterEditorPanel(QWidget):
         return False
 
     def _refresh_grid_row(self, player: rr.Player) -> None:
+        """One row after an edit. A sorted grid keeps the row where it is until the next refresh, the way a
+        spreadsheet does, so the player being edited never jumps away."""
+
         chart = self._depth_chart()
         for row, candidate in enumerate(self._rows):
             if candidate is player:
-                record = player.record
-                marker = "● " if (player.pool, player.index) in self._dirty else ""
-                note = self._depth_note(chart, player) if chart else ""
-                for column, text in enumerate((record.position_name, str(record.values["jersey"]),
-                                               f"{marker}{player.display}",
-                                               rr.years_pro_label(record.values["years_pro"]), str(record.overall()),
-                                               self._depth_text(player))):
+                for column, fresh in enumerate(self._row_items(player, chart)):
                     item = self.player_table.item(row, column)
-                    if item is not None:
-                        item.setText(text)
-                        if column == 0:
-                            item.setToolTip(f"{record.position_long_name} "
-                                            f"(code {record.values['position']})")
-                        elif column == 5:
-                            item.setToolTip(note)
+                    if fresh is None:
+                        if item is not None:
+                            item.setText("")
+                        continue
+                    if item is None:
+                        self.player_table.setItem(row, column, fresh)
+                    else:
+                        item.setText(fresh.text())
+                        item.setToolTip(fresh.toolTip())
                 break
         self.count_label.setText(f"{len(self._rows)} shown · {len(self._dirty)} edited")
 
@@ -2941,34 +5382,102 @@ class RosterEditorPanel(QWidget):
         do()
         self.undo_stack.push(UndoEntry(f"{player.display}: college", undo, do))
 
+    def depth_field(self) -> str:
+        """Which order the arrows move: the rank order, or (paired positions) the side order."""
+
+        data = None if self.depth_order_combo.isHidden() else self.depth_order_combo.currentData()
+        return str(data) if data in rr.DEPTH_FIELDS else "depth_rank"
+
+    def _refresh_depth_order_combo(self) -> None:
+        player = self.selected_player()
+        code = player.record.values["position"] if player is not None else None
+        paired = code in rr.PAIRED_DEPTH_CODES
+        if paired:
+            left, right = rr.depth_slot_names(code, self._scheme)
+            wanted = [(f"{left} order", "depth_rank"), (f"{right} order", "depth_side")]
+            current = [(self.depth_order_combo.itemText(i), self.depth_order_combo.itemData(i))
+                       for i in range(self.depth_order_combo.count())]
+            if current != wanted:
+                field = self.depth_field()
+                with QSignalBlocker(self.depth_order_combo):
+                    self.depth_order_combo.clear()
+                    for text, data in wanted:
+                        self.depth_order_combo.addItem(text, data)
+                    self.depth_order_combo.setCurrentIndex(1 if field == "depth_side" else 0)
+        self.depth_order_combo.setHidden(not paired)
+
+    def _refresh_grid_order(self) -> None:
+        if self._chip != "All" and self._group[0] == "team" and self._sort is None:
+            self.refresh_grid()
+
+    def _depth_context(self, player: rr.Player | None) -> tuple[int | None, str]:
+        """``(club, reason)``: the club whose depth chart the arrows edit for ``player``, or why there is none."""
+
+        if player is None or self.document is None:
+            return None, "Select a player first."
+        if (player.pool, player.index) in self.document.reserve_owner:
+            return None, "A reserve has no depth chart row. Promote him first."
+        club = self.document.club_of(player)
+        kind, index = self._group
+        if club is None or player.offset not in self.document.teams[club].slots:
+            return None, "Only a club's active players have a depth chart row."
+        if kind != "team" or index != club:
+            return None, f"Open {self.document.teams[club].abbreviation} to change his depth chart row."
+        return club, ""
+
     def move_selected(self, delta: int) -> bool:
-        """Move the selected player up or down his team's list -- the depth chart itself."""
+        """b81 R4: move the selected player one row up or down his position's depth chart: the stored depth rank (or,
+        for a paired position, the side order chosen beside the arrows), which is what the game's depth chart screen and
+        its starters follow (Codex's native witness). Rows stay unique and gap-free; the players whose row changed get
+        that order's lock, as the game's own chart swap does. One undo; Show my changes lists it."""
 
         player = self.selected_player()
-        kind, team_index = self._group
-        if player is None or self.document is None or kind != "team":
+        if self._refuse_many():
             return False
-        team = self.document.teams[team_index]
+        club, reason = self._depth_context(player)
+        if club is None:
+            if player is not None:
+                self._set_status(reason)
+            return False
+        assert player is not None and self.document is not None
+        document = self.document
+        field = self.depth_field()
+        if field == "depth_side" and player.record.values["position"] not in rr.PAIRED_DEPTH_CODES:
+            field = "depth_rank"
+        order = document.depth_order(club, player.record.values["position"], field)
+        row = order.index(player) if player in order else -1
+        target = row + int(delta)
+        labels = rr.depth_slot_names(player.record.values["position"], self._scheme)
+        label = labels[1] if field == "depth_side" and labels[1] else labels[0]
+        if row < 0 or not 0 <= target < len(order):
+            self._set_status(f"{player.display} is already {'first' if delta < 0 else 'last'} in the {label} order.")
+            return False
         try:
-            slot = team.slots.index(player.offset)
-        except ValueError:
+            result = document.place_in_depth(player, target, field)
+        except rr.RosterRecordError as exc:
+            self._set_status(str(exc))
             return False
-        if not self.document.move_in_depth(team_index, slot, delta):
-            return False
+        before = result["before"]
+        after = {offset: (p.record.values["depth_rank"], p.record.values["depth_side"], p.record.values["unknown_52"])
+                 for offset in before for p in [document.by_offset[offset]]}
+        moved = list(result["changed"])
 
-        def undo(a: int = slot, b: int = slot + delta) -> None:
+        def put(snapshot) -> None:
             assert self.document is not None
-            self.document.move_in_depth(team_index, b, a - b)
+            self.document.restore_depth(snapshot)
+            for other in moved:
+                self._after_edit(other)
             self.refresh_grid()
+            self.select_player(player)
 
-        def redo(a: int = slot, b: int = delta) -> None:
-            assert self.document is not None
-            self.document.move_in_depth(team_index, a, b)
-            self.refresh_grid()
-
-        self.undo_stack.push(UndoEntry(f"{player.display}: depth order", undo, redo))
-        self.refresh_grid()
-        self.select_player(player)
+        self.undo_stack.push(UndoEntry(f"{player.display}: {label} depth", lambda: put(before), lambda: put(after)))
+        put(after)
+        swapped = [p.display for p in moved if p is not player]
+        self._set_status(f"{player.display} is now {label} #{target + 1} on {document.teams[club].abbreviation}"
+                         + (f"; {', '.join(swapped[:3])} moved too" if swapped else "")
+                         + ". The game's depth chart and starters follow this order; the moved players are locked to "
+                           "their rows so the weekly pass keeps them (it still frees a CPU team's lock for a clearly "
+                           "better player).")
         return True
 
     def _move_card_focus(self, name: str, step: int) -> str:
@@ -3060,7 +5569,91 @@ class RosterEditorPanel(QWidget):
         return any(m["pool"] == player.pool and m["index"] == player.index
                    for m in self.document.membership_changes())
 
+    def release_problems(self, players: Sequence[rr.Player], context: Mapping[str, Any] | None = None
+                         ) -> tuple[list[tuple[rr.Player, int]], list[str]]:
+        """b81 M3: check a whole batch of releases before anything changes. Returns the ``(player, team)`` plan and
+        every reason the batch is refused: players already free agents or otherwise refused by name, each club
+        that would fall under the minimum, and the free-agent list ceiling."""
+
+        document = self.document
+        assert document is not None
+        context = document.membership_context() if context is None else context
+        kind, team_index = self._group
+        plan: list[tuple[rr.Player, int]] = []
+        problems: list[str] = []
+        for player in {p.offset: p for p in players}.values():
+            source = team_index if kind == "team" else document.team_of(player)
+            if source is None or not 0 <= source < len(document.teams):
+                problems.append(f"{player.display} is already a free agent" if document.is_free_agent(player)
+                                else f"{player.display} is not on a team")
+                continue
+            try:
+                team = document._team_for_membership(source)
+                document.check_operation(player, "release", context=context)
+            except rr.RosterRecordError as exc:
+                problems.append(f"{player.display}: {plain_error(exc)}")
+                continue
+            if player.offset not in team.slots:
+                problems.append(f"{player.display} is not on {team.display}")
+                continue
+            plan.append((player, source))
+        leaving: dict[int, set[int]] = {}
+        for player, source in plan:
+            leaving.setdefault(source, set()).add(player.offset)
+        for source, offsets in leaving.items():
+            team = document.teams[source]
+            left = document.active_count(source, [o for o in team.slots if o not in offsets])
+            if left < rr.TEAM_MIN_PLAYERS:
+                problems.append(f"{rr.MSG_RELEASE_MINIMUM.format(team=team.display, minimum=rr.TEAM_MIN_PLAYERS)} "
+                                f"Releasing {len(offsets)} would leave {team.display} with {left}.")
+        entering = sum(1 for player, source in plan
+                       if document.teams[source].is_club and not document.is_free_agent(player))
+        room = document.free_agent_capacity - len(document.free_agents)
+        if entering > room:
+            problems.append(f"{rr.MSG_RELEASE_MAX_FREE_AGENTS} The free-agent list has room for {max(room, 0)} "
+                            f"more and {entering} would join it.")
+        return plan, problems
+
+    def release_players(self, players: Sequence[rr.Player]) -> dict[str, Any] | None:
+        """b81 M3: release several players to free agency, all or none. The whole batch is checked first (each club
+        keeps at least 42, the free-agent list has room, nobody is already free or on injured reserve); one undo
+        puts every player back exactly."""
+
+        if self.document is None or not players:
+            return None
+        document = self.document
+        context = document.membership_context()
+        plan, problems = self.release_problems(players, context)
+        if problems:
+            shown = "\n".join(problems[:8]) + (f"\nand {len(problems) - 8} more" if len(problems) > 8 else "")
+            message = f"Nothing was released. {shown}"
+            self._set_status(message)
+            if self.isVisible():
+                QMessageBox.warning(self, "Couldn't finish that", message)
+            return None
+
+        def operation() -> dict[str, Any]:
+            receipts = [document.release(player, source, context=context) for player, source in plan]
+            invalid = document.membership_context()["invalid"]          # the reserve lists still hold together
+            if invalid:
+                raise rr.MembershipRefused(invalid)
+            return {"operation": "release", "count": len(receipts), "receipts": receipts,
+                    "players": [r["player"] for r in receipts], "free_agents": len(document.free_agents)}
+
+        receipt = self._membership_edit(f"release {len(plan)} players", operation, [p for p, _ in plan])
+        if receipt is not None:
+            clubs: dict[str, int] = {}
+            for each in receipt["receipts"]:
+                clubs[each["from"]["team"]] = clubs.get(each["from"]["team"], 0) + 1
+            where = ", ".join(f"{abbreviation} {count}" for abbreviation, count in clubs.items())
+            self._set_status(f"Released {receipt['count']} players to free agency ({where}). "
+                             f"{receipt['free_agents']} free agents now. One undo puts all of them back.")
+        return receipt
+
     def release_selected(self) -> dict[str, Any] | None:
+        chosen = self._multi_selection()
+        if chosen:
+            return self.release_players(chosen)
         player = self.selected_player()
         if player is None or self.document is None:
             return None
@@ -3077,7 +5670,7 @@ class RosterEditorPanel(QWidget):
         """Sign a free agent to ``team_index``, or move a rostered player there."""
 
         player = self.selected_player()
-        if player is None or self.document is None:
+        if player is None or self.document is None or self._refuse_many():
             return None
         document = self.document
         target = document.teams[team_index]
@@ -3098,7 +5691,7 @@ class RosterEditorPanel(QWidget):
 
     def swap_selected_with(self, other: rr.Player) -> dict[str, Any] | None:
         player = self.selected_player()
-        if player is None or self.document is None:
+        if player is None or self.document is None or self._refuse_many():
             return None
         document = self.document
         receipt = self._membership_edit(f"swap {player.display} <-> {other.display}",
@@ -3110,7 +5703,7 @@ class RosterEditorPanel(QWidget):
 
     def open_swap_dialog(self) -> SwapPlayerDialog | None:
         player = self.selected_player()
-        if player is None or self.document is None:
+        if player is None or self.document is None or self._refuse_many():
             return None
         dialog = SwapPlayerDialog(self, player, self)
         if dialog.exec_() == QDialog.Accepted:
@@ -3153,75 +5746,232 @@ class RosterEditorPanel(QWidget):
                             positions: Sequence[str] = (), rookies_only: bool = False,
                             minimum: int = 0, maximum: int = rr.RATING_MAX,
                             where: tuple[str, str, int] | None = None,
-                            current_team_only: bool = False) -> list[dict[str, Any]]:
+                            current_team_only: bool = False, attributes: Sequence[str] = (),
+                            teams: Sequence[int] = (), selected_only: bool = False) -> list[dict[str, Any]]:
+        """Finn's Global Attribute Editor preview. ``attributes`` adds more attributes to the same rule and scope
+        (b81 R12; rows then carry ``attribute``); ``teams`` keeps those clubs and their reserves;
+        ``selected_only`` (b81 M3) keeps the players selected in the list."""
+
         if self.document is None:
             return []
         scope = self.visible_players() if current_team_only else None
-        return rr.global_edit_preview(self.document, attribute=attribute, mode=mode, value=value,
-                                      positions=positions, rookies_only=rookies_only,
-                                      minimum=minimum, maximum=maximum, where=where, players=scope)
+        if selected_only:
+            chosen = self.selected_players()
+            if scope is not None:
+                shown = {p.offset for p in scope}
+                chosen = [p for p in chosen if p.offset in shown]
+            scope = chosen
+        settings = dict(mode=mode, value=value, positions=positions, rookies_only=rookies_only, minimum=minimum,
+                        maximum=maximum, where=where, players=scope, teams=tuple(teams))
+        names = list(dict.fromkeys([attribute, *attributes]))
+        if len(names) > 1:
+            return rr.global_edit_preview_many(self.document, attributes=names, **settings)
+        return rr.global_edit_preview(self.document, attribute=attribute, **settings)
 
     def apply_global_edit(self, preview: Sequence[dict[str, Any]], attribute: str) -> int:
+        """One undoable pass, however many attributes it carries: undo puts every touched record back exactly."""
+
         if self.document is None or not preview:
             return 0
         rows = [dict(row) for row in preview]
         by_key = {(p.pool, p.index): p for p in self.document.players}
-        restore_attribute = "power_run_style" if attribute == "power_run_style_bucket" else attribute
-        before_values = {key: player.record.get(restore_attribute) for key, player in by_key.items()}
+        touched = [by_key[key] for key in dict.fromkeys((row["pool"], row["index"]) for row in rows) if key in by_key]
+        before_values = {(p.pool, p.index): dict(p.record.values) for p in touched}
 
         def do() -> None:
             assert self.document is not None
             rr.global_edit_apply(self.document, rows, attribute)
-            for row in rows:
-                player = by_key.get((row["pool"], row["index"]))
-                if player is not None:
-                    self._dirty.add((player.pool, player.index))
+            for player in touched:
+                self._after_edit(player)
             self.refresh_grid()
             self._show_player(self.selected_player())
 
         def undo() -> None:
-            for row in rows:
-                player = by_key.get((row["pool"], row["index"]))
-                if player is not None:
-                    player.record.set(restore_attribute, before_values[(row["pool"], row["index"])])
-                    self._after_edit(player)
+            for player in touched:
+                player.record.values.update(before_values[(player.pool, player.index)])
+                self._after_edit(player)
             self.refresh_grid()
 
         do()
-        self.undo_stack.push(UndoEntry(f"global edit: {attribute} on {len(rows)} players", undo, do))
-        self._set_status(f"Global edit applied to {len(rows)} players.")
+        names = list(dict.fromkeys(str(row.get("attribute") or attribute) for row in rows))
+        label = names[0] if len(names) == 1 else f"{len(names)} attributes"
+        self.undo_stack.push(UndoEntry(f"global edit: {label} on {len(touched)} players", undo, do))
+        self._set_status(f"Global edit applied: {len(rows)} change{'s' if len(rows) != 1 else ''} to "
+                         f"{len(touched)} player{'s' if len(touched) != 1 else ''}.")
         return len(rows)
 
     def copy_player(self) -> bool:
         player = self.selected_player()
-        if player is None:
+        if player is None or self._refuse_many():
             return False
         self._clipboard = player.record.copy()
+        self._clipboard_identity = {"first": player.first, "last": player.last, "college": player.college}
         self._set_status(f"Copied {player.display}.")
         self._refresh_actions()
         return True
 
-    def paste_player(self, mode: str = "all") -> int:
+    def paste_player(self, mode: str = "all", *, abilities: bool | None = None) -> int:
+        """Finn's Paste (Ctrl+V), Paste attributes only (Ctrl+Alt+A), Paste photo only and Paste exact copy.
+
+        Paste exact copy (Finn's Paste Player-Exact Copy, b81 finn-r2) adds the first and last name, the college,
+        the play-by-play id and the photo id.  The names are set through the shared name pool, so another player who
+        shares the target's old last name keeps it; and the target keeps his own career-history link (Finn points both
+        players at one stats stream, which would make them share every future stat).
+
+        The target keeps his own depth place, locks, injury and IR state, player kind, pool and star tag
+        (b81 R7: carrying them could give a club two KR1s or a phantom IR player). Abilities travel only
+        with the menu's "Include abilities and tier" tick. A pasted position goes through the position
+        edit's rule (bottom of the new chain, unlocked) and is refused when the scheme retired it."""
+
         player = self.selected_player()
-        if player is None or self._clipboard is None:
+        if player is None or self._clipboard is None or self.document is None or self._refuse_many():
             return 0
-        before = player.record.copy()
-        count = rr.copy_player(self._clipboard, player.record, mode=mode)
+        if abilities is None:
+            abilities = self.paste_abilities_action.isChecked()
+        source = self._clipboard
+        document = self.document
+        try:
+            result = document.paste_player(player, source, mode=mode, abilities=abilities,
+                                           identity=self._clipboard_identity if mode == "exact" else None)
+        except rr.RosterRecordError as exc:
+            self._set_status(f"Nothing was pasted. {plain_error(exc)}")
+            return 0
+        count = int(result["count"])
         if not count:
+            self._set_status(f"Nothing to paste: {player.display} already has those values.")
             return 0
+        before = result["before"]
+        after = player.record.copy()
+        names_before = result["identity_before"] if mode == "exact" else None
+        names_after = ({"first": player.first, "last": player.last, "college_index": player.college_index}
+                       if mode == "exact" else None)
 
         def undo(snapshot: rr.PlayerRecord = before) -> None:
-            player.record.values.update(snapshot.values)
+            document.restore_pasted_player(player, snapshot.values, names_before)
             self._after_edit(player)
+            self.refresh_grid()
 
-        def redo(source: rr.PlayerRecord = self._clipboard, kind: str = mode) -> None:
-            rr.copy_player(source, player.record, mode=kind)
+        def redo(snapshot: rr.PlayerRecord = after) -> None:
+            document.restore_pasted_player(player, snapshot.values, names_after)
             self._after_edit(player)
+            self.refresh_grid()
 
-        self.undo_stack.push(UndoEntry(f"paste ({mode}) onto {player.display}", undo, redo))
+        label = {"all": "paste", "exact": "paste exact copy", "attributes": "paste attributes",
+                 "photo": "paste photo"}[mode]
+        self.undo_stack.push(UndoEntry(f"{label} onto {player.display}", undo, redo))
         self._after_edit(player)
-        self._set_status(f"Pasted {count} fields onto {player.display}.")
+        if result["position_changed"]:
+            self.refresh_grid()
+        kept = ""
+        if mode == "exact":
+            kept = (f" Names, college, play-by-play id and photo id came too. Kept {rr.PASTE_KEPT_TEXT}, and his own "
+                    "career history (Finn's version points both players at one stats stream, so they would share "
+                    "every future stat).")
+            if result["identity"].get("college_missing"):
+                kept += " The copied player's college is not in this roster's college list, so his college stayed."
+            kept += "" if abilities else " His abilities stayed (tick Include abilities and tier to copy them)."
+            if result["position_changed"]:
+                kept += " His position changed, so he moved to the bottom of that position's depth order, unlocked."
+        elif mode == "all":
+            kept = f" Kept {rr.PASTE_KEPT_TEXT}"
+            kept += "." if abilities else ", and his abilities (tick Include abilities and tier to copy them)."
+            if result["position_changed"]:
+                kept += " His position changed, so he moved to the bottom of that position's depth order, unlocked."
+        self._set_status(f"Pasted {count} field{'s' if count != 1 else ''} onto {player.display}.{kept}")
         return count
+
+    # ------------------------------------------------------------------ b81 finn-r2: Heal Player(s) (Finn's HealAction)
+    def listed_ir_indices(self) -> set[int]:
+        """Primary-pool indices the open franchise save lists on injured reserve (legacy cells and the modern extension)."""
+
+        page = self.franchise_panel
+        if not page.active or page.save is None:
+            return set()
+        return {entry.player_index for entry in page.save.injured_reserve()}
+
+    def heal_reason(self, player: rr.Player | None, listed_ir: set[int] | None = None) -> str:
+        """Why Heal player is not offered for ``player`` ('' when it is)."""
+
+        if player is None or self.document is None:
+            return "Select a player first."
+        if listed_ir is None:
+            listed_ir = self.listed_ir_indices()
+        return player_health.heal_refusal(player.record, on_listed_ir=player.pool == "primary" and player.index in listed_ir,
+                                          franchise=self.franchise_panel.active)
+
+    def hurt_players_shown(self) -> list[rr.Player]:
+        """The hurt players in the list as it is filtered now that Heal can act on (injured reserve excluded)."""
+
+        if self.document is None:
+            return []
+        listed_ir = self.listed_ir_indices()
+        return [p for p in self.visible_players() if not self.heal_reason(p, listed_ir)]
+
+    def _add_heal_actions(self, menu: QMenu, player: rr.Player | None) -> None:
+        loaded = self.document is not None and player is not None
+        chosen = self.selected_players() if loaded else []
+        if len(chosen) > 1:                    # Finn's "Heal Player(s)" on the selection (b81 M3)
+            listed_ir = self.listed_ir_indices()
+            hurt_chosen = [p for p in chosen if not self.heal_reason(p, listed_ir)]
+            action = menu.addAction(f"Heal the {len(hurt_chosen)} hurt of the {len(chosen)} selected",
+                                    lambda: self.heal_players(hurt_chosen))
+            action.setEnabled(bool(hurt_chosen))
+            action.setToolTip("Clears their injuries the way the game's own recovery does. Players on injured reserve "
+                              "and healthy players are skipped." if hurt_chosen else
+                              "None of the selected players is hurt (or the hurt ones are on injured reserve).")
+        else:
+            reason = self.heal_reason(player)
+            action = menu.addAction("Heal player", lambda: self.heal_players([player] if player is not None else []))
+            action.setEnabled(loaded and not reason)
+            action.setToolTip(reason or f"Clears his injury the way the game's own recovery does "
+                                        f"({player_health.describe(player.record)}).")
+        hurt = self.hurt_players_shown() if self.document is not None else []
+        action = menu.addAction(f"Heal all {len(hurt)} hurt player{'' if len(hurt) == 1 else 's'} shown",
+                                lambda: self.heal_players(self.hurt_players_shown()))
+        action.setEnabled(bool(hurt))
+        action.setToolTip("Every hurt player in the list as it is filtered now. Players on injured reserve are skipped."
+                          if hurt else "Nobody in this list is hurt (or the hurt ones are on injured reserve).")
+
+    def heal_players(self, players: Sequence[rr.Player] | None = None) -> int:
+        """Finn's Heal, done the game's way (parity row E8): exactly what the game's own recovery routine writes
+        (nfl2k5_player_health), one undo entry however many players.  Players who are healthy or on injured reserve
+        are skipped, with the reason when nobody can be healed.  Returns how many were healed."""
+
+        if self.document is None:
+            return 0
+        chosen = list(players) if players is not None else ([self.selected_player()] if self.selected_player() else [])
+        listed_ir = self.listed_ir_indices()
+        healable = []
+        skipped_ir = 0
+        for player in chosen:
+            reason = self.heal_reason(player, listed_ir)
+            if not reason:
+                healable.append(player)
+            elif reason == player_health.REASON_IR:
+                skipped_ir += 1
+        if not healable:
+            self._set_status(self.heal_reason(chosen[0], listed_ir) if chosen else "Select a player first.")
+            return 0
+        franchise = bool(self.franchise_panel.active)
+        before = {id(p): {key: p.record.values[key] for key in player_health.HEAL_FIELDS} for p in healable}
+        after = {id(p): player_health.heal_values(p.record, franchise) for p in healable}
+
+        def put(values: dict[int, dict[str, int]]) -> None:
+            for player in healable:
+                for key, value in values[id(player)].items():
+                    player.record.set(key, value)
+                self._after_edit(player)
+            if len(healable) > 1:
+                self.refresh_grid()
+
+        put(after)
+        label = (f"{healable[0].display}: heal" if len(healable) == 1 else f"heal {len(healable)} hurt players")
+        self.undo_stack.push(UndoEntry(label, lambda: put(before), lambda: put(after)))
+        names = healable[0].display if len(healable) == 1 else f"{len(healable)} players"
+        self._set_status(f"Healed {names}: injury, weeks left and status cleared, as the game's own recovery does."
+                         + (f" {skipped_ir} on injured reserve skipped (use Franchise > Injured Reserve > Activate)."
+                            if skipped_ir else ""))
+        return len(healable)
 
     @staticmethod
     def age_shift_text(receipt: dict[str, Any]) -> str:
@@ -3368,9 +6118,12 @@ class RosterEditorPanel(QWidget):
 
         if name == "pbp_id":
             entries = rr.pbp_name_index(self.document)
-            note = (f"Play-by-play name ids this roster uses ({sum(1 for k in entries if k < rr.PBP_NUMBER_BASE)}), "
-                    "the jersey-number call-outs 9000-9099 and the 485-name recorded surname bank at 9300+. "
-                    "Any other id can be typed; the wider audio bank is not decoded.")
+            used = len({p.record.values["pbp_id"] for p in self.document.players if p.pool == "primary"}) \
+                if self.document is not None else 0
+            note = (f"Play-by-play name ids: the {used} this roster uses, the retail roster's other recordings "
+                    "(by the retail player who carries each), the jersey-number call-outs 9000-9099 and the 485-name "
+                    "recorded surname bank at 9300+. Any other id can be typed; the rest of the audio bank has no "
+                    "names on the disc.")
             return entries, note
         entries, meta = rr.portrait_index(self.document)
         if entries:
@@ -3386,7 +6139,8 @@ class RosterEditorPanel(QWidget):
             return None
         entries, note = self.picker_entries(name)
         title = "Play-by-play name" if name == "pbp_id" else "Portrait"
-        dialog = IdPickerDialog(title, entries, player.record.values[name], self, note=note)
+        dialog = IdPickerDialog(title, entries, player.record.values[name], self, note=note,
+                                preview=None if name == "pbp_id" else self.portrait_pixmap)
         if dialog.exec_() == QDialog.Accepted:
             self.set_field(player, name, dialog.chosen())
         return dialog
@@ -3447,7 +6201,7 @@ class RosterEditorPanel(QWidget):
         """Write one template onto the selected player with undo."""
 
         player = self.selected_player()
-        if player is None or self.document is None:
+        if player is None or self.document is None or self._refuse_many():
             return {}
         before = dict(player.record.values)
         changes = rr.apply_template(player.record, template)
@@ -3752,8 +6506,8 @@ class RosterEditorPanel(QWidget):
         if export:
             lines.append(f"Export replay on the original disc body: {export['matched']}/{changed} repaired words "
                          f"match (college table entry {export['entry']} {export['college'] or '(blank)'!r})"
-                         + (f" — {export['note']}" if export.get("note") else "")
-                         + ("" if export["verified"] else " — MISMATCH: do not rely on the export for this repair"))
+                         + (f": {export['note']}" if export.get("note") else "")
+                         + ("" if export["verified"] else ": MISMATCH: do not rely on the export for this repair"))
         return "\n".join(lines)
 
     # ------------------------------------------------------------------ reports
@@ -3770,7 +6524,7 @@ class RosterEditorPanel(QWidget):
             if item.get("check") == "jersey" and "outside the NFL range" in detail:
                 detail = (detail.replace("is outside the NFL range", "is outside this check's")
                           .replace(" for a ", " range for a ") + ". This may already be present in your source")
-            lines.append(f"{words.get(level, level.capitalize())} — {who}: {detail}")
+            lines.append(f"{words.get(level, level.capitalize())}: {who}: {detail}")
         self.report.setPlainText("\n".join(lines) or "Nothing to report.")
         self.tabs.setCurrentIndex(self.tabs.count() - 1)
         return findings
@@ -3779,6 +6533,7 @@ class RosterEditorPanel(QWidget):
         if self.document is None:
             return []
         entries = self.document.diff()
+        lookup = {(p.pool, p.index): p for p in self.document.players}
         count = len(entries)
         lines: list[str] = [f"{count} player{'' if count == 1 else 's'} "
                             f"{'differs' if count == 1 else 'differ'} from the roster you loaded.", ""]
@@ -3789,14 +6544,57 @@ class RosterEditorPanel(QWidget):
                 lines.append(f"    team: {was} -> {now}")
             for key, (was, now) in sorted(entry["texts"].items()):
                 lines.append(f"    {key}: {was!r} -> {now!r}")
+            if entry.get("history_cleared"):
+                lines.append("    Career stats: cleared (season and career stats, history card clubs, his honors)")
             for key, (was, now) in sorted(entry["changes"].items()):
                 caption = rr.RATING_LABELS.get(key) or rr.FIELD_BY_NAME[key].label
                 if key == "position":
                     # a bare "10 -> 11" says nothing; name both ends in the loaded scheme
                     lines.append(f"    {caption}: {rr.position_name(was, self._scheme)} -> "
                                  f"{rr.position_name(now, self._scheme)}")
+                elif key in rr.DEPTH_FIELDS:
+                    # b81 R4: the depth chart rows the game reads, counted from 1 like its chart
+                    player = lookup.get((entry["pool"], entry["index"]))
+                    code = player.record.values["position"] if player is not None else None
+                    names = rr.depth_slot_names(code, self._scheme) if code is not None else ("Depth", "Side")
+                    name = (names[1] if key == "depth_side" and names[1] else names[0]) or caption
+                    lines.append(f"    Depth chart, {name}: #{was + 1} -> #{now + 1}")
+                elif key == "unknown_52":
+                    def locks(value: int) -> str:
+                        named = [role if role in ("rank", "side") else role.upper() for role, bit in
+                                 (("rank", 1), ("side", 2), ("kr1", 4), ("kr2", 8), ("pr", 16)) if value & bit]
+                        return ", ".join(named) or "none"
+                    if (was ^ now) & 0x1F:
+                        lines.append(f"    Depth and returner locks: {locks(was)} -> {locks(now)}")
+                    if (was ^ now) & 0xE0:
+                        lines.append(f"    Ability flags (+0x52): {was & 0xE0} -> {now & 0xE0}")
+                # the injury fields read as one injury line; +0x28 alone moving to or from 0xEE is the older IR marker
+                # (review F1: with another injury field changing, an id ending in 0xEE is an injury, e.g. 750)
+                elif key in player_health.HEAL_FIELDS and not (
+                        key == "injured_reserve" and player_health.IR_MARKER in (was, now)
+                        and not any(k in player_health.HEAL_FIELDS and k != "injured_reserve" for k in entry["changes"])):
+                    player = lookup.get((entry["pool"], entry["index"]))
+                    if player is not None and "_injury_done" not in entry:
+                        entry["_injury_done"] = True
+                        was_values = {k: entry["changes"].get(k, (player.record.values[k],))[0]
+                                      for k in player_health.HEAL_FIELDS}
+                        lines.append(f"    Injury: {player_health.describe(was_values)} -> "
+                                     f"{player_health.describe(player.record)}"
+                                     + (" (healed the game's way)" if not player_health.hurt(player.record) else ""))
+                elif key == "player_type" and {was, now} <= {rr.PBP_FULL_NAME_WORD, rr.PBP_LAST_ONLY_WORD}:
+                    lines.append(f"    {caption}: {was} -> {now} (play-by-play last name only: "
+                                 f"{'on' if now == rr.PBP_LAST_ONLY_WORD else 'off'})")
+                elif key == "photo_id" and now == rr.PHOTO_CLEARED:
+                    lines.append(f"    {caption}: {was} -> {now} (cleared: the game shows its no-photo picture)")
                 else:
                     lines.append(f"    {caption}: {was} -> {now}")
+        if self._team_pastes:         # b81 wave 3: team settings and the coach are club bytes the player list does not show
+            lines += ["", f"Team pastes ({len(self._team_pastes)}):"] + [f"    {label}" for label in self._team_pastes]
+        journal = self.franchise_panel.edit_labels()
+        if journal:                   # b81: coach and franchise edits are changes too, written with the save copy
+            lines += ["", f"{'Coach' if self.franchise_panel.coaches_only else 'Franchise'} changes "
+                          f"({len(journal)}), written by Save Xbox save copy:"]
+            lines += [f"    {label}" for label in journal]
         self.report.setPlainText("\n".join(lines))
         self.tabs.setCurrentIndex(self.tabs.count() - 1)
         return entries
@@ -3841,12 +6639,17 @@ class RosterEditorPanel(QWidget):
     def export_player_data_bytes(self) -> bytes:
         return rr.export_player_data(self.document) if self.document is not None else b""
 
-    def import_player_data_bytes(self, data: bytes, mode: str = "all") -> dict[str, Any]:
+    def import_player_data_bytes(self, data: bytes, mode: str = "all", *, groups: Sequence[str] | None = None,
+                                 current_list_only: bool = False) -> dict[str, Any]:
+        """Restore a .PlayerData backup with one undo. ``groups`` are Finn's restore options (b81 R15; the roster
+        spot stays unless asked for), ``current_list_only`` limits it to the list shown."""
+
         if self.document is None:
             return {"entries": 0, "matched": 0, "changed": 0, "fields": 0, "log": ["no roster loaded"]}
         document = self.document
         snapshot = {(p.pool, p.index): (dict(p.record.values), p.college_index, p.college) for p in document.players}
-        receipt = rr.import_player_data(document, data, mode=mode)
+        receipt = rr.import_player_data(document, data, mode=mode, groups=groups,
+                                        players=self.visible_players() if current_list_only else None)
         after = {(p.pool, p.index): (dict(p.record.values), p.college_index, p.college) for p in document.players}
         touched = [p for p in document.players if snapshot[(p.pool, p.index)] != after[(p.pool, p.index)]]
 
@@ -3882,7 +6685,17 @@ class RosterEditorPanel(QWidget):
         if not chosen:
             return
         try:
-            receipt = self.import_player_data_bytes(Path(chosen).read_bytes(), mode)
+            data = Path(chosen).read_bytes()
+            entries = len(rr.read_player_data(data))
+        except (OSError, rr.RosterRecordError) as exc:
+            QMessageBox.warning(self, "Not a .PlayerData file", failure_body(exc))
+            return
+        dialog = PlayerDataRestoreDialog(self, entries, attributes_only=mode == "attributes")
+        if dialog.exec_() != QDialog.Accepted or not dialog.chosen_groups():
+            return
+        try:
+            receipt = self.import_player_data_bytes(data, mode, groups=dialog.chosen_groups(),
+                                                    current_list_only=dialog.list_only.isChecked())
         except rr.RosterRecordError as exc:
             QMessageBox.warning(self, "Not a .PlayerData file", failure_body(exc))
             return
@@ -3938,9 +6751,6 @@ class RosterEditorPanel(QWidget):
             staff = self.coaches_panel.export_staff()
         except ValueError as exc:
             raise rr.RosterRecordError(plain_error(exc)) from exc
-        if staff and self._appearance_bundle is not None:
-            raise rr.RosterRecordError("Staff changes cannot be exported together with a complete roster with faces yet. "
-                                       "Put every coach back on the Coaches tab, or load the roster without the faces file.")
         document = self._edits_document_players()
         if staff:
             document["staff"] = staff
@@ -3981,8 +6791,13 @@ class RosterEditorPanel(QWidget):
         source = self._source_path.resolve()
         if target == source or source.is_dir() and source in target.parents:
             raise rr.RosterRecordError("Export the roster outside the source disc or pack folder.")
-        document = (self.edits_document() if self._appearance_bundle is not None else
-                    appearance.complete_document(self._source_path, self.document))
+        if self._appearance_bundle is not None:
+            document = self.edits_document()
+        else:
+            document = appearance.complete_document(self._source_path, self.document)
+            staff = self.coaches_panel.export_staff()
+            if staff:
+                document["staff"] = staff
         return self.save_edits_to(target, document=document)
 
     def load_roster_with_faces(self, path: Path | str) -> dict[str, Any]:
@@ -3993,7 +6808,14 @@ class RosterEditorPanel(QWidget):
         edits = rr.read_edits(path)
         if edits["schema"] != snapshot.SCHEMA or "appearance_assets" not in edits:
             raise rr.RosterRecordError("Choose an Export complete roster with faces file.")
-        body, receipt = rr.apply_body(self.document.to_body(), edits, scheme=self.document.scheme)
+        player_edits = dict(edits)
+        staff = player_edits.pop("staff", {})
+        body, receipt = rr.apply_body(self.document.to_body(), player_edits, scheme=self.document.scheme)
+        if staff:
+            # Validate the pending coach plan against the replacement roster. The
+            # panel keeps the plan editable and the final disc writer applies it once.
+            check = rr.RosterDocument(body)
+            rr.apply_coach_edits(check.body, check.teams, {"staff": staff}, [], obj_base=check.obj_base)
         with rr._outer_image()(self._source_path) as archive:
             appearance.prepare_writes(archive, edits["appearance_assets"], body)
         document = rr.RosterDocument(body, source=str(self._source_path),
@@ -4002,6 +6824,7 @@ class RosterEditorPanel(QWidget):
         document.original = self.document.original
         self.load_document(document, source=self._source_path, kind="disc", label=Path(path).name)
         self._appearance_bundle = copy.deepcopy(edits["appearance_assets"])
+        self.coaches_panel.set_staff(staff)
         self._set_status("Roster and faces loaded. Export roster edits for Build, or save a disc copy.")
         return receipt
 
@@ -4017,22 +6840,32 @@ class RosterEditorPanel(QWidget):
 
     def _import_roster_faces(self) -> None:
         chosen, _ = QFileDialog.getOpenFileName(self, "Load complete roster with faces", "", EDITS_FILTER)
-        if not chosen:
+        if not chosen or not self._confirm_replace():
             return
         try:
             self.load_roster_with_faces(chosen)
         except (OSError, ValueError) as exc:
             QMessageBox.warning(self, "Could not load roster faces", failure_body(exc))
 
-    def save_edits_to(self, path: Path | str, *, document: dict[str, Any] | None = None) -> dict[str, Any]:
+    def save_edits_to(self, path: Path | str, *, document: dict[str, Any] | None = None,
+                      represents_current_roster: bool = True) -> dict[str, Any]:
         document = self.edits_document() if document is None else document
         from mod_editor.core.nfl2k5_roster_save_to_disc import json_text
-        Path(path).write_text(json_text(document), encoding="utf-8", newline="\n")
-        self._edits_path = Path(path)
-        self._edits_snapshot = self.edits_key()
+        from mod_editor.core.image_use import studio_staging
+        destination = Path(path)
+        with studio_staging(destination.parent, ".roster-") as stage:
+            staged = stage.path / destination.name
+            staged.write_text(json_text(document), encoding="utf-8", newline="\n")
+            os.replace(staged, destination)
+        self._edits_path = destination
+        franchise_pending = bool(self.franchise_panel.edits)
+        if represents_current_roster and not franchise_pending:
+            self._edits_snapshot = self.edits_key()
         self.roster_edits_changed.emit(str(path))
         self._set_status(f"Roster edits exported to {path} ({len(document.get('edits', []))} players). "
-                         "Build uses this saved file. Export again after further changes.")
+                         + (("Coach changes" if self.franchise_panel.coaches_only else "Franchise changes")
+                            + " still need Save Xbox save copy." if franchise_pending
+                            else "Build uses this saved file. Export again after further changes."))
         return document
 
     def save_roster_to_disc(self, path: Path | str, *, save_path: Path | str | None = None,
@@ -4058,7 +6891,7 @@ class RosterEditorPanel(QWidget):
         target = rr.load_image(target_path, detect=True)
         result = save_import.compare(target, source, replace_roster=True, appearance_source=appearance_source)
         result.write_receipt(destination)
-        self.save_edits_to(destination, document=result.edits)
+        self.save_edits_to(destination, document=result.edits, represents_current_roster=False)
         self._set_status(result.summary)
         return result
 
@@ -4146,8 +6979,28 @@ class RosterEditorPanel(QWidget):
                 "Use Save roster edits… and apply them from Build & Share, or load a disc image.")
         if destination.exists() and not overwrite:
             raise rr.RosterRecordError(f"{destination} exists")
-        shutil.copyfile(self._source_path, destination)
-        return rr.apply(destination, self.edits_document())
+        edits = self.edits_document()
+        return self._write_disc_copy(self._source_path, destination, edits, overwrite)
+
+    @staticmethod
+    def _write_disc_copy(source: Path, destination: Path, edits: dict[str, Any], overwrite: bool) -> dict[str, Any]:
+        from mod_editor.core.image_use import studio_staging
+        from mod_editor.core.platform_compat import publish_no_replace
+        with studio_staging(destination.parent, ".roster-") as stage:
+            staged = stage.path / destination.name
+            shutil.copyfile(source, staged)
+            result = rr.apply(staged, edits)
+            # b81 stability: a copy with Simulated injuries gets references measured on its edited roster (or the
+            # frozen ones, with a sentence, when that roster cannot be measured), before it is published.
+            from mod_editor.core import mod_build
+            stability = mod_build.restabilize_sim_qb_disc(staged)
+            if stability is not None:
+                result = {**result, "sim_qb_stability": stability}
+            if overwrite:
+                os.replace(staged, destination)
+            else:
+                publish_no_replace(staged, destination)
+        return result
 
     def _migrate_arena_save(self):
         source, _ = QFileDialog.getOpenFileName(self, "Choose the signed save to migrate", "", SAVE_FILTER)
@@ -4170,11 +7023,71 @@ class RosterEditorPanel(QWidget):
         except (OSError, ValueError) as exc:
             show_operation_error(self, "migrate the signed save copy", str(exc))
 
+    def save_copy_destination(self, folder: Path | str) -> Path:
+        """Where Save Xbox save copy writes inside the folder the user chose: a new ``<name> (edited).zip`` for
+        an Action Replay zip, a new ``<name> (edited)`` folder for an extracted save or a loose SAVEGAME.DAT.
+        Never an existing path (a number is added), never the source. A chosen folder was refused before b81
+        for a zip ("target is not a regular file"), which is the file Finn users bring."""
+
+        folder = Path(folder)
+        source = self._source_path
+        kind = getattr(getattr(self.document, "container", None), "kind", "")
+        if source is None:
+            stem = "NFL 2K5 save"
+        elif kind == "zip":
+            stem = source.stem
+        elif kind == "loose":
+            stem = source.parent.name or "NFL 2K5 save"
+        else:
+            stem = source.name
+        if getattr(getattr(self.document, "container", None), "platform", "") == "ps2":
+            stem = source.stem if source is not None and kind != "directory" else (source.name if source else stem)
+            kind = "ps2-" + kind
+        stem = stem.strip() or "NFL 2K5 save"
+        suffix = {"zip": ".zip", "ps2-card": ".ps2", "ps2-psu": ".psu", "ps2-directory": ".psu"}.get(kind, "")
+        candidate = folder / f"{stem} (edited){suffix}"
+        counter = 2
+        while candidate.exists() or (source is not None and candidate.resolve() == source.resolve()):
+            candidate = folder / f"{stem} (edited {counter}){suffix}"
+            counter += 1
+        return candidate
+
+    @staticmethod
+    def disc_copy_message(receipt: Mapping[str, Any], written: str) -> str:
+        """After Save disc copy: where it is, and what happened to the Simulated injuries balance (b81 stability)."""
+
+        text = f"Disc ready: {written}. Open it in xemu."
+        stability = receipt.get("sim_qb_stability")
+        if stability:
+            text += " " + (stability.get("note") or "Simulated injuries: the long-franchise injury balance was measured "
+                                                     "again on your edited roster.")
+        return text
+
+    def save_copy_message(self, receipt: Mapping[str, Any]) -> str:
+        """The after-save words a Finn user needs: his editor saved over the zip, this one never does."""
+
+        written = str(receipt.get("target", ""))
+        if receipt.get("platform") == "ps2":
+            where = ("a copy of your memory card with the edited save in it; the other saves are unchanged"
+                     if receipt.get("kind") == "card" else "a .psu you can import with PCSX2's memory card tools or mymc")
+            return (f"PS2 save copy written: {written}, {where}. Checksum sealed and checked by the Studio's save "
+                    "verifier. Your original save was not changed.")
+        both = (f"{Path(str(receipt.get('savegame', 'SAVEGAME.DAT'))).name} and "
+                f"{Path(str(receipt.get('extra', 'EXTRA'))).name}")
+        if receipt.get("kind") == "zip":
+            return (f"Signed save copy written: {written}. Your original save was not changed. Use the new zip "
+                    f"in its place, or copy {both} from it into your save; they only work as a pair.")
+        return (f"Signed save copy written: {written}. Your original save was not changed. Copy {both} from "
+                f"this folder back into your save; they only work as a pair.")
+
     def _write_copy(self) -> None:
         if self.document is None:
             return
         if self._source_kind == "save":
-            chosen = QFileDialog.getExistingDirectory(self, "Choose the folder for the signed Xbox save copy")
+            ps2_save = getattr(self.document.container, "platform", "") == "ps2"
+            chosen = QFileDialog.getExistingDirectory(
+                self, "Choose a folder for the PS2 save copy (your original stays as it is)" if ps2_save
+                else "Choose a folder for the signed Xbox save copy (your original stays as it is)")
         else:
             suggested = (suggest_copy_name(self._source_path, suffix="roster edited")
                          if self._source_path is not None and self._source_path.is_file() else "roster-edited.xiso.iso")
@@ -4182,15 +7095,30 @@ class RosterEditorPanel(QWidget):
         if not chosen:
             return
         try:
-            receipt = self.write_copy_to(chosen)
+            if self._source_kind == "disc" and self._source_path is not None:
+                destination = Path(chosen)
+                source = self._source_path
+                if destination.resolve() == source.resolve() or destination.exists():
+                    raise rr.RosterRecordError("Choose a new output filename for the edited disc.")
+                if not source.is_file():
+                    raise rr.RosterRecordError("Open a disc image to save an edited disc copy.")
+                self.document.check_depth_locks()
+                edits = self.edits_document()
+                receipt = run_in_background(self, "Saving edited disc", "Copying and verifying the roster and artwork.",
+                                            lambda: self._write_disc_copy(source, destination, edits, False))
+                self._edits_snapshot = self.edits_key()
+                if self.undo_stack.on_change is not None:
+                    self.undo_stack.on_change()
+            else:
+                receipt = self.write_copy_to(self.save_copy_destination(chosen))
         except Exception as exc:  # noqa: BLE001
             show_operation_error(self, "write the copy", plain_error(exc))
             return
         written = str(receipt.get("target", chosen))
         if self._source_kind == "save":
-            self._set_status(f"Xbox save copy written: {written}. Put SAVEGAME.DAT and EXTRA back together.")
+            self._set_status(self.save_copy_message(receipt))
         else:
-            self._set_status(f"Disc ready: {written}. Open it in xemu.")
+            self._set_status(self.disc_copy_message(receipt, written))
             self.disc_written.emit(written)
 
     # ------------------------------------------------------------------ chrome
@@ -4241,47 +7169,83 @@ class RosterEditorPanel(QWidget):
         self.copy_button.setEnabled(selected)
         self.paste_button.setEnabled(selected and self._clipboard is not None)
         self.template_button.setEnabled(selected)
-        self.up_button.setEnabled(selected and self._group[0] == "team")
-        self.down_button.setEnabled(selected and self._group[0] == "team")
+        club, reason = self._depth_context(self.selected_player()) if selected else (None, "Select a player first.")
+        self.up_button.setEnabled(club is not None)
+        self.down_button.setEnabled(club is not None)
+        kind, index = self._group
+        self.special_teams_button.setEnabled(bool(loaded and kind == "team" and self.document is not None
+                                                  and 0 <= index < len(self.document.teams)
+                                                  and self.document.teams[index].is_club))
+        team_reason = self.team_options_reason() if loaded else "Load a roster first."
+        self.team_options_button.setEnabled(not team_reason)
+        self.team_options_button.setToolTip(team_reason or "Finn's Options tab: stadium, default jersey, playbook, "
+                                                          "team play-by-play and defensive front of the club shown.")
+        arrow_tip = reason or ("Move him up or down his position's depth chart: the stored depth rank the game's depth "
+                               "chart and starters follow. One undo.")
+        self.up_button.setToolTip(arrow_tip)
+        self.down_button.setToolTip(arrow_tip)
+        self._refresh_depth_order_combo()
         player = self.selected_player()
         movable = bool(loaded and player is not None and self.document is not None
                        and not self.document.is_draft_class(player)
-                       and not player.record.on_injured_reserve
+                       and not self.document.is_on_injured_reserve(player)     # b81 finn-r2 review F1
                        and (player.pool, player.index) not in self.document.reserve_owner)
         on_team = bool(movable and player is not None and player.teams)
         self.unlock_button.setEnabled(bool(player and any(player.record.depth_locks.values())))
-        if self.document is not None and self._source_kind == "save":
-            state = (id(self.document), bytes(self.document.body),
-                     tuple(tuple(t.slots) for t in self.document.teams), tuple(self.document.free_agents),
-                     tuple(tuple(p.record.values.values()) for p in self.document.players))
-            if state != self._reserve_legality_state:
-                self._reserve_legality_state = state
-                self._reserve_legality_cache.clear()
         for button, promote in ((self.promote_button, True), (self.demote_button, False)):
             legal, reason = False, "Select an owned player from an Xbox save"
             if self.document is not None and player is not None and player.pool == "primary":
                 owner = self.document.club_of(player)
                 if owner is not None and self._source_kind == "save":
-                    key = (owner, player.index, promote)
-                    if key not in self._reserve_legality_cache:
-                        try:
-                            self.document.reserve_move_check(owner, player.index, promote=promote)
-                            legal, reason = True, "EXPERIMENTAL / UNWITNESSED. Save a signed Xbox save copy."
-                        except rr.RosterRecordError as exc:
-                            reason = str(exc)
-                        self._reserve_legality_cache[key] = (legal, reason)
-                    legal, reason = self._reserve_legality_cache[key]
+                    # b81: the quick check of the document state; pressing the button runs the full transaction
+                    # (the full check here cost about 3 s a player on the SOFTDRINK save)
+                    try:
+                        self.document.reserve_move_precheck(owner, player.index, promote=promote)
+                        legal, reason = True, "EXPERIMENTAL / UNWITNESSED. Save a signed Xbox save copy."
+                    except rr.RosterRecordError as exc:
+                        reason = str(exc)
             button.setEnabled(legal)
             button.setToolTip(reason)
         self.release_button.setEnabled(on_team)
         self.swap_button.setEnabled(on_team)
         self.team_menu_button.setEnabled(movable)
         self.team_menu_button.setText("Move to ▾" if on_team else "Sign to ▾")
+        self._refresh_multi_selection()
         if self.document is not None:
             self._refresh_pool_label()
         if hasattr(self, "franchise_panel") and self.franchise_panel.active:
             self.franchise_panel.undo_button.setEnabled(self.undo_stack.can_undo())
             self.franchise_panel.redo_button.setEnabled(self.undo_stack.can_redo())
+
+    def _refresh_multi_selection(self) -> None:
+        """b81 M3: with several players selected the one-player commands are off (with the reason as their tip) and
+        Release acts on the whole selection; with one selected everything is as it was."""
+
+        chosen = self.selected_players() if self.document is not None else []
+        many = len(chosen) > 1
+        saved = self.__dict__.setdefault("_multi_saved", {})
+        static = (self.copy_button, self.paste_button, self.template_button, self.swap_button,
+                  self.team_menu_button, self.unlock_button, self.release_button)
+        if not many:
+            for widget in static:
+                if widget in saved:
+                    text, tip = saved.pop(widget)
+                    widget.setToolTip(tip)
+                    if widget is self.release_button:
+                        widget.setText(text)
+            return
+        note = self.MANY_SELECTED_TIP.format(count=len(chosen))
+        for widget in static:
+            if widget not in saved:
+                saved[widget] = (widget.text(), widget.toolTip())
+        for widget in (*static[:-1], self.up_button, self.down_button, self.promote_button, self.demote_button):
+            widget.setEnabled(False)
+            widget.setToolTip(note)
+        self.release_button.setEnabled(True)
+        self.release_button.setText(f"Release {len(chosen)} selected")
+        self.release_button.setToolTip(
+            f"Release all {len(chosen)} selected players to free agency, or none of them: every club must keep "
+            f"{rr.TEAM_MIN_PLAYERS} players and the free-agent list must have room. One undo.")
 
     def _set_status(self, text: str) -> None:
         warning = self.document.college_warning if self.document is not None else ""

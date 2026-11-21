@@ -1834,7 +1834,7 @@
  "receipt": {
   "team": "CIN",
   "offense_pack": "data/playbooks/softdrink_cin_modern.2k5book",
-  "offense_pack_sha256": "0b0aa3ce33f11e7c0d046f83fb519734d7fc66a8d7157e7e26f0612718a28000",
+  "offense_pack_sha256": "a976a3d532bae4677fa2f7a4f4466d113ef563a579f2139f1e27cab3433768f3",
   "source_fingerprint": "8b294aff51abf91c233c5f268f41423584d6f25ac5d167a6b0284c441d12ea76",
   "replacement_sha256": "425d7fb4cc39e3381dc0b5614f06a2b8254064f9772d6efc92e4cd67cf0cb788",
   "semantic_sha256": "2cab68dbd3d8d1d92814daa65f7cb44cefc8c5550690fc0bbebdafe6f84332d6",

@@ -1938,7 +1938,7 @@
  "receipt": {
   "team": "DET",
   "offense_pack": "data/playbooks/softdrink_det_modern.2k5book",
-  "offense_pack_sha256": "c6fb9bb730b6f6870b0f83160b8e9c314c436414f808bbd1ad17968db7abdab8",
+  "offense_pack_sha256": "64a2917ff5cd54256ab4be2075e20298e8957953b33650ad6d2ea8d92927cb6e",
   "source_fingerprint": "bea625bce2ac71701f6ba9385ded2bf425fe49beb14f20e24f64dfba3ddc220c",
   "replacement_sha256": "026944bcdb9e7fa2eed274adbe0044e09a254b1520b3887f466d38cf6fcdd619",
   "semantic_sha256": "7a5aad43346145b446e67b7093e253318c1f4e9e925300f817868530e7f3c799",

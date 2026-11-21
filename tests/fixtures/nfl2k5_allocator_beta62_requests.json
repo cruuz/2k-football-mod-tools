@@ -616,5 +616,35 @@
   "data",
   32,
   16
+ ],
+ [
+  "nfl2k5_gadget_proof",
+  "code",
+  2048,
+  16
+ ],
+ [
+  "nfl2k5_gadget_proof",
+  "read_only",
+  12800,
+  16
+ ],
+ [
+  "nfl2k5_backfield_cards",
+  "code",
+  176,
+  16
+ ],
+ [
+  "nfl2k5_sim_qb_injuries",
+  "code",
+  16384,
+  4096
+ ],
+ [
+  "nfl2k5_qb_room",
+  "code",
+  12288,
+  4096
  ]
 ]

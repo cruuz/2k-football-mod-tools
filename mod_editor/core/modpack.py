@@ -810,13 +810,14 @@ def inspect(pack: Pack | Path | str) -> dict[str, Any]:
     }
 
 
-def extract_assets(pack: Pack | Path | str, directory: Path | str, *, overwrite: bool = False) -> dict[str, Any]:
+def extract_assets(pack: Pack | Path | str, directory: Path | str, *, overwrite: bool = False,
+                   resume: bool = False, progress: ProgressSink | None = None) -> dict[str, Any]:
     """Write every asset (verified) plus ``recipe.json`` and ``manifest.json`` under ``directory``."""
 
     loaded = pack if isinstance(pack, Pack) else load(pack)
     if loaded.manifest.raw.get("format") == 3:
         from . import modpack_files
-        return modpack_files.extract_assets(loaded, directory, overwrite=overwrite)
+        return modpack_files.extract_assets(loaded, directory, overwrite=overwrite, resume=resume, progress=progress)
     root = Path(directory).expanduser()
     root.mkdir(parents=True, exist_ok=True)
     written: list[str] = []
@@ -954,8 +955,9 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
                                      nfl2k5_edge_rename, nfl2k5_kick_rules, nfl2k5_modern_positions,
                                      nfl2k5_position_pools, nfl2k5_progression, nfl2k5_returner_fix,
                                      nfl2k5_season_length, nfl2k5_widescreen, nfl2k5_overtime, nfl2k5_seven_on_seven,
-                                     nfl2k5_depth_chart_rows)
-        for label, module in (("depth_chart_rows", nfl2k5_depth_chart_rows),
+                                     nfl2k5_backfield_cards, nfl2k5_depth_chart_rows)
+        for label, module in (("backfield_cards", nfl2k5_backfield_cards),
+                              ("depth_chart_rows", nfl2k5_depth_chart_rows),
                               ("catch_slider", nfl2k5_catch_slider),
                               ("accel_ramp", nfl2k5_accel_ramp),
                               ("draft_ai", nfl2k5_draft_ai),
@@ -1071,6 +1073,8 @@ def describe_operation(operation: Mapping[str, Any]) -> str:
         if logical and operation.get("music_policy"):
             text += " Apply the selected music policies."
         return text + " Experimental, not yet tested in game."
+    if op == "backfield_cards":
+        return "Show the starting backfield on Coach Matchup"
     if op == "depth_chart_rows":
         return "SPECIAL depth-chart tab (expanded read-only XBE storage): " + ("on" if operation.get("enabled") else str(operation.get("status", "off")))
     if op == "throw_tuning":
@@ -1338,10 +1342,11 @@ def _export_modular(base_iso, patched_iso, out_path, meta, *, overwrite, recipe,
         partition = partition_base(base_fd, size) or 0
         _require((partition_base(patched_fd, patched_size) or 0) == partition, "game partition moved between inputs")
         if patch_operations is None:
-            _require(patched_size >= size, "unrecognised image size change: shrinking needs a registered operation")
+            allocations = ops.detect_allocations(base_fd, patched_fd, size, patched_size, partition, file_operations)
             ranges, base_sha, _ = diff_descriptors(base_fd, patched_fd, size, block=block, gap=gap, progress=report)
             _require(not ranges or ranges[0][0] >= partition, "differences in front of the game partition cannot be shared")
-            operations, payloads = ops.detect(base_fd, patched_fd, size, patched_size, partition, ranges, file_operations)
+            operations, payloads = ops.detect(base_fd, patched_fd, size, patched_size, partition, ranges,
+                                              file_operations, allocations=allocations)
         else:
             operations, payloads = list(patch_operations), {}
             for member, source in (operation_payloads or {}).items():
@@ -1362,6 +1367,8 @@ def _export_modular(base_iso, patched_iso, out_path, meta, *, overwrite, recipe,
                         role=item.role, source_name=item.source_name) for item in staged]
         recipe_doc = {"operations": list(recognised["operations"]) + list(meta.get("operations") or []),
                       "detected": recognised["detected"]}
+        if meta.get("console_settings"):
+            recipe_doc["overrides"] = dict(meta["console_settings"])
         if project_document is not None:
             recipe_doc["project"] = project_document
         is_retail = size == RETAIL_XISO_SIZE and base_sha == RETAIL_XISO_SHA256
@@ -1578,6 +1585,8 @@ def export(
         "operations": [dict(item) for item in recognised["operations"]] + [dict(item) for item in user_operations],
         "detected": recognised["detected"],
     }
+    if meta.get("console_settings"):
+        recipe_doc["overrides"] = dict(meta["console_settings"])
     if project_document is not None:
         recipe_doc["project"] = project_document
 

@@ -25,7 +25,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.111"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.112"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -383,23 +383,24 @@ def _check_desktop_contract() -> None:
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
     environment["PYTHONNOUSERSITE"] = "1"
     environment["PYTHONPATH"] = str(ROOT)
-    version = subprocess.run(
-        [sys.executable, "-m", "mod_editor.apf_studio", "--version"],
-        cwd=ROOT,
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        env=environment,
-        check=False,
-    )
-    require(
-        version.returncode == 0
-        and "APF 2K8 Mod Studio alpha" in version.stdout
-        and f"({EXPECTED_PRODUCT_VERSION})" in version.stdout
-        and "QApplication" not in version.stderr,
-        f"headless APF GUI entry point failed: {version.stderr.strip()}",
-    )
+    for module in ("mod_editor.apf_studio", "mod_editor"):
+        version = subprocess.run(
+            [sys.executable, "-m", module, "--version"],
+            cwd=ROOT,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            env=environment,
+            check=False,
+        )
+        require(
+            version.returncode == 0
+            and "APF 2K8 Mod Studio alpha" in version.stdout
+            and f"({EXPECTED_PRODUCT_VERSION})" in version.stdout
+            and "QApplication" not in version.stderr,
+            f"headless APF GUI entry point {module} failed: {version.stderr.strip()}",
+        )
 
 
 def _load_installer_module() -> object:

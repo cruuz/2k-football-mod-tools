@@ -1,5 +1,6 @@
 """Native authored-checkdown repair, source compiler and byte-scope regression."""
 from pathlib import Path
+import gzip
 import json
 import os
 import struct
@@ -149,13 +150,19 @@ class ResourceTests(unittest.TestCase):
 class CompilerTests(unittest.TestCase):
     def test_existing_complete_pack_compiles_with_forward_flats(self):
         from mod_editor.core import nfl2k5_playbook_pack as packs,nfl2k5_complete_offense as full
-        raw=RETAIL_BUF.read_bytes();pack=packs.load_pack(ROOT/'data/playbooks/softdrink_buf_modern.2k5book')
+        # Exact authored data/playbooks/softdrink_buf_modern.2k5book at 3e6ae7257.
+        fixture = Path(__file__).with_name('fixtures') / 'b765_buf_modern.2k5book.gz'
+        authored = gzip.decompress(fixture.read_bytes())
+        self.assertEqual(repair.sha(authored), '6cdf370384d11749a2ee8c2ab89f685baeb8a29071a0c596168362562fa977f7')
+        raw = RETAIL_BUF.read_bytes()
+        pack = packs.loads_pack(authored.decode('utf-8'))
         compiled=full.compile_offense(raw,pack,asset_id='old-buf-pack')
         self.assertEqual(len(compiled.report['checkdown_routes']),31)
         by_index={p.replace_index:p for p in pack.plays}
         for row in compiled.report['checkdown_routes']:
             for slot in row['slots']:
                 before=by_index[row['play_index']].assignments[slot]
+                self.assertEqual([op for op, _ in before], [1, 18])
                 nodes=compiled.parsed_replacement.assignment_chain(compiled.parsed_replacement.plays[row['play_index']].assignments[slot]).nodes
                 after=[codec.Node.from_bytes(bytes.fromhex(n.raw_hex))for n in nodes]
                 self.assertEqual([n.op for n in after],[1,18,18]);self.assertEqual([n.operands[0]for n in after[1:]],[0,5])
@@ -168,5 +175,47 @@ class CompilerTests(unittest.TestCase):
             self.assertEqual(native['endpoint_calls'],2)
             self.assertEqual(native['decoder_calls'],1)
             self.assertGreater(native['records'][2]['z']+160.02,qb['z'])
+
+    def test_current_buf_pack_preserves_its_authored_forward_checkdown(self):
+        from mod_editor.core import nfl2k5_complete_offense as full, nfl2k5_playbook_pack as packs
+
+        pack = packs.load_pack(ROOT / 'data/playbooks/softdrink_buf_modern.2k5book')
+        compiled = full.compile_offense(RETAIL_BUF.read_bytes(), pack, asset_id='current-buf-pack')
+        self.assertEqual(compiled.report['checkdown_routes'], [])
+
+        # Several Buffalo plays share this display name. The menus link by pack ID.
+        play = next(p for p in pack.plays if p.id == 'p068')
+        self.assertEqual(play.custom_name, 'Z Hitch Seam')
+        slot = 10
+        authored = play.assignments[slot]
+        self.assertEqual([n[0] for n in authored], [1, 18, 18])
+        self.assertEqual([n[1][0] for n in authored[1:]], [0, 5])
+        book = compiled.parsed_replacement
+        assignment = book.plays[play.replace_index].assignments[slot]
+        nodes = [codec.Node.from_bytes(bytes.fromhex(n.raw_hex)) for n in book.assignment_chain(assignment).nodes]
+        self.assertEqual([(n.op, tuple(n.operands)) for n in nodes], list(authored))
+
+        menus = dict(pack.menus)
+        forms = {f.custom_name: f for f in pack.formations}
+        machine = None
+        if XBE.is_file():
+            from tools.b765.d2b_route_probe import NativeMachine, native_assignment, native_qb_drop
+            machine = NativeMachine(XBE.read_bytes())
+        for name in ('I-Form Y Off Close', 'Strong I'):
+            with self.subTest(formation=name):
+                form = forms[name]
+                self.assertIn(play.id, menus[form.id])
+                self.assertEqual(form.position_codes[slot] & 31, lib.HB)
+                if machine is not None:
+                    for direction in (-1, 1):
+                        args = (machine, compiled.replacement, form.replace_index, play.replace_index)
+                        qb = native_qb_drop(*args, direction=direction)
+                        route = native_assignment(*args, slot, direction=direction)
+                        self.assertEqual((route['endpoint_calls'], route['decoder_calls']), (2, 1))
+                        start, approach, flat = route['records'][:3]
+                        self.assertLess(start['z'], qb['z'])
+                        self.assertGreater(approach['z'], qb['z'])
+                        self.assertEqual(flat['kind'], 5)
+                        self.assertGreater(flat['z'], qb['z'])
 
 if __name__=='__main__':unittest.main()

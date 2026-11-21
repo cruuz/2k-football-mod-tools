@@ -469,12 +469,8 @@ def changed_file_operations(base_path, patched_path):
         return tuple(entry.path for entry in sorted(selected, key=lambda entry: entry.byte_offset))
 
 
-def detect(base, patched, size, patched_size, partition, ranges, named_files):
-    """Conservative automatic export; arbitrary operations use the explicit API.
-
-    Size changes must be accounted for by named allocations. SPECIAL is the
-    sole implicit allocation; other files require the caller to name them.
-    """
+def detect_allocations(base, patched, size, patched_size, partition, named_files):
+    """Resolve the file operations from bounded directory reads before diffing image contents."""
     m._require(patched_size >= size, "unrecognised image size change: shrinking needs a registered operation")
     named = list(named_files)
     before_entries = after_entries = {}
@@ -496,13 +492,27 @@ def detect(base, patched, size, patched_size, partition, ranges, named_files):
                        f"unrecognised file allocation change: {old.path}; name it in file_operations")
     named = sorted({name.casefold() for name in named}, key=lambda name: after_entries[name.casefold()].byte_offset
                    if name.casefold() in after_entries else -1)
-    exclusions, file_ops, payloads = [], [], {}
+    allocations = []
     for name in named:
         old, new = before_entries.get(name.casefold()), after_entries.get(name.casefold())
         m._require(old is not None and new is not None and not old.attributes & 0x10, f"missing named disc file: {name}")
         old_node = storage.image_file_node(lambda n, at: m._pread_exact(base, n, at, name), partition, size, name)
         new_node = storage.image_file_node(lambda n, at: m._pread_exact(patched, n, at, name), partition, patched_size, name)
         m._require(old_node[0] == new_node[0], f"{name}: directory node moved; needs a directory operation")
+        if new.size > old.size:
+            m._require(new.byte_offset >= size, "growth overlaps a preceding allocation")
+        elif new.size < old.size:
+            m._require(new.sector == old.sector, 'file_shrink cannot relocate a file')
+        allocations.append((name, old, new, old_node[0]))
+    return allocations
+
+
+def detect(base, patched, size, patched_size, partition, ranges, named_files, *, allocations=None):
+    """Derive byte runs and the verified payloads of the recognized file operations."""
+    if allocations is None:
+        allocations = detect_allocations(base, patched, size, patched_size, partition, named_files)
+    exclusions, file_ops, payloads = [], [], {}
+    for name, old, new, node_offset in allocations:
         growing = new.size > old.size
         special = (name.casefold() == "default.xbe" and old.size == storage.RETAIL_FILE_SIZE
                    and new.size == storage.FILE_SIZE and growing)
@@ -512,7 +522,6 @@ def detect(base, patched, size, patched_size, partition, ranges, named_files):
                        "unrecognised SPECIAL storage transition")
         shrinking = new.size < old.size
         if shrinking:
-            m._require(new.sector == old.sector, 'file_shrink cannot relocate a file')
             tail = old.size - new.size
             m._require(digest(lambda n, at: m._pread_exact(base, n, old.byte_offset + new.size + at, 'old file slack'), tail)
                        == digest(lambda n, at: m._pread_exact(patched, n, old.byte_offset + new.size + at, 'new file slack'), tail),
@@ -527,12 +536,12 @@ def detect(base, patched, size, patched_size, partition, ranges, named_files):
         before_fd = patched if growing else base
         before_hash = digest(lambda n, at, start=old.byte_offset: m._pread_exact(before_fd, n, start + at, "named file before"), old.size)
         op = {"type": op_type, "name": REGISTRY[op_type].name, "version": 1,
-              "path": old.path, "directory_offset": old_node[0] - partition,
+              "path": old.path, "directory_offset": node_offset - partition,
               "before": {"sector": old.sector, "size": old.size, "sha256": before_hash},
               "after": {"sector": new.sector, "size": new.size, "sha256": payload_doc["sha256"]},
               "payload": payload_doc}
         file_ops.append(op)
-        exclusions.append((old_node[0], old_node[0] + 8))
+        exclusions.append((node_offset, node_offset + 8))
         if not growing:
             exclusions.append((old.byte_offset, old.byte_offset + old.size))
     ranges = list(_subtract(ranges, exclusions))

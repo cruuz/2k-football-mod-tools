@@ -162,7 +162,7 @@ def load_layout(folder=None):
         require(all(r.get(k)==variants[0].get(k) for r in variants for k in ('box','pin','opacity','material','z')), 'Watermark variants must share one quad and placement.')
     for row in spec['fields']:
         require(row['source'] in SOURCES and row['glyph_set'] in spec['glyph_sets'], 'Unknown scorebug data source or glyph set.')
-        require(type(row['slots'])==int and 1<=row['slots']<=16, 'Each field needs 1–16 quads.')
+        require(type(row['slots'])==int and 1<=row['slots']<=16, 'Each field needs 1-16 quads.')
         require(row['alignment'] in ('left','center','right'), 'Unknown field alignment.')
         require(len(row['anchor'])==2 and all(_number(v) and 0<=v<=limit for v,limit in zip(row['anchor'],(1920,1080))), 'Invalid field anchor.')
         # Only the possession arrow and the TIMEOUT tab (sb) move between two positions: away at the anchor, home at
@@ -178,7 +178,7 @@ def load_layout(folder=None):
         require(0<len(gset['glyphs'])<=128, 'Too many glyphs in '+name)
         require(_number(gset.get('cap_height')) and 1<=gset['cap_height']<=110, 'Invalid glyph set cap height.')
         for token,row in gset['glyphs'].items():
-            require(1<=len(token)<=4 and all(0<ord(c)<128 for c in token), 'Glyph tokens must have 1–4 ASCII characters.')
+            require(1<=len(token)<=4 and all(0<ord(c)<128 for c in token), 'Glyph tokens must have 1-4 ASCII characters.')
             require(row['cell'] in spec['cells'] and len(row['size'])==2 and all(_number(v) and 0<=v<=256 for v in row['size']), 'Invalid glyph cell or size.')
             require(_number(row['advance']) and 0<row['advance']<=256 and _number(row.get('raise',0)), 'Invalid glyph advance.')
     if spec.get('team_accents'):
@@ -789,11 +789,11 @@ def normalize_state(state=None):
     require(state['possession'] in ('home','away'),'Possession must be home or away.')
     require(state['event'] in ('standard','FLAG','FUMBLE','hang time','ball on','score slabs','hidden play clock'),'Unknown retail event state.')
     require(state['broadcast'] in ('play_now','monday_night','sunday_night','monday_afternoon'),'Unknown broadcast slot.')
-    # Franchise records are counted by the owner at setup from a synthetic season (W, L, T per side, 16 games at most).
+    # Both retail and modern-season previews feed the game's schedule reader.
     for key in ('home_record','away_record'):
         record=state[key]
         require(record is None or (isinstance(record,(list,tuple)) and len(record)==3 and all(type(v)==int and v>=0 for v in record)
-                and sum(record)<=16),'A preview record is null or [wins, losses, ties] with at most 16 games.')
+                and sum(record)<=17),'A preview record is null or [wins, losses, ties] with at most 17 games.')
     require(state['season'] in SEASONS,'Unknown season stage.')
     require(type(state['phase'])==int and state['phase'] in PHASES,'The play phase is 0 to 4.')
     # Beta 76 sb: a previous down one lower shows the interim label; a timeout called by one side shows its tab.

@@ -65,6 +65,7 @@ class Replay:
         m = self.m
         m.u32(0xE5FF80, mode)
         m.u32(0xE60284, m.DEF)
+        m.u32(m.GAME + 0x500 + 0x18, 0)          # default to a running game clock for each independent replay
         # As the native pre-snap store 0x20AC70 does: the offense's estimate is stored before the defense's is made
         # (a tied defense's branch of 0x20A4D0 reads it), so no estimate depends on the previous replay's state.
         offense = self.estimate(m.HOME, state)
@@ -121,11 +122,11 @@ class Replay:
         m.run(0x2D3360, ecx=OBJ, edx=0, count=50000)
         return self.st0()
 
-    def kneel(self, *, quarter, seconds, own_yard, margin, down, defense_timeouts, play_clock=40.0):
+    def kneel(self, *, quarter, seconds, own_yard, margin, down, defense_timeouts, play_clock=40.0, running=True):
         self.prepare(dict(down=down, quarter=quarter, seconds=seconds, score_margin=margin, own_yard=own_yard,
                           distance=10, home=True, quarter_seconds=900, timeouts=defense_timeouts))
         self.m.f32(self.m.GAME + 0x600 + 0x10, play_clock)
-        self.m.u32(self.m.GAME + 0x500 + 0x18, 0)
+        self.m.u32(self.m.GAME + 0x500 + 0x18, 0 if running else 2)
         return self.flag(0x206F10)
 
     def runoff(self, *, quarter, seconds, down, defense_timeouts, play=KNEEL, state=18, running=True, warned=True):
@@ -156,24 +157,20 @@ class ClockReplays(unittest.TestCase):
         return fn(self.retail, *args, **kwargs), fn(self.clock, *args, **kwargs)
 
     def test_two_scores_down_gets_the_estimate_and_urgency_from_ten_minutes(self):
-        """Q4, own 25: retail E is 0 until 5:00; a team down 9 or more now gets the native E from 10:00, urgency rises
-        before 5:00, one-score games are unchanged. The native E (0x20A4D0) counts 7-point scores: down 9 to 15 needs
-        two (75 yards x 1.875 s + 140.625 s = 281.25 s), down 16 or 17 three (two touchdowns leave it 2 or 3 behind,
-        so a field goal too: 75 x 1.875 + 2 x 140.625 = 421.875 s), and E never exceeds the quarter length (420 s
-        with 7-minute quarters, the SOFTDRINK default)."""
+        """Down 16, two touchdowns and two conversions can tie. Down 17 still takes three possessions."""
         def offense_estimate(r, seconds, margin, quarter_seconds=420):
             return r.prepare(dict(down=1, quarter=4, seconds=seconds, score_margin=margin, own_yard=25, distance=10,
                                   home=True, quarter_seconds=quarter_seconds))[0]
-        for margin, native in ((-9, 281.25), (-14, 281.25), (-15, 281.25), (-16, 420.0), (-17, 420.0)):
+        for margin, native in ((-9, 281.25), (-14, 281.25), (-15, 281.25), (-16, 281.25), (-17, 420.0)):
             for seconds in (600, 420, 330):
                 self.assertEqual(self.both(offense_estimate, seconds, margin), (0.0, native), (margin, seconds))
             self.assertEqual(self.both(offense_estimate, 660, margin), (0.0, 0.0), margin)
-            self.assertEqual(self.both(offense_estimate, 270, margin), (native, native), margin)
+            self.assertEqual(self.both(offense_estimate, 270, margin), (420.0 if margin == -16 else native, native), margin)
         # 15-minute quarters: the three-score estimate is not capped, and the window still opens at 10:00
-        for margin, native in ((-9, 281.25), (-16, 421.875)):
+        for margin, native in ((-9, 281.25), (-16, 281.25), (-17, 421.875)):
             self.assertEqual(self.both(offense_estimate, 600, margin, 900), (0.0, native), margin)
             self.assertEqual(self.both(offense_estimate, 660, margin, 900), (0.0, 0.0), margin)
-            self.assertEqual(self.both(offense_estimate, 270, margin, 900), (native, native), margin)
+            self.assertEqual(self.both(offense_estimate, 270, margin, 900), (421.875 if margin == -16 else native, native), margin)
         for margin in (-8, -3, 0, 7):
             for seconds in (600, 420, 330):
                 self.assertEqual(self.both(offense_estimate, seconds, margin), (0.0, 0.0), (margin, seconds))
@@ -313,9 +310,22 @@ class ClockReplays(unittest.TestCase):
         for name in ("trail_normal_240", "lead_normal_360", "tied_normal_240", "q2_lead_normal_100", "lead_kneel_200"):
             self.assertEqual(delay[name][0], delay[name][1], name)
 
+    def test_two_point_conversions_count_at_every_multiple_of_eight(self):
+        """Q4 4:30, own 25, 15-minute quarters: each score is 140.625 s here. A deficit d needs ceil(d / 8) scores
+        (two-point conversions included), so 16 and 24 no longer count an extra score; retail counts seven-point
+        touchdowns and adds one."""
+        def offense_estimate(r, margin):
+            return r.prepare(dict(down=1, quarter=4, seconds=270, score_margin=margin, own_yard=25, distance=10,
+                                  home=True, quarter_seconds=900))[0]
+        cases = {-8: (1, 1), -9: (2, 2), -15: (2, 2), -16: (3, 2), -17: (3, 3), -23: (4, 3), -24: (4, 3), -25: (4, 4),
+                 -31: (5, 4), -32: (5, 4), -33: (5, 5)}
+        for margin, (retail, modern) in cases.items():
+            with self.subTest(margin=margin):
+                self.assertEqual(self.both(offense_estimate, margin), (retail * 140.625, modern * 140.625))
+
     def test_end_of_half_kneel(self):
-        """Q2, own side, 60 s or less, the native kneel formula: (4 - defense timeouts - down) x 40 + 40 + 15 > t."""
-        cases = {(40, 30, 7, 2, 2): (0, 1), (40, 30, 0, 1, 3): (0, 1), (40, 30, -3, 1, 3): (0, 1),
+        """Only actual clock cycles can be used to end the half."""
+        cases = {(39, 30, 7, 2, 2): (0, 1), (39, 30, 0, 1, 3): (0, 1), (39, 30, -3, 1, 3): (0, 1),
                  (55, 25, 7, 1, 3): (0, 0), (70, 30, 7, 1, 0): (0, 0), (40, 60, 7, 2, 2): (0, 0),
                  (40, 5, 7, 2, 2): (0, 0), (20, 45, -7, 3, 3): (0, 0), (110, 30, 7, 1, 0): (0, 0)}
         for (seconds, own, margin, down, tos), result in cases.items():
@@ -323,6 +333,12 @@ class ClockReplays(unittest.TestCase):
                                        defense_timeouts=tos), result, (seconds, own, margin, down, tos))
         self.assertEqual(self.both(Replay.kneel, quarter=4, seconds=100, own_yard=30, margin=7, down=1,
                                    defense_timeouts=0), (1, 1))                       # Q4 stays native
+
+    def test_stopped_third_down_respects_the_last_defensive_timeout(self):
+        state = dict(quarter=2, seconds=14, own_yard=30, margin=0, down=3, running=False)
+        self.assertEqual(self.clock.kneel(**state, defense_timeouts=1), 0)
+        self.assertEqual(self.clock.kneel(**state, defense_timeouts=0), 1)
+        self.assertEqual(self.clock.kneel(**dict(state, down=4), defense_timeouts=0), 0)
 
     def test_kneel_runoff(self):
         """After a Take Knee PLAY: the clock goes to 0:00 and stops only when the downs left can kneel it all out."""

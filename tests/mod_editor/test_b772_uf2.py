@@ -133,8 +133,8 @@ class Data(unittest.TestCase):
     def test_pins_are_complete_and_unique(self):
         doc = fixes.alternates()
         rows = doc["textures"]
-        self.assertEqual(len(rows), 544)
-        self.assertEqual(len(fixes.selectors(doc)), 92)
+        self.assertEqual(len(rows), 534)   # b81-retail-free-art: ten chunk 12 rows deleted by ruling (never write in beta 81)
+        self.assertEqual(len(fixes.selectors(doc)), 91)   # b81-retail-free-art: 26H0 had only its deleted chunk 12 row
         keys = set()
         for row in rows:
             self.assertIn(row["kind"], fixes.KINDS)
@@ -173,13 +173,13 @@ class Data(unittest.TestCase):
         uf1 = {(r["selector"], r["chunk"]): r for r in fixes.spec()["textures"]}
         both = [r for r in fixes.alternates()["textures"] if (r["selector"], r["chunk"]) in uf1]
         self.assertEqual(sorted((r["selector"], r["chunk"]) for r in both),
-                         [("18A0", 3), ("26A0", 1), ("26A0", 12), ("26H0", 12)])
+                         [("18A0", 3), ("26A0", 1)])   # b81-retail-free-art: 26A0/26H0:12 deleted in both
         for r in both:
             u = uf1[(r["selector"], r["chunk"])]
             self.assertEqual((r["before_sha256"], r["offset"], r["length"]), (u["after_sha256"], u["offset"], u["length"]))
 
     def test_uf1_document_is_unchanged(self):
-        self.assertEqual(len(fixes.spec()["textures"]), 60)
+        self.assertEqual(len(fixes.spec()["textures"]), 58)
         self.assertNotEqual(fixes.DATA, fixes.DATA_ALTS)
 
     def test_no_private_paths_in_data(self):
