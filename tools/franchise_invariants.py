@@ -96,8 +96,10 @@ T1  trades since ``previous`` (the view one weekly advance earlier): the ring ro
     T1.unexplained_pick with both views in stage 8 of the same year (no draft roll between), a pick-table entry that
                    changed owner with no pick row of a trade group in the new rows giving it (same round, year, and
                    outgoing club = old owner; each row explains one entry) -- failure.
-    The T1 checks assume one advance between the views (the harness's case); for views further apart T1.window judges
-    by ``previous``'s state alone. A summary (rows, groups, quarterback-for-pick trades, pick changes, notes) goes into
+    The T1 checks assume one advance between the views (the harness's case). T1.window is judged only when the two views
+    are exactly one weekly advance apart (same year and stage, week + 1): across a season's opening (the offseason and
+    camp advances, whose stages 1, 2 and 7 run the CPU trade tick) or a stage advance it is not judged, with a note
+    (shadow panel trades-shadow, 2026-11-20: both arms failed T1.window at the 2027 opening on offseason CPU trades). A summary (rows, groups, quarterback-for-pick trades, pick changes, notes) goes into
     info["trades_since_previous"].
 I9  the transaction ring cursor is below 600 and every row's kind is in the allowed set: default 1, 2, 4, 7, 8, 9, 10,
     11, 12 (the design's list 1, 4, 7, 8, 9, 10, 12 plus 11, written by the native CPU listing at 0x2BBE72 in every
@@ -1127,11 +1129,15 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
         t1 = trades_since(previous, view)
         human = lambda c: c is not None and 0 <= c < CLUBS and (clubs[c].human or previous.clubs[c].human)
         cpu_path = cpu_can_trade(previous)
+        one_advance = (previous.year_index == view.year_index and previous.stage == view.stage
+                       and view.week == previous.week + 1)
         user_groups = []
         for g in t1["groups"]:
             named = sorted({x["club"] for x in g if x["club"] is not None})
             if any(human(c) for c in named):
                 user_groups.append({"rows": [x["slot"] for x in g], "clubs": named})
+            elif not one_advance:
+                t1["notes"].append("T1.window not judged: the views are not one weekly advance apart")
             elif cpu_path is None:
                 t1["notes"].append("T1.window not judged: the previous view's Trade Deadline option is unknown")
             elif not cpu_path and not skipped("T1.window"):

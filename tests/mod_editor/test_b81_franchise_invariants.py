@@ -903,6 +903,7 @@ class TradeExecutionTests(unittest.TestCase):
         before.post(cls.SELLER, cls.qb, cls.BUYER, cls.word)
         cls.after = before.native_pending_scan()
         cls.previous = Ram(cls.image).view()
+        cls.after.put(fi.WEEK, cls.previous.week + 1)       # the weekly advance's own week + 1: one advance apart
         cls.after_view = cls.after.view()
         cls.after_base = fi.check(cls.after_view)                                     # the state after, alone
 
@@ -934,8 +935,23 @@ class TradeExecutionTests(unittest.TestCase):
         for stage, judged in ((7, False), (9, True)):   # 0x247D40's stage 7 case runs the tick with no window test;
             other = Ram(self.image)                         # stage 9 (the playoffs) runs none
             other.put(fi.STAGE, stage)
-            report, _ = self.judged(previous=other.view())
+            after = Ram(self.after.regions)
+            after.put(fi.STAGE, stage)
+            report, _ = self.judged(previous=other.view(), after=after)
             self.assertEqual("T1.window" in failing(report), judged, stage)
+
+    def test_T1_window_is_not_judged_across_a_season_opening(self):
+        """The shadow panel's false failure (2026-11-20): the 2027 opening judged against the 2026 playoffs' last view,
+        with the offseason's CPU trades (stages 1, 2 and 7 run the tick) in between. Not one weekly advance: noted."""
+        playoffs = Ram(self.image)
+        playoffs.put(fi.STAGE, 9)
+        opening = Ram(self.after.regions)
+        opening.put(fi.YEAR, self.previous.year_index + 1)
+        opening.put(fi.WEEK, 0)
+        report, view = self.judged(previous=playoffs.view(), after=opening)
+        self.assertNotIn("T1.window", failing(report))
+        self.assertIn("T1.window not judged: the views are not one weekly advance apart",
+                      view.info["trades_since_previous"]["notes"])
 
     def test_a_trade_naming_a_human_club_fails_T1_human(self):
         after = Ram(self.after.regions)
