@@ -31,6 +31,7 @@ FOLDERS = ("data/nfl2k5_modern_coaches", "data/nfl2k5_modern_fans", "data/nfl2k5
            "data/nfl2k5_glyph_fixes_2026",  # b776-fn2 (int2)
            "data/nfl2k5_relief_2026_b81u",  # b81-retail-free-art: relief differences and layout masks
            "data/nfl2k5_glyph_fixes_2026_b81u",  # b81-retail-free-art: the b81u glyph pictures that ship
+           "data/nfl2k5_kit_rule_fill",  # b81-retail-free-art round 3: pictures the helmet rule reads (SOURCES.json)
            "data/nfl2k5_scorebug_digit_glyphs.png")  # b780: one file, not a folder
 
 
@@ -41,6 +42,10 @@ class ModernArtReleaseTests(unittest.TestCase):
         self.root = Path(self.temporary.name) / "stage"
         self.catalog = json.loads((ROOT / release.MODERN_ART_PNG_CATALOG).read_text(encoding="utf-8"))
         self.files = [release.MODERN_ART_PNG_CATALOG, *self.catalog["files"]]
+        # b81-retail-free-art round 3: a picture beside a SOURCES record ships with the record, and a third-party one
+        # with its NOTICE.md attribution (the release check refuses it otherwise)
+        self.files += [r for r in (*release.THIRD_PARTY_SOURCES, "NOTICE.md")
+                       if any(f.startswith(release.THIRD_PARTY_SOURCES[0].rsplit("/", 1)[0] + "/") for f in self.files)]
         for relative in self.files:
             destination = self.root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
@@ -80,7 +85,7 @@ class ModernArtReleaseTests(unittest.TestCase):
         self.assertEqual(tool.NOT_AUTHORED_BY_NAME, {})
         self.assertTrue(all(p.startswith("data/nfl2k5_glyph_fixes_2026_b81u/") for p in tool.NOT_AUTHORED))
         self.assertFalse(set(tool.NOT_AUTHORED) & set(document["files"]))
-        self.assertEqual(len(document["files"]), 1488)   # R2-G: + round 2 Broncos one face and Jets 2 pictures (data/nfl2k5_glyph_fixes_2026_b81u); b81-retail-free-art: + 146 relief difference layers (review round 3: no layout mask ships) (data/nfl2k5_relief_2026_b81u), + 387 b81u glyph pictures (data/nfl2k5_glyph_fixes_2026_b81u); b780 pillowfont: + the scorebug digit glyph layer; b780-int (rst2 dc437e4b2): + the real portrait atlas faces_04 and its palette for the 119 players the 11/03 refresh creates; b779-int1: rf3 + pt1; b779-pt1: + 8 real free-agent portrait atlases; b779-rf3: + new rookie face atlases (faces_14..16); b778 cf4: KC head.png in place of head_mask + head_overlay; b778 int2: + classic teams, 28 rookie face atlases, alien, Trophy Room; keeps fn2 four Titans 7 digits and hs1 nine hair textures
+        self.assertEqual(len(document["files"]), 1491)   # b81-retail-free-art round 3: + the helmet rule's three pictures (data/nfl2k5_kit_rule_fill: the league project's Ravens and 49ers logo files and the CC BY 4.0 Ravens mark); R2-G: + round 2 Broncos one face and Jets 2 pictures (data/nfl2k5_glyph_fixes_2026_b81u); b81-retail-free-art: + 146 relief difference layers (review round 3: no layout mask ships) (data/nfl2k5_relief_2026_b81u), + 387 b81u glyph pictures (data/nfl2k5_glyph_fixes_2026_b81u); b780 pillowfont: + the scorebug digit glyph layer; b780-int (rst2 dc437e4b2): + the real portrait atlas faces_04 and its palette for the 119 players the 11/03 refresh creates; b779-int1: rf3 + pt1; b779-pt1: + 8 real free-agent portrait atlases; b779-rf3: + new rookie face atlases (faces_14..16); b778 cf4: KC head.png in place of head_mask + head_overlay; b778 int2: + classic teams, 28 rookie face atlases, alien, Trophy Room; keeps fn2 four Titans 7 digits and hs1 nine hair textures
         for relative in ("data/nfl2k5_modern_coaches/portraits/7031.png",
                          "data/nfl2k5_modern_coaches/portraits/7034.png",
                          "data/nfl2k5_modern_coaches/DAL/headset.png"):

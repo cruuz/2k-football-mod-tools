@@ -197,8 +197,8 @@
    "selector": "03H0"
   },
   {
-   "after_sha256": "da4b9798bb7fa76036be947bd6cbdec386cf6545f93b76b7b46675a9b97d3d29",
-   "before_sha256": "7870638bc1fa30f699d9d3ff1ce2210b5ea978bf115432d848437dcb93624a12",
+   "after_sha256": "5561994b5525002e2fdf118763f7de689e17a30fb22942ff090f99d464b9917a",
+   "before_sha256": "f2478f281fc36d8ea6d37c2bd8eba6c54f377031be06c8fb6cc3902bff561513",
    "compose": {
     "pants": {
      "crop": [
@@ -225,8 +225,8 @@
    "selector": "04A2"
   },
   {
-   "after_sha256": "da4b9798bb7fa76036be947bd6cbdec386cf6545f93b76b7b46675a9b97d3d29",
-   "before_sha256": "7870638bc1fa30f699d9d3ff1ce2210b5ea978bf115432d848437dcb93624a12",
+   "after_sha256": "5561994b5525002e2fdf118763f7de689e17a30fb22942ff090f99d464b9917a",
+   "before_sha256": "f2478f281fc36d8ea6d37c2bd8eba6c54f377031be06c8fb6cc3902bff561513",
    "compose": {
     "pants": {
      "crop": [

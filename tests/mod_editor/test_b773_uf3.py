@@ -227,12 +227,21 @@ class Data(unittest.TestCase):
         self.assertNotIn("/media/", text)
         self.assertTrue(text.isascii())
 
-    def test_baltimore_leftovers_decode(self):
-        for chunk, count in ((11, 358), (12, 349)):
-            points = author.runs_to_points(author.BAL_REMNANTS[chunk])
-            self.assertEqual(len(points), count)
-            self.assertEqual(len({tuple(p) for p in points}), count)
-            self.assertTrue(all(0 <= x < 256 and 0 <= y < 256 for x, y in points))
+    def test_baltimore_leftovers_are_a_clear_rule_not_a_texel_list(self):
+        """b81-retail-free-art (ruling 2, round 3): the retail logo's left-overs on the Ravens helmet02 are painted out
+        by rule (kf clear: boxes of at least 16 texels, a threshold, full alpha); no texel list ships. The helmet00 rows
+        were deleted by ruling (a beta 81 build never holds their input)."""
+        self.assertFalse(hasattr(author, "BAL_REMNANTS"))
+        self.assertEqual(sorted(author.BAL_CLEAR), [12])
+        rows = {(r["selector"], r["chunk"]): r for r in fixes.finish()["textures"]}
+        for sel in ("02A0", "02H0"):
+            self.assertNotIn((sel, 11), rows)
+            ops = rows[(sel, 12)]["ops"]
+            self.assertEqual([op["op"] for op in ops], ["want", "clear"])
+            clear = ops[1]
+            self.assertEqual((clear["to"], clear["above"], clear["alpha"]), ("#010001", 24, 255))
+            self.assertTrue(all((x1 - x0) * (y1 - y0) >= 16 for x0, y0, x1, y1 in clear["boxes"]))
+            self.assertTrue(all(0 <= x0 < x1 <= 256 and 0 <= y0 < y1 <= 256 for x0, y0, x1, y1 in clear["boxes"]))
 
     def test_swoosh_moves_only_on_sleeve_number_kits(self):
         moved = sorted(author.SWOOSH_FORWARD)

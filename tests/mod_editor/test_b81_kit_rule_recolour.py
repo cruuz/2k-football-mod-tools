@@ -214,6 +214,55 @@ class KitRuleRecolourTest(unittest.TestCase):
                                  seeds=[[2, 12]], levels=["#000000"])])
 
 
+
+def inpaint_case():
+    """A donor with a clean swoosh-like band (mark over field, with half-coverage edges) and a kit whose old band sits
+    at an offset across a field and a piece of dark art."""
+    h = w = 48
+    f0, m0 = np.array([38, 65, 58]), np.array([255, 255, 255])
+    donor = np.zeros((h, w, 4), np.uint8); donor[..., :3] = f0; donor[..., 3] = 255
+    kit = np.zeros((h, w, 4), np.uint8); kit[..., :3] = (180, 20, 40); kit[..., 3] = 200
+    kit[22:41, 14:21, :3] = (12, 12, 14)                                    # dark art beside the old band
+    for y in range(4, 17):
+        for x in range(w):
+            k = 2 * x - y
+            cov = 255 if 40 <= k <= 52 else 128 if k in (38, 39, 53, 54) else 0
+            if cov:
+                donor[y, x, :3] = f0 + (m0 - f0) * cov // 255
+                kit[y + 20, x + 2, :3] = np.array([180, 20, 40]) + (np.array([250, 248, 246]) - [180, 20, 40]) * cov // 255
+    op = {"op": "rule", "module": "recolour", "do": "inpaint", "rows": [16, 48],
+          "footprint": {"donor": "10H0:3", "field": "#26413A", "mark": "#FFFFFF", "box": [10, 2, 40, 20],
+                        "above_milli": 5, "offset": [2, 20]}}
+    return kit, donor, op
+
+
+class InpaintTests(unittest.TestCase):
+    """b81-retail-free-art round 3 (coordinator's ruling on sw1): the old swoosh's remnants filled from the nearest
+    texel outside its own footprint, the footprint read from the build's donor swoosh; integers only, pinned."""
+
+    def test_the_old_band_is_filled_from_outside_and_pinned(self):
+        kit, donor, op = inpaint_case()
+        out, _ = kf.paint(kit, [op], {"10H0:3": donor})
+        changed = (out != kit).any(-1)
+        self.assertGreater(int(changed.sum()), 40)
+        self.assertFalse(changed[:24].any() or changed[37:].any())            # only the old band's rows
+        self.assertTrue(np.array_equal(out[..., 3], kit[..., 3]))              # alpha never moves
+        self.assertFalse(((out[changed][:, :3] >= 240).all(-1)).any())         # no white left where it changed
+        self.assertEqual(sha(out), "24e0dd06c1d17236c6e5150a9bb380a16970d6f6f985ef345dc2c35cca46e13e")
+
+    def test_texels_an_earlier_rule_changed_are_left(self):
+        kit, donor, op = inpaint_case()
+        first = {"op": "clear", "to": "#B41428", "boxes": [[20, 24, 30, 30]], "above": 8}
+        out, _ = kf.paint(kit, [first, op], {"10H0:3": donor})
+        alone, _ = kf.paint(kit, [first], {"10H0:3": donor})
+        self.assertTrue(np.array_equal(out[24:30, 20:30], alone[24:30, 20:30]))
+
+    def test_a_missing_donor_is_refused(self):
+        kit, donor, op = inpaint_case()
+        with self.assertRaises(ValueError):
+            kf.paint(kit, [op], {})
+
+
 if __name__ == "__main__":
     if "--print-pins" in sys.argv:
         for key, value in sorted(run_all().items()):

@@ -357,6 +357,89 @@ def _boxres(out, op, rgba):
     return new
 
 
+def _dilate4(m, n):
+    """Grow a mask ``n`` times by its 4-neighbours (scipy's default binary dilation), in place of scipy."""
+    for _ in range(int(n)):
+        g = m.copy()
+        g[1:] |= m[:-1]
+        g[:-1] |= m[1:]
+        g[:, 1:] |= m[:, :-1]
+        g[:, :-1] |= m[:, 1:]
+        m = g
+    return m
+
+
+def _shift(m, dx, dy):
+    out = np.zeros_like(m)
+    h, w = m.shape
+    out[max(dy, 0):min(h, h + dy), max(dx, 0):min(w, w + dx)] = m[max(-dy, 0):min(h, h - dy), max(-dx, 0):min(w, w - dx)]
+    return out
+
+
+def _inpaint(out, op, rgba, donors):
+    """b81-retail-free-art round 3 (coordinator's ruling on sw1, 2026-11-20): the old sleeve swoosh's remnants filled
+    from the art around them, nothing stored. The footprint is the old swoosh's own rendering: the build's clean donor
+    swoosh (``footprint.donor``, the texture every sw1 warp reads) where its coverage on the donor's field-to-mark line
+    is above ``above_milli``/1000, inside the donor grid's ``box``, moved by the kit's ``offset`` and cut to ``rows``.
+    The kit's own mark is the per-channel lower median of the input over the donor's core (coverage above 9/10), its
+    field the commonest input colour in the ring two texels round coverage 2/100. A footprint texel is filled when the
+    rules before it left it as the input holds it and it is the mark or on the field-to-mark line (sw1's own test:
+    within 40 levels of the mark, or 0.15 < t < 1.2 and 30 levels or less off the line); it takes the input colour of
+    the nearest texel outside the footprint (squared distance, then row, then column). Integers only."""
+    fp = op["footprint"]
+    _require(donors is not None and fp["donor"] in donors, "inpaint donor texture absent")
+    src = np.asarray(donors[fp["donor"]], np.uint8)
+    h, w = out.shape[:2]
+    _require(src.shape[:2] == (h, w), "inpaint donor of another size")
+    f0, m0 = _rgb(fp["field"]), _rgb(fp["mark"])
+    d0 = m0 - f0
+    den = int((d0 * d0).sum())
+    _require(den > 0, "inpaint donor line has no length")
+    num = ((src[..., :3].astype(np.int64) - f0) * d0).sum(-1)
+    x0, y0, x1, y1 = (int(v) for v in fp["box"])
+    box = np.zeros((h, w), bool)
+    box[max(0, y0):min(h, y1), max(0, x0):min(w, x1)] = True
+    dx, dy = (int(v) for v in fp["offset"])
+    above = int(fp["above_milli"])
+    _require(0 <= above < 1000, "inpaint coverage threshold outside 0-999/1000")
+    cover = _shift(box & (num * 1000 > above * den), dx, dy)
+    core = _shift(box & (num * 10 > 9 * den), dx, dy)
+    cov02 = _shift(box & (num * 1000 > 20 * den), dx, dy)
+    r0, r1 = (int(v) for v in op["rows"])
+    footprint = cover.copy()
+    footprint[:r0] = False
+    footprint[r1:] = False
+    c = rgba[..., :3].astype(np.int64)
+    if not footprint.any() or not core.any():
+        return out
+    mark = np.sort(c[core], axis=0)[(int(core.sum()) - 1) // 2]
+    ring = _dilate4(cov02, 2) & ~cov02
+    if not ring.any():
+        return out
+    colours, counts = np.unique(c[ring], axis=0, return_counts=True)
+    field = colours[int(np.argmax(counts))]
+    d = mark - field
+    dd = int((d * d).sum())
+    near_mark = np.abs(c - mark).max(-1) <= 40
+    if dd > 0:
+        tn = ((c - field) * d).sum(-1)
+        resid = (c - field) * dd - tn[..., None] * d
+        on_line = (100 * tn > 15 * dd) & (10 * tn < 12 * dd) & ((resid * resid).sum(-1) < 900 * dd * dd)
+        swooshlike = near_mark | on_line
+    else:
+        swooshlike = near_mark
+    untouched = (np.asarray(out)[..., :3] == rgba[..., :3]).all(-1)
+    ys_out, xs_out = np.nonzero(~footprint)
+    new = np.asarray(out, np.uint8).copy()
+    for y, x in zip(*np.nonzero(footprint & untouched & swooshlike)):
+        d2 = (ys_out - y) ** 2 + (xs_out - x) ** 2
+        k = int(np.lexsort((xs_out, ys_out, d2))[0])
+        colour = rgba[ys_out[k], xs_out[k], :3]
+        if (colour != rgba[y, x, :3]).any():
+            new[y, x, :3] = colour
+    return new
+
+
 _KINDS = {"ramp": _ramp, "scale": _scale, "map": _map, "move": _move, "cols": _cols, "mirror": _mirror,
           "rowfill": _rowfill, "boxres": _boxres, "erase": _erase}
 
@@ -364,7 +447,10 @@ _KINDS = {"ramp": _ramp, "scale": _scale, "map": _map, "move": _move, "cols": _c
 def apply(out, op, rgba, donors):
     """One recolour rule over ``out`` (the texture so far); returns the new RGBA uint8 array."""
     kind = op.get("do")
-    _require(kind in _KINDS, "unknown rule " + repr(kind))
+    _require(kind in _KINDS or kind == "inpaint", "unknown rule " + repr(kind))
     _require("color" not in op, "a rule names no palette colour (use a want op)")
+    if kind == "inpaint":
+        new = _inpaint(np.asarray(out, np.uint8), op, np.asarray(rgba, np.uint8), donors)
+        return np.ascontiguousarray(new, np.uint8)
     new = _KINDS[kind](np.asarray(out, np.uint8), op, np.asarray(rgba, np.uint8))
     return np.ascontiguousarray(new, np.uint8)

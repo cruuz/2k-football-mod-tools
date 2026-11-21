@@ -108,7 +108,9 @@ class Data(unittest.TestCase):
             self.assertNotEqual(row["before_sha256"], row["after_sha256"])
             self.assertNotIn((row["selector"], row["chunk"]), keys)
             keys.add((row["selector"], row["chunk"]))
-        self.assertEqual(sorted(k for k in keys if k[1] == 12), [("26A0", 12), ("26A4", 12), ("26H0", 12), ("26H4", 12)])
+        # b81-retail-free-art (ruling 2, round 3): the 26A4/26H4 helmet rows were deleted by ruling (a beta 81 build
+        # never holds their input; the b81 helmet pass owns those two textures)
+        self.assertEqual(sorted(k for k in keys if k[1] == 12), [("26A0", 12), ("26H0", 12)])
         self.assertEqual(sorted(k for k in keys if k[1] != 12),
                          sorted((s, c) for s in ("26H0", "26H4") for c in range(33, 43)))
 

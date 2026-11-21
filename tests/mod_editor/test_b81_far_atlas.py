@@ -106,6 +106,18 @@ class Document(unittest.TestCase):
             for part, pin in row["field_sha256"].items():
                 self.assertEqual(finished[(row["selector"], {"pants": 2, "sleeve": 3}[part])], pin, row["selector"])
 
+    def test_far_atlas_rows_start_from_what_the_helmet_pass_writes(self):
+        """b81-retail-free-art round 3: where the helmet pass (data/nfl2k5_kit_fixes_2026_b81.json) writes a kit's far
+        atlas (chunk 51: the Carolina far view, now the far_helmet rule), this step's row for that kit is pinned to the
+        atlas that pass writes, so the step still composes its far-view pants (it skipped them on the old pins)."""
+        helmets = {(r["selector"], r["chunk"]): r for r in kf.helmets_b81()["textures"]}
+        rows = {r["selector"]: r for r in kf.sideline_b81u()["kits"]} if hasattr(kf, "sideline_b81u") else \
+            {r["selector"]: r for r in json.loads((ROOT / "data/nfl2k5_sideline_2026_b81u.json").read_text())["kits"]}
+        far = sorted(sel for (sel, chunk) in helmets if chunk == 51 and sel in rows)
+        self.assertEqual(far, ["04A2", "04H2"])
+        for sel in far:
+            self.assertEqual(rows[sel]["before_sha256"], helmets[(sel, 51)]["after_sha256"], sel)
+
     def test_no_torso(self):
         self.assertFalse(any("torso" in row["parts"] for row in rows()))
 
