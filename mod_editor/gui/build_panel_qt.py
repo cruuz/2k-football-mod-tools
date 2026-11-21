@@ -4014,6 +4014,14 @@ class BuildPanel(QWidget):
         # An earlier revision's page ("previous") is always a change: the edit upgrades or removes it.
         room_now = {"applied": "realistic", "previous": "previous"}.get(room_status, "retail")
         room_wanted = "realistic" if mode in ("realistic", "custom") and self._qb_room_needs_on() else "retail"
+        if room_now == "realistic" and room_wanted == "realistic":
+            # b81 qb34 (D3/D4 hand-over): a disc whose rules carry another stage set (an earlier Studio's Realistic, 67)
+            # is a change too: the edit rewrites the set the Studio installs now.
+            room = mod_build._core_module("nfl2k5_qb_room")
+            above_zero = mode == "realistic" or (mode == "custom" and self.qb_injury_rate.value() > 0)
+            stages_now = ((self._state or {}).get("qb_room_settings") or {}).get("stages")
+            if room is not None and stages_now != room.studio_stages(above_zero, True):
+                room_now = "previous"
         # An earlier revision (slice 1, quarterbacks only) at the same mode is still a change: Build upgrades it.
         current = mode == "retail" or installed.get("revision") == _sim_qb_injuries.REVISION
         if mode == installed.get("mode", "retail") and current and room_now == room_wanted and (

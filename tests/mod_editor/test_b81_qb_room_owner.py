@@ -156,12 +156,18 @@ class OwnerTests(unittest.TestCase):
         settings = room.read_settings(self.applied)
         self.assertEqual((settings["status"], settings["stages"], settings["shadow"], settings["va"]),
                          ("applied", self.code.STAGE_D1, False, 0x1529000))
-        # D1 + D2 handover (designer's addendum 2): D1 and D2 ship, D3 (256) and D4 stay off; the floor comes from the
-        # injury level and is bit 64 alone since the floor review (F1(b): no over-cap rung), so Realistic installs 67.
-        self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT), (self.code.STAGE_D1 | self.code.STAGE_D2, False))
-        self.assertEqual((room.FLOOR_STUDIO_STAGES, room.realistic_stages()), (64, 67))
-        self.assertEqual(room.stage_names(67), ["D1 veteran or rookie", "D2 the kid's turn", "floor"])
-        self.assertFalse(room.REALISTIC_STAGES & (self.code.STAGE_D3 | self.code.STAGE_D4))
+        # E1/E2 hand-over (C21): D1, D2, D3 (256), D4 (4), E1 (8) and E2 (32) ship; the floor comes from the injury
+        # level (bit 64 alone since the floor review), and E1/E2 only where the floor and piece 3 are both installed,
+        # so Realistic installs 367 (327 at the D3/D4 hand-over, 67 at the floor hand-over).
+        c = self.code
+        self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT),
+                         (c.STAGE_D1 | c.STAGE_D2 | c.STAGE_D4 | c.STAGE_D3 | c.STAGE_SIGN | c.STAGE_E2, False))
+        self.assertEqual((room.FLOOR_STUDIO_STAGES, room.realistic_stages()), (64, 367))
+        self.assertEqual((room.studio_stages(True, False), room.studio_stages(False, True)), (64, 263))
+        self.assertEqual(room.stage_names(367), ["D1 veteran or rookie", "D2 the kid's turn", "D3 benched for poor play",
+                                                 "D4 returning starter", "E1 emergency backup signing",
+                                                 "E2 better quarterback while the starter is out", "floor"])
+        self.assertFalse(room.REALISTIC_STAGES & c.STAGE_TRADE)
         self.assertEqual(settings["stage_names"], ["D1 veteran or rookie"])
         row = _room_row(space.layout(self.applied)["allocations"])
         self.assertEqual((row["va"], row["size"]), (0x1529000, 0x3000))
@@ -465,6 +471,10 @@ class PreviousRevisionTests(unittest.TestCase):
     FLOOR_EMPTY_SHA = "cdb14fd0ffe2024c6b2bb52689a1d76ac52de3e39dd95dd281208e83d880a062"
     STAGE_3A_SHA = "9efb5e9894636d338d1f893b73a7991c99836c60b2aa9c472cdbc82bf72f9e5e"
     STAGE_3A_EMPTY_SHA = "e41c836df130854ad27dde6f88fe60a6f0273ec107646c7ba0861ed7c5c2184d"
+    # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64)
+    # on slice 1 alone; rebuilt here at the merged head.
+    HANDOVER_67_SHA = "48138073b92485b43262e7a456af4b3b90ee7fd012bc2b23dbf8d2594a05bbf5"
+    HANDOVER_64_SHA = "c6d7275189ccb74adabeb845a06909e8ed19fc2a4e26e01c6a0d1df98c481363"
 
     @classmethod
     def setUpClass(cls):
@@ -482,6 +492,8 @@ class PreviousRevisionTests(unittest.TestCase):
         _empty, cls.d1d2 = cls._written_by("nfl2k5_qb_room_code_b81_d1d2", cls.base, 195)
         _empty, cls.review67 = cls._written_by("nfl2k5_qb_room_code_b81_floor_review", cls.base, 67)
         _empty, cls.review64 = cls._written_by("nfl2k5_qb_room_code_b81_floor_review", cls.base, 64)
+        _empty, cls.handover67 = cls._written_by("nfl2k5_qb_room_code_b81_handover", cls.base, 67)
+        _empty, cls.handover64 = cls._written_by("nfl2k5_qb_room_code_b81_handover", cls.base, 64)
 
     @classmethod
     def _written_by(cls, template, source, stages):
@@ -510,12 +522,15 @@ class PreviousRevisionTests(unittest.TestCase):
         self.assertEqual((sha(self.stage_3a), sha(self.stage_3a_empty)), (self.STAGE_3A_SHA, self.STAGE_3A_EMPTY_SHA))
         self.assertEqual(sha(self.d1d2), self.D1D2_SHA)
         self.assertEqual((sha(self.review67), sha(self.review64)), (self.REVIEW_67_SHA, self.REVIEW_64_SHA))
+        self.assertEqual((sha(self.handover67), sha(self.handover64)), (self.HANDOVER_67_SHA, self.HANDOVER_64_SHA))
 
     def test_status_reads_previous(self):
         room = self.room
         for payload, revision, stages in ((self.floor, "b81 floor handover", 192), (self.stage_3a, "b81 stage 3a", 1),
                                           (self.d1d2, "b81 D1 + D2 handover", 195),
-                                          (self.review67, "b81 floor review", 67), (self.review64, "b81 floor review", 64)):
+                                          (self.review67, "b81 floor review", 67), (self.review64, "b81 floor review", 64),
+                                          (self.handover67, "b81 floor + D1 + D2 hand-over", 67),
+                                          (self.handover64, "b81 floor + D1 + D2 hand-over", 64)):
             with self.subTest(revision=revision):
                 settings = room.read_settings(payload)
                 self.assertEqual((settings["status"], settings.get("revision"), settings.get("stages")),
@@ -549,6 +564,38 @@ class PreviousRevisionTests(unittest.TestCase):
                 upgraded, receipt = room.apply(payload, "realistic", stages=stages)
                 self.assertEqual(upgraded, room.apply(self.base, "realistic", stages=stages)[0])
                 self.assertEqual(receipt["upgraded_from"], "b81 floor review")
+                self.assertEqual(self._rows(upgraded), self._rows(payload))
+                self.assertEqual(room.apply(payload, "retail")[0], self.floor_empty)
+
+    def test_the_hand_over_pages_upgrade_and_restore(self):
+        # C21: the page b2672e398's Studio wrote (f5270f4d, 35ce7727: the P5 and P6-5ff candidates) differs from the
+        # current one (E1/E2's protected release); it reads previous, upgrades to a fresh install and restores.
+        room = self.room
+        for payload, stages in ((self.handover67, None), (self.handover64, 64)):
+            with self.subTest(stages=stages):
+                upgraded, receipt = room.apply(payload, "realistic", stages=stages)
+                self.assertEqual(upgraded, room.apply(self.base, "realistic", stages=stages)[0])
+                self.assertEqual(receipt["upgraded_from"], "b81 floor + D1 + D2 hand-over")
+                self.assertEqual(self._rows(upgraded), self._rows(payload))
+                self.assertEqual(room.apply(payload, "retail")[0], self.floor_empty)
+
+    def test_the_hand_over_page_at_every_set_its_studios_wrote(self):
+        # The E1/E2 review's F1 and the standing rule (coordinator, 11/21): every page and stage set a Studio at a head
+        # merged to integration could write reads "previous" at every later head. b2672e398's page was written at 67,
+        # 64 and 3 (Custom 0) there, and at 327 and 263 (Custom 0) by the D3/D4 hand-over's Studio at 9c7f38657 (the
+        # lead's witnesses 72ca9c12, 961d13db, ba363326). Each reads previous, upgrades in place to a fresh 367 (E1 and
+        # E2 on, the stage set this branch's needs allow) and restores to the empty reservation.
+        room = self.room
+        fresh, _ = room.install_stages(self.base, 367)
+        for stages in (67, 64, 3, 327, 263):
+            with self.subTest(stages=stages):
+                _empty, payload = self._written_by("nfl2k5_qb_room_code_b81_handover", self.base, stages)
+                settings = room.read_settings(payload)
+                self.assertEqual((settings["status"], settings.get("revision"), settings.get("stages")),
+                                 ("previous", "b81 floor + D1 + D2 hand-over", stages))
+                upgraded, receipt = room.install_stages(payload, 367)
+                self.assertEqual(upgraded, fresh)
+                self.assertEqual((receipt["upgraded_from"], receipt["stages"]), ("b81 floor + D1 + D2 hand-over", 367))
                 self.assertEqual(self._rows(upgraded), self._rows(payload))
                 self.assertEqual(room.apply(payload, "retail")[0], self.floor_empty)
 

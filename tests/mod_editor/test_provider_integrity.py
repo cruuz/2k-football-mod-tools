@@ -225,7 +225,9 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [604, 10, 8, 9, 8, 9]
+            [605, 10, 8, 9, 8, 9]
+            # b81 integration (qb34 E head merge): 605 = 604 (art merge, next lines) + qb34 C21's frozen floor + D1 + D2
+            # hand-over page template (a fifth "previous" revision; the lane counted 602 = 601 + 1).
             # b81 integration (retail-free art merge): 604 = 601 + the build-time kit rules the kit fixes import by name
             # (nfl2k5_kit_rule_emblem, _fill, _recolour; the lane counted 593 = 590 + 3 on 3a789811e).
             # b81 combined + qb34 merge: 601 = 598 (qb34's merge, next line) + the combined branch's three (stability's

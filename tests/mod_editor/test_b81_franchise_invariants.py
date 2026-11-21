@@ -157,6 +157,89 @@ class OfflineTests(unittest.TestCase):
             self.assertEqual(fi.load_memory(plain).read(0x1001, 2), b"bc")
 
 
+class ProtectedReleaseTests(unittest.TestCase):
+    """PR1 (DESIGN_CHANGES C21): an E1/E2 make-room release judged on the club as it stood at the release call."""
+
+    LAYOUT = {1: 1, 2: 1, 3: 6, 4: 6, 5: 2, 6: 2, 7: 3, 8: 1, 9: 3, 10: 3, 11: 3, 12: 2, 13: 4, 14: 4, 15: 5, 16: 5}
+
+    def club(self):
+        """A 53-man club: two QBs, then rating 70 - 3 x row at every other position (the room page's test layout)."""
+        players = [{"index": 0, "position": 0, "row": 0, "rating": 70.0, "healthy": True},
+                   {"index": 1, "position": 0, "row": 1, "rating": 72.0, "healthy": False}]
+        for position, n in self.LAYOUT.items():
+            for row in range(n):
+                players.append({"index": len(players), "position": position, "row": row, "rating": 70.0 - 3 * row,
+                                "healthy": True})
+        return players
+
+    def verdict(self, players, released):
+        return [row["check"] for row in fi.protected_release_problems({"club": 5, "released": released,
+                                                                       "players": players})]
+
+    def find(self, players, position, row):
+        return next(p for p in players if p["position"] == position and p["row"] == row)
+
+    def test_the_lowest_rated_eligible_man_keeps_the_rule(self):
+        players = self.club()
+        self.assertEqual(self.verdict(players, self.find(players, 3, 5)["index"]), [])     # WR row 5, rated 55
+
+    def test_a_hurt_95_guard_fails_whatever_his_health(self):
+        players = self.club()
+        star = self.find(players, 13, 1)
+        star.update(rating=95.0, healthy=False)        # flag 0: injury does not lower the rating PR1 compares
+        problems = self.verdict(players, star["index"])
+        self.assertEqual(problems, ["not one of the club's ten lowest-rated players (QB, K and P left out)"])
+        star["healthy"] = True
+        self.assertEqual(self.verdict(players, star["index"]), problems)
+
+    def test_row_0_fails(self):
+        players = self.club()
+        for p in players:                              # every row 0 man the lowest rated: still never released
+            if p["row"] == 0 and p["position"] > 2:
+                p["rating"] = 40.0
+        man = self.find(players, 3, 0)
+        self.assertEqual(self.verdict(players, man["index"]), ["first (row 0) on his position's depth chart"])
+
+    def test_a_position_at_its_minimum_of_healthy_men_fails(self):
+        players = self.club()
+        fs = self.find(players, 5, 1)                  # FS: 2 healthy, minimum 2
+        fs["rating"] = 30.0
+        self.assertEqual(self.verdict(players, fs["index"]),
+                         ["his position falls below its minimum of healthy players without him"])
+        fs["healthy"] = False                          # an injured man leaves the healthy count as it is: 1 < 2 still
+        self.find(players, 5, 0)["healthy"] = False
+        self.assertIn("his position falls below its minimum of healthy players without him",
+                      self.verdict(players, fs["index"]))
+        lb = self.find(players, 10, 2)                 # OLB pools with ILB: 6 healthy, minimum 5
+        lb["rating"] = 30.0
+        self.assertEqual(self.verdict(players, lb["index"]), [])
+
+    def test_never_a_quarterback_kicker_or_punter(self):
+        players = self.club()
+        for position, row in ((0, 1), (1, 0), (2, 0)):
+            man = self.find(players, position, row)
+            man["rating"] = 5.0
+            self.assertIn("a quarterback, kicker or punter released to make room",
+                          self.verdict(players, man["index"]))
+
+    def test_the_tenth_lowest_passes_and_the_eleventh_fails(self):
+        players = self.club()
+        others = sorted((p for p in players if 3 <= p["position"] <= 16), key=lambda p: p["rating"])
+        for k, p in enumerate(others):                 # distinct ratings, lowest first
+            p["rating"] = 40.0 + k
+        tenth, eleventh = others[9], others[10]
+        for p in (tenth, eleventh):
+            p["row"], p["healthy"] = 3, True
+        self.assertNotIn("not one of the club's ten lowest-rated players (QB, K and P left out)",
+                         self.verdict(players, tenth["index"]))
+        self.assertIn("not one of the club's ten lowest-rated players (QB, K and P left out)",
+                      self.verdict(players, eleventh["index"]))
+
+    def test_a_man_off_the_list_fails(self):
+        self.assertEqual(self.verdict(self.club(), 999),
+                         ["the released man is not on the club's active list at the release call"])
+
+
 class SignedSaveTests(unittest.TestCase):
     def test_61001_duplicate_ownership_fails_I2(self):
         folder = owned(f"{QUALIFICATION}/runs/pair-causal-e/61001/signed/2026")
@@ -470,6 +553,18 @@ class HandBrokenTests(unittest.TestCase):
         report = fi.check(self.view)
         self.assertEqual(report.violations, [])
         self.assertEqual(report.status(strict=True), 0)
+
+    def test_a_protected_release_breaking_rule_1_fails_PR1(self):
+        club = self.view.clubs[3]
+        players = [{"index": i, "position": self.view.record(i)[0x35], "row": 1, "rating": 50.0 + k, "healthy": True}
+                   for k, i in enumerate(club.active)]
+        star = next(p for p in reversed(players) if p["position"] > 2)
+        snapshot = {"club": 3, "released": star["index"], "players": players}
+        report = fi.check(self.view, protected_releases=[snapshot])
+        self.assertEqual(failing(report), {"PR1"})
+        row = next(v for v in report.violations if v["invariant"] == "PR1")
+        self.assertEqual((row["club"], row["player_index"]), (3, star["index"]))
+        self.assertEqual(fi.check(self.view, protected_releases=[snapshot], skip=["PR1"]).violations, [])
 
     def board_players(self):
         return {p for o in self.view.board if o.kind for p in o.players_a + o.players_b if p is not None}
