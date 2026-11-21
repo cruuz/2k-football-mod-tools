@@ -121,7 +121,10 @@ class Document(unittest.TestCase):
             # a fill rule, or the project's own drawing kept as runs (after the rule, or alone)
             self.assertIn([op["op"] for op in row["ops"]], (["runs"], ["rule"], ["rule", "runs"]), row["selector"])
             self.assertNotIn("color", json.dumps(row["ops"]))  # the compile must ask the palette for nothing new
-            if is_rule(row) and row["ops"][0]["kind"] == "far_helmet":
+            if is_rule(row) and row["ops"][0]["kind"] == "clear_near":
+                # b81 retail-free: the Jaguars teal alternate's three transparent texels, by rule (no donor)
+                self.assertNotIn("donors", row)
+            elif is_rule(row) and row["ops"][0]["kind"] == "far_helmet":
                 # b81 retail-free: the Carolina far-view helmet, composed from the kit's own near-view helmet
                 self.assertEqual(list(row["donors"]), [str(row["ops"][0]["near"])])
             elif is_rule(row):
@@ -287,6 +290,11 @@ class Document(unittest.TestCase):
             for selector in ("02H3", "02A3"):
                 row = by[(selector, texture)]
                 self.assertGreater(row["texels"], 4000, (selector, texture))
+                if is_rule(row):
+                    # b81 retail-free: realmark.apply as a rule step on the shipped mark (data/nfl2k5_kit_rule_fill)
+                    (step,) = after_steps(row, "real_mark")
+                    self.assertEqual((step["mark_file"], step["height"]), ("bal_dark_mark_2026.png", 51))
+                    continue
                 red = {"lower": 0, "upper": 0}
                 for op in row["ops"]:
                     for y, x0, colours in op.get("rows", ()):
@@ -319,7 +327,14 @@ class Document(unittest.TestCase):
         by = {(r["selector"], r["texture"]): r for r in rows()}
         self.assertTrue({"helmet00_02H0", "helmet00_02H2", "helmet00_02H3"} <= NEW_ART)
         for selector, texture in (("02H0", "helmet02"), ("02H2", "helmet02")):
-            texels = run_texels(by[(selector, texture)])        # the keyline is the logo file's drawing: kept as runs
+            row = by[(selector, texture)]
+            if is_rule(row):
+                # b81 retail-free: keyline.remove as a rule step on the league project's own logo file
+                (step,) = after_steps(row, "keyline")
+                self.assertEqual(step["logo_file"], "logo_02_0.png")
+                self.assertEqual(len(step["regs"]), 2)
+                continue
+            texels = run_texels(by[(selector, texture)])
             near = sum(1 for x, y in texels if 30 <= x < 126 and (60 <= y < 120 or 140 <= y < 200))
             self.assertGreater(near, 700, (selector, texture))
 

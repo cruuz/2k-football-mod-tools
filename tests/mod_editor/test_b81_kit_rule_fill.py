@@ -127,6 +127,107 @@ def case_outputs():
     return out
 
 
+#: round 2 and 3 steps and kinds on synthetic textures (integers only), pinned on the authoring machine
+STEP_PINS = {
+    "after_interior": "f88b6fcfbd8eede913cd4dc9b967b2730bca29a268e6df31d64a8205a097432f",
+    "after_keyline": "db95d8b3f7a4bd1579164d90f98b1fff09f58926bf549a48eb9354ac288a24bf",
+    "after_mirror_box": "c17266debe98d4c6506d370feef7a33fe8756f36493724ce73b0685a9de4df6a",
+    "after_mirror_off": "05aca8e46fce2234118722ab946eec288f0f7190d2840b24572109af755e06d9",
+    "after_mirror_side": "b16edb6e0a5ff8a10b516b88d561e6527b9e337349dc184f42c5182d32dc9dac",
+    "after_outline": "492a2d89935534f78096eb3cc4f8f8a99451c483ece28585e6b42f8b39274f82",
+    "after_turn_upper": "cc14f695a172b64cc05b37a223cc1a5bfeb7bf1b6bb559b61e11aacd5eb90b73",
+    "clear_near": "e2d8c9a3aec7e6b8dc087193f04fd7d8b2f8d64f74811a4608428df547ac5d5e",
+    "footprint": "a407fef0db89addd74bc9a5eced2626c4ea93119fbf5797a780e54b76a4ab1a0",
+    "footprint_crop": "c11dbf75ae9b810e57cad64741cdf2f7a7075d6c26d89e354543f1a0e17e01ab",
+    "old_ink": "57a757fc58b96b358f6daf396ce7f8f046bea7993254be2420c80f660f393f1f",
+}
+
+
+def logo_texture():
+    """A 2026 shell with a logo on each side island (an arrow in the lower one, the same arrow turned in the upper
+    one), a white mark of 300 texels with a gold dot, and old ink beside the lower logo (integers)."""
+    t = helmet_texture()
+    y, x = np.mgrid[0:256, 0:256].astype(np.int64)
+    lower = (x >= 50) & (x < 90) & (y >= 165) & (y < 195) & ((x - 50) * 30 >= (y - 165) * 40)
+    t[lower, :3] = (250, 200, 0)
+    t[(x >= 61) & (x < 70) & (y >= 61) & (y < 66), :3] = (220, 30, 30)   # the upper logo is not its own half turn
+    t[(x >= 100) & (x < 120) & (y >= 170) & (y < 185), :3] = (250, 250, 250)
+    t[(x == 110) & (y == 177), :3] = (200, 120, 40)
+    t[(x >= 40) & (x < 46) & (y >= 214) & (y < 218), :3] = (140, 60, 60)
+    return t
+
+
+def synthetic_logo():
+    """A 64 x 48 RGBA logo: a dark core in a gold outline inside a white keyline ring, anti-aliased alpha."""
+    y, x = np.mgrid[0:48, 0:64].astype(np.int64)
+    r2 = (x - 32) * (x - 32) * 16 + (y - 24) * (y - 24) * 25
+    out = np.zeros((48, 64, 4), np.uint8)
+    out[..., 3] = np.clip((14400 - r2) // 12, 0, 255)
+    out[r2 <= 14400, :3] = (255, 255, 255)
+    out[r2 <= 9000, :3] = (200, 160, 30)
+    out[r2 <= 5000, :3] = (20, 20, 60)
+    return out
+
+
+def step_outputs():
+    blank, tex = blank_shell(), logo_texture()
+    logo = synthetic_logo()
+    donors = {"retail:30H0:12": blank, "logo:test": logo, "home": helmet_texture(), "retail:ref": helmet_texture()}
+    plain = {"op": "rule", "module": "fill", "kind": "helmet", "hardware": "retail:30H0:12", "vents": "hhhhhh"}
+    regs = [{"panel": "lower", "ori": "fh", "w": 40, "h": 30, "x0": 50, "y0": 165},
+            {"panel": "upper", "ori": "r180", "w": 40, "h": 30, "x0": 50, "y0": 60}]
+    out = {}
+    for name, steps in (("mirror_box", [{"do": "mirror_box", "box": [24, 55, 122, 98]}]),
+                        ("mirror_side", [{"do": "mirror_side", "to_upper": False}]),
+                        ("turn_upper", [{"do": "turn_upper"}]),
+                        ("mirror_off", [{"do": "mirror_off", "boxes": [[40, 160, 100, 200]]}]),
+                        ("outline", [{"do": "outline", "ink": "#000000"}]),
+                        ("keyline", [{"do": "keyline", "logo": "logo:test", "regs": regs, "grow": 1}]),
+                        ("interior", [{"do": "interior", "donor": "home", "logo": "logo:test", "regs": regs,
+                                       "shift": {"lower": [0, 0], "upper": [1, -1]},
+                                       "recipe": {"kind": "helmet", "hardware": "retail:30H0:12", "vents": "h-----"}}])):
+        out["after_" + name] = rf.apply(tex.copy(), dict(plain, after=steps), tex, donors)
+    out["footprint"] = rf.footprint({"logo": "logo:test", "regs": regs}, tex, donors)
+    out["footprint_crop"] = rf.footprint({"logo": "logo:test", "regs": regs, "above": 0.035, "crop": [2, 2, 62, 46]},
+                                         tex, donors)
+    ink = {"refs": ["retail:ref"], "panels": ["lower", "upper"], "reviewed": True, "grow": 2,
+           "add": [[36, 210, 50, 222]], "add_dev": 6, "erase": [[38, 212, 48, 220]], "shell_boxes": [[98, 198, 106, 205]]}
+    out["old_ink"] = rf.apply(tex.copy(), dict(plain, foot={"logo": "logo:test", "regs": regs}, old_ink=ink), tex, donors)
+    t = np.zeros((6, 9, 4), np.uint8)
+    t[..., :3] = 1
+    t[0, 0, :3] = 2
+    t[1, :, 3] = 7
+    out["clear_near"] = rf.apply(t.copy(), {"kind": "clear_near", "to": "#000000", "within": 1, "alpha": 0,
+                                            "boxes": [[0, 0, 5, 4], [6, 0, 9, 6]]}, t, {})
+    return out
+
+
+class FillRuleSteps(unittest.TestCase):
+    def test_each_step_changes_the_texture_and_matches_the_authoring_machine(self):
+        tex = logo_texture()
+        got = step_outputs()
+        for name, array in got.items():
+            if name.startswith("after_"):
+                self.assertTrue((array != rf.apply(tex.copy(), {"kind": "helmet", "hardware": "retail:30H0:12",
+                                                                "vents": "hhhhhh"}, tex,
+                                                   {"retail:30H0:12": blank_shell()})).any(), name)
+        digests = {name: digest(array) for name, array in got.items()}
+        if not STEP_PINS:
+            self.skipTest("pins not written yet: " + json.dumps(digests, sort_keys=True))
+        self.assertEqual(digests, STEP_PINS)
+
+    def test_clear_near_takes_only_near_texels_of_its_alpha_inside_its_boxes(self):
+        got = step_outputs()["clear_near"]
+        self.assertEqual(int((got[..., :3] == 0).all(axis=2).sum()), 4 * 5 - 5 - 1 + 3 * 6 - 3)
+
+    def test_project_art_is_pinned(self):
+        with self.assertRaises(ValueError):
+            rf.project_art("logo_02_0.png", "0" * 64)
+        sources = json.loads((ROOT / "data/nfl2k5_kit_rule_fill/SOURCES.json").read_text(encoding="utf-8"))
+        for name, entry in sources["files"].items():
+            self.assertEqual(rf.project_art(name, entry["sha256"]).shape[2], 4, name)
+
+
 class FillRuleArithmetic(unittest.TestCase):
     def test_outputs_match_the_authoring_machine(self):
         got = {name: digest(array) for name, array in case_outputs().items()}
@@ -356,6 +457,115 @@ class CarolinaFarHelmetRows(unittest.TestCase):
             self.assertEqual(hashlib.sha256(span).hexdigest(), row["before_sha256"], selector)
             new, _detail = kf.compile_texture(span, row, {12: near})
             self.assertEqual(hashlib.sha256(new).hexdigest(), FAR_AFTER, selector)
+
+
+#: the real mark step (realmark.apply, the Ravens dark alternate) and its 8-bit LANCZOS resize on synthetic inputs
+#: (integers only), pinned on the authoring machine (Linux x86-64, CPython 3.12.3, numpy 1.26.4)
+REAL_MARK_PINS = {
+    "after_real_mark": "1bd3e3b28507e8f2d05edbeb1c4d8284c7db4e129f90a00d81870ed99dad8d7b",
+    "lanczos8_down": "a454f38433b4950f19da6223915d976d617b58abff343ebe72f82abc4beeb484",
+    "lanczos8_mark": "ea298b7294d5ae279044dab81e98c04046d7eb0ba3bb305ab504446764f59da7",
+    "lanczos8_shipped_40x51": "3b19f154f52b1af7cab42d24e5320a19879b252f3ca79b78ae79645ca659ea20",
+    "lanczos8_up": "9fbca10c1dce84896835abcafac49e24862f086f2d3e4c572b332dff6deb3da2",
+    "lanczos8_wide": "a0cfaf30abe399179717abca45af39ebd1de817816ce7e5c2ac3bcf9ccda4b8c",
+    "real_mark": "805ddf542e1b87a79c63bbdd5fcad59ac3cc959e107079f5524c190f4fcd7df3",
+    "real_mark_changed": "330d421c3b6f27ef5910330307d95de57a4083adbe35348a7912a6a85c13ee8d",
+}
+#: the shipped mark (data/nfl2k5_kit_rule_fill/), by file SHA-256
+REAL_MARK_FILE = ("bal_dark_mark_2026.png", "4fc5ef83a0811a5f72540e89848e05f6c433b47b0867df3db4d3f4958075010f")
+
+
+def real_mark_texture():
+    """helmet_texture with beta 80's stand-in drawing on the lower side island (a light ring with two red eyes; the
+    upper island's gold block is the other side's) and an old black shell square (integers)."""
+    t = helmet_texture()
+    y, x = np.mgrid[0:256, 0:256].astype(np.int64)
+    r2 = (x - 70) * (x - 70) * 4 + (y - 180) * (y - 180) * 9
+    t[(r2 >= 900) & (r2 <= 1300), :3] = (200, 200, 210)
+    eyes = ((x - 64) * (x - 64) + (y - 176) * (y - 176) <= 2) | ((x - 76) * (x - 76) + (y - 176) * (y - 176) <= 2)
+    t[eyes, :3] = (220, 30, 40)
+    t[(x >= 120) & (x < 125) & (y >= 40) & (y < 44), :3] = (8, 8, 8)
+    return t
+
+
+def synthetic_mark():
+    """A 32 x 40 (w x h) RGBA mark: an ellipse with an anti-aliased rim, dark body, grey ring, red eye (integers)."""
+    y, x = np.mgrid[0:40, 0:32].astype(np.int64)
+    r2 = (2 * x - 31) * (2 * x - 31) * 25 + (2 * y - 39) * (2 * y - 39) * 16
+    out = np.zeros((40, 32, 4), np.uint8)
+    out[..., :3] = (90, 30, 140)                    # colour under alpha 0 (Pillow premultiplies it away)
+    out[..., 3] = np.clip((25600 - r2) // 40, 0, 255)
+    out[r2 <= 25600, :3] = (180, 180, 190)
+    out[r2 <= 16000, :3] = (25, 20, 35)
+    out[(x - 20) * (x - 20) + (y - 14) * (y - 14) <= 4, :3] = (230, 30, 40)
+    return out
+
+
+def lanczos_source():
+    """A 37 x 29 RGBA pattern with every kind of alpha (0, 255, partial) and sharp edges (integers)."""
+    y, x = np.mgrid[0:29, 0:37].astype(np.int64)
+    out = np.zeros((29, 37, 4), np.uint8)
+    out[..., 0] = (x * 37 + y * 11) % 256
+    out[..., 1] = (x * x + 3 * y) % 256
+    out[..., 2] = np.where((x // 4 + y // 3) % 2 == 0, 250, 5)
+    out[..., 3] = np.where(x < 6, 0, np.where(x > 30, 255, (x * 29 + y * 17) % 256))
+    return out
+
+
+def real_mark_outputs():
+    blank, tex, mark = blank_shell(), real_mark_texture(), synthetic_mark()
+    plain = {"op": "rule", "module": "fill", "kind": "helmet", "hardware": "retail:30H0:12", "vents": "hhhhhh"}
+    donors = {"retail:30H0:12": blank}
+    step = {"do": "real_mark", "height": 21}
+    new, changed = rf._real_mark_parts(tex, step, blank, rf.ZONE, mark)
+    shipped = dict(step, mark_file=REAL_MARK_FILE[0], mark_sha256=REAL_MARK_FILE[1])
+    src = lanczos_source()
+    return {
+        "real_mark": new, "real_mark_changed": changed,
+        "after_real_mark": rf.apply(tex.copy(), dict(plain, after=[shipped]), tex, donors),
+        "lanczos8_down": rf.resize_lanczos_rgba8(src, 23, 17), "lanczos8_up": rf.resize_lanczos_rgba8(src, 50, 41),
+        "lanczos8_wide": rf.resize_lanczos_rgba8(src, 61, 29), "lanczos8_mark": rf.resize_lanczos_rgba8(mark, 13, 16),
+        "lanczos8_shipped_40x51": rf.resize_lanczos_rgba8(rf.project_art(*REAL_MARK_FILE), 40, 51),
+    }
+
+
+class FillRuleRealMark(unittest.TestCase):
+    def test_real_mark_paints_the_mark_and_matches_the_authoring_machine(self):
+        tex, blank = real_mark_texture(), blank_shell()
+        got = real_mark_outputs()
+        plain = {"op": "rule", "module": "fill", "kind": "helmet", "hardware": "retail:30H0:12", "vents": "hhhhhh"}
+        before = rf.apply(tex.copy(), plain, tex, {"retail:30H0:12": blank})
+        self.assertTrue((got["after_real_mark"] != before).any())
+        self.assertTrue((got["real_mark"] != tex).any())
+        # every texel the step touched holds a colour the texture already had; nothing else moved
+        moved = (got["real_mark"] != tex).any(axis=2)
+        self.assertFalse((moved & ~got["real_mark_changed"]).any())
+        have = {tuple(c) for c in tex[..., :3].reshape(-1, 3).tolist()}
+        self.assertTrue(all(tuple(c) in have for c in got["real_mark"][moved][:, :3].tolist()))
+        self.assertTrue((got["real_mark"][..., 3] == tex[..., 3]).all())
+        digests = {name: digest(array) for name, array in got.items()}
+        if not REAL_MARK_PINS:
+            self.skipTest("pins not written yet: " + json.dumps(digests, sort_keys=True))
+        self.assertEqual(digests, REAL_MARK_PINS)
+
+    def test_lanczos8_same_size_is_a_copy_and_matches_pillow_10_2(self):
+        src = lanczos_source()
+        self.assertTrue((rf.resize_lanczos_rgba8(src, 37, 29) == src).all())
+        try:
+            import PIL
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow absent")
+        if PIL.__version__ != "10.2.0":
+            self.skipTest("written out from Pillow 10.2.0 (" + PIL.__version__ + " here)")
+        for w, h in ((23, 17), (50, 41), (61, 29), (37, 11), (5, 70)):
+            want = np.asarray(Image.fromarray(src, "RGBA").resize((w, h), Image.LANCZOS))
+            self.assertTrue((rf.resize_lanczos_rgba8(src, w, h) == want).all(), (w, h))
+
+    def test_real_mark_file_is_pinned(self):
+        with self.assertRaises(ValueError):
+            rf.project_art(REAL_MARK_FILE[0], "0" * 64)
+        self.assertEqual(rf.project_art(*REAL_MARK_FILE).shape, (292, 229, 4))
 
 
 if __name__ == "__main__":

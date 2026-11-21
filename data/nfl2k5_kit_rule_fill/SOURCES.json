@@ -1,0 +1,24 @@
+{
+ "about": "Project art the 2026 kit fill rules read at build time (mod_editor/core/nfl2k5_kit_rule_fill.py, ART). Each file is the SOFTDRINK league project's own picture, byte for byte, pinned by SHA-256 in the rows that read it.",
+ "files": {
+  "bal_dark_mark_2026.png": {
+   "from": "Wikimedia Commons, \"Baltimore Ravens Uniforms (2026).png\" (https://commons.wikimedia.org/wiki/File:Baltimore_Ravens_Uniforms_(2026).png), by TheGoodGeneral 1, own work, licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0); cropped and cut out, nothing redrawn: crop box (5250, 40, 5850, 640), the mark's own grey outline ring with its holes filled as alpha (the b81 art lane's realmark.mark()), cropped to that alpha",
+   "licence": "CC BY 4.0, https://creativecommons.org/licenses/by/4.0. Attribution: \"Baltimore Ravens Uniforms (2026)\" by TheGoodGeneral 1, Wikimedia Commons, CC BY 4.0; cropped to the alternate helmet's mark",
+   "sha256": "4fc5ef83a0811a5f72540e89848e05f6c433b47b0867df3db4d3f4958075010f",
+   "used_by": "the real_mark step (realmark.apply: beta 80's stand-in raven drawing replaced by the real mark), rows 02A3/02H3 chunk 12 of data/nfl2k5_kit_fixes_2026_b81.json",
+   "what": "Baltimore Ravens 2026 dark alternate (ALT 2) helmet mark, the front-facing raven head, 229 x 292 RGBA, alpha 0 or 255"
+  },
+  "logo_02_0.png": {
+   "from": "SOFTDRINK league project v0.10 (beta81/v10-sources-128/SOFTDRINK-league-project.json), the asset file of p8:3102:logo_02_0, copied unchanged",
+   "sha256": "375248a36514e5c7e282958cb75598040ad9df3e9e603621b5b41ca9297c207d",
+   "used_by": "the keyline step (keyline.remove: the logo file's white outer keyline repainted with its own outline colour) and the interior step's footprint, rows 02A0/02H0, 02A2/02H2 of data/nfl2k5_kit_fixes_2026_b81.json",
+   "what": "Baltimore Ravens 2026 team logo, 256 x 256 RGBA: the league project's own logo art (asset p8:3102:logo_02_0, written into logos.cdf by the project step)"
+  },
+  "logo_25_0.png": {
+   "from": "SOFTDRINK league project v0.10 (beta81/v10-sources-128/SOFTDRINK-league-project.json), the asset file of p8:3102:logo_25_0, copied unchanged",
+   "sha256": "81161425091e8394817ece62c3be02d8f972b936f55385a89a6e1f2efac20e9d",
+   "used_by": "the keyline step (keyline.remove: the logo file's white outer keyline repainted with its own outline colour) and the interior step's footprint, rows 25A0/25H0 (both shells), 25A7/25H7 of data/nfl2k5_kit_fixes_2026_b81.json",
+   "what": "San Francisco 49ers 2026 team logo, 256 x 256 RGBA: the league project's own logo art (asset p8:3102:logo_25_0, written into logos.cdf by the project step)"
+  }
+ }
+}

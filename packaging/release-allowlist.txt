@@ -696,6 +696,10 @@ data/nfl2k5_nyg_numbers_pins.json
 mod_editor/core/nfl2k5_kit_fixes_2026.py
 mod_editor/core/nfl2k5_kit_rule_emblem.py
 mod_editor/core/nfl2k5_kit_rule_fill.py
+data/nfl2k5_kit_rule_fill/SOURCES.json
+data/nfl2k5_kit_rule_fill/bal_dark_mark_2026.png
+data/nfl2k5_kit_rule_fill/logo_02_0.png
+data/nfl2k5_kit_rule_fill/logo_25_0.png
 mod_editor/core/nfl2k5_kit_rule_recolour.py
 mod_editor/core/nfl2k5_relief_2026.py
 mod_editor/core/nfl2k5_team_sleeves.py

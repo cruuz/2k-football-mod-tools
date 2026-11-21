@@ -16,9 +16,11 @@ kind "helmet"  the b81-art cleanup of a finished modern-shell helmet (helmet02):
                pieces and old shell squares given as mask rules or found by the art lane's old-logo detector
                (``old_ink``: the user's own retail helmets of the club against the texture, beside the 2026 logo's
                footprint ``foot``); harmonic or nearest-texel fill, the texture's own colours; then the logo moves the
-               art lane made after the cleanup (``after``: mirror_box, mirror_side, turn_upper, mirror_off, outline),
+               art lane made after the cleanup (``after``: mirror_box, mirror_side, turn_upper, mirror_off, outline,
+               keyline, interior, real_mark),
                colour only, from the texture itself; then the palette entry of each texel's alpha.
 kind "row"     each masked texel takes the colour of the nearest unmasked texel on its own row (ties to the left).
+kind "clear_near"  inside boxes, texels of one alpha one or two levels off a colour take that colour.
 kind "far_helmet"  the far-away player atlas's helmet side composed from the kit's own near-view helmet (the two
                Carolina blue-alternate rows): its shell colour lit by the island's folds and its logo laid in by an
                exact area average (see that section).
@@ -29,7 +31,13 @@ the separable Euclidean feature transform in integers). No float32, no library r
 """
 from __future__ import annotations
 
+import hashlib
+from pathlib import Path
+
 import numpy as np
+
+#: shipped project art the fill rules read (the league project's own 2026 team logos, the raven mark): see SOURCES.md
+ART = Path(__file__).resolve().parents[2] / "data" / "nfl2k5_kit_rule_fill"
 
 JACOBI = 1500                                   # harmonic sweeps after the outside-in start (as the authoring fill)
 ZONE = (6, 16, 146, 240)                        # x0, y0, x1, y1: the two side panels of the helmet02 atlas
@@ -416,7 +424,7 @@ def _donor(donors, key):
     return texture
 
 
-def helmet(out, op, donors):
+def helmet(out, op, donors, snap=True):
     """See the module text; ``op``: hardware (donor key of the blank retail shell), vents ("hhhhhh": per vent h
     harmonic, n nearest, - none), keep (mask rule: the 2026 logo kept out of the vents' fills), flag ({"from":
     "self" or a donor key, "paint": "ring" | "full", "how": "h" | "n"}), boxes / old (mask rules: old shell squares,
@@ -482,7 +490,9 @@ def helmet(out, op, donors):
         if soft.any():
             res = _shell_palette(res, texture, work, changed, blank, zone)
     for step in op.get("after", ()):
-        res = _after(res, step, blank, zone)
+        res = _after(res, step, blank, zone, texture, donors)
+    if not snap:
+        return res                                  # the cleaned texture before the per-alpha snap (a donor's)
     moved = (res[..., :3] != texture[..., :3]).any(axis=2)
     if moved.any():
         snapped = snap_to_alpha(res[moved][:, :3].astype(np.int64), texture[moved][:, 3], texture, op.get("snap", []))
@@ -934,7 +944,7 @@ def _fill_holes4(mask):
     return ~outside
 
 
-def _after(res, step, blank, zone):
+def _after(res, step, blank, zone, texture=None, donors=None):
     """A logo move after the cleanup (the art lane's fixes7 steps), colour only, from the texture so far:
     mirror_box   the ``box`` takes the mirror image about the atlas axis of the same columns (fixes7
                  mirror_upper_from_lower, the box being the two logos' boxes as that step measured them);
@@ -982,7 +992,330 @@ def _after(res, step, blank, zone):
         return out
     if do == "outline":
         return _outline(res, step, blank, zone)
+    if do == "keyline":
+        return _keyline(res, step, blank, zone, texture, donors)
+    if do == "interior":
+        return _interior(res, step, donors)
+    if do == "real_mark":
+        return _real_mark(res, step, blank, zone, project_art(step["mark_file"], step["mark_sha256"]))
     raise ValueError("2026 kit fill rule: unknown step " + repr(do))
+
+
+def _without_keyline(logo):
+    """keyline.without_keyline: the logo's outer white ring (white texels reachable from outside through white, and
+    the semi-transparent light rim texels beside them) made transparent. ``logo`` RGBA uint8; returns the new alpha."""
+    rgb = logo[..., :3].astype(np.int64)
+    al = logo[..., 3].astype(np.int64)
+    white = (al > 40) & (rgb.min(axis=2) > 190) & (rgb.max(axis=2) - rgb.min(axis=2) < 40)
+    outside = al <= 40
+    reach = outside.copy()
+    for _ in range(64):
+        grown = dilate8(reach, 1) & (white | outside)
+        if (grown == reach).all():
+            break
+        reach = grown
+    ring = reach & white
+    rim = dilate4(ring, 1) & (al < 250) & ~ring & (rgb.min(axis=2) > 150)
+    out = logo[..., 3].copy()
+    out[ring | rim] = 0
+    return out
+
+
+def _outline_colour(logo, alpha2):
+    """keyline.outline_colour: the middle colour of the de-keylined logo's opaque texels within 3 steps of its outside."""
+    opaque = alpha2 > 250
+    rim = opaque & dilate4(alpha2 < 40, 3)
+    return _median_rows(logo[..., :3].astype(np.float64)[rim])
+
+
+def project_art(name, sha256):
+    """RGBA uint8 of a shipped project picture in ART, checked against its SHA-256 (PNG decoding is lossless)."""
+    path = ART / name
+    _require(path.parent == ART and path.is_file(), "project art absent: " + str(name))
+    data = path.read_bytes()
+    _require(hashlib.sha256(data).hexdigest() == sha256, "project art differs from its pin: " + str(name))
+    from PIL import Image
+    import io
+    with Image.open(io.BytesIO(data)) as image:
+        return np.array(image.convert("RGBA"), np.uint8)
+
+
+def _keyline(res, step, blank, zone, texture, donors):
+    """keyline.remove (mode outline) and its palette snap: at each registered placement ``regs`` of the 2026 logo
+    (the league project's own logo file shipped in ART, ``logo_file`` pinned by ``logo_sha256``, or a donor ``logo``;
+    cropped to its alpha above 8 or to ``crop``), the texels where the logo's coverage exceeds the
+    de-keylined logo's by more than 0.03 (``grow``: grown by that many 4-neighbour steps where the de-keylined
+    coverage is below 0.98) take the logo's own outline colour at the logo's coverage over the shell colour; then the
+    nearest colour of the row's input texture."""
+    logo = (project_art(step["logo_file"], step["logo_sha256"]) if step.get("logo_file")
+            else _donor(donors, step["logo"]))
+    x0, y0, x1, y1 = crop_box(logo[..., 3]) if step.get("crop") is None else (int(v) for v in step["crop"])
+    lg = np.ascontiguousarray(logo[y0:y1, x0:x1])
+    a2 = _without_keyline(lg)
+    ring_col = _outline_colour(lg, a2)
+    inside = box_mask(res.shape, zone)
+    rgb = res[..., :3].astype(np.float64)
+    shell = _median_rows(rgb[inside & ~hardware_mask_raw(blank, zone)])
+    out = rgb.copy()
+    changed = np.zeros(res.shape[:2], bool)
+    above = float(step.get("above", 0.03))
+    for v in step["regs"]:
+        al = logo_alpha(np.ascontiguousarray(lg[..., 3]), v["ori"], v["w"], v["h"])
+        al2 = logo_alpha(np.ascontiguousarray(a2), v["ori"], v["w"], v["h"])
+        band = (al - al2) > above
+        if step.get("grow"):
+            band = dilate4(band, int(step["grow"])) & (al2 < 0.98)
+        new = ring_col * al[..., None] + shell * (1 - al[..., None])
+        sub = out[v["y0"]:v["y0"] + v["h"], v["x0"]:v["x0"] + v["w"]]
+        sub[band] = new[band]
+        changed[v["y0"]:v["y0"] + v["h"], v["x0"]:v["x0"] + v["w"]] |= band
+    result = res.copy()
+    pal, _ = unique_colours(texture[..., :3])
+    result[changed, :3] = nearest_colour(out[changed], pal).astype(np.uint8)
+    return result
+
+
+def _interior(res, step, donors):
+    """refine.interior: inside the registered 2026 logo (its footprint at ``regs`` grown by one, shrunk by three: the
+    rim stays), the texels take the home kit's cleaned texture there (donor ``donor``: the home kit's helmet as the
+    build holds it, cleaned here by its own row's rule ``recipe``; ``shift`` per panel: the offset between the two
+    registrations), then the nearest colour of the texture so far."""
+    home = helmet(_donor(donors, step["donor"]), step["recipe"], donors, snap=False)
+    logo = (project_art(step["logo_file"], step["logo_sha256"]) if step.get("logo_file")
+            else _donor(donors, step["logo"]))
+    foot = dilate4(logo_footprint(res, np.ascontiguousarray(logo[..., 3]), step["regs"]), 1)
+    inner = erode4(foot, 3)
+    rows = np.arange(res.shape[0])[:, None]
+    out = res[..., :3].astype(np.float64)
+    changed = np.zeros(res.shape[:2], bool)
+    for panel in ("lower", "upper"):
+        dx, dy = (int(v) for v in step["shift"][panel])
+        m = inner & ((rows >= 128) if panel == "lower" else (rows < 128))
+        ys, xs = np.nonzero(m)
+        out[ys, xs] = home[ys + dy, xs + dx, :3]
+        changed |= m
+    result = res.copy()
+    pal, _ = unique_colours(res[..., :3])
+    result[changed, :3] = nearest_colour(out[changed], pal).astype(np.uint8)
+    return result
+
+
+# ------------------------------------------------------------------------------- the real mark (Ravens dark alternate)
+# Written to paste into mod_editor/core/nfl2k5_kit_rule_fill.py after _outline (it uses the module's own primitives:
+# box_mask, dilate4, shell_hardware, vent_masks, flag_masks, _median_int, nearest_fill, band_fill, unique_colours,
+# nearest_colour, coeffs, project_art, _require, HARDWARE_ABOVE, LOGO_X1, NEIGHBOURS4). Reached from _after as
+#     if do == "real_mark":
+#         return _real_mark(res, step, blank, zone, project_art(step["mark_file"], step["mark_sha256"]))
+# with the step {"do": "real_mark", "mark_file": "bal_dark_mark_2026.png", "mark_sha256": "4fc5ef83...", "height": 51}
+# (the PNG in data/nfl2k5_kit_rule_fill/, its file SHA-256; SOURCE.txt / sources_entry.json beside this file).
+#
+# The art lane's realmark.apply (b81/art/work/realmark.py, called from fixtex2._cleanup on the cleaned texture) on the
+# texture the build holds: beta 80's stand-in raven drawing (found by its lighter-than-shell outline and red eyes) and
+# the old black shell squares are repainted from the shell round them (nearest texel and harmonic, averaged), the real
+# front-facing mark (cut from the Commons 2026 Ravens uniform diagram, shipped as a PNG with its source note) is
+# resized with Pillow's 8-bit LANCZOS written out (premultiplied RGBa, integer coefficients, clip, un-premultiply) to
+# ``height`` texels at the drawing's centre, blended over the repaint by its alpha, off the blank shell's hardware,
+# and every texel the step touched takes the nearest colour the texture already holds.
+#
+# Arithmetic: masks, medians and thresholds in integers (the shell is held as twice its median; Euclidean thresholds as
+# squared integers; the luminance as 299 R + 587 G + 114 B); the fills are the module's; the blend is IEEE double
+# region * (1 - a) + mark * a with a = A / 255.0, in that order; the resize is integer apart from its coefficients,
+# which are Pillow's doubles from the module's coeffs() (exact sin, no libm), rounded to 22 fraction bits as Pillow does.
+
+REAL_MARK_LUM = (299, 587, 114)        # luminance weights in thousandths (realmark: rgb @ [0.299, 0.587, 0.114])
+REAL_MARK_LIGHTER = 12                 # the old drawing: luminance above the shell's by more than this, or ...
+REAL_MARK_RED = (120, 80)              # ... its red eyes: R above 120 and G below 80
+REAL_MARK_COLS = (36, 126)             # the old drawing is looked for in these columns of each side island
+REAL_MARK_PAD = (30, 18)               # the repaint box: the drawing's box grown 30 columns and 18 rows (columns < LOGO_X1)
+REAL_MARK_DEV = 3                      # inside that box: texels farther than this from the shell colour
+REAL_MARK_FAR = 12                     # "not shell": farther than this from the shell colour (Euclidean RGB)
+REAL_MARK_DARK = 30                    # old black shell squares: every channel below this (and not shell)
+REAL_MARK_COVER = 50                   # a mark texel counts as painted where its alpha / 255 > 1 / 50 (0.02)
+
+
+def _label4(mask):
+    """4-connected pieces in raster order of their first texel: (labels, sizes) (scipy ndimage.label's default)."""
+    h, w = mask.shape
+    label = np.zeros((h, w), np.int64)
+    sizes = []
+    for y0, x0 in zip(*np.nonzero(mask)):
+        if label[y0, x0]:
+            continue
+        n = len(sizes) + 1
+        label[y0, x0] = n
+        stack, size = [(int(y0), int(x0))], 0
+        while stack:
+            y, x = stack.pop()
+            size += 1
+            for dy, dx in NEIGHBOURS4:
+                v, u = y + dy, x + dx
+                if 0 <= v < h and 0 <= u < w and mask[v, u] and not label[v, u]:
+                    label[v, u] = n
+                    stack.append((v, u))
+        sizes.append(size)
+    return label, sizes
+
+
+def _round_half_even(num, den):
+    """round(num / den) for integers, den > 0, ties to even (Python's round of the exact quotient)."""
+    q, r = divmod(int(num), int(den))
+    if 2 * r > den or (2 * r == den and q % 2):
+        q += 1
+    return q
+
+
+_PRECISION_BITS = 22                   # Resample.c: 32 - 8 - 2
+_COEFFS8: dict = {}
+
+
+def coeffs8(in_size: int, out_size: int):
+    """Resample.c normalize_coeffs_8bpc of precompute_coeffs (LANCZOS): [(xmin, [INT32 k...]), ...]; each double k
+    becomes (int)(k * 2^22 + 0.5), or (int)(-0.5 + k * 2^22) below 0 (C casts truncate toward zero, as int() does)."""
+    key = (in_size, out_size)
+    if key not in _COEFFS8:
+        scale = float(1 << _PRECISION_BITS)
+        out = []
+        for xmin, k in coeffs(in_size, out_size):
+            ints = [int(-0.5 + v * scale) if v < 0 else int(0.5 + v * scale) for v in k]
+            # Pillow sums in a C int: 255 * sum |k| plus the rounding half must stay below 2^31
+            _require(255 * sum(abs(v) for v in ints) + (1 << (_PRECISION_BITS - 1)) < 1 << 31, "resize overflow")
+            out.append((xmin, ints))
+        _COEFFS8[key] = out
+    return _COEFFS8[key]
+
+
+def resize_lanczos_rgba8(rgba, width: int, height: int):
+    """Image.fromarray(rgba, "RGBA").resize((width, height), Image.LANCZOS) (Pillow 10.2), written out in integers:
+    RGBA -> RGBa (Convert.c rgbA2rgba: MULDIV255), the horizontal then the vertical 8-bit pass (Resample.c
+    ImagingResampleHorizontal_8bpc / Vertical_8bpc: 2^21 + sum of value * k, then clip8 = clamp(sum >> 22, 0, 255)),
+    then RGBa -> RGBA (Convert.c rgba2rgbA: alpha 0 or 255 kept, else CLIP8(255 * c / alpha), integer division).
+    The same size is a plain copy, as Image.resize returns one."""
+    a = np.asarray(rgba)
+    _require(a.dtype == np.uint8 and a.ndim == 3 and a.shape[2] == 4, "the mark must be RGBA uint8")
+    _require(width > 0 and height > 0, "resize to nothing")
+    if (height, width) == a.shape[:2]:
+        return a.copy()                               # Image.resize: the same size is a plain copy
+    a = a.astype(np.int64)
+    t = a[..., :3] * a[..., 3:4] + 128
+    img = np.concatenate([((t >> 8) + t) >> 8, a[..., 3:4]], axis=2)
+    h, w = img.shape[:2]
+    half = 1 << (_PRECISION_BITS - 1)
+    if width != w:                                    # need_horizontal (default box)
+        tmp = np.zeros((h, width, 4), np.int64)
+        for xx, (xmin, k) in enumerate(coeffs8(w, width)):
+            ss = np.full((h, 4), half, np.int64)
+            for x, kx in enumerate(k):
+                ss = ss + img[:, xmin + x] * kx
+            tmp[:, xx] = np.clip(ss >> _PRECISION_BITS, 0, 255)
+        img = tmp
+    if height != h:                                   # need_vertical
+        tmp = np.zeros((height, img.shape[1], 4), np.int64)
+        for yy, (ymin, k) in enumerate(coeffs8(h, height)):
+            ss = np.full((img.shape[1], 4), half, np.int64)
+            for y, ky in enumerate(k):
+                ss = ss + img[ymin + y] * ky
+            tmp[yy] = np.clip(ss >> _PRECISION_BITS, 0, 255)
+        img = tmp
+    al = img[..., 3:4]
+    keep = (al == 0) | (al == 255)
+    un = np.minimum((255 * img[..., :3]) // np.maximum(al, 1), 255)
+    return np.concatenate([np.where(keep, img[..., :3], un), al], axis=2).astype(np.uint8)
+
+
+def _real_mark_core(blank, zone, diamond):
+    """realmark.hw_core: the blank shell's hardware (largest step above HARDWARE_ABOVE) grown by one 4-neighbour step,
+    less the six painted 2004 vents grown by 3 and the flag diamond grown by 3."""
+    _shell2, dev2 = shell_hardware(blank, zone)
+    core = dilate4(dev2 > 2 * HARDWARE_ABOVE, 1)
+    for v in vent_masks(blank):
+        core &= ~dilate4(v, 3)
+    return core & ~dilate4(diamond, 3)
+
+
+def _old_drawing(rgb, lum2, sl2, inside, core, upper):
+    """realmark.old_drawing: the box (x0, y0, x1, y1) of beta 80's drawing on one side island: texels of the panels off
+    the core lighter than the shell by more than REAL_MARK_LIGHTER (twice the luminance in thousandths against twice
+    the shell's) or red; grown by two 4-neighbour steps, the 4-connected piece holding most of them."""
+    r_hi, g_lo = REAL_MARK_RED
+    red = (rgb[..., 0] > r_hi) & (rgb[..., 1] < g_lo)
+    m = inside & ~core & ((lum2 > sl2 + 2 * 1000 * REAL_MARK_LIGHTER) | red)
+    rows = np.arange(rgb.shape[0])[:, None]
+    m &= (rows < 128) if upper else (rows >= 128)
+    m[:, :REAL_MARK_COLS[0]] = False
+    m[:, REAL_MARK_COLS[1]:] = False
+    label, _sizes = _label4(dilate4(m, 2))
+    _require(len(_sizes) > 0, "no old drawing on this side")
+    counts = [int((m & (label == i + 1)).sum()) for i in range(len(_sizes))]
+    big = label == 1 + max(range(len(counts)), key=lambda i: (counts[i], -i))
+    ys, xs = np.nonzero(big & m)
+    return int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1
+
+
+def _real_mark_parts(res, step, blank, zone, mark_rgba):
+    """(the new texture, the texels the step touched); see _real_mark."""
+    shape = res.shape[:2]
+    rgb = res[..., :3].astype(np.int64)
+    inside = box_mask(shape, zone)
+    _shell2, dev2 = shell_hardware(blank, zone)
+    hw = dilate4(dev2 > 2 * HARDWARE_ABOVE, 2)                    # hardware_mask_raw(blank, zone)
+    diamond, _ring = flag_masks(res, "ring")                       # the flag's place: the texture's transparent diamond
+    core = _real_mark_core(blank, zone, diamond)
+    shell2 = _median_int(rgb[inside & ~hw])                       # twice the shell colour of this texture
+    d = 2 * rgb - shell2
+    dev4 = d[..., 0] * d[..., 0] + d[..., 1] * d[..., 1] + d[..., 2] * d[..., 2]     # (2 * distance) squared
+    wr, wg, wb = REAL_MARK_LUM
+    lum2 = 2 * (wr * rgb[..., 0] + wg * rgb[..., 1] + wb * rgb[..., 2])           # 2000 * luminance
+    sl2 = wr * int(shell2[0]) + wg * int(shell2[1]) + wb * int(shell2[2])        # 2000 * the shell's
+    rows = np.arange(shape[0])[:, None]
+    paint = np.zeros(shape, bool)
+    places = []
+    pad_x, pad_y = REAL_MARK_PAD
+    for upper in (False, True):
+        x0, y0, x1, y1 = _old_drawing(rgb, lum2, sl2, inside, core, upper)
+        places.append((upper, x0, y0, x1, y1))
+        box = np.zeros(shape, bool)
+        box[max(0, y0 - pad_y):y1 + pad_y, max(0, x0 - pad_x):min(LOGO_X1, x1 + pad_x)] = True
+        box &= (rows < 128) if upper else (rows >= 128)
+        paint |= box & inside & ~core & (dev4 > 4 * REAL_MARK_DEV * REAL_MARK_DEV)
+    side = inside.copy()
+    side[:, LOGO_X1:] = False
+    far = dev4 > 4 * REAL_MARK_FAR * REAL_MARK_FAR
+    paint |= side & ~core & (rgb.max(axis=2) < REAL_MARK_DARK) & far          # squares of the old black shell
+    not_shell = far | paint
+    out = rgb.astype(np.float64)
+    a = nearest_fill(out, paint, not_shell)
+    b = band_fill(a, paint, not_shell)
+    out[paint] = 0.5 * a[paint] + 0.5 * b[paint]
+    changed = paint.copy()
+    mark = np.asarray(mark_rgba, np.uint8)
+    h = int(step["height"])
+    _require(h > 0, "mark height must be positive")
+    w = max(1, _round_half_even(h * mark.shape[1], mark.shape[0]))
+    sized = resize_lanczos_rgba8(mark, w, h)
+    for upper, x0, y0, x1, y1 in places:
+        m = sized[::-1] if upper else sized
+        px = _round_half_even(x0 + x1 - w, 2)                     # round(cx - w / 2), cx = (x0 + x1) / 2
+        py = _round_half_even(y0 + y1 - h, 2)
+        _require(0 <= px and px + w <= shape[1] and 0 <= py and py + h <= shape[0], "mark outside the texture")
+        A = m[..., 3].astype(np.int64)
+        al = (A.astype(np.float64) / 255.0)[..., None]
+        region = out[py:py + h, px:px + w]
+        ok = ~core[py:py + h, px:px + w]
+        blend = region * (1.0 - al) + m[..., :3].astype(np.float64) * al
+        region[ok] = blend[ok]
+        changed[py:py + h, px:px + w] |= (A * REAL_MARK_COVER > 255) & ok
+    pal, _ = unique_colours(res[..., :3])
+    new = res.copy()
+    new[changed, :3] = nearest_colour(out[changed], pal).astype(np.uint8)
+    return new, changed
+
+
+def _real_mark(res, step, blank, zone, mark_rgba):
+    """realmark.apply as a step after the cleanup (see the section text); ``mark_rgba`` is the shipped mark
+    (project_art(step["mark_file"], step["mark_sha256"])), ``step["height"]`` its height in texels (51: beta 80's
+    drawing on the modern shell). The flag diamond kept out of the core is the texture's own transparent one
+    (flag_masks of ``res``; the art lane read the 2026 Cleveland helmet's, the same texels on this row)."""
+    return _real_mark_parts(res, step, blank, zone, mark_rgba)[0]
 
 
 #: outline coverage beside the logo (refine.outline: clip(1.7 - d, 0, 1) * 0.9 at the Euclidean distance d from the
@@ -1275,6 +1608,20 @@ def far_helmet(out, op, rgba, donors):
     return result
 
 
+def clear_near(out, op):
+    """Inside ``boxes``, texels of alpha ``alpha`` whose largest RGB step from ``to`` is 1..``within`` take ``to``
+    (a colour one or two levels off a field the import quantised; the Jaguars teal alternate's 3 transparent texels)."""
+    to = _hex(op["to"])
+    zone = np.zeros(out.shape[:2], bool)
+    for box in op["boxes"]:
+        zone |= box_mask(out.shape, box)
+    step = np.abs(out[..., :3].astype(np.int64) - to).max(axis=2)
+    hit = zone & (out[..., 3].astype(np.int64) == int(op["alpha"])) & (step > 0) & (step <= int(op["within"]))
+    res = out.copy()
+    res[hit, :3] = to.astype(np.uint8)
+    return res
+
+
 def apply(out, op, rgba, donors):
     """The fill rule ``op`` on ``out`` (the texture so far); ``rgba`` is the row's input level 0, ``donors`` its
     donor textures by key."""
@@ -1285,4 +1632,6 @@ def apply(out, op, rgba, donors):
         return row_fill(out, op)
     if kind == "far_helmet":
         return far_helmet(out, op, rgba, donors)
+    if kind == "clear_near":
+        return clear_near(out, op)
     raise ValueError("2026 kit fill rule: unknown kind " + repr(kind))
