@@ -4,7 +4,7 @@
 .global stability
 # Long-franchise stability (beta 81): the contract is the addendum "Long-franchise stability" of pos3/DESIGN.md
 # (A.2 the mechanism, A.6 the interim). From a franchise's third season on, each class's chance is multiplied by
-# g = R / M, clamped to 0.5 to 1.25, where M is the league mean of max(0, K - Durability) over the class's starters and
+# g = R / M, clamped to 0.35 to 1.25, where M is the league mean of max(0, K - Durability) over the class's starters and
 # R the same statistic at the calibrated level (installer). In the first two seasons every g is exactly 1.0, and a
 # multiply by exactly 1.0 changes no bit, so those seasons play as slice 3 does.
 # Entered by CALL as the first instruction of the new-game blocks of clinical.S (quarterback) and positions.S, so it
@@ -14,7 +14,7 @@
 # register (not the flags; neither caller needs them), uses one x87 slot and touches no game generator.
 .set CLASS_COUNT, 13                    # slices 2 and 3's twelve classes in their order, then the quarterback
 .set ONE, 0x3f800000
-.set FLOOR, 0x3f000000                  # 0.5
+.set FLOOR, 0x3eb33333                  # 0.35 (float32 nearest; was 0.5 until the stability review, rev-pos3/REVIEW_STABILITY.md)
 .set CEILING, 0x3fa00000                # 1.25
 .set MIN_STARTERS, 8
 .set CLUBS, 32
