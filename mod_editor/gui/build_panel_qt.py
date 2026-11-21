@@ -1378,6 +1378,13 @@ class BuildPanel(QWidget):
                                                          "Use Studio's save tools to promote or demote an existing reserve. Final cuts use native "
                                                          "free agency instead of creating new reserves. Modern practice-squad eligibility and CPU "
                                                          "signings are unavailable. Only use reserve saves with this compatibility patch.")
+        # b81 qb34 (coordinator's rule): unticking what the quarterback floor needs while injuries are above zero turns
+        # the injuries to Retail and says why.
+        self._qb_floor_message = ""
+        for key in ("modern_injured_reserve", "franchise_economy", "practice_squad"):
+            box = getattr(self, key + "_check", None)
+            if box is not None:
+                box.clicked.connect(self._qb_floor_need_changed)
         self.depth_locks_check = self._option(f, "depth_locks", "Depth chart locks (LT/RT, LG/RG, KR/PR)",
                                               "Your depth chart moves and returner picks stay put through the weekly auto-depth.",
                                               badge=NOT_TESTED,
@@ -2089,8 +2096,13 @@ class BuildPanel(QWidget):
                      "is treated like every other club in the games you simulate. Simulated games also get modern NFL "
                      "field goal accuracy by distance, CPU clubs try 50-yard field goals about as often as NFL teams, and a "
                      "catch-and-run breakaway that starts inside the offense's own 28 is tackled at the 10 instead of always "
-                     "scoring. Games you play are not changed. "
-                     "Realistic and Custom require 128 MB and Simulated season realism.")
+                     "scoring. Injuries in games you play are not changed, nor is their kicking or scoring. "
+                     "Realistic and Custom require 128 MB and Simulated season realism. "
+                     "Realistic and Custom above 0 percent also add modern injured reserve, the franchise economy and "
+                     "reserve save compatibility, so a club is never left without a quarterback.")  # b81 qb34: the floor
+        if mod_build._piece3_bits():  # b81 qb34: said only once piece 3's rules are handed over to the Studio
+            help_text += (" The rules for who starts at quarterback ride with Realistic and Custom when depth chart "
+                          "locks and SPECIAL rows are on, and Retail removes them.")
         caption = QLabel("Simulated injuries (all positions)")
         self.qb_injury_mode = QComboBox()
         caption.setBuddy(self.qb_injury_mode)
@@ -2116,7 +2128,8 @@ class BuildPanel(QWidget):
         self.qb_injury_rate_label.setBuddy(self.qb_injury_rate)
         self.qb_injury_rate.setAccessibleName(self.qb_injury_rate_label.text())
         rate_help = ("Realistic uses 0.310%. Durability, the Injury slider and the type of play change each chance. "
-                     "Custom 0% keeps the original injury roll and the updated simulated passing model.")
+                     "Custom 0% keeps the original injury roll and the updated simulated passing model, and needs "
+                     "no injured reserve or economy changes.")
         self.qb_injury_rate.setToolTip(rate_help)
         self.qb_injury_rate.setAccessibleDescription(rate_help)
         self.qb_injury_rate_help = WrappedLabel(rate_help)
@@ -2126,7 +2139,7 @@ class BuildPanel(QWidget):
         layout.addLayout(rate)
         layout.addWidget(self.qb_injury_rate_help)
         self.qb_injury_mode.currentIndexChanged.connect(self._sim_qb_injury_mode_changed)
-        self.qb_injury_rate.valueChanged.connect(lambda _value: self._refresh())
+        self.qb_injury_rate.valueChanged.connect(lambda _value: (self._qb_floor_ticks(), self._refresh()))
 
     def _sim_qb_injury_mode_changed(self):
         needs_simulator = self.qb_injury_mode.currentData() in ("realistic", "custom")
@@ -2134,6 +2147,30 @@ class BuildPanel(QWidget):
             for parent in (self.sim_realism_check, self.k128_memory_check):
                 if parent.isEnabled():
                     parent.setChecked(True)
+        self._qb_floor_message = ""
+        self._qb_floor_ticks()
+        self._refresh()
+
+    def _qb_injuries_above_zero(self):
+        mode = self.qb_injury_mode.currentData() if self.qb_injury_mode.isEnabled() else None
+        return mode == "realistic" or (mode == "custom" and self.qb_injury_rate.value() > 0)
+
+    def _qb_floor_ticks(self):
+        """b81 qb34 (coordinator's rule): injuries above zero tick what the quarterback floor needs."""
+        if not self._qb_injuries_above_zero() or self.console_memory() != 128:
+            return
+        for key in ("modern_injured_reserve", "franchise_economy", "practice_squad"):
+            box = getattr(self, key + "_check", None)
+            if box is not None and box.isEnabled() and not box.isChecked() and not self._installed(key):
+                box.setChecked(True)
+
+    def _qb_floor_need_changed(self, value):
+        if value or self._preset_applying or not self._qb_injuries_above_zero() or self.console_memory() != 128:
+            return
+        self.qb_injury_mode.setCurrentIndex(self.qb_injury_mode.findData("retail"))
+        self._qb_floor_message = ("Simulated quarterback injuries changed to Retail: injuries above 0 percent need modern "
+                                  "injured reserve, the franchise economy and reserve save compatibility so a club is "
+                                  "never left without a quarterback.")
         self._refresh()
 
     def _sim_qb_injury_dependency_changed(self, value):
@@ -2152,7 +2189,8 @@ class BuildPanel(QWidget):
     @staticmethod
     def _sim_qb_companion_choices(plan):
         values = plan.to_recipe()
-        for name in ("sim_qb_injuries", "sim_qb_injury_rate", "sim_realism", "k128_memory", "name", "author", "notes"):
+        for name in ("sim_qb_injuries", "sim_qb_injury_rate", "qb_room", "sim_realism", "k128_memory", "name", "author",
+                     "notes", "modern_injured_reserve", "franchise_economy", "practice_squad"):  # b81 qb34: floor needs
             values.pop(name, None)
         return values
 
@@ -3466,6 +3504,9 @@ class BuildPanel(QWidget):
             setattr(plan, key, getattr(self, key + "_check").isChecked())
         if self.qb_injury_mode.isEnabled():
             plan.sim_qb_injuries = self.qb_injury_mode.currentData()
+            # b81 qb34: this control also sets the quarterback room rules: the plan leaves them unnamed, so they follow
+            # this choice (Realistic and Custom where depth chart locks and SPECIAL rows are on, Retail off).
+            plan.qb_room = None
             if plan.sim_qb_injuries == "custom":
                 plan.sim_qb_injury_rate = self.qb_injury_rate.value()
             if plan.sim_qb_injuries in ("realistic", "custom"):
@@ -3538,7 +3579,8 @@ class BuildPanel(QWidget):
                                              modern_injured_reserve=plan.modern_injured_reserve,
                                              backfield_cards=plan.backfield_cards, gadget_play=plan.gadget_play,
                                              sim_qb_injuries=plan.sim_qb_injuries,
-                                             custom_rate=plan.sim_qb_injury_rate, overwrite=plan.overwrite,
+                                             custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
+                                             overwrite=plan.overwrite,
                                              name=plan.name, author=plan.author, notes=plan.notes)
         if (self._sim_qb_injury_change() and not self._sim_qb_other_choice and not self._sim_qb_authored
                 and not self.softdrink_project_field.text().strip()
@@ -3546,7 +3588,8 @@ class BuildPanel(QWidget):
                 and ((self._state or {}).get("k128_settings") or {}).get("require_128") is True
                 and self._sim_qb_source_choices == self._sim_qb_companion_choices(plan)):
             return mod_build.sim_qb_disc_edit(plan.source, plan.target, plan.sim_qb_injuries,
-                                              custom_rate=plan.sim_qb_injury_rate, overwrite=plan.overwrite,
+                                              custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
+                                              overwrite=plan.overwrite,
                                               name=plan.name, author=plan.author, notes=plan.notes)
         for name in KEPT_WHEN_INSTALLED:
             if getattr(plan, name, True) is False and self._installed(name):
@@ -3576,7 +3619,7 @@ class BuildPanel(QWidget):
     @staticmethod
     def _v09_companion_choices(plan):
         values = plan.to_recipe()
-        for key in (*mod_build.V09_UPDATE_CHOICES, "sim_qb_injuries", "sim_qb_injury_rate",
+        for key in (*mod_build.V09_UPDATE_CHOICES, "sim_qb_injuries", "sim_qb_injury_rate", "qb_room",
                     "sim_realism", "k128_memory", "name", "author", "notes"):
             values.pop(key, None)
         return values
@@ -3954,6 +3997,11 @@ class BuildPanel(QWidget):
                     # standalone steps of mod_build the list above never named: ticked alone, each was refused as "nothing is selected"
                     or p.espn25_rosters or bool(p.honors_history) or p.trophy_room)
 
+    def _qb_room_needs_on(self):
+        """b81 qb34: depth chart locks and SPECIAL rows ticked or already on the disc (the room's plan needs)."""
+        return all(getattr(self, key + "_check").isChecked() or self._installed(key)
+                   for key in ("depth_locks", "depth_chart_rows"))
+
     def _sim_qb_injury_change(self):
         if not self.qb_injury_mode.isEnabled():
             return ""
@@ -3961,9 +4009,14 @@ class BuildPanel(QWidget):
         if mode is None:
             return ""
         installed = (self._state or {}).get("sim_qb_injury_settings") or {}
+        # b81 qb34: the control also sets the quarterback room rules, so a disc whose rules differ is a change too.
+        room_status = ((self._state or {}).get("qb_room_settings") or {}).get("status")
+        # An earlier revision's page ("previous") is always a change: the edit upgrades or removes it.
+        room_now = {"applied": "realistic", "previous": "previous"}.get(room_status, "retail")
+        room_wanted = "realistic" if mode in ("realistic", "custom") and self._qb_room_needs_on() else "retail"
         # An earlier revision (slice 1, quarterbacks only) at the same mode is still a change: Build upgrades it.
         current = mode == "retail" or installed.get("revision") == _sim_qb_injuries.REVISION
-        if mode == installed.get("mode", "retail") and current and (
+        if mode == installed.get("mode", "retail") and current and room_now == room_wanted and (
                 mode != "custom" or self.qb_injury_rate.value() == installed.get("custom_rate")):
             return ""
         detail = mode.title()
@@ -4247,6 +4300,8 @@ class BuildPanel(QWidget):
                 reason = "Open a full Xbox disc image to configure simulated quarterback injuries."
             elif state.get("sim_qb_injuries") == "foreign":
                 reason = "This executable has unrecognized quarterback data. Open a verified source disc."
+            elif state.get("qb_room") == "foreign":  # b81 qb34
+                reason = "This executable has unrecognized quarterback room data. Open a verified source disc."
             elif (state.get("k128_memory") == "applied"
                   and (state.get("k128_settings") or {}).get("require_128") is False):
                 reason = ("This disc allows a 64 MB boot. Build from your retail disc to select the 128 MB "
@@ -4260,7 +4315,7 @@ class BuildPanel(QWidget):
                 reason = "The quarterback simulator option is unavailable in this Studio installation."
             available = not reason
             self.qb_injury_mode.setEnabled(available)
-            help_text = reason or self.qb_injury_mode.toolTip()
+            help_text = reason or getattr(self, "_qb_floor_message", "") or self.qb_injury_mode.toolTip()
             if self.qb_injury_help.text() != help_text:
                 self.qb_injury_help.setText(help_text)
             selected = (state.get("sim_qb_injury_settings") or {}).get("mode")

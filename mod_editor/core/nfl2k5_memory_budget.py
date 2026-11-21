@@ -145,6 +145,7 @@ OWNER_BYTES = {
 # Keep the calibrated release layout for comparisons against the actual RC executable.
 BUILD_OWNER_BYTES = {**OWNER_BYTES, "backfield_cards": (space.BACKFIELD_REQUEST[2], 0, 0, 0, 0),
                      "sim_qb_injuries": (4 * PAGE, 0, 0, 0, 0),
+                     "qb_room": (space.QB_ROOM_SIZE, 0, 0, 0, 0),  # b81 qb34: the fixed quarterback room pages
                      "gadget_reservation": (space.GADGET_REQUESTS[0][2], 0, space.GADGET_REQUESTS[1][2], 0, 0),
                      "pass_rush_stats": (
     0, pass_rush_stats.CODE_SIZE, pass_rush_stats.READ_ONLY_SIZE, 0, pass_rush_stats.DATA_SIZE)}
@@ -480,6 +481,17 @@ def owners(opts: dict, target_mb: int = 64) -> list:
     out = [o for o, fs in OWNER_FIELDS.items() if any(on(opts, f) for f in fs)]
     if target_mb == 128 and (on(opts, "injured_reserve_guard") or on(opts, "modern_injured_reserve")):
         out.append("franchise_ownership")
+    from .nfl2k5_build_settings import qb_room_level, qb_room_needs_met  # b81 qb34
+    from . import nfl2k5_qb_room as room
+    # The floor whenever quarterback injuries are above zero (coordinator's rule); piece 3's handed-over bits where
+    # named or where their needs are in the plan (DESIGN_CHANGES C1).
+    injuries = (opts.get("sim_qb_injuries") == "realistic"
+                or (opts.get("sim_qb_injuries") == "custom" and opts.get("sim_qb_injury_rate", 0.310) > 0))
+    piece3 = (room.REALISTIC_STAGES & room.PIECE3_BITS
+              and qb_room_level(opts.get("qb_room"), opts.get("sim_qb_injuries")) == "realistic"
+              and (opts.get("qb_room") is not None or (target_mb == 128 and qb_room_needs_met(opts.get))))
+    if (target_mb == 128 and injuries) or piece3:
+        out.append("qb_room")
     return out + list(INFRASTRUCTURE) if out else out
 
 
@@ -510,6 +522,9 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
             pool = max(pool, math.ceil(last / PAGE) * PAGE + BUILD_OWNER_BYTES["sim_qb_injuries"][0])
     if "franchise_ownership" in found:
         last = space.FRANCHISE_OWNERSHIP_VA + space.FRANCHISE_OWNERSHIP_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "qb_room" in found:
+        last = space.QB_ROOM_VA + space.QB_ROOM_SIZE - space.POOL_VA
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     return RETAIL_RESIDENT + LEGACY_SPACE + SCALEOUT_V3 + pool + extra
 
