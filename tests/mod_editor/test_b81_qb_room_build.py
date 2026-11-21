@@ -31,6 +31,11 @@ sys.path[:0] = [str(ROOT), str(ROOT / "tests")]
 from mod_editor.core import mod_build, modpack_sources  # noqa: E402
 from mod_editor.core import nfl2k5_sim_qb_injuries as _sim_qb_injuries  # noqa: E402  b81 merge
 from mod_editor.core import nfl2k5_build_settings as settings  # noqa: E402
+
+
+def _room():
+    from mod_editor.core import nfl2k5_qb_room as room
+    return room
 import tests.mod_editor.test_b780_int_first_pass as first_pass  # noqa: E402
 
 ROOM_ROW = (0x1529000, 0x3000, 0x1000)
@@ -708,10 +713,27 @@ class BuildPageTests(unittest.TestCase):
                                                             "custom_rate": .310,
                                                             # b81 merge: the current slice revision, so only the room differs
                                                             "revision": _sim_qb_injuries.REVISION},
-                                    qb_room="applied", qb_room_settings={"status": "applied", "mode": "realistic"},
+                                    qb_room="applied", qb_room_settings={"status": "applied", "mode": "realistic",
+                                                                         "stages": _room().realistic_stages()},
                                     depth_locks="applied", depth_chart_rows="applied"))
         mode.setCurrentIndex(mode.findData("realistic"))
         self.assertFalse(self.panel._sim_qb_injury_change())
+
+    def test_a_disc_with_an_earlier_stage_set_counts_as_a_change(self):
+        """b81 qb34 D3/D4 hand-over: a disc whose room carries the floor hand-over's Realistic (67) is a change while
+        the Studio's Realistic is 327, so Build rewrites the set; the current set is not."""
+        slice_now = {"status": "applied", "mode": "realistic", "custom_rate": .310, "revision": _sim_qb_injuries.REVISION}
+        mode = self.panel.qb_injury_mode
+        for stages, change in ((67, True), (_room().realistic_stages(), False)):
+            with self.subTest(stages=stages):
+                self.panel.apply_state(dict(self.state, sim_qb_injuries="applied", sim_qb_injury_settings=slice_now,
+                                            qb_room="applied",
+                                            qb_room_settings={"status": "applied", "mode": "realistic", "stages": stages},
+                                            depth_locks="applied", depth_chart_rows="applied"))
+                self.panel.depth_locks_check.setChecked(True)
+                self.panel.depth_chart_rows_check.setChecked(True)
+                mode.setCurrentIndex(mode.findData("realistic"))
+                self.assertEqual(bool(self.panel._sim_qb_injury_change()), change)
 
 
 class FloorBuildPageTests(BuildPageTests):
@@ -743,7 +765,10 @@ class FaqTests(unittest.TestCase):
         section = text.split("## How do quarterback injuries work when I simulate a franchise game?", 1)[1].split("\n## ", 1)[0]
         # D3 (benched for poor play) is bit 256 since the designer's addendum 2 (R5); D2 (the kid's turn) keeps bit 2.
         claims = {"who starts at quarterback": 1 | 2 | 4 | 256, "start of the season": 1, "kid's turn": 2,
-                  "benched": 256, "poor play": 256, "back from injury": 4, "returning starter": 4}
+                  "benched": 256, "poor play": 256, "back from injury": 4, "returning starter": 4,
+                  # E1/E2 hand-over (C21): the backup signing, the better quarterback while the starter is out, and the
+                  # protected make-room release
+                  "healthy backup quarterback": 8, "starter is out for weeks": 32, "lowest-rated players": 8 | 32}
         for words, bits in claims.items():
             with self.subTest(claim=words):
                 self.assertEqual(words in section, bool(room.REALISTIC_STAGES & bits))

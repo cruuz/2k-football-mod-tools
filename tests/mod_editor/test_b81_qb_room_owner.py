@@ -136,7 +136,8 @@ def _private(variable, sha):
 
 
 class OwnerTests(unittest.TestCase):
-    """Owner level on the reviewed v0.10 helmet test executable (98dd7329) with slice 1 Realistic (9f435b38)."""
+    """Owner level on the reviewed v0.10 helmet test executable (98dd7329) with the injury option Realistic (slices 1 to 3
+    since the merge of 5854e5144: 501b8412; slice 1 alone gave 9f435b38)."""
 
     @classmethod
     def setUpClass(cls):
@@ -150,18 +151,24 @@ class OwnerTests(unittest.TestCase):
 
     def test_settings_and_status(self):
         room = self.room
-        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "9f435b38")
+        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "501b8412")  # b81 merge: slices 1-3 (was 9f435b38)
         self.assertEqual(room.read_settings(self.slice1), {"status": "retail", "mode": "retail", "reserved": False,
                                                            "va": None})
         settings = room.read_settings(self.applied)
         self.assertEqual((settings["status"], settings["stages"], settings["shadow"], settings["va"]),
                          ("applied", self.code.STAGE_D1, False, 0x1529000))
-        # D1 + D2 handover (designer's addendum 2): D1 and D2 ship, D3 (256) and D4 stay off; the floor comes from the
-        # injury level and is bit 64 alone since the floor review (F1(b): no over-cap rung), so Realistic installs 67.
-        self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT), (self.code.STAGE_D1 | self.code.STAGE_D2, False))
-        self.assertEqual((room.FLOOR_STUDIO_STAGES, room.realistic_stages()), (64, 67))
-        self.assertEqual(room.stage_names(67), ["D1 veteran or rookie", "D2 the kid's turn", "floor"])
-        self.assertFalse(room.REALISTIC_STAGES & (self.code.STAGE_D3 | self.code.STAGE_D4))
+        # E1/E2 hand-over (C21): D1, D2, D3 (256), D4 (4), E1 (8) and E2 (32) ship; the floor comes from the injury
+        # level (bit 64 alone since the floor review), and E1/E2 only where the floor and piece 3 are both installed,
+        # so Realistic installs 367 (327 at the D3/D4 hand-over, 67 at the floor hand-over).
+        c = self.code
+        self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT),
+                         (c.STAGE_D1 | c.STAGE_D2 | c.STAGE_D4 | c.STAGE_D3 | c.STAGE_SIGN | c.STAGE_E2, False))
+        self.assertEqual((room.FLOOR_STUDIO_STAGES, room.realistic_stages()), (64, 367))
+        self.assertEqual((room.studio_stages(True, False), room.studio_stages(False, True)), (64, 263))
+        self.assertEqual(room.stage_names(367), ["D1 veteran or rookie", "D2 the kid's turn", "D3 benched for poor play",
+                                                 "D4 returning starter", "E1 emergency backup signing",
+                                                 "E2 better quarterback while the starter is out", "floor"])
+        self.assertFalse(room.REALISTIC_STAGES & c.STAGE_TRADE)
         self.assertEqual(settings["stage_names"], ["D1 veteran or rookie"])
         row = _room_row(space.layout(self.applied)["allocations"])
         self.assertEqual((row["va"], row["size"]), (0x1529000, 0x3000))
@@ -443,15 +450,19 @@ class PreviousRevisionTests(unittest.TestCase):
     empty reservation; any other page is still foreign. The previous executables are rebuilt here from the frozen
     templates and must equal the hashes recorded when those revisions were built."""
 
-    D1D2_SHA = "72a78fcebfb9b057a897d9925cd93180822f55e08bbfecf084fb90c70bd9eb60"  # P6 candidate at 692062151
-    REVIEW_67_SHA = "9e1f2b830528a5007ab272b58875934d166c6bd6d5620571466bf0e7e997f0b6"  # P6-final at 66d8a7e1b
-    REVIEW_64_SHA = "58462a62f5b09d838faf394bb3bb96f3ba067f648874158801eeb78f9f976f7d"  # P2a-final at 66d8a7e1b
-    HANDOVER_67_SHA = "f5270f4dd305564ad38b782d492f26a095434f11bd3b9627f159a1c6b109e284"  # P5/P6-5ff candidate, 5ff30d9f8
-    HANDOVER_64_SHA = "35ce772759ad49a0611fe65d080336c27bc089998823de06b000ac4f11738001"  # P5 control (P2a), 5ff30d9f8
-    FLOOR_SHA = "c93f6c0d31aa99476b92092d32777f16af8bebe4c3b8fa8256495aa02dbe704b"
-    FLOOR_EMPTY_SHA = "a0a81494513bda2b812793ea9bf9e356a3e5af5988932c973778a852bc207502"
-    STAGE_3A_SHA = "4af354d711604f4fccc4908f36381da31446c734a0d1fdc61ed34ead008d7eeb"
-    STAGE_3A_EMPTY_SHA = "6aef88eb074f455918e015a6109e7373f183ccba9294ec55a30d7bcf44d2edc2"
+    # b81 merge of 5854e5144 (slices 2 and 3): the injury option's Realistic now writes slices 1 to 3, so every rebuilt
+    # previous executable differs from the one its panel ran (on slice 1 alone). Re-pinned to the rebuilds at the merged
+    # head; the panel executables were, in order: 72a78fce (P6 candidate at 692062151), 9e1f2b83 (P6-final at
+    # 66d8a7e1b), 58462a62 (P2a-final at 66d8a7e1b), c93f6c0d / a0a81494 (floor handover), 4af354d7 / 6aef88eb (3a).
+    D1D2_SHA = "52f4d9fec9afe88b62bcacde2a0c179541da8b5d0de85590a46b0a445c986906"
+    REVIEW_67_SHA = "1c68a15fcf47025cc60055aca7a1210af69955199eb69aa0c58c37d590f23871"
+    REVIEW_64_SHA = "e6928bafc31b730bcdcd6984341be25023bd5cf2a5d99b7115f8db528344aa5d"
+    HANDOVER_67_SHA = "d85a7c5cd1d3c3dad382456afe93fd8b34a47ef36fe9d4e29fa58f4e36be7281"  # rebuilt at the merged head (panel: f5270f4d, P5/P6-5ff candidate, 5ff30d9f8)
+    HANDOVER_64_SHA = "34dbcece1cfdc7810a76a8c56edc974926ef3f791711156d5c27281cd678e85b"  # rebuilt at the merged head (panel: 35ce7727, P5 control, 5ff30d9f8)
+    FLOOR_SHA = "ab2920569c77140a68c9302b6f4faec9fde2d3f87405dacb05b1bf16ebe612ee"
+    FLOOR_EMPTY_SHA = "6e14638a53dfbd45d9860aceaae951496c89a651b4eb902cc428d8db92777a33"
+    STAGE_3A_SHA = "449e651ed6d12509565f65e27afd440bd4ff7318f709ec300e292595fd5accb6"
+    STAGE_3A_EMPTY_SHA = "e3270c1b26ef94b697098ff351d63500adb120c4aa86d3e1a73111ea243804e8"
 
     @classmethod
     def setUpClass(cls):

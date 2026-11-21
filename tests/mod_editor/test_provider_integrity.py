@@ -226,9 +226,9 @@ class ProviderIntegrityTests(unittest.TestCase):
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
             [601, 10, 8, 9, 8, 9]
-            # b81 qb34 4b + C21 merge: 601 = 598 (the merge below) + the quarterback trades owner and its generated page
-            # template (the room owner loads it for stage bit 16; 4b C20 on its own branch was 598 = 596 + those two)
-            # + C21's frozen floor + D1 + D2 hand-over page template (a fifth "previous" revision; unpinned at a3c8ff69c).
+            # b81 qb34 4b + the room branch: 601 = 599 (C21, below) + the quarterback trades owner and its generated page
+            # template (the room owner loads it for stage bit 16; 4b C20 on its own branch was 598 = 596 + those two).
+            # b81 qb34 C21: 599 = 598 + the frozen floor + D1 + D2 hand-over page template (a fifth "previous" revision).
             # b81 merge (qb34 + slices 2 and 3): 598 = 592 (slices 2 and 3, below) + qb34's six (above).
             # b81 qb34: 596 = 595 + the frozen floor review page template (66d8a7e1b; a fourth "previous" revision).
             # b81 qb34: 595 = 594 + the frozen D1 + D2 handover page template (a third "previous" revision).
