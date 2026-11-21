@@ -44,7 +44,7 @@ NATIVE = {"n_rating": 0x246D80, "n_recount": 0xC3F00, "n_human": 0x13EC30, "n_te
           # b81 practice squads (revision 8): the free-agent list's remove-by-value and append, the active list's
           # append (the squad's ps_append when the practice squad is installed) and remove-by-value.
           "n_fa_remove": 0x2425C0, "n_fa_add": 0x242560, "n_append": 0xC3EE0, "n_remove": 0xC3EB0,
-          "n_ir_return": 0x246F90, "n_gate": 0x2BFAA0}
+          "n_ir_return": 0x246F90, "n_next_class": 0x2BF8B0}
 # b81 (revision 8): the practice squad's fixed ABI entries (its pinned caves; the roster arena bridges them).
 from mod_editor.core.nfl2k5_practice_squad_runtime import SYMBOLS as _SQUAD  # noqa: E402
 NATIVE.update({"ps_append": _SQUAD["ps_append"], "ps_demote": _SQUAD["ps_demote"]})

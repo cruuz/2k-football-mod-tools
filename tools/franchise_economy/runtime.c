@@ -920,9 +920,10 @@ SECTION(".roster_o") unsigned club_level(u8 *team, unsigned pos, float him, unsi
  * b81 practice squads (revision 8, REMAINING R60; Noah 11/20: "this franchise mode's got to be like the most realistic
  * NFL simulator"; real clubs keep a full practice squad every season). In every recorded ten-season franchise no player
  * ever joined a practice squad: beta 76.5 retired the automatic demotion at final cuts and nothing else adds a reserve,
- * so the 128 shipped reserves only retired away (128 in 2026, 9 by 2035). The stage-7 action's call of the preseason ->
- * regular season gate (0x2485DB) comes here (economy_squad_gate): the gate runs as before (every club the CPU runs cut to
- * the in-season limit), then every club no person manages tops its squad up to SQUAD from the free-agent list, in
+ * so the 128 shipped reserves only retired away (128 in 2026, 9 by 2035). In the stage-7 action, right after the
+ * preseason -> regular season gate (0x2485DB: every club the CPU runs cut to the in-season limit, unchanged), its call of
+ * the next class (0x2485E0) comes here (economy_squad_gate): every club no person manages tops its squad up to SQUAD
+ * from the free-agent list, then the class is made as before. The fill goes in
  * rounds: one signing per club for each slot of a 12-slot position mix (squad_mix; no quarterback, coordinator 11/20:
  * the emergency and backup quarterback signings draw from the free agents), the clubs in an order whose start turns with
  * the slot and the season, so a scarce position runs out on a different club each time; a second round over the mix for
@@ -1028,12 +1029,12 @@ SECTION(".roster_s") void FAST economy_squad_expire(void) {
     n_ir_return();
 }
 
-/* 0x2485DB in the stage-7 action (no register arguments): was call 0x2BFAA0, the gate. Round r, slot j: the 32 clubs in
- * turn from (7 x season + 11 x (12 r + j)) modulo 32 (the league's 32 clubs, as the gate's own loop); a club full, refused
- * or managed by a person is passed over. */
-extern void n_gate(void);                                         /* 0x2BFAA0 */
+/* 0x2485E0 in the stage-7 action, right after the gate's call 0x2485DB (no register arguments): was call 0x2BF8B0, the
+ * next draft class (0x2485DB itself lies in nfl2k5_progression's guarded "Preseason calls" span). Round r, slot j: the 32
+ * clubs in turn from (7 x season + 11 x (12 r + j)) modulo 32 (the league's 32 clubs, as the gate's own loop); a club
+ * full, refused or managed by a person is passed over. Then the class. */
+extern void n_next_class(void);                                   /* 0x2BF8B0 */
 SECTION(".roster_t") void FAST economy_squad_gate(void) {
-    n_gate();
     u32 turn = *(u32 *)0xE576B8 * 7;
     for (u32 j = 0; j < 3 * SQUAD; ++j, turn += 11)
         for (u32 k = 0; k < 32; ++k) {
@@ -1041,4 +1042,5 @@ SECTION(".roster_t") void FAST economy_squad_gate(void) {
             if (team[0x1f2] < SQUAD && squad_ok(team))
                 squad_sign(team, squad_mix[j]);
         }
+    n_next_class();
 }

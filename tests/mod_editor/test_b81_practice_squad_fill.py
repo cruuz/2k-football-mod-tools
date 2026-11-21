@@ -3,8 +3,8 @@
 Finding (practice-squad lane, kept saves of 10 ten-season roots): no player ever joined a practice squad in any recorded
 franchise, because beta 76.5 retired the automatic demotion at final cuts and nothing else adds a reserve, so the 128
 shipped reserves retired away (9 left by 2035). Revision 8: the season gate's cut-down call for each club the CPU runs
-(0x2485DB, its stage-7 action call) goes to economy_squad_gate, which runs the gate and then signs young free agents to
-every squad of a club no person manages, up to 12.
+and the stage-7 action's next call (0x2485E0, the next draft class) goes to economy_squad_gate, which signs young free
+agents to every squad of a club no person manages, up to 12, before the class is made.
 
 The site tests need the private retail executable. The native tests run the real gate on the kept 2027 preseason image
 of the qb34 lane (stage 7 week 2, a 4,096-record capacity arena, 1,023 free agents) with its executable, the economy's
@@ -65,7 +65,7 @@ class SiteTests(unittest.TestCase):
     def test_revision_eight_calls_the_squad_fill_from_the_gate(self):
         from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
         self.assertEqual((economy.REVISION, self.receipt["revision"], economy.status(self.after)), (8, 8, "applied"))
-        self.assertEqual(XbeImage(self.retail).read(economy.SQUAD_GATE, 5), bytes.fromhex("e8c0740700"))   # call 0x2BFAA0
+        self.assertEqual(XbeImage(self.retail).read(economy.SQUAD_GATE, 5), bytes.fromhex("e8cb720700"))   # call 0x2BF8B0
         gate = next(s.patched for s in economy.sites() if s.va == economy.SQUAD_GATE)
         self.assertEqual(gate, b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_gate"] - economy.SQUAD_GATE - 5))
         self.assertEqual((SYMBOLS["economy_squad_gate"], SYMBOLS["economy_squad_expire"]), (0x3E9CD0, 0x3E9A90))   # each starts its window
@@ -188,10 +188,15 @@ class KeptPreseasonImage(unittest.TestCase):
         return clubs, free
 
     def gate(self, m):
-        # the stage-7 action's call of the gate (0x2485DB) runs this: the native gate 0x2BFAA0, then the squad fill
-        # (on the code before revision 8 there is no such symbol and the plain gate runs, as the action calls it there)
+        # the stage-7 action's two calls: the native gate 0x2BFAA0 (0x2485DB), then 0x2485E0, which revision 8 sends to
+        # the squad fill before the next draft class (the class generator itself is not under test: a leaf here)
         from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
-        m.call(SYMBOLS.get("economy_squad_gate", GATE), budget=4_000_000_000)
+        m.call(GATE, budget=4_000_000_000)
+        if "economy_squad_gate" in SYMBOLS:
+            if not getattr(m, "class_leaf", False):
+                m.leaf(0x2BF8B0, lambda: m.ret(), reason="the next draft class runs after the fill; not under test")
+                m.class_leaf = True
+            m.call(SYMBOLS["economy_squad_gate"], budget=4_000_000_000)
         return self.state(m)
 
     def player(self, m, p):
@@ -305,6 +310,7 @@ class KeptPreseasonImage(unittest.TestCase):
         m.uc.mem_write(team + 0x1F2, bytes((11,)))                                     # 11 counted, one of them null
         m.put(team + 4 * (53 + 10), 0)
         m.call(SYMBOLS["economy_squad_gate"], budget=4_000_000_000)          # club 0 is skipped, every other is full
+        # (the gate helper above already put the class-generator leaf in place)
         self.assertEqual(m.uc.mem_read(team + 0x1F2, 1)[0], 11)
         corrupt, free = self.state(m)
         m.leaf(0x246F90, lambda: m.ret(), reason="the injured-reserve return the expiry hands on to is not under test")

@@ -295,17 +295,18 @@ REVISION_7_SITES = REVISION_7_NEW | frozenset(PREVIOUS_REVISION_6)
 CUT_MAXIMUM = {0: 3, 8: 2}
 # b81 practice squads (revision 8, REMAINING R60). In every recorded ten-season franchise (2 organic dynasties and the 8
 # qb34 P5 roots, 65 season transitions) no player ever joined a practice squad: beta 76.5 retired the automatic demotion
-# at final cuts and nothing else adds a reserve, so the shipped 128 reserves only retired away (9 left by 2035). The
-# stage-7 action's call of the preseason -> regular season gate (0x2485DB, retail call 0x2BFAA0) goes to
-# economy_squad_gate (tools/franchise_economy/runtime.c): the gate runs as before, then every club no person manages tops
-# its practice squad up to 12 from the free-agent list, round by round over a 12-slot position mix without a QB, the
-# clubs in an order that turns with the slot and the season (review 11/20: no club favoured by its index), each slot a
-# hash-chosen healthy free agent with years pro <= 3 (not the best-rated); the native free-agent removal, the squad's
-# append and its own ps_demote; a one-year minimum deal; no RNG, no transaction row. Code: six more unreferenced retail
-# functions (dead_code.py WINDOWS roster_p..roster_u). A revision-7 image (released v0.9, every beta 81 disc so far) reads
-# "legacy" and upgrades in place.
-SQUAD_GATE = 0x2485DB               # call 0x2BFAA0 (the gate) in the stage-7 (preseason -> regular season) action
-PINS[SQUAD_GATE] = "78632f5d3abc99accd8e763ed07a58e1745ae25aa8ddc321b620750730bafd9f"
+# at final cuts and nothing else adds a reserve, so the shipped 128 reserves only retired away (9 left by 2035). In the
+# stage-7 action, right after the preseason -> regular season gate (0x2485DB, unchanged), its call of the next draft class
+# (0x2485E0, retail call 0x2BF8B0) goes to economy_squad_gate (tools/franchise_economy/runtime.c): every club no person
+# manages tops its practice squad up to 12 from the free-agent list, then the class is made. Round by round over a
+# 12-slot position mix without a QB, the clubs in an order that turns with the slot and the season (review 11/20: no club
+# favoured by its index), each slot a hash-chosen healthy free agent with years pro <= 3 (not the best-rated); the native
+# free-agent removal, the squad's append and its own ps_demote; a one-year minimum deal; no RNG, no transaction row. Code:
+# six more unreferenced retail functions (dead_code.py WINDOWS roster_p..roster_u). A revision-7 image (released v0.9,
+# every beta 81 disc so far) reads "legacy" and upgrades in place. (The gate's own call 0x2485DB lies in
+# nfl2k5_progression's guarded "Preseason calls" span 0x2485B6 + 0x2A; 0x2485E0 is outside every guard and span.)
+SQUAD_GATE = 0x2485E0               # call 0x2BF8B0 (the next draft class) right after the gate in the stage-7 action
+PINS[SQUAD_GATE] = "e9493963a6cb9526a85b7b338e4fc98da1f30f0ff845cdc77c6d2566d96caa64"
 SQUAD_WINDOWS = {                   # retail sha256 of each window's bytes (dead_code.py WINDOWS)
     0x38D3E0: "56f4e445ce5f93581e0676bc3308fd7c203a05e8fddee8c76ee6a0120522daeb",   # roster_p: the hash pick of a young free agent
     0x1C62E0: "b062e461131d35405759a1b89f6b58e0c8390f8532a73526113350ebb480c992",   # roster_q: the three rounds' position mix
