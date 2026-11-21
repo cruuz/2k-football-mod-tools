@@ -153,15 +153,18 @@ class OwnerTests(unittest.TestCase):
         settings = room.read_settings(self.applied)
         self.assertEqual((settings["status"], settings["stages"], settings["shadow"], settings["va"]),
                          ("applied", self.code.STAGE_D1, False, 0x1529000))
-        # D3/D4 hand-over: D1, D2, D3 (256) and D4 (4) ship; the floor comes from the injury level and is bit 64 alone
-        # since the floor review (F1(b): no over-cap rung), so Realistic installs 327 (67 at the floor hand-over).
+        # E1/E2 hand-over (C21): D1, D2, D3 (256), D4 (4), E1 (8) and E2 (32) ship; the floor comes from the injury
+        # level (bit 64 alone since the floor review), and E1/E2 only where the floor and piece 3 are both installed,
+        # so Realistic installs 367 (327 at the D3/D4 hand-over, 67 at the floor hand-over).
         c = self.code
         self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT),
-                         (c.STAGE_D1 | c.STAGE_D2 | c.STAGE_D4 | c.STAGE_D3, False))
-        self.assertEqual((room.FLOOR_STUDIO_STAGES, room.realistic_stages()), (64, 327))
-        self.assertEqual(room.stage_names(327), ["D1 veteran or rookie", "D2 the kid's turn", "D3 benched for poor play",
-                                                 "D4 returning starter", "floor"])
-        self.assertFalse(room.REALISTIC_STAGES & (c.STAGE_SIGN | c.STAGE_E2 | c.STAGE_TRADE))
+                         (c.STAGE_D1 | c.STAGE_D2 | c.STAGE_D4 | c.STAGE_D3 | c.STAGE_SIGN | c.STAGE_E2, False))
+        self.assertEqual((room.FLOOR_STUDIO_STAGES, room.realistic_stages()), (64, 367))
+        self.assertEqual((room.studio_stages(True, False), room.studio_stages(False, True)), (64, 263))
+        self.assertEqual(room.stage_names(367), ["D1 veteran or rookie", "D2 the kid's turn", "D3 benched for poor play",
+                                                 "D4 returning starter", "E1 emergency backup signing",
+                                                 "E2 better quarterback while the starter is out", "floor"])
+        self.assertFalse(room.REALISTIC_STAGES & c.STAGE_TRADE)
         self.assertEqual(settings["stage_names"], ["D1 veteran or rookie"])
         row = _room_row(space.layout(self.applied)["allocations"])
         self.assertEqual((row["va"], row["size"]), (0x1529000, 0x3000))

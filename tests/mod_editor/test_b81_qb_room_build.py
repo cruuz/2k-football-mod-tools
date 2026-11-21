@@ -765,7 +765,10 @@ class FaqTests(unittest.TestCase):
         section = text.split("## How do quarterback injuries work when I simulate a franchise game?", 1)[1].split("\n## ", 1)[0]
         # D3 (benched for poor play) is bit 256 since the designer's addendum 2 (R5); D2 (the kid's turn) keeps bit 2.
         claims = {"who starts at quarterback": 1 | 2 | 4 | 256, "start of the season": 1, "kid's turn": 2,
-                  "benched": 256, "poor play": 256, "back from injury": 4, "returning starter": 4}
+                  "benched": 256, "poor play": 256, "back from injury": 4, "returning starter": 4,
+                  # E1/E2 hand-over (C21): the backup signing, the better quarterback while the starter is out, and the
+                  # protected make-room release
+                  "healthy backup quarterback": 8, "starter is out for weeks": 32, "lowest-rated players": 8 | 32}
         for words, bits in claims.items():
             with self.subTest(claim=words):
                 self.assertEqual(words in section, bool(room.REALISTIC_STAGES & bits))
