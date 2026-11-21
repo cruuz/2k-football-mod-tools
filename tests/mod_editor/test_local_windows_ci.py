@@ -1019,8 +1019,8 @@ class ProcessTests(unittest.TestCase):
             while status.exists():
                 try:
                     state = status.read_text().split(") ", 1)[1].split()[0]
-                except FileNotFoundError:
-                    break
+                except (FileNotFoundError, ProcessLookupError):
+                    break  # reaped between the exists() check and the read: the descendant is gone
                 if state == "Z":
                     break
                 self.assertLess(time.monotonic(), deadline, "timed-out descendant is still running")
