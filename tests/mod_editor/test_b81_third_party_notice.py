@@ -24,8 +24,8 @@ class ThirdPartyNoticeTests(unittest.TestCase):
         self.shipped = {"NOTICE.md", FOLDER + "SOURCES.json"} | {FOLDER + name for name in self.sources["files"]}
         self.tmp = Path(tempfile.mkdtemp())
         (self.tmp / FOLDER).mkdir(parents=True)
-        shutil.copy2(ROOT / "NOTICE.md", self.tmp / "NOTICE.md")
-        shutil.copy2(ROOT / FOLDER / "SOURCES.json", self.tmp / FOLDER / "SOURCES.json")
+        for relative in ("NOTICE.md", FOLDER + "SOURCES.json"):     # plain reads and writes (Wine has no CopyFile2)
+            (self.tmp / relative).write_bytes((ROOT / relative).read_bytes())
 
     def tearDown(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
