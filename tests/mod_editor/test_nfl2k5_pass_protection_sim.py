@@ -73,10 +73,10 @@ class BytesTests(unittest.TestCase):
         retail = retail_bytes()
         image = XbeImage(retail)
         self.assertAlmostEqual(struct.unpack("<f", image.read(pp.SIM_GAIN_VA, 4))[0], 0.75, places=6)
-        # b81 combined calibration: the centre is the owner's own float (SIM_CENTRE at SIM_CENTRE_VA); its default is
-        # exactly the retail .rdata float earlier releases read (test_b81_combined_levers)
+        # b81 combined calibration: the centre is the owner's own float (SIM_CENTRE at SIM_CENTRE_VA); earlier releases
+        # read the retail .rdata float 0.866 (test_b81_combined_levers)
         self.assertAlmostEqual(struct.unpack("<f", image.read(pp.LEGACY_CENTRE_VA, 4))[0], 0.866, places=4)
-        self.assertEqual(struct.pack("<f", pp.SIM_CENTRE), image.read(pp.LEGACY_CENTRE_VA, 4))
+        self.assertEqual(pp.SIM_CENTRE, 0.890)       # fitted by the combined calibration (accepted 2026-11-21)
         self.assertAlmostEqual(struct.unpack("<f", image.read(pp.SIM_NORM_VA, 4))[0], 0.25, places=6)
         self.assertAlmostEqual(struct.unpack("<f", image.read(0x4F6BD4, 4))[0], 0.875, places=6)   # the shared one stays
         self.assertAlmostEqual(struct.unpack("<f", image.read(0x4E6D5C, 4))[0], 0.1, places=6)
@@ -256,11 +256,19 @@ class NativeTests(unittest.TestCase):
             self.assertGreater(len(rows), 150)
             self.assertTrue(all(x is not None for x, _ in rows))
         retail_corr = self.correlation(retail_rows)
-        patched_corr = self.correlation(patched_rows)
         # retail: only |x| > 0.1 (about 3.5% of dropbacks) moves the chance; the rest is a uniform draw
         self.assertGreater(retail_corr, -0.45, retail_corr)
-        # patched: the chance is 1 - clamp(0.866 + 0.75 * x) - 0.005 * QB term, so it falls as the blockers win
-        self.assertLess(patched_corr, -0.6, patched_corr)
+        # patched: the chance is exactly 1 - clamp(SIM_CENTRE + 0.75 * x, 0.825, 0.925) - 0.005 * s, s the QB's whole-number
+        # game term, so it falls as the blockers win. b81 combined calibration: checked per dropback at the module's centre
+        # (fitted 0.890) instead of by a correlation over the fixture. At 0.890 more of this fixture's dropbacks sit at the
+        # 0.925 ceiling, where only the QB term moves the chance, and the correlation fell from -0.92 (at 0.866) to -0.25.
+        centre = struct.unpack("<f", struct.pack("<f", pp.SIM_CENTRE))[0]
+        for x, chance in patched_rows:
+            o = struct.unpack("<f", struct.pack("<f", 0.75 * x))[0]
+            v = min(max(struct.unpack("<f", struct.pack("<f", centre + o))[0], 0.825), 0.925)
+            s = (1 - v - chance) / 0.005
+            self.assertTrue(-0.01 < s < 15.01 and abs(s - round(s)) < 0.01, (x, chance, s))
+        self.assertLess(self.correlation(patched_rows), retail_corr)
         thresholds = [t for _, t in patched_rows]
         self.assertLessEqual(max(thresholds), 0.175 + 1e-6)         # 1 - 0.825 with no QB term
 

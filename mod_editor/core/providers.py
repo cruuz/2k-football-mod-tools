@@ -803,7 +803,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_team_number_scale.py": "1be5d406dfa34e809488f9c5efbcbdc23e012c697c118fa7ac665c8a4cc49269",
         "mod_editor/core/nfl2k5_run_blocking.py": "96251a09e80032838fc0cf9fa8ca187063fc2d7a60c823b7b4a3daca41e54d7f",
         "mod_editor/core/nfl2k5_run_blocking_code.py": "622c8683badbb73ad0997e96d68a9d116317c5916d92a70be2758b05914e244b",
-        "mod_editor/core/nfl2k5_pass_protection.py": "5c18005f5a3c9987213e8a1485c629563c95d24b7c496e1e31acee54c3bfd23a",
+        "mod_editor/core/nfl2k5_pass_protection.py": "47927d1bec09e75e536093564d8874d9c236237840758750d0bd291cc58b0508",
         "mod_editor/core/nfl2k5_pass_protection_code.py": "a9d8e2bfb43cab4c95d2e5c909a47a5d84fbf3b927ce51f97da619728b49e8de",
         "mod_editor/core/nfl2k5_pass_rush_stats.py": "bf6db89e8e248bdda1cf7051932cb1a87699ef93be6d4f67d9d7c6b8ed139e37",
         "mod_editor/core/nfl2k5_pass_rush_stats_b779.py": "aa5d0ca54ff78cce5e95e1cecd3c1848484792218465602afc6b91f2064f8281",  # b780 n6: frozen beta-79 revision

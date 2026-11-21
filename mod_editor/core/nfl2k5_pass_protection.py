@@ -41,8 +41,9 @@ its constants to 352), and growing it would move every later late owner and brea
 lives in the owner's own ``sim_event_chance`` site: that edit already writes 0x3E bytes of which only the first 22 are
 code and the rest NOPs. Now a two-byte jump at ``0x1083AE`` steps over the float at ``0x1083B0`` and lands on the same
 NOPs. No branch in the executable targets the site's interior (a scan of every retail rel8/rel32 branch and absolute
-pointer), so the jump is the only way past the float. The default is exactly the float32 bits at ``0x4E73E4``, so a new
-install simulates bit for bit like the old one; the old form reads "legacy" and ``apply`` updates it in place.
+pointer), so the jump is the only way past the float. The lever was built at 0.866 (the float32 bits at ``0x4E73E4``, so
+that install simulated bit for bit like the old one) and is fitted to 0.890; the old form reads "legacy" and ``apply``
+updates it in place to this release's centre.
 """
 from __future__ import annotations
 
@@ -77,7 +78,9 @@ SIM_GAIN_VA = 0x004E6968         # float 0.75 in retail .rdata: the lines' effec
 SIM_NORM_VA = 0x004E696C         # float 0.25 (retail 0x4E6D5C = 0.1)
 # b81 combined calibration, lever 1: the simulated pass-pressure centre (see the module docstring). Raising it lowers the
 # sack-or-scramble chance of every simulated dropback whose centre plus offset stays inside the clamp [0.825, 0.925].
-SIM_CENTRE = 0.866               # float32 0x3F5DB22D: exactly the retail .rdata float LEGACY_CENTRE_VA holds
+# Fitted by the combined calibration and accepted (coordinator, 2026-11-21): 0.890. Earlier releases read 0.866 (float32
+# 0x3F5DB22D, the retail .rdata float LEGACY_CENTRE_VA), which a legacy install keeps until apply() updates it.
+SIM_CENTRE = 0.890
 SIM_CENTRE_RANGE = (0.825, 0.925)  # the clamp window around it (0x4F6BD0, 0x4F6BCC); a centre outside it is refused
 SIM_CENTRE_VA = 0x001083B0       # the owner's float, inside its own sim_event_chance site
 LEGACY_CENTRE_VA = 0x004E73E4    # what v0.8, v0.9 and beta 80 read (the shared 0.875 at 0x4F6BD4 stays for 0x23803E)

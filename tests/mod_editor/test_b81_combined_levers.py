@@ -6,8 +6,9 @@ its sim_event_chance site, behind a two-byte jump). v0.8, v0.9 and beta 80 point
 Lever 2, the quarterback's supplemental chance: QB_CHANCE_SCALE multiplies the two quarterback threshold tables only.
 Lever 3, slice 1's passing level: PASSING_LEVEL drives the accuracy gain table and the base multiplier together.
 
-At the default values every byte the simulation reads is unchanged: the new float holds exactly the bits at 0x4E73E4
-(Unicorn runs the real instructions on both forms) and the quarterback bank is the revision 4 bank byte for byte.
+The lever was built at 0.866, where every byte the simulation reads was unchanged (the float held exactly the bits at
+0x4E73E4; Unicorn still checks a 0.866 build against the legacy forms). The fitted centre 0.890 is the module default since
+the coordinator accepted it (2026-11-21). At the default lever 2 and 3 values the quarterback bank is unchanged.
 The retail executable comes from the private fixtures (skipped when absent); the shipped legacy installs are the
 slice 1 base bda1e4a4 (NFL2K5_B81_STABILITY_FIXTURES), the v0.8 executable (NFL2K5_V08_XBE) and the v0.9 release
 candidate (NFL2K5_V09_XBE). No game boot is claimed.
@@ -112,7 +113,9 @@ class SackCentreBytes(unittest.TestCase):
         self.assertEqual(image.read(0x1083F8, 4), struct.pack("<I", pp.SIM_CENTRE_VA))
         self.assertEqual(image.read(pp.SIM_CENTRE_VA, 4), struct.pack("<f", pp.SIM_CENTRE))
         # the default is exactly the float v0.8, v0.9 and beta 80 read, which stays untouched in .rdata
-        self.assertEqual(struct.pack("<f", pp.SIM_CENTRE), XbeImage(self.retail).read(pp.LEGACY_CENTRE_VA, 4))
+        # the fitted centre (accepted 2026-11-21); earlier releases read 0.866 at 0x4E73E4, which stays untouched in .rdata
+        self.assertEqual(pp.SIM_CENTRE, 0.890)
+        self.assertEqual(XbeImage(self.retail).read(pp.LEGACY_CENTRE_VA, 4), struct.pack("<f", 0.866))
         self.assertEqual(image.read(pp.LEGACY_CENTRE_VA, 4), XbeImage(self.retail).read(pp.LEGACY_CENTRE_VA, 4))
         # the float sits in the owner's own site, after its code and a jump over it
         start, end = EVENT_SITE
@@ -128,7 +131,7 @@ class SackCentreBytes(unittest.TestCase):
         image, retail = XbeImage(self.fresh), XbeImage(self.retail)
         target = struct.unpack("<I", image.read(0x1083F8, 4))[0]
         self.assertTrue(EVENT_SITE[0] <= target and target + 4 <= EVENT_SITE[1], hex(target))
-        self.assertEqual(image.read(target, 4), retail.read(0x4E73E4, 4))
+        self.assertEqual(image.read(target, 4), struct.pack("<f", 0.890))   # the fitted centre
         self.assertEqual(image.read(target - 2, 2), b"\xeb\x04")
 
     def test_the_constant_is_what_gets_written(self):
@@ -212,6 +215,8 @@ class SackCentreSimulation(unittest.TestCase):
         cls.shipped = shipped[0][1] if shipped else None
         with mock.patch.object(pp, "SIM_CENTRE", 0.891):
             cls.tuned = pp.apply(retail)[0]
+        with mock.patch.object(pp, "SIM_CENTRE", 0.866):     # the lever as built: the legacy value
+            cls.at_legacy = pp.apply(retail)[0]
 
     def test_event_site_reaches_the_retail_continuation_with_the_same_frame(self):
         for x in (-0.31, -0.07, 0.0, 0.0425, 0.19):
@@ -224,17 +229,19 @@ class SackCentreSimulation(unittest.TestCase):
             self.assertEqual(eip, EVENT_SITE[1])
             self.assertEqual(struct.unpack_from("<f", after, 0x18)[0], _f32(_f32(x) * 0.75))
 
-    def test_centre_value_is_bit_identical_at_the_default_and_follows_the_constant(self):
+    def test_centre_value_is_bit_identical_at_0866_and_follows_the_constant(self):
         moved = 0
         for k in range(-200, 201, 9):
             o = k / 1000
             frame = _frame(x18=o)
-            new = _emulate(self.new, *CENTRE_ADD, frame)[1]
-            self.assertEqual(new, _emulate(self.legacy, *CENTRE_ADD, frame)[1], o)
+            built = _emulate(self.at_legacy, *CENTRE_ADD, frame)[1]
+            self.assertEqual(built, _emulate(self.legacy, *CENTRE_ADD, frame)[1], o)
             if self.shipped is not None:
-                self.assertEqual(new, _emulate(self.shipped, *CENTRE_ADD, frame)[1], o)
+                self.assertEqual(built, _emulate(self.shipped, *CENTRE_ADD, frame)[1], o)
+            self.assertEqual(struct.unpack_from("<f", built, 0x14)[0], _f32(_f32(o) + _f32(0.866)), o)
+            new = _emulate(self.new, *CENTRE_ADD, frame)[1]
             v = struct.unpack_from("<f", new, 0x14)[0]
-            self.assertEqual(v, _f32(_f32(o) + _f32(0.866)), o)
+            self.assertEqual(v, _f32(_f32(o) + _f32(0.890)), o)        # the fitted default
             tuned = struct.unpack_from("<f", _emulate(self.tuned, *CENTRE_ADD, frame)[1], 0x14)[0]
             self.assertEqual(tuned, _f32(_f32(o) + _f32(0.891)), o)
             moved += tuned != v
