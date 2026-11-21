@@ -24,11 +24,12 @@ OWNER = space.QB_INJURY_OWNER
 REQUESTS = (space.QB_INJURY_REQUEST,)
 REALISTIC_RATE = 310
 MARK = struct.Struct('<8sIII')
-# Slices 1 (QBMEDv1) and 2 (QBMEDv2) are read and reversed through their frozen code modules; every apply writes the
-# current revision. Slice 2 added the line, edge and ball-carrier checks and parks the weekly running-back roll;
-# slice 3 (QBMEDv3) adds receivers, tight ends, fullbacks, defensive tackles, linebackers and defensive backs.
-SIGNATURES = {1: b'QBMEDv1\0', 2: b'QBMEDv2\0', 3: b'QBMEDv3\0'}
-REVISION = 3
+# Slices 1 (QBMEDv1), 2 (QBMEDv2) and 3 (QBMEDv3) are read and reversed through their frozen code modules; every apply
+# writes the current revision. Slice 2 added the line, edge and ball-carrier checks and parks the weekly running-back
+# roll; slice 3 added receivers, tight ends, fullbacks, defensive tackles, linebackers and defensive backs; revision 4
+# (QBMEDv4) adds the long-franchise stability factor (pos3/DESIGN.md addendum).
+SIGNATURES = {1: b'QBMEDv1\0', 2: b'QBMEDv2\0', 3: b'QBMEDv3\0', 4: b'QBMEDv4\0'}
+REVISION = 4
 SIGNATURE = SIGNATURES[REVISION]
 ERRORS = (ValueError, TypeError, IndexError, KeyError, OverflowError, struct.error)
 
@@ -62,11 +63,13 @@ class _Setting:
 
 
 def _runtime(revision):
-    """The code module that authored this revision's bank and edits (slices 1 and 2 are frozen copies)."""
+    """The code module that authored this revision's bank and edits (slices 1, 2 and 3 are frozen copies)."""
     if revision == 1:
         from . import nfl2k5_sim_qb_injuries_code_b81_slice1 as code
     elif revision == 2:
         from . import nfl2k5_sim_qb_injuries_code_b81_slice2 as code
+    elif revision == 3:
+        from . import nfl2k5_sim_qb_injuries_code_b81_slice3 as code
     else:
         from . import nfl2k5_sim_qb_injuries_code as code
     _require(code.MARK_SIGNATURE == SIGNATURES[revision] if revision > 1 else not hasattr(code, 'MARK_SIGNATURE'),
@@ -243,8 +246,8 @@ def status(payload):
 def apply(payload, level='realistic', *, custom_rate=0.310, breakaway_stop=None):
     """Install, retune or restore on an existing standard executable without moving installed owners.
 
-    A slice 1 or slice 2 install is reversed exactly and the current revision written fresh, even at the same mode
-    and rate.
+    A slice 1, 2 or 3 install is reversed exactly and the current revision written fresh, even at the same mode and
+    rate.
     """
     wanted = _setting(level, custom_rate)
     kick = scoring.parameters(breakaway_stop_beyond=breakaway_stop)   # validated; None = the shipped default

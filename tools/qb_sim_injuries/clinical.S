@@ -74,6 +74,7 @@ sorted_clubs:
     cmp ebx, [season_week]
     je existing_game
 new_game:
+    call STABILITY                      # long-franchise factors for this fixture (stability.S)
     mov [club_a], eax
     mov [club_b], edx
     mov [season_year], ecx
@@ -115,6 +116,7 @@ existing_game:
 evaluate_gate:
     fld DWORD PTR [edx+ecx*4]           # thresholds in 31-bit units at slider 1.0
     fmul DWORD PTR [0xe60204]
+    fmul DWORD PTR [STAB_FACTOR+48]     # the quarterback's factor, exactly 1.0 in seasons one and two
     fild DWORD PTR [gate_sample]
     fcompp
     fnstsw ax

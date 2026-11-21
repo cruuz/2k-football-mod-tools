@@ -1,6 +1,8 @@
-"""Slices 2 and 3 code module: generated template, installer tables, weekly edit and the frozen slice 1 and 2 modules.
+"""Slices 2 and 3 code module: generated template, installer tables, weekly edit and the frozen slice 1, 2 and 3 modules.
 
-pos2/DESIGN.md and pos3/DESIGN.md section 6 test 3. Native behaviour is in test_b81_sim_pos_injuries_native.py.
+pos2/DESIGN.md and pos3/DESIGN.md section 6 test 3; the long-franchise stability piece, pos3/DESIGN.md addendum A.6
+test 2. The slice 3 template facts are checked on the frozen slice 3 module (the bytes of 712835585), and the current
+template against it. Native behaviour is in test_b81_sim_pos_injuries_native.py.
 """
 from __future__ import annotations
 
@@ -18,6 +20,7 @@ from unittest import mock
 from mod_editor.core import nfl2k5_sim_qb_injuries_code as rules
 from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice1 as frozen
 from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice2 as frozen2
+from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice3 as frozen3
 from mod_editor.core import nfl2k5_sim_rb_injuries as running_backs
 from mod_editor.core import nfl2k5_xbe_space as space
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
@@ -31,6 +34,8 @@ BANK, SIM, DATA, LINEUP, RB = 0x1524000, 0x150E000, 0x14FD650, 0x151CE00, 0x1519
 SLICE1_SHA256 = 'ab914dbc3989ecaf33799f95c0e555027c2ae097758e97b425b655227ceded3c'
 # The bytes of `git show d2abd00a5:mod_editor/core/nfl2k5_sim_qb_injuries_code.py`, the refit slice 2 head slice 3 extends.
 SLICE2_SHA256 = '392af556f5f034cc72da325931885b7a5b109f34d3e7112a8c5792b8f7e23329'
+# The bytes of `git show 712835585:mod_editor/core/nfl2k5_sim_qb_injuries_code.py`, the handed-over slice 3 head.
+SLICE3_SHA256 = '91184562d94f80fe78feec3cc80d78d2ab5df39dc90213e55ca0419df15f232f'
 # The only template bytes that differ from the frozen slice 2 template: inside the positions piece, which now ends at
 # 0x1AF5 (slice 2's ended at 0x1B39; the rest of both is 0xCC fill up to 0x2000).
 CHANGED_FROM_SLICE2 = (0x1402, 0x1B39)
@@ -42,6 +47,32 @@ CHANGED = ((0xFB, 0x13B0), (0x1400, POSITIONS_END), (0x310C, 0x31AB), (0x361B, 0
 FINISHED = 0x21E
 ADDED_LINES = {'clinical.S': '    call POSITIONS', 'context.S': '    mov dword ptr [POS_CACHED_YEAR],-1',
                'fixture_start.S': '    mov dword ptr [POS_CACHED_YEAR],-1'}
+# Long-franchise stability (pos3/DESIGN.md addendum A.3): the only source lines added to slice 3, and the new piece.
+STABILITY_LINES = {'clinical.S': ('    call STABILITY', '    fmul DWORD PTR [STAB_FACTOR+48]'),
+                   'positions.S': ('    call STABILITY', '    fmul DWORD PTR [STAB_FACTOR+ecx*4]')}
+STABILITY_PIECE = (0x1C00, 0x1E88)
+# Template bytes that differ from the frozen slice 3 template: in the clinical piece from its first displacement or
+# address that crosses the added call to its new end, in the positions piece likewise, and the stability piece.
+CHANGED_FROM_SLICE3 = ((0x3F, 0x13B8), (0x1402, 0x1B01), STABILITY_PIECE)
+INSERTED = {'clinical': 0x119, 'positions': 0x14C7}   # where `call STABILITY` now starts in each piece
+
+
+def _strip_stability(folder):
+    """Remove the four stability lines (each exactly once) from copied sources."""
+    for name, lines in STABILITY_LINES.items():
+        text = (folder / name).read_text().split('\n')
+        for line in lines:
+            found = [n for n, each in enumerate(text) if each.split('#')[0].rstrip() == line]
+            assert len(found) == 1, (name, line, found)
+            del text[found[0]]
+        (folder / name).write_text('\n'.join(text))
+
+
+def _without_stability(build):
+    build.PIECES = tuple(piece for piece in build.PIECES if piece[0] != 'stability')
+    for name in ('STABILITY', 'STAB_FACTOR'):
+        del build.LOCAL[name]
+    del build.EXPORTED['stability']
 # pos2/DESIGN.md section 2 and pos3/DESIGN.md section 1: class, side (0 offense, 1 defense), lineup slot, flags
 # (bits 0-1 the rule: 0 every scrimmage play, 1 rushing ball carrier, 2 rush play; bits 4-7 the weight in sixteenths).
 SLOTS = ((0, 0, 12, 0), (0, 0, 13, 0), (1, 0, 10, 0), (1, 0, 11, 0), (2, 0, 9, 0), (3, 1, 15, 0), (3, 1, 16, 0),
@@ -80,8 +111,11 @@ class GeneratedTemplate(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix='2k5-slice1-') as folder:
             folder = Path(folder)
             for source in TOOLS.iterdir():
-                if source.suffix in ('.S', '.c') and source.name != 'positions.S':
+                if source.suffix in ('.S', '.c') and source.name not in ('positions.S', 'stability.S'):
                     shutil.copy(source, folder / source.name)
+            shutil.copy(TOOLS / 'positions.S', folder / 'positions.S')
+            _strip_stability(folder)
+            (folder / 'positions.S').unlink()
             for name, line in ADDED_LINES.items():
                 lines = (folder / name).read_text().split('\n')
                 found = [n for n, text in enumerate(lines) if text.split('#')[0].rstrip() == line]
@@ -89,6 +123,7 @@ class GeneratedTemplate(unittest.TestCase):
                 del lines[found[0]]
                 (folder / name).write_text('\n'.join(lines))
             build.HERE = folder
+            _without_stability(build)
             build.PIECES = tuple(piece for piece in build.PIECES if piece[0] != 'positions')
             for name in ('POSITIONS', 'POS_CACHED_YEAR', 'QB_PRIVATE_RNG'):
                 del build.LOCAL[name]
@@ -100,7 +135,7 @@ class GeneratedTemplate(unittest.TestCase):
     def test_template_differs_from_slice_1_only_in_the_stated_ranges_inside_the_same_allocation(self):
         self.assertEqual(space.QB_INJURY_REQUEST, ('nfl2k5_sim_qb_injuries', 'code', 0x4000, 0x1000))
         self.assertEqual(rules.CODE_SIZE, space.QB_INJURY_REQUEST[2])
-        old, new = frozen._TEMPLATE, rules._TEMPLATE
+        old, new = frozen._TEMPLATE, frozen3._TEMPLATE
         self.assertEqual((len(old), len(new)), (rules.CODE_SIZE, frozen.CODE_SIZE))
         differ = [n for n in range(len(new)) if old[n] != new[n]]
         inside = lambda n: any(start <= n < end for start, end in CHANGED)
@@ -114,49 +149,211 @@ class GeneratedTemplate(unittest.TestCase):
         for n in differ:
             if n < FINISHED:
                 self.assertTrue(any(field <= n < field + 4 for field in fields), hex(n))
-        self.assertEqual(rules.LABELS['finished'], frozen.LABELS['finished'])
-        linked = rules._link_authored(BANK, SIM, DATA, LINEUP + 0x455)
+        self.assertEqual(frozen3.LABELS['finished'], frozen.LABELS['finished'])
+        linked = frozen3._link_authored(BANK, SIM, DATA, LINEUP + 0x455)
         self.assertEqual(linked[FINISHED:FINISHED + 5], b'\xe8' + struct.pack('<i', 0x1400 - FINISHED - 5))
         # The positions piece ends before the recovery piece at 0x2000, followed only by fill.
-        self.assertEqual(rules.LABELS['positions'], 0x1400)
+        self.assertEqual(frozen3.LABELS['positions'], 0x1400)
         self.assertEqual(new[POSITIONS_END:0x2000], b'\xcc' * (0x2000 - POSITIONS_END))
         self.assertEqual(old[0x13A8:0x2000], b'\xcc' * (0x2000 - 0x13A8))
         unmoved = {name for name, at in frozen.LABELS.items() if at < FINISHED or 0x2000 <= at < 0x3100
                    or 0x3200 <= at < 0x3600 or at >= 0x3840}
-        self.assertEqual({name: rules.LABELS[name] for name in unmoved}, {name: frozen.LABELS[name] for name in unmoved})
-        self.assertEqual(set(frozen.LABELS) - set(rules.LABELS), set())
+        self.assertEqual({name: frozen3.LABELS[name] for name in unmoved}, {name: frozen.LABELS[name] for name in unmoved})
+        self.assertEqual(set(frozen.LABELS) - set(frozen3.LABELS), set())
 
     def test_template_equals_the_frozen_slice_2_template_outside_the_positions_piece(self):
-        old, new = frozen2._TEMPLATE, rules._TEMPLATE
+        old, new = frozen2._TEMPLATE, frozen3._TEMPLATE
         differ = [n for n in range(len(new)) if old[n] != new[n]]
         self.assertEqual((differ[0], differ[-1] + 1), CHANGED_FROM_SLICE2)
-        self.assertEqual({name: at for name, at in rules.LABELS.items() if not 0x1400 <= at < 0x2000},
+        self.assertEqual({name: at for name, at in frozen3.LABELS.items() if not 0x1400 <= at < 0x2000},
                          {name: at for name, at in frozen2.LABELS.items() if not 0x1400 <= at < 0x2000})
-        self.assertEqual(set(rules.LABELS) - set(frozen2.LABELS), {'pos_week_group'})
+        self.assertEqual(set(frozen3.LABELS) - set(frozen2.LABELS), {'pos_week_group'})
         # Outside the piece, relocations are slice 2's; the only target that moved is pos_year, which context.S and
         # fixture_start.S clear on a re-entered fixture (its value is the label's bank offset).
-        moved = {('bank', frozen2.LABELS['pos_year']): ('bank', rules.LABELS['pos_year'])}
-        self.assertEqual([r for r in rules._RELOCATIONS if not 0x1400 <= r[0] < 0x2000],
+        moved = {('bank', frozen2.LABELS['pos_year']): ('bank', frozen3.LABELS['pos_year'])}
+        self.assertEqual([r for r in frozen3._RELOCATIONS if not 0x1400 <= r[0] < 0x2000],
                          [r[:2] + moved.get(r[2:], r[2:]) for r in frozen2._RELOCATIONS if not 0x1400 <= r[0] < 0x2000])
         self.assertEqual(sum(r[2:] in moved for r in frozen2._RELOCATIONS if not 0x1400 <= r[0] < 0x2000), 2)
-        self.assertEqual(rules._LOCAL_FUNCTIONS, frozen2._LOCAL_FUNCTIONS)
+        self.assertEqual(frozen3._LOCAL_FUNCTIONS, frozen2._LOCAL_FUNCTIONS)
         end = 0x2000
         while new[end - 1] == 0xCC:
             end -= 1
         self.assertEqual(end, POSITIONS_END)
         self.assertLess(POSITIONS_END, 0x2000)
 
-    def test_the_frozen_modules_are_slices_1_and_2_byte_for_byte_under_two_comment_lines(self):
-        for module, digest in ((frozen, SLICE1_SHA256), (frozen2, SLICE2_SHA256)):
+    def test_the_frozen_modules_are_slices_1_2_and_3_byte_for_byte_under_two_comment_lines(self):
+        for module, digest in ((frozen, SLICE1_SHA256), (frozen2, SLICE2_SHA256), (frozen3, SLICE3_SHA256)):
             first, second, body = Path(module.__file__).read_bytes().split(b'\n', 2)
             self.assertTrue(first.startswith(b'# FROZEN') and second.startswith(b'# '))
             self.assertEqual(hashlib.sha256(body).hexdigest(), digest)
-            self.assertEqual((module.MARK_OFFSET, module.MARK_SIZE), (rules.MARK_OFFSET, rules.MARK_SIZE))
+            self.assertEqual((module.MARK_OFFSET, module.MARK_SIZE), (frozen3.MARK_OFFSET, frozen3.MARK_SIZE))
         self.assertFalse(hasattr(frozen, 'MARK_SIGNATURE'))
         self.assertEqual(frozen2.MARK_SIGNATURE, b'QBMEDv2\0')
-        self.assertEqual(rules.MARK_SIGNATURE, b'QBMEDv3\0')
-        self.assertEqual(rules.MARK_SIZE, struct.calcsize('<8sIII'))
+        self.assertEqual(frozen3.MARK_SIGNATURE, b'QBMEDv3\0')
+        self.assertEqual(rules.MARK_SIGNATURE, b'QBMEDv4\0')
+        self.assertEqual((rules.MARK_OFFSET, rules.MARK_SIZE), (frozen3.MARK_OFFSET, frozen3.MARK_SIZE))
         self.assertEqual(rules._TEMPLATE[rules.MARK_OFFSET:rules.MARK_OFFSET + rules.MARK_SIZE], b'\xcc' * rules.MARK_SIZE)
+        self.assertEqual(frozen3.MARK_SIZE, struct.calcsize('<8sIII'))
+        self.assertEqual(frozen3._TEMPLATE[frozen3.MARK_OFFSET:frozen3.MARK_OFFSET + frozen3.MARK_SIZE], b'\xcc' * frozen3.MARK_SIZE)
+
+
+class StabilityTemplate(unittest.TestCase):
+    """pos3/DESIGN.md addendum A.6 test 2: build.py --check, and the template equals the frozen slice 3 template outside
+    the stability piece and the two edits in each of the clinical and positions pieces (and what follows them)."""
+
+    def test_build_check_passes_and_slice_3_sources_changed_only_by_the_four_lines_and_the_piece(self):
+        _toolchain()
+        subprocess.run([sys.executable, str(TOOLS / 'build.py'), '--check'], check=True)
+        build = _build_module()
+        self.assertEqual([piece for piece in build.PIECES if piece[0] in ('positions', 'stability', 'recovery')],
+                         [('positions', 0x1400), ('stability', 0x1C00), ('recovery', 0x2000)])
+        self.assertEqual((build.LOCAL['STABILITY'], build.LOCAL['STAB_FACTOR']),
+                         ('stability.stability', 'stability.stab_factor'))
+        with tempfile.TemporaryDirectory(prefix='2k5-slice3-') as folder:
+            folder = Path(folder)
+            for source in TOOLS.iterdir():
+                if source.suffix in ('.S', '.c') and source.name != 'stability.S':
+                    shutil.copy(source, folder / source.name)
+            _strip_stability(folder)
+            build.HERE = folder
+            _without_stability(build)
+            generated = build.render()
+        text = Path(frozen3.__file__).read_text(encoding='utf-8')
+        self.assertEqual(text[text.index(build.DIVIDER):], generated)
+
+    def test_template_equals_the_frozen_slice_3_template_outside_the_stated_ranges(self):
+        old, new = frozen3._TEMPLATE, rules._TEMPLATE
+        self.assertEqual((len(old), len(new)), (rules.CODE_SIZE, rules.CODE_SIZE))
+        differ = [n for n in range(len(new)) if old[n] != new[n]]
+        for start, end in CHANGED_FROM_SLICE3:
+            here = [n for n in differ if start <= n < end]
+            self.assertEqual((here[0], here[-1] + 1), (start, end), hex(start))
+        self.assertEqual([hex(n) for n in differ if not any(a <= n < b for a, b in CHANGED_FROM_SLICE3)], [])
+        # Each piece ends before the next: clinical before 0x1400, positions before 0x1C00, stability before 0x2000.
+        for start, end, limit in ((0, 0x13B8, 0x1400), (0x1400, 0x1B01, 0x1C00), (0x1C00, 0x1E88, 0x2000)):
+            self.assertEqual(new[end:limit], b'\xcc' * (limit - end), hex(start))
+            self.assertNotEqual(new[end - 1], 0xCC)
+        self.assertEqual(rules.LABELS['stability'], STABILITY_PIECE[0])
+        # Before the added call in each piece only displacement and address fields change: jumps and calls that cross
+        # it, and the relocated addresses of labels after it.
+        try:
+            from capstone import Cs, CS_ARCH_X86, CS_MODE_32
+        except ImportError:
+            self.skipTest('capstone is required to decode the slice 3 instructions')
+        relocated = {offset for offset, *_ in frozen3._RELOCATIONS}
+        for piece, start in (('clinical', 0), ('positions', 0x1400)):
+            end = INSERTED[piece]
+            fields = set(relocated)
+            for instruction in Cs(CS_ARCH_X86, CS_MODE_32).disasm(old[start:end], start):
+                if instruction.mnemonic == 'call' or instruction.mnemonic.startswith('j'):
+                    width = 1 if instruction.size == 2 else 4
+                    fields.add(instruction.address + instruction.size - width)
+                    if width == 1:
+                        relocated.add(instruction.address + 1)
+            for n in differ:
+                if start <= n < end:
+                    self.assertTrue(any(field <= n < field + 4 for field in fields) or n in relocated, hex(n))
+            self.assertIn((end + 1, True, 'bank', STABILITY_PIECE[0] - 4), rules._RELOCATIONS)   # call STABILITY
+        # Relocations outside the three ranges are slice 3's, only with the moved labels' new offsets.
+        moved = {('bank', frozen3.LABELS[name]): ('bank', rules.LABELS[name]) for name in frozen3.LABELS}
+        outside = lambda rows: [row for row in rows if not any(a <= row[0] < b for a, b in CHANGED_FROM_SLICE3)]
+        self.assertEqual([row[:2] for row in outside(rules._RELOCATIONS)], [row[:2] for row in outside(frozen3._RELOCATIONS)])
+        self.assertEqual(rules._LOCAL_FUNCTIONS, frozen3._LOCAL_FUNCTIONS)
+        self.assertEqual(set(rules.LABELS) - set(frozen3.LABELS),
+                         {'stability', 'stab_factor', 'stab_reference', 'stab_year', 'stab_zero', 'stab_mode',
+                          'stab_class', 'stab_starters', 'stab_sum', 'stab_count'})
+        self.assertEqual(set(frozen3.LABELS) - set(rules.LABELS), set())
+        unmoved = {name for name, at in frozen3.LABELS.items() if at < INSERTED['clinical'] or 0x2000 <= at}
+        self.assertEqual({name: rules.LABELS[name] for name in unmoved}, {name: frozen3.LABELS[name] for name in unmoved})
+
+    def test_the_four_lines_link_to_the_piece_and_its_factor_table(self):
+        linked = rules._link_authored(BANK, SIM, DATA, LINEUP + 0x455)
+        L = rules.LABELS
+        factor = BANK + L['stab_factor']
+        for at in INSERTED.values():
+            self.assertEqual(linked[at:at + 5], b'\xe8' + struct.pack('<i', L['stability'] - at - 5))
+        clinical = bytes(linked[:0x1400])
+        # evaluate_gate: fld [table]; fmul [slider]; fmul [stab_factor+48]; fild [gate sample]
+        self.assertEqual(clinical.count(b'\xd8\x0d' + struct.pack('<I', 0xE60204) + b'\xd8\x0d' + struct.pack('<I', factor + 48)
+                                        + b'\xdb\x05' + struct.pack('<I', BANK + L['private_rng'] - 20)), 1)
+        # effective: fld [pos_scale+ecx*4]; fmul [slider]; fmul [stab_factor+ecx*4]; fistp qword [pos_wide]
+        positions = bytes(linked[0x1400:0x1C00])
+        self.assertEqual(positions.count(b'\xd8\x0d' + struct.pack('<I', 0xE60204) + b'\xd8\x0c\x8d'
+                                         + struct.pack('<I', factor) + b'\xdf\x3d' + struct.pack('<I', BANK + L['pos_wide'])), 1)
+        self.assertEqual(L['stab_count'], L['stab_sum'] + 52)            # one loop clears both
+        self.assertEqual(L['stab_factor'] % 4, 0)
+
+
+class StabilityTables(unittest.TestCase):
+    """pos3/DESIGN.md addendum A.2, A.4 and A.6: the installed stability tables for each mode."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.image = XbeImage(retail_bytes())
+
+    def read(self, bank):
+        L = rules.LABELS
+        return {'factor': struct.unpack_from('<13I', bank, L['stab_factor']),
+                'reference': struct.unpack_from('<13f', bank, L['stab_reference']),
+                'year': struct.unpack_from('<10f', bank, L['stab_year']),
+                'zero': bytes(bank[L['stab_zero']:L['stab_zero'] + 13]),
+                'class': bytes(bank[L['stab_class']:L['stab_class'] + 17]),
+                'starters': bytes(bank[L['stab_starters']:L['stab_starters'] + 17]),
+                'mode': bank[L['stab_mode']], 'sums': bytes(bank[L['stab_sum']:L['stab_count'] + 52])}
+
+    def test_constants_are_the_measured_references_and_the_designs_rule(self):
+        self.assertEqual(rules.STABILITY_REFERENCE, (17.627, 18.847, 18.803, 19.526, 17.703, 22.138, 20.803, 21.261,
+                                                     20.343, 20.551, 23.144, 21.840, 25.807))   # order S0, 64001-64004
+        self.assertEqual(rules.STABILITY_CLASS_NAMES, tuple(p.name for p in rules.POSITION_CLASSES) + ('quarterback',))
+        self.assertEqual((rules.STABILITY_MODE, rules.STABILITY_CLASSES_OFF, rules.STABILITY_YEAR_SLOPE),
+                         ('adaptive', (), .055))
+        self.assertEqual(rules.STABILITY_MODES, {'off': 0, 'year': 1, 'adaptive': 2})
+        self.assertEqual([round(value, 3) for value in rules.stability_year_factors()],
+                         [1.0, 1.0, .924, .879, .839, .839, .839, .839, .839, .839])
+        template = self.read(rules._TEMPLATE)
+        self.assertEqual(template['factor'], (0x3F800000,) * 13)
+        self.assertEqual(template['sums'], bytes(104))
+        self.assertEqual(template['mode'], 0)
+        # By stored position QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE (pos3/DESIGN.md addendum A.2).
+        self.assertEqual(template['class'], bytes((12, 255, 255, 5, 10, 11, 11, 4, 7, 6, 9, 9, 2, 1, 0, 8, 3)))
+        self.assertEqual(template['starters'], bytes((1, 0, 0, 3, 3, 1, 1, 2, 1, 1, 3, 3, 1, 2, 2, 2, 2)))
+
+    def test_tables_for_each_mode_rate_and_switched_off_class(self):
+        zero = bytes((110, 110, 110, 100, 100, 100, 100, 105, 100, 100, 100, 100, 100))
+        default_class = bytes((12, 255, 255, 5, 10, 11, 11, 4, 7, 6, 9, 9, 2, 1, 0, 8, 3))
+        year = struct.unpack('<10f', struct.pack('<10f', 1, 1, 1 / 1.0825, 1 / 1.1375, *([1 / 1.1925] * 6)))
+        for mode, value in (('adaptive', 2), ('year', 1), ('off', 0)):
+            for rate in (rules.DEFAULT_RATE, 0, 155, 100_000):
+                with self.subTest(mode=mode, rate=rate), mock.patch.object(rules, 'STABILITY_MODE', mode):
+                    bank = rules.bank_bytes(self.image.read, BANK, SIM, DATA, LINEUP, rate=rate)
+                    tables = self.read(bank)
+                    self.assertEqual(tables['mode'], value if rate else 0)
+                    self.assertEqual(tables['reference'], struct.unpack('<13f', struct.pack('<13f', *rules.STABILITY_REFERENCE)))
+                    self.assertEqual(tables['zero'], zero)
+                    for got, expected in zip(tables['year'], year):
+                        self.assertAlmostEqual(got, expected, places=6)
+                    self.assertEqual(tables['year'], struct.unpack('<10f', struct.pack('<10f', *rules.stability_year_factors())))
+                    self.assertEqual(tables['class'], default_class)
+                    self.assertEqual(tables['factor'], (0x3F800000,) * 13)
+        positions = {name: [n for n, index in enumerate(default_class) if index == rules.STABILITY_CLASS_NAMES.index(name)]
+                     for name in rules.STABILITY_CLASS_NAMES}
+        self.assertEqual(positions['linebacker'], [10, 11])
+        self.assertEqual(positions['safety'], [5, 6])
+        self.assertEqual(positions['quarterback'], [0])
+        for name in rules.STABILITY_CLASS_NAMES:
+            with self.subTest(off=name), mock.patch.object(rules, 'STABILITY_CLASSES_OFF', (name,)):
+                tables = self.read(rules.bank_bytes(self.image.read, BANK, SIM, DATA, LINEUP))
+                expected = bytearray(default_class)
+                for position in positions[name]:
+                    expected[position] = 0xFF
+                self.assertEqual(tables['class'], bytes(expected))
+                self.assertEqual(tables['mode'], 2)
+        bank = bytearray(rules._TEMPLATE)
+        for bad in (dict(mode='weekly'), dict(reference=(20.0,) * 12), dict(reference=(20.0,) * 12 + (0,)),
+                    dict(reference=(20.0,) * 12 + (float('nan'),)), dict(reference=(20.0,) * 12 + (-1.0,)),
+                    dict(classes_off=('kicker',)), dict(slope=1.0), dict(slope=-.01)):
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                rules._configure_stability(bank, rules.DEFAULT_RATE, **bad)
 
 
 class PositionTables(unittest.TestCase):

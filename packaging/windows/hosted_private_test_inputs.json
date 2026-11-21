@@ -40,6 +40,13 @@
         "private inputs are absent: *"
       ]
     },
+    "b81_stability_third_season": {
+      "description": "Private beta 81 third-season franchise: base executable, roster and signed third-season save (NFL2K5_B81_STABILITY_FIXTURES, env.sh)",
+      "messages": [
+        "private third-season franchise inputs are absent (NFL2K5_B81_STABILITY_FIXTURES)",
+        "private inputs are absent: *"
+      ]
+    },
     "coach_ai_disc": {
       "description": "Matching NFL2K5_COACH_AI_XBE and NFL2K5_COACH_AI_IMAGE",
       "messages": [
@@ -156,7 +163,7 @@
     "test_b780_econ3_roster_drift.py": {"NativeTests": "usa_xbe", "SiteTests": "usa_xbe"},
     "test_b780_n4_defense_playcall_sweep.py": {"DefensePlayCallSweepTests": "softdrink_disc"},
     "test_b81_gadget_pair_path.py": {"PairedGadgetPathTests": "b81_gadget_disc"},
-    "test_b81_sim_pos_injury_signed.py": {"SignedSlice2Exchange": "b81_signed_standard"},
+    "test_b81_sim_pos_injury_signed.py": {"SignedSlice2Exchange": "b81_signed_standard", "SignedThirdSeasonExchange": "b81_stability_third_season"},
     "test_b791_h7_numbers_real.py": {"RealSlotTests": "digit_templates"},
     "test_franchise_colleges.py": {"CollegeTests": "usa_roster"},
     "test_franchise_economy_composition.py": {"CompositionTests": "usa_xbe"},

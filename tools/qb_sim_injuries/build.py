@@ -16,7 +16,7 @@ HERE = Path(__file__).resolve().parent
 TARGET = HERE.parents[1] / "mod_editor/core/nfl2k5_sim_qb_injuries_code.py"
 DIVIDER = "# Generated from tools/qb_sim_injuries by build.py.\n"
 PIECES = (
-    ("clinical", 0), ("positions", 0x1400), ("recovery", 0x2000), ("fixture_start", 0x3100),
+    ("clinical", 0), ("positions", 0x1400), ("stability", 0x1C00), ("recovery", 0x2000), ("fixture_start", 0x3100),
     ("clinical_return", 0x3200), ("contest", 0x3300), ("redzone", 0x3500),
     ("context", 0x3600), ("completed_entry", 0x3840), ("duration", 0x3900),
     ("passing", 0x3A00), ("completed_pass", 0x3D00),
@@ -36,6 +36,7 @@ LOCAL = {
     "FIXTURE_ACTIVE": "context.active", "COMPLETED_PASS": "completed_pass.completed_catch_scale",
     "REDZONE_GAIN": "redzone.adjust", "COMPLETED_GAIN": "passing.passing_scale",
     "POSITIONS": "positions.positions", "POS_CACHED_YEAR": "positions.pos_year", "QB_PRIVATE_RNG": "clinical.private_rng",
+    "STABILITY": "stability.stability", "STAB_FACTOR": "stability.stab_factor",
 }
 EXTERNAL = {
     "qb_depth_helper": ("depth", 0), "RATING_TABLE": ("bank", 0x3B00),
@@ -64,6 +65,8 @@ EXPORTED = {
                   "pos_key", "pos_seq", "pos_hash", "pos_sample", "pos_wide", "pos_class", "victim_side",
                   "victim_slot", "accept_ptr", "pos_plays", "pos_hits", "pos_commits", "pos_effective",
                   "pos_week_group"),
+    "stability": ("stability", "stab_factor", "stab_reference", "stab_year", "stab_zero", "stab_mode", "stab_class",
+                  "stab_starters", "stab_sum", "stab_count"),
 }
 
 
