@@ -579,6 +579,26 @@ class PreviousRevisionTests(unittest.TestCase):
                 self.assertEqual(self._rows(upgraded), self._rows(payload))
                 self.assertEqual(room.apply(payload, "retail")[0], self.floor_empty)
 
+    def test_the_hand_over_page_at_every_set_its_studios_wrote(self):
+        # The E1/E2 review's F1 and the standing rule (coordinator, 11/21): every page and stage set a Studio at a head
+        # merged to integration could write reads "previous" at every later head. b2672e398's page was written at 67,
+        # 64 and 3 (Custom 0) there, and at 327 and 263 (Custom 0) by the D3/D4 hand-over's Studio at 9c7f38657 (the
+        # lead's witnesses 72ca9c12, 961d13db, ba363326). Each reads previous, upgrades in place to a fresh 367 (E1 and
+        # E2 on, the stage set this branch's needs allow) and restores to the empty reservation.
+        room = self.room
+        fresh, _ = room.install_stages(self.base, 367)
+        for stages in (67, 64, 3, 327, 263):
+            with self.subTest(stages=stages):
+                _empty, payload = self._written_by("nfl2k5_qb_room_code_b81_handover", self.base, stages)
+                settings = room.read_settings(payload)
+                self.assertEqual((settings["status"], settings.get("revision"), settings.get("stages")),
+                                 ("previous", "b81 floor + D1 + D2 hand-over", stages))
+                upgraded, receipt = room.install_stages(payload, 367)
+                self.assertEqual(upgraded, fresh)
+                self.assertEqual((receipt["upgraded_from"], receipt["stages"]), ("b81 floor + D1 + D2 hand-over", 367))
+                self.assertEqual(self._rows(upgraded), self._rows(payload))
+                self.assertEqual(room.apply(payload, "retail")[0], self.floor_empty)
+
     def test_retail_restores_the_floor_page(self):
         restored, receipt = self.room.apply(self.floor, "retail")
         self.assertEqual(restored, self.floor_empty)

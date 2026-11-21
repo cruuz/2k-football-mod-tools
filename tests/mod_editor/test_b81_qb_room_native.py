@@ -1999,6 +1999,58 @@ class ProtectedRelease(SignLeague):
         self.assertEqual(self.counters()["sign_skip_protected"], 1)
 
 
+class ProtectedReleaseBoundaries(SignLeague):
+    """The E1/E2 review's F3: rule (a)'s boundary and "injured or healthy makes no difference", each failing on the
+    reviewer's mutation (rev-qb34/e12/mut: MB `lower >= 11`, ME injured men never eligible)."""
+    e1_star_club = ProtectedRelease.e1_star_club
+
+    def setUp(self):
+        super().setUp()
+        injury_aware_rating(self.uc)
+
+    def flat_club(self):
+        """e1_star_club with every man but QB, K and P healthy and rated 90 (flag 0 and 1 alike)."""
+        starter, hurt, star, lowest, fa = self.e1_star_club()
+        roster = self.clubs[SIGN_CLUB]
+        for q in roster:
+            if q.position not in (0, 1, 2):
+                q.ovr, q.injury = 90, 0
+                self.write_player(q)
+        return starter, roster, lowest, fa
+
+    def test_c21_exactly_9_rated_below_goes_exactly_10_signs_nobody(self):
+        for below, goes in ((9, True), (10, False)):
+            with self.subTest(below=below):
+                self.setUp()
+                starter, roster, target, fa = self.flat_club()
+                firsts = [q for q in roster if q.row == 0 and q.position not in (0, 1, 2)]     # 14: never eligible (b)
+                for k, q in enumerate(firsts[:below]):
+                    q.ovr = 30 + k
+                    self.write_player(q)
+                target.ovr = 50                                                # WR row 5: the lowest eligible man
+                self.write_player(target)
+                before = self.club_list(), self.fa_list()
+                self.enter_sign()
+                if goes:
+                    self.assertEqual([p for p in before[0] if p not in self.club_list()], [target.address])
+                    self.assertIn(fa.address, self.club_list())
+                else:
+                    self.assertEqual((self.club_list(), self.fa_list()), before)
+                    self.assertEqual(self.counters()["sign_skip_protected"], 1)
+
+    def test_c21_an_injured_man_at_a_group_above_its_healthy_minimum_goes(self):
+        for injured in (True, False):
+            with self.subTest(injured=injured):
+                self.setUp()
+                starter, roster, target, fa = self.flat_club()               # WR: 6, minimum 5 healthy
+                target.ovr, target.injury = 40, (0x80000000 | 4 << 22 if injured else 0)
+                self.write_player(target)
+                before = self.club_list()
+                self.enter_sign()
+                self.assertEqual([p for p in before if p not in self.club_list()], [target.address])
+                self.assertIn(fa.address, self.club_list())
+
+
 class ProtectedReleaseE2(SignLeague):
     """C21 rule 4: E2 releases under the same rule. (The plain rating stub here: E2's own test of L, gap(L, S') >= 3,
     rates the man on injured reserve by 0x246D80(p, 1), which the injury-aware stub would discount. Without the
