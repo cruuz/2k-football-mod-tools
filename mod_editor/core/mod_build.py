@@ -3413,7 +3413,6 @@ def _update_v09_disc(plan, progress, *, preflight, project):
                                     breakaway_stop=plan.sim_breakaway_stop)
         _verify_sim_qb_injuries(plan, medical, expected)
         receipt["v09_update"].append("sim_qb_injuries")
-    expected, _ = _cpu_kick_aim_with_kicking(expected)  # b81 scoring: as a full build with the kicking fixes
     room_level, room_stages, room_note = _qb_room_plan(plan, expected)  # b81 qb34: rides with the QB option (C1)
     _note_qb_room_left_out(receipt, room_note)
     if _qb_injuries_above_zero(plan):
@@ -3432,6 +3431,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
             expected, _ = room.apply(expected, room_level)
         _verify_qb_room(plan, room, expected)
         receipt["v09_update"].append("qb_room")
+    expected, _ = _cpu_kick_aim_with_kicking(expected)  # b81 scoring: as a full build with the kicking fixes
     if plan.gadget_play:
         # After every other v0.9 update, as in a standard Build; the books are the released disc's own.
         expected, _ = gadget.apply(expected, _gadget_resources(source))
@@ -3451,8 +3451,8 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         _apply_sim_realism(plan, target, receipt, progress)
         _upgrade_pass_protection_in_place(plan, target, receipt, progress)
         _apply_sim_qb_injuries(plan, target, receipt, progress)
+    _apply_qb_room(plan, target, receipt, progress)  # b81 qb34: right after the quarterback injury step
     _apply_cpu_kick_aim_in_place(target, receipt, progress)
-    _apply_qb_room(plan, target, receipt, progress)  # b81 qb34
     if plan.gadget_play:
         _apply_gadget_play(plan, target, receipt, progress)
     _compact_build_disc(target, source, receipt, progress)

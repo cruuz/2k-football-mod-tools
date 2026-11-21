@@ -280,7 +280,10 @@ class StudioRuleTests(unittest.TestCase):
                 room.read_settings.return_value = {"status": room_status, "stages": 1 if room_status == "applied" else 0}
                 from mod_editor.core import nfl2k5_qb_room as real_room
                 room.PIECE3_BITS, room.REALISTIC_STAGES = real_room.PIECE3_BITS, real_room.REALISTIC_STAGES
-                modules = {"nfl2k5_sim_qb_injuries": qb, "nfl2k5_qb_room": room}
+                # Since the combined merge the read-back also asks the simulated scoring module (it rides with the option).
+                scoring = MagicMock()
+                scoring.installed.return_value = ("applied", {"breakaway_stop_beyond": 72})
+                modules = {"nfl2k5_sim_qb_injuries": qb, "nfl2k5_qb_room": room, "nfl2k5_sim_scoring": scoring}
                 with patch.object(mod_build, "_xbe_bytes", return_value=b"standard executable"), \
                         patch.object(cards, "status", return_value="retail"), \
                         patch.object(mod_build, "_core_module", side_effect=lambda name: modules.get(name)):
@@ -518,9 +521,12 @@ class FloorRuleTests(unittest.TestCase):
         import hashlib
         from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_qb_room as room
         from mod_editor.core import nfl2k5_sim_qb_injuries as qb
+        from mod_editor.core import nfl2k5_cpu_kick_aim as aim, nfl2k5_pass_protection as pressure
         source = self._private()
         slice1, _ = qb.apply(source, "realistic")  # 9f435b38: slice 1 without the floor (an earlier private test disc)
-        expected, _ = room.apply(ir.apply(slice1, "modern", standard_guard=True)[0], "realistic",
+        # Since the combined merge the edit also updates the legacy pass protection and adds CPU kick aim (both own sites).
+        routed = aim.apply(qb.apply(pressure.apply(source)[0], "realistic")[0])[0]
+        expected, _ = room.apply(ir.apply(routed, "modern", standard_guard=True)[0], "realistic",
                                  stages=self.FLOOR | self.P3)
         for name, original in (("98dd7329", source), ("9f435b38", slice1)):
             with self.subTest(source=name):
@@ -532,7 +538,7 @@ class FloorRuleTests(unittest.TestCase):
                 self.assertIn(update["added"][0], receipt["user_notes"])
                 self.assertEqual(update["settings"]["stage_names"], room.stage_names(self.FLOOR | self.P3))
                 self.assertEqual(update["settings"]["stage_names"][-1:], ["floor"])
-                self.assertEqual(receipt["sim_qb_source_update"]["result_sha256"], hashlib.sha256(slice1).hexdigest())
+                self.assertEqual(receipt["sim_qb_source_update"]["result_sha256"], hashlib.sha256(routed).hexdigest())
         receipt = self._edit(mod_build.sim_qb_disc_edit("s.iso", "t.iso", "custom", custom_rate=0.0), source)
         self.assertEqual(receipt["qb_room_source_update"]["stages"], self.P3)  # Custom 0: piece 3 only, no floor or IR
 
@@ -591,7 +597,9 @@ class InPlacePreflightTests(unittest.TestCase):
             self.skipTest("the private reviewed test disc is absent")
         source = mod_build._xbe_bytes(disc)
         from mod_editor.core import nfl2k5_injured_reserve as ir
-        slice1, _ = qb.apply(source, "realistic")
+        from mod_editor.core import nfl2k5_cpu_kick_aim as aim, nfl2k5_pass_protection as pressure
+        # Since the combined merge the edit also updates the legacy pass protection and adds CPU kick aim (both own sites).
+        slice1 = aim.apply(qb.apply(pressure.apply(source)[0], "realistic")[0])[0]
         # The helmet disc has the economy and the practice squad; the edit adds modern IR for the floor.
         expected, _ = room.apply(ir.apply(slice1, "modern", standard_guard=True)[0], "realistic",
                                  stages=room.realistic_stages())
