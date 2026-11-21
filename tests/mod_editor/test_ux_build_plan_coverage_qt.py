@@ -107,6 +107,8 @@ class BuildPlanCoverageTests(unittest.TestCase):
             "console_memory",  # b780-m64b: the Console memory combo (128 MB xemu / 64 MB experimental) in Make my disc
             "sim_qb_injuries",  # b81 (d75921d84): the Simulated quarterback injuries combo (qb_injury_mode)
             "sim_qb_injury_rate",  # b81 (d75921d84): the Base chance per eligible simulated play spin box (qb_injury_rate)
+            "qb_room",  # b81 qb34 (DESIGN_CHANGES C1): the quarterback room rules follow the Simulated injuries combo
+                        # (Realistic/Custom -> Realistic, Retail -> Retail); an explicit level is a recipe/project/CLI key only
         }
         self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
         self.assertEqual(bound - fields, set(), "controls that name a field BuildPlan no longer has")
