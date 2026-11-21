@@ -210,8 +210,9 @@ class AllocatorTests(unittest.TestCase):
         # b779-hn1: + the Super Bowl champions owner (after honors); b779-fixD (4c89ebbb2): + return coverage (1 row)
         # and the module loader (2 rows), which dormant_union() now lists to match the manifest builder.
         # Beta 81 reserves the two gadget slots and the Coach Matchup cards after those owners, and e70b25819 adds the
-        # simulated quarterback injury bank (one 16 KiB code row, a late owner placed after the card slot).
-        self.assertEqual(len(union) - len(without), 31)
+        # simulated quarterback injury bank (one 16 KiB code row, a late owner placed after the card slot); b81 qb34:
+        # + the quarterback room's fixed page (one 12 KiB row at 0x1529000, the last late owner).
+        self.assertEqual(len(union) - len(without), 32)
         plan_with, plan_without = space.plan(union), space.plan(without)
         # b778 xs1/bd3: a union that no longer fits the v3 runs is a v4 image, which adds a second
         # allocator-directory row at POOL_VA; owner_offset keeps the two pages apart.
@@ -234,6 +235,7 @@ class AllocatorTests(unittest.TestCase):
                                         ("nfl2k5_gadget_proof", "code"), ("nfl2k5_gadget_proof", "read_only"),
                                         ("nfl2k5_backfield_cards", "code"),
                                         ("nfl2k5_sim_qb_injuries", "code"),  # e70b25819
+                                        ("nfl2k5_qb_room", "code"),  # b81 qb34: the room's fixed page
                                         ("nfl2k5_period_goalposts", "code"), ("nfl2k5_period_goalposts", "read_only"),
                                         ("nfl2k5_honors", "code"), ("nfl2k5_honors", "data"),
                                         ("nfl2k5_champions", "code"),  # b779-hn1
