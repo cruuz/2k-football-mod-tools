@@ -1027,6 +1027,26 @@ class TradeExecutionTests(unittest.TestCase):
         report, _ = self.judged(after=after)
         self.assertEqual(new_failures(report, fi.check(after.view())), set())
 
+    def test_a_buyer_above_three_quarterbacks_fails_T1_buyer_qbs(self):
+        """C22 addendum (1): a buyer holds at most 2 active quarterbacks before the trade, never 4 after (the acting run's
+        club 28 in 2503/2031). CLE given a third quarterback before the post (a non-quarterback re-listed as one) ends
+        with 4."""
+        before = Ram(self.image)
+        qbs = [i for i in self.previous.clubs[self.BUYER].active if self.previous.record(i)[0x35] == fi.QB]
+        extra = [i for i in self.previous.clubs[self.BUYER].active if self.previous.record(i)[0x35] not in (fi.QB, fi.K, fi.P)]
+        for i in extra[:3 - len(qbs)]:
+            before.put(before.player(i) + 0x35, fi.QB, 1)
+        previous = before.view()
+        before.post(self.SELLER, self.qb, self.BUYER, self.word)
+        after = before.native_pending_scan()
+        report, view = self.judged(previous=previous, after=after)
+        self.assertIn(self.qb, view.clubs[self.BUYER].active)
+        self.assertEqual(new_failures(report, fi.check(after.view())), {"T1.buyer_qbs"})
+        row, = [r for r in report.violations if r["invariant"] == "T1.buyer_qbs"]
+        self.assertEqual((row["club"], row["values"]["quarterbacks"], row["values"]["before"]), (self.BUYER, 4, 3))
+        report, _ = self.judged()                                                     # the genuine trade: 3 at most
+        self.assertNotIn("T1.buyer_qbs", failing(report))
+
     def test_a_pick_that_did_not_change_owner_fails_T1_pick(self):
         after = Ram(self.after.regions)
         after.put(PICK_ROW1 + 32 * (5 - 1) + self.BUYER, self.BUYER, 1)                # the transfer undone

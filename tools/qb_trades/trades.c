@@ -14,10 +14,10 @@
    tools/qb_room/room.h and INTERFACE.md). This page keeps one link word: the IR owner's store (+0xF00), for E2's L.
 
    Buyer: not human (every user-managed club of a multi-user franchise is human here: the flag 0xE5775C), not named by a
-   live record, 49 to 52 active, a healthy quarterback, W + L + T >= 2, W + 1 >= L, no emergency signing (E1, E2 or the
-   floor, applied or, in shadow, would) logged in this or the previous week, and either its starter was benched by D3 in
-   the previous advance's room pass (logged with this week), or A <= 2 and a quarterback L on its IR 3+ better than S'
-   is out 3+ weeks or for the season (E2's L). Seller: not human, not named, not a buyer, 51 to 65 active, 3+
+   live record, 49 to 52 active, a healthy quarterback, at most 2 active quarterbacks (C22 addendum 1), W + L + T >= 2,
+   W + 1 >= L, no emergency signing (E1, E2 or the floor, applied or, in shadow, would) logged in this or the previous
+   week, and either its starter was benched by D3 in the previous advance's room pass (logged with this week), or a
+   quarterback L on its IR 3+ better than S' (L rated with flag 0, C22 addendum 2) is out 3+ weeks or for the season. Seller: not human, not named, not a buyer, 51 to 65 active, 3+
    quarterbacks of whom 3+ healthy (it keeps 2 healthy ones).
    Package: the best-rated Qs over every seller: fully healthy, not on row 0, rated below the seller's best healthy
    quarterback (C22 (a): a seller never gives up its best man), 4+ years pro, 1+ contract years, not named by a live
@@ -79,14 +79,18 @@ static u32 healthy(u32 p) {
     return !(D(p + 0x20) & (INJURED | WEEKS_MASK)) && !(D(p + 0x24) & 0x70000000u);
 }
 
-static i32 ovr(u32 p) {                                  /* room.c overall(): 0x246D80(p, 1) to whole points */
+static i32 rating(u32 p, u32 flag) {                     /* room.c overall(): 0x246D80(p, flag) to whole points */
     union { float f; u32 u; } v;
-    v.f = RATING(p, 1);
+    v.f = RATING(p, flag);
     u32 e = (v.u >> 23) & 255;
     if (v.u >> 31 || e < 119) return 0;
     if (e > 127) return 100;
     u32 s = 150 - e;
     return (i32)((((v.u & 0x7FFFFFu) | 0x800000u) * 100u + (1u << (s - 1))) >> s);
+}
+
+static i32 ovr(u32 p) {                                  /* flag 1, the page's rating for healthy men (gap, Qs, S') */
+    return rating(p, 1);
 }
 
 static u32 index_of(u32 p) {
@@ -139,7 +143,8 @@ static u32 lost_starter(u32 index, i32 best) {
     u32 club = store + IR_CLUBS + IR_CLUB_SIZE * index, n = B(club);
     for (u32 i = 0; i < n && i < IR_CAP; i++) {
         u32 entry = club + 4 + 8 * i, p = D(entry);
-        if (p && B(p + 0x35) == 0 && ovr(p) - best >= 3 && ((B(entry + 6) & F_SEASON) || (D(p + 0x20) >> 22 & 255) >= 3))
+        /* C22 addendum (2): L is hurt, and flag 1 discounts injured men (C21): his rating is flag 0's */
+        if (p && B(p + 0x35) == 0 && rating(p, 0) - best >= 3 && ((B(entry + 6) & F_SEASON) || (D(p + 0x20) >> 22 & 255) >= 3))
             return 1;
     }
     return 0;
@@ -200,9 +205,10 @@ static u32 post(struct posted *out) {
         x->l = LOSSES(t);
         x->t = TIES(t);
         x->flags = m >= 51 && a >= 3 && h >= 3 ? SELLER : 0;
-        if (m < 49 || m > 52 || !h || x->w + x->l + x->t < 2 || x->w + 1 < x->l || signed_mask >> i & 1) continue;
+        /* C22 addendum (1): at most 2 active quarterbacks before the trade, for either need (never 4 after) */
+        if (m < 49 || m > 52 || !h || a > 2 || x->w + x->l + x->t < 2 || x->w + 1 < x->l || signed_mask >> i & 1) continue;
         if (benched >> i & 1) x->flags = BUYER | NEED_D3;
-        else if (a <= 2 && lost_starter(i, x->best)) x->flags = BUYER;
+        else if (lost_starter(i, x->best)) x->flags = BUYER;
     }
     u32 saved = D(STAT_CLASS);
     if (saved) D(STAT_CLASS) = 0;

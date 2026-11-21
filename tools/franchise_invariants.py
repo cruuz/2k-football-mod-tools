@@ -1167,6 +1167,12 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
                     if 0 <= c < CLUBS and not 50 <= clubs[c].count <= 53:
                         add("T1.counts", FAIL, "active count outside 50..53 after a quarterback-for-pick trade",
                             club=c, count=clubs[c].count, role="seller" if c == seller else "buyer", rows=q["rows"])
+            if not skipped("T1.buyer_qbs") and 0 <= buyer < CLUBS:      # C22 addendum (1): at most 2 before, never 4 after
+                qbs = [i for i in clubs[buyer].active if view.record(i)[0x35] == QB]
+                if len(qbs) > 3:
+                    before = [i for i in previous.clubs[buyer].active if previous.record(i)[0x35] == QB]
+                    add("T1.buyer_qbs", FAIL, "buyer above 3 active quarterbacks after a quarterback-for-pick trade",
+                        club=buyer, player=q["player"], quarterbacks=len(qbs), before=len(before), rows=q["rows"])
             if not skipped("T1.seller_depth") and 0 <= seller < CLUBS:
                 qbs = [i for i in clubs[seller].active if view.record(i)[0x35] == QB]
                 # healthy now, or at the previous boundary: a man hurt in this week's game was hurt after the trade

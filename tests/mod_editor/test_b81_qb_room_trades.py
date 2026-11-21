@@ -126,8 +126,8 @@ class ImageMachine:
     def row(self, p):
         return self.h(p + 0x28) >> 10 & 7
 
-    def ovr(self, p):
-        code = (b"\xb9" + struct.pack("<I", p) + b"\xba\x01\x00\x00\x00\xb8\x80\x6d\x24\x00\xff\xd0"
+    def ovr(self, p, flag=1):
+        code = (b"\xb9" + struct.pack("<I", p) + b"\xba" + struct.pack("<I", flag) + b"\xb8\x80\x6d\x24\x00\xff\xd0"
                 + b"\xd9\x1d" + struct.pack("<I", PROBE + 0x800) + b"\xc3")
         self.m.uc.mem_write(PROBE, code)
         self.m.uc.ctl_flush_tb()
@@ -264,9 +264,17 @@ class TradesImage(unittest.TestCase):
         m.uc.mem_map(TRADES_VA, 0x1000)
         from tools import franchise_invariants as fi
         read = lambda a, n: bytes(m.uc.mem_read(a, n))
-        self.ir = fi.view_from_memory(read).info.get("ir_store")
-        self.ir = int(self.ir, 16) if self.ir else 0
-        m.uc.mem_write(TRADES_VA, _trades_code().page_bytes(TRADES_VA, ROOM_VA, ir_store_va=self.ir))
+
+        def search(needle):                                   # the IR owner's config inside the image's own bytes
+            for lo, data in x.memory.regions:
+                at = data.find(needle)
+                while at >= 0:
+                    yield lo + at
+                    at = data.find(needle, at + 1)
+        self.ir = fi.find_ir_store(read, search) or 0
+        # The cases below run with the IR unlinked (no lost-starter need; on this image club 24's IR man would make it
+        # a buyer); link_ir() links it for the cases about that need.
+        m.uc.mem_write(TRADES_VA, _trades_code().page_bytes(TRADES_VA, ROOM_VA))
         self.settings(64 | 16)
         # The image's room page is an earlier revision's: the counters 4b appends start at zero, as in a page file.
         for name, at in _room_code().COUNTERS.items():
@@ -275,6 +283,10 @@ class TradesImage(unittest.TestCase):
         m.uc.ctl_flush_tb()
 
     # -- helpers
+    def link_ir(self):
+        self.x.m.uc.mem_write(TRADES_VA, _trades_code().page_bytes(TRADES_VA, ROOM_VA, ir_store_va=self.ir))
+        self.x.m.uc.ctl_flush_tb()
+
     def settings(self, stages, shadow=False):
         room = _room_code()
         self.x.m.uc.mem_write(ROOM_VA + room.SETTINGS_OFFSET, room.settings_record(stages, shadow=shadow))
@@ -735,6 +747,59 @@ class TradesImage(unittest.TestCase):
                 self.assertEqual(c["trades_posted"], posted)
                 self.assertEqual(c.get("trade_past_deadline"), 1 - posted)
 
+    # -- C22 addenda (lead, 2026-11-20 after the acting run): each fails on e877f2e7f
+    def test_c22_addendum1_a_club_with_three_quarterbacks_is_never_a_buyer(self):
+        """The acting run's club 28 (2503/2031) bought a fourth quarterback on a D3 benching. A D3-benched club with 3
+        active quarterbacks is not a buyer now (at most 2 before the trade, as E1's "never above 3")."""
+        x, m = self.x, self.x.m
+        named = self.named_clubs()
+        club = next((c for c in range(32) if c not in named and not m.get(USER_FLAG + 4 * c)
+                     and 49 <= len(x.roster(c)) <= 52 and len(x.qbs(c)) == 3 and any(map(x.healthy, x.qbs(c)))
+                     and sum(x.record(c)) >= 2 and x.record(c)[0] + 1 >= x.record(c)[1]), None)
+        if club is None:
+            self.skipTest("no 3-quarterback club that could buy on this image")
+        m.uc.mem_write(0x2BC960, b"\xc3")
+        m.uc.ctl_flush_tb()
+        self.enter()                                            # the baseline: the image's own buyers
+        baseline = self.counters()["trade_buyers"]
+        self.setUp()
+        x, m = self.x, self.x.m
+        self.bench(club)
+        start = self.cursor()
+        m.uc.mem_write(0x2BC960, b"\xc3")
+        m.uc.ctl_flush_tb()
+        self.enter()
+        self.assertEqual(self.counters()["trade_buyers"], baseline)      # the benched 3-QB club is not one more
+        self.assertFalse([r for r in self.rows(start) if r[3] & 15 == 8 and r[2] == club])
+
+    def test_c22_addendum2_a_lost_starter_on_ir_is_rated_at_full_strength(self):
+        """L is a hurt man. The image's most discounted hurt quarterback (flag 0 90, flag 1 42: C21's discount) is put on
+        club 5's IR, out for the season; club 5's best healthy is 82. With flag 0 he is 3+ better and club 5 needs a
+        quarterback; with flag 1 (e877f2e7f) he is not and club 5 is no buyer."""
+        x, m = self.x, self.x.m
+        if not self.ir:
+            self.skipTest("this image has no modern IR store")
+        hurt = min((p for c in range(32) for p in x.qbs(c) if not x.healthy(p)), key=lambda p: x.ovr(p, 1) - x.ovr(p, 0))
+        best = max(x.ovr(p) for p in x.qbs(self.BUYER) if x.healthy(p))
+        self.assertGreaterEqual(x.ovr(hurt, 0) - best, 3)
+        self.assertLess(x.ovr(hurt, 1) - best, 3)
+        club = self.ir + 0x40 + 0xA4 * self.BUYER
+        n = x.b(club)
+        m.uc.mem_write(club + 4 + 8 * n, struct.pack("<IhBB", hurt, 0, 1, 0))      # flags bit 0: out for the season
+        m.uc.mem_write(club, bytes([n + 1]))
+        self.link_ir()
+        m.uc.mem_write(0x2BC960, b"\xc3")
+        m.uc.ctl_flush_tb()
+        self.enter()                                            # club 5 is now a buyer (no other change to the image)
+        with_l = self.counters()["trade_buyers"]
+        self.setUp()
+        x, m = self.x, self.x.m
+        self.link_ir()
+        m.uc.mem_write(0x2BC960, b"\xc3")
+        m.uc.ctl_flush_tb()
+        self.enter()
+        self.assertEqual(with_l - self.counters()["trade_buyers"], 1)
+
     def test_must_never_10_a_buyer_never_cuts(self):
         x, m = self.x, self.x.m
         qs, seller, word = self.ready_buyer(self.BUYER)
@@ -831,6 +896,26 @@ class TradesPage(unittest.TestCase):
                              {"events_logged", "trades_posted", "trades_cancelled"} | {n for n in room.COUNTERS
                                                                                        if n.startswith("trade")})
         self.assertTrue(all(family in ("page", "room", "stock") for _o, _r, family, _a in trades._RELOCATIONS))
+
+    def test_the_room_and_trades_counters_are_disjoint_inside_the_counter_area(self):
+        """C22 addendum (3): C21 ([native]) puts sign_skip_protected at +0x219C, after season_locks_cleared (+0x2198); 4b's
+        own counters follow every room counter, from +0x21A0, below the middle code piece (+0x2200). On e877f2e7f
+        4b's trade_calls sat at +0x219C."""
+        room, trades = _room_code(), _trades_code()
+        offsets = list(room.COUNTERS.values())
+        self.assertEqual(len(offsets), len(set(offsets)))
+        self.assertTrue(all(room.COUNTERS_OFFSET <= o < room.CODE_RESERVED[0] and o % 4 == 0 for o in offsets))
+        self.assertEqual((room.COUNTERS["season_locks_cleared"], room.COUNTERS.get("sign_skip_protected")),
+                         (0x2198, 0x219C))
+        own = {n: o for n, o in room.COUNTERS.items() if n.startswith("trade") and n not in ("trades_posted",
+                                                                                         "trades_cancelled")}
+        rest = {n: o for n, o in room.COUNTERS.items() if n not in own}
+        self.assertGreaterEqual(min(own.values()), 0x21A0)
+        self.assertGreater(min(own.values()), max(rest.values()))
+        written = {a for _o, _r, family, a in trades._RELOCATIONS if family == "room"
+                   and room.COUNTERS_OFFSET <= a < room.CODE_RESERVED[0]}
+        self.assertLessEqual(written, set(own.values()) | {room.COUNTERS[n] for n in
+                                                           ("events_logged", "trades_posted", "trades_cancelled")})
 
     def test_page_layout_site_and_relocation(self):
         trades = _trades_code()
