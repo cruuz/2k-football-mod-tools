@@ -53,6 +53,15 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     0x3C0920: (537, "0acdd04030bf3c49cc3377ba0638a24e3148e5b06e6641c8583206105ccc387b"),
     0x264AC0: (295, "5a6643fac404521c9f37c72989ea8b406cd04040ba31add1a83c2da6e2d5a938"),
     0x41E2A0: (192, "6380da53ed52f0ec42021477b15a441b2b0532da2189e902ea9c02225ff7aec7"),
+    # b81 practice squads (revision 8, "roster_p".."roster_u"): six more retail functions no code, table or pointer reaches
+    # (found by a scan of every function that starts after a return and padding, then this check; none overlaps a span of
+    # data/nfl2k5_cave_reservations.json).
+    0x38D3E0: (143, "56f4e445ce5f93581e0676bc3308fd7c203a05e8fddee8c76ee6a0120522daeb"),
+    0x1C62E0: (156, "b062e461131d35405759a1b89f6b58e0c8390f8532a73526113350ebb480c992"),
+    0x343040: (159, "cdf33bb1c95a330336a8dc9b1f8b1f324fa382da4bab96c5b20e06692cb86acc"),
+    0x3E9A90: (142, "04343c196ca45460668f254456e50e0e97f8950c728aa6c52384a47339c1cb4f"),
+    0x3E9CD0: (134, "5d5df93f0747d8134d1c4c2502c4350caea4f033b513626ad5d08f2325f90a84"),
+    0x3220B0: (131, "91cf637d17206732620e7706abdb4f7fab2b0b4269de74921a0f05ae3eacde72"),
 }
 
 

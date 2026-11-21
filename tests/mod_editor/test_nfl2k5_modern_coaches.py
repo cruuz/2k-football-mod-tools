@@ -340,6 +340,25 @@ class BuildWiring(unittest.TestCase):
             self.assertIn(needle, panel)
 
 
+def _coach_staff_as(module):
+    """Stand in for ``mod_editor.core.nfl2k5_coach_staff`` (``None``: a Studio without it) for one ``with`` block.
+    ``from . import nfl2k5_coach_staff`` reads the package attribute first, and any earlier import of the real module
+    in the same process leaves it set, so both ``sys.modules`` and the package attribute are replaced and restored."""
+    import contextlib
+    from unittest import mock
+    import mod_editor.core as package
+    name, missing = "nfl2k5_coach_staff", object()
+    stack = contextlib.ExitStack()
+    stack.enter_context(mock.patch.dict(sys.modules, {f"mod_editor.core.{name}": module}))
+    saved = package.__dict__.get(name, missing)
+    if module is None:
+        package.__dict__.pop(name, None)
+    else:
+        setattr(package, name, module)
+    stack.callback(lambda: package.__dict__.pop(name, None) if saved is missing else setattr(package, name, saved))
+    return stack
+
+
 class MovedCoaches(unittest.TestCase):
     """b780 c3-looks: the coaching staff, its refusals and the moved-look pins (repository only)."""
 
@@ -403,19 +422,39 @@ class MovedCoaches(unittest.TestCase):
             module.coach_records = coach_records
             return module
         roster = SimpleNamespace(body=b"", teams=[])
-        key = "mod_editor.core.nfl2k5_coach_staff"
-        with mock.patch.dict(sys.modules, {key: stub({})}):
+        with _coach_staff_as(stub({})):
             self.assertEqual(mc.roster_staff(roster), {c: c for c in clubs})
-        with mock.patch.dict(sys.modules, {key: stub({"LV": "KC", "KC": "LV", "NYG": None})}):
+        with _coach_staff_as(stub({"LV": "KC", "KC": "LV", "NYG": None})):
             staff = mc.roster_staff(roster)
             self.assertEqual((staff["LV"], staff["KC"], staff["NYG"], staff["DAL"]), ("KC", "LV", None, "DAL"))
             self.assertEqual(mc.assignment(staff)["NYG"], None)
-        with mock.patch.dict(sys.modules, {key: stub({c: None for c in clubs})}):
+        with _coach_staff_as(stub({c: None for c in clubs})):
             self.assertIsNone(mc.roster_staff(roster))          # a retail roster names none of them: per club as before
-        with mock.patch.dict(sys.modules, {key: stub("raise")}):
+        with _coach_staff_as(stub("raise")):
             self.assertIsNone(mc.roster_staff(roster))
-        with mock.patch.dict(sys.modules, {key: None}):          # a Studio without the coaching staff module
+        with _coach_staff_as(None):                              # a Studio without the coaching staff module
             self.assertIsNone(mc.roster_staff(roster))
+
+    def test_the_staff_check_holds_after_the_coach_staff_tests_in_one_process(self):
+        """Regression (11/21): in a long multi-file run the check above failed after another file had imported the real
+        ``nfl2k5_coach_staff`` (``from . import`` reads the package attribute that import leaves, so a stand-in placed
+        only in ``sys.modules`` was never asked). Runs the two files in that order in a fresh process."""
+        import subprocess
+        script = (
+            "import sys, unittest\n"
+            f"sys.path[:0] = [{str(ROOT)!r}, {str(ROOT / 'tools')!r}, {str(ROOT / 'tests' / 'mod_editor')!r}]\n"
+            "import test_nfl2k5_coach_staff  # the earlier file: imports the real coaching staff module\n"
+            "import mod_editor.core as package\n"
+            "assert hasattr(package, 'nfl2k5_coach_staff'), 'the earlier file no longer leaves the module imported'\n"
+            "import test_nfl2k5_modern_coaches as later\n"
+            "suite = unittest.defaultTestLoader.loadTestsFromName("
+            "'MovedCoaches.test_the_staff_is_read_from_the_coach_records_the_clubs_point_at', later)\n"
+            "result = unittest.TextTestRunner(stream=sys.stderr, verbosity=0).run(suite)\n"
+            "sys.exit(0 if result.wasSuccessful() and result.testsRun == 1 else 1)\n")
+        env = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1", "QT_QPA_PLATFORM": "offscreen"}
+        run = subprocess.run([sys.executable, "-B", "-c", script], cwd=ROOT, env=env, capture_output=True, text=True,
+                             timeout=600)
+        self.assertEqual(run.returncode, 0, run.stderr[-3000:])
 
 
 @unittest.skipUnless(HAVE_RETAIL, "retail USA image not present (NFL2K5_RETAIL_XISO)")

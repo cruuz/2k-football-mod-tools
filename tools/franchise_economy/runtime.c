@@ -915,3 +915,139 @@ SECTION(".roster_o") unsigned club_level(u8 *team, unsigned pos, float him, unsi
     if (busy || economy_full(team, pos)) return 0;
     return better < n_minimum_at(pos) + depth_step[0][pos] ? 2 : better < n_wanted_at(pos) + depth_step[1][pos] ? 1 : 0;
 }
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * b81 practice squads (revision 8, REMAINING R60; Noah 11/20: "this franchise mode's got to be like the most realistic
+ * NFL simulator"; real clubs keep a full practice squad every season). In every recorded ten-season franchise no player
+ * ever joined a practice squad: beta 76.5 retired the automatic demotion at final cuts and nothing else adds a reserve,
+ * so the 128 shipped reserves only retired away (128 in 2026, 9 by 2035). In the stage-7 action, right after the
+ * preseason -> regular season gate (0x2485DB: every club the CPU runs cut to the in-season limit, unchanged), its call of
+ * the next class (0x2485E0) comes here (economy_squad_gate): every club no person manages tops its squad up to SQUAD
+ * from the free-agent list, then the class is made as before. The fill goes in
+ * rounds: one signing per club for each slot of a 12-slot position mix (squad_mix; no quarterback, coordinator 11/20:
+ * the emergency and backup quarterback signings draw from the free agents), the clubs in an order whose start turns with
+ * the slot and the season, so a scarce position runs out on a different club each time; a second round over the mix for
+ * clubs still short; a third that also takes a K, P or FB. Each signing takes one healthy free agent at the slot's
+ * position with at most two accrued seasons (years pro 3 or less, a rookie being 1), chosen by a hash of his record and
+ * the club's record (squad_best), not the best-rated: review 11/20, signing the best-rated in club-index order gave clubs
+ * 0-7 squads 8.6 overall better than clubs 24-31, and a hash pick in club-index order still sent clubs 24-31 to the
+ * kickers and punters once the young receivers ran out. A club a person manages is never touched, whatever the auto
+ * sign and cut setting.
+ * The signing is the native one without its random contract and jersey draws: off the free-agent list (0x2425C0), onto
+ * the active list (0xC3EE0, the squad's append), then the squad's own demotion ps_demote (its limit, single ownership,
+ * record flags), then a one-year minimum deal (no cap charge while on the squad). No game RNG, no transaction row.
+ * Without the practice-squad runtime (0xC3EE0 not its append) or with foreign reserve bytes the club is only cut. At the
+ * rollover the squad's one-year deals expire (economy_squad_expire): the reserves of a club no person manages go back to the
+ * free-agent list, so squads re-form every year from young players and camps keep their full offseason roster.
+ * --------------------------------------------------------------------------------------------------------------------- */
+#define SQUAD 12
+extern unsigned FAST ps_append(u8 *team, u8 *p);                  /* nfl2k5_practice_squad SYMBOLS (bridged by the arena) */
+extern unsigned FAST ps_demote(u8 *team, u8 *p);
+extern unsigned FAST n_fa_remove(u32 *list, u8 *p);               /* 0x2425C0 */
+extern unsigned FAST n_fa_add(u32 *list, u8 *p);                  /* 0x242560 (the squad runtime's ps_fa_add) */
+extern unsigned FAST retail_fa_add(u32 *list, u8 *p);             /* 0x2952FC: the retail append, no ownership test */
+extern unsigned FAST n_append(u8 *team, u8 *p);                   /* 0xC3EE0 */
+extern unsigned FAST n_remove(u8 *team, u8 *p);                   /* 0xC3EB0 */
+extern void n_ir_return(void);                                    /* 0x246F90 the rollover's return from injured reserve */
+/* WR, CB, T, DE, HB, LB (OLB or ILB), C or G, DT, TE, S (FS or SS), WR, any lineman (C, G or T): position masks by the
+ * +0x35 codes; no quarterback (coordinator 11/20). Three rounds written out: the mix, the mix again for clubs still
+ * short, and the mix with a K, P or FB (bits 1, 2, 8) for clubs short after two. */
+#define SQUAD_MIX 1u << 3, 1u << 4, 1u << 14, 1u << 16, 1u << 7, 3u << 10, 3u << 12, 1u << 15, 1u << 9, 3u << 5, 1u << 3, 7u << 12
+#define SQUAD_MIX_KP (1u << 3) | 0x106, (1u << 4) | 0x106, (1u << 14) | 0x106, (1u << 16) | 0x106, (1u << 7) | 0x106, \
+    (3u << 10) | 0x106, (3u << 12) | 0x106, (1u << 15) | 0x106, (1u << 9) | 0x106, (3u << 5) | 0x106, (1u << 3) | 0x106, \
+    (7u << 12) | 0x106
+SECTION(".roster_q_rodata") __attribute__((aligned(4))) const u32 squad_mix[3 * SQUAD] = {SQUAD_MIX, SQUAD_MIX, SQUAD_MIX_KP};
+
+/* The eligible free agent at a position in `mask` with the lowest hash of (his record offset, the club's record offset):
+ * a pseudo-random pick fixed by the league state (record offsets, not memory addresses, so a reloaded save picks the
+ * same), with no game RNG drawn. Each club ranks the pool in its own order, the same every season, so a club tends to
+ * sign back its own squad players who are still free and eligible. */
+SECTION(".roster_p") __attribute__((noinline)) static u8 *FAST squad_best(u8 *team, u32 mask) {
+    u8 *root = *(u8 **)0xB72918, *p, *best = 0;
+    u32 *list = FA_LIST, seed = (u32)team - *(u32 *)(root + 0x1c), low = ~0u, h;
+    for (u32 i = 0; i < list[0]; ++i) {
+        p = ((u8 **)list[1])[i];
+        if (p[0x35] >= 17 || !(mask >> p[0x35] & 1) || (p[0x25] & 31) > 3 || (p[8] & 0x1c) != 4 ||
+            p[0x28] == 0xee || (p[0x23] & 0x80)) continue;
+        h = (((u32)p - *(u32 *)(root + 4)) ^ seed) * 2654435761u;
+        if (h <= low) { low = h; best = p; }
+    }
+    return best;
+}
+
+/* Sign one free agent for one slot to the squad: 1 = go on (signed, or nobody fits), 0 = stop the whole fill (refused).
+ * Re-check R1 (11/21): the squad runtime refuses every player while any club's reserve storage is unreadable, and its
+ * free-agent append refuses too, so a player taken off the list first ended in no list (446 on the kept image with one
+ * damaged club). Now the squad's append is asked first, while he is still on the free-agent list, so that refusal
+ * changes nothing; only then is he taken off the list (the retail remove-by-value). If the demotion is refused after it,
+ * he goes back through the retail append with no ownership test (0x2952FC) and leaves the active list only once he is
+ * back on the free-agent list: if he could not be put back he stays on the club's active list (54 players, which the
+ * validator's I1 reports), never in no list. */
+SECTION(".roster_r") __attribute__((noinline)) static u32 FAST squad_sign(u8 *team, u32 mask) {
+    u32 *list = FA_LIST;
+    u8 *p = squad_best(team, mask);
+    if (!p) return 1;
+    if (!n_append(team, p)) return 0;
+    n_fa_remove(list, p);
+    if (ps_demote(team, p)) {
+        *(u16 *)(p + 10) = (u16)((economy_floor(0) + 9) / 10);    /* one year at the rookie minimum */
+        p[0x24] = (p[0x24] & 0xf0) | 1;
+        p[0x27] = (p[0x27] & 0xf0) | 1;
+        p[0x26] = 2;
+        return 1;
+    }
+    if (retail_fa_add(list, p)) n_remove(team, p);           /* 1 once he is on the list (0 only at 2,500) */
+    return 0;
+}
+
+/* The squad's storage as the fill and the release may change it: the practice-squad runtime installed (0xC3EE0 is its
+ * append), a club no person manages (coordinator 11/20: never a human club, whatever the auto sign and cut setting; the
+ * gate's own cut still follows that setting), and its reserve bytes in the squad's own form (none yet, or the A5 marker
+ * with at most SQUAD reserves), every reserve a player in the 65 physical slots (a null slot skips the club). */
+SECTION(".roster_u") __attribute__((noinline)) static u32 FAST squad_ok(u8 *team) {
+    u32 a = team[0x11c], r = team[0x1f2];
+    if (n_human(team) || *(u8 *)0xC3EE0 != 0xE9 || *(int *)0xC3EE1 != (int)ps_append - 0xC3EE5 ||
+        (team[0x1f3] == 0xa5 ? r > SQUAD || a + r > 65u : (team[0x19b] | r) != 0))
+        return 0;
+    while (r--) if (!((u8 **)team)[a + r]) return 0;
+    return 1;
+}
+
+/* 0x247B79 in the rollover 0x247B40, after the retirements and before the injured players return (ECX/EDX unused): was
+ * call 0x246F90 (the return from injured reserve). Real squad deals last one season: every club no person manages lets them
+ * expire here, every reserve back on the free-agent list with no contract (as the native release leaves a player), so
+ * camp has the full offseason roster again and the next gate forms a new squad. At this point a club holds its 53 and at
+ * most SQUAD reserves, all in physical slots. Holding 12 reserves through the offseason caps a camp at 53 (65 physical
+ * slots): the second ten-season panel then opened 7 seasons with a club that could not sign a kicker or punter in camp. */
+SECTION(".roster_s") void FAST economy_squad_expire(void) {
+    for (unsigned t = 0; t < n_teams(); ++t) {
+        u8 *team = n_team(t);
+        if (squad_ok(team))
+            while (team[0x1f2]) {
+                u8 **slot = (u8 **)team + team[0x11c] + --team[0x1f2], *p = *slot;
+                *slot = 0;                                    /* the squad's own form: the slots past the last are null */
+                if (!n_fa_add(FA_LIST, p)) { *slot = p; ++team[0x1f2]; break; }
+                *(u16 *)(p + 10) = 0;
+                p[0x24] &= 0xf0;
+                p[0x27] &= 0xf0;
+            }
+    }
+    n_ir_return();
+}
+
+/* 0x2485E0 in the stage-7 action, right after the gate's call 0x2485DB (no register arguments): was call 0x2BF8B0, the
+ * next draft class (0x2485DB itself lies in nfl2k5_progression's guarded "Preseason calls" span). Round r, slot j: the 32
+ * clubs in turn from (7 x season + 11 x (12 r + j)) modulo 32 (the league's 32 clubs, as the gate's own loop); a club
+ * full or managed by a person is passed over; a refused signing stops the fill. Then the class. */
+extern void n_next_class(void);                                   /* 0x2BF8B0 */
+SECTION(".roster_t") void FAST economy_squad_gate(void) {
+    u32 turn = *(u32 *)0xE576B8 * 7;
+    for (u32 j = 0; j < 3 * SQUAD; ++j, turn += 11)
+        for (u32 k = 0; k < 32; ++k) {
+            u8 *team = n_team((turn + k) & 31);
+            if (team[0x1f2] < SQUAD && squad_ok(team) && !squad_sign(team, squad_mix[j]))
+                goto done;                                    /* a refused signing stops the whole fill (re-check R1) */
+        }
+done:
+    n_next_class();
+}

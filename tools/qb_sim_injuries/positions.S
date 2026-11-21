@@ -65,6 +65,7 @@ sorted_clubs:
     cmp ebp, [pos_week]
     je existing_game
 new_game:
+    call STABILITY                      # long-franchise factors for this fixture (stability.S)
     mov [pos_club_a], eax
     mov [pos_club_b], edx
     mov [pos_year], ecx
@@ -101,6 +102,7 @@ pos_sampled:                            # exported: the play's sample is stored 
 effective:
     fld DWORD PTR [pos_scale+ecx*4]
     fmul DWORD PTR [0xe60204]
+    fmul DWORD PTR [STAB_FACTOR+ecx*4]  # the class's factor, exactly 1.0 in seasons one and two
     fistp QWORD PTR [pos_wide]
     mov eax, [pos_wide]
     mov edx, [pos_wide+4]

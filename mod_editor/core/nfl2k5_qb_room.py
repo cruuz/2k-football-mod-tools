@@ -149,13 +149,15 @@ def _previous_revisions():
     """(name, frozen page template, the stage sets that revision's Studio wrote) for each earlier template whose pages a
     disc may hold ([validator]'s finding at c8683ea7e): the floor + D1 + D2 hand-over's (c7067bacabf4, pinned at
     b2672e398, the P5 and P6-5ff candidates' page; C21 replaced its E1/E2 smart cut; its Studio wrote 67, 64 where piece
-    3's needs were missing, 3 for Custom 0), the floor review's (420fbe089764, pinned at 66d8a7e1b; 67, 64, 3), the
+    3's needs were missing, 3 for Custom 0, and the D3/D4 hand-over's Studio at 9c7f38657 wrote the same page at 327
+    and 263 for Custom 0: the E1/E2 review's F1), the floor review's (420fbe089764, pinned at 66d8a7e1b; 67, 64, 3), the
     D1 + D2 handover's (65259084fc89, pinned at 692062151; 195, 192, 3), the floor handover's (752571283e98, pinned at
     c16934bee and f34553b06; 192) and the reviewed stage 0 + 3a page's (b1372b645e46 at 78d3633d3; 1)."""
     from . import nfl2k5_qb_room_code_b81_3a as stage_3a, nfl2k5_qb_room_code_b81_d1d2 as d1d2
     from . import nfl2k5_qb_room_code_b81_floor as floor, nfl2k5_qb_room_code_b81_floor_review as floor_review
     from . import nfl2k5_qb_room_code_b81_handover as handover
-    return (("b81 floor + D1 + D2 hand-over", handover, (67, 64, 3)), ("b81 floor review", floor_review, (67, 64, 3)),
+    return (("b81 floor + D1 + D2 hand-over", handover, (67, 64, 3, 327, 263)),
+            ("b81 floor review", floor_review, (67, 64, 3)),
             ("b81 D1 + D2 handover", d1d2, (195, 192, 3)), ("b81 floor handover", floor, (192,)),
             ("b81 stage 3a", stage_3a, (1,)))
 

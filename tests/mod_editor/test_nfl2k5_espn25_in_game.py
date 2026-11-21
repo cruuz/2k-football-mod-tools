@@ -52,7 +52,8 @@ class PublicationTests(unittest.TestCase):
             full = replace(preset, espn25_rosters=True)
             bn = replace(full, position_pools=False, position_pools_keep_olb=False, depth_roles=False,
                          edge_rename=False, depth_chart_rows=False,
-                         team_ratings=False)   # b773 tr1: modern team ratings need the modern position pools this plan turns off
+                         team_ratings=False,   # b773 tr1: modern team ratings need the modern position pools this plan turns off
+                         gadget_play=False)    # beta 81 Q62: the gadget player needs the SPECIAL rows this plan turns off
             # Beta 81 (64916bc7d): with the punter holder option on, the build first reads the source roster for the
             # holders it inherits. Like the other image readers here, that read is stubbed for the synthetic source.
             roster = object()

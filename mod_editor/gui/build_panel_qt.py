@@ -296,6 +296,7 @@ from mod_editor.core import nfl2k5_star_retention as _star_retention  # noqa: E4
 from mod_editor.core import nfl2k5_alien_prospect as _alien_prospect  # noqa: E402
 from mod_editor.core import nfl2k5_star_career as _star_career  # noqa: E402  b778-st2
 from mod_editor.core import nfl2k5_backfield_cards as _backfield_cards  # noqa: E402
+from mod_editor.core import nfl2k5_gadget_play as _gadget_play  # noqa: E402  beta 81 Q62
 from mod_editor.core import nfl2k5_sportscenter_lineup as _sportscenter_lineup  # noqa: E402
 from mod_editor.core import nfl2k5_inbox_standings as _inbox_standings  # noqa: E402  b778-pc3
 # b778-dr1: the broadcast-paced franchise draft (on in the Advanced and Experimental presets).
@@ -359,6 +360,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("scramble_blocking", _scramble_blocking.BUILD_CAPTION, _scramble_blocking.HELP_TEXT),  # b780-cv7
                  ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
                  ("backfield_cards", _backfield_cards.BUILD_CAPTION, _backfield_cards.HELP_TEXT),
+                 ("gadget_play", _gadget_play.BUILD_CAPTION, _gadget_play.HELP_TEXT),  # beta 81 Q62
                  ("sportscenter_lineup", _sportscenter_lineup.BUILD_CAPTION, _sportscenter_lineup.HELP_TEXT),  # b778-sc2
                  ("inbox_standings", _inbox_standings.BUILD_CAPTION, _inbox_standings.HELP_TEXT),  # b778-pc3
                  # b778 ci2: the tab caption stays short; the full wording is the module help.
@@ -424,7 +426,7 @@ def rebuild_only_reason(state: Mapping[str, object]) -> str:
     offer Needs update boxes on such a disc and then let the engine refuse. Both Build and Game Fixes ask this one function."""
 
     if state.get("v09_standard_update"):
-        return ("On this v0.9 standard disc you can select the boot save-list repair, modern injured reserve, starting backfield cards or simulated quarterback injuries. "
+        return ("On this v0.9 standard disc you can select the boot save-list repair, modern injured reserve, starting backfield cards, the gadget player on gadget plays or simulated quarterback injuries. "
                 "Choose the changes you want. Use your retail disc for other changes or a league project.")
     if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") not in ("applied", "retail"):
         what = "disc" if state.get("container") == "xiso" else "executable"
@@ -1125,9 +1127,11 @@ class BuildPanel(QWidget):
                                              "Kickoff: 35 · touchback: 35 · PAT snap: 15.",
                                              details="These describe the shipped patch, not a newly verified NFL ruleset. Two-point tries stay at the 2; "
                                                      "the kick meter and kicker curves are re-spaced so a 99 leg reaches 65-69 yards; onside and safety "
-                                                     "kicks are untouched; the CPU keeps its original field-goal range for fourth-down decisions.")
+                                                     "kicks are untouched; the CPU keeps its original field-goal range for fourth-down decisions. "
+                                                     "CPU kickers aim with two thirds of their original error (your own kicks are unchanged).")
         self.kick_power_check = self._option(g, "kick_power", "More kicking power; keep 2004 kick spots",
-                                             "The Basic preset's kicking fix: ~70-yard legs for elite kickers, original kick spots.")
+                                             "The Basic preset's kicking fix: ~70-yard legs for elite kickers, original kick spots. "
+                                             "CPU kickers also aim with two thirds of their original error.")
         self.kickoff_alignment_check = self._option(g, "kickoff_alignment", "Dynamic kickoff alignment",
                                                     "Coverage on the receiving 40, return setup zone 35-30, two returners deep.",
                                                     badge=NOT_TESTED, needs_image=True)
@@ -2085,8 +2089,14 @@ class BuildPanel(QWidget):
                      "line, the defensive line, linebackers, cornerbacks and safeties. Each simulated play has a small "
                      "chance that depends on the player's "
                      "Durability and the Injury slider. Nothing is scripted: some seasons are healthy and some are not. "
+                     "From a franchise's third season on, the chances follow the league's Durability ratings as they "
+                     "change, so injuries neither creep up nor die out over a long franchise; a more durable player is "
+                     "still hurt less often than a less durable one. "
                      "While it is on, the weekly running back roll is replaced by the per-carry chance, and your own club "
-                     "is treated like every other club in the games you simulate. Injuries in games you play are not changed. "
+                     "is treated like every other club in the games you simulate. Simulated games also get modern NFL "
+                     "field goal accuracy by distance, CPU clubs try 50-yard field goals about as often as NFL teams, and a "
+                     "catch-and-run breakaway that starts inside the offense's own 28 is tackled at the 10 instead of always "
+                     "scoring. Injuries in games you play are not changed, nor is their kicking or scoring. "
                      "Realistic and Custom require 128 MB and Simulated season realism. "
                      "Realistic and Custom above 0 percent also add modern injured reserve, the franchise economy and "
                      "reserve save compatibility, so a club is never left without a quarterback.")  # b81 qb34: the floor
@@ -3567,7 +3577,8 @@ class BuildPanel(QWidget):
         if self._v09_selected(plan):
             return mod_build.v09_disc_update(plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
                                              modern_injured_reserve=plan.modern_injured_reserve,
-                                             backfield_cards=plan.backfield_cards, sim_qb_injuries=plan.sim_qb_injuries,
+                                             backfield_cards=plan.backfield_cards, gadget_play=plan.gadget_play,
+                                             sim_qb_injuries=plan.sim_qb_injuries,
                                              custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
                                              overwrite=plan.overwrite,
                                              name=plan.name, author=plan.author, notes=plan.notes)

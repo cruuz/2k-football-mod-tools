@@ -22,9 +22,10 @@ GCC_FLAGS = "-m32 -march=i386 -Os -fomit-frame-pointer -fno-builtin -fno-stack-p
 PAGE_SIZE = 0x3000
 CODE_LIMIT = 0x2000
 # Further code pieces (INTERFACE.md): the tail of page 3 after the cursor and the menu slot holds .text.tail; page +
-# 0x2200..0x23FF is reserved for code (zero until used), so the counters must end by 0x2200.
+# 0x21E0..0x23FF is reserved for code (zero until used), so the counters must end by 0x21E0 (104 counters; C23 moved
+# the middle piece's start down from 0x2200 to give the D3/D4 fixes and C21 room: the room and 4b use 101).
 TAIL_START, TAIL_LIMIT = 0x2E10, 0x3000
-RESERVED_CODE = (0x2200, 0x2400)              # the middle piece: .text.mid (D1 after review, addendum 2)
+RESERVED_CODE = (0x21E0, 0x2400)              # the middle piece: .text.mid (D1 after review; C23: from 0x21E0)
 # Page data the C code names as extern objects. Offsets are fixed by INTERFACE.md.
 DATA = {"qb_settings": 0x2000, "qb_link_ir_store": 0x2020, "qb_counters": 0x2040, "qb_ring": 0x2400,
         "qb_ring_cursor": 0x2E00, "qb_menu": 0x2E04,
@@ -98,7 +99,7 @@ def collect(temp):
         if main_end >= CODE_LIMIT:
             raise ValueError("the code does not fit below the settings record")
         if mid_end > RESERVED_CODE[1]:
-            raise ValueError("the middle piece does not fit page + 0x2200..0x23FF")
+            raise ValueError(f"the middle piece does not fit page + {RESERVED_CODE[0]:#x}..{RESERVED_CODE[1] - 1:#x}")
         if tail_end > TAIL_LIMIT or len(data) != tail_end:
             raise ValueError("the tail piece does not fit page + 0x2E10..0x2FFF")
         body[:main_end] = data[:main_end]

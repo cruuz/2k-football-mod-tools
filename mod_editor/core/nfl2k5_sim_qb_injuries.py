@@ -6,7 +6,7 @@ running-back owner on later must restore Retail first, install it, then apply th
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from decimal import Decimal, InvalidOperation
 from functools import lru_cache
 import struct
@@ -15,6 +15,7 @@ from . import nfl2k5_k128 as memory
 from . import nfl2k5_lineup_roles as lineup
 from . import nfl2k5_sim_rb_injuries as running_backs
 from . import nfl2k5_sim_realism as simulator
+from . import nfl2k5_sim_scoring as scoring
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
@@ -23,17 +24,22 @@ OWNER = space.QB_INJURY_OWNER
 REQUESTS = (space.QB_INJURY_REQUEST,)
 REALISTIC_RATE = 310
 MARK = struct.Struct('<8sIII')
-# Slices 1 (QBMEDv1) and 2 (QBMEDv2) are read and reversed through their frozen code modules; every apply writes the
-# current revision. Slice 2 added the line, edge and ball-carrier checks and parks the weekly running-back roll;
-# slice 3 (QBMEDv3) adds receivers, tight ends, fullbacks, defensive tackles, linebackers and defensive backs.
-SIGNATURES = {1: b'QBMEDv1\0', 2: b'QBMEDv2\0', 3: b'QBMEDv3\0'}
-REVISION = 3
+# Slices 1 (QBMEDv1), 2 (QBMEDv2) and 3 (QBMEDv3) are read and reversed through their frozen code modules; every apply
+# writes the current revision. Slice 2 added the line, edge and ball-carrier checks and parks the weekly running-back
+# roll; slice 3 added receivers, tight ends, fullbacks, defensive tackles, linebackers and defensive backs; revision 4
+# (QBMEDv4) adds the long-franchise stability factor (pos3/DESIGN.md addendum).
+SIGNATURES = {1: b'QBMEDv1\0', 2: b'QBMEDv2\0', 3: b'QBMEDv3\0', 4: b'QBMEDv4\0'}
+REVISION = 4
 SIGNATURE = SIGNATURES[REVISION]
 ERRORS = (ValueError, TypeError, IndexError, KeyError, OverflowError, struct.error)
 
 
 class SimQbInjuriesError(ValueError):
     """The requested option or the executable's installed state could not be verified."""
+
+
+class StabilityRosterOutOfRange(SimQbInjuriesError):
+    """The disc's roster was measured, but its stability references are too far from the standard roster's."""
 
 
 def _require(condition, message):
@@ -46,6 +52,9 @@ class _Setting:
     mode: str
     rate: int
     revision: int = REVISION
+    # Revision 4: the thirteen stability references in the bank, as float32 values (the disc roster's, or the frozen R).
+    # Not in the marker: _state reads them from the bank, so Retail and a re-apply reproduce whatever was installed.
+    reference: tuple | None = None
 
     def marker(self):
         mode = 1 if self.mode == 'realistic' else 2
@@ -61,16 +70,88 @@ class _Setting:
 
 
 def _runtime(revision):
-    """The code module that authored this revision's bank and edits (slices 1 and 2 are frozen copies)."""
+    """The code module that authored this revision's bank and edits (slices 1, 2 and 3 are frozen copies)."""
     if revision == 1:
         from . import nfl2k5_sim_qb_injuries_code_b81_slice1 as code
     elif revision == 2:
         from . import nfl2k5_sim_qb_injuries_code_b81_slice2 as code
+    elif revision == 3:
+        from . import nfl2k5_sim_qb_injuries_code_b81_slice3 as code
     else:
         from . import nfl2k5_sim_qb_injuries_code as code
     _require(code.MARK_SIGNATURE == SIGNATURES[revision] if revision > 1 else not hasattr(code, 'MARK_SIGNATURE'),
              'Simulated QB injury code module does not match its settings revision')
     return code
+
+
+def _reference32(values):
+    """Thirteen stability references as the bank holds them (float32), each above 0 and below 256."""
+    try:
+        values = struct.unpack('<13f', struct.pack('<13f', *values))
+    except (TypeError, struct.error) as exc:
+        raise SimQbInjuriesError('The stability reference needs thirteen numbers') from exc
+    _require(all(0 < value < 256 for value in values), 'Each stability reference must be above 0 and below 256')
+    return values
+
+
+def roster_stability(roster):
+    """The stability statistic and references of a roster (a RosterDocument or a bare ROST body).
+
+    Returns ``(starters, reference)``: stability.S's walk over the roster at rest (clubs 0-31, listed players, stored
+    position, stored depth rank and Durability) as (sum, starters) per class, and the thirteen references that walk
+    gives (``nfl2k5_sim_qb_injuries_code.stability_reference_for``). The calibration roster gives the frozen R.
+    A measurement that looks wrong raises SimQbInjuriesError (the Studio's routes then install the frozen R).
+    """
+    from . import nfl2k5_roster_records as rosters
+    from . import nfl2k5_sim_qb_injuries_code as code
+    document = rosters.load_body(bytes(roster)) if isinstance(roster, (bytes, bytearray)) else roster
+    clubs = []
+    for index in range(code.STABILITY_CLUBS):
+        team = document.teams[index]
+        _require(team.index == index and team.clean_parse, f'Roster club {index} does not read as a club list')
+        clubs.append([(player.record.values['position'], player.record.values['depth_rank'],
+                       player.record.values['durability']) for player in document.team_players(index)])
+    try:
+        starters = code.stability_starters(clubs)
+        return starters, code.stability_reference_for(starters)
+    except code.StabilityOutOfRange as exc:
+        raise StabilityRosterOutOfRange(str(exc)) from exc
+    except ValueError as exc:
+        raise SimQbInjuriesError(str(exc)) from exc
+
+
+def restabilize(payload, reference):
+    """Rewrite only the stability references of an installed revision 4 option (mode, rate and kicking as installed).
+
+    For a disc whose roster changed after the build (the roster editor's Save disc copy). The bank is rebuilt with the
+    new references through the same authenticated transform as apply(), so only the 52 reference bytes and the
+    integrity fields that cover them change, and Retail still restores every byte.
+    """
+    source = bytes(payload)
+    setting, physical = _state(source)
+    _require(setting is not None and setting.revision == REVISION,
+             'Only an installed current Simulated injuries option has stability references to rewrite')
+    wanted = replace(setting, reference=_reference32(reference))
+    if wanted == setting:
+        return source
+    kicking, installed = scoring.installed(source)
+    _require(kicking in ('applied', 'retail'), 'Foreign or mixed simulated kicking bytes')
+    bank = _bank_allocation(physical)
+    result = _transform(physical, _edits(physical, bank, wanted, kicking=installed if kicking == 'applied' else False),
+                        restoring=False)
+    confirmed, restored = _state(result)
+    _require(confirmed == wanted and restored == physical and scoring.installed(result) == (kicking, installed),
+             'Simulated injury references failed readback')
+    return result
+
+
+def installed_reference(payload):
+    """The stability references a revision 4 install holds, or None (Retail, foreign, or an earlier revision)."""
+    try:
+        setting, _ = _state(bytes(payload))
+    except ERRORS:
+        return None
+    return setting.reference if setting is not None else None
 
 
 def _setting(mode, percent):
@@ -135,19 +216,27 @@ def _running_back_va(payload):
     return row['va']
 
 
-def _edits(payload, bank, setting):
+def _edits(payload, bank, setting, *, kicking=None):
+    """The option's whole edit list.
+
+    The in-place simulated scoring sites (beta 81 scoring slice) ride with it: ``kicking`` None writes the current
+    defaults, a dict writes those parameters (``nfl2k5_sim_scoring.parameters``), False leaves the sites out (an
+    install from before the scoring slice).
+    """
     code = _runtime(setting.revision)
     image = XbeImage(payload)
     sim, data = simulator._allocations(payload)
     _require(sim['size'] == simulator.CODE_SIZE, 'Update simulated season realism before enabling QB injuries')
     base = bank['va']
     addresses = (base, sim['va'], data['va'], _lineup_va(payload))
-    body = code.bank_bytes(image.read, *addresses, rate=setting.rate, marker=setting.marker())
+    stability = {} if setting.reference is None else {'reference': setting.reference}
+    body = code.bank_bytes(image.read, *addresses, rate=setting.rate, marker=setting.marker(), **stability)
     _require(len(body) == bank['size'], 'Incorrect simulated QB injury runtime size')
     # Slice 2: with a rate above zero the weekly running-back jump is the expected byte run and the game's own tail
     # is installed (code.edits adds it only then). The usual authentication refuses anything else at that site.
     extra = {} if setting.revision == 1 else {'rb_va': _running_back_va(payload)}
-    return (*code.edits(*addresses, rate=setting.rate, **extra),
+    scoring_sites = () if kicking is False else scoring.edits(**(kicking or {}))
+    return (*code.edits(*addresses, rate=setting.rate, **extra), *scoring_sites,
             ('simulated QB injury bank', base, b'\xcc' * bank['size'], body))
 
 
@@ -186,6 +275,7 @@ def _validate_simulation(payload):
 def _state(payload: bytes):
     """Return the physical simulator only after the entire installed option matches its authored bytes."""
     if not space.is_scaleout(payload) or not any(r[0] == OWNER for r in space._scale_directory_requests(payload)):
+        _require(scoring.installed(payload)[0] == 'retail', 'Simulated kicking bytes without the simulator option')
         return None, payload
     from . import nfl2k5_sim_qb_injuries_code as code
     allocation = _bank_allocation(payload)
@@ -197,10 +287,18 @@ def _state(payload: bytes):
                 target = address + 5 + struct.unpack_from('<i', entry, 1)[0]
                 _require(not allocation['va'] <= target < allocation['va'] + allocation['size'],
                          f'Simulated QB injury entry at {address:#x} points into an empty allocation')
+        _require(scoring.installed(payload)[0] == 'retail', 'Simulated kicking bytes beside an empty simulator option')
         return None, payload
     marker = image.read(allocation['va'] + code.MARK_OFFSET, MARK.size)
     setting = _Setting.from_marker(marker)
-    restored = _transform(payload, _edits(payload, allocation, setting), restoring=True)
+    if setting.revision == REVISION:
+        at = allocation['va'] + code.LABELS['stab_reference']
+        setting = replace(setting, reference=_reference32(struct.unpack('<13f', image.read(at, 52))))
+    # An option installed before the scoring slice has retail scoring sites; apply() upgrades it in place.
+    kicking, installed = scoring.installed(payload)
+    _require(kicking in ('applied', 'retail'), 'Foreign or mixed simulated kicking bytes')
+    restored = _transform(payload, _edits(payload, allocation, setting,
+                                          kicking=installed if kicking == 'applied' else False), restoring=True)
     _validate_simulation(restored)
     return setting, restored
 
@@ -226,18 +324,25 @@ def status(payload):
     return read_settings(payload)['status']
 
 
-def apply(payload, level='realistic', *, custom_rate=0.310):
+def apply(payload, level='realistic', *, custom_rate=0.310, breakaway_stop=None, reference=None):
     """Install, retune or restore on an existing standard executable without moving installed owners.
 
-    A slice 1 or slice 2 install is reversed exactly and the current revision written fresh, even at the same mode
-    and rate.
+    A slice 1, 2 or 3 install is reversed exactly and the current revision written fresh, even at the same mode and
+    rate. ``reference`` is the thirteen stability references for the disc's roster (``roster_stability``); None keeps
+    the references a revision 4 install already holds, or writes the frozen calibrated ones.
     """
+    from . import nfl2k5_sim_qb_injuries_code as code
     wanted = _setting(level, custom_rate)
+    kick = scoring.parameters(breakaway_stop_beyond=breakaway_stop)   # validated; None = the shipped default
     source = bytes(payload)
     XbeImage(source)
     original, physical = _state(source)
+    if wanted is not None:
+        kept = original.reference if original is not None and original.revision == REVISION else None
+        wanted = replace(wanted, reference=_reference32(
+            reference if reference is not None else kept if kept is not None else code.STABILITY_REFERENCE))
     receipt = {'owner':OWNER, 'mode':level, 'custom_rate':wanted.rate / 1000 if wanted else None}
-    if original == wanted:
+    if original == wanted and (wanted is None or scoring.installed(source) == ('applied', kick)):
         return source, {**receipt, 'status':'already_applied' if wanted else 'retail', 'changed_bytes':0}
     if wanted is None:
         result = physical
@@ -247,11 +352,14 @@ def apply(payload, level='realistic', *, custom_rate=0.310):
         if bank is None:
             physical, receipt['allocation'] = space.extend_scaleout(physical, REQUESTS)
             bank = _bank_allocation(physical)
-        result = _transform(physical, _edits(physical, bank, wanted), restoring=False)
+        result = _transform(physical, _edits(physical, bank, wanted, kicking=kick), restoring=False)
+        receipt['breakaway_stop'] = kick['breakaway_stop_beyond']
         receipt['revision'] = wanted.revision
         if original is not None and original.revision != wanted.revision:
             receipt['upgraded_from'] = f'slice{original.revision}'
     confirmed, restored = _state(result)
     _require(confirmed == wanted and restored == physical, 'Simulated QB injury settings failed readback')
+    _require(scoring.installed(result) == (('applied', kick) if wanted else ('retail', None)),
+             'Simulated kicking failed readback')
     return result, {**receipt, 'status':'applied' if wanted else 'retail', 'changed_bytes':space.count_differing_bytes(source,result),
                     'file_growth':len(result) - len(source)}

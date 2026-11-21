@@ -84,6 +84,7 @@ FEATURE_KEYS += ("star_career",)  # b778-st2: rookie stars and stars earned/lost
 FEATURE_KEYS += ("rookie_faces",)  # b778-rh1: new draft headshots matched to skin tone, build and name (image only)
 FEATURE_KEYS += ("alien_prospect",)  # b778-ee1: the once-in-a-century gray alien prospect (needs rookie faces)
 FEATURE_KEYS += ("backfield_cards",)
+FEATURE_KEYS += ("gadget_play",)  # beta 81 Q62: the SPECIAL GAD player on gadget plays
 FEATURE_KEYS += ("sportscenter_lineup",)  # b778-sc2: featured-player identity lookup, no allocation
 FEATURE_KEYS += ("franchise_draft_clock",)  # b778-dr1: broadcast-paced franchise draft, late executable owner
 FEATURE_KEYS += ("weekly_progression",)  # b778-pg1: franchise weekly progression, late executable owner
@@ -100,6 +101,7 @@ FEATURE_KEYS += ("sim_cb_tackles",)  # b778-cb1: cornerback tackle credit, late 
 FEATURE_KEYS += ("sim_rb_injuries",)  # b779-sim2: weekly RB injury roll and simulated-game carry guard
 FEATURE_KEYS += ("sim_realism",)  # b779-sim2 r4: scheduled-sim season realism, late executable owner
 FEATURE_KEYS += ("sim_qb_injuries", "sim_qb_injury_rate")
+FEATURE_KEYS += ("sim_breakaway_stop",)  # b81 scoring: the simulated breakaway stop, yards to goal (default 72)
 FEATURE_KEYS += ("qb_room",)  # b81 qb34: None follows sim_qb_injuries (DESIGN_CHANGES C1)
 FEATURE_KEYS += ("coach_carousel",)  # b780-c6: the coaching carousel, late executable owner + roster pool
 FEATURE_KEYS += ("standings_records",)  # b780-j1: Team Standings division / conference / home / road records, late executable owner
@@ -150,6 +152,9 @@ def validate_sim_qb_injuries(mode, rate):
             raise ValueError("Use increments of 0.001 percentage points for the custom quarterback injury chance.")
 
 
+def validate_sim_breakaway_stop(value):
+    if type(value) is not int or not 20 <= value <= 99:
+        raise ValueError("The simulated breakaway stop is a whole number of yards to goal from 20 to 99.")
 QB_ROOM_LEVELS = (None, "retail", "realistic")
 
 
@@ -191,6 +196,7 @@ def build_settings(value):
     if choices["sim_qb_injuries"] != "custom":
         choices["sim_qb_injury_rate"] = expected["sim_qb_injury_rate"]
     validate_sim_qb_injuries(choices["sim_qb_injuries"], choices["sim_qb_injury_rate"])
+    validate_sim_breakaway_stop(choices["sim_breakaway_stop"])
     validate_qb_room(choices["qb_room"])
     tt._require(choices["helmet_finish"] in ("glossy", "matte"), "Helmet finish must be glossy or matte")
     from . import nfl2k5_modern_color as colour
