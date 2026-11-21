@@ -920,15 +920,18 @@ SECTION(".roster_o") unsigned club_level(u8 *team, unsigned pos, float him, unsi
  * b81 practice squads (revision 8, REMAINING R60; Noah 11/20: "this franchise mode's got to be like the most realistic
  * NFL simulator"; real clubs keep a full practice squad every season). In every recorded ten-season franchise no player
  * ever joined a practice squad: beta 76.5 retired the automatic demotion at final cuts and nothing else adds a reserve,
- * so the 128 shipped reserves only retired away (128 in 2026, 9 by 2035). At the preseason -> regular season gate
- * (0x2BFAA0, for every club the CPU runs) the cut-down call at 0x2BFAD4 comes here: the same cut, then the club's squad
- * is topped up to SQUAD from the free-agent list. A 12-slot position mix (squad_mix, in priority order, no quarterback:
- * coordinator 11/20, the emergency and backup quarterback signings draw from the free agents); each current reserve
- * fills the first open slot of his position; each open slot takes one healthy free agent at that position with at most
- * two accrued seasons (years pro 3 or less, a rookie being 1), chosen by a hash of his record and the club's record
- * (squad_best): no club is favoured by its place in the gate's order and the squads do not take the best
- * young free agents first (review 11/20: picking the best-rated in club order gave clubs 0-7 squads 8.6 overall better
- * than clubs 24-31). A club a person manages is never touched, whatever the auto sign and cut setting.
+ * so the 128 shipped reserves only retired away (128 in 2026, 9 by 2035). The stage-7 action's call of the preseason ->
+ * regular season gate (0x2485DB) comes here (economy_squad_gate): the gate runs as before (every club the CPU runs cut to
+ * the in-season limit), then every club no person manages tops its squad up to SQUAD from the free-agent list, in
+ * rounds: one signing per club for each slot of a 12-slot position mix (squad_mix; no quarterback, coordinator 11/20:
+ * the emergency and backup quarterback signings draw from the free agents), the clubs in an order whose start turns with
+ * the slot and the season, so a scarce position runs out on a different club each time; a second round over the mix for
+ * clubs still short; a third that also takes a K, P or FB. Each signing takes one healthy free agent at the slot's
+ * position with at most two accrued seasons (years pro 3 or less, a rookie being 1), chosen by a hash of his record and
+ * the club's record (squad_best), not the best-rated: review 11/20, signing the best-rated in club-index order gave clubs
+ * 0-7 squads 8.6 overall better than clubs 24-31, and a hash pick in club-index order still sent clubs 24-31 to the
+ * kickers and punters once the young receivers ran out. A club a person manages is never touched, whatever the auto
+ * sign and cut setting.
  * The signing is the native one without its random contract and jersey draws: off the free-agent list (0x2425C0), onto
  * the active list (0xC3EE0, the squad's append), then the squad's own demotion ps_demote (its limit, single ownership,
  * record flags), then a one-year minimum deal (no cap charge while on the squad). No game RNG, no transaction row.
@@ -945,11 +948,13 @@ extern unsigned FAST n_append(u8 *team, u8 *p);                   /* 0xC3EE0 */
 extern unsigned FAST n_remove(u8 *team, u8 *p);                   /* 0xC3EB0 */
 extern void n_ir_return(void);                                    /* 0x246F90 the rollover's return from injured reserve */
 /* WR, CB, T, DE, HB, LB (OLB or ILB), C or G, DT, TE, S (FS or SS), WR, any lineman (C, G or T): position masks by the
- * +0x35 codes. No quarterback (coordinator 11/20). */
-SECTION(".roster_q_rodata") __attribute__((aligned(4))) const u32 squad_mix[SQUAD] = {
-    1u << 3, 1u << 4, 1u << 14, 1u << 16, 1u << 7, 3u << 10, 3u << 12, 1u << 15, 1u << 9, 3u << 5, 1u << 3, 7u << 12};
-/* The second round (a club still short when the mix's slots found nobody) also takes a K, P or FB. */
-#define SQUAD_EXTRA ((1u << 1) | (1u << 2) | (1u << 8))
+ * +0x35 codes; no quarterback (coordinator 11/20). Three rounds written out: the mix, the mix again for clubs still
+ * short, and the mix with a K, P or FB (bits 1, 2, 8) for clubs short after two. */
+#define SQUAD_MIX 1u << 3, 1u << 4, 1u << 14, 1u << 16, 1u << 7, 3u << 10, 3u << 12, 1u << 15, 1u << 9, 3u << 5, 1u << 3, 7u << 12
+#define SQUAD_MIX_KP (1u << 3) | 0x106, (1u << 4) | 0x106, (1u << 14) | 0x106, (1u << 16) | 0x106, (1u << 7) | 0x106, \
+    (3u << 10) | 0x106, (3u << 12) | 0x106, (1u << 15) | 0x106, (1u << 9) | 0x106, (3u << 5) | 0x106, (1u << 3) | 0x106, \
+    (7u << 12) | 0x106
+SECTION(".roster_q_rodata") __attribute__((aligned(4))) const u32 squad_mix[3 * SQUAD] = {SQUAD_MIX, SQUAD_MIX, SQUAD_MIX_KP};
 
 /* The eligible free agent at a position in `mask` with the lowest hash of (his record offset, the club's record offset):
  * a pseudo-random pick fixed by the league state (record offsets, not memory addresses, so a reloaded save picks the
@@ -966,15 +971,6 @@ SECTION(".roster_p") __attribute__((noinline)) static u8 *FAST squad_best(u8 *te
         if (h <= low) { low = h; best = p; }
     }
     return best;
-}
-
-/* The mix slots the club's current reserves (the 65 physical slots after its active players) already fill. */
-SECTION(".roster_q") __attribute__((noinline)) static u32 FAST squad_used(u8 *team) {
-    u32 used = 0, i, j, a = 0;
-    for (i = team[0x11c]; i < 65u && a < team[0x1f2]; ++i, ++a)
-        for (j = 0; j < SQUAD; ++j)
-            if (!(used >> j & 1) && squad_mix[j] >> ((u8 **)team)[i][0x35] & 1) { used |= 1u << j; break; }
-    return used;
 }
 
 /* Sign one free agent for one slot to the squad: 1 = go on (signed, or nobody fits), 0 = stop (refused; the
@@ -1032,14 +1028,17 @@ SECTION(".roster_s") void FAST economy_squad_expire(void) {
     n_ir_return();
 }
 
-/* 0x2BFAD4 in the gate 0x2BFAA0 (ECX = team, EDX = the in-season limit): was call 0x2BF9A0. The first round fills the
- * mix's open slots; a slot with no eligible free agent left (the clubs before it took them) leaves the squad short, so
- * a second round goes over the mix again, each slot also taking a K, P or FB, until the squad is full or nobody fits. */
-SECTION(".roster_t") void FAST economy_squad(u8 *team, unsigned target) {
-    n_cut_to(team, target);
-    if (!squad_ok(team)) return;
-    u32 used = squad_used(team);
-    for (u32 j = 0; j < 2 * SQUAD && team[0x1f2] < SQUAD; ++j)
-        if (!(j < SQUAD && used >> j & 1) &&
-                !squad_sign(team, j < SQUAD ? squad_mix[j] : squad_mix[j - SQUAD] | SQUAD_EXTRA)) return;
+/* 0x2485DB in the stage-7 action (no register arguments): was call 0x2BFAA0, the gate. Round r, slot j: the 32 clubs in
+ * turn from (7 x season + 11 x (12 r + j)) modulo 32 (the league's 32 clubs, as the gate's own loop); a club full, refused
+ * or managed by a person is passed over. */
+extern void n_gate(void);                                         /* 0x2BFAA0 */
+SECTION(".roster_t") void FAST economy_squad_gate(void) {
+    n_gate();
+    u32 turn = *(u32 *)0xE576B8 * 7;
+    for (u32 j = 0; j < 3 * SQUAD; ++j, turn += 11)
+        for (u32 k = 0; k < 32; ++k) {
+            u8 *team = n_team((turn + k) & 31);
+            if (team[0x1f2] < SQUAD && squad_ok(team))
+                squad_sign(team, squad_mix[j]);
+        }
 }

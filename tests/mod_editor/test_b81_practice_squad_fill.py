@@ -3,7 +3,8 @@
 Finding (practice-squad lane, kept saves of 10 ten-season roots): no player ever joined a practice squad in any recorded
 franchise, because beta 76.5 retired the automatic demotion at final cuts and nothing else adds a reserve, so the 128
 shipped reserves retired away (9 left by 2035). Revision 8: the season gate's cut-down call for each club the CPU runs
-(0x2BFAD4) goes to economy_squad, which cuts as before and then signs young free agents to the squad up to 12.
+(0x2485DB, its stage-7 action call) goes to economy_squad_gate, which runs the gate and then signs young free agents to
+every squad of a club no person manages, up to 12.
 
 The site tests need the private retail executable. The native tests run the real gate on the kept 2027 preseason image
 of the qb34 lane (stage 7 week 2, a 4,096-record capacity arena, 1,023 free agents) with its executable, the economy's
@@ -64,10 +65,10 @@ class SiteTests(unittest.TestCase):
     def test_revision_eight_calls_the_squad_fill_from_the_gate(self):
         from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
         self.assertEqual((economy.REVISION, self.receipt["revision"], economy.status(self.after)), (8, 8, "applied"))
-        self.assertEqual(XbeImage(self.retail).read(economy.SQUAD_GATE, 5), bytes.fromhex("e8c7feffff"))   # call 0x2BF9A0
+        self.assertEqual(XbeImage(self.retail).read(economy.SQUAD_GATE, 5), bytes.fromhex("e8c0740700"))   # call 0x2BFAA0
         gate = next(s.patched for s in economy.sites() if s.va == economy.SQUAD_GATE)
-        self.assertEqual(gate, b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad"] - economy.SQUAD_GATE - 5))
-        self.assertEqual((SYMBOLS["economy_squad"], SYMBOLS["economy_squad_expire"]), (0x3E9CD0, 0x3E9A90))   # each starts its window
+        self.assertEqual(gate, b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_gate"] - economy.SQUAD_GATE - 5))
+        self.assertEqual((SYMBOLS["economy_squad_gate"], SYMBOLS["economy_squad_expire"]), (0x3E9CD0, 0x3E9A90))   # each starts its window
         self.assertEqual(XbeImage(self.retail).read(economy.SQUAD_EXPIRE, 5), bytes.fromhex("e812f4ffff"))  # call 0x246F90
         expire = next(s.patched for s in economy.sites() if s.va == economy.SQUAD_EXPIRE)
         self.assertEqual(expire, b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_expire"] - economy.SQUAD_EXPIRE - 5))
@@ -187,7 +188,10 @@ class KeptPreseasonImage(unittest.TestCase):
         return clubs, free
 
     def gate(self, m):
-        m.call(GATE, budget=4_000_000_000)
+        # the stage-7 action's call of the gate (0x2485DB) runs this: the native gate 0x2BFAA0, then the squad fill
+        # (on the code before revision 8 there is no such symbol and the plain gate runs, as the action calls it there)
+        from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
+        m.call(SYMBOLS.get("economy_squad_gate", GATE), budget=4_000_000_000)
         return self.state(m)
 
     def player(self, m, p):
@@ -234,6 +238,18 @@ class KeptPreseasonImage(unittest.TestCase):
         better_left = [p for p in added if any(eligible(q) and self.player(m, q)["pos"] == self.player(m, p)["pos"]
                                                and ovr(q) > ovr(p) for q in free_after)]
         self.assertGreater(len(better_left), len(added) // 4)
+
+    def test_the_order_turns_with_the_season(self):
+        # review 11/20 (no club favoured by its index): the clubs sign in turn from 7 x season + 11 x slot, so the same
+        # league state signed in another season gives the clubs other players (the image is the 2027 preseason)
+        squads = []
+        for season in (1, 2):
+            m = self.machine()
+            m.put(0xE576B8, season)
+            after, _ = self.gate(m)
+            squads.append([tuple(club["squad"]) for club in after])
+        self.assertGreater(sum(a != b for a, b in zip(*squads)), 20)
+        self.assertEqual(sorted(p for s in squads[0] for p in s) == sorted(p for s in squads[1] for p in s), False)
 
     def test_nobody_is_held_twice(self):
         m = self.machine()
@@ -288,7 +304,7 @@ class KeptPreseasonImage(unittest.TestCase):
         m.put(team + 4 * (53 + 11), 0)
         m.uc.mem_write(team + 0x1F2, bytes((11,)))                                     # 11 counted, one of them null
         m.put(team + 4 * (53 + 10), 0)
-        m.call(SYMBOLS["economy_squad"], ecx=team, edx=53, budget=400_000_000)
+        m.call(SYMBOLS["economy_squad_gate"], budget=4_000_000_000)          # club 0 is skipped, every other is full
         self.assertEqual(m.uc.mem_read(team + 0x1F2, 1)[0], 11)
         corrupt, free = self.state(m)
         m.leaf(0x246F90, lambda: m.ret(), reason="the injured-reserve return the expiry hands on to is not under test")

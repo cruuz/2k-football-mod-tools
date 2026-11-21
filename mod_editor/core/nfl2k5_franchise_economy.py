@@ -295,22 +295,23 @@ REVISION_7_SITES = REVISION_7_NEW | frozenset(PREVIOUS_REVISION_6)
 CUT_MAXIMUM = {0: 3, 8: 2}
 # b81 practice squads (revision 8, REMAINING R60). In every recorded ten-season franchise (2 organic dynasties and the 8
 # qb34 P5 roots, 65 season transitions) no player ever joined a practice squad: beta 76.5 retired the automatic demotion
-# at final cuts and nothing else adds a reserve, so the shipped 128 reserves only retired away (9 left by 2035). At the
-# preseason -> regular season gate 0x2BFAA0 the cut-down call for each club the CPU runs (0x2BFAD4, retail call
-# 0x2BF9A0) goes to economy_squad (tools/franchise_economy/runtime.c): the same cut to the in-season limit, then the
-# club's practice squad is topped up to 12 from the free-agent list (a 12-slot position mix; the best-rated healthy free
-# agent with years pro <= 3 for each open slot; the native free-agent removal, the squad's append and its own ps_demote;
-# a one-year minimum deal; no RNG, no transaction row). Code: four more unreferenced retail functions (dead_code.py
-# WINDOWS roster_p..roster_s). A revision-7 image (released v0.9, every beta 81 disc so far) reads "legacy" and
-# upgrades in place.
-SQUAD_GATE = 0x2BFAD4               # call 0x2BF9A0 (the cut-down) for one CPU club in the season gate 0x2BFAA0
-PINS[SQUAD_GATE] = "f1106c9f72d7eded9194e0d377cf90793ac1df739bf9a464991b3517791f2b90"
+# at final cuts and nothing else adds a reserve, so the shipped 128 reserves only retired away (9 left by 2035). The
+# stage-7 action's call of the preseason -> regular season gate (0x2485DB, retail call 0x2BFAA0) goes to
+# economy_squad_gate (tools/franchise_economy/runtime.c): the gate runs as before, then every club no person manages tops
+# its practice squad up to 12 from the free-agent list, round by round over a 12-slot position mix without a QB, the
+# clubs in an order that turns with the slot and the season (review 11/20: no club favoured by its index), each slot a
+# hash-chosen healthy free agent with years pro <= 3 (not the best-rated); the native free-agent removal, the squad's
+# append and its own ps_demote; a one-year minimum deal; no RNG, no transaction row. Code: six more unreferenced retail
+# functions (dead_code.py WINDOWS roster_p..roster_u). A revision-7 image (released v0.9, every beta 81 disc so far) reads
+# "legacy" and upgrades in place.
+SQUAD_GATE = 0x2485DB               # call 0x2BFAA0 (the gate) in the stage-7 (preseason -> regular season) action
+PINS[SQUAD_GATE] = "78632f5d3abc99accd8e763ed07a58e1745ae25aa8ddc321b620750730bafd9f"
 SQUAD_WINDOWS = {                   # retail sha256 of each window's bytes (dead_code.py WINDOWS)
-    0x38D3E0: "56f4e445ce5f93581e0676bc3308fd7c203a05e8fddee8c76ee6a0120522daeb",   # roster_p: the best young free agent
-    0x1C62E0: "b062e461131d35405759a1b89f6b58e0c8390f8532a73526113350ebb480c992",   # roster_q: the mix slots in use
+    0x38D3E0: "56f4e445ce5f93581e0676bc3308fd7c203a05e8fddee8c76ee6a0120522daeb",   # roster_p: the hash pick of a young free agent
+    0x1C62E0: "b062e461131d35405759a1b89f6b58e0c8390f8532a73526113350ebb480c992",   # roster_q: the three rounds' position mix
     0x343040: "cdf33bb1c95a330336a8dc9b1f8b1f324fa382da4bab96c5b20e06692cb86acc",   # roster_r: one squad signing
     0x3E9A90: "04343c196ca45460668f254456e50e0e97f8950c728aa6c52384a47339c1cb4f",   # roster_s: economy_squad_expire (the rollover call)
-    0x3E9CD0: "5d5df93f0747d8134d1c4c2502c4350caea4f033b513626ad5d08f2325f90a84",   # roster_t: economy_squad (the gate call)
+    0x3E9CD0: "5d5df93f0747d8134d1c4c2502c4350caea4f033b513626ad5d08f2325f90a84",   # roster_t: economy_squad_gate (the gate call)
     0x3220B0: "91cf637d17206732620e7706abdb4f7fab2b0b4269de74921a0f05ae3eacde72",   # roster_u: the squad storage test
 }
 for _va, _digest in SQUAD_WINDOWS.items():
@@ -383,7 +384,7 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
     if revision >= 7:
         replacements[DRAFT_NEED_MINIMUM] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_draft_min"] - DRAFT_NEED_MINIMUM - 5)
     if revision >= 8:
-        replacements[SQUAD_GATE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad"] - SQUAD_GATE - 5)
+        replacements[SQUAD_GATE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_gate"] - SQUAD_GATE - 5)
         replacements[SQUAD_EXPIRE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_expire"] - SQUAD_EXPIRE - 5)
     return tuple(Site(a, b, PINS[a]) for a, b in sorted(replacements.items()))
 
