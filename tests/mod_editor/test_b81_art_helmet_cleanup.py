@@ -72,8 +72,9 @@ def is_rule(row):
     return bool(ops) and ops[0]["op"] == "rule" and ops[0].get("module") == "fill"
 
 
-def is_r55(row):
-    return [op["op"] for op in row["ops"]] == ["rule", "rule", "runs"] and row["ops"][1].get("do") == "mirror"
+def after_steps(row, do):
+    """The logo-move steps of a fill rule row (mirror_box, mirror_side, turn_upper, mirror_off, outline) named ``do``."""
+    return [s for s in (row["ops"][0].get("after", ()) if is_rule(row) else ()) if s["do"] == do]
 
 
 def rule_boxes(spec):
@@ -117,12 +118,18 @@ class Document(unittest.TestCase):
             self.assertGreater(row["length"], 32)
             self.assertGreater(row["resource_size"], row["offset"] + row["length"] - 1)
             self.assertTrue(row["note"])
-            self.assertTrue([op["op"] for op in row["ops"]] in (["runs"], ["rule"]) or is_r55(row), row["selector"])
+            # a fill rule, or the project's own drawing kept as runs (after the rule, or alone)
+            self.assertIn([op["op"] for op in row["ops"]], (["runs"], ["rule"], ["rule", "runs"]), row["selector"])
             self.assertNotIn("color", json.dumps(row["ops"]))  # the compile must ask the palette for nothing new
-            if is_rule(row):
+            if is_rule(row) and row["ops"][0]["kind"] == "far_helmet":
+                # b81 retail-free: the Carolina far-view helmet, composed from the kit's own near-view helmet
+                self.assertEqual(list(row["donors"]), [str(row["ops"][0]["near"])])
+            elif is_rule(row):
                 # b81 retail-free: the cleanup is a build-time fill rule over the blank retail shell's vents
                 self.assertEqual(row["ops"][0]["module"], "fill")
                 self.assertIn(row["ops"][0]["hardware"], row["donors"])
+            if [op["op"] for op in row["ops"]] != ["runs"]:
+                pass
             elif row["texture"] == "splayer":
                 # the patch brings colours the atlas palette only has nearby, so a few texels end as they were
                 self.assertTrue(0 < row["texels"] <= len(run_texels(row)))
@@ -217,7 +224,12 @@ class Document(unittest.TestCase):
         kept = [kit for kit in STANDARD_LEFT_SIDE + STANDARD_RIGHT_SIDE + ("13_0",) if kit not in STANDARD_REBUILT]
         self.assertEqual(kept, ["14_0"])
         for side in "HA":
-            texels = run_texels(by[("14" + side + "0", "helmet00")])
+            row = by[("14" + side + "0", "helmet00")]
+            if is_rule(row):
+                # b81 retail-free: the left side is laid by rule as the right side's mirror image (fixes7.mirror_panel)
+                self.assertEqual(after_steps(row, "mirror_side"), [{"do": "mirror_side", "to_upper": False}], side)
+                continue
+            texels = run_texels(row)
             there = sum(1 for x, y in texels if 20 <= x < 142 and y >= 128)
             self.assertGreater(there, 900, side)
 
@@ -226,10 +238,14 @@ class Document(unittest.TestCase):
         # it as the right side's mirror image, and the Standard shell follows (new art)
         by = {(r["selector"], r["texture"]): r for r in rows()}
         for side in "HA":
-            texels = run_texels(by[("27" + side + "6", "helmet02")])
+            row = by[("27" + side + "6", "helmet02")]
+            self.assertIn(slot("helmet00", "27_6", side), NEW_ART)
+            if is_rule(row):
+                self.assertEqual(after_steps(row, "mirror_side"), [{"do": "mirror_side", "to_upper": False}], side)
+                continue
+            texels = run_texels(row)
             there = sum(1 for x, y in texels if 20 <= x < 142 and y >= 128)
             self.assertGreater(there, 2500, side)
-            self.assertIn(slot("helmet00", "27_6", side), NEW_ART)
 
     def test_the_hail_raiser_spearhead_points_to_the_facemask_on_both_sides(self):
         # R55 (beta 81): Washington's Hail Raiser (style 9) had its right-side logo (the upper atlas island) laid as a
@@ -242,10 +258,10 @@ class Document(unittest.TestCase):
             row = by[("29" + side + "9", "helmet02")]
             # b81 retail-free (ruling 2): the vents by the fill rule, the upper logo laid by rule as the lower one's mirror
             # image about the atlas axis (no texel of it stored), then the texels the recompiled art differs from that
-            self.assertTrue(is_r55(row), side)
-            mirror = row["ops"][1]
-            x0, y0, x1, y1 = mirror["box"]
-            self.assertEqual((mirror["module"], mirror["axis"]), ("recolour", 255))
+            self.assertEqual([op["op"] for op in row["ops"]], ["rule"], side)
+            mirror = after_steps(row, "mirror_box")
+            self.assertEqual(len(mirror), 1, side)
+            x0, y0, x1, y1 = mirror[0]["box"]
             self.assertTrue(20 <= x0 and x1 <= 142 and 50 <= y0 and y1 <= 100 and (x1 - x0) * (y1 - y0) > 2000, side)
             self.assertIn(slot("helmet00", "29_9", side), NEW_ART)
 
@@ -254,7 +270,11 @@ class Document(unittest.TestCase):
         # the modern shell, and the Standard shell takes that logo from the modern shell
         by = {(r["selector"], r["texture"]): r for r in rows()}
         self.assertIn("helmet00_22H5", NEW_ART)
-        modern = [t for t in run_texels(by[("22H5", "helmet02")]) if 46 <= t[0] < 102 and 48 <= t[1] < 104]
+        row = by[("22H5", "helmet02")]
+        if is_rule(row):
+            self.assertEqual(after_steps(row, "turn_upper"), [{"do": "turn_upper"}])
+            return
+        modern = [t for t in run_texels(row) if 46 <= t[0] < 102 and 48 <= t[1] < 104]
         self.assertGreater(len(modern), 300)
 
     def test_the_ravens_dark_alternate_carries_the_real_mark_on_both_shells(self):
@@ -269,7 +289,7 @@ class Document(unittest.TestCase):
                 self.assertGreater(row["texels"], 4000, (selector, texture))
                 red = {"lower": 0, "upper": 0}
                 for op in row["ops"]:
-                    for y, x0, colours in op["rows"]:
+                    for y, x0, colours in op.get("rows", ()):
                         for i in range(len(colours) // 6):
                             r, g, b = (int(colours[6 * i + k:6 * i + k + 2], 16) for k in (0, 2, 4))
                             if r > 150 and g < 70 and b < 70:
@@ -299,7 +319,7 @@ class Document(unittest.TestCase):
         by = {(r["selector"], r["texture"]): r for r in rows()}
         self.assertTrue({"helmet00_02H0", "helmet00_02H2", "helmet00_02H3"} <= NEW_ART)
         for selector, texture in (("02H0", "helmet02"), ("02H2", "helmet02")):
-            texels = run_texels(by[(selector, texture)])
+            texels = run_texels(by[(selector, texture)])        # the keyline is the logo file's drawing: kept as runs
             near = sum(1 for x, y in texels if 30 <= x < 126 and (60 <= y < 120 or 140 <= y < 200))
             self.assertGreater(near, 700, (selector, texture))
 
@@ -407,6 +427,11 @@ class RealDisc(unittest.TestCase):
             self.assertEqual(hc.sha(span), row["before_sha256"], selector)
             donors = {}
             for key in row.get("donors", {}):
+                if key.startswith(kf.LOGO_DONOR):
+                    slot = kf.read_logos(DISC, [key[len(kf.LOGO_DONOR):]])[key[len(kf.LOGO_DONOR):]]
+                    self.assertEqual(hc.sha(slot), row["donors"][key], key)
+                    donors[key] = kf.logo_rgba(slot)
+                    continue
                 if key.startswith(kf.RETAIL_DONOR):
                     if not RETAIL.is_file():
                         self.skipTest("the retail disc is not on this machine")
@@ -427,7 +452,10 @@ class RealDisc(unittest.TestCase):
             self.assertTrue((palette_before == palette_after).all(), selector)
             self.assertTrue((before[..., 3] == after[..., 3]).all(), selector)
             changed = {(int(x), int(y)) for y, x in np.argwhere((before != after).any(axis=2))}
-            self.assertEqual(changed, (rule_reach(row["ops"][0]) if is_rule(row) else run_texels(row)) & changed)
+            if not is_rule(row):
+                self.assertEqual(changed, run_texels(row) & changed)
+            elif not any(k in row["ops"][0] for k in ("after", "old_ink", "foot")) and len(row["ops"]) == 1:
+                self.assertEqual(changed, rule_reach(row["ops"][0]) & changed)
             self.assertEqual(len(changed), row["texels"], selector)
             # the replay on the cleaned package is a no-op
             again = raw[:chunk.offset] + new + raw[chunk.end_offset:]

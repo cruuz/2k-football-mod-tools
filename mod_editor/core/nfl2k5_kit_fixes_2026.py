@@ -102,6 +102,7 @@ ADD_COLOUR_DISTANCE = 48       # squared RGB distance above which a scope colour
 ALPHA_DRIFT = 2                # helmet reflection alpha may move this far inside the art (as the uni helmet job)
 MERGE_LEVELS = 1               # near-identical palette twins may be folded together (protected texels move <= 1 level)
 RETAIL_DONOR = "retail:"        # b81 retail-free: a donor texture read from the user's retail disc ("retail:SEL:chunk")
+LOGO_DONOR = "logo:"            # b81 retail-free: a 2026 team logo as the image holds it (logos.cdf slot "logo:logo_08_0")
 
 
 def require(ok, message):
@@ -1484,7 +1485,7 @@ def known_pairs(row) -> dict:
     return pairs
 
 
-def compile_resource(selector, raw, *, strict=True, document=None, kits=None, retail_kits=None):
+def compile_resource(selector, raw, *, strict=True, document=None, kits=None, retail_kits=None, logos=None):
     """Compile every pinned texture of one kit package; refuses partial or unknown inputs when strict. ``kits`` maps
     a donor kit selector to its package bytes (the uf3 ``name`` rows); ``retail_kits`` maps a selector to its package
     bytes on the user's retail disc (``retail:SELECTOR:chunk`` donors of the fill rules)."""
@@ -1556,6 +1557,16 @@ def compile_resource(selector, raw, *, strict=True, document=None, kits=None, re
         else:
             donors, missing = {}, False
             for index, pin in sorted((row.get("donors") or {}).items()):
+                if str(index).startswith(LOGO_DONOR):
+                    # b81 retail-free (fill rules): the league project's 2026 team logo as the image holds it (the
+                    # project step writes it into logos.cdf before this pass); the helmet cleanup reads its footprint
+                    slot = (logos or {}).get(str(index)[len(LOGO_DONOR):])
+                    if slot is None or sha(slot) != pin:
+                        require(not strict, selector + ": logo donor absent or not its pin")
+                        missing = True
+                        break
+                    donors[str(index)] = logo_rgba(slot)
+                    continue
                 if str(index).startswith(RETAIL_DONOR):
                     # b81 retail-free (fill rules): a texture of the user's own retail disc ("retail:SELECTOR:chunk"),
                     # e.g. the blank retail shell whose painted vents the helmet cleanup removes
@@ -1604,8 +1615,37 @@ def donor_kits(document):
     """Kit packages read as donors (uf3): nameplate rows' ``donor_selector`` and cross-kit stamp sources."""
     out = {r["donor_selector"] for r in document["textures"] if r.get("donor_selector")}
     out |= {str(k).split(":")[0] for r in document["textures"] for k in (r.get("donors") or {})
-            if ":" in str(k) and not str(k).startswith(RETAIL_DONOR)}
+            if ":" in str(k) and not str(k).startswith((RETAIL_DONOR, LOGO_DONOR))}
     return sorted(out)
+
+
+def logo_donor_names(document):
+    """The logos.cdf slots read as donors (``logo:NAME`` donors of the fill rules)."""
+    return sorted({str(k)[len(LOGO_DONOR):] for r in document["textures"] for k in (r.get("donors") or {})
+                   if str(k).startswith(LOGO_DONOR)})
+
+
+def read_logos(path, names):
+    """{name: slot bytes} of the named logos.cdf members of a disc image (read only); absent ones are left out."""
+    out = {}
+    if not names:
+        return out
+    from tools.nfl2k5_playbook_position_recode import OuterImage
+    from . import nfl2k5_menu_helmet_w2026 as menu
+    with OuterImage(Path(path), writable=False) as archive:
+        for name in names:
+            try:
+                out[name] = menu.locate(archive, "logos", name)[1]
+            except (KeyError, ValueError):
+                continue
+    return out
+
+
+def logo_rgba(slot):
+    """RGBA of a logos.cdf slot (single-level P8, 256 x 256)."""
+    from . import nfl2k5_menu_helmet_w2026 as menu
+    indices, palette, _base = menu.read_slot(slot)
+    return palette[indices].astype(np.uint8)
 
 
 def retail_donor_kits(document):
@@ -1650,6 +1690,14 @@ def apply_to_image(path, *, strict=False, document=None, retail=None):
             raise
         return dict(state="other_image", written_spans=0, written_bytes=0, changed_bytes=0, kits=[])
     wanted = selectors(document)
+    logos = {}
+    if logo_donor_names(document):
+        try:
+            logos = read_logos(path, logo_donor_names(document))
+        except (OSError, ValueError, KeyError):
+            # an image without the league logo aggregate: the rows that read it keep their input (strict refuses)
+            if strict:
+                raise
     if not strict and not all(s + ".IFF" in names for s in wanted):
         return dict(state="other_uniform", written_spans=0, written_bytes=0, changed_bytes=0, kits=[])
     kits, written, written_bytes = [], 0, 0
@@ -1680,7 +1728,7 @@ def apply_to_image(path, *, strict=False, document=None, retail=None):
             raw = image.read_segments(index.sub_extents(entry, 0, entry.size))
             with build_steps.resource(selector + ".IFF"):
                 replacements, receipt = compile_resource(selector, raw, strict=strict, document=document, kits=donors,
-                                                         retail_kits=retail_kits)
+                                                         retail_kits=retail_kits, logos=logos)
             plans.append((entry, replacements, receipt))
         states = {p[2]["state"] for p in plans}
         if states == {"other_uniform"}:
