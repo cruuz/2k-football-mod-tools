@@ -2099,7 +2099,7 @@ class BuildPanel(QWidget):
                      "is treated like every other club in the games you simulate. Simulated games also get modern NFL "
                      "field goal accuracy by distance, CPU clubs try 50-yard field goals about as often as NFL teams, and a "
                      "catch-and-run breakaway that starts inside the offense's own 28 is tackled at the 10 instead of always "
-                     "scoring. Games you play are not changed. "
+                     "scoring. Injuries in games you play are not changed, nor is their kicking or scoring. "
                      "Realistic and Custom require 128 MB and Simulated season realism. "
                      "Realistic and Custom above 0 percent also add modern injured reserve, the franchise economy and "
                      "reserve save compatibility, so a club is never left without a quarterback.")  # b81 qb34: the floor
