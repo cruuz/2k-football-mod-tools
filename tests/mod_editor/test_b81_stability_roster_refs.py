@@ -298,6 +298,22 @@ class Routes(unittest.TestCase):
         self.assertEqual(update["result_sha256"], _sha(expected))
         self.assertEqual(update["stability_reference"]["reference"], list(reference))
         self.assertFalse((self.folder / "copy.iso").exists())
+        # The whole route: the copy gets those bytes, and the compaction still gets its own reference disc (the route's
+        # `reference` argument; a first version reused that name for the references and the real run failed there).
+        copy, compaction = self.folder / "copy.iso", []
+        retail_reference = self.folder / "retail-reference.iso"
+        def copied(src, dst, receipt, *_):
+            Path(dst).write_bytes(xbe)
+            receipt.setdefault("steps", [])
+        with seam, patch.object(mod_build, "_copy_private_build_source", side_effect=copied), \
+                patch.object(mod_build, "_compact_build_disc", side_effect=lambda *args: compaction.append(args)), \
+                patch.object(mod_build, "inspect", return_value={}), \
+                patch.object(mod_build, "_verify_finished_game_disc", return_value=None):
+            self.assertTrue(mod_build._edit_installed_sim_qb(plan, source, copy, xbe, {}, lambda *_: None,
+                                                             preflight=False, consume=False,
+                                                             reference=retail_reference))
+        self.assertEqual(copy.read_bytes(), expected)
+        self.assertEqual([args[:2] for args in compaction], [(copy, retail_reference)])
 
     def test_update_v09_measures_the_released_disc(self):
         disc = os.environ.get("NFL2K5_V09_XISO")

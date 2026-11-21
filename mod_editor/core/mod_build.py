@@ -2658,9 +2658,9 @@ def _apply_sim_qb_injuries(plan, target, receipt, progress, *, prepared=None):
     progress("Applying simulated quarterback injuries", 0, 0)
     original = _xbe_bytes(target)
     if prepared is None:
-        reference, stability = _sim_qb_stability(plan, module, target)
+        references, stability = _sim_qb_stability(plan, module, target)
         payload, patch = module.apply(original, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
-                                      breakaway_stop=plan.sim_breakaway_stop, reference=reference)
+                                      breakaway_stop=plan.sim_breakaway_stop, reference=references)
         if stability is not None:
             patch = {**patch, "stability_reference": stability}
     else:
@@ -2708,9 +2708,10 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     dependency = None
     if simulator_state == "legacy" and plan.sim_qb_injuries in ("realistic", "custom"):
         simulator_input, dependency = simulator.apply(original)
-    reference, stability = _sim_qb_stability(plan, module, source)   # the copy keeps this disc's roster
+    # The copy keeps this disc's roster. (`reference` here is the compaction's reference disc: do not reuse the name.)
+    references, stability = _sim_qb_stability(plan, module, source)
     patched, patch = module.apply(simulator_input, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
-                                  breakaway_stop=plan.sim_breakaway_stop, reference=reference)
+                                  breakaway_stop=plan.sim_breakaway_stop, reference=references)
     if stability is not None:
         patch = {**patch, "stability_reference": stability}
     # b81 scoring: an in-place copy gets the same kicking as a full build of a disc with the kicking fixes.
@@ -3050,9 +3051,9 @@ def _update_v09_disc(plan, progress, *, preflight, project):
             expected, _ = _core_module("nfl2k5_sim_realism").apply(expected)
         medical = _core_module("nfl2k5_sim_qb_injuries")
         # The released disc's own roster; _apply_sim_qb_injuries measures the same roster again on the copy.
-        reference, receipt["v09_stability_reference"] = _sim_qb_stability(plan, medical, source)
+        references, receipt["v09_stability_reference"] = _sim_qb_stability(plan, medical, source)
         expected, _ = medical.apply(expected, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
-                                    breakaway_stop=plan.sim_breakaway_stop, reference=reference)
+                                    breakaway_stop=plan.sim_breakaway_stop, reference=references)
         _verify_sim_qb_injuries(plan, medical, expected)
         receipt["v09_update"].append("sim_qb_injuries")
     expected, _ = _cpu_kick_aim_with_kicking(expected)  # b81 scoring: as a full build with the kicking fixes
