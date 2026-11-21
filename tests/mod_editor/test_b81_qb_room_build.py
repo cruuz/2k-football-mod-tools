@@ -531,7 +531,9 @@ class FloorRuleTests(unittest.TestCase):
         slice1, _ = qb.apply(source, "realistic")  # 9f435b38: slice 1 without the floor (an earlier private test disc)
         # b81 integration (scoring merged): the in-place edit also writes the CPU kick aim, as a full build would
         aimed, _ = aim.apply(slice1)
-        expected, _ = room.apply(ir.apply(aimed, "modern", standard_guard=True)[0], "realistic",
+        # b81 integration (practice squad merge): and upgrades the disc's revision 7 economy before the floor
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        expected, _ = room.apply(ir.apply(economy.apply(aimed)[0], "modern", standard_guard=True)[0], "realistic",
                                  stages=self.FLOOR | self.P3)
         for name, original in (("98dd7329", source), ("9f435b38", slice1)):
             with self.subTest(source=name):
@@ -540,6 +542,7 @@ class FloorRuleTests(unittest.TestCase):
                 self.assertEqual((update["level"], update["stages"]), ("realistic", self.FLOOR | self.P3))
                 self.assertEqual(update["result_sha256"], hashlib.sha256(expected).hexdigest())
                 self.assertIn("added modern injured reserve", update["added"][0])
+                self.assertIn("updated the franchise economy", update["added"][1])  # practice squad merge: revision 7 -> 8
                 self.assertIn(update["added"][0], receipt["user_notes"])
                 self.assertEqual(update["settings"]["stage_names"], room.stage_names(self.FLOOR | self.P3))
                 self.assertEqual(update["settings"]["stage_names"][-1:], ["floor"])
@@ -550,8 +553,11 @@ class FloorRuleTests(unittest.TestCase):
     def test_inspect_reports_a_build_with_injuries_but_no_floor(self):
         from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_qb_room as room
         from mod_editor.core import nfl2k5_sim_qb_injuries as qb
+        from mod_editor.core import nfl2k5_franchise_economy as economy
         slice1, _ = qb.apply(self._private(), "realistic")
-        floor, _ = room.apply(ir.apply(slice1, "modern", standard_guard=True)[0], "realistic", stages=self.FLOOR | 1)
+        # b81 integration (practice squad merge): the floor needs the current economy (revision 8) under it
+        floor, _ = room.apply(ir.apply(economy.apply(slice1)[0], "modern", standard_guard=True)[0], "realistic",
+                              stages=self.FLOOR | 1)
         with tempfile.TemporaryDirectory() as directory:
             for name, payload, expected in (("9f435b38", slice1, "missing"), ("floor", floor, "applied")):
                 with self.subTest(executable=name):
@@ -604,8 +610,10 @@ class InPlacePreflightTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_cpu_kick_aim as aim, nfl2k5_injured_reserve as ir
         slice1, _ = qb.apply(source, "realistic")
         slice1, _ = aim.apply(slice1)  # b81 integration (scoring merged): the edit writes the CPU kick aim too
-        # The helmet disc has the economy and the practice squad; the edit adds modern IR for the floor.
-        expected, _ = room.apply(ir.apply(slice1, "modern", standard_guard=True)[0], "realistic",
+        # The helmet disc has the economy and the practice squad; the edit adds modern IR for the floor and (practice
+        # squad merge) upgrades the disc's revision 7 economy to the current one first.
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        expected, _ = room.apply(ir.apply(economy.apply(slice1)[0], "modern", standard_guard=True)[0], "realistic",
                                  stages=room.realistic_stages())
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / "copy.iso"

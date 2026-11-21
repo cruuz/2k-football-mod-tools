@@ -285,6 +285,10 @@ class FloorOwnerTests(unittest.TestCase):
         cls.room, cls.code = room, room._code()
         cls.source = _private("NFL2K5_B81_REVIEWED_TEST_DISC", HELMET_XBE_SHA)
         cls.slice1, _ = qb.apply(cls.source, "realistic")
+        # b81 integration (practice squad merge): the helmet disc's economy is revision 7, which reads "legacy" since
+        # revision 8; the floor needs the current economy, so the fixture upgrades it in place as the Studio routes do.
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        cls.slice1, _ = economy.apply(cls.slice1)
 
     def _changed(self, payload, va, data):
         image, out = XbeImage(payload), bytearray(payload)
@@ -450,13 +454,17 @@ class PreviousRevisionTests(unittest.TestCase):
     # from its 5854e5144 rebuild only where its source (the injury option's executable) differs, plus the shared registry
     # and header fields; the room's page and sites are unchanged. The 5854e5144 values were D1D2 52f4d9fe, REVIEW_67
     # 1c68a15f, REVIEW_64 e6928baf, FLOOR ab292056 / 6e14638a, STAGE_3A 449e651e / e3270c1b.
-    D1D2_SHA = "cdb2fd96b7385b744c6389fcccb532f1edddddf7b8bc0233d93c6b389461957c"
-    REVIEW_67_SHA = "e0acccbd619deffff42f19db0c9d04e607d1fe7c7ba0a2b695a0f0f6947178ff"
-    REVIEW_64_SHA = "15a779c54c040f8b353e664e042e28187ce7fec03168b212412cedca0294ff9d"
-    FLOOR_SHA = "5087b8d3260e6c855ce0b8173429ffce4e31f74e15b124425a231e5246d68d1f"
-    FLOOR_EMPTY_SHA = "5a798bf10ffa901d854b65aeaca3815869139a7e337b7f2d50f0a5a1876cd300"
-    STAGE_3A_SHA = "cd746c09fe8db307fb317a8cf201c0d2e66b4ab6ee27a2baeb1c2ee3a1ae22a4"
-    STAGE_3A_EMPTY_SHA = "33b007d0191e8ddf0d25814c98cebf5b00d6aa592d77b494aac5ed21d22c3c37"
+    # Practice squad merge (economy revision 8): the fixture's economy is upgraded first, so re-pinned once more; each
+    # rebuild differs from its qb34-merge rebuild exactly where the economy upgrade changes its source (plus one header
+    # digest byte). The qb34-merge values were D1D2 cdb2fd96, REVIEW_67 e0acccbd, REVIEW_64 15a779c5, FLOOR 5087b8d3 /
+    # 5a798bf1, STAGE_3A cd746c09 / 33b007d0.
+    D1D2_SHA = "6ca8b301332870a8b6be445db84def9b7407e0dfa1826d3fde1b7bd303145593"
+    REVIEW_67_SHA = "bebed442a62a46f64a4073cc5000957e765b677ffb7cce70f378ced39c351786"
+    REVIEW_64_SHA = "2b7ce61c91bf8037b02f706691f4d6f164b5c068d54179154b509fe12df1a0de"
+    FLOOR_SHA = "62a6480c40fe7565869c3d81047ca93ce47dac299f1ce22394244474c9902a28"
+    FLOOR_EMPTY_SHA = "cdb14fd0ffe2024c6b2bb52689a1d76ac52de3e39dd95dd281208e83d880a062"
+    STAGE_3A_SHA = "9efb5e9894636d338d1f893b73a7991c99836c60b2aa9c472cdbc82bf72f9e5e"
+    STAGE_3A_EMPTY_SHA = "e41c836df130854ad27dde6f88fe60a6f0273ec107646c7ba0861ed7c5c2184d"
 
     @classmethod
     def setUpClass(cls):
@@ -464,6 +472,10 @@ class PreviousRevisionTests(unittest.TestCase):
         cls.room = room
         source = _private("NFL2K5_B81_REVIEWED_TEST_DISC", HELMET_XBE_SHA)
         cls.slice1, _ = qb.apply(source, "realistic")
+        # b81 integration (practice squad merge): economy revision 7 on the helmet disc upgraded to the current one, as
+        # the Studio routes do before the floor (the floor authenticates the current economy's routines)
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        cls.slice1, _ = economy.apply(cls.slice1)
         cls.base, _ = ir.apply(cls.slice1, "modern", standard_guard=True)
         cls.floor_empty, cls.floor = cls._written_by("nfl2k5_qb_room_code_b81_floor", cls.base, 192)
         cls.stage_3a_empty, cls.stage_3a = cls._written_by("nfl2k5_qb_room_code_b81_3a", cls.slice1, 1)

@@ -2938,9 +2938,20 @@ def _only_sim_qb_changes(plan):
 
 def _qb_floor_in_place(payload):
     """b81 qb34: an existing build gets what the floor needs where an in-place edit can add it (modern injured reserve
-    and its ownership page); the franchise economy and the practice squad cannot be added in place."""
+    and its ownership page); the franchise economy and the practice squad cannot be added in place.
+
+    b81 integration (practice squad merge): an earlier revision of the economy (v0.8, v0.9, beta 80 and every beta 81
+    build before revision 8 read "legacy") is upgraded in place to the current one first, as the v0.9 update does
+    (R60): the floor authenticates the current economy's routines, and a build's economy must match a full build's."""
     economy, squad = _core_module("nfl2k5_franchise_economy"), _core_module("nfl2k5_practice_squad")
     ir, ownership = _core_module("nfl2k5_injured_reserve"), _core_module("nfl2k5_franchise_ownership")
+    notes = []
+    if economy is not None and economy.status(payload) == "legacy":
+        payload, _receipt = economy.apply(payload)
+        if economy.status(payload) != "applied":
+            raise ValueError("The franchise economy did not update to this release's version.")
+        notes.append("Simulated quarterback injuries: updated the franchise economy to this release's version "
+                     f"(practice squads refilled each preseason) {_QB_FLOOR_WHY}.")
     absent = [label for module, label in ((economy, "the franchise economy"), (squad, "the practice squad"))
               if module is None or module.status(payload) != "applied"]
     if absent:
@@ -2950,9 +2961,9 @@ def _qb_floor_in_place(payload):
     if ir is None or ownership is None:
         raise ValueError("Modern injured reserve is unavailable in this Studio installation. Choose Retail or Custom 0 percent.")
     if ir.status(payload) == "applied" and ownership.status(payload, ir.store_va(payload) or 0) == "applied":
-        return payload, []
+        return payload, notes
     upgraded, _receipt = ir.apply(payload, "modern", standard_guard=True)
-    return upgraded, [f"Simulated quarterback injuries: added modern injured reserve and its roster safeguards {_QB_FLOOR_WHY}."]
+    return upgraded, [f"Simulated quarterback injuries: added modern injured reserve and its roster safeguards {_QB_FLOOR_WHY}."] + notes
 
 
 def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *, preflight, consume, reference):
