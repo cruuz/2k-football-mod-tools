@@ -709,4 +709,5 @@ COUNTERS = {
     'trades_gone': 0x21c8,
     'trade_ir_unlinked': 0x21cc,
     'trade_past_deadline': 0x21d0,
+    'trade_free_agent': 0x21d4,
 }

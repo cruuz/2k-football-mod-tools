@@ -364,6 +364,7 @@ class TradesImage(unittest.TestCase):
             if not 51 <= len(ros) <= 65 or len(qbs) < 3 or sum(map(x.healthy, qbs)) < 3:
                 continue
             seller_best = max(x.ovr(q) for q in qbs if x.healthy(q))          # C22 (a): never the seller's best man
+            best_man = next(q for q in ros if x.b(q + 0x35) == 0 and x.healthy(q) and x.ovr(q) == seller_best)
             for p in ros:
                 if (x.b(p + 0x35) or not x.healthy(p) or not x.row(p) or x.b(p + 0x25) & 31 < 4
                         or not x.b(p + 0x24) & 15 or p in named_players):
@@ -371,13 +372,16 @@ class TradesImage(unittest.TestCase):
                 o = x.ovr(p)
                 if o <= top or o >= seller_best or room - m.call(0xE6380, ecx=p) <= 10:
                     continue
+                backup = max((x.ovr(q) for q in qbs if q not in (best_man, p) and x.healthy(q)), default=0)
+                if backup < 60:                                                  # C24 F3
+                    continue
                 top, choice = o, (p, c)
         if choice is None:
             return None
-        rnd = 3 if top >= 90 else 4 if top >= 82 else 5 if top >= 76 else 6 if top >= 70 else 7       # C22 (b)
-        while rnd <= 7 and x.pick_owner(rnd | buyer << 6) != buyer:
-            rnd += 1
-        return (*choice, rnd | buyer << 6 if rnd <= 7 else 0)
+        rnd = 2 if top >= 95 else 3 if top >= 90 else 4 if top >= 82 else 5 if top >= 76 else 6 if top >= 70 else 7
+        while rnd >= 1 and x.pick_owner(rnd | buyer << 6) != buyer:          # C24: an earlier round, never a later
+            rnd -= 1
+        return (*choice, rnd | buyer << 6 if rnd >= 1 else 0)
 
     def year_that_fires(self, buyer, qs):
         x, m = self.x, self.x.m
@@ -799,6 +803,130 @@ class TradesImage(unittest.TestCase):
         m.uc.ctl_flush_tb()
         self.enter()
         self.assertEqual(with_l - self.counters()["trade_buyers"], 1)
+
+    # -- C24 (coordinator's rulings on the independent review, 2026-11-21): each fails on c01237d67
+    def set_overall(self, p, target):
+        """Move a man's overall (0x246D80(p, 1)) to `target` through his quarterback rating bytes (+0x42 first, as
+        test_c22b does, then +0x38, +0x50, +0x43, +0x4E, +0x41; each kept within 0..99), one step at a time."""
+        x, m = self.x, self.x.m
+        step = 1 if x.ovr(p) < target else -1
+        for at in (0x42, 0x38, 0x50, 0x43, 0x4E, 0x41):
+            while x.ovr(p) != target and 1 < x.b(p + at) < 99 and (x.ovr(p) < target) == (step > 0):   # 0..99
+                m.uc.mem_write(p + at, bytes([x.b(p + at) + step]))
+            if x.ovr(p) == target:
+                return p
+        self.skipTest(f"cannot move this man's overall to {target}")
+
+    def without_native_pass(self):
+        self.x.m.uc.mem_write(0x2BC960, b"\xc3")
+        self.x.m.uc.ctl_flush_tb()
+
+    def post_for(self, qs):
+        """Bench the buyer and choose the season-year at which the draw posts Qs (no oracle)."""
+        self.buyers = {self.BUYER}
+        self.bench(self.BUYER)
+        self.x.m.put(YEAR, self.year_that_fires(self.BUYER, qs))
+        self.bench(self.BUYER)
+
+    def test_c24_f3_a_seller_keeps_a_healthy_backup_rated_60_or_more(self):
+        """Seller 25 (100, Mariota 85, a 63 third man) sells Mariota only if the man left behind its best rates 60+: at
+        59 no package (the review's Brosmer 28 case), at 60 the trade is made."""
+        for backup_overall, posted in ((59, 0), (60, 1)):
+            with self.subTest(backup=backup_overall):
+                self.setUp()
+                x = self.x
+                mariota = next(p for p in x.qbs(25) if x.row(p) == 1)
+                third = next(p for p in x.qbs(25) if x.row(p) == 2)
+                self.set_overall(third, backup_overall)
+                self.close_other_sellers(25)
+                self.post_for(mariota)
+                self.without_native_pass()
+                self.enter()
+                c = self.counters()
+                self.assertEqual((c["trades_posted"], c["trade_no_package"]), (posted, 1 - posted))
+
+    def test_c24_f4_no_purchase_when_the_buyers_best_healthy_quarterback_rates_85_or_more(self):
+        """Club 5's best healthy quarterback (82, benched by D3) moved to 85: no buyer; at 84 still a buyer. The relative
+        tests (Qs 3+ above S'; L 3+ above S') still apply on top."""
+        for best, buyers in ((85, 0), (84, 1)):
+            with self.subTest(best=best):
+                self.setUp()
+                x = self.x
+                starter = max((p for p in x.qbs(self.BUYER) if x.healthy(p)), key=x.ovr)
+                self.set_overall(starter, best)
+                self.bench(self.BUYER)
+                self.without_native_pass()
+                self.enter()
+                self.assertEqual(self.counters()["trade_buyers"], buyers)
+
+    def test_c24_price_95_or_more_costs_the_buyers_2nd(self):
+        x, m = self.x, self.x.m
+        mariota = self.set_overall(next(p for p in x.qbs(25) if x.row(p) == 1), 95)   # behind a 100
+        qs, seller, word = self.ready_buyer(self.BUYER)
+        self.assertEqual((qs, seller, word & 0x3F), (mariota, 25, 2))
+        self.enter()
+        self.assertIn(mariota, x.roster(self.BUYER))
+        self.assertEqual(x.pick_owner(2 | self.BUYER << 6), 25)
+        self.assertEqual(x.pick_owner(3 | self.BUYER << 6), self.BUYER)
+
+    def test_c24_price_an_earlier_round_when_that_pick_is_gone_never_a_later_one(self):
+        """Mariota (85) costs a 4th. Club 5's 4th traded away: it pays its 3rd. Its 1st to 4th all gone: no trade (its 5th
+        is never offered)."""
+        for gone, round_paid in (((4,), 3), ((1, 2, 3, 4), None)):
+            with self.subTest(gone=gone):
+                self.setUp()
+                x, m = self.x, self.x.m
+                for r in gone:
+                    m.uc.mem_write(0xE3C094 + 32 * r + self.BUYER, bytes([29]))
+                mariota = next(p for p in x.qbs(25) if x.row(p) == 1)
+                self.post_for(mariota)
+                start = self.cursor()
+                self.enter()
+                c = self.counters()
+                if round_paid is None:
+                    self.assertEqual((c["trades_posted"], c["trade_no_pick"]), (0, 1))
+                    self.assertEqual(x.pick_owner(5 | self.BUYER << 6), self.BUYER)
+                    self.assertNotIn(mariota, x.roster(self.BUYER))
+                else:
+                    self.assertEqual(c["trades_posted"], 1)
+                    self.assertIn(mariota, x.roster(self.BUYER))
+                    self.assertEqual(x.pick_owner(round_paid | self.BUYER << 6), 25)
+                    self.assertEqual(x.pick_owner(5 | self.BUYER << 6), self.BUYER)
+
+    def test_c24_f5_no_trade_when_a_free_agent_as_good_is_within_the_buyers_reach(self):
+        """The best free-agent quarterback (78, valued far below club 5's cap room) moved to 85, Mariota's overall: no
+        trade (E1/E2 would sign him); at 84 the trade is made."""
+        for fa_overall, posted in ((85, 0), (84, 1)):
+            with self.subTest(free_agent=fa_overall):
+                self.setUp()
+                x, m = self.x, self.x.m
+                root = m.get(0xB72918)
+                listing = [m.get(m.get(root + 0x3C) + 4 * i) for i in range(m.get(root + 0x38))]
+                best = max((p for p in listing if p and x.b(p + 0x35) == 0 and x.healthy(p)), key=x.ovr)
+                self.set_overall(best, fa_overall)
+                mariota = next(p for p in x.qbs(25) if x.row(p) == 1)
+                self.post_for(mariota)
+                self.without_native_pass()
+                self.enter()
+                c = self.counters()
+                self.assertEqual((c["trades_posted"], c.get("trade_free_agent", 0)), (posted, 1 - posted))
+
+    def test_c24_f6_no_trade_after_an_emergency_signing_this_week_or_last(self):
+        """An applied E1 row (decision 5, result 1) for the buyer logged with this week's number or the previous one
+        keeps it out; two weeks back it is a buyer again (the review's mutation MS deletes this guard)."""
+        for back, buyers in ((0, 0), (1, 0), (2, 1)):
+            with self.subTest(weeks_back=back):
+                self.setUp()
+                m = self.x.m
+                self.bench(self.BUYER)
+                n = self.cursor()
+                row = _room_code().RING_EVENT.pack(m.get(YEAR), m.get(WEEK) - back, self.BUYER, 5, 1, 0, 0, 0, 0, 0, 0,
+                                                   0, 0)
+                m.uc.mem_write(ROOM_VA + 0x2400 + 20 * (n % 128), row)
+                m.put(ROOM_VA + 0x2E00, n + 1)
+                self.without_native_pass()
+                self.enter()
+                self.assertEqual(self.counters()["trade_buyers"], buyers)
 
     def test_must_never_10_a_buyer_never_cuts(self):
         x, m = self.x, self.x.m

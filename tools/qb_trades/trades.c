@@ -16,16 +16,21 @@
    Buyer: not human (every user-managed club of a multi-user franchise is human here: the flag 0xE5775C), not named by a
    live record, 49 to 52 active, a healthy quarterback, at most 2 active quarterbacks (C22 addendum 1), W + L + T >= 2,
    W + 1 >= L, no emergency signing (E1, E2 or the floor, applied or, in shadow, would) logged in this or the previous
-   week, and either its starter was benched by D3 in the previous advance's room pass (logged with this week), or a
-   quarterback L on its IR 3+ better than S' (L rated with flag 0, C22 addendum 2) is out 3+ weeks or for the season. Seller: not human, not named, not a buyer, 51 to 65 active, 3+
-   quarterbacks of whom 3+ healthy (it keeps 2 healthy ones).
+   week, its best healthy quarterback S' rated below 85 (C24 F4: a healthy 85+ starter is no need; the relative tests
+   below still apply, the two together), and either its starter was benched by D3 in the previous advance's room pass
+   (logged with this week), or a quarterback L on its IR 3+ better than S' (L rated with flag 0, C22 addendum 2) is out
+   3+ weeks or for the season. Seller: not human, not named, not a buyer, 51 to 65 active, 3+ quarterbacks of whom 3+
+   healthy (it keeps 2 healthy ones), and after the sale a healthy backup rated 60 or more besides its best man (C24 F3).
    Package: the best-rated Qs over every seller: fully healthy, not on row 0, rated below the seller's best healthy
    quarterback (C22 (a): a seller never gives up its best man), 4+ years pro, 1+ contract years, not named by a live
-   record, ovr(Qs) - ovr(S') >= 3, buyer's cap room - Qs's charge > 10. Price: the buyer's OWN pick of the coming draft,
-   word round | buyer << 6 (year 0; round one-based, slot = original club in season; RISKS.md (b)): round 3 at 90+
-   (C22 (b)), 4 at 82-89, 5 at 76-81, 6 at 70-75, 7 below; the next later round when the buyer does not own that one;
-   none after the 7th. Only before the native deadline week (C22 (c): the week counter below the stage table's byte
-   0x5151C5, 9 with the deadline owner), whatever the Trade Deadline option says.
+   record, ovr(Qs) - ovr(S') >= 3, buyer's cap room - Qs's charge > 10; and no free agent at least as good within the
+   buyer's reach (C24 F5: E2's candidate F for the buyer, the best healthy free agent the picker 0x322BB0 takes within
+   cap room - 10, exactly as moves.c chooses it; ovr(F) >= ovr(Qs) means no trade: E1/E2 sign him instead). Price
+   (C24, ruled): the buyer's OWN pick of the coming draft, word round | buyer << 6 (year 0; round one-based, slot =
+   original club in season; RISKS.md (b)): round 2 at 95+, 3 at 90-94, 4 at 82-89, 5 at 76-81, 6 at 70-75, 7 below;
+   when the buyer does not own that round's pick, the next EARLIER round it owns, never a later one; none: no trade.
+   Only before the native deadline week (C22 (c): the week counter below the stage table's byte 0x5151C5, 9 with the
+   deadline owner), whatever the Trade Deadline option says.
    Post with probability 0.35 (key: 8, buyer, year, W, L, T, Qs index, S' attempts and yards) if the native evaluator
    0x2BAE90 accepts the record as built, into the first kind-0 slot of 1 to 14, kind written last. Shadow (the room's
    flags bit 0, or this page's own flag word +0xF04 bit 0, which puts 4b alone in shadow while the room's other stages
@@ -72,6 +77,11 @@ extern u32 qb_trade_flags;                             /* this page + 0xF04: bit
                                                             deadline owner); C22 (c) posts only before it, always */
 
 #define SALARY ((u32 (FC *)(u32))0x000E6380)            /* this season's base charge (fastcall ECX) */
+#define VALUE ((u32 (FC *)(u32, u32, u32, u32, u32))0x002BD440)   /* the picker's value (moves.c): AX */
+#define OFFERS 0x00E3C600u                               /* the offer table the picker scans after the list */
+#define OFFER_COUNT 100u
+#define STARTER_CAP 85                                   /* C24 F4: S' at or above it is no need */
+#define BACKUP_MIN 60                                    /* C24 F3: the seller's backup after the sale */
 #define CANCEL ((void (FC *)(u32, u32, u32, u32))0x002BB660)   /* (offer, new kind, clear A, clear B), ret 8 */
 #define NATIVE_PASS ((void (FC *)(u32, u32))0x002BC960)        /* (proposers, menu) */
 
@@ -159,6 +169,46 @@ static u32 evaluate(u32 *offer) {
     return ok;
 }
 
+/* C24 F5: E2's candidate F for a club with cap room `room` (tools/qb_room/moves.c pick_at and choose, the same scan):
+   the man the picker 0x322BB0 takes at budget room - 10 (its scan order: the free-agent list [root + 0x38], then the
+   counted entries of the offer table; the first strictly higher 0x246D80(p, 1) whose value is below the budget); if he
+   is on the offer table or not fully healthy, ask again at his value. Returns F's rating, 0 when nobody. */
+static i32 free_agent(i32 room) {
+    if (room <= 10) return 0;
+    u32 budget = room - 10 > 0xFFFF ? 0xFFFFu : (u32)(room - 10), root = D(LEAGUE_ROOT), count = D(root + 0x38);
+    u32 list = D(root + 0x3C);
+    for (;;) {
+        u32 have = 0, best = 0, key = 0, value = 0, pool = 0;
+        for (u32 i = 0; i < count + OFFER_COUNT; i++) {
+            u32 offer = i >= count, entry = OFFERS + 16 * (i - count), p;
+            if (offer && (!(B(entry + 0xB) & 3) || (D(entry + 8) & 0x1C000000u) != 0x0C000000u)) continue;
+            p = offer ? D(entry) : D(list + 4 * i);
+            if (!p || B(p + 0x35) != 0) continue;
+            union { float f; u32 u; } v;
+            v.f = RATING(p, 1);
+            u32 k = v.u >> 31 ? 0 : v.u;
+            if (have && k <= key) continue;
+            u32 x = VALUE(p, 0, 0, 1, 0) & 0xFFFFu;
+            if (x >= budget) continue;
+            best = p, key = k, value = x, pool = offer, have = 1;
+        }
+        if (!have) return 0;
+        if (!pool && healthy(best)) return ovr(best);
+        budget = value;
+    }
+}
+
+/* C24 F3: the seller's best healthy quarterback rating left besides its best man `starter` once `qs` is sold. */
+static i32 backup_after(u32 t, u32 starter, u32 qs) {
+    i32 top = 0;
+    for (u32 j = 0; j < B(t + 0x11C); j++) {
+        u32 p = D(t + 4 * j);
+        i32 o;
+        if (p && p != starter && p != qs && B(p + 0x35) == 0 && healthy(p) && (o = ovr(p)) > top) top = o;
+    }
+    return top;
+}
+
 struct club { u32 team, starter, w, l, t, flags; i32 best; };
 #define OUT 1u                                           /* no club, human, or named by a live record */
 #define SELLER 2u
@@ -206,7 +256,9 @@ static u32 post(struct posted *out) {
         x->t = TIES(t);
         x->flags = m >= 51 && a >= 3 && h >= 3 ? SELLER : 0;
         /* C22 addendum (1): at most 2 active quarterbacks before the trade, for either need (never 4 after) */
-        if (m < 49 || m > 52 || !h || a > 2 || x->w + x->l + x->t < 2 || x->w + 1 < x->l || signed_mask >> i & 1) continue;
+        if (m < 49 || m > 52 || !h || a > 2 || x->w + x->l + x->t < 2 || x->w + 1 < x->l || signed_mask >> i & 1
+                || x->best >= STARTER_CAP)                              /* C24 F4 */
+            continue;
         if (benched >> i & 1) x->flags = BUYER | NEED_D3;
         else if (lost_starter(i, x->best)) x->flags = BUYER;
     }
@@ -226,7 +278,8 @@ static u32 post(struct posted *out) {
                 i32 o;
                 if (!p || B(p + 0x35) != 0 || !healthy(p) || !(W(p + 0x28) & ROW_MASK) || (B(p + 0x25) & 31) < 4
                         || !(B(p + 0x24) & 15) || (o = ovr(p)) <= top || o >= c[i].best   /* C22 (a) */
-                        || room - (i32)SALARY(p) <= 10 || named(p))
+                        || room - (i32)SALARY(p) <= 10 || named(p)
+                        || backup_after(t, c[i].starter, p) < BACKUP_MIN)               /* C24 F3 */
                     continue;
                 qs = p;
                 top = o;
@@ -237,7 +290,13 @@ static u32 post(struct posted *out) {
             qb_counters.trade_no_package++;
             continue;
         }
-        for (u32 round = top >= 90 ? 3 : top >= 82 ? 4 : top >= 76 ? 5 : top >= 70 ? 6 : 7; round <= 7 && !word; round++)
+        if (free_agent(room) >= top) {                                  /* C24 F5: E1/E2 sign him instead */
+            qb_counters.trade_free_agent++;
+            goto log;
+        }
+        /* C24 price: 2nd at 95+, 3rd at 90-94, 4th 82-89, 5th 76-81, 6th 70-75, 7th below; not owned: an EARLIER round */
+        for (u32 round = top >= 95 ? 2 : top >= 90 ? 3 : top >= 82 ? 4 : top >= 76 ? 5 : top >= 70 ? 6 : 7;
+                round >= 1 && !word; round--)
             if (B(PICKS + 32 * round + b) == b) word = round | b << 6;
         if (!word) {
             qb_counters.trade_no_pick++;
