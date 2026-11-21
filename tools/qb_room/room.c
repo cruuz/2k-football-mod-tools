@@ -205,9 +205,12 @@ static MID u32 decide_d1(struct room *r, struct qb *u) {
     return result != KEPT;
 }
 
-/* R1's season reset (stage 3b, bit 256): at the first pre-game pass of a season with year index 1 or more (stage 8,
-   week 0), a healthy quarterback who leads the healthy row 0 man by 6 or more takes row 0 (rows only; the best-rated
-   such man, ties to the upper row). Year index 0 is exempt, so the real opening chart stands. */
+/* R1's season reset (stage 3b): at the first pre-game pass of a season with year index 1 or more (stage 8, week 0),
+   right after C18's lock clear, the healthy quarterback the native sort would put first (0x246D80's float order, ties
+   to the upper row; a rookie without starter usage is left to D1) takes row 0 when he rates above the healthy row 0
+   man (rows only). C23 (week-1 order): the clear runs after the week-1 advance's first native sort, so without this
+   game 1 was played on last season's locked order and the sort after it reordered by rating; before C23 the reset
+   needed a lead of 6 or more. Year index 0 is exempt, so the real opening chart stands. */
 static TAIL void clear_season_locks(struct room *r, u32 team) {
     u32 slots = B(team + 0x11C);
     if (slots > SLOTS) return;
@@ -224,9 +227,10 @@ static u32 season_reset(struct room *r) {
     for (u32 i = 0; i < r->n; i++) {
         struct qb *q = &r->q[i];
         if (!q->row) first = q;
-        if (q->healthy && (!top || q->ovr > top->ovr || (q->ovr == top->ovr && q->row < top->row))) top = q;
+        if (q->healthy && !q->rookie && (!top || q->ovr > top->ovr || (q->ovr == top->ovr && q->row < top->row)))
+            top = q;                                /* a rookie (none has starter usage at week 0) is D1's */
     }
-    if (!first || !first->healthy || top->ovr - first->ovr < 6) return 0;
+    if (!first || !first->healthy || !top || top->ovr <= first->ovr) return 0;
     lift(r, top, 0);
     qb_counters.season_resets++;
     return 1;
@@ -235,7 +239,10 @@ static u32 season_reset(struct room *r) {
 /* ---- D4: the returning starter (DESIGN 2.6; addendum 2, R1). U is not on row 0; S = row 0. ----------------------
    Recomputed in every room pass from draw(D4, club, year, U index, S index) against today's gap and today's "hot"
    test; U takes the job (an exchange: rows and both locks) in the week the draw falls below the table's chance.
-   Until then nothing is written. threshold = the chance U takes the job. */
+   Until then nothing is written. threshold = the chance U takes the job. C23 (independent D3/D4 review, F1): D4 runs
+   only while S holds row 0 by a rank lock, the premise it was designed for; where both men are unlocked the native
+   rating order decides (a returning starter rated at least as high is back at once, one rated lower is not). F4: a
+   man 3 better only by rounding (the native rule needs a float lead of 0.03) is drawn like x = 2. */
 static u32 decide_d4(struct room *r, struct qb *u) {
     struct qb *s = 0;
     for (u32 i = 0; i < r->n; i++)
@@ -245,7 +252,7 @@ static u32 decide_d4(struct room *r, struct qb *u) {
     u32 flags = D4 | (hot ? HOT : 0);
     qb_counters.d4_evaluated++;
     if (hot) qb_counters.d4_hot++;
-    if (x >= 3 || x <= -3) {
+    if (x <= -3) {                                  /* C23 (F4): x >= 3 by rounding is drawn like x = 2 */
         qb_counters.d4_lock_only++;
         return 0;
     }
@@ -369,7 +376,7 @@ static void club_pass(struct room *r) {
         u32 p = D(team + 4 * i);
         if (!p || B(p + 0x35) != 0) continue;
         u32 row = (W(p + 0x28) >> 10) & 7;
-        if (n == QB_MAX || rows & (1u << row)) {
+        if (row >= QB_MAX || n == QB_MAX || rows & (1u << row)) {     /* C23 (F5): row 7 is no slot */
             n = 0;
             break;
         }
@@ -455,7 +462,7 @@ static void club_pass(struct room *r) {
             struct qb *u = &r->q[order[k]];
             if (u->locked) continue;                    /* locked as the other man of an earlier decision */
             u32 a = u->rookie && !starter_usage(u) && (r->stage == 7 || r->stage == 8);
-            u32 b = !a && u->row != 0 && !u->rookie && starter_usage(u) && r->stage >= 8;
+            u32 b = !a && u->row != 0 && !u->rookie && starter_usage(u) && r->stage >= 8 && r->q[0].locked;
             if (r->opening && !a) continue;             /* the opening pass does D1 only */
             if ((a && !(r->stages & STAGE_D1)) || (b && !(r->stages & STAGE_D4))) {
                 qb_counters.newcomer_stage_off++;

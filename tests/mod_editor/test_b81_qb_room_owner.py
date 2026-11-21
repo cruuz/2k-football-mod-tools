@@ -453,6 +453,10 @@ class PreviousRevisionTests(unittest.TestCase):
     FLOOR_EMPTY_SHA = "6e14638a53dfbd45d9860aceaae951496c89a651b4eb902cc428d8db92777a33"
     STAGE_3A_SHA = "449e651ed6d12509565f65e27afd440bd4ff7318f709ec300e292595fd5accb6"
     STAGE_3A_EMPTY_SHA = "e3270c1b26ef94b697098ff351d63500adb120c4aa86d3e1a73111ea243804e8"
+    # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64),
+    # on slice 1 alone; rebuilt here at the merged head (d85a7c5c is also the reviewer's 67 witness at 0520efd93).
+    HANDOVER_67_SHA = "d85a7c5cd1d3c3dad382456afe93fd8b34a47ef36fe9d4e29fa58f4e36be7281"
+    HANDOVER_64_SHA = "34dbcece1cfdc7810a76a8c56edc974926ef3f791711156d5c27281cd678e85b"
 
     @classmethod
     def setUpClass(cls):
@@ -466,6 +470,8 @@ class PreviousRevisionTests(unittest.TestCase):
         _empty, cls.d1d2 = cls._written_by("nfl2k5_qb_room_code_b81_d1d2", cls.base, 195)
         _empty, cls.review67 = cls._written_by("nfl2k5_qb_room_code_b81_floor_review", cls.base, 67)
         _empty, cls.review64 = cls._written_by("nfl2k5_qb_room_code_b81_floor_review", cls.base, 64)
+        _empty, cls.handover67 = cls._written_by("nfl2k5_qb_room_code_b81_handover", cls.base, 67)
+        _empty, cls.handover64 = cls._written_by("nfl2k5_qb_room_code_b81_handover", cls.base, 64)
 
     @classmethod
     def _written_by(cls, template, source, stages):
@@ -494,12 +500,15 @@ class PreviousRevisionTests(unittest.TestCase):
         self.assertEqual((sha(self.stage_3a), sha(self.stage_3a_empty)), (self.STAGE_3A_SHA, self.STAGE_3A_EMPTY_SHA))
         self.assertEqual(sha(self.d1d2), self.D1D2_SHA)
         self.assertEqual((sha(self.review67), sha(self.review64)), (self.REVIEW_67_SHA, self.REVIEW_64_SHA))
+        self.assertEqual((sha(self.handover67), sha(self.handover64)), (self.HANDOVER_67_SHA, self.HANDOVER_64_SHA))
 
     def test_status_reads_previous(self):
         room = self.room
         for payload, revision, stages in ((self.floor, "b81 floor handover", 192), (self.stage_3a, "b81 stage 3a", 1),
                                           (self.d1d2, "b81 D1 + D2 handover", 195),
-                                          (self.review67, "b81 floor review", 67), (self.review64, "b81 floor review", 64)):
+                                          (self.review67, "b81 floor review", 67), (self.review64, "b81 floor review", 64),
+                                          (self.handover67, "b81 floor + D1 + D2 hand-over", 67),
+                                          (self.handover64, "b81 floor + D1 + D2 hand-over", 64)):
             with self.subTest(revision=revision):
                 settings = room.read_settings(payload)
                 self.assertEqual((settings["status"], settings.get("revision"), settings.get("stages")),
@@ -533,6 +542,18 @@ class PreviousRevisionTests(unittest.TestCase):
                 upgraded, receipt = room.apply(payload, "realistic", stages=stages)
                 self.assertEqual(upgraded, room.apply(self.base, "realistic", stages=stages)[0])
                 self.assertEqual(receipt["upgraded_from"], "b81 floor review")
+                self.assertEqual(self._rows(upgraded), self._rows(payload))
+                self.assertEqual(room.apply(payload, "retail")[0], self.floor_empty)
+
+    def test_the_hand_over_pages_upgrade_and_restore(self):
+        # C21: the page b2672e398's Studio wrote (f5270f4d, 35ce7727: the P5 and P6-5ff candidates) differs from the
+        # current one (E1/E2's protected release); it reads previous, upgrades to a fresh install and restores.
+        room = self.room
+        for payload, stages in ((self.handover67, None), (self.handover64, 64)):
+            with self.subTest(stages=stages):
+                upgraded, receipt = room.apply(payload, "realistic", stages=stages)
+                self.assertEqual(upgraded, room.apply(self.base, "realistic", stages=stages)[0])
+                self.assertEqual(receipt["upgraded_from"], "b81 floor + D1 + D2 hand-over")
                 self.assertEqual(self._rows(upgraded), self._rows(payload))
                 self.assertEqual(room.apply(payload, "retail")[0], self.floor_empty)
 
