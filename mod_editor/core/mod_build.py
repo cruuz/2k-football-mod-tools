@@ -2651,11 +2651,16 @@ def _disc_roster(disc):
     return rosters.load_image(disc)
 
 
-# b81 stability (fail safe, coordinator 2026-11-20 22:1x): the one sentence a build report gets when the disc's roster
-# could not be measured or the measurement looked wrong, and the frozen calibrated references were installed instead.
-SIM_QB_STABILITY_FALLBACK_NOTE = (
-    "Simulated injuries: the roster on this disc could not be measured for the long-franchise injury balance, so the "
-    "standard roster's values were used.")
+# b81 stability (fail safe, coordinator 2026-11-20 22:1x; wording after the review rev-pos3/REVIEW_REFS.md finding 5): the
+# one sentence a build report gets when the frozen calibrated references were installed instead of the disc roster's.
+SIM_QB_STABILITY_NOTES = {
+    "unreadable": "Simulated injuries: the roster on this disc could not be read for the long-franchise injury balance, "
+                  "so from a franchise's third season injury rates follow the standard roster's level and may step up "
+                  "or down at that point on this roster.",
+    "out_of_range": "Simulated injuries: the roster on this disc is too far from the standard roster for the "
+                    "long-franchise injury balance, so from a franchise's third season injury rates follow the standard "
+                    "roster's level and may step up or down at that point on this roster.",
+}
 
 
 def _sim_qb_stability(plan, module, disc):
@@ -2663,27 +2668,66 @@ def _sim_qb_stability(plan, module, disc):
 
     Realistic and Custom on a disc image (or a pack folder) measure the disc's own main roster with the game's starter
     rule (module.roster_stability), so the season-3 factor corrects drift, not a roster difference. Fail safe: when
-    the roster cannot be measured (a bare executable, an unreadable roster, any exception in the replica) or the result
-    looks wrong (a class without starters, a mean out of range, a reference outside the bound), the build goes on with
-    the frozen calibrated references and the record carries SIM_QB_STABILITY_FALLBACK_NOTE for the build report.
-    Retail measures nothing: (None, None).
+    the roster cannot be read (an unreadable roster or club list, any exception in the replica) or a derived reference
+    is outside the accepted range, the build goes on with the frozen calibrated references and the record carries the
+    matching sentence of SIM_QB_STABILITY_NOTES for the build report. A bare executable (no disc, no roster) and Custom
+    0 percent (the stage is off) get the frozen references without a sentence. Retail measures nothing: (None, None).
     """
     if plan.sim_qb_injuries not in ("realistic", "custom"):
         return None, None
     try:
         document = _disc_roster(disc)
         if document is None:
-            raise ValueError("no roster beside a bare executable")
-        starters, reference = module.roster_stability(document)
-        reference = tuple(float(value) for value in reference)
-        module._reference32(reference)
-        return reference, {"source": "disc roster", "roster_sha256": sha256(bytes(document.body)).hexdigest(),
-                           "starters": [list(row) for row in starters], "reference": list(reference)}
+            kind, why = "bare_executable", "no roster beside a bare executable"
+        else:
+            starters, reference = module.roster_stability(document)
+            reference = tuple(float(value) for value in reference)
+            module._reference32(reference)
+            return reference, {"source": "disc roster", "roster_sha256": sha256(bytes(document.body)).hexdigest(),
+                               "starters": [list(row) for row in starters], "reference": list(reference)}
+    except module.StabilityRosterOutOfRange as exc:
+        kind, why = "out_of_range", str(exc)
     except Exception as exc:  # noqa: BLE001 - never fail the build here and never install a doubtful measurement
-        from . import nfl2k5_sim_qb_injuries_code as code
-        frozen = tuple(code.STABILITY_REFERENCE)
-        return frozen, {"source": "frozen calibration references", "reason": f"{type(exc).__name__}: {exc}",
-                        "reference": list(frozen), "note": SIM_QB_STABILITY_FALLBACK_NOTE}
+        kind, why = "unreadable", f"{type(exc).__name__}: {exc}"
+    from . import nfl2k5_sim_qb_injuries_code as code
+    frozen = tuple(code.STABILITY_REFERENCE)
+    record = {"source": "frozen calibration references", "kind": kind, "reason": why, "reference": list(frozen)}
+    stage_on = not (plan.sim_qb_injuries == "custom" and float(plan.sim_qb_injury_rate) == 0)
+    if stage_on and kind in SIM_QB_STABILITY_NOTES:
+        record["note"] = SIM_QB_STABILITY_NOTES[kind]
+    return frozen, record
+
+
+SIM_QB_STABILITY_NOT_UPDATED = ("Simulated injuries: this copy's long-franchise injury balance could not be updated for "
+                                "the edited roster; run the Simulated injuries update on this copy.")
+
+
+def restabilize_sim_qb_disc(disc) -> dict | None:
+    """b81 stability (review rev-pos3/REVIEW_REFS.md finding 1): after a disc copy's roster changed (the roster editor's
+    Save disc copy), measure the copy's roster again and rewrite only the thirteen references of its installed
+    Simulated injuries option, with the same measurement and fail safe as the build routes. Returns the record for
+    the save's receipt and message, or None when the copy has no current Simulated injuries option (nothing to do).
+    The executable keeps its size; nothing else in it changes."""
+    from types import SimpleNamespace
+    module = _core_module("nfl2k5_sim_qb_injuries")
+    if module is None:
+        return None
+    disc = Path(disc)
+    payload = _xbe_bytes(disc)
+    settings = module.read_settings(payload)
+    if settings.get("status") != "applied" or settings.get("revision") != module.REVISION:
+        return None
+    plan = SimpleNamespace(sim_qb_injuries=settings["mode"], sim_qb_injury_rate=settings["custom_rate"])
+    references, record = _sim_qb_stability(plan, module, disc)
+    try:
+        updated = module.restabilize(payload, references)
+    except module.ERRORS as exc:
+        return {"source": "unchanged", "reason": str(exc), "note": SIM_QB_STABILITY_NOT_UPDATED}
+    if updated != payload:
+        _write_xbe_bytes(disc, updated)
+        if _xbe_bytes(disc) != updated:
+            raise ValueError("The simulated injury references did not read back on the disc copy.")
+    return {**record, "changed": updated != payload}
 
 
 @_core_step("sim_qb_injuries")

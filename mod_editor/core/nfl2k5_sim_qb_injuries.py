@@ -38,6 +38,10 @@ class SimQbInjuriesError(ValueError):
     """The requested option or the executable's installed state could not be verified."""
 
 
+class StabilityRosterOutOfRange(SimQbInjuriesError):
+    """The disc's roster was measured, but its stability references are too far from the standard roster's."""
+
+
 def _require(condition, message):
     if not condition:
         raise SimQbInjuriesError(message)
@@ -110,8 +114,35 @@ def roster_stability(roster):
     try:
         starters = code.stability_starters(clubs)
         return starters, code.stability_reference_for(starters)
+    except code.StabilityOutOfRange as exc:
+        raise StabilityRosterOutOfRange(str(exc)) from exc
     except ValueError as exc:
         raise SimQbInjuriesError(str(exc)) from exc
+
+
+def restabilize(payload, reference):
+    """Rewrite only the stability references of an installed revision 4 option (mode, rate and kicking as installed).
+
+    For a disc whose roster changed after the build (the roster editor's Save disc copy). The bank is rebuilt with the
+    new references through the same authenticated transform as apply(), so only the 52 reference bytes and the
+    integrity fields that cover them change, and Retail still restores every byte.
+    """
+    source = bytes(payload)
+    setting, physical = _state(source)
+    _require(setting is not None and setting.revision == REVISION,
+             'Only an installed current Simulated injuries option has stability references to rewrite')
+    wanted = replace(setting, reference=_reference32(reference))
+    if wanted == setting:
+        return source
+    kicking, installed = scoring.installed(source)
+    _require(kicking in ('applied', 'retail'), 'Foreign or mixed simulated kicking bytes')
+    bank = _bank_allocation(physical)
+    result = _transform(physical, _edits(physical, bank, wanted, kicking=installed if kicking == 'applied' else False),
+                        restoring=False)
+    confirmed, restored = _state(result)
+    _require(confirmed == wanted and restored == physical and scoring.installed(result) == (kicking, installed),
+             'Simulated injury references failed readback')
+    return result
 
 
 def installed_reference(payload):

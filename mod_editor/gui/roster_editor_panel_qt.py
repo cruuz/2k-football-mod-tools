@@ -6990,6 +6990,12 @@ class RosterEditorPanel(QWidget):
             staged = stage.path / destination.name
             shutil.copyfile(source, staged)
             result = rr.apply(staged, edits)
+            # b81 stability: a copy with Simulated injuries gets references measured on its edited roster (or the
+            # frozen ones, with a sentence, when that roster cannot be measured), before it is published.
+            from mod_editor.core import mod_build
+            stability = mod_build.restabilize_sim_qb_disc(staged)
+            if stability is not None:
+                result = {**result, "sim_qb_stability": stability}
             if overwrite:
                 os.replace(staged, destination)
             else:
@@ -7046,6 +7052,17 @@ class RosterEditorPanel(QWidget):
             counter += 1
         return candidate
 
+    @staticmethod
+    def disc_copy_message(receipt: Mapping[str, Any], written: str) -> str:
+        """After Save disc copy: where it is, and what happened to the Simulated injuries balance (b81 stability)."""
+
+        text = f"Disc ready: {written}. Open it in xemu."
+        stability = receipt.get("sim_qb_stability")
+        if stability:
+            text += " " + (stability.get("note") or "Simulated injuries: the long-franchise injury balance was measured "
+                                                     "again on your edited roster.")
+        return text
+
     def save_copy_message(self, receipt: Mapping[str, Any]) -> str:
         """The after-save words a Finn user needs: his editor saved over the zip, this one never does."""
 
@@ -7101,7 +7118,7 @@ class RosterEditorPanel(QWidget):
         if self._source_kind == "save":
             self._set_status(self.save_copy_message(receipt))
         else:
-            self._set_status(f"Disc ready: {written}. Open it in xemu.")
+            self._set_status(self.disc_copy_message(receipt, written))
             self.disc_written.emit(written)
 
     # ------------------------------------------------------------------ chrome

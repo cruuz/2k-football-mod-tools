@@ -113,8 +113,12 @@ STABILITY_ZERO_POINTS = tuple(position.zero_point for position in POSITION_CLASS
 # stored depth rank below the starter count) at the confirmed calibration. Measured by order S0 on the slice 3
 # confirmation candidate seasons, roots 64001 to 64004, 2026 and 2027, Durability from each season's signed save
 # (pos3/work/stability/reference.py, reference.json, reference.txt).
+# R and STABILITY_CALIBRATION below are one pair: re-measure STABILITY_CALIBRATION on the same roster in the same commit
+# whenever R is re-measured (test_b81_stability_roster_refs pins the pair). STABILITY_REFERENCE_ROSTER is the roster of
+# the seasons R was measured on (reference.json sources: ROST body 70813bd9, executable e714aecf).
 STABILITY_REFERENCE = (17.627, 18.847, 18.803, 19.526, 17.703, 22.138, 20.803, 21.261, 20.343, 20.551, 23.144, 21.840,
                        25.807)
+STABILITY_REFERENCE_ROSTER = "70813bd95d1265b40009fb611569e2e1ffcce02bf17a5f73476e8f55ffa3d157"
 STABILITY_YEAR_SLOPE = 0.055        # mode "year": the supplement's measured 24 to 25 percent over four offseasons
 STABILITY_SEASONS = 10              # stab_year entries by season index; later seasons use the last
 STABILITY_CLASSES_OFF = ()          # class names left at 1.0 by the tracking gate (adaptive mode only)
@@ -133,10 +137,15 @@ STABILITY_CALIBRATION = ((1077, 64), (1253, 64), (576, 32), (1210, 64), (1060, 6
 STABILITY_CLUBS = 32                # stability.S CLUBS
 STABILITY_MAX_LISTED = 0x41         # stability.S MAX_LISTED: a larger count is not a club record
 STABILITY_MIN_STARTERS = 8          # stability.S MIN_STARTERS: fewer starters leave the class at 1.0
-# A derived reference outside this factor of the frozen R is a measurement that looks wrong (the Studio then installs the
-# frozen R). On the shipped roster an even Durability change from +10 to -15 points stays inside (factors 0.41 to 1.91);
-# the factor clamp (0.35 to 1.25) bounds what any reference inside it can do.
-STABILITY_REFERENCE_BOUND = (0.4, 2.0)
+# A derived reference outside this factor of the frozen R is a sanity failure (the Studio then installs the frozen R and
+# says so). It is wide on purpose (stability review rev-pos3/REVIEW_REFS.md finding 2): the factor clamp (0.35 to 1.25)
+# already limits what any reference can do, and on the shipped roster an even Durability change from about -49 to +16
+# points stays inside.
+STABILITY_REFERENCE_BOUND = (0.25, 4.0)
+
+
+class StabilityOutOfRange(ValueError):
+    """The roster was measured, but a derived reference is outside STABILITY_REFERENCE_BOUND x R."""
 
 
 def stability_starters(clubs) -> tuple[tuple[int, int], ...]:
@@ -169,30 +178,36 @@ def stability_reference_for(starters) -> tuple[float, ...]:
     """R x static(roster) / static(calibration roster) per class, from stability_starters() of the disc's roster.
 
     A class with the calibration roster's exact statistic keeps its frozen R, so that roster builds the executable
-    unchanged; so does a class with 1 to 7 starters, which the game leaves at 1.0. Raises ValueError when the measurement
-    looks wrong: a class with no starters, a mean of max(0, K - Durability) that is not finite or not in (0, K], or a
-    derived reference outside STABILITY_REFERENCE_BOUND x R."""
+    unchanged. So does a class the game leaves at 1.0 (no starters, 1 to 7 starters, or every starter at or above K: a
+    zero sum); the other classes are still derived. Raises ValueError for a league with no starters in any class or a
+    class mean that is not finite or above K, and StabilityOutOfRange for a derived reference outside
+    STABILITY_REFERENCE_BOUND x R."""
     from fractions import Fraction
     import math
 
     starters = tuple(tuple(row) for row in starters)
     if len(starters) != len(STABILITY_CLASS_NAMES):
         raise ValueError("The stability statistic needs thirteen classes")
+    if not any(count > 0 for _, count in starters):
+        raise ValueError("The roster has no starters in any class")
     low, high = STABILITY_REFERENCE_BOUND
     out = []
     for name, zero, frozen, (total, count), (total0, count0) in zip(
             STABILITY_CLASS_NAMES, STABILITY_ZERO_POINTS, STABILITY_REFERENCE, starters, STABILITY_CALIBRATION):
-        if not count > 0:
-            raise ValueError(f"The roster has no {name} starters")
+        if count < 0:
+            raise ValueError(f"The {name} starter count is negative")
+        if count == 0:
+            out.append(frozen)
+            continue
         mean = total / count
-        if not (math.isfinite(mean) and 0 < mean <= zero):
+        if not (math.isfinite(mean) and 0 <= mean <= zero):
             raise ValueError(f"The {name} mean of K - Durability ({mean!r}) is out of range")
-        if (total, count) == (total0, count0) or count < STABILITY_MIN_STARTERS:
+        if (total, count) == (total0, count0) or count < STABILITY_MIN_STARTERS or total == 0:
             out.append(frozen)
             continue
         value = float(Fraction(frozen) * Fraction(total) * count0 / (Fraction(count) * total0))
         if not (math.isfinite(value) and low <= value / frozen <= high):
-            raise ValueError(f"The {name} reference {value:.3f} is outside {low} to {high} times {frozen}")
+            raise StabilityOutOfRange(f"The {name} reference {value:.3f} is outside {low} to {high} times {frozen}")
         out.append(value)
     return tuple(out)
 
