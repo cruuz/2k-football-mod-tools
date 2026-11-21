@@ -225,7 +225,8 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [598, 10, 8, 9, 8, 9]
+            [599, 10, 8, 9, 8, 9]
+            # b81 qb34 C21: 599 = 598 + the frozen floor + D1 + D2 hand-over page template (a fifth "previous" revision).
             # b81 merge (qb34 + slices 2 and 3): 598 = 592 (slices 2 and 3, below) + qb34's six (above).
             # b81 qb34: 596 = 595 + the frozen floor review page template (66d8a7e1b; a fourth "previous" revision).
             # b81 qb34: 595 = 594 + the frozen D1 + D2 handover page template (a third "previous" revision).
