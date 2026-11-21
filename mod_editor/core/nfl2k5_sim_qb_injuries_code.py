@@ -133,6 +133,10 @@ STABILITY_CALIBRATION = ((1077, 64), (1253, 64), (576, 32), (1210, 64), (1060, 6
 STABILITY_CLUBS = 32                # stability.S CLUBS
 STABILITY_MAX_LISTED = 0x41         # stability.S MAX_LISTED: a larger count is not a club record
 STABILITY_MIN_STARTERS = 8          # stability.S MIN_STARTERS: fewer starters leave the class at 1.0
+# A derived reference outside this factor of the frozen R is a measurement that looks wrong (the Studio then installs the
+# frozen R). On the shipped roster an even Durability change from +10 to -15 points stays inside (factors 0.41 to 1.91);
+# the factor clamp (0.35 to 1.25) bounds what any reference inside it can do.
+STABILITY_REFERENCE_BOUND = (0.4, 2.0)
 
 
 def stability_starters(clubs) -> tuple[tuple[int, int], ...]:
@@ -165,18 +169,31 @@ def stability_reference_for(starters) -> tuple[float, ...]:
     """R x static(roster) / static(calibration roster) per class, from stability_starters() of the disc's roster.
 
     A class with the calibration roster's exact statistic keeps its frozen R, so that roster builds the executable
-    unchanged. A class the game would leave at 1.0 (fewer than 8 starters, or none below K) keeps its frozen R too."""
+    unchanged; so does a class with 1 to 7 starters, which the game leaves at 1.0. Raises ValueError when the measurement
+    looks wrong: a class with no starters, a mean of max(0, K - Durability) that is not finite or not in (0, K], or a
+    derived reference outside STABILITY_REFERENCE_BOUND x R."""
     from fractions import Fraction
+    import math
 
     starters = tuple(tuple(row) for row in starters)
     if len(starters) != len(STABILITY_CLASS_NAMES):
         raise ValueError("The stability statistic needs thirteen classes")
+    low, high = STABILITY_REFERENCE_BOUND
     out = []
-    for frozen, (total, count), (total0, count0) in zip(STABILITY_REFERENCE, starters, STABILITY_CALIBRATION):
-        if (total, count) == (total0, count0) or count < STABILITY_MIN_STARTERS or total <= 0:
+    for name, zero, frozen, (total, count), (total0, count0) in zip(
+            STABILITY_CLASS_NAMES, STABILITY_ZERO_POINTS, STABILITY_REFERENCE, starters, STABILITY_CALIBRATION):
+        if not count > 0:
+            raise ValueError(f"The roster has no {name} starters")
+        mean = total / count
+        if not (math.isfinite(mean) and 0 < mean <= zero):
+            raise ValueError(f"The {name} mean of K - Durability ({mean!r}) is out of range")
+        if (total, count) == (total0, count0) or count < STABILITY_MIN_STARTERS:
             out.append(frozen)
-        else:
-            out.append(float(Fraction(frozen) * total * count0 / (count * total0)))
+            continue
+        value = float(Fraction(frozen) * Fraction(total) * count0 / (Fraction(count) * total0))
+        if not (math.isfinite(value) and low <= value / frozen <= high):
+            raise ValueError(f"The {name} reference {value:.3f} is outside {low} to {high} times {frozen}")
+        out.append(value)
     return tuple(out)
 
 # These native checks cover the master Injury option, selector stack contract, switch tables and shared constants.

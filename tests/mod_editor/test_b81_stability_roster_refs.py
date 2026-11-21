@@ -53,12 +53,23 @@ def _float32(values):
     return struct.unpack(f"<{len(values)}f", struct.pack(f"<{len(values)}f", *values))
 
 
-def synthetic_clubs(seed, low=40, high=95):
+def synthetic_durability(generator, position):
+    """A Durability like the shipped roster's: K - Durability within 8 points of the calibration mean of the position's
+    class (so a league of them is inside the reference bound, and 5 points either way keep every player below K);
+    kickers and punters anywhere from 60 to 90."""
+    index = rules.STABILITY_POSITION_CLASS[position]
+    if index is None:
+        return generator.randrange(60, 91)
+    total, count = rules.STABILITY_CALIBRATION[index]
+    return rules.STABILITY_ZERO_POINTS[index] - round(total / count) + generator.randrange(-8, 9)
+
+
+def synthetic_clubs(seed):
     """32 clubs of 65 listed players: every stored position at ranks 0-3, shuffled and cut to the list limit."""
     generator = random.Random(seed)
     clubs = []
     for _ in range(32):
-        players = [(position, rank, generator.randrange(low, high)) for position in range(17) for rank in range(4)]
+        players = [(position, rank, synthetic_durability(generator, position)) for position in range(17) for rank in range(4)]
         generator.shuffle(players)
         clubs.append(players[:rules.STABILITY_MAX_LISTED])
     return clubs
@@ -103,7 +114,7 @@ class RosterStatistic(unittest.TestCase):
         for index, ((total, count), (total0, count0), frozen) in enumerate(
                 zip(base, rules.STABILITY_CALIBRATION, rules.STABILITY_REFERENCE)):
             self.assertAlmostEqual(before[index], frozen * (total / count) / (total0 / count0), delta=1e-12)
-        for shift in (-SHIFT, -25, 5):
+        for shift in (-SHIFT, -3, 5):
             with self.subTest(shift=shift):
                 moved = rules.stability_starters(shifted_clubs(clubs, shift))
                 # Every Durability stays below its zero point, so each starter's gap moves by exactly -shift.
@@ -129,17 +140,41 @@ class RosterStatistic(unittest.TestCase):
         self.assertEqual({position: (index, rules._TEMPLATE[at + position]) for position, index
                           in enumerate(rules.STABILITY_POSITION_CLASS) if index is not None}, POSITION_RULE)
 
-    def test_classes_the_game_leaves_at_one_keep_the_frozen_reference(self):
+    def test_a_small_class_keeps_r_and_a_measurement_that_looks_wrong_is_refused(self):
         statistic = list(rules.STABILITY_CALIBRATION)
-        statistic[7] = (300, 7)          # fullback: fewer than eight starters
-        statistic[2] = (0, 32)           # center: every starter at or above K
-        statistic[0] = (2 * 1077, 64)    # tackle: twice the calibration mean
+        statistic[7] = (300, 7)          # fullback: 1 to 7 starters, which the game leaves at 1.0: frozen R
+        statistic[0] = (3 * 1077, 128)   # tackle: 1.5 times the calibration mean
         reference = rules.stability_reference_for(statistic)
         self.assertEqual(reference[7], rules.STABILITY_REFERENCE[7])
-        self.assertEqual(reference[2], rules.STABILITY_REFERENCE[2])
-        self.assertEqual(reference[0], 2 * rules.STABILITY_REFERENCE[0])
-        self.assertEqual(reference[1:2] + reference[3:7] + reference[8:], rules.STABILITY_REFERENCE[1:2]
-                         + rules.STABILITY_REFERENCE[3:7] + rules.STABILITY_REFERENCE[8:])
+        self.assertEqual(reference[0], 1.5 * rules.STABILITY_REFERENCE[0])
+        self.assertEqual(reference[1:7] + reference[8:], rules.STABILITY_REFERENCE[1:7] + rules.STABILITY_REFERENCE[8:])
+        wrong = {"a class with no starters": (7, (0, 0)),
+                 "every starter at or above K (mean 0)": (2, (0, 32)),
+                 "a mean above K": (2, (111 * 32, 32)),
+                 "a mean that is not a number": (5, (float("nan"), 96)),
+                 "an infinite mean": (5, (float("inf"), 96))}
+        for label, (index, row) in wrong.items():
+            with self.subTest(label), self.assertRaises(ValueError):
+                bad = list(rules.STABILITY_CALIBRATION)
+                bad[index] = row
+                rules.stability_reference_for(bad)
+
+    def test_a_reference_outside_the_bound_is_refused(self):
+        self.assertEqual(rules.STABILITY_REFERENCE_BOUND, (0.4, 2.0))
+        total, count = rules.STABILITY_CALIBRATION[3]                      # defensive ends, 64 starters
+        for factor, accepted in ((2.0, True), (2.03125, False), (0.40625, True), (0.375, False)):
+            with self.subTest(factor=factor):
+                statistic = list(rules.STABILITY_CALIBRATION)
+                statistic[3] = (round(total * factor * 64), count * 64)    # exactly factor x the calibration mean
+                if accepted:
+                    reference = rules.stability_reference_for(statistic)
+                    self.assertEqual(reference[3], float(rules.STABILITY_REFERENCE[3] * factor))
+                else:
+                    with self.assertRaises(ValueError):
+                        rules.stability_reference_for(statistic)
+        # The shipped roster with every Durability 10 lower (the proof rosters) is inside; 20 lower is not.
+        clubs = synthetic_clubs(81074)
+        rules.stability_reference_for(rules.stability_starters(clubs))
 
     def test_a_league_the_walk_cannot_read_is_refused(self):
         with self.assertRaises(ValueError):
@@ -165,7 +200,9 @@ class NativeWalkMatchesTheReplica(StabilityGate):
         generator = random.Random(81072)
         for club in range(32):
             for _ in range(generator.randrange(40, rules.STABILITY_MAX_LISTED + 1)):
-                self.league.player(club, generator.randrange(17), generator.randrange(5), generator.randrange(30, 115),
+                position = generator.randrange(17)
+                durability = synthetic_durability(generator, position) + generator.choice((0, 0, 0, 0, -12, 25))
+                self.league.player(club, position, generator.randrange(5), max(0, durability),
                                    noise=generator.randrange(1 << 16))
             for _ in range(3):           # off the list (IR, released): not walked
                 self.league.player(club, 14, 0, 1, listed=False)
@@ -353,17 +390,92 @@ class Routes(unittest.TestCase):
         plan = mod_build.sim_qb_disc_edit("x.iso", "y.iso", "retail")
         self.assertEqual(mod_build._sim_qb_stability(plan, qb, "x.iso"), (None, None))
 
-    def test_a_bare_executable_or_an_unreadable_roster_keeps_the_installed_references(self):
+    def test_a_roster_that_cannot_be_measured_or_looks_wrong_gives_the_frozen_references_and_a_sentence(self):
+        _, body = private_fixtures(self)
+        from mod_editor.core import nfl2k5_roster_records as rosters
         plan = mod_build.sim_qb_disc_edit("x.iso", "y.iso", "realistic")
         bare = self.folder / "default.xbe"
         bare.write_bytes(b"\0" * 4096)
-        self.assertEqual(mod_build._sim_qb_stability(plan, qb, bare),
-                         (None, {"source": "bare executable: installed or calibrated references"}))
+        no_tackles = rosters.load_body(body)
+        for club in range(32):
+            for player in no_tackles.team_players(club):
+                if player.record.values["position"] == 14:
+                    player.record.set("position", 13)
+        cases = {
+            "a bare executable": (None, None),
+            "an unreadable roster": (None, rosters.RosterRecordError("foreign roster")),
+            "an exception in the replica": (rosters.load_body(body), None),
+            "a class with no starters": (no_tackles, None),
+            "a reference outside the bound": (roster_with_lower_durability(body, 25), None),
+        }
+        for label, (document, error) in cases.items():
+            with self.subTest(label):
+                seam = (patch.object(mod_build, "_disc_roster", side_effect=error) if error is not None
+                        else patch.object(mod_build, "_disc_roster", return_value=document) if document is not None
+                        else patch.object(mod_build, "_disc_roster", wraps=mod_build._disc_roster))
+                replica = (patch.object(qb, "roster_stability", side_effect=KeyError("durability"))
+                           if label == "an exception in the replica" else patch.object(qb, "_require", wraps=qb._require))
+                with seam, replica:
+                    reference, record = mod_build._sim_qb_stability(plan, qb, bare)
+                self.assertEqual(reference, rules.STABILITY_REFERENCE)
+                self.assertEqual(record["source"], "frozen calibration references")
+                self.assertEqual(record["note"], mod_build.SIM_QB_STABILITY_FALLBACK_NOTE)
+                self.assertTrue(record["reason"])
+        self.assertEqual(mod_build.SIM_QB_STABILITY_FALLBACK_NOTE.count(". "), 0)      # one sentence
+
+    def test_every_route_falls_back_to_the_frozen_references_with_the_sentence(self):
+        xbe, body = private_fixtures(self)
         from mod_editor.core import nfl2k5_roster_records as rosters
-        with patch.object(mod_build, "_disc_roster", side_effect=rosters.RosterRecordError("foreign roster")):
-            reference, record = mod_build._sim_qb_stability(plan, qb, bare)
-        self.assertIsNone(reference)
-        self.assertEqual(record["reason"], "foreign roster")
+        _, shifted = self.lowered(body)
+        treated = qb.apply(xbe, "realistic", reference=shifted)[0]       # a disc whose option holds other references
+        frozen = qb.apply(xbe, "realistic")[0]
+        note = mod_build.SIM_QB_STABILITY_FALLBACK_NOTE
+        unreadable = patch.object(mod_build, "_disc_roster", side_effect=rosters.RosterRecordError("foreign roster"))
+        # Build's own step: the frozen references replace the installed ones; the report gets the sentence.
+        target = self.folder / "output.xiso.iso"
+        target.write_bytes(treated)
+        plan = mod_build.BuildPlan(str(self.folder / "retail.iso"), str(target), console_memory=128,
+                                   sim_qb_injuries="realistic", sim_realism=True, k128_memory=True)
+        receipt, said = {"steps": [], "result": {}}, []
+        with unreadable:
+            mod_build._apply_sim_qb_injuries(plan, target, receipt, lambda text, *_: said.append(text))
+        self.assertEqual(target.read_bytes(), frozen)
+        self.assertEqual(receipt["user_notes"], [note])
+        self.assertEqual(receipt["steps"][0]["user_notes"], [note])
+        self.assertIn(note, said)
+        # edit-sim-qb, the whole route with the copy and compaction stubbed.
+        source, copy = self.folder / "built.xiso.iso", self.folder / "copy.iso"
+        plan = mod_build.sim_qb_disc_edit(str(source), str(copy), "realistic")
+
+        def copied(src, dst, receipt, *_):
+            Path(dst).write_bytes(treated)
+            receipt.setdefault("steps", [])
+        receipt = {}
+        with unreadable, patch.object(mod_build, "_copy_private_build_source", side_effect=copied), \
+                patch.object(mod_build, "_compact_build_disc", return_value=None), \
+                patch.object(mod_build, "inspect", return_value={}), \
+                patch.object(mod_build, "_verify_finished_game_disc", return_value=None):
+            self.assertTrue(mod_build._edit_installed_sim_qb(plan, source, copy, treated, receipt, lambda *_: None,
+                                                             preflight=False, consume=False, reference=None))
+        self.assertEqual(copy.read_bytes(), mod_build._cpu_kick_aim_with_kicking(frozen)[0])
+        self.assertEqual(receipt["user_notes"], [note])
+        self.assertEqual(receipt["sim_qb_source_update"]["stability_reference"]["note"], note)
+        # update-v09 (released disc, preflight): the expected bytes carry the frozen references and the receipt says so.
+        disc = os.environ.get("NFL2K5_V09_XISO")
+        if not disc or not Path(disc).is_file():
+            self.skipTest("the released v0.9 disc image is absent")
+        written, verify = [], mod_build._verify_sim_qb_injuries
+
+        def keep(plan, module, payload):
+            written.append(payload)
+            return verify(plan, module, payload)
+        plan = mod_build.v09_disc_update(disc, str(self.folder / "v09-copy.iso"), sim_qb_injuries="realistic")
+        release = mod_build._v09_reference(Path(disc), mod_build._xbe_bytes(Path(disc)))
+        with unreadable, patch.object(mod_build, "_verify_sim_qb_injuries", new=keep), \
+                patch("mod_editor.core.modpack.hash_file", return_value=release["image_sha256"]):
+            receipt = mod_build._update_v09_disc(plan, lambda *_: None, preflight=True, project=False)
+        self.assertEqual(qb.installed_reference(written[-1]), _float32(rules.STABILITY_REFERENCE))
+        self.assertEqual(receipt["v09_stability_reference"]["note"], note)
 
 
 class LineupRolesKeepTheReferences(unittest.TestCase):

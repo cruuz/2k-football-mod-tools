@@ -2651,26 +2651,39 @@ def _disc_roster(disc):
     return rosters.load_image(disc)
 
 
+# b81 stability (fail safe, coordinator 2026-11-20 22:1x): the one sentence a build report gets when the disc's roster
+# could not be measured or the measurement looked wrong, and the frozen calibrated references were installed instead.
+SIM_QB_STABILITY_FALLBACK_NOTE = (
+    "Simulated injuries: the roster on this disc could not be measured for the long-franchise injury balance, so the "
+    "standard roster's values were used.")
+
+
 def _sim_qb_stability(plan, module, disc):
     """b81 stability references for the roster on this disc (stability review, Medium finding): (reference, record).
 
     Realistic and Custom on a disc image (or a pack folder) measure the disc's own main roster with the game's starter
-    rule (module.roster_stability), so the season-3 factor corrects drift, not a roster difference. Retail, a bare
-    executable (no roster beside it) and a roster the walk cannot read give None: the installer then keeps the
-    references already installed, or writes the frozen calibrated ones. The record goes into the receipt.
+    rule (module.roster_stability), so the season-3 factor corrects drift, not a roster difference. Fail safe: when
+    the roster cannot be measured (a bare executable, an unreadable roster, any exception in the replica) or the result
+    looks wrong (a class without starters, a mean out of range, a reference outside the bound), the build goes on with
+    the frozen calibrated references and the record carries SIM_QB_STABILITY_FALLBACK_NOTE for the build report.
+    Retail measures nothing: (None, None).
     """
     if plan.sim_qb_injuries not in ("realistic", "custom"):
         return None, None
-    from . import nfl2k5_roster_records as rosters
     try:
         document = _disc_roster(disc)
         if document is None:
-            return None, {"source": "bare executable: installed or calibrated references"}
+            raise ValueError("no roster beside a bare executable")
         starters, reference = module.roster_stability(document)
-    except (rosters.RosterRecordError, module.SimQbInjuriesError) as exc:
-        return None, {"source": "disc roster unreadable: installed or calibrated references", "reason": str(exc)}
-    return reference, {"source": "disc roster", "roster_sha256": sha256(bytes(document.body)).hexdigest(),
-                       "starters": [list(row) for row in starters], "reference": list(reference)}
+        reference = tuple(float(value) for value in reference)
+        module._reference32(reference)
+        return reference, {"source": "disc roster", "roster_sha256": sha256(bytes(document.body)).hexdigest(),
+                           "starters": [list(row) for row in starters], "reference": list(reference)}
+    except Exception as exc:  # noqa: BLE001 - never fail the build here and never install a doubtful measurement
+        from . import nfl2k5_sim_qb_injuries_code as code
+        frozen = tuple(code.STABILITY_REFERENCE)
+        return frozen, {"source": "frozen calibration references", "reason": f"{type(exc).__name__}: {exc}",
+                        "reference": list(frozen), "note": SIM_QB_STABILITY_FALLBACK_NOTE}
 
 
 @_core_step("sim_qb_injuries")
@@ -2696,8 +2709,13 @@ def _apply_sim_qb_injuries(plan, target, receipt, progress, *, prepared=None):
     if written != payload:
         raise ValueError("The written quarterback simulator data differs from the requested update.")
     settings = _verify_sim_qb_injuries(plan, module, written)
-    receipt["steps"].append({"step": "sim_qb_injuries", **{k: v for k, v in patch.items() if k != "reservations"},
-                              "settings": settings})
+    step = {"step": "sim_qb_injuries", **{k: v for k, v in patch.items() if k != "reservations"}, "settings": settings}
+    note = (patch.get("stability_reference") or {}).get("note")
+    if note:                      # the frozen references were installed (fail safe): one sentence in the build report
+        progress(note, 0, 0)
+        step["user_notes"] = [note]
+        receipt.setdefault("user_notes", []).append(note)
+    receipt["steps"].append(step)
     receipt["result"]["sim_qb_injuries"] = settings["mode"]
 
 

@@ -96,6 +96,7 @@ def roster_stability(roster):
     Returns ``(starters, reference)``: stability.S's walk over the roster at rest (clubs 0-31, listed players, stored
     position, stored depth rank and Durability) as (sum, starters) per class, and the thirteen references that walk
     gives (``nfl2k5_sim_qb_injuries_code.stability_reference_for``). The calibration roster gives the frozen R.
+    A measurement that looks wrong raises SimQbInjuriesError (the Studio's routes then install the frozen R).
     """
     from . import nfl2k5_roster_records as rosters
     from . import nfl2k5_sim_qb_injuries_code as code
@@ -108,9 +109,9 @@ def roster_stability(roster):
                        player.record.values['durability']) for player in document.team_players(index)])
     try:
         starters = code.stability_starters(clubs)
+        return starters, code.stability_reference_for(starters)
     except ValueError as exc:
         raise SimQbInjuriesError(str(exc)) from exc
-    return starters, code.stability_reference_for(starters)
 
 
 def installed_reference(payload):
