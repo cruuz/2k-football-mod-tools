@@ -5,8 +5,8 @@
   "data/nfl2k5_classic_teams/kits.json": {
    "-": {
     "cls": "iii",
-    "reason": "the Sarasota Seamen jersey mesh (b778-ss1, drawn from the SOFTDRINKTV video references): a dot mesh on every second column in the kit's own colour, the same 3,489 points for both kits; no base texel",
-    "sha256": "183d26c0f433db5fcb2b1624da23dcfc547b79db2da163313c28ff1c6571f1a9"
+    "reason": "the Sarasota Seamen jersey mesh (b778-ss1, drawn from the SOFTDRINKTV video references): a dot mesh on every second column in the kit's own colour, the same 3,489 points for both kits; no base texel; shipped in v0.9, not measured: the classic teams' kits (b778-ss1)",
+    "sha256": "a041ded2ee3c92724e84b26e3e41079cd9983a86158e96d9d8dd535fa5cbc6f9"
    }
   },
   "data/nfl2k5_glyph_fixes_2026_b81u.json": {
@@ -18,7 +18,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "80f39f7e5fccd815b0e78454ccd8b2615504f6b1fd048339488c8e8276d7c891"
+    "sha256": "52eff3861ccfe74db676c4b1f8339c519a33827348f3c76f782d8ae77141c922"
    },
    "02A0:37:digit_derived": {
     "base_equal": 0,
@@ -28,7 +28,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "80f39f7e5fccd815b0e78454ccd8b2615504f6b1fd048339488c8e8276d7c891"
+    "sha256": "52eff3861ccfe74db676c4b1f8339c519a33827348f3c76f782d8ae77141c922"
    },
    "02A2:17:digit_derived": {
     "base_equal": 0,
@@ -38,7 +38,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "80f39f7e5fccd815b0e78454ccd8b2615504f6b1fd048339488c8e8276d7c891"
+    "sha256": "52eff3861ccfe74db676c4b1f8339c519a33827348f3c76f782d8ae77141c922"
    },
    "02A2:37:digit_derived": {
     "base_equal": 0,
@@ -48,7 +48,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "80f39f7e5fccd815b0e78454ccd8b2615504f6b1fd048339488c8e8276d7c891"
+    "sha256": "52eff3861ccfe74db676c4b1f8339c519a33827348f3c76f782d8ae77141c922"
    },
    "02A3:17:digit_derived": {
     "base_equal": 0,
@@ -58,7 +58,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "48f5fd20eb2ec2f81c7d69246f41975a0f840b6416246eedf56f44b32248f521"
+    "sha256": "a32577849d3f75cc8056cba0b9d64028922b1d58d32dc98e0516ae39552ea48b"
    },
    "02A3:37:digit_derived": {
     "base_equal": 0,
@@ -68,7 +68,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "48f5fd20eb2ec2f81c7d69246f41975a0f840b6416246eedf56f44b32248f521"
+    "sha256": "a32577849d3f75cc8056cba0b9d64028922b1d58d32dc98e0516ae39552ea48b"
    },
    "02H0:17:digit_derived": {
     "base_equal": 0,
@@ -78,7 +78,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "64f8522157fb4bd4c3635f3d5890b91fb8114ddcab0511f12509f3ddf3106618"
+    "sha256": "966012ab8543a25558fd379cea5196715178fc91b8a2ce4ccda535185f232418"
    },
    "02H0:37:digit_derived": {
     "base_equal": 0,
@@ -88,7 +88,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "64f8522157fb4bd4c3635f3d5890b91fb8114ddcab0511f12509f3ddf3106618"
+    "sha256": "966012ab8543a25558fd379cea5196715178fc91b8a2ce4ccda535185f232418"
    },
    "02H2:17:digit_derived": {
     "base_equal": 0,
@@ -98,7 +98,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "087de0e8e5e8d56d7a5c98629fb11331b20d73583ede790295a2b214f039c971"
+    "sha256": "211b8543f1963d93331ac2d5cc0c32bcdbf7e6cc7ecb2d6697bbc1b6d787607d"
    },
    "02H2:37:digit_derived": {
     "base_equal": 0,
@@ -108,7 +108,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "64f8522157fb4bd4c3635f3d5890b91fb8114ddcab0511f12509f3ddf3106618"
+    "sha256": "966012ab8543a25558fd379cea5196715178fc91b8a2ce4ccda535185f232418"
    },
    "02H3:17:digit_derived": {
     "base_equal": 0,
@@ -118,7 +118,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "48f5fd20eb2ec2f81c7d69246f41975a0f840b6416246eedf56f44b32248f521"
+    "sha256": "a32577849d3f75cc8056cba0b9d64028922b1d58d32dc98e0516ae39552ea48b"
    },
    "02H3:37:digit_derived": {
     "base_equal": 0,
@@ -128,7 +128,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "48f5fd20eb2ec2f81c7d69246f41975a0f840b6416246eedf56f44b32248f521"
+    "sha256": "a32577849d3f75cc8056cba0b9d64028922b1d58d32dc98e0516ae39552ea48b"
    },
    "07H0:13:digit_derived": {
     "base_equal": 0,
@@ -138,7 +138,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "4fb78599cf425b4346d45b76b3117cdbef3d333f55c58295dfb7d6fc7658a389"
+    "sha256": "4718e94b664702fd4ad9f117df5627cf1ae58ebe83b85df059bb426faa97f8b0"
    },
    "07H0:14:digit_derived": {
     "base_equal": 0,
@@ -148,7 +148,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "2d01a17493d65e9cf8a8eb609f6ba5e30a922654e664d8b4dbd3c80bee0860d7"
+    "sha256": "62e388e981226adb128deae2c03625b9dda247d02b1e60bfd05102bf71ad70c6"
    },
    "07H0:15:digit_derived": {
     "base_equal": 0,
@@ -158,7 +158,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "20ce7c1d550fd41f704d116da5899a73b80adaac50a3b3cd314223c1e38c775b"
+    "sha256": "88ea71bdb0ef6efaac4bc10260a099a0fc8b5bc3a98f72865d0a5444d9d28c0f"
    },
    "07H0:16:digit_derived": {
     "base_equal": 0,
@@ -168,7 +168,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "875c9a0ae431b9fbc48bfac5db0d9b50f179870ba0f89cfaa694cb2d03342d50"
+    "sha256": "724faf4c35a1dfb814092623ffbceb6006115e5da2b68a5866fa96c4e9f9088b"
    },
    "07H0:17:digit_derived": {
     "base_equal": 0,
@@ -178,7 +178,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "a4b0434d6c88aff3d8036add0585660378c9ea6111361fef00810e1021904eec"
+    "sha256": "401e54ea4df52d750c8bebb257e91c02e5ab3d93a48acceef399d416e16a9aa1"
    },
    "07H0:18:digit_derived": {
     "base_equal": 0,
@@ -188,7 +188,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "d76b58ff5830d5d0739e62fd66bfd29bacb2849aef850f3996c2d9731cbd2ad1"
+    "sha256": "41719332f6c58c5604597fd871eeef35205f2bc617a8614aebfe608b1ca94e5f"
    },
    "07H0:19:digit_derived": {
     "base_equal": 0,
@@ -198,7 +198,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "e02166bad5a4b429b113c42c2a3c77ab24a8bbfe1e5def25fc2b3cf405674db1"
+    "sha256": "4b4b8b6e784d499df79726f6e8c630d1b9b21acd4b960ec047da3026bffb2790"
    },
    "07H0:20:digit_derived": {
     "base_equal": 0,
@@ -208,7 +208,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "8b47f97c3c1ab4b7ab9a3ce34639379c933f139ba048814acce871f6311b8c90"
+    "sha256": "a5bb334c7c33c3e8ee62c8d2eddcd68f57aa0dc3f10b77224e23cca1490a8636"
    },
    "07H0:21:digit_derived": {
     "base_equal": 0,
@@ -218,7 +218,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "37e81241cf28cc12c86f852217a9ab21af71874cefca5f06b5d5c95c98f86797"
+    "sha256": "7d084f030895ade0a37747ad052ca2a60ca47073a4e2ecd039f25ea7784b412e"
    },
    "07H0:22:digit_derived": {
     "base_equal": 0,
@@ -228,7 +228,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "10dce8b9e5ab2fabbb457efa91be7126fdbe00ae3c891586f8b46a3f1e788851"
+    "sha256": "a5654b862134fa6cd4f17465c006dceec324fa1cc12ce9e9dc673b4f421b270f"
    },
    "07H0:33:digit_derived": {
     "base_equal": 0,
@@ -238,7 +238,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "4fb78599cf425b4346d45b76b3117cdbef3d333f55c58295dfb7d6fc7658a389"
+    "sha256": "4718e94b664702fd4ad9f117df5627cf1ae58ebe83b85df059bb426faa97f8b0"
    },
    "07H0:34:digit_derived": {
     "base_equal": 0,
@@ -248,7 +248,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "2d01a17493d65e9cf8a8eb609f6ba5e30a922654e664d8b4dbd3c80bee0860d7"
+    "sha256": "62e388e981226adb128deae2c03625b9dda247d02b1e60bfd05102bf71ad70c6"
    },
    "07H0:35:digit_derived": {
     "base_equal": 0,
@@ -258,7 +258,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "20ce7c1d550fd41f704d116da5899a73b80adaac50a3b3cd314223c1e38c775b"
+    "sha256": "88ea71bdb0ef6efaac4bc10260a099a0fc8b5bc3a98f72865d0a5444d9d28c0f"
    },
    "07H0:36:digit_derived": {
     "base_equal": 0,
@@ -268,7 +268,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "875c9a0ae431b9fbc48bfac5db0d9b50f179870ba0f89cfaa694cb2d03342d50"
+    "sha256": "724faf4c35a1dfb814092623ffbceb6006115e5da2b68a5866fa96c4e9f9088b"
    },
    "07H0:37:digit_derived": {
     "base_equal": 0,
@@ -278,7 +278,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "a4b0434d6c88aff3d8036add0585660378c9ea6111361fef00810e1021904eec"
+    "sha256": "401e54ea4df52d750c8bebb257e91c02e5ab3d93a48acceef399d416e16a9aa1"
    },
    "07H0:38:digit_derived": {
     "base_equal": 0,
@@ -288,7 +288,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "d76b58ff5830d5d0739e62fd66bfd29bacb2849aef850f3996c2d9731cbd2ad1"
+    "sha256": "41719332f6c58c5604597fd871eeef35205f2bc617a8614aebfe608b1ca94e5f"
    },
    "07H0:39:digit_derived": {
     "base_equal": 0,
@@ -298,7 +298,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "e02166bad5a4b429b113c42c2a3c77ab24a8bbfe1e5def25fc2b3cf405674db1"
+    "sha256": "4b4b8b6e784d499df79726f6e8c630d1b9b21acd4b960ec047da3026bffb2790"
    },
    "07H0:40:digit_derived": {
     "base_equal": 0,
@@ -308,7 +308,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "8b47f97c3c1ab4b7ab9a3ce34639379c933f139ba048814acce871f6311b8c90"
+    "sha256": "a5bb334c7c33c3e8ee62c8d2eddcd68f57aa0dc3f10b77224e23cca1490a8636"
    },
    "07H0:41:digit_derived": {
     "base_equal": 0,
@@ -318,7 +318,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "37e81241cf28cc12c86f852217a9ab21af71874cefca5f06b5d5c95c98f86797"
+    "sha256": "7d084f030895ade0a37747ad052ca2a60ca47073a4e2ecd039f25ea7784b412e"
    },
    "07H0:42:digit_derived": {
     "base_equal": 0,
@@ -328,7 +328,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "10dce8b9e5ab2fabbb457efa91be7126fdbe00ae3c891586f8b46a3f1e788851"
+    "sha256": "a5654b862134fa6cd4f17465c006dceec324fa1cc12ce9e9dc673b4f421b270f"
    },
    "18A0:13:digit_derived": {
     "base_equal": 0,
@@ -378,7 +378,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "0aafd2d6ecbbc928a6e8f64ce1b91728de5a327d7e66a1cfa83ae16c815fde6e"
+    "sha256": "98eaf40a228b95e94e7bcafdc8a4749317116e0a00cf9b9b31806c123d9fd46e"
    },
    "18A0:18:digit_derived": {
     "base_equal": 0,
@@ -408,7 +408,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "02e856016c3dcca7ab1b60a0bbdada805ededde1aec8d1f6a70b6c8e54c2d7c4"
+    "sha256": "ce9fb97af0928522f3dd5afea60c8dff62f0a4c069d055b63b67eb01434ca90f"
    },
    "18A0:21:digit_derived": {
     "base_equal": 0,
@@ -418,7 +418,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "80d73e85161d17c112bb7edb80bf0cb5117f92291fdb369346f4866891cdb120"
+    "sha256": "3e20ec71398e3f600db933dd1f3acecd6f6c478e2a34d7ed915f087e917abcab"
    },
    "18A0:22:digit_derived": {
     "base_equal": 0,
@@ -478,7 +478,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "0aafd2d6ecbbc928a6e8f64ce1b91728de5a327d7e66a1cfa83ae16c815fde6e"
+    "sha256": "98eaf40a228b95e94e7bcafdc8a4749317116e0a00cf9b9b31806c123d9fd46e"
    },
    "18A0:38:digit_derived": {
     "base_equal": 0,
@@ -508,7 +508,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "02e856016c3dcca7ab1b60a0bbdada805ededde1aec8d1f6a70b6c8e54c2d7c4"
+    "sha256": "ce9fb97af0928522f3dd5afea60c8dff62f0a4c069d055b63b67eb01434ca90f"
    },
    "18A0:41:digit_derived": {
     "base_equal": 0,
@@ -518,7 +518,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "80d73e85161d17c112bb7edb80bf0cb5117f92291fdb369346f4866891cdb120"
+    "sha256": "3e20ec71398e3f600db933dd1f3acecd6f6c478e2a34d7ed915f087e917abcab"
    },
    "18A0:42:digit_derived": {
     "base_equal": 0,
@@ -538,7 +538,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "d294e0b86965c82b107ff2c187ec24a6bf2f5c4ad16a73059b9494b235839afe"
+    "sha256": "7f5c41c5c61ff751addb0e7858a8203aee0b2bc96efcf56acd9d0f3d8510a6a5"
    },
    "18A7:14:digit_derived": {
     "base_equal": 0,
@@ -548,7 +548,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "3d886c35005b1af6ce391ebd10235f90566b50ea3ce81251eb924534cecd3b49"
+    "sha256": "160b3cea2dc26bfc5bd99c4a1b0953eb2c237957e24eeaba4fb34a0f6476f488"
    },
    "18A7:15:digit_derived": {
     "base_equal": 0,
@@ -558,7 +558,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "26fc22a384890a2afedbafeaaf9a343a0f125c8655129f9cee587ef5e4cdce54"
+    "sha256": "59be1c71f6e63d6439cffaab03cd7df92fafb16087928ee6d834c294317d808b"
    },
    "18A7:16:digit_derived": {
     "base_equal": 0,
@@ -568,7 +568,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "2cdc6b00d5258d84a57bb96b1608a59556b4fa1f6e0c857829ecd9144401e042"
+    "sha256": "14432585e6ae4d5534dea04aa8edbcc533e1569dd7f52a49a588faa5108e693d"
    },
    "18A7:17:digit_derived": {
     "base_equal": 0,
@@ -578,7 +578,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "431747b7bf865d5e150050dc73c01dde80123c2cb0679ea581a601753a07a72b"
+    "sha256": "bb2423797562c5d8522788cd1831c9264bd5d240ae9d345c5dbd26f33c15e10c"
    },
    "18A7:18:digit_derived": {
     "base_equal": 0,
@@ -588,7 +588,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "7da2dc1ce7225f86d5dba2c47392ae27f2f7de98377146cf2c68cc75d3cb1a07"
+    "sha256": "02feaa4fa1432553e5dfebad94de3faee84c8c362dd6c60e6fc78edf106a9efa"
    },
    "18A7:19:digit_derived": {
     "base_equal": 0,
@@ -598,7 +598,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "d912a1f37edc3cc4b74ecfd8837d15c4f3874e956ee1c4c84999db61ac1af3a5"
+    "sha256": "8d891112e6ca3b87c9e0190b1ecb02e98b06fe1d53e06fad391f3bc0591837a3"
    },
    "18A7:20:digit_derived": {
     "base_equal": 0,
@@ -608,7 +608,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "7ee5e80ee0688e1d10be69100c3a37febf4d0cd0dd079d3a960f98207c902d91"
+    "sha256": "d35e380b913790ecf98d1dfaf41a841b1acd381f78a9eb6944935ad2c95a37e7"
    },
    "18A7:21:digit_derived": {
     "base_equal": 0,
@@ -618,7 +618,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "771bf9d98f59bd88cb7e8a29c6125680b6b84686d302d87668ca0533f6e57a2d"
+    "sha256": "34cb5aeaed43efd92edb8c05ab8a5c939d625f0950af15b4bdb3a9f493385b15"
    },
    "18A7:22:digit_derived": {
     "base_equal": 0,
@@ -628,7 +628,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "9216d3b2f8dcae2cc53a2e310baf596d950ece4a9dbfe17112ebff6d31194749"
+    "sha256": "b3861c46a2ecffc66ba4f750627d0305e9563a8066e29bc8b703438adfa4b980"
    },
    "18A7:33:digit_derived": {
     "base_equal": 0,
@@ -638,7 +638,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "d294e0b86965c82b107ff2c187ec24a6bf2f5c4ad16a73059b9494b235839afe"
+    "sha256": "7f5c41c5c61ff751addb0e7858a8203aee0b2bc96efcf56acd9d0f3d8510a6a5"
    },
    "18A7:34:digit_derived": {
     "base_equal": 0,
@@ -648,7 +648,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "3d886c35005b1af6ce391ebd10235f90566b50ea3ce81251eb924534cecd3b49"
+    "sha256": "160b3cea2dc26bfc5bd99c4a1b0953eb2c237957e24eeaba4fb34a0f6476f488"
    },
    "18A7:35:digit_derived": {
     "base_equal": 0,
@@ -658,7 +658,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "26fc22a384890a2afedbafeaaf9a343a0f125c8655129f9cee587ef5e4cdce54"
+    "sha256": "59be1c71f6e63d6439cffaab03cd7df92fafb16087928ee6d834c294317d808b"
    },
    "18A7:36:digit_derived": {
     "base_equal": 0,
@@ -668,7 +668,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "2cdc6b00d5258d84a57bb96b1608a59556b4fa1f6e0c857829ecd9144401e042"
+    "sha256": "14432585e6ae4d5534dea04aa8edbcc533e1569dd7f52a49a588faa5108e693d"
    },
    "18A7:37:digit_derived": {
     "base_equal": 0,
@@ -678,7 +678,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "431747b7bf865d5e150050dc73c01dde80123c2cb0679ea581a601753a07a72b"
+    "sha256": "bb2423797562c5d8522788cd1831c9264bd5d240ae9d345c5dbd26f33c15e10c"
    },
    "18A7:38:digit_derived": {
     "base_equal": 0,
@@ -688,7 +688,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "7da2dc1ce7225f86d5dba2c47392ae27f2f7de98377146cf2c68cc75d3cb1a07"
+    "sha256": "02feaa4fa1432553e5dfebad94de3faee84c8c362dd6c60e6fc78edf106a9efa"
    },
    "18A7:39:digit_derived": {
     "base_equal": 0,
@@ -698,7 +698,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "d912a1f37edc3cc4b74ecfd8837d15c4f3874e956ee1c4c84999db61ac1af3a5"
+    "sha256": "8d891112e6ca3b87c9e0190b1ecb02e98b06fe1d53e06fad391f3bc0591837a3"
    },
    "18A7:40:digit_derived": {
     "base_equal": 0,
@@ -708,7 +708,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "7ee5e80ee0688e1d10be69100c3a37febf4d0cd0dd079d3a960f98207c902d91"
+    "sha256": "d35e380b913790ecf98d1dfaf41a841b1acd381f78a9eb6944935ad2c95a37e7"
    },
    "18A7:41:digit_derived": {
     "base_equal": 0,
@@ -718,7 +718,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "771bf9d98f59bd88cb7e8a29c6125680b6b84686d302d87668ca0533f6e57a2d"
+    "sha256": "34cb5aeaed43efd92edb8c05ab8a5c939d625f0950af15b4bdb3a9f493385b15"
    },
    "18A7:42:digit_derived": {
     "base_equal": 0,
@@ -728,7 +728,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "9216d3b2f8dcae2cc53a2e310baf596d950ece4a9dbfe17112ebff6d31194749"
+    "sha256": "b3861c46a2ecffc66ba4f750627d0305e9563a8066e29bc8b703438adfa4b980"
    },
    "18H0:13:digit_derived": {
     "base_equal": 0,
@@ -778,7 +778,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "e602ff42adffdf3446f31d2629aedac9cb7fcf16bf66ce6921610a828444767c"
+    "sha256": "d893e1692180e39c16f0b698d46b2e9db86165f6fcd72fd509bdc261118a76d3"
    },
    "18H0:18:digit_derived": {
     "base_equal": 0,
@@ -808,7 +808,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "daa93c0a87739f46dfe2c4eec77056430fbcef75b90a284791e60be8e9e0ec0c"
+    "sha256": "bb2f189c7c3ba941b87f56ebb656ce3f0b02dc0435f65ddef90bfc961bdbd0dd"
    },
    "18H0:21:digit_derived": {
     "base_equal": 0,
@@ -818,7 +818,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "39ad68eee18ae486b5a19fcf3de876ef035179b5c1158c9dadd2247de6f09aae"
+    "sha256": "7cdefdd3029474cf57572d40b95116fa229f2869e541ba7a07746abc3022a8aa"
    },
    "18H0:22:digit_derived": {
     "base_equal": 0,
@@ -878,7 +878,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "e602ff42adffdf3446f31d2629aedac9cb7fcf16bf66ce6921610a828444767c"
+    "sha256": "d893e1692180e39c16f0b698d46b2e9db86165f6fcd72fd509bdc261118a76d3"
    },
    "18H0:38:digit_derived": {
     "base_equal": 0,
@@ -908,7 +908,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "daa93c0a87739f46dfe2c4eec77056430fbcef75b90a284791e60be8e9e0ec0c"
+    "sha256": "bb2f189c7c3ba941b87f56ebb656ce3f0b02dc0435f65ddef90bfc961bdbd0dd"
    },
    "18H0:41:digit_derived": {
     "base_equal": 0,
@@ -918,7 +918,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "39ad68eee18ae486b5a19fcf3de876ef035179b5c1158c9dadd2247de6f09aae"
+    "sha256": "7cdefdd3029474cf57572d40b95116fa229f2869e541ba7a07746abc3022a8aa"
    },
    "18H0:42:digit_derived": {
     "base_equal": 0,
@@ -938,7 +938,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "d294e0b86965c82b107ff2c187ec24a6bf2f5c4ad16a73059b9494b235839afe"
+    "sha256": "7f5c41c5c61ff751addb0e7858a8203aee0b2bc96efcf56acd9d0f3d8510a6a5"
    },
    "18H7:14:digit_derived": {
     "base_equal": 0,
@@ -948,7 +948,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "3d886c35005b1af6ce391ebd10235f90566b50ea3ce81251eb924534cecd3b49"
+    "sha256": "160b3cea2dc26bfc5bd99c4a1b0953eb2c237957e24eeaba4fb34a0f6476f488"
    },
    "18H7:15:digit_derived": {
     "base_equal": 0,
@@ -958,7 +958,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "26fc22a384890a2afedbafeaaf9a343a0f125c8655129f9cee587ef5e4cdce54"
+    "sha256": "59be1c71f6e63d6439cffaab03cd7df92fafb16087928ee6d834c294317d808b"
    },
    "18H7:16:digit_derived": {
     "base_equal": 0,
@@ -968,7 +968,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "2cdc6b00d5258d84a57bb96b1608a59556b4fa1f6e0c857829ecd9144401e042"
+    "sha256": "14432585e6ae4d5534dea04aa8edbcc533e1569dd7f52a49a588faa5108e693d"
    },
    "18H7:17:digit_derived": {
     "base_equal": 0,
@@ -978,7 +978,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "431747b7bf865d5e150050dc73c01dde80123c2cb0679ea581a601753a07a72b"
+    "sha256": "bb2423797562c5d8522788cd1831c9264bd5d240ae9d345c5dbd26f33c15e10c"
    },
    "18H7:18:digit_derived": {
     "base_equal": 0,
@@ -988,7 +988,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "7da2dc1ce7225f86d5dba2c47392ae27f2f7de98377146cf2c68cc75d3cb1a07"
+    "sha256": "02feaa4fa1432553e5dfebad94de3faee84c8c362dd6c60e6fc78edf106a9efa"
    },
    "18H7:19:digit_derived": {
     "base_equal": 0,
@@ -998,7 +998,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "d912a1f37edc3cc4b74ecfd8837d15c4f3874e956ee1c4c84999db61ac1af3a5"
+    "sha256": "8d891112e6ca3b87c9e0190b1ecb02e98b06fe1d53e06fad391f3bc0591837a3"
    },
    "18H7:20:digit_derived": {
     "base_equal": 0,
@@ -1008,7 +1008,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "7ee5e80ee0688e1d10be69100c3a37febf4d0cd0dd079d3a960f98207c902d91"
+    "sha256": "d35e380b913790ecf98d1dfaf41a841b1acd381f78a9eb6944935ad2c95a37e7"
    },
    "18H7:21:digit_derived": {
     "base_equal": 0,
@@ -1018,7 +1018,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "771bf9d98f59bd88cb7e8a29c6125680b6b84686d302d87668ca0533f6e57a2d"
+    "sha256": "34cb5aeaed43efd92edb8c05ab8a5c939d625f0950af15b4bdb3a9f493385b15"
    },
    "18H7:22:digit_derived": {
     "base_equal": 0,
@@ -1028,7 +1028,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "9216d3b2f8dcae2cc53a2e310baf596d950ece4a9dbfe17112ebff6d31194749"
+    "sha256": "b3861c46a2ecffc66ba4f750627d0305e9563a8066e29bc8b703438adfa4b980"
    },
    "18H7:33:digit_derived": {
     "base_equal": 0,
@@ -1038,7 +1038,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "d294e0b86965c82b107ff2c187ec24a6bf2f5c4ad16a73059b9494b235839afe"
+    "sha256": "7f5c41c5c61ff751addb0e7858a8203aee0b2bc96efcf56acd9d0f3d8510a6a5"
    },
    "18H7:34:digit_derived": {
     "base_equal": 0,
@@ -1048,7 +1048,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "3d886c35005b1af6ce391ebd10235f90566b50ea3ce81251eb924534cecd3b49"
+    "sha256": "160b3cea2dc26bfc5bd99c4a1b0953eb2c237957e24eeaba4fb34a0f6476f488"
    },
    "18H7:35:digit_derived": {
     "base_equal": 0,
@@ -1058,7 +1058,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "26fc22a384890a2afedbafeaaf9a343a0f125c8655129f9cee587ef5e4cdce54"
+    "sha256": "59be1c71f6e63d6439cffaab03cd7df92fafb16087928ee6d834c294317d808b"
    },
    "18H7:36:digit_derived": {
     "base_equal": 0,
@@ -1068,7 +1068,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "2cdc6b00d5258d84a57bb96b1608a59556b4fa1f6e0c857829ecd9144401e042"
+    "sha256": "14432585e6ae4d5534dea04aa8edbcc533e1569dd7f52a49a588faa5108e693d"
    },
    "18H7:37:digit_derived": {
     "base_equal": 0,
@@ -1078,7 +1078,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "431747b7bf865d5e150050dc73c01dde80123c2cb0679ea581a601753a07a72b"
+    "sha256": "bb2423797562c5d8522788cd1831c9264bd5d240ae9d345c5dbd26f33c15e10c"
    },
    "18H7:38:digit_derived": {
     "base_equal": 0,
@@ -1088,7 +1088,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "7da2dc1ce7225f86d5dba2c47392ae27f2f7de98377146cf2c68cc75d3cb1a07"
+    "sha256": "02feaa4fa1432553e5dfebad94de3faee84c8c362dd6c60e6fc78edf106a9efa"
    },
    "18H7:39:digit_derived": {
     "base_equal": 0,
@@ -1098,7 +1098,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "d912a1f37edc3cc4b74ecfd8837d15c4f3874e956ee1c4c84999db61ac1af3a5"
+    "sha256": "8d891112e6ca3b87c9e0190b1ecb02e98b06fe1d53e06fad391f3bc0591837a3"
    },
    "18H7:40:digit_derived": {
     "base_equal": 0,
@@ -1108,7 +1108,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "7ee5e80ee0688e1d10be69100c3a37febf4d0cd0dd079d3a960f98207c902d91"
+    "sha256": "d35e380b913790ecf98d1dfaf41a841b1acd381f78a9eb6944935ad2c95a37e7"
    },
    "18H7:41:digit_derived": {
     "base_equal": 0,
@@ -1118,7 +1118,7 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "771bf9d98f59bd88cb7e8a29c6125680b6b84686d302d87668ca0533f6e57a2d"
+    "sha256": "34cb5aeaed43efd92edb8c05ab8a5c939d625f0950af15b4bdb3a9f493385b15"
    },
    "18H7:42:digit_derived": {
     "base_equal": 0,
@@ -1128,7 +1128,233 @@
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "9216d3b2f8dcae2cc53a2e310baf596d950ece4a9dbfe17112ebff6d31194749"
+    "sha256": "b3861c46a2ecffc66ba4f750627d0305e9563a8066e29bc8b703438adfa4b980"
+   }
+  },
+  "data/nfl2k5_kit_fixes_2026.json": {
+   "25A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 home/away kit pass (uf1, b772): 49ers 80 YEARS patch on the upper left chest",
+    "sha256": "920d2818e55e0b3ff056d55ae86273143d57227957265c13812adada86554749"
+   },
+   "25H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 home/away kit pass (uf1, b772): 49ers 80 YEARS patch on the upper left chest",
+    "sha256": "920d2818e55e0b3ff056d55ae86273143d57227957265c13812adada86554749"
+   },
+   "37A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 home/away kit pass (uf1, b772): Texans 25th-season patch on the upper left chest",
+    "sha256": "bb305b1b79a426d4453aac378fd4a18fb74e33ffe46d2b0a708947bfdaf0974e"
+   },
+   "37H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 home/away kit pass (uf1, b772): Texans 25th-season patch on the upper left chest",
+    "sha256": "0a5220560e16e0759644110714b116b054a9beb025c640d32d9b21c2212f9235"
+   }
+  },
+  "data/nfl2k5_kit_fixes_2026_alts.json": {
+   "00A7:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): Arizona flag patch (red and copper rays over black, copper star) below the swoosh",
+    "sha256": "e79bdbacb0b62a1192cc14e8f7270a5b4b961feb6a65a7a33277397bfe1bad2c"
+   },
+   "00H7:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): Arizona flag patch (red and copper rays over black, copper star) below the swoosh",
+    "sha256": "e79bdbacb0b62a1192cc14e8f7270a5b4b961feb6a65a7a33277397bfe1bad2c"
+   },
+   "03A9:12:txtr": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): pale metallic cracked-ice centre stripe edged in blue",
+    "sha256": "6783fab33383070b64df4835a7b01da6f72d2cfc89fc49044b19e95c5072b8bd"
+   },
+   "03A9:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): blue BUFFALO wordmark above the front number (the small BILLS mark goes)",
+    "sha256": "2b5ad54fc387c2197f53861b15b0fed30d1bbbecca24b4607c5d764ecc984021"
+   },
+   "03A9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): large blue cracked-ice buffalo on each sleeve (the kit's own buffalo art); measured against the retail 03A9/03H9 sleeve: the ten cracked-ice line polygons cover 236 texels, edge overlap 0.0 (the retail sleeve holds no buffalo there; retail-free/buffalo/)",
+    "sha256": "11d4519518fabdfc88af9400b79986c5673f3c2d3835aa39aea6549ddf97e77d"
+   },
+   "03H9:12:txtr": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): pale metallic cracked-ice centre stripe edged in blue",
+    "sha256": "6783fab33383070b64df4835a7b01da6f72d2cfc89fc49044b19e95c5072b8bd"
+   },
+   "03H9:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): blue BUFFALO wordmark above the front number (the small BILLS mark goes)",
+    "sha256": "2b5ad54fc387c2197f53861b15b0fed30d1bbbecca24b4607c5d764ecc984021"
+   },
+   "03H9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): large blue cracked-ice buffalo on each sleeve (the kit's own buffalo art); measured against the retail 03A9/03H9 sleeve: the ten cracked-ice line polygons cover 236 texels, edge overlap 0.0 (the retail sleeve holds no buffalo there; retail-free/buffalo/)",
+    "sha256": "11d4519518fabdfc88af9400b79986c5673f3c2d3835aa39aea6549ddf97e77d"
+   },
+   "05A4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad orange football-shaped GSH patch outlined white on the left chest",
+    "sha256": "136df879c9233aaeed9f3e4835a7395ce9963e0ea8b11bc28e3cc2ba18e4fbdf"
+   },
+   "05H4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad orange football-shaped GSH patch outlined white on the left chest",
+    "sha256": "136df879c9233aaeed9f3e4835a7395ce9963e0ea8b11bc28e3cc2ba18e4fbdf"
+   },
+   "10A5:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): two broad cream bands around a gold centre stripe with black sawtooth edging, moved up",
+    "sha256": "d8b9754f079d96adda15be55e671459fbbad0308a77d4b1b2b5a271633ca3653"
+   },
+   "10H5:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): two broad cream bands around a gold centre stripe with black sawtooth edging, moved up",
+    "sha256": "d8b9754f079d96adda15be55e671459fbbad0308a77d4b1b2b5a271633ca3653"
+   },
+   "11A3:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): charcoal pants with one broad blue panel edged black, with rivets",
+    "sha256": "251487d2407f1c221fdb9826e244c4355c31101a518eb1cf6199f97b08245091"
+   },
+   "11H3:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): charcoal pants with one broad blue panel edged black, with rivets",
+    "sha256": "251487d2407f1c221fdb9826e244c4355c31101a518eb1cf6199f97b08245091"
+   },
+   "15A6:12:txtr": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad dark centre panel with a gold knot chain and ivory and gold borders",
+    "sha256": "3500e1b54f19466c5b1d406b7cb2829bc7a50ec8ae413435bbe5b75a96ad4ca2"
+   },
+   "15A6:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad dark panel with a gold knot chain and ivory and gold edge bands",
+    "sha256": "a208d3287c3571e0eacf12caacafaaa62141e53978eb82b32d6f4192420f6118"
+   },
+   "15A6:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad ivory and gold bands around a dark knot-chain band, moved up from the hem",
+    "sha256": "80321df312bca8d0cb14c9904fef4bf4f9e640ee0676a3b648a1b33d45c86d8f"
+   },
+   "15H6:12:txtr": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad dark centre panel with a gold knot chain and ivory and gold borders",
+    "sha256": "3500e1b54f19466c5b1d406b7cb2829bc7a50ec8ae413435bbe5b75a96ad4ca2"
+   },
+   "15H6:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad dark panel with a gold knot chain and ivory and gold edge bands",
+    "sha256": "a208d3287c3571e0eacf12caacafaaa62141e53978eb82b32d6f4192420f6118"
+   },
+   "15H6:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad ivory and gold bands around a dark knot-chain band, moved up from the hem",
+    "sha256": "80321df312bca8d0cb14c9904fef4bf4f9e640ee0676a3b648a1b33d45c86d8f"
+   },
+   "16A9:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): gray lattice shoulder bars with a dark-blue centre; red stars around the front collar",
+    "sha256": "d1fc76be35ae27492b4a90569e07318c8c72e7416961c39c54a8851fa31c4703"
+   },
+   "16H9:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): gray lattice shoulder bars with a dark-blue centre; red stars around the front collar",
+    "sha256": "d1fc76be35ae27492b4a90569e07318c8c72e7416961c39c54a8851fa31c4703"
+   },
+   "19A6:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): narrow silver centre stripe between dark border bands; silver-outlined oval jet emblem",
+    "sha256": "1e9b27189d6fea2abb94044acd33f77bee0f252f718ed7bb8eb7c231a9c86331"
+   },
+   "19A6:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): gray manhole-cover tread pattern over the black sleeve",
+    "sha256": "ee827f9954fa444eac6720f24f4fef0eafa541eb6c4a38fdc482f36275442942"
+   },
+   "19H6:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): narrow silver centre stripe between dark border bands; silver-outlined oval jet emblem",
+    "sha256": "1e9b27189d6fea2abb94044acd33f77bee0f252f718ed7bb8eb7c231a9c86331"
+   },
+   "19H6:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): gray manhole-cover tread pattern over the black sleeve",
+    "sha256": "ee827f9954fa444eac6720f24f4fef0eafa541eb6c4a38fdc482f36275442942"
+   },
+   "22A5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad black V bands meeting under the collar with fewer broad vertical bars below; yellow inner collar; white-bordered Pittsburgh coat of arms on the upper left",
+    "sha256": "ab3c798d0d07d716f170a3db3859b90f47a432239d601f0af4dfe4d018de97e3"
+   },
+   "22H5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad black V bands meeting under the collar with fewer broad vertical bars below; yellow inner collar; white-bordered Pittsburgh coat of arms on the upper left",
+    "sha256": "ab3c798d0d07d716f170a3db3859b90f47a432239d601f0af4dfe4d018de97e3"
+   },
+   "23A12:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): yellow strip beside a blue halftone panel (the white outer stripe removed)",
+    "sha256": "f59bc1a2975b7b607c2d8e79e4c646babffe3682f17566e25eab11d26c173768"
+   },
+   "23H12:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): yellow strip beside a blue halftone panel (the white outer stripe removed)",
+    "sha256": "f59bc1a2975b7b607c2d8e79e4c646babffe3682f17566e25eab11d26c173768"
+   },
+   "26A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): dark charcoal inner collar; navy feather chevrons continued down both sides of the V; the chest-band wordmark reads SEAHAWKS in full (it was cut to SEAHAV)",
+    "sha256": "ae97d7692981dc27b3a4b6a518236afa2fd664dc45e3a7d7e32e1bb8d75b2427"
+   },
+   "26A3:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broader side panel of dark soundwave marks along a dark border stripe",
+    "sha256": "c9040a75076780d754da8d89e541b76de19546cf761034c018a2ab6351ca5477"
+   },
+   "26H3:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broader side panel of dark soundwave marks along a dark border stripe",
+    "sha256": "c9040a75076780d754da8d89e541b76de19546cf761034c018a2ab6351ca5477"
    }
   },
   "data/nfl2k5_kit_fixes_2026_b81u.json": {
@@ -1340,7 +1566,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "c603f7c9449f0432161299b986ea4d012a0ac3f08be4493420e6430c63a83e82"
+    "sha256": "40a5bcbccd10e93ebd377908680bf324b68491bab7e29bf06c0be48d6874edc6",
+    "small_box_edge_base": 0.1556,
+    "small_box_edge_retail": 0.1724,
+    "small_box_texels": 17
    },
    "03H0:1:tset": {
     "base_equal": 0,
@@ -1390,7 +1619,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "c603f7c9449f0432161299b986ea4d012a0ac3f08be4493420e6430c63a83e82"
+    "sha256": "40a5bcbccd10e93ebd377908680bf324b68491bab7e29bf06c0be48d6874edc6",
+    "small_box_edge_base": 0.1556,
+    "small_box_edge_retail": 0.1724,
+    "small_box_texels": 17
    },
    "04A0:1:tset": {
     "base_equal": 0,
@@ -1612,6 +1844,20 @@
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
     "sha256": "b41f50d6676c48cea1be026b7818e6f01584c7981090f45b5111c16d5e07f2fc"
    },
+   "07H0:3:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "c65f337cf025fc08e8067c848d108c3cc7881286749db02aae2345821803832f",
+    "small_box_edge_base": 0.0237,
+    "small_box_edge_retail": 0.0246,
+    "small_box_texels": 12
+   },
    "07H7:1:tset": {
     "base_equal": 0,
     "cls": "iii",
@@ -1710,7 +1956,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; DETROIT drawn italic by code (Noah's decision 6)",
-    "sha256": "3542f549528d84554894e090956e89b0528fb4c5e3ea150bfe1ac56ec51f9e90"
+    "sha256": "1d6505d74499af5e5f80190ed89bd775f8d6c25904673d1df6b36f106f5029b8",
+    "small_box_edge_base": 0.0199,
+    "small_box_edge_retail": 0.0097,
+    "small_box_texels": 11
    },
    "09A9:2:tset": {
     "base_equal": 0,
@@ -1750,7 +1999,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; DETROIT drawn italic by code (Noah's decision 6)",
-    "sha256": "3542f549528d84554894e090956e89b0528fb4c5e3ea150bfe1ac56ec51f9e90"
+    "sha256": "1d6505d74499af5e5f80190ed89bd775f8d6c25904673d1df6b36f106f5029b8",
+    "small_box_edge_base": 0.0199,
+    "small_box_edge_retail": 0.0097,
+    "small_box_texels": 11
    },
    "09H9:2:tset": {
     "base_equal": 0,
@@ -1790,7 +2042,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "7e8de2a136543d0835dace896af79bbe757f29db86a8324d285a15cfebedcb4b"
+    "sha256": "fec5fc66c4cfd85071cced6a46559d1cecab4747121746c783486ea8e06e6649",
+    "small_box_edge_base": 0.0952,
+    "small_box_edge_retail": 0.0825,
+    "small_box_texels": 23
    },
    "10H0:1:tset": {
     "base_equal": 0,
@@ -1820,7 +2075,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "7e8de2a136543d0835dace896af79bbe757f29db86a8324d285a15cfebedcb4b"
+    "sha256": "fec5fc66c4cfd85071cced6a46559d1cecab4747121746c783486ea8e06e6649",
+    "small_box_edge_base": 0.0952,
+    "small_box_edge_retail": 0.0825,
+    "small_box_texels": 23
    },
    "11A0:1:tset": {
     "base_equal": 0,
@@ -1940,7 +2198,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: swoosh recoloured by rule (ramp); Dolphins sleeve logo drawn from the repo's data/nfl2k5_scorebug_assets/logos/mia.png (the mod's own logo) at its 2026 size",
-    "sha256": "cdd3315381f06d8c352acdad1ec7814da47b75c7b1a61afc37fb1afa169d32e3"
+    "sha256": "e6eace267aa7a560521efbb67ba5a388f6d8cda94b1b28f31c78050d36ef31cf",
+    "small_box_edge_base": 0.2048,
+    "small_box_edge_retail": 0.1504,
+    "small_box_texels": 346
    },
    "14A10:1:tset": {
     "base_equal": 3,
@@ -1970,7 +2231,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: Dolphins sleeve logo drawn from the repo's data/nfl2k5_scorebug_assets/logos/mia.png (the mod's own logo) at its 2026 size",
-    "sha256": "cdabc2a8eed239372f0b15f7f7228dffca294bf3dcf7b0cab0d24c57c0827b89"
+    "sha256": "cb064136600ffc55eb060674fca7663c9065a984eef9f7f123dec65a36bd21e7",
+    "small_box_edge_base": 0.2334,
+    "small_box_edge_retail": 0.1611,
+    "small_box_texels": 462
    },
    "14H10:1:tset": {
     "base_equal": 3,
@@ -2130,7 +2394,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
-    "sha256": "72e30ae49d7ef25c4dee62e8ef51e6e2ca598447e5cfa1ea06778e9b5cde52af"
+    "sha256": "ef7529cfbf177606e9390a777b31133a2053673d5582fd4cb1c3b7bb7f62bd9d",
+    "small_box_edge_base": 0.1587,
+    "small_box_edge_retail": 0.1176,
+    "small_box_texels": 10
    },
    "17A1:1:tset": {
     "base_equal": 0,
@@ -2210,7 +2477,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: chest ny drawn from the repo's NYG logo at 12 x 10 beside the redrawn shield; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "0351547652397404c9acbb0d6230164e3cbbc6aa195a5cdc9322c632af5a43be"
+    "sha256": "e28e6b7ac185d4d753d3dcd10137ae4c6ac46d9c1753f26d5b9391831b31e45b",
+    "small_box_edge_base": 0.2101,
+    "small_box_edge_retail": 0.194,
+    "small_box_texels": 26
    },
    "18A7:1:tset": {
     "base_equal": 5,
@@ -2230,7 +2500,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: chest ny drawn from the repo's NYG logo at 12 x 10 beside the redrawn shield; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "f43fbe20d42d0f8de60054b894f41b82901f9c8baf81ed7cf913b54f0121751a"
+    "sha256": "e746ad43e949f2aa23b847acc40508698682f54d7b3db71fb3731998ae6af5ef",
+    "small_box_edge_base": 0.2101,
+    "small_box_edge_retail": 0.194,
+    "small_box_texels": 26
    },
    "18H7:1:tset": {
     "base_equal": 5,
@@ -2410,7 +2683,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "43872b27c872438f8beaa453cd1acf908067fe89161ad1dcc77da57a76753659"
+    "sha256": "771c22e848650844c562798e27e21539c82f18a95b63f80e34c48e65e4ed9ce7",
+    "small_box_edge_base": 0.1364,
+    "small_box_edge_retail": 0.0,
+    "small_box_texels": 6
    },
    "21H0:1:tset": {
     "base_equal": 25,
@@ -2460,7 +2736,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "43872b27c872438f8beaa453cd1acf908067fe89161ad1dcc77da57a76753659"
+    "sha256": "771c22e848650844c562798e27e21539c82f18a95b63f80e34c48e65e4ed9ce7",
+    "small_box_edge_base": 0.1364,
+    "small_box_edge_retail": 0.1875,
+    "small_box_texels": 6
    },
    "22A0:1:tset": {
     "base_equal": 0,
@@ -2520,7 +2799,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: sol band and white band drawn by rule at their 2026 place and width",
-    "sha256": "fed38bcf097f13db58d420b6a055465c9eef22b35ef762095e6f22accfdda222"
+    "sha256": "ca8bc5620e3d76416f2ce8f71372024fe633798ee66aa2f069a75a7a0d020237",
+    "small_box_edge_base": 0.0084,
+    "small_box_edge_retail": 0.0,
+    "small_box_texels": 43
    },
    "23A10:1:tset": {
     "base_equal": 0,
@@ -2720,7 +3002,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "198f222c53463e5b3ad40a648a0e380922eec3e7e92d0d837b668bedd2d0b922"
+    "sha256": "ab4497a4be325dfac7573eed3fc5b15f5b7fd0a9cf2d9358fe1ea9181a23db52",
+    "small_box_edge_base": 0.0964,
+    "small_box_edge_retail": 0.1242,
+    "small_box_texels": 23
    },
    "26A4:1:tset": {
     "base_equal": 0,
@@ -2750,7 +3035,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "b0ac8aaa7a26a9fc58fe8205a383f270c46ace6ab0fdc07b686bc36407c9b118"
+    "sha256": "51828f760d2d0289cd2c125f357bd241911842890be55b73316560190dfb698c",
+    "small_box_edge_base": 0.0964,
+    "small_box_edge_retail": 0.1242,
+    "small_box_texels": 23
    },
    "26H4:1:tset": {
     "base_equal": 0,
@@ -2760,7 +3048,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: 26H0's panels copied by rule (stamp of the pinned donor + a colour-pair map); only the drawn collar shield ships",
-    "sha256": "9ab6283dc227c2953696d793791f6052b83a51a0090498f1cf7ea159b51be5f0"
+    "sha256": "4ce4b67f06608a33444c5700b12b57cd503a440b09df59f7682fc284c9189986",
+    "small_box_edge_base": 0.1408,
+    "small_box_edge_retail": 0.1133,
+    "small_box_texels": 56
    },
    "27A0:1:tset": {
     "base_equal": 0,
@@ -2770,7 +3061,10 @@
     "follows_base": false,
     "measured": true,
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "cf6e30f989083ef6f7a904e638a565a38d96cb70908bf7d68f8d0da2d8f95e44"
+    "sha256": "b3be35df7dd28c87599e0d3dfb4d0a579ae27e169a61e760baa2dd0932c45a1e",
+    "small_box_edge_base": 0.119,
+    "small_box_edge_retail": 0.1071,
+    "small_box_texels": 22
    },
    "27A0:2:tset": {
     "base_equal": 0,
@@ -2865,7 +3159,10 @@
    "29A0:1:tset": {
     "cls": "iii",
     "reason": "ruling 1: Commanders road shoulder swoosh, added to this list by ruling: retail 29H0 and 29A0 carry no swoosh; the shape is the project's own swoosh from its 29H0 sleeve art, laid on the body by work/fix/R2C/tools/waspaint.py through the game jersey mesh; it sits where the project's own v0.9 swoosh was, which a clear rule removes; its colours blend white with the kit burgundy. Measured (retail-free/REVIEW_ME.md section 18): the swoosh texels' edge overlap 0.047 against the retail torso and 0.165 against the base the build holds at this step, none equal to either. The row's collar shield is drawn from data/nfl2k5_espn25_fields/source/nfl_2008.png (class iii family b81u-collar-shield-undersized)",
-    "sha256": "c2891154df46399fb4c2774d89caa79d3cf117791361bd217af17809d2207d72"
+    "sha256": "bde95e94e17e696ac9a66eca1577da7a19f92cbde2def5ae33d13e962f7df2ed",
+    "small_box_edge_base": 0.0377,
+    "small_box_edge_retail": 0.0179,
+    "small_box_texels": 87
    },
    "29A9:1:tset": {
     "base_equal": 0,
@@ -2996,6 +3293,632 @@
     "measured": true,
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
     "sha256": "c193f1cc2572314b5549e64a6684cb1346c5ec2d876462cab68418b1335d63ff"
+   }
+  },
+  "data/nfl2k5_kit_fixes_2026_ku1.json": {
+   "13A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the Chiefs kit pass (ku1, b776): 2026 red; the AFL (Lamar Hunt) roundel at its real size and place on the player's left chest",
+    "sha256": "e666df004fd542deb59a778ad7865f48e712e9ef1e5ac3a86c2345ca255e3c17"
+   },
+   "13H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the Chiefs kit pass (ku1, b776): 2026 red; the AFL (Lamar Hunt) roundel at its real size and place on the player's left chest",
+    "sha256": "e666df004fd542deb59a778ad7865f48e712e9ef1e5ac3a86c2345ca255e3c17"
+   }
+  },
+  "data/nfl2k5_kit_fixes_2026_sw1.json": {
+   "00H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "edbcd937db60287b456034d04aca085f135280c3b67ba1d40a7c6ec834184160"
+   },
+   "00H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "45f93d6cf00ef38217ce65aa6ee5afb98e13da60a8eaedbf3a76dedbd8203058"
+   },
+   "03A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "a67c93775d64fc12bd608acdde9b51d689a6e3a8bf0b5211d93c395bbe3abcf2"
+   },
+   "03A3:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f3380135c379b564fad010a633f2188a14ee6ffb087888cee12e212084341538"
+   },
+   "03A8:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "fb0c88b7a567f6988bd1d660e9d4a89e60687d9d1eebee8aba31a0b70adecbfd"
+   },
+   "03H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "9130d232452a59c5897ed61f27c11bb79fb5c7af898f65dc362b814912bd20fe"
+   },
+   "03H3:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f3380135c379b564fad010a633f2188a14ee6ffb087888cee12e212084341538"
+   },
+   "03H8:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "fb0c88b7a567f6988bd1d660e9d4a89e60687d9d1eebee8aba31a0b70adecbfd"
+   },
+   "05A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "6dd39cb83d09cf70911990ed4108c7f7fcbe6a24f030f77c00361bb420f3fb4b"
+   },
+   "05A4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "025b6c1c3ebd4073ec4403033de5cac9eb95595816c311fc88817a43aa878d8a"
+   },
+   "05H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "a44273f498a9043901c553072ff807e7686b9e42b18eafd9a5474edee20ca09c"
+   },
+   "05H4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "025b6c1c3ebd4073ec4403033de5cac9eb95595816c311fc88817a43aa878d8a"
+   },
+   "07A7:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f796d4b95eff2b3785abd54ca12e57f6f75ae0573aba0e562143c6f0b7d15b76"
+   },
+   "07A9:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "1be77819090f57a8712a92bd586159dee6cfac43619b8fe0f943449b2a90e368"
+   },
+   "07A9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "45be988dd6b2558c48fd6df2d49dcd8bb1ccba81a6ed2558e249dc492a138777"
+   },
+   "07H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "30590affd445eecfb47af6ced8bb0e5160273645e6e0379d9a96182f551ddee0"
+   },
+   "07H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "6b9fb7390321c29aae2f847f2d4949ae9fb53d8e0709d379160bef99a79ab21d"
+   },
+   "07H7:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f796d4b95eff2b3785abd54ca12e57f6f75ae0573aba0e562143c6f0b7d15b76"
+   },
+   "07H9:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "1be77819090f57a8712a92bd586159dee6cfac43619b8fe0f943449b2a90e368"
+   },
+   "07H9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "45be988dd6b2558c48fd6df2d49dcd8bb1ccba81a6ed2558e249dc492a138777"
+   },
+   "09A2:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7dd063de4dd0addba346243fa5ff5a67440abcb95757a81191bb8745aa613d20"
+   },
+   "09A9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "44f3a14f7241066bf7e91f9aed05cb414e68f1a69ebb1870ef81872fe63fe26b"
+   },
+   "09H2:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7dd063de4dd0addba346243fa5ff5a67440abcb95757a81191bb8745aa613d20"
+   },
+   "09H9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "44f3a14f7241066bf7e91f9aed05cb414e68f1a69ebb1870ef81872fe63fe26b"
+   },
+   "10A5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d5353d296141c39e5f822069f99e6bce30e60bc7abaa16655c5aef4e841de1f3"
+   },
+   "10H5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d5353d296141c39e5f822069f99e6bce30e60bc7abaa16655c5aef4e841de1f3"
+   },
+   "11A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "e9a3ae0afaab23e16ac57a60c2ca66cfbf6f91a5b9f087b9dcbd170b0a2a78f8"
+   },
+   "11A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "62118c56a47aa3b5b5090b4b7914daa9f54939bb6e3b2b8207f8593a861bb60c"
+   },
+   "11A4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "dc5bfd5297cdccbcc733419f672a30aa47db70ff629419e9f026e010417c0f59"
+   },
+   "11A4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "3a8c374a9929d7bb5009599efbd8f8b4f65fa0d3c0f8e8c7c7f702a4019fbf1a"
+   },
+   "11H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7b11a0f19f47ef9ee6e886d4c2e1b05e2dd44182d7d7756d35d9d2768e0c117c"
+   },
+   "11H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "fb17600eb82c0efcb7b875b194268b015ac968399426d91df59ccc94259fcdd1"
+   },
+   "11H4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d0d4925006bd665a8fcecc368a4effd4e751716512e49e6e774643428e75c693"
+   },
+   "11H4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "507818938430e42979f19ee83a33a5db555318c858450466f642086ec21cd652"
+   },
+   "12A5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "1b8802cbf055b36b2eb618d28dfb2fd1dc08a28f5f900fe7d3c2360015b09169"
+   },
+   "12H5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "1b8802cbf055b36b2eb618d28dfb2fd1dc08a28f5f900fe7d3c2360015b09169"
+   },
+   "13A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "43f2dd7178a30fde31eff389574b5665c722adf1f841b3f50a5009ae85e15cd0"
+   },
+   "13A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "6b3c8a274b5db38d15ed8bcc35c59b658e8411e5851370782c267a8a257236e9"
+   },
+   "13H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "736db7c24b56bdb54579df34cb3446d854a159e97cd4242fa3802445c4c44df0"
+   },
+   "13H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "a737c5af8e593cf46c639b5e59155b2fed966e3adea07661e5c0faf19dc2ba0e"
+   },
+   "16A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d6c50c0f52911a7c443272afee442ca76db43fdaea3aec7158621a5ed04820d6"
+   },
+   "16A4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7f68612a9afb5eccdfdeb4c6be233dd462f5b59d41d2c8c83ed424de8a36d128"
+   },
+   "16A4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "c8083886ea40448396ed19bb915ba518faec2d46603d08a632970058fc74ffec"
+   },
+   "16A9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "b1de6b2e5bd58470a4122bba085f5752e534cc6b78724c8d0c7d1a4cf1b447d5"
+   },
+   "16H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "a3a244f7019ad0f938c669d94812114bc37a231899a350f8cf8cf97c7d09c3dc"
+   },
+   "16H4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7f68612a9afb5eccdfdeb4c6be233dd462f5b59d41d2c8c83ed424de8a36d128"
+   },
+   "16H4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "c8083886ea40448396ed19bb915ba518faec2d46603d08a632970058fc74ffec"
+   },
+   "16H9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "b1de6b2e5bd58470a4122bba085f5752e534cc6b78724c8d0c7d1a4cf1b447d5"
+   },
+   "19A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "01b6a1416e7a03e200e2c81da869ad2fe5c6d99da669a567df3dd08f63521856"
+   },
+   "19A7:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "fc70a152a94afc49849e982246b1a15cd341e91f342bcfccffe2f4517fb2e013"
+   },
+   "19H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7ac0a85615b68f3810fb57b8bd1cc4cc42f900588b23f455cec7746ca0f384ba"
+   },
+   "19H7:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "fc70a152a94afc49849e982246b1a15cd341e91f342bcfccffe2f4517fb2e013"
+   },
+   "20A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "21b7ff8e554ceb622906eed5500fe68f8b4f287bf66f3b01e3e9de6ce51067e3"
+   },
+   "20A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "926552991f6681537e5ec8b5637d7681d8259479d6fec2d7766bf2e80cd907f1"
+   },
+   "20A4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "21b7ff8e554ceb622906eed5500fe68f8b4f287bf66f3b01e3e9de6ce51067e3"
+   },
+   "20A4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "926552991f6681537e5ec8b5637d7681d8259479d6fec2d7766bf2e80cd907f1"
+   },
+   "20H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "cc4134df140d6c48f7086c8cc93f3642239888f3b57efaa0abd332bc4d3796a6"
+   },
+   "20H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f4d3be18d983a4de2fe92a70f662e783ed828e452f45937ecc42140dd15a6015"
+   },
+   "20H4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "21b7ff8e554ceb622906eed5500fe68f8b4f287bf66f3b01e3e9de6ce51067e3"
+   },
+   "20H4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "926552991f6681537e5ec8b5637d7681d8259479d6fec2d7766bf2e80cd907f1"
+   },
+   "22A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "08ab1213f64893570ac97e61f467f2550f33b7dedb47c09efcbe1704be29a6fd"
+   },
+   "22A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "eb1c005545f47b2250cc78d964a34e6a25c5c0e11df89c73ee288d05dc928f35"
+   },
+   "22A5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f61cf24d5075f16db33b75afe1829a8fb4d19816c687646b78ebccd359221686"
+   },
+   "22H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "469b52615705908cc2a5751183a3d23864da5a0cc1c7225192d4fc4b7422ac54"
+   },
+   "22H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "8d4407c47a15a6c60057f3caef24318fb08d8ba8b06fcf885df472d2e5f1e823"
+   },
+   "22H5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "edf8dc86f17b4e9cc93dc00aaba2ffae4ee16ed119d7e4dca503c2ba819ca81c"
+   },
+   "23A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d4caa254379c591fcb5d8b644b45dc02e5f299d599e4110c015c3a395c92adde"
+   },
+   "23A10:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "add930eac093700fd5e4f406d4202bec849ad3965969963b399fe1aa388c6339"
+   },
+   "23A10:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "c32c00530778912e4cec7d6c9012f54d64fc7f0b501240e7d1fc232cd3f54ebc"
+   },
+   "23A11:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "b2e93cc38755bb106d6079d2c804c25627b7b173f8790a6da5ed586f8b7b9888"
+   },
+   "23A12:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "ae0e8dc56bcfd1b856e5f1bae2d649392397f82a326def9e4db5060dd0c138bd"
+   },
+   "23H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "37426a9b03170580b7d5bbf0ca81454e39ccf185a5f3ef5128923578b40111db"
+   },
+   "23H10:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "add930eac093700fd5e4f406d4202bec849ad3965969963b399fe1aa388c6339"
+   },
+   "23H10:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "c32c00530778912e4cec7d6c9012f54d64fc7f0b501240e7d1fc232cd3f54ebc"
+   },
+   "23H11:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "b2e93cc38755bb106d6079d2c804c25627b7b173f8790a6da5ed586f8b7b9888"
+   },
+   "23H12:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "ae0e8dc56bcfd1b856e5f1bae2d649392397f82a326def9e4db5060dd0c138bd"
+   },
+   "26A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "0ee4d9c5599489ce9f900cb9a4817dc5998e678706c0121f15f5cb0d1e6fc93e"
+   },
+   "26H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "0e95a6aeac0ca70d46b113dd07cbce428e4ceeb2415d2de6982808ca586f773d"
+   },
+   "27A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f007342c2e75b6a528336cc6e4345ba23a8cca056a134b51bb3d7e140a2a86fa"
+   },
+   "27A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d75219c9c72eaf19bd1f1b8f17859eb09b24544ed74151fc894f8dfd47420b75"
+   },
+   "27A2:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "c0015a3d959a78c10b9fb82a0f0c0205242597c022ea9b891ed08ca1a97fb6db"
+   },
+   "27A6:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d3f88b934186f5df69cb75fd39e5ff2dff9ca8bf61f4b7a4b91bbc97ad776650"
+   },
+   "27A6:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "ab567815348ed69bb8e436551ad3ea5e7a37e41c1d35e20487f8c24048e0543b"
+   },
+   "27H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "00a8fb3528169f9505a6910c42554ee3054e4ff6eae58d02f6730ade65455736"
+   },
+   "27H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "461b56c13ff7b38a1fe1e060734233cde5fb11984baa17e90b4b757821761068"
+   },
+   "27H2:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "c0015a3d959a78c10b9fb82a0f0c0205242597c022ea9b891ed08ca1a97fb6db"
+   },
+   "27H6:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d3f88b934186f5df69cb75fd39e5ff2dff9ca8bf61f4b7a4b91bbc97ad776650"
+   },
+   "27H6:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "ab567815348ed69bb8e436551ad3ea5e7a37e41c1d35e20487f8c24048e0543b"
+   },
+   "28A7:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "3462dccabcab3c5d204c243cfdf2048aa3532e061a4b1b2275ed04e169c3dcb2"
+   },
+   "28H7:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "3462dccabcab3c5d204c243cfdf2048aa3532e061a4b1b2275ed04e169c3dcb2"
+   },
+   "29A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "3a0cae6f42417996bae3e6f7d7d067841ba63c46687d7856468213b3d0864366"
+   },
+   "30A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "54f4f8bdc9c74fa1362aa79a8dd4ba360f45a43f2dde88d4112d041496dd6be2"
+   },
+   "30A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "6389268ea59770784ff162d548c2e4e4d23a3b9b19368c75338a175a0f933ae2"
+   },
+   "30A4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f45a119a15c3b4b8b8d4f5236618ad421fc71f78ddfbac2fce98a960269a93ea"
+   },
+   "30A4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d4b2af5b171bd54739b0ef5b9388ebcf5fe6488d47ac035056b387660d42647f"
+   },
+   "30H4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f45a119a15c3b4b8b8d4f5236618ad421fc71f78ddfbac2fce98a960269a93ea"
+   },
+   "30H4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d4b2af5b171bd54739b0ef5b9388ebcf5fe6488d47ac035056b387660d42647f"
+   },
+   "37H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "5ea90e5ec5380dcb0a694948b08e1268147875037d498bb4ed498fb9b45f734d"
+   },
+   "37H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7474dfa98e6aead84c34054fbf701206cb647d6fa1f88862bfe900610aad9920"
+   }
+  },
+  "data/nfl2k5_moment_kits.json": {
+   "-": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 25th Anniversary moment kits' vector art (b775)",
+    "sha256": "6cbb091d2a2ea40136864a9a6e13d8b53f93447e784653a639ae64749ba2243f"
+   }
+  },
+  "data/nfl2k5_uniform_alternates_2026_u3b.json": {
+   "-": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the u3b alternate uniforms' remix boxes (b777)",
+    "sha256": "37c5270c67b795541242a591f7daa9f405d535802d5a5a04e7730d8df1f5cb0c"
    }
   }
  },

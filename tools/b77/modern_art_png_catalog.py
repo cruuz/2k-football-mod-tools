@@ -406,41 +406,24 @@ def excluded(relative: str, digest: str) -> str | None:
 #: b81-retail-free-art (review F5): data documents that may carry texel data (``paint`` operations: the texels a
 #: redraw adds over the glyph the build holds). Every paint operation is listed in the catalog by row with its SHA-256
 #: and texel count, so the release gate refuses any texel data in a data file that was not reviewed here.
-TEXEL_OPS = {"paint": "runs", "runs": "rows", "texels": "points"}
+def _release(repo: Path):
+    """The release check of ``repo`` (its texel walk is the one the gate runs: one definition, no drift)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("release_check_walk", repo / "packaging/check_2k5_mod_studio_release.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
-def texel_rows(document) -> dict:
-    """b81-retail-free-art (review F5): {"<selector>:<chunk>:<kind>": [texel operations]} of a data document: every
-    operation that stores texels (a glyph ``paint`` with ``runs``, a kit-fix ``runs`` with ``rows``, a kit-fix
-    ``texels`` with ``points``), grouped by the row that holds it ("-" outside a row). Same walk as the release check."""
-    out = {}
-    pending = [(document, "-")]
-    while pending:
-        value, owner = pending.pop()
-        if isinstance(value, dict):
-            key = TEXEL_OPS.get(value.get("op"))
-            if key is not None and key in value:
-                out.setdefault(owner, []).append(value)
-                continue
-            if "selector" in value and "chunk" in value:
-                owner = f"{value['selector']}:{value['chunk']}:{value.get('kind', '')}"
-            pending.extend((item, owner) for item in reversed(list(value.values())))
-        elif isinstance(value, list):
-            pending.extend((item, owner) for item in reversed(value))
-    return out
+def texel_rows(document, repo: Path = Path(__file__).resolve().parents[2]) -> dict:
+    """b81-retail-free-art: {"<selector>:<chunk>:<kind>": [operations holding texel data]} of a data document, by the
+    release check's own walk (texel runs and lists, glyph keep runs, warp masks, boxes and polygons under 16 texels,
+    clears below threshold 0)."""
+    return _release(repo)._texel_rows(document)
 
 
-def texel_count(op: dict) -> int:
-    if op["op"] == "texels":
-        return len(op["points"])
-    width = 8 if op["op"] == "paint" else 6
-    total = 0
-    for y, x0, values in op[TEXEL_OPS[op["op"]]]:
-        if not (isinstance(y, int) and isinstance(x0, int) and isinstance(values, str) and values
-                and len(values) % width == 0 and all(c in "0123456789ABCDEF" for c in values.upper())):
-            raise SystemExit("malformed texel run")
-        total += len(values) // width
-    return total
+def texel_count(op: dict, repo: Path = Path(__file__).resolve().parents[2]) -> int:
+    return _release(repo)._op_texels(op)
 
 
 def paint_section(repo: Path) -> dict:
@@ -448,16 +431,17 @@ def paint_section(repo: Path) -> dict:
     release check refuses texel data that is not exactly this (review F5: no pixel data rides in a JSON document past
     the PNG gate). The digest is SHA-256 of the row's texel operations as compact sorted JSON."""
     out = {}
+    release = _release(repo)
     for path in sorted((repo / "data").rglob("*.json")):
         try:
             document = json.loads(path.read_text(encoding="utf-8"))
         except (ValueError, UnicodeDecodeError):
             continue
-        rows = texel_rows(document)
+        rows = release._texel_rows(document)
         if rows:
             out[path.relative_to(repo).as_posix()] = {"rows": {
                 owner: dict(sha256=sha256(json.dumps(ops, sort_keys=True, separators=(",", ":")).encode("ascii")),
-                            texels=sum(texel_count(op) for op in ops))
+                            texels=sum(release._op_texels(op) for op in ops))
                 for owner, ops in sorted(rows.items())}}
     return out
 
@@ -482,7 +466,7 @@ def judged_paint_section(repo: Path) -> dict:
                 reasons.append(line["reason"])
             row.update(cls=line["cls"], why=reasons.index(line["reason"]),
                        passes=line["cls"] in ("i", "iii") or bool(line.get("passes")))
-            for key in ("edge_overlap", "base_equal"):
+            for key in ("edge_overlap", "base_equal", "small_box_texels", "small_box_edge_base", "small_box_edge_retail"):
                 if key in line:
                     row[key] = line[key]
         entry["reasons"] = reasons                    # rows name their reason by its place in this list (size)

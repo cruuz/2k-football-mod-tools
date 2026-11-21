@@ -100,11 +100,17 @@ class ReviewedPaint(unittest.TestCase):
         self.assertEqual(len(glyph), PAINTED_ROWS)
         self.assertIn("data/nfl2k5_kit_fixes_2026_b81u.json", self.catalog["paint"])
         # ruling 2, round 3: every helmet row and every sea1, sw1 and uf3 row is a build-time rule; those documents
-        # store no texel at all (four dead rows of uf3 and sea1 deleted by ruling)
-        for name in ("kit_fixes_2026_b81", "kit_fixes_2026_sea1", "kit_fixes_2026_sw1", "kit_fixes_2026_uf3"):
+        # store no texel at all (dead rows deleted by ruling). Fix 1: sw1's warp masks are texel data, listed and judged
+        # class iii by name (the destination footprints of sw1's warp of the project's donor swoosh); nothing else.
+        for name in ("kit_fixes_2026_b81", "kit_fixes_2026_sea1", "kit_fixes_2026_uf3"):
             document = json.loads((ROOT / ("data/nfl2k5_%s.json" % name)).read_text(encoding="utf-8"))
             self.assertEqual(self.release._texel_rows(document), {}, name)
             self.assertNotIn("data/nfl2k5_%s.json" % name, self.catalog["paint"])
+        sw1 = json.loads((ROOT / "data/nfl2k5_kit_fixes_2026_sw1.json").read_text(encoding="utf-8"))
+        rows = self.release._texel_rows(sw1)
+        self.assertTrue(rows and all(op["op"] == "warp" for ops in rows.values() for op in ops))
+        entry = self.catalog["paint"]["data/nfl2k5_kit_fixes_2026_sw1.json"]
+        self.assertTrue(all(v["cls"] == "iii" and "donor swoosh" in entry["reasons"][v["why"]] for v in entry["rows"].values()))
         for relative in self.catalog["paint"]:                      # the release check's walk finds the same rows
             document = json.loads((ROOT / relative).read_text(encoding="utf-8"))
             self.assertEqual(sorted(self.release._texel_rows(document)), sorted(self.catalog["paint"][relative]["rows"]))

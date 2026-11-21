@@ -368,11 +368,7 @@ def recipes():
     for sel in ("16H4", "16A4"):
         add(sel, (1, ne_ops(), ["ur1-16H4-shoulder-bars", "uw2-NE-home-4-shoulder-bands", "uw2-NE-away-4-shoulder-bands"],
                   "clean equal white/blue/white shoulder bars over the shoulder top (ragged, and down to the armpit)"))
-    for sel in ("03H8", "03A8"):
-        for chunk in (11, 12):
-            add(sel, (chunk, buf_outline_ops(chunk), ["ur1-03H8-helmet-outline", "uw2-BUF-home-8-helmet-graphic",
-                                                      "uw2-BUF-away-8-helmet-graphic"],
-                      "a continuous white outline round the blue buffalo and the red streak (it was scattered dots)"))
+    # 03H8/03A8 chunks 11 and 12 (the buffalo's white outline): deleted. b81-retail-free-art (coordinator's ruling, 2026-11-21, fix 3): rows that never write in a beta 81 build (the step finds another input than their before pin and skips them) and carry shape data are deleted.
     for sel in ("02H0", "02A0"):
         for chunk in (12,):
             add(sel, (chunk, bal_ops(chunk), ["N03", "ur1-02-helmet-remnants"],

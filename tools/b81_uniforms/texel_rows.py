@@ -38,6 +38,7 @@ from mod_editor.core import nfl2k5_kit_fixes_2026 as kf  # noqa: E402
 import kitfix_convert as kc  # noqa: E402
 import glyph_derive as gd  # noqa: E402
 import modern_art_png_catalog as catalog  # noqa: E402
+RELEASE = catalog._release(ROOT)
 
 OUT = ROOT / 'packaging/nfl2k5_texel_rows.json'
 SCHEMA = 'nfl2k5_texel_rows/v1'
@@ -137,6 +138,76 @@ PATTERNS = {
               "on every second column in the kit's own colour, the same 3,489 points for both kits; no base texel"),
     },
 }
+
+
+# fix 1 (coordinator's ruling (b), 2026-11-21): documents this lane never touched, shipped in v0.9. Their small polygons,
+# pieces and boxes are texel data now; their inputs exist only inside a build (earlier steps write them), so they are
+# listed as class iii, named per row family from the row's own note, plainly "shipped in v0.9, not measured". The point
+# is to freeze them: each row's shape data is hashed in the catalog, so the gate refuses any change. A second capturing
+# build to measure them is in retail-free/LATER.md (not for beta 81).
+FROZEN_V09 = {
+    "data/nfl2k5_kit_fixes_2026.json": "the 2026 home/away kit pass (uf1, b772)",
+    "data/nfl2k5_kit_fixes_2026_alts.json": "the 2026 alternate kits (uf2, b772-b773)",
+    "data/nfl2k5_kit_fixes_2026_ku1.json": "the Chiefs kit pass (ku1, b776)",
+    "data/nfl2k5_moment_kits.json": "the 25th Anniversary moment kits' vector art (b775)",
+    "data/nfl2k5_classic_teams/kits.json": "the classic teams' kits (b778-ss1)",
+    "data/nfl2k5_uniform_alternates_2026_u3b.json": "the u3b alternate uniforms' remix boxes (b777)",
+}
+# measured anyway on request (coordinator, item 4): the Bills cracked-ice lines against the retail sleeve of the slot
+FROZEN_MEASURED = {
+    ("data/nfl2k5_kit_fixes_2026_alts.json", sel + ":3:tset"): (
+        "measured against the retail 03A9/03H9 sleeve: the ten cracked-ice line polygons cover 236 texels, edge overlap "
+        "0.0 (the retail sleeve holds no buffalo there; retail-free/buffalo/)") for sel in ("03A9", "03H9")}
+# sw1 (coordinator's ruling): its warp masks are the destination footprints of sw1's warp of the project's donor
+# swoosh (10H0:3), quadrilaterals of the warp grid clipped to the sleeve island; no colour
+SW1_WARP = ("the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's "
+            "quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)")
+
+
+def frozen_reason(relative, owner, row):
+    family = FROZEN_V09[relative]
+    note = (row or {}).get("note") if isinstance(row, dict) else None
+    text = f"shipped in v0.9, not measured: {family}" + (f": {note[:160]}" if isinstance(note, str) and note else "")
+    extra = FROZEN_MEASURED.get((relative, owner))
+    return text + ("; " + extra if extra else "")
+
+
+def small_box_mask(ops, shape):
+    """The union of every box under 16 texels in a row's operations (painting boxes and keep-outs together)."""
+    m = np.zeros(shape, bool)
+    for op in ops:
+        for _key, b in RELEASE._boxes_in(op):
+            if RELEASE._box_area(b) < RELEASE.SMALL:
+                m[max(0, b[1]):max(0, b[3]), max(0, b[0]):max(0, b[2])] = True
+    return m
+
+
+def small_box_line(row, ops, raw):
+    """The reviewer's per-row rule: the small boxes' edge overlap against the base the step holds (the released disc,
+    where every b81u input is its before pin) and against the retail texture of the same slot."""
+    c = kf._chunk_for(raw, row['chunk'])
+    span = raw[c.offset:c.end_offset]
+    base = kc.level0(span, row) if sha(span) == row['before_sha256'] else None
+    shape = base.shape[:2] if base is not None else None
+    retail = None
+    source = RETAIL(row['selector'])
+    if source is not None:
+        try:
+            rc = kf._chunk_for(source, row['chunk'])
+            retail = kc.level0(source[rc.offset:rc.end_offset], row)
+        except Exception:                                 # noqa: BLE001 - a slot the retail disc does not hold
+            retail = None
+    shape = shape or (retail.shape[:2] if retail is not None else None)
+    if shape is None:
+        return dict(small_box_texels=None, small_box_edge_base=None, small_box_edge_retail=None)
+    m = small_box_mask(ops, shape)
+    if not m.any():
+        return {}
+    out = dict(small_box_texels=int(m.sum()))
+    out['small_box_edge_base'] = round(kc.edge_overlap(m, base), 4) if base is not None and base.shape[:2] == shape else None
+    out['small_box_edge_retail'] = (round(kc.edge_overlap(m, retail), 4)
+                                    if retail is not None and retail.shape[:2] == shape else None)
+    return out
 
 
 def sha(data):
@@ -311,7 +382,12 @@ def main():
                         line.update(cls='ii', reason='authored row, but unmeasured or an erasure is still stored',
                                     passes=False, **measured)
                 elif owner in PATTERNS.get(relative, {}):
-                    line.update(cls='iii', reason=PATTERNS[relative][owner])
+                    line.update(cls='iii', reason=PATTERNS[relative][owner] + (
+                        "; " + frozen_reason(relative, owner, row) if relative in FROZEN_V09 else ""))
+                elif relative in FROZEN_V09:
+                    line.update(cls='iii', reason=frozen_reason(relative, owner, row), measured=False)
+                elif relative == "data/nfl2k5_kit_fixes_2026_sw1.json" and all(op['op'] == 'warp' for op in ops):
+                    line.update(cls='iii', reason=SW1_WARP, measured=False)
                 else:
                     line.update(cls='ii', reason='the base is built from the user\'s retail disc at build time')
                     if row is not None:
@@ -321,6 +397,8 @@ def main():
                         line.update(measured=False)
                     line['passes'] = bool(line.get('measured') and line['edge_overlap'] <= EDGE_OVERLAP_LIMIT
                                           and line['base_equal'] == 0 and not line['follows_base'])
+                if row is not None and 'selector' in row and 'chunk' in row and relative not in FROZEN_V09:
+                    line.update(small_box_line(row, ops, package(row['selector'])))
                 out[owner] = line
             rows_out[relative] = out
     document = dict(schema=SCHEMA, limit=EDGE_OVERLAP_LIMIT, rows=rows_out,

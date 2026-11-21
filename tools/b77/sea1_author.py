@@ -257,7 +257,7 @@ def helmet_ops():
 # ruling (b81-retail-free-art, 2026-11-20). A beta 81 build never holds their input (the helmet pass b81 owns these
 # two textures from the state they find, data/nfl2k5_kit_fixes_2026_b81.json), so they never wrote; they also stored
 # the old red dotted remnants' places as a texel list.
-HELMET_ROWS = ("26H0", "26A0")
+HELMET_ROWS = ()      # 26H0/26A0 chunk 12 deleted as well (b81-retail-free-art (coordinator's ruling, 2026-11-21, fix 3): rows that never write in a beta 81 build (the step finds another input than their before pin and skips them) and carry shape data are deleted)
 
 
 DIGIT_SCALE = [3, 5]

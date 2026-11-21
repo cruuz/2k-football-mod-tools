@@ -208,7 +208,7 @@ class Data(unittest.TestCase):
         earlier = {(r["selector"], r["chunk"]): r for r in fixes.spec()["textures"] + fixes.alternates()["textures"]}
         both = [r for r in fixes.finish()["textures"] if (r["selector"], r["chunk"]) in earlier]
         self.assertEqual(sorted((r["selector"], r["chunk"]) for r in both),
-                         [("03A0", 3), ("03A8", 12), ("03H8", 12), ("05A0", 3), ("05H0", 3), ("08A0", 3),
+                         [("03A0", 3), ("05A0", 3), ("05H0", 3), ("08A0", 3),
                           ("08A5", 3), ("08A6", 3), ("08H0", 3), ("08H5", 3), ("08H6", 3), ("13A0", 3), ("16A4", 1),
                           ("16H4", 1), ("19A0", 3), ("19H0", 3), ("29A0", 12), ("29H0", 12), ("37A2", 3),
                           ("37H2", 3)])
@@ -217,8 +217,8 @@ class Data(unittest.TestCase):
             self.assertEqual((r["before_sha256"], r["offset"], r["length"]), (e["after_sha256"], e["offset"], e["length"]))
 
     def test_documents_are_separate_and_unchanged(self):
-        self.assertEqual(len(fixes.spec()["textures"]), 60)
-        self.assertEqual(len(fixes.alternates()["textures"]), 544)
+        self.assertEqual(len(fixes.spec()["textures"]), 58)        # b81-retail-free-art: dead rows deleted by ruling
+        self.assertEqual(len(fixes.alternates()["textures"]), 534)
         self.assertEqual(len({fixes.DATA, fixes.DATA_ALTS, fixes.DATA_UF3}), 3)
 
     def test_no_private_paths_in_data(self):
