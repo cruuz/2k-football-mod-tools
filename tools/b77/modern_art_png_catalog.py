@@ -38,8 +38,10 @@ FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2
            "data/nfl2k5_relief_2026_b81u/",  # b81-retail-free-art: the 2026 relief as differences (no retail base)
            "data/nfl2k5_glyph_fixes_2026_b81u/",  # b81-retail-free-art: the b81u digits and name strips drawn new or
                                                   # edited from the project's own glyph art
+           "data/nfl2k5_kit_rule_fill/",  # b81-retail-free-art: pictures the 2026 helmet rule reads (SOURCES.json)
            "data/nfl2k5_scorebug_digit_glyphs.png")  # b780: the scorebug digit sheet's glyph layer (one file)
-CLASSIFICATION = ("b779 pt1's real portrait atlases are the official NFL.com / ESPN headshot photographs of the created real free agents, cropped and reduced to the game's 128 x 128 P8 portrait format (Noah 2026-10-28: the card shows the real picture, like the NFL roster does); the original photo files never ship, only these game-format portraits. "
+CLASSIFICATION = ("b81-retail-free-art: data/nfl2k5_kit_rule_fill/ holds what the 2026 helmet rule reads at build time instead of stored texels: logo_02_0.png and logo_25_0.png are the SOFTDRINK league project's own 2026 logo files (assets p8:3102:logo_02_0 and logo_25_0, byte copies), bal_dark_mark_2026.png is the Ravens dark alternate mark cut from the Wikimedia Commons diagram 'Baltimore Ravens Uniforms (2026)' by TheGoodGeneral 1 under CC BY 4.0 (attributed in NOTICE.md; the release check refuses it without that entry); records in its SOURCES.json. "
+    "b779 pt1's real portrait atlases are the official NFL.com / ESPN headshot photographs of the created real free agents, cropped and reduced to the game's 128 x 128 P8 portrait format (Noah 2026-10-28: the card shows the real picture, like the NFL roster does); the original photo files never ship, only these game-format portraits. "
                   "b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), "
                   "reviewed face by face; no photograph or retail-extracted pixels. "
                   "b778 ss1's Seamen card, field and face art is drawn from the video references and the authored kit. "

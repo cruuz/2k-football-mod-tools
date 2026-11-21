@@ -333,7 +333,7 @@ ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "c621d94c4f48f26ab6c44e912dd5d5ff7a36d070
 # (b778 cf1-cf4: photo-derived likeness textures, Noah 2026-10-12; see the catalog's classification). It grants no general PNG
 # exception inside those folders; tools/b77/modern_art_png_catalog.py regenerates it and prints the digest below.
 MODERN_ART_PNG_CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
-MODERN_ART_PNG_CATALOG_SHA256 = "6b7be5fbfc1d9a9f9083c7369ae0cdca7676bd303a4b0c08887187961c3d1b3b"  # b81-retail-free-art round 3 + round 2 (R2-G): the texel data of every data document is listed (glyph paint, kit-fix runs and texels); b81-retail-free-art round 3: no layout mask ships (146 relief files), the reviewed paint of the glyph document is listed; b81-retail-free-art: + the 2026 relief as differences (147 files: no retail-derived map) and the 387 b81u glyph pictures drawn new or edited from project art (the 231 retail-derived ones ship as build-time operations or as the texels that differ from the build's glyph); b780 pillowfont: + the scorebug digit glyph layer (939 files); b780-rst2: + 121 more real portraits (faces_03 filled, a fifth atlas pair faces_04: the 119 players the 11/03 refresh creates, Thorson and Masses); b780-b9: + 49 more real portraits in faces_03 (the no-photo players the pt1 target list missed); b779-int1: rf3 + pt1 regenerated together (936 files); b779-pt1: + the 8 real free-agent portrait atlases; b779-rf3: + new rookie face atlases (faces_14..16); b778 cf5: seven scanned coach heads (ARI BUF DEN HOU LV NO SEA); b778 3d1: classification names the scanned heads as photo-derived; b778-pg2: + the TROPHY ROOM emblem; b778-ee1: + the 4 gray alien PNGs; b778-ss1: + the 15 Seamen card/field/face PNGs; b778-rh1/rh2: + the 18 rookie face bank atlases; b778 cf1: four scanned coach heads; b778 cf2: seven scanned coach heads and the PIT rescan; b778 cf3: seven scanned coach heads; b778 cf4: seven scanned coach heads, KC head.png in place of head_mask + head_overlay; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
+MODERN_ART_PNG_CATALOG_SHA256 = "7a6f93cbec3d3b051495a8eced4cbf95b34a73c55c6259d4183001048d0c624b"  # b81-retail-free-art round 3 + round 2 (R2-G): the texel data of every data document is listed (glyph paint, kit-fix runs and texels); b81-retail-free-art round 3: no layout mask ships (146 relief files), the reviewed paint of the glyph document is listed; b81-retail-free-art: + the 2026 relief as differences (147 files: no retail-derived map) and the 387 b81u glyph pictures drawn new or edited from project art (the 231 retail-derived ones ship as build-time operations or as the texels that differ from the build's glyph); b780 pillowfont: + the scorebug digit glyph layer (939 files); b780-rst2: + 121 more real portraits (faces_03 filled, a fifth atlas pair faces_04: the 119 players the 11/03 refresh creates, Thorson and Masses); b780-b9: + 49 more real portraits in faces_03 (the no-photo players the pt1 target list missed); b779-int1: rf3 + pt1 regenerated together (936 files); b779-pt1: + the 8 real free-agent portrait atlases; b779-rf3: + new rookie face atlases (faces_14..16); b778 cf5: seven scanned coach heads (ARI BUF DEN HOU LV NO SEA); b778 3d1: classification names the scanned heads as photo-derived; b778-pg2: + the TROPHY ROOM emblem; b778-ee1: + the 4 gray alien PNGs; b778-ss1: + the 15 Seamen card/field/face PNGs; b778-rh1/rh2: + the 18 rookie face bank atlases; b778 cf1: four scanned coach heads; b778 cf2: seven scanned coach heads and the PIT rescan; b778 cf3: seven scanned coach heads; b778 cf4: seven scanned coach heads, KC head.png in place of head_mask + head_overlay; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
 
 # sb3: Noah (2026-10-28) cleared real logos for this free fan mod, so his real Super Bowl event logos, network marks
 # and team-season logos ship as the bundled default. This is a separate exact catalog, not an authored-art exception:
@@ -425,6 +425,34 @@ def _texel_rows(document: object) -> dict:
         elif isinstance(value, list):
             pending.extend((item, owner) for item in reversed(value))
     return out
+
+
+# b81-retail-free-art (coordinator, 2026-11-20): third-party pictures that ship under a licence requiring attribution are
+# recorded in these SOURCES files; each such file ships only with its NOTICE.md entry, and every PNG beside a SOURCES file
+# needs its record.
+THIRD_PARTY_SOURCES = ("data/nfl2k5_kit_rule_fill/SOURCES.json",)
+
+
+def _check_third_party_notices(root: Path, shipped: set) -> None:
+    """Refuse a shipped picture without its source record, or a third-party one (``licence`` in its record) whose
+    NOTICE.md attribution is missing: every string of the record's ``notice`` list must appear in NOTICE.md."""
+    notice = (root / "NOTICE.md").read_text(encoding="utf-8") if "NOTICE.md" in shipped else ""
+    for record in THIRD_PARTY_SOURCES:
+        folder = record.rsplit("/", 1)[0] + "/"
+        pictures = sorted(r for r in shipped if r.startswith(folder) and r.lower().endswith(".png"))
+        if not pictures:
+            continue
+        if record not in shipped:
+            raise ReleaseCheckError(f"pictures ship without their source record: {record}")
+        files = json.loads((root / record).read_text(encoding="utf-8")).get("files", {})
+        for relative in pictures:
+            row = files.get(relative[len(folder):])
+            if not isinstance(row, dict):
+                raise ReleaseCheckError(f"picture ships without its source record: {relative}")
+            if row.get("licence"):
+                needed = row.get("notice")
+                if not needed or relative not in needed or any(text not in notice for text in needed):
+                    raise ReleaseCheckError(f"third-party picture ships without its NOTICE.md attribution: {relative}")
 
 
 def _check_paint(relative: str, path: Path, reviewed: dict) -> None:
@@ -883,6 +911,7 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
     for relative in sorted(seen_files):
         if relative.endswith(".json") and relative.startswith("data/"):
             _check_paint(relative, release_root / relative, reviewed_paint)
+    _check_third_party_notices(release_root, seen_files)
     missing_files = sorted(exact - seen_files)
     missing_prefixes = sorted(prefix for prefix in prefixes if prefix not in seen_directories)
     if missing_files or missing_prefixes:
