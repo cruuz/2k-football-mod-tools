@@ -63,11 +63,16 @@ class ProjectSettings(unittest.TestCase):
         from mod_editor.core import nfl2k5_sim_realism as simulator, nfl2k5_sim_qb_injuries as medical
         from mod_editor.core import nfl2k5_xbe_space as space
 
-        cases = (("NFL2K5_V09_XISO", "d78088f9ba47c6197e99ea540d0bc3d2c9255f7cd49152a77946be70dacab866", "legacy"),
-                 ("NFL2K5_B81_REVIEWED_TEST_DISC", "98dd732945fb665a8d7fe771650d61c1098015cda4917ac83037059db477008e", "applied"))
-        if any(not os.environ.get(variable) for variable, _, _ in cases):
+        from mod_editor.core import nfl2k5_sim_qb_injuries_code as code
+
+        # b81 stability: the main roster of each disc (both have the calibration roster's starters and Durability).
+        cases = (("NFL2K5_V09_XISO", "d78088f9ba47c6197e99ea540d0bc3d2c9255f7cd49152a77946be70dacab866", "legacy",
+                  "8d2b2f50aa19679e4e3a6a783d7137acef96a5975b2ce22bef8ede037c26f42c"),
+                 ("NFL2K5_B81_REVIEWED_TEST_DISC", "98dd732945fb665a8d7fe771650d61c1098015cda4917ac83037059db477008e", "applied",
+                  "70813bd95d1265b40009fb611569e2e1ffcce02bf17a5f73476e8f55ffa3d157"))
+        if any(not os.environ.get(variable) for variable, _, _, _ in cases):
             self.skipTest("private released and reviewed standard disc images are absent")
-        for variable, digest, source_state in cases:
+        for variable, digest, source_state, roster in cases:
             source = Path(os.environ[variable])
             with self.subTest(source=variable):
                 before = mod_build._xbe_bytes(source)
@@ -93,6 +98,9 @@ class ProjectSettings(unittest.TestCase):
                         "source_sha256": digest, "result_sha256": hashlib.sha256(aim.apply(current)[0]).hexdigest(),
                         "source_simulator": source_state, "simulator_upgraded": source_state == "legacy",
                         "settings": medical.read_settings(current),
+                        "stability_reference": {"source": "disc roster", "roster_sha256": roster,
+                                                "starters": [list(row) for row in code.STABILITY_CALIBRATION],
+                                                "reference": list(code.STABILITY_REFERENCE)},
                     })
                     self.assertFalse(target.exists())
 
