@@ -1619,7 +1619,7 @@ class Nfl2k5UnifiedVisualProvider:
         "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_8.png": "5c1385b458f26e11bc5d04bf9884ca1936f74fbe42144c0a0f7a03c4fdeb93ec",
         "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_9.png": "c75073a37930a06be156832835ba4c8bf6821a5cb4342f3514b288d40c316add",
         "data/nfl2k5_kit_fixes_2026_b81.json": "2852c4b44017652eff0fd60cecadb73cd60f554ae7cf3ea911561344570187d6",
-        "data/nfl2k5_kit_fixes_2026_b81u.json": "4007173218fac959873b818f630f905b59efafdbaba9fcdc98ac4a126f07a12c",
+        "data/nfl2k5_kit_fixes_2026_b81u.json": "02189a0f26cce5067c89bfaeb62562754761a7000fb60c0849f41c1ba05c8c94",
         "data/nfl2k5_sideline_2026_b81u.json": "99467fc250d25538123b89f2cc9280d7c2b9589d612eeaea1ca92463d7c7e9b3",
         "data/nfl2k5_relief_2026_b81u.json": "e7bf44e4360bb5a34a198937abb9b3df74d2dc1bb478bc65e966bc39384b6372",
         "data/nfl2k5_relief_2026_b81u/difference_jersey.png": "f4d24e2c69457b2b08c9ffb9fd9e3c023bea9d41e342842907b8286323f28387",
