@@ -1160,8 +1160,9 @@ class ReplayP2a2502(unittest.TestCase):
         link = m.get(VA + room.LINK_IR_STORE)
         page = room.page_bytes(VA, settings, ir_store_va=link)
         m.uc.mem_write(VA, page[:room.CODE_LIMIT])
-        start, size = getattr(room, "CODE_TAIL", (0, 0))
-        m.uc.mem_write(VA + start, page[start:start + size])
+        # Every code piece: since C23 the floor's `listed` is in the middle one.
+        for start, size in (getattr(room, "CODE_MID", (0, 0)), getattr(room, "CODE_TAIL", (0, 0))):
+            m.uc.mem_write(VA + start, page[start:start + size])
         m.uc.ctl_flush_tb()
         root = m.get(0xB72918)
         self.table, self.team = m.get(root + 4), m.get(root + 0x1C) + 500 * 8

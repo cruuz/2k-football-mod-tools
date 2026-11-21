@@ -335,8 +335,10 @@ class BuildWiringTests(unittest.TestCase):
         if not source.is_file():
             self.skipTest("the retail disc is absent")
         plan = build.apply_preset(build.BuildPlan(str(source), str(ROOT / "never-written.xiso.iso")), "softdrink_experimental")
+        # b81 qb34: the Experimental preset's quarterback room rules need the SPECIAL rows too and are checked first;
+        # with them on Retail the refusal is the gadget rule's own.
         with self.assertRaisesRegex(ValueError, "needs the SPECIAL depth chart rows"):
-            build.preflight_plan(replace(plan, gadget_play=True, depth_chart_rows=False))
+            build.preflight_plan(replace(plan, gadget_play=True, depth_chart_rows=False, qb_room="retail"))
         self.assertFalse((ROOT / "never-written.xiso.iso").exists())
 
     def test_the_single_setting_edit_of_a_built_disc(self):

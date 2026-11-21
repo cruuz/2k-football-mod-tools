@@ -31,6 +31,16 @@ sys.path[:0] = [str(ROOT), str(ROOT / "tests")]
 from mod_editor.core import mod_build, modpack_sources  # noqa: E402
 from mod_editor.core import nfl2k5_sim_qb_injuries as _sim_qb_injuries  # noqa: E402  b81 merge
 from mod_editor.core import nfl2k5_build_settings as settings  # noqa: E402
+
+
+def room_module():
+    from mod_editor.core import nfl2k5_qb_room as room
+    return room
+
+
+def _room():
+    from mod_editor.core import nfl2k5_qb_room as room
+    return room
 import tests.mod_editor.test_b780_int_first_pass as first_pass  # noqa: E402
 
 ROOM_ROW = (0x1529000, 0x3000, 0x1000)
@@ -249,7 +259,8 @@ class StudioRuleTests(unittest.TestCase):
                 # The key names piece 3's rules; the floor follows the injuries (coordinator's rule, 2026-11-20).
                 self.assertEqual(mod_build._qb_room_resolution(plan)[0], explicit)
                 piece3 = mod_build._piece3_bits() if explicit == "realistic" else 0
-                self.assertEqual(mod_build._qb_room_plan(plan)[:2], ("realistic", 64 | piece3))
+                e_bits = room_module().REALISTIC_STAGES & room_module().E_BITS if piece3 else 0  # C21: E1/E2 with both
+                self.assertEqual(mod_build._qb_room_plan(plan)[:2], ("realistic", 64 | piece3 | e_bits))
                 self.assertEqual(plan.to_recipe()["qb_room"], explicit)
         old = {"preset": "softdrink_experimental", "overrides": {}}
         self.assertIsNone(mod_build._qb_room_level(modpack_sources.build_plan(old)))
@@ -275,14 +286,13 @@ class StudioRuleTests(unittest.TestCase):
                 recipe = root / "frozen.json"
                 recipe.write_text(json.dumps({"preset": preset, "overrides": {},
                                               "inputs": {"teams_2026": {"project": str(root / "league.json")}}}))
-                qb, room = MagicMock(), MagicMock()
+                qb, room, scoring = MagicMock(), MagicMock(), MagicMock()
                 qb.read_settings.return_value = qb_state
+                # b81 integration (scoring merged): a pack also reads the disc's simulated scoring sites
+                scoring.installed.return_value = ("retail", None)
                 room.read_settings.return_value = {"status": room_status, "stages": 1 if room_status == "applied" else 0}
                 from mod_editor.core import nfl2k5_qb_room as real_room
                 room.PIECE3_BITS, room.REALISTIC_STAGES = real_room.PIECE3_BITS, real_room.REALISTIC_STAGES
-                # Since the combined merge the read-back also asks the simulated scoring module (it rides with the option).
-                scoring = MagicMock()
-                scoring.installed.return_value = ("applied", {"breakaway_stop_beyond": 72})
                 modules = {"nfl2k5_sim_qb_injuries": qb, "nfl2k5_qb_room": room, "nfl2k5_sim_scoring": scoring}
                 with patch.object(mod_build, "_xbe_bytes", return_value=b"standard executable"), \
                         patch.object(cards, "status", return_value="retail"), \
@@ -307,7 +317,8 @@ class StudioRuleTests(unittest.TestCase):
                 plan = mod_build.apply_preset(mod_build.BuildPlan("s", "t", console_memory=memory), name)
                 expected = "realistic" if name == "softdrink_experimental" and memory == 128 else None
                 with self.subTest(preset=name, memory=memory):
-                    self.assertEqual(plan.qb_room, expected)
+                    # No preset names the room (C1): it follows the injury option, Realistic where its needs are met.
+                    self.assertIsNone(plan.qb_room)
                     self.assertEqual(mod_build._qb_room_level(plan), expected)
                     if memory == 128:
                         self.assertEqual(mod_build.validate_plan(plan), [])
@@ -433,7 +444,12 @@ class StudioRuleTests(unittest.TestCase):
                               and isinstance(c.func, ast.Name) and c.func.id == "_apply_qb_room")
                 self.assertGreater(room_at, qb_at)
                 between = [c for c in ast.walk(node) if isinstance(c, ast.Call) and qb_at < c.lineno < room_at]
-                self.assertEqual(between, [])
+                # b81 integration (scoring merged): the v0.9 update writes the CPU kick aim after the quarterback step, in
+                # the order of its expected executable; it touches only the kicking sites (the room and the aim commute
+                # byte for byte), so it is the one call allowed in between.
+                allowed = {"_apply_cpu_kick_aim_in_place"} if function == "_update_v09_disc" else set()
+                self.assertEqual([ast.unparse(c.func) for c in between
+                                  if not (isinstance(c.func, ast.Name) and c.func.id in allowed)], [])
 
 
 class FloorRuleTests(unittest.TestCase):
@@ -446,6 +462,12 @@ class FloorRuleTests(unittest.TestCase):
     def P3(self):
         from mod_editor.core import nfl2k5_qb_room as room
         return room.REALISTIC_STAGES & room.PIECE3_BITS  # 0 at the floor handover
+
+    @property
+    def E(self):
+        """E1/E2 (C21 hand-over): installed only where the floor and piece 3 are both installed."""
+        from mod_editor.core import nfl2k5_qb_room as room
+        return room.REALISTIC_STAGES & room.E_BITS
 
     def plan_set(self, plan, payload=None):
         return mod_build._qb_room_plan(plan, payload)[:2]
@@ -460,7 +482,7 @@ class FloorRuleTests(unittest.TestCase):
                                               sim_qb_injury_rate=0.5),
                   ["modern injured reserve", "the franchise economy", "reserve save compatibility (the practice squad)"],
                   ("realistic", self.FLOOR)),
-                 ("Experimental Realistic", experimental, ["the franchise economy"], ("realistic", self.FLOOR | self.P3)),
+                 ("Experimental Realistic", experimental, ["the franchise economy"], ("realistic", self.FLOOR | self.P3 | self.E)),
                  ("Experimental, rules named Retail", replace(experimental, qb_room="retail"), ["the franchise economy"],
                   ("realistic", self.FLOOR)))
         for name, plan, added, expected in cases:
@@ -524,29 +546,36 @@ class FloorRuleTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_cpu_kick_aim as aim, nfl2k5_pass_protection as pressure
         source = self._private()
         slice1, _ = qb.apply(source, "realistic")  # 9f435b38: slice 1 without the floor (an earlier private test disc)
-        # Since the combined merge the edit also updates the legacy pass protection and adds CPU kick aim (both own sites).
-        routed = aim.apply(qb.apply(pressure.apply(source)[0], "realistic")[0])[0]
-        expected, _ = room.apply(ir.apply(routed, "modern", standard_guard=True)[0], "realistic",
-                                 stages=self.FLOOR | self.P3)
+        # b81 integration (scoring merged): the in-place edit also writes the CPU kick aim, as a full build would; and
+        # (combined levers) it updates the disc's legacy pass protection to this release's centre float first
+        aimed, _ = aim.apply(qb.apply(pressure.apply(source)[0], "realistic")[0])
+        # b81 integration (practice squad merge): and upgrades the disc's revision 7 economy before the floor
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        expected, _ = room.apply(ir.apply(economy.apply(aimed)[0], "modern", standard_guard=True)[0], "realistic",
+                                 stages=self.FLOOR | self.P3 | self.E)
         for name, original in (("98dd7329", source), ("9f435b38", slice1)):
             with self.subTest(source=name):
                 receipt = self._edit(mod_build.sim_qb_disc_edit("s.iso", "t.iso", "realistic"), original)
                 update = receipt["qb_room_source_update"]
-                self.assertEqual((update["level"], update["stages"]), ("realistic", self.FLOOR | self.P3))
+                self.assertEqual((update["level"], update["stages"]), ("realistic", self.FLOOR | self.P3 | self.E))
                 self.assertEqual(update["result_sha256"], hashlib.sha256(expected).hexdigest())
                 self.assertIn("added modern injured reserve", update["added"][0])
+                self.assertIn("updated the franchise economy", update["added"][1])  # practice squad merge: revision 7 -> 8
                 self.assertIn(update["added"][0], receipt["user_notes"])
-                self.assertEqual(update["settings"]["stage_names"], room.stage_names(self.FLOOR | self.P3))
+                self.assertEqual(update["settings"]["stage_names"], room.stage_names(self.FLOOR | self.P3 | self.E))
                 self.assertEqual(update["settings"]["stage_names"][-1:], ["floor"])
-                self.assertEqual(receipt["sim_qb_source_update"]["result_sha256"], hashlib.sha256(routed).hexdigest())
+                self.assertEqual(receipt["sim_qb_source_update"]["result_sha256"], hashlib.sha256(aimed).hexdigest())
         receipt = self._edit(mod_build.sim_qb_disc_edit("s.iso", "t.iso", "custom", custom_rate=0.0), source)
         self.assertEqual(receipt["qb_room_source_update"]["stages"], self.P3)  # Custom 0: piece 3 only, no floor or IR
 
     def test_inspect_reports_a_build_with_injuries_but_no_floor(self):
         from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_qb_room as room
         from mod_editor.core import nfl2k5_sim_qb_injuries as qb
+        from mod_editor.core import nfl2k5_franchise_economy as economy
         slice1, _ = qb.apply(self._private(), "realistic")
-        floor, _ = room.apply(ir.apply(slice1, "modern", standard_guard=True)[0], "realistic", stages=self.FLOOR | 1)
+        # b81 integration (practice squad merge): the floor needs the current economy (revision 8) under it
+        floor, _ = room.apply(ir.apply(economy.apply(slice1)[0], "modern", standard_guard=True)[0], "realistic",
+                              stages=self.FLOOR | 1)
         with tempfile.TemporaryDirectory() as directory:
             for name, payload, expected in (("9f435b38", slice1, "missing"), ("floor", floor, "applied")):
                 with self.subTest(executable=name):
@@ -583,7 +612,7 @@ class FloorRuleTests(unittest.TestCase):
         v09 = mod_build._xbe_bytes(disc)
         expected = qb.apply(sim.apply(ir.apply(v09, "modern", standard_guard=True)[0])[0], "realistic")[0]
         plan = mod_build.v09_disc_update("s.iso", "t.iso", sim_qb_injuries="realistic")
-        self.assertEqual(self.plan_set(plan, expected), ("realistic", self.FLOOR | self.P3))
+        self.assertEqual(self.plan_set(plan, expected), ("realistic", self.FLOOR | self.P3 | self.E))
 
 
 class InPlacePreflightTests(unittest.TestCase):
@@ -596,12 +625,15 @@ class InPlacePreflightTests(unittest.TestCase):
         if not disc.is_file():
             self.skipTest("the private reviewed test disc is absent")
         source = mod_build._xbe_bytes(disc)
-        from mod_editor.core import nfl2k5_injured_reserve as ir
-        from mod_editor.core import nfl2k5_cpu_kick_aim as aim, nfl2k5_pass_protection as pressure
-        # Since the combined merge the edit also updates the legacy pass protection and adds CPU kick aim (both own sites).
-        slice1 = aim.apply(qb.apply(pressure.apply(source)[0], "realistic")[0])[0]
-        # The helmet disc has the economy and the practice squad; the edit adds modern IR for the floor.
-        expected, _ = room.apply(ir.apply(slice1, "modern", standard_guard=True)[0], "realistic",
+        from mod_editor.core import nfl2k5_cpu_kick_aim as aim, nfl2k5_injured_reserve as ir
+        from mod_editor.core import nfl2k5_pass_protection as pressure
+        # The edit updates the legacy pass protection (combined levers), applies the option and writes the CPU kick aim
+        slice1, _ = qb.apply(pressure.apply(source)[0], "realistic")
+        slice1, _ = aim.apply(slice1)  # b81 integration (scoring merged): the edit writes the CPU kick aim too
+        # The helmet disc has the economy and the practice squad; the edit adds modern IR for the floor and (practice
+        # squad merge) upgrades the disc's revision 7 economy to the current one first.
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        expected, _ = room.apply(ir.apply(economy.apply(slice1)[0], "modern", standard_guard=True)[0], "realistic",
                                  stages=room.realistic_stages())
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / "copy.iso"
@@ -716,10 +748,27 @@ class BuildPageTests(unittest.TestCase):
                                                             "custom_rate": .310,
                                                             # b81 merge: the current slice revision, so only the room differs
                                                             "revision": _sim_qb_injuries.REVISION},
-                                    qb_room="applied", qb_room_settings={"status": "applied", "mode": "realistic"},
+                                    qb_room="applied", qb_room_settings={"status": "applied", "mode": "realistic",
+                                                                         "stages": _room().realistic_stages()},
                                     depth_locks="applied", depth_chart_rows="applied"))
         mode.setCurrentIndex(mode.findData("realistic"))
         self.assertFalse(self.panel._sim_qb_injury_change())
+
+    def test_a_disc_with_an_earlier_stage_set_counts_as_a_change(self):
+        """b81 qb34 D3/D4 hand-over: a disc whose room carries the floor hand-over's Realistic (67) is a change while
+        the Studio's Realistic is 327, so Build rewrites the set; the current set is not."""
+        slice_now = {"status": "applied", "mode": "realistic", "custom_rate": .310, "revision": _sim_qb_injuries.REVISION}
+        mode = self.panel.qb_injury_mode
+        for stages, change in ((67, True), (_room().realistic_stages(), False)):
+            with self.subTest(stages=stages):
+                self.panel.apply_state(dict(self.state, sim_qb_injuries="applied", sim_qb_injury_settings=slice_now,
+                                            qb_room="applied",
+                                            qb_room_settings={"status": "applied", "mode": "realistic", "stages": stages},
+                                            depth_locks="applied", depth_chart_rows="applied"))
+                self.panel.depth_locks_check.setChecked(True)
+                self.panel.depth_chart_rows_check.setChecked(True)
+                mode.setCurrentIndex(mode.findData("realistic"))
+                self.assertEqual(bool(self.panel._sim_qb_injury_change()), change)
 
 
 class FloorBuildPageTests(BuildPageTests):
@@ -751,7 +800,10 @@ class FaqTests(unittest.TestCase):
         section = text.split("## How do quarterback injuries work when I simulate a franchise game?", 1)[1].split("\n## ", 1)[0]
         # D3 (benched for poor play) is bit 256 since the designer's addendum 2 (R5); D2 (the kid's turn) keeps bit 2.
         claims = {"who starts at quarterback": 1 | 2 | 4 | 256, "start of the season": 1, "kid's turn": 2,
-                  "benched": 256, "poor play": 256, "back from injury": 4, "returning starter": 4}
+                  "benched": 256, "poor play": 256, "back from injury": 4, "returning starter": 4,
+                  # E1/E2 hand-over (C21): the backup signing, the better quarterback while the starter is out, and the
+                  # protected make-room release
+                  "healthy backup quarterback": 8, "starter is out for weeks": 32, "lowest-rated players": 8 | 32}
         for words, bits in claims.items():
             with self.subTest(claim=words):
                 self.assertEqual(words in section, bool(room.REALISTIC_STAGES & bits))

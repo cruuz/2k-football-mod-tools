@@ -158,7 +158,8 @@ def _revision_three(current, retail):
         import json
         from pathlib import Path
         for site in economy.sites():
-            if site.va in economy.REVISION_7_NEW:
+            # b81: revision 8's new sites (the practice-squad fill) are retail in a revision-3 image too
+            if site.va in economy.REVISION_7_NEW or site.va in getattr(economy, "REVISION_8_NEW", ()):
                 offset = image.offset(site.va, len(site.patched))
                 out[offset:offset + len(site.patched)] = source.read(site.va, len(site.patched))
         fixture = Path(__file__).resolve().parent / "fixtures" / "econ3_revision6_windows.json"
@@ -255,7 +256,7 @@ class DraftClassSupplyTests(unittest.TestCase):
 
     def test_revision_three_reads_legacy_and_upgrades_in_place(self):
         from mod_editor.core import nfl2k5_franchise_economy as economy
-        self.assertIn(economy.REVISION, (4, 5, 6, 7))   # b780 b4-economy revision 5 / hunt1 revision 6 keep every revision-4 site
+        self.assertIn(economy.REVISION, (4, 5, 6, 7, 8))   # b780 b4-economy revision 5 / hunt1 revision 6 keep every revision-4 site; b81: 8 too
         self.assertEqual(economy.status(self.previous), "legacy")
         upgraded, receipt = economy.apply(self.previous)
         self.assertEqual(upgraded, self.current)
@@ -265,7 +266,8 @@ class DraftClassSupplyTests(unittest.TestCase):
         self.assertEqual(sorted(int(e["va"], 16) for e in receipt["edits"]),
                          sorted(economy.REVISION_4_SITES | getattr(economy, "REVISION_5_SITES", frozenset())
                                 | getattr(economy, "REVISION_6_SITES", frozenset())
-                                | getattr(economy, "REVISION_7_SITES", frozenset())))
+                                | getattr(economy, "REVISION_7_SITES", frozenset())
+                                | getattr(economy, "REVISION_8_NEW", frozenset())))   # b81: the practice-squad fill
 
     def test_a_small_pool_still_gets_a_full_draft_and_keeps_the_vacancies(self):
         # The retail roster has only 241 free agents, mostly young: retiring by age alone frees far fewer than

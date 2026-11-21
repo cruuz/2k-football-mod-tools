@@ -325,6 +325,7 @@ RC_VALUES = {"momentum": 50, "momentum_collision_level": 50, "cpu_money_downs": 
 REQUIRES_128 = {
     "sim_qb_injuries": "The updated simulated quarterback injuries and passing model require 128 MB.",
     "backfield_cards": "This option is available in the standard preset. The compact preset keeps the original display.",
+    "gadget_play": "The gadget player is a SPECIAL depth chart row, which only the standard 128 MB preset installs.",
     "k128_memory": "It teaches the Xbox's 4627 kernel to use 128 MB at start-up. A 64 MB console has nothing to add, "
                    "hakuX has no real kernel to patch, and with the 128 MB start-up check the disc refuses to start "
                    "below 128 MB.",

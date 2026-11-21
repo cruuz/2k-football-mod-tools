@@ -66,7 +66,7 @@ CLUB_SIZE, PLAYER_SIZE, COACH_SIZE = 500, 0x54, 0xA8
 LEAGUE_CLUBS = 34                       # 32 league clubs and the two all-star sides
 GENERATORS = ((0xB12680, 448), (0xE5FCA0, 448))
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
-PIECE3_RELOCATIONS = "ada3933514f0b4ef7455b7744e2ab0007b6e0378233e5748f6f1c603a455107f"   # D1 after review
+PIECE3_RELOCATIONS = "1a0dafd5e77d6a13b33df2e50fd0449daf229adb2f073addeabdea10d0d84016"   # C23 (D1 after review: ada39335)
 # Stage 4a runs on a real standard Studio build (retail plus every standard owner, slice 1 Realistic): economy_week
 # at 0x323870, the practice-squad guard and economy gate in front of 0x322BB0, the smart cut at 0x2BF9A0.
 STANDARD_XBE = Path(os.environ.get("NFL2K5_B81_QB_STANDARD_XBE",
@@ -198,12 +198,12 @@ class PageInterface(unittest.TestCase):
         self.assertEqual(len(page), room.PAGE_SIZE)
         self.assertEqual(page[0x2000:0x2020], settings)
         self.assertEqual(page[0x2020:0x2040], struct.pack("<I", 0x14FD6D0) + bytes(28))
-        # Counters, the range reserved for code (0x2200..0x23FF), ring, cursor and menu slot are zero in the file; the
-        # second code piece starts at 0x2E10 and ends by the page's end, zeros after it.
+        # Counters, the range reserved for code (0x21E0..0x23FF since C23; 0x2200 before), ring, cursor and menu slot are
+        # zero in the file; the second code piece starts at 0x2E10 and ends by the page's end, zeros after it.
         tail, size = room.CODE_TAIL
         mid, mid_size = room.CODE_MID
-        self.assertEqual((tail, mid, room.CODE_RESERVED), (0x2E10, 0x2200, (0x2200, 0x2400)))
-        self.assertTrue(0 < size and tail + size <= room.PAGE_SIZE and 0 < mid_size <= 0x200)
+        self.assertEqual((tail, mid, room.CODE_RESERVED), (0x2E10, 0x21E0, (0x21E0, 0x2400)))
+        self.assertTrue(0 < size and tail + size <= room.PAGE_SIZE and 0 < mid_size <= 0x220)
         self.assertEqual(page[0x2040:mid], bytes(mid - 0x2040))
         self.assertEqual(page[mid + mid_size:tail], bytes(tail - mid - mid_size))
         self.assertEqual(page[tail + size:], bytes(room.PAGE_SIZE - tail - size))
@@ -221,7 +221,7 @@ class PageInterface(unittest.TestCase):
         self.assertTrue(differ <= fields)
         self.assertEqual(room.COUNTERS["opening_passes"], 0x2040)
         self.assertEqual(len(set(room.COUNTERS.values())), len(room.COUNTERS))
-        self.assertTrue(all(0x2040 <= at < 0x2200 and at % 4 == 0 for at in room.COUNTERS.values()))
+        self.assertTrue(all(0x2040 <= at < 0x21E0 and at % 4 == 0 for at in room.COUNTERS.values()))   # 104 slots
         self.assertEqual(room.RING_EVENT.size, 20)
         self.assertEqual(room.RING_OFFSET + room.RING_COUNT * room.RING_EVENT.size, 0x2E00)
         for bad in ((VA + 4, settings), (VA, settings[:31]), (0, settings), (VA, b"\0" * 32)):
@@ -246,14 +246,17 @@ class PageInterface(unittest.TestCase):
         self.assertEqual(at + 5 + struct.unpack("<i", new[1:])[0], VA + room.LABELS["sign_entry"])
         self.assertEqual(page[room.MENU_SLOT:room.MENU_SLOT + 4], bytes(4))
 
-    def test_stage_4a_is_linked_after_piece_3_which_keeps_every_byte(self):
+    def test_stage_4a_is_linked_after_piece_3(self):
         # Piece 3 as reworked after the review (DESIGN addendum 2): its main part (both entries, room.c's code and
         # tables) is 0xF10 bytes with the sha256 and relocations below; D1 sits in the middle piece (page + 0x2200)
-        # and its row shift in the tail. 4a and the floor are linked after the main part, so they move none of it.
-        # (Before the review, 5846655b1's piece 3 was 0x10BC bytes, sha256 2441d02a..., 96 relocations.)
-        self.assertEqual(room.PIECE3_BYTES, 0xF10)
+        # and its row shift in the tail. 4a and the floor are linked after the main part, so a change in them moves
+        # none of it (piece 3 itself changes with room.c: C23 below).
+        # (Before the review, 5846655b1's piece 3 was 0x10BC bytes, sha256 2441d02a..., 96 relocations; after it and
+        # until C23, 0xF10 bytes, sha256 808e0d12.... C23 changed piece 3: the D3/D4 review fixes and the middle piece
+        # moved to 0x21E0, so its calls to decide_d1 moved too.)
+        self.assertEqual(room.PIECE3_BYTES, 0xF1C)
         self.assertEqual(hashlib.sha256(room._TEMPLATE[:room.PIECE3_BYTES]).hexdigest(),
-                         "808e0d12e9ba2eec273a0e9bf86d3929a840e3decc8e43649beefaac13f852c2")
+                         "93388c74010825dee324c1d41e34dd7372d6927342694ca9a451445b18757773")
         inside = [r for r in room._RELOCATIONS if r[0] < room.PIECE3_BYTES]
         self.assertEqual(len(inside), 89)
         self.assertEqual(hashlib.sha256(repr(inside).encode()).hexdigest(), PIECE3_RELOCATIONS)
@@ -932,6 +935,224 @@ class D4Return(League):
 
 
 
+# ---- C23: the independent D3/D4 review (rev-qb34/REVIEW_D34.md F1, F3, F4; coordinator's rulings, 11/21) ----------
+NOT_HOT = (6, 200, 120, 1300, 6, 8)        # rating x10 712: never hot
+HOT = (6, 200, 140, 1700, 14, 3)           # rating x10 >= 900 with 200 attempts
+AWFUL = (2, 70, 28, 250, 0, 6)             # two awful starts: rating x10 about 197
+RETURNING = (6, 200, 120, 1400, 9, 6)      # starter usage: 6 games, 200 attempts
+
+
+class D4OnlyBehindALock(League):
+    """F1: D4 judges a returning starter held below a replacement who keeps row 0 by a rank lock. Where both men are
+    unlocked (from the second season after C18's clear, or a new signing in any season) the native rating order
+    decides and D4 does not run. The reviewer's probes DP1 to DP3 (rev-qb34/d34/probes), made assertions of the fixed
+    behaviour: each fails on 9c7f38657's page, where the replacement took the job in about 0.79 of keys at x = 0."""
+
+    def share(self, stages, starter_line, replacement_line, starter_ovr, replacement_ovr, keys=100):
+        took = d4 = 0
+        for k in range(1, keys + 1):
+            self.setUp()
+            self.settings(stages)
+            self.write(0xE576B8, k)                 # year index k >= 1
+            self.write(0xE576B4, 9)                 # after game 8
+            self.record(4, 4, 4, 0)
+            starter = QB(starter_ovr, 1, locked=False, line=starter_line)            # back from injury, unlocked
+            replacement = QB(replacement_ovr, 0, locked=False, line=replacement_line)  # started while he was out
+            qbs = [starter, replacement, QB(60, 2, years=9, locked=False)]
+            self.club(4, qbs)
+            self.native_sort()                      # both unlocked: by rating, the starter back on row 0
+            self.assertEqual(self.rows(qbs)[:2], [0, 1])
+            self.enter("room")
+            took += self.rows(qbs)[1] == 0
+            d4 += sum(1 for e in self.events() if e[3] & 0x0F == 4)
+        return took / keys, d4
+
+    def test_dp1_the_replacement_never_takes_the_job_from_a_returning_starter_rated_the_same(self):
+        self.assertEqual(self.share(room.STAGE_D4, NOT_HOT, AWFUL, 80.4, 80.0), (0.0, 0))
+
+    def test_dp2_nor_from_a_better_one(self):
+        self.assertEqual(self.share(room.STAGE_D4, NOT_HOT, AWFUL, 82.0, 80.0), (0.0, 0))
+
+    def test_dp3_whoever_is_hot(self):
+        self.assertEqual(self.share(room.STAGE_D4, HOT, AWFUL, 80.4, 80.0), (0.0, 0))
+        self.assertEqual(self.share(room.STAGE_D4, NOT_HOT, HOT, 80.4, 80.0), (0.0, 0))
+
+    def test_dp1_at_the_studio_set_only_d3_can_move_him(self):
+        moved = 0
+        for k in range(1, 201):
+            self.setUp()
+            self.settings(327)
+            self.write(0xE576B8, k)
+            self.write(0xE576B4, 9)
+            self.record(4, 4, 4, 0)
+            starter = QB(80.4, 1, locked=False, line=NOT_HOT)
+            replacement = QB(80.0, 0, locked=False, line=AWFUL)
+            qbs = [starter, replacement, QB(60, 2, years=9, locked=False)]
+            self.club(4, qbs)
+            self.native_sort()
+            self.enter("room")
+            fired = [e for e in self.events() if e[4] == room.RESULT_APPLIED]
+            self.assertFalse([e for e in self.events() if e[3] & 0x0F == 4])
+            if self.rows(qbs)[1] == 0:
+                moved += 1
+                self.assertEqual([e[3] & 0x0F for e in fired], [3])         # D3's own poor-play draw on the starter
+        self.assertLess(moved, 20)
+
+
+class D4RoundedThree(League):
+    """F4 (DP4): a returning starter 3 better only by rounding (70.49 against 73.39: the native rule needs a float lead
+    of 0.03) behind a locked replacement is drawn like x = 2 (0.80, 0.30 when the replacement is hot). On 9c7f38657 D4
+    wrote nothing at x >= 3 (d4_lock_only) and the native sort did not move him either: rows stayed [0, 1] every week."""
+
+    def test_dp4_three_points_better_by_rounding_is_drawn_like_two(self):
+        took = 0
+        for k in range(1, 61):
+            self.setUp()
+            self.settings(room.STAGE_D4)
+            self.write(0xE576B8, k)
+            self.write(0xE576B4, 9)
+            self.record(4, 3, 5, 0)                 # W < L: the replacement is not hot
+            replacement = QB(70.49, 0, locked=True, line=AWFUL)
+            starter = QB(73.39, 1, locked=False, line=RETURNING)
+            qbs = [replacement, starter, QB(60, 2, years=9)]
+            self.club(4, qbs)
+            self.native_sort()
+            self.assertEqual(self.rows(qbs)[:2], [0, 1])                     # the native rule leaves him
+            self.enter("room")
+            expected = draw([4, 4, k, starter.index, replacement.index]) < 80000
+            self.assertEqual(self.rows(qbs)[:2], [1, 0] if expected else [0, 1], k)
+            self.assertEqual(self.counters()["d4_drawn"], 1)
+            self.assertEqual(self.last()[-1], 80000)
+            took += expected
+        self.assertTrue(30 < took < 60)
+
+
+class D34Behaviour(League):
+    """F3: behaviour cases for each of the reviewer's mutations (rev-qb34/d34/mut): M1 D3 without its healthy-backup
+    guard, M2 'hot' at W > L, M3 D3 from 30 attempts, M4 D4 without starter usage, M5 'hot' from 60 attempts. Each
+    test fails on its mutation (evidence/d34-fix/mutations/), not through the byte pin."""
+
+    def d3_room(self, *, backup_injury=0, backup_status=0, att=100):
+        starter = QB(80, 0, line=(4, att, 40, 309, 3, 2))                    # rating x10 500: poor play
+        backup = QB(79, 1, line=(1, 5, 3, 30, 0, 0), injury=backup_injury, status=backup_status)
+        qbs = [starter, backup, QB(55, 2, years=9)]
+        self.club(CLUB, qbs)
+        self.record(CLUB, 1, 6, 0)
+        return qbs
+
+    def test_m1_d3_never_benches_for_an_injured_or_suspended_backup(self):
+        for case, kwargs, evaluated in (("healthy", {}, 1), ("injured", {"backup_injury": 0x80000000 | 2 << 22}, 0),
+                                        ("suspended", {"backup_status": 0x10000000}, 0)):
+            with self.subTest(case=case):
+                self.setUp()
+                self.settings(STAGE_D3, h0_ppm=1_000_000)                     # every evaluation fires
+                qbs = self.d3_room(**kwargs)
+                self.enter("room")
+                self.assertEqual(self.counters()["d3_evaluated"], evaluated)
+                self.assertEqual(self.rows(qbs), [1, 0, 2] if evaluated else [0, 1, 2])
+
+    def test_m3_d3_judges_a_starter_from_60_attempts(self):
+        for att, evaluated in ((30, 0), (59, 0), (60, 1)):
+            with self.subTest(att=att):
+                self.setUp()
+                self.settings(STAGE_D3, shadow=True)
+                self.d3_room(att=att)
+                self.enter("room")
+                self.assertEqual(self.counters()["d3_evaluated"], evaluated)
+
+    def d4_room(self, line, x=0, *, returning_line=RETURNING, rookie=False):
+        starter = QB(80, 0, line=line)                                        # the replacement, locked on row 0
+        returning = QB(80 + x, 1, locked=False, line=returning_line, years=1 if rookie else 5)
+        qbs = [starter, returning, QB(60, 2, years=3)]
+        self.club(9, qbs)
+        return qbs
+
+    def test_m2_m5_d4_hot_boundaries(self):
+        # hot = 90+ attempts, season rating x10 900+, W >= L (DESIGN 2.6); the 'hot' replacement keeps the job more.
+        lines = {(89, 900): (3, 89, 40, 438, 8, 0), (90, 900): (3, 90, 40, 459, 8, 0), (90, 899): (3, 90, 40, 457, 8, 0)}
+        for (att, r10), line in lines.items():
+            self.assertEqual(rating10(*line[1:]), r10)
+        for key, (w, l), hot in (((90, 900), (4, 4), True), ((90, 900), (5, 3), True), ((90, 900), (3, 5), False),
+                                 ((89, 900), (4, 4), False), ((90, 899), (4, 4), False)):
+            with self.subTest(line=key, record=(w, l)):
+                self.setUp()
+                self.settings(room.STAGE_D4, shadow=True)
+                self.d4_room(lines[key])
+                self.record(9, w, l, 0)
+                self.enter("room")
+                event = self.last()
+                self.assertEqual(event[3] & 0x0F, 4)
+                self.assertEqual(bool(event[3] & 0x10), hot)
+                self.assertEqual(event[-1], 30000 if hot else 80000)
+
+    def test_m4_d4_needs_starter_usage_and_no_rookie(self):
+        for case, kwargs, judged in (("starter usage", {}, 1), ("no games", {"returning_line": (0, 0, 0, 0, 0, 0)}, 0),
+                                     ("under 15 attempts a game", {"returning_line": (4, 59, 30, 300, 1, 1)}, 0),
+                                     ("rookie", {"rookie": True}, 0)):
+            with self.subTest(case=case):
+                self.setUp()
+                self.settings(room.STAGE_D4, shadow=True)
+                self.d4_room(NOT_HOT, **kwargs)
+                self.record(9, 4, 4, 0)
+                self.enter("room")
+                self.assertEqual(self.counters()["d4_evaluated"], judged)
+
+    def test_d4_table_at_x_plus_1_minus_2_plus_3_and_minus_3(self):
+        for x, chance in ((1, 80000), (-2, 35000), (3, 80000), (-3, None)):
+            with self.subTest(x=x):
+                self.setUp()
+                self.settings(room.STAGE_D4, shadow=True)
+                self.d4_room(NOT_HOT, x)
+                self.record(9, 4, 4, 0)
+                count = len(self.events())
+                self.enter("room")
+                if chance is None:
+                    self.assertEqual((len(self.events()), self.counters()["d4_lock_only"]), (count, 1))
+                else:
+                    self.assertEqual(self.last()[-1], chance)
+
+
+class WeekOneOrder(League):
+    """C23, the week-1 order (F1's second form): C18 clears last season's rank locks at the season's first pre-game
+    pass, after the week-1 advance's first native sort, so game 1 was played on last season's order and the sort
+    after it reordered by rating. The season reset now seats, at that pass, the healthy non-rookie the rating order
+    puts first (rows only); rookies stay D1's. Before C23 it needed a lead of 6 or more (TD9's case still holds)."""
+
+    def setUp(self):
+        super().setUp()
+        self.settings(STAGE_D3 | room.STAGE_D2D3 | room.STAGE_D4)
+        self.write(0xE576B8, 1)
+        self.write(0xE576B4, 0)
+
+    def test_the_better_man_starts_game_1(self):
+        for lead, moved in ((4, True), (1, True), (0, False), (-2, False)):
+            with self.subTest(lead=lead):
+                self.setUp()
+                kid, veteran = QB(80, 0, years=2), QB(80 + lead, 1, years=7)     # last season's locked pair
+                self.club(4, [kid, veteran, QB(60, 2, years=9)])
+                self.enter("opening")
+                self.assertEqual(self.rows([kid, veteran]), [1, 0] if moved else [0, 1])
+                self.assertEqual(self.locks([kid, veteran]), [0, 0])
+
+    def test_a_better_rookie_is_left_to_d1(self):
+        veteran, rookie = QB(80, 0, years=7), QB(84, 1, years=1, locked=False)
+        self.club(4, [veteran, rookie, QB(60, 2, years=9)])
+        self.enter("opening")
+        self.assertEqual(self.rows([veteran, rookie]), [0, 1])
+        self.assertEqual(self.counters()["season_resets"], 0)
+
+    def test_the_first_season_and_later_weeks_are_untouched(self):
+        for year, week in ((0, 0), (1, 3)):
+            with self.subTest(year=year, week=week):
+                self.setUp()
+                self.write(0xE576B8, year)
+                self.write(0xE576B4, week)
+                kid, veteran = QB(80, 0, years=2), QB(84, 1, years=7)
+                self.club(4, [kid, veteran, QB(60, 2, years=9)])
+                self.enter("opening")
+                self.assertEqual(self.rows([kid, veteran]), [0, 1])
+
+
 # ---- T4: D3 and D2 ----------------------------------------------------------------------------------------------
 # (apps, att, cmp, yds, TD, INT) with the season rating x10 on each side of every form boundary.
 LINES = {500: (4, 100, 40, 309, 3, 2), 649: (4, 100, 40, 307, 5, 0), 650: (4, 100, 40, 309, 5, 0),
@@ -1581,10 +1802,11 @@ class Signings(SignLeague):
         self.assertNotIn(veteran.address, roster)
         self.assertNotIn(prime.address, roster)
 
-    def test_t8_a_human_club_without_auto_sign_is_untouched(self):
+    def test_t8_a_human_club_is_untouched_with_auto_sign_on_or_off(self):
+        # C21 rule 5 (coordinator 11/20): E1/E2 never act on a user's club, auto sign/cut or not (the floor keeps F4).
         # The economy's own fill would serve 31 human clubs as soon as auto sign/cut is on, so this case stubs
         # 0x323870 (ret 8) and leaves only club 5 in the league table: the pass's own gate is what is tested.
-        for auto, signs in ((0, False), (1, True)):
+        for auto, signs in ((0, False), (1, False)):
             with self.subTest(auto_sign=auto):
                 self.setUp()
                 self.e1_club()
@@ -1598,7 +1820,7 @@ class Signings(SignLeague):
                 before = self.snapshot()
                 self.enter_sign()
                 self.assertEqual(self.snapshot() != before, signs)
-                self.assertEqual(self.counters()["sign_skip_human"], 0 if auto else 1)
+                self.assertEqual(self.counters()["sign_skip_human"], 1)
                 self.assertEqual(self.counters()["sign_passes"], 1)
 
     def test_t8_stages_7_and_9_and_shadow_change_nothing(self):
@@ -1676,6 +1898,233 @@ class SecondSignings(SignLeague):
                 self.assertEqual(fa.address in self.club_list(), applies and draw(self.key(starter, fa, year)) < 50000)
                 self.assertEqual(self.counters()["e2_tried"], int(applies))
                 self.assertEqual(self.counters()["sign_ir_unlinked"], int(case == "store not linked"))
+
+
+# ---- C21 (coordinator's ruling 11/20): E1/E2's make-room release protects stars ---------------------------------
+HALF = 0x246C40                       # a float 0.5 next to the injury-aware rating stub below
+
+
+def injury_aware_rating(uc):
+    """0x246D80 as the game rates: flag 1 (EDX) discounts an injured man (+0x23 bit 7; here by half, P5's images show
+    a hurt 90 CB at 63), flag 0 does not. jmp 0x246C00: fld [ecx+0x36]; test edx,edx; jz ret; test byte [ecx+0x23],0x80;
+    jz ret; fmul [HALF]; ret."""
+    uc.mem_write(0x246D80, b"\xe9" + struct.pack("<i", 0x246C00 - 0x246D85))
+    uc.mem_write(0x246C00, bytes.fromhex("d9413685d2740cf64123807406d80d") + struct.pack("<I", HALF) + b"\xc3")
+    uc.mem_write(HALF, struct.pack("<f", 0.5))
+    uc.ctl_flush_tb()
+
+
+class ProtectedRelease(SignLeague):
+    """E1 at 53 releases the lowest-rated man among the ten lowest (QB, K and P left out), never one first on his
+    position's chart and never one his position needs to keep its minimum of healthy men; nobody: no signing."""
+
+    def setUp(self):
+        super().setUp()
+        injury_aware_rating(self.uc)
+
+    def e1_star_club(self):
+        starter, hurt = self.roster([QB(70, 0, line=(4, 120, 70, 800, 5, 3)), QB(72, 1, injury=0x80000000 | 2 << 22)])
+        roster = self.clubs[SIGN_CLUB]
+        star = [q for q in roster if q.position == 13][1]               # a guard on row 1, hurt for 4 weeks
+        star.ovr, star.injury, star.salary = 95, 0x80000000 | 4 << 22, 3000
+        self.write_player(star)
+        lowest = [q for q in roster if q.position == 3][5]              # WR row 5, 55: first of the two 55s listed
+        (fa,) = self.free_agents([QB(75)])
+        return starter, hurt, star, lowest, fa
+
+    def released(self, before):
+        return [p for p in before if p not in self.club_list()]
+
+    def test_c21_the_smart_cut_would_release_the_hurt_95_guard(self):
+        # The scenario: the economy's smart cut (0x2BF9A0, what E1 called before C21) rates by 0x246D80(p, 1), so the
+        # hurt 95 guard rates 47.5, the lowest at a position above its keep target (4 guards, keep 3): he goes.
+        starter, hurt, star, lowest, fa = self.e1_star_club()
+        before = self.club_list()
+        self.call(0x2BF9A0, CLUBS + CLUB_SIZE * SIGN_CLUB, 52)
+        self.assertEqual(self.released(before), [star.address])
+
+    def test_c21_e1_releases_the_lowest_rated_eligible_man_not_the_star(self):
+        starter, hurt, star, lowest, fa = self.e1_star_club()
+        before = self.club_list()
+        self.enter_sign()
+        self.assertEqual(self.released(before), [lowest.address])
+        self.assertIn(star.address, self.club_list())
+        self.assertIn(fa.address, self.club_list())
+        self.assertEqual(len(self.club_list()), 53)
+        counts = self.counters()
+        self.assertEqual((counts["e1_done"], counts["sign_cuts"], counts["sign_skip_protected"]), (1, 1, 0))
+
+    def test_c21_never_a_quarterback_kicker_or_punter_even_rated_lowest(self):
+        starter, hurt, star, lowest, fa = self.e1_star_club()
+        roster = self.clubs[SIGN_CLUB]
+        spare = [q for q in roster if q.position == 15][4]               # DT row 4 becomes a second kicker, row 1
+        spare.position, spare.row, spare.ovr = 1, 1, 5
+        punter = next(q for q in roster if q.position == 2)
+        punter.ovr = 5
+        hurt.ovr = 5
+        for q in (spare, punter, hurt):
+            self.write_player(q)
+        before = self.club_list()
+        self.enter_sign()
+        (gone,) = self.released(before)
+        self.assertNotIn(self.uc.mem_read(gone + 0x35, 1)[0], (0, 1, 2))
+        self.assertEqual(gone, lowest.address)
+
+    def test_c21_no_release_and_no_signing_when_the_ten_lowest_are_starters_or_needed(self):
+        starter, hurt, star, lowest, fa = self.e1_star_club()
+        roster = self.clubs[SIGN_CLUB]
+        for q in roster:                     # every row 0 man rates 50, every other man 90: the ten lowest all start
+            if q.position not in (0, 1, 2):
+                q.ovr, q.injury = (50 if q.row == 0 else 90), 0
+                self.write_player(q)
+        before = self.club_list(), self.fa_list()
+        self.enter_sign()
+        self.assertEqual((self.club_list(), self.fa_list(), self.ledger()), (*before, []))
+        counts = self.counters()
+        self.assertEqual((counts["e1_tried"], counts["e1_done"], counts["sign_cuts"], counts["sign_skip_protected"]),
+                         (1, 0, 0, 1))
+        self.assertEqual(self.events()[-1][3:7], (5, room.RESULT_KEPT, starter.index, fa.index))
+        # A man below the ten lowest whose position sits at its minimum of healthy men stays as well: the four safeties
+        # (FS and SS minimum 2 each) and the two centers are the lowest rated and not first on their charts.
+        self.setUp()
+        starter, hurt, star, lowest, fa = self.e1_star_club()
+        roster = self.clubs[SIGN_CLUB]
+        for q in roster:
+            if q.position not in (0, 1, 2):
+                q.ovr, q.injury = (40 if q.position in (5, 6, 12) else 50 if q.row == 0 else 90), 0
+                self.write_player(q)
+        before = self.club_list(), self.fa_list()
+        self.enter_sign()
+        self.assertEqual((self.club_list(), self.fa_list()), before)
+        self.assertEqual(self.counters()["sign_skip_protected"], 1)
+
+
+class ProtectedReleaseBoundaries(SignLeague):
+    """The E1/E2 review's F3: rule (a)'s boundary and "injured or healthy makes no difference", each failing on the
+    reviewer's mutation (rev-qb34/e12/mut: MB `lower >= 11`, ME injured men never eligible)."""
+    e1_star_club = ProtectedRelease.e1_star_club
+
+    def setUp(self):
+        super().setUp()
+        injury_aware_rating(self.uc)
+
+    def flat_club(self):
+        """e1_star_club with every man but QB, K and P healthy and rated 90 (flag 0 and 1 alike)."""
+        starter, hurt, star, lowest, fa = self.e1_star_club()
+        roster = self.clubs[SIGN_CLUB]
+        for q in roster:
+            if q.position not in (0, 1, 2):
+                q.ovr, q.injury = 90, 0
+                self.write_player(q)
+        return starter, roster, lowest, fa
+
+    def test_c21_exactly_9_rated_below_goes_exactly_10_signs_nobody(self):
+        for below, goes in ((9, True), (10, False)):
+            with self.subTest(below=below):
+                self.setUp()
+                starter, roster, target, fa = self.flat_club()
+                firsts = [q for q in roster if q.row == 0 and q.position not in (0, 1, 2)]     # 14: never eligible (b)
+                for k, q in enumerate(firsts[:below]):
+                    q.ovr = 30 + k
+                    self.write_player(q)
+                target.ovr = 50                                                # WR row 5: the lowest eligible man
+                self.write_player(target)
+                before = self.club_list(), self.fa_list()
+                self.enter_sign()
+                if goes:
+                    self.assertEqual([p for p in before[0] if p not in self.club_list()], [target.address])
+                    self.assertIn(fa.address, self.club_list())
+                else:
+                    self.assertEqual((self.club_list(), self.fa_list()), before)
+                    self.assertEqual(self.counters()["sign_skip_protected"], 1)
+
+    def test_c21_an_injured_man_at_a_group_above_its_healthy_minimum_goes(self):
+        for injured in (True, False):
+            with self.subTest(injured=injured):
+                self.setUp()
+                starter, roster, target, fa = self.flat_club()               # WR: 6, minimum 5 healthy
+                target.ovr, target.injury = 40, (0x80000000 | 4 << 22 if injured else 0)
+                self.write_player(target)
+                before = self.club_list()
+                self.enter_sign()
+                self.assertEqual([p for p in before if p not in self.club_list()], [target.address])
+                self.assertIn(fa.address, self.club_list())
+
+
+class ProtectedReleaseE2(SignLeague):
+    """C21 rule 4: E2 releases under the same rule. (The plain rating stub here: E2's own test of L, gap(L, S') >= 3,
+    rates the man on injured reserve by 0x246D80(p, 1), which the injury-aware stub would discount. Without the
+    discount the smart cut would take the lowest-rated man at a position above its keep target, a DT on row 4.)"""
+    e2_club = SecondSignings.e2_club
+    key = SecondSignings.key
+
+    def fire_year(self):
+        for year in range(12):
+            self.setUp()
+            self.write(0xE576B8, year)
+            starter, backup, lost, fa = self.e2_club()
+            if draw(self.key(starter, fa, year)) < 50000:
+                return year
+        self.fail("no E2 draw fired in 12 years")
+
+    def star_e2_club(self, year):
+        self.setUp()
+        self.write(0xE576B8, year)
+        starter, backup, lost, fa = self.e2_club()
+        roster = self.clubs[SIGN_CLUB]
+        star = [q for q in roster if q.position == 13][1]
+        star.ovr, star.injury, star.salary = 95, 0x80000000 | 4 << 22, 3000
+        self.write_player(star)
+        return starter, fa, star, [q for q in roster if q.position == 3][5], roster
+
+    def test_c21_e2_releases_the_lowest_rated_eligible_man_not_the_star(self):
+        year = self.fire_year()
+        starter, fa, star, lowest, roster = self.star_e2_club(year)
+        before = self.club_list()
+        self.enter_sign()
+        self.assertEqual([p for p in before if p not in self.club_list()], [lowest.address])
+        self.assertIn(fa.address, self.club_list())
+        self.assertEqual((self.counters()["e2_done"], self.counters()["sign_skip_protected"]), (1, 0))
+
+    def test_c21_e2_signs_nobody_when_nobody_may_go(self):
+        year = self.fire_year()
+        starter, fa, star, lowest, roster = self.star_e2_club(year)
+        for q in roster:
+            if q.position not in (0, 1, 2):
+                q.ovr, q.injury = (50 if q.row == 0 else 90), 0
+                self.write_player(q)
+        before = self.club_list(), self.fa_list()
+        self.enter_sign()
+        self.assertEqual((self.club_list(), self.fa_list()), before)
+        counts = self.counters()
+        self.assertEqual((counts["e2_tried"], counts["e2_done"], counts["sign_skip_protected"]), (1, 0, 1))
+        self.assertEqual(self.events()[-1][3:7], (6, room.RESULT_KEPT, starter.index, fa.index))
+
+
+class E2NeedRatesTheHurtStarterUnhurt(SignLeague):
+    """C21 addendum (lead 11/20): E2's need test rates the man on injured reserve, L, by 0x246D80(p, 0). With flag 1
+    (the injury-aware stub halves a hurt man) "L is 3+ better than S'" almost never held for a hurt L."""
+    e2_club = SecondSignings.e2_club
+
+    def setUp(self):
+        super().setUp()
+        injury_aware_rating(self.uc)
+
+    def test_c21_a_hurt_90_starter_behind_an_80_is_a_need(self):
+        starter, backup, lost, fa = self.e2_club(ir_ovr=90, market=85)
+        starter.ovr = 80
+        self.write_player(starter)
+        self.enter_sign()
+        counts = self.counters()
+        self.assertEqual((counts["e2_tried"], counts["e2_drawn"]), (1, 1))
+        self.assertEqual(self.events()[-1][3], 6)
+
+    def test_c21_a_hurt_82_starter_behind_an_80_is_not(self):
+        starter, backup, lost, fa = self.e2_club(ir_ovr=82, market=85)
+        starter.ovr = 80
+        self.write_player(starter)
+        self.enter_sign()
+        self.assertEqual(self.counters()["e2_tried"], 0)
 
 if __name__ == "__main__":
     unittest.main()

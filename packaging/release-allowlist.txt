@@ -629,6 +629,7 @@ mod_editor/core/nfl2k5_qb_room_code_b81_3a.py
 mod_editor/core/nfl2k5_qb_room_code_b81_d1d2.py
 mod_editor/core/nfl2k5_qb_room_code_b81_floor.py
 mod_editor/core/nfl2k5_qb_room_code_b81_floor_review.py
+mod_editor/core/nfl2k5_qb_room_code_b81_handover.py
 mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice1.py
 mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice2.py
 mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice3.py

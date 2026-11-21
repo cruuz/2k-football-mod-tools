@@ -322,7 +322,13 @@ class ExecutableTests(unittest.TestCase):
         self.assertLess(body.index("_apply_champions_history(plan, target, receipt, progress, capacity_records)"), pool)
         self.assertLess(body.index("_apply_coach_carousel(plan, target, receipt, progress)"), pool)
         self.assertLess(body.index("_apply_sim_realism(plan, target"), body.index("_apply_coach_carousel(plan, target"))
-        self.assertLess(pool, body.index("finish_private(target"))
+        # Beta 81 moved the disc compaction into _compact_build_disc (shared with the single-option QB and v0.9
+        # update routes); _build calls it once, after the pool.
+        helper = next(node for node in ast.parse(source).body
+                      if isinstance(node, ast.FunctionDef) and node.name == "_compact_build_disc")
+        self.assertIn("finish_private(target", ast.get_source_segment(source, helper))
+        self.assertEqual(body.count("_compact_build_disc("), 1)
+        self.assertLess(pool, body.index("_compact_build_disc(target"))
 
     def test_the_coach_career_fix_inside_the_guarded_loop_composes(self):
         """b780 int (cave dry run #5): the coach career fix (on in every preset) rewrites 8 bytes inside the guarded
