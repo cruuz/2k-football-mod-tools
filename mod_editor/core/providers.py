@@ -992,7 +992,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice1.py": "bb25da81abf8bd62c615d1cc676401a5050f4ab0f982fff243dea14af53cdfd0",  # b81 slice 2: frozen slice 1 bank, read to reverse a QBMEDv1 install
         "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice2.py": "a893ed713c2a16ec9a4fbf33d8e3cdc330d6f80578cd3d3eefe04dd9ee211873",  # b81 slice 3: frozen slice 2 bank, read to reverse a QBMEDv2 install
         "mod_editor/core/nfl2k5_qb_room.py": "cfb6757aa5dca7fcd69909303340da3365025e61bf08c3b58e4711676de1425d",  # b81 qb34: mod_build loads it by name
-        "mod_editor/core/nfl2k5_qb_room_code.py": "5e4cb9d5e5cea273081606ee008458b459eba0898b76cba738eed9a03fffe3eb",  # b81 qb34: its generated page template
+        "mod_editor/core/nfl2k5_qb_room_code.py": "c2ee4250292a33ccde0e878b5c06c37ec63b0dd8542764441b4e97af69848071",  # b81 qb34: its generated page template
         "mod_editor/core/nfl2k5_qb_room_code_b81_floor.py": "fca60cc8cb3b41a8dbb6756110d33ee0ef1ef70581420b7ecf73dbb0c91cbca4",  # b81 qb34: frozen floor handover template ("previous")
         "mod_editor/core/nfl2k5_qb_room_code_b81_3a.py": "892a6ba85e94f55151423b4842825d521b85e54c9dcf7162d41b9344bee513f8",  # b81 qb34: frozen stage 0 + 3a template ("previous")
         "mod_editor/core/nfl2k5_qb_room_code_b81_d1d2.py": "f01e39ac2a6fbf29595a28d7092d7dcc8fa7060081430f88d6295e9c5ac2ef32",  # b81 qb34: frozen D1 + D2 template ("previous")

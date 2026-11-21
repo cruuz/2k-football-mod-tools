@@ -66,7 +66,7 @@ CLUB_SIZE, PLAYER_SIZE, COACH_SIZE = 500, 0x54, 0xA8
 LEAGUE_CLUBS = 34                       # 32 league clubs and the two all-star sides
 GENERATORS = ((0xB12680, 448), (0xE5FCA0, 448))
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
-PIECE3_RELOCATIONS = "ada3933514f0b4ef7455b7744e2ab0007b6e0378233e5748f6f1c603a455107f"   # D1 after review
+PIECE3_RELOCATIONS = "1a0dafd5e77d6a13b33df2e50fd0449daf229adb2f073addeabdea10d0d84016"   # C23 (D1 after review: ada39335)
 # Stage 4a runs on a real standard Studio build (retail plus every standard owner, slice 1 Realistic): economy_week
 # at 0x323870, the practice-squad guard and economy gate in front of 0x322BB0, the smart cut at 0x2BF9A0.
 STANDARD_XBE = Path(os.environ.get("NFL2K5_B81_QB_STANDARD_XBE",
@@ -198,12 +198,12 @@ class PageInterface(unittest.TestCase):
         self.assertEqual(len(page), room.PAGE_SIZE)
         self.assertEqual(page[0x2000:0x2020], settings)
         self.assertEqual(page[0x2020:0x2040], struct.pack("<I", 0x14FD6D0) + bytes(28))
-        # Counters, the range reserved for code (0x2200..0x23FF), ring, cursor and menu slot are zero in the file; the
-        # second code piece starts at 0x2E10 and ends by the page's end, zeros after it.
+        # Counters, the range reserved for code (0x21E0..0x23FF since C23; 0x2200 before), ring, cursor and menu slot are
+        # zero in the file; the second code piece starts at 0x2E10 and ends by the page's end, zeros after it.
         tail, size = room.CODE_TAIL
         mid, mid_size = room.CODE_MID
-        self.assertEqual((tail, mid, room.CODE_RESERVED), (0x2E10, 0x2200, (0x2200, 0x2400)))
-        self.assertTrue(0 < size and tail + size <= room.PAGE_SIZE and 0 < mid_size <= 0x200)
+        self.assertEqual((tail, mid, room.CODE_RESERVED), (0x2E10, 0x21E0, (0x21E0, 0x2400)))
+        self.assertTrue(0 < size and tail + size <= room.PAGE_SIZE and 0 < mid_size <= 0x220)
         self.assertEqual(page[0x2040:mid], bytes(mid - 0x2040))
         self.assertEqual(page[mid + mid_size:tail], bytes(tail - mid - mid_size))
         self.assertEqual(page[tail + size:], bytes(room.PAGE_SIZE - tail - size))
@@ -221,7 +221,7 @@ class PageInterface(unittest.TestCase):
         self.assertTrue(differ <= fields)
         self.assertEqual(room.COUNTERS["opening_passes"], 0x2040)
         self.assertEqual(len(set(room.COUNTERS.values())), len(room.COUNTERS))
-        self.assertTrue(all(0x2040 <= at < 0x2200 and at % 4 == 0 for at in room.COUNTERS.values()))
+        self.assertTrue(all(0x2040 <= at < 0x21E0 and at % 4 == 0 for at in room.COUNTERS.values()))   # 104 slots
         self.assertEqual(room.RING_EVENT.size, 20)
         self.assertEqual(room.RING_OFFSET + room.RING_COUNT * room.RING_EVENT.size, 0x2E00)
         for bad in ((VA + 4, settings), (VA, settings[:31]), (0, settings), (VA, b"\0" * 32)):
@@ -246,14 +246,17 @@ class PageInterface(unittest.TestCase):
         self.assertEqual(at + 5 + struct.unpack("<i", new[1:])[0], VA + room.LABELS["sign_entry"])
         self.assertEqual(page[room.MENU_SLOT:room.MENU_SLOT + 4], bytes(4))
 
-    def test_stage_4a_is_linked_after_piece_3_which_keeps_every_byte(self):
+    def test_stage_4a_is_linked_after_piece_3(self):
         # Piece 3 as reworked after the review (DESIGN addendum 2): its main part (both entries, room.c's code and
         # tables) is 0xF10 bytes with the sha256 and relocations below; D1 sits in the middle piece (page + 0x2200)
-        # and its row shift in the tail. 4a and the floor are linked after the main part, so they move none of it.
-        # (Before the review, 5846655b1's piece 3 was 0x10BC bytes, sha256 2441d02a..., 96 relocations.)
-        self.assertEqual(room.PIECE3_BYTES, 0xF10)
+        # and its row shift in the tail. 4a and the floor are linked after the main part, so a change in them moves
+        # none of it (piece 3 itself changes with room.c: C23 below).
+        # (Before the review, 5846655b1's piece 3 was 0x10BC bytes, sha256 2441d02a..., 96 relocations; after it and
+        # until C23, 0xF10 bytes, sha256 808e0d12.... C23 changed piece 3: the D3/D4 review fixes and the middle piece
+        # moved to 0x21E0, so its calls to decide_d1 moved too.)
+        self.assertEqual(room.PIECE3_BYTES, 0xF1C)
         self.assertEqual(hashlib.sha256(room._TEMPLATE[:room.PIECE3_BYTES]).hexdigest(),
-                         "808e0d12e9ba2eec273a0e9bf86d3929a840e3decc8e43649beefaac13f852c2")
+                         "93388c74010825dee324c1d41e34dd7372d6927342694ca9a451445b18757773")
         inside = [r for r in room._RELOCATIONS if r[0] < room.PIECE3_BYTES]
         self.assertEqual(len(inside), 89)
         self.assertEqual(hashlib.sha256(repr(inside).encode()).hexdigest(), PIECE3_RELOCATIONS)
@@ -930,6 +933,224 @@ class D4Return(League):
                     self.assertEqual(took, 0)
                     self.assertEqual(self.counters()["d4_lock_only"], 50)
 
+
+
+# ---- C23: the independent D3/D4 review (rev-qb34/REVIEW_D34.md F1, F3, F4; coordinator's rulings, 11/21) ----------
+NOT_HOT = (6, 200, 120, 1300, 6, 8)        # rating x10 712: never hot
+HOT = (6, 200, 140, 1700, 14, 3)           # rating x10 >= 900 with 200 attempts
+AWFUL = (2, 70, 28, 250, 0, 6)             # two awful starts: rating x10 about 197
+RETURNING = (6, 200, 120, 1400, 9, 6)      # starter usage: 6 games, 200 attempts
+
+
+class D4OnlyBehindALock(League):
+    """F1: D4 judges a returning starter held below a replacement who keeps row 0 by a rank lock. Where both men are
+    unlocked (from the second season after C18's clear, or a new signing in any season) the native rating order
+    decides and D4 does not run. The reviewer's probes DP1 to DP3 (rev-qb34/d34/probes), made assertions of the fixed
+    behaviour: each fails on 9c7f38657's page, where the replacement took the job in about 0.79 of keys at x = 0."""
+
+    def share(self, stages, starter_line, replacement_line, starter_ovr, replacement_ovr, keys=100):
+        took = d4 = 0
+        for k in range(1, keys + 1):
+            self.setUp()
+            self.settings(stages)
+            self.write(0xE576B8, k)                 # year index k >= 1
+            self.write(0xE576B4, 9)                 # after game 8
+            self.record(4, 4, 4, 0)
+            starter = QB(starter_ovr, 1, locked=False, line=starter_line)            # back from injury, unlocked
+            replacement = QB(replacement_ovr, 0, locked=False, line=replacement_line)  # started while he was out
+            qbs = [starter, replacement, QB(60, 2, years=9, locked=False)]
+            self.club(4, qbs)
+            self.native_sort()                      # both unlocked: by rating, the starter back on row 0
+            self.assertEqual(self.rows(qbs)[:2], [0, 1])
+            self.enter("room")
+            took += self.rows(qbs)[1] == 0
+            d4 += sum(1 for e in self.events() if e[3] & 0x0F == 4)
+        return took / keys, d4
+
+    def test_dp1_the_replacement_never_takes_the_job_from_a_returning_starter_rated_the_same(self):
+        self.assertEqual(self.share(room.STAGE_D4, NOT_HOT, AWFUL, 80.4, 80.0), (0.0, 0))
+
+    def test_dp2_nor_from_a_better_one(self):
+        self.assertEqual(self.share(room.STAGE_D4, NOT_HOT, AWFUL, 82.0, 80.0), (0.0, 0))
+
+    def test_dp3_whoever_is_hot(self):
+        self.assertEqual(self.share(room.STAGE_D4, HOT, AWFUL, 80.4, 80.0), (0.0, 0))
+        self.assertEqual(self.share(room.STAGE_D4, NOT_HOT, HOT, 80.4, 80.0), (0.0, 0))
+
+    def test_dp1_at_the_studio_set_only_d3_can_move_him(self):
+        moved = 0
+        for k in range(1, 201):
+            self.setUp()
+            self.settings(327)
+            self.write(0xE576B8, k)
+            self.write(0xE576B4, 9)
+            self.record(4, 4, 4, 0)
+            starter = QB(80.4, 1, locked=False, line=NOT_HOT)
+            replacement = QB(80.0, 0, locked=False, line=AWFUL)
+            qbs = [starter, replacement, QB(60, 2, years=9, locked=False)]
+            self.club(4, qbs)
+            self.native_sort()
+            self.enter("room")
+            fired = [e for e in self.events() if e[4] == room.RESULT_APPLIED]
+            self.assertFalse([e for e in self.events() if e[3] & 0x0F == 4])
+            if self.rows(qbs)[1] == 0:
+                moved += 1
+                self.assertEqual([e[3] & 0x0F for e in fired], [3])         # D3's own poor-play draw on the starter
+        self.assertLess(moved, 20)
+
+
+class D4RoundedThree(League):
+    """F4 (DP4): a returning starter 3 better only by rounding (70.49 against 73.39: the native rule needs a float lead
+    of 0.03) behind a locked replacement is drawn like x = 2 (0.80, 0.30 when the replacement is hot). On 9c7f38657 D4
+    wrote nothing at x >= 3 (d4_lock_only) and the native sort did not move him either: rows stayed [0, 1] every week."""
+
+    def test_dp4_three_points_better_by_rounding_is_drawn_like_two(self):
+        took = 0
+        for k in range(1, 61):
+            self.setUp()
+            self.settings(room.STAGE_D4)
+            self.write(0xE576B8, k)
+            self.write(0xE576B4, 9)
+            self.record(4, 3, 5, 0)                 # W < L: the replacement is not hot
+            replacement = QB(70.49, 0, locked=True, line=AWFUL)
+            starter = QB(73.39, 1, locked=False, line=RETURNING)
+            qbs = [replacement, starter, QB(60, 2, years=9)]
+            self.club(4, qbs)
+            self.native_sort()
+            self.assertEqual(self.rows(qbs)[:2], [0, 1])                     # the native rule leaves him
+            self.enter("room")
+            expected = draw([4, 4, k, starter.index, replacement.index]) < 80000
+            self.assertEqual(self.rows(qbs)[:2], [1, 0] if expected else [0, 1], k)
+            self.assertEqual(self.counters()["d4_drawn"], 1)
+            self.assertEqual(self.last()[-1], 80000)
+            took += expected
+        self.assertTrue(30 < took < 60)
+
+
+class D34Behaviour(League):
+    """F3: behaviour cases for each of the reviewer's mutations (rev-qb34/d34/mut): M1 D3 without its healthy-backup
+    guard, M2 'hot' at W > L, M3 D3 from 30 attempts, M4 D4 without starter usage, M5 'hot' from 60 attempts. Each
+    test fails on its mutation (evidence/d34-fix/mutations/), not through the byte pin."""
+
+    def d3_room(self, *, backup_injury=0, backup_status=0, att=100):
+        starter = QB(80, 0, line=(4, att, 40, 309, 3, 2))                    # rating x10 500: poor play
+        backup = QB(79, 1, line=(1, 5, 3, 30, 0, 0), injury=backup_injury, status=backup_status)
+        qbs = [starter, backup, QB(55, 2, years=9)]
+        self.club(CLUB, qbs)
+        self.record(CLUB, 1, 6, 0)
+        return qbs
+
+    def test_m1_d3_never_benches_for_an_injured_or_suspended_backup(self):
+        for case, kwargs, evaluated in (("healthy", {}, 1), ("injured", {"backup_injury": 0x80000000 | 2 << 22}, 0),
+                                        ("suspended", {"backup_status": 0x10000000}, 0)):
+            with self.subTest(case=case):
+                self.setUp()
+                self.settings(STAGE_D3, h0_ppm=1_000_000)                     # every evaluation fires
+                qbs = self.d3_room(**kwargs)
+                self.enter("room")
+                self.assertEqual(self.counters()["d3_evaluated"], evaluated)
+                self.assertEqual(self.rows(qbs), [1, 0, 2] if evaluated else [0, 1, 2])
+
+    def test_m3_d3_judges_a_starter_from_60_attempts(self):
+        for att, evaluated in ((30, 0), (59, 0), (60, 1)):
+            with self.subTest(att=att):
+                self.setUp()
+                self.settings(STAGE_D3, shadow=True)
+                self.d3_room(att=att)
+                self.enter("room")
+                self.assertEqual(self.counters()["d3_evaluated"], evaluated)
+
+    def d4_room(self, line, x=0, *, returning_line=RETURNING, rookie=False):
+        starter = QB(80, 0, line=line)                                        # the replacement, locked on row 0
+        returning = QB(80 + x, 1, locked=False, line=returning_line, years=1 if rookie else 5)
+        qbs = [starter, returning, QB(60, 2, years=3)]
+        self.club(9, qbs)
+        return qbs
+
+    def test_m2_m5_d4_hot_boundaries(self):
+        # hot = 90+ attempts, season rating x10 900+, W >= L (DESIGN 2.6); the 'hot' replacement keeps the job more.
+        lines = {(89, 900): (3, 89, 40, 438, 8, 0), (90, 900): (3, 90, 40, 459, 8, 0), (90, 899): (3, 90, 40, 457, 8, 0)}
+        for (att, r10), line in lines.items():
+            self.assertEqual(rating10(*line[1:]), r10)
+        for key, (w, l), hot in (((90, 900), (4, 4), True), ((90, 900), (5, 3), True), ((90, 900), (3, 5), False),
+                                 ((89, 900), (4, 4), False), ((90, 899), (4, 4), False)):
+            with self.subTest(line=key, record=(w, l)):
+                self.setUp()
+                self.settings(room.STAGE_D4, shadow=True)
+                self.d4_room(lines[key])
+                self.record(9, w, l, 0)
+                self.enter("room")
+                event = self.last()
+                self.assertEqual(event[3] & 0x0F, 4)
+                self.assertEqual(bool(event[3] & 0x10), hot)
+                self.assertEqual(event[-1], 30000 if hot else 80000)
+
+    def test_m4_d4_needs_starter_usage_and_no_rookie(self):
+        for case, kwargs, judged in (("starter usage", {}, 1), ("no games", {"returning_line": (0, 0, 0, 0, 0, 0)}, 0),
+                                     ("under 15 attempts a game", {"returning_line": (4, 59, 30, 300, 1, 1)}, 0),
+                                     ("rookie", {"rookie": True}, 0)):
+            with self.subTest(case=case):
+                self.setUp()
+                self.settings(room.STAGE_D4, shadow=True)
+                self.d4_room(NOT_HOT, **kwargs)
+                self.record(9, 4, 4, 0)
+                self.enter("room")
+                self.assertEqual(self.counters()["d4_evaluated"], judged)
+
+    def test_d4_table_at_x_plus_1_minus_2_plus_3_and_minus_3(self):
+        for x, chance in ((1, 80000), (-2, 35000), (3, 80000), (-3, None)):
+            with self.subTest(x=x):
+                self.setUp()
+                self.settings(room.STAGE_D4, shadow=True)
+                self.d4_room(NOT_HOT, x)
+                self.record(9, 4, 4, 0)
+                count = len(self.events())
+                self.enter("room")
+                if chance is None:
+                    self.assertEqual((len(self.events()), self.counters()["d4_lock_only"]), (count, 1))
+                else:
+                    self.assertEqual(self.last()[-1], chance)
+
+
+class WeekOneOrder(League):
+    """C23, the week-1 order (F1's second form): C18 clears last season's rank locks at the season's first pre-game
+    pass, after the week-1 advance's first native sort, so game 1 was played on last season's order and the sort
+    after it reordered by rating. The season reset now seats, at that pass, the healthy non-rookie the rating order
+    puts first (rows only); rookies stay D1's. Before C23 it needed a lead of 6 or more (TD9's case still holds)."""
+
+    def setUp(self):
+        super().setUp()
+        self.settings(STAGE_D3 | room.STAGE_D2D3 | room.STAGE_D4)
+        self.write(0xE576B8, 1)
+        self.write(0xE576B4, 0)
+
+    def test_the_better_man_starts_game_1(self):
+        for lead, moved in ((4, True), (1, True), (0, False), (-2, False)):
+            with self.subTest(lead=lead):
+                self.setUp()
+                kid, veteran = QB(80, 0, years=2), QB(80 + lead, 1, years=7)     # last season's locked pair
+                self.club(4, [kid, veteran, QB(60, 2, years=9)])
+                self.enter("opening")
+                self.assertEqual(self.rows([kid, veteran]), [1, 0] if moved else [0, 1])
+                self.assertEqual(self.locks([kid, veteran]), [0, 0])
+
+    def test_a_better_rookie_is_left_to_d1(self):
+        veteran, rookie = QB(80, 0, years=7), QB(84, 1, years=1, locked=False)
+        self.club(4, [veteran, rookie, QB(60, 2, years=9)])
+        self.enter("opening")
+        self.assertEqual(self.rows([veteran, rookie]), [0, 1])
+        self.assertEqual(self.counters()["season_resets"], 0)
+
+    def test_the_first_season_and_later_weeks_are_untouched(self):
+        for year, week in ((0, 0), (1, 3)):
+            with self.subTest(year=year, week=week):
+                self.setUp()
+                self.write(0xE576B8, year)
+                self.write(0xE576B4, week)
+                kid, veteran = QB(80, 0, years=2), QB(84, 1, years=7)
+                self.club(4, [kid, veteran, QB(60, 2, years=9)])
+                self.enter("opening")
+                self.assertEqual(self.rows([kid, veteran]), [0, 1])
 
 
 # ---- T4: D3 and D2 ----------------------------------------------------------------------------------------------

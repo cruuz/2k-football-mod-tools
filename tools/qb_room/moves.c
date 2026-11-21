@@ -137,7 +137,7 @@ static u32 scan(u32 team, u32 *healthy, u32 *starter, u32 *best) {
     return a;
 }
 
-static __attribute__((noinline)) int listed(u32 team, u32 p) {
+static __attribute__((noinline, section(".text.mid"))) int listed(u32 team, u32 p) {   /* C23: in the middle piece */
     for (u32 i = 0; i < B(team + 0x11C); i++)
         if (D(team + 4 * i) == p) return 1;
     return 0;

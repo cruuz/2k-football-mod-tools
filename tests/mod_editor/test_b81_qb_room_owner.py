@@ -458,6 +458,10 @@ class PreviousRevisionTests(unittest.TestCase):
     FLOOR_EMPTY_SHA = "6e14638a53dfbd45d9860aceaae951496c89a651b4eb902cc428d8db92777a33"
     STAGE_3A_SHA = "449e651ed6d12509565f65e27afd440bd4ff7318f709ec300e292595fd5accb6"
     STAGE_3A_EMPTY_SHA = "e3270c1b26ef94b697098ff351d63500adb120c4aa86d3e1a73111ea243804e8"
+    # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64),
+    # on slice 1 alone; rebuilt here at the merged head (d85a7c5c is also the reviewer's 67 witness at 0520efd93).
+    HANDOVER_67_SHA = "d85a7c5cd1d3c3dad382456afe93fd8b34a47ef36fe9d4e29fa58f4e36be7281"
+    HANDOVER_64_SHA = "34dbcece1cfdc7810a76a8c56edc974926ef3f791711156d5c27281cd678e85b"
 
     @classmethod
     def setUpClass(cls):
