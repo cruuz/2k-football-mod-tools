@@ -322,6 +322,40 @@ class KeptPreseasonImage(unittest.TestCase):
         self.assertEqual([a["squad"] for a in after], [c["squad"] for c in corrupt])
         self.assertEqual(free_after, free)
 
+    def test_a_club_damaged_before_the_fill_stops_it_and_loses_nobody(self):
+        # re-check R1 (11/21): with one club's reserve storage unreadable the squad runtime refuses every signing and
+        # every free-agent append; the fill must stop at the first refusal and leave every list as it was (d30476a1b put
+        # 446 free agents in no list on this image)
+        from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
+        m = self.machine()
+        m.call(GATE, budget=4_000_000_000)                                              # the native cut, every club
+        team = m.get(m.get(0xB72918) + 0x1C)                                            # club 0
+        a, r = m.uc.mem_read(team + 0x11C, 1)[0], m.uc.mem_read(team + 0x1F2, 1)[0]
+        self.assertTrue(r > 0 and a + r <= 65)
+        m.put(team + 4 * (a + r - 1), 0)                                                # its last reserve slot null
+        before, free_before = self.state(m)
+        m.leaf(0x2BF8B0, lambda: m.ret(), reason="the next draft class runs after the fill; not under test")
+        m.call(SYMBOLS["economy_squad_gate"], budget=4_000_000_000)
+        after, free_after = self.state(m)
+        self.assertEqual(free_after, free_before)
+        self.assertEqual([(c["active"], c["squad"]) for c in after], [(c["active"], c["squad"]) for c in before])
+
+    def test_a_demotion_refused_after_the_append_puts_the_player_back(self):
+        # re-check R1: if the squad's demotion refuses a player its append accepted, he goes back on the free-agent list
+        # (retail append, no ownership test) and off the active list, and the fill stops
+        from mod_editor.core import nfl2k5_practice_squad_runtime as runtime
+        from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
+        m = self.machine()
+        m.call(GATE, budget=4_000_000_000)
+        before, free_before = self.state(m)
+        m.leaf(runtime.SYMBOLS["ps_demote"], lambda: m.ret(0), reason="a refused demotion, forced")
+        m.leaf(0x2BF8B0, lambda: m.ret(), reason="the next draft class runs after the fill; not under test")
+        m.call(SYMBOLS["economy_squad_gate"], budget=4_000_000_000)
+        after, free_after = self.state(m)
+        self.assertEqual(sorted(free_after), sorted(free_before))                      # the one tried is back (at the end)
+        self.assertEqual(len(free_after), len(free_before))
+        self.assertEqual([(c["active"], c["squad"]) for c in after], [(c["active"], c["squad"]) for c in before])
+
     def test_the_rollover_lets_every_cpu_squad_deal_expire_and_the_next_gate_forms_new_squads(self):
         from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
         m = self.machine()

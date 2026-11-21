@@ -47,7 +47,8 @@ NATIVE = {"n_rating": 0x246D80, "n_recount": 0xC3F00, "n_human": 0x13EC30, "n_te
           "n_ir_return": 0x246F90, "n_next_class": 0x2BF8B0}
 # b81 (revision 8): the practice squad's fixed ABI entries (its pinned caves; the roster arena bridges them).
 from mod_editor.core.nfl2k5_practice_squad_runtime import SYMBOLS as _SQUAD  # noqa: E402
-NATIVE.update({"ps_append": _SQUAD["ps_append"], "ps_demote": _SQUAD["ps_demote"]})
+NATIVE.update({"ps_append": _SQUAD["ps_append"], "ps_demote": _SQUAD["ps_demote"],
+               "retail_fa_add": _SQUAD["retail_fa_add"]})   # re-check R1: the put-back with no ownership test
 # Entry points that must sit at their window's first byte.
 ENTRIES = {"economy_value": 0x2BD440, "economy_contract": 0x3228A0, "economy_rookie": 0x322980,
            "economy_pick": 0x2BAB20, "economy_money": 0x31E580, "economy_week": 0x323870,

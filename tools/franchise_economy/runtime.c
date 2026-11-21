@@ -944,7 +944,8 @@ SECTION(".roster_o") unsigned club_level(u8 *team, unsigned pos, float him, unsi
 extern unsigned FAST ps_append(u8 *team, u8 *p);                  /* nfl2k5_practice_squad SYMBOLS (bridged by the arena) */
 extern unsigned FAST ps_demote(u8 *team, u8 *p);
 extern unsigned FAST n_fa_remove(u32 *list, u8 *p);               /* 0x2425C0 */
-extern unsigned FAST n_fa_add(u32 *list, u8 *p);                  /* 0x242560 */
+extern unsigned FAST n_fa_add(u32 *list, u8 *p);                  /* 0x242560 (the squad runtime's ps_fa_add) */
+extern unsigned FAST retail_fa_add(u32 *list, u8 *p);             /* 0x2952FC: the retail append, no ownership test */
 extern unsigned FAST n_append(u8 *team, u8 *p);                   /* 0xC3EE0 */
 extern unsigned FAST n_remove(u8 *team, u8 *p);                   /* 0xC3EB0 */
 extern void n_ir_return(void);                                    /* 0x246F90 the rollover's return from injured reserve */
@@ -974,23 +975,28 @@ SECTION(".roster_p") __attribute__((noinline)) static u8 *FAST squad_best(u8 *te
     return best;
 }
 
-/* Sign one free agent for one slot to the squad: 1 = go on (signed, or nobody fits), 0 = stop (refused; the
- * player is back on the free-agent list as he was). */
+/* Sign one free agent for one slot to the squad: 1 = go on (signed, or nobody fits), 0 = stop the whole fill (refused).
+ * Re-check R1 (11/21): the squad runtime refuses every player while any club's reserve storage is unreadable, and its
+ * free-agent append refuses too, so a player taken off the list first ended in no list (446 on the kept image with one
+ * damaged club). Now the squad's append is asked first, while he is still on the free-agent list, so that refusal
+ * changes nothing; only then is he taken off the list (the retail remove-by-value). If the demotion is refused after it,
+ * he goes back through the retail append with no ownership test (0x2952FC) and leaves the active list only once he is
+ * back on the free-agent list: if he could not be put back he stays on the club's active list (54 players, which the
+ * validator's I1 reports), never in no list. */
 SECTION(".roster_r") __attribute__((noinline)) static u32 FAST squad_sign(u8 *team, u32 mask) {
     u32 *list = FA_LIST;
     u8 *p = squad_best(team, mask);
-    if (!p || !n_fa_remove(list, p)) return 1;
-    if (n_append(team, p)) {
-        if (ps_demote(team, p)) {
-            *(u16 *)(p + 10) = (u16)((economy_floor(0) + 9) / 10);    /* one year at the rookie minimum */
-            p[0x24] = (p[0x24] & 0xf0) | 1;
-            p[0x27] = (p[0x27] & 0xf0) | 1;
-            p[0x26] = 2;
-            return 1;
-        }
-        n_remove(team, p);
+    if (!p) return 1;
+    if (!n_append(team, p)) return 0;
+    n_fa_remove(list, p);
+    if (ps_demote(team, p)) {
+        *(u16 *)(p + 10) = (u16)((economy_floor(0) + 9) / 10);    /* one year at the rookie minimum */
+        p[0x24] = (p[0x24] & 0xf0) | 1;
+        p[0x27] = (p[0x27] & 0xf0) | 1;
+        p[0x26] = 2;
+        return 1;
     }
-    n_fa_add(list, p);
+    if (retail_fa_add(list, p)) n_remove(team, p);           /* 1 once he is on the list (0 only at 2,500) */
     return 0;
 }
 
@@ -1032,15 +1038,16 @@ SECTION(".roster_s") void FAST economy_squad_expire(void) {
 /* 0x2485E0 in the stage-7 action, right after the gate's call 0x2485DB (no register arguments): was call 0x2BF8B0, the
  * next draft class (0x2485DB itself lies in nfl2k5_progression's guarded "Preseason calls" span). Round r, slot j: the 32
  * clubs in turn from (7 x season + 11 x (12 r + j)) modulo 32 (the league's 32 clubs, as the gate's own loop); a club
- * full, refused or managed by a person is passed over. Then the class. */
+ * full or managed by a person is passed over; a refused signing stops the fill. Then the class. */
 extern void n_next_class(void);                                   /* 0x2BF8B0 */
 SECTION(".roster_t") void FAST economy_squad_gate(void) {
     u32 turn = *(u32 *)0xE576B8 * 7;
     for (u32 j = 0; j < 3 * SQUAD; ++j, turn += 11)
         for (u32 k = 0; k < 32; ++k) {
             u8 *team = n_team((turn + k) & 31);
-            if (team[0x1f2] < SQUAD && squad_ok(team))
-                squad_sign(team, squad_mix[j]);
+            if (team[0x1f2] < SQUAD && squad_ok(team) && !squad_sign(team, squad_mix[j]))
+                goto done;                                    /* a refused signing stops the whole fill (re-check R1) */
         }
+done:
     n_next_class();
 }
