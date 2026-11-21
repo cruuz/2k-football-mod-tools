@@ -309,7 +309,8 @@ class StudioRuleTests(unittest.TestCase):
                 plan = mod_build.apply_preset(mod_build.BuildPlan("s", "t", console_memory=memory), name)
                 expected = "realistic" if name == "softdrink_experimental" and memory == 128 else None
                 with self.subTest(preset=name, memory=memory):
-                    self.assertEqual(plan.qb_room, expected)
+                    # No preset names the room (C1): it follows the injury option, Realistic where its needs are met.
+                    self.assertIsNone(plan.qb_room)
                     self.assertEqual(mod_build._qb_room_level(plan), expected)
                     if memory == 128:
                         self.assertEqual(mod_build.validate_plan(plan), [])
