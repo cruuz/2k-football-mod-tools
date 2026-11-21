@@ -532,7 +532,11 @@ class Routes(unittest.TestCase):
             self.assertTrue(mod_build._edit_installed_sim_qb(plan, source, copy, treated, receipt, lambda *_: None,
                                                              preflight=False, consume=False, reference=None))
         self._assert_copy(copy, receipt, mod_build._cpu_kick_aim_with_kicking(frozen)[0])
-        self.assertEqual(receipt["user_notes"], [note])
+        # The sentence once, next to the floor's own notes (practice squad merge: this disc's earlier economy is
+        # upgraded in place for the floor, and the report says so).
+        floor_notes = receipt["qb_room_source_update"].get("added") or []
+        self.assertEqual(sorted(receipt["user_notes"]), sorted(floor_notes + [note]))
+        self.assertEqual(receipt["user_notes"].count(note), 1)
         self.assertEqual(receipt["sim_qb_source_update"]["stability_reference"]["note"], note)
         # update-v09 (released disc, preflight): the expected bytes carry the frozen references and the receipt says so.
         disc = os.environ.get("NFL2K5_V09_XISO")
