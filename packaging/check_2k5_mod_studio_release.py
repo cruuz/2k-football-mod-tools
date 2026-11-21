@@ -334,7 +334,7 @@ ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "c621d94c4f48f26ab6c44e912dd5d5ff7a36d070
 # (b778 cf1-cf4: photo-derived likeness textures, Noah 2026-10-12; see the catalog's classification). It grants no general PNG
 # exception inside those folders; tools/b77/modern_art_png_catalog.py regenerates it and prints the digest below.
 MODERN_ART_PNG_CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
-MODERN_ART_PNG_CATALOG_SHA256 = "db0ba9a1fc37403c2ab8bf339947b8883752bbfb5d018873f1d9b1f2c57916a2"  # b81-retail-free-art round 3 + round 2 (R2-G): the texel data of every data document is listed (glyph paint, kit-fix runs and texels); b81-retail-free-art round 3: no layout mask ships (146 relief files), the reviewed paint of the glyph document is listed; b81-retail-free-art: + the 2026 relief as differences (147 files: no retail-derived map) and the 387 b81u glyph pictures drawn new or edited from project art (the 231 retail-derived ones ship as build-time operations or as the texels that differ from the build's glyph); b780 pillowfont: + the scorebug digit glyph layer (939 files); b780-rst2: + 121 more real portraits (faces_03 filled, a fifth atlas pair faces_04: the 119 players the 11/03 refresh creates, Thorson and Masses); b780-b9: + 49 more real portraits in faces_03 (the no-photo players the pt1 target list missed); b779-int1: rf3 + pt1 regenerated together (936 files); b779-pt1: + the 8 real free-agent portrait atlases; b779-rf3: + new rookie face atlases (faces_14..16); b778 cf5: seven scanned coach heads (ARI BUF DEN HOU LV NO SEA); b778 3d1: classification names the scanned heads as photo-derived; b778-pg2: + the TROPHY ROOM emblem; b778-ee1: + the 4 gray alien PNGs; b778-ss1: + the 15 Seamen card/field/face PNGs; b778-rh1/rh2: + the 18 rookie face bank atlases; b778 cf1: four scanned coach heads; b778 cf2: seven scanned coach heads and the PIT rescan; b778 cf3: seven scanned coach heads; b778 cf4: seven scanned coach heads, KC head.png in place of head_mask + head_overlay; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
+MODERN_ART_PNG_CATALOG_SHA256 = "aad2b76ec7c286004335432d98013c44239a40c6b9c7b1a9db5444e84faed75f"  # b81-retail-free-art round 3 + round 2 (R2-G): the texel data of every data document is listed (glyph paint, kit-fix runs and texels); b81-retail-free-art round 3: no layout mask ships (146 relief files), the reviewed paint of the glyph document is listed; b81-retail-free-art: + the 2026 relief as differences (147 files: no retail-derived map) and the 387 b81u glyph pictures drawn new or edited from project art (the 231 retail-derived ones ship as build-time operations or as the texels that differ from the build's glyph); b780 pillowfont: + the scorebug digit glyph layer (939 files); b780-rst2: + 121 more real portraits (faces_03 filled, a fifth atlas pair faces_04: the 119 players the 11/03 refresh creates, Thorson and Masses); b780-b9: + 49 more real portraits in faces_03 (the no-photo players the pt1 target list missed); b779-int1: rf3 + pt1 regenerated together (936 files); b779-pt1: + the 8 real free-agent portrait atlases; b779-rf3: + new rookie face atlases (faces_14..16); b778 cf5: seven scanned coach heads (ARI BUF DEN HOU LV NO SEA); b778 3d1: classification names the scanned heads as photo-derived; b778-pg2: + the TROPHY ROOM emblem; b778-ee1: + the 4 gray alien PNGs; b778-ss1: + the 15 Seamen card/field/face PNGs; b778-rh1/rh2: + the 18 rookie face bank atlases; b778 cf1: four scanned coach heads; b778 cf2: seven scanned coach heads and the PIT rescan; b778 cf3: seven scanned coach heads; b778 cf4: seven scanned coach heads, KC head.png in place of head_mask + head_overlay; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
 
 # sb3: Noah (2026-10-28) cleared real logos for this free fan mod, so his real Super Bowl event logos, network marks
 # and team-season logos ship as the bundled default. This is a separate exact catalog, not an authored-art exception:
@@ -414,7 +414,10 @@ _DATA_KEY = re.compile(r"^(?:[0-9]+|[0-9A-Z]{2,5}:[0-9A-Za-z_:.\-]+|(?:retail|lo
 
 
 def _is_box(value) -> bool:
-    return (isinstance(value, list) and len(value) == 4 and all(type(v) is int for v in value)
+    """Four numbers, end-exclusive and non-empty. Non-integer coordinates count too (fix 1, the re-check's A14): the
+    build refuses them, but the bytes would ship."""
+    return (isinstance(value, list) and len(value) == 4
+            and all(type(v) in (int, float) and v == v and abs(v) != float("inf") for v in value)
             and value[2] > value[0] and value[3] > value[1])
 
 
@@ -459,9 +462,9 @@ def _op_texels(op: dict) -> int:
     if kind == "warp" and isinstance(op.get("mask"), list):          # warp masks: [y, x0, x1] at the warp's scale
         total += sum(max(int(r[2]) - int(r[1]), 1) if isinstance(r, list) and len(r) == 3 else 1 for r in op["mask"])
     if kind == "clear" and isinstance(op.get("above", 0), (int, float)) and op.get("above", 0) < 0:
-        total += sum(_box_area(b) for _k, b in _boxes_in(op.get("boxes", [])))
+        total += sum(max(1, int(_box_area(b) + 0.999)) for _k, b in _boxes_in(op.get("boxes", [])))
     else:
-        total += sum(_box_area(b) for _k, b in _boxes_in(op) if _box_area(b) < SMALL)
+        total += sum(max(1, int(_box_area(b) + 0.999)) for _k, b in _boxes_in(op) if _box_area(b) < SMALL)
     if kind == "poly" and isinstance(op.get("points"), list) and _poly_area(op["points"]) < SMALL:
         total += max(1, int(_poly_area(op["points"]) + 0.999))
     if kind == "multipoly" and isinstance(op.get("polys"), list):
@@ -491,7 +494,7 @@ def _texel_rows(document: object) -> dict:
 
 def _one_texel_painting_boxes(ops) -> int:
     """Painting boxes of one texel (keep-outs paint nothing and are measured instead)."""
-    return sum(1 for op in ops for key, box in _boxes_in(op) if key != "keep" and _box_area(box) == 1)
+    return sum(1 for op in ops for key, box in _boxes_in(op) if key != "keep" and _box_area(box) <= 1)
 
 
 def _holds_operations(document) -> bool:
@@ -500,6 +503,26 @@ def _holds_operations(document) -> bool:
         value = pending.pop()
         if isinstance(value, dict):
             if isinstance(value.get("op"), str):
+                return True
+            pending.extend(value.values())
+        elif isinstance(value, list):
+            pending.extend(value)
+    return False
+
+
+# keys of texture pins, shapes and texel data: a document holding any of them edits textures (with or without `op`)
+_TEXTURE_KEYS = frozenset({"after_sha256", "before_sha256", "boxes", "derive", "ints", "map", "mask", "nodes", "pixels",
+                           "points", "polys", "relayout", "runs", "texels"})
+
+
+def _edits_textures(document) -> bool:
+    """b81-retail-free-art (fix 1 of the re-check): a document that holds operations, texture pins, shapes or texel data.
+    The release check pins every such data document by its whole SHA-256."""
+    pending = [document]
+    while pending:
+        value = pending.pop()
+        if isinstance(value, dict):
+            if isinstance(value.get("op"), str) or not _TEXTURE_KEYS.isdisjoint(value):
                 return True
             pending.extend(value.values())
         elif isinstance(value, list):
@@ -1811,6 +1834,39 @@ def _check_third_party_notices(root: Path, shipped: set) -> None:
                     raise ReleaseCheckError(f"third-party picture ships without its NOTICE.md attribution: {relative}")
 
 
+def _reviewed_documents(root: Path) -> dict:
+    """b81-retail-free-art (fix 1 of the re-check): every shipped data/*.json the catalog knows, with the SHA-256 of the
+    whole document for each one that edits textures (and for every data JSON added after the list began); written
+    only by tools/b77/modern_art_png_catalog.py from tools/b81_uniforms/texel_rows.py's measured hashes."""
+    catalog = root / MODERN_ART_PNG_CATALOG
+    if not catalog.exists():
+        return {}
+    with catalog.open("rb") as stream:
+        data = stream.read(512 * 1024 + 1)
+    if len(data) > 512 * 1024 or hashlib.sha256(data).hexdigest() != MODERN_ART_PNG_CATALOG_SHA256:
+        raise ReleaseCheckError("reviewed modern-art PNG catalog hash changed")
+    return json.loads(data).get("documents", {})
+
+
+def _check_document_pin(relative: str, path: Path, documents: dict) -> None:
+    """A data JSON ships only if the reviewed catalog lists it; one listed with a hash only with exactly that whole-document
+    SHA-256 (the PNG catalog's rule, for data documents); one listed by name only, only while it edits no texture."""
+    if relative not in documents:
+        raise ReleaseCheckError(f"a data document the reviewed catalog does not list: {relative}")
+    data = path.read_bytes()
+    pinned = documents[relative]
+    if pinned is None:
+        try:
+            document = json.loads(data.decode("utf-8"))
+        except (ValueError, UnicodeDecodeError):
+            document = None
+        if _edits_textures(document):
+            raise ReleaseCheckError(f"a data document that edits textures has no reviewed hash: {relative}")
+        return
+    if hashlib.sha256(data).hexdigest() != pinned:
+        raise ReleaseCheckError(f"a data document differs from its reviewed hash: {relative}")
+
+
 def _check_paint(relative: str, path: Path, reviewed: dict) -> None:
     """Texel data inside a data file must be exactly the reviewed texel data of the catalog: no pixel data may ride in a
     JSON document past the PNG gate, in the glyph document or any other."""
@@ -2276,8 +2332,10 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
         seen_files.add(relative)
         total_bytes += info.st_size
 
+    reviewed_documents = _reviewed_documents(release_root)
     for relative in sorted(seen_files):
         if relative.endswith(".json") and relative.startswith("data/"):
+            _check_document_pin(relative, release_root / relative, reviewed_documents)
             _check_paint(relative, release_root / relative, reviewed_paint)
     _check_third_party_notices(release_root, seen_files)
     missing_files = sorted(exact - seen_files)

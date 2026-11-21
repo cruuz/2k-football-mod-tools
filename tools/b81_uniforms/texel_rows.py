@@ -401,7 +401,19 @@ def main():
                     line.update(small_box_line(row, ops, package(row['selector'])))
                 out[owner] = line
             rows_out[relative] = out
-    document = dict(schema=SCHEMA, limit=EDGE_OVERLAP_LIMIT, rows=rows_out,
+    # fix 1 of the re-check: the whole-document SHA-256 of every data JSON that edits textures (operations, texture pins,
+    # shapes or texel data), as measured or classified here; the catalog pins exactly these
+    # (tools/b77/modern_art_png_catalog.py refuses a document changed since)
+    pinned = {}
+    for path in sorted((ROOT / 'data').rglob('*.json')):
+        data = path.read_bytes()
+        try:
+            parsed = json.loads(data.decode('utf-8'))
+        except (ValueError, UnicodeDecodeError):
+            continue
+        if RELEASE._edits_textures(parsed):
+            pinned[path.relative_to(ROOT).as_posix()] = sha(data)
+    document = dict(schema=SCHEMA, limit=EDGE_OVERLAP_LIMIT, rows=rows_out, documents=pinned,
                     about=("Ruling 2 classes of every data row that stores texels; class ii rows measured on the released "
                            "v0.9 disc by tools/b81_uniforms/texel_rows.py; the release check refuses a class ii row that "
                            "does not pass"))

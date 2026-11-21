@@ -492,7 +492,42 @@ def build(repo: Path) -> tuple[dict, dict]:
     if undeclared:
         raise SystemExit("PNG files under the reviewed folders are not in the release allowlist: " + ", ".join(undeclared))
     paint = judged_paint_section(repo)
-    return dict(classification=CLASSIFICATION, files=files, paint=paint, schema=SCHEMA), refused
+    return dict(classification=CLASSIFICATION, documents=document_pins(repo), files=files, paint=paint,
+                schema=SCHEMA), refused
+
+
+def document_pins(repo: Path) -> dict:
+    """b81-retail-free-art (fix 1 of the re-check): every data JSON the release allowlist declares. One that edits
+    textures (operations, texture pins, shapes or texel data) is pinned by its whole-document SHA-256 exactly as
+    tools/b81_uniforms/texel_rows.py measured or classified it (refused if it changed since); one that edits none is
+    listed by name (null) if it was on the list before, and pinned whole if it is new. The release check refuses a data
+    JSON that is not listed or not its pin, so a document can change only through the generators."""
+    release = _release(repo)
+    rows_path = repo / TEXEL_ROWS
+    measured = json.loads(rows_path.read_text(encoding="utf-8")).get("documents", {}) if rows_path.exists() else {}
+    catalog = repo / CATALOG
+    previous = json.loads(catalog.read_text(encoding="utf-8")).get("documents") if catalog.exists() else None
+    out = {}
+    for line in (repo / "packaging/release-allowlist.txt").read_text(encoding="utf-8").splitlines():
+        relative = line.strip()
+        if not (relative.startswith("data/") and relative.endswith(".json")) or relative in out:
+            continue
+        data = (repo / relative).read_bytes()
+        digest = sha256(data)
+        try:
+            document = json.loads(data.decode("utf-8"))
+        except (ValueError, UnicodeDecodeError):
+            document = None
+        if release._edits_textures(document):
+            if measured.get(relative) != digest:
+                raise SystemExit(f"{relative}: edits textures and is not the document texel_rows.py measured "
+                                 "(run tools/b81_uniforms/texel_rows.py first)")
+            out[relative] = digest
+        elif previous is None or (relative in previous and previous[relative] is None):
+            out[relative] = None
+        else:
+            out[relative] = digest
+    return dict(sorted(out.items()))
 
 
 def render(document: dict) -> bytes:
