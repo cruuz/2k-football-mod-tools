@@ -288,7 +288,6 @@ REQUIRES = {
     "classic_teams": ("historic_teams_quick_game",),  # b775-ct1
     "cpu_clock2_overtime": ("cpu_clock2",),  # b780 b-clock: the overtime window extends the modern clock rules
     "cpu_runner_vision": ("cpu_ball_carriers",),  # b780 cv2-runner: its wider sideline limit is cpu_ball_carriers' taper
-    "gadget_play": ("depth_chart_rows",),  # beta 81 Q62: the GAD player is a SPECIAL depth chart row
 }
 # b780 m64prof: values that mean something only with another option on; the build refuses them otherwise
 # (nfl2k5_momentum._settings: "a collision level requires momentum_collisions", "contact requires a nonzero momentum level").
