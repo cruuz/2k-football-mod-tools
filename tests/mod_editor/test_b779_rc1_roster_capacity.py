@@ -266,7 +266,8 @@ class DraftClassSupplyTests(unittest.TestCase):
         self.assertEqual(sorted(int(e["va"], 16) for e in receipt["edits"]),
                          sorted(economy.REVISION_4_SITES | getattr(economy, "REVISION_5_SITES", frozenset())
                                 | getattr(economy, "REVISION_6_SITES", frozenset())
-                                | getattr(economy, "REVISION_7_SITES", frozenset())))
+                                | getattr(economy, "REVISION_7_SITES", frozenset())
+                                | getattr(economy, "REVISION_8_NEW", frozenset())))   # b81: the practice-squad fill
 
     def test_a_small_pool_still_gets_a_full_draft_and_keeps_the_vacancies(self):
         # The retail roster has only 241 free agents, mostly young: retiring by age alone frees far fewer than
