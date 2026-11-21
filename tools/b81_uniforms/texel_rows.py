@@ -2,7 +2,10 @@
 """Ruling 2 (b81-retail-free-art): the provenance class and the measured base content of every data row that stores
 texels, for the release gate to judge.
 
-  python3 tools/b81_uniforms/texel_rows.py "<released v0.9 disc>"      -> packaging/nfl2k5_texel_rows.json
+  python3 tools/b81_uniforms/texel_rows.py "<released v0.9 disc>" "<retail disc>"   -> packaging/nfl2k5_texel_rows.json
+
+(the retail disc is read only for rows whose rules read the user's own retail textures, ``retail:`` donors, exactly as
+the build does; without it those rows are recorded unmeasured)
 
 Class, by the provenance of the texture the row edits (coordinator's ruling 2):
   i    the base ships whole in the package as the project's own art (a retail-free catalog with a provenance record);
@@ -102,10 +105,27 @@ CLASS_III = {
 # documents whose rows still storing texels are known to hold base content whatever the measures say: the b81-art
 # helmet rows the fill rule does not yet reproduce are shell shading filled from the texels around a piece, or marks
 # redrawn from game art (helpers/fill/REVIEW_ME.md)
-REFUSE_DOCUMENTS = {
-    "data/nfl2k5_kit_fixes_2026_b81.json": ("a helmet piece repainted from the shell's own shading or a mark redrawn "
-                                            "from game art, not yet a build-time rule"),
+# Ruling 2 class iii, named per row (the helmet document's rows carry the cleanup's defect names, which the fill rule now
+# does at build time, so the families above cannot name their drawn part): rows whose stored texels are only the
+# project's own drawing, placed after the rule cleared the old mark. Measured like the families: no erasure may remain.
+_KEYLINE = ("keyline drawn by the art lane's keyline.py from the league project's 2026 logo file (its de-keylined "
+            "outline colour at the registered placement, anti-aliased with the logo file's own coverage against the "
+            "shell colour); the old logo ink and the vents are cleared by the fill rule first")
+AUTHORED_ROWS = {
+    "data/nfl2k5_kit_fixes_2026_b81.json": {
+        **{f"{sel}:{chunk}:txtr": _KEYLINE for sel, chunk in (("02A0", 12), ("02H0", 12), ("25A0", 12), ("25H0", 12),
+                                                               ("25A7", 12), ("25H7", 12), ("25A0", 11), ("25H0", 11))},
+        **{f"{sel}:12:txtr": _KEYLINE + "; the logo interior drawn from the home kit's 2026 logo (league project art, "
+                                        "refine.interior)" for sel in ("02A2", "02H2")},
+        **{f"{sel}:12:txtr": ("the raven mark drawn by the art lane's realmark.py from the Wikimedia Commons diagram "
+                              "'Baltimore Ravens Uniforms (2026).png', scaled to the shell; the old ink and the vents "
+                              "are cleared by the fill rule first") for sel in ("02A3", "02H3")},
+    },
 }
+
+
+REFUSE_DOCUMENTS = {}  # documents refused whole (the helmet document left it in round 3: its rows are build-time rules,
+                       # the drawn ones named in AUTHORED_ROWS, every other stored texel judged as class ii)
 # rows whose remaining texels are known to come from game art even though the measures pass: refused by name
 REFUSE = {}          # rows refused outright by name (29A0:1 left this list by ruling: RULING_1)
 
@@ -149,6 +169,8 @@ def follows(base, final, shipped):
 
 
 PACKAGE = None          # set by main: selector -> package bytes on the disc
+RETAIL = lambda selector: None          # set by main: selector -> package bytes on the retail disc
+LOGO = lambda name: None                # set by main: logos.cdf slot bytes on the disc
 
 
 def kit_line(row, raw):
@@ -160,8 +182,22 @@ def kit_line(row, raw):
     donors = {}
     for k, pin in sorted((row.get('donors') or {}).items()):
         k = str(k)
-        if k.startswith('retail:'):
-            return dict(measured=False)                 # a donor from the retail disc: measured by the rule's own tests
+        if k.startswith('logo:'):                       # the league logo as the image holds it (logos.cdf)
+            slot = LOGO(k[len('logo:'):])
+            if slot is None or sha(slot) != pin:
+                return dict(measured=False)
+            donors[k] = kf.logo_rgba(slot)
+            continue
+        if k.startswith('retail:'):                     # the user's own retail texture, as the build reads it
+            other, at = k[len('retail:'):].split(':')
+            source = RETAIL(other)
+            if source is None:
+                return dict(measured=False)
+            d = kf._chunk_for(source, int(at))
+            if sha(source[d.offset:d.end_offset]) != pin:
+                return dict(measured=False)
+            donors[k] = kf.texture_rgba(source[d.offset:d.end_offset])
+            continue
         other, at = (k.split(':') if ':' in k else (None, k))
         source = raw if other is None else PACKAGE(other)
         d = kf._chunk_for(source, int(at))
@@ -200,7 +236,24 @@ def glyph_line(row, raw):
 
 
 def main():
+    global RETAIL, LOGO
     disc = Path(sys.argv[1])
+    retail = Path(sys.argv[2]) if len(sys.argv) > 2 else None
+    retail_cache, logo_cache = {}, {}
+
+    def retail_package(selector):
+        if retail is None:
+            return None
+        if selector not in retail_cache:
+            retail_cache[selector] = kf.read_kits(retail, [selector]).get(selector)
+        return retail_cache[selector]
+
+    def logo_slot(name):
+        if name not in logo_cache:
+            logo_cache[name] = kf.read_logos(disc, [name]).get(name)
+        return logo_cache[name]
+
+    RETAIL, LOGO = retail_package, logo_slot
     section = catalog.paint_section(ROOT)
     rows_out = {}
     with bw._Image.open(disc, writable=False) as image:
@@ -248,6 +301,14 @@ def main():
                                     + '; '.join(CLASS_III[f] for f in sorted(families)), **measured)
                     else:
                         line.update(cls='ii', reason='authored families, but an erasure is still stored as texels',
+                                    passes=False, **measured)
+                elif owner in AUTHORED_ROWS.get(relative, {}) and row is not None:
+                    measured = kit_line(row, package(row['selector']))
+                    if measured.get('measured') and measured['erasure'] == 0:
+                        line.update(cls='iii', reason='authored on a region cleared by rule: '
+                                    + AUTHORED_ROWS[relative][owner], **measured)
+                    else:
+                        line.update(cls='ii', reason='authored row, but unmeasured or an erasure is still stored',
                                     passes=False, **measured)
                 elif owner in PATTERNS.get(relative, {}):
                     line.update(cls='iii', reason=PATTERNS[relative][owner])
