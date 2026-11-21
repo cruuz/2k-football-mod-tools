@@ -133,7 +133,8 @@ def _private(variable, sha):
 
 class OwnerTests(unittest.TestCase):
     """Owner level on the reviewed v0.10 helmet test executable (98dd7329) with the injury option Realistic (slices 1 to 3
-    since the merge of 5854e5144: 501b8412; slice 1 alone gave 9f435b38)."""
+    since the merge of 5854e5144: 501b8412; with scoring and revision 4 at the integration merge: f3a22805; slice 1
+    alone gave 9f435b38)."""
 
     @classmethod
     def setUpClass(cls):
@@ -147,7 +148,9 @@ class OwnerTests(unittest.TestCase):
 
     def test_settings_and_status(self):
         room = self.room
-        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "501b8412")  # b81 merge: slices 1-3 (was 9f435b38)
+        # b81 integration merge of qb34 (scoring + stability revision 4): f3a22805 (was 501b8412 at 5854e5144, 9f435b38
+        # for slice 1 alone)
+        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "f3a22805")
         self.assertEqual(room.read_settings(self.slice1), {"status": "retail", "mode": "retail", "reserved": False,
                                                            "va": None})
         settings = room.read_settings(self.applied)
@@ -443,13 +446,17 @@ class PreviousRevisionTests(unittest.TestCase):
     # previous executable differs from the one its panel ran (on slice 1 alone). Re-pinned to the rebuilds at the merged
     # head; the panel executables were, in order: 72a78fce (P6 candidate at 692062151), 9e1f2b83 (P6-final at
     # 66d8a7e1b), 58462a62 (P2a-final at 66d8a7e1b), c93f6c0d / a0a81494 (floor handover), 4af354d7 / 6aef88eb (3a).
-    D1D2_SHA = "52f4d9fec9afe88b62bcacde2a0c179541da8b5d0de85590a46b0a445c986906"
-    REVIEW_67_SHA = "1c68a15fcf47025cc60055aca7a1210af69955199eb69aa0c58c37d590f23871"
-    REVIEW_64_SHA = "e6928bafc31b730bcdcd6984341be25023bd5cf2a5d99b7115f8db528344aa5d"
-    FLOOR_SHA = "ab2920569c77140a68c9302b6f4faec9fde2d3f87405dacb05b1bf16ebe612ee"
-    FLOOR_EMPTY_SHA = "6e14638a53dfbd45d9860aceaae951496c89a651b4eb902cc428d8db92777a33"
-    STAGE_3A_SHA = "449e651ed6d12509565f65e27afd440bd4ff7318f709ec300e292595fd5accb6"
-    STAGE_3A_EMPTY_SHA = "e3270c1b26ef94b697098ff351d63500adb120c4aa86d3e1a73111ea243804e8"
+    # Integration merge of qb34 (scoring + stability revision 4 under the room): re-pinned again; every rebuild differs
+    # from its 5854e5144 rebuild only where its source (the injury option's executable) differs, plus the shared registry
+    # and header fields; the room's page and sites are unchanged. The 5854e5144 values were D1D2 52f4d9fe, REVIEW_67
+    # 1c68a15f, REVIEW_64 e6928baf, FLOOR ab292056 / 6e14638a, STAGE_3A 449e651e / e3270c1b.
+    D1D2_SHA = "cdb2fd96b7385b744c6389fcccb532f1edddddf7b8bc0233d93c6b389461957c"
+    REVIEW_67_SHA = "e0acccbd619deffff42f19db0c9d04e607d1fe7c7ba0a2b695a0f0f6947178ff"
+    REVIEW_64_SHA = "15a779c54c040f8b353e664e042e28187ce7fec03168b212412cedca0294ff9d"
+    FLOOR_SHA = "5087b8d3260e6c855ce0b8173429ffce4e31f74e15b124425a231e5246d68d1f"
+    FLOOR_EMPTY_SHA = "5a798bf10ffa901d854b65aeaca3815869139a7e337b7f2d50f0a5a1876cd300"
+    STAGE_3A_SHA = "cd746c09fe8db307fb317a8cf201c0d2e66b4ab6ee27a2baeb1c2ee3a1ae22a4"
+    STAGE_3A_EMPTY_SHA = "33b007d0191e8ddf0d25814c98cebf5b00d6aa592d77b494aac5ed21d22c3c37"
 
     @classmethod
     def setUpClass(cls):

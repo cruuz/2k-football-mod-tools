@@ -152,20 +152,28 @@ class BuildChoices(unittest.TestCase):
                                 "sim_qb_injury_settings": {"status": "retail", "mode": "retail"}})
         mode = self.panel.qb_injury_mode
         mode.setCurrentIndex(mode.findData("realistic"))
+        # b81 qb34 (the floor): injuries above zero keep modern injured reserve ticked, and the v0.9 update installs it
+        # with them, so "alone" is the quarterback choice with that one need.
+        need = "modern_injured_reserve"
         for other_updates in (False, True):
-            for key in build.V09_UPDATE_CHOICES:
+            wanted = tuple(other_updates or key == need for key in build.V09_UPDATE_CHOICES)
+            for key, on in zip(build.V09_UPDATE_CHOICES, wanted):
                 box = self.panel._boxes()[key]
-                if box.isChecked() != other_updates:
+                if box.isChecked() != on:
                     box.click()
             with self.subTest(other_updates=other_updates):
+                self.assertEqual(mode.currentData(), "realistic")
                 self.assertFalse(self.panel.blocker())
                 self.assertTrue(self.panel.build_button.isEnabled())
                 self.assertIn("Simulated injuries (Realistic)", self.panel.selected_labels())
                 plan = self.panel._plan_for_build()
                 self.assertIsInstance(plan, build._ReleasedV09Update)
                 self.assertEqual((plan.sim_qb_injuries, plan.sim_realism), ("realistic", True))
-                self.assertEqual(tuple(getattr(plan, k) for k in build.V09_UPDATE_CHOICES),
-                                 (other_updates,) * len(build.V09_UPDATE_CHOICES))
+                self.assertEqual(tuple(getattr(plan, k) for k in build.V09_UPDATE_CHOICES), wanted)
+        with self.subTest("unticking the floor's need turns the injuries to Retail"):
+            self.panel._boxes()[need].click()
+            self.assertEqual(mode.currentData(), "retail")
+            self.assertNotIn("Simulated injuries (Realistic)", self.panel.selected_labels())
 
     def test_make_my_disc_selects_the_supported_options_independently(self):
         for flags in itertools.product((False, True), repeat=len(build.V09_UPDATE_CHOICES)):
