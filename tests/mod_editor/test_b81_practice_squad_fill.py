@@ -34,7 +34,7 @@ SQUAD_LIMIT, ACTIVE_LIMIT = 12, 53
 IMAGES = Path(os.environ.get("QB_ROOM_P2A_REPLAY", "/home/noah/2k-worktrees/.b77-scratch/b81/qb34/evidence/p2a-replay"))
 IMAGE = ("00-sign_after-y1-st7-w2-ENTER.b81mem.gz", "c76828e9931eaebdfebd837b5cbe5bf3cf36adb8070618f1f247cdb9d518cd8e")
 IMAGE_XBE = ("p2-candidate-9edd1353.xbe", "9edd1353bedfbca6b4ce35faa2acc3cb68b8a74521d3313e3b1873e6b12c7c3d")
-V09_XBE = Path(os.environ.get("NFL2K5_V09_XBE", "/home/noah/2k-worktrees/.b77-scratch/b81/fixtures/v09/default.xbe"))
+V09_XBE = Path(os.environ.get("NFL2K5_V09_RELEASED_XBE", "/home/noah/2k-worktrees/.b77-scratch/b81/fixtures/v09/default.xbe"))   # the released executable (env.sh NFL2K5_V09_XBE is the RC)
 V09_SHA = "d78088f9ba47c6197e99ea540d0bc3d2c9255f7cd49152a77946be70dacab866"
 
 
@@ -180,7 +180,8 @@ class KeptPreseasonImage(unittest.TestCase):
                 assert m.get(block) == 0x52354B32, "no arena overflow block"
                 squad.append(pool + 84 * struct.unpack("<H", m.uc.mem_read(block + 32 + 10 * c + 2 * (i - 65), 2))[0])
             clubs.append({"active": [m.get(t + 4 * i) for i in range(a)], "squad": squad, "count": r,
-                          "cpu": not m.call(0x13EC30, ecx=t) or bool(m.get(0xE6013C)), "record": bytes(m.uc.mem_read(t, 500))})
+                          "cpu": not m.call(0x13EC30, ecx=t) or bool(m.get(0xE6013C)), "human": bool(m.call(0x13EC30, ecx=t)),
+                          "record": bytes(m.uc.mem_read(t, 500))})
         table = m.get(root + 0x3C)
         free = [m.get(table + 4 * i) for i in range(m.get(root + 0x38))]
         return clubs, free
@@ -198,8 +199,8 @@ class KeptPreseasonImage(unittest.TestCase):
         m = self.machine()
         before, free_before = self.state(m)
         after, free_after = self.gate(m)
-        cpu = [c for c, club in enumerate(after) if club["cpu"]]
-        self.assertGreaterEqual(len(cpu), 31)
+        cpu = [c for c, club in enumerate(after) if not club["human"]]
+        self.assertEqual(len(cpu), 31)
         full = [c for c in cpu if after[c]["count"] == SQUAD_LIMIT]
         self.assertEqual(len(full), len(cpu), [after[c]["count"] for c in cpu])   # a short slot is made up in round two
         self.assertTrue(all(club["count"] <= SQUAD_LIMIT for club in after))
@@ -219,6 +220,20 @@ class KeptPreseasonImage(unittest.TestCase):
             self.assertEqual((row["left"], row["length"], row["hurt"], row["flags"] & 0x1C), (1, 1, 0, 4))
         positions = Counter(self.player(m, p)["pos"] for p in added)
         self.assertGreaterEqual(len(positions), 10)             # the position mix, not one position
+        self.assertEqual(positions[0], 0)                       # no quarterback (coordinator 11/20)
+        # not the best-rated young free agents: a pick by hash, so better eligible players at a signed player's position
+        # are still free afterwards (the rating-first fill of the first revision left none)
+        from mod_editor.core.nfl2k5_my_career_prospects import native_overall
+        def eligible(p):
+            row = self.player(m, p)
+            return row["pro"] <= 3 and not row["hurt"] and row["flags"] & 0x1C == 4 and row["pos"] < 17
+        class Record:          # native_overall reads record.encode(), the 84-byte record
+            def __init__(self, raw): self.raw = raw
+            def encode(self): return self.raw
+        ovr = lambda p: native_overall(Record(bytes(m.uc.mem_read(p, 84))))
+        better_left = [p for p in added if any(eligible(q) and self.player(m, q)["pos"] == self.player(m, p)["pos"]
+                                               and ovr(q) > ovr(p) for q in free_after)]
+        self.assertGreater(len(better_left), len(added) // 4)
 
     def test_nobody_is_held_twice(self):
         m = self.machine()
@@ -246,6 +261,45 @@ class KeptPreseasonImage(unittest.TestCase):
         self.assertEqual(after[15]["record"], before[15]["record"])
         self.assertEqual(sum(after[c]["count"] == SQUAD_LIMIT for c in range(32) if c != 15), 31)
 
+    def test_a_user_club_with_cpu_roster_moves_keeps_its_own_squad(self):
+        # coordinator 11/20: a club a person manages is never touched, whatever the auto sign and cut setting. With it on
+        # the native gate still cuts the club to 53; the fill adds nobody and the expiry releases nobody (review finding 8:
+        # hand-picked squad players released at every rollover must not ship).
+        from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
+        m = self.machine(auto_sign_cut=1)
+        before, _ = self.state(m)
+        self.assertTrue(before[15]["human"] and before[15]["cpu"] and before[15]["count"] > 0)
+        after, _ = self.gate(m)
+        self.assertEqual(len(after[15]["active"]), ACTIVE_LIMIT)                       # the native cut, as before
+        self.assertEqual(after[15]["squad"], before[15]["squad"])                      # no fill
+        m.leaf(0x246F90, lambda: m.ret(), reason="the injured-reserve return the expiry hands on to is not under test")
+        m.call(SYMBOLS["economy_squad_expire"], budget=400_000_000)
+        expired, _ = self.state(m)
+        self.assertEqual(expired[15]["squad"], before[15]["squad"])                    # no release
+        self.assertEqual([expired[c]["count"] for c in range(32) if c != 15], [0] * 31)
+
+    def test_a_bad_reserve_slot_skips_the_club(self):
+        # review finding 10: a null pointer among a club's reserves (only a corrupt save could hold one) skips the club in
+        # the fill and in the expiry instead of reading through it
+        from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
+        m = self.machine()
+        filled, _ = self.gate(m)
+        team = m.get(m.get(0xB72918) + 0x1C)                                            # club 0, 53 + 12
+        m.put(team + 4 * (53 + 11), 0)
+        m.uc.mem_write(team + 0x1F2, bytes((11,)))                                     # 11 counted, one of them null
+        m.put(team + 4 * (53 + 10), 0)
+        m.call(SYMBOLS["economy_squad"], ecx=team, edx=53, budget=400_000_000)
+        self.assertEqual(m.uc.mem_read(team + 0x1F2, 1)[0], 11)
+        corrupt, free = self.state(m)
+        m.leaf(0x246F90, lambda: m.ret(), reason="the injured-reserve return the expiry hands on to is not under test")
+        m.call(SYMBOLS["economy_squad_expire"], budget=400_000_000)
+        after, free_after = self.state(m)
+        self.assertEqual(m.uc.mem_read(team + 0x1F2, 1)[0], 11)
+        # while any club's reserves are unreadable the squad runtime refuses every free-agent append (its ownership test
+        # reads every club), so each other club's release is refused and put back exactly: nobody is lost or doubled
+        self.assertEqual([a["squad"] for a in after], [c["squad"] for c in corrupt])
+        self.assertEqual(free_after, free)
+
     def test_the_rollover_lets_every_cpu_squad_deal_expire_and_the_next_gate_forms_new_squads(self):
         from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
         m = self.machine()
@@ -253,14 +307,15 @@ class KeptPreseasonImage(unittest.TestCase):
         m.leaf(0x246F90, lambda: m.ret(), reason="the injured-reserve return the expiry hands on to is not under test")
         m.call(SYMBOLS["economy_squad_expire"], budget=400_000_000)      # once per rollover, every club
         after, free = self.state(m)
-        released = [p for club in filled for p in club["squad"]]
-        self.assertEqual([club["count"] for club in after], [0] * 32)
+        released = [p for c, club in enumerate(filled) if c != 15 for p in club["squad"]]
+        self.assertEqual([club["count"] for c, club in enumerate(after) if c != 15], [0] * 31)
+        self.assertEqual(after[15]["squad"], filled[15]["squad"])                      # the person's club keeps its own
         self.assertEqual([len(a["active"]) for a in after], [len(f["active"]) for f in filled])
         self.assertTrue(set(released) <= set(free))
         for p in released:
             self.assertEqual((self.player(m, p)["left"], self.player(m, p)["length"]), (0, 0))   # as the native release
         again, _ = self.gate(m)
-        self.assertEqual([club["count"] for club in again], [SQUAD_LIMIT] * 32)
+        self.assertEqual([club["count"] for c, club in enumerate(again) if c != 15], [SQUAD_LIMIT] * 31)
 
     def test_the_expiry_leaves_a_manual_user_club_alone(self):
         from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
