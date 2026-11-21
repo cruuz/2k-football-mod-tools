@@ -304,8 +304,10 @@ class NamingTests(_PanelCase):
         self.assertIn("already exists shares it", self.panel.name_pool_label.text())
         self.assertIn("Select a player to edit him", self.panel.player_table.toolTip())
         menu = [a.text() for a in self.panel.grid_menu().actions() if a.text()]
-        self.assertEqual(menu[:5], ["Copy player", "Paste player", "Paste attributes only", "Paste photo only",
-                                    "Find player… (every team)"])
+        # b81 finn-r2: Paste exact copy joined the paste entries, so the list is one longer before Find player
+        self.assertEqual(menu[:7], ["Copy player", "Paste player", "Paste attributes only", "Paste photo only",
+                                    "Paste exact copy (names, college, PBP, photo too)",
+                                    "Clear photo", "Find player… (every team)"])
         self.assertIn("Place on IR…", menu)
         place = next(a for a in self.panel.grid_menu().actions() if a.text() == "Place on IR…")
         self.assertFalse(place.isEnabled(), "IR belongs to a franchise save")

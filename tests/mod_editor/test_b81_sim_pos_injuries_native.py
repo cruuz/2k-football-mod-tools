@@ -1203,7 +1203,7 @@ class SlotTwentyEight(unittest.TestCase):
 
 # Long-franchise stability (pos3/DESIGN.md addendum "Long-franchise stability", A.2 the mechanism and A.6 test 1;
 # tools/qb_sim_injuries/stability.S). The rule below is the design's, written out here independently of the piece.
-ONE, FLOOR, CEILING = 0x3F800000, 0x3F000000, 0x3FA00000
+ONE, FLOOR, CEILING = 0x3F800000, 0x3EB33333, 0x3FA00000   # 1.0, 0.35 (float32 nearest), 1.25
 STABILITY_CLASSES = 13                  # slices 2 and 3's twelve classes in order, then the quarterback
 QUARTERBACK = 12
 # stored position -> (class, starters counted): QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE; K and P are not counted
@@ -1237,6 +1237,21 @@ def scaled(first, second, factor, fpcw=FPCW_64):
     precision = PRECISION[fpcw >> 8 & 3]
     product = _round_bits(Fraction(f32(first)) * Fraction(f32(second)), precision)
     return _round_bits(product * Fraction(f32(factor)), precision)
+
+
+def times_single(register, factor, fpcw=FPCW_64):
+    """An x87 register value (64-bit mantissa, sign and exponent word) times a single float under the control word."""
+    mantissa, top = register
+    value = Fraction(mantissa) * Fraction(2) ** ((top & 0x7FFF) - 16383 - 63)
+    product = _round_bits(value * Fraction(f32(factor)), PRECISION[fpcw >> 8 & 3])
+    exponent = product.numerator.bit_length() - product.denominator.bit_length()
+    while Fraction(2) ** exponent > product:
+        exponent -= 1
+    while Fraction(2) ** (exponent + 1) <= product:
+        exponent += 1
+    whole = product / Fraction(2) ** (exponent - 63)
+    assert whole.denominator == 1
+    return int(whole), (top & 0x8000) | (exponent + 16383)
 
 
 def effective_scaled(scale, slider, factor, fpcw=FPCW_64):
@@ -1476,10 +1491,10 @@ class StabilityFactors(StabilityGate):
         self.assert_isolated()
 
     def test_quarterback_threshold_is_scaled_by_its_own_factor_to_the_unit(self):
-        # The quarterback's starters at 2 x R: his factor is the floor 0.5; every other class at 0.8. With the
+        # The quarterback's starters at 3 x R: his factor 1/3 is held at the floor 0.35; every other class at 0.8. With the
         # positions check switched off the clinical piece's own new-game call computes the factors.
         gaps = gaps_for(.8)
-        gaps[QUARTERBACK] = [round(2 * rules.STABILITY_REFERENCE[QUARTERBACK])] * 10
+        gaps[QUARTERBACK] = [round(3 * rules.STABILITY_REFERENCE[QUARTERBACK])] * 10
         for index, values in gaps.items():
             self.league.starters(index, values)
         self.install()
@@ -1555,22 +1570,32 @@ class StabilityFactors(StabilityGate):
                     self.assertEqual(self.table('stab_count', 13)[index], 9)
 
     def test_both_clamps(self):
-        # Exactly at 0.5 and 1.25 (reference 20: means 40 and 16) the factor is the bound itself; beyond them it is
-        # held there; just inside it is the model's value.
-        reference = (20.0,) * STABILITY_CLASSES
-        self.load_rate(rules.DEFAULT_RATE, reference=reference)
-        for index in range(STABILITY_CLASSES):
-            for gaps, expected in (([40] * 8, FLOOR), ([41] * 8, FLOOR), ([90] * 8, FLOOR), ([16] * 8, CEILING),
-                                   ([15] * 8, CEILING), ([1] * 8, CEILING), ([39] * 8, factor_bits(8, 312, 20.0)),
-                                   ([17] * 8, factor_bits(8, 136, 20.0))):
-                with self.subTest(index=index, mean=gaps[0]):
-                    self.league = League()
-                    self.league.starters(index, gaps)
-                    self.install()
-                    factors = self.stability(6)
-                    self.assertEqual(factors[index], expected)
-                    self.assertEqual(factors, self.league.factors(reference))
-        self.assertTrue(FLOOR < factor_bits(8, 312, 20.0) < factor_bits(8, 136, 20.0) < CEILING)
+        # The floor is 0.35 (rev-pos3/REVIEW_STABILITY.md; it was 0.5) and the ceiling 1.25. With reference 20: mean 40
+        # gives exactly 0.5, now the model's own value and no longer a bound; mean 57 gives 0.3509, just above the floor
+        # (the model's value); 58 gives 0.3448, just below (held at the floor), as are 90 and beyond. Exactly at the
+        # floor: reference 7 and mean 20 give 7/20, whose float32 is the floor's own bit pattern. At 1.25 (mean 16) the
+        # factor is the bound; beyond (15, 1) it is held there; just inside (17) it is the model's value.
+        cases = {20.0: (([40] * 8, factor_bits(8, 320, 20.0)), ([57] * 8, factor_bits(8, 456, 20.0)),
+                        ([58] * 8, FLOOR), ([90] * 8, FLOOR), ([16] * 8, CEILING), ([15] * 8, CEILING),
+                        ([1] * 8, CEILING), ([39] * 8, factor_bits(8, 312, 20.0)), ([17] * 8, factor_bits(8, 136, 20.0))),
+                 7.0: (([20] * 8, FLOOR), ([19] * 8, factor_bits(8, 152, 7.0)), ([21] * 8, FLOOR))}
+        for value, rows in cases.items():
+            reference = (value,) * STABILITY_CLASSES
+            self.load_rate(rules.DEFAULT_RATE, reference=reference)
+            for index in range(STABILITY_CLASSES):
+                for gaps, expected in rows:
+                    with self.subTest(reference=value, index=index, mean=gaps[0]):
+                        self.league = League()
+                        self.league.starters(index, gaps)
+                        self.install()
+                        factors = self.stability(6)
+                        self.assertEqual(factors[index], expected)
+                        self.assertEqual(factors, self.league.factors(reference))
+        self.assertEqual(factor_bits(8, 320, 20.0), 0x3F000000)                 # 0.5 is not a bound any more
+        self.assertEqual(factor_bits(8, 160, 7.0), FLOOR)                       # exactly at the floor
+        self.assertTrue(FLOOR < factor_bits(8, 456, 20.0) < 0x3F000000 < factor_bits(8, 312, 20.0)
+                        < factor_bits(8, 136, 20.0) < CEILING)
+        self.assertTrue(FLOOR < factor_bits(8, 152, 7.0))
 
     def test_fewer_than_eight_starters_a_zero_sum_or_a_bad_club_count_leave_one(self):
         for index in range(STABILITY_CLASSES):
@@ -1756,7 +1781,7 @@ class StabilityIdentity(NativeMachine):
 
     def league(self):
         gaps = gaps_for(.8)
-        gaps[QUARTERBACK] = [round(2 * rules.STABILITY_REFERENCE[QUARTERBACK])] * 10
+        gaps[QUARTERBACK] = [round(3 * rules.STABILITY_REFERENCE[QUARTERBACK])] * 10
         league = League()
         for index, values in gaps.items():
             league.starters(index, values)
@@ -1794,7 +1819,7 @@ class StabilityIdentity(NativeMachine):
         self.assertEqual(len(current[2]), len(reference[2]))
         for (new, sample), (old, same) in zip(current[2], reference[2]):
             self.assertEqual(sample, same)                                # the quarterback's gate sample
-            self.assertEqual(new, (old[0], old[1] - 1))                   # his threshold x 0.5 exactly
+            self.assertEqual(new, times_single(old, FLOOR, control))     # his threshold x the floor 0.35, rounded
         positions = [struct.unpack('<12I', row[5]) for row in current[0]]
         unscaled = [struct.unpack('<12I', row[5]) for row in reference[0]]
         self.assertTrue(all(new[i] < old[i] for new, old in zip(positions, unscaled) for i in range(12) if old[i]))

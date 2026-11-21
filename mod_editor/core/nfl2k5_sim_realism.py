@@ -37,11 +37,11 @@ read-only code and leaves the played game alone:
   the career tackle delta of that game is read from the merge (career field 18 before/after) and
   ``TACKLE_BONUS_PCT`` of it is added back, so the single native tackle counter keeps its shape.
   Cornerbacks are skipped because the experimental cornerback tackle owner already calibrates them.
-* **Stat-space scales** (``PASS_SCALE`` / ``RUSH_BONUS_PCT``): after the native conversion pass
-  yards are multiplied by ``PASS_SCALE`` at the three completion commits and season rush yards of
-  non-quarterbacks get ``RUSH_BONUS_PCT`` of each game's delta added back after the merge.  Both
-  change the recorded season line only; the engine's field position and play outcomes are
-  untouched.  The red-zone pass scale above is different: it runs before the conversion.
+* **Pass yards after conversion.** At three native pass-yard calculation sites, ``PASS_SCALE``
+  multiplies the gain returned to the simulator. Changing this value affects credited yardage
+  and can change subsequent plays and final scores.
+* **Season rushing correction.** The postgame merge applies ``RUSH_BONUS_PCT`` to the lead
+  halfback's rushing-yard delta and adds the result to his season total.
 
 Round 5 calibration: two QL 15 seasons and one QL 5 season with the round-3 roster gave
 22.65/22.35 points, 1.84/1.82 pass touchdowns, 0.50/0.52 rush touchdowns and 110.7/109.6 rush
@@ -55,7 +55,7 @@ allocation is proven by the union test.
 
 Integration rebalance (b779-int1, constants only): with every simulated-season owner installed together (the
 cornerback credit and its injured-player guard, the RB injuries, this owner) two QL 15 seasons gave 23.1-23.3
-points, 8-10 backs and 28-33 receivers over 1,000 yards.  ``PASS_SCALE`` 0.92 (stat space), ``RUSH_BONUS_PCT`` 20
+points, 8-10 backs and 28-33 receivers over 1,000 yards.  ``PASS_SCALE`` 0.92 after conversion, ``RUSH_BONUS_PCT`` 20
 (stat space), ``RZ_PASS_SCALE`` 0.64 and the RB owner's rotation at 2% give, over seeds 2501/2502/2503:
 22.78/22.42/22.49 points, pass TD 1.57/1.55/1.60, rush TD 0.97/0.95/0.87, 18/18/12 backs and 24/22/26
 receivers over 1,000 yards.
@@ -63,7 +63,7 @@ receivers over 1,000 yards.
 b780 b5-sim, calibrated on the released v0.8 executable itself (a 17-game regular season; the earlier rounds ran the
 retail 16-game harness, which understated season totals): the season rush correction goes to each team's lead back
 only (HB, depth rank 0) at 8 percent; the play mix bias moves with the QB1's Pass Accuracy (0.4 a point around 87), the
-redirect share with the WR1's Catching (0.08 + 0.015 a point around 90); the stat-space pass scale is 0.86 because every
+redirect share with the WR1's Catching (0.08 + 0.015 a point around 90); the pass scale after conversion is 0.86 because every
 simulated QB1 plays all 17 games (19 and 13 passers over 4,000 yards at 0.92 against the NFL's 8.2); the tackle
 correction uses its constant (10 percent; the code had a hard-coded 21).
 
@@ -146,7 +146,7 @@ QB_MOBILE_SUM = 150                  # mobile family: scramble + agility > 150
 QB_BONUS_YARDS = 3.5
 QB_BONUS_RZ_LINE = 20.0              # inside the opponent 20 is the red zone for both yard scales
 INTERCEPT_SCALE = 1.35
-PASS_SCALE = 0.91                    # stat-space scale across the three completion commits
+PASS_SCALE = 0.91                    # returned-yard scale across the three pass-yard calls
 RUN_RZ_SCALE = 0.94              # red-zone run yardage (round 6: near-retail, small trim)
 RZ_PASS_SCALE = 0.64             # red-zone pass yardage before the native conversion (scoring lever)
 RUSH_BONUS_PCT = 0               # post-game season rush-yard correction, lead backs only (b780 db2: 0, was 8 in b780 b5-sim,

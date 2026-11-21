@@ -1272,6 +1272,14 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    holders it preserves. Rebuilding an older SOFTDRINK disc upgrades its holder rule. Releasing, signing, moving
    or swapping players keeps every role on the same player. A role becomes empty when its player leaves the club. One undo takes the whole change back.
 
+   **Export depth chart / Import depth chart** (right-click a club, or **Tools ▾**) read and write Finn's own `.2k5dc`
+   file, so a chart moves between his editor and the Studio. Like Finn's editor, the file matches players by their place
+   in the club's list and their position, so it belongs to the club it came from; the import lists every change, and
+   players whose position no longer matches are left alone. The Studio applies it through its own depth chart and
+   special teams rules: rows stay unique, a moved player keeps his new row through the weekly roster pass, and a
+   returner from the file takes his returner lock with him. **Back up punt returners / Restore punt returners** do the
+   same with Finn's `.NFL2k5PR` file for every club (a returner must be a WR, CB, FS, SS or RB, as in Finn's editor).
+
    **Team settings…** is Finn's Options tab for a club in an Xbox roster or franchise save: the **stadium** it
    plays home games in, its **default jersey** (only the club's own styles), its **playbook**, the **team
    play-by-play** name call and the **defensive front** (4-3, 3-4 or both, which decides the depth chart pages).
@@ -1288,6 +1296,15 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    gives him a new six-word history with zero yards, the same words the game itself writes, so he reads zero
    everywhere and earns new stats as he plays. Each player uses six words of the save's career-stat pool (50,000
    words in a 32-club league). The same command repairs a selected player's damaged history link. Use Undo to restore his previous history.
+
+   **Several players at once.** Shift-click or Ctrl-click players in the grid, or press Ctrl+A (or right-click →
+   **Select all … shown**) to take every player in the list. With more than one selected, **Release … selected**
+   (under the grid or right-click) frees all of them in one step: it is checked for the whole group first, so if
+   any club would fall under 42, the free-agent list has no room, or someone is already a free agent or on injured
+   reserve, nothing changes and the message names who or which club. One Undo puts every player back. Right-click →
+   **Clear career stats of the … selected…** does the same for the selection, and the Global Attribute Editor has
+   **Only the selected players (…)**. The one-player buttons (Copy, Paste, Swap, Move, the arrows, Place on IR) wait
+   until one player is selected, and their tips say so.
    The Studio checks for enough free space before it changes the save.
 
    **Copy team, Paste team, Export team, Import team** (right-click a club in the list, or **Tools ▾**) move a
@@ -1381,7 +1398,7 @@ locks (KR1, KR2, PR), his injury and IR state, his player kind (NFL player, pros
 star tag. Carrying those could give a club two KR1s or a player who claims to be on IR without an IR
 slot. Abilities and their tier stay too unless you tick **Include abilities and tier** in the Paste
 menu. If the paste changes his position, he goes to the bottom of that position's depth order,
-unlocked, the same as a position edit. **Tools ▾** advances years pro for the
+unlocked, the same as a position edit. **Paste exact copy** (Finn's Paste Player-Exact Copy) also copies the first and last name, the college, the play-by-play id and the photo id. Another player who shares his old last name keeps it (Finn's version renames all of them), and he keeps his own career history (Finn's version points both players at one stats stream, so they would share every future stat). **Heal player** and **Heal all N hurt players shown** are in the right-click menu: they clear the injury, the weeks left and the status the way the game's own recovery does, and skip anyone on injured reserve. **Tools ▾** advances years pro for the
 league or the list (Finn's Advance year), restores height, weight and date of birth to what the roster shipped with,
 and sets **Body type from weight** or **from BMI** with Finn's thresholds (Skinny below 200 lb, Normal from 200,
 Large from 270, Extra Large from 300; by BMI 26, 30 and 35), showing every player it would change first. **Open on
@@ -1427,6 +1444,15 @@ play-by-play and photo ids, college. **Roster spot** (depth rows, depth and retu
 is off unless you tick it: a backup from another time or another save would bring back an old team's depth and a
 kick returner lock another player holds now. **CSV ▾ → Export this list as a web page** is Finn's Export as HTML: the
 list shown, with the grid's columns, in its current order.
+**CSV ▾ → Print this list…** is Finn's File > Print: it sends that same table to your printer.
+**Clear photo** (right-click a player, or the small button under his photo at the top) is Finn's Clear Photo: it writes
+65535 into his Photo id and changes nothing else, and the game then shows its own no-photo picture. Undo puts the old
+id back. Finn's "Clear User Photos" for the whole league is not here on purpose, because it would wipe the SOFTDRINK
+portraits. **PBP last name only** is the box Finn put beside the jersey number (on the Identity tab, under the number).
+Checked writes 5 into the player type word and unchecked writes 4; nothing else changes and he stays an NFL player.
+The game does ask for a different recording of his name when it is checked, but nobody has listened to what that
+recording says, so the Studio does not promise that the announcer says only his last name. If the word is anything
+other than 4 or 5 the box is greyed out and its tooltip tells you the value, the same as Finn's editor.
 
 **Moving a roster between projects.** Open the source disc and choose **Tools ▾ → Export complete
 roster with faces…**. Open the destination disc, choose **Tools ▾ → Load complete roster with
@@ -1450,18 +1476,30 @@ player and team capacities. This transfer is proved offline and has no gameplay 
 | Team > Options (stadium, playbook, default jersey, team play-by-play, defensive front) | **Team settings…** in Xbox saves and PS2 roster saves |
 | Clear Stats | Right-click **Clear his career stats…** or **Clear career stats of all … shown…** in an Xbox save or PS2 roster save |
 | Team menu: Copy Team, Paste Team, Export Team, Import Team | Right-click a club: the same four, with a preview of what converts or refuses |
+| Depth Chart > Export / Import (`.2k5dc`) | Right-click a club (or **Tools ▾**): **Export depth chart** / **Import depth chart**, in Finn's own file format |
+| Tools > Backup and Restore > Backup / Restore Punt Returners (`.NFL2k5PR`) | Right-click a club (or **Tools ▾**): **Back up punt returners** / **Restore punt returners**, Finn's file |
+| Tools > Auto-update > Clear Rookie Stats | **Tools ▾ → Clear rookie stats (every club)…**: Finn's choice of players (years pro 0 or 1), the Studio's safe clear |
 | Open a PS2 save (`.max`, `.psu`) | **Open PS2 save…**: `.psu`, a `BASLUS-20919` folder or a `.ps2` card (roster saves; `.max` not yet) |
 | The player grid (every rating as a column, click to sort) | **Columns ▾**, then click a heading |
 | Copy Player (Ctrl+C), Paste Player (Ctrl+V), Paste Attributes Only (Ctrl+Alt+A) | Same keys, or **Copy player** and **Paste ▾** |
 | Tools > Global Editor | **Global Attribute Editor…** |
+| Edit > Select All (Ctrl+A), then Global Edit or Release on the selection | Ctrl+A or Shift/Ctrl click in the grid, then **Global Attribute Editor… → Only the selected players** or **Release … selected** |
 | Tools > Auto-update > Advance year | **Tools ▾ → Add a year pro to everyone (Advance year)** |
 | Tools > Auto-update > Body type from weight / from BMI | **Tools ▾ → Body type from weight / from BMI (Auto-update)…** |
 | Tools > Options > Default Team | **Tools ▾ → Open on this list next time** |
 | File > Export as HTML | **CSV ▾ → Export this list as a web page (HTML)…** |
+| File > Print | **CSV ▾ → Print this list…** |
+| Edit > Clear Photo | Right-click → **Clear photo**, or the **Clear photo** button under his photo |
+| "PBP Last Only" box | **PBP last name only**, under the jersey number on the Identity tab |
 | Tools > Backup and Restore | **CSV ▾ → .PlayerData backup (Finn's format)** |
 | Place on IR (right-click) | Right-click → **Place on IR…** opens **Franchise → Injured Reserve** with him chosen |
-| Heal Player | Not available. **Activate** on the IR tab returns a player from IR; it does not change an injury |
+| Heal Player(s) | Right-click → **Heal player**, or **Heal all N hurt players shown**. It clears the injury the way the game's own recovery does, so the game stops counting injury weeks (Finn's Heal leaves it counting). A player on injured reserve is skipped: use **Franchise → Injured Reserve → Activate** for him |
+| Paste Player-Exact Copy | **Paste ▾** or right-click → **Paste exact copy (names, college, PBP, photo too)** |
 | Manage Salary Cap | **Franchise → Overview → Salary cap** |
+| Franchise Stats tab (team statistics) | **Franchise → Team Stats**: Finn's 31 columns for every club, plus W-L-T and games played; click a heading to sort |
+| Boxscore | **Franchise → Schedule**: select a played game and press **Box score…** (or double-click it) |
+| Tools > Backup and Restore > Export Coaches / Import Coaches | **Franchise → Coaches → Export coaches… / Import coaches…** (also on a roster save's Coaches tab); the same `.Coaches` file |
+| Clear Cap Penalty | **Franchise → Overview**: pick a club in the salary table and press **Clear cap penalty…** |
 | Save (writes the zip back) | **Save Xbox save copy…** writes a new signed copy; your original is never changed |
 
 Ctrl+Z and Ctrl+Y undo and redo on this page (Finn had no undo). Ctrl+/ lists the keys.
@@ -1490,8 +1528,18 @@ read-only, a checkable list of the user-controlled teams, the salary cap in mill
 $1000-unit value the game keeps, and every team's salary against the cap. **Schedule** shows the
 22 × 17 grid week by week (away, home, date, kick-off, played, score); pick a game, change the teams,
 date or time and press **Apply to this game**, or **Swap home/away**. A game that has been played is
-refused with the reason unless you tick **Allow editing played games**; its score stays read-only
-because which side the quarter bytes belong to is still a hypothesis. Finn's week tools are there too, for
+refused with the reason unless you tick **Allow editing played games**. **Box score…** (or a double-click on a
+played game) is Finn's Boxscore: both clubs' points in each quarter and overtime, with the finals. Change a number
+and press **Apply**. The game counts every club's wins, losses and ties from these numbers, so the standings follow
+the change. **Also keep season totals, win streaks and head coaches' records in step** (ticked by default) does what
+the game itself does after every game: both clubs' points scored, points allowed and games played are counted again
+from all their box scores (playoff games count too), each club's win streak is counted again, and when a
+regular-season result changes, both head coaches' season and career records move by one game. Before you press
+**Apply** the dialog lists everything else that changes and what stays as it is: yards and the other season numbers,
+a counter that already disagreed with the box scores (it is named), and the playoff bracket, which a regular-season
+change does not re-seed. A playoff game can change its quarters but not its winner, because the bracket has already
+moved the winner on. **Swap home/away** on a played game swaps the two
+score lines too, so each club keeps its own points. Finn's week tools are there too, for
 regular-season weeks: **Add game to this week** (the teams, date and kick-off set above; refused if either team
 already plays that week or the week is full), **Remove this game** (the week's later games move up one place) and
 **Clear this week**; a week with a played game needs the same tick. Playoff rounds keep their games, because the
@@ -1508,13 +1556,22 @@ pass calls come from shotgun / pistol / empty, split backs, I form, one back or 
 are pooled strings and stay read-only. **Injured Reserve** shows each team's five slots; **Place on IR…** picks
 one of the team's rostered players and does exactly Finn's move (his own save is reproduced byte for
 byte), and **Activate** is the inverse, labelled unwitnessed because nobody has watched the game accept
-it; a free agent or a draft prospect is refused in Finn's words. **Checks** prints the file map by
+it; a free agent or a draft prospect is refused in Finn's words. **Team Stats** is Finn's Stats tab: every club
+with its W-L-T (counted from the box scores, the way the game's standings count it), games played and Finn's 31
+season columns in his order (total yards, passing and rushing yards and averages, yards allowed, first downs,
+third and fourth downs, red zone, penalties, turnovers, points scored and allowed, pass and run plays), then the
+two-point counters. It is read-only, as Finn's is, and **Export as CSV…** saves it. W-L-T includes playoff games, as
+the game's standings count them (a coach card shows the regular season only). The two averages, marked **(Studio)**,
+are the Studio's own arithmetic: they divide by the season's pass plays and rushing plays, the numbers the save
+keeps, so they can differ a little from the game's own box score, which divides by attempts and carries, and from
+Finn's, whose rounding is not known. **Checks** prints the file map by
 PROVED / HYPOTHESIS / OPAQUE, what the page may edit, and every franchise edit since load in plain words
 with the byte ranges it touched. Each tab undoes per action and the header counts the unwritten edits.
 **Save Xbox save copy…** writes one re-signed copy carrying the roster edits first and the franchise edits on
 top, so the two never fight over the arena. In game, check the salary cap edit first (the cap projection
 is the game's own arithmetic), then a moved user team, then a schedule change; everything but the year
-rule and the IR move is unwitnessed.
+rule and the IR move is unwitnessed. A box score edit was loaded by the game's own save loader in an offline
+check and its standings followed; nobody has watched it on the Xbox yet.
 
 **Coaches in a roster save.** Finn's editor edits coaches in any save, and so does this page: open a roster save
 (not a franchise) and a **Coaches** tab appears beside **Roster**. It is the Franchise page's Coaches screen: every
@@ -1522,6 +1579,21 @@ coach's numbers, the 23 ratings, the ten formation shares, and the head-coach mo
 Each change undoes with the page's Undo, is listed by **Show my changes**, and is written by **Save Xbox save copy…**
 together with your player edits into one signed copy. Not yet tested in the game. (For a game disc, the **Coaches**
 tab is the build's staff plan instead.)
+
+**Coach files (Finn's Export and Import Coaches).** On the Coaches tab, **Export coaches…** writes every club's head coach
+to a `.Coaches` file in Finn's own format: a text file with one `[Nickname]` section a club (First, Last, Body, Photo,
+the career numbers, the 23 ratings and the ten formation shares). **Import coaches…** reads a `.Coaches` or `.2k5Coaches`
+file and shows every change (club, coach, field, now, becomes) before you press **Apply**. Apply is one step in Undo.
+A section goes to the club's head coach as he is now, not to a list position, so it still works after coaches have
+moved. A missing section or key changes nothing. A number that is not a whole number or is out of range (ratings 0 to 99,
+formation shares 0 to 100) refuses the whole file and names the club and the key. A coach that two clubs lead is listed
+and left alone. Names are written the way **Fire and hire** writes them; if this save's coach text cannot be rewritten,
+the numbers still apply and the names are listed as skipped. Not yet tested in the game.
+
+**Clear cap penalty.** On **Franchise → Overview** the salary table has a **Dead cap** column (this season; hover for all
+seven seasons). Pick a club and press **Clear cap penalty…** to zero its dead cap in every season after you confirm the
+amounts. It is one step in Undo. Only clubs a person controls ever pile up dead cap in the game. The button is greyed out
+when the club has none. Finn's button clears only this season and next season; this one clears all seven.
 
 ## ★ Models: every model out to Blender and back
 

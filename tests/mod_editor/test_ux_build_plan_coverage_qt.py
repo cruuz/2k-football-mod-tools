@@ -105,6 +105,9 @@ class BuildPlanCoverageTests(unittest.TestCase):
             "team_number_scale",  # b776-ns1: per-kit jersey number sizes are a recipe/project key only (coordinator: no Build tab control yet)
             "speed_threshold",  # b780-cv5: the Speed separation strength is a spin box (0-100) on the Build tab, not a check box
             "console_memory",  # b780-m64b: the Console memory combo (128 MB xemu / 64 MB experimental) in Make my disc
+            "sim_qb_injuries",  # b81 (d75921d84): the Simulated quarterback injuries combo (qb_injury_mode)
+            "sim_qb_injury_rate",  # b81 (d75921d84): the Base chance per eligible simulated play spin box (qb_injury_rate)
+            "sim_breakaway_stop",  # b81 scoring: one recipe value (yards to goal, default 72), no Build tab control by design
         }
         self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
         self.assertEqual(bound - fields, set(), "controls that name a field BuildPlan no longer has")
