@@ -69,8 +69,8 @@ FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
 PIECE3_RELOCATIONS = "ada3933514f0b4ef7455b7744e2ab0007b6e0378233e5748f6f1c603a455107f"   # D1 after review
 # Stage 4a runs on a real standard Studio build (retail plus every standard owner, slice 1 Realistic): economy_week
 # at 0x323870, the practice-squad guard and economy gate in front of 0x322BB0, the smart cut at 0x2BF9A0.
-STANDARD_XBE = Path(os.environ.get("NFL2K5_B81_QB_STANDARD_XBE",
-                                   "/media/noah/Storage/2K5-project/beta81/evidence/nov19-qb-product/realistic.xbe"))
+# A private input: the environment names it (b81/env.sh); the shipped file names no host path (release gate).
+STANDARD_XBE = Path(os.environ.get("NFL2K5_B81_QB_STANDARD_XBE", "") or "missing-NFL2K5_B81_QB_STANDARD_XBE")
 STANDARD_SHA256 = "9f435b380a948c976cf4fe1160a8137a157f7bb93cd202b5fb04d49195c42a6a"
 SIGN_SITE, SIGN_RETURN = 0x248010, 0x248015
 SIGN_CLUB = 5
