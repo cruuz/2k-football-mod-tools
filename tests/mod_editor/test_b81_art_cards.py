@@ -11,7 +11,10 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 PINS = ROOT / "data/nfl2k5_b81_art_cards.json"
-SOURCES = Path(os.environ.get("B81_ART_SOURCES", "/media/noah/Storage/2K5-project/b81-art/src128-final"))
+# b81-retail-free-art (fix 4): the folder a release build reads (the standard v0.10 sources), not a lane folder, so the
+# test fails exactly when the release sources lack pinned art; B81_ART_SOURCES still overrides it
+SOURCES = Path(os.environ.get("B81_ART_SOURCES") or os.environ.get("NFL2K5_B81_STANDARD_SOURCES")
+               or "/media/noah/Storage/2K5-project/beta81/v10-sources-128")
 #: the alternates whose logo is rebuilt from the official mark (Bills blue, Broncos white, Jaguars teal), both shells
 ALTERNATES = ("03_8", "08_5", "12_6")
 #: Standard-shell kits whose side logos are rebuilt from the modern shell (tests/mod_editor/test_b81_art_helmet_cleanup.py)

@@ -108,7 +108,9 @@ class Data(unittest.TestCase):
             self.assertNotEqual(row["before_sha256"], row["after_sha256"])
             self.assertNotIn((row["selector"], row["chunk"]), keys)
             keys.add((row["selector"], row["chunk"]))
-        self.assertEqual(sorted(k for k in keys if k[1] == 12), [("26A0", 12), ("26A4", 12), ("26H0", 12), ("26H4", 12)])
+        # b81-retail-free-art (ruling 2, round 3): the 26A4/26H4 helmet rows were deleted by ruling (a beta 81 build
+        # never holds their input; the b81 helmet pass owns those two textures)
+        self.assertEqual(sorted(k for k in keys if k[1] == 12), [])   # 26A0/26H0:12 deleted by ruling too (fix 3)
         self.assertEqual(sorted(k for k in keys if k[1] != 12),
                          sorted((s, c) for s in ("26H0", "26H4") for c in range(33, 43)))
 
@@ -139,8 +141,8 @@ class Data(unittest.TestCase):
 
     def test_documents_are_separate(self):
         self.assertEqual(len({fixes.DATA, fixes.DATA_ALTS, fixes.DATA_UF3, fixes.DATA_SEA1}), 4)
-        self.assertEqual(len(fixes.spec()["textures"]), 60)
-        self.assertEqual(len(fixes.alternates()["textures"]), 544)
+        self.assertEqual(len(fixes.spec()["textures"]), 58)        # b81-retail-free-art: dead rows deleted by ruling
+        self.assertEqual(len(fixes.alternates()["textures"]), 534)
 
     def test_no_private_paths_in_shipped_files(self):
         for path in (fixes.DATA_SEA1, author.SHAPES):

@@ -1,0 +1,3991 @@
+{
+ "about": "Ruling 2 classes of every data row that stores texels; class ii rows measured on the released v0.9 disc by tools/b81_uniforms/texel_rows.py; the release check refuses a class ii row that does not pass",
+ "documents": {
+  "data/nfl2k5_allegiant_model/footprint.json": "b76a6582d5361111798cb7b7a3b6922968df0d3a4ce586395eb6190f03b18f38",
+  "data/nfl2k5_att_model/footprint.json": "8c421f87bee508db2160ddc76682db6c124f9630ac08d182f006ac9f74798cb8",
+  "data/nfl2k5_cave_reservations.json": "25817a5664674ea71707b9d7b033fb83f26da9cd55a390b94ee0b8990f46c5e2",
+  "data/nfl2k5_classic_teams/kits.json": "389d53845d3dbc595a1d1994c71c94a0ce07e30cbf8b63d5662fc4c38f6d1b41",
+  "data/nfl2k5_era_kits_pins.json": "de18bdf5f1b32067b286c72c275641a6e3498791f852b6bbe48ea2c80ad0db90",
+  "data/nfl2k5_glyph_fixes_2026.json": "a709d39b5fb5ab4a6f6793e6626d36771197c6a196c410b8057e58f899148387",
+  "data/nfl2k5_glyph_fixes_2026_b81u.json": "dfa1bf243713de29770e08d39dea4df0666591d4aa5565c9edc133a7369e452b",
+  "data/nfl2k5_highmark_model/footprint.json": "3f72e13954a89f212c391c42b02589d480df0177f46392bbd34f20cf70da0429",
+  "data/nfl2k5_history_2026.json": "94c10ebba65f96ff7318612bc7fce8d2a00c45eb7ef60e7edf6b8247f18ae687",
+  "data/nfl2k5_kit_fixes_2026.json": "d33818434feb3f30e5d2515eaae1b186f97bfc6344bd477298550885bce96156",
+  "data/nfl2k5_kit_fixes_2026_alts.json": "8a15681861c8abbe4c66c25e27fae776e3d37495f8e0ecf68fa4ffc6660ed7f5",
+  "data/nfl2k5_kit_fixes_2026_b81.json": "d2a9e3239050947bc69a4ade58491b3578e3859d841831749dfd163ef24d2da7",
+  "data/nfl2k5_kit_fixes_2026_b81u.json": "1e803b7ebfeacba800301482c105a4a50354f20bd63e10606efca1a4f349930e",
+  "data/nfl2k5_kit_fixes_2026_ku1.json": "2811ee1e688df9b388544d335106df651eedef26e4bedf69c0e3b914a8d08c97",
+  "data/nfl2k5_kit_fixes_2026_names.json": "cb354c62aa6b6e8de0ff01e9f25937f0a2e54169bfc37932bd689599529693fb",
+  "data/nfl2k5_kit_fixes_2026_ov1.json": "506d9592290de13e4aeb17a23a0febf147e4392b985646ef9c0df5e15765c9c4",
+  "data/nfl2k5_kit_fixes_2026_sea1.json": "a313792e54018305ee69026e06e1227f4998e7bfe33b95d2a55d27821fd4da62",
+  "data/nfl2k5_kit_fixes_2026_sw1.json": "857e2cc360d95f830840bf2db620dfb5499e92eb4e12e0c319fcff205102f459",
+  "data/nfl2k5_kit_fixes_2026_uf3.json": "f4a2cbc1368de99d800498ea969041d29bb0e195fe6ae6d32f2213c4174c71fa",
+  "data/nfl2k5_levis_model/footprint.json": "c3206ecd9c4ef80ec02f67c2bae8d7338a762db6547f08ba7df6c81460909ef3",
+  "data/nfl2k5_lucas_oil_model/footprint.json": "7e26e8090ae379b49a07a500bcda9101f0c0027b4178d0aefb0f07f5fcd2ea4e",
+  "data/nfl2k5_menu_chiefs_2026.json": "8b4a86d2bb6893d6e23546ebddc3ff1626e029fcf3b8ed4a14fbee6fd1748eb2",
+  "data/nfl2k5_menu_helmet_w2026.json": "ae19a9a2d032d25312fea3114ae530b137a0f437629f56c5ff484f08ac5626b6",
+  "data/nfl2k5_mercedes_benz_model/footprint.json": "010e000612043104852c782e2fe940185acfe526c3331492fd0b192f00dbb2fc",
+  "data/nfl2k5_moment_era_kits.json": "6f7095e05cc31ece037aa40cf2d5b315c45566482f7b4a1a6a855067d087ac76",
+  "data/nfl2k5_moment_kits.json": "e2fcbb93f376f266f6973626a48e2244521df1f529f3fbe67ec28cfdc7565c18",
+  "data/nfl2k5_moment_kits_pins.json": "514dd6891d97b7102d7c3f85bf355840faaeefe13e7a296edaa34a0ef176a342",
+  "data/nfl2k5_nameplate_fixes_2026.json": "535f690f05dfb40a53239ca007fef42bdc4eaaa9611fcf4b74b1496b62980200",
+  "data/nfl2k5_nyg_numbers_pins.json": "e1d34f4a340820f6569f362a91e7a1a5f5f96fd74c3a46644d656500a392f2da",
+  "data/nfl2k5_pants_hem_2026.json": "c85ecadefb53337ab7b97996b36b9c36d2119e4745f64e1bab34e321162aa9ca",
+  "data/nfl2k5_relief_2026_b81u.json": "e7bf44e4360bb5a34a198937abb9b3df74d2dc1bb478bc65e966bc39384b6372",
+  "data/nfl2k5_scorebug_mnf/painted_label_2x.json": "9bcf730b076c538f8ed6f879568e766810077549878a909d495034bff8a636da",
+  "data/nfl2k5_sideline_2026_b81u.json": "99467fc250d25538123b89f2cc9280d7c2b9589d612eeaea1ca92463d7c7e9b3",
+  "data/nfl2k5_stadium_environment/s00.json": "715e0fd764e9517a04ad903fa2058b45a9a65ea237efbb4e307250e8f6f7004b",
+  "data/nfl2k5_stadium_environment/s01.json": "1b3191f57afd76c0a35cbda1f97dce03f1cc9fa0bea4c790751648fb41b3bc13",
+  "data/nfl2k5_stadium_environment/s03.json": "a1a6f9dac0242cd93967eaf7947e36da74dc25460685bae9b4e15b147a59cc6b",
+  "data/nfl2k5_stadium_environment/s07.json": "1889613559d2b23d3468bb8866b81d3371ef22be52acea87f14b1f02b35dfe03",
+  "data/nfl2k5_stadium_environment/s10.json": "cc941662eb21265d65d8bd3905d0daf00d2c43a5dc8893526da1cb1bf720a59a",
+  "data/nfl2k5_stadium_environment/s11.json": "3eca4ef3417606e4a1ff1f35301101343baafa3665714b1d2842bacbd7cd018e",
+  "data/nfl2k5_stadium_environment/s12.json": "a15bce7fdee58fb7d250ddc8357290e79bfc692f7e4f5f06fd091cf4ed65ebeb",
+  "data/nfl2k5_stadium_environment/s14.json": "6579750369014378aa1e88465958a1865648ad812fd6f5434dbccce03fedb5f4",
+  "data/nfl2k5_stadium_environment/s15.json": "cd905f12a59727defa2638f589d732c1b6d88d6197bc8dfac2c522497ddf4582",
+  "data/nfl2k5_stadium_environment/s16.json": "e2b7c42ed508a58543a0584a1ca925c7572e38343d4db2ba720e33eb1918eb2a",
+  "data/nfl2k5_stadium_environment/s18.json": "591c7e7c80dfa71e34fb9abed9f9b136002a665c6066297b40120ca86be51b3c",
+  "data/nfl2k5_stadium_environment/s20.json": "27c55ab6cef7883d15c7abc19f4da8f55d5a61c61afaf35ce7ab2c150daf07c9",
+  "data/nfl2k5_stadium_environment/s23.json": "4feebac80e0389098ffe36a72faecf7e24fe17c8bbe386554608fd064c8a7677",
+  "data/nfl2k5_stadium_environment/s25.json": "7dd351f6a74377e9b416cca40bdfbae0dcf7a3ebf869f261cf0602aab0bd4d57",
+  "data/nfl2k5_state_farm_model/footprint.json": "492658e2fcc5bad88a6d595747a92580d8f6b6d0a470638794f93895b23ad0f8",
+  "data/nfl2k5_team_select_old_logo_cleanup.json": "c4c0c16a52c6f3e1c4c88d84d72f4ec6d5616ee8ed07b86688c61dfcf42f61cd",
+  "data/nfl2k5_teams_2026/BUF.json": "f3222336b9826b09310bf2334f55c5658cddd20cc92bd7032fe46ad961de8781",
+  "data/nfl2k5_teams_2026/CAR.json": "758b825065cc439d8c474dd9abf3ef1bc05f1a1953e7d83b6518be6ace63c1bf",
+  "data/nfl2k5_teams_2026/DEN.json": "a9f22e2ffbcf7dca98f29ea5d3e1af876a9fca257b3deb14156f914c9dc2be1d",
+  "data/nfl2k5_teams_2026/JAX.json": "3bb85114b058271a56eebb1b7a7bd79ca564742046655cad98b689df4bbda30b",
+  "data/nfl2k5_teams_2026/LAC.json": "84f8b3e0540d545924fe44b98962fef771ebae896914b776f21971584de7829d",
+  "data/nfl2k5_teams_2026/MIA.json": "5d251dd68137ecf712a341ece456abf7e570f6ff71582245cd595c4983761398",
+  "data/nfl2k5_teams_2026/NYJ.json": "ce9c729d8d68545378a4a437b1f422c34f7086dbe5e0313e1cc546659046cbd2",
+  "data/nfl2k5_teams_2026/PIT.json": "cadcda1242028611d16fc26e65f428ef200d0e234a86014f30c0dbd1775d57fd",
+  "data/nfl2k5_teams_2026/TEN.json": "3113f43711d83f587375d20f14837ef12bbaab2b34edb79adb080235767b2f87",
+  "data/nfl2k5_unc_bowl_uniforms_pins.json": "84dc131eebe5188fbfc18eee5187abc8ac5aba572b3796a35d2cd905a2769fe0",
+  "data/nfl2k5_uniform_alt_specs_2026/TEN_7.json": "5b6d6c97437513de1e91e458bfd6ef38cb44364bb62a5778b6b967e1237ffe6e",
+  "data/nfl2k5_uniform_alternates_2026_u3b.json": "5e26ac45ef6632fa794fe5273c8c456048f7bc70c2ce291d2b962406becfa7b1",
+  "data/nfl2k5_uniform_alternates_2026_u3d.json": "54ddf8039a3c1e85df57d79096d93a1ef8480f5a6e6582543e4670f5d98a61ee",
+  "data/nfl2k5_usbank_model/footprint.json": "9b8e1074c584c4ae219941ffed2a4e6e1e1ca1916a613e1822bd01cc2460c635"
+ },
+ "limit": 0.25,
+ "rows": {
+  "data/nfl2k5_classic_teams/kits.json": {
+   "-": {
+    "cls": "iii",
+    "reason": "the Sarasota Seamen jersey mesh (b778-ss1, drawn from the SOFTDRINKTV video references): a dot mesh on every second column in the kit's own colour, the same 3,489 points for both kits; no base texel; shipped in v0.9, not measured: the classic teams' kits (b778-ss1)",
+    "sha256": "a041ded2ee3c92724e84b26e3e41079cd9983a86158e96d9d8dd535fa5cbc6f9"
+   }
+  },
+  "data/nfl2k5_glyph_fixes_2026_b81u.json": {
+   "02A0:17:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1674,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "52eff3861ccfe74db676c4b1f8339c519a33827348f3c76f782d8ae77141c922"
+   },
+   "02A0:37:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1674,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "52eff3861ccfe74db676c4b1f8339c519a33827348f3c76f782d8ae77141c922"
+   },
+   "02A2:17:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1674,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "52eff3861ccfe74db676c4b1f8339c519a33827348f3c76f782d8ae77141c922"
+   },
+   "02A2:37:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1674,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "52eff3861ccfe74db676c4b1f8339c519a33827348f3c76f782d8ae77141c922"
+   },
+   "02A3:17:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.149,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "a32577849d3f75cc8056cba0b9d64028922b1d58d32dc98e0516ae39552ea48b"
+   },
+   "02A3:37:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.149,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "a32577849d3f75cc8056cba0b9d64028922b1d58d32dc98e0516ae39552ea48b"
+   },
+   "02H0:17:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.149,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "966012ab8543a25558fd379cea5196715178fc91b8a2ce4ccda535185f232418"
+   },
+   "02H0:37:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.149,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "966012ab8543a25558fd379cea5196715178fc91b8a2ce4ccda535185f232418"
+   },
+   "02H2:17:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1743,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "211b8543f1963d93331ac2d5cc0c32bcdbf7e6cc7ecb2d6697bbc1b6d787607d"
+   },
+   "02H2:37:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.149,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "966012ab8543a25558fd379cea5196715178fc91b8a2ce4ccda535185f232418"
+   },
+   "02H3:17:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.149,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "a32577849d3f75cc8056cba0b9d64028922b1d58d32dc98e0516ae39552ea48b"
+   },
+   "02H3:37:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.149,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "a32577849d3f75cc8056cba0b9d64028922b1d58d32dc98e0516ae39552ea48b"
+   },
+   "07H0:13:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0207,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "4718e94b664702fd4ad9f117df5627cf1ae58ebe83b85df059bb426faa97f8b0"
+   },
+   "07H0:14:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0468,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "62e388e981226adb128deae2c03625b9dda247d02b1e60bfd05102bf71ad70c6"
+   },
+   "07H0:15:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0413,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "88ea71bdb0ef6efaac4bc10260a099a0fc8b5bc3a98f72865d0a5444d9d28c0f"
+   },
+   "07H0:16:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0358,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "724faf4c35a1dfb814092623ffbceb6006115e5da2b68a5866fa96c4e9f9088b"
+   },
+   "07H0:17:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0851,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "401e54ea4df52d750c8bebb257e91c02e5ab3d93a48acceef399d416e16a9aa1"
+   },
+   "07H0:18:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.023,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "41719332f6c58c5604597fd871eeef35205f2bc617a8614aebfe608b1ca94e5f"
+   },
+   "07H0:19:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0301,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "4b4b8b6e784d499df79726f6e8c630d1b9b21acd4b960ec047da3026bffb2790"
+   },
+   "07H0:20:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1367,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "a5bb334c7c33c3e8ee62c8d2eddcd68f57aa0dc3f10b77224e23cca1490a8636"
+   },
+   "07H0:21:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0357,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7d084f030895ade0a37747ad052ca2a60ca47073a4e2ecd039f25ea7784b412e"
+   },
+   "07H0:22:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0475,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "a5654b862134fa6cd4f17465c006dceec324fa1cc12ce9e9dc673b4f421b270f"
+   },
+   "07H0:33:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0207,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "4718e94b664702fd4ad9f117df5627cf1ae58ebe83b85df059bb426faa97f8b0"
+   },
+   "07H0:34:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0468,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "62e388e981226adb128deae2c03625b9dda247d02b1e60bfd05102bf71ad70c6"
+   },
+   "07H0:35:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0413,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "88ea71bdb0ef6efaac4bc10260a099a0fc8b5bc3a98f72865d0a5444d9d28c0f"
+   },
+   "07H0:36:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0358,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "724faf4c35a1dfb814092623ffbceb6006115e5da2b68a5866fa96c4e9f9088b"
+   },
+   "07H0:37:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0851,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "401e54ea4df52d750c8bebb257e91c02e5ab3d93a48acceef399d416e16a9aa1"
+   },
+   "07H0:38:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.023,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "41719332f6c58c5604597fd871eeef35205f2bc617a8614aebfe608b1ca94e5f"
+   },
+   "07H0:39:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0301,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "4b4b8b6e784d499df79726f6e8c630d1b9b21acd4b960ec047da3026bffb2790"
+   },
+   "07H0:40:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1367,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "a5bb334c7c33c3e8ee62c8d2eddcd68f57aa0dc3f10b77224e23cca1490a8636"
+   },
+   "07H0:41:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0357,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7d084f030895ade0a37747ad052ca2a60ca47073a4e2ecd039f25ea7784b412e"
+   },
+   "07H0:42:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0475,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "a5654b862134fa6cd4f17465c006dceec324fa1cc12ce9e9dc673b4f421b270f"
+   },
+   "18A0:13:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7acaa4a495788847855086b5984112694671e999cacb8b07718e0582991b5ea1"
+   },
+   "18A0:14:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0182,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7f2efeef548d35b5df3e37da14b5a67ab486a76d8af3d2ea6cddf892ac42c41e"
+   },
+   "18A0:15:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0089,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "8844e9346d526a1e7d47cd0a046461086feb6c8cce86545ade2b58314b5ad1f7"
+   },
+   "18A0:16:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0032,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "543e526b26e97c93fa72c2059fc489bf22ef74f822dc2cea47bbf09a4132c128"
+   },
+   "18A0:17:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.047,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "98eaf40a228b95e94e7bcafdc8a4749317116e0a00cf9b9b31806c123d9fd46e"
+   },
+   "18A0:18:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0016,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7b163ce4fe943f03b0dfbe333e4ac84b857c17ffc97a83a28099233a493bc22b"
+   },
+   "18A0:19:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "bd026a209188f45474fc6e9d700e5dad2d026f408db6ae89d3b71407270ac2d0"
+   },
+   "18A0:20:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1493,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "ce9fb97af0928522f3dd5afea60c8dff62f0a4c069d055b63b67eb01434ca90f"
+   },
+   "18A0:21:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0016,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "3e20ec71398e3f600db933dd1f3acecd6f6c478e2a34d7ed915f087e917abcab"
+   },
+   "18A0:22:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7b3a4511f0e3dd2ba896f230a1c2ffeb52864f98d343e6bac079a5565ab91317"
+   },
+   "18A0:33:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7acaa4a495788847855086b5984112694671e999cacb8b07718e0582991b5ea1"
+   },
+   "18A0:34:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0182,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7f2efeef548d35b5df3e37da14b5a67ab486a76d8af3d2ea6cddf892ac42c41e"
+   },
+   "18A0:35:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0089,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "8844e9346d526a1e7d47cd0a046461086feb6c8cce86545ade2b58314b5ad1f7"
+   },
+   "18A0:36:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0032,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "543e526b26e97c93fa72c2059fc489bf22ef74f822dc2cea47bbf09a4132c128"
+   },
+   "18A0:37:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.047,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "98eaf40a228b95e94e7bcafdc8a4749317116e0a00cf9b9b31806c123d9fd46e"
+   },
+   "18A0:38:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0016,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7b163ce4fe943f03b0dfbe333e4ac84b857c17ffc97a83a28099233a493bc22b"
+   },
+   "18A0:39:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "bd026a209188f45474fc6e9d700e5dad2d026f408db6ae89d3b71407270ac2d0"
+   },
+   "18A0:40:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1493,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "ce9fb97af0928522f3dd5afea60c8dff62f0a4c069d055b63b67eb01434ca90f"
+   },
+   "18A0:41:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0016,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "3e20ec71398e3f600db933dd1f3acecd6f6c478e2a34d7ed915f087e917abcab"
+   },
+   "18A0:42:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7b3a4511f0e3dd2ba896f230a1c2ffeb52864f98d343e6bac079a5565ab91317"
+   },
+   "18A7:13:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0095,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7f5c41c5c61ff751addb0e7858a8203aee0b2bc96efcf56acd9d0f3d8510a6a5"
+   },
+   "18A7:14:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.019,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "160b3cea2dc26bfc5bd99c4a1b0953eb2c237957e24eeaba4fb34a0f6476f488"
+   },
+   "18A7:15:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0187,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "59be1c71f6e63d6439cffaab03cd7df92fafb16087928ee6d834c294317d808b"
+   },
+   "18A7:16:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0225,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "14432585e6ae4d5534dea04aa8edbcc533e1569dd7f52a49a588faa5108e693d"
+   },
+   "18A7:17:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0556,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "bb2423797562c5d8522788cd1831c9264bd5d240ae9d345c5dbd26f33c15e10c"
+   },
+   "18A7:18:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.011,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "02feaa4fa1432553e5dfebad94de3faee84c8c362dd6c60e6fc78edf106a9efa"
+   },
+   "18A7:19:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0206,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "8d891112e6ca3b87c9e0190b1ecb02e98b06fe1d53e06fad391f3bc0591837a3"
+   },
+   "18A7:20:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1034,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "d35e380b913790ecf98d1dfaf41a841b1acd381f78a9eb6944935ad2c95a37e7"
+   },
+   "18A7:21:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0267,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "34cb5aeaed43efd92edb8c05ab8a5c939d625f0950af15b4bdb3a9f493385b15"
+   },
+   "18A7:22:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0147,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "b3861c46a2ecffc66ba4f750627d0305e9563a8066e29bc8b703438adfa4b980"
+   },
+   "18A7:33:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0095,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7f5c41c5c61ff751addb0e7858a8203aee0b2bc96efcf56acd9d0f3d8510a6a5"
+   },
+   "18A7:34:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.019,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "160b3cea2dc26bfc5bd99c4a1b0953eb2c237957e24eeaba4fb34a0f6476f488"
+   },
+   "18A7:35:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0187,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "59be1c71f6e63d6439cffaab03cd7df92fafb16087928ee6d834c294317d808b"
+   },
+   "18A7:36:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0225,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "14432585e6ae4d5534dea04aa8edbcc533e1569dd7f52a49a588faa5108e693d"
+   },
+   "18A7:37:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0556,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "bb2423797562c5d8522788cd1831c9264bd5d240ae9d345c5dbd26f33c15e10c"
+   },
+   "18A7:38:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.011,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "02feaa4fa1432553e5dfebad94de3faee84c8c362dd6c60e6fc78edf106a9efa"
+   },
+   "18A7:39:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0206,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "8d891112e6ca3b87c9e0190b1ecb02e98b06fe1d53e06fad391f3bc0591837a3"
+   },
+   "18A7:40:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1034,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "d35e380b913790ecf98d1dfaf41a841b1acd381f78a9eb6944935ad2c95a37e7"
+   },
+   "18A7:41:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0267,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "34cb5aeaed43efd92edb8c05ab8a5c939d625f0950af15b4bdb3a9f493385b15"
+   },
+   "18A7:42:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0147,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "b3861c46a2ecffc66ba4f750627d0305e9563a8066e29bc8b703438adfa4b980"
+   },
+   "18H0:13:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "d8a43e3933dd832a3962c9ea08e2adcc613849718fdd6afa2e6b70ff13011cf7"
+   },
+   "18H0:14:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0182,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "80f6d9322b2039b3d50abaf172955163ddd169e89cdda34bb9f29f7776c2be12"
+   },
+   "18H0:15:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0089,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "1e1e2ffa4a2e29ee740c6c4d0e2a555e973e77d5b130afa7c0e28b97b3fa12e4"
+   },
+   "18H0:16:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0032,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "48c181d3ee2fb3b11e5f414a90b4803fca6e145ebe7863cf66da91395fb7870c"
+   },
+   "18H0:17:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.047,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "d893e1692180e39c16f0b698d46b2e9db86165f6fcd72fd509bdc261118a76d3"
+   },
+   "18H0:18:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0016,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "6b96188ed7bd9fe6086414cd774848559b51b7908de93b2cad0a89f87ca7a088"
+   },
+   "18H0:19:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "2d148e19e10cd4addbd8bcf02780ceb3a03da0887b4439f45aa273611ef12c78"
+   },
+   "18H0:20:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1493,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "bb2f189c7c3ba941b87f56ebb656ce3f0b02dc0435f65ddef90bfc961bdbd0dd"
+   },
+   "18H0:21:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0016,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7cdefdd3029474cf57572d40b95116fa229f2869e541ba7a07746abc3022a8aa"
+   },
+   "18H0:22:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "3fc588fe82cdb95c71fcfc9ae39ed220f68e415ae105c5499a29c5f134c230e8"
+   },
+   "18H0:33:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "d8a43e3933dd832a3962c9ea08e2adcc613849718fdd6afa2e6b70ff13011cf7"
+   },
+   "18H0:34:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0182,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "80f6d9322b2039b3d50abaf172955163ddd169e89cdda34bb9f29f7776c2be12"
+   },
+   "18H0:35:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0089,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "1e1e2ffa4a2e29ee740c6c4d0e2a555e973e77d5b130afa7c0e28b97b3fa12e4"
+   },
+   "18H0:36:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0032,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "48c181d3ee2fb3b11e5f414a90b4803fca6e145ebe7863cf66da91395fb7870c"
+   },
+   "18H0:37:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.047,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "d893e1692180e39c16f0b698d46b2e9db86165f6fcd72fd509bdc261118a76d3"
+   },
+   "18H0:38:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0016,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "6b96188ed7bd9fe6086414cd774848559b51b7908de93b2cad0a89f87ca7a088"
+   },
+   "18H0:39:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "2d148e19e10cd4addbd8bcf02780ceb3a03da0887b4439f45aa273611ef12c78"
+   },
+   "18H0:40:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1493,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "bb2f189c7c3ba941b87f56ebb656ce3f0b02dc0435f65ddef90bfc961bdbd0dd"
+   },
+   "18H0:41:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0016,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7cdefdd3029474cf57572d40b95116fa229f2869e541ba7a07746abc3022a8aa"
+   },
+   "18H0:42:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "3fc588fe82cdb95c71fcfc9ae39ed220f68e415ae105c5499a29c5f134c230e8"
+   },
+   "18H7:13:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0095,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7f5c41c5c61ff751addb0e7858a8203aee0b2bc96efcf56acd9d0f3d8510a6a5"
+   },
+   "18H7:14:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.019,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "160b3cea2dc26bfc5bd99c4a1b0953eb2c237957e24eeaba4fb34a0f6476f488"
+   },
+   "18H7:15:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0187,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "59be1c71f6e63d6439cffaab03cd7df92fafb16087928ee6d834c294317d808b"
+   },
+   "18H7:16:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0225,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "14432585e6ae4d5534dea04aa8edbcc533e1569dd7f52a49a588faa5108e693d"
+   },
+   "18H7:17:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0556,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "bb2423797562c5d8522788cd1831c9264bd5d240ae9d345c5dbd26f33c15e10c"
+   },
+   "18H7:18:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.011,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "02feaa4fa1432553e5dfebad94de3faee84c8c362dd6c60e6fc78edf106a9efa"
+   },
+   "18H7:19:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0206,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "8d891112e6ca3b87c9e0190b1ecb02e98b06fe1d53e06fad391f3bc0591837a3"
+   },
+   "18H7:20:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1034,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "d35e380b913790ecf98d1dfaf41a841b1acd381f78a9eb6944935ad2c95a37e7"
+   },
+   "18H7:21:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0267,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "34cb5aeaed43efd92edb8c05ab8a5c939d625f0950af15b4bdb3a9f493385b15"
+   },
+   "18H7:22:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0147,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "b3861c46a2ecffc66ba4f750627d0305e9563a8066e29bc8b703438adfa4b980"
+   },
+   "18H7:33:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0095,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "7f5c41c5c61ff751addb0e7858a8203aee0b2bc96efcf56acd9d0f3d8510a6a5"
+   },
+   "18H7:34:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.019,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "160b3cea2dc26bfc5bd99c4a1b0953eb2c237957e24eeaba4fb34a0f6476f488"
+   },
+   "18H7:35:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0187,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "59be1c71f6e63d6439cffaab03cd7df92fafb16087928ee6d834c294317d808b"
+   },
+   "18H7:36:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0225,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "14432585e6ae4d5534dea04aa8edbcc533e1569dd7f52a49a588faa5108e693d"
+   },
+   "18H7:37:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0556,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "bb2423797562c5d8522788cd1831c9264bd5d240ae9d345c5dbd26f33c15e10c"
+   },
+   "18H7:38:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.011,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "02feaa4fa1432553e5dfebad94de3faee84c8c362dd6c60e6fc78edf106a9efa"
+   },
+   "18H7:39:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0206,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "8d891112e6ca3b87c9e0190b1ecb02e98b06fe1d53e06fad391f3bc0591837a3"
+   },
+   "18H7:40:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1034,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "d35e380b913790ecf98d1dfaf41a841b1acd381f78a9eb6944935ad2c95a37e7"
+   },
+   "18H7:41:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0267,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "34cb5aeaed43efd92edb8c05ab8a5c939d625f0950af15b4bdb3a9f493385b15"
+   },
+   "18H7:42:digit_derived": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0147,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "b3861c46a2ecffc66ba4f750627d0305e9563a8066e29bc8b703438adfa4b980"
+   }
+  },
+  "data/nfl2k5_kit_fixes_2026.json": {
+   "25A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 home/away kit pass (uf1, b772): 49ers 80 YEARS patch on the upper left chest",
+    "sha256": "920d2818e55e0b3ff056d55ae86273143d57227957265c13812adada86554749"
+   },
+   "25H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 home/away kit pass (uf1, b772): 49ers 80 YEARS patch on the upper left chest",
+    "sha256": "920d2818e55e0b3ff056d55ae86273143d57227957265c13812adada86554749"
+   },
+   "37A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 home/away kit pass (uf1, b772): Texans 25th-season patch on the upper left chest",
+    "sha256": "bb305b1b79a426d4453aac378fd4a18fb74e33ffe46d2b0a708947bfdaf0974e"
+   },
+   "37H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 home/away kit pass (uf1, b772): Texans 25th-season patch on the upper left chest",
+    "sha256": "0a5220560e16e0759644110714b116b054a9beb025c640d32d9b21c2212f9235"
+   }
+  },
+  "data/nfl2k5_kit_fixes_2026_alts.json": {
+   "00A7:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): Arizona flag patch (red and copper rays over black, copper star) below the swoosh",
+    "sha256": "e79bdbacb0b62a1192cc14e8f7270a5b4b961feb6a65a7a33277397bfe1bad2c"
+   },
+   "00H7:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): Arizona flag patch (red and copper rays over black, copper star) below the swoosh",
+    "sha256": "e79bdbacb0b62a1192cc14e8f7270a5b4b961feb6a65a7a33277397bfe1bad2c"
+   },
+   "03A9:12:txtr": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): pale metallic cracked-ice centre stripe edged in blue",
+    "sha256": "6783fab33383070b64df4835a7b01da6f72d2cfc89fc49044b19e95c5072b8bd"
+   },
+   "03A9:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): blue BUFFALO wordmark above the front number (the small BILLS mark goes)",
+    "sha256": "2b5ad54fc387c2197f53861b15b0fed30d1bbbecca24b4607c5d764ecc984021"
+   },
+   "03A9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): large blue cracked-ice buffalo on each sleeve (the kit's own buffalo art); measured against the retail 03A9/03H9 sleeve: the ten cracked-ice line polygons cover 236 texels, edge overlap 0.0 (the retail sleeve holds no buffalo there; retail-free/buffalo/)",
+    "sha256": "11d4519518fabdfc88af9400b79986c5673f3c2d3835aa39aea6549ddf97e77d"
+   },
+   "03H9:12:txtr": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): pale metallic cracked-ice centre stripe edged in blue",
+    "sha256": "6783fab33383070b64df4835a7b01da6f72d2cfc89fc49044b19e95c5072b8bd"
+   },
+   "03H9:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): blue BUFFALO wordmark above the front number (the small BILLS mark goes)",
+    "sha256": "2b5ad54fc387c2197f53861b15b0fed30d1bbbecca24b4607c5d764ecc984021"
+   },
+   "03H9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): large blue cracked-ice buffalo on each sleeve (the kit's own buffalo art); measured against the retail 03A9/03H9 sleeve: the ten cracked-ice line polygons cover 236 texels, edge overlap 0.0 (the retail sleeve holds no buffalo there; retail-free/buffalo/)",
+    "sha256": "11d4519518fabdfc88af9400b79986c5673f3c2d3835aa39aea6549ddf97e77d"
+   },
+   "05A4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad orange football-shaped GSH patch outlined white on the left chest",
+    "sha256": "136df879c9233aaeed9f3e4835a7395ce9963e0ea8b11bc28e3cc2ba18e4fbdf"
+   },
+   "05H4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad orange football-shaped GSH patch outlined white on the left chest",
+    "sha256": "136df879c9233aaeed9f3e4835a7395ce9963e0ea8b11bc28e3cc2ba18e4fbdf"
+   },
+   "10A5:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): two broad cream bands around a gold centre stripe with black sawtooth edging, moved up",
+    "sha256": "d8b9754f079d96adda15be55e671459fbbad0308a77d4b1b2b5a271633ca3653"
+   },
+   "10H5:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): two broad cream bands around a gold centre stripe with black sawtooth edging, moved up",
+    "sha256": "d8b9754f079d96adda15be55e671459fbbad0308a77d4b1b2b5a271633ca3653"
+   },
+   "11A3:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): charcoal pants with one broad blue panel edged black, with rivets",
+    "sha256": "251487d2407f1c221fdb9826e244c4355c31101a518eb1cf6199f97b08245091"
+   },
+   "11H3:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): charcoal pants with one broad blue panel edged black, with rivets",
+    "sha256": "251487d2407f1c221fdb9826e244c4355c31101a518eb1cf6199f97b08245091"
+   },
+   "15A6:12:txtr": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad dark centre panel with a gold knot chain and ivory and gold borders",
+    "sha256": "3500e1b54f19466c5b1d406b7cb2829bc7a50ec8ae413435bbe5b75a96ad4ca2"
+   },
+   "15A6:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad dark panel with a gold knot chain and ivory and gold edge bands",
+    "sha256": "a208d3287c3571e0eacf12caacafaaa62141e53978eb82b32d6f4192420f6118"
+   },
+   "15A6:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad ivory and gold bands around a dark knot-chain band, moved up from the hem",
+    "sha256": "80321df312bca8d0cb14c9904fef4bf4f9e640ee0676a3b648a1b33d45c86d8f"
+   },
+   "15H6:12:txtr": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad dark centre panel with a gold knot chain and ivory and gold borders",
+    "sha256": "3500e1b54f19466c5b1d406b7cb2829bc7a50ec8ae413435bbe5b75a96ad4ca2"
+   },
+   "15H6:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad dark panel with a gold knot chain and ivory and gold edge bands",
+    "sha256": "a208d3287c3571e0eacf12caacafaaa62141e53978eb82b32d6f4192420f6118"
+   },
+   "15H6:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad ivory and gold bands around a dark knot-chain band, moved up from the hem",
+    "sha256": "80321df312bca8d0cb14c9904fef4bf4f9e640ee0676a3b648a1b33d45c86d8f"
+   },
+   "16A9:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): gray lattice shoulder bars with a dark-blue centre; red stars around the front collar",
+    "sha256": "d1fc76be35ae27492b4a90569e07318c8c72e7416961c39c54a8851fa31c4703"
+   },
+   "16H9:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): gray lattice shoulder bars with a dark-blue centre; red stars around the front collar",
+    "sha256": "d1fc76be35ae27492b4a90569e07318c8c72e7416961c39c54a8851fa31c4703"
+   },
+   "19A6:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): narrow silver centre stripe between dark border bands; silver-outlined oval jet emblem",
+    "sha256": "1e9b27189d6fea2abb94044acd33f77bee0f252f718ed7bb8eb7c231a9c86331"
+   },
+   "19A6:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): gray manhole-cover tread pattern over the black sleeve",
+    "sha256": "ee827f9954fa444eac6720f24f4fef0eafa541eb6c4a38fdc482f36275442942"
+   },
+   "19H6:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): narrow silver centre stripe between dark border bands; silver-outlined oval jet emblem",
+    "sha256": "1e9b27189d6fea2abb94044acd33f77bee0f252f718ed7bb8eb7c231a9c86331"
+   },
+   "19H6:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): gray manhole-cover tread pattern over the black sleeve",
+    "sha256": "ee827f9954fa444eac6720f24f4fef0eafa541eb6c4a38fdc482f36275442942"
+   },
+   "22A5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad black V bands meeting under the collar with fewer broad vertical bars below; yellow inner collar; white-bordered Pittsburgh coat of arms on the upper left",
+    "sha256": "ab3c798d0d07d716f170a3db3859b90f47a432239d601f0af4dfe4d018de97e3"
+   },
+   "22H5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broad black V bands meeting under the collar with fewer broad vertical bars below; yellow inner collar; white-bordered Pittsburgh coat of arms on the upper left",
+    "sha256": "ab3c798d0d07d716f170a3db3859b90f47a432239d601f0af4dfe4d018de97e3"
+   },
+   "23A12:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): yellow strip beside a blue halftone panel (the white outer stripe removed)",
+    "sha256": "f59bc1a2975b7b607c2d8e79e4c646babffe3682f17566e25eab11d26c173768"
+   },
+   "23H12:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): yellow strip beside a blue halftone panel (the white outer stripe removed)",
+    "sha256": "f59bc1a2975b7b607c2d8e79e4c646babffe3682f17566e25eab11d26c173768"
+   },
+   "26A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): dark charcoal inner collar; navy feather chevrons continued down both sides of the V; the chest-band wordmark reads SEAHAWKS in full (it was cut to SEAHAV)",
+    "sha256": "ae97d7692981dc27b3a4b6a518236afa2fd664dc45e3a7d7e32e1bb8d75b2427"
+   },
+   "26A3:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broader side panel of dark soundwave marks along a dark border stripe",
+    "sha256": "c9040a75076780d754da8d89e541b76de19546cf761034c018a2ab6351ca5477"
+   },
+   "26H3:2:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 2026 alternate kits (uf2, b772-b773): broader side panel of dark soundwave marks along a dark border stripe",
+    "sha256": "c9040a75076780d754da8d89e541b76de19546cf761034c018a2ab6351ca5477"
+   }
+  },
+  "data/nfl2k5_kit_fixes_2026_b81u.json": {
+   "00A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "9a35fbc7f735ff640dca47f63b81ae34755b8903d6ccf4f0316222f550035d12"
+   },
+   "00A6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7387,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "2e3dd0b3a52f559654fa07b4a382eff585844d3debe88cda24ffe403ef2a60a6"
+   },
+   "00A7:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5068,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "dda8fee120ad7afc3fec9117c727e9cc0f0c95241e94fd9153e0058623bb054c"
+   },
+   "00H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "74386861eb8bdbc655381f892c5262fa12d45f298d99673b426872380c7f2cb4"
+   },
+   "00H6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7387,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "2e3dd0b3a52f559654fa07b4a382eff585844d3debe88cda24ffe403ef2a60a6"
+   },
+   "00H7:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5068,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "dda8fee120ad7afc3fec9117c727e9cc0f0c95241e94fd9153e0058623bb054c"
+   },
+   "01A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: lettering moved by rule (move); only the drawn shield ships",
+    "sha256": "7266334de6ea398b514ff4e033c1be1624ebcd43b517dd88e599d5bc2bd5df95"
+   },
+   "01A9:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "86228448cbf6a8ceef13a35daa31df5a376a4a8bdf7fc4a6aa056e42c3168aa6"
+   },
+   "01H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: lettering moved by rule (move); only the drawn shield ships",
+    "sha256": "ee5a8b4615411c3dad1790909886d9f715a03914d406c9a0f130d1a93a8ea95a"
+   },
+   "01H9:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "86228448cbf6a8ceef13a35daa31df5a376a4a8bdf7fc4a6aa056e42c3168aa6"
+   },
+   "02A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7292,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "e9b1f2ded12832cd31603c45587d230d2fa919436c24264f034ad8d810d9689f"
+   },
+   "02A2:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5035,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "072f8b5ed00aeceeb3eb0bb865bb9ec0870daf219abddfa1f59cd9e2ee784afd"
+   },
+   "02A3:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5732,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "eb0a7e4f37a12e38be554263288d3d73318f50a4bcaadae8296423dba9df5455"
+   },
+   "02H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7327,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "b61efb2b21613a015aab27805dec2e0317e4d5d2849ebc0e562e8823d6fb0517"
+   },
+   "02H2:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5161,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "53e9dc31f4a91afcda93a81e765cdae0c33024aa69a641b678a95cb4405a9440"
+   },
+   "02H3:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5732,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "eb0a7e4f37a12e38be554263288d3d73318f50a4bcaadae8296423dba9df5455"
+   },
+   "03A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7071,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "f8290033c7fced33d4af6e709e46133a9c6d862b08e9d1ab8b4f1819efd48dfa"
+   },
+   "03A0:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5217,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: sleeve stripes drawn by rule to the real set",
+    "sha256": "e8aec85fc77639c47ab5374727851bba6d731e2909c8853c91e77d956961087d"
+   },
+   "03A3:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5957,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "48bce991219c44a40f9fa7ae1f5e10a08e9325e60fdfb094aa66c3defc7b32c0"
+   },
+   "03A8:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.0294,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: the league shield drawn from the repo's shield art below the collar point",
+    "sha256": "66b03311c6d5bcca32bb4fc00f3e4604f1ca0b39d5624554344ff4327b60b386"
+   },
+   "03A9:1:tset": {
+    "base_equal": 2,
+    "cls": "iii",
+    "edge_overlap": 0.4881,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "40a5bcbccd10e93ebd377908680bf324b68491bab7e29bf06c0be48d6874edc6",
+    "small_box_edge_base": 0.1556,
+    "small_box_edge_retail": 0.1724,
+    "small_box_texels": 17
+   },
+   "03H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7321,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "2ae0db00e8a0fa17737c46793d72c70bd289e8f30c0418ab48faa42ced9a62f9"
+   },
+   "03H0:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4138,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: sleeve stripes drawn by rule to the real set",
+    "sha256": "4eb88f0851a6cc19e8ffb1a35bff273995ea20b2687146f4c4c2f98113c9eb13"
+   },
+   "03H3:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5957,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "48bce991219c44a40f9fa7ae1f5e10a08e9325e60fdfb094aa66c3defc7b32c0"
+   },
+   "03H8:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.0294,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: the league shield drawn from the repo's shield art below the collar point",
+    "sha256": "66b03311c6d5bcca32bb4fc00f3e4604f1ca0b39d5624554344ff4327b60b386"
+   },
+   "03H9:1:tset": {
+    "base_equal": 2,
+    "cls": "iii",
+    "edge_overlap": 0.4881,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "40a5bcbccd10e93ebd377908680bf324b68491bab7e29bf06c0be48d6874edc6",
+    "small_box_edge_base": 0.1556,
+    "small_box_edge_retail": 0.1724,
+    "small_box_texels": 17
+   },
+   "04A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.616,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "099b9c9285ea0ec3290ad196ae59b6e3865aa6ee8173c08e408ac047fa1427ae"
+   },
+   "04A2:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6208,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: the standard league shield drawn from the repo's shield art",
+    "sha256": "e1beefb7e347a9246bf86c12812b91bc9e621e3cf69ae2313aa345172e7b5451"
+   },
+   "04A2:2:tset": {
+    "base_equal": 2,
+    "cls": "iii",
+    "edge_overlap": 0.5383,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: the standard league shield drawn from the repo's shield art",
+    "sha256": "7e8a63c74eb2e62f2480abe48833e28546a4273364e161c65039cd64597276db"
+   },
+   "04H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6214,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "80ee3c15e1423b375d9fa24bd371793b6d549706b21c700ba78fc664e7ad04e7"
+   },
+   "04H2:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6208,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: the standard league shield drawn from the repo's shield art",
+    "sha256": "e1beefb7e347a9246bf86c12812b91bc9e621e3cf69ae2313aa345172e7b5451"
+   },
+   "04H2:2:tset": {
+    "base_equal": 2,
+    "cls": "iii",
+    "edge_overlap": 0.5383,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: the standard league shield drawn from the repo's shield art",
+    "sha256": "7e8a63c74eb2e62f2480abe48833e28546a4273364e161c65039cd64597276db"
+   },
+   "05A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "9a35fbc7f735ff640dca47f63b81ae34755b8903d6ccf4f0316222f550035d12"
+   },
+   "05A4:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "76420a769d4eb3a99d8a47bd2302cf1147a14cda9a68ddd7410db9bc646e2e3a"
+   },
+   "05H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7431,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "26d3788981f452b0a3f4a54369c3cf3504d1c32a23495cd5b8c0c48443e47685"
+   },
+   "05H4:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "76420a769d4eb3a99d8a47bd2302cf1147a14cda9a68ddd7410db9bc646e2e3a"
+   },
+   "06A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "9a35fbc7f735ff640dca47f63b81ae34755b8903d6ccf4f0316222f550035d12"
+   },
+   "06A0:2:tset": {
+    "cls": "iii",
+    "reason": "ruling 1: Bengals pants strokes: drawn by work/fix/R2C/tools/cinpaint.py on the player model from the geometry read off the 2026 White Bengal photographs (strokes.py, inkband2.py) and order R2-C item 1; the old marks are cleared by rule (clear) first",
+    "sha256": "a701d63237e3cdbf0044f58b0b1c024c4ab78500ff8332ca69840f8f53794b5a"
+   },
+   "06A5:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "72b0f8418dab26869ff71a48efe875b25917b5403917b3f5775056337fccf64b"
+   },
+   "06A5:2:tset": {
+    "cls": "iii",
+    "reason": "ruling 1: Bengals pants strokes: drawn by work/fix/R2C/tools/cinpaint.py on the player model from the geometry read off the 2026 White Bengal photographs (strokes.py, inkband2.py) and order R2-C item 1; the old marks are cleared by rule (clear) first",
+    "sha256": "5c837717bea2d104e20f1bb3532715dfa691799b481c677aab27c73ff72ab30e"
+   },
+   "06A6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8272,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "363a321acefdd551623e135c200ef06404b69ed1f06e24917bbb47498ecc6671"
+   },
+   "06A6:2:tset": {
+    "cls": "iii",
+    "reason": "ruling 1: Bengals pants strokes: drawn by work/fix/R2C/tools/cinpaint.py on the player model from the geometry read off the 2026 White Bengal photographs (strokes.py, inkband2.py) and order R2-C item 1; the old marks are cleared by rule (clear) first",
+    "sha256": "338fc816c895b0693c9a661638078f5929ac0986310376d80e38da36deb0cda4"
+   },
+   "06H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "9d171f18093d29c637455884caf5cbf2cb083fa811a3abe9f224d08ad1038311"
+   },
+   "06H0:2:tset": {
+    "cls": "iii",
+    "reason": "ruling 1: Bengals pants strokes: drawn by work/fix/R2C/tools/cinpaint.py on the player model from the geometry read off the 2026 White Bengal photographs (strokes.py, inkband2.py) and order R2-C item 1; the old marks are cleared by rule (clear) first",
+    "sha256": "4c89940750a4ebff92b0534b343295c1f5b42d85dc4b053ac63e1f521dd16f73"
+   },
+   "06H5:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "72b0f8418dab26869ff71a48efe875b25917b5403917b3f5775056337fccf64b"
+   },
+   "06H5:2:tset": {
+    "cls": "iii",
+    "reason": "ruling 1: Bengals pants strokes: drawn by work/fix/R2C/tools/cinpaint.py on the player model from the geometry read off the 2026 White Bengal photographs (strokes.py, inkband2.py) and order R2-C item 1; the old marks are cleared by rule (clear) first",
+    "sha256": "2025a6df9296bd1b574fcc223cb6f4ca2a738742d6790488bdd3f59c846481f9"
+   },
+   "06H6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8272,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "363a321acefdd551623e135c200ef06404b69ed1f06e24917bbb47498ecc6671"
+   },
+   "06H6:2:tset": {
+    "cls": "iii",
+    "reason": "ruling 1: Bengals pants strokes: drawn by work/fix/R2C/tools/cinpaint.py on the player model from the geometry read off the 2026 White Bengal photographs (strokes.py, inkband2.py) and order R2-C item 1; the old marks are cleared by rule (clear) first",
+    "sha256": "338fc816c895b0693c9a661638078f5929ac0986310376d80e38da36deb0cda4"
+   },
+   "07A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "9a35fbc7f735ff640dca47f63b81ae34755b8903d6ccf4f0316222f550035d12"
+   },
+   "07A7:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7816,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "3451fdc98489d26de380649c79f6d02d09aeb1c61265867c2e3cea7df108622d"
+   },
+   "07H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "b41f50d6676c48cea1be026b7818e6f01584c7981090f45b5111c16d5e07f2fc"
+   },
+   "07H0:3:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "c65f337cf025fc08e8067c848d108c3cc7881286749db02aae2345821803832f",
+    "small_box_edge_base": 0.0237,
+    "small_box_edge_retail": 0.0246,
+    "small_box_texels": 12
+   },
+   "07H7:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7816,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "3451fdc98489d26de380649c79f6d02d09aeb1c61265867c2e3cea7df108622d"
+   },
+   "08A0:1:tset": {
+    "base_equal": 4,
+    "cls": "iii",
+    "edge_overlap": 0.4513,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: BRONCOS drawn from nothing by code (7 letters 6 x 6, 2-texel stems, one colour)",
+    "sha256": "3e807788fd11d0c71f47679b1db0f5f835e2a96a886164fd6cc6b0c2a2213a8d"
+   },
+   "08A5:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4509,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: BRONCOS drawn from nothing by code (7 letters 6 x 6, 2-texel stems, one colour)",
+    "sha256": "d657fc432334fdc4f36d42345c010ea22f7fa105aee289ba14c4110986823046"
+   },
+   "08A6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7736,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: BRONCOS drawn from nothing by code (7 letters 6 x 6, 2-texel stems, one colour)",
+    "sha256": "8c33eedadf0abcc0380ddd74bae4b25dddbc89ea3b4ff298f9e094334909b005"
+   },
+   "08H0:1:tset": {
+    "base_equal": 2,
+    "cls": "iii",
+    "edge_overlap": 0.4632,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: BRONCOS drawn from nothing by code (7 letters 6 x 6, 2-texel stems, one colour)",
+    "sha256": "10a92a9a0ecf2d46a3bfd304524568420b492ddd47759c875b582677bb3242b2"
+   },
+   "08H5:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7736,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: BRONCOS drawn from nothing by code (7 letters 6 x 6, 2-texel stems, one colour)",
+    "sha256": "8c33eedadf0abcc0380ddd74bae4b25dddbc89ea3b4ff298f9e094334909b005"
+   },
+   "08H6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7736,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: BRONCOS drawn from nothing by code (7 letters 6 x 6, 2-texel stems, one colour)",
+    "sha256": "8c33eedadf0abcc0380ddd74bae4b25dddbc89ea3b4ff298f9e094334909b005"
+   },
+   "09A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "d7c655e5de79db43903c1bc206b4483611ed22fde284d62448d1849a7a19847b"
+   },
+   "09A2:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "5c9504d13a5ab95d3a44db7ae33465e626922a4b52a4797a852ab8cac3637f0b"
+   },
+   "09A9:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.3152,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; DETROIT drawn italic by code (Noah's decision 6)",
+    "sha256": "1d6505d74499af5e5f80190ed89bd775f8d6c25904673d1df6b36f106f5029b8",
+    "small_box_edge_base": 0.0199,
+    "small_box_edge_retail": 0.0097,
+    "small_box_texels": 11
+   },
+   "09A9:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.0083,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; band and wedge drawn by code on the player model (order R2-C item 2)",
+    "sha256": "41e96a51e4795d9c1df5122f6f7fbbe7d0ec84b6bdecce5df2f35078edb1a24a"
+   },
+   "09H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "764f5c4614baee5cbaed6e0538ef117cdc415ecdbe6c96dedacbb67669399267"
+   },
+   "09H2:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "5c9504d13a5ab95d3a44db7ae33465e626922a4b52a4797a852ab8cac3637f0b"
+   },
+   "09H9:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.3152,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; DETROIT drawn italic by code (Noah's decision 6)",
+    "sha256": "1d6505d74499af5e5f80190ed89bd775f8d6c25904673d1df6b36f106f5029b8",
+    "small_box_edge_base": 0.0199,
+    "small_box_edge_retail": 0.0097,
+    "small_box_texels": 11
+   },
+   "09H9:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.0083,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; band and wedge drawn by code on the player model (order R2-C item 2)",
+    "sha256": "41e96a51e4795d9c1df5122f6f7fbbe7d0ec84b6bdecce5df2f35078edb1a24a"
+   },
+   "10A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6273,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "4a71408c1ffe0dff231b6ecb7eb182dde06029534c1df34928289498c8126053"
+   },
+   "10A5:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6078,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "068b24cdd77584d4ae8dfc2fe2d0930a2d24e4c10dff1b657924ebc4e44ec3c4"
+   },
+   "10A6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4045,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "fec5fc66c4cfd85071cced6a46559d1cecab4747121746c783486ea8e06e6649",
+    "small_box_edge_base": 0.0952,
+    "small_box_edge_retail": 0.0825,
+    "small_box_texels": 23
+   },
+   "10H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6557,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "4634221da9eaea68f5a8b57411473f16c6c41dad06b5d8e08351d0714f6907ea"
+   },
+   "10H5:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6078,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "068b24cdd77584d4ae8dfc2fe2d0930a2d24e4c10dff1b657924ebc4e44ec3c4"
+   },
+   "10H6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4045,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "fec5fc66c4cfd85071cced6a46559d1cecab4747121746c783486ea8e06e6649",
+    "small_box_edge_base": 0.0952,
+    "small_box_edge_retail": 0.0825,
+    "small_box_texels": 23
+   },
+   "11A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "0ce2501722da969758b8747b292d1b37e505dcf660df1266b15ab6c8b5b62593"
+   },
+   "11A3:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8143,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "97657f8f790e30f9a566d789ba45c3e3f3c51eccf9fbeee07019221fb67c1fae"
+   },
+   "11H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7593,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "18fae61a7699891de66d43209b1dd9247b7d122eb882f2fd6bbeab3b72d9d8be"
+   },
+   "11H3:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8143,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "97657f8f790e30f9a566d789ba45c3e3f3c51eccf9fbeee07019221fb67c1fae"
+   },
+   "12A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.701,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "87d03df868ea8859a78ea656f30d5c14548d755446a97a021c95cde2e1f9f884"
+   },
+   "12A6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7126,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "c7b9fe200bb403832092ed60de8b63990660192c43996e6876d05f8b8d8d3750"
+   },
+   "12H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7257,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "292e1e15bac1beb0fd2351b243344ec6c409d1bbfa024f88ab3c543be7fa980f"
+   },
+   "12H6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7126,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "c7b9fe200bb403832092ed60de8b63990660192c43996e6876d05f8b8d8d3750"
+   },
+   "13A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8193,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "16e7258dca519e588a75bb782af37c362e873d7fab5db951a5ba2ff762a61d11"
+   },
+   "13H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "2440d535edde1f002d82b93c4aabca9e514b04559ad1585333557bfe48ae3131"
+   },
+   "14A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7391,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "4d281b6d6f364a8c8965b003877ef404ebe40d703ea062fc1ba1bfd6adc60052"
+   },
+   "14A0:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.2677,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: swoosh recoloured by rule (ramp); Dolphins sleeve logo drawn from the repo's data/nfl2k5_scorebug_assets/logos/mia.png (the mod's own logo) at its 2026 size",
+    "sha256": "e6eace267aa7a560521efbb67ba5a388f6d8cda94b1b28f31c78050d36ef31cf",
+    "small_box_edge_base": 0.2048,
+    "small_box_edge_retail": 0.1504,
+    "small_box_texels": 346
+   },
+   "14A10:1:tset": {
+    "base_equal": 3,
+    "cls": "iii",
+    "edge_overlap": 0.6522,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "a9cb30f02e6ef506b4764c70a0d3e9dff87db84604c13b65a8feaad7204d8b85"
+   },
+   "14H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6777,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "8b180730bd522b5872fdb7e0e07749865ad757c9971d291cd5b41ac42ce3c9fd"
+   },
+   "14H0:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.3085,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: Dolphins sleeve logo drawn from the repo's data/nfl2k5_scorebug_assets/logos/mia.png (the mod's own logo) at its 2026 size",
+    "sha256": "cb064136600ffc55eb060674fca7663c9065a984eef9f7f123dec65a36bd21e7",
+    "small_box_edge_base": 0.2334,
+    "small_box_edge_retail": 0.1611,
+    "small_box_texels": 462
+   },
+   "14H10:1:tset": {
+    "base_equal": 3,
+    "cls": "iii",
+    "edge_overlap": 0.6522,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "a9cb30f02e6ef506b4764c70a0d3e9dff87db84604c13b65a8feaad7204d8b85"
+   },
+   "15A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6355,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "9a35fbc7f735ff640dca47f63b81ae34755b8903d6ccf4f0316222f550035d12"
+   },
+   "15A0:2:tset": {
+    "base_equal": 118,
+    "cls": "iii",
+    "edge_overlap": 0.3219,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: pants stripe drawn by rule at its real widths",
+    "sha256": "52f9e4ed47449b0c163a7fd08a688da43fa98246e35c32a44879f18180d0d88f"
+   },
+   "15A5:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6538,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "7bd3ae6fb66bcd126e5e57149d7c3902d304855be332f6ea6b7b0409f87ebbe6"
+   },
+   "15A6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6061,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "64941596d86865a67f6cac75613b29d0ee34f8084a24dfeb1c1d7358f0a36dc0"
+   },
+   "15H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.609,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "748e082149b68cbfaf1ed13d71841ab81be18feff3932ae83ced105369f949f5"
+   },
+   "15H0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4904,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: pants stripe drawn by rule at its real width; socks recoloured by rule (ramp)",
+    "sha256": "1764b84f193556069146b3a9ea1ec00d15d0501d1b0290794ab69ee9b29acfb3"
+   },
+   "15H5:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6538,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "7bd3ae6fb66bcd126e5e57149d7c3902d304855be332f6ea6b7b0409f87ebbe6"
+   },
+   "15H6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6061,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "64941596d86865a67f6cac75613b29d0ee34f8084a24dfeb1c1d7358f0a36dc0"
+   },
+   "16A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6071,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "6cfde0ff9af97cff4ac43f8269c5ec366b70ff079b5cc9909e17fabc8da30cf4"
+   },
+   "16A4:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7257,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "7943f282ebf5250e9638daeac19ca0cf6a5673f70234c03d2faefe59c9fd7784"
+   },
+   "16A9:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7204,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "76d05c78f1be6f16ecf3112b6d94912e639adf20294b0cf1358892e7e1907263"
+   },
+   "16H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.587,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "6b1f67e91168268f5280da0d297a12aaa9c758217e806a3721f8c87b50b2d0bb"
+   },
+   "16H4:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7257,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "7943f282ebf5250e9638daeac19ca0cf6a5673f70234c03d2faefe59c9fd7784"
+   },
+   "16H9:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7204,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "76d05c78f1be6f16ecf3112b6d94912e639adf20294b0cf1358892e7e1907263"
+   },
+   "17A0:1:tset": {
+    "base_equal": 6,
+    "cls": "iii",
+    "edge_overlap": 0.2243,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
+    "sha256": "ef7529cfbf177606e9390a777b31133a2053673d5582fd4cb1c3b7bb7f62bd9d",
+    "small_box_edge_base": 0.1587,
+    "small_box_edge_retail": 0.1176,
+    "small_box_texels": 10
+   },
+   "17A1:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "9a35fbc7f735ff640dca47f63b81ae34755b8903d6ccf4f0316222f550035d12"
+   },
+   "17A3:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.3843,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
+    "sha256": "7eaa14b77a17cd86bdf478ca128e88157b6896af3d2477ab0cdb6bb9108a5305"
+   },
+   "17A8:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.3417,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
+    "sha256": "508d4b0e6e35be55d45507f339e66700380448c5c51be153c25b876e6f83d8b1"
+   },
+   "17H0:1:tset": {
+    "base_equal": 3,
+    "cls": "iii",
+    "edge_overlap": 0.2195,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
+    "sha256": "315f08998dc14b833139ab2378c116df415520f300de70d1b0ea294dca8f0428"
+   },
+   "17H1:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "9a35fbc7f735ff640dca47f63b81ae34755b8903d6ccf4f0316222f550035d12"
+   },
+   "17H3:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.3843,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
+    "sha256": "7eaa14b77a17cd86bdf478ca128e88157b6896af3d2477ab0cdb6bb9108a5305"
+   },
+   "17H8:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.3417,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
+    "sha256": "508d4b0e6e35be55d45507f339e66700380448c5c51be153c25b876e6f83d8b1"
+   },
+   "18A0:1:tset": {
+    "base_equal": 3,
+    "cls": "iii",
+    "edge_overlap": 0.4273,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest ny drawn from the repo's NYG logo at 12 x 10 beside the redrawn shield; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "e28e6b7ac185d4d753d3dcd10137ae4c6ac46d9c1753f26d5b9391831b31e45b",
+    "small_box_edge_base": 0.2101,
+    "small_box_edge_retail": 0.194,
+    "small_box_texels": 26
+   },
+   "18A7:1:tset": {
+    "base_equal": 5,
+    "cls": "iii",
+    "edge_overlap": 0.4971,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest ny drawn from the repo's NYG logo at 12 x 10 beside the redrawn shield; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "b098d9c00dc0fb710269dc0af3d729e9e523fd52ec2db1425b544b5803e13c9a"
+   },
+   "18H0:1:tset": {
+    "base_equal": 3,
+    "cls": "iii",
+    "edge_overlap": 0.4368,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest ny drawn from the repo's NYG logo at 12 x 10 beside the redrawn shield; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "e746ad43e949f2aa23b847acc40508698682f54d7b3db71fb3731998ae6af5ef",
+    "small_box_edge_base": 0.2101,
+    "small_box_edge_retail": 0.194,
+    "small_box_texels": 26
+   },
+   "18H7:1:tset": {
+    "base_equal": 5,
+    "cls": "iii",
+    "edge_overlap": 0.4971,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest ny drawn from the repo's NYG logo at 12 x 10 beside the redrawn shield; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "b098d9c00dc0fb710269dc0af3d729e9e523fd52ec2db1425b544b5803e13c9a"
+   },
+   "19A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6018,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "020e805657dd159d4b2c3b187fe1e08a206face603b2a7b604e4cdb75b107d4e"
+   },
+   "19A2:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7387,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "587f5fe09da19454ee7b2c594c732366e1358eefaf74a98537cd86a072e21db6"
+   },
+   "19A6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7664,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "52de4d861a9c06a60254be49e0d2ec54d6c88f45256d24a6e10f708f00d918a2"
+   },
+   "19A7:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.633,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "6cda9394dc8d7c1cff632c0a14961e1cb351cd6bfa4872bd886186085225e889"
+   },
+   "19H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.708,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "00d55ea2fb82cb53c1d7550fbb0696db4d3a4aaa5069e34966e33be508604d33"
+   },
+   "19H2:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7387,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "587f5fe09da19454ee7b2c594c732366e1358eefaf74a98537cd86a072e21db6"
+   },
+   "19H6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7664,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "52de4d861a9c06a60254be49e0d2ec54d6c88f45256d24a6e10f708f00d918a2"
+   },
+   "19H7:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.633,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "6cda9394dc8d7c1cff632c0a14961e1cb351cd6bfa4872bd886186085225e889"
+   },
+   "20A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "9a35fbc7f735ff640dca47f63b81ae34755b8903d6ccf4f0316222f550035d12"
+   },
+   "20A4:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "9a35fbc7f735ff640dca47f63b81ae34755b8903d6ccf4f0316222f550035d12"
+   },
+   "20H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "d8c0e57e69674ee39e1cef865115e6af92d6d5e2ecf49279b9300b0311917755"
+   },
+   "20H4:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "9a35fbc7f735ff640dca47f63b81ae34755b8903d6ccf4f0316222f550035d12"
+   },
+   "21A0:1:tset": {
+    "base_equal": 2,
+    "cls": "iii",
+    "edge_overlap": 0.4455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
+    "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5"
+   },
+   "21A10:1:tset": {
+    "base_equal": 2,
+    "cls": "iii",
+    "edge_overlap": 0.4455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
+    "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5"
+   },
+   "21A12:1:tset": {
+    "base_equal": 2,
+    "cls": "iii",
+    "edge_overlap": 0.4455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
+    "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5"
+   },
+   "21A13:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6517,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "ee81a5240b5e33745e864518879d05f835ffd402f84edd8340815e4d25e5665d"
+   },
+   "21A4:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "771c22e848650844c562798e27e21539c82f18a95b63f80e34c48e65e4ed9ce7",
+    "small_box_edge_base": 0.1364,
+    "small_box_edge_retail": 0.0,
+    "small_box_texels": 6
+   },
+   "21H0:1:tset": {
+    "base_equal": 25,
+    "cls": "iii",
+    "edge_overlap": 0.4701,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
+    "sha256": "ff7e0ba261e1161a89ecfa4b30629378a6d0655f5425ea29739701033a59ef0f"
+   },
+   "21H10:1:tset": {
+    "base_equal": 2,
+    "cls": "iii",
+    "edge_overlap": 0.4455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
+    "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5"
+   },
+   "21H12:1:tset": {
+    "base_equal": 2,
+    "cls": "iii",
+    "edge_overlap": 0.4455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
+    "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5"
+   },
+   "21H13:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6517,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "ee81a5240b5e33745e864518879d05f835ffd402f84edd8340815e4d25e5665d"
+   },
+   "21H4:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "771c22e848650844c562798e27e21539c82f18a95b63f80e34c48e65e4ed9ce7",
+    "small_box_edge_base": 0.1364,
+    "small_box_edge_retail": 0.1875,
+    "small_box_texels": 6
+   },
+   "22A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6154,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "b93f658a2e1a56cb19026a9cab3939e21b9e24a6a1994bba397bad22e7681090"
+   },
+   "22A5:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6847,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "1c562fa3d1b7d91057e076308b3757d407d8b7b8773f37f76d8ff91b8b65d281"
+   },
+   "22H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7407,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "bc56fdd0165888e0305774d2f06c1c7628f22674d7757910be6dd1884ac7bc43"
+   },
+   "22H5:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6847,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "1c562fa3d1b7d91057e076308b3757d407d8b7b8773f37f76d8ff91b8b65d281"
+   },
+   "23A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "8de0c99dbdbfce58486e81d4b906b08bbc23d3e7f784d8ff9cbad46027ee52af"
+   },
+   "23A0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5555,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: sol band and white band drawn by rule at their 2026 place and width",
+    "sha256": "ca8bc5620e3d76416f2ce8f71372024fe633798ee66aa2f069a75a7a0d020237",
+    "small_box_edge_base": 0.0084,
+    "small_box_edge_retail": 0.0,
+    "small_box_texels": 43
+   },
+   "23A10:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7364,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "dd767f53dfbfb89db9aba94723d05d28d082f0765dd15d08461f4d38fc50fe98"
+   },
+   "23A11:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "029e12fb621f4c694cad39807f25781b791e8b163207f15cf6831ab865c7d1c4"
+   },
+   "23A12:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7407,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "d3e0c9950c824ffc39f5d034436291509276e468c8689ac9fba984d2e6b44a51"
+   },
+   "23H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7593,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "603a291d20f69be1cbb719e70ab9cbc190be9392b423888fc5e2afd4263d1452"
+   },
+   "23H10:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7364,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "dd767f53dfbfb89db9aba94723d05d28d082f0765dd15d08461f4d38fc50fe98"
+   },
+   "23H11:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "029e12fb621f4c694cad39807f25781b791e8b163207f15cf6831ab865c7d1c4"
+   },
+   "23H12:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7407,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "d3e0c9950c824ffc39f5d034436291509276e468c8689ac9fba984d2e6b44a51"
+   },
+   "24A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8395,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "8605e2a877cfb943c3a7280d5885f7a1aa481f29d481b9a48edea4c8ab6dc216"
+   },
+   "24A10:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8193,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "8c62f25351694118f1e765f8278d70a4c00ecbc7e6e36e92b46ce239eef7fda0"
+   },
+   "24A11:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "ced8da21011bf6060a42c1dc01cc4f1efeb6139ac6a30784acceae446202ddbb"
+   },
+   "24A9:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7476,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "5a8a97971611ea493bf4a65519d931b0c0928f9acfd93b3d31b9f17db59413ca"
+   },
+   "24H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "03a66e04d1462ab562b2194a821ded9ed542ad5142fe62a427dd5dccb638d280"
+   },
+   "24H10:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "cb6a5aaea840c5dbafba94276a751d554205732e60bf4697a59677c6a92c7d33"
+   },
+   "24H11:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "ced8da21011bf6060a42c1dc01cc4f1efeb6139ac6a30784acceae446202ddbb"
+   },
+   "24H9:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7476,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "5a8a97971611ea493bf4a65519d931b0c0928f9acfd93b3d31b9f17db59413ca"
+   },
+   "25A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "1a0915c7907847369db23d016f3c2a2145f6be588a6279a14c7b5cfeab8368d2"
+   },
+   "25H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "d5eb100d2553a7de108483ab9490051a2de8170350d7ba80f8d566ee15f009c1"
+   },
+   "25H0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.2142,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: pants stripe drawn by rule at the widths read off 2026 photographs",
+    "sha256": "f49b8a9eeed4ccce627a1b73d030ba033805757e8a420c797d2a9a73a3cde96b"
+   },
+   "26A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7216,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "828f9ce72293d52188f63564354878c3f814042e2a45c9a3b595b655d123cad0"
+   },
+   "26A3:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4167,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "ab4497a4be325dfac7573eed3fc5b15f5b7fd0a9cf2d9358fe1ea9181a23db52",
+    "small_box_edge_base": 0.0964,
+    "small_box_edge_retail": 0.1242,
+    "small_box_texels": 23
+   },
+   "26A4:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7216,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "0f40f1d8751c4344c8959c0aceca80e72cd8d7ffeebd4b9109e33ea73a74aa9e"
+   },
+   "26H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7434,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "94e866355b3b1dfe0a21fee7def474a76dd6ae313d4fe7ac3658aa181d6e58a5"
+   },
+   "26H3:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4167,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "51828f760d2d0289cd2c125f357bd241911842890be55b73316560190dfb698c",
+    "small_box_edge_base": 0.0964,
+    "small_box_edge_retail": 0.1242,
+    "small_box_texels": 23
+   },
+   "26H4:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5328,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: 26H0's panels copied by rule (stamp of the pinned donor + a colour-pair map); only the drawn collar shield ships",
+    "sha256": "4ce4b67f06608a33444c5700b12b57cd503a440b09df59f7682fc284c9189986",
+    "small_box_edge_base": 0.1408,
+    "small_box_edge_retail": 0.1133,
+    "small_box_texels": 56
+   },
+   "27A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5643,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "b3be35df7dd28c87599e0d3dfb4d0a579ae27e169a61e760baa2dd0932c45a1e",
+    "small_box_edge_base": 0.119,
+    "small_box_edge_retail": 0.1071,
+    "small_box_texels": 22
+   },
+   "27A0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.2471,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: pants stripe drawn by rule in the real order and widths (decision 5)",
+    "sha256": "89480263790ca7362ce4cc3aac084c55ba05c0b9afaee207d51aca98c6d93c82"
+   },
+   "27A2:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "571c6599ddde150b6229273c200be6da1c6b0e98ec6a576f9939b79df73a244a"
+   },
+   "27A6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5215,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "bd4614c27fc9522573d0eb6e0f351923fce39fe9538251a1b1915db7c47f519d"
+   },
+   "27H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5148,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "3570f2af479d259a6464e174c07ee8f91aaa26cf4160459dd73490d976caa6b0"
+   },
+   "27H0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.3929,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: pants stripe drawn by rule in the real order and widths (decision 5)",
+    "sha256": "34607fcb29aef5f3f5e774d07d63eef12b2f8181856a0216fcc281b4513f9113"
+   },
+   "27H2:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8293,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "571c6599ddde150b6229273c200be6da1c6b0e98ec6a576f9939b79df73a244a"
+   },
+   "27H6:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5215,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "bd4614c27fc9522573d0eb6e0f351923fce39fe9538251a1b1915db7c47f519d"
+   },
+   "28A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "754542336ee1f76a065a366509e6742b69b93e4c9b161eb09fe4aff6934420d2"
+   },
+   "28H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5322,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: TITANS narrowed by rule (cols); only the drawn shield ships",
+    "sha256": "ba1d28f22903c224c668c9e5648114ec18a449d6d5eee6b05732dfdc9e4e2c63"
+   },
+   "29A0:1:tset": {
+    "cls": "iii",
+    "reason": "ruling 1: Commanders road shoulder swoosh, added to this list by ruling: retail 29H0 and 29A0 carry no swoosh; the shape is the project's own swoosh from its 29H0 sleeve art, laid on the body by work/fix/R2C/tools/waspaint.py through the game jersey mesh; it sits where the project's own v0.9 swoosh was, which a clear rule removes; its colours blend white with the kit burgundy. Measured (retail-free/REVIEW_ME.md section 18): the swoosh texels' edge overlap 0.047 against the retail torso and 0.165 against the base the build holds at this step, none equal to either. The row's collar shield is drawn from data/nfl2k5_espn25_fields/source/nfl_2008.png (class iii family b81u-collar-shield-undersized)",
+    "sha256": "bde95e94e17e696ac9a66eca1577da7a19f92cbde2def5ae33d13e962f7df2ed",
+    "small_box_edge_base": 0.0377,
+    "small_box_edge_retail": 0.0179,
+    "small_box_texels": 87
+   },
+   "29A9:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "ef7d4ff3ba3dc1a19e95535c4a26bf635cf246e380fd1803beaa8542bf176e6a"
+   },
+   "29H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "a63a62f7a6154956758e36e0739e0a4bd951faa247694c369ced16c8d7798242"
+   },
+   "29H9:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "ef7d4ff3ba3dc1a19e95535c4a26bf635cf246e380fd1803beaa8542bf176e6a"
+   },
+   "30A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8193,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "046bf5376b925b5545e995cef9b036a2faddc7b058bc366f3206b1dce1fb939f"
+   },
+   "30A3:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "f9ab84079bb7ee54338c09660488e71023e548ca13d8b44a3f713c80738a475b"
+   },
+   "30A4:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8193,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "3ec0cb2c2c6bec72ce142c730c37f47bd082ea2e43f52425f769a95fdcacb2d6"
+   },
+   "30H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "fdf63ff5d44f9c50c0c41f02522b5ffbb96042091113a1e4c7f8f0e0cb0ef2c9"
+   },
+   "30H3:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "f9ab84079bb7ee54338c09660488e71023e548ca13d8b44a3f713c80738a475b"
+   },
+   "30H4:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.8193,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "3ec0cb2c2c6bec72ce142c730c37f47bd082ea2e43f52425f769a95fdcacb2d6"
+   },
+   "37A0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.3487,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: memorial oval drawn by code (navy oval, light rim, a row of marks)",
+    "sha256": "a38db7926cfd9f0065a5c1b77151fdfbca1b13ed4061ca15412b80a671c43114"
+   },
+   "37A2:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6308,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "c193f1cc2572314b5549e64a6684cb1346c5ec2d876462cab68418b1335d63ff"
+   },
+   "37H0:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.315,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: memorial oval drawn by code (navy oval, light rim, a row of marks)",
+    "sha256": "ced83466099e0751e7c5c4a9a0c7fc0940e2779184ca4ee1dee75294b448e44c"
+   },
+   "37H2:1:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6308,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "c193f1cc2572314b5549e64a6684cb1346c5ec2d876462cab68418b1335d63ff"
+   }
+  },
+  "data/nfl2k5_kit_fixes_2026_ku1.json": {
+   "13A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the Chiefs kit pass (ku1, b776): 2026 red; the AFL (Lamar Hunt) roundel at its real size and place on the player's left chest",
+    "sha256": "e666df004fd542deb59a778ad7865f48e712e9ef1e5ac3a86c2345ca255e3c17"
+   },
+   "13H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the Chiefs kit pass (ku1, b776): 2026 red; the AFL (Lamar Hunt) roundel at its real size and place on the player's left chest",
+    "sha256": "e666df004fd542deb59a778ad7865f48e712e9ef1e5ac3a86c2345ca255e3c17"
+   }
+  },
+  "data/nfl2k5_kit_fixes_2026_sw1.json": {
+   "00H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "edbcd937db60287b456034d04aca085f135280c3b67ba1d40a7c6ec834184160"
+   },
+   "00H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "45f93d6cf00ef38217ce65aa6ee5afb98e13da60a8eaedbf3a76dedbd8203058"
+   },
+   "03A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "a67c93775d64fc12bd608acdde9b51d689a6e3a8bf0b5211d93c395bbe3abcf2"
+   },
+   "03A3:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f3380135c379b564fad010a633f2188a14ee6ffb087888cee12e212084341538"
+   },
+   "03A8:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "fb0c88b7a567f6988bd1d660e9d4a89e60687d9d1eebee8aba31a0b70adecbfd"
+   },
+   "03H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "9130d232452a59c5897ed61f27c11bb79fb5c7af898f65dc362b814912bd20fe"
+   },
+   "03H3:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f3380135c379b564fad010a633f2188a14ee6ffb087888cee12e212084341538"
+   },
+   "03H8:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "fb0c88b7a567f6988bd1d660e9d4a89e60687d9d1eebee8aba31a0b70adecbfd"
+   },
+   "05A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "6dd39cb83d09cf70911990ed4108c7f7fcbe6a24f030f77c00361bb420f3fb4b"
+   },
+   "05A4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "025b6c1c3ebd4073ec4403033de5cac9eb95595816c311fc88817a43aa878d8a"
+   },
+   "05H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "a44273f498a9043901c553072ff807e7686b9e42b18eafd9a5474edee20ca09c"
+   },
+   "05H4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "025b6c1c3ebd4073ec4403033de5cac9eb95595816c311fc88817a43aa878d8a"
+   },
+   "07A7:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f796d4b95eff2b3785abd54ca12e57f6f75ae0573aba0e562143c6f0b7d15b76"
+   },
+   "07A9:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "1be77819090f57a8712a92bd586159dee6cfac43619b8fe0f943449b2a90e368"
+   },
+   "07A9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "45be988dd6b2558c48fd6df2d49dcd8bb1ccba81a6ed2558e249dc492a138777"
+   },
+   "07H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "30590affd445eecfb47af6ced8bb0e5160273645e6e0379d9a96182f551ddee0"
+   },
+   "07H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "6b9fb7390321c29aae2f847f2d4949ae9fb53d8e0709d379160bef99a79ab21d"
+   },
+   "07H7:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f796d4b95eff2b3785abd54ca12e57f6f75ae0573aba0e562143c6f0b7d15b76"
+   },
+   "07H9:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "1be77819090f57a8712a92bd586159dee6cfac43619b8fe0f943449b2a90e368"
+   },
+   "07H9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "45be988dd6b2558c48fd6df2d49dcd8bb1ccba81a6ed2558e249dc492a138777"
+   },
+   "09A2:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7dd063de4dd0addba346243fa5ff5a67440abcb95757a81191bb8745aa613d20"
+   },
+   "09A9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "44f3a14f7241066bf7e91f9aed05cb414e68f1a69ebb1870ef81872fe63fe26b"
+   },
+   "09H2:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7dd063de4dd0addba346243fa5ff5a67440abcb95757a81191bb8745aa613d20"
+   },
+   "09H9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "44f3a14f7241066bf7e91f9aed05cb414e68f1a69ebb1870ef81872fe63fe26b"
+   },
+   "10A5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d5353d296141c39e5f822069f99e6bce30e60bc7abaa16655c5aef4e841de1f3"
+   },
+   "10H5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d5353d296141c39e5f822069f99e6bce30e60bc7abaa16655c5aef4e841de1f3"
+   },
+   "11A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "e9a3ae0afaab23e16ac57a60c2ca66cfbf6f91a5b9f087b9dcbd170b0a2a78f8"
+   },
+   "11A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "62118c56a47aa3b5b5090b4b7914daa9f54939bb6e3b2b8207f8593a861bb60c"
+   },
+   "11A4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "dc5bfd5297cdccbcc733419f672a30aa47db70ff629419e9f026e010417c0f59"
+   },
+   "11A4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "3a8c374a9929d7bb5009599efbd8f8b4f65fa0d3c0f8e8c7c7f702a4019fbf1a"
+   },
+   "11H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7b11a0f19f47ef9ee6e886d4c2e1b05e2dd44182d7d7756d35d9d2768e0c117c"
+   },
+   "11H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "fb17600eb82c0efcb7b875b194268b015ac968399426d91df59ccc94259fcdd1"
+   },
+   "11H4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d0d4925006bd665a8fcecc368a4effd4e751716512e49e6e774643428e75c693"
+   },
+   "11H4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "507818938430e42979f19ee83a33a5db555318c858450466f642086ec21cd652"
+   },
+   "12A5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "1b8802cbf055b36b2eb618d28dfb2fd1dc08a28f5f900fe7d3c2360015b09169"
+   },
+   "12H5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "1b8802cbf055b36b2eb618d28dfb2fd1dc08a28f5f900fe7d3c2360015b09169"
+   },
+   "13A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "43f2dd7178a30fde31eff389574b5665c722adf1f841b3f50a5009ae85e15cd0"
+   },
+   "13A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "6b3c8a274b5db38d15ed8bcc35c59b658e8411e5851370782c267a8a257236e9"
+   },
+   "13H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "736db7c24b56bdb54579df34cb3446d854a159e97cd4242fa3802445c4c44df0"
+   },
+   "13H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "a737c5af8e593cf46c639b5e59155b2fed966e3adea07661e5c0faf19dc2ba0e"
+   },
+   "16A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d6c50c0f52911a7c443272afee442ca76db43fdaea3aec7158621a5ed04820d6"
+   },
+   "16A4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7f68612a9afb5eccdfdeb4c6be233dd462f5b59d41d2c8c83ed424de8a36d128"
+   },
+   "16A4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "c8083886ea40448396ed19bb915ba518faec2d46603d08a632970058fc74ffec"
+   },
+   "16A9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "b1de6b2e5bd58470a4122bba085f5752e534cc6b78724c8d0c7d1a4cf1b447d5"
+   },
+   "16H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "a3a244f7019ad0f938c669d94812114bc37a231899a350f8cf8cf97c7d09c3dc"
+   },
+   "16H4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7f68612a9afb5eccdfdeb4c6be233dd462f5b59d41d2c8c83ed424de8a36d128"
+   },
+   "16H4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "c8083886ea40448396ed19bb915ba518faec2d46603d08a632970058fc74ffec"
+   },
+   "16H9:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "b1de6b2e5bd58470a4122bba085f5752e534cc6b78724c8d0c7d1a4cf1b447d5"
+   },
+   "19A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "01b6a1416e7a03e200e2c81da869ad2fe5c6d99da669a567df3dd08f63521856"
+   },
+   "19A7:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "fc70a152a94afc49849e982246b1a15cd341e91f342bcfccffe2f4517fb2e013"
+   },
+   "19H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7ac0a85615b68f3810fb57b8bd1cc4cc42f900588b23f455cec7746ca0f384ba"
+   },
+   "19H7:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "fc70a152a94afc49849e982246b1a15cd341e91f342bcfccffe2f4517fb2e013"
+   },
+   "20A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "21b7ff8e554ceb622906eed5500fe68f8b4f287bf66f3b01e3e9de6ce51067e3"
+   },
+   "20A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "926552991f6681537e5ec8b5637d7681d8259479d6fec2d7766bf2e80cd907f1"
+   },
+   "20A4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "21b7ff8e554ceb622906eed5500fe68f8b4f287bf66f3b01e3e9de6ce51067e3"
+   },
+   "20A4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "926552991f6681537e5ec8b5637d7681d8259479d6fec2d7766bf2e80cd907f1"
+   },
+   "20H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "cc4134df140d6c48f7086c8cc93f3642239888f3b57efaa0abd332bc4d3796a6"
+   },
+   "20H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f4d3be18d983a4de2fe92a70f662e783ed828e452f45937ecc42140dd15a6015"
+   },
+   "20H4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "21b7ff8e554ceb622906eed5500fe68f8b4f287bf66f3b01e3e9de6ce51067e3"
+   },
+   "20H4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "926552991f6681537e5ec8b5637d7681d8259479d6fec2d7766bf2e80cd907f1"
+   },
+   "22A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "08ab1213f64893570ac97e61f467f2550f33b7dedb47c09efcbe1704be29a6fd"
+   },
+   "22A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "eb1c005545f47b2250cc78d964a34e6a25c5c0e11df89c73ee288d05dc928f35"
+   },
+   "22A5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f61cf24d5075f16db33b75afe1829a8fb4d19816c687646b78ebccd359221686"
+   },
+   "22H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "469b52615705908cc2a5751183a3d23864da5a0cc1c7225192d4fc4b7422ac54"
+   },
+   "22H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "8d4407c47a15a6c60057f3caef24318fb08d8ba8b06fcf885df472d2e5f1e823"
+   },
+   "22H5:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "edf8dc86f17b4e9cc93dc00aaba2ffae4ee16ed119d7e4dca503c2ba819ca81c"
+   },
+   "23A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d4caa254379c591fcb5d8b644b45dc02e5f299d599e4110c015c3a395c92adde"
+   },
+   "23A10:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "add930eac093700fd5e4f406d4202bec849ad3965969963b399fe1aa388c6339"
+   },
+   "23A10:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "c32c00530778912e4cec7d6c9012f54d64fc7f0b501240e7d1fc232cd3f54ebc"
+   },
+   "23A11:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "b2e93cc38755bb106d6079d2c804c25627b7b173f8790a6da5ed586f8b7b9888"
+   },
+   "23A12:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "ae0e8dc56bcfd1b856e5f1bae2d649392397f82a326def9e4db5060dd0c138bd"
+   },
+   "23H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "37426a9b03170580b7d5bbf0ca81454e39ccf185a5f3ef5128923578b40111db"
+   },
+   "23H10:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "add930eac093700fd5e4f406d4202bec849ad3965969963b399fe1aa388c6339"
+   },
+   "23H10:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "c32c00530778912e4cec7d6c9012f54d64fc7f0b501240e7d1fc232cd3f54ebc"
+   },
+   "23H11:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "b2e93cc38755bb106d6079d2c804c25627b7b173f8790a6da5ed586f8b7b9888"
+   },
+   "23H12:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "ae0e8dc56bcfd1b856e5f1bae2d649392397f82a326def9e4db5060dd0c138bd"
+   },
+   "26A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "0ee4d9c5599489ce9f900cb9a4817dc5998e678706c0121f15f5cb0d1e6fc93e"
+   },
+   "26H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "0e95a6aeac0ca70d46b113dd07cbce428e4ceeb2415d2de6982808ca586f773d"
+   },
+   "27A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f007342c2e75b6a528336cc6e4345ba23a8cca056a134b51bb3d7e140a2a86fa"
+   },
+   "27A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d75219c9c72eaf19bd1f1b8f17859eb09b24544ed74151fc894f8dfd47420b75"
+   },
+   "27A2:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "c0015a3d959a78c10b9fb82a0f0c0205242597c022ea9b891ed08ca1a97fb6db"
+   },
+   "27A6:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d3f88b934186f5df69cb75fd39e5ff2dff9ca8bf61f4b7a4b91bbc97ad776650"
+   },
+   "27A6:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "ab567815348ed69bb8e436551ad3ea5e7a37e41c1d35e20487f8c24048e0543b"
+   },
+   "27H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "00a8fb3528169f9505a6910c42554ee3054e4ff6eae58d02f6730ade65455736"
+   },
+   "27H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "461b56c13ff7b38a1fe1e060734233cde5fb11984baa17e90b4b757821761068"
+   },
+   "27H2:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "c0015a3d959a78c10b9fb82a0f0c0205242597c022ea9b891ed08ca1a97fb6db"
+   },
+   "27H6:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d3f88b934186f5df69cb75fd39e5ff2dff9ca8bf61f4b7a4b91bbc97ad776650"
+   },
+   "27H6:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "ab567815348ed69bb8e436551ad3ea5e7a37e41c1d35e20487f8c24048e0543b"
+   },
+   "28A7:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "3462dccabcab3c5d204c243cfdf2048aa3532e061a4b1b2275ed04e169c3dcb2"
+   },
+   "28H7:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "3462dccabcab3c5d204c243cfdf2048aa3532e061a4b1b2275ed04e169c3dcb2"
+   },
+   "29A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "3a0cae6f42417996bae3e6f7d7d067841ba63c46687d7856468213b3d0864366"
+   },
+   "30A0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "54f4f8bdc9c74fa1362aa79a8dd4ba360f45a43f2dde88d4112d041496dd6be2"
+   },
+   "30A0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "6389268ea59770784ff162d548c2e4e4d23a3b9b19368c75338a175a0f933ae2"
+   },
+   "30A4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f45a119a15c3b4b8b8d4f5236618ad421fc71f78ddfbac2fce98a960269a93ea"
+   },
+   "30A4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d4b2af5b171bd54739b0ef5b9388ebcf5fe6488d47ac035056b387660d42647f"
+   },
+   "30H4:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "f45a119a15c3b4b8b8d4f5236618ad421fc71f78ddfbac2fce98a960269a93ea"
+   },
+   "30H4:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "d4b2af5b171bd54739b0ef5b9388ebcf5fe6488d47ac035056b387660d42647f"
+   },
+   "37H0:1:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "5ea90e5ec5380dcb0a694948b08e1268147875037d498bb4ed498fb9b45f734d"
+   },
+   "37H0:3:tset": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "the destination footprint of sw1's warp of the project's donor swoosh (10H0:3): the warp grid's quadrilaterals clipped to the sleeve island, no colour (sw1 b777; the drawing is the project's swoosh)",
+    "sha256": "7474dfa98e6aead84c34054fbf701206cb647d6fa1f88862bfe900610aad9920"
+   }
+  },
+  "data/nfl2k5_moment_kits.json": {
+   "-": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the 25th Anniversary moment kits' vector art (b775)",
+    "sha256": "6cbb091d2a2ea40136864a9a6e13d8b53f93447e784653a639ae64749ba2243f"
+   }
+  },
+  "data/nfl2k5_uniform_alternates_2026_u3b.json": {
+   "-": {
+    "cls": "iii",
+    "measured": false,
+    "reason": "shipped in v0.9, not measured: the u3b alternate uniforms' remix boxes (b777)",
+    "sha256": "37c5270c67b795541242a591f7daa9f405d535802d5a5a04e7730d8df1f5cb0c"
+   }
+  }
+ },
+ "schema": "nfl2k5_texel_rows/v1"
+}

@@ -46,6 +46,13 @@ REDRAWN += RAVENS + ("20A0",)
 # 2026 numerals wear (27A0, 27H0), Patriots at full height (16H0, 16A0); the Browns road set (30A0, already redrawn) in
 # the charcoal the photographs show
 REDRAWN += ("27A0", "27H0", "16H0", "16A0")
+# R2 (order R2-B): one Broncos number face on every look that wears it, so the home, road and Christmas navy sets join
+# the alternates (08A5, 08A6, 08H6 already redrawn); the Ravens 4, the Jets 2 and the Raiders road edge change inside
+# sets already listed
+BRONCOS = ("08A0", "08A5", "08A6", "08H0", "08H5", "08H6")
+REDRAWN += ("08H0", "08A0", "08H5")
+#: the Raiders road silver edge measured against the jersey white on the week 8 and week 9 road photographs (R2-B)
+LV_ROAD_SILVER = (0xA5, 0xAD, 0xB0)
 #: the Buccaneers' orange inline (decision 1) and the Browns' road charcoal (decision 3)
 TB_ORANGE = (0xD9, 0x64, 0x28)
 CLE_CHARCOAL = (0x3B, 0x3B, 0x3B)
@@ -56,6 +63,9 @@ FOUR_LAYERS = ("27A0",)
 PER_DIGIT = {selector: (0, 4) for selector in RAVENS}
 #: batch 4 (KITS4): the only jersey rows that repaint beyond the chest strip under the collar
 WHOLE_JERSEY = ("09A9", "09H9", "26H4")
+#: R2 (order R2-C): the Commanders road shoulder swoosh, drawn by the game across the torso texture's front/back seam:
+#: (first column, first row, last column + 1, last row + 1) of the hook on the front panel and the tail on the back panel
+WAS_ROAD_SWOOSH = ((54, 9, 72, 22), (250, 9, 268, 22), (283, 14, 298, 40), (483, 14, 496, 40))
 
 
 def kit_rows():
@@ -64,6 +74,35 @@ def kit_rows():
 
 def digit_rows():
     return [r for r in gf.digits_b81()["textures"] if r["kind"] == "digit_png"]
+
+
+def all_digit_rows():
+    """b81-retail-free-art: the shipped pictures and the ``digit_derived`` rows made at build time."""
+    return [r for r in gf.digits_b81()["textures"] if r["kind"] in ("digit_png", "digit_derived")]
+
+
+_KITS = {}
+
+
+def picture(row):
+    """A digit row's picture: its PNG, or for a ``digit_derived`` row its operations on the glyph the released disc
+    holds (None without the disc: the picture exists only at build time)."""
+    if row["kind"] == "digit_png":
+        return png_rgba(gf.art_folder(gf.digits_b81()) / row["png"])[0]
+    if not DISC.is_file():
+        return None
+    if not _KITS:
+        from mod_editor.core import nfl2k5_bump_texture_writer as bump
+        wanted = {r["selector"] for r in all_digit_rows()}
+        with bump._Image.open(DISC, writable=False) as image:
+            index = bump._parsed_index(image)
+            for entry in index.entries:
+                name = bump.logical_name_for(entry.name_id)
+                if name and name[:-4] in wanted:
+                    _KITS[name[:-4]] = image.read_segments(index.sub_extents(entry, 0, entry.size))
+    raw = _KITS[row["selector"]]
+    chunk = gf._chunk_for(raw, row["chunk"])
+    return gf.derive_digit(gf.digit_level0(raw[chunk.offset:chunk.end_offset]), row["derive"])
 
 
 def run_texels(row):
@@ -106,14 +145,21 @@ class KitDocument(unittest.TestCase):
             self.assertNotEqual(row["before_sha256"], row["after_sha256"])
             self.assertGreater(row["resource_size"], row["offset"] + row["length"] - 1)
             self.assertTrue(row["note"] and row["defects"] and row["reference"], row["selector"])
-            self.assertEqual(row["ops"][-1]["op"], "runs")
-            self.assertTrue(all(op["op"] == "texels" for op in row["ops"][:-1]))
+            # b81-retail-free-art (review rule, ruling 2): a converted row names its palette colours (``want``), clears
+            # old marks by rule (``clear``), applies build-time rules (``rule``, ``stamp``) and lists only drawn texels
+            # in its runs, or none at all
+            kinds = [op["op"] for op in row["ops"]]
+            self.assertTrue(set(kinds) <= {"texels", "runs", "clear", "want", "rule", "stamp"}, (row["selector"], kinds))
+            self.assertTrue(kinds.count("runs") <= 1 or "clear" in kinds, row["selector"])
             self.assertGreater(row["texels"], 0)
 
     def test_every_run_stays_inside_its_texture(self):
         for row in kit_rows():
             width, height = row["size"][:2]
-            for y, x0, colours in row["ops"][-1]["rows"]:
+            for op in row["ops"]:
+                if op["op"] == "clear":
+                    self.assertTrue(all(0 <= x0 < x1 <= width and 0 <= y0 < y1 <= height for x0, y0, x1, y1 in op["boxes"]))
+            for y, x0, colours in [r for op in row["ops"] if op["op"] == "runs" for r in op["rows"]]:
                 self.assertEqual(len(colours) % 6, 0)
                 bytes.fromhex(colours)
                 self.assertTrue(0 <= y < height and 0 <= x0 and x0 + len(colours) // 6 <= width, (row["selector"], y, x0))
@@ -122,10 +168,16 @@ class KitDocument(unittest.TestCase):
         # the ``texels`` operations only name the art's colours for the palette; the runs carry the picture
         for row in kit_rows():
             painted = run_texels(row)
-            self.assertLessEqual(len(row["ops"]) - 1, 48, row["selector"])
-            for op in row["ops"][:-1]:
+            carriers = [op for op in row["ops"] if op["op"] == "texels"]
+            self.assertLessEqual(len(carriers), 48, row["selector"])
+            cleared = {op["to"] for op in row["ops"] if op["op"] == "clear"}
+            colours = {"#%02X%02X%02X" % c for c in painted.values()} | cleared
+            for op in carriers:
                 (x, y), = op["points"]
-                self.assertEqual("#%02X%02X%02X" % painted[(x, y)], op["color"], row["selector"])
+                if not cleared:
+                    self.assertEqual("#%02X%02X%02X" % painted[(x, y)], op["color"], row["selector"])
+                else:                               # a converted row: the clear decides some texels (the disc test
+                    self.assertIn(op["color"], colours, row["selector"])     # replays it on the real texture)
 
     def test_only_a_named_row_may_fold_a_palette_twin(self):
         folded = {(r["selector"], r["texture"]): (r["folded_twin_entries"], r["texels_moved_one_level"])
@@ -138,13 +190,16 @@ class KitDocument(unittest.TestCase):
                           ("01H9", "pants00"),
                           ("02A3", "pants00"), ("02H3", "pants00"),
                           ("03A0", "sleeve00"), ("03H0", "sleeve00"), ("04A2", "pants00"), ("04H2", "pants00"),
-                          ("06A0", "sleeve00"), ("06A5", "sleeve00"), ("06A6", "sleeve00"), ("06H5", "sleeve00"),
-                          ("06H6", "sleeve00"),
+                          ("06A0", "pants00"), ("06A0", "sleeve00"), ("06A5", "pants00"), ("06A5", "sleeve00"),
+                          ("06A6", "pants00"), ("06A6", "sleeve00"), ("06H0", "pants00"), ("06H5", "pants00"),
+                          ("06H5", "sleeve00"), ("06H6", "pants00"), ("06H6", "sleeve00"),
                           ("07A7", "sleeve00"), ("07H0", "sleeve00"), ("07H7", "sleeve00"),
                           ("09A9", "pants00"), ("09H9", "pants00"), ("11A3", "sleeve00"), ("11H3", "sleeve00"),
                           ("14A0", "pants00"), ("14A0", "sleeve00"), ("14A0", "socks00"), ("14H0", "sleeve00"),
                           ("15A0", "pants00"), ("15H0", "pants00"), ("15H0", "socks00"),
-                          ("17A8", "pants00"), ("17H8", "pants00"), ("19A2", "pants00"), ("19H2", "pants00"),
+                          ("17A0", "sleeve00"), ("17A3", "sleeve00"), ("17A8", "pants00"), ("17A8", "sleeve00"),
+                          ("17H0", "sleeve00"), ("17H3", "sleeve00"), ("17H8", "pants00"), ("17H8", "sleeve00"),
+                          ("19A2", "pants00"), ("19H2", "pants00"),
                           ("21A4", "sleeve00"), ("21H4", "sleeve00"), ("23A0", "pants00"), ("25H0", "pants00"),
                           ("26A4", "pants00"), ("26A4", "socks00"), ("26H4", "sleeve00"), ("27A0", "pants00"),
                           ("27H0", "pants00")])
@@ -162,6 +217,9 @@ class KitDocument(unittest.TestCase):
         # measured width (25H0)
         # Noah 11/19 (decision 5, "use the prototype"): the Buccaneers pants stripe black, orange, red, orange, black at
         # about 5.8 cm on the white home pants (27H0) and the pewter road pants that wear the same stripe (27A0)
+        # R2 (order R2-C): the Saints sleeve fleur-de-lis at the emblem's own proportions (17H0 17A0, and 17H3 17A3 17H8
+        # 17A8, which carry the same fleur art at the same squat size); the Bengals pants tiger strokes, one geometry on all six Bengals pants (06H0 06A0 06H5 06A5
+        # 06H6 06A6), each in its own stroke colour; the Lions Defend the Den side stripe (09H9/09A9, rows already listed)
 
     def test_the_jersey_rows_repaint_only_the_chest_under_the_collar(self):
         # Round 2 (Noah 11/18: "the NY logo on the giants jersey below the nfl patch is too large. There are likely
@@ -171,6 +229,7 @@ class KitDocument(unittest.TestCase):
         # Batch 3 added: wordmarks redrawn at their real width (Eagles, Titans, Broncos), the Saints 60th patch at its
         # real size, the Texans memorial oval, the Panthers alternate and Bills Nickel City shields.
         # Batch 4 (KITS4) named the only jerseys repainted beyond that strip: see test_the_batch_4_whole_jersey_rows.
+        # R2 (order R2-C): the Commanders road 29A0 also repaints its two shoulder swooshes (WAS_ROAD_SWOOSH).
         jerseys = [r for r in kit_rows() if r["texture"] == "jersey00"]
         self.assertEqual(len(jerseys), 170)
         self.assertEqual(len({r["selector"] for r in jerseys}), 170)
@@ -178,37 +237,20 @@ class KitDocument(unittest.TestCase):
         for row in jerseys:
             if row["selector"] in WHOLE_JERSEY:
                 continue
-            for run in [op for op in row["ops"] if op["op"] == "runs"][0]["rows"]:   # [row, first column, colours]
+            for op in row["ops"]:                   # a clear stays inside the strip (or 29A0's swoosh boxes) too
+                for x0, y0, x1, y1 in op.get("boxes", ()) if op["op"] == "clear" else ():
+                    self.assertTrue((58 <= y0 and y1 <= 113 and 90 <= x0 and x1 <= 216)
+                                    or (row["selector"] == "29A0" and any(a <= x0 and x1 <= c and b <= y0 and y1 <= d
+                                                                          for a, b, c, d in WAS_ROAD_SWOOSH)),
+                                    (row["selector"], (x0, y0, x1, y1)))
+            for run in [r for op in row["ops"] if op["op"] == "runs" for r in op["rows"]]:   # [row, first column, colours]
+                if row["selector"] == "29A0" and any(x0 <= run[1] and run[1] + len(run[2]) // 6 <= x1 and y0 <= run[0] < y1
+                                                     for x0, y0, x1, y1 in WAS_ROAD_SWOOSH):
+                    continue
                 self.assertTrue(58 <= run[0] <= 112, (row["selector"], run[:2]))   # down to the old lettering some kits lose
                 self.assertTrue(90 <= run[1] and run[1] + len(run[2]) // 6 <= 216, (row["selector"], run[:2]))
         for selector in ("25H7", "25A7", "28H7", "28A7", "11H4", "11A4", "07H9", "07A9"):
             self.assertNotIn(selector, {r["selector"] for r in jerseys})        # open: no 2026 picture of the look
-
-    def test_the_batch_4_whole_jersey_rows(self):
-        # KITS4 (measured on 2026 game frames, approved from its review sheet): the Lions Defend the Den jersey and
-        # pants are a pale blue-grey, not near-white (DET 2026-11-01 MIN frames: target #B6C1DB, shading kept by
-        # scaling, so the median texel is the target); the Seahawks 26H4 navy home jersey wears the lime shoulder
-        # panels, grey bars and lime collar chevrons of the same jersey's 26H0 art, which lie above the number only.
-        for selector in ("09H9", "09A9"):
-            for texture, size in (("jersey00", 512 * 256), ("pants00", None)):
-                row = [r for r in kit_rows() if (r["selector"], r["texture"]) == (selector, texture)][0]
-                painted = run_texels(row)
-                if size:
-                    # the whole torso, front and back; a texel the new chest DETROIT (Noah 11/19, decision 6) paints in
-                    # the colour the released texture already had there is not a run: those lie inside the word's box
-                    missing = {(x, y) for x in range(512) for y in range(256)} - set(painted)
-                    self.assertLessEqual(len(missing), 8, (selector, texture))
-                    self.assertTrue(all(132 <= x <= 190 and 93 <= y <= 105 for x, y in missing), (selector, missing))
-                median = np.median(np.array(list(painted.values())), axis=0)
-                self.assertTrue(near(tuple(median), (0xB6, 0xC1, 0xDB), 12), (selector, texture, median))
-        row = [r for r in kit_rows() if (r["selector"], r["texture"]) == ("26H4", "jersey00")][0]
-        painted = run_texels(row)
-        self.assertLessEqual(max(y for _x, y in painted), 112)                  # never below the chest strip
-        shoulders = {(x, y): c for (x, y), c in painted.items() if not (58 <= y <= 112 and 90 <= x < 216)}
-        self.assertTrue(shoulders)
-        self.assertLessEqual(max(y for _x, y in shoulders), 73)                 # the shoulder panels and the collar
-        lime = sum(1 for c in shoulders.values() if c == (105, 190, 40))        # Action Green #69BE28
-        self.assertGreater(lime, len(shoulders) // 2)
 
     def test_no_row_touches_a_helmet_or_the_far_away_atlas(self):
         for row in kit_rows():
@@ -229,7 +271,11 @@ class DigitDocument(unittest.TestCase):
             key = (row["selector"], row["chunk"])
             self.assertNotIn(key, seen)
             seen.add(key)
-            self.assertIn(row["kind"], ("digit_png", "names_png", "name_widths"))
+            self.assertIn(row["kind"], ("digit_png", "names_png", "name_widths", "digit_derived", "names_derived"))
+            if row["kind"] in ("digit_derived", "names_derived"):   # b81-retail-free-art: no picture ships
+                self.assertNotIn("png", row)
+                self.assertEqual(len(row["rgba_sha256"]), 64)
+                continue
             if row["kind"] != "digit_png":
                 continue                                    # the nameplate rows: see NameplateDocument
             self.assertEqual(row["texture"], str(48 + row["chunk"] - 13) if row["chunk"] < 23
@@ -243,7 +289,7 @@ class DigitDocument(unittest.TestCase):
 
     def test_the_redrawn_sets_are_whole_ten_jersey_digits_and_arm_digits_where_the_kit_has_them(self):
         by = {}
-        for row in digit_rows():
+        for row in all_digit_rows():
             by.setdefault(row["selector"], set()).add(row["chunk"])
         self.assertEqual(tuple(sorted(by)), tuple(sorted(REDRAWN)))
         for selector, chunks in by.items():
@@ -254,15 +300,20 @@ class DigitDocument(unittest.TestCase):
     def test_art_is_as_authored_and_in_flat_colours(self):
         from mod_editor.core.nfl2k5_digit_art import REGISTRATION_KEY, registration_mode
         folder = gf.art_folder(gf.digits_b81())
-        for path in sorted({folder / r["png"] for r in digit_rows()}):
+        for path in sorted({folder / r["png"] for r in digit_rows() if "png" in r}):
             rgba, info = png_rgba(path)
-            self.assertIn(rgba.shape, ((64, 64, 4), (32, 32, 4)), path.name)
             self.assertEqual(info.get(REGISTRATION_KEY), "as_authored", path.name)
             self.assertEqual(registration_mode(path.read_bytes()), "as_authored")
+        for row in all_digit_rows():
+            rgba = picture(row)
+            if rgba is None:
+                continue
+            path = Path(row.get("png") or "%s_%s_%d" % (row["selector"], row["texture"], row["chunk"]))
+            self.assertIn(rgba.shape, ((64, 64, 4), (32, 32, 4)), path.name)
             solid = rgba[rgba[..., 3] == 255][:, :3]
             colours, counts = np.unique(solid, axis=0, return_counts=True)
             self.assertGreater(len(solid), 500 if rgba.shape[0] == 64 else 100, path.name)
-            layers = 4 if path.name.split("_")[1] in FOUR_LAYERS else 3
+            layers = 4 if row["selector"] in FOUR_LAYERS else 3
             top = counts.argsort()[::-1][:layers]
             self.assertGreater(counts[top].sum(), 0.8 * len(solid), path.name)        # a fill, an outline, at most an inline
 
@@ -270,30 +321,40 @@ class DigitDocument(unittest.TestCase):
         # batch 3: a number is 62 rows of its 64 cell (22.2 cm on the player, the collar shield 0.141 of that as on the
         # real jersey). The pack drew several sets 50 to 56 rows tall. Two-digit numbers are cut outside columns 12-51.
         folder = gf.art_folder(gf.digits_b81())
-        for row in digit_rows():
+        for row in all_digit_rows():
             if row["chunk"] > 22:
                 continue
-            solid = png_rgba(folder / row["png"])[0][..., 3] > 127
+            rgba = picture(row)
+            if rgba is None:
+                continue
+            solid = rgba[..., 3] > 127
             rows = np.flatnonzero(solid.any(axis=1)); cols = np.flatnonzero(solid.any(axis=0))
-            self.assertGreaterEqual(int(rows.max() - rows.min() + 1), 61, row["png"])
-            self.assertTrue(12 <= cols.min() and cols.max() <= 51, (row["png"], int(cols.min()), int(cols.max())))
+            name = row.get("png", (row["selector"], row["chunk"]))
+            self.assertGreaterEqual(int(rows.max() - rows.min() + 1), 61, name)
+            self.assertTrue(12 <= cols.min() and cols.max() <= 51, (name, int(cols.min()), int(cols.max())))
 
     def test_number_widths_follow_the_measured_real_numbers(self):
         # width of the 0 in texels at 62 rows = real width over height x 62 / 1.048 (the cell is 23.8 by 22.7 cm)
         folder = gf.art_folder(gf.digits_b81())
-        by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
+        by = {(r["selector"], r["chunk"]): r for r in all_digit_rows()}
         for selector, width in (("18H0", 37), ("18A0", 37), ("18H7", 37), ("24A0", 35), ("00H0", 37), ("00A0", 37),
                                 ("01H0", 39), ("06H0", 31), ("14H0", 37), ("07H0", 35), ("28H7", 36),   # 28H7: 34 and its 2 texel dark layer
                                 # batch 5: real wider than 40 columns allow (two-digit numbers are cut outside 12-51): 40
                                 ("23H0", 40), ("23A0", 40), ("05H0", 30), ("05A0", 30), ("19H0", 38), ("19A0", 38),
                                 ("29H0", 40), ("29A0", 40), ("11H0", 40), ("11A0", 40), ("37H0", 40), ("37A0", 40),
-                                ("30H0", 35), ("30A0", 35), ("08A5", 40), ("08A6", 40), ("08H6", 40), ("09A2", 37),
+                                ("30H0", 35), ("30A0", 35), ("09A2", 37),
                                 ("09H2", 37), ("09A9", 40), ("09H9", 40), ("10A5", 38), ("10H5", 38), ("17A1", 37), ("17H1", 37),
                                 ("19A2", 38), ("19H2", 38), ("19A7", 38), ("19H7", 38), ("26A4", 38), ("26H4", 38), ("30A3", 35),
                                 ("30H3", 35), ("37A2", 40), ("37H2", 40),
                                 # batch 6: the Ravens 0 at 33 (real 0.554; the released 37) and the Raiders road as released
-                                ("02H0", 33), ("02A0", 33), ("02A2", 33), ("02A3", 33), ("02H2", 33), ("02H3", 33), ("20A0", 37)):
-            solid = png_rgba(folder / by[(selector, 13)])[0][..., 3] > 127
+                                ("02H0", 33), ("02A0", 33), ("02A2", 33), ("02A3", 33), ("02H2", 33), ("02H3", 33), ("20A0", 37),
+                                # R2: one Broncos face, the 2026 photographs of the orange, white and navy jerseys pooled
+                                # (15 digits, 0.613); restated from 40 for the alternates (batch 5's separate pool)
+                                *((selector, 36) for selector in BRONCOS)):
+            rgba = picture(by[(selector, 13)])
+            if rgba is None:
+                continue
+            solid = rgba[..., 3] > 127
             cols = np.flatnonzero(solid.any(axis=0))
             self.assertLessEqual(abs(int(cols.max() - cols.min() + 1) - width), 1, selector)
 
@@ -368,17 +429,19 @@ class DigitDocument(unittest.TestCase):
         # ground: an orange texel always lies between them, on every digit, jersey and arm.
         from scipy import ndimage
         folder = gf.art_folder(gf.digits_b81())
-        for row in digit_rows():
+        for row in all_digit_rows():
             if row["selector"] not in ("27A0", "27H0"):
                 continue
-            rgba, _info = png_rgba(folder / row["png"])
+            rgba = picture(row)
+            if rgba is None:
+                continue
             opaque = rgba[..., 3] == 255
             colours, counts = np.unique(rgba[opaque][:, :3], axis=0, return_counts=True)
             fill = opaque & (rgba[..., :3] == colours[counts.argmax()]).all(-1)
             edge = ~opaque | (opaque & (rgba[..., :3].max(-1) < 0x60))
-            self.assertFalse((ndimage.binary_dilation(fill, np.ones((3, 3), bool)) & edge).any(), row["png"])
+            self.assertFalse((ndimage.binary_dilation(fill, np.ones((3, 3), bool)) & edge).any(), (row["selector"], row["chunk"]))
             orange = opaque & (rgba[..., :3] == TB_ORANGE).all(-1)
-            self.assertGreater(int(orange.sum()), 100, row["png"])
+            self.assertGreater(int(orange.sum()), 100, (row["selector"], row["chunk"]))
 
     def test_the_patriots_numbers_stand_rows_1_to_62(self):
         # Noah 11/19 (decision 2): "switch to the full height" (the game drew solid rows 2 to 61)
@@ -396,6 +459,86 @@ class DigitDocument(unittest.TestCase):
         for row in rows:
             rgba, _info = png_rgba(folder / row["png"])
             self.assertEqual({tuple(int(v) for v in c) for c in rgba[rgba[..., 3] > 0][:, :3]}, {CLE_CHARCOAL}, row["png"])
+
+    def test_the_ravens_4_has_the_tall_closed_counter(self):
+        if not DISC.is_file():                 # hosted runners: the derived picture needs the released disc
+            self.skipTest("the released SOFTDRINK v0.9 disc is not on this machine")
+        # R2: the 2026 Ravens 4 has a tall closed triangular counter, 0.27 and 0.30 of the height on the two photographs;
+        # the released and batch 6 4 had a slit about 3 rows tall (an opening of 11 rows in the fill)
+        # R2-G (retail-free): the 4 ships as the lane's remap on the glyph the build holds plus a paint of the texels
+        # round 2 drew (digit_derived), so the picture is the derived one (the released disc must be on this machine)
+        from scipy import ndimage
+        seen = 0
+        for row in all_digit_rows():
+            if row["selector"] not in RAVENS or row["chunk"] not in (17, 37):
+                continue
+            rgba = picture(row)
+            self.assertIsNotNone(rgba, "the released v0.9 disc is needed to derive the Ravens 4")
+            seen += 1
+            name = row.get("png", (row["selector"], row["chunk"]))
+            opaque = rgba[..., 3] == 255
+            colours, counts = np.unique(rgba[opaque][:, :3], axis=0, return_counts=True)
+            fill = opaque & (rgba[..., :3] == colours[counts.argmax()]).all(-1)
+            holes, count = ndimage.label(ndimage.binary_fill_holes(fill) & ~fill)
+            self.assertGreaterEqual(count, 1, name)
+            rows = np.flatnonzero((holes == np.bincount(holes.ravel())[1:].argmax() + 1).any(axis=1))
+            self.assertTrue(16 <= len(rows) <= 19, (name, len(rows)))           # 0.26 to 0.31 of 62 rows
+            cols = np.flatnonzero((rgba[..., 3] > 127).any(axis=0))
+            self.assertEqual(len(cols), 31, name)
+        self.assertEqual(seen, 12)                                # six sets, jersey and arm
+
+    def test_the_jets_2_has_one_straight_diagonal(self):
+        # R2: the 2026 Jets 2 (three photographs) is the block 2 with one diagonal from the right stem to the bottom left;
+        # the squared S-shaped 2 had a middle bar, a left stem and a stub on the right above the bottom bar
+        folder = gf.art_folder(gf.digits_b81())
+        seen = 0
+        for row in digit_rows():
+            if not row["selector"].startswith("19") or row["selector"] in ("19A6", "19H6") or row["chunk"] not in (15, 35):
+                continue
+            seen += 1
+            ink = png_rgba(folder / row["png"])[0][..., 3] > 127
+            rows = np.flatnonzero(ink.any(axis=1)); cols = np.flatnonzero(ink.any(axis=0))
+            top, height, left, width = rows.min(), rows.max() - rows.min() + 1, cols.min(), cols.max() - cols.min() + 1
+            lefts = [np.flatnonzero(ink[y]).min() for y in range(top + int(0.42 * height), top + int(0.74 * height))]
+            self.assertTrue(all(b <= a for a, b in zip(lefts, lefts[1:])), row["png"])   # moves only left, row by row
+            self.assertGreaterEqual(lefts[0] - lefts[-1], 0.4 * width, row["png"])
+            stub = ink[top + int(0.66 * height):top + int(0.76 * height), left + int(0.75 * width):]
+            self.assertFalse(stub.any(), row["png"])
+        self.assertEqual(seen, 12)                                # six sets, jersey and arm
+
+    def test_the_broncos_wear_one_face_with_a_thin_edge(self):
+        # R2: home, road and alternates wear the same numerals (photographs of the orange, white and navy jerseys); the
+        # edge is about 1.3 texels on the photographs: one solid texel and a soft one
+        from scipy import ndimage
+        folder = gf.art_folder(gf.digits_b81())
+        by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
+        for chunk in range(13, 23):
+            masks = {s: png_rgba(folder / by[(s, chunk)])[0][..., 3] > 127 for s in BRONCOS}
+            for selector, mask in masks.items():
+                self.assertEqual(int((mask ^ masks["08H0"]).sum()), 0, (selector, chunk))
+            for selector in BRONCOS:
+                rgba, _info = png_rgba(folder / by[(selector, chunk)])
+                opaque = rgba[..., 3] == 255
+                colours, counts = np.unique(rgba[opaque][:, :3], axis=0, return_counts=True)
+                fill = opaque & (rgba[..., :3] == colours[counts.argmax()]).all(-1)
+                ring = opaque & ~fill                             # the solid edge: one texel, touching the fill
+                self.assertFalse((ring & ~ndimage.binary_dilation(fill, np.ones((3, 3), bool))).any(), (selector, chunk))
+                self.assertLess(int(ring.sum()), 0.33 * int(fill.sum()), (selector, chunk))
+                rows = np.flatnonzero((rgba[..., 3] > 127).any(axis=1))
+                self.assertEqual((int(rows.min()), int(rows.max())), (1, 62), (selector, chunk))
+
+    def test_the_raiders_road_edge_is_the_measured_silver(self):
+        if not DISC.is_file():                 # hosted runners: the derived picture needs the released disc
+            self.skipTest("the released SOFTDRINK v0.9 disc is not on this machine")
+        # R2: #C8C7C7 could not be seen on the white jersey in the game; the real edge reads 0.41 of the jersey white
+        # R2-G (retail-free): the set ships as the lane's edge + remap + recolour on the glyph the build holds
+        rows = [r for r in all_digit_rows() if r["selector"] == "20A0"]
+        self.assertEqual(len(rows), 20)
+        for row in rows:
+            rgba = picture(row)
+            self.assertIsNotNone(rgba, "the released v0.9 disc is needed to derive the Raiders road digits")
+            colours = {tuple(int(v) for v in c) for c in rgba[rgba[..., 3] > 0][:, :3]}
+            self.assertEqual(colours, {(0, 0, 0), LV_ROAD_SILVER}, (row["selector"], row["chunk"]))
 
     def test_a_document_art_folder_must_be_a_plain_glyph_folder_name(self):
         self.assertEqual(gf.art_folder({}), gf.ART)
@@ -444,7 +587,7 @@ class BuildHook(unittest.TestCase):
             self.assertIn(step, mod_build.OPTIONAL_STEPS)
             self.assertIn(step, build_steps.STEP_LABELS)
         source = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
-        helmets = source.index("apply_helmets_b81(target)")
+        helmets = source.index("apply_helmets_b81(target, ")
         kits = source.index("apply_uniforms_b81(target)")
         digits = source.index("apply_digits_b81(target)")
         self.assertLess(helmets, kits)
@@ -559,14 +702,56 @@ class RealDisc(unittest.TestCase):
     def setUpClass(cls):
         selectors = sorted({r["selector"] for r in kit_rows()} | {r["selector"] for r in digit_rows()}
                            | {r["selector"] for r in nf.structures(nf.spec())})
+        selectors = sorted(set(selectors) | set(kf.donor_kits(kf.uniforms_b81())))
         cls.kits = up.read_kits(DISC, selectors)
 
     def after(self, selector, texture):
         row = [r for r in kit_rows() if (r["selector"], r["texture"]) == (selector, texture)][0]
         raw = self.kits[selector]
         chunk = kf._chunk_for(raw, row["chunk"])
-        new, _detail = kf.compile_texture(raw[chunk.offset:chunk.end_offset], row)
+        donors = {}
+        for key in (row.get("donors") or {}):           # b81-retail-free-art: rules that read another kit's texture
+            other, _, at = str(key).rpartition(":")
+            source = self.kits[other] if other else raw
+            d = kf._chunk_for(source, int(at))
+            donors[str(key) if other else int(at)] = kf.texture_rgba(source[d.offset:d.end_offset])
+        new, _detail = kf.compile_texture(raw[chunk.offset:chunk.end_offset], row, donors)
         return up.level0(new, "tset")[0]
+
+    def painted(self, selector, texture):
+        """{(x, y): (r, g, b)} of every texel the finished texture changes against the released one."""
+        row = [r for r in kit_rows() if (r["selector"], r["texture"]) == (selector, texture)][0]
+        raw = self.kits[selector]
+        chunk = kf._chunk_for(raw, row["chunk"])
+        before = up.level0(raw[chunk.offset:chunk.end_offset], "tset")[0]
+        after = self.after(selector, texture)
+        ys, xs = np.nonzero((after[..., :3] != before[..., :3]).any(-1))
+        return {(int(x), int(y)): tuple(int(v) for v in after[y, x, :3]) for y, x in zip(ys, xs)}
+
+    def test_the_batch_4_whole_jersey_rows(self):
+        # KITS4 (measured on 2026 game frames, approved from its review sheet): the Lions Defend the Den jersey and
+        # pants are a pale blue-grey, not near-white (DET 2026-11-01 MIN frames: target #B6C1DB, shading kept by
+        # scaling, so the median texel is the target); the Seahawks 26H4 navy home jersey wears the lime shoulder
+        # panels, grey bars and lime collar chevrons of the same jersey's 26H0 art, which lie above the number only.
+        for selector in ("09H9", "09A9"):
+            for texture, size in (("jersey00", 512 * 256), ("pants00", None)):
+                painted = self.painted(selector, texture)
+                if size:
+                    # the whole torso, front and back; a texel the new chest DETROIT (Noah 11/19, decision 6) paints in
+                    # the colour the released texture already had there is unchanged: those lie inside the word's box
+                    # (b81-retail-free-art: the recolour is a build-time rule now, so this reads the finished texture)
+                    missing = {(x, y) for x in range(512) for y in range(256)} - set(painted)
+                    self.assertLessEqual(len(missing), 8, (selector, texture))
+                    self.assertTrue(all(132 <= x <= 190 and 93 <= y <= 105 for x, y in missing), (selector, missing))
+                median = np.median(np.array(list(painted.values())), axis=0)
+                self.assertTrue(near(tuple(median), (0xB6, 0xC1, 0xDB), 12), (selector, texture, median))
+        painted = self.painted("26H4", "jersey00")
+        self.assertLessEqual(max(y for _x, y in painted), 112)                  # never below the chest strip
+        shoulders = {(x, y): c for (x, y), c in painted.items() if not (58 <= y <= 112 and 90 <= x < 216)}
+        self.assertTrue(shoulders)
+        self.assertLessEqual(max(y for _x, y in shoulders), 73)                 # the shoulder panels and the collar
+        lime = sum(1 for c in shoulders.values() if c == (105, 190, 40))        # Action Green #69BE28
+        self.assertGreater(lime, len(shoulders) // 2)
 
     def runs_down(self, column):
         """[(first row, colour, rows)] down one texel column"""
@@ -698,13 +883,135 @@ class RealDisc(unittest.TestCase):
             self.assertGreaterEqual(left[93] - left[105], 2, selector)              # the top leans right
             self.assertFalse(ink[78:92, 150:176].any(), selector)                   # nothing new at the collar shield
 
+    def test_the_bengals_pants_wear_seven_tiger_strokes_from_one_column(self):
+        # R2 (order R2-C): the club's one pants pattern, read off the 2026 White Bengal photographs: seven strokes from
+        # the waist to the knee, each thick on one column at the front side seam (111 on the left leg, 400 on the right),
+        # sweeping back and up to a point, the third and fifth forked; the same geometry on all six Bengals pants in each
+        # one's own stroke colour (before: seven blunt bars on 06H5, thin dashes on 06H0/06A0, nine claws on the rest)
+        from scipy import ndimage
+        colours = {"06H0": ((0, 0, 0), (0xFB, 0x4F, 0x14)), "06A0": ((255, 255, 255), (0, 0, 0)),
+                   "06H5": ((255, 255, 255), (0x0B, 0x0B, 0x0B)), "06A5": ((255, 255, 255), (0x0F, 0x0F, 0x0F)),
+                   "06H6": ((255, 255, 255), (0xFA, 0x50, 0x14)), "06A6": ((255, 255, 255), (0xFA, 0x50, 0x14))}
+        shapes = {}
+        for selector, (base, stroke) in colours.items():
+            pants = self.after(selector, "pants00")[..., :3].astype(float)
+            b, s = np.array(base, float), np.array(stroke, float)
+            steps = np.round(np.clip(((pants - b) @ (s - b)) / ((s - b) @ (s - b)), 0, 1)[:200] * 4)   # blend steps 0-4
+            ink = steps >= 2
+            for x0, x1, seam in ((108, 200, 111), (312, 404, 400)):
+                lab, n = ndimage.label(ink[:, x0:x1], structure=np.ones((3, 3)))
+                strokes = [q for q in (np.argwhere(lab == i) for i in range(1, n + 1)) if len(q) >= 10]
+                self.assertEqual(len(strokes), 7, (selector, seam))
+                forks = 0
+                for q in strokes:
+                    cols = q[:, 1] + x0
+                    self.assertEqual(int(cols.min() if seam == 111 else cols.max()), seam, selector)   # thick end on the seam
+                    tip = cols.max() if seam == 111 else cols.min()
+                    self.assertLessEqual(int((cols == tip).sum()), 2, selector)                      # a point of 1 or 2 texels
+                    self.assertGreaterEqual(abs(int(tip) - seam), 30, selector)
+                    split = sum(1 for c in np.unique(cols) if (np.diff(np.sort(q[cols == c, 0])) > 1).any())
+                    forks += split >= 2
+                self.assertEqual(forks, 2, (selector, seam))
+            shapes[selector] = steps
+        for selector in colours:
+            self.assertTrue(np.array_equal(shapes[selector][:, 108:404], shapes["06H5"][:, 108:404]), selector)   # one geometry
+
+    def test_the_lions_defend_the_den_pants_wear_the_black_band_and_blue_wedge(self):
+        # R2 (order R2-C): the 2026 Defend the Den pants carry one black band on the side seam that starts as a slanted
+        # point below the hip and widens slowly to the hem, and a kit blue wedge on its front side from a point about
+        # two thirds down (picture DET 2026-11-01 4-5: black 0.076 of the thigh depth at mid-thigh, black : blue at the
+        # knee 28 : 17). Flat colours, no piping; the base colour is not touched. The game had no stripe.
+        black, blue, base = (0x18, 0x19, 0x1B), (0x00, 0x76, 0xB6), (0xB6, 0xC1, 0xDB)
+        def cols(pants, y, colour):
+            return [x for x in range(100, 412) if near(tuple(int(v) for v in pants[y, x, :3]), colour, 6)]
+        for selector in ("09H9", "09A9"):
+            pants = self.after(selector, "pants00")
+            for y in range(30, 59):
+                self.assertEqual(cols(pants, y, black), [], (selector, y))                     # nothing above the start
+            self.assertEqual(cols(pants, 60, black), [144, 367], selector)                     # the point, both legs
+            self.assertEqual(cols(pants, 61, black), [143, 144, 367, 368], selector)
+            self.assertEqual(cols(pants, 120, black), [*range(138, 145), *range(367, 374)], selector)   # 7 texels, 1.7 cm
+            self.assertEqual(cols(pants, 120, blue), [], selector)
+            self.assertEqual(cols(pants, 190, black), [*range(136, 145), *range(367, 376)], selector)   # 9 full + a blend
+            self.assertEqual(cols(pants, 190, blue), [*range(129, 135), *range(377, 383)], selector)    # 6 texels, 1.4 cm
+            for y in range(100, 156):
+                self.assertEqual(cols(pants, y, blue), [], (selector, y))                      # the wedge starts lower
+            for x in (126, 145, 366, 385):                                                       # the base on both sides
+                self.assertTrue(near(tuple(int(v) for v in pants[190 if x in (126, 385) else 120, x, :3]), base, 12), (selector, x))
+
+    def test_the_commanders_road_shoulder_swoosh_is_one_solid_mark(self):
+        # R2 (order R2-C, art director's ruling): the game draws the road shoulder swoosh across the torso texture's
+        # front/back seam: a hook of 13 or 14 solid texels on the front panel and a faint sliver of a tail on the back
+        # (6 and 9 solid texels), white notches at the seam. Redrawn on the player model as one solid kit-burgundy swoosh,
+        # hook to the front, tail to the back, 5.5 cm tip to tip (5.61 and 5.54 cm): the tail is solid down the back panel.
+        burgundy = np.array((0x5E, 0x15, 0x19))
+        torso = self.after("29A0", "jersey00")[..., :3].astype(int)
+        solid = np.abs(torso - burgundy).max(-1) <= 6
+        counts, spans = [], []
+        for x0, y0, x1, y1 in WAS_ROAD_SWOOSH:
+            box = solid[y0:y1, x0:x1]
+            rows = np.flatnonzero(box.any(axis=1)) + y0
+            counts.append(int(box.sum()))
+            spans.append((int(rows.min()), int(rows.max()), bool((np.diff(rows) == 1).all())))
+        self.assertEqual(counts, [23, 24, 30, 28])
+        self.assertEqual(spans, [(12, 17, True), (12, 17, True), (17, 34, True), (17, 33, True)])
+        for x0, y0, x1, y1 in WAS_ROAD_SWOOSH:
+            self.assertFalse(solid[y1:y1 + 16, x0:x1].any())                     # nothing below the swoosh boxes
+
+    def test_the_saints_sleeve_fleur_stands_taller_than_wide(self):
+        # R2 (order R2-C): the game's sleeve fleur was squat (29 to 33 texels wide, 7.6 to 8.6 cm on the body against
+        # 5.8 to 6.2 cm tall: w/h 1.23 to 1.50; the 2026 pictures read 0.78 and 0.86, the club emblem 0.83). Redrawn from
+        # the repo's emblem at the old height and centre: 18 to 20 texels wide, w/h 0.84 to 0.86 on the body (the sleeve
+        # texel is 0.26 cm across and 0.21 cm down there).
+        from scipy import ndimage
+        want = {"17H0": [(51, 9, 20, 30), (58, 73, 19, 30)], "17A0": [(52, 9, 19, 28), (58, 73, 18, 28)]}
+        want.update({"17H3": want["17H0"], "17A3": want["17H0"], "17H8": want["17A0"], "17A8": want["17A0"]})
+        for selector, boxes in want.items():
+            sleeve = self.after(selector, "sleeve00")[..., :3].astype(int)
+            colours, counts = np.unique(sleeve.reshape(-1, 3), axis=0, return_counts=True)
+            base = colours[counts.argmax()]
+            ink = np.abs(sleeve - base).sum(-1) > 24
+            found = []
+            for rows in (slice(0, 64), slice(64, 128)):
+                half = np.zeros(ink.shape, bool)
+                half[rows] = ink[rows]
+                lab, n = ndimage.label(half, structure=np.ones((3, 3)))
+                for i in range(1, n + 1):
+                    ys, xs = np.nonzero(lab == i)
+                    if ys.max() - ys.min() >= 20 and xs.max() - xs.min() < 60:          # the fleur, not the swoosh or a stripe
+                        found.append((int(xs.min()), int(ys.min()), int(xs.max() - xs.min() + 1), int(ys.max() - ys.min() + 1)))
+            self.assertEqual(found, boxes, selector)
+
+    def test_the_bengals_strokes_are_blades_that_hold_their_thickness(self):
+        # R2 (order R2-C, second pass, art director): the real strokes are blades that keep nearly their full thickness
+        # for most of their length and taper over the last third (2026 White Bengal pictures 3 and 5: thickness at half
+        # length 0.83 of the seam end, band about half ink). The first pass thinned at once (0.56 to 0.67 on four strokes).
+        from scipy import ndimage
+        pants = self.after("06H5", "pants00")[..., :3].astype(float)
+        b, s = np.array((255.0, 255.0, 255.0)), np.array((11.0, 11.0, 11.0))
+        ink = np.round(np.clip(((pants - b) @ (s - b)) / ((s - b) @ (s - b)), 0, 1)[:200] * 4) >= 2
+        ratios = []
+        for x0, x1, seam, step in ((108, 200, 111, 1), (312, 404, 400, -1)):
+            lab, n = ndimage.label(ink[:, x0:x1], structure=np.ones((3, 3)))
+            for q in (np.argwhere(lab == i) for i in range(1, n + 1)):
+                if len(q) < 10:
+                    continue
+                cols = q[:, 1] + x0
+                tip = cols.max() if step > 0 else cols.min()
+                at_seam = int((cols == seam + step).sum())
+                at_half = int((cols == int(round(seam + (tip - seam) / 2))).sum())
+                ratios.append(at_half / at_seam)
+        self.assertEqual(len(ratios), 14)
+        self.assertGreaterEqual(min(ratios), 0.75, ratios)
+        self.assertGreaterEqual(float(np.mean(ratios)), 0.85, ratios)
+
     def test_every_kit_row_is_waiting_on_the_released_disc_and_compiles_to_its_pin(self):
         result = up.states(DISC)
         self.assertEqual((result["before"], result["after"], result["other"], result["absent"]),
                          (len(kit_rows()), 0, 0, 0), result["rows"])
         for selector in sorted({r["selector"] for r in kit_rows()}):
             replacements, receipt = kf.compile_resource(selector, self.kits[selector], strict=True,
-                                                        document=kf.uniforms_b81())
+                                                        document=kf.uniforms_b81(), kits=self.kits)
             rows = [r for r in kit_rows() if r["selector"] == selector]
             self.assertEqual(len(replacements), len(rows), selector)
             for part in receipt["parts"]:
@@ -715,16 +1022,56 @@ class RealDisc(unittest.TestCase):
                 else:                               # over all stored mips; seven of them on the top level
                     self.assertLessEqual(part["protected_texels_moved_one_level"], 30)
 
+    def test_a_cleared_mark_ships_no_texel_and_the_runs_are_measured(self):
+        """b81-retail-free-art (review rule, round 2 rows): an old mark is cleared by rule (``clear``), so no run texel
+        takes the clear colour over a base mark; the runs' cover of the base's strong edges is measured against the
+        generator's limit. The Bengals strokes and the Saints fleur are redrawn by code where the old mark was: they
+        ship no erasure; whether a row may ship is its Ruling 2 class (the release check judges it)."""
+        sys.path.insert(0, str(ROOT / "tools/b81_uniforms"))
+        import kitfix_convert as tool
+        converted = [r for r in kit_rows() if any(op["op"] in ("clear", "rule", "stamp") for op in r["ops"])]
+        self.assertGreaterEqual(len(converted), 150)
+        for row in converted:
+            raw = self.kits[row["selector"]]
+            chunk = kf._chunk_for(raw, row["chunk"])
+            base = tool.level0(raw[chunk.offset:chunk.end_offset], row)
+            donors = {}
+            for key in (row.get("donors") or {}):
+                other, _, at = str(key).rpartition(":")
+                source = self.kits[other] if other else raw
+                d = kf._chunk_for(source, int(at))
+                donors[str(key) if other else int(at)] = kf.texture_rgba(source[d.offset:d.end_offset])
+            final, _ = kf.paint(base, row["ops"], donors)
+            if row["ops"][-1]["op"] != "runs":
+                continue                                    # a row of rules only ships no texel
+            before, _ = kf.paint(base, row["ops"][:-1], donors)
+            shipped = np.zeros(base.shape[:2], bool)
+            for y, x0, colours in row["ops"][-1]["rows"]:
+                shipped[y, x0:x0 + len(colours) // 6] = True
+            self.assertTrue((final[shipped] != before[shipped]).any(-1).all(), row["selector"])   # only what still differs
+        # whether a converted row may ship is judged by its class (tools/b81_uniforms/texel_rows.py, the release check)
+
     def test_the_compiled_kit_textures_hold_exactly_the_authored_runs(self):
         for row in kit_rows():
             raw = self.kits[row["selector"]]
             chunk = kf._chunk_for(raw, row["chunk"])
             span = raw[chunk.offset:chunk.end_offset]
             before, _native = up.level0(span, "tset")
-            new, _detail = kf.compile_texture(span, row)
+            donors = {}
+            for key in (row.get("donors") or {}):           # rules that read another kit (stamp, the Saints emblem)
+                other, _, at = str(key).rpartition(":")
+                source = self.kits[other] if other else raw
+                d = kf._chunk_for(source, int(at))
+                donors[str(key) if other else int(at)] = kf.texture_rgba(source[d.offset:d.end_offset])
+            new, _detail = kf.compile_texture(span, row, donors)
             self.assertEqual(hashlib.sha256(new).hexdigest(), row["after_sha256"])
             after, _native = up.level0(new, "tset")
-            painted = run_texels(row)
+            # the art the row's operations make (runs, and on a converted row its clear) on the level 0 it was made on
+            native, decoded, textures = kf.native_textures(span, "tset")
+            palette = kf.read_palette(decoded, native, textures[0])
+            art, scope = kf.paint(palette[kf.read_planes(decoded, native, textures[0])[0]].astype(np.uint8), row["ops"],
+                                  donors)
+            painted = {(int(x), int(y)): tuple(int(v) for v in art[y, x, :3]) for y, x in np.argwhere(scope)}
             changed = np.argwhere((after != before).any(axis=2))
             outside = 0
             for y, x in changed:
@@ -751,8 +1098,8 @@ class RealDisc(unittest.TestCase):
         document = gf.digits_b81()
         for selector in REDRAWN:
             replacements, receipt = gf.compile_resource(selector, self.as_built(selector), strict=True, document=document)
-            digits = [p for p in receipt["parts"] if p["kind"] == "digit_png"]     # (a kit may also carry nameplate rows)
-            self.assertEqual(len(digits), len([r for r in digit_rows() if r["selector"] == selector]), selector)
+            digits = [p for p in receipt["parts"] if p["kind"] in ("digit_png", "digit_derived")]  # (and nameplate rows)
+            self.assertEqual(len(digits), len([r for r in all_digit_rows() if r["selector"] == selector]), selector)
             drawn = len(PER_DIGIT.get(selector, range(10)))
             self.assertIn(len(digits), (drawn, 2 * drawn), selector)              # jersey digits, and arm digits where drawn
             self.assertEqual(len(replacements), len([r for r in document["textures"] if r["selector"] == selector]))
@@ -768,20 +1115,21 @@ class RealDisc(unittest.TestCase):
 
 
 #: b81-uniforms batch 4 (Noah 11/19: "Jags road nameplate and all nameplates should match real ones"): the nameplate
-#: strips redrawn to this season's measured lettering. selector -> (fill, outline, stem texels, bar rows). The strip is
-#: stretched about 1.7 times across on the player, so a 2 texel stem is 0.14 of the cap there (real 0.12 to 0.16).
+#: strips redrawn to this season's measured lettering. selector -> (fill, outline, stem texels, bar rows). R2 (art
+#: director 11/20): the weight is set from emulator close-ups, not from a stretch sum (2 texel stems read as hairlines
+#: in the game, about 0.10 of the cap; 3 texels about 0.17; the real 2026 names 0.12 to 0.19).
 NAMEPLATES = {
-    **{s: ("#101010", None, 2, 2) for s in ("12A0", "12A6", "12H6")},       # Jaguars road and Bold City: thin horizontals
-    "12H0": ("#FFFFFF", None, 2, 2),                                       # Jaguars home: white, no black outline
-    "00A0": ("#A0233F", None, 2, 4), "00H0": ("#FFFFFF", None, 2, 4),      # Cardinals: cut-corner face
-    "00A6": ("#A0233F", None, 2, 4), "00H6": ("#A0233F", None, 2, 4),      # the black alternate wears red names
-    "01A9": ("#FFFFFF", "#D40038", 2, 4), "01H9": ("#FFFFFF", "#D40038", 2, 4),  # Falcons 1966: white, thin red edge
-    "02H0": ("#FFFFFF", None, 2, 3), "02H2": ("#FFFFFF", None, 2, 3),
-    "11A0": ("#0C3A9C", None, 2, 3), **{s: ("#FFFFFF", None, 2, 3) for s in ("11H0", "11A3", "11A4", "11H3", "11H4")},
-    **{s: ("#0A0A0A", None, 2, 3) for s in ("17A1", "17A8", "17H8")},
-    "18A7": ("#0E2878", None, 2, 3), "18H7": ("#0E2878", None, 2, 3),      # Giants Vintage White: slab serif
-    **{s: ("#145F47", None, 2, 3) for s in ("19A0", "19A7", "19H7")},       # Jets white: green, as the real names
-    "27A0": ("#0E0E0E", None, 2, 3),                                       # Buccaneers road: black, the strip was red
+    **{s: ("#101010", None, 3, 3) for s in ("12A0", "12A6", "12H6")},       # Jaguars road and Bold City: thin horizontals
+    "12H0": ("#FFFFFF", None, 3, 3),                                       # Jaguars home: white, no black outline
+    "00A0": ("#A0233F", None, 3, 3), "00H0": ("#FFFFFF", None, 3, 3),      # Cardinals: cut-corner face
+    "00A6": ("#A0233F", None, 3, 3), "00H6": ("#A0233F", None, 3, 3),      # the black alternate wears red names
+    "01A9": ("#FFFFFF", "#D40038", 3, 4), "01H9": ("#FFFFFF", "#D40038", 3, 4),  # Falcons 1966: white, thin red edge
+    "02H0": ("#FFFFFF", None, 3, 3), "02H2": ("#FFFFFF", None, 3, 3),
+    "11A0": ("#0C3A9C", None, 3, 3), **{s: ("#FFFFFF", None, 3, 3) for s in ("11H0", "11A3", "11A4", "11H3", "11H4")},
+    **{s: ("#0A0A0A", None, 3, 3) for s in ("17A1", "17A8", "17H8")},
+    "18A7": ("#0E2878", None, 3, 3), "18H7": ("#0E2878", None, 3, 3),      # Giants Vintage White: slab serif
+    **{s: ("#145F47", None, 3, 3) for s in ("19A0", "19A7", "19H7")},       # Jets white: green, as the real names
+    "27A0": ("#0E0E0E", None, 3, 3),                                       # Buccaneers road: black, the strip was red
 }
 NAME_GLYPHS = "'-ABCDEFGHIJKLMNOPQRSTUVWXYZc"
 RETAIL = Path(os.environ.get("B81_RETAIL_DISC", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
@@ -791,8 +1139,29 @@ RECOLOURED_NAMES = {s: CLE_CHARCOAL for s in ("30A0", "30A4", "30H4")}
 
 
 def names_rows(kind=None):
-    return [r for r in gf.digits_b81()["textures"] if r["kind"] in ("names_png", "name_widths")
-            and (kind is None or r["kind"] == kind)]
+    """b81-retail-free-art: ``names_png`` also yields the ``names_derived`` strips (the Jaguars road strip, made at
+    build time from the strip the nameplate pass leaves; see strip_picture)."""
+    kinds = ("names_png", "names_derived") if kind == "names_png" else (kind,) if kind else (
+        "names_png", "names_derived", "name_widths")
+    return [r for r in gf.digits_b81()["textures"] if r["kind"] in kinds]
+
+
+_STRIPS = {}
+
+
+def strip_picture(row):
+    """A strip row's picture: its PNG, or a ``names_derived`` row's operations on the strip the released disc holds
+    after the nameplate pass (None without the released and retail discs)."""
+    if row["kind"] == "names_png":
+        return png_rgba(gf.art_folder(gf.digits_b81()) / row["png"])[0]
+    if not (DISC.is_file() and RETAIL.is_file()):
+        return None
+    if row["selector"] not in _STRIPS:
+        raw = up.after_nameplate_pass(row["selector"], up.read_kits(DISC, [row["selector"]])[row["selector"]],
+                                      up.retail_kits_for_nameplates(RETAIL))
+        chunk = gf._chunk_for(raw, row["chunk"])
+        _STRIPS[row["selector"]] = gf.names_level0(raw[chunk.offset:chunk.end_offset])
+    return gf.derive_digit(_STRIPS[row["selector"]], row["derive"])
 
 
 def hex_rgb(text):
@@ -836,7 +1205,10 @@ class NameplateDocument(unittest.TestCase):
         folder = gf.art_folder(gf.digits_b81())
         for selector, row in strips.items():
             self.assertEqual((row["chunk"], row["texture"]), (43, "names"))
-            self.assertEqual(hashlib.sha256((folder / row["png"]).read_bytes()).hexdigest(), row["png_sha256"], selector)
+            if row["kind"] == "names_derived":                # b81-retail-free-art: made at build time
+                self.assertNotIn("png", row)
+            else:
+                self.assertEqual(hashlib.sha256((folder / row["png"]).read_bytes()).hexdigest(), row["png_sha256"], selector)
             self.assertNotEqual(row["before_sha256"], row["after_sha256"])
             self.assertTrue(row["note"] and row["defects"], selector)
             if selector in RECOLOURED_NAMES:
@@ -853,13 +1225,16 @@ class NameplateDocument(unittest.TestCase):
             if row["selector"] in RECOLOURED_NAMES:
                 continue
             fill, outline, _stem, _bar = NAMEPLATES[row["selector"]]
-            rgba, _info = png_rgba(folder / row["png"])
+            rgba = strip_picture(row)
+            if rgba is None:
+                continue
+            name = row.get("png", row["selector"])
             self.assertEqual(rgba.shape, (32, 1024, 4))
-            self.assertEqual(set(np.unique(rgba[..., 3]).tolist()), {0, 255}, row["png"])        # no soft edges
+            self.assertEqual(set(np.unique(rgba[..., 3]).tolist()), {0, 255}, name)        # no soft edges
             opaque = {tuple(int(v) for v in c) for c in np.unique(rgba[rgba[..., 3] == 255][:, :3], axis=0)}
-            self.assertEqual(opaque, {hex_rgb(fill)} | ({hex_rgb(outline)} if outline else set()), row["png"])
+            self.assertEqual(opaque, {hex_rgb(fill)} | ({hex_rgb(outline)} if outline else set()), name)
             clear = {tuple(int(v) for v in c) for c in np.unique(rgba[rgba[..., 3] == 0][:, :3], axis=0)}
-            self.assertEqual(clear, {hex_rgb(outline or fill)}, row["png"])     # a filtered edge never fades to black
+            self.assertEqual(clear, {hex_rgb(outline or fill)}, name)     # a filtered edge never fades to black
 
     def test_every_glyph_starts_on_its_offset_and_fits_its_stored_width(self):
         folder = gf.art_folder(gf.digits_b81())
@@ -867,7 +1242,10 @@ class NameplateDocument(unittest.TestCase):
         for row in names_rows("names_png"):
             if row["selector"] in RECOLOURED_NAMES:
                 continue
-            ink = png_rgba(folder / row["png"])[0][..., 3] >= kf.NAME_ATLAS_ALPHA
+            rgba = strip_picture(row)
+            if rgba is None:
+                continue
+            ink = rgba[..., 3] >= kf.NAME_ATLAS_ALPHA
             for i, width in enumerate(widths[row["selector"]]):
                 cols = np.flatnonzero(ink[:, 32 * (i + 1):32 * (i + 2)].any(0))
                 self.assertEqual(int(cols[0]), 0, (row["selector"], NAME_GLYPHS[i]))
@@ -882,7 +1260,10 @@ class NameplateDocument(unittest.TestCase):
             if row["selector"] in RECOLOURED_NAMES:
                 continue
             fill, _outline, stem, bar = NAMEPLATES[row["selector"]]
-            got = measure_strip(png_rgba(folder / row["png"])[0], widths[row["selector"]], hex_rgb(fill))
+            rgba = strip_picture(row)
+            if rgba is None:
+                continue
+            got = measure_strip(rgba, widths[row["selector"]], hex_rgb(fill))
             self.assertEqual(got["cap"], (4, 27), row["selector"])                   # 24 rows, as every 2026 strip
             self.assertEqual(got["stem"], {stem}, row["selector"])
             self.assertEqual(got["bar"], bar, row["selector"])
@@ -913,7 +1294,8 @@ class RealDiscNameplates(unittest.TestCase):
         document = gf.digits_b81()
         for selector in sorted(set(NAMEPLATES) | set(RECOLOURED_NAMES)):
             replacements, receipt = gf.compile_resource(selector, self.kits[selector], strict=True, document=document)
-            kinds = sorted(p["kind"] for p in receipt["parts"] if p["kind"] in ("names_png", "name_widths"))
+            kinds = sorted("names_png" if p["kind"] == "names_derived" else p["kind"]  # a strip made at build time counts
+                           for p in receipt["parts"] if p["kind"] in ("names_png", "names_derived", "name_widths"))
             self.assertEqual(kinds, ["names_png"] if selector in RECOLOURED_NAMES else ["name_widths", "names_png"],
                              selector)
             self.assertEqual(receipt["skipped_textures"], [], selector)
@@ -930,13 +1312,13 @@ class RealDiscNameplates(unittest.TestCase):
             name = kf._chunk_for(bytes(out), 44)
             moved = np.flatnonzero(np.frombuffer(bytes(out), np.uint8) != np.frombuffer(raw, np.uint8))
             digits = [(kf._chunk_for(raw, r["chunk"]).offset, kf._chunk_for(raw, r["chunk"]).end_offset)
-                      for r in digit_rows() if r["selector"] == row["selector"]]
+                      for r in all_digit_rows() if r["selector"] == row["selector"]]
             for at in moved:
                 inside = (chunk.offset <= at < chunk.end_offset or name.offset <= at < name.end_offset
                           or any(a <= at < b for a, b in digits))
                 self.assertTrue(inside, (row["selector"], int(at)))
             compiled = gf.names_level0(bytes(out)[chunk.offset:chunk.end_offset])
-            self.assertTrue((compiled == png_rgba(folder / row["png"])[0]).all(), row["selector"])
+            self.assertTrue((compiled == strip_picture(row)).all(), row["selector"])
             if row["selector"] in RECOLOURED_NAMES:                 # the released letters, only the colour moves
                 before = gf.names_level0(raw[chunk.offset:chunk.end_offset])
                 self.assertTrue((compiled[..., 3] == before[..., 3]).all(), row["selector"])

@@ -481,5 +481,8 @@
  },
  "10_5:helmet00": {
   "keep_placement": true
+ },
+ "29_9:helmet02": {
+  "mirror_upper": true
  }
 }

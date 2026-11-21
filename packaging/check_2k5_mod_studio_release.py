@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path, PurePosixPath
 import stat
 import sys
@@ -333,7 +334,7 @@ ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "c621d94c4f48f26ab6c44e912dd5d5ff7a36d070
 # (b778 cf1-cf4: photo-derived likeness textures, Noah 2026-10-12; see the catalog's classification). It grants no general PNG
 # exception inside those folders; tools/b77/modern_art_png_catalog.py regenerates it and prints the digest below.
 MODERN_ART_PNG_CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
-MODERN_ART_PNG_CATALOG_SHA256 = "e1ab18fab39816e8aea6fb03d79c491193aff71e7e43f0f5affc9d135c786399"  # b780 pillowfont: + the scorebug digit glyph layer (939 files); b780-rst2: + 121 more real portraits (faces_03 filled, a fifth atlas pair faces_04: the 119 players the 11/03 refresh creates, Thorson and Masses); b780-b9: + 49 more real portraits in faces_03 (the no-photo players the pt1 target list missed); b779-int1: rf3 + pt1 regenerated together (936 files); b779-pt1: + the 8 real free-agent portrait atlases; b779-rf3: + new rookie face atlases (faces_14..16); b778 cf5: seven scanned coach heads (ARI BUF DEN HOU LV NO SEA); b778 3d1: classification names the scanned heads as photo-derived; b778-pg2: + the TROPHY ROOM emblem; b778-ee1: + the 4 gray alien PNGs; b778-ss1: + the 15 Seamen card/field/face PNGs; b778-rh1/rh2: + the 18 rookie face bank atlases; b778 cf1: four scanned coach heads; b778 cf2: seven scanned coach heads and the PIT rescan; b778 cf3: seven scanned coach heads; b778 cf4: seven scanned coach heads, KC head.png in place of head_mask + head_overlay; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
+MODERN_ART_PNG_CATALOG_SHA256 = "aad2b76ec7c286004335432d98013c44239a40c6b9c7b1a9db5444e84faed75f"  # b81-retail-free-art round 3 + round 2 (R2-G): the texel data of every data document is listed (glyph paint, kit-fix runs and texels); b81-retail-free-art round 3: no layout mask ships (146 relief files), the reviewed paint of the glyph document is listed; b81-retail-free-art: + the 2026 relief as differences (147 files: no retail-derived map) and the 387 b81u glyph pictures drawn new or edited from project art (the 231 retail-derived ones ship as build-time operations or as the texels that differ from the build's glyph); b780 pillowfont: + the scorebug digit glyph layer (939 files); b780-rst2: + 121 more real portraits (faces_03 filled, a fifth atlas pair faces_04: the 119 players the 11/03 refresh creates, Thorson and Masses); b780-b9: + 49 more real portraits in faces_03 (the no-photo players the pt1 target list missed); b779-int1: rf3 + pt1 regenerated together (936 files); b779-pt1: + the 8 real free-agent portrait atlases; b779-rf3: + new rookie face atlases (faces_14..16); b778 cf5: seven scanned coach heads (ARI BUF DEN HOU LV NO SEA); b778 3d1: classification names the scanned heads as photo-derived; b778-pg2: + the TROPHY ROOM emblem; b778-ee1: + the 4 gray alien PNGs; b778-ss1: + the 15 Seamen card/field/face PNGs; b778-rh1/rh2: + the 18 rookie face bank atlases; b778 cf1: four scanned coach heads; b778 cf2: seven scanned coach heads and the PIT rescan; b778 cf3: seven scanned coach heads; b778 cf4: seven scanned coach heads, KC head.png in place of head_mask + head_overlay; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
 
 # sb3: Noah (2026-10-28) cleared real logos for this free fan mod, so his real Super Bowl event logos, network marks
 # and team-season logos ship as the bundled default. This is a separate exact catalog, not an authored-art exception:
@@ -389,6 +390,1518 @@ def _modern_art_pngs(root: Path) -> dict:
     if document.get("schema") != "nfl2k5_modern_art_pngs/v1":
         raise ReleaseCheckError("reviewed modern-art PNG catalog schema changed")
     return document["files"]
+
+
+def _reviewed_paint(root: Path) -> dict:
+    """b81-retail-free-art (review F5): the reviewed texel data of the data documents, from the pinned modern-art
+    catalog (read and hash-checked the same way as its PNG list)."""
+    catalog = root / MODERN_ART_PNG_CATALOG
+    if not catalog.exists():
+        return {}
+    with catalog.open("rb") as stream:
+        data = stream.read(512 * 1024 + 1)
+    if len(data) > 512 * 1024 or hashlib.sha256(data).hexdigest() != MODERN_ART_PNG_CATALOG_SHA256:
+        raise ReleaseCheckError("reviewed modern-art PNG catalog hash changed")
+    return json.loads(data).get("paint", {})
+
+
+_TEXEL_OPS = {"paint": "runs", "runs": "rows", "texels": "points"}
+# b81-retail-free-art (fix 1, the reviewer's injections): position-bearing primitives below a minimum are texel data too
+SMALL = 16                                   # texels: a box or a polygon under this is a position list
+SMALL_BOX_EDGE_LIMIT = 0.25
+_DATA_KEY = re.compile(r"^(?:[0-9]+|[0-9A-Z]{2,5}:[0-9A-Za-z_:.\-]+|(?:retail|logo):[0-9A-Za-z_:.\-]+|[A-Z]{2,4}(?:_[0-9A-Za-z_]+)?"
+                       r"|[0-9a-f]{64})$")
+
+
+def _is_box(value) -> bool:
+    """Four numbers, end-exclusive and non-empty. Non-integer coordinates count too (fix 1, the re-check's A14): the
+    build refuses them, but the bytes would ship."""
+    return (isinstance(value, list) and len(value) == 4
+            and all(type(v) in (int, float) and v == v and abs(v) != float("inf") for v in value)
+            and value[2] > value[0] and value[3] > value[1])
+
+
+def _box_area(box) -> int:
+    return (box[2] - box[0]) * (box[3] - box[1])
+
+
+def _poly_area(points) -> float:
+    pts = [(float(p[0]), float(p[1])) for p in points if isinstance(p, (list, tuple)) and len(p) == 2]
+    if len(pts) < 3:
+        return 0.0
+    return abs(sum(pts[k][0] * pts[(k + 1) % len(pts)][1] - pts[(k + 1) % len(pts)][0] * pts[k][1]
+                   for k in range(len(pts)))) / 2.0
+
+
+def _boxes_in(value, key=None):
+    """(key, box) for every box anywhere inside an operation (a list of four ints, end-exclusive and non-empty)."""
+    if _is_box(value):
+        yield key, value
+    elif isinstance(value, list):
+        for item in value:
+            yield from _boxes_in(item, key)
+    elif isinstance(value, dict):
+        for k, item in value.items():
+            yield from _boxes_in(item, k)
+
+
+def _op_texels(op: dict) -> int:
+    """Texel data an operation holds (0: none): texel runs and lists, glyph keep runs, warp masks, boxes and polygons
+    under SMALL texels, every box of a clear whose threshold is below 0."""
+    kind = op.get("op")
+    key = _TEXEL_OPS.get(kind)
+    if key is not None and key in op:
+        if kind == "texels":
+            return len(op[key])
+        width = 8 if kind == "paint" else 6
+        return sum(len(r[2]) // width if isinstance(r, list) and len(r) == 3 and isinstance(r[2], str) else 1
+                   for r in op[key])
+    total = 0
+    if kind == "keep" and isinstance(op.get("runs"), list):          # glyph keep runs: [y, x0, count]
+        total += sum(int(r[2]) if isinstance(r, list) and len(r) == 3 and type(r[2]) is int else 1 for r in op["runs"])
+    if kind == "warp" and isinstance(op.get("mask"), list):          # warp masks: [y, x0, x1] at the warp's scale
+        total += sum(max(int(r[2]) - int(r[1]), 1) if isinstance(r, list) and len(r) == 3 else 1 for r in op["mask"])
+    if kind == "clear" and isinstance(op.get("above", 0), (int, float)) and op.get("above", 0) < 0:
+        total += sum(max(1, int(_box_area(b) + 0.999)) for _k, b in _boxes_in(op.get("boxes", [])))
+    else:
+        total += sum(max(1, int(_box_area(b) + 0.999)) for _k, b in _boxes_in(op) if _box_area(b) < SMALL)
+    if kind == "poly" and isinstance(op.get("points"), list) and _poly_area(op["points"]) < SMALL:
+        total += max(1, int(_poly_area(op["points"]) + 0.999))
+    if kind == "multipoly" and isinstance(op.get("polys"), list):
+        total += sum(max(1, int(_poly_area(p) + 0.999)) for p in op["polys"]
+                     if isinstance(p, list) and _poly_area(p) < SMALL)
+    return total
+
+
+def _texel_rows(document: object) -> dict:
+    """Every operation that stores texel data (see _op_texels) anywhere inside a JSON value, grouped by the row that
+    holds it ("<selector>:<chunk>:<kind>", "-" outside a row)."""
+    out: dict = {}
+    pending = [(document, "-")]
+    while pending:
+        value, owner = pending.pop()
+        if isinstance(value, dict):
+            if isinstance(value.get("op"), str) and _op_texels(value):
+                out.setdefault(owner, []).append(value)
+                continue
+            if "selector" in value and "chunk" in value:
+                owner = f"{value['selector']}:{value['chunk']}:{value.get('kind', '')}"
+            pending.extend((item, owner) for item in reversed(list(value.values())))
+        elif isinstance(value, list):
+            pending.extend((item, owner) for item in reversed(value))
+    return out
+
+
+def _one_texel_painting_boxes(ops) -> int:
+    """Painting boxes of one texel (keep-outs paint nothing and are measured instead)."""
+    return sum(1 for op in ops for key, box in _boxes_in(op) if key != "keep" and _box_area(box) <= 1)
+
+
+def _holds_operations(document) -> bool:
+    pending = [document]
+    while pending:
+        value = pending.pop()
+        if isinstance(value, dict):
+            if isinstance(value.get("op"), str):
+                return True
+            pending.extend(value.values())
+        elif isinstance(value, list):
+            pending.extend(value)
+    return False
+
+
+# keys of texture pins, shapes and texel data: a document holding any of them edits textures (with or without `op`)
+_TEXTURE_KEYS = frozenset({"after_sha256", "before_sha256", "boxes", "derive", "ints", "map", "mask", "nodes", "pixels",
+                           "points", "polys", "relayout", "runs", "texels"})
+
+
+def _edits_textures(document) -> bool:
+    """b81-retail-free-art (fix 1 of the re-check): a document that holds operations, texture pins, shapes or texel data.
+    The release check pins every such data document by its whole SHA-256."""
+    pending = [document]
+    while pending:
+        value = pending.pop()
+        if isinstance(value, dict):
+            if isinstance(value.get("op"), str) or not _TEXTURE_KEYS.isdisjoint(value):
+                return True
+            pending.extend(value.values())
+        elif isinstance(value, list):
+            pending.extend(value)
+    return False
+
+
+def _shape(document) -> set:
+    """The key paths of a document (see tools/b81_uniforms/gate_shapes.py)."""
+    out = set()
+    pending = [(document, "")]
+    while pending:
+        value, path = pending.pop()
+        if isinstance(value, dict):
+            if isinstance(value.get("op"), str):
+                tag = value["op"] + (":" + str(value.get("module")) if value["op"] == "rule" else "")
+                path = path + "{" + tag + "}"
+            variable = bool(value) and all(isinstance(k, str) and _DATA_KEY.match(k) for k in value) and "op" not in value
+            for k, item in value.items():
+                child = path + "." + ("*" if variable else str(k))
+                out.add(child)
+                pending.append((item, child))
+        elif isinstance(value, list):
+            for item in value:
+                pending.append((item, path + "[]"))
+    return out
+
+
+def _check_shape(relative: str, document) -> None:
+    """b81-retail-free-art (fix 1): a data document that holds operations may use only the operations and keys its
+    schema's reviewed shape holds (DOCUMENT_SHAPES); anything else could carry pixel data past the paint check."""
+    if not _holds_operations(document):
+        return
+    schema = document.get("schema") if isinstance(document, dict) else None
+    allowed = DOCUMENT_SHAPES.get(schema)
+    if allowed is None:
+        raise ReleaseCheckError(f"a data document with operations has no reviewed shape: {relative}")
+    unknown = sorted(_shape(document) - allowed)
+    if unknown:
+        shown = ", ".join(unknown[:4]) + (f" and {len(unknown) - 4} more" if len(unknown) > 4 else "")
+        raise ReleaseCheckError(f"unknown operation or key in a data document: {relative}: {shown}")
+
+
+DOCUMENT_SHAPES = {   # generated by tools/b81_uniforms/gate_shapes.py: do not edit by hand
+    'nfl2k5_glyph_fixes_2026/v1': frozenset((
+        '.art',
+        '.names_purpose',
+        '.names_references',
+        '.names_references.*',
+        '.purpose',
+        '.references',
+        '.references.*',
+        '.schema',
+        '.textures',
+        '.textures[].after_sha256',
+        '.textures[].before_sha256',
+        '.textures[].chunk',
+        '.textures[].defects',
+        '.textures[].derive',
+        '.textures[].derive[]{clear_rgb}.colour',
+        '.textures[].derive[]{clear_rgb}.op',
+        '.textures[].derive[]{edge}.edge',
+        '.textures[].derive[]{edge}.fill',
+        '.textures[].derive[]{edge}.keep',
+        '.textures[].derive[]{edge}.op',
+        '.textures[].derive[]{embolden}.extra',
+        '.textures[].derive[]{embolden}.fill',
+        '.textures[].derive[]{embolden}.k',
+        '.textures[].derive[]{embolden}.op',
+        '.textures[].derive[]{embolden}.outline',
+        '.textures[].derive[]{embolden}.ring',
+        '.textures[].derive[]{inline_dark}.colour',
+        '.textures[].derive[]{inline_dark}.op',
+        '.textures[].derive[]{inline_fill}.colour',
+        '.textures[].derive[]{inline_fill}.fill',
+        '.textures[].derive[]{inline_fill}.op',
+        '.textures[].derive[]{keep}.op',
+        '.textures[].derive[]{keep}.runs',
+        '.textures[].derive[]{paint}.op',
+        '.textures[].derive[]{paint}.runs',
+        '.textures[].derive[]{recolour}.hidden',
+        '.textures[].derive[]{recolour}.op',
+        '.textures[].derive[]{recolour}.pairs',
+        '.textures[].derive[]{remap}.cols',
+        '.textures[].derive[]{remap}.op',
+        '.textures[].derive[]{remap}.rows',
+        '.textures[].derive[]{thin_letters}.bar',
+        '.textures[].derive[]{thin_letters}.cap',
+        '.textures[].derive[]{thin_letters}.fill',
+        '.textures[].derive[]{thin_letters}.offsets',
+        '.textures[].derive[]{thin_letters}.op',
+        '.textures[].derive[]{thin_letters}.stem',
+        '.textures[].derive[]{thin_letters}.top',
+        '.textures[].derive[]{thin_letters}.weights',
+        '.textures[].derive[]{thin_letters}.weights.K',
+        '.textures[].derive[]{thin_letters}.weights.M',
+        '.textures[].derive[]{thin_letters}.weights.N',
+        '.textures[].derive[]{thin_letters}.weights.W',
+        '.textures[].derive[]{thin_letters}.weights.X',
+        '.textures[].derive[]{thin_letters}.weights.Y',
+        '.textures[].derive[]{thin_letters}.weights.Z',
+        '.textures[].kind',
+        '.textures[].length',
+        '.textures[].note',
+        '.textures[].offset',
+        '.textures[].png',
+        '.textures[].png_sha256',
+        '.textures[].reference',
+        '.textures[].resource_size',
+        '.textures[].rgba_sha256',
+        '.textures[].selector',
+        '.textures[].texture',
+        '.textures[].widths',
+    )),
+    'nfl2k5_kit_fixes_2026/v1': frozenset((
+        '.base_disc_sha256',
+        '.method',
+        '.output_disc_sha256',
+        '.schema',
+        '.source',
+        '.textures',
+        '.textures[].after_equivalent_sha256',
+        '.textures[].after_sha256',
+        '.textures[].also',
+        '.textures[].also[].after_sha256',
+        '.textures[].also[].before_sha256',
+        '.textures[].before_sha256',
+        '.textures[].chunk',
+        '.textures[].defects',
+        '.textures[].donor_chunk',
+        '.textures[].donor_selector',
+        '.textures[].donor_sha256',
+        '.textures[].donor_texture',
+        '.textures[].donors',
+        '.textures[].donors.*',
+        '.textures[].equivalent_note',
+        '.textures[].fields',
+        '.textures[].fields.facemask',
+        '.textures[].folded_twin_entries',
+        '.textures[].ints',
+        '.textures[].ints.number_route',
+        '.textures[].kind',
+        '.textures[].length',
+        '.textures[].map',
+        '.textures[].map[].alpha_min',
+        '.textures[].map[].from',
+        '.textures[].map[].to',
+        '.textures[].map[].tolerance',
+        '.textures[].max_blend_slots',
+        '.textures[].mip',
+        '.textures[].note',
+        '.textures[].offset',
+        '.textures[].ops',
+        '.textures[].ops[]{clear}.above',
+        '.textures[].ops[]{clear}.alpha',
+        '.textures[].ops[]{clear}.boxes',
+        '.textures[].ops[]{clear}.grow',
+        '.textures[].ops[]{clear}.keep',
+        '.textures[].ops[]{clear}.op',
+        '.textures[].ops[]{clear}.to',
+        '.textures[].ops[]{close}.box',
+        '.textures[].ops[]{close}.color',
+        '.textures[].ops[]{close}.colors',
+        '.textures[].ops[]{close}.into',
+        '.textures[].ops[]{close}.into_tolerance',
+        '.textures[].ops[]{close}.op',
+        '.textures[].ops[]{close}.radius',
+        '.textures[].ops[]{close}.tolerance',
+        '.textures[].ops[]{copy}.dst',
+        '.textures[].ops[]{copy}.op',
+        '.textures[].ops[]{copy}.skip',
+        '.textures[].ops[]{copy}.skip_col',
+        '.textures[].ops[]{copy}.src',
+        '.textures[].ops[]{copy}.tolerance',
+        '.textures[].ops[]{enclosed}.box',
+        '.textures[].ops[]{enclosed}.color',
+        '.textures[].ops[]{enclosed}.edge',
+        '.textures[].ops[]{enclosed}.invert',
+        '.textures[].ops[]{enclosed}.op',
+        '.textures[].ops[]{enclosed}.tolerance',
+        '.textures[].ops[]{flood}.box',
+        '.textures[].ops[]{flood}.color',
+        '.textures[].ops[]{flood}.op',
+        '.textures[].ops[]{flood}.seed',
+        '.textures[].ops[]{flood}.tolerance',
+        '.textures[].ops[]{grow}.box',
+        '.textures[].ops[]{grow}.color',
+        '.textures[].ops[]{grow}.except',
+        '.textures[].ops[]{grow}.from',
+        '.textures[].ops[]{grow}.into',
+        '.textures[].ops[]{grow}.op',
+        '.textures[].ops[]{grow}.radius',
+        '.textures[].ops[]{grow}.tolerance',
+        '.textures[].ops[]{halo}.box',
+        '.textures[].ops[]{halo}.color',
+        '.textures[].ops[]{halo}.edge',
+        '.textures[].ops[]{halo}.into',
+        '.textures[].ops[]{halo}.into_tolerance',
+        '.textures[].ops[]{halo}.op',
+        '.textures[].ops[]{halo}.radius',
+        '.textures[].ops[]{halo}.tolerance',
+        '.textures[].ops[]{lift}.box',
+        '.textures[].ops[]{lift}.from',
+        '.textures[].ops[]{lift}.keep',
+        '.textures[].ops[]{lift}.op',
+        '.textures[].ops[]{lift}.tolerance',
+        '.textures[].ops[]{multipoly}.alpha',
+        '.textures[].ops[]{multipoly}.color',
+        '.textures[].ops[]{multipoly}.op',
+        '.textures[].ops[]{multipoly}.polys',
+        '.textures[].ops[]{poly}.alpha',
+        '.textures[].ops[]{poly}.color',
+        '.textures[].ops[]{poly}.only',
+        '.textures[].ops[]{poly}.only_tolerance',
+        '.textures[].ops[]{poly}.op',
+        '.textures[].ops[]{poly}.points',
+        '.textures[].ops[]{poly}.protect',
+        '.textures[].ops[]{poly}.protect.box',
+        '.textures[].ops[]{poly}.protect.colors',
+        '.textures[].ops[]{poly}.protect.tolerance',
+        '.textures[].ops[]{recolor}.box',
+        '.textures[].ops[]{recolor}.color',
+        '.textures[].ops[]{recolor}.from',
+        '.textures[].ops[]{recolor}.invert',
+        '.textures[].ops[]{recolor}.match',
+        '.textures[].ops[]{recolor}.op',
+        '.textures[].ops[]{recolor}.tolerance',
+        '.textures[].ops[]{retint}.base',
+        '.textures[].ops[]{retint}.box',
+        '.textures[].ops[]{retint}.color',
+        '.textures[].ops[]{retint}.field',
+        '.textures[].ops[]{retint}.op',
+        '.textures[].ops[]{retint}.source',
+        '.textures[].ops[]{retint}.tolerance',
+        '.textures[].ops[]{ring}.box',
+        '.textures[].ops[]{ring}.color',
+        '.textures[].ops[]{ring}.from',
+        '.textures[].ops[]{ring}.inside',
+        '.textures[].ops[]{ring}.invert',
+        '.textures[].ops[]{ring}.op',
+        '.textures[].ops[]{ring}.to',
+        '.textures[].ops[]{ring}.tolerance',
+        '.textures[].ops[]{rule:emblem}.emblem',
+        '.textures[].ops[]{rule:emblem}.halves',
+        '.textures[].ops[]{rule:emblem}.halves[].flip',
+        '.textures[].ops[]{rule:emblem}.halves[].nh',
+        '.textures[].ops[]{rule:emblem}.halves[].nw',
+        '.textures[].ops[]{rule:emblem}.halves[].rows',
+        '.textures[].ops[]{rule:emblem}.module',
+        '.textures[].ops[]{rule:emblem}.op',
+        '.textures[].ops[]{rule:emblem}.template',
+        '.textures[].ops[]{rule:fill}.after',
+        '.textures[].ops[]{rule:fill}.after[].box',
+        '.textures[].ops[]{rule:fill}.after[].boxes',
+        '.textures[].ops[]{rule:fill}.after[].do',
+        '.textures[].ops[]{rule:fill}.after[].donor',
+        '.textures[].ops[]{rule:fill}.after[].grow',
+        '.textures[].ops[]{rule:fill}.after[].height',
+        '.textures[].ops[]{rule:fill}.after[].ink',
+        '.textures[].ops[]{rule:fill}.after[].logo_file',
+        '.textures[].ops[]{rule:fill}.after[].logo_sha256',
+        '.textures[].ops[]{rule:fill}.after[].mark_file',
+        '.textures[].ops[]{rule:fill}.after[].mark_sha256',
+        '.textures[].ops[]{rule:fill}.after[].recipe',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.after',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.after[].do',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.after[].logo_file',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.after[].logo_sha256',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.after[].regs',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.after[].regs[].h',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.after[].regs[].ori',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.after[].regs[].panel',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.after[].regs[].w',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.after[].regs[].x0',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.after[].regs[].y0',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.flag',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.flag.from',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.flag.how',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.flag.paint',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.foot',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.foot.logo',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.foot.regs',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.foot.regs[].h',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.foot.regs[].ori',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.foot.regs[].panel',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.foot.regs[].w',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.foot.regs[].x0',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.foot.regs[].y0',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.hardware',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.kind',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.module',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.old_ink',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.old_ink.panels',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.old_ink.refs',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.old_ink.reviewed',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.op',
+        '.textures[].ops[]{rule:fill}.after[].recipe{rule:fill}.vents',
+        '.textures[].ops[]{rule:fill}.after[].regs',
+        '.textures[].ops[]{rule:fill}.after[].regs[].h',
+        '.textures[].ops[]{rule:fill}.after[].regs[].ori',
+        '.textures[].ops[]{rule:fill}.after[].regs[].panel',
+        '.textures[].ops[]{rule:fill}.after[].regs[].w',
+        '.textures[].ops[]{rule:fill}.after[].regs[].x0',
+        '.textures[].ops[]{rule:fill}.after[].regs[].y0',
+        '.textures[].ops[]{rule:fill}.after[].shift',
+        '.textures[].ops[]{rule:fill}.after[].shift.lower',
+        '.textures[].ops[]{rule:fill}.after[].shift.upper',
+        '.textures[].ops[]{rule:fill}.after[].to_upper',
+        '.textures[].ops[]{rule:fill}.alpha',
+        '.textures[].ops[]{rule:fill}.boxes',
+        '.textures[].ops[]{rule:fill}.boxes.all',
+        '.textures[].ops[]{rule:fill}.boxes.all[].above',
+        '.textures[].ops[]{rule:fill}.boxes.all[].box',
+        '.textures[].ops[]{rule:fill}.boxes.all[].far2',
+        '.textures[].ops[]{rule:fill}.boxes.any',
+        '.textures[].ops[]{rule:fill}.boxes.any[].all',
+        '.textures[].ops[]{rule:fill}.boxes.any[].all[].above',
+        '.textures[].ops[]{rule:fill}.boxes.any[].all[].box',
+        '.textures[].ops[]{rule:fill}.boxes.any[].all[].far2',
+        '.textures[].ops[]{rule:fill}.decal',
+        '.textures[].ops[]{rule:fill}.decal.box',
+        '.textures[].ops[]{rule:fill}.decal.to',
+        '.textures[].ops[]{rule:fill}.flag',
+        '.textures[].ops[]{rule:fill}.flag.from',
+        '.textures[].ops[]{rule:fill}.flag.how',
+        '.textures[].ops[]{rule:fill}.flag.paint',
+        '.textures[].ops[]{rule:fill}.foot',
+        '.textures[].ops[]{rule:fill}.foot.above',
+        '.textures[].ops[]{rule:fill}.foot.crop',
+        '.textures[].ops[]{rule:fill}.foot.logo',
+        '.textures[].ops[]{rule:fill}.foot.regs',
+        '.textures[].ops[]{rule:fill}.foot.regs[].h',
+        '.textures[].ops[]{rule:fill}.foot.regs[].ori',
+        '.textures[].ops[]{rule:fill}.foot.regs[].panel',
+        '.textures[].ops[]{rule:fill}.foot.regs[].w',
+        '.textures[].ops[]{rule:fill}.foot.regs[].x0',
+        '.textures[].ops[]{rule:fill}.foot.regs[].y0',
+        '.textures[].ops[]{rule:fill}.hardware',
+        '.textures[].ops[]{rule:fill}.island',
+        '.textures[].ops[]{rule:fill}.keep',
+        '.textures[].ops[]{rule:fill}.keep.all',
+        '.textures[].ops[]{rule:fill}.keep.all[].box',
+        '.textures[].ops[]{rule:fill}.keep.all[].cross',
+        '.textures[].ops[]{rule:fill}.keep.all[].grow',
+        '.textures[].ops[]{rule:fill}.keep.all[].of',
+        '.textures[].ops[]{rule:fill}.keep.all[].of.above',
+        '.textures[].ops[]{rule:fill}.keep.all[].of.far2',
+        '.textures[].ops[]{rule:fill}.kind',
+        '.textures[].ops[]{rule:fill}.mask',
+        '.textures[].ops[]{rule:fill}.mask.all',
+        '.textures[].ops[]{rule:fill}.mask.all[].above',
+        '.textures[].ops[]{rule:fill}.mask.all[].box',
+        '.textures[].ops[]{rule:fill}.mask.all[].far',
+        '.textures[].ops[]{rule:fill}.module',
+        '.textures[].ops[]{rule:fill}.near',
+        '.textures[].ops[]{rule:fill}.old',
+        '.textures[].ops[]{rule:fill}.old.any',
+        '.textures[].ops[]{rule:fill}.old.any[].all',
+        '.textures[].ops[]{rule:fill}.old.any[].all[].above',
+        '.textures[].ops[]{rule:fill}.old.any[].all[].box',
+        '.textures[].ops[]{rule:fill}.old.any[].all[].far2',
+        '.textures[].ops[]{rule:fill}.old_ink',
+        '.textures[].ops[]{rule:fill}.old_ink.add',
+        '.textures[].ops[]{rule:fill}.old_ink.add_dev',
+        '.textures[].ops[]{rule:fill}.old_ink.despeckle',
+        '.textures[].ops[]{rule:fill}.old_ink.erase',
+        '.textures[].ops[]{rule:fill}.old_ink.erase_edge_neutral',
+        '.textures[].ops[]{rule:fill}.old_ink.gold',
+        '.textures[].ops[]{rule:fill}.old_ink.grow',
+        '.textures[].ops[]{rule:fill}.old_ink.grow_dev',
+        '.textures[].ops[]{rule:fill}.old_ink.panels',
+        '.textures[].ops[]{rule:fill}.old_ink.refs',
+        '.textures[].ops[]{rule:fill}.old_ink.reviewed',
+        '.textures[].ops[]{rule:fill}.old_ink.shell_boxes',
+        '.textures[].ops[]{rule:fill}.op',
+        '.textures[].ops[]{rule:fill}.snap',
+        '.textures[].ops[]{rule:fill}.to',
+        '.textures[].ops[]{rule:fill}.vents',
+        '.textures[].ops[]{rule:fill}.within',
+        '.textures[].ops[]{rule:fill}.zone',
+        '.textures[].ops[]{rule:recolour}.at',
+        '.textures[].ops[]{rule:recolour}.boxes',
+        '.textures[].ops[]{rule:recolour}.by',
+        '.textures[].ops[]{rule:recolour}.cuts',
+        '.textures[].ops[]{rule:recolour}.dilate',
+        '.textures[].ops[]{rule:recolour}.do',
+        '.textures[].ops[]{rule:recolour}.dst',
+        '.textures[].ops[]{rule:recolour}.dy',
+        '.textures[].ops[]{rule:recolour}.ends',
+        '.textures[].ops[]{rule:recolour}.far',
+        '.textures[].ops[]{rule:recolour}.far_tolerance',
+        '.textures[].ops[]{rule:recolour}.field',
+        '.textures[].ops[]{rule:recolour}.footprint',
+        '.textures[].ops[]{rule:recolour}.footprint.above_milli',
+        '.textures[].ops[]{rule:recolour}.footprint.box',
+        '.textures[].ops[]{rule:recolour}.footprint.donor',
+        '.textures[].ops[]{rule:recolour}.footprint.field',
+        '.textures[].ops[]{rule:recolour}.footprint.mark',
+        '.textures[].ops[]{rule:recolour}.footprint.offset',
+        '.textures[].ops[]{rule:recolour}.from',
+        '.textures[].ops[]{rule:recolour}.from_x',
+        '.textures[].ops[]{rule:recolour}.levels',
+        '.textures[].ops[]{rule:recolour}.min',
+        '.textures[].ops[]{rule:recolour}.module',
+        '.textures[].ops[]{rule:recolour}.near',
+        '.textures[].ops[]{rule:recolour}.off',
+        '.textures[].ops[]{rule:recolour}.off_above',
+        '.textures[].ops[]{rule:recolour}.op',
+        '.textures[].ops[]{rule:recolour}.pairs',
+        '.textures[].ops[]{rule:recolour}.rows',
+        '.textures[].ops[]{rule:recolour}.seeds',
+        '.textures[].ops[]{rule:recolour}.src',
+        '.textures[].ops[]{rule:recolour}.to',
+        '.textures[].ops[]{rule:recolour}.tolerance',
+        '.textures[].ops[]{rule:recolour}.vacate',
+        '.textures[].ops[]{rule:recolour}.vacate.copy_by',
+        '.textures[].ops[]{rule:recolour}.vacate.to',
+        '.textures[].ops[]{runs}.op',
+        '.textures[].ops[]{runs}.rows',
+        '.textures[].ops[]{stamp}.alpha_line',
+        '.textures[].ops[]{stamp}.alpha_line.field',
+        '.textures[].ops[]{stamp}.alpha_line.mark',
+        '.textures[].ops[]{stamp}.color',
+        '.textures[].ops[]{stamp}.donor',
+        '.textures[].ops[]{stamp}.dst',
+        '.textures[].ops[]{stamp}.op',
+        '.textures[].ops[]{stamp}.remap',
+        '.textures[].ops[]{stamp}.remap[].from',
+        '.textures[].ops[]{stamp}.remap[].to',
+        '.textures[].ops[]{stamp}.remap[].tolerance',
+        '.textures[].ops[]{stamp}.skip',
+        '.textures[].ops[]{stamp}.src',
+        '.textures[].ops[]{stamp}.tolerance',
+        '.textures[].ops[]{texels}.color',
+        '.textures[].ops[]{texels}.op',
+        '.textures[].ops[]{texels}.points',
+        '.textures[].ops[]{want}.color',
+        '.textures[].ops[]{want}.op',
+        '.textures[].ops[]{warp}.alpha_line',
+        '.textures[].ops[]{warp}.alpha_line.field',
+        '.textures[].ops[]{warp}.alpha_line.mark',
+        '.textures[].ops[]{warp}.arm',
+        '.textures[].ops[]{warp}.color',
+        '.textures[].ops[]{warp}.donor',
+        '.textures[].ops[]{warp}.gain',
+        '.textures[].ops[]{warp}.grid',
+        '.textures[].ops[]{warp}.grid.s',
+        '.textures[].ops[]{warp}.grid.t',
+        '.textures[].ops[]{warp}.grid.x',
+        '.textures[].ops[]{warp}.grid.y',
+        '.textures[].ops[]{warp}.mask',
+        '.textures[].ops[]{warp}.nodes',
+        '.textures[].ops[]{warp}.nodes.a',
+        '.textures[].ops[]{warp}.nodes.b',
+        '.textures[].ops[]{warp}.nodes.dst',
+        '.textures[].ops[]{warp}.nodes.use',
+        '.textures[].ops[]{warp}.op',
+        '.textures[].palette_remap',
+        '.textures[].palette_remap.pairs',
+        '.textures[].palette_remap.tolerance',
+        '.textures[].reference',
+        '.textures[].resource_size',
+        '.textures[].selector',
+        '.textures[].size',
+        '.textures[].texels',
+        '.textures[].texels_moved_one_level',
+        '.textures[].texture',
+    )),
+    'nfl2k5_moment_kits/v1': frozenset((
+        '.about',
+        '.classic_defaults',
+        '.classic_defaults[].before',
+        '.classic_defaults[].file',
+        '.classic_defaults[].style',
+        '.classic_defaults[].why',
+        '.classic_defaults_note',
+        '.free_index_rule',
+        '.kits',
+        '.kits[].card_art',
+        '.kits[].card_art.flipchip',
+        '.kits[].card_art.helm_a',
+        '.kits[].card_art.helm_h',
+        '.kits[].card_art.logo',
+        '.kits[].card_art.logo_s',
+        '.kits[].card_art.mini_a',
+        '.kits[].card_art.mini_h',
+        '.kits[].card_art.unif_a',
+        '.kits[].card_art.unif_h',
+        '.kits[].cards',
+        '.kits[].cards.A',
+        '.kits[].cards.H',
+        '.kits[].cards.helm_a',
+        '.kits[].cards.logo',
+        '.kits[].cards.mini_a',
+        '.kits[].cards.unif_a',
+        '.kits[].cards.unif_h',
+        '.kits[].classic',
+        '.kits[].code',
+        '.kits[].evidence',
+        '.kits[].id',
+        '.kits[].label',
+        '.kits[].look',
+        '.kits[].moments',
+        '.kits[].sides',
+        '.kits[].sides.A',
+        '.kits[].sides.A.art',
+        '.kits[].sides.A.art[].chunk',
+        '.kits[].sides.A.art[].kind',
+        '.kits[].sides.A.art[].map',
+        '.kits[].sides.A.art[].map[].from',
+        '.kits[].sides.A.art[].map[].to',
+        '.kits[].sides.A.art[].max_blend_slots',
+        '.kits[].sides.A.art[].note',
+        '.kits[].sides.A.art[].ops',
+        '.kits[].sides.A.art[].ops[]{flood}.box',
+        '.kits[].sides.A.art[].ops[]{flood}.color',
+        '.kits[].sides.A.art[].ops[]{flood}.op',
+        '.kits[].sides.A.art[].ops[]{flood}.seed',
+        '.kits[].sides.A.art[].ops[]{flood}.tolerance',
+        '.kits[].sides.A.art[].ops[]{multipoly}.alpha',
+        '.kits[].sides.A.art[].ops[]{multipoly}.color',
+        '.kits[].sides.A.art[].ops[]{multipoly}.op',
+        '.kits[].sides.A.art[].ops[]{multipoly}.polys',
+        '.kits[].sides.A.art[].ops[]{poly}.alpha',
+        '.kits[].sides.A.art[].ops[]{poly}.color',
+        '.kits[].sides.A.art[].ops[]{poly}.note',
+        '.kits[].sides.A.art[].ops[]{poly}.op',
+        '.kits[].sides.A.art[].ops[]{poly}.points',
+        '.kits[].sides.A.art[].ops[]{recolor}.box',
+        '.kits[].sides.A.art[].ops[]{recolor}.color',
+        '.kits[].sides.A.art[].ops[]{recolor}.from',
+        '.kits[].sides.A.art[].ops[]{recolor}.op',
+        '.kits[].sides.A.art[].ops[]{recolor}.tolerance',
+        '.kits[].sides.A.art[].ops[]{ring}.box',
+        '.kits[].sides.A.art[].ops[]{ring}.color',
+        '.kits[].sides.A.art[].ops[]{ring}.from',
+        '.kits[].sides.A.art[].ops[]{ring}.inside',
+        '.kits[].sides.A.art[].ops[]{ring}.op',
+        '.kits[].sides.A.art[].ops[]{ring}.to',
+        '.kits[].sides.A.art[].ops[]{ring}.tolerance',
+        '.kits[].sides.A.art[].ops[]{texels}.color',
+        '.kits[].sides.A.art[].ops[]{texels}.note',
+        '.kits[].sides.A.art[].ops[]{texels}.op',
+        '.kits[].sides.A.art[].ops[]{texels}.points',
+        '.kits[].sides.A.art[].reencode',
+        '.kits[].sides.A.art[].size',
+        '.kits[].sides.A.art[].texture',
+        '.kits[].sides.A.art[].texture_kind',
+        '.kits[].sides.A.art[].tolerance',
+        '.kits[].sides.A.atlas',
+        '.kits[].sides.A.atlas.format',
+        '.kits[].sides.A.atlas.ops',
+        '.kits[].sides.A.atlas.ops[]{copy}.dst',
+        '.kits[].sides.A.atlas.ops[]{copy}.note',
+        '.kits[].sides.A.atlas.ops[]{copy}.op',
+        '.kits[].sides.A.atlas.ops[]{copy}.src',
+        '.kits[].sides.A.atlas.ops[]{multipoly}.color',
+        '.kits[].sides.A.atlas.ops[]{multipoly}.op',
+        '.kits[].sides.A.atlas.ops[]{multipoly}.polys',
+        '.kits[].sides.A.atlas.ops[]{poly}.color',
+        '.kits[].sides.A.atlas.ops[]{poly}.note',
+        '.kits[].sides.A.atlas.ops[]{poly}.op',
+        '.kits[].sides.A.atlas.ops[]{poly}.points',
+        '.kits[].sides.A.atlas.ops[]{remap}.box',
+        '.kits[].sides.A.atlas.ops[]{remap}.op',
+        '.kits[].sides.A.atlas.ops[]{remap}.pairs',
+        '.kits[].sides.A.atlas.ops[]{remap}.tolerance',
+        '.kits[].sides.A.atlas.overlays',
+        '.kits[].sides.A.atlas.overlays[].boxes',
+        '.kits[].sides.A.atlas.overlays[].donor',
+        '.kits[].sides.A.base',
+        '.kits[].sides.A.chunks',
+        '.kits[].sides.A.chunks.*',
+        '.kits[].sides.A.chunks.1',
+        '.kits[].sides.A.chunks.13-22',
+        '.kits[].sides.A.chunks.23-32',
+        '.kits[].sides.A.chunks.3',
+        '.kits[].sides.A.chunks.33-44',
+        '.kits[].sides.A.chunks.4',
+        '.kits[].sides.A.chunks.4-12',
+        '.kits[].sides.A.chunks.45',
+        '.kits[].sides.A.chunks.46',
+        '.kits[].sides.A.chunks.48',
+        '.kits[].sides.A.unif',
+        '.kits[].sides.A.unif_colours',
+        '.kits[].sides.H',
+        '.kits[].sides.H.art',
+        '.kits[].sides.H.art[].chunk',
+        '.kits[].sides.H.art[].kind',
+        '.kits[].sides.H.art[].map',
+        '.kits[].sides.H.art[].map[].from',
+        '.kits[].sides.H.art[].map[].to',
+        '.kits[].sides.H.art[].max_blend_slots',
+        '.kits[].sides.H.art[].ops',
+        '.kits[].sides.H.art[].ops[]{flood}.box',
+        '.kits[].sides.H.art[].ops[]{flood}.color',
+        '.kits[].sides.H.art[].ops[]{flood}.op',
+        '.kits[].sides.H.art[].ops[]{flood}.seed',
+        '.kits[].sides.H.art[].ops[]{flood}.tolerance',
+        '.kits[].sides.H.art[].ops[]{grow}.box',
+        '.kits[].sides.H.art[].ops[]{grow}.color',
+        '.kits[].sides.H.art[].ops[]{grow}.from',
+        '.kits[].sides.H.art[].ops[]{grow}.into',
+        '.kits[].sides.H.art[].ops[]{grow}.op',
+        '.kits[].sides.H.art[].ops[]{grow}.radius',
+        '.kits[].sides.H.art[].ops[]{grow}.tolerance',
+        '.kits[].sides.H.art[].ops[]{multipoly}.alpha',
+        '.kits[].sides.H.art[].ops[]{multipoly}.color',
+        '.kits[].sides.H.art[].ops[]{multipoly}.op',
+        '.kits[].sides.H.art[].ops[]{multipoly}.polys',
+        '.kits[].sides.H.art[].ops[]{poly}.alpha',
+        '.kits[].sides.H.art[].ops[]{poly}.color',
+        '.kits[].sides.H.art[].ops[]{poly}.note',
+        '.kits[].sides.H.art[].ops[]{poly}.op',
+        '.kits[].sides.H.art[].ops[]{poly}.points',
+        '.kits[].sides.H.art[].ops[]{recolor}.box',
+        '.kits[].sides.H.art[].ops[]{recolor}.color',
+        '.kits[].sides.H.art[].ops[]{recolor}.from',
+        '.kits[].sides.H.art[].ops[]{recolor}.invert',
+        '.kits[].sides.H.art[].ops[]{recolor}.match',
+        '.kits[].sides.H.art[].ops[]{recolor}.op',
+        '.kits[].sides.H.art[].ops[]{recolor}.tolerance',
+        '.kits[].sides.H.art[].ops[]{ring}.box',
+        '.kits[].sides.H.art[].ops[]{ring}.color',
+        '.kits[].sides.H.art[].ops[]{ring}.from',
+        '.kits[].sides.H.art[].ops[]{ring}.inside',
+        '.kits[].sides.H.art[].ops[]{ring}.op',
+        '.kits[].sides.H.art[].ops[]{ring}.to',
+        '.kits[].sides.H.art[].ops[]{ring}.tolerance',
+        '.kits[].sides.H.art[].ops[]{texels}.color',
+        '.kits[].sides.H.art[].ops[]{texels}.note',
+        '.kits[].sides.H.art[].ops[]{texels}.op',
+        '.kits[].sides.H.art[].ops[]{texels}.points',
+        '.kits[].sides.H.art[].reencode',
+        '.kits[].sides.H.art[].size',
+        '.kits[].sides.H.art[].texture',
+        '.kits[].sides.H.art[].texture_kind',
+        '.kits[].sides.H.art[].tolerance',
+        '.kits[].sides.H.atlas',
+        '.kits[].sides.H.atlas.format',
+        '.kits[].sides.H.atlas.ops',
+        '.kits[].sides.H.atlas.ops[]{copy}.dst',
+        '.kits[].sides.H.atlas.ops[]{copy}.note',
+        '.kits[].sides.H.atlas.ops[]{copy}.op',
+        '.kits[].sides.H.atlas.ops[]{copy}.src',
+        '.kits[].sides.H.atlas.ops[]{multipoly}.color',
+        '.kits[].sides.H.atlas.ops[]{multipoly}.op',
+        '.kits[].sides.H.atlas.ops[]{multipoly}.polys',
+        '.kits[].sides.H.atlas.ops[]{poly}.color',
+        '.kits[].sides.H.atlas.ops[]{poly}.note',
+        '.kits[].sides.H.atlas.ops[]{poly}.op',
+        '.kits[].sides.H.atlas.ops[]{poly}.points',
+        '.kits[].sides.H.atlas.ops[]{recolor}.box',
+        '.kits[].sides.H.atlas.ops[]{recolor}.color',
+        '.kits[].sides.H.atlas.ops[]{recolor}.from',
+        '.kits[].sides.H.atlas.ops[]{recolor}.note',
+        '.kits[].sides.H.atlas.ops[]{recolor}.op',
+        '.kits[].sides.H.atlas.ops[]{recolor}.tolerance',
+        '.kits[].sides.H.atlas.ops[]{remap}.box',
+        '.kits[].sides.H.atlas.ops[]{remap}.op',
+        '.kits[].sides.H.atlas.ops[]{remap}.pairs',
+        '.kits[].sides.H.atlas.ops[]{remap}.tolerance',
+        '.kits[].sides.H.atlas.overlays',
+        '.kits[].sides.H.atlas.overlays[].boxes',
+        '.kits[].sides.H.atlas.overlays[].donor',
+        '.kits[].sides.H.base',
+        '.kits[].sides.H.chunks',
+        '.kits[].sides.H.chunks.*',
+        '.kits[].sides.H.unif',
+        '.kits[].sides.H.unif_colours',
+        '.kits[].style',
+        '.kits[].team',
+        '.schema',
+        '.selections',
+        '.selections[].before',
+        '.selections[].file',
+        '.selections[].kit',
+        '.selections[].reuse',
+        '.selections[].row',
+        '.selections[].side',
+        '.selections[].style',
+        '.selections[].why',
+    )),
+    'nfl2k5_team_select_old_logo_cleanup/v1': frozenset((
+        '.cards',
+        '.cards.helm_a00_0_128',
+        '.cards.helm_a00_0_128.changed_pixels',
+        '.cards.helm_a00_0_128.clean_rgba_sha256',
+        '.cards.helm_a00_0_128.source_rgba_sha256',
+        '.cards.helm_a00_0_256',
+        '.cards.helm_a00_0_256.changed_pixels',
+        '.cards.helm_a00_0_256.clean_rgba_sha256',
+        '.cards.helm_a00_0_256.source_rgba_sha256',
+        '.cards.helm_a00_6_128',
+        '.cards.helm_a00_6_128.changed_pixels',
+        '.cards.helm_a00_6_128.clean_rgba_sha256',
+        '.cards.helm_a00_6_128.source_rgba_sha256',
+        '.cards.helm_a00_6_256',
+        '.cards.helm_a00_6_256.changed_pixels',
+        '.cards.helm_a00_6_256.clean_rgba_sha256',
+        '.cards.helm_a00_6_256.source_rgba_sha256',
+        '.cards.helm_a00_7_128',
+        '.cards.helm_a00_7_128.changed_pixels',
+        '.cards.helm_a00_7_128.clean_rgba_sha256',
+        '.cards.helm_a00_7_128.source_rgba_sha256',
+        '.cards.helm_a00_7_256',
+        '.cards.helm_a00_7_256.changed_pixels',
+        '.cards.helm_a00_7_256.clean_rgba_sha256',
+        '.cards.helm_a00_7_256.source_rgba_sha256',
+        '.cards.helm_a02_0_128',
+        '.cards.helm_a02_0_128.changed_pixels',
+        '.cards.helm_a02_0_128.clean_rgba_sha256',
+        '.cards.helm_a02_0_128.source_rgba_sha256',
+        '.cards.helm_a02_0_256',
+        '.cards.helm_a02_0_256.changed_pixels',
+        '.cards.helm_a02_0_256.clean_rgba_sha256',
+        '.cards.helm_a02_0_256.source_rgba_sha256',
+        '.cards.helm_a02_2_128',
+        '.cards.helm_a02_2_128.changed_pixels',
+        '.cards.helm_a02_2_128.clean_rgba_sha256',
+        '.cards.helm_a02_2_128.source_rgba_sha256',
+        '.cards.helm_a02_2_256',
+        '.cards.helm_a02_2_256.changed_pixels',
+        '.cards.helm_a02_2_256.clean_rgba_sha256',
+        '.cards.helm_a02_2_256.source_rgba_sha256',
+        '.cards.helm_a02_3_128',
+        '.cards.helm_a02_3_128.changed_pixels',
+        '.cards.helm_a02_3_128.clean_rgba_sha256',
+        '.cards.helm_a02_3_128.source_rgba_sha256',
+        '.cards.helm_a02_3_256',
+        '.cards.helm_a02_3_256.changed_pixels',
+        '.cards.helm_a02_3_256.clean_rgba_sha256',
+        '.cards.helm_a02_3_256.source_rgba_sha256',
+        '.cards.helm_a09_0_128',
+        '.cards.helm_a09_0_128.changed_pixels',
+        '.cards.helm_a09_0_128.clean_rgba_sha256',
+        '.cards.helm_a09_0_128.source_rgba_sha256',
+        '.cards.helm_a09_0_256',
+        '.cards.helm_a09_0_256.changed_pixels',
+        '.cards.helm_a09_0_256.clean_rgba_sha256',
+        '.cards.helm_a09_0_256.source_rgba_sha256',
+        '.cards.helm_a09_2_128',
+        '.cards.helm_a09_2_128.changed_pixels',
+        '.cards.helm_a09_2_128.clean_rgba_sha256',
+        '.cards.helm_a09_2_128.source_rgba_sha256',
+        '.cards.helm_a09_2_256',
+        '.cards.helm_a09_2_256.changed_pixels',
+        '.cards.helm_a09_2_256.clean_rgba_sha256',
+        '.cards.helm_a09_2_256.source_rgba_sha256',
+        '.cards.helm_a09_9_128',
+        '.cards.helm_a09_9_128.changed_pixels',
+        '.cards.helm_a09_9_128.clean_rgba_sha256',
+        '.cards.helm_a09_9_128.source_rgba_sha256',
+        '.cards.helm_a09_9_256',
+        '.cards.helm_a09_9_256.changed_pixels',
+        '.cards.helm_a09_9_256.clean_rgba_sha256',
+        '.cards.helm_a09_9_256.source_rgba_sha256',
+        '.cards.helm_a19_7_128',
+        '.cards.helm_a19_7_128.changed_pixels',
+        '.cards.helm_a19_7_128.clean_rgba_sha256',
+        '.cards.helm_a19_7_128.source_rgba_sha256',
+        '.cards.helm_a19_7_256',
+        '.cards.helm_a19_7_256.changed_pixels',
+        '.cards.helm_a19_7_256.clean_rgba_sha256',
+        '.cards.helm_a19_7_256.source_rgba_sha256',
+        '.cards.helm_a29_0_128',
+        '.cards.helm_a29_0_128.changed_pixels',
+        '.cards.helm_a29_0_128.clean_rgba_sha256',
+        '.cards.helm_a29_0_128.source_rgba_sha256',
+        '.cards.helm_a29_0_256',
+        '.cards.helm_a29_0_256.changed_pixels',
+        '.cards.helm_a29_0_256.clean_rgba_sha256',
+        '.cards.helm_a29_0_256.source_rgba_sha256',
+        '.cards.helm_a29_9_128',
+        '.cards.helm_a29_9_128.changed_pixels',
+        '.cards.helm_a29_9_128.clean_rgba_sha256',
+        '.cards.helm_a29_9_128.source_rgba_sha256',
+        '.cards.helm_a29_9_256',
+        '.cards.helm_a29_9_256.changed_pixels',
+        '.cards.helm_a29_9_256.clean_rgba_sha256',
+        '.cards.helm_a29_9_256.source_rgba_sha256',
+        '.cards.helm_h00_0_128',
+        '.cards.helm_h00_0_128.changed_pixels',
+        '.cards.helm_h00_0_128.clean_rgba_sha256',
+        '.cards.helm_h00_0_128.source_rgba_sha256',
+        '.cards.helm_h00_0_256',
+        '.cards.helm_h00_0_256.changed_pixels',
+        '.cards.helm_h00_0_256.clean_rgba_sha256',
+        '.cards.helm_h00_0_256.source_rgba_sha256',
+        '.cards.helm_h00_6_128',
+        '.cards.helm_h00_6_128.changed_pixels',
+        '.cards.helm_h00_6_128.clean_rgba_sha256',
+        '.cards.helm_h00_6_128.source_rgba_sha256',
+        '.cards.helm_h00_6_256',
+        '.cards.helm_h00_6_256.changed_pixels',
+        '.cards.helm_h00_6_256.clean_rgba_sha256',
+        '.cards.helm_h00_6_256.source_rgba_sha256',
+        '.cards.helm_h00_7_128',
+        '.cards.helm_h00_7_128.changed_pixels',
+        '.cards.helm_h00_7_128.clean_rgba_sha256',
+        '.cards.helm_h00_7_128.source_rgba_sha256',
+        '.cards.helm_h00_7_256',
+        '.cards.helm_h00_7_256.changed_pixels',
+        '.cards.helm_h00_7_256.clean_rgba_sha256',
+        '.cards.helm_h00_7_256.source_rgba_sha256',
+        '.cards.helm_h02_0_128',
+        '.cards.helm_h02_0_128.changed_pixels',
+        '.cards.helm_h02_0_128.clean_rgba_sha256',
+        '.cards.helm_h02_0_128.source_rgba_sha256',
+        '.cards.helm_h02_0_256',
+        '.cards.helm_h02_0_256.changed_pixels',
+        '.cards.helm_h02_0_256.clean_rgba_sha256',
+        '.cards.helm_h02_0_256.source_rgba_sha256',
+        '.cards.helm_h02_2_128',
+        '.cards.helm_h02_2_128.changed_pixels',
+        '.cards.helm_h02_2_128.clean_rgba_sha256',
+        '.cards.helm_h02_2_128.source_rgba_sha256',
+        '.cards.helm_h02_2_256',
+        '.cards.helm_h02_2_256.changed_pixels',
+        '.cards.helm_h02_2_256.clean_rgba_sha256',
+        '.cards.helm_h02_2_256.source_rgba_sha256',
+        '.cards.helm_h02_3_128',
+        '.cards.helm_h02_3_128.changed_pixels',
+        '.cards.helm_h02_3_128.clean_rgba_sha256',
+        '.cards.helm_h02_3_128.source_rgba_sha256',
+        '.cards.helm_h02_3_256',
+        '.cards.helm_h02_3_256.changed_pixels',
+        '.cards.helm_h02_3_256.clean_rgba_sha256',
+        '.cards.helm_h02_3_256.source_rgba_sha256',
+        '.cards.helm_h09_0_128',
+        '.cards.helm_h09_0_128.changed_pixels',
+        '.cards.helm_h09_0_128.clean_rgba_sha256',
+        '.cards.helm_h09_0_128.source_rgba_sha256',
+        '.cards.helm_h09_0_256',
+        '.cards.helm_h09_0_256.changed_pixels',
+        '.cards.helm_h09_0_256.clean_rgba_sha256',
+        '.cards.helm_h09_0_256.source_rgba_sha256',
+        '.cards.helm_h09_2_128',
+        '.cards.helm_h09_2_128.changed_pixels',
+        '.cards.helm_h09_2_128.clean_rgba_sha256',
+        '.cards.helm_h09_2_128.source_rgba_sha256',
+        '.cards.helm_h09_2_256',
+        '.cards.helm_h09_2_256.changed_pixels',
+        '.cards.helm_h09_2_256.clean_rgba_sha256',
+        '.cards.helm_h09_2_256.source_rgba_sha256',
+        '.cards.helm_h09_9_128',
+        '.cards.helm_h09_9_128.changed_pixels',
+        '.cards.helm_h09_9_128.clean_rgba_sha256',
+        '.cards.helm_h09_9_128.source_rgba_sha256',
+        '.cards.helm_h09_9_256',
+        '.cards.helm_h09_9_256.changed_pixels',
+        '.cards.helm_h09_9_256.clean_rgba_sha256',
+        '.cards.helm_h09_9_256.source_rgba_sha256',
+        '.cards.helm_h19_7_128',
+        '.cards.helm_h19_7_128.changed_pixels',
+        '.cards.helm_h19_7_128.clean_rgba_sha256',
+        '.cards.helm_h19_7_128.source_rgba_sha256',
+        '.cards.helm_h19_7_256',
+        '.cards.helm_h19_7_256.changed_pixels',
+        '.cards.helm_h19_7_256.clean_rgba_sha256',
+        '.cards.helm_h19_7_256.source_rgba_sha256',
+        '.cards.helm_h29_0_128',
+        '.cards.helm_h29_0_128.changed_pixels',
+        '.cards.helm_h29_0_128.clean_rgba_sha256',
+        '.cards.helm_h29_0_128.source_rgba_sha256',
+        '.cards.helm_h29_0_256',
+        '.cards.helm_h29_0_256.changed_pixels',
+        '.cards.helm_h29_0_256.clean_rgba_sha256',
+        '.cards.helm_h29_0_256.source_rgba_sha256',
+        '.cards.helm_h29_9_128',
+        '.cards.helm_h29_9_128.changed_pixels',
+        '.cards.helm_h29_9_128.clean_rgba_sha256',
+        '.cards.helm_h29_9_128.source_rgba_sha256',
+        '.cards.helm_h29_9_256',
+        '.cards.helm_h29_9_256.changed_pixels',
+        '.cards.helm_h29_9_256.clean_rgba_sha256',
+        '.cards.helm_h29_9_256.source_rgba_sha256',
+        '.cards.unif_a00_0_256',
+        '.cards.unif_a00_0_256.changed_pixels',
+        '.cards.unif_a00_0_256.clean_rgba_sha256',
+        '.cards.unif_a00_0_256.source_rgba_sha256',
+        '.cards.unif_a00_6_256',
+        '.cards.unif_a00_6_256.changed_pixels',
+        '.cards.unif_a00_6_256.clean_rgba_sha256',
+        '.cards.unif_a00_6_256.source_rgba_sha256',
+        '.cards.unif_a00_7_256',
+        '.cards.unif_a00_7_256.changed_pixels',
+        '.cards.unif_a00_7_256.clean_rgba_sha256',
+        '.cards.unif_a00_7_256.source_rgba_sha256',
+        '.cards.unif_a02_0_256',
+        '.cards.unif_a02_0_256.changed_pixels',
+        '.cards.unif_a02_0_256.clean_rgba_sha256',
+        '.cards.unif_a02_0_256.source_rgba_sha256',
+        '.cards.unif_a02_2_256',
+        '.cards.unif_a02_2_256.changed_pixels',
+        '.cards.unif_a02_2_256.clean_rgba_sha256',
+        '.cards.unif_a02_2_256.source_rgba_sha256',
+        '.cards.unif_a02_3_256',
+        '.cards.unif_a02_3_256.changed_pixels',
+        '.cards.unif_a02_3_256.clean_rgba_sha256',
+        '.cards.unif_a02_3_256.source_rgba_sha256',
+        '.cards.unif_a09_0_256',
+        '.cards.unif_a09_0_256.changed_pixels',
+        '.cards.unif_a09_0_256.clean_rgba_sha256',
+        '.cards.unif_a09_0_256.source_rgba_sha256',
+        '.cards.unif_a09_2_256',
+        '.cards.unif_a09_2_256.changed_pixels',
+        '.cards.unif_a09_2_256.clean_rgba_sha256',
+        '.cards.unif_a09_2_256.source_rgba_sha256',
+        '.cards.unif_a09_9_256',
+        '.cards.unif_a09_9_256.changed_pixels',
+        '.cards.unif_a09_9_256.clean_rgba_sha256',
+        '.cards.unif_a09_9_256.source_rgba_sha256',
+        '.cards.unif_a19_7_256',
+        '.cards.unif_a19_7_256.changed_pixels',
+        '.cards.unif_a19_7_256.clean_rgba_sha256',
+        '.cards.unif_a19_7_256.source_rgba_sha256',
+        '.cards.unif_a29_0_256',
+        '.cards.unif_a29_0_256.changed_pixels',
+        '.cards.unif_a29_0_256.clean_rgba_sha256',
+        '.cards.unif_a29_0_256.source_rgba_sha256',
+        '.cards.unif_a29_9_256',
+        '.cards.unif_a29_9_256.changed_pixels',
+        '.cards.unif_a29_9_256.clean_rgba_sha256',
+        '.cards.unif_a29_9_256.source_rgba_sha256',
+        '.cards.unif_h00_0_256',
+        '.cards.unif_h00_0_256.changed_pixels',
+        '.cards.unif_h00_0_256.clean_rgba_sha256',
+        '.cards.unif_h00_0_256.source_rgba_sha256',
+        '.cards.unif_h00_6_256',
+        '.cards.unif_h00_6_256.changed_pixels',
+        '.cards.unif_h00_6_256.clean_rgba_sha256',
+        '.cards.unif_h00_6_256.source_rgba_sha256',
+        '.cards.unif_h00_7_256',
+        '.cards.unif_h00_7_256.changed_pixels',
+        '.cards.unif_h00_7_256.clean_rgba_sha256',
+        '.cards.unif_h00_7_256.source_rgba_sha256',
+        '.cards.unif_h02_0_256',
+        '.cards.unif_h02_0_256.changed_pixels',
+        '.cards.unif_h02_0_256.clean_rgba_sha256',
+        '.cards.unif_h02_0_256.source_rgba_sha256',
+        '.cards.unif_h02_2_256',
+        '.cards.unif_h02_2_256.changed_pixels',
+        '.cards.unif_h02_2_256.clean_rgba_sha256',
+        '.cards.unif_h02_2_256.source_rgba_sha256',
+        '.cards.unif_h02_3_256',
+        '.cards.unif_h02_3_256.changed_pixels',
+        '.cards.unif_h02_3_256.clean_rgba_sha256',
+        '.cards.unif_h02_3_256.source_rgba_sha256',
+        '.cards.unif_h09_0_256',
+        '.cards.unif_h09_0_256.changed_pixels',
+        '.cards.unif_h09_0_256.clean_rgba_sha256',
+        '.cards.unif_h09_0_256.source_rgba_sha256',
+        '.cards.unif_h09_2_256',
+        '.cards.unif_h09_2_256.changed_pixels',
+        '.cards.unif_h09_2_256.clean_rgba_sha256',
+        '.cards.unif_h09_2_256.source_rgba_sha256',
+        '.cards.unif_h09_9_256',
+        '.cards.unif_h09_9_256.changed_pixels',
+        '.cards.unif_h09_9_256.clean_rgba_sha256',
+        '.cards.unif_h09_9_256.source_rgba_sha256',
+        '.cards.unif_h19_7_256',
+        '.cards.unif_h19_7_256.changed_pixels',
+        '.cards.unif_h19_7_256.clean_rgba_sha256',
+        '.cards.unif_h19_7_256.source_rgba_sha256',
+        '.cards.unif_h29_0_256',
+        '.cards.unif_h29_0_256.changed_pixels',
+        '.cards.unif_h29_0_256.clean_rgba_sha256',
+        '.cards.unif_h29_0_256.source_rgba_sha256',
+        '.cards.unif_h29_9_256',
+        '.cards.unif_h29_9_256.changed_pixels',
+        '.cards.unif_h29_9_256.clean_rgba_sha256',
+        '.cards.unif_h29_9_256.source_rgba_sha256',
+        '.coordinates',
+        '.derived_128',
+        '.groups',
+        '.groups[].card',
+        '.groups[].code',
+        '.groups[].regions',
+        '.groups[].regions[].estimate',
+        '.groups[].regions[].grow',
+        '.groups[].regions[].inset',
+        '.groups[].regions[].keep_band',
+        '.groups[].regions[].mode',
+        '.groups[].regions[].note',
+        '.groups[].regions[].poly',
+        '.groups[].regions[].shell_box',
+        '.groups[].regions[].sign',
+        '.groups[].regions[].threshold',
+        '.groups[].styles',
+        '.groups[].team',
+        '.purpose',
+        '.schema',
+        '.source',
+        '.texture_pins',
+        '.texture_pins.bal_pants_02A0',
+        '.texture_pins.bal_pants_02A0.changed_pixels',
+        '.texture_pins.bal_pants_02A0.clean_rgba_sha256',
+        '.texture_pins.bal_pants_02A0.edits',
+        '.texture_pins.bal_pants_02A0.source_rgba_sha256',
+        '.texture_pins.bal_pants_02A2',
+        '.texture_pins.bal_pants_02A2.changed_pixels',
+        '.texture_pins.bal_pants_02A2.clean_rgba_sha256',
+        '.texture_pins.bal_pants_02A2.edits',
+        '.texture_pins.bal_pants_02A2.source_rgba_sha256',
+        '.texture_pins.bal_pants_02H0',
+        '.texture_pins.bal_pants_02H0.changed_pixels',
+        '.texture_pins.bal_pants_02H0.clean_rgba_sha256',
+        '.texture_pins.bal_pants_02H0.edits',
+        '.texture_pins.bal_pants_02H0.source_rgba_sha256',
+        '.texture_pins.bal_pants_02H2',
+        '.texture_pins.bal_pants_02H2.changed_pixels',
+        '.texture_pins.bal_pants_02H2.clean_rgba_sha256',
+        '.texture_pins.bal_pants_02H2.edits',
+        '.texture_pins.bal_pants_02H2.source_rgba_sha256',
+        '.texture_pins.bal_pants_02x3',
+        '.texture_pins.bal_pants_02x3.changed_pixels',
+        '.texture_pins.bal_pants_02x3.clean_rgba_sha256',
+        '.texture_pins.bal_pants_02x3.edits',
+        '.texture_pins.bal_pants_02x3.source_rgba_sha256',
+        '.texture_pins.buf_splayer_a',
+        '.texture_pins.buf_splayer_a.changed_pixels',
+        '.texture_pins.buf_splayer_a.clean_rgba_sha256',
+        '.texture_pins.buf_splayer_a.edits',
+        '.texture_pins.buf_splayer_a.source_rgba_sha256',
+        '.texture_pins.buf_splayer_h',
+        '.texture_pins.buf_splayer_h.changed_pixels',
+        '.texture_pins.buf_splayer_h.clean_rgba_sha256',
+        '.texture_pins.buf_splayer_h.edits',
+        '.texture_pins.buf_splayer_h.source_rgba_sha256',
+        '.texture_pins.car_pants_04A0',
+        '.texture_pins.car_pants_04A0.changed_pixels',
+        '.texture_pins.car_pants_04A0.clean_rgba_sha256',
+        '.texture_pins.car_pants_04A0.edits',
+        '.texture_pins.car_pants_04A0.source_rgba_sha256',
+        '.texture_pins.car_pants_04H0',
+        '.texture_pins.car_pants_04H0.changed_pixels',
+        '.texture_pins.car_pants_04H0.clean_rgba_sha256',
+        '.texture_pins.car_pants_04H0.edits',
+        '.texture_pins.car_pants_04H0.source_rgba_sha256',
+        '.texture_pins.car_splayer_a',
+        '.texture_pins.car_splayer_a.changed_pixels',
+        '.texture_pins.car_splayer_a.clean_rgba_sha256',
+        '.texture_pins.car_splayer_a.edits',
+        '.texture_pins.car_splayer_a.source_rgba_sha256',
+        '.texture_pins.cle_helmet02_30_0',
+        '.texture_pins.cle_helmet02_30_0.changed_pixels',
+        '.texture_pins.cle_helmet02_30_0.clean_rgba_sha256',
+        '.texture_pins.cle_helmet02_30_0.edits',
+        '.texture_pins.cle_helmet02_30_0.source_rgba_sha256',
+        '.texture_pins.cle_helmet02_30_3',
+        '.texture_pins.cle_helmet02_30_3.changed_pixels',
+        '.texture_pins.cle_helmet02_30_3.clean_rgba_sha256',
+        '.texture_pins.cle_helmet02_30_3.edits',
+        '.texture_pins.cle_helmet02_30_3.source_rgba_sha256',
+        '.texture_pins.cle_helmet02_30_4',
+        '.texture_pins.cle_helmet02_30_4.changed_pixels',
+        '.texture_pins.cle_helmet02_30_4.clean_rgba_sha256',
+        '.texture_pins.cle_helmet02_30_4.edits',
+        '.texture_pins.cle_helmet02_30_4.source_rgba_sha256',
+        '.texture_pins.den_helmet00_alt',
+        '.texture_pins.den_helmet00_alt.changed_pixels',
+        '.texture_pins.den_helmet00_alt.clean_rgba_sha256',
+        '.texture_pins.den_helmet00_alt.edits',
+        '.texture_pins.den_helmet00_alt.source_rgba_sha256',
+        '.texture_pins.den_helmet02_navy',
+        '.texture_pins.den_helmet02_navy.changed_pixels',
+        '.texture_pins.den_helmet02_navy.clean_rgba_sha256',
+        '.texture_pins.den_helmet02_navy.edits',
+        '.texture_pins.den_helmet02_navy.source_rgba_sha256',
+        '.texture_pins.den_helmet02_navy6',
+        '.texture_pins.den_helmet02_navy6.changed_pixels',
+        '.texture_pins.den_helmet02_navy6.clean_rgba_sha256',
+        '.texture_pins.den_helmet02_navy6.edits',
+        '.texture_pins.den_helmet02_navy6.source_rgba_sha256',
+        '.texture_pins.den_helmet02_white',
+        '.texture_pins.den_helmet02_white.changed_pixels',
+        '.texture_pins.den_helmet02_white.clean_rgba_sha256',
+        '.texture_pins.den_helmet02_white.edits',
+        '.texture_pins.den_helmet02_white.source_rgba_sha256',
+        '.texture_pins.det_helmet00_alt',
+        '.texture_pins.det_helmet00_alt.changed_pixels',
+        '.texture_pins.det_helmet00_alt.clean_rgba_sha256',
+        '.texture_pins.det_helmet00_alt.edits',
+        '.texture_pins.det_helmet00_alt.source_rgba_sha256',
+        '.texture_pins.det_helmet02_alt',
+        '.texture_pins.det_helmet02_alt.changed_pixels',
+        '.texture_pins.det_helmet02_alt.clean_rgba_sha256',
+        '.texture_pins.det_helmet02_alt.edits',
+        '.texture_pins.det_helmet02_alt.source_rgba_sha256',
+        '.texture_pins.det_splayer_a',
+        '.texture_pins.det_splayer_a.changed_pixels',
+        '.texture_pins.det_splayer_a.clean_rgba_sha256',
+        '.texture_pins.det_splayer_a.edits',
+        '.texture_pins.det_splayer_a.source_rgba_sha256',
+        '.texture_pins.det_splayer_h',
+        '.texture_pins.det_splayer_h.changed_pixels',
+        '.texture_pins.det_splayer_h.clean_rgba_sha256',
+        '.texture_pins.det_splayer_h.edits',
+        '.texture_pins.det_splayer_h.source_rgba_sha256',
+        '.texture_pins.hou_helmet00_horns',
+        '.texture_pins.hou_helmet00_horns.changed_pixels',
+        '.texture_pins.hou_helmet00_horns.clean_rgba_sha256',
+        '.texture_pins.hou_helmet00_horns.edits',
+        '.texture_pins.hou_helmet00_horns.source_rgba_sha256',
+        '.texture_pins.hou_helmet02_bull',
+        '.texture_pins.hou_helmet02_bull.changed_pixels',
+        '.texture_pins.hou_helmet02_bull.clean_rgba_sha256',
+        '.texture_pins.hou_helmet02_bull.edits',
+        '.texture_pins.hou_helmet02_bull.source_rgba_sha256',
+        '.texture_pins.lac_helmet00_24',
+        '.texture_pins.lac_helmet00_24.changed_pixels',
+        '.texture_pins.lac_helmet00_24.clean_rgba_sha256',
+        '.texture_pins.lac_helmet00_24.edits',
+        '.texture_pins.lac_helmet00_24.source_rgba_sha256',
+        '.texture_pins.ten_splayer_a',
+        '.texture_pins.ten_splayer_a.changed_pixels',
+        '.texture_pins.ten_splayer_a.clean_rgba_sha256',
+        '.texture_pins.ten_splayer_a.edits',
+        '.texture_pins.ten_splayer_a.source_rgba_sha256',
+        '.texture_pins.ten_splayer_h',
+        '.texture_pins.ten_splayer_h.changed_pixels',
+        '.texture_pins.ten_splayer_h.clean_rgba_sha256',
+        '.texture_pins.ten_splayer_h.edits',
+        '.texture_pins.ten_splayer_h.source_rgba_sha256',
+        '.texture_pins.was_helmet00_29_9',
+        '.texture_pins.was_helmet00_29_9.changed_pixels',
+        '.texture_pins.was_helmet00_29_9.clean_rgba_sha256',
+        '.texture_pins.was_helmet00_29_9.edits',
+        '.texture_pins.was_helmet00_29_9.source_rgba_sha256',
+        '.texture_pins.was_helmet02_29_9',
+        '.texture_pins.was_helmet02_29_9.changed_pixels',
+        '.texture_pins.was_helmet02_29_9.clean_rgba_sha256',
+        '.texture_pins.was_helmet02_29_9.edits',
+        '.texture_pins.was_helmet02_29_9.source_rgba_sha256',
+        '.textures',
+        '.textures[].alpha',
+        '.textures[].edits',
+        '.textures[].kind',
+        '.textures[].marks',
+        '.textures[].marks[].box',
+        '.textures[].marks[].flip',
+        '.textures[].marks[].png',
+        '.textures[].match',
+        '.textures[].match.asset_code',
+        '.textures[].match.asset_id',
+        '.textures[].match.family',
+        '.textures[].match.side',
+        '.textures[].match.variant',
+        '.textures[].name',
+        '.textures[].note',
+        '.textures[].regions',
+        '.textures[].regions[].from',
+        '.textures[].regions[].grow',
+        '.textures[].regions[].mode',
+        '.textures[].regions[].note',
+        '.textures[].regions[].ops',
+        '.textures[].regions[].ops[]{poly}.color',
+        '.textures[].regions[].ops[]{poly}.only',
+        '.textures[].regions[].ops[]{poly}.only_tolerance',
+        '.textures[].regions[].ops[]{poly}.op',
+        '.textures[].regions[].ops[]{poly}.points',
+        '.textures[].regions[].poly',
+        '.textures[].regions[].runs',
+        '.textures[].regions[].shell_box',
+        '.textures[].regions[].sign',
+        '.textures[].regions[].threshold',
+        '.textures_note',
+    )),
+    'nfl2k5_uniform_alternates_2026/v1': frozenset((
+        '.alternates',
+        '.alternates.*',
+        '.alternates.*.blank',
+        '.alternates.*.blank_why',
+        '.alternates.*.build_type',
+        '.alternates.*.card_facemask',
+        '.alternates.*.code',
+        '.alternates.*.estimates',
+        '.alternates.*.keep_slot',
+        '.alternates.*.keep_slot_why',
+        '.alternates.*.kits',
+        '.alternates.*.kits.A',
+        '.alternates.*.kits.A.donor',
+        '.alternates.*.kits.A.ops',
+        '.alternates.*.kits.A.ops[]{remix}.boxes',
+        '.alternates.*.kits.A.ops[]{remix}.components',
+        '.alternates.*.kits.A.ops[]{remix}.exclude',
+        '.alternates.*.kits.A.ops[]{remix}.from',
+        '.alternates.*.kits.A.ops[]{remix}.moved',
+        '.alternates.*.kits.A.ops[]{remix}.op',
+        '.alternates.*.kits.A.ops[]{remix}.region',
+        '.alternates.*.kits.A.ops[]{remix}.to',
+        '.alternates.*.kits.A.ops[]{remix}.tolerance',
+        '.alternates.*.kits.A.ops[]{remix}.why',
+        '.alternates.*.kits.A.part_donors',
+        '.alternates.*.kits.A.part_donors.sleeve',
+        '.alternates.*.kits.A.socks',
+        '.alternates.*.kits.A.splayer_socks',
+        '.alternates.*.kits.H',
+        '.alternates.*.kits.H.donor',
+        '.alternates.*.kits.H.ops',
+        '.alternates.*.kits.H.ops[]{remix}.boxes',
+        '.alternates.*.kits.H.ops[]{remix}.components',
+        '.alternates.*.kits.H.ops[]{remix}.exclude',
+        '.alternates.*.kits.H.ops[]{remix}.from',
+        '.alternates.*.kits.H.ops[]{remix}.moved',
+        '.alternates.*.kits.H.ops[]{remix}.op',
+        '.alternates.*.kits.H.ops[]{remix}.region',
+        '.alternates.*.kits.H.ops[]{remix}.to',
+        '.alternates.*.kits.H.ops[]{remix}.tolerance',
+        '.alternates.*.kits.H.ops[]{remix}.why',
+        '.alternates.*.kits.H.part_donors',
+        '.alternates.*.kits.H.part_donors.sleeve',
+        '.alternates.*.kits.H.socks',
+        '.alternates.*.kits.H.socks.colour',
+        '.alternates.*.kits.H.splayer_socks',
+        '.alternates.*.label',
+        '.alternates.*.note',
+        '.alternates.*.ops',
+        '.alternates.*.ops[]{halo}.colour',
+        '.alternates.*.ops[]{halo}.components',
+        '.alternates.*.ops[]{halo}.op',
+        '.alternates.*.ops[]{halo}.target',
+        '.alternates.*.ops[]{halo}.tolerance',
+        '.alternates.*.ops[]{halo}.why',
+        '.alternates.*.ops[]{halo}.width',
+        '.alternates.*.ops[]{outline}.components',
+        '.alternates.*.ops[]{outline}.fill',
+        '.alternates.*.ops[]{outline}.line',
+        '.alternates.*.ops[]{outline}.op',
+        '.alternates.*.ops[]{outline}.why',
+        '.alternates.*.ops[]{outline}.width',
+        '.alternates.*.ops[]{paint}.components',
+        '.alternates.*.ops[]{paint}.op',
+        '.alternates.*.ops[]{paint}.rects',
+        '.alternates.*.ops[]{paint}.rects[].box',
+        '.alternates.*.ops[]{paint}.rects[].colour',
+        '.alternates.*.ops[]{paint}.why',
+        '.alternates.*.ops[]{remix}.boxes',
+        '.alternates.*.ops[]{remix}.components',
+        '.alternates.*.ops[]{remix}.exclude',
+        '.alternates.*.ops[]{remix}.from',
+        '.alternates.*.ops[]{remix}.moved',
+        '.alternates.*.ops[]{remix}.op',
+        '.alternates.*.ops[]{remix}.region',
+        '.alternates.*.ops[]{remix}.to',
+        '.alternates.*.ops[]{remix}.tolerance',
+        '.alternates.*.ops[]{remix}.why',
+        '.alternates.*.ops[]{star}.components',
+        '.alternates.*.ops[]{star}.op',
+        '.alternates.*.ops[]{star}.stars',
+        '.alternates.*.ops[]{star}.stars[].R',
+        '.alternates.*.ops[]{star}.stars[].c',
+        '.alternates.*.ops[]{star}.stars[].fill',
+        '.alternates.*.ops[]{star}.stars[].line',
+        '.alternates.*.ops[]{star}.stars[].outline',
+        '.alternates.*.ops[]{star}.stars[].r',
+        '.alternates.*.ops[]{star}.stars[].rot',
+        '.alternates.*.ops[]{star}.why',
+        '.alternates.*.ops[]{tint}.colour',
+        '.alternates.*.ops[]{tint}.components',
+        '.alternates.*.ops[]{tint}.op',
+        '.alternates.*.ops[]{tint}.why',
+        '.alternates.*.retail_pair',
+        '.alternates.*.set',
+        '.alternates.*.socks',
+        '.alternates.*.socks.colour',
+        '.alternates.*.socks.why',
+        '.alternates.*.sources',
+        '.alternates.*.sources[].supports',
+        '.alternates.*.sources[].url',
+        '.alternates.*.splayer_socks',
+        '.alternates.*.style',
+        '.alternates.*.team',
+        '.alternates.*.unif',
+        '.alternates.*.unif.facemask',
+        '.alternates.*.unif.turtleneck',
+        '.note',
+        '.schema',
+    )),
+}   # end of DOCUMENT_SHAPES
+
+
+# b81-retail-free-art (coordinator, 2026-11-20): third-party pictures that ship under a licence requiring attribution are
+# recorded in these SOURCES files; each such file ships only with its NOTICE.md entry, and every PNG beside a SOURCES file
+# needs its record.
+THIRD_PARTY_SOURCES = ("data/nfl2k5_kit_rule_fill/SOURCES.json",)
+
+
+def _check_third_party_notices(root: Path, shipped: set) -> None:
+    """Refuse a shipped picture without its source record, or a third-party one (``licence`` in its record) whose
+    NOTICE.md attribution is missing: every string of the record's ``notice`` list must appear in NOTICE.md."""
+    notice = (root / "NOTICE.md").read_text(encoding="utf-8") if "NOTICE.md" in shipped else ""
+    for record in THIRD_PARTY_SOURCES:
+        folder = record.rsplit("/", 1)[0] + "/"
+        pictures = sorted(r for r in shipped if r.startswith(folder) and r.lower().endswith(".png"))
+        if not pictures:
+            continue
+        if record not in shipped:
+            raise ReleaseCheckError(f"pictures ship without their source record: {record}")
+        files = json.loads((root / record).read_text(encoding="utf-8")).get("files", {})
+        for relative in pictures:
+            row = files.get(relative[len(folder):])
+            if not isinstance(row, dict):
+                raise ReleaseCheckError(f"picture ships without its source record: {relative}")
+            if row.get("licence"):
+                needed = row.get("notice")
+                if not needed or relative not in needed or any(text not in notice for text in needed):
+                    raise ReleaseCheckError(f"third-party picture ships without its NOTICE.md attribution: {relative}")
+
+
+def _reviewed_documents(root: Path) -> dict:
+    """b81-retail-free-art (fix 1 of the re-check): every shipped data/*.json the catalog knows, with the SHA-256 of the
+    whole document for each one that edits textures (and for every data JSON added after the list began); written
+    only by tools/b77/modern_art_png_catalog.py from tools/b81_uniforms/texel_rows.py's measured hashes."""
+    catalog = root / MODERN_ART_PNG_CATALOG
+    if not catalog.exists():
+        return {}
+    with catalog.open("rb") as stream:
+        data = stream.read(512 * 1024 + 1)
+    if len(data) > 512 * 1024 or hashlib.sha256(data).hexdigest() != MODERN_ART_PNG_CATALOG_SHA256:
+        raise ReleaseCheckError("reviewed modern-art PNG catalog hash changed")
+    return json.loads(data).get("documents", {})
+
+
+def _check_document_pin(relative: str, path: Path, documents: dict) -> None:
+    """A data JSON ships only if the reviewed catalog lists it; one listed with a hash only with exactly that whole-document
+    SHA-256 (the PNG catalog's rule, for data documents); one listed by name only, only while it edits no texture."""
+    if relative not in documents:
+        raise ReleaseCheckError(f"a data document the reviewed catalog does not list: {relative}")
+    data = path.read_bytes()
+    pinned = documents[relative]
+    if pinned is None:
+        try:
+            document = json.loads(data.decode("utf-8"))
+        except (ValueError, UnicodeDecodeError):
+            document = None
+        if _edits_textures(document):
+            raise ReleaseCheckError(f"a data document that edits textures has no reviewed hash: {relative}")
+        return
+    if hashlib.sha256(data).hexdigest() != pinned:
+        raise ReleaseCheckError(f"a data document differs from its reviewed hash: {relative}")
+
+
+def _check_paint(relative: str, path: Path, reviewed: dict) -> None:
+    """Texel data inside a data file must be exactly the reviewed texel data of the catalog: no pixel data may ride in a
+    JSON document past the PNG gate, in the glyph document or any other."""
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError, UnicodeDecodeError):
+        return
+    _check_shape(relative, document)
+    rows = _texel_rows(document)
+    found = {owner: hashlib.sha256(json.dumps(ops, sort_keys=True, separators=(",", ":")).encode("ascii")).hexdigest()
+             for owner, ops in rows.items()}
+    expected = reviewed.get(relative, {}).get("rows", {})
+    if not found and not expected:
+        return
+    if set(found) != set(expected) or any(found[k] != expected[k]["sha256"] for k in found):
+        raise ReleaseCheckError(f"texel data in a data file is not the reviewed texel data: {relative}")
+    # fix 1: no one-texel painting box at all; the small boxes of a row (painting and keep-outs together) cover at most
+    # EDGE_LIMIT of the edge texels, measured against the base the step holds and against retail (catalog values)
+    ones = sorted(owner for owner, ops in rows.items() if _one_texel_painting_boxes(ops))
+    if ones:
+        raise ReleaseCheckError(f"one-texel painting boxes in a data file: {relative}: {', '.join(ones[:8])}")
+    wide = sorted(owner for owner, row in expected.items() if row.get("small_box_texels")
+                  and not all(isinstance(row.get(k), (int, float)) and row[k] <= SMALL_BOX_EDGE_LIMIT
+                              for k in ("small_box_edge_base", "small_box_edge_retail")))
+    if wide:
+        raise ReleaseCheckError(f"small boxes cover too much of the edges or are unmeasured: {relative}: {', '.join(wide[:8])}")
+    # Ruling 2 (b81-retail-free-art): judge, not only list. A row whose base is class ii (built from the user's retail
+    # disc) must not carry base content: it is refused unless its recorded measures pass (edge overlap within the
+    # limit, no base-equal texel, colours that do not follow the base's shading); class i and iii rows pass with their
+    # recorded reason.
+    refused = sorted(owner for owner, row in expected.items()
+                     if row.get("cls") not in ("i", "iii") and not (row.get("cls") == "ii" and row.get("passes") is True))
+    if refused:
+        shown = ", ".join(refused[:8]) + (f" and {len(refused) - 8} more" if len(refused) > 8 else "")
+        raise ReleaseCheckError(f"texel rows carry content of a base built from the retail disc: {relative}: {shown}")
 
 
 def _super_bowl_logo_pngs(root: Path) -> dict:
@@ -661,6 +2174,7 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
     anniversary_pngs = _anniversary_field_pngs(release_root)
     modern_art_pngs = _modern_art_pngs(release_root)
     super_bowl_logo_pngs = _super_bowl_logo_pngs(release_root)
+    reviewed_paint = _reviewed_paint(release_root)
     if (set(modern_art_pngs) & (set(scorebug_pngs) | set(anniversary_pngs))
             or set(super_bowl_logo_pngs) & (set(scorebug_pngs) | set(anniversary_pngs) | set(modern_art_pngs))):
         raise ReleaseCheckError("a PNG is listed in more than one reviewed catalog")
@@ -818,6 +2332,12 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
         seen_files.add(relative)
         total_bytes += info.st_size
 
+    reviewed_documents = _reviewed_documents(release_root)
+    for relative in sorted(seen_files):
+        if relative.endswith(".json") and relative.startswith("data/"):
+            _check_document_pin(relative, release_root / relative, reviewed_documents)
+            _check_paint(relative, release_root / relative, reviewed_paint)
+    _check_third_party_notices(release_root, seen_files)
     missing_files = sorted(exact - seen_files)
     missing_prefixes = sorted(prefix for prefix in prefixes if prefix not in seen_directories)
     if missing_files or missing_prefixes:

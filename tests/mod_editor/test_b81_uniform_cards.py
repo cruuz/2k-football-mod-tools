@@ -282,5 +282,39 @@ class StagedDisc(unittest.TestCase):
             self.assertEqual(apply_cards.update_archive(archive, root, pins, write=True)['written'], 0)
 
 
+class RendererChoice(unittest.TestCase):
+    """R2-F: the renders come from the NVIDIA driver, or with --software-gl from Mesa llvmpipe on a private display;
+    never llvmpipe by accident, never the owner's own display, and the renderer is part of every cache key."""
+
+    def render(self, renderer, display, software):
+        def check_output(cmd, text=True):
+            return 'Blender 4.0.2\n' if cmd[0] == 'blender' else f'OpenGL renderer string: {renderer}\n'
+
+        with tempfile.TemporaryDirectory() as folder, \
+                patch.object(cards_unif.subprocess, 'check_output', side_effect=check_output), \
+                patch.dict(cards_unif.os.environ, {'DISPLAY': display}), \
+                patch.object(cards_unif, 'sha', return_value='0' * 64), \
+                patch.object(cards_unif.Path, 'read_bytes', return_value=b''):
+            return cards_unif.render_layers({}, Path(folder), Path(folder), 16, software)
+
+    def test_llvmpipe_is_refused_unless_asked_for(self):
+        with self.assertRaises(ValueError):
+            self.render('llvmpipe (LLVM 20.1.2, 256 bits)', ':187', False)
+
+    def test_software_needs_a_private_display_and_llvmpipe(self):
+        for renderer, display in (('llvmpipe (LLVM 20.1.2, 256 bits)', ':0'),
+                                  ('llvmpipe (LLVM 20.1.2, 256 bits)', ''),
+                                  ('NVIDIA GeForce RTX 2080 Ti/PCIe/SSE2', ':187')):
+            with self.subTest(renderer=renderer, display=display), self.assertRaises(ValueError):
+                self.render(renderer, display, True)
+
+    def test_software_on_a_private_display_is_recorded(self):
+        _layers, meta = self.render('llvmpipe (LLVM 20.1.2, 256 bits)', ':187', True)
+        self.assertTrue(meta['software_gl'])
+        self.assertIn('llvmpipe', meta['opengl'])
+        _layers, meta = self.render('NVIDIA GeForce RTX 2080 Ti/PCIe/SSE2', ':187', False)
+        self.assertNotIn('software_gl', meta)
+
+
 if __name__ == '__main__':
     unittest.main()
