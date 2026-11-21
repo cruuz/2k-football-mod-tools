@@ -33,6 +33,11 @@ from mod_editor.core import nfl2k5_sim_qb_injuries as _sim_qb_injuries  # noqa: 
 from mod_editor.core import nfl2k5_build_settings as settings  # noqa: E402
 
 
+def room_module():
+    from mod_editor.core import nfl2k5_qb_room as room
+    return room
+
+
 def _room():
     from mod_editor.core import nfl2k5_qb_room as room
     return room
@@ -254,7 +259,8 @@ class StudioRuleTests(unittest.TestCase):
                 # The key names piece 3's rules; the floor follows the injuries (coordinator's rule, 2026-11-20).
                 self.assertEqual(mod_build._qb_room_resolution(plan)[0], explicit)
                 piece3 = mod_build._piece3_bits() if explicit == "realistic" else 0
-                self.assertEqual(mod_build._qb_room_plan(plan)[:2], ("realistic", 64 | piece3))
+                e_bits = room_module().REALISTIC_STAGES & room_module().E_BITS if piece3 else 0  # C21: E1/E2 with both
+                self.assertEqual(mod_build._qb_room_plan(plan)[:2], ("realistic", 64 | piece3 | e_bits))
                 self.assertEqual(plan.to_recipe()["qb_room"], explicit)
         old = {"preset": "softdrink_experimental", "overrides": {}}
         self.assertIsNone(mod_build._qb_room_level(modpack_sources.build_plan(old)))
@@ -449,6 +455,12 @@ class FloorRuleTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_qb_room as room
         return room.REALISTIC_STAGES & room.PIECE3_BITS  # 0 at the floor handover
 
+    @property
+    def E(self):
+        """E1/E2 (C21 hand-over): installed only where the floor and piece 3 are both installed."""
+        from mod_editor.core import nfl2k5_qb_room as room
+        return room.REALISTIC_STAGES & room.E_BITS
+
     def plan_set(self, plan, payload=None):
         return mod_build._qb_room_plan(plan, payload)[:2]
 
@@ -462,7 +474,7 @@ class FloorRuleTests(unittest.TestCase):
                                               sim_qb_injury_rate=0.5),
                   ["modern injured reserve", "the franchise economy", "reserve save compatibility (the practice squad)"],
                   ("realistic", self.FLOOR)),
-                 ("Experimental Realistic", experimental, ["the franchise economy"], ("realistic", self.FLOOR | self.P3)),
+                 ("Experimental Realistic", experimental, ["the franchise economy"], ("realistic", self.FLOOR | self.P3 | self.E)),
                  ("Experimental, rules named Retail", replace(experimental, qb_room="retail"), ["the franchise economy"],
                   ("realistic", self.FLOOR)))
         for name, plan, added, expected in cases:
@@ -526,16 +538,16 @@ class FloorRuleTests(unittest.TestCase):
         source = self._private()
         slice1, _ = qb.apply(source, "realistic")  # 9f435b38: slice 1 without the floor (an earlier private test disc)
         expected, _ = room.apply(ir.apply(slice1, "modern", standard_guard=True)[0], "realistic",
-                                 stages=self.FLOOR | self.P3)
+                                 stages=self.FLOOR | self.P3 | self.E)
         for name, original in (("98dd7329", source), ("9f435b38", slice1)):
             with self.subTest(source=name):
                 receipt = self._edit(mod_build.sim_qb_disc_edit("s.iso", "t.iso", "realistic"), original)
                 update = receipt["qb_room_source_update"]
-                self.assertEqual((update["level"], update["stages"]), ("realistic", self.FLOOR | self.P3))
+                self.assertEqual((update["level"], update["stages"]), ("realistic", self.FLOOR | self.P3 | self.E))
                 self.assertEqual(update["result_sha256"], hashlib.sha256(expected).hexdigest())
                 self.assertIn("added modern injured reserve", update["added"][0])
                 self.assertIn(update["added"][0], receipt["user_notes"])
-                self.assertEqual(update["settings"]["stage_names"], room.stage_names(self.FLOOR | self.P3))
+                self.assertEqual(update["settings"]["stage_names"], room.stage_names(self.FLOOR | self.P3 | self.E))
                 self.assertEqual(update["settings"]["stage_names"][-1:], ["floor"])
                 self.assertEqual(receipt["sim_qb_source_update"]["result_sha256"], hashlib.sha256(slice1).hexdigest())
         receipt = self._edit(mod_build.sim_qb_disc_edit("s.iso", "t.iso", "custom", custom_rate=0.0), source)
@@ -582,7 +594,7 @@ class FloorRuleTests(unittest.TestCase):
         v09 = mod_build._xbe_bytes(disc)
         expected = qb.apply(sim.apply(ir.apply(v09, "modern", standard_guard=True)[0])[0], "realistic")[0]
         plan = mod_build.v09_disc_update("s.iso", "t.iso", sim_qb_injuries="realistic")
-        self.assertEqual(self.plan_set(plan, expected), ("realistic", self.FLOOR | self.P3))
+        self.assertEqual(self.plan_set(plan, expected), ("realistic", self.FLOOR | self.P3 | self.E))
 
 
 class InPlacePreflightTests(unittest.TestCase):
