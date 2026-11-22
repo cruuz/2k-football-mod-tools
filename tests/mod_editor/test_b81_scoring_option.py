@@ -197,7 +197,8 @@ class BreakawayStopSetting(unittest.TestCase):
     def test_recipe_value_validation_and_round_trip(self):
         from mod_editor.core import mod_build, nfl2k5_build_settings as saved
         plan = mod_build.BuildPlan("src", "dst", sim_qb_injuries="realistic", sim_realism=True, k128_memory=True)
-        self.assertEqual(plan.sim_breakaway_stop, 72)
+        self.assertEqual(plan.sim_breakaway_stop, 68)   # combined calibration freeze (was 72)
+        self.assertEqual(plan.sim_breakaway_stop, mod_build.SIM_BREAKAWAY_STOP_DEFAULT)
         self.assertNotIn("sim_breakaway_stop", plan.to_recipe())
         plan.sim_breakaway_stop = 75
         self.assertEqual(plan.to_recipe()["sim_breakaway_stop"], 75)
@@ -215,7 +216,7 @@ class BreakawayStopSetting(unittest.TestCase):
         from mod_editor.core import mod_build, nfl2k5_sim_qb_injuries as qb
         source = mod_build._xbe_bytes(Path(disc))
         shipped, _ = qb.apply(source, "realistic")
-        self.assertEqual(scoring.installed(shipped), ("applied", {"breakaway_stop_beyond": 72.0}))
+        self.assertEqual(scoring.installed(shipped), ("applied", {"breakaway_stop_beyond": 68.0}))  # frozen (was 72)
         fallback, receipt = qb.apply(shipped, "realistic", breakaway_stop=75)
         self.assertEqual(receipt["breakaway_stop"], 75.0)
         self.assertEqual(scoring.installed(fallback), ("applied", {"breakaway_stop_beyond": 75.0}))
@@ -231,8 +232,10 @@ class ShareExporter(unittest.TestCase):
         from unittest.mock import patch
         from mod_editor.core import mod_build, modpack_sources
         from mod_editor.core import nfl2k5_backfield_cards as cards
+        # Since the combined freeze the default is 68, so a disc with the earlier 72 records it too.
         for installed, expected in ((("applied", {"breakaway_stop_beyond": 75.0}), 75),
-                                    (("applied", {"breakaway_stop_beyond": 72.0}), None), (("retail", None), None)):
+                                    (("applied", {"breakaway_stop_beyond": 72.0}), 72),
+                                    (("applied", {"breakaway_stop_beyond": 68.0}), None), (("retail", None), None)):
             with self.subTest(installed=installed), tempfile.TemporaryDirectory() as t:
                 root = Path(t)
                 project = root / "league.json"

@@ -30,6 +30,7 @@ sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
 
 from mod_editor.core import nfl2k5_pass_protection as pp  # noqa: E402
 from mod_editor.core import nfl2k5_sim_qb_injuries_code as code  # noqa: E402
+from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage  # noqa: E402
 from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import retail_xbe  # noqa: E402
 
@@ -40,9 +41,12 @@ except ImportError:  # pragma: no cover
     uc = x86 = None
 
 BASE_XBE = "bda1e4a408f19cc30f0916e03b158b0accc46e0ccb6a39e134c1ce79ba3ab6ea"         # slice 1 base, shared base disc
-# Realistic on it, revision 4: 12f2776dd's own (lever-free) result. It was dff6cbc5 before the 7c64ec2ca merge, which
+# Realistic on it, revision 4, levers unfrozen: 12f2776dd's own (lever-free) result. It was dff6cbc5 before the 7c64ec2ca merge, which
 # adds scoring's bytes and the 0.35 floor immediates only (pos3/work/combined-A/merge/classify.txt).
-REALISTIC_XBE = "33cd2a36a81b20d86ddd50417bbb71212be933fc20bee68d58645d4e3e01eb50"
+LEVER_FREE_XBE = "33cd2a36a81b20d86ddd50417bbb71212be933fc20bee68d58645d4e3e01eb50"
+# The freeze (bb5a408b1: QB_CHANCE_SCALE 1.06, breakaway stop 68) moves exactly the two QB tables (606 bytes), one byte of
+# the breakaway site and integrity fields (pos3/work/combined-A/freeze/classify.txt).
+REALISTIC_XBE = "aa1e29e1846ae8e094631283b1a122f3cf3a6dc95a5f617bbf7a19a6eb9669c7"
 LEGACY_INSTALLS = (("NFL2K5_B81_STABILITY_FIXTURES", "default.xbe", BASE_XBE),
                    ("NFL2K5_V08_XBE", None, "5f987568"),
                    ("NFL2K5_V09_XBE", None, "1a476d94"))
@@ -276,7 +280,8 @@ class QuarterbackChanceScale(unittest.TestCase):
         for label in self.QB_TABLES:
             spans |= set(range(code.LABELS[label], code.LABELS[label] + 1024))
         for rate in (310, 155):
-            before = _tables(rate)
+            with mock.patch.object(code, "QB_CHANCE_SCALE", 1.0, create=True):   # unscaled: the shipped scale is 1.06
+                before = _tables(rate)
             for scale in (0.8, 0.25 / 0.31, 1.3):
                 with self.subTest(rate=rate, scale=scale), mock.patch.object(code, "QB_CHANCE_SCALE", scale, create=True):
                     after = _tables(rate)
@@ -294,7 +299,8 @@ class PassingLevel(unittest.TestCase):
 
     def test_default_is_the_slice_1_level_and_bytes_are_unchanged(self):
         self.assertEqual(code.PASSING_LEVEL, .982)
-        bank = _tables()
+        with mock.patch.object(code, "QB_CHANCE_SCALE", 1.0):   # lever 2's frozen 1.06 moves only the two QB tables
+            bank = _tables()
         self.assertEqual(_sha(bank), TABLES_BEFORE[310])
         self.assertEqual(struct.unpack_from("<f", bank, code.GAIN_CONSTANTS + 4)[0], _f32(.982))
         self.assertEqual(struct.unpack_from("<f", bank, code.GAIN_TABLE + 4 * 100)[0], _f32(.982 * 1.065))
@@ -316,9 +322,10 @@ class PassingLevel(unittest.TestCase):
 
 
 class RevisionFourBank(unittest.TestCase):
-    """At the default levers the quarterback owner writes the lever-free head's executable byte for byte."""
+    """Unfrozen, the quarterback owner writes the lever-free head's executable byte for byte; frozen, it differs only in
+    the levers' bytes."""
 
-    def test_realistic_on_the_base_equals_the_lever_free_build(self):
+    def test_realistic_on_the_base_is_the_lever_free_build_plus_the_frozen_levers(self):
         root = os.environ.get("NFL2K5_B81_STABILITY_FIXTURES")
         path = Path(root or "") / "default.xbe"
         if not root or not path.is_file():
@@ -326,9 +333,25 @@ class RevisionFourBank(unittest.TestCase):
         base = path.read_bytes()
         self.assertEqual(_sha(base), BASE_XBE)
         from mod_editor.core import nfl2k5_sim_qb_injuries as qb
-        self.assertEqual((code.QB_CHANCE_SCALE, code.PASSING_LEVEL), (1.0, .982))
+        from mod_editor.core import nfl2k5_sim_scoring as scoring
+        self.assertEqual((code.QB_CHANCE_SCALE, code.PASSING_LEVEL, scoring.BREAKAWAY_STOP_BEYOND), (1.06, .982, 68.0))
+        with mock.patch.object(code, "QB_CHANCE_SCALE", 1.0), mock.patch.object(scoring, "BREAKAWAY_STOP_BEYOND", 72.0):
+            free = qb.apply(base, "realistic")[0]
+        self.assertEqual(_sha(free), LEVER_FREE_XBE)
         realistic = qb.apply(base, "realistic")[0]
         self.assertEqual(_sha(realistic), REALISTIC_XBE)
+        image = XbeImage(realistic)
+        bank = next(r for r in space.layout(realistic)["allocations"] if r["owner"] == qb.OWNER and r["kind"] == "code")["va"]
+        allowed = set()
+        for va, size in ((bank + code.LABELS["ordinary_thresholds"], 1024), (bank + code.LABELS["special_thresholds"], 1024),
+                         (scoring.BREAKAWAY_VA, scoring.BREAKAWAY_SIZE), (0x150604C, 32)):
+            at = image.offset(va, size)
+            allowed |= set(range(at, at + size))
+        allowed |= set(range(0xDB4, 0xDB4 + 32))
+        for section in image.sections:
+            allowed |= set(range(section.header + 36, section.header + 56))
+        changed = {i for i, (a, b) in enumerate(zip(free, realistic)) if a != b}
+        self.assertTrue(changed and changed <= allowed, sorted(changed - allowed)[:10])
         # and the in-place route's extra step changes only pass protection's own bytes
         upgraded = pp.apply(realistic)[0]
         self.assertEqual(qb.read_settings(upgraded), qb.read_settings(realistic))
