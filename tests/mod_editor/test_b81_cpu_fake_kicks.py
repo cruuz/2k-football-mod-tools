@@ -150,6 +150,9 @@ class CpuFakeKickTests(unittest.TestCase):
         at = rdata.offset_of(self.payload, 0x20B26B)
         self.assertEqual(bytes(mutant[at:at + 6]), bytes.fromhex("837804047535"))   # cmp [eax+4],4; jne fake_done
         mutant[at:at + 6] = b"\x90" * 6
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        text = next(x for x in _sections(self.payload) if x.raw_offset <= at < x.raw_offset + x.raw_size)
+        mutant[text.header_offset + 36:text.header_offset + 56] = section_digest(bytes(mutant), text)   # reseal
         machine = Machine(bytes(mutant))
         machine.supply_fg_range(self.RANGE)
         _points_stub(machine, 14)

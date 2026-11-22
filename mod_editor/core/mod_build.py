@@ -3621,11 +3621,6 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         _verify_sim_qb_injuries(plan, medical, expected)
         receipt["v09_update"].append("sim_qb_injuries")
     expected, _ = _cpu_kick_aim_with_kicking(expected)  # b81 scoring: as a full build with the kicking fixes
-    # beta 81 fake kicks (review 11/22): every v0.9 update also brings CPU decisions to the current Modern 2 template,
-    # as a full build has it (the released b778_late ran fake field goals before fourth down).
-    expected, decisions = _cpu_decisions_current(expected)
-    if decisions is not None and decisions.get("changed_bytes"):
-        receipt["v09_update"].append("cpu_decisions")
     room_level, room_stages, room_note = _qb_room_plan(plan, expected)  # b81 qb34: rides with the QB option (C1)
     _note_qb_room_left_out(receipt, room_note)
     if _qb_injuries_above_zero(plan):
@@ -3644,6 +3639,11 @@ def _update_v09_disc(plan, progress, *, preflight, project):
             expected, _ = room.apply(expected, room_level)
         _verify_qb_room(plan, room, expected)
         receipt["v09_update"].append("qb_room")
+    # beta 81 fake kicks (review 11/22), after the quarterback steps (they stay adjacent): every v0.9 update also brings CPU decisions to the current Modern 2 template,
+    # as a full build has it (the released b778_late ran fake field goals before fourth down).
+    expected, decisions = _cpu_decisions_current(expected)
+    if decisions is not None and decisions.get("changed_bytes"):
+        receipt["v09_update"].append("cpu_decisions")
     if plan.gadget_play:
         # After every other v0.9 update, as in a standard Build; the books are the released disc's own.
         expected, _ = gadget.apply(expected, _gadget_resources(source))
@@ -3665,8 +3665,8 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         _apply_sim_realism(plan, target, receipt, progress)
         _apply_sim_qb_injuries(plan, target, receipt, progress)
     _apply_cpu_kick_aim_in_place(target, receipt, progress)
-    _apply_cpu_decisions_in_place(target, receipt, progress)  # beta 81 fake kicks
     _apply_qb_room(plan, target, receipt, progress)  # b81 qb34
+    _apply_cpu_decisions_in_place(target, receipt, progress)  # beta 81 fake kicks (the expected chain's order)
     if plan.gadget_play:
         _apply_gadget_play(plan, target, receipt, progress)
     _compact_build_disc(target, source, receipt, progress)
