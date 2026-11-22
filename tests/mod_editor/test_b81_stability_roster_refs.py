@@ -39,8 +39,10 @@ from tests.mod_editor.test_b81_sim_pos_injuries_native import (
 
 CALIBRATION_ROSTER = "70813bd95d1265b40009fb611569e2e1ffcce02bf17a5f73476e8f55ffa3d157"
 BASE_XBE = "bda1e4a408f19cc30f0916e03b158b0accc46e0ccb6a39e134c1ce79ba3ab6ea"
-# Realistic on bda1e4a4 with 6185ad6c0's own code (git archive of that commit; pos3/work/stability/merge/apply_realistic.py).
-REALISTIC_AT_6185AD6C0 = "33cd2a36a81b20d86ddd50417bbb71212be933fc20bee68d58645d4e3e01eb50"
+# Realistic on bda1e4a4 with 6185ad6c0's own code (git archive of that commit; pos3/work/stability/merge/apply_realistic.py)
+# was 33cd2a36. With the frozen combined levers (merge queue item 15: QB_CHANCE_SCALE 1.06, breakaway stop 68) it is
+# aa1e29e1: 731 bytes differ, all in the QB bank's tables, the scoring site's stop byte, the registry hash and digests.
+REALISTIC_AT_6185AD6C0 = "aa1e29e1846ae8e094631283b1a122f3cf3a6dc95a5f617bbf7a19a6eb9669c7"
 V09_ROSTER = "8d2b2f50aa19679e4e3a6a783d7137acef96a5975b2ce22bef8ede037c26f42c"
 SHIFT = 10
 # sha256 of repr((STABILITY_REFERENCE, STABILITY_CALIBRATION, STABILITY_CALIBRATION_ROSTER, STABILITY_REFERENCE_ROSTER)).

@@ -154,7 +154,8 @@ class OwnerTests(unittest.TestCase):
         room = self.room
         # b81 integration merge of qb34 (scoring + stability revision 4): f3a22805 (was 501b8412 at 5854e5144, 9f435b38
         # for slice 1 alone)
-        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "f3a22805")
+        # combined calibration levers (merge queue item 15: QB_CHANCE_SCALE 1.06, breakaway stop 68): 68c9db2e (was f3a22805)
+        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "68c9db2e")
         self.assertEqual(room.read_settings(self.slice1), {"status": "retail", "mode": "retail", "reserved": False,
                                                            "va": None})
         settings = room.read_settings(self.applied)
@@ -469,17 +470,20 @@ class PreviousRevisionTests(unittest.TestCase):
     # rebuild differs from its qb34-merge rebuild exactly where the economy upgrade changes its source (plus one header
     # digest byte). The qb34-merge values were D1D2 cdb2fd96, REVIEW_67 e0acccbd, REVIEW_64 15a779c5, FLOOR 5087b8d3 /
     # 5a798bf1, STAGE_3A cd746c09 / 33b007d0.
-    D1D2_SHA = "6ca8b301332870a8b6be445db84def9b7407e0dfa1826d3fde1b7bd303145593"
-    REVIEW_67_SHA = "bebed442a62a46f64a4073cc5000957e765b677ffb7cce70f378ced39c351786"
-    REVIEW_64_SHA = "2b7ce61c91bf8037b02f706691f4d6f164b5c068d54179154b509fe12df1a0de"
-    FLOOR_SHA = "62a6480c40fe7565869c3d81047ca93ce47dac299f1ce22394244474c9902a28"
-    FLOOR_EMPTY_SHA = "cdb14fd0ffe2024c6b2bb52689a1d76ac52de3e39dd95dd281208e83d880a062"
-    STAGE_3A_SHA = "9efb5e9894636d338d1f893b73a7991c99836c60b2aa9c472cdbc82bf72f9e5e"
-    STAGE_3A_EMPTY_SHA = "e41c836df130854ad27dde6f88fe60a6f0273ec107646c7ba0861ed7c5c2184d"
+    # Combined calibration levers (merge queue item 15): re-pinned once more; every rebuild differs from its
+    # practice-squad-merge rebuild exactly where the injury option's executable differs (the QB bank's tables for
+    # QB_CHANCE_SCALE 1.06, the scoring site's breakaway stop 68, the registry hash and digests).
+    D1D2_SHA = "5d471c14062b4080b33cbf699b8779cf307723b17fbd8ddae37f222a6c676e6b"
+    REVIEW_67_SHA = "08087d170426ec914119a7b4a32b4f1e47239152e1d6b759c99902bdca74a94a"
+    REVIEW_64_SHA = "c22d95b64fa9f01c0ebb3c1d0c0ccf796c2b493b8ea357d7cf526c41be2574ae"
+    FLOOR_SHA = "55e522337d0e11bbe7541b8fc23b16c0273a1656b78d4ff23ec6b00521883540"
+    FLOOR_EMPTY_SHA = "8652889ed5c32e064a6c8818b3c70dabaa39dcb1bd627afa2a59ee4ae1df790f"
+    STAGE_3A_SHA = "5b3c065a543ea4cc7eb4e56c24709d9c5706406824db7c48e6cf1bdf2d863477"
+    STAGE_3A_EMPTY_SHA = "0af4c40fa91dc267ad3f07c92f6d3fe354b49f9f04dd0b3ea0e4c78d494159df"
     # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64)
     # on slice 1 alone; rebuilt here at the merged head.
-    HANDOVER_67_SHA = "48138073b92485b43262e7a456af4b3b90ee7fd012bc2b23dbf8d2594a05bbf5"
-    HANDOVER_64_SHA = "c6d7275189ccb74adabeb845a06909e8ed19fc2a4e26e01c6a0d1df98c481363"
+    HANDOVER_67_SHA = "61724296e024ce01289635e1a93b7b5c46294098e391ed43bc272d4557fcfa42"
+    HANDOVER_64_SHA = "58e859356c3eebb935f1c0b40375b742744211214cff1e4607b58cf35ef741c0"
 
     @classmethod
     def setUpClass(cls):
