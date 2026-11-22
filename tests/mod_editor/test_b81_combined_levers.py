@@ -264,9 +264,12 @@ class QuarterbackChanceScale(unittest.TestCase):
     QB_TABLES = ("ordinary_thresholds", "special_thresholds")
 
     def test_default_scale_leaves_the_tables_exactly_as_before(self):
-        self.assertEqual(code.QB_CHANCE_SCALE, 1.0)
-        for rate, digest in TABLES_BEFORE.items():
-            self.assertEqual(_sha(_tables(rate)), digest, rate)
+        # The shipped scale is the combined calibration's fitted 1.06 (pos3/COMBINED_PLAN.md section 12); at 1.0 the
+        # tables are exactly the ones before the lever existed.
+        self.assertEqual(code.QB_CHANCE_SCALE, 1.06)
+        with mock.patch.object(code, "QB_CHANCE_SCALE", 1.0):
+            for rate, digest in TABLES_BEFORE.items():
+                self.assertEqual(_sha(_tables(rate)), digest, rate)
 
     def test_only_the_quarterback_tables_scale(self):
         spans = set()

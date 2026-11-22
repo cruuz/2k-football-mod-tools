@@ -32,7 +32,7 @@ GAIN_TABLE = 0x3B00
 GAIN_CONSTANTS = 0x3D80
 # Combined calibration (pos3/COMBINED_PLAN.md section 1). Both levers are 1.0 / 0.982 today, so the bank is unchanged.
 # Lever 2: a quarterback-only multiplier of the ordinary and sack/escape threshold tables (q / 0.310 for a fitted q).
-QB_CHANCE_SCALE = 1.0
+QB_CHANCE_SCALE = 1.06
 # Lever 3: the franchise completed-pass gain level. passing.S passing_scale multiplies every completed-pass gain in a
 # franchise fixture by GAIN_TABLE[accuracy] (a healthy QB's positive gain: PASSING_LEVEL x the accuracy shape) or by the
 # base multiplier at GAIN_CONSTANTS + 4 (every other case), so this one constant moves both together. PHYS_GAIN (.91,

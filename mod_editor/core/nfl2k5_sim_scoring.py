@@ -83,7 +83,7 @@ BREAKAWAY_SIZE = 0x59
 RETAIL_BREAKAWAY = bytes.fromhex(
     "d9442418d81d80414e00dfe0f6c4417548d9442410d8250072a900d81d406d4e00dfe0f6c4057a316a0aba010000008bcee804d6"
     "1300d80d5c6d4e0051d91c24e8a58bffff85c07410d9050072a900d8059c414e00d95c2410")
-BREAKAWAY_STOP_BEYOND = 72.0      # 2026-11-20 second dose after the first confirmation (scoring/DESIGN.md section 9)
+BREAKAWAY_STOP_BEYOND = 68.0      # combined calibration 2026-11-21: 72 -> 68 (pos3/COMBINED_PLAN.md section 12); was 72 (scoring/DESIGN.md section 9)
 FN_RATING = 0x00246A80             # thiscall(ecx=player, edx=1, [esp]=category) -> st0
 FN_CHANCE = 0x00102030             # stdcall(float p) -> eax = draw below p
 BREAKAWAY_SCALE = 0x004E6D5C       # 0.10

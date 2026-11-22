@@ -208,6 +208,11 @@ class CommentarySwap:
     wav: str               # path to the replacement WAV
 
 
+# b81 combined calibration (2026-11-21): the simulated breakaway stop, yards to goal, fitted 68 (was scoring's 72);
+# a recipe names it only when it differs from this.
+SIM_BREAKAWAY_STOP_DEFAULT = 68
+
+
 @dataclass
 class BuildPlan:
     source: str
@@ -772,7 +777,7 @@ class BuildPlan:
     sim_qb_injury_rate: float = 0.310
     # b81 scoring: simulated breakaways from beyond this many yards to goal stop at the 10 (the one adjustable value
     # of the simulator scoring change; whole yards 20-99; only written to a recipe when it differs from 72).
-    sim_breakaway_stop: int = 72
+    sim_breakaway_stop: int = SIM_BREAKAWAY_STOP_DEFAULT
     # b81 qb34: the quarterback room rules (who starts the season, the kid's turn, benched for poor play, the returning
     # starter). None follows sim_qb_injuries (Realistic or Custom -> Realistic, Retail -> Retail, None keeps the
     # source), and a followed Realistic is installed only where its needs are met (128 MB standard, depth chart locks,
@@ -930,7 +935,7 @@ class BuildPlan:
             d.pop("sim_qb_injuries")
         if self.sim_qb_injuries != "custom":
             d.pop("sim_qb_injury_rate")
-        if self.sim_qb_injuries not in ("realistic", "custom") or self.sim_breakaway_stop == 72:
+        if self.sim_qb_injuries not in ("realistic", "custom") or self.sim_breakaway_stop == SIM_BREAKAWAY_STOP_DEFAULT:
             d.pop("sim_breakaway_stop")
         if self.qb_room is None:  # b81 qb34: a recipe without the key follows sim_qb_injuries
             d.pop("qb_room")
