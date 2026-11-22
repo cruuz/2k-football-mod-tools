@@ -58,6 +58,10 @@ class EngineAndMeasurementTests(unittest.TestCase):
         rc = mb.rc_plan()
         self.assertEqual(mb.xbe_resident(rc, 128), 15_896_576)                 # the RC's boot-loaded pages
         room, game = mb.room(rc, 128, "anchor")
+        # b81 helmet-sides: today's hair styles growth carries helmet number set E, 4,736 B more than the RC disc's
+        set_e = mb.RESOURCE_BYTES["hair_styles"] - mb.ANCHOR_RESOURCE_BYTES["hair_styles"]
+        self.assertEqual(set_e, 4_736)
+        room += set_e
         self.assertEqual((room, game["delta"]), (1_495_936, 0))
         got = mb.heaps(room, 14_176, capped=True)
         self.assertEqual((got["block"], got["left"], got["heap_a"] - 128, got["heap_b"]),
@@ -74,6 +78,7 @@ class EngineAndMeasurementTests(unittest.TestCase):
         v08 = off(mb.rc_plan(), *V08_ONLY_OFF)
         self.assertEqual(mb.xbe_resident(v08, 128), 15_835_136)                # 15 pages fewer, as measured
         room, _ = mb.room(v08, 128, "anchor")
+        room += mb.RESOURCE_BYTES["hair_styles"] - mb.ANCHOR_RESOURCE_BYTES["hair_styles"]   # b81: set E (see above)
         self.assertEqual(room - 1_555_456, 1_920)                               # MEM1's 1,920 B of other main-heap use
         got = mb.heaps(1_555_456, 13_856, capped=True)
         self.assertEqual((got["block"], got["heap_b"]), (1_424_384, 66_304))
@@ -182,7 +187,7 @@ class TargetTests(unittest.TestCase):
         got = mb.predict(None, 64)
         self.assertEqual(got["forced_off"], ["k128_memory", "k128_roster_heap", "roster_capacity"])
         self.assertFalse(got["fits"])
-        self.assertEqual((got["room"], got["over_bytes"]), (732_288, 897_088))
+        self.assertEqual((got["room"], got["over_bytes"]), (727_552, 901_824))   # b81 helmet-sides: set E, 4,736 B
         self.assertEqual(got["hardest"], "NRG Stadium (s37)")
         self.assertEqual((got["matchup"]["home_kit"], got["matchup"]["away_kit"], got["matchup"]["delta"]),
                          ("37h0", "02a1", 177_792))
@@ -234,7 +239,7 @@ class ApiTests(unittest.TestCase):
         self.assertTrue(all(isinstance(k, str) and type(v) is int and v > 0 for k, v in costs.items()))
         # hair_styles' marginal cost is page-rounded: beta 81's larger pass rush code (4,096 bytes) moves a boundary
         self.assertEqual((costs["scorebug"], costs["hair_styles"], costs["depth_chart_rows"]),
-                         (408_320, 84_736, 81_920))
+                         (408_320, 89_472, 81_920))       # b81 helmet-sides: the hair growth carries set E
         self.assertEqual(list(costs), sorted(costs, key=lambda k: -costs[k]))
 
     def test_plan_forms(self):

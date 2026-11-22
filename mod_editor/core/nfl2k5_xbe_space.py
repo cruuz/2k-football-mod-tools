@@ -832,6 +832,9 @@ QB_TRADES_VA = QB_ROOM_VA + QB_ROOM_SIZE
 QB_TRADES_SIZE = PAGE
 QB_TRADES_REQUEST = (QB_TRADES_OWNER, "code", QB_TRADES_SIZE, PAGE)
 LATE_OWNERS += (QB_TRADES_OWNER,)
+# b81 helmet sides (b): helmet-number route 5 binds set E (192 B code + 32 B RW row). Last, after every other late owner,
+# so appending it moves nothing; the build applies it after every other executable owner.
+LATE_OWNERS += ("nfl2k5_helmet_side_numbers",)
 QB_FIXED_OWNERS = (QB_ROOM_OWNER, QB_TRADES_OWNER)
 QB_FIXED_SPAN = (QB_ROOM_VA, QB_TRADES_VA + QB_TRADES_SIZE)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the

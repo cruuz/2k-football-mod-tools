@@ -133,6 +133,18 @@ INSERT_ALIGN = 128
 TOP_KEYS = ("locs", "dreads")
 TOP_OF_MESH = {"long_locs": "locs", "short_twists": "locs"}
 DREADS_TOP = "dreads"
+#: b81 helmet-sides (owner 11/22: the Chargers' number on the sides of the helmet, "Scope it for this release"): the
+#: growth also adds helmet number set E, three materials after the hair materials (hidden like every number set until
+#: a kit's helmet-number route 5 binds them through nfl2k5_helmet_side_numbers), each drawing one digit cell on BOTH
+#: sides of the helmet (geometry ``numbers.json``, tools/nfl2k5_helmet_side_numbers_generate.py). Their records copy set
+#: D's (same skin selector, same digit window). A scene grown before b81 ("grown_v1": hair only) is recognised and
+#: regrown; the hair cave's count check follows the grown count.
+NUMBERS_PATH = DATA_DIR / "numbers.json"
+NUMBERS_SCHEMA = "nfl2k5_hair_styles/numbers/v1"
+NUMBER_CELLS = ("L", "M", "R")
+NUMBER_MATERIALS = tuple(f"NUMBER_helmet_E_{c}" for c in NUMBER_CELLS)
+NUMBER_TEMPLATES = tuple(f"NUMBER_helmet_D_{c}" for c in NUMBER_CELLS)
+N = len(NUMBER_MATERIALS)
 
 
 class HairStylesError(ValueError):
@@ -177,6 +189,21 @@ def load_geometry(path: Path | None = None) -> dict[str, Any]:
     return document
 
 
+def load_numbers(path: Path | None = None) -> dict[str, Any]:
+    """b81 helmet-sides: helmet number set E (records and strips per scene and cell)."""
+    document = _load_json(NUMBERS_PATH if path is None else Path(path), NUMBERS_SCHEMA)
+    require(tuple(document["materials"]) == NUMBER_MATERIALS and tuple(document["templates"]) == NUMBER_TEMPLATES,
+            "the helmet number set differs from the catalogue")
+    return document
+
+
+def _numbers_doc(numbers: Mapping[str, Any] | bool | None) -> Mapping[str, Any] | None:
+    """None/True: the shipped set E; False: no set E (the hair-only growth of b775-b80); a mapping: that set."""
+    if numbers is None or numbers is True:
+        return load_numbers()
+    return numbers or None
+
+
 def load_pointer_fields() -> dict[str, list[int]]:
     document = _load_json(POINTERS_PATH, POINTERS_SCHEMA)
     return {key: [int(v) for v in document["scenes"][key]] for key in KEYS}
@@ -191,8 +218,10 @@ def available() -> bool:
     try:
         pins = load_pins()
         load_geometry()
+        load_numbers()
         load_pointer_fields()
         return (pins["geometry_sha256"] == sha(GEOMETRY_PATH.read_bytes())
+                and pins["numbers_sha256"] == sha(NUMBERS_PATH.read_bytes())
                 and pins["pointer_fields_sha256"] == sha(POINTERS_PATH.read_bytes())
                 and all(pins["art_sha256"][k] == sha((ART_DIR / f"{k}.png").read_bytes()) for k in TEXTURES))
     except (HairStylesError, OSError, KeyError, ValueError):
@@ -237,10 +266,12 @@ def _top(document: Mapping[str, Any], key: str, name: str) -> tuple[bytes, list[
     return records, list(struct.unpack(f"<{len(raw) // 2}H", raw))
 
 
-def _added(document: Mapping[str, Any], key: str, first: int, record_size: int) -> dict[str, Any]:
+def _added(document: Mapping[str, Any], key: str, first: int, record_size: int,
+           numbers: Mapping[str, Any] | None = None) -> dict[str, Any]:
     """Every vertex and push word the growth adds, in order: the K parts' vertices, then the tops' vertices (b778
-    hr4); each part's words are its own strip followed by its top's strip (a second BEGIN/END batch), and the retail
-    dreads get the dreads top's batch appended to their own words. One source for grow_scene and strip_scene."""
+    hr4), then (b81) set E's cells; each part's words are its own strip followed by its top's strip (a second
+    BEGIN/END batch), the retail dreads get the dreads top's batch appended to their own words, and each set E cell
+    draws its strips (both sides of the helmet) as consecutive batches. One source for grow_scene and strip_scene."""
     from .nfl2k5_modern_helmets import encode_strip
     blobs: list[bytes] = []
     parts, tops = [], {}
@@ -264,6 +295,25 @@ def _added(document: Mapping[str, Any], key: str, first: int, record_size: int) 
         tops[name] = dict(first_vertex=at, vertices=count, strip=strip)
         blobs.append(records)
         at += count
+    cells = []
+    if numbers is not None:
+        scene = numbers["scenes"][key]
+        for cell in NUMBER_CELLS:
+            item = scene["cells"][cell]
+            records = _b64_field(item["records"])
+            strips = []
+            for raw in (_b64_field(s) for s in item["strips"]):
+                strips.append(list(struct.unpack(f"<{len(raw) // 2}H", raw)))
+            require(len(records) % record_size == 0 and records, f"{key}/number {cell}: vertex records are not whole")
+            count = len(records) // record_size
+            require(strips and all(len(s) >= 3 and max(s) < count for s in strips),
+                    f"{key}/number {cell}: strip index out of range")
+            words: list[int] = []
+            for s in strips:
+                words += encode_strip([at + i for i in s])
+            cells.append(dict(cell=cell, first_vertex=at, vertices=count, strips=len(strips), mesh_words=words))
+            blobs.append(records)
+            at += count
     require(at < 0xFFFF, f"{key}: too many vertices")
     for part in parts:
         words = encode_strip([part["first_vertex"] + i for i in part["strip"]])
@@ -273,7 +323,8 @@ def _added(document: Mapping[str, Any], key: str, first: int, record_size: int) 
         part["mesh_words"] = words
     dreads = tops.get(DREADS_TOP)
     dreads_words = encode_strip([dreads["first_vertex"] + i for i in dreads["strip"]]) if dreads else []
-    return dict(parts=parts, tops=tops, records=b"".join(blobs), added=at - first, dreads_words=dreads_words)
+    return dict(parts=parts, tops=tops, cells=cells, records=b"".join(blobs), added=at - first,
+                dreads_words=dreads_words)
 
 
 def _dreads_row(lay: "Layout") -> dict[str, Any]:
@@ -356,7 +407,10 @@ def layout(key: str, decoded: bytes) -> Layout:
 
 
 def scene_state(key: str, decoded: bytes) -> str:
-    """retail-shaped | grown | foreign (the hair growth only; Modern helmets' in-place writes are not judged here)."""
+    """retail | grown | grown_v1 | foreign (the growth only; Modern helmets' in-place writes are not judged here).
+
+    grown = the hair meshes and helmet number set E (b81); grown_v1 = the hair meshes only (discs built before b81),
+    which the build step regrows."""
     try:
         lay = layout(key, decoded)
     except (HairStylesError, struct.error, IndexError, KeyError):
@@ -365,10 +419,15 @@ def scene_state(key: str, decoded: bytes) -> str:
     if (lay.material_count, lay.submesh_count, lay.vertex_count) == (base["materials"], base["submeshes"],
                                                                       base["vertices"]):
         return "retail" if "HAIR_dreads" in lay.names.values() else "foreign"
-    if lay.material_count == base["materials"] + K and lay.submesh_count == base["submeshes"] + K:
-        added = [lay.names[base["materials"] + k] for k in range(K)]
-        return "grown" if added == [material_name(m) for m in MESHES] else "foreign"
+    for extra, state in ((K + N, "grown"), (K, "grown_v1")):
+        if lay.material_count == base["materials"] + extra and lay.submesh_count == base["submeshes"] + extra:
+            added = [lay.names[base["materials"] + k] for k in range(extra)]
+            want = [material_name(m) for m in MESHES] + (list(NUMBER_MATERIALS) if extra == K + N else [])
+            return state if added == want else "foreign"
     return "foreign"
+
+
+GROWN_STATES = ("grown", "grown_v1")
 
 
 def material_name(mesh: str) -> str:
@@ -446,8 +505,24 @@ def _extra_palette(key: str, lay: Layout, decoded: bytes, item: Mapping[str, Any
     return out
 
 
-def build_plan(key: str, decoded: bytes, document: Mapping[str, Any]) -> tuple[Plan, dict[str, Any]]:
-    """The byte insertions that add the K hair meshes to a retail-shaped scene (pointers are not yet moved)."""
+def _number_templates(lay: Layout, decoded: bytes) -> list[tuple[bytes, bytes]]:
+    """b81: (material record, submesh record) of set D's cells, the templates of set E (hidden, same palette)."""
+    names = {v: k for k, v in lay.names.items()}
+    out = []
+    for template in NUMBER_TEMPLATES:
+        require(template in names, f"{lay.key}: no {template} material")
+        material = names[template]
+        rows = [r for r in lay.submesh_rows if r["material"] == material]
+        require(len(rows) == 1, f"{lay.key}: {template} is not one submesh")
+        out.append((bytes(decoded[lay.materials + 0x80 * material: lay.materials + 0x80 * (material + 1)]),
+                    bytes(decoded[rows[0]["record"]: rows[0]["record"] + 0x80])))
+    return out
+
+
+def build_plan(key: str, decoded: bytes, document: Mapping[str, Any],
+               numbers: Mapping[str, Any] | None = None) -> tuple[Plan, dict[str, Any]]:
+    """The byte insertions that add the K hair meshes (and, b81, set E's N cells) to a retail-shaped scene
+    (pointers are not yet moved)."""
     from .nfl2k5_modern_helmets import encode_strip
     lay = layout(key, decoded)
     base = RETAIL[key]
@@ -458,11 +533,17 @@ def build_plan(key: str, decoded: bytes, document: Mapping[str, Any]) -> tuple[P
     expect = document["scenes"][key]
     require(expect["vertex_count"] == lay.vertex_count and expect["strides"] == [s for _o, s in lay.streams],
             f"{key}: the geometry was authored for another vertex layout")
+    if numbers is not None:
+        ne = numbers["scenes"][key]
+        require(ne["vertex_count"] == lay.vertex_count and ne["strides"] == [s for _o, s in lay.streams],
+                f"{key}: the helmet number set was authored for another vertex layout")
+    extra = K + (N if numbers is not None else 0)
     record_size = sum(s for _o, s in lay.streams)
     mat_t, sub_raw = _template(lay, decoded)
     sub_t = _remap(key, sub_raw)
-    # vertices and push words (the parts, then the hair tops: b778 hr4)
-    plan_added = _added(document, key, lay.vertex_count, record_size)
+    number_t = _number_templates(lay, decoded) if numbers is not None else []
+    # vertices and push words (the parts, then the hair tops: b778 hr4, then set E: b81)
+    plan_added = _added(document, key, lay.vertex_count, record_size, numbers)
     records = plan_added["records"]
     per_stream = [bytearray() for _ in lay.streams]
     for v in range(len(records) // record_size):
@@ -477,21 +558,26 @@ def build_plan(key: str, decoded: bytes, document: Mapping[str, Any]) -> tuple[P
         submesh = _remap(key, sub_raw, _extra_palette(key, lay, decoded, expect["parts"][mesh]))
         part_rows.append(dict(mesh=mesh, first_vertex=part["first_vertex"], vertices=part["vertices"],
                               word_offset=len(words), words=len(part["mesh_words"]), strip=len(part["strip"]),
-                              submesh=submesh))
+                              submesh=submesh, material=mat_t))
         words += part["mesh_words"]
+    for k, cell in enumerate(plan_added["cells"]):
+        part_rows.append(dict(mesh=NUMBER_MATERIALS[k], first_vertex=cell["first_vertex"], vertices=cell["vertices"],
+                              word_offset=len(words), words=len(cell["mesh_words"]), strip=cell["strips"],
+                              submesh=number_t[k][1], material=number_t[k][0]))
+        words += cell["mesh_words"]
     added = plan_added["added"]
     dreads_words = plan_added["dreads_words"]
     # names (UTF-16, appended at the very end of the scene)
     name_blob = bytearray()
     name_at = []
-    for mesh in MESHES:
+    for name in added_names(numbers is not None):
         name_at.append(len(name_blob))
-        name_blob += (material_name(mesh) + "\0").encode("utf-16le")
+        name_blob += (name + "\0").encode("utf-16le")
     inserts: list[tuple[int, bytes]] = []
     material_offset = lay.materials + 0x80 * lay.material_count
     submesh_offset = lay.submeshes + 0x80 * lay.submesh_count
-    inserts.append((material_offset, b"M" * (0x80 * K)))          # placeholders, filled after the plan is known
-    inserts.append((submesh_offset, b"S" * (0x80 * K)))
+    inserts.append((material_offset, b"M" * (0x80 * extra)))      # placeholders, filled after the plan is known
+    inserts.append((submesh_offset, b"S" * (0x80 * extra)))
     inserts.append((lay.command_end, struct.pack(f"<{len(words)}I", *words).ljust(align(4 * len(words)), b"\0")))
     dreads = _dreads_row(lay)
     if dreads_words:
@@ -506,21 +592,30 @@ def build_plan(key: str, decoded: bytes, document: Mapping[str, Any]) -> tuple[P
     require(len({at for at, _ in inserts}) == len(inserts), f"{key}: two insertions at one offset")
     plan = Plan(sorted(inserts, key=lambda t: t[0]))
     info = dict(material_offset=material_offset, submesh_offset=submesh_offset, command_end=lay.command_end,
-                name_at=name_at, parts=part_rows, added_vertices=added, words=len(words),
+                name_at=name_at, parts=part_rows, added_vertices=added, words=len(words), extra=extra,
                 material_template=mat_t, submesh_template=sub_t, dreads_record=dreads["record"],
-                dreads_words=len(dreads_words),
+                dreads_words=len(dreads_words), names=added_names(numbers is not None),
                 tops={name: {k: v for k, v in top.items() if k != "strip"} for name, top in plan_added["tops"].items()})
     return plan, info
 
 
+def added_names(numbers: bool = True) -> list[str]:
+    """The added materials in order: the K hair meshes, then (b81) set E's cells."""
+    return [material_name(m) for m in MESHES] + (list(NUMBER_MATERIALS) if numbers else [])
+
+
 def grow_scene(key: str, decoded: bytes, document: Mapping[str, Any] | None = None,
-               pointer_fields: Sequence[int] | None = None) -> tuple[bytes, dict[str, Any]]:
-    """The retail-shaped scene with the hair meshes added; every relocated pointer moved with its target."""
+               pointer_fields: Sequence[int] | None = None,
+               numbers: Mapping[str, Any] | bool | None = None) -> tuple[bytes, dict[str, Any]]:
+    """The retail-shaped scene with the hair meshes (and, b81, set E) added; every relocated pointer moved with its
+    target. ``numbers=False`` gives the hair-only growth of b775-b80 (``grown_v1``)."""
     document = load_geometry() if document is None else document
+    numbers = _numbers_doc(numbers)
     fields = load_pointer_fields()[key] if pointer_fields is None else list(pointer_fields)
     d = bytes(decoded)
     lay = layout(key, d)
-    plan, info = build_plan(key, d, document)
+    plan, info = build_plan(key, d, document, numbers)
+    extra = info["extra"]
     # every pinned pointer field must resolve inside the scene (refuses a foreign layout)
     targets = {}
     for field in fields:
@@ -538,16 +633,15 @@ def grow_scene(key: str, decoded: bytes, document: Mapping[str, Any] | None = No
         new_field, new_target = plan.shift(field), plan.shift(target)
         struct.pack_into("<i", out, new_field, new_target - new_field + 1)
     # fill the material and submesh records
-    material_at = plan.shift(info["material_offset"]) - 0x80 * K
-    submesh_at = plan.shift(info["submesh_offset"]) - 0x80 * K
+    material_at = plan.shift(info["material_offset"]) - 0x80 * extra
+    submesh_at = plan.shift(info["submesh_offset"]) - 0x80 * extra
     command_at = plan.shift(info["command_end"]) - align(4 * info["words"])
-    names_at = len(out) - align(sum(2 * (len(material_name(m)) + 1) for m in MESHES))
-    for k, mesh in enumerate(MESHES):
-        rec = bytearray(info["material_template"])
+    names_at = len(out) - align(sum(2 * (len(name) + 1) for name in info["names"]))
+    for k, part in enumerate(info["parts"]):
+        rec = bytearray(part["material"])
         at = material_at + 0x80 * k
         struct.pack_into("<i", rec, 0, names_at + info["name_at"][k] - at + 1)
         out[at:at + 0x80] = rec
-        part = info["parts"][k]
         rec = bytearray(part["submesh"])
         at = submesh_at + 0x80 * k
         struct.pack_into("<H", rec, 0, lay.material_count + k)
@@ -559,36 +653,42 @@ def grow_scene(key: str, decoded: bytes, document: Mapping[str, Any] | None = No
         at = plan.shift(info["dreads_record"]) + 0x7C
         struct.pack_into("<H", out, at, struct.unpack_from("<H", out, at)[0] + info["dreads_words"])
     # counts
-    struct.pack_into("<I", out, plan.shift(lay.descriptor + 0x1C), lay.material_count + K)
+    struct.pack_into("<I", out, plan.shift(lay.descriptor + 0x1C), lay.material_count + extra)
     shape = plan.shift(lay.shape)
-    struct.pack_into("<H", out, shape + 0x54, lay.submesh_count + K)
+    struct.pack_into("<H", out, shape + 0x54, lay.submesh_count + extra)
     struct.pack_into("<H", out, shape + 0x4C, lay.vertex_count + info["added_vertices"])
     grown = bytes(out)
-    require(scene_state(key, grown) == "grown", f"{key}: the grown scene does not read back")
+    want = "grown" if numbers is not None else "grown_v1"
+    require(scene_state(key, grown) == want, f"{key}: the grown scene does not read back")
     receipt = {"key": key, "size_before": len(d), "size_after": len(grown), "growth": len(grown) - len(d),
                "added_vertices": info["added_vertices"], "push_words": info["words"],
-               "dreads_top_words": info["dreads_words"], "tops": info["tops"],
-               "parts": [{k: v for k, v in p.items() if k != "submesh"} for p in info["parts"]],
+               "dreads_top_words": info["dreads_words"], "tops": info["tops"], "helmet_number_set_e": numbers is not None,
+               "parts": [{k: v for k, v in p.items() if k not in ("submesh", "material")} for p in info["parts"]],
                "inserts": [{"at": at, "bytes": len(data)} for at, data in plan.inserts]}
     return grown, receipt
 
 
 def strip_scene(key: str, grown: bytes, document: Mapping[str, Any] | None = None,
-                pointer_fields: Sequence[int] | None = None) -> bytes:
-    """The exact retail-shaped scene a grown scene came from (the growth removed, every pointer moved back)."""
+                pointer_fields: Sequence[int] | None = None,
+                numbers: Mapping[str, Any] | None = None) -> bytes:
+    """The exact retail-shaped scene a grown scene came from (the growth removed, every pointer moved back). Both the
+    b81 growth (hair and set E) and the hair-only growth of b775-b80 are recognised by their material counts."""
     document = load_geometry() if document is None else document
     fields = load_pointer_fields()[key] if pointer_fields is None else list(pointer_fields)
     g = bytes(grown)
-    require(scene_state(key, g) == "grown", f"{key}: the scene carries no hair growth")
+    state = scene_state(key, g)
+    require(state in GROWN_STATES, f"{key}: the scene carries no hair growth")
+    numbers = (load_numbers() if numbers is None else numbers) if state == "grown" else None
+    extra = K + (N if numbers is not None else 0)
     lay = layout(key, g)
     base = RETAIL[key]
     record_size = sum(s for _o, s in lay.streams)
-    plan_added = _added(document, key, base["vertices"], record_size)
+    plan_added = _added(document, key, base["vertices"], record_size, numbers)
     added = plan_added["added"]
-    words = sum(len(p["mesh_words"]) for p in plan_added["parts"])
+    words = sum(len(p["mesh_words"]) for p in plan_added["parts"]) + sum(len(c["mesh_words"]) for c in plan_added["cells"])
     dreads_words = len(plan_added["dreads_words"])
     require(lay.vertex_count == base["vertices"] + added, f"{key}: the grown vertex count differs from the geometry")
-    name_bytes = align(sum(2 * (len(material_name(m)) + 1) for m in MESHES))
+    name_bytes = align(sum(2 * (len(name) + 1) for name in added_names(numbers is not None)))
     # the insert positions in the grown scene, then in the original
     old_rows = [r for r in lay.submesh_rows[:base["submeshes"]]]
     dreads = _dreads_row(lay)
@@ -600,8 +700,8 @@ def strip_scene(key: str, grown: bytes, document: Mapping[str, Any] | None = Non
             return r["command"] + 4 * retail_dreads_words + align(4 * dreads_words)
         return r["command"] + 4 * r["words"]
     grown_inserts = [
-        (lay.materials + 0x80 * base["materials"], 0x80 * K),
-        (lay.submeshes + 0x80 * base["submeshes"], 0x80 * K),
+        (lay.materials + 0x80 * base["materials"], 0x80 * extra),
+        (lay.submeshes + 0x80 * base["submeshes"], 0x80 * extra),
         (max(command_end(r) for r in old_rows if r["command"] is not None), align(4 * words)),
     ]
     if dreads_words:                     # b778 hr4: the dreads top's words after the retail dreads' own
@@ -635,7 +735,6 @@ def strip_scene(key: str, grown: bytes, document: Mapping[str, Any] | None = Non
         struct.pack_into("<H", out, row["record"] + 0x7C, retail_dreads_words)
     return bytes(out)
 
-
 def _unshift(inserts: Sequence[tuple[int, int]], grown_offset: int) -> int:
     """Original offset of the byte at ``grown_offset`` of the grown scene (never one of the added bytes)."""
     shift = 0
@@ -649,8 +748,9 @@ def _unshift(inserts: Sequence[tuple[int, int]], grown_offset: int) -> int:
 
 
 def retail_shaped(key: str, decoded: bytes) -> bytes:
-    """The scene with any hair growth removed (what Modern helmets and the other player-model writers judge)."""
-    return strip_scene(key, decoded) if scene_state(key, decoded) == "grown" else bytes(decoded)
+    """The scene with any hair growth (and set E) removed (what Modern helmets and the other player-model writers
+    judge)."""
+    return strip_scene(key, decoded) if scene_state(key, decoded) in GROWN_STATES else bytes(decoded)
 
 
 # ------------------------------------------------------------------------------------------------ resources
@@ -747,10 +847,12 @@ def _texture_spans(payload: bytes) -> dict[str, tuple[int, bytes]]:
 
 
 def collection_status(payload: bytes, pins: Mapping[str, Any] | None = None) -> str:
-    """retail / applied / foreign for the hair part of outer 3 (Modern helmets' in-place scene writes accepted).
+    """retail / applied / previous / foreign for the hair part of outer 3 (Modern helmets' in-place scene writes
+    accepted).
 
     applied = both player scenes carry exactly the pinned growth (their retail-shaped bytes are judged by their own
-    owners) and the nine textures are the pinned ones, appended after every other resource."""
+    owners) and the nine textures are the pinned ones, appended after every other resource. previous = the same with
+    the hair-only growth of b775-b80 (no helmet number set E), which ``compile_collection`` regrows."""
     pins = load_pins() if pins is None else pins
     try:
         chunks = _chunks(payload)
@@ -759,10 +861,10 @@ def collection_status(payload: bytes, pins: Mapping[str, Any] | None = None) -> 
             _outer, index = models.parse_model_key(key)
             decoded = decode_span(_chunk_span(payload, chunks[index]))
             state = scene_state(key, decoded)
-            if state == "grown":
+            if state in GROWN_STATES:
                 base = strip_scene(key, decoded)
-                grown, _ = grow_scene(key, base)
-                states.add("applied" if grown == decoded else "foreign")
+                grown, _ = grow_scene(key, base, numbers=state == "grown")
+                states.add(("applied" if state == "grown" else "previous") if grown == decoded else "foreign")
             else:
                 states.add(state)
         textures = _texture_spans(payload)
@@ -774,10 +876,12 @@ def collection_status(payload: bytes, pins: Mapping[str, Any] | None = None) -> 
             require(indices == list(range(len(chunks) - len(TEXTURES), len(chunks))), "the hair textures moved")
             require(all(sha(span) == pins["textures"][key] for key, (_i, span) in textures.items()),
                     "a hair texture differs from its pin")
-            states.add("applied")
+            states.add("textures")
     except (HairStylesError, ValueError, IndexError, KeyError, struct.error):
         return "foreign"
-    return states.pop() if len(states) == 1 else "foreign"
+    if states == {"applied", "textures"} or states == {"previous", "textures"}:
+        return (states - {"textures"}).pop()
+    return states.pop() if len(states) == 1 and states != {"textures"} else "foreign"
 
 
 def compile_collection(payload: bytes, *, document: Mapping[str, Any] | None = None,
@@ -787,7 +891,7 @@ def compile_collection(payload: bytes, *, document: Mapping[str, Any] | None = N
     pins = load_pins() if pins is None else pins
     document = load_geometry() if document is None else document
     state = collection_status(payload, pins)
-    require(state in ("retail", "applied"), "the player models and hair textures are not a supported set")
+    require(state in ("retail", "applied", "previous"), "the player models and hair textures are not a supported set")
     if state == "applied":
         return bytes(payload), {"status": "already_applied", "growth": 0}
     chunks = _chunks(payload)
@@ -796,7 +900,10 @@ def compile_collection(payload: bytes, *, document: Mapping[str, Any] | None = N
     for key in KEYS:
         _outer, index = models.parse_model_key(key)
         span = _chunk_span(payload, chunks[index])
-        grown, rec = grow_scene(key, decode_span(span), document)
+        decoded = decode_span(span)
+        if state == "previous":          # b81: a disc grown before set E: back to retail shape, then the b81 growth
+            decoded = strip_scene(key, decoded, document)
+        grown, rec = grow_scene(key, decoded, document)
         new = compress_scene(span, grown)
         replace[index] = new
         rec.update(chunk=index, span_before=len(span), span_after=len(new), sha256=sha(new))
@@ -811,14 +918,14 @@ def compile_collection(payload: bytes, *, document: Mapping[str, Any] | None = N
     tail = bytes(payload[cursor:])
     require(not any(tail), "outer 3 has trailing bytes")
     template = _chunk_span(payload, chunks[DREAD_CHUNK])
-    for key in TEXTURES:
+    for key in TEXTURES if state == "retail" else ():     # b81: a "previous" collection already ends with them
         raw = compile_texture(key, template)
         require(sha(raw) == pins["textures"][key], f"hair_{key}: the texture differs from its pin")
         out += raw
         receipt["textures"].append({"name": texture_name(key), "bytes": len(raw), "sha256": sha(raw)})
     result = bytes(out)
     require(collection_status(result, pins) == "applied", "the hair read-back failed")
-    receipt.update(status="applied", size_before=len(payload), size_after=len(result),
+    receipt.update(status="applied" if state == "retail" else "upgraded", size_before=len(payload), size_after=len(result),
                    growth=len(result) - len(payload), memory_growth=sum(r["growth"] for r in receipt["scenes"])
                    + sum(r["bytes"] for r in receipt["textures"]))
     return result, receipt
@@ -840,7 +947,7 @@ def strip_collection(payload: bytes) -> bytes:
         key = models.model_key(OUTER, chunk.index)
         if key in KEYS:
             decoded = decode_span(span)
-            if scene_state(key, decoded) == "grown":
+            if scene_state(key, decoded) in GROWN_STATES:
                 span = compress_scene(span, strip_scene(key, decoded))
         out += span
     return bytes(out)
@@ -852,6 +959,7 @@ def record_pins(outer3: bytes) -> dict[str, Any]:
     return {"schema": SCHEMA, "textures": {key: sha(compile_texture(key, template)) for key in TEXTURES},
             "art_sha256": {key: sha((ART_DIR / f"{key}.png").read_bytes()) for key in TEXTURES},
             "geometry_sha256": sha(GEOMETRY_PATH.read_bytes()),
+            "numbers_sha256": sha(NUMBERS_PATH.read_bytes()),
             "pointer_fields_sha256": sha(POINTERS_PATH.read_bytes())}
 
 
@@ -872,11 +980,19 @@ TXTR = 0x52545854
 TABLE_OFFSET = 0x100                         # style table: 8 bytes per style (mesh slot, 3 pad, name pointer)
 NAMES_OFFSET = TABLE_OFFSET + 8 * (MAX_STYLE + 1)
 #: model rows of the player builder (0x4EEAC0: lo_body, hi_body, hi_head) and their grown material counts
-ROWS = {0: RETAIL[LO]["materials"] + K, 2: RETAIL[HI]["materials"] + K}
+ROWS = {0: RETAIL[LO]["materials"] + K + N, 2: RETAIL[HI]["materials"] + K + N}
 
 
-def code_for(code_va: int) -> bytes:
-    """The owned cave (CODE_SIZE bytes, int3-padded): code, the style table and the texture names (UTF-16)."""
+def rows_for(extra: int) -> dict[int, int]:
+    return {0: RETAIL[LO]["materials"] + extra, 2: RETAIL[HI]["materials"] + extra}
+
+
+def code_for(code_va: int, extra: int = K + N) -> bytes:
+    """The owned cave (CODE_SIZE bytes, int3-padded): code, the style table and the texture names (UTF-16).
+
+    ``extra`` = the materials the growth adds: K + N since b81 (the hair meshes, then helmet number set E, so a hair
+    material is ``count - (K + N) + slot``); K for the hair-only growth of b775-b80 (recognised, then rewritten)."""
+    rows = rows_for(extra)
     from .nfl2k5_draft_ai import _Asm
     a = _Asm(code_va)
     table = code_va + TABLE_OFFSET
@@ -893,13 +1009,13 @@ def code_for(code_va: int) -> bytes:
     a.b("8b571c")                    # mov edx, [edi+0x1C]            (the instance's material count)
     a.b("85c9")                      # test ecx, ecx
     a.j8("75", "row2")
-    a.b("81fa" + struct.pack("<I", ROWS[0]).hex())   # cmp edx, lo_body grown count
+    a.b("81fa" + struct.pack("<I", rows[0]).hex())   # cmp edx, lo_body grown count
     a.j32("0f85", "done")
     a.j8("eb", "lookup")
     a.label("row2")
     a.b("83f902")                    # cmp ecx, 2 (hi_head; hi_body has no hair)
     a.j32("0f85", "done")
-    a.b("81fa" + struct.pack("<I", ROWS[2]).hex())   # cmp edx, hi_head grown count
+    a.b("81fa" + struct.pack("<I", rows[2]).hex())   # cmp edx, hi_head grown count
     a.j32("0f85", "done")
     a.label("lookup")
     a.b("50")                        # push eax                       (keep the style)
@@ -914,7 +1030,7 @@ def code_for(code_va: int) -> bytes:
     a.b("50")                        # push eax                       (texture handle)
     a.b("0fb604cd" + struct.pack("<I", table).hex())     # movzx eax, byte [ecx*8 + table]  (mesh slot)
     a.b("8b4f1c")                    # mov ecx, [edi+0x1C]
-    a.b("83e9" + f"{K:02x}")         # sub ecx, K
+    a.b("83e9" + f"{extra:02x}")     # sub ecx, K + N (the hair materials come first, then set E)
     a.b("01c8")                      # add eax, ecx                   (material index of HAIR_<mesh>)
     a.b("8bcf")                      # mov ecx, edi
     a.call(SET_DREADS_TEXTURE)       # show it with the texture (pops the handle)
@@ -980,13 +1096,16 @@ def _xbe_state(payload: bytes) -> tuple[str, dict | None]:
     if code == b"\xcc" * CODE_SIZE:
         require(rdata.status(payload, sites(found["va"])) == "retail", "the dreads block changed with an empty owner")
         return "retail", found
+    if code == code_for(found["va"], K):          # b81: the hair-only cave of b775-b80, upgraded in place by apply
+        require(rdata.status(payload, sites(found["va"])) == "applied", "mixed hair styles hook")
+        return "previous", found
     require(code == code_for(found["va"]), "foreign hair styles code")
     require(rdata.status(payload, sites(found["va"])) == "applied", "mixed hair styles hook")
     return "applied", found
 
 
 def status(payload: bytes) -> str:
-    """retail / applied / foreign for default.xbe."""
+    """retail / applied / previous (the b775-b80 cave, before set E) / foreign for default.xbe."""
     try:
         return _xbe_state(payload)[0]
     except (ValueError, IndexError, KeyError, TypeError, struct.error, OverflowError):
@@ -1017,8 +1136,10 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
             payload, _ = space.extend_scaleout(payload, REQUESTS)
         found = allocation(payload)
     require(found is not None, "reserve the hair styles allocation first")
-    installed, code_receipt = space.install_code(payload, OWNER, code_for(found["va"]))
-    result, site_receipt = rdata.apply(installed, sites(found["va"]), OWNER)
+    previous = code_for(found["va"], K) if state == "previous" else None
+    installed, code_receipt = space.install_code(payload, OWNER, code_for(found["va"]), previous=previous)
+    result, site_receipt = (rdata.apply(installed, sites(found["va"]), OWNER) if state != "previous"
+                            else (installed, {"hook": "already in place"}))
     require(status(result) == "applied", "hair styles postcondition failed")
     changed = sum(a != b for a, b in zip(before, result)) + abs(len(result) - len(before))
     return result, {**common, **site_receipt, "already_applied": False, "code_install": code_receipt,
@@ -1056,7 +1177,7 @@ def image_status(path: Path | str) -> str:
         return "foreign"
     if resources == xbe:
         return resources
-    return "partial" if {resources, xbe} <= {"retail", "applied"} else "foreign"
+    return "partial" if {resources, xbe} <= {"retail", "applied", "previous"} else "foreign"
 
 
 def resource_status(path: Path | str) -> str:

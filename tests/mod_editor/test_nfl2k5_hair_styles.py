@@ -395,10 +395,15 @@ class ExecutableTests(unittest.TestCase):
             for style in hs.STYLES:
                 slot = hs.MESHES.index(style.mesh)
                 handle = textures[hs.texture_name(style.texture)]
-                self.assertEqual(emu.run(style.index, dreads, 0, lo, textures), [(lo - hs.K + slot, handle)])
-                self.assertEqual(emu.run(style.index, dreads, 2, hi, textures), [(hi - hs.K + slot, handle)])
+                # b81 helmet-sides: the growth adds K hair materials, then set E's N cells; a hair material is the
+                # retail count + its slot, whatever follows it
+                self.assertEqual(emu.run(style.index, dreads, 0, lo, textures),
+                                 [(hs.RETAIL[hs.LO]["materials"] + slot, handle)])
+                self.assertEqual(emu.run(style.index, dreads, 2, hi, textures),
+                                 [(hs.RETAIL[hs.HI]["materials"] + slot, handle)])
                 self.assertEqual(emu.run(style.index, dreads, 1, 90, textures), [])        # hi_body: no hair
-                self.assertEqual(emu.run(style.index, dreads, 0, lo - hs.K, textures), [])  # ungrown scene
+                self.assertEqual(emu.run(style.index, dreads, 0, lo - hs.K - hs.N, textures), [])  # ungrown scene
+                self.assertEqual(emu.run(style.index, dreads, 0, lo - hs.N, textures), [])  # b775-b80 growth (no set E)
                 self.assertEqual(emu.run(style.index, dreads, 0, lo, {}), [])             # texture missing
 
 
@@ -851,7 +856,9 @@ class TopsSceneTests(unittest.TestCase):
         self.assertTrue(all(top["first_vertex"] <= v < top["first_vertex"] + top["vertices"] for v in new[-1]))
 
     def test_lo_body_growth_is_unchanged(self):
-        grown, receipt = hs.grow_scene(hs.LO, scene(hs.LO))
+        # b81 helmet-sides: the hair-only growth (what b775-b80 discs carry) is byte for byte the pinned one; set E
+        # is pinned by test_b81_helmet_side_numbers_geometry
+        grown, receipt = hs.grow_scene(hs.LO, scene(hs.LO), numbers=False)
         self.assertEqual(sha(grown), LO_GROWN_SHA256)
         self.assertEqual(receipt["dreads_top_words"], 0)
 

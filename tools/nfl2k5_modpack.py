@@ -301,6 +301,18 @@ def cmd_edit_gadget_play(args):
     return _print_build_result(args, result, (args.source, args.out))
 
 
+def cmd_edit_helmet_sides(args):
+    """b81 helmet-sides: the Chargers' helmet side numbers alone, on a new copy of a built 128 MB standard disc."""
+    from mod_editor.core import mod_build
+    from mod_editor.core.errors import ModEditorError
+    plan = mod_build.helmet_sides_disc_edit(args.source, args.out)
+    try:
+        result = mod_build.build(plan, _progress(not args.json), require_change=True)
+    except ModEditorError as exc:
+        raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, result, (args.source, args.out))
+
+
 def cmd_edit_sim_qb(args):
     from mod_editor.core import mod_build
     from mod_editor.core.errors import ModEditorError
@@ -430,6 +442,13 @@ def main(argv: list[str] | None = None) -> int:
     gadget.add_argument("--receipt", help="new JSON receipt file")
     gadget.add_argument("--json", action="store_true")
     gadget.set_defaults(run=cmd_edit_gadget_play)
+    sides = sub.add_parser("edit-helmet-sides", help="add only the helmet side numbers (Chargers) to a copy of a built "
+                                                     "128 MB standard disc with Hair styles")
+    sides.add_argument("--source", required=True, help="built 128 MB standard disc with Hair styles")
+    sides.add_argument("--out", required=True, help="new output disc")
+    sides.add_argument("--receipt", help="new JSON receipt file")
+    sides.add_argument("--json", action="store_true")
+    sides.set_defaults(run=cmd_edit_helmet_sides)
 
     args = parser.parse_args(argv)
     try:

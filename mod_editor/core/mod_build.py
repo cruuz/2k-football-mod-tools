@@ -535,6 +535,12 @@ class BuildPlan:
     # that shows the one a player's roster hair style (record +0x0D, Studio field hair_style) asks for. Style 0 keeps
     # every player exactly as retail. EXPERIMENTAL / UNWITNESSED: on only in the experimental preset
     hair_styles: bool = False
+    # b81 helmet-sides (owner 11/22, "Scope it for this release"): the 2026 Chargers wear their number on both sides of
+    # the helmet. Hair styles' player-model growth carries helmet number set E (nfl2k5_hair_styles numbers.json); this
+    # option installs the late owner that makes kit helmet-number route 5 bind set E (nfl2k5_helmet_side_numbers) and
+    # gives the Chargers' home and road kits (24H0, 24A0) route 5. Needs Hair styles. EXPERIMENTAL / UNWITNESSED: on only
+    # in the experimental preset.
+    helmet_side_numbers: bool = False
     # b776-ai2: CPU AI, two late executable owners installed after every other executable writer.
     # nfl2k5_cpu_qb_reads: cpu_qb_zone_windows (the covered-window curve 0x50C51C: a defender who reaches the catch
     # point with or before the ball now closes the window) and cpu_qb_recheck (the CPU QB only weighs receivers he read
@@ -1222,6 +1228,11 @@ for _preset in PRESETS.values():
     _preset["hair_styles"] = False
 PRESETS["softdrink_experimental"]["hair_styles"] = True
 del _preset
+# b81 helmet-sides: the Chargers' side numbers ride the experimental preset with the hair styles growth they need.
+for _preset in PRESETS.values():
+    _preset["helmet_side_numbers"] = False
+PRESETS["softdrink_experimental"]["helmet_side_numbers"] = True
+del _preset
 # b776-ai2: the CPU AI options are off in every preset (retail bytes); only a test recipe turns them on.
 for _preset in PRESETS.values():
     _preset["cpu_qb_zone_windows"] = False
@@ -1892,6 +1903,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_team_ratings", "Modern team ratings", lambda p: p.team_ratings),
     ("nfl2k5_classic_teams", "Classic teams", lambda p: p.classic_teams and p.historic_teams_quick_game),
     ("nfl2k5_hair_styles", "Hair styles", lambda p: p.hair_styles),
+    ("nfl2k5_helmet_side_numbers", "Helmet side numbers", lambda p: p.helmet_side_numbers),  # b81 helmet-sides
     ("nfl2k5_cpu_qb_reads", "CPU QB reads", lambda p: p.cpu_qb_zone_windows or p.cpu_qb_recheck or p.cpu_qb_tiers),
     ("nfl2k5_db_ball_play", "Defender ball play", lambda p: p.db_ball_play),
     ("nfl2k5_dive_window", "Defenders leap only for balls they can reach", lambda p: p.db_dive_window),  # b780-cv3
@@ -3090,6 +3102,70 @@ def _only_gadget_changes(plan):
                                     name=plan.name, author=plan.author, notes=plan.notes)
 
 
+class _InstalledHelmetSidesEdit(BuildPlan):
+    """b81 helmet-sides: the Chargers' helmet side numbers alone on an already-built standard disc."""
+
+
+def helmet_sides_disc_edit(source, target, *, overwrite=False, name="", author="", notes=""):
+    """Add the helmet side numbers (number set E in the player models, the route-5 owner, the Chargers' 24H0/24A0 on
+    route 5) to a new copy of a built 128 MB standard disc that has Hair styles. Every other installed setting is kept."""
+    return _InstalledHelmetSidesEdit(str(source), str(target), hair_styles=True, helmet_side_numbers=True,
+                                     overwrite=overwrite, name=name, author=author, notes=notes)
+
+
+def _only_helmet_sides_changes(plan):
+    if not isinstance(plan, _InstalledHelmetSidesEdit) or plan.console_memory != 128:
+        return False
+    return plan == helmet_sides_disc_edit(plan.source, plan.target, overwrite=plan.overwrite, name=plan.name,
+                                          author=plan.author, notes=plan.notes)
+
+
+def _edit_installed_helmet_sides(plan, source, target, original, receipt, progress, *, preflight, consume, reference):
+    """b81 helmet-sides: on an already-built standard disc with Hair styles, regrow the player models with set E (a
+    disc grown before b81 is recognised and regrown; the hair cave is upgraded in place), install the route-5 owner
+    last, and give the Chargers' two kits route 5. Nothing else changes."""
+    hair = _core_module("nfl2k5_hair_styles")
+    sides = _core_module("nfl2k5_helmet_side_numbers")
+    if hair is None or sides is None:
+        raise ValueError("Helmet side numbers are unavailable in this Studio installation.")
+    if tt.k128_patch.read_settings(original).get("require_128") is not True or not space_is_scaleout(original):
+        raise ValueError("Helmet side numbers edit a built 128 MB standard disc.")
+    hair_state = hair.image_status(source)
+    if hair_state not in ("applied", "previous"):
+        raise ValueError(f"Helmet side numbers need a disc built with Hair styles (this one reads {hair_state}).")
+    receipt["installed_helmet_sides_only"] = True
+    receipt["helmet_sides_source"] = {"source_xbe_sha256": sha256(original).hexdigest(), "hair_state": hair_state,
+                                      "sides_state": sides.image_status(source)}
+    if preflight:
+        return True
+    _copy_private_build_source(source, target, receipt, progress, consume)
+    receipt["result"] = {}
+    if _xbe_bytes(target) != original:
+        raise ValueError("The copied image's executable differs from the source.")
+    _step("hair_styles")
+    progress("Hair styles: player models with helmet number set E", 0, 0)
+    hair_receipt = hair.apply_to_image(target, progress=progress)
+    hair_xbe, hair_xbe_receipt = hair.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, hair_xbe)
+    if hair.image_status(target) != "applied":
+        raise RuntimeError("Hair styles: the output image does not read back as applied")
+    receipt["steps"].append({"step": "hair_styles", **{k: v for k, v in hair_receipt.items() if k != "scenes"},
+                             "scenes": [{k: v for k, v in r.items() if k in ("key", "growth", "added_vertices")}
+                                        for r in hair_receipt.get("scenes", [])],
+                             "xbe": {k: v for k, v in hair_xbe_receipt.items() if k != "edits"}})
+    receipt["result"]["hair_styles"] = "applied"
+    _apply_helmet_side_numbers(plan, target, receipt, progress)
+    _compact_build_disc(target, reference, receipt, progress)
+    _step("final_checks")
+    for label, module in (("hair styles", hair), ("helmet side numbers", sides)):
+        if module.image_status(target) != "applied":
+            raise ValueError(f"The {label} did not survive the final archive pass")
+    inspection = inspect(target, screen_timing=plan.screen_timing)
+    receipt["result"] = {**inspection, **receipt["result"], "path": str(target)}
+    _verify_finished_game_disc(target, receipt, progress)
+    return True
+
+
 def _edit_installed_gadget(plan, source, target, original, receipt, progress, *, preflight, consume, reference):
     """Beta 81 Q62: the gadget rule alone on an already-built standard disc; every other installed setting is kept.
     The code goes into the fixed gadget slots (reserved by the cards on every standard build, or appended there)."""
@@ -3908,6 +3984,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "rookie_faces": _rookie_faces_available(),  # b778-rh1
         "alien_prospect": _alien_prospect_available(),  # b778-ee1
         "hair_styles": _hair_styles_available(),  # b775-hs1
+        "helmet_side_numbers": _hair_styles_available() and _core_module("nfl2k5_helmet_side_numbers") is not None,  # b81
         # b776-ai2: the CPU AI owners need only their modules and the allocator
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("cpu_qb_zone_windows", "nfl2k5_cpu_qb_reads"), ("cpu_qb_recheck", "nfl2k5_cpu_qb_reads"),
@@ -4847,6 +4924,16 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
             out["hair_styles"] = hair.image_status(source)
         except (OSError, ValueError):
             out["hair_styles"] = "unknown"
+    sides = _core_module("nfl2k5_helmet_side_numbers")  # b81 helmet-sides
+    if sides is None:
+        out["helmet_side_numbers"] = "unavailable"
+    elif not tt.is_disc_image(source):
+        out["helmet_side_numbers"] = "needs_image"
+    else:
+        try:
+            out["helmet_side_numbers"] = sides.image_status(source)
+        except (OSError, ValueError):
+            out["helmet_side_numbers"] = "unknown"
     # b776-ai2: the CPU AI owners (executable only, so a bare default.xbe reads too)
     reads, ball = _core_module("nfl2k5_cpu_qb_reads"), _core_module("nfl2k5_db_ball_play")
     dive = _core_module("nfl2k5_dive_window")  # b780-cv3
@@ -6221,6 +6308,23 @@ def _apply_team_ratings(plan, target, receipt, progress):
     receipt["steps"].append({"step": "team_ratings", **result})
 
 
+@_core_step("helmet_side_numbers")
+def _apply_helmet_side_numbers(plan, target, receipt, progress):
+    """b81 helmet-sides: after every other executable writer (its late owner is the last in LATE_OWNERS) and after
+    every kit writer: the route-5 owner, then the Chargers' two kits. Needs the hair styles growth (set E)."""
+    if not plan.helmet_side_numbers:
+        return
+    sides = _core_module("nfl2k5_helmet_side_numbers")
+    if sides is None:
+        raise ValueError("Helmet side numbers are unavailable in this Studio installation.")
+    progress("Helmet side numbers (Chargers)", 0, 0)
+    sides_receipt = sides.apply_to_image(target, _xbe_bytes, _write_xbe_bytes)
+    if sides.image_status(target) != "applied":
+        raise RuntimeError("Helmet side numbers: the output does not read back as applied")
+    receipt["steps"].append({"step": "helmet_side_numbers", **sides_receipt})
+    receipt["result"]["helmet_side_numbers"] = "applied"
+
+
 @_core_step("play_art_routes")
 def _apply_play_art_routes(plan, target, receipt, progress):
     """b776-pa2: the late play-art owner, after every other allocator owner (hair styles included)."""
@@ -6501,6 +6605,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         progress(qb_floor_note, 0, 0)
     sim_qb_only = _only_sim_qb_changes(plan)
     gadget_only = _only_gadget_changes(plan)  # beta 81 Q62
+    helmet_sides_only = _only_helmet_sides_changes(plan)  # b81 helmet-sides
     seven_held = bool(plan.seven_on_seven and not SEVEN_ON_SEVEN_RELEASED)
     if seven_held:
         progress("7-on-7 practice is unavailable until repaired; ignoring the saved opt-in", 0, 0)
@@ -6941,6 +7046,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 consume=_consume_source, reference=_retail_source or source):
             return receipt
         raise ValueError("A single-setting disc update needs a built 128 MB disc with a supported version of simulated season realism.")
+    if helmet_sides_only:
+        if not (is_image and installed_xbe is not None):
+            raise ValueError("Helmet side numbers edit a built 128 MB standard disc image.")
+        _edit_installed_helmet_sides(plan, source, target, installed_xbe, receipt, progress, preflight=_preflight_only,
+                                     consume=_consume_source, reference=_retail_source or source)
+        return receipt
     if gadget_only:
         if not (is_image and installed_xbe is not None):
             raise ValueError("The gadget player on gadget plays edits a built 128 MB standard disc image.")
@@ -7502,9 +7613,11 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             hair_state = hair.image_status(source)
         except (OSError, ValueError) as exc:
             raise ValueError(f"Hair styles cannot read the player models: {exc}") from exc
-        if hair_state not in ("retail", "applied"):
+        if hair_state not in ("retail", "applied", "previous"):   # b81: "previous" = grown before set E, regrown
             raise ValueError("The player models, hair textures or the executable's hair hook are not the supported "
                              "retail or already-styled set. Turn Hair styles off or rebuild from a supported USA source.")
+    if plan.helmet_side_numbers and not plan.hair_styles:  # b81 helmet-sides: set E rides the hair styles growth
+        raise ValueError("Helmet side numbers need Hair styles: number set E is part of its player-model growth.")
     if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.cpu_qb_tiers or plan.db_ball_play:  # b776-ai2
         _cpu_ai_preflight(plan, source, progress)
     if plan.qb_accuracy:  # b777-qb3: the pass accuracy routine must be retail or this owner, before any write
@@ -9646,6 +9759,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _apply_backfield_cards(target, receipt, progress)
     _apply_sim_qb_injuries(plan, target, receipt, progress)
     _apply_qb_room(plan, target, receipt, progress)  # b81 qb34: right after the quarterback injury step
+    _apply_helmet_side_numbers(plan, target, receipt, progress)  # b81 helmet-sides: the last allocator owner
     # Beta 81 Q62: after every play-book writer and every other owner, so its table matches the books on the disc and
     # its gate call is the final one. Its code and table sit in the fixed gadget slots ahead of the cards.
     _apply_gadget_play(plan, target, receipt, progress)

@@ -61,6 +61,7 @@ FEATURE_KEYS += ("modern_coaches",)  # b77-co1: the 2026 head coaches (sideline 
 FEATURE_KEYS += ("cpu_qb_zone_windows", "cpu_qb_recheck", "cpu_qb_tiers", "db_ball_play")  # b776-ai2: CPU AI late executable owners, off in every preset
 FEATURE_KEYS += ("db_dive_window",)  # b780-cv3: defenders leap only for balls they can reach, the last late executable owner
 FEATURE_KEYS += ("hair_styles",)  # b775-hs1: added hair models chosen per player (roster +0x0D), late executable owner
+FEATURE_KEYS += ("helmet_side_numbers",)  # b81 helmet-sides: route 5 = helmet number set E (both sides), Chargers 24H0/24A0
 FEATURE_KEYS += ("play_art_routes",)  # b776-pa2: play art routes at their real length, late executable owner
 FEATURE_KEYS += ("run_blocking",)  # b777-ol1: run blocking, the last late executable owner
 FEATURE_KEYS += ("pass_protection",)  # b778-pr1: pass protection, a late executable owner
