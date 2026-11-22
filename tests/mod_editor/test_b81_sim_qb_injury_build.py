@@ -292,6 +292,8 @@ class StudioControls(unittest.TestCase):
         panel.sim_realism_check.click()
         self.assertIsNone(panel.plan().sim_qb_injuries)
         self.assertTrue(panel.qb_injury_rate.isHidden())
+        # b81 relrev m2: the change is said, as unticking a floor need is
+        self.assertIn("Realistic and Custom need Simulated season realism and 128 MB memory", panel.qb_injury_help.text())
 
     def test_share_project_restore_and_compact_switch(self):
         panel = self.panel

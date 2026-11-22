@@ -426,7 +426,7 @@ def rebuild_only_reason(state: Mapping[str, object]) -> str:
     offer Needs update boxes on such a disc and then let the engine refuse. Both Build and Game Fixes ask this one function."""
 
     if state.get("v09_standard_update"):
-        return ("On this v0.9 standard disc you can select the boot save-list repair, modern injured reserve, starting backfield cards, the gadget player on gadget plays or simulated quarterback injuries. "
+        return ("On this v0.9 standard disc you can select the boot save-list repair, modern injured reserve, starting backfield cards, the gadget player on gadget plays or simulated injuries. "
                 "Choose the changes you want. Use your retail disc for other changes or a league project.")
     if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") not in ("applied", "retail"):
         # b81 relrev M1: this is also every SOFTDRINK standard disc this release builds (the facility is composed with the
@@ -2179,7 +2179,7 @@ class BuildPanel(QWidget):
         if value or self._preset_applying or not self._qb_injuries_above_zero() or self.console_memory() != 128:
             return
         self.qb_injury_mode.setCurrentIndex(self.qb_injury_mode.findData("retail"))
-        self._qb_floor_message = ("Simulated quarterback injuries changed to Retail: injuries above 0 percent need modern "
+        self._qb_floor_message = ("Simulated injuries changed to Retail: injuries above 0 percent need modern "
                                   "injured reserve, the franchise economy and reserve save compatibility so a club is "
                                   "never left without a quarterback.")
         self._refresh()
@@ -2188,6 +2188,10 @@ class BuildPanel(QWidget):
         if (not value and not self._preset_applying and self.qb_injury_mode.currentData() in ("realistic", "custom")
                 and self.console_memory() == 128):
             self.qb_injury_mode.setCurrentIndex(0)
+            # b81 relrev m2: said, as the floor needs are (the mode change above cleared the message)
+            self._qb_floor_message = ("Simulated injuries changed to Keep the source setting: Realistic and Custom need "
+                                      "Simulated season realism and 128 MB memory (K128).")
+            self._refresh()
 
     def _other_sim_qb_choice(self, *_):
         # An explicit choice still belongs to a full build when its value equals the default.
@@ -4387,7 +4391,7 @@ class BuildPanel(QWidget):
             if self.console_memory() != 128:
                 reason = "The 64 MB profile uses the original quarterback simulation."
             elif state.get("container") not in (None, "xiso"):
-                reason = "Open a full Xbox disc image to configure simulated quarterback injuries."
+                reason = "Open a full Xbox disc image to configure simulated injuries."
             elif state.get("sim_qb_injuries") == "foreign":
                 reason = "This executable has unrecognized quarterback data. Open a verified source disc."
             elif state.get("qb_room") == "foreign":  # b81 qb34
@@ -4395,7 +4399,7 @@ class BuildPanel(QWidget):
             elif (state.get("k128_memory") == "applied"
                   and (state.get("k128_settings") or {}).get("require_128") is False):
                 reason = ("This disc allows a 64 MB boot. Build from your retail disc to select the 128 MB "
-                          "memory requirement for simulated quarterback injuries.")
+                          "memory requirement for simulated injuries.")
             elif state.get("sim_realism") in ("foreign", "previous") or state.get("k128_memory") == "foreign":
                 reason = "This disc's simulator or 128 MB memory settings cannot be updated. Open a verified source disc."
             elif not all(self._available.get(key, True) and state.get(key) != "unavailable"
