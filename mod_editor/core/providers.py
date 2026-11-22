@@ -901,7 +901,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_kit_rule_emblem.py": "5950b7fabb434f2aeaa59c7495db380593c600a1aa0d2c89af319a2903f268c8",
         "mod_editor/core/nfl2k5_kit_rule_fill.py": "cc53076d5a2f8015bf0503ba39b995226eac848a95afbc334a523827b40ffe5a",
         "mod_editor/core/nfl2k5_kit_rule_recolour.py": "c2209ac28148ca3eaee4104163d98b35bdc365d8917dd92e5c987f4a000a3913",
-        "mod_editor/core/nfl2k5_relief_2026.py": "b76e160ce29190b31dbf8dd6d0e10f2febbd5994b19be43b073e9af4f651f22e",
+        "mod_editor/core/nfl2k5_relief_2026.py": "9ff0d3c8de77521365869dc24fe3934ae235a00b61da510b83c5a79188260bda",
         "mod_editor/core/nfl2k5_position_row.py": "0df78f0d7e3af61be8738afe5373925f48ef8a309a35bfcb31ab62008b6be85b",
         "mod_editor/core/nfl2k5_practice_reserves.py": "787e84ba5d4e1316e3bef58a82305366bf8e3d5f084cb0fe242fb68f77ecbbb6",
         "mod_editor/core/nfl2k5_practice_squad.py": "2631acdf806d7859f2ac40c0efc71b6315c647cfc5949ab568653ccbf5265ebe",

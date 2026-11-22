@@ -929,6 +929,7 @@ def apply_to_image(path, retail=None, *, strict=False, document=None, count=None
     for row in document["slots"]:
         by_selector.setdefault(row["selector"], []).append(row)
     written, written_bytes, skipped, todo, spans, places, kits, torsos = 0, 0, [], [], {}, {}, {}, {}
+    collar_kept = []
     with bump._Image.open(Path(path), writable=True) as image:
         index = bump._parsed_index(image)
         entries = {}
@@ -953,11 +954,21 @@ def apply_to_image(path, retail=None, *, strict=False, document=None, count=None
                         kits[selector]["skipped"].append(row["slot"])
                         continue
                     key = (selector, row["slot"])
+                    if row["slot"] == "bump_jersey":
+                        torso = torso_rgba(raw)
+                        # b81 Edwards rehearsal: a user's own torso art that moves the collar opening is another kit's
+                        # art for this slot. Not strict, that kit's jersey keeps its relief (as a slot holding other
+                        # art does) and every other slot goes on; before this, kit_opening raised inside the compile
+                        # and the optional step dropped the relief of all 178 kits. Strict still refuses (kit_opening).
+                        if not strict and opening_sha256(collar_opening(torso)) != row["opening_sha256"]:
+                            skipped.append("%s:%s" % (selector, row["slot"]))
+                            kits[selector]["skipped"].append(row["slot"])
+                            collar_kept.append(selector)
+                            continue
+                        torsos[selector] = torso
                     todo.append(row)
                     spans[key] = span
                     places[key] = (entry, chunk.offset)
-                    if row["slot"] == "bump_jersey":
-                        torsos[selector] = torso_rgba(raw)
         if todo:
             maps = None
             if any(r["base"] == "retail" for r in todo):
@@ -989,8 +1000,15 @@ def apply_to_image(path, retail=None, *, strict=False, document=None, count=None
                 written_bytes += len(new)
                 kits[row["selector"]]["written"].append(row["slot"])
     nothing_known = skipped and not written and not any(k["kept"] for k in kits.values())
-    return dict(state="other_uniform" if nothing_known else "applied", written_spans=written, written_bytes=written_bytes, skipped_slots=skipped,
-                kits=list(kits.values()))
+    receipt = dict(state="other_uniform" if nothing_known else "applied", written_spans=written, written_bytes=written_bytes, skipped_slots=skipped,
+                   kits=list(kits.values()))
+    if collar_kept:
+        note = ("2026 jersey relief: %d kit%s whose torso art you changed (the collar opening moved) keep their own jersey "
+                "relief: %s." % (len(collar_kept), "" if len(collar_kept) == 1 else "s", ", ".join(collar_kept)))
+        receipt["user_notes"] = [note]
+        if progress is not None:
+            progress(note, 0, 0)
+    return receipt
 
 
 def apply_relief_b81u(path, retail=None, *, strict=False, progress=None):
