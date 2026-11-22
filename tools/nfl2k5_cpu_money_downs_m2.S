@@ -46,6 +46,9 @@ fourth_kick:
     popad
     popfd
     mov eax, 0x13
+.ifdef LATE_GATED
+p_late_return:
+.endif
     ret
 
 /* EAX = 0 retail, 1 go, 2 kick. No random draws, no special-team choice, no mutable global scratch (native stack only).
@@ -53,11 +56,13 @@ fourth_kick:
  * +20 limit, +24 region (0 own side of the 40, 1 middle, 2 opponent 40 and in). */
 policy:
 .ifdef LATE_HELPER
+.ifndef LATE_GATED
     call late_decision             /* b778 ai6: the late-trailing rule lives in its own late owner */
     cmp eax, 4
     jae p_late_continue
     ret                             /* 0 retail / 1 go / 2 field goal / 3 punt */
 p_late_continue:
+.endif
 .endif
 .ifdef VIP_AWARE
     call vip_active
@@ -69,6 +74,16 @@ p_late_continue:
     jz no
     cmp dword ptr [eax+4], 4
     jne no
+.ifdef LATE_GATED
+    /* b81 fake kicks: the late-trailing rule is a fourth-down rule for a CPU offense without a user VIP (the helper's
+     * own contract). Called before these checks (b778 to b81s), it answered "field goal" on downs 1 to 3 in the last
+     * two minutes; the commit-time test then said no and the game ran a fake field goal before fourth down. */
+    mov edx, eax                    /* game state; eligible_any already used EDX, the helper preserves it */
+    call late_decision
+    cmp eax, 4
+    jb p_late_return                /* 0 retail / 1 go / 2 field goal / 3 punt */
+    mov eax, edx
+.endif
     push ebx
     push esi
     push edi
