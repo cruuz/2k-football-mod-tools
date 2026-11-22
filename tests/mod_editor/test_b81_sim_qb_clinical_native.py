@@ -24,6 +24,13 @@ ACCEPT, REJECT = 0x1027E8, 0x10286E
 
 class ClinicalCalls(NativeFixture):
     def setUp(self):
+        # These cases replay slice 1's recorded signed draws, so the bank runs at QB_CHANCE_SCALE 1.0; the combined
+        # calibration lever (merge queue item 15, frozen 1.06) only multiplies the two quarterback threshold tables
+        # (pinned by test_b81_combined_levers and test_b81_sim_qb_injuries_code).
+        from unittest import mock
+        scale = mock.patch.object(rules, "QB_CHANCE_SCALE", 1.0)
+        scale.start()
+        self.addCleanup(scale.stop)
         super().setUp()
         from unicorn import UC_HOOK_CODE, UC_HOOK_MEM_WRITE
 

@@ -723,6 +723,20 @@ class SliceThreeDecisions(PositionGate):
 
 
 @unittest.skipUnless(HAVE_UC, 'Unicorn is required for the native branch witnesses')
+
+class UnscaledQuarterback:
+    """Mix-in for the identity tests against frozen banks (slice 1, 2 and 3): they show the code and every draw are
+    unchanged, so they run the current bank at QB_CHANCE_SCALE 1.0. The combined calibration lever (merge queue item
+    15, frozen 1.06) only multiplies the two quarterback threshold tables; test_b81_combined_levers and
+    test_b81_sim_qb_injuries_code pin what it changes."""
+
+    def setUp(self):
+        from unittest import mock
+        scale = mock.patch.object(rules, "QB_CHANCE_SCALE", 1.0)
+        scale.start()
+        self.addCleanup(scale.stop)
+        super().setUp()
+
 class NativeMachine(unittest.TestCase):
     """The bank linked by bank_bytes against the retail executable, run inside the repo's native machine."""
     BANK = 0x1524000
@@ -971,7 +985,7 @@ class NativeCommit(NativeMachine):
         self.assertTrue(all(pc in inside for pc, _ in self.reads))
 
 
-class QuarterbackUnchanged(NativeMachine):
+class QuarterbackUnchanged(UnscaledQuarterback, NativeMachine):
     """pos2/DESIGN.md section 6 test 2: slice 1's quarterback draws are bit for bit what they were."""
     # The first 69 eligible calls of signed root 61002 and whose room each was in (test_b81_sim_qb_clinical_native).
     ROUTES = 'PRSPRRPSPRRRSRRPRRRSPPPRPPPRRPRRRRRPRSRPRPRPRRRPRSSPPPPRRSRRPPRPPRPPP'
@@ -1702,7 +1716,7 @@ class StabilityFactors(StabilityGate):
         self.assert_isolated()
 
 
-class StabilityIdentity(NativeMachine):
+class StabilityIdentity(UnscaledQuarterback, NativeMachine):
     """A.6 test 1, the identity case: at season index 0 and 1 every factor is exactly 1.0 and an identical script of
     plays gives the same samples, thresholds, proposals and commits as the frozen slice 3 bank, the quarterback
     included, on a league whose factors from season index 2 are not 1.0 and with stab_factor left at 0.6 by an
