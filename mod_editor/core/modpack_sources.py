@@ -304,6 +304,9 @@ def build_plan(recipe, source="", target=""):
         # Older source recipes predate the quarterback setting and the experimental preset's heap default.
         plan.sim_qb_injuries = None
         plan.k128_memory = initial.k128_memory
+        # b81 relrev M4: the preset's early form and roster heap came with that default; an older recipe names its own
+        plan.k128_early = initial.k128_early
+        plan.k128_roster_heap = initial.k128_roster_heap
     if "qb_room" not in recipe["overrides"]:
         # b81 qb34 (DESIGN_CHANGES C1): a recipe that does not name the room follows its quarterback injury setting.
         plan.qb_room = None

@@ -1522,7 +1522,11 @@ for _preset in PRESETS.values():
     _preset["sim_qb_injuries"] = None
     _preset["qb_room"] = None  # b81 qb34
 del _preset
-PRESETS["softdrink_experimental"].update(k128_memory=True, sim_qb_injuries="realistic")
+# b81 relrev M4: with 128 MB memory the Experimental preset takes the early form and the roster heap, as the standard release
+# recipe (v10-sources-128 overrides) and every release build since beta 80 do. The late form alone is the setup Check my
+# project warns about (nfl2k5_project_check "k128.early_off": the pregame intro's camera script no longer fits at
+# retail-model stadiums), and a Build-tab Experimental disc would differ from the SOFTDRINK disc in memory layout.
+PRESETS["softdrink_experimental"].update(k128_memory=True, k128_early=True, k128_roster_heap=True, sim_qb_injuries="realistic")
 # b81 qb34 (C1): the Experimental preset leaves qb_room unnamed, so the room follows the injury option: Realistic
 # where its needs are met, left out with a note where they are not (the 64 MB set, BN style) instead of refusing.
 # b77-f4: letter grades in Franchise (Noah, 2026-10-07): Basic keeps the 2004 numbers; Modern and Experimental grade.
@@ -1611,6 +1615,8 @@ def apply_preset(plan: BuildPlan, name: str) -> BuildPlan:
         values["sim_qb_injuries"] = None
         values["qb_room"] = None  # b81 qb34: 128 MB standard only
         values["k128_memory"] = False
+        values["k128_early"] = False         # b81 relrev M4: both need 128 MB memory
+        values["k128_roster_heap"] = False
     values["modern_naming"] = tt.modern_naming_patch.preset_enabled(name.removeprefix("softdrink_"))
     if not values.get("name"):
         values["name"] = PRESET_TITLES[name]

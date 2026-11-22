@@ -2151,9 +2151,13 @@ class BuildPanel(QWidget):
     def _sim_qb_injury_mode_changed(self):
         needs_simulator = self.qb_injury_mode.currentData() in ("realistic", "custom")
         if needs_simulator and self.console_memory() == 128 and self.qb_injury_mode.isEnabled():
-            for parent in (self.sim_realism_check, self.k128_memory_check):
+            for key in ("sim_realism", "k128_memory"):
+                parent = getattr(self, key + "_check")
                 if parent.isEnabled():
+                    fresh = not parent.isChecked()
                     parent.setChecked(True)
+                    if fresh:  # b81 relrev M4: 128 MB memory brings its early form, as a click on the box does
+                        r62_ui.tick_default_children(key, self._requirement_box)
         self._qb_floor_message = ""
         self._qb_floor_ticks()
         self._refresh()

@@ -621,7 +621,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     scramble_tuning=False, music_shuffle=False, music_shuffle_selection=None,
                                     practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False,
                                     franchise_autosave=False, coverage_trail=False, coverage_hitch_brake=False, franchise_edit_player=False,
-                                    historic_teams_quick_game=False, espn25_more_moments=False, k128_memory=False, k128_roster_heap=False, letter_grades=False, honors_page=False, coach_ai=False, team_ratings=False,
+                                    historic_teams_quick_game=False, espn25_more_moments=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, coach_ai=False, team_ratings=False,
                                     # b77-i2: p9 made Advanced/Experimental select Modern 2; the money-downs owner is an allocator
                                     # owner like the others here, so the probe build leaves it off and the union below installs it.
                                     cpu_money_downs="retail",
