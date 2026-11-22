@@ -179,6 +179,33 @@ class BuildTabNeverWritesARetailCopyTests(unittest.TestCase):
                 mod_build.build(mod_build.BuildPlan(str(fixture.path), str(target)), require_change=True)
         self.assertFalse(target.exists())
 
+    def test_the_up_front_space_check_itself_at_its_boundary(self) -> None:
+        """b81 relrev 1 (its mutation 5): the check that turns a full drive into an instruction before the long copy,
+        tested by name: the exact figure the build needs passes, one byte less is refused with the folder and the figures,
+        an executable copy is never measured, and build() stops there before its private stage folder exists."""
+        from nfl2k5_xiso_fixture import SyntheticXiso
+
+        fixture = SyntheticXiso(Path(self.tmp.name), [])
+        target = Path(self.tmp.name) / "built.iso"
+        need = fixture.path.stat().st_size + mod_build.STAGE_SPACE_MARGIN
+        with mock.patch.object(mod_build.platform_compat, "available_bytes", return_value=need):
+            self.assertEqual(mod_build.output_space_problem(fixture.path, target), "")
+        with mock.patch.object(mod_build.platform_compat, "available_bytes", return_value=need - 1):
+            problem = mod_build.output_space_problem(fixture.path, target)
+        self.assertIn("The output folder does not have enough free space for the build", problem)
+        self.assertIn(str(target.parent), problem)
+        self.assertIn("MiB of working room", problem)
+        self.assertTrue(problem.endswith("Nothing was written."))
+        executable = Path(self.tmp.name) / "default.xbe"
+        executable.write_bytes(_build_synthetic_xbe())
+        with mock.patch.object(mod_build.platform_compat, "available_bytes", return_value=0):
+            self.assertEqual(mod_build.output_space_problem(executable, target), "")
+        with mock.patch.object(mod_build.platform_compat, "available_bytes", return_value=need - 1):
+            with self.assertRaisesRegex(ValueError, "The output folder does not have enough free space"):
+                mod_build.build(mod_build.BuildPlan(str(fixture.path), str(target)), require_change=True)
+        self.assertEqual([p.name for p in target.parent.iterdir() if p.name.startswith(mod_build.STAGE_PREFIX)], [])
+        self.assertFalse(target.exists())
+
     def test_an_unchanged_copy_is_refused_and_never_published(self) -> None:
         source = Path(self.tmp.name) / "default.xbe"
         source.write_bytes(_build_synthetic_xbe())
