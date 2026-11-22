@@ -823,6 +823,17 @@ QB_ROOM_VA = 0x1529000
 QB_ROOM_SIZE = 3 * PAGE
 QB_ROOM_REQUEST = (QB_ROOM_OWNER, "code", QB_ROOM_SIZE, PAGE)
 LATE_OWNERS += (QB_ROOM_OWNER,)
+# b81 qb34 4b (DESIGN_CHANGES C20): the quarterback trades page, fixed right after the room's three pages and placed
+# like them: at its absolute address, never advancing the pool cursor. Every other pool owner steps over the whole span
+# 0x1529000..0x152CFFF whether or not either is requested, so the room keeps its address with or without trades, trades
+# can be added later in any order, and no other owner can take either address.
+QB_TRADES_OWNER = "nfl2k5_qb_trades"
+QB_TRADES_VA = QB_ROOM_VA + QB_ROOM_SIZE
+QB_TRADES_SIZE = PAGE
+QB_TRADES_REQUEST = (QB_TRADES_OWNER, "code", QB_TRADES_SIZE, PAGE)
+LATE_OWNERS += (QB_TRADES_OWNER,)
+QB_FIXED_OWNERS = (QB_ROOM_OWNER, QB_TRADES_OWNER)
+QB_FIXED_SPAN = (QB_ROOM_VA, QB_TRADES_VA + QB_TRADES_SIZE)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -913,7 +924,7 @@ def dormant_union():
             + classic_teams.REQUESTS  # b775-ct1 after b775-mo2
             + return_coverage.REQUESTS  # b779-fixD: matches build_manifest's all_requests so allocation_evidence() needs no allocated=
             + module_loader.REQUESTS + seven.REQUESTS + GADGET_REQUESTS + (BACKFIELD_REQUEST, QB_INJURY_REQUEST)
-            + (QB_ROOM_REQUEST,))  # b81 qb34: the fixed quarterback room pages
+            + (QB_ROOM_REQUEST, QB_TRADES_REQUEST))  # b81 qb34: the fixed quarterback room pages, then trades (C20)
 
 
 def is_scaleout(payload):
@@ -963,7 +974,7 @@ def _requests(requests):
 
 def _needs_scaleout(requests):
     normalized = _requests(requests)
-    if any(r[0] in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER) for r in normalized):
+    if any(r[0] in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER, QB_TRADES_OWNER) for r in normalized):
         return True
     # Unknown beta-62 owners never sort ahead of a shipped owner in its pages.
     if any(r[0] not in LEGACY_OWNERS for r in normalized) and any(
@@ -1071,6 +1082,8 @@ def _scale_allocations(requests):
                  "the standard franchise ownership code has a fixed page")
     _require(all(r == QB_ROOM_REQUEST for r in requests if r[0] == QB_ROOM_OWNER),
              "the quarterback room has three fixed pages")
+    _require(all(r == QB_TRADES_REQUEST for r in requests if r[0] == QB_TRADES_OWNER),
+             "the quarterback trades page has one fixed page")
     gadget = tuple(r for r in requests if r[0] == GADGET_OWNER)
     if gadget:
         _require(gadget == GADGET_REQUESTS, "incomplete or foreign gadget allocation")
@@ -1121,14 +1134,17 @@ def _scale_allocations(requests):
             at = (protected + FRANCHISE_OWNERSHIP_SIZE + align - 1) & -align
         # b81 qb34: unconditional, after the ownership step-over (an owner bumped over that page lands here next).
         room = QB_ROOM_VA - POOL_VA
+        span = QB_FIXED_SPAN[1] - QB_FIXED_SPAN[0]          # C20: the room's three pages and the trades page
         if owner == QB_ROOM_OWNER:
             at = room
-        elif at < room + QB_ROOM_SIZE and at + size > room:
-            at = (room + QB_ROOM_SIZE + align - 1) & -align
+        elif owner == QB_TRADES_OWNER:
+            at = QB_TRADES_VA - POOL_VA
+        elif at < room + span and at + size > room:
+            at = (room + span + align - 1) & -align
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))
-        if owner not in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER):
+        if owner not in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER, QB_TRADES_OWNER):
             pool[0] = max(pool[0], at + size)
 
     for owner, kind, size, align in requests:
@@ -1195,7 +1211,7 @@ def _scale_allocations(requests):
             pool[0] = max(pool[0], BACKFIELD_VA + BACKFIELD_REQUEST[2] - POOL_VA)
             to_pool(owner, kind, size, align)
             continue
-        if owner in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER) or (gadget and (owner, kind) in LINEUP_SLOT_VA):
+        if owner in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER, QB_TRADES_OWNER) or (gadget and (owner, kind) in LINEUP_SLOT_VA):
             to_pool(owner, kind, size, align)
             continue
         for r in regions:

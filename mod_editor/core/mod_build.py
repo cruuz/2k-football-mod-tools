@@ -1072,9 +1072,23 @@ def _with_qb_floor_needs(plan):
                   "Choose Retail or Custom 0 percent to build without them.")
 
 
+def _qb_trades_wanted(plan, payload, room):
+    """b81 qb34 (the trades review's F1, coordinator 11/21): 4b trades ride with E1/E2 wherever their five needs are
+    installed: in the executable when one is named (the room step passes the written one), else in the plan (the 2026
+    season brings the NFL week 9 trade deadline; the floor's needs bring the economy, the practice squad, modern IR and
+    the ownership page). Returns (trades, note): never a refusal, one plain note when they are left out."""
+    if payload is not None:
+        ok = room.trade_needs_met(payload)
+    else:
+        ok = all(bool(getattr(plan, name, False)) for name in ("season_2026", "franchise_economy", "practice_squad",
+                                                                 "modern_injured_reserve"))
+    return ok, (None if ok else room.TRADES_LEFT_OUT)
+
+
 def _qb_room_plan(plan, payload=None):
     """b81 qb34: (level, stages, note). The floor's bits whenever injuries are above zero; piece 3's bits where rule
-    C1a allows them; Retail when neither applies but the plan names a quarterback setting; None keeps the source."""
+    C1a allows them; E1/E2 with both; 4b trades with those where their needs are installed; Retail when neither applies
+    but the plan names a quarterback setting; None keeps the source."""
     piece3_level, note = _qb_room_resolution(plan, payload)
     injuries = _qb_injuries_above_zero(plan)
     stages = 0
@@ -1082,7 +1096,12 @@ def _qb_room_plan(plan, payload=None):
         room = _core_module("nfl2k5_qb_room")
         if room is None:
             raise ValueError("The quarterback room rules are unavailable in this Studio installation.")
-        stages = room.studio_stages(injuries, piece3_level == "realistic")
+        trades = False
+        if injuries and piece3_level == "realistic" and hasattr(room, "trade_needs_met"):
+            trades, trades_note = _qb_trades_wanted(plan, payload, room)
+            note = note or trades_note
+        stages = room.studio_stages(injuries, piece3_level == "realistic", trades) if trades else \
+            room.studio_stages(injuries, piece3_level == "realistic")
     if stages:
         return "realistic", stages, note
     if piece3_level is not None or plan.sim_qb_injuries is not None:
@@ -2904,7 +2923,9 @@ def _apply_qb_room(plan, target, receipt, progress, *, prepared=None):
     if qb_room_level(plan.qb_room, plan.sim_qb_injuries) is None:
         return
     original = _xbe_bytes(target)
-    level, stages, note = _qb_room_plan(plan, original)
+    # A prepared copy (the in-place edit) was judged on the executable it writes, with the floor's needs added: its
+    # trades decision and note come from there (the trades review's F1).
+    level, stages, note = _qb_room_plan(plan, original if prepared is None else prepared[1])
     if level is None:
         _note_qb_room_left_out(receipt, note)
         if note:
@@ -3007,13 +3028,15 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     # b81 qb34: the quarterback room rules ride with this option (DESIGN_CHANGES C1) on the same executable.
     room_level, room_stages, room_note = _qb_room_plan(plan, patched)
     room_prepared, staged, floor_notes = None, patched, []
-    _note_qb_room_left_out(receipt, room_note)
     if room_level is not None:
         room = _core_module("nfl2k5_qb_room")
         if room is None:
             raise ValueError("The quarterback room rules are unavailable in this Studio installation.")
         if room_stages & room.FLOOR_STUDIO_STAGES:
             staged, floor_notes = _qb_floor_in_place(staged)
+            # The trades review's F1: 4b's needs are judged on the copy with the floor's needs added (modern IR and
+            # its ownership page), the executable the room step writes and the final check reads.
+            room_level, room_stages, room_note = _qb_room_plan(plan, staged)
         if room_level == "realistic":
             missing = room.requirements(staged, room_stages)
             if missing:
@@ -3024,6 +3047,7 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
         room_prepared = (patched, roomed, room_patch)
         for note in floor_notes:
             _note_qb_room_left_out(receipt, note)
+    _note_qb_room_left_out(receipt, room_note)
     final = room_prepared[1] if room_prepared else patched
     receipt["sim_qb_source_update"] = {
         "source_sha256": sha256(original).hexdigest(), "result_sha256": sha256(patched).hexdigest(),
