@@ -832,11 +832,21 @@ QB_TRADES_VA = QB_ROOM_VA + QB_ROOM_SIZE
 QB_TRADES_SIZE = PAGE
 QB_TRADES_REQUEST = (QB_TRADES_OWNER, "code", QB_TRADES_SIZE, PAGE)
 LATE_OWNERS += (QB_TRADES_OWNER,)
-# b81 helmet sides (b): helmet-number route 5 binds set E (192 B code + 32 B RW row). Last, after every other late owner,
-# so appending it moves nothing; the build applies it after every other executable owner.
-LATE_OWNERS += ("nfl2k5_helmet_side_numbers",)
 QB_FIXED_OWNERS = (QB_ROOM_OWNER, QB_TRADES_OWNER)
 QB_FIXED_SPAN = (QB_ROOM_VA, QB_TRADES_VA + QB_TRADES_SIZE)
+# b81 helmet sides (b): helmet-number route 5 binds set E. One fixed page right after the quarterback trades page (its
+# cave, route table, name and its row record, which the game writes: the pool is RWX), placed like the quarterback pages:
+# at its absolute address, never advancing the pool cursor. Every other pool owner steps over the whole span
+# 0x1529000..0x152DFFF whether or not it is requested, so an owner a disc lacks (the injury bank of a disc built with
+# Simulated injuries Retail) can still be added in place after it (review 11/22). No layout but this owner's reaches
+# 0x1529000 (see the quarterback room above).
+HELMET_SIDES_OWNER = "nfl2k5_helmet_side_numbers"
+HELMET_SIDES_VA = QB_TRADES_VA + QB_TRADES_SIZE
+HELMET_SIDES_SIZE = PAGE
+HELMET_SIDES_REQUEST = (HELMET_SIDES_OWNER, "code", HELMET_SIDES_SIZE, PAGE)
+LATE_OWNERS += (HELMET_SIDES_OWNER,)
+FIXED_PAGE_OWNERS = (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER, QB_TRADES_OWNER, HELMET_SIDES_OWNER)
+FIXED_SPAN_END = HELMET_SIDES_VA + HELMET_SIDES_SIZE     # every pool owner steps over QB_ROOM_VA..FIXED_SPAN_END
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -927,7 +937,8 @@ def dormant_union():
             + classic_teams.REQUESTS  # b775-ct1 after b775-mo2
             + return_coverage.REQUESTS  # b779-fixD: matches build_manifest's all_requests so allocation_evidence() needs no allocated=
             + module_loader.REQUESTS + seven.REQUESTS + GADGET_REQUESTS + (BACKFIELD_REQUEST, QB_INJURY_REQUEST)
-            + (QB_ROOM_REQUEST, QB_TRADES_REQUEST))  # b81 qb34: the fixed quarterback room pages, then trades (C20)
+            + (QB_ROOM_REQUEST, QB_TRADES_REQUEST)  # b81 qb34: the fixed quarterback room pages, then trades (C20)
+            + (HELMET_SIDES_REQUEST,))  # b81 helmet sides: its fixed page after the trades page
 
 
 def is_scaleout(payload):
@@ -977,7 +988,7 @@ def _requests(requests):
 
 def _needs_scaleout(requests):
     normalized = _requests(requests)
-    if any(r[0] in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER, QB_TRADES_OWNER) for r in normalized):
+    if any(r[0] in FIXED_PAGE_OWNERS for r in normalized):
         return True
     # Unknown beta-62 owners never sort ahead of a shipped owner in its pages.
     if any(r[0] not in LEGACY_OWNERS for r in normalized) and any(
@@ -1087,6 +1098,8 @@ def _scale_allocations(requests):
              "the quarterback room has three fixed pages")
     _require(all(r == QB_TRADES_REQUEST for r in requests if r[0] == QB_TRADES_OWNER),
              "the quarterback trades page has one fixed page")
+    _require(all(r == HELMET_SIDES_REQUEST for r in requests if r[0] == HELMET_SIDES_OWNER),
+             "the helmet side numbers have one fixed page")
     gadget = tuple(r for r in requests if r[0] == GADGET_OWNER)
     if gadget:
         _require(gadget == GADGET_REQUESTS, "incomplete or foreign gadget allocation")
@@ -1137,17 +1150,19 @@ def _scale_allocations(requests):
             at = (protected + FRANCHISE_OWNERSHIP_SIZE + align - 1) & -align
         # b81 qb34: unconditional, after the ownership step-over (an owner bumped over that page lands here next).
         room = QB_ROOM_VA - POOL_VA
-        span = QB_FIXED_SPAN[1] - QB_FIXED_SPAN[0]          # C20: the room's three pages and the trades page
+        span = FIXED_SPAN_END - QB_ROOM_VA                  # C20: the room's pages, the trades page, (b81) side numbers
         if owner == QB_ROOM_OWNER:
             at = room
         elif owner == QB_TRADES_OWNER:
             at = QB_TRADES_VA - POOL_VA
+        elif owner == HELMET_SIDES_OWNER:
+            at = HELMET_SIDES_VA - POOL_VA
         elif at < room + span and at + size > room:
             at = (room + span + align - 1) & -align
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))
-        if owner not in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER, QB_TRADES_OWNER):
+        if owner not in FIXED_PAGE_OWNERS:
             pool[0] = max(pool[0], at + size)
 
     for owner, kind, size, align in requests:
@@ -1214,7 +1229,7 @@ def _scale_allocations(requests):
             pool[0] = max(pool[0], BACKFIELD_VA + BACKFIELD_REQUEST[2] - POOL_VA)
             to_pool(owner, kind, size, align)
             continue
-        if owner in (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER, QB_TRADES_OWNER) or (gadget and (owner, kind) in LINEUP_SLOT_VA):
+        if owner in FIXED_PAGE_OWNERS or (gadget and (owner, kind) in LINEUP_SLOT_VA):
             to_pool(owner, kind, size, align)
             continue
         for r in regions:

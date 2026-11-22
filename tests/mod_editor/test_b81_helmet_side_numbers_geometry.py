@@ -102,6 +102,23 @@ class GrowthTests(unittest.TestCase):
             for name in hs.NUMBER_MATERIALS:
                 self.assertEqual(rows[name]["material"], base + hs.K + hs.NUMBER_MATERIALS.index(name))
 
+    def test_set_e_materials_carry_the_display_word_the_game_gives_every_bound_number_set(self):
+        """Review 11/22 finding 1: after the registration loop the game walks rows 0..13 of a model row and stores 0xFFFF
+        in word +0xA of every bound material (0x90C08..0x90C5E; the renderer at 0x2D123 sends it times 1/32768 as a
+        vertex-shader constant, about 2.0). Set E's row lies outside that walk, so its materials carry the value
+        themselves; set D's records keep the file value (the game raises them at load)."""
+        for key in hs.KEYS:
+            g, _ = self.grown[key]
+            lay = hs.layout(key, g)
+            names = {v: k for k, v in lay.names.items()}
+            for cell in hs.NUMBER_CELLS:
+                e = lay.materials + 0x80 * names[f"NUMBER_helmet_E_{cell}"]
+                d = lay.materials + 0x80 * names[f"NUMBER_helmet_D_{cell}"]
+                self.assertEqual(struct.unpack_from("<H", g, e + 0xA)[0], 0xFFFF, (key, cell))
+                self.assertEqual(struct.unpack_from("<H", g, d + 0xA)[0], 0x8000, (key, cell))
+                self.assertEqual(g[e + 4:e + 0xA] + g[e + 0xC:e + 0x80], g[d + 4:d + 0xA] + g[d + 0xC:d + 0x80],
+                                 (key, cell))
+
     def test_strip_gives_back_the_retail_scene(self):
         for key in hs.KEYS:
             g, _ = self.grown[key]

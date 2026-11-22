@@ -91,27 +91,30 @@ class OwnerShapeTests(unittest.TestCase):
         self.assertEqual(hsn.OWNER, "nfl2k5_helmet_side_numbers")
         self.assertEqual(hsn.ROUTE, 5)
         self.assertEqual(hsn.ROW_FORMAT, "NUMBER_helmet_E_%c")
-        self.assertEqual(hsn.REQUESTS, ((hsn.OWNER, "code", hsn.CODE_SIZE, 16), (hsn.OWNER, "data", hsn.DATA_SIZE, 16)))
+        # review 11/22: one fixed page right after the quarterback trades page (the pool is RWX; R lives in it)
+        self.assertEqual(hsn.REQUESTS, ((hsn.OWNER, "code", 0x1000, 0x1000),))
+        self.assertEqual(hsn.REQUESTS, (space.HELMET_SIDES_REQUEST,))
+        self.assertEqual(space.HELMET_SIDES_VA, space.QB_TRADES_VA + space.QB_TRADES_SIZE)
         self.assertIn(hsn.OWNER, space.LATE_OWNERS)
-        self.assertEqual(space.LATE_OWNERS[-1], hsn.OWNER)          # after every other late owner: it moves none
+        self.assertIn(hsn.OWNER, space.FIXED_PAGE_OWNERS)
 
     def test_row_record_address(self):
-        for data_va in (0x14F2000, 0x14F2FE0, 0x152D0C0):
-            row = hsn.row_va(data_va)
-            self.assertEqual(row, data_va + 8)
+        for code_va in (0x14DA000, 0x152D000):
+            row = hsn.row_va(code_va)
+            self.assertEqual(row, code_va + 0x108)
             self.assertEqual(row % 16, ROWS_VA % 16)
             self.assertGreater(row, 0xA86E38)                        # the loop's signed bound falls out after it
             self.assertEqual(hsn.row_index(row) * 16 + ROWS_VA, row)
             self.assertGreater(hsn.row_index(row), 13)
         with self.assertRaises(ValueError):
-            hsn.row_va(0x14F2008)                                    # the data allocation is 16-aligned
+            hsn.row_va(0x152D010)                                    # the owner's page is page-aligned
 
     def test_table_string_and_cave(self):
-        code_va, data_va = 0x14DA100, 0x14F2010
-        code = hsn.code_for(code_va, data_va)
+        code_va = 0x152D000
+        code = hsn.code_for(code_va)
         self.assertEqual(len(code), hsn.CODE_SIZE)
         table = struct.unpack_from("<6I", code, hsn.table_va(code_va) - code_va)
-        k = hsn.row_index(hsn.row_va(data_va))
+        k = hsn.row_index(hsn.row_va(code_va))
         self.assertEqual(table[:5], RETAIL_ROUTE_ROWS[:5])           # routes 0..4 map exactly as in retail
         self.assertEqual(table[5], k)
         self.assertNotEqual(table[5], 0)                             # route 5 never maps to row 0 (NUMBER_%c)
@@ -119,8 +122,11 @@ class OwnerShapeTests(unittest.TestCase):
         self.assertEqual(code[at:at + 38], "NUMBER_helmet_E_%c\0".encode("utf-16le"))
         # the cave: first fall-out -> our row, re-entering the retail loop body; second -> the displaced push
         self.assertEqual(code[:9], bytes.fromhex("8b442418" "3d486ea800"))
-        self.assertIn(b"\xc7\x44\x24\x18" + struct.pack("<I", hsn.row_va(data_va)), code)
-        self.assertIn(b"\x8d\x84\x40" + struct.pack("<I", hsn.row_va(data_va) + 4), code)
+        self.assertIn(b"\xc7\x44\x24\x18" + struct.pack("<I", hsn.row_va(code_va)), code)
+        self.assertIn(b"\x8d\x84\x40" + struct.pack("<I", hsn.row_va(code_va) + 4), code)
+        # R in the page: the format pointer, then every cell unbound
+        at = hsn.row_va(code_va) - code_va
+        self.assertEqual(code[at:at + 16], struct.pack("<I", hsn.format_va(code_va)) + b"\xff" * 12)
         self.assertIn(bytes.fromhex("681056e600"), code)
 
     def test_sites(self):
@@ -139,7 +145,7 @@ class OwnerShapeTests(unittest.TestCase):
     def test_memory_budget_rows(self):
         key = hsn.OWNER[len("nfl2k5_"):]
         self.assertEqual(mb.LEGACY_REQUESTS[key], tuple(r[1:] for r in hsn.REQUESTS))
-        self.assertEqual(mb.OWNER_BYTES[key], (hsn.CODE_SIZE, 0, 0, 0, hsn.DATA_SIZE))
+        self.assertEqual(mb.OWNER_BYTES[key], (hsn.CODE_SIZE, 0, 0, 0, 0))
         self.assertEqual(mb.OWNER_FIELDS[key], (hsn.BUILD_KEY,))
         self.assertNotIn(key, mb.owners(mb.rc_plan()))               # the v0.9 pack plan does not carry it
 
@@ -160,10 +166,10 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual(space.status(self.applied), "applied")
         self.assertEqual(nk.status(self.applied), "retail")
         found = hsn.allocation(self.applied)
-        code_va, data_va = found["code"]["va"], found["data"]["va"]
-        row = hsn.row_va(data_va)
-        self.assertEqual(read(self.applied, code_va, hsn.CODE_SIZE), hsn.code_for(code_va, data_va))
-        self.assertEqual(read(self.applied, data_va, hsn.DATA_SIZE), bytes(hsn.DATA_SIZE))   # zero-initialised data
+        code_va = found["code"]["va"]
+        self.assertEqual(code_va, space.HELMET_SIDES_VA)                          # fixed, whatever else is installed
+        row = hsn.row_va(code_va)
+        self.assertEqual(read(self.applied, code_va, hsn.CODE_SIZE), hsn.code_for(code_va))
         self.assertEqual(read(self.applied, 0x8F041, 7), bytes.fromhex("8b0c8d") + struct.pack("<I", hsn.table_va(code_va)))
         self.assertEqual(read(self.applied, 0x4EF874, 24), read(self.retail, 0x4EF874, 24))  # retail table untouched
         self.assertEqual(struct.unpack("<6I", read(self.applied, hsn.table_va(code_va), 24)),
@@ -173,7 +179,7 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual(self.receipt["status"], "applied")
         self.assertFalse(self.receipt["already_applied"])
         self.assertEqual(self.receipt["row_va"], hex(row))
-        self.assertTrue(XbeImage(self.applied).section(data_va, hsn.DATA_SIZE).flags & 1)    # writable at run time
+        self.assertTrue(XbeImage(self.applied).section(row, 16).flags & 1)                    # writable at run time
 
     def test_only_the_two_sites_change_in_the_retail_sections(self):
         plain, _ = space.apply(self.retail, hsn.REQUESTS, scaleout=True)         # the same reservation, empty
@@ -275,14 +281,50 @@ class BaseExecutableTests(unittest.TestCase):
         after = [a for a in space.layout(self.applied)["allocations"] if a["owner"] != space.DIRECTORY_OWNER]
         self.assertTrue(all(a in after for a in before))                         # every existing owner stays put
         added = [a for a in after if a not in before]
-        self.assertEqual(sorted((a["owner"], a["kind"]) for a in added), [(hsn.OWNER, "code"), (hsn.OWNER, "data")])
+        self.assertEqual(sorted((a["owner"], a["kind"], a["va"]) for a in added),
+                         [(hsn.OWNER, "code", space.HELMET_SIDES_VA)])
         found = hsn.allocation(self.applied)
-        section = XbeImage(self.applied).section(found["data"]["va"], hsn.DATA_SIZE)
+        section = XbeImage(self.applied).section(hsn.row_va(found["code"]["va"]), 16)
         self.assertTrue(section.flags & 1, "the row record must be in a writable section")
         self.assertEqual(hsn.apply(self.applied)[0], self.applied)
         removed, _ = hsn.remove(self.applied)
         self.assertEqual(hsn.status(removed), "retail")
         self.assertEqual(hsn.apply(removed)[0], self.applied)
+
+
+class InPlaceEditTests(unittest.TestCase):
+    """Review 11/22 (coordinator): the in-place edits players are told to use must still work on a disc with side
+    numbers. A standard disc built with Simulated injuries Retail has no injury bank; the FAQ's Build-tab copy to
+    Realistic or Custom appends it in place (nfl2k5_xbe_space.extend_scaleout), which refuses any plan that moves an
+    installed owner. The side-numbers page is fixed, like the quarterback room's, so nothing moves."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.applied, _ = hsn.apply(base_xbe())
+
+    def test_the_injury_bank_can_still_be_added_in_place(self):
+        _g, _s, current = space._validate(self.applied)
+        bank = [r for r in current if r[0] == space.QB_INJURY_OWNER]
+        self.assertEqual(bank, [space.QB_INJURY_REQUEST])
+        without = [r for r in current if r[0] != space.QB_INJURY_OWNER]
+        before = {(r["owner"], r["kind"]): r["va"] for r in space._scale_allocations(space._requests(without))}
+        after = {(r["owner"], r["kind"]): r["va"] for r in space._scale_allocations(space._requests(without + bank))}
+        self.assertEqual(sorted(k for k in before if after.get(k) != before[k]), [])
+
+    def test_every_late_pool_owner_of_the_standard_disc_can_be_re_added_in_place(self):
+        _g, _s, current = space._validate(self.applied)
+        owners = sorted({r[0] for r in current if r[0] in space.LATE_OWNERS and r[0] != hsn.OWNER})
+        for owner in owners:
+            rows = [r for r in current if r[0] == owner]
+            without = [r for r in current if r[0] != owner]
+            before = {(r["owner"], r["kind"]): r["va"] for r in space._scale_allocations(space._requests(without))}
+            try:
+                after = {(r["owner"], r["kind"]): r["va"]
+                         for r in space._scale_allocations(space._requests(without + rows))}
+            except ValueError:
+                continue                                        # an owner the layout cannot place alone is not in scope
+            moved = sorted(k for k in before if after.get(k) != before[k])
+            self.assertNotIn((hsn.OWNER, "code"), moved, owner)
 
 
 # ------------------------------------------------------------------------------------------------ emulated

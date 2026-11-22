@@ -16,12 +16,13 @@ kit today binds its helmet digits into the lo_body's far jersey-number cells.
 What this owner changes (the selector, the binder and every retail table are untouched):
   * 0x8F044, the 4-byte table address of ``mov ecx, [ecx*4 + 0x4EF874]``, points to the owner's own 6-dword table
     1, 1, 2, 3, 4, k (routes 0..4 map exactly as in retail; route 5 maps to row k, never to row 0).
-  * Row k is a 16-byte record R in the owner's zero-initialised RW data, R = data + 8, so R = 0xA86D68 (mod 16) and
-    k = (R - 0xA86D68) / 16; R lies above every retail row, so the selector's ``16 * row + 3 * model row`` addressing
-    reaches exactly R's cells and nothing else.
+  * Row k is a 16-byte record R at page + 0x108 of the owner's own fixed page (review 11/22: no separate data
+    allocation; the scale-out pool is RWX), so R = 0xA86D68 (mod 16) and k = (R - 0xA86D68) / 16; R lies above every
+    retail row, so the selector's ``16 * row + 3 * model row`` addressing reaches exactly R's cells and nothing else.
+    The file holds R's name pointer (L"NUMBER_helmet_E_%c") and twelve 0xFF cells; the game writes the cells.
   * A 5-byte hook at 0x90AB1 (``push 0xE65610``, the first instruction after the registration loop) jumps to the
-    cave. When the retail rows are done ([esp+0x18] = 0xA86E48) it points the loop at R (on the first run ever it
-    writes R's name pointer, L"NUMBER_helmet_E_%c", and sets all twelve cells to 0xFF), sets the cell pointer
+    cave. When the retail rows are done ([esp+0x18] = 0xA86E48) it points the loop at R (should R's name pointer
+    ever read otherwise it writes it and sets all twelve cells to 0xFF, as the file holds them), sets the cell pointer
     [esp+0x10] = R + 4 + 3 * model row and jumps back into the retail loop body 0x909F0, so the game's own code names,
     searches and stores E's cells. When the loop falls out again ([esp+0x18] = R + 0x10) the cave puts back the
     loop's retail exit state (eax, ecx, edx, [esp+0x10], [esp+0x14], [esp+0x18]; ebx and edi are the last name
@@ -40,11 +41,13 @@ kerning, Jersey number sizes (hook 0x8F580) and Hair styles (0x8F5B9). Guardian'
 covers 0x8F041, and this owner's helmet-block guard covers Guardian's bind hook 0x8F02E: the two refuse each other,
 as Guardian and Hair styles already do.
 
-Install order: a late allocator owner, last in nfl2k5_xbe_space.LATE_OWNERS; it must be applied after every other
-late owner (an earlier owner appended after it would have to move it, which extend_scaleout refuses). Removal
-(``remove``) follows the gadget-play pattern: the two sites back to their retail bytes and the code allocation back to
-its int3 fill; the reservation stays, so nothing moves. Applying to an image whose allocation is already reserved and
-then removing returns the same bytes. A clean retail executable comes from rebuilding from the original source.
+Install order (review 11/22): one fixed page right after the quarterback trades page (nfl2k5_xbe_space.HELMET_SIDES_VA),
+placed like the quarterback pages: at its absolute address, never advancing the pool cursor, and every other pool owner
+steps over it whether or not it is requested. So the owner can be added in place after every other owner, and an owner a
+disc lacks (the injury bank of a disc built with Simulated injuries Retail) can still be added in place after it: the
+FAQ's Build-tab copy keeps working. Removal (``remove``) follows the gadget-play pattern: the two sites back to their
+retail bytes and the page back to its int3 fill; the reservation stays, so nothing moves. Applying to an image whose page
+is already reserved and then removing returns the same bytes. A clean retail executable comes from rebuilding.
 """
 from __future__ import annotations
 
@@ -63,12 +66,11 @@ HELP_TEXT = (
     "draws them. Off = the executable keeps its retail bytes.")
 ROUTE = 5
 ROW_FORMAT = "NUMBER_helmet_E_%c"
-CODE_SIZE = 0xC0
-DATA_SIZE = 0x20
-REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
+CODE_SIZE = 0x1000                                   # one fixed page (nfl2k5_xbe_space.HELMET_SIDES_VA), the pool is RWX
+REQUESTS = ((OWNER, "code", CODE_SIZE, CODE_SIZE),)  # = nfl2k5_xbe_space.HELMET_SIDES_REQUEST
 TABLE_OFFSET = 0x80                                  # the 6-dword route -> row table
 FORMAT_OFFSET = 0x98                                 # L"NUMBER_helmet_E_%c"
-ROW_OFFSET = 8                                       # R = data + 8 (= 0xA86D68 mod 16)
+ROW_OFFSET = 0x108                                   # R = page + 0x108 (= 0xA86D68 mod 16), written by the game
 
 ROWS_VA, ROW_SIZE = 0xA86D68, 16                     # row records 0..13: +0 name format, +4 cells [model row][L, M, R]
 LOOP_BOUND, LOOP_EXIT = 0xA86E38, 0xA86E48           # cmp eax, 0xA86E38 (signed jle); the row pointer at the fall-out
@@ -114,11 +116,11 @@ def _p32(value):
 
 # ------------------------------------------------------------------------------------------------ addresses
 
-def row_va(data_va: int) -> int:
-    """R, the owner's row record: data + 8. It must sit on the retail rows' 16-byte grid, above the loop bound and
-    below 2 GiB (the loop's bound check is signed)."""
-    _require(type(data_va) is int and data_va % 16 == 0, "the helmet side numbers data must be 16-aligned")
-    row = data_va + ROW_OFFSET
+def row_va(code_va: int) -> int:
+    """R, the owner's row record: page + 0x108 (review 11/22: in the owner's own fixed RWX page, no data allocation). It
+    must sit on the retail rows' 16-byte grid, above the loop bound and below 2 GiB (the loop's bound check is signed)."""
+    _require(type(code_va) is int and code_va % CODE_SIZE == 0, "the helmet side numbers page must be page-aligned")
+    row = code_va + ROW_OFFSET
     _require(row % ROW_SIZE == ROWS_VA % ROW_SIZE and LOOP_BOUND < row and row + ROW_SIZE < 0x80000000,
              "the helmet side numbers row is off the row grid")
     return row
@@ -140,10 +142,11 @@ def format_va(code_va: int) -> int:
 
 # ------------------------------------------------------------------------------------------------ the cave
 
-def code_for(code_va: int, data_va: int) -> bytes:
-    """The owned code (CODE_SIZE bytes, int3-padded): the cave, the route table and the name format."""
+def code_for(code_va: int) -> bytes:
+    """The owned page (CODE_SIZE bytes, int3-padded): the cave, the route table, the name format and the row record R
+    (its format pointer, every cell 0xFF until the game registers a model)."""
     from .nfl2k5_draft_ai import _Asm
-    row, fmt = row_va(data_va), format_va(code_va)
+    row, fmt = row_va(code_va), format_va(code_va)
     a = _Asm(code_va)
     a.b("8b442418")                                  # mov eax, [esp+0x18]       the loop's row pointer
     a.b("3d" + _p32(LOOP_EXIT))                      # cmp eax, 0xA86E48         the retail rows are done
@@ -177,7 +180,9 @@ def code_for(code_va: int, data_va: int) -> bytes:
     code += struct.pack("<6I", *RETAIL_ROUTE_ROWS, row_index(row))
     _require(len(code) == FORMAT_OFFSET, "route table misplaced")
     code += (ROW_FORMAT + "\0").encode("utf-16le")
-    _require(len(code) <= CODE_SIZE, "the helmet side numbers name outgrew the owner")
+    _require(len(code) <= ROW_OFFSET, "the helmet side numbers name outgrew its slot")
+    code += b"\xcc" * (ROW_OFFSET - len(code))
+    code += struct.pack("<I", fmt) + b"\xff" * 12                # R: the format, then 4 model rows x L, M, R unbound
     return bytes(code).ljust(CODE_SIZE, b"\xcc")
 
 
@@ -195,18 +200,17 @@ def _space():
 
 
 def allocation(payload: bytes) -> dict | None:
-    """{"code": row, "data": row} of the owner's allocations, or None."""
+    """{"code": row} of the owner's fixed page, or None."""
     space = _space()
     if space.status(payload) != "applied":
         return None
     rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == OWNER]
     if not rows:
         return None
-    kinds = {r["kind"]: r for r in rows}
-    _require(len(rows) == 2 and set(kinds) == {"code", "data"} and kinds["code"]["size"] == CODE_SIZE
-             and kinds["data"]["size"] == DATA_SIZE, "foreign helmet side numbers allocation")
-    row_va(kinds["data"]["va"])
-    return kinds
+    _require(len(rows) == 1 and rows[0]["kind"] == "code" and rows[0]["size"] == CODE_SIZE
+             and rows[0]["va"] == space.HELMET_SIDES_VA, "foreign helmet side numbers allocation")
+    row_va(rows[0]["va"])
+    return {"code": rows[0]}
 
 
 def _guards(payload: bytes, hooked: bool) -> None:
@@ -235,9 +239,8 @@ def _state(payload: bytes) -> tuple[str, dict | None]:
         _guards(payload, False)
         return "retail", None
     image = XbeImage(payload)
-    code_va, data_va = found["code"]["va"], found["data"]["va"]
-    _require(image.read(data_va, DATA_SIZE) == bytes(DATA_SIZE), "the helmet side numbers row must start zeroed")
-    section = image.section(data_va, DATA_SIZE)
+    code_va = found["code"]["va"]
+    section = image.section(row_va(code_va), ROW_SIZE)
     _require(section is not None and section.flags & 1, "the helmet side numbers row is not in a writable section")
     code = image.read(code_va, CODE_SIZE)
     if code == b"\xcc" * CODE_SIZE:
@@ -245,7 +248,7 @@ def _state(payload: bytes) -> tuple[str, dict | None]:
                  "the helmet number sites changed with an empty owner")
         _guards(payload, False)
         return "retail", found
-    _require(code == code_for(code_va, data_va), "foreign helmet side numbers code")
+    _require(code == code_for(code_va), "foreign helmet side numbers code")
     _require(rdata.status(payload, sites(code_va)) == "applied", "mixed helmet side numbers sites")
     _guards(payload, True)
     return "applied", found
@@ -266,10 +269,10 @@ def read_settings(payload: bytes) -> dict:
         return {"status": "foreign", "route": ROUTE}
     if state != "applied":
         return {"status": state, "route": ROUTE}
-    code_va, data_va = found["code"]["va"], found["data"]["va"]
-    row = row_va(data_va)
+    code_va = found["code"]["va"]
+    row = row_va(code_va)
     return {"status": state, "route": ROUTE, "row": row_index(row), "row_va": hex(row), "code_va": hex(code_va),
-            "data_va": hex(data_va), "table_va": hex(table_va(code_va)), "format_va": hex(format_va(code_va))}
+            "table_va": hex(table_va(code_va)), "format_va": hex(format_va(code_va))}
 
 
 def reservations(payload: bytes) -> list[dict]:
@@ -297,14 +300,14 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
             payload, _ = space.extend_scaleout(payload, REQUESTS)
         found = allocation(payload)
     _require(found is not None, "reserve the helmet side numbers allocation first")
-    code_va, data_va = found["code"]["va"], found["data"]["va"]
-    row = row_va(data_va)
-    with_code, code_receipt = space.install_code(payload, OWNER, code_for(code_va, data_va))
+    code_va = found["code"]["va"]
+    row = row_va(code_va)
+    with_code, code_receipt = space.install_code(payload, OWNER, code_for(code_va))
     result, site_receipt = rdata.apply(with_code, sites(code_va), OWNER)
     _require(status(result) == "applied", "helmet side numbers postcondition failed")
     return result, {**common, **site_receipt, "status": "applied", "already_applied": False,
                     "code_install": code_receipt, "code_va": hex(code_va), "code_end": hex(code_va + CODE_SIZE),
-                    "data_va": hex(data_va), "row_va": hex(row), "row": row_index(row),
+                    "row_va": hex(row), "row": row_index(row),
                     "table_va": hex(table_va(code_va)), "format_va": hex(format_va(code_va)),
                     "hook_va": hex(HOOK_VA), "route_site_va": hex(ROUTE_SITE),
                     "changed_bytes": space.count_differing_bytes(before, result) + abs(len(result) - len(before)),
@@ -332,7 +335,7 @@ def remove(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
 
 
 __all__ = ["OWNER", "LABEL", "BUILD_KEY", "BUILD_CAPTION", "HELP_TEXT", "ROUTE", "ROW_FORMAT", "CODE_SIZE",
-           "DATA_SIZE", "REQUESTS", "GUARDS", "HelmetSideNumbersError", "row_va", "row_index", "table_va",
+           "REQUESTS", "GUARDS", "HelmetSideNumbersError", "row_va", "row_index", "table_va",
            "format_va", "code_for", "sites", "allocation", "status", "read_settings", "reservations", "apply",
            "remove"]
 

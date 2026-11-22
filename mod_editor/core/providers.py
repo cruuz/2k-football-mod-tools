@@ -798,7 +798,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_champions_code.py": "d0b7c4b07d849a24fda938e120cf7c6d4f15f0b589ac20183ecde61fb7fa463a",
         "mod_editor/core/nfl2k5_champions_code_b779.py": "c9a7e5bffface03b6ad23a030c652ef4398f8ac2ed26c249b8e815c2056c4407",  # b780 n6: frozen beta-79 runtime
         "mod_editor/core/nfl2k5_champions_code_b780.py": "c4f68380fa68902511e4502340d6b0e55228e04e6756dd3fde1eaef40db8ae7d",
-        "mod_editor/core/nfl2k5_hair_styles.py": "ae81f6c34308d3088582617bd7b9c986499509aa6a30820453dfa877ba2b9bae",
+        "mod_editor/core/nfl2k5_hair_styles.py": "e0de5a96cd3c87264fb99d6e278b881fd784c0e6fb6604b118aef61377139414",
         "mod_editor/core/nfl2k5_play_art_routes.py": "b2e652809e1a030608fcd3811bce6346903b3af3f06b5e737250d091b98681cf",
         "mod_editor/core/nfl2k5_team_number_scale.py": "1be5d406dfa34e809488f9c5efbcbdc23e012c697c118fa7ac665c8a4cc49269",
         "mod_editor/core/nfl2k5_run_blocking.py": "96251a09e80032838fc0cf9fa8ca187063fc2d7a60c823b7b4a3daca41e54d7f",
@@ -1004,7 +1004,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_qb_room_code_b81_handover.py": "8c1df5fc0d2eadd433f3558c334c07275284f43a1ec283842d3901eab4e8162a",  # b81 qb34: frozen floor + D1 + D2 hand-over template (b2672e398; "previous" since C21)
         "mod_editor/core/nfl2k5_qb_trades.py": "00f1b6fd4aceb6c647d7b490a4079b9ac998721d81174b3a379233116b76f6ff",  # b81 qb34 4b (C20): the room owner loads it with bit 16
         "mod_editor/core/nfl2k5_qb_trades_code.py": "03a3b7fe4d829e132d782f62fb180567b7bc5bfc581940c7ff8a3ae7eed7ea68",  # b81 qb34 4b: its generated page template
-        "mod_editor/core/nfl2k5_helmet_side_numbers.py": "7018c39e91d634051165bbdff22c913e45456ade4fa8bed401eb4f4ec707fab9",  # b81 helmet-sides: mod_build loads it by name (route 5 = set E)
+        "mod_editor/core/nfl2k5_helmet_side_numbers.py": "c10876d8ef2c26740f3559706d8678de673730a7e260285ddc35eaafec9e6069",  # b81 helmet-sides: mod_build loads it by name (route 5 = set E)
         "mod_editor/core/nfl2k5_number_kerning.py": "48405334b32b7495399f204a898825531423ed6025e848b51ac0c86891df6902",  # b81 helmet-sides: the owner reads Number kerning's state (same cell addressing)
         "mod_editor/core/nfl2k5_sim_realism.py": "81d981f096486cc13f7033e87b014694eacbbee82afeb96412784cb85ff7d77a",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_sim_scoring.py": "71ef9e833a7e0b8bb339221dff1ce115e51b00f07bba0050df4cddab14c3f948",  # b81 scoring: in-place simulated kicking, installed by the QB option
@@ -1101,7 +1101,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "68490769db636ea8ad9f011f0a511c2ffe326cb1ebbb5b553851cc35255834a8",
+        "mod_editor/core/nfl2k5_xbe_space.py": "86f3b1c7237b548265d5ff2d95de06fad18e9694c0c0f7d9a409ccbc22d61f9f",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "b63521c9b17119b87558aff36a5a914d0c3fdd42e96240cf7de20065ead644d7",

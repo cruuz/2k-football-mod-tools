@@ -145,6 +145,8 @@ NUMBER_CELLS = ("L", "M", "R")
 NUMBER_MATERIALS = tuple(f"NUMBER_helmet_E_{c}" for c in NUMBER_CELLS)
 NUMBER_TEMPLATES = tuple(f"NUMBER_helmet_D_{c}" for c in NUMBER_CELLS)
 N = len(NUMBER_MATERIALS)
+#: material word the game raises to 0xFFFF for every number set it registers (rows 0..13); set E's records carry it
+NUMBER_DISPLAY_WORD = 0xA
 
 
 class HairStylesError(ValueError):
@@ -561,9 +563,14 @@ def build_plan(key: str, decoded: bytes, document: Mapping[str, Any],
                               submesh=submesh, material=mat_t))
         words += part["mesh_words"]
     for k, cell in enumerate(plan_added["cells"]):
+        # Review 11/22: once a model's rows 0..13 are registered the game stores 0xFFFF in word +0xA of every bound
+        # number, jersey and nameplate material (0x90C08..0x90C5E; the renderer sends it / 32768 as a vertex-shader
+        # constant, 0x2D123). Set E's row lies outside that walk, so its materials carry the value from the file.
+        material = bytearray(number_t[k][0])
+        struct.pack_into("<H", material, NUMBER_DISPLAY_WORD, 0xFFFF)
         part_rows.append(dict(mesh=NUMBER_MATERIALS[k], first_vertex=cell["first_vertex"], vertices=cell["vertices"],
                               word_offset=len(words), words=len(cell["mesh_words"]), strip=cell["strips"],
-                              submesh=number_t[k][1], material=number_t[k][0]))
+                              submesh=number_t[k][1], material=bytes(material)))
         words += cell["mesh_words"]
     added = plan_added["added"]
     dreads_words = plan_added["dreads_words"]
