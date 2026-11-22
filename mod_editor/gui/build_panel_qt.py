@@ -429,10 +429,12 @@ def rebuild_only_reason(state: Mapping[str, object]) -> str:
         return ("On this v0.9 standard disc you can select the boot save-list repair, modern injured reserve, starting backfield cards, the gadget player on gadget plays or simulated quarterback injuries. "
                 "Choose the changes you want. Use your retail disc for other changes or a league project.")
     if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") not in ("applied", "retail"):
+        # b81 relrev M1: this is also every SOFTDRINK standard disc this release builds (the facility is composed with the
+        # disc's colour grade and art, so it never matches the one stored reading), not only a disc an older build made.
         what = "disc" if state.get("container") == "xiso" else "executable"
-        return (f"This {what} already has the practice field's team logo at midfield, put there by an older build. This release "
-                f"can neither keep it nor update it in place, so it cannot build on top of this {what}. To change it, build "
-                f"again from a dump of your own retail disc.")
+        return (f"This {what} already has the practice field's team logo at midfield, and this release does not recognise "
+                f"its practice field, so it can neither keep the logo nor take it off and cannot build on top of this {what}. "
+                f"To change other options, build again from a dump of your own retail disc.")
     return ""
 # b780 n6: beta-79 installs this release reads ("previous") but cannot update in place (they grew, or MyCareer and its
 # companions are linked together); the option stays off and says to rebuild from the retail game
@@ -550,7 +552,9 @@ class BuildPanel(QWidget):
 
         self._state: dict[str, object] | None = None
         self._v09_source_choices = None
-        self._v09_other_edit = False
+        # b81 relrev M2: a saved project's build settings restored on this disc. A project always needs a full build. A
+        # click is judged by value instead, wherever the disc cannot take a full build (see _in_place_explicit).
+        self._project_settings_restored = False
         self._sim_qb_source_choices = None
         self._sim_qb_other_choice = False
         self._sim_qb_authored = False
@@ -2420,11 +2424,11 @@ class BuildPanel(QWidget):
                           or self._keep_selection_on_state)
         if previous_path and not same_disc:
             self._v09_source_choices = None
-            if not keep_selection:
-                self._v09_other_edit = False
             self._sim_qb_source_choices = None
             if not keep_selection:
+                self._project_settings_restored = False
                 self._sim_qb_other_choice = False
+                self._sim_qb_authored = False
         softdrink_choices = self._softdrink_build_settings() if self.softdrink_project_field.text().strip() else None
         combo = self.screen_timing_combo
         if combo is not None and state.get("container") == "xiso" and (
@@ -3127,7 +3131,6 @@ class BuildPanel(QWidget):
     def apply_preset(self, name: str) -> dict[str, list[str]]:
         """Tick the preset's toggles (only those the source can still take); returns what was skipped."""
 
-        self._v09_other_edit = True
         self._sim_qb_authored = True
         self._momentum_legacy_disabled = False
         self._momentum_last_positive = 50
@@ -3582,11 +3585,7 @@ class BuildPanel(QWidget):
                                              custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
                                              overwrite=plan.overwrite,
                                              name=plan.name, author=plan.author, notes=plan.notes)
-        if (self._sim_qb_injury_change() and not self._sim_qb_other_choice and not self._sim_qb_authored
-                and not self.softdrink_project_field.text().strip()
-                and (self._state or {}).get("sim_realism") in ("applied", "legacy")
-                and ((self._state or {}).get("k128_settings") or {}).get("require_128") is True
-                and self._sim_qb_source_choices == self._sim_qb_companion_choices(plan)):
+        if self._sim_qb_only_selected(plan):
             return mod_build.sim_qb_disc_edit(plan.source, plan.target, plan.sim_qb_injuries,
                                               custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
                                               overwrite=plan.overwrite,
@@ -3607,8 +3606,8 @@ class BuildPanel(QWidget):
         return plan
 
     def _v09_other_selected(self, *_):
-        # A deliberate edit still belongs to the full build when its selected value equals its default.
-        self._v09_other_edit = True
+        # b81 relrev M2: the v0.9 disc takes no full build, so a neighbour counts by its value (_v09_selected compares the
+        # plan with the disc as read): one ticked and unticked again, or Console memory chosen again, changes nothing.
         if (self._state or {}).get("v09_standard_update"):
             self._refresh()
 
@@ -3625,12 +3624,85 @@ class BuildPanel(QWidget):
         return values
 
     def _v09_selected(self, plan=None):
-        if (not (self._state or {}).get("v09_standard_update") or self._v09_other_edit
+        if (not (self._state or {}).get("v09_standard_update") or self._project_settings_restored
                 or self.softdrink_project_field.text().strip() or self._include_session_project()):
             return False
         boxes = self._boxes()
         return ((any(boxes[key].isChecked() for key in mod_build.V09_UPDATE_CHOICES) or bool(self._sim_qb_injury_change()))
                 and self._v09_companion_choices(plan or self.plan()) == self._v09_source_choices)
+
+    def _sim_qb_in_place_possible(self) -> bool:
+        """The disc can take the single-setting Simulated injuries copy (a standard 128 MB disc with the simulator)."""
+        state = self._state or {}
+        return (not state.get("v09_standard_update") and self.qb_injury_mode.isEnabled()
+                and state.get("sim_realism") in ("applied", "legacy")
+                and (state.get("k128_settings") or {}).get("require_128") is True)
+
+    def _sim_qb_only_selected(self, plan=None) -> bool:
+        """Make my disc runs the single-setting Simulated injuries copy (mod_build.sim_qb_disc_edit).
+
+        Where a full build is possible, an explicit neighbour (even at its default) or a preset keeps the full build. b81
+        relrev M1/M2: where this disc cannot take a full build (rebuild_only_reason, every SOFTDRINK standard disc with the
+        practice field's team logo), a full build is no alternative, so only values count: the copy runs while every other
+        choice is as the disc was read, and a box ticked and unticked again does not lose it. A restored project still
+        needs a full build."""
+        if not self._sim_qb_injury_change() or not self._sim_qb_in_place_possible():
+            return False
+        if self.softdrink_project_field.text().strip():
+            return False
+        if rebuild_only_reason(self._state or {}):
+            if self._project_settings_restored:
+                return False
+        elif self._sim_qb_other_choice or self._sim_qb_authored:
+            return False
+        return self._sim_qb_source_choices == self._sim_qb_companion_choices(plan or self.plan())
+
+    _CHOICE_NAMES = {"max_deep_yards": "Throw ceiling", "arc": "Throw arc", "console_memory": "Console memory",
+                     "helmet_finish": "Helmet finish", "cpu_scrambles": "CPU QB scrambles", "hires_folder": "Hi-res artwork folder",
+                     "stock_age_policy": "Stock player ages", "speed_threshold": speed_threshold_ui.CAPTION}
+
+    def _choice_name(self, key: str) -> str:
+        if key in self._boxes():
+            return self._short_label(key)
+        return self._CHOICE_NAMES.get(key) or key.replace("_", " ").capitalize()
+
+    def _in_place_blocker(self, reason: str) -> str:
+        """b81 relrev M1/M2: ``reason`` (rebuild_only_reason) says why this disc takes no full build. When the disc has an
+        in-place route (the v0.9 update, or the Simulated injuries copy), say what still works, or name what stands in the
+        way of it, so a player who looked around is never left with a sentence that does not say why."""
+        state = self._state or {}
+        if state.get("v09_standard_update"):
+            route = "the v0.9 update"
+            chosen = (any(self._boxes()[key].isChecked() for key in mod_build.V09_UPDATE_CHOICES)
+                      or bool(self._sim_qb_injury_change()))
+            before, now = self._v09_source_choices, self._v09_companion_choices(self.plan())
+        elif self._sim_qb_in_place_possible():
+            route = "the Simulated injuries copy"
+            chosen = bool(self._sim_qb_injury_change())
+            before, now = self._sim_qb_source_choices, self._sim_qb_companion_choices(self.plan())
+        else:
+            return reason
+        if chosen and self.softdrink_project_field.text().strip():
+            return (reason + f" Include SOFTDRINK league artwork is on, and a league project needs a full build. Turn it "
+                    f"off to use {route}.")
+        if chosen and state.get("v09_standard_update") and self._include_session_project():
+            return (reason + f" The open project's edits are included, and they need a full build. Save them and use a "
+                    f"clean session to use {route}.")
+        if chosen and self._project_settings_restored:
+            return (reason + f" A saved project's build settings are loaded, and a project needs a full build, so "
+                    f"{route} is not available with it.")
+        changed = ([] if before is None else
+                   [self._choice_name(key) for key in dict.fromkeys((*now, *before)) if now.get(key) != before.get(key)])
+        if changed:
+            shown = ", ".join(changed[:4]) + (f" and {len(changed) - 4} more" if len(changed) > 4 else "")
+            one = len(changed) == 1
+            goal = "use the update" if state.get("v09_standard_update") else "make that copy"
+            return (reason + f" {shown} {'is' if one else 'are'} not part of {route}. Set {'it' if one else 'them'} back "
+                    f"as {'it was' if one else 'they were'} to {goal}.")
+        if not chosen and not state.get("v09_standard_update"):
+            return (reason + " You can still change only Simulated injuries: choose the mode and leave every other option "
+                    "as it is.")
+        return reason
 
     # ------------------------------------------------------------- b780-m64b: console memory
     def console_memory(self) -> int:
@@ -4070,6 +4142,10 @@ class BuildPanel(QWidget):
             labels = [self._short_label(k) for k in mod_build.V09_UPDATE_CHOICES if self._boxes()[k].isChecked()]
             medical = self._sim_qb_injury_change()
             return labels + [medical] if medical else labels
+        if self._sim_qb_only_selected():
+            # b81 relrev M1: the single-setting copy changes the injury option only; the ticked boxes beside it are the
+            # options the disc already carries, which Make my disc? used to list as changes
+            return [self._sim_qb_injury_change()]
         labels = []
         for key, box in self._boxes().items():
             if key in ("realistic_flight", "arc_by_distance"):
@@ -4168,8 +4244,8 @@ class BuildPanel(QWidget):
         if self._reading:
             return "Reading disc…"
         reason = rebuild_only_reason(self._state or {})
-        if reason and not self._v09_selected():
-            return reason
+        if reason and not self._v09_selected() and not self._sim_qb_only_selected():
+            return self._in_place_blocker(reason)   # b81 relrev M1: the injuries copy is exempt as the v0.9 update is
         if self.softdrink_project_check.isChecked():
             if not self.softdrink_project_field.text().strip() or not platform_compat.io_path(self.softdrink_project_field.text()).is_file():
                 return "Choose an existing SOFTDRINK league project, or turn off Include SOFTDRINK league artwork."
@@ -5216,8 +5292,7 @@ class BuildPanel(QWidget):
                 dialog.deleteLater()
 
     def restore_project_build_settings(self, state):
-        if state:
-            self._v09_other_edit = True
+        self._project_settings_restored = bool(state)
         from .gameplay_project_ui import restore
         from mod_editor.core import nfl2k5_build_settings as saved
         choices = saved.build_settings(state)
