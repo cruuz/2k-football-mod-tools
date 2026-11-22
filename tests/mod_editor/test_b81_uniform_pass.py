@@ -55,6 +55,12 @@ REDRAWN += ("08H0", "08A0", "08H5")
 # a regression", "Old number font is better"): these primaries wear the released v0.9 digits again; their digit rows (jersey and
 # arm) were dropped from the document (b81-uniform-fix1)
 REVERTED_TO_V09 = ("01H0", "01A0", "30H0", "30A0", "08H0", "08A0", "37H0", "37A0", "11H0", "11A0", "23H0", "23A0", "29H0")
+# Noah 11/21 (b81-uniform-exact, his second verdict on the Chargers numerals: "The first picture is the best when they're
+# italicized. That looks the closest to reality"): the Chargers home and road wear the released v0.9 italic digits again; their
+# 20 upright digit rows were dropped (b81-uniform-pass2). The alternates keep R2's upright set until he rules on them.
+REVERTED_TO_V09 += ("24H0", "24A0")
+#: the Chargers packages that still wear the one upright R2 shape set
+CHARGERS_R2 = tuple(s for s in CHARGERS if s not in REVERTED_TO_V09)
 REDRAWN = tuple(dict.fromkeys(s for s in REDRAWN if s not in REVERTED_TO_V09))
 #: the Broncos looks that still wear R2's one face (the home and road went back to v0.9's)
 BRONCOS_ONE_FACE = tuple(s for s in BRONCOS if s not in REVERTED_TO_V09)
@@ -345,7 +351,7 @@ class DigitDocument(unittest.TestCase):
         folder = gf.art_folder(gf.digits_b81())
         by = {(r["selector"], r["chunk"]): r for r in all_digit_rows()}
         for selector, width in (("18H0", 37), ("18A0", 37), ("18H7", 37), ("24A0", 35), ("00H0", 37), ("00A0", 37),
-                                ("01H0", 39), ("06H0", 31), ("14H0", 37), ("07H0", 35), ("28H7", 36),   # 28H7: 34 and its 2 texel dark layer
+                                ("01H0", 39), ("06H0", 31), ("14H0", 32), ("07H0", 35), ("28H7", 36),   # 28H7: 34 and its 2 texel dark layer
                                 # batch 5: real wider than 40 columns allow (two-digit numbers are cut outside 12-51): 40
                                 ("23H0", 40), ("23A0", 40), ("05H0", 30), ("05A0", 30), ("19H0", 38), ("19A0", 38),
                                 ("29H0", 40), ("29A0", 40), ("11H0", 40), ("11A0", 40), ("37H0", 40), ("37A0", 40),
@@ -358,6 +364,8 @@ class DigitDocument(unittest.TestCase):
                                 # R2: one Broncos face, the 2026 photographs of the orange, white and navy jerseys pooled
                                 # (15 digits, 0.613); restated from 40 for the alternates (batch 5's separate pool)
                                 *((selector, 36) for selector in BRONCOS)):
+            # 14H0: Noah 11/21 "Make number font in between the old and new, neither are right": v0.9 29, R2 37, pass2 32
+
             if selector in REVERTED_TO_V09:
                 self.assertNotIn((selector, 13), by, selector)                   # back to the released v0.9 digits
                 continue
@@ -373,7 +381,7 @@ class DigitDocument(unittest.TestCase):
         # bottom rows' (the 1's stem leans about 0.13 texel per row). Upright: the 1's stem keeps its column.
         folder = gf.art_folder(gf.digits_b81())
         by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
-        for selector in CHARGERS:
+        for selector in CHARGERS_R2:
             rgba, _info = png_rgba(folder / by[(selector, 14)])                                 # the digit 1
             solid = rgba[..., 3] > 127
             rows = np.flatnonzero(solid.any(axis=1))
@@ -387,13 +395,13 @@ class DigitDocument(unittest.TestCase):
         folder = gf.art_folder(gf.digits_b81())
         by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
         for chunk in range(13, 23):
-            masks = {selector: png_rgba(folder / by[(selector, chunk)])[0][..., 3] > 127 for selector in CHARGERS}
-            first = masks[CHARGERS[0]]
+            masks = {selector: png_rgba(folder / by[(selector, chunk)])[0][..., 3] > 127 for selector in CHARGERS_R2}
+            first = masks[CHARGERS_R2[0]]
             for selector, mask in masks.items():
                 self.assertLessEqual(int((mask ^ first).sum()), 4, (selector, chunk))
         heights = []
         for chunk in range(13, 23):
-            solid = png_rgba(folder / by[("24H0", chunk)])[0][..., 3] > 127
+            solid = png_rgba(folder / by[(CHARGERS_R2[0], chunk)])[0][..., 3] > 127
             rows = np.flatnonzero(solid.any(axis=1))
             heights.append(int(rows.max() - rows.min() + 1))
         self.assertLessEqual(max(heights) - min(heights), 2, heights)
