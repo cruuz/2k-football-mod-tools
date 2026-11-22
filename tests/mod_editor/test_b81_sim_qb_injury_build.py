@@ -292,6 +292,8 @@ class StudioControls(unittest.TestCase):
         panel.sim_realism_check.click()
         self.assertIsNone(panel.plan().sim_qb_injuries)
         self.assertTrue(panel.qb_injury_rate.isHidden())
+        # b81 relrev m2: the change is said, as unticking a floor need is
+        self.assertIn("Realistic and Custom need Simulated season realism and 128 MB memory", panel.qb_injury_help.text())
 
     def test_share_project_restore_and_compact_switch(self):
         panel = self.panel
@@ -376,6 +378,55 @@ class StudioControls(unittest.TestCase):
         self.panel.restore_project_build_settings({"sim_qb_injuries": "realistic", "k128_memory": True,
                                                   "sim_realism": True, "helmet_finish": "glossy"})
         self.assertFalse(mod_build._only_sim_qb_changes(self.panel._plan_for_build()))
+
+    def test_a_standard_disc_with_the_practice_field_logo_takes_the_injury_copy_from_the_build_tab(self):
+        """b81 relrev M1. Every SOFTDRINK standard disc this release builds reads the practice field's team logo applied and
+        its facility foreign (the facility is composed with the disc's colour grade and art), so no full build can go on top
+        of it (rebuild_only_reason). The FAQ's "change only this setting" copy must still run from the Build tab; a box
+        ticked and unticked again or Console memory chosen again must not lose it; anything else is refused with a true
+        sentence that names it ("put there by an older build" was false about this release's own disc)."""
+        from mod_editor.gui.build_panel_qt import rebuild_only_reason
+        standard = self.source.with_name("standard.iso")
+        standard.write_bytes(bytes(4096))
+        state = {**self.retail_state, "path": str(standard), "modern_practice_field": "foreign",
+                 "modern_practice_field_team_logo": "applied", "sim_realism": "applied", "k128_memory": "applied",
+                 "k128_early": "applied", "k128_roster_heap": "applied", "modern_injured_reserve": "applied",
+                 "practice_squad": "applied", "depth_locks": "applied", "depth_chart_rows": "applied",
+                 "k128_settings": {"status": "applied", "require_128": True, "early": True, "roster_heap": True},
+                 "sim_qb_injuries": "applied", "sim_qb_injury_settings": {"status": "applied", "mode": "realistic",
+                                                                          "custom_rate": .310, "revision": 1}}
+        panel = self.panel
+        panel.begin_reading(standard)
+        panel.apply_state(state)
+        panel.target_field.setText(str(standard.with_name("copy.iso")))
+        reason = rebuild_only_reason(state)
+        self.assertTrue(reason)
+        self.assertNotIn("older build", reason)
+        self.assertTrue(panel.blocker().startswith(reason))
+        self.assertIn("You can still change only Simulated injuries", panel.blocker())
+        mode = panel.qb_injury_mode
+        mode.setCurrentIndex(mode.findData("custom"))
+        panel.qb_injury_rate.setValue(.5)
+        self.assertEqual(panel.blocker(), "")
+        self.assertTrue(panel.build_button.isEnabled())
+        plan = panel._plan_for_build()
+        self.assertIs(type(plan), mod_build._InstalledSimQbEdit)
+        self.assertEqual((plan.sim_qb_injuries, plan.sim_qb_injury_rate), ("custom", .5))
+        self.assertEqual(panel.selected_labels(), ["Simulated injuries (Custom, 0.500%)"])   # not the installed options
+        box = panel.kick_laces_check
+        self.assertTrue(box.isEnabled())
+        box.click()
+        box.click()
+        memory_combo = panel.console_memory_combo
+        memory_combo.activated.emit(memory_combo.currentIndex())
+        self.assertEqual(panel.blocker(), "")
+        self.assertIs(type(panel._plan_for_build()), mod_build._InstalledSimQbEdit)
+        box.click()
+        blocker = panel.blocker()
+        self.assertTrue(blocker.startswith(reason))
+        self.assertIn(panel._short_label("kick_laces") + " is not part of the Simulated injuries copy", blocker)
+        self.assertFalse(panel.build_button.isEnabled())
+        self.assertNotIn("\u2014", blocker)
 
 
 if __name__ == "__main__":

@@ -561,8 +561,10 @@ class BuildWiringTests(unittest.TestCase):
         for name in mod_build.PRESETS:
             plan = mod_build.apply_preset(self._plan(), name)
             self.assertEqual(plan.k128_memory, name == "softdrink_experimental", name)
-            self.assertFalse(plan.k128_roster_heap, name)
-            self.assertFalse(plan.k128_early, name)
+            # b81 relrev M4: with it, the early form and the roster heap, as the standard release recipe has them (the late
+            # form alone is the setup Check my project warns about: the pregame intro loops at retail-model stadiums)
+            self.assertEqual(plan.k128_roster_heap, plan.k128_memory, name)
+            self.assertEqual(plan.k128_early, plan.k128_memory, name)
 
     def test_they_are_saved_build_settings_and_allocator_keys(self) -> None:
         from mod_editor.core import nfl2k5_build_settings as settings
