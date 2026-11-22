@@ -51,6 +51,13 @@ REDRAWN += ("27A0", "27H0", "16H0", "16A0")
 # sets already listed
 BRONCOS = ("08A0", "08A5", "08A6", "08H0", "08H5", "08H6")
 REDRAWN += ("08H0", "08A0", "08H5")
+# Noah 11/21 (uniform verdicts, uniform-marks/NOAH_VERDICTS_20261121.json: "Jersey number font was perfect in v0.9, new one is
+# a regression", "Old number font is better"): these primaries wear the released v0.9 digits again; their digit rows (jersey and
+# arm) were dropped from the document (b81-uniform-fix1)
+REVERTED_TO_V09 = ("01H0", "01A0", "30H0", "30A0", "08H0", "08A0", "37H0", "37A0", "11H0", "11A0", "23H0", "23A0", "29H0")
+REDRAWN = tuple(dict.fromkeys(s for s in REDRAWN if s not in REVERTED_TO_V09))
+#: the Broncos looks that still wear R2's one face (the home and road went back to v0.9's)
+BRONCOS_ONE_FACE = tuple(s for s in BRONCOS if s not in REVERTED_TO_V09)
 #: the Raiders road silver edge measured against the jersey white on the week 8 and week 9 road photographs (R2-B)
 LV_ROAD_SILVER = (0xA5, 0xAD, 0xB0)
 #: the Buccaneers' orange inline (decision 1) and the Browns' road charcoal (decision 3)
@@ -351,6 +358,9 @@ class DigitDocument(unittest.TestCase):
                                 # R2: one Broncos face, the 2026 photographs of the orange, white and navy jerseys pooled
                                 # (15 digits, 0.613); restated from 40 for the alternates (batch 5's separate pool)
                                 *((selector, 36) for selector in BRONCOS)):
+            if selector in REVERTED_TO_V09:
+                self.assertNotIn((selector, 13), by, selector)                   # back to the released v0.9 digits
+                continue
             rgba = picture(by[(selector, 13)])
             if rgba is None:
                 continue
@@ -451,14 +461,11 @@ class DigitDocument(unittest.TestCase):
                 rows = np.flatnonzero((png_rgba(folder / row["png"])[0][..., 3] > 127).any(axis=1))
                 self.assertEqual((int(rows.min()), int(rows.max())), (1, 62), row["png"])
 
-    def test_the_browns_road_numbers_are_charcoal(self):
-        # Noah 11/19 (decision 3): "switch to the neutral charcoal the photos show" (not the kit brown #311D00)
-        folder = gf.art_folder(gf.digits_b81())
-        rows = [r for r in digit_rows() if r["selector"] == "30A0"]
-        self.assertEqual(len(rows), 20)
-        for row in rows:
-            rgba, _info = png_rgba(folder / row["png"])
-            self.assertEqual({tuple(int(v) for v in c) for c in rgba[rgba[..., 3] > 0][:, :3]}, {CLE_CHARCOAL}, row["png"])
+    def test_the_browns_road_numbers_are_the_released_ones_again(self):
+        # Noah 11/19 (decision 3) had the road numbers redrawn in charcoal; Noah 11/21 ("Revert the jersey number font, was
+        # better before"; road: "same as other browns uni") took the v0.9 numbers back, so no digit row remains for 30A0
+        # (the road name letters stay charcoal: RECOLOURED_NAMES)
+        self.assertEqual([r for r in digit_rows() if r["selector"] == "30A0"], [])
 
     def test_the_ravens_4_has_the_tall_closed_counter(self):
         if not DISC.is_file():                 # hosted runners: the derived picture needs the released disc
@@ -513,10 +520,10 @@ class DigitDocument(unittest.TestCase):
         folder = gf.art_folder(gf.digits_b81())
         by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
         for chunk in range(13, 23):
-            masks = {s: png_rgba(folder / by[(s, chunk)])[0][..., 3] > 127 for s in BRONCOS}
+            masks = {s: png_rgba(folder / by[(s, chunk)])[0][..., 3] > 127 for s in BRONCOS_ONE_FACE}
             for selector, mask in masks.items():
-                self.assertEqual(int((mask ^ masks["08H0"]).sum()), 0, (selector, chunk))
-            for selector in BRONCOS:
+                self.assertEqual(int((mask ^ masks[BRONCOS_ONE_FACE[0]]).sum()), 0, (selector, chunk))
+            for selector in BRONCOS_ONE_FACE:
                 rgba, _info = png_rgba(folder / by[(selector, chunk)])
                 opaque = rgba[..., 3] == 255
                 colours, counts = np.unique(rgba[opaque][:, :3], axis=0, return_counts=True)
