@@ -445,7 +445,8 @@ static void club_pass(struct room *r) {
     r->coach1000 = 1350 - 600 * (leadership - 61) / 38;
 
     /* 0. The season reset (addendum 2, R1; bit 256): the first pre-game pass of a season from year index 1. */
-    if (r->opening && r->stage == 8 && !D(WEEK) && D(YEAR) && season_reset(r)) return;
+    /* C23-1 (confirmation review): fall through, so D1's opening draw still runs against the new row-0 man. */
+    if (r->opening && r->stage == 8 && !D(WEEK) && D(YEAR)) season_reset(r);
     /* 1. Newcomers: healthy, rank lock clear, best-rated first (ties: the upper row first). */
     if (r->stages & (STAGE_D1 | STAGE_D4)) {
         u32 order[QB_MAX], count = 0;

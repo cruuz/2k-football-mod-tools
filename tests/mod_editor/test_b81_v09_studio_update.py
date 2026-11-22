@@ -245,16 +245,57 @@ class BuildChoices(unittest.TestCase):
                     self.assertEqual(tuple(getattr(plan, key) for key in build.V09_UPDATE_CHOICES), flags)
                     self.assertEqual(len(self.panel.selected_labels()), sum(flags))
 
-    def test_an_explicit_neighbor_even_at_default_or_an_authored_project_stays_full(self):
+    def test_a_changed_neighbor_or_an_authored_project_stays_full(self):
+        # b81 relrev M2: this disc takes no full build, so a neighbour counts by its value. The rule used to be "an explicit
+        # neighbour, even at its default, stays full": re-selecting the same helmet finish or Console memory, or a box ticked
+        # and unticked again, then locked the update out for this disc until another disc was opened, with a sentence that
+        # did not say why. A restored project still needs the full build (and is refused here).
         self.panel.backfield_cards_check.click()
         self.panel.ceiling_spin.editingFinished.emit()
         self.assertIsInstance(self.panel._plan_for_build(), build._ReleasedV09Update)
         finish = self.panel.helmet_finish_combo
-        finish.activated.emit(finish.currentIndex())
+        start = finish.currentIndex()
+        finish.activated.emit(start)
+        self.assertIsInstance(self.panel._plan_for_build(), build._ReleasedV09Update)
+        other = next(index for index in range(finish.count()) if finish.itemData(index) != finish.itemData(start))
+        finish.setCurrentIndex(other)
+        finish.activated.emit(other)
         self.assertIs(type(self.panel._plan_for_build()), build.BuildPlan)
         self.assertFalse(self.panel.build_button.isEnabled())
+        finish.setCurrentIndex(start)
+        finish.activated.emit(start)
+        self.assertIsInstance(self.panel._plan_for_build(), build._ReleasedV09Update)
         self.panel.restore_project_build_settings({"backfield_cards": True, "helmet_finish": "glossy"})
         self.assertIs(type(self.panel._plan_for_build()), build.BuildPlan)
+        self.assertIn("A saved project's build settings are loaded", self.panel.blocker())
+
+    def test_looking_around_never_locks_the_update_out_and_the_blocker_names_the_box(self):
+        """b81 relrev M2 (the reviewer's steps): tick and untick another option, or choose the same Console memory again,
+        then tick an update. The update stays available, opening the same disc again keeps it, and a box that really is
+        changed is named in the sentence."""
+        panel = self.panel
+        state = {**self.state, "kick_laces": "retail"}
+        panel.apply_state(state)
+        other = panel.kick_laces_check
+        self.assertTrue(other.isEnabled())
+        other.click()
+        other.click()
+        memory = panel.console_memory_combo
+        memory.activated.emit(memory.currentIndex())
+        panel.backfield_cards_check.click()
+        self.assertEqual(panel.blocker(), "")
+        self.assertTrue(panel.build_button.isEnabled())
+        self.assertIsInstance(panel._plan_for_build(), build._ReleasedV09Update)
+        panel.begin_reading(self.source)
+        panel.apply_state(state)
+        self.assertIsInstance(panel._plan_for_build(), build._ReleasedV09Update)
+        other.click()
+        blocker = panel.blocker()
+        self.assertIn(panel._short_label("kick_laces") + " is not part of the v0.9 update", blocker)
+        self.assertIn("Set it back as it was to use the update", blocker)
+        self.assertFalse(panel.build_button.isEnabled())
+        other.click()
+        self.assertEqual(panel.blocker(), "")
 
     def test_compact_or_an_unrecognized_disc_does_not_get_the_update(self):
         self.panel.apply_state({**self.state, "v09_standard_update": False})

@@ -160,6 +160,21 @@ struct counters {
     u32 floor_no_game;           /* F6: a club with no next game (stages 8 and 9): no act */
     u32 season_locks_cleared;    /* option (a): healthy QBs' rank locks cleared at a season's first pre-game pass */
     u32 sign_skip_protected;     /* C21 rule 3: E1/E2 at 53 with nobody it may release: no signing that week */
+    /* Stage 4b (bit 16): own page (nfl2k5_qb_trades, tools/qb_trades), counted here, after every counter above */
+    u32 trade_calls;             /* 4b: every entry at the native trade pass 0x247E1E, whatever the settings */
+    u32 trade_inactive;          /* bit 16 on but the league stage is not 8 (the site is stage 8's; defensive) */
+    u32 trade_buyers;            /* clubs with a need (DESIGN 4.2) */
+    u32 trade_no_package;        /* a buyer, but no seller offers a man who fits */
+    u32 trade_no_pick;           /* a package, but the buyer owns none of its own picks from that round to the 7th */
+    u32 trade_kept;              /* the 0.35 draw kept the record off the board this week */
+    u32 trade_refused;           /* the native evaluator 0x2BAE90 refused the record as built: not posted */
+    u32 trade_no_slot;           /* slots 1 to 14 all in use */
+    u32 trade_shadow;            /* records that would be posted, in shadow (nothing written) */
+    u32 trades_executed;         /* after the native pass: Qs on the buyer's list (the trade happened) */
+    u32 trades_gone;             /* after the native pass: the record gone, no trade (the pruner or the ownership guard) */
+    u32 trade_ir_unlinked;       /* the IR store link of the trades page is 0: lost starters on IR are not seen */
+    u32 trade_past_deadline;     /* C22 (c): the week counter at or past the deadline byte 0x5151C5: nothing posted */
+    u32 trade_free_agent;        /* C24 F5: a free agent at least as good as Qs within the buyer's reach: no trade */
 };
 /* COUNTERS END */
 extern volatile struct counters qb_counters;          /* page + 0x2040 */

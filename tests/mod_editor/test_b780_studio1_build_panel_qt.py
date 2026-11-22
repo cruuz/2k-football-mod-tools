@@ -286,6 +286,7 @@ class RebuildOnlyDiscTests(_PanelCase):
         self.assertIn("practice field's team logo at midfield", disc)
         self.assertIn("build again from a dump of your own retail disc", disc)
         self.assertIn("this disc", disc)
+        self.assertNotIn("older build", disc)   # b81 relrev M1: this release's own standard discs read this way too
         self.assertIn("this executable", rebuild_only_reason(dict(self.LOGO, container="xbe")))
         self.assertNotIn("\u2014", disc)
 

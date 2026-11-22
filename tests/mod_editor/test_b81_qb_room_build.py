@@ -139,6 +139,13 @@ class RoomInstallationOrderTests(first_pass.QuarterbackInstallationOrderTests):
                         self.assertEqual((row["va"], row["size"], row["align"]), ROOM_ROW)
                         reserved = (before if room.read_settings(before).get("reserved")
                                     else space.extend_scaleout(before, room.REQUESTS)[0])
+                        # The trades review's F1: the Studio adds 4b (bit 16) where its needs are on at this step;
+                        # Retail then leaves the trades page's reservation too.
+                        trades_on = studio and stages & room.E_BITS == room.E_BITS and room.trade_needs_met(before)
+                        installed = stages | (room.STUDIO_TRADE_BITS if trades_on else 0)
+                        if trades_on:
+                            from mod_editor.core import nfl2k5_qb_trades as trades
+                            reserved = space.extend_scaleout(reserved, trades.REQUESTS)[0]
                         self.assertEqual(room.apply(current, "retail")[0], reserved, "T12 at the room step")
                         if order[-1] == "ROOM":
                             neighbours = _neighbour_status(before)
@@ -152,13 +159,13 @@ class RoomInstallationOrderTests(first_pass.QuarterbackInstallationOrderTests):
                 if ownership:
                     self.assertEqual((ownership[0]["va"], ownership[0]["size"]), (0x1528000, 4096))
                 self.assertEqual(room.status(current), "applied")
-                self.assertEqual(room.read_settings(current)["stages"], stages)
+                self.assertEqual(room.read_settings(current)["stages"], installed)
                 self.assertEqual(qb.read_settings(current)["mode"], plan.sim_qb_injuries)
                 self.assertEqual((faces.hair_status(current), toss.status(current), cards.status(current)),
                                  ("applied", "applied", "applied"))
                 retail, _ = room.apply(current, "retail")
                 self.assertEqual(room.read_settings(retail)["reserved"], True)
-                again = (room.apply(retail, "realistic", stages=stages) if studio
+                again = (room.apply(retail, "realistic", stages=installed) if studio
                          else room.install_stages(retail, stages))[0]
                 self.assertEqual(again, current)
                 if order[-1] == "ROOM":
@@ -482,7 +489,9 @@ class FloorRuleTests(unittest.TestCase):
                                               sim_qb_injury_rate=0.5),
                   ["modern injured reserve", "the franchise economy", "reserve save compatibility (the practice squad)"],
                   ("realistic", self.FLOOR)),
-                 ("Experimental Realistic", experimental, ["the franchise economy"], ("realistic", self.FLOOR | self.P3 | self.E)),
+                 # The Experimental preset has the 2026 season, so with the floor's needs 4b's are met too: 383.
+                 ("Experimental Realistic", experimental, ["the franchise economy"],
+                  ("realistic", self.FLOOR | self.P3 | self.E | 16)),
                  ("Experimental, rules named Retail", replace(experimental, qb_room="retail"), ["the franchise economy"],
                   ("realistic", self.FLOOR)))
         for name, plan, added, expected in cases:
@@ -497,6 +506,7 @@ class FloorRuleTests(unittest.TestCase):
                 self.assertEqual(self.plan_set(completed), expected)
                 from mod_editor.core import nfl2k5_qb_room as room
                 self.assertEqual(room.stage_names(expected[1])[-1:], ["floor"])  # no over-cap rung (floor review F1(b))
+                self.assertEqual(bool(expected[1] & 16), bool(completed.season_2026 and expected[1] & self.E))
                 self.assertEqual(expected[1] & room.PIECE3_BITS, self.P3 if name.startswith("Experimental R") else 0)
 
     def test_no_floor_without_injuries(self):
@@ -551,18 +561,21 @@ class FloorRuleTests(unittest.TestCase):
         aimed, _ = aim.apply(qb.apply(pressure.apply(source)[0], "realistic")[0])
         # b81 integration (practice squad merge): and upgrades the disc's revision 7 economy before the floor
         from mod_editor.core import nfl2k5_franchise_economy as economy
-        expected, _ = room.apply(ir.apply(economy.apply(aimed)[0], "modern", standard_guard=True)[0], "realistic",
-                                 stages=self.FLOOR | self.P3 | self.E)
+        prepared = ir.apply(economy.apply(aimed)[0], "modern", standard_guard=True)[0]
+        # The trades review's F1: this disc carries 4b's needs once modern IR is in, so the Studio's set is 383.
+        stages = self.FLOOR | self.P3 | self.E | (16 if room.trade_needs_met(prepared) else 0)
+        self.assertEqual(stages, room.realistic_stages(prepared))
+        expected, _ = room.apply(prepared, "realistic", stages=stages)
         for name, original in (("98dd7329", source), ("9f435b38", slice1)):
             with self.subTest(source=name):
                 receipt = self._edit(mod_build.sim_qb_disc_edit("s.iso", "t.iso", "realistic"), original)
                 update = receipt["qb_room_source_update"]
-                self.assertEqual((update["level"], update["stages"]), ("realistic", self.FLOOR | self.P3 | self.E))
+                self.assertEqual((update["level"], update["stages"]), ("realistic", stages))
                 self.assertEqual(update["result_sha256"], hashlib.sha256(expected).hexdigest())
                 self.assertIn("added modern injured reserve", update["added"][0])
                 self.assertIn("updated the franchise economy", update["added"][1])  # practice squad merge: revision 7 -> 8
                 self.assertIn(update["added"][0], receipt["user_notes"])
-                self.assertEqual(update["settings"]["stage_names"], room.stage_names(self.FLOOR | self.P3 | self.E))
+                self.assertEqual(update["settings"]["stage_names"], room.stage_names(stages))
                 self.assertEqual(update["settings"]["stage_names"][-1:], ["floor"])
                 self.assertEqual(receipt["sim_qb_source_update"]["result_sha256"], hashlib.sha256(aimed).hexdigest())
         receipt = self._edit(mod_build.sim_qb_disc_edit("s.iso", "t.iso", "custom", custom_rate=0.0), source)
@@ -633,8 +646,9 @@ class InPlacePreflightTests(unittest.TestCase):
         # The helmet disc has the economy and the practice squad; the edit adds modern IR for the floor and (practice
         # squad merge) upgrades the disc's revision 7 economy to the current one first.
         from mod_editor.core import nfl2k5_franchise_economy as economy
-        expected, _ = room.apply(ir.apply(economy.apply(slice1)[0], "modern", standard_guard=True)[0], "realistic",
-                                 stages=room.realistic_stages())
+        prepared = ir.apply(economy.apply(slice1)[0], "modern", standard_guard=True)[0]
+        stages = room.realistic_stages(prepared)       # 383 where 4b's needs are installed (the trades review's F1)
+        expected, _ = room.apply(prepared, "realistic", stages=stages)
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / "copy.iso"
             receipt = mod_build.preflight_plan(mod_build.sim_qb_disc_edit(str(disc), str(target), "realistic"))
@@ -644,8 +658,9 @@ class InPlacePreflightTests(unittest.TestCase):
         self.assertEqual((update["level"], update["result_sha256"]), ("realistic", hashlib.sha256(expected).hexdigest()))
         self.assertEqual((update["settings"]["status"], update["settings"]["va"]), ("applied", 0x1529000))
         # D1 + D2 plus the coordinator's floor rule (the floor alone since the floor review), shadow off.
-        self.assertEqual((update["settings"]["stages"], update["settings"]["shadow"]), (room.realistic_stages(), False))
-        self.assertEqual(receipt["user_notes"], update["added"])
+        self.assertEqual((update["settings"]["stages"], update["settings"]["shadow"]), (stages, False))
+        trades_note = [] if stages & 16 else [room.TRADES_LEFT_OUT]
+        self.assertEqual(receipt["user_notes"], update["added"] + trades_note)
 
 
 class InPlaceWithoutDependenciesTests(unittest.TestCase):
@@ -771,6 +786,34 @@ class BuildPageTests(unittest.TestCase):
                 self.assertEqual(bool(self.panel._sim_qb_injury_change()), change)
 
 
+    def test_with_4bs_needs_on_a_disc_without_trades_counts_as_a_change(self):
+        """The trades review's F1: where 4b's needs are on (the 2026 season ticked or its trade deadline on the disc;
+        the economy, reserve save compatibility and modern IR), the Studio's Realistic is 383, so a disc at 367 is a
+        change and a disc at 383 is not; without them 367 is the current set."""
+        slice_now = {"status": "applied", "mode": "realistic", "custom_rate": .310, "revision": _sim_qb_injuries.REVISION}
+        mode = self.panel.qb_injury_mode
+        for needs, stages, change in (("ticked", 367, True), ("ticked", 383, False), ("on the disc", 367, True),
+                                      ("on the disc", 383, False), ("off", 367, False), ("off", 383, True)):
+            with self.subTest(needs=needs, stages=stages):
+                extra = {"trade_deadline": "applied", "franchise_economy": "applied", "practice_squad": "applied",
+                         "modern_injured_reserve": "applied"} if needs == "on the disc" else {}
+                self.panel.apply_state(dict(self.state, sim_qb_injuries="applied", sim_qb_injury_settings=slice_now,
+                                            qb_room="applied",
+                                            qb_room_settings={"status": "applied", "mode": "realistic", "stages": stages},
+                                            depth_locks="applied", depth_chart_rows="applied", **extra))
+                self.panel.depth_locks_check.setChecked(True)
+                self.panel.depth_chart_rows_check.setChecked(True)
+                mode.setCurrentIndex(mode.findData("realistic"))
+                if needs == "ticked":
+                    self.panel.season_check.setChecked(True)
+                    for key in ("franchise_economy", "practice_squad", "modern_injured_reserve"):
+                        getattr(self.panel, key + "_check").setChecked(True)
+                elif needs == "off":
+                    self.panel.season_check.setChecked(False)
+                self.assertEqual(self.panel._qb_trades_needs_on(), needs != "off")
+                self.assertEqual(bool(self.panel._sim_qb_injury_change()), change)
+
+
 class FloorBuildPageTests(BuildPageTests):
     def test_injuries_above_zero_tick_the_floors_needs_and_unticking_one_turns_them_to_retail(self):
         panel, mode = self.panel, self.panel.qb_injury_mode
@@ -803,10 +846,12 @@ class FaqTests(unittest.TestCase):
                   "benched": 256, "poor play": 256, "back from injury": 4, "returning starter": 4,
                   # E1/E2 hand-over (C21): the backup signing, the better quarterback while the starter is out, and the
                   # protected make-room release
-                  "healthy backup quarterback": 8, "starter is out for weeks": 32, "lowest-rated players": 8 | 32}
+                  "healthy backup quarterback": 8, "starter is out for weeks": 32, "lowest-rated players": 8 | 32,
+                  # 4b trades (bit 16): in the Studio's set where their needs are installed (the trades review's F1)
+                  "trade for a quarterback": 16, "never trade with a club you manage": 16}
         for words, bits in claims.items():
             with self.subTest(claim=words):
-                self.assertEqual(words in section, bool(room.REALISTIC_STAGES & bits))
+                self.assertEqual(words in section, bool(room.studio_stages(True, True, True) & bits))
         floor, = [p for p in section.split("\n\n") if "never left without a quarterback" in p]
         self.assertIn("keeps the empty space reserved", floor)
         self.assertNotIn("restores the original executable bytes", text)

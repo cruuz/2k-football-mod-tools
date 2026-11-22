@@ -328,6 +328,51 @@ class BuildWiringTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_build_settings as settings
         self.assertIn("gadget_play", settings.FEATURE_KEYS)
 
+    def test_bn_style_on_the_build_tab_unticks_the_gadget_with_the_special_rows(self):
+        """b81 relrev M3. 9e378c717 took gadget_play out of REQUIRES (the v0.9 update takes the gadget on a disc that has the
+        rows), so in "BN style" (Experimental, then the SPECIAL rows and their neighbours unticked) the gadget box stayed
+        ticked and the build refused right after Make my disc?. The box now follows its requirement with a one-line note,
+        ticking it again brings the rows back, and a gadget without rows is named before Make my disc."""
+        import tempfile
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        from PyQt5 import sip
+        from PyQt5.QtWidgets import QApplication
+        from mod_editor.core import mod_build as build
+        from mod_editor.gui.build_panel_qt import BuildPanel
+        app = type(self)._qt_app = QApplication.instance() or QApplication([])   # kept: a dead app deletes every widget
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / "retail.xiso.iso"
+            source.write_bytes(bytes(4096))
+            panel = BuildPanel(available={})
+            self.addCleanup(lambda: sip.isdeleted(panel) or panel.deleteLater())
+            state = {key: "retail" for key in panel._boxes()}
+            state.update(path=str(source), container="xiso", throw=None, speed_threshold="retail")
+            panel.apply_state(state)
+            panel.target_field.setText(str(Path(folder) / "out.xiso.iso"))
+            panel.apply_preset("softdrink_experimental")
+            rows, gadget_box = panel.depth_chart_rows_check, panel.gadget_play_check
+            self.assertTrue(rows.isChecked() and gadget_box.isChecked())
+            for key in ("position_pools", "depth_roles", "edge_rename", "depth_chart_rows", "team_ratings"):
+                box = panel._boxes()[key]
+                if box.isChecked():
+                    box.click()
+            app.processEvents()
+            self.assertFalse(gadget_box.isChecked())
+            self.assertIn("also turned off the gadget player", panel._helpers["depth_chart_rows"].text())
+            plan = panel._plan_for_build()
+            self.assertFalse(plan.gadget_play)
+            self.assertEqual(build.validate_plan(plan), [])
+            self.assertNotIn("gadget", panel.blocker().lower())
+            gadget_box.click()
+            self.assertTrue(rows.isChecked())
+            self.assertNotIn("also turned off", panel._helpers["depth_chart_rows"].text())
+            rows.blockSignals(True)
+            rows.setChecked(False)          # a gadget without its rows (a restored project, say) is said before the build
+            rows.blockSignals(False)
+            panel._refresh()
+            self.assertIn("needs SPECIAL: 13 rows", panel.blocker())
+            self.assertFalse(panel.build_button.isEnabled())
+
     def test_the_build_refuses_it_without_the_special_rows(self):
         from dataclasses import replace
         from mod_editor.core import mod_build as build

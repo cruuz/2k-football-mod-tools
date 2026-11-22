@@ -26,6 +26,16 @@
    the atlas offsets stay). The rows ride in the b81-uniforms digit document and are pinned to the strip a build holds
    when that step runs (after the nameplate pass).
 
+5. b81-retail-free-art (``digit_derived``): b81u digits that the uniform lane made by editing a glyph the Studio itself
+   builds from a retail donor (whole rows and columns repeated or removed, fill strokes grown or thinned with the
+   outline rebuilt, an edge ring or an inline recoloured) do not ship as pictures. The row carries the edit as
+   operations with their parameters (``derive``); the Studio applies them at build time to the glyph the build holds
+   (the retail-derived v0.9 digit, made from the user's own disc) and compiles the result through the same route as
+   ``digit_png``. ``rgba_sha256`` pins the derived picture, ``after_sha256`` the compiled span, both unchanged.
+   A redraw no operation list rebuilds ships as ``paint``: only the texels that differ from the glyph the build holds
+   at that point (row, first column, the new RGBA values); a texel equal to that glyph is never shipped. The same
+   holds for a nameplate strip (``names_derived``, on the strip the build holds after the nameplate pass).
+
 The Studio runs this after its uniform layers. Exact input and output pins limit it to the known SOFTDRINK spans:
 retail kits and textures a user's own recipe replaced are left alone (strict refuses them).
 """
@@ -41,7 +51,7 @@ import struct
 import numpy as np
 
 from . import nfl2k5_bump_texture_writer as bump
-from nfl_txtr import TxtrError, decode_chunk, parse_chunks, parse_texture, swizzle_2d
+from nfl_txtr import TxtrError, decode_chunk, parse_chunks, parse_texture, swizzle_2d, texture_to_rgba
 from nfl_vc_lz_fill import rebuild_fixed_span_filled
 
 SCHEMA = "nfl2k5_glyph_fixes_2026/v1"
@@ -51,7 +61,9 @@ ART = ROOT / "data/nfl2k5_glyph_fixes_2026"
 #: b81-uniforms (beta 81): digits redrawn against this season's game highlights, pinned to the finished digits of the
 #: released v0.9 build and applied as the last uniform step (``apply_digits_b81``). The document names its own art folder.
 DATA_B81U = ROOT / "data/nfl2k5_glyph_fixes_2026_b81u.json"
-KINDS = ("names_retint", "digit_png", "digit_retint", "names_png", "name_widths")
+KINDS = ("names_retint", "digit_png", "digit_retint", "names_png", "name_widths", "digit_derived", "names_derived")
+DERIVE_OPS = ("remap", "embolden", "edge", "inline_fill", "inline_dark", "recolour", "paint", "thin_letters", "clear_rgb",
+              "hidden_from_base", "keep")
 NAMES_CHUNK = 43
 NAME_CHUNK = 44                         # the raw NAME chunk: 29 (atlas offset, glyph width) pairs for ' - A..Z c
 NAME_METRICS = slice(0x2C, 0xA0)
@@ -173,15 +185,26 @@ def compile_names(span, retail_span, row, *, name="names", storage="VC_P8_LINEAR
 
 def compile_digit(span, png_payload):
     """Authored digit PNG -> the pinned digit span, through the Studio's digit preparation and fixed-span fit."""
-    from PIL import Image
-    from nfl_tset_png_import import decode_rgba_png, palette_bytes
-    from nfl_txtr import rebuild_compressed_chunk_fixed_span
-    from .nfl2k5_digit_art import fit_digit, registration_mode
+    from nfl_tset_png_import import decode_rgba_png
+    from .nfl2k5_digit_art import registration_mode
     chunk, decoded, info, texture = _one_txtr(span)
-    require(texture.format_name == "P8", "digit textures are swizzled P8")
     width, height, rgba = decode_rgba_png(png_payload, (texture.width, texture.height))
     require((width, height) == (texture.width, texture.height), "digit PNG size differs")
     require(registration_mode(png_payload) == "as_authored", "fixed digits are placed As authored")
+    return compile_digit_rgba(span, rgba)
+
+
+def compile_digit_rgba(span, rgba):
+    """A digit picture (level-0 RGBA bytes, placed As authored) -> the pinned digit span (``compile_digit``'s route)."""
+    from PIL import Image
+    from nfl_tset_png_import import palette_bytes
+    from nfl_txtr import rebuild_compressed_chunk_fixed_span
+    from .nfl2k5_digit_art import fit_digit
+    chunk, decoded, info, texture = _one_txtr(span)
+    require(texture.format_name == "P8", "digit textures are swizzled P8")
+    width, height = texture.width, texture.height
+    rgba = bytes(rgba)
+    require(len(rgba) == width * height * 4, "digit picture size differs")
     sizes = [(max(texture.width >> i, 1), max(texture.height >> i, 1)) for i in range(texture.mip_levels)]
     chain = sum(w * h for w, h in sizes)
     video = decoded[chunk.system_bytes:]
@@ -211,6 +234,379 @@ def compile_digit(span, png_payload):
             "digit round trip differs")
     return rebuilt_span, dict(texture=texture.name, palette_entries=len(bounded.palette),
                               registration=receipt["registration"]["mode"])
+
+
+# -- digits derived at build time from the glyph the build holds (b81-retail-free-art) --------------------------------
+# The uniform lane's edits as operations (tools/b81_uniforms/glyph_derive.py finds their parameters): BATCH5 reshape.py
+# (whole rows and columns repeated or removed, then placed: ``remap``), BATCH5 embolden.py (``embolden``), BATCH6
+# edge6.py (``edge``), BATCH5 inline3.py / DECISIONS tb_four.py (``inline_fill``) and tb_home_inline.py (``inline_dark``).
+
+def _grow(mask, n=1, eight=False):
+    m = np.asarray(mask, bool)
+    for _ in range(n):
+        o = m.copy()
+        o[1:] |= m[:-1]
+        o[:-1] |= m[1:]
+        o[:, 1:] |= m[:, :-1]
+        o[:, :-1] |= m[:, 1:]
+        if eight:
+            o[1:, 1:] |= m[:-1, :-1]
+            o[1:, :-1] |= m[:-1, 1:]
+            o[:-1, 1:] |= m[1:, :-1]
+            o[:-1, :-1] |= m[1:, 1:]
+        m = o
+    return m
+
+
+def _shrink(mask, n=1):
+    m = np.asarray(mask, bool)
+    for _ in range(n):
+        o = m.copy()
+        o[1:] &= m[:-1]
+        o[0] = False
+        o[:-1] &= m[1:]
+        o[-1] = False
+        o[:, 1:] &= m[:, :-1]
+        o[:, 0] = False
+        o[:, :-1] &= m[:, 1:]
+        o[:, -1] = False
+        m = o
+    return m
+
+
+def _taxicab_depth(mask):
+    """Taxicab distance of each texel of ``mask`` to the nearest texel outside it (0 outside)."""
+    depth = np.zeros(mask.shape, np.int64)
+    current = np.asarray(mask, bool)
+    k = 0
+    while current.any():
+        k += 1
+        depth[current] = k
+        current = _shrink(current)
+    return depth
+
+
+def _colour(text):
+    return None if text is None else np.array(hex_rgb(text), np.int64)
+
+
+def derive_digit(before_rgba, ops):
+    """The digit picture an op list makes from the glyph the build holds (level-0 RGBA, uint8 h x w x 4)."""
+    a = np.array(before_rgba, np.uint8, copy=True)
+    for op in ops:
+        kind = op["op"]
+        require(kind in DERIVE_OPS, "unknown digit operation " + repr(kind))
+        if kind == "remap":
+            pad = np.zeros((a.shape[0] + 1, a.shape[1] + 1, 4), np.uint8)
+            pad[:a.shape[0], :a.shape[1]] = a
+            rows = np.array([r if r >= 0 else a.shape[0] for r in op["rows"]])
+            cols = np.array([c if c >= 0 else a.shape[1] for c in op["cols"]])
+            require(rows.max() <= a.shape[0] and cols.max() <= a.shape[1], "remap outside the glyph")
+            a = pad[rows][:, cols]
+        elif kind == "embolden":
+            b = np.pad(a.astype(np.int64), ((8, 8), (8, 8), (0, 0)))
+            fill_c, out_c, k = _colour(op["fill"]), _colour(op["outline"]), int(op["k"])
+            glyph = b[..., 3] >= 128
+            fill = glyph & (np.abs(b[..., :3] - fill_c).max(-1) <= 40)
+            nf = fill.copy() if k == 0 else _grow(fill, k) if k > 0 else _shrink(fill, -k)
+            if op["extra"] and k > 0:
+                nf = nf | np.roll(nf, 1, axis=1) | np.roll(nf, 1, axis=0)
+            elif op["extra"]:
+                nf = nf & np.roll(nf, -1, axis=1) & np.roll(nf, -1, axis=0)
+            ng = _grow(nf, int(op["ring"])) if op["ring"] else nf
+            out = np.zeros_like(b)
+            out[ng, 3] = 255
+            out[ng, :3] = out_c if out_c is not None else fill_c
+            out[nf, :3] = fill_c
+            a = out.astype(np.uint8)
+        elif kind == "edge":
+            opaque = a[..., 3] >= 128
+            depth = _taxicab_depth(np.pad(opaque, 1))[1:-1, 1:-1]
+            is_edge = opaque & (np.abs(a[..., :3].astype(np.int64) - _colour(op["edge"])).sum(-1) <= 24)
+            a[is_edge & (depth > int(op["keep"])), :3] = _colour(op["fill"])
+        elif kind == "recolour":
+            # exact colour swaps (a club colour corrected): every visible texel of a listed colour takes the new one;
+            # b81-retail-free-art: with ``hidden`` the colour stored under clear texels moves too (as a picture editor
+            # swaps it), so no texel of the glyph's clear surround is listed
+            rgb = a[..., :3].copy()
+            seen = np.ones(a.shape[:2], bool) if op.get("hidden") else a[..., 3] > 0
+            for old, new in op["pairs"]:
+                hit = seen & (rgb == _colour(old)).all(-1)
+                a[hit, :3] = _colour(new)
+        elif kind == "thin_letters":
+            a = thin_letters(a, op)
+        elif kind == "hidden_from_base":
+            # b81-retail-free-art (ruling 2): the colour under every clear texel is the glyph's own colour at that texel
+            # (as a picture editor leaves it), by rule
+            base0 = np.asarray(before_rgba, np.uint8)
+            require(base0.shape == a.shape, "hidden_from_base needs the glyph's own size")
+            clear = a[..., 3] == 0
+            a[clear, :3] = base0[clear, :3]
+        elif kind == "keep":
+            # b81-retail-free-art (ruling 2): texels the edit leaves as the glyph the build holds had them, by place only
+            # ([row, first column, count]): no texel value is stored
+            base0 = np.asarray(before_rgba, np.uint8)
+            require(base0.shape == a.shape, "keep needs the glyph's own size")
+            for y, x0, count in op["runs"]:
+                require(0 <= y < a.shape[0] and 0 <= x0 and count > 0 and x0 + count <= a.shape[1], "keep outside the glyph")
+                a[y, x0:x0 + count] = base0[y, x0:x0 + count]
+        elif kind == "clear_rgb":
+            # b81-retail-free-art: the colour stored under every clear texel (alpha 0), by rule, never by listing them
+            a[a[..., 3] == 0, :3] = _colour(op["colour"])
+        elif kind == "paint":
+            # the texels that differ from the glyph the build holds: [row, first column, "RRGGBBAA" per texel]
+            for y, x0, values in op["runs"]:
+                count = len(values) // 8
+                require(len(values) == 8 * count and count and 0 <= y < a.shape[0] and 0 <= x0 and
+                        x0 + count <= a.shape[1], "paint run outside the picture")
+                a[y, x0:x0 + count] = np.frombuffer(bytes.fromhex(values), np.uint8).reshape(count, 4)
+        elif kind == "inline_fill":
+            opaque = a[..., 3] == 255
+            fill = opaque & (np.abs(a[..., :3].astype(np.int64) - _colour(op["fill"])).max(-1) <= 24)
+            a[fill & _grow(~fill, 1, eight=True), :3] = _colour(op["colour"])
+        else:
+            opaque = a[..., 3] == 255
+            soft = (a[..., 3] > 0) & ~opaque
+            dark = opaque & (a[..., :3].max(-1) < 0x60)
+            inner = opaque & ~dark
+            ring = inner & _grow(dark | soft | (a[..., 3] == 0), 1, eight=True)
+            a[ring, :3] = _colour(op["colour"])
+            a[inner & ~ring, :3] = 255
+    return a
+
+
+# -- the Jaguars road strip (Noah's decision 8, "Thin them to match"): work/fix/DECISIONS/tools/jax_thin.py as an
+# instruction. Each letter keeps the silhouette of the strip the build holds and comes down to bands 2 texels across and
+# 2 rows; the per-letter rules are the lane's. The only float steps are basic IEEE operations; the diagonal weights
+# (jax_thin's arctan2/cos) are stored per letter as float64 hex, so no transcendental function runs at build time.
+
+_THIN_GLYPHS = "'-ABCDEFGHIJKLMNOPQRSTUVWXYZc"
+
+
+def _silhouette(m):
+    rows = np.zeros_like(m)
+    for y in range(m.shape[0]):
+        xs = np.flatnonzero(m[y])
+        if len(xs):
+            rows[y, xs[0]:xs[-1] + 1] = True
+    cols = np.zeros_like(m)
+    for x in range(m.shape[1]):
+        ys = np.flatnonzero(m[:, x])
+        if len(ys):
+            cols[ys[0]:ys[-1] + 1, x] = True
+    return rows & cols
+
+
+def _bands(S, s, b):
+    H, W = S.shape
+    L = np.zeros_like(S); R = np.zeros_like(S); T = np.zeros_like(S); B = np.zeros_like(S)
+    for y in range(H):
+        xs = np.flatnonzero(S[y])
+        if len(xs):
+            L[y, xs[0]:xs[0] + s] = True
+            R[y, max(0, xs[-1] - s + 1):xs[-1] + 1] = True
+    for x in range(W):
+        ys = np.flatnonzero(S[:, x])
+        if len(ys):
+            T[ys[0]:ys[0] + b, x] = True
+            B[max(0, ys[-1] - b + 1):ys[-1] + 1, x] = True
+    return L & S, R & S, T & S, B & S
+
+
+def _straight(S, side, s):
+    H, W = S.shape
+    edges = []
+    for y in range(6, H - 6):
+        xs = np.flatnonzero(S[y])
+        if len(xs):
+            edges.append(xs[0] if side == "L" else xs[-1])
+    e = sorted(edges)
+    k = len(e)
+    e = e[k // 2] if k % 2 else (e[k // 2 - 1] + e[k // 2]) / 2      # np.median, exactly
+    e = int(e)
+    out = np.zeros_like(S)
+    if side == "L":
+        out[:, e:e + s] = True
+    else:
+        out[:, e - s + 1:e + 1] = True
+    return out & S
+
+
+def _rows(S, y0, y1):
+    out = np.zeros_like(S)
+    out[max(0, y0):max(0, y1)] = True
+    return out
+
+
+def _hbar(S, y0, b, x0=None, x1=None):
+    out = np.zeros_like(S)
+    out[y0:y0 + b, (x0 or 0):(x1 if x1 is not None else S.shape[1])] = True
+    return out & S
+
+
+def _diag(S, s, xa, ya, xb, yb, t):
+    H, W = S.shape
+    n = max(s, int(round(t)))
+    out = np.zeros_like(S)
+    for y in range(H):
+        yc = y + 0.5
+        if not (min(ya, yb) <= yc <= max(ya, yb)):
+            continue
+        x0 = int(round(xa + (yc - ya) * (xb - xa) / (yb - ya)))
+        out[y, max(0, x0):max(0, x0 + n)] = True
+    return out & S
+
+
+def _thin_letter(ch, m, s, b, t):
+    """jax_thin.thin: one glyph (its ink mask, cap rows, from column 0) -> the thinned mask. ``t``: the stored diagonal
+    weights of this letter, in the order jax_thin computes them."""
+    S = _silhouette(m)
+    H, W = S.shape
+    L, R, T, B = _bands(S, s, b)
+    SL, SR = _straight(S, "L", s), _straight(S, "R", s)
+    mid = 11
+    t = list(t)
+    if ch == "O":
+        return L | R | T | B
+    if ch == "D":
+        return SL | R | T | B
+    if ch == "Q":
+        return (L | R | T | B) | _diag(S, s, W * 0.48, H * 0.66, W - 2.0, H, 2)
+    if ch == "B":
+        return SL | R | T | B | _hbar(S, mid, b)
+    if ch == "C":
+        return L | T | B | (R & (_rows(S, 0, 4) | _rows(S, H - 4, H)))
+    if ch == "c":
+        top = int(np.flatnonzero(S.any(1))[0])
+        return L | T | B | (R & (_rows(S, top, top + 3) | _rows(S, H - 3, H)))
+    if ch in "EF":
+        xs = np.flatnonzero(m[mid + 1])
+        xe = (int(xs[-1]) if len(xs) else -1) + 1
+        return SL | T | (B if ch == "E" else np.zeros_like(S)) | _hbar(S, mid, b, 0, xe)
+    if ch == "G":
+        jaw = 10
+        return L | T | B | (R & (_rows(S, 0, 4) | _rows(S, jaw, H))) | _hbar(S, jaw, b, W - 6, W)
+    if ch == "H":
+        return SL | SR | _hbar(S, mid, b)
+    if ch in "IT":
+        x0 = int(round((W - s) / 2))
+        stem = np.zeros_like(S)
+        stem[:, x0:x0 + s] = True
+        return (T if ch == "T" else np.zeros_like(S)) | (stem & S)
+    if ch == "J":
+        return R | (B & ~_rows(S, 0, H - 6)) | (L & _rows(S, H - 7, H))
+    if ch == "L":
+        return SL | B
+    if ch == "U":
+        return (SL | SR) & _rows(S, 0, H - 6) | L & _rows(S, H - 6, H) | R & _rows(S, H - 6, H) | B
+    if ch in "PR":
+        yb = 12
+        out = SL | T | (R & _rows(S, 0, yb + 1)) | _hbar(S, yb - b + 1, b, 0, W)
+        return out | (R & _rows(S, yb, H)) if ch == "R" else out
+    if ch == "A":
+        return L | R | T | _hbar(S, 14, b)
+    if ch == "V":
+        return L | R | B
+    # diagonal letters: ``t`` lists, in jax_thin's order, the position weight(s) it computes first and then the weight
+    # of each diagonal (jax_thin's diag() default), all stored at authoring time
+    if ch == "W":
+        q1, q3 = W * 0.30, W * 0.70
+        w, d1, d2 = t
+        return L | R | _diag(S, s, W / 2 - w / 2, H * 0.22, q1 - w / 2, H, d1) | \
+            _diag(S, s, W / 2 - w / 2, H * 0.22, q3 - w / 2, H, d2)
+    if ch == "M":
+        depth = H * 0.70
+        w, d1, d2 = t
+        stems = np.zeros_like(S)
+        stems[:, :s] = True
+        stems[:, W - s:] = True
+        return stems | _diag(S | stems, s, 0, 0, W / 2 - w / 2, depth, d1) | \
+            _diag(S | stems, s, W - w, 0, W / 2 - w / 2, depth, d2)
+    if ch == "N":
+        w, d1 = t
+        return SL | SR | _diag(S, s, 0, 0, W - w, H, d1)
+    if ch == "K":
+        w, d1, w2, d2 = t
+        yk = H * 0.58
+        arm = _diag(S, s, W - w, 0, s, yk, d1)
+        ya = yk - 4.0
+        xa = (W - w) + (ya / yk) * (s - (W - w)) + 1.0
+        leg = _diag(S, s, xa, ya, W - round(w2), H, d2)
+        return SL | arm | leg
+    if ch == "X":
+        w, d1, d2 = t
+        return _diag(S, s, 0, 0, W - w, H, d1) | _diag(S, s, W - w, 0, 0, H, d2)
+    if ch == "Y":
+        w, d1, d2 = t
+        yj = H * 0.52
+        x0 = int(round((W - s) / 2))
+        stem = np.zeros_like(S)
+        stem[int(yj) - 1:, x0:x0 + s] = True
+        return _diag(S, s, 0, 0, x0, yj, d1) | _diag(S, s, W - w, 0, x0 + s - w, yj, d2) | (stem & S)
+    if ch == "Z":
+        w, d1 = t
+        return T | B | _diag(S, s, W - w, b - 0.5, 0, H - b + 0.5, d1)
+    if ch == "S":
+        sp = mid
+        up = (L & _rows(S, 0, sp + 2)) | (R & _rows(S, 0, 4))
+        lo = (R & _rows(S, sp, H)) | (L & _rows(S, H - 4, H))
+        return T | B | up | lo | _hbar(S, sp, b)
+    if ch == "'":
+        out = np.zeros_like(S)
+        for y in range(H):
+            xs = np.flatnonzero(S[y])
+            if len(xs):
+                c = int(round((xs[0] + xs[-1]) / 2))
+                out[y, max(xs[0], c - 1):min(xs[-1], c + 1) + 1] = True
+        return out
+    if ch == "-":
+        ys = np.flatnonzero(S.any(1))
+        y0 = int(round((ys[0] + ys[-1]) / 2)) - 1
+        return _hbar(S, y0, 3)
+    raise ValueError("2026 glyph fixes: no thinning rule for " + repr(ch))
+
+
+def thin_letters(strip, op):
+    """The ``thin_letters`` operation on a nameplate strip (32 x 1024 RGBA): every glyph cell of the strip the build
+    holds (``offsets``: the 29 atlas columns) thinned by its letter's rule, moved to its cell's column 0, in the colour
+    ``fill`` on a clear strip of that colour (the old letters are cleared by the instruction, never by shipped texels)."""
+    rgba = np.asarray(strip, np.uint8)
+    fill = _colour(op["fill"]).astype(np.uint8)
+    top, cap, cell = int(op["top"]), int(op["cap"]), 32
+    out = np.zeros(rgba.shape, np.uint8)
+    out[..., :3] = fill
+    weights = op["weights"]
+    for i, ch in enumerate(_THIN_GLYPHS):
+        x0 = int(op["offsets"][i])
+        m = rgba[top:top + cap, x0:x0 + cell, 3] >= 128
+        cols = np.flatnonzero(m.any(0))
+        m = m[:, cols[0]:cols[-1] + 1]
+        new = _thin_letter(ch, m, int(op["stem"]), int(op["bar"]), [float.fromhex(w) for w in weights.get(ch, [])])
+        ncols = np.flatnonzero(new.any(0))
+        new = new[:, ncols[0]:ncols[-1] + 1]
+        region = out[top:top + cap, x0:x0 + new.shape[1]]
+        region[new, 3] = 255
+    return out
+
+
+def digit_level0(span):
+    """Level 0 of a digit span as RGBA (the glyph the build holds)."""
+    chunk, decoded, _info, texture = _one_txtr(span)
+    return np.frombuffer(texture_to_rgba(decoded, chunk, texture), np.uint8).reshape(texture.height, texture.width, 4)
+
+
+def compile_derived_names(span, row):
+    """A ``names_derived`` row: its operations on the strip the build holds, then the ``names_png`` route."""
+    rgba = derive_digit(names_level0(span), row["derive"])
+    require(sha(rgba.tobytes()) == row["rgba_sha256"], "the derived nameplate strip differs from its pin")
+    return compile_names_rgba(span, rgba)
+
+
+def compile_derived_digit(span, row):
+    """A ``digit_derived`` row: its operations on the glyph the build holds, then the ``digit_png`` route."""
+    rgba = derive_digit(digit_level0(span), row["derive"])
+    require(sha(rgba.tobytes()) == row["rgba_sha256"], "the derived digit differs from its pin")
+    return compile_digit_rgba(span, rgba.tobytes())
 
 
 # -- authored nameplate letters (b81-uniforms batch 4) ---------------------------------------------------------------
@@ -307,10 +703,16 @@ def compile_names_png(span, png_payload):
     smaller levels average it (``_names_levels``), the palette holds level 0's colours exactly; the native format,
     size, mip count, descriptor, wrapper and stored allocation stay. A palette whose stream does not fit the stored
     span is tried again with the smaller levels' blends on a coarser grid."""
+    return compile_names_rgba(span, names_png_rgba(png_payload))
+
+
+def compile_names_rgba(span, rgba):
+    """A nameplate strip picture (32 x 1024 RGBA array) -> the pinned chunk 43 span (``compile_names_png``'s route)."""
     chunk, decoded, _info, texture = _one_txtr(span)
     require(texture.name == "names" and texture.format_name == "VC_P8_LINEAR" and
             (texture.width, texture.height) == NAMES_SIZE, "not a 1024 x 32 linear nameplate strip")
-    rgba = names_png_rgba(png_payload)
+    rgba = np.asarray(rgba, np.uint8)
+    require(rgba.shape == (NAMES_SIZE[1], NAMES_SIZE[0], 4), "the nameplate strip picture is not 1024 x 32")
     levels = _names_levels(rgba, texture.mip_levels)
     video = decoded[chunk.system_bytes:chunk.system_bytes + chunk.video_bytes]
     chain = sum(level.shape[0] * level.shape[1] for level in levels)
@@ -416,6 +818,11 @@ def compile_resource(selector, raw, *, strict=True, document=None, retail_kits=N
                 new, detail = compile_names(span, donor_span, row, name=row["texture"], storage="P8")
         elif row["kind"] == "name_widths":
             new, detail = compile_name_widths(span, row["widths"])
+        elif row["kind"] == "digit_derived":
+            new, detail = compile_derived_digit(span, row)
+        elif row["kind"] == "names_derived":
+            new, detail = compile_derived_names(span, row)
+            detail = {k: v for k, v in detail.items() if k != "fit"}
         else:
             payload = (art_folder(document) / row["png"]).read_bytes()
             require(sha(payload) == row["png_sha256"], selector + ": authored " +

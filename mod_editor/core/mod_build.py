@@ -49,7 +49,7 @@ OPTIONAL_STEPS = frozenset({
     "kit_fixes_2026_uf3", "kit_fixes_2026_sea1", "kit_fixes_2026_ov1", "glyph_fixes_2026", "menu_icon_uf3",
     "menu_helmet_w2026", "menu_chiefs_2026", "pants_hem_2026", "kit_fixes_2026_ku1", "kit_fixes_2026_sw1",
     "kit_fixes_2026_names", "sideline_2026", "moment_kits", "nameplate_fixes_2026", "team_sleeves",
-    "kit_fixes_2026_b81", "kit_fixes_2026_b81u", "glyph_fixes_2026_b81u", "relief_2026_b81u",
+    "kit_fixes_2026_b81", "kit_fixes_2026_b81u", "glyph_fixes_2026_b81u", "sideline_2026_b81u", "relief_2026_b81u",
     # stadiums, fields and their colour
     "modern_color_bundles", "modern_arrowhead", "modern_metlife", "modern_venues_2026", "modern_metlife_model",
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant", "modern_mercedes_benz",
@@ -1072,9 +1072,23 @@ def _with_qb_floor_needs(plan):
                   "Choose Retail or Custom 0 percent to build without them.")
 
 
+def _qb_trades_wanted(plan, payload, room):
+    """b81 qb34 (the trades review's F1, coordinator 11/21): 4b trades ride with E1/E2 wherever their five needs are
+    installed: in the executable when one is named (the room step passes the written one), else in the plan (the 2026
+    season brings the NFL week 9 trade deadline; the floor's needs bring the economy, the practice squad, modern IR and
+    the ownership page). Returns (trades, note): never a refusal, one plain note when they are left out."""
+    if payload is not None:
+        ok = room.trade_needs_met(payload)
+    else:
+        ok = all(bool(getattr(plan, name, False)) for name in ("season_2026", "franchise_economy", "practice_squad",
+                                                                 "modern_injured_reserve"))
+    return ok, (None if ok else room.TRADES_LEFT_OUT)
+
+
 def _qb_room_plan(plan, payload=None):
     """b81 qb34: (level, stages, note). The floor's bits whenever injuries are above zero; piece 3's bits where rule
-    C1a allows them; Retail when neither applies but the plan names a quarterback setting; None keeps the source."""
+    C1a allows them; E1/E2 with both; 4b trades with those where their needs are installed; Retail when neither applies
+    but the plan names a quarterback setting; None keeps the source."""
     piece3_level, note = _qb_room_resolution(plan, payload)
     injuries = _qb_injuries_above_zero(plan)
     stages = 0
@@ -1082,7 +1096,12 @@ def _qb_room_plan(plan, payload=None):
         room = _core_module("nfl2k5_qb_room")
         if room is None:
             raise ValueError("The quarterback room rules are unavailable in this Studio installation.")
-        stages = room.studio_stages(injuries, piece3_level == "realistic")
+        trades = False
+        if injuries and piece3_level == "realistic" and hasattr(room, "trade_needs_met"):
+            trades, trades_note = _qb_trades_wanted(plan, payload, room)
+            note = note or trades_note
+        stages = room.studio_stages(injuries, piece3_level == "realistic", trades) if trades else \
+            room.studio_stages(injuries, piece3_level == "realistic")
     if stages:
         return "realistic", stages, note
     if piece3_level is not None or plan.sim_qb_injuries is not None:
@@ -1522,7 +1541,11 @@ for _preset in PRESETS.values():
     _preset["sim_qb_injuries"] = None
     _preset["qb_room"] = None  # b81 qb34
 del _preset
-PRESETS["softdrink_experimental"].update(k128_memory=True, sim_qb_injuries="realistic")
+# b81 relrev M4: with 128 MB memory the Experimental preset takes the early form and the roster heap, as the standard release
+# recipe (v10-sources-128 overrides) and every release build since beta 80 do. The late form alone is the setup Check my
+# project warns about (nfl2k5_project_check "k128.early_off": the pregame intro's camera script no longer fits at
+# retail-model stadiums), and a Build-tab Experimental disc would differ from the SOFTDRINK disc in memory layout.
+PRESETS["softdrink_experimental"].update(k128_memory=True, k128_early=True, k128_roster_heap=True, sim_qb_injuries="realistic")
 # b81 qb34 (C1): the Experimental preset leaves qb_room unnamed, so the room follows the injury option: Realistic
 # where its needs are met, left out with a note where they are not (the 64 MB set, BN style) instead of refusing.
 # b77-f4: letter grades in Franchise (Noah, 2026-10-07): Basic keeps the 2004 numbers; Modern and Experimental grade.
@@ -1611,6 +1634,8 @@ def apply_preset(plan: BuildPlan, name: str) -> BuildPlan:
         values["sim_qb_injuries"] = None
         values["qb_room"] = None  # b81 qb34: 128 MB standard only
         values["k128_memory"] = False
+        values["k128_early"] = False         # b81 relrev M4: both need 128 MB memory
+        values["k128_roster_heap"] = False
     values["modern_naming"] = tt.modern_naming_patch.preset_enabled(name.removeprefix("softdrink_"))
     if not values.get("name"):
         values["name"] = PRESET_TITLES[name]
@@ -2898,7 +2923,9 @@ def _apply_qb_room(plan, target, receipt, progress, *, prepared=None):
     if qb_room_level(plan.qb_room, plan.sim_qb_injuries) is None:
         return
     original = _xbe_bytes(target)
-    level, stages, note = _qb_room_plan(plan, original)
+    # A prepared copy (the in-place edit) was judged on the executable it writes, with the floor's needs added: its
+    # trades decision and note come from there (the trades review's F1).
+    level, stages, note = _qb_room_plan(plan, original if prepared is None else prepared[1])
     if level is None:
         _note_qb_room_left_out(receipt, note)
         if note:
@@ -3004,13 +3031,15 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     # b81 qb34: the quarterback room rules ride with this option (DESIGN_CHANGES C1) on the same executable.
     room_level, room_stages, room_note = _qb_room_plan(plan, patched)
     room_prepared, staged, floor_notes = None, patched, []
-    _note_qb_room_left_out(receipt, room_note)
     if room_level is not None:
         room = _core_module("nfl2k5_qb_room")
         if room is None:
             raise ValueError("The quarterback room rules are unavailable in this Studio installation.")
         if room_stages & room.FLOOR_STUDIO_STAGES:
             staged, floor_notes = _qb_floor_in_place(staged)
+            # The trades review's F1: 4b's needs are judged on the copy with the floor's needs added (modern IR and
+            # its ownership page), the executable the room step writes and the final check reads.
+            room_level, room_stages, room_note = _qb_room_plan(plan, staged)
         if room_level == "realistic":
             missing = room.requirements(staged, room_stages)
             if missing:
@@ -3021,6 +3050,7 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
         room_prepared = (patched, roomed, room_patch)
         for note in floor_notes:
             _note_qb_room_left_out(receipt, note)
+    _note_qb_room_left_out(receipt, room_note)
     final = room_prepared[1] if room_prepared else patched
     receipt["sim_qb_source_update"] = {
         "source_sha256": sha256(original).hexdigest(), "result_sha256": sha256(patched).hexdigest(),
@@ -8814,7 +8844,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if b81_helmets is None:
             raise RuntimeError("the 2026 kit art repair module is not available in this build")
         with _optional(receipt, target, progress, "kit_fixes_2026_b81"):
-            b81_receipt = b81_helmets.apply_helmets_b81(target)
+            # b81 retail-free: the fill rules read the blank retail shell's painted vents from the user's own disc
+            b81_receipt = b81_helmets.apply_helmets_b81(target, lambda: require_step_source(
+                source if _retail_source is None else _retail_source, "2026 helmet cleanup"))
             if b81_receipt["state"] == "applied":
                 receipt["steps"].append({"step": "kit_fixes_2026_b81",
                                          **{k: v for k, v in b81_receipt.items() if k != "kits"},
@@ -8842,14 +8874,25 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                              **{k: v for k, v in b81u_digit_receipt.items() if k != "kits"},
                                              "kits": [{k: v for k, v in kit.items() if k != "parts"}
                                                       for kit in b81u_digit_receipt["kits"]]})
+        # b81-uniforms R54 (beta 81): the far-player atlas (chunk 51 splayer) pants and sleeves of each kit the uniform
+        # pass changed, composed from the kit's own finished field texture by the sideline step's compose. After the
+        # uniform pass, whose finished textures each rule pins; pinned to the atlas spans a v0.10 build holds here.
+        with _optional(receipt, target, progress, "sideline_2026_b81u"):
+            far_receipt = b81_helmets.apply_sideline_b81u(target)
+            if far_receipt["state"] == "applied" and far_receipt["kits"]:
+                receipt["steps"].append({"step": "sideline_2026_b81u",
+                                         **{k: v for k, v in far_receipt.items() if k != "kits"},
+                                         "kits": far_receipt["kits"]})
         # b81-uniforms (Noah 11/19, of the three strengths drawn from this season's close-ups: "B. Keep new."): the
-        # jersey, sleeve and pants relief of every 2026 kit package, this season's construction at level B, composed
-        # from one master per map and small per-kit patches over the kit's own painted shield and swooshes. Pinned to
-        # the bump spans a v0.10 build holds here; a user's own relief art stays.
+        # jersey, sleeve and pants relief of every 2026 kit package, this season's construction at level B. Retail-free
+        # (b81-retail-free-art): the base (the 2004 folds softened, the 2004 construction lifted out) is derived here
+        # from the user's own disc (the retail 18H0 maps; each kit's own pants map), and only the authored differences
+        # ship. Pinned to the bump spans a v0.10 build holds here; a user's own relief art stays.
         relief = _core_module("nfl2k5_relief_2026")
         if relief is not None:                      # as the glyph passes: a build without the module goes on
             with _optional(receipt, target, progress, "relief_2026_b81u"):
-                relief_receipt = relief.apply_relief_b81u(target, progress=progress)
+                relief_receipt = relief.apply_relief_b81u(target, lambda: require_step_source(
+                    source if _retail_source is None else _retail_source, "2026 jersey relief"), progress=progress)
                 if relief_receipt["state"] == "applied":
                     receipt["steps"].append({"step": "relief_2026_b81u",
                                              **{k: v for k, v in relief_receipt.items() if k != "kits"}})

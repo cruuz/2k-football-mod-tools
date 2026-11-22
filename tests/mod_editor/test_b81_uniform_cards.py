@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -71,6 +73,37 @@ class ProjectInputs(unittest.TestCase):
             if row['selector'] not in requested:
                 self.assertIsNone(row['replacement_sha256'], name)
                 self.assertEqual(row['new_slot_sha256'], row['reviewed_slot_sha256'], name)
+
+
+STANDARD_SOURCES = Path(os.environ.get("NFL2K5_B81_STANDARD_SOURCES", "") or "missing-NFL2K5_B81_STANDARD_SOURCES")
+
+
+@unittest.skipUnless((STANDARD_SOURCES / "SOFTDRINK-league-project.json").is_file(),
+                     "private release sources absent: NFL2K5_B81_STANDARD_SOURCES")
+class StandardSources(unittest.TestCase):
+    """The release build's league project (b81/env.sh NFL2K5_B81_STANDARD_SOURCES) references, for each of the 190 uniform
+    card slots, exactly the pinned picture, by pixels and by file. Added 11/21, when 22 round 2 cards were missing from the
+    release folder although every pin was right; a stale release folder fails here."""
+
+    def test_every_uniform_card_of_the_release_sources_is_its_pinned_file(self):
+        project = json.loads((STANDARD_SOURCES / "SOFTDRINK-league-project.json").read_text(encoding="utf-8"))
+        rows = apply_cards.load_pins()
+        seen = set()
+        for edit in project["edits"]:
+            if edit.get("kind") != "team_select" or edit.get("family") != "unif":
+                continue
+            side = "h" if edit["side"] == "home" else "a"
+            name = f"unif_{side}{edit['asset_code']}_{int(edit['style'])}_{int(edit['resolution'])}"
+            path = Path(edit["png"].replace("@pack/", f"{STANDARD_SOURCES}/"))
+            row = rows[name]
+            with self.subTest(card=name), Image.open(path) as image:
+                pixels = np.ascontiguousarray(np.asarray(image.convert("RGBA"), dtype=np.uint8)).tobytes()
+                self.assertEqual(hashlib.sha256(pixels).hexdigest(), row["new_rgba_sha256"])
+                # a card the uniform pass left unchanged keeps the art lane's file (its pin has no new file)
+                self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),
+                                 row["new_file_sha256"] or row["source_file_sha256"])
+            seen.add(name)
+        self.assertEqual(seen, set(rows))
 
 
 class NativeColors(unittest.TestCase):
@@ -280,6 +313,40 @@ class StagedDisc(unittest.TestCase):
             self.assertEqual((result['written'], result['checked'], len(result['final'])), (1, 3, 3))
             self.assertEqual(archive.parts, {0: b'HEADbbbbPAD', 1: b'HEADbbbbPAD', 2: old[2]})
             self.assertEqual(apply_cards.update_archive(archive, root, pins, write=True)['written'], 0)
+
+
+class RendererChoice(unittest.TestCase):
+    """R2-F: the renders come from the NVIDIA driver, or with --software-gl from Mesa llvmpipe on a private display;
+    never llvmpipe by accident, never the owner's own display, and the renderer is part of every cache key."""
+
+    def render(self, renderer, display, software):
+        def check_output(cmd, text=True):
+            return 'Blender 4.0.2\n' if cmd[0] == 'blender' else f'OpenGL renderer string: {renderer}\n'
+
+        with tempfile.TemporaryDirectory() as folder, \
+                patch.object(cards_unif.subprocess, 'check_output', side_effect=check_output), \
+                patch.dict(cards_unif.os.environ, {'DISPLAY': display}), \
+                patch.object(cards_unif, 'sha', return_value='0' * 64), \
+                patch.object(cards_unif.Path, 'read_bytes', return_value=b''):
+            return cards_unif.render_layers({}, Path(folder), Path(folder), 16, software)
+
+    def test_llvmpipe_is_refused_unless_asked_for(self):
+        with self.assertRaises(ValueError):
+            self.render('llvmpipe (LLVM 20.1.2, 256 bits)', ':187', False)
+
+    def test_software_needs_a_private_display_and_llvmpipe(self):
+        for renderer, display in (('llvmpipe (LLVM 20.1.2, 256 bits)', ':0'),
+                                  ('llvmpipe (LLVM 20.1.2, 256 bits)', ''),
+                                  ('NVIDIA GeForce RTX 2080 Ti/PCIe/SSE2', ':187')):
+            with self.subTest(renderer=renderer, display=display), self.assertRaises(ValueError):
+                self.render(renderer, display, True)
+
+    def test_software_on_a_private_display_is_recorded(self):
+        _layers, meta = self.render('llvmpipe (LLVM 20.1.2, 256 bits)', ':187', True)
+        self.assertTrue(meta['software_gl'])
+        self.assertIn('llvmpipe', meta['opengl'])
+        _layers, meta = self.render('NVIDIA GeForce RTX 2080 Ti/PCIe/SSE2', ':187', False)
+        self.assertNotIn('software_gl', meta)
 
 
 if __name__ == '__main__':

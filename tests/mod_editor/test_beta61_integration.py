@@ -81,8 +81,10 @@ class BuildIntegrationTests(unittest.TestCase):
                                                             apply_sideline=lambda target: {'state': 'retail'},
                                                             # b81-art/b81-uniforms: the helmet cleanup and the kit
                                                             # textures, pinned spans a synthetic image does not hold
-                                                            apply_helmets_b81=lambda target: {'state': 'retail'},
-                                                            apply_uniforms_b81=lambda target: {'state': 'retail'}),
+                                                            apply_helmets_b81=lambda target, retail=None: {'state': 'retail'},
+                                                            apply_uniforms_b81=lambda target: {'state': 'retail'},
+                                                            # b81-uniforms R54: the far-player atlas compose
+                                                            apply_sideline_b81u=lambda target: {'state': 'retail'}),
                            'nfl2k5_nameplate_fixes_2026':SimpleNamespace(apply_to_image=lambda target, retail=None: {'state': 'retail'})}
                 selected = build.BuildPlan(str(source), str(target), overwrite=True,
                                             scorebug_runtime=True, music_library='recipe.json')

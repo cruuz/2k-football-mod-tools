@@ -66,11 +66,11 @@ CLUB_SIZE, PLAYER_SIZE, COACH_SIZE = 500, 0x54, 0xA8
 LEAGUE_CLUBS = 34                       # 32 league clubs and the two all-star sides
 GENERATORS = ((0xB12680, 448), (0xE5FCA0, 448))
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
-PIECE3_RELOCATIONS = "1a0dafd5e77d6a13b33df2e50fd0449daf229adb2f073addeabdea10d0d84016"   # C23 (D1 after review: ada39335)
+PIECE3_RELOCATIONS = "ed15b0753dbe16a5244745791e63a5297ffe24155aaf3143908ae24b34672256"   # C23-1 (C23: 1a0dafd5; D1 after review: ada39335)
 # Stage 4a runs on a real standard Studio build (retail plus every standard owner, slice 1 Realistic): economy_week
 # at 0x323870, the practice-squad guard and economy gate in front of 0x322BB0, the smart cut at 0x2BF9A0.
-STANDARD_XBE = Path(os.environ.get("NFL2K5_B81_QB_STANDARD_XBE",
-                                   "/media/noah/Storage/2K5-project/beta81/evidence/nov19-qb-product/realistic.xbe"))
+# A private input: the environment names it (b81/env.sh); the shipped file names no host path (release gate).
+STANDARD_XBE = Path(os.environ.get("NFL2K5_B81_QB_STANDARD_XBE", "") or "missing-NFL2K5_B81_QB_STANDARD_XBE")
 STANDARD_SHA256 = "9f435b380a948c976cf4fe1160a8137a157f7bb93cd202b5fb04d49195c42a6a"
 SIGN_SITE, SIGN_RETURN = 0x248010, 0x248015
 SIGN_CLUB = 5
@@ -253,10 +253,11 @@ class PageInterface(unittest.TestCase):
         # none of it (piece 3 itself changes with room.c: C23 below).
         # (Before the review, 5846655b1's piece 3 was 0x10BC bytes, sha256 2441d02a..., 96 relocations; after it and
         # until C23, 0xF10 bytes, sha256 808e0d12.... C23 changed piece 3: the D3/D4 review fixes and the middle piece
-        # moved to 0x21E0, so its calls to decide_d1 moved too.)
+        # moved to 0x21E0, so its calls to decide_d1 moved too; C23-1, the week-1 fall-through, 93388c74 -> 5502ab83,
+        # same size.)
         self.assertEqual(room.PIECE3_BYTES, 0xF1C)
         self.assertEqual(hashlib.sha256(room._TEMPLATE[:room.PIECE3_BYTES]).hexdigest(),
-                         "93388c74010825dee324c1d41e34dd7372d6927342694ca9a451445b18757773")
+                         "5502ab83460daf0094327c98a55119fe64487820154a785567945a7c9bcb6379")
         inside = [r for r in room._RELOCATIONS if r[0] < room.PIECE3_BYTES]
         self.assertEqual(len(inside), 89)
         self.assertEqual(hashlib.sha256(repr(inside).encode()).hexdigest(), PIECE3_RELOCATIONS)
@@ -1140,6 +1141,41 @@ class WeekOneOrder(League):
         self.enter("opening")
         self.assertEqual(self.rows([veteran, rookie]), [0, 1])
         self.assertEqual(self.counters()["season_resets"], 0)
+
+    def opening_room(self, qbs, *, stages=263, year=1):
+        """The reviewer's confirmation set-up (rev-qb34/conf/probes): stage 8, week 0, the week-1 advance's first
+        native sort with last season's locks, then the opening pass."""
+        self.settings(stages)
+        self.write(0xE576A4, 8)
+        self.write(0xE576B8, year)
+        self.write(0xE576B4, 0)
+        self.club(4, qbs)
+        self.native_sort()
+        self.enter("opening")
+
+    def test_cp6_never_an_injured_man_and_not_in_year_0(self):
+        """C23-2 (reviewer's CP6; mutation M7 drops the healthy test): a hurt 85 is never lifted over a healthy 80,
+        and year index 0 is untouched."""
+        a, b = QB(80, 0), QB(85, 1, injury=0x80000000 | 3 << 22)
+        self.opening_room([a, b, QB(60, 2, years=9)])
+        self.assertEqual(self.rows([a])[0], 0)
+        self.setUp()
+        a, b = QB(80, 0), QB(85, 1)
+        self.opening_room([a, b, QB(60, 2, years=9)], year=0)
+        self.assertEqual(self.rows([a, b]), [0, 1])
+
+    def test_cp8_the_reset_keeps_the_rookies_opening_draw(self):
+        """C23-1 (reviewer's CP8): last season's locked pair A 80 (row 0) and B 82 (row 1), this year's rookie R 82
+        unlocked on row 2. The reset lifts B, then D1 still draws R against the new row-0 man (x = 0 against B: the
+        table gives the rookie about 15 percent). At b1d283e79 the reset returned and R never reached row 0 (0 of
+        200); the reviewer measured 36 of 200 with the fall-through."""
+        keys, firsts = 200, 0
+        for year in range(1, keys + 1):
+            self.setUp()
+            a, b, r = QB(80, 0), QB(82, 1), QB(82, 2, years=1, locked=False)
+            self.opening_room([a, b, r], year=year)
+            firsts += self.rows([r])[0] == 0
+        self.assertTrue(0.08 <= firsts / keys <= 0.30, firsts)
 
     def test_the_first_season_and_later_weeks_are_untouched(self):
         for year, week in ((0, 0), (1, 3)):

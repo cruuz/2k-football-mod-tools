@@ -96,7 +96,7 @@ class Data(unittest.TestCase):
     def test_pins_are_complete_and_unique(self):
         spec = fixes.spec()
         rows = spec["textures"]
-        self.assertEqual(len(rows), 60)
+        self.assertEqual(len(rows), 58)   # b81-retail-free-art: 26A0/26H0 chunk 12 deleted by ruling (never write in beta 81)
         self.assertEqual(len(fixes.selectors(spec)), 33)
         for row in rows:
             for key in ("before_sha256", "after_sha256"):
