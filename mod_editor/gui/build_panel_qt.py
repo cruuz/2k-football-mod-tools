@@ -875,6 +875,7 @@ class BuildPanel(QWidget):
         # tested in-game / New franchises only / Not available in this release.  The long
         # technical story sits under Details so the labels never push the page wide.
         self._helpers: dict[str, QLabel] = {}
+        self._helper_bases: dict[str, str] = {}   # b81 relrev M3: a helper's own text under a one-line note
         self._badges: dict[str, QLabel] = {}
         self._static_badges: dict[str, str] = {}
         self._needs_image: set[str] = set()
@@ -2039,6 +2040,8 @@ class BuildPanel(QWidget):
         self.roster_edits_check.toggled.connect(lambda on: self.roster_edits_status.setVisible(on and bool(self.roster_edits_status.text())))
         r62_ui.connect_requirements(self._requirement_box, self._requirement_child_toggled, self._requirement_parent_toggled,
                                    self._requirement_parent_clicked)
+        self.depth_chart_rows_check.clicked.connect(self._special_rows_clicked)   # b81 relrev M3
+        self.gadget_play_check.clicked.connect(self._gadget_play_clicked)
         self.historic_stock_books_check.toggled.connect(
             lambda on: self._exclusive_books("historic_stock_books", "playbook_pair", on))
         self.playbook_pair_check.toggled.connect(
@@ -2436,6 +2439,7 @@ class BuildPanel(QWidget):
             details = mod_build.inspect_screen_timing(state["path"], combo.currentText())
             state = {**state, "screen_timing": details["status"], "screen_timing_details": details}
         self._state = state
+        self._set_helper_note("depth_chart_rows", "")
         # Source inspection starts a new selection; installed choices are
         # projected from this disc, then saved project choices can be restored.
         # Every feature toggle is cleared here explicitly: throw used not to be
@@ -3132,6 +3136,7 @@ class BuildPanel(QWidget):
         """Tick the preset's toggles (only those the source can still take); returns what was skipped."""
 
         self._sim_qb_authored = True
+        self._set_helper_note("depth_chart_rows", "")
         self._momentum_legacy_disabled = False
         self._momentum_last_positive = 50
         self.momentum_level.blockSignals(True)
@@ -4261,6 +4266,11 @@ class BuildPanel(QWidget):
                            if not getattr(self, key + "_check").isChecked() and not self._installed(key)]
                 if missing:
                     return child_box.text() + " requires: " + ", ".join(missing) + "."
+        gadget = self.gadget_play_check   # b81 relrev M3: said here, never by the build after Make my disc?
+        if (gadget.isChecked() and gadget.isEnabled() and not (self._state or {}).get("v09_standard_update")
+                and not self.depth_chart_rows_check.isChecked() and not self._installed("depth_chart_rows")):
+            return ("The gadget player on gadget plays needs SPECIAL: 13 rows (its GAD row). Tick SPECIAL: 13 rows, or "
+                    "untick the gadget player.")
         if self.historic_stock_books_check.isChecked() and self.playbook_pair_check.isChecked():
             return "Choose stock historic books or separate offensive and defensive playbooks."
         if self._include_session_project():
@@ -4618,6 +4628,33 @@ class BuildPanel(QWidget):
         if not on:
             r62_ui.untick_children(parent, self._requirement_box)
         self._refresh()
+
+    def _set_helper_note(self, key, note):
+        """One plain sentence in front of an option's helper line ("" puts the helper back as it was)."""
+        label = self._helpers.get(key)
+        if label is None:
+            return
+        base = self._helper_bases.setdefault(key, label.text())
+        label.setText(f"{note} {base}" if note else base)
+        label.setVisible(bool(note or base))
+
+    def _special_rows_clicked(self, on):
+        """b81 relrev M3: the gadget player is a SPECIAL depth chart row (its GAD row), so a full build needs the rows.
+        REQUIRES cannot hold the rule (the v0.9 update takes the gadget on a disc that already has the rows, 9e378c717), so
+        the page keeps it: unticking the rows unticks the gadget player and says so, instead of a refusal after Make my disc?."""
+        gadget = self.gadget_play_check
+        note = ""
+        if not on and gadget.isChecked() and gadget.isEnabled():
+            gadget.setChecked(False)
+            note = "This also turned off the gadget player on gadget plays, which needs these rows (its GAD row)."
+        self._set_helper_note("depth_chart_rows", note)
+
+    def _gadget_play_clicked(self, on):
+        """b81 relrev M3: ticking the gadget player ticks the SPECIAL rows it needs, as a REQUIRES child ticks its parent."""
+        rows = self.depth_chart_rows_check
+        if on and rows.isEnabled() and not rows.isChecked() and not self._installed("depth_chart_rows"):
+            rows.setChecked(True)
+            self._set_helper_note("depth_chart_rows", "")
 
     def _requirement_parent_clicked(self, parent, on):
         """b780-mem1: a parent the user ticked brings its default children along."""
