@@ -11,7 +11,9 @@ restores it. The byte interface is .b77-scratch/b81/qb34/INTERFACE.md.
 Stage bit 16 (4b trades, DESIGN_CHANGES C20) brings a second owner with it: nfl2k5_qb_trades, one fixed page at 0x152C000
 and the site 0x247E1E. This owner installs and restores it together with the room (never one without the other: the
 room's state authenticates it, Retail restores the trades site and page first, then the room). The Studio's Realistic set
-does not include bit 16 (REALISTIC_STAGES); only install_stages writes it, for panels and tests.
+includes bit 16 wherever 4b's five needs are installed (the trades review's F1, coordinator 11/21: the deadline owner,
+the economy, the practice squad, modern IR and the ownership page; studio_stages(..., trades=True)), so Realistic is 383
+there and 367 elsewhere, with one plain note (TRADES_LEFT_OUT) instead of a refused build.
 """
 from __future__ import annotations
 
@@ -51,6 +53,12 @@ PIECE3_BITS = 1 | 2 | 4 | 256  # STAGE_D1 | STAGE_D2 | STAGE_D4 | STAGE_D3
 # E1 (8) and E2 (32): they need the floor's needs (economy, practice squad, modern IR, ownership) and were judged with
 # piece 3 on (P5 at 335/367, C21), so the Studio installs them only where both the floor and piece 3 are installed.
 E_BITS = 8 | 32  # STAGE_SIGN | STAGE_E2
+# 4b trades (bit 16; C20, C22): the Studio adds it where E1/E2 are installed and 4b's own needs are installed
+# (trade_needs_met); otherwise it is left out with one plain note, never a refused build (the trades review's F1).
+STUDIO_TRADE_BITS = 16
+TRADES_LEFT_OUT = ("Computer clubs trading for a quarterback need the 2026 franchise season (its NFL week 9 trade deadline), "
+                   "the franchise economy, reserve save compatibility and modern injured reserve, so trades were not "
+                   "added.")
 STAGE_NAMES = ((1, "D1 veteran or rookie"), (2, "D2 the kid's turn"), (256, "D3 benched for poor play"),
                (4, "D4 returning starter"),
                (8, "E1 emergency backup signing"), (16, "trades (4b)"), (32, "E2 better quarterback while the starter is out"),
@@ -62,16 +70,24 @@ def stage_names(stages):
     return [name for bit, name in STAGE_NAMES if stages & bit]
 
 
-def studio_stages(injuries_above_zero, piece3):
-    """The stage set the Studio installs: the floor whenever injuries are above zero, piece 3 where C1a allows it, and
-    E1/E2 where both are installed."""
+def studio_stages(injuries_above_zero, piece3, trades=False):
+    """The stage set the Studio installs: the floor whenever injuries are above zero, piece 3 where C1a allows it, E1/E2
+    where both are installed, and 4b trades (bit 16) where those are and 4b's own needs are installed too
+    (``trades``: trade_needs_met)."""
     return ((FLOOR_STUDIO_STAGES if injuries_above_zero else 0) | ((REALISTIC_STAGES & PIECE3_BITS) if piece3 else 0)
-            | ((REALISTIC_STAGES & E_BITS) if injuries_above_zero and piece3 else 0))
+            | ((REALISTIC_STAGES & E_BITS) if injuries_above_zero and piece3 else 0)
+            | (STUDIO_TRADE_BITS if injuries_above_zero and piece3 and trades else 0))
 
 
-def realistic_stages():
-    """apply(payload, "realistic") with no stage set: what the Studio installs for Realistic injuries with piece 3."""
-    return studio_stages(True, True)
+def trade_needs_met(payload):
+    """4b's five needs are installed on this executable (requirements(payload, 16) is empty)."""
+    return not requirements(payload, STUDIO_TRADE_BITS)
+
+
+def realistic_stages(payload=None):
+    """apply(payload, "realistic") with no stage set: what the Studio installs for Realistic injuries with piece 3:
+    383 on an executable that carries 4b's needs, else 367 (and 367 when no executable is named)."""
+    return studio_stages(True, True, payload is not None and trade_needs_met(payload))
 
 
 class QbRoomError(ValueError):
@@ -403,7 +419,7 @@ def apply(payload, level="realistic", *, stages=None):
         return result, {**receipt, "status": "retail", "restored_stages": settings["stages"],
                         **({"restored_revision": revision[0]} if revision is not None else {}),
                         "changed_bytes": space.count_differing_bytes(source, result), "file_growth": 0}
-    stages = realistic_stages() if stages is None else stages
+    stages = realistic_stages(source) if stages is None else stages
     _require(type(stages) is int and stages > 0, "Realistic needs at least one quarterback room stage")
     return _install(source, current, settings, allocation, receipt, stages, SHADOW_DEFAULT, revision)
 

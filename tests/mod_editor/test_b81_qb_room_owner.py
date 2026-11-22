@@ -513,7 +513,10 @@ class PreviousRevisionTests(unittest.TestCase):
 
     @staticmethod
     def _rows(payload):
-        return [(r["owner"], r["kind"], r["va"], r["size"]) for r in space.layout(payload)["allocations"]]
+        """Allocator rows, the trades page's left out: Realistic is 383 on this base (the trades review's F1), which adds
+        that one row at 0x152C000 and moves none (StudioTrades in test_b81_qb_room_trades.py pins it)."""
+        return [(r["owner"], r["kind"], r["va"], r["size"]) for r in space.layout(payload)["allocations"]
+                if r["owner"] != "nfl2k5_qb_trades"]
 
     def _changed(self, payload, va, data):
         image, out = XbeImage(payload), bytearray(payload)

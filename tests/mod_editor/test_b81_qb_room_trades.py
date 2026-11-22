@@ -951,8 +951,11 @@ class TradesPage(unittest.TestCase):
 
 @lru_cache(maxsize=1)
 def _candidate():
+    # The trades review's F2: f5270f4d carries economy revision 7, which reads "legacy" since the integration merge
+    # (revision 8); the economy is upgraded in place first, as the room's own owner tests and the Studio routes do.
+    from mod_editor.core import nfl2k5_franchise_economy as economy
     _need(CANDIDATE, CANDIDATE_SHA)
-    return CANDIDATE.read_bytes()
+    return economy.apply(CANDIDATE.read_bytes())[0]
 
 
 class TradesAllocation(unittest.TestCase):
@@ -1064,11 +1067,81 @@ class TradesOwner(unittest.TestCase):
         with self.assertRaises(ValueError):
             room.install_stages(source, 67, trades_shadow=True)
 
-    def test_the_studio_never_writes_bit_16(self):
+    def test_the_studios_realistic_set_is_383_where_4bs_needs_are_installed(self):
+        # The trades review's F1 (coordinator 11/21): Realistic adds bit 16 to E1/E2's set where the deadline owner,
+        # the economy, the practice squad, modern IR and the ownership page are installed; elsewhere 367, never a
+        # refused build.
         from mod_editor.core import nfl2k5_qb_room as room
-        self.assertFalse(room.realistic_stages() & 16)
-        self.assertFalse(room.studio_stages(True, True) & 16)
+        from unittest import mock
+        self.assertEqual((room.studio_stages(True, True), room.studio_stages(True, True, True)), (367, 383))
+        self.assertEqual((room.studio_stages(True, False, True), room.studio_stages(False, True, True)), (64, 263))
+        self.assertEqual(room.realistic_stages(), 367)                     # no executable named: no trades
         self.assertFalse(room.REALISTIC_STAGES & 16)
+        source = _candidate()
+        self.assertEqual(room.realistic_stages(source), 383)
+        with mock.patch("mod_editor.core.nfl2k5_trade_deadline.status", return_value="retail"):
+            self.assertEqual(room.realistic_stages(source), 367)
+            out, receipt = room.apply(source, "realistic")                 # not refused: 367
+            self.assertEqual((room.read_settings(out)["stages"], room.read_settings(out)["trades"]), (367, "retail"))
+
+
+class StudioTrades(unittest.TestCase):
+    """The trades review's F1: the Studio's Realistic installs 383 on an executable with 4b's needs. A disc at 367 (the
+    E head's Realistic) is a change that upgrades in place to 383; Retail from 383 restores the room and the trades
+    page (both empty reservations, byte for byte); and every frozen hand-over page set (67, 64, 3, 327, 263) still
+    reads previous and upgrades to 383."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_qb_room as room, nfl2k5_qb_trades as trades, nfl2k5_xbe_space as space
+        cls.room, cls.trades, cls.space = room, trades, space
+        cls.source = _candidate()                                         # b2672e398's page at 67 ("previous")
+        cls.fresh, cls.fresh_receipt = room.apply(cls.source, "realistic")
+        cls.empty, _ = room.apply(cls.source, "retail")                   # the room's empty reservation
+
+    def test_realistic_on_an_executable_with_4bs_needs_is_383(self):
+        room, trades = self.room, self.trades
+        settings = room.read_settings(self.fresh)
+        self.assertEqual((settings["status"], settings["stages"], settings["trades"]), ("applied", 383, "applied"))
+        self.assertEqual(trades.status(self.fresh), "applied")
+        self.assertEqual(self.fresh_receipt["upgraded_from"], "b81 floor + D1 + D2 hand-over")
+        again, receipt = room.apply(self.fresh, "realistic")
+        self.assertEqual((again, receipt["status"]), (self.fresh, "already_applied"))
+
+    def test_a_disc_at_367_upgrades_in_place_to_383(self):
+        room = self.room
+        disc, _ = room.apply(self.source, "realistic", stages=367)       # the E head's Studio Realistic
+        settings = room.read_settings(disc)
+        self.assertEqual((settings["status"], settings["stages"], settings["trades"]), ("applied", 367, "retail"))
+        self.assertNotEqual(settings["stages"], room.realistic_stages(disc))      # the Studio sees a change
+        upgraded, _ = room.apply(disc, "realistic")
+        self.assertEqual(upgraded, self.fresh)
+
+    def test_retail_from_383_restores_the_room_and_the_trades_page_byte_for_byte(self):
+        room, trades, space = self.room, self.trades, self.space
+        back, receipt = room.apply(self.fresh, "retail")
+        self.assertEqual((room.status(back), trades.status(back), receipt["restored_stages"]), ("retail", "retail", 383))
+        # Both reservations stay, empty: the room's empty reservation plus the trades page's, nothing else.
+        expected, _ = space.extend_scaleout(self.empty, trades.REQUESTS)
+        self.assertEqual(back, expected)
+        self.assertEqual(room.apply(back, "realistic")[0], self.fresh)
+
+    def test_every_frozen_hand_over_page_set_reads_previous_and_upgrades_to_383(self):
+        import importlib
+        room = self.room
+        old = importlib.import_module("mod_editor.core.nfl2k5_qb_room_code_b81_handover")
+        for stages in (67, 64, 3, 327, 263):
+            with self.subTest(stages=stages):
+                page = old.page_bytes(room.VA, old.settings_record(stages), ir_store_va=0)
+                edits = [(room.VA, b"\xcc" * room.SIZE, page)]
+                edits += [(at, o, p) for _l, at, o, p in old.sites(room.VA, stages | 8 if stages & 64 else stages)]
+                payload = room._patch(self.empty, edits)
+                settings = room.read_settings(payload)
+                self.assertEqual((settings["status"], settings.get("revision"), settings["stages"]),
+                                 ("previous", "b81 floor + D1 + D2 hand-over", stages))
+                upgraded, receipt = room.apply(payload, "realistic")
+                self.assertEqual((upgraded, receipt["upgraded_from"]), (self.fresh, "b81 floor + D1 + D2 hand-over"))
+                self.assertEqual(room.apply(payload, "retail")[0], self.empty)
 
 
 if __name__ == "__main__":
