@@ -30,6 +30,14 @@ RATE_DENOMINATOR = 100_000
 REFERENCE_DURABILITY = 74.72222222222223
 GAIN_TABLE = 0x3B00
 GAIN_CONSTANTS = 0x3D80
+# Combined calibration (pos3/COMBINED_PLAN.md section 1). Both levers are 1.0 / 0.982 today, so the bank is unchanged.
+# Lever 2: a quarterback-only multiplier of the ordinary and sack/escape threshold tables (q / 0.310 for a fitted q).
+QB_CHANCE_SCALE = 1.06
+# Lever 3: the franchise completed-pass gain level. passing.S passing_scale multiplies every completed-pass gain in a
+# franchise fixture by GAIN_TABLE[accuracy] (a healthy QB's positive gain: PASSING_LEVEL x the accuracy shape) or by the
+# base multiplier at GAIN_CONSTANTS + 4 (every other case), so this one constant moves both together. PHYS_GAIN (.91,
+# tools/qb_sim_injuries/build.py) is not this lever: context.S multiplies by it only outside an active franchise fixture.
+PASSING_LEVEL = .982
 LENGTH_ACCEPT = ((1, 507082694), (2, 601295421), (3, 1503238554), (4, 196716059),
                  (7, 149245968), (8, 195151244), (14, 348438850), (255, 2050967529))
 
@@ -293,8 +301,10 @@ def _rate(rate):
 
 def _configure_tables(bank, rate):
     # The health slider scales these 31-bit thresholds again in the native handler. Sacks and escapes carry 4x exposure.
+    # QB_CHANCE_SCALE (combined calibration lever 2) multiplies these two quarterback tables only: the Studio's rate
+    # stays 310 for Realistic, Custom X still scales every class by X/0.310, and the twelve position classes keep theirs.
     for label, factor in (("ordinary_thresholds", 1), ("special_thresholds", 4)):
-        chance = rate / RATE_DENOMINATOR
+        chance = rate / RATE_DENOMINATOR * QB_CHANCE_SCALE
         values = (2 * chance * factor * max(0, 100 - d) / (100 - REFERENCE_DURABILITY) * (1 << 31)
                   for d in range(256))
         struct.pack_into("<256f", bank, LABELS[label], *values)
@@ -305,9 +315,9 @@ def _configure_tables(bank, rate):
         start = end + 1
     for accuracy in range(101):
         position = min(1.0, max(0.0, (accuracy - 92) / 6))
-        gain = .982 * (.935 + .130 * position**4)
+        gain = PASSING_LEVEL * (.935 + .130 * position**4)
         struct.pack_into("<f", bank, GAIN_TABLE + 4 * accuracy, gain)
-    struct.pack_into("<ff", bank, GAIN_CONSTANTS, .77, .982)
+    struct.pack_into("<ff", bank, GAIN_CONSTANTS, .77, PASSING_LEVEL)
     _configure_positions(bank, rate)
     _configure_stability(bank, rate)
 

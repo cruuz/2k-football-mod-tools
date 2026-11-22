@@ -115,7 +115,7 @@ class PlanField(unittest.TestCase):
                 if plan.sim_qb_injuries != "custom":
                     omitted.add("sim_qb_injury_rate")
                 # The simulator's breakaway stop (beta 81 scoring) is carried only with the option on and off its default.
-                if plan.sim_qb_injuries not in ("realistic", "custom") or plan.sim_breakaway_stop == 72:
+                if plan.sim_qb_injuries not in ("realistic", "custom") or plan.sim_breakaway_stop == mod_build.SIM_BREAKAWAY_STOP_DEFAULT:
                     omitted.add("sim_breakaway_stop")
                 # b81 qb34: the quarterback room key, like the mode, only when a preset or the user named it.
                 if plan.qb_room is None:

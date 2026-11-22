@@ -553,11 +553,12 @@ class FloorRuleTests(unittest.TestCase):
         import hashlib
         from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_qb_room as room
         from mod_editor.core import nfl2k5_sim_qb_injuries as qb
-        from mod_editor.core import nfl2k5_cpu_kick_aim as aim
+        from mod_editor.core import nfl2k5_cpu_kick_aim as aim, nfl2k5_pass_protection as pressure
         source = self._private()
         slice1, _ = qb.apply(source, "realistic")  # 9f435b38: slice 1 without the floor (an earlier private test disc)
-        # b81 integration (scoring merged): the in-place edit also writes the CPU kick aim, as a full build would
-        aimed, _ = aim.apply(slice1)
+        # b81 integration (scoring merged): the in-place edit also writes the CPU kick aim, as a full build would; and
+        # (combined levers) it updates the disc's legacy pass protection to this release's centre float first
+        aimed, _ = aim.apply(qb.apply(pressure.apply(source)[0], "realistic")[0])
         # b81 integration (practice squad merge): and upgrades the disc's revision 7 economy before the floor
         from mod_editor.core import nfl2k5_franchise_economy as economy
         prepared = ir.apply(economy.apply(aimed)[0], "modern", standard_guard=True)[0]
@@ -638,7 +639,9 @@ class InPlacePreflightTests(unittest.TestCase):
             self.skipTest("the private reviewed test disc is absent")
         source = mod_build._xbe_bytes(disc)
         from mod_editor.core import nfl2k5_cpu_kick_aim as aim, nfl2k5_injured_reserve as ir
-        slice1, _ = qb.apply(source, "realistic")
+        from mod_editor.core import nfl2k5_pass_protection as pressure
+        # The edit updates the legacy pass protection (combined levers), applies the option and writes the CPU kick aim
+        slice1, _ = qb.apply(pressure.apply(source)[0], "realistic")
         slice1, _ = aim.apply(slice1)  # b81 integration (scoring merged): the edit writes the CPU kick aim too
         # The helmet disc has the economy and the practice squad; the edit adds modern IR for the floor and (practice
         # squad merge) upgrades the disc's revision 7 economy to the current one first.

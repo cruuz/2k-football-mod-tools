@@ -33,6 +33,7 @@ from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_lineup_roles as lineup, nfl2k5_sim_qb_injuries as qb
 from mod_editor.core import nfl2k5_sim_rb_injuries as running_backs, nfl2k5_sim_realism as simulator
 from mod_editor.core import nfl2k5_xbe_space as space
+from mod_editor.core import nfl2k5_pass_protection as pressure
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 
 BANK = (0x1524000, 16384, 4096)
@@ -355,7 +356,11 @@ class InPlaceUpgrades(_BuildPath):
         self.assertIsNone(_bank(source))
         without = self.v09_route(path, "retail", .310)
         self.assertIsNone(_bank(without))
-        blank = space.extend_scaleout(simulator.apply(without)[0], qb.REQUESTS)[0]
+        legacy_blank = space.extend_scaleout(simulator.apply(without)[0], qb.REQUESTS)[0]
+        # b81 combined calibration: Realistic and Custom also update v0.9's pass protection (its centre read the retail
+        # .rdata float) to this release's centre float; Retail leaves it as v0.9 shipped it.
+        self.assertEqual((pressure.status(source), pressure.status(without)), ("legacy", "legacy"))
+        blank = space.extend_scaleout(pressure.apply(simulator.apply(without)[0])[0], qb.REQUESTS)[0]
         rows = _rows(source)
         for mode, rate in (("realistic", .310), ("custom", 0.0), ("custom", 100.0)):
             with self.subTest(mode=mode, custom_rate=rate):
@@ -366,17 +371,20 @@ class InPlaceUpgrades(_BuildPath):
                 self.assertEqual(_rows(fresh), _rows(blank))
                 self.assertEqual(_weekly(fresh), GAME_TAIL if units else _running_back_jump(fresh))
                 self.assertEqual(qb.apply(fresh, "retail")[0], blank)
+                self.assertEqual(pressure.status(fresh), "applied")
                 for reader in (running_backs.status, simulator.status, lineup.read_settings):
                     self.assertEqual(reader(fresh), reader(blank), reader.__module__)
-                # The same route as slices 1 and 2 wrote it, upgraded in place; Retail from each.
+                # The same route as slices 1 and 2 wrote it, upgraded in place (the route updates pass protection
+                # before the option); Retail from each.
                 older = {revision: _older_install(simulator.apply(without)[0], mode, units, revision)
                          for revision in (1, 2, 3)}
                 self.assertNotEqual(older[3], fresh)
                 for revision, old in older.items():
-                    upgraded, receipt = qb.apply(old, mode, custom_rate=rate)
+                    self.assertEqual(pressure.status(old), "legacy")
+                    upgraded, receipt = qb.apply(pressure.apply(old)[0], mode, custom_rate=rate)
                     self.assertEqual(receipt.get("upgraded_from"), f"slice{revision}")
                     self.assertEqual(upgraded, fresh)
-                    self.assertEqual(qb.apply(old, "retail")[0], blank)
+                    self.assertEqual(qb.apply(old, "retail")[0], legacy_blank)
                     self.assertEqual(qb.read_settings(old).get("revision"), revision)
                 settings = qb.read_settings(fresh)
                 self.assertEqual((settings["mode"], settings.get("revision"), settings.get("positions")),

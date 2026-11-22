@@ -208,6 +208,11 @@ class CommentarySwap:
     wav: str               # path to the replacement WAV
 
 
+# b81 combined calibration (2026-11-21): the simulated breakaway stop, yards to goal, fitted 68 (was scoring's 72);
+# a recipe names it only when it differs from this.
+SIM_BREAKAWAY_STOP_DEFAULT = 68
+
+
 @dataclass
 class BuildPlan:
     source: str
@@ -772,7 +777,7 @@ class BuildPlan:
     sim_qb_injury_rate: float = 0.310
     # b81 scoring: simulated breakaways from beyond this many yards to goal stop at the 10 (the one adjustable value
     # of the simulator scoring change; whole yards 20-99; only written to a recipe when it differs from 72).
-    sim_breakaway_stop: int = 72
+    sim_breakaway_stop: int = SIM_BREAKAWAY_STOP_DEFAULT
     # b81 qb34: the quarterback room rules (who starts the season, the kid's turn, benched for poor play, the returning
     # starter). None follows sim_qb_injuries (Realistic or Custom -> Realistic, Retail -> Retail, None keeps the
     # source), and a followed Realistic is installed only where its needs are met (128 MB standard, depth chart locks,
@@ -930,7 +935,7 @@ class BuildPlan:
             d.pop("sim_qb_injuries")
         if self.sim_qb_injuries != "custom":
             d.pop("sim_qb_injury_rate")
-        if self.sim_qb_injuries not in ("realistic", "custom") or self.sim_breakaway_stop == 72:
+        if self.sim_qb_injuries not in ("realistic", "custom") or self.sim_breakaway_stop == SIM_BREAKAWAY_STOP_DEFAULT:
             d.pop("sim_breakaway_stop")
         if self.qb_room is None:  # b81 qb34: a recipe without the key follows sim_qb_injuries
             d.pop("qb_room")
@@ -3014,6 +3019,9 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     dependency = None
     if simulator_state == "legacy" and plan.sim_qb_injuries in ("realistic", "custom"):
         simulator_input, dependency = simulator.apply(original)
+    pressure = None
+    if plan.sim_qb_injuries in ("realistic", "custom"):
+        simulator_input, pressure = _upgrade_legacy_pass_protection(simulator_input)
     # The copy keeps this disc's roster. (`reference` here is the compaction's reference disc: do not reuse the name.)
     references, stability = _sim_qb_stability(plan, module, source)
     patched, patch = module.apply(simulator_input, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
@@ -3052,6 +3060,7 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     receipt["sim_qb_source_update"] = {
         "source_sha256": sha256(original).hexdigest(), "result_sha256": sha256(patched).hexdigest(),
         "source_simulator": simulator_state, "simulator_upgraded": dependency is not None, "settings": settings,
+        "pass_protection_upgraded": pressure is not None,
         "stability_reference": stability,
     }
     if room_level is not None or room_note:
@@ -3068,6 +3077,8 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     receipt["result"] = {}
     if dependency is not None:
         receipt["steps"].append({"step": "sim_realism", **{k: v for k, v in dependency.items() if k != "reservations"}})
+    if pressure is not None:
+        receipt["steps"].append({"step": "pass_protection", **{k: v for k, v in pressure.items() if k != "reservations"}})
     _apply_sim_qb_injuries(plan, target, receipt, progress, prepared=(original, patched, patch))
     _apply_qb_room(plan, target, receipt, progress, prepared=room_prepared)
     _compact_build_disc(target, reference, receipt, progress)
@@ -3389,6 +3400,35 @@ def _apply_backfield_cards(target, receipt, progress):
     receipt["result"]["backfield_cards"] = "applied"
 
 
+def _upgrade_legacy_pass_protection(payload):
+    """b81 combined calibration: Realistic and Custom simulated injuries are calibrated at this release's simulated
+    pass-pressure centre, which the pass-protection owner holds (nfl2k5_pass_protection.SIM_CENTRE). An install of that
+    owner from v0.8, v0.9 or beta 80 reads "legacy" and is updated in place; a disc without it (or with any other state)
+    is returned unchanged, so a single-setting route never adds pass protection. Returns (payload, receipt or None)."""
+    module = _core_module("nfl2k5_pass_protection")
+    if module is None or module.status(payload) != "legacy":
+        return payload, None
+    return module.apply(payload)
+
+
+@_core_step("pass_protection")
+def _upgrade_pass_protection_in_place(plan, target, receipt, progress):
+    """The in-place routes' half of _upgrade_legacy_pass_protection: Realistic and Custom only (Retail keeps the disc's
+    simulated sacks as they are, like the simulator, which Retail does not update either)."""
+    if plan.sim_qb_injuries not in ("realistic", "custom"):
+        return
+    payload, upgrade = _upgrade_legacy_pass_protection(_xbe_bytes(target))
+    if upgrade is None:
+        return
+    progress("Pass protection: updating the simulated pass-pressure centre", 0, 0)
+    _write_xbe_bytes(target, payload)
+    module = _core_module("nfl2k5_pass_protection")
+    if _xbe_bytes(target) != payload or module.status(payload) != "applied":
+        raise RuntimeError("Pass protection: the executable does not read back as applied")
+    receipt["steps"].append({"step": "pass_protection", **{k: v for k, v in upgrade.items() if k != "reservations"}})
+    receipt["result"]["pass_protection"] = "applied"
+
+
 def _cpu_kick_aim_with_kicking(payload):
     """b81 scoring: the CPU place-kick aim repair travels with the kicking fixes, so an in-place copy of a built disc
     (update-v09, edit-sim-qb) gets the same kicking bytes as a full build of the same choices."""
@@ -3530,6 +3570,8 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     if plan.sim_qb_injuries is not None:
         if plan.sim_realism:
             expected, _ = _core_module("nfl2k5_sim_realism").apply(expected)
+        if plan.sim_qb_injuries in ("realistic", "custom"):
+            expected, _ = _upgrade_legacy_pass_protection(expected)
         medical = _core_module("nfl2k5_sim_qb_injuries")
         # The released disc's own roster; _apply_sim_qb_injuries measures the same roster again on the copy.
         references, receipt["v09_stability_reference"] = _sim_qb_stability(plan, medical, source)
@@ -3575,6 +3617,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         _upgrade_v09_economy(economy, target, receipt, progress)
     if plan.sim_qb_injuries is not None:
         _apply_sim_realism(plan, target, receipt, progress)
+        _upgrade_pass_protection_in_place(plan, target, receipt, progress)
         _apply_sim_qb_injuries(plan, target, receipt, progress)
     _apply_cpu_kick_aim_in_place(target, receipt, progress)
     _apply_qb_room(plan, target, receipt, progress)  # b81 qb34

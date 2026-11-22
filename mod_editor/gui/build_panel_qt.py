@@ -410,7 +410,10 @@ PREVIOUS_UPGRADE_KEYS = {"punter_holder": "saved field-goal holders", "modern_in
 LEGACY_UPGRADE_KEYS = {"progression": "player growth, decline and retirement", "franchise_economy": "2026 franchise economy",
                        "returner_fix": "CPU kick and punt returner fix",
                        # beta 81: the beta 80 (v0.9) simulated season realism reads "legacy"; sim_realism.apply updates it
-                       "sim_realism": "simulated season realism"}
+                       "sim_realism": "simulated season realism",
+                       # beta 81 combined calibration: the v0.8 / v0.9 / beta 80 pass protection (its simulated
+                       # pass-pressure centre read a retail float) reads "legacy"; pass_protection.apply updates it
+                       "pass_protection": "pass protection"}
 
 
 def rebuild_only_reason(state: Mapping[str, object]) -> str:

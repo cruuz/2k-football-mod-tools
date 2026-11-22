@@ -58,7 +58,8 @@ class LinkedRules(unittest.TestCase):
             for name, mult in (('ordinary_thresholds', 1), ('special_thresholds', 4)):
                 start = rules.LABELS[name]
                 actual = template[start:start + 1024]
-                expected = [2 * (rate / 100_000) * mult * max(0, 100 - d) / (100 - 74.72222222222223) * 2**31
+                chance = rate / 100_000 * rules.QB_CHANCE_SCALE   # combined lever 2, frozen 1.06 (QB tables only)
+                expected = [2 * chance * mult * max(0, 100 - d) / (100 - 74.72222222222223) * 2**31
                             for d in range(256)]
                 self.assertEqual(actual, struct.pack('<256f', *expected))
             actual = struct.unpack_from('<256I', template, rules.LABELS['length_thresholds'])
@@ -227,8 +228,10 @@ class LocalGameInputs(unittest.TestCase):
                 rate = {'baf0968d': 0}.get(expected[:8], rules.DEFAULT_RATE)
                 raw = slice3.bank_bytes(self.image.read, bank, SIM, DATA, LINEUP, rate=rate)
                 self.assertEqual(hashlib.sha256(raw).hexdigest(), expected)
-        pinned = ((0x1520000, '7df951ca1ca38b78a8def62e7bf471d6ec9fa8709df93d80ddebaba78bbf4f02'),
-                  (0x1524000, '64989e9cb5d3dc1171bb751b01f5593fd25ba6d58777c16c230230c9a7f500ab'))
+        # Combined freeze (QB_CHANCE_SCALE 1.06): only the two QB tables move, 606 bytes; at 1.0 these were 7df951ca and
+        # 64989e9c (pos3/work/combined-A/freeze/classify.txt).
+        pinned = ((0x1520000, '254023945dd0484d2b0c607f781266012ccd1d88a4b53895806a4894a917f56a'),
+                  (0x1524000, '9e203b283648c706a8c887e6c4f9d461d03d37d74a4f4eb32873e79f7cf6e823'))
         for bank, expected in pinned:
             with self.subTest(bank=hex(bank)):
                 raw = rules.bank_bytes(self.image.read, bank, SIM, DATA, LINEUP)
