@@ -4002,6 +4002,14 @@ class BuildPanel(QWidget):
         return all(getattr(self, key + "_check").isChecked() or self._installed(key)
                    for key in ("depth_locks", "depth_chart_rows"))
 
+    def _qb_trades_needs_on(self):
+        """b81 qb34 (the trades review's F1): 4b's needs ticked or already on the disc: the 2026 season (its NFL week 9
+        trade deadline), the franchise economy, reserve save compatibility and modern injured reserve."""
+        season = self.season_check.isChecked() or (self._state or {}).get("trade_deadline") == "applied"
+        boxes = {key: getattr(self, key + "_check", None) for key in ("franchise_economy", "practice_squad",
+                                                                        "modern_injured_reserve")}
+        return season and all((box is not None and box.isChecked()) or self._installed(key) for key, box in boxes.items())
+
     def _sim_qb_injury_change(self):
         if not self.qb_injury_mode.isEnabled():
             return ""
@@ -4020,7 +4028,9 @@ class BuildPanel(QWidget):
             room = mod_build._core_module("nfl2k5_qb_room")
             above_zero = mode == "realistic" or (mode == "custom" and self.qb_injury_rate.value() > 0)
             stages_now = ((self._state or {}).get("qb_room_settings") or {}).get("stages")
-            if room is not None and stages_now != room.studio_stages(above_zero, True):
+            trades = above_zero and self._qb_trades_needs_on()           # 383 where 4b's needs are on, else 367
+            wanted = room.studio_stages(above_zero, True, trades) if trades else room.studio_stages(above_zero, True)
+            if room is not None and stages_now != wanted:
                 room_now = "previous"
         # An earlier revision (slice 1, quarterbacks only) at the same mode is still a change: Build upgrades it.
         current = mode == "retail" or installed.get("revision") == _sim_qb_injuries.REVISION
