@@ -115,6 +115,46 @@ class CpuFakeKickTests(unittest.TestCase):
                     self.assertEqual(self.fake_flag(kick, seed=7, **state), 0)
         self.assertGreater(early_kicks, 0, "the native buzzer field goal on an early down must survive")
 
+    SHORT_EARLY = tuple(dict(down=down, own_yard=own_yard, distance=distance, score_margin=margin, quarter=quarter,
+                             seconds=seconds, quarter_seconds=900, timeouts=timeouts)
+                        for down in (1, 2, 3) for distance in (1, 2)
+                        for quarter, seconds, margin, timeouts, own_yard in ((4, 60, -2, 3, 80), (2, 12, 0, 0, 97),
+                                                                              (3, 600, 0, 3, 70), (4, 600, 7, 3, 30)))
+
+    def forced_draw(self, machine, value):
+        """Stub the match RNG's uniform draw 0x48B90 to return ``value`` (0.0 lies below every fake rate)."""
+        original = bytes(machine.uc.mem_read(0x48B90, 8))
+        code = b"\xd9\xee\xc3" if value == 0 else b"\xd9\xe8\xc3"          # fldz / fld1; ret
+        machine.uc.mem_write(0x48B90, code)
+        machine.uc.ctl_flush_tb()
+        return original
+
+    def restore_draw(self, machine, original):
+        machine.uc.mem_write(0x48B90, original)
+        machine.uc.ctl_flush_tb()
+
+    def early_short_fakes(self, machine):
+        original = self.forced_draw(machine, 0)
+        try:
+            return [(state, kick) for state in self.SHORT_EARLY for kick in KICKS
+                    if self.fake_flag(kick, machine=machine, **state)]
+        finally:
+            self.restore_draw(machine, original)
+
+    def test_no_fake_on_downs_1_to_3_even_at_1_or_2_yards_with_the_lowest_draw(self):
+        """Review 11/22 (finding 1): 1 and 2 yards to go before fourth down, with the RNG forced to 0.0, never fake. The
+        reviewer's mutant (the gate's down check 0x20B26B, 6 bytes, made NOPs) must fail this check."""
+        self.assertEqual(self.early_short_fakes(self.m), [])
+        from mod_editor.core import nfl2k5_rdata_sites as rdata
+        mutant = bytearray(self.payload)
+        at = rdata.offset_of(self.payload, 0x20B26B)
+        self.assertEqual(bytes(mutant[at:at + 6]), bytes.fromhex("837804047535"))   # cmp [eax+4],4; jne fake_done
+        mutant[at:at + 6] = b"\x90" * 6
+        machine = Machine(bytes(mutant))
+        machine.supply_fg_range(self.RANGE)
+        _points_stub(machine, 14)
+        self.assertEqual(len(self.early_short_fakes(machine)), len(self.SHORT_EARLY) * len(KICKS))
+
     # -- fourth down ----------------------------------------------------------------------------------------------------
     def rate(self, category, trials, **state):
         return sum(self.fake_flag(category, seed=seed, **state) for seed in range(1, trials + 1))
@@ -173,6 +213,36 @@ class CpuFakeKickTests(unittest.TestCase):
         self.assertNotEqual(self.try_category(.98), FG)
         self.assertEqual(self.try_category(.99), FG)
         self.assertAlmostEqual(patch.FAKE_RATES["two_point"], 0.0176, places=4)
+
+
+class V09UpdateCarriesCpuDecisionsTests(unittest.TestCase):
+    """Review 11/22 (finding 3): a player who updates the released v0.9 disc in the Studio gets the fix too."""
+
+    def test_every_v09_update_brings_cpu_decisions_to_the_current_template(self):
+        import tempfile
+        from mod_editor.core import mod_build
+        disc = Path(os.environ.get("NFL2K5_V09_XISO", "") or "missing")
+        if not disc.is_file():
+            self.skipTest("the released v0.9 disc is absent")
+        source = mod_build._xbe_bytes(disc)
+        self.assertEqual((patch.read_settings(source) or {}).get("variant"), "b778_late")
+        seen = []
+        original = patch.apply
+
+        def keep(payload, **kwargs):
+            result = original(payload, **kwargs)
+            seen.append(result[0])
+            return result
+        release = mod_build._v09_reference(disc, source)
+        with tempfile.TemporaryDirectory() as folder:
+            plan = mod_build.v09_disc_update(str(disc), str(Path(folder) / "copy.iso"), backfield_cards=True)
+            with mock.patch.object(patch, "apply", new=keep), \
+                    mock.patch("mod_editor.core.modpack.hash_file", return_value=release["image_sha256"]):
+                receipt = mod_build._update_v09_disc(plan, lambda *_: None, preflight=True, project=False)
+        self.assertIn("cpu_decisions", receipt["v09_update"])
+        self.assertEqual(len(seen), 1)
+        self.assertEqual(patch.read_settings(seen[0])["variant"], patch.CURRENT_LATE)
+        self.assertEqual(patch.status(seen[0]), "applied")
 
 
 class CpuDecisionsDiscEditTests(unittest.TestCase):

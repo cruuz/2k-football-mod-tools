@@ -11,7 +11,7 @@
  * (0x11 punt, 0x13 field goal). Downs 1 to 3: never a fake (a kick there is the native end-of-half or overtime kick).
  * Fourth down with 2 yards or less to go: a fake with the league's rate for that kick, drawn from the game's match RNG
  * (0x48B90 on 0xE5FCA0). Otherwise the real kick. Returns ESI = fake flag; clobbers EAX, ECX, EDX and flags (the commit
- * reloads them); the x87 stack is balanced.
+ * reloads EAX at 0x20B6F9 and ECX at 0x20B702 / 0x20B733, and sets EDX before its next use); the x87 stack is balanced.
  *
  * two_point_threshold: the try lottery in 0x209FE0 (0x20A01E "fcomp [0.95]") reads this value instead, so a two-point try
  * comes from the kick formation 1.76% of the time instead of 5%.
@@ -43,7 +43,8 @@ fake_gate:
     test ah, 0x41
     jz fake_done                    /* more than 2 yards to go: a real kick */
     mov ecx, 0xe5fca0
-    call rng_uniform                /* ST0 = uniform [0,1); preserves ECX, EBX, ESI, EDI */
+    call rng_uniform                /* ST0 = uniform [0,1); keeps EBX, ESI, EDI; leaves float bits in ECX (the
+                                       commit reloads ECX at 0x20B702 / 0x20B733 before using it) */
     movzx eax, byte ptr [ebx+4]
     and eax, 2                      /* 0x11 punt -> p_punt, 0x13 field goal -> p_fg */
     fcomp dword ptr [p_punt+eax*2]

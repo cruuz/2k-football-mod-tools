@@ -3458,6 +3458,32 @@ def _cpu_kick_aim_with_kicking(payload):
     return aim.apply(payload)            # refuses bytes that are neither retail nor the repair
 
 
+def _cpu_decisions_current(payload):
+    """Beta 81 fake kicks: an installed Modern 2 with the late rule (the v0.8 and v0.9 releases carry b778_late) is brought
+    to the current template, so an in-place update of a built disc (update-v09) gets the CPU decisions of a full build
+    (no fake kick before fourth down). Anything else is left alone: (payload, None)."""
+    money = tt.cpu_money_downs_patch
+    settings = money.read_settings(payload) or {}
+    if settings.get("level") != "modern2" or not settings.get("late_policy"):
+        return payload, None
+    if settings.get("variant") == money.CURRENT_LATE:
+        return payload, {"owner": money.OWNER, "already_applied": True, "changed_bytes": 0}
+    return money.apply(payload, level="modern2")      # upgrade_to_modern2: refuses foreign or mixed bytes
+
+
+def _apply_cpu_decisions_in_place(target, receipt, progress):
+    patched, decisions = _cpu_decisions_current(_xbe_bytes(target))
+    if decisions is None:
+        return
+    progress("CPU decisions: no fake kicks before fourth down", 0, 0)
+    if decisions.get("changed_bytes"):
+        _write_xbe_bytes(target, patched)
+        if _xbe_bytes(target) != patched:
+            raise ValueError("The CPU decisions update did not read back.")
+    receipt["steps"].append({"step": "cpu_money_downs", **{k: v for k, v in decisions.items() if k != "reservations"}})
+    receipt["result"]["cpu_money_downs"] = "modern2"
+
+
 def _apply_cpu_kick_aim_in_place(target, receipt, progress):
     patched, aim_receipt = _cpu_kick_aim_with_kicking(_xbe_bytes(target))
     if aim_receipt is None:
@@ -3595,6 +3621,11 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         _verify_sim_qb_injuries(plan, medical, expected)
         receipt["v09_update"].append("sim_qb_injuries")
     expected, _ = _cpu_kick_aim_with_kicking(expected)  # b81 scoring: as a full build with the kicking fixes
+    # beta 81 fake kicks (review 11/22): every v0.9 update also brings CPU decisions to the current Modern 2 template,
+    # as a full build has it (the released b778_late ran fake field goals before fourth down).
+    expected, decisions = _cpu_decisions_current(expected)
+    if decisions is not None and decisions.get("changed_bytes"):
+        receipt["v09_update"].append("cpu_decisions")
     room_level, room_stages, room_note = _qb_room_plan(plan, expected)  # b81 qb34: rides with the QB option (C1)
     _note_qb_room_left_out(receipt, room_note)
     if _qb_injuries_above_zero(plan):
@@ -3634,6 +3665,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         _apply_sim_realism(plan, target, receipt, progress)
         _apply_sim_qb_injuries(plan, target, receipt, progress)
     _apply_cpu_kick_aim_in_place(target, receipt, progress)
+    _apply_cpu_decisions_in_place(target, receipt, progress)  # beta 81 fake kicks
     _apply_qb_room(plan, target, receipt, progress)  # b81 qb34
     if plan.gadget_play:
         _apply_gadget_play(plan, target, receipt, progress)

@@ -50,7 +50,8 @@ class Constants(unittest.TestCase):
     def test_the_two_point_site_is_the_only_money_downs_hook_inside_an_era_guard(self):
         import json
         guards = json.loads((era.ROOT / "data/nfl2k5_era_rules.json").read_text())["retail_guards"]
-        inside = [name for name, (va, raw) in money_downs.HOOKS2.items()
+        # beta 81 fake kicks: the gate's three sites (HOOKS4) are checked too (review 11/22).
+        inside = [name for name, (va, raw) in {**money_downs.HOOKS2, **money_downs.HOOKS4}.items()
                   if any(g["va"] < va + len(raw) and va < g["va"] + g["size"] for g in guards)]
         self.assertEqual(inside, ["two_point"])
 
