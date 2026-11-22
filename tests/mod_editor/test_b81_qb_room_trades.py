@@ -378,10 +378,9 @@ class TradesImage(unittest.TestCase):
                 top, choice = o, (p, c)
         if choice is None:
             return None
-        rnd = 2 if top >= 95 else 3 if top >= 90 else 4 if top >= 82 else 5 if top >= 76 else 6 if top >= 70 else 7
-        while rnd >= 1 and x.pick_owner(rnd | buyer << 6) != buyer:          # C24: an earlier round, never a later
-            rnd -= 1
-        return (*choice, rnd | buyer << 6 if rnd >= 1 else 0)
+        ruled = 2 if top >= 95 else 3 if top >= 90 else 4 if top >= 82 else 5 if top >= 76 else 6 if top >= 70 else 7
+        rnd = next((r for r in (ruled, ruled - 1) if r >= 1 and x.pick_owner(r | buyer << 6) == buyer), 0)
+        return (*choice, rnd | buyer << 6 if rnd else 0)               # C24 N1: at most one round earlier, never later
 
     def year_that_fires(self, buyer, qs):
         x, m = self.x, self.x.m
@@ -870,9 +869,10 @@ class TradesImage(unittest.TestCase):
         self.assertEqual(x.pick_owner(3 | self.BUYER << 6), self.BUYER)
 
     def test_c24_price_an_earlier_round_when_that_pick_is_gone_never_a_later_one(self):
-        """Mariota (85) costs a 4th. Club 5's 4th traded away: it pays its 3rd. Its 1st to 4th all gone: no trade (its 5th
-        is never offered)."""
-        for gone, round_paid in (((4,), 3), ((1, 2, 3, 4), None)):
+        """Mariota (85) costs a 4th. Club 5's 4th traded away: it pays its 3rd. Its 3rd and 4th gone, or its 2nd to 4th (the
+        reviewer's RP1, which paid a 1st at d9880d4af): no trade (C24 N1: at most one round earlier). Its 1st to 4th all
+        gone: no trade (its 5th is never offered)."""
+        for gone, round_paid in (((4,), 3), ((3, 4), None), ((2, 3, 4), None), ((1, 2, 3, 4), None)):
             with self.subTest(gone=gone):
                 self.setUp()
                 x, m = self.x, self.x.m
@@ -885,7 +885,8 @@ class TradesImage(unittest.TestCase):
                 c = self.counters()
                 if round_paid is None:
                     self.assertEqual((c["trades_posted"], c["trade_no_pick"]), (0, 1))
-                    self.assertEqual(x.pick_owner(5 | self.BUYER << 6), self.BUYER)
+                    self.assertEqual([x.pick_owner(r | self.BUYER << 6) for r in (1, 2, 5)],
+                                     [29 if r in gone else self.BUYER for r in (1, 2, 5)])
                     self.assertNotIn(mariota, x.roster(self.BUYER))
                 else:
                     self.assertEqual(c["trades_posted"], 1)
@@ -904,6 +905,46 @@ class TradesImage(unittest.TestCase):
                 listing = [m.get(m.get(root + 0x3C) + 4 * i) for i in range(m.get(root + 0x38))]
                 best = max((p for p in listing if p and x.b(p + 0x35) == 0 and x.healthy(p)), key=x.ovr)
                 self.set_overall(best, fa_overall)
+                mariota = next(p for p in x.qbs(25) if x.row(p) == 1)
+                self.post_for(mariota)
+                self.without_native_pass()
+                self.enter()
+                c = self.counters()
+                self.assertEqual((c["trades_posted"], c.get("trade_free_agent", 0)), (posted, 1 - posted))
+
+    def best_free_agent(self):
+        x, m = self.x, self.x.m
+        root = m.get(0xB72918)
+        listing = [m.get(m.get(root + 0x3C) + 4 * i) for i in range(m.get(root + 0x38))]
+        return max((p for p in listing if p and x.b(p + 0x35) == 0 and x.healthy(p)), key=x.ovr)
+
+    def test_c24_n2_a_better_free_agent_the_buyer_cannot_afford_does_not_stop_the_trade(self):
+        """The reviewer's FP1: the best free agent moved to 90 (above Mariota's 85) but valued above club 5's budget
+        (cap room - 10, cap room set to Mariota's charge + 12, so Mariota still fits): the trade is made. Fails when
+        free_agent() ignores the cap (the reviewer's mutation MA, budget 0xFFFF)."""
+        x, m = self.x, self.x.m
+        fa = self.set_overall(self.best_free_agent(), 90)
+        mariota = next(p for p in x.qbs(25) if x.row(p) == 1)
+        salary = m.call(0xE6380, ecx=mariota)
+        value = m.call(0x2BD440, ecx=fa, edx=0, args=(0, 1, 0), budget=5_000_000) & 0xFFFF
+        self.assertGreaterEqual(value, salary + 2)                     # he cannot be signed within the budget
+        m.put(x.club(self.BUYER) + 0x124, m.get(0xE3C278) - (salary + 12))
+        self.post_for(mariota)
+        self.enter()
+        c = self.counters()
+        self.assertEqual((c["trades_posted"], c.get("trade_free_agent", 0)), (1, 0))
+        self.assertIn(mariota, x.roster(self.BUYER))
+
+    def test_c24_n2_an_injured_better_free_agent_does_not_stop_the_trade(self):
+        """The reviewer's FP2: the best free agent at 90 but injured (3 weeks): the trade is made; with him healthy (the
+        same budget) it is not (FP3)."""
+        for injured, posted in ((True, 1), (False, 0)):
+            with self.subTest(injured=injured):
+                self.setUp()
+                x, m = self.x, self.x.m
+                fa = self.set_overall(self.best_free_agent(), 90)
+                if injured:
+                    m.put(fa + 0x20, m.get(fa + 0x20) | 0x80000000 | 3 << 22)
                 mariota = next(p for p in x.qbs(25) if x.row(p) == 1)
                 self.post_for(mariota)
                 self.without_native_pass()

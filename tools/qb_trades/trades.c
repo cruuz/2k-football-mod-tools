@@ -28,7 +28,8 @@
    cap room - 10, exactly as moves.c chooses it; ovr(F) >= ovr(Qs) means no trade: E1/E2 sign him instead). Price
    (C24, ruled): the buyer's OWN pick of the coming draft, word round | buyer << 6 (year 0; round one-based, slot =
    original club in season; RISKS.md (b)): round 2 at 95+, 3 at 90-94, 4 at 82-89, 5 at 76-81, 6 at 70-75, 7 below;
-   when the buyer does not own that round's pick, the next EARLIER round it owns, never a later one; none: no trade.
+   when the buyer does not own that round's pick, the round just before it (C24 N1: at most one round earlier), never
+   a later one; neither: no trade.
    Only before the native deadline week (C22 (c): the week counter below the stage table's byte 0x5151C5, 9 with the
    deadline owner), whatever the Trade Deadline option says.
    Post with probability 0.35 (key: 8, buyer, year, W, L, T, Qs index, S' attempts and yards) if the native evaluator
@@ -294,9 +295,10 @@ static u32 post(struct posted *out) {
             qb_counters.trade_free_agent++;
             goto log;
         }
-        /* C24 price: 2nd at 95+, 3rd at 90-94, 4th 82-89, 5th 76-81, 6th 70-75, 7th below; not owned: an EARLIER round */
-        for (u32 round = top >= 95 ? 2 : top >= 90 ? 3 : top >= 82 ? 4 : top >= 76 ? 5 : top >= 70 ? 6 : 7;
-                round >= 1 && !word; round--)
+        /* C24 price: 2nd at 95+, 3rd at 90-94, 4th 82-89, 5th 76-81, 6th 70-75, 7th below; not owned: the round just
+           before it (C24 N1: at most one round earlier), never a later one; neither: no trade */
+        u32 ruled = top >= 95 ? 2 : top >= 90 ? 3 : top >= 82 ? 4 : top >= 76 ? 5 : top >= 70 ? 6 : 7;
+        for (u32 round = ruled; round >= 1 && round + 1 >= ruled && !word; round--)
             if (B(PICKS + 32 * round + b) == b) word = round | b << 6;
         if (!word) {
             qb_counters.trade_no_pick++;
