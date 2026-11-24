@@ -51,6 +51,9 @@ FULL_IMAGE = Path(os.environ.get("B81_HISTORY_POOL_FULL_IMAGE", "/home/noah/2k-w
 FULL_IMAGE_XBE = Path(os.environ.get("B81_HISTORY_POOL_FULL_XBE", "/home/noah/2k-worktrees/.b77-scratch/b81/pos3/runs/"
                                      "combined-confirm/cand-build/default.xbe"))
 FULL_IMAGE_XBE_SHA256 = "8b180ed5bd69647c99ba7eb5f63c95471b1785d89afe4b489f2492ace37aa8aa"
+# b81 round 5: the same league's yearly closing saves (v0.9, root 68001) give every man's real club per season
+TRUTH_SAVES = Path(os.environ.get("B81_HISTORY_POOL_TRUTH_SAVES",
+                                  "/media/noah/Storage/2K5-project/b81-history-pool/runs/ten/ctrl/68001/signed"))
 V09_RELEASED_XBE = Path(os.environ.get("NFL2K5_V09_RELEASED_XBE", "/nonexistent"))
 V09_RELEASED_SHA256_PREFIX = "d78088f9"
 MAX_FIELDS = frozenset((16, 17, 30, 36, 43, 44, 45, 46, 56, 73))
@@ -206,6 +209,25 @@ class TemplateTests(unittest.TestCase):
                 self.assertEqual(after, old[label], label)
             if label in ("site_a", "site_f"):                                  # only grow: playoff_staged, playoff_fold
                 self.assertEqual(after[:len(old[label])], old[label], label)
+
+    def test_the_club_variant_differs_in_site_d_only_and_the_default_is_3947e61b6s(self):
+        # b81 round 5: with franchise history off every byte stays 3947e61b6's (the same pin); the club variant changes
+        # site D only, inside the fold's 392 bytes, and is pinned on its own
+        self.assertEqual(hp.PATCHED_SHA256, "9e8e9f792d6734174f875473f2eea789fb312462d28318f18dee7c37ac78ec5d")
+        self.assertEqual(hp._digest(hp.CLUB_SITES), hp.CLUB_PATCHED_SHA256)
+        self.assertEqual(hp.CLUB_PATCHED_SHA256, "7bfcf9c320406f46eba347282984c4c2ba6df6189299276f6c5ea84d4eab65a2")
+        self.assertEqual([row[0] for row in hp.CLUB_SITES], [row[0] for row in hp.SITES])
+        for plain, club in zip(hp.SITES, hp.CLUB_SITES):
+            if plain[0] != "site_d":
+                self.assertEqual(plain, club)
+        label, va, before, after = next(row for row in hp.CLUB_SITES if row[0] == "site_d")
+        self.assertEqual((va, len(after)), (0x14EFE0, 391))
+        self.assertLessEqual(va + len(after), 0x14F168)                  # RULE, the honors owner's site, follows
+        self.assertEqual(before, XbeImage(_retail()).read(va, 391) if _retail() else before)
+        # jecxz .Lf_add; cmp esi, 87; je .Lf_have_value; .Lf_add: add ecx, edx
+        self.assertIn(bytes.fromhex("e30583fe57741301d1"), after)
+        self.assertIn(bytes.fromhex("832424"), after)                    # and dword ptr [esp], 0
+        self.assertNotIn(bytes.fromhex("832424"), dict((r[0], r[3]) for r in hp.SITES)["site_d"])
 
     def test_the_close_fields_are_the_season_closes_own_reads(self):
         # round 4: the list comes from the close itself (tools/nfl2k5_history/runtime.c, read_career): the ten leader
@@ -371,6 +393,43 @@ class RouteTests(unittest.TestCase):
                 self.assertEqual(target.read_bytes(), want)
                 self.assertEqual(receipt["result"].get("history_pool"), "applied" if start == self.previous else None)
 
+    def with_franchise_history(self, payload):
+        from mod_editor.core import nfl2k5_xbe_space as space, nfl2k5_franchise_footer as footer
+        from mod_editor.core import nfl2k5_history as history
+        base, _ = space.apply(payload, (), scaleout=True)
+        base, _ = footer.apply(base, static_body=True)
+        return history.apply(base)[0]
+
+    def test_the_club_variant_rides_only_with_franchise_history(self):
+        # b81 round 5: the in-place routes pick the variant from the executable (franchise history installed or not),
+        # the full build from its plan; without franchise history nothing differs from 3947e61b6
+        from mod_editor.core import mod_build
+        import inspect, types, tempfile
+        plain = (self.previous, self.fresh)
+        hist_retail = self.with_franchise_history(self.retail)
+        hist_previous = rdata.apply(hist_retail, hp.PREVIOUS_SITES, "beta-80 history pool")[0]
+        hist_sum = hp.apply(hist_retail)[0]
+        hist_club = hp.apply(hist_retail, club=True)[0]
+        self.assertEqual(hp.variant(hist_club), "club")
+        self.assertEqual(mod_build._history_pool_upgrade(plain[0])[0], plain[1])          # history off: as before
+        self.assertEqual(hp.variant(mod_build._history_pool_upgrade(plain[0])[0]), "sum")
+        self.assertEqual(mod_build._history_pool_upgrade(plain[1]), (plain[1], None))
+        self.assertEqual(mod_build._history_pool_upgrade(hist_previous)[0], hist_club)   # v0.9 with history: club
+        self.assertEqual(mod_build._history_pool_upgrade(hist_sum)[0], hist_club)        # 3947e61b6 with history
+        self.assertEqual(mod_build._history_pool_upgrade(hist_club), (hist_club, None))
+        self.assertEqual(mod_build._history_pool_upgrade(self.retail), (self.retail, None))
+        step = inspect.unwrap(mod_build._apply_history_pool)
+        with tempfile.TemporaryDirectory() as temp:
+            target = Path(temp) / "default.xbe"
+            for franchise_history, want in ((False, "sum"), (True, "club")):
+                target.write_bytes(self.retail)
+                receipt = {"steps": [], "result": {}}
+                step(types.SimpleNamespace(history_pool=True, franchise_history=franchise_history), target, receipt,
+                     lambda *_: None)
+                self.assertEqual(hp.variant(target.read_bytes()), want)
+                if not franchise_history:
+                    self.assertEqual(target.read_bytes(), self.fresh)
+
     def test_the_build_tab_offers_the_update_on_a_previous_install(self):
         source = (ROOT / "mod_editor/gui/build_panel_qt.py").read_text(encoding="utf-8")
         keys = source[source.index("PREVIOUS_UPGRADE_KEYS = {"):source.index("LEGACY_UPGRADE_KEYS = {")]
@@ -490,6 +549,30 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual((before["history_pool"], after["history_pool"]), ("previous", "applied"))
         self.assertEqual({k: v for k, v in before.items() if k not in ("history_pool", "path", "sha256")},
                          {k: v for k, v in after.items() if k not in ("history_pool", "path", "sha256")})
+
+    def test_the_club_variant_keeps_every_neighbour_and_switches_both_ways(self):
+        # b81 round 5: on the released v0.9 executable the club variant leaves every other owner's status as the
+        # default does (honors and defensive_try mask its site D, star career's guard is clear of it); the two
+        # variants switch in place (site D only) and back to exactly the same bytes
+        from mod_editor.core import mod_build
+        import tempfile
+        released = V09_RELEASED_XBE.read_bytes()
+        plain, club = hp.apply(released)[0], hp.apply(released, club=True)[0]
+        self.assertEqual((hp.variant(plain), hp.variant(club)), ("sum", "club"))
+        self.assertEqual(hp.apply(club)[0], plain)
+        self.assertEqual(hp.apply(plain, club=True)[0], club)
+        self.assertEqual(hp.apply(club, club=True)[1]["already_applied"], True)
+        differ = [i for i, (a, b) in enumerate(zip(plain, club)) if a != b]
+        site_d = XbeImage(plain).offset(0x14EFE0, 391)
+        header = rdata.header_size(plain)
+        self.assertTrue(all(site_d <= i < site_d + 391 or i < header for i in differ))   # site D and its digest
+        self.assertEqual([va for va, _b in hp.compatible_edits(club)], [va for va, _b in hp.compatible_edits(plain)])
+        with tempfile.TemporaryDirectory() as temp:
+            a, b = Path(temp) / "plain.xbe", Path(temp) / "club.xbe"
+            a.write_bytes(plain)
+            b.write_bytes(club)
+            self.assertEqual({k: v for k, v in mod_build.inspect(a).items() if k not in ("path", "sha256")},
+                             {k: v for k, v in mod_build.inspect(b).items() if k not in ("path", "sha256")})
 
     def test_nothing_outside_the_engine_calls_the_rewritten_routines(self):
         image = XbeImage(self.retail)
@@ -671,6 +754,52 @@ class NativeTests(unittest.TestCase):
             m = Machine(payload)
             out.append((m, m.roster(players, **kw)))
         return out
+
+    def club_fold(self, club, players, depth):
+        m = Machine(hp.apply(self.retail, club=club)[0])
+        recs = m.roster(players)
+        m.call(0x14EFE0, stack=(depth,))
+        m.check(recs)
+        return m, recs
+
+    def test_with_franchise_history_a_folded_team_word_keeps_the_newer_club(self):
+        # b81 round 5 (coordinator's ruling: fix the main club, gated on franchise history). Six seasons with clubs
+        # 2, 2, 6, 6, 6, 11 (TEAM word = club + 1) and yards, years pro 8, then v0.9's collection depth 3: every season
+        # up to slot 5 folds into slot 6. The default sums the TEAM words (39: a club the man never played for); the
+        # club variant keeps the newest folded season's club (12 = club 11). Yards sum in both. A TEAM word that folds
+        # into a season without one keeps its own club (the second man).
+        clubs = [3, 3, 7, 7, 7, 12]
+        first = [word(87, s, c) for s, c in enumerate(clubs)] + [word(8, s, 100 * (s + 1)) for s in range(6)]
+        second = [word(87, 0, 5), word(8, 1, 50), word(8, 2, 60)]
+        for club, want in ((True, 12), (False, 39)):
+            with self.subTest(club=club):
+                m, (a, b) = self.club_fold(club, [(8, first), (5, second)], 3)
+                team = [(w >> 23 & 31, s16(w), bool(w & FOLDED)) for w in m.stream(a)
+                        if (w >> 16) & 127 == 87 and not w & DELETED]
+                self.assertEqual(team, [(6, want, True)])
+                self.assertEqual(m.totals(a)[8][0], 2100)
+                self.assertEqual([(w >> 23 & 31, s16(w)) for w in m.stream(b) if (w >> 16) & 127 == 87
+                                  and not w & DELETED], [(3, 5)])     # slot 0 -> 3 (base 2), its own club
+
+    def test_the_club_variant_changes_nothing_but_team_words(self):
+        # every other field, the pool's word count and the stream layout are the default's, word for word
+        rng = random.Random(81)
+        fields = [0, 2, 3, 8, 16, 30, 73, 87, 96, 101, 103]
+        players = []
+        for _ in range(40):
+            yp, used, words = rng.randint(3, 16), set(), []
+            for _ in range(rng.randint(0, 30)):
+                key = (rng.choice(fields), rng.randint(0, yp - 1))
+                if key not in used:
+                    used.add(key)
+                    words.append(word(key[0], key[1], rng.randint(1, 33) if key[0] == 87 else rng.randint(1, 900)))
+            players.append((yp, words))
+        (mc, rc), (md, rd) = self.club_fold(True, players, 3), self.club_fold(False, players, 3)
+        self.assertEqual(mc.used(), md.used())
+        for a, b in zip(rc, rd):
+            sa, sb = mc.stream(a), md.stream(b)
+            self.assertEqual([w for w in sa if (w >> 16) & 127 != 87], [w for w in sb if (w >> 16) & 127 != 87])
+            self.assertEqual([w & 0xFFFF0000 for w in sa], [w & 0xFFFF0000 for w in sb])
 
     def test_a_long_career_keeps_its_total_where_retail_wraps(self):
         # 20 seasons of 4,000 passing yards and one TEAM word a season, the current season empty
@@ -1454,6 +1583,104 @@ class FullFranchiseImageTests(unittest.TestCase):
             ends[revision] = {p: collections.Counter(w for w in words if not w & (DELETED | POST))
                               for p, words in streams.items()}
         self.assertEqual(ends["b81"], ends["v0.9"])
+
+    def test_with_franchise_history_the_career_rows_club_is_right_more_often_and_never_less(self):
+        # b81 round 5 (coordinator's ruling: fix the main club, gated on franchise history; 27 better / 0 worse on the
+        # truth set). The stored 68001/2032 pool's club men, each with his real club per season from the same league's
+        # yearly saves (TRUTH_SAVES, 2026-2032: the earliest unfolded TEAM word of each season). Each man's folded TEAM
+        # row is rebuilt from his real seasons (their sum must equal the pool's word, or he is left out: incomplete
+        # history) and folded by the real fold of each variant at the depth that ends in that row; then the season
+        # close's main-club rule (read_career: the club of the most recorded seasons, the current one included, ties to
+        # the lower club; a folded word counts as one season) is compared with his real main club.
+        saves = [TRUTH_SAVES / str(y) / "SAVEGAME.DAT" for y in range(2026, 2033)]
+        if not all(p.is_file() for p in saves):
+            self.skipTest("the 68001 yearly saves are not present")
+        from mod_editor.core import nfl2k5_save_rost as rost, nfl2k5_roster_records as records
+        m = self.machine("v0.9")
+        root, (streams, _agents) = m.get(ROSTER), self.streams(m)
+        teams = m.get(root + 0x1C)
+
+        def text(p, at):
+            return bytes(m.uc.mem_read(m.get(p + at), 40)).decode("utf-16-le", "replace").split("\0")[0]
+
+        def ident(first, last, v):
+            return first, last, v["birth_day"], v["birth_month"], v["birth_year_high"], v["birth_year_low"]
+
+        men = []
+        for c in range(32):
+            for k in range(m.uc.mem_read(teams + 500 * c + 0x11C, 1)[0]):
+                p = m.get(teams + 500 * c + 4 * k)
+                if p:
+                    v = records.PlayerRecord.decode(bytes(m.uc.mem_read(p, records.PLAYER_SIZE))).values
+                    men.append((ident(text(p, 0x10), text(p, 0x14), v), c, (m.get(p + 0x24) >> 8) & 31, streams[p]))
+        truth = {}
+        for path in saves:
+            doc, _ = rost.load_save(path, require_signature=False)
+            for p in doc.players:
+                for w in doc.history_words.get(p.key, ()):
+                    if not w & (DELETED | POST | FOLDED) and (w >> 16) & 127 == 87:
+                        truth.setdefault(ident(p.first, p.last, p.record.values), {}).setdefault(w >> 23 & 31,
+                                                                                                 (w & 0xFFFF) - 1)
+
+        def main_club(clubs_by_slot, current, club, *, real=False):
+            # read_career's last loop: a slot counts for club k when its word is k + 1, k in 0..31 (a sum past 32
+            # counts for nobody); the real main club counts every real season the same way, from the saves
+            club_of = dict(clubs_by_slot)
+            club_of[current] = club
+            counts = collections.Counter(c for c in club_of.values() if real or 0 <= c < 32)
+            most = max(counts.values())
+            return min(c for c, n in counts.items() if n == most)
+
+        cases = []
+        for who, club, yp, words in men:
+            real = truth.get(who)
+            live = [w for w in words if not w & (DELETED | POST) and (w >> 16) & 127 == 87]
+            folded = [w for w in live if w & FOLDED]
+            if not real or len(folded) > 1:
+                continue
+            unfolded = {w >> 23 & 31: (w & 0xFFFF) - 1 for w in live if not w & FOLDED}
+            row = None
+            if folded:
+                slot = folded[0] >> 23 & 31
+                seasons = sorted((s, c) for s, c in real.items() if s <= slot and s not in unfolded)
+                if not seasons or sum(c + 1 for _s, c in seasons) != folded[0] & 0xFFFF:
+                    continue
+                row = (slot, seasons)
+            cases.append((who, club, yp, unfolded, row, real))
+        rows = collections.defaultdict(list)                     # by fold depth: base = slot - 1 = yp - depth
+        for i, (_w, _c, yp, _u, row, _r) in enumerate(cases):
+            if row:
+                rows[yp - row[0] + 1].append(i)
+        right = {}
+        for club in (False, True):
+            folded_value = {}
+            for depth, members in rows.items():
+                machine = Machine(hp.apply(self.retail_bytes(), club=club)[0])
+                recs = machine.roster([(cases[i][2], [word(87, s, c + 1) for s, c in cases[i][4][1]])
+                                       for i in members])
+                machine.call(0x14EFE0, stack=(depth,), budget=2_000_000_000)
+                for i, rec in zip(members, recs):
+                    got = [w for w in machine.stream(rec) if not w & DELETED and (w >> 16) & 127 == 87]
+                    self.assertEqual([(w >> 23 & 31, bool(w & FOLDED)) for w in got], [(cases[i][4][0], True)])
+                    folded_value[i] = got[0] & 0xFFFF
+                    if not club:                                  # the default rebuilds the pool's own word
+                        self.assertEqual(folded_value[i], sum(c + 1 for _s, c in cases[i][4][1]))
+            right[club] = []
+            for i, (_who, team, yp, unfolded, row, real) in enumerate(cases):
+                slots = dict(unfolded)
+                if row:
+                    slots[row[0]] = folded_value[i] - 1
+                truth_main = main_club({s: c for s, c in real.items() if s <= yp}, yp, team, real=True)
+                right[club].append(main_club(slots, yp, team) == truth_main)
+        gained = sum(1 for a, b in zip(right[False], right[True]) if b and not a)
+        lost = sum(1 for a, b in zip(right[False], right[True]) if a and not b)
+        print(f"\n[b81 round 5] main club on {len(cases)} men with complete history: default {sum(right[False])}, "
+              f"club variant {sum(right[True])} ({gained} now right, {lost} now wrong)")
+        self.assertEqual((len(cases), sum(right[False]), sum(right[True]), gained, lost), (1405, 1271, 1298, 27, 0))
+
+    @staticmethod
+    def retail_bytes():
+        return _retail()
 
     def test_a_club_mans_first_stat_word_is_kept_where_v09_drops_it(self):
         old, new = self.machine("v0.9"), self.machine("b81")

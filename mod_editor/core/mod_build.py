@@ -2686,7 +2686,8 @@ def _apply_history_pool(plan: "BuildPlan", target: Path, receipt: dict, progress
     if module is None:
         raise RuntimeError("The career history pool fix needs nfl2k5_history_pool.")
     progress("Franchise: career history keeps whole totals", 0, 0)
-    payload, fix_receipt = module.apply(_xbe_bytes(target))
+    # b81 round 5: the club variant (a folded TEAM word keeps a real club) only when the build carries franchise history
+    payload, fix_receipt = module.apply(_xbe_bytes(target), club=bool(plan.franchise_history))
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
     if final != payload or module.status(final) != "applied":
@@ -3469,11 +3470,19 @@ def _history_pool_upgrade(payload):
     (update-v09, edit-sim-qb, edit-gadget) carries the career-history pool's current revision, as a full build of it
     does. The beta-80 / v0.9 revision reads "previous" and is upgraded in place (three engine sites, the same bytes a
     full build writes); a disc without the fix, or with this release's, is returned unchanged: a single-setting route
-    never adds it. Returns (payload, receipt or None)."""
+    never adds it. Returns (payload, receipt or None).
+    b81 round 5: the variant follows the executable: the club variant (a folded TEAM word keeps a real club) when it
+    carries franchise history (nfl2k5_history applied or previous), the default otherwise. An applied fix of the other
+    variant is switched in place (site D only), as a full build with the same settings would write it."""
     module = _core_module("nfl2k5_history_pool")
-    if module is None or module.status(payload) != "previous":
+    state = None if module is None else module.status(payload)
+    if state not in ("previous", "applied"):
         return payload, None
-    return module.apply(payload)
+    history = _core_module("nfl2k5_history")
+    club = history is not None and history.status(payload) in ("applied", "previous")
+    if state == "applied" and (module.variant(payload) == "club") == club:
+        return payload, None
+    return module.apply(payload, club=True) if club else module.apply(payload)
 
 
 def _apply_history_pool_in_place(target, receipt, progress):

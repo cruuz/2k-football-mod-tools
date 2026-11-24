@@ -423,7 +423,11 @@ fold:
         mov     eax, [ROSTER]
         mov     ecx, [eax+0x40]
         mov     [esp+4], ecx
+.ifdef CLUB_RULE
+        and     dword ptr [esp], 0      /* club variant: 3 bytes shorter, the same 0 */
+.else
         mov     dword ptr [esp], 0
+.endif
 .Lf_player:
         mov     eax, [ROSTER]
         mov     ecx, [esp]
@@ -454,7 +458,9 @@ fold:
         call    age_ok                  /* b81: the age test against fold_base's base, and the playoff fold's fields */
         test    eax, eax
         js      .Lf_advance
+.ifndef CLUB_RULE
         .byte   0x0F, 0x1F, 0x00        /* nop: every later instruction keeps its address */
+.endif
         inc     edi                     /* the slot it merges into */
         push    edi
         mov     ecx, [esp+12]
@@ -480,6 +486,16 @@ fold:
         mov     ecx, edx
         jmp     .Lf_have_value
 .Lf_sum:
+.ifdef CLUB_RULE
+        /* b81 round 5, the club variant (installed only with franchise history, nfl2k5_history): a TEAM word (field
+           87, club + 1) folding into a season that has one keeps that season's club, the newer one, instead of the
+           sum of club numbers. The season close (read_career) then reads a real club in a career row. Without a
+           receiving word the sum below is the source's own club. Every other field sums as before. */
+        jecxz   .Lf_add
+        cmp     esi, FIELD_TEAM
+        je      .Lf_have_value
+.Lf_add:
+.endif
         add     ecx, edx
         lea     eax, [ecx+0x8000]
         cmp     eax, 0xFFFF

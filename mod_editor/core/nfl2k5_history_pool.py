@@ -134,6 +134,18 @@ def _digest(sites) -> str:
 
 PATCHED_SHA256 = "9e8e9f792d6734174f875473f2eea789fb312462d28318f18dee7c37ac78ec5d"   # the ten sites (label, VA, retail, patched); tests check it
 
+# b81 round 5 (coordinator's ruling on the main club): the CLUB variant, installed only when the build carries franchise
+# history (nfl2k5_history, EXPERIMENTAL, off in every preset). It differs in site D only (391 bytes, within the fold's
+# 392): a TEAM word (field 87, club + 1) folding into a season that has one keeps that newer season's club instead of
+# the sum of club numbers, so the season close's main club reads a real club in a career row (measured on the stored
+# 68001/2032 pool against the league's yearly saves: 27 more men right, 0 newly wrong). The only reader of a folded club
+# word is franchise history's close (the TEAM column shows "--" for folded rows), so without franchise history the
+# default SITES above stay byte for byte 3947e61b6's. Sums already folded into a save stay sums: they cannot be
+# repaired. The variant swaps `mov dword [esp], 0` for `and dword [esp], 0` and drops the 3-byte nop to make room.
+CLUB_SITES = tuple(runtime.CLUB_SITE_D if row[0] == "site_d" else row for row in SITES)
+CLUB_PATCHED_SHA256 = "7bfcf9c320406f46eba347282984c4c2ba6df6189299276f6c5ea84d4eab65a2"
+FIELD_TEAM = 87
+
 # b81 history-pool: the beta-80 / v0.9 revision (b780 hist1 as shipped): (label, VA, patched bytes). Each lies at the
 # start of the same site of this release, which is at least as long, so its retail bytes are the first bytes of ours.
 PREVIOUS_PATCHED = (
@@ -349,6 +361,8 @@ PREVIOUS_SHA256 = "12f8f431af15622399a453dc937f869a5fc5c8956f9769d6190c9634c2ce3
 REVISION_570CD7C16_SHA256 = "7b61e3e99770293913efdb989b8d097a8bf2b2ef4a03b1a54e7d972f0144ddae"   # 570cd7c16's
 REVISION_26D92BDE0_SHA256 = "92f96e1b979b075ccb73f67f7951f08ee523987baaea500439404d9a016d4d38"   # 26d92bde0's
 REVISION_F27DD95A6_SHA256 = "dea980b4159eefd0b5f7b7728dba0c2b7386b5c5838027d4f60f49d516597845"   # f27dd95a6's
+if _digest(SITES) != PATCHED_SHA256 or _digest(CLUB_SITES) != CLUB_PATCHED_SHA256:
+    raise ImportError("nfl2k5_history_pool: the generated sites do not match their pins")
 REVISIONS = (_revision("beta-80", PREVIOUS_PATCHED, PREVIOUS_SHA256),
              _revision("b81 570cd7c16", REVISION_570CD7C16_PATCHED, REVISION_570CD7C16_SHA256),
              _revision("b81 26d92bde0", REVISION_26D92BDE0_PATCHED, REVISION_26D92BDE0_SHA256),
@@ -376,19 +390,42 @@ def installed_revision(payload: bytes) -> str | None:
     return None
 
 
+def variant(payload: bytes) -> str | None:
+    """b81 round 5: ``"sum"`` (SITES, the default) or ``"club"`` (CLUB_SITES, with franchise history) when applied."""
+
+    if rdata.status(payload, SITES) == "applied":
+        return "sum"
+    if rdata.status(payload, CLUB_SITES) == "applied":
+        return "club"
+    return None
+
+
 def status(payload: bytes) -> str:
-    """``retail`` | ``applied`` | ``previous`` (the beta-80 / v0.9 revision, or the b81 revisions 570cd7c16, 26d92bde0) |
-    ``foreign`` for a default.xbe image."""
+    """``retail`` | ``applied`` (either variant) | ``previous`` (the beta-80 / v0.9 revision, or the b81 revisions
+    570cd7c16, 26d92bde0, f27dd95a6) | ``foreign`` for a default.xbe image."""
 
     state = rdata.status(payload, SITES)
+    if state == "foreign" and rdata.status(payload, CLUB_SITES) == "applied":
+        return "applied"
     if state == "foreign" and installed_revision(payload) is not None:
         return "previous"
     return state
 
 
-def apply(payload: bytes):
+def _switch_rows(club: bool):
+    """site D from one variant to the other, in place (both rows 391 bytes: the default's 390 plus the retail byte)."""
+
+    _l, va, retail, club_d = runtime.CLUB_SITE_D
+    plain = dict((label, after) for label, _va, _b, after in SITES)["site_d"]
+    plain = plain + retail[len(plain):]
+    return (("site_d", va, plain, club_d),) if club else (("site_d", va, club_d, plain),)
+
+
+def apply(payload: bytes, *, club: bool = False):
     """(patched payload, receipt). Retail and previous become applied (previous in place: only the changed spans);
-    refuses an executable whose sites are neither retail, previous nor exactly this owner's."""
+    refuses an executable whose sites are neither retail, previous nor exactly this owner's.
+    b81 round 5: ``club`` picks the variant (True only when the build carries franchise history); an applied executable
+    of the other variant is switched in place (site D only)."""
 
     state = status(payload)
     if state == "previous":
@@ -396,15 +433,25 @@ def apply(payload: bytes):
         upgrade = next(row[3] for row in REVISIONS if row[0] == name)
         result, receipt = rdata.apply(payload, upgrade, f"history pool ({name} revision)")
         receipt = {**dict(receipt), "upgraded_from": "previous", "previous_revision": name}
+    elif state == "applied":
+        result, receipt = payload, {"already_applied": True, "edits": [], "changed_bytes": 0}
     else:
         result, receipt = rdata.apply(payload, SITES, "history pool")
     if status(result) != "applied":
         raise rdata.RdataSiteError("history pool: post-apply verification failed")
-    return result, {"owner": OWNER, "status": status(result), **dict(receipt)}
+    if (variant(result) == "club") != bool(club):
+        switched, switch = rdata.apply(result, _switch_rows(bool(club)), "history pool (club variant)")
+        receipt = {**dict(receipt), "already_applied": False, "variant_switched": True,
+                   "changed_bytes": sum(1 for a, b in zip(payload, switched) if a != b),
+                   "edits": list(receipt.get("edits", [])) + list(switch["edits"])}
+        result = switched
+    if status(result) != "applied" or variant(result) != ("club" if club else "sum"):
+        raise rdata.RdataSiteError("history pool: post-apply verification failed")
+    return result, {"owner": OWNER, "status": status(result), "variant": variant(result), **dict(receipt)}
 
 
 def _installed_sites(read) -> list[tuple[str, int, bytes, bytes]]:
-    for sites in (SITES,) + tuple(row[1] for row in REVISIONS):
+    for sites in (SITES, CLUB_SITES) + tuple(row[1] for row in REVISIONS):
         try:
             if all(read(va, len(after)) == after for _label, va, _before, after in sites):
                 return list(sites)
@@ -430,7 +477,7 @@ def compatible_edits(payload: bytes) -> list[tuple[int, bytes]]:
 
     state = status(payload)
     if state == "applied":
-        sites = SITES
+        sites = CLUB_SITES if variant(payload) == "club" else SITES
     elif state == "previous":
         name = installed_revision(payload)
         sites = next(row[1] for row in REVISIONS if row[0] == name)
@@ -448,11 +495,12 @@ def verify(payload: bytes) -> dict:
             "patched_sha256": PATCHED_SHA256, "previous_sha256": PREVIOUS_SHA256,
             "revision_570cd7c16_sha256": REVISION_570CD7C16_SHA256, "revision_26d92bde0_sha256": REVISION_26D92BDE0_SHA256,
             "revision_f27dd95a6_sha256": REVISION_F27DD95A6_SHA256, "playoff_room_words": PLAYOFF_ROOM,
-            "honor_fields_left_by_early_folds": list(HONOR_FIELDS)}
+            "honor_fields_left_by_early_folds": list(HONOR_FIELDS), "variant": variant(payload),
+            "club_patched_sha256": CLUB_PATCHED_SHA256}
 
 
 __all__ = ["OWNER", "BUILD_CAPTION", "HELP_TEXT", "SITES", "PREVIOUS_SITES", "UPGRADE_SITES", "REVISIONS",
            "REVISION_570CD7C16_SITES", "UPGRADE_570CD7C16_SITES", "REVISION_26D92BDE0_SITES", "UPGRADE_26D92BDE0_SITES",
            "REVISION_F27DD95A6_SITES", "UPGRADE_F27DD95A6_SITES", "PLAYOFF_ROOM", "HONOR_FIELDS",
            "CHUNK_WORDS", "MIN_DEPTH", "FREE_AGENT_DEPTH", "PLAYOFF_RESERVE", "PLAYOFF_FOLD_DEPTH", "CLOSE_FIELDS", "DROP_VA", "status", "apply", "applied_sites", "compatible_edits", "installed_revision",
-           "verify"]
+           "verify", "variant", "CLUB_SITES", "CLUB_PATCHED_SHA256", "FIELD_TEAM"]
