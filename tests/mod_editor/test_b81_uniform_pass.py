@@ -62,6 +62,9 @@ REVERTED_TO_V09 += ("24H0", "24A0")
 # Advisor round 2 (11/24; Noah: "let the advisor approve"), coordinator ruling: the Commanders road follows his home verdict
 # ("Old number font is better") and his never-worse-than-v0.9 rule: 29A0 wears the released v0.9 digits again (b81-uniform-pass2)
 REVERTED_TO_V09 += ("29A0",)
+# Coordinator (11/24, the owner's Chargers ruling applied to the alternates): every Chargers kit wears the released v0.9 italic
+# digits; the alternates' upright rows are dropped too (b81-uniform-pass2)
+REVERTED_TO_V09 += ("24A9", "24H9", "24A10", "24H10", "24A11", "24H11")
 # Noah 11/23 ("use charcoal browns numbers but old font"): the Browns road wears the released v0.9 digits recoloured to the
 # charcoal of its name letters: 20 digit_derived rows, one colour swap on the glyph the build holds (b81-uniform-pass2)
 V09_FONT_RECOLOURED = ("30A0",)
@@ -385,35 +388,12 @@ class DigitDocument(unittest.TestCase):
             cols = np.flatnonzero(solid.any(axis=0))
             self.assertLessEqual(abs(int(cols.max() - cols.min() + 1) - width), 1, selector)
 
-    def test_the_chargers_digits_stand_upright(self):
-        # the slant the pass removes: on the released digits the opaque box of the top rows sits to the right of the
-        # bottom rows' (the 1's stem leans about 0.13 texel per row). Upright: the 1's stem keeps its column.
-        folder = gf.art_folder(gf.digits_b81())
-        by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
-        for selector in CHARGERS_R2:
-            rgba, _info = png_rgba(folder / by[(selector, 14)])                                 # the digit 1
-            solid = rgba[..., 3] > 127
-            rows = np.flatnonzero(solid.any(axis=1))
-            body = rows[len(rows) // 3:]                                                        # below the flag
-            centres = np.array([np.flatnonzero(solid[y]).mean() for y in body])
-            slope = np.polyfit(body.astype(float), centres, 1)[0]
-            self.assertLess(abs(slope), 0.03, (selector, slope))
-
-    def test_one_shape_set_serves_every_chargers_kit(self):
-        # the alternates' own digits were of uneven height; every kit now wears the home shapes in its own colours
-        folder = gf.art_folder(gf.digits_b81())
-        by = {(r["selector"], r["chunk"]): r["png"] for r in digit_rows()}
-        for chunk in range(13, 23):
-            masks = {selector: png_rgba(folder / by[(selector, chunk)])[0][..., 3] > 127 for selector in CHARGERS_R2}
-            first = masks[CHARGERS_R2[0]]
-            for selector, mask in masks.items():
-                self.assertLessEqual(int((mask ^ first).sum()), 4, (selector, chunk))
-        heights = []
-        for chunk in range(13, 23):
-            solid = png_rgba(folder / by[(CHARGERS_R2[0], chunk)])[0][..., 3] > 127
-            rows = np.flatnonzero(solid.any(axis=1))
-            heights.append(int(rows.max() - rows.min() + 1))
-        self.assertLessEqual(max(heights) - min(heights), 2, heights)
+    def test_every_chargers_kit_wears_the_released_italic_digits(self):
+        # Noah 11/21 (b81-uniform-exact): "The first picture is the best when they're italicized. That looks the closest to
+        # reality". Rounds 1 and 2 had stood every Chargers set upright; pass2 dropped those rows from the home and road and
+        # then (coordinator 11/24) from the six alternates, so the build keeps the released v0.9 digits on all eight
+        self.assertEqual(CHARGERS_R2, ())
+        self.assertEqual([r for r in all_digit_rows() if r["selector"] in CHARGERS], [])
 
     def test_the_bengals_digits_wear_a_hairline_ring_and_open_counters(self):
         # Noah 11/18: "bengals jersey number font isnt accurate". Measured against the 2026 frames the ring was 2 to 3
