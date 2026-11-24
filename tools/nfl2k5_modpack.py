@@ -301,6 +301,18 @@ def cmd_edit_gadget_play(args):
     return _print_build_result(args, result, (args.source, args.out))
 
 
+def cmd_edit_cpu_decisions(args):
+    """Beta 81 fake kicks: CPU decisions (Modern 2) alone, on a new copy of a built 128 MB standard disc."""
+    from mod_editor.core import mod_build
+    from mod_editor.core.errors import ModEditorError
+    plan = mod_build.cpu_decisions_disc_edit(args.source, args.out)
+    try:
+        result = mod_build.build(plan, _progress(not args.json), require_change=True)
+    except ModEditorError as exc:
+        raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, result, (args.source, args.out))
+
+
 def cmd_edit_sim_qb(args):
     from mod_editor.core import mod_build
     from mod_editor.core.errors import ModEditorError
@@ -430,6 +442,13 @@ def main(argv: list[str] | None = None) -> int:
     gadget.add_argument("--receipt", help="new JSON receipt file")
     gadget.add_argument("--json", action="store_true")
     gadget.set_defaults(run=cmd_edit_gadget_play)
+    decisions = sub.add_parser("edit-cpu-decisions", help="update only CPU decisions (Modern 2: fourth downs, fake kicks, "
+                                                          "two-point tries) on a copy of a built 128 MB standard disc")
+    decisions.add_argument("--source", required=True, help="built 128 MB standard disc with CPU decisions at Modern 2")
+    decisions.add_argument("--out", required=True, help="new output disc")
+    decisions.add_argument("--receipt", help="new JSON receipt file")
+    decisions.add_argument("--json", action="store_true")
+    decisions.set_defaults(run=cmd_edit_cpu_decisions)
 
     args = parser.parse_args(argv)
     try:

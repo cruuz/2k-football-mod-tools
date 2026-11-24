@@ -598,8 +598,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "22a50b66cece72046d84de5ed34f3d04c71c6ac921dba125cf9b08505e71efac",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/build_steps.py": "dd6dd8908056ac091fd70d97e9d1c11a8a13cad2a7d1e2a8d8719200acf75b0f",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "e56c3d4170ee93aedd43461f63d4ef659183236688e408aa9f6b89eb145240d5",
+        "mod_editor/core/build_steps.py": "c5fc0122540eae26e5923b9ac379b7e5310684d1daf8098390ccb256efa7b78a",  # b791-h3: step context and optional steps
+        "mod_editor/core/mod_build.py": "67d2ecb46ade33b1463ef2c7e9d50c658ed5c5c99ab8927590874a59a8a5e38a",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -695,8 +695,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_coverage_trail.py": "2307dfcfc5419eec9e5b1286cb056d577939028a7a14ff532bfc0a67a24fa902",
         "mod_editor/core/nfl2k5_coverage_trail_code.py": "3c2cfd81b9210f4843bf4eb548987794991161c7ccf5f21ab197d83ac8b0943f",
         "mod_editor/core/nfl2k5_coverage_hitch_code.py": "a7be9dcd4cb6c66222e92cb1f3b49f2d82342cad43507c716f074300c026681b",
-        "mod_editor/core/nfl2k5_cpu_money_downs.py": "1a3299c58ec247c6f3c51aaf37b3471cba3ac7b4232154a7e39a070d09f74d6c",
-        "mod_editor/core/nfl2k5_cpu_money_downs_code.py": "f9bfb3a36ce4d28b3d3543441808ba36824cb791d816eebec996364419478119",
+        "mod_editor/core/nfl2k5_cpu_money_downs.py": "379e9c17e348227e51c29e6fd81fe5a6df14a4993b1e8a6b343ae6c472732318",
+        "mod_editor/core/nfl2k5_cpu_money_downs_code.py": "75006f464c59eb82522931b1d7763dcbedc69c726196eb4a11e4ce7424413199",
         "mod_editor/core/nfl2k5_cpu_third_down.py": "e4cf6e7a6cbedf651dff6b797018fdd23959cf2d2ed045482611c56a5aa76ee8",
         "mod_editor/core/nfl2k5_cpu_qb_reads.py": "d23312a9a21ac0ba3114b740be4a2ca315d0f9567b11d0f6a99891fc7f64e005",
         "mod_editor/core/nfl2k5_cpu_qb_reads_code.py": "a20b09e6bf4b98a02f481562717630c633bbf84d206921f2f9c7548707a6738c",

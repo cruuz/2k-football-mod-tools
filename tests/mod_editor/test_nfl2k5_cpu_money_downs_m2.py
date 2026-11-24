@@ -228,9 +228,10 @@ class Modern2OwnerTests(unittest.TestCase):
         row = next(a for a in space.layout(out)["allocations"] if a["owner"] == patch.OWNER)
         self.assertEqual((row["kind"], row["size"], row["align"]), ("code", 2048, 16))
         image, base = XbeImage(out), XbeImage(self.retail)
-        sites = patch.sites(row["va"], "modern2", variant="b778_late")
+        sites = patch.sites(row["va"], "modern2", variant=patch.CURRENT_LATE)
+        # b81f: the fake-kick gate's three sites follow the b778 clock revision's operand edit.
         self.assertEqual([s[0] for s in sites], ["fourth", "play", "target", "two_point", "fg_dispatch", "fg_commit", "exponent_front", "exponent_cover",
-                                                 "timeout_window"])
+                                                 "timeout_window", "fake_block", "fake_flag", "two_point_fake"])
         # b778: the first-half timeout predicate compares the half clock with 0.0 instead of 15.0 (fcomp operand)
         self.assertEqual(base.read(0x207200, 6), bytes.fromhex("d81d74694e00"))
         self.assertEqual(image.read(0x207200, 6), bytes.fromhex("d81d80414e00"))
@@ -305,7 +306,9 @@ class Modern2OwnerTests(unittest.TestCase):
         # and section digests. A fresh build and the bounded upgrade are identical.
         # b778: +4 code bytes (team flag test), +8 (sign-only direction test), the 2-byte timeout operand edit,
         # plus derived digests.
-        self.assertEqual(len(changed), 2523)
+        # b81f (fake kicks): 2,652 = 2,016 owner code + 385 late companion + 97 of the 98 native lottery block bytes +
+        # 7 at the commit's fake flag + 3 of the two-point operand + 21 at the other sites + 123 derived seals/digests.
+        self.assertEqual(len(changed), 2652)
 
     def test_v061_modern2_upgrade_and_foreign_refusal(self):
         allocated, _ = space.apply(self.retail, patch.REQUESTS + patch.LATE_REQUESTS, scaleout=True)

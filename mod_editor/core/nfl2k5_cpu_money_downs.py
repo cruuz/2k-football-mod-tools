@@ -28,6 +28,17 @@ Beta 81 (variant b81s): the own-half and midfield part of the fourth-down table 
 rises at most one yard per yard line from the own 20 to the opponent 41, plus FOURTH_DOWN_SHIFT_CHANGES, the few
 score-and-clock cells that would otherwise drop it by two or more yards at the own 40 in a one-score game. Both are Noah's
 to tune. The first beta 81 cap (b81) and the beta 78 to beta 80 template (b778) upgrade in place.
+
+Beta 81 fake kicks (variant b81f_late; a player report via Noah 2026-11-21: "teams running fake field goal plays when it
+isn't 4th down in a field goal situation... CPU should rarely run those, like play calling should be tuned to also match
+irl percentages"). Cause: ``policy`` called the late-trailing helper before its own fourth-down, CPU and VIP checks, so in
+the last two minutes of the fourth quarter a CPU offense trailing by 1 to 3 inside the kicker's range minus 5 yards got
+"field goal" on downs 1 to 3; the commit-time field-goal test (native early-down branch) said no and the game's fake
+flag ran FG Pass / FG Sweep / Fake FG End Zone. b81f calls the helper only after those checks (the 2,048-byte template is
+now full), and moves the fake decision to one gate (``tools/nfl2k5_cpu_money_downs_fakes.S``) written over the native
+fake lottery of the dispatcher, which this owner already guards: downs 1 to 3 never fake; fourth down fakes only with 2
+yards or less to go, at the league's rates for that kick (FAKE_RATES); two-point tries come from the kick formation at the
+league's rate instead of retail's 5%. The b81s, b81 and b778 late templates stay recognizable and upgrade in place.
 """
 from __future__ import annotations
 
@@ -92,9 +103,31 @@ HOOKS3 = {"timeout_window": (0x207202, bytes.fromhex("74694e00"))}
 HOOK3_AFTER = {"timeout_window": bytes.fromhex("80414e00")}
 # b81s (beta 81 review) is installed now. b81 (the first beta 81 cap), b778 (beta 78 to beta 80), v061 (beta 77.1) and p9
 # stay recognizable so their installs upgrade in place.
-LATE_VARIANTS = ("b81s_late", "b81_late", "b778_late")
+LATE_VARIANTS = ("b81f_late", "b81s_late", "b81_late", "b778_late")
 M2_VARIANTS = (*LATE_VARIANTS, "b81s", "b81", "b778", "v061", "p9")  # ai6 late rule, ai4 no late owner, beta-77.1, b77 p9
-CURRENT_LATE, CURRENT_NO_LATE = "b81s_late", "b81s"
+CURRENT_LATE, CURRENT_NO_LATE = "b81f_late", "b81s"
+FAKE_VARIANTS = ("b81f_late",)
+
+# ---- Fake kicks (b81f). Real NFL rates, nflverse play-by-play, regular season, counted by
+# /home/noah/2k-worktrees/.b77-scratch/b81/fake-fg/tools/nflverse_fakes.py (formation-based, as nflverse writes it:
+# a run or pass whose description says "Punt formation" / "Field Goal formation", "Kick formation" on a two-point try).
+# 2021-2025, 2,718 team-games: 102 fake punts (0.0375 per team-game, 0.96% of 10,622 punt-formation snaps), 12 fake field
+# goals (0.0044 per team-game, 0.22% of 5,364). By distance on fourth down, fake punts: 4th and 1 18 of 563 (3.2%), 4th
+# and 2 27 of 647 (4.2%), 3 to 5 1.0%, 6 to 9 0.7%, 10+ 0.3%. One fake field goal before fourth down in five seasons.
+# Two-point tries 2020-2025: 14 of 794 from the kick formation (1.76%; retail used 5%).
+# The CPU fakes only on fourth and 1 or 2 (the brief: "only in short yardage"), at that distance's rate.
+FAKE_RATES = {"punt": 0.037, "field_goal": 0.0022, "two_point": 0.0176, "short_yards": 2}
+FAKE_BLOCK, FAKE_BLOCK_SIZE = 0x20B258, 98      # the dispatcher's native fake lottery, up to its FG return at 0x20B2BA
+HOOKS4 = {
+    # The native lottery block, rewritten in place: its entry answers the ordinary category, the gate follows.
+    "fake_block": (FAKE_BLOCK, bytes.fromhex(
+        "8b158002e6008bcae8ebacffffd95c2404e812adffffd85c2404dfe0f6c4417553d9442400d81d28964e00dfe0f6c4417542833db402e6"
+        "000374398b0dec02e60083790404752d8bcae87afef7ffd95c2404e8c180ffffd85c2404dfe0f6c4417a09")),
+    # The commit's fake flag "esi = (re-test == 0)" becomes "call fake_gate".
+    "fake_flag": (0x20B6F2, bytes.fromhex("8bf0f7de1bf646")),
+    # The try lottery's 0.95 operand (0x20A01E fcomp) reads the two-point threshold in the block instead.
+    "two_point_fake": (0x20A020, bytes.fromhex("28964e00")),
+}
 
 # ---- Fourth-down go limits. NOAH'S TO TUNE. ---------------------------------------------------------------------------
 # The longest fourth down a CPU offense goes for in a neutral game, by its own yard line from its own 20 to the opponent
@@ -167,10 +200,10 @@ def _m2(variant="b778"):
     """(code, relocations, labels) of a Modern 2 template variant."""
     if variant not in M2_VARIANTS:
         raise ValueError(f"Unknown Modern 2 variant {variant!r}")
-    suffix = {"b81s": "2", "b81s_late": "2_LATE", "b81": "2", "b81_late": "2_LATE", "b778_late": "2_LATE", "b778": "2",
-              "v061": "2_V061", "p9": "2_LEGACY"}[variant]
+    suffix = {"b81f_late": "2_GATED", "b81s": "2", "b81s_late": "2_LATE", "b81": "2", "b81_late": "2_LATE",
+              "b778_late": "2_LATE", "b778": "2", "v061": "2_V061", "p9": "2_LEGACY"}[variant]
     code, labels = getattr(assembly, "CODE" + suffix), getattr(assembly, "LABELS" + suffix)
-    if variant in ("b81s", "b81s_late"):
+    if variant in ("b81s", "b81s_late", "b81f_late"):
         code = bytearray(code)
         for first, last, limit in FOURTH_DOWN_GO_LIMITS:
             for own_yard in range(first, last + 1):
@@ -378,6 +411,13 @@ def mapping(level="modern"):
                        "with native VIP optional rolls. Automatic coach profiles (flag clear) use Modern 2 (b778)",
             timeout_window="First half: a CPU offense with time left on the native estimate calls its timeouts below 15 s "
                            "too (207050 operand 15.0 -> 0.0, b778)",
+            fake_kicks={"downs_1_to_3": "never (the late-trailing rule is fourth down only; the commit never fakes a kick "
+                                        "before fourth down)",
+                        "fourth_down": f"only with {FAKE_RATES['short_yards']} yards or less to go: fake punt "
+                                       f"{FAKE_RATES['punt']:.1%}, fake field goal {FAKE_RATES['field_goal']:.2%} of those kicks",
+                        "two_point_from_kick_formation": f"{FAKE_RATES['two_point']:.2%} of two-point tries (retail 5%)",
+                        "native_lottery": "off (retail: 5% of fourth downs the game went for, with time to spare)",
+                        "source": "nflverse play-by-play, regular season 2021-2025 (two-point 2020-2025)"},
             sources=SOURCES_FILE)
     return out
 
@@ -390,6 +430,30 @@ def _resolve(code, relocations, va, symbols):
             target -= va + offset
         struct.pack_into("<I", code, offset, target & 0xFFFFFFFF)
     return code
+
+
+def fake_block():
+    """The b81f fake-kick block, resolved for its fixed address (0x20B258) and padded to the native span it replaces."""
+    symbols = {"code": FAKE_BLOCK, "native_category": 0x209FE0, "rng_uniform": 0x48B90}
+    code = _resolve(assembly.CODE_FAKES, assembly.RELOCATIONS_FAKES, FAKE_BLOCK, symbols)
+    if len(code) > FAKE_BLOCK_SIZE:
+        raise ValueError("fake-kick gate exceeds the native lottery block")
+    labels = assembly.LABELS_FAKES
+    rates = struct.unpack_from("<3f", code, labels["p_punt"])
+    threshold = struct.unpack_from("<f", code, labels["two_point_threshold"])[0]
+    if (abs(rates[0] - FAKE_RATES["punt"]) > 1e-6 or abs(rates[1] - FAKE_RATES["field_goal"]) > 1e-6
+            or abs(1 - threshold - FAKE_RATES["two_point"]) > 1e-6
+            or abs(struct.unpack_from("<f", code, labels["short_cm"])[0] - FAKE_RATES["short_yards"] * 91.44) > .02):
+        raise ValueError("fake-kick constants disagree with FAKE_RATES")
+    return bytes(code).ljust(FAKE_BLOCK_SIZE, b"\xcc")
+
+
+def _fake_sites():
+    gate = FAKE_BLOCK + assembly.LABELS_FAKES["fake_gate"]
+    after = {"fake_block": fake_block(),
+             "fake_flag": b"\xe8" + struct.pack("<i", gate - HOOKS4["fake_flag"][0] - 5) + b"\x90\x90",
+             "two_point_fake": struct.pack("<I", FAKE_BLOCK + assembly.LABELS_FAKES["two_point_threshold"])}
+    return [(name, hook, before, after[name]) for name, (hook, before) in HOOKS4.items()]
 
 
 def late_code_for(va, state_va):
@@ -439,6 +503,8 @@ def sites(va, level="modern", *, variant="b778"):
             rows.append((name, hook, before, after))
         if variant in ("b81s", "b81", "b778", *LATE_VARIANTS):
             rows += [(name, hook, before, HOOK3_AFTER[name]) for name, (hook, before) in HOOKS3.items()]
+        if variant in FAKE_VARIANTS:
+            rows += _fake_sites()
         return rows
     return [(name, hook, before,
              b"\xe9" + struct.pack("<i", va + assembly.LABELS[name] - hook - 5) +

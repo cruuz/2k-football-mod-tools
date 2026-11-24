@@ -156,6 +156,23 @@ class UpgradeInPlaceTests(unittest.TestCase):
         current = patch.code_for(main["va"], "modern2", variant=patch.CURRENT_LATE, late_va=late["va"], state_va=state["va"])
         old = patch.code_for(main["va"], "modern2", variant=variant, late_va=late["va"], state_va=state["va"])
         payload, _ = self.space.install_code(self.fresh, patch.OWNER, old, previous=current)
+        if variant not in patch.FAKE_VARIANTS:
+            # An install before beta 81's fake-kick gate (b81f): that template's own hook displacements (its labels
+            # differ from the gated template's) and the retail bytes at the gate's three sites.
+            from mod_editor.core import nfl2k5_rdata_sites as rdata
+            from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+            buf = bytearray(payload)
+            touched = set()
+            writes = [(hook, after) for _name, hook, _before, after in patch.sites(main["va"], "modern2", variant=variant)]
+            writes += [(hook, before) for _name, hook, before, _after in patch._fake_sites()]
+            for hook, data in writes:
+                off = rdata.offset_of(payload, hook)
+                buf[off:off + len(data)] = data
+                touched.add(next(s.index for s in _sections(payload) if s.raw_offset <= off < s.raw_offset + s.raw_size))
+            for section in _sections(payload):
+                if section.index in touched:
+                    buf[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(buf), section)
+            payload = bytes(buf)
         return payload
 
     def test_fresh_install_is_the_current_table(self):
@@ -166,7 +183,7 @@ class UpgradeInPlaceTests(unittest.TestCase):
         self.assertTrue(receipt["already_applied"])
 
     def test_beta80_and_first_beta81_installs_upgrade_in_place(self):
-        for variant in ("b81_late", "b778_late"):
+        for variant in ("b81s_late", "b81_late", "b778_late"):
             with self.subTest(variant=variant):
                 old = self.older(variant)
                 self.assertEqual(patch.read_settings(old)["variant"], variant)

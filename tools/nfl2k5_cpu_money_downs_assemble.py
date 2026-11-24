@@ -39,12 +39,13 @@ def tables_inc() -> str:
 
 
 def _assemble(source: Path, *, vip_aware: bool = False, clock_aware: bool = False,
-              late_helper: bool = False) -> tuple[bytes, list, dict]:
+              late_helper: bool = False, late_gated: bool = False) -> tuple[bytes, list, dict]:
     with tempfile.TemporaryDirectory(prefix="cpu_money_downs-") as directory:
         obj = Path(directory).resolve() / "cpu_money_downs.o"
         defines = ["--defsym", "VIP_AWARE=1"] if vip_aware else []
         defines += ["--defsym", "CLOCK_AWARE=1"] if clock_aware else []
         defines += ["--defsym", "LATE_HELPER=1"] if late_helper else []
+        defines += ["--defsym", "LATE_GATED=1"] if late_gated else []
         subprocess.run(["as", "--32", *defines, "-I", str(source.parent), "-o", str(obj), str(source)], check=True)
         data = obj.read_bytes()
     if data[:6] != b"\x7fELF\x01\x01":
@@ -115,6 +116,13 @@ def generate() -> str:
     lines += [""] + _emit("2_LATE", blob2, relocations2, labels2)
     blob3, relocations3, labels3 = _assemble(ROOT / "tools/nfl2k5_cpu_money_downs_late.S")
     lines += [""] + _emit("_LATE", blob3, relocations3, labels3)
+    # b81 fake kicks (variant b81f): the late-trailing rule only after the fourth-down, CPU and VIP checks, and the
+    # fake-kick gate assembled for the native lottery block 0x20B258 it replaces.
+    blob2, relocations2, labels2 = _assemble(ROOT / "tools/nfl2k5_cpu_money_downs_m2.S", vip_aware=True,
+                                             clock_aware=True, late_helper=True, late_gated=True)
+    lines += [""] + _emit("2_GATED", blob2, relocations2, labels2)
+    blob4, relocations4, labels4 = _assemble(ROOT / "tools/nfl2k5_cpu_money_downs_fakes.S")
+    lines += [""] + _emit("_FAKES", blob4, relocations4, labels4)
     lines += [""]
     return "\n".join(lines)
 

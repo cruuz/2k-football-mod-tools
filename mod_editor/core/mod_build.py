@@ -1127,6 +1127,18 @@ def gadget_disc_edit(source, target, *, enabled=True, overwrite=False, name="", 
                                 name=name, author=author, notes=notes)
 
 
+class _InstalledCpuDecisionsEdit(BuildPlan):
+    """Beta 81 fake kicks: an explicit single-setting update of CPU decisions (Modern 2) on an already-built disc."""
+
+
+def cpu_decisions_disc_edit(source, target, *, overwrite=False, name="", author="", notes=""):
+    """Bring CPU decisions (Modern 2) of a built 128 MB standard disc to this Studio's template on a new copy: only
+    default.xbe changes, inside the owner's own allocations and routines (beta 81: the late-trailing rule on fourth down
+    only; fake punts and fake field goals only on fourth and 1 or 2, at league rates)."""
+    return _InstalledCpuDecisionsEdit(str(source), str(target), cpu_money_downs="modern2", overwrite=overwrite,
+                                      name=name, author=author, notes=notes)
+
+
 # ---------------------------------------------------------------------------------------------
 # SOFTDRINK patch presets (Noah, 9/3): one click to start from a known-good set, then customise.
 #   basic    = gameplay/logic fixes only, stock feel — what an official update would have shipped
@@ -3101,6 +3113,51 @@ def _only_gadget_changes(plan):
                                     name=plan.name, author=plan.author, notes=plan.notes)
 
 
+def _only_cpu_decisions_changes(plan):
+    if not isinstance(plan, _InstalledCpuDecisionsEdit) or plan.console_memory != 128:
+        return False
+    return plan == cpu_decisions_disc_edit(plan.source, plan.target, overwrite=plan.overwrite, name=plan.name,
+                                           author=plan.author, notes=plan.notes)
+
+
+def _edit_installed_cpu_decisions(plan, source, target, original, receipt, progress, *, preflight, consume, reference):
+    """Beta 81 fake kicks: CPU decisions alone on an already-built standard disc (an installed Modern 2 with the late
+    rule upgrades in place to the current template); every other installed setting is kept."""
+    money = tt.cpu_money_downs_patch
+    before = money.read_settings(original) or {}
+    if (tt.k128_patch.read_settings(original).get("require_128") is not True or not space_is_scaleout(original)
+            or before.get("level") != "modern2" or not before.get("late_policy")):
+        raise ValueError("Updating CPU decisions needs a built 128 MB standard disc with CPU decisions at Modern 2.")
+    patched, patch = money.apply(original, level="modern2")
+    receipt["installed_cpu_decisions_only"] = True
+    receipt["cpu_decisions_source_update"] = {"source_sha256": sha256(original).hexdigest(),
+                                              "result_sha256": sha256(patched).hexdigest(),
+                                              "from_variant": before.get("variant")}
+    if preflight:
+        return True
+    _copy_private_build_source(source, target, receipt, progress, consume)
+    receipt["result"] = {}
+    _step("cpu_decisions")
+    progress("CPU decisions: Modern 2", 0, 0)
+    if _xbe_bytes(target) != original:
+        raise ValueError("The copied image's executable differs from the source.")
+    if patched != original:
+        _write_xbe_bytes(target, patched)
+    if _xbe_bytes(target) != patched:
+        raise RuntimeError("CPU decisions: the output does not read back as written")
+    receipt["steps"].append({"step": "cpu_money_downs", **{k: v for k, v in patch.items() if k != "reservations"}})
+    receipt["result"]["cpu_money_downs"] = "modern2"
+    _compact_build_disc(target, reference, receipt, progress)
+    _step("final_checks")
+    final = money.read_settings(_xbe_bytes(target)) or {}
+    if final.get("variant") != money.CURRENT_LATE:
+        raise ValueError(f"CPU decisions did not survive the final archive pass ({final.get('variant')})")
+    inspection = inspect(target, screen_timing=plan.screen_timing)
+    receipt["result"] = {**inspection, **receipt["result"], "path": str(target)}
+    _verify_finished_game_disc(target, receipt, progress)
+    return True
+
+
 def _edit_installed_gadget(plan, source, target, original, receipt, progress, *, preflight, consume, reference):
     """Beta 81 Q62: the gadget rule alone on an already-built standard disc; every other installed setting is kept.
     The code goes into the fixed gadget slots (reserved by the cards on every standard build, or appended there)."""
@@ -3441,6 +3498,32 @@ def _cpu_kick_aim_with_kicking(payload):
     return aim.apply(payload)            # refuses bytes that are neither retail nor the repair
 
 
+def _cpu_decisions_current(payload):
+    """Beta 81 fake kicks: an installed Modern 2 with the late rule (the v0.8 and v0.9 releases carry b778_late) is brought
+    to the current template, so an in-place update of a built disc (update-v09) gets the CPU decisions of a full build
+    (no fake kick before fourth down). Anything else is left alone: (payload, None)."""
+    money = tt.cpu_money_downs_patch
+    settings = money.read_settings(payload) or {}
+    if settings.get("level") != "modern2" or not settings.get("late_policy"):
+        return payload, None
+    if settings.get("variant") == money.CURRENT_LATE:
+        return payload, {"owner": money.OWNER, "already_applied": True, "changed_bytes": 0}
+    return money.apply(payload, level="modern2")      # upgrade_to_modern2: refuses foreign or mixed bytes
+
+
+def _apply_cpu_decisions_in_place(target, receipt, progress):
+    patched, decisions = _cpu_decisions_current(_xbe_bytes(target))
+    if decisions is None:
+        return
+    progress("CPU decisions: no fake kicks before fourth down", 0, 0)
+    if decisions.get("changed_bytes"):
+        _write_xbe_bytes(target, patched)
+        if _xbe_bytes(target) != patched:
+            raise ValueError("The CPU decisions update did not read back.")
+    receipt["steps"].append({"step": "cpu_money_downs", **{k: v for k, v in decisions.items() if k != "reservations"}})
+    receipt["result"]["cpu_money_downs"] = "modern2"
+
+
 def _apply_cpu_kick_aim_in_place(target, receipt, progress):
     patched, aim_receipt = _cpu_kick_aim_with_kicking(_xbe_bytes(target))
     if aim_receipt is None:
@@ -3598,6 +3681,11 @@ def _update_v09_disc(plan, progress, *, preflight, project):
             expected, _ = room.apply(expected, room_level)
         _verify_qb_room(plan, room, expected)
         receipt["v09_update"].append("qb_room")
+    # beta 81 fake kicks (review 11/22), after the quarterback steps (they stay adjacent): every v0.9 update also brings CPU decisions to the current Modern 2 template,
+    # as a full build has it (the released b778_late ran fake field goals before fourth down).
+    expected, decisions = _cpu_decisions_current(expected)
+    if decisions is not None and decisions.get("changed_bytes"):
+        receipt["v09_update"].append("cpu_decisions")
     if plan.gadget_play:
         # After every other v0.9 update, as in a standard Build; the books are the released disc's own.
         expected, _ = gadget.apply(expected, _gadget_resources(source))
@@ -3621,6 +3709,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         _apply_sim_qb_injuries(plan, target, receipt, progress)
     _apply_cpu_kick_aim_in_place(target, receipt, progress)
     _apply_qb_room(plan, target, receipt, progress)  # b81 qb34
+    _apply_cpu_decisions_in_place(target, receipt, progress)  # beta 81 fake kicks (the expected chain's order)
     if plan.gadget_play:
         _apply_gadget_play(plan, target, receipt, progress)
     _compact_build_disc(target, source, receipt, progress)
@@ -6544,6 +6633,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         progress(qb_floor_note, 0, 0)
     sim_qb_only = _only_sim_qb_changes(plan)
     gadget_only = _only_gadget_changes(plan)  # beta 81 Q62
+    cpu_decisions_only = _only_cpu_decisions_changes(plan)  # beta 81 fake kicks
     seven_held = bool(plan.seven_on_seven and not SEVEN_ON_SEVEN_RELEASED)
     if seven_held:
         progress("7-on-7 practice is unavailable until repaired; ignoring the saved opt-in", 0, 0)
@@ -6989,6 +7079,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError("The gadget player on gadget plays edits a built 128 MB standard disc image.")
         _edit_installed_gadget(plan, source, target, installed_xbe, receipt, progress, preflight=_preflight_only,
                                consume=_consume_source, reference=_retail_source or source)
+        return receipt
+    if cpu_decisions_only:
+        if not (is_image and installed_xbe is not None):
+            raise ValueError("Updating CPU decisions edits a built 128 MB standard disc image.")
+        _edit_installed_cpu_decisions(plan, source, target, installed_xbe, receipt, progress, preflight=_preflight_only,
+                                      consume=_consume_source, reference=_retail_source or source)
         return receipt
     retire_holder = installed_xbe is not None and tt.punter_holder_patch.build_status(installed_xbe) == "previous"
     holder_inherited = None
