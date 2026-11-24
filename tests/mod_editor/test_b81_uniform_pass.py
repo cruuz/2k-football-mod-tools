@@ -65,9 +65,16 @@ REVERTED_TO_V09 += ("29A0",)
 # Coordinator (11/24, the owner's Chargers ruling applied to the alternates): every Chargers kit wears the released v0.9 italic
 # digits; the alternates' upright rows are dropped too (b81-uniform-pass2)
 REVERTED_TO_V09 += ("24A9", "24H9", "24A10", "24H10", "24A11", "24H11")
+# Advisor, alternates round (11/24; Noah delegated their approval): the alternates that carried a number font he rejected on
+# the same club go back to the released v0.9 digits (Broncos 08H5/A5, 08H6/A6, Texans 37H2/A2, Browns 30H3/A3), and so do
+# the Packers Rivalries 10H5/A5 (stray outline ticks on the redrawn set)
+REVERTED_TO_V09 += ("08H5", "08A5", "08H6", "08A6", "37H2", "37A2", "30H3", "30A3", "10H5", "10A5")
 # Noah 11/23 ("use charcoal browns numbers but old font"): the Browns road wears the released v0.9 digits recoloured to the
 # charcoal of its name letters: 20 digit_derived rows, one colour swap on the glyph the build holds (b81-uniform-pass2)
 V09_FONT_RECOLOURED = ("30A0",)
+# b81 fold-in (11/24): the approved kits' helmet numerals (hn48..hn57, chunks 23-32) as the lanes staged them: colour swaps
+# of the released set (digit_derived), whole sets of ten
+HELMET_NUMERALS = ("04H0", "06A0", "06H0", "09A0", "09H0", "11A0", "11H0")
 REVERTED_TO_V09 = tuple(s for s in REVERTED_TO_V09 if s not in V09_FONT_RECOLOURED)
 #: the Chargers packages that still wear the one upright R2 shape set
 CHARGERS_R2 = tuple(s for s in CHARGERS if s not in REVERTED_TO_V09)
@@ -92,7 +99,12 @@ WAS_ROAD_SWOOSH = ((54, 9, 72, 22), (250, 9, 268, 22), (283, 14, 298, 40), (483,
 
 
 def kit_rows():
-    return kf.uniforms_b81()["textures"]
+    """The texture rows (``tset``); the Unif data rows of the b81 fold-in are ``unif_rows``."""
+    return [r for r in kf.uniforms_b81()["textures"] if r["kind"] == "tset"]
+
+
+def unif_rows():
+    return [r for r in kf.uniforms_b81()["textures"] if r["kind"] == "unif"]
 
 
 def digit_rows():
@@ -160,6 +172,8 @@ class KitDocument(unittest.TestCase):
             key = (row["selector"], row["chunk"])
             self.assertNotIn(key, seen)
             seen.add(key)
+            if row["kind"] == "unif":                       # the Unif data rows of the b81 fold-in: see UnifDocument
+                continue
             self.assertEqual(row["kind"], "tset")
             self.assertEqual((row["chunk"], "tset"), up.chunk_of(row["texture"]))
             self.assertEqual(row["size"][:2], SIZES[row["texture"]])
@@ -282,6 +296,43 @@ class KitDocument(unittest.TestCase):
             self.assertTrue(13 <= row["chunk"] <= 22 or 33 <= row["chunk"] <= 42, row["selector"])  # jersey and arm digits, never the helmet's
 
 
+class UnifDocument(unittest.TestCase):
+    """b81 fold-in (11/24): the approved kits' Unif fields as the lanes staged them (no texel): the arm numbers on the
+    shoulder tops (route 1; Noah 11/21 on the Bears: "Shows sleeve numbers instead of shoulder numbers"), the helmet number
+    places the helmet lane chose (helmet_number_route at 0x3C) and the Vikings facemask."""
+
+    SHOULDER_TOPS = ("00H0", "03A0", "03H0", "05A0", "05H0", "19A0", "19H0", "29A0", "37H0")
+
+    def test_the_rows_set_only_reviewed_fields(self):
+        rows = unif_rows()
+        self.assertEqual(len(rows), 34)
+        self.assertEqual(len({r["selector"] for r in rows}), 34)
+        for row in rows:
+            self.assertEqual((row["chunk"], row["texture"]), (0, "Unif"), row["selector"])
+            self.assertNotIn("ops", row)
+            self.assertTrue(row.get("ints") or row.get("fields"), row["selector"])
+            for key, value in row.get("ints", {}).items():
+                self.assertIn(value, kf.UNIF_INTS[key][1], (row["selector"], key))
+            self.assertTrue(row["note"] and row["defects"])
+        self.assertEqual(sorted(r["selector"] for r in rows if r.get("ints", {}).get("number_route") == 1),
+                         sorted(self.SHOULDER_TOPS))
+        self.assertEqual({r["selector"]: r["fields"] for r in rows if "fields" in r},
+                         {"15H0": {"facemask": "#0C0B0C"}, "15A0": {"facemask": "#0C0B0C"}})
+
+    @unittest.skipUnless(DISC.is_file(), "the released v0.9 disc")
+    def test_the_rows_compile_to_their_pins(self):
+        rows = unif_rows()
+        kits = up.read_kits(DISC, sorted({r["selector"] for r in rows}))
+        for row in rows:
+            raw = kits[row["selector"]]
+            chunk = kf._chunk_for(raw, 0)
+            span = raw[chunk.offset:chunk.end_offset]
+            self.assertEqual(hashlib.sha256(span).hexdigest(), row["before_sha256"], row["selector"])
+            new, _detail = kf.compile_unif(span, row)
+            self.assertEqual(hashlib.sha256(new).hexdigest(), row["after_sha256"], row["selector"])
+            self.assertEqual(len(new), len(span))
+
+
 class DigitDocument(unittest.TestCase):
     def test_schema_art_and_pins(self):
         document = gf.digits_b81()
@@ -311,10 +362,14 @@ class DigitDocument(unittest.TestCase):
         self.assertEqual(sorted(p.name for p in folder.glob("*.png")), sorted(files))           # no stray art
 
     def test_the_redrawn_sets_are_whole_ten_jersey_digits_and_arm_digits_where_the_kit_has_them(self):
-        by = {}
+        by, helmet = {}, {}
         for row in all_digit_rows():
+            if 23 <= row["chunk"] <= 32:            # the helmet numerals (b81 fold-in): see HELMET_NUMERALS below
+                helmet.setdefault(row["selector"], set()).add(row["chunk"])
+                continue
             by.setdefault(row["selector"], set()).add(row["chunk"])
         self.assertEqual(tuple(sorted(by)), tuple(sorted(REDRAWN)))
+        self.assertEqual(helmet, {selector: set(range(23, 33)) for selector in HELMET_NUMERALS})
         for selector, chunks in by.items():
             digits = PER_DIGIT.get(selector, range(10))
             self.assertEqual({c for c in chunks if c < 23}, {13 + d for d in digits}, selector)
@@ -355,6 +410,25 @@ class DigitDocument(unittest.TestCase):
             name = row.get("png", (row["selector"], row["chunk"]))
             self.assertGreaterEqual(int(rows.max() - rows.min() + 1), 61, name)
             self.assertTrue(12 <= cols.min() and cols.max() <= 51, (name, int(cols.min()), int(cols.max())))
+
+    def test_the_alternates_wear_their_primaries_final_digit_shapes(self):
+        # Advisor, alternates round (11/24; Noah delegated the alternates' approval): the Bengals White Bengal 06H5/06A5 and
+        # Open in Orange 06H6/06A6 take the final Bengals set of the primaries (the clean redraw: "the 2 has the sharp down on
+        # the top of the 2 curve ... We need number refinement"), the Dolphins Rivalries 14H10/14A10 the primaries' in-between
+        # set ("Make number font in between the old and new, neither are right"), each in its own colours: the same shapes
+        by = {(r["selector"], r["chunk"]): r for r in all_digit_rows()}
+        for primary, alternates in (("06A0", ("06H5", "06A5", "06H6", "06A6")), ("14H0", ("14H10", "14A10"))):
+            for chunk in range(13, 23):
+                want = picture(by[(primary, chunk)])
+                if want is None:
+                    continue
+                for selector in alternates:
+                    got = picture(by[(selector, chunk)])
+                    self.assertTrue(np.array_equal(got[..., 3], want[..., 3]), (selector, chunk))
+        for selector, chunk in by:                  # the Dolphins alternates' shoulder digits too (the primaries have none)
+            if selector in ("14H10", "14A10") and chunk >= 33:
+                self.assertTrue(np.array_equal(picture(by[(selector, chunk)])[..., 3], picture(by[("14H0", chunk - 20)])[..., 3]),
+                                (selector, chunk))
 
     def test_number_widths_follow_the_measured_real_numbers(self):
         # width of the 0 in texels at 62 rows = real width over height x 62 / 1.048 (the cell is 23.8 by 22.7 cm)
@@ -1019,7 +1093,7 @@ class RealDisc(unittest.TestCase):
     def test_every_kit_row_is_waiting_on_the_released_disc_and_compiles_to_its_pin(self):
         result = up.states(DISC)
         self.assertEqual((result["before"], result["after"], result["other"], result["absent"]),
-                         (len(kit_rows()), 0, 0, 0), result["rows"])
+                         (len(kit_rows()) + len(unif_rows()), 0, 0, 0), result["rows"])
         for selector in sorted({r["selector"] for r in kit_rows()}):
             replacements, receipt = kf.compile_resource(selector, self.kits[selector], strict=True,
                                                         document=kf.uniforms_b81(), kits=self.kits)
