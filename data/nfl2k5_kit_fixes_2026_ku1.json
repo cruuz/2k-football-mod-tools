@@ -1362,10 +1362,13 @@
    "length": 36160,
    "before_sha256": "68eb2b8adf598406e98c723270820c5561018a0815d7a69ef651db18bd2254bc",
    "after_sha256": "acfeb5bd4869696cdaff22056a42055b81e7b14d9eca5bb3fdbe8e47ab5c21b7",
+   "after_equivalent_sha256": [
+    "b1c4ec2c560dccbd3b497b583b7f83c1ecabf784ee83b175a68697a73198e015"
+   ],
    "defects": [
     "ku1-KC-2026-look"
    ],
-   "note": "2026 helmet red and arrowhead red (shading kept)",
+   "note": "2026 helmet red and arrowhead red (shading kept). b81 (11/24): in a standard build this row finds the finished helmet already in place. The league project supplies the art lane's cleaned helmet (b81art_helmet00), which was made from the helmet this row produced in the released v0.9, so its red is already this row's output red (#CC242A). Its texture is pinned here as an equivalent finished helmet (after_equivalent_sha256), and the Studio leaves it as it is: remapping it again would move the red a second time.",
    "palette_remap": {
     "pairs": [
      [
@@ -2931,10 +2934,13 @@
    "length": 36160,
    "before_sha256": "68eb2b8adf598406e98c723270820c5561018a0815d7a69ef651db18bd2254bc",
    "after_sha256": "acfeb5bd4869696cdaff22056a42055b81e7b14d9eca5bb3fdbe8e47ab5c21b7",
+   "after_equivalent_sha256": [
+    "b1c4ec2c560dccbd3b497b583b7f83c1ecabf784ee83b175a68697a73198e015"
+   ],
    "defects": [
     "ku1-KC-2026-look"
    ],
-   "note": "2026 helmet red and arrowhead red (shading kept)",
+   "note": "2026 helmet red and arrowhead red (shading kept). b81 (11/24): in a standard build this row finds the finished helmet already in place. The league project supplies the art lane's cleaned helmet (b81art_helmet00), which was made from the helmet this row produced in the released v0.9, so its red is already this row's output red (#CC242A). Its texture is pinned here as an equivalent finished helmet (after_equivalent_sha256), and the Studio leaves it as it is: remapping it again would move the red a second time.",
    "palette_remap": {
     "pairs": [
      [
