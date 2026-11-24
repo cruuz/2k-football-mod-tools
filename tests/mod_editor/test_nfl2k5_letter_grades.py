@@ -239,6 +239,7 @@ class AllocatorTests(unittest.TestCase):
                                         ("nfl2k5_sim_qb_injuries", "code"),  # e70b25819
                                         ("nfl2k5_qb_room", "code"),  # b81 qb34: the room's fixed page
                                         ("nfl2k5_qb_trades", "code"),  # b81 qb34 4b (C20): the trades page
+                                        ("nfl2k5_helmet_side_numbers", "code"),  # b81 helmet sides: its fixed page
                                         ("nfl2k5_period_goalposts", "code"), ("nfl2k5_period_goalposts", "read_only"),
                                         ("nfl2k5_honors", "code"), ("nfl2k5_honors", "data"),
                                         ("nfl2k5_champions", "code"),  # b779-hn1
