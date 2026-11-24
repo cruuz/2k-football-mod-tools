@@ -102,6 +102,78 @@ CLASS_III = {
     "b81u-14A0-swoosh-colour": "swoosh recoloured by rule (ramp)",
     "b81u-26H4-panels-kits4": "26H0's panels copied by rule (stamp of the pinned donor + a colour-pair map); only the "
                               "drawn collar shield ships",
+    # b81-uniform-pass2 fold-in (the approved home/road kits, 11/24): the uniform lanes' authored pictures put in retail-free
+    # form (work/rf in the lane folder): old marks cleared by rule (clear), recolours of the base as rules (ramp, map,
+    # cols, move), only the drawn texels below ship. "Read on the texture" marks a drawing whose placement or an edge
+    # blend was taken from the texture the painter worked on; the shapes themselves are the tools' own.
+    **{f"b81p2-{club}-collar-{kind}": (
+        "collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read "
+        "off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat "
+        "collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run "
+        "into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are "
+        "re-blended over the new colour") for club, kind in (("CAR", "v"), ("NO", "v"), ("NYJ", "v"), ("PHI", "v"),
+                                                              ("WAS", "v"), ("NYJ", "white"), ("PIT", "white"),
+                                                              ("TB", "white"), ("TB", "red"))},
+    "b81m-BUF-road-collar-band": "collar band (royal, red inner edge) drawn by work/BUF/tools/bufcollar.py by distance "
+                                 "from the neck opening at 4x, 4 blend steps; the old one-texel lines cleared by rule",
+    **{f"b81p2-{fam}": ("sleeve stripes drawn as rings round the arm by work/BC/tools/paint_bands.py on the posed model "
+                        "(band widths from the 2026 photographs), the swoosh from the exact pass's outline "
+                        "(surf.swoosh_outline), 5 coverage levels; the old stripes and swoosh cleared by rule")
+       for fam in ("DAL-sleeve-stripes", "CLE-sleeve-stripes-home", "CLE-sleeve-stripes-road")},
+    **{f"b81p2-NE-shoulder-stripe-{k}": ("shoulder stripe set drawn as one shape along the model's armhole seam by "
+                                         "work/BC/tools/paint_ne.py (2.8 cm stripes, ends at posed heights read off the "
+                                         "photographs), 4 coverage levels; the old pieces cleared by rule")
+       for k in ("breaks", "over-back")},
+    **{f"b81p2-LAR-horn-{k}": ("shoulder horn drawn as one shape on the posed body by work/BC/tools/paint_lar.py (widths, "
+                               "tip and curl from the 2026 photographs), 5 coverage levels; the old horn and the blue "
+                               "back-yoke bars cleared by rule") for k in ("home", "road")},
+    "b81x-LAC-bolt-place-size": "shoulder bolt drawn by b81-uniform-exact work/tools/paint_lac.py: the art lane's "
+                                "measured bolt polygon (lacbolt.BOLT_GOLD) laid along the sleeve seam at 38 cm; the old "
+                                "marks cleared to the flat cloth colour by rule",
+    "b81m-LAC-pants-bolt": "pants bolt drawn by b81-uniform-marks work/LAC/tools/lacbolt.py (the same measured bolt "
+                           "polygon) down the outer leg on the model; the old bolt cleared to the flat cloth by rule",
+    "b81x-SEA-shoulder-shape": "sleeve cap and shoulder patch drawn by b81-uniform-exact work/tools/paint_sea.py from "
+                               "shapes defined on the body (measured on the 2026 photographs, laid out in the Design "
+                               "Lab); the old marks cleared by rule",
+    "b81x-SEA-band": "chest band, collar feather strips and SEAHAWKS wordmark drawn by b81-uniform-exact "
+                     "work/tools/paint_sea.py from shapes defined on the body; the old marks cleared by rule",
+    "b81x-SEA-feather-band": "side stripe with twelve feathers drawn by b81-uniform-exact work/tools/paint_sea_pants.py; "
+                             "the old stripe cleared by rule",
+    "b81m-DAL-navy-sleeve-star": "five-point star drawn by S/work/DAL/tools/dal_sleeve.py (pentagram, tip radius 3.98 cm, "
+                                 "white border and navy keyline widths from the photographs) at 4x, 4 blend steps",
+    "b81m-DAL-navy-sleeve-band-depth": "band drawn by S/work/DAL/tools/dal_sleeve.py white / grey / white at the "
+                                       "photographed proportions; read on the texture: its path and depth are the part "
+                                       "0.119..0.833 of the old band's footprint (distance fields at 4x)",
+    "b81m-HOU-road-shoulder-horn": "shoulder horn drawn by S/work/HOU/tools/hou_horn.py (paths and widths from the "
+                                   "photographs) at 4x, 4 coverage levels; the old band cleared to white by rule",
+    **{f"b81m-HOU-pants-stripe-{k}": ("side stripe drawn by S/work/HOU/tools/hou_pants.py: red 5 + navy 20 texels from "
+                                      "row 36-40 to the standard hem row (uvpos/std_hem.npy); the old stripe back to the "
+                                      "cloth by rule") for k in ("width", "red-edge")},
+    **{f"b81m-MIN-{k}": ("side stripe drawn by S/work/MIN/tools/min_pants.py (paintlib pants_stripe: band edges at fixed "
+                         "cm round the model's leg, widths from the photographs), 4 blend steps; the old stripe cleared "
+                         "by rule") for k in ("home-pants-stripe-front-purple", "home-pants-stripe-width",
+                                               "road-pants-stripe-width", "road-pants-stripe-gap")},
+    "b81m-TEN-road-pants-stripe": "side stripe drawn by S/work/TEN/tools/ten_road_pants.py (27 texels: red, white, navy "
+                                  "line, a band with four ribs, to the standard hem row); read on the texture: the band "
+                                  "takes one pants colour per row from the painter's picture",
+    **{f"b81m-WAS-pants-stripe-{k}": ("side stripe drawn by S/work/WAS/tools/restripe.py in the kit's flat colours on "
+                                      "straight columns to the cuff line; read on the texture: the last row above the "
+                                      "cuff line keeps the coverage the old picture had there") for k in ("order", "width")},
+    **{f"b81m-CLE-pants-stripe-{k}": ("side stripe drawn by b81-uniform-marks work/CLE/tools/clepaint.py: three touching "
+                                      "13-texel bands, 4 blend steps; read on the texture: the hem row per column and "
+                                      "(30A0) the cloth beside the old stripe") for k in ("gaps", "width")},
+    "b81m-CLE-home-pants-colour": "cloth white -> orange keeping each texel's shade, the maker's mark and the hem edge "
+                                  "by rule (ramps); nothing of it ships as texels",
+    "b81m-NO-road-sleeve-fleur-solid": "fleur drawn by S/work/NO/tools/no_road_fleur.py from the repo's "
+                                       "data/nfl2k5_scorebug_assets/logos/no.png at 8x (outline, white band, black core); "
+                                       "read on the texture: size and place are round 2's boxes, which ruling 1 found to "
+                                       "be the old fleur's height and centre; the old fleur cleared by rule",
+    "b81u-NO-sleeve-fleur-squat": "round 2's fleur size (19 x 28 / 18 x 29 texels), kept by the row's drawn fleur",
+    "b81p2-DET-dtd-neutral-grey": "Defend the Den base recolour retargeted to neutral grey by rule (ramp); only the "
+                                  "authored art ships",
+    **{f"b81m-{k}": "the maker's mark recoloured at each texel's own coverage by rule (ramp); none of it ships as texels"
+       for k in ("ARI-pants-swoosh-colour", "ATL-pants-swoosh-colour", "LAR-pants-swoosh-colour",
+                 "NO-pants-swoosh-white", "SF-pants-swoosh-colour", "MIA-pants-mark-colour")},
 }
 # documents whose rows still storing texels are known to hold base content whatever the measures say: the b81-art
 # helmet rows the fill rule does not yet reproduce are shell shading filled from the texels around a piece, or marks
