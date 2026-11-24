@@ -96,6 +96,9 @@ PASS2_ADDED = (("00A0", "pants00"), ("01H0", "pants00"), ("02A0", "pants00"), ("
                ("29A0", "pants00"), ("29H0", "pants00"), ("30A0", "pants00"), ("30A0", "sleeve00"), ("30H0", "pants00"),
                ("30H0", "sleeve00"), ("37A0", "pants00"), ("37A0", "sleeve00"), ("37H0", "pants00"),
                ("09A9", "socks00"), ("09H9", "socks00"))   # advisor 11/24: Defend the Den dark socks
+# rows whose input an earlier step of the build writes (the swoosh step sw1 leaves these sleeves, not the released v0.9 ones):
+# pinned to that input, sw1's after pin (BuildInputRows); the gate measures them on a build of the branch base (B81_TEXEL_INPUTS)
+BUILD_INPUT_ROWS = (("07H0", 3), ("09A9", 3), ("09H9", 3), ("26A0", 3), ("26H0", 3))
 # the approved helmet shells (helmet00 Standard, helmet02 Revolution): Lions stripe order, Dolphins stripe colours,
 # Commanders stripe proportions; pinned to the helmet the build holds after the b81 helmet cleanup, rules only
 HELMET_KITS = ("09A0", "09H0", "14A0", "14H0", "29A0", "29H0")
@@ -338,16 +341,17 @@ class UnifDocument(unittest.TestCase):
     SHOULDER_TOPS = ("00H0", "03A0", "03H0", "05A0", "05H0", "19A0", "19H0", "29A0", "37H0",
                      # the modern-template alternates of the same clubs (coordinator's ruling 11/24 under Noah's standing
                      # rule "Yes fix every new bug we find like that"); the Cowboys Arctic 07H7/A7 keeps its sleeve number
-                     # (the 10/26 photographs)
-                     "03A3", "03A8", "03A9", "03H3", "03H8", "03H9", "05A4", "05A6", "05H4", "05H6", "19A4", "19A6", "19A7",
-                     "19H4", "19H6", "19H7", "37A2", "37H2")
+                     # (the 10/26 photographs); the advisor's batch-2 check put the Jets Gotham 19H6/A6 (numbers across the
+                     # grey shoulder bars) and the 1965-68 throwback 19H4/A4 (numbers coloured for the sleeve) back on the sleeve
+                     "03A3", "03A8", "03A9", "03H3", "03H8", "03H9", "05A4", "05A6", "05H4", "05H6", "19A7", "19H7",
+                     "37A2", "37H2")
+    ON_THE_SLEEVE = ("07A7", "07H7", "19A4", "19A6", "19H4", "19H6")
 
     def test_the_rows_set_only_reviewed_fields(self):
         rows = unif_rows()
-        self.assertEqual(len(rows), 52)
-        self.assertEqual(len({r["selector"] for r in rows}), 52)
-        self.assertNotIn("07H7", {r["selector"] for r in rows})
-        self.assertNotIn("07A7", {r["selector"] for r in rows})
+        self.assertEqual(len(rows), 48)
+        self.assertEqual(len({r["selector"] for r in rows}), 48)
+        self.assertFalse(set(self.ON_THE_SLEEVE) & {r["selector"] for r in rows})
         for row in rows:
             self.assertEqual((row["chunk"], row["texture"]), (0, "Unif"), row["selector"])
             self.assertNotIn("ops", row)
@@ -402,6 +406,30 @@ class HelmetRows(unittest.TestCase):
                 self.assertEqual(hashlib.sha256(span).hexdigest(), row["before_sha256"], (selector, row["texture"]))
                 new, _detail = kf.compile_texture(span, row)
                 self.assertEqual(hashlib.sha256(new).hexdigest(), row["after_sha256"], (selector, row["texture"]))
+
+
+class BuildInputRows(unittest.TestCase):
+    """b81-uniform-pass2 (11/24, the final-build proof): five sleeve rows pinned to the released v0.9 span never applied in a
+    build, because the swoosh step (data/nfl2k5_kit_fixes_2026_sw1.json) writes these sleeves first. They are pinned to its
+    output, so the approved sleeves ship."""
+
+    def test_the_rows_wait_on_the_swoosh_steps_output(self):
+        sw1 = {(r["selector"], r["chunk"]): r for r in json.loads((ROOT / "data/nfl2k5_kit_fixes_2026_sw1.json").read_text())["textures"]}
+        rows = {(r["selector"], r["chunk"]): r for r in kit_rows()}
+        for key in BUILD_INPUT_ROWS:
+            self.assertEqual(rows[key]["before_sha256"], sw1[key]["after_sha256"], key)
+
+    @unittest.skipUnless(REHEARSAL.is_file(), "a beta 81 build of the branch base (B81_REHEARSAL_DISC)")
+    def test_the_rows_compile_to_their_pins_on_the_builds_input(self):
+        rows = {(r["selector"], r["chunk"]): r for r in kit_rows()}
+        kits = up.read_kits(REHEARSAL, sorted({s for s, _c in BUILD_INPUT_ROWS}))
+        for key in BUILD_INPUT_ROWS:
+            raw = kits[key[0]]
+            chunk = kf._chunk_for(raw, key[1])
+            span = raw[chunk.offset:chunk.end_offset]
+            self.assertEqual(hashlib.sha256(span).hexdigest(), rows[key]["before_sha256"], key)
+            new, _detail = kf.compile_texture(span, rows[key])
+            self.assertEqual(hashlib.sha256(new).hexdigest(), rows[key]["after_sha256"], key)
 
 
 class DigitDocument(unittest.TestCase):
@@ -1168,12 +1196,14 @@ class RealDisc(unittest.TestCase):
         # the helmet shell rows wait on the helmet the b81 cleanup leaves (HelmetRows): on the released disc those the
         # cleanup changes read "other"
         moved = [r for r in result["rows"] if r["state"] == "other"]
-        self.assertTrue(all(r["texture"] in ("helmet00", "helmet02") and r["selector"] in HELMET_KITS for r in moved), moved)
+        self.assertTrue(all((r["texture"] in ("helmet00", "helmet02") and r["selector"] in HELMET_KITS)
+                            or (r["selector"], up.chunk_of(r["texture"])[0]) in BUILD_INPUT_ROWS for r in moved), moved)
         self.assertEqual((result["before"] + result["other"], result["after"], result["absent"]),
                          (len(kit_rows()) + len(unif_rows()) + len(helmet_rows()), 0, 0), result["rows"])
         # the helmet shell rows compile on the helmet the build holds after the cleanup (HelmetRows); here the rest
         document = dict(kf.uniforms_b81())
-        document["textures"] = [r for r in document["textures"] if r["kind"] != "txtr"]
+        document["textures"] = [r for r in document["textures"] if r["kind"] != "txtr"
+                                and (r["selector"], r["chunk"]) not in BUILD_INPUT_ROWS]
         for selector in sorted({r["selector"] for r in kit_rows()}):
             replacements, receipt = kf.compile_resource(selector, self.kits[selector], strict=True,
                                                         document=document, kits=self.kits)
@@ -1220,6 +1250,8 @@ class RealDisc(unittest.TestCase):
 
     def test_the_compiled_kit_textures_hold_exactly_the_authored_runs(self):
         for row in kit_rows():
+            if (row["selector"], row["chunk"]) in BUILD_INPUT_ROWS:
+                continue                                    # compiled on the build's own input: BuildInputRows
             raw = self.kits[row["selector"]]
             chunk = kf._chunk_for(raw, row["chunk"])
             span = raw[chunk.offset:chunk.end_offset]

@@ -19,11 +19,15 @@ released v0.9 disc: no earlier step of beta 81 touches these chunks; every input
   base_equal     shipped texels whose colour equals the base's at that texel
   follows_base   the shipped colours follow the base's shading (a recolour that keeps it): luminance correlation
                  >= 0.9 over at least 32 shipped texels where the base varies
-A row whose input is not on the disc (an earlier step of the same build writes it) is recorded unmeasured. The release
-check refuses a class ii row that fails any of these or is unmeasured."""
+A row whose input is not on the disc (an earlier step of the same build writes it) is recorded unmeasured, unless
+B81_TEXEL_INPUTS names a Studio build of the branch base (b81-uniform-pass2, 11/24): then such a row is measured on the
+input that build holds at the row's chunk, when it is exactly the row's before pin (the sleeves the swoosh step sw1 writes
+before the uniform pass: 07H0, 26H0, 26A0, 09H9, 09A9). The release check refuses a class ii row that fails any of these or
+is unmeasured."""
 from __future__ import annotations
 
 import hashlib
+import os
 import json
 from pathlib import Path
 import sys
@@ -314,12 +318,18 @@ def follows(base, final, shipped):
 PACKAGE = None          # set by main: selector -> package bytes on the disc
 RETAIL = lambda selector: None          # set by main: selector -> package bytes on the retail disc
 LOGO = lambda name: None                # set by main: logos.cdf slot bytes on the disc
+INPUTS = lambda selector: None          # set by main from B81_TEXEL_INPUTS: package bytes on a build of the branch base
 
 
 def kit_line(row, raw):
     c = kf._chunk_for(raw, row['chunk'])
     span = raw[c.offset:c.end_offset]
     if sha(span) != row['before_sha256']:
+        alt = INPUTS(row['selector'])               # the input an earlier step of the build writes (B81_TEXEL_INPUTS)
+        if alt is not None and alt is not raw:
+            ca = kf._chunk_for(alt, row['chunk'])
+            if sha(alt[ca.offset:ca.end_offset]) == row['before_sha256']:
+                return dict(kit_line(row, alt), input='a build of the branch base (B81_TEXEL_INPUTS)')
         return dict(measured=False)
     base = kc.level0(span, row)
     donors = {}
@@ -379,8 +389,18 @@ def glyph_line(row, raw):
 
 
 def main():
-    global RETAIL, LOGO
+    global RETAIL, LOGO, INPUTS
     disc = Path(sys.argv[1])
+    inputs = Path(os.environ['B81_TEXEL_INPUTS']) if os.environ.get('B81_TEXEL_INPUTS') else None
+    inputs_cache = {}
+
+    def inputs_package(selector):
+        if inputs is None:
+            return None
+        if selector not in inputs_cache:
+            inputs_cache[selector] = kf.read_kits(inputs, [selector]).get(selector)
+        return inputs_cache[selector]
+    INPUTS = inputs_package
     retail = Path(sys.argv[2]) if len(sys.argv) > 2 else None
     retail_cache, logo_cache = {}, {}
 
