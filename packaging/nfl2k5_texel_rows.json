@@ -3,18 +3,18 @@
  "documents": {
   "data/nfl2k5_allegiant_model/footprint.json": "b76a6582d5361111798cb7b7a3b6922968df0d3a4ce586395eb6190f03b18f38",
   "data/nfl2k5_att_model/footprint.json": "8c421f87bee508db2160ddc76682db6c124f9630ac08d182f006ac9f74798cb8",
-  "data/nfl2k5_cave_reservations.json": "e44f3caccbff5efec631e1a0e9ab7b42ad4c2c8b30e27bd9a683128b9dca8f3c",
+  "data/nfl2k5_cave_reservations.json": "d8ea5ec56ef7a648e0f485497a69e3091c5fe8d50e08b9a614314086f9a577fc",
   "data/nfl2k5_classic_teams/kits.json": "389d53845d3dbc595a1d1994c71c94a0ce07e30cbf8b63d5662fc4c38f6d1b41",
   "data/nfl2k5_era_kits_pins.json": "de18bdf5f1b32067b286c72c275641a6e3498791f852b6bbe48ea2c80ad0db90",
   "data/nfl2k5_glyph_fixes_2026.json": "a709d39b5fb5ab4a6f6793e6626d36771197c6a196c410b8057e58f899148387",
-  "data/nfl2k5_glyph_fixes_2026_b81u.json": "dfa1bf243713de29770e08d39dea4df0666591d4aa5565c9edc133a7369e452b",
+  "data/nfl2k5_glyph_fixes_2026_b81u.json": "dd6c4f44b78e1176b954aee7afd7a072f3ed7d6fe7f5eb0a583004062a4db5f4",
   "data/nfl2k5_highmark_model/footprint.json": "3f72e13954a89f212c391c42b02589d480df0177f46392bbd34f20cf70da0429",
   "data/nfl2k5_history_2026.json": "94c10ebba65f96ff7318612bc7fce8d2a00c45eb7ef60e7edf6b8247f18ae687",
   "data/nfl2k5_kit_fixes_2026.json": "d33818434feb3f30e5d2515eaae1b186f97bfc6344bd477298550885bce96156",
   "data/nfl2k5_kit_fixes_2026_alts.json": "8a15681861c8abbe4c66c25e27fae776e3d37495f8e0ecf68fa4ffc6660ed7f5",
   "data/nfl2k5_kit_fixes_2026_b81.json": "d2a9e3239050947bc69a4ade58491b3578e3859d841831749dfd163ef24d2da7",
-  "data/nfl2k5_kit_fixes_2026_b81u.json": "1e803b7ebfeacba800301482c105a4a50354f20bd63e10606efca1a4f349930e",
-  "data/nfl2k5_kit_fixes_2026_ku1.json": "2811ee1e688df9b388544d335106df651eedef26e4bedf69c0e3b914a8d08c97",
+  "data/nfl2k5_kit_fixes_2026_b81u.json": "9195c523e9d8188aa90bd10fe30d0c83c35c604f4b66bb2916dbd65a8e259587",
+  "data/nfl2k5_kit_fixes_2026_ku1.json": "9227fb1ef129725bcf72cc8c208a0433eb45b69af14fe5b8a1f99d3c381f62cb",
   "data/nfl2k5_kit_fixes_2026_names.json": "cb354c62aa6b6e8de0ff01e9f25937f0a2e54169bfc37932bd689599529693fb",
   "data/nfl2k5_kit_fixes_2026_ov1.json": "506d9592290de13e4aeb17a23a0febf147e4392b985646ef9c0df5e15765c9c4",
   "data/nfl2k5_kit_fixes_2026_sea1.json": "a313792e54018305ee69026e06e1227f4998e7bfe33b95d2a55d27821fd4da62",
@@ -31,9 +31,9 @@
   "data/nfl2k5_nameplate_fixes_2026.json": "535f690f05dfb40a53239ca007fef42bdc4eaaa9611fcf4b74b1496b62980200",
   "data/nfl2k5_nyg_numbers_pins.json": "e1d34f4a340820f6569f362a91e7a1a5f5f96fd74c3a46644d656500a392f2da",
   "data/nfl2k5_pants_hem_2026.json": "c85ecadefb53337ab7b97996b36b9c36d2119e4745f64e1bab34e321162aa9ca",
-  "data/nfl2k5_relief_2026_b81u.json": "e7bf44e4360bb5a34a198937abb9b3df74d2dc1bb478bc65e966bc39384b6372",
+  "data/nfl2k5_relief_2026_b81u.json": "b4a07b3efbcba1d8e63fc2af19be3f659b7503dce027b4445ae33f6dda17b043",
   "data/nfl2k5_scorebug_mnf/painted_label_2x.json": "9bcf730b076c538f8ed6f879568e766810077549878a909d495034bff8a636da",
-  "data/nfl2k5_sideline_2026_b81u.json": "99467fc250d25538123b89f2cc9280d7c2b9589d612eeaea1ca92463d7c7e9b3",
+  "data/nfl2k5_sideline_2026_b81u.json": "5ab2db190a2658d0e6d8be6569b1ee3930fcd1a9ee6abdc80cb19c7b12352ef6",
   "data/nfl2k5_stadium_environment/s00.json": "715e0fd764e9517a04ad903fa2058b45a9a65ea237efbb4e307250e8f6f7004b",
   "data/nfl2k5_stadium_environment/s01.json": "1b3191f57afd76c0a35cbda1f97dce03f1cc9fa0bea4c790751648fb41b3bc13",
   "data/nfl2k5_stadium_environment/s03.json": "a1a6f9dac0242cd93967eaf7947e36da74dc25460685bae9b4e15b147a59cc6b",
@@ -1533,6 +1533,17 @@
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
     "sha256": "e9b1f2ded12832cd31603c45587d230d2fa919436c24264f034ad8d810d9689f"
    },
+   "02A0:2:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0985,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "ef56fab57c012a308cf271d264b01189a11cf61018eea9bb27ca169ebc55e57e"
+   },
    "02A2:1:tset": {
     "base_equal": 0,
     "cls": "iii",
@@ -1563,6 +1574,17 @@
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
     "sha256": "b61efb2b21613a015aab27805dec2e0317e4d5d2849ebc0e562e8823d6fb0517"
    },
+   "02H0:2:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.2069,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "ed461a969a591803f788fd85e584c4c49d865bb5184951c50e58834beeefdccc"
+   },
    "02H2:1:tset": {
     "base_equal": 0,
     "cls": "iii",
@@ -1586,12 +1608,12 @@
    "03A0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.7071,
+    "edge_overlap": 0.7916,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "f8290033c7fced33d4af6e709e46133a9c6d862b08e9d1ab8b4f1819efd48dfa"
+    "reason": "authored on a region cleared by rule: collar band (royal, red inner edge) drawn by work/BUF/tools/bufcollar.py by distance from the neck opening at 4x, 4 blend steps; the old one-texel lines cleared by rule; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "5e5bc7ea874a129c4dc28d9f4b729e02b0b243e6c403920178b350cff148ee43"
    },
    "03A0:3:tset": {
     "base_equal": 0,
@@ -1692,12 +1714,12 @@
    "04A0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.616,
+    "edge_overlap": 0.6849,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "099b9c9285ea0ec3290ad196ae59b6e3865aa6ee8173c08e408ac047fa1427ae"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "bfab1e6ffdd4c33d9e1300b86ed6b9881f33be00a9dc4b3a5911a1c6ad3072a9"
    },
    "04A2:1:tset": {
     "base_equal": 0,
@@ -1722,12 +1744,12 @@
    "04H0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.6214,
+    "edge_overlap": 0.6616,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "80ee3c15e1423b375d9fa24bd371793b6d549706b21c700ba78fc664e7ad04e7"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "c66379b76c486691f0b77b3c842b9d71b5901c764a712ae5bda406039525620e"
    },
    "04H2:1:tset": {
     "base_equal": 0,
@@ -1882,12 +1904,36 @@
    "07A0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.8293,
+    "edge_overlap": 0.2443,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "9a35fbc7f735ff640dca47f63b81ae34755b8903d6ccf4f0316222f550035d12"
+    "reason": "authored on a region cleared by rule: sleeve stripes drawn as rings round the arm by work/BC/tools/paint_bands.py on the posed model (band widths from the 2026 photographs), the swoosh from the exact pass's outline (surf.swoosh_outline), 5 coverage levels; the old stripes and swoosh cleared by rule; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "5c0d47bf42a3fa9ba1b15a1452366287aed94437ec2bc8a8a87c257f6ae5f660"
+   },
+   "07A0:2:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.2172,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "74bd611a06682f02e31c463b670aea4b368a69fc77337de904cbe028cce72237"
+   },
+   "07A0:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4751,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: sleeve stripes drawn as rings round the arm by work/BC/tools/paint_bands.py on the posed model (band widths from the 2026 photographs), the swoosh from the exact pass's outline (surf.swoosh_outline), 5 coverage levels; the old stripes and swoosh cleared by rule",
+    "sha256": "f3e4d4b7aa601e0ec1439c9c30dd182d75925dde64a5159de71c45d26d553c2c",
+    "small_box_edge_base": 0.0,
+    "small_box_edge_retail": 0.1111,
+    "small_box_texels": 2
    },
    "07A7:1:tset": {
     "base_equal": 0,
@@ -1909,19 +1955,27 @@
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
     "sha256": "b41f50d6676c48cea1be026b7818e6f01584c7981090f45b5111c16d5e07f2fc"
    },
-   "07H0:3:tset": {
+   "07H0:2:tset": {
     "base_equal": 0,
     "cls": "ii",
-    "edge_overlap": 0.0,
+    "edge_overlap": 0.2189,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
     "passes": true,
     "reason": "the base is built from the user's retail disc at build time",
-    "sha256": "c65f337cf025fc08e8067c848d108c3cc7881286749db02aae2345821803832f",
-    "small_box_edge_base": 0.0237,
-    "small_box_edge_retail": 0.0246,
-    "small_box_texels": 12
+    "sha256": "d0b5ea6d762efa9ee7b916e1a3c2d1a712fe02c9cc1847f2d49357f279f0524c"
+   },
+   "07H0:3:tset": {
+    "base_equal": 5,
+    "cls": "iii",
+    "edge_overlap": 0.369,
+    "erasure": 0,
+    "follows_base": false,
+    "input": "a build of the branch base (B81_TEXEL_INPUTS)",
+    "measured": true,
+    "reason": "authored on a region cleared by rule: band drawn by S/work/DAL/tools/dal_sleeve.py white / grey / white at the photographed proportions; read on the texture: its path and depth are the part 0.119..0.833 of the old band's footprint (distance fields at 4x); five-point star drawn by S/work/DAL/tools/dal_sleeve.py (pentagram, tip radius 3.98 cm, white border and navy keyline widths from the photographs) at 4x, 4 blend steps",
+    "sha256": "a27ccb9142daaae2f4fc226408d9bcaab8817cbd67c71a2061ac32a7d9e87341"
    },
    "07H7:1:tset": {
     "base_equal": 0,
@@ -2020,21 +2074,22 @@
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; DETROIT drawn italic by code (Noah's decision 6)",
-    "sha256": "1d6505d74499af5e5f80190ed89bd775f8d6c25904673d1df6b36f106f5029b8",
+    "reason": "authored on a region cleared by rule: Defend the Den base recolour retargeted to neutral grey by rule (ramp); only the authored art ships; base recolour by rule (ramp); only authored art ships; DETROIT drawn italic by code (Noah's decision 6)",
+    "sha256": "0eb558a75acdbd451ab450a57568d6fcae4e56b9d681e38c8c6ac6a039b986ff",
     "small_box_edge_base": 0.0199,
     "small_box_edge_retail": 0.0097,
     "small_box_texels": 11
    },
    "09A9:2:tset": {
     "base_equal": 0,
-    "cls": "iii",
-    "edge_overlap": 0.0083,
+    "cls": "ii",
+    "edge_overlap": 0.0055,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; band and wedge drawn by code on the player model (order R2-C item 2)",
-    "sha256": "41e96a51e4795d9c1df5122f6f7fbbe7d0ec84b6bdecce5df2f35078edb1a24a"
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "17ada86976d9b17abecdc0cc4136c9cd20042b0abcdf54b21cb78a6832ef5149"
    },
    "09H0:1:tset": {
     "base_equal": 0,
@@ -2063,21 +2118,22 @@
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; DETROIT drawn italic by code (Noah's decision 6)",
-    "sha256": "1d6505d74499af5e5f80190ed89bd775f8d6c25904673d1df6b36f106f5029b8",
+    "reason": "authored on a region cleared by rule: Defend the Den base recolour retargeted to neutral grey by rule (ramp); only the authored art ships; base recolour by rule (ramp); only authored art ships; DETROIT drawn italic by code (Noah's decision 6)",
+    "sha256": "0eb558a75acdbd451ab450a57568d6fcae4e56b9d681e38c8c6ac6a039b986ff",
     "small_box_edge_base": 0.0199,
     "small_box_edge_retail": 0.0097,
     "small_box_texels": 11
    },
    "09H9:2:tset": {
     "base_equal": 0,
-    "cls": "iii",
-    "edge_overlap": 0.0083,
+    "cls": "ii",
+    "edge_overlap": 0.0055,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: base recolour by rule (ramp); only authored art ships; band and wedge drawn by code on the player model (order R2-C item 2)",
-    "sha256": "41e96a51e4795d9c1df5122f6f7fbbe7d0ec84b6bdecce5df2f35078edb1a24a"
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "17ada86976d9b17abecdc0cc4136c9cd20042b0abcdf54b21cb78a6832ef5149"
    },
    "10A0:1:tset": {
     "base_equal": 0,
@@ -2215,6 +2271,17 @@
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
     "sha256": "292e1e15bac1beb0fd2351b243344ec6c409d1bbfa024f88ab3c543be7fa980f"
    },
+   "12H0:4:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "3aa79d482dc1cfd69574947f22e10cac446e0c8e6cfd4d3c5c71b30fdbfa407b"
+   },
    "12H6:1:tset": {
     "base_equal": 0,
     "cls": "iii",
@@ -2322,14 +2389,14 @@
     "sha256": "9a35fbc7f735ff640dca47f63b81ae34755b8903d6ccf4f0316222f550035d12"
    },
    "15A0:2:tset": {
-    "base_equal": 118,
+    "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.3219,
+    "edge_overlap": 0.4139,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: pants stripe drawn by rule at its real widths",
-    "sha256": "52f9e4ed47449b0c163a7fd08a688da43fa98246e35c32a44879f18180d0d88f"
+    "reason": "authored on a region cleared by rule: side stripe drawn by S/work/MIN/tools/min_pants.py (paintlib pants_stripe: band edges at fixed cm round the model's leg, widths from the photographs), 4 blend steps; the old stripe cleared by rule; side stripe drawn by S/work/MIN/tools/min_pants.py (paintlib pants_stripe: band edges at fixed cm round the model's leg, widths from the photographs), 4 blend steps; the old stripe cleared by rule; pants stripe drawn by rule at its real widths",
+    "sha256": "6f1b6d019bc44e2bc724622c2d0d95d3c2270b0c6141803ae2ba9fce830f63d2"
    },
    "15A5:1:tset": {
     "base_equal": 0,
@@ -2364,12 +2431,12 @@
    "15H0:2:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.4904,
+    "edge_overlap": 0.733,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: pants stripe drawn by rule at its real width; socks recoloured by rule (ramp)",
-    "sha256": "1764b84f193556069146b3a9ea1ec00d15d0501d1b0290794ab69ee9b29acfb3"
+    "reason": "authored on a region cleared by rule: side stripe drawn by S/work/MIN/tools/min_pants.py (paintlib pants_stripe: band edges at fixed cm round the model's leg, widths from the photographs), 4 blend steps; the old stripe cleared by rule; side stripe drawn by S/work/MIN/tools/min_pants.py (paintlib pants_stripe: band edges at fixed cm round the model's leg, widths from the photographs), 4 blend steps; the old stripe cleared by rule; pants stripe drawn by rule at its real width; socks recoloured by rule (ramp)",
+    "sha256": "213ba05d2e963516118eefebd4b2a65bda390b2eb6a68ed5eb64102c48025e1f"
    },
    "15H5:1:tset": {
     "base_equal": 0,
@@ -2394,12 +2461,12 @@
    "16A0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.6071,
+    "edge_overlap": 0.4122,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "6cfde0ff9af97cff4ac43f8269c5ec366b70ff079b5cc9909e17fabc8da30cf4"
+    "reason": "authored on a region cleared by rule: shoulder stripe set drawn as one shape along the model's armhole seam by work/BC/tools/paint_ne.py (2.8 cm stripes, ends at posed heights read off the photographs), 4 coverage levels; the old pieces cleared by rule; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "37812d4617e25a0ae7b12440a8fa57ccd69e514b55d5da303fd1dacd68de6ccf"
    },
    "16A4:1:tset": {
     "base_equal": 0,
@@ -2424,12 +2491,12 @@
    "16H0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.587,
+    "edge_overlap": 0.3934,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "6b1f67e91168268f5280da0d297a12aaa9c758217e806a3721f8c87b50b2d0bb"
+    "reason": "authored on a region cleared by rule: shoulder stripe set drawn as one shape along the model's armhole seam by work/BC/tools/paint_ne.py (2.8 cm stripes, ends at posed heights read off the photographs), 4 coverage levels; the old pieces cleared by rule; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "5c31b29a2b1ebb774f700d8b14b83f56d04f485bae5a168c19410214557b17ed"
    },
    "16H4:1:tset": {
     "base_equal": 0,
@@ -2452,17 +2519,24 @@
     "sha256": "76d05c78f1be6f16ecf3112b6d94912e639adf20294b0cf1358892e7e1907263"
    },
    "17A0:1:tset": {
-    "base_equal": 6,
+    "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.2243,
+    "edge_overlap": 0.4224,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
-    "sha256": "ef7529cfbf177606e9390a777b31133a2053673d5582fd4cb1c3b7bb7f62bd9d",
-    "small_box_edge_base": 0.1587,
-    "small_box_edge_retail": 0.1176,
-    "small_box_texels": 10
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
+    "sha256": "a0d42c5b3e73157ff4dc13659cb1f5a1afad5a426e56c6e614f15472d55e46f3"
+   },
+   "17A0:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.288,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: fleur drawn by S/work/NO/tools/no_road_fleur.py from the repo's data/nfl2k5_scorebug_assets/logos/no.png at 8x (outline, white band, black core); read on the texture: size and place are round 2's boxes, which ruling 1 found to be the old fleur's height and centre; the old fleur cleared by rule; round 2's fleur size (19 x 28 / 18 x 29 texels), kept by the row's drawn fleur",
+    "sha256": "467fa5726f4f1bfebe3ef098d3821afdbee95b2be4e6b6e8e429a5cd40efc12a"
    },
    "17A1:1:tset": {
     "base_equal": 0,
@@ -2477,12 +2551,12 @@
    "17A3:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.3843,
+    "edge_overlap": 0.574,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
-    "sha256": "7eaa14b77a17cd86bdf478ca128e88157b6896af3d2477ab0cdb6bb9108a5305"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
+    "sha256": "f4dfbd050a0023151a43b88a200c22f21ecdc1eed4ad06b15fcde778a65956dc"
    },
    "17A8:1:tset": {
     "base_equal": 0,
@@ -2495,14 +2569,14 @@
     "sha256": "508d4b0e6e35be55d45507f339e66700380448c5c51be153c25b876e6f83d8b1"
    },
    "17H0:1:tset": {
-    "base_equal": 3,
+    "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.2195,
+    "edge_overlap": 0.4227,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
-    "sha256": "315f08998dc14b833139ab2378c116df415520f300de70d1b0ea294dca8f0428"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
+    "sha256": "a35791ff4bea41cd0d052534acd9be29ab610b798fe579eea31fef895bc903f2"
    },
    "17H1:1:tset": {
     "base_equal": 0,
@@ -2517,12 +2591,12 @@
    "17H3:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.3843,
+    "edge_overlap": 0.574,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
-    "sha256": "7eaa14b77a17cd86bdf478ca128e88157b6896af3d2477ab0cdb6bb9108a5305"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
+    "sha256": "f4dfbd050a0023151a43b88a200c22f21ecdc1eed4ad06b15fcde778a65956dc"
    },
    "17H8:1:tset": {
     "base_equal": 0,
@@ -2547,6 +2621,17 @@
     "small_box_edge_retail": 0.194,
     "small_box_texels": 26
    },
+   "18A0:2:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.1507,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "47277d70790d1e873ad6b690abb9facd32b6ce5afc185f732b61f06827ff0b89"
+   },
    "18A7:1:tset": {
     "base_equal": 5,
     "cls": "iii",
@@ -2570,6 +2655,17 @@
     "small_box_edge_retail": 0.194,
     "small_box_texels": 26
    },
+   "18H0:2:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.207,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "b64ac5f01a1864a2452a07a38db2f66d14fcb1dd9b38bc94055c1ac63d57f0a9"
+   },
    "18H7:1:tset": {
     "base_equal": 5,
     "cls": "iii",
@@ -2583,12 +2679,23 @@
    "19A0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.6018,
+    "edge_overlap": 0.5518,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "020e805657dd159d4b2c3b187fe1e08a206face603b2a7b604e4cdb75b107d4e"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "e5112f11e0a9835a4521d0047d808aa462fb513c7dac6cc4038254eb54a608b8"
+   },
+   "19A0:2:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0014,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "9a567aea8fd094b642c3104c38ee50a4808b580eb2cd3fc0e8f3de5ceb8f6136"
    },
    "19A2:1:tset": {
     "base_equal": 0,
@@ -2613,22 +2720,33 @@
    "19A7:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.633,
+    "edge_overlap": 0.6831,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "6cda9394dc8d7c1cff632c0a14961e1cb351cd6bfa4872bd886186085225e889"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "76ea485b873427c261f48f906ee68752287b9198de07bc90a6f403b87b40664f"
    },
    "19H0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.708,
+    "edge_overlap": 0.414,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "00d55ea2fb82cb53c1d7550fbb0696db4d3a4aaa5069e34966e33be508604d33"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "83264457bb46495066809f5bdce79d324f27303f5d115092ca9b6f5fd8a5b94e"
+   },
+   "19H0:2:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.0016,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "1dc69eef11e07e61a7cb63b35de61b6380e0084a8390d20bd544285c9257b1e1"
    },
    "19H2:1:tset": {
     "base_equal": 0,
@@ -2653,12 +2771,12 @@
    "19H7:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.633,
+    "edge_overlap": 0.6831,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "6cda9394dc8d7c1cff632c0a14961e1cb351cd6bfa4872bd886186085225e889"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "76ea485b873427c261f48f906ee68752287b9198de07bc90a6f403b87b40664f"
    },
    "20A0:1:tset": {
     "base_equal": 0,
@@ -2701,34 +2819,34 @@
     "sha256": "9a35fbc7f735ff640dca47f63b81ae34755b8903d6ccf4f0316222f550035d12"
    },
    "21A0:1:tset": {
-    "base_equal": 2,
+    "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.4455,
+    "edge_overlap": 0.5224,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
-    "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; 18 half-blend texels (#808080) added in the inner corners of the two steps",
+    "sha256": "7ae0532c881a7356758d3642250b78178621db32a0993fa7dd473ae78898a350"
    },
    "21A10:1:tset": {
-    "base_equal": 2,
+    "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.4455,
+    "edge_overlap": 0.5224,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
-    "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; 18 half-blend texels (#808080) added in the inner corners of the two steps",
+    "sha256": "7ae0532c881a7356758d3642250b78178621db32a0993fa7dd473ae78898a350"
    },
    "21A12:1:tset": {
-    "base_equal": 2,
+    "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.4455,
+    "edge_overlap": 0.5224,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
-    "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; 18 half-blend texels (#808080) added in the inner corners of the two steps",
+    "sha256": "7ae0532c881a7356758d3642250b78178621db32a0993fa7dd473ae78898a350"
    },
    "21A13:1:tset": {
     "base_equal": 0,
@@ -2754,34 +2872,34 @@
     "small_box_texels": 6
    },
    "21H0:1:tset": {
-    "base_equal": 25,
+    "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.4701,
+    "edge_overlap": 0.5692,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
-    "sha256": "ff7e0ba261e1161a89ecfa4b30629378a6d0655f5425ea29739701033a59ef0f"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; 18 half-blend texels (#808080) added in the inner corners of the two steps",
+    "sha256": "eeb8249c13ad02164286c6ab7d8bbb4e1b32853ea8a7c640e60d5489273c1253"
    },
    "21H10:1:tset": {
-    "base_equal": 2,
+    "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.4455,
+    "edge_overlap": 0.5224,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
-    "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; 18 half-blend texels (#808080) added in the inner corners of the two steps",
+    "sha256": "7ae0532c881a7356758d3642250b78178621db32a0993fa7dd473ae78898a350"
    },
    "21H12:1:tset": {
-    "base_equal": 2,
+    "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.4455,
+    "edge_overlap": 0.5224,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: 18 half-blend texels (#808080) added in the inner corners of the two steps",
-    "sha256": "21718deb2377259cf698c866964e5d45b51108b19e34bb0466989c22efb3aec5"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; 18 half-blend texels (#808080) added in the inner corners of the two steps",
+    "sha256": "7ae0532c881a7356758d3642250b78178621db32a0993fa7dd473ae78898a350"
    },
    "21H13:1:tset": {
     "base_equal": 0,
@@ -2809,12 +2927,12 @@
    "22A0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.6154,
+    "edge_overlap": 0.0618,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "b93f658a2e1a56cb19026a9cab3939e21b9e24a6a1994bba397bad22e7681090"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "1413ed20d0c22240f7d077a260818684c250ae72d30282e113d596f1a520c467"
    },
    "22A5:1:tset": {
     "base_equal": 0,
@@ -2849,12 +2967,12 @@
    "23A0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.8293,
+    "edge_overlap": 0.1337,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "8de0c99dbdbfce58486e81d4b906b08bbc23d3e7f784d8ff9cbad46027ee52af"
+    "reason": "authored on a region cleared by rule: shoulder horn drawn as one shape on the posed body by work/BC/tools/paint_lar.py (widths, tip and curl from the 2026 photographs), 5 coverage levels; the old horn and the blue back-yoke bars cleared by rule; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "cb388efdbc55050563a17f3407a772903afc6651cdf74e4f55036b414c20b365"
    },
    "23A0:2:tset": {
     "base_equal": 0,
@@ -2868,6 +2986,16 @@
     "small_box_edge_base": 0.0084,
     "small_box_edge_retail": 0.0,
     "small_box_texels": 43
+   },
+   "23A0:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.1647,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: shoulder horn drawn as one shape on the posed body by work/BC/tools/paint_lar.py (widths, tip and curl from the 2026 photographs), 5 coverage levels; the old horn and the blue back-yoke bars cleared by rule",
+    "sha256": "a75a175f5672992a6b8b38e3bf4958f1cf0ff58e8c2dfdfd62895d956a366b15"
    },
    "23A10:1:tset": {
     "base_equal": 0,
@@ -2902,12 +3030,22 @@
    "23H0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.7593,
+    "edge_overlap": 0.1741,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "603a291d20f69be1cbb719e70ab9cbc190be9392b423888fc5e2afd4263d1452"
+    "reason": "authored on a region cleared by rule: shoulder horn drawn as one shape on the posed body by work/BC/tools/paint_lar.py (widths, tip and curl from the 2026 photographs), 5 coverage levels; the old horn and the blue back-yoke bars cleared by rule; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "9a944e195cc565b960840dc7359606935349d0c2d20b6d42779855d97ee20327"
+   },
+   "23H0:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.1647,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: shoulder horn drawn as one shape on the posed body by work/BC/tools/paint_lar.py (widths, tip and curl from the 2026 photographs), 5 coverage levels; the old horn and the blue back-yoke bars cleared by rule",
+    "sha256": "2eca0ffa2eea13ba17a48ddd8c58fa63f1dcfeaf3bae9bda7eed7db6a7100349"
    },
    "23H10:1:tset": {
     "base_equal": 0,
@@ -2942,22 +3080,54 @@
    "24A0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.8395,
+    "edge_overlap": 0.244,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "8605e2a877cfb943c3a7280d5885f7a1aa481f29d481b9a48edea4c8ab6dc216"
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule; shoulder bolt drawn by b81-uniform-exact work/tools/paint_lac.py: the art lane's measured bolt polygon (lacbolt.BOLT_GOLD) laid along the sleeve seam at 38 cm; the old marks cleared to the flat cloth colour by rule",
+    "sha256": "9fa165a148c9f0987e6e360530333f76a739bc5f6b17310519e1b34b101174a0"
+   },
+   "24A0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4373,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: pants bolt drawn by b81-uniform-marks work/LAC/tools/lacbolt.py (the same measured bolt polygon) down the outer leg on the model; the old bolt cleared to the flat cloth by rule",
+    "sha256": "70949168a4d657ddb2c167c46f323a1e25fb91270a3684da072538c6f1da606b"
+   },
+   "24A0:3:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.2455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "f167c797dd3e9271e1a8f592ee33ed1f95613c371ceb202183fe907d0143b499"
    },
    "24A10:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.8193,
+    "edge_overlap": 0.2503,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "8c62f25351694118f1e765f8278d70a4c00ecbc7e6e36e92b46ce239eef7fda0"
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule; shoulder bolt drawn by b81-uniform-exact work/tools/paint_lac.py: the art lane's measured bolt polygon (lacbolt.BOLT_GOLD) laid along the sleeve seam at 38 cm; the old marks cleared to the flat cloth colour by rule",
+    "sha256": "c498083e50ee8c9b6f39d07b538da47d3f2ec906bc168ec2e6e3299181525794"
+   },
+   "24A10:3:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.2455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "f167c797dd3e9271e1a8f592ee33ed1f95613c371ceb202183fe907d0143b499"
    },
    "24A11:1:tset": {
     "base_equal": 0,
@@ -2982,22 +3152,54 @@
    "24H0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.7455,
+    "edge_overlap": 0.2379,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "03a66e04d1462ab562b2194a821ded9ed542ad5142fe62a427dd5dccb638d280"
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule; shoulder bolt drawn by b81-uniform-exact work/tools/paint_lac.py: the art lane's measured bolt polygon (lacbolt.BOLT_GOLD) laid along the sleeve seam at 38 cm; the old marks cleared to the flat cloth colour by rule",
+    "sha256": "f3aa187ab402934e61288ced496ac96be15951446cc127e5871c2d4d6c027104"
+   },
+   "24H0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.3599,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: pants bolt drawn by b81-uniform-marks work/LAC/tools/lacbolt.py (the same measured bolt polygon) down the outer leg on the model; the old bolt cleared to the flat cloth by rule",
+    "sha256": "75bf8888ae619f43742c4815382e95f051e9fc8599ea15156052ba739e8d72a8"
+   },
+   "24H0:3:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.2455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "8f4b125035db1a6f80eb126aa10c725fba1a1179460df883eeb6c7fadef75f22"
    },
    "24H10:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.7455,
+    "edge_overlap": 0.237,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "cb6a5aaea840c5dbafba94276a751d554205732e60bf4697a59677c6a92c7d33"
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule; shoulder bolt drawn by b81-uniform-exact work/tools/paint_lac.py: the art lane's measured bolt polygon (lacbolt.BOLT_GOLD) laid along the sleeve seam at 38 cm; the old marks cleared to the flat cloth colour by rule",
+    "sha256": "56b1cc89ee3bb1d182879f3c8338dd82a1c3ced300de4bd3370d19fa95650b30"
+   },
+   "24H10:3:tset": {
+    "base_equal": 0,
+    "cls": "ii",
+    "edge_overlap": 0.2455,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "passes": true,
+    "reason": "the base is built from the user's retail disc at build time",
+    "sha256": "8f4b125035db1a6f80eb126aa10c725fba1a1179460df883eeb6c7fadef75f22"
    },
    "24H11:1:tset": {
     "base_equal": 0,
@@ -3042,22 +3244,49 @@
    "25H0:2:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.2142,
+    "edge_overlap": 0.5319,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: pants stripe drawn by rule at the widths read off 2026 photographs",
-    "sha256": "f49b8a9eeed4ccce627a1b73d030ba033805757e8a420c797d2a9a73a3cde96b"
+    "reason": "authored on a region cleared by rule: the maker's mark recoloured at each texel's own coverage by rule (ramp); none of it ships as texels; pants stripe drawn by rule at the widths read off 2026 photographs",
+    "sha256": "9f45f52c04361fc91900822beccdb9adf3a8029ed9925c40806b0eaf87e6be17"
    },
    "26A0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.7216,
+    "edge_overlap": 0.3837,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "828f9ce72293d52188f63564354878c3f814042e2a45c9a3b595b655d123cad0"
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule; chest band, collar feather strips and SEAHAWKS wordmark drawn by b81-uniform-exact work/tools/paint_sea.py from shapes defined on the body; the old marks cleared by rule; sleeve cap and shoulder patch drawn by b81-uniform-exact work/tools/paint_sea.py from shapes defined on the body (measured on the 2026 photographs, laid out in the Design Lab); the old marks cleared by rule",
+    "sha256": "73a4eb6ab10e98d2e825f6b5f890d0cbea4086ef17a64ba67753694ae8bf5415"
+   },
+   "26A0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4816,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: side stripe with twelve feathers drawn by b81-uniform-exact work/tools/paint_sea_pants.py; the old stripe cleared by rule",
+    "sha256": "5c248dbcd2ee9094158432bad4363763403cbe00a307ee1397f661c4b760fab7",
+    "small_box_edge_base": 0.1622,
+    "small_box_edge_retail": 0.2,
+    "small_box_texels": 15
+   },
+   "26A0:3:tset": {
+    "base_equal": 1,
+    "cls": "iii",
+    "edge_overlap": 0.5632,
+    "erasure": 0,
+    "follows_base": false,
+    "input": "a build of the branch base (B81_TEXEL_INPUTS)",
+    "measured": true,
+    "reason": "authored on a region cleared by rule: sleeve cap and shoulder patch drawn by b81-uniform-exact work/tools/paint_sea.py from shapes defined on the body (measured on the 2026 photographs, laid out in the Design Lab); the old marks cleared by rule",
+    "sha256": "224a1006869deec1f8c75dabedd355c6395bd546c0e4abdc13bc08a974e73569",
+    "small_box_edge_base": 0.0526,
+    "small_box_edge_retail": 0.0303,
+    "small_box_texels": 15
    },
    "26A3:1:tset": {
     "base_equal": 0,
@@ -3075,22 +3304,65 @@
    "26A4:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.7216,
+    "edge_overlap": 0.2733,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "0f40f1d8751c4344c8959c0aceca80e72cd8d7ffeebd4b9109e33ea73a74aa9e"
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule; chest band, collar feather strips and SEAHAWKS wordmark drawn by b81-uniform-exact work/tools/paint_sea.py from shapes defined on the body; the old marks cleared by rule; sleeve cap and shoulder patch drawn by b81-uniform-exact work/tools/paint_sea.py from shapes defined on the body (measured on the 2026 photographs, laid out in the Design Lab); the old marks cleared by rule",
+    "sha256": "4d17fa0f0b507333d71165b4df0f4ec31b36810531799b87e965d95e1afaa112",
+    "small_box_edge_base": 0.0,
+    "small_box_edge_retail": 0.2222,
+    "small_box_texels": 4
+   },
+   "26A4:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.75,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: sleeve cap and shoulder patch drawn by b81-uniform-exact work/tools/paint_sea.py from shapes defined on the body (measured on the 2026 photographs, laid out in the Design Lab); the old marks cleared by rule",
+    "sha256": "d262a0e1a1d1827d7338a277333a1cb4d67c691596d1a2b1de8a1affd57e9c82"
    },
    "26H0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.7434,
+    "edge_overlap": 0.3406,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "94e866355b3b1dfe0a21fee7def474a76dd6ae313d4fe7ac3658aa181d6e58a5"
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule; chest band, collar feather strips and SEAHAWKS wordmark drawn by b81-uniform-exact work/tools/paint_sea.py from shapes defined on the body; the old marks cleared by rule; sleeve cap and shoulder patch drawn by b81-uniform-exact work/tools/paint_sea.py from shapes defined on the body (measured on the 2026 photographs, laid out in the Design Lab); the old marks cleared by rule",
+    "sha256": "985051765eec7a15d30d9055c86afc1cb6ee00eaad392d42e89f1401b82bc10b",
+    "small_box_edge_base": 0.2,
+    "small_box_edge_retail": 0.1333,
+    "small_box_texels": 10
+   },
+   "26H0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4241,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: side stripe with twelve feathers drawn by b81-uniform-exact work/tools/paint_sea_pants.py; the old stripe cleared by rule",
+    "sha256": "a6f86a92d9cc555f012692ddff05bca0981273f443c6f7332479268df29ac84e",
+    "small_box_edge_base": 0.1667,
+    "small_box_edge_retail": 0.2,
+    "small_box_texels": 15
+   },
+   "26H0:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5711,
+    "erasure": 0,
+    "follows_base": false,
+    "input": "a build of the branch base (B81_TEXEL_INPUTS)",
+    "measured": true,
+    "reason": "authored on a region cleared by rule: sleeve cap and shoulder patch drawn by b81-uniform-exact work/tools/paint_sea.py from shapes defined on the body (measured on the 2026 photographs, laid out in the Design Lab); the old marks cleared by rule",
+    "sha256": "f48d8d6a92e3090cb8026d4cc4c5399f74d30cf3b1e3c9d389dfd66f9713a022",
+    "small_box_edge_base": 0.0,
+    "small_box_edge_retail": 0.0,
+    "small_box_texels": 2
    },
    "26H3:1:tset": {
     "base_equal": 0,
@@ -3108,28 +3380,32 @@
    "26H4:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.5328,
+    "edge_overlap": 0.2633,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: 26H0's panels copied by rule (stamp of the pinned donor + a colour-pair map); only the drawn collar shield ships",
-    "sha256": "4ce4b67f06608a33444c5700b12b57cd503a440b09df59f7682fc284c9189986",
-    "small_box_edge_base": 0.1408,
-    "small_box_edge_retail": 0.1133,
-    "small_box_texels": 56
+    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule; chest band, collar feather strips and SEAHAWKS wordmark drawn by b81-uniform-exact work/tools/paint_sea.py from shapes defined on the body; the old marks cleared by rule; sleeve cap and shoulder patch drawn by b81-uniform-exact work/tools/paint_sea.py from shapes defined on the body (measured on the 2026 photographs, laid out in the Design Lab); the old marks cleared by rule",
+    "sha256": "68a9cc1defe53e8ec8d9d800c51ec6a18d227890c0e5b3c2cf8df11a8144d278"
+   },
+   "26H4:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7545,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: sleeve cap and shoulder patch drawn by b81-uniform-exact work/tools/paint_sea.py from shapes defined on the body (measured on the 2026 photographs, laid out in the Design Lab); the old marks cleared by rule",
+    "sha256": "ca7b30019ebba64f75b785235ccc74da31b26d8af685f7e1c87cb29710a988cf"
    },
    "27A0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.5643,
+    "edge_overlap": 0.0803,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "b3be35df7dd28c87599e0d3dfb4d0a579ae27e169a61e760baa2dd0932c45a1e",
-    "small_box_edge_base": 0.119,
-    "small_box_edge_retail": 0.1071,
-    "small_box_texels": 22
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "efef24ad3c9c3c5b6f93f79271db972e7af947aa0b05ebb225ba095c940f71de"
    },
    "27A0:2:tset": {
     "base_equal": 0,
@@ -3164,12 +3440,12 @@
    "27H0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.5148,
+    "edge_overlap": 0.1535,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "3570f2af479d259a6464e174c07ee8f91aaa26cf4160459dd73490d976caa6b0"
+    "reason": "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "0f89773368efdc9008702b5b5fb50c613a1b676503c7fa5f9f83500f3fe3c160"
    },
    "27H0:2:tset": {
     "base_equal": 0,
@@ -3211,6 +3487,16 @@
     "reason": "authored on a region cleared by rule: chest wordmark moved by rule (move); only the drawn collar shield ships; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
     "sha256": "754542336ee1f76a065a366509e6742b69b93e4c9b161eb09fe4aff6934420d2"
    },
+   "28A0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.2669,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: side stripe drawn by S/work/TEN/tools/ten_road_pants.py (27 texels: red, white, navy line, a band with four ribs, to the standard hem row); read on the texture: the band takes one pants colour per row from the painter's picture",
+    "sha256": "225101e1e0316bd01b1100c7ff10494ed6a7e9ba04f13ff921fed181f0f93f82"
+   },
    "28H0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
@@ -3224,10 +3510,17 @@
    "29A0:1:tset": {
     "cls": "iii",
     "reason": "ruling 1: Commanders road shoulder swoosh, added to this list by ruling: retail 29H0 and 29A0 carry no swoosh; the shape is the project's own swoosh from its 29H0 sleeve art, laid on the body by work/fix/R2C/tools/waspaint.py through the game jersey mesh; it sits where the project's own v0.9 swoosh was, which a clear rule removes; its colours blend white with the kit burgundy. Measured (retail-free/REVIEW_ME.md section 18): the swoosh texels' edge overlap 0.047 against the retail torso and 0.165 against the base the build holds at this step, none equal to either. The row's collar shield is drawn from data/nfl2k5_espn25_fields/source/nfl_2008.png (class iii family b81u-collar-shield-undersized)",
-    "sha256": "bde95e94e17e696ac9a66eca1577da7a19f92cbde2def5ae33d13e962f7df2ed",
-    "small_box_edge_base": 0.0377,
-    "small_box_edge_retail": 0.0179,
-    "small_box_texels": 87
+    "sha256": "61e8c485751b5d2a696ddc9e158bb389f4014a2e0e2b1406f234ca721b64c806"
+   },
+   "29A0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7921,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: side stripe drawn by S/work/WAS/tools/restripe.py in the kit's flat colours on straight columns to the cuff line; read on the texture: the last row above the cuff line keeps the coverage the old picture had there; side stripe drawn by S/work/WAS/tools/restripe.py in the kit's flat colours on straight columns to the cuff line; read on the texture: the last row above the cuff line keeps the coverage the old picture had there",
+    "sha256": "ca5dd8c9dc0ebb748e5636ae0834989ec2f909581da3e9de537abce482fe2ce9"
    },
    "29A9:1:tset": {
     "base_equal": 0,
@@ -3249,6 +3542,16 @@
     "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
     "sha256": "a63a62f7a6154956758e36e0739e0a4bd951faa247694c369ced16c8d7798242"
    },
+   "29H0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6784,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: side stripe drawn by S/work/WAS/tools/restripe.py in the kit's flat colours on straight columns to the cuff line; read on the texture: the last row above the cuff line keeps the coverage the old picture had there; side stripe drawn by S/work/WAS/tools/restripe.py in the kit's flat colours on straight columns to the cuff line; read on the texture: the last row above the cuff line keeps the coverage the old picture had there",
+    "sha256": "0ca6249e817b91a7d93d0f7e386955cbe5cfdec3abe18764cd495d78713b5db0"
+   },
    "29H9:1:tset": {
     "base_equal": 0,
     "cls": "iii",
@@ -3262,12 +3565,32 @@
    "30A0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.8193,
+    "edge_overlap": 0.2265,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "046bf5376b925b5545e995cef9b036a2faddc7b058bc366f3206b1dce1fb939f"
+    "reason": "authored on a region cleared by rule: sleeve stripes drawn as rings round the arm by work/BC/tools/paint_bands.py on the posed model (band widths from the 2026 photographs), the swoosh from the exact pass's outline (surf.swoosh_outline), 5 coverage levels; the old stripes and swoosh cleared by rule; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "24e17abd569190ade2f9c0380e4204dfb6b9a7e8c630f91104e80de055fcbfe1"
+   },
+   "30A0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4909,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: side stripe drawn by b81-uniform-marks work/CLE/tools/clepaint.py: three touching 13-texel bands, 4 blend steps; read on the texture: the hem row per column and (30A0) the cloth beside the old stripe; side stripe drawn by b81-uniform-marks work/CLE/tools/clepaint.py: three touching 13-texel bands, 4 blend steps; read on the texture: the hem row per column and (30A0) the cloth beside the old stripe",
+    "sha256": "e028520ded18d2df2a45ed94cce3c84c6a3508c3b42c9306ce01c9d77b5ba442"
+   },
+   "30A0:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4941,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: sleeve stripes drawn as rings round the arm by work/BC/tools/paint_bands.py on the posed model (band widths from the 2026 photographs), the swoosh from the exact pass's outline (surf.swoosh_outline), 5 coverage levels; the old stripes and swoosh cleared by rule",
+    "sha256": "2bbf4c2bfcf67d44a9e62dd95d5fa6b78ec2a9bb007a464631333fbe204bc01a"
    },
    "30A3:1:tset": {
     "base_equal": 0,
@@ -3292,12 +3615,32 @@
    "30H0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.7455,
+    "edge_overlap": 0.3255,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "fdf63ff5d44f9c50c0c41f02522b5ffbb96042091113a1e4c7f8f0e0cb0ef2c9"
+    "reason": "authored on a region cleared by rule: sleeve stripes drawn as rings round the arm by work/BC/tools/paint_bands.py on the posed model (band widths from the 2026 photographs), the swoosh from the exact pass's outline (surf.swoosh_outline), 5 coverage levels; the old stripes and swoosh cleared by rule; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "e5d86d6d66aa47418a2e8e4394eed7c27b521b8e838df212412d9404538f4b94"
+   },
+   "30H0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.4717,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: cloth white -> orange keeping each texel's shade, the maker's mark and the hem edge by rule (ramps); nothing of it ships as texels; side stripe drawn by b81-uniform-marks work/CLE/tools/clepaint.py: three touching 13-texel bands, 4 blend steps; read on the texture: the hem row per column and (30A0) the cloth beside the old stripe; side stripe drawn by b81-uniform-marks work/CLE/tools/clepaint.py: three touching 13-texel bands, 4 blend steps; read on the texture: the hem row per column and (30A0) the cloth beside the old stripe",
+    "sha256": "56107984c32a14a2262d28114d49867abf5f9e38bdaaa7f942af7012a7de3f4c"
+   },
+   "30H0:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.7485,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: sleeve stripes drawn as rings round the arm by work/BC/tools/paint_bands.py on the posed model (band widths from the 2026 photographs), the swoosh from the exact pass's outline (surf.swoosh_outline), 5 coverage levels; the old stripes and swoosh cleared by rule",
+    "sha256": "4d2ecdb6c25d29d5dab675acfe9c3fc060940c4a3f99373ae88ae33333115602"
    },
    "30H3:1:tset": {
     "base_equal": 0,
@@ -3322,12 +3665,32 @@
    "37A0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.3487,
+    "edge_overlap": 0.0787,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: memorial oval drawn by code (navy oval, light rim, a row of marks)",
-    "sha256": "a38db7926cfd9f0065a5c1b77151fdfbca1b13ed4061ca15412b80a671c43114"
+    "reason": "authored on a region cleared by rule: shoulder horn drawn by S/work/HOU/tools/hou_horn.py (paths and widths from the photographs) at 4x, 4 coverage levels; the old band cleared to white by rule; memorial oval drawn by code (navy oval, light rim, a row of marks)",
+    "sha256": "6e5c347c0dbda37580e790d4efa500d42bcc75af90d947abdd999a68e07fe377"
+   },
+   "37A0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.6142,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: side stripe drawn by S/work/HOU/tools/hou_pants.py: red 5 + navy 20 texels from row 36-40 to the standard hem row (uvpos/std_hem.npy); the old stripe back to the cloth by rule; side stripe drawn by S/work/HOU/tools/hou_pants.py: red 5 + navy 20 texels from row 36-40 to the standard hem row (uvpos/std_hem.npy); the old stripe back to the cloth by rule",
+    "sha256": "df1194158c3bd5de6efae403cf925193cbf5d9511a49af1e3b353ea348b749e9"
+   },
+   "37A0:3:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.3497,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: shoulder horn drawn by S/work/HOU/tools/hou_horn.py (paths and widths from the photographs) at 4x, 4 coverage levels; the old band cleared to white by rule",
+    "sha256": "55b14a09f628edaaceebe97fde8f4bb51799dde32ddecfaf86bef013f2b08dec"
    },
    "37A2:1:tset": {
     "base_equal": 0,
@@ -3348,6 +3711,16 @@
     "measured": true,
     "reason": "authored on a region cleared by rule: memorial oval drawn by code (navy oval, light rim, a row of marks)",
     "sha256": "ced83466099e0751e7c5c4a9a0c7fc0940e2779184ca4ee1dee75294b448e44c"
+   },
+   "37H0:2:tset": {
+    "base_equal": 0,
+    "cls": "iii",
+    "edge_overlap": 0.5206,
+    "erasure": 0,
+    "follows_base": false,
+    "measured": true,
+    "reason": "authored on a region cleared by rule: side stripe drawn by S/work/HOU/tools/hou_pants.py: red 5 + navy 20 texels from row 36-40 to the standard hem row (uvpos/std_hem.npy); the old stripe back to the cloth by rule; side stripe drawn by S/work/HOU/tools/hou_pants.py: red 5 + navy 20 texels from row 36-40 to the standard hem row (uvpos/std_hem.npy); the old stripe back to the cloth by rule",
+    "sha256": "165e30a971915f64bd0620012aee65c44db044a8cfa93b2d2fd7306c46468b1e"
    },
    "37H2:1:tset": {
     "base_equal": 0,
