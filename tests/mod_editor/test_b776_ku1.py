@@ -16,12 +16,23 @@ from mod_editor.core import nfl2k5_glyph_fixes_2026 as glyphs
 from mod_editor.core import nfl2k5_menu_chiefs_2026 as menu
 
 # the b775 test disc (the pinned input) and the user's retail disc, e.g. NFL2K5_KU1_DISC=... NFL2K5_KU1_RETAIL=...
+# NFL2K5_KU1_DISC may also be a folder holding 13H0.IFF and 13A0.IFF saved whole from a disc. The b775 disc is gone;
+# the earlier i4 test disc's packages (same frozen recipe) are at every ku1 and fn2 row's before pin, so the rows read
+# exactly the b775 bytes. The checks below are unchanged: strict compiles refuse any chunk off its pin.
 B775 = Path(os.environ.get("NFL2K5_KU1_DISC", "/nonexistent"))
 RETAIL = Path(os.environ.get("NFL2K5_KU1_RETAIL", "/nonexistent"))
 
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def _packages(source, selectors):
+    """Kit packages from a disc image, or from a folder of packages saved whole from one (SELECTOR.IFF)."""
+    if source.is_dir():
+        return {s: (source / f"{s}.IFF").read_bytes() for s in selectors}
+    from test_b776_fn2 import _read_kits
+    return _read_kits(source, selectors)
 
 
 def hx(text):
@@ -156,9 +167,8 @@ class RealBytes(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        from test_b776_fn2 import _read_kits
-        cls.raws = _read_kits(B775, {"13H0", "13A0"})
-        cls.retail = _read_kits(RETAIL, {"13H0", "13A0"})
+        cls.raws = _packages(B775, {"13H0", "13A0"})
+        cls.retail = _packages(RETAIL, {"13H0", "13A0"})
 
     def test_kit_rows_compile_to_their_pins_and_replay_to_nothing(self):
         doc = fixes.chiefs()
