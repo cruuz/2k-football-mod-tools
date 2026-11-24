@@ -59,6 +59,9 @@ REVERTED_TO_V09 = ("01H0", "01A0", "30H0", "30A0", "08H0", "08A0", "37H0", "37A0
 # italicized. That looks the closest to reality"): the Chargers home and road wear the released v0.9 italic digits again; their
 # 20 upright digit rows were dropped (b81-uniform-pass2). The alternates keep R2's upright set until he rules on them.
 REVERTED_TO_V09 += ("24H0", "24A0")
+# Advisor round 2 (11/24; Noah: "let the advisor approve"), coordinator ruling: the Commanders road follows his home verdict
+# ("Old number font is better") and his never-worse-than-v0.9 rule: 29A0 wears the released v0.9 digits again (b81-uniform-pass2)
+REVERTED_TO_V09 += ("29A0",)
 # Noah 11/23 ("use charcoal browns numbers but old font"): the Browns road wears the released v0.9 digits recoloured to the
 # charcoal of its name letters: 20 digit_derived rows, one colour swap on the glyph the build holds (b81-uniform-pass2)
 V09_FONT_RECOLOURED = ("30A0",)
