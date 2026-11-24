@@ -1080,7 +1080,7 @@
    "selector": "17A8"
   },
   {
-   "after_sha256": "a7d53b42a40397e782436cf4e463a2c57165d426c4464d638ffabce9ac64317d",
+   "after_sha256": "874247404065fd51223052689b9e8b567a6cf8f7a0cd1d94180597fcb38f63b1",
    "before_sha256": "52736ae2655f37fb43bc98e93455b43c7505debf57ca7fa79804ba1939997ea5",
    "compose": {
     "pants": {
@@ -1107,7 +1107,7 @@
    },
    "field_sha256": {
     "pants": "8ebc9ad22626e82057651978048ab5f9f95de24243a1f70e4513ae92b82adc4a",
-    "sleeve": "2b6008462566e98283285f9db507d47714318984e44baea3954aea5ad51fe02b"
+    "sleeve": "cb5a9704e5040fc168221c4ec402ca4b177011c943e8b52a0c8c45185c367cad"
    },
    "parts": [
     "pants",

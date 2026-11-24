@@ -23,6 +23,9 @@ from mod_editor.core import (build_steps, mod_build, nfl2k5_glyph_fixes_2026 as 
                              nfl2k5_kit_fixes_2026 as kf, nfl2k5_nameplate_fixes_2026 as nf)
 
 DISC = Path(os.environ.get("B81_UNIFORM_DISC", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.9 (2026-11-05).xiso.iso"))
+RETAIL = Path(os.environ.get("B81_RETAIL_DISC", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
+REHEARSAL = Path(os.environ.get("B81_REHEARSAL_DISC",
+                                "/media/noah/Storage/2K5-project/b81-rehearsal/build/full-20261121-155155/full.xiso.iso"))
 SIZES = {"jersey00": [512, 256], "pants00": [512, 256], "sleeve00": [128, 128], "socks00": [64, 64]}
 #: the Chargers' eight kit packages: home, road, the gold jersey, the gold-pants pair and the navy set
 CHARGERS = ("24A0", "24A10", "24A11", "24A9", "24H0", "24H10", "24H11", "24H9")
@@ -75,6 +78,29 @@ V09_FONT_RECOLOURED = ("30A0",)
 # b81 fold-in (11/24): the approved kits' helmet numerals (hn48..hn57, chunks 23-32) as the lanes staged them: colour swaps
 # of the released set (digit_derived), whole sets of ten
 HELMET_NUMERALS = ("04H0", "06A0", "06H0", "09A0", "09H0", "11A0", "11H0")
+# b81-uniform-pass2 fold-in (11/24): the approved kits' textures as the lanes drew them (P/art/final: collars, sleeve
+# stripes, the Patriots shoulder stripe, the Seahawks/Chargers set, the lane's clubs) and the advisor's alternates fixes
+# (copies of approved primary jerseys and collars, the Lions grey), in retail-free form. Their jersey rows repaint more
+# than the chest strip (collars from row 42, shoulders, whole jerseys); the rows added beside the earlier batches:
+PASS2_JERSEY = ("03A0", "04A0", "04H0", "07A0", "09A9", "09H9", "16A0", "16H0", "17A0", "17A3", "17H0", "17H3", "19A0", "19A7",
+                "19H0", "19H7", "21A0", "21A10", "21A12", "21H0", "21H10", "21H12", "22A0", "23A0", "23H0", "24A0", "24A10",
+                "24H0", "24H10", "26A0", "26A4", "26H0", "26H4", "27A0", "27H0", "29A0", "30A0", "30H0", "37A0")
+PASS2_ADDED = (("00A0", "pants00"), ("01H0", "pants00"), ("02A0", "pants00"), ("02H0", "pants00"), ("07A0", "pants00"),
+               ("07A0", "sleeve00"), ("07H0", "pants00"), ("08A0", "sleeve00"), ("08H0", "sleeve00"), ("09A0", "pants00"),
+               ("09A9", "sleeve00"), ("09H9", "sleeve00"), ("12H0", "pants00"), ("12H0", "socks00"), ("13A0", "sleeve00"),
+               ("14H0", "pants00"), ("15A0", "sleeve00"), ("15H0", "sleeve00"), ("17A0", "pants00"), ("17H0", "pants00"),
+               ("18A0", "pants00"), ("18H0", "pants00"), ("19A0", "pants00"), ("19H0", "pants00"), ("23A0", "sleeve00"),
+               ("23H0", "pants00"), ("23H0", "sleeve00"), ("24A0", "pants00"), ("24A0", "sleeve00"), ("24A10", "sleeve00"),
+               ("24H0", "pants00"), ("24H0", "sleeve00"), ("24H10", "sleeve00"), ("25A0", "pants00"), ("26A0", "pants00"),
+               ("26A0", "sleeve00"), ("26A4", "sleeve00"), ("26H0", "pants00"), ("26H0", "sleeve00"), ("28A0", "pants00"),
+               ("29A0", "pants00"), ("29H0", "pants00"), ("30A0", "pants00"), ("30A0", "sleeve00"), ("30H0", "pants00"),
+               ("30H0", "sleeve00"), ("37A0", "pants00"), ("37A0", "sleeve00"), ("37H0", "pants00"))
+# the approved helmet shells (helmet00 Standard, helmet02 Revolution): Lions stripe order, Dolphins stripe colours,
+# Commanders stripe proportions; pinned to the helmet the build holds after the b81 helmet cleanup, rules only
+HELMET_KITS = ("09A0", "09H0", "14A0", "14H0", "29A0", "29H0")
+# the advisor (11/24) on Defend the Den: "Make body, sleeves and pants one colour": a neutral grey, stored as the
+# palettes' nearest entries
+DET_DTD_GREY = {"jersey00": (0xBE, 0xC0, 0xC1), "pants00": (0xBF, 0xC0, 0xC2)}
 REVERTED_TO_V09 = tuple(s for s in REVERTED_TO_V09 if s not in V09_FONT_RECOLOURED)
 #: the Chargers packages that still wear the one upright R2 shape set
 CHARGERS_R2 = tuple(s for s in CHARGERS if s not in REVERTED_TO_V09)
@@ -105,6 +131,11 @@ def kit_rows():
 
 def unif_rows():
     return [r for r in kf.uniforms_b81()["textures"] if r["kind"] == "unif"]
+
+
+def helmet_rows():
+    """The approved helmet shells of the b81 fold-in (kind ``txtr``, chunks 11 and 12): see HelmetRows."""
+    return [r for r in kf.uniforms_b81()["textures"] if r["kind"] == "txtr"]
 
 
 def digit_rows():
@@ -174,6 +205,8 @@ class KitDocument(unittest.TestCase):
             seen.add(key)
             if row["kind"] == "unif":                       # the Unif data rows of the b81 fold-in: see UnifDocument
                 continue
+            if row["kind"] == "txtr":                       # the approved helmet shells of the b81 fold-in: see HelmetRows
+                continue
             self.assertEqual(row["kind"], "tset")
             self.assertEqual((row["chunk"], "tset"), up.chunk_of(row["texture"]))
             self.assertEqual(row["size"][:2], SIZES[row["texture"]])
@@ -223,7 +256,7 @@ class KitDocument(unittest.TestCase):
 
     def test_the_first_batch_is_the_reviewed_kits(self):
         self.assertEqual(sorted((r["selector"], r["texture"]) for r in kit_rows() if r["texture"] != "jersey00"),
-                         [("00A6", "sleeve00"), ("00A7", "sleeve00"), ("00H6", "sleeve00"), ("00H7", "sleeve00"), ("01A9", "pants00"),
+                         sorted(list(PASS2_ADDED) + [("00A6", "sleeve00"), ("00A7", "sleeve00"), ("00H6", "sleeve00"), ("00H7", "sleeve00"), ("01A9", "pants00"),
                           ("01H9", "pants00"),
                           ("02A3", "pants00"), ("02H3", "pants00"),
                           ("03A0", "sleeve00"), ("03H0", "sleeve00"), ("04A2", "pants00"), ("04H2", "pants00"),
@@ -239,7 +272,7 @@ class KitDocument(unittest.TestCase):
                           ("19A2", "pants00"), ("19H2", "pants00"),
                           ("21A4", "sleeve00"), ("21H4", "sleeve00"), ("23A0", "pants00"), ("25H0", "pants00"),
                           ("26A4", "pants00"), ("26A4", "socks00"), ("26H4", "sleeve00"), ("27A0", "pants00"),
-                          ("27H0", "pants00")])
+                          ("27H0", "pants00")]))
         # batch 3: the panther the real Panthers alternate pants lack (04H2/04A2), the star the real Cowboys navy
         # sleeves and Arctic shoulder blocks lack (07H0, 07H7/07A7)
         # batch 4 marks (MARKS4): swooshes recoloured to the measured 2026 colour (Cardinals black 00H6/00A6, Bengals
@@ -272,7 +305,7 @@ class KitDocument(unittest.TestCase):
         self.assertEqual(len({r["selector"] for r in jerseys}), 170)
         self.assertTrue(set(WHOLE_JERSEY) <= {r["selector"] for r in jerseys})
         for row in jerseys:
-            if row["selector"] in WHOLE_JERSEY:
+            if row["selector"] in WHOLE_JERSEY or row["selector"] in PASS2_JERSEY:
                 continue
             for op in row["ops"]:                   # a clear stays inside the strip (or 29A0's swoosh boxes) too
                 for x0, y0, x1, y1 in op.get("boxes", ()) if op["op"] == "clear" else ():
@@ -331,6 +364,36 @@ class UnifDocument(unittest.TestCase):
             new, _detail = kf.compile_unif(span, row)
             self.assertEqual(hashlib.sha256(new).hexdigest(), row["after_sha256"], row["selector"])
             self.assertEqual(len(new), len(span))
+
+
+class HelmetRows(unittest.TestCase):
+    """b81 fold-in (11/24): the approved helmet shells (helmet00 Standard, helmet02 Revolution) of the Lions (stripe
+    order), Dolphins (stripe colours) and Commanders (stripe proportions), as the helmet lane staged them. The uniform
+    pass runs right after the b81 helmet cleanup, so these rows are pinned to the helmet that step leaves; they carry
+    rules only (no texel data: the gate measures rows on the released disc, which these inputs are not)."""
+
+    def test_the_rows_are_rules_on_the_cleaned_helmets(self):
+        rows = helmet_rows()
+        self.assertEqual(sorted((r["selector"], r["chunk"], r["texture"]) for r in rows),
+                         sorted((s, c, t) for s in HELMET_KITS for c, t in ((11, "helmet00"), (12, "helmet02"))))
+        for row in rows:
+            self.assertEqual(row["size"][:2], [256, 256])
+            self.assertTrue(row["note"] and row["defects"])
+            self.assertTrue({op["op"] for op in row["ops"]} <= {"want", "clear", "rule"}, row["selector"])
+
+    @unittest.skipUnless(REHEARSAL.is_file(), "a beta 81 build of the branch base (B81_REHEARSAL_DISC)")
+    def test_the_rows_compile_to_their_pins_after_the_cleanup(self):
+        # the input is the helmet every earlier step of a build leaves (the b81 cleanup last): read from a build of the
+        # branch base, which holds exactly that (the uniform pass's rows were not in it)
+        kits = up.read_kits(REHEARSAL, list(HELMET_KITS))
+        for selector in HELMET_KITS:
+            raw = kits[selector]
+            for row in [r for r in helmet_rows() if r["selector"] == selector]:
+                chunk = kf._chunk_for(raw, row["chunk"])
+                span = raw[chunk.offset:chunk.end_offset]
+                self.assertEqual(hashlib.sha256(span).hexdigest(), row["before_sha256"], (selector, row["texture"]))
+                new, _detail = kf.compile_texture(span, row)
+                self.assertEqual(hashlib.sha256(new).hexdigest(), row["after_sha256"], (selector, row["texture"]))
 
 
 class DigitDocument(unittest.TestCase):
@@ -829,14 +892,10 @@ class RealDisc(unittest.TestCase):
                     self.assertLessEqual(len(missing), 8, (selector, texture))
                     self.assertTrue(all(132 <= x <= 190 and 93 <= y <= 105 for x, y in missing), (selector, missing))
                 median = np.median(np.array(list(painted.values())), axis=0)
-                self.assertTrue(near(tuple(median), (0xB6, 0xC1, 0xDB), 12), (selector, texture, median))
-        painted = self.painted("26H4", "jersey00")
-        self.assertLessEqual(max(y for _x, y in painted), 112)                  # never below the chest strip
-        shoulders = {(x, y): c for (x, y), c in painted.items() if not (58 <= y <= 112 and 90 <= x < 216)}
-        self.assertTrue(shoulders)
-        self.assertLessEqual(max(y for _x, y in shoulders), 73)                 # the shoulder panels and the collar
-        lime = sum(1 for c in shoulders.values() if c == (105, 190, 40))        # Action Green #69BE28
-        self.assertGreater(lime, len(shoulders) // 2)
+                # advisor 11/24 (the alternates round): one neutral grey, not the lavender blue #B6C1DB
+                self.assertTrue(near(tuple(median), DET_DTD_GREY[texture], 3), (selector, texture, median))
+        # 26H4: since the advisor's alternates round (11/24) the whole approved 26H0 jersey (art_v4), see
+        # test_the_seahawks_26h4_wears_the_26h0_shoulder_art
 
     def runs_down(self, column):
         """[(first row, colour, rows)] down one texel column"""
@@ -864,6 +923,8 @@ class RealDisc(unittest.TestCase):
                 self.assertTrue((stack == stack[:, :1]).all(), selector)
 
     def test_vikings_home_pants_get_a_broad_purple_band_gold_in_front_and_a_white_lower_leg(self):
+        # b81m (approved 11/24, staged by the lane): from the back of the leg forward a wide purple band, a gold band and
+        # a narrow purple band (real 4.2 / 1.35 / 1.2 cm; the game had gold in front of one purple band)
         purple, gold, white = (79, 38, 131), (255, 198, 47), (255, 255, 255)
         pants = self.after("15H0", "pants00")
         for y in (40, 100, 160):
@@ -871,13 +932,12 @@ class RealDisc(unittest.TestCase):
                 row = [tuple(int(v) for v in pants[y, x, :3]) for x in columns]
                 band = [i for i, c in enumerate(row) if c == purple]
                 line = [i for i, c in enumerate(row) if c == gold]
-                self.assertGreaterEqual(len(band), 11, y)                                    # it was 4 texels
-                self.assertTrue(3 <= len(line) <= 7, (y, len(line)))
-                self.assertGreater(len(band), 2 * len(line), y)
-                if front_first:
-                    self.assertLess(max(line), min(band), y)                                 # gold toward the front
-                else:
-                    self.assertGreater(min(line), max(band), y)
+                self.assertGreaterEqual(len(band), 18, y)                                    # it was 4 texels
+                self.assertTrue(4 <= len(line) <= 7, (y, len(line)))
+                front = [i for i in band if (i < min(line)) == front_first]
+                back = [i for i in band if i not in front]
+                self.assertTrue(front and back, y)                                           # purple on both sides of the gold
+                self.assertGreater(len(back), 2 * len(front), y)                             # the wide band behind
         self.assertTrue((pants[232:, :, :3] == 255).all())                                   # white below the hem
         socks = self.after("15H0", "socks00")
         self.assertTrue((socks[..., :3] == 255).all())
@@ -928,12 +988,13 @@ class RealDisc(unittest.TestCase):
         # KITS4: 26H4 is the same navy home jersey as 26H0 (worn with wolf-grey pants); its torso and sleeves now carry
         # 26H0's art (the lime shoulder panels it lacked: up to 244 levels away before). Each texture keeps its own
         # palette, so a colour lands within a few levels of 26H0's: the KITS4 colour acceptance is 12 levels.
+        # Advisor 11/24 (alternates round): the approved 26H0 jersey (art_v4: torso and sleeves) in this slot
         torso = np.abs(self.after("26H4", "jersey00").astype(int) - self.after("26H0", "jersey00").astype(int)).max(-1)
         self.assertLessEqual(int(torso.max()), 12)
-        raw = self.kits["26H0"]
-        chunk = kf._chunk_for(raw, up.chunk_of("sleeve00")[0])
-        home = up.level0(raw[chunk.offset:chunk.end_offset], "tset")[0]
+        home = self.after("26H0", "sleeve00")
         self.assertLessEqual(int(np.abs(self.after("26H4", "sleeve00").astype(int) - home.astype(int)).max()), 12)
+        road = np.abs(self.after("26A4", "jersey00").astype(int) - self.after("26A0", "jersey00").astype(int)).max(-1)
+        self.assertLessEqual(int(road.max()), 12)
         raw = self.kits["26H4"]
         chunk = kf._chunk_for(raw, up.chunk_of("jersey00")[0])
         before = up.level0(raw[chunk.offset:chunk.end_offset], "tset")[0]
@@ -1006,7 +1067,7 @@ class RealDisc(unittest.TestCase):
         # point below the hip and widens slowly to the hem, and a kit blue wedge on its front side from a point about
         # two thirds down (picture DET 2026-11-01 4-5: black 0.076 of the thigh depth at mid-thigh, black : blue at the
         # knee 28 : 17). Flat colours, no piping; the base colour is not touched. The game had no stripe.
-        black, blue, base = (0x18, 0x19, 0x1B), (0x00, 0x76, 0xB6), (0xB6, 0xC1, 0xDB)
+        black, blue, base = (0x18, 0x19, 0x1B), (0x00, 0x76, 0xB6), DET_DTD_GREY["pants00"]   # the base: advisor 11/24
         def cols(pants, y, colour):
             return [x for x in range(100, 412) if near(tuple(int(v) for v in pants[y, x, :3]), colour, 6)]
         for selector in ("09H9", "09A9"):
@@ -1092,14 +1153,23 @@ class RealDisc(unittest.TestCase):
 
     def test_every_kit_row_is_waiting_on_the_released_disc_and_compiles_to_its_pin(self):
         result = up.states(DISC)
-        self.assertEqual((result["before"], result["after"], result["other"], result["absent"]),
-                         (len(kit_rows()) + len(unif_rows()), 0, 0, 0), result["rows"])
+        # the helmet shell rows wait on the helmet the b81 cleanup leaves (HelmetRows): on the released disc those the
+        # cleanup changes read "other"
+        moved = [r for r in result["rows"] if r["state"] == "other"]
+        self.assertTrue(all(r["texture"] in ("helmet00", "helmet02") and r["selector"] in HELMET_KITS for r in moved), moved)
+        self.assertEqual((result["before"] + result["other"], result["after"], result["absent"]),
+                         (len(kit_rows()) + len(unif_rows()) + len(helmet_rows()), 0, 0), result["rows"])
+        # the helmet shell rows compile on the helmet the build holds after the cleanup (HelmetRows); here the rest
+        document = dict(kf.uniforms_b81())
+        document["textures"] = [r for r in document["textures"] if r["kind"] != "txtr"]
         for selector in sorted({r["selector"] for r in kit_rows()}):
             replacements, receipt = kf.compile_resource(selector, self.kits[selector], strict=True,
-                                                        document=kf.uniforms_b81(), kits=self.kits)
-            rows = [r for r in kit_rows() if r["selector"] == selector]
+                                                        document=document, kits=self.kits)
+            rows = [r for r in document["textures"] if r["selector"] == selector]   # texture and Unif rows
             self.assertEqual(len(replacements), len(rows), selector)
             for part in receipt["parts"]:
+                if part.get("texture") is None:     # a Unif row: data fields, no palette (UnifDocument)
+                    continue
                 folded = selector == "23A0" and part.get("texture") == "pants00"   # the one full palette (first batch)
                 self.assertEqual(part["merged_twin_slots"], 1 if folded else 0, (selector, part.get("texture")))
                 if not folded:
@@ -1217,7 +1287,6 @@ NAMEPLATES = {
     "27A0": ("#0E0E0E", None, 3, 3),                                       # Buccaneers road: black, the strip was red
 }
 NAME_GLYPHS = "'-ABCDEFGHIJKLMNOPQRSTUVWXYZc"
-RETAIL = Path(os.environ.get("B81_RETAIL_DISC", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
 #: Noah 11/19 (decision 3): the Browns road name strips recoloured to the charcoal of the road numbers; letters, soft
 #: edges and glyph widths as released (a ``names_png`` row, no ``name_widths`` row)
 RECOLOURED_NAMES = {s: CLE_CHARCOAL for s in ("30A0", "30A4", "30H4")}
