@@ -264,6 +264,15 @@ def small_box_line(row, ops, raw):
     c = kf._chunk_for(raw, row['chunk'])
     span = raw[c.offset:c.end_offset]
     base = kc.level0(span, row) if sha(span) == row['before_sha256'] else None
+    if base is None:
+        # a row pinned to an earlier step's output (the swoosh step's sleeves): its base is the texture that step
+        # writes, read from a build of the branch base (B81_TEXEL_INPUTS), as kit_line reads it
+        alt = INPUTS(row['selector'])
+        if alt is not None and alt is not raw:
+            ca = kf._chunk_for(alt, row['chunk'])
+            alt_span = alt[ca.offset:ca.end_offset]
+            if sha(alt_span) == row['before_sha256']:
+                base = kc.level0(alt_span, row)
     shape = base.shape[:2] if base is not None else None
     retail = None
     source = RETAIL(row['selector'])
