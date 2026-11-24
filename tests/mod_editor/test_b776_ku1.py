@@ -29,10 +29,8 @@ def sha(data):
 
 def _packages(source, selectors):
     """Kit packages from a disc image, or from a folder of packages saved whole from one (SELECTOR.IFF)."""
-    if source.is_dir():
-        return {s: (source / f"{s}.IFF").read_bytes() for s in selectors}
-    from test_b776_fn2 import _read_kits
-    return _read_kits(source, selectors)
+    from test_b776_fn2 import _packages as read
+    return read(source, selectors)
 
 
 def hx(text):

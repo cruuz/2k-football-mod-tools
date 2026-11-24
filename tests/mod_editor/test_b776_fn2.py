@@ -116,6 +116,14 @@ class Contract(unittest.TestCase):
                 glyphs.apply_to_image(junk, strict=True)
 
 
+def _packages(source, selectors):
+    """Kit packages from a disc image, or from a folder of packages saved whole from one (SELECTOR.IFF)."""
+    source = Path(source)
+    if source.is_dir():
+        return {s: (source / f"{s}.IFF").read_bytes() for s in selectors}
+    return _read_kits(source, selectors)
+
+
 def _read_kits(disc, selectors):
     from nfl2k5_playbook_position_recode import OuterImage
     from nfl_uniform_inventory import logical_name_candidates
@@ -154,14 +162,18 @@ def _names_rgba(span):
     return np.frombuffer(texture_to_rgba(decoded, chunk, texture), np.uint8).reshape(32, 1024, 4)
 
 
+# NFL2K5_FN2_DISC: the b775 disc, or (it is gone) a folder of kit packages saved whole whose every fn2 row is at its
+# before pin, so the rows read exactly the b775 bytes. The checks are unchanged: strict compiles refuse any chunk off
+# its pin and check every output against its after pin.
 @unittest.skipUnless(os.environ.get("NFL2K5_FN2_DISC") and os.environ.get("NFL2K5_FN2_RETAIL"),
-                     "set NFL2K5_FN2_DISC (the b775 disc) and NFL2K5_FN2_RETAIL for read-only native checks")
+                     "set NFL2K5_FN2_DISC (the b775 disc or a folder of its kit packages) and NFL2K5_FN2_RETAIL "
+                     "for read-only native checks")
 class Native(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.doc = glyphs.spec()
         sels = glyphs.selectors(cls.doc)
-        cls.raws = _read_kits(os.environ["NFL2K5_FN2_DISC"], set(sels))
+        cls.raws = _packages(os.environ["NFL2K5_FN2_DISC"], set(sels))
         cls.retail = _read_kits(os.environ["NFL2K5_FN2_RETAIL"], set(sels))
         cls.compiled = {}
         for sel in sels:
