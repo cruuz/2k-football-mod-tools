@@ -109,7 +109,7 @@ CURRENT_LATE, CURRENT_NO_LATE = "b81f_late", "b81s"
 FAKE_VARIANTS = ("b81f_late",)
 
 # ---- Fake kicks (b81f). Real NFL rates, nflverse play-by-play, regular season, counted by
-# /home/noah/2k-worktrees/.b77-scratch/b81/fake-fg/tools/nflverse_fakes.py (formation-based, as nflverse writes it:
+# the beta 81 fake-kick lane's nflverse_fakes.py (project evidence, not shipped; formation-based, as nflverse writes it:
 # a run or pass whose description says "Punt formation" / "Field Goal formation", "Kick formation" on a two-point try).
 # 2021-2025, 2,718 team-games: 102 fake punts (0.0375 per team-game, 0.96% of 10,622 punt-formation snaps), 12 fake field
 # goals (0.0044 per team-game, 0.22% of 5,364). By distance on fourth down, fake punts: 4th and 1 18 of 563 (3.2%), 4th

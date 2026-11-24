@@ -695,7 +695,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_coverage_trail.py": "2307dfcfc5419eec9e5b1286cb056d577939028a7a14ff532bfc0a67a24fa902",
         "mod_editor/core/nfl2k5_coverage_trail_code.py": "3c2cfd81b9210f4843bf4eb548987794991161c7ccf5f21ab197d83ac8b0943f",
         "mod_editor/core/nfl2k5_coverage_hitch_code.py": "a7be9dcd4cb6c66222e92cb1f3b49f2d82342cad43507c716f074300c026681b",
-        "mod_editor/core/nfl2k5_cpu_money_downs.py": "379e9c17e348227e51c29e6fd81fe5a6df14a4993b1e8a6b343ae6c472732318",
+        "mod_editor/core/nfl2k5_cpu_money_downs.py": "f4f6eedc9a2dfbd58cfcb0fb82cdc42f0a697d90f231b2ae6241976826018ac1",
         "mod_editor/core/nfl2k5_cpu_money_downs_code.py": "75006f464c59eb82522931b1d7763dcbedc69c726196eb4a11e4ce7424413199",
         "mod_editor/core/nfl2k5_cpu_third_down.py": "e4cf6e7a6cbedf651dff6b797018fdd23959cf2d2ed045482611c56a5aa76ee8",
         "mod_editor/core/nfl2k5_cpu_qb_reads.py": "d23312a9a21ac0ba3114b740be4a2ca315d0f9567b11d0f6a99891fc7f64e005",
