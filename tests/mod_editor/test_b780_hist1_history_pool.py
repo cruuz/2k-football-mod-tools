@@ -86,8 +86,8 @@ class TemplateTests(unittest.TestCase):
             self.assertEqual(len(before), len(after), label)
             self.assertNotEqual(before, after, label)
         self.assertEqual(hp._digest(hp.SITES), hp.PATCHED_SHA256)
-        # b81: A +29, B +63, C +98, F +82, G 5, H 5, I 172
-        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1427)
+        # b81: A +29, B +63, C +98, F +82, G 5, H 5, I 173
+        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1428)
         self.assertEqual(hp.PLAYOFF_RESERVE, 512)
         sites = dict((label, after) for label, _va, _b, after in hp.SITES)
         # reserve_cap: `cmp dword [0xE576A4], 9` (the playoffs) and `sub eax, RESERVE` carry the module's numbers
@@ -102,6 +102,7 @@ class TemplateTests(unittest.TestCase):
         self.assertIn(bytes.fromhex("83fe57"), sites["site_i"])
         self.assertIn(b"\xb8" + mask.to_bytes(4, "little"), sites["site_i"])
         self.assertIn(b"\x6a\xfc\xe8", sites["site_i"])
+        self.assertIn(bytes.fromhex("817c2408827c2400"), sites["site_i"])     # cmp [esp+8], 0x247C82: the wipe's call site
         # site H: retail `mov eax, 1` at the end of 0x14ED90 becomes a call of the same length
         site_h = next(row for row in hp.SITES if row[0] == "site_h")
         self.assertEqual((site_h[2], site_h[3][0]), (bytes.fromhex("b801000000"), 0xE8))
@@ -121,7 +122,7 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_SITES],
                          [("site_a", 0x14E8B0, 106), ("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 488),
                           ("site_d", 0x14EFE0, 390), ("site_f", 0x14F249, 100), ("site_g", 0x14F239, 5),
-                          ("site_h", 0x14EDA8, 5), ("site_i", 0x14F170, 172)])
+                          ("site_h", 0x14EDA8, 5), ("site_i", 0x14F170, 173)])
         # site C: the compaction is unchanged up to room's full branch (0x14EB31), room gains its free-agent test and
         # fold_base follows it; site D changes exactly the 13 bytes that computed years pro; site F only grows (fa_fold
         # in the dead tail of retail's full-pool path, before the retail write path at 0x14F2BB); site G is the
@@ -154,7 +155,7 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_570CD7C16_SITES],
                          [("site_a", 0x14E8B0, 106), ("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 488),
                           ("site_d", 0x14EFE0, 390), ("site_g", 0x14F239, 5), ("site_h", 0x14EDA8, 5),
-                          ("site_i", 0x14F170, 172)])
+                          ("site_i", 0x14F170, 173)])
         old = {label: after for label, _va, _b, after in hp.REVISION_570CD7C16_SITES}
         for label, _va, _before, after in hp.SITES:
             if label in ("site_e", "site_f"):
@@ -167,7 +168,7 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.REVISION_26D92BDE0_SITES), 1182)
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_26D92BDE0_SITES],
                          [("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 488), ("site_d", 0x14EFE0, 390),
-                          ("site_h", 0x14EDA8, 5), ("site_i", 0x14F170, 172)])
+                          ("site_h", 0x14EDA8, 5), ("site_i", 0x14F170, 173)])
         old = {label: after for label, _va, _b, after in hp.REVISION_26D92BDE0_SITES}
         for label, _va, _before, after in hp.SITES:
             if label in ("site_a", "site_e", "site_f", "site_g"):
@@ -324,7 +325,7 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual(hp.status(self.retail), "retail")
         patched, receipt = hp.apply(self.retail)
         self.assertEqual(hp.status(patched), "applied")
-        self.assertEqual(receipt["changed_bytes"], 1397)
+        self.assertEqual(receipt["changed_bytes"], 1399)
         again, receipt2 = hp.apply(patched)
         self.assertEqual(again, patched)
         self.assertTrue(receipt2["already_applied"])
@@ -492,20 +493,22 @@ class Machine:
             return self.uc.reg_read(r)
         self.uc.reg_write(r, value & 0xFFFFFFFF)
 
-    def call(self, va, ecx=0, edx=0, stack=(), budget=4_000_000_000):
+    def call(self, va, ecx=0, edx=0, stack=(), budget=4_000_000_000, ret=None):
+        """ret: the return address the callee sees (emulation stops there; default STOP)"""
         sp = self.STACK + 0x1F000
         for v in reversed(list(stack)):
             sp -= 4
             self.put(sp, v)
         sp -= 4
-        self.put(sp, self.STOP)
+        stop = self.STOP if ret is None else ret
+        self.put(sp, stop)
         self.reg("ESP", sp)
         self.reg("ECX", ecx)
         self.reg("EDX", edx)
         for name in ("EBX", "ESI", "EDI", "EBP"):
             self.reg(name, 0x0BADF00D)
-        self.uc.emu_start(va, self.STOP, count=budget)
-        if self.reg("EIP") != self.STOP:
+        self.uc.emu_start(va, stop, count=budget)
+        if self.reg("EIP") != stop:
             raise AssertionError(f"budget exhausted at {self.reg('EIP'):#x}")
         return self.reg("EAX")
 
@@ -923,14 +926,17 @@ class NativeTests(unittest.TestCase):
             players.append((6, words))
         return players
 
-    @staticmethod
-    def rollover(m, recs):
-        """the rollover's two loops (0x247B40): years pro advance, then 0x14ED90 for every record with class 1"""
+    ROLLOVER_WIPE = 0x247C82                  # the return address of 0x247B40's postseason wipe call (0x247C7D)
+
+    @classmethod
+    def rollover(cls, m, recs, ret=ROLLOVER_WIPE):
+        """the rollover's two loops (0x247B40): years pro advance, then 0x14ED90 for every record with class 1, called
+        from the wipe's call site (its return address; emulation stops there)"""
         for rec in recs:
             m.put(rec + 0x24, m.get(rec + 0x24) + 0x100)
         m.put(CLASS, 1)
         for rec in recs:
-            m.call(0x14ED90, ecx=rec)
+            m.call(0x14ED90, ecx=rec, ret=ret)
         m.put(CLASS, 0)
 
     def test_a_playoff_word_at_the_reserve_edge_is_kept_by_folding_every_career_row(self):
@@ -1013,6 +1019,26 @@ class NativeTests(unittest.TestCase):
             m.check(recs)
             out[name] = [collections.Counter(w & ~END for w in m.stream(r) if not w & (DELETED | POST)) for r in recs]
         self.assertEqual(out["b81"], out["v0.9"])
+
+    def test_only_the_rollovers_wipe_finishes_an_early_fold(self):
+        # the retirement pass's record resets (0x2BDB00 -> 0x2BDA90 -> 0xE64D0) also delete with class 1 in stage 9,
+        # before the season close: called from anywhere but the rollover's wipe, 0x14ED90 finishes nothing
+        m = Machine(self.patched)
+        recs = m.roster(self.playoff_pool())
+        m.put(STAGE, 9)
+        m.put(CLASS, 1)
+        m.call(0x14F220, ecx=recs[0], edx=word(40, 6, 3))                      # the playoff fold
+        for rec in recs:                                                        # the rollover advances years pro first
+            m.put(rec + 0x24, m.get(rec + 0x24) + 0x100)
+        before = [m.stream(r) for r in recs]
+        m.put(CLASS, 1)
+        for ret in (None, 0x2BDAE1, 0xE64E9):
+            m.call(0x14ED90, ecx=recs[0], ret=ret)
+        self.assertEqual([[w for w in m.stream(r) if not w & POST] for r in recs],
+                         [[w for w in b if not w & POST] for b in before])
+        m.call(0x14ED90, ecx=recs[0], ret=self.ROLLOVER_WIPE)                  # the rollover's: it finishes the fold
+        self.assertNotEqual([[w for w in m.stream(r) if not w & POST] for r in recs],
+                            [[w for w in b if not w & POST] for b in before])
 
     def test_the_rollover_changes_nothing_without_an_early_fold(self):
         # playoff words below the reserve edge (no playoff fold): the rollover leaves the same pool, byte for byte
@@ -1221,8 +1247,12 @@ class FullFranchiseImageTests(unittest.TestCase):
                 v = m.get(p + 0x24)
                 m.put(p + 0x24, (v & ~0x1F00) | ((((v >> 8) + 1) & 31) << 8))
         m.put(CLASS, 1)
-        for p in records:
-            m.call(0x14ED90, ecx=p, budget=4_000_000_000)
+        for p in records:                                                       # from the wipe's call site 0x247C7D
+            m.uc.mem_write(m.STACK, struct.pack("<I", 0x247C82))
+            for name, value in (("ECX", p), ("ESP", m.STACK), ("ESI", 0), ("EDI", 0), ("EBX", 0), ("EBP", 0)):
+                m.reg(name, value)
+            m.uc.emu_start(0x14ED90, 0x247C82, count=4_000_000_000)
+            self.assertEqual(m.reg("EIP"), 0x247C82)
         m.put(CLASS, 0)
 
     def test_a_playoff_word_in_the_full_pool_is_kept_by_the_playoff_fold(self):

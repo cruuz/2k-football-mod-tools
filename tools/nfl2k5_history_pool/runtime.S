@@ -45,7 +45,8 @@
    the ten leader fields 2, 3, 8, 9, 12, 13, 14, 18, 19, 20), so the close, which runs after the playoffs and before
    the rollover, counts each man's last season, club and seasons exactly as with v0.9's bytes. At the rollover's
    postseason wipe (0x247B40 calls 0x14ED90 with class 1 for every player, the first record first, years pro already
-   advanced) rollover_tail finishes the merge for every man folded early (a FOLDED word two seasons back):
+   advanced; rollover_tail knows it by its return address) finishes the merge for every man folded early (a FOLDED
+   word two seasons back):
    fold(COMPLETE_FOLD) merges what is older into it, as v0.9's next preseason collection would. It does nothing when no
    man was folded early, so a franchise whose playoffs never fill the pool is byte-identical. The free-agent resort
    runs only in stages 8-9 (never in the preseason, after the rollover, where the star career reads the season just
@@ -71,6 +72,7 @@
         .set NO_FOLD_BASE, -0x40       /* fold_base for a man a negative depth does not touch: no word passes age_ok */
         .set CLOSE_FIELDS, 0x001C730D  /* fields 0, 2, 3, 8, 9, 12, 13, 14, 18, 19, 20 (and FIELD_TEAM): read per season */
         .set FIELD_TEAM, 87
+        .set ROLLOVER_WIPE, 0x00247C82 /* 0x247B40's postseason wipe: the instruction after its call of 0x14ED90 */
         .set FA_PLAYERS, 4096          /* the free-agent bitmap's bits: the capacity arena's 4,096 primary records */
         .set RESERVE, 512              /* words a playoff (postseason-class) word may not take: kept for permanent words */
         .set STAGE,    0x00E576A4      /* franchise stage: 7 preseason, 8 regular season, 9 playoffs */
@@ -590,12 +592,15 @@ folded_age2:
         pop     esi
         ret
 
-/* rollover_tail (site H): at the rollover's postseason wipe (class 1, stage still 9, the first record: 0x247B40 walks
-   every record from index 0 after advancing years pro, and the season close has run), when any man was folded early
-   this season, fold(COMPLETE_FOLD) in the regular class. Returns eax 1 (0x14ED90's result). */
+/* rollover_tail (site H): at the rollover's postseason wipe (0x14ED90 called from 0x247C7D, so its return address
+   [esp+8] here is ROLLOVER_WIPE; class 1, stage still 9, the first record: 0x247B40 walks every record from index 0
+   after advancing years pro, and the season close has run), when any man was folded early this season,
+   fold(COMPLETE_FOLD) in the regular class. The call site, not the class, tells the rollover from the retirement pass's
+   record resets (0x2BDB00 -> 0x2BDA90 -> 0xE64D0 -> 0x14ED90 with class 1, also in stage 9 but before the close).
+   Returns eax 1 (0x14ED90's result). */
         .globl rollover_tail
 rollover_tail:
-        cmp     dword ptr [CLASS], 1
+        cmp     dword ptr [esp+8], ROLLOVER_WIPE
         jne     9f
         cmp     dword ptr [STAGE], PLAYOFFS
         jne     9f
@@ -614,7 +619,7 @@ rollover_tail:
         and     dword ptr [CLASS], 0
         push    COMPLETE_FOLD
         call    fold
-        inc     dword ptr [CLASS]
+        inc     dword ptr [CLASS]       /* back to 1: the wipe set it (0x247C41) */
 8:      popad
 9:      mov     eax, 1
         ret

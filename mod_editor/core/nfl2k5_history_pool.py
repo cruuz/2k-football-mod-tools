@@ -130,7 +130,7 @@ def _digest(sites) -> str:
     return h.hexdigest()
 
 
-PATCHED_SHA256 = "d5c5983a8233fd5ee7f5a4bb83f465225c732e62d90f21cc83013db5ee6fa3fe"   # the nine sites (label, VA, retail, patched); tests check it
+PATCHED_SHA256 = "dea980b4159eefd0b5f7b7728dba0c2b7386b5c5838027d4f60f49d516597845"   # the nine sites (label, VA, retail, patched); tests check it
 
 # b81 history-pool: the beta-80 / v0.9 revision (b780 hist1 as shipped): (label, VA, patched bytes). Each lies at the
 # start of the same site of this release, which is at least as long, so its retail bytes are the first bytes of ours.
