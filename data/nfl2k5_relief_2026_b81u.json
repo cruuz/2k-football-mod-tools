@@ -1732,6 +1732,15 @@
    "y": 28,
    "width": 11,
    "height": 11
+  },
+  "8fd3161f301cd916": {
+   "png": "jersey_8fd3161f301cd916.png",
+   "sha256": "e3a868879ad56b20e2bc1e837f559a4e78d2c40d072aeb802e443f65a7b73fe8",
+   "slot": "bump_jersey",
+   "x": 79,
+   "y": 12,
+   "width": 341,
+   "height": 92
   }
  },
  "slots": [
@@ -11421,6 +11430,21 @@
   },
   {
    "selector": "26A0",
+   "slot": "bump_jersey",
+   "chunk": 45,
+   "resource_size": 1521392,
+   "offset": 491760,
+   "length": 469216,
+   "base": "retail",
+   "patch": "8fd3161f301cd916",
+   "composed_sha256": "8f4a4005a0b52cf73cc9ee8303202f2373e83ab859b75868df465cf2dfcbdda3",
+   "before_sha256": "d5af851e50ca2837a6b892c67a3aa4d311de8532ff280212102d2af765991a4f",
+   "after_sha256": "00d96dbee9a6d99b31f7a40ada5f06768544674fd4fe32a8f4f57fa3c2edc042",
+   "opening_sha256": "dd4aa32e30499354c9fbbeb56afc2228580482214879e70c6ad33cf2fc7733cf",
+   "opening": "retail_base"
+  },
+  {
+   "selector": "26A0",
    "slot": "bump_sleeve",
    "chunk": 46,
    "resource_size": 1521392,
@@ -11533,6 +11557,21 @@
   },
   {
    "selector": "26A4",
+   "slot": "bump_jersey",
+   "chunk": 45,
+   "resource_size": 1529024,
+   "offset": 499872,
+   "length": 469216,
+   "base": "retail",
+   "patch": "8fd3161f301cd916",
+   "composed_sha256": "8f4a4005a0b52cf73cc9ee8303202f2373e83ab859b75868df465cf2dfcbdda3",
+   "before_sha256": "d5af851e50ca2837a6b892c67a3aa4d311de8532ff280212102d2af765991a4f",
+   "after_sha256": "00d96dbee9a6d99b31f7a40ada5f06768544674fd4fe32a8f4f57fa3c2edc042",
+   "opening_sha256": "dd4aa32e30499354c9fbbeb56afc2228580482214879e70c6ad33cf2fc7733cf",
+   "opening": "retail_base"
+  },
+  {
+   "selector": "26A4",
    "slot": "bump_sleeve",
    "chunk": 46,
    "resource_size": 1529024,
@@ -11582,6 +11621,21 @@
      38
     ]
    ]
+  },
+  {
+   "selector": "26H0",
+   "slot": "bump_jersey",
+   "chunk": 45,
+   "resource_size": 1524800,
+   "offset": 497056,
+   "length": 469216,
+   "base": "retail",
+   "patch": "8fd3161f301cd916",
+   "composed_sha256": "8f4a4005a0b52cf73cc9ee8303202f2373e83ab859b75868df465cf2dfcbdda3",
+   "before_sha256": "d5af851e50ca2837a6b892c67a3aa4d311de8532ff280212102d2af765991a4f",
+   "after_sha256": "00d96dbee9a6d99b31f7a40ada5f06768544674fd4fe32a8f4f57fa3c2edc042",
+   "opening_sha256": "dd4aa32e30499354c9fbbeb56afc2228580482214879e70c6ad33cf2fc7733cf",
+   "opening": "retail_base"
   },
   {
    "selector": "26H0",
@@ -11694,6 +11748,21 @@
      38
     ]
    ]
+  },
+  {
+   "selector": "26H4",
+   "slot": "bump_jersey",
+   "chunk": 45,
+   "resource_size": 1529024,
+   "offset": 499872,
+   "length": 469216,
+   "base": "retail",
+   "patch": "8fd3161f301cd916",
+   "composed_sha256": "8f4a4005a0b52cf73cc9ee8303202f2373e83ab859b75868df465cf2dfcbdda3",
+   "before_sha256": "d5af851e50ca2837a6b892c67a3aa4d311de8532ff280212102d2af765991a4f",
+   "after_sha256": "00d96dbee9a6d99b31f7a40ada5f06768544674fd4fe32a8f4f57fa3c2edc042",
+   "opening_sha256": "dd4aa32e30499354c9fbbeb56afc2228580482214879e70c6ad33cf2fc7733cf",
+   "opening": "retail_base"
   },
   {
    "selector": "26H4",

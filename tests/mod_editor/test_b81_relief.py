@@ -59,23 +59,66 @@ def png(rgba):
     return out.getvalue()
 
 
+class OpeningOverride(unittest.TestCase):
+    """b81-uniform-pass2 (11/24): a jersey row's collar opening comes from the kit's torso, or for a ``retail_base`` row
+    from the retail base sculpt's own torso (retail_maps' ``opening``); the row's pin checks either."""
+
+    def test_a_retail_base_row_takes_the_retail_opening_and_its_pin_still_checks(self):
+        torso = np.zeros((256, 512, 4), np.uint8)
+        torso[..., :3] = (10, 42, 78)                  # the neck opening painted in the body's colour: the finder floods
+        torso[..., 3] = 255
+        flooded = rl.collar_opening(torso)
+        base = np.zeros((256, 512), bool)
+        base[0:70, 140:180] = True
+        retail = {"opening": base}
+        row = {"selector": "XXH0", "slot": "bump_jersey", "opening": "retail_base", "opening_sha256": rl.opening_sha256(base)}
+        self.assertTrue(np.array_equal(rl.kit_opening(row, torso, retail), base))
+        self.assertFalse(np.array_equal(flooded, base))
+        with self.assertRaises(ValueError):
+            rl.kit_opening(dict(row, opening_sha256=rl.opening_sha256(flooded)), torso, retail)
+        with self.assertRaises(ValueError):
+            rl.kit_opening(row, torso, None)          # without the retail maps there is no base opening
+        plain = {"selector": "XXH0", "slot": "bump_jersey", "opening_sha256": rl.opening_sha256(flooded)}
+        self.assertTrue(np.array_equal(rl.kit_opening(plain, torso, retail), flooded))   # the default reads the torso
+
+    def test_an_unknown_opening_source_is_refused(self):
+        import tempfile
+        doc = json.loads(rl.DATA_B81U.read_text(encoding="utf-8"))
+        row = next(r for r in doc["slots"] if r["slot"] == "bump_jersey")
+        for bad in ({"opening": "mask"}, ):
+            with self.subTest(bad=bad), tempfile.TemporaryDirectory() as d:
+                changed = json.loads(json.dumps(doc))
+                next(r for r in changed["slots"] if r is not None and r["selector"] == row["selector"] and r["slot"] == "bump_jersey").update(bad)
+                path = Path(d) / "doc.json"
+                path.write_text(json.dumps(changed), encoding="utf-8")
+                with self.assertRaises(ValueError):
+                    rl.spec(path)
+        sleeve = json.loads(json.dumps(doc))
+        next(r for r in sleeve["slots"] if r["slot"] == "bump_sleeve")["opening"] = "retail_base"
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "doc.json"
+            path.write_text(json.dumps(sleeve), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                rl.spec(path)
+
+
 class Document(unittest.TestCase):
     def setUp(self):
         self.doc = rl.relief_b81u()
 
     # b81-uniform-pass2 fold-in (11/24): the approved Seahawks torsos (art_v4: 26H0/26A0 and the combination slots 26H4/26A4
-    # that wear them) paint the neck opening in the body's navy, within the 14 levels collar_opening separates by, so the
-    # opening it derives floods the chest (20,969 texels, tip at row 157, where the other kits' openings hold about 4,300).
-    # Their jersey slot is left out: those four jerseys keep the bump map the released v0.9 disc holds.
-    NO_JERSEY_RELIEF = ("26A0", "26A4", "26H0", "26H4")
+    # that wear them) paint the neck opening in the body's colour, within the 14 levels collar_opening separates by, so the
+    # opening it derives floods the chest (20,969 texels, tip at row 157). Coordinator's ruling: a per-kit override, no
+    # other pin moving: their jersey rows take the retail base sculpt's own opening ("retail_base").
+    RETAIL_BASE_OPENING = ("26A0", "26A4", "26H0", "26H4")
 
     def test_every_kit_has_its_three_slots_pinned(self):
         slots = self.doc["slots"]
         kits = {r["selector"] for r in slots}
         self.assertEqual(len(kits), 178)
-        self.assertEqual(len(slots), 3 * 178 - len(self.NO_JERSEY_RELIEF))
-        self.assertEqual(sorted(k for k in kits if not any(r["selector"] == k and r["slot"] == "bump_jersey" for r in slots)),
-                         list(self.NO_JERSEY_RELIEF))
+        self.assertEqual(len(slots), 3 * 178)
+        self.assertEqual(sorted(r["selector"] for r in slots if "opening" in r), list(self.RETAIL_BASE_OPENING))
+        self.assertTrue(all(r["opening"] == "retail_base" and r["slot"] == "bump_jersey" for r in slots if "opening" in r))
         for row in slots:
             for key in ("before_sha256", "after_sha256", "composed_sha256"):
                 self.assertEqual(len(row[key]), 64, row)

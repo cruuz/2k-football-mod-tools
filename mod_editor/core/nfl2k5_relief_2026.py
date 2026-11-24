@@ -89,6 +89,8 @@ def spec(path=None):
         require(row["patch"] is None or document["patches"][row["patch"]]["slot"] == row["slot"], "patch of another slot")
         require(row["slot"] != "bump_jersey" or len(row.get("opening_sha256", "")) == 64,
                 "jersey row without its collar opening pin")
+        require(row.get("opening", OPENING_FROM_TORSO) in OPENING_SOURCES and
+                (row["slot"] == "bump_jersey" or "opening" not in row), "unknown collar opening source")
     for slot in document["masters"]:
         require(slot in document["bases"], "difference master without its retail base")
     return document
@@ -391,6 +393,16 @@ def collar_opening(torso_rgba):
     return out
 
 
+# Where a jersey row's collar opening comes from. By default the kit's own torso as the build holds it (collar_opening).
+# b81-uniform-pass2 (11/24, coordinator's ruling: a per-kit override, no other pin moves): "retail_base" takes the opening
+# of the retail base sculpt's own torso (the 18H0 package the jersey base is made from, read from the user's retail disc
+# with the base maps), for kits whose finished torso paints the neck opening in the body's colour, where collar_opening
+# cannot separate it (the approved 2026 Seahawks jerseys: the opening floods the chest). Nothing of it ships; the row's
+# opening_sha256 still pins the derived mask.
+OPENING_FROM_TORSO = "torso"
+OPENING_SOURCES = (OPENING_FROM_TORSO, "retail_base")
+
+
 def opening_sha256(opening):
     return sha(np.packbits(np.asarray(opening, bool)).tobytes())
 
@@ -654,6 +666,7 @@ def retail_maps(document, retail, problems=None):
             return None
         out[slot] = _texture(span)
     out["islands"] = island
+    out["opening"] = collar_opening(torso_rgba(raw))        # the base sculpt's own collar opening ("retail_base" rows)
     return out
 
 
@@ -778,9 +791,15 @@ def _pool_map(function, jobs, count):
         yield from map(function, jobs)
 
 
-def kit_opening(row, torso):
-    """The collar opening derived from the kit's torso texture as the build holds it, checked against its pin."""
-    opening = collar_opening(torso)
+def kit_opening(row, torso, retail=None):
+    """The collar opening derived from the kit's torso texture as the build holds it (or, for a ``retail_base`` row, the
+    retail base sculpt's own opening from ``retail_maps``), checked against its pin."""
+    if row.get("opening", OPENING_FROM_TORSO) == "retail_base":
+        require(retail is not None and retail.get("opening") is not None,
+                "%s: the retail base's collar opening is not available" % row["selector"])
+        opening = retail["opening"]
+    else:
+        opening = collar_opening(torso)
     require(opening_sha256(opening) == row["opening_sha256"],
             "%s: the kit's collar opening is not the one its relief was drawn for (the kit's torso texture changed "
             "since the relief was made)" % row["selector"])
@@ -800,7 +819,7 @@ def compose_maps(rows, spans, document, retail, torsos=None, *, count=None, prog
     for row in rows:
         key = (row["selector"], row["slot"])
         if row["slot"] == "bump_jersey":
-            opening = kit_opening(row, torsos[row["selector"]])
+            opening = kit_opening(row, (torsos or {}).get(row["selector"]), retail)
             job_key = ("bump_jersey", row["opening_sha256"])
             payload = (retail["bump_jersey"], opening, island)
         elif row["slot"] == "bump_sleeve":
@@ -848,7 +867,7 @@ def authored_map(document, row, retail, before_rgba=None, torso=None):
     gauss = Kernels(document["gauss_kernels"])
     folder = art_folder(document)
     if row["slot"] == "bump_jersey":
-        base = jersey_base(gauss, retail["bump_jersey"], kit_opening(row, torso),
+        base = jersey_base(gauss, retail["bump_jersey"], kit_opening(row, torso, retail),
                            jersey_islands_for(document, retail, folder))
     elif row["slot"] == "bump_sleeve":
         base = sleeve_base(gauss, retail["bump_sleeve"])
