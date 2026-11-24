@@ -63,11 +63,19 @@ class Document(unittest.TestCase):
     def setUp(self):
         self.doc = rl.relief_b81u()
 
+    # b81-uniform-pass2 fold-in (11/24): the approved Seahawks torsos (art_v4: 26H0/26A0 and the combination slots 26H4/26A4
+    # that wear them) paint the neck opening in the body's navy, within the 14 levels collar_opening separates by, so the
+    # opening it derives floods the chest (20,969 texels, tip at row 157, where the other kits' openings hold about 4,300).
+    # Their jersey slot is left out: those four jerseys keep the bump map the released v0.9 disc holds.
+    NO_JERSEY_RELIEF = ("26A0", "26A4", "26H0", "26H4")
+
     def test_every_kit_has_its_three_slots_pinned(self):
         slots = self.doc["slots"]
         kits = {r["selector"] for r in slots}
         self.assertEqual(len(kits), 178)
-        self.assertEqual(len(slots), 3 * 178)
+        self.assertEqual(len(slots), 3 * 178 - len(self.NO_JERSEY_RELIEF))
+        self.assertEqual(sorted(k for k in kits if not any(r["selector"] == k and r["slot"] == "bump_jersey" for r in slots)),
+                         list(self.NO_JERSEY_RELIEF))
         for row in slots:
             for key in ("before_sha256", "after_sha256", "composed_sha256"):
                 self.assertEqual(len(row[key]), 64, row)
