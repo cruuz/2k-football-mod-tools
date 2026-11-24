@@ -19834,6 +19834,286 @@
    "texture": "57"
   },
   {
+   "after_sha256": "347be94d7381e7732ff33cdc9b7114815a4c565e979358a024586f80f3c07ea8",
+   "before_sha256": "f07ec95528f1707928bc1dffde05c4b504c285c4bcdb220536e82e9308fb3f9b",
+   "chunk": 23,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 784,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 0 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 483632,
+   "resource_size": 1546512,
+   "rgba_sha256": "4a734c44a88aa7a750eb2177bf6a7ef5d14623b0acb4e4bad4e9166b9bfb3f71",
+   "selector": "06A0",
+   "texture": "hn48"
+  },
+  {
+   "after_sha256": "69e61e25e79abedc34987c145486d90a56ef60fef5ff90db5d7f1f5a3932197d",
+   "before_sha256": "74ef0fc2c05074229ee91f5a40beaff83207a36b6d7a4cd5a53d3e437877f858",
+   "chunk": 24,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 624,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 1 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 484416,
+   "resource_size": 1546512,
+   "rgba_sha256": "2bfd300db01da0ee9de7fc0c099bcfe5acdedcaa7f8f591219ea6e97ebd87890",
+   "selector": "06A0",
+   "texture": "hn49"
+  },
+  {
+   "after_sha256": "ef1f75f278a2d8bec8972641d49986c6a56bf9144e58bc0697d17a6a68d29409",
+   "before_sha256": "d299f47ff22bd618ee7b1300b9ae2acd9729428cd6e815f6399257b655d627ab",
+   "chunk": 25,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1024,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 2 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 485040,
+   "resource_size": 1546512,
+   "rgba_sha256": "8441f066f844d5740d58e9390a6ca0b9face233d080a752c36a75d7fd9d089b5",
+   "selector": "06A0",
+   "texture": "hn50"
+  },
+  {
+   "after_sha256": "d1bf33ad3e85974b34f501e3aa693da0947c66aaf7a8ac20131ebe70fb92a4e8",
+   "before_sha256": "5451c2fd6d1f6da7f535489f47cd4c4621ff96c86e6d4dceebab707947a34445",
+   "chunk": 26,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1056,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 3 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 486064,
+   "resource_size": 1546512,
+   "rgba_sha256": "1902394c210baadab7111aef07b519dd55fee9a12c1321cab70b7f617f70aa2c",
+   "selector": "06A0",
+   "texture": "hn51"
+  },
+  {
+   "after_sha256": "af3869239a149956e6da0abf4887ebd7359236e08a64ef55b44c2e9cad713ba7",
+   "before_sha256": "d0a3c48ee5de09b7c8bc9edca9d5467fa9088ab0e7635dab523141c67fc55e38",
+   "chunk": 27,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1040,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 4 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 487120,
+   "resource_size": 1546512,
+   "rgba_sha256": "68dc5d05c3daf1d1e00d5ca1edf75502d23ecb9fb3cefd3164abba9ec86f24a1",
+   "selector": "06A0",
+   "texture": "hn52"
+  },
+  {
+   "after_sha256": "156556cda18147813a2d815d5b592af1dab178fcc5a888beb1819ab7d894c6d0",
+   "before_sha256": "b9dd1135a8bf7be8e05ac5bb4c90abb62f38598791a69770f00161d6508a71de",
+   "chunk": 28,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 976,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 5 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 488160,
+   "resource_size": 1546512,
+   "rgba_sha256": "2a6b9091afec0b2154e703944b403249d8a540e57fe082978563aa22c9267719",
+   "selector": "06A0",
+   "texture": "hn53"
+  },
+  {
+   "after_sha256": "945debad39fe9ac562ee9e05d0e0dbc257840f47fd97d426595d1f4441189fad",
+   "before_sha256": "37ab95d24195fae8feb2240ad83bbb3566bf88ed3a8d68a4b16b8bf9f2b95621",
+   "chunk": 29,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 6 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 489136,
+   "resource_size": 1546512,
+   "rgba_sha256": "05c2afc0ad5a1e87b6ba33e4b01543901f9b487f529f0a521f73b39b92539a6f",
+   "selector": "06A0",
+   "texture": "hn54"
+  },
+  {
+   "after_sha256": "fbaa82d3cb265035d68a22f4fb977982de19264bad4621688af523bd4229bcfd",
+   "before_sha256": "ea07e668caf12a8b153d162e2334f48b661cb01ae74cbd4490e53ad5ce6d81ca",
+   "chunk": 30,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 896,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 7 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 490080,
+   "resource_size": 1546512,
+   "rgba_sha256": "a85d47aaf102caf9e494d4052f4de4a2418eccc9bd78b05a46728782a2a538b3",
+   "selector": "06A0",
+   "texture": "hn55"
+  },
+  {
+   "after_sha256": "af193c6a7971fde3811cfefda66496a130a410a695a107c738d067aa98dc8cdf",
+   "before_sha256": "6e46c76245d730feb48b79dd5ca7ffb2601afc8b872d8c634b29d48dffb6edd1",
+   "chunk": 31,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1008,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 8 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 490976,
+   "resource_size": 1546512,
+   "rgba_sha256": "8194f529673bc37160f2a47c11b1b2be9ff197d64cd07311eeb007d2b2296b27",
+   "selector": "06A0",
+   "texture": "hn56"
+  },
+  {
+   "after_sha256": "551e59b67b4cc9cca70b51b2f06aa11387f1deefffdd2abf48ad0470f69d99d0",
+   "before_sha256": "b1483eb8b045c9eb47589d37a06ad015105a8b243c80d0c8c890f7b46c7a89ce",
+   "chunk": 32,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 9 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 491984,
+   "resource_size": 1546512,
+   "rgba_sha256": "a491e7228f5d4ed287e1297b694cfd9ec889d56a8dfbea00f4cddf0a1c336321",
+   "selector": "06A0",
+   "texture": "hn57"
+  },
+  {
    "after_sha256": "cc5c92e0f4ecdb1951424945032386e09448462493cf51795333647ab5bc21ce",
    "before_sha256": "26d2a6527d9c089023be2b57eaeb76e6df6cb7950a098d312ad53e8034e88981",
    "chunk": 13,
@@ -20352,6 +20632,286 @@
    "resource_size": 1552160,
    "selector": "06H0",
    "texture": "57"
+  },
+  {
+   "after_sha256": "347be94d7381e7732ff33cdc9b7114815a4c565e979358a024586f80f3c07ea8",
+   "before_sha256": "f07ec95528f1707928bc1dffde05c4b504c285c4bcdb220536e82e9308fb3f9b",
+   "chunk": 23,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 784,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 0 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 489760,
+   "resource_size": 1552160,
+   "rgba_sha256": "4a734c44a88aa7a750eb2177bf6a7ef5d14623b0acb4e4bad4e9166b9bfb3f71",
+   "selector": "06H0",
+   "texture": "hn48"
+  },
+  {
+   "after_sha256": "69e61e25e79abedc34987c145486d90a56ef60fef5ff90db5d7f1f5a3932197d",
+   "before_sha256": "74ef0fc2c05074229ee91f5a40beaff83207a36b6d7a4cd5a53d3e437877f858",
+   "chunk": 24,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 624,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 1 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 490544,
+   "resource_size": 1552160,
+   "rgba_sha256": "2bfd300db01da0ee9de7fc0c099bcfe5acdedcaa7f8f591219ea6e97ebd87890",
+   "selector": "06H0",
+   "texture": "hn49"
+  },
+  {
+   "after_sha256": "ef1f75f278a2d8bec8972641d49986c6a56bf9144e58bc0697d17a6a68d29409",
+   "before_sha256": "d299f47ff22bd618ee7b1300b9ae2acd9729428cd6e815f6399257b655d627ab",
+   "chunk": 25,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1024,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 2 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 491168,
+   "resource_size": 1552160,
+   "rgba_sha256": "8441f066f844d5740d58e9390a6ca0b9face233d080a752c36a75d7fd9d089b5",
+   "selector": "06H0",
+   "texture": "hn50"
+  },
+  {
+   "after_sha256": "d1bf33ad3e85974b34f501e3aa693da0947c66aaf7a8ac20131ebe70fb92a4e8",
+   "before_sha256": "5451c2fd6d1f6da7f535489f47cd4c4621ff96c86e6d4dceebab707947a34445",
+   "chunk": 26,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1056,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 3 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 492192,
+   "resource_size": 1552160,
+   "rgba_sha256": "1902394c210baadab7111aef07b519dd55fee9a12c1321cab70b7f617f70aa2c",
+   "selector": "06H0",
+   "texture": "hn51"
+  },
+  {
+   "after_sha256": "af3869239a149956e6da0abf4887ebd7359236e08a64ef55b44c2e9cad713ba7",
+   "before_sha256": "d0a3c48ee5de09b7c8bc9edca9d5467fa9088ab0e7635dab523141c67fc55e38",
+   "chunk": 27,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1040,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 4 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 493248,
+   "resource_size": 1552160,
+   "rgba_sha256": "68dc5d05c3daf1d1e00d5ca1edf75502d23ecb9fb3cefd3164abba9ec86f24a1",
+   "selector": "06H0",
+   "texture": "hn52"
+  },
+  {
+   "after_sha256": "156556cda18147813a2d815d5b592af1dab178fcc5a888beb1819ab7d894c6d0",
+   "before_sha256": "b9dd1135a8bf7be8e05ac5bb4c90abb62f38598791a69770f00161d6508a71de",
+   "chunk": 28,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 976,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 5 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 494288,
+   "resource_size": 1552160,
+   "rgba_sha256": "2a6b9091afec0b2154e703944b403249d8a540e57fe082978563aa22c9267719",
+   "selector": "06H0",
+   "texture": "hn53"
+  },
+  {
+   "after_sha256": "945debad39fe9ac562ee9e05d0e0dbc257840f47fd97d426595d1f4441189fad",
+   "before_sha256": "37ab95d24195fae8feb2240ad83bbb3566bf88ed3a8d68a4b16b8bf9f2b95621",
+   "chunk": 29,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 6 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 495264,
+   "resource_size": 1552160,
+   "rgba_sha256": "05c2afc0ad5a1e87b6ba33e4b01543901f9b487f529f0a521f73b39b92539a6f",
+   "selector": "06H0",
+   "texture": "hn54"
+  },
+  {
+   "after_sha256": "fbaa82d3cb265035d68a22f4fb977982de19264bad4621688af523bd4229bcfd",
+   "before_sha256": "ea07e668caf12a8b153d162e2334f48b661cb01ae74cbd4490e53ad5ce6d81ca",
+   "chunk": 30,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 896,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 7 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 496208,
+   "resource_size": 1552160,
+   "rgba_sha256": "a85d47aaf102caf9e494d4052f4de4a2418eccc9bd78b05a46728782a2a538b3",
+   "selector": "06H0",
+   "texture": "hn55"
+  },
+  {
+   "after_sha256": "af193c6a7971fde3811cfefda66496a130a410a695a107c738d067aa98dc8cdf",
+   "before_sha256": "6e46c76245d730feb48b79dd5ca7ffb2601afc8b872d8c634b29d48dffb6edd1",
+   "chunk": 31,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1008,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 8 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 497104,
+   "resource_size": 1552160,
+   "rgba_sha256": "8194f529673bc37160f2a47c11b1b2be9ff197d64cd07311eeb007d2b2296b27",
+   "selector": "06H0",
+   "texture": "hn56"
+  },
+  {
+   "after_sha256": "551e59b67b4cc9cca70b51b2f06aa11387f1deefffdd2abf48ad0470f69d99d0",
+   "before_sha256": "b1483eb8b045c9eb47589d37a06ad015105a8b243c80d0c8c890f7b46c7a89ce",
+   "chunk": 32,
+   "defects": [
+    "b81m-CIN-helmet-numerals-colour"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#000000"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Bengals helmet numeral 9 recoloured from white to black (the real numerals are black on the orange shell).",
+   "offset": 498112,
+   "resource_size": 1552160,
+   "rgba_sha256": "a491e7228f5d4ed287e1297b694cfd9ec889d56a8dfbea00f4cddf0a1c336321",
+   "selector": "06H0",
+   "texture": "hn57"
   },
   {
    "after_sha256": "cc5c92e0f4ecdb1951424945032386e09448462493cf51795333647ab5bc21ce",
@@ -39657,6 +40217,286 @@
    ]
   },
   {
+   "after_sha256": "fccd2ae35f24e18bc8fbf1502702f85bc998f9667d15fac2b45516a7891d7581",
+   "before_sha256": "6ec33efa4a43adc1f34f048f659ac8f856314d7754b1e79bbafd2000952d05e9",
+   "chunk": 23,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 720,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 457904,
+   "resource_size": 1512432,
+   "rgba_sha256": "2b3441d32058f1c98437cbb03ae82274434d7ab39523b6b7d36d92b5e7962e87",
+   "selector": "11A0",
+   "texture": "hn48"
+  },
+  {
+   "after_sha256": "ef03898eef608b118856d3568fd815abdbde10953a174b9d21eee0042e69349a",
+   "before_sha256": "c7f54cdca03fb02ecce31ac66b54b0d7ada7236084225f191fe27fd5a4a5506c",
+   "chunk": 24,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 576,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 458624,
+   "resource_size": 1512432,
+   "rgba_sha256": "e83ae4c7fe31303283acfb7abe48d36e171e84b2ffc59977f1de3c87539b6502",
+   "selector": "11A0",
+   "texture": "hn49"
+  },
+  {
+   "after_sha256": "22e5e0d409894f3ae15c9c739071185e5fc50fa1eff3e50aacb017a2ee887555",
+   "before_sha256": "df9b74bc72a8e8efa9cb4eb8102366ac3a7fcf18681f0f632e8b294ed3baed51",
+   "chunk": 25,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 459200,
+   "resource_size": 1512432,
+   "rgba_sha256": "1f524ecafd940ecaa7595e224c937a0b2b680a92da1ea05b6d08dbe7e4c5ab49",
+   "selector": "11A0",
+   "texture": "hn50"
+  },
+  {
+   "after_sha256": "9142f6aebcd1e0cf305089c8c1ad552a00019eb88a00e5d61b310e4eed25f793",
+   "before_sha256": "f708f96f847155c96ed8e98645c1162377eac68a0eb4dbe04d6a92c75545766a",
+   "chunk": 26,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 992,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 460144,
+   "resource_size": 1512432,
+   "rgba_sha256": "c4b0dc2dd5930ff5e701a9247cb441f0d4beeb9039eababb81a0d04b3d0ac2fa",
+   "selector": "11A0",
+   "texture": "hn51"
+  },
+  {
+   "after_sha256": "9695da1912818454a55b5e36038d63e3035b7a2b466b7c782e91212d4310e3d3",
+   "before_sha256": "a597b0bf4acc9c715f3cdc4643f4e65ee0d8f70cb47b3b2481e72ff8ad82c5a9",
+   "chunk": 27,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 912,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 461136,
+   "resource_size": 1512432,
+   "rgba_sha256": "acfff1456b8735bc3e95526128cc6d25af790f56293ebd4329002e6bb5d3f300",
+   "selector": "11A0",
+   "texture": "hn52"
+  },
+  {
+   "after_sha256": "6d2eabbd98425471f1a883cac06b42fc856bd65d4b1ded569873118d54ae8bbb",
+   "before_sha256": "482dcaa97eb3ebbdb27ec81f11efcbf64d5899795f79f2ed17a230b2bc863258",
+   "chunk": 28,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 912,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 462048,
+   "resource_size": 1512432,
+   "rgba_sha256": "b53dc386c650abe369366e012326697b870f957f65b2aff4776bf7479e335ab7",
+   "selector": "11A0",
+   "texture": "hn53"
+  },
+  {
+   "after_sha256": "8bc11e8b830868d61d9e3ce666dc86e2bfda638c4b7891628193f4dfbe81d3db",
+   "before_sha256": "7651952fbbe5dfcb12c30a5fc07a14ad29457933705a688023d14769663ff4f0",
+   "chunk": 29,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 912,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 462960,
+   "resource_size": 1512432,
+   "rgba_sha256": "ec987c86f7b1ea5c5e0f1d57e60477d4594b7a0364df00377ad4a5fa2defeca2",
+   "selector": "11A0",
+   "texture": "hn54"
+  },
+  {
+   "after_sha256": "f75ea495f1644f03e05da89eeee0551ef3a933556c813c46de296e0cb1b5b5d6",
+   "before_sha256": "73fd4a564cd48f884bddb02d20b1d9e7cd2c764674f2b8c9ff306afbf840fc17",
+   "chunk": 30,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 832,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 463872,
+   "resource_size": 1512432,
+   "rgba_sha256": "297530c21f0355c40857efbcbf95cb983cb3bbb662fd1c2358da445c54f4059d",
+   "selector": "11A0",
+   "texture": "hn55"
+  },
+  {
+   "after_sha256": "a91535cb4cda7d7a7a7e8fcb0e995ab27f354b728d9cb8c81f68cf61397d3829",
+   "before_sha256": "216a6639f4650300e917f0d4e4277d87399046265f90135b7039963d3f289c2d",
+   "chunk": 31,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 464704,
+   "resource_size": 1512432,
+   "rgba_sha256": "8f8c472cd542dfc54914cfa1d0a9afaf64e658f2f65499ca80d621231c6e9658",
+   "selector": "11A0",
+   "texture": "hn56"
+  },
+  {
+   "after_sha256": "52666b48f9f6ef9077ca37a51982192b63f95e789633caec00e00123764e2939",
+   "before_sha256": "ec65e8edb4a95e377d20cf1be6e64dba81d2b98f8e1867414588a5de8713df9f",
+   "chunk": 32,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 928,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 465648,
+   "resource_size": 1512432,
+   "rgba_sha256": "902b04eb2c072f1eea8d5744cc15b65229da44f29437e2c19a6b8d4f843a08ff",
+   "selector": "11A0",
+   "texture": "hn57"
+  },
+  {
    "after_sha256": "39e1ed8fb020ee27c17888c0c951f8c80c26b0c00ad93230e8c6e6316c8d36de",
    "before_sha256": "a37b53e374f985f1e5c843b485c39f1e44a3d4d4fd812864a4fb3cefd8b9a7a2",
    "chunk": 43,
@@ -39880,6 +40720,286 @@
     12,
     10
    ]
+  },
+  {
+   "after_sha256": "fccd2ae35f24e18bc8fbf1502702f85bc998f9667d15fac2b45516a7891d7581",
+   "before_sha256": "6ec33efa4a43adc1f34f048f659ac8f856314d7754b1e79bbafd2000952d05e9",
+   "chunk": 23,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 720,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 443216,
+   "resource_size": 1494688,
+   "rgba_sha256": "2b3441d32058f1c98437cbb03ae82274434d7ab39523b6b7d36d92b5e7962e87",
+   "selector": "11H0",
+   "texture": "hn48"
+  },
+  {
+   "after_sha256": "ef03898eef608b118856d3568fd815abdbde10953a174b9d21eee0042e69349a",
+   "before_sha256": "c7f54cdca03fb02ecce31ac66b54b0d7ada7236084225f191fe27fd5a4a5506c",
+   "chunk": 24,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 576,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 443936,
+   "resource_size": 1494688,
+   "rgba_sha256": "e83ae4c7fe31303283acfb7abe48d36e171e84b2ffc59977f1de3c87539b6502",
+   "selector": "11H0",
+   "texture": "hn49"
+  },
+  {
+   "after_sha256": "22e5e0d409894f3ae15c9c739071185e5fc50fa1eff3e50aacb017a2ee887555",
+   "before_sha256": "df9b74bc72a8e8efa9cb4eb8102366ac3a7fcf18681f0f632e8b294ed3baed51",
+   "chunk": 25,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 444512,
+   "resource_size": 1494688,
+   "rgba_sha256": "1f524ecafd940ecaa7595e224c937a0b2b680a92da1ea05b6d08dbe7e4c5ab49",
+   "selector": "11H0",
+   "texture": "hn50"
+  },
+  {
+   "after_sha256": "9142f6aebcd1e0cf305089c8c1ad552a00019eb88a00e5d61b310e4eed25f793",
+   "before_sha256": "f708f96f847155c96ed8e98645c1162377eac68a0eb4dbe04d6a92c75545766a",
+   "chunk": 26,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 992,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 445456,
+   "resource_size": 1494688,
+   "rgba_sha256": "c4b0dc2dd5930ff5e701a9247cb441f0d4beeb9039eababb81a0d04b3d0ac2fa",
+   "selector": "11H0",
+   "texture": "hn51"
+  },
+  {
+   "after_sha256": "9695da1912818454a55b5e36038d63e3035b7a2b466b7c782e91212d4310e3d3",
+   "before_sha256": "a597b0bf4acc9c715f3cdc4643f4e65ee0d8f70cb47b3b2481e72ff8ad82c5a9",
+   "chunk": 27,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 912,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 446448,
+   "resource_size": 1494688,
+   "rgba_sha256": "acfff1456b8735bc3e95526128cc6d25af790f56293ebd4329002e6bb5d3f300",
+   "selector": "11H0",
+   "texture": "hn52"
+  },
+  {
+   "after_sha256": "6d2eabbd98425471f1a883cac06b42fc856bd65d4b1ded569873118d54ae8bbb",
+   "before_sha256": "482dcaa97eb3ebbdb27ec81f11efcbf64d5899795f79f2ed17a230b2bc863258",
+   "chunk": 28,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 912,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 447360,
+   "resource_size": 1494688,
+   "rgba_sha256": "b53dc386c650abe369366e012326697b870f957f65b2aff4776bf7479e335ab7",
+   "selector": "11H0",
+   "texture": "hn53"
+  },
+  {
+   "after_sha256": "8bc11e8b830868d61d9e3ce666dc86e2bfda638c4b7891628193f4dfbe81d3db",
+   "before_sha256": "7651952fbbe5dfcb12c30a5fc07a14ad29457933705a688023d14769663ff4f0",
+   "chunk": 29,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 912,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 448272,
+   "resource_size": 1494688,
+   "rgba_sha256": "ec987c86f7b1ea5c5e0f1d57e60477d4594b7a0364df00377ad4a5fa2defeca2",
+   "selector": "11H0",
+   "texture": "hn54"
+  },
+  {
+   "after_sha256": "f75ea495f1644f03e05da89eeee0551ef3a933556c813c46de296e0cb1b5b5d6",
+   "before_sha256": "73fd4a564cd48f884bddb02d20b1d9e7cd2c764674f2b8c9ff306afbf840fc17",
+   "chunk": 30,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 832,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 449184,
+   "resource_size": 1494688,
+   "rgba_sha256": "297530c21f0355c40857efbcbf95cb983cb3bbb662fd1c2358da445c54f4059d",
+   "selector": "11H0",
+   "texture": "hn55"
+  },
+  {
+   "after_sha256": "a91535cb4cda7d7a7a7e8fcb0e995ab27f354b728d9cb8c81f68cf61397d3829",
+   "before_sha256": "216a6639f4650300e917f0d4e4277d87399046265f90135b7039963d3f289c2d",
+   "chunk": 31,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 450016,
+   "resource_size": 1494688,
+   "rgba_sha256": "8f8c472cd542dfc54914cfa1d0a9afaf64e658f2f65499ca80d621231c6e9658",
+   "selector": "11H0",
+   "texture": "hn56"
+  },
+  {
+   "after_sha256": "52666b48f9f6ef9077ca37a51982192b63f95e789633caec00e00123764e2939",
+   "before_sha256": "ec65e8edb4a95e377d20cf1be6e64dba81d2b98f8e1867414588a5de8713df9f",
+   "chunk": 32,
+   "defects": [
+    "b81m-IND-helmet-numerals-white-on-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0C3A9D"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 928,
+   "note": "b81 uniform fold-in (approved kit): Helmet-back numeral recoloured from white to the helmet blue: white numerals do not show on the white shell; the real helmet carries large blue numerals at the back, one each side of the blue stripe (28). Shape, size, place and alpha untouched. The kit's helmet-number field is 2 (set B: 3.0 x 4.7 cm digits 1.5 cm either side of the centre line, low), which is the real arrangement, and stays.",
+   "offset": 450960,
+   "resource_size": 1494688,
+   "rgba_sha256": "902b04eb2c072f1eea8d5744cc15b65229da44f29437e2c19a6b8d4f843a08ff",
+   "selector": "11H0",
+   "texture": "hn57"
   },
   {
    "after_sha256": "311787dc64b6e361cf7e5e57984c8f8777da124c81163948093a804938bde2e5",
@@ -110427,6 +111547,846 @@
    "resource_size": 1525328,
    "selector": "37H2",
    "texture": "57"
+  },
+  {
+   "after_sha256": "c072d5b8514565eff9613105c0cfb7b42afce1063c69a862179fcd01bca4200d",
+   "before_sha256": "f07ec95528f1707928bc1dffde05c4b504c285c4bcdb220536e82e9308fb3f9b",
+   "chunk": 23,
+   "defects": [
+    "b81m-CAR-helmet-numerals-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0F0F0F"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 784,
+   "note": "b81 uniform fold-in (approved kit): Panthers home: the helmet-back numerals recoloured from white to black. The silver helmet carries black numerals (photograph of the same helmet in the Nov 15 game); the road kit 04A0 already has them black, the home kit's were white and all but invisible on silver. Glyph shape, size and place untouched.",
+   "offset": 466256,
+   "resource_size": 1525440,
+   "rgba_sha256": "63f16035878b6d1eb8427963d242f3684b1656361a11148b04968618e5b5cf44",
+   "selector": "04H0",
+   "texture": "hn48"
+  },
+  {
+   "after_sha256": "e07718be6aa4316fc34fb1947cbabdb48b091cb676aae1a35047b8813c1227ac",
+   "before_sha256": "74ef0fc2c05074229ee91f5a40beaff83207a36b6d7a4cd5a53d3e437877f858",
+   "chunk": 24,
+   "defects": [
+    "b81m-CAR-helmet-numerals-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0F0F0F"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 624,
+   "note": "b81 uniform fold-in (approved kit): Panthers home: the helmet-back numerals recoloured from white to black. The silver helmet carries black numerals (photograph of the same helmet in the Nov 15 game); the road kit 04A0 already has them black, the home kit's were white and all but invisible on silver. Glyph shape, size and place untouched.",
+   "offset": 467040,
+   "resource_size": 1525440,
+   "rgba_sha256": "c59ca1767671da56591e6bfa5f748ff237f2b8adfb9d47f34b17ac6a054ddd79",
+   "selector": "04H0",
+   "texture": "hn49"
+  },
+  {
+   "after_sha256": "c0d41241d96802c64aac1c7f5a69a6096e62a2c9f2b81cec1bee44ffbf550c37",
+   "before_sha256": "d299f47ff22bd618ee7b1300b9ae2acd9729428cd6e815f6399257b655d627ab",
+   "chunk": 25,
+   "defects": [
+    "b81m-CAR-helmet-numerals-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0F0F0F"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1024,
+   "note": "b81 uniform fold-in (approved kit): Panthers home: the helmet-back numerals recoloured from white to black. The silver helmet carries black numerals (photograph of the same helmet in the Nov 15 game); the road kit 04A0 already has them black, the home kit's were white and all but invisible on silver. Glyph shape, size and place untouched.",
+   "offset": 467664,
+   "resource_size": 1525440,
+   "rgba_sha256": "0748927755891542265e5fafaaed83e14e7ecec2f2868f4b677fec93b1d8f4cb",
+   "selector": "04H0",
+   "texture": "hn50"
+  },
+  {
+   "after_sha256": "5608d85e6b79d06a83bed7d36b363dd05246305642429f85e5895141d889f87e",
+   "before_sha256": "5451c2fd6d1f6da7f535489f47cd4c4621ff96c86e6d4dceebab707947a34445",
+   "chunk": 26,
+   "defects": [
+    "b81m-CAR-helmet-numerals-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0F0F0F"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1056,
+   "note": "b81 uniform fold-in (approved kit): Panthers home: the helmet-back numerals recoloured from white to black. The silver helmet carries black numerals (photograph of the same helmet in the Nov 15 game); the road kit 04A0 already has them black, the home kit's were white and all but invisible on silver. Glyph shape, size and place untouched.",
+   "offset": 468688,
+   "resource_size": 1525440,
+   "rgba_sha256": "9b109bfe29a252d74dc397db48d1978a44c70f8a886930ac939021ee4f08cd36",
+   "selector": "04H0",
+   "texture": "hn51"
+  },
+  {
+   "after_sha256": "2973d1ad39414589df6c5fcad06b9622fded39df2308ff49b0e5d92c201e25e5",
+   "before_sha256": "d0a3c48ee5de09b7c8bc9edca9d5467fa9088ab0e7635dab523141c67fc55e38",
+   "chunk": 27,
+   "defects": [
+    "b81m-CAR-helmet-numerals-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0F0F0F"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1040,
+   "note": "b81 uniform fold-in (approved kit): Panthers home: the helmet-back numerals recoloured from white to black. The silver helmet carries black numerals (photograph of the same helmet in the Nov 15 game); the road kit 04A0 already has them black, the home kit's were white and all but invisible on silver. Glyph shape, size and place untouched.",
+   "offset": 469744,
+   "resource_size": 1525440,
+   "rgba_sha256": "d20c6e43886a06c063fb1470ba722eced1c761f72ce2c028510a4c3b7eb2cca0",
+   "selector": "04H0",
+   "texture": "hn52"
+  },
+  {
+   "after_sha256": "82a3578f73b8d1e74e52012aca8c141d768558fcef07f131933d551c4c068b70",
+   "before_sha256": "b9dd1135a8bf7be8e05ac5bb4c90abb62f38598791a69770f00161d6508a71de",
+   "chunk": 28,
+   "defects": [
+    "b81m-CAR-helmet-numerals-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0F0F0F"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 976,
+   "note": "b81 uniform fold-in (approved kit): Panthers home: the helmet-back numerals recoloured from white to black. The silver helmet carries black numerals (photograph of the same helmet in the Nov 15 game); the road kit 04A0 already has them black, the home kit's were white and all but invisible on silver. Glyph shape, size and place untouched.",
+   "offset": 470784,
+   "resource_size": 1525440,
+   "rgba_sha256": "00030e652bfe23e6712a1cd1311a00ceccc43ae3edb81bcea827c566d0dc09cd",
+   "selector": "04H0",
+   "texture": "hn53"
+  },
+  {
+   "after_sha256": "b5da792c47c18eeb5450dd9204fc33db7f729e3dfea0f8639da41e5553c2ab51",
+   "before_sha256": "37ab95d24195fae8feb2240ad83bbb3566bf88ed3a8d68a4b16b8bf9f2b95621",
+   "chunk": 29,
+   "defects": [
+    "b81m-CAR-helmet-numerals-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0F0F0F"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Panthers home: the helmet-back numerals recoloured from white to black. The silver helmet carries black numerals (photograph of the same helmet in the Nov 15 game); the road kit 04A0 already has them black, the home kit's were white and all but invisible on silver. Glyph shape, size and place untouched.",
+   "offset": 471760,
+   "resource_size": 1525440,
+   "rgba_sha256": "229f2edd31dfc773d1dad934baf3609d78e882b5698b2c0351817be5340c1d30",
+   "selector": "04H0",
+   "texture": "hn54"
+  },
+  {
+   "after_sha256": "31c73c41f059061acff6d947b6d3f3c6581c05fface7c437a51241decadf3661",
+   "before_sha256": "ea07e668caf12a8b153d162e2334f48b661cb01ae74cbd4490e53ad5ce6d81ca",
+   "chunk": 30,
+   "defects": [
+    "b81m-CAR-helmet-numerals-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0F0F0F"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 896,
+   "note": "b81 uniform fold-in (approved kit): Panthers home: the helmet-back numerals recoloured from white to black. The silver helmet carries black numerals (photograph of the same helmet in the Nov 15 game); the road kit 04A0 already has them black, the home kit's were white and all but invisible on silver. Glyph shape, size and place untouched.",
+   "offset": 472704,
+   "resource_size": 1525440,
+   "rgba_sha256": "24548a4a8e380f976b0383147e5b88a6ac0ef0b2b2e1b3dbdb517aa257961dbf",
+   "selector": "04H0",
+   "texture": "hn55"
+  },
+  {
+   "after_sha256": "69c694e6cfff7ad0a4295bd55110e27eec96681fd78772366c0d3f701df6af68",
+   "before_sha256": "6e46c76245d730feb48b79dd5ca7ffb2601afc8b872d8c634b29d48dffb6edd1",
+   "chunk": 31,
+   "defects": [
+    "b81m-CAR-helmet-numerals-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0F0F0F"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1008,
+   "note": "b81 uniform fold-in (approved kit): Panthers home: the helmet-back numerals recoloured from white to black. The silver helmet carries black numerals (photograph of the same helmet in the Nov 15 game); the road kit 04A0 already has them black, the home kit's were white and all but invisible on silver. Glyph shape, size and place untouched.",
+   "offset": 473600,
+   "resource_size": 1525440,
+   "rgba_sha256": "19dab631c5669c8c72de9975421c06b7a6a93aeed2de45a05b18696c25b69cfa",
+   "selector": "04H0",
+   "texture": "hn56"
+  },
+  {
+   "after_sha256": "b185b1ec5ab6740a17a6517238627f058d555a47effdcde38075c08c54697e54",
+   "before_sha256": "b1483eb8b045c9eb47589d37a06ad015105a8b243c80d0c8c890f7b46c7a89ce",
+   "chunk": 32,
+   "defects": [
+    "b81m-CAR-helmet-numerals-white"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#FFFFFF",
+       "#0F0F0F"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Panthers home: the helmet-back numerals recoloured from white to black. The silver helmet carries black numerals (photograph of the same helmet in the Nov 15 game); the road kit 04A0 already has them black, the home kit's were white and all but invisible on silver. Glyph shape, size and place untouched.",
+   "offset": 474608,
+   "resource_size": 1525440,
+   "rgba_sha256": "46fc3a68a23404fd6b98890e1cea8df3a4944b5c5a04b816a61ac324804c08eb",
+   "selector": "04H0",
+   "texture": "hn57"
+  },
+  {
+   "after_sha256": "86a73e0231c08d75cc4b0c8526bc8843fb70793f4be7518da3ee753c9c1d9a91",
+   "before_sha256": "85d831e41fdd1542aaba0bdf1d62a1448b8543ce90ab3818d5aab3a7d3d63691",
+   "chunk": 23,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 784,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 476432,
+   "resource_size": 1544224,
+   "rgba_sha256": "d6dd59376a88bda1698c86bc125f1baf01d20cf38aebac45e750980b40cdde63",
+   "selector": "09A0",
+   "texture": "hn48"
+  },
+  {
+   "after_sha256": "3133568d3863ffe1901fcf6b966391b0bfc9e48ae0bfb2fb3a9cb3335296eee9",
+   "before_sha256": "b4f1e7e24252a04dc9ca9d6a3639920d93a37f1d82dbbec71ad966c40ee056ac",
+   "chunk": 24,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 624,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 477216,
+   "resource_size": 1544224,
+   "rgba_sha256": "eebf6c251517c4bcc2bc1a00a498fe36226a553207782646052b4f19dd1b7019",
+   "selector": "09A0",
+   "texture": "hn49"
+  },
+  {
+   "after_sha256": "75cf2015be0dc4ca36997225684746537a61a2e6f7e2511cd96687d50e72414b",
+   "before_sha256": "22eaa3752feea061202fd3fa26c53f83e7aaa71a0ecabfa21a802882cf55c94b",
+   "chunk": 25,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1024,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 477840,
+   "resource_size": 1544224,
+   "rgba_sha256": "416029fe58d84cbcbe59b0e8b9b330090ae1702f32d5e0733ed419f5ca46148e",
+   "selector": "09A0",
+   "texture": "hn50"
+  },
+  {
+   "after_sha256": "3d68a329a177ce006ed788e555418a81e3ac1e1a6e698ffe67b82ddb3cf93bc0",
+   "before_sha256": "27e9ed1e276e094b10832e5f642f966a3e448c3f59544f66919f5d0374cc2e4f",
+   "chunk": 26,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1056,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 478864,
+   "resource_size": 1544224,
+   "rgba_sha256": "cc15ba9a6fdfce55ddd46ca60c8a22300b513466d0d5d1525f9dee4032df5f70",
+   "selector": "09A0",
+   "texture": "hn51"
+  },
+  {
+   "after_sha256": "a8a0cc463274b806dfe9656a6154f81bc3987359dc9d25db89a78942ea79b70c",
+   "before_sha256": "3090688800a673ad61bcda27b1129b779d09ecadb88212eb0f43c18fbfbcf3ab",
+   "chunk": 27,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1040,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 479920,
+   "resource_size": 1544224,
+   "rgba_sha256": "f87f23adb1e8551e567dea7cf742b1da1a3de3d4ed08097af86780e0df045db5",
+   "selector": "09A0",
+   "texture": "hn52"
+  },
+  {
+   "after_sha256": "c3512cabf0c0f7c20375ce0cc59cc9506bc66f46c170c30296fda2532e76a934",
+   "before_sha256": "3c71f8ed6ccd6e88c87a0aea15a219935d3828241068e3ed6ae1600b6e08b4a7",
+   "chunk": 28,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 976,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 480960,
+   "resource_size": 1544224,
+   "rgba_sha256": "be81e99fe11b4d0e29febde3fef10f6f2f241895e7f97796c4b8bfb1555bea10",
+   "selector": "09A0",
+   "texture": "hn53"
+  },
+  {
+   "after_sha256": "ba8b5981ccccedcadda7df6dd02441501831825c8b3c3cc4817dd4c161b4d153",
+   "before_sha256": "808976a53414dfa54e0fe607b17d768bf2d6512ad913cc773e06e67e95b49cc8",
+   "chunk": 29,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 481936,
+   "resource_size": 1544224,
+   "rgba_sha256": "28c4c9456d1567826ae3d1d78d2af3892fbec9349c10bc172a3f9fbb0aaf6be7",
+   "selector": "09A0",
+   "texture": "hn54"
+  },
+  {
+   "after_sha256": "d8ffa68a5315567e52a1efe1948ce9d6f20a9abd106495bf934215f8b2e51ff2",
+   "before_sha256": "8b4de65bab0a21c0b1d471b2e2f2187fab5744b26e46198ada4ce8d0154534d5",
+   "chunk": 30,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 896,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 482880,
+   "resource_size": 1544224,
+   "rgba_sha256": "98d0bb0b0351894cef07c67721255e171f62c132e9626fa24ec381fc1417f9cb",
+   "selector": "09A0",
+   "texture": "hn55"
+  },
+  {
+   "after_sha256": "26e03172290a312f83e86c5d87c4219f2c1312ea13bb0a3998341f0cdfbd27b3",
+   "before_sha256": "1870388bf53628371d7d59f1e8443d782c1ade3993298188189cca500a625d2f",
+   "chunk": 31,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1008,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 483776,
+   "resource_size": 1544224,
+   "rgba_sha256": "9ce5de4b938ade239172af8f528313aa2f079d38ccab66edb43a0551fafc784f",
+   "selector": "09A0",
+   "texture": "hn56"
+  },
+  {
+   "after_sha256": "6729e89238f24353a24d01aa3757ffe5032eb8daf3c52d52ac02538e24114627",
+   "before_sha256": "61de721b6d9299bf0bd2a6bddbb32d6777f325ebc63e3add53a33bc84a6ec41d",
+   "chunk": 32,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 484784,
+   "resource_size": 1544224,
+   "rgba_sha256": "448b2b2cc6d65e1fa66264c1f0d90430a583230fff15bb22acf009b20e52a1b8",
+   "selector": "09A0",
+   "texture": "hn57"
+  },
+  {
+   "after_sha256": "86a73e0231c08d75cc4b0c8526bc8843fb70793f4be7518da3ee753c9c1d9a91",
+   "before_sha256": "85d831e41fdd1542aaba0bdf1d62a1448b8543ce90ab3818d5aab3a7d3d63691",
+   "chunk": 23,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 784,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 469984,
+   "resource_size": 1533088,
+   "rgba_sha256": "d6dd59376a88bda1698c86bc125f1baf01d20cf38aebac45e750980b40cdde63",
+   "selector": "09H0",
+   "texture": "hn48"
+  },
+  {
+   "after_sha256": "3133568d3863ffe1901fcf6b966391b0bfc9e48ae0bfb2fb3a9cb3335296eee9",
+   "before_sha256": "b4f1e7e24252a04dc9ca9d6a3639920d93a37f1d82dbbec71ad966c40ee056ac",
+   "chunk": 24,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 624,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 470768,
+   "resource_size": 1533088,
+   "rgba_sha256": "eebf6c251517c4bcc2bc1a00a498fe36226a553207782646052b4f19dd1b7019",
+   "selector": "09H0",
+   "texture": "hn49"
+  },
+  {
+   "after_sha256": "75cf2015be0dc4ca36997225684746537a61a2e6f7e2511cd96687d50e72414b",
+   "before_sha256": "22eaa3752feea061202fd3fa26c53f83e7aaa71a0ecabfa21a802882cf55c94b",
+   "chunk": 25,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1024,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 471392,
+   "resource_size": 1533088,
+   "rgba_sha256": "416029fe58d84cbcbe59b0e8b9b330090ae1702f32d5e0733ed419f5ca46148e",
+   "selector": "09H0",
+   "texture": "hn50"
+  },
+  {
+   "after_sha256": "3d68a329a177ce006ed788e555418a81e3ac1e1a6e698ffe67b82ddb3cf93bc0",
+   "before_sha256": "27e9ed1e276e094b10832e5f642f966a3e448c3f59544f66919f5d0374cc2e4f",
+   "chunk": 26,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1056,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 472416,
+   "resource_size": 1533088,
+   "rgba_sha256": "cc15ba9a6fdfce55ddd46ca60c8a22300b513466d0d5d1525f9dee4032df5f70",
+   "selector": "09H0",
+   "texture": "hn51"
+  },
+  {
+   "after_sha256": "a8a0cc463274b806dfe9656a6154f81bc3987359dc9d25db89a78942ea79b70c",
+   "before_sha256": "3090688800a673ad61bcda27b1129b779d09ecadb88212eb0f43c18fbfbcf3ab",
+   "chunk": 27,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1040,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 473472,
+   "resource_size": 1533088,
+   "rgba_sha256": "f87f23adb1e8551e567dea7cf742b1da1a3de3d4ed08097af86780e0df045db5",
+   "selector": "09H0",
+   "texture": "hn52"
+  },
+  {
+   "after_sha256": "c3512cabf0c0f7c20375ce0cc59cc9506bc66f46c170c30296fda2532e76a934",
+   "before_sha256": "3c71f8ed6ccd6e88c87a0aea15a219935d3828241068e3ed6ae1600b6e08b4a7",
+   "chunk": 28,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 976,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 474512,
+   "resource_size": 1533088,
+   "rgba_sha256": "be81e99fe11b4d0e29febde3fef10f6f2f241895e7f97796c4b8bfb1555bea10",
+   "selector": "09H0",
+   "texture": "hn53"
+  },
+  {
+   "after_sha256": "ba8b5981ccccedcadda7df6dd02441501831825c8b3c3cc4817dd4c161b4d153",
+   "before_sha256": "808976a53414dfa54e0fe607b17d768bf2d6512ad913cc773e06e67e95b49cc8",
+   "chunk": 29,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 475488,
+   "resource_size": 1533088,
+   "rgba_sha256": "28c4c9456d1567826ae3d1d78d2af3892fbec9349c10bc172a3f9fbb0aaf6be7",
+   "selector": "09H0",
+   "texture": "hn54"
+  },
+  {
+   "after_sha256": "d8ffa68a5315567e52a1efe1948ce9d6f20a9abd106495bf934215f8b2e51ff2",
+   "before_sha256": "8b4de65bab0a21c0b1d471b2e2f2187fab5744b26e46198ada4ce8d0154534d5",
+   "chunk": 30,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 896,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 476432,
+   "resource_size": 1533088,
+   "rgba_sha256": "98d0bb0b0351894cef07c67721255e171f62c132e9626fa24ec381fc1417f9cb",
+   "selector": "09H0",
+   "texture": "hn55"
+  },
+  {
+   "after_sha256": "26e03172290a312f83e86c5d87c4219f2c1312ea13bb0a3998341f0cdfbd27b3",
+   "before_sha256": "1870388bf53628371d7d59f1e8443d782c1ade3993298188189cca500a625d2f",
+   "chunk": 31,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1008,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 477328,
+   "resource_size": 1533088,
+   "rgba_sha256": "9ce5de4b938ade239172af8f528313aa2f079d38ccab66edb43a0551fafc784f",
+   "selector": "09H0",
+   "texture": "hn56"
+  },
+  {
+   "after_sha256": "6729e89238f24353a24d01aa3757ffe5032eb8daf3c52d52ac02538e24114627",
+   "before_sha256": "61de721b6d9299bf0bd2a6bddbb32d6777f325ebc63e3add53a33bc84a6ec41d",
+   "chunk": 32,
+   "defects": [
+    "b81m-DET-helmet-numerals"
+   ],
+   "derive": [
+    {
+     "hidden": true,
+     "op": "recolour",
+     "pairs": [
+      [
+       "#0076B6",
+       "#B0B7BC"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "b81 uniform fold-in (approved kit): Lions helmet numeral in silver: the real helmet prints its small numerals in silver on the blue centre stripe; the kit's numeral pictures were the kit blue and would not show there.",
+   "offset": 478336,
+   "resource_size": 1533088,
+   "rgba_sha256": "448b2b2cc6d65e1fa66264c1f0d90430a583230fff15bb22acf009b20e52a1b8",
+   "selector": "09H0",
+   "texture": "hn57"
   }
  ]
 }
