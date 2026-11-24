@@ -22,7 +22,7 @@ SOURCE = Path(__file__).resolve().parent / "nfl2k5_history_pool"
 TARGET = ROOT / "mod_editor/core/nfl2k5_history_pool_code.py"
 RETAIL_XBE = Path(os.environ.get("NFL2K5_RETAIL_XBE",
                                  "/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe"))
-SITES = (".site_a", ".site_b", ".site_c", ".site_d", ".site_e", ".site_f", ".site_g", ".site_h", ".site_i")
+SITES = (".site_a", ".site_b", ".site_c", ".site_d", ".site_e", ".site_f", ".site_g", ".site_h", ".site_i", ".site_j")
 
 
 def _sections(elf: bytes) -> dict[str, tuple[int, bytes]]:

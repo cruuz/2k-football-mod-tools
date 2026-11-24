@@ -81,13 +81,13 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual([(label, va) for label, va, _b, _a in hp.SITES],
                          [("site_a", 0x14E8B0), ("site_b", 0x14E930), ("site_c", 0x14E9D0), ("site_d", 0x14EFE0),
                           ("site_e", 0x14F16F), ("site_f", 0x14F249), ("site_g", 0x14F239), ("site_h", 0x14EDA8),
-                          ("site_i", 0x14F170)])
+                          ("site_i", 0x14F170), ("site_j", 0x14EFB0)])
         for label, va, before, after in hp.SITES:
             self.assertEqual(len(before), len(after), label)
             self.assertNotEqual(before, after, label)
         self.assertEqual(hp._digest(hp.SITES), hp.PATCHED_SHA256)
-        # b81: A +29, B +63, C +98, F +82, G 5, H 5, I 173
-        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1428)
+        # b81: A +49, B +63, C +105, F +92, G 5, H 5, I 176, J 48
+        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1516)
         self.assertEqual(hp.PLAYOFF_RESERVE, 512)
         sites = dict((label, after) for label, _va, _b, after in hp.SITES)
         # reserve_cap: `cmp dword [0xE576A4], 9` (the playoffs) and `sub eax, RESERVE` carry the module's numbers
@@ -97,12 +97,23 @@ class TemplateTests(unittest.TestCase):
         # close's fields (CLOSE_FIELDS below 32 as one mask, FIELD_TEAM 87 by itself); rollover_tail pushes COMPLETE_FOLD
         self.assertEqual(hp.CLOSE_FIELDS, (0, 2, 3, 8, 9, 12, 13, 14, 18, 19, 20, 87))
         mask = sum(1 << f for f in hp.CLOSE_FIELDS if f < 32)
-        self.assertIn(b"\x6a\xfd\xe8", sites["site_b"])
-        self.assertIn(bytes.fromhex("837c242cfd"), sites["site_i"])
+        self.assertIn(b"\xe8" + (0x14F2AD - 0x14E99E).to_bytes(4, "little"), sites["site_b"])   # call playoff_fold
+        self.assertIn(b"\x6a\xfd\xe8", sites["site_a"])                     # playoff_staged: push PLAYOFF_FOLD; call fold
         self.assertIn(bytes.fromhex("83fe57"), sites["site_i"])
         self.assertIn(b"\xb8" + mask.to_bytes(4, "little"), sites["site_i"])
         self.assertIn(b"\x6a\xfc\xe8", sites["site_i"])
         self.assertIn(bytes.fromhex("817c2408827c2400"), sites["site_i"])     # cmp [esp+8], 0x247C82: the wipe's call site
+        # round 4: every early fold leaves the honors (lea edx, [esi-96]; cmp edx, 9); the completion (depth -4) merges
+        # the close's fields; playoff_fold folds the free agents first, then down to PLAYOFF_ROOM besides the reserve
+        self.assertEqual((hp.PLAYOFF_ROOM, hp.HONOR_FIELDS), (4096, tuple(range(96, 106))))
+        self.assertIn(bytes.fromhex("8d56a083fa09"), sites["site_i"])
+        self.assertIn(bytes.fromhex("837c242cfc74"), sites["site_i"])
+        self.assertIn(b"\x2d" + (hp.PLAYOFF_RESERVE + hp.PLAYOFF_ROOM).to_bytes(4, "little") + b"\x50\x6a\xfd\xe8",
+                      sites["site_a"])
+        # playoff_fold (site F's last 10 bytes, 0x14F2AD): call fa_fold (site F + 18); jmp playoff_staged (0x14E91A)
+        fa_fold = 0x14F249 + 18
+        self.assertEqual(sites["site_f"][-10:], b"\xe8" + (fa_fold - 0x14F2B2).to_bytes(4, "little", signed=True)
+                         + b"\xe9" + (0x14E91A - 0x14F2B7).to_bytes(4, "little", signed=True))
         # site H: retail `mov eax, 1` at the end of 0x14ED90 becomes a call of the same length
         site_h = next(row for row in hp.SITES if row[0] == "site_h")
         self.assertEqual((site_h[2], site_h[3][0]), (bytes.fromhex("b801000000"), 0xE8))
@@ -120,9 +131,9 @@ class TemplateTests(unittest.TestCase):
             if label in ("site_a", "site_e"):
                 self.assertEqual(after[:len(old)], old, label)          # unchanged (site A only grows: reserve_cap)
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_SITES],
-                         [("site_a", 0x14E8B0, 106), ("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 488),
-                          ("site_d", 0x14EFE0, 390), ("site_f", 0x14F249, 100), ("site_g", 0x14F239, 5),
-                          ("site_h", 0x14EDA8, 5), ("site_i", 0x14F170, 173)])
+                         [("site_a", 0x14E8B0, 126), ("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 495),
+                          ("site_d", 0x14EFE0, 390), ("site_f", 0x14F249, 110), ("site_g", 0x14F239, 5),
+                          ("site_h", 0x14EDA8, 5), ("site_i", 0x14F170, 176), ("site_j", 0x14EFB0, 48)])
         # site C: the compaction is unchanged up to room's full branch (0x14EB31), room gains its free-agent test and
         # fold_base follows it; site D changes exactly the 13 bytes that computed years pro; site F only grows (fa_fold
         # in the dead tail of retail's full-pool path, before the retail write path at 0x14F2BB); site G is the
@@ -148,18 +159,21 @@ class TemplateTests(unittest.TestCase):
 
     def test_the_first_b81_revision_is_pinned_and_upgrades_in_place(self):
         # coordinator's ruling (11/24): 570cd7c16 (the free-agent resort without the playoff reserve) upgrades in place too
-        self.assertEqual([row[0] for row in hp.REVISIONS], ["beta-80", "b81 570cd7c16", "b81 26d92bde0"])
+        self.assertEqual([row[0] for row in hp.REVISIONS],
+                         ["beta-80", "b81 570cd7c16", "b81 26d92bde0", "b81 f27dd95a6"])
         self.assertEqual(hp._digest(hp.REVISION_570CD7C16_SITES), hp.REVISION_570CD7C16_SHA256)
         self.assertEqual(hp.REVISION_570CD7C16_SHA256, "7b61e3e99770293913efdb989b8d097a8bf2b2ef4a03b1a54e7d972f0144ddae")
         self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.REVISION_570CD7C16_SITES), 1142)
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_570CD7C16_SITES],
-                         [("site_a", 0x14E8B0, 106), ("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 488),
-                          ("site_d", 0x14EFE0, 390), ("site_g", 0x14F239, 5), ("site_h", 0x14EDA8, 5),
-                          ("site_i", 0x14F170, 173)])
+                         [("site_a", 0x14E8B0, 126), ("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 495),
+                          ("site_d", 0x14EFE0, 390), ("site_f", 0x14F249, 110), ("site_g", 0x14F239, 5),
+                          ("site_h", 0x14EDA8, 5), ("site_i", 0x14F170, 176), ("site_j", 0x14EFB0, 48)])
         old = {label: after for label, _va, _b, after in hp.REVISION_570CD7C16_SITES}
         for label, _va, _before, after in hp.SITES:
-            if label in ("site_e", "site_f"):
-                self.assertEqual(after, old[label], label)                     # fa_fold and the drop path are unchanged
+            if label == "site_e":
+                self.assertEqual(after, old[label], label)
+            if label == "site_f":                                              # fa_fold and the drop path are unchanged;
+                self.assertEqual(after[:len(old[label])], old[label], label)   # round 4 appends playoff_fold
 
     def test_the_second_b81_revision_is_pinned_and_upgrades_in_place(self):
         # coordinator's second ruling (11/24): 26d92bde0 (the reserve without the playoff fold) upgrades in place too
@@ -167,12 +181,57 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(hp.REVISION_26D92BDE0_SHA256, "92f96e1b979b075ccb73f67f7951f08ee523987baaea500439404d9a016d4d38")
         self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.REVISION_26D92BDE0_SITES), 1182)
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_26D92BDE0_SITES],
-                         [("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 488), ("site_d", 0x14EFE0, 390),
-                          ("site_h", 0x14EDA8, 5), ("site_i", 0x14F170, 173)])
+                         [("site_a", 0x14E8B0, 126), ("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 495),
+                          ("site_d", 0x14EFE0, 390), ("site_f", 0x14F249, 110), ("site_h", 0x14EDA8, 5),
+                          ("site_i", 0x14F170, 176), ("site_j", 0x14EFB0, 48)])
         old = {label: after for label, _va, _b, after in hp.REVISION_26D92BDE0_SITES}
         for label, _va, _before, after in hp.SITES:
-            if label in ("site_a", "site_e", "site_f", "site_g"):
-                self.assertEqual(after, old[label], label)                     # the reserve and fa_fold are unchanged
+            if label in ("site_e", "site_g"):
+                self.assertEqual(after, old[label], label)
+            if label in ("site_a", "site_f"):                                  # the reserve and fa_fold are unchanged;
+                self.assertEqual(after[:len(old[label])], old[label], label)   # round 4 appends the staged playoff fold
+
+    def test_the_third_b81_revision_is_pinned_and_upgrades_in_place(self):
+        # round 4: f27dd95a6 (round 3's reviewed head: the playoff fold of every man) upgrades in place too
+        self.assertEqual(hp._digest(hp.REVISION_F27DD95A6_SITES), hp.REVISION_F27DD95A6_SHA256)
+        self.assertEqual(hp.REVISION_F27DD95A6_SHA256, "dea980b4159eefd0b5f7b7728dba0c2b7386b5c5838027d4f60f49d516597845")
+        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.REVISION_F27DD95A6_SITES), 1428)
+        self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_F27DD95A6_SITES],
+                         [("site_a", 0x14E8B0, 126), ("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 495),
+                          ("site_f", 0x14F249, 110), ("site_h", 0x14EDA8, 5), ("site_i", 0x14F170, 176),
+                          ("site_j", 0x14EFB0, 48)])
+        old = {label: after for label, _va, _b, after in hp.REVISION_F27DD95A6_SITES}
+        for label, _va, _before, after in hp.SITES:
+            if label in ("site_d", "site_e", "site_g"):
+                self.assertEqual(after, old[label], label)
+            if label in ("site_a", "site_f"):                                  # only grow: playoff_staged, playoff_fold
+                self.assertEqual(after[:len(old[label])], old[label], label)
+
+    def test_the_close_fields_are_the_season_closes_own_reads(self):
+        # round 4: the list comes from the close itself (tools/nfl2k5_history/runtime.c, read_career): the ten leader
+        # fields it totals per season with the slot's club, games (seasons) and the club word (club_of); the native mask
+        # (age_ok: CLOSE_FIELDS below 32, cmp esi, FIELD_TEAM) holds exactly these
+        import re
+        source = (ROOT / "tools" / "nfl2k5_history" / "runtime.c").read_text(encoding="utf-8")
+        leaders = re.search(r"static const u8 leader_field\[10\] = \{([^}]*)\}", source).group(1)
+        games = int(re.search(r"#define FIELD_GAMES (\d+)u", source).group(1))
+        club = int(re.search(r"#define FIELD_CLUB (\d+)u", source).group(1))
+        read_career = source[source.index("static void read_career"):source.index("/* insert (or update) a player")]
+        # the per-season reads of read_career: the club word, games and the leader fields, nothing else by field
+        self.assertIn("== FIELD_CLUB", read_career)
+        self.assertIn("field == FIELD_GAMES", read_career)
+        self.assertIn("field == leader_field[k]", read_career)
+        # by field number it also sums field 101 (Super Bowls) over every row, folded or not: not a per-season read
+        self.assertEqual(sorted(set(re.findall(r"field == (\w+)", read_career))), ["101", "FIELD_GAMES", "leader_field"])
+        self.assertIn("if (field == 101 && value > 0)\n                c->sb += (u32)value;", read_career)
+        expected = sorted({int(x) for x in leaders.split(",")} | {games, club})
+        self.assertEqual(len(expected), 12)
+        self.assertEqual(list(hp.CLOSE_FIELDS), expected)
+        site_i = dict((label, after) for label, _va, _b, after in hp.SITES)["site_i"]
+        mask = sum(1 << f for f in expected if f < 32)
+        self.assertIn(b"\xb8" + mask.to_bytes(4, "little"), site_i)
+        self.assertEqual([f for f in expected if f >= 32], [club])
+        self.assertIn(b"\x83\xfe" + bytes([club]), site_i)
 
     def test_sites_lie_in_the_engine_and_clear_of_the_honors_rule_site(self):
         spans = [(va, va + len(after)) for _l, va, _b, after in hp.SITES]
@@ -189,6 +248,13 @@ class TemplateTests(unittest.TestCase):
         # tail after site E's ret, before the writer 0x14F220
         self.assertEqual((spans[7][0], spans[7][1]), (0x14EDA8, 0x14EDAD))
         self.assertTrue(0x14F170 <= spans[8][0] and spans[8][1] <= 0x14F220)
+        # round 4: site J is the second half of the retail routine 0x14EF90 nothing calls (0x14EFB0..0x14EFDF, before the
+        # fold at 0x14EFE0); its first half stays retail because star career pins 0x14EF20..0x14EFAF (its stat getter
+        # guard): a first build at 0x14EF90 read star career and every owner over it foreign on the released v0.9 disc
+        self.assertTrue(spans[9][0] == 0x14EFB0 and spans[9][1] <= 0x14EFE0)
+        from mod_editor.core import nfl2k5_star_career as star
+        for va, size, _digest in star.GUARDS:
+            self.assertFalse([row[0] for row, (a, b) in zip(hp.SITES, spans) if a < va + size and va < b], hex(va))
 
     def test_help_and_caption(self):
         self.assertLessEqual(len(hp.BUILD_CAPTION), 60)
@@ -325,7 +391,7 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual(hp.status(self.retail), "retail")
         patched, receipt = hp.apply(self.retail)
         self.assertEqual(hp.status(patched), "applied")
-        self.assertEqual(receipt["changed_bytes"], 1399)
+        self.assertEqual(receipt["changed_bytes"], 1484)
         again, receipt2 = hp.apply(patched)
         self.assertEqual(again, patched)
         self.assertTrue(receipt2["already_applied"])
@@ -788,16 +854,19 @@ class NativeTests(unittest.TestCase):
         self.assertNotEqual(m.call(0x14F220, ecx=recs[0], edx=new), 0, "the write was dropped")
         self.assertEqual(m.hits["drops"], 0)
         self.assertIn(new, [w & ~END for w in m.stream(recs[0])])
-        # each free agent's ten last-season fields took his career row in: 10 x 600 words freed, one written. His five
-        # career-only fields stay in the career row: with the pool full the last resort only merges (a move would free
-        # nothing), as a word the 16-bit cell cannot hold stays where it is.
-        self.assertEqual(m.used(), 50000 - 6000 + 1)
+        # each free agent's last-season fields the season close does not read (1, 4, 5, 6, 7) took his career row in:
+        # 5 x 600 words freed, one written (round 4: the close's fields 0, 2, 3, 8, 9 stay, as for every early fold;
+        # a free agent a club signs before the close is read by it). His five career-only fields stay in the career row:
+        # with the pool full the last resort only merges (a move would free nothing).
+        self.assertEqual(m.used(), 50000 - 3000 + 1)
         m.check(recs)
         for i in self.FREE:
             stream = m.stream(recs[i])
             self.assertEqual({f: v[0] for f, v in m.totals(recs[i]).items()}, totals[i])   # whole career totals
+            close = [f for f in range(10) if f in hp.CLOSE_FIELDS]
             self.assertEqual(sorted(((w >> 16) & 127, (w >> 23) & 31, bool(w & FOLDED)) for w in stream),
-                             sorted([(f, 5, True) for f in range(10)] + [(f, 4, True) for f in range(10, 15)]))
+                             sorted([(f, 5, True) for f in range(10) if f not in close] + [(f, 5, False) for f in close]
+                                    + [(f, 4, True) for f in close] + [(f, 4, True) for f in range(10, 15)]))
         for i in list(self.CLUB) + list(self.OTHER):                             # nobody else's words moved or changed
             got = [w & ~END for w in m.stream(recs[i])]
             want = [w & ~END for w in before[i]]
@@ -950,10 +1019,16 @@ class NativeTests(unittest.TestCase):
         m.put(CLASS, 0)
         honors = sum(m.call(0x14F220, ecx=recs[i], edx=word(101, 6, 1)) != 0 for i in range(134))
         self.assertEqual((playoff, honors, m.hits["drops"]), (1000, 134, 0), "playoff stat words were refused")
-        # each man's five other fields of his career row joined his last season: 5 x 1,650 words freed
-        self.assertEqual(m.used(), 49500 - 5 * 1650 + 1000 + 134)
+        # round 4: only as far as the playoffs need. The fold walks the men in record order and stops at the first check
+        # (every 64th man) that finds PLAYOFF_ROOM words free besides the reserve (49,500 - 4,608 = 44,892 used or less
+        # is not needed: 45,392): 832 men (13 x 64), 5 words each
+        folded = [r for r in recs if any(w & FOLDED and (w >> 23) & 31 == 5 for w in m.stream(r))]
+        self.assertEqual(folded, recs[:832])
+        self.assertEqual(m.used(), 49500 - 5 * 832 + 1000 + 134)
         m.check(recs)
-        for r in recs:
+        for r in recs[832:]:                                                     # the rest untouched
+            self.assertEqual([w & ~END for w in m.stream(r) if not w & POST], [w & ~END for w in before[r]])
+        for r in recs[:832]:
             was = [w & ~END for w in before[r]]
             now = [w & ~END for w in m.stream(r) if not w & POST and (w >> 16) & 127 != 101]
             keep = sorted(w for w in was if (w >> 16) & 127 in self.CLOSE_SAMPLE or (w >> 23) & 31 == 6)
@@ -962,6 +1037,69 @@ class NativeTests(unittest.TestCase):
             for f in self.NON_CLOSE:
                 old = [s16(w) for w in was if (w >> 16) & 127 == f and (w >> 23) & 31 in (4, 5)]
                 self.assertEqual((merged[f] >> 23 & 31, bool(merged[f] & FOLDED), s16(merged[f])), (5, True, sum(old)))
+
+    def test_a_second_playoff_fold_folds_on_when_the_first_room_runs_out(self):
+        # the playoffs fill the room the first fold made; the next word that finds no room outside the reserve folds on
+        # from where the first stopped (the men already folded have nothing left to merge) and is kept
+        m = Machine(self.patched)
+        recs = m.roster(self.playoff_pool())
+        m.count(0x14F256, "drops")
+        m.put(STAGE, 9)
+        m.put(CLASS, 1)
+        self.assertNotEqual(m.call(0x14F220, ecx=recs[0], edx=word(40, 6, 3)), 0)  # the first fold
+        folded = [r for r in recs if any(w & FOLDED and (w >> 23) & 31 == 5 for w in m.stream(r))]
+        self.assertEqual(folded, recs[:832])
+        i = 1
+        while m.used() < 50000 - 512:                                            # the playoffs fill its room
+            self.assertNotEqual(m.call(0x14F220, ecx=recs[i % 1650], edx=word(40 + i // 1650, 6, 3)), 0)
+            i += 1
+        self.assertNotEqual(m.call(0x14F220, ecx=recs[1], edx=word(99, 6, 3)), 0)
+        folded = [r for r in recs if any(w & FOLDED and (w >> 23) & 31 == 5 for w in m.stream(r))]
+        self.assertEqual(len(folded), 1650)                                      # 818 more: the rest of the walk
+        self.assertEqual(m.hits["drops"], 0)
+        m.check(recs)
+
+    def test_the_playoff_fold_takes_the_free_agents_first(self):
+        # free agents last in record order: the fold folds all of them (fa_fold) before any other man, then the others
+        # only as far as needed
+        m = Machine(self.patched)
+        players = self.playoff_pool()
+        recs = m.roster(players, free_agents=list(range(1450, 1650)))
+        before = {r: m.stream(r) for r in recs}
+        m.put(STAGE, 9)
+        m.put(CLASS, 1)
+        self.assertNotEqual(m.call(0x14F220, ecx=recs[0], edx=word(40, 6, 3)), 0)
+        folded = {r for r in recs if any(w & FOLDED and (w >> 23) & 31 == 5 for w in m.stream(r))}
+        self.assertTrue(set(recs[1450:]) <= folded)                              # every free agent
+        others = sorted(recs.index(r) for r in folded if recs.index(r) < 1450)
+        self.assertEqual(others, list(range(len(others))))                      # then men in record order ...
+        self.assertEqual(len(others) % 64, 0)                                    # ... to a check
+        self.assertLess(len(others), 832)                                        # fewer: the free agents freed some
+        for r in recs:                                                           # nobody's close fields moved
+            self.assertEqual(sorted(w & ~END for w in m.stream(r) if (w >> 16) & 127 in self.CLOSE_SAMPLE),
+                             sorted(w & ~END for w in before[r] if (w >> 16) & 127 in self.CLOSE_SAMPLE))
+
+    def test_no_early_fold_merges_the_honors(self):
+        # round 4: the honors card's year list stays right through the playoffs and the rollover (honors 96-105 stay in
+        # their own seasons); the next preseason's collection merges them as v0.9's does
+        m = Machine(self.patched)
+        players = []
+        for i, (yp, words) in enumerate(self.playoff_pool()):
+            players.append((yp, words + [word(103, 4, 2, folded=True), word(103, 5, 1), word(101, 5, 1)]))
+        recs = m.roster(players[:1500])
+        honors = lambda r: sorted(w & ~END for w in m.stream(r) if (w >> 16) & 127 in hp.HONOR_FIELDS and not w & POST)
+        before = {r: honors(r) for r in recs}
+        m.put(STAGE, 9)
+        m.put(CLASS, 1)
+        while m.used() < 50000 - 512:                                            # the playoffs fill the pool
+            m.call(0x14F220, ecx=recs[m.used() % 1500], edx=word(40 + m.used() % 30, 6, 3))
+        m.call(0x14F220, ecx=recs[0], edx=word(70, 6, 3))                        # a playoff fold
+        self.assertTrue(any(w & FOLDED and (w >> 23) & 31 == 5 for w in m.stream(recs[0])))
+        self.assertEqual({r: honors(r) for r in recs}, before)
+        self.rollover(m, recs)                                                   # the completion
+        self.assertEqual({r: honors(r) for r in recs}, before)
+        m.call(0x14EFE0, stack=(3,))                                             # the next preseason's collection
+        self.assertNotEqual({r: honors(r) for r in recs}, before)
 
     def test_the_second_b81_revision_refuses_those_playoff_words(self):
         second = rdata.apply(self.retail, hp.REVISION_26D92BDE0_SITES, "26d92bde0")[0]
@@ -1009,10 +1147,13 @@ class NativeTests(unittest.TestCase):
             m.put(CLASS, 1)
             for i in range(1000):
                 m.call(0x14F220, ecx=recs[i % 1650], edx=word(40 + i // 1650, 6, 3))
+            early = [r for r in recs if any(w & FOLDED and (w >> 23) & 31 == 5 for w in m.stream(r))]
             self.rollover(m, recs)
             if name == "b81":
-                # the completion ran: no man has a word older than his row folded early (age 2 after the rollover)
-                for r in recs:
+                # the completion ran: no man folded early (the staged fold took the first 832) has a word older than his
+                # row folded early (age 2 after the rollover); the others wait for the preseason collection, as in v0.9
+                self.assertEqual(early, recs[:832])
+                for r in early:
                     yp = (m.get(r + 0x24) >> 8) & 31
                     self.assertFalse([w for w in m.stream(r) if not w & (DELETED | POST) and yp - ((w >> 23) & 31) > 2])
             m.call(0x14EFE0, stack=(3,))
@@ -1066,25 +1207,27 @@ class SeasonCloseTests(unittest.TestCase):
     franchise totals, single-season records, the season lines) must be byte for byte the close without the fold."""
 
     EXTRA = (7, 21, 50)
+    LEADERS_ADDED = (3, 12, 14, 18, 20)      # round 4: the league's streams carry 8, 9, 2, 13, 19; these five too
 
     @classmethod
     def setUpClass(cls):
-        cls.patched = hp.apply(_retail())[0]
+        cls.retail = _retail()
+        cls.patched = hp.apply(cls.retail)[0]
 
-    def close_body(self, depths):
+    def close_body(self, depths, payload=None):
         from tests.mod_editor import test_nfl2k5_history as th
         case = th.CaptureTests("test_a_season_is_recorded_like_the_model")
         case.setUp()
         pointers = list(case.players)
-        m = Machine(self.patched)
+        m = Machine(payload or self.patched)
         players = []
         for k, p in enumerate(pointers):
             words = [w & ~END for w in case.players[p]["stream"]]
-            words += [word(f, slot, 3 + (k + f + slot) % 40) for slot in range(5) for f in self.EXTRA]
+            words += [word(f, slot, 3 + (k + f + slot) % 40) for slot in range(5) for f in self.EXTRA + self.LEADERS_ADDED]
             players.append((4, words))
         recs = m.roster(players)
         for depth in (3,) + tuple(depths):
-            m.call(0x14EFE0, stack=(depth & 0xFFFFFFFF,))
+            m.call(0x14EFE0, stack=(depth & 0xFFFFFFFF, 1))                    # 1: the playoff fold's target, never met
         for p, rec in zip(pointers, recs):
             words = m.stream(rec)
             self.assertLessEqual(len(words), 0x200 // 4)
@@ -1095,7 +1238,26 @@ class SeasonCloseTests(unittest.TestCase):
     def test_the_close_records_exactly_what_it_records_without_the_playoff_fold(self):
         base = self.close_body(())
         self.assertEqual(self.close_body((-3,)), base)            # PLAYOFF_FOLD
+        self.assertEqual(self.close_body((-2,)), base)            # the free-agent resort (nobody is on the list here)
         self.assertNotEqual(self.close_body((2,)), base)          # every field folded: the close counts differently
+
+    def test_each_close_field_left_out_of_the_mask_changes_the_close(self):
+        # round 4 (the reviewer's mutants): with any one of the twelve fields taken out of age_ok's list, the playoff
+        # fold merges it and the close records something else
+        base = self.close_body(())
+        label, va, before, after = next(row for row in hp.SITES if row[0] == "site_i")
+        mask = sum(1 << f for f in hp.CLOSE_FIELDS if f < 32)
+        for field in hp.CLOSE_FIELDS:
+            with self.subTest(field=field):
+                if field < 32:
+                    old = b"\xb8" + mask.to_bytes(4, "little")
+                    new = b"\xb8" + (mask & ~(1 << field)).to_bytes(4, "little")
+                else:
+                    old, new = b"\x83\xfe" + bytes([field]), b"\x83\xfe\x7f"
+                self.assertEqual(after.count(old), 1)
+                mutant = rdata.apply(self.retail, [(label, va, before, after.replace(old, new))] +
+                                     [row for row in hp.SITES if row[0] != label], "mutant")[0]
+                self.assertNotEqual(self.close_body((-3,), mutant), base, field)
 
 
 @unittest.skipUnless(_retail() is not None and HAVE_UC and (HUNT4 / "pool_y0_start.dat").is_file(),
@@ -1265,7 +1427,8 @@ class FullFranchiseImageTests(unittest.TestCase):
         new.call(0x14F430, ecx=player, edx=95, args=(1,), budget=4_000_000_000)
         self.assertEqual(self.stat(new, player, 95), 1)                         # kept
         used = new.get(root + 0x40)
-        self.assertLess(used, 50000 - 6000)                                     # the playoffs' room (43,048 here)
+        self.assertLessEqual(used, 50000 - hp.PLAYOFF_RESERVE - hp.PLAYOFF_ROOM)  # round 4: the staged fold's room
+        self.assertGreater(used, 50000 - 6000)                                  # (45,360 here; round 3 took 43,048)
         self.assertEqual(self.close_view(new), view)                            # the season close reads the same words
         new.put(CLASS, 0)
         new.call(0x14F430, ecx=player, edx=103, args=(1,), budget=2_000_000_000)          # a Pro Bowl honor: kept
@@ -1328,9 +1491,13 @@ class FullFranchiseImageTests(unittest.TestCase):
             yp = (new.get(p + 0x24) >> 8) & 0x1F
             rows = {((w >> 16) & 127, (w >> 23) & 31): s16(w) for w in after[p] if not w & (DELETED | POST)}
             # nothing left that could merge: a word 2+ seasons old stays only where the next season has no such field,
-            # or where the sum would not fit the 16-bit cell
+            # or where the sum would not fit the 16-bit cell; round 4: the free-agent resort leaves the season close's
+            # fields and the honors to v0.9's own collection (they stay as v0.9 has them)
             self.assertFalse([(f, s) for (f, s), v in rows.items() if yp - s >= 2 and (f, s + 1) in rows
+                              and f not in hp.CLOSE_FIELDS + hp.HONOR_FIELDS
                               and (f in MAX_FIELDS or -0x8000 <= v + rows[f, s + 1] <= 0x7FFF)])
+            self.assertEqual([w for w in after[p] if (w >> 16) & 127 in hp.CLOSE_FIELDS + hp.HONOR_FIELDS],
+                             [w for w in before[p] if (w >> 16) & 127 in hp.CLOSE_FIELDS + hp.HONOR_FIELDS], hex(p))
         print(f"\n[b81 history pool] 68001/2032 week 22: field {field} kept; {len(changed) - 1} free agents folded, "
               f"pool {50000} -> {used} words")
 

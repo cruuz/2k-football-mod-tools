@@ -50,7 +50,13 @@
    fold(COMPLETE_FOLD) merges what is older into it, as v0.9's next preseason collection would. It does nothing when no
    man was folded early, so a franchise whose playoffs never fill the pool is byte-identical. The free-agent resort
    runs only in stages 8-9 (never in the preseason, after the rollover, where the star career reads the season just
-   played). */
+   played).
+
+   Round 4 (coordinator's third ruling, 11/24): the playoff fold folds only as much as the playoffs need, free agents
+   first (fa_fold), then every man in record order until PLAYOFF_ROOM words are free besides the reserve
+   (playoff_fold in site F's tail, playoff_staged in site A's, playoff_target in site J); a second playoff word that
+   finds the pool short again folds on. Every early fold leaves the honors fields 96-105 alone, and the free-agent resort
+   and the playoff fold leave the close's fields. */
         .intel_syntax noprefix
 
         .set ROSTER,   0x00B72918      /* the roster object: [0] players, [4] first player, [0x40] used, [0x44] pool */
@@ -68,6 +74,9 @@
         .set MIN_DEPTH, 3              /* fold(3) merges seasons 3+ years old into the one 2 years old */
         .set FA_DEPTH2, -2             /* fold(-2): depth 2, men on the free-agent list only (fold_base) */
         .set PLAYOFF_FOLD, -3          /* fold(-3): depth 2, every man, but the season close's fields (age_ok) */
+        .set PLAYOFF_ROOM, 4096        /* round 4: the playoff fold stops once this much is free besides the reserve */
+        .set HONORS_FIRST, 96          /* round 4: the honors fields 96-105 stay out of every early fold */
+        .set HONORS_COUNT, 10
         .set COMPLETE_FOLD, -4         /* fold(-4): depth 3 for a man folded early this season (folded_age2) */
         .set NO_FOLD_BASE, -0x40       /* fold_base for a man a negative depth does not touch: no word passes age_ok */
         .set CLOSE_FIELDS, 0x001C730D  /* fields 0, 2, 3, 8, 9, 12, 13, 14, 18, 19, 20 (and FIELD_TEAM): read per season */
@@ -128,6 +137,20 @@ reserve_cap:
         sub     eax, RESERVE
 1:      ret
 
+/* playoff_staged (round 4; reached from playoff_fold in site F after the free agents): fold(PLAYOFF_FOLD) down to
+   PLAYOFF_ROOM words free besides the reserve. fold_base asks playoff_target before each man; the target (the used
+   count to reach) sits right above fold's argument. A second playoff word that finds the pool short again folds on from
+   where this stopped (the men already folded have nothing left to merge). */
+        .globl playoff_staged
+playoff_staged:
+        call    CAPACITY
+        sub     eax, RESERVE + PLAYOFF_ROOM
+        push    eax
+        push    PLAYOFF_FOLD
+        call    fold
+        pop     eax
+        ret
+
 /* ---- site B: the full-pool path of 0x14F220 (pool used >= capacity) -> eax 1 room for the write, 0 none ------- */
         .section .site_b, "ax"
         .globl gc_chunk
@@ -161,8 +184,9 @@ gc_chunk:
         jl      4f
         dec     edx
         jnz     4f                      /* a playoff word (stage 9) only; preseason words are dropped as in v0.9 */
-        push    PLAYOFF_FOLD
-        call    fold                    /* every man's career row into his last season, but the close's fields */
+        call    playoff_fold            /* round 4: free agents first, then the rest, only as far as the playoffs need */
+        nop
+        nop
         jmp     4f
 3:      cmp     [ecx+0x40], eax
         jl      4f                      /* the write has room: as before */
@@ -365,15 +389,19 @@ fold_base:
         dec     edx                     /* depth 2 */
         jmp     6f
 3:      inc     eax
-        jz      4b                      /* PLAYOFF_FOLD: every man */
-        call    folded_age2             /* COMPLETE_FOLD */
+        jnz     7f
+        call    playoff_target          /* PLAYOFF_FOLD: every man until the room is there */
+        jc      1f
+        jmp     4b
+7:      call    folded_age2             /* COMPLETE_FOLD */
         test    eax, eax
         jz      1f
         sub     edx, 3                  /* depth 3: the rest of his career row into the row folded early */
         jmp     6f
 5:      sub     edx, eax
 6:      mov     [esp+16], edx
-        mov     eax, 1
+        xor     eax, eax
+        inc     eax
         ret
 1:      mov     dword ptr [esp+16], NO_FOLD_BASE
         xor     eax, eax
@@ -541,15 +569,23 @@ fold:
    returns before this) ------------------------------------------------------------------------------------------- */
         .section .site_i, "ax"
 /* age_ok: fold's age test (called from its word loop: esi = field, edi = slot; fold's base is [esp+16] here, its
-   depth [esp+44]) -> eax >= 0 merge the word, < 0 leave it. The playoff fold leaves the fields the season close reads
-   per season (CLOSE_FIELDS, FIELD_TEAM). Keeps every register but eax. */
+   depth [esp+44]) -> eax >= 0 merge the word, < 0 leave it. Every negative depth (the free-agent resort, the playoff
+   fold, the rollover's completion) leaves the honors fields 96-105 (round 4: the honors card's year list stays right;
+   the next preseason collection, fold(3), merges them as in v0.9). The free-agent resort and the playoff fold also
+   leave the fields the season close reads per season (CLOSE_FIELDS, FIELD_TEAM): a free agent a club signs before the
+   close is read by it too. Keeps every register but eax and edx. */
         .globl age_ok
 age_ok:
         mov     eax, [esp+16]
         sub     eax, edi
         js      2f                      /* younger than the depth */
-        cmp     dword ptr [esp+44], PLAYOFF_FOLD
-        jne     2f
+        cmp     dword ptr [esp+44], 0
+        jge     2f                      /* a collection (depth 3+): every field */
+        lea     edx, [esi-HONORS_FIRST]
+        cmp     edx, HONORS_COUNT - 1
+        jbe     1f                      /* the honors */
+        cmp     dword ptr [esp+44], COMPLETE_FOLD
+        je      2f                      /* the completion merges the close's fields (after the close) */
         cmp     esi, FIELD_TEAM
         je      1f
         cmp     esi, 31
@@ -573,7 +609,7 @@ folded_age2:
         and     ebx, 31
         sub     ebx, 2
         shl     ebx, 23
-        or      ebx, FOLDED             /* the pattern: FOLDED, live, regular class, that slot (none for a rookie) */
+        bts     ebx, 30                 /* the pattern: FOLDED, live, regular class, that slot (none for a rookie) */
         mov     esi, [ecx+0x2C]
         xor     eax, eax
         test    esi, esi
@@ -601,9 +637,7 @@ folded_age2:
         .globl rollover_tail
 rollover_tail:
         cmp     dword ptr [esp+8], ROLLOVER_WIPE
-        jne     9f
-        cmp     dword ptr [STAGE], PLAYOFFS
-        jne     9f
+        jne     9f                      /* (0x247B40 runs only when the franchise leaves stage 9) */
         mov     eax, [ROSTER]
         cmp     esi, [eax+4]
         jne     9f
@@ -616,12 +650,42 @@ rollover_tail:
         add     ecx, 0x54
         test    eax, eax
         jz      1b
-        and     dword ptr [CLASS], 0
+        dec     dword ptr [CLASS]       /* 1 -> 0: the wipe set class 1 (0x247C41) */
         push    COMPLETE_FOLD
         call    fold
         inc     dword ptr [CLASS]       /* back to 1: the wipe set it (0x247C41) */
 8:      popad
 9:      mov     eax, 1
+        ret
+
+/* ---- site J (round 4): 0x14EFB0..0x14EFDF, the second half of a retail routine nothing calls (0x14EF90, a club's sum
+   over a past period, the twin of 0x14EF50: no call, jump or pointer to it in the retail or any built executable). Its
+   first 32 bytes stay retail: nfl2k5_star_career pins 0x14EF20..0x14EFAF. --------------------------------------------- */
+        .section .site_j, "ax"
+/* playoff_target: fold_base's question for the playoff fold (fold's player index is [esp+8] here, the target
+   [esp+52]) -> CF 1 stop (fold no more men), 0 fold this one. Every 64th man it compacts (the merges so far only marked
+   words deleted) and stops once the used count is at the target; then it zeroes the target, so every later man of this
+   walk stops at once. Keeps every register but eax and the flags. */
+        .globl playoff_target
+playoff_target:
+        cmp     dword ptr [esp+52], 0
+        je      8f
+        test    byte ptr [esp+8], 63
+        jnz     9f
+        push    ecx
+        push    edx
+        push    0
+        call    compact
+        pop     edx
+        pop     ecx
+        mov     eax, [ROSTER]
+        mov     eax, [eax+0x40]
+        cmp     eax, [esp+52]
+        ja      9f
+        and     dword ptr [esp+52], 0
+8:      stc
+        ret
+9:      clc
         ret
 
 /* ---- site F: inside 0x14F220, where retail starts its full-pool path (push 1 / call 0x14E9D0) ---------------- */
@@ -671,3 +735,11 @@ fa_fold:
         call    fold
         add     esp, FA_PLAYERS / 8
         ret
+
+/* playoff_fold (round 4): gc_chunk (class 0) for a playoff word that has no room outside the reserve: the free agents
+   first (fa_fold: their last season into their career row, but the close's fields and the honors), then the rest only
+   as far as the playoffs need (playoff_staged, site A). */
+        .globl playoff_fold
+playoff_fold:
+        call    fa_fold
+        jmp     playoff_staged
