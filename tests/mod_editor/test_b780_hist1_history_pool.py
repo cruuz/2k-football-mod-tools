@@ -85,7 +85,7 @@ class TemplateTests(unittest.TestCase):
             self.assertEqual(len(before), len(after), label)
             self.assertNotEqual(before, after, label)
         self.assertEqual(hp._digest(hp.SITES), hp.PATCHED_SHA256)
-        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1195)    # b81: A +20, B +49, C +66, F +82, G 5
+        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1173)    # b81: A +20, B +27, C +66, F +82, G 5
         self.assertEqual(hp.PLAYOFF_RESERVE, 512)
 
     def test_the_beta80_revision_is_pinned_and_the_upgrade_moves_four_sites(self):
@@ -101,7 +101,7 @@ class TemplateTests(unittest.TestCase):
             if label in ("site_a", "site_e"):
                 self.assertEqual(after[:len(old)], old, label)          # unchanged (site A only grows: reserve_cap)
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_SITES],
-                         [("site_a", 0x14E8B0, 97), ("site_b", 0x14E930, 146), ("site_c", 0x14E9D0, 456),
+                         [("site_a", 0x14E8B0, 97), ("site_b", 0x14E930, 124), ("site_c", 0x14E9D0, 456),
                           ("site_d", 0x14EFE0, 390), ("site_f", 0x14F249, 100), ("site_g", 0x14F239, 5)])
         # site C: the compaction is unchanged up to room's full branch (0x14EB31), room gains its free-agent test and
         # fold_base follows it; site D changes exactly the 13 bytes that computed years pro; site F only grows (fa_fold
@@ -127,7 +127,7 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(hp.REVISION_570CD7C16_SHA256, "7b61e3e99770293913efdb989b8d097a8bf2b2ef4a03b1a54e7d972f0144ddae")
         self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.REVISION_570CD7C16_SITES), 1142)
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_570CD7C16_SITES],
-                         [("site_a", 0x14E8B0, 97), ("site_b", 0x14E930, 146), ("site_g", 0x14F239, 5)])
+                         [("site_a", 0x14E8B0, 97), ("site_b", 0x14E930, 124), ("site_g", 0x14F239, 5)])
         old = {label: after for label, _va, _b, after in hp.REVISION_570CD7C16_SITES}
         for label, _va, _before, after in hp.SITES:
             if label in ("site_c", "site_d", "site_e", "site_f"):
@@ -280,7 +280,7 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual(hp.status(self.retail), "retail")
         patched, receipt = hp.apply(self.retail)
         self.assertEqual(hp.status(patched), "applied")
-        self.assertEqual(receipt["changed_bytes"], 1173)
+        self.assertEqual(receipt["changed_bytes"], 1151)
         again, receipt2 = hp.apply(patched)
         self.assertEqual(again, patched)
         self.assertTrue(receipt2["already_applied"])

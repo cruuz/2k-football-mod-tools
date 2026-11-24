@@ -64,8 +64,9 @@ out in the 2028 playoffs and then in every playoffs, where postseason stat words
 took the last words and the season's Super Bowl champion, Super Bowl MVP and Pro Bowl honors (about 134 regular-class
 words, written in the same window) were lost every season, in v0.9 and with the free-agent resort alike. Now a new
 postseason-class word may not take one of the last ``PLAYOFF_RESERVE`` (512) words: the writer's capacity test (site G,
-0x14F239) calls ``reserve_cap`` (site A's tail); ``gc_chunk`` refuses such a word without a collection while the pool is
-not full, never runs the free-agent resort for it, and keeps it only if 512 words stay free. Regular-class writes see
+0x14F239) calls ``reserve_cap`` (site A's tail), so such a word reaches ``gc_chunk`` 512 words before the pool is
+full; ``gc_chunk`` runs the same depth 3+ collection as for any full-pool write, never the free-agent resort for it,
+and keeps it only if 512 words stay free. Regular-class writes see
 the whole capacity as before.
 
 Revisions: ``SITES`` is this release. ``REVISIONS`` holds the earlier ones, each pinned: the beta-80 / v0.9 revision
@@ -109,7 +110,7 @@ def _digest(sites) -> str:
     return h.hexdigest()
 
 
-PATCHED_SHA256 = "b54c9bf9af21f49e8f7d118e174884a601a185142f0e86e65e8edc3fa1767e1f"   # the seven sites (label, VA, retail, patched); tests check it
+PATCHED_SHA256 = "949bdbbf6fa5884ca837bd5b96a8e69fb75dc7d8106a775b2f6a841e7797554b"   # the seven sites (label, VA, retail, patched); tests check it
 
 # b81 history-pool: the beta-80 / v0.9 revision (b780 hist1 as shipped): (label, VA, patched bytes). Each lies at the
 # start of the same site of this release, which is at least as long, so its retail bytes are the first bytes of ours.

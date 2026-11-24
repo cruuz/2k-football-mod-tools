@@ -25,10 +25,12 @@
 
    b81 playoff reserve (coordinator's ruling on the history-pool report, 11/24: permanent honors outrank playoff stat
    words, which the offseason rollover wipes anyway): a new postseason-class word ([CLASS] 1) may not take one of the
-   last RESERVE (512) words. The writer's capacity test (site G) uses reserve_cap; such a word reaches gc_chunk, which
-   refuses it without a collection while the pool is not full, and when the pool is full runs the depth 3+ collection
-   but never the free-agent resort for it, and keeps the word only if RESERVE words stay free. Regular-class writes
-   (every season stat, the season honors, the next season's words) see the whole capacity, exactly as before. */
+   last RESERVE (512) words. The writer's capacity test (site G) uses reserve_cap, so such a word reaches gc_chunk 512
+   words before the pool is full; gc_chunk runs the same depth 3+ collection v0.9 runs at the full pool (a first panel
+   that refused these words without a collection left every preseason's playoff-class flood, about 20,000 words, without
+   the collection it used to trigger), never the free-agent resort for it, and keeps the word only if RESERVE words stay
+   free. Regular-class writes (every season stat, the season honors, the next season's words) see the whole capacity,
+   exactly as before. */
         .intel_syntax noprefix
 
         .set ROSTER,   0x00B72918      /* the roster object: [0] players, [4] first player, [0x40] used, [0x44] pool */
@@ -103,13 +105,7 @@ gc_chunk:
         pushad
         push    dword ptr [CLASS]
         mov     dword ptr [CLASS], 0
-        cmp     dword ptr [esp], 0      /* b81 playoff reserve: a playoff word ... */
-        je      4f
-        call    CAPACITY
-        mov     ecx, [ROSTER]
-        cmp     [ecx+0x40], eax
-        jl      3f                      /* ... in the reserve (pool not full) is refused without a collection */
-4:      push    1
+        push    1
         call    compact                 /* deleted words first (the offseason's postseason wipe, retirements) */
         call    MAXAGE
         mov     ebx, eax
