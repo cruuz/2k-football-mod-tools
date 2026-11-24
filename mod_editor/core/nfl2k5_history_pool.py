@@ -53,8 +53,8 @@ v0.9's collection could fold only seasons 3+ years old. Once every word of a ful
 last one or the folded career row, a new stat word was dropped: seed 68003's 2029 kept Trey Smack's 52-yard make and
 lost its attempt (1 made of 0 attempted); the pool was full at 4 of 40 simulated closing saves. Now, when depth 3+
 leaves the pool full, ``gc_chunk`` folds the last season into the career row for the men on the game's free-agent list
-(root+0x38/0x3C) and nobody else (``fold`` with depth -2, ``fold_base``), and only then drops the write
-(``history_drop``, 0x14F256). Club men (active list, injured reserve, practice squad) keep their last season; a free
+(root+0x38/0x3C) and nobody else (``fa_fold`` marks them in a 4,096-bit bitmap on the stack, then ``fold`` with depth
+-2 asks ``fold_base`` one bit per man), and only then drops the write (``history_drop``, 0x14F256). Club men (active list, injured reserve, practice squad) keep their last season; a free
 agent's last season joins his career row (his totals stay whole). While depth 3+ leaves the write room nothing runs
 that writes memory, so every franchise that never reaches this point is byte-identical to v0.9's.
 
@@ -95,7 +95,7 @@ def _digest(sites) -> str:
     return h.hexdigest()
 
 
-PATCHED_SHA256 = "1cf6859c3ed4556ae2d0943e124c9ca97e9d2ec0b158c27a5f9ed8565f8b2556"   # the six sites (label, VA, retail, patched); tests check it
+PATCHED_SHA256 = "2b34685900f874735e6009599d434f38913f16eb13b8e89b202f998e245661bb"   # the six sites (label, VA, retail, patched); tests check it
 
 # b81 history-pool: the beta-80 / v0.9 revision (b780 hist1 as shipped): (label, VA, patched bytes). Each lies at the
 # start of the same site of this release, which is at least as long, so its retail bytes are the first bytes of ours.

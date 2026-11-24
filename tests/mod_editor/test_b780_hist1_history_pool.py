@@ -85,9 +85,9 @@ class TemplateTests(unittest.TestCase):
             self.assertEqual(len(before), len(after), label)
             self.assertNotEqual(before, after, label)
         self.assertEqual(hp._digest(hp.SITES), hp.PATCHED_SHA256)
-        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1052)          # b81: site B +23, site C +56
+        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1124)    # b81: site B +21, C +48, F +82
 
-    def test_the_beta80_revision_is_pinned_and_the_upgrade_moves_three_sites(self):
+    def test_the_beta80_revision_is_pinned_and_the_upgrade_moves_four_sites(self):
         # b81 history-pool: the revision v0.9 shipped (b780 hist1) is kept byte for byte under its own pin
         self.assertEqual(hp._digest(hp.PREVIOUS_SITES), hp.PREVIOUS_SHA256)
         self.assertEqual(hp.PREVIOUS_SHA256, "12f8f431af15622399a453dc937f869a5fc5c8956f9769d6190c9634c2ce3373")
@@ -97,13 +97,17 @@ class TemplateTests(unittest.TestCase):
                           ("site_d", 0x14EFE0, 390), ("site_e", 0x14F16F, 1), ("site_f", 0x14F249, 18)])
         for (label, va, before, after), (_l, _v, old_before, old) in zip(hp.SITES, hp.PREVIOUS_SITES):
             self.assertEqual(old_before, before[:len(old)], label)
-            if label in ("site_a", "site_e", "site_f"):
+            if label in ("site_a", "site_e"):
                 self.assertEqual(after, old, label)                                # unchanged sites
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_SITES],
-                         [("site_b", 0x14E930, 120), ("site_c", 0x14E9D0, 446), ("site_d", 0x14EFE0, 390)])
-        # site C only grows (fold_base after room), site D changes exactly the 13 bytes that computed years pro
-        (_l, _v, was_c, now_c), (_l2, va_d, was_d, now_d) = hp.UPGRADE_SITES[1:]
+                         [("site_b", 0x14E930, 118), ("site_c", 0x14E9D0, 438), ("site_d", 0x14EFE0, 390),
+                          ("site_f", 0x14F249, 100)])
+        # site C only grows (fold_base after room), site D changes exactly the 13 bytes that computed years pro, site F
+        # only grows (fa_fold in the dead tail of retail's full-pool path, before the retail write path at 0x14F2BB)
+        (_l, _v, was_c, now_c), (_l2, va_d, was_d, now_d), (_l3, va_f, was_f, now_f) = hp.UPGRADE_SITES[1:]
         self.assertEqual(now_c[:390], was_c[:390])
+        self.assertEqual(now_f[:18], was_f[:18])
+        self.assertLessEqual(va_f + len(now_f), 0x14F2B7)
         self.assertEqual([va_d + i for i in range(390) if was_d[i] != now_d[i]], list(range(0x14F014, 0x14F021)))
         self.assertEqual(now_d[0x34:0x41], bytes.fromhex("e83dfbffff0f1f840000000000"))   # call fold_base; 8-byte nop
         # the drop path keeps its address (harnesses watch it)
@@ -255,7 +259,7 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual(hp.status(self.retail), "retail")
         patched, receipt = hp.apply(self.retail)
         self.assertEqual(hp.status(patched), "applied")
-        self.assertEqual(receipt["changed_bytes"], 1033)
+        self.assertEqual(receipt["changed_bytes"], 1103)
         again, receipt2 = hp.apply(patched)
         self.assertEqual(again, patched)
         self.assertTrue(receipt2["already_applied"])

@@ -18,7 +18,7 @@
    b81 history-pool (Noah 11/23: "fix the history storage for franchise now"): when that leaves the pool still full
    (every word in the current, the last or the folded career season, the case that dropped Trey Smack's 52-yard
    attempt in seed 68003's 2029), gc_chunk folds the last season into the career row for the men on the game's
-   free-agent list only (fold with depth -2, fold_base below) before the write is dropped. Club men (active list,
+   free-agent list only (fa_fold, fold with depth -2, fold_base) before the write is dropped. Club men (active list,
    injured reserve, practice squad) keep their last season. Nothing changes while depth 3+ leaves the write room: the
    extra test reads the pool and the capacity only, so a franchise that never reaches this point is byte-identical.
    A write that still finds no room is dropped at history_drop (0x14F256), as before. */
@@ -39,6 +39,7 @@
         .set MIN_DEPTH, 3              /* fold(3) merges seasons 3+ years old into the one 2 years old */
         .set FA_DEPTH2, -2             /* fold(-2): depth 2, men on the free-agent list only (fold_base) */
         .set NO_FOLD_BASE, -0x40       /* fold_base for a man fold(-d) must not touch: no word reaches age -d */
+        .set FA_PLAYERS, 4096          /* the free-agent bitmap's bits: the capacity arena's 4,096 primary records */
 
 /* ---- site A: insert one word at edi (called by 0x14F220 only) ------------------------------------------------ */
         .section .site_a, "ax"
@@ -102,8 +103,7 @@ gc_chunk:
         mov     ecx, [ROSTER]
         cmp     [ecx+0x40], eax
         jl      3f                      /* the write has room: as before */
-        push    FA_DEPTH2
-        call    fold                    /* last resort: the free agents' last season into their career row */
+        call    fa_fold                 /* last resort: the free agents' last season into their career row */
 3:      pop     dword ptr [CLASS]
         call    CAPACITY
         mov     ecx, [ROSTER]
@@ -268,11 +268,12 @@ room:
         ret
 
 /* fold_base (b81 history-pool): ecx = player record, called by fold for each player; stores the season fold counts
-   word ages from into fold's [esp+12] ([esp+16] here; fold's depth argument is [esp+44] here). Depth >= 0: his years
-   pro, the hist1 rule (fold merges a word when years pro - slot >= depth). Depth -d < 0: fold depth d for a man on the
-   game's free-agent list (root+0x38 count, root+0x3C list of player pointers) and nobody else: years pro - 2d for him
-   (years pro - 2d - slot >= -d exactly when years pro - slot >= d), NO_FOLD_BASE for every other man (no word of his
-   reaches age -d). Keeps ebx, esi, edi, ebp. */
+   word ages from into fold's [esp+12] ([esp+16] here; fold's player index is [esp+4] here, its depth argument
+   [esp+44]). Depth >= 0: his years pro, the hist1 rule (fold merges a word when years pro - slot >= depth). Depth
+   -d < 0 (only fa_fold passes one): fold depth d for a man on the game's free-agent list and nobody else: years pro - 2d
+   for him (years pro - 2d - slot >= -d exactly when years pro - slot >= d), NO_FOLD_BASE for every other man (no word
+   of his reaches age -d). Membership is one bit of the bitmap fa_fold keeps right above fold's argument ([esp+48]
+   here), indexed by the player index fold walks. Keeps ebx, ecx, esi, edi, ebp. */
         .globl fold_base
 fold_base:
         mov     edx, [ecx+0x24]
@@ -282,19 +283,12 @@ fold_base:
         test    eax, eax
         jns     3f
         lea     edx, [edx+eax*2]
-        push    esi
-        push    edi
-        mov     esi, [ROSTER]
-        mov     edi, [esi+0x3C]
-        mov     esi, [esi+0x38]
-1:      dec     esi
-        js      2f
-        cmp     [edi+esi*4], ecx
-        jne     1b
-        jmp     4f
+        mov     eax, [esp+4]
+        cmp     eax, FA_PLAYERS
+        jae     2f
+        bt      dword ptr [esp+48], eax
+        jc      3f
 2:      mov     edx, NO_FOLD_BASE
-4:      pop     edi
-        pop     esi
 3:      mov     [esp+16], edx
         ret
 
@@ -456,4 +450,39 @@ history_drop:                           /* 0x14F256: the full pool has no room e
         pop     esi
         pop     ebp
         pop     ecx
+        ret
+
+/* fa_fold (b81 history-pool, in the dead tail of retail's full-pool path, 0x14F25B..0x14F2B6): called by gc_chunk
+   (inside its pushad, class 0) when depth 3+ left the pool full. Marks the game's free-agent list (root+0x38 count,
+   root+0x3C list of player pointers) in a FA_PLAYERS-bit bitmap on the stack, by player index (a pointer that is not a
+   primary record start below FA_PLAYERS is left out), then runs fold(-2), whose fold_base reads the bitmap: one bit
+   test per player instead of a walk of the list. Clobbers every register but esp (gc_chunk restores them). */
+        .globl fa_fold
+fa_fold:
+        sub     esp, FA_PLAYERS / 8
+        mov     edi, esp
+        xor     eax, eax
+        mov     ecx, FA_PLAYERS / 32
+        rep stosd
+        mov     esi, [ROSTER]
+        mov     ecx, [esi+0x38]
+        mov     ebx, [esi+0x3C]
+        mov     esi, [esi+4]
+        mov     ebp, 0x54
+1:      dec     ecx
+        js      2f
+        mov     eax, [ebx+ecx*4]
+        sub     eax, esi
+        jb      1b
+        xor     edx, edx
+        div     ebp
+        test    edx, edx
+        jnz     1b
+        cmp     eax, FA_PLAYERS
+        jae     1b
+        bts     dword ptr [esp], eax
+        jmp     1b
+2:      push    FA_DEPTH2
+        call    fold
+        add     esp, FA_PLAYERS / 8
         ret
