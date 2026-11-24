@@ -18,7 +18,7 @@
    gc_chunk folds whole season levels, oldest first, until 6,000 words are free, never at depth < 3 (the current
    and the last season are never folded), so a full pool collects once per ~6,000 writes, not on every write.
 
-   b81 history-pool (Noah 11/23: "fix the history storage for franchise now"): when that leaves the pool still full
+   b81 history-pool ("fix the history storage for franchise now"): when that leaves the pool still full
    (every word in the current, the last or the folded career season, the case that dropped Trey Smack's 52-yard
    attempt in seed 68003's 2029), gc_chunk folds the last season into the career row for the men on the game's
    free-agent list only (fa_fold, fold with depth -2, fold_base) before the write is dropped. Club men (active list,
@@ -190,8 +190,12 @@ gc_chunk:
         jmp     4f
 3:      cmp     [ecx+0x40], eax
         jl      4f                      /* the write has room: as before */
-        cmp     edx, 1
-        ja      4f                      /* stages 8 and 9 only: never in the preseason or the offseason */
+        test    edx, edx
+        jnz     4f                      /* round 5 (review F2): the regular season (stage 8) only. Never in the
+                                           preseason or the offseason, and never in stage 9: the rollover advances years
+                                           pro while the stage still reads 9, and a resort there would fold the free
+                                           agents' older rows into the season just played. A playoff word runs fa_fold
+                                           itself (playoff_fold); the honors (class 0, stage 9) have the reserve. */
         call    fa_fold                 /* last resort: the free agents' last season into their career row */
 4:      pop     dword ptr [CLASS]
         call    reserve_cap             /* room for this class: a playoff word must leave RESERVE words free */
@@ -341,13 +345,16 @@ delete_at:
 room:
         call    CAPACITY
         mov     ecx, [ROSTER]
-        cmp     [ecx+0x40], eax
+        mov     edx, [esp+44]           /* b81: fold's depth (only fold calls room) */
+        cmp     edx, COMPLETE_FOLD
+        je      4f                      /* the rollover's completion moves a word like any fold */
+        test    edx, edx
+        js      3f                      /* round 5 (review F1): the free-agent resort and the playoff fold only merge.
+                                           A move (a word whose next season has no word of that field) frees nothing
+                                           and would give a man a last-season line he never had, so the word stays,
+                                           whatever the room; such a man is not marked folded and keeps v0.9's path */
+4:      cmp     [ecx+0x40], eax
         jl      1f
-        cmp     dword ptr [esp+44], COMPLETE_FOLD   /* b81: fold's depth (only fold calls room). The rollover's */
-        je      4f                      /* completion compacts for a move like any fold; the free-agent resort and */
-        cmp     dword ptr [esp+44], 0   /* the playoff fold (negative) compact nothing for a move, which frees */
-        jl      3f                      /* nothing: the word stays, as here */
-4:
         push    eax
         push    0
         call    compact
@@ -411,7 +418,9 @@ fold_base:
    one slot up (sum, or max where the rule table says so), the retail order (restart from the stream head after each
    merge). A sum the 16-bit cell cannot hold is not merged: that word stays, so the career total stays whole.
    Returns 1 when the pool shrank. Locals: [esp] player index, [esp+4] used at entry, [esp+8] player,
-   [esp+12] fold_base's base (a word merges when base - slot >= 0), [esp+16] new value; the depth is [esp+40]. */
+   [esp+12] fold_base's base (a word merges when base - slot >= 0), [esp+16] new value; the depth is [esp+40].
+   Keep this frame: fold_base, age_ok, room and playoff_target read it at fixed offsets from their own esp (one return
+   address deeper: index +4, base +16, depth +44, fa bitmap or playoff target +48 / +52). */
         .section .site_d, "ax"
         .globl fold
 fold:
@@ -647,8 +656,10 @@ folded_age2:
 /* rollover_tail (site H): at the rollover's postseason wipe (0x14ED90 called from 0x247C7D, so its return address
    [esp+8] here is ROLLOVER_WIPE; class 1, stage still 9, the first record: 0x247B40 walks every record from index 0
    after advancing years pro, and the season close has run), when any man was folded early this season,
-   fold(COMPLETE_FOLD) in the regular class. The call site, not the class, tells the rollover from the retirement pass's
-   record resets (0x2BDB00 -> 0x2BDA90 -> 0xE64D0 -> 0x14ED90 with class 1, also in stage 9 but before the close).
+   fold(COMPLETE_FOLD) in the regular class. The call site, not the class, tells the rollover from the other callers of
+   0x14ED90, among them the retiree wipe: 0x2BDB00 (stage 9, "advance to offseason") only flags the retirees (record +8
+   bit 3); the offseason erases them when it leaves stage 4 (0x2484E4 -> 0x2BDA90 -> 0xE64D0, which calls 0x14ED90 with
+   class 1 and then class 0 and zeroes the record).
    Returns eax 1 (0x14ED90's result). */
         .globl rollover_tail
 rollover_tail:
@@ -759,3 +770,10 @@ fa_fold:
 playoff_fold:
         call    fa_fold
         jmp     playoff_staged
+
+/* round 5: one pad byte each keeps sites B and C as long as 3947e61b6's (the upgrade tables need every earlier
+   revision's site to fit inside this release's), after F1 and F2 made each one byte shorter. Never executed. */
+        .section .site_b, "ax"
+        int3
+        .section .site_c, "ax"
+        int3

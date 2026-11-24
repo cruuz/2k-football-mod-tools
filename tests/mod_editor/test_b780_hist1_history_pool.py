@@ -9,7 +9,7 @@
   count), the insert, and the full-pool collection (once per 6,000 words, never into the last two seasons);
 * when HUNT4's real franchise pools are on this machine: the v0.9 franchise start and its year-1 save fold with every
   career total exact.
-* b81 history-pool (Noah 11/23: "fix the history storage for franchise now"): a full pool with nothing left at depth
+* b81 history-pool ("fix the history storage for franchise now"): a full pool with nothing left at depth
   3+ folds the free agents' last season (and only theirs) before a write is dropped; the v0.9 revision drops it. The
   last resort never runs while depth 3+ leaves the write room (byte-identical pools). The beta-80 / v0.9 revision reads
   "previous" (also on the released v0.9 executable) and upgrades in place to exactly a fresh install. A stored full
@@ -46,14 +46,13 @@ HUNT4 = Path(os.environ.get("B780_HUNT4_EVIDENCE", "/home/noah/2k-worktrees/.b77
 ROSTER, CLASS, STAGE = 0xB72918, 0xBD7F98, 0xE576A4      # STAGE: franchise stage, 7 preseason, 8 season, 9 playoffs
 # b81 history-pool: a stored full franchise (seed 68001, 2032 playoffs, pool 50,000 of 50,000) and its executable (the
 # frozen bb5a408b1 candidate 8b180ed5, hist1 at its v0.9 revision). Private game data: never in git.
-FULL_IMAGE = Path(os.environ.get("B81_HISTORY_POOL_FULL_IMAGE", "/home/noah/2k-worktrees/.b77-scratch/b81/pos3/runs/"
-                                 "combined-ten/ten/68001/validator/FAIL-2032-st9-w22.b81mem.gz"))
-FULL_IMAGE_XBE = Path(os.environ.get("B81_HISTORY_POOL_FULL_XBE", "/home/noah/2k-worktrees/.b77-scratch/b81/pos3/runs/"
-                                     "combined-confirm/cand-build/default.xbe"))
+# Local fixtures, named by environment variables (no default: without them these classes skip). The lane's REVIEW_ME
+# names the files: the stored full 68001/2032 week-22 image, its executable (8b180ed5) and the 2026-2032 yearly saves.
+FULL_IMAGE = Path(os.environ.get("B81_HISTORY_POOL_FULL_IMAGE", "/nonexistent"))
+FULL_IMAGE_XBE = Path(os.environ.get("B81_HISTORY_POOL_FULL_XBE", "/nonexistent"))
 FULL_IMAGE_XBE_SHA256 = "8b180ed5bd69647c99ba7eb5f63c95471b1785d89afe4b489f2492ace37aa8aa"
 # b81 round 5: the same league's yearly closing saves (v0.9, root 68001) give every man's real club per season
-TRUTH_SAVES = Path(os.environ.get("B81_HISTORY_POOL_TRUTH_SAVES",
-                                  "/media/noah/Storage/2K5-project/b81-history-pool/runs/ten/ctrl/68001/signed"))
+TRUTH_SAVES = Path(os.environ.get("B81_HISTORY_POOL_TRUTH_SAVES", "/nonexistent"))
 V09_RELEASED_XBE = Path(os.environ.get("NFL2K5_V09_RELEASED_XBE", "/nonexistent"))
 V09_RELEASED_SHA256_PREFIX = "d78088f9"
 MAX_FIELDS = frozenset((16, 17, 30, 36, 43, 44, 45, 46, 56, 73))
@@ -144,9 +143,10 @@ class TemplateTests(unittest.TestCase):
         up = {label: (va, was, now) for label, va, was, now in hp.UPGRADE_SITES}
         (_v, was_c, now_c), (va_d, was_d, now_d), (va_f, was_f, now_f) = up["site_c"], up["site_d"], up["site_f"]
         self.assertEqual(up["site_g"][1:], (bytes.fromhex("e8a2f5ffff"), bytes.fromhex("e8bff6ffff")))
-        self.assertEqual(now_c[:0x161], was_c[:0x161])
-        # room: cmp dword [esp+44], COMPLETE_FOLD / je (compacts) / cmp dword [esp+44], 0 (fold's depth)
-        self.assertEqual(now_c[0x163:0x16F], bytes.fromhex("837c242cfc7407837c242c00"))
+        self.assertEqual(now_c[:0x15E], was_c[:0x15E])
+        # room (round 5, review F1): mov edx, [esp+44] (fold's depth) / cmp edx, COMPLETE_FOLD / je / test edx, edx /
+        # js (a negative depth never moves) / cmp [ecx+0x40], eax
+        self.assertEqual(now_c[0x15E:0x16E], bytes.fromhex("8b54242c83fafc740485d27819394140"))
         self.assertEqual(now_f[:18], was_f[:18])
         self.assertLessEqual(va_f + len(now_f), 0x14F2B7)
         # fold_base's call (13 bytes) and the age test, which now calls age_ok after the field is known (24 bytes, padded
@@ -156,14 +156,14 @@ class TemplateTests(unittest.TestCase):
         self.assertTrue(all(0x14F045 <= a <= 0x14F05C for a in changed if a >= 0x14F040))
         self.assertEqual(now_d[0x7D:], was_d[0x7D:])                    # from 0x14F05D on: the same bytes
         # call fold_base; test eax, eax; jz .Lf_nextplayer (0x14F13C: the man a negative depth does not fold)
-        self.assertEqual(now_d[0x34:0x41], bytes.fromhex("e84bfbffff85c00f841b010000"))
+        self.assertEqual(now_d[0x34:0x41], bytes.fromhex("e84afbffff85c00f841b010000"))
         # the drop path keeps its address (harnesses watch it)
         self.assertEqual(hp.DROP_VA, 0x14F249 + 13)
 
     def test_the_first_b81_revision_is_pinned_and_upgrades_in_place(self):
         # coordinator's ruling (11/24): 570cd7c16 (the free-agent resort without the playoff reserve) upgrades in place too
         self.assertEqual([row[0] for row in hp.REVISIONS],
-                         ["beta-80", "b81 570cd7c16", "b81 26d92bde0", "b81 f27dd95a6"])
+                         ["beta-80", "b81 570cd7c16", "b81 26d92bde0", "b81 f27dd95a6", "b81 3947e61b6"])
         self.assertEqual(hp._digest(hp.REVISION_570CD7C16_SITES), hp.REVISION_570CD7C16_SHA256)
         self.assertEqual(hp.REVISION_570CD7C16_SHA256, "7b61e3e99770293913efdb989b8d097a8bf2b2ef4a03b1a54e7d972f0144ddae")
         self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.REVISION_570CD7C16_SITES), 1142)
@@ -201,21 +201,23 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.REVISION_F27DD95A6_SITES), 1428)
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_F27DD95A6_SITES],
                          [("site_a", 0x14E8B0, 126), ("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 495),
-                          ("site_f", 0x14F249, 110), ("site_h", 0x14EDA8, 5), ("site_i", 0x14F170, 176),
-                          ("site_j", 0x14EFB0, 48)])
+                          ("site_d", 0x14EFE0, 390), ("site_f", 0x14F249, 110), ("site_h", 0x14EDA8, 5),
+                          ("site_i", 0x14F170, 176), ("site_j", 0x14EFB0, 48)])
         old = {label: after for label, _va, _b, after in hp.REVISION_F27DD95A6_SITES}
         for label, _va, _before, after in hp.SITES:
-            if label in ("site_d", "site_e", "site_g"):
+            if label == "site_d":                                              # round 5: room's call displacement
+                self.assertEqual(sum(a != b for a, b in zip(after, old[label])), 1)
+            if label in ("site_e", "site_g"):
                 self.assertEqual(after, old[label], label)
             if label in ("site_a", "site_f"):                                  # only grow: playoff_staged, playoff_fold
                 self.assertEqual(after[:len(old[label])], old[label], label)
 
-    def test_the_club_variant_differs_in_site_d_only_and_the_default_is_3947e61b6s(self):
-        # b81 round 5: with franchise history off every byte stays 3947e61b6's (the same pin); the club variant changes
+    def test_the_club_variant_differs_from_the_default_in_site_d_only(self):
+        # b81 round 5: without franchise history an executable carries the default SITES only; the club variant changes
         # site D only, inside the fold's 392 bytes, and is pinned on its own
-        self.assertEqual(hp.PATCHED_SHA256, "9e8e9f792d6734174f875473f2eea789fb312462d28318f18dee7c37ac78ec5d")
+        self.assertEqual(hp.PATCHED_SHA256, "1f1094c3f162f2eb8b419ffa226cd916e149373762229c14b3deac0b56c5b4f2")
         self.assertEqual(hp._digest(hp.CLUB_SITES), hp.CLUB_PATCHED_SHA256)
-        self.assertEqual(hp.CLUB_PATCHED_SHA256, "7bfcf9c320406f46eba347282984c4c2ba6df6189299276f6c5ea84d4eab65a2")
+        self.assertEqual(hp.CLUB_PATCHED_SHA256, "e622bd2b17732480aa6e8ac691f508a8379170731a02a2ab9ad6101e1dd42234")
         self.assertEqual([row[0] for row in hp.CLUB_SITES], [row[0] for row in hp.SITES])
         for plain, club in zip(hp.SITES, hp.CLUB_SITES):
             if plain[0] != "site_d":
@@ -228,6 +230,18 @@ class TemplateTests(unittest.TestCase):
         self.assertIn(bytes.fromhex("e30583fe57741301d1"), after)
         self.assertIn(bytes.fromhex("832424"), after)                    # and dword ptr [esp], 0
         self.assertNotIn(bytes.fromhex("832424"), dict((r[0], r[3]) for r in hp.SITES)["site_d"])
+
+    def test_the_fourth_b81_revision_is_pinned_and_upgrades_in_place(self):
+        # round 5: 3947e61b6 (round 4, reviewed; the panel executable 7bb7ea9a and the xemu witness disc carry it)
+        # upgrades in place: review F1 (room) and F2 (gc_chunk) change sites C and B, site D one call displacement
+        self.assertEqual(hp._digest(hp.REVISION_3947E61B6_SITES), hp.REVISION_3947E61B6_SHA256)
+        self.assertEqual(hp.REVISION_3947E61B6_SHA256, "9e8e9f792d6734174f875473f2eea789fb312462d28318f18dee7c37ac78ec5d")
+        self.assertEqual([row[0] for row in hp.REVISIONS][-1], "b81 3947e61b6")
+        self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_3947E61B6_SITES],
+                         [("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 495), ("site_d", 0x14EFE0, 390)])
+        old = dict((label, after) for label, _va, _b, after in hp.REVISION_3947E61B6_SITES)
+        new = dict((label, after) for label, _va, _b, after in hp.SITES)
+        self.assertEqual(sum(a != b for a, b in zip(old["site_d"], new["site_d"])), 1)
 
     def test_the_close_fields_are_the_season_closes_own_reads(self):
         # round 4: the list comes from the close itself (tools/nfl2k5_history/runtime.c, read_career): the ten leader
@@ -450,7 +464,7 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual(hp.status(self.retail), "retail")
         patched, receipt = hp.apply(self.retail)
         self.assertEqual(hp.status(patched), "applied")
-        self.assertEqual(receipt["changed_bytes"], 1484)
+        self.assertEqual(receipt["changed_bytes"], 1483)
         again, receipt2 = hp.apply(patched)
         self.assertEqual(again, patched)
         self.assertTrue(receipt2["already_applied"])
@@ -549,6 +563,18 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual((before["history_pool"], after["history_pool"]), ("previous", "applied"))
         self.assertEqual({k: v for k, v in before.items() if k not in ("history_pool", "path", "sha256")},
                          {k: v for k, v in after.items() if k not in ("history_pool", "path", "sha256")})
+
+    def test_the_rollovers_wipe_call_is_intact(self):
+        # review F7: rollover_tail knows the rollover by the return address of retail `call 0x14ED90` at 0x247C7D;
+        # verify() reports whether those bytes are intact (retail, the released v0.9 and every route witness carry them)
+        self.assertEqual(hp.ROLLOVER_WIPE_CALL, (0x247C7D, bytes.fromhex("e80e71f0ff")))
+        for payload in (self.retail, V09_RELEASED_XBE.read_bytes(), hp.apply(self.retail)[0]):
+            self.assertTrue(hp.rollover_call_intact(payload))
+            self.assertTrue(hp.verify(payload)["rollover_wipe_call_intact"])
+        broken = bytearray(self.retail)
+        off = rdata.offset_of(self.retail, 0x247C7D)
+        broken[off:off + 5] = b"\x90" * 5
+        self.assertFalse(hp.rollover_call_intact(bytes(broken)))
 
     def test_the_club_variant_keeps_every_neighbour_and_switches_both_ways(self):
         # b81 round 5: on the released v0.9 executable the club variant leaves every other owner's status as the
@@ -1251,8 +1277,10 @@ class NativeTests(unittest.TestCase):
         self.assertEqual([[w & ~END for w in m.stream(r) if not w & POST] for r in recs],
                          [[w & ~END for w in b] for b in before])
 
-    def test_the_free_agent_resort_runs_only_in_the_regular_season_and_the_playoffs(self):
-        for stage, kept in ((7, False), (0, False), (10, False), (8, True), (9, True)):
+    def test_the_free_agent_resort_runs_only_in_the_regular_season(self):
+        # round 5 (review F2): stage 8 only. In stage 9 a regular-class write that finds the pool full is dropped as in
+        # v0.9 (the honors have the reserve; a playoff word runs the free agents itself, in playoff_fold)
+        for stage, kept in ((7, False), (0, False), (10, False), (8, True), (9, False)):
             with self.subTest(stage=stage):
                 m = Machine(self.patched)
                 recs = m.roster(self.full_young_pool(), free_agents=list(self.FREE))
@@ -1262,6 +1290,93 @@ class NativeTests(unittest.TestCase):
                 self.assertEqual(got, kept)
                 if not kept:
                     self.assertEqual(([m.stream(r) for r in recs], m.used()), (before, 50000))   # no free agent folded
+
+    def test_the_free_agent_resort_never_runs_in_the_rollover_window(self):
+        # round 5 (review F2, E2): the rollover advances years pro while the stage still reads 9. A regular-class write
+        # there on a full pool with nothing three seasons back would have folded the free agents' older rows into the
+        # season just played (slot 6 here), the row the star career and FORM read next preseason. Now it is dropped as in
+        # v0.9 and no free agent changes.
+        m = Machine(self.patched)
+        players = [(6, [word(f, 6, 3 + f) for f in (0, 1, 2, 6, 7)] +
+                    [word(f, 5, 100 + f, folded=f in (1, 6, 7)) for f in (0, 1, 2, 6, 7)]) for _ in range(2000)]
+        recs = m.roster(players, free_agents=list(range(1500, 2000)))
+        i = 0
+        while m.used() < 50000:
+            m.call(0x14F220, ecx=recs[i % 2000], edx=word(30 + i // 2000, 6, 2))
+            i += 1
+        for rec in recs:
+            m.put(rec + 0x24, m.get(rec + 0x24) + 0x100)                    # years pro advanced; stage still 9
+        m.put(STAGE, 9)
+        m.put(CLASS, 0)
+        before = [m.stream(r) for r in recs]
+        self.assertEqual(m.call(0x14F220, ecx=recs[0], edx=word(87, 7, 12)), 0)
+        self.assertEqual(([m.stream(r) for r in recs], m.used()), (before, 50000))
+
+    def career_only_pool(self):
+        """1,650 men, years pro 6: a career row (slot 4, folded), last season (5) and this season (6) in the close's
+        fields and in 1 and 6; fields 7, 21 and 50 only in the career row and this season (no word last season), so
+        folding them would be a move. Men 1,600..1,649 have nothing a fold could merge: only fields 7, 21, 50 past."""
+        out = []
+        for i in range(1650):
+            words = []
+            for slot, folded in ((4, True), (5, False), (6, False)):
+                both = () if i >= 1600 else (0, 2, 8, 12, 87, 1, 6)
+                fields = both + ((7, 21, 50) if slot != 5 else ())
+                for f in fields:
+                    words.append(word(f, slot, (1 + i % 31) if f == 87 else 10 + (f * 7 + i + slot) % 50,
+                                      folded=folded))
+            out.append((6, words))
+        return out
+
+    def test_no_early_fold_moves_a_word(self):
+        # round 5 (review F1): the playoff fold (and the free-agent resort) only merge. A word whose last season has no
+        # word of that field stays in the career row: moving it frees nothing and would give the man a last-season line
+        # he never had. A man with nothing to merge is not marked, so the rollover leaves him exactly as v0.9 would.
+        m = Machine(self.patched)
+        recs = m.roster(self.career_only_pool())
+        i = 0
+        while m.used() < 50000 - 512:
+            m.call(0x14F220, ecx=recs[i % 1650], edx=word(60 + i // 1650, 6, 2))
+            i += 1
+        totals = [m.totals(r) for r in recs]
+        untouched = {r: m.stream(r) for r in recs[1600:]}
+        m.put(STAGE, 9)
+        m.put(CLASS, 1)
+        self.assertNotEqual(m.call(0x14F220, ecx=recs[0], edx=word(40, 6, 3)), 0)
+        m.check(recs)
+        moved, merged = 0, 0
+        for r, t in zip(recs, totals):
+            live = [w for w in m.stream(r) if not w & (DELETED | POST)]
+            last = {(w >> 16) & 127 for w in live if (w >> 23) & 31 == 5 and w & FOLDED}
+            moved += len(last & {7, 21, 50})
+            merged += bool(last)
+            self.assertEqual({f: v[0] for f, v in m.totals(r).items() if f < 60},
+                             {f: v[0] for f, v in t.items() if f < 60})
+        self.assertEqual(moved, 0)
+        self.assertGreater(merged, 0)
+        self.assertEqual({r: m.stream(r) for r in recs[1600:]}, untouched)          # not marked, not changed
+        self.rollover(m, recs)
+        self.assertEqual({r: [w for w in m.stream(r) if not w & POST] for r in recs[1600:]},
+                         {r: [w for w in ws if not w & POST] for r, ws in untouched.items()})
+
+    def test_a_refused_playoff_word_costs_one_compaction_per_64_men(self):
+        # review F3 (documents the cost): when nothing at all can fold, one refused playoff word runs the staged walk,
+        # which compacts at every 64th man: 67 compactions on 4,096 records (v0.9's drop path runs one). The panel never
+        # got there (every playoffs folded once and kept every word).
+        m = Machine(self.patched)
+        players = [(1, [word(f, s, 5) for s in (0, 1) for f in range(6)]) for _ in range(4000)]
+        players += [(1, [word(f, s, 5) for s in (0, 1) for f in range(20, 30)]) for _ in range(96)]
+        recs = m.roster(players)
+        i = 0
+        while m.used() < 50000:
+            m.call(0x14F220, ecx=recs[i % 4096], edx=word(40 + i // 4096, 1, 3))
+            i += 1
+        m.put(STAGE, 9)
+        m.put(CLASS, 1)
+        m.count(0x14E9D0, "compact")
+        m.count(0x14F256, "drops")
+        self.assertEqual(m.call(0x14F220, ecx=recs[0], edx=word(60, 1, 3)), 0)
+        self.assertEqual((m.hits["drops"], m.hits["compact"]), (1, 67))
 
     def test_the_rollover_finishes_the_early_fold_where_v09s_next_preseason_collection_ends(self):
         # v0.9: nothing in the playoffs (the pool fills, the rest drops); at the next preseason's first collection fold(3)
@@ -1291,8 +1406,9 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(out["b81"], out["v0.9"])
 
     def test_only_the_rollovers_wipe_finishes_an_early_fold(self):
-        # the retirement pass's record resets (0x2BDB00 -> 0x2BDA90 -> 0xE64D0) also delete with class 1 in stage 9,
-        # before the season close: called from anywhere but the rollover's wipe, 0x14ED90 finishes nothing
+        # other callers of 0x14ED90 with class 1 (the retiree wipe 0x2484E4 -> 0x2BDA90 -> 0xE64D0 when the offseason
+        # leaves stage 4; 0x2BDB00 in stage 9 only flags the retirees): from anywhere but the rollover's wipe, 0x14ED90
+        # finishes nothing
         m = Machine(self.patched)
         recs = m.roster(self.playoff_pool())
         m.put(STAGE, 9)
@@ -1684,6 +1800,8 @@ class FullFranchiseImageTests(unittest.TestCase):
 
     def test_a_club_mans_first_stat_word_is_kept_where_v09_drops_it(self):
         old, new = self.machine("v0.9"), self.machine("b81")
+        for m in (old, new):                       # round 5 (F2): the free-agent resort runs in the regular season only;
+            m.put(STAGE, 8)                        # the image is the 2032 playoffs, so this write is a stage-8 one
         root = old.get(ROSTER)
         self.assertEqual((old.get(root + 0x40), old.call(0x14E7E0)), (50000, 50000))
         teams = old.get(root + 0x1C)

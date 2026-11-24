@@ -48,8 +48,8 @@ fold's first 0x188 bytes and the writer; both restore these sites' retail bytes 
 reads exactly applied or previous (``applied_sites``, ``compatible_edits``). The honors fold rule (0x14F168) is still
 the rule the fold uses for every field below 87; fields 87 and up (TEAM, the honors and the pressure counters) sum.
 
-The last resort before a dropped write (b81 history-pool, Noah 11/23: "fix the history storage for franchise now")
-----------------------------------------------------------------------------------------------------------------
+The last resort before a dropped write (b81 history-pool: "fix the history storage for franchise now")
+----------------------------------------------------------------------------------------------------
 v0.9's collection could fold only seasons 3+ years old. Once every word of a full pool was in the current season, the
 last one or the folded career row, a new stat word was dropped: seed 68003's 2029 kept Trey Smack's 52-yard make and
 lost its attempt (1 made of 0 attempted); the pool was full at 4 of 40 simulated closing saves. Now, when depth 3+
@@ -132,7 +132,7 @@ def _digest(sites) -> str:
     return h.hexdigest()
 
 
-PATCHED_SHA256 = "9e8e9f792d6734174f875473f2eea789fb312462d28318f18dee7c37ac78ec5d"   # the ten sites (label, VA, retail, patched); tests check it
+PATCHED_SHA256 = "1f1094c3f162f2eb8b419ffa226cd916e149373762229c14b3deac0b56c5b4f2"   # the ten sites (label, VA, retail, patched); tests check it
 
 # b81 round 5 (coordinator's ruling on the main club): the CLUB variant, installed only when the build carries franchise
 # history (nfl2k5_history, EXPERIMENTAL, off in every preset). It differs in site D only (391 bytes, within the fold's
@@ -140,10 +140,10 @@ PATCHED_SHA256 = "9e8e9f792d6734174f875473f2eea789fb312462d28318f18dee7c37ac78ec
 # the sum of club numbers, so the season close's main club reads a real club in a career row (measured on the stored
 # 68001/2032 pool against the league's yearly saves: 27 more men right, 0 newly wrong). The only reader of a folded club
 # word is franchise history's close (the TEAM column shows "--" for folded rows), so without franchise history the
-# default SITES above stay byte for byte 3947e61b6's. Sums already folded into a save stay sums: they cannot be
+# default SITES above are all an executable carries. Sums already folded into a save stay sums: they cannot be
 # repaired. The variant swaps `mov dword [esp], 0` for `and dword [esp], 0` and drops the 3-byte nop to make room.
 CLUB_SITES = tuple(runtime.CLUB_SITE_D if row[0] == "site_d" else row for row in SITES)
-CLUB_PATCHED_SHA256 = "7bfcf9c320406f46eba347282984c4c2ba6df6189299276f6c5ea84d4eab65a2"
+CLUB_PATCHED_SHA256 = "e622bd2b17732480aa6e8ac691f508a8379170731a02a2ab9ad6101e1dd42234"
 FIELD_TEAM = 87
 
 # b81 history-pool: the beta-80 / v0.9 revision (b780 hist1 as shipped): (label, VA, patched bytes). Each lies at the
@@ -342,6 +342,55 @@ REVISION_F27DD95A6_PATCHED = (
 )
 
 
+# round 5: 3947e61b6 (round 4, reviewed by Fable; the panel executable 7bb7ea9a and the xemu witness disc carry it):
+# its ten sites, (label, VA, patched bytes). Round 5 changes sites B, C (review F1, F2) and D (one displacement).
+REVISION_3947E61B6_PATCHED = (
+    ('site_a', 0x0014E8B0, bytes.fromhex(
+        "56578b0d1829b7008b414089fe2b7144c1fe0289c129f17e0b8d748ffc8d3c8ffdf3a5fc5f8b351829b7008b0e8b560485c97e0f397a2c760483422c0483c25449ebedff4640b8010000005ec3e8defeffff833d987fbd0000740e833da476e5"
+        "000975052d00020000c3e8c1feffff2d00120000506afde8b406000058c3"
+    )),
+    ('site_b', 0x0014E930, bytes.fromhex(
+        "60ff35987fbd00c705987fbd00000000006a01e888000000e87302000089c3e88cfeffff8b0d1829b7002d701700003941407e0e83fb037c0953e8710600004bebdde869feffff8b0d1829b7008b15a476e50083ea08833c240074162d000200"
+        "003941407c1b4a7518e80f0900009090eb0f3941407c0a83fa017705e8aa0800008f05987fbd00e841ffffff8b0d1829b70031d23941400f9cc28954241c61c3"
+    )),
+    ('site_c', 0x0014E9D0, bytes.fromhex(
+        "5553565781ec08020000a11829b7008b48408b704485c90f8ef500000081f9000001000f87e9000000898c240002000031d231db84db750989dfc1ef086689147cf7049e000000107401424339cb72e485d20f84ba00000089d5a11829b7008b"
+        "088b580485c97e608b432c29f07253c1e8023b842400020000734789c28b3c96f7c700000010741785ff780a423b94240002000072e7c7432c00000000eb2389c2c1ea080fb73c54c1e20839c2730df704960000001074014742ebefc1e70229"
+        "7b2c83c35449eb9c8b8c240002000031d289f731db8b0496a900000010750e890783c70431db85c0781443eb1185c0790d85db7409814ffc0000008031db4239ca72d2a11829b700296840b801000000eb0231c081c4080200005f5e5b5dc204"
+        "00528b1081ca00000010891085d279218b512c39d0761383e804f7000000001075f1810800000080eb07c7412c000000005ac3e8b8fcffff8b0d1829b7003941407c25837c242cfc7407837c242c007c14506a00e887feffff598b151829b700"
+        "394a407c0931c0c3b801000000c3b802000000c38b5124c1ea0883e21f8b44242c85c0793583c00275168b4424043d00100000732f0fa344243073284a4aeb1c407509e818040000721aebf0e80606000085c0740f83ea03eb0229c289542410"
+        "31c040c3c7442410c0ffffff31c0c3"
+    )),
+    ('site_d', 0x0014EFE0, bytes.fromhex(
+        "5553565783ec14a11829b7008b4840894c2404c7042400000000a11829b7008b0c243b080f8d3a0100006bc954034804894c2408e84bfbffff85c00f841b0100008b442408beff00000089f2e86ff8ffff85c00f840301000089c38b0b89cfc1"
+        "ef1783e71fc1e91083e17f89cee81e01000085c00f88cf0000000f1f0047578b4c240c89f2e8b6fdffff89c531c985c074030fbf080fbf1383fe5773155152e8e40000005a5985c0750839d17d1789d1eb1301d18d81008000003dffff00000f"
+        "8784000000894c241085ed754685c97468e86dfaffff85c0746f83f8020f845effffff8b4c240889d8e823faffff89fac1e20709f2c1e2100fb744241009c281ca000000408b4c2408e832010000e92effffff85c9750d8b4c240889e8e8eff9"
+        "ffffeb158b4500250000ffff0fb7c909c80d000000408945008b4c240889d8e8cdf9ffffe9f8feffff89d8beff00000089f2e849f7ffffe9f5feffffff0424e9b6feffff6a00e885f8ffffa11829b7008b484031c0394c24040f97c083c4145f"
+        "5e5b5dc20400"
+    )),
+    ('site_e', 0x0014F16F, bytes.fromhex(
+        "c3"
+    )),
+    ('site_f', 0x0014F249, bytes.fromhex(
+        "e8e2f6ffff85c00f85650000005f5e5d59c381ec0002000089e731c0b980000000f3ab8b351829b7008b4e388b5e3c8b7604bd5400000049781c8b048b29f072f631d2f7f585d275ee3d0010000073e70fab0424ebe16afee83afdffff81c400"
+        "020000c3e8a9ffffffe963f6ffff"
+    )),
+    ('site_g', 0x0014F239, bytes.fromhex(
+        "e8bff6ffff"
+    )),
+    ('site_h', 0x0014EDA8, bytes.fromhex(
+        "e831040000"
+    )),
+    ('site_i', 0x0014F170, bytes.fromhex(
+        "8b44241029f8782e837c242c007d278d56a083fa09761c837c242cfc741883fe57741083fe1f770eb80d731c000fa3f019c0c383c8ffc356538b5924c1eb0883e31f83eb02c1e3170fbaeb1e8b712c31c085f674168b0683c60450250000807f"
+        "39d858740685c079ec31c05b5ec3817c2408827c24007532a11829b7003b70047528608b2889f14d781fe8a8ffffff83c15485c074f1ff0d987fbd006afce8cdfdffffff05987fbd0061b801000000c3"
+    )),
+    ('site_j', 0x0014EFB0, bytes.fromhex(
+        "837c2434007425f64424083f752051526a00e809faffff5a59a11829b7008b40403b44243477078364243400f9c3f8c3"
+    )),
+)
+
+
 def _revision(name: str, patched, pin: str):
     """(name, the revision's own sites (label, VA, retail, patched), what it holds over each of this release's spans
     (its bytes, then retail to our length; retail where it has no such site), the in-place upgrade (changed spans))."""
@@ -361,16 +410,19 @@ PREVIOUS_SHA256 = "12f8f431af15622399a453dc937f869a5fc5c8956f9769d6190c9634c2ce3
 REVISION_570CD7C16_SHA256 = "7b61e3e99770293913efdb989b8d097a8bf2b2ef4a03b1a54e7d972f0144ddae"   # 570cd7c16's
 REVISION_26D92BDE0_SHA256 = "92f96e1b979b075ccb73f67f7951f08ee523987baaea500439404d9a016d4d38"   # 26d92bde0's
 REVISION_F27DD95A6_SHA256 = "dea980b4159eefd0b5f7b7728dba0c2b7386b5c5838027d4f60f49d516597845"   # f27dd95a6's
+REVISION_3947E61B6_SHA256 = "9e8e9f792d6734174f875473f2eea789fb312462d28318f18dee7c37ac78ec5d"   # 3947e61b6's
 if _digest(SITES) != PATCHED_SHA256 or _digest(CLUB_SITES) != CLUB_PATCHED_SHA256:
     raise ImportError("nfl2k5_history_pool: the generated sites do not match their pins")
 REVISIONS = (_revision("beta-80", PREVIOUS_PATCHED, PREVIOUS_SHA256),
              _revision("b81 570cd7c16", REVISION_570CD7C16_PATCHED, REVISION_570CD7C16_SHA256),
              _revision("b81 26d92bde0", REVISION_26D92BDE0_PATCHED, REVISION_26D92BDE0_SHA256),
-             _revision("b81 f27dd95a6", REVISION_F27DD95A6_PATCHED, REVISION_F27DD95A6_SHA256))
+             _revision("b81 f27dd95a6", REVISION_F27DD95A6_PATCHED, REVISION_F27DD95A6_SHA256),
+             _revision("b81 3947e61b6", REVISION_3947E61B6_PATCHED, REVISION_3947E61B6_SHA256))
 PREVIOUS_SITES, UPGRADE_SITES = REVISIONS[0][1], REVISIONS[0][3]        # the shipped (beta-80 / v0.9) revision
 REVISION_570CD7C16_SITES, UPGRADE_570CD7C16_SITES = REVISIONS[1][1], REVISIONS[1][3]
 REVISION_26D92BDE0_SITES, UPGRADE_26D92BDE0_SITES = REVISIONS[2][1], REVISIONS[2][3]
 REVISION_F27DD95A6_SITES, UPGRADE_F27DD95A6_SITES = REVISIONS[3][1], REVISIONS[3][3]
+REVISION_3947E61B6_SITES, UPGRADE_3947E61B6_SITES = REVISIONS[4][1], REVISIONS[4][3]
 
 
 def _reads(payload: bytes, spans) -> bool:
@@ -486,6 +538,20 @@ def compatible_edits(payload: bytes) -> list[tuple[int, bytes]]:
     return [(va, before) for _label, va, before, _after in sites]
 
 
+# review F7: rollover_tail knows the rollover by its return address 0x247C82, i.e. by the retail `call 0x14ED90` at
+# 0x247C7D. Nothing else pins those bytes; an owner that replaced that call would silently stop the completion.
+ROLLOVER_WIPE_CALL = (0x00247C7D, bytes.fromhex("e80e71f0ff"))
+
+
+def rollover_call_intact(payload: bytes) -> bool:
+    va, want = ROLLOVER_WIPE_CALL
+    try:
+        off = rdata.offset_of(payload, va)
+    except (rdata.RdataSiteError, ValueError):
+        return False
+    return payload[off:off + len(want)] == want
+
+
 def verify(payload: bytes) -> dict:
     return {"owner": OWNER, "status": status(payload), "experimental": False, "runtime_witnessed": False,
             "sites": [{"label": label, "va": f"0x{va:x}", "bytes": len(after)} for label, va, _b, after in SITES],
@@ -496,6 +562,7 @@ def verify(payload: bytes) -> dict:
             "revision_570cd7c16_sha256": REVISION_570CD7C16_SHA256, "revision_26d92bde0_sha256": REVISION_26D92BDE0_SHA256,
             "revision_f27dd95a6_sha256": REVISION_F27DD95A6_SHA256, "playoff_room_words": PLAYOFF_ROOM,
             "honor_fields_left_by_early_folds": list(HONOR_FIELDS), "variant": variant(payload),
+            "rollover_wipe_call_intact": rollover_call_intact(payload),
             "club_patched_sha256": CLUB_PATCHED_SHA256}
 
 
@@ -503,4 +570,5 @@ __all__ = ["OWNER", "BUILD_CAPTION", "HELP_TEXT", "SITES", "PREVIOUS_SITES", "UP
            "REVISION_570CD7C16_SITES", "UPGRADE_570CD7C16_SITES", "REVISION_26D92BDE0_SITES", "UPGRADE_26D92BDE0_SITES",
            "REVISION_F27DD95A6_SITES", "UPGRADE_F27DD95A6_SITES", "PLAYOFF_ROOM", "HONOR_FIELDS",
            "CHUNK_WORDS", "MIN_DEPTH", "FREE_AGENT_DEPTH", "PLAYOFF_RESERVE", "PLAYOFF_FOLD_DEPTH", "CLOSE_FIELDS", "DROP_VA", "status", "apply", "applied_sites", "compatible_edits", "installed_revision",
-           "verify", "variant", "CLUB_SITES", "CLUB_PATCHED_SHA256", "FIELD_TEAM"]
+           "verify", "variant", "CLUB_SITES", "CLUB_PATCHED_SHA256", "FIELD_TEAM", "REVISION_3947E61B6_SITES",
+           "UPGRADE_3947E61B6_SITES", "ROLLOVER_WIPE_CALL", "rollover_call_intact"]

@@ -170,7 +170,7 @@ class ReleasedUpdates(unittest.TestCase):
 
 
     def test_every_v09_update_upgrades_the_history_pool(self):
-        # b81 history-pool (Noah 11/23: "fix the history storage for franchise now"): the released disc's career
+        # b81 history-pool ("fix the history storage for franchise now"): the released disc's career
         # history pool (the beta-80 revision, "previous") is upgraded on every v0.9 update, after the route's last
         # writer, as a full build has it; a disc whose pool is already current is left alone.
         for choice in ("save_list_type_guard", "modern_injured_reserve", "backfield_cards"):

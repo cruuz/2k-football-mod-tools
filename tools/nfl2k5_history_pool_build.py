@@ -4,7 +4,7 @@
 The generated ``mod_editor/core/nfl2k5_history_pool_code.py`` is checked in, so Studio users never need an assembler.
 Every site is linked at its own retail address (tools/nfl2k5_history_pool/link.ld), so the template has no relocations.
 ``--check`` fails if the checked-in template differs from a fresh build (binutils 2.42). The retail bytes of each site
-are read from the pinned USA default.xbe (NFL2K5_RETAIL_XBE, or the default extraction path).
+are read from the pinned USA default.xbe named by NFL2K5_RETAIL_XBE (required).
 """
 from __future__ import annotations
 
@@ -20,8 +20,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path(__file__).resolve().parent / "nfl2k5_history_pool"
 TARGET = ROOT / "mod_editor/core/nfl2k5_history_pool_code.py"
-RETAIL_XBE = Path(os.environ.get("NFL2K5_RETAIL_XBE",
-                                 "/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe"))
+RETAIL_XBE_ENV = "NFL2K5_RETAIL_XBE"      # the pinned USA default.xbe (checked against RETAIL_SHA256)
 SITES = (".site_a", ".site_b", ".site_c", ".site_d", ".site_e", ".site_f", ".site_g", ".site_h", ".site_i", ".site_j")
 
 
@@ -42,7 +41,10 @@ def _sections(elf: bytes) -> dict[str, tuple[int, bytes]]:
 def generate(source: Path = SOURCE) -> str:
     sys.path.insert(0, str(ROOT))
     from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage
-    retail = RETAIL_XBE.read_bytes()
+    path = os.environ.get(RETAIL_XBE_ENV)
+    if not path:
+        raise SystemExit(f"set {RETAIL_XBE_ENV} to the pinned USA default.xbe")
+    retail = Path(path).read_bytes()
     if hashlib.sha256(retail).hexdigest() != RETAIL_SHA256:
         raise SystemExit("the retail default.xbe pin differs")
     image = XbeImage(retail)

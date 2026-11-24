@@ -3466,11 +3466,11 @@ def _apply_cpu_kick_aim_in_place(target, receipt, progress):
 
 
 def _history_pool_upgrade(payload):
-    """b81 history-pool (Noah 11/23: "fix the history storage for franchise now"): an in-place copy of a built disc
-    (update-v09, edit-sim-qb, edit-gadget) carries the career-history pool's current revision, as a full build of it
-    does. The beta-80 / v0.9 revision reads "previous" and is upgraded in place (three engine sites, the same bytes a
-    full build writes); a disc without the fix, or with this release's, is returned unchanged: a single-setting route
-    never adds it. Returns (payload, receipt or None).
+    """b81 history-pool ("fix the history storage for franchise now"): an in-place copy of a built disc (update-v09,
+    edit-sim-qb, edit-gadget) carries the career-history pool's current revision, as a full build of it does. An earlier
+    revision (beta-80 / v0.9, or a b81 one) reads "previous" and is upgraded in place (the engine sites that changed,
+    the same bytes a full build writes); a disc without the fix, or with this release's, is returned unchanged: a
+    single-setting route never adds it. Returns (payload, receipt or None).
     b81 round 5: the variant follows the executable: the club variant (a folded TEAM word keeps a real club) when it
     carries franchise history (nfl2k5_history applied or previous), the default otherwise. An applied fix of the other
     variant is switched in place (site D only), as a full build with the same settings would write it."""
