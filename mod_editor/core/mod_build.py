@@ -3032,6 +3032,10 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     patched, aim_receipt = _cpu_kick_aim_with_kicking(patched)
     if aim_receipt is not None:
         patch = {**patch, "cpu_kick_aim": aim_receipt}
+    # b81 history-pool: the copy carries the career history pool's current revision, as a full build does.
+    patched, history_upgrade = _history_pool_upgrade(patched)
+    if history_upgrade is not None:
+        patch = {**patch, "history_pool": history_upgrade}
     settings = _verify_sim_qb_injuries(plan, module, patched)
     # b81 qb34: the quarterback room rules ride with this option (DESIGN_CHANGES C1) on the same executable.
     room_level, room_stages, room_note = _qb_room_plan(plan, patched)
@@ -3061,6 +3065,7 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
         "source_sha256": sha256(original).hexdigest(), "result_sha256": sha256(patched).hexdigest(),
         "source_simulator": simulator_state, "simulator_upgraded": dependency is not None, "settings": settings,
         "pass_protection_upgraded": pressure is not None,
+        "history_pool_upgraded": history_upgrade is not None,
         "stability_reference": stability,
     }
     if room_level is not None or room_note:
@@ -3117,10 +3122,12 @@ def _edit_installed_gadget(plan, source, target, original, receipt, progress, *,
         patched, patch = gadget.apply(original, books)
     else:
         patched, patch = gadget.remove(original)
+    patched, history_upgrade = _history_pool_upgrade(patched)  # b81 history-pool: as a full build
     receipt["installed_gadget_only"] = True
     receipt["gadget_source_update"] = {"source_sha256": sha256(original).hexdigest(),
                                        "result_sha256": sha256(patched).hexdigest(),
-                                       "source_state": gadget.status(original, books)}
+                                       "source_state": gadget.status(original, books),
+                                       "history_pool_upgraded": history_upgrade is not None}
     if preflight:
         return True
     _copy_private_build_source(source, target, receipt, progress, consume)
@@ -3135,6 +3142,9 @@ def _edit_installed_gadget(plan, source, target, original, receipt, progress, *,
         raise RuntimeError("Gadget player on gadget plays: the output does not read back as written")
     receipt["steps"].append({"step": "gadget_play", **{k: v for k, v in patch.items() if k != "books"}})
     receipt["result"]["gadget_play"] = "applied" if plan.gadget_play else "retail"
+    if history_upgrade is not None:
+        receipt["steps"].append({"step": "history_pool", **{k: v for k, v in history_upgrade.items() if k != "edits"}})
+        receipt["result"]["history_pool"] = "applied"
     _compact_build_disc(target, reference, receipt, progress)
     _step("final_checks")
     final_state = gadget.read_settings(_xbe_bytes(target), _gadget_resources(target))["status"]
@@ -3454,6 +3464,32 @@ def _apply_cpu_kick_aim_in_place(target, receipt, progress):
     receipt["result"]["cpu_kick_aim"] = "applied"
 
 
+def _history_pool_upgrade(payload):
+    """b81 history-pool (Noah 11/23: "fix the history storage for franchise now"): an in-place copy of a built disc
+    (update-v09, edit-sim-qb, edit-gadget) carries the career-history pool's current revision, as a full build of it
+    does. The beta-80 / v0.9 revision reads "previous" and is upgraded in place (three engine sites, the same bytes a
+    full build writes); a disc without the fix, or with this release's, is returned unchanged: a single-setting route
+    never adds it. Returns (payload, receipt or None)."""
+    module = _core_module("nfl2k5_history_pool")
+    if module is None or module.status(payload) != "previous":
+        return payload, None
+    return module.apply(payload)
+
+
+def _apply_history_pool_in_place(target, receipt, progress):
+    """The in-place routes' write of _history_pool_upgrade, after the route's own writers."""
+    patched, upgrade = _history_pool_upgrade(_xbe_bytes(target))
+    if upgrade is None:
+        return
+    progress("Franchise: career history pool update", 0, 0)
+    _write_xbe_bytes(target, patched)
+    if _xbe_bytes(target) != patched or _core_module("nfl2k5_history_pool").status(patched) != "applied":
+        raise RuntimeError("The career history pool update did not read back as applied.")
+    receipt["steps"].append({"step": "history_pool", **{k: v for k, v in upgrade.items() if k != "edits"},
+                             "edits": upgrade.get("edits", [])})
+    receipt["result"]["history_pool"] = "applied"
+
+
 def _gadget_play_preflight(source, progress):
     """Beta 81 Q62: refuse, before any write, a source whose gadget sites or slot another build changed."""
     gadget = _core_module("nfl2k5_gadget_play")
@@ -3601,6 +3637,9 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     if plan.gadget_play:
         # After every other v0.9 update, as in a standard Build; the books are the released disc's own.
         expected, _ = gadget.apply(expected, _gadget_resources(source))
+    expected, history_upgrade = _history_pool_upgrade(expected)  # b81 history-pool: every v0.9 update, as a full build
+    if history_upgrade is not None:
+        receipt["v09_update"].append("history_pool")
     if preflight:
         from .modpack import hash_file
         if hash_file(source, progress=progress) != release["image_sha256"]:
@@ -3623,6 +3662,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     _apply_qb_room(plan, target, receipt, progress)  # b81 qb34
     if plan.gadget_play:
         _apply_gadget_play(plan, target, receipt, progress)
+    _apply_history_pool_in_place(target, receipt, progress)  # b81 history-pool
     _compact_build_disc(target, source, receipt, progress)
     _step("final_checks")
     if _xbe_bytes(target) != expected:

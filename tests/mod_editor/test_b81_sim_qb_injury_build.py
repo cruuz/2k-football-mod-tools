@@ -98,11 +98,16 @@ class ProjectSettings(unittest.TestCase):
                     plan = mod_build.sim_qb_disc_edit(str(source), str(target), mode)
                     receipt = mod_build.preflight_plan(plan)
                     # b81 scoring: an in-place copy also gets the CPU kick-aim repair that rides with the kicking fixes.
+                    # b81 history-pool: and this release's career history pool (both discs carry the v0.9 revision).
                     from mod_editor.core import nfl2k5_cpu_kick_aim as aim
+                    from mod_editor.core import nfl2k5_history_pool as history
+                    self.assertEqual(history.status(before), "previous")
+                    result = history.apply(aim.apply(current)[0])[0]
                     self.assertEqual(receipt["sim_qb_source_update"], {
-                        "source_sha256": digest, "result_sha256": hashlib.sha256(aim.apply(current)[0]).hexdigest(),
+                        "source_sha256": digest, "result_sha256": hashlib.sha256(result).hexdigest(),
                         "source_simulator": source_state, "simulator_upgraded": source_state == "legacy",
                         "settings": medical.read_settings(current), "pass_protection_upgraded": True,
+                        "history_pool_upgraded": True,
                         "settings": medical.read_settings(current),
                         "stability_reference": {"source": "disc roster", "roster_sha256": roster,
                                                 "starters": [list(row) for row in code.STABILITY_CALIBRATION],

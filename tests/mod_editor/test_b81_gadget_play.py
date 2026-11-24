@@ -407,7 +407,10 @@ class BuildWiringTests(unittest.TestCase):
         receipt = build.preflight_plan(build.gadget_disc_edit(str(disc), str(target)))
         self.assertFalse(target.exists())
         expected, _ = gadget.apply(source, books)
-        self.assertEqual(receipt["gadget_source_update"]["result_sha256"], _sha(expected))
+        # b81 history-pool: the copy also carries this release's career history pool (the disc has the v0.9 revision)
+        upgraded, history = build._history_pool_upgrade(expected)
+        self.assertEqual(receipt["gadget_source_update"]["result_sha256"], _sha(upgraded))
+        self.assertEqual(receipt["gadget_source_update"]["history_pool_upgraded"], history is not None)
         self.assertEqual(receipt["gadget_source_update"]["source_state"], "retail")
 
     def test_an_installed_rule_is_replayed_and_an_executable_only_target_is_refused(self):

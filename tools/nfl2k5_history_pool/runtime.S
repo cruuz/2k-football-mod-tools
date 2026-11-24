@@ -13,7 +13,15 @@
      site E 0x14F16F  `ret` after the 7-byte rule-table load at 0x14F168 (retail bytes, or the honors owner's call)
      site F 0x14F249  the full-pool path of 0x14F220 calls gc_chunk; a zero result drops the write as retail does
    gc_chunk folds whole season levels, oldest first, until 6,000 words are free, never at depth < 3 (the current
-   and the last season are never folded), so a full pool collects once per ~6,000 writes, not on every write. */
+   and the last season are never folded), so a full pool collects once per ~6,000 writes, not on every write.
+
+   b81 history-pool (Noah 11/23: "fix the history storage for franchise now"): when that leaves the pool still full
+   (every word in the current, the last or the folded career season, the case that dropped Trey Smack's 52-yard
+   attempt in seed 68003's 2029), gc_chunk folds the last season into the career row for the men on the game's
+   free-agent list only (fold with depth -2, fold_base below) before the write is dropped. Club men (active list,
+   injured reserve, practice squad) keep their last season. Nothing changes while depth 3+ leaves the write room: the
+   extra test reads the pool and the capacity only, so a franchise that never reaches this point is byte-identical.
+   A write that still finds no room is dropped at history_drop (0x14F256), as before. */
         .intel_syntax noprefix
 
         .set ROSTER,   0x00B72918      /* the roster object: [0] players, [4] first player, [0x40] used, [0x44] pool */
@@ -29,6 +37,8 @@
         .set FOLDED,   0x40000000
         .set CHUNK,    6000            /* words a full-pool collection frees */
         .set MIN_DEPTH, 3              /* fold(3) merges seasons 3+ years old into the one 2 years old */
+        .set FA_DEPTH2, -2             /* fold(-2): depth 2, men on the free-agent list only (fold_base) */
+        .set NO_FOLD_BASE, -0x40       /* fold_base for a man fold(-d) must not touch: no word reaches age -d */
 
 /* ---- site A: insert one word at edi (called by 0x14F220 only) ------------------------------------------------ */
         .section .site_a, "ax"
@@ -88,7 +98,13 @@ gc_chunk:
         call    fold
         dec     ebx
         jmp     1b
-2:      pop     dword ptr [CLASS]
+2:      call    CAPACITY
+        mov     ecx, [ROSTER]
+        cmp     [ecx+0x40], eax
+        jl      3f                      /* the write has room: as before */
+        push    FA_DEPTH2
+        call    fold                    /* last resort: the free agents' last season into their career row */
+3:      pop     dword ptr [CLASS]
         call    CAPACITY
         mov     ecx, [ROSTER]
         xor     edx, edx
@@ -251,11 +267,43 @@ room:
 2:      mov     eax, 2
         ret
 
+/* fold_base (b81 history-pool): ecx = player record, called by fold for each player; stores the season fold counts
+   word ages from into fold's [esp+12] ([esp+16] here; fold's depth argument is [esp+44] here). Depth >= 0: his years
+   pro, the hist1 rule (fold merges a word when years pro - slot >= depth). Depth -d < 0: fold depth d for a man on the
+   game's free-agent list (root+0x38 count, root+0x3C list of player pointers) and nobody else: years pro - 2d for him
+   (years pro - 2d - slot >= -d exactly when years pro - slot >= d), NO_FOLD_BASE for every other man (no word of his
+   reaches age -d). Keeps ebx, esi, edi, ebp. */
+        .globl fold_base
+fold_base:
+        mov     edx, [ecx+0x24]
+        shr     edx, 8
+        and     edx, 31
+        mov     eax, [esp+44]
+        test    eax, eax
+        jns     3f
+        lea     edx, [edx+eax*2]
+        push    esi
+        push    edi
+        mov     esi, [ROSTER]
+        mov     edi, [esi+0x3C]
+        mov     esi, [esi+0x38]
+1:      dec     esi
+        js      2f
+        cmp     [edi+esi*4], ecx
+        jne     1b
+        jmp     4f
+2:      mov     edx, NO_FOLD_BASE
+4:      pop     edi
+        pop     esi
+3:      mov     [esp+16], edx
+        ret
+
 /* ---- site D: fold(depth), stdcall ret 4: every live word of the current class at least `depth` seasons old merges
    one slot up (sum, or max where the rule table says so), the retail order (restart from the stream head after each
    merge). A sum the 16-bit cell cannot hold is not merged: that word stays, so the career total stays whole.
    Returns 1 when the pool shrank. Locals: [esp] player index, [esp+4] used at entry, [esp+8] player,
-   [esp+12] years pro, [esp+16] new value; the depth is [esp+40]. */
+   [esp+12] years pro (fold_base: for a negative depth, the free-agent rule), [esp+16] new value; the depth is
+   [esp+40]. */
         .section .site_d, "ax"
         .globl fold
 fold:
@@ -276,10 +324,8 @@ fold:
         imul    ecx, ecx, 0x54
         add     ecx, [eax+4]
         mov     [esp+8], ecx
-        mov     edx, [ecx+0x24]
-        shr     edx, 8
-        and     edx, 31
-        mov     [esp+12], edx
+        call    fold_base               /* [esp+12]: years pro (b81: or the free-agent rule of a negative depth) */
+        .byte   0x0F, 0x1F, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00   /* 8-byte nop: the rest of the fold keeps its addresses */
 .Lf_restart:
         mov     eax, [esp+8]
         mov     esi, 0xFF
@@ -404,6 +450,8 @@ fold:
         call    gc_chunk
         test    eax, eax
         jne     0x0014F2BB              /* retail's write path */
+        .globl history_drop
+history_drop:                           /* 0x14F256: the full pool has no room even after the last resort */
         pop     edi
         pop     esi
         pop     ebp

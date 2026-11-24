@@ -169,6 +169,52 @@ class ReleasedUpdates(unittest.TestCase):
         copying.assert_not_called()
 
 
+    def test_every_v09_update_upgrades_the_history_pool(self):
+        # b81 history-pool (Noah 11/23: "fix the history storage for franchise now"): the released disc's career
+        # history pool (the beta-80 revision, "previous") is upgraded on every v0.9 update, after the route's last
+        # writer, as a full build has it; a disc whose pool is already current is left alone.
+        for choice in ("save_list_type_guard", "modern_injured_reserve", "backfield_cards"):
+            ir, cards, guard, economy, history = Mock(), Mock(), Mock(), Mock(), Mock()
+            ir.status.return_value = "previous"
+            ir.apply.side_effect = lambda payload, *a, **k: (payload + b"+ir", {})
+            cards.status.return_value = "retail"
+            cards.apply.side_effect = lambda payload: (payload + b"+cards", {})
+            guard.status.return_value = "previous"
+            guard.apply.side_effect = lambda payload: (payload + b"+guard", {})
+            economy.status.side_effect = lambda payload: "legacy" if payload == b"original" else "applied"
+            economy.apply.side_effect = lambda payload: (payload + b"+economy", {})
+            history.status.side_effect = lambda payload: "applied" if payload.endswith(b"+history") else "previous"
+            history.apply.side_effect = lambda payload: (payload + b"+history", {"upgraded_from": "previous"})
+            modules = {"nfl2k5_injured_reserve": ir, "nfl2k5_backfield_cards": cards,
+                       "nfl2k5_save_list_type_guard": guard, "nfl2k5_franchise_economy": economy,
+                       "nfl2k5_history_pool": history}
+            plan = build.v09_disc_update("v09.iso", "copy.iso", **{choice: True})
+            with (self.subTest(choice=choice),
+                  patch.object(build.tt, "is_disc_image", return_value=True),
+                  patch.object(build, "_v09_reference", return_value={"image_sha256": "released"}),
+                  patch.object(build.tt.k128_patch, "read_settings", return_value={"require_128": True}),
+                  patch.object(build, "_xbe_bytes", return_value=b"original"),
+                  patch.object(build, "_core_module", side_effect=modules.get),
+                  patch("mod_editor.core.modpack.hash_file", return_value="released")):
+                receipt = build._update_v09_disc(plan, lambda *_: None, preflight=True, project=False)
+                self.assertEqual(receipt["v09_update"][-1], "history_pool")
+                history.apply.assert_called_once()
+                self.assertTrue(history.apply.call_args.args[0].endswith(b"+economy"))   # after every other writer
+        history.status.side_effect = None
+        history.status.return_value = "applied"
+        history.apply.reset_mock()
+        with (patch.object(build.tt, "is_disc_image", return_value=True),
+              patch.object(build, "_v09_reference", return_value={"image_sha256": "released"}),
+              patch.object(build.tt.k128_patch, "read_settings", return_value={"require_128": True}),
+              patch.object(build, "_xbe_bytes", return_value=b"original"),
+              patch.object(build, "_core_module", side_effect=modules.get),
+              patch("mod_editor.core.modpack.hash_file", return_value="released")):
+            receipt = build._update_v09_disc(build.v09_disc_update("v09.iso", "copy.iso", backfield_cards=True),
+                                             lambda *_: None, preflight=True, project=False)
+        self.assertNotIn("history_pool", receipt["v09_update"])
+        history.apply.assert_not_called()
+
+
 class BuildChoices(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

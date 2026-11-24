@@ -163,6 +163,8 @@ class InPlaceRoutes(unittest.TestCase):
                 # Realistic also updates the disc's legacy pass protection (combined lever 1, nine bytes)
                 upgraded = pressure.apply(source)[0] if mode == "realistic" else source
                 expected = aim.apply(qb.apply(upgraded, mode)[0])[0]
+                # b81 history-pool: the copy also carries this release's career history pool (the disc has v0.9's)
+                expected = mod_build._history_pool_upgrade(expected)[0]
                 with self.subTest(mode=mode):
                     self.assertEqual(result, hashlib.sha256(expected).hexdigest())
                     self.assertEqual(XbeImage(expected).read(aim.SITE_VA, aim.SITE_SIZE), aim.site_bytes())

@@ -9,6 +9,11 @@
   count), the insert, and the full-pool collection (once per 6,000 words, never into the last two seasons);
 * when HUNT4's real franchise pools are on this machine: the v0.9 franchise start and its year-1 save fold with every
   career total exact.
+* b81 history-pool (Noah 11/23: "fix the history storage for franchise now"): a full pool with nothing left at depth
+  3+ folds the free agents' last season (and only theirs) before a write is dropped; the v0.9 revision drops it. The
+  last resort never runs while depth 3+ leaves the write room (byte-identical pools). The beta-80 / v0.9 revision reads
+  "previous" (also on the released v0.9 executable) and upgrades in place to exactly a fresh install. A stored full
+  franchise image (seed 68001, 2032 playoffs) keeps a stat word the v0.9 revision drops.
 """
 from __future__ import annotations
 
@@ -23,6 +28,7 @@ import struct
 import subprocess
 import sys
 import unittest
+import unittest.mock
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -38,6 +44,15 @@ XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION",
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
 HUNT4 = Path(os.environ.get("B780_HUNT4_EVIDENCE", "/home/noah/2k-worktrees/.b77-scratch/b780/hunt4/evidence"))
 ROSTER, CLASS = 0xB72918, 0xBD7F98
+# b81 history-pool: a stored full franchise (seed 68001, 2032 playoffs, pool 50,000 of 50,000) and its executable (the
+# frozen bb5a408b1 candidate 8b180ed5, hist1 at its v0.9 revision). Private game data: never in git.
+FULL_IMAGE = Path(os.environ.get("B81_HISTORY_POOL_FULL_IMAGE", "/home/noah/2k-worktrees/.b77-scratch/b81/pos3/runs/"
+                                 "combined-ten/ten/68001/validator/FAIL-2032-st9-w22.b81mem.gz"))
+FULL_IMAGE_XBE = Path(os.environ.get("B81_HISTORY_POOL_FULL_XBE", "/home/noah/2k-worktrees/.b77-scratch/b81/pos3/runs/"
+                                     "combined-confirm/cand-build/default.xbe"))
+FULL_IMAGE_XBE_SHA256 = "8b180ed5bd69647c99ba7eb5f63c95471b1785d89afe4b489f2492ace37aa8aa"
+V09_RELEASED_XBE = Path(os.environ.get("NFL2K5_V09_RELEASED_XBE", "/nonexistent"))
+V09_RELEASED_SHA256_PREFIX = "d78088f9"
 MAX_FIELDS = frozenset((16, 17, 30, 36, 43, 44, 45, 46, 56, 73))
 END, FOLDED, POST, DELETED = 0x80000000, 0x40000000, 0x20000000, 0x10000000
 
@@ -70,7 +85,29 @@ class TemplateTests(unittest.TestCase):
             self.assertEqual(len(before), len(after), label)
             self.assertNotEqual(before, after, label)
         self.assertEqual(hp._digest(hp.SITES), hp.PATCHED_SHA256)
-        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 973)
+        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1052)          # b81: site B +23, site C +56
+
+    def test_the_beta80_revision_is_pinned_and_the_upgrade_moves_three_sites(self):
+        # b81 history-pool: the revision v0.9 shipped (b780 hist1) is kept byte for byte under its own pin
+        self.assertEqual(hp._digest(hp.PREVIOUS_SITES), hp.PREVIOUS_SHA256)
+        self.assertEqual(hp.PREVIOUS_SHA256, "12f8f431af15622399a453dc937f869a5fc5c8956f9769d6190c9634c2ce3373")
+        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.PREVIOUS_SITES), 973)
+        self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.PREVIOUS_SITES],
+                         [("site_a", 0x14E8B0, 77), ("site_b", 0x14E930, 97), ("site_c", 0x14E9D0, 390),
+                          ("site_d", 0x14EFE0, 390), ("site_e", 0x14F16F, 1), ("site_f", 0x14F249, 18)])
+        for (label, va, before, after), (_l, _v, old_before, old) in zip(hp.SITES, hp.PREVIOUS_SITES):
+            self.assertEqual(old_before, before[:len(old)], label)
+            if label in ("site_a", "site_e", "site_f"):
+                self.assertEqual(after, old, label)                                # unchanged sites
+        self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_SITES],
+                         [("site_b", 0x14E930, 120), ("site_c", 0x14E9D0, 446), ("site_d", 0x14EFE0, 390)])
+        # site C only grows (fold_base after room), site D changes exactly the 13 bytes that computed years pro
+        (_l, _v, was_c, now_c), (_l2, va_d, was_d, now_d) = hp.UPGRADE_SITES[1:]
+        self.assertEqual(now_c[:390], was_c[:390])
+        self.assertEqual([va_d + i for i in range(390) if was_d[i] != now_d[i]], list(range(0x14F014, 0x14F021)))
+        self.assertEqual(now_d[0x34:0x41], bytes.fromhex("e83dfbffff0f1f840000000000"))   # call fold_base; 8-byte nop
+        # the drop path keeps its address (harnesses watch it)
+        self.assertEqual(hp.DROP_VA, 0x14F249 + 13)
 
     def test_sites_lie_in_the_engine_and_clear_of_the_honors_rule_site(self):
         spans = [(va, va + len(after)) for _l, va, _b, after in hp.SITES]
@@ -141,6 +178,70 @@ class WiringTests(unittest.TestCase):
 
 
 @unittest.skipUnless(_retail() is not None, "pinned USA XBE required")
+class RouteTests(unittest.TestCase):
+    """b81 history-pool: the change rides every route that carries hist1. A full build applies it (and upgrades the
+    beta-80 / v0.9 revision in place); update-v09, edit-sim-qb and edit-gadget upgrade a previous install on their copy
+    and never add the fix to a disc without it."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.retail = _retail()
+        cls.previous = rdata.apply(cls.retail, hp.PREVIOUS_SITES, "beta-80 history pool")[0]
+        cls.fresh = hp.apply(cls.retail)[0]
+
+    def test_the_in_place_upgrade_helper(self):
+        from mod_editor.core import mod_build
+        upgraded, receipt = mod_build._history_pool_upgrade(self.previous)
+        self.assertEqual(upgraded, self.fresh)
+        self.assertEqual((receipt["status"], receipt["upgraded_from"]), ("applied", "previous"))
+        self.assertEqual(mod_build._history_pool_upgrade(self.retail), (self.retail, None))     # never adds the fix
+        self.assertEqual(mod_build._history_pool_upgrade(self.fresh), (self.fresh, None))
+        with unittest.mock.patch.object(mod_build, "_core_module", return_value=None):
+            self.assertEqual(mod_build._history_pool_upgrade(self.previous), (self.previous, None))
+
+    def test_a_full_build_upgrades_a_previous_install(self):
+        import tempfile
+        from mod_editor.core import mod_build
+        with tempfile.TemporaryDirectory() as temp:
+            source, target = Path(temp) / "default.xbe", Path(temp) / "built.xbe"
+            source.write_bytes(self.previous)
+            receipt = mod_build.build(mod_build.BuildPlan(str(source), str(target), history_pool=True))
+            self.assertEqual(target.read_bytes(), self.fresh)
+            self.assertEqual(receipt["result"]["history_pool"], "applied")
+            step = next(s for s in receipt["steps"] if s["step"] == "history_pool")
+            self.assertEqual(step["upgraded_from"], "previous")
+            self.assertEqual(mod_build.inspect(source)["history_pool"], "previous")
+
+    def test_each_in_place_route_writes_the_upgrade_on_its_copy(self):
+        from mod_editor.core import mod_build
+        import inspect
+        sim_qb = inspect.getsource(inspect.unwrap(mod_build._edit_installed_sim_qb))
+        gadget = inspect.getsource(inspect.unwrap(mod_build._edit_installed_gadget))
+        v09 = inspect.getsource(inspect.unwrap(mod_build._update_v09_disc))
+        self.assertIn("patched, history_upgrade = _history_pool_upgrade(patched)", sim_qb)
+        self.assertIn("patched, history_upgrade = _history_pool_upgrade(patched)", gadget)
+        # update-v09: the expected executable and the write, both after the route's last writer (the gadget rule)
+        self.assertLess(v09.index("expected, _ = gadget.apply(expected"), v09.index("_history_pool_upgrade(expected)"))
+        self.assertLess(v09.index("_apply_gadget_play(plan, target"), v09.index("_apply_history_pool_in_place(target"))
+        self.assertLess(v09.index("_apply_history_pool_in_place(target"), v09.index("_compact_build_disc(target"))
+        # the in-place write itself, on a copy
+        import tempfile
+        with tempfile.TemporaryDirectory() as temp:
+            target = Path(temp) / "default.xbe"
+            for start, want in ((self.previous, self.fresh), (self.retail, self.retail), (self.fresh, self.fresh)):
+                target.write_bytes(start)
+                receipt = {"steps": [], "result": {}}
+                mod_build._apply_history_pool_in_place(target, receipt, lambda *_: None)
+                self.assertEqual(target.read_bytes(), want)
+                self.assertEqual(receipt["result"].get("history_pool"), "applied" if start == self.previous else None)
+
+    def test_the_build_tab_offers_the_update_on_a_previous_install(self):
+        source = (ROOT / "mod_editor/gui/build_panel_qt.py").read_text(encoding="utf-8")
+        keys = source[source.index("PREVIOUS_UPGRADE_KEYS = {"):source.index("LEGACY_UPGRADE_KEYS = {")]
+        self.assertIn('"history_pool": "career history pool"}', keys)
+
+
+@unittest.skipUnless(_retail() is not None, "pinned USA XBE required")
 class RetailExecutableTests(unittest.TestCase):
 
     @classmethod
@@ -154,7 +255,7 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual(hp.status(self.retail), "retail")
         patched, receipt = hp.apply(self.retail)
         self.assertEqual(hp.status(patched), "applied")
-        self.assertEqual(receipt["changed_bytes"], 957)
+        self.assertEqual(receipt["changed_bytes"], 1033)
         again, receipt2 = hp.apply(patched)
         self.assertEqual(again, patched)
         self.assertTrue(receipt2["already_applied"])
@@ -176,6 +277,60 @@ class RetailExecutableTests(unittest.TestCase):
             bad[rdata.offset_of(a, va)] ^= 0xFF
             self.assertEqual(hp.status(bytes(bad)), "foreign")
             self.assertEqual(honors.status(bytes(bad)), "foreign")
+
+    def test_the_beta80_revision_reads_previous_and_upgrades_to_exactly_a_fresh_install(self):
+        from mod_editor.core import nfl2k5_defensive_try as defensive_try
+        from mod_editor.core import nfl2k5_honors as honors
+        previous = rdata.apply(self.retail, hp.PREVIOUS_SITES, "beta-80 history pool")[0]
+        fresh = hp.apply(self.retail)[0]
+        self.assertEqual(hp.status(previous), "previous")
+        self.assertEqual(hp.applied_sites(XbeImage(previous)), list(hp.PREVIOUS_SITES))
+        self.assertEqual(hp.compatible_edits(previous), [(va, b) for _l, va, b, _a in hp.PREVIOUS_SITES])
+        upgraded, receipt = hp.apply(previous)
+        self.assertEqual(upgraded, fresh)                                    # byte for byte, section digest included
+        self.assertEqual((receipt["status"], receipt["upgraded_from"]), ("applied", "previous"))
+        changed = [i for i in range(len(previous)) if previous[i] != upgraded[i]]
+        spans = [(rdata.offset_of(previous, va), rdata.offset_of(previous, va) + len(a)) for _l, va, _b, a in hp.UPGRADE_SITES]
+        outside = [i for i in changed if not any(lo <= i < hi for lo, hi in spans)]
+        self.assertLessEqual(len(outside), 20)                               # the .text section digest only
+        # with the honors owner, in either order, on top of the previous revision; defensive_try's engine pin agrees
+        for payload in (honors.apply(previous)[0], hp.apply(honors.apply(previous)[0])[0]):
+            self.assertEqual(honors.status(payload), "applied")
+        self.assertEqual(hp.apply(honors.apply(previous)[0])[0], honors.apply(fresh)[0])
+        self.assertEqual(defensive_try.status(previous), defensive_try.status(fresh))
+        self.assertEqual(defensive_try.status(self.retail), defensive_try.status(fresh))
+        # a mix of the two revisions is nobody's install
+        mixed = bytearray(previous)
+        _label, va, _before, after = hp.SITES[3]                             # this release's fold over beta-80's gc_chunk
+        at = rdata.offset_of(previous, va)
+        mixed[at:at + len(after)] = after
+        self.assertEqual(hp.status(bytes(mixed)), "foreign")
+        self.assertEqual(hp.applied_sites(XbeImage(bytes(mixed))), [])
+        self.assertEqual(hp.compatible_edits(bytes(mixed)), [])
+        self.assertEqual(honors.status(bytes(mixed)), "foreign")
+        with self.assertRaises(rdata.RdataSiteError):
+            hp.apply(bytes(mixed))
+
+    @unittest.skipUnless(V09_RELEASED_XBE.is_file(), "the released v0.9 default.xbe (NFL2K5_V09_RELEASED_XBE) required")
+    def test_the_released_v09_executable_reads_previous_and_upgrades_with_its_neighbours_intact(self):
+        from mod_editor.core import mod_build
+        from mod_editor.core import nfl2k5_honors as honors
+        import tempfile
+        released = V09_RELEASED_XBE.read_bytes()
+        self.assertTrue(hashlib.sha256(released).hexdigest().startswith(V09_RELEASED_SHA256_PREFIX))
+        self.assertEqual(hp.status(released), "previous")
+        upgraded, receipt = hp.apply(released)
+        self.assertEqual(hp.status(upgraded), "applied")
+        self.assertEqual(receipt["upgraded_from"], "previous")
+        self.assertEqual(honors.status(upgraded), honors.status(released))
+        with tempfile.TemporaryDirectory() as temp:
+            a, b = Path(temp) / "released.xbe", Path(temp) / "upgraded.xbe"
+            a.write_bytes(released)
+            b.write_bytes(upgraded)
+            before, after = mod_build.inspect(a), mod_build.inspect(b)
+        self.assertEqual((before["history_pool"], after["history_pool"]), ("previous", "applied"))
+        self.assertEqual({k: v for k, v in before.items() if k not in ("history_pool", "path", "sha256")},
+                         {k: v for k, v in after.items() if k not in ("history_pool", "path", "sha256")})
 
     def test_nothing_outside_the_engine_calls_the_rewritten_routines(self):
         image = XbeImage(self.retail)
@@ -262,8 +417,11 @@ class Machine:
             raise AssertionError(f"budget exhausted at {self.reg('EIP'):#x}")
         return self.reg("EAX")
 
-    def roster(self, players, *, used_extra=(), teams=52):
-        """players: [(years_pro, [words])]: streams back to back (then used_extra orphan words)."""
+    FREE_AGENTS = 0x30F0000
+
+    def roster(self, players, *, used_extra=(), teams=52, free_agents=()):
+        """players: [(years_pro, [words])]: streams back to back (then used_extra orphan words); free_agents: indices of
+        the players on the game's free-agent list (root+0x38 count, root+0x3C list of record pointers)."""
         at, recs = self.POOL, []
         for i, (yp, words) in enumerate(players):
             rec = self.PLAYERS + i * 0x54
@@ -281,6 +439,10 @@ class Machine:
         self.put(self.HEAP + 0x00, len(players))
         self.put(self.HEAP + 0x04, self.PLAYERS)
         self.put(self.HEAP + 0x18, teams)
+        for k, i in enumerate(free_agents):
+            self.put(self.FREE_AGENTS + 4 * k, recs[i])
+        self.put(self.HEAP + 0x38, len(free_agents))
+        self.put(self.HEAP + 0x3C, self.FREE_AGENTS)
         self.put(self.HEAP + 0x40, (at - self.POOL) // 4)
         self.put(self.HEAP + 0x44, self.POOL)
         self.put(ROSTER, self.HEAP)
@@ -484,13 +646,104 @@ class NativeTests(unittest.TestCase):
 
     def test_the_writer_drops_a_word_only_when_nothing_can_be_folded(self):
         # every word in the current or the last season: a full pool has nothing it may fold (depth 3 floor)
+        # (b81: the free agents among them have no season 2 years old either, so the last resort frees nothing)
         players = [(1, [word(f, s, 5) for s in (0, 1) for f in range(25)]) for _ in range(1000)]
         m = Machine(self.patched)
-        recs = m.roster(players)
+        recs = m.roster(players, free_agents=list(range(0, 1000, 4)))
+        m.count(0x14F256, "drops")
         self.assertEqual(m.used(), 50000)
+        before = [m.stream(r) for r in recs]
         self.assertEqual(m.call(0x14F220, ecx=recs[0], edx=word(60, 1, 9)), 0)
-        self.assertEqual(m.used(), 50000)
+        self.assertEqual((m.used(), m.hits["drops"]), (50000, 1))
+        self.assertEqual([m.stream(r) for r in recs], before)
         m.check(recs)
+
+
+    # ---- b81 history-pool: the last resort before a dropped write ----------------------------------------------------
+    CLUB, FREE, OTHER = range(900), range(900, 1500), range(1500, 1900)
+
+    def full_young_pool(self):
+        """A 50,000-word pool with nothing at depth 3+ (as seed 68003's 2029): every man in his 6th season with a folded
+        career row (slot 4, depth 2) and last season (slot 5); club men also have this season (slot 6). The free agents
+        (on the game's list) carry 15 career fields and 10 last-season fields; the other men (injured reserve, practice
+        squad: on no active list, not free agents) 10 and 10."""
+        players = []
+        for i in range(1900):
+            if i in self.CLUB:
+                words = ([word(f, 4, 10 + f, folded=True) for f in range(10)] + [word(f, 5, 3 + f) for f in range(10)]
+                         + [word(f, 6, 1 + (i + f) % 9) for f in range(10)])
+            elif i in self.FREE:
+                words = [word(f, 4, 20 + f, folded=True) for f in range(15)] + [word(f, 5, 2 + f) for f in range(10)]
+            else:
+                words = [word(f, 4, 30 + f, folded=True) for f in range(10)] + [word(f, 5, 4 + f) for f in range(10)]
+            players.append((6, words))
+        return players
+
+    def test_a_full_pool_keeps_a_write_by_folding_the_free_agents_last_season(self):
+        players = self.full_young_pool()
+        m = Machine(self.patched)
+        recs = m.roster(players, free_agents=list(self.FREE))
+        m.count(0x14F256, "drops")
+        self.assertEqual(m.used(), 50000)
+        self.assertEqual(m.call(0x14E7E0), 50000)
+        before = {i: m.stream(r) for i, r in enumerate(recs)}
+        totals = {i: {f: v[0] for f, v in m.totals(recs[i]).items()} for i in self.FREE}   # sum fields only
+        new = word(20, 6, 7)                                                    # a club man's first stat of a field
+        self.assertNotEqual(m.call(0x14F220, ecx=recs[0], edx=new), 0, "the write was dropped")
+        self.assertEqual(m.hits["drops"], 0)
+        self.assertIn(new, [w & ~END for w in m.stream(recs[0])])
+        # each free agent's ten last-season fields took his career row in: 10 x 600 words freed, one written
+        self.assertEqual(m.used(), 50000 - 6000 + 1)
+        m.check(recs)
+        for i in self.FREE:
+            stream = m.stream(recs[i])
+            self.assertEqual({f: v[0] for f, v in m.totals(recs[i]).items()}, totals[i])   # whole career totals
+            self.assertEqual(sorted(((w >> 23) & 31, bool(w & FOLDED)) for w in stream), [(5, True)] * 15)
+        for i in list(self.CLUB) + list(self.OTHER):                             # nobody else's words moved or changed
+            got = [w & ~END for w in m.stream(recs[i])]
+            want = [w & ~END for w in before[i]]
+            self.assertEqual(got, [new] + want if i == 0 else want, i)
+
+    def test_the_v09_revision_drops_that_write(self):
+        previous = rdata.apply(self.retail, hp.PREVIOUS_SITES, "beta-80 history pool")[0]
+        m = Machine(previous)
+        recs = m.roster(self.full_young_pool(), free_agents=list(self.FREE))
+        m.count(0x14F256, "drops")
+        before = [m.stream(r) for r in recs]
+        self.assertEqual(m.call(0x14F220, ecx=recs[0], edx=word(20, 6, 7)), 0)
+        self.assertEqual((m.hits["drops"], m.used()), (1, 50000))
+        self.assertEqual([m.stream(r) for r in recs], before)
+
+    def test_the_last_resort_never_runs_while_depth_three_leaves_room(self):
+        # The collection test's veterans (depth 3+ to fold), with a free-agent list: the v0.9 revision and this one
+        # leave byte-identical pools after the same writes, and the free-agent fold is never entered.
+        previous = rdata.apply(self.retail, hp.PREVIOUS_SITES, "beta-80 history pool")[0]
+        players = []
+        for i in range(1500):
+            words = [word(0, s, 16) for s in range(15)] + [word(18, s, 40 + (i % 7)) for s in range(15)] + [word(87, 15, 1)]
+            players.append((15, words))
+        machines = []
+        for payload in (previous, self.patched):
+            m = Machine(payload)
+            recs = m.roster(players, free_agents=list(range(0, 1500, 3)))
+            depths = collections.Counter()
+
+            def fold(uc, address, size, data, m=m, depths=depths):
+                depths[struct.unpack("<i", bytes(m.uc.mem_read(m.reg("ESP") + 4, 4)))[0]] += 1
+            m.uc.hook_add(m.u.UC_HOOK_CODE, fold, begin=0x14EFE0, end=0x14EFE0)
+            m.count(0x14F249, "collections")
+            rng = random.Random(81)
+            for n in range(9000):
+                m.call(0x14F430, ecx=recs[rng.randrange(len(recs))], edx=rng.choice((1, 2, 3, 6, 7, 8, 9, 10, 12, 13)),
+                       stack=(1 + n % 50,))
+            machines.append((m, recs, depths))
+        (a, ra, da), (b, rb, db) = machines
+        self.assertGreaterEqual(b.hits["collections"], 1)
+        self.assertEqual(da, db)
+        self.assertFalse([d for d in db if d < 0])
+        self.assertEqual(a.used(), b.used())
+        self.assertEqual(bytes(a.uc.mem_read(Machine.POOL, 4 * 50000)), bytes(b.uc.mem_read(Machine.POOL, 4 * 50000)))
+        self.assertEqual([a.get(r + 0x2C) for r in ra], [b.get(r + 0x2C) for r in rb])
 
 
 @unittest.skipUnless(_retail() is not None and HAVE_UC and (HUNT4 / "pool_y0_start.dat").is_file(),
@@ -562,6 +815,110 @@ class RealPoolTests(unittest.TestCase):
         self.assertEqual(m.totals(recs["Matthew Stafford"])[8][0], 64918)
         self.assertEqual(m.totals(recs["Joe Flacco"])[8][0], 48176)
         self.assertLess(m.used(), 30000)
+
+
+def _full_image_xbe() -> bytes | None:
+    if not FULL_IMAGE_XBE.is_file() or FULL_IMAGE_XBE.stat().st_size > 32 * 1024 ** 2:
+        return None
+    data = FULL_IMAGE_XBE.read_bytes()
+    return data if hashlib.sha256(data).hexdigest() == FULL_IMAGE_XBE_SHA256 else None
+
+
+@unittest.skipUnless(HAVE_UC and FULL_IMAGE.is_file() and _full_image_xbe() is not None,
+                     "unicorn, the stored full franchise image and its executable required")
+class FullFranchiseImageTests(unittest.TestCase):
+    """b81 history-pool on a real full pool: seed 68001's 2032 playoffs (week 22), 50,000 of 50,000 words, the frozen
+    candidate's executable. The v0.9 revision (what that executable carries) drops a club man's first stat word of a
+    field through the game's own season setter 0x14F430; this release (the in-place upgrade written over the same code
+    in memory) keeps it, folds only free agents' last seasons, and leaves every other man's stream as it was."""
+
+    @classmethod
+    def setUpClass(cls):
+        from tools import franchise_invariants as fi
+        cls.xbe = _full_image_xbe()
+        cls.regions = list(fi.load_memory(FULL_IMAGE).regions)
+
+    def machine(self, revision):
+        from tests.nfl2k5_supersim_draft_fixture import Machine as Franchise
+        m = Franchise(self.xbe, trace_writes=False)
+        mapped = [(lo, hi) for lo, hi, _ in m.uc.mem_regions()]
+        for start, data in self.regions:
+            page = start & ~0xFFF
+            while page < start + len(data):
+                if not any(lo <= page <= hi for lo, hi in mapped):
+                    m.uc.mem_map(page, 0x1000)
+                    mapped.append((page, page + 0xFFF))
+                page += 0x1000
+            m.uc.mem_write(start, data)
+        for _label, va, before, after in hp.PREVIOUS_SITES:                  # the image runs the v0.9 revision
+            self.assertEqual(bytes(m.uc.mem_read(va, len(after))), after)
+        if revision == "b81":
+            m.uc.mem_protect(0x11000, 0x410000, m.u.UC_PROT_ALL)
+            for _label, va, was, after in hp.UPGRADE_SITES:
+                self.assertEqual(bytes(m.uc.mem_read(va, len(was))), was)
+                m.uc.mem_write(va, after)
+            m.uc.mem_protect(0x11000, 0x410000, m.u.UC_PROT_READ | m.u.UC_PROT_EXEC)
+        m.put(CLASS, 0)
+        return m
+
+    @staticmethod
+    def streams(m):
+        root = m.get(ROSTER)
+        count, table = m.get(root), m.get(root + 4)
+        out = {}
+        for i in range(count):
+            at, words = m.get(table + 0x54 * i + 0x2C), []
+            while at:
+                w = m.get(at)
+                words.append(w & ~END)
+                if w & END:
+                    break
+                at += 4
+            out[table + 0x54 * i] = words
+        agents = {m.get(m.get(root + 0x3C) + 4 * k) for k in range(m.get(root + 0x38))}
+        return out, agents
+
+    def stat(self, m, player, field):
+        v = m.call(0x14EE40, ecx=player, edx=field, budget=5_000_000) & 0xFFFF
+        return v - 0x10000 if v & 0x8000 else v
+
+    def test_a_club_mans_first_stat_word_is_kept_where_v09_drops_it(self):
+        old, new = self.machine("v0.9"), self.machine("b81")
+        root = old.get(ROSTER)
+        self.assertEqual((old.get(root + 0x40), old.call(0x14E7E0)), (50000, 50000))
+        teams = old.get(root + 0x1C)
+        player = old.get(teams)                                                  # club 0's first rostered man
+        year = (old.get(player + 0x24) >> 8) & 0x1F
+        field = next(f for f in (68, 67, 3, 14, 20)
+                     if not old.call(0x14E8A0, eax=player, edx=year, esi=f, budget=5_000_000))
+        before, agents = self.streams(new)
+        old.call(0x14F430, ecx=player, edx=field, args=(1,), budget=2_000_000_000)
+        self.assertEqual((self.stat(old, player, field), old.get(root + 0x40)), (0, 50000))     # v0.9: dropped
+        new.call(0x14F430, ecx=player, edx=field, args=(1,), budget=2_000_000_000)
+        self.assertEqual(self.stat(new, player, field), 1)                                      # b81: kept
+        used = new.get(root + 0x40)
+        self.assertLess(used, 50000)
+        after, agents_after = self.streams(new)
+        self.assertEqual(agents_after, agents)
+        self.assertGreater(len(agents), 500)
+        changed = [p for p in before if before[p] != after[p]]
+        self.assertTrue(changed)
+        self.assertFalse([p for p in changed if p not in agents and p != player])          # only free agents moved
+        self.assertEqual(len(after[player]), len(before[player]) + 1)
+        for p in changed:                                                       # their career totals stay whole
+            if p == player:
+                continue
+            def sums(words):
+                out = collections.Counter()
+                for w in words:
+                    if not w & (DELETED | POST) and (w >> 16) & 127 not in MAX_FIELDS:
+                        out[(w >> 16) & 127] += s16(w)
+                return out
+            self.assertEqual(sums(after[p]), sums(before[p]), hex(p))
+            yp = (new.get(p + 0x24) >> 8) & 0x1F
+            self.assertFalse([w for w in after[p] if not w & (DELETED | POST) and yp - ((w >> 23) & 31) >= 2])
+        print(f"\n[b81 history pool] 68001/2032 week 22: field {field} kept; {len(changed) - 1} free agents folded, "
+              f"pool {50000} -> {used} words")
 
 
 if __name__ == "__main__":

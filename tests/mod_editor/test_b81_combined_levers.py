@@ -387,6 +387,10 @@ class StudioRoutes(unittest.TestCase):
                 # since 7c64ec2ca the route adds the CPU kick aim repair in every mode (the base carries the kicking fixes)
                 self.assertEqual(aim.status(expected), "retail")
                 expected = aim.apply(expected)[0]
+                # b81 history-pool: and this release's career history pool in every mode (the base has the v0.9 one)
+                expected, history = mod_build._history_pool_upgrade(expected)
+                self.assertIsNotNone(history)
+                self.assertTrue(update["history_pool_upgraded"])
                 self.assertEqual(update["result_sha256"], _sha(expected))
                 self.assertEqual(pp.status(expected), "applied" if upgrade else "legacy")
 
