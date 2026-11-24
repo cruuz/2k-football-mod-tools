@@ -167,6 +167,7 @@ STEP_LABELS: dict[str, str] = {
     "modern_officials": "2025-26 officials",
     "modern_helmets": "Modern helmets and facemasks",
     "hair_styles": "the hair styles",
+    "helmet_side_numbers": "the helmet side numbers",
     "cpu_ai": "the CPU QB and defender reads",
     "play_art_routes": "the full-length play art routes",
     "commentary_final": "the final commentary pass",

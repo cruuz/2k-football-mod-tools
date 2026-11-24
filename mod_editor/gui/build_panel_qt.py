@@ -1720,6 +1720,10 @@ class BuildPanel(QWidget):
         self.hair_styles_check = self._option(
             r, "hair_styles", hair_styles.BUILD_CAPTION, hair_styles.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_helmet_side_numbers as helmet_sides  # b81 helmet-sides
+        self.helmet_side_numbers_check = self._option(
+            r, "helmet_side_numbers", helmet_sides.BUILD_CAPTION, helmet_sides.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         from mod_editor.core import nfl2k5_modern_fans as fans  # b77-fr1
         self.modern_fans_check = self._option(
             r, "modern_fans", fans.BUILD_CAPTION, fans.HELP_TEXT,
@@ -2952,6 +2956,15 @@ class BuildPanel(QWidget):
         self._set_badge("hair_styles", "EXPERIMENTAL / UNWITNESSED" if hair_ok else
                         "Already in this source (Off cannot restore it)" if hair_done else
                         "Needs a supported USA disc image with the retail player models")
+        # b81 helmet-sides: the Chargers' side numbers (needs the hair styles growth)
+        sides_state = state.get("helmet_side_numbers")
+        sides_ok = bool(self._available.get("helmet_side_numbers", False) and is_image and sides_state == "retail")
+        sides_done = bool(self._available.get("helmet_side_numbers", False) and is_image and sides_state == "applied")
+        self.helmet_side_numbers_check.setEnabled(sides_ok)
+        self.helmet_side_numbers_check.setChecked(sides_done)
+        self._set_badge("helmet_side_numbers", "EXPERIMENTAL / UNWITNESSED (needs Hair styles)" if sides_ok else
+                        "Already in this source (Off cannot restore it)" if sides_done else
+                        "Needs a supported USA disc image")
         # b77-fr1: 2026 fans
         fan_state = state.get("modern_fans")
         fan_ok = bool(self._available.get("modern_fans", False) and is_image and fan_state in ("retail", "mixed"))
@@ -3352,6 +3365,7 @@ class BuildPanel(QWidget):
             "modern_goalposts": self.modern_goalposts_check,  # b77-v1
             "modern_coaches": self.modern_coaches_check,  # b77-co1
             "hair_styles": self.hair_styles_check,  # b775-hs1
+            "helmet_side_numbers": self.helmet_side_numbers_check,  # b81 helmet-sides
             "modern_fans": self.modern_fans_check,  # b77-fr1
             "modern_officials": self.modern_officials_check,  # b77-rf1
             "trim_intro_videos": self.trim_intro_videos_check,
@@ -3492,6 +3506,7 @@ class BuildPanel(QWidget):
             modern_goalposts=self._modern_goalposts_changed(),  # b77-v1
             modern_coaches=self._modern_coaches_changed(),  # b77-co1
             hair_styles=self._hair_styles_changed(),  # b775-hs1
+            helmet_side_numbers=self._helmet_side_numbers_changed(),  # b81 helmet-sides
             modern_fans=self._modern_fans_changed(),  # b77-fr1
             modern_officials=self._modern_officials_changed(),  # b77-rf1
             trim_intro_videos=self.trim_intro_videos_check.isChecked(),
@@ -4223,6 +4238,8 @@ class BuildPanel(QWidget):
                 if key == "modern_coaches" and not self._modern_coaches_changed():  # b77-co1
                     continue
                 if key == "hair_styles" and not self._hair_styles_changed():  # b775-hs1
+                    continue
+                if key == "helmet_side_numbers" and not self._helmet_side_numbers_changed():  # b81 helmet-sides
                     continue
                 if key == "modern_fans" and not self._modern_fans_changed():  # b77-fr1
                     continue
@@ -5083,6 +5100,12 @@ class BuildPanel(QWidget):
         state = (self._state or {}).get("modern_coaches")
         return bool(self.modern_coaches_check.isEnabled() and state in ("retail", "mixed")
                     and self.modern_coaches_check.isChecked())
+
+    def _helmet_side_numbers_changed(self):  # b81 helmet-sides
+        """Only turning the option on counts: Off leaves a source that has the side numbers as it is."""
+        state = (self._state or {}).get("helmet_side_numbers")
+        return bool(self.helmet_side_numbers_check.isEnabled() and state == "retail"
+                    and self.helmet_side_numbers_check.isChecked())
 
     def _hair_styles_changed(self):  # b775-hs1
         """Only turning the option on counts: Off leaves an already-styled source as it is."""

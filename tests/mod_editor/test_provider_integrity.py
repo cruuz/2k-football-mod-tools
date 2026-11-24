@@ -225,7 +225,9 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [607, 10, 8, 9, 8, 9]
+            [609, 10, 8, 9, 8, 9]
+            # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
+            # the cave manifest recorder) + Number kerning, whose state the owner reads.
             # b81 integration (qb34 trades merge): 607 = 605 (next lines) + the quarterback trades owner and its generated
             # page template (the room owner loads it for stage bit 16; the lane counted 604 = 602 + those two).
             # b81 integration (qb34 E head merge): 605 = 604 (art merge, next lines) + qb34 C21's frozen floor + D1 + D2
