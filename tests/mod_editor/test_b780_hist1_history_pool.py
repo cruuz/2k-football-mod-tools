@@ -43,7 +43,7 @@ XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION",
                           "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)" / "default.xbe"
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
 HUNT4 = Path(os.environ.get("B780_HUNT4_EVIDENCE", "/home/noah/2k-worktrees/.b77-scratch/b780/hunt4/evidence"))
-ROSTER, CLASS = 0xB72918, 0xBD7F98
+ROSTER, CLASS, STAGE = 0xB72918, 0xBD7F98, 0xE576A4      # STAGE: franchise stage, 7 preseason, 8 season, 9 playoffs
 # b81 history-pool: a stored full franchise (seed 68001, 2032 playoffs, pool 50,000 of 50,000) and its executable (the
 # frozen bb5a408b1 candidate 8b180ed5, hist1 at its v0.9 revision). Private game data: never in git.
 FULL_IMAGE = Path(os.environ.get("B81_HISTORY_POOL_FULL_IMAGE", "/home/noah/2k-worktrees/.b77-scratch/b81/pos3/runs/"
@@ -85,8 +85,12 @@ class TemplateTests(unittest.TestCase):
             self.assertEqual(len(before), len(after), label)
             self.assertNotEqual(before, after, label)
         self.assertEqual(hp._digest(hp.SITES), hp.PATCHED_SHA256)
-        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1173)    # b81: A +20, B +27, C +66, F +82, G 5
+        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1182)    # b81: A +29, B +27, C +66, F +82, G 5
         self.assertEqual(hp.PLAYOFF_RESERVE, 512)
+        site_a = dict((label, after) for label, _va, _b, after in hp.SITES)["site_a"]
+        # reserve_cap: `cmp dword [0xE576A4], 9` (the playoffs) and `sub eax, RESERVE` carry the module's numbers
+        self.assertIn(bytes.fromhex("833da476e50009"), site_a)
+        self.assertIn(b"\x2d" + hp.PLAYOFF_RESERVE.to_bytes(4, "little"), site_a)
 
     def test_the_beta80_revision_is_pinned_and_the_upgrade_moves_four_sites(self):
         # b81 history-pool: the revision v0.9 shipped (b780 hist1) is kept byte for byte under its own pin
@@ -101,7 +105,7 @@ class TemplateTests(unittest.TestCase):
             if label in ("site_a", "site_e"):
                 self.assertEqual(after[:len(old)], old, label)          # unchanged (site A only grows: reserve_cap)
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_SITES],
-                         [("site_a", 0x14E8B0, 97), ("site_b", 0x14E930, 124), ("site_c", 0x14E9D0, 456),
+                         [("site_a", 0x14E8B0, 106), ("site_b", 0x14E930, 124), ("site_c", 0x14E9D0, 456),
                           ("site_d", 0x14EFE0, 390), ("site_f", 0x14F249, 100), ("site_g", 0x14F239, 5)])
         # site C: the compaction is unchanged up to room's full branch (0x14EB31), room gains its free-agent test and
         # fold_base follows it; site D changes exactly the 13 bytes that computed years pro; site F only grows (fa_fold
@@ -127,7 +131,7 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(hp.REVISION_570CD7C16_SHA256, "7b61e3e99770293913efdb989b8d097a8bf2b2ef4a03b1a54e7d972f0144ddae")
         self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.REVISION_570CD7C16_SITES), 1142)
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_570CD7C16_SITES],
-                         [("site_a", 0x14E8B0, 97), ("site_b", 0x14E930, 124), ("site_g", 0x14F239, 5)])
+                         [("site_a", 0x14E8B0, 106), ("site_b", 0x14E930, 124), ("site_g", 0x14F239, 5)])
         old = {label: after for label, _va, _b, after in hp.REVISION_570CD7C16_SITES}
         for label, _va, _before, after in hp.SITES:
             if label in ("site_c", "site_d", "site_e", "site_f"):
@@ -280,7 +284,7 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual(hp.status(self.retail), "retail")
         patched, receipt = hp.apply(self.retail)
         self.assertEqual(hp.status(patched), "applied")
-        self.assertEqual(receipt["changed_bytes"], 1151)
+        self.assertEqual(receipt["changed_bytes"], 1160)
         again, receipt2 = hp.apply(patched)
         self.assertEqual(again, patched)
         self.assertTrue(receipt2["already_applied"])
@@ -766,13 +770,14 @@ class NativeTests(unittest.TestCase):
         self.assertEqual([m.stream(r) for r in recs], before)
 
     # ---- b81 playoff reserve -------------------------------------------------------------------------------------------
-    def playoffs_then_honors(self, payload):
+    def playoffs_then_honors(self, payload, stage=9):
         """980 men with 50 words each in this and last season (49,000 words, nothing to fold, no free agents): 1,000 new
-        playoff words (postseason class), then the season honors (134 regular-class words, field 101). -> (playoff
-        words kept, pool after them, honors kept, the machine)."""
+        postseason-class words in the given franchise stage (9 the playoffs, 7 the preseason), then the season honors
+        (134 regular-class words, field 101). -> (postseason words kept, pool after them, honors kept, the machine)."""
         m = Machine(payload)
         recs = m.roster([(1, [word(f, s, 5) for s in (0, 1) for f in range(25)]) for _ in range(980)])
         m.count(0x14F256, "drops")
+        m.put(STAGE, stage)
         m.put(CLASS, 1)
         playoff = sum(m.call(0x14F220, ecx=recs[i % 980], edx=word(40 + i // 980, 1, 3)) != 0 for i in range(1000))
         after_playoffs = m.used()
@@ -793,6 +798,18 @@ class NativeTests(unittest.TestCase):
         playoff, after_playoffs, honors, m = self.playoffs_then_honors(first)
         self.assertEqual((playoff, after_playoffs, honors), (1000, 50000, 0))
 
+    def test_preseason_words_see_the_whole_pool_as_before(self):
+        # Preseason games write the postseason class too (stage 7, wiped when the regular season starts). They are not
+        # playoff words: they fill the pool exactly as with the v0.9 bytes and the first b81 revision, so the yearly
+        # collection they trigger comes at the same write.
+        pools = []
+        for payload in (rdata.apply(self.retail, hp.PREVIOUS_SITES, "beta-80")[0],
+                        rdata.apply(self.retail, hp.REVISION_570CD7C16_SITES, "570cd7c16")[0], self.patched):
+            kept, after, honors, m = self.playoffs_then_honors(payload, stage=7)
+            self.assertEqual((kept, after, honors, m.hits["drops"]), (1000, 50000, 0, 134))
+            pools.append(bytes(m.uc.mem_read(Machine.POOL, 4 * 50000)))
+        self.assertEqual(len(set(pools)), 1)
+
     def test_playoff_words_outside_the_reserve_are_unchanged(self):
         # postseason words while more than 512 words are free, and regular words up to the full pool: the same pool,
         # pointers and results as the v0.9 bytes and the first b81 revision
@@ -803,6 +820,7 @@ class NativeTests(unittest.TestCase):
             recs = m.roster([(1, [word(f, s, 5) for s in (0, 1) for f in range(20)]) for _ in range(1000)])
             results = []
             rng = random.Random(81)
+            m.put(STAGE, 9)
             for cls, n in ((1, 9300), (0, 700)):                              # 40,000 -> 49,300 -> 50,000
                 m.put(CLASS, cls)
                 for i in range(n):
@@ -986,6 +1004,7 @@ class FullFranchiseImageTests(unittest.TestCase):
     def test_a_playoff_word_in_the_full_pool_is_refused_and_costs_no_free_agent_his_season(self):
         new = self.machine("b81")
         root = new.get(ROSTER)
+        self.assertEqual(new.get(STAGE), 9)                                     # the image's 2032 playoffs
         before, agents = self.streams(new)
         player = new.get(new.get(root + 0x1C) + 500 * 5)                        # club 5's first rostered man
         new.put(CLASS, 1)

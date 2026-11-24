@@ -24,13 +24,15 @@
    A write that still finds no room is dropped at history_drop (0x14F256), as before.
 
    b81 playoff reserve (coordinator's ruling on the history-pool report, 11/24: permanent honors outrank playoff stat
-   words, which the offseason rollover wipes anyway): a new postseason-class word ([CLASS] 1) may not take one of the
-   last RESERVE (512) words. The writer's capacity test (site G) uses reserve_cap, so such a word reaches gc_chunk 512
-   words before the pool is full; gc_chunk runs the same depth 3+ collection v0.9 runs at the full pool (a first panel
-   that refused these words without a collection left every preseason's playoff-class flood, about 20,000 words, without
-   the collection it used to trigger), never the free-agent resort for it, and keeps the word only if RESERVE words stay
-   free. Regular-class writes (every season stat, the season honors, the next season's words) see the whole capacity,
-   exactly as before. */
+   words, which the offseason rollover wipes anyway): a new playoff word (postseason class, [CLASS] 1, while the
+   franchise stage [0xE576A4] is 9, the playoffs) may not take one of the last RESERVE (512) words. The writer's
+   capacity test (site G) uses reserve_cap, so such a word reaches gc_chunk 512 words before the pool is full; gc_chunk
+   runs the same depth 3+ collection v0.9 runs at the full pool, and keeps the word only if RESERVE words stay free.
+   Preseason games write the postseason class too (stage 7, about 20,000 words a season, wiped when the regular season
+   starts); they see the whole capacity, as in v0.9, because they are not playoff words and filling the pool with them
+   is what triggers v0.9's yearly collection (a first panel that held them to the reserve left the franchise on another
+   path from the 2027 preseason on). No postseason-class word, in any stage, runs the free-agent resort. Regular-class
+   writes (every season stat, the season honors, the next season's words) see the whole capacity, exactly as before. */
         .intel_syntax noprefix
 
         .set ROSTER,   0x00B72918      /* the roster object: [0] players, [4] first player, [0x40] used, [0x44] pool */
@@ -50,6 +52,8 @@
         .set NO_FOLD_BASE, -0x40       /* fold_base for a man fold(-d) must not touch: no word reaches age -d */
         .set FA_PLAYERS, 4096          /* the free-agent bitmap's bits: the capacity arena's 4,096 primary records */
         .set RESERVE, 512              /* words a playoff (postseason-class) word may not take: kept for permanent words */
+        .set STAGE,    0x00E576A4      /* franchise stage: 7 preseason, 8 regular season, 9 playoffs */
+        .set PLAYOFFS, 9
 
 /* ---- site A: insert one word at edi (called by 0x14F220 only) ------------------------------------------------ */
         .section .site_a, "ax"
@@ -88,13 +92,16 @@ insert_word:
         ret
 
 /* reserve_cap (b81 history-pool, playoff reserve; in site A's tail): eax = the words a new word of the current class
-   may fill: the capacity, less RESERVE while the class is postseason ([CLASS] 1). The writer's capacity test
-   (site G, 0x14F239) and gc_chunk's room test call it in place of CAPACITY; like CAPACITY it clobbers ecx and edx. */
+   may fill: the capacity, less RESERVE for a playoff word (postseason class [CLASS] 1 in stage 9). The writer's
+   capacity test (site G, 0x14F239) and gc_chunk's room test call it in place of CAPACITY; like CAPACITY it clobbers
+   ecx and edx. */
         .globl reserve_cap
 reserve_cap:
         call    CAPACITY
         cmp     dword ptr [CLASS], 0
         je      1f
+        cmp     dword ptr [STAGE], PLAYOFFS
+        jne     1f                      /* preseason words see the whole pool, as in v0.9 */
         sub     eax, RESERVE
 1:      ret
 
@@ -121,7 +128,7 @@ gc_chunk:
         dec     ebx
         jmp     1b
 2:      cmp     dword ptr [esp], 0
-        jne     3f                      /* a playoff word never costs a free agent his last season */
+        jne     3f                      /* a postseason-class word never costs a free agent his last season */
         call    CAPACITY
         mov     ecx, [ROSTER]
         cmp     [ecx+0x40], eax

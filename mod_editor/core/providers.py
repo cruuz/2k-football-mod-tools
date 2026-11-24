@@ -981,8 +981,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_history_code.py": "7677da0a95a58b89dd5e5b46c6bd74f8d69fd11b73678daa74c4d55d7464c0a5",  # b780 j23
         "mod_editor/core/nfl2k5_contract_college_guard.py": "4bf8deeb95c3718380e8dc248ec2a2f0c81116f304d1a93723e277cc4bd32fe6",  # b778-cr1
         "mod_editor/core/nfl2k5_coach_career_fix.py": "7dea3f42075289b257c8b81e9591d35d6d19530d450ecb5469764925e6bd90ba",  # b780 c1 (wired at b780-int)
-        "mod_editor/core/nfl2k5_history_pool.py": "b4afd2c47536a44ef762c4f398efae3eb44a3c11a2dd7b7cea9a004583c3caa4",  # b780 hist1
-        "mod_editor/core/nfl2k5_history_pool_code.py": "c567d0312444180e134f8604d54bc8d94a984666439ddd243551ab38cf27c35b",  # b780 hist1: its generated runtime
+        "mod_editor/core/nfl2k5_history_pool.py": "47ff19d04288bb2866b9dc701c9f18f6f56b6ca7d64e397b9b79ddca7f818bd8",  # b780 hist1
+        "mod_editor/core/nfl2k5_history_pool_code.py": "de5dbeac5cdab33a7a8b1718d600ceb54bd6e8f705c448c3c65f6a06ff3aeb3c",  # b780 hist1: its generated runtime
         "mod_editor/core/nfl2k5_load_user_team_guard.py": "70b3e0d9196a55d093870651173d83e305545f15118acd6224a9fb9f02ca7e86",  # b780 mc1
         "mod_editor/core/nfl2k5_save_list_type_guard.py": "64fcd510de0aa6b3595bfeb94e5f1555e96fb723595cc9d0390f9bf969368f40",  # b780 mc1
         "mod_editor/core/nfl2k5_edition_save_notes.py": "d321ef80273c081bdfc4871c11fa52d3733a604f3b7968149be9b4ab84268d05",  # beta 81 review M1
