@@ -1320,7 +1320,10 @@ UNIF_FIELDS = {"facemask": 0x30}
 # uf3 (b773): the arm-number route at 0x38 (native accessor 0x8E840, route table 0x4EF810): with no neck roll 1/2/3/4
 # put the arm digits on shoulder_B/shoulder_A/sleeve_B/sleeve_A. A slot that borrows another kit's jersey must take
 # that kit's route too, or its digits land on the borrowed sleeve stripes (ur1, the Unc Bowl Steelers).
-UNIF_INTS = {"number_route": (0x38, (1, 2, 3, 4))}
+# b81-uniform-pass2 (the uniform lanes' approved kits, 11/21-11/24): the helmet-number route at 0x3C, the field the native
+# helmet-number pass reads next to the arm route: 0 = no numerals, 1 = set A (front and back), 2 = set B (large, at the back),
+# 3 = set C (small, low at the back), 4 = set D (high at the back, split about the stripe)
+UNIF_INTS = {"number_route": (0x38, (1, 2, 3, 4)), "helmet_number_route": (0x3C, (0, 1, 2, 3, 4))}
 
 
 def compile_unif(span, row):

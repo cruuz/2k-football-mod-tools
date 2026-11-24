@@ -61,9 +61,14 @@ class ProjectInputs(unittest.TestCase):
             for kind in ('kit_fixes', 'glyph_fixes', 'relief')
         ]
         requested = {row['selector'] for doc in docs for row in doc.get('textures', doc.get('slots', []))}
-        self.assertEqual(len(requested), 178)
+        # b81-uniform-pass2 (11/24): the shoulder-top number rows name two alternates no other row touched (05H6/05A6):
+        # a data field only, their cards do not change
+        self.assertEqual(len(requested), 180)
+        self.assertTrue({'05A6', '05H6'} <= requested)
+        drawn = {row['selector'] for doc in docs for row in doc.get('textures', doc.get('slots', [])) if row.get('kind') != 'unif'}
+        self.assertEqual(len(drawn), 178)                   # kits whose look the pass draws: each has its card
         self.assertEqual(len(rows), 190)
-        self.assertTrue({cards_unif.card_name(sel) for sel in requested} <= rows.keys())
+        self.assertTrue({cards_unif.card_name(sel) for sel in drawn} <= rows.keys())
         for name, row in rows.items():
             self.assertEqual(len(row['stored_rgba_sha256']), 64)
             self.assertEqual(
