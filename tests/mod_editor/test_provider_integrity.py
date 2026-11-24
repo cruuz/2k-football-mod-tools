@@ -433,7 +433,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_glyph_fixes_2026/TEN_28A0_digit_jersey_7.png": "5da1a357b81632f469e23f506155ff43af10b2fad036a3de285145e7b694c713",
                 "data/nfl2k5_glyph_fixes_2026/TEN_28H0_digit_arm_7.png": "078b28a7a0ae54e18d08b4580155ba6fa49fe566932305c7decd795a96f6d17b",
                 "data/nfl2k5_glyph_fixes_2026/TEN_28H0_digit_jersey_7.png": "25727ec3a92a703131e11766c4da6a781a63855be44d10a0a961e451cad02de6",
-                "data/nfl2k5_kit_fixes_2026_ku1.json": "2811ee1e688df9b388544d335106df651eedef26e4bedf69c0e3b914a8d08c97",
+                "data/nfl2k5_kit_fixes_2026_ku1.json": "9227fb1ef129725bcf72cc8c208a0433eb45b69af14fe5b8a1f99d3c381f62cb",
                 "data/nfl2k5_kit_fixes_2026_sw1.json": "857e2cc360d95f830840bf2db620dfb5499e92eb4e12e0c319fcff205102f459",
                 "data/nfl2k5_kit_fixes_2026_names.json": "cb354c62aa6b6e8de0ff01e9f25937f0a2e54169bfc37932bd689599529693fb",
                 "data/nfl2k5_glyph_fixes_2026_b81u.json": "dd6c4f44b78e1176b954aee7afd7a072f3ed7d6fe7f5eb0a583004062a4db5f4",
