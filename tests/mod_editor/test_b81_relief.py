@@ -459,5 +459,82 @@ class ReleasedDisc(unittest.TestCase):
         self.assertEqual(rl.state_of(row, bytes(raw))[0], "other")
 
 
+class UserTorsoArtMovesTheCollar(unittest.TestCase):
+    """b81 Edwards rehearsal (1c7b2afda; Coach Edwards' 10/27 project under Windows CPython in Wine, BUILD_OK with
+    left_out relief_2026_b81u): his own torso art moves the collar opening of every kit's jersey relief. kit_opening
+    raised inside the compile, so the optional step left the 2026 relief out of EVERY kit. Not strict, only the jersey
+    slot of a kit whose collar moved keeps its relief and every other slot is written; strict still refuses. Offline: the
+    image, its index and the compile are stand-ins; the collar check is the shipped kit_opening."""
+
+    def run_step(self, strict):
+        from contextlib import contextmanager
+        from types import SimpleNamespace
+        from unittest import mock
+        stock = np.zeros((8, 8), bool)
+        stock[2:4, 3:5] = True
+        moved = np.zeros((8, 8), bool)
+        moved[2:5, 2:6] = True                               # the user's torso art: a wider collar
+        torso = {b"AAH0": stock, b"BBH0": moved}
+        rows = []
+        for selector in ("AAH0", "BBH0"):
+            for slot in ("bump_jersey", "bump_sleeve"):
+                new = (selector + slot).encode().ljust(48, b"\x01")
+                rows.append(dict(selector=selector, slot=slot, chunk=0, base="authored", new=new,
+                                 opening_sha256=rl.opening_sha256(stock), after_sha256=sha(new)))
+        document = {"slots": rows}
+        disc = self.disc = {}
+
+        class Image:
+            def read_segments(self, segments):
+                return disc[segments] if segments in disc else segments[0].encode()
+
+            def write_segments(self, segments, data):
+                disc[segments] = bytes(data)
+
+        @contextmanager
+        def open_image(path, writable=False):
+            yield Image()
+
+        index = SimpleNamespace(entries=[SimpleNamespace(name_id=s, size=4096) for s in ("AAH0", "BBH0")],
+                                sub_extents=lambda entry, offset, size: (entry.name_id, offset, size))
+
+        def state_of(row, raw):
+            span = row["new"][:rl.HEADER.size] + bytes(len(row["new"]) - rl.HEADER.size)
+            return "before", SimpleNamespace(offset=0 if row["slot"] == "bump_jersey" else 1024), span
+
+        def compile_slots(todo, spans, document, *, retail=None, torsos=None, count=None, progress=None):
+            # the shipped contract of compose_maps: every jersey's collar opening is checked against its pin
+            for row in todo:
+                if row["slot"] == "bump_jersey":
+                    rl.kit_opening(row, torsos[row["selector"]])
+            return {(r["selector"], r["slot"]): (r["new"], {}) for r in todo}
+
+        with mock.patch.object(rl.bump, "_Image", SimpleNamespace(open=open_image)), \
+                mock.patch.object(rl.bump, "_parsed_index", lambda image: index), \
+                mock.patch.object(rl.bump, "logical_name_for", lambda name_id: name_id + ".IFF"), \
+                mock.patch.object(rl, "state_of", state_of), \
+                mock.patch.object(rl, "torso_rgba", lambda raw: torso[raw]), \
+                mock.patch.object(rl, "collar_opening", lambda rgba: rgba), \
+                mock.patch.object(rl, "compile_slots", compile_slots):
+            notes = []
+            result = rl.apply_to_image("disc.iso", None, strict=strict, document=document,
+                                       progress=lambda message, done, total: notes.append(message))
+        return result, {segments[0] + ":" + data.decode().strip("\x01")[4:] for segments, data in disc.items()}, notes
+
+    def test_only_the_moved_collar_keeps_its_jersey_relief(self):
+        result, written, notes = self.run_step(strict=False)
+        self.assertEqual(result["state"], "applied")
+        self.assertEqual(result["skipped_slots"], ["BBH0:bump_jersey"])
+        self.assertEqual(written, {"AAH0:bump_jersey", "AAH0:bump_sleeve", "BBH0:bump_sleeve"})
+        self.assertEqual(result["written_spans"], 3)
+        self.assertIn("BBH0", result["user_notes"][0])
+        self.assertEqual(notes, result["user_notes"])
+
+    def test_strict_still_refuses_and_writes_nothing(self):
+        with self.assertRaisesRegex(ValueError, "collar opening is not the one its relief was drawn for"):
+            self.run_step(strict=True)
+        self.assertEqual(self.disc, {})
+
+
 if __name__ == "__main__":
     unittest.main()
