@@ -59,6 +59,10 @@ REVERTED_TO_V09 = ("01H0", "01A0", "30H0", "30A0", "08H0", "08A0", "37H0", "37A0
 # italicized. That looks the closest to reality"): the Chargers home and road wear the released v0.9 italic digits again; their
 # 20 upright digit rows were dropped (b81-uniform-pass2). The alternates keep R2's upright set until he rules on them.
 REVERTED_TO_V09 += ("24H0", "24A0")
+# Noah 11/23 ("use charcoal browns numbers but old font"): the Browns road wears the released v0.9 digits recoloured to the
+# charcoal of its name letters: 20 digit_derived rows, one colour swap on the glyph the build holds (b81-uniform-pass2)
+V09_FONT_RECOLOURED = ("30A0",)
+REVERTED_TO_V09 = tuple(s for s in REVERTED_TO_V09 if s not in V09_FONT_RECOLOURED)
 #: the Chargers packages that still wear the one upright R2 shape set
 CHARGERS_R2 = tuple(s for s in CHARGERS if s not in REVERTED_TO_V09)
 REDRAWN = tuple(dict.fromkeys(s for s in REDRAWN if s not in REVERTED_TO_V09))
@@ -369,6 +373,8 @@ class DigitDocument(unittest.TestCase):
             if selector in REVERTED_TO_V09:
                 self.assertNotIn((selector, 13), by, selector)                   # back to the released v0.9 digits
                 continue
+            if selector in V09_FONT_RECOLOURED:                                      # v0.9 widths, recoloured only
+                continue
             rgba = picture(by[(selector, 13)])
             if rgba is None:
                 continue
@@ -469,11 +475,18 @@ class DigitDocument(unittest.TestCase):
                 rows = np.flatnonzero((png_rgba(folder / row["png"])[0][..., 3] > 127).any(axis=1))
                 self.assertEqual((int(rows.min()), int(rows.max())), (1, 62), row["png"])
 
-    def test_the_browns_road_numbers_are_the_released_ones_again(self):
-        # Noah 11/19 (decision 3) had the road numbers redrawn in charcoal; Noah 11/21 ("Revert the jersey number font, was
-        # better before"; road: "same as other browns uni") took the v0.9 numbers back, so no digit row remains for 30A0
-        # (the road name letters stay charcoal: RECOLOURED_NAMES)
-        self.assertEqual([r for r in digit_rows() if r["selector"] == "30A0"], [])
+    def test_the_browns_road_numbers_are_the_released_font_in_charcoal(self):
+        # Noah 11/19 (decision 3) had the road numbers redrawn in charcoal; Noah 11/21 took the v0.9 font back; Noah 11/23:
+        # "use charcoal browns numbers but old font". So the 30A0 jersey and shoulder digits are the glyphs the build holds
+        # (the released v0.9 font) with one colour swap to the charcoal of the road name letters (RECOLOURED_NAMES), and
+        # nothing else: no picture ships, no texel and no shape operation
+        rows = [r for r in all_digit_rows() if r["selector"] == "30A0"]
+        self.assertEqual(sorted(r["texture"] for r in rows), sorted([str(n) for n in range(48, 58)] + [f"an{n}" for n in range(48, 58)]))
+        charcoal = "#%02X%02X%02X" % CLE_CHARCOAL
+        for row in rows:
+            self.assertEqual(row["kind"], "digit_derived", row["texture"])
+            self.assertEqual([op["op"] for op in row["derive"]], ["recolour"], row["texture"])
+            self.assertTrue(all(new.upper() == charcoal for _old, new in row["derive"][0]["pairs"]), row["texture"])
 
     def test_the_ravens_4_has_the_tall_closed_counter(self):
         if not DISC.is_file():                 # hosted runners: the derived picture needs the released disc

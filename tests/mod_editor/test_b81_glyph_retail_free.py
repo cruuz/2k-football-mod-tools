@@ -59,8 +59,9 @@ class Document(unittest.TestCase):
     def test_derived_rows_carry_operations_and_no_picture(self):
         derived = [r for r in self.doc["textures"] if r["kind"] in DERIVED]
         # R2-G: the lane's 507 less the 12 Jets 2 rows round 2 redrew as new pictures (rated A) = 495; b81-uniform-fix1 (Noah
-        # 11/21, v0.9 numbers back): less the 60 Colts home and road and Commanders home digit rows dropped from the document
-        self.assertEqual(len(derived), 435)
+        # 11/21, v0.9 numbers back): less the 60 Colts home and road and Commanders home digit rows dropped from the document;
+        # b81-uniform-pass2 (Noah 11/23, "use charcoal browns numbers but old font"): plus the 20 Browns road rows, a colour swap
+        self.assertEqual(len(derived), 455)
         self.assertEqual(sum(r["kind"] == "names_derived" for r in derived), 3)
         for row in derived:
             if row["kind"] == "names_derived":                   # the Jaguars strip: an instruction, no texel (F3)

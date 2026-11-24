@@ -112525,6 +112525,1086 @@
    "texture": "names"
   },
   {
+   "after_sha256": "206f9415f3e07bb5fccc16ef16d8887f4e066f6486add1144d2b42a6f63be140",
+   "before_sha256": "b4ef693b2f5e9b39fe843916578d7237505cbbfb940efab90fa4fda0992b6a4c",
+   "chunk": 13,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2F1B00",
+       "#3B3B3B"
+      ],
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#301E00",
+       "#3B3B3B"
+      ],
+      [
+       "#301F00",
+       "#3B3B3B"
+      ],
+      [
+       "#311B00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#321D00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 880,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 444304,
+   "resource_size": 1510320,
+   "rgba_sha256": "f88bd7a23bb45a85b310286068fe00c5b51f0701da92a98400274602350984ca",
+   "selector": "30A0",
+   "texture": "48"
+  },
+  {
+   "after_sha256": "4f6ec71eb5e31b301c22c7a3db5d7f4f113a03cbcb0561bcb9d839e4ba90144b",
+   "before_sha256": "2ee895648b88a4b20bbd0500dcd3831c317301d9e9ff42435eb8e39913b61570",
+   "chunk": 14,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#311D00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 720,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 445184,
+   "resource_size": 1510320,
+   "rgba_sha256": "1e2b72d09abc742c4a634dd79a0c808cf8c5ea9f38bd1e00b5fb7ba4e59207f6",
+   "selector": "30A0",
+   "texture": "49"
+  },
+  {
+   "after_sha256": "4d89821f6ce01e94ddc0927f9c7900f82bfdd42cb67f9f1c776bed0d37877abf",
+   "before_sha256": "8aa3270625e6cdbc57f075d1c6623b8be482ad58d93536132f7bc4c916c28bd5",
+   "chunk": 15,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2E2300",
+       "#3B3B3B"
+      ],
+      [
+       "#301C00",
+       "#3B3B3B"
+      ],
+      [
+       "#301F00",
+       "#3B3B3B"
+      ],
+      [
+       "#311B00",
+       "#3B3B3B"
+      ],
+      [
+       "#311C00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311E00",
+       "#3B3B3B"
+      ],
+      [
+       "#321D00",
+       "#3B3B3B"
+      ],
+      [
+       "#331A00",
+       "#3B3B3B"
+      ],
+      [
+       "#331F00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1088,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 445904,
+   "resource_size": 1510320,
+   "rgba_sha256": "3ff5937ccc6e750f3b7c3887108984d011f2b29c6285312138f9be96a443ba03",
+   "selector": "30A0",
+   "texture": "50"
+  },
+  {
+   "after_sha256": "367dd23e1bc8de248ac521cb1b9a680ccf2f546322a3accf298ae43bc166257e",
+   "before_sha256": "da2cc2ddc1c030fb5e42c90d2133c164f709eca416a5b51a411414cfa5f94cdd",
+   "chunk": 16,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2D1E00",
+       "#3B3B3B"
+      ],
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311E00",
+       "#3B3B3B"
+      ],
+      [
+       "#321C00",
+       "#3B3B3B"
+      ],
+      [
+       "#341F00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1136,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 446992,
+   "resource_size": 1510320,
+   "rgba_sha256": "5911fa1773f098ad326c5871d040f6451e114580a10403d13a2b3278792c8087",
+   "selector": "30A0",
+   "texture": "51"
+  },
+  {
+   "after_sha256": "6185255cd6a884ecd7a102f6889e55e0cce4ca487ff2d6db0b0f88fe3431af60",
+   "before_sha256": "9d38df5322c07a3045c29c6208af743654ff2b344e116c4f7a3244c5222dd8c7",
+   "chunk": 17,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2E1A00",
+       "#3B3B3B"
+      ],
+      [
+       "#301C00",
+       "#3B3B3B"
+      ],
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#301E00",
+       "#3B3B3B"
+      ],
+      [
+       "#311C00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311E00",
+       "#3B3B3B"
+      ],
+      [
+       "#321B00",
+       "#3B3B3B"
+      ],
+      [
+       "#321C00",
+       "#3B3B3B"
+      ],
+      [
+       "#321D00",
+       "#3B3B3B"
+      ],
+      [
+       "#331F00",
+       "#3B3B3B"
+      ],
+      [
+       "#391C00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1056,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 448128,
+   "resource_size": 1510320,
+   "rgba_sha256": "2138d9c68bd919b5809308c324c9cb8f90c5fdbead7aa38dc2db3dc5ff9bb793",
+   "selector": "30A0",
+   "texture": "52"
+  },
+  {
+   "after_sha256": "bc22f0651b88df21f68d19a834d20d9cc01904318b52f52051ac2820ec6daa28",
+   "before_sha256": "79f64870982056ff167325be276f6cc508544e7f2e321b9b61c54a32ee4dc4f1",
+   "chunk": 18,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2E2300",
+       "#3B3B3B"
+      ],
+      [
+       "#2F1B00",
+       "#3B3B3B"
+      ],
+      [
+       "#301B00",
+       "#3B3B3B"
+      ],
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#301E00",
+       "#3B3B3B"
+      ],
+      [
+       "#301F00",
+       "#3B3B3B"
+      ],
+      [
+       "#311C00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#312100",
+       "#3B3B3B"
+      ],
+      [
+       "#321C00",
+       "#3B3B3B"
+      ],
+      [
+       "#321E00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1040,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 449184,
+   "resource_size": 1510320,
+   "rgba_sha256": "4e128fb56a17f4b908e3fd62adcc370684a31f091d32dd5b6aaa26d8bcffe555",
+   "selector": "30A0",
+   "texture": "53"
+  },
+  {
+   "after_sha256": "e27e9e78d7fbef0ba2099d5bb67ae3ba36fafe5623c66e4eb85f8d43db12633d",
+   "before_sha256": "a27da5800affeddf13424bce25033c86e9ce1d487055ed04743c1d764ef68eaf",
+   "chunk": 19,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2F1E00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311E00",
+       "#3B3B3B"
+      ],
+      [
+       "#321C00",
+       "#3B3B3B"
+      ],
+      [
+       "#321D00",
+       "#3B3B3B"
+      ],
+      [
+       "#321E00",
+       "#3B3B3B"
+      ],
+      [
+       "#331A00",
+       "#3B3B3B"
+      ],
+      [
+       "#331E00",
+       "#3B3B3B"
+      ],
+      [
+       "#351A00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1056,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 450224,
+   "resource_size": 1510320,
+   "rgba_sha256": "7a6679a669e02acf68dddcc058657917e0e89c81fb35a72b792cd739db4a3dad",
+   "selector": "30A0",
+   "texture": "54"
+  },
+  {
+   "after_sha256": "f67e066123fe1306db144929053ca5da4369927650bedaa2e47b2b8fdcb20f5a",
+   "before_sha256": "7ad5c4ae445cc987788c63eb84186ea415b90bc6f199dc76c60b18e2e61ae944",
+   "chunk": 20,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2D1A00",
+       "#3B3B3B"
+      ],
+      [
+       "#2F1D00",
+       "#3B3B3B"
+      ],
+      [
+       "#301C00",
+       "#3B3B3B"
+      ],
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#301F00",
+       "#3B3B3B"
+      ],
+      [
+       "#311C00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311E00",
+       "#3B3B3B"
+      ],
+      [
+       "#321D00",
+       "#3B3B3B"
+      ],
+      [
+       "#331D00",
+       "#3B3B3B"
+      ],
+      [
+       "#331F00",
+       "#3B3B3B"
+      ],
+      [
+       "#372400",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 451280,
+   "resource_size": 1510320,
+   "rgba_sha256": "c27af05f16334b69a762b22bb5c9b085d70a998c394ce65dfcd62d3f17090fe3",
+   "selector": "30A0",
+   "texture": "55"
+  },
+  {
+   "after_sha256": "84b15c0ee353fcb791793b1a617cc6c5fa01f855626a02e71518553147a3a720",
+   "before_sha256": "41cc903fbde467745ec30e3c725aa7442f275c09c2f048bd0be62513d37860b9",
+   "chunk": 21,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2E1D00",
+       "#3B3B3B"
+      ],
+      [
+       "#2F1B00",
+       "#3B3B3B"
+      ],
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#301E00",
+       "#3B3B3B"
+      ],
+      [
+       "#311C00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311F00",
+       "#3B3B3B"
+      ],
+      [
+       "#361B00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1072,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 452224,
+   "resource_size": 1510320,
+   "rgba_sha256": "84ad210add7cd360ff0dccdd37a87debdf3692a88f4563767f128db75fe927e1",
+   "selector": "30A0",
+   "texture": "56"
+  },
+  {
+   "after_sha256": "ab26698f0046a5657d954bd9e38c50ab4cfe8cb3a5404e81a656894b877498ac",
+   "before_sha256": "6cc35b89ae52e40b2d8b3bd38b631097e798e33edaff4a11dc6cd6febd4ee57d",
+   "chunk": 22,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311E00",
+       "#3B3B3B"
+      ],
+      [
+       "#321E00",
+       "#3B3B3B"
+      ],
+      [
+       "#372100",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1040,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 453296,
+   "resource_size": 1510320,
+   "rgba_sha256": "24e9d54a66b8e649dbcd4eba6872e9db25972ac5839230e28f958dbefc9cd40e",
+   "selector": "30A0",
+   "texture": "57"
+  },
+  {
+   "after_sha256": "902c379224ae46ae1edc4affc0b8db422f07cf345f5095decf2f9a01e3a2d78b",
+   "before_sha256": "518fd5fe84facaff83e080c5da8656f4accabb269de803979ae12fd47e55411c",
+   "chunk": 33,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2F1B00",
+       "#3B3B3B"
+      ],
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#301E00",
+       "#3B3B3B"
+      ],
+      [
+       "#301F00",
+       "#3B3B3B"
+      ],
+      [
+       "#311B00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#321D00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 880,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 463632,
+   "resource_size": 1510320,
+   "rgba_sha256": "f88bd7a23bb45a85b310286068fe00c5b51f0701da92a98400274602350984ca",
+   "selector": "30A0",
+   "texture": "an48"
+  },
+  {
+   "after_sha256": "b4034db1050c5fc9e99a54e74403b074b9bf0963c7cb3066721f6479e7a94baa",
+   "before_sha256": "fb759055e7c8d25ff774f21ce6036777f02ca58c2319e47d6e861477c72be246",
+   "chunk": 34,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#311D00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 720,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 464512,
+   "resource_size": 1510320,
+   "rgba_sha256": "1e2b72d09abc742c4a634dd79a0c808cf8c5ea9f38bd1e00b5fb7ba4e59207f6",
+   "selector": "30A0",
+   "texture": "an49"
+  },
+  {
+   "after_sha256": "d77d42681d507c84c4eb6aca05364471a47e7fba29f3060569eba28f27be61e5",
+   "before_sha256": "d687d8c3eb38416fb49a6c422e47e55d2c0ec12c3371e28aeb7a23a0271c4404",
+   "chunk": 35,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2E2300",
+       "#3B3B3B"
+      ],
+      [
+       "#301C00",
+       "#3B3B3B"
+      ],
+      [
+       "#301F00",
+       "#3B3B3B"
+      ],
+      [
+       "#311B00",
+       "#3B3B3B"
+      ],
+      [
+       "#311C00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311E00",
+       "#3B3B3B"
+      ],
+      [
+       "#321D00",
+       "#3B3B3B"
+      ],
+      [
+       "#331A00",
+       "#3B3B3B"
+      ],
+      [
+       "#331F00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1104,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 465232,
+   "resource_size": 1510320,
+   "rgba_sha256": "3ff5937ccc6e750f3b7c3887108984d011f2b29c6285312138f9be96a443ba03",
+   "selector": "30A0",
+   "texture": "an50"
+  },
+  {
+   "after_sha256": "541abcce9fa9589df75ed00f55611acb118eaf0fe8dca85182f46e247a61cb50",
+   "before_sha256": "0f1a49ac437541f4f0f26746919555241eec71b6163fb2ce4ac4ead92b802489",
+   "chunk": 36,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2D1E00",
+       "#3B3B3B"
+      ],
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311E00",
+       "#3B3B3B"
+      ],
+      [
+       "#321C00",
+       "#3B3B3B"
+      ],
+      [
+       "#341F00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1136,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 466336,
+   "resource_size": 1510320,
+   "rgba_sha256": "5911fa1773f098ad326c5871d040f6451e114580a10403d13a2b3278792c8087",
+   "selector": "30A0",
+   "texture": "an51"
+  },
+  {
+   "after_sha256": "458be2ff087e5cdd3932ccfff4db4e19de946b47e721501792423072a92129e1",
+   "before_sha256": "5c02d7f1f772e4fae47da3a65a3dd05dfaec545850a59585cd9583f6c4003d38",
+   "chunk": 37,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2E1A00",
+       "#3B3B3B"
+      ],
+      [
+       "#301C00",
+       "#3B3B3B"
+      ],
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#301E00",
+       "#3B3B3B"
+      ],
+      [
+       "#311C00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311E00",
+       "#3B3B3B"
+      ],
+      [
+       "#321B00",
+       "#3B3B3B"
+      ],
+      [
+       "#321C00",
+       "#3B3B3B"
+      ],
+      [
+       "#321D00",
+       "#3B3B3B"
+      ],
+      [
+       "#331F00",
+       "#3B3B3B"
+      ],
+      [
+       "#391C00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1056,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 467472,
+   "resource_size": 1510320,
+   "rgba_sha256": "2138d9c68bd919b5809308c324c9cb8f90c5fdbead7aa38dc2db3dc5ff9bb793",
+   "selector": "30A0",
+   "texture": "an52"
+  },
+  {
+   "after_sha256": "da9fa0d884854a71ea0c657b9770c90ce1a216f7fccae15450e3f34a0865e8d1",
+   "before_sha256": "61cdc1d2ec17aa6c9ec53259cc31bc5a3cae142bda22ab9c67ae9ead17b1e20c",
+   "chunk": 38,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2E2300",
+       "#3B3B3B"
+      ],
+      [
+       "#2F1B00",
+       "#3B3B3B"
+      ],
+      [
+       "#301B00",
+       "#3B3B3B"
+      ],
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#301E00",
+       "#3B3B3B"
+      ],
+      [
+       "#301F00",
+       "#3B3B3B"
+      ],
+      [
+       "#311C00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#312100",
+       "#3B3B3B"
+      ],
+      [
+       "#321C00",
+       "#3B3B3B"
+      ],
+      [
+       "#321E00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1040,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 468528,
+   "resource_size": 1510320,
+   "rgba_sha256": "4e128fb56a17f4b908e3fd62adcc370684a31f091d32dd5b6aaa26d8bcffe555",
+   "selector": "30A0",
+   "texture": "an53"
+  },
+  {
+   "after_sha256": "cc464d5d3aee781d07d98d8857fa06acec695efae9fb68092fa2dbc6aa2d9ee6",
+   "before_sha256": "cce5b436035fb166d81d7a4bbb8410d138b4904fd191ba651fc777a5e20cf59b",
+   "chunk": 39,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2F1E00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311E00",
+       "#3B3B3B"
+      ],
+      [
+       "#321C00",
+       "#3B3B3B"
+      ],
+      [
+       "#321D00",
+       "#3B3B3B"
+      ],
+      [
+       "#321E00",
+       "#3B3B3B"
+      ],
+      [
+       "#331A00",
+       "#3B3B3B"
+      ],
+      [
+       "#331E00",
+       "#3B3B3B"
+      ],
+      [
+       "#351A00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1056,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 469568,
+   "resource_size": 1510320,
+   "rgba_sha256": "7a6679a669e02acf68dddcc058657917e0e89c81fb35a72b792cd739db4a3dad",
+   "selector": "30A0",
+   "texture": "an54"
+  },
+  {
+   "after_sha256": "1259ed572e78023ee5ba15bdbe191839190e6cda980c6b10eb0c9e69e8cf503b",
+   "before_sha256": "7ceb458e74a33592868cea76cc4efbe9a94855052a587f4f66ba49f1ab90a313",
+   "chunk": 40,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2E1B00",
+       "#3B3B3B"
+      ],
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#301E00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311E00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 944,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 470624,
+   "resource_size": 1510320,
+   "rgba_sha256": "c0e2494f405e145840ab7c8d43017d7101be020c15ebfd7207fb622f263aa5da",
+   "selector": "30A0",
+   "texture": "an55"
+  },
+  {
+   "after_sha256": "18b2c1c39929b030b88c4ac55867d0ba1ae5f8ff0dfaf9a349c96ae75bef32c4",
+   "before_sha256": "6db1c0a7dd17d361965ed20e729b759929e76aacad40a8a6ba8cd0ab521dcc98",
+   "chunk": 41,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#2E1D00",
+       "#3B3B3B"
+      ],
+      [
+       "#2F1B00",
+       "#3B3B3B"
+      ],
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#301E00",
+       "#3B3B3B"
+      ],
+      [
+       "#311C00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311F00",
+       "#3B3B3B"
+      ],
+      [
+       "#361B00",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1072,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 471568,
+   "resource_size": 1510320,
+   "rgba_sha256": "84ad210add7cd360ff0dccdd37a87debdf3692a88f4563767f128db75fe927e1",
+   "selector": "30A0",
+   "texture": "an56"
+  },
+  {
+   "after_sha256": "e214c7a24a978331e0a38220ade3b3d8aa1637a0645b72c501bd6366b506a0d7",
+   "before_sha256": "2a7de67af22485205c29b7494acfb66f4661a64b18832c6b1bbc466d80a46cf6",
+   "chunk": 42,
+   "defects": [
+    "b81p2-CLE-road-numbers-charcoal"
+   ],
+   "derive": [
+    {
+     "op": "recolour",
+     "pairs": [
+      [
+       "#301D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311D00",
+       "#3B3B3B"
+      ],
+      [
+       "#311E00",
+       "#3B3B3B"
+      ],
+      [
+       "#321E00",
+       "#3B3B3B"
+      ],
+      [
+       "#372100",
+       "#3B3B3B"
+      ]
+     ]
+    }
+   ],
+   "kind": "digit_derived",
+   "length": 1056,
+   "note": "pass2 (owner 11/23 ruling on the Browns): Owner 11/23: \"use charcoal browns numbers but old font\": the released v0.9 Browns road digit, shape (alpha) untouched, recoloured from v0.9 brown #311D00 to the charcoal #3B3B3B of the road name letters",
+   "offset": 472640,
+   "resource_size": 1510320,
+   "rgba_sha256": "24e9d54a66b8e649dbcd4eba6872e9db25972ac5839230e28f958dbefc9cd40e",
+   "selector": "30A0",
+   "texture": "an57"
+  },
+  {
    "after_sha256": "4cad2755a4f7a562d03728b381277f26cde3bcff75415067400720d4d925377f",
    "before_sha256": "17ee65023f535442a990265504f9690583903290319edf6e1cd7a0fe4d65a74e",
    "chunk": 13,
