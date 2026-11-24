@@ -80,12 +80,13 @@ class TemplateTests(unittest.TestCase):
     def test_sites_and_pin(self):
         self.assertEqual([(label, va) for label, va, _b, _a in hp.SITES],
                          [("site_a", 0x14E8B0), ("site_b", 0x14E930), ("site_c", 0x14E9D0), ("site_d", 0x14EFE0),
-                          ("site_e", 0x14F16F), ("site_f", 0x14F249)])
+                          ("site_e", 0x14F16F), ("site_f", 0x14F249), ("site_g", 0x14F239)])
         for label, va, before, after in hp.SITES:
             self.assertEqual(len(before), len(after), label)
             self.assertNotEqual(before, after, label)
         self.assertEqual(hp._digest(hp.SITES), hp.PATCHED_SHA256)
-        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1142)    # b81: site B +21, C +66, F +82
+        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1195)    # b81: A +20, B +49, C +66, F +82, G 5
+        self.assertEqual(hp.PLAYOFF_RESERVE, 512)
 
     def test_the_beta80_revision_is_pinned_and_the_upgrade_moves_four_sites(self):
         # b81 history-pool: the revision v0.9 shipped (b780 hist1) is kept byte for byte under its own pin
@@ -98,14 +99,17 @@ class TemplateTests(unittest.TestCase):
         for (label, va, before, after), (_l, _v, old_before, old) in zip(hp.SITES, hp.PREVIOUS_SITES):
             self.assertEqual(old_before, before[:len(old)], label)
             if label in ("site_a", "site_e"):
-                self.assertEqual(after, old, label)                                # unchanged sites
+                self.assertEqual(after[:len(old)], old, label)          # unchanged (site A only grows: reserve_cap)
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_SITES],
-                         [("site_b", 0x14E930, 118), ("site_c", 0x14E9D0, 456), ("site_d", 0x14EFE0, 390),
-                          ("site_f", 0x14F249, 100)])
+                         [("site_a", 0x14E8B0, 97), ("site_b", 0x14E930, 146), ("site_c", 0x14E9D0, 456),
+                          ("site_d", 0x14EFE0, 390), ("site_f", 0x14F249, 100), ("site_g", 0x14F239, 5)])
         # site C: the compaction is unchanged up to room's full branch (0x14EB31), room gains its free-agent test and
         # fold_base follows it; site D changes exactly the 13 bytes that computed years pro; site F only grows (fa_fold
-        # in the dead tail of retail's full-pool path, before the retail write path at 0x14F2BB)
-        (_l, _v, was_c, now_c), (_l2, va_d, was_d, now_d), (_l3, va_f, was_f, now_f) = hp.UPGRADE_SITES[1:]
+        # in the dead tail of retail's full-pool path, before the retail write path at 0x14F2BB); site G is the
+        # writer's capacity call (retail call 0x14E7E0 -> call reserve_cap)
+        up = {label: (va, was, now) for label, va, was, now in hp.UPGRADE_SITES}
+        (_v, was_c, now_c), (va_d, was_d, now_d), (va_f, was_f, now_f) = up["site_c"], up["site_d"], up["site_f"]
+        self.assertEqual(up["site_g"][1:], (bytes.fromhex("e8a2f5ffff"), bytes.fromhex("e8bff6ffff")))
         self.assertEqual(now_c[:0x161], was_c[:0x161])
         self.assertEqual(now_c[0x163:0x168], bytes.fromhex("837c242c00"))   # room: cmp dword [esp+44], 0 (fold's depth)
         self.assertEqual(now_f[:18], was_f[:18])
@@ -116,6 +120,19 @@ class TemplateTests(unittest.TestCase):
         # the drop path keeps its address (harnesses watch it)
         self.assertEqual(hp.DROP_VA, 0x14F249 + 13)
 
+    def test_the_first_b81_revision_is_pinned_and_upgrades_three_sites(self):
+        # coordinator's ruling (11/24): 570cd7c16 (the free-agent resort without the playoff reserve) upgrades in place too
+        self.assertEqual([row[0] for row in hp.REVISIONS], ["beta-80", "b81 570cd7c16"])
+        self.assertEqual(hp._digest(hp.REVISION_570CD7C16_SITES), hp.REVISION_570CD7C16_SHA256)
+        self.assertEqual(hp.REVISION_570CD7C16_SHA256, "7b61e3e99770293913efdb989b8d097a8bf2b2ef4a03b1a54e7d972f0144ddae")
+        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.REVISION_570CD7C16_SITES), 1142)
+        self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_570CD7C16_SITES],
+                         [("site_a", 0x14E8B0, 97), ("site_b", 0x14E930, 146), ("site_g", 0x14F239, 5)])
+        old = {label: after for label, _va, _b, after in hp.REVISION_570CD7C16_SITES}
+        for label, _va, _before, after in hp.SITES:
+            if label in ("site_c", "site_d", "site_e", "site_f"):
+                self.assertEqual(after, old[label], label)                     # the free-agent resort is unchanged
+
     def test_sites_lie_in_the_engine_and_clear_of_the_honors_rule_site(self):
         spans = [(va, va + len(after)) for _l, va, _b, after in hp.SITES]
         for lo, hi in spans:
@@ -123,9 +140,10 @@ class TemplateTests(unittest.TestCase):
             self.assertFalse(lo < 0x14F16F and 0x14F168 < hi, hex(lo))              # honors' 7-byte fold-rule site
         for (a, b), (c, d) in zip(sorted(spans), sorted(spans)[1:]):
             self.assertLessEqual(b, c)
-        # honors guards: the fold (0x14EFE0, 0x188) holds site D, the writer (0x14F220, 0x13A) holds site F
+        # honors guards: the fold (0x14EFE0, 0x188) holds site D, the writer (0x14F220, 0x13A) holds sites F and G
         self.assertTrue(0x14EFE0 <= spans[3][0] and spans[3][1] <= 0x14EFE0 + 0x188)
         self.assertTrue(0x14F220 <= spans[5][0] and spans[5][1] <= 0x14F220 + 0x13A)
+        self.assertTrue(0x14F220 <= spans[6][0] and spans[6][1] <= 0x14F220 + 0x13A)
 
     def test_help_and_caption(self):
         self.assertLessEqual(len(hp.BUILD_CAPTION), 60)
@@ -262,7 +280,7 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual(hp.status(self.retail), "retail")
         patched, receipt = hp.apply(self.retail)
         self.assertEqual(hp.status(patched), "applied")
-        self.assertEqual(receipt["changed_bytes"], 1121)
+        self.assertEqual(receipt["changed_bytes"], 1173)
         again, receipt2 = hp.apply(patched)
         self.assertEqual(again, patched)
         self.assertTrue(receipt2["already_applied"])
@@ -317,6 +335,29 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual(honors.status(bytes(mixed)), "foreign")
         with self.assertRaises(rdata.RdataSiteError):
             hp.apply(bytes(mixed))
+
+    def test_every_earlier_revision_upgrades_in_place_to_exactly_a_fresh_install(self):
+        from mod_editor.core import nfl2k5_defensive_try as defensive_try
+        from mod_editor.core import nfl2k5_honors as honors
+        fresh = hp.apply(self.retail)[0]
+        for name, own, _spans, upgrade in hp.REVISIONS:
+            with self.subTest(revision=name):
+                earlier = rdata.apply(self.retail, own, name)[0]
+                self.assertEqual((hp.status(earlier), hp.installed_revision(earlier)), ("previous", name))
+                self.assertEqual(hp.applied_sites(XbeImage(earlier)), list(own))
+                self.assertEqual(hp.compatible_edits(earlier), [(va, b) for _l, va, b, _a in own])
+                upgraded, receipt = hp.apply(earlier)
+                self.assertEqual(upgraded, fresh)
+                self.assertEqual((receipt["upgraded_from"], receipt["previous_revision"]), ("previous", name))
+                self.assertEqual(hp.apply(honors.apply(earlier)[0])[0], honors.apply(fresh)[0])
+                self.assertEqual(honors.status(honors.apply(earlier)[0]), "applied")
+                self.assertEqual(defensive_try.status(earlier), defensive_try.status(fresh))
+        # the two earlier revisions never read as each other, and a mix of either with this release is foreign
+        first = rdata.apply(self.retail, hp.REVISION_570CD7C16_SITES, "570cd7c16")[0]
+        mixed = bytearray(first)
+        _label, va, _before, after = next(row for row in hp.SITES if row[0] == "site_g")
+        mixed[rdata.offset_of(first, va):rdata.offset_of(first, va) + 5] = after
+        self.assertEqual(hp.status(bytes(mixed)), "foreign")
 
     @unittest.skipUnless(V09_RELEASED_XBE.is_file(), "the released v0.9 default.xbe (NFL2K5_V09_RELEASED_XBE) required")
     def test_the_released_v09_executable_reads_previous_and_upgrades_with_its_neighbours_intact(self):
@@ -724,6 +765,56 @@ class NativeTests(unittest.TestCase):
         self.assertEqual((m.hits["drops"], m.used()), (1, 50000))
         self.assertEqual([m.stream(r) for r in recs], before)
 
+    # ---- b81 playoff reserve -------------------------------------------------------------------------------------------
+    def playoffs_then_honors(self, payload):
+        """980 men with 50 words each in this and last season (49,000 words, nothing to fold, no free agents): 1,000 new
+        playoff words (postseason class), then the season honors (134 regular-class words, field 101). -> (playoff
+        words kept, pool after them, honors kept, the machine)."""
+        m = Machine(payload)
+        recs = m.roster([(1, [word(f, s, 5) for s in (0, 1) for f in range(25)]) for _ in range(980)])
+        m.count(0x14F256, "drops")
+        m.put(CLASS, 1)
+        playoff = sum(m.call(0x14F220, ecx=recs[i % 980], edx=word(40 + i // 980, 1, 3)) != 0 for i in range(1000))
+        after_playoffs = m.used()
+        m.put(CLASS, 0)
+        honors = sum(m.call(0x14F220, ecx=recs[i], edx=word(101, 1, 1)) != 0 for i in range(134))
+        m.check(recs)
+        return playoff, after_playoffs, honors, m
+
+    def test_a_full_pool_keeps_the_season_honors_after_the_playoffs(self):
+        playoff, after_playoffs, honors, m = self.playoffs_then_honors(self.patched)
+        self.assertEqual(honors, 134, "the playoff words took the room the season honors needed")
+        self.assertEqual((playoff, after_playoffs), (488, 50000 - 512))      # playoff words stop 512 words short
+        self.assertEqual(m.used(), 50000 - 512 + 134)
+        self.assertEqual(m.hits["drops"], 1000 - 488)
+
+    def test_the_first_b81_revision_lets_the_playoffs_take_the_honors_room(self):
+        first = rdata.apply(self.retail, hp.REVISION_570CD7C16_SITES, "570cd7c16")[0]
+        playoff, after_playoffs, honors, m = self.playoffs_then_honors(first)
+        self.assertEqual((playoff, after_playoffs, honors), (1000, 50000, 0))
+
+    def test_playoff_words_outside_the_reserve_are_unchanged(self):
+        # postseason words while more than 512 words are free, and regular words up to the full pool: the same pool,
+        # pointers and results as the v0.9 bytes and the first b81 revision
+        machines = []
+        for payload in (rdata.apply(self.retail, hp.PREVIOUS_SITES, "beta-80")[0],
+                        rdata.apply(self.retail, hp.REVISION_570CD7C16_SITES, "570cd7c16")[0], self.patched):
+            m = Machine(payload)
+            recs = m.roster([(1, [word(f, s, 5) for s in (0, 1) for f in range(20)]) for _ in range(1000)])
+            results = []
+            rng = random.Random(81)
+            for cls, n in ((1, 9300), (0, 700)):                              # 40,000 -> 49,300 -> 50,000
+                m.put(CLASS, cls)
+                for i in range(n):
+                    results.append(m.call(0x14F220, ecx=recs[rng.randrange(1000)], edx=word(30 + i % 60, 1, 1 + i % 9)))
+            machines.append((m, recs, results))
+        (a, ra, xa), (b, rb, xb), (c, rc, xc) = machines
+        self.assertEqual(a.used(), 50000)
+        for m, recs, results in ((b, rb, xb), (c, rc, xc)):
+            self.assertEqual(results, xa)
+            self.assertEqual(bytes(m.uc.mem_read(Machine.POOL, 4 * 50000)), bytes(a.uc.mem_read(Machine.POOL, 4 * 50000)))
+            self.assertEqual([m.get(r + 0x2C) for r in recs], [a.get(r + 0x2C) for r in ra])
+
     def test_the_last_resort_never_runs_while_depth_three_leaves_room(self):
         # The collection test's veterans (depth 3+ to fold), with a free-agent list: the v0.9 revision and this one
         # leave byte-identical pools after the same writes, and the free-agent fold is never entered.
@@ -891,6 +982,24 @@ class FullFranchiseImageTests(unittest.TestCase):
     def stat(self, m, player, field):
         v = m.call(0x14EE40, ecx=player, edx=field, budget=5_000_000) & 0xFFFF
         return v - 0x10000 if v & 0x8000 else v
+
+    def test_a_playoff_word_in_the_full_pool_is_refused_and_costs_no_free_agent_his_season(self):
+        new = self.machine("b81")
+        root = new.get(ROSTER)
+        before, agents = self.streams(new)
+        player = new.get(new.get(root + 0x1C) + 500 * 5)                        # club 5's first rostered man
+        new.put(CLASS, 1)
+        new.call(0x14F430, ecx=player, edx=95, args=(1,), budget=2_000_000_000)
+        self.assertEqual((self.stat(new, player, 95), new.get(root + 0x40)), (0, 50000))   # refused, pool as it was
+        self.assertEqual(self.streams(new)[0], before)                                    # no free agent folded
+        new.put(CLASS, 0)
+        new.call(0x14F430, ecx=player, edx=103, args=(1,), budget=2_000_000_000)          # a Pro Bowl honor: kept
+        self.assertEqual(self.stat(new, player, 103), 1)
+        used = new.get(root + 0x40)
+        self.assertLess(used, 50000 - 512)                                                 # the resort freed room ...
+        new.put(CLASS, 1)
+        new.call(0x14F430, ecx=player, edx=95, args=(1,), budget=2_000_000_000)           # ... so the playoffs go on
+        self.assertEqual(new.get(root + 0x40), used + 1)
 
     def test_a_club_mans_first_stat_word_is_kept_where_v09_drops_it(self):
         old, new = self.machine("v0.9"), self.machine("b81")

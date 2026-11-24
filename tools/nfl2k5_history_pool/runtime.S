@@ -21,7 +21,14 @@
    free-agent list only (fa_fold, fold with depth -2, fold_base) before the write is dropped. Club men (active list,
    injured reserve, practice squad) keep their last season. Nothing changes while depth 3+ leaves the write room: the
    extra test reads the pool and the capacity only, so a franchise that never reaches this point is byte-identical.
-   A write that still finds no room is dropped at history_drop (0x14F256), as before. */
+   A write that still finds no room is dropped at history_drop (0x14F256), as before.
+
+   b81 playoff reserve (coordinator's ruling on the history-pool report, 11/24: permanent honors outrank playoff stat
+   words, which the offseason rollover wipes anyway): a new postseason-class word ([CLASS] 1) may not take one of the
+   last RESERVE (512) words. The writer's capacity test (site G) uses reserve_cap; such a word reaches gc_chunk, which
+   refuses it without a collection while the pool is not full, and when the pool is full runs the depth 3+ collection
+   but never the free-agent resort for it, and keeps the word only if RESERVE words stay free. Regular-class writes
+   (every season stat, the season honors, the next season's words) see the whole capacity, exactly as before. */
         .intel_syntax noprefix
 
         .set ROSTER,   0x00B72918      /* the roster object: [0] players, [4] first player, [0x40] used, [0x44] pool */
@@ -40,6 +47,7 @@
         .set FA_DEPTH2, -2             /* fold(-2): depth 2, men on the free-agent list only (fold_base) */
         .set NO_FOLD_BASE, -0x40       /* fold_base for a man fold(-d) must not touch: no word reaches age -d */
         .set FA_PLAYERS, 4096          /* the free-agent bitmap's bits: the capacity arena's 4,096 primary records */
+        .set RESERVE, 512              /* words a playoff (postseason-class) word may not take: kept for permanent words */
 
 /* ---- site A: insert one word at edi (called by 0x14F220 only) ------------------------------------------------ */
         .section .site_a, "ax"
@@ -77,6 +85,17 @@ insert_word:
         pop     esi
         ret
 
+/* reserve_cap (b81 history-pool, playoff reserve; in site A's tail): eax = the words a new word of the current class
+   may fill: the capacity, less RESERVE while the class is postseason ([CLASS] 1). The writer's capacity test
+   (site G, 0x14F239) and gc_chunk's room test call it in place of CAPACITY; like CAPACITY it clobbers ecx and edx. */
+        .globl reserve_cap
+reserve_cap:
+        call    CAPACITY
+        cmp     dword ptr [CLASS], 0
+        je      1f
+        sub     eax, RESERVE
+1:      ret
+
 /* ---- site B: the full-pool path of 0x14F220 (pool used >= capacity) -> eax 1 room for the write, 0 none ------- */
         .section .site_b, "ax"
         .globl gc_chunk
@@ -84,7 +103,13 @@ gc_chunk:
         pushad
         push    dword ptr [CLASS]
         mov     dword ptr [CLASS], 0
-        push    1
+        cmp     dword ptr [esp], 0      /* b81 playoff reserve: a playoff word ... */
+        je      4f
+        call    CAPACITY
+        mov     ecx, [ROSTER]
+        cmp     [ecx+0x40], eax
+        jl      3f                      /* ... in the reserve (pool not full) is refused without a collection */
+4:      push    1
         call    compact                 /* deleted words first (the offseason's postseason wipe, retirements) */
         call    MAXAGE
         mov     ebx, eax
@@ -99,13 +124,15 @@ gc_chunk:
         call    fold
         dec     ebx
         jmp     1b
-2:      call    CAPACITY
+2:      cmp     dword ptr [esp], 0
+        jne     3f                      /* a playoff word never costs a free agent his last season */
+        call    CAPACITY
         mov     ecx, [ROSTER]
         cmp     [ecx+0x40], eax
         jl      3f                      /* the write has room: as before */
         call    fa_fold                 /* last resort: the free agents' last season into their career row */
 3:      pop     dword ptr [CLASS]
-        call    CAPACITY
+        call    reserve_cap             /* room for this class: a playoff word must leave RESERVE words free */
         mov     ecx, [ROSTER]
         xor     edx, edx
         cmp     [ecx+0x40], eax
@@ -446,6 +473,12 @@ fold:
 /* ---- site E: the rule-table load at 0x14F168 (7 bytes, retail or the honors owner's) returns here ------------ */
         .section .site_e, "ax"
         ret
+
+/* ---- site G (b81 playoff reserve): the writer's capacity test, 0x14F239 (retail `call 0x14E7E0`): the limit a new
+   word of the current class may fill, so a playoff word that would take one of the last RESERVE words goes to the
+   full-pool path (gc_chunk refuses it there) ----------------------------------------------------------------------- */
+        .section .site_g, "ax"
+        call    reserve_cap
 
 /* ---- site F: inside 0x14F220, where retail starts its full-pool path (push 1 / call 0x14E9D0) ---------------- */
         .section .site_f, "ax"

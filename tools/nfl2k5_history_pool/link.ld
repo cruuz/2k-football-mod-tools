@@ -5,6 +5,7 @@ SECTIONS {
   .site_d 0x0014EFE0 : { *(.site_d) }
   .site_e 0x0014F16F : { *(.site_e) }
   .site_f 0x0014F249 : { *(.site_f) }
+  .site_g 0x0014F239 : { *(.site_g) }
   /DISCARD/ : { *(.comment) *(.note*) *(.eh_frame*) *(.text) *(.data) *(.bss) }
 }
 ASSERT(SIZEOF(.site_a) <= 0x80, "site A overflows 0x14E8B0..0x14E92F")
@@ -13,3 +14,4 @@ ASSERT(SIZEOF(.site_c) <= 0x1F0, "site C overflows 0x14E9D0..0x14EBBF")
 ASSERT(SIZEOF(.site_d) <= 0x188, "site D overflows 0x14EFE0..0x14F167")
 ASSERT(SIZEOF(.site_e) == 1, "site E is one ret")
 ASSERT(SIZEOF(.site_f) <= 0x6E, "site F overflows 0x14F249..0x14F2B6")
+ASSERT(SIZEOF(.site_g) == 5, "site G is the writer's 5-byte capacity call at 0x14F239")
