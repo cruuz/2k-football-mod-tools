@@ -670,7 +670,11 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     # b81 qb34: the preset names the quarterback room Realistic, whose needs (K128, depth
                                     # chart locks, SPECIAL rows) are off here; the preset build above observed the room's
                                     # fixed page and sites, so the allocator-free probe leaves it out.
-                                    qb_room=None),
+                                    qb_room=None,
+                                    # b81 helmet-sides: the side numbers need Hair styles' set E (hair styles are off
+                                    # here); the preset build above observed the route-5 owner, installed last, so the
+                                    # allocator-free probe leaves it off too (the 70cabc00a regeneration stopped there).
+                                    helmet_side_numbers=False),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
