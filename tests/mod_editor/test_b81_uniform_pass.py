@@ -94,7 +94,8 @@ PASS2_ADDED = (("00A0", "pants00"), ("01H0", "pants00"), ("02A0", "pants00"), ("
                ("24H0", "pants00"), ("24H0", "sleeve00"), ("24H10", "sleeve00"), ("25A0", "pants00"), ("26A0", "pants00"),
                ("26A0", "sleeve00"), ("26A4", "sleeve00"), ("26H0", "pants00"), ("26H0", "sleeve00"), ("28A0", "pants00"),
                ("29A0", "pants00"), ("29H0", "pants00"), ("30A0", "pants00"), ("30A0", "sleeve00"), ("30H0", "pants00"),
-               ("30H0", "sleeve00"), ("37A0", "pants00"), ("37A0", "sleeve00"), ("37H0", "pants00"))
+               ("30H0", "sleeve00"), ("37A0", "pants00"), ("37A0", "sleeve00"), ("37H0", "pants00"),
+               ("09A9", "socks00"), ("09H9", "socks00"))   # advisor 11/24: Defend the Den dark socks
 # the approved helmet shells (helmet00 Standard, helmet02 Revolution): Lions stripe order, Dolphins stripe colours,
 # Commanders stripe proportions; pinned to the helmet the build holds after the b81 helmet cleanup, rules only
 HELMET_KITS = ("09A0", "09H0", "14A0", "14H0", "29A0", "29H0")
@@ -334,12 +335,19 @@ class UnifDocument(unittest.TestCase):
     shoulder tops (route 1; Noah 11/21 on the Bears: "Shows sleeve numbers instead of shoulder numbers"), the helmet number
     places the helmet lane chose (helmet_number_route at 0x3C) and the Vikings facemask."""
 
-    SHOULDER_TOPS = ("00H0", "03A0", "03H0", "05A0", "05H0", "19A0", "19H0", "29A0", "37H0")
+    SHOULDER_TOPS = ("00H0", "03A0", "03H0", "05A0", "05H0", "19A0", "19H0", "29A0", "37H0",
+                     # the modern-template alternates of the same clubs (coordinator's ruling 11/24 under Noah's standing
+                     # rule "Yes fix every new bug we find like that"); the Cowboys Arctic 07H7/A7 keeps its sleeve number
+                     # (the 10/26 photographs)
+                     "03A3", "03A8", "03A9", "03H3", "03H8", "03H9", "05A4", "05A6", "05H4", "05H6", "19A4", "19A6", "19A7",
+                     "19H4", "19H6", "19H7", "37A2", "37H2")
 
     def test_the_rows_set_only_reviewed_fields(self):
         rows = unif_rows()
-        self.assertEqual(len(rows), 34)
-        self.assertEqual(len({r["selector"] for r in rows}), 34)
+        self.assertEqual(len(rows), 52)
+        self.assertEqual(len({r["selector"] for r in rows}), 52)
+        self.assertNotIn("07H7", {r["selector"] for r in rows})
+        self.assertNotIn("07A7", {r["selector"] for r in rows})
         for row in rows:
             self.assertEqual((row["chunk"], row["texture"]), (0, "Unif"), row["selector"])
             self.assertNotIn("ops", row)
@@ -1084,6 +1092,10 @@ class RealDisc(unittest.TestCase):
                 self.assertEqual(cols(pants, y, blue), [], (selector, y))                      # the wedge starts lower
             for x in (126, 145, 366, 385):                                                       # the base on both sides
                 self.assertTrue(near(tuple(int(v) for v in pants[190 if x in (126, 385) else 120, x, :3]), base, 12), (selector, x))
+            # advisor 11/24 (Noah's "fix every bug" rule): dark socks as in the photographs, the sock top below the hem too
+            socks = self.after(selector, "socks00")
+            self.assertTrue((np.abs(socks[..., :3].astype(int) - np.array((0x18, 0x19, 0x1B))).max(-1) <= 2).all(), selector)
+            self.assertTrue((np.abs(pants[240:, :, :3].astype(int) - 0x19).max(-1) <= 2).all(), selector)
 
     def test_the_commanders_road_shoulder_swoosh_is_one_solid_mark(self):
         # R2 (order R2-C, art director's ruling): the game draws the road shoulder swoosh across the torso texture's

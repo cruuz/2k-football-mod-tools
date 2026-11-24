@@ -32388,18 +32388,19 @@
    "texture": "49"
   },
   {
-   "after_sha256": "d5ea0c24398d7b8287f40645f51925f90dc3f075cb284cc7aa00301657dcb3e0",
+   "after_sha256": "64cc3551732977b8fcd28d713e8b4adf0bf7db3899d15dc7837e81725c34a673",
    "before_sha256": "f7e7b48355646fa02d221411e9a28f9622ff8fa2bb7ad0eee2b11892b8f90797",
    "chunk": 15,
    "defects": [
+    "b81p2-DET-dtd-2-spur",
     "b81u-DET-defendtheden-heavy-narrow-short-digits"
    ],
    "kind": "digit_png",
    "length": 2096,
-   "note": "jersey digits to the 2026 Defend the Den numerals: fill strokes 3 texels lighter, 40 columns (the widest a two-digit number allows; real 0.734), solid rows 1-62 (were 57), whole texels, no resampling",
+   "note": "advisor 11/24 (alternates recheck, under Noah's \"fix every bug\" rule): the 2-texel spur at the lower left of the 2's top arm taken off (row 16: its left edge now in line with the rows above, as on every other row of the arm) jersey digits to the 2026 Defend the Den numerals: fill strokes 3 texels lighter, 40 columns (the widest a two-digit number allows; real 0.734), solid rows 1-62 (were 57), whole texels, no resampling",
    "offset": 451296,
    "png": "DET_09A9_digit_jersey_2.png",
-   "png_sha256": "a62ff5c5fe04f8af05fb210a2db44beb91622d086e6b78a77543f5495fd99d74",
+   "png_sha256": "2073a2aef87fbf0f06ef7efda1ff6d978a788877a0f215f13fa985c4b9fca1b2",
    "resource_size": 1535024,
    "selector": "09A9",
    "texture": "50"
@@ -32898,18 +32899,19 @@
    "texture": "49"
   },
   {
-   "after_sha256": "d5ea0c24398d7b8287f40645f51925f90dc3f075cb284cc7aa00301657dcb3e0",
+   "after_sha256": "64cc3551732977b8fcd28d713e8b4adf0bf7db3899d15dc7837e81725c34a673",
    "before_sha256": "f7e7b48355646fa02d221411e9a28f9622ff8fa2bb7ad0eee2b11892b8f90797",
    "chunk": 15,
    "defects": [
+    "b81p2-DET-dtd-2-spur",
     "b81u-DET-defendtheden-heavy-narrow-short-digits"
    ],
    "kind": "digit_png",
    "length": 2096,
-   "note": "jersey digits to the 2026 Defend the Den numerals: fill strokes 3 texels lighter, 40 columns (the widest a two-digit number allows; real 0.734), solid rows 1-62 (were 57), whole texels, no resampling",
+   "note": "advisor 11/24 (alternates recheck, under Noah's \"fix every bug\" rule): the 2-texel spur at the lower left of the 2's top arm taken off (row 16: its left edge now in line with the rows above, as on every other row of the arm) jersey digits to the 2026 Defend the Den numerals: fill strokes 3 texels lighter, 40 columns (the widest a two-digit number allows; real 0.734), solid rows 1-62 (were 57), whole texels, no resampling",
    "offset": 451296,
    "png": "DET_09A9_digit_jersey_2.png",
-   "png_sha256": "a62ff5c5fe04f8af05fb210a2db44beb91622d086e6b78a77543f5495fd99d74",
+   "png_sha256": "2073a2aef87fbf0f06ef7efda1ff6d978a788877a0f215f13fa985c4b9fca1b2",
    "resource_size": 1537216,
    "selector": "09H9",
    "texture": "50"
