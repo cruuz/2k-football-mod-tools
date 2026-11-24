@@ -246,13 +246,16 @@ delete_at:
         ret
 
 /* room: -> eax 1 the pool has room, 2 it has room after a compaction (words moved), 0 it is full. Keeps ebx, esi,
-   edi, ebp. */
+   edi, ebp. b81: under fold(-d) a full pool answers 0 without a compaction (measured on the stored 68001/2032 image:
+   a write into a pool that stays full compacted 109 times, against 3 in v0.9, retrying the same unmovable words). */
         .globl room
 room:
         call    CAPACITY
         mov     ecx, [ROSTER]
         cmp     [ecx+0x40], eax
         jl      1f
+        cmp     dword ptr [esp+44], 0   /* b81: fold's depth (only fold calls room). The free-agent resort (negative) */
+        jl      3f                      /* compacts nothing for a move, which frees nothing: the word stays, as here */
         push    eax
         push    0
         call    compact
@@ -260,7 +263,7 @@ room:
         mov     edx, [ROSTER]
         cmp     [edx+0x40], ecx
         jl      2f
-        xor     eax, eax
+3:      xor     eax, eax
         ret
 1:      mov     eax, 1
         ret
@@ -271,9 +274,10 @@ room:
    word ages from into fold's [esp+12] ([esp+16] here; fold's player index is [esp+4] here, its depth argument
    [esp+44]). Depth >= 0: his years pro, the hist1 rule (fold merges a word when years pro - slot >= depth). Depth
    -d < 0 (only fa_fold passes one): fold depth d for a man on the game's free-agent list and nobody else: years pro - 2d
-   for him (years pro - 2d - slot >= -d exactly when years pro - slot >= d), NO_FOLD_BASE for every other man (no word
-   of his reaches age -d). Membership is one bit of the bitmap fa_fold keeps right above fold's argument ([esp+48]
-   here), indexed by the player index fold walks. Keeps ebx, ecx, esi, edi, ebp. */
+   for him (years pro - 2d - slot >= -d exactly when years pro - slot >= d); every other man gets NO_FOLD_BASE (no word
+   of his reaches age -d) and eax 0, on which fold goes straight to the next man (it would only walk his words and
+   merge none). Membership is one bit of the bitmap fa_fold keeps right above fold's argument ([esp+48] here), indexed
+   by the player index fold walks. Returns eax 1 to walk the man. Keeps ebx, ecx, esi, edi, ebp. */
         .globl fold_base
 fold_base:
         mov     edx, [ecx+0x24]
@@ -281,15 +285,18 @@ fold_base:
         and     edx, 31
         mov     eax, [esp+44]
         test    eax, eax
-        jns     3f
+        jns     2f
         lea     edx, [edx+eax*2]
         mov     eax, [esp+4]
         cmp     eax, FA_PLAYERS
-        jae     2f
+        jae     1f
         bt      dword ptr [esp+48], eax
-        jc      3f
-2:      mov     edx, NO_FOLD_BASE
-3:      mov     [esp+16], edx
+        jc      2f
+1:      mov     dword ptr [esp+16], NO_FOLD_BASE
+        xor     eax, eax
+        ret
+2:      mov     [esp+16], edx
+        mov     eax, 1
         ret
 
 /* ---- site D: fold(depth), stdcall ret 4: every live word of the current class at least `depth` seasons old merges
@@ -319,7 +326,8 @@ fold:
         add     ecx, [eax+4]
         mov     [esp+8], ecx
         call    fold_base               /* [esp+12]: years pro (b81: or the free-agent rule of a negative depth) */
-        .byte   0x0F, 0x1F, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00   /* 8-byte nop: the rest of the fold keeps its addresses */
+        test    eax, eax                /* 0: a man a negative depth does not fold (8 bytes with the jump: the rest of */
+        jz      .Lf_nextplayer          /* the fold keeps its addresses) */
 .Lf_restart:
         mov     eax, [esp+8]
         mov     esi, 0xFF

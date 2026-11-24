@@ -85,7 +85,7 @@ class TemplateTests(unittest.TestCase):
             self.assertEqual(len(before), len(after), label)
             self.assertNotEqual(before, after, label)
         self.assertEqual(hp._digest(hp.SITES), hp.PATCHED_SHA256)
-        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1124)    # b81: site B +21, C +48, F +82
+        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 1142)    # b81: site B +21, C +66, F +82
 
     def test_the_beta80_revision_is_pinned_and_the_upgrade_moves_four_sites(self):
         # b81 history-pool: the revision v0.9 shipped (b780 hist1) is kept byte for byte under its own pin
@@ -100,16 +100,19 @@ class TemplateTests(unittest.TestCase):
             if label in ("site_a", "site_e"):
                 self.assertEqual(after, old, label)                                # unchanged sites
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_SITES],
-                         [("site_b", 0x14E930, 118), ("site_c", 0x14E9D0, 438), ("site_d", 0x14EFE0, 390),
+                         [("site_b", 0x14E930, 118), ("site_c", 0x14E9D0, 456), ("site_d", 0x14EFE0, 390),
                           ("site_f", 0x14F249, 100)])
-        # site C only grows (fold_base after room), site D changes exactly the 13 bytes that computed years pro, site F
-        # only grows (fa_fold in the dead tail of retail's full-pool path, before the retail write path at 0x14F2BB)
+        # site C: the compaction is unchanged up to room's full branch (0x14EB31), room gains its free-agent test and
+        # fold_base follows it; site D changes exactly the 13 bytes that computed years pro; site F only grows (fa_fold
+        # in the dead tail of retail's full-pool path, before the retail write path at 0x14F2BB)
         (_l, _v, was_c, now_c), (_l2, va_d, was_d, now_d), (_l3, va_f, was_f, now_f) = hp.UPGRADE_SITES[1:]
-        self.assertEqual(now_c[:390], was_c[:390])
+        self.assertEqual(now_c[:0x161], was_c[:0x161])
+        self.assertEqual(now_c[0x163:0x168], bytes.fromhex("837c242c00"))   # room: cmp dword [esp+44], 0 (fold's depth)
         self.assertEqual(now_f[:18], was_f[:18])
         self.assertLessEqual(va_f + len(now_f), 0x14F2B7)
         self.assertEqual([va_d + i for i in range(390) if was_d[i] != now_d[i]], list(range(0x14F014, 0x14F021)))
-        self.assertEqual(now_d[0x34:0x41], bytes.fromhex("e83dfbffff0f1f840000000000"))   # call fold_base; 8-byte nop
+        # call fold_base; test eax, eax; jz .Lf_nextplayer (0x14F13C: the man a negative depth does not fold)
+        self.assertEqual(now_d[0x34:0x41], bytes.fromhex("e844fbffff85c00f841b010000"))
         # the drop path keeps its address (harnesses watch it)
         self.assertEqual(hp.DROP_VA, 0x14F249 + 13)
 
@@ -259,7 +262,7 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual(hp.status(self.retail), "retail")
         patched, receipt = hp.apply(self.retail)
         self.assertEqual(hp.status(patched), "applied")
-        self.assertEqual(receipt["changed_bytes"], 1103)
+        self.assertEqual(receipt["changed_bytes"], 1121)
         again, receipt2 = hp.apply(patched)
         self.assertEqual(again, patched)
         self.assertTrue(receipt2["already_applied"])
@@ -696,13 +699,16 @@ class NativeTests(unittest.TestCase):
         self.assertNotEqual(m.call(0x14F220, ecx=recs[0], edx=new), 0, "the write was dropped")
         self.assertEqual(m.hits["drops"], 0)
         self.assertIn(new, [w & ~END for w in m.stream(recs[0])])
-        # each free agent's ten last-season fields took his career row in: 10 x 600 words freed, one written
+        # each free agent's ten last-season fields took his career row in: 10 x 600 words freed, one written. His five
+        # career-only fields stay in the career row: with the pool full the last resort only merges (a move would free
+        # nothing), as a word the 16-bit cell cannot hold stays where it is.
         self.assertEqual(m.used(), 50000 - 6000 + 1)
         m.check(recs)
         for i in self.FREE:
             stream = m.stream(recs[i])
             self.assertEqual({f: v[0] for f, v in m.totals(recs[i]).items()}, totals[i])   # whole career totals
-            self.assertEqual(sorted(((w >> 23) & 31, bool(w & FOLDED)) for w in stream), [(5, True)] * 15)
+            self.assertEqual(sorted(((w >> 16) & 127, (w >> 23) & 31, bool(w & FOLDED)) for w in stream),
+                             sorted([(f, 5, True) for f in range(10)] + [(f, 4, True) for f in range(10, 15)]))
         for i in list(self.CLUB) + list(self.OTHER):                             # nobody else's words moved or changed
             got = [w & ~END for w in m.stream(recs[i])]
             want = [w & ~END for w in before[i]]
@@ -920,7 +926,11 @@ class FullFranchiseImageTests(unittest.TestCase):
                 return out
             self.assertEqual(sums(after[p]), sums(before[p]), hex(p))
             yp = (new.get(p + 0x24) >> 8) & 0x1F
-            self.assertFalse([w for w in after[p] if not w & (DELETED | POST) and yp - ((w >> 23) & 31) >= 2])
+            rows = {((w >> 16) & 127, (w >> 23) & 31): s16(w) for w in after[p] if not w & (DELETED | POST)}
+            # nothing left that could merge: a word 2+ seasons old stays only where the next season has no such field,
+            # or where the sum would not fit the 16-bit cell
+            self.assertFalse([(f, s) for (f, s), v in rows.items() if yp - s >= 2 and (f, s + 1) in rows
+                              and (f in MAX_FIELDS or -0x8000 <= v + rows[f, s + 1] <= 0x7FFF)])
         print(f"\n[b81 history pool] 68001/2032 week 22: field {field} kept; {len(changed) - 1} free agents folded, "
               f"pool {50000} -> {used} words")
 
