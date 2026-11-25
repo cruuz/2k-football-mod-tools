@@ -105,6 +105,40 @@ class NativeSettingsTests(unittest.TestCase):
         emptied=qb._transform(self.enabled,[('cleared bank',base,image.read(base,code.CODE_SIZE),b'\xcc'*code.CODE_SIZE)],restoring=False)
         self.assertEqual(qb.status(emptied),'foreign')
 
+    def test_pre_rule_realism_is_updated_beneath_the_option(self):
+        """b81 fb-targets (review S2), retail-built: season realism from before the fullback target rule, the lineup roles
+        and the option, then simulator.apply(): the same bytes as a fresh install of the current realism with the same
+        option written over it, the option's settings unchanged, and reinstall_on() rewriting it exactly."""
+        from mod_editor.core import nfl2k5_rdata_sites as rdata
+        clean = retail_bytes()
+        paired = pools.apply(positions.apply(edge.apply(clean)[0])[0], roster_has_olb=True)[0]
+        allocated = memory.apply(space.apply(paired, (*memory.REQUESTS, *simulator.REQUESTS, *lineup.REQUESTS),
+                                             scaleout=True)[0], require=True)[0]
+        sim, data = simulator._allocations(allocated)
+        old = space.install_code(allocated, simulator.OWNER, simulator._assemble(sim['va'], data['va'], fb=False)[1])[0]
+        old = rdata.apply(old, simulator.sites(sim['va'], fb=False), simulator.OWNER)[0]
+        fresh_roles = lineup.apply(simulator.apply(allocated)[0], third_down=False)[0]
+        old_roles = lineup.apply(old, third_down=False)[0]
+        for mode, rate in (('realistic', .310), ('custom', 1.5)):
+            with self.subTest(mode=mode):
+                pre_rule = qb.apply(old_roles, mode, custom_rate=rate)[0]
+                self.assertEqual(simulator.status(pre_rule), 'legacy')
+                self.assertEqual(simulator._recognize(pre_rule), 'b81')
+                settings = qb.read_settings(pre_rule)
+                self.assertEqual(settings['status'], 'applied')
+                updated, receipt = simulator.apply(pre_rule)
+                self.assertTrue(receipt['simulated_qb_injuries_kept'])
+                fresh = qb.apply(fresh_roles, mode, custom_rate=rate)[0]
+                self.assertEqual(updated, fresh)
+                self.assertEqual(simulator.status(updated), 'applied')
+                self.assertEqual(qb.read_settings(updated), settings)
+                self.assertEqual(qb.physical_view(updated), space.extend_scaleout(fresh_roles, qb.REQUESTS)[0])
+                # reinstall_on: the option written again over the updated physical executable, exactly
+                physical = simulator.apply(qb.physical_view(pre_rule))[0]
+                self.assertEqual(qb.reinstall_on(pre_rule, physical), updated)
+                self.assertIsNone(qb.reinstall_on(fresh_roles, fresh_roles))     # no option: nothing to write
+                self.assertEqual(simulator.apply(updated)[1]['status'], 'already_applied')
+
     def test_running_back_owner_installed_after_the_option_fails_closed(self):
         """Build installs the running-back owner first. Installed after the option, its weekly jump lands where the
         option expects the game's tail (0x133CC9): the option reads foreign and Retail and re-apply refuse instead of

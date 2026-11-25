@@ -265,9 +265,27 @@ def _transform(payload, edits, *, restoring):
     return bytes(data)
 
 
+def reinstall_on(payload, physical):
+    """b81 fb-targets: the option installed on ``payload``, written again unchanged over ``physical`` (the same executable
+    after an owner beneath the option, simulated season realism, updated its own code). None without the option."""
+    setting, _restored = _state(bytes(payload))
+    if setting is None:
+        return None
+    kicking, installed = scoring.installed(payload)
+    _validate_simulation(physical)
+    bank = _bank_allocation(physical)
+    result = _transform(physical, _edits(physical, bank, setting, kicking=installed if kicking == 'applied' else False),
+                        restoring=False)
+    _require(_state(result) == (setting, physical), 'Simulated QB injuries did not survive the simulator update')
+    return result
+
+
 def _validate_simulation(payload):
     _require(memory.read_settings(payload).get('require_128'), 'Simulated QB injuries require a 128 MiB standard executable')
-    _require(simulator._recognize_physical(payload) == 'applied', 'Enable the current simulated season realism before QB injuries')
+    # b81 fb-targets: the season realism revision before the fullback target rule links the same way (the option uses
+    # its mix block, pass converter and float pool, which that update leaves in place)
+    _require(simulator._recognize_physical(payload) in ('applied', 'b81'),
+             'Enable the current simulated season realism before QB injuries')
     roles = lineup._read_physical_settings(payload)
     _require(roles['status'] in ('applied','retail'), 'Simulated QB injuries found an unknown lineup patch')
     # Only on the restored executable, where the weekly running-back site holds that owner's own bytes again.
