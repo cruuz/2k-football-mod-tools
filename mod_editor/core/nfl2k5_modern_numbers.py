@@ -31,7 +31,9 @@ first two instructions (``mov eax,[esp+4]; test eax,eax``) become ``jmp page`` +
     number in it; tier = the draft round (A = 1, B = 2, C = 3, D = 4-7), E for an undrafted rookie, and by rating
     against THRESHOLDS for anyone else; every draw is a hash of (player index, club index, season, stage, k): no game
     RNG, the same number after a reload;
-  * nothing legal free: the retail routine with keep = 1 (its walk and its own fallback).
+  * nothing legal free at a league club: a number from the nearest decade(s) that nobody on the club wears or holds
+    (IR, practice squad), not retired and not another position's legacy number (the owner's rules; the retail walk
+    reads the active list only); nothing free at all, or a club outside the league: the retail routine, keep = 1.
 Only the joiner's +0x20 bits 3..9 change (and the retail tail moves his play-by-play cue 9000..9099 with the number).
 Nobody already on a club is renumbered; Create Player and the user's own number screen are untouched.
 
@@ -452,6 +454,15 @@ def pick(position: int, own: int, taken, key, *, draft_round: int | None = None,
                 return numbers[draw(key, 4) % len(numbers)]
             r -= weights[d]
     numbers = [n for n in range(100) if free(n)]
+    if not numbers and 0 <= club < 32:
+        # nothing legal free at a league club: the nearest decade(s) with a number nobody on the club wears or holds,
+        # not retired and not another position's legacy number (never the retail routine's active-list-only walk)
+        legal_decades = {d for d in range(10) if LEGAL_DECADES[position] >> d & 1}
+        for dist in range(1, 10):
+            near = {d for d in range(10) if d not in legal_decades and (d - dist in legal_decades or d + dist in legal_decades)}
+            numbers = [n for n in range(100) if n // 10 in near and n not in taken]
+            if numbers:
+                break
     if not numbers:
         return -1
     return numbers[draw(key, 5) % len(numbers)]

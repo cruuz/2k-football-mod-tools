@@ -33,8 +33,9 @@
      at QB, HB, FB, WR or TE where it really has (NYG 1, Nabers; TEN 1, Ward). A legacy number (DAL 88: a WR) is taken for
      every other position and left out of every draw; a fresh-draw joiner at its position of tier A or B gets it, when
      free, ahead of the draw. A user's own choice (Create Player, Assign Jersey Number, the Studio) never comes here.
-   * Nothing free and legal (or a position code outside 0..16, or no league): return -1, and the entry runs the retail
-     routine with keep = 1.
+   * Nothing legal free at a league club: a number from the nearest decade(s) nobody on the club wears or holds, not
+     retired and not another position's legacy number. Nothing free at all, a club outside the league, a position code
+     outside 0..16 or no league: return -1, and the entry runs the retail routine with keep = 1.
    Nothing here writes game memory; the entry writes the joiner's +0x20 bits 3..9 and the retail tail his cue. */
 #include "tables.h"
 
@@ -212,7 +213,20 @@ i32 __attribute__((cdecl)) number_pick(u32 p, u32 club, const u32 *frame) {
         }
     }
     for (total = 0, d = 0; d < 10; d++) total += free_in(&s, d);
-    if (!total) return -1;                                 /* no legal number free: the retail routine */
+    if (!total && index < 32) {
+        /* No legal number free at a league club: the nearest decade(s) holding a number nobody on the club wears or holds
+           (IR, practice squad), not retired and not another position's legacy number. The retail routine reads the
+           active list only and would hand out an IR or squad man's number or a retired one (the owner's rules). */
+        u32 legal = s.legal, dist, near;
+        for (dist = 1; !total && dist < 10; dist++) {
+            for (near = 0, d = 0; d < 10; d++)
+                if ((d >= dist && (legal >> (d - dist) & 1)) || (d + dist < 10 && (legal >> (d + dist) & 1)))
+                    near |= 1u << d;
+            s.legal = near & ~legal;
+            for (d = 0; d < 10; d++) total += free_in(&s, d);
+        }
+    }
+    if (!total) return -1;                                 /* nothing free: the retail routine */
     total = draw(&s, 5) % total;
     for (d = 0; d < 10; d++) {
         u32 c = free_in(&s, d);

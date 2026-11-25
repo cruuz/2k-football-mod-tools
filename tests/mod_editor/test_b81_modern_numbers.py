@@ -320,13 +320,15 @@ class SyntheticRule(unittest.TestCase):
             self.assertEqual(lg.join(p, t), 37)
 
     def test_t3_none_free_runs_the_retail_routine_with_keep_1(self):
-        """Every legal number taken: the retail walk with keep = 1, the same as the unhooked routine."""
+        """Every legal number taken at a club outside the league (slot 40: 0xC4CA0 gives no league index; a league club
+        draws from the nearest decade instead, SyntheticClubNumbers): the retail walk with keep = 1, the same as the
+        unhooked routine."""
         for lg in (self.league, self.retail):
             holders = [lg.player(300 + k, POS["G"], n) for k, n in enumerate(range(50, 80))]
-            lg.club(7, holders)
+            lg.club(40, holders)
         for own in (55, 64, 72, 90):
-            hooked = self.league.join(self.league.player(901, POS["G"], own), self.league.teams + 500 * 7)
-            retail = self.retail.join(self.retail.player(901, POS["G"], own), self.retail.teams + 500 * 7)
+            hooked = self.league.join(self.league.player(901, POS["G"], own), self.league.teams + 500 * 40)
+            retail = self.retail.join(self.retail.player(901, POS["G"], own), self.retail.teams + 500 * 40)
             self.assertEqual(hooked, retail, own)
             # the retail random fallback drew from the league generator in both executables alike
             self.assertEqual(bytes(self.league.m.uc.mem_read(0xE5FCA0, 448)), bytes(self.retail.m.uc.mem_read(0xE5FCA0, 448)))
@@ -501,6 +503,43 @@ class SyntheticClubNumbers(unittest.TestCase):
             self.assertNotEqual(self.joins(chi, POS["HB"], [None], own=34, years=6)[0], 34)   # a game path never
         finally:
             lg.when(stage=8)
+
+    def test_nothing_legal_free_never_hands_out_rights_or_retired_numbers(self):
+        """The panel's case (ten3, root 72003, 2026: Miami, the Jets and Washington signing quarterbacks): every legal
+        number is worn by a club-mate, held by an IR or practice-squad man, or retired. The retail routine (active list
+        only) gave an IR man's 11 or a retired 12; the owner's rules allow neither. The joiner gets a number from the
+        nearest decade nobody on the club wears, holds or has retired; the Python rule agrees. Fails on d4a055ce3."""
+        lg = self.league
+        lg.mode(2)                                                        # franchise: the IR table is read
+        try:
+            for club, position, legal_numbers, ir_numbers, ps_numbers, near in (
+                    ("MIA", "QB", range(0, 20), (11,), (10,), range(20, 30)),
+                    ("NYJ", "QB", range(0, 20), (4, 11), (15,), range(20, 30)),
+                    ("WAS", "QB", range(0, 20), (5,), (), range(20, 30)),
+                    ("ARI", "G", range(50, 80), (66,), (71,), list(range(40, 50)) + list(range(80, 90)))):
+                c = self.idx[club]
+                open_ = [n for n in legal_numbers if not mn.retired(c, n)]
+                ir = [lg.player(7100 + k, POS[position], n) for k, n in enumerate(ir_numbers)]
+                ps = [lg.player(7120 + k, POS[position], n) for k, n in enumerate(ps_numbers)]
+                worn = [n for n in open_ if n not in ir_numbers and n not in ps_numbers]
+                active = [lg.player(7140 + k, POS[position], n) for k, n in enumerate(worn)]
+                t = lg.club(c, active, practice=ps)
+                lg.injured_reserve(c, ir)
+                claimed = set(open_)
+                for k, frame in enumerate([None] * 12 + [draft_frame(r, slot=c) for r in range(7)]):
+                    index = 7200 + k
+                    own = open_[k % len(open_)]
+                    got = lg.join(lg.player(index, POS[position], own, years=0 if frame else 6), t, frame=frame)
+                    where = dict(club=club, own=own, got=got, frame=frame)
+                    self.assertNotIn(got, claimed, where)                  # no club-mate's, no IR or squad man's
+                    self.assertFalse(mn.retired(c, got), where)            # no retired number
+                    self.assertIn(got, near, where)                        # the nearest decade(s) with a free number
+                    want = mn.pick(POS[position], own, claimed, (index, c, 1, 8),
+                                   draft_round=frame[5] >> 5 if frame else None)
+                    self.assertEqual(got, want, where)
+                lg.injured_reserve(c, [])
+        finally:
+            lg.mode(0)
 
     def test_dallas_88(self):
         dal = self.idx["DAL"]
