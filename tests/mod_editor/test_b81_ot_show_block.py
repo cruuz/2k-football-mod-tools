@@ -162,7 +162,7 @@ class Machine:
 class ByteTests(unittest.TestCase):
     def test_every_site_keeps_its_extent(self):
         self.assertEqual([(va, len(before)) for _l, va, before, _a in guard.SITES],
-                         [(0xDA4D0, 0xD0), (0xDA5A0, 0x30), (0xDA5D0, 0x160), (0x1F7DF0, 0xB8), (0x83F10, 0x60)])
+                         [(0xDA4D0, 0xD0), (0xDA5A0, 0x30), (0xDA5D0, 0x160), (0x83F10, 0x60)])
         for label, _va, before, after in guard.SITES:
             with self.subTest(site=label):
                 self.assertEqual(len(before), len(after))
@@ -170,7 +170,7 @@ class ByteTests(unittest.TestCase):
     @unittest.skipUnless(shutil.which("as") and shutil.which("ld"), "GNU as and ld are required")
     def test_the_assembly_sources_give_the_installed_bytes(self):
         folder = ROOT / "tools" / "nfl2k5_show_block_guard"
-        for (label, va, before, after), name in zip(guard.SITES, ("loader", "release", "task", "switch", "replay")):
+        for (label, va, before, after), name in zip(guard.SITES, ("loader", "release", "task", "replay")):
             with self.subTest(site=label), tempfile.TemporaryDirectory() as temp:
                 obj, out = Path(temp) / "o.o", Path(temp) / "o.bin"
                 subprocess.run(["as", "--32", "-o", str(obj), str(folder / f"{name}.S")], check=True)
@@ -190,6 +190,17 @@ class ShowBlockTests(unittest.TestCase):
     def setUpClass(cls):
         cls.retail = _retail()
         cls.guarded = guard.apply(cls.retail)[0]
+
+    def test_presentation_command_14_stays_retail(self):
+        # The ruled fallback (b81 ot-crash w10l/w10m): case 9 still loads the postgame show at a continued overtime
+        # period end; the guard only has to survive a second load. Only the four sites and the header digest change.
+        from mod_editor.core import nfl2k5_rdata_sites as rdata
+        command_14 = rdata.offset_of(self.retail, 0x1F7DF0)
+        self.assertEqual(self.guarded[command_14:command_14 + 0xD0], self.retail[command_14:command_14 + 0xD0])
+        changed = [i for i in range(len(self.retail)) if self.retail[i] != self.guarded[i]]
+        extents = [(rdata.offset_of(self.retail, va), len(before)) for _, va, before, _ in guard.SITES]
+        outside = [i for i in changed if i >= 0x1000 and not any(o <= i < o + n for o, n in extents)]
+        self.assertEqual(outside, [])
 
     # -- the faults the guard removes (retail) -----------------------------------------------------------------------
     def test_retail_builds_the_show_heap_at_address_zero_when_the_block_is_taken(self):
@@ -271,38 +282,6 @@ class ShowBlockTests(unittest.TestCase):
         r.call(guard.LOADER_VA, ecx=1)
         with self.assertRaisesRegex(AssertionError, r"0xda4d0 faulted at 0x4865c"):
             r.call(guard.LOADER_VA, ecx=1)
-
-    # -- presentation command 14 ------------------------------------------------------------------------------------------
-    def test_the_postgame_show_loads_only_when_the_game_is_over(self):
-        # the w9j trigger: a continued overtime period end (game state 0x15) ran case 9; now only state 10 loads it
-        for state, loads in ((10, True), (0x15, False), (11, False), (0x12, False)):
-            with self.subTest(state=state):
-                m = Machine(self.guarded)
-                m.block(free=True)
-                m.put(guard.GAME_STATE, state)
-                m.call(guard.SWITCH_VA, ecx=9)
-                self.assertEqual("load_context" in [c[0] for c in m.calls], loads)
-                self.assertEqual(m.word(guard.SHOW_ACTIVE), int(loads))
-                self.assertEqual(m.word(guard.SHOW_BLOCK_FREE), int(not loads))
-        m = Machine(self.retail)                                            # retail loads it in any state
-        m.block(free=True)
-        m.put(guard.GAME_STATE, 0x15)
-        m.call(guard.SWITCH_VA, ecx=9)
-        self.assertEqual(m.word(guard.SHOW_ACTIVE), 1)
-
-    def test_every_other_case_of_command_14_runs_as_retail(self):
-        for case in list(range(9)) + [10, 0xFF]:
-            with self.subTest(case=case):
-                runs = []
-                for xbe in (self.retail, self.guarded):
-                    m = Machine(xbe)
-                    m.block(free=True)
-                    m.put(guard.GAME_STATE, 10)
-                    m.put(0xE602C8, 0x77)
-                    m.put(0xE602CC, 0x55)
-                    m.call(guard.SWITCH_VA, ecx=0x1100 | case)
-                    runs.append(([(c[0], c[1] & 0xFF) for c in m.calls], m.word(0xE602C8), m.word(0xE602CC)))
-                self.assertEqual(runs[1], runs[0])
 
     # -- the show task ------------------------------------------------------------------------------------------------
     def test_the_show_task_is_done_at_once_when_no_show_was_loaded(self):
