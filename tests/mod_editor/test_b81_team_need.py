@@ -65,6 +65,32 @@ class TeamNeedHeader(unittest.TestCase):
             subprocess.run(["gcc", "-m32", "-Os", "-ffreestanding", "-fno-builtin", "-Wall", "-Wextra", "-Werror",
                             "-I", str(HEADER.parent), "-c", str(src), "-o", str(Path(tmp) / "t.o")], check=True)
 
+    def test_percentile_is_the_mid_rank_in_c_and_python(self):
+        """The coordinator's ruling: mid-rank over every club's need-seat starters; ties at a cut line are not holes."""
+        from mod_editor.core import nfl2k5_team_need as tn
+        scale = tn.league_scale([[60, 70], [70, 80], [0, 75], [70, 70]])      # four clubs, two need seats each
+        self.assertEqual(scale, [0, 60, 70, 70, 70, 70, 75, 80])
+        self.assertEqual(tn.percentile(scale, 70), (2 * 2 + 4) * 128 // 8)     # half the tie: the middle, 128
+        self.assertEqual(tn.percentile(scale, 0), 16)
+        self.assertEqual(tn.percentile(scale, 80), (2 * 7 + 1) * 128 // 8)
+        self.assertEqual(tn.percentile(scale, 90), 256)
+        self.assertEqual(tn.percentile([], 50), 0)
+        if not shutil.which("gcc"):
+            raise unittest.SkipTest("gcc is needed")
+        cases = [(scale, r) for r in (0, 1, 60, 65, 70, 75, 80, 90)] + [([50] * 64, 50), (list(range(64)), 31)]
+        with tempfile.TemporaryDirectory() as tmp:
+            src = Path(tmp) / "p.c"
+            lines = ['#include <stdio.h>', '#include "team_need.h"', 'int main(void) {']
+            for k, (sc, r) in enumerate(cases):
+                lines.append(f'  static const unsigned char s{k}[] = {{{", ".join(map(str, sc))}}};')
+                lines.append(f'  printf("%u\\n", tn_percentile(s{k}, {len(sc)}u, {r}u));')
+            src.write_text("\n".join(lines + ["  return 0;", "}"]) + "\n", encoding="utf-8")
+            exe = Path(tmp) / "p"
+            subprocess.run(["gcc", "-O1", "-Wall", "-Wextra", "-Werror", "-I", str(HEADER.parent), str(src), "-o", str(exe)],
+                           check=True)
+            got = [int(v) for v in subprocess.run([str(exe)], capture_output=True, text=True, check=True).stdout.split()]
+        self.assertEqual(got, [tn.percentile(sc, r) for sc, r in cases])
+
     def test_points_rounds_like_the_room(self):
         from mod_editor.core import nfl2k5_team_need as tn
         import struct

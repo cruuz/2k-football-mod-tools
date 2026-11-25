@@ -24,8 +24,11 @@
 
    Rating: 0x246D80(p, 0) (the native sort rating; flag 0 does not discount injuries, presence is judged separately)
    in whole points 0..100 (tn_points, the quarterback room's conversion).
-   League scale of a pool: the ratings of every club's TN_NEED_SEATS present starters (32 x seats values), sorted;
-   a man's percentile is the share of that list rated strictly below him, in 256ths (tn_percentile).
+   League scale of a pool: the ratings of every club's TN_NEED_SEATS starters, all 32 clubs (32 x TN_NEED_SEATS
+   values: 64 at WR, 32 at FS; an empty need seat rates 0), sorted. A rating's percentile is its mid-rank on that list:
+   the values strictly below it plus half of those equal to it, over the list's length, in 256ths (tn_percentile), so
+   a tie at a cut line is not a hole. A club's need at a pool is the percentile of its weakest need-seat starter
+   (coordinator ruling 11/25: the scale is every club's need-seat starters, not one weakest value per club).
    Development asset (S4): 3 or fewer years pro and rated above the pool's median starter: never surplus. */
 #ifndef TEAM_NEED_H
 #define TEAM_NEED_H
@@ -73,11 +76,13 @@ static inline unsigned tn_points(unsigned bits) {
     return (((bits & 0x7FFFFFu) | 0x800000u) * 100u + (1u << (s - 1))) >> s;
 }
 
-/* Share of a sorted scale (n values, ascending) rated strictly below r, in 256ths. */
+/* Mid-rank of r on a sorted scale (n values, ascending), in 256ths: (below + equal / 2) / n, as
+   (2 * below + equal) * TN_SCALE / (2 * n), rounded down. */
 static inline unsigned tn_percentile(const unsigned char *scale, unsigned n, unsigned r) {
-    unsigned below = 0;
+    unsigned below = 0, upto;
     while (below < n && scale[below] < r) below++;
-    return n ? below * TN_SCALE / n : 0;
+    for (upto = below; upto < n && scale[upto] == r; upto++) {}
+    return n ? (below + upto) * (TN_SCALE / 2u) / n : 0;
 }
 
 #endif
