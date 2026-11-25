@@ -15,6 +15,10 @@ faces with hanging hair first inside a bucket, so the native Dreads rule is "ind
 b778-rh2: 24 rows (18 tone x build buckets, then the East Asian and South Asian rows for the rare surnames, by build),
 row counts up to 511 (9 bits) with up to 127 hanging faces, several crop folders, per-face look / expression tags.
 
+b81: this tool writes OPAQUE atlases (RGB palettes). The shipped bank was then cut out with
+``tools/b81/portrait_cutout.py faces`` + ``pack`` (alpha in the palettes, no grey wall); run those two steps after a
+rebuild, or the test tests/mod_editor/test_b81_portrait_cutout.py fails on the grey background.
+
 usage: rh1_bank.py --crops DIR[,DIR...] --labels labels.json --accept accept.txt --runs RUNS [--jobs 8] [--apply]
 """
 from __future__ import annotations
