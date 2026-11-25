@@ -1104,7 +1104,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "507d4980e6744e72c643b75e8124650f4c603273a4c3ed6d0be62f1760269fb3",
+        "mod_editor/core/nfl2k5_xbe_space.py": "6af12023351269316e33676bf665836034bcc23a76931a2e01bd868044bcf03d",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "b63521c9b17119b87558aff36a5a914d0c3fdd42e96240cf7de20065ead644d7",
@@ -1176,6 +1176,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/xbox_ima_encoder.py": "2f6c7209674d93c542f4c67fdab2ebfa4aaa8a6a21d6b4a08d07a9996bf79d76"
     }
     data_pins: Mapping[str, str] = {
+        "data/nfl2k5_modern_numbers/numbers.json": "847e027758b39f0981403d8a2f0c643c5956dd6bada06fab8820acd6c7f27492",  # b81 modern numbers: retired and legacy numbers (the owner reads it at import)
         "data/vip/coach_sources_2026.json": "54fac5e396a2d76c574d63b94217261c58ef2dbfa4f1906fbbade6e7951c9b63",
         "data/vip/coach_portraits_2026.json": "aa398aa7b0e695c73b4a809ba5886bb7df95d1c4173adb00f542d6fd0ccfebe1",
         "data/vip/defense_identity_2026.json": "12e2bcc1b7ede02dcac2d2f43351c7985e88ab4a62ad908d900168b4009a55e7",

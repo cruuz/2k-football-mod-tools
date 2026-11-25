@@ -869,7 +869,10 @@ MODERN_NUMBERS_OWNER = "nfl2k5_modern_numbers"
 MODERN_NUMBERS_VA = 0x1530000
 MODERN_NUMBERS_SIZE = PAGE
 MODERN_NUMBERS_REQUEST = (MODERN_NUMBERS_OWNER, "code", MODERN_NUMBERS_SIZE, PAGE)
-LATE_OWNERS += (MODERN_NUMBERS_OWNER,)
+# A fixed page never advances the pool cursor, so its place in LATE_OWNERS moves nobody; it sits before the quarterback
+# room so the fixed quarterback, helmet (and, after their merge, CPU trades) owners stay the last late owners.
+LATE_OWNERS = (LATE_OWNERS[:LATE_OWNERS.index(QB_ROOM_OWNER)] + (MODERN_NUMBERS_OWNER,)
+               + LATE_OWNERS[LATE_OWNERS.index(QB_ROOM_OWNER):])
 FIXED_PAGE_OWNERS += (MODERN_NUMBERS_OWNER,)
 
 

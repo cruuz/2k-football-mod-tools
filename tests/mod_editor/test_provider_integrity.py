@@ -387,6 +387,8 @@ class ProviderIntegrityTests(unittest.TestCase):
         self.assertEqual(
             unified.data_pins,
             {
+                # b81 modern numbers: retired and legacy numbers, read when the owner module is imported
+                "data/nfl2k5_modern_numbers/numbers.json": "847e027758b39f0981403d8a2f0c643c5956dd6bada06fab8820acd6c7f27492",
                 "data/nfl2k5_modern_venues_2026/numbers/manifest.json": "fa9ca79e6175b4b50fb624841b4cb6aea47f9a9f910e891723de1fdf9cfed089",
                 "data/nfl2k5_modern_venues_2026/numbers/block.png": "1a6e2517c6f5f745a0a98712c4f19870ae964c8f81563d99351f2a1948d56718",
                 "data/nfl2k5_super_bowl_logos/manifest.json": "66193ac79c75a1da67f44948392f4a3885f31733e255448905f410409d1a28a8",
