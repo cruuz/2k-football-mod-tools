@@ -78,10 +78,11 @@ T2  (b81 CPU trades, nfl2k5_cpu_trades) on every trade group of exactly one play
     two views are one weekly advance apart (else the harness judges the trade at the call): T2.deadline (stage 8 at or past
     the deadline byte, whatever the option), T2.window (only stages 7 and 8), T2.counts (seller 50..65, buyer at most 53
     in season, 65 in the preseason), T2.player (no rookie, no years left, in the preseason from year index 1 no first
-    contract year, not star-tagged, fully healthy before), T2.cap (the buyer within the cap after it, M1), T2.round (no
+    contract year, not star-tagged, not hurt both before and after the advance), T2.cap (the buyer within the cap after it, M1), T2.round (no
     1st, N3), T2.picks_paid (fewer than three own picks of the coming draft already paid, S3),
     T2.seller_depth (the seller keeps its seats present and its cut minimum at the pool: nfl2k5_team_need), T2.load (neither club in
-    three trade groups of the previous ledger), T2.repeat (the man was not signed or traded in the previous ledger),
+    three trade groups of the ledger rows the call surely saw: ledger_seen_at_call), T2.repeat (the man was not signed
+    or traded in those rows),
     T2.pick (exactly that pick passes buyer to seller). All failures.
 T1  trades since ``previous`` (the view one weekly advance earlier): the ring rows from previous.ledger_cursor to
     view.ledger_cursor (modulo 600: a wrap of 600 or more rows cannot be told apart, which info says; rows outside the
@@ -908,6 +909,23 @@ def ledger_trade_load(view: LeagueView) -> list[int]:
     return load
 
 
+def ledger_seen_at_call(previous: LeagueView, view: LeagueView):
+    """The ledger rows the trade call surely saw: the previous view's 600 rows, less the slots this advance wrote
+    (previous.ledger_cursor up to view.ledger_cursor, modulo 600). Those old rows may have been overwritten before the
+    call (rows of the same week, or native trades the pending scan executed ahead of ours), so whether the engine saw
+    them is unknown here; the season observer's TT.load and TT.repeat judge them at the call itself. Returns an object
+    with ledger_rows and ledger_cursor."""
+    from types import SimpleNamespace
+    rows = list(previous.ledger_rows)
+    if view.ledger_rows is not None and 0 <= previous.ledger_cursor < LEDGER_CAPACITY \
+            and 0 <= view.ledger_cursor < LEDGER_CAPACITY:
+        k = previous.ledger_cursor
+        for _ in range((view.ledger_cursor - previous.ledger_cursor) % LEDGER_CAPACITY):
+            rows[k] = (0, None, None)
+            k = (k + 1) % LEDGER_CAPACITY
+    return SimpleNamespace(ledger_rows=rows, ledger_cursor=view.ledger_cursor)
+
+
 def _check_player_for_pick(q, view, previous, clubs, human, one_advance, changes, add, skipped):
     """T2: the rules of the CPU trades owner on one player-for-pick group at a position other than QB."""
     seller, buyer, player, pos, rows = q["seller"], q["buyer"], q["player"], q["position"], q["rows"]
@@ -944,8 +962,10 @@ def _check_player_for_pick(q, view, previous, clubs, human, one_advance, changes
             reasons.append("first contract year (preseason, from the second franchise season)")
         if before[0x53] & 1:
             reasons.append("star-tagged")
-        if not _fully_healthy(before):
-            reasons.append("not fully healthy before the trade")
+        if not _fully_healthy(before) and not _fully_healthy(view.record(player)):
+            # hurt before the advance AND after it: a man who healed during the advance before the call is healthy at
+            # the call (the season observer's TT.player judges health at the call itself)
+            reasons.append("not fully healthy before the trade or after it")
         if reasons:
             add("T2.player", FAIL, "a man the CPU trades never offer", club=seller, player=player, reasons=reasons,
                 rows=rows)
@@ -968,12 +988,13 @@ def _check_player_for_pick(q, view, previous, clubs, human, one_advance, changes
             add("T2.picks_paid", FAIL, "buyer had already paid three of its own picks of the coming draft (S3)",
                 club=buyer, paid=paid, rows=rows)
     if previous.ledger_rows is not None and not skipped("T2.load"):
-        load = ledger_trade_load(previous)
+        at_call = ledger_seen_at_call(previous, view)
+        load = ledger_trade_load(at_call)
         named = [c for c in (seller, buyer) if 0 <= c < CLUBS and load[c] >= CPU_TRADE_LOAD_LIMIT]
         if named:
             add("T2.load", FAIL, "player-for-pick trade by a club already in three trade groups of the ledger",
                 club=named[0], player=player, load=[load[c] for c in named], rows=rows)
-        signed = [k for k, (word, p, _c) in enumerate(previous.ledger_rows) if p == player and word & 31 in (1, 7)]
+        signed = [k for k, (word, p, _c) in enumerate(at_call.ledger_rows) if p == player and word & 31 in (1, 7)]
         if signed and not skipped("T2.repeat"):
             add("T2.repeat", FAIL, "player-for-pick trade of a man the ledger shows signed or traded", club=seller,
                 player=player, ledger_slots=signed, rows=rows)

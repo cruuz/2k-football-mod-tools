@@ -53,10 +53,12 @@ class CpuTradeValidatorTests(unittest.TestCase):
             break
         cls.word = 5 | cls.BUYER << 6
 
-    def run_trade(self, before_edit=None, after_edit=None, prior_week=None):
+    def run_trade(self, before_edit=None, after_edit=None, prior_week=None, before_post=None):
         ram = Ram(self.image)
         if before_edit:
             before_edit(ram)
+        if before_post:                                  # rows the same advance writes before the trade call
+            before_post(ram)
         ram.post(self.SELLER, self.man, self.BUYER, self.word)
         after = ram.native_pending_scan()
         prior = Ram(self.image)
@@ -143,6 +145,40 @@ class CpuTradeValidatorTests(unittest.TestCase):
             ram.put(at + 8, ram.team(self.SELLER))
         report, _v, _a = self.run_trade(before_edit=signed)
         self.assertEqual(t2(report), {"T2.repeat"})
+
+    def test_a_ledger_row_the_advance_overwrote_does_not_count(self):
+        """A signing row at a slot the same advance overwrote (here first by an injury row) may have been gone at the
+        call, so T2.repeat leaves it to the observer's TT.repeat at the call; a row the advance did not touch counts
+        (test_a_man_the_ledger_shows_signed_fails_T2_repeat)."""
+        def oldest_signed(ram):
+            at = fi.LEDGER + 12 * ram.get(fi.LEDGER_CURSOR)         # the oldest row: the next one written
+            ram.put(at, 1 | fi.LAST_IN_GROUP)
+            ram.put(at + 4, ram.player(self.man))
+            ram.put(at + 8, ram.team(self.SELLER))
+
+        def injury_row_first(ram):                                   # the advance writes one row before the call
+            cursor = ram.get(fi.LEDGER_CURSOR)
+            at = fi.LEDGER + 12 * cursor
+            ram.put(at, 10 | fi.LAST_IN_GROUP)
+            ram.put(at + 4, ram.player(self.man))
+            ram.put(at + 8, ram.team(self.SELLER))
+            ram.put(fi.LEDGER_CURSOR, (cursor + 1) % fi.LEDGER_CAPACITY)
+
+        report, _v, _a = self.run_trade(before_edit=oldest_signed, before_post=injury_row_first)
+        self.assertNotIn("T2.repeat", t2(report))
+
+    def test_health_is_judged_on_both_sides_of_the_advance(self):
+        def hurt(ram):
+            p = ram.player(self.man)
+            ram.put(p + 0x20, ram.get(p + 0x20) | 0x80000000 | 1 << 22)
+        report, _v, _a = self.run_trade(before_edit=hurt, after_edit=self._healed)   # healed before the call
+        self.assertNotIn("T2.player", t2(report))
+        report, _v, _a = self.run_trade(before_edit=hurt)                            # hurt on both sides
+        self.assertIn("T2.player", t2(report))
+
+    def _healed(self, ram):
+        p = ram.player(self.man)
+        ram.put(p + 0x20, ram.get(p + 0x20) & ~0xBFC00000)
 
     def test_a_seller_left_without_its_starters_fails_T2_seller_depth(self):
         def hurt(ram):
