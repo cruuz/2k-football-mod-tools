@@ -68,7 +68,8 @@ class Document(unittest.TestCase):
         self.assertEqual(sum(r["kind"] == "names_derived" for r in derived), 3)
         for row in derived:
             if row["kind"] == "names_derived":                   # the Jaguars strip: an instruction, no texel (F3)
-                self.assertEqual([op["op"] for op in row["derive"]], ["thin_letters"])
+                # b81-nameplates (owner 11/25): the thinned letters then get coverage edges, still no texel
+                self.assertEqual([op["op"] for op in row["derive"]], ["thin_letters", "smooth_letters"])
         for row in derived:
             self.assertNotIn("png", row)
             self.assertEqual(len(row["rgba_sha256"]), 64)
@@ -279,14 +280,14 @@ class ReleasedDisc(unittest.TestCase):
     def test_a_paint_ships_no_texel_equal_to_the_base_and_never_traces_its_shape(self):
         """Review F3/F4: erasures are instructions, additions are pixels. A paint texel always differs from what the
         operations before it made, and the shipped texels cover at most a quarter of the base's edge texels (the
-        generator's EDGE_OVERLAP_LIMIT); the Jaguars strip ships no texel at all (``thin_letters``)."""
+        generator's EDGE_OVERLAP_LIMIT); the Jaguars strip ships no texel at all (``thin_letters``, then ``smooth_letters``)."""
         sys.path.insert(0, str(ROOT / "tools/b81_uniforms"))
         import glyph_derive as tool
         painted = 0
         for row in self.rows:
             ops = row["derive"]
             if row["kind"] == "names_derived":
-                self.assertEqual([op["op"] for op in ops], ["thin_letters"])
+                self.assertEqual([op["op"] for op in ops], ["thin_letters", "smooth_letters"])
                 continue
             if not any(op["op"] == "paint" for op in ops):
                 continue
