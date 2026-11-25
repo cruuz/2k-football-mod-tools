@@ -63,12 +63,17 @@ from typing import Mapping
 from . import nfl2k5_champions as champions
 from . import nfl2k5_history_pool as history_pool  # b780 hist1: its in-place sites lie inside two guarded spans
 from . import nfl2k5_honors_code as runtime
+from . import nfl2k5_honors_code_b779 as runtime_b779   # b81: the runtime from beta-79 to the beta 81 integration
 from . import nfl2k5_rdata_sites as rdata
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_honors"
 UPGRADES_PREVIOUS = True   # b780 n6: status() may read "previous" (the beta-79 install); apply() upgrades it
+# b81 sb-ir-honors: this release's runtime also gives the Super Bowl honor to the winners on injured reserve. Every install
+# of the earlier runtime (beta-79 to the beta 81 integration, with any champions revision) reads "previous", and apply()
+# installs the new runtime in place (the entries kept their offsets, so the seven sites do not change).
+HONORS_PREVIOUS_REVISION = "beta-79 honors runtime (no injured-reserve Super Bowl honor)"
 EVIDENCE = "EXPERIMENTAL"
 CODE_SIZE = 2560
 DATA_SIZE = 16
@@ -173,7 +178,8 @@ def _rel32(source_end: int, target: int) -> bytes:
     return struct.pack("<i", target - source_end)
 
 
-def code_for(code_va: int, data_va: int, champions_code_va: int = 0, *, champions_previous: bool = False) -> bytes:
+def code_for(code_va: int, data_va: int, champions_code_va: int = 0, *, champions_previous: bool = False,
+             honors_previous: bool = False) -> bytes:
     """The owned RX content with the template's relocations applied, padded to CODE_SIZE with int3.
 
     ``champions_code_va`` is the champions owner's code page: the card's third page calls into it. 0 (no such owner)
@@ -188,8 +194,9 @@ def code_for(code_va: int, data_va: int, champions_code_va: int = 0, *, champion
         symbols["champ_bio"] = at["champions_bio"]
         symbols["champ_flip"] = at["champions_flip"]
         symbols["champ_enter"] = at["champions_enter"]
-    result = bytearray(runtime.CODE)
-    for offset, kind, symbol, value in runtime.RELOCATIONS:
+    template = runtime_b779 if honors_previous else runtime   # b81: the earlier honors runtime, for "previous"
+    result = bytearray(template.CODE)
+    for offset, kind, symbol, value in template.RELOCATIONS:
         target = symbols[symbol] + value + struct.unpack_from("<i", result, offset)[0]
         if kind == 2:
             target -= code_va + offset
@@ -293,12 +300,19 @@ def _owned_state(payload: bytes):
         _require(champions_state == "retail", "honors and champions installations differ")
         return "retail", found
     revision = champions.installed_revision(payload, champs_va) if champs_va else False
-    _require(code == code_for(code_va, data_va, champs_va, champions_previous=revision), "foreign honors code")
-    state = "previous" if revision else "applied"
+    if code == code_for(code_va, data_va, champs_va, champions_previous=revision):
+        state = "previous" if revision else "applied"
+    else:
+        # b81: the earlier honors runtime, linked to whichever champions revision is installed beside it
+        _require(code == code_for(code_va, data_va, champs_va, champions_previous=revision, honors_previous=True),
+                 "foreign honors code")
+        state = "previous"
     edits = sites(code_va)
     _require(rdata.status(payload, edits) == "applied", "mixed honors sites")
     _check_guards(image, edits)
-    _require(champions_state == state, "honors and champions installations differ")
+    # b81: an earlier honors runtime may sit beside an up-to-date champions owner (beta-80 to the beta 81 integration)
+    _require(champions_state == state or (state, champions_state) == ("previous", "applied"),
+             "honors and champions installations differ")
     return state, found
 
 
@@ -360,7 +374,8 @@ def read_settings(payload: bytes) -> dict:
     prior = {}
     if state == "previous":
         revision = champions.installed_revision(payload, champions.allocations(payload)["code"]["va"])
-        prior = {"revision": champions.PREVIOUS_REVISION if revision is True else revision, "needs_update": True}
+        prior = {"revision": champions.PREVIOUS_REVISION if revision is True else revision or HONORS_PREVIOUS_REVISION,
+                 "needs_update": True}
     return {"status": state, "honors_page": installed, "fields": dict(FIELDS) if installed else None,
             "champions": installed, "award_rule": champions.AWARD_RULE if installed else None, **prior}
 
@@ -394,7 +409,8 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
             previous=XbeImage(payload).read(code_va, CODE_SIZE))
         result, champions_receipt = champions.install(relinked)
         _require(status(result) == "applied", "honors upgrade postcondition failed")
-        return result, {**common, "already_applied": False, "upgraded_from": champions_receipt["upgraded_from"],
+        return result, {**common, "already_applied": False,
+                        "upgraded_from": champions_receipt.get("upgraded_from", HONORS_PREVIOUS_REVISION),
                         "code_install": code_receipt, "code_va": hex(code_va), "data_va": hex(data_va),
                         "changed_bytes": sum(a != b for a, b in zip(before, result)) + abs(len(result) - len(before)),
                         "champions": champions_receipt,

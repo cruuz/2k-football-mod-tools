@@ -792,8 +792,9 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_letter_grades_attributes.py": "0fb3e43e4bd366b542bea98770f75d20ed0a46642bf25f38e261971d44b3e28a",
         "mod_editor/core/nfl2k5_letter_grades_code.py": "b01bcdb0e8a0e8c6a41f606500afeffd41034f2615c776dda6a9b24be6548dbd",
         "mod_editor/core/nfl2k5_letter_grades_progress.py": "5088c0b6a545b95efae98f906b5c4c2e030774b22f87a35fd08a2c1c80b31a90",
-        "mod_editor/core/nfl2k5_honors.py": "775745cb1de0c259a7edebdb7981e05d2ca46d2f7eaabf103fb63190a1d22abd",
-        "mod_editor/core/nfl2k5_honors_code.py": "5f74c634876b93f5a6fb37073b742d2248f7118f6074651473459791caccef59",
+        "mod_editor/core/nfl2k5_honors.py": "7d6f24b7af9c2deb4427b38be02b51f1754b60d7c1df1b44a4664b31d8b86e05",
+        "mod_editor/core/nfl2k5_honors_code.py": "e4a4554f1ac6df9ae267f47ec5095f84cd80015fb68f640a78f76d27263f9202",
+        "mod_editor/core/nfl2k5_honors_code_b779.py": "94dda893841e3d46989aa77ebc77b50cfa08206adb38c66f6176ef4b09d06c30",  # b81 sb-ir-honors: the earlier runtime
         "mod_editor/core/nfl2k5_champions.py": "cc677f15b8704080071a034b65ff953e2b12df194b64ef550aa17943373fb8b7",
         "mod_editor/core/nfl2k5_champions_code.py": "d0b7c4b07d849a24fda938e120cf7c6d4f15f0b589ac20183ecde61fb7fa463a",
         "mod_editor/core/nfl2k5_champions_code_b779.py": "c9a7e5bffface03b6ad23a030c652ef4398f8ac2ed26c249b8e815c2056c4407",  # b780 n6: frozen beta-79 runtime
