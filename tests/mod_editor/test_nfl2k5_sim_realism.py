@@ -25,9 +25,10 @@ class ConstantTests(unittest.TestCase):
     def test_calibration_constants(self):
         self.assertEqual(r.MIX_BIAS, 8.5)
         self.assertEqual((r.MIX_QB_PIVOT, r.MIX_QB_SLOPE), (87, 0.4))      # b780 b5-sim: QB1-scaled play mix
-        self.assertEqual(r.TARGET_RATE, 0.08)                               # b780 b5-sim: was 0.14
+        self.assertEqual(r.TARGET_RATE, 0.14)                               # b81 fb-targets (b780 b5-sim: 0.08)
         self.assertEqual((r.TARGET_PIVOT, r.TARGET_SLOPE), (90, 0.015))      # b780 b5-sim: WR1-scaled redirect
-        self.assertEqual(r.TARGET_WR1_SHARE, 0.75)
+        self.assertEqual(r.TARGET_WR1_SHARE, 0.50)                          # b81 fb-targets: half go to TE1 (was 0.75)
+        self.assertEqual((r.PREVIOUS_TARGET_RATE, r.PREVIOUS_TARGET_WR1_SHARE), (0.08, 0.75))
         self.assertEqual(r.QB_BONUS_YARDS, 3.5)
         self.assertEqual(r.QB_BONUS_RZ_LINE, 20.0)
         self.assertEqual(r.PASS_SCALE, 0.91)
@@ -121,7 +122,13 @@ class CodeTests(unittest.TestCase):
         # the float pool carries the calibrated constants
         import struct as _s
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.MIX_BIAS_OFF)[0], 8.5, places=6)
-        self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_RATE_OFF)[0], 0.08, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_RATE_OFF)[0], 0.14, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_WR1_OFF)[0], 0.50, places=6)
+        # the beta 80 and pre-rule beta 81 revisions keep the constants they shipped with (recognition, upgrades)
+        for kw in ({"beta80": True}, {"fb": False}):
+            old = r._assemble(0x14DA000, 0x14DC000, **kw)[1]
+            self.assertAlmostEqual(_s.unpack_from("<f", old, r.TARGET_RATE_OFF)[0], 0.08, places=6)
+            self.assertAlmostEqual(_s.unpack_from("<f", old, r.TARGET_WR1_OFF)[0], 0.75, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.MIX_QB_SLOPE_OFF)[0], 0.4, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_SLOPE_OFF)[0], 0.015, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.INTERCEPT_SCALE_OFF)[0], 1.35, places=6)
@@ -193,7 +200,9 @@ class InstallTests(unittest.TestCase):
         self.assertNotEqual(old_body, r.code_for(code["va"], state["va"]))
         self.assertEqual(old_body[:r.label_offsets()["tackle_entry"]],
                          r.code_for(code["va"], state["va"])[:r.label_offsets()["tackle_entry"]])
-        self.assertEqual(old_body[r.FLOAT_POOL:], r.code_for(code["va"], state["va"])[r.FLOAT_POOL:])
+        pool_diff = [i for i in range(r.FLOAT_POOL, r.CODE_SIZE)
+                     if old_body[i] != r.code_for(code["va"], state["va"])[i]]
+        self.assertTrue(set(pool_diff) <= set(range(r.TARGET_RATE_OFF, r.TARGET_WR1_OFF + 4)), pool_diff)  # the retune
         old = space.install_code(allocated, r.OWNER, old_body)[0]
         old = rdata.apply(old, r.sites(code["va"], fb=False), r.OWNER)[0]
         self.assertEqual(r.status(old), "legacy")

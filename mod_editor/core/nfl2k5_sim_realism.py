@@ -86,7 +86,10 @@ site now enters ``fb_entry``: the target step runs as before (the lottery and th
 position byte 8 (fullbacks and the authored H-backs) keeps the pass when the 16-bit league draw is below
 ``FB_TARGET_KEEP_THRESHOLD`` (1 in 3); otherwise the step runs again, up to ``FB_TARGET_REDRAWS`` times, and the first
 other pick takes it (the TE1 slot, else the HB1 slot, if every draw is a fullback). A halfback in the FB slot is not
-touched. The room came from the season merge: the lead-back rush correction had a constant of 0 since b780 db2 and never
+touched. The same report named Isaiah Likely ("the giants barely use isiah likely"): in the regular season (stage 8) the
+lottery gives no role any weight (its WR1 x1.5 and HB1 x1.2 apply only when 0xE576A4 is 7, the preseason), so TE1s
+drew 11.7% of the targets against 14.5-15.0% in the 2024-2025 NFL; the redirect above now moves 14% (was 8%) of the
+eligible picks at an average WR1 and sends half (was a quarter) of them to TE1. The room came from the season merge: the lead-back rush correction had a constant of 0 since b780 db2 and never
 changed a stat, so its branch and the rushing-yard read at the tackle entry are gone; the tackle correction is the same
 arithmetic, inlined. Everything before the tackle entry and the float pool keep their offsets (the simulated QB injury
 option links ``pass_scale`` and the pool, and edits the mix block), and the size stays 896, so the beta 81 revision
@@ -111,7 +114,8 @@ HELP_TEXT = (
     "EXPERIMENTAL. In franchise games the CPU simulates (not games you play) the play mix moves toward "
     "the modern NFL (about 33 passes and 27 runs a team), and better passers call more passes than weaker ones; "
     "both starting receivers keep the targets the game gives them. Strong receiving pairs share extra targets, fullbacks and "
-    "H-backs keep about one in three of the passes the game aims at them, and mobile quarterbacks "
+    "H-backs keep about one in three of the passes the game aims at them, half of the passes moved off backs and depth "
+    "receivers go to the first tight end, and mobile quarterbacks "
     "carry more often. Team interceptions move toward 12.8, and tackle totals move toward the NFL leader and "
     "top-10 levels. Red-zone passes gain fewer yards so scoring and the touchdown mix land near the modern NFL. "
     "Played games, ratings and rosters are unchanged. The numbers are calibrated from nflverse 2021-2025 regular "
@@ -149,10 +153,12 @@ FN_YARD_CONVERT = 0x00106480
 MIX_BIAS = 8.5                       # run score must beat pass score by this much to stay a run (average QB)
 MIX_QB_PIVOT = 87                    # b780 b5-sim: QB1 Pass Accuracy of the league-average starter (SOFTDRINK roster)
 MIX_QB_SLOPE = 0.4                   # extra bias per accuracy point above the pivot (fewer passes below it)
-TARGET_RATE = 0.08                   # share of eligible targets redirected with an average WR1
+TARGET_RATE = 0.14                   # share of eligible targets redirected with an average WR1 (b81 fb-targets: was 0.08)
 TARGET_PIVOT = 90                    # b780 b5-sim: WR1 Catching of the league-average WR1 (SOFTDRINK roster)
 TARGET_SLOPE = 0.015                 # extra redirect share per Catching point above the pivot (less below it)
-TARGET_WR1_SHARE = 0.75              # receiver share of redirects, with the rest going to TE1
+TARGET_WR1_SHARE = 0.50              # receiver share of redirects, with the rest going to TE1 (b81 fb-targets: was 0.75)
+# b81 fb-targets: the beta 80 and pre-rule beta 81 revisions carry these in their float pool (recognition and upgrades).
+PREVIOUS_TARGET_RATE, PREVIOUS_TARGET_WR1_SHARE = 0.08, 0.75
 WR2_MIN_CATCH = 80
 WR2_MAX_CATCH_GAP = 8
 WR2_SHARE = 0.28                     # share of receiver redirects for a competitive WR2
@@ -666,7 +672,7 @@ def _assemble(code_va, data_va, *, beta80=False, fb=True):
         a.jmp_abs(TACKLE_ENTRY_RESUME)
         _tackle_merge(a, state)
         _fullback_target(a)
-        return _finish(a, code_va, beta80)
+        return _finish(a, code_va, beta80, fb)
     a.b("31c0")                                           # xor eax,eax
     a.b("a3" + _u32(state).hex())                         # [state]=0
     a.b("803d" + _u32(SIM_MODE).hex() + "04")             # cmp byte [mode],4
@@ -691,15 +697,16 @@ def _assemble(code_va, data_va, *, beta80=False, fb=True):
         _beta80_merge(a, state)
     else:
         _season_merge(a, state)
-    return _finish(a, code_va, beta80)
+    return _finish(a, code_va, beta80, fb)
 
 
-def _finish(a, code_va, beta80):
+def _finish(a, code_va, beta80, fb):
     body = bytearray(a.assemble())
     require(len(body) <= FLOAT_POOL, f"sim realism code is {len(body)} bytes, float pool {FLOAT_POOL}")
     body = body.ljust(FLOAT_POOL, b"\xcc")
     qb_scale, qb_yards, pass_scale = (0.0036, 3.0, 0.86) if beta80 else (QB_SCRAMBLE_SCALE, QB_BONUS_YARDS, PASS_SCALE)
-    pool = (_flt(MIX_BIAS) + _flt(TARGET_RATE) + _flt(TARGET_WR1_SHARE) + _flt(qb_scale)
+    rate, share = (TARGET_RATE, TARGET_WR1_SHARE) if fb else (PREVIOUS_TARGET_RATE, PREVIOUS_TARGET_WR1_SHARE)
+    pool = (_flt(MIX_BIAS) + _flt(rate) + _flt(share) + _flt(qb_scale)
             + _flt(qb_yards) + _flt(INTERCEPT_SCALE) + _flt(pass_scale) + _flt(TACKLE_BONUS_PCT)
             + _flt(QB_BONUS_RZ_LINE) + _flt(RUN_RZ_SCALE) + _flt(RUSH_BONUS_PCT)
             + _flt(RZ_PASS_SCALE))
