@@ -4,6 +4,7 @@
 
 ### Installing and creating a mod
 
+- SOFTDRINK 2K28 v0.10 keeps the game's own Gillette Stadium for the Patriots. The custom Gillette Stadium model (Build tab, experimental, off in every preset) is still there to try but the SOFTDRINK build no longer turns it on, so the 2026 venue art treats the Patriots like every other club whose stadium keeps its retail model. Off does not restore a disc that already has the custom model, such as a built v0.9 disc: build again from your original game to get the retail stadium back.
 - On macOS, both Finder launchers can prepare their own Python environment on first use. They find an existing environment and open from folders whose names contain accents or emoji. The APF Linux archive supports `./APF-2K8-Mod-Studio.sh --setup`. Its first window fits the selected monitor, and a returning player keeps their saved layout.
 - Install SOFTDRINK 2K28 v0.10 for xemu at 128 MiB with the Complex 4627 BIOS. For 64 MiB, Studio links to the published v0.9 experimental pack. A later 64 MiB update is planned for selected improvements. Studio remembers the selected target when it launches xemu. [64 MiB download](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.9)
 - Quick Export handles a finished disc whose files were compacted, reordered or moved. Changing the selected pack or source clears its previous compatibility result. Starting a new export clears the preceding cover, name and project.
