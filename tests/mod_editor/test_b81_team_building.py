@@ -1,20 +1,27 @@
-"""CPU team building (beta 81, owner nfl2k5_team_building; the team-building lane's DESIGN.txt and the coordinator's
-rulings of 2026-11-25): the draft's need order and the free-agent wishes judged by the shared team-need rule.
+"""CPU team building (beta 81, owner nfl2k5_team_building; the coordinator's rulings of 2026-11-25 and the review fixes
+of the same day): the draft's need order and the free-agent wishes judged by the shared team-need rule.
 
 Every class fails on c4406481b: there is no nfl2k5_team_building owner, code template or window proof there.
 
-- Windows: the thirty code windows are proven unreferenced on the retail executable (tools/team_building/dead_code.py:
-  references, digests, return + padding, decode synchronisation, entry/TLS), clear of the reservation inventory and
-  of the economy's windows; the template reproduces from runtime.c (when gcc is present); its tables equal the draft
-  AI's VALUE and the economy's aging line.
+- Windows: the 29 code windows are proven unreferenced on the retail executable (tools/team_building/dead_code.py:
+  references including loop/jecxz, digests, return + padding, decode synchronisation, entry/TLS), clear of the
+  reservation inventory and of the economy's windows; the template reproduces from runtime.c (when gcc is present);
+  its tables equal the draft AI's VALUE and the economy's aging line.
 - Oracle: the Python mirror of runtime.c on built rosters: holes first by key, premium 3:2, QB in, a position drafted
-  this draft out, a development asset out in rounds 1 and 2 only, aging read in, a person's club keeps the retail order.
+  this draft out, an unseated development asset out in rounds 1 and 2 only, a bench man 3 better takes the seat,
+  aging read in, OLB keyed with LB only in the two-pool scheme, the kept positions' tiers, a person's club keeps the
+  retail order.
 - Owner (TEAM_BUILDING_STANDARD_XBE, a standard executable with the draft AI and the economy; else skip): install,
   Retail, foreign, needs, and the draft AI reading applied with the branches retargeted.
-- Image (TEAM_BUILDING_IMAGE, a kept .b81mem.gz, and TEAM_BUILDING_IMAGE_XBE, its executable; else skip): the code runs
-  natively in Unicorn on a real league: the native view equals the oracle's for every club, tb_order equals the
-  oracle's order for every CPU club and round, a club a person runs keeps the retail order byte for byte, hole clubs
-  get their hole first where the retail need had it lower, and the wish routine wishes for a hole first.
+- Studio and UpdateRoutes: the option, the v0.9 update (its in-place steps on a written copy of the released
+  executable when NFL2K5_V09_XISO is set) and the single-setting edit (which sends the released v0.9 disc to the
+  update).
+- Image and EntryPoints (TEAM_BUILDING_IMAGE, a kept .b81mem.gz, and TEAM_BUILDING_IMAGE_XBE, its executable; else
+  skip): the code runs natively in Unicorn on a real league: the native view equals the oracle's for every club,
+  tb_order equals the oracle's order for every CPU club and round, the draft pick 0x31E0F0 and the retail wish routine
+  0x3242C0 reach the code with their frames and registers intact, a person's club goes to the draft AI's cave, QB, K,
+  P and FB keep the draft AI's score, a signed starter takes his seat, and each guard has a check that fails when
+  the guard is changed in runtime.c (built with tools/team_building/assemble.py).
 Fixtures come from the environment only (no private paths in the repo).
 """
 from __future__ import annotations
@@ -61,7 +68,17 @@ class Windows(unittest.TestCase):
         report = dead_code.verify(RETAIL_XBE.read_bytes())
         self.assertEqual(len(report["windows"]), 29)
         self.assertEqual(report["references"], 0)
+        self.assertEqual(report["loop_references"], 0)
         self.assertEqual(dead_code.reservations_clear(), [])
+        # The loop/jecxz scan finds a planted `loop` into a window (review N7).
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        payload = bytearray(RETAIL_XBE.read_bytes())
+        start = min(dead_code.WINDOWS)
+        image = XbeImage(bytes(payload))
+        at = image.offset(start - 40, 2)
+        payload[at - 30: at] = b"\x90" * 30                         # synchronise the decodes: nops, then the loop
+        payload[at: at + 2] = bytes((0xE2, 40 - 2 + 4))
+        self.assertTrue(dead_code.loop_references(XbeImage(bytes(payload))))
 
     def test_windows_clear_of_the_economy_and_each_other(self):
         from tools.franchise_economy import dead_code as economy
@@ -152,9 +169,44 @@ class Oracle(unittest.TestCase):
         self.assertEqual(self._order(roster, 2), RETAIL)
 
     def test_a_development_asset_waits_until_round_three(self):
-        roster = self.average(WR=(86, 70)) + [man("WR", 86, 4, pro=2)]    # above the WR median starter (85)
-        self.assertEqual(self._order(roster, 0)[0], RETAIL[0])
-        self.assertEqual(self._order(roster, 2)[0], P["WR"])
+        # A compressed league (every other club's receivers at 78, the median starter 78) so that an unseated young man
+        # can sit above the median and still be under the bench line (weakest + 3): the only place the rule still acts
+        # now that a man 3 better takes the seat (review S1).
+        own = [m for m in club(0) if m.pos != P["WR"]] + [man("WR", 86, 0), man("WR", 77, 1), man("WR", 79, 4, pro=2)]
+        clubs = [own] + [[m for m in club(i % 16 - 8) if m.pos != P["WR"]] + [man("WR", 78, 0), man("WR", 78, 1)]
+                         for i in range(31)]
+        v = self.tb.view(clubs, 0)
+        self.assertEqual((v.weak[P["WR"]], v.young[P["WR"]]), (77, 79))
+        self.assertEqual(self.tb.order(RETAIL, v, 0, self.decline)[0], RETAIL[0])
+        self.assertEqual(self.tb.order(RETAIL, v, 2, self.decline)[0], P["WR"])
+
+    def test_the_own_seated_starter_is_not_a_development_asset(self):
+        """Review S3: a young star in one receiver seat does not excuse a bottom-quarter man in the other."""
+        roster = [m for m in self.average() if m.pos != P["WR"]] + [man("WR", 88, 0, pro=2), man("WR", 70, 1)]
+        v = self.tb.view(league(roster), 0)
+        self.assertEqual(v.young[P["WR"]], 0)
+        self.assertEqual(self._order(roster, 0)[0], P["WR"])
+
+    def test_a_better_man_on_the_bench_takes_the_seat(self):
+        """Review S1: a CPU signing joins with his old club's depth row; a man 3 or more better than the weakest seat
+        takes it in the view (the next depth sort will), so a hole just filled stops bidding. 2 better does not."""
+        hole = self.average(WR=(85, 70))
+        self.assertEqual(self._order(hole)[0], P["WR"])
+        for extra, seated in ((man("WR", 86, 3), True), (man("WR", 73, 3), True), (man("WR", 72, 3), False),
+                              (man("WR", 90, 3, present=False), False)):
+            with self.subTest(points=extra.points, present=extra.present):
+                v = self.tb.view(league(hole + [extra]), 0)
+                self.assertEqual(v.weak[P["WR"]], min(85, extra.points) if seated else 70)
+        self.assertNotEqual(self._order(hole + [man("WR", 86, 3)])[0], P["WR"])      # the hole is filled
+        self.assertEqual(self._order(hole + [man("WR", 72, 3)])[0], P["WR"])         # 2 better: still the hole
+        # The scale keeps the depth-row seats (the header's rule): the bench check is the own club's view only.
+        self.assertEqual(self.tb.view(league(hole + [man("WR", 86, 3)]), 0).scale, self.tb.view(league(hole), 0).scale)
+
+    def test_two_bench_men_fill_two_seats(self):
+        roster = [m for m in self.average() if m.pos != P["CB"]] + [man("CB", 70, 0), man("CB", 69, 1),
+                                                                     man("CB", 84, 4), man("CB", 83, 5)]
+        v = self.tb.view(league(roster), 0)
+        self.assertEqual(v.weak[P["CB"]], 83)
 
     def test_aging_reads_the_next_season(self):
         base = [m for m in self.average() if m.pos != P["WR"]]
@@ -169,6 +221,36 @@ class Oracle(unittest.TestCase):
     def test_fullback_kicker_punter_never_holes(self):
         roster = [m for m in self.average() if m.pos not in (P["FB"], P["K"], P["P"])]
         self.assertEqual(self._order(roster), RETAIL)
+
+    def test_olb_is_the_alias_or_keyed_with_lb_in_the_two_pool_scheme(self):
+        """Review S6: in the one-pool scheme OLB (10) keeps its retail place; when some rostered man carries OLB (the
+        economy's league_has_olb test) an LB hole moves OLB forward with LB."""
+        hole = self.average(LB=(82, 66))
+        one = self._order(hole)
+        self.assertEqual(one[0], P["LB"])
+        self.assertEqual(one.index(P["OLB"]), len(RETAIL) - 1)
+        clubs = league(hole)
+        clubs[5] = clubs[5] + [man("OLB", 75, 2)]
+        v = self.tb.view(clubs, 0)
+        self.assertTrue(v.olb)
+        self.assertEqual(sorted(self.tb.order(RETAIL, v, 0, self.decline)[:2]), [P["OLB"], P["LB"]])
+
+    def test_kept_positions_and_their_tiers(self):
+        """Ruling 3 and review M1/S2: QB, K, P and FB keep the draft AI's score; whether they wish is its decision; short
+        of the roster minimum they rank with the count deficits, a K or P the club has none of above the holes."""
+        tb = self.tb
+        self.assertEqual(tb.KEPT, (P["QB"], P["K"], P["P"], P["FB"]))
+        self.assertEqual([p for p in range(17) if not tb.tn.NEED_SEATS[tb.tn.POOL[p]] or p == 0],
+                         list(tb.KEPT))                                          # runtime.c tb_score's test
+        self.assertEqual(tb.kept_score(P["QB"], 900, 0, 3), 900)               # today's score as it was
+        self.assertEqual(tb.kept_score(P["QB"], -50, 1, 1), -50)               # the draft AI says no: no wish
+        self.assertEqual(tb.kept_score(P["QB"], 900, 1, 1), 900 // 16 + 51200)  # a count deficit
+        self.assertEqual(tb.kept_score(P["K"], 9000, 1, 0), 9000 // 16 + 200000)  # no kicker at all: above the holes
+        self.assertEqual(tb.kept_score(P["FB"], 900, 1, 0), 900 // 16 + 51200)
+        v = tb.view(league(self.average(WR=(86, 60))), 0)
+        deepest = tb.new_score(v, P["WR"], 90, 0)
+        self.assertLess(deepest, tb.kept_score(P["P"], 1, 1, 0))
+        self.assertGreater(deepest, tb.kept_score(P["QB"], 20000, 4, 0))
 
     def test_new_score_tiers(self):
         v = self.tb.view(league(self.average(WR=(86, 70))), 0)
@@ -337,6 +419,8 @@ class UpdateRoutes(unittest.TestCase):
         source = build._xbe_bytes(disc)
         expected = build._team_building_edit_payload(source)[0]
         self.assertEqual(receipt["team_building_source_update"]["result_sha256"], hashlib.sha256(expected).hexdigest())
+        if receipt["team_building_source_update"]["economy_upgraded"]:              # review N8: the user is told
+            self.assertIn(build.TEAM_BUILDING_ECONOMY_NOTE, receipt.get("user_notes", []))
 
     def test_v09_update_preflight_carries_team_building(self):
         from unittest import mock
@@ -353,6 +437,65 @@ class UpdateRoutes(unittest.TestCase):
                 receipt = build._update_v09_disc(plan, lambda *_: None, preflight=True, project=False)
         self.assertIn("team_building", receipt["v09_update"])
         self.assertIn("franchise_economy", receipt["v09_update"])
+
+
+    def test_the_released_v09_disc_goes_to_the_v09_update(self):
+        """Review S7: the single-setting edit refuses the released v0.9 disc before anything is read or written and
+        names the v0.9 update, which also brings the disc's CPU decisions, kick aim and history storage current."""
+        from unittest import mock
+        from mod_editor.core import mod_build as build
+        plan = build.team_building_disc_edit("v09.iso", "copy.iso")
+        with mock.patch.object(build, "_v09_reference", return_value={"name": "SOFTDRINK 2K28 v0.9"}), \
+                mock.patch.object(build, "_team_building_edit_payload") as payload, \
+                mock.patch.object(build, "_copy_private_build_source") as copying:
+            with self.assertRaisesRegex(ValueError, "update-v09 --team-building"):
+                build._edit_installed_team_building(plan, Path("v09.iso"), Path("copy.iso"), b"xbe",
+                                                    {"steps": [], "result": {}}, lambda *_: None, preflight=False,
+                                                    consume=False, reference=None)
+        payload.assert_not_called()
+        copying.assert_not_called()
+        disc = Path(os.environ.get("NFL2K5_V09_XISO", "") or "missing")
+        if disc.is_file():
+            target = ROOT / "never-written-team-building-v09.xiso.iso"
+            with self.assertRaisesRegex(ValueError, "v0.9 update"):
+                build.preflight_plan(build.team_building_disc_edit(str(disc), str(target)))
+            self.assertFalse(target.exists())
+
+    def test_v09_update_in_place_steps_on_a_written_executable(self):
+        """Review S5: the v0.9 update with CPU team building, run through its real in-place steps on a written copy of
+        the released executable (the disc copy, compaction and the finished-disc checks stubbed): the product's own
+        final comparison with the expected chain holds, and the owner, the draft AI and the economy read applied."""
+        import tempfile
+        from unittest import mock
+        from mod_editor.core import mod_build as build
+        from mod_editor.core import nfl2k5_draft_ai as draft, nfl2k5_franchise_economy as economy
+        disc = Path(os.environ.get("NFL2K5_V09_XISO", "") or "missing")
+        if not disc.is_file():
+            self.skipTest("the released v0.9 disc is absent")
+        original = build._xbe_bytes(disc)
+        release = build._v09_reference(disc, original)
+        self.assertIsNotNone(release)
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / "default.xbe"
+
+            def copy(source, out, receipt, progress, consume):
+                out.write_bytes(original)
+                receipt["source_sha256"] = release["image_sha256"]
+
+            for team_building in (True, False):
+                with self.subTest(team_building=team_building):
+                    plan = build.v09_disc_update(str(disc), str(target), team_building=team_building,
+                                                 backfield_cards=not team_building, overwrite=True)
+                    with mock.patch.object(build, "_copy_private_build_source", side_effect=copy), \
+                            mock.patch.object(build, "_compact_build_disc"), \
+                            mock.patch.object(build, "_verify_finished_game_disc"), \
+                            mock.patch.object(build, "inspect", return_value={}):
+                        receipt = build._update_v09_disc(plan, lambda *_: None, preflight=False, project=False)
+                    written = target.read_bytes()
+                    self.assertEqual(_tb().status(written), "applied" if team_building else "retail")
+                    self.assertEqual(draft.status(written), "applied")
+                    self.assertEqual(economy.status(written), "applied")
+                    self.assertEqual(receipt["result"].get("team_building"), "applied" if team_building else None)
 
 
 class MidRank(unittest.TestCase):
@@ -380,51 +523,78 @@ def code_economy_cap():
     return economy.SYMBOLS["economy_cap"]
 
 
-@unittest.skipUnless(HAVE_UC, "Unicorn required")
-class Image(unittest.TestCase):
-    """The code runs natively on a kept league image (the executable it was made with plus this owner)."""
+def _load_image(cls):
+    """The kept league image in a fresh Unicorn machine on `cls`: its executable with the economy upgrade and this owner
+    (every changed code byte written over the image's own code), the clubs, the user's clubs and the league as Man
+    rows. Keeps the image's RAM outside the code range for _restore_ram."""
+    from tests.nfl2k5_supersim_draft_fixture import Machine
+    from tools import franchise_invariants as fi
+    from mod_editor.core import nfl2k5_team_building_code as code
+    tb = _tb()
+    xbe, image = _with_economy_9(_fixture(IMAGE_XBE)), IMAGE
+    if not image or not Path(image).is_file():
+        raise unittest.SkipTest("TEAM_BUILDING_IMAGE not set or absent")
+    cls.tb, cls.code = tb, code
+    original = _fixture(IMAGE_XBE)
+    patched, _ = tb.apply(xbe)
+    cls.m = m = Machine(patched, trace_writes=False)
+    cls.ram = []
+    for lo, data in fi.load_memory(Path(image)).regions:
+        if lo < 0x3000000:
+            m.uc.mem_write(lo, data)
+            if lo + len(data) > CODE_END or lo < CODE_START:
+                cls.ram.append((lo, bytes(data)))
+    # The image holds the code it was made with: write back every byte the economy upgrade and this owner changed.
+    from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+    new, old = XbeImage(patched), XbeImage(original)
+    for section in new.sections:
+        if not section.raw_size or not section.start < 0x420000:
+            continue
+        a, b = old.read(section.start, section.raw_size), new.read(section.start, section.raw_size)
+        i = 0
+        while i < len(b):
+            if a[i] != b[i]:
+                j = i
+                while j < len(b) and a[j] != b[j]:
+                    j += 1
+                m.uc.mem_write(section.start + i, b[i:j])
+                i = j
+            else:
+                i += 1
+    cls.PROBE = 0x3200000
+    m.uc.mem_map(cls.PROBE, 0x1000)
+    m.uc.ctl_flush_tb()
+    root = m.get(0xB72918)
+    cls.teams = [m.get(root + 0x1C) + 500 * i for i in range(32)]
+    cls.user = [i for i in range(32) if m.call(0x13EC30, ecx=cls.teams[i], budget=100000)]
+    cls._points = {}
+    cls.league = [[cls._man(m.get(t + 4 * k)) for k in range(m.uc.mem_read(t + 0x11C, 1)[0])] for t in cls.teams]
+
+
+CODE_START, CODE_END = 0x10000, 0x420200      # the executable's code (and the draft AI's header cave) in the image
+
+
+def _restore_ram(cls):
+    """The image's RAM back, outside the code range (a wish pass creates bids; a signing changes a roster)."""
+    for lo, data in cls.ram:
+        hi = lo + len(data)
+        if hi <= CODE_START or lo >= CODE_END:
+            cls.m.uc.mem_write(lo, data)
+        else:
+            if lo < CODE_START:
+                cls.m.uc.mem_write(lo, data[:CODE_START - lo])
+            if hi > CODE_END:
+                cls.m.uc.mem_write(CODE_END, data[CODE_END - lo:])
+
+
+class _ImageBase(unittest.TestCase):
+    """A kept league image in its own machine (no tests here)."""
 
     @classmethod
     def setUpClass(cls):
-        from tests.nfl2k5_supersim_draft_fixture import Machine
-        from tools import franchise_invariants as fi
-        from mod_editor.core import nfl2k5_team_building_code as code
-        tb = _tb()
-        xbe, image = _with_economy_9(_fixture(IMAGE_XBE)), IMAGE
-        if not image or not Path(image).is_file():
-            raise unittest.SkipTest("TEAM_BUILDING_IMAGE not set or absent")
-        cls.tb, cls.code = tb, code
-        original = _fixture(IMAGE_XBE)
-        patched, _ = tb.apply(xbe)
-        cls.m = m = Machine(patched, trace_writes=False)
-        for lo, data in fi.load_memory(Path(image)).regions:
-            if lo < 0x3000000:
-                m.uc.mem_write(lo, data)
-        # The image holds the code it was made with: write back every byte the economy upgrade and this owner changed.
-        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
-        new, old = XbeImage(patched), XbeImage(original)
-        for section in new.sections:
-            if not section.raw_size or not section.start < 0x420000:
-                continue
-            a, b = old.read(section.start, section.raw_size), new.read(section.start, section.raw_size)
-            i = 0
-            while i < len(b):
-                if a[i] != b[i]:
-                    j = i
-                    while j < len(b) and a[j] != b[j]:
-                        j += 1
-                    m.uc.mem_write(section.start + i, b[i:j])
-                    i = j
-                else:
-                    i += 1
-        cls.PROBE = 0x3200000
-        m.uc.mem_map(cls.PROBE, 0x1000)
-        m.uc.ctl_flush_tb()
-        root = m.get(0xB72918)
-        cls.teams = [m.get(root + 0x1C) + 500 * i for i in range(32)]
-        cls.user = [i for i in range(32) if m.call(0x13EC30, ecx=cls.teams[i], budget=100000)]
-        cls._points = {}
-        cls.league = [[cls._man(m.get(t + 4 * k)) for k in range(m.uc.mem_read(t + 0x11C, 1)[0])] for t in cls.teams]
+        if not HAVE_UC:
+            raise unittest.SkipTest("Unicorn required")
+        _load_image(cls)
 
     @classmethod
     def _rating(cls, p, flag):
@@ -451,6 +621,110 @@ class Image(unittest.TestCase):
         self.m.call(fn, ecx=self.teams[club], edx=rnd, args=(pick, need), budget=200_000_000)
         return list(struct.unpack("<17i", bytes(self.m.uc.mem_read(need, 68))))
 
+    def _free_agents(self):
+        root = self.m.get(0xB72918)
+        count, table = self.m.get(root + 0x38), self.m.get(root + 0x3C)
+        return [self.m.get(table + 4 * i) for i in range(count)]
+
+    def _best_free_agents(self):
+        """best[17] as the retail wish routine hands it over: the best free agent by 0x246D80(p, 1) at each position."""
+        best, top = [0] * 17, [-1.0] * 17
+        for p in self._free_agents():
+            pos = self.m.uc.mem_read(p + 0x35, 1)[0]
+            if pos < 17:
+                r = struct.unpack("<f", struct.pack("<I", self._rating(p, 1)))[0]
+                if r > top[pos]:
+                    top[pos], best[pos] = r, p
+        return best
+
+    def _scores(self, team, best, view=0x3002000, target=0x3001100):
+        """{position: (score, target)} from the native tb_view and tb_score with the club's own room."""
+        m, code = self.m, self.code
+        m.call(code.SYMBOLS["tb_view"], args=(view, team), budget=400_000_000)
+        room = m.call(0x2D82F0, ecx=team, budget=50_000_000)
+        out = {}
+        for p in range(17):
+            score = m.call(code.SYMBOLS["tb_score"], args=(view, team, p, best[p], room, target), budget=400_000_000)
+            out[p] = (score - (1 << 32) if score >= 1 << 31 else score, m.get(target))
+        return out
+
+    def _install(self, blobs, symbols):
+        """A runtime build (blobs, symbols from assemble.build) over the installed one, both branches retargeted."""
+        m, tb = self.m, self.tb
+        for va, blob in blobs.items():
+            m.uc.mem_write(va, blob.ljust(len(self.code.WINDOWS[va]), b"\xcc"))
+        m.uc.mem_write(tb.HEAD_CALL_VA, tb._branch(tb.HEAD_CALL_VA, 0xE8, symbols["tb_order"]))
+        m.uc.mem_write(tb.WISH_JUMP_VA, tb._branch(tb.WISH_JUMP_VA, 0xE9, symbols["tb_wish_entry"]))
+        m.uc.ctl_flush_tb()
+
+    def _wish_pass(self, symbols):
+        """The retail wish routine 0x3242C0 whole, with its jump retargeted: what each club's pass did."""
+        import unicorn
+        m, rec = self.m, {"entry": [], "wishes": [], "cave": [], "exit": 0}
+
+        def on_entry(uc, a, n, _):
+            esp = m.reg("ESP")
+            rec["entry"].append({"team": m.reg("ESI"), "ebx": m.reg("EBX"), "count": m.get(esp + 0x10),
+                                 "best": esp + 0x20, "row": [m.get(esp + 0x20 + 4 * i) for i in range(17)]})
+
+        def on_wishes(uc, a, n, _):
+            rec["wishes"].append({"team": m.reg("ECX"), "best": m.reg("EDX"), "count": m.get(m.reg("ESP") + 4)})
+
+        hooks = [m.uc.hook_add(unicorn.UC_HOOK_CODE, on_entry, begin=symbols["tb_wish_entry"],
+                               end=symbols["tb_wish_entry"]),
+                 m.uc.hook_add(unicorn.UC_HOOK_CODE, on_wishes, begin=symbols["tb_wishes"], end=symbols["tb_wishes"]),
+                 m.uc.hook_add(unicorn.UC_HOOK_CODE, lambda uc, a, n, _: rec["cave"].append(m.reg("ESI")),
+                               begin=self.tb.DRAFT_CAVE_VA, end=self.tb.DRAFT_CAVE_VA),
+                 m.uc.hook_add(unicorn.UC_HOOK_CODE, lambda uc, a, n, _: rec.__setitem__("exit", rec["exit"] + 1),
+                               begin=0x324545, end=0x324545)]
+        try:
+            m.call(0x3242C0, budget=3_000_000_000)
+            rec["registers"] = tuple(m.reg(r) for r in ("EBX", "ESI", "EDI", "EBP", "ESP"))
+        finally:
+            for hook in hooks:
+                m.uc.hook_del(hook)
+            _restore_ram(type(self))
+        return rec
+
+    def _kept_paths(self, club, symbols):
+        """{position: 'old' | 'new'}: which score tb_score took for each position (code hooks on tb_old_score and
+        tb_seek), with the club's K and P moved off the roster so those positions are reached too; and the scores."""
+        import unicorn
+        m, team = self.m, self.teams[club]
+        best = self._best_free_agents()
+        for pos in range(17):                     # a position without a free agent: any man there (only rated)
+            if not best[pos]:
+                best[pos] = next((x.ref for c in self.league for x in c if x.pos == pos), 0)
+        moved = [x.ref for x in self.league[club] if x.pos in (1, 2)]
+        for ref in moved:
+            m.uc.mem_write(ref + 0x35, bytes([17]))
+        path, cur = {}, {}
+        hooks = [m.uc.hook_add(unicorn.UC_HOOK_CODE, lambda uc, a, n, _: path.setdefault(cur["p"], "old"),
+                               begin=symbols["tb_old_score"], end=symbols["tb_old_score"]),
+                 m.uc.hook_add(unicorn.UC_HOOK_CODE, lambda uc, a, n, _: path.setdefault(cur["p"], "new"),
+                               begin=symbols["tb_seek"], end=symbols["tb_seek"])]
+        scores = {}
+        try:
+            view, target = 0x3002000, 0x3001100
+            m.call(symbols["tb_view"], args=(view, team), budget=400_000_000)
+            room = m.call(0x2D82F0, ecx=team, budget=50_000_000)
+            for p in range(17):
+                cur["p"] = p
+                score = m.call(symbols["tb_score"], args=(view, team, p, best[p], room, target), budget=400_000_000)
+                scores[p] = score - (1 << 32) if score >= 1 << 31 else score
+        finally:
+            for hook in hooks:
+                m.uc.hook_del(hook)
+            for x in self.league[club]:
+                if x.pos in (1, 2):
+                    m.uc.mem_write(x.ref + 0x35, bytes([x.pos]))
+        return path, scores
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn required")
+class Image(_ImageBase):
+    """The code runs natively on a kept league image (the executable it was made with plus this owner)."""
+
     def test_native_view_equals_the_oracle(self):
         tb, m = self.tb, self.m
         x = 0x3001000
@@ -465,6 +739,7 @@ class Image(unittest.TestCase):
             for pool in range(17):
                 n = raw[68 + pool]
                 self.assertEqual(list(raw[85 + 64 * pool: 85 + 64 * pool + n]), v.scale[pool], (club, pool))
+            self.assertEqual(m.uc.mem_read(x + 85 + 17 * 64, 1)[0], int(v.olb), club)
 
     def test_native_order_equals_the_oracle_for_every_cpu_club(self):
         tb, decline = self.tb, self.tb.decline_after()
@@ -544,13 +819,200 @@ class Image(unittest.TestCase):
                 self.assertGreaterEqual(len(tried), min(4, len(wanted)), club)
         self.assertGreater(clubs_with_holes, 0)
 
-    def _bids(self, team):
-        out = []
-        for i in range(100):
-            s = self.m.call(0x322840, ecx=i, budget=100000)
-            if self.m.call(0x322BA0, ecx=s, budget=100000) and self.m.get(s + 4) == team:
-                out.append(self.m.get(s))
-        return out
+
+@unittest.skipUnless(HAVE_UC, "Unicorn required")
+class EntryPoints(_ImageBase):
+    """Review S5: the real entry points on the kept image (the draft pick 0x31E0F0 and the retail wish routine 0x3242C0
+    with their branches retargeted), the kept positions, a signing's seat, and guard mutations that the checks catch."""
+
+    SAVED = (0x11111111, 0x22222222, 0x33333333, 0x44444444)
+
+    def test_the_draft_pick_head_reaches_tb_order_for_every_club(self):
+        import unicorn
+        m, code = self.m, self.code
+        seen = []
+        hook = m.uc.hook_add(unicorn.UC_HOOK_CODE, lambda uc, a, n, _: seen.append(m.reg("ECX")),
+                             begin=code.SYMBOLS["tb_order"], end=code.SYMBOLS["tb_order"])
+        try:
+            for rnd in (0, 3):
+                m.put(0xE3C0A8, rnd)
+                m.put(0xE3C0A4, 15)
+                for club in range(32):
+                    pick = m.call(0x31E0F0, ecx=self.teams[club], edx=0 if club in self.user else 1,
+                                  budget=2_000_000_000)
+                    self.assertEqual(tuple(m.reg(r) for r in ("EBX", "ESI", "EDI", "EBP", "ESP")),
+                                     self.SAVED + (m.STACK + 4,), (club, rnd))
+                    self.assertTrue(m.uc.mem_read(pick + 8, 1)[0] & 0x10, (club, rnd))      # a prospect
+        finally:
+            m.uc.hook_del(hook)
+            _restore_ram(type(self))
+        self.assertEqual(len(seen), 64)
+        self.assertEqual(set(seen), set(self.teams))
+
+    def test_the_wish_routine_sends_a_persons_club_to_the_draft_ai(self):
+        """Review M3: with "CPU signs and cuts for me" on (0xE6013C, set in the image) retail asks for the user's club's
+        wishes too; it goes on to the draft AI's own cave, every CPU club to tb_wishes with the routine's frame."""
+        m, tb = self.m, self.tb
+        users = {self.teams[i] for i in self.user}
+        if not m.get(0xE6013C) or not users:
+            self.skipTest("the image's own club gets no wishes")
+        rec = self._wish_pass(self.code.SYMBOLS)
+        self.assertEqual(rec["registers"], self.SAVED + (m.STACK + 4,))
+        entered = [e["team"] for e in rec["entry"]]
+        self.assertTrue(users & set(entered))
+        self.assertEqual(sorted(rec["cave"]), sorted(t for t in entered if t in users))
+        self.assertEqual([w["team"] for w in rec["wishes"]], [t for t in entered if t not in users])
+        cpu = [e for e in rec["entry"] if e["team"] not in users]
+        self.assertGreater(len(cpu), 20)
+        for e, w in zip(cpu, rec["wishes"]):
+            self.assertEqual((w["best"], w["count"], e["count"]), (e["best"], e["ebx"], e["ebx"]))
+            for pos, player in enumerate(e["row"]):
+                if player:
+                    self.assertEqual(m.uc.mem_read(player + 0x35, 1)[0], pos)
+        self.assertEqual(rec["exit"], len(entered))
+
+    def _cpu_club_with_quarterback_room(self):
+        return next(i for i in range(32) if i not in self.user and sum(x.pos == 0 for x in self.league[i]) < 4)
+
+    def test_kept_positions_take_the_draft_ai_score(self):
+        """Review M1 and S2: QB, K, P and FB score by the draft AI's own rule; a club with no K or P ranks that wish
+        above every hole."""
+        tb = self.tb
+        path, scores = self._kept_paths(self._cpu_club_with_quarterback_room(), self.code.SYMBOLS)
+        self.assertTrue({0, 1, 2} <= set(path), path)
+        for p, how in path.items():
+            self.assertEqual(how, "old" if p in tb.KEPT else "new", NAMES[p])
+        self.assertTrue(set(path) - set(tb.KEPT))
+        for p in (1, 2):
+            self.assertGreaterEqual(scores[p], 200000, NAMES[p])
+        self.assertLess(max(v for p, v in scores.items() if p not in (1, 2)), 200000)
+
+    def test_a_signed_starter_takes_his_seat_and_the_hole_closes(self):
+        """Review S1: the CPU signing appends the man with his old club's depth row and sorts nothing. For every hole
+        wish of every CPU club, the man joins the roster the way the build's acceptance does it (off the free-agent
+        list 0x2425C0, appended by 0xC3EE0 at an offseason stage); the native view then seats him and equals the
+        oracle's, and the hole closes unless the club's other seat is a hole too."""
+        m, tb, code = self.m, self.tb, self.code
+        root, view = m.get(0xB72918), 0x3002000
+        best = self._best_free_agents()
+        cases, closed = 0, 0
+        try:
+            for club in range(32):
+                if club in self.user:
+                    continue
+                team = self.teams[club]
+                holes = [(p, t) for p, (score, t) in self._scores(team, best).items()
+                         if score > 100000 and p not in tb.KEPT and t]
+                for p, t in holes:
+                    n0 = m.uc.mem_read(team + 0x11C, 1)[0]
+                    stage = m.get(0xE576A4)
+                    m.put(0xE576A4, 3)
+                    m.call(0x2425C0, ecx=root + 0x38, edx=t, budget=5_000_000)
+                    m.call(0xC3EE0, ecx=team, edx=t, budget=5_000_000)
+                    m.put(0xE576A4, stage)
+                    if m.uc.mem_read(team + 0x11C, 1)[0] != n0 + 1:      # the build refused: the retail append's effect
+                        m.put(team + 4 * n0, t)
+                        m.uc.mem_write(team + 0x11C, bytes([n0 + 1]))
+                    newcomer = self._man(t)
+                    own = list(self.league[club]) + [newcomer]
+                    clubs = list(self.league)
+                    clubs[club] = own
+                    v = tb.view(clubs, club)
+                    m.call(code.SYMBOLS["tb_view"], args=(view, team), budget=400_000_000)
+                    self.assertEqual(list(m.uc.mem_read(view, 17)), v.weak, (club, NAMES[p]))
+                    men = tb.seats(own)
+                    tb.bench(own, men)
+                    pool = tb.tn.POOL[p]
+                    self.assertIn(newcomer, men[pool][:tb.tn.NEED_SEATS[pool]], (club, NAMES[p]))
+                    cases += 1
+                    closed += tb.percentile(v.scale[pool], v.weak[pool]) >= tb.HOLE
+                    _restore_ram(type(self))
+        finally:
+            _restore_ram(type(self))
+        self.assertGreater(cases, 10)
+        self.assertGreater(closed, cases // 2)
+
+    @unittest.skipUnless(shutil.which("gcc") and shutil.which("ld") and shutil.which("objcopy"), "GNU i386 tools")
+    def test_each_guard_has_a_check_that_fails_without_it(self):
+        """Review S5: build runtime.c with one guard changed and run the check that covers it: the real build passes
+        every check, each mutant fails its own (the kept positions, the person's club, the hole line, the margin)."""
+        from tools.team_building import assemble
+        tb, code = self.tb, self.code
+        decline = tb.decline_after()
+        source = (ROOT / "tools/team_building/runtime.c").read_text()
+        cpu = [i for i in range(32) if i not in self.user]
+
+        def kept(symbols):
+            path, _ = self._kept_paths(self._cpu_club_with_quarterback_room(), symbols)
+            return all(how == ("old" if p in tb.KEPT else "new") for p, how in path.items())
+
+        def person(symbols):
+            users = {self.teams[i] for i in self.user}
+            rec = self._wish_pass(symbols)
+            return not users & {w["team"] for w in rec["wishes"]} and bool(users & set(rec["cave"]))
+
+        def hole_line(symbols):
+            return all(self._native_order(symbols["tb_order"], c, 0) ==
+                       tb.order(self._native_order(0x31DEA0, c, 0), tb.view(self.league, c), 0, decline) for c in cpu)
+
+        def margin(symbols):
+            for c in cpu:
+                self.m.call(symbols["tb_view"], args=(0x3002000, self.teams[c]), budget=400_000_000)
+                if list(self.m.uc.mem_read(0x3002000, 17)) != tb.view(self.league, c).weak:
+                    return False
+            return True
+
+        mutants = {"kept": (kept, "|| p == 0) return tb_kept", ") return tb_kept"),
+                   "person": (person, r"test %eax, %eax\n\tjnz 0x10B40\n\t", ""),
+                   "hole line": (hole_line, "#define HOLE (TN_SCALE / 4u)", "#define HOLE (TN_SCALE / 8u)"),
+                   "margin": (margin, "#define MARGIN 3u", "#define MARGIN 1u")}
+        if not self.user or not self.m.get(0xE6013C):
+            del mutants["person"]
+        try:
+            for name, (check, old, new) in mutants.items():
+                with self.subTest(guard=name):
+                    self.assertEqual(source.count(old), 1)
+                    self.assertTrue(check(code.SYMBOLS), "the real build fails its own check")
+                    blobs, _place, symbols, _info = assemble.build(source.replace(old, new))
+                    self._install(blobs, symbols)
+                    try:
+                        self.assertFalse(check(symbols), "the mutant passes")
+                    finally:
+                        self._install(code.WINDOWS, code.SYMBOLS)
+        finally:
+            _restore_ram(type(self))
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn required")
+class SpecialistPolicy(unittest.TestCase):
+    """Review S5 (T10): the draft AI's kicker and punter policy with the owner installed, in b780's native worst-case
+    draft (the signed franchise, no club with a K or P, five K and five P prospects made outliers; and the same with
+    none made outliers). One specialist before display round 5, one K and one P a round after, and the same K and P
+    picks round by round as the draft AI and economy without the owner: holes ahead of K and P in the need order
+    change neither."""
+
+    @classmethod
+    def setUpClass(cls):
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes, signed_save
+        from mod_editor.core import nfl2k5_draft_ai as ai, nfl2k5_franchise_economy as economy
+        signed_save()                                 # skip early without the private franchise
+        cls.ai = ai
+        cls.economy_only = economy.apply(ai.apply(retail_bytes())[0])[0]
+        cls.owner = _tb().apply(cls.economy_only)[0]
+
+    def test_specialists_with_the_owner(self):
+        from tests.mod_editor.test_b780_draft_class import _worst_case_draft
+        for stars in (5, 0):
+            with self.subTest(stars=stars):
+                rows, _edges, done = _worst_case_draft(self.owner, seed=1, stars=stars)
+                base, _edges, base_done = _worst_case_draft(self.economy_only, seed=1, stars=stars)
+                self.assertEqual((done, base_done), (1, 1))
+                early = sum(rows[(r, p)] for r in range(4) for p in (1, 2))
+                self.assertEqual(early, self.ai.EARLY_SPECIALIST_CAP if stars else 0)
+                for round_number in (4, 5, 6):
+                    self.assertLessEqual(rows[(round_number, 1)], 1)
+                    self.assertLessEqual(rows[(round_number, 2)], 1)
+                self.assertEqual({k: v for k, v in rows.items() if v}, {k: v for k, v in base.items() if v})
 
 
 if __name__ == "__main__":

@@ -328,16 +328,16 @@ class Recorder:
         if economy.status(final) == "applied":
             for site in economy.sites():
                 self.reserve(site.va, len(site.patched), "nfl2k5_franchise_economy", "full owner site")
+            if squad.status(final) == "applied":
+                self.reserve(fill.ENTRY, 6, "nfl2k5_roster_fill_composition", "shared roster-fill entry")
+                self.reserve(fill.CONTINUATION, len(fill.CHAIN), "nfl2k5_roster_fill_composition",
+                             "shared roster-fill continuation")
         from . import nfl2k5_team_building as team_building  # b81: whole windows and both branches, padding included
         if team_building.status(final) == "applied":
             for va, blob in team_building._code().WINDOWS.items():
                 self.reserve(va, len(blob), "nfl2k5_team_building", "full owner window")
             for va in (team_building.HEAD_CALL_VA, team_building.WISH_JUMP_VA):
                 self.reserve(va, 5, "nfl2k5_team_building", "retargeted draft-AI branch")
-            if squad.status(final) == "applied":
-                self.reserve(fill.ENTRY, 6, "nfl2k5_roster_fill_composition", "shared roster-fill entry")
-                self.reserve(fill.CONTINUATION, len(fill.CHAIN), "nfl2k5_roster_fill_composition",
-                             "shared roster-fill continuation")
         # Preserve the whole shared host, including alignment padding between owners.
         self.reserve(0xB4A60, 16, "nfl2k5_penalties", "shared host allocation including stub padding")
         self.reserve(0xB4A70, 32, "nfl2k5_prospect_names", "shared host allocation")

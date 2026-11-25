@@ -61,14 +61,21 @@ def pack(sizes: dict, aligns: dict) -> dict:
     return place
 
 
-def generate() -> str:
+def build(source: str | None = None) -> tuple[dict, dict, dict, dict]:
+    """(window blobs, placement, symbols, inputs) for runtime.c, or for `source` (runtime.c's text with a change: the
+    tests' guard mutations; its header include resolves as runtime.c's does)."""
     info = inputs()
     with tempfile.TemporaryDirectory(prefix="tb-assemble-") as tmp:
         d = Path(tmp)
         obj, elf = d / "runtime.o", d / "runtime.elf"
-        subprocess.run(["gcc", *CFLAGS, f"-DTB_DECLINE_AFTER={{{','.join(map(str, info['decline']))}}}",
+        src = ROOT / "tools/team_building/runtime.c"
+        if source is not None:
+            src = d / "runtime.c"
+            src.write_text(source)
+        subprocess.run(["gcc", *CFLAGS, "-iquote", str(ROOT / "tools/team_building"),
+                        f"-DTB_DECLINE_AFTER={{{','.join(map(str, info['decline']))}}}",
                         f"-DTB_VALUE={{{','.join(map(str, info['value']))}}}", "-c",
-                        str(ROOT / "tools/team_building/runtime.c"), "-o", str(obj)], check=True)
+                        str(src), "-o", str(obj)], check=True)
         headers = subprocess.check_output(["objdump", "-h", str(obj)], text=True)
         sizes, aligns = {}, {}
         for m in re.finditer(r"^\s*\d+\s+(\S+)\s+([0-9a-f]+)\s+[0-9a-f]+\s+[0-9a-f]+\s+[0-9a-f]+\s+2\*\*(\d+)", headers,
@@ -102,6 +109,11 @@ def generate() -> str:
             if len(code) > WINDOWS[va][0]:
                 raise ValueError(f"window {va:#x}: {len(code)} bytes, capacity {WINDOWS[va][0]}")
             blobs[va] = code
+    return blobs, place, symbols, info
+
+
+def generate() -> str:
+    blobs, place, symbols, info = build()
     lines = ['"""DESIGN: generated original code; reproduce with tools/team_building/assemble.py."""', "",
              "WINDOWS = {"]
     for va, code in blobs.items():

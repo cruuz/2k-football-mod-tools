@@ -639,7 +639,7 @@ class BuildPlan:
     star_retention: bool = False
     # b81 team building (lane team-building, coordinator rulings of 2026-11-25): CPU clubs draft and sign to their
     # weakest starters (the shared team-need rule, tools/common/team_need.h). The owner nfl2k5_team_building retargets
-    # two draft-AI branches into its own code (thirty proven-unreferenced retail functions), so it needs the draft AI
+    # two draft-AI branches into its own code (29 proven-unreferenced retail functions), so it needs the draft AI
     # and the franchise economy; without them it is left out with a note. On in the Experimental preset (the SOFTDRINK
     # 2K28 recipe builds from it with the economy on).
     team_building: bool = False
@@ -3276,14 +3276,30 @@ def _team_building_edit_payload(original):
     if state == "retail" and economy.status(payload) == "legacy":
         payload, economy_receipt = economy.apply(payload)
     if state == "retail" and not module.needs_met(payload):
+        draft = _core_module("nfl2k5_draft_ai")
+        if draft is not None and draft.status(module.as_draft_ai(payload)) == "legacy":
+            raise ValueError("This disc's draft AI is older than CPU team building needs. Build a new disc with CPU team "
+                             "building on (a released v0.9 disc takes it through the v0.9 update).")
         raise ValueError("CPU team building needs a disc built with the draft AI and the 2026 franchise economy.")
     payload, receipt = module.apply(payload)
     return payload, economy_receipt, receipt
 
 
+TEAM_BUILDING_V09_USE_UPDATE = ("This is the released SOFTDRINK 2K28 v0.9 disc. Add CPU team building through the v0.9 "
+                                "update instead (update-v09 --team-building): it also brings the disc's CPU decisions, "
+                                "kick aim and history storage current, as a full build has them.")
+TEAM_BUILDING_ECONOMY_NOTE = ("CPU team building needs the current 2026 franchise economy, so this copy's franchise "
+                              "economy was brought up to date first, as a full build would have it.")
+
+
 def _edit_installed_team_building(plan, source, target, original, receipt, progress, *, preflight, consume, reference):
-    """b81 team building: the owner alone on an already-built standard disc (the economy upgraded first if older)."""
+    """b81 team building: the owner alone on an already-built standard disc (the economy upgraded first if older). The
+    released v0.9 disc is refused with a pointer to the v0.9 update (review S7: the update brings the rest current)."""
+    if _v09_reference(Path(source), original) is not None:
+        raise ValueError(TEAM_BUILDING_V09_USE_UPDATE)
     patched, economy_receipt, patch = _team_building_edit_payload(original)
+    if economy_receipt is not None:
+        receipt.setdefault("user_notes", []).append(TEAM_BUILDING_ECONOMY_NOTE)
     receipt["installed_team_building_only"] = True
     receipt["team_building_source_update"] = {"source_sha256": sha256(original).hexdigest(),
                                               "result_sha256": sha256(patched).hexdigest(),
