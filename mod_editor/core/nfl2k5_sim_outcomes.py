@@ -145,13 +145,18 @@ def _f32(value: float) -> bytes:
     return struct.pack("<f", value)
 
 
+# Modern 2's two-point threshold bytes for margins -16..+16 (units of 10 s of game time left; 255 always, 0 never), as
+# this page revision installs them. Frozen here rather than read live from nfl2k5_cpu_money_downs: an installed page is
+# recognised by rebuilding its bytes, so a later change to the played game's chart must become a new page revision that
+# keeps this one readable ("previous", upgraded in place), never a silent change that turns every built disc foreign.
+# tests/mod_editor/test_b81_sim_outcomes.py checks that it still equals the played game's chart.
+TWO_POINT_THRESHOLDS = bytes.fromhex("00b40000005a3600870000b43000ff0200b400001eb40000000000003c00000000")
+
+
 def two_point_thresholds() -> bytes:
-    """Modern 2's threshold bytes for margins -16..+16 (units of 10 s of game time left; 255 always, 0 never), from
-    the played game's owner so the two charts cannot drift apart."""
-    from . import nfl2k5_cpu_money_downs as downs
-    table = bytes(downs.m2_tables()[2])
-    _require(len(table) == 33, "the Modern 2 two-point table has 33 margins")
-    return table
+    """The simulator's two-point chart (TWO_POINT_THRESHOLDS: the played game's Modern 2 chart, frozen per revision)."""
+    _require(len(TWO_POINT_THRESHOLDS) == 33, "the Modern 2 two-point table has 33 margins")
+    return TWO_POINT_THRESHOLDS
 
 
 # ------------------------------------------------------------------------------------------------ the page's code
@@ -591,5 +596,6 @@ def remove(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
 
 
 __all__ = ["OWNER", "BUILD_CAPTION", "HELP_TEXT", "CODE_SIZE", "HOME_EDGE", "FORM_SIGMA", "M_LOW", "M_HIGH",
-           "COMMIT_SITE", "TRY_SITE", "TIES_SITE", "REG_SITE", "STEP_SITE", "SimOutcomesError", "two_point_thresholds", "code_for", "labels",
+           "COMMIT_SITE", "TRY_SITE", "TIES_SITE", "REG_SITE", "STEP_SITE", "SimOutcomesError", "TWO_POINT_THRESHOLDS",
+           "two_point_thresholds", "code_for", "labels",
            "sites", "allocation", "status", "read_settings", "reservations", "apply", "remove"]

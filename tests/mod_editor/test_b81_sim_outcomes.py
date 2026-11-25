@@ -237,6 +237,36 @@ def chart_reference(margin, period, fraction):
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is required to execute the page")
+class RevisionPins(unittest.TestCase):
+    """An installed page and its sites are recognised by rebuilding their bytes. These pins make any change to the page's
+    code or constants (here or in a module it reads) a deliberate new revision: freeze this one first so discs built with
+    it read "previous" and are upgraded in place, then re-pin (coordinator, 2026-11-25, after the fb-targets review S1)."""
+    PAGE = {(0.045, 0.08): "cdf7f5d8a475323e680a1037053f5dc5ebe3290af193f20899b6a1f293aaf84b",
+            (0.07, 0.12): "753d63685a38d9e7c26cb7531f8286fbde8eadc0a4eb750c5b891c6c629449d3"}
+    SITES = "b3852b775de09e165d77b8f3df4f2b6f1762a31c0056b91c0c38507310fe1620"
+
+    def test_page_bytes_up_to_the_state_block(self):
+        import hashlib
+        for (home_edge, form_sigma), digest in self.PAGE.items():
+            page = so.code_for(PAGE_VA, home_edge=home_edge, form_sigma=form_sigma)
+            self.assertEqual(hashlib.sha256(page[:so.STATE_OFF]).hexdigest(), digest, (home_edge, form_sigma))
+
+    def test_site_bytes(self):
+        import hashlib
+        rows = so.sites(PAGE_VA)
+        self.assertEqual([row[0] for row in rows],
+                         ["commit_entry", "two_point_chooser", "tie_roll_gate", "regulation_end", "state_step"])
+        joined = b"".join(name.encode() + va.to_bytes(4, "little") + retail + after for name, va, retail, after in rows)
+        self.assertEqual(hashlib.sha256(joined).hexdigest(), self.SITES)
+
+    def test_frozen_two_point_chart_is_still_the_played_games(self):
+        """Failing means the played game's Modern 2 chart changed: the simulator's copy is frozen with this revision, so
+        decide whether the simulator follows (a new page revision that keeps this one readable) or not."""
+        from mod_editor.core import nfl2k5_cpu_money_downs as downs
+        self.assertEqual(so.TWO_POINT_THRESHOLDS, bytes(downs.m2_tables()[2]))
+        self.assertIs(so.two_point_thresholds(), so.TWO_POINT_THRESHOLDS)
+
+
 class TwoPointChart(unittest.TestCase):
     def decide(self, code_va, code, margin, period, fraction, offense_home=True):
         m = _Machine(so.code_for(PAGE_VA))

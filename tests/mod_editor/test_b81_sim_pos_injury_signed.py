@@ -416,7 +416,8 @@ class SignedSlice2Exchange(_NativeExchange):
 
     def test_weeks_with_slice_3_injuries_on_both_sides_and_slot_28_cross_both_ways(self):
         names = [position.name for position in code.POSITION_CLASSES]
-        self.assertEqual(len(names), 12, 'slice 3 has twelve position classes')
+        self.assertEqual(len(names), 14, 'slice 3 has twelve position classes; revision 5 adds the kicker and punter')
+        self.assertEqual(names[12:], ['kicker', 'punter'])
         machine = self.boot(self.realistic, self.opening)
         record = lambda state, i: state['players'][RECORD * i:RECORD * (i + 1)]
         try:
@@ -497,12 +498,12 @@ class SignedThirdSeasonExchange(_NativeExchange):
                         if row['owner'] == medical.OWNER and row['kind'] == 'code')
 
     def factors(self, machine):
-        classes = len(code.POSITION_CLASSES) + 1   # the position classes, then the quarterback
+        classes = len(code.STABILITY_CLASS_NAMES)   # the twelve stability position classes, then the quarterback
         return struct.unpack(f'<{classes}f', bytes(machine.uc.mem_read(self.bank + code.LABELS['stab_factor'],
                                                                          4 * classes)))
 
     def test_third_season_save_does_not_depend_on_the_factor(self):
-        self.assertEqual(medical.read_settings(self.realistic)['revision'], 4)
+        self.assertEqual(medical.read_settings(self.realistic)['revision'], medical.REVISION)   # 5 since the kicker and punter
         machine = self.boot(self.realistic, self.save)
         try:
             league = census(machine, self.realistic)
@@ -512,7 +513,7 @@ class SignedThirdSeasonExchange(_NativeExchange):
             machine.close()
         machine = self.boot(self.realistic, self.save)
         try:
-            self.assertEqual(self.factors(machine), (1.0,) * (len(code.POSITION_CLASSES) + 1))
+            self.assertEqual(self.factors(machine), (1.0,) * len(code.STABILITY_CLASS_NAMES))
             machine.call(self.bank + code.LABELS['stability'], budget=50_000_000)
             live = self.factors(machine)
             self.assertTrue(any(value != 1.0 for value in live), f'the factor is not live in season index 2: {live}')

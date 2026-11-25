@@ -43,6 +43,9 @@ BASE_XBE = "bda1e4a408f19cc30f0916e03b158b0accc46e0ccb6a39e134c1ce79ba3ab6ea"
 # was 33cd2a36. With the frozen combined levers (merge queue item 15: QB_CHANCE_SCALE 1.06, breakaway stop 68) it is
 # aa1e29e1: 731 bytes differ, all in the QB bank's tables, the scoring site's stop byte, the registry hash and digests.
 REALISTIC_AT_6185AD6C0 = "aa1e29e1846ae8e094631283b1a122f3cf3a6dc95a5f617bbf7a19a6eb9669c7"
+# b81 game outcomes, revision 5 (the kicker and punter rows): the Studio now writes this; the revision 4 executable above
+# is still produced through the frozen revision 4 module and upgrades in place to it.
+REALISTIC_V5 = "5c1568bc7d284d343a02f76f859da414f42b244718c276755e8d60e9f1355f5b"
 V09_ROSTER = "8d2b2f50aa19679e4e3a6a783d7137acef96a5975b2ce22bef8ede037c26f42c"
 SHIFT = 10
 # sha256 of repr((STABILITY_REFERENCE, STABILITY_CALIBRATION, STABILITY_CALIBRATION_ROSTER, STABILITY_REFERENCE_ROSTER)).
@@ -272,7 +275,11 @@ class CalibrationRoster(unittest.TestCase):
         self.assertEqual(starters, rules.STABILITY_CALIBRATION)
         self.assertEqual(reference, rules.STABILITY_REFERENCE)
         realistic, _ = qb.apply(xbe, "realistic", reference=reference)
-        self.assertEqual(_sha(realistic), REALISTIC_AT_6185AD6C0)
+        self.assertEqual(_sha(realistic), REALISTIC_V5)
+        from tests.mod_editor.test_b81_combined_levers import revision_4_install
+        before = revision_4_install(xbe)
+        self.assertEqual(_sha(before), REALISTIC_AT_6185AD6C0)
+        self.assertEqual(qb.apply(before, "realistic")[0], realistic)
         self.assertEqual(qb.apply(xbe, "realistic")[0], realistic)
         for rate in (0, 100):
             with self.subTest(custom_rate=rate):
@@ -306,7 +313,7 @@ class CalibrationRoster(unittest.TestCase):
                 other = qb.apply(result, "custom", custom_rate=1.5)[0]
                 self.assertEqual(qb.installed_reference(other), _float32(reference))
                 self.assertEqual(qb.apply(result, "realistic", reference=rules.STABILITY_REFERENCE)[0], frozen_install)
-                self.assertEqual(qb.read_settings(result)["revision"], 4)
+                self.assertEqual(qb.read_settings(result)["revision"], qb.REVISION)
 
 
 class Routes(unittest.TestCase):
@@ -384,8 +391,9 @@ class Routes(unittest.TestCase):
         # combined levers: the edit also updates the disc's legacy pass protection to this release's centre float
         # b81 history-pool: and the disc's v0.9-revision career history pool to this release's (as a full build)
         from mod_editor.core import nfl2k5_pass_protection as pressure
-        expected = mod_build._history_pool_upgrade(mod_build._cpu_kick_aim_with_kicking(
-            qb.apply(pressure.apply(xbe)[0], "realistic", reference=reference)[0])[0])[0]
+        # b81 game outcomes: and the simulated-game outcomes that ride with the realism owner (as a full build)
+        expected = mod_build._history_pool_upgrade(mod_build._cpu_kick_aim_with_kicking(mod_build._sim_outcomes_with_realism(
+            qb.apply(pressure.apply(xbe)[0], "realistic", reference=reference)[0])[0])[0])[0]
         update = receipt["sim_qb_source_update"]
         self.assertEqual(update["result_sha256"], _sha(expected))
         self.assertEqual(update["stability_reference"]["reference"], list(reference))
@@ -539,8 +547,9 @@ class Routes(unittest.TestCase):
                                                              preflight=False, consume=False, reference=None))
         from mod_editor.core import nfl2k5_pass_protection as pressure   # combined levers: the legacy centre updated
         # b81 history-pool: the copy also carries this release's career history pool
-        self._assert_copy(copy, receipt, mod_build._history_pool_upgrade(
-            mod_build._cpu_kick_aim_with_kicking(pressure.apply(frozen)[0])[0])[0])
+        # b81 game outcomes: and the simulated-game outcomes that ride with the realism owner
+        self._assert_copy(copy, receipt, mod_build._history_pool_upgrade(mod_build._cpu_kick_aim_with_kicking(
+            mod_build._sim_outcomes_with_realism(pressure.apply(frozen)[0])[0])[0])[0])
         # The sentence once, next to the floor's own notes (practice squad merge: this disc's earlier economy is
         # upgraded in place for the floor, and the report says so).
         floor_notes = receipt["qb_room_source_update"].get("added") or []

@@ -43,9 +43,11 @@ SLICE3_WALK = ((5, OFFENSE, 4, 0), (5, OFFENSE, 5, 0), (5, OFFENSE, 6, 0), (5, O
                (7, OFFENSE, 2, 2), (8, DEFENSE, 17, 0), (8, DEFENSE, 18, 0), (9, DEFENSE, 19, 0), (9, DEFENSE, 20, 0),
                (9, DEFENSE, 21, 0), (9, DEFENSE, 22, 0x40), (10, DEFENSE, 24, 0), (10, DEFENSE, 25, 0),
                (10, DEFENSE, 26, 0), (11, DEFENSE, 23, 0), (11, DEFENSE, 27, 0), (11, DEFENSE, 28, 0x40))
-WALK = SLICE2_WALK + SLICE3_WALK
-CLASS_SLOT = {0: 12, 1: 10, 2: 9, 3: 15, 4: 1, 5: 4, 6: 8, 7: 2, 8: 17, 9: 19, 10: 24, 11: 23}
-ZERO_POINTS = (110, 110, 110, 100, 100, 100, 100, 105, 100, 100, 100, 100)   # fixed by the two designs
+# b81 game outcomes (revision 5): the kicker (lineup slot 32) and punter (slot 14) of the offense, walked last.
+KP_WALK = ((12, OFFENSE, 32, 0), (13, OFFENSE, 14, 0))
+WALK = SLICE2_WALK + SLICE3_WALK + KP_WALK
+CLASS_SLOT = {0: 12, 1: 10, 2: 9, 3: 15, 4: 1, 5: 4, 6: 8, 7: 2, 8: 17, 9: 19, 10: 24, 11: 23, 12: 32, 13: 14}
+ZERO_POINTS = (110, 110, 110, 100, 100, 100, 100, 105, 100, 100, 100, 100, 100, 100)   # the two designs; K, P 100
 SIDE_OF = {slot: side for _, side, slot, _ in WALK}
 CLASSES = len(rules.POSITION_CLASSES)
 
@@ -488,9 +490,9 @@ class PositionDecisions(PositionGate):
         self.assert_proposed(self.play(force=0), 16, side=DEFENSE)
         self.assert_isolated()
 
-    def test_one_sample_gives_each_of_the_27_slots_its_own_interval_in_walk_order(self):
+    def test_one_sample_gives_each_walked_slot_its_own_interval_in_walk_order(self):   # 29 slots since revision 5
         ratings = (93, 70, 91, 60, 99, 81, 40, 83, 55, 78, 66, 90, 50, 80, 85, 70, 88, 62, 79, 95, 58, 74, 81, 64, 78,
-                   92, 45)
+                   92, 45, 70, 65)   # b81 game outcomes: + the kicker and punter rows (revision 5)
         self.load_rate(min(rate_with_room(ratings, 2_000, .8, carrier=carrier) for carrier in (7, 8)))
         for (_, side, slot, _), rating in zip(WALK, ratings):
             self.place(slot, rating, side=side)
@@ -950,7 +952,7 @@ class NativeCommit(NativeMachine):
 
     def test_no_write_or_draw_outside_the_bank_the_stack_and_the_victims_health(self):
         ratings = (93, 70, 91, 60, 99, 81, 40, 83, 55, 78, 66, 90, 50, 80, 85, 70, 88, 62, 79, 95, 58, 74, 81, 64, 78,
-                   92, 45)
+                   92, 45, 70, 65)   # b81 game outcomes: + the kicker and punter rows (revision 5)
         rate = min(rate_with_room(ratings, 3_000, .95, carrier=carrier) for carrier in (7, 8))
         self.link(rules, rate)
         self.lineup(tuple((side, slot, rating) for (_, side, slot, _), rating in zip(WALK, ratings)))
@@ -1130,6 +1132,64 @@ class SliceTwoUnchanged(NativeMachine):
                     self.assertGreater(kept, 0)
 
 
+class KickerPunterAppended(NativeMachine):
+    """b81 game outcomes (revision 5): the kicker and punter rows are walked last, so on an identical script of plays
+    every proposal, decision and commit of the twelve earlier classes is the frozen revision 4 bank's; the new classes
+    only propose on plays where revision 4 proposed nothing, and they do propose."""
+    RATINGS = (93, 70, 91, 60, 99, 81, 40, 83, 55, 72, 64, 58, 77, 69, 61, 74, 66, 59, 71, 63, 57, 68, 60, 52, 70, 62, 65,
+               61, 70)   # the 29 walked slots in WALK order; the kicker and punter last
+
+    def script(self, module, rate):
+        from unicorn import UC_HOOK_CODE
+
+        self.link(module, rate)
+        self.lineup(tuple((side, slot, rating) for (_, side, slot, _), rating in zip(WALK, self.RATINGS)))
+        L = module.LABELS
+        by_play, current = {}, [None]
+
+        def at_proposal(uc, pc, size, data):
+            by_play.setdefault(current[0], []).append(
+                (self.m.get(self.BANK + L['victim_side']), self.m.get(self.BANK + L['victim_slot']),
+                 self.m.get(self.BANK + L['pos_class']), self.m.get(self.m.reg('ESP') + 8)))
+
+        entry = self.BANK + L['pos_descriptor']
+        handle = self.m.uc.hook_add(UC_HOOK_CODE, at_proposal, begin=entry, end=entry)
+        self.m.uc.ctl_remove_cache(self.BANK, self.BANK + rules.CODE_SIZE)
+        rows = {}
+        try:
+            for number in range(240):
+                current[0] = number
+                a, b = (1000, 3000) if number % 2 else (3000, 1000)
+                self.m.put(self.side, self.teams + a)
+                self.m.put(self.other, self.teams + b)
+                self.m.put(CARRIER, self.players[(OFFENSE, (1, 3)[number % 3 == 0])])
+                events = self.play((RUSH, RUSH, PASS, SACK_ESCAPE)[number % 4])
+                rows[number] = [e for e in events if e[0] in ('decide', 'commit', 'substitute')]
+                self.heal()
+        finally:
+            self.m.uc.hook_del(handle)
+        return by_play, rows
+
+    def test_twelve_classes_unchanged_and_the_specialists_propose(self):
+        from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_v4 as frozen4
+        busy = rate_with_room(self.RATINGS, 3_000, .6, carrier=7)
+        for rate in (rules.DEFAULT_RATE, busy):
+            with self.subTest(rate=rate):
+                old_props, old_rows = self.script(frozen4, rate)
+                new_props, new_rows = self.script(rules, rate)
+                specialists = 0
+                for number in range(240):
+                    old, new = old_props.get(number, []), new_props.get(number, [])
+                    if old:
+                        self.assertEqual(new, old, f'play {number}: an earlier class changed')
+                        self.assertEqual(new_rows[number], old_rows[number], f'play {number}: its decision changed')
+                    else:
+                        self.assertTrue(all(cls in (12, 13) and slot in (32, 14) for _, slot, cls, _ in new), new)
+                        specialists += len(new)
+                if rate == busy:
+                    self.assertGreater(specialists, 0, 'the kicker and punter rows never proposed')
+
+
 @unittest.skipUnless(HAVE_UC, 'Unicorn is required for the native branch witnesses')
 class SlotTwentyEight(unittest.TestCase):
     """The second free safety (defensive slot 28) has never been written by any injury code. A slice 3 commit there
@@ -1223,7 +1283,7 @@ QUARTERBACK = 12
 # stored position -> (class, starters counted): QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE; K and P are not counted
 POSITION_RULE = {0: (12, 1), 3: (5, 3), 4: (10, 3), 5: (11, 1), 6: (11, 1), 7: (4, 2), 8: (7, 1), 9: (6, 1),
                  10: (9, 3), 11: (9, 3), 12: (2, 1), 13: (1, 2), 14: (0, 2), 15: (8, 2), 16: (3, 2)}
-ZERO_K = ZERO_POINTS + (100,)
+ZERO_K = ZERO_POINTS[:12] + (100,)   # the twelve stability classes (no K or P), then the quarterback
 LEAGUE, RECORD = 0x2400000, 0x40        # synthetic league player records (each stability fixture maps them)
 RETURN_STUB = 0x3003100                 # return address of a direct call of the piece (mapped by NativeFixture)
 PRECISION = {0: 24, 2: 53, 3: 64}
@@ -1494,6 +1554,15 @@ class StabilityFactors(StabilityGate):
                         player = self.place(slot, 60)
                         self.write(CARRIER, player)
                         self.write(0xE576B4, 100 + index)       # a new fixture: its first play computes the factors
+                        if index >= 12:
+                            # b81 game outcomes: the kicker and punter (revision 5) take no stability factor
+                            unscaled = threshold(effective(scales[index], slider, fpcw), zeros[index], 60)
+                            self.assert_proposed(self.play(slider=slider, force=unscaled - 1, fpcw=fpcw), slot)
+                            self.assertEqual(self.factors(), [bits32(.8)] * STABILITY_CLASSES)
+                            self.assertEqual(self.table('pos_effective', CLASSES)[index],
+                                             effective(scales[index], slider, fpcw))
+                            self.assertIsNone(self.play(slider=slider, force=unscaled, fpcw=fpcw))
+                            continue
                         limit = threshold(effective_scaled(scales[index], slider, bits32(.8), fpcw), zeros[index], 60)
                         unscaled = threshold(effective(scales[index], slider, fpcw), zeros[index], 60)
                         self.assertLess(limit, unscaled)
@@ -1789,8 +1858,9 @@ class StabilityIdentity(UnscaledQuarterback, NativeMachine):
             for handle in handles:
                 self.m.uc.hook_del(handle)
         factors = (struct.unpack('<13I', self.m.uc.mem_read(self.label('stab_factor'), 52)) if stability else None)
-        result = (rows, samples, thresholds, proposals, list(self.counters('pos_hits')),
-                  list(self.counters('pos_commits')))
+        hits, commits = list(self.counters('pos_hits')), list(self.counters('pos_commits'))
+        self.assertEqual(hits[12:] + commits[12:], [0] * (2 * (len(hits) - 12)))   # b81: no kicker/punter seated here
+        result = (rows, samples, thresholds, proposals, hits[:12], commits[:12])
         return result, factors, quarterback
 
     def league(self):

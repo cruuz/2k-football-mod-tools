@@ -15,8 +15,9 @@
 # the one 0x1028B0 passes to the selector as its restriction (0x1028E4).
 .set FRAME, 516
 .set RUSH_RETURN, 0x1081e8
-.set SLOT_COUNT, 27
-.set CLASS_COUNT, 12
+.set SLOT_COUNT, 29
+.set CLASS_COUNT, 14
+.set STAB_CLASSES, 12                  # classes with a long-franchise factor; kicker and punter (12, 13) take none
 positions:
     cmp BYTE PTR [pos_enabled], 0
     je done
@@ -102,7 +103,10 @@ pos_sampled:                            # exported: the play's sample is stored 
 effective:
     fld DWORD PTR [pos_scale+ecx*4]
     fmul DWORD PTR [0xe60204]
+    cmp ecx, STAB_CLASSES
+    jae no_factor                       # b81 game outcomes: the kicker and punter classes have no stability factor
     fmul DWORD PTR [STAB_FACTOR+ecx*4]  # the class's factor, exactly 1.0 in seasons one and two
+no_factor:
     fistp QWORD PTR [pos_wide]
     mov eax, [pos_wide]
     mov edx, [pos_wide+4]
@@ -261,12 +265,12 @@ victim_side: .long 0
 victim_slot: .long 0
 accept_ptr: .long 0
 pos_plays: .long 0
-pos_hits: .zero 48
-pos_commits: .zero 48
-pos_effective: .zero 48
-pos_scale: .zero 48                     # CLASS_COUNT floats, installer
-pos_zero: .zero 48                      # CLASS_COUNT dwords, installer: the zero point K per class
-pos_accept: .zero 288                   # CLASS_COUNT tables of six thresholds by week group, installer
+pos_hits: .zero 4*CLASS_COUNT
+pos_commits: .zero 4*CLASS_COUNT
+pos_effective: .zero 4*CLASS_COUNT
+pos_scale: .zero 4*CLASS_COUNT          # CLASS_COUNT floats, installer
+pos_zero: .zero 4*CLASS_COUNT           # CLASS_COUNT dwords, installer: the zero point K per class
+pos_accept: .zero 24*CLASS_COUNT        # CLASS_COUNT tables of six thresholds by week group, installer
 pos_week_group: .byte 0,0,1,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5   # assigned weeks 0 to 31
 # class, side (0 offense, 1 defense), lineup slot, flags: bits 0-1 the rule (0 every scrimmage play, 1 rushing ball
 # carrier, 2 rush play), bits 4-7 the exposure weight in sixteenths (0 full, 0x40 a quarter). Walk order.
@@ -298,5 +302,9 @@ pos_slots:
     .byte 11, 1, 23, 0
     .byte 11, 1, 27, 0
     .byte 11, 1, 28, 0x40
+    # b81 game outcomes (coordinator R2/R3): the kicker (lineup slot 32) and the punter (slot 14) of the offense, on every
+    # scrimmage play of their offense, LAST in the walk so every earlier entry's hit decision is unchanged.
+    .byte 12, 0, 32, 0
+    .byte 13, 0, 14, 0
 pos_enabled: .byte 0
 .section .note.GNU-stack,"",@progbits

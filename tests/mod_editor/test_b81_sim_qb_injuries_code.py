@@ -229,9 +229,20 @@ class LocalGameInputs(unittest.TestCase):
                 raw = slice3.bank_bytes(self.image.read, bank, SIM, DATA, LINEUP, rate=rate)
                 self.assertEqual(hashlib.sha256(raw).hexdigest(), expected)
         # Combined freeze (QB_CHANCE_SCALE 1.06): only the two QB tables move, 606 bytes; at 1.0 these were 7df951ca and
-        # 64989e9c (pos3/work/combined-A/freeze/classify.txt).
-        pinned = ((0x1520000, '254023945dd0484d2b0c607f781266012ccd1d88a4b53895806a4894a917f56a'),
-                  (0x1524000, '9e203b283648c706a8c887e6c4f9d461d03d37d74a4f4eb32873e79f7cf6e823'))
+        # 64989e9c (pos3/work/combined-A/freeze/classify.txt). Since revision 5 (b81 game outcomes: the kicker and punter
+        # rows) these revision 4 pins are facts of the frozen revision 4 module, which must still link exactly these banks:
+        # a disc built before revision 5 then reads as revision 4 and is upgraded in place, not refused as foreign.
+        from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_v4 as v4
+        for bank, expected in ((0x1520000, '254023945dd0484d2b0c607f781266012ccd1d88a4b53895806a4894a917f56a'),
+                               (0x1524000, '9e203b283648c706a8c887e6c4f9d461d03d37d74a4f4eb32873e79f7cf6e823'),
+                               (BANK, '0ff132770f3d0c432a1b262e1933d799c7aa99c5b540427f8abd1882ab322527')):
+            with self.subTest(frozen_v4=hex(bank)):
+                rate = 0 if expected.startswith('0ff13277') else v4.DEFAULT_RATE
+                raw = v4.bank_bytes(self.image.read, bank, SIM, DATA, LINEUP, rate=rate)
+                self.assertEqual(hashlib.sha256(raw).hexdigest(), expected)
+        # Revision 5 (b81 game outcomes): the same banks with the kicker and punter rows and their tables.
+        pinned = ((0x1520000, '668b32a3d8f44317c7cf812fedecd3068036593f6680c5d54ddebd7b54709771'),
+                  (0x1524000, '0837df6ab1ca95b068e92f01c69df4709c3e61715ca9332c58417feb6720c9c2'))
         for bank, expected in pinned:
             with self.subTest(bank=hex(bank)):
                 raw = rules.bank_bytes(self.image.read, bank, SIM, DATA, LINEUP)
@@ -241,7 +252,7 @@ class LocalGameInputs(unittest.TestCase):
                 self.assertEqual(tagged, raw[:rules.MARK_OFFSET] + tag + raw[rules.MARK_OFFSET + len(tag):])
         zero = rules.bank_bytes(self.image.read, BANK, SIM, DATA, LINEUP, rate=0)
         self.assertEqual(zero, rules.bank_bytes(self.image.read, BANK, SIM, DATA, rate=0))
-        self.assertEqual(hashlib.sha256(zero).hexdigest(), '0ff132770f3d0c432a1b262e1933d799c7aa99c5b540427f8abd1882ab322527')
+        self.assertEqual(hashlib.sha256(zero).hexdigest(), '56756418f638f11859b2a02ad35cda72cb92a2362e3d1de28f92ab5e26bc29e8')
 
     def test_refuses_foreign_first_middle_or_last_byte_in_every_native_input(self):
         targets = [(at, count) for at, count, _, _ in rules._NATIVE_ABI]

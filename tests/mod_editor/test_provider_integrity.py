@@ -225,8 +225,9 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [610, 10, 8, 9, 8, 9]
-            # b81 game outcomes: 610 = 609 + the simulated-outcomes owner (mod_build loads it by name with sim_realism).
+            [611, 10, 8, 9, 8, 9]
+            # b81 game outcomes: 611 = 609 + the simulated-outcomes owner (mod_build loads it by name with sim_realism)
+            # + the frozen revision 4 quarterback/position bank (read to upgrade a QBMEDv4 install to v5).
             # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
             # the cave manifest recorder) + Number kerning, whose state the owner reads.
             # b81 integration (qb34 trades merge): 607 = 605 (next lines) + the quarterback trades owner and its generated

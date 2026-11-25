@@ -47,6 +47,11 @@ LEVER_FREE_XBE = "33cd2a36a81b20d86ddd50417bbb71212be933fc20bee68d58645d4e3e01eb
 # The freeze (bb5a408b1: QB_CHANCE_SCALE 1.06, breakaway stop 68) moves exactly the two QB tables (606 bytes), one byte of
 # the breakaway site and integrity fields (pos3/work/combined-A/freeze/classify.txt).
 REALISTIC_XBE = "aa1e29e1846ae8e094631283b1a122f3cf3a6dc95a5f617bbf7a19a6eb9669c7"
+# b81 game outcomes, revision 5 (the kicker and punter rows): the two pins above are revision 4's and are still produced
+# byte for byte through the frozen revision 4 module (revision_4_install); the Studio now writes these, and a revision 4
+# install upgraded in place equals them.
+LEVER_FREE_V5_XBE = "27b903c80b3b17c1df98e6fb5492dc65f1fee431ab638728d5cd1a77fc116316"
+REALISTIC_V5_XBE = "5c1568bc7d284d343a02f76f859da414f42b244718c276755e8d60e9f1355f5b"
 LEGACY_INSTALLS = (("NFL2K5_B81_STABILITY_FIXTURES", "default.xbe", BASE_XBE),
                    ("NFL2K5_V08_XBE", None, "5f987568"),
                    ("NFL2K5_V09_XBE", None, "1a476d94"))
@@ -258,6 +263,32 @@ def _tables(rate=code.DEFAULT_RATE):
     return bank
 
 
+def _as_revision_4(bank):
+    """A revision 5 table bank in revision 4's layout, the kicker and punter rows left out (b81 game outcomes). The two
+    revisions' tables are identical outside the positions piece (0x1400-0x1C00); inside, revision 5 adds two classes."""
+    from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_v4 as v4
+    out = bytearray(bank)
+    out[0x1400:0x1C00] = bytes(0x800)
+    for label, width in (("pos_scale", 4), ("pos_zero", 4), ("pos_accept", 24)):
+        out[v4.LABELS[label]:v4.LABELS[label] + 12 * width] = bank[code.LABELS[label]:code.LABELS[label] + 12 * width]
+    out[v4.LABELS["pos_enabled"]] = bank[code.LABELS["pos_enabled"]]
+    return out
+
+
+def revision_4_install(payload, mode="realistic", custom_rate=.310):
+    """What the Studio wrote before revision 5: the same Realistic or Custom install through the frozen revision 4
+    module (its own bank, the frozen references, the shipped kicking parameters)."""
+    from dataclasses import replace
+    from mod_editor.core import nfl2k5_sim_qb_injuries as qb, nfl2k5_sim_scoring as scoring
+    setting = replace(qb._setting(mode, custom_rate), revision=4, reference=qb._reference32(code.STABILITY_REFERENCE))
+    _, physical = qb._state(payload)
+    bank = qb._bank_allocation(physical)
+    if bank is None:
+        physical = space.extend_scaleout(physical, qb.REQUESTS)[0]
+        bank = qb._bank_allocation(physical)
+    return qb._transform(physical, qb._edits(physical, bank, setting, kicking=scoring.parameters()), restoring=False)
+
+
 def _floats(bank, label):
     return struct.unpack_from("<256f", bank, code.LABELS[label])
 
@@ -273,7 +304,8 @@ class QuarterbackChanceScale(unittest.TestCase):
         self.assertEqual(code.QB_CHANCE_SCALE, 1.06)
         with mock.patch.object(code, "QB_CHANCE_SCALE", 1.0):
             for rate, digest in TABLES_BEFORE.items():
-                self.assertEqual(_sha(_tables(rate)), digest, rate)
+                # b81 game outcomes: revision 5 adds the kicker and punter rows; without them, the same bytes
+                self.assertEqual(_sha(_as_revision_4(_tables(rate))), digest, rate)
 
     def test_only_the_quarterback_tables_scale(self):
         spans = set()
@@ -301,7 +333,7 @@ class PassingLevel(unittest.TestCase):
         self.assertEqual(code.PASSING_LEVEL, .982)
         with mock.patch.object(code, "QB_CHANCE_SCALE", 1.0):   # lever 2's frozen 1.06 moves only the two QB tables
             bank = _tables()
-        self.assertEqual(_sha(bank), TABLES_BEFORE[310])
+        self.assertEqual(_sha(_as_revision_4(bank)), TABLES_BEFORE[310])   # revision 5 less its kicker and punter rows
         self.assertEqual(struct.unpack_from("<f", bank, code.GAIN_CONSTANTS + 4)[0], _f32(.982))
         self.assertEqual(struct.unpack_from("<f", bank, code.GAIN_TABLE + 4 * 100)[0], _f32(.982 * 1.065))
 
@@ -323,7 +355,8 @@ class PassingLevel(unittest.TestCase):
 
 class RevisionFourBank(unittest.TestCase):
     """Unfrozen, the quarterback owner writes the lever-free head's executable byte for byte; frozen, it differs only in
-    the levers' bytes."""
+    the levers' bytes. Since revision 5 (b81 game outcomes) those two revision 4 executables come from the frozen
+    revision 4 module, and each upgrades in place to exactly what the Studio now writes."""
 
     def test_realistic_on_the_base_is_the_lever_free_build_plus_the_frozen_levers(self):
         root = os.environ.get("NFL2K5_B81_STABILITY_FIXTURES")
@@ -335,11 +368,21 @@ class RevisionFourBank(unittest.TestCase):
         from mod_editor.core import nfl2k5_sim_qb_injuries as qb
         from mod_editor.core import nfl2k5_sim_scoring as scoring
         self.assertEqual((code.QB_CHANCE_SCALE, code.PASSING_LEVEL, scoring.BREAKAWAY_STOP_BEYOND), (1.06, .982, 68.0))
+        from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_v4 as v4
+        with mock.patch.object(v4, "QB_CHANCE_SCALE", 1.0), mock.patch.object(scoring, "BREAKAWAY_STOP_BEYOND", 72.0):
+            free_v4 = revision_4_install(base)
+        self.assertEqual(_sha(free_v4), LEVER_FREE_XBE)
+        realistic_v4 = revision_4_install(base)
+        self.assertEqual(_sha(realistic_v4), REALISTIC_XBE)
         with mock.patch.object(code, "QB_CHANCE_SCALE", 1.0), mock.patch.object(scoring, "BREAKAWAY_STOP_BEYOND", 72.0):
             free = qb.apply(base, "realistic")[0]
-        self.assertEqual(_sha(free), LEVER_FREE_XBE)
+            with mock.patch.object(v4, "QB_CHANCE_SCALE", 1.0):     # the lever-free revision 4 reads at its own scale
+                self.assertEqual(qb.apply(free_v4, "realistic")[0], free)
+        self.assertEqual(_sha(free), LEVER_FREE_V5_XBE)
         realistic = qb.apply(base, "realistic")[0]
-        self.assertEqual(_sha(realistic), REALISTIC_XBE)
+        self.assertEqual(_sha(realistic), REALISTIC_V5_XBE)
+        self.assertEqual(qb.read_settings(realistic_v4)["revision"], 4)
+        self.assertEqual(qb.apply(realistic_v4, "realistic")[0], realistic)        # upgraded in place
         image = XbeImage(realistic)
         bank = next(r for r in space.layout(realistic)["allocations"] if r["owner"] == qb.OWNER and r["kind"] == "code")["va"]
         allowed = set()
@@ -384,6 +427,10 @@ class StudioRoutes(unittest.TestCase):
                 expected = simulator.apply(base)[0] if simulator.status(base) == "legacy" and upgrade else base
                 expected = pp.apply(expected)[0] if upgrade else expected
                 expected = qb.apply(expected, mode, custom_rate=rate)[0]
+                # b81 game outcomes: the copy carries the simulated-game outcomes with the realism owner (the plan's
+                # Simulated season realism, on for Realistic and Custom)
+                if plan.sim_realism:
+                    expected = mod_build._sim_outcomes_with_realism(expected)[0]
                 # since 7c64ec2ca the route adds the CPU kick aim repair in every mode (the base carries the kicking fixes)
                 self.assertEqual(aim.status(expected), "retail")
                 expected = aim.apply(expected)[0]
