@@ -381,10 +381,14 @@ class WeeklyFillPortTests(unittest.TestCase):
         m.put(0xE3C278, 100000)          # every club under the cap: the rebuilt pass has nothing else to do
         m.put(0xE576A4, 8)
         before = sum(m.uc.mem_read(m.team_base + 500 * t + 0x11C, 1)[0] for t in range(32))
+        kept = {p for t in range(32) for p in roster(m, m.team_base + 500 * t)}
         m.call(0x323870, ecx=MENU, args=(0x3F800000, 0x3E4CCCCD), budget=2_000_000_000)
         self.assertGreaterEqual(sum(m.uc.mem_read(m.team_base + 500 * t + 0x11C, 1)[0] for t in range(32)) - before, 10)
+        # b81 economy r10: a man signed this week is priced by economy_value (the market curve by rank) and given
+        # economy_years' length, where revision 2 used q^3 and the native years, so for the signings only who signed
+        # where is compared (test_b81_economy_r10 covers the prices and lengths); every other contract byte for byte.
         return {t: sorted((p, bytes(m.uc.mem_read(p + 10, 2)) + bytes((m.uc.mem_read(p + 0x24, 1)[0],)) +
-                           bytes(m.uc.mem_read(p + 0x26, 2)))
+                           bytes(m.uc.mem_read(p + 0x26, 2)) if p in kept else b"signed")
                           for p in roster(m, m.team_base + 500 * t)) for t in range(32)}
 
     def test_same_signings_as_retail(self):

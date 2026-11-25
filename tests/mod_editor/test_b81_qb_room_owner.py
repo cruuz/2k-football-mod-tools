@@ -477,17 +477,21 @@ class PreviousRevisionTests(unittest.TestCase):
     # Combined calibration levers (merge queue item 15): re-pinned once more; every rebuild differs from its
     # practice-squad-merge rebuild exactly where the injury option's executable differs (the QB bank's tables for
     # QB_CHANCE_SCALE 1.06, the scoring site's breakaway stop 68, the registry hash and digests).
-    D1D2_SHA = "5d471c14062b4080b33cbf699b8779cf307723b17fbd8ddae37f222a6c676e6b"
-    REVIEW_67_SHA = "08087d170426ec914119a7b4a32b4f1e47239152e1d6b759c99902bdca74a94a"
-    REVIEW_64_SHA = "c22d95b64fa9f01c0ebb3c1d0c0ccf796c2b493b8ea357d7cf526c41be2574ae"
-    FLOOR_SHA = "55e522337d0e11bbe7541b8fc23b16c0273a1656b78d4ff23ec6b00521883540"
-    FLOOR_EMPTY_SHA = "8652889ed5c32e064a6c8818b3c70dabaa39dcb1bd627afa2a59ee4ae1df790f"
-    STAGE_3A_SHA = "5b3c065a543ea4cc7eb4e56c24709d9c5706406824db7c48e6cf1bdf2d863477"
-    STAGE_3A_EMPTY_SHA = "0af4c40fa91dc267ad3f07c92f6d3fe354b49f9f04dd0b3ea0e4c78d494159df"
+    # Economy revision 10 (with team building's revision 9): re-pinned. Every rebuild differs from the same rebuild on
+    # 3647cabab only inside the economy's own sites (revisions 9 and 10) plus two section digests (40 bytes). The
+    # earlier values were D1D2 5d471c14, REVIEW_67 08087d17, REVIEW_64 c22d95b6, FLOOR 55e52233 / 8652889e,
+    # STAGE_3A 5b3c065a / 0af4c40f, HANDOVER 61724296 / 58e85935 (3647cabab's revision 9 had already moved them).
+    D1D2_SHA = "a714f327a9b85afbe67455dcd3fce8095d2b3462f4ae40ddaae1916cc4896894"
+    REVIEW_67_SHA = "1dbca5baa92e1b80cf9394616142a50f733fe404f66547d846d0df3880e58b06"
+    REVIEW_64_SHA = "86d59df2e50a237de0157998dddc6d0386b4626e15f0a037fea903b992fc29d5"
+    FLOOR_SHA = "b2022c6cd200456693e926049a86535081bbb80403fdf429f7e81857c778e71f"
+    FLOOR_EMPTY_SHA = "844ee39147d7c634d501ee54e412aba7f11342d26accff516e1d602ca6eb531b"
+    STAGE_3A_SHA = "b747dd4b8a736d1c7a1a33a4040ccdf62d7e4bfc12862111dfcbca20ec2df6a0"
+    STAGE_3A_EMPTY_SHA = "566fe395e5b274a5d6656238f3f813767b6f25b333344121d6156748aaa0d90b"
     # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64)
     # on slice 1 alone; rebuilt here at the merged head.
-    HANDOVER_67_SHA = "61724296e024ce01289635e1a93b7b5c46294098e391ed43bc272d4557fcfa42"
-    HANDOVER_64_SHA = "58e859356c3eebb935f1c0b40375b742744211214cff1e4607b58cf35ef741c0"
+    HANDOVER_67_SHA = "950df4fb819a9abec1b9e4a9ade27d4498d4c48ec6300ae5104892e697e5a24d"
+    HANDOVER_64_SHA = "0dd9a21fa8d50fbd6406c5db55ef938199748bf93d08d7dfefc8eed67b0ffaca"
 
     @classmethod
     def setUpClass(cls):
@@ -675,6 +679,11 @@ class TestOnlyInstallTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_qb_room as room, nfl2k5_sim_qb_injuries as qb
         source = _private("NFL2K5_B81_REVIEWED_TEST_DISC", HELMET_XBE_SHA)
         slice1, _ = qb.apply(source, "realistic")
+        # b81 economy r10: the floor authenticates the CURRENT economy's restructure, and revision 10 changed it (no
+        # restructure under 3 years left, no 6-to-2 deal), so the helmet disc's revision 7 economy is upgraded first, as
+        # the Studio routes and PreviousRevisionTests do.
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        slice1, _ = economy.apply(slice1)
         stages = room.STAGE_FLOOR
         with self.assertRaisesRegex(ValueError, "modern injured reserve"):
             room.install_stages(slice1, stages)
