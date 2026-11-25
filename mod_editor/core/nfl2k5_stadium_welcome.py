@@ -18,12 +18,16 @@ How the welcome is picked (static RE, retail executable and data)
 
 What this owner does
 --------------------
-For each of the 20 stadiums whose recording names a building or city the 2026 product no longer shows, and only when
+For each of the 24 stadiums whose recording names a building, a city or a stand-in name ("Arizona Stadium", "Chicago
+Field", "Seattle Stadium", "Washington Field": the retail game's unlicensed names) that the 2026 product no longer
+shows, and only when
 the built disc's stadium row really shows another name (its display name differs from the retail one, ignoring spaces
 and case), the stadium's
 value in list 2936 becomes 0xFFFF, which no stadium number matches. That stadium's welcome is then skipped; every
 other value, stream and key keeps its bytes. A disc without the venue renames is left alone (the recording still
-matches the row). A stadium whose welcome recording the user replaced through the commentary replacement
+matches the row). On the standard 2026 disc every one of the 24 rows is renamed, so the welcome plays at 8 of the 32
+home stadiums (M&T Bank, Charlotte, Ford Field, Lambeau, Arrowhead, Gillette, Lincoln Financial, Reliant). A stadium
+whose welcome recording the user replaced through the commentary replacement
 (``keep_streams``) keeps its value, so the user's recording stays reachable. Data only: two bytes per stadium in the
 one ``lines`` SPCI, which the disc stores uncompressed.
 
@@ -52,8 +56,10 @@ RETAIL_VALUES = tuple(range(0, 33)) + (36, 37, 48) + tuple(range(51, 72)) + tupl
 SKIP = 0xFFFF
 #: stadium number -> (the recorded welcome, the retail display name of its row)
 STALE = {
+    0: ("Arizona Stadium", "Arizona Stadium"),
     1: ("the Georgia Dome", "The Georgia Dome"),
     3: ("Ralph Wilson Stadium", "Ralph Wilson Stadium"),
+    5: ("Chicago Field", "Chicago Field"),
     6: ("Paul Brown Stadium", "Paul Brown Stadium"),
     7: ("Texas Stadium", "Texas Stadium"),
     8: ("Invesco Field at Mile High Stadium", "INVESCO Field at Mile High Stadium"),
@@ -69,8 +75,10 @@ STALE = {
     23: ("the Edward Jones Dome", "Edward Jones Dome "),
     24: ("Qualcomm Stadium", "QUALCOMM Stadium"),
     25: ("San Francisco, California", "San Francisco Park"),
+    26: ("Seattle Stadium", "Qwest Field"),
     27: ("Tampa Bay Stadium", "Tampa Bay Stadium"),
     28: ("the Titans Coliseum", "Titans Coliseum"),
+    29: ("Washington Field", "Washington Field"),
     30: ("Browns Stadium", "The Cleveland Browns Stadium"),
 }
 

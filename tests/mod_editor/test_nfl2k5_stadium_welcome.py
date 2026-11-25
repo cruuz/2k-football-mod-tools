@@ -49,9 +49,18 @@ class ListLogic(unittest.TestCase):
     def test_retail_values_and_stale_numbers(self):
         self.assertEqual(len(w.RETAIL_VALUES), w.LIST_COUNT)
         self.assertEqual(len(set(w.RETAIL_VALUES)), w.LIST_COUNT)
-        self.assertEqual(sorted(w.STALE), [1, 3, 6, 7, 8, 11, 12, 14, 15, 17, 18, 19, 20, 22, 23, 24, 25, 27, 28, 30])
+        self.assertEqual(sorted(w.STALE), [0, 1, 3, 5, 6, 7, 8, 11, 12, 14, 15, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27,
+                                           28, 29, 30])
         self.assertEqual((w.STALE[27][0], w.STALE[30][0]), ("Tampa Bay Stadium", "Browns Stadium"))
         self.assertEqual((w.stream_of(27), w.stream_of(30)), (18056, 18059))   # "welcoming you to Tampa Bay Stadium."
+        # the retail game's stand-in names (coordinator, round 2): "welcome to Arizona Stadium / Chicago Field /
+        # Seattle Stadium", "greetings from Washington Field"
+        self.assertEqual({n: (w.STALE[n][0], w.stream_of(n)) for n in (0, 5, 26, 29)},
+                         {0: ("Arizona Stadium", 18029), 5: ("Chicago Field", 18034), 26: ("Seattle Stadium", 18055),
+                          29: ("Washington Field", 18058)})
+        self.assertEqual(w.STALE[26][1], "Qwest Field")                         # the retail row; the line says "Seattle"
+        home = set(range(31)) | {37}                                             # the 32 clubs' home stadiums
+        self.assertEqual(sorted(home - set(w.STALE)), [2, 4, 9, 10, 13, 16, 21, 37])   # where the welcome still plays
         self.assertTrue(set(w.STALE) <= set(w.RETAIL_VALUES))
         self.assertNotIn(w.SKIP, w.RETAIL_VALUES)
 
@@ -59,6 +68,10 @@ class ListLogic(unittest.TestCase):
         self.assertEqual(w.stale_rows({n: retail for n, (_s, retail) in w.STALE.items()}), [])
         self.assertEqual(w.stale_rows(RENAMED), sorted(w.STALE))
         self.assertEqual(w.stale_rows({20: "Allegiant Stadium", 10: "Lambeau Field", 3: "Ralph Wilson Stadium"}), [20])
+        self.assertEqual(w.stale_rows({0: "Arizona Stadium", 5: "Chicago Field", 26: "Qwest Field",
+                                       29: "Washington Field"}), [])          # retail names keep the line
+        self.assertEqual(w.stale_rows({0: "State Farm Stadium", 5: "Soldier Field", 26: "Lumen Field",
+                                       29: "Northwest Stadium"}), [0, 5, 26, 29])
         self.assertEqual(w.stale_rows({23: "Edward Jones Dome", 12: "Alltel  stadium", 30: "Huntington Bank Field"}),
                          [30])                                          # spaces and case are not a rename (N8)
 
