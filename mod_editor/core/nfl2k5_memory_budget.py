@@ -355,6 +355,10 @@ REQUIRES_128 = {
                               "the extra executable sections (the scale-out), and the 64 MB profile is the legacy "
                               "layout, which has no room left for it. A 64 MB build keeps the 2004 injured reserve "
                               "(5 a club, season-ending) with the Pro Bowl guard.",
+    # b81 modern numbers (review M1): its fixed page sits in the scale-out pool, which the 64 MB legacy layout has not
+    "modern_numbers": "Modern jersey numbers keep their rules on a page of the extra executable sections (the "
+                      "scale-out), and the 64 MB profile is the legacy layout, which has no room left for it. A 64 MB "
+                      "build keeps the game's own jersey numbers.",
 }
 
 # A field and the sub-options that only matter with it; a suggestion turns the whole group off.

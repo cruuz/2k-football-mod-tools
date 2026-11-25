@@ -183,6 +183,12 @@ i32 __attribute__((cdecl)) number_pick(u32 p, u32 club, const u32 *frame) {
                 if (legacy[i][2] == pos) legacy_number = legacy[i][1];
                 else mark(&s, legacy[i][1]);               /* another position's legacy number */
             }
+        if (!(RESERVE_EXEMPT >> pos & 1)) {                /* 0-19 kept for quarterbacks (review S4): a joiner who is */
+            u32 open_ = 0;                                 /* not a QB, K or P takes none of it (his own number */
+            for (i = 0; i < 20; i++) open_ += !is_taken(&s, i);   /* included) while fewer than QB_RESERVE are free */
+            if (open_ < QB_RESERVE)
+                for (i = 0; i < 20; i++) mark(&s, i);
+        }
     }
     if (!draft && !(rookie && s.key[3] < 8) && own < 100 && (s.legal >> (own / 10) & 1) && !is_taken(&s, own))
         return (i32)own;                                   /* he keeps his own number */

@@ -268,14 +268,15 @@ void ir_rollover(void) {
         u8 *club = CLUB_AT(c);
         struct club *k = &S->c[c];
         struct entry was[CAP];
-        u32 n = k->n, kept = 0;
+        u8 *back[CAP];
+        u32 n = k->n, kept = 0, b = 0;
         for (u32 i = 0; i < n; i++) was[i] = k->e[i];
         k->n = 0;                      /* off the store (and the mirror) first: the append's own "owned" checks */
         mirror(c);
         for (u32 i = 0; i < n; i++) {
             struct entry e = was[i];
             if (club && append_room(club) && APPEND(club, e.p)) {
-                restore_number(club, e.p);                            /* b81: he wears his own number again */
+                back[b++] = e.p;
                 S->rollover_back++;
                 continue;
             }
@@ -289,6 +290,9 @@ void ir_rollover(void) {
         k->returns = 0;
         mirror(c);
         if (club) RECOUNT(club);
+        /* b81: each returner wears his own number again. Only now, with the store rebuilt: a club-mate the jersey routine
+           renumbers must see the men who stay on IR (review S2), and every returner is on the active list. */
+        for (u32 i = 0; i < b; i++) restore_number(club, back[i]);
     }
 }
 

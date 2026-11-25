@@ -6,8 +6,10 @@ number a club-mate wears (active list, practice squad or injured reserve) while 
 
 Every native test runs the game's own jersey routine 0x2BD260 in the harness CPU with the owner's page installed by its
 own apply(): on synthetic clubs on the retail executable (Synthetic*), and on a kept 2027 opening image of the standard
-build (KeptImage*: real clubs, practice squads and the modern IR store). Each class fails on c4406481b (no owner module)
-or on the named mutation (Mutations). The Python rule nfl2k5_modern_numbers.pick is checked against the page.
+build (KeptImage*: real clubs, practice squads and the modern IR store). Each class fails on c4406481b (no owner module);
+the later rules' tests name the commit they fail on. There is no mutation class here: the independent review's 12 page
+mutants (11 killed; the overflow-row mutant killed once T7 moved to a club without retired numbers) are recorded in
+modern-numbers/evidence. The Python rule nfl2k5_modern_numbers.pick is checked against the page.
 """
 from __future__ import annotations
 
@@ -139,6 +141,9 @@ class League:
             raise AssertionError(f"the jersey routine did not return ({m.reg('EIP'):#x})")
         if m.reg("ESP") != m.STACK + 8:
             raise AssertionError("the jersey routine did not pop its one argument")
+        saved = {name: m.reg(name) for name in ("EBX", "ESI", "EDI", "EBP")}   # review N2: callee-saved registers
+        if saved != dict(EBX=0x11111111, ESI=0x22222222, EDI=0x33333333, EBP=0x44444444):
+            raise AssertionError(f"the jersey routine did not preserve the callee-saved registers: {saved}")
         return self.number(p)
 
 
@@ -421,15 +426,15 @@ class SyntheticRule(unittest.TestCase):
             ir = [lg.player(740 + k, POS["CB"], n) for k, n in enumerate(numbers[14:19])]
             active = [lg.player(760 + k, POS["CB"], n) for k, n in enumerate(numbers[19:])]
             active += [lg.player(800 + k, POS["G"], 50 + k) for k in range(53 - len(active))]   # 53 + 12 fill the 65 slots
-            t = lg.club(12, active, practice=ps, overflow=overflow)
-            lg.injured_reserve(12, ir)
+            t = lg.club(14, active, practice=ps, overflow=overflow)     # Atlanta: no retired numbers (review S1:
+            lg.injured_reserve(14, ir)                                  # at Miami 12 and 13 were taken anyway)
             for years in (7, 0):
                 self.assertEqual(lg.join(lg.player(992, POS["CB"], numbers[0], years=years), t), free)
             self.assertEqual(lg.join(lg.player(993, POS["CB"], numbers[13], years=7), t), free)   # an overflow man's
             self.assertEqual(lg.join(lg.player(994, POS["CB"], numbers[15], years=7), t), free)   # an IR man's
         finally:
             lg.mode(0)
-            lg.injured_reserve(12, [])
+            lg.injured_reserve(14, [])
 
     def test_t8_the_cue_follows_the_number(self):
         lg = self.league
@@ -556,6 +561,26 @@ class SyntheticClubNumbers(unittest.TestCase):
                 lg.injured_reserve(c, [])
         finally:
             lg.mode(0)
+
+    def test_0_19_kept_for_quarterbacks_when_short(self):
+        """Review S4 (coordinator 11/25): at a league club with fewer than 3 numbers free in 0-19, a joiner who is not a
+        QB, K or P takes none of them, his own number included; a quarterback (or kicker) still may. With 3 free, the
+        draw is as before. Fails on c02a1b9ae (a first-round WR took 5 or 11)."""
+        atl = self.idx["ATL"]
+        two = [n for n in range(20) if n not in (5, 11)]
+        r1 = self.joins(atl, POS["WR"], [draft_frame(0, slot=atl) for _ in range(60)], mates=two)
+        self.assertFalse([n for n in r1 if n < 20], r1)
+        for position in ("CB", "HB", "TE", "OLB", "DE"):
+            got = self.joins(atl, POS[position], [draft_frame(r % 7, slot=atl) for r in range(40)] + [None] * 10,
+                             own=11, mates=two)
+            self.assertFalse([n for n in got if n < 20], position)        # a veteran's own free 11 included
+        self.assertIn(self.joins(atl, POS["QB"], [None], own=12, mates=two)[0], (5, 11))
+        self.assertIn(self.joins(atl, POS["K"], [None], own=12, mates=two)[0], (5, 11))
+        self.assertEqual(self.joins(atl, POS["QB"], [None], own=11, mates=two)[0], 11)   # a QB keeps his free own
+        three = [n for n in range(20) if n not in (5, 11, 17)]
+        r1 = self.joins(atl, POS["WR"], [draft_frame(0, slot=atl) for _ in range(60)], mates=three)
+        self.assertTrue([n for n in r1 if n < 20], r1)                     # 3 free: single digits as before
+        self.assertEqual(self.joins(atl, POS["WR"], [None], own=11, mates=three)[0], 11)
 
     def test_dallas_88(self):
         dal = self.idx["DAL"]
@@ -980,6 +1005,52 @@ class InjuredReserveReturns(unittest.TestCase):
                 if payload is self.both:
                     self.assertTrue(mn.legal(m.uc.mem_read(b + 0x35, 1)[0], b_new))
 
+    def test_the_rollover_keeps_the_rights_of_a_man_who_stays_on_ir(self):
+        """Review S2: at the rollover the club is full after the first returner (A), so the second IR man (C) stays on
+        IR. A quarterback club-mate (B) wears A's number and is renumbered; every other 0-19 number is worn, so C's
+        number is the only one a page reading the store too early would see free. The renumbering runs after the store
+        is rebuilt: B gets a number nobody on the club wears or holds, never C's. Fails on c02a1b9ae (B got C's)."""
+        from mod_editor.core import nfl2k5_modern_numbers as numbers
+        helper, m = self.boot(self.both)
+        c = next(k for k in range(32) if not any(numbers.retired(k, n) for n in range(30))
+                 and any(m.uc.mem_read(p + 0x35, 1)[0] == 0 for p in helper.roster(m, k)))
+        roster = helper.roster(m, c)
+        b = next(p for p in roster if m.uc.mem_read(p + 0x35, 1)[0] == 0)
+        hurt = [p for p in roster if p != b][:2]
+        for p in hurt:
+            helper.hurt(m, p, 9)
+        helper.week(m)
+        stored = [e[0] for e in helper.store(m, c)[2]]
+        self.assertEqual(sorted(stored), sorted(hurt))
+        a, c_man = stored                                                  # the store's order: A returns first
+        x, y = 3, 7
+        self.give(m, a, x)
+        self.give(m, c_man, y)
+        self.give(m, b, x)                                                 # an older build gave A's number away
+        others = [p for p in helper.roster(m, c) if p != b]
+        wanted = [n for n in range(20) if n not in (x, y)]
+        for k, p in enumerate(others):                                     # 0-19 but C's 7 is worn; the rest 30 and up
+            self.give(m, p, wanted[k] if k < len(wanted) else 30 + k % 60)
+        club = helper.club(m, c)
+        agents = m.get(m.root + 0x3C)
+        k = 0
+        while len(helper.roster(m, c)) < 64:                               # A's return takes the 65th slot
+            p = m.get(agents + 4 * k)
+            k += 1
+            if p and p not in helper.roster(m, c):
+                self.give(m, p, 30 + k % 60)
+                m.call(0xC3EE0, ecx=club, edx=p)
+        m.call(0x246F90, budget=400_000_000)
+        self.assertIn(a, helper.roster(m, c))
+        n, _returns, entries = helper.store(m, c)
+        self.assertEqual((n, entries[0][0]), (1, c_man))                   # C stays on IR, with his number
+        self.assertEqual((m.get(c_man + 0x20) >> 3) & 0x7F, y)
+        self.assertEqual((m.get(a + 0x20) >> 3) & 0x7F, x)
+        got = (m.get(b + 0x20) >> 3) & 0x7F
+        self.assertNotIn(got, (x, y))
+        worn = [(m.get(p + 0x20) >> 3) & 0x7F for p in helper.roster(m, c) if p != b]
+        self.assertNotIn(got, worn)
+
     def test_the_weekly_return_and_a_free_number_untouched(self):
         for label, payload in (("modern IR", self.with_ir), ("modern IR + modern numbers", self.both)):
             for taken in (True, False):
@@ -1115,6 +1186,41 @@ class StudioWiring(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "changed by another tool"):
             build._edit_installed_modern_numbers(plan, plan.source, plan.target, foreign, {"steps": []},
                                                  lambda *_: None, preflight=True, consume=False, reference=None)
+
+    def test_64_mb_builds_leave_modern_numbers_out(self):
+        """Review M1: the page needs the 128 MB scale-out pool. At 64 MB every preset and the recommended 64 MB profile
+        leave the option out, the memory model lists it among the 128 MB options, an explicit Modern is refused, and
+        the in-place route refuses a disc built without the 128 MB requirement. Fails on c02a1b9ae (the presets
+        set "modern" at 64 MB and the build failed at its last executable step)."""
+        from unittest import mock
+        from mod_editor.core import mod_build as build
+        from mod_editor.core import nfl2k5_memory_budget as budget
+        level = build._modern_numbers_level
+        self.assertIn("modern_numbers", budget.REQUIRES_128)
+        for name in build.PRESETS:
+            with self.subTest(preset=name):
+                small = build.apply_preset(build.BuildPlan("a.iso", "b.iso", console_memory=64), name)
+                self.assertIs(small.modern_numbers, False)
+                self.assertIsNone(level(small))
+                big = build.apply_preset(build.BuildPlan("a.iso", "b.iso"), name)
+                profile = budget.profile_64_plan(big)
+                self.assertFalse(budget.on(profile, "modern_numbers"))
+                self.assertNotIn("modern_numbers", budget.forced_off(profile, 64))
+                self.assertIn("modern_numbers", budget.forced_off({**budget.options(big), "modern_numbers": "modern"}, 64))
+        self.assertIsNone(level(build.BuildPlan("a", "b", console_memory=64, season_2026=True)))   # follows: left out
+        for value in (True, "modern"):
+            with self.assertRaisesRegex(ValueError, "128 MB"):
+                level(build.BuildPlan("a", "b", console_memory=64, modern_numbers=value))
+        self.assertIsNone(level(build.BuildPlan("a", "b", console_memory=64, modern_numbers=False)))
+        _need(KEPT_XBE, KEPT_XBE_SHA)
+        base = KEPT_XBE.read_bytes()
+        plan = build.modern_numbers_disc_edit("in.iso", "out.iso")
+        with mock.patch.object(build.tt.k128_patch, "read_settings", return_value={"status": "applied", "require_128": False}):
+            for mode in ("modern", "retail"):
+                plan = build.modern_numbers_disc_edit("in.iso", "out.iso", mode=mode)
+                with self.assertRaisesRegex(ValueError, "128 MB standard disc"):
+                    build._edit_installed_modern_numbers(plan, plan.source, plan.target, base, {"steps": []},
+                                                         lambda *_: None, preflight=True, consume=False, reference=None)
 
     def test_the_cli_route(self):
         import importlib.util

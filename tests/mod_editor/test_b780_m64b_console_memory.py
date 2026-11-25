@@ -120,6 +120,9 @@ class PlanField(unittest.TestCase):
                 # b81 qb34: the quarterback room key, like the mode, only when a preset or the user named it.
                 if plan.qb_room is None:
                     omitted.add("qb_room")
+                # b81 modern numbers: None (follows season_2026) is left out of a recipe, as the bare plan's.
+                if plan.modern_numbers is None:
+                    omitted.add("modern_numbers")
                 before = {key: value for key, value in asdict(plan).items() if key not in omitted}
                 self.assertEqual(plan.to_recipe(), before)
                 self.assertEqual(plan.to_recipe().get("sim_qb_injuries"),

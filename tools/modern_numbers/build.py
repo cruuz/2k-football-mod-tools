@@ -50,6 +50,8 @@ def tables_h() -> str:
         "static const unsigned int draft_callers[%d] = {%s};" % (len(mn.DRAFT_CALLERS),
                                                                  ", ".join("0x%08xu" % v for v in mn.DRAFT_CALLERS)),
         "#define SKILL 0x%xu" % mn.SKILL,
+        "#define RESERVE_EXEMPT 0x%xu" % mn.RESERVE_EXEMPT,
+        "#define QB_RESERVE %d" % mn.QB_RESERVE,
         "static const unsigned char retired[32][13] = {%s};" % rows(mn.RETIRED),
         "#define EXCEPTIONS %d" % len(mn.RETIRED_EXCEPTIONS),
         "static const unsigned char exceptions[%d][2] = {%s};" % (max(1, len(mn.RETIRED_EXCEPTIONS)),

@@ -59,8 +59,9 @@ HELP_TEXT = ("Players who join a club (draft picks, signings, trades) get today'
              "reserve or the practice squad keeps the rights to his number: nobody else on his club is given it, and he "
              "wears it again when he comes back. Clubs never hand out their retired numbers on their own (a top "
              "first-round pick may still get the Giants' or Titans' No. 1, as Malik Nabers and Cam Ward did), and the "
-             "Cowboys' 88 goes to a wide receiver, a top new one when it is free. Nobody already on a club changes number, "
-             "and you can still give any player any number yourself.")
+             "Cowboys' 88 goes to a wide receiver, a top new one when it is free. When a club has fewer than three numbers "
+             "left from 0 to 19, other newcomers leave them for quarterbacks. Nobody already on a club changes number, "
+             "and you can still give any player any number yourself. Standard 128 MB build only.")
 MODES = ("retail", "modern")
 
 SITE_VA = 0x2BD260
@@ -154,6 +155,11 @@ THRESHOLDS = (
 # for one position. Club = the game's league slot (club_index in the file).
 DATA_PATH = Path(__file__).resolve().parents[2] / "data" / "nfl2k5_modern_numbers" / "numbers.json"
 SKILL = sum(1 << POSITIONS.index(p) for p in ("QB", "HB", "FB", "WR", "TE"))
+# 0-19 kept for quarterbacks (review S4, coordinator 11/25): at a league club with fewer than QB_RESERVE numbers free in
+# 0-19, a joiner who is not a QB, K or P takes none of them (his own number included), so a quarterback who joins later
+# still finds a legal number without anyone being renumbered.
+RESERVE_EXEMPT = sum(1 << POSITIONS.index(p) for p in ("QB", "K", "P"))
+QB_RESERVE = 3
 
 
 def _load_data():
@@ -180,6 +186,11 @@ def retired(club: int, number: int) -> bool:
 DRAFT_JOIN_RET = 0x325B6C
 TEXT_RANGE = (0x11000, 0x420114)                     # the retail .text; a call from elsewhere is an owner page's
 DRAFT_CALLERS = (0x325C40, 0x3265C2, 0x322FBE)       # after the calls at 0x325C3B, 0x3265BD, 0x322FB9
+# The pick word's "round": on 0x325C3B (the pick on the clock) and 0x3265BD (the auto pick) it is [0xE3C0A8] << 5 |
+# [0xE3C0A4], the draft's round and slot. On 0x322FB9 (FUN_00322F50, from the stage machine at 0x248549: signing a
+# club's pending picks) the pushed word is a per-club counter (edi += 0x20), so "round" is the order of that club's
+# pending picks, as in the game's own contract call there; tier and the first-round exception follow that order. The
+# ten-season panel never saw that path (all 8,064 picks came through 0x325C3B). (Independent review N3.)
 SALT = 0x4D4E554D                                    # "MNUM"
 LEAGUE_GLOBALS = {"root": 0xB72918, "arena_size": 0xB72808, "mode": 0xE576A0, "stage": 0xE576A4, "season": 0xE576B8}
 
@@ -430,6 +441,8 @@ def pick(position: int, own: int, taken, key, *, draft_round: int | None = None,
                     legacy_number = n
                 else:
                     taken.add(n)
+        if not RESERVE_EXEMPT >> position & 1 and sum(n not in taken for n in range(20)) < QB_RESERVE:
+            taken |= set(range(20))                       # 0-19 kept for quarterbacks
     free = lambda n: legal(position, n) and n not in taken  # noqa: E731
     if draft_round is None and not rookie_preseason and 0 <= own <= 99 and free(own):
         return own
@@ -475,6 +488,6 @@ def pick(position: int, own: int, taken, key, *, draft_round: int | None = None,
 
 __all__ = ["OWNER", "BUILD_KEY", "LABEL", "BUILD_CAPTION", "HELP_TEXT", "MODES", "SITE_VA", "SITE_RETAIL", "CODE_SIZE",
            "POSITIONS", "GROUPS", "TIERS", "LEGAL_DECADES", "GROUP_OF", "WEIGHTS", "SINGLE_DIGIT", "THRESHOLDS",
-           "DRAFT_JOIN_RET", "DRAFT_CALLERS", "GUARDS", "DATA", "RETIRED", "RETIRED_EXCEPTIONS", "LEGACY", "SKILL", "retired", "ModernNumbersError", "tables_bytes", "code_for", "site_bytes",
+           "DRAFT_JOIN_RET", "DRAFT_CALLERS", "GUARDS", "DATA", "RETIRED", "RETIRED_EXCEPTIONS", "LEGACY", "SKILL", "RESERVE_EXEMPT", "QB_RESERVE", "retired", "ModernNumbersError", "tables_bytes", "code_for", "site_bytes",
            "sites", "allocation", "status", "read_settings", "reservations", "apply", "remove", "set_mode", "legal",
            "draw", "pick"]

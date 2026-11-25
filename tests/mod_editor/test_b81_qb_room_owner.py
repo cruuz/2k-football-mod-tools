@@ -480,23 +480,24 @@ class PreviousRevisionTests(unittest.TestCase):
     # Combined calibration levers (merge queue item 15): re-pinned once more; every rebuild differs from its
     # practice-squad-merge rebuild exactly where the injury option's executable differs (the QB bank's tables for
     # QB_CHANCE_SCALE 1.06, the scoring site's breakaway stop 68, the registry hash and digests).
-    D1D2_SHA = "103a4a6a92d4c33299040d65454ccd6259892ddcb6601a1951f0472b633d8e82"
-    REVIEW_67_SHA = "35d7feb51dc8b940ef0ac16cc1e9f9c403ffa6effc3bcea4c2d7fb9fa588678b"
-    REVIEW_64_SHA = "3d7523033f64acb404a39bf3849bc6caef2a58527b5b33f8c42bee6c38f70534"
-    FLOOR_SHA = "217c10a8a5e0a203df3e9548a3d46ddbf6d1f43f31a1c0a1a001d0efb736046c"
-    FLOOR_EMPTY_SHA = "68c1556bcde075d12633197ddab1dc47917c1ed595023bcd7c04241b144e6451"
+    D1D2_SHA = "dd02160e32c8fb083b60afd2fcac676362c0737b704ec47bb0ec4c253c3cda4b"
+    REVIEW_67_SHA = "0962b31e580a7f07cfdd326a006eef7671cd4b6cf0599685a205640d725c5744"
+    REVIEW_64_SHA = "92887acc8daea7a6324239b96af8df7383d6dc0377bec9955d8b7caf34821143"
+    FLOOR_SHA = "8c7b1095af3e57949964c6a04479ebfb11d469466b7acf5b87c53859b1e413b8"
+    FLOOR_EMPTY_SHA = "35af3cb703e303e8de34dda5eaae75767e2089e939f98b79f590b8391b4cf836"
     STAGE_3A_SHA = "5b3c065a543ea4cc7eb4e56c24709d9c5706406824db7c48e6cf1bdf2d863477"
     STAGE_3A_EMPTY_SHA = "0af4c40fa91dc267ad3f07c92f6d3fe354b49f9f04dd0b3ea0e4c78d494159df"
     # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64)
     # on slice 1 alone; rebuilt here at the merged head.
-    HANDOVER_67_SHA = "8a2c1b187885b9fdaf7086a84acde4802d67373791a762642dd33a7a314c0eef"
-    HANDOVER_64_SHA = "566e68b566b9aef7b641372f62084cd74a73107ab57ebe11be497a8641709146"
+    HANDOVER_67_SHA = "114e403140402abe7c76bf3c236ff01a47464fa0e20cd9ab7498b6092992b9e9"
+    HANDOVER_64_SHA = "eca5b56d1fb1731c69babc30ae5d4d421bca2e3cb52560fc61aaa4d81f01b827"
 
     @classmethod
     # b81 modern numbers (modern IR's number-rights revision, 866fe3a8d / 911e590e3): the fixture's base is built with
     # ir.apply, so every rebuild on that base differs from its earlier rebuild exactly in the IR runtime's code (its own
     # allocation) and the digests; the room's pages and sites are unchanged, and the 3a rebuilds (no IR) did not move.
     # The earlier values were D1D2 5d471c14, REVIEW_67 08087d17, REVIEW_64 c22d95b6, FLOOR 55e52233, FLOOR_EMPTY 8652889e, HANDOVER_67 61724296, HANDOVER_64 58e85935.
+    # Review S2 (IR rollover renumbers after the store is rebuilt) moved them again; before it: D1D2 103a4a6a, REVIEW_67 35d7feb5, REVIEW_64 3d752303, FLOOR 217c10a8, FLOOR_EMPTY 68c1556b, HANDOVER_67 8a2c1b18, HANDOVER_64 566e68b5.
     def setUpClass(cls):
         from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_qb_room as room, nfl2k5_sim_qb_injuries as qb
         cls.room = room

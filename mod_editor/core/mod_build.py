@@ -1674,6 +1674,7 @@ def apply_preset(plan: BuildPlan, name: str) -> BuildPlan:
         values["gadget_play"] = False
         values["sim_qb_injuries"] = None
         values["qb_room"] = None  # b81 qb34: 128 MB standard only
+        values["modern_numbers"] = False  # b81 modern numbers (review M1): its page is in the 128 MB scale-out pool
         values["k128_memory"] = False
         values["k128_early"] = False         # b81 relrev M4: both need 128 MB memory
         values["k128_roster_heap"] = False
@@ -3224,6 +3225,9 @@ def _edit_installed_modern_numbers(plan, source, target, original, receipt, prog
         raise ValueError("Modern jersey numbers are unavailable in this Studio installation.")
     if not space_is_scaleout(original):
         raise ValueError("Modern jersey numbers edit a built disc (its executable carries the allocator).")
+    if tt.k128_patch.read_settings(original).get("require_128") is not True:   # review M1: never a 64 MB disc
+        raise ValueError("Modern jersey numbers edit a built 128 MB standard disc; a 64 MB disc keeps the game's own "
+                         "jersey numbers.")
     state = numbers.status(original)
     if state == "foreign":
         raise ValueError("The jersey routine or the modern jersey numbers page in this disc was changed by another "
@@ -6616,9 +6620,13 @@ def _modern_numbers_level(plan):
     """b81 modern numbers: "modern" (install or update), "retail" (take out) or None (leave the source as it is).
     None follows season_2026 (modern where the 2026 season is applied); False is the Build tab's box left clear."""
     value = getattr(plan, "modern_numbers", None)
+    small = getattr(plan, "console_memory", None) == 64   # review M1: the page needs the 128 MB scale-out pool
     if value is None:
-        return "modern" if getattr(plan, "season_2026", False) else None
+        return "modern" if getattr(plan, "season_2026", False) and not small else None
     if value is True or value == "modern":
+        if small:
+            raise ValueError("Modern jersey numbers need the 128 MB standard build: their page is in the extra executable "
+                             "sections, which the 64 MB layout does not have. Clear the option for a 64 MB build.")
         return "modern"
     if value == "retail":
         return "retail"
