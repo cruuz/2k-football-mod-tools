@@ -187,6 +187,7 @@ from . import nfl2k5_intro_autoskip as intro_autoskip_patch  # noqa: F401  b780-
 from . import nfl2k5_injured_reserve as injured_reserve_patch  # noqa: F401  b780 IR1: modern injured reserve (late owner)
 from . import nfl2k5_load_user_team_guard as load_user_team_guard_patch  # noqa: F401  b780 mc1: Franchise load guard (in-place sites); imported so the cave manifest recorder observes it
 from . import nfl2k5_save_list_type_guard as save_list_type_guard_patch  # noqa: F401  b780 mc1: boot save-list guard (in-place sites); imported so the cave manifest recorder observes it
+from . import nfl2k5_show_block_guard as show_block_guard_patch  # noqa: F401  b81 ot-crash: show block guard (in-place sites); imported so the cave manifest recorder observes it
 from . import nfl2k5_edition_save_notes as edition_save_notes_patch  # noqa: F401  beta 81 review M1: 64 MB save messages (in-place text); imported so the cave manifest recorder observes it
 from . import nfl2k5_preseason_warning as preseason_warning_patch  # noqa: F401  b779-int1: rc1's warned flag joins the union (LATE_OWNERS before the sim owners)
 from . import nfl2k5_cpu_passer_iq as cpu_passer_iq_patch  # noqa: F401  b780 a-passer: late owner (CPU quarterbacks throw on time); imported so the cave manifest recorder observes it

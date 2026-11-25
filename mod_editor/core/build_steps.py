@@ -237,6 +237,7 @@ STEP_LABELS: dict[str, str] = {
     "injured_reserve": "Modern injured reserve",
     "load_user_team_guard": "the Franchise load user-team guard",
     "save_list_type_guard": "the boot save-list type guard",
+    "show_block_guard": "the show block guard",
     "edition_save_notes": "the 64 MB edition's save messages",
     "quick_long_release": "Quicker deep and rollout throws",
     "coach_carousel_pool": "the coaching carousel's hiring pool",

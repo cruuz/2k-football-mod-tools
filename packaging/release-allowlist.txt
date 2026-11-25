@@ -611,6 +611,7 @@ mod_editor/core/nfl2k5_history_code.py
 mod_editor/core/nfl2k5_contract_college_guard.py
 mod_editor/core/nfl2k5_load_user_team_guard.py
 mod_editor/core/nfl2k5_save_list_type_guard.py
+mod_editor/core/nfl2k5_show_block_guard.py
 mod_editor/core/nfl2k5_edition_save_notes.py
 mod_editor/core/nfl2k5_coach_career_fix.py
 mod_editor/core/nfl2k5_history_pool.py
@@ -4569,6 +4570,7 @@ tests/mod_editor/test_nfl2k5_player_progress_screen.py
 tests/mod_editor/test_nfl2k5_contract_college_guard.py
 tests/mod_editor/test_nfl2k5_load_user_team_guard.py
 tests/mod_editor/test_nfl2k5_save_list_type_guard.py
+tests/mod_editor/test_b81_ot_show_block.py
 tests/mod_editor/test_nfl2k5_edition_save_notes.py
 tests/mod_editor/test_nfl2k5_sim_cb_tackles.py
 tests/mod_editor/test_nfl2k5_option_defaults.py

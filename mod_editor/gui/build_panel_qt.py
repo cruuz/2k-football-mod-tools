@@ -308,6 +308,7 @@ from mod_editor.core import nfl2k5_franchise_footer as _franchise_footer  # noqa
 from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # noqa: E402
 from mod_editor.core import nfl2k5_load_user_team_guard as _load_guard  # noqa: E402  b780 mc1
 from mod_editor.core import nfl2k5_save_list_type_guard as _save_list_guard  # noqa: E402  b780 mc1
+from mod_editor.core import nfl2k5_show_block_guard as _show_block_guard  # noqa: E402  b81 ot-crash
 from mod_editor.core import nfl2k5_edition_save_notes as _edition_notes  # noqa: E402  beta 81 review M1
 from mod_editor.core import nfl2k5_coach_career_fix as _coach_career_fix  # noqa: E402  b780 c1 (wired at b780-int)
 from mod_editor.core import nfl2k5_history_pool as _history_pool  # noqa: E402  b780 hist1
@@ -374,6 +375,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT),  # b778-cr1
                  ("load_user_team_guard", _load_guard.BUILD_CAPTION, _load_guard.HELP_TEXT),  # b780 mc1
                  ("save_list_type_guard", _save_list_guard.BUILD_CAPTION, _save_list_guard.HELP_TEXT),  # b780 mc1
+                 ("show_block_guard", _show_block_guard.BUILD_CAPTION, _show_block_guard.HELP_TEXT),  # b81 ot-crash
                  ("edition_save_notes", _edition_notes.BUILD_CAPTION, _edition_notes.HELP_TEXT),  # beta 81 review M1
                  ("coach_career_fix", _coach_career_fix.BUILD_CAPTION, _coach_career_fix.HELP_TEXT),  # b780 c1
                  ("history_pool", _history_pool.BUILD_CAPTION, _history_pool.HELP_TEXT),  # b780 hist1
