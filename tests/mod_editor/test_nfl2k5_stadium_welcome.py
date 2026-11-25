@@ -3,7 +3,8 @@
 Retail-free tests use a synthetic ``lines`` speech index holding the retail stadium list of key 14039 and a synthetic
 disc image. Retail tests (skipped without the user-owned USA disc folder) check that the retail list is the pinned one,
 that it belongs to key 14039 alone, that its values select the transcribed stadium welcomes, and that the retail
-roster renames nothing (so a retail build keeps every welcome).
+roster renames nothing (so a retail build keeps every welcome). Review fixes: Tampa Bay Stadium and Browns Stadium are
+stale too (S3), a normalised name is not a rename (N8), and a welcome the user re-recorded is left alone (S2).
 """
 from __future__ import annotations
 
@@ -48,7 +49,9 @@ class ListLogic(unittest.TestCase):
     def test_retail_values_and_stale_numbers(self):
         self.assertEqual(len(w.RETAIL_VALUES), w.LIST_COUNT)
         self.assertEqual(len(set(w.RETAIL_VALUES)), w.LIST_COUNT)
-        self.assertEqual(sorted(w.STALE), [1, 3, 6, 7, 8, 11, 12, 14, 15, 17, 18, 19, 20, 22, 23, 24, 25, 28])
+        self.assertEqual(sorted(w.STALE), [1, 3, 6, 7, 8, 11, 12, 14, 15, 17, 18, 19, 20, 22, 23, 24, 25, 27, 28, 30])
+        self.assertEqual((w.STALE[27][0], w.STALE[30][0]), ("Tampa Bay Stadium", "Browns Stadium"))
+        self.assertEqual((w.stream_of(27), w.stream_of(30)), (18056, 18059))   # "welcoming you to Tampa Bay Stadium."
         self.assertTrue(set(w.STALE) <= set(w.RETAIL_VALUES))
         self.assertNotIn(w.SKIP, w.RETAIL_VALUES)
 
@@ -56,6 +59,12 @@ class ListLogic(unittest.TestCase):
         self.assertEqual(w.stale_rows({n: retail for n, (_s, retail) in w.STALE.items()}), [])
         self.assertEqual(w.stale_rows(RENAMED), sorted(w.STALE))
         self.assertEqual(w.stale_rows({20: "Allegiant Stadium", 10: "Lambeau Field", 3: "Ralph Wilson Stadium"}), [20])
+        self.assertEqual(w.stale_rows({23: "Edward Jones Dome", 12: "Alltel  stadium", 30: "Huntington Bank Field"}),
+                         [30])                                          # spaces and case are not a rename (N8)
+
+    def test_the_users_own_welcome_is_kept(self):
+        self.assertEqual(w.kept_for_user([18, 20, 27], {w.stream_of(20), 5}), [20])
+        self.assertEqual(w.kept_for_user([18, 20], ()), [])
 
     def test_patch_and_states(self):
         body = synthetic_body()
@@ -107,6 +116,13 @@ class Image(unittest.TestCase):
             with mock.patch.object(w, "_stadium_names", return_value={n: r for n, (_s, r) in w.STALE.items()}):
                 self.assertEqual(w.apply_to_image(image.path)["state"], "not_needed")   # retail names: nothing to do
             self.assertEqual(image.path.read_bytes(), after)
+            renamed = {20: "Allegiant Stadium", 27: "Raymond James Stadium", 30: "Huntington Bank Field"}
+            with mock.patch.object(w, "_stadium_names", return_value=renamed):
+                receipt = w.apply_to_image(image.path, keep_streams={w.stream_of(27)})  # the user's Tampa welcome
+                self.assertEqual((receipt["skipped_stadiums"], receipt["kept_for_user_recordings"],
+                                  receipt["changed_bytes"]), ([20, 30], [27], 2))
+                status = w.status(image.path, keep_streams={w.stream_of(27)})
+                self.assertEqual((status["skipped"], status["expected"]), ([20, 30], [20, 30]))
 
     def test_a_disc_without_readable_stadium_rows_is_left_alone(self):
         """Build never fails over a disc it does not recognise: no roster, or no renamed row, writes nothing."""

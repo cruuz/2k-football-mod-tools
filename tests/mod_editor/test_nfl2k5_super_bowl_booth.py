@@ -2,9 +2,10 @@
 
 Retail-free tests use synthetic directors (the pins are swapped for theirs) and a synthetic disc image. Retail tests
 need the user-owned USA disc folder and are skipped without it: they check the pins, that the retail directors say the
-stale lines at exactly the 18 sites (the failing-first case), that revision 1 (40c10fb79) is the pinned previous
-state and upgrades in place, and that the ``lines`` speech table resolves every retail key to the recording named in
-the site table and every generic key to its listed streams.
+stale lines at exactly the 18 sites (the failing-first case), that revisions 1 (40c10fb79) and 2 (298c1fb22) are the
+pinned previous states and upgrade in place, and that the ``lines`` speech table resolves every retail key to the
+recordings named in the site table and every generic key to its listed streams. A line the user replaced through the
+commentary replacement keeps its retail key (review S2).
 The release gate runs on a built disc named by ``NFL2K5_SB_BOOTH_DISC`` (or ``python3 -m
 mod_editor.core.nfl2k5_super_bowl_booth check <disc>``). Nothing here is a gameplay result.
 """
@@ -35,16 +36,25 @@ GATE_DISC = os.environ.get("NFL2K5_SB_BOOTH_DISC", "")
 
 
 # --------------------------------------------------------------------------------------------- fixtures
-def synthetic_entry(outer: int, *, applied: bool = False, revision: int | None = None) -> bytes:
+def synthetic_entry(outer: int, *, applied: bool = False, revision: int | None = None,
+                    keep: frozenset[int] = frozenset()) -> bytes:
     """A director entry of the pinned size: the DRCT head and a say instruction at each site, zeros elsewhere.
-    ``applied`` writes every generic key; ``revision=1`` only revision 1's."""
+    ``applied`` writes every generic key (except the ``keep`` keys); ``revision=r`` what revision r wrote (revision 2
+    wrote 39796 where revision 3 writes 39800)."""
     out = bytearray(b.ENTRY_PINS[outer]["size"])
     out[:4] = b"DRCT"
     for site in b.sites_for(outer):
         at = b.WRAPPER + site.body_offset
         out[at] = b.SAY
-        generic = applied or (revision is not None and site.revision <= revision)
-        out[at + 1:at + 3] = (site.generic if generic else site.retail).to_bytes(2, "big")
+        if site.retail in keep:
+            key = site.retail
+        elif applied or (revision is not None and site.revision <= revision):
+            key = site.generic
+        elif revision is not None and revision >= 2 and site.earlier:
+            key = site.earlier[0]
+        else:
+            key = site.retail
+        out[at + 1:at + 3] = key.to_bytes(2, "big")
     return bytes(out)
 
 
@@ -55,7 +65,8 @@ def synthetic_pins() -> dict[int, dict[str, object]]:
                        "retail": hashlib.sha256(synthetic_entry(outer)).hexdigest(),
                        "applied": hashlib.sha256(synthetic_entry(outer, applied=True)).hexdigest()}
         if "previous" in b.ENTRY_PINS[outer]:
-            pins[outer]["previous"] = (hashlib.sha256(synthetic_entry(outer, revision=1)).hexdigest(),)
+            pins[outer]["previous"] = tuple(hashlib.sha256(synthetic_entry(outer, revision=r)).hexdigest()
+                                            for r in (1, 2))
     return pins
 
 
@@ -115,7 +126,9 @@ class SiteTable(unittest.TestCase):
         self.assertEqual(len(b.SITES), 18)
         self.assertEqual({outer: len(b.sites_for(outer)) for outer in b.OUTERS}, {4: 7, 1194: 4, 1195: 7})
         self.assertEqual(len({(s.outer, s.body_offset) for s in b.SITES}), 18)
-        self.assertEqual(sum(1 for s in b.SITES if s.revision == 2), 4)
+        self.assertEqual(sum(1 for s in b.SITES if s.revision == 2), 2)
+        self.assertEqual([(s.child, s.retail, s.generic, s.earlier) for s in b.SITES if s.revision == 3],
+                         [(68, 39799, 39800, (39796,)), (69, 39799, 39800, (39796,))])   # review N1
         for site in b.SITES:
             self.assertIn(site.generic, b.GENERIC_LINES)
             self.assertNotIn(site.generic, b.STALE_KEYS)
@@ -123,7 +136,10 @@ class SiteTable(unittest.TestCase):
         self.assertEqual(sorted(b.STALE_KEYS), [2956, 2957, 2958, 14047, 14048, 14049, 14050, 39795, 39797, 39799,
                                                 39811, 39812, 39813])
         self.assertEqual(b.GENERIC_LINES, {14051: (1483,), 2959: (1051,), 39815: (2740,), 39796: (9440, 9441, 9442),
-                                           39798: (9445, 9446)})
+                                           39798: (9445, 9446), 39800: (2731,)})
+        self.assertEqual(set(b.RETAIL_STREAMS), set(b.STALE_KEYS))
+        self.assertEqual(b.kept_keys({9439, 5}), frozenset({39795}))
+        self.assertEqual(b.WITNESSED, {"super_bowl_welcome": True, "super_bowl_coin_toss": True, "sign_offs": False})
 
     def test_patch_entry(self):
         with mock.patch.dict(b.ENTRY_PINS, synthetic_pins()):
@@ -150,6 +166,39 @@ class SiteTable(unittest.TestCase):
             for outer in (4, 1194):
                 self.assertEqual(synthetic_entry(outer, revision=1), synthetic_entry(outer, applied=True))
 
+    def test_revision_2_upgrades_in_place(self):
+        """Revision 2 said the regular-season sign-off (39796) for the AFC wild card; revision 3 says 39800."""
+        with mock.patch.dict(b.ENTRY_PINS, synthetic_pins()):
+            previous = synthetic_entry(1195, revision=2)
+            self.assertEqual(b.entry_state(1195, previous), "previous")
+            self.assertEqual(b.stale_lines(1195, previous), [])
+            patched, receipt = b.patch_entry(1195, previous)
+            self.assertEqual(patched, synthetic_entry(1195, applied=True))
+            self.assertEqual((receipt["from"], receipt["changed_bytes"]), ("previous", 2))
+
+    def test_the_users_own_recordings_keep_their_lines(self):
+        """Review S2: a site whose retail line the user replaced keeps (or gets back) its retail key."""
+        keep = b.kept_keys({1479, 9443})                                   # 14047 (Jacksonville), 39797 take 1
+        self.assertEqual(keep, frozenset({14047, 39797}))
+        with mock.patch.dict(b.ENTRY_PINS, synthetic_pins()):
+            for outer in b.OUTERS:
+                want = synthetic_entry(outer, applied=True, keep=keep)
+                patched, receipt = b.patch_entry(outer, synthetic_entry(outer), keep)
+                self.assertEqual(patched, want)
+                kept = sorted({s.retail for s in b.sites_for(outer)} & keep)
+                self.assertEqual(receipt["kept_for_user_recordings"], kept)
+                self.assertEqual(b.entry_state(outer, patched), "partial" if kept else "applied")
+                self.assertEqual(b.stale_lines(outer, patched, keep), [])
+                self.assertEqual(len(b.stale_lines(outer, patched)), sum(1 for s in b.sites_for(outer)
+                                                                         if s.retail in keep))
+                back, receipt = b.patch_entry(outer, synthetic_entry(outer, applied=True), keep)   # restores retail
+                self.assertEqual(back, want)
+                full, _ = b.patch_entry(outer, patched)                                            # and back again
+                self.assertEqual(full, synthetic_entry(outer, applied=True))
+            foreign = bytearray(synthetic_entry(4, applied=True, keep=keep))
+            foreign[b.WRAPPER + b.sites_for(4)[0].body_offset + 2] ^= 0x40                     # a key never written
+            self.assertEqual(b.entry_state(4, bytes(foreign)), "foreign")
+
     def test_refuses_a_foreign_director(self):
         with mock.patch.dict(b.ENTRY_PINS, synthetic_pins()):
             for outer in b.OUTERS:
@@ -175,6 +224,11 @@ class SiteTable(unittest.TestCase):
             self.assertEqual(sum(1 for x, y in zip(before, after) if x != y), 18)
             self.assertEqual(b.apply_to_image(image.path)["changed_bytes"], 0)                     # idempotent
             self.assertEqual(image.path.read_bytes(), after)
+            receipt = b.apply_to_image(image.path, keep_streams={1480})                             # user's 14048
+            self.assertEqual((receipt["changed_bytes"], receipt["kept_for_user_recordings"]), (2, [14048]))
+            self.assertEqual(b.image_state(image.path), "partial")
+            self.assertEqual(b.check_image(image.path, {1480}), [])
+            self.assertEqual(len(b.check_image(image.path)), 2)
 
     def test_image_with_a_foreign_director_is_left_alone(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(b.ENTRY_PINS, synthetic_pins()):
@@ -243,9 +297,22 @@ class Retail(unittest.TestCase):
         self.assertEqual(hashlib.sha256(patched).hexdigest(), b.ENTRY_PINS[1195]["applied"])
         self.assertEqual(receipt["changed_bytes"], 4)
 
+    def test_revision_2_is_the_pinned_previous_state(self):
+        """298c1fb22 pointed 39799 at 39796; its outer 1195 upgrades to 39800 (2 bytes)."""
+        out = bytearray(self.entries[1195])
+        for site in b.sites_for(1195):
+            at = b.WRAPPER + site.body_offset + 1
+            out[at:at + 2] = (site.earlier[0] if site.earlier else site.generic).to_bytes(2, "big")
+        self.assertEqual(hashlib.sha256(out).hexdigest(), b.ENTRY_PINS[1195]["previous"][1])
+        patched, receipt = b.patch_entry(1195, bytes(out))
+        self.assertEqual(hashlib.sha256(patched).hexdigest(), b.ENTRY_PINS[1195]["applied"])
+        self.assertEqual(receipt["changed_bytes"], 2)
+
     def test_the_speech_table_resolves_every_key(self):
         for site in b.SITES:
             self.assertEqual(lines_streams(self.table, site.retail)[0], site.line, site)
+        for key, lines in b.RETAIL_STREAMS.items():
+            self.assertEqual(lines_streams(self.table, key), lines, key)
         for key, lines in b.GENERIC_LINES.items():
             self.assertEqual(lines_streams(self.table, key), lines, key)
         self.assertEqual(lines_streams(self.table, 2950), (1042,))   # "As always, I'm with Peter O'Keeffe ..." follows

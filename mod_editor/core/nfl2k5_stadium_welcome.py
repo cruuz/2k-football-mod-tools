@@ -9,18 +9,23 @@ How the welcome is picked (static RE, retail executable and data)
   list 2936 (body +0x6AA6: a u16 count of 70, then 70 u16 values) and stream 18029 + j plays for the j-th value. The
   values are the stadium numbers (the digits of the stadium's asset code: 20 is the Raiders' "s20", 37 Reliant, 32 the
   practice facility); stream 18049 (s20) is "Hi there, I'm Dan Stevens and welcome to the Oakland Coliseum".
-* The lookup FUN_0013CBA0 scans the list for the context; when no value matches, the booth's resolver 0x67560 (the
+* 14039's context handler (0x137EC0) returns the current stadium's number if 14039 has a recording for it, else 999.
+  The lookup FUN_0013CBA0 scans the list for the context; when no value matches, the booth's resolver 0x67560 (the
   speech sequencer's +0x1050 hook) retries context 999 and the other speaker variant, and when those fail too the
   sequencer FUN_000C32C0 drops the phrase (0xC3424 -> 0xC33D9): nothing is said and the intro goes on.
-* List 2936 belongs to 14039 alone (no other key of the table uses it), and 14039 has no context 999.
+* List 2936 belongs to 14039 alone (no other key of the table uses it), and 14039 has no context 997, 998 or 999, so
+  a removed stadium is always skipped (nfl2k5_stale_speech.spoken models this).
 
 What this owner does
 --------------------
-For each of the 18 stadiums whose recording names a building or city the 2026 product no longer shows, and only when
-the built disc's stadium row really shows another name (its display name differs from the retail one), the stadium's
+For each of the 20 stadiums whose recording names a building or city the 2026 product no longer shows, and only when
+the built disc's stadium row really shows another name (its display name differs from the retail one, ignoring spaces
+and case), the stadium's
 value in list 2936 becomes 0xFFFF, which no stadium number matches. That stadium's welcome is then skipped; every
 other value, stream and key keeps its bytes. A disc without the venue renames is left alone (the recording still
-matches the row). Data only: two bytes per stadium in the one ``lines`` SPCI, which the disc stores uncompressed.
+matches the row). A stadium whose welcome recording the user replaced through the commentary replacement
+(``keep_streams``) keeps its value, so the user's recording stays reachable. Data only: two bytes per stadium in the
+one ``lines`` SPCI, which the disc stores uncompressed.
 
 Witnessed (xemu, 2026-11-25): Commanders at Giants on a disc with the list edited: the pregame looked up 14039 with
 context 18 (MetLife Stadium, row s18), the scan reported no match (0x13CE33) and the booth went on to its next line;
@@ -42,6 +47,7 @@ SPCI_NAME = "lines"
 KEY = 14039
 LIST_OFFSET = 0x6AA6                     # body offset of list 2936: u16 count, then the values
 LIST_COUNT = 70
+FIRST_STREAM = 18029                     # lines.bin stream of the list's first value (stream = FIRST_STREAM + j)
 RETAIL_VALUES = tuple(range(0, 33)) + (36, 37, 48) + tuple(range(51, 72)) + tuple(range(73, 86))
 SKIP = 0xFFFF
 #: stadium number -> (the recorded welcome, the retail display name of its row)
@@ -63,7 +69,9 @@ STALE = {
     23: ("the Edward Jones Dome", "Edward Jones Dome "),
     24: ("Qualcomm Stadium", "QUALCOMM Stadium"),
     25: ("San Francisco, California", "San Francisco Park"),
+    27: ("Tampa Bay Stadium", "Tampa Bay Stadium"),
     28: ("the Titans Coliseum", "Titans Coliseum"),
+    30: ("Browns Stadium", "The Cleveland Browns Stadium"),
 }
 
 
@@ -94,6 +102,15 @@ def find_spci(entry: bytes) -> int:
     return hits[0]
 
 
+def same_name(a: str, b: str) -> bool:
+    """Display names compared without case and extra spaces ("Edward Jones Dome " is "Edward Jones Dome")."""
+    return " ".join(a.split()).casefold() == " ".join(b.split()).casefold()
+
+
+def stream_of(stadium: int) -> int:
+    return FIRST_STREAM + RETAIL_VALUES.index(stadium)
+
+
 def list_values(body: bytes) -> tuple[int, ...]:
     count = struct.unpack_from("<H", body, LIST_OFFSET)[0]
     require(count == LIST_COUNT, f"the welcome's stadium list holds {count} values, not {LIST_COUNT}")
@@ -120,7 +137,13 @@ def list_state(body: bytes) -> tuple[str, list[int]]:
 def stale_rows(stadiums: dict[int, str]) -> list[int]:
     """The stale stadium numbers whose row on this disc shows another name than retail (``stadiums``: number ->
     display name read from the built disc's main roster)."""
-    return sorted(n for n, (_said, retail) in STALE.items() if n in stadiums and stadiums[n] != retail)
+    return sorted(n for n, (_said, retail) in STALE.items() if n in stadiums and not same_name(stadiums[n], retail))
+
+
+def kept_for_user(stadiums: list[int], keep_streams: Any = ()) -> list[int]:
+    """The stadiums among ``stadiums`` whose welcome recording the user replaced (left alone)."""
+    keep = frozenset(keep_streams)
+    return sorted(n for n in stadiums if stream_of(n) in keep)
 
 
 def patch_body(body: bytes, skip: list[int]) -> tuple[bytes, dict[str, Any]]:
@@ -153,17 +176,21 @@ def _stadium_names(path: Path | str) -> dict[int, str]:
     return names
 
 
-def status(path: Path | str) -> dict[str, Any]:
+def status(path: Path | str, keep_streams: Any = ()) -> dict[str, Any]:
     from . import nfl2k5_roster_records as rr
     with rr._outer_image()(path) as archive:
         entry = archive.entries[SPCI_OUTER_INDEX]
         raw = archive.read(entry.virtual_offset, entry.size)
     at = find_spci(raw)
     state, skipped = list_state(raw[at + 0x20:at + 0x20 + SPCI_STORED])
-    return {"state": state, "skipped": skipped, "stale_rows": stale_rows(_stadium_names(path))}
+    stale = stale_rows(_stadium_names(path))
+    kept = kept_for_user(stale, keep_streams)
+    return {"state": state, "skipped": skipped, "stale_rows": stale, "kept_for_user_recordings": kept,
+            "expected": sorted(set(stale) - set(kept))}
 
 
-def apply_to_image(path: Path | str, *, progress: Callable[[str], None] | None = None) -> dict[str, Any]:
+def apply_to_image(path: Path | str, *, keep_streams: Any = (),
+                   progress: Callable[[str], None] | None = None) -> dict[str, Any]:
     """Skip the welcome for every stale stadium whose row this disc renamed (in place on a built COPY, read back).
 
     A disc whose main roster has no stadium rows this module can read, or that renamed none of the 18 stadiums, is left
@@ -176,10 +203,12 @@ def apply_to_image(path: Path | str, *, progress: Callable[[str], None] | None =
         names = _stadium_names(path)
     except (OSError, ValueError, KeyError, IndexError, struct.error) as exc:
         return {**head, "state": "skipped", "reason": f"no readable stadium rows: {exc}", "changed_bytes": 0}
-    skip = stale_rows(names)
+    stale = stale_rows(names)
+    kept = kept_for_user(stale, keep_streams)
+    skip = sorted(set(stale) - set(kept))
     if not skip:
         return {**head, "state": "not_needed", "reason": "no stale stadium row is renamed on this disc",
-                "changed_bytes": 0}
+                "kept_for_user_recordings": kept, "changed_bytes": 0}
     with rr._outer_image()(path, writable=True) as archive:
         entry = archive.entries[SPCI_OUTER_INDEX]
         raw = archive.read(entry.virtual_offset, entry.size)
@@ -193,5 +222,6 @@ def apply_to_image(path: Path | str, *, progress: Callable[[str], None] | None =
             require(archive.write(start, span) == len(span), "short write of the stadium list")
             back = archive.read(entry.virtual_offset + at + 0x20, SPCI_STORED)
             require(back == result, "the speech index did not read back")
-    return {**head, "skipped_stadiums": receipt["skipped"], "kept_with_retail_names": sorted(set(STALE) - set(receipt["skipped"])),
+    return {**head, "skipped_stadiums": receipt["skipped"], "kept_with_retail_names": sorted(set(STALE) - set(stale)),
+            "kept_for_user_recordings": kept,
             **{k: v for k, v in receipt.items() if k not in ("skipped",)}}
