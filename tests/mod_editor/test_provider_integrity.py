@@ -348,6 +348,8 @@ class ProviderIntegrityTests(unittest.TestCase):
                     # b81 qb34: mod_build selects the quarterback room owner by name; it imports its page template.
                     "mod_editor/core/nfl2k5_qb_room.py",
                     "mod_editor/core/nfl2k5_qb_room_code.py",
+                    # b81 game outcomes: mod_build selects the simulated-outcomes owner by name (with sim_realism).
+                    "mod_editor/core/nfl2k5_sim_outcomes.py",
 
                     "mod_editor/core/nfl2k5_audo_fixed_slots.py",
                     "mod_editor/core/nfl2k5_safe_text_banks.py",
