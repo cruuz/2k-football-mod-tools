@@ -75,6 +75,40 @@ class StockAgesTests(unittest.TestCase):
         self.assertEqual(retired(2026, shifted), original)
 
 
+STANDARD_SOURCES = Path(os.environ.get("NFL2K5_B81_STANDARD_SOURCES", "") or "missing")
+# b81 roster-1125 (Noah: "kirk cousins not on vikings, trade deadline roster not updated?"; the 2026 deadline was 11/10):
+# the release sources load the 11/25 refresh, 128 MB and the 64 MB retail-capacity fit of it.
+RELEASE_ROSTERS = {128: ("roster-edits-b81-refresh-20261125.json",
+                         "80e4502bc87259edf5575935e3f2e261f879998dff4a6e38352e56b25b67032b"),
+                   64: ("roster-edits-b81-refresh-20261125-retail-capacity-64mb.json",
+                        "26027d5259fea56e0e5261469e14ee4da6e34fedf801bb9f2a1d3d3f08c9a332")}
+
+
+@unittest.skipUnless((STANDARD_SOURCES / "recipe.json").is_file(), "private release sources absent: NFL2K5_B81_STANDARD_SOURCES")
+class ReleaseSourcesRosterTests(unittest.TestCase):
+    def test_both_editions_load_the_november_25_roster(self):
+        import hashlib, json
+        for memory, (name, digest) in RELEASE_ROSTERS.items():
+            root = STANDARD_SOURCES.parent / f"v10-sources-{memory}"
+            if not (root / "recipe.json").is_file():
+                continue
+            with self.subTest(memory=memory):
+                for document in ("recipe.json", "assets/documents/frozen-recipe.json"):
+                    overrides = json.loads((root / document).read_text(encoding="utf-8"))["overrides"]
+                    self.assertTrue(overrides["roster_edits"].endswith("_" + name), document)
+                    self.assertIn("Roster frozen November 25, 2026.", overrides["notes"])
+                built = json.loads((root / "SOFTDRINK-build-recipe.json").read_text(encoding="utf-8"))["overrides"]
+                path = Path(built["roster_edits"])
+                self.assertEqual(path.parent, root / "assets/files")
+                self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), digest)
+                plan = json.loads(path.read_text(encoding="utf-8"))["roster_refresh"]
+                self.assertEqual(plan["as_of"], "2026-11-25")
+                cousins = next(r for r in plan["players"] if r.get("gsis_id") == "00-0029604")
+                self.assertEqual((cousins["team"], cousins["status"]), ("MIN", "ACT"))
+                minnesota = next(t for t in plan["teams"] if t["team"] == "MIN")
+                self.assertIn(cousins["index"], minnesota["active"])
+
+
 MOD = Path(os.environ.get("NFL2K5_V09_XISO", ""))
 
 

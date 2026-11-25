@@ -53,6 +53,9 @@ ELIGIBLE = {"h": {"P", "K", "QB"}, "k": {"K"}, "ls": {"C", "TE", "G", "T"},
 # Left for a decision in this release (b780 roster1 report; BETA81_QUEUE.md), or fixed by another job.
 KNOWN = {
     ("LAR", "jersey twice"): "nflverse 11/03 lists Brandon McManus and the injured Blake Grupe, both kickers, as #19",
+    # b81 roster-1125: Amani Hooker (traded TEN -> BUF 11/10) wears #22 on buffalobills.com; nflverse 11/25 still lists the
+    # injured C.J. Gardner-Johnson (reserve, last listed week 8) as BUF #22, so he starts the franchise on IR with it
+    ("BUF", "jersey twice"): "nflverse 11/25 lists Amani Hooker and the injured C.J. Gardner-Johnson, both safeties, as #22",
 }
 # Findings of the plans before the 11/03 refresh (the b779 roster edits the v0.8 recipe loads, as_of 10/14). The release rosters
 # (128 and 64 MB) have none of them: the 11/03 refresh signs Karty and creates McManus (LAR kicker), creates Zach Wood (NO long

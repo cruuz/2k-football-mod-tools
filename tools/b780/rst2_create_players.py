@@ -62,9 +62,13 @@ def norm(text):
 
 
 def split_name(full):
-    """(first, last) from a display name, without a generational suffix ('Kenneth Murray, Jr.' -> Kenneth, Murray)."""
+    """(first, last) from a display name, without a generational suffix ('Kenneth Murray, Jr.' -> Kenneth, Murray).
+    A hyphenated surname longer than the game's 15-character name buffer keeps its first part, the form the pack's
+    records already use (Van Pran-Granger -> Van Pran, Valdes-Scantling -> Valdes; b81 roster-1125: Westbrook-Ikhine)."""
     text = re.sub(r"[,\s]+(?:jr|sr|ii|iii|iv|v)\.?$", "", full.strip(), flags=re.IGNORECASE)
     first, _, last = text.partition(" ")
+    if len(last) > 15 and "-" in last:
+        last = last.split("-")[0]
     return first, last
 
 
@@ -295,7 +299,9 @@ BIRTH_CORRECTIONS = ("00-0041539",)         # Logan Jones (CHI C): the guard had
 
 # ECON3 (Q45): a player traded at the deadline owes his new club only the rest of his base salary; the signing-bonus
 # proration stays with the club that paid it (OverTheCap trade accounting). Weeks left after roster week 8 of 18.
-TRADED_CONTRACTS = {"00-0034342": ("Quenton Nelson", "IND", "SEA")}
+# The last field is the roster week of the trade (the 11/03 pull's week 8): a later pull must not shrink the charge again
+# (b81 roster-1125: rerun on the week 12 pull).
+TRADED_CONTRACTS = {"00-0034342": ("Quenton Nelson", "IND", "SEA", 8)}
 SEASON_WEEKS = 18
 
 
@@ -306,10 +312,9 @@ def traded_contracts(plan, fresh):
     audit = {(r["pool"], r["index"]): r for r in json.loads((ROOT / "fc/data/contract_audit.json").read_text(
         encoding="utf-8"))["ledger"]}
     rows = {r["gsis_id"]: r for r in plan["players"]}
-    week = max(int(n["week"] or 0) for n in fresh.values())
     done = []
     out = [c for c in plan.get("contract_corrections", ()) if c["index"] not in {rows[g]["index"] for g in TRADED_CONTRACTS}]
-    for g, (name, _was_club, club) in TRADED_CONTRACTS.items():
+    for g, (name, _was_club, club, week) in TRADED_CONTRACTS.items():
         row, entry = rows[g], audit[("primary", rows[g]["index"])]
         if row["team"] != club or row["status"] not in upd.CLUB_STATUSES:
             continue

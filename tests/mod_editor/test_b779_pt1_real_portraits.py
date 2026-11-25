@@ -246,14 +246,28 @@ class RosterPlayersRst2(unittest.TestCase):
 
     def test_ids_follow_b9_in_a_wider_window_and_fill_a_fifth_atlas(self):
         self.assertEqual([r["id"] for r in self.rows], list(range(30995, 30995 + len(self.rows))))
-        self.assertEqual(len(self.rows), 121)
+        # b780 rst2's 121 (ids 30995..31115), then b81 roster-1125's 47 (31116..31162, see the next test)
+        self.assertEqual(len(self.rows), 121 + 47)
         self.assertLess(self.rows[-1]["id"], rp.ID_LIMIT)
         self.assertEqual(rp.ID_LIMIT, 31200)
         self.assertEqual({r["atlas"] for r in self.rows}, {"faces_03.png", "faces_04.png"})
         self.assertIn("faces_04.png", {a["file"] for a in self.doc["atlases"]})
-        self.assertEqual(self.doc["additions"][-1]["job"], "b780-rst2")
+        self.assertEqual([a["job"] for a in self.doc["additions"]][-2:], ["b780-rst2", "b81-roster-1125"])
         every = [(r["first"], r["last"], r["birth_month"], r["birth_day"]) for r in self.doc["portraits"]]
         self.assertEqual(len(every), len(set(every)))
+
+    def test_the_11_25_refresh_adds_the_47_players_it_creates(self):
+        """b81 roster-1125: the players the 11/25 refresh creates (nflverse 53-man players the plan had no record for, among
+        them Micah Parsons, Myles Garrett and Kerby Joseph, back from injured reserve) get their official headshots,
+        under the record's own name (Nick Westbrook-Ikhine's surname is Westbrook: the 15-character buffer)."""
+        added = self.rows[121:]
+        self.assertEqual(self.doc["additions"][-1], dict(job="b81-roster-1125", fetched="2026-11-25", rows=47,
+                                                         moved_from_wrong_faces=0, note=self.doc["additions"][-1]["note"]))
+        self.assertEqual([r["id"] for r in added], list(range(31116, 31163)))
+        self.assertEqual({r["atlas"] for r in added}, {"faces_04.png"})
+        names = {(r["first"], r["last"]) for r in added}
+        for name in (("Micah", "Parsons"), ("Myles", "Garrett"), ("Kerby", "Joseph"), ("Nick", "Westbrook")):
+            self.assertIn(name, names)
 
     def test_thorson_and_masses_have_their_own_pictures_and_are_no_longer_wrong_faces(self):
         names = {(r["first"], r["last"]) for r in self.rows}
