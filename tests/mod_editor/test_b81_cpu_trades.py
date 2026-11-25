@@ -573,7 +573,10 @@ class CpuTradesImage(unittest.TestCase):
             rating = r["rating"]
             ruled = 3 if rating >= q75 else 4 if rating >= q50 else 5 if rating >= q25 else 6
             ruled = min(ruled + ((rec[0x25] & 31) >= 9) + ((rec[0x24] & 15) == 1), 7)
-            self.assertIn(r["word"] & 0x3F, (ruled, ruled - 1))
+            own = lambda rnd: owner_before[rnd | r["buyer"] << 6] == r["buyer"]
+            expected = ruled if own(ruled) else ruled - 1                       # the ruled round, else one earlier
+            self.assertEqual(r["word"] & 0x3F, expected, (r, ruled))
+            self.assertTrue(own(expected))
             self.assertGreaterEqual(r["word"] & 0x3F, 2)
             self.assertEqual(r["word"] >> 6 & 0x3F, r["buyer"])               # its own pick
             self.assertEqual(owner_before[r["word"]], r["buyer"])
