@@ -56,7 +56,8 @@ class Table(unittest.TestCase):
             for index in s._LIST_KEYS[key]:
                 values |= set(s.retail_values(index))
             self.assertEqual(sorted(set(rule) - values), [], key)
-            self.assertNotIn(999, rule)
+            if key != 9455:                                               # only 9455 must drop its generic
+                self.assertNotIn(999, rule)
         self.assertEqual(s.RULES[38506], s.RULES[38550])                  # one shared list
         self.assertEqual(sorted(s.RULES[13850]), sorted(s.TEAMS_2004))
 
@@ -64,8 +65,12 @@ class Table(unittest.TestCase):
         """Only the 'Redskins' lines with lists of their own move; none of the PA 'Washington' keys is touched."""
         for key in (9003, 9012, 9015, 9017, 9018, 9051, 9213, 9252, 9333, 9335, 9336, 9400, 38502):
             self.assertNotIn(29, s.RULES.get(key, {}), key)
-        for key in (9454, 9455, 38507, 38540, 38541):                     # their generic says "created team/players"
-            self.assertNotIn(key, s.RULES)
+        for key in (9454, 38507, 38540, 38541, 38247, 38248, 38503, 38539, 38583, 38585, 38853, 38854):
+            self.assertNotIn(key, s.RULES)                                # their generic says "created team/players"
+        shared = (9405, 9413, 9424, 9425, 9426, 9474, 9475, 9476, 38851, 38852, 38859, 38860, 38996, 38997, 38998,
+                  38999, 39360, 39361, 39362, 39363, 53051, 53052, 51010, 51112, 51155, 51161)
+        for key in shared:                                                # shared lists, all "Redskins" lines
+            self.assertEqual(s.RULES[key], {29: s.N}, key)
 
     def test_decisions_follow_the_disc(self):
         retail = s.decide(retail_facts())
@@ -74,10 +79,17 @@ class Table(unittest.TestCase):
         modern = s.decide(modern_facts())
         self.assertEqual(sorted(modern[13850]), sorted(s.TEAMS_2004))
         self.assertEqual(sorted(modern[38502]), [20, 23, 24])
-        for key in (512, 1201, 9414, 9427, 9444, 9456, 9467, 9468, 50020):
+        for key in (512, 1201, 9414, 9427, 9444, 9456, 9467, 9468, 50020, 9424, 38859, 39361, 51161):
             self.assertEqual(sorted(modern[key]), [29])
         self.assertNotIn(29, s.RULES[38800])                              # "suburban Washington, D.C." stays
         self.assertNotIn(20, modern[38803])                               # the Raiders' blurb names no city: kept
+
+    def test_the_2004_team_intro_is_skipped_for_real_clubs_only(self):
+        modern = s.decide(modern_facts())[9455]
+        self.assertTrue(set(s.TEAMS_2004) <= set(modern))
+        self.assertIn(999, modern)                                         # else they would fall back to "created team"
+        self.assertFalse({c for c in modern if 100 <= c <= 168})           # the dated classic teams keep their intro
+        self.assertNotIn(9455, s.decide(retail_facts()))
 
     def test_list_state(self):
         index = 2302
@@ -124,7 +136,7 @@ class Retail(unittest.TestCase):
     def test_patch_is_idempotent_and_touches_only_rule_contexts(self):
         decisions = s.decide(modern_facts())
         once, receipt = s.patch_body(self.body, decisions)
-        self.assertEqual(receipt["changed_bytes"], 246)
+        self.assertEqual(receipt["changed_bytes"], 352)
         by_key, _users, lists = s.context_lists(once)
         for index in s.plan_lists(once):
             touched = any(c in s.retail_values(index) for key, ctxs in decisions.items()
@@ -154,9 +166,9 @@ class Retail(unittest.TestCase):
             before = image.path.read_bytes()
             with mock.patch.object(s, "disc_facts", return_value=modern_facts()):
                 receipt = s.apply_to_image(image.path)
-                self.assertEqual((receipt["state"], receipt["changed_bytes"]), ("applied", 246))
+                self.assertEqual((receipt["state"], receipt["changed_bytes"]), ("applied", 352))
                 after = image.path.read_bytes()
-                self.assertEqual(sum(1 for x, y in zip(before, after) if x != y), 246)
+                self.assertEqual(sum(1 for x, y in zip(before, after) if x != y), 352)
                 self.assertEqual(s.apply_to_image(image.path)["changed_bytes"], 0)
             with mock.patch.object(s, "disc_facts", side_effect=ValueError("no roster")):
                 self.assertEqual(s.apply_to_image(image.path)["state"], "skipped")

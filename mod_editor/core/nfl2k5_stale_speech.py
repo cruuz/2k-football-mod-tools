@@ -15,14 +15,16 @@ sequencer FUN_000C32C0 drops the phrase and the broadcast goes on.
 
 What this owner does: for each (key, context) in ``RULES`` whose condition holds on the built disc, the context's
 value becomes 0xFFFF in every context list of that key (all speaker variants), so the line falls back to the key's
-generic 999 line or, where the key has none, is skipped. Every list edited here belongs to its key alone, except
-list 4664, which keys 38506 and 38550 share with identical rules. Conditions read the built disc:
+generic 999 line or, where the key has none, is skipped. Every list edited here belongs to its key alone or is shared
+only by keys with identical rules (38506/38550, and Washington's "Redskins" lines on their shared lists); a list that
+any other key uses refuses. Conditions read the built disc:
 
 * ``row``: the stadium row with that number shows another display name than retail (renamed by the venue options);
 * ``place`` / ``nickname``: the club with that speech id no longer carries its retail city (Raiders, Rams, Chargers)
   or nickname (Washington);
 * ``coach``: the club's head coach is no longer its 2004 coach (a 2004 storyline is no longer current);
-* ``always``: the recording names a building that was already gone in 2004 (Veterans Stadium, CMGI Field, ...).
+* ``always``: the recording names a building that was already gone in 2004 (Veterans Stadium, CMGI Field, ...);
+* ``modern``: some club's head coach is no longer its 2004 coach (for contexts that are not a club).
 
 A disc whose roster this module cannot read, or on which no condition holds, is left alone. Data only: two bytes per
 (list, context) in the one ``lines`` SPCI, stored uncompressed. Unwitnessed for these keys unless a report says
@@ -43,7 +45,7 @@ SKIP = 0xFFFF
 TEAMS_2004 = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
               28, 29, 30, 37)
 
-R, A, P, N, C = "row", "always", "place", "nickname", "coach"
+R, A, P, N, C, M = "row", "always", "place", "nickname", "coach", "modern"
 _STADIUM_LINE = {1: R, 3: R, 6: R, 7: R, 8: R, 11: R, 12: R, 14: R, 15: R, 18: R, 19: R, 22: R, 23: R, 24: R, 30: R}
 #: key -> {context: condition}; the comment is what the retail recording says (transcribed) and its fallback
 RULES: dict[int, dict[int, str]] = {
@@ -65,6 +67,41 @@ RULES: dict[int, dict[int, str]] = {
     # Washington's "Redskins" lines on lists of their own (the PA, crowd and booth calls; generic or skipped)
     512: {29: N}, 1201: {29: N}, 9414: {29: N}, 9427: {29: N}, 9444: {29: N}, 9456: {29: N}, 9467: {29: N},
     9468: {29: N}, 50020: {29: N},
+    # the PA's "And now, your 2004 <club>!" (coordinator's ruling 3, option a): no code or director site queues 9455
+    # by value, so it cannot be pointed at 9456 ("And now, your <nickname>!"); its real clubs, the 2004 alumni and
+    # all-star teams are skipped. The lookup would fall back to 999 "And now, your very own created team." for them,
+    # so 999 goes too (created teams lose that line); the dated classic teams (100-168) keep theirs.
+    9455: {**{team: C for team in TEAMS_2004}, **{other: M for other in (31, 34, 35, 40, 41, 42, 43, 44, 45, 46, 999)}},
+    # Washington's "Redskins" lines on lists shared only with other "Redskins" lines (coordinator, 11/25): the PA
+    # (9405, 9413, 9424-9426, 9474-9476), crowd chants (38851/38852), Berman's team names (38859/38860), the halftime
+    # and post-game recaps (38996-38999, 39360-39363, 53051/53052) and the franchise news (51010, 51112, 51155,
+    # 51161); generic or skipped. Lists whose generic is "the created players" (4460, 4562, 4994, 5445) stay as recorded.
+    9405: {29: N},
+    9413: {29: N},
+    9424: {29: N},
+    9425: {29: N},
+    9426: {29: N},
+    9474: {29: N},
+    9475: {29: N},
+    9476: {29: N},
+    38851: {29: N},
+    38852: {29: N},
+    38859: {29: N},
+    38860: {29: N},
+    38996: {29: N},
+    38997: {29: N},
+    38998: {29: N},
+    38999: {29: N},
+    39360: {29: N},
+    39361: {29: N},
+    39362: {29: N},
+    39363: {29: N},
+    53051: {29: N},
+    53052: {29: N},
+    51010: {29: N},
+    51112: {29: N},
+    51155: {29: N},
+    51161: {29: N},
 }
 #: context list index -> its retail values (u16 little-endian, hex); the pin every edit is checked against
 RETAIL_LISTS = {
@@ -103,6 +140,48 @@ RETAIL_LISTS = {
     9905: ("00000100020003000400050006000700080009000a000b000c000d000e000f00100011001200130014001500160017001800"
          "19001a001b001c001d001e0063006400650066006700680069006a006b006c006d006e006f00700071007200730074007500"
          "76007700780079007a007b007c007d007e007f00800081008200c7002b018f01"),
+    1056: ("00000100020003000400050006000700080009000a000b000c000d000e000f00100011001200130014001500160017001800"
+         "19001a001b001c001d001e001f00220023002500280029002a002b002c002d002e006400a200e503e603"),
+    1234: ("00000100020003000400050006000700080009000a000b000c000d000e000f00100011001200130014001500160017001800"
+         "19001a001b001c001d001e001f00220023002500280029002a002b002c002d002e006400a200e603e803e903ea03eb03ec03"
+         "ed03ee03ef03f003f103f203f303f403f503f603f703f803f903fa03fb03fc03fd03fe03ff03000401040204030404040504"
+         "060407040a040b040d0410041104120413041404150416044c048a04ce07"),
+    1325: ("00000100020003000400050006000700080009000a000b000c000d000e000f00100011001200130014001500160017001800"
+         "19001a001b001c001d001e001f00220023002500280029002a002b002c002d002e0064007d00a200e503e703e803e903ea03"
+         "eb03ec03ed03ee03ef03f003f103f203f303f403f503f603f703f803f903fa03fb03fc03fd03fe03ff030004010402040304"
+         "04040504060407040a040b040d0410041104120413041404150416044c0465048a04cd07cf07102711271227132714271527"
+         "16271727182719271a271b271d271e271f2720272127222723272427252726272727282729272a272b272c272d272e272f27"
+         "32273327382739273b273c273d277427f52af82af92afa2afb2afc2afd2afe2aff2a002b012b022b032b052b062b072b082b"
+         "092b0a2b0b2b0c2b0d2b0e2b0f2b102b112b122b132b142b152b162b172b1a2b1b2b202b212b232b242b252b5c2bdd2e224e"
+         "234e244e254e264e274e284e294e2a4e2b4e2d4e2e4e2f4e304e314e324e334e344e354e364e374e384e394e3a4e3b4e3c4e"
+         "3d4e3f4e424e434e484e494e4b4e4c4e4d4e05520a520b520c520d520e520f52105211521252135215521652175218521952"
+         "1a521b521c521d521e521f5220522152225223522452255227522a522b5230523152335234523552ed553275337534753575"
+         "36753775387539753a753b753e753f754075437544754575467547754a754c754d751a791b791c791d791e791f7920792179"
+         "227923792679277928792b792c792d792e792f79327934793579429c439c459c479c4a9c4b9c509c579c2aa02ba02da02fa0"
+         "32a033a038a03fa0"),
+    1630: ("00000100020003000400050006000700080009000a000b000c000d000e000f00100011001200130014001500160017001800"
+         "19001a001b001c001d001e001f00220023002500280029002a002b002c002d002e0064007d00a200e503e803e903ea03eb03"
+         "ec03ed03ee03ef03f003f103f203f303f403f503f603f703f803f903fa03fb03fc03fd03fe03ff0300040104020403040404"
+         "0504060407040a040b040d0410041104120413041404150416044c0465048a04cd0717271d271e27ff2a052b062b2d4e1552"
+         "4975"),
+    1732: ("00000100020003000400050006000700080009000a000b000c000d000e000f00100011001200130014001500160017001800"
+         "19001a001b001c001d001e001f00220023002500280029002a002b002c002d002e0064007d00a200e503e803e903ea03ec03"
+         "ed03ee03ef03f003f103f203f303f403f503f603f703f803f903fa03fb03fc03fd03fe03ff03000401040204030404040504"
+         "060407040a040b040d0410041104120413041404150416044c0465048a04cd07"),
+    2745: ("00000100020003000400050006000700080009000a000b000c000d000e000f00100011001200130014001500160017001800"
+         "19001a001b001c001d001e0025006400a200"),
+    5423: ("000001000500060008000a000b000c000d000e000f00100011001200130014001500180019001b001d00"),
+    5555: ("00000100020003000400050006000700080009000a000b000c000d000e000f00100011001200130014001500160017001800"
+         "19001a001b001c001d001e00210025003a005c005d005e005f00600061006200"),
+    5602: ("00000100020003000400050006000700080009000a000b000c000d000e000f00100011001200130014001500160017001800"
+         "19001a001b001c001d001e001f002100220023002500280029002a002b002c002d002e00a200e503e603e703"),
+    11166: ("00000100020003000400050006000700080009000a000b000c000d000e000f00100011001200130014001500160017001800"
+         "19001a001b001c001d001e001f002100220023002500280029002a002b002c002d002e00e503e603e703"),
+    2385: ("00000100020003000400050006000700080009000a000b000c000d000e000f00100011001200130014001500160017001800"
+         "19001a001b001c001d001e001f00220023002500280029002a002b002c002d002e006400650066006700680069006a006b00"
+         "6c006d006e006f0070007100720073007400750076007700780079007a007b007c007d007e007f0080008100820083008400"
+         "850086008700880089008a008b008c008d008e008f0090009100920093009400950096009700980099009a009b009c009d00"
+         "9e009f00a000a100a200a300a400a500a600a700a800e703"),
 }
 #: retail display names of the stadium rows a ``row`` condition reads (data/nfl2k5_modern_venues_2026/names.json)
 RETAIL_ROWS = {0: "Arizona Stadium", 1: "The Georgia Dome", 3: "Ralph Wilson Stadium", 6: "Paul Brown Stadium",
@@ -181,9 +260,16 @@ def list_state(index: int, values: tuple[int, ...]) -> str:
 
 
 #: key -> the retail context lists it uses (one per speaker variant), checked against the disc in plan_lists
-_LIST_KEYS = {9453: (2302,), 38506: (4664,), 38550: (4664,), 38502: (4522,), 38800: (5121,), 38803: (5224,),
-              13850: (2784,), 512: (231,), 1201: (538,), 9414: (1187, 1199), 9427: (1824, 1870), 9444: (2256,),
-              9456: (2498,), 9467: (2649,), 9468: (2697,), 50020: (9905,)}
+_LIST_KEYS = {
+    9453: (2302,), 38506: (4664,), 38550: (4664,), 38502: (4522,), 38800: (5121,), 38803: (5224,),
+    13850: (2784,), 9455: (2385,), 512: (231,), 1201: (538,), 9414: (1187, 1199), 9427: (1824, 1870),
+    9444: (2256,), 9456: (2498,), 9467: (2649,), 9468: (2697,), 50020: (9905,), 9405: (1056,),
+    9413: (1056,), 9424: (1234, 1325), 9425: (1234, 1630), 9426: (1234, 1732), 9474: (2745,),
+    9475: (2745,), 9476: (2745,), 38851: (5423,), 38852: (5423,), 38859: (5555,), 38860: (5555,),
+    38996: (5602,), 38997: (5602,), 38998: (5602,), 38999: (5602,), 39360: (5602,), 39361: (5602,),
+    39362: (5602,), 39363: (5602,), 53051: (5602,), 53052: (5602,), 51010: (11166,), 51112: (11166,),
+    51155: (11166,), 51161: (11166,)
+}
 
 
 def plan_lists(body: bytes) -> dict[int, tuple[int, ...]]:
@@ -207,6 +293,7 @@ def plan_lists(body: bytes) -> dict[int, tuple[int, ...]]:
 def decide(facts: dict[str, Any]) -> dict[int, dict[int, str]]:
     """key -> {context: reason} for every rule whose condition holds on this disc."""
     rows, teams = facts["rows"], facts["teams"]
+    modern = any(t.get("coach") not in (None, RETAIL_COACHES.get(c)) for c, t in teams.items() if c in RETAIL_COACHES)
     out: dict[int, dict[int, str]] = {}
     for key, rule in RULES.items():
         for ctx, cond in rule.items():
@@ -222,6 +309,8 @@ def decide(facts: dict[str, Any]) -> dict[int, dict[int, str]]:
             elif cond == N:
                 why = (f"the club's nickname is {team.get('nickname')!r}"
                        if team.get("nickname") not in (None, RETAIL_NICKNAMES[ctx]) else None)
+            elif cond == M:
+                why = "the league's head coaches are no longer the 2004 ones" if modern else None
             else:
                 why = (f"the club's head coach is {team.get('coach')!r}"
                        if team.get("coach") not in (None, RETAIL_COACHES[ctx]) else None)
