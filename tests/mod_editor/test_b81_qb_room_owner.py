@@ -164,8 +164,9 @@ class OwnerTests(unittest.TestCase):
         # b81 integration merge of qb34 (scoring + stability revision 4): f3a22805 (was 501b8412 at 5854e5144, 9f435b38
         # for slice 1 alone)
         # combined calibration levers (merge queue item 15: QB_CHANCE_SCALE 1.06, breakaway stop 68): 68c9db2e (was f3a22805)
-        # b81 game outcomes (QB option revision 5: the kicker and punter rows): 51e9583f (was 68c9db2e)
-        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "51e9583f")
+        # b81 game outcomes (QB option revision 5: the kicker and punter rows, only while both specialists play):
+        # 1acfdcae (was 68c9db2e)
+        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "1acfdcae")
         self.assertEqual(room.read_settings(self.slice1), {"status": "retail", "mode": "retail", "reserved": False,
                                                            "va": None})
         settings = room.read_settings(self.applied)
@@ -485,19 +486,20 @@ class PreviousRevisionTests(unittest.TestCase):
     # QB_CHANCE_SCALE 1.06, the scoring site's breakaway stop 68, the registry hash and digests).
     # b81 game outcomes (the QB option's revision 5, kicker and punter rows): re-pinned once more; the injury option's
     # executable differs from revision 4's only in the QB bank (0x1524000), the section digests, the registry hash and the
-    # scale directory seal (measured on bda1e4a4: 1,257 bank bytes and 102 header/seal bytes). The revision 4 values were
+    # scale directory seal (measured on bda1e4a4: 1,257 bank bytes and 102 header/seal bytes); re-pinned again for the
+    # specialist-pair rule (the kicker and punter rows only while both play, still revision 5). The revision 4 values were
     # D1D2 5d471c14, REVIEW_67 08087d17, REVIEW_64 c22d95b6, FLOOR 55e52233, FLOOR_EMPTY 8652889e, STAGE_3A 5b3c065a, STAGE_3A_EMPTY 0af4c40f, HANDOVER_67 61724296, HANDOVER_64 58e85935.
-    D1D2_SHA = "7f91808b2f8af989207ef2a5f30d7bcff850b922d1f24e02dd0f610a3b2958c7"
-    REVIEW_67_SHA = "7b2c524da2ffe7ce95eaae369a422b258c4e840186f7fa14d2ba45fae6123801"
-    REVIEW_64_SHA = "1cf74bb9a18d5cde1fb7d0c8a8ca80eb5c34be3fe08b2ad99ba45634136b6505"
-    FLOOR_SHA = "fb052657035ab4d7ca7f7d09b4f0d593e87765727c9b78e05bc15eaf1087b2dd"
-    FLOOR_EMPTY_SHA = "54de2406cfd490cddaa46fef5d3c5f34a628ef5075e727add12c6a2fbb3b7efd"
-    STAGE_3A_SHA = "7613c186f958d4ada1a88d77d8be3da5baf155f809109a5f2cda96f2c01fa474"
-    STAGE_3A_EMPTY_SHA = "6df6e4be24ee9ac61e0efe732feae38bd434ade38157e44b6fc302b9caff2713"
+    D1D2_SHA = "274f30587feda33cb9cc97b3f778ffd7bbec00ee6e23a14565d4bc435cec07e6"
+    REVIEW_67_SHA = "b1ae1f272c054eb8ef3515574652bd5645d54b135e3841bedbf6f7b287d43a10"
+    REVIEW_64_SHA = "a7c0109b239ebe8974c995293c18bbabba1aecb0acab5382e04eabd0db88ee1f"
+    FLOOR_SHA = "a831e1bd74396550ab1b0839f3de2dd464a2c0115a222c5d7f47fb002cfceb1d"
+    FLOOR_EMPTY_SHA = "985698b924eec8092f1b690bc917bda7491688404619e2b3e99ad395f0b4898d"
+    STAGE_3A_SHA = "3bdc443fe66885fc7f2a26019dc1552ee2f50e19e95a3fb9c417d2c175a46008"
+    STAGE_3A_EMPTY_SHA = "1917d5da19f5d69670fbdd499560d549635815e75e4fb05de47865a023198b31"
     # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64)
     # on slice 1 alone; rebuilt here at the merged head.
-    HANDOVER_67_SHA = "aa1970a1c1e52ffe0fc885f30ffec9f8edf00a36a5a764565fc98862884435dd"
-    HANDOVER_64_SHA = "3aa356f534a831ded89c8e9d602750c53f987de893a31a739aa452396664a19b"
+    HANDOVER_67_SHA = "b046c90cfb38386a87f7b23f5d04234f598a656ae87223e255b7825c225140c2"
+    HANDOVER_64_SHA = "54d79c87810f87734783dd656df987045a4bb888984d26912f10ddc612b3e5f7"
 
     @classmethod
     def setUpClass(cls):

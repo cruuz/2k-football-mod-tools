@@ -141,13 +141,30 @@ side_ready:
     test BYTE PTR [edx+0x27], 0x70      # status
     jnz next
     movzx eax, BYTE PTR [pos_slots+ebp*4+3]
-    and eax, 3                          # rule: 0 every scrimmage play, 1 rushing ball carrier, 2 rush play
+    and eax, 3                          # rule: 0 every scrimmage play, 1 rushing ball carrier, 2 rush play, 3 specialists
     jz exposed
+    cmp eax, 3
+    je specialists
     cmp DWORD PTR [ebx+40], RUSH_RETURN
     jne next
     dec eax
     jnz exposed                         # rule 2: any rush play of his offense
     cmp edx, [0xa971a4]                 # rule 1: he is the ball carrier
+    jne next
+    jmp exposed
+specialists:
+    # rule 3 (b81 game outcomes, coordinator R3 ruling): the kicker and punter rows count only while both specialist
+    # slots of that side hold their own specialists (stored position 1 in slot 32, 2 in slot 14). While either is out,
+    # the other covers both jobs unexposed, so a club never loses both and puts a position player in to kick or punt.
+    mov eax, [ecx+32*4+8]
+    test eax, eax
+    jz next
+    cmp BYTE PTR [eax+0x35], 1
+    jne next
+    mov eax, [ecx+14*4+8]
+    test eax, eax
+    jz next
+    cmp BYTE PTR [eax+0x35], 2
     jne next
 exposed:
     movzx eax, BYTE PTR [edx+0x3b]      # stored Durability (unsigned)
@@ -303,8 +320,9 @@ pos_slots:
     .byte 11, 1, 27, 0
     .byte 11, 1, 28, 0x40
     # b81 game outcomes (coordinator R2/R3): the kicker (lineup slot 32) and the punter (slot 14) of the offense, on every
-    # scrimmage play of their offense, LAST in the walk so every earlier entry's hit decision is unchanged.
-    .byte 12, 0, 32, 0
-    .byte 13, 0, 14, 0
+    # scrimmage play of their offense while both slots hold their own specialists (rule 3), LAST in the walk so every
+    # earlier entry's hit decision is unchanged.
+    .byte 12, 0, 32, 3
+    .byte 13, 0, 14, 3
 pos_enabled: .byte 0
 .section .note.GNU-stack,"",@progbits

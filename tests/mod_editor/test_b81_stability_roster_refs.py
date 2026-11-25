@@ -45,7 +45,7 @@ BASE_XBE = "bda1e4a408f19cc30f0916e03b158b0accc46e0ccb6a39e134c1ce79ba3ab6ea"
 REALISTIC_AT_6185AD6C0 = "aa1e29e1846ae8e094631283b1a122f3cf3a6dc95a5f617bbf7a19a6eb9669c7"
 # b81 game outcomes, revision 5 (the kicker and punter rows): the Studio now writes this; the revision 4 executable above
 # is still produced through the frozen revision 4 module and upgrades in place to it.
-REALISTIC_V5 = "5c1568bc7d284d343a02f76f859da414f42b244718c276755e8d60e9f1355f5b"
+REALISTIC_V5 = "46ce6b20bdcc45a16b58bd8656a14f34f53af5b9f77daab378f17d4f5bbb2968"
 V09_ROSTER = "8d2b2f50aa19679e4e3a6a783d7137acef96a5975b2ce22bef8ede037c26f42c"
 SHIFT = 10
 # sha256 of repr((STABILITY_REFERENCE, STABILITY_CALIBRATION, STABILITY_CALIBRATION_ROSTER, STABILITY_REFERENCE_ROSTER)).

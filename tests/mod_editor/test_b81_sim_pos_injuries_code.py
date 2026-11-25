@@ -77,43 +77,58 @@ def _without_stability(build):
     del build.EXPORTED['stability']
 
 
-# b81 game outcomes, revision 5: every positions.S line it changed (current text -> revision 4 text; None deletes).
+# b81 game outcomes, revision 5: every positions.S change it made (current lines -> revision 4 lines; a tuple is a run
+# of consecutive lines, matched exactly once; an empty replacement deletes it).
 KICKER_PUNTER_EDITS = (
-    ('.set SLOT_COUNT, 29', '.set SLOT_COUNT, 27'),
-    ('.set CLASS_COUNT, 14', '.set CLASS_COUNT, 12'),
-    ('.set STAB_CLASSES, 12                  # classes with a long-franchise factor; kicker and punter (12, 13) take none',
-     None),
-    ('    cmp ecx, STAB_CLASSES', None),
-    ('    jae no_factor                       # b81 game outcomes: the kicker and punter classes have no stability factor',
-     None),
-    ('no_factor:', None),
-    ('pos_hits: .zero 4*CLASS_COUNT', 'pos_hits: .zero 48'),
-    ('pos_commits: .zero 4*CLASS_COUNT', 'pos_commits: .zero 48'),
-    ('pos_effective: .zero 4*CLASS_COUNT', 'pos_effective: .zero 48'),
-    ('pos_scale: .zero 4*CLASS_COUNT          # CLASS_COUNT floats, installer',
-     'pos_scale: .zero 48                     # CLASS_COUNT floats, installer'),
-    ('pos_zero: .zero 4*CLASS_COUNT           # CLASS_COUNT dwords, installer: the zero point K per class',
-     'pos_zero: .zero 48                      # CLASS_COUNT dwords, installer: the zero point K per class'),
-    ('pos_accept: .zero 24*CLASS_COUNT        # CLASS_COUNT tables of six thresholds by week group, installer',
-     'pos_accept: .zero 288                   # CLASS_COUNT tables of six thresholds by week group, installer'),
-    ('    # b81 game outcomes (coordinator R2/R3): the kicker (lineup slot 32) and the punter (slot 14) of the offense, on every',
-     None),
-    ('    # scrimmage play of their offense, LAST in the walk so every earlier entry\'s hit decision is unchanged.', None),
-    ('    .byte 12, 0, 32, 0', None),
-    ('    .byte 13, 0, 14, 0', None),
+    (('.set SLOT_COUNT, 29', '.set CLASS_COUNT, 14',
+      '.set STAB_CLASSES, 12                  # classes with a long-franchise factor; kicker and punter (12, 13) take none'),
+     ('.set SLOT_COUNT, 27', '.set CLASS_COUNT, 12')),
+    (('    cmp ecx, STAB_CLASSES',
+      '    jae no_factor                       # b81 game outcomes: the kicker and punter classes have no stability factor',
+      '    fmul DWORD PTR [STAB_FACTOR+ecx*4]  # the class\'s factor, exactly 1.0 in seasons one and two',
+      'no_factor:'),
+     ('    fmul DWORD PTR [STAB_FACTOR+ecx*4]  # the class\'s factor, exactly 1.0 in seasons one and two',)),
+    (('    and eax, 3                          # rule: 0 every scrimmage play, 1 rushing ball carrier, 2 rush play, 3 specialists',
+      '    jz exposed',
+      '    cmp eax, 3',
+      '    je specialists'),
+     ('    and eax, 3                          # rule: 0 every scrimmage play, 1 rushing ball carrier, 2 rush play',
+      '    jz exposed')),
+    (('    jne next',
+      '    jmp exposed',
+      'specialists:',
+      '    # rule 3 (b81 game outcomes, coordinator R3 ruling): the kicker and punter rows count only while both specialist',
+      '    # slots of that side hold their own specialists (stored position 1 in slot 32, 2 in slot 14). While either is out,',
+      '    # the other covers both jobs unexposed, so a club never loses both and puts a position player in to kick or punt.',
+      '    mov eax, [ecx+32*4+8]', '    test eax, eax', '    jz next', '    cmp BYTE PTR [eax+0x35], 1', '    jne next',
+      '    mov eax, [ecx+14*4+8]', '    test eax, eax', '    jz next', '    cmp BYTE PTR [eax+0x35], 2', '    jne next',
+      'exposed:'),
+     ('    jne next', 'exposed:')),
+    (('pos_hits: .zero 4*CLASS_COUNT',), ('pos_hits: .zero 48',)),
+    (('pos_commits: .zero 4*CLASS_COUNT',), ('pos_commits: .zero 48',)),
+    (('pos_effective: .zero 4*CLASS_COUNT',), ('pos_effective: .zero 48',)),
+    (('pos_scale: .zero 4*CLASS_COUNT          # CLASS_COUNT floats, installer',),
+     ('pos_scale: .zero 48                     # CLASS_COUNT floats, installer',)),
+    (('pos_zero: .zero 4*CLASS_COUNT           # CLASS_COUNT dwords, installer: the zero point K per class',),
+     ('pos_zero: .zero 48                      # CLASS_COUNT dwords, installer: the zero point K per class',)),
+    (('pos_accept: .zero 24*CLASS_COUNT        # CLASS_COUNT tables of six thresholds by week group, installer',),
+     ('pos_accept: .zero 288                   # CLASS_COUNT tables of six thresholds by week group, installer',)),
+    (('    # b81 game outcomes (coordinator R2/R3): the kicker (lineup slot 32) and the punter (slot 14) of the offense, on every',
+      '    # scrimmage play of their offense while both slots hold their own specialists (rule 3), LAST in the walk so every',
+      '    # earlier entry\'s hit decision is unchanged.',
+      '    .byte 12, 0, 32, 3',
+      '    .byte 13, 0, 14, 3'), ()),
 )
 
 
 def _revert_kicker_punter(folder):
-    """Turn copied revision 5 sources back into revision 4's (each changed line exactly once)."""
+    """Turn copied revision 5 sources back into revision 4's (each changed run of lines exactly once)."""
     text = (folder / 'positions.S').read_text().split('\n')
     for current, original in KICKER_PUNTER_EDITS:
-        found = [n for n, each in enumerate(text) if each.rstrip() == current]
-        assert len(found) == 1, (current, found)
-        if original is None:
-            del text[found[0]]
-        else:
-            text[found[0]] = original
+        found = [n for n in range(len(text) - len(current) + 1)
+                 if [line.rstrip() for line in text[n:n + len(current)]] == list(current)]
+        assert len(found) == 1, (current[0], found)
+        text[found[0]:found[0] + len(current)] = list(original)
     (folder / 'positions.S').write_text('\n'.join(text))
 # pos2/DESIGN.md section 2 and pos3/DESIGN.md section 1: class, side (0 offense, 1 defense), lineup slot, flags
 # (bits 0-1 the rule: 0 every scrimmage play, 1 rushing ball carrier, 2 rush play; bits 4-7 the weight in sixteenths).
@@ -123,7 +138,7 @@ SLOTS = ((0, 0, 12, 0), (0, 0, 13, 0), (1, 0, 10, 0), (1, 0, 11, 0), (2, 0, 9, 0
          (8, 1, 18, 0), (9, 1, 19, 0), (9, 1, 20, 0), (9, 1, 21, 0), (9, 1, 22, 0x40), (10, 1, 24, 0),
          (10, 1, 25, 0), (10, 1, 26, 0), (11, 1, 23, 0), (11, 1, 27, 0), (11, 1, 28, 0x40))
 # b81 game outcomes, revision 5: the offense's kicker (slot 32) and punter (slot 14), every scrimmage play, walked last.
-KICKER_PUNTER_SLOTS = ((12, 0, 32, 0), (13, 0, 14, 0))
+KICKER_PUNTER_SLOTS = ((12, 0, 32, 3), (13, 0, 14, 3))   # rule 3: while both specialists play
 # pos3/DESIGN.md section 2: weeks 0-1, 2, 3, 4-7, 8-15, 16-31.
 WEEK_GROUPS = (0, 0, 1, 2) + (3,) * 4 + (4,) * 8 + (5,) * 16
 
@@ -363,8 +378,10 @@ class KickerPunterTemplate(unittest.TestCase):
         old, new = frozen4._TEMPLATE, rules._TEMPLATE
         self.assertEqual((len(old), len(new)), (rules.CODE_SIZE, rules.CODE_SIZE))
         differ = [n for n in range(len(new)) if old[n] != new[n]]
-        self.assertEqual((hex(differ[0]), hex(differ[-1] + 1)), ('0x1402', '0x1b69'))
-        self.assertEqual(new[0x1B69:0x1C00], b'\xcc' * (0x1C00 - 0x1B69))      # still ends before the stability piece
+        self.assertEqual(hex(differ[0]), '0x1402')
+        end = max(n for n in range(0x1400, 0x1C00) if new[n] != 0xCC) + 1
+        self.assertLessEqual(differ[-1] + 1, end)
+        self.assertEqual(new[end:0x1C00], b'\xcc' * (0x1C00 - end))      # still ends before the stability piece
         self.assertEqual(set(rules.LABELS), set(frozen4.LABELS))
         moved = {name for name in rules.LABELS if rules.LABELS[name] != frozen4.LABELS[name]}
         self.assertTrue(all(0x1400 <= frozen4.LABELS[name] < 0x1C00 and 0x1400 <= rules.LABELS[name] < 0x1C00
@@ -378,7 +395,7 @@ class KickerPunterTemplate(unittest.TestCase):
         self.assertEqual(rules._LOCAL_FUNCTIONS, frozen4._LOCAL_FUNCTIONS)
         self.assertEqual(rules.LABELS['pos_slots'] + 4 * 29, rules.LABELS['pos_enabled'])   # 29 rows of four bytes
         self.assertEqual(bytes(new[rules.LABELS['pos_slots'] + 4 * 27:rules.LABELS['pos_slots'] + 4 * 29]),
-                         bytes((12, 0, 32, 0, 13, 0, 14, 0)))
+                         bytes((12, 0, 32, 3, 13, 0, 14, 3)))   # rule 3: only while both specialists play
 
 
 class StabilityTables(unittest.TestCase):

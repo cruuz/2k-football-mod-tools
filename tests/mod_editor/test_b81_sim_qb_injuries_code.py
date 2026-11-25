@@ -240,9 +240,10 @@ class LocalGameInputs(unittest.TestCase):
                 rate = 0 if expected.startswith('0ff13277') else v4.DEFAULT_RATE
                 raw = v4.bank_bytes(self.image.read, bank, SIM, DATA, LINEUP, rate=rate)
                 self.assertEqual(hashlib.sha256(raw).hexdigest(), expected)
-        # Revision 5 (b81 game outcomes): the same banks with the kicker and punter rows and their tables.
-        pinned = ((0x1520000, '668b32a3d8f44317c7cf812fedecd3068036593f6680c5d54ddebd7b54709771'),
-                  (0x1524000, '0837df6ab1ca95b068e92f01c69df4709c3e61715ca9332c58417feb6720c9c2'))
+        # Revision 5 (b81 game outcomes): the same banks with the kicker and punter rows (rule 3: only while both
+        # specialists play) and their tables.
+        pinned = ((0x1520000, '8778f8f13fee98897a801aea99c7df86aa2952826449e654f7c9ccfffd616c2b'),
+                  (0x1524000, '2fed76fab841879f7c2d91ee667b1e2b2308cce06ab407dabad52cec8036f150'))
         for bank, expected in pinned:
             with self.subTest(bank=hex(bank)):
                 raw = rules.bank_bytes(self.image.read, bank, SIM, DATA, LINEUP)
@@ -252,7 +253,7 @@ class LocalGameInputs(unittest.TestCase):
                 self.assertEqual(tagged, raw[:rules.MARK_OFFSET] + tag + raw[rules.MARK_OFFSET + len(tag):])
         zero = rules.bank_bytes(self.image.read, BANK, SIM, DATA, LINEUP, rate=0)
         self.assertEqual(zero, rules.bank_bytes(self.image.read, BANK, SIM, DATA, rate=0))
-        self.assertEqual(hashlib.sha256(zero).hexdigest(), '56756418f638f11859b2a02ad35cda72cb92a2362e3d1de28f92ab5e26bc29e8')
+        self.assertEqual(hashlib.sha256(zero).hexdigest(), 'c0b9a8d4f27751eb1f02c684794a7e4fdba6a94e474d088fbe080257f622c8df')
 
     def test_refuses_foreign_first_middle_or_last_byte_in_every_native_input(self):
         targets = [(at, count) for at, count, _, _ in rules._NATIVE_ABI]

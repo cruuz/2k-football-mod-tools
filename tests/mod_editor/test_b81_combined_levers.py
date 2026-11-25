@@ -50,8 +50,8 @@ REALISTIC_XBE = "aa1e29e1846ae8e094631283b1a122f3cf3a6dc95a5f617bbf7a19a6eb9669c
 # b81 game outcomes, revision 5 (the kicker and punter rows): the two pins above are revision 4's and are still produced
 # byte for byte through the frozen revision 4 module (revision_4_install); the Studio now writes these, and a revision 4
 # install upgraded in place equals them.
-LEVER_FREE_V5_XBE = "27b903c80b3b17c1df98e6fb5492dc65f1fee431ab638728d5cd1a77fc116316"
-REALISTIC_V5_XBE = "5c1568bc7d284d343a02f76f859da414f42b244718c276755e8d60e9f1355f5b"
+LEVER_FREE_V5_XBE = "569d006576675b5a42c2ed71fd0869cac51a088fcf72ae5c7b66765c3e479ad3"
+REALISTIC_V5_XBE = "46ce6b20bdcc45a16b58bd8656a14f34f53af5b9f77daab378f17d4f5bbb2968"
 LEGACY_INSTALLS = (("NFL2K5_B81_STABILITY_FIXTURES", "default.xbe", BASE_XBE),
                    ("NFL2K5_V08_XBE", None, "5f987568"),
                    ("NFL2K5_V09_XBE", None, "1a476d94"))

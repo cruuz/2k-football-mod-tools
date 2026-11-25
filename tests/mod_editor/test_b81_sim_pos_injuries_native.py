@@ -44,7 +44,8 @@ SLICE3_WALK = ((5, OFFENSE, 4, 0), (5, OFFENSE, 5, 0), (5, OFFENSE, 6, 0), (5, O
                (9, DEFENSE, 21, 0), (9, DEFENSE, 22, 0x40), (10, DEFENSE, 24, 0), (10, DEFENSE, 25, 0),
                (10, DEFENSE, 26, 0), (11, DEFENSE, 23, 0), (11, DEFENSE, 27, 0), (11, DEFENSE, 28, 0x40))
 # b81 game outcomes (revision 5): the kicker (lineup slot 32) and punter (slot 14) of the offense, walked last.
-KP_WALK = ((12, OFFENSE, 32, 0), (13, OFFENSE, 14, 0))
+KP_WALK = ((12, OFFENSE, 32, 3), (13, OFFENSE, 14, 3))   # rule 3: only while both specialist slots hold specialists
+SPECIALIST = {32: 1, 14: 2}            # lineup slot -> the stored position (+0x35) that slot's specialist holds
 WALK = SLICE2_WALK + SLICE3_WALK + KP_WALK
 CLASS_SLOT = {0: 12, 1: 10, 2: 9, 3: 15, 4: 1, 5: 4, 6: 8, 7: 2, 8: 17, 9: 19, 10: 24, 11: 23, 12: 32, 13: 14}
 ZERO_POINTS = (110, 110, 110, 100, 100, 100, 100, 105, 100, 100, 100, 100, 100, 100)   # the two designs; K, P 100
@@ -52,10 +53,12 @@ SIDE_OF = {slot: side for _, side, slot, _ in WALK}
 CLASSES = len(rules.POSITION_CLASSES)
 
 
-def exposed_on(flags, site, player, carrier):
+def exposed_on(flags, site, player, carrier, specialists=True):
     rule = flags & 3
     if rule == 0:
         return True
+    if rule == 3:                       # b81 game outcomes: the kicker and punter rows, on every play while both play
+        return specialists
     if site != RUSH:
         return False
     return player == carrier if rule == 1 else True
@@ -271,10 +274,34 @@ class PositionGate(NativeFixture):
         record = bytearray(0x80)
         struct.pack_into('<II', record, 0x20, health, status)
         record[0x3B] = durability
+        if side == OFFENSE and slot in SPECIALIST:
+            record[0x35] = SPECIALIST[slot]
         self.uc.mem_write(player, bytes(record))
         self.write(self.sides[side] + 8 + 4 * slot, player)
         self.players[(side, slot)] = player
+        if side == OFFENSE and slot in SPECIALIST:
+            self._partner(slot)
         return player
+
+    def _partner(self, slot):
+        """b81 game outcomes, rule 3: a specialist row counts only while both specialist slots hold specialists. When a
+        test places one alone, the other slot gets an immune specialist (Durability 100: no chance) outside the model's
+        players, so the placed one is exposed exactly as before."""
+        other = 46 - slot                          # 32 <-> 14
+        at = self.sides[OFFENSE] + 8 + 4 * other
+        if struct.unpack('<I', bytes(self.uc.mem_read(at, 4)))[0]:
+            return
+        partner = self.ROOT + 0xA000 + 0x80 * self.allocated
+        self.allocated += 1
+        record = bytearray(0x80)
+        record[0x3B], record[0x35] = 100, SPECIALIST[other]
+        self.uc.mem_write(partner, bytes(record))
+        self.write(at, partner)
+
+    def specialists_ready(self, side):
+        read = lambda at: struct.unpack('<I', bytes(self.uc.mem_read(at, 4)))[0]
+        held = [read(self.sides[side] + 8 + 4 * slot) for slot in (32, 14)]
+        return all(held) and all(self.uc.mem_read(p + 0x35, 1)[0] == SPECIALIST[slot] for p, slot in zip(held, (32, 14)))
 
     def clear(self):
         for side in self.sides:
@@ -293,7 +320,7 @@ class PositionGate(NativeFixture):
         result = []
         for index, side, slot, flags in WALK:
             player = self.players.get((side, slot))
-            if player is None or not exposed_on(flags, site, player, carrier):
+            if player is None or not exposed_on(flags, site, player, carrier, self.specialists_ready(side)):
                 result.append(None)
                 continue
             rating = self.uc.mem_read(player + 0x3B, 1)[0] if durability is None else durability
@@ -379,6 +406,38 @@ class PositionDecisions(PositionGate):
                         self.assert_proposed(proposal, slot)
                     else:
                         self.assertIsNone(proposal)
+        self.assert_isolated()
+
+    def test_kicker_and_punter_only_while_both_specialists_play(self):
+        """b81 game outcomes, coordinator's R3 ruling: the kicker (slot 32) and punter (slot 14) rows count only while
+        slot 32 holds a kicker and slot 14 a punter. Calibration's confirmation saw one club lose both in two weeks and
+        play a quarterback at both jobs; with either specialist out the other covers both jobs unexposed."""
+        self.load_rate(100_000)                         # sample 0 proposes any exposed, positive threshold
+        def lineup(kicker_position, punter_position, kicker_rating=60, punter_rating=60):
+            self.clear()
+            kicker = self.place(32, kicker_rating)
+            punter = self.place(14, punter_rating)
+            self.uc.mem_write(kicker + 0x35, bytes((kicker_position,)))
+            self.uc.mem_write(punter + 0x35, bytes((punter_position,)))
+            self.write(CARRIER, kicker)
+            return kicker, punter
+        lineup(1, 2)                                    # both specialists: the kicker's row comes first
+        self.assert_proposed(self.play(force=0), 32)
+        lineup(1, 2, kicker_rating=100)                 # the kicker immune: the punter's row is reached
+        self.assert_proposed(self.play(force=0), 14)
+        for kicker_position, punter_position, case in ((2, 2, "the punter kicks (kicker out)"),
+                                                       (1, 1, "the kicker punts (punter out)"),
+                                                       (0, 2, "a quarterback kicks"), (1, 0, "a quarterback punts"),
+                                                       (1, 7, "a halfback punts")):
+            with self.subTest(case=case):
+                lineup(kicker_position, punter_position)
+                self.assertIsNone(self.play(force=0))
+                self.assertEqual([value for value in self.model_thresholds(.5)[-2:]], [None, None])
+        self.clear()                                    # an empty specialist slot: the other is not exposed either
+        kicker = self.place(32, 60)
+        self.write(self.sides[OFFENSE] + 8 + 4 * 14, 0)
+        self.write(CARRIER, kicker)
+        self.assertIsNone(self.play(force=0))
         self.assert_isolated()
 
     def test_rate_zero_never_proposes_and_writes_only_the_stack(self):
@@ -858,9 +917,19 @@ class NativeMachine(unittest.TestCase):
             player = self.area + 0x10000 + 0x100 * len(self.players)
             record = bytearray(0x100)
             record[0x3B] = durability
+            if side == OFFENSE and slot in SPECIALIST:
+                record[0x35] = SPECIALIST[slot]
             self.m.uc.mem_write(player, bytes(record))
             self.m.put(self.sides[side] + 8 + 4 * slot, player)
             self.players[(side, slot)] = player
+        placed = {slot for side, slot, _ in placements if side == OFFENSE}
+        for slot in SPECIALIST:                # b81 game outcomes, rule 3: an immune partner for a lone specialist
+            if slot in placed and 46 - slot not in placed:
+                partner = self.area + 0x1F000
+                record = bytearray(0x100)
+                record[0x3B], record[0x35] = 100, SPECIALIST[46 - slot]
+                self.m.uc.mem_write(partner, bytes(record))
+                self.m.put(self.sides[OFFENSE] + 8 + 4 * (46 - slot), partner)
 
     def heal(self):
         for player in self.players.values():

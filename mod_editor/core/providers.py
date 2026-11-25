@@ -991,7 +991,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "777a337e2ba22559c0b77ae5bc22b3df94a1392da07217a76d7a3a02063ebed0",  # b779-sim2
         "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",  # b780 hunt1: frozen beta-79 roll for the previous state
         "mod_editor/core/nfl2k5_sim_qb_injuries.py": "848bef27ce8308213859732c4c3e438ff53c3a38ec9b8e7a5079e0fb277ea0c0",
-        "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "248b02bb611f7c6c64cfdafefe2bf7cfe2a162d53a6a4a184641256e6f0d99e4",
+        "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "2c6397607463d932b41bcbb802f379f8e5e472d8e9c8b61c489d44ca2d882280",
         "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice1.py": "bb25da81abf8bd62c615d1cc676401a5050f4ab0f982fff243dea14af53cdfd0",  # b81 slice 2: frozen slice 1 bank, read to reverse a QBMEDv1 install
         "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice2.py": "a893ed713c2a16ec9a4fbf33d8e3cdc330d6f80578cd3d3eefe04dd9ee211873",  # b81 slice 3: frozen slice 2 bank, read to reverse a QBMEDv2 install
         "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice3.py": "ec6737ce9bab5695714c7956c932272af6fe33a63b8f4411cbe1f8de6497aff3",  # b81 stability: frozen slice 3 bank, read to reverse a QBMEDv3 install
