@@ -78,7 +78,7 @@ T2  (b81 CPU trades, nfl2k5_cpu_trades) on every trade group of exactly one play
     two views are one weekly advance apart (else the harness judges the trade at the call): T2.deadline (stage 8 at or past
     the deadline byte, whatever the option), T2.window (only stages 7 and 8), T2.counts (seller 50..65, buyer at most 53
     in season, 65 in the preseason), T2.player (no rookie, no years left, in the preseason from year index 1 no first
-    contract year, not star-tagged, not hurt both before and after the advance), T2.cap (the buyer within the cap after it, M1), T2.round (no
+    contract year, not star-tagged; health is the observer's TT.player at the call), T2.cap (the buyer within the cap after it, M1), T2.round (no
     1st, N3), T2.picks_paid (fewer than three own picks of the coming draft already paid, S3),
     T2.seller_depth (the seller keeps its seats present and its cut minimum at the pool: nfl2k5_team_need), T2.load (neither club in
     three trade groups of the ledger rows the call surely saw: ledger_seen_at_call), T2.repeat (the man was not signed
@@ -962,10 +962,9 @@ def _check_player_for_pick(q, view, previous, clubs, human, one_advance, changes
             reasons.append("first contract year (preseason, from the second franchise season)")
         if before[0x53] & 1:
             reasons.append("star-tagged")
-        if not _fully_healthy(before) and not _fully_healthy(view.record(player)):
-            # hurt before the advance AND after it: a man who healed during the advance before the call is healthy at
-            # the call (the season observer's TT.player judges health at the call itself)
-            reasons.append("not fully healthy before the trade or after it")
+        # Health is not judged here: one advance holds the healing before the trade call and the games after it, so
+        # a man hurt in both snapshots can be fully healthy at the call (P1, 2026: three such men). The season
+        # observer's TT.player judges health at the call itself.
         if reasons:
             add("T2.player", FAIL, "a man the CPU trades never offer", club=seller, player=player, reasons=reasons,
                 rows=rows)

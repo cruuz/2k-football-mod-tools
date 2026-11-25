@@ -167,18 +167,14 @@ class CpuTradeValidatorTests(unittest.TestCase):
         report, _v, _a = self.run_trade(before_edit=oldest_signed, before_post=injury_row_first)
         self.assertNotIn("T2.repeat", t2(report))
 
-    def test_health_is_judged_on_both_sides_of_the_advance(self):
+    def test_health_is_left_to_the_call(self):
+        """A man hurt in both snapshots of one advance can be healthy at the call (healed, traded, hurt in that week's
+        games): T2.player does not judge health; the observer's TT.player does, at the call."""
         def hurt(ram):
             p = ram.player(self.man)
             ram.put(p + 0x20, ram.get(p + 0x20) | 0x80000000 | 1 << 22)
-        report, _v, _a = self.run_trade(before_edit=hurt, after_edit=self._healed)   # healed before the call
+        report, _v, _a = self.run_trade(before_edit=hurt)
         self.assertNotIn("T2.player", t2(report))
-        report, _v, _a = self.run_trade(before_edit=hurt)                            # hurt on both sides
-        self.assertIn("T2.player", t2(report))
-
-    def _healed(self, ram):
-        p = ram.player(self.man)
-        ram.put(p + 0x20, ram.get(p + 0x20) & ~0xBFC00000)
 
     def test_a_seller_left_without_its_starters_fails_T2_seller_depth(self):
         def hurt(ram):
