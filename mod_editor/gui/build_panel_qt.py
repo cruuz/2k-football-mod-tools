@@ -311,6 +311,7 @@ from mod_editor.core import nfl2k5_save_list_type_guard as _save_list_guard  # n
 from mod_editor.core import nfl2k5_edition_save_notes as _edition_notes  # noqa: E402  beta 81 review M1
 from mod_editor.core import nfl2k5_coach_career_fix as _coach_career_fix  # noqa: E402  b780 c1 (wired at b780-int)
 from mod_editor.core import nfl2k5_history_pool as _history_pool  # noqa: E402  b780 hist1
+from mod_editor.core import nfl2k5_modern_numbers as _modern_numbers  # noqa: E402  b81 modern numbers
 from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
 from mod_editor.core import nfl2k5_sim_rb_injuries as _sim_rb_injuries  # noqa: E402  b779-sim2
 from mod_editor.core import nfl2k5_sim_realism as _sim_realism  # noqa: E402  b779-sim2 r4
@@ -377,6 +378,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("edition_save_notes", _edition_notes.BUILD_CAPTION, _edition_notes.HELP_TEXT),  # beta 81 review M1
                  ("coach_career_fix", _coach_career_fix.BUILD_CAPTION, _coach_career_fix.HELP_TEXT),  # b780 c1
                  ("history_pool", _history_pool.BUILD_CAPTION, _history_pool.HELP_TEXT),  # b780 hist1
+                 ("modern_numbers", _modern_numbers.BUILD_CAPTION, _modern_numbers.HELP_TEXT),  # b81 modern numbers
                  ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
                  ("sim_rb_injuries", _sim_rb_injuries.BUILD_CAPTION, _sim_rb_injuries.HELP_TEXT),  # b779-sim2
                  ("sim_realism", _sim_realism.BUILD_CAPTION, _sim_realism.HELP_TEXT),  # b779-sim2 r4
@@ -404,6 +406,7 @@ PREVIOUS_UPGRADE_KEYS = {"punter_holder": "saved field-goal holders", "modern_in
                          "coach_career_fix": "coach record fix",
                          # b81 history-pool: the v0.9 (beta 80) career history pool, upgraded in place
                          "history_pool": "career history pool"}
+PREVIOUS_UPGRADE_KEYS["modern_numbers"] = "modern jersey numbers"  # b81: an earlier page revision is updated in place
 # b780 studio1: older revisions that read "legacy" and that the build upgrades in place (progression.apply and
 # franchise_economy.apply both accept "retail" or "legacy"). A v0.8 disc reads legacy for both; the boxes were greyed out
 # with no badge and no line in the disc summary, so retirement by age and the economy revision could not be added.
@@ -3221,6 +3224,7 @@ class BuildPanel(QWidget):
             self.ceiling_spin.setValue(int(round(float(values["max_deep_yards"]))))
         def wanted(key):
             return (values[key] == "matte" if key == "helmet_finish" else
+                    values[key] in (True, "modern") if key == "modern_numbers" else  # b81: None, False, "retail" clear
                     values[key] != "retail" if key in ("music_policy", *r62_ui.LEVELS) else
                     bool(values[key]))
         # fx1: the build is exactly the preset. A dependency child whose parent the preset leaves off stays off (it would

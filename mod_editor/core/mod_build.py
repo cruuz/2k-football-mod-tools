@@ -546,6 +546,12 @@ class BuildPlan:
     # gives the Chargers' home and road kits (24H0, 24A0) route 5. Needs Hair styles. EXPERIMENTAL / UNWITNESSED: on only
     # in the experimental preset.
     helmet_side_numbers: bool = False
+    # b81 modern numbers (owner 11/25: "make sure new additions can use modern position numbers"): players who join a
+    # club (draft, signings, trades) get today's NFL numbers and never a number a club-mate already wears (owner
+    # nfl2k5_modern_numbers: one fixed page and the jersey routine's entry). None follows season_2026 (modern where the
+    # 2026 season is applied); True or "modern" installs it; "retail" takes it out; False (the Build tab box left clear)
+    # leaves the source as it is. EXPERIMENTAL / UNWITNESSED.
+    modern_numbers: bool | str | None = None
     # b776-ai2: CPU AI, two late executable owners installed after every other executable writer.
     # nfl2k5_cpu_qb_reads: cpu_qb_zone_windows (the covered-window curve 0x50C51C: a defender who reaches the catch
     # point with or before the ball now closes the window) and cpu_qb_recheck (the CPU QB only weighs receivers he read
@@ -918,6 +924,7 @@ class BuildPlan:
     def wants_xbe_patch(self) -> bool:
         return (self.sim_qb_injuries is not None or self.qb_room is not None or self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
                 or self.quick_long_release  # b780-c-release: constants only, in place
+                or self.modern_numbers not in (None, False)  # b81 modern numbers (an explicit choice)
                 or self.progression or self.franchise_economy or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
                 or self.season_cap or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
                 or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.loader_wakeup_fix or self.rb_rename or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.team_sleeves or self.helmet_finish == "matte"
@@ -945,6 +952,8 @@ class BuildPlan:
             d.pop("sim_breakaway_stop")
         if self.qb_room is None:  # b81 qb34: a recipe without the key follows sim_qb_injuries
             d.pop("qb_room")
+        if self.modern_numbers is None:  # b81 modern numbers: a recipe without the key follows season_2026
+            d.pop("modern_numbers")
         if d.get("console_memory") == 128:  # b780-m64b: a 128 MB recipe stays exactly the recipe it always was
             d.pop("console_memory")
         return d
@@ -1249,6 +1258,10 @@ del _preset
 for _preset in PRESETS.values():
     _preset["helmet_side_numbers"] = False
 PRESETS["softdrink_experimental"]["helmet_side_numbers"] = True
+del _preset
+# b81 modern numbers: every preset that applies the 2026 season names it (SOFTDRINK: modern); the others leave it out.
+for _preset in PRESETS.values():
+    _preset["modern_numbers"] = "modern" if _preset.get("season_2026") else None
 del _preset
 # b776-ai2: the CPU AI options are off in every preset (retail bytes); only a test recipe turns them on.
 for _preset in PRESETS.values():
@@ -1918,6 +1931,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_moment_coaches", "25 more Anniversary moments", lambda p: p.espn25_more_moments),
     ("nfl2k5_moment_context", "25 more Anniversary moments", lambda p: p.espn25_more_moments),
     ("nfl2k5_team_ratings", "Modern team ratings", lambda p: p.team_ratings),
+    ("nfl2k5_modern_numbers", "Modern jersey numbers", lambda p: _modern_numbers_level(p) == "modern"),  # b81
     ("nfl2k5_classic_teams", "Classic teams", lambda p: p.classic_teams and p.historic_teams_quick_game),
     ("nfl2k5_hair_styles", "Hair styles", lambda p: p.hair_styles),
     ("nfl2k5_helmet_side_numbers", "Helmet side numbers", lambda p: p.helmet_side_numbers),  # b81 helmet-sides
@@ -3182,6 +3196,69 @@ def _edit_installed_cpu_decisions(plan, source, target, original, receipt, progr
     return True
 
 
+class _InstalledModernNumbersEdit(BuildPlan):
+    """b81 modern numbers: the modern jersey numbers alone on an already-built disc (any release that has the
+    allocator: v0.9, beta 80, beta 81)."""
+
+
+def modern_numbers_disc_edit(source, target, *, mode="modern", overwrite=False, name="", author="", notes=""):
+    """Set modern jersey numbers ("modern" or "retail") on a new copy of a built disc. Every other installed setting is
+    kept; the owner's fixed page is added in place (nothing moves) or, for Retail, emptied with its reservation kept."""
+    if mode not in ("modern", "retail"):
+        raise ValueError("Modern jersey numbers must be Modern or Retail.")
+    return _InstalledModernNumbersEdit(str(source), str(target), modern_numbers=mode, overwrite=overwrite, name=name,
+                                       author=author, notes=notes)
+
+
+def _only_modern_numbers_changes(plan):
+    if not isinstance(plan, _InstalledModernNumbersEdit):
+        return False
+    return plan == modern_numbers_disc_edit(plan.source, plan.target, mode=plan.modern_numbers, overwrite=plan.overwrite,
+                                            name=plan.name, author=plan.author, notes=plan.notes)
+
+
+def _edit_installed_modern_numbers(plan, source, target, original, receipt, progress, *, preflight, consume, reference):
+    """b81 modern numbers: on an already-built disc, the owner's page and site (or Retail); nothing else changes."""
+    numbers = _core_module("nfl2k5_modern_numbers")
+    if numbers is None:
+        raise ValueError("Modern jersey numbers are unavailable in this Studio installation.")
+    if not space_is_scaleout(original):
+        raise ValueError("Modern jersey numbers edit a built disc (its executable carries the allocator).")
+    state = numbers.status(original)
+    if state == "foreign":
+        raise ValueError("The jersey routine or the modern jersey numbers page in this disc was changed by another "
+                         "tool." + _REBUILD_HINT)
+    patched, patch = numbers.set_mode(original, plan.modern_numbers)
+    receipt["installed_modern_numbers_only"] = True
+    receipt["modern_numbers_source_update"] = {"source_sha256": sha256(original).hexdigest(),
+                                               "result_sha256": sha256(patched).hexdigest(), "source_state": state,
+                                               "mode": plan.modern_numbers}
+    if preflight:
+        return True
+    _copy_private_build_source(source, target, receipt, progress, consume)
+    receipt["result"] = {}
+    if _xbe_bytes(target) != original:
+        raise ValueError("The copied image's executable differs from the source.")
+    _step("modern_numbers")
+    progress("Franchise: modern jersey numbers" if plan.modern_numbers == "modern" else "Franchise: retail jersey numbers",
+             0, 0)
+    if patched != original:
+        _write_xbe_bytes(target, patched)
+    want = "applied" if plan.modern_numbers == "modern" else "retail"
+    if _xbe_bytes(target) != patched or numbers.status(_xbe_bytes(target)) != want:
+        raise RuntimeError("Modern jersey numbers: the output does not read back as written")
+    receipt["steps"].append({"step": "modern_numbers", **{k: v for k, v in patch.items() if k != "code_install"}})
+    receipt["result"]["modern_numbers"] = want
+    _compact_build_disc(target, reference, receipt, progress)
+    _step("final_checks")
+    if numbers.status(_xbe_bytes(target)) != want:
+        raise ValueError("Modern jersey numbers did not survive the final archive pass")
+    inspection = inspect(target, screen_timing=plan.screen_timing)
+    receipt["result"] = {**inspection, **receipt["result"], "path": str(target)}
+    _verify_finished_game_disc(target, receipt, progress)
+    return True
+
+
 class _InstalledHelmetSidesEdit(BuildPlan):
     """b81 helmet-sides: the Chargers' helmet side numbers alone on an already-built standard disc."""
 
@@ -4192,6 +4269,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "alien_prospect": _alien_prospect_available(),  # b778-ee1
         "hair_styles": _hair_styles_available(),  # b775-hs1
         "helmet_side_numbers": _hair_styles_available() and _core_module("nfl2k5_helmet_side_numbers") is not None,  # b81
+        "modern_numbers": _core_module("nfl2k5_modern_numbers") is not None and _core_module("nfl2k5_xbe_space") is not None,
         # b776-ai2: the CPU AI owners need only their modules and the allocator
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("cpu_qb_zone_windows", "nfl2k5_cpu_qb_reads"), ("cpu_qb_recheck", "nfl2k5_cpu_qb_reads"),
@@ -4566,6 +4644,8 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     out["coach_career_fix"] = career_fix.status(_xbe_bytes(source)) if career_fix is not None else "unavailable"
     history_pool = _core_module("nfl2k5_history_pool")  # b780 hist1
     out["history_pool"] = history_pool.status(_xbe_bytes(source)) if history_pool is not None else "unavailable"
+    numbers = _core_module("nfl2k5_modern_numbers")  # b81 modern numbers (the executable alone)
+    out["modern_numbers"] = numbers.status(_xbe_bytes(source)) if numbers is not None else "unavailable"
     cb_tackles = _core_module("nfl2k5_sim_cb_tackles")  # b778-cb1
     out["sim_cb_tackles"] = cb_tackles.status(_xbe_bytes(source)) if cb_tackles is not None else "unavailable"
     rb_injuries = _core_module("nfl2k5_sim_rb_injuries")  # b779-sim2
@@ -6532,6 +6612,60 @@ def _apply_helmet_side_numbers(plan, target, receipt, progress):
     receipt["result"]["helmet_side_numbers"] = "applied"
 
 
+def _modern_numbers_level(plan):
+    """b81 modern numbers: "modern" (install or update), "retail" (take out) or None (leave the source as it is).
+    None follows season_2026 (modern where the 2026 season is applied); False is the Build tab's box left clear."""
+    value = getattr(plan, "modern_numbers", None)
+    if value is None:
+        return "modern" if getattr(plan, "season_2026", False) else None
+    if value is True or value == "modern":
+        return "modern"
+    if value == "retail":
+        return "retail"
+    if value is False:
+        return None
+    raise ValueError("Modern jersey numbers must be Modern or Retail.")
+
+
+@_core_step("modern_numbers")
+def _apply_modern_numbers(plan, target, receipt, progress):
+    """b81 modern numbers: its fixed page and the jersey routine's entry (nfl2k5_modern_numbers). The page is fixed, so
+    it is added in any order, in place, and moves nobody."""
+    level = _modern_numbers_level(plan)
+    if level is None:
+        return
+    numbers = _core_module("nfl2k5_modern_numbers")
+    if numbers is None:
+        raise ValueError("Modern jersey numbers are unavailable in this Studio installation.")
+    payload = _xbe_bytes(target)
+    state = numbers.status(payload)
+    if state == "foreign":
+        raise ValueError("The jersey routine or the modern jersey numbers page in this source was changed by another "
+                         "tool, so modern jersey numbers cannot be set here." + _REBUILD_HINT)
+    want = "applied" if level == "modern" else "retail"
+    if state == want:
+        receipt["result"]["modern_numbers"] = want
+        return
+    progress("Franchise: modern jersey numbers" if level == "modern" else "Franchise: retail jersey numbers", 0, 0)
+    patched, patch = numbers.set_mode(payload, level)
+    _write_xbe_bytes(target, patched)
+    if _xbe_bytes(target) != patched or numbers.status(patched) != want:
+        raise RuntimeError("Modern jersey numbers: the output does not read back as written")
+    receipt["steps"].append({"step": "modern_numbers", **{k: v for k, v in patch.items() if k != "code_install"}})
+    receipt["result"]["modern_numbers"] = want
+
+
+def _verify_modern_numbers_final(plan, target, receipt):
+    """b81 modern numbers: on the finished executable, the state the plan asked for survived the final passes."""
+    level = _modern_numbers_level(plan)
+    numbers = _core_module("nfl2k5_modern_numbers")
+    if level is None or numbers is None:
+        return
+    want = "applied" if level == "modern" else "retail"
+    if numbers.status(_xbe_bytes(target)) != want:
+        raise ValueError(f"modern jersey numbers did not survive the final passes (expected {want})")
+
+
 @_core_step("play_art_routes")
 def _apply_play_art_routes(plan, target, receipt, progress):
     """b776-pa2: the late play-art owner, after every other allocator owner (hair styles included)."""
@@ -6814,6 +6948,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     gadget_only = _only_gadget_changes(plan)  # beta 81 Q62
     cpu_decisions_only = _only_cpu_decisions_changes(plan)  # beta 81 fake kicks
     helmet_sides_only = _only_helmet_sides_changes(plan)  # b81 helmet-sides
+    modern_numbers_only = _only_modern_numbers_changes(plan)  # b81 modern numbers
     seven_held = bool(plan.seven_on_seven and not SEVEN_ON_SEVEN_RELEASED)
     if seven_held:
         progress("7-on-7 practice is unavailable until repaired; ignoring the saved opt-in", 0, 0)
@@ -7052,6 +7187,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("The coach career counter fix must be Off or On.")
     if type(plan.history_pool) is not bool:  # b780 hist1
         raise ValueError("The career history pool fix must be Off or On.")
+    _modern_numbers_level(plan)  # b81 modern numbers: refuses anything but None, True, False, "retail", "modern"
     if type(plan.load_user_team_guard) is not bool:  # b780 mc1
         raise ValueError("The Franchise load user-team guard must be Off or On.")
     if type(plan.save_list_type_guard) is not bool:  # b780 mc1
@@ -7259,6 +7395,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError("Helmet side numbers edit a built 128 MB standard disc image.")
         _edit_installed_helmet_sides(plan, source, target, installed_xbe, receipt, progress, preflight=_preflight_only,
                                      consume=_consume_source, reference=_retail_source or source)
+        return receipt
+    if modern_numbers_only:
+        if not (is_image and installed_xbe is not None):
+            raise ValueError("Modern jersey numbers edit a built disc image.")
+        _edit_installed_modern_numbers(plan, source, target, installed_xbe, receipt, progress, preflight=_preflight_only,
+                                       consume=_consume_source, reference=_retail_source or source)
         return receipt
     if gadget_only:
         if not (is_image and installed_xbe is not None):
@@ -9977,6 +10119,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     # Beta 81 Q62: after every play-book writer and every other owner, so its table matches the books on the disc and
     # its gate call is the final one. Its code and table sit in the fixed gadget slots ahead of the cards.
     _apply_gadget_play(plan, target, receipt, progress)
+    _apply_modern_numbers(plan, target, receipt, progress)  # b81 modern numbers: its fixed page (any order)
 
     if tt.is_disc_image(target):
         compacted = _compact_build_disc(target, _retail_source or source, receipt, progress)
@@ -10058,6 +10201,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the coach career counter fix did not survive the final passes")  # b780 c1
     if plan.history_pool and _core_module("nfl2k5_history_pool").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the career history pool fix did not survive the final passes")  # b780 hist1
+    _verify_modern_numbers_final(plan, target, receipt)  # b81 modern numbers
     if plan.load_user_team_guard and _core_module("nfl2k5_load_user_team_guard").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the Franchise load user-team guard did not survive the final passes")  # b780 mc1
     if plan.save_list_type_guard and _core_module("nfl2k5_save_list_type_guard").status(_xbe_bytes(target)) != "applied":

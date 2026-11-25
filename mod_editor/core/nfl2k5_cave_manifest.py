@@ -153,6 +153,10 @@ class Recorder:
         if owner == "nfl2k5_cpu_kick_aim":
             from . import nfl2k5_cpu_kick_aim as kick_aim  # b81 scoring: in-place CPU place-kick aim
             self.reserve(kick_aim.SITE_VA, kick_aim.SITE_SIZE, owner, "full owner site")
+        if owner == "nfl2k5_modern_numbers":  # b81 modern numbers: the jersey routine's entry (6 bytes)
+            from . import nfl2k5_modern_numbers as numbers
+            for name, va, retail, _ in numbers.sites(numbers.PLACEHOLDER_VA):
+                self.reserve(va, len(retail), owner, "full owner site: " + name)
         if owner == "nfl2k5_qb_room":  # b81 qb34: whole weekly-advance calls, every stage's site
             from . import nfl2k5_qb_room_code as room_runtime
             for va, before, _label, _stage in room_runtime.HOOKS:
@@ -435,6 +439,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_sim_realism as sim_realism  # b779-sim2 r4-6 (int1): the last late owner, observed on the same probe copy
     from . import nfl2k5_sim_qb_injuries as sim_qb_injuries
     from . import nfl2k5_qb_room as qb_room  # b81 qb34: installed by the observed Experimental build (its preset selects it)
+    from . import nfl2k5_modern_numbers as modern_numbers  # b81 modern numbers: the same (its fixed page)
     from . import nfl2k5_helmet_side_numbers as helmet_sides  # b81 helmet-sides: the same (the last late owner)
     from . import nfl2k5_coach_carousel as coach_carousel  # b780-c6: the coaching carousel, the last late owner, same probe copy
     from . import nfl2k5_standings_records as standings_records  # b780-j1: Team Standings records, the last late owner, observed on the same probe copy
@@ -567,6 +572,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     modules[sim_qb_injuries.__name__] = sim_qb_injuries
     modules[gadget_play.__name__] = gadget_play
     modules[qb_room.__name__] = qb_room
+    modules[modern_numbers.__name__] = modern_numbers  # b81 modern numbers: installed by the observed preset build
     modules[helmet_sides.__name__] = helmet_sides  # b81 helmet-sides: installed last by the observed Experimental build
     fingerprints = source_fingerprints()
     with tempfile.TemporaryDirectory(prefix="nfl2k5-oracle-", dir=work_dir) as temp:
