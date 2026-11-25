@@ -87,6 +87,10 @@ PINS = {
     "sleeve_base": "ad0e97c9c8b84b7416167dfe6a2eeae4d871bec31d29ec471b1427e6d0883851",
     "sleeve_folds": "44464e37c5fe13e95f5f295a63c5491790d0eeb8b4a10b83c71a8063a6fd46e5",
     "slopes": "c3da6eb49aa5cf1f7faee20e9dba748651344a16c5a92a1a628f7b86bf38b627",
+    "smooth_letters_25": "32aa14b87e923611e067e3fecc9672028eb05af7d48bd604733e7067d74911cd",
+    "smooth_letters_32": "7a3d482920b9781fe8b0bb09012c94a067fe6d39592b7bfc172a7411c0db259c",
+    "smooth_letters_edged_25": "973f89b1f13af56c7348b29f3bb8ebb91735414946a872a474a2eb3b755b2a19",
+    "smooth_letters_edged_32": "67d616536fd6bfe93d3749235abaad0bef12d016b73480695876aadee84a5645",
     "thin_letters_2_2": "7129b34b02079c016c8cc955c3ab9bd282ae1941c90aef2c94b43c3eb3d2a67b",
     "thin_letters_3_3": "e22191b39a4510020811b7ed696f1c788c8a210331cdee792f7eecf33570b62f",
 }
@@ -296,6 +300,32 @@ class GlyphInstructions(unittest.TestCase):
             op = dict(op="thin_letters", stem=stem, bar=bar, top=4, cap=24, fill="#101010", offsets=offsets,
                       weights=weights)
             self.run_ops("thin_letters_%d_%d" % (stem, bar), strip, [op])
+
+    def test_smooth_letters(self):
+        """b81-nameplates: the coverage-edge rule on a synthetic strip (straight stems, diagonals, a counter, a
+        hairline gap), one colour and fill with an edge colour, at the drawn weight (32/64) and grown (25/64)."""
+        strip = np.zeros((32, 1024, 4), np.uint8)
+        strip[..., :3] = (200, 30, 30)
+        offsets = [32 * (i + 1) for i in range(29)]
+        for i, x0 in enumerate(offsets):
+            w = 9 + (i % 7)
+            strip[4:28, x0:x0 + 3, 3] = 255                                  # a stem on the cell's column 0
+            strip[4:7, x0:x0 + w, 3] = 255                                   # a top bar
+            for y in range(4, 28):                                           # a stepped diagonal
+                x = x0 + 3 + (y - 4) * (w - 6) // 24
+                strip[y, x:x + 3, 3] = 255
+            strip[14:17, x0 + 3:x0 + w - 2, 3] = 255 if i % 2 else 0          # a bar or a one-texel gap
+        edged = strip.copy()
+        edged[..., :3] = (212, 0, 56)
+        inner = (edged[..., 3] == 255) & np.roll(edged[..., 3] == 255, 1, 1) & np.roll(edged[..., 3] == 255, -1, 1)
+        edged[inner, :3] = 255
+        for level in (32, 25):
+            op = dict(op="smooth_letters", offsets=offsets, fill="#C81E1E", box=11, passes=3, level=level, den=64)
+            out = self.run_ops("smooth_letters_%d" % level, strip, [op])
+            self.assertGreater(len(np.unique(out[..., 3])), 16)
+            op = dict(op="smooth_letters", offsets=offsets, fill="#FFFFFF", outline="#D40038", blend_steps=8, box=11,
+                      passes=3, level=level, den=64)
+            self.run_ops("smooth_letters_edged_%d" % level, edged, [op])
 
     def test_each_operation_kind(self):
         for size in ((64, 64), (32, 32), (31, 33)):

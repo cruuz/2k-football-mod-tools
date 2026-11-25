@@ -79,7 +79,7 @@
     "data/nfl2k5_gillette_model/footprint.json": null,
     "data/nfl2k5_gillette_model/pins.json": null,
     "data/nfl2k5_glyph_fixes_2026.json": "a709d39b5fb5ab4a6f6793e6626d36771197c6a196c410b8057e58f899148387",
-    "data/nfl2k5_glyph_fixes_2026_b81u.json": "dd6c4f44b78e1176b954aee7afd7a072f3ed7d6fe7f5eb0a583004062a4db5f4",
+    "data/nfl2k5_glyph_fixes_2026_b81u.json": "0873fe7a578b7f01b2782ccb2a9a08373db776cd98aeb6edd917e013c44394e4",
     "data/nfl2k5_hair_styles/geometry.json": null,
     "data/nfl2k5_hair_styles/numbers.json": "610ebfab61c3992c21583f3803dfff9db4f5a7df23b2ca4db63eafc4e1230ede",
     "data/nfl2k5_hair_styles/pins.json": null,
@@ -514,8 +514,8 @@
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00A0_names.png": {
       "height": 32,
-      "sha256": "3e9ebb153c98e87789d4af4fe38536fd0f63cb951ecd496e37113066d9e156f8",
-      "size": 1131,
+      "sha256": "c8dd32e3df3797b645191583efe042172e6d1e8da652ad50765ec2846cc9fcf2",
+      "size": 2862,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_digit_arm_0.png": {
@@ -640,20 +640,20 @@
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/ARI_00H0_names.png": {
       "height": 32,
-      "sha256": "4a9dfcfbb5130175d671d38ea92c314a079d4c4b88d0eb90ed620971f9dc8084",
-      "size": 1086,
+      "sha256": "2307808e6e9fcc58fcd029283e043a565e7d098823ba853f40259387dfcd1485",
+      "size": 2892,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/ATL_01A9_names.png": {
       "height": 32,
-      "sha256": "ef7150b4981adffaa52ab28979e503446a460778c46cad619a375aaacf347773",
-      "size": 1500,
+      "sha256": "c41e417dac423b3f045c06bbd63050ec9e7d6376e298ce8f1339276d591584d6",
+      "size": 2969,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/BAL_02H0_names.png": {
       "height": 32,
-      "sha256": "7c92873ffa51961497ad79519d9f2da8928d379ca944c358d77cd4167e24dfef",
-      "size": 882,
+      "sha256": "8b5bfff28269d2c5352d157e5d0211a74ebce98ee9fe0dd154475582346bc816",
+      "size": 2437,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/CIN_06A0_digit_jersey_0.png": {
@@ -1042,20 +1042,20 @@
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/IND_11A0_names.png": {
       "height": 32,
-      "sha256": "067984292236ef1c3ac36e33977586e874f4bb5f0ad8b940d613d1e7a91c9708",
-      "size": 1071,
+      "sha256": "c149e9477a02f091dcc561a878e6cf6560821bddac59e13fdbf88309c4a341fa",
+      "size": 3648,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/IND_11A3_names.png": {
       "height": 32,
-      "sha256": "18d1ebe9316a8d88bdbf5f55c1fcc6f673a8c3c02ba23ff5e3ce117cf81a1260",
-      "size": 1024,
+      "sha256": "a14b2f73bec7000d1eccc4bad36be3036b76fe23ef91061a52de6f1b55205306",
+      "size": 3640,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/JAX_12H0_names.png": {
       "height": 32,
-      "sha256": "d143fe34ceca0e3cd387b6fd8774bcbb217947738d448566a4a7ae1360d85bcf",
-      "size": 1018,
+      "sha256": "888a4b693598b11afbaa94248b2aa20e796058e65fd52bd49526268fd2809f98",
+      "size": 2812,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/MIA_14A0_digit_arm_0.png": {
@@ -1420,14 +1420,14 @@
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/NO_17A1_names.png": {
       "height": 32,
-      "sha256": "b654602b173cb9cfbd30c29abcf77e7382e1d071f19073b7f2204a0b25bd8010",
-      "size": 961,
+      "sha256": "5c7fd7414db7941ea7f5fdc3a31d5567f87d2d4978c70a03773626aeb140ee17",
+      "size": 2641,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/NYG_18A7_names.png": {
       "height": 32,
-      "sha256": "abaf4243785a5f6f0b715323e91f713c118120c79dee39f9afe325f5a568c2a6",
-      "size": 1089,
+      "sha256": "5a8badf703068af8ba8713cc7f8d9b966ce39d4b5adbef3238db9ddba94a7745",
+      "size": 2447,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_digit_arm_2.png": {
@@ -1444,8 +1444,8 @@
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A0_names.png": {
       "height": 32,
-      "sha256": "a076b14e9f2a5c4c80124083477c1b176c58e6168d77a95e4bbc766586b86986",
-      "size": 934,
+      "sha256": "77d3bd88536a23960be6ef0ee1505e58246d925b631dab8be6bbe6b096231657",
+      "size": 2441,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/NYJ_19A2_digit_arm_2.png": {
@@ -1954,8 +1954,8 @@
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/TB_27A0_names.png": {
       "height": 32,
-      "sha256": "3865b3c9a807267820d78b99a297046baaf10581e0d64e1cfdfa5f821aafc139",
-      "size": 849,
+      "sha256": "c2facd55d6439c17b47faf18f6a1fa2e9604bcd94ee7ed3aefdad47e01046c57",
+      "size": 2260,
       "width": 1024
     },
     "data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_arm_0.png": {
