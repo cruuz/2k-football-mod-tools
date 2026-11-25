@@ -73,6 +73,14 @@ I8  trade board: every player a record names belongs to that side's club and bot
                    either, and the harness may pass boundary=True for its closing saves. A memory state INSIDE an advance
                    (the kick-off hook 0x247DCF runs before the stage switch's trade tick, where the record legitimately
                    sits) must pass boundary=False, as kick-off checks do by skipping I8.
+T2  (b81 CPU trades, nfl2k5_cpu_trades) on every trade group of exactly one player at a position other than QB and one
+    pick (the native CPU trades are player swaps): T2.human and T2.position (no K or P) always; the rest only when the
+    two views are one weekly advance apart (else the harness judges the trade at the call): T2.deadline (stage 8 at or past
+    the deadline byte, whatever the option), T2.window (only stages 7 and 8), T2.counts (seller 50..65, buyer at most 53
+    in season, 65 in the preseason), T2.player (no rookie, no first contract year, not star-tagged, fully healthy before),
+    T2.seller_depth (the seller keeps its starters healthy and its cut minimum at the position), T2.load (neither club in
+    three trade groups of the previous ledger), T2.repeat (the man was not signed or traded in the previous ledger),
+    T2.pick (exactly that pick passes buyer to seller). All failures.
 T1  trades since ``previous`` (the view one weekly advance earlier): the ring rows from previous.ledger_cursor to
     view.ledger_cursor (modulo 600: a wrap of 600 or more rows cannot be told apart, which info says; rows outside the
     span that changed are counted in info), grouped by bit 31 (the executor marks a trade's last row). Kind 7 rows: one
@@ -872,13 +880,104 @@ def is_qb_for_pick(view: LeagueView, offer: Offer) -> bool:
             and not any(p is not None for p in offer.players_b) and sum(1 for w in offer.picks_b if w & 0x3F) == 1)
 
 
+# b81 CPU trades (nfl2k5_cpu_trades, tools/cpu_trades/trades.c): starters per position and the economy's cut minimum
+# (QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE; OLB and ILB one pool under ILB's minimum), the club load limit.
+CPU_TRADE_STARTERS = (0, 0, 0, 3, 2, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 2, 2)
+CPU_TRADE_CUT_MIN = (2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 0, 5, 2, 3, 3, 3, 4)
+CPU_TRADE_LOAD_LIMIT = 3
+
+
+def ledger_trade_load(view: LeagueView) -> list[int]:
+    """Trade groups of the native ledger naming each club (an outgoing row of the group), oldest row first."""
+    load = [0] * CLUBS
+    if view.ledger_rows is None or not 0 <= view.ledger_cursor < LEDGER_CAPACITY:
+        return load
+    mask = set()
+    for k in range(LEDGER_CAPACITY):
+        word, _player, club = view.ledger_rows[(view.ledger_cursor + k) % LEDGER_CAPACITY]
+        if word & 31 != 7:
+            mask = set()
+            continue
+        if club is not None and 0 <= club < CLUBS:
+            mask.add(club)
+        if word & LAST_IN_GROUP:
+            for c in mask:
+                load[c] += 1
+            mask = set()
+    return load
+
+
+def _check_player_for_pick(q, view, previous, clubs, human, one_advance, changes, add, skipped):
+    """T2: the rules of the CPU trades owner on one player-for-pick group at a position other than QB."""
+    seller, buyer, player, pos, rows = q["seller"], q["buyer"], q["player"], q["position"], q["rows"]
+    if (human(seller) or human(buyer)) and not skipped("T2.human"):
+        add("T2.human", FAIL, "player-for-pick trade with a human club", club=buyer if human(buyer) else seller,
+            player=player, seller=seller, buyer=buyer, rows=rows)
+    if pos in (K, P) and not skipped("T2.position"):
+        add("T2.position", FAIL, "player-for-pick trade of a kicker or punter", club=seller, player=player, rows=rows)
+    if not one_advance:
+        # Across a stage advance (the preseason runs inside the advance to the regular season) the previous view is not
+        # the state the trade was made from; the season harness judges those trades at the trade call itself.
+        return
+    if previous.stage == 8 and previous.deadline_week is not None \
+            and previous.week >= previous.deadline_week and not skipped("T2.deadline"):
+        add("T2.deadline", FAIL, "player-for-pick trade at or after the deadline week", club=buyer, player=player,
+            week=previous.week, deadline_week=previous.deadline_week, option=previous.trade_option, rows=rows)
+    if previous.stage not in (7, 8) and not skipped("T2.window"):
+        add("T2.window", FAIL, "player-for-pick trade outside the preseason and the regular season", club=buyer,
+            player=player, stage=previous.stage, rows=rows)
+    if not skipped("T2.counts"):
+        top = 53 if previous.stage == 8 else 65
+        for c, low, high in ((seller, 50, 65), (buyer, 0, top)):
+            if 0 <= c < CLUBS and not low <= clubs[c].count <= high:
+                add("T2.counts", FAIL, "active count outside its limits after a player-for-pick trade", club=c,
+                    count=clubs[c].count, role="seller" if c == seller else "buyer", rows=rows)
+    if 0 <= player < previous.player_count and not skipped("T2.player"):
+        before = previous.record(player)
+        reasons = []
+        if before[0x25] & 31 < 2:
+            reasons.append("rookie")
+        if not before[0x24] & 15 or before[0x24] & 15 == before[0x27] & 15:
+            reasons.append("first contract year or no years left")
+        if before[0x53] & 1:
+            reasons.append("star-tagged")
+        if not _fully_healthy(before):
+            reasons.append("not fully healthy before the trade")
+        if reasons:
+            add("T2.player", FAIL, "a man the CPU trades never offer", club=seller, player=player, reasons=reasons,
+                rows=rows)
+    if 0 <= seller < CLUBS and pos < len(CPU_TRADE_STARTERS) and not skipped("T2.seller_depth"):
+        lb = pos in (10, 11)
+        at_pos = [i for i in clubs[seller].active if view.record(i)[0x35] == pos]
+        count = len([i for i in clubs[seller].active if view.record(i)[0x35] in ((10, 11) if lb else (pos,))])
+        healthy = [i for i in at_pos if _fully_healthy(view.record(i)) or _fully_healthy(previous.record(i))]
+        if len(healthy) < CPU_TRADE_STARTERS[pos] or count < CPU_TRADE_CUT_MIN[11 if lb else pos]:
+            add("T2.seller_depth", FAIL, "seller left below its starters or cut minimum at the position", club=seller,
+                player=player, position=pos, healthy=len(healthy), count=count, rows=rows)
+    if previous.ledger_rows is not None and not skipped("T2.load"):
+        load = ledger_trade_load(previous)
+        named = [c for c in (seller, buyer) if 0 <= c < CLUBS and load[c] >= CPU_TRADE_LOAD_LIMIT]
+        if named:
+            add("T2.load", FAIL, "player-for-pick trade by a club already in three trade groups of the ledger",
+                club=named[0], player=player, load=[load[c] for c in named], rows=rows)
+        signed = [k for k, (word, p, _c) in enumerate(previous.ledger_rows) if p == player and word & 31 in (1, 7)]
+        if signed and not skipped("T2.repeat"):
+            add("T2.repeat", FAIL, "player-for-pick trade of a man the ledger shows signed or traded", club=seller,
+                player=player, ledger_slots=signed, rows=rows)
+    if changes is not None and not skipped("T2.pick"):
+        hits = [c for c in changes if (c["round"], c["year"], c["from"], c["to"]) == (q["round"], q["year"], buyer, seller)]
+        if len(hits) != 1:
+            add("T2.pick", FAIL, "the pick table does not show exactly this pick passing buyer to seller", club=buyer,
+                player=player, round=q["round"], year=q["year"], seller=seller, matching_changes=hits, rows=rows)
+
+
 def trades_since(previous: LeagueView, view: LeagueView) -> dict:
     """The transaction rows written between two views (previous.ledger_cursor up to view.ledger_cursor), grouped by the
     last-in-group bit 31, the kind 7 (trade) groups among them, and the pick-table entries that changed owner. Kind 7:
     one row per OUTGOING player (club = his old club) and one per outgoing pick (no player, arg1 = round, arg2 = year,
     club = the club giving it). A quarterback-for-pick group is exactly a quarterback's row (seller) and a pick row
     (buyer). More than 600 new rows cannot be told from fewer: the count is taken modulo 600."""
-    out = {"new_rows": None, "groups": [], "qb_for_pick": [], "pick_changes": None, "notes": []}
+    out = {"new_rows": None, "groups": [], "qb_for_pick": [], "player_for_pick": [], "pick_changes": None, "notes": []}
     if previous.ledger_rows is None or view.ledger_rows is None:
         out["notes"].append("a view has no ledger rows: trades not judged")
         return out
@@ -917,6 +1016,14 @@ def trades_since(previous: LeagueView, view: LeagueView) -> dict:
             out["qb_for_pick"].append({"seller": players[0]["club"], "buyer": picks[0]["club"],
                                        "player": players[0]["player"], "round": picks[0]["arg1"],
                                        "year": picks[0]["arg2"], "rows": [x["slot"] for x in trade]})
+        elif (len(trade) == 2 and len(players) == 1 and len(picks) == 1 and 0 <= players[0]["player"] < view.player_count
+                and players[0]["club"] is not None and picks[0]["club"] is not None
+                and players[0]["club"] != picks[0]["club"]):
+            # b81 CPU trades (nfl2k5_cpu_trades): one man at any other position for one pick (native trades are swaps)
+            out["player_for_pick"].append({"seller": players[0]["club"], "buyer": picks[0]["club"],
+                                           "player": players[0]["player"], "round": picks[0]["arg1"],
+                                           "year": picks[0]["arg2"], "rows": [x["slot"] for x in trade],
+                                           "position": view.record(players[0]["player"])[0x35]})
     if previous.pick_owners is not None and view.pick_owners is not None:
         out["pick_changes"] = [{"round": k // PICK_SLOTS % 7 + 1, "year": k // PICK_SLOTS // 7, "slot": k % PICK_SLOTS,
                                 "from": a, "to": b}
@@ -1236,6 +1343,8 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
                     add("T1.pick", FAIL, "the pick table does not show exactly this pick passing buyer to seller",
                         club=buyer, player=q["player"], round=q["round"], year=q["year"], seller=seller,
                         matching_changes=hits, rows=q["rows"])
+        for q in t1["player_for_pick"]:
+            _check_player_for_pick(q, view, previous, clubs, human, one_advance, changes, add, skipped)
         if (changes is not None and previous.stage == stage == 8 and previous.year_index == view.year_index
                 and not skipped("T1.unexplained_pick")):        # within one regular season no draft roll moves picks
             pool = [(x["arg1"], x["arg2"], x["club"]) for g in t1["groups"] for x in g
@@ -1248,7 +1357,7 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
                     add("T1.unexplained_pick", FAIL, "pick changed owner with no trade row giving it",
                         club=c["from"] if 0 <= c["from"] < CLUBS else None, round=c["round"], year=c["year"],
                         pick_slot=c["slot"], owner_before=c["from"], owner_after=c["to"])
-        view.info["trades_since_previous"] = {k: t1[k] for k in ("new_rows", "qb_for_pick", "notes")} | {
+        view.info["trades_since_previous"] = {k: t1[k] for k in ("new_rows", "qb_for_pick", "player_for_pick", "notes")} | {
             "groups": len(t1["groups"]), "pick_changes": None if changes is None else len(changes),
             **({"user_trades": t1["user_trades"]} if "user_trades" in t1 else {})}
 
