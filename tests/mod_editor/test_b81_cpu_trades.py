@@ -240,7 +240,7 @@ def offer_of(x, s, pos, floor, above, room, q, eff, best, rebuild_ok, board_play
         if x.b(p + 0x35) != pos or not x.healthy(p):
             continue
         pro, left, length = x.b(p + 0x25) & 31, x.b(p + 0x24) & 15, x.b(p + 0x27) & 15
-        if pro < 2 or not left or left == length or x.b(p + 0x53) & 1:
+        if pro < 2 or not left or (x.m.get(YEAR) and left == length) or x.b(p + 0x53) & 1:
             continue
         r = x.rating(p)
         if r < floor or r <= best_r or r >= best[s] or (r >= q[3] and pro <= 6):
@@ -361,7 +361,8 @@ class CpuTradesImage(unittest.TestCase):
             self.assertEqual(m.get(USER_FLAG + 4 * buyer) | m.get(USER_FLAG + 4 * seller), 0)
             self.assertNotIn(rec[0x35], (0, 1, 2))
             self.assertGreaterEqual(rec[0x25] & 31, 2)
-            self.assertNotEqual(rec[0x24] & 15, rec[0x27] & 15)
+            if m.get(YEAR):                          # the first contract year counts from the second franchise season
+                self.assertNotEqual(rec[0x24] & 15, rec[0x27] & 15)
             self.assertFalse(rec[0x53] & 1)
             self.assertFalse(struct.unpack_from("<I", rec, 0x20)[0] & 0xBFC00000)
             self.assertLessEqual(len(x.roster(buyer)), 53)

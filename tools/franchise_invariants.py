@@ -77,7 +77,8 @@ T2  (b81 CPU trades, nfl2k5_cpu_trades) on every trade group of exactly one play
     pick (the native CPU trades are player swaps): T2.human and T2.position (no K or P) always; the rest only when the
     two views are one weekly advance apart (else the harness judges the trade at the call): T2.deadline (stage 8 at or past
     the deadline byte, whatever the option), T2.window (only stages 7 and 8), T2.counts (seller 50..65, buyer at most 53
-    in season, 65 in the preseason), T2.player (no rookie, no first contract year, not star-tagged, fully healthy before),
+    in season, 65 in the preseason), T2.player (no rookie, no years left, from year index 1 no first contract year, not
+    star-tagged, fully healthy before),
     T2.seller_depth (the seller keeps its starters healthy and its cut minimum at the position), T2.load (neither club in
     three trade groups of the previous ledger), T2.repeat (the man was not signed or traded in the previous ledger),
     T2.pick (exactly that pick passes buyer to seller). All failures.
@@ -937,8 +938,10 @@ def _check_player_for_pick(q, view, previous, clubs, human, one_advance, changes
         reasons = []
         if before[0x25] & 31 < 2:
             reasons.append("rookie")
-        if not before[0x24] & 15 or before[0x24] & 15 == before[0x27] & 15:
-            reasons.append("first contract year or no years left")
+        if not before[0x24] & 15:
+            reasons.append("no contract years left")
+        if previous.year_index >= 1 and before[0x24] & 15 == before[0x27] & 15:
+            reasons.append("first contract year (from the second franchise season)")
         if before[0x53] & 1:
             reasons.append("star-tagged")
         if not _fully_healthy(before):

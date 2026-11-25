@@ -22,7 +22,8 @@
      or fewer active, stage 7: 64 or fewer; it never cuts), in stage 8 still in the race (W + 1 >= L). Its need is the
      position with eff below q25 that is furthest below it.
    - Package: the best-rated man Qs at that position over every seller: fully healthy, no status bits, 2+ years pro,
-     1+ contract years and not in the first year of his contract (years left +0x24 & 15 != length +0x27 & 15), not
+     1+ contract years and, from the second franchise season (year index 1), not in the first year of his contract
+     (years left +0x24 & 15 != length +0x27 & 15; the starting roster has length = years left for everyone), not
      star-tagged (+0x53 bit 0; MyCareer's player carries it), not the seller's best player, not a young cornerstone
      (q90 or better with 6 or fewer years pro), named by no board record (listings included) and by no signing (kind 1) or trade (kind 7)
      row of the native ledger, rated at least eff(buyer) + 3 and at least q25; the buyer's cap room minus his charge
@@ -310,7 +311,9 @@ static u32 offer_of(struct club *s, u32 pos, u32 floor, u32 above, i32 room, con
         if (!p || B(p + 0x35) != pos || !healthy(p)) continue;
         pro = B(p + 0x25) & 31;
         left = B(p + 0x24) & 15;
-        if (pro < 2 || !left || left == (B(p + 0x27) & 15u) || B(p + 0x53) & 1) continue;
+        /* first contract year (just signed or re-signed) from the second franchise season: the roster a franchise
+           starts from carries length = years left for every man, so in year index 0 the ledger rule alone applies */
+        if (pro < 2 || !left || (D(YEAR) && left == (B(p + 0x27) & 15u)) || B(p + 0x53) & 1) continue;
         r = rating(p);
         if (r < floor || r <= best_r || r >= s->best || (r >= q[3] && pro <= 6)) continue;
         sale_rebuild = r >= s->eff[pos];
