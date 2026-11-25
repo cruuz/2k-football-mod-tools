@@ -50,7 +50,7 @@ PROBE = 0x3200000
 CUT_MAX = (3, 30, 30, 30, 30, 30, 30, 30, 2, 30, 0, 30, 30, 30, 30, 30, 30)
 CUT_KEEP = (2, 30, 30, 6, 6, 2, 2, 3, 1, 3, 0, 5, 2, 3, 4, 4, 4)
 WEEK_WEIGHT = (1, 1, 2, 2, 4, 4, 4, 12, 24)
-POOL_WEIGHT = ((0, 0, 0, 16, 4, 4, 4, 13, 0, 4, 0, 9, 2, 2, 2, 9, 9),
+POOL_WEIGHT = ((0, 0, 0, 16, 4, 4, 4, 13, 0, 4, 0, 16, 2, 2, 2, 6, 9),
                (0, 0, 0, 12, 16, 16, 16, 2, 0, 3, 0, 16, 16, 16, 16, 16, 16))
 
 
@@ -318,6 +318,8 @@ def offer_of(x, s, stage, pool, floor, above, room, q, club, rebuild_ok, board_p
         sale_rebuild = x.seated(s, p)
         if sale_rebuild and (not rebuild_ok or pro < 8):
             continue
+        if not sale_rebuild and r > club["weak"][pool]:            # code review S1: a buried starter
+            continue
         if r < floor or r <= best_r:
             continue
         if room - x.charge_after(p) < margin:
@@ -458,6 +460,9 @@ class CpuTradesImage(unittest.TestCase):
         packages, q = model(twin, 8, first)
         self.assertEqual([(r["buyer"], r["seller"], r["player"], r["position"]) for r in first],
                          [(b, s, (p - x.table) // 0x54, pool) for b, s, p, pool, _h in packages])
+        for r in first:                                  # code review S1: never a man above a need-seat starter
+            if r["result"] in (1, 2) and not r["flags"] & 1:
+                self.assertLessEqual(r["rating"], twin.scan(r["seller"])[0][r["position"]], r)
         executed = [r for r in after if r["result"] == 1]
         self.assertTrue(executed, "nothing was executed")
         for r in executed:
@@ -1010,6 +1015,46 @@ class SignedRoundTrip(unittest.TestCase):
         traded = {r["player"] for r in rows if r["flags"] & code.F_AFTER and r["result"] == code.RESULT_EXECUTED}
         self.assertTrue(traded)
         self.assertFalse(traded & {r["player"] for r in rows_cold if not r["flags"] & code.F_AFTER})
+
+
+class StoryGateOnTheConsoleStack(unittest.TestCase):
+    """Code review M1: the story writer's `jle 0x2BB354` after our gate is a SIGNED test. The console's thread stacks
+    sit at 0xD00xxxxx (negative as a signed word), so a gate that compares ESP skipped every story of ours there while
+    the CPU harness (stack 0x3008000) posted them. The gate runs here on its own machine with both stacks."""
+
+    def gate(self, esp, ours, value):
+        import unicorn as u
+        from unicorn import x86_const as x
+        code = _code()
+        record = BOARD + RECORD * 3
+        page = bytearray(code.page_bytes(VA, code.settings_record(7, p8_ppm=450_000, p7_ppm=1_000_000)))
+        if ours:
+            struct.pack_into("<I", page, code.CURRENT, record)
+        uc = u.Uc(u.UC_ARCH_X86, u.UC_MODE_32)
+        uc.mem_map(VA, 0x2000)
+        uc.mem_write(VA, bytes(page))
+        stub = 0x100000                                  # call story_entry; jle skip; mov eax, 1; ret; skip: xor eax, eax; ret
+        call = struct.pack("<i", VA + code.LABELS["story_entry"] - (stub + 5))
+        body = b"\xe8" + call + b"\x7e\x06" + b"\xb8\x01\x00\x00\x00\xc3" + b"\x31\xc0\xc3"
+        uc.mem_map(stub, 0x1000)
+        uc.mem_write(stub, body)
+        uc.mem_map(esp & ~0xFFFF, 0x20000)
+        stop = 0x200000
+        uc.mem_map(stop, 0x1000)
+        uc.mem_write(esp, struct.pack("<I", stop))
+        uc.reg_write(x.UC_X86_REG_ESP, esp)
+        uc.reg_write(x.UC_X86_REG_EAX, value)
+        uc.reg_write(x.UC_X86_REG_EBP, record)
+        uc.emu_start(stub, stop, count=10_000)
+        counters = code.counters(bytes(uc.mem_read(VA, 0x2000)))
+        return uc.reg_read(x.UC_X86_REG_EAX), counters["stories_forced"]
+
+    def test_ours_post_on_the_console_stack_and_others_keep_the_native_test(self):
+        for esp in (0x3008000 - 0x100, 0xD0025D10, 0xD0066264):
+            for value in (300, 5000):
+                self.assertEqual(self.gate(esp, True, value), (1, 1), (hex(esp), value))       # ours: always posts
+            self.assertEqual(self.gate(esp, False, 300), (0, 0), hex(esp))                    # others: native 1000
+            self.assertEqual(self.gate(esp, False, 5000), (1, 0), hex(esp))
 
 
 class PagesAndLayout(unittest.TestCase):

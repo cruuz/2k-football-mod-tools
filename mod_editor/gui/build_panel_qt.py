@@ -2157,9 +2157,9 @@ class BuildPanel(QWidget):
         # b81 trades-all (ruling R6): computer trades at every position have their own control beside the quarterback
         # option; "Same as the quarterback option" leaves the plan unnamed, so they follow it.
         trades_help = ("Computer clubs trade players for draft picks when one club has a hole and another has a spare "
-                       "man: about 16 trades up to the Week 9 deadline and about 20 in the preseason, as in the NFL. "
-                       "Clubs you control are never part of a computer trade. Retail keeps the original game's few "
-                       "player swaps.")
+                       "man: about 16 trades up to the Week 9 deadline and about 13 to 15 in each preseason after the "
+                       "first (a new franchise's first preseason has none). Clubs you control are never part of a "
+                       "computer trade. Retail keeps the original game's few player swaps.")
         trades_caption = QLabel("Computer trades")
         self.cpu_trades_mode = QComboBox()
         trades_caption.setBuddy(self.cpu_trades_mode)

@@ -36,6 +36,7 @@ story_entry:
     jnz 1f
     cmp eax, 0x3e8
     ret
-1:  cmp esp, 0x3e8              /* a stack address is far above 1000: "greater", so `jle` falls through */
+1:  cmp eax, 0x80000000         /* every value but INT_MIN is greater as a signed word, so `jle` falls through
+                                   (not ESP: the console's stacks sit at 0xD00xxxxx, negative as a signed word) */
     ret
 .section .note.GNU-stack,"",@progbits

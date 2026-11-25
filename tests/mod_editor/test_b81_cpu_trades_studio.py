@@ -41,8 +41,9 @@ STANDARD_XBE = os.environ.get("CPU_TRADES_STANDARD_XBE", "")
 WITHOUT_NEEDS_XBE = os.environ.get("NFL2K5_B81_QB_STANDARD_XBE", "")
 V09_XISO = os.environ.get("NFL2K5_V09_XISO", "")
 HELP = ("Computer clubs trade players for draft picks when one club has a hole and another has a spare man: about 16 "
-        "trades up to the Week 9 deadline and about 20 in the preseason, as in the NFL. Clubs you control are never part "
-        "of a computer trade. Retail keeps the original game's few player swaps.")
+        "trades up to the Week 9 deadline and about 13 to 15 in each preseason after the first (a new franchise's first "
+        "preseason has none). Clubs you control are never part of a computer trade. Retail keeps the original game's few "
+        "player swaps.")
 
 
 def _fixture(path, what):
@@ -535,7 +536,8 @@ class FaqTests(unittest.TestCase):
         paragraphs = section.split("\n\n")
         quarterback = next(i for i, p in enumerate(paragraphs) if "trade for a quarterback" in p)
         trades_text = paragraphs[quarterback + 1]
-        for words in ("Computer trades", "Same as the quarterback option", "about 16 trades", "about 20 in the preseason",
+        for words in ("Computer trades", "Same as the quarterback option", "about 16 trades", "about 13 to 15 in each preseason after the first",
+                      "first preseason has none",
                       "never part of a computer trade", "Retail keeps the original game's few player swaps",
                       "--cpu-trades"):
             with self.subTest(words=words):

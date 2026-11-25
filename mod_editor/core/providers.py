@@ -1006,7 +1006,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_qb_trades_code.py": "6060bc35957410b91ec5e2242e87836b15591e1430996cd2dcb598ea18b5996a",  # b81 qb34 4b: its generated page template
         "mod_editor/core/nfl2k5_qb_trades_code_b81_383.py": "36d9ac7d5e7e7368f3d9b650f0bde1065960cb0f61e21aa2c94d57c68ac2b492",  # b81 4b revision (M1/N6): frozen 383 trades template ("previous")
         "mod_editor/core/nfl2k5_cpu_trades.py": "3a7e29d2c495ad3d9bcbdd863afe6b9bcc3cedbe73e72029bd35773e6f0dd5a2",  # b81 trades-all (R6): mod_build loads it by name, right after the room
-        "mod_editor/core/nfl2k5_cpu_trades_code.py": "a9bc93b1be0329ee621216d53ebf1da86bcf12eb82f5dcd1ed1335fe598d8580",  # b81 trades-all: its generated page template
+        "mod_editor/core/nfl2k5_cpu_trades_code.py": "6a8bc8afe16a0ccad96782338f38ad290bb650f5c744949f03a7b601b9f81a85",  # b81 trades-all: its generated page template
         "mod_editor/core/nfl2k5_helmet_side_numbers.py": "c10876d8ef2c26740f3559706d8678de673730a7e260285ddc35eaafec9e6069",  # b81 helmet-sides: mod_build loads it by name (route 5 = set E)
         "mod_editor/core/nfl2k5_number_kerning.py": "48405334b32b7495399f204a898825531423ed6025e848b51ac0c86891df6902",  # b81 helmet-sides: the owner reads Number kerning's state (same cell addressing)
         "mod_editor/core/nfl2k5_sim_realism.py": "81d981f096486cc13f7033e87b014694eacbbee82afeb96412784cb85ff7d77a",  # b779-sim2 r6

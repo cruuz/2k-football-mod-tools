@@ -196,7 +196,7 @@ static const u8 WEEK_WEIGHT[9] = {1, 1, 2, 2, 4, 4, 4, 12, 24};
    were 35-39 percent DB and 5-7 percent WR (real 21 and 21), the preseason's 33 percent OL and 14 percent TE (real 21
    and 5). Supply, not chance, limits WR (the 4th WR is rarely above the floor), so DB is cut hardest. */
 static const u8 POOL_WEIGHT[2][TN_POSITIONS] = {
-    {0, 0, 0, 16, 4, 4, 4, 13, 0, 4, 0, 9, 2, 2, 2, 9, 9},          /* season */
+    {0, 0, 0, 16, 4, 4, 4, 13, 0, 4, 0, 16, 2, 2, 2, 6, 9},         /* season (P2 review N3: LB up, DT down) */
     {0, 0, 0, 12, 16, 16, 16, 2, 0, 3, 0, 16, 16, 16, 16, 16, 16},  /* preseason (P2: OL, LB, DT/DE raised for G-T2) */
 };
 
@@ -420,7 +420,9 @@ static u32 offer_of(struct club *s, u32 stage, u32 pool, u32 floor, u32 above, i
             continue;
         }
         sale_rebuild = seated(t, p);
-        if (sale_rebuild && (!(s->flags & REBUILD) || pro < REBUILD_YEARS)) {
+        /* a seated starter (unless a losing club's veteran: R3), or a man rated above the club's weakest need-seat
+           starter: a starter the native chart has buried after an injury, not yet restored (code review S1) */
+        if ((sale_rebuild && (!(s->flags & REBUILD) || pro < REBUILD_YEARS)) || (!sale_rebuild && r > s->weak[pool])) {
             ct_counters.rej_starter++;
             continue;
         }
