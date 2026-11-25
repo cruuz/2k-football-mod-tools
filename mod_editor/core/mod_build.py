@@ -752,9 +752,10 @@ class BuildPlan:
     # b81 ot-crash (played wild card witness, 2026-11-24): the halftime/postgame show loader 0xDA4D0 and the replay
     # system 0x83F10 share one 0x148000-byte block and never check that 0xF6070 gave it to them; after an overtime score
     # the show was asked for while the block was taken and built its heap at address 0 (bugcheck 0x1E at 0x4865C).
-    # Four in-place sites (nfl2k5_show_block_guard: the loader, the show release, the show task and the replay setup, each within its
-    # own extent) skip the show or the replay zones without the block and give back only a block they hold. A retail
-    # crash path: on in every preset and in the 64 MB profile (no allocation).
+    # Five in-place sites (nfl2k5_show_block_guard: the loader, the show release, the show task, the period start and
+    # the replay setup, each within its own extent) skip the show or the replay zones without the block, give back only
+    # a block they hold, and release a show still loaded when a period starts (continued playoff overtime periods).
+    # A retail crash path: on in every preset and in the 64 MB profile (no allocation).
     show_block_guard: bool = False
     # beta 81 review (M1): the compact 64 MB game lists a franchise saved by the standard 128 MB edition as Damaged
     # and offers to delete it. Text only, in place (nfl2k5_edition_save_notes): the Delete confirmation and the load
@@ -9822,7 +9823,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_load_user_team_guard(plan, target, receipt, progress)
     # b780 mc1: the boot save-list type guard, in place (the matcher prologue and its .text padding)
     _apply_save_list_type_guard(plan, target, receipt, progress)
-    # b81 ot-crash: the show block guard, in place (the show loader, its release, the show task and the replay setup)
+    # b81 ot-crash: the show block guard, in place (loader, release, show task, period start, replay setup)
     _apply_show_block_guard(plan, target, receipt, progress)
     # beta 81 review M1: the 64 MB edition's save messages (two strings in place; 64 MB profile only)
     _apply_edition_save_notes(plan, target, receipt, progress)

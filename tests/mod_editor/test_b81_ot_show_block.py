@@ -73,6 +73,9 @@ class Machine:
         0x9F8C0: ("c0_show_end", 0), 0x125CD0: ("c1", 0), 0xA0320: ("c4", 0), 0xA1E90: ("c5_replay_leave", 0),
         0x11BEA0: ("c6a", 0), 0xA5580: ("c6b", 0), 0x5AB60: ("c6c", 0), 0x5F460: ("c6d", 0), 0x67DF0: ("c6e", 0),
         0xA0090: ("c7", 0), 0x136D40: ("c8a", 0), 0x117780: ("c8b", 0),
+        # the period start 0x9F940's callees (ECX = the period where retail passes it) and its tail jump
+        0x8D340: ("p_8d340", 0), 0xB8910: ("p_b8910", 0), 0x1CEED0: ("p_1ceed0", 0), 0x89440: ("p_89440", 0),
+        0x1D3210: ("p_1d3210", 0), 0x100780: ("p_100780", 0), 0x1D1F80: ("p_1d1f80", 0), 0xCECD0: ("p_cecd0", 0),
     }
     RESULTS = {"show_ready": 1, "context_find": 0x01100000, "anim_step": 1}
 
@@ -162,7 +165,7 @@ class Machine:
 class ByteTests(unittest.TestCase):
     def test_every_site_keeps_its_extent(self):
         self.assertEqual([(va, len(before)) for _l, va, before, _a in guard.SITES],
-                         [(0xDA4D0, 0xD0), (0xDA5A0, 0x30), (0xDA5D0, 0x160), (0x83F10, 0x60)])
+                         [(0xDA4D0, 0xD0), (0xDA5A0, 0x30), (0xDA5D0, 0x160), (0x9F940, 0x50), (0x83F10, 0x60)])
         for label, _va, before, after in guard.SITES:
             with self.subTest(site=label):
                 self.assertEqual(len(before), len(after))
@@ -170,7 +173,7 @@ class ByteTests(unittest.TestCase):
     @unittest.skipUnless(shutil.which("as") and shutil.which("ld"), "GNU as and ld are required")
     def test_the_assembly_sources_give_the_installed_bytes(self):
         folder = ROOT / "tools" / "nfl2k5_show_block_guard"
-        for (label, va, before, after), name in zip(guard.SITES, ("loader", "release", "task", "replay")):
+        for (label, va, before, after), name in zip(guard.SITES, ("loader", "release", "task", "period", "replay")):
             with self.subTest(site=label), tempfile.TemporaryDirectory() as temp:
                 obj, out = Path(temp) / "o.o", Path(temp) / "o.bin"
                 subprocess.run(["as", "--32", "-o", str(obj), str(folder / f"{name}.S")], check=True)
@@ -193,7 +196,7 @@ class ShowBlockTests(unittest.TestCase):
 
     def test_presentation_command_14_stays_retail(self):
         # The ruled fallback (b81 ot-crash w10l/w10m): case 9 still loads the postgame show at a continued overtime
-        # period end; the guard only has to survive a second load. Only the four sites and the header digest change.
+        # period end (the period start releases it later). Only the guard's sites and the header digest change.
         from mod_editor.core import nfl2k5_rdata_sites as rdata
         command_14 = rdata.offset_of(self.retail, 0x1F7DF0)
         self.assertEqual(self.guarded[command_14:command_14 + 0xD0], self.retail[command_14:command_14 + 0xD0])
@@ -282,6 +285,53 @@ class ShowBlockTests(unittest.TestCase):
         r.call(guard.LOADER_VA, ecx=1)
         with self.assertRaisesRegex(AssertionError, r"0xda4d0 faulted at 0x4865c"):
             r.call(guard.LOADER_VA, ecx=1)
+
+    # -- the period start ---------------------------------------------------------------------------------------------
+    def test_a_show_still_loaded_at_a_period_start_is_released(self):
+        # b81 ot-crash w12b: a continued overtime period end loads the postgame show (case 9, retail) and it stayed
+        # loaded into play; over further continued periods the game crashed. The period start now releases it, so the
+        # next period end and the real end load their show into a free block.
+        m = Machine(self.guarded)
+        m.block(free=True)
+        m.call(guard.LOADER_VA, ecx=1)                                       # the continued period end's postgame show
+        m.put(0xB73B04, 2)
+        self.assertEqual(m.word(guard.SHOW_BLOCK_FREE), 0)
+        m.calls.clear()
+        m.call(guard.PERIOD_VA, ecx=6)                                       # the next overtime period starts
+        names = [c[0] for c in m.calls]
+        self.assertEqual((m.word(guard.SHOW_BLOCK_FREE), m.word(guard.SHOW_HELD), m.word(guard.SHOW_ACTIVE)), (1, 0, 0))
+        self.assertEqual(names.count("unload_context"), 2)
+        self.assertIn("zone_register", names)
+        self.assertLess(names.index("unload_context"), names.index("p_b8910"))  # before the period's own setup
+        m.calls.clear()
+        m.call(guard.LOADER_VA, ecx=1)                                       # the next postgame load gets the block
+        self.assertEqual(m.word(guard.SHOW_HELD), BLOCK)
+        self.assertEqual([c[0] for c in m.calls].count("load_context"), 2)
+
+    def test_retail_starts_a_period_with_the_show_still_loaded(self):
+        # what the guard changes: retail's period start leaves the block with the show (the w12b state)
+        m = Machine(self.retail)
+        m.block(free=True)
+        m.call(guard.LOADER_VA, ecx=1)
+        m.put(0xB73B04, 2)
+        m.call(guard.PERIOD_VA, ecx=6)
+        self.assertEqual((m.word(guard.SHOW_BLOCK_FREE), m.word(guard.SHOW_ACTIVE)), (0, 1))
+
+    def test_a_period_start_without_a_show_runs_as_retail(self):
+        for period in (1, 2, 3, 5, 6):
+            with self.subTest(period=period):
+                runs = []
+                for xbe in (self.retail, self.guarded):
+                    m = Machine(xbe)
+                    m.block(free=True)
+                    m.call(guard.PERIOD_VA, ecx=period)
+                    runs.append((m.calls, m.globals_(), m.code_writes))
+                self.assertEqual(runs[0], runs[1])
+                names = [c[0] for c in runs[1][0]]
+                self.assertEqual("p_100780" in names, period != 1)
+                self.assertEqual([c[1] for c in runs[1][0] if c[0] == "p_1d1f80"], [0x100])
+                self.assertEqual([c[1] for c in runs[1][0] if c[0] in ("p_b8910", "p_1ceed0", "p_89440", "p_1d3210")],
+                                 [period] * 4)
 
     # -- the show task ------------------------------------------------------------------------------------------------
     def test_the_show_task_is_done_at_once_when_no_show_was_loaded(self):

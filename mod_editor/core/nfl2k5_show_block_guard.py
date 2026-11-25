@@ -48,8 +48,14 @@ What this owner changes (in place: each routine within its own extent and alignm
 * Not changed: presentation command 14's case 9 still loads the postgame show at a continued overtime period end, as
   retail does, so the show plays between the overtime periods. Suppressing it there left the presentation without a
   show at the continued period end or at the real end (b81 ot-crash w10i, w10l: still screens of five to six minutes).
-  When the real end asks for the postgame show again (w5a), the loader above keeps the first show, which still holds
-  the block; when it does not (w10m), the end-of-game menu comes at once.
+* 0x9F940 (start period ECX; 0xB8B30 jumps here for each further overtime period): when a show still holds the block
+  (0xB72ED0, set only by the loader above), it is released first through 0xDA5A0, so play never runs with the block
+  taken. Retail never starts a period with a show loaded (the halftime show ends before the third quarter); a
+  continued overtime period end's postgame show stayed loaded into play, and over several continued periods the
+  game crashed at a later period end (b81 ot-crash w12b: bugcheck 0x1E at 0x30C43 at the end of the third overtime
+  period, after a second postgame load had found the block taken). Every continued period end and the real end now
+  load their postgame show into a free block. Room: ``cmp esi, 1`` before the ``pop esi`` becomes ``dec esi`` and
+  ``mov ecx, 0x100`` becomes ``xor ecx, ecx / mov ch, 1``; the routine fills its extent and padding exactly.
 * 0x83F10: the replay system marks itself active (0xB60A90, read only by its two releases) only once it got the
   block; without it, it registers no zone, and its release (0x83F70) gives nothing back.
 
@@ -63,15 +69,16 @@ from . import nfl2k5_rdata_sites as rdata
 
 OWNER = "nfl2k5_show_block_guard"
 BUILD_CAPTION = "Halftime and postgame show memory guard"
-HELP_TEXT = ("Load the halftime or postgame show only when its memory is free, and keep instant replays out of the "
-             "show's memory. Prevents the crash at the end of a playoff game whose overtime went on into another "
-             "period. A retail crash path: no allocation.")
+HELP_TEXT = ("Load the halftime or postgame show only when its memory is free, release a show still loaded when a "
+             "period starts, and keep instant replays out of the show's memory. Prevents the crash at the end of a "
+             "playoff game whose overtime went on into further periods. A retail crash path: no allocation.")
 
 SHOW_BLOCK, SHOW_BLOCK_FREE = 0x00B9E230, 0x00B9E234
 SHOW_HELD = 0x00B72ED0          # the block the show holds (0 = none); retail writes it only in the loader
 SHOW_ACTIVE = 0x00B72E80        # 1 while a show is loaded
 REPLAY_ACTIVE = 0x00B60A90      # 1 while the replay system holds the block
 LOADER_VA, RELEASE_VA, TASK_VA, REPLAY_VA = 0x000DA4D0, 0x000DA5A0, 0x000DA5D0, 0x00083F10
+PERIOD_VA = 0x0009F940          # start period ECX (0xB8B30 jumps here for each further overtime period)
 TAKE_VA, GIVE_VA, SIZE_VA = 0x000F6070, 0x000F60A0, 0x000F6060
 
 # Exact retail bytes over each routine's whole extent, its alignment padding included; the new bytes are assembled at
@@ -111,6 +118,13 @@ SITES = (
             "8c6e070089c1e87545f5ff518b0d083bb700d91c24e8766e070089c1e84f49f5ffe8da17180068fc3ab70068f83ab700b8003bb7"
             "00e806f5ffffb904000000e8ccb0f8ffb8010000005ec331c940a3f03ab700e82862f9ff8935d03ab7008935083bb700ebde8935"
             "d03ab700ebd6e81d02f8ff518b0dd03ab700d91c24e80e6e070089c1e80749f5ff85c075b75ec390")),
+    ("period start: release a show still loaded (a continued overtime period end's postgame show)", PERIOD_VA,
+        bytes.fromhex(
+            "568bf1e8f8d9feffe8a33bfeff8bcee8bc8f01008bcee875f512008bcee8de9afeff8bcee8a738130083fe015e7405e80c0e0600"
+            "b900010000e80226130033c9e94bf302009090909090909090909090"),
+        bytes.fromhex(
+            "5689cee8f8d9feffe8a33bfeff833dd02eb700007405e845ac030089f1e8ae8f010089f1e867f5120089f1e8d09afeff89f1e899"
+            "3813004e5e7405e8000e060031c9b501e8f725130031c9e940f30200")),
     ("replay system: no zones and no later give-back without the show block", REPLAY_VA,
         bytes.fromhex(
             "f605f008b60001754d56c705900ab60001000000e8372107008bf032c9d1fee86cf5ffff8325f007b600fee830210700568bd0"
