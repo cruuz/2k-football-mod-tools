@@ -30,11 +30,14 @@ VA = space.CPU_TRADES_VA
 SIZE = space.CPU_TRADES_SIZE
 LEVELS = ("retail", "realistic")
 # What the Studio installs for Realistic: the regular season (bit 1), the preseason (bit 2) and losing clubs' veteran
-# sales in season (bit 4, RULINGS R3), at the calibrated chances per buyer and tick (millionths; the trades-all lane's
-# calibration panels set them, stage 8 halved and weighted by week inside the page).
+# sales in season (bit 4, RULINGS R3), at the calibrated chances per package and tick (millionths, stage 8 halved and
+# weighted by week inside the page, both times the pool weight). P1 (4 roots x 3 seasons): our in-season trades 7.75
+# a season at 80,000 and 11.5 at 160,000 (equal pool weights); preseason 6.6 at 300,000 and 10.25 at 600,000. With the
+# calibrated pool weights these chances aim at about 16 in season and 16 to 21 in the preseason, all sources (G-T1,
+# G-T2); the ten-season run (P2) measures them.
 REALISTIC_STAGES = 1 | 2 | 4
-P8_PPM = 250_000
-P7_PPM = 400_000
+P8_PPM = 450_000
+P7_PPM = 1_000_000
 SHADOW_DEFAULT = False
 ERRORS = (ValueError, TypeError, IndexError, KeyError, OverflowError, struct.error)
 LEFT_OUT = ("Computer clubs trading players at every position need the 2026 franchise season (its NFL week 9 trade "

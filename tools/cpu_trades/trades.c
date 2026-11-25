@@ -188,9 +188,12 @@ static const u8 CUT_KEEP[TN_POSITIONS] = {2, 30, 30, 6, 6, 2, 2, 3, 1, 3, 0, 5, 
 /* Stage 8 week weights (stored week 0..8), halved when used: the real deadline rush. */
 static const u8 WEEK_WEIGHT[9] = {1, 1, 1, 1, 2, 2, 2, 4, 8};
 /* Pool weights in 16ths (S1: hold the position mix to the real one), regular season and preseason. */
+/* Calibrated on P1 (trades-all/runs/p1, 4 roots x 3 seasons at two chances): at equal weights our in-season trades
+   were 35-39 percent DB and 5-7 percent WR (real 21 and 21), the preseason's 33 percent OL and 14 percent TE (real 21
+   and 5). Supply, not chance, limits WR (the 4th WR is rarely above the floor), so DB is cut hardest. */
 static const u8 POOL_WEIGHT[2][TN_POSITIONS] = {
-    {0, 0, 0, 16, 16, 16, 16, 16, 0, 10, 0, 16, 5, 5, 5, 16, 16},    /* season: OL about 7 percent, TE 4 */
-    {0, 0, 0, 12, 16, 16, 16, 4, 0, 8, 0, 14, 12, 12, 12, 10, 10},   /* preseason: DB, OL, LB first; RB rare */
+    {0, 0, 0, 16, 4, 4, 4, 13, 0, 4, 0, 9, 2, 2, 2, 9, 9},          /* season */
+    {0, 0, 0, 12, 16, 16, 16, 2, 0, 3, 0, 14, 9, 9, 9, 12, 12},     /* preseason */
 };
 
 struct club {

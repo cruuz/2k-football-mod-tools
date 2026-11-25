@@ -50,8 +50,8 @@ PROBE = 0x3200000
 CUT_MAX = (3, 30, 30, 30, 30, 30, 30, 30, 2, 30, 0, 30, 30, 30, 30, 30, 30)
 CUT_KEEP = (2, 30, 30, 6, 6, 2, 2, 3, 1, 3, 0, 5, 2, 3, 4, 4, 4)
 WEEK_WEIGHT = (1, 1, 1, 1, 2, 2, 2, 4, 8)
-POOL_WEIGHT = ((0, 0, 0, 16, 16, 16, 16, 16, 0, 10, 0, 16, 5, 5, 5, 16, 16),
-               (0, 0, 0, 12, 16, 16, 16, 4, 0, 8, 0, 14, 12, 12, 12, 10, 10))
+POOL_WEIGHT = ((0, 0, 0, 16, 4, 4, 4, 13, 0, 4, 0, 9, 2, 2, 2, 9, 9),
+               (0, 0, 0, 12, 16, 16, 16, 2, 0, 3, 0, 14, 9, 9, 9, 12, 12))
 
 
 def _code():
@@ -967,7 +967,7 @@ class SignedRoundTrip(unittest.TestCase):
         from mod_editor.core import nfl2k5_roster_records as records
         live = self.boot(self.save)
         self.assertEqual([live.get(STAGE), live.get(YEAR)], [8, 2])
-        live.put(WEEK, 3)                                     # the saved franchise ended its season; trade week 3
+        live.put(WEEK, 8)                                     # the saved franchise ended its season; the last open week
         rows, counts = self.tick(live)
         self.assertGreater(counts["executed"], 0)
         self.assertEqual(counts["stories_forced"], counts["executed"])
