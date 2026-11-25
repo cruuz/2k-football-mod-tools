@@ -598,8 +598,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "22a50b66cece72046d84de5ed34f3d04c71c6ac921dba125cf9b08505e71efac",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/build_steps.py": "cd9a81bd7bb797c51e4835b269cc273bfaf2b64f6dd8b415ce795afe71ec4a65",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "7e4f86f71eb49a155173e8ce3f910a9d212ffe214b7655f2847c89758f7016d6",
+        "mod_editor/core/build_steps.py": "c1aeff113127fafd07e2b24cf579b410a99472b605e89667fc8f0a7eecb3bd19",  # b791-h3: step context and optional steps
+        "mod_editor/core/mod_build.py": "70afb6320d68a7718a6f04617a87eaccf8f127a8fbe9d6779823a5930157edcf",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list

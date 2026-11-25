@@ -15091,7 +15091,9 @@
         "tests/mod_editor/test_nfl2k5_stadium_shared_art.py",
         "data/nfl2k5_stadium_shared_art/event_fields.json",
         "tests/mod_editor/test_nfl2k5_event_fields.py",
-        "ev/evidence/field_proof.json"
+        "ev/evidence/field_proof.json",
+        "mod_editor/core/nfl2k5_stadium_welcome.py",
+        "tests/mod_editor/test_nfl2k5_stadium_welcome.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -15107,7 +15109,8 @@
         "Kansas City (s13) is written only with Modern Arrowhead off; its reviewed art fills what the Kansas City folder leaves out, except the sideline yard markers.",
         "The main ROST's stadium records of the twelve venues whose building is still the team's home (data/nfl2k5_modern_venues_2026/names.json): name and display name become the 2026 names; the asset codes (the engine's file-name keys) and every other record stay.",
         "Appearance in game is unwitnessed.",
-        "Residual sponsor items reach two home atlases and 19 special slots through the venue-art pass. Seven plain-type P8 event field logos replace the complete native textures in all nine variants: s31/s39 PRO BOWL / ALL-STARS; s41-s45 SUPER BOWL / CHAMPIONSHIP. s40 stays with the SoFi model and its existing LXI art. The ten board-kit venues have no shared items."
+        "Residual sponsor items reach two home atlases and 19 special slots through the venue-art pass. Seven plain-type P8 event field logos replace the complete native textures in all nine variants: s31/s39 PRO BOWL / ALL-STARS; s41-s45 SUPER BOWL / CHAMPIONSHIP. s40 stays with the SoFi model and its existing LXI art. The ten board-kit venues have no shared items.",
+        "b81 sb-booth: the pregame welcome (key 14039) names each stadium's 2004 building; for each of 18 stadium rows a build renames away from its recorded name (Georgia Dome, Ralph Wilson, Paul Brown, Texas Stadium, Invesco, RCA Dome, Alltel, Pro Player, Metrodome, Louisiana Superdome, Giants/Jets Stadium, Oakland Coliseum, Heinz Field, Edward Jones Dome, Qualcomm, San Francisco, Titans Coliseum) the welcome is skipped (its value in the lines speech index's stadium list becomes 0xFFFF; the list belongs to 14039 alone). Data-driven: rows that keep their retail name keep the welcome."
       ],
       "portme": [
         "Witness home games at two venues by day and one at night (end zones, midfield, field walls, fan banners, boards), and one rain or snow game."

@@ -59,7 +59,7 @@ OPTIONAL_STEPS = frozenset({
     # broadcast art, people on the field, late visual passes
     "espn_marks_2026", "espn_wipes_boards_2026", "kick_meter_2026", "modern_goalposts", "modern_coaches",
     "modern_fans", "modern_officials", "modern_helmets", "menu_icon_orientation", "espn25_fields", "era_ball",
-    "broadcast_greens", "super_bowl_hosts", "super_bowl_booth",
+    "broadcast_greens", "super_bowl_hosts", "super_bowl_booth", "stadium_welcome",
 })
 ROOT = Path(__file__).resolve().parents[2]
 PACK0_SIZE = 193_710_080   # vc_53450030/0 (retail); the schedule template lives in its ROST resource
@@ -9828,6 +9828,18 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             booth_receipt = booth.apply_to_image(target, progress=lambda line: progress(line, 0, 0))
             receipt["steps"].append({"step": "super_bowl_booth", **booth_receipt})
             receipt["result"]["super_bowl_booth"] = booth_receipt["state"]
+    if tt.is_disc_image(target):
+        # sb-booth (b81, audit finding 1): the pregame welcome (key 14039) names each stadium's 2004 building; for every
+        # stadium row this build renamed away from a recorded name, the welcome is skipped instead of naming it wrong.
+        # Data-driven: a disc without the venue renames is left alone.
+        welcome = _core_module("nfl2k5_stadium_welcome")
+        if welcome is None:
+            raise ValueError("the pregame welcome step is unavailable")
+        with _optional(receipt, target, progress, "stadium_welcome"):
+            progress("Pregame welcome for renamed stadiums", 0, 0)
+            welcome_receipt = welcome.apply_to_image(target, progress=lambda line: progress(line, 0, 0))
+            receipt["steps"].append({"step": "stadium_welcome", **welcome_receipt})
+            receipt["result"]["stadium_welcome"] = welcome_receipt["state"]
     if plan.team_number_scale:
         _step("team_number_scale")
         # b776-ns1: after every executable writer (the hair styles' late owner and the Super Bowl hosts' season codes): a late
