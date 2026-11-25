@@ -1019,11 +1019,12 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_audible_legend.py": "a441d13947fd09d7dcd82f79f80f66642e29148484b40fdab8525aee14161b20",  # b780-p3: imported by throw_tuning for the build union
         "mod_editor/core/nfl2k5_lineup_roles.py": "084f75f1f872ebab56b930bd47d8eb72a68dfea2cfe8796e0a6c9835e950de26",  # b780 sub1: the SPECIAL third-down back + FB fallback (late owner)
         "mod_editor/core/nfl2k5_intro_autoskip.py": "a836a0f77a6cdf1402a1d4ec0c66ebe0ac0b5d973c36dcc007b6434dce0b6d95",  # b780-mem1: imported by throw_tuning for the build union
-        "mod_editor/core/nfl2k5_injured_reserve.py": "e463fba60efaf9ccf9cebc1612c1ecf5bd6694e41f84403120e05ff07f88c453",  # b780 IR1: modern injured reserve (late owner, imported by throw_tuning)
-        "mod_editor/core/nfl2k5_injured_reserve_code.py": "6cdccc14900bccbb41d9e1ac00fd776bf964a36faca63c91fafb42b2be70ddb9",  # b780 IR1: its generated runtime template
+        "mod_editor/core/nfl2k5_injured_reserve.py": "7d00fb59f5eaf64200c32a89c438d52508008e2dc9f10ae410268fcf42b473d0",  # b780 IR1: modern injured reserve (late owner, imported by throw_tuning)
+        "mod_editor/core/nfl2k5_injured_reserve_code.py": "9dffb70830473b710ff6e6face3670b3920c83c01bbfb42ca6b73c1acef5461f",  # b780 IR1: its generated runtime template
         "mod_editor/core/nfl2k5_franchise_ownership.py": "f8eabe44463a07f90c2286023562e5809156a6054f6fb8520018360f7352c370",
         "mod_editor/core/nfl2k5_franchise_ownership_code.py": "f407221db98c311cbef6f9626ca2b37f5f4ecbdcc2d5638bead3a57a4bfa93b5",
         "mod_editor/core/nfl2k5_injured_reserve_code_b81_pre_ownership.py": "1e1f421ecfdc6dd9d40de2696d9fa9f146858b0488e46fe31f83d28ef5c4f387",
+        "mod_editor/core/nfl2k5_injured_reserve_code_b81_pre_numbers.py": "2b1bcca499e6321285ccca8c6b06335961c6402f10df01ae4f9a83e58f219629",  # b81 modern numbers: frozen revision before the IR returns' jersey call ("previous")
         "mod_editor/core/nfl2k5_injured_reserve_code_b780.py": "0435e068e930f74a937e075f0f235fc61d951ba7b12873ac2b6fdcfc17f3b78a",
         "mod_editor/core/nfl2k5_injured_reserve_save.py": "cf9111798edbe0fcedfae7cf9894f288223da9f47a315c0f31bfcbfe79d1e6b2",  # b780 IR1: the save extension codec (imported by nfl2k5_franchise_save)
         "mod_editor/core/nfl2k5_preseason_warning.py": "44647523c32291820e98b2dad0a9c44af27fe6bca13626104551dc3647bcc6f2",  # b779-int1: imported by throw_tuning for the build union (693fe63a0)

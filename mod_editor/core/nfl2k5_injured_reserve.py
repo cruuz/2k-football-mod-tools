@@ -41,6 +41,7 @@ import struct
 from . import nfl2k5_injured_reserve_code as runtime
 from . import nfl2k5_injured_reserve_code_b780 as previous_runtime
 from . import nfl2k5_injured_reserve_code_b81_pre_ownership as pre_ownership_runtime
+from . import nfl2k5_injured_reserve_code_b81_pre_numbers as pre_numbers_runtime   # b81 modern numbers: before the returns' jersey call
 from . import nfl2k5_franchise_ownership as ownership
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
@@ -174,7 +175,11 @@ def _recognize(payload: bytes):
     _require(guard == "hooked", "the Pro Bowl guard is missing under the modern install")
     code = image.read(code_va, CODE_SIZE)
     if bank == "applied":
-        revision = runtime if code == code_for(code_va, store_va, load_entry=ownership.load_entry(payload)) else None
+        # b81 modern numbers: every earlier beta 81 install (with the ownership bank) reads "previous" and is updated in
+        # place: the current revision renumbers a returning IR man whose number a club-mate wears.
+        entry = ownership.load_entry(payload)
+        revision = next((rev for rev in (runtime, pre_numbers_runtime)
+                         if code == code_for(code_va, store_va, revision=rev, load_entry=entry)), None)
     else:
         _require(bank in ("retail", "guard"), "foreign franchise ownership installation")
         revision = next((rev for rev in (pre_ownership_runtime, previous_runtime)
@@ -256,7 +261,9 @@ def apply(payload: bytes, mode: str = "modern", *, standard_guard: bool = False)
     payload, receipt = _reserve(payload, REQUESTS)
     rows = allocations(payload)
     code_va, store_va = rows["code"]["va"], rows["data"]["va"]
-    old_code = code_for(code_va, store_va, revision=prior) if prior is not None else None
+    old_code = (code_for(code_va, store_va, revision=prior,
+                         load_entry=ownership.load_entry(payload) if prior is pre_numbers_runtime else 0)
+                if prior is not None else None)
     old_sites = {va: after for _, va, _, after in sites(code_va, revision=prior)} if prior is not None else {}
     payload, ownership_receipt = ownership.apply(payload, store_va)
     current = code_for(code_va, store_va, load_entry=ownership.load_entry(payload))

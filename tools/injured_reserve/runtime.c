@@ -243,6 +243,27 @@ FC u32 ir_find(u8 *p, u8 **club_out) {
     return 1;
 }
 
+/* b81 modern numbers (coordinator 11/25): a player coming back from injured reserve whose number a club-mate wears (on
+   the active list or another IR man) goes through the game's jersey routine 0x2BD260 (keep = 1) before he rejoins the
+   list: with the modern numbers owner he keeps his number when no club-mate wears it, else a free legal number; with
+   the retail routine, the retail walk. Nobody else is renumbered, and a free number is never touched. Retail let an
+   IR man's number be given away (its routine reads only the active list), so the returner made a duplicate. In the
+   rollover the club's IR list is already empty when each man comes back, so there only the active list is compared
+   (with the modern numbers owner no two IR men of a club share a number). */
+#define JERSEY ((void (FC *)(u8 *, u8 *, u32))0x002BD260)
+static __attribute__((noinline)) u32 same_number(const u8 *q, const u8 *p) {
+    return q && q != p && !((*(const u32 *)(q + 0x20) ^ *(const u32 *)(p + 0x20)) & 0x3F8);
+}
+static __attribute__((noinline)) void renumber_if_taken(u8 *club, u32 c, u8 *p) {
+    u8 *const *list = (u8 *const *)club;
+    const struct club *k = &S->c[c];
+    for (u32 i = 0; i < count_of(club) && i < SLOTS; i++) if (same_number(list[i], p)) goto taken;
+    for (u32 i = 0; i < k->n && i < CAP; i++) if (same_number(k->e[i].p, p)) goto taken;
+    return;
+taken:
+    JERSEY(p, club, 1);
+}
+
 static u32 append_room(u8 *club) {
     return ps_on() ? 1 : count_of(club) < SLOTS;                  /* the practice squad's append checks itself */
 }
@@ -258,7 +279,10 @@ void ir_rollover(void) {
         mirror(c);
         for (u32 i = 0; i < n; i++) {
             struct entry e = was[i];
-            if (club && append_room(club) && APPEND(club, e.p)) { S->rollover_back++; continue; }
+            if (club && append_room(club)) {
+                renumber_if_taken(club, c, e.p);                      /* b81 modern numbers: a free number first */
+                if (APPEND(club, e.p)) { S->rollover_back++; continue; }
+            }
             e.base = CARRY;                                           /* no room: stays, eligible at once */
             e.flags = 0;
             k->e[kept++] = e;
@@ -290,6 +314,7 @@ static u32 activate(u32 c, u32 i, u8 *club, u32 how) {
     u8 *p = k->e[i].p;
     u32 limit = STAGE_GET() >= 8 ? ACTIVE : SLOTS;
     if (count_of(club) >= limit || !append_room(club)) return ROSTER_FULL;
+    renumber_if_taken(club, c, p);                                    /* b81 modern numbers: a free number first */
     struct entry keep = k->e[i];
     drop(c, i);
     if (!APPEND(club, p)) {                                           /* refused: he stays where he was */

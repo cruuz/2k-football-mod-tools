@@ -60,6 +60,7 @@ mod_editor/core/nfl2k5_injured_reserve.py
 mod_editor/core/nfl2k5_injured_reserve_code.py
 mod_editor/core/nfl2k5_injured_reserve_code_b780.py
 mod_editor/core/nfl2k5_injured_reserve_code_b81_pre_ownership.py
+mod_editor/core/nfl2k5_injured_reserve_code_b81_pre_numbers.py
 mod_editor/core/nfl2k5_franchise_ownership.py
 mod_editor/core/nfl2k5_franchise_ownership_code.py
 mod_editor/core/nfl2k5_injured_reserve_save.py

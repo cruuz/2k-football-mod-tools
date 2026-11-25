@@ -759,6 +759,108 @@ class NumberZero(unittest.TestCase):
                     self.assertEqual(bind(10 * tens, family, slot)[2], zero[1], (family, slot, tens))
 
 
+# ------------------------------------------------------------------------------------------------ IR returns
+class InjuredReserveReturns(unittest.TestCase):
+    """The duplicate the panel traced (control 2026: 58 of 59 new active-list duplicates): a man on injured reserve keeps
+    his number, the retail jersey routine (active list only) gives it to a signing while he is out, and his return (no
+    jersey call) makes two. The shipped roster already holds one such pair (LAR K #19, Grupe on IR, McManus active), which
+    surfaces at week 9 in every root. Modern IR (this revision) sends a returner whose number a club-mate wears through
+    the jersey routine first; a returner whose number is free keeps it. The game's own code on retail + modern IR and the
+    retail roster (as tests/mod_editor/test_nfl2k5_injured_reserve.GameTests); with and without the numbers owner.
+    Fails on d849800cc (the earlier IR revision)."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_injured_reserve as ir
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes, retail_roster
+        _need_retail()
+        data = retail_bytes()
+        cls.ir = ir
+        cls.with_ir = ir.apply(data, "modern")[0]
+        cls.both = mn.apply(cls.with_ir)[0]
+        cls.body = retail_roster()
+
+    def boot(self, payload):
+        from tests.mod_editor.test_nfl2k5_injured_reserve import GameTests
+        helper = GameTests()
+        helper.payload, helper.body = payload, self.body
+        helper.store_va = self.ir.store_va(payload)
+        m = helper.boot(payload, human=0)
+        return helper, m
+
+    def numbers(self, m, roster):
+        return [(m.get(p + 0x20) >> 3) & 0x7F for p in roster]
+
+    def pair(self, helper, m, c):
+        """Two active club-mates of one position (A goes on IR, then B takes A's number)."""
+        roster = helper.roster(m, c)
+        by = collections.defaultdict(list)
+        for p in roster:
+            by[m.uc.mem_read(p + 0x35, 1)[0]].append(p)
+        pos = next(k for k in (3, 4, 15) if len(by[k]) >= 2)
+        return by[pos][0], by[pos][1]
+
+    def give(self, m, p, number):
+        m.put(p + 0x20, (m.get(p + 0x20) & ~0x3F8) | number << 3)
+
+    def check(self, helper, m, c, a, b, b_number):
+        roster = helper.roster(m, c)
+        self.assertIn(a, roster)
+        nums = self.numbers(m, roster)
+        self.assertEqual(len(nums), len(set(nums)), sorted(nums))         # no two club-mates share a number
+        self.assertEqual((m.get(b + 0x20) >> 3) & 0x7F, b_number)          # the active man keeps his
+        return (m.get(a + 0x20) >> 3) & 0x7F
+
+    def test_the_rollover_return(self):
+        for label, payload in (("modern IR", self.with_ir), ("modern IR + modern numbers", self.both)):
+            with self.subTest(label):
+                helper, m = self.boot(payload)
+                c = 12
+                a, b = self.pair(helper, m, c)
+                own = (m.get(a + 0x20) >> 3) & 0x7F
+                helper.hurt(m, a, 9)
+                helper.week(m)
+                self.assertEqual(helper.store(m, c)[2][0][0], a)
+                self.give(m, b, own)                                       # a signing took his number while he was out
+                m.call(0x246F90, budget=400_000_000)
+                new = self.check(helper, m, c, a, b, own)
+                self.assertNotEqual(new, own)
+                if payload is self.both:
+                    self.assertTrue(mn.legal(m.uc.mem_read(a + 0x35, 1)[0], new))
+
+    def test_the_weekly_return_and_a_free_number_untouched(self):
+        for label, payload in (("modern IR", self.with_ir), ("modern IR + modern numbers", self.both)):
+            for taken in (True, False):
+                with self.subTest(label, taken=taken):
+                    helper, m = self.boot(payload)
+                    c = 5
+                    a, b = self.pair(helper, m, c)
+                    own, b_own = (m.get(a + 0x20) >> 3) & 0x7F, (m.get(b + 0x20) >> 3) & 0x7F
+                    helper.hurt(m, a, 6)
+                    helper.week(m)
+                    self.assertEqual(helper.store(m, c)[2][0][0], a)
+                    if taken:
+                        self.give(m, b, own)
+                    helper.heal(m, a)
+                    helper.play(m, c, 4)
+                    helper.week(m)
+                    self.assertEqual(helper.store(m, c)[0], 0)
+                    new = self.check(helper, m, c, a, b, own if taken else b_own)
+                    self.assertEqual(new != own, taken)                     # renumbered only when a club-mate wears it
+
+    def test_earlier_beta_81_installs_read_previous_and_update_in_place(self):
+        _need(KEPT_XBE, KEPT_XBE_SHA)
+        from mod_editor.core import nfl2k5_injured_reserve_code_b81_pre_numbers as pre
+        built = KEPT_XBE.read_bytes()
+        self.assertEqual(self.ir.status(built), "previous")
+        self.assertIs(self.ir.installed_revision(built), pre)
+        upgraded = self.ir.apply(built, "modern", standard_guard=True)[0]
+        self.assertEqual(self.ir.status(upgraded), "applied")
+        self.assertEqual(self.ir.apply(upgraded, "modern", standard_guard=True)[0], upgraded)
+        both = mn.apply(upgraded)[0]
+        self.assertEqual((self.ir.status(both), mn.status(both)), ("applied", "applied"))
+
+
 # ------------------------------------------------------------------------------------------------ the Studio
 class StudioWiring(unittest.TestCase):
     """T10 (Studio): the plan field, presets, recipes, the full-build step, the in-place route and the Build tab."""

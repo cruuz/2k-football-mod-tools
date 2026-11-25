@@ -225,9 +225,9 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [611, 10, 8, 9, 8, 9]
-            # b81 modern numbers: 611 = 609 + the modern numbers owner and its generated page (loaded by name, imported
-            # by throw_tuning for the cave manifest recorder).
+            [612, 10, 8, 9, 8, 9]
+            # b81 modern numbers: 612 = 609 + the modern numbers owner and its generated page (loaded by name, imported
+            # by throw_tuning for the cave manifest recorder) + modern IR's frozen pre-numbers revision ("previous").
             # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
             # the cave manifest recorder) + Number kerning, whose state the owner reads.
             # b81 integration (qb34 trades merge): 607 = 605 (next lines) + the quarterback trades owner and its generated
