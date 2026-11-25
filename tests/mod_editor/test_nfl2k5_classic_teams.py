@@ -755,6 +755,39 @@ class NativeTests(unittest.TestCase):
         files, receipts = ct.compile_files(_main_roster(), templates, data, spares={}, has_kit=lambda c, s: True)
         return dict(files)[receipts["seamen_2006"]["file"]]
 
+    def test_the_seamen_booth_uses_the_games_generic_announcer_id(self):
+        # b81-seamen (coordinator's ruling 3, 11/25): the Dolphins' 1984 template carries play-by-play id 14 (the booth
+        # said Miami / the Dolphins); "announcer": "generic" writes 99, the id the match handler 0x138200 falls back to.
+        # Nothing else of any file changes, and every other classic team keeps its franchise's id.
+        import copy
+        from mod_editor.core import nfl2k5_roster_records as rr
+        self.assertEqual(self.data.presentation["seamen_2006"]["announcer"], "generic")
+        self.assertEqual([k for k in self.data.order() if "announcer" in self.data.presentation[k]], ["seamen_2006"])
+        with rr._outer_image()(self.retail_dir) as archive:
+            by_id = {x.name_id: x for x in archive.entries}
+            templates = {k: archive.read(by_id[mm.name_id(self.data.teams[k]["template"])].virtual_offset,
+                                         by_id[mm.name_id(self.data.teams[k]["template"])].size)
+                         for k in self.data.order()}
+        plain_data = copy.deepcopy(self.data)
+        del plain_data.presentation["seamen_2006"]["announcer"]
+        files, receipts = ct.compile_files(_main_roster(), templates, self.data, spares={}, has_kit=lambda c, s: True)
+        plain, _ = ct.compile_files(_main_roster(), templates, plain_data, spares={}, has_kit=lambda c, s: True)
+        sea = receipts["seamen_2006"]["file"]
+        for (name, raw), (name2, raw2) in zip(files, plain):
+            self.assertEqual(name, name2)
+            if name != sea:
+                self.assertEqual(raw, raw2, name)
+                continue
+            t = ct._team_offset(raw)
+            self.assertEqual(struct.unpack_from("<H", raw2, t + 0x154)[0], 14)          # the Dolphins' template id
+            self.assertEqual(struct.unpack_from("<H", raw, t + 0x154)[0], ct.GENERIC_ANNOUNCER)
+            self.assertEqual(ct.GENERIC_ANNOUNCER, 99)
+            self.assertEqual([i for i in range(len(raw)) if raw[i] != raw2[i]], [t + 0x154])
+        bad = copy.deepcopy(self.data)
+        bad.presentation["seamen_2006"]["announcer"] = 14
+        with self.assertRaises(ValueError):
+            bad.validate()
+
     def test_the_seamen_tags_change_only_the_two_named_records_footer(self):
         import copy
         from mod_editor.core import nfl2k5_roster_records as rr

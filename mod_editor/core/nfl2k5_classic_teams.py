@@ -158,6 +158,8 @@ class Data:
                         and 0 <= self.presentation[key]["stadium_id"] <= 255, f"{key}: stadium_id")
             if "stadium_info" in self.presentation[key]:
                 require(isinstance(self.presentation[key]["stadium_info"], dict), f"{key}: stadium_info")
+            if "announcer" in self.presentation[key]:
+                require(self.presentation[key]["announcer"] == "generic", f"{key}: announcer")   # b81-seamen
             for tag in self.presentation[key].get("players", ()):
                 _validate_tag(key, tag, rows)
 
@@ -662,11 +664,20 @@ def resolve_kit(choice, code, spares, has_kit):
     return choice, "existing"
 
 
-def finish_file(raw, team, *, identity, stadium_id, style):
-    """Identity, home row id and kit on a compiled team file."""
+# b81-seamen: the team play-by-play id (team +0x154, Finn facts TEAM_AND_HISTORY: the match handler 0x138200 hands it
+# to the speech archive check 0x67390 and uses 99 when the archive has no line for it). A template's id names its
+# franchise in the booth; a team of its own (the Seamen ride the Dolphins' 1984 template, id 14) takes the game's own
+# fallback, 99, so the booth never calls them Miami or the Dolphins.
+GENERIC_ANNOUNCER = 0x63
+
+
+def finish_file(raw, team, *, identity, stadium_id, style, announcer=None):
+    """Identity, home row id, kit and (when named) the play-by-play id on a compiled team file."""
     out = bytearray(raw)
     t = _team_offset(out)
     struct.pack_into("<H", out, t + 0x118, identity)
+    if announcer == "generic":
+        struct.pack_into("<H", out, t + 0x154, GENERIC_ANNOUNCER)
     out[_stadium_offset(out) + 0x7C] = stadium_id
     out[t + 0x192] = style
     if style:
@@ -723,7 +734,8 @@ def compile_files(main, templates, data, *, spares, has_kit, prefix="", one_pool
         code = team["asset_code"]
         style, how = resolve_kit(data.presentation[key]["kit"], code, spares, has_kit)
         stadium_id = data.presentation[key].get("stadium_id", homes[code])
-        raw = finish_file(raw, team, identity=identity, stadium_id=stadium_id, style=style)
+        raw = finish_file(raw, team, identity=identity, stadium_id=stadium_id, style=style,
+                          announcer=data.presentation[key].get("announcer"))
         raw = finish_stadium(raw, data.presentation[key].get("stadium_info"))
         files.append((data.filename(key, prefix), raw))
         receipts[key] = dict(file=data.filename(key, prefix), identity=identity, style=style, kit=how,

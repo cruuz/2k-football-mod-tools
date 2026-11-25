@@ -1492,6 +1492,10 @@ class BuildPanel(QWidget):
         self.classic_teams_check = self._option(
             r, "classic_teams", classic_teams.UI_LABEL, classic_teams.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_classic_crowd as classic_crowd  # b81-seamen
+        self.classic_crowd_check = self._option(
+            r, "classic_crowd", classic_crowd.UI_LABEL, classic_crowd.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self._espn25_plan_cache: tuple[tuple[str, int, int] | None, str] = (None, "")
         from mod_editor.core import nfl2k5_weather as weather
         from mod_editor.core import nfl2k5_weather_haze as haze
@@ -3057,6 +3061,7 @@ class BuildPanel(QWidget):
         gate(self.espn25_rosters_check, "espn25_rosters", needs_image=True)
         gate(self.historic_rosters_2026_check, "historic_rosters_2026", needs_image=True)
         gate(self.classic_teams_check, "classic_teams", needs_image=True)  # b775-ct1
+        gate(self.classic_crowd_check, "classic_crowd", needs_image=True)  # b81-seamen
         self._sync_keep_olb(self.position_pools_check.isChecked())
         gate(self.depth_roles_check, "depth_roles", needs_image=True)
         gate(self.depth_chart_rows_check, "depth_chart_rows", needs_image=True)
@@ -3375,6 +3380,7 @@ class BuildPanel(QWidget):
             "espn25_plan": self.espn25_plan_check, "espn25_rosters": self.espn25_rosters_check,
             "historic_rosters_2026": self.historic_rosters_2026_check,
             "classic_teams": self.classic_teams_check,  # b775-ct1
+            "classic_crowd": self.classic_crowd_check,  # b81-seamen
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
 
@@ -3457,6 +3463,7 @@ class BuildPanel(QWidget):
             espn25_rosters=self.espn25_rosters_check.isChecked(),
             historic_rosters_2026=self.historic_rosters_2026_check.isChecked(),
             classic_teams=self.classic_teams_check.isChecked(),  # b775-ct1
+            classic_crowd=self.classic_crowd_check.isChecked(),  # b81-seamen
             depth_roles=self.depth_roles_check.isChecked(),
             depth_chart_rows=self.depth_chart_rows_check.isChecked(),
             kickoff_alignment=self.kickoff_alignment_check.isChecked(),

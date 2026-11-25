@@ -598,8 +598,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "22a50b66cece72046d84de5ed34f3d04c71c6ac921dba125cf9b08505e71efac",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/build_steps.py": "586a309b5e9323c51d5a6b694fdf5eaccb41118d8e5df480d386c6305a0747c1",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "57f06ff4ff7513282aed02eb700b7825613bd44b6c5bdf8162dfba29be450148",
+        "mod_editor/core/build_steps.py": "7805db04e19e1b0743fcd4b122ab6b8f9a5d0a207c6954efb07c5ad2a8ec2507",  # b791-h3: step context and optional steps
+        "mod_editor/core/mod_build.py": "8db0f6bc83795c776e9afcc20a265073c9b43d00d1fc519b84fe743a3a49441d",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -634,7 +634,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
         "mod_editor/core/nfl2k5_boot_logo.py": "9ee25b1fb49859951ba4780ec2b4a3d71773f7199d5a308338acf51f84bdb257",
         "mod_editor/core/nfl2k5_build_service.py": "cdff75f2ceb2da2ad18d38b7c8f1915193f91075ac2275cb204474765d27dcc7",
-        "mod_editor/core/nfl2k5_build_settings.py": "f1b5f1436efe17c06ad1af6c4352569a1f538872230694509f975bab32ec677e",
+        "mod_editor/core/nfl2k5_build_settings.py": "f8c32f7e25e8d0a7c740195f615773f32a33527f03a07a9b13e8ba3f6aa02f45",
         "mod_editor/core/nfl2k5_build_service.py": "cdff75f2ceb2da2ad18d38b7c8f1915193f91075ac2275cb204474765d27dcc7",
         "mod_editor/core/nfl2k5_midfield_art.py": "da5ff3541f2d7a7674cd3fc715c831379ecbe17c307951ce547ecaf8d3b4ab89",
         "mod_editor/core/nfl2k5_split_endzone_art.py": "c135625db5663efa13f3f446f98e7cfe8d071148f7b892ea378d18a05d845957",
@@ -767,7 +767,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_historic_teams_quick_game.py": "ae5ec8f54426e7faebfec7506baad623ed5950b944146e8bcc7a5080a8614a38",
         "mod_editor/core/nfl2k5_historic_teams_quick_game_code.py": "de1f93902ea8d78c7484344a19118a7e2c23163ee6beac59e76a3d061b09b10c",
         "mod_editor/core/nfl2k5_historic_teams_quick_game_code_b778.py": "3476183ffa3faf91db310ea64fb095dc21437fd20cd77f28e4b0ae23985f5cb5",  # b780 modes2: frozen beta-78 .. v0.9 RC revision
-        "mod_editor/core/nfl2k5_classic_teams.py": "c0464154c6f2fa8e682b7b3b0aa82d18460a638dc4e270506183e32b1248fa5e",
+        "mod_editor/core/nfl2k5_classic_teams.py": "142a4383073874aa877bb138bb850369b6ec15e87c587be22207c53210aefee5",
         "mod_editor/core/nfl2k5_classic_art.py": "7f5682d76b185c090e85b436d87127565b95cc0c19fab3c1d416274ba67eb155",
         "mod_editor/core/nfl2k5_classic_kit_art.py": "8095764ce78cf7f08dbed5244cdccb4a2090a4edaca6508c7f67b7d1ce84ded7",
         "mod_editor/core/nfl2k5_classic_face.py": "3e220a1b888036bf9d53b90e9e318b1033a60b66a6b39e4eab3a8061d41548b9",
@@ -1006,6 +1006,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_qb_trades_code.py": "03a3b7fe4d829e132d782f62fb180567b7bc5bfc581940c7ff8a3ae7eed7ea68",  # b81 qb34 4b: its generated page template
         "mod_editor/core/nfl2k5_helmet_side_numbers.py": "c10876d8ef2c26740f3559706d8678de673730a7e260285ddc35eaafec9e6069",  # b81 helmet-sides: mod_build loads it by name (route 5 = set E)
         "mod_editor/core/nfl2k5_number_kerning.py": "48405334b32b7495399f204a898825531423ed6025e848b51ac0c86891df6902",  # b81 helmet-sides: the owner reads Number kerning's state (same cell addressing)
+        "mod_editor/core/nfl2k5_classic_crowd.py": "98b63c1f59edefb8edb010ff8a5b799eed470f33a6cd02c311993e0a24fb161b",  # b81-seamen: the Seamen's crowd, its fixed page (mod_build loads it by name; throw_tuning imports it for the cave manifest recorder)
+        "mod_editor/core/nfl2k5_modern_fans.py": "2252c602b9ddb4a543836124ffeaacbcea3824a182587cf12357aae3ee307514",  # b81-seamen: the crowd composer refits its spans with the 2026 fans writer
         "mod_editor/core/nfl2k5_sim_realism.py": "81d981f096486cc13f7033e87b014694eacbbee82afeb96412784cb85ff7d77a",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_sim_scoring.py": "7c3681cef1f94638ab0137d966f08d80fcde3dfc335874ae24c5fd9491815f96",  # b81 scoring: in-place simulated kicking, installed by the QB option
         "mod_editor/core/nfl2k5_cpu_kick_aim.py": "cc41567cdd80d6149af319cb2502b62f8d8ff32ea9263b1cdeee388bb9463f99",  # b81 scoring: CPU place-kick aim (imported by throw_tuning)
@@ -1090,7 +1092,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_team_logo_swap.py": "d4e46ff301b3449fc78a145548be2bcbc6104caad80563e1d940ef564fd73c12",
         "mod_editor/core/nfl2k5_text_catalog.py": "514706a38b28a4c7189f49e7601813cd55e16f1b9e81c9c8aa3e92c072e962c9",
         "mod_editor/core/nfl2k5_throw_arc.py": "0fbf33d12fe27a0f940fb7e13f375390b88701c4ccb7e89a1de895d8f66b9c3c",
-        "mod_editor/core/nfl2k5_throw_tuning.py": "94fb359839d7137fddf5e336365905852de79111a6a2f54adc125578dabac714",
+        "mod_editor/core/nfl2k5_throw_tuning.py": "6c25a98be5267dba19b42bdf7678f58017cf588f636baf29fb219c73d3e5d84f",
         "mod_editor/core/nfl2k5_trade_deadline.py": "6d06124670e0c360c9c9600ee7010d8afd239df7cd6352e18dd3762fc72297f4",
         "mod_editor/core/nfl2k5_unif_color_writer.py": "5e950cc404e25c1fbeff7ee5aa2a3fad235115aeddd743e95be6862677a88324",
         "mod_editor/core/nfl2k5_uniform_catalog.py": "e297a2431241c8cc5b0fa38b42ae6ee77771094fafda28f44c98ad47dafe10b5",
@@ -1103,7 +1105,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "86f3b1c7237b548265d5ff2d95de06fad18e9694c0c0f7d9a409ccbc22d61f9f",
+        "mod_editor/core/nfl2k5_xbe_space.py": "7380e8250e0e96f20094641c4d1e3e1ad27fee8ab002834631a21e5c61c1df67",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "b63521c9b17119b87558aff36a5a914d0c3fdd42e96240cf7de20065ead644d7",
@@ -1672,7 +1674,7 @@ class Nfl2k5UnifiedVisualProvider:
         "data/nfl2k5_classic_teams/teams.json": "bbe46a3c6d87a9c7a8d2e1c95a63cece0495a7c069a132fd5253cd9ecca668ca",
         "data/nfl2k5_classic_teams/manifest.json": "93e82081f2036b2196ae78ba9a71df138c205bae8e9269b596a60e2ea588de35",
         "data/nfl2k5_classic_teams/appearance.json": "8b2607c2ceb4e70682991b0980736b3be9726fbdb1fbe440d812a48ef30b711c",
-        "data/nfl2k5_classic_teams/classic.json": "8cb3f94e6b87329f2bfc1b40d1a1eeb49399a77741b63c6a3b251a0aff1ed6cd",
+        "data/nfl2k5_classic_teams/classic.json": "667d431a6ff15ea9d4cb022490a1f34f66993822ee3a4849921c819369b9d40a",
         "data/nfl2k5_classic_teams/honours.json": "9430c474ede71ea59077476a01c051fc2675a032e864e84cf77312d25d52d184",
         "data/nfl2k5_espn25_more_moments.json": "53b5667960d0720ab75d127804f152d9513d681648525b958228db16bf12bafd",
         "data/nfl2k5_espn25_fields/source/nfl_2008.png": "1d0e8fe7f52a9ba3549e415e14c82bc70221a3ff9bfe6d934b4304be100eaec6",

@@ -678,6 +678,7 @@ mod_editor/core/nfl2k5_name_keyboard.py
 mod_editor/core/nfl2k5_historic_teams_quick_game.py
 mod_editor/core/nfl2k5_historic_teams_quick_game_code_b778.py
 mod_editor/core/nfl2k5_classic_teams.py
+mod_editor/core/nfl2k5_classic_crowd.py
 mod_editor/core/nfl2k5_classic_field.py
 mod_editor/core/nfl2k5_classic_face.py
 mod_editor/core/nfl2k5_classic_art.py
@@ -4435,6 +4436,17 @@ data/nfl2k5_classic_teams/cards/mini_a.png
 data/nfl2k5_classic_teams/cards/mini_h.png
 data/nfl2k5_classic_teams/cards/unif_a.png
 data/nfl2k5_classic_teams/cards/unif_h.png
+data/nfl2k5_classic_teams/crowd/boxlogo.png
+data/nfl2k5_classic_teams/crowd/crowdsign.png
+data/nfl2k5_classic_teams/crowd/fanplate.png
+data/nfl2k5_classic_teams/crowd/foamfinger.png
+data/nfl2k5_classic_teams/crowd/hardhat.png
+data/nfl2k5_classic_teams/crowd/head03.png
+data/nfl2k5_classic_teams/crowd/jersey.png
+data/nfl2k5_classic_teams/crowd/puffyjacket.png
+data/nfl2k5_classic_teams/crowd/sweatshirt.png
+data/nfl2k5_classic_teams/crowd/tshirt.png
+data/nfl2k5_classic_teams/crowd/varsity.png
 tests/mod_editor/test_b778_sd3_digits.py
 # b778 ai4: CPU clock management (end-of-half timeouts, automatic coach profiles defer 4th downs and clock windows)
 tests/mod_editor/test_b778_ai4_cpu_clock.py

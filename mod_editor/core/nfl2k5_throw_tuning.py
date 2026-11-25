@@ -154,6 +154,7 @@ from . import nfl2k5_pass_rush_stats as pass_rush_stats_patch  # noqa: F401  b77
 from . import nfl2k5_qb_accuracy as qb_accuracy_patch  # noqa: F401  b777-qb3: late owner, same
 from . import nfl2k5_hair_styles as hair_styles_patch  # noqa: F401  b775-hs1: its late owner is installed by the hair_styles image step; imported here so the cave manifest recorder observes it
 from . import nfl2k5_helmet_side_numbers as helmet_side_numbers_patch  # noqa: F401  b81 helmet-sides: the last late owner, installed by its image step; imported so the cave manifest recorder observes it
+from . import nfl2k5_classic_crowd as classic_crowd_patch  # noqa: F401  b81-seamen: its fixed page, installed by its image step; imported so the cave manifest recorder observes it
 from . import nfl2k5_play_art_routes as play_art_routes_patch  # noqa: F401  b776-pa2: late owner installed by the play_art_routes step; imported so the cave manifest recorder observes it
 from . import nfl2k5_formation_art_spacing as formation_art_spacing_patch  # noqa: F401  b777-tp1: late owner installed with play_art_routes; imported so the cave manifest recorder observes it
 from . import nfl2k5_ball_carrier_ai as ball_carrier_patch  # noqa: F401  b778-ai5: late owner (CPU ball carriers); imported so the cave manifest recorder observes it

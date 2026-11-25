@@ -381,6 +381,72 @@
       "size": 72731,
       "width": 256
     },
+    "data/nfl2k5_classic_teams/crowd/boxlogo.png": {
+      "height": 64,
+      "sha256": "ee5f4ae0aae66a3d9ad8166933132bf2fad25da6220d8f02127f69546b5a4795",
+      "size": 96,
+      "width": 64
+    },
+    "data/nfl2k5_classic_teams/crowd/crowdsign.png": {
+      "height": 128,
+      "sha256": "a4d7c83019ffcc0208e825d73c740b8ddd7a5df38042163ef8b266d7b80e16fc",
+      "size": 10982,
+      "width": 128
+    },
+    "data/nfl2k5_classic_teams/crowd/fanplate.png": {
+      "height": 128,
+      "sha256": "4711d7a91302aa913496c759663cec580d67eb8c5b9b8c2e9741fdaf363a75fe",
+      "size": 3358,
+      "width": 128
+    },
+    "data/nfl2k5_classic_teams/crowd/foamfinger.png": {
+      "height": 64,
+      "sha256": "c534c1f8a71c945190fda46a05b0f1abb140b5e66e98d0f58dc904a453c3bee4",
+      "size": 9337,
+      "width": 128
+    },
+    "data/nfl2k5_classic_teams/crowd/hardhat.png": {
+      "height": 64,
+      "sha256": "581e4bf25c5a8d943f7507e75df15c1ab0e212afbbb7acd1e154a88f4a14dd70",
+      "size": 7758,
+      "width": 128
+    },
+    "data/nfl2k5_classic_teams/crowd/head03.png": {
+      "height": 128,
+      "sha256": "35116c124bd6f2f6d150af4fc7a1514ab0ef6f8ffb900db22f76e83ee71ab16d",
+      "size": 7181,
+      "width": 128
+    },
+    "data/nfl2k5_classic_teams/crowd/jersey.png": {
+      "height": 128,
+      "sha256": "abd8e982407c8e70ab8ef07609d56aae3288db75120aa0363ccb86c5338aa23e",
+      "size": 33068,
+      "width": 256
+    },
+    "data/nfl2k5_classic_teams/crowd/puffyjacket.png": {
+      "height": 128,
+      "sha256": "1fe6a03c7acff191f67db0cf44b42c5f2d6ba277c83a8f24ac3befa233e51d1d",
+      "size": 37358,
+      "width": 256
+    },
+    "data/nfl2k5_classic_teams/crowd/sweatshirt.png": {
+      "height": 128,
+      "sha256": "a79d96dd3a47071206b849ec7aa6ea77c2adc983d1185c1b216d8c11c8dd7ace",
+      "size": 24186,
+      "width": 256
+    },
+    "data/nfl2k5_classic_teams/crowd/tshirt.png": {
+      "height": 128,
+      "sha256": "fb3d8c5f3ce4a91acd38a3314e32187479e9e52449ca8027e71cb332c2aebd59",
+      "size": 25878,
+      "width": 256
+    },
+    "data/nfl2k5_classic_teams/crowd/varsity.png": {
+      "height": 128,
+      "sha256": "bec82f07a8aacafe79d28fb1fde37d3cf8dac4fc94fccec613a08fc2a8d9b930",
+      "size": 37741,
+      "width": 256
+    },
     "data/nfl2k5_classic_teams/face/f0304.png": {
       "height": 256,
       "sha256": "fd5caf7ad340c270b290f5af3e53e00dde10087eee1ac68e4bf422e4f93a3344",

@@ -225,7 +225,9 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [611, 10, 8, 9, 8, 9]
+            [613, 10, 8, 9, 8, 9]
+            # b81-seamen: 613 = 611 + the classic crowd owner (its fixed page; throw_tuning imports it for the cave
+            # manifest recorder) and the 2026 fans writer it refits its spans with.
             # b81-seamen: 611 = 609 + the frozen revision 18 scorebug engine (the owner's recognition of 18 and 17) and
             # the abilities editor (its tier capacities check the classic teams' authored player tags).
             # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
@@ -931,7 +933,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_classic_teams/teams.json": "bbe46a3c6d87a9c7a8d2e1c95a63cece0495a7c069a132fd5253cd9ecca668ca",
                 "data/nfl2k5_classic_teams/manifest.json": "93e82081f2036b2196ae78ba9a71df138c205bae8e9269b596a60e2ea588de35",
                 "data/nfl2k5_classic_teams/appearance.json": "8b2607c2ceb4e70682991b0980736b3be9726fbdb1fbe440d812a48ef30b711c",
-                "data/nfl2k5_classic_teams/classic.json": "8cb3f94e6b87329f2bfc1b40d1a1eeb49399a77741b63c6a3b251a0aff1ed6cd",
+                "data/nfl2k5_classic_teams/classic.json": "667d431a6ff15ea9d4cb022490a1f34f66993822ee3a4849921c819369b9d40a",
                 "data/nfl2k5_classic_teams/honours.json": "9430c474ede71ea59077476a01c051fc2675a032e864e84cf77312d25d52d184",
                 "data/nfl2k5_espn25_more_moments.json": "53b5667960d0720ab75d127804f152d9513d681648525b958228db16bf12bafd",
                 "data/nfl2k5_espn25_fields/source/nfl_2008.png": "1d0e8fe7f52a9ba3549e415e14c82bc70221a3ff9bfe6d934b4304be100eaec6",

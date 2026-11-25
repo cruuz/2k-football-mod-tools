@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "about": "ct1 hand decisions per classic team (2026-10-17): kit = 'modern' (style 0, the franchise's current kit), 'retail' (the franchise's historic spare: the retail 2004 kit, nfl2k5_historic_styles), an existing style index, or {prefer, fallback}; stadium = 'franchise' (the main roster's home venue row of that franchise). The owner, 10/17: reuse an existing kit or stadium wherever the real one exists in the game. quality: match / close / stand-in. players (optional, b81-seamen): authored tags for named players, each {name (first and last as the roster CSV has them), star (the star tag, record +0x53 bit 0), ability_tier (0..3: Unranked, Star, Superstar, X-Factor), abilities (stored move flags, nfl2k5_roster_records.ABILITY_BITS names, at most the tier's capacity), why}; set on the compiled team file, nothing else of the record changes. Uniform references: Gridiron Uniform Database season pages (reference only, never ship).",
+ "about": "ct1 hand decisions per classic team (2026-10-17): kit = 'modern' (style 0, the franchise's current kit), 'retail' (the franchise's historic spare: the retail 2004 kit, nfl2k5_historic_styles), an existing style index, or {prefer, fallback}; stadium = 'franchise' (the main roster's home venue row of that franchise). The owner, 10/17: reuse an existing kit or stadium wherever the real one exists in the game. quality: match / close / stand-in. announcer (optional, b81-seamen): 'generic' writes the game's own fallback play-by-play id 99 at team +0x154 (match handler 0x138200 uses 99 when the speech archive has no line for an id), for a team of its own riding a franchise template (the Seamen: the Dolphins' 1984 template carries 14, so the booth said Miami and the Dolphins). players (optional, b81-seamen): authored tags for named players, each {name (first and last as the roster CSV has them), star (the star tag, record +0x53 bit 0), ability_tier (0..3: Unranked, Star, Superstar, X-Factor), abilities (stored move flags, nfl2k5_roster_records.ABILITY_BITS names, at most the tier's capacity), why}; set on the compiled team file, nothing else of the record changes. Uniform references: Gridiron Uniform Database season pages (reference only, never ship).",
  "teams": {
   "bears_2006": {
    "kit": "modern",
@@ -192,6 +192,7 @@
    "stadium": "franchise",
    "stadium_note": "ESPN Stadium (s48, asset 48): a neutral venue no NFL team uses; its field scene carries the authored Seamen end zones and midfield anchor.",
    "stadium_id": 48,
+   "announcer": "generic",
    "stadium_info": {
     "asset": "s48",
     "name": "ESPN Stadium",
