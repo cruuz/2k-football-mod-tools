@@ -648,6 +648,40 @@ class CpuTradesImage(unittest.TestCase):
         self.assertEqual([(r["buyer"], r["seller"], r["player"]) for r in first],
                          [(b, s, (p - y.table) // 0x54) for b, s, p, _pool, _h in packages])
 
+    def test_a_sale_from_a_full_chart_fills_row_6_from_the_overflow(self):
+        """S9 with men sharing the overflow row 7 (a deep pool, or a camp roster): closing the seller's gap empties row
+        6; the best of the overflow men takes it, so the rows stay 0..6 then 7 (P1 2027: TT.rows at a camp DT sale)."""
+        tn = _tn()
+        x = self.fresh()
+        x.install(7)
+        x.run()
+        sales = [r for r in self.rows(page=x.page()) if r["result"] == 1 and not r["flags"] & 8]
+        self.assertTrue(sales)
+        sale = sales[0]
+        y = self.fresh()
+        p = y.table + 0x54 * sale["player"]
+        code = y.b(p + 0x35)
+        mates = [o for o in y.roster(sale["seller"]) if y.pool(o) == sale["position"]]
+        # deepen the pool to 9: the seller's last-row men of its deepest other pools play this position (rated low)
+        others = sorted((o for o in y.roster(sale["seller"]) if y.pool(o) not in (None, 0, 1, 2, sale["position"])),
+                        key=lambda o: -_tn().row(y.rec(o)))
+        for o in others[:max(0, 9 - len(mates))]:
+            y.m.uc.mem_write(o + 0x35, bytes([code]))
+            mates.append(o)
+        old = {o: tn.row(y.rec(o)) for o in mates}
+        order = sorted(mates, key=lambda o: (old[o], mates.index(o)))
+        order.remove(p)
+        order.insert(min(old[p], 6), p)                              # his own row (below 7), the rest 0..6 then 7
+        for k, o in enumerate(order):
+            word = y.h(o + 0x28)
+            y.m.uc.mem_write(o + 0x28, struct.pack("<H", (word & ~0x1C00) | min(k, 7) << 10))
+        y.install(7)
+        y.run()
+        if sale["player"] not in [r["player"] for r in _code().events(y.page()) if r["flags"] & 0x40 and r["result"] == 1]:
+            self.skipTest("the edited chart changed the decision")
+        rows = sorted(tn.row(y.rec(o)) for o in y.roster(sale["seller"]) if y.pool(o) == sale["position"])
+        self.assertEqual(rows, [min(k, 7) for k in range(len(rows))])
+
     def test_shadow_writes_nothing_and_decides_the_same(self):
         x, m = self.x, self.x.m
         x.install(7, shadow=True)

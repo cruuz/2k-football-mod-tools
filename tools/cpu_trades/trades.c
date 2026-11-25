@@ -498,13 +498,22 @@ static void set_row(u32 p, u32 r) {
 /* S9 after an executed trade, at the traded pool only (a league-wide re-sort would also undo the quarterback room's
    pre-game holds): the seller closes the row the man left; the buyer seats him by rating among its men (a rank-locked
    man keeps his place ahead of him). */
-/* A man left `team` from `row` at `pool` (traded or released): the men behind him move up one row. */
+/* A man left `team` from `row` at `pool` (traded or released): the men behind him move up one row, and when that
+   empties row 6 while men share the overflow row 7 (a camp roster), the best of them takes row 6. */
 static void close_gap(u32 team, u32 pool, u32 row) {
-    u32 n = B(team + 0x11C);
+    u32 n = B(team + 0x11C), six = 0, best = 0, top = 0;
     for (u32 j = 0; j < n && j < SLOTS; j++) {
-        u32 o = D(team + 4 * j), ro;
-        if (o && pool_of(o) == pool && (ro = row_of(o)) > row && ro < 7) set_row(o, ro - 1);
+        u32 o = D(team + 4 * j), ro, r;
+        if (!o || pool_of(o) != pool) continue;
+        ro = row_of(o);
+        if (ro > row && ro < 7) set_row(o, --ro);
+        if (ro == 6) six = 1;
+        if (ro == 7 && (r = rating(o) + 1) > top) {
+            top = r;
+            best = o;
+        }
     }
+    if (row < 7 && !six && best) set_row(best, 6);
 }
 
 static void repair(u32 seller, u32 buyer, u32 qs, u32 old_row) {
