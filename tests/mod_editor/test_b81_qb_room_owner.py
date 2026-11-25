@@ -38,7 +38,9 @@ class AllocatorPlacementTests(unittest.TestCase):
         self.assertEqual(space.QB_ROOM_REQUEST, ROOM)
         # C20: the trades page (fixed right after the room) follows the room; b81 helmet sides (review 11/22): the
         # side-numbers page, fixed right after the trades page, is the last late owner.
-        self.assertEqual(space.LATE_OWNERS[-3:], (ROOM[0], space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER))
+        # b81 game outcomes: its fixed page (0x1534000) is appended after them.
+        self.assertEqual(space.LATE_OWNERS[-4:], (ROOM[0], space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER,
+                                                  space.SIM_OUTCOMES_OWNER))
         self.assertIn(ROOM, space.dormant_union())
 
     def test_the_room_alone_and_in_the_dormant_union_sits_at_its_fixed_pages(self):
@@ -77,7 +79,9 @@ class AllocatorPlacementTests(unittest.TestCase):
             with self.subTest(room=ROOM in requests):
                 rows = space.plan(requests)["allocations"]
                 placed = next(r for r in rows if r["owner"] == straddle[0])
-                self.assertEqual(placed["va"], space.FIXED_SPAN_END)
+                # b81 game outcomes: 128 KB from FIXED_SPAN_END would cover the outcomes page (0x1534000), so the
+                # straddler steps over that page too
+                self.assertEqual(placed["va"], space.SIM_OUTCOMES_VA + space.SIM_OUTCOMES_SIZE)
                 self.assertEqual(space.FIXED_SPAN_END, 0x152E000)
                 for row in rows:
                     if row["owner"] != ROOM[0]:
@@ -88,7 +92,8 @@ class AllocatorPlacementTests(unittest.TestCase):
         filler = ("aa_synthetic_filler", "code", 0x1528000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
         bumped = ("ab_synthetic_bumped", "code", 0x20000, 16)
         rows = space.plan([filler, bumped, ownership])["allocations"]
-        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x152E000)   # past trades and side numbers
+        # past trades and side numbers, and (b81 game outcomes) the outcomes page its 128 KB would cover
+        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], space.SIM_OUTCOMES_VA + space.SIM_OUTCOMES_SIZE)
 
     def test_a_foreign_room_request_is_refused(self):
         for request in (("nfl2k5_qb_room", "code", 0x2000, 0x1000), ("nfl2k5_qb_room", "data", 0x3000, 0x1000)):
@@ -159,7 +164,8 @@ class OwnerTests(unittest.TestCase):
         # b81 integration merge of qb34 (scoring + stability revision 4): f3a22805 (was 501b8412 at 5854e5144, 9f435b38
         # for slice 1 alone)
         # combined calibration levers (merge queue item 15: QB_CHANCE_SCALE 1.06, breakaway stop 68): 68c9db2e (was f3a22805)
-        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "68c9db2e")
+        # b81 game outcomes (QB option revision 5: the kicker and punter rows): 51e9583f (was 68c9db2e)
+        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "51e9583f")
         self.assertEqual(room.read_settings(self.slice1), {"status": "retail", "mode": "retail", "reserved": False,
                                                            "va": None})
         settings = room.read_settings(self.applied)
@@ -477,17 +483,21 @@ class PreviousRevisionTests(unittest.TestCase):
     # Combined calibration levers (merge queue item 15): re-pinned once more; every rebuild differs from its
     # practice-squad-merge rebuild exactly where the injury option's executable differs (the QB bank's tables for
     # QB_CHANCE_SCALE 1.06, the scoring site's breakaway stop 68, the registry hash and digests).
-    D1D2_SHA = "5d471c14062b4080b33cbf699b8779cf307723b17fbd8ddae37f222a6c676e6b"
-    REVIEW_67_SHA = "08087d170426ec914119a7b4a32b4f1e47239152e1d6b759c99902bdca74a94a"
-    REVIEW_64_SHA = "c22d95b64fa9f01c0ebb3c1d0c0ccf796c2b493b8ea357d7cf526c41be2574ae"
-    FLOOR_SHA = "55e522337d0e11bbe7541b8fc23b16c0273a1656b78d4ff23ec6b00521883540"
-    FLOOR_EMPTY_SHA = "8652889ed5c32e064a6c8818b3c70dabaa39dcb1bd627afa2a59ee4ae1df790f"
-    STAGE_3A_SHA = "5b3c065a543ea4cc7eb4e56c24709d9c5706406824db7c48e6cf1bdf2d863477"
-    STAGE_3A_EMPTY_SHA = "0af4c40fa91dc267ad3f07c92f6d3fe354b49f9f04dd0b3ea0e4c78d494159df"
+    # b81 game outcomes (the QB option's revision 5, kicker and punter rows): re-pinned once more; the injury option's
+    # executable differs from revision 4's only in the QB bank (0x1524000), the section digests, the registry hash and the
+    # scale directory seal (measured on bda1e4a4: 1,257 bank bytes and 102 header/seal bytes). The revision 4 values were
+    # D1D2 5d471c14, REVIEW_67 08087d17, REVIEW_64 c22d95b6, FLOOR 55e52233, FLOOR_EMPTY 8652889e, STAGE_3A 5b3c065a, STAGE_3A_EMPTY 0af4c40f, HANDOVER_67 61724296, HANDOVER_64 58e85935.
+    D1D2_SHA = "7f91808b2f8af989207ef2a5f30d7bcff850b922d1f24e02dd0f610a3b2958c7"
+    REVIEW_67_SHA = "7b2c524da2ffe7ce95eaae369a422b258c4e840186f7fa14d2ba45fae6123801"
+    REVIEW_64_SHA = "1cf74bb9a18d5cde1fb7d0c8a8ca80eb5c34be3fe08b2ad99ba45634136b6505"
+    FLOOR_SHA = "fb052657035ab4d7ca7f7d09b4f0d593e87765727c9b78e05bc15eaf1087b2dd"
+    FLOOR_EMPTY_SHA = "54de2406cfd490cddaa46fef5d3c5f34a628ef5075e727add12c6a2fbb3b7efd"
+    STAGE_3A_SHA = "7613c186f958d4ada1a88d77d8be3da5baf155f809109a5f2cda96f2c01fa474"
+    STAGE_3A_EMPTY_SHA = "6df6e4be24ee9ac61e0efe732feae38bd434ade38157e44b6fc302b9caff2713"
     # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64)
     # on slice 1 alone; rebuilt here at the merged head.
-    HANDOVER_67_SHA = "61724296e024ce01289635e1a93b7b5c46294098e391ed43bc272d4557fcfa42"
-    HANDOVER_64_SHA = "58e859356c3eebb935f1c0b40375b742744211214cff1e4607b58cf35ef741c0"
+    HANDOVER_67_SHA = "aa1970a1c1e52ffe0fc885f30ffec9f8edf00a36a5a764565fc98862884435dd"
+    HANDOVER_64_SHA = "3aa356f534a831ded89c8e9d602750c53f987de893a31a739aa452396664a19b"
 
     @classmethod
     def setUpClass(cls):

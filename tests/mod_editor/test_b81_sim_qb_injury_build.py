@@ -103,13 +103,16 @@ class ProjectSettings(unittest.TestCase):
                     from mod_editor.core import nfl2k5_cpu_kick_aim as aim
                     from mod_editor.core import nfl2k5_history_pool as history
                     self.assertEqual(history.status(before), "previous")
-                    result = history.apply(aim.apply(current)[0])[0]
+                    # b81 game outcomes: and the simulated-outcomes page that rides with the realism owner
+                    paged, outcomes = mod_build._sim_outcomes_with_realism(current)
+                    result = history.apply(aim.apply(paged)[0])[0]
                     self.assertEqual(receipt["sim_qb_source_update"], {
                         "source_sha256": digest, "result_sha256": hashlib.sha256(result).hexdigest(),
                         "source_simulator": source_state, "simulator_upgraded": source_state == "legacy",
                         "settings": medical.read_settings(current), "pass_protection_upgraded": True,
                         "history_pool_upgraded": True,
                         "settings": medical.read_settings(current),
+                        "sim_outcomes": {k: v for k, v in outcomes.items() if k != "reservations"},
                         "stability_reference": {"source": "disc roster", "roster_sha256": roster,
                                                 "starters": [list(row) for row in code.STABILITY_CALIBRATION],
                                                 "reference": list(code.STABILITY_REFERENCE)},
@@ -335,8 +338,9 @@ class StudioControls(unittest.TestCase):
         self.assertEqual(panel.plan().sim_qb_injuries, "retail")
         self.assertTrue(panel.has_work())
         self.assertIn("Simulated injuries (Retail)", panel.selected_labels())
-        # An earlier revision (slices 1, 2 and 3) at the same mode is still a change: Build upgrades it in place.
-        for revision, labelled in ((1, True), (2, True), (3, True), (4, False)):
+        # An earlier revision (slices 1, 2 and 3, and revision 4 since the kicker and punter rows) at the same mode is
+        # still a change: Build upgrades it in place.
+        for revision, labelled in ((1, True), (2, True), (3, True), (4, True), (5, False)):
             with self.subTest(installed_revision=revision):
                 panel.apply_state({**self.retail_state, "sim_qb_injuries": "applied", "sim_qb_injury_settings": {
                     "status": "applied", "mode": "realistic", "custom_rate": .310, "revision": revision}})

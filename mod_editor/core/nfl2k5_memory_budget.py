@@ -327,7 +327,10 @@ team_sleeves the1wam_lineman_rating throw trophy_room weather_haze weekly_prep w
 weekly_progression widescreen xemu_display_list_fix zone_drop_cap""".split())
 RC_VALUES = {"momentum": 50, "momentum_collision_level": 50, "cpu_money_downs": "modern2", "cpu_scrambles": "modern",
              "team_number_scale": {"13A0": 1.1, "13H0": 1.1}, "modern_venues_2026": "2026 venue art",
-             "roster_capacity": True, "roster_draft_pick_ownership": True, "roster_hback_roles": True}
+             "roster_capacity": True, "roster_draft_pick_ownership": True, "roster_hback_roles": True,
+             # b81 game outcomes: the RC predates the simulated-outcomes page that now rides with sim_realism (a pseudo
+             # field: a plan without it, a Studio build of this release, gets the page with Simulated season realism)
+             "sim_outcomes_page": False}
 
 # Options a 64 MB build cannot have. A plan field, except roster_capacity: roster edits whose document asks for the
 # capacity arena (free_agent_capacity; see roster_capacity_records).
@@ -502,7 +505,9 @@ def owners(opts: dict, target_mb: int = 64) -> list:
               and (opts.get("qb_room") is not None or (target_mb == 128 and qb_room_needs_met(opts.get))))
     if (target_mb == 128 and injuries) or piece3:
         out.append("qb_room")
-    if on(opts, "sim_realism"):     # b81 game outcomes: the simulated-outcomes page rides with Simulated season realism
+    # b81 game outcomes: the simulated-outcomes page rides with Simulated season realism (not on the v0.9 RC or v0.8,
+    # whose anchors predate it: their plans carry sim_outcomes_page False)
+    if on(opts, "sim_realism") and opts.get("sim_outcomes_page", True) is not False:
         out.append("sim_outcomes")
     return out + list(INFRASTRUCTURE) if out else out
 
@@ -791,7 +796,7 @@ PROFILE_64_TRIM = ("scorebug", "scorebug_runtime", "hair_styles", "kick_meter_20
 # (nfl2k5_edition_save_notes: two strings in place). Only this profile turns it on; the presets leave it off.
 PROFILE_64_ON = ("history_pool", "load_user_team_guard", "save_list_type_guard", "edition_save_notes")
 PSEUDO_FIELDS = frozenset(("roster_capacity", "roster_draft_pick_ownership", "roster_hback_roles",
-                           "cpu_money_downs_modern2"))
+                           "cpu_money_downs_modern2", "sim_outcomes_page"))
 PROFILE_64_ROSTER = ("roster edits at retail capacity without the draft_pick_ownership and hback_roles sections: "
                      "tools/nfl2k5_roster_retail_fit.py fit --drop-xbe-sections")
 

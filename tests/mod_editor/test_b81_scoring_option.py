@@ -164,7 +164,10 @@ class InPlaceRoutes(unittest.TestCase):
                 # fb-targets) the disc's season realism from before the fullback target rule, beneath the QB option
                 from mod_editor.core import nfl2k5_sim_realism as realism
                 upgraded = pressure.apply(realism.apply(source)[0])[0] if mode == "realistic" else source
-                expected = aim.apply(qb.apply(upgraded, mode)[0])[0]
+                expected = qb.apply(upgraded, mode)[0]
+                if plan.sim_realism:      # b81 game outcomes: the outcomes page rides with the realism owner
+                    expected = mod_build._sim_outcomes_with_realism(expected)[0]
+                expected = aim.apply(expected)[0]
                 # b81 history-pool: the copy also carries this release's career history pool (the disc has v0.9's)
                 expected = mod_build._history_pool_upgrade(expected)[0]
                 with self.subTest(mode=mode):

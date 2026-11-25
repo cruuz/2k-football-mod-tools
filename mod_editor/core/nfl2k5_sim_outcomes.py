@@ -51,6 +51,13 @@ The changes:
   the play: different -> the game is over, level -> overtime (period 4, its kickoff, as ``0x106450``).  A regulation
   end before a play keeps the retail branch.  The tie roll's setup clears the flag for every game.
 
+* **Goal-line runs** (the same ``0x106480`` entry): a run or scramble (the gain calls returning to ``0x107D12`` and
+  ``0x1085C2``) snapped inside the 5 whose gain reaches the goal line scores only with probability ``GOAL_LINE_KEEP``
+  for its distance (the 1, the 2, the 3, the 4-5; a two-point try from the 2 too). Otherwise the ball stops at the 1
+  (from the 1: no gain). The draw is a private hash of the fixture's seed and a play counter, never the game's
+  generators. Measured before (40 stored seasons): 84/76/67% of runs scored from the 1/2/3 against the NFL's
+  58/45/36%, and two-point tries converted 72% (47.5%).
+
 One fixed page at ``SIM_OUTCOMES_VA`` (``nfl2k5_xbe_space``), placed like the quarterback pages; every site is pinned
 to its retail bytes; Retail (``remove``) restores the sites and empties the page.
 """
@@ -70,14 +77,24 @@ HELP_TEXT = (
     "of games, as in the modern NFL), clubs have better and worse days, CPU coaches use the same modern two-point chart "
     "in simulated games as in played ones, a regular-season game still tied after its 10-minute overtime ends as a tie "
     "in every season, not only the first, and a game decided on the last play of regulation ends there instead of going "
-    "on into an overtime. Played games, ratings and rosters are unchanged.")
+    "on into an overtime, and runs from the goal line score about as often as in the NFL. Played games, ratings and "
+    "rosters are unchanged.")
 CODE_SIZE = 0x1000
-PLACEHOLDER_VA = 0x1531000      # nfl2k5_xbe_space.SIM_OUTCOMES_VA (checked in apply)
+PLACEHOLDER_VA = 0x1534000      # nfl2k5_xbe_space.SIM_OUTCOMES_VA (checked in apply)
 
 # ---- calibration levers (game-outcomes DESIGN.txt; fitted on the calibration roots, frozen before the confirmation) --
-HOME_EDGE = 0.045               # home gains x (1 + edge), away gains x (1 - edge)
-FORM_SIGMA = 0.08               # SD of the per-game form factor
+HOME_EDGE = 0.027               # home gains x (1 + edge), away gains x (1 - edge); calibration round 1 (below)
+FORM_SIGMA = 0.10               # SD of the per-game form factor; calibration round 1 (below)
 M_LOW, M_HIGH = 0.70, 1.30      # clamp of the game factor
+# Chance that a goal-line run's touchdown stands, by distance at the snap (the 1, the 2, the 3, the 4-5): real / sim per
+# play rate (DESIGN problem 3: 57.7/84.0, 45.2/76.1, 36.3/66.9, 24.9/44.9). Calibration round 1 kept them: runs scored
+# 58-59/44-46/37-41% from the 1/2/3 (NFL 58/45/36) and two-point tries converted 44-46% (47.5).
+# Calibration round 1 (2501-2502 x 2 seasons; control fb-targets 0c2729b9, 51.2% home wins, +0.03 points): home edge
+# 0.045 gave 60.0% and +3.04, 0.07 gave 61.5% and +4.2 (game-outcomes STATUS.txt). 0.027 aims at 54-55% and +1.7 from the
+# 40-season baseline 49.4% / -0.15 (real 53.95% / +2.06). Form 0.08 and 0.12 bracket the real residual margin SD (12.2).
+GOAL_LINE_KEEP = (0.69, 0.59, 0.54, 0.55)
+GOAL_LINE_BOUNDS = (1.5, 2.5, 3.5, 5.5)    # yards to goal at the snap: the 1, the 2, the 3, the 4-5
+GOAL_LINE_RUN_RETURNS = (0x00107D12, 0x001085C2)   # the run and scramble calls of 0x106480 (DESIGN problem 3)
 IRWIN_HALL_MEAN = 510.0         # four bytes: mean 4 x 127.5
 IRWIN_HALL_SD = 147.80          # four bytes: sqrt(4 x (256^2 - 1) / 12)
 
@@ -116,15 +133,18 @@ FN_DISPATCH = 0x00105020
 SIM_STATE = 0x00A971B8
 
 # ---- page layout --------------------------------------------------------------------------------------------------------
-COMMIT_OFF, TRY_OFF, TIES_OFF, REG_OFF = 0x000, 0x200, 0x300, 0x380
+COMMIT_OFF, TRY_OFF, TIES_OFF, REG_OFF, GOAL_OFF = 0x000, 0x200, 0x300, 0x380, 0x480
 DATA_OFF = 0xE00
 MARK = b"SIMOUT1\0"
 D_MARK, D_HOME_UP, D_HOME_DOWN, D_FORM_UNIT, D_LOW, D_HIGH, D_MEAN, D_C90 = 0x00, 0x08, 0x0C, 0x10, 0x14, 0x18, 0x1C, 0x20
 D_THRESHOLDS = 0x24             # 33 bytes: margins -16..+16
+D_GOAL_BOUNDS, D_GOAL_KEEP = 0x48, 0x58   # 4 floats; 4 dwords (the keep chance x 65536)
 STATE_OFF = 0xE80
 S_KEY, S_FACTORS, S_SEED, S_FIXTURES, S_SCALED, S_TMP, S_PENDING = 0x00, 0x04, 0x0C, 0x10, 0x14, 0x18, 0x1C
 S_DEFERRED, S_FINAL, S_OVERTIME = 0x20, 0x24, 0x28   # counters: deferred regulation ends, decided final, overtime
+S_GOAL_SEEN, S_GOAL_STOPPED = 0x2C, 0x30            # goal-line runs drawn, and stopped at the 1
 HOME_TAG, AWAY_TAG = 0x484F4D45, 0x41574159          # "HOME", "AWAY"
+GOAL_TAG = 0x474F414C                                # "GOAL"
 GOLDEN = 0x9E3779B1
 
 
@@ -163,8 +183,16 @@ def two_point_thresholds() -> bytes:
 def _commit_code(a: _Asm, page: int) -> None:
     data, state = page + DATA_OFF, page + STATE_OFF
     a.label("commit")
-    a.b("833d" + _u32(SIM_KIND) + "00")             # cmp dword [kind], 0  (scrimmage plays only)
+    a.b("a1" + _u32(SIM_KIND))                      # mov eax, [kind]
+    a.b("85c0")                                     # test eax, eax  (0: a scrimmage play)
+    a.j8("74", "commit_scrimmage")
+    a.b("83f804")                                   # cmp eax, 4  (a try: the goal-line filter only)
     a.j32("0f85", "commit_done")
+    a.call(page + _LABELS["fixture"])
+    a.b("89e2")                                     # mov edx, esp  ([edx] the call's return, [edx+4] the gain)
+    a.call(page + _LABELS["goal_line"])
+    a.j32("e9", "commit_done")
+    a.label("commit_scrimmage")
     a.b("a1" + _u32(SIM_OFFENSE))                   # mov eax, [offense]
     a.b("31d2")                                     # xor edx, edx  (side 0, home)
     a.b("3d" + _u32(HOME_SIDE))
@@ -175,7 +203,11 @@ def _commit_code(a: _Asm, page: int) -> None:
     a.label("commit_side")
     a.b("52")                                       # push edx
     a.call(page + _LABELS["fixture"])
-    a.b("5a")                                       # pop edx
+    a.b("8d542404")                                 # lea edx, [esp+4]  (the hook's frame)
+    a.call(page + _LABELS["goal_line"])
+    a.b("5a")                                       # pop edx  (the side)
+    a.b("85c0")                                     # test eax, eax  (1: stopped at the 1, nothing else applies)
+    a.j8("75", "commit_done")
     a.b("d9442404")                                 # fld dword [esp+4]  (the gain)
     a.b("d9ee")                                     # fldz
     a.b("dff1")                                     # fcomip st, st(1)   0 vs gain
@@ -381,13 +413,76 @@ def _regulation_code(a: _Asm, page: int) -> None:
     a.jmp_abs(FN_DISPATCH)
 
 
+def _goal_line_code(a: _Asm, page: int) -> None:
+    data, state = page + DATA_OFF, page + STATE_OFF
+    # goal_line(edx -> [the gain call's return, the gain]): eax = 1 when it stopped a touchdown at the 1, else 0.
+    # Keeps edx; clobbers ecx; the x87 stack is left as found.
+    a.label("goal_line")
+    a.b("52")                                       # push edx  (the frame)
+    a.b("31c0")                                     # xor eax, eax
+    a.b("8b0a")                                     # mov ecx, [edx]
+    a.b("81f9" + _u32(GOAL_LINE_RUN_RETURNS[0]))
+    a.j8("74", "gl_run")
+    a.b("81f9" + _u32(GOAL_LINE_RUN_RETURNS[1]))
+    a.j8("75", "gl_ret")
+    a.label("gl_run")
+    a.b("d905" + _u32(SIM_LINE_TO_GOAL))            # fld dword [line to goal]
+    a.b("d94204")                                   # fld dword [edx+4]  (the gain)
+    a.b("dff1")                                     # fcomip: gain vs line
+    a.j8("72", "gl_pop")                            # jb: short of the goal line (or unordered) -> unchanged
+    a.b("31c9")                                     # xor ecx, ecx
+    a.label("gl_bucket")
+    a.b("d9048d" + _u32(data + D_GOAL_BOUNDS))      # fld dword [bounds + ecx*4]
+    a.b("dff1")                                     # fcomip: bound vs line
+    a.j8("73", "gl_found")                          # jae: line <= bound
+    a.b("41")                                       # inc ecx
+    a.b("83f904")                                   # cmp ecx, 4
+    a.j8("72", "gl_bucket")
+    a.j8("eb", "gl_pop")                            # beyond the 5: unchanged
+    a.label("gl_found")
+    a.b("a1" + _u32(state + S_SEED))                # mov eax, [fixture seed]
+    a.b("35" + _u32(GOAL_TAG))
+    a.b("8b15" + _u32(state + S_GOAL_SEEN))         # mov edx, [seen]
+    a.b("69d2" + _u32(GOLDEN))                      # imul edx, edx, golden
+    a.b("01d0")                                     # add eax, edx
+    a.b("ff05" + _u32(state + S_GOAL_SEEN))
+    a.b("51")                                       # push ecx
+    a.call(page + _LABELS["mix32"])
+    a.b("59")                                       # pop ecx
+    a.b("25ffff0000")                               # and eax, 0xFFFF
+    a.b("3b048d" + _u32(data + D_GOAL_KEEP))        # cmp eax, [keep + ecx*4]
+    a.j8("72", "gl_keep")                           # jb: the touchdown stands
+    a.b("d9e8")                                     # fld1 ; 1, line
+    a.b("dee9")                                     # fsubp: line - 1
+    a.b("d9ee")                                     # fldz
+    a.b("dff1")                                     # fcomip: 0 vs line - 1
+    a.j8("72", "gl_store")                          # jb: line - 1 > 0
+    a.b("ddd8")                                     # fstp st(0)
+    a.b("d9ee")                                     # fldz  (from the 1 or closer: no gain)
+    a.label("gl_store")
+    a.b("8b1424")                                   # mov edx, [esp]  (the frame)
+    a.b("d95a04")                                   # fstp dword [edx+4]
+    a.b("ff05" + _u32(state + S_GOAL_STOPPED))
+    a.b("b801000000")                               # mov eax, 1
+    a.b("5a")                                       # pop edx
+    a.b("c3")
+    a.label("gl_keep")
+    a.b("31c0")
+    a.label("gl_pop")
+    a.b("ddd8")                                     # fstp st(0)  (the line)
+    a.label("gl_ret")
+    a.b("5a")
+    a.b("c3")
+
+
 _LABELS: dict[str, int] = {}
 
 
 def _assemble(page: int) -> tuple[bytes, dict[str, int]]:
     blocks = []
     for offset, builder in ((COMMIT_OFF, lambda a: _commit_code(a, page)), (TRY_OFF, lambda a: _try_code(a, page)),
-                            (TIES_OFF, lambda a: _ties_code(a, page)), (REG_OFF, lambda a: _regulation_code(a, page))):
+                            (TIES_OFF, lambda a: _ties_code(a, page)), (REG_OFF, lambda a: _regulation_code(a, page)),
+                            (GOAL_OFF, lambda a: _goal_line_code(a, page))):
         a = _Asm(page + offset)
         builder(a)
         blocks.append((offset, a))
@@ -403,13 +498,22 @@ def _assemble(page: int) -> tuple[bytes, dict[str, int]]:
 def _labels() -> dict[str, int]:
     """Label offsets inside the page (they do not depend on the page address)."""
     if not _LABELS:
-        _LABELS.update({"fixture": 0, "mix32": 0, "form": 0, "clamp": 0})
+        _LABELS.update({"fixture": 0, "mix32": 0, "form": 0, "clamp": 0, "goal_line": 0})
         _LABELS.update(_assemble(PLACEHOLDER_VA)[1])    # pass 1: sizes and offsets
         _LABELS.update(_assemble(PLACEHOLDER_VA)[1])    # pass 2: the calls resolved
     return dict(_LABELS)
 
 
-def data_bytes(*, home_edge=HOME_EDGE, form_sigma=FORM_SIGMA) -> bytes:
+def _keep_units(goal_line) -> tuple[int, ...]:
+    """Each keep chance as the 16-bit draw's threshold (1.0 -> 65536: always). A chance given to four decimals reads
+    back exactly (the threshold is within 1/131072 of it)."""
+    values = tuple(goal_line)
+    _require(len(values) == 4 and all(isinstance(v, (int, float)) and 0.0 <= v <= 1.0 for v in values),
+             "four goal-line keep chances from 0 to 1")
+    return tuple(round(v * 65536) for v in values)
+
+
+def data_bytes(*, home_edge=HOME_EDGE, form_sigma=FORM_SIGMA, goal_line=GOAL_LINE_KEEP) -> bytes:
     _require(0.0 <= home_edge < 0.2 and 0.0 <= form_sigma < 0.3, "home edge or form spread out of range")
     out = bytearray(STATE_OFF - DATA_OFF)
     out[D_MARK:D_MARK + 8] = MARK
@@ -418,6 +522,8 @@ def data_bytes(*, home_edge=HOME_EDGE, form_sigma=FORM_SIGMA) -> bytes:
                       (D_MEAN, IRWIN_HALL_MEAN), (D_C90, 90.0)):
         out[at:at + 4] = _f32(value)
     out[D_THRESHOLDS:D_THRESHOLDS + 33] = two_point_thresholds()
+    out[D_GOAL_BOUNDS:D_GOAL_BOUNDS + 16] = struct.pack("<4f", *GOAL_LINE_BOUNDS)
+    out[D_GOAL_KEEP:D_GOAL_KEEP + 16] = struct.pack("<4I", *_keep_units(goal_line))
     return bytes(out)
 
 
@@ -476,7 +582,8 @@ def _installed_levers(page: bytes) -> dict | None:
         return None
     up = struct.unpack_from("<f", data, D_HOME_UP)[0]
     unit = struct.unpack_from("<f", data, D_FORM_UNIT)[0]
-    levers = {"home_edge": round(up - 1.0, 6), "form_sigma": round(unit * IRWIN_HALL_SD, 6)}
+    levers = {"home_edge": round(up - 1.0, 6), "form_sigma": round(unit * IRWIN_HALL_SD, 6),
+              "goal_line": tuple(round(v / 65536, 4) for v in struct.unpack_from("<4I", data, D_GOAL_KEEP))}
     try:
         expected = code_for(PLACEHOLDER_VA, **levers)
     except SimOutcomesError:
@@ -539,14 +646,16 @@ def reservations(payload: bytes) -> list[dict]:
                    for label, va, retail, _after in sites(PLACEHOLDER_VA)]
 
 
-def apply(payload: bytes, *, home_edge=HOME_EDGE, form_sigma=FORM_SIGMA) -> tuple[bytes, Mapping[str, object]]:
+def apply(payload: bytes, *, home_edge=HOME_EDGE, form_sigma=FORM_SIGMA,
+          goal_line=GOAL_LINE_KEEP) -> tuple[bytes, Mapping[str, object]]:
     """Install the owner (its fixed page, reserved now when the image lacks it, a late owner that moves nobody) and the
     three sites, or re-set the levers of an installed page. Idempotent."""
     from . import nfl2k5_rdata_sites as rdata
     space = _space()
     _require(space.SIM_OUTCOMES_VA == PLACEHOLDER_VA, "the outcomes page address changed")
     state, found, levers = _state(bytes(payload))
-    wanted = {"home_edge": round(home_edge, 6), "form_sigma": round(form_sigma, 6)}
+    wanted = {"home_edge": round(home_edge, 6), "form_sigma": round(form_sigma, 6),
+              "goal_line": tuple(round(v / 65536, 4) for v in _keep_units(goal_line))}
     common = {"owner": OWNER, "label": LABEL, "experimental": True, "runtime_witnessed": False, **wanted}
     if state == "applied" and levers == wanted:
         return payload, {**common, "status": "applied", "already_applied": True, "changed_bytes": 0}
@@ -562,11 +671,11 @@ def apply(payload: bytes, *, home_edge=HOME_EDGE, form_sigma=FORM_SIGMA) -> tupl
     from .nfl2k5_cave_oracle import XbeImage
     previous = XbeImage(payload).read(page_va, CODE_SIZE)
     payload, code_receipt = space.install_code(payload, OWNER, code_for(page_va, home_edge=home_edge,
-                                                                       form_sigma=form_sigma),
+                                                                       form_sigma=form_sigma, goal_line=goal_line),
                                                previous=None if previous == b"\xcc" * CODE_SIZE else previous)
     if state != "applied":
         payload, _ = rdata.apply(payload, sites(page_va), OWNER)
-    _require(status(payload) == "applied" and read_settings(payload).get("home_edge") == wanted["home_edge"],
+    _require(status(payload) == "applied" and {k: read_settings(payload).get(k) for k in wanted} == wanted,
              "simulated outcomes postcondition failed")
     return payload, {**common, "status": "applied", "already_applied": False, "from": state,
                      "page_va": hex(page_va), "sites": [hex(va) for _l, va, _r, _a in sites(page_va)],
@@ -596,6 +705,7 @@ def remove(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
 
 
 __all__ = ["OWNER", "BUILD_CAPTION", "HELP_TEXT", "CODE_SIZE", "HOME_EDGE", "FORM_SIGMA", "M_LOW", "M_HIGH",
+           "GOAL_LINE_KEEP", "GOAL_LINE_BOUNDS",
            "COMMIT_SITE", "TRY_SITE", "TIES_SITE", "REG_SITE", "STEP_SITE", "SimOutcomesError", "TWO_POINT_THRESHOLDS",
            "two_point_thresholds", "code_for", "labels",
            "sites", "allocation", "status", "read_settings", "reservations", "apply", "remove"]

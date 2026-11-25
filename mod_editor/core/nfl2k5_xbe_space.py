@@ -847,14 +847,15 @@ HELMET_SIDES_REQUEST = (HELMET_SIDES_OWNER, "code", HELMET_SIDES_SIZE, PAGE)
 LATE_OWNERS += (HELMET_SIDES_OWNER,)
 FIXED_PAGE_OWNERS = (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER, QB_TRADES_OWNER, HELMET_SIDES_OWNER)
 FIXED_SPAN_END = HELMET_SIDES_VA + HELMET_SIDES_SIZE     # every pool owner steps over QB_ROOM_VA..FIXED_SPAN_END
-# b81 game outcomes: one fixed page at 0x1531000 for the simulated-game outcomes owner (home field, game-day form, the
-# simulator's two-point chart and tie roll; code, constants and its per-fixture state: the pool is RWX). Placed like the
-# quarterback and helmet pages: at its absolute address, never advancing the pool cursor, with its own step-over (to_pool,
-# after the fixed-span chain), so every other pool owner steps over 0x1531000..0x1531FFF whether or not it is requested
-# and the owner can be added in place after every other owner. 0x152E000..0x152FFFF (CPU trades) and 0x1530000 (modern
-# jersey numbers) are claimed by other beta 81 lanes (coord/PAGES_AND_SEEDS.md), so this page sits after them.
+# b81 game outcomes: one fixed page at 0x1534000 for the simulated-game outcomes owner (home field, game-day form, the
+# simulator's two-point chart and tie roll, the regulation end, goal-line runs; code, constants and its per-fixture state:
+# the pool is RWX). Placed like the quarterback and helmet pages: at its absolute address, never advancing the pool cursor,
+# with its own step-over (to_pool, after the fixed-span chain), so every other pool owner steps over 0x1534000..0x1534FFF
+# whether or not it is requested and the owner can be added in place after every other owner. 0x152E000..0x1533FFF are
+# claimed by other beta 81 lanes (CPU trades, modern jersey numbers, awards, classic crowd, SportsCenter news;
+# coord/PAGES_AND_SEEDS.md), so this page sits after them.
 SIM_OUTCOMES_OWNER = "nfl2k5_sim_outcomes"
-SIM_OUTCOMES_VA = 0x1531000
+SIM_OUTCOMES_VA = 0x1534000
 SIM_OUTCOMES_SIZE = PAGE
 SIM_OUTCOMES_REQUEST = (SIM_OUTCOMES_OWNER, "code", SIM_OUTCOMES_SIZE, PAGE)
 LATE_OWNERS += (SIM_OUTCOMES_OWNER,)

@@ -17,7 +17,7 @@ from mod_editor.core import nfl2k5_sim_outcomes as so
 from tests.nfl2k5_supersim_draft_fixture import HAVE_UC
 
 PAGE = 0x1000
-PAGE_VA = 0x1531000
+PAGE_VA = 0x1534000
 STACK = 0x00200000
 RETURN = 0x00300000          # a fake caller of 0x106480 / 0x103260
 COMMIT_RESUME = so.COMMIT_RESUME
@@ -237,13 +237,93 @@ def chart_reference(margin, period, fraction):
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is required to execute the page")
+@unittest.skipUnless(HAVE_UC, "Unicorn is required to execute the page")
+class GoalLine(unittest.TestCase):
+    """Touchdown mix part 1: a run or scramble snapped inside the 5 whose gain reaches the goal line scores with the keep
+    chance for its distance; otherwise the ball stops at the 1. Passes, gains short of the line, longer runs and kicks
+    are untouched; a two-point run is filtered too."""
+    RUN, SCRAMBLE = so.GOAL_LINE_RUN_RETURNS
+    PASS = 0x0010921F                     # another 0x106480 call (a completion): never filtered
+
+    def commit(self, m, gain, *, line, ret=None, kind=0, side=0):
+        m.u32(so.SIM_KIND, kind)
+        m.u32(so.SIM_OFFENSE, so.HOME_SIDE if side == 0 else so.AWAY_SIDE)
+        m.f(so.SIM_LINE_TO_GOAL, line)
+        m.reg("ESP", STACK - 8)
+        m.u32(STACK - 8, self.RUN if ret is None else ret)
+        m.f(STACK - 4, gain)
+        m.reg("EBX", 0x1234)
+        landed = m.run(PAGE_VA + so.labels()["commit"], [COMMIT_RESUME, RETURN])
+        self.assertEqual(landed, COMMIT_RESUME)
+        self.assertEqual((m.reg("ESP"), m.reg("EBX")), (STACK - 8, 0x1234))
+        self.assertEqual(m.reg("FPSW") >> 11 & 7, 0, "the x87 stack is left as found")
+        return m.get_f(STACK - 4)
+
+    def counters(self, m):
+        state = PAGE_VA + so.STATE_OFF
+        return m.get_u32(state + so.S_GOAL_SEEN), m.get_u32(state + so.S_GOAL_STOPPED)
+
+    def test_always_and_never(self):
+        m = _Machine(so.code_for(PAGE_VA, home_edge=0.0, form_sigma=0.0, goal_line=(0, 0, 0, 0)))
+        _fixture(m)
+        for line, stopped in ((1.0, 0.0), (2.0, 1.0), (3.0, 2.0), (4.0, 3.0), (5.0, 4.0), (0.5, 0.0), (1.4, 0.4)):
+            with self.subTest(line=line):
+                self.assertAlmostEqual(self.commit(m, line, line=line), stopped, places=5)
+                self.assertAlmostEqual(self.commit(m, line + 7.0, line=line, ret=self.SCRAMBLE), stopped, places=5)
+        self.assertEqual(self.counters(m), (14, 14))
+        m = _Machine(so.code_for(PAGE_VA, home_edge=0.0, form_sigma=0.0, goal_line=(1, 1, 1, 1)))
+        _fixture(m)
+        for line in (1.0, 2.0, 3.0, 5.0):
+            self.assertEqual(self.commit(m, line, line=line), line)
+        self.assertEqual(self.counters(m), (4, 0))
+
+    def test_only_goal_line_runs_and_tries(self):
+        m = _Machine(so.code_for(PAGE_VA, home_edge=0.0, form_sigma=0.0, goal_line=(0, 0, 0, 0)))
+        _fixture(m)
+        self.assertEqual(self.commit(m, 3.0, line=3.0, ret=self.PASS), 3.0)        # a pass touchdown stands
+        self.assertEqual(self.commit(m, 3.0, line=3.0, ret=RETURN), 3.0)
+        self.assertEqual(self.commit(m, 2.0, line=3.0), 2.0)                       # short of the line
+        self.assertEqual(self.commit(m, 6.0, line=6.0), 6.0)                       # snapped at the 6
+        self.assertEqual(self.commit(m, 9.0, line=5.0, kind=1), 9.0)               # a kickoff
+        self.assertEqual(self.counters(m), (0, 0))
+        self.assertEqual(self.commit(m, 2.0, line=2.0, kind=4), 1.0)               # a two-point run from the 2
+        self.assertEqual(self.counters(m), (1, 1))
+
+    def test_draws_follow_the_model_and_the_keep_chances(self):
+        keep = (0.69, 0.59, 0.54, 0.55)
+        m = _Machine(so.code_for(PAGE_VA, home_edge=0.0, form_sigma=0.0, goal_line=keep))
+        stops = [0, 0, 0, 0]
+        for fixture in range(40):
+            _fixture(m, season=fixture % 7, week=fixture, w0=mix32(fixture), w1=mix32(fixture + 1000))
+            self.commit(m, 1.0, line=50.0)                 # an ordinary play: the new fixture's seed is current
+            seed = m.get_u32(PAGE_VA + so.STATE_OFF + so.S_SEED)
+            for line, bucket in ((1.0, 0), (2.0, 1), (3.0, 2), (5.0, 3)) * 25:
+                seen = self.counters(m)[0]
+                got = self.commit(m, line, line=line)
+                draw = mix32(((seed ^ so.GOAL_TAG) + seen * so.GOLDEN) & 0xFFFFFFFF) & 0xFFFF
+                self.assertEqual(got == line, draw < round(keep[bucket] * 65536), (fixture, line, seen))
+                stops[bucket] += got != line
+        for bucket, q in enumerate(keep):
+            self.assertAlmostEqual(stops[bucket] / 1000, 1 - q, delta=0.05, msg=bucket)
+
+    def test_keep_chances_read_back(self):
+        page = so.code_for(PAGE_VA, home_edge=0.05, form_sigma=0.1, goal_line=(0.6, 0.5, 0.45, 0.4))
+        self.assertEqual(so._installed_levers(page)["goal_line"], (0.6, 0.5, 0.45, 0.4))
+        self.assertEqual(so._installed_levers(so.code_for(PAGE_VA))["goal_line"], tuple(so.GOAL_LINE_KEEP))
+        for bad in ((0.5, 0.5, 0.5), (1.2, 0.5, 0.5, 0.5), (-0.1, 0.5, 0.5, 0.5)):
+            with self.assertRaises(so.SimOutcomesError):
+                so.code_for(PAGE_VA, goal_line=bad)
+
+
 class RevisionPins(unittest.TestCase):
     """An installed page and its sites are recognised by rebuilding their bytes. These pins make any change to the page's
     code or constants (here or in a module it reads) a deliberate new revision: freeze this one first so discs built with
     it read "previous" and are upgraded in place, then re-pin (coordinator, 2026-11-25, after the fb-targets review S1)."""
-    PAGE = {(0.045, 0.08): "cdf7f5d8a475323e680a1037053f5dc5ebe3290af193f20899b6a1f293aaf84b",
-            (0.07, 0.12): "753d63685a38d9e7c26cb7531f8286fbde8eadc0a4eb750c5b891c6c629449d3"}
-    SITES = "b3852b775de09e165d77b8f3df4f2b6f1762a31c0056b91c0c38507310fe1620"
+    # Re-pinned for the goal-line filter (touchdown mix) and the move to 0x1534000 (0x1531000 is the awards page), before
+    # any release or integration build carried the page.
+    PAGE = {(0.045, 0.08): "b3937c452b0dcca2d1220c855e500fde99149ab8877711d5b08117e83b2b8e3b",
+            (0.07, 0.12): "05ca013ac7ec26bf759c78891e8b802e434d18402a255e08d81fd027be4ac464"}
+    SITES = "94ca0b9ca9979ec06f88d2e1cab51ad68dffb3c61bbba1038b52eb406b0d03c0"
 
     def test_page_bytes_up_to_the_state_block(self):
         import hashlib
