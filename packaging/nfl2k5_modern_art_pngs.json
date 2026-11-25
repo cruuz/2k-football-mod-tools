@@ -101,7 +101,7 @@
     "data/nfl2k5_kit_fixes_2026.json": "d33818434feb3f30e5d2515eaae1b186f97bfc6344bd477298550885bce96156",
     "data/nfl2k5_kit_fixes_2026_alts.json": "8a15681861c8abbe4c66c25e27fae776e3d37495f8e0ecf68fa4ffc6660ed7f5",
     "data/nfl2k5_kit_fixes_2026_b81.json": "d2a9e3239050947bc69a4ade58491b3578e3859d841831749dfd163ef24d2da7",
-    "data/nfl2k5_kit_fixes_2026_b81u.json": "9195c523e9d8188aa90bd10fe30d0c83c35c604f4b66bb2916dbd65a8e259587",
+    "data/nfl2k5_kit_fixes_2026_b81u.json": "69e94eba840180d6db585725c2eb0d1d3ff8bcc907c0cfb6d114a800c40539ac",
     "data/nfl2k5_kit_fixes_2026_ku1.json": "9227fb1ef129725bcf72cc8c208a0433eb45b69af14fe5b8a1f99d3c381f62cb",
     "data/nfl2k5_kit_fixes_2026_names.json": "cb354c62aa6b6e8de0ff01e9f25937f0a2e54169bfc37932bd689599529693fb",
     "data/nfl2k5_kit_fixes_2026_ov1.json": "506d9592290de13e4aeb17a23a0febf147e4392b985646ef9c0df5e15765c9c4",
@@ -9822,7 +9822,7 @@
         "authored on a region cleared by rule: Dolphins sleeve logo drawn from the repo's data/nfl2k5_scorebug_assets/logos/mia.png (the mod's own logo) at its 2026 size",
         "authored on a region cleared by rule: side stripe drawn by S/work/MIN/tools/min_pants.py (paintlib pants_stripe: band edges at fixed cm round the model's leg, widths from the photographs), 4 blend steps; the old stripe cleared by rule; side stripe drawn by S/work/MIN/tools/min_pants.py (paintlib pants_stripe: band edges at fixed cm round the model's leg, widths from the photographs), 4 blend steps; the old stripe cleared by rule; pants stripe drawn by rule at its real widths",
         "authored on a region cleared by rule: side stripe drawn by S/work/MIN/tools/min_pants.py (paintlib pants_stripe: band edges at fixed cm round the model's leg, widths from the photographs), 4 blend steps; the old stripe cleared by rule; side stripe drawn by S/work/MIN/tools/min_pants.py (paintlib pants_stripe: band edges at fixed cm round the model's leg, widths from the photographs), 4 blend steps; the old stripe cleared by rule; pants stripe drawn by rule at its real width; socks recoloured by rule (ramp)",
-        "authored on a region cleared by rule: shoulder stripe set drawn as one shape along the model's armhole seam by work/BC/tools/paint_ne.py (2.8 cm stripes, ends at posed heights read off the photographs), 4 coverage levels; the old pieces cleared by rule; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+        "authored on a region cleared by rule: shoulder stripe set drawn round one smooth centre line on the posed model by work/tools/paint_curve.py and centreline.py (the approved front line from the same start, a straight back bar, a cubic join over the shoulder; 2.8 cm stripes, ends at the approved posed heights), 4 coverage levels; the old set cleared by rule; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
         "authored on a region cleared by rule: collar drawn by work/A/tools/paint_collar.py on the posed model (V point, sides and neck opening from ratios read off the 2026 photographs, the model's neck-insert island), 8x supersampled, 4 coverage levels, in the kit's flat collar colour; the old band cleared by rule; read on the texture: where the V meets the old band its sides run into a line fitted to the band's outer edge, and the edge texels of the project's own collar shield are re-blended over the new colour; 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
         "authored on a region cleared by rule: fleur drawn by S/work/NO/tools/no_road_fleur.py from the repo's data/nfl2k5_scorebug_assets/logos/no.png at 8x (outline, white band, black core); read on the texture: size and place are round 2's boxes, which ruling 1 found to be the old fleur's height and centre; the old fleur cleared by rule; round 2's fleur size (19 x 28 / 18 x 29 texels), kept by the row's drawn fleur",
         "authored on a region cleared by rule: 60th anniversary patch drawn by code at 21 x 33 from the club's patch design",
@@ -10795,10 +10795,10 @@
         "16A0:1:tset": {
           "base_equal": 0,
           "cls": "iii",
-          "edge_overlap": 0.4122,
+          "edge_overlap": 0.4175,
           "passes": true,
-          "sha256": "37812d4617e25a0ae7b12440a8fa57ccd69e514b55d5da303fd1dacd68de6ccf",
-          "texels": 4164,
+          "sha256": "7614c825a01f20adb5361844941a5477723070298217a0db04419f06fc2df48b",
+          "texels": 3420,
           "why": 19
         },
         "16A4:1:tset": {
@@ -10822,10 +10822,10 @@
         "16H0:1:tset": {
           "base_equal": 0,
           "cls": "iii",
-          "edge_overlap": 0.3934,
+          "edge_overlap": 0.3976,
           "passes": true,
-          "sha256": "5c31b29a2b1ebb774f700d8b14b83f56d04f485bae5a168c19410214557b17ed",
-          "texels": 4164,
+          "sha256": "b9218ad0db624272e0664e2e2c6cc3f884eeca0a7c70c87ef9c1cd651a98efe0",
+          "texels": 3414,
           "why": 19
         },
         "16H4:1:tset": {

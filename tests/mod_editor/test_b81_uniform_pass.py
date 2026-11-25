@@ -1125,6 +1125,36 @@ class RealDisc(unittest.TestCase):
             self.assertTrue((np.abs(socks[..., :3].astype(int) - np.array((0x18, 0x19, 0x1B))).max(-1) <= 2).all(), selector)
             self.assertTrue((np.abs(pants[240:, :, :3].astype(int) - 0x19).max(-1) <= 2).all(), selector)
 
+    def test_the_patriots_shoulder_stripes_run_straight_down_the_back(self):
+        # Owner 11/25: "the Patriot shoulder stripes are almost good, but they aren't smooth and straight. They kind of
+        # curve over near the back ... They should just be one streamlined stripe that is straight". On the back of the
+        # torso texture (rows 25-84, the back face below the shoulder top, where the texture follows the body almost
+        # linearly) the middle stripe of each set keeps to one straight line (the 11/22 set bent off it by 4 texels and
+        # the released v0.9 set by 6.6), the set keeps its width, and both sets end on the same row (level on the body).
+        red = np.array((200, 16, 46))
+        for selector, middle in (("16H0", (255, 255, 255)), ("16A0", (10, 37, 80))):
+            torso = self.after(selector, "jersey00")[..., :3].astype(int)
+            is_red = np.abs(torso - red).sum(-1) <= 30
+            is_mid = np.abs(torso - np.array(middle)).sum(-1) <= 30
+            ends = []
+            for x0, x1 in ((280, 384), (384, 505)):          # the left and the right shoulder's set on the back
+                centres, widths = [], []
+                for y in range(25, 100):
+                    reds = np.flatnonzero(is_red[y, x0:x1])
+                    if len(reds) < 4:
+                        continue
+                    inside = np.flatnonzero(is_mid[y, x0 + reds.min():x0 + reds.max()])
+                    if len(inside) >= 2:
+                        centres.append((y, inside.mean() + reds.min()))
+                        widths.append(int(reds.max() - reds.min() + 1))
+                rows = np.array(centres)
+                self.assertGreaterEqual(len(rows), 55, (selector, x0))
+                slope, at = np.polyfit(rows[:, 0], rows[:, 1], 1)
+                self.assertLessEqual(float(np.abs(rows[:, 1] - (at + slope * rows[:, 0])).max()), 1.5, (selector, x0))
+                self.assertLessEqual(max(widths) - min(widths), 5, (selector, x0, widths))
+                ends.append(int(rows[-1, 0]))
+            self.assertLessEqual(abs(ends[0] - ends[1]), 1, (selector, ends))
+
     def test_the_commanders_road_shoulder_swoosh_is_one_solid_mark(self):
         # R2 (order R2-C, art director's ruling): the game draws the road shoulder swoosh across the torso texture's
         # front/back seam: a hook of 13 or 14 solid texels on the front panel and a faint sliver of a tail on the back
