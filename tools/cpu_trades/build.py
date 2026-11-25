@@ -2,9 +2,9 @@
 no game input.
 
 entry.S and trades.c (with tools/common/team_need.h) are linked into one relocatable .text at page offset 0 (at most
-CODE_LIMIT bytes). The pages also hold the settings record (+0x1B00), the counters (+0x1B20), the ring cursor (+0x1BE0),
-the records of ours during a pending scan (+0x1BE4, six words), the clubs in our records this call (+0x1BFC) and the
-event ring (+0x1C00, 64 x 16 bytes), all zero in the template; trades.c reaches them as externs that become relocations of family "page".
+CODE_LIMIT bytes). The pages also hold the settings record (+0x1C00), the counters (+0x1C20), the ring cursor (+0x1CE0),
+the records of ours during a pending scan (+0x1CE4, six words), the clubs in our records this call (+0x1CFC) and the
+event ring (+0x1D00, 48 x 16 bytes), all zero in the template; trades.c reaches them as externs that become relocations of family "page".
 `--check` reproduces the checked-in module mod_editor/core/nfl2k5_cpu_trades_code.py.
 """
 from __future__ import annotations
@@ -24,9 +24,9 @@ DIVIDER = "# Generated from tools/cpu_trades by build.py.\n"
 GCC_FLAGS = ("-m32 -march=i386 -Os -fomit-frame-pointer -fno-builtin -fno-stack-protector -ffreestanding -fno-pic "
              "-fno-pie -fno-asynchronous-unwind-tables -fno-tree-loop-distribute-patterns -Wall -Wextra -Werror").split()
 PAGE_SIZE = 0x2000
-CODE_LIMIT = 0x1B00
-PAGE = {"ct_settings": 0x1B00, "ct_counters": 0x1B20, "ct_ring_cursor": 0x1BE0, "ct_current": 0x1BE4,
-        "ct_round_mask": 0x1BFC, "ct_ring": 0x1C00}
+CODE_LIMIT = 0x1C00
+PAGE = {"ct_settings": 0x1C00, "ct_counters": 0x1C20, "ct_ring_cursor": 0x1CE0, "ct_current": 0x1CE4,
+        "ct_round_mask": 0x1CFC, "ct_ring": 0x1D00}
 EXPORTED = ("trade_entry", "trade_call", "story_entry", "story_is_ours")
 
 

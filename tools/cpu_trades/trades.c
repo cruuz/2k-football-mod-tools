@@ -11,15 +11,16 @@
    A second entry (entry.S story_entry, site 0x2BB296 in the trade story writer 0x2BB200) posts the inbox story of every
    executed trade of ours whatever its asset value (S7); for any other trade it is the native `cmp eax, 1000`.
 
-   Settings (page + 0x1B00, CPUTRDv1): stage bits 1 = the regular season (stage 8, only while the week counter is below
+   Settings (page + 0x1C00, CPUTRDv1): stage bits 1 = the regular season (stage 8, only while the week counter is below
    the deadline byte 0x5151C5 whatever the Trade Deadline option says; R5), 2 = the preseason (stage 7, from the second
    franchise season: S10), 4 = losing clubs may sell veterans past their prime in season (R3, S2); flags bit 0 = shadow
    (everything is computed, counted and logged; nothing is written: no release, no record, no row); p8_ppm and p7_ppm
    = the posting chance per package in millionths (stage 8: times the week weight, halved; both times the pool weight).
 
    One round (post):
-   - League scale per pool (header): every club's weakest need-seat starter (an empty seat rates 0), sorted; a club's
-     need percentile at a pool is its own value's place there; q25/q50/q75/q90 of the scale.
+   - League scale per pool (header): every club's need-seat starters (32 x TN_NEED_SEATS values; an empty seat rates
+     0), sorted; a club's need percentile at a pool is the mid-rank of its weakest need-seat starter there
+     (tn_percentile); q25/q50/q75/q90 = the scale's values at n/4, n/2, 3n/4, 9n/10.
    - Buyer: no person manages it (0xE5775C), no pending offer names it (a native listing does not), fewer than 3 trade
      groups in the native ledger (R4), 2+ healthy quarterbacks, fewer than 3 of its own picks of the coming draft gone
      (S3), in stage 8 still in the race (W + 1 >= L). Its needs: up to three pools in its bottom quarter (percentile
@@ -43,7 +44,7 @@
      the first kind-0 slot of 1 to 14; the native evaluator 0x2BAE90 accepts the record (after the release); kind
      written last; at most MAX_POSTS records (or would-be records, in shadow) a round; one record per club.
 
-   Ring rows (page + 0x1C00, 64 x 16 bytes, cursor + 0x1BE0): struct event; a package the draw keeps is only counted.
+   Ring rows (page + 0x1D00, 48 x 16 bytes, cursor + 0x1CE0): struct event; a package the draw keeps is only counted.
    Results before the pending scan: 1 posted, 2 would post (shadow), 3 no pick, 4 refused by the evaluator, 5 no slot, 6 per-round cap,
    8 nobody to release; rows after it (flag F_AFTER): 1 executed, 7 refused by the executor and cancelled here, 0 gone. */
 #include "../common/team_need.h"
@@ -97,6 +98,7 @@ typedef unsigned char u8;
 #define MAX_POSTS 6u
 #define LOAD_LIMIT 3u
 #define PICKS_PAID_LIMIT 3u                              /* S3 */
+#define RING_EVENTS 48u
 #define QUARTER 64u                                      /* 0.25 in 256ths */
 #define REBUILD_YEARS 8u                                 /* R3, S2: past his prime */
 #define DECISION 9u
@@ -122,7 +124,7 @@ struct settings {
     u32 mode, stages, flags, p8_ppm, p7_ppm, reserved;
 };
 
-/* COUNTERS BEGIN (build.py reads these names in order; page + 0x1B20, u32 each, at most 48) */
+/* COUNTERS BEGIN (build.py reads these names in order; page + 0x1C20, u32 each, at most 48) */
 struct counters {
     u32 calls;                   /* every entry at the pending scan, whatever the settings */
     u32 bad_settings;            /* magic or mode not CPUTRDv1 / 1: nothing posted */
@@ -173,12 +175,12 @@ struct event {                   /* 16 bytes */
     u8 rating, pct, q25, flags;
 } __attribute__((packed));
 
-extern volatile struct settings ct_settings;          /* page + 0x1B00 */
-extern volatile struct counters ct_counters;          /* page + 0x1B20 */
-extern volatile u32 ct_ring_cursor;                   /* page + 0x1BE0 */
-extern volatile u32 ct_current[MAX_POSTS];            /* page + 0x1BE4: our records during the pending scan (S7) */
-extern volatile u32 ct_round_mask;                    /* page + 0x1BFC: clubs in a record of ours or a trade this call (S8) */
-extern volatile struct event ct_ring[64];             /* page + 0x1C00 */
+extern volatile struct settings ct_settings;          /* page + 0x1C00 */
+extern volatile struct counters ct_counters;          /* page + 0x1C20 */
+extern volatile u32 ct_ring_cursor;                   /* page + 0x1CE0 */
+extern volatile u32 ct_current[MAX_POSTS];            /* page + 0x1CE4: our records during the pending scan (S7) */
+extern volatile u32 ct_round_mask;                    /* page + 0x1CFC: clubs in a record of ours or a trade this call (S8) */
+extern volatile struct event ct_ring[RING_EVENTS];    /* page + 0x1D00 */
 
 /* The economy's smart cut tiers per position (cut_max, cut_keep; cut_min is the header's; one-pool LB). */
 static const u8 CUT_MAX[TN_POSITIONS] = {3, 30, 30, 30, 30, 30, 30, 30, 2, 30, 0, 30, 30, 30, 30, 30, 30};
@@ -197,6 +199,7 @@ struct club {
     u8 w, l, t, paid;
     u8 qbs, pad[3];
     u8 weak[TN_POSITIONS];       /* weakest need-seat starter's rating (0: a seat empty) */
+    u8 other[TN_POSITIONS];      /* the other need-seat starter's rating at a two-seat pool (0: empty) */
     u8 pct[TN_POSITIONS];        /* its percentile on the league scale, 256ths */
     u8 present[TN_POSITIONS];    /* present men at the pool */
 };
@@ -265,7 +268,7 @@ static u32 fmix(u32 h) {
 static void row(u32 stage, u32 buyer, u32 seller, u32 pool, u32 result, u32 qs, u32 word, u32 rating10, u32 pct,
                 u32 q25, u32 flags) {
     u32 n = ct_ring_cursor;
-    volatile struct event *e = &ct_ring[n % 64u];
+    volatile struct event *e = &ct_ring[n % RING_EVENTS];
     e->year = (u16)D(YEAR);
     e->stage = (u8)stage;
     e->week = (u8)D(WEEK);
@@ -371,14 +374,9 @@ static void scan(struct club *x) {
         if (n[pool] < 4) n[pool]++;
     }
     for (u32 p = 0; p < TN_POSITIONS; p++) {
-        u32 seats = TN_NEED_SEATS[p], weak = 255;
-        if (!seats || n[p] < seats) {
-            x->weak[p] = 0;
-            continue;
-        }
-        for (u32 k = 0; k < seats; k++)
-            if (rate[p][k] < weak) weak = rate[p][k];
-        x->weak[p] = (u8)weak;
+        u32 s0 = n[p] ? rate[p][0] : 0, s1 = n[p] > 1 ? rate[p][1] : 0;
+        x->weak[p] = (u8)(TN_NEED_SEATS[p] > 1 && s1 < s0 ? s1 : s0);
+        x->other[p] = (u8)(s1 < s0 ? s0 : s1);
     }
 }
 
@@ -538,7 +536,7 @@ static u32 post(struct posted *out, u32 stage, u32 round2, u32 *exhausted) {
         struct club *x = &c[i];
         x->team = CLUB_AT(i);
         x->flags = x->load = x->active = x->best = x->w = x->l = x->t = x->paid = x->qbs = 0;
-        for (u32 p = 0; p < TN_POSITIONS; p++) x->weak[p] = x->present[p] = 0;
+        for (u32 p = 0; p < TN_POSITIONS; p++) x->weak[p] = x->other[p] = x->present[p] = 0;
         if (!x->team || B(x->team + 0x11C) > SLOTS) {
             x->flags = OUT;
             continue;
@@ -553,13 +551,14 @@ static u32 post(struct posted *out, u32 stage, u32 round2, u32 *exhausted) {
     ledger_load(c, base);
     /* The league scale of each pool and each club's percentile there. */
     for (u32 p = 0; p < TN_POSITIONS; p++) {
-        u8 v[CLUBS];
+        u8 v[2 * CLUBS];
         u32 n = 0;
         for (u32 i = 0; i < CLUBS; i++) c[i].pct[p] = 0;
         q[p][0] = q[p][1] = q[p][2] = q[p][3] = 0;
         if (!TN_NEED_SEATS[p]) continue;
-        for (u32 i = 0; i < CLUBS; i++) {
-            u8 e = c[i].weak[p];
+        /* the header's league scale: every club's need-seat starters (weak, and the other at a two-seat pool) */
+        for (u32 j = 0; j < CLUBS * TN_NEED_SEATS[p]; j++) {
+            u8 e = j < CLUBS ? c[j].weak[p] : c[j - CLUBS].other[p];
             u32 k = n++;
             while (k && v[k - 1] > e) {
                 v[k] = v[k - 1];

@@ -242,7 +242,8 @@ class Image:
         return before < tn.SEATS[pool]
 
     def scan(self, i):
-        """(weak per pool, present per pool, best, healthy quarterbacks) as the page's scan()."""
+        """(weak per pool, present per pool, best, healthy quarterbacks, need-seat ratings per pool) as the page's
+        scan(); the need-seat ratings are the first NEED_SEATS present men by row, an empty seat 0."""
         tn = _tn()
         weak, present, best, qbs = [0] * 17, [0] * 17, 0, 0
         lists = [[] for _ in range(17)]
@@ -258,11 +259,13 @@ class Image:
                 continue
             present[pool] += 1
             lists[pool].append((tn.row(self.rec(o)), r))
+        need = [[] for _ in range(17)]
         for p in range(17):
             seats = tn.NEED_SEATS[p]
             men = sorted(lists[p], key=lambda t: t[0])[:4]          # stable: ties keep list order, as the page
-            weak[p] = 0 if not seats or len(men) < seats else min(r for _row, r in men[:seats])
-        return weak, present, best, qbs
+            need[p] = ([r for _row, r in men] + [0, 0])[:seats]
+            weak[p] = min(need[p]) if seats else 0
+        return weak, present, best, qbs, need
 
     def release_of(self, i, pool, ledger_players, board_players):
         tn, ros = _tn(), self.roster(i)
@@ -336,9 +339,9 @@ def model(x, stage, rows, *, round2=0, rebuild_bit=True, p8=1_000_000, p7=1_000_
     clubs = []
     for i in range(32):
         team = x.club(i)
-        weak, present, best, qbs = x.scan(i)
+        weak, present, best, qbs, need = x.scan(i)
         paid = sum(1 for r in range(1, 8) if x.b(PICKS + 32 * r + i) != i)
-        c = dict(weak=weak, present=present, best=best, qbs=qbs, paid=paid, active=x.b(team + 0x11C),
+        c = dict(weak=weak, need=need, present=present, best=best, qbs=qbs, paid=paid, active=x.b(team + 0x11C),
                  out=bool(m.get(USER_FLAG + 4 * i)) or team in board_clubs, seller=False, rebuild=False, buyer=False,
                  used=False, w=0, l=0, t=0)
         clubs.append(c)
@@ -347,8 +350,9 @@ def model(x, stage, rows, *, round2=0, rebuild_bit=True, p8=1_000_000, p7=1_000_
         if not tn.NEED_SEATS[p]:
             q.append((0, 0, 0, 0))
             continue
-        v = sorted(c["weak"][p] for c in clubs)
-        q.append((v[8], v[16], v[24], v[28]))
+        v = tn.league_scale(c["need"][p] for c in clubs)              # the header's scale: every need-seat starter
+        n = len(v)
+        q.append((v[n // 4], v[n // 2], v[3 * n // 4], v[9 * n // 10]))
         for i, c in enumerate(clubs):
             pct[i][p] = tn.percentile(v, c["weak"][p])
     for i, c in enumerate(clubs):
@@ -938,6 +942,11 @@ class SignedRoundTrip(unittest.TestCase):
         self.assertTrue(records.verify_extra(raw, extra or b""), "the native signature does not verify")
         cold = self.boot(raw)
         self.assertEqual(self.state(cold), self.state(live), "the cold load differs from the live franchise")
+        # The game's random streams are not part of a save (a cold load seeds them at boot); the native proposers of
+        # the trade pass draw from them, so both machines get the same seed before the next pass.
+        for machine in (live, cold):
+            for generator in (0xB12680, 0xE5FCA0):
+                machine.call(0x48BE0, ecx=generator, edx=4242)
         rows_live, counts_live = self.tick(live)
         rows_cold, counts_cold = self.tick(cold)
         self.assertGreater(counts_live["executed"], 0)
