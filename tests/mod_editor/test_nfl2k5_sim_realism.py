@@ -28,7 +28,9 @@ class ConstantTests(unittest.TestCase):
         self.assertEqual(r.TARGET_RATE, 0.14)                               # b81 fb-targets (b780 b5-sim: 0.08)
         self.assertEqual((r.TARGET_PIVOT, r.TARGET_SLOPE), (90, 0.015))      # b780 b5-sim: WR1-scaled redirect
         self.assertEqual(r.TARGET_WR1_SHARE, 0.50)                          # b81 fb-targets: half go to TE1 (was 0.75)
-        self.assertEqual((r.PREVIOUS_TARGET_RATE, r.PREVIOUS_TARGET_WR1_SHARE), (0.08, 0.75))
+        for revision in ("b81", "beta80"):
+            self.assertEqual((r.FROZEN_CONSTANTS[revision]["TARGET_RATE"], r.FROZEN_CONSTANTS[revision]["TARGET_WR1_SHARE"]),
+                             (0.08, 0.75))
         self.assertEqual(r.QB_BONUS_YARDS, 3.5)
         self.assertEqual(r.QB_BONUS_RZ_LINE, 20.0)
         self.assertEqual(r.PASS_SCALE, 0.91)
@@ -292,8 +294,10 @@ class NativeTests(unittest.TestCase):
 
     def test_the_compact_tackle_merge_matches_the_previous_revision(self):
         # b81 fb-targets: the entry and the merge were rewritten to make room for the fullback rule (the rush branch it
-        # dropped never changed a stat). Both revisions run the same games natively: entry, the game's own merge of this
-        # game's tackles (the additive writer), return; the tackles, the rushing line and the hand-off must agree.
+        # dropped never changed a stat). Both revisions run the same merge calls natively: entry, the game's own merge of
+        # this game's tackles and rushing yards (the additive writer), return; the tackles, the rushing line and the
+        # hand-off must agree. With rushing yards on a lead back in the simulator the old revision enters its lead-back
+        # branch (review N3), which at its frozen 0 percent adds nothing.
         from mod_editor.core import nfl2k5_rdata_sites as rdata, nfl2k5_xbe_space as space
         from tests.mod_editor.test_nfl2k5_honors import Machine, word
         data = retail_bytes()
@@ -304,7 +308,7 @@ class NativeTests(unittest.TestCase):
         new = r.apply(data)[0]
         self.assertEqual((code["va"], state["va"]), (self.code_va, self.data_va))
 
-        def run(payload, labels, position, rank, mode, before, game):
+        def run(payload, labels, position, rank, mode, before, game, rush=0):
             m = Machine(payload)
             p = m.roster([(3, [word(2, 3, 300), word(18, 3, before)])])[0]
             m.put8(p + 0x35, position)
@@ -320,6 +324,8 @@ class NativeTests(unittest.TestCase):
             m.uc.emu_start(self.code_va + labels["tackle_entry"], m.STOP, count=100_000)
             if game:
                 m.call(0x14F450, ecx=p, edx=18, stack=(game,))   # the merge adds this game's tackles
+            if rush:
+                m.call(0x14F450, ecx=p, edx=2, stack=(rush,))    # and this game's rushing yards
             m.call(self.code_va + labels["tackle_return"], stack=(0, 0))
             return (m.call(0x14EE40, ecx=p, edx=18) & 0xFFFF, m.call(0x14EE40, ecx=p, edx=2) & 0xFFFF,
                     m.get(self.data_va))
@@ -330,13 +336,15 @@ class NativeTests(unittest.TestCase):
             for rank in (0, 1):
                 for mode in (4, 0):
                     for before, game in ((10, 0), (10, 4), (10, 5), (30, 15), (30, 20), (0, 25), (100, 96)):
-                        a = run(old, old_labels, position, rank, mode, before, game)
-                        b = run(new, r.label_offsets(), position, rank, mode, before, game)
-                        self.assertEqual(a, b, (position, rank, mode, before, game))
-                        bonus = r.tackle_bonus(game) if mode == 4 and position != 4 else 0
-                        self.assertEqual(b, (before + game + bonus, 300, 0), (position, rank, mode, before, game))
-                        cases += 1
-        self.assertEqual(cases, 168)
+                        for rush in ((0, 120) if position == 7 else (0,)):
+                            a = run(old, old_labels, position, rank, mode, before, game, rush)
+                            b = run(new, r.label_offsets(), position, rank, mode, before, game, rush)
+                            self.assertEqual(a, b, (position, rank, mode, before, game, rush))
+                            bonus = r.tackle_bonus(game) if mode == 4 and position != 4 else 0
+                            self.assertEqual(b, (before + game + bonus, 300 + rush, 0),
+                                             (position, rank, mode, before, game, rush))
+                            cases += 1
+        self.assertEqual(cases, 196)                       # merge calls, 28 of them with a lead back's rushing yards
 
     def _mix(self, accuracy, run_minus_pass, *, deep_own_end=False, position=0):
         """Run the mix hook: returns 'pass' or 'run' (its two retail continuations)."""
@@ -372,6 +380,53 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(self._mix(70, low), "run")
         self.assertEqual(self._mix(99, margin, position=3), "run")       # no quarterback in slot 0: the flat bias
         self.assertEqual(self._mix(99, 0.5, deep_own_end=True), "run")   # own deep end: the retail call
+
+
+class FrozenRevisionTests(unittest.TestCase):
+    """Review S1: the earlier revisions are rebuilt from frozen constants, so tuning a live constant (game-outcomes will
+    refit the red-zone pass scale) cannot turn a v0.9 or pre-rule beta 81 disc foreign."""
+
+    PINS = {"b81": "a2d6fdc0bbf3983a96cb5b5b6cca9ab21d92401df0e27221fd1efc82928078f6",      # c4406481b's code_for
+            "beta80": "c89d42e3f4fa73abb05718e1ac7d246d1829b072785d34264d62b6252bbf15a7"}   # beta-80 / v0.9
+    TUNED = {"RZ_PASS_SCALE": 0.60, "MIX_BIAS": 9.25, "PASS_SCALE": 0.95, "TARGET_RATE": 0.2, "TACKLE_BONUS_PCT": 12,
+             "INTERCEPT_SCALE": 1.2, "RUN_RZ_SCALE": 0.9, "WR2_SHARE": 0.3}
+
+    def bodies(self):
+        return {"b81": r._assemble(0x14DA000, 0x14DC000, fb=False)[1],
+                "beta80": r._assemble(0x14DA000, 0x14DC000, beta80=True)[1]}
+
+    def test_the_earlier_bodies_are_pinned(self):
+        for revision, body in self.bodies().items():
+            self.assertEqual(hashlib.sha256(body).hexdigest(), self.PINS[revision], revision)
+
+    def test_retuned_live_constants_leave_earlier_discs_legacy(self):
+        from unittest import mock
+        from mod_editor.core import nfl2k5_rdata_sites as rdata, nfl2k5_xbe_space as space
+        data = retail_bytes()
+        allocated = space.apply(data, r.REQUESTS, scaleout=True)[0]
+        code, state = r._allocations(allocated)
+        installs = {}
+        for revision, kw in (("b81", {"fb": False}), ("beta80", {"beta80": True})):
+            old = space.install_code(allocated, r.OWNER, r._assemble(code["va"], state["va"], **kw)[1])[0]
+            installs[revision] = rdata.apply(old, r.sites(code["va"], **kw), r.OWNER)[0]
+        with mock.patch.multiple(r, **self.TUNED):
+            r._LABEL_CACHE = None
+            self.assertEqual({k: hashlib.sha256(v).hexdigest() for k, v in self.bodies().items()}, self.PINS)
+            for revision, old in installs.items():
+                self.assertEqual(r.status(old), "legacy", revision)           # still the previous revision
+                upgraded = r.apply(old)[0]                                   # updated in place to the retuned one
+                self.assertEqual(r.status(upgraded), "applied", revision)
+                self.assertEqual(upgraded, r.apply(data)[0], revision)
+                pool = XbeImage(upgraded).read(code["va"] + r.RZ_PASS_SCALE_OFF, 4)
+                self.assertAlmostEqual(struct.unpack("<f", pool)[0], 0.60, places=6)
+        r._LABEL_CACHE = None
+
+    def test_a_non_zero_rush_correction_is_refused(self):
+        from unittest import mock
+        with mock.patch.object(r, "RUSH_BONUS_PCT", 8), self.assertRaises(r.SimRealismError):
+            r.code_for(0x14DA000, 0x14DC000)
+        r._assemble(0x14DA000, 0x14DC000, fb=False)                    # the frozen revisions keep their own 0
+        r._assemble(0x14DA000, 0x14DC000, beta80=True)
 
 
 class FullbackTargetTests(unittest.TestCase):

@@ -40,8 +40,9 @@ read-only code and leaves the played game alone:
 * **Pass yards after conversion.** At three native pass-yard calculation sites, ``PASS_SCALE``
   multiplies the gain returned to the simulator. Changing this value affects credited yardage
   and can change subsequent plays and final scores.
-* **Season rushing correction.** The postgame merge applies ``RUSH_BONUS_PCT`` to the lead
-  halfback's rushing-yard delta and adds the result to his season total.
+* **Season rushing correction (beta 80 and pre-rule beta 81 only).** Those revisions' postgame merge applied
+  ``RUSH_BONUS_PCT`` to the lead halfback's rushing-yard delta. It has been 0 since b780 db2, and b81 fb-targets
+  removed the branch from the current revision (``RUSH_BONUS_PCT`` must stay 0; its pool float is kept at its offset).
 
 Round 5 calibration: two QL 15 seasons and one QL 5 season with the round-3 roster gave
 22.65/22.35 points, 1.84/1.82 pass touchdowns, 0.50/0.52 rush touchdowns and 110.7/109.6 rush
@@ -86,7 +87,10 @@ site now enters ``fb_entry``: the target step runs as before (the lottery and th
 position byte 8 (fullbacks and the authored H-backs) keeps the pass when the 16-bit league draw is below
 ``FB_TARGET_KEEP_THRESHOLD`` (1 in 3); otherwise the step runs again, up to ``FB_TARGET_REDRAWS`` times, and the first
 other pick takes it (the TE1 slot, else the HB1 slot, if every draw is a fullback). A halfback in the FB slot is not
-touched. The same report named Isaiah Likely ("the giants barely use isiah likely"): in the regular season (stage 8) the
+touched. Only the 0x107035 call is hooked. The lottery's two other callers are 0x106C76 (play family 0, a pass
+whose gain is the full distance to goal; the redirect never covered it either) and 0x104C04 (an offensive player
+picked to take the ball after a play event, not a pass target). Fullbacks' share of receiving touchdowns fell with
+their catches on the panels (3.05% -> 0.96%), so family 0 is no real fullback channel (LATER). The same report named Isaiah Likely ("the giants barely use isiah likely"): in the regular season (stage 8) the
 lottery gives no role any weight (its WR1 x1.5 and HB1 x1.2 apply only when 0xE576A4 is 7, the preseason), so TE1s
 drew 11.7% of the targets against 14.5-15.0% in the 2024-2025 NFL; the redirect above now moves 14% (was 8%) of the
 eligible picks at an average WR1 and sends half (was a quarter) of them to TE1. The room came from the season merge: the lead-back rush correction had a constant of 0 since b780 db2 and never
@@ -106,7 +110,8 @@ import hashlib
 import struct
 
 OWNER = "nfl2k5_sim_realism"
-CODE_SIZE = 896                      # b780 b5-sim: 832 -> 896 (QB-scaled mix, WR1-scaled targets, lead-back rush rule)
+CODE_SIZE = 896                      # b780 b5-sim: 832 -> 896 (QB-scaled mix, WR1-scaled targets, then a lead-back rush
+                                     # rule); b81 fb-targets: same size, the rush rule's room holds the fullback target rule
 DATA_SIZE = 16
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 4))
 BUILD_CAPTION = "Simulated season realism (experimental)"
@@ -157,8 +162,6 @@ TARGET_RATE = 0.14                   # share of eligible targets redirected with
 TARGET_PIVOT = 90                    # b780 b5-sim: WR1 Catching of the league-average WR1 (SOFTDRINK roster)
 TARGET_SLOPE = 0.015                 # extra redirect share per Catching point above the pivot (less below it)
 TARGET_WR1_SHARE = 0.50              # receiver share of redirects, with the rest going to TE1 (b81 fb-targets: was 0.75)
-# b81 fb-targets: the beta 80 and pre-rule beta 81 revisions carry these in their float pool (recognition and upgrades).
-PREVIOUS_TARGET_RATE, PREVIOUS_TARGET_WR1_SHARE = 0.08, 0.75
 WR2_MIN_CATCH = 80
 WR2_MAX_CATCH_GAP = 8
 WR2_SHARE = 0.28                     # share of receiver redirects for a competitive WR2
@@ -213,6 +216,41 @@ WR2_SHARE_OFF = 880
 FLOAT_POOL = MIX_BIAS_OFF
 
 
+# b81 fb-targets (review S1): every tuned constant that reaches the code or the float pool. An installed revision is
+# recognised by rebuilding its exact bytes, so the earlier revisions read their own frozen values here, never the live
+# module constants: tuning a live constant (the red-zone scale, say) must not turn a v0.9 or pre-rule beta 81 disc
+# "foreign". The current revision reads the live constants. Whoever changes one of them makes a new revision: freeze
+# this release's values as another entry here, recognise it in _revision() (it reads "legacy") and update it in place
+# in apply(), as "b81" is. FrozenRevisionTests pins both frozen bodies by sha256.
+_TUNED = ("MIX_BIAS", "MIX_QB_PIVOT", "MIX_QB_SLOPE", "TARGET_RATE", "TARGET_WR1_SHARE", "TARGET_PIVOT", "TARGET_SLOPE",
+          "WR2_SHARE", "WR2_MIN_CATCH", "WR2_MAX_CATCH_GAP", "QB_SCRAMBLE_SCALE", "QB_SCRAMBLE_CAP", "QB_MOBILE_SUM",
+          "QB_BONUS_YARDS", "QB_BONUS_RZ_LINE", "INTERCEPT_SCALE", "PASS_SCALE", "RUN_RZ_SCALE", "RZ_PASS_SCALE",
+          "RUSH_BONUS_PCT", "TACKLE_BONUS_PCT", "SKIP_TACKLE_POSITION", "LEAD_BACK_POSITION", "FULLBACK_POSITION",
+          "FB_TARGET_KEEP_THRESHOLD", "FB_TARGET_REDRAWS", "TE1_SLOT", "HB1_SLOT")
+_B81_PRE_RULE = dict(MIX_BIAS=8.5, MIX_QB_PIVOT=87, MIX_QB_SLOPE=0.4, TARGET_RATE=0.08, TARGET_WR1_SHARE=0.75,
+                     TARGET_PIVOT=90, TARGET_SLOPE=0.015, WR2_SHARE=0.28, WR2_MIN_CATCH=80, WR2_MAX_CATCH_GAP=8,
+                     QB_SCRAMBLE_SCALE=0.0056, QB_SCRAMBLE_CAP=40, QB_MOBILE_SUM=150, QB_BONUS_YARDS=3.5,
+                     QB_BONUS_RZ_LINE=20.0, INTERCEPT_SCALE=1.35, PASS_SCALE=0.91, RUN_RZ_SCALE=0.94, RZ_PASS_SCALE=0.64,
+                     RUSH_BONUS_PCT=0, TACKLE_BONUS_PCT=10, SKIP_TACKLE_POSITION=4, LEAD_BACK_POSITION=7,
+                     FULLBACK_POSITION=None, FB_TARGET_KEEP_THRESHOLD=None, FB_TARGET_REDRAWS=None, TE1_SLOT=None,
+                     HB1_SLOT=None)
+FROZEN_CONSTANTS = {
+    "b81": _B81_PRE_RULE,                                       # beta 81 before the fullback target rule (c4406481b)
+    "beta80": {**_B81_PRE_RULE, "QB_SCRAMBLE_SCALE": 0.0036, "QB_BONUS_YARDS": 3.0, "PASS_SCALE": 0.86,
+               "WR2_SHARE": None, "WR2_MIN_CATCH": None, "WR2_MAX_CATCH_GAP": None},     # beta 80 / v0.9
+}
+
+
+def _revision_constants(name):
+    from types import SimpleNamespace
+    if name != "current":
+        return SimpleNamespace(**FROZEN_CONSTANTS[name])
+    values = {key: globals()[key] for key in _TUNED}
+    # review N2: the current revision has no lead-back rush correction, so a non-zero value would do nothing in game
+    require(values["RUSH_BONUS_PCT"] == 0, "RUSH_BONUS_PCT must be 0: the current revision has no lead-back rush "
+                                           "correction (b81 fb-targets removed that branch)")
+    return SimpleNamespace(**values)
+
 class SimRealismError(ValueError):
     pass
 
@@ -230,7 +268,8 @@ def tackle_bonus(game_tackles):
 
 
 def rush_bonus(game_yards):
-    """The integer season rush-yard correction added after a scheduled simulated game."""
+    """The integer season rush-yard correction the beta 80 and pre-rule beta 81 merges added (legacy: the current
+    revision has no such branch and requires RUSH_BONUS_PCT == 0)."""
     if game_yards <= 0:
         return 0
     return (game_yards * RUSH_BONUS_PCT + 50) // 100
@@ -265,7 +304,7 @@ def _flt(value):
     return struct.pack("<f", value)
 
 
-def _beta80_merge(a, state):
+def _beta80_merge(a, state, K):
     """Exact season-merge instructions retained to recognize installed beta 80 copies."""
     a.label("tackle_return")
     a.b("60")                                             # pushad
@@ -274,7 +313,7 @@ def _beta80_merge(a, state):
     a.j32("0f84", "tackle_done")
     # b780 b5-sim: the season rush correction goes to the lead back only (HB, depth rank 0); every other runner keeps the
     # engine's line, so team rushing is not inflated by backups, fullbacks and receivers
-    a.b("807835" + bytes([LEAD_BACK_POSITION]).hex())      # cmp byte [eax+0x35],7  a halfback
+    a.b("807835" + bytes([K.LEAD_BACK_POSITION]).hex())      # cmp byte [eax+0x35],7  a halfback
     a.j8("75", "rush_done")
     a.b("f74028001c0000")                                 # test dword [eax+0x28],0x1C00  depth rank 0
     a.j8("75", "rush_done")
@@ -285,7 +324,7 @@ def _beta80_merge(a, state):
     a.b("2bc1")                                           # sub eax,ecx
     a.b("85c0")
     a.j8("7e", "rush_done")
-    a.b("69c0" + struct.pack("<I", RUSH_BONUS_PCT).hex())
+    a.b("69c0" + struct.pack("<I", K.RUSH_BONUS_PCT).hex())
     a.b("0532000000")                                     # add eax,50
     a.b("99")                                             # cdq
     a.b("b964000000")                                     # mov ecx,100
@@ -308,7 +347,7 @@ def _beta80_merge(a, state):
     a.b("8b0d" + _u32(state).hex())
     a.b("80793504")                                       # cmp byte [ecx+0x35],4
     a.j8("74", "tackle_done")
-    a.b("69c0" + struct.pack("<I", TACKLE_BONUS_PCT).hex())  # imul eax,eax,TACKLE_BONUS_PCT
+    a.b("69c0" + struct.pack("<I", K.TACKLE_BONUS_PCT).hex())  # imul eax,eax,TACKLE_BONUS_PCT
     a.b("0532000000")                                     # add eax,50
     a.b("99")                                             # cdq
     a.b("b964000000")                                     # mov ecx,100
@@ -326,26 +365,26 @@ def _beta80_merge(a, state):
     a.b("c20800")                                         # ret 8
 
 
-def _season_merge(a, state):
+def _season_merge(a, state, K):
     """Apply each eligible runner or defender's percentage to this game's stat delta."""
     a.label("tackle_return")
     a.b("60")                                             # pushad
     a.b("8b3d" + _u32(state).hex())                       # edi = player
     a.b("85ff")
     a.j8("74", "merge_done")
-    a.b("807f35" + bytes([LEAD_BACK_POSITION]).hex())
+    a.b("807f35" + bytes([K.LEAD_BACK_POSITION]).hex())
     a.j8("75", "merge_tackles")
     a.b("f74728001c0000")                                 # test depth rank bits
     a.j8("75", "merge_tackles")
     a.b("6a025e")                                         # esi = rushing yards field
-    a.b("6a" + bytes([RUSH_BONUS_PCT]).hex() + "5d")     # ebp = correction percent
+    a.b("6a" + bytes([K.RUSH_BONUS_PCT]).hex() + "5d")     # ebp = correction percent
     a.b("8b1d" + _u32(state + 8).hex())                   # ebx = prior rushing yards
     a.j32("e8", "correct_delta")
     a.label("merge_tackles")
-    a.b("807f35" + bytes([SKIP_TACKLE_POSITION]).hex())
+    a.b("807f35" + bytes([K.SKIP_TACKLE_POSITION]).hex())
     a.j8("74", "merge_done")
     a.b("6a125e")                                         # esi = tackles field
-    a.b("6a" + bytes([TACKLE_BONUS_PCT]).hex() + "5d")
+    a.b("6a" + bytes([K.TACKLE_BONUS_PCT]).hex() + "5d")
     a.b("8b1d" + _u32(state + 4).hex())                   # ebx = prior tackles
     a.j32("e8", "correct_delta")
     a.label("merge_done")
@@ -368,7 +407,7 @@ def _season_merge(a, state):
     a.b("c3")
 
 
-def _tackle_merge(a, state):
+def _tackle_merge(a, state, K):
     """b81 fb-targets: the tackle correction alone (cornerbacks skipped), inlined.
 
     The lead-back rush correction is gone: its constant has been 0 since b780 db2, so that branch never changed a stat
@@ -379,13 +418,13 @@ def _tackle_merge(a, state):
     a.b("8b3d" + _u32(state).hex())                       # edi = player
     a.b("85ff")
     a.j8("74", "merge_done")
-    a.b("807f35" + bytes([SKIP_TACKLE_POSITION]).hex())   # cornerbacks: nfl2k5_sim_cb_tackles
+    a.b("807f35" + bytes([K.SKIP_TACKLE_POSITION]).hex())   # cornerbacks: nfl2k5_sim_cb_tackles
     a.j8("74", "merge_done")
     a.b("6a125a89f9")                                     # edx = tackles field, ecx = player
     a.call(FN_STAT_READ)
     a.b("2b05" + _u32(state + 4).hex())                   # sub eax,[prior tackles]
     a.j8("7e", "merge_done")
-    a.b("6bc0" + bytes([TACKLE_BONUS_PCT]).hex())        # imul eax,eax,percent
+    a.b("6bc0" + bytes([K.TACKLE_BONUS_PCT]).hex())        # imul eax,eax,percent
     a.b("83c03299")                                       # add eax,50; cdq
     a.b("6a6459f7f9")                                     # idiv 100
     a.b("85c0")
@@ -397,7 +436,7 @@ def _tackle_merge(a, state):
     a.b("61c20800")                                       # popad; ret 8
 
 
-def _fullback_target(a):
+def _fullback_target(a, K):
     """b81 fb-targets: the target site's entry. The target step (retail lottery plus the redirect) runs first; a pick
     with position byte 8 keeps the pass 1 time in 3 (the 16-bit league draw, as the carry rule), otherwise the step runs
     again (up to FB_TARGET_REDRAWS times) and a non-fullback pick goes out as drawn. A fullback drawn every time gives
@@ -405,23 +444,23 @@ def _fullback_target(a):
     mov edi,[0xA9719C]); the target step and the league draw keep EDI and EBP."""
     a.label("fb_entry")
     a.j32("e8", "target")                                 # eax = the target step's pick
-    a.b("807835" + bytes([FULLBACK_POSITION]).hex())     # cmp byte [eax+0x35],8
+    a.b("807835" + bytes([K.FULLBACK_POSITION]).hex())     # cmp byte [eax+0x35],8
     a.j8("75", "fb_ret")
     a.b("60")                                             # pushad (saved EAX = the fullback)
     a.call(FN_LEAGUE_DRAW)
-    a.b("663d" + struct.pack("<H", FB_TARGET_KEEP_THRESHOLD).hex())  # cmp ax,threshold
+    a.b("663d" + struct.pack("<H", K.FB_TARGET_KEEP_THRESHOLD).hex())  # cmp ax,threshold
     a.j8("72", "fb_out")                                  # below: he keeps this pass
-    a.b("6a" + bytes([FB_TARGET_REDRAWS]).hex() + "5d")  # ebp = redraws
+    a.b("6a" + bytes([K.FB_TARGET_REDRAWS]).hex() + "5d")  # ebp = redraws
     a.label("fb_redraw")
     a.j32("e8", "target")
-    a.b("807835" + bytes([FULLBACK_POSITION]).hex())
+    a.b("807835" + bytes([K.FULLBACK_POSITION]).hex())
     a.j8("75", "fb_store")                                # not a fullback: this pick
     a.b("4d")                                             # dec ebp
     a.j8("75", "fb_redraw")
-    a.b("8b47" + bytes([TE1_SLOT]).hex())                 # mov eax,[edi+0x28]  TE1
+    a.b("8b47" + bytes([K.TE1_SLOT]).hex())                 # mov eax,[edi+0x28]  TE1
     a.b("85c0")
     a.j8("75", "fb_store")
-    a.b("8b47" + bytes([HB1_SLOT]).hex())                 # mov eax,[edi+0xc]   HB1
+    a.b("8b47" + bytes([K.HB1_SLOT]).hex())                 # mov eax,[edi+0xc]   HB1
     a.b("85c0")
     a.j8("74", "fb_out")                                  # neither: the fullback keeps it
     a.label("fb_store")
@@ -434,8 +473,10 @@ def _fullback_target(a):
 
 def _assemble(code_va, data_va, *, beta80=False, fb=True):
     """beta80: the beta 80 / v0.9 revision. fb=False: the beta 81 revision before the fullback target rule (same
-    896 bytes; everything before the tackle entry and the float pool are the same in both)."""
+    896 bytes; everything before the tackle entry and the float pool are the same in both). Earlier revisions read
+    their frozen constants (FROZEN_CONSTANTS), the current one the live module constants."""
     fb = fb and not beta80
+    K = _revision_constants("beta80" if beta80 else "current" if fb else "b81")
     from .nfl2k5_draft_ai import _Asm
     a = _Asm(code_va)
     state, state_out = data_va, data_va + 8
@@ -447,7 +488,7 @@ def _assemble(code_va, data_va, *, beta80=False, fb=True):
     a.b("dfe0")                                           # fnstsw ax
     a.b("f6c441")                                         # test ah,0x41
     a.j8("74", "mix_red")                                 # spot > 79.5: own side, retail call
-    # b780 b5-sim: bias = MIX_BIAS + MIX_QB_SLOPE * (QB1 Pass Accuracy - MIX_QB_PIVOT), so better passers call more passes
+    # b780 b5-sim: bias = K.MIX_BIAS + K.MIX_QB_SLOPE * (QB1 Pass Accuracy - K.MIX_QB_PIVOT), so better passers call more passes
     # and weaker ones fewer around the same league mix (eax, ecx and edx are dead here: both paths reload them)
     a.b("a1" + _u32(TEAM_OFFENSE).hex())                  # mov eax,[offense]
     a.b("8b4008")                                         # mov eax,[eax+8]  slot 0 = QB
@@ -456,7 +497,7 @@ def _assemble(code_va, data_va, *, beta80=False, fb=True):
     a.b("80783500")                                       # cmp byte [eax+0x35],0  a quarterback
     a.j8("75", "mix_flat")
     a.b("0fb64842")                                       # movzx ecx,byte [eax+0x42]  Pass Accuracy
-    a.b("83e9" + struct.pack("<b", MIX_QB_PIVOT).hex())   # sub ecx,pivot
+    a.b("83e9" + struct.pack("<b", K.MIX_QB_PIVOT).hex())   # sub ecx,pivot
     a.b("890d" + _u32(state_out).hex())                   # mov [tmp],ecx
     a.b("db05" + _u32(state_out).hex())                   # fild dword [tmp]
     a.b("d80d" + _u32(code_va + MIX_QB_SLOPE_OFF).hex())  # fmul slope
@@ -498,9 +539,9 @@ def _assemble(code_va, data_va, *, beta80=False, fb=True):
     a.b("0fb6484f")                                       # movzx ecx,byte [eax+0x4f]
     a.b("83e92d")                                         # sub ecx,45
     a.j8("7e", "qb_done")
-    a.b("83f9" + bytes([QB_SCRAMBLE_CAP]).hex())                                         # cmp ecx,40
+    a.b("83f9" + bytes([K.QB_SCRAMBLE_CAP]).hex())                                         # cmp ecx,40
     a.j8("7e", "qb_ok")
-    a.b("b9" + _u32(QB_SCRAMBLE_CAP).hex())                                     # mov ecx,40
+    a.b("b9" + _u32(K.QB_SCRAMBLE_CAP).hex())                                     # mov ecx,40
     a.label("qb_ok")
     a.b("890d" + _u32(state_out).hex())                   # mov [state],ecx
     a.b("db05" + _u32(state_out).hex())                   # fild dword [state]
@@ -544,10 +585,10 @@ def _assemble(code_va, data_va, *, beta80=False, fb=True):
         a.label("target_native")
         a.b("895c241c61c3")                               # return the original receiver
         a.label("target_rate")
-    # b780 b5-sim: rate = TARGET_RATE + TARGET_SLOPE * (WR1 Catching - TARGET_PIVOT): an elite WR1 draws more of the other
+    # b780 b5-sim: rate = K.TARGET_RATE + K.TARGET_SLOPE * (WR1 Catching - K.TARGET_PIVOT): an elite WR1 draws more of the other
     # targets, a weaker one fewer (a rate below 0 never redirects; the WR1 pointer is still in eax)
     a.b("0fb64844")                                       # movzx ecx,byte [eax+0x44]  Catching
-    a.b("83e9" + struct.pack("<b", TARGET_PIVOT).hex())   # sub ecx,pivot
+    a.b("83e9" + struct.pack("<b", K.TARGET_PIVOT).hex())   # sub ecx,pivot
     a.b("890d" + _u32(state_out).hex())                   # mov [tmp],ecx
     a.b("db05" + _u32(state_out).hex())                   # fild dword [tmp]
     a.b("d80d" + _u32(code_va + TARGET_SLOPE_OFF).hex())  # fmul slope
@@ -574,9 +615,9 @@ def _assemble(code_va, data_va, *, beta80=False, fb=True):
         a.b("807f3503")                                   # cmp byte [edi+0x35],WR
         a.j8("75", "target_done")
         a.b("0fb64f44")                                   # movzx ecx,byte [edi+0x44] WR2 Catching
-        a.b("83f9" + bytes([WR2_MIN_CATCH]).hex())
+        a.b("83f9" + bytes([K.WR2_MIN_CATCH]).hex())
         a.j8("72", "target_done")
-        a.b("83c1" + bytes([WR2_MAX_CATCH_GAP]).hex())
+        a.b("83c1" + bytes([K.WR2_MAX_CATCH_GAP]).hex())
         a.b("0fb64344")                                   # movzx eax,byte [ebx+0x44] WR1 Catching
         a.b("39c1")
         a.j8("72", "target_done")
@@ -620,7 +661,7 @@ def _assemble(code_va, data_va, *, beta80=False, fb=True):
     a.b("0fb6484f")                                       # movzx ecx,byte [eax+0x4f]
     a.b("0fb65037")                                       # movzx edx,byte [eax+0x37]
     a.b("03ca")                                           # add ecx,edx
-    a.b("81f9" + struct.pack("<I", QB_MOBILE_SUM).hex())
+    a.b("81f9" + struct.pack("<I", K.QB_MOBILE_SUM).hex())
     a.j8("7e", "qb_bonus_done")
     a.b("d9442414")                                       # fld dword [esp+0x14]
     a.b("d805" + _u32(code_va + QB_BONUS_VALUE_OFF).hex())
@@ -670,9 +711,9 @@ def _assemble(code_va, data_va, *, beta80=False, fb=True):
         a.b("8d9424e0000000")                             # lea edx,[esp+0xe0] (replayed +4)
         a.b("83c404")                                     # add esp,4
         a.jmp_abs(TACKLE_ENTRY_RESUME)
-        _tackle_merge(a, state)
-        _fullback_target(a)
-        return _finish(a, code_va, beta80, fb)
+        _tackle_merge(a, state, K)
+        _fullback_target(a, K)
+        return _finish(a, code_va, K)
     a.b("31c0")                                           # xor eax,eax
     a.b("a3" + _u32(state).hex())                         # [state]=0
     a.b("803d" + _u32(SIM_MODE).hex() + "04")             # cmp byte [mode],4
@@ -694,26 +735,24 @@ def _assemble(code_va, data_va, *, beta80=False, fb=True):
     a.jmp_abs(TACKLE_ENTRY_RESUME)
 
     if beta80:
-        _beta80_merge(a, state)
+        _beta80_merge(a, state, K)
     else:
-        _season_merge(a, state)
-    return _finish(a, code_va, beta80, fb)
+        _season_merge(a, state, K)
+    return _finish(a, code_va, K)
 
 
-def _finish(a, code_va, beta80, fb):
+def _finish(a, code_va, K):
     body = bytearray(a.assemble())
     require(len(body) <= FLOAT_POOL, f"sim realism code is {len(body)} bytes, float pool {FLOAT_POOL}")
     body = body.ljust(FLOAT_POOL, b"\xcc")
-    qb_scale, qb_yards, pass_scale = (0.0036, 3.0, 0.86) if beta80 else (QB_SCRAMBLE_SCALE, QB_BONUS_YARDS, PASS_SCALE)
-    rate, share = (TARGET_RATE, TARGET_WR1_SHARE) if fb else (PREVIOUS_TARGET_RATE, PREVIOUS_TARGET_WR1_SHARE)
-    pool = (_flt(MIX_BIAS) + _flt(rate) + _flt(share) + _flt(qb_scale)
-            + _flt(qb_yards) + _flt(INTERCEPT_SCALE) + _flt(pass_scale) + _flt(TACKLE_BONUS_PCT)
-            + _flt(QB_BONUS_RZ_LINE) + _flt(RUN_RZ_SCALE) + _flt(RUSH_BONUS_PCT)
-            + _flt(RZ_PASS_SCALE))
-    pool = (pool.ljust(RED_ZONE_OFF - FLOAT_POOL, b"\xcc") + _flt(79.5) + _flt(0.0) + _flt(MIX_QB_SLOPE)
-            + _flt(TARGET_SLOPE))
-    if not beta80:
-        pool += _flt(WR2_SHARE)
+    pool = (_flt(K.MIX_BIAS) + _flt(K.TARGET_RATE) + _flt(K.TARGET_WR1_SHARE) + _flt(K.QB_SCRAMBLE_SCALE)
+            + _flt(K.QB_BONUS_YARDS) + _flt(K.INTERCEPT_SCALE) + _flt(K.PASS_SCALE) + _flt(K.TACKLE_BONUS_PCT)
+            + _flt(K.QB_BONUS_RZ_LINE) + _flt(K.RUN_RZ_SCALE) + _flt(K.RUSH_BONUS_PCT)
+            + _flt(K.RZ_PASS_SCALE))
+    pool = (pool.ljust(RED_ZONE_OFF - FLOAT_POOL, b"\xcc") + _flt(79.5) + _flt(0.0) + _flt(K.MIX_QB_SLOPE)
+            + _flt(K.TARGET_SLOPE))
+    if K.WR2_SHARE is not None:                           # beta 80 had no WR2 share in its pool
+        pool += _flt(K.WR2_SHARE)
     body += pool.ljust(CODE_SIZE - FLOAT_POOL, b"\xcc")
     require(len(body) == CODE_SIZE, "sim realism code size")
     return a, bytes(body)
