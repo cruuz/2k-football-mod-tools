@@ -1051,3 +1051,13 @@ SECTION(".roster_t") void FAST economy_squad_gate(void) {
 done:
     n_next_class();
 }
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * b81 team building (revision 9; coordinator 11/25: one routine for the CPU free-agent signing's affordability, so the
+ * economy lane's revision 10 changes only its body). The cap room a CPU club may spend on a free-agent signing: cap room
+ * less 10 ($40,000 real), the margin the prove-it pass already keeps (economy_best_room). Called by the team-building
+ * wishes (nfl2k5_team_building, tools/team_building/runtime.c tb_candidate) at this window's first byte (an ENTRY).
+ * --------------------------------------------------------------------------------------------------------------------- */
+SECTION(".roster_v") int FAST economy_room_for_signing(u8 *team) {
+    return ROOM(team) - 10;
+}

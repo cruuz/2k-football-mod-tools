@@ -324,7 +324,15 @@ for _va, _digest in SQUAD_WINDOWS.items():
 SQUAD_EXPIRE = 0x247B79
 PINS[SQUAD_EXPIRE] = "9fc06df982b634efc45adf0d757738512d523c30cbabb7f2c067cbcd01b75ad0"
 REVISION_8_NEW = frozenset({SQUAD_GATE, SQUAD_EXPIRE}) | frozenset(SQUAD_WINDOWS)
-REVISION = 8
+# b81 team building (revision 9; coordinator 11/25): economy_room_for_signing, the cap room a CPU club may spend on a
+# free-agent signing (cap room less 10), in one more unreferenced retail function (dead_code.py WINDOWS "roster_v", from
+# the team-building lane's proof). The team-building wishes (nfl2k5_team_building) call it at its pinned entry 0x2D82F0;
+# the economy lane's revision 10 changes only its body. No other site changes: a revision-8 image reads "legacy" and
+# upgrades in place by writing that window.
+ROOM_FOR_SIGNING_WINDOW = 0x2D82F0
+PINS[ROOM_FOR_SIGNING_WINDOW] = "58e11dd15a15fd5c794376c38955800f8a89a1f94d53811c4f3b4aef314055a3"
+REVISION_9_NEW = frozenset({ROOM_FOR_SIGNING_WINDOW})
+REVISION = 9
 
 
 class EconomyError(ValueError):
@@ -339,11 +347,12 @@ class Site:
 
 
 def sites(revision: int = REVISION) -> tuple[Site, ...]:
-    if revision not in (1, 2, 3, 4, 5, 6, 7, 8):
+    if revision not in (1, 2, 3, 4, 5, 6, 7, 8, 9):
         raise EconomyError("unknown economy revision")
     windows = {va: code for va, code in WINDOWS.items()
                if (revision >= 3 or va not in REVISION_3_SITES) and (revision >= 4 or va not in REVISION_4_SITES)
-               and (revision >= 7 or va not in REVISION_7_NEW) and (revision >= 8 or va not in REVISION_8_NEW)}
+               and (revision >= 7 or va not in REVISION_7_NEW) and (revision >= 8 or va not in REVISION_8_NEW)
+               and (revision >= 9 or va not in REVISION_9_NEW)}
     replacements = {**windows, ROOKIE_TABLE_VA: ROOKIE_TABLE,
                     0x13EF17: bytes.fromhex("c70578c2e300") + struct.pack("<I", GAME_CAP),
                     0x4FE7A0: struct.pack("<f", CAP_GROWTH),
@@ -397,7 +406,24 @@ def _site_state(image: XbeImage, site: Site) -> str:
 
 
 def _standalone_status(payload: bytes) -> str:
-    """retail | applied | legacy | foreign. b81 (revision 8): an image with every revision-8 site applied reads as the
+    """retail | applied | legacy | foreign. b81 team building (revision 9): an image with its new window applied reads as
+    the revision-8 rules read the rest of it; with that window retail it reads "legacy" where those rules read "applied"
+    or "legacy" (a revision-8 or older economy, which upgrades in place); a mix is foreign."""
+    try:
+        image = XbeImage(payload)
+        nine = {_site_state(image, site) for site in sites() if site.va in REVISION_9_NEW}
+        rest = _status_before_9(payload)
+        if nine == {"applied"}:
+            return rest if rest == "applied" else "foreign"
+        if nine == {"retail"}:
+            return "legacy" if rest in ("applied", "legacy") else rest
+        return "foreign"
+    except (ValueError, struct.error, IndexError):
+        return "foreign"
+
+
+def _status_before_9(payload: bytes) -> str:
+    """The revision-8 rules (revision 9's new window left out). b81 (revision 8): an image with every revision-8 site applied reads as the
     revision-7 rules read the rest of it; an image with none of them (the four squad windows and the gate call retail)
     reads "legacy" where those rules read "applied" or "legacy" (it upgrades in place); a mix of the two is foreign."""
     try:
@@ -422,7 +448,7 @@ def _status_before_8(payload: bytes) -> str:
         image = XbeImage(payload)
         seven = {}
         for site in sites():
-            if site.va in REVISION_7_SITES and site.va not in REVISION_8_NEW:
+            if site.va in REVISION_7_SITES and site.va not in REVISION_8_NEW | REVISION_9_NEW:
                 state = _site_state(image, site)
                 if state == "foreign" and site.va in PREVIOUS_REVISION_6 and hashlib.sha256(
                         image.read(site.va, len(site.patched))).hexdigest() == PREVIOUS_REVISION_6[site.va]:
@@ -449,7 +475,7 @@ def _status_before_7(image: XbeImage, revision_6: frozenset) -> str:
     try:
         states = {}
         for site in sites():
-            if site.va in REVISION_7_NEW or site.va in REVISION_8_NEW:
+            if site.va in REVISION_7_NEW or site.va in REVISION_8_NEW or site.va in REVISION_9_NEW:
                 continue
             state = "applied" if site.va in revision_6 else _site_state(image, site)
             if state == "foreign" and site.va in PREVIOUS and \

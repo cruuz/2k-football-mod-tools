@@ -74,6 +74,7 @@ FEATURE_KEYS += ("protection_calls",)  # b780 p1-slide: the user's slide call at
 FEATURE_KEYS += ("team_number_scale",)  # b776-ns1: per-kit jersey number size {kit: scale}, late executable owner
 FEATURE_KEYS += ("qb_accuracy",)  # b777-qb3: accurate short and on-the-run throws by Pass Accuracy, late executable owner
 FEATURE_KEYS += ("star_retention",)  # b778-fa1: CPU clubs keep their stars (veteran cap cut), late executable owner
+FEATURE_KEYS += ("team_building",)  # b81: CPU clubs draft and sign to their weakest starters (shared need rule)
 FEATURE_KEYS += ("practice_injuries",)  # b778-pi1: franchise practice keeps injuries, late executable owner
 FEATURE_KEYS += ("cpu_ball_carriers",)  # b778-ai5: CPU ball carriers stay in bounds / QBs slide past the sticks
 FEATURE_KEYS += ("cpu_runner_vision",)  # b780 cv2-runner: CPU ball carriers see where defenders go (needs cpu_ball_carriers)

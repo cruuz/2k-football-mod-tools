@@ -33,7 +33,10 @@ WINDOWS = {"value": (0x2BD440, 1082), "contracts": (0x3228A0, 215),
            # b81 practice squads (revision 8): six more unreferenced retail functions (dead_code.py WINDOWS).
            "roster_p": (0x38D3E0, 143), "roster_q": (0x1C62E0, 156), "roster_r": (0x343040, 159),
            "roster_s": (0x3E9A90, 142), "roster_t": (0x3E9CD0, 134),
-           "roster_u": (0x3220B0, 131)}
+           "roster_u": (0x3220B0, 131),
+           # b81 team building (revision 9): economy_room_for_signing, one routine every CPU free-agent signing's
+           # affordability reads (the team-building wishes; the economy lane's revision 10 changes only its body).
+           "roster_v": (0x2D82F0, 110)}
 # b778 fa2: retail routines the C code calls directly (rel32 instead of mov/call reg).
 NATIVE = {"n_rating": 0x246D80, "n_recount": 0xC3F00, "n_human": 0x13EC30, "n_team": 0xC4C50,
           "n_teams": 0xC4BE0, "n_roster_limit": 0x247AF0, "n_salary": 0xE6380, "n_base": 0xE6040,
@@ -52,7 +55,7 @@ NATIVE.update({"ps_append": _SQUAD["ps_append"], "ps_demote": _SQUAD["ps_demote"
 # Entry points that must sit at their window's first byte.
 ENTRIES = {"economy_value": 0x2BD440, "economy_contract": 0x3228A0, "economy_rookie": 0x322980,
            "economy_pick": 0x2BAB20, "economy_money": 0x31E580, "economy_week": 0x323870,
-           "economy_reconcile": 0x2BFBE0}
+           "economy_reconcile": 0x2BFBE0, "economy_room_for_signing": 0x2D82F0}
 # PROVED OFFLINE: the first seven words at the retail pick-index base also
 # belong to Player Contracts' last action row. Only retire the values after it.
 ROOKIE_TABLE_VA = 0x521598

@@ -1,0 +1,204 @@
+"""DESIGN: generated original code; reproduce with tools/team_building/assemble.py."""
+
+WINDOWS = {
+    0x11c150: (  # .tb_t .rodata.cst4: 204/206 bytes
+        bytes.fromhex(
+            "5589e557565383ec148b45088b7d1c8b75148b5d108945e88b450c8945ec8b45188945e031c08907"
+            "85f60f848b0000008b4dec89dae8267bfaff89d98945e4e86c121a003945e473720fb68338632500"
+            "893780b82463250000740583fb0875188b45ec897510895d0c8945088d65f45b5e5f5de9a81e1b00"
+            "8b4de80fb6040183c002508d45f050ff75e053e840151f0083c41085c00f44c689078b45f0895d10"
+            "8945148b45ec89450c8b45e88945088d65f45b5e5f5de915ed0f008d65f431c05b5e5f5dc3669090"
+            "0000c842"
+        ).ljust(206, b"\xcc")
+    ),
+    0x137d50: (  # .tb_b .tb_y: 115/116 bytes
+        bytes.fromhex(
+            "5589e55756538b45088b750c0fb6b81c010000688800000056e8130b2500595b31db39fb73308b45"
+            "088b0c980fb6513580fa10771e89c8e8ed591d0085c074130fb68238632500518d04c650e8ff2129"
+            "00585a43ebcc8d65f45b5e5f5dc35589e550d90518c21100d84d08db5dfc8b45fcc9c3"
+        ).ljust(116, b"\xcc")
+    ),
+    0x1b8da0: (  # .tb_i: 120/123 bytes
+        bytes.fromhex(
+            "5589e5575689d65389cb81eca8040000ff750cff7508e8e550160089d9e86e5ef8ff85c07548538d"
+            "9d5ffbffff89c753e88b4715005958b0ff83ff0a74120fb68738632500565053e8a3d5230083c40c"
+            "88843d4efbffff478d8d4efbffff83ff1175d451ff750ce864951800585a8d65f45b5e5f5dc20800"
+        ).ljust(123, b"\xcc")
+    ),
+    0x21af20: (  # .tb_l: 177/187 bytes
+        bytes.fromhex(
+            "5589e557565383ec0c8b75108b45080fb696386325000fb63c1057528955e850e85bdd080083c40c"
+            "8d4f03394d14894dec89c30f9345f356ff750ce88ff01a0083fb3f5a598b4dec7724807df300741e"
+            "8b55e80fb68210632500ba4000000029da83c0020fafc205a0860100eb3b85c07e0d69c0b0040000"
+            "0550c30000eb2a83c8ff394d1472228b5d140fb686bc23340029fb0fafd8e805dce2ff0fb6c069c0"
+            "58020000c1e80801d88d65f45b5e5f5dc3"
+        ).ljust(187, b"\xcc")
+    ),
+    0x256310: (  # .rodata: 57/110 bytes
+        bytes.fromhex(
+            "01000001010000000000000000000101010000000100000202010101000100020102020202000000"
+            "000102030405060708090b0b0c0d0e0f10"
+        ).ljust(110, b"\xcc")
+    ),
+    0x256380: (  # unused: 0/110 bytes
+        bytes.fromhex(
+            ""
+        ).ljust(110, b"\xcc")
+    ),
+    0x256460: (  # unused: 0/110 bytes
+        bytes.fromhex(
+            ""
+        ).ljust(110, b"\xcc")
+    ),
+    0x256540: (  # unused: 0/110 bytes
+        bytes.fromhex(
+            ""
+        ).ljust(110, b"\xcc")
+    ),
+    0x256620: (  # unused: 0/110 bytes
+        bytes.fromhex(
+            ""
+        ).ljust(110, b"\xcc")
+    ),
+    0x284e50: (  # .tb_o: 125/129 bytes
+        bytes.fromhex(
+            "5589e5575689ce5331db81ec240500008995d0faffffe8853405005689c78d855ffbffff50e8e686"
+            "0800585a8d95d4faffff8d049a508b85d0faffff57ff34988d855ffbffff535650e8b272e9ff83c4"
+            "188d95d4faffff89c18d8518fbffff890c984383fb1175c4ff7508505256e88d4116008d65f45b5e"
+            "5f5dc20400"
+        ).ljust(129, b"\xcc")
+    ),
+    0x28e1d0: (  # unused: 0/110 bytes
+        bytes.fromhex(
+            ""
+        ).ljust(110, b"\xcc")
+    ),
+    0x295d40: (  # .tb_e: 123/125 bytes
+        bytes.fromhex(
+            "5589e5575653538b450c31db8b75080fb6801c0100008945f08b45f039c373538b450c8b14980fb6"
+            "7a250fb64a3589f883e01f83f910773884c0743483e71c752ffec80fb6b9386325007505c6443e33"
+            "0189d0e8e179070085c0741452e87e2a0f000fb6543e225939c2730488443e2243eba68d65f45b5e"
+            "5f5dc3"
+        ).ljust(125, b"\xcc")
+    ),
+    0x2a8ca0: (  # .tb_s: 122/124 bytes
+        bytes.fromhex(
+            "5589e5538b55088b450c0fb64c0244c1e0068d5c025531c039c8720685c97417eb0c0fb614033b55"
+            "10730340ebeac1e00831d2f7f189c189c85b5dc35589e5538b450c8b55080fb60c020fb65402110f"
+            "b698d023340031c04239d3730e89d0ba0400000029d839d00f47c231d239c8730429c189ca89d05b"
+            "5dc3"
+        ).ljust(124, b"\xcc")
+    ),
+    0x2ac900: (  # unused: 0/110 bytes
+        bytes.fromhex(
+            ""
+        ).ljust(110, b"\xcc")
+    ),
+    0x2ac9e0: (  # unused: 0/110 bytes
+        bytes.fromhex(
+            ""
+        ).ljust(110, b"\xcc")
+    ),
+    0x2ce070: (  # .tb_k: 125/139 bytes
+        bytes.fromhex(
+            "55ba0100000089e5565383ec088b4d108b5d0c8b7508e8f58cf7ffd95df45356e81b631200d86df4"
+            "d80d18c21100d80c9df00a0100d95df45356e840bf0f0083c41085c07e128945f0db45f0d80d340b"
+            "0100d845f4d95df4e8f3aad7ff0fb6c08945f0db45f0d80d380b0100d845f4d95d088d65f85b5e5d"
+            "e9c19ce6ff"
+        ).ljust(139, b"\xcc")
+    ),
+    0x30d560: (  # .tb_f: 93/116 bytes
+        bytes.fromhex(
+            "5589e557565331db508b75088b7d0ce86c76dbff8945f0689504000056e8ffb207005a598b45f039"
+            "c3742089d9e8be76dbff85c0741231d239c70f94c2525056e89b95080083c40c43ebd9897d0c8975"
+            "088d65f45b5e5f5de98387f8ff"
+        ).ljust(116, b"\xcc")
+    ),
+    0x30d720: (  # .tb_j .text: 116/116 bytes
+        bytes.fromhex(
+            "5589e55731ff5631f653508b5d148b151829b7003b7238732aff750c53ff75088b423c8955f0ff34"
+            "b0e842a1040083c4108b55f085c074088b4a3c89c38b3cb146ebd131c085ff0f44d88b451089188d"
+            "65f489f85b5e5f5dc3f7402400000070750f8b4020c1e8163c020f96c00fb6c0c331c0c3"
+        ).ljust(116, b"\xcc")
+    ),
+    0x315e50: (  # unused: 0/110 bytes
+        bytes.fromhex(
+            ""
+        ).ljust(110, b"\xcc")
+    ),
+    0x342370: (  # .tb_h .tb_q: 113/114 bytes
+        bytes.fromhex(
+            "5531d231c989e557565383ec448b5d0831c08b34838b7d0c0fb63c3739d7750589748db0414083f8"
+            "1175e74281fa0001000075dc31c08b5485b08914834083f81175f383c4445b5e5f5dc3907364646c"
+            "6c5f5f5c3c5f645d585c7064700000000c0e0e0707080805080807070a0a0a0908"
+        ).ljust(114, b"\xcc")
+    ),
+    0x357890: (  # .tb_x .tb_p: 100/114 bytes
+        bytes.fromhex(
+            "5589e556538b75080fb646353b450c751989f0e8d15efbff85c0740e56e86e0f030089c358395d10"
+            "720431dbeb146a0131d289f16a016a00e8735bf6ff3b45147fe88d65f889d85b5e5dc38d54242089"
+            "f153e869d5f2ff89c389442410e953ccfcff0f0b"
+        ).ljust(114, b"\xcc")
+    ),
+    0x382110: (  # .tb_c: 60/112 bytes
+        bytes.fromhex(
+            "5589e5578b550c8b4d0856530fb60283f83f772385c074170fb67c01ff8d70ff89fb397d10730888"
+            "5c310189f0ebe58a5d10881c01fe025b5e5f5dc3"
+        ).ljust(112, b"\xcc")
+    ),
+    0x388820: (  # .tb_a: 119/123 bytes
+        bytes.fromhex(
+            "5531d289e553518b4d08e851e5ebffd95df88b55f889d3c1eb1785d2783d0fb6db83fb7676350fba"
+            "e21eb864000000722c81e2ffff7f00b99500000081ca0000800029d96bc264ba01000000d3e2b996"
+            "00000029d901d0d3e8eb0231c05a5b5dc35589e58b55088b450c83e8017206c6040200ebf55dc3"
+        ).ljust(123, b"\xcc")
+    ),
+    0x396b40: (  # .tb_d .tb_z: 105/113 bytes
+        bytes.fromhex(
+            "5589e55631f6538d9d70ffffff81ec8800000053ff750ce8f411daff585a8d04f3ff7510564650ff"
+            "7508e8b1ae040083c41083fe1175e78d65f85b5e5dc35589e5538b4d088b550c8a44114489d38a54"
+            "1122c1e306d0e801cb0fb6c0385418555b0f92c05d0fb6c0c3"
+        ).ljust(113, b"\xcc")
+    ),
+    0x3c9fa0: (  # .tb_w .tb_u: 113/116 bytes
+        bytes.fromhex(
+            "5589e556538b5d0c8b5508668b43288b3266c1e80a83e00785f6740f668b4e2866c1e90a83e10739"
+            "c87307897204891aeb198b4a0485c9740f668b492866c1e90a83e10739c87303895a045b5e5dc355"
+            "89e5538b4d0ce81534efff8b550c8b4d0889c3e8a89ccfff89c289d85b5d29d0c3"
+        ).ljust(116, b"\xcc")
+    ),
+    0x3e1a20: (  # .tb_r: 185/192 bytes
+        bytes.fromhex(
+            "55b9ff00000089e55731ff565331db83ec108b75108b5508895df00fb686246325008945ec89f0c1"
+            "e0068d4402558945e88b45ec39c773608b450c31db8b04b885c0742f894de450e8b36dfaff598b4d"
+            "e489c38b450c833cb80074178b4508538d44304450ff75e8e88306faff8b4de483c40c39cb731a8b"
+            "450c31d28955f08b04b885c0740d8a402583e01f8945f0eb0289cb4789d9eb99837d1400741385c0"
+            "740f8b4508880c3089c28a45f0884432118d65f45b5e5f5dc3"
+        ).ljust(192, b"\xcc")
+    ),
+    0x3e9050: (  # .tb_n .tb_m: 121/122 bytes
+        bytes.fromhex(
+            "5589e55756538b750c8b5d1483fb03774b31c031c9baff000000833c8600740e8b7d108b3c8739cf"
+            "7e0489f989c24083f81175e681faff00000074208d3c96ff7508ff37e81d000000595a85c0750631"
+            "d28917ebbc31c0438907ebb08d65f489d85b5e5f5dc35589e5538b45088b5d0c53e8bab0f3ff5b5d"
+            "c3"
+        ).ljust(122, b"\xcc")
+    ),
+    0x3f43b0: (  # .tb_v: 98/117 bytes
+        bytes.fromhex(
+            "55d9ee89e5575631f65331db83ec088b45080fb6b81c01000039fe73258b45088b0cb00fb651353b"
+            "550c7513d95decba0100000043e89629e5ffd945ecdec146ebd7d9ee85db7411ddd831c9895dec89"
+            "4df0df6decdef9eb02ddd9585a5b5e5f5dc3"
+        ).ljust(117, b"\xcc")
+    ),
+    0x3f6390: (  # .tb_g: 114/123 bytes
+        bytes.fromhex(
+            "5589e55756538b750cbbff0000008b7d0880be2463250000744e807c37330075475657e82429ebff"
+            "5b5a505657e8de28ebff83c40c89c383f83f7727837d1001770d5657e8a507faff5a5985c0751480"
+            "be1063250000741069dbab000000c1eb08eb05bbff0000008d65f489d85b5e5f5dc3"
+        ).ljust(123, b"\xcc")
+    ),
+}
+RETAIL_SHA256 = {0x11c150: '6a0627a3815ee96afdd8042600e9c3209459c59f93e1a7e940403c22d77b0488', 0x137d50: '5629b8bc65bfd01104d7a7d6e565e766af2b11d305fa47ed727c3cbf486e1d8f', 0x1b8da0: '7f96ea0c7d90472dcab5001487156e42a6a4af203369c7b8adbc6dec3a251b34', 0x21af20: 'b0af97b9730e74566b72d3df0e79fb3a5a53e34d6661559974a1767f6da22c80', 0x256310: 'ac2bdb653311ff29fed2441178ee27015e4aa8f8da0aecd59520f32401694f61', 0x256380: '7586a4270b8c21882af7b5fe1b46761fee1270000bca47920464dc658285ce84', 0x256460: '150fd3d7e648d3099048d698bdf91fda8dfd802d6de2bef1621d04c0bf0368bf', 0x256540: '2e26328787c3aa09a9ef691b129aeac5acfcacfa7ccc1156a5d5bef56badda23', 0x256620: 'c5b1617c97ffed62bf58c816c668338a9a68249e3591363bc08415e38e9f9bfe', 0x284e50: '3b72966b30190a9f4e97ef8b7b8ed405f80610273f3fee13d93414f652849085', 0x28e1d0: '44dcd10a8b2934698493f139c987e38b7dcef65cff5d1e76cb4a2519e24c39ce', 0x295d40: 'bac87fcda14a810b1ae8bb5a5622644af5de5ecec757fbbf9ee4f3a9d4ade5f0', 0x2a8ca0: 'df738c80c70f0ba748ba155313186612af9adb2d2f55a97f92007ac32cc58357', 0x2ac900: '9180b1dfb4220a03c21748b4d3e3d96c496f68f4dee07eb455061419536dbf41', 0x2ac9e0: '7b1fb662a5abd9a317a17a137753f9a7e39076142ee852a58c0bbbae1332b0b7', 0x2ce070: '97e5ab81dc640153673b4fe9e28d69d7c85cf9ede6e887e2de34c1774e9246ea', 0x30d560: '1c362b368dafe6e33e5a5636feedc72f84f584cf2fa03904557890526b58c623', 0x30d720: '1c362b368dafe6e33e5a5636feedc72f84f584cf2fa03904557890526b58c623', 0x315e50: '44dcd10a8b2934698493f139c987e38b7dcef65cff5d1e76cb4a2519e24c39ce', 0x342370: '150409860c8ad33832bc493ef0144e9ea282ed63c389718470495cc9ae4219f1', 0x357890: '150409860c8ad33832bc493ef0144e9ea282ed63c389718470495cc9ae4219f1', 0x382110: '84611ff71826a4163b01c8c75fbcee24c0136b875d49694ae343cab7131d4ca9', 0x388820: 'f8479f7c678f3a1fb9283d7c4c177c935e1ba9b41e30fed5eba7e711094e811c', 0x396b40: '8ea370535f73774d2ae07a8e89b1f989d89ef2cd0805b2227436bf0ccb4a60c9', 0x3c9fa0: '55f0f3f333eebf2fa0f26c9fbac31df62a5f9d1a84e34e33befb680bb87405f1', 0x3e1a20: '1a9eb7a465bc1658c937f5fa3379ca56a2fcd0e2ae741530f4006427730a3330', 0x3e9050: '48e16eae9c5d58ccc0a70f077cc09c118f423867f1a477bd16eda309efd57c3d', 0x3f43b0: 'b5b94548eae653b94a6edfde69e22fba55bae2309aa716d163fcd3b2a75d3290', 0x3f6390: '6865039eadb91cc7619c60cf38ed4b712dbb76b6cd59b8b1861be232a036e87c'}
+SYMBOLS = {'tb_ahead': 2788572, 'tb_asset': 3763070, 'tb_candidate': 3200800, 'tb_club': 3763008, 'tb_decline_after': 3417040, 'tb_deficit': 3973103, 'tb_fits': 3504272, 'tb_insert': 3678480, 'tb_int100': 1277358, 'tb_key': 4154256, 'tb_mean': 4146096, 'tb_new_score': 2207520, 'tb_old_score': 2941040, 'tb_order': 1805728, 'tb_pct': 2788512, 'tb_points': 3704864, 'tb_pool': 4069920, 'tb_reorder': 3416944, 'tb_score': 1163600, 'tb_seat': 3973024, 'tb_seats': 1277264, 'tb_select': 4100176, 'tb_value': 3417020, 'tb_view': 3200352, 'tb_wish': 4100278, 'tb_wish_entry': 3504347, 'tb_wishes': 2641488, 'tb_young': 2710848, 'tb_zero': 3704961}
+INPUTS = {'decline_after': [12, 14, 14, 7, 7, 8, 8, 5, 8, 8, 7, 7, 10, 10, 10, 9, 8], 'value_x100': [115, 100, 100, 108, 108, 95, 95, 92, 60, 95, 100, 93, 88, 92, 112, 100, 112]}

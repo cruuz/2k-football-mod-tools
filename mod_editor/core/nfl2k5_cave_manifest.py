@@ -328,6 +328,12 @@ class Recorder:
         if economy.status(final) == "applied":
             for site in economy.sites():
                 self.reserve(site.va, len(site.patched), "nfl2k5_franchise_economy", "full owner site")
+        from . import nfl2k5_team_building as team_building  # b81: whole windows and both branches, padding included
+        if team_building.status(final) == "applied":
+            for va, blob in team_building._code().WINDOWS.items():
+                self.reserve(va, len(blob), "nfl2k5_team_building", "full owner window")
+            for va in (team_building.HEAD_CALL_VA, team_building.WISH_JUMP_VA):
+                self.reserve(va, 5, "nfl2k5_team_building", "retargeted draft-AI branch")
             if squad.status(final) == "applied":
                 self.reserve(fill.ENTRY, 6, "nfl2k5_roster_fill_composition", "shared roster-fill entry")
                 self.reserve(fill.CONTINUATION, len(fill.CHAIN), "nfl2k5_roster_fill_composition",
@@ -800,6 +806,11 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             # b76-fc3: the 2026 franchise economy (off in the presets) over the practice squad: its guarded windows and
             # the shared roster-fill chain at 0x322BB0 (nfl2k5_roster_fill_composition), observed through apply.
             final, _ = economy.apply(final)
+            # b81 team building (off in the presets but Experimental): its 29 windows and the two draft-AI branches it
+            # retargets, observed through apply over the draft AI and the economy installed above.
+            from . import nfl2k5_team_building as team_building
+            if team_building.needs_met(final):
+                final, _ = team_building.apply(final)
             final, _ = backfield_cards.apply(final)
             # b776-ai2: the CPU AI late owners (off in every preset). This complete union already holds the
             # allocator's 95-request ceiling, so they are observed on a disposable copy of the allocation base with
