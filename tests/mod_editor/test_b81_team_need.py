@@ -6,11 +6,23 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 HEADER = ROOT / "tools/common/team_need.h"
+
+
+def _expected_gcc():
+    """None on the development host (Linux with gcc 13.3, as test_b81_gadget_play.py's guard), else why the C checks
+    skip: a hosted runner with another gcc, or Windows, must skip them rather than fail."""
+    if not sys.platform.startswith("linux") or not shutil.which("gcc"):
+        return "GNU gcc on Linux (development only)"
+    first = subprocess.run(["gcc", "--version"], capture_output=True, text=True).stdout.splitlines()[:1]
+    if not first or " 13.3" not in first[0]:
+        return "the header's C checks are pinned to gcc 13.3"
+    return None
 
 
 def _tables(text):
@@ -54,8 +66,9 @@ class TeamNeedHeader(unittest.TestCase):
         self.assertFalse(tn.present(bytes(rec)))
 
     def test_the_header_compiles_freestanding(self):
-        if not shutil.which("gcc"):
-            raise unittest.SkipTest("gcc is needed")
+        reason = _expected_gcc()
+        if reason:
+            self.skipTest(reason)
         with tempfile.TemporaryDirectory() as tmp:
             src = Path(tmp) / "t.c"
             src.write_text('#include "team_need.h"\nunsigned f(const unsigned char *p, const unsigned char *s) '
@@ -65,7 +78,7 @@ class TeamNeedHeader(unittest.TestCase):
             subprocess.run(["gcc", "-m32", "-Os", "-ffreestanding", "-fno-builtin", "-Wall", "-Wextra", "-Werror",
                             "-I", str(HEADER.parent), "-c", str(src), "-o", str(Path(tmp) / "t.o")], check=True)
 
-    def test_percentile_is_the_mid_rank_in_c_and_python(self):
+    def test_percentile_is_the_mid_rank(self):
         """The coordinator's ruling: mid-rank over every club's need-seat starters; ties at a cut line are not holes."""
         from mod_editor.core import nfl2k5_team_need as tn
         scale = tn.league_scale([[60, 70], [70, 80], [0, 75], [70, 70]])      # four clubs, two need seats each
@@ -75,8 +88,13 @@ class TeamNeedHeader(unittest.TestCase):
         self.assertEqual(tn.percentile(scale, 80), (2 * 7 + 1) * 128 // 8)
         self.assertEqual(tn.percentile(scale, 90), 256)
         self.assertEqual(tn.percentile([], 50), 0)
-        if not shutil.which("gcc"):
-            raise unittest.SkipTest("gcc is needed")
+
+    def test_percentile_is_the_same_in_c_and_python(self):
+        from mod_editor.core import nfl2k5_team_need as tn
+        reason = _expected_gcc()
+        if reason:
+            self.skipTest(reason)
+        scale = tn.league_scale([[60, 70], [70, 80], [0, 75], [70, 70]])
         cases = [(scale, r) for r in (0, 1, 60, 65, 70, 75, 80, 90)] + [([50] * 64, 50), (list(range(64)), 31)]
         with tempfile.TemporaryDirectory() as tmp:
             src = Path(tmp) / "p.c"
