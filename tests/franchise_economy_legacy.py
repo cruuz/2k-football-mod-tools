@@ -64,3 +64,14 @@ def no_restructure_room(m, team, keep):
             raw[0x26] = 2
             raw[0x27] = (raw[0x27] & 0xF0) | 1
             m.uc.mem_write(p, bytes(raw))
+
+
+VETERAN_CUT_RETURN = 0x2BFBC2      # the return address of the veteran cap cut's release call 0x2BFBBD
+
+
+def release_caller(m) -> int:
+    """Who a release at 0x2BD900 entry answers to. The veteran cut's (0x2BFBC2) also when the economy's release stub
+    (roster_m; revision 10: the native release, then the trade board's pruner 0x2BB9A0) made the call for the cut:
+    the cut's return address is then three words up (the stub's return and the two arguments it pushed again)."""
+    esp = m.reg("ESP")
+    return VETERAN_CUT_RETURN if m.get(esp + 12) == VETERAN_CUT_RETURN else m.get(esp)

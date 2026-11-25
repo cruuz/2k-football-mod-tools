@@ -28,6 +28,7 @@ from mod_editor.core import nfl2k5_franchise_economy as economy
 from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from tests.nfl2k5_supersim_draft_fixture import HAVE_UC, retail_bytes, retail_roster
+from tests.franchise_economy_legacy import release_caller  # noqa: E402
 
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "econ3_revision6_windows.json"
 QB, K, P, WR, CB, FS, SS, HB, FB, TE = range(10)
@@ -265,9 +266,11 @@ class NativeTests(unittest.TestCase):
         m.put(0xE576A4, 6)
         m.put(0xE576B4, 0)
         released = []
-        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("ECX"), m.reg("EDX"), m.get(m.reg("ESP")))),
+        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("ECX"), m.reg("EDX"), release_caller(m))),
                       begin=0x2BD900, end=0x2BD900)
-        m.call(0x247D40, ecx=m.ARENA + 0x1A0000, budget=2_000_000_000)
+        # b81 economy r10 retune: with every club this far over a cap set from club 0's payroll and the restructure cap
+        # (three a club), the cap clearing prices whole clubs by rank many times (LATER.txt L-PERF): over 2e9 here
+        m.call(0x247D40, ecx=m.ARENA + 0x1A0000, budget=8_000_000_000)
         self.assertEqual(m.reg("ESP"), m.STACK + 4)
         for name, value in (("EBX", 0x11111111), ("ESI", 0x22222222), ("EDI", 0x33333333)):
             self.assertEqual(m.reg(name), value)

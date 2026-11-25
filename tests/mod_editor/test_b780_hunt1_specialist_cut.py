@@ -26,6 +26,7 @@ from mod_editor.core import nfl2k5_franchise_economy as economy
 from mod_editor.core import nfl2k5_star_retention as star_retention
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from tests.nfl2k5_supersim_draft_fixture import HAVE_UC, retail_bytes, retail_roster
+from tests.franchise_economy_legacy import release_caller  # noqa: E402
 
 K, P, CUT_RETURN = 1, 2, 0x2BFBC2
 NATIVE_RELEASE_CALL = bytes.fromhex("e83eddffff")      # call 0x2BD900 at 0x2BFBBD
@@ -190,7 +191,7 @@ class NativeStageSixTests(unittest.TestCase):
         m.put(0xE576A4, 6)
         m.put(0xE576B4, 0)
         released = []
-        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("EDX"), m.get(m.reg("ESP")))),
+        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("EDX"), release_caller(m))),
                       begin=0x2BD900, end=0x2BD900)
         m.call(0x247D40, ecx=m.ARENA + 0x1A0000, budget=2_000_000_000)
         self.assertEqual(m.reg("ESP"), m.STACK + 4)
