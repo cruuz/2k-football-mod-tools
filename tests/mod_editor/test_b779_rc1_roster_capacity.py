@@ -128,7 +128,8 @@ class MyCareerCapacityCreateTests(unittest.TestCase):
 # Revision 4's class mix per 450 (Noah 10/28: deep classes, undrafted players at every position):
 #             QB   K   P  WR  CB  FS  SS  HB  FB  TE OLB ILB   C   G   T  DT  DE
 # b779 ag1: retuned on the 4,096-record arena (sim fastX1 leftovers)
-CLASS_MIX = (21, 9, 9, 37, 44, 18, 14, 25, 9, 25, 18, 18, 30, 28, 44, 49, 52)
+# b81 economy revision 10 (coordinator ruling 6, 11/25): K 9 -> 4, P 9 -> 4, two more each at WR, CB, T, DT, DE
+CLASS_MIX = (21, 4, 4, 39, 46, 18, 14, 25, 9, 25, 18, 18, 30, 28, 46, 51, 54)
 ONE_POOL_MIX = CLASS_MIX[:10] + (0, CLASS_MIX[10] + CLASS_MIX[11]) + CLASS_MIX[12:]   # no rostered OLB: OLB is LB
 
 

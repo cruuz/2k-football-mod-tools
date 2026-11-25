@@ -325,6 +325,27 @@ SQUAD_EXPIRE = 0x247B79
 PINS[SQUAD_EXPIRE] = "9fc06df982b634efc45adf0d757738512d523c30cbabb7f2c067cbcd01b75ad0"
 REVISION_8_NEW = frozenset({SQUAD_GATE, SQUAD_EXPIRE}) | frozenset(SQUAD_WINDOWS)
 REVISION = 8
+# b81 economy revision 10, part 1 (coordinator ruling 6, 11/25): the draft class position mix (window roster_f's
+# class_counts) moves from K 9 / P 9 to K 4 / P 4 per 450, the ten slots two each to WR, CB, T, DT and DE (runtime.c).
+# Every image built since b779 ag1 (beta 79 / v0.8, beta 80 / v0.9, every beta 81 disc so far) carries the 9/9 window,
+# whether the economy or only the draft class owner (nfl2k5_draft_class) installed it. Such an image reads as the same
+# image with the new window, but "legacy" where that reads "applied" or "legacy", so apply() rewrites the window in
+# place. sha256 of the whole 192-byte window as revisions 4 to 9 installed it:
+PREVIOUS_CLASS_WINDOW = "9f5f9e856f8e57d304273a4ecdc8211bf41df14715d3d65cde8a8b49198e65cb"
+
+
+def with_current_class_window(payload: bytes) -> bytes | None:
+    """The image with its 9/9 class window replaced by the current one, or None when it does not carry that window."""
+    image = XbeImage(payload)
+    window = WINDOWS[CLASS_WINDOW]
+    at = image.offset(CLASS_WINDOW, len(window))
+    if hashlib.sha256(payload[at:at + len(window)]).hexdigest() != PREVIOUS_CLASS_WINDOW:
+        return None
+    out = bytearray(payload)
+    out[at:at + len(window)] = window
+    section = _section_for_offset(_sections(payload), at)          # the window's section digest follows its bytes
+    out[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(out), section)
+    return bytes(out)
 
 
 class EconomyError(ValueError):
@@ -399,7 +420,16 @@ def _site_state(image: XbeImage, site: Site) -> str:
 def _standalone_status(payload: bytes) -> str:
     """retail | applied | legacy | foreign. b81 (revision 8): an image with every revision-8 site applied reads as the
     revision-7 rules read the rest of it; an image with none of them (the four squad windows and the gate call retail)
-    reads "legacy" where those rules read "applied" or "legacy" (it upgrades in place); a mix of the two is foreign."""
+    reads "legacy" where those rules read "applied" or "legacy" (it upgrades in place); a mix of the two is foreign.
+    b81 revision 10 part 1: an image with the 9/9 class window reads as it would with the current window, "legacy" where
+    that reads "applied" or "legacy" (a draft-class-only image still reads "retail": the economy is not installed)."""
+    try:
+        swapped = with_current_class_window(payload)
+    except (ValueError, struct.error, IndexError):
+        return "foreign"
+    if swapped is not None:
+        state = _standalone_status(swapped)
+        return "legacy" if state == "applied" else state
     try:
         image = XbeImage(payload)
         eight = {_site_state(image, site) for site in sites() if site.va in REVISION_8_NEW}

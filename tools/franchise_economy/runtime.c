@@ -573,10 +573,16 @@ SECTION(".roster_f") __attribute__((naked)) void economy_class_free(void) {
  * second run (fastX4: C and DT once at 5): QB 21, K 9, P 9, WR 37, CB 44, FS 18, SS 14, HB 25, FB 9, TE 25, OLB 18,
  * ILB 18, C 30, G 28, T 44, DT 49, DE 52. Under the
  * one-pool scheme no rostered player carries OLB (10), and the class must conserve that
- * (nfl2k5_position_pools), so an OLB slot becomes LB (11). */
+ * (nfl2k5_position_pools), so an OLB slot becomes LB (11).
+ * b81 economy revision 10 (coordinator ruling 6, 11/25): K 9 -> 4 and P 9 -> 4. Every class added 18 specialists nobody
+ * drafted while clubs keep one of each, so the free-agent pool grew by about 8 kickers and 8 punters a season (ten-season
+ * panel 68001-68004: K 17 -> 72, P 12 -> 60; rated 80+ 1 -> 30 per league). Real: 7.3 kickers and 5.5 punters a season
+ * play their first snap, 1.9 and 2.0 are drafted (nflverse 2014-2025, economy/real.txt R6). The ten slots go two each to
+ * WR, CB, T, DT and DE (the premium positions): QB 21, K 4, P 4, WR 39, CB 46, FS 18, SS 14, HB 25, FB 9, TE 25, OLB 18,
+ * ILB 18, C 30, G 28, T 46, DT 51, DE 54. */
 #define CLASS_SIZE 450
 SECTION(".roster_f_rodata") static const u8 class_counts[17] = {
-    21, 9, 9, 37, 44, 18, 14, 25, 9, 25, 18, 18, 30, 28, 44, 49, 52};
+    21, 4, 4, 39, 46, 18, 14, 25, 9, 25, 18, 18, 30, 28, 46, 51, 54};
 
 SECTION(".roster_f") __attribute__((noinline)) unsigned league_has_olb(void) {
     u8 *root = *(u8 **)0xB72918;   /* the roster's own 32 club blocks, valid whenever a class is generated */
