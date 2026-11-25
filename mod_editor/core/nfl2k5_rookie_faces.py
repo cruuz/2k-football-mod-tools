@@ -1086,9 +1086,13 @@ def face_pixels(rgb: bytes) -> tuple[bytes, bytes]:
     return indices, palette
 
 
-def bank_faces(bank: Mapping[str, Any]) -> Iterable[tuple[int, bytes]]:
-    """(portrait id, 128x128 RGB) for every bank face. Each atlas ``faces_NN.png`` holds 16 x 16 cells of 8-bit palette
-    indices and ``faces_NN_pal.png`` one 256-colour RGB palette row per cell (both sha256-pinned in bank.json)."""
+def bank_faces(bank: Mapping[str, Any]) -> Iterable[tuple[int, Any]]:
+    """(portrait id, face) for every bank face. Each atlas ``faces_NN.png`` holds 16 x 16 cells of 8-bit palette
+    indices and ``faces_NN_pal.png`` one 256-entry palette row per cell (both sha256-pinned in bank.json).
+
+    b81 (owner report, 11/25: "the rookie photos have a grey background"): the palettes now carry alpha, the cutout the real
+    portraits have, and a face is ``(128 x 128 indices, 1024-byte RGBA palette)`` (the P8 the portrait writer takes
+    as it is).  A face whose palette is fully opaque (an older bank) is still ``128 x 128 RGB`` bytes."""
     import io  # noqa: PLC0415
     from PIL import Image  # noqa: PLC0415
     files = {}
@@ -1098,16 +1102,19 @@ def bank_faces(bank: Mapping[str, Any]) -> Iterable[tuple[int, bytes]]:
         files[sheet["file"]] = Image.open(io.BytesIO(data))
     for face in bank["faces"]:
         index = files[face["atlas"]]
-        palette = files[face["atlas"][:-4] + "_pal.png"].convert("RGB")
+        palette = files[face["atlas"][:-4] + "_pal.png"].convert("RGBA")
         col, row = face["cell"]
         require(index.mode == "L", "a face atlas must be 8-bit indices")
         cell = index.crop((col * 128, row * 128, col * 128 + 128, row * 128 + 128)).tobytes()
         pal = palette.crop((0, row * 16 + col, 256, row * 16 + col + 1)).tobytes()
-        rgb = b"".join(pal[3 * i:3 * i + 3] for i in cell)
+        if any(pal[3::4][i] != 255 for i in set(cell)):
+            value: Any = (cell, pal)
+        else:
+            value = b"".join(pal[4 * i:4 * i + 3] for i in cell)
         if face.get("id") is not None:
-            yield face["id"], rgb
+            yield face["id"], value
         if face.get("legacy_id") is not None:     # same person (a re-framed face shows its fixed crop there too)
-            yield face["legacy_id"], rgb
+            yield face["legacy_id"], value
 
 
 def build_portraits(record: bytes, cdf: bytes, faces: Iterable[tuple[int, bytes]]) -> tuple[bytes, bytes, int]:
