@@ -120,7 +120,8 @@ class CaveShapeTests(unittest.TestCase):
         self.assertEqual(len(aux), ot.AUX_CAVE_SIZE)
         self.assertEqual(len(ot.RETAIL_MAIN_CAVE), ot.MAIN_CAVE_SIZE)
         self.assertEqual(len(ot.RETAIL_AUX_CAVE), ot.AUX_CAVE_SIZE)
-        self.assertTrue(main.endswith(b"\xcc"))
+        # b81 ot-crash: the main cave now fills its host exactly (ot_expiry's last return is the host's last byte)
+        self.assertTrue(main.endswith(b"\xcc") or main.endswith(b"\xc3"))
         self.assertTrue(aux.endswith(b"\xcc"))
         for retail in (ot.RETAIL_MAIN_CAVE, ot.RETAIL_AUX_CAVE):
             self.assertEqual(retail[:3], bytes.fromhex("558bec"), "cave hosts start with push ebp / mov ebp, esp")
@@ -235,6 +236,26 @@ class SyntheticXbeTests(unittest.TestCase):
                                     "postseason_no_ties": True, "sim_engine": True})
         with self.assertRaises(ot.OvertimeError):
             ot.apply(patched)
+
+    def test_the_earlier_main_cave_reads_previous_and_upgrades_to_a_fresh_install(self) -> None:
+        # b81 ot-crash: the main cave as beta-79 .. the beta 81 integration installed it (PREVIOUS_MAIN_CODE_R1) reads
+        # "previous"; apply() rewrites only that code, keeping the settings, and equals a fresh install
+        for kwargs in ({}, {"regular_minutes": 12}, {"postseason_no_ties": False}, {"sim_engine": False}):
+            with self.subTest(**kwargs):
+                fresh, _receipt = ot.apply(self.payload, **kwargs)
+                earlier = bytearray(fresh)
+                off = ot._offset(fresh, ot.MAIN_CAVE_VA)
+                earlier[off + 4: off + ot.MAIN_CAVE_SIZE] = ot.PREVIOUS_MAIN_CODE_R1
+                section = strength._section_for_offset(strength._sections(bytes(earlier)), off)
+                earlier[section.header_offset + 36: section.header_offset + 56] = strength.section_digest(
+                    bytes(earlier), section)
+                earlier = bytes(earlier)
+                self.assertEqual(ot.status(earlier), "previous")
+                self.assertEqual(ot.read_settings(earlier)["regular_minutes"], ot.read_settings(fresh)["regular_minutes"])
+                upgraded, receipt = ot.apply(earlier)
+                self.assertEqual(receipt["upgraded_from"], "previous")
+                self.assertEqual(upgraded, fresh)
+                self.assertEqual(ot.status(upgraded), "applied")
 
     def test_only_the_sites_and_the_text_digest_change(self) -> None:
         patched, receipt = ot.apply(self.payload)
@@ -686,6 +707,44 @@ class UnicornScenarioTests(unittest.TestCase):
         g.kick_fielded(AWAY)
         self.assertEqual(g.evaluate(), "continue")
         self.assertEqual(g.flags, self.HOME_POSSESSED | self.AWAY_POSSESSED)
+
+    # ---- b81 ot-crash (coordinator ruling 2): the period end (ot_expiry, ZF = 1 "play on" / 0 "decided")
+    def _expiry(self, *, home, away, poss, flags, mode=6, period=5):
+        from unicorn.x86_const import UC_X86_REG_EFLAGS
+        g = _Game(self.patched)
+        g.set(period=period, home=home, away=away, poss=poss, flags=flags, mode=mode)
+        g.run(ot.cave_labels()["ot_expiry"])
+        return "play on" if g.uc.reg_read(UC_X86_REG_EFLAGS) & 0x40 else "decided"
+
+    def test_period_end_the_leader_holds_the_ball_through_it(self):
+        # the leader scored nothing yet but leads (forced lead) and keeps the ball to the period end: the trailing team
+        # has not possessed, so the next period starts with the leader's drive going on
+        self.assertEqual(self._expiry(home=7, away=0, poss=HOME, flags=self.HOME_POSSESSED), "play on")
+        self.assertEqual(self._expiry(home=0, away=3, poss=AWAY, flags=self.AWAY_POSSESSED), "play on")
+
+    def test_period_end_after_a_first_drive_score(self):
+        # a first-drive touchdown as the period ends: the kickoff to the trailing team is pending (not a possession)
+        self.assertEqual(self._expiry(home=7, away=0, poss=HOME, flags=self.HOME_POSSESSED | self.AWAY_PENDING),
+                         "play on")
+
+    def test_period_end_trailing_team_on_its_first_possession_still_plays_on(self):
+        self.assertEqual(self._expiry(home=7, away=0, poss=AWAY, flags=self.HOME_POSSESSED | self.AWAY_POSSESSED),
+                         "play on")
+
+    def test_period_end_after_both_possessed_with_the_leader_in_possession_is_decided(self):
+        self.assertEqual(self._expiry(home=7, away=0, poss=HOME, flags=self.HOME_POSSESSED | self.AWAY_POSSESSED),
+                         "decided")
+
+    def test_period_end_tied_plays_on_and_the_regular_season_keeps_its_rule(self):
+        self.assertEqual(self._expiry(home=3, away=3, poss=HOME, flags=self.HOME_POSSESSED), "play on")
+        # regular season (mode 7): the period end decides it, possessed or not, as before
+        self.assertEqual(self._expiry(home=7, away=0, poss=HOME, flags=self.HOME_POSSESSED, mode=7), "decided")
+
+    def test_a_first_possession_safety_still_ends_the_game(self):
+        # unchanged evaluator path (also covered by test_first_possession_safety_ends_the_game)
+        g = self._overtime(kicker=HOME)                         # away receives and has the ball
+        g.score(KIND_SAFETY, HOME, next_phase=1)                # the receiver is tackled in its own end zone
+        self.assertEqual(g.evaluate(), "over")
 
     def test_regulation_keeps_the_retail_path(self) -> None:
         g = _Game(self.patched)

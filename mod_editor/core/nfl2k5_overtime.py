@@ -52,7 +52,13 @@ The patch (two caves, both dead functions with no reference anywhere in the imag
   builder, so its possession store also clears the flags.
 * ``postseason_no_ties``: in modes 5/6 an overtime period that expires with the trailing team
   still on its first possession continues into another period (the retail code only continues
-  when tied); regular-season games keep retail's one-period-then-tie rule.
+  when tied); regular-season games keep retail's one-period-then-tie rule.  b81 ot-crash: it also
+  continues when the trailing team has not had the ball at all (its has-possessed bit is clear):
+  the leader's first drive carries over into the next period, or the kickoff after a first-drive
+  score as the period ends is still to come.  A playoff game cannot end before the second team has
+  had the ball; a safety on the first possession still ends it (the post-play evaluator).  The
+  earlier main cave (beta-79 to the beta 81 integration, ``PREVIOUS_MAIN_CODE_R1``) reads
+  "previous" and ``apply`` upgrades it in place.
 * ``sim_engine``: the simulator's overtime period gets the same ``regular_minutes / 15`` clock
   fraction and a regular-season game that is still tied after it ends as a tie instead of the
   1-in-40 roll; playoff simulations keep playing periods.  The simulator now uses the modern
@@ -348,6 +354,12 @@ def _main_code(base: int) -> tuple[bytes, dict[str, int]]:
     a.b("8b0d" + _imm(AWAY_SCORE_PTR))
     a.b("3b11")
     a.j8("74", "exp_tied")
+    # b81 ot-crash (coordinator ruling 2): the trailing team's has-possessed bit (home bit 0, away bit 1), from the
+    # compare above (home < away: home trails)
+    a.b("b001")                                     # mov al, 1
+    a.j8("7c", "exp_bit")
+    a.b("b002")                                     # mov al, 2
+    a.label("exp_bit")
     a.b("833d" + _imm(MODE_GLOBAL) + f"{NO_TIE_MODES[1]:02x}")   # cmp dword [mode], 6
     a.j8("74", "exp_mode_ok")
     a.b("833d" + _imm(MODE_GLOBAL) + f"{NO_TIE_MODES[0]:02x}")   # cmp dword [mode], 5
@@ -355,6 +367,11 @@ def _main_code(base: int) -> tuple[bytes, dict[str, int]]:
     a.label("exp_mode_ok")
     a.b("833d" + _imm(PERIOD_GLOBAL) + "05")        # cmp dword [period], 5
     a.j8("7c", "exp_differ")
+    # the 2025 rule: a playoff game cannot end before the second team has had the ball. A trailing team that has not
+    # possessed yet plays on (the leader's drive carries into the next period, or the kickoff after a first-drive
+    # score is still to come). A pending kickoff (bits 2/3) is not a possession.
+    a.b("8405" + _imm(STATE_FLAGS))                 # test byte [flags], al
+    a.j8("74", "exp_tied")
     a.b("8b0d" + _imm(POSSESSION_GLOBAL))
     a.b("85c9")
     a.j8("74", "exp_differ")
@@ -375,7 +392,7 @@ def _main_code(base: int) -> tuple[bytes, dict[str, int]]:
     a.b("5a")
     a.b("59")
     a.b("58")
-    a.b("83fc00")                                   # ZF = 0
+    a.b("85e4")                                     # test esp, esp: ZF = 0 (b81: was cmp esp, 0, one byte more)
     a.b("c3")
     a.label("end")
     code = a.assemble()
@@ -463,6 +480,19 @@ def _aux_code(base: int, flag_team_va: int) -> tuple[bytes, dict[str, int]]:
     a.label("end")
     code = a.assemble()
     return code, {name: base + off for name, off in a.labels.items()}
+
+
+# b81 ot-crash (coordinator ruling 2): the main cave's code as beta-79 to the beta 81 integration installed it (after the
+# 4-byte scale float; 0xCC padding included). An install of it reads "previous" and apply() upgrades it in place: only
+# ot_expiry's tail changes (the trailing team's has-possessed bit), every label and every hook site stays.
+PREVIOUS_MAIN_CODE_R1 = bytes.fromhex(
+    "d91db002e600c705a802e60000000000c385c9741781f920fce50075070815a802e600c300d20815a802e600c3a1c402e60083f8"
+    "057c7c833db402e600027424a0a802e6008ac8c0e9020ac12403a2a802e6008b0d8002e60085c97456b201e8adffffff8b1528fc"
+    "e5008b128b0d68fce5003b11743d833db402e60001743d8b0d8002e6008b51088b128b018b40088b003bd07e1e8b0981f920fce5"
+    "00750bf605a802e600017514eb09f605a802e600027509a1c402e60083fc00c3a1c402e60039c0c35051528b1528fce5008b128b"
+    "0d68fce5003b117435833d80ffe500067409833d80ffe500057529833dc402e600057c208b0d8002e60085c974168b51088b128b"
+    "018b40088b003bd07d065a595839c0c35a595883fc00c3cccccccccccccccccccccccccc"
+)
 
 
 def main_cave_bytes(regular_minutes: float = 10) -> bytes:
@@ -853,7 +883,9 @@ def _site_state(payload: bytes, label: str, off: int, before: bytes, after: byte
     if got == before:
         return "retail"
     if label == "main_cave":
-        return "applied" if got[4:] == after[4:] else "foreign"   # the scale float varies
+        if got[4:] == after[4:]:                                   # the scale float varies
+            return "applied"
+        return "previous" if got[4:] == PREVIOUS_MAIN_CODE_R1 else "foreign"
     return "applied" if got == after else "foreign"
 
 
@@ -880,6 +912,9 @@ def status(payload: bytes) -> str:
         return "retail"
     if states["core"] == {"applied"} and all(states[g] in ({"retail"}, {"applied"}) for g in GROUPS[1:]):
         return "applied"
+    # b81 ot-crash: the beta-79 .. beta 81 integration install (only its main cave code differs); apply() upgrades it
+    if states["core"] == {"applied", "previous"} and all(states[g] in ({"retail"}, {"applied"}) for g in GROUPS[1:]):
+        return "previous"
     return "foreign"
 
 
@@ -887,7 +922,7 @@ def read_settings(payload: bytes) -> dict[str, object]:
     """The overtime rules currently encoded (retail values when the patch is not applied)."""
 
     state = status(payload)
-    if state != "applied":
+    if state not in ("applied", "previous"):
         return {"status": state, "regular_minutes": RETAIL_REGULAR_MINUTES, "both_possessions": False,
                 "postseason_no_ties": False, "sim_engine": False}
     scale = struct.unpack_from("<f", payload, _offset(payload, SCALE_VA))[0]
@@ -898,12 +933,37 @@ def read_settings(payload: bytes) -> dict[str, object]:
             "sim_engine": states["sim"] == {"applied"}}
 
 
+def _upgrade(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
+    """b81 ot-crash: an install of the earlier main cave code gets this release's code in place. Its settings (the scale
+    float, the optional groups) and every hook site stay; the result equals a fresh install with the same settings."""
+
+    settings = read_settings(payload)
+    off = _offset(payload, MAIN_CAVE_VA)
+    scale = payload[off: off + 4]
+    code = main_cave_bytes(settings["regular_minutes"])
+    _require(code[:4] == scale, "the installed scale float does not round-trip")
+    buf = bytearray(payload)
+    buf[off: off + MAIN_CAVE_SIZE] = code
+    sections = _sections(payload)
+    section = _section_for_offset(sections, off)
+    d = section.header_offset + 36
+    buf[d: d + 20] = section_digest(bytes(buf), section)
+    upgraded = bytes(buf)
+    _require(status(upgraded) == "applied", "overtime upgrade postcondition failed")
+    _require({k: v for k, v in read_settings(upgraded).items() if k != "status"}
+             == {k: v for k, v in settings.items() if k != "status"}, "overtime upgrade changed its settings")
+    return upgraded, {"upgraded_from": "previous", "changed_bytes": sum(1 for a, b in zip(payload, upgraded) if a != b),
+                      "sections_repinned": [section.index], **{k: v for k, v in settings.items() if k != "status"}}
+
+
 def apply(payload: bytes, regular_minutes: float = 10, both_possessions: bool = True,
           postseason_no_ties: bool = True, sim_engine: bool = True) -> tuple[bytes, Mapping[str, object]]:
     """Return the patched XBE bytes plus a receipt; refuses anything but retail sites."""
 
     minutes = _validate_minutes(regular_minutes)
     state = status(payload)
+    if state == "previous":
+        return _upgrade(payload)
     _require(state == "retail", f"overtime sites are {state}, not retail")
     buf = bytearray(payload)
     sections = _sections(payload)

@@ -2379,7 +2379,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         # b778-pg1: so does progression (the beta-77 curves-only patch gains the NFL career layer in place)
         # b780 sub1: a previous SPECIAL role table (revision 1 or 2) reads "previous"; apply rewrites its role records
         # b780 st1: so does the returner fix (beta-79 and older: the loop only; the KR/PR getter gains its slot check)
-        if state == "retail" or (state == "legacy" and key in ("player_star_patch", "depth_locks_patch", "franchise_economy_patch", "progression_patch", "returner_fix_patch")) or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")) or (state == "previous" and key == "depth_chart_rows_patch"):
+        if state == "retail" or (state == "legacy" and key in ("player_star_patch", "depth_locks_patch", "franchise_economy_patch", "progression_patch", "returner_fix_patch")) or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")) or (state == "previous" and key in ("depth_chart_rows_patch", "overtime_patch")):
             patched, sub_receipt = module.apply(patched)
             if state in ("legacy", "previous"):
                 sub_receipt = {**sub_receipt, "upgraded_from": sub_receipt.get("upgraded_from") or state}
