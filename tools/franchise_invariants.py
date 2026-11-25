@@ -103,8 +103,10 @@ T1  trades since ``previous`` (the view one weekly advance earlier): the ring ro
                    (the native evaluator lets side B finish at 44, 0x2BB161).
     T1.seller_depth after a quarterback-for-pick group the seller has fewer than 2 quarterbacks on its active list, or
                    fewer than 2 healthy ones (I11's healthy) -- failure. A quarterback counts as healthy when he is so in
-                   this view or in ``previous``: the trade runs before the week's games, so a man hurt in this week's
-                   game was healthy when he was traded around (the CPU path checks no seller depth, RISKS (a) 5).
+                   this view, or in ``previous``, or out 1 week or less there with no status bits: the trade runs before
+                   the week's games and after the advance counts injuries down, so a man hurt in this week's game, or
+                   healed by this advance, was healthy when he was traded around (the CPU path checks no seller depth,
+                   RISKS (a) 5).
     T1.pick        for a quarterback-for-pick group, not exactly one pick-table entry changed owner between the views
                    with the pick row's round and year, from the buyer to the seller -- failure.
     T1.unexplained_pick with both views in stage 8 of the same year (no draft roll between), a pick-table entry that
@@ -807,6 +809,13 @@ def _fully_healthy(record: bytes) -> bool:
     return not _u32(record, 0x20) & (INJURED | WEEKS_MASK) and not _u32(record, 0x24) & STATUS_MASK
 
 
+def _healed_by_the_call(record: bytes) -> bool:
+    """Fully healthy at the next trade call, judged at the previous boundary: healthy there, or out 1 week or less with
+    no status bits (the weekly advance counts the week down before its trade tick)."""
+    return _fully_healthy(record) or (not _u32(record, 0x24) & STATUS_MASK
+                                      and (_u32(record, 0x20) & WEEKS_MASK) >> 22 <= 1)
+
+
 def rank_lock_pairs(view: LeagueView) -> list[dict]:
     """W12's cases: from year index 1 on, on each club whose chart the CPU manages, every healthy quarterback
     rank-locked below row 0 who leads the (single) row 0 quarterback by W12_LEAD or more overall points."""
@@ -1364,8 +1373,11 @@ def check(view: LeagueView, *, previous: LeagueView | None = None, allowed_kinds
                         club=buyer, player=q["player"], quarterbacks=len(qbs), before=len(before), rows=q["rows"])
             if not skipped("T1.seller_depth") and 0 <= seller < CLUBS:
                 qbs = [i for i in clubs[seller].active if view.record(i)[0x35] == QB]
-                # healthy now, or at the previous boundary: a man hurt in this week's game was hurt after the trade
-                healthy = [i for i in qbs if _fully_healthy(view.record(i)) or _fully_healthy(previous.record(i))]
+                # healthy at the call: healthy now, or at the previous boundary (a man hurt in this week's game was hurt
+                # after the trade), or out 1 week or less there with no status bits (the advance heals him before the
+                # trade tick; P1 2026 seed 71002 week 7: Burrow, out at the boundary, healthy at the call in the room
+                # observer's snapshot, hurt again in that week's game)
+                healthy = [i for i in qbs if _fully_healthy(view.record(i)) or _healed_by_the_call(previous.record(i))]
                 if len(qbs) < 2 or len(healthy) < 2:
                     add("T1.seller_depth", FAIL, "seller left with fewer than 2 quarterbacks or 2 healthy ones",
                         club=seller, player=q["player"], quarterbacks=len(qbs), healthy=len(healthy), rows=q["rows"])
