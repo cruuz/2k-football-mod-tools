@@ -468,6 +468,8 @@ REFRESH_BASE = Path(os.environ.get("NFL2K5_B780_REFRESH_BASE",
                                    "/home/noah/2k-worktrees/.b77-scratch/i4/inputs/ro1/baseline.body"))
 RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
 FITTED_64_SHA256 = "26522689b76cb8791cc2936058513a47f4c3c89fc58a1f47fc4a7622f3737c20"
+PINNED_BASE_SHA256 = "12701297fd05f86ff513acad4363dbe059cdb499d95d13976acb16dd87f8c98e"   # i4/inputs/ro1/baseline.body
+PINNED_FIT_FINAL_SHA256 = "a763287bc066260298adeedd6ffa0c6a418bf0d24b1d31061d68d3835eacd3e3"  # the fit's body on it (rst2 report)
 
 
 def _proof_inputs():
@@ -507,7 +509,16 @@ class SoftdrinkRosterFitProof(unittest.TestCase):
         cls.sha = hashlib.sha256(cls.raw).hexdigest()
 
     def test_on_the_refresh_pinned_base_it_is_the_validated_file_byte_for_byte(self):
-        variant, receipt = cm.fit_roster_edits(self.source, REFRESH_BASE.read_bytes(), source_sha256=self.sha)
+        base = REFRESH_BASE.read_bytes()
+        variant, receipt = cm.fit_roster_edits(self.source, base, source_sha256=self.sha)
+        if hashlib.sha256(base).hexdigest() != PINNED_BASE_SHA256:
+            # b81 roster-1125: the pinned base (12701297) was deleted 11/25; env.sh names its rebuild by users_dump_base.
+            # On it the fit differs only in the two receipt hashes, which name the base it ran on; with them set back
+            # to the pinned base's, it is the validated file byte for byte.
+            depth = variant["fa3_free_agent_depth"]
+            for block in (depth, depth["retail_capacity"]):
+                self.assertEqual(block["base_sha256"], hashlib.sha256(base).hexdigest())
+                block.update(base_sha256=PINNED_BASE_SHA256, final_body_sha256=PINNED_FIT_FINAL_SHA256)
         text = json.dumps(variant, indent=1, ensure_ascii=False) + "\n"
         self.assertEqual(hashlib.sha256(text.encode("utf-8")).hexdigest(), FITTED_64_SHA256)
         self.assertEqual((receipt["depth_candidates"], receipt["depth_kept"], receipt["club_players_kept"],

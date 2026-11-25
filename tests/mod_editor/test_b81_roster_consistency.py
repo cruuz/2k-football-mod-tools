@@ -79,9 +79,9 @@ STANDARD_SOURCES = Path(os.environ.get("NFL2K5_B81_STANDARD_SOURCES", "") or "mi
 # b81 roster-1125 (Noah: "kirk cousins not on vikings, trade deadline roster not updated?"; the 2026 deadline was 11/10):
 # the release sources load the 11/25 refresh, 128 MB and the 64 MB retail-capacity fit of it.
 RELEASE_ROSTERS = {128: ("roster-edits-b81-refresh-20261125.json",
-                         "20668706593f6e4be9241ee5601659e7014aaff6953fb6a803b1be93b4d545a6"),
+                         "c002e7afdfd0b45b79314d85cd467a8675fa7fbec43d5d7ef29edfc22f09e85f"),
                    64: ("roster-edits-b81-refresh-20261125-retail-capacity-64mb.json",
-                        "73b383824559b55bb7a0ef2dcebb5ae9020374390e56fdca0c401a8844c536e9")}
+                        "49a255fffadbdec88f5e51a46967af0c02d1f5d88dac4b3f8fe6e82eca47ec98")}
 
 
 @unittest.skipUnless((STANDARD_SOURCES / "recipe.json").is_file(), "private release sources absent: NFL2K5_B81_STANDARD_SOURCES")
@@ -126,6 +126,17 @@ class ReleaseSourcesRosterTests(unittest.TestCase):
                                              "Blake Bortles", "Tim Tebow", "Allen Hurns", "PJ Walker", "Hakeem Butler"})
                     self.assertTrue(all(r["index"] in plan["free_agents"] for r in plan["players"]
                                         if r.get("source_name") in named))
+                    # coordinator ruling 11/25 (option A): about 600 more real unsigned veterans as free agents
+                    tail = [r for r in plan["players"] if (r.get("evidence") or {}).get("kind") == "long_tail_unsigned_veteran"]
+                    self.assertEqual(len(tail), 599)
+                    self.assertTrue(all(r["status"] == "UFA" and r["index"] in plan["free_agents"] for r in tail))
+                # coordinator ruling 11/25: Daniel Carlson is Miami's kicker on the 53; the released Zane Gonzalez is not
+                miami = next(t for t in plan["teams"] if t["team"] == "MIA")
+                carlson = next(r for r in plan["players"] if r.get("gsis_id") == "00-0034161")
+                self.assertIn(carlson["index"], miami["active"])
+                self.assertEqual(miami["specialists"]["k"], carlson["index"])
+                gonzalez = next((r for r in plan["players"] if r.get("gsis_id") == "00-0033862"), None)
+                self.assertTrue(gonzalez is None or gonzalez["index"] not in miami["active"] + miami["reserves"])
 
 
 MOD = Path(os.environ.get("NFL2K5_V09_XISO", ""))

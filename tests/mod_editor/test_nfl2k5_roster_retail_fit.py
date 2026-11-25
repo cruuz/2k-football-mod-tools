@@ -225,7 +225,19 @@ class SoftdrinkV09RetailFitTests(unittest.TestCase):
         cls.source = json.loads(cls.raw.decode("utf-8"))
         cls.base = BASE.read_bytes()
         if hashlib.sha256(cls.base).hexdigest() != BASE_SHA256:
-            raise unittest.SkipTest("the refresh base is not the pinned 12701297... body")
+            # b81 roster-1125: the pinned base (i4/inputs/ro1/baseline.body) was deleted 11/25. Without it the proof runs the
+            # way a 64 MB build does on a user's own disc: the base is this document's own pre-refresh roster from the
+            # retail dump (test_b780_m64b_console_memory.users_dump_base) and the document's base pins are dropped
+            # (nfl2k5_console_memory.fit_roster_edits does the same); the counts below must not change.
+            retail = Path(os.environ.get("NFL2K5_RETAIL_XISO", ""))
+            if not retail.is_file():
+                raise unittest.SkipTest("the refresh base is not the pinned 12701297... body and no retail XISO to rebuild it")
+            sys.path.insert(0, str(Path(__file__).resolve().parent))
+            from test_b780_m64b_console_memory import users_dump_base
+            cls.base = users_dump_base(cls.source)
+            for key in ("fa3_free_agent_depth", "free_agent_capacity"):
+                if isinstance(cls.source.get(key), dict):
+                    cls.source[key] = {k: v for k, v in cls.source[key].items() if k != "base_sha256"}
         cls.variant, cls.receipt = fit.retail_variant(cls.source, cls.base, source_sha256=hashlib.sha256(cls.raw).hexdigest())
         cls.folder = tempfile.TemporaryDirectory(prefix="retail-fit-")
         cls.path = Path(cls.folder.name) / "roster-edits-retail.json"

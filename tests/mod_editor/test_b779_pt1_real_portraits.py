@@ -246,14 +246,15 @@ class RosterPlayersRst2(unittest.TestCase):
 
     def test_ids_follow_b9_in_a_wider_window_and_fill_a_fifth_atlas(self):
         self.assertEqual([r["id"] for r in self.rows], list(range(30995, 30995 + len(self.rows))))
-        # b780 rst2's 121 (ids 30995..31115), then b81 roster-1125's 47 (31116..31162) and the 9 named free agents
-        # (31163..31171), see the next test
-        self.assertEqual(len(self.rows), 121 + 47 + 9)
+        # b780 rst2's 121 (ids 30995..31115), then b81 roster-1125's 47 (31116..31162), the 9 named free agents
+        # (31163..31171) and 28 long-tail free agents (31172..31199, the window's last ids), see the next tests
+        self.assertEqual(len(self.rows), 121 + 47 + 9 + 28)
         self.assertLess(self.rows[-1]["id"], rp.ID_LIMIT)
         self.assertEqual(rp.ID_LIMIT, 31200)
         self.assertEqual({r["atlas"] for r in self.rows}, {"faces_03.png", "faces_04.png"})
         self.assertIn("faces_04.png", {a["file"] for a in self.doc["atlases"]})
-        self.assertEqual([a["job"] for a in self.doc["additions"]][-3:], ["b780-rst2", "b81-roster-1125", "b81-roster-1125-named"])
+        self.assertEqual([a["job"] for a in self.doc["additions"]][-4:],
+                         ["b780-rst2", "b81-roster-1125", "b81-roster-1125-named", "b81-roster-1125-long"])
         every = [(r["first"], r["last"], r["birth_month"], r["birth_day"]) for r in self.doc["portraits"]]
         self.assertEqual(len(every), len(set(every)))
 
@@ -262,7 +263,7 @@ class RosterPlayersRst2(unittest.TestCase):
         them Micah Parsons, Myles Garrett and Kerby Joseph, back from injured reserve) get their official headshots,
         under the record's own name (Nick Westbrook-Ikhine's surname is Westbrook: the 15-character buffer)."""
         added = self.rows[121:168]
-        addition = self.doc["additions"][-2]
+        addition = self.doc["additions"][-3]
         self.assertEqual(addition, dict(job="b81-roster-1125", fetched="2026-11-25", rows=47, moved_from_wrong_faces=0,
                                         note=addition["note"]))
         self.assertEqual([r["id"] for r in added], list(range(31116, 31163)))
@@ -274,8 +275,8 @@ class RosterPlayersRst2(unittest.TestCase):
     def test_the_free_agents_noah_named_have_their_official_headshots(self):
         """b81 roster-1125 (Noah 11/25: "Johnny Manziel should be a free agent ... RG3 ... Derek Carr ..."): nine named free
         agents. Manziel's NFL.com picture is the league's placeholder helmet, so his is the ESPN headshot of his espn_id."""
-        named = self.rows[168:]
-        self.assertEqual(self.doc["additions"][-1]["job"], "b81-roster-1125-named")
+        named = self.rows[168:177]
+        self.assertEqual(self.doc["additions"][-2]["job"], "b81-roster-1125-named")
         self.assertEqual([r["id"] for r in named], list(range(31163, 31172)))
         self.assertEqual({r["last"] for r in named}, {"Manziel", "Griffin", "Carr", "Bridgewater", "Bortles", "Tebow", "Hurns",
                                                       "Walker", "Butler"})
@@ -283,6 +284,14 @@ class RosterPlayersRst2(unittest.TestCase):
         self.assertEqual((manziel["source_list"], manziel["source_url"]),
                          ("espn", "https://a.espncdn.com/i/headshots/nfl/players/full/16736.png"))
         self.assertLess(named[-1]["id"], rp.ID_LIMIT)
+
+    def test_the_long_tail_free_agents_fill_the_rest_of_the_id_window(self):
+        """b81 roster-1125 (coordinator ruling 11/25, option A): 28 of the ~600 long-tail free agents, most recent snaps
+        first, take the window's last ids; the others go the no-photo (created face) path."""
+        tail = self.rows[177:]
+        self.assertEqual(self.doc["additions"][-1]["job"], "b81-roster-1125-long")
+        self.assertEqual([r["id"] for r in tail], list(range(31172, rp.ID_LIMIT)))
+        self.assertTrue(all(r["source_url"].startswith("https://static.www.nfl.com/") for r in tail))
 
     def test_thorson_and_masses_have_their_own_pictures_and_are_no_longer_wrong_faces(self):
         names = {(r["first"], r["last"]) for r in self.rows}
