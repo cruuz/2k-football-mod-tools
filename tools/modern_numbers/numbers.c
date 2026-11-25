@@ -25,6 +25,14 @@
      (top 10 percent of the 2026 roster A, next 15 B, next 15 C, the rest D).
    * u1..u3 are a hash of (player index, club index, season [0xE576B8], stage, k): no game RNG is drawn and a reload
      gives the same number.
+   * A call from outside the retail .text (an owner's page: MyCareer's signing of the user's own created player, modern
+     IR renumbering a club-mate) keeps the player's own number whenever no club-mate wears it, even a rookie before the
+     season or a retired or legacy number: the user chose it. Draws still follow every rule below.
+   * A club's retired numbers (the owner's data file, from the public retired-numbers list) count as taken: never given
+     automatically, not even as a joiner's own number. The exception list lets a club give one to a first-round rookie
+     at QB, HB, FB, WR or TE where it really has (NYG 1, Nabers; TEN 1, Ward). A legacy number (DAL 88: a WR) is taken for
+     every other position and left out of every draw; a fresh-draw joiner at its position of tier A or B gets it, when
+     free, ahead of the draw. A user's own choice (Create Player, Assign Jersey Number, the Studio) never comes here.
    * Nothing free and legal (or a position code outside 0..16, or no league): return -1, and the entry runs the retail
      routine with keep = 1.
    Nothing here writes game memory; the entry writes the joiner's +0x20 bits 3..9 and the retail tail his cue. */
@@ -51,6 +59,8 @@ typedef unsigned char u8;
 #define RATING ((float (FC *)(u32, u32))0x00246D80)       /* player, 1 -> the native sort rating, 0..1 in ST0 */
 
 #define DRAFT_JOIN_RET 0x00325B6Cu     /* FUN_00325B50's call of the jersey routine returns here */
+#define TEXT_START 0x00011000u         /* the retail .text: every game path that numbers a joiner calls from here */
+#define TEXT_END 0x00420114u
 #define PLAYER_SIZE 84
 #define ACTIVE 0x11C
 #define PS_COUNT 0x1F2
@@ -140,29 +150,53 @@ static int is_draft(const u32 *frame) {
     return 0;
 }
 
+static void mark(struct pick *s, u32 n) { s->taken[n >> 5] |= 1u << (n & 31); }
+
 i32 __attribute__((cdecl)) number_pick(u32 p, u32 club, const u32 *frame) {
     struct pick s;
     u32 root = D(ROOT), pos = B(p + 0x35), own = (D(p + 0x20) >> 3) & 0x7F;
-    u32 rookie = (B(p + 0x25) & 31) <= 1, draft = is_draft(frame), tier, group, i, total, d;
+    u32 rookie = (B(p + 0x25) & 31) <= 1, draft = is_draft(frame), tier, group, i, total, d, index, round = 31;
+    u32 owner_call = frame[0] < TEXT_START || frame[0] >= TEXT_END, mates[4];
+    i32 legacy_number = -1;
     if (!root || !club || pos >= 17) return -1;
     for (i = 0; i < 4; i++) s.taken[i] = 0;
     s.legal = legal_decades[pos];
     s.key[0] = (p - D(root + 4)) / PLAYER_SIZE;
-    s.key[1] = CLUB_INDEX(club);
+    s.key[1] = index = CLUB_INDEX(club);
     s.key[2] = D(SEASON);
     s.key[3] = D(STAGE);
-    club_numbers(&s, club, s.key[1], p);
+    if (draft) round = (frame[5] >> 5) & 31;               /* FUN_00325B50's pick word: round << 5 | slot */
+    club_numbers(&s, club, index, p);
+    for (i = 0; i < 4; i++) mates[i] = s.taken[i];         /* numbers club-mates wear, before the club's own rules */
+    if (owner_call && own < 100 && (s.legal >> (own / 10) & 1) && !(mates[own >> 5] >> (own & 31) & 1))
+        return (i32)own;                                   /* a page's call: the player's own number while it is free */
+    if (index < 32) {
+        u32 open[4] = {0, 0, 0, 0};                        /* retired numbers this joiner may have (the exceptions) */
+        if (round == 0 && (SKILL >> pos & 1))
+            for (i = 0; i < EXCEPTIONS; i++)
+                if (exceptions[i][0] == index) open[exceptions[i][1] >> 5] |= 1u << (exceptions[i][1] & 31);
+        for (i = 0; i < 100; i++)
+            if ((retired[index][i >> 3] >> (i & 7) & 1) && !(open[i >> 5] >> (i & 31) & 1)) mark(&s, i);
+        for (i = 0; i < LEGACY; i++)
+            if (legacy[i][0] == index) {
+                if (legacy[i][2] == pos) legacy_number = legacy[i][1];
+                else mark(&s, legacy[i][1]);               /* another position's legacy number */
+            }
+    }
     if (!draft && !(rookie && s.key[3] < 8) && own < 100 && (s.legal >> (own / 10) & 1) && !is_taken(&s, own))
         return (i32)own;                                   /* he keeps his own number */
     group = group_of[pos];
     if (draft) {
-        u32 round = (frame[5] >> 5) & 31;                  /* FUN_00325B50's pick word: round << 5 | slot */
         tier = round < 3 ? round : 3;
     } else if (rookie && s.key[3] < 8) {
         tier = 4;                                          /* undrafted rookie */
     } else {
         u32 ovr = overall(p);
         tier = ovr >= thresholds[pos][0] ? 0 : ovr >= thresholds[pos][1] ? 1 : ovr >= thresholds[pos][2] ? 2 : 3;
+    }
+    if (legacy_number >= 0 && !is_taken(&s, (u32)legacy_number) && (s.legal >> (legacy_number / 10) & 1)) {
+        if (tier <= 1) return legacy_number;               /* the position's legacy number, ahead of the draw */
+        mark(&s, (u32)legacy_number);                      /* otherwise it stays for a better newcomer */
     }
     if (draw(&s, 1) % 100 < single_digit[group][tier]) {
         u32 c = free_in(&s, 0);

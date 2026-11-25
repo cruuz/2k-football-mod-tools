@@ -983,8 +983,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_coach_career_fix.py": "7dea3f42075289b257c8b81e9591d35d6d19530d450ecb5469764925e6bd90ba",  # b780 c1 (wired at b780-int)
         "mod_editor/core/nfl2k5_history_pool.py": "c273697ad83d0ff3b68e384a76d622f5850beb933f1318290f1d373c9e204459",  # b780 hist1
         "mod_editor/core/nfl2k5_history_pool_code.py": "4095d51eaf652e61dde4c1f48671c5ceedb79d0812ec1b565aac8aba3a08643a",  # b780 hist1: its generated runtime
-        "mod_editor/core/nfl2k5_modern_numbers.py": "7727cae80c7dce277ec9af6ee9b15a98209c18b159437c84bd3f9493ca38f70b",  # b81 modern numbers: mod_build loads it by name
-        "mod_editor/core/nfl2k5_modern_numbers_code.py": "415572cfaed2fc596971bc77e857b5cd96edc937f43cefbeb59b6e988c176367",  # b81 modern numbers: its generated page template
+        "mod_editor/core/nfl2k5_modern_numbers.py": "70be5f5043717b41a84f39caa4b8c8951848abe84c4f316ce879f80d14e5fc58",  # b81 modern numbers: mod_build loads it by name
+        "mod_editor/core/nfl2k5_modern_numbers_code.py": "4d4a5b48c1a81747f4474acdeec816eedf9e39ae5f1e6c475cbbd5badde9bdb8",  # b81 modern numbers: its generated page template
         "mod_editor/core/nfl2k5_load_user_team_guard.py": "70b3e0d9196a55d093870651173d83e305545f15118acd6224a9fb9f02ca7e86",  # b780 mc1
         "mod_editor/core/nfl2k5_save_list_type_guard.py": "64fcd510de0aa6b3595bfeb94e5f1555e96fb723595cc9d0390f9bf969368f40",  # b780 mc1
         "mod_editor/core/nfl2k5_edition_save_notes.py": "d321ef80273c081bdfc4871c11fa52d3733a604f3b7968149be9b4ab84268d05",  # beta 81 review M1
@@ -1020,7 +1020,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_lineup_roles.py": "084f75f1f872ebab56b930bd47d8eb72a68dfea2cfe8796e0a6c9835e950de26",  # b780 sub1: the SPECIAL third-down back + FB fallback (late owner)
         "mod_editor/core/nfl2k5_intro_autoskip.py": "a836a0f77a6cdf1402a1d4ec0c66ebe0ac0b5d973c36dcc007b6434dce0b6d95",  # b780-mem1: imported by throw_tuning for the build union
         "mod_editor/core/nfl2k5_injured_reserve.py": "7d00fb59f5eaf64200c32a89c438d52508008e2dc9f10ae410268fcf42b473d0",  # b780 IR1: modern injured reserve (late owner, imported by throw_tuning)
-        "mod_editor/core/nfl2k5_injured_reserve_code.py": "9dffb70830473b710ff6e6face3670b3920c83c01bbfb42ca6b73c1acef5461f",  # b780 IR1: its generated runtime template
+        "mod_editor/core/nfl2k5_injured_reserve_code.py": "7781b71ba59e9a4213f141760fd1a76c3be0ce4a8058a5c9f0c90daffbb0d7dc",  # b780 IR1: its generated runtime template
         "mod_editor/core/nfl2k5_franchise_ownership.py": "f8eabe44463a07f90c2286023562e5809156a6054f6fb8520018360f7352c370",
         "mod_editor/core/nfl2k5_franchise_ownership_code.py": "f407221db98c311cbef6f9626ca2b37f5f4ecbdcc2d5638bead3a57a4bfa93b5",
         "mod_editor/core/nfl2k5_injured_reserve_code_b81_pre_ownership.py": "1e1f421ecfdc6dd9d40de2696d9fa9f146858b0488e46fe31f83d28ef5c4f387",

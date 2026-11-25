@@ -49,6 +49,13 @@ def tables_h() -> str:
         "static const unsigned char thresholds[17][3] = {%s};" % rows(mn.THRESHOLDS),
         "static const unsigned int draft_callers[%d] = {%s};" % (len(mn.DRAFT_CALLERS),
                                                                  ", ".join("0x%08xu" % v for v in mn.DRAFT_CALLERS)),
+        "#define SKILL 0x%xu" % mn.SKILL,
+        "static const unsigned char retired[32][13] = {%s};" % rows(mn.RETIRED),
+        "#define EXCEPTIONS %d" % len(mn.RETIRED_EXCEPTIONS),
+        "static const unsigned char exceptions[%d][2] = {%s};" % (max(1, len(mn.RETIRED_EXCEPTIONS)),
+                                                                  rows(mn.RETIRED_EXCEPTIONS) or "{255, 255}"),
+        "#define LEGACY %d" % len(mn.LEGACY),
+        "static const unsigned char legacy[%d][3] = {%s};" % (max(1, len(mn.LEGACY)), rows(mn.LEGACY) or "{255, 255, 255}"),
         ""])
 
 

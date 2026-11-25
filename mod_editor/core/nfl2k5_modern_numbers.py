@@ -43,7 +43,9 @@ with 0xCC; the reservation stays. No save bytes: saves load both ways. EXPERIMEN
 from __future__ import annotations
 
 import hashlib
+import json
 import struct
+from pathlib import Path
 from typing import Mapping
 
 OWNER = "nfl2k5_modern_numbers"
@@ -51,9 +53,12 @@ BUILD_KEY = "modern_numbers"
 LABEL = "EXPERIMENTAL / UNWITNESSED"
 BUILD_CAPTION = "Modern jersey numbers"
 HELP_TEXT = ("Players who join a club (draft picks, signings, trades) get today's NFL numbers: single digits for many top "
-             "receivers, backs and defensive backs, 0 allowed, edge rushers in the 50s and 90s. A new player never takes "
-             "a number a teammate already wears, on the practice squad or injured reserve included. Nobody already on a "
-             "club changes number.")
+             "receivers, backs and defensive backs, 0 allowed, edge rushers in the 50s and 90s. A player on injured "
+             "reserve or the practice squad keeps the rights to his number: nobody else on his club is given it, and he "
+             "wears it again when he comes back. Clubs never hand out their retired numbers on their own (a top "
+             "first-round pick may still get the Giants' or Titans' No. 1, as Malik Nabers and Cam Ward did), and the "
+             "Cowboys' 88 goes to a wide receiver, a top new one when it is free. Nobody already on a club changes number, "
+             "and you can still give any player any number yourself.")
 MODES = ("retail", "modern")
 
 SITE_VA = 0x2BD260
@@ -137,9 +142,36 @@ THRESHOLDS = (
     (100, 92, 81), (85, 75, 69), (86, 80, 75), (86, 80, 75), (96, 81, 74), (93, 85, 79), (91, 83, 77), (81, 74, 69),
     (86, 80, 74),
 )
+# Numbers a club does not hand out automatically (data/nfl2k5_modern_numbers/numbers.json, with its sources): retired numbers
+# by club, the retired numbers a club has given a first-round skill rookie (QB, HB, FB, WR, TE), and legacy numbers kept
+# for one position. Club = the game's league slot (club_index in the file).
+DATA_PATH = Path(__file__).resolve().parents[2] / "data" / "nfl2k5_modern_numbers" / "numbers.json"
+SKILL = sum(1 << POSITIONS.index(p) for p in ("QB", "HB", "FB", "WR", "TE"))
+
+
+def _load_data():
+    doc = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+    index = doc["club_index"]
+    retired = [bytearray(13) for _ in range(32)]
+    for club, rows in doc["retired"]["clubs"].items():
+        for row in rows:
+            retired[index[club]][row["number"] >> 3] |= 1 << (row["number"] & 7)
+    exceptions = tuple((index[e["club"]], e["number"]) for e in doc["retired_exceptions"])
+    legacy = tuple((index[e["club"]], e["number"], POSITIONS.index(e["position"])) for e in doc["legacy"])
+    return doc, tuple(bytes(r) for r in retired), exceptions, legacy
+
+
+DATA, RETIRED, RETIRED_EXCEPTIONS, LEGACY = _load_data()
+
+
+def retired(club: int, number: int) -> bool:
+    return 0 <= club < 32 and 0 <= number <= 99 and bool(RETIRED[club][number >> 3] >> (number & 7) & 1)
+
+
 # FUN_00325B50's call of the jersey routine returns to DRAFT_JOIN_RET; FUN_00325B50 itself is called by the three draft
 # paths, whose return addresses identify a drafted rookie (and its stack argument is the pick word, round << 5 | slot).
 DRAFT_JOIN_RET = 0x325B6C
+TEXT_RANGE = (0x11000, 0x420114)                     # the retail .text; a call from elsewhere is an owner page's
 DRAFT_CALLERS = (0x325C40, 0x3265C2, 0x322FBE)       # after the calls at 0x325C3B, 0x3265BD, 0x322FB9
 SALT = 0x4D4E554D                                    # "MNUM"
 LEAGUE_GLOBALS = {"root": 0xB72918, "arena_size": 0xB72808, "mode": 0xE576A0, "stage": 0xE576A4, "season": 0xE576B8}
@@ -196,6 +228,7 @@ def tables_bytes() -> bytes:
     for row in THRESHOLDS:
         out += bytes(row)
     out += struct.pack("<3I", *DRAFT_CALLERS)
+    out += b"".join(RETIRED)
     return bytes(out)
 
 
@@ -373,9 +406,23 @@ def draw(key, k: int) -> int:
 
 
 def pick(position: int, own: int, taken, key, *, draft_round: int | None = None, rookie_preseason: bool = False,
-         overall: int = 0) -> int:
+         overall: int = 0, owner_call: bool = False) -> int:
     """The page's rule in Python (tests compare the two): ``taken`` = numbers worn by the club's other players, ``key`` =
-    (player index, club index, season, stage). -1 = the retail routine."""
+    (player index, club index, season, stage). -1 = the retail routine. ``owner_call``: the jersey routine was called
+    from an owner's page (MyCareer, modern IR), which keeps a free own number whatever the club's rules."""
+    taken = set(taken)
+    if owner_call and 0 <= own <= 99 and legal(position, own) and own not in taken:
+        return own
+    club, legacy_number = key[1], -1
+    if 0 <= club < 32:
+        open_ = {n for c, n in RETIRED_EXCEPTIONS if c == club} if draft_round == 0 and SKILL >> position & 1 else set()
+        taken |= {n for n in range(100) if retired(club, n) and n not in open_}
+        for c, n, pos in LEGACY:
+            if c == club:
+                if pos == position:
+                    legacy_number = n
+                else:
+                    taken.add(n)
     free = lambda n: legal(position, n) and n not in taken  # noqa: E731
     if draft_round is None and not rookie_preseason and 0 <= own <= 99 and free(own):
         return own
@@ -387,6 +434,10 @@ def pick(position: int, own: int, taken, key, *, draft_round: int | None = None,
     else:
         a, b, c = THRESHOLDS[position]
         tier = 0 if overall >= a else 1 if overall >= b else 2 if overall >= c else 3
+    if legacy_number >= 0 and free(legacy_number):
+        if tier <= 1:
+            return legacy_number
+        taken.add(legacy_number)
     in_decade = lambda d: [n for n in range(10 * d, 10 * d + 10) if free(n)]  # noqa: E731
     if draw(key, 1) % 100 < SINGLE_DIGIT[group][tier] and in_decade(0):
         singles = in_decade(0)
@@ -408,6 +459,6 @@ def pick(position: int, own: int, taken, key, *, draft_round: int | None = None,
 
 __all__ = ["OWNER", "BUILD_KEY", "LABEL", "BUILD_CAPTION", "HELP_TEXT", "MODES", "SITE_VA", "SITE_RETAIL", "CODE_SIZE",
            "POSITIONS", "GROUPS", "TIERS", "LEGAL_DECADES", "GROUP_OF", "WEIGHTS", "SINGLE_DIGIT", "THRESHOLDS",
-           "DRAFT_JOIN_RET", "DRAFT_CALLERS", "GUARDS", "ModernNumbersError", "tables_bytes", "code_for", "site_bytes",
+           "DRAFT_JOIN_RET", "DRAFT_CALLERS", "GUARDS", "DATA", "RETIRED", "RETIRED_EXCEPTIONS", "LEGACY", "SKILL", "retired", "ModernNumbersError", "tables_bytes", "code_for", "site_bytes",
            "sites", "allocation", "status", "read_settings", "reservations", "apply", "remove", "set_mode", "legal",
            "draw", "pick"]

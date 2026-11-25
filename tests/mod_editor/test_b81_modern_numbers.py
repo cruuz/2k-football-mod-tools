@@ -37,6 +37,8 @@ KEPT_XBE = Path(os.environ.get("NFL2K5_B81_NUMBERS_XBE", "/home/noah/2k-worktree
 KEPT_XBE_SHA = "adb55ab91206367836d277e3829bca417968f7765c58b4c0398e0d0166ff619c"
 PAGE = space.MODERN_NUMBERS_VA
 POS = {name: k for k, name in enumerate(mn.POSITIONS)}
+SIGNING_RET = 0x322DA8                                # the CPU signing's jersey call returns here (a game path)
+PAGE_RET = 0x1508000                                  # a return address in an owner's page (MyCareer, modern IR)
 RNG_BLOCKS = ((0xE5FCA0, 448), (0xB12680, 448))      # the league and match generators
 
 
@@ -124,9 +126,10 @@ class League:
         return (self.m.get(p + 0x20) >> 3) & 0x7F
 
     def join(self, p, t, *, keep=1, frame=None):
-        """Call 0x2BD260 (ECX = player, EDX = club, keep) with the caller's frame: [return, keep, ...]."""
+        """Call 0x2BD260 (ECX = player, EDX = club, keep) with the caller's frame: [return, keep, ...] (default: the CPU
+        signing's return address; the run stops there)."""
         m = self.m
-        words = list(frame) if frame else [m.STOP, keep]
+        words = list(frame) if frame else [SIGNING_RET, keep]
         m.uc.mem_write(m.STACK, struct.pack("<%dI" % len(words), *words))
         for name, value in dict(ECX=p, EDX=t, ESP=m.STACK, EBX=0x11111111, ESI=0x22222222, EDI=0x33333333,
                                 EBP=0x44444444, EFLAGS=0x202).items():
@@ -421,6 +424,100 @@ class SyntheticRule(unittest.TestCase):
         self.assertEqual(struct.unpack("<H", bytes(lg.m.uc.mem_read(p + 4, 2)))[0], 4321)
 
 
+class SyntheticClubNumbers(unittest.TestCase):
+    """Retired and legacy numbers (data/nfl2k5_modern_numbers/numbers.json): never handed out automatically, the
+    first-round skill exceptions (NYG 1, TEN 1), DAL 88 for a wide receiver. Synthetic clubs on retail + the owner; the
+    club is its league slot. Fail on 866fe3a8d (no retired or legacy numbers)."""
+
+    @classmethod
+    def setUpClass(cls):
+        _need_retail()
+        cls.league = League(retail_with_owner())
+        cls.idx = mn.DATA["club_index"]
+
+    def joins(self, club, position, frames, *, own=50, years=6, mates=(), start=6000):
+        lg = self.league
+        t = lg.club(club, [lg.player(5000 + k, POS["QB"], n) for k, n in enumerate(mates)])
+        out = []
+        for k, frame in enumerate(frames):
+            p = lg.player(start + k, position, own, years=years)
+            out.append(lg.join(p, t, frame=frame))
+        return out
+
+    def test_the_data_and_its_sources(self):
+        d = mn.DATA
+        self.assertEqual(sorted(d["club_index"].values()), list(range(32)))
+        self.assertTrue(d["retired"]["source"]["url"].startswith("https://en.wikipedia.org/"))
+        self.assertEqual(len(d["retired"]["source"]["wikitext_sha256"]), 64)
+        chi = [r["number"] for r in d["retired"]["clubs"]["CHI"]]
+        self.assertEqual(chi, [3, 5, 7, 28, 34, 40, 41, 42, 51, 56, 61, 66, 77, 89])
+        for e in d["retired_exceptions"]:
+            self.assertTrue(mn.retired(self.idx[e["club"]], e["number"]), e)
+            self.assertTrue(e["source"] and e["precedent"])
+        self.assertEqual([(e["club"], e["number"], e["position"]) for e in d["legacy"]], [("DAL", 88, "WR")])
+        self.assertFalse(any(mn.retired(c, n) for c, n, _ in mn.LEGACY))
+
+    def test_retired_numbers_are_never_handed_out(self):
+        rng = random.Random(5)
+        for club in ("CHI", "NYG", "SF", "KC"):
+            c = self.idx[club]
+            for position in ("QB", "HB", "WR", "CB", "ILB", "DE", "DT", "G", "TE", "K"):
+                frames = [draft_frame(rng.randrange(7), slot=c) for _ in range(30)] + [None] * 30
+                got = self.joins(c, POS[position], frames, own=rng.randrange(100), years=0)
+                bad = [n for n in got if mn.retired(c, n)
+                       and not (club == "NYG" and n == 1)]                 # the exception: checked below
+                self.assertFalse(bad, (club, position))
+        chi = self.idx["CHI"]
+        self.assertNotEqual(self.joins(chi, POS["HB"], [None], own=34)[0], 34)   # not even as a veteran's own number
+        self.assertEqual(self.joins(self.idx["ATL"], POS["HB"], [None], own=34)[0], 34)
+
+    def test_the_first_round_skill_exception(self):
+        singles = list(range(2, 10)) + [0]                                  # every other single digit taken
+        for club, position in (("NYG", "WR"), ("TEN", "QB")):
+            c = self.idx[club]
+            r1 = self.joins(c, POS[position], [draft_frame(0, slot=c) for _ in range(80)], mates=singles)
+            r2 = self.joins(c, POS[position], [draft_frame(1, slot=c) for _ in range(80)], mates=singles)
+            vet = self.joins(c, POS[position], [None] * 40, own=1)
+            self.assertIn(1, r1, club)                                     # a first-round skill rookie may get it
+            self.assertNotIn(1, r2, club)
+            self.assertNotIn(1, vet, club)
+        nyg = self.idx["NYG"]
+        cb = self.joins(nyg, POS["CB"], [draft_frame(0, slot=nyg) for _ in range(80)], mates=singles)
+        self.assertNotIn(1, cb)                                            # a corner is not a skill position
+
+    def test_a_page_call_keeps_the_users_own_number(self):
+        """MyCareer signs the user's own created player through the jersey routine from its page: he keeps the number he
+        chose while no club-mate wears it (rookie before the season, a retired or legacy number included); taken, a draw
+        that follows every rule."""
+        lg = self.league
+        chi, dal = self.idx["CHI"], self.idx["DAL"]
+        lg.when(stage=5)
+        try:
+            self.assertEqual(self.joins(chi, POS["HB"], [[PAGE_RET, 1]], own=34, years=1)[0], 34)
+            self.assertEqual(self.joins(dal, POS["TE"], [[PAGE_RET, 1]], own=88, years=1)[0], 88)
+            self.assertEqual(self.joins(chi, POS["WR"], [[PAGE_RET, 1]], own=17, years=1)[0], 17)
+            got = self.joins(chi, POS["HB"], [[PAGE_RET, 1]] * 40, own=12, years=1, mates=(12,))
+            self.assertFalse([n for n in got if n == 12 or mn.retired(chi, n)])
+            self.assertNotEqual(self.joins(chi, POS["HB"], [None], own=34, years=6)[0], 34)   # a game path never
+        finally:
+            lg.when(stage=8)
+
+    def test_dallas_88(self):
+        dal = self.idx["DAL"]
+        self.assertEqual(self.joins(dal, POS["WR"], [draft_frame(0, slot=dal)])[0], 88)   # a first-round WR
+        self.assertEqual(self.joins(dal, POS["WR"], [draft_frame(1, slot=dal)])[0], 88)
+        later = self.joins(dal, POS["WR"], [draft_frame(4, slot=dal) for _ in range(150)])
+        self.assertNotIn(88, later)                                        # left for a better newcomer
+        for position in ("TE", "HB", "QB", "CB"):
+            got = self.joins(dal, POS[position], [draft_frame(r % 7, slot=dal) for r in range(150)] + [None] * 30,
+                             own=88)
+            self.assertNotIn(88, got, position)                            # another position never gets it
+        self.assertEqual(self.joins(dal, POS["WR"], [None], own=88)[0], 88)  # a veteran WR keeps his own 88
+        self.assertEqual(self.joins(dal, POS["WR"], [draft_frame(0, slot=dal)], mates=(88,))[0] != 88, True)
+        other = self.idx["NYJ"]
+        self.assertEqual(self.joins(other, POS["TE"], [None], own=88)[0], 88)   # elsewhere 88 is any WR or TE's
+
+
 class SyntheticRookieFaces(unittest.TestCase):
     """T9: with Rookie faces' two jersey edits (the draft's push 1 at 0x325B61, the DT/DE walk at 0x2BD2F7) the modern
     path gives the same numbers; the two owners install in either order and either one's Retail leaves the other."""
@@ -533,7 +630,7 @@ class KeptImage(unittest.TestCase):
         returns = {"cpu signing 0x322DA3": 0x322DA8, "trade side A 0x2BC740": 0x2BC745, "trade side B 0x2BC790": 0x2BC795,
                    "offseason FA 0x323BFB": 0x323C00, "offers 0x32401E": 0x324023, "signing 0x2B83AE": 0x2B83B3,
                    "UI 0x319BF6": 0x319BFB, "user FA 0x36F881": 0x36F886, "user FA 0x36FA9F": 0x36FAA4,
-                   "MyCareer (its page)": 0x1508000}
+                   "MyCareer (its page)": PAGE_RET}
         stop = self.m.STOP
         fas = self.view.free_agents
         rng = random.Random(2)
@@ -543,12 +640,11 @@ class KeptImage(unittest.TestCase):
                 i = fas[rng.randrange(len(fas))]
                 record = bytes(self.m.uc.mem_read(self.table + 0x54 * i, 0x54))
                 held = self.held(c)
-                self.call(self.table + 0x54 * i, self.teams + 500 * c, [stop, 1])
+                self.call(self.table + 0x54 * i, self.teams + 500 * c, [ret, 1])
                 n, pos = self.number(i), self.m.uc.mem_read(self.table + 0x54 * i + 0x35, 1)[0]
                 self.assertTrue(mn.legal(pos, n), (label, pos, n))
                 self.assertNotIn(n, held, label)
                 self.m.uc.mem_write(self.table + 0x54 * i, record)
-            del ret
         for caller in mn.DRAFT_CALLERS:                                   # the draft: a fresh draw for each
             for k in range(24):
                 c = rng.randrange(32)
@@ -619,7 +715,7 @@ class KeptImage(unittest.TestCase):
                 self.m.put(p + 0x20, (word & ~0x3F8) | self.number(h) << 3)    # he arrives wearing the hidden man's
                 self.m.uc.mem_write(p + 0x35, bytes((hpos,)))
                 self.m.uc.mem_write(p + 0x25, b"\x06")
-                self.call(p, self.teams + 500 * c, [stop, 1])
+                self.call(p, self.teams + 500 * c, [SIGNING_RET, 1])
                 self.assertNotIn(self.number(i), self.held(c, minus=i))
                 self.m.uc.mem_write(p, record)
                 checked += 1
@@ -803,13 +899,13 @@ class InjuredReserveReturns(unittest.TestCase):
     def give(self, m, p, number):
         m.put(p + 0x20, (m.get(p + 0x20) & ~0x3F8) | number << 3)
 
-    def check(self, helper, m, c, a, b, b_number):
+    def check(self, helper, m, c, a, own):
+        """He is back, wears his own number, and no two club-mates share one."""
         roster = helper.roster(m, c)
         self.assertIn(a, roster)
         nums = self.numbers(m, roster)
-        self.assertEqual(len(nums), len(set(nums)), sorted(nums))         # no two club-mates share a number
-        self.assertEqual((m.get(b + 0x20) >> 3) & 0x7F, b_number)          # the active man keeps his
-        return (m.get(a + 0x20) >> 3) & 0x7F
+        self.assertEqual(len(nums), len(set(nums)), sorted(nums))
+        self.assertEqual((m.get(a + 0x20) >> 3) & 0x7F, own)
 
     def test_the_rollover_return(self):
         for label, payload in (("modern IR", self.with_ir), ("modern IR + modern numbers", self.both)):
@@ -821,12 +917,13 @@ class InjuredReserveReturns(unittest.TestCase):
                 helper.hurt(m, a, 9)
                 helper.week(m)
                 self.assertEqual(helper.store(m, c)[2][0][0], a)
-                self.give(m, b, own)                                       # a signing took his number while he was out
+                self.give(m, b, own)                                       # an older build gave his number away
                 m.call(0x246F90, budget=400_000_000)
-                new = self.check(helper, m, c, a, b, own)
-                self.assertNotEqual(new, own)
+                self.check(helper, m, c, a, own)
+                b_new = (m.get(b + 0x20) >> 3) & 0x7F
+                self.assertNotEqual(b_new, own)                            # the club-mate gets another one
                 if payload is self.both:
-                    self.assertTrue(mn.legal(m.uc.mem_read(a + 0x35, 1)[0], new))
+                    self.assertTrue(mn.legal(m.uc.mem_read(b + 0x35, 1)[0], b_new))
 
     def test_the_weekly_return_and_a_free_number_untouched(self):
         for label, payload in (("modern IR", self.with_ir), ("modern IR + modern numbers", self.both)):
@@ -845,8 +942,58 @@ class InjuredReserveReturns(unittest.TestCase):
                     helper.play(m, c, 4)
                     helper.week(m)
                     self.assertEqual(helper.store(m, c)[0], 0)
-                    new = self.check(helper, m, c, a, b, own if taken else b_own)
-                    self.assertEqual(new != own, taken)                     # renumbered only when a club-mate wears it
+                    self.check(helper, m, c, a, own)
+                    b_now = (m.get(b + 0x20) >> 3) & 0x7F
+                    self.assertNotEqual(b_now, own)                         # the club-mate never keeps the returner's
+                    if not taken:
+                        self.assertEqual(b_now, b_own)                      # and is not touched when he had his own
+
+    def test_burrow(self):
+        """The owner's case: the starting QB goes on injured reserve, the club signs players (QBs who arrive wearing his
+        number), he comes back and wears his own number. With modern numbers nobody is given it while he is out; with
+        modern IR alone (a 2004 jersey routine) the club-mate who was given it is renumbered at his return."""
+        from tests.nfl2k5_supersim_draft_fixture import Machine  # noqa: F401
+        for label, payload in (("modern IR + modern numbers", self.both), ("modern IR", self.with_ir)):
+            with self.subTest(label):
+                helper, m = self.boot(payload)
+                c = 2
+                team = helper.club(m, c)
+                qbs = [p for p in helper.roster(m, c) if m.uc.mem_read(p + 0x35, 1)[0] == 0]
+                burrow = qbs[0]
+                own = (m.get(burrow + 0x20) >> 3) & 0x7F
+                helper.hurt(m, burrow, 6)
+                helper.week(m)
+                self.assertEqual(helper.store(m, c)[2][0][0], burrow)
+                root = m.get(0xB72918)
+                table, count = m.get(root + 4), m.get(root)
+                for p in [q for q in helper.roster(m, c) if m.uc.mem_read(q + 0x35, 1)[0] != 0][-3:]:
+                    m.call(0xC3EB0, ecx=team, edx=p)                       # room: three released, so nobody is cut
+                signed = []
+                for i in range(count - 1, 0, -1):                          # free agents of the league table
+                    p = table + 0x54 * i
+                    if len(signed) == 3:
+                        break
+                    if p in helper.roster(m, c) or m.uc.mem_read(p + 0x35, 1)[0] != 0:
+                        continue
+                    m.put(p + 0x20, (m.get(p + 0x20) & ~0x3F8) | own << 3)  # he arrives wearing the starter's number
+                    m.uc.mem_write(p + 0x25, b"\x06")
+                    m.uc.mem_write(m.STACK, struct.pack("<2I", SIGNING_RET, 1))
+                    for name, value in dict(ECX=p, EDX=team, ESP=m.STACK).items():
+                        m.reg(name, value)
+                    m.uc.emu_start(0x2BD260, SIGNING_RET, count=5_000_000)  # the signing's jersey call
+                    m.call(0xC3EE0, ecx=team, edx=p)                       # and onto the active list
+                    signed.append(p)
+                numbers = [(m.get(p + 0x20) >> 3) & 0x7F for p in signed]
+                if payload is self.both:
+                    self.assertNotIn(own, numbers)                         # nobody is given his number while he is out
+                else:
+                    self.assertIn(own, numbers)                            # the 2004 routine gave it away
+                helper.heal(m, burrow)
+                helper.play(m, c, 4)
+                helper.week(m)
+                self.assertEqual(helper.store(m, c)[0], 0)
+                self.assertTrue(all(p in helper.roster(m, c) for p in signed))   # nobody was cut to make room
+                self.check(helper, m, c, burrow, own)
 
     def test_earlier_beta_81_installs_read_previous_and_update_in_place(self):
         _need(KEPT_XBE, KEPT_XBE_SHA)

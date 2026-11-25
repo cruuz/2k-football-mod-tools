@@ -77,7 +77,9 @@ class AllocatorPlacementTests(unittest.TestCase):
             with self.subTest(room=ROOM in requests):
                 rows = space.plan(requests)["allocations"]
                 placed = next(r for r in rows if r["owner"] == straddle[0])
-                self.assertEqual(placed["va"], space.FIXED_SPAN_END)
+                # b81 modern numbers: from the span's end the 0x20000-byte owner would straddle the numbers page at
+                # 0x1530000 (space.MODERN_NUMBERS_VA), so it steps past that page too
+                self.assertEqual(placed["va"], space.MODERN_NUMBERS_VA + space.MODERN_NUMBERS_SIZE)
                 self.assertEqual(space.FIXED_SPAN_END, 0x152E000)
                 for row in rows:
                     if row["owner"] != ROOM[0]:
@@ -88,7 +90,8 @@ class AllocatorPlacementTests(unittest.TestCase):
         filler = ("aa_synthetic_filler", "code", 0x1528000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
         bumped = ("ab_synthetic_bumped", "code", 0x20000, 16)
         rows = space.plan([filler, bumped, ownership])["allocations"]
-        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x152E000)   # past trades and side numbers
+        # past trades and side numbers, and (b81 modern numbers) past the numbers page it would otherwise straddle
+        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x1531000)
 
     def test_a_foreign_room_request_is_refused(self):
         for request in (("nfl2k5_qb_room", "code", 0x2000, 0x1000), ("nfl2k5_qb_room", "data", 0x3000, 0x1000)):
