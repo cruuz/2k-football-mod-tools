@@ -598,8 +598,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "22a50b66cece72046d84de5ed34f3d04c71c6ac921dba125cf9b08505e71efac",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/build_steps.py": "7a2880b6dbf6dbc832572bc8a97a50d8e3e43eac959ec5504f3649ab841c4639",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "382b9e9f4232a0569b4594d6e80010380c51d9218b7cf10c8544575f1632d87b",
+        "mod_editor/core/build_steps.py": "6c7984cf7c497ed3bc33a670846cee24dabc40d9247a26b66f523368b9f77d39",  # b791-h3: step context and optional steps
+        "mod_editor/core/mod_build.py": "359acbe569ddfcf5f7ee93d79db90dbc6be2e953256efa06449be017aa5a6c2e",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -634,7 +634,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
         "mod_editor/core/nfl2k5_boot_logo.py": "9ee25b1fb49859951ba4780ec2b4a3d71773f7199d5a308338acf51f84bdb257",
         "mod_editor/core/nfl2k5_build_service.py": "cdff75f2ceb2da2ad18d38b7c8f1915193f91075ac2275cb204474765d27dcc7",
-        "mod_editor/core/nfl2k5_build_settings.py": "f1b5f1436efe17c06ad1af6c4352569a1f538872230694509f975bab32ec677e",
+        "mod_editor/core/nfl2k5_build_settings.py": "586a833bbbf33ea661238cdf8f4743fab9e6d78d99610f8c8112ab709da98b75",
         "mod_editor/core/nfl2k5_build_service.py": "cdff75f2ceb2da2ad18d38b7c8f1915193f91075ac2275cb204474765d27dcc7",
         "mod_editor/core/nfl2k5_midfield_art.py": "da5ff3541f2d7a7674cd3fc715c831379ecbe17c307951ce547ecaf8d3b4ab89",
         "mod_editor/core/nfl2k5_split_endzone_art.py": "c135625db5663efa13f3f446f98e7cfe8d071148f7b892ea378d18a05d845957",
@@ -1005,6 +1005,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_qb_trades.py": "eb077a4143157c25045d5eb01526f2b430e9c3dd6cead72710b8561afd91db97",  # b81 qb34 4b (C20): the room owner loads it with bit 16
         "mod_editor/core/nfl2k5_qb_trades_code.py": "6060bc35957410b91ec5e2242e87836b15591e1430996cd2dcb598ea18b5996a",  # b81 qb34 4b: its generated page template
         "mod_editor/core/nfl2k5_qb_trades_code_b81_383.py": "36d9ac7d5e7e7368f3d9b650f0bde1065960cb0f61e21aa2c94d57c68ac2b492",  # b81 4b revision (M1/N6): frozen 383 trades template ("previous")
+        "mod_editor/core/nfl2k5_cpu_trades.py": "c4a08bc2863ad0fd6d92ecbe03ea45760be5c6fbea534d1eb9659619febf42cd",  # b81 trades-all (R6): mod_build loads it by name, right after the room
+        "mod_editor/core/nfl2k5_cpu_trades_code.py": "8ba107cff96d50f6c2ba732abdf6fb932dbf6312c6dddfdfe3f07472f593da75",  # b81 trades-all: its generated page template
         "mod_editor/core/nfl2k5_helmet_side_numbers.py": "c10876d8ef2c26740f3559706d8678de673730a7e260285ddc35eaafec9e6069",  # b81 helmet-sides: mod_build loads it by name (route 5 = set E)
         "mod_editor/core/nfl2k5_number_kerning.py": "48405334b32b7495399f204a898825531423ed6025e848b51ac0c86891df6902",  # b81 helmet-sides: the owner reads Number kerning's state (same cell addressing)
         "mod_editor/core/nfl2k5_sim_realism.py": "81d981f096486cc13f7033e87b014694eacbbee82afeb96412784cb85ff7d77a",  # b779-sim2 r6

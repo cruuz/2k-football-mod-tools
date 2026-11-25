@@ -254,8 +254,12 @@ def cmd_build_sources(args: argparse.Namespace) -> int:
         room = getattr(args, "qb_room", None)
         if room is not None:  # b81 qb34: otherwise the recipe's own key, or the quarterback injury setting, decides
             plan.qb_room = room
+        cpu_trades = getattr(args, "cpu_trades", None)
+        if cpu_trades is not None:  # b81 trades-all (R6): otherwise the recipe's own key, or the quarterback option
+            plan.cpu_trades = cpu_trades
         nfl2k5_build_settings.validate_sim_qb_injuries(plan.sim_qb_injuries, plan.sim_qb_injury_rate)
         nfl2k5_build_settings.validate_qb_room(plan.qb_room)
+        nfl2k5_build_settings.validate_cpu_trades(plan.cpu_trades)
     except KeyError as exc:
         raise modpack.ModpackError(f"Source recipe requires an unsupported Studio preset: {recipe['preset']}") from exc
     try:
@@ -283,7 +287,8 @@ def cmd_update_v09(args: argparse.Namespace) -> int:
     plan = mod_build.v09_disc_update(args.source, args.out, save_list_type_guard=args.save_list_guard,
                                      modern_injured_reserve=args.modern_ir, backfield_cards=args.backfield_cards,
                                      gadget_play=args.gadget_play, sim_qb_injuries=args.sim_qb_injuries, custom_rate=rate,
-                                     qb_room=getattr(args, "qb_room", None), overwrite=args.overwrite)
+                                     qb_room=getattr(args, "qb_room", None),
+                                     cpu_trades=getattr(args, "cpu_trades", None), overwrite=args.overwrite)
     receipt = mod_build.build(plan, _progress(not args.json), require_change=True)
     print(json.dumps(receipt, indent=2, default=str))
     return 0
@@ -333,7 +338,8 @@ def cmd_edit_sim_qb(args):
         raise ValueError("--qb-injury-rate requires Custom mode.")
     plan = mod_build.sim_qb_disc_edit(args.source, args.out, args.mode,
                                       custom_rate=mod_build.BuildPlan.sim_qb_injury_rate if rate is None else rate,
-                                      qb_room=getattr(args, "qb_room", None))
+                                      qb_room=getattr(args, "qb_room", None),
+                                      cpu_trades=getattr(args, "cpu_trades", None))
     try:
         result = mod_build.build(plan, _progress(not args.json), require_change=True)
     except ModEditorError as exc:
@@ -419,6 +425,8 @@ def main(argv: list[str] | None = None) -> int:
     build.add_argument("--qb-injury-rate", type=float, metavar="PERCENT",
                        help="Custom base chance per eligible play, from 0.000 to 100.000 percent")
     build.add_argument("--qb-room", choices=("retail", "realistic"), help="set the quarterback room rules explicitly (default: they follow the quarterback injury setting)")
+    build.add_argument("--cpu-trades", choices=("retail", "realistic"),
+                       help="set computer trades at every position explicitly (default: they follow the quarterback option)")
     build.add_argument("--json", action="store_true")
     build.set_defaults(run=cmd_build_sources)
 
@@ -434,6 +442,8 @@ def main(argv: list[str] | None = None) -> int:
                          help="set the simulated quarterback injury option on the same copy")
     upgrade.add_argument("--qb-injury-rate", type=float, metavar="PERCENT", help="Custom base injury chance per eligible play")
     upgrade.add_argument("--qb-room", choices=("retail", "realistic"), help="set the quarterback room rules explicitly (default: they follow the quarterback injury setting)")
+    upgrade.add_argument("--cpu-trades", choices=("retail", "realistic"),
+                         help="set computer trades at every position explicitly (default: they follow the quarterback option)")
     upgrade.add_argument("--overwrite", action="store_true")
     upgrade.add_argument("--json", action="store_true", help="omit progress and print only the resulting receipt")
     upgrade.set_defaults(run=cmd_update_v09)
@@ -443,6 +453,8 @@ def main(argv: list[str] | None = None) -> int:
     edit.add_argument("--mode", required=True, choices=("retail", "realistic", "custom"))
     edit.add_argument("--qb-injury-rate", type=float, metavar="PERCENT", help="base chance in Custom mode")
     edit.add_argument("--qb-room", choices=("retail", "realistic"), help="set the quarterback room rules explicitly (default: they follow the quarterback injury setting)")
+    edit.add_argument("--cpu-trades", choices=("retail", "realistic"),
+                      help="set computer trades at every position explicitly (default: they follow the quarterback option)")
     edit.add_argument("--receipt", help="new JSON receipt file")
     edit.add_argument("--json", action="store_true")
     edit.set_defaults(run=cmd_edit_sim_qb)

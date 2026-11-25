@@ -110,6 +110,7 @@ class BuildPlanCoverageTests(unittest.TestCase):
             "sim_breakaway_stop",  # b81 scoring: one recipe value (yards to goal, default 72), no Build tab control by design
             "qb_room",  # b81 qb34 (DESIGN_CHANGES C1): the quarterback room rules follow the Simulated injuries combo
                         # (Realistic/Custom -> Realistic, Retail -> Retail); an explicit level is a recipe/project/CLI key only
+            "cpu_trades",  # b81 trades-all (R6): the Computer trades combo (cpu_trades_mode) beside the quarterback option
         }
         self.assertEqual(fields - bound, set(), "BuildPlan fields with no control on the Build tab")
         self.assertEqual(bound - fields, set(), "controls that name a field BuildPlan no longer has")

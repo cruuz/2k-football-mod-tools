@@ -847,6 +847,10 @@ class BuildPageTests(unittest.TestCase):
             with self.subTest(needs=needs, stages=stages):
                 extra = {"trade_deadline": "applied", "franchise_economy": "applied", "practice_squad": "applied",
                          "modern_injured_reserve": "applied"} if needs == "on the disc" else {}
+                # b81 trades-all (R6): a disc the Studio built at 383 carries computer trades at every position too
+                # (they follow the room), so only the room's stage set differs here.
+                if stages == 383:
+                    extra.update(cpu_trades="applied", cpu_trades_settings={"status": "applied", "mode": "realistic"})
                 self.panel.apply_state(dict(self.state, sim_qb_injuries="applied", sim_qb_injury_settings=slice_now,
                                             qb_room="applied",
                                             qb_room_settings={"status": "applied", "mode": "realistic", "stages": stages},
