@@ -436,7 +436,9 @@ class InPlaceUpgrades(_BuildPath):
                     slice3=later[3])
         for payload in (source, upgraded, retail):
             self.assertEqual(running_backs.status(payload), "applied")
-            self.assertEqual(simulator.status(payload), "applied")
+            # b81 fb-targets: season realism from before the fullback target rule reads "legacy"; the QB option's own
+            # apply leaves it alone (the Studio's in-place route updates it first, as test_b81_sim_qb_injury_build shows)
+            self.assertEqual(simulator.status(payload), "legacy")
             self.assertEqual(lineup.read_settings(payload), lineup.read_settings(retail))
 
 
