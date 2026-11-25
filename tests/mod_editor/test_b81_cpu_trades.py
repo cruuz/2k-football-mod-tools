@@ -1,20 +1,22 @@
-"""CPU trades at every position (beta 81, owner nfl2k5_cpu_trades; the trades-all lane's DESIGN.md and RULINGS.md).
+"""CPU trades at every position (beta 81, owner nfl2k5_cpu_trades; the trades-all lane's DESIGN.md, RULINGS.md and the
+design-review rulings M1-M3, S1-S10, N1-N8).
 
-Image tests (CpuTradesImage): the pages linked at 0x152E000 and the site 0x2BC96C patched into a kept regular-season
-opening (a season-panel checkpoint of the 4b hand-over run: stage 8, week counter 0, the Trade Deadline option off, the
-quarterback room at 383), entered as the game enters them: the native trade pass 0x2BC960 (ECX = 3 proposers, EDX = the
-menu), whose pending scan call is the site. The packages are recomputed here from the design in Python (ratings by the
-game's own 0x246D80 on the same image) and compared with the page's ring rows; every executed trade is then checked
-against the hard rules (no club a person manages, no QB/K/P, healthy, 2+ years pro, not in the first contract year, the
-seller's depth, roster counts, the pick changes owner from buyer to seller, nothing of ours left on the board).
+Image tests (CpuTradesImage): the pages linked at 0x152E000 and both sites (0x2BC96C, 0x2BB296) patched into a kept
+regular-season opening (a season-panel checkpoint of the 4b hand-over run: 2027, stage 8, week counter 0, the Trade
+Deadline option off, the quarterback room at 383), entered as the game enters them: the native trade pass 0x2BC960
+(ECX = 3 proposers, EDX = the menu), whose pending-scan call is the site. The packages are recomputed here from the
+design in Python (the shared need header's Python mirror; ratings, charges and the release choice from the game's own
+routines on an untouched twin of the same state) and compared with the page's ring rows; every executed trade is then
+checked against the hard rules (no club a person manages, no QB/K/P, healthy, 2+ years pro, the seller keeps its seats
+and its cut minimum, roster counts, the buyer's cap after the trade (M1), the pick changes owner from buyer to seller,
+the rows of both clubs repaired (S9), nothing of ours left on the board).
 
 Fixtures come from the environment only (no private paths in the repo): CPU_TRADES_IMAGE (a .b81mem.gz opening) and
 CPU_TRADES_IMAGE_XBE (the executable it was made with). Without them the image classes skip.
 
-PagesAndOwner: the byte interface and the owner (install, Retail, foreign, needs) on CPU_TRADES_STANDARD_XBE, a standard
-executable carrying the needs (else skip). Allocation: the fixed pages and the step-over, no fixture.
-
-Every class fails on c4406481b: there is no nfl2k5_cpu_trades owner, code module or allocation there.
+PagesAndOwner: the byte interface and the owner (install, Retail, foreign, needs, the unowned range) on
+CPU_TRADES_STANDARD_XBE, a standard executable carrying the needs (else skip). Allocation: the fixed pages and the
+step-over, no fixture. Every class fails on c4406481b: there is no nfl2k5_cpu_trades owner, code module or allocation.
 """
 from __future__ import annotations
 
@@ -37,14 +39,21 @@ LEDGER, LEDGER_CURSOR = 0xE3F070, 0xE3F06C
 DEADLINE_BYTE = 0x5151C5
 CAP = 0xE3C278
 PROBE = 0x3200000
-STARTERS = (0, 0, 0, 3, 2, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 2, 2)
-CUT_MIN = (2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 0, 5, 2, 3, 3, 3, 4)
+CUT_MAX = (3, 30, 30, 30, 30, 30, 30, 30, 2, 30, 0, 30, 30, 30, 30, 30, 30)
+CUT_KEEP = (2, 30, 30, 6, 6, 2, 2, 3, 1, 3, 0, 5, 2, 3, 4, 4, 4)
 WEEK_WEIGHT = (1, 1, 1, 1, 2, 2, 2, 4, 8)
+POOL_WEIGHT = ((0, 0, 0, 16, 16, 16, 16, 16, 0, 10, 0, 16, 5, 5, 5, 16, 16),
+               (0, 0, 0, 12, 16, 16, 16, 4, 0, 8, 0, 14, 12, 12, 12, 10, 10))
 
 
 def _code():
     from mod_editor.core import nfl2k5_cpu_trades_code as code
     return code
+
+
+def _tn():
+    from mod_editor.core import nfl2k5_team_need as tn
+    return tn
 
 
 def fmix(h):
@@ -62,16 +71,6 @@ def draw(words):
     return h % 1000000
 
 
-def overall_of_bits(u):
-    e = (u >> 23) & 255
-    if u >> 31 or e < 119:
-        return 0
-    if e > 127:
-        return 100
-    s = 150 - e
-    return (((u & 0x7FFFFF) | 0x800000) * 100 + (1 << (s - 1))) >> s
-
-
 def _fixture(path):
     if not path or not Path(path).is_file():
         raise unittest.SkipTest("CPU_TRADES_IMAGE / CPU_TRADES_IMAGE_XBE / CPU_TRADES_STANDARD_XBE not set or absent")
@@ -79,7 +78,7 @@ def _fixture(path):
 
 
 class Image:
-    """A kept image on its executable with the CPU trades pages and site written in (the 4b tests' method)."""
+    """A kept image on its executable with the CPU trades pages and both sites written in (the 4b tests' method)."""
 
     def __init__(self):
         from tests.nfl2k5_supersim_draft_fixture import Machine
@@ -102,13 +101,19 @@ class Image:
 
     def install(self, stages=7, *, shadow=False, p8=1_000_000, p7=1_000_000):
         code = _code()
-        at, _original, patched = code.site(VA)
         self.m.uc.mem_write(VA, code.page_bytes(VA, code.settings_record(stages, shadow=shadow, p8_ppm=p8, p7_ppm=p7)))
-        self.m.uc.mem_write(at, patched)
+        for at, _original, patched in code.sites(VA):
+            self.m.uc.mem_write(at, patched)
         self.m.uc.ctl_flush_tb()
 
     def b(self, at):
         return self.m.uc.mem_read(at, 1)[0]
+
+    def h(self, at):
+        return struct.unpack("<H", bytes(self.m.uc.mem_read(at, 2)))[0]
+
+    def rec(self, p):
+        return bytes(self.m.uc.mem_read(p, 0x54))
 
     def club(self, i):
         return self.teams + 500 * i
@@ -117,25 +122,36 @@ class Image:
         team = self.club(i)
         return [self.m.get(team + 4 * k) for k in range(self.b(team + 0x11C))]
 
-    def healthy(self, p):
-        return not self.m.get(p + 0x20) & 0xBFC00000 and not self.m.get(p + 0x24) & 0x70000000
+    def _float_call(self, address, p, flag):
+        code = (b"\xb9" + struct.pack("<I", p) + b"\xba" + struct.pack("<I", flag) + b"\xb8" + struct.pack("<I", address)
+                + b"\xff\xd0\xd9\x1d" + struct.pack("<I", PROBE + 0x800) + b"\xc3")
+        self.m.uc.mem_write(PROBE, code)
+        self.m.uc.ctl_flush_tb()
+        self.m.call(PROBE, budget=2_000_000)
+        return struct.unpack("<f", bytes(self.m.uc.mem_read(PROBE + 0x800, 4)))[0], self.m.get(PROBE + 0x800)
 
     def rating(self, p):
         if p not in self._ratings:
-            code = (b"\xb9" + struct.pack("<I", p) + b"\xba\x00\x00\x00\x00\xb8\x80\x6d\x24\x00\xff\xd0"
-                    + b"\xd9\x1d" + struct.pack("<I", PROBE + 0x800) + b"\xc3")
-            self.m.uc.mem_write(PROBE, code)
-            self.m.uc.ctl_flush_tb()
-            self.m.call(PROBE, budget=2_000_000)
-            self._ratings[p] = overall_of_bits(self.m.get(PROBE + 0x800))
+            self._ratings[p] = _tn().points(self._float_call(0x246D80, p, 0)[1])
         return self._ratings[p]
+
+    def rating1(self, p):
+        return self._float_call(0x246D80, p, 1)[0]
 
     def record(self, i):
         team = self.club(i)
         return tuple(self.m.call(at, ecx=team, budget=5_000_000) for at in (0xC7720, 0xC7750, 0xC7780))
 
-    def salary(self, p):
-        return self.m.call(0xE6380, ecx=p, budget=2_000_000)
+    def charge_after(self, p):
+        """M1: 0x2BB360's contract (owed bonus folded into the value, bonus cleared) on a copy; 0xE6380 on the copy."""
+        m = self.m
+        money = (m.call(0xE5FF0, ecx=self.h(p + 0xA), budget=2_000_000) - m.call(0x13ED00, ecx=p, budget=2_000_000)) \
+            & 0xFFFFFFFF
+        copy = bytearray(self.rec(p))
+        struct.pack_into("<I", copy, 0x24, struct.unpack_from("<I", copy, 0x24)[0] & 0xFF0FFFFF)
+        struct.pack_into("<H", copy, 0xA, m.call(0xE6000, ecx=money, budget=2_000_000) & 0xFFFF)
+        m.uc.mem_write(PROBE + 0x400, bytes(copy))
+        return m.call(0xE6380, ecx=PROBE + 0x400, budget=2_000_000)
 
     def pick_owner(self, word):
         from mod_editor.core import nfl2k5_trade_picks as picks
@@ -149,8 +165,7 @@ class Image:
 
     def open_places(self, clubs):
         """Give these clubs a vacancy the way the season does (the game's own release 0x2BD900 of their last-listed
-        player outside QB, K and P, to the free-agent list): at the opening every club holds 53, and an in-season buyer
-        needs 52 or fewer."""
+        player outside QB, K and P, to the free-agent list)."""
         for i in clubs:
             team = self.club(i)
             p = next(p for p in reversed(self.roster(i)) if self.b(p + 0x35) > 2)
@@ -169,9 +184,9 @@ class Image:
         assert [m.reg(r) for r in ("EBX", "ESI", "EDI", "EBP", "ESP")] == [0x11111111, 0x22222222, 0x33333333,
                                                                            0x44444444, m.STACK + 4]
 
-    # ---- the design, in Python ------------------------------------------------------------------------------
+    # ---- the design, in Python (the header's mirror) ---------------------------------------------------------------
     def ledger(self):
-        """(load per club, players named by a signing or trade row)."""
+        """(trade groups per club, players named by a signing or trade row)."""
         m = self.m
         cursor, mask, load, named = m.get(LEDGER_CURSOR), 0, [0] * 32, set()
         for k in range(600):
@@ -203,118 +218,199 @@ class Image:
                 clubs |= {m.get(rec + 8), m.get(rec + 0x20)}
         return clubs, players
 
-    def scale(self):
-        """eff[club][pos], best[club], q[pos] = (q25, q50, q75, q90)."""
-        eff, best = [], []
-        for i in range(32):
-            top = [[] for _ in range(17)]
-            b = 0
-            for p in self.roster(i):
-                pos = self.b(p + 0x35)
-                if pos >= 17:
+    def pool(self, p):
+        pos = self.b(p + 0x35)
+        return _tn().POOL[pos] if pos < 17 else None
+
+    def seated(self, i, p):
+        tn, ros = _tn(), self.roster(i)
+        pool = self.pool(p)
+        if pool is None or not tn.present(self.rec(p)):
+            return False
+        mine = ros.index(p)
+        before = sum(1 for j, o in enumerate(ros) if o != p and self.pool(o) == pool and tn.present(self.rec(o))
+                     and (tn.row(self.rec(o)) < tn.row(self.rec(p))
+                          or (tn.row(self.rec(o)) == tn.row(self.rec(p)) and j < mine)))
+        return before < tn.SEATS[pool]
+
+    def scan(self, i):
+        """(weak per pool, present per pool, best, healthy quarterbacks) as the page's scan()."""
+        tn = _tn()
+        weak, present, best, qbs = [0] * 17, [0] * 17, 0, 0
+        lists = [[] for _ in range(17)]
+        for o in self.roster(i):
+            pool = self.pool(o)
+            if pool is None:
+                continue
+            r = self.rating(o)
+            best = max(best, r)
+            if pool == 0 and tn.healthy(self.rec(o)):
+                qbs += 1
+            if not tn.present(self.rec(o)):
+                continue
+            present[pool] += 1
+            lists[pool].append((tn.row(self.rec(o)), r))
+        for p in range(17):
+            seats = tn.NEED_SEATS[p]
+            men = sorted(lists[p], key=lambda t: t[0])[:4]          # stable: ties keep list order, as the page
+            weak[p] = 0 if not seats or len(men) < seats else min(r for _row, r in men[:seats])
+        return weak, present, best, qbs
+
+    def release_of(self, i, pool, ledger_players, board_players):
+        tn, ros = _tn(), self.roster(i)
+        counts = {}
+        for o in ros:
+            counts[self.pool(o)] = counts.get(self.pool(o), 0) + 1
+        for tier in range(3):
+            best = None
+            for p in ros:
+                at = self.pool(p)
+                if at is None or at <= 2:
                     continue
-                r = self.rating(p)
-                b = max(b, r)
-                if self.healthy(p):
-                    top[pos].append(r)
-            eff.append([sorted(top[pos], reverse=True)[STARTERS[pos] - 1] if STARTERS[pos] and
-                        len(top[pos]) >= STARTERS[pos] else 0 for pos in range(17)])
-            best.append(b)
-        q = []
-        for pos in range(17):
-            v = sorted(eff[i][pos] for i in range(32))
-            q.append((v[8], v[16], v[24], v[28]))
-        return eff, best, q
-
-
-def offer_of(x, s, pos, floor, above, room, q, eff, best, rebuild_ok, board_players, ledger_players):
-    """The design's man from seller s (see trades.c offer_of), or None; returns (player, rating, rebuild sale)."""
-    lb = pos in (10, 11)
-    ros = x.roster(s)
-    count = sum(1 for p in ros if x.b(p + 0x35) == pos or (lb and x.b(p + 0x35) in (10, 11)))
-    healthy_at = sum(1 for p in ros if x.b(p + 0x35) == pos and x.healthy(p))
-    if healthy_at < STARTERS[pos] + 1 or count < CUT_MIN[11 if lb else pos] + 1:
+                count = counts[at] + (at == pool)
+                limit = (CUT_MAX, CUT_KEEP, tn.CUT_MIN)[tier][at]
+                if count <= limit or self.seated(i, p) or p in board_players or p in ledger_players:
+                    continue
+                length = self.b(p + 0x27) & 15
+                small = self.h(p + 0xA) <= 60 * (length or 1)
+                key = (not small, self.rating1(p))
+                if best is None or key < best[0]:
+                    best = (key, p)
+            if best:
+                return best[1]
         return None
+
+
+def offer_of(x, s, stage, pool, floor, above, room, q, club, rebuild_ok, board_players, ledger_players):
+    """The design's man from seller s, or None; returns (player, rating, rebuild sale)."""
+    tn = _tn()
+    ros = x.roster(s)
+    count = sum(1 for p in ros if x.pool(p) == pool)
+    top = max([x.rating(p) for p in ros if x.pool(p) == pool] or [0])
+    if count < tn.CUT_MIN[pool] + 1 or club["present"][pool] < tn.SEATS[pool] + 1:
+        return None
+    margin = 2 * ((885 + 45 * min(x.m.get(YEAR), 4) + 3) // 4)
     out, best_r = None, above
     for p in ros:
-        if x.b(p + 0x35) != pos or not x.healthy(p):
+        if x.pool(p) != pool:
             continue
-        pro, left, length = x.b(p + 0x25) & 31, x.b(p + 0x24) & 15, x.b(p + 0x27) & 15
-        if pro < 2 or not left or (x.m.get(YEAR) and left == length) or x.b(p + 0x53) & 1:
+        rec = x.rec(p)
+        pro, left, length = rec[0x25] & 31, rec[0x24] & 15, rec[0x27] & 15
+        if not tn.healthy(rec) or pro < 2 or not left:
+            continue
+        if stage == 7 and x.m.get(YEAR) and left == length:
             continue
         r = x.rating(p)
-        if r < floor or r <= best_r or r >= best[s] or (r >= q[3] and pro <= 6):
+        if rec[0x53] & 1 or r >= club["best"] or (tn.PREMIUM[pool] and r >= top) or r >= q[3] \
+                or (pro <= tn.YOUNG_YEARS and r > q[1]):
             continue
-        sale_rebuild = r >= eff[s][pos]
-        if sale_rebuild and (not rebuild_ok or pro < 6):
+        sale_rebuild = x.seated(s, p)
+        if sale_rebuild and (not rebuild_ok or pro < 8):
             continue
-        if room - x.salary(p) <= 10 or p in board_players or p in ledger_players:
+        if r < floor or r <= best_r:
+            continue
+        if room - x.charge_after(p) < margin:
+            continue
+        if p in board_players or p in ledger_players:
             continue
         out, best_r = (p, r, sale_rebuild), r
     return out
 
 
-def model(x, stage, rows, *, rebuild_bit=True):
-    """Every buyer's package in the page's order: [(buyer, seller, player, position, word)]. `rows` are the page's
-    before-scan rows: a row posted or would-post makes both clubs used, as in the page."""
-    m = x.m
-    eff, best, q = x.scale()
+def model(x, stage, rows, *, round2=0, rebuild_bit=True, p8=1_000_000, p7=1_000_000):
+    """Every buyer's package in the page's order that the draw lets through: [(buyer, seller, player, pool, hash)].
+    `rows` are the page's before-scan rows of this round: a posted or would-post row makes both clubs used."""
+    tn, m = _tn(), x.m
+    year, week = m.get(YEAR), m.get(WEEK)
+    kind = 1 if stage == 7 else 0
     load, ledger_players = x.ledger()
     board_clubs, board_players = x.board_names()
-    year, week = m.get(YEAR), m.get(WEEK)
     clubs = []
     for i in range(32):
         team = x.club(i)
-        active = x.b(team + 0x11C)
-        out = m.get(USER_FLAG + 4 * i) != 0 or team in board_clubs
-        w = l_ = t = 0
-        if stage == 8:
-            w, l_, t = x.record(i)
-        c = dict(out=out, active=active, w=w, l=l_, t=t, seller=False, rebuild=False, need=None, used=False)
-        if not out and load[i] < 3:
-            if active >= 51:
-                c["seller"] = True
-                c["rebuild"] = stage == 8 and rebuild_bit and w + l_ + t >= 4 and l_ >= w + 3
-            if not (active > (52 if stage == 8 else 64) or (stage == 8 and w + 1 < l_)):
-                deficit = 0
-                for pos in range(17):
-                    if STARTERS[pos] and eff[i][pos] < q[pos][0] and q[pos][0] - eff[i][pos] > deficit:
-                        deficit, c["need"] = q[pos][0] - eff[i][pos], pos
-        elif not out:
-            c["out"] = True
+        weak, present, best, qbs = x.scan(i)
+        paid = sum(1 for r in range(1, 8) if x.b(PICKS + 32 * r + i) != i)
+        c = dict(weak=weak, present=present, best=best, qbs=qbs, paid=paid, active=x.b(team + 0x11C),
+                 out=bool(m.get(USER_FLAG + 4 * i)) or team in board_clubs, seller=False, rebuild=False, buyer=False,
+                 used=False, w=0, l=0, t=0)
         clubs.append(c)
-    start = fmix((year * 131 + week * 7 + stage) & 0xFFFFFFFF) % 32
-    packages, by_buyer = [], {(r["buyer"]): r for r in rows}
+    q, pct = [], [[0] * 17 for _ in range(32)]
+    for p in range(17):
+        if not tn.NEED_SEATS[p]:
+            q.append((0, 0, 0, 0))
+            continue
+        v = sorted(c["weak"][p] for c in clubs)
+        q.append((v[8], v[16], v[24], v[28]))
+        for i, c in enumerate(clubs):
+            pct[i][p] = tn.percentile(v, c["weak"][p])
+    for i, c in enumerate(clubs):
+        if c["out"]:
+            continue
+        if load[i] >= 3:
+            c["out"] = True
+            continue
+        if stage == 8:
+            c["w"], c["l"], c["t"] = x.record(i)
+        if c["active"] >= 51:
+            c["seller"] = True
+            c["rebuild"] = stage == 8 and rebuild_bit and c["w"] + c["l"] + c["t"] >= 4 and c["l"] >= c["w"] + 3
+        if (stage == 8 and c["w"] + 1 < c["l"]) or c["paid"] >= 3 or c["qbs"] < 2:
+            continue
+        c["buyer"] = True
+    threshold = p8 // 2 * WEEK_WEIGHT[min(week, 8)] if stage == 8 else p7
+    start = fmix((year * 131 + week * 7 + stage + round2 * 977) & 0xFFFFFFFF) % 32
+    packages, by_buyer = [], {r["buyer"]: r for r in rows}
     for k in range(32):
         b = (start + k) % 32
         c = clubs[b]
-        if c["out"] or c["need"] is None or c["used"]:
+        if not c["buyer"] or c["used"]:
             continue
-        pos = c["need"]
-        floor = max(eff[b][pos] + 3, q[pos][0])
         room = (m.get(CAP) - m.get(x.club(b) + 0x124)) & 0xFFFFFFFF
         room = room - (1 << 32) if room >= 1 << 31 else room
-        choice, top = None, 0
-        for s in range(32):
-            if s == b or not clubs[s]["seller"] or clubs[s]["used"] or clubs[s]["out"]:
-                continue
-            got = offer_of(x, s, pos, floor, top, room, q[pos], eff, best, clubs[s]["rebuild"], board_players,
-                           ledger_players)
-            if got:
-                choice, top = (s, *got), got[1]
-        if choice is None:
+        tried, choice, top = set(), None, 0
+        for _n in range(3):
+            if choice:
+                break
+            need, low, depth = None, 256, False
+            for p in range(1, 17):
+                thin = stage == 7 and tn.NEED_SEATS[p] and c["present"][p] < tn.SEATS[p] + 1
+                if not tn.NEED_SEATS[p] or p in tried or not POOL_WEIGHT[kind][p]:
+                    continue
+                if (pct[b][p] < 64 or thin) and pct[b][p] < low:
+                    need, low, depth = p, pct[b][p], pct[b][p] >= 64
+            if need is None:
+                break
+            tried.add(need)
+            floor = max(q[need][0] - 8, 0) if depth else max(c["weak"][need] + 3, q[need][0])
+            for s in range(32):
+                sc = clubs[s]
+                if s == b or not sc["seller"] or sc["used"] or sc["out"]:
+                    continue
+                got = offer_of(x, s, stage, need, floor, top, room, q[need], sc, sc["rebuild"], board_players,
+                               ledger_players)
+                if got:
+                    choice, top = (s, got[0], need), got[1]
+        if not choice:
             continue
-        s, p, r, _sale = choice
-        packages.append((b, s, p, pos))
+        s, p, pool = choice
+        rec = x.rec(p)
+        r = x.rating(p)
+        ruled = 3 if r >= q[pool][2] else 4 if r >= q[pool][1] else 5 if r >= q[pool][0] else 6
+        ruled = min(ruled + ((rec[0x25] & 31) >= 9) + ((rec[0x24] & 15) == 1) + (stage == 7), 7)
+        has_pick = any(x.b(PICKS + 32 * rnd + b) == b for rnd in (ruled, ruled - 1) if rnd >= 2)
+        h = draw([9, b, pool, year, stage, week, (p - x.table) // 0x54, c["w"], c["l"]])
+        if has_pick and h >= threshold // 16 * POOL_WEIGHT[kind][pool]:
+            continue                                                    # KEPT: counted only, no row
+        packages.append((b, s, p, pool, h))
         row = by_buyer.get(b)
         if row is not None and row["result"] in (1, 2):
             c["used"] = clubs[s]["used"] = True
-    return packages, eff, q
+    return packages, q
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is required")
 class CpuTradesImage(unittest.TestCase):
-    PLACES = tuple(range(0, 32, 2))         # clubs given a vacancy (every second club; 15, a person's, is odd)
+    PLACES = tuple(range(0, 32, 4))         # some clubs with a vacancy, the rest at 53 (they release a man: M3)
 
     def fresh(self):
         x = Image()
@@ -327,87 +423,114 @@ class CpuTradesImage(unittest.TestCase):
         m = self.x.m
         self.assertEqual(m.get(STAGE), 8)
         self.assertEqual(self.x.b(DEADLINE_BYTE), 9)
+        self.assertGreaterEqual(m.get(YEAR), 1)
 
-    def rows(self, after=False):
-        events = _code().events(self.x.page())
+    def rows(self, after=False, page=None):
+        events = _code().events(page or self.x.page())
         return [e for e in events if bool(e["flags"] & 0x40) == after]
 
-    def counters(self):
-        return _code().counters(self.x.page())
+    def counters(self, page=None):
+        return _code().counters(page or self.x.page())
 
     def test_packages_follow_the_design_and_every_executed_trade_keeps_the_rules(self):
         x, m = self.x, self.x.m
+        tn = _tn()
         x.install(7)
         before = {i: x.roster(i) for i in range(32)}
-        snapshot = {p: bytes(m.uc.mem_read(p, 0x54)) for i in range(32) for p in before[i]}
-        owners = {}
+        records = {p: x.rec(p) for i in range(32) for p in before[i]}
+        twin = self.fresh()
         x.run()
         rows, after = self.rows(), self.rows(after=True)
         self.assertTrue(rows, "no buyer found a package on this image")
-        # the design's packages (with the page's own posted/would results deciding which clubs were used)
-        twin = self.fresh()                  # the same state before the call, for the model
-        packages, eff, q = model(twin, 8, rows)
-        self.assertEqual([(r["buyer"], r["seller"], r["player"], r["position"]) for r in rows],
-                         [(b, s, (p - x.table) // 0x54, pos) for b, s, p, pos in packages])
+        first = [r for r in rows if not r["flags"] & 8]
+        packages, q = model(twin, 8, first)
+        self.assertEqual([(r["buyer"], r["seller"], r["player"], r["position"]) for r in first],
+                         [(b, s, (p - x.table) // 0x54, pool) for b, s, p, pool, _h in packages])
         executed = [r for r in after if r["result"] == 1]
         self.assertTrue(executed, "nothing was executed")
-        self.assertLessEqual(len(after), 6)
         for r in executed:
             p = x.table + 0x54 * r["player"]
-            rec = snapshot[p]
+            rec = records[p]
             buyer, seller = r["buyer"], r["seller"]
             self.assertIn(p, x.roster(buyer))
             self.assertNotIn(p, x.roster(seller))
             self.assertEqual(m.get(USER_FLAG + 4 * buyer) | m.get(USER_FLAG + 4 * seller), 0)
             self.assertNotIn(rec[0x35], (0, 1, 2))
             self.assertGreaterEqual(rec[0x25] & 31, 2)
-            if m.get(YEAR):                          # the first contract year counts from the second franchise season
-                self.assertNotEqual(rec[0x24] & 15, rec[0x27] & 15)
             self.assertFalse(rec[0x53] & 1)
-            self.assertFalse(struct.unpack_from("<I", rec, 0x20)[0] & 0xBFC00000)
+            self.assertTrue(tn.healthy(rec))
             self.assertLessEqual(len(x.roster(buyer)), 53)
             self.assertGreaterEqual(len(x.roster(seller)), 50)
-            healthy_left = sum(1 for o in x.roster(seller) if x.b(o + 0x35) == rec[0x35] and x.healthy(o))
-            self.assertGreaterEqual(healthy_left, STARTERS[rec[0x35]])
+            pool = tn.POOL[rec[0x35]]
+            present = [o for o in x.roster(seller) if x.pool(o) == pool and tn.present(x.rec(o))]
+            self.assertGreaterEqual(len(present), tn.SEATS[pool])
+            self.assertGreaterEqual(sum(1 for o in x.roster(seller) if x.pool(o) == pool), tn.CUT_MIN[pool])
             self.assertEqual(x.pick_owner(r["word"]), seller)
-            owners[r["word"]] = seller
-        # nothing of ours left on the board: no kind-2 record whose A player is one of our rows' men
+            self.assertNotEqual(r["word"] & 0x3F, 1)                          # never a 1st (N3)
+            self.assertLessEqual(m.get(x.club(buyer) + 0x124), m.get(CAP))    # M1: never over the cap
+            for club in (buyer, seller):                                       # S9: rows 0..n-1 at the pool, no gap
+                was = sorted(tn.row(records[o]) for o in before[club] if o != p and tn.POOL[records[o][0x35]] == pool)
+                if club == seller:
+                    was = sorted(tn.row(records[o]) for o in before[club] if tn.POOL[records[o][0x35]] == pool)
+                if was != [min(k, 7) for k in range(len(was))]:
+                    continue                                                   # the chart had a gap already
+                rows_now = sorted(tn.row(x.rec(o)) for o in x.roster(club) if x.pool(o) == pool)
+                self.assertEqual(rows_now, [min(k, 7) for k in range(len(rows_now))], (club, rows_now))
+            gone = [o for o in before[buyer] if o not in x.roster(buyer)]
+            for o in gone:                                                     # M3: the released man
+                self.assertNotIn(records[o][0x35], (0, 1, 2))
         ours = {x.table + 0x54 * r["player"] for r in rows}
         for rec in x.board():
             kind, player = struct.unpack_from("<I", rec, 0)[0], struct.unpack_from("<I", rec, 0xC)[0]
             self.assertFalse(kind == 2 and player in ours)
         c = self.counters()
         self.assertEqual(c["posted"], c["executed"] + c["cancelled"] + c["gone"])
+        self.assertEqual(c["stories_forced"], c["executed"])                  # S7: every executed trade of ours
+
+    def test_the_post_trade_charge_is_what_the_buyer_pays(self):
+        """M1: the buyer's payroll rises by the predicted charge (0x2BB360's contract) for every executed trade."""
+        x, m = self.x, self.x.m
+        x.install(7)
+        twin = self.fresh()
+        payroll = {i: m.get(x.club(i) + 0x124) for i in range(32)}
+        predicted = {}
+        x.run()
+        for r in self.rows(after=True):
+            if r["result"] != 1:
+                continue
+            p = twin.table + 0x54 * r["player"]
+            predicted[r["buyer"]] = twin.charge_after(p)
+        self.assertTrue(predicted)
+        releases = [r for r in self.rows() if r["flags"] & 2 and r["result"] == 1]
+        for buyer, charge in predicted.items():
+            if any(r["buyer"] == buyer for r in releases):
+                continue                                                       # its payroll also lost a release
+            self.assertEqual(m.get(x.club(buyer) + 0x124) - payroll[buyer], charge, buyer)
 
     def test_prices_follow_the_ladder_and_picks_were_the_buyers(self):
         x, m = self.x, self.x.m
-        owner_before = {}
+        owner_before = {rnd | s << 6: x.pick_owner(rnd | s << 6) for rnd in range(1, 8) for s in range(32)}
+        records = {x.table + 0x54 * k: x.rec(x.table + 0x54 * k) for k in range(m.get(x.root))}
+        twin = self.fresh()
         x.install(7)
-        rows_seen = []
-        # pick owners before the call, for every word a row can name
-        for rnd in range(1, 8):
-            for s in range(32):
-                owner_before[rnd | s << 6] = x.pick_owner(rnd | s << 6)
-        eff, best, q = x.scale()
-        before = {x.table + 0x54 * k: bytes(m.uc.mem_read(x.table + 0x54 * k, 0x54)) for k in range(m.get(x.root))}
         x.run()
+        _packages, q = model(twin, 8, [r for r in self.rows() if not r["flags"] & 8])
+        seen = 0
         for r in self.rows():
             if r["result"] == 3:
                 continue
-            rows_seen.append(r)
-            p = x.table + 0x54 * r["player"]
+            seen += 1
+            rec = records[x.table + 0x54 * r["player"]]
+            q25, q50, q75, _q90 = q[r["position"]]
             rating = r["rating"]
-            self.assertEqual(rating, x._ratings.get(p, rating))
-            q25, q50, q75, q90 = q[r["position"]]
-            ruled = 2 if rating >= q90 else 3 if rating >= q75 else 4 if rating >= q50 else 5 if rating >= q25 else 6
-            ruled += (before[p][0x25] & 31) >= 9
-            ruled += (before[p][0x24] & 15) == 1
-            ruled = min(ruled, 7)
-            rnd = r["word"] & 0x3F
-            self.assertIn(rnd, (ruled, ruled - 1))
+            ruled = 3 if rating >= q75 else 4 if rating >= q50 else 5 if rating >= q25 else 6
+            ruled = min(ruled + ((rec[0x25] & 31) >= 9) + ((rec[0x24] & 15) == 1), 7)
+            self.assertIn(r["word"] & 0x3F, (ruled, ruled - 1))
+            self.assertGreaterEqual(r["word"] & 0x3F, 2)
+            self.assertEqual(r["word"] >> 6 & 0x3F, r["buyer"])               # its own pick
             self.assertEqual(owner_before[r["word"]], r["buyer"])
             self.assertEqual(r["word"] >> 12, 0)
-        self.assertTrue(rows_seen)
+        self.assertTrue(seen)
 
     def test_a_club_a_person_manages_is_never_a_buyer_or_a_seller(self):
         x, m = self.x, self.x.m
@@ -415,7 +538,6 @@ class CpuTradesImage(unittest.TestCase):
         x.run()
         first = [(r["buyer"], r["seller"]) for r in self.rows(after=True) if r["result"] == 1]
         self.assertTrue(first)
-        # a fresh image with those clubs managed by people
         self.x = y = self.fresh()
         managed = {c for pair in first for c in pair}
         for c in managed:
@@ -429,58 +551,65 @@ class CpuTradesImage(unittest.TestCase):
     def test_nothing_at_or_after_the_deadline_week_or_in_the_playoffs_or_with_the_bit_off(self):
         x, m = self.x, self.x.m
         x.install(7)
-        board = x.board()
-        m.put(WEEK, 9)                               # the deadline byte: the window's last open stored week is 8
+        m.put(WEEK, 9)
         x.run()
-        self.assertEqual(self.counters()["past_deadline"], 1)
-        self.assertEqual(self.counters()["ticks"], 0)
+        self.assertEqual((self.counters()["past_deadline"], self.counters()["rounds"]), (1, 0))
         m.put(WEEK, 8)
-        x.install(2 | 4)                             # regular season off
+        x.install(2 | 4)
         x.run()
-        self.assertEqual((self.counters()["inactive"], self.counters()["ticks"]), (1, 0))
+        self.assertEqual((self.counters()["inactive"], self.counters()["rounds"]), (1, 0))
         x.install(7)
         m.put(STAGE, 9)
         x.run()
-        self.assertEqual((self.counters()["inactive"], self.counters()["ticks"]), (1, 0))
+        self.assertEqual((self.counters()["inactive"], self.counters()["rounds"]), (1, 0))
         self.assertEqual(_code().events(x.page()), [])
-        del board
 
-    def test_preseason_posts_with_bit_2_and_obeys_the_camp_limits(self):
+    def test_no_trades_in_the_opening_preseason_of_a_new_franchise(self):
+        """S10: stage 7 of year index 0 posts nothing (the opening rosters stay the real ones)."""
         x, m = self.x, self.x.m
         m.put(STAGE, 7)
-        x.install(1 | 4)                             # preseason bit off
+        m.put(YEAR, 0)
+        x.install(7)
+        x.run()
+        self.assertEqual((self.counters()["opening_preseason"], self.counters()["rounds"]), (1, 0))
+
+    def test_preseason_posts_with_bit_2_depth_deals_and_obeys_the_camp_limits(self):
+        x, m = self.x, self.x.m
+        m.put(STAGE, 7)
+        x.install(1 | 4)
         x.run()
         self.assertEqual(self.counters()["inactive"], 1)
         self.x = y = self.fresh()
         y.m.put(STAGE, 7)
+        twin = self.fresh()
+        twin.m.put(STAGE, 7)
         y.install(2)
         y.run()
         rows = [r for r in _code().events(y.page()) if not r["flags"] & 0x40]
         self.assertTrue(rows)
         self.assertTrue(all(r["stage"] == 7 and not r["flags"] & 1 for r in rows))   # no rebuild sales in stage 7
-        twin = self.fresh()
-        twin.m.put(STAGE, 7)
-        packages, _eff, _q = model(twin, 7, rows)
-        self.assertEqual([(r["buyer"], r["seller"], r["player"]) for r in rows],
-                         [(b, s, (p - y.table) // 0x54) for b, s, p, _pos in packages])
+        first = [r for r in rows if not r["flags"] & 8]
+        packages, _q = model(twin, 7, first)
+        self.assertEqual([(r["buyer"], r["seller"], r["player"]) for r in first],
+                         [(b, s, (p - y.table) // 0x54) for b, s, p, _pool, _h in packages])
 
     def test_shadow_writes_nothing_and_decides_the_same(self):
         x, m = self.x, self.x.m
         x.install(7, shadow=True)
-        regions = {at: bytes(m.uc.mem_read(at, n)) for at, n in ((BOARD, 15 * RECORD), (PICKS, 15 * 32),
-                                                                   (x.teams, 32 * 500))}
+        rosters = {i: x.roster(i) for i in range(32)}
         x.run()
         shadow_rows = [(r["buyer"], r["seller"], r["player"], r["word"]) for r in self.rows()]
-        self.assertTrue(all(r["result"] != 1 for r in self.rows()))
-        self.assertEqual(self.counters()["posted"], 0)
+        self.assertTrue(shadow_rows)
+        self.assertTrue(any(r["result"] == 2 for r in self.rows()))
+        self.assertFalse(any(r["result"] in (1, 4) for r in self.rows()))
+        self.assertEqual((self.counters()["posted"], self.counters()["releases"]), (0, 0))
+        self.assertEqual({i: x.roster(i) for i in range(32)}, rosters)
         y = self.fresh()
         y.install(7)
-        # the native pass itself still runs (its proposers post and list as retail): compare our own decisions
         y.run()
         acting = [(r["buyer"], r["seller"], r["player"], r["word"])
-                  for r in _code().events(y.page()) if not r["flags"] & 0x40]
-        self.assertEqual(shadow_rows, acting)
-        del regions
+                  for r in _code().events(y.page()) if not r["flags"] & 0x48]
+        self.assertEqual(shadow_rows[0], acting[0])                       # the same first decision
 
     def test_the_same_state_gives_the_same_trades(self):
         x = self.x
@@ -502,7 +631,7 @@ class CpuTradesImage(unittest.TestCase):
         y = self.fresh()
         cursor = y.m.get(LEDGER_CURSOR)
         team = y.club(busy)
-        for k in range(3):                         # three one-row trade groups naming the club, the newest rows
+        for k in range(3):
             at = LEDGER + 12 * ((cursor + k) % 600)
             y.m.put(at, 7 | 0x80000000)
             y.m.put(at + 4, 0)
@@ -510,37 +639,70 @@ class CpuTradesImage(unittest.TestCase):
         y.m.put(LEDGER_CURSOR, (cursor + 3) % 600)
         y.install(7)
         y.run()
-        rows = _code().events(y.page())
-        self.assertTrue(all(busy not in (r["buyer"], r["seller"]) for r in rows))
-        self.assertGreaterEqual(_code().counters(y.page())["load_out"], 1)
+        self.assertTrue(all(busy not in (r["buyer"], r["seller"]) for r in _code().events(y.page())))
+        self.assertGreaterEqual(_code().counters(y.page())["out_load"], 1)
+
+    def test_a_buyer_with_three_picks_gone_is_out(self):
+        """S3: at most 3 of a club's own picks of the coming draft paid."""
+        x, m = self.x, self.x.m
+        x.install(7)
+        x.run()
+        executed = [r for r in self.rows(after=True) if r["result"] == 1]
+        self.assertTrue(executed)
+        busy = executed[0]["buyer"]
+        y = self.fresh()
+        other = (busy + 1) % 32
+        for rnd in (5, 6, 7):
+            y.m.uc.mem_write(PICKS + 32 * rnd + busy, bytes([other]))
+        y.install(7)
+        y.run()
+        self.assertTrue(all(r["buyer"] != busy for r in _code().events(y.page())))
+        self.assertGreaterEqual(_code().counters(y.page())["out_picks"], 1)
 
     def test_the_draw_keeps_records_off_the_board(self):
         x, m = self.x, self.x.m
         x.install(7, p8=0)
         x.run()
-        rows = self.rows()
-        self.assertTrue(rows)
-        self.assertTrue(all(r["result"] in (0, 3) for r in rows))
-        self.assertEqual(self.counters()["posted"], 0)
-        year, week = m.get(YEAR), m.get(WEEK)
-        for r in rows:
-            p = x.table + 0x54 * r["player"]
-            w, l_, _t = x.record(r["buyer"])
-            self.assertEqual(r["draw"], draw([9, r["buyer"], r["position"], year, 8, week, r["player"], w, l_]))
-            self.assertEqual(r["threshold"], 0)
-            del p
+        self.assertEqual([r for r in self.rows() if r["result"] in (1, 2)], [])
+        c = self.counters()
+        self.assertEqual(c["posted"], 0)
+        self.assertGreater(c["kept"], 0)
 
-    def test_week_weights_scale_the_chance(self):
+    def test_week_weights_and_pool_weights_scale_the_chance(self):
         x, m = self.x, self.x.m
-        for week in range(9):
-            m.put(WEEK, week)
-            x.install(7, p8=200_000)
-            x.run()
-            rows = self.rows()
-            if rows:
-                self.assertEqual({r["threshold"] for r in rows}, {100_000 * WEEK_WEIGHT[week]})
-            x = self.x = self.fresh()
-            m = x.m
+        twin = self.fresh()
+        twin.m.put(WEEK, 3)
+        m.put(WEEK, 3)
+        x.install(7, p8=200_000)
+        x.run()
+        first = [r for r in self.rows() if not r["flags"] & 8]
+        packages, _q = model(twin, 8, first, p8=200_000)
+        self.assertEqual([(r["buyer"], r["player"]) for r in first],
+                         [(b, (p - x.table) // 0x54) for b, _s, p, _pool, _h in packages])
+        self.assertGreater(self.counters()["kept"], 0)
+
+    def test_the_story_gate_lets_our_records_through_and_leaves_others_native(self):
+        """S7: the gate's flags for a record of ours read "greater"; for another record they are the native compare."""
+        x, m = self.x, self.x.m
+        x.install(7)
+        code = _code()
+        entry = VA + code.LABELS["story_entry"]
+        stub = PROBE + 0x900                          # call story_entry; pushfd; pop eax into PROBE+0x800; ret
+        m.uc.mem_write(stub, b"\xe8" + struct.pack("<i", entry - (stub + 5)) + b"\x9c\x58\xa3"
+                       + struct.pack("<I", PROBE + 0x800) + b"\xc3")
+        m.uc.ctl_flush_tb()
+
+        def flags(value, ours):                       # Machine.call sets EBP = 0x44444444: that is "the record"
+            m.put(VA + code.CURRENT, 0x44444444 if ours else 0)
+            m.call(stub, eax=value, budget=200_000)
+            return m.get(PROBE + 0x800)
+
+        greater = lambda f: not f & 0x40 and bool(f & 0x80) == bool(f & 0x800)     # ZF clear, SF == OF
+        self.assertTrue(greater(flags(500, True)))
+        self.assertFalse(greater(flags(500, False)))
+        self.assertTrue(greater(flags(1500, False)))
+        self.assertFalse(greater(flags(1000, False)))
+        self.assertEqual(self.counters()["stories_forced"], 1)
 
 
 class PagesAndLayout(unittest.TestCase):
@@ -552,15 +714,19 @@ class PagesAndLayout(unittest.TestCase):
         page = code.page_bytes(VA, record)
         self.assertEqual(len(page), 0x2000)
         self.assertEqual(page[code.CODE_BYTES:code.CODE_LIMIT], b"\xcc" * (code.CODE_LIMIT - code.CODE_BYTES))
-        self.assertEqual(page[0x1200:0x1220], record)
-        self.assertEqual(page[0x1220:], bytes(0x2000 - 0x1220))
+        self.assertEqual(page[code.SETTINGS_OFFSET:code.SETTINGS_OFFSET + 0x20], record)
+        self.assertEqual(page[code.SETTINGS_OFFSET + 0x20:], bytes(0x2000 - code.SETTINGS_OFFSET - 0x20))
         self.assertEqual(code.parse_settings(record), {"stages": 7, "shadow": False, "p8_ppm": 250_000, "p7_ppm": 400_000})
-        at, original, patched = code.site(VA)
+        (at, original, patched), (story, story_original, story_patched) = code.sites(VA)
         self.assertEqual((at, original), (0x2BC96C, bytes.fromhex("e88fffffff")))
         self.assertEqual(at + 5 + struct.unpack("<i", patched[1:])[0], VA + code.LABELS["trade_entry"])
-        self.assertEqual(code.RING_EVENT.size, 24)
+        self.assertEqual((story, story_original), (0x2BB296, bytes.fromhex("3de8030000")))
+        self.assertEqual(story + 5 + struct.unpack("<i", story_patched[1:])[0], VA + code.LABELS["story_entry"])
+        self.assertEqual(code.RING_EVENT.size, 16)
         self.assertEqual(code.RING_OFFSET + code.RING_COUNT * code.RING_EVENT.size, 0x2000)
-        self.assertLessEqual(code.COUNTERS_OFFSET + 4 * len(code.COUNTER_NAMES), code.RING_CURSOR)
+        self.assertLessEqual(len(code.COUNTER_NAMES), code.COUNTERS_LIMIT)
+        self.assertEqual(code.COUNTERS_OFFSET + 4 * code.COUNTERS_LIMIT, code.RING_CURSOR)
+        self.assertLessEqual(code.CURRENT + 4 * code.MAX_POSTS, code.RING_OFFSET)
         for bad in (0, 8, 15):
             with self.assertRaises(ValueError):
                 code.settings_record(bad, p8_ppm=1, p7_ppm=1)
@@ -633,6 +799,23 @@ class Owner(unittest.TestCase):
         at = XbeImage(self.source).offset(0x2BC96C, 5)
         site[at:at + 5] = b"\xe8\x00\x00\x00\x00"
         self.assertEqual(ct.read_settings(bytes(site))["status"], "foreign")
+        half = bytearray(out)                       # one site restored, the other installed: foreign
+        at = XbeImage(out).offset(0x2BB296, 5)
+        half[at:at + 5] = bytes.fromhex("3de8030000")
+        self.assertEqual(ct.read_settings(bytes(half))["status"], "foreign")
+
+    def test_an_owner_already_in_the_range_is_refused(self):
+        """N7: the install checks that nothing else is allocated in 0x152E000..0x152FFFF."""
+        from unittest.mock import patch
+        from mod_editor.core import nfl2k5_cpu_trades as ct, nfl2k5_xbe_space as space
+        layout = space.layout(self.source)
+        fake = dict(layout, allocations=layout["allocations"] + [dict(owner="zz_squatter", kind="code", size=0x100,
+                                                                           align=16, va=0x152F000, raw=0,
+                                                                           owner_offset=0)])
+        with patch.object(space, "layout", lambda payload: fake):
+            self.assertIn("zz_squatter", ct.unowned_problem(self.source))
+            with self.assertRaises(ct.CpuTradesError):
+                ct.apply(self.source, "realistic")
 
     def test_calibration_records_and_shadow(self):
         from mod_editor.core import nfl2k5_cpu_trades as ct

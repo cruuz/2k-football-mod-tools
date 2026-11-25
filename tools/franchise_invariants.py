@@ -77,9 +77,10 @@ T2  (b81 CPU trades, nfl2k5_cpu_trades) on every trade group of exactly one play
     pick (the native CPU trades are player swaps): T2.human and T2.position (no K or P) always; the rest only when the
     two views are one weekly advance apart (else the harness judges the trade at the call): T2.deadline (stage 8 at or past
     the deadline byte, whatever the option), T2.window (only stages 7 and 8), T2.counts (seller 50..65, buyer at most 53
-    in season, 65 in the preseason), T2.player (no rookie, no years left, from year index 1 no first contract year, not
-    star-tagged, fully healthy before),
-    T2.seller_depth (the seller keeps its starters healthy and its cut minimum at the position), T2.load (neither club in
+    in season, 65 in the preseason), T2.player (no rookie, no years left, in the preseason from year index 1 no first
+    contract year, not star-tagged, fully healthy before), T2.cap (the buyer within the cap after it, M1), T2.round (no
+    1st, N3), T2.picks_paid (fewer than three own picks of the coming draft already paid, S3),
+    T2.seller_depth (the seller keeps its seats present and its cut minimum at the pool: nfl2k5_team_need), T2.load (neither club in
     three trade groups of the previous ledger), T2.repeat (the man was not signed or traded in the previous ledger),
     T2.pick (exactly that pick passes buyer to seller). All failures.
 T1  trades since ``previous`` (the view one weekly advance earlier): the ring rows from previous.ledger_cursor to
@@ -881,11 +882,10 @@ def is_qb_for_pick(view: LeagueView, offer: Offer) -> bool:
             and not any(p is not None for p in offer.players_b) and sum(1 for w in offer.picks_b if w & 0x3F) == 1)
 
 
-# b81 CPU trades (nfl2k5_cpu_trades, tools/cpu_trades/trades.c): starters per position and the economy's cut minimum
-# (QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE; OLB and ILB one pool under ILB's minimum), the club load limit.
-CPU_TRADE_STARTERS = (0, 0, 0, 3, 2, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 2, 2)
-CPU_TRADE_CUT_MIN = (2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 0, 5, 2, 3, 3, 3, 4)
+# b81 CPU trades (nfl2k5_cpu_trades, tools/cpu_trades/trades.c): the shared need header's tables (mod_editor/core/
+# nfl2k5_team_need.py mirrors tools/common/team_need.h: pools, seats, cut minimum) and the club load limit.
 CPU_TRADE_LOAD_LIMIT = 3
+CPU_TRADE_PICKS_PAID = 3
 
 
 def ledger_trade_load(view: LeagueView) -> list[int]:
@@ -940,8 +940,8 @@ def _check_player_for_pick(q, view, previous, clubs, human, one_advance, changes
             reasons.append("rookie")
         if not before[0x24] & 15:
             reasons.append("no contract years left")
-        if previous.year_index >= 1 and before[0x24] & 15 == before[0x27] & 15:
-            reasons.append("first contract year (from the second franchise season)")
+        if previous.stage == 7 and previous.year_index >= 1 and before[0x24] & 15 == before[0x27] & 15:
+            reasons.append("first contract year (preseason, from the second franchise season)")
         if before[0x53] & 1:
             reasons.append("star-tagged")
         if not _fully_healthy(before):
@@ -949,14 +949,24 @@ def _check_player_for_pick(q, view, previous, clubs, human, one_advance, changes
         if reasons:
             add("T2.player", FAIL, "a man the CPU trades never offer", club=seller, player=player, reasons=reasons,
                 rows=rows)
-    if 0 <= seller < CLUBS and pos < len(CPU_TRADE_STARTERS) and not skipped("T2.seller_depth"):
-        lb = pos in (10, 11)
-        at_pos = [i for i in clubs[seller].active if view.record(i)[0x35] == pos]
-        count = len([i for i in clubs[seller].active if view.record(i)[0x35] in ((10, 11) if lb else (pos,))])
-        healthy = [i for i in at_pos if _fully_healthy(view.record(i)) or _fully_healthy(previous.record(i))]
-        if len(healthy) < CPU_TRADE_STARTERS[pos] or count < CPU_TRADE_CUT_MIN[11 if lb else pos]:
-            add("T2.seller_depth", FAIL, "seller left below its starters or cut minimum at the position", club=seller,
-                player=player, position=pos, healthy=len(healthy), count=count, rows=rows)
+    from mod_editor.core import nfl2k5_team_need as tn
+    if 0 <= seller < CLUBS and pos < tn.POSITIONS and not skipped("T2.seller_depth"):
+        pool = tn.POOL[pos]
+        at_pool = [i for i in clubs[seller].active if tn.POOL[view.record(i)[0x35]] == pool]
+        present = [i for i in at_pool if tn.present(view.record(i)) or tn.present(previous.record(i))]
+        if len(present) < tn.SEATS[pool] or len(at_pool) < tn.CUT_MIN[pool]:
+            add("T2.seller_depth", FAIL, "seller left below its seats or its cut minimum at the pool", club=seller,
+                player=player, pool=pool, present=len(present), count=len(at_pool), rows=rows)
+    if 0 <= buyer < CLUBS and not skipped("T2.cap") and clubs[buyer].payroll > view.salary_cap:
+        add("T2.cap", FAIL, "buyer over the salary cap after a player-for-pick trade (M1)", club=buyer,
+            payroll=clubs[buyer].payroll, cap=view.salary_cap, rows=rows)
+    if q["round"] == 1 and not skipped("T2.round"):
+        add("T2.round", FAIL, "a first-round pick paid in a CPU trade (N3)", club=buyer, rows=rows)
+    if previous.pick_owners is not None and 0 <= buyer < CLUBS and not skipped("T2.picks_paid"):
+        paid = sum(1 for r in range(1, 8) if previous.pick_owner(r, buyer, 0) not in (None, buyer))
+        if paid >= CPU_TRADE_PICKS_PAID:
+            add("T2.picks_paid", FAIL, "buyer had already paid three of its own picks of the coming draft (S3)",
+                club=buyer, paid=paid, rows=rows)
     if previous.ledger_rows is not None and not skipped("T2.load"):
         load = ledger_trade_load(previous)
         named = [c for c in (seller, buyer) if 0 <= c < CLUBS and load[c] >= CPU_TRADE_LOAD_LIMIT]

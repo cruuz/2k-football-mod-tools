@@ -36,14 +36,15 @@ class CpuTradeValidatorTests(unittest.TestCase):
             return r[0x25] & 31 >= 2 and r[0x24] & 15 and not r[0x53] & 1 and fi._fully_healthy(r)
         # The first legal package in club order: a seller no person manages with 51+ active, a position other than QB, K,
         # P (and LB, whose minimum pools two codes) where it keeps its starters healthy and its cut minimum after the sale.
+        from mod_editor.core import nfl2k5_team_need as tn
         for seller in range(32):
             club = view.clubs[seller]
             if seller in (cls.BUYER, 15) or club.human or club.count < 51:
                 continue
             for pos in (3, 4, 5, 6, 7, 9, 12, 13, 14, 15, 16):
-                men = [i for i in club.active if view.record(i)[0x35] == pos]
-                healthy = [i for i in men if fi._fully_healthy(view.record(i))]
-                if (len(men) >= fi.CPU_TRADE_CUT_MIN[pos] + 1 and len(healthy) >= fi.CPU_TRADE_STARTERS[pos] + 1
+                men = [i for i in club.active if tn.POOL[view.record(i)[0x35]] == pos]
+                present = [i for i in men if tn.present(view.record(i))]
+                if (len(men) >= tn.CUT_MIN[pos] + 1 and len(present) >= tn.SEATS[pos] + 1
                         and any(map(tradeable, men))):
                     cls.SELLER, cls.man = seller, next(i for i in reversed(men) if tradeable(i))
                     break
@@ -89,18 +90,27 @@ class CpuTradeValidatorTests(unittest.TestCase):
         report, _v, _a = self.run_trade(prior_week=deadline)
         self.assertEqual(t2(report), {"T2.deadline"})
 
-    def test_the_first_contract_year_counts_from_the_second_franchise_season(self):
-        """The starting roster carries length = years left for every man (this image: 1,685 of 1,685), so in year
-        index 0 the rule would forbid every trade; from year index 1 a man whose years left equal his length is in the
-        first year of a contract he signed (or re-signed) since, and fails T2.player."""
+    def test_the_first_contract_year_counts_only_in_the_preseason_from_the_second_season(self):
+        """The starting roster carries length = years left for every man (this image: all of them), so in year index 0
+        the rule would forbid every trade; from year index 1 it applies in the preseason only (N2: in season the
+        ledger's signing rows say "just signed", and one-year veterans are the deadline's rentals)."""
         p = Ram(self.image).player(self.man)
         self.assertEqual(Ram(self.image).get(p + 0x24, 1) & 15, Ram(self.image).get(p + 0x27, 1) & 15)
         self.assertEqual(Ram(self.image).view().year_index, 0)
-        report, _v, _a = self.run_trade()
-        self.assertEqual(t2(report), set())
-        report, _v, _a = self.run_trade(before_edit=lambda ram: ram.put(fi.YEAR, 1),
-                                        after_edit=lambda ram: ram.put(fi.YEAR, 1))
-        self.assertEqual(t2(report), {"T2.player"})
+        year1 = lambda ram: ram.put(fi.YEAR, 1)
+        report, _v, _a = self.run_trade(before_edit=year1, after_edit=year1)
+        self.assertEqual(t2(report), set())                                  # in season: allowed (N2)
+
+        def preseason(ram):
+            ram.put(fi.YEAR, 1)
+            ram.put(fi.STAGE, 7)
+        report, _v, _a = self.run_trade(before_edit=preseason, after_edit=preseason)
+        self.assertIn("T2.player", t2(report))
+
+    def test_a_buyer_over_the_cap_after_the_trade_fails_T2_cap(self):
+        report, view, _a = self.run_trade(after_edit=lambda ram: ram.put(ram.team(self.BUYER) + 0x124,
+                                                                          ram.get(fi.SALARY_CAP) + 1))
+        self.assertIn("T2.cap", t2(report))
 
     def test_a_star_tagged_man_fails_T2_player(self):
         report, _v, _a = self.run_trade(before_edit=lambda ram: ram.put(ram.player(self.man) + 0x53,

@@ -6,8 +6,10 @@ quarterback room's stage 4b does those), K or P. tools/cpu_trades/trades.c holds
 lane's DESIGN.md with the coordinator's rulings R1 to R7.
 
 Two fixed pages at 0x152E000 (nfl2k5_xbe_space.CPU_TRADES_*) hold the native code, the CPUTRDv1 settings record, the
-counters and the event ring. One whole 5-byte call enters them: 0x2BC96C, the native trade pass's call of its pending
-scan. The owner authenticates the site and the whole pages and refuses anything else. Retail restores the site and
+counters and the event ring. Two whole 5-byte calls enter them: 0x2BC96C, the native trade pass's call of its pending
+scan, and 0x2BB296, the trade story writer's value line (every trade of ours posts its inbox story). The owner
+authenticates both sites and the whole pages and refuses anything else, and it installs only where nothing else is
+allocated in its range. Retail restores the sites and
 fills the pages with 0xCC; the reservation stays, so Realistic then Retail is the source plus an empty reservation, byte
 for byte. Nothing is added to any save: a record of this owner exists only inside the game's own trade call.
 
@@ -74,17 +76,19 @@ def allocation(payload):
 
 
 def state(payload):
-    """(status, settings) after authenticating the site and the whole pages: ("retail", None) or ("applied", settings);
-    raises CpuTradesError when foreign."""
+    """(status, settings) after authenticating both sites and the whole pages: ("retail", None) or ("applied",
+    settings); raises CpuTradesError when foreign (a site half installed, foreign bytes, or code in the pages while the
+    sites are retail)."""
     image = XbeImage(payload)
-    at, original, patched = _code().site(VA)
-    found = image.read(at, len(original))
     row = allocation(payload)
+    sites = _code().sites(VA)
+    found = [image.read(at, len(original)) for at, original, _patched in sites]
     raw = image.read(VA, SIZE) if row is not None else None
-    if found == original:
-        _require(raw is None or raw == b"\xcc" * SIZE, "The CPU trades pages hold code but their site is retail")
+    if all(now == original for now, (_at, original, _p) in zip(found, sites)):
+        _require(raw is None or raw == b"\xcc" * SIZE, "The CPU trades pages hold code but their sites are retail")
         return "retail", None
-    _require(found == patched and raw is not None, f"Foreign CPU trades bytes at {at:#x}")
+    for now, (at, _original, patched) in zip(found, sites):
+        _require(now == patched and raw is not None, f"Foreign or half-installed CPU trades bytes at {at:#x}")
     code = _code()
     record = raw[code.SETTINGS_OFFSET:code.SETTINGS_OFFSET + code.SETTINGS.size]
     settings = code.parse_settings(record)
@@ -158,12 +162,24 @@ def _patch(payload, edits):
 
 
 def edits(record, *, restoring):
-    """(address, before, after) for the site and the whole pages with this settings record."""
-    at, original, patched = _code().site(VA)
+    """(address, before, after) for both sites and the whole pages with this settings record."""
     empty, full = b"\xcc" * SIZE, _code().page_bytes(VA, record)
-    if restoring:
-        return [(at, patched, original), (VA, full, empty)]
-    return [(at, original, patched), (VA, empty, full)]
+    out = []
+    for at, original, patched in _code().sites(VA):
+        out.append((at, patched, original) if restoring else (at, original, patched))
+    out.append((VA, full, empty) if restoring else (VA, empty, full))
+    return out
+
+
+def unowned_problem(payload):
+    """N7: None when nothing but this owner is allocated in its fixed range; else a plain reason."""
+    if not space.is_scaleout(payload):
+        return None
+    for r in space.layout(payload)["allocations"]:
+        if r["owner"] != OWNER and r["va"] < VA + SIZE and r["va"] + r["size"] > VA:
+            return (f"Another owner ({r['owner']}) is allocated at {r['va']:#x}, inside the computer trades pages "
+                    f"{VA:#x}..{VA + SIZE - 1:#x}; refusing to install over it.")
+    return None
 
 
 def apply(payload, level="realistic"):
@@ -222,6 +238,8 @@ def _install(source, stages, *, shadow, p8_ppm, p7_ppm, receipt, needs=True):
     if current == "applied":
         working, _ = _retail(source)          # another stage set or calibration record: back to the empty reservation
     elif allocation(working) is None:
+        problem = unowned_problem(working)
+        _require(problem is None, problem or "")
         working, receipt["allocation"] = space.extend_scaleout(working, REQUESTS)
     empty = working
     result = _patch(working, edits(record, restoring=False))
@@ -230,5 +248,6 @@ def _install(source, stages, *, shadow, p8_ppm, p7_ppm, receipt, needs=True):
     restored, _ = _retail(result)
     _require(restored == empty, "The CPU trades Retail restore does not reproduce the empty reservation")
     return result, {**receipt, "status": "applied", **wanted, "stage_names": stage_names(stages),
-                    "site": hex(_code().HOOK[0]), "changed_bytes": space.count_differing_bytes(source, result),
+                    "sites": [hex(at) for at, _o, _p in _code().sites(VA)],
+                    "changed_bytes": space.count_differing_bytes(source, result),
                     "file_growth": len(result) - len(source)}
