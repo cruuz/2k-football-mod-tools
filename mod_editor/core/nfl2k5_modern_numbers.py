@@ -139,8 +139,13 @@ SINGLE_DIGIT = (
 # Overall (0x246D80(player, 1), rounded as the quarterback room rounds it) at or above which a non-draft joiner is tier A,
 # B, C: the top 10, 25 and 40 percent of each position on the 32 active lists of the shipped 2026 roster at 2026 week 1
 # (kept image sha256 82c00d50..., modern-numbers/calc2/thresholds.json). OLB holds no player there: ILB's values.
+# QB (0, 0, 0): every veteran quarterback who must draw is tier A (50 percent single digits). Quarterbacks have always
+# worn 1-19, so today's veterans wear single digits far more than rookies do: 46 percent of the 54 veteran QBs on the
+# 2026 nflverse roster (rookie_year before 2023) against 28 percent of the 57 on rookie deals. With the rating tiers
+# (96, 85, 79) most veteran joiners were tier D (14 percent), and the ten-season panel's quarterback joiners wore single
+# digits 19.5 percent of the time against 37 percent league-wide (ten3, 911e590e3).
 THRESHOLDS = (
-    (96, 85, 79), (93, 91, 83), (92, 84, 81), (90, 84, 79), (84, 78, 72), (89, 79, 76), (89, 82, 77), (89, 75, 69),
+    (0, 0, 0), (93, 91, 83), (92, 84, 81), (90, 84, 79), (84, 78, 72), (89, 79, 76), (89, 82, 77), (89, 75, 69),
     (100, 92, 81), (85, 75, 69), (86, 80, 75), (86, 80, 75), (96, 81, 74), (93, 85, 79), (91, 83, 77), (81, 74, 69),
     (86, 80, 74),
 )

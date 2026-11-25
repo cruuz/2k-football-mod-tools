@@ -237,6 +237,22 @@ class SyntheticDraft(unittest.TestCase):
             single += n <= 9
         return single / joins, out
 
+    def test_veteran_quarterbacks_draw_single_digits_like_todays_veterans(self):
+        """A veteran QB whose number is taken at his new club takes a single digit about as often as today's veteran
+        QBs (46 percent of 54, nflverse 2026 roster): every veteran QB who draws is tier A (50 percent). Before, most were
+        tier D by rating (14 percent; the ten-season panel's QB joiners: 19.5 percent single digits against 37
+        league-wide). Fails on 532759774."""
+        lg = self.league
+        mates = [lg.player(100 + k, POS["QB"], n) for k, n in enumerate((12, 15))]
+        single = 0
+        for k in range(1000):
+            c = k % 32
+            t = lg.club(c, mates)
+            n = lg.join(lg.player(3000 + k, POS["QB"], 12, years=6), t)          # his own 12 is a club-mate's
+            self.assertTrue(mn.legal(POS["QB"], n) and n not in (12, 15), n)
+            single += n <= 9
+        self.assertLess(abs(single / 1000 - 0.50), 0.05, single)
+
     def test_single_digits_by_round_follow_the_real_draft(self):
         for name, round_, low, high in (("WR", 0, 0.50, 0.80), ("WR", 4, 0.05, 0.20), ("CB", 0, 0.40, 0.70),
                                         ("FS", 1, 0.25, 0.55), ("HB", 0, 0.40, 0.70), ("DE", 0, 0.10, 0.35),
