@@ -700,6 +700,33 @@ class CpuTradesImage(unittest.TestCase):
         self.assertTrue(all(busy not in (r["buyer"], r["seller"]) for r in _code().events(y.page())))
         self.assertGreaterEqual(_code().counters(y.page())["out_load"], 1)
 
+    def test_a_man_the_ledger_shows_just_signed_or_traded_is_never_offered(self):
+        """A signing row (kind 1) or a trade row (kind 7) naming a man keeps him off the market while it is in the
+        ledger (R4 'just signed'); the model with the same rows agrees."""
+        x = self.x
+        x.install(7)
+        x.run()
+        first = [r for r in self.rows() if r["result"] == 1 and not r["flags"] & 8]
+        self.assertGreaterEqual(len(first), 2)
+        y, z = self.fresh(), self.fresh()
+        marked = {}
+        for image in (y, z):
+            cursor = image.m.get(LEDGER_CURSOR)
+            for k, (r, kind) in enumerate(zip(first[:2], (1, 7))):
+                at = LEDGER + 12 * ((cursor + k) % 600)
+                image.m.put(at, kind | 0x80000000)
+                image.m.put(at + 4, image.table + 0x54 * r["player"])
+                image.m.put(at + 8, image.club(r["seller"]))
+                marked[r["player"]] = kind
+            image.m.put(LEDGER_CURSOR, (cursor + 2) % 600)
+        y.install(7)
+        y.run()
+        rows = [e for e in _code().events(y.page()) if not e["flags"] & 0x48]
+        self.assertFalse({e["player"] for e in rows if e["result"] in (1, 2)} & set(marked))
+        packages, _q = model(z, 8, rows)
+        self.assertEqual([(e["buyer"], e["player"]) for e in rows],
+                         [(b, (p - z.table) // 0x54) for b, _s, p, _pool, _h in packages])
+
     def test_a_buyer_with_three_picks_gone_is_out(self):
         """S3: at most 3 of a club's own picks of the coming draft paid."""
         x, m = self.x, self.x.m
