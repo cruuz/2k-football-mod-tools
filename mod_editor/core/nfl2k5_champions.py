@@ -41,6 +41,10 @@ What this owner adds
 * ``champions_awards`` at 0x116E55: after the retail award pass, the MVP, offensive and defensive player of the year and
   both rookies of the year are chosen again by production (``tools/nfl2k5_champions/runtime.c``, ``champions_modern_awards``;
   the rule is in ``AWARD_RULE`` below), and the honors owner records the new winners.
+  b81 (job b81-awards): superseded. The award vote owner ``nfl2k5_awards`` (installed with the honors owner) runs right
+  after this call (site 0x116E5A) and writes every player award again with the modern rule; this owner's vote, and its
+  "otherworldly" shortcut that gave a 15-interception linebacker or corner the MVP, no longer reach the honors. The code
+  here is unchanged so every earlier install keeps reading as itself.
 
 Allocation: a late owner (``nfl2k5_xbe_space.LATE_OWNERS``, right after the honors owner it is installed with, so the
 owners that Studio appends one by one later keep their places), code only; it does not fit the MyCareer gap.
@@ -71,10 +75,7 @@ HELP_TEXT = (
     "roster (no save size change; old saves start empty). Those bytes exist only on a bigger roster (the SOFTDRINK "
     "pack, 16 reserves or the two extra created teams); on the game's own roster size the page reads CHAMPIONS: NONE YET "
     "and the build says so. A 2026 build with the sourced award history starts with Super Bowls XXXIX to LX filled in. "
-    "MVP, offensive and defensive player of the year and the rookies of the year are "
-    "voted by production the way they have gone in the last decade: a quarterback on a winning team almost always, "
-    "skill players for offensive player of the year, pass rushers, tackles, linebackers and corners for defensive "
-    "player of the year, and any position can win MVP with a season far beyond a record.")
+    "It also re-votes the season's player awards; from beta 81 the award vote below has the last word.")
 
 # season awards by position code (QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE); production in hundredths of a point
 AWARD_RULE = {

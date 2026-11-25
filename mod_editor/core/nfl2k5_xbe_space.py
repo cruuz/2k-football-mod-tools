@@ -859,6 +859,28 @@ TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"), (
 GAP_OWNERS = (("nfl2k5_honors", "code"), ("nfl2k5_coach_ai", "code"), ("nfl2k5_moment_coaches", "code"),
               ("nfl2k5_human_tap_burst", "code"))
 MYCAREER_M3_STATE_VA = 0x1505000
+# b81 awards: one fixed page at 0x1531000 for the season award vote, the All-Pro team and the defensive credit in
+# simulated games (nfl2k5_awards; claimed in the lane's page register after the CPU trades pages 0x152E000-0x152FFFF and
+# the modern jersey numbers page 0x1530000). Placed like those pages: at its absolute address, never advancing the pool
+# cursor, with its own step-over in to_pool (FIXED_SPAN_END untouched), so every other pool owner skips
+# 0x1531000..0x1531FFF whether or not it is requested and the owner can be added in place after every other owner.
+AWARDS_OWNER = "nfl2k5_awards"
+AWARDS_VA = 0x1531000
+AWARDS_SIZE = PAGE
+AWARDS_REQUEST = (AWARDS_OWNER, "code", AWARDS_SIZE, PAGE)
+LATE_OWNERS += (AWARDS_OWNER,)
+FIXED_PAGE_OWNERS += (AWARDS_OWNER,)
+
+
+def _awards_at(owner, at, size, align):
+    """b81 awards: the fixed page's pool offset for its owner; any other owner overlapping it steps past it."""
+    page = AWARDS_VA - POOL_VA
+    if owner == AWARDS_OWNER:
+        return page
+    if at < page + AWARDS_SIZE and at + size > page:
+        return (page + AWARDS_SIZE + align - 1) & -align
+    return at
+
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
 SCALE_TAG = EXT_MAGIC + b"SP03"
@@ -1105,6 +1127,8 @@ def _scale_allocations(requests):
         _require(gadget == GADGET_REQUESTS, "incomplete or foreign gadget allocation")
         _require(all(r == BACKFIELD_REQUEST for r in requests if r[0] == BACKFIELD_REQUEST[0]),
                  "foreign Backfield card allocation")
+    _require(all(r == AWARDS_REQUEST for r in requests if r[0] == AWARDS_OWNER),
+             "the season awards owner has one fixed page")  # b81 awards
     _directory_code_size(requests)  # Validate every named slot before placement.
     requests = [r for r in requests if r[0] not in DIRECTORY_CODE_OWNERS]
     # b76-k1: the K128 owner is placed after every other owner, the promoted MyCareer code and the grown
@@ -1159,6 +1183,7 @@ def _scale_allocations(requests):
             at = HELMET_SIDES_VA - POOL_VA
         elif at < room + span and at + size > room:
             at = (room + span + align - 1) & -align
+        at = _awards_at(owner, at, size, align)             # b81 awards: its fixed page, after the span
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))
