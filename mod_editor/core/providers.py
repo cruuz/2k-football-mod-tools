@@ -1008,7 +1008,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_helmet_side_numbers.py": "c10876d8ef2c26740f3559706d8678de673730a7e260285ddc35eaafec9e6069",  # b81 helmet-sides: mod_build loads it by name (route 5 = set E)
         "mod_editor/core/nfl2k5_number_kerning.py": "48405334b32b7495399f204a898825531423ed6025e848b51ac0c86891df6902",  # b81 helmet-sides: the owner reads Number kerning's state (same cell addressing)
         "mod_editor/core/nfl2k5_sim_realism.py": "6d0be46b7eec8c8c72be956aafa4041977ba91067fe14d993d00d8e29162c674",  # b779-sim2 r6
-        "mod_editor/core/nfl2k5_sim_outcomes.py": "67d7b280006848a9b87fcdf8a0ffe0c18093f9325dd2e5bf41153e471d16912e",  # b81 game outcomes: rides with Simulated season realism
+        "mod_editor/core/nfl2k5_sim_outcomes.py": "e50e4ef2466a65fb66474f910452af5937494b6e81a21f9d45ee5c782ff1805b",  # b81 game outcomes: rides with Simulated season realism
         "mod_editor/core/nfl2k5_sim_scoring.py": "7c3681cef1f94638ab0137d966f08d80fcde3dfc335874ae24c5fd9491815f96",  # b81 scoring: in-place simulated kicking, installed by the QB option
         "mod_editor/core/nfl2k5_cpu_kick_aim.py": "cc41567cdd80d6149af319cb2502b62f8d8ff32ea9263b1cdeee388bb9463f99",  # b81 scoring: CPU place-kick aim (imported by throw_tuning)
         "mod_editor/core/nfl2k5_sim_realism_b779.py": "687a35375780ce07948ba555a8c189167586393c5de6f48d954c2902a71010ad",  # b780 n6: frozen beta-79 revision

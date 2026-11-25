@@ -41,7 +41,7 @@ The changes:
   gives every regular season its 10-minute overtime that can end tied; the postseason never ties.  One extra
   match-generator draw per such game (the roll itself).
 
-* **End of regulation after the last play** (``0x106423`` and ``0x10B251`` call the page): a play's commit
+* **End of regulation after the last play** (``0x106400`` and ``0x10B251`` call the page): a play's commit
   (``0x106480``) runs the clock routine ``0x1061F0`` before the handler has finished the play; when the clock ran out it
   ended regulation on the scores from before the play (state ``0x12``), and the handler then went on (an interception
   at ``0x108AC0`` writes state ``0xB``, a last kick credits its points), so the game continued into a phantom overtime
@@ -49,7 +49,10 @@ The changes:
   regulation end reached from the commit (return address ``0x106A14``) is tentative: the period index goes back to the
   fourth quarter for the rest of the play and, before the next state handler, the result is decided on the scores after
   the play: different -> the game is over, level -> overtime (period 4, its kickoff, as ``0x106450``).  A regulation
-  end before a play keeps the retail branch.  The tie roll's setup clears the flag for every game.
+  end before a play keeps the retail branch.  The tie roll's setup clears the flag for every game.  The hook takes only
+  ``0x106400``'s ``cmp eax, 4 ; jle``: ``0x106427`` (game over) is also where an expired overtime goes (a first
+  version replaced it and an overtime that ended tied jumped into the middle of the page's call: calibration root
+  tdA/2502 stopped with an emulation error in week 2).
 
 * **Goal-line runs** (the same ``0x106480`` entry): a run or scramble (the gain calls returning to ``0x107D12`` and
   ``0x1085C2``) snapped inside the 5 whose gain reaches the goal line scores only with probability ``GOAL_LINE_KEEP``
@@ -123,8 +126,14 @@ TRY_RETAIL = bytes.fromhex("51a19c71a900")          # push ecx; mov eax, [0xA971
 TIES_SITE = 0x0010B2E9
 TIES_RETAIL = bytes.fromhex("395d107421")           # cmp [ebp+0x10], ebx; je 0x10B30F
 TIES_SKIP = 0x0010B30F
-REG_SITE = 0x00106423
-REG_RETAIL = bytes.fromhex("3bfb7429c705b871a90012000000")   # cmp edi,ebx; je 0x106450; mov [state], 0x12
+# The period-advance routine 0x1061F0, after the period index is stored (eax): 0x106400 `cmp eax, 4 ; jle 0x106423`
+# selects the end of regulation. The hook replaces those 5 bytes only. 0x106423 (cmp edi,ebx ; je overtime) and 0x106427
+# (mov [state], 0x12: the game is over) stay retail: 0x106427 is also the target of the overtime-expiry branches
+# 0x106407 and 0x106410 (the overtime owner's sim_tie returns there), so it must stay an instruction boundary.
+REG_SITE = 0x00106400
+REG_RETAIL = bytes.fromhex("83f8047e1e")       # cmp eax, 4 ; jle 0x106423
+REG_PREPLAY = 0x00106423         # retail: the end of regulation before a play (cmp edi,ebx ; je 0x106450 ; game over)
+REG_GAME_OVER = 0x00106427       # retail: mov [state], 0x12, then the game-over tail (returns 5)
 REG_OVERTIME = 0x00106450        # retail: tied at the end of regulation -> overtime kickoff (state 1), returns 4
 COMMIT_CLOCK_RETURN = 0x00106A14  # 0x1061F0 called by the commit (mid-play)
 STEP_SITE = 0x0010B251
@@ -369,24 +378,23 @@ def _ties_code(a: _Asm, page: int) -> None:
 
 def _regulation_code(a: _Asm, page: int) -> None:
     state = page + STATE_OFF
-    # Called at 0x106423 (cmp edi,ebx / je / mov [state],0x12 replaced; 9 nops follow, so `ret` lands on 0x106431, the
-    # retail game-over tail). [esp+0x14] is 0x1061F0's return address (it pushed ecx, ebx, esi, edi).
+    # Called at 0x106400 in place of `cmp eax, 4 ; jle 0x106423` (eax = the period index just stored). [esp+0x14] is
+    # 0x1061F0's return address (it pushed ecx, ebx, esi, edi).
     a.label("regulation")
+    a.b("83f804")                                   # cmp eax, 4
+    a.j8("7f", "reg_overtime_end")                  # jg: the end of an overtime period -> retail 0x106405
     a.b("817c2414" + _u32(COMMIT_CLOCK_RETURN))     # cmp dword [esp+0x14], 0x106A14  (mid-play, from the commit)
     a.j8("74", "reg_mid_play")
-    a.b("3bfb")                                     # cmp edi, ebx  (retail: before a play the scores are final)
-    a.j8("75", "reg_over")
     a.b("83c404")                                   # add esp, 4
-    a.jmp_abs(REG_OVERTIME)                         # tied: retail's overtime kickoff path
-    a.label("reg_over")
-    a.b("c705" + _u32(SIM_STATE) + "12000000")
-    a.b("c3")
+    a.jmp_abs(REG_PREPLAY)                          # before a play the scores are final: retail decides
     a.label("reg_mid_play")
-    a.b("c705" + _u32(SIM_STATE) + "12000000")      # tentative: the game is over unless the play ties it
     a.b("c705" + _u32(SIM_PERIOD_INDEX) + "03000000")   # the rest of this play is the fourth quarter's
-    a.b("c605" + _u32(state + S_PENDING) + "01")
+    a.b("c605" + _u32(state + S_PENDING) + "01")    # decided before the next handler, on the scores after the play
     a.b("ff05" + _u32(state + S_DEFERRED))
-    a.b("c3")
+    a.b("83c404")                                   # add esp, 4
+    a.jmp_abs(REG_GAME_OVER)                        # tentative: retail's game over (state 0x12) and its tail
+    a.label("reg_overtime_end")
+    a.b("c3")                                       # back to 0x106405 (retail)
 
     # Called at 0x10B251 in place of `call 0x105020`, before every state handler.
     a.label("step")
@@ -551,7 +559,7 @@ def sites(page_va: int) -> list[tuple[str, int, bytes, bytes]]:
         ("commit_entry", COMMIT_SITE, COMMIT_RETAIL, rel(0xE9, COMMIT_SITE, page_va + lab["commit"]) + b"\x90"),
         ("two_point_chooser", TRY_SITE, TRY_RETAIL, rel(0xE9, TRY_SITE, page_va + lab["try"]) + b"\xcc"),
         ("tie_roll_gate", TIES_SITE, TIES_RETAIL, rel(0xE8, TIES_SITE, page_va + lab["ties"])),
-        ("regulation_end", REG_SITE, REG_RETAIL, rel(0xE8, REG_SITE, page_va + lab["regulation"]) + b"\x90" * 9),
+        ("regulation_end", REG_SITE, REG_RETAIL, rel(0xE8, REG_SITE, page_va + lab["regulation"])),
         ("state_step", STEP_SITE, STEP_RETAIL, rel(0xE8, STEP_SITE, page_va + lab["step"])),
     ]
 

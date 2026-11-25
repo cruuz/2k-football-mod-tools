@@ -208,7 +208,7 @@ class CommitHook(unittest.TestCase):
         self.assertAlmostEqual(mean, 1 + so.HOME_EDGE, delta=0.01)
         self.assertAlmostEqual(sum(aways) / len(aways), 1 - so.HOME_EDGE, delta=0.01)
         self.assertAlmostEqual(sd, so.FORM_SIGMA * (1 + so.HOME_EDGE), delta=0.01)
-        self.assertTrue(all(so.M_LOW <= x <= so.M_HIGH for x in homes + aways))
+        self.assertTrue(all(f32(so.M_LOW) <= x <= f32(so.M_HIGH) for x in homes + aways))   # the clamp's float32 bounds
 
     def test_retail_entry_leaves_the_gain_alone(self):
         """Failing first: the retail first instruction of 0x106480 does not touch the gain (no home edge)."""
@@ -319,11 +319,11 @@ class RevisionPins(unittest.TestCase):
     """An installed page and its sites are recognised by rebuilding their bytes. These pins make any change to the page's
     code or constants (here or in a module it reads) a deliberate new revision: freeze this one first so discs built with
     it read "previous" and are upgraded in place, then re-pin (coordinator, 2026-11-25, after the fb-targets review S1)."""
-    # Re-pinned for the goal-line filter (touchdown mix) and the move to 0x1534000 (0x1531000 is the awards page), before
-    # any release or integration build carried the page.
-    PAGE = {(0.045, 0.08): "b3937c452b0dcca2d1220c855e500fde99149ab8877711d5b08117e83b2b8e3b",
-            (0.07, 0.12): "05ca013ac7ec26bf759c78891e8b802e434d18402a255e08d81fd027be4ac464"}
-    SITES = "94ca0b9ca9979ec06f88d2e1cab51ad68dffb3c61bbba1038b52eb406b0d03c0"
+    # Re-pinned for the goal-line filter, the move to 0x1534000 (0x1531000 is the awards page) and the regulation hook's
+    # move to 0x106400 (0x106427 stays retail), before any release or integration build carried the page.
+    PAGE = {(0.045, 0.08): "5f0bbe69df3567d8da088e08d4b81617827fc036ac6ef05e67b5ea6150cc8046",
+            (0.07, 0.12): "27a47c5a9be23aaac7ac3751aba5ec9043defd08da8039b6925bb96ca734f069"}
+    SITES = "3d2f1051f096612c2deb0563164eb9f4a2d863e23d5e2cc264bb67cd339859ed"
 
     def test_page_bytes_up_to_the_state_block(self):
         import hashlib
@@ -427,29 +427,53 @@ class TieRoll(unittest.TestCase):
         self.assertEqual(self.gate(so.TIES_SITE, so.TIES_RETAIL, allowed=0, mode=2, stage=8), TIES_SKIP)
 
 
+# Retail 0x106400..0x106459, the period-advance routine 0x1061F0 after the period index is stored (eax): end of
+# regulation (cmp eax,4 ; jle 0x106423), an expired overtime (0x106405: cmp edi,ebx ; jne 0x106427 ; the tie roll at
+# 0x106409 ; jne 0x106427 ; another overtime period), the end of regulation (0x106423: cmp edi,ebx ; je 0x106450 ;
+# 0x106427 game over ; tail returns 5) and the overtime kickoff 0x106450. Read from the retail executable
+# (test_the_tail_is_retail checks it where the private retail image is present).
+PERIOD_TAIL = 0x00106400
+PERIOD_TAIL_RETAIL = bytes.fromhex(
+    "83f8047e1e3bfb751ea1d471a90085c07515c705f071a900040000005f5e33c05b59c33bfb7429c705b871a900120000008b06a90000c00375"
+    "0c25ffff7ffe0d0000400289065f5eb8050000005b59c3c705b871a90001000000")
+
+
 @unittest.skipUnless(HAVE_UC, "Unicorn is required to execute the page")
 class RegulationEnd(unittest.TestCase):
-    """R8: a regulation end reached from a play's commit is decided on the scores after the play."""
-    TAIL = so.REG_SITE + 5               # the call's return (9 nops follow, then the retail game-over tail 0x106431)
+    """R8: a regulation end reached from a play's commit is decided on the scores after the play. The routine runs inside
+    the real retail tail of 0x1061F0 with the site installed; 0x106427 (game over) stays retail because the expired
+    overtime branches jump there."""
     PENDING = PAGE_VA + so.STATE_OFF + so.S_PENDING
+    RETURN_OF_ROUTINE = 0x00106A40       # a stand-in for 0x1061F0's own return (the ret instructions land here)
+    TAIL_END = (0x0010641C + 6, 0x0010644F, 0x00106450 + 10)   # ret 0 (period goes on), ret 5 (over), the kickoff
 
-    def machine(self):
+    def machine(self, site=None):
         m = _Machine(so.code_for(PAGE_VA))
-        for at in (self.TAIL, so.REG_OVERTIME, so.FN_DISPATCH, 0x106431):
-            m.map(at, 1)
+        tail = bytearray(PERIOD_TAIL_RETAIL)
+        site = site if site is not None else dict((l, a) for l, _va, _r, a in [(r[0], r[1], r[2], r[3])
+                                                                                for r in so.sites(PAGE_VA)])["regulation_end"]
+        tail[0:len(site)] = site
+        m.put(PERIOD_TAIL, bytes(tail))
+        m.map(self.RETURN_OF_ROUTINE, 1)
+        m.map(so.FN_DISPATCH, 1)
         return m
 
-    def regulation(self, m, *, caller, offense, defense):
-        """Run the page's regulation routine as if called from 0x106423 inside 0x1061F0 (which pushed ecx, ebx, esi, edi)."""
+    def advance(self, m, *, period, caller, home, away, tie_allowed=0):
+        """0x1061F0 after it stored the new period index: edi/ebx the two scores, its four pushes and return on the stack."""
         m.u32(so.SIM_STATE, 2)
-        m.u32(so.SIM_PERIOD_INDEX, 4)
-        m.reg("EDI", offense)
-        m.reg("EBX", defense)
+        m.u32(so.SIM_PERIOD_INDEX, period)
+        m.u32(0x00A971D4, tie_allowed)
+        m.reg("EAX", period)
+        m.reg("EDI", home)
+        m.reg("EBX", away)
+        m.reg("ESI", 0x00A96000)              # the tail's [esi] flags word (mapped scratch)
         frame = STACK - 0x40
-        m.u32(frame, self.TAIL)              # our call's return address
-        m.u32(frame + 0x14, caller)          # 0x1061F0's return address
+        for i, value in enumerate((0x11, 0x22, 0x33, 0x44)):   # pushed edi, esi, ebx, ecx
+            m.u32(frame + 4 * i, value)
+        m.u32(frame + 0x10, caller)           # 0x1061F0's return address
         m.reg("ESP", frame)
-        return m.run(PAGE_VA + so.labels()["regulation"], [self.TAIL, so.REG_OVERTIME])
+        stops = [0x00106422, 0x0010644F, so.REG_OVERTIME, so.REG_GAME_OVER + 10]
+        return m.run(PERIOD_TAIL, stops)
 
     def step(self, m, home, away):
         m.f(0xA97300, home)
@@ -460,28 +484,71 @@ class RegulationEnd(unittest.TestCase):
 
     def test_mid_play_end_is_tentative_and_keeps_the_fourth_quarter(self):
         m = self.machine()
-        self.assertEqual(self.regulation(m, caller=so.COMMIT_CLOCK_RETURN, offense=20, defense=23), self.TAIL)
+        landed = self.advance(m, period=4, caller=so.COMMIT_CLOCK_RETURN, home=20, away=23)
+        self.assertEqual(landed, so.REG_GAME_OVER + 10)              # retail's game over ran, then its tail
         self.assertEqual(m.get_u32(so.SIM_STATE), 0x12)
         self.assertEqual(m.get_u32(so.SIM_PERIOD_INDEX), 3)
         self.assertEqual(bytes(m.uc.mem_read(self.PENDING, 1)), b"\x01")
 
     def test_pre_play_end_keeps_retail(self):
         m = self.machine()
-        self.assertEqual(self.regulation(m, caller=0x0010798B, offense=20, defense=23), self.TAIL)
+        self.assertEqual(self.advance(m, period=4, caller=0x0010798B, home=20, away=23), so.REG_GAME_OVER + 10)
         self.assertEqual((m.get_u32(so.SIM_STATE), m.get_u32(so.SIM_PERIOD_INDEX)), (0x12, 4))
         self.assertEqual(bytes(m.uc.mem_read(self.PENDING, 1)), b"\x00")
         m = self.machine()
-        self.assertEqual(self.regulation(m, caller=0x0010798B, offense=17, defense=17), so.REG_OVERTIME)
+        self.assertEqual(self.advance(m, period=4, caller=0x0010798B, home=17, away=17), so.REG_OVERTIME)
+
+    def test_an_expired_overtime_reaches_retails_game_over(self):
+        """The round-1 emulation error: an overtime that expires level with ties allowed (or not level) jumps to
+        0x106427 from 0x106410 (0x106407). With the site at 0x106400 that is still retail's mov [state], 0x12."""
+        for home, away, allowed in ((17, 17, 1), (24, 17, 0)):
+            with self.subTest(home=home, away=away, tie_allowed=allowed):
+                m = self.machine()
+                landed = self.advance(m, period=5, caller=so.COMMIT_CLOCK_RETURN, home=home, away=away,
+                                      tie_allowed=allowed)
+                self.assertEqual(landed, so.REG_GAME_OVER + 10)
+                self.assertEqual((m.get_u32(so.SIM_STATE), m.get_u32(so.SIM_PERIOD_INDEX)), (0x12, 5))
+                self.assertEqual(bytes(m.uc.mem_read(self.PENDING, 1)), b"\x00")
+        m = self.machine()        # level, no tie: another overtime period (period back to 4), the routine returns 0
+        self.assertEqual(self.advance(m, period=5, caller=0x0010798B, home=17, away=17), 0x00106422)
+        self.assertEqual(m.get_u32(so.SIM_PERIOD_INDEX), 4)
+
+    def test_the_first_sites_layout_broke_the_expired_overtime(self):
+        """Failing first: the first version replaced 0x106423..0x106430 (a call and nine nops); the expired-overtime jump
+        to 0x106427 then lands inside the call's displacement."""
+        from unicorn import UcError
+        first = bytearray(PERIOD_TAIL_RETAIL[:5])                    # cmp eax,4 ; jle kept
+        m = self.machine(site=bytes(first))
+        old = b"\xe8" + struct.pack("<i", PAGE_VA + so.labels()["regulation"] - (0x106423 + 5)) + b"\x90" * 9
+        m.put(0x106423, old)
+        try:
+            landed = self.advance(m, period=5, caller=0x0010798B, home=17, away=17, tie_allowed=1)
+        except UcError:
+            landed = None
+        self.assertNotEqual(landed, so.REG_GAME_OVER + 10)
+        self.assertNotEqual(m.get_u32(so.SIM_STATE), 0x12)
+
+    def test_the_site_replaces_only_the_period_test(self):
+        label, va, retail, after = next(r for r in so.sites(PAGE_VA) if r[0] == "regulation_end")
+        self.assertEqual((va, retail, len(after)), (0x106400, PERIOD_TAIL_RETAIL[:5], 5))
+        self.assertFalse(va <= so.REG_GAME_OVER < va + len(after))
+
+    def test_the_tail_is_retail(self):
+        path = Path(os.environ.get("NFL2K5_RETAIL_XBE") or "/nonexistent")
+        if not path.is_file():
+            self.skipTest("the private retail default.xbe is absent")
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        self.assertEqual(XbeImage(path.read_bytes()).read(PERIOD_TAIL, len(PERIOD_TAIL_RETAIL)), PERIOD_TAIL_RETAIL)
 
     def test_next_handler_decides_on_the_scores_after_the_play(self):
         m = self.machine()
-        self.regulation(m, caller=so.COMMIT_CLOCK_RETURN, offense=20, defense=23)
+        self.advance(m, period=4, caller=so.COMMIT_CLOCK_RETURN, home=20, away=23)
         m.u32(so.SIM_STATE, 0xB)                              # the handler went on (an interception return)
         self.assertEqual(self.step(m, 20.0, 23.0), so.FN_DISPATCH)
         self.assertEqual(m.get_u32(so.SIM_STATE), 0x12, "the game is over")
         self.assertEqual(m.get_u32(so.SIM_PERIOD_INDEX), 3, "a regulation result")
         m = self.machine()
-        self.regulation(m, caller=so.COMMIT_CLOCK_RETURN, offense=20, defense=23)
+        self.advance(m, period=4, caller=so.COMMIT_CLOCK_RETURN, home=20, away=23)
         m.u32(so.SIM_STATE, 7)                                # the play's last kick tied the game
         self.step(m, 23.0, 23.0)
         self.assertEqual((m.get_u32(so.SIM_STATE), m.get_u32(so.SIM_PERIOD_INDEX)), (1, 4), "overtime kickoff")
@@ -496,7 +563,7 @@ class RegulationEnd(unittest.TestCase):
 
     def test_new_game_clears_the_flag(self):
         m = self.machine()
-        self.regulation(m, caller=so.COMMIT_CLOCK_RETURN, offense=20, defense=23)
+        self.advance(m, period=4, caller=so.COMMIT_CLOCK_RETURN, home=20, away=23)
         frame = STACK - 0x100
         m.reg("EBP", frame)
         m.u32(frame + 0x10, 0)
@@ -508,13 +575,8 @@ class RegulationEnd(unittest.TestCase):
 
     def test_retail_game_over_is_overwritten(self):
         """Failing first: retail ends regulation on the pre-play scores and a later handler write survives."""
-        m = self.machine()
-        m.put(so.REG_SITE, so.REG_RETAIL)
-        m.u32(so.SIM_STATE, 2)
-        m.reg("EDI", 20)
-        m.reg("EBX", 23)
-        m.reg("ESP", STACK - 0x40)
-        self.assertEqual(m.run(so.REG_SITE, [0x106431, so.REG_OVERTIME]), 0x106431)
+        m = self.machine(site=PERIOD_TAIL_RETAIL[:5])
+        self.assertEqual(self.advance(m, period=4, caller=so.COMMIT_CLOCK_RETURN, home=20, away=23), so.REG_GAME_OVER + 10)
         self.assertEqual(m.get_u32(so.SIM_STATE), 0x12)
         m.u32(so.SIM_STATE, 0xB)                              # 0x108AC0's interception write
         self.assertEqual(m.get_u32(so.SIM_STATE), 0xB, "retail: the game goes on into a phantom overtime")
