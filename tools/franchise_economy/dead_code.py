@@ -105,6 +105,8 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     0x35B2F0: (84, "041631f61249f34975cf1985aefd7f7f0ecb3b283325b0ee2ed538c2d96c5409"),   # r10: r10_pool_man + r10_seat_pts (the prove-it hole priority)
     0x65380: (86, "03b6f083b6e429bc9f815643fb668887d33154b97bc77e11c07a53ab1e451e25"),   # r10: r10_low + r10_club_seats (the prove-it hole priority)
     0x65940: (86, "20dcb7de3fb8abad5909d06f7de4b1fdccdda7087c1d0bbb6c2a0ec0e9ae2871"),   # r10: r10_prove (the prove-it club: best room, then a hole club)
+    0x6F420: (95, "e5c4bd553d6342316f547b146c89c20c4877e936d6500c8d6ec4624799ae3600"),   # r10: restructure_best + economy_release (retune: the 3-a-club cap; releases prune the trade board)
+    0x15E9D0: (91, "20f03f798baf9489d32685f6bc3115606680117bdb9729e6745a760bfa50b228"),   # r10: restructured: a club's restructured deals (retune)
 }
 
 

@@ -63,12 +63,12 @@ class OwnerTests(unittest.TestCase):
 
     def test_the_tables_come_from_the_real_market(self):
         price = DATA["price"]
-        self.assertEqual(price["price_scale"], 0.80)
+        self.assertEqual(price["price_scale"], 1.0)                  # retune 11/25 (0.80 left ~20% of the cap unspent)
         qb = price["market_curve_capshare"]["QB"]
         self.assertAlmostEqual(qb[0], 0.245)                          # OverTheCap: the best-paid QB, 24.5% of the cap
         for group, row in price["market_curve_capshare"].items():
             self.assertEqual(row, sorted(row, reverse=True), group)
-        self.assertEqual(DATA["reserve"]["permille"], [20, 25, 30, 35, 40, 50, 85, 130])
+        self.assertEqual(DATA["reserve"]["permille"], [15, 20, 25, 30, 35, 40, 60, 90])   # retune 11/25
         self.assertEqual(DATA["cap_growth"]["factor"], economy.CAP_GROWTH)
         old_cheap = DATA["lengths"]["by_age_and_price"]["33+"]["<0.5%"]["length_pct"]
         self.assertEqual(old_cheap, {"1": 100.0})                     # a cheap 33+ veteran: one year, always
@@ -138,10 +138,10 @@ class NativeTests(unittest.TestCase):
         return self.p
 
     def test_the_best_quarterback_is_priced_at_the_top_of_the_market(self):
-        # 24.5% of the cap x 0.80 = 19.6%: 1960 x (75300 / 100) / 100 game $1000 (rank 1); a tie at the top shares
-        # ranks 1 and 2. Revision 8 priced the best QB at the top-five average x a cube of his overall.
+        # 24.5% of the cap x 1.0 (retune 11/25; 0.80 before) = 2450 x (75300 / 100) / 100 game $1000 (rank 1); a tie at
+        # the top shares ranks 1 and 2 (23.5%). Revision 8 priced the best QB at the top-five average x a cube of his overall.
         best = max(self.price(q) for t in range(32) for q in self.roster(t) if self.m.uc.mem_read(q + 0x35, 1)[0] == 0)
-        self.assertIn(best, (1960 * 753 // 100, (1960 + 1880) // 2 * 753 // 100))
+        self.assertIn(best, (2450 * 753 // 100, (2450 + 2350) // 2 * 753 // 100))
 
     def test_a_league_wide_rating_shift_moves_no_price(self):
         # Every rostered receiver three points worse at everything: the ranks are the same men's ranks, so the
@@ -197,6 +197,11 @@ class NativeTests(unittest.TestCase):
         # 0x322690 (EDI = player) answers economy_years: a cheap 33+ veteran always 1, a young star 3 to 5.
         cheap = [self.m.call(0x322690, edi=self.synthetic(rating=40, age=34), budget=50_000_000)]
         self.assertEqual(cheap, [1])
+        # retune 11/25 (gate E2: 88% of the <=25 veterans were on 1-year deals, real 27%): a man 29 or under signs for
+        # 2-3 years where the draw said 1
+        young = {self.m.call(0x322690, edi=self.synthetic(rating=r, age=a, pro=3), budget=50_000_000)
+                 for a in (22, 25, 27, 29) for r in (40, 55, 70)}
+        self.assertTrue(young and min(young) >= 2, young)
         self.assertEqual(self.m.call(0x322690, edi=0), 0xFFFFFFFF)
 
     def test_an_offer_must_leave_the_clubs_reserve(self):
@@ -224,6 +229,65 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(self.m.call(0x3B9F60, ecx=restructured, edx=0), 0)
         two_left = self.synthetic(rating=80, value=100, years=2)
         self.assertEqual(self.m.call(0x3B9F60, ecx=two_left, edx=0), 0)
+
+    def test_a_club_restructures_three_deals_at_most(self):
+        # retune 11/25 (gate E3: some clubs held 5-9 restructured deals): economy_restructure_best refuses a club that
+        # already has three; with two it restructures its best deal as before.
+        t = next(t for t in range(32) if t not in self.human)
+        team, men = self.team(t), self.roster(t)
+        saved = {q: bytes(self.m.uc.mem_read(q, 84)) for q in men}
+        try:
+            for q in men:                                           # nobody restructured, nobody worth restructuring
+                self.m.uc.mem_write(q + 0x24, bytes((1, self.m.uc.mem_read(q + 0x25, 1)[0], 2, 1)))
+            big = men[0]                                            # one large 4-year deal: a restructure saves a lot
+            self.m.uc.mem_write(big + 10, struct.pack("<H", 3000))
+            self.m.uc.mem_write(big + 0x24, bytes((4, self.m.uc.mem_read(big + 0x25, 1)[0], 2, 4)))
+            for q in men[1:3]:
+                self.m.uc.mem_write(q + 0x26, bytes((6 | 2 << 4,)))
+            self.assertEqual(self.m.call(SYM["economy_restructured"], args=(team,)), 2)
+            self.assertEqual(self.m.call(SYM["economy_restructure_best"], args=(team,), budget=200_000_000), 1)
+            self.assertEqual(self.m.uc.mem_read(big + 0x26, 1)[0], 6 | 2 << 4)
+            self.m.uc.mem_write(big + 0x24, bytes((4, self.m.uc.mem_read(big + 0x25, 1)[0], 2, 4)))   # a fresh deal again
+            self.m.uc.mem_write(men[3] + 0x26, bytes((6 | 2 << 4,)))                                     # three now
+            self.assertEqual(self.m.call(SYM["economy_restructured"], args=(team,)), 3)
+            self.assertEqual(self.m.call(SYM["economy_restructure_best"], args=(team,), budget=200_000_000), 0)
+            self.assertEqual(self.m.uc.mem_read(big + 0x26, 1)[0], 2)
+        finally:
+            for q, raw in saved.items():
+                self.m.uc.mem_write(q, raw)
+
+    def test_a_release_cancels_the_trade_offers_that_name_the_man(self):
+        # Panel 74003, 2031 (gate E8 / G6): an offer kept naming a man the economy had released after another club took
+        # him onto its IR or practice squad (I8 "side B names a player his club does not have", eleven weeks). Every
+        # economy release now runs the board's pruner 0x2BB9A0, which cancels an offer naming a man with no contract
+        # years: the released man's offer goes, another offer stays. The native release alone leaves both.
+        board, size = 0xE3C27C, 0x3C
+        cpu = [t for t in range(32) if t not in self.human]
+        x, y, z = cpu[0], cpu[1], cpu[2]
+
+        def run(release):
+            px, py, pz = self.roster(x)[5], self.roster(y)[5], self.roster(z)[6]
+            saved = {q: bytes(self.m.uc.mem_read(q, 84)) for q in (px, py, pz)}
+            rows = bytes(self.m.uc.mem_read(board, 15 * size))
+            teams = {t: bytes(self.m.uc.mem_read(self.team(t), 500)) for t in (y,)}
+            try:
+                for slot, (b, pb) in ((2, (y, py)), (3, (z, pz))):
+                    raw = bytearray(size)
+                    struct.pack_into("<IIII", raw, 0, 2, 0, self.team(x), px)
+                    struct.pack_into("<II", raw, 0x20, self.team(b), pb)
+                    self.m.uc.mem_write(board + size * slot, bytes(raw))
+                release(self.team(y), py)
+                self.assertNotIn(py, self.roster(y))
+                return self.m.get(board + 2 * size), self.m.get(board + 3 * size)
+            finally:
+                self.m.uc.mem_write(board, rows)
+                for t, raw in teams.items():
+                    self.m.uc.mem_write(self.team(t), raw)
+                for q, raw in saved.items():
+                    self.m.uc.mem_write(q, raw)
+
+        self.assertEqual(run(lambda team, p: self.m.call(0x2BD900, ecx=team, edx=p, args=(1, 1), budget=50_000_000)), (2, 2))
+        self.assertEqual(run(lambda team, p: self.m.call(SYM["economy_release"], ecx=team, edx=p, budget=50_000_000)), (0, 2))
 
     def test_cap_casualties_before_re_signing(self):
         # A CPU club short of its reserve + 2% of the cap cuts its most overpaid veteran (a 33-year-old receiver paid far
@@ -355,7 +419,7 @@ class NativeTests(unittest.TestCase):
             for q, raw in saved.items():
                 self.m.uc.mem_write(q, raw)
 
-    def test_a_kicker_four_points_better_wins_the_job_in_camp(self):
+    def test_a_kicker_well_ahead_wins_the_job_in_camp(self):
         t = next(t for t in range(32) if t not in self.human and
                  sum(self.m.uc.mem_read(q + 0x35, 1)[0] == 1 for q in self.roster(t)) == 1)
         team = self.team(t)
@@ -373,6 +437,41 @@ class NativeTests(unittest.TestCase):
         kickers = [q for q in self.roster(t) if self.m.uc.mem_read(q + 0x35, 1)[0] == 1]
         self.assertEqual(kickers, [fa])
 
+
+    def test_the_camp_edge_is_two_points(self):
+        # retune 11/25 (gate E5: K/P jobs changed hands 10% a year at a four-point edge; real 34% / 28%): a free-agent
+        # kicker who rates 3 points above the incumbent (0x246D80 in whole points) now wins the job; 1 point does not.
+        t = next(t for t in range(32) if t not in self.human and
+                 sum(self.m.uc.mem_read(q + 0x35, 1)[0] == 1 for q in self.roster(t)) == 1)
+        team = self.team(t)
+        mine = next(q for q in self.roster(t) if self.m.uc.mem_read(q + 0x35, 1)[0] == 1)
+        root = self.m.get(0xB72918)
+        fas = [self.m.get(self.m.get(root + 0x3C) + 4 * i) for i in range(self.m.get(root + 0x38))]
+        fa = next(q for q in fas if self.m.uc.mem_read(q + 0x35, 1)[0] == 1)
+        point = lambda q: self.m.call(SYM["economy_points"], args=(q,), budget=5_000_000)
+        saved = {q: bytes(self.m.uc.mem_read(q, 84)) for q in (mine, fa)}
+        roster = bytes(self.m.uc.mem_read(team, 500))
+        results = {}
+        try:
+            self.m.uc.mem_write(mine + 0x38, bytes([70] * (84 - 0x38)))
+            base = point(mine)
+            for want in (1, 3):
+                v = next(v for v in range(70, 100) if (self.m.uc.mem_write(fa + 0x38, bytes([v] * (84 - 0x38))) or True)
+                         and point(fa) - base == want)
+                for q in (mine, fa):
+                    self.m.uc.mem_write(q + 0x23, bytes((self.m.uc.mem_read(q + 0x23, 1)[0] & 0x7F,)))
+                self.m.put(0xE3C278, 200000)
+                self.m.put(0xE576A4, 6)
+                self.m.call(SYM["economy_camp"], ecx=team, edx=self.menu, budget=500_000_000)
+                results[want] = [q for q in self.roster(t) if self.m.uc.mem_read(q + 0x35, 1)[0] == 1]
+                self.m.uc.mem_write(team, roster)
+                self.m.uc.mem_write(fa, saved[fa])
+                self.m.uc.mem_write(mine, saved[mine][:0x38] + bytes([70] * (84 - 0x38)))
+        finally:
+            self.m.uc.mem_write(team, roster)
+            for q, raw in saved.items():
+                self.m.uc.mem_write(q, raw)
+        self.assertEqual(results, {1: [mine], 3: [fa]})
 
 if __name__ == "__main__":
     unittest.main()

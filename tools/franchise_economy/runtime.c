@@ -27,6 +27,8 @@ extern int STD n_trunc(float value);                               /* 0x322260 c
 extern void FAST n_release(u8 *team, u8 *p, unsigned to_list, unsigned log); /* 0x2BD900 */
 extern unsigned STD n_cpu_sign(u8 *team, unsigned pos, int budget, void *menu); /* 0x322BB0 */
 extern void FAST n_cut_to(u8 *team, unsigned count);              /* 0x2BF9A0 */
+extern void n_prune(void);                                          /* 0x2BB9A0: the trade board's pruner */
+void FAST economy_release(u8 *team, u8 *p);
 extern void FAST n_need_low(int *need, u8 *team);                  /* 0x2BD880 count - native minimum */
 extern void FAST n_need_want(int *need, u8 *team);                 /* 0x2BD8C0 count - wanted depth */
 extern unsigned FAST n_at_position(u8 *team, unsigned pos);        /* 0xC3CB0 */
@@ -322,7 +324,7 @@ SECTION(".roster_b") int FAST economy_restructure(u8 *p, unsigned apply) {
 
 /* Restructure the contract that makes the most room (b81 revision 10: moved to window .r10_rbest, where a club holding
  * three restructured deals restructures no more). */
-unsigned restructure_best(u8 *team);
+unsigned economy_restructure_best(u8 *team);
 
 unsigned FAST economy_camp_limit(void);   /* b780 b4-economy (D10): defined at the end of roster_m */
 void FAST economy_cover(u8 *team, void *menu);   /* b780 hunt1: defined after roster_h's rodata (naked, fastcall ECX/EDX) */
@@ -343,7 +345,7 @@ SECTION(".fill_room") static void trim(u8 *team, unsigned force) {
         unsigned count = team[0x11c], least = economy_floor(0);
         int room = ROOM(team);
         if (count <= economy_camp_limit() && room >= 0 && !force) return;
-        if (room < 0 && CPU(team) && restructure_best(team)) continue;
+        if (room < 0 && CPU(team) && economy_restructure_best(team)) continue;
         u8 *best = 0;
         float score = 2.0f;
         for (unsigned i = 0; i < count; ++i) {
@@ -358,7 +360,7 @@ SECTION(".fill_room") static void trim(u8 *team, unsigned force) {
         }
         if (!best) return;
         economy_penalty(team, best, 0);
-        n_release(team, best, 1, 1);
+        economy_release(team, best);
     }
 }
 
@@ -407,7 +409,7 @@ SECTION(".roster_a") static void upkeep(u8 *team, void *menu) {
         fill(team, menu, 1.0f, 0, 1);
         fill(team, menu, 1.0f, 1, 1);
         if (team[0x11c] >= FLOOR_PLAYERS || ROOM(team) >= (int)(2 * economy_floor(0)) + 10) return;
-        if (!restructure_best(team)) trim(team, 1);
+        if (!economy_restructure_best(team)) trim(team, 1);
     }
 }
 
@@ -501,7 +503,7 @@ SECTION(".roster_d") void FAST economy_clubs(void *menu, unsigned vetcut) {
         /* b780 econ3 (revision 7, Q45): restructure only while the club is short of the veteran cut's line (room for
          * two league-minimum signings; economy_vet_short), not within the retail gate's 6000 ($24M). */
         do n_recount(team);
-        while (economy_vet_short(team) > 0 && restructure_best(team));
+        while (economy_vet_short(team) > 0 && economy_restructure_best(team));
     }
 }
 
@@ -715,7 +717,7 @@ SECTION(".roster_m") __attribute__((noinline)) unsigned FAST economy_camp_limit(
  * guard moved there): ECX = team, EDX = the cut's candidate, the native release's two stack arguments untouched. */
 SECTION(".roster_m") __attribute__((naked)) void economy_vet_release(void) {
     __asm__("push %ecx\ncall economy_vet_pick\npop %ecx\ntest %eax, %eax\njz 1f\nmov %eax, %edx\n"
-            "jmp 0x2bd900\n1: ret $8\n");
+            "push 8(%esp)\npush 8(%esp)\ncall 0x2bd900\ncall 0x2bb9a0\n1: ret $8\n");
 }
 
 
@@ -810,7 +812,7 @@ SECTION(".roster_l") void FAST economy_smart_cut(u8 *team, unsigned target) {
     while (team[0x11c] > target) {
         for (k = 0; k < 3 && !(best = cut_pick(team, rows[k], 0)); ++k) {}
         if (k == 3 && !(best = cut_pick(team, rows[2], 1))) return;
-        n_release(team, best, 1, 1);
+        economy_release(team, best);
     }
 }
 
@@ -1098,7 +1100,7 @@ SECTION(".roster_v") int FAST economy_room_for_signing(u8 *team) {
 #define TEAM_INDEX(t) ((u32)((t) - *(u8 **)(ROSTER_ROOT + 0x1c)) / 500u)
 #define HEALTHY(p) (!((p)[0x23] & 0x80))      /* no injury bit, as the trim, the gate and economy_cover read it */
 #define CHARGE(q) (n_salary(q) + n_prorated(*(u16 *)((q) + 10), (q)[0x26] >> 4, (q)[0x27] & 15))
-#define CAMP_EDGE 0.04f                         /* four points of 0x246D80 */
+#define CAMP_EDGE 0.02f                         /* two points of 0x246D80 (retune 11/25: four kept turnover at 10%) */
 /* Code space: economy_value's own 540 bytes (economy_value, price_of, share_e4), the retail routine 0x322690 (the
  * player's years wanted; economy_years) and unreferenced retail functions (assemble.py R10_WINDOWS, one or two routines
  * or tables each). A club a person owns never reaches the new rules (ruling 7: n_human, "CPU manages" or not). */
@@ -1204,6 +1206,7 @@ SECTION(".r10_years") unsigned FAST economy_years(u8 *p) {
     u32 h = ((((u32)p - *(u32 *)(ROSTER_ROOT + 4)) ^ (SEASON * 0x9E3779B9u)) * 2654435761u) >> 24;
     unsigned years = 1;
     while (years < 5 && h >= cum[years - 1]) ++years;
+    if (years == 1 && age_of(p) <= 29) years = 2 + (h & 1);   /* retune 11/25: a man 29 or under signs for 2-3 years */
     return years;
 }
 
@@ -1229,14 +1232,28 @@ SECTION(".r10_budget") int FAST economy_fill_budget(u8 *team) {
 
 /* Restructure the contract that makes the most room, at least $1M real (moved from roster_b, unchanged: economy_restructure
  * itself now refuses a deal already restructured or with fewer than 3 years left). */
-SECTION(".r10_rbest") unsigned restructure_best(u8 *team) {
+/* The club's restructured deals (curve kind 6, bonus 2: economy_restructure's mark). */
+SECTION(".r10_rcount") unsigned economy_restructured(u8 *team) {
+    unsigned n = 0;
+    for (unsigned i = 0; i < team[0x11c]; ++i) n += ((u8 **)team)[i][0x26] == (6 | 2 << 4);
+    return n;
+}
+
+/* The contract whose restructure makes the most room, at least $1M real, or 0. */
+SECTION(".r10_rscan") u8 *restructure_pick(u8 *team) {
     u8 *best = 0;
     int most = 250;
     for (unsigned i = 0; i < team[0x11c]; ++i) {
         int saving = economy_restructure(((u8 **)team)[i], 0);
         if (saving > most) { most = saving; best = ((u8 **)team)[i]; }
     }
-    if (best) economy_restructure(best, 1);
+    return best;
+}
+
+SECTION(".r10_rbest") unsigned economy_restructure_best(u8 *team) {
+    u8 *best;
+    if (economy_restructured(team) >= 3) return 0;      /* retune 11/25: three restructured deals a club at most */
+    if ((best = restructure_pick(team))) economy_restructure(best, 1);
     return best != 0;
 }
 
@@ -1250,9 +1267,9 @@ SECTION(".r10_clear") void FAST economy_clear_cap(u8 *team) {
         int over = -ROOM(team);
         u8 *q;
         if (over <= 0) return;
-        if (restructure_best(team)) continue;
+        if (economy_restructure_best(team)) continue;
         if (!(q = economy_vet_pick(team, (u8 *)(u32)over))) return;
-        n_release(team, q, 1, 1);
+        economy_release(team, q);
     }
 }
 
@@ -1260,6 +1277,16 @@ SECTION(".r10_clear") void FAST economy_clear_cap(u8 *team) {
 SECTION(".r10_rollover") void FAST economy_rollover_reconcile(u8 *team) {
     economy_clear_cap(team);
     economy_reconcile(team);
+}
+
+/* Every release the economy makes (the trim, the smart cut, the cap clearing, the cap casualties, camp) goes through
+ * here: the native release, then the trade board's own pruner 0x2BB9A0, which cancels (0x2BB660(rec, 0, 1, 1)) any
+ * offer naming a man with no contract years -- the man just released. Without it a pending offer kept naming him after
+ * another club took him onto its practice squad or IR (panel 74003, 2031: I8 "side B names a player his club does not
+ * have" for eleven weeks; the ownership guard refused it each week, the pruner no longer saw zero years). */
+SECTION(".r10_release") void FAST economy_release(u8 *team, u8 *p) {
+    n_release(team, p, 1, 1);
+    n_prune();
 }
 
 /* A veteran the club could cut for room (ruling 4): not a QB (the quarterback room's), K or P; under contract; above the
@@ -1301,7 +1328,7 @@ SECTION(".r10_casualty") void casualties(u8 *team) {
         u8 *q;
         n_recount(team);
         if (economy_usable_room(team) + 10 >= (int)(CAP / 50) || !(q = most_overpaid(team))) return;
-        n_release(team, q, 1, 1);
+        economy_release(team, q);
     }
 }
 
@@ -1311,6 +1338,7 @@ SECTION(".r10_resign") void FAST economy_resign_stage(void *menu) {
     for (unsigned t = 0; t < n_teams(); ++t)
         if (!n_human(n_team(t))) casualties(n_team(t));
     ((void (FAST *)(void *))0x323720)(menu);
+    n_prune();                                  /* the expiring men it released have no contract years now */
 }
 
 /* The best-rated healthy man at `pos` in a list of player pointers (a club's active list or the free-agent list). */
@@ -1341,7 +1369,7 @@ SECTION(".r10_camp") void FAST economy_camp(u8 *team, void *menu) {
     if (STAGE != 6 || n_human(team) || team[0x11c] >= 64) return;
     for (unsigned pos = 1; pos <= 2; ++pos) {
         u8 *mine = camp_pick(team, pos);
-        if (mine && n_cpu_sign(team, pos, economy_fill_budget(team), menu)) n_release(team, mine, 1, 1);
+        if (mine && n_cpu_sign(team, pos, economy_fill_budget(team), menu)) economy_release(team, mine);
     }
 }
 

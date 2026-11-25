@@ -7,6 +7,12 @@ image from a revision-10 one (older-revision tests start from it)."""
 
 
 SITES = {
+    0x3dbc10: bytes.fromhex(   # roster_m
+        "5589e55756be0c00000053538b5d103b75147c353b5d187e3031ff3b7d0c73263b5d187e218b45088b0cb85651894df0e8d7"
+        "2604005a5985c074088b4df04b8049080847ebd54eebc68d65f489d85b5e5f5dc35589e5e885bee6ffba360000005d39d00f"
+        "42c2c351e8dd4cfeff5985c0740789c2e9771ceeffc208000f0bcccccccccccccccccccccccccccccccccccccccccccccccc"
+        "cccccccccccccccccccc"
+    ),
     0x247bc6: bytes.fromhex(
         "e815800700"
     ),
