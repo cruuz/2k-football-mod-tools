@@ -640,8 +640,8 @@ class BuildPlan:
     # b81 team building (lane team-building, coordinator rulings of 2026-11-25): CPU clubs draft and sign to their
     # weakest starters (the shared team-need rule, tools/common/team_need.h). The owner nfl2k5_team_building retargets
     # two draft-AI branches into its own code (29 proven-unreferenced retail functions), so it needs the draft AI
-    # and the franchise economy; without them it is left out with a note. On in the Experimental preset (the SOFTDRINK
-    # 2K28 recipe builds from it with the economy on).
+    # and the franchise economy; without them it is left out with a note. A stock preset turns it on only where the
+    # economy is on (none today); the SOFTDRINK 2K28 release recipe turns on both.
     team_building: bool = False
     # b778-pi1: Franchise practice: injured players sit out. Retail heals every match copy for practice (0x61540: keeps
     # injuries only in league games, modes 5..7), so a starter who is out for weeks lines up in the Coach's Desk
@@ -1362,10 +1362,11 @@ for _preset in PRESETS.values():
     _preset["star_retention"] = False
 PRESETS["softdrink_advanced"]["star_retention"] = True
 PRESETS["softdrink_experimental"]["star_retention"] = True
-# b81 team building: needs-based CPU drafts and signings, on in Experimental (needs the draft AI and the economy).
+# b81 team building: needs-based CPU drafts and signings. It needs the draft AI and the franchise economy, so a stock
+# preset turns it on only where the economy is on (coordinator 11/25, review N1: no stock build carries the "left out"
+# note; none today). A recipe that turns the economy on names team building too (the release recipe turns on both).
 for _preset in PRESETS.values():
-    _preset["team_building"] = False
-PRESETS["softdrink_experimental"]["team_building"] = True
+    _preset["team_building"] = bool(_preset.get("franchise_economy")) and bool(_preset.get("draft_ai"))
 # b778-pi1: franchise practice keeps injuries: on wherever the Coach's Desk Practice row (franchise_practice) is on.
 for _preset in PRESETS.values():
     _preset["practice_injuries"] = bool(_preset.get("franchise_practice"))

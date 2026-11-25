@@ -5,7 +5,7 @@ Every class fails on c4406481b: there is no nfl2k5_team_building owner, code tem
 
 - Windows: the 29 code windows are proven unreferenced on the retail executable (tools/team_building/dead_code.py:
   references including loop/jecxz, digests, return + padding, decode synchronisation, entry/TLS), clear of the
-  reservation inventory and of the economy's windows; the template reproduces from runtime.c (when gcc is present);
+  reservation inventory and of the economy's windows; the template reproduces from runtime.c (Linux, gcc 13.3);
   its tables equal the draft AI's VALUE and the economy's aging line.
 - Oracle: the Python mirror of runtime.c on built rosters: holes first by key, premium 3:2, QB in, a position drafted
   this draft out, an unseated development asset out in rounds 1 and 2 only, a bench man 3 better takes the seat,
@@ -21,7 +21,7 @@ Every class fails on c4406481b: there is no nfl2k5_team_building owner, code tem
   tb_order equals the oracle's order for every CPU club and round, the draft pick 0x31E0F0 and the retail wish routine
   0x3242C0 reach the code with their frames and registers intact, a person's club goes to the draft AI's cave, QB, K,
   P and FB keep the draft AI's score, a signed starter takes his seat, and each guard has a check that fails when
-  the guard is changed in runtime.c (built with tools/team_building/assemble.py).
+  the guard is changed in runtime.c (built with tools/team_building/assemble.py; Linux, gcc 13.3).
 Fixtures come from the environment only (no private paths in the repo).
 """
 from __future__ import annotations
@@ -31,6 +31,8 @@ import os
 from pathlib import Path
 import shutil
 import struct
+import subprocess
+import sys
 import unittest
 
 from tests.nfl2k5_supersim_draft_fixture import HAVE_UC, XBE as RETAIL_XBE
@@ -46,6 +48,17 @@ P = {n: i for i, n in enumerate(NAMES)}
 def _tb():
     from mod_editor.core import nfl2k5_team_building as tb
     return tb
+
+
+def _expected_toolchain():
+    """None on the development host (Linux with GNU gcc 13.3 and binutils, as test_b81_gadget_play.py's guard), else why
+    the compiler tests skip: a hosted runner with another gcc, or Windows, skips them rather than fails."""
+    if not sys.platform.startswith("linux") or not all(shutil.which(t) for t in ("as", "gcc", "ld", "nm", "objcopy")):
+        return "GNU gcc/binutils on Linux (development only)"
+    first = subprocess.run(["gcc", "--version"], capture_output=True, text=True).stdout.splitlines()[:1]
+    if not first or " 13.3" not in first[0]:
+        return "the team-building template is pinned to gcc 13.3"
+    return None
 
 
 def _with_economy_9(payload: bytes) -> bytes:
@@ -103,8 +116,10 @@ class Windows(unittest.TestCase):
         self.assertIn("tb_order", code.SYMBOLS)
         self.assertIn("tb_wish_entry", code.SYMBOLS)
 
-    @unittest.skipUnless(shutil.which("gcc") and shutil.which("ld") and shutil.which("objcopy"), "GNU i386 tools")
     def test_template_reproduces(self):
+        reason = _expected_toolchain()
+        if reason:
+            self.skipTest(reason)
         from tools.team_building import assemble
         self.assertEqual(assemble.generate(), assemble.TARGET.read_text())
 
@@ -333,7 +348,12 @@ class Studio(unittest.TestCase):
         from mod_editor.core import mod_build, nfl2k5_build_settings as settings
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).team_building, False)
         for name, preset in mod_build.PRESETS.items():
-            self.assertIs(preset["team_building"], name == "softdrink_experimental", name)
+            # Coordinator 11/25 (review N1): on only where the economy is (with the draft AI), so no stock build carries
+            # the "left out" note; no stock preset turns the economy on today.
+            self.assertIs(preset["team_building"], bool(preset["franchise_economy"] and preset["draft_ai"]), name)
+            self.assertIs(preset["team_building"], False, name)
+            plan = mod_build.apply_preset(mod_build.BuildPlan(Path("s.iso"), Path("t.iso")), name)
+            self.assertFalse(plan.team_building and not (plan.franchise_economy and plan.draft_ai), name)
         self.assertIn("team_building", settings.FEATURE_KEYS)
         self.assertIn(("nfl2k5_team_building", "CPU team building"),
                       [(owner, label) for owner, label, _ in mod_build._LATE_OWNER_OPTIONS])
@@ -948,10 +968,12 @@ class EntryPoints(_ImageBase):
         self.assertGreater(cases, 10)
         self.assertGreater(closed, cases // 2)
 
-    @unittest.skipUnless(shutil.which("gcc") and shutil.which("ld") and shutil.which("objcopy"), "GNU i386 tools")
     def test_each_guard_has_a_check_that_fails_without_it(self):
         """Review S5: build runtime.c with one guard changed and run the check that covers it: the real build passes
         every check, each mutant fails its own (the kept positions, the person's club, the hole line, the margin)."""
+        reason = _expected_toolchain()
+        if reason:
+            self.skipTest(reason)
         from tools.team_building import assemble
         tb, code = self.tb, self.code
         decline = tb.decline_after()
