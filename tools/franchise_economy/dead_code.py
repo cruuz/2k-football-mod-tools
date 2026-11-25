@@ -104,6 +104,7 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     0x9AB90: (84, "9a80ce598a961cfcafea31f99e3c87f2450a8329f51d6c8891a33888e6e325f0"),   # r10: r10_level (the prove-it hole priority)
     0x35B2F0: (84, "041631f61249f34975cf1985aefd7f7f0ecb3b283325b0ee2ed538c2d96c5409"),   # r10: r10_pool_man + r10_seat_pts (the prove-it hole priority)
     0x65380: (86, "03b6f083b6e429bc9f815643fb668887d33154b97bc77e11c07a53ab1e451e25"),   # r10: r10_low + r10_club_seats (the prove-it hole priority)
+    0x65940: (86, "20dcb7de3fb8abad5909d06f7de4b1fdccdda7087c1d0bbb6c2a0ec0e9ae2871"),   # r10: r10_prove (the prove-it club: best room, then a hole club)
 }
 
 

@@ -57,6 +57,7 @@ int FAST economy_fill_budget(u8 *team);
 void FAST economy_camp(u8 *team, void *menu);
 void FAST economy_clear_cap(u8 *team);
 u8 *economy_hole_first(u8 *p, unsigned ask, u8 *club);
+u8 *economy_prove_club(u8 *p, unsigned ask);
 u8 *FAST economy_vet_pick(u8 *team, u8 *proposed);
 
 static unsigned maximum(unsigned a, unsigned b) { return a > b ? a : b; }
@@ -475,8 +476,7 @@ SECTION(".week") void FAST economy_week(void *menu, unsigned unused, float low, 
         u8 *p = ((u8 **)list[1])[i], *club = 0;
         if (!PROVE_IT_FREE_AGENT(p) || p[0x35] >= 17 || !(n_rating(p, 1) > PROVE_IT)) continue;
         unsigned ask = economy_value(p, 0, 0, 1, 1);
-        if (economy_best_room(p, &club) < ask || !club) continue;
-        club = economy_hole_first(p, ask, club);   /* b81 r10: a club with a hole he fills gets first call */
+        if (!(club = economy_prove_club(p, ask))) continue;   /* b81 r10: best room, then a hole club first */
         /* b780 b4-economy (D10): economy_best_room no longer offers a full club, so this cut never runs now. */
         if (club[0x11c] >= limit) n_cut_to(club, limit - 1);
         n_cpu_sign(club, p[0x35], ask + 1, menu);
@@ -1478,4 +1478,14 @@ SECTION(".r10_holefirst") u8 *economy_hole_first(u8 *p, unsigned ask, u8 *club) 
     if (p[0x35] && TN_NEED_SEATS[TN_POOL[p[0x35]]])
         for (unsigned t = 0; t < n_teams(); ++t) hole_pick(n_team(t), p, ask, &k);
     return k.club;
+}
+
+/* The prove-it pass's club for him (economy_week): the club economy_best_room chose if it has room for his ask, then a
+ * hole club first. Kept out of economy_week so the week window's stage stubs (economy_after, economy_stage6) stay at
+ * their revision 3-9 addresses: the stage hook sites 0x248628 and 0x24809C keep their bytes, which the Player Progress
+ * owner accepts inside its guarded span. */
+SECTION(".r10_prove") u8 *economy_prove_club(u8 *p, unsigned ask) {
+    u8 *club = 0;
+    if (economy_best_room(p, &club) < ask || !club) return 0;
+    return economy_hole_first(p, ask, club);
 }

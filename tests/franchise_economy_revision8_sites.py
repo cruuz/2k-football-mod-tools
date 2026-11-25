@@ -7,8 +7,6 @@ image from a revision-10 one (older-revision tests start from it)."""
 
 
 SITES = {
-    0x24809c: bytes.fromhex("2f3a3200"),   # STAGE6_CASE
-    0x248628: bytes.fromhex("e8f2b30d00"),   # AFTER_STAGE
     0x247bc6: bytes.fromhex(
         "e815800700"
     ),

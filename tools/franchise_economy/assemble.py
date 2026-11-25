@@ -52,7 +52,8 @@ R10_WINDOWS = {"r10_5de10": (0x5de10, 84),
                "r10_ecce0": (0xecce0, 91),
                "r10_9ab90": (0x9ab90, 84),
                "r10_35b2f0": (0x35b2f0, 84),
-               "r10_65380": (0x65380, 86)}
+               "r10_65380": (0x65380, 86),
+               "r10_65940": (0x65940, 86)}
 # the input sections each window takes (value: economy_value's own bytes, placed before economy_floor's pin below)
 R10_SECTIONS = {'r10_5de10': ['r10_casualty'],
                 'r10_87dc0': ['r10_rank'],
@@ -92,6 +93,7 @@ R10_SECTIONS = {'r10_5de10': ['r10_casualty'],
                 'r10_9ab90': ['r10_level'],
                 'r10_35b2f0': ['r10_pool_man', 'r10_seat_pts'],
                 'r10_65380': ['r10_low', 'r10_club_seats'],
+                'r10_65940': ['r10_prove'],
                 'roster_v': ['r10_holefirst']}
 WINDOWS = {"value": (0x2BD440, 1082), "contracts": (0x3228A0, 215),
            "rookie": (0x322980, 280), "picks": (0x2BAB20, 403),
@@ -135,7 +137,9 @@ NATIVE.update({"ps_append": _SQUAD["ps_append"], "ps_demote": _SQUAD["ps_demote"
 # b81 revision 10: symbols other owners or the native code reach at fixed addresses inside a window (not its first
 # byte): they must not move (the team-building owner calls economy_cap; the practice-squad composition chains to
 # economy_fill_gate).
-STABLE = {"economy_floor": 0x2BD65C, "economy_penalty": 0x2BD68F, "economy_cap": 0x2BD6D7, "economy_fill_gate": 0x31E605}
+STABLE = {"economy_floor": 0x2BD65C, "economy_penalty": 0x2BD68F, "economy_cap": 0x2BD6D7, "economy_fill_gate": 0x31E605,
+          # b81 r10: the stage stubs keep their revision 3-9 addresses (the hook sites 0x248628 and 0x24809C keep their bytes)
+          "economy_after": 0x323A1F, "economy_stage6": 0x323A2F}
 # Entry points that must sit at their window's first byte.
 ENTRIES = {"economy_value": 0x2BD440, "economy_contract": 0x3228A0, "economy_rookie": 0x322980,
            "economy_pick": 0x2BAB20, "economy_money": 0x31E580, "economy_week": 0x323870,
@@ -242,7 +246,7 @@ def generate():
         script = script.replace("*(.picks_rodata)", "*(.txn_years) *(.picks_rodata)")
         # b780 b4-economy: the two stage stubs follow economy_week (which must start the window) in their own
         # input section, so gcc's function order inside .week cannot move them in front of it.
-        script = script.replace("*(.week_rodata)", "*(.week_rodata) *(.week_tail)")
+        script = script.replace("*(.week_rodata)", "*(.week_rodata) . = 0x1AF; *(.week_tail)")   # b81 r10: the stubs keep their addresses
         # b780 hunt1: economy_cover follows roster_h's read-only byte (economy_floor_protected stays at its address).
         script = script.replace("*(.roster_h_rodata)", "*(.roster_h_rodata) *(.roster_h_tail)")
         # b780 econ3 (revision 7): economy_need follows economy_best_room, which keeps its address.

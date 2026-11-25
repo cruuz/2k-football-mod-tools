@@ -389,6 +389,7 @@ R10_WINDOW_PINS = {                 # retail sha256 of each window the revision 
     0x9AB90: "9a80ce598a961cfcafea31f99e3c87f2450a8329f51d6c8891a33888e6e325f0",   # the prove-it hole priority (team_need.h mid-rank ruling)
     0x35B2F0: "041631f61249f34975cf1985aefd7f7f0ecb3b283325b0ee2ed538c2d96c5409",   # the prove-it hole priority (team_need.h mid-rank ruling)
     0x65380: "03b6f083b6e429bc9f815643fb668887d33154b97bc77e11c07a53ab1e451e25",   # the prove-it hole priority (team_need.h mid-rank ruling)
+    0x65940: "20dcb7de3fb8abad5909d06f7de4b1fdccdda7087c1d0bbb6c2a0ec0e9ae2871",   # economy_prove_club (keeps the week stubs at their addresses)
 }
 PINS.update(R10_WINDOW_PINS)
 PINS[OFFER_JITTER] = "fa53102234cdfb47e76212cf24faf309c148be7f525d793ad1ee97a9052f9e49"
@@ -412,8 +413,6 @@ PREVIOUS_REVISION_9 = {             # the sites revision 10 rewrites, as revisio
     ROLLOVER_RECONCILE: "93bcf088d60a02096f8e9e588f0e0897189d4d145f3f47edcde91f78312acf5b",   # call economy_reconcile
     0x323BB3: "f8c0693c7061677d6267125e0be1a8f4304d7d675cac935604dfbed77edf511d",   # the offer gate's jump (economy_offer_gate moved with economy_contract)
     ROOM_FOR_SIGNING_WINDOW: "64db62a40e3106e8cff3ce66159dd8a3dfdb039c4dacfd0ea272378a63da34aa",   # roster_v (revision 9)
-    0x24809C: "ffba3d1e8671bc9ead0fe8cf654d4b77e5ff66225a1d5a23b3cfd4c0affff716",   # STAGE6_CASE (economy_stage6 moved with economy_week)
-    0x248628: "6583d740e2196efe9ca80190ae584679f28cf5af3431e097dadc538ed8c190c7",   # AFTER_STAGE (economy_after moved with economy_week)
 }
 REVISION = 10
 # b81 economy revision 10, part 1 (coordinator ruling 6, 11/25): the draft class position mix (window roster_f's
