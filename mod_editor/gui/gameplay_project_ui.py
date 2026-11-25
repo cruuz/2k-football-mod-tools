@@ -67,6 +67,9 @@ def restore(panel, state):
             mode = choices.get("sim_qb_injuries")
             panel.qb_injury_mode.setCurrentIndex(0 if mode is None else panel.qb_injury_mode.findData(mode))
             panel.qb_injury_rate.setValue(choices.get("sim_qb_injury_rate", saved.defaults()["sim_qb_injury_rate"]))
+        if hasattr(panel, "cpu_trades_mode"):  # b81 trades-all (R6): unnamed (it follows) or Retail / Realistic
+            level = choices.get("cpu_trades")
+            panel.cpu_trades_mode.setCurrentIndex(0 if level is None else panel.cpu_trades_mode.findData(level))
         panel._momentum_last_positive = choices["momentum"] or 50
         panel._collision_last_positive = choices["momentum_collision_level"] or 50
         for field, value in (("scorebug_watermark_combo", choices["scorebug_watermark"]),

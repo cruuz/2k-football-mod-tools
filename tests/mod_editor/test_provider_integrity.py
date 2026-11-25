@@ -225,7 +225,9 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [609, 10, 8, 9, 8, 9]
+            [611, 10, 8, 9, 8, 9]
+            # b81 trades-all (R6): 611 = 609 + the computer trades owner and its generated page template (mod_build
+            # loads the owner by name, right after the quarterback room step).
             # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
             # the cave manifest recorder) + Number kerning, whose state the owner reads.
             # b81 integration (qb34 trades merge): 607 = 605 (next lines) + the quarterback trades owner and its generated
@@ -346,6 +348,9 @@ class ProviderIntegrityTests(unittest.TestCase):
                     # b81 qb34: mod_build selects the quarterback room owner by name; it imports its page template.
                     "mod_editor/core/nfl2k5_qb_room.py",
                     "mod_editor/core/nfl2k5_qb_room_code.py",
+                    # b81 trades-all: mod_build selects the computer trades owner by name; it imports its page template.
+                    "mod_editor/core/nfl2k5_cpu_trades.py",
+                    "mod_editor/core/nfl2k5_cpu_trades_code.py",
 
                     "mod_editor/core/nfl2k5_audo_fixed_slots.py",
                     "mod_editor/core/nfl2k5_safe_text_banks.py",
