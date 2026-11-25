@@ -13,7 +13,10 @@ and the site 0x247E1E. This owner installs and restores it together with the roo
 room's state authenticates it, Retail restores the trades site and page first, then the room). The Studio's Realistic set
 includes bit 16 wherever 4b's five needs are installed (the trades review's F1, coordinator 11/21: the deadline owner,
 the economy, the practice squad, modern IR and the ownership page; studio_stages(..., trades=True)), so Realistic is 383
-there and 367 elsewhere, with one plain note (TRADES_LEFT_OUT) instead of a refused build.
+there and 367 elsewhere, with one plain note (TRADES_LEFT_OUT) instead of a refused build. A current room page whose
+trades page is an earlier revision's (nfl2k5_qb_trades.previous_revisions: the 383 page of ff6ae30b2, whose cap test
+charged the buyer the base salary before the trade) reads "previous" too: Realistic upgrades the trades page in place
+(same address; the room page and its sites are written back byte for byte) and Retail restores both.
 """
 from __future__ import annotations
 
@@ -133,14 +136,16 @@ def _trades_link(payload):
 
 
 def _trades_check(payload, stages):
-    """With bit 16 the trades page must be applied with this executable's IR link; without it, retail. Returns the
-    trades page's own shadow flag (None without bit 16)."""
-    status, link, shadow = _trades().state(payload)
+    """With bit 16 the trades page must be the current template or an earlier revision's ("previous"), linked to this
+    executable's IR store; without it, retail. Returns the trades page's revision (name, frozen template) when it is
+    an earlier one, else None."""
+    status, link, _shadow = _trades().state(payload)
     if stages & STAGE_TRADE:
-        _require(status == "applied" and link == _trades_link(payload), "The quarterback trades page is not as installed")
-    else:
-        _require(status == "retail", "Quarterback trades bytes without the room's trade stage")
-    return shadow
+        _require(status in ("applied", "previous") and link == _trades_link(payload),
+                 "The quarterback trades page is not as installed")
+        return _trades().revision(payload) if status == "previous" else None
+    _require(status == "retail", "Quarterback trades bytes without the room's trade stage")
+    return None
 
 
 def _ir_store_va(payload, stages):
@@ -229,8 +234,9 @@ def _sites_state(image, va, stages, code=None):
 
 def _state(payload):
     """(status, settings, allocation, revision) after authenticating every site and the whole page; raises when
-    foreign. "previous" means the page and its sites are exactly what an earlier revision's Studio wrote; revision is
-    then (name, frozen template), else None."""
+    foreign. "previous" means the page and its sites, or (with bit 16) the trades page, are exactly what an earlier
+    revision's Studio wrote; revision is then (name, the room's template, the trades page's frozen template or None),
+    else None."""
     image = XbeImage(payload)
     allocation = _allocation(payload)
     if allocation is None:
@@ -244,7 +250,10 @@ def _state(payload):
         return "retail", None, allocation, None
     try:
         settings = _page_settings(payload, image, page, _code())
-        _trades_check(payload, settings["stages"])
+        trades = _trades_check(payload, settings["stages"])
+        if trades is not None:
+            # The current room page with an earlier revision's trades page (N6: the 383 page of ff6ae30b2).
+            return "previous", settings, allocation, (trades[0], _code(), trades[1])
         return "applied", settings, allocation, None
     except ERRORS as exc:
         current_error = exc
@@ -256,7 +265,7 @@ def _state(payload):
         written = module.parse_settings(module.settings_record(settings["stages"]))  # that Studio's own record
         if settings["stages"] in stage_sets and settings == written:
             _trades_check(payload, 0)
-            return "previous", settings, allocation, (name, module)
+            return "previous", settings, allocation, (name, module, None)
     raise current_error
 
 
@@ -300,6 +309,8 @@ def read_settings(payload):
         # An earlier revision's page; Realistic upgrades it in place, Retail restores it. Its stage names are read
         # with the current meaning of the bits, which matches for the sets those Studios wrote (192 and 1).
         out["revision"] = revision[0]
+        if revision[2] is not None:
+            out["trades"] = "previous"                  # the room page is current; the trades page is the earlier one
     return out
 
 
@@ -382,11 +393,13 @@ def _patch(payload, edits):
     return bytes(data)
 
 
-def _edits(va, stages, page, *, restoring, code=None, trades_link=0, trades_shadow=False):
+def _edits(va, stages, page, *, restoring, code=None, trades_link=0, trades_shadow=False, trades_code=None):
     """Every byte the owner writes: the sites the stage set needs and the whole page (template ``code``); with bit 16
-    the trades site and page first (C20: restored before the room)."""
+    the trades site and page first (C20: restored before the room), written with ``trades_code`` (the current trades
+    template by default; an earlier revision's to restore its page)."""
     empty = b"\xcc" * SIZE
-    out = _trades().edits(trades_link, restoring=restoring, shadow=trades_shadow) if stages & STAGE_TRADE else []
+    out = (_trades().edits(trades_link, restoring=restoring, shadow=trades_shadow, code=trades_code)
+           if stages & STAGE_TRADE else [])
     out += [(at, patched, original) if restoring else (at, original, patched)
             for _label, at, original, patched in _sites(va, stages, code)]
     out.append((va, page, empty) if restoring else (va, empty, page))
@@ -414,7 +427,8 @@ def apply(payload, level="realistic", *, stages=None):
                                ir_store_va=_ir_store_va(source, settings["stages"]))
         trades_shadow = bool(_trades().state(source)[2]) if settings["stages"] & STAGE_TRADE else False
         result = _patch(source, _edits(VA, settings["stages"], page, restoring=True, code=code,
-                                       trades_link=_trades_link(source), trades_shadow=trades_shadow))
+                                       trades_link=_trades_link(source), trades_shadow=trades_shadow,
+                                       trades_code=revision[2] if revision is not None else None))
         _require(_state(result)[0] == "retail", "The quarterback room failed Retail readback")
         return result, {**receipt, "status": "retail", "restored_stages": settings["stages"],
                         **({"restored_revision": revision[0]} if revision is not None else {}),
