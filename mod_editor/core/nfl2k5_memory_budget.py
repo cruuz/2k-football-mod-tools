@@ -544,7 +544,7 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
     if "helmet_side_numbers" in found:  # b81 helmet sides: its fixed page after the quarterback trades page
         last = space.HELMET_SIDES_VA + space.HELMET_SIDES_SIZE - space.POOL_VA
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
-    if "sportscenter_news" in found:  # b81 sportscenter: its fixed page after the helmet side numbers page
+    if "sportscenter_news" in found:  # b81 sportscenter: its fixed page at 0x1533000
         last = space.SPORTSCENTER_NEWS_VA + space.SPORTSCENTER_NEWS_SIZE - space.POOL_VA
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     return RETAIL_RESIDENT + LEGACY_SPACE + SCALEOUT_V3 + pool + extra

@@ -9,6 +9,9 @@ reading), for every combination of the director variables the two events test.
     18 weeks (fails before: these are the retail bytes);
   * with the owner: everything selectable after N weeks is what retail selected after N-1 (weeks 15 to 23), except
     that child 43 is never selectable and children 50/51 only for spot 8; nothing changes before week 13;
+  * Berman's Primetime Players (event 170, coordinator's ruling): "two weeks to go now" after Week 16, the wildcard /
+    final four / conference lines one round later than retail, only the generic line after Weeks 15, 17 and 18, and
+    never "Pivotal Week 16" or "And then there were 12" (fails before: "wildcard edition" after Week 18);
   * the entry pins, idempotence and refusal of a foreign director; the calendar gate on real executables.
 
 Fixtures come only from the environment (copyrighted game data, never in the repository):
@@ -26,10 +29,13 @@ import unittest
 
 from mod_editor.core import nfl2k5_sportscenter_lines as sl
 
-PICTURE, SIGN_OFF = 182, 165
+PICTURE, SIGN_OFF, PRIMETIME = 182, 165, 170
 BYE_LINE, OUTSIDE_LINES = 43, (50, 51)
 FINAL_SEED_LINES = (42, 44, 45, 46, 47, 48, 49)
 DIVISION_SIGN_OFF = 7
+#: event 170 (Berman's Primetime Players) children: the generic game-ball line, "two weeks to go now", "Pivotal Week 16",
+#: "And then there were 12", "this special wildcard edition", "as the field narrows to four", "conference championships"
+GENERIC, TWO_TO_GO, WEEK16, TWELVE, WILDCARD, FINAL_FOUR, CONFERENCE = 7, 4, 5, 6, 8, 9, 10
 
 
 def _path(name):
@@ -158,7 +164,7 @@ class Tree:
 
 
 #: the two events' fixed-slot packages in the DRCT body (offset, end) of the pinned retail entry (sl.ENTRY_PINS)
-PACKAGES = {PICTURE: (0x5214, 0x5A84), SIGN_OFF: (0x3050, 0x31C8)}
+PACKAGES = {PICTURE: (0x5214, 0x5A84), SIGN_OFF: (0x3050, 0x31C8), PRIMETIME: (0x31C8, 0x3374)}
 
 
 def _trees(entry: bytes) -> dict:
@@ -231,9 +237,31 @@ class LinesTests(unittest.TestCase):
         self.assertEqual(set(self._sel("after", SIGN_OFF, 19)) - set(self._sel("after", SIGN_OFF, 17)),
                          {DIVISION_SIGN_OFF})
 
+    def test_primetime_players_follow_the_18_week_calendar(self):
+        before = {w: set(self._sel("before", PRIMETIME, w)) for w in range(0, 24)}
+        after = {w: set(self._sel("after", PRIMETIME, w)) for w in range(0, 24)}
+        # the retail bytes (the failing case): 17-week weeks and rounds
+        self.assertIn(TWO_TO_GO, before[15])
+        self.assertIn(TWELVE, before[17])
+        self.assertIn(WILDCARD, before[18])
+        for weeks in range(0, 15):
+            self.assertEqual(after[weeks], before[weeks], f"{weeks} weeks: unchanged")
+        self.assertEqual(after[15], {GENERIC})
+        self.assertEqual(after[16], before[15])
+        self.assertIn(TWO_TO_GO, after[16])
+        self.assertEqual((after[17], after[18]), ({GENERIC}, {GENERIC}))
+        for weeks in (19, 20, 21):
+            self.assertEqual(after[weeks], before[weeks - 1], f"{weeks} weeks: one round later than retail")
+        self.assertEqual([w for w in range(24) if WILDCARD in after[w]], [19])
+        self.assertEqual([w for w in range(24) if FINAL_FOUR in after[w]], [20])
+        self.assertEqual([w for w in range(24) if CONFERENCE in after[w]], [21])
+        for weeks in (22, 23):
+            self.assertEqual(after[weeks], before[weeks])
+        self.assertFalse(any({WEEK16, TWELVE} & after[w] for w in range(24)))
+
     def test_pins_idempotence_and_refusal(self):
         self.assertEqual(self.receipt["changed_bytes"], sl.CHANGED_BYTES)
-        self.assertEqual(sl.CHANGED_BYTES, 11)
+        self.assertEqual(sl.CHANGED_BYTES, 16)
         self.assertEqual(sl.entry_state(self.applied), "applied")
         again, receipt = sl.patch_entry(self.applied)
         self.assertEqual(again, self.applied)

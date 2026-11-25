@@ -845,18 +845,8 @@ HELMET_SIDES_VA = QB_TRADES_VA + QB_TRADES_SIZE
 HELMET_SIDES_SIZE = PAGE
 HELMET_SIDES_REQUEST = (HELMET_SIDES_OWNER, "code", HELMET_SIDES_SIZE, PAGE)
 LATE_OWNERS += (HELMET_SIDES_OWNER,)
-# b81 sportscenter: SportsCenter news (modern injured reserve on the injury report, the news windows across a save and
-# load). One fixed page right after the helmet side numbers page, placed like it: at its absolute address, never
-# advancing the pool cursor, and every other pool owner steps over it whether or not it is requested, so it can be added
-# in place after every other owner. No shipped or tested layout reaches 0x1529000 (see the quarterback room above), so
-# growing the stepped-over span by this page moves nothing.
-SPORTSCENTER_NEWS_OWNER = "nfl2k5_sportscenter_news"
-SPORTSCENTER_NEWS_VA = HELMET_SIDES_VA + HELMET_SIDES_SIZE
-SPORTSCENTER_NEWS_SIZE = PAGE
-SPORTSCENTER_NEWS_REQUEST = (SPORTSCENTER_NEWS_OWNER, "code", SPORTSCENTER_NEWS_SIZE, PAGE)
-LATE_OWNERS += (SPORTSCENTER_NEWS_OWNER,)
-FIXED_PAGE_OWNERS = (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER, QB_TRADES_OWNER, HELMET_SIDES_OWNER, SPORTSCENTER_NEWS_OWNER)
-FIXED_SPAN_END = SPORTSCENTER_NEWS_VA + SPORTSCENTER_NEWS_SIZE     # every pool owner steps over QB_ROOM_VA..FIXED_SPAN_END
+FIXED_PAGE_OWNERS = (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER, QB_TRADES_OWNER, HELMET_SIDES_OWNER)
+FIXED_SPAN_END = HELMET_SIDES_VA + HELMET_SIDES_SIZE     # every pool owner steps over QB_ROOM_VA..FIXED_SPAN_END
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -869,6 +859,33 @@ TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"), (
 GAP_OWNERS = (("nfl2k5_honors", "code"), ("nfl2k5_coach_ai", "code"), ("nfl2k5_moment_coaches", "code"),
               ("nfl2k5_human_tap_burst", "code"))
 MYCAREER_M3_STATE_VA = 0x1505000
+# b81 sportscenter: one fixed page at 0x1533000 for SportsCenter news (nfl2k5_sportscenter_news: modern injured reserve on
+# the injury report, the news windows across a save and load). Claimed in the lanes' page register (the first free page of
+# 0x1533000..0x1534FFF, which the economy released; 0x152E000..0x152FFFF is the CPU trades owner's, 0x1530000 modern
+# numbers', 0x1531000 awards', 0x1532000 the classic crowd's). Placed like those pages: at its absolute address, never
+# advancing the pool cursor, with its own step-over in to_pool (FIXED_SPAN_END untouched), so every other pool owner skips
+# 0x1533000..0x1533FFF whether or not it is requested and the owner can be added in place after every other owner.
+SPORTSCENTER_NEWS_OWNER = "nfl2k5_sportscenter_news"
+SPORTSCENTER_NEWS_VA = 0x1533000
+SPORTSCENTER_NEWS_SIZE = PAGE
+SPORTSCENTER_NEWS_REQUEST = (SPORTSCENTER_NEWS_OWNER, "code", SPORTSCENTER_NEWS_SIZE, PAGE)
+# A fixed page never advances the pool cursor, so its place in LATE_OWNERS moves nobody; it sits before the quarterback
+# room so the fixed quarterback, helmet (and, after their merge, CPU trades) owners stay the last late owners.
+LATE_OWNERS = (LATE_OWNERS[:LATE_OWNERS.index(QB_ROOM_OWNER)] + (SPORTSCENTER_NEWS_OWNER,)
+               + LATE_OWNERS[LATE_OWNERS.index(QB_ROOM_OWNER):])
+FIXED_PAGE_OWNERS += (SPORTSCENTER_NEWS_OWNER,)
+
+
+def _sportscenter_news_at(owner, at, size, align):
+    """b81 sportscenter: the fixed page's pool offset for its owner; any other owner overlapping it steps past it."""
+    page = SPORTSCENTER_NEWS_VA - POOL_VA
+    if owner == SPORTSCENTER_NEWS_OWNER:
+        return page
+    if at < page + SPORTSCENTER_NEWS_SIZE and at + size > page:
+        return (page + SPORTSCENTER_NEWS_SIZE + align - 1) & -align
+    return at
+
+
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
 SCALE_TAG = EXT_MAGIC + b"SP03"
@@ -1162,17 +1179,16 @@ def _scale_allocations(requests):
             at = (protected + FRANCHISE_OWNERSHIP_SIZE + align - 1) & -align
         # b81 qb34: unconditional, after the ownership step-over (an owner bumped over that page lands here next).
         room = QB_ROOM_VA - POOL_VA
-        span = FIXED_SPAN_END - QB_ROOM_VA                  # C20: the room's pages, the trades page, (b81) side numbers, news
+        span = FIXED_SPAN_END - QB_ROOM_VA                  # C20: the room's pages, the trades page, (b81) side numbers
         if owner == QB_ROOM_OWNER:
             at = room
         elif owner == QB_TRADES_OWNER:
             at = QB_TRADES_VA - POOL_VA
         elif owner == HELMET_SIDES_OWNER:
             at = HELMET_SIDES_VA - POOL_VA
-        elif owner == SPORTSCENTER_NEWS_OWNER:
-            at = SPORTSCENTER_NEWS_VA - POOL_VA
         elif at < room + span and at + size > room:
             at = (room + span + align - 1) & -align
+        at = _sportscenter_news_at(owner, at, size, align)  # b81 sportscenter: its fixed page, after the span
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))

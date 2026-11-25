@@ -29,9 +29,9 @@ And, always (R3): the franchise loader restores the ledger cursor only (0x2D0EE3
 0, so the windows ran from slot 0; loading a second franchise kept the first one's. At 0x2D0EE3 the cave restores the
 cursor as before and both window starts when each is a ring slot (below 600); anything else keeps retail's behaviour.
 
-One fixed page after the helmet side numbers page (nfl2k5_xbe_space.SPORTSCENTER_NEWS_VA), placed like the quarterback
-pages: at its absolute address, never advancing the pool cursor, so the owner can be added in place after every other
-owner and an owner a disc lacks can still be added after it. No new save field: the ledger, its cursor and both window
+One fixed page at 0x1533000 (nfl2k5_xbe_space.SPORTSCENTER_NEWS_VA, with its own step-over like the modern numbers and
+awards pages), placed like the quarterback pages: at its absolute address, never advancing the pool cursor, so the owner
+can be added in place after every other owner and an owner a disc lacks can still be added after it. No new save field: the ledger, its cursor and both window
 starts are already in every franchise save. States: retail, applied (either mode), foreign; ``apply`` switches the mode
 in place when modern injured reserve was added or removed since (the same bytes a fresh install of that mode writes).
 """

@@ -3720,7 +3720,7 @@ def _apply_sportscenter_news_in_place(target, receipt, progress):
 
 def _apply_sportscenter_news(plan, target, receipt, progress):
     """b81 sportscenter: SportsCenter news (nfl2k5_sportscenter_news), after every other executable owner: its fixed
-    page follows the helmet side numbers page. 128 MB scale-out builds only (the page grows the pool; modern injured
+    page is at 0x1533000 (nfl2k5_xbe_space.SPORTSCENTER_NEWS_VA). 128 MB scale-out builds only (the page grows the pool; modern injured
     reserve, which R2 serves, is 128 MB only). Optional: a failure leaves it out with a note."""
     if plan.console_memory != 128:
         return
@@ -3740,8 +3740,8 @@ def _apply_sportscenter_news(plan, target, receipt, progress):
 
 
 def _apply_sportscenter_lines(target, receipt, progress):
-    """b81 sportscenter: SportsCenter's playoff picture and sign-off lines (nfl2k5_sportscenter_lines, 11 bytes of the
-    wrapup director on the disc) for an executable with 18 regular weeks and seven seeds; the retail calendar keeps
+    """b81 sportscenter: SportsCenter's playoff picture, sign-off and Primetime Players lines (nfl2k5_sportscenter_lines,
+    16 bytes of the wrapup director on the disc) for an executable with 18 regular weeks and seven seeds; the retail calendar keeps
     the retail lines. Full builds (with the 2026 season) and the v0.9 update. Optional: a failure leaves it out."""
     _step("sportscenter_lines")
     lines = _core_module("nfl2k5_sportscenter_lines")
@@ -3751,7 +3751,7 @@ def _apply_sportscenter_lines(target, receipt, progress):
         receipt["result"]["sportscenter_lines"] = "skipped (not 18 weeks with seven seeds)"
         return
     with _optional(receipt, target, progress, "sportscenter_lines"):
-        progress("SportsCenter playoff picture lines", 0, 0)
+        progress("SportsCenter playoff picture, sign-off and Primetime Players lines", 0, 0)
         lines_receipt = lines.apply_to_image(target, progress=lambda message: progress(message, 0, 0))
         receipt["steps"].append({"step": "sportscenter_lines", **lines_receipt})
         receipt["result"]["sportscenter_lines"] = lines_receipt["state"]
@@ -9894,8 +9894,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 progress(line, 0, 0)
             receipt["steps"].append({"step": "super_bowl_hosts", **hosts_receipt})
             receipt["result"]["super_bowl_hosts"] = hosts_receipt["state"]
-        # b81 sportscenter: SportsCenter's playoff picture and sign-off (wrapup director, 11 bytes) follow the 18-week
-        # calendar and drop the six-seed 2- and 7-seed lines; only on an executable with 18 weeks and seven seeds
+        # b81 sportscenter: SportsCenter's playoff picture, sign-off and Primetime Players (wrapup director, 16 bytes)
+        # follow the 18-week calendar and drop the six-seed 2- and 7-seed lines; only with 18 weeks and seven seeds
         _apply_sportscenter_lines(target, receipt, progress)
     if plan.team_number_scale:
         _step("team_number_scale")

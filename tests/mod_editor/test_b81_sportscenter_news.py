@@ -235,9 +235,14 @@ class OwnerTests(unittest.TestCase):
     """Recognition and install on real executables."""
 
     def test_page_and_sites(self):
-        self.assertEqual(space.SPORTSCENTER_NEWS_VA, space.HELMET_SIDES_VA + space.HELMET_SIDES_SIZE)
+        # the page claimed in the lanes' page register (0x152E000..0x152FFFF is the CPU trades owner's); its own
+        # step-over, the quarterback span untouched
+        self.assertEqual((space.SPORTSCENTER_NEWS_VA, space.SPORTSCENTER_NEWS_SIZE), (0x1533000, space.PAGE))
+        self.assertEqual(sc.REQUESTS, (space.SPORTSCENTER_NEWS_REQUEST,))
         self.assertIn(sc.OWNER, space.FIXED_PAGE_OWNERS)
-        self.assertEqual(space.FIXED_SPAN_END, space.SPORTSCENTER_NEWS_VA + space.PAGE)
+        self.assertEqual(space.FIXED_SPAN_END, space.HELMET_SIDES_VA + space.HELMET_SIDES_SIZE)
+        self.assertEqual(space.LATE_OWNERS[-4:], (sc.OWNER, space.QB_ROOM_OWNER, space.QB_TRADES_OWNER,
+                                                  space.HELMET_SIDES_OWNER))
         va = space.SPORTSCENTER_NEWS_VA
         self.assertEqual([s[1] for s in sc.sites(va, 0)], [sc.RELOAD_VA])
         self.assertEqual([s[1] for s in sc.sites(va, sc.MODE_IR)], [sc.RELOAD_VA, sc.IR_PAGE_VA, sc.IR_SKIP_VA, sc.CLUB_VA])
@@ -248,6 +253,28 @@ class OwnerTests(unittest.TestCase):
             self.assertEqual(len(page), sc.CODE_SIZE)
             self.assertEqual(page[:8], sc.MARKER)
         self.assertEqual(sc.code_for(va, 0)[sc.OFF_IR_PAGE:sc.OFF_IR_PAGE + 64], b"\xcc" * 64)
+
+    def test_the_page_sits_at_its_address_and_every_other_pool_owner_steps_over_it(self):
+        for name, requests in (("alone", [space.SPORTSCENTER_NEWS_REQUEST]),
+                               ("dormant union", list(space.dormant_union()) + [space.SPORTSCENTER_NEWS_REQUEST])):
+            with self.subTest(case=name):
+                rows = space.plan(requests)["allocations"]
+                row = next(r for r in rows if r["owner"] == sc.OWNER)
+                self.assertEqual((row["va"], row["size"], row["align"]), (0x1533000, space.PAGE, space.PAGE))
+                for other in rows:
+                    if other["owner"] != sc.OWNER:
+                        self.assertFalse(other["va"] < 0x1534000 and other["va"] + other["size"] > 0x1533000, other)
+        # an owner that would cover the page (whether or not the news page is requested) lands after it
+        filler = ("aa_synthetic_filler", "code", 0x1533000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
+        straddle = ("ab_synthetic_straddle", "code", 0x20000, 16)
+        for requests in ([filler, straddle], [filler, straddle, space.SPORTSCENTER_NEWS_REQUEST]):
+            with self.subTest(news=space.SPORTSCENTER_NEWS_REQUEST in requests):
+                rows = space.plan(requests)["allocations"]
+                for other in rows:
+                    if other["owner"] != sc.OWNER:
+                        self.assertFalse(other["va"] < 0x1534000 and other["va"] + other["size"] > 0x1533000, other)
+        with self.assertRaisesRegex(ValueError, "SportsCenter news has one fixed page"):
+            space.plan([(sc.OWNER, "code", 0x2000, space.PAGE)])
 
     def test_retail_reads_retail(self):
         _path, retail = _fixture("NFL2K5_RETAIL_XBE")

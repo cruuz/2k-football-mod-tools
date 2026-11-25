@@ -1,9 +1,10 @@
-"""SportsCenter's playoff picture and sign-off lines for the 2026 calendar (b81 sportscenter). EXPERIMENTAL / UNWITNESSED.
+"""SportsCenter's playoff picture, sign-off and Primetime Players lines for the 2026 calendar (b81 sportscenter).
+EXPERIMENTAL / UNWITNESSED.
 
 How the weekly show picks these lines (static reading of the USA executable and the disc's dir_wrapup.iff, outer
 19): each SportsCenter segment fires one event of the wrapup director; an event's
 children are its alternative lines and a decision tree picks among them. The tree (read by FUN_00269750) is a list of
-rules, each testing one director variable against byte constants. Two rules key on the number of weeks played
+rules, each testing one director variable against byte constants. Three rules key on the number of weeks played
 (director variable 65, 0x15E8D0 = last played week + 1) with the retail 17-week season in their constants:
 
 * Playoff picture (event 182, rule 2): 17 weeks played = the final picture, 16 = the late picture (the #1 seed's
@@ -13,6 +14,13 @@ rules, each testing one director variable against byte constants. Two rules key 
 * Show sign-off (event 165, rule 2): 18 = "we'll see you for the division championships", 19 = the conference
   championships, 20 = the Super Bowl, 21 = next season. On the 18-week calendar each named the round one week early
   (after Week 18 Chris Berman sent viewers to the division championships).
+* Berman's Primetime Players (event 170, rule 1) named weeks and rounds the same 17-week way: "two weeks to go now"
+  after Week 15, "And then there were 12 ... the final game of the regular season" after Week 17, "this special
+  wildcard edition" after Week 18, "as the field narrows to four" after the wild card round and "today's conference
+  championships" after the divisional round. Its compares 15, 18, 16, 19, 20 become 16, 19, 19, 20, 21 (coordinator's
+  ruling, 11/25): "two weeks to go now" after Week 16, the wildcard / final four / conference lines after the wild card,
+  divisional and conference rounds, and only the generic game-ball line (always a candidate) after Weeks 15, 17 and 18.
+  "Pivotal Week 16" and "And then there were 12" no longer play ("Pivotal Week 14" and the early-season lines stay).
 
 And the final picture's seed lines (event 182, rule 5, by the spotlighted team's spot) were recorded for the six-seed
 field. The spotlight (FUN_00220AE0, unchanged by the mod) picks spot = rand % 7 + 1 from each conference's eight-team
@@ -28,22 +36,21 @@ keep their lines (#1: home field throughout; the 3 seed hosts the 6; the 4 meets
 line (3247, classifier case 1) cannot play on a seven-seed disc: nfl2k5_playoff_picture's recap_obsolete_bye_script
 (0x221001) already removed the classifier's bye cases.
 
-What this owner changes: 11 bytes of the wrapup director (an uncompressed outer entry of fixed size; nothing moves):
+What this owner changes: 16 bytes of the wrapup director (an uncompressed outer entry of fixed size; nothing moves):
   * event 182 rule 2: the week constants 17, 15, 16, 16 become 18, 16, 17, 17;
   * event 182 rule 5: the spot-2 leaf (pick child 43, line 3277) becomes the end-of-rule byte 0xFF twice; the spot-7
     compare becomes 8 (the spotlight selector 0x220AE0 never picks spot 8 in the seven-seed field);
-  * event 165 rule 2: the week constants 19, 18, 20, 21 become 20, 19, 21, 22.
+  * event 165 rule 2: the week constants 19, 18, 20, 21 become 20, 19, 21, 22;
+  * event 170 rule 1: the week constants 15, 18, 16, 19, 20 become 16, 19, 19, 20, 21.
 The whole entry is pinned by SHA-256 (retail and applied); anything else is refused and nothing is written. Saves hold
 no director data, so an existing franchise hears the new choices at its next show. The build runs it with the 2026
 season, after the season patch, and only when the executable has both 18 regular weeks and the fourteen-team bracket
 (``wanted``); on the retail calendar the retail lines are right and stay. The Studio's executable-only update cannot
 carry it (it is disc data): it lands with a rebuild.
 
-Not changed (reported for a ruling): event 170 (Berman's Primetime Players) names weeks and rounds the same 17-week
-way ("two weeks to go now" after Week 15, "And then there were 12" after Week 17, "this special wildcard edition"
-after Week 18); its lines name week numbers themselves, so a shift alone cannot make them all right. The final
-picture's outro key 51655 has two takes, one of them "Time to see which of these 12 teams will emerge as Super Bowl
-champs" (11431); a take count lives in the shared speech index (outer 3), which this owner does not touch.
+Not changed (LATER, coordinator 11/25): the final picture's outro key 51655 has two takes, one of them "Time to see
+which of these 12 teams will emerge as Super Bowl champs" (11431); a take count lives in the shared speech index
+(outer 3), which this owner does not touch.
 """
 from __future__ import annotations
 
@@ -84,14 +91,19 @@ SITES = (
     Site("signoff_conference_round", 0x30E2, 165, 2, bytes([19]), bytes([20])),
     Site("signoff_super_bowl", 0x30EC, 165, 2, bytes([20]), bytes([21])),
     Site("signoff_next_season", 0x30F1, 165, 2, bytes([21]), bytes([22])),
+    Site("primetime_two_weeks_to_go", 0x323A, 170, 1, bytes([15]), bytes([16])),
+    Site("primetime_wildcard_edition", 0x3253, 170, 1, bytes([18]), bytes([19])),
+    Site("primetime_week16_and_then_there_were_12", 0x3257, 170, 1, bytes([16]), bytes([19])),
+    Site("primetime_field_narrows_to_four", 0x3262, 170, 1, bytes([19]), bytes([20])),
+    Site("primetime_conference_championships", 0x3267, 170, 1, bytes([20]), bytes([21])),
 )
 CHANGED_BYTES = sum(len(site.retail) for site in SITES)
 #: outer entry size and SHA-256 of the whole entry (wrapper + body), retail and with this owner applied
 ENTRY_PINS = {"size": 36_192,
               "retail": "860ac6bd6760179a78ae3f533d96fa5ded6c7acb2c60bbe12c91586929e55263",
-              "applied": "9d5fa735f2f50f259f4dd6be15b1f48f8da5aebcc6e8dd44cf2306fd3d6a8073"}
-UI_TEXT = ("EXPERIMENTAL / UNWITNESSED. With the 2026 season: SportsCenter's playoff picture and sign-off follow the "
-           "18-week calendar, and the final picture says nothing false about the 2 and 7 seeds.")
+              "applied": "3dbf6c7ad35d63c7d6c1c00ba97a50379fb0b90cbbedb6914a735d742b298fdf"}
+UI_TEXT = ("EXPERIMENTAL / UNWITNESSED. With the 2026 season: SportsCenter's playoff picture, sign-off and Primetime "
+           "Players follow the 18-week calendar, and the final picture says nothing false about the 2 and 7 seeds.")
 
 
 class SportsCenterLinesError(ValueError):
@@ -174,7 +186,8 @@ def _entry(archive: Any) -> Any:
     entries = archive.entries
     require(len(entries) > OUTER, f"the archive has no outer entry {OUTER}")
     entry = entries[OUTER]
-    require(entry.size == ENTRY_PINS["size"], f"outer entry {OUTER} is 0x{entry.size:X} bytes, not the SportsCenter director")
+    require(entry.size == ENTRY_PINS["size"],
+            f"outer entry {OUTER} is 0x{entry.size:X} bytes, not the SportsCenter director")
     return entry
 
 
@@ -194,7 +207,7 @@ def image_state(path: Path | str) -> str:
 
 
 def check_image(path: Path | str) -> list[dict[str, Any]]:
-    """Release gate for a 2026-calendar disc: the sites still carrying retail (17-week / six-seed) bytes (empty = pass)."""
+    """Release gate for a 2026-calendar disc: the sites still holding retail (17-week, six-seed) bytes; empty = pass."""
     entry = read_entry(path)
     left = []
     for site in SITES:
@@ -206,14 +219,15 @@ def check_image(path: Path | str) -> list[dict[str, Any]]:
 
 
 def apply_to_image(path: Path | str, *, progress: Callable[[str], None] | None = None) -> dict[str, Any]:
-    """Write the 11 bytes on a built COPY (in place, read back). Idempotent; refuses a foreign director."""
+    """Write this owner's bytes on a built COPY (in place, read back). Idempotent; refuses a foreign director."""
     say = progress or (lambda _m: None)
     with _outer_image()(path, writable=True) as archive:
         entry = _entry(archive)
         before = archive.read(entry.virtual_offset, entry.size)
         after, receipt = patch_entry(before)
         if not receipt["already_applied"]:
-            say(f"SportsCenter playoff picture lines ({receipt['changed_bytes']} bytes)")
+            say("SportsCenter playoff picture, sign-off and Primetime Players lines "
+                f"({receipt['changed_bytes']} bytes)")
             for site in SITES:
                 at = WRAPPER + site.body_offset
                 require(archive.write(entry.virtual_offset + at, after[at:at + len(site.applied)]) == len(site.applied),
