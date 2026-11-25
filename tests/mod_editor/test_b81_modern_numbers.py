@@ -420,18 +420,23 @@ class SyntheticRule(unittest.TestCase):
         lg.mode(2)                                                        # franchise: the IR table is read
         try:
             free = 33
-            numbers = [n for n in range(50) if n != free]
+            # The overflow men wear 20 and 21: outside 0-19, which the quarterback reserve closes for a corner here,
+            # and not retired at Atlanta. So only the overflow rows hold them (review S1, rounds 1 and 2: at Miami the
+            # retired 12/13, then the 0-19 reserve, hid the check).
+            held_overflow = [20, 21]
+            numbers = [n for n in range(50) if n != free and n not in held_overflow]
             ps = [lg.player(700 + k, POS["CB"], n) for k, n in enumerate(numbers[:12])]
-            overflow = [lg.player(730 + k, POS["CB"], n) for k, n in enumerate(numbers[12:14])]
-            ir = [lg.player(740 + k, POS["CB"], n) for k, n in enumerate(numbers[14:19])]
-            active = [lg.player(760 + k, POS["CB"], n) for k, n in enumerate(numbers[19:])]
+            overflow = [lg.player(730 + k, POS["CB"], n) for k, n in enumerate(held_overflow)]
+            ir = [lg.player(740 + k, POS["CB"], n) for k, n in enumerate(numbers[12:17])]
+            active = [lg.player(760 + k, POS["CB"], n) for k, n in enumerate(numbers[17:])]
             active += [lg.player(800 + k, POS["G"], 50 + k) for k in range(53 - len(active))]   # 53 + 12 fill the 65 slots
-            t = lg.club(14, active, practice=ps, overflow=overflow)     # Atlanta: no retired numbers (review S1:
-            lg.injured_reserve(14, ir)                                  # at Miami 12 and 13 were taken anyway)
+            t = lg.club(14, active, practice=ps, overflow=overflow)     # Atlanta: no retired numbers
+            lg.injured_reserve(14, ir)
             for years in (7, 0):
                 self.assertEqual(lg.join(lg.player(992, POS["CB"], numbers[0], years=years), t), free)
-            self.assertEqual(lg.join(lg.player(993, POS["CB"], numbers[13], years=7), t), free)   # an overflow man's
-            self.assertEqual(lg.join(lg.player(994, POS["CB"], numbers[15], years=7), t), free)   # an IR man's
+            for k, own in enumerate(held_overflow):                     # an overflow man's
+                self.assertEqual(lg.join(lg.player(993 + k, POS["CB"], own, years=7), t), free)
+            self.assertEqual(lg.join(lg.player(995, POS["CB"], numbers[13], years=7), t), free)   # an IR man's
         finally:
             lg.mode(0)
             lg.injured_reserve(14, [])
