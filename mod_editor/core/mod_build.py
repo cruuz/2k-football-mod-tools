@@ -3159,6 +3159,12 @@ def _qb_floor_in_place(payload):
     if ir is None or ownership is None:
         raise ValueError("Modern injured reserve is unavailable in this Studio installation. Choose Retail or Custom 0 percent.")
     if ir.status(payload) == "applied" and ownership.status(payload, ir.store_va(payload) or 0) == "applied":
+        store = ir.store_va(payload) or 0
+        if getattr(ownership, "revision", None) is not None and ownership.revision(payload, store) == "previous":
+            # b81 trades lane: the earlier ownership page left a refused trade listing on the board every week
+            payload, _receipt = ownership.apply(payload, store)
+            notes.append("Simulated quarterback injuries: updated the franchise ownership safeguards to this release's "
+                         "version (a refused trade listing is now withdrawn).")
         return payload, notes
     upgraded, _receipt = ir.apply(payload, "modern", standard_guard=True)
     return upgraded, [f"Simulated quarterback injuries: added modern injured reserve and its roster safeguards {_QB_FLOOR_WHY}."] + notes

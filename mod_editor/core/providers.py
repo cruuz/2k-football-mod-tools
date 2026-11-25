@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "6c7984cf7c497ed3bc33a670846cee24dabc40d9247a26b66f523368b9f77d39",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "359acbe569ddfcf5f7ee93d79db90dbc6be2e953256efa06449be017aa5a6c2e",
+        "mod_editor/core/mod_build.py": "bd16a55184f91f974b13e1f3f4f5bc540e7db7f8c837c044ddddb80db3f18a2e",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -1006,7 +1006,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_qb_trades_code.py": "6060bc35957410b91ec5e2242e87836b15591e1430996cd2dcb598ea18b5996a",  # b81 qb34 4b: its generated page template
         "mod_editor/core/nfl2k5_qb_trades_code_b81_383.py": "36d9ac7d5e7e7368f3d9b650f0bde1065960cb0f61e21aa2c94d57c68ac2b492",  # b81 4b revision (M1/N6): frozen 383 trades template ("previous")
         "mod_editor/core/nfl2k5_cpu_trades.py": "c4a08bc2863ad0fd6d92ecbe03ea45760be5c6fbea534d1eb9659619febf42cd",  # b81 trades-all (R6): mod_build loads it by name, right after the room
-        "mod_editor/core/nfl2k5_cpu_trades_code.py": "8ba107cff96d50f6c2ba732abdf6fb932dbf6312c6dddfdfe3f07472f593da75",  # b81 trades-all: its generated page template
+        "mod_editor/core/nfl2k5_cpu_trades_code.py": "2a8b82ee45a4121039e97908dcee546890ed9f56f654c86fa858e9a95bba908a",  # b81 trades-all: its generated page template
         "mod_editor/core/nfl2k5_helmet_side_numbers.py": "c10876d8ef2c26740f3559706d8678de673730a7e260285ddc35eaafec9e6069",  # b81 helmet-sides: mod_build loads it by name (route 5 = set E)
         "mod_editor/core/nfl2k5_number_kerning.py": "48405334b32b7495399f204a898825531423ed6025e848b51ac0c86891df6902",  # b81 helmet-sides: the owner reads Number kerning's state (same cell addressing)
         "mod_editor/core/nfl2k5_sim_realism.py": "81d981f096486cc13f7033e87b014694eacbbee82afeb96412784cb85ff7d77a",  # b779-sim2 r6
@@ -1022,8 +1022,9 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_intro_autoskip.py": "a836a0f77a6cdf1402a1d4ec0c66ebe0ac0b5d973c36dcc007b6434dce0b6d95",  # b780-mem1: imported by throw_tuning for the build union
         "mod_editor/core/nfl2k5_injured_reserve.py": "e463fba60efaf9ccf9cebc1612c1ecf5bd6694e41f84403120e05ff07f88c453",  # b780 IR1: modern injured reserve (late owner, imported by throw_tuning)
         "mod_editor/core/nfl2k5_injured_reserve_code.py": "6cdccc14900bccbb41d9e1ac00fd776bf964a36faca63c91fafb42b2be70ddb9",  # b780 IR1: its generated runtime template
-        "mod_editor/core/nfl2k5_franchise_ownership.py": "f8eabe44463a07f90c2286023562e5809156a6054f6fb8520018360f7352c370",
-        "mod_editor/core/nfl2k5_franchise_ownership_code.py": "f407221db98c311cbef6f9626ca2b37f5f4ecbdcc2d5638bead3a57a4bfa93b5",
+        "mod_editor/core/nfl2k5_franchise_ownership.py": "13ed403c379cdc31a835721deb2882f6ba6ad76fafb6d5243114ac2e34bd4967",
+        "mod_editor/core/nfl2k5_franchise_ownership_code.py": "3ea12d0bb2f9abab63b1b53191478b799ae263de934658210bd2462e0a3e6993",
+        "mod_editor/core/nfl2k5_franchise_ownership_code_b81_prev.py": "8d15de32686ddef3052c7321f1ae8ff4f00a8c7150145d4561ac71094f4b1dde",  # b81 trades lane: frozen previous ownership page (refused listings stayed)
         "mod_editor/core/nfl2k5_injured_reserve_code_b81_pre_ownership.py": "1e1f421ecfdc6dd9d40de2696d9fa9f146858b0488e46fe31f83d28ef5c4f387",
         "mod_editor/core/nfl2k5_injured_reserve_code_b780.py": "0435e068e930f74a937e075f0f235fc61d951ba7b12873ac2b6fdcfc17f3b78a",
         "mod_editor/core/nfl2k5_injured_reserve_save.py": "cf9111798edbe0fcedfae7cf9894f288223da9f47a315c0f31bfcbfe79d1e6b2",  # b780 IR1: the save extension codec (imported by nfl2k5_franchise_save)

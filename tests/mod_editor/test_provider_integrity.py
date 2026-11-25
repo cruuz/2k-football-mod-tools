@@ -225,7 +225,9 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [612, 10, 8, 9, 8, 9]
+            [613, 10, 8, 9, 8, 9]
+            # b81 trades lane (ownership refusal fix): 613 = 612 + the frozen previous ownership page template
+            # nfl2k5_franchise_ownership_code_b81_prev (the owner reads such a page as its previous revision).
             # b81 trades-all (R6) + 4b revision (M1/N6): 612 = 609 + the frozen 383 trades page template
             # nfl2k5_qb_trades_code_b81_383 + the computer trades owner and its generated page template (mod_build
             # loads the owner by name, right after the quarterback room step).
