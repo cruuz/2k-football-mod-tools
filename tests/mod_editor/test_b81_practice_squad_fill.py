@@ -64,7 +64,9 @@ class SiteTests(unittest.TestCase):
 
     def test_revision_eight_calls_the_squad_fill_from_the_gate(self):
         from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
-        self.assertEqual((economy.REVISION, self.receipt["revision"], economy.status(self.after)), (10, 10, "applied"))   # b81: revision 10 keeps every revision-8 site
+        # b81: revisions 9 (team building) and 10 (economy lane) keep every revision-8 site
+        self.assertIn(economy.REVISION, (8, 9, 10))
+        self.assertEqual((self.receipt["revision"], economy.status(self.after)), (economy.REVISION, "applied"))
         self.assertEqual(XbeImage(self.retail).read(economy.SQUAD_GATE, 5), bytes.fromhex("e8cb720700"))   # call 0x2BF8B0
         gate = next(s.patched for s in economy.sites() if s.va == economy.SQUAD_GATE)
         self.assertEqual(gate, b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_gate"] - economy.SQUAD_GATE - 5))
@@ -80,7 +82,12 @@ class SiteTests(unittest.TestCase):
         self.assertEqual({va: eight[va] for va in seven}, seven)
 
     def test_a_revision_seven_image_reads_legacy_and_upgrades_in_place(self):
-        before = with_retail(self.after, self.retail, economy.REVISION_8_NEW)
+        # b81 team building: revision 9's window is retail on a revision-7 image as well
+        start = self.after
+        if economy.REVISION >= 10:                    # b81 economy lane: revision 10's sites back to revision 8 first
+            from tests.franchise_economy_revision8_sites import as_revision
+            start = as_revision(self.after, self.retail, 8)
+        before = with_retail(start, self.retail, economy.REVISION_8_NEW | getattr(economy, "REVISION_9_NEW", frozenset()))
         self.assertEqual(economy.status(before), "legacy")
         upgraded, receipt = economy.apply(before)
         self.assertEqual((receipt.get("upgraded_from"), receipt["revision"]), ("legacy", economy.REVISION))   # b81: revision 10 upgrades a revision-7 image too
@@ -131,7 +138,7 @@ class SiteTests(unittest.TestCase):
         self.assertEqual((economy.status(upgraded), receipt["revision"]), ("applied", economy.REVISION))
         image = XbeImage(v09)
         allowed = [(image.offset(s.va, len(s.patched)), image.offset(s.va, len(s.patched)) + len(s.patched))
-                   for s in economy.sites() if s.va in economy.REVISION_8_NEW
+                   for s in economy.sites() if s.va in economy.REVISION_8_NEW | economy.REVISION_9_NEW
                    # b81: revision 10's new and rewritten sites and the class window (9 -> 4 kickers and punters) too
                    or s.va in economy.REVISION_10_NEW or s.va in economy.PREVIOUS_REVISION_9 or s.va == economy.CLASS_WINDOW]
         allowed += [(s.header_offset + 36, s.header_offset + 56) for s in _sections(v09)]

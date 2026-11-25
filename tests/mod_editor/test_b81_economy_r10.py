@@ -73,19 +73,16 @@ class OwnerTests(unittest.TestCase):
         old_cheap = DATA["lengths"]["by_age_and_price"]["33+"]["<0.5%"]["length_pct"]
         self.assertEqual(old_cheap, {"1": 100.0})                     # a cheap 33+ veteran: one year, always
 
-    def test_a_revision_eight_image_reads_legacy_and_upgrades_in_place(self):
-        from tests.franchise_economy_revision8_sites import SITES
-        old = dict(SITES)
-        image = XbeImage(self.retail)
-        for va in economy.REVISION_10_NEW:                            # the new sites back to retail
-            size = len(next(s.patched for s in economy.sites() if s.va == va))
-            old[va] = image.read(va, size)
-        previous = _with(self.current, old)
-        self.assertEqual(economy.status(previous), "legacy")
-        upgraded, receipt = economy.apply(previous)
-        self.assertEqual(upgraded, self.current)
-        self.assertEqual(receipt.get("upgraded_from"), "legacy")
+    def test_revision_eight_and_nine_images_read_legacy_and_upgrade_in_place(self):
+        from tests.franchise_economy_revision8_sites import as_revision
+        for revision in (8, 9):                               # 9: the team-building lane's economy_room_for_signing
+            previous = as_revision(self.current, self.retail, revision)
+            self.assertEqual(economy.status(previous), "legacy", revision)
+            upgraded, receipt = economy.apply(previous)
+            self.assertEqual(upgraded, self.current, revision)
+            self.assertEqual(receipt.get("upgraded_from"), "legacy")
         # half an upgrade (one rewritten window new, the rest old) is foreign and refused
+        previous = as_revision(self.current, self.retail, 8)
         half = _with(previous, {0x2BD440: next(s.patched for s in economy.sites() if s.va == 0x2BD440)})
         self.assertEqual(economy.status(half), "foreign")
         with self.assertRaises(economy.EconomyError):
@@ -251,6 +248,32 @@ class NativeTests(unittest.TestCase):
         self.assertNotIn(marks[cpu], self.roster(cpu))
         for t in self.human[:1]:
             self.assertIn(marks[t], self.roster(t))
+
+    def test_a_club_with_a_hole_gets_first_call_on_a_prove_it_man(self):
+        # Coordinator 11/25 (team building DESIGN 3.4): among the clubs that can sign a long-unsigned man, a club with a
+        # hole he fills (shared team-need rule: its weakest need seat in the league's bottom quarter, 3+ points below
+        # him) gets him first; otherwise the prove-it pass's own choice stands. Revision 8 had no such call.
+        cpu = [t for t in range(32) if t not in self.human]
+        x, other = cpu[0], cpu[1]
+        team = self.team(x)
+        wrs = [q for q in self.roster(x) if self.m.uc.mem_read(q + 0x35, 1)[0] == 3]
+        saved = {q: bytes(self.m.uc.mem_read(q + 0x38, 84 - 0x38)) for q in wrs}
+        count = self.m.uc.mem_read(team + 0x11C, 1)[0]
+        try:
+            for q in wrs:                                       # every receiver of club x far below the league's
+                self.m.uc.mem_write(q + 0x38, bytes([30] * (84 - 0x38)))
+            self.m.uc.mem_write(team + 0x11C, bytes((min(count, 52),)))   # an open spot this week
+            self.m.put(0xE3C278, 200000)
+            p = self.synthetic(pos=3, rating=90, weeks=7)
+            chosen = self.m.call(SYM["economy_hole_first"], ecx=0, args=(p, 1, self.team(other)), budget=2_000_000_000)
+            self.assertEqual(chosen, team)
+            qb = self.synthetic(pos=0, rating=90, weeks=7)       # quarterbacks keep the old choice
+            self.assertEqual(self.m.call(SYM["economy_hole_first"], args=(qb, 1, self.team(other)),
+                                         budget=2_000_000_000), self.team(other))
+        finally:
+            self.m.uc.mem_write(team + 0x11C, bytes((count,)))
+            for q, raw in saved.items():
+                self.m.uc.mem_write(q + 0x38, raw)
 
     def test_a_kicker_four_points_better_wins_the_job_in_camp(self):
         t = next(t for t in range(32) if t not in self.human and

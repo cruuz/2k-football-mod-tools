@@ -361,7 +361,8 @@ class CampTests(unittest.TestCase):
         self.assertEqual(sorted(int(e["va"], 16) for e in self.receipt["edits"]),
                          sorted(self.economy.REVISION_5_SITES | getattr(self.economy, "REVISION_6_SITES", frozenset())
                                 | getattr(self.economy, "REVISION_7_SITES", frozenset())   # b780 econ3: revision 7
-                                | getattr(self.economy, "REVISION_8_NEW", frozenset())))  # b81: the practice-squad fill
+                                | getattr(self.economy, "REVISION_8_NEW", frozenset())  # b81: the practice-squad fill
+                                | getattr(self.economy, "REVISION_9_NEW", frozenset())))  # b81 team building: the room routine
         self.assertEqual(self.economy.status(self.fixed), "applied")
 
     def _camp(self, payload, stage, size):

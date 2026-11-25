@@ -62,6 +62,9 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     0x3E9A90: (142, "04343c196ca45460668f254456e50e0e97f8950c728aa6c52384a47339c1cb4f"),
     0x3E9CD0: (134, "5d5df93f0747d8134d1c4c2502c4350caea4f033b513626ad5d08f2325f90a84"),
     0x3220B0: (131, "91cf637d17206732620e7706abdb4f7fab2b0b4269de74921a0f05ae3eacde72"),
+    # b81 team building (revision 9): one unreferenced retail function from the team-building lane's proof (also passes
+    # its decode-synchronisation test, tools/team_building/dead_code.py): "roster_v", economy_room_for_signing.
+    0x2D82F0: (110, "58e11dd15a15fd5c794376c38955800f8a89a1f94d53811c4f3b4aef314055a3"),
     # b81 economy revision 10 (assemble.py R10_WINDOWS): 22 more retail functions no code, table or pointer reaches, from the
     # team-building lane's decode-synchronised candidate list (its tools/team_building/dead_code.py boundary votes; clear of
     # the reservation inventory and of every built beta 81 executable at 11/25 05:10), less the 30 it took; 0x2B3F40 and
@@ -89,6 +92,14 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     0x3C8E00: (107, "584184aca675af2dde2bfaf929b08597ffc0baba86dcea8864daf7a8d5eceb8f"),   # r10: r10_camp_pick
     0x3C98C0: (108, "704783e70d8408dea647fbe7a4263b62990516b5aa6287e5a1297886b136f9d4"),   # r10: r10_rank_club
     0x3D3390: (81, "ef8bfbaf8b64e1013530787507f9869e3a56deabe6b8cdf9a1c7462d4cfae140"),   # r10: r10_cell
+    0x121900: (84, "620b4d0a07b0b475b62112680a330be15cedca91e299e04259496609d67192e3"),   # r10: r10_quarter (the prove-it hole priority)
+    0x17A480: (84, "e71b40560481d14dbbcac0bef95159c3b3c82c239a10be6f5607305e3efab317"),   # r10: r10_level (the prove-it hole priority)
+    0x256230: (109, "7e3e4d4ef768950751781e7d6d63d8d5cd5575cb4c732cb4597f9aa8486f5999"),   # r10: r10_seat_row (the prove-it hole priority)
+    0x26CB60: (84, "a416917f31c92569edf3815ddf7ca6b45072b946cb4fc26c6350573d715c6b77"),   # r10: r10_seats (the prove-it hole priority)
+    0x2EC530: (84, "30a455cfe830fe4df653d6caa045e11678ac1110fb2e8151320a4f510b3a93ed"),   # r10: r10_hole_p (the prove-it hole priority)
+    0x2EE400: (85, "156528052eb0fae5ea043bb10762a9115728e51758c77004a6c981f794137247"),   # r10: r10_could (the prove-it hole priority)
+    0x3D62D0: (83, "d6dfaf369d58832c4c1da8418eca627611b2fc7d39696725075a14ac9fd2b86c"),   # r10: r10_seat_ok (the prove-it hole priority)
+    0x3E1030: (104, "48b4ba8ad1e9a274bd48ee6a33f75102dada6b2aaea72cc1ba3724f2b80067a1"),   # r10: r10_hole (the prove-it hole priority)
 }
 
 

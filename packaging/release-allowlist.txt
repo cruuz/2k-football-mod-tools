@@ -2605,6 +2605,9 @@ data/nfl2k5_rookie_faces/faces_07_pal.png
 data/nfl2k5_rookie_faces/faces_08.png
 data/nfl2k5_rookie_faces/faces_08_pal.png
 mod_editor/core/nfl2k5_star_retention.py
+mod_editor/core/nfl2k5_team_building.py
+mod_editor/core/nfl2k5_team_building_code.py
+mod_editor/core/nfl2k5_team_need.py
 mod_editor/core/nfl2k5_practice_injuries.py
 mod_editor/core/nfl2k5_ball_carrier_ai.py
 data/nfl2k5_rookie_faces/faces_09.png
@@ -4456,6 +4459,8 @@ tests/mod_editor/test_b81_gadget_attract_fatigue.py
 tests/mod_editor/test_b81_qb_room_owner.py
 tests/mod_editor/test_b81_qb_room_build.py
 tests/mod_editor/test_b81_qb_room_native.py
+tests/mod_editor/test_b81_team_building.py
+tests/mod_editor/test_b81_team_need.py
 tests/mod_editor/test_nfl2k5_sim_realism.py
 tests/mod_editor/test_b780_c6_coach_carousel.py
 tests/mod_editor/test_nfl2k5_standings_records.py

@@ -328,6 +328,14 @@ for _va, _digest in SQUAD_WINDOWS.items():
 SQUAD_EXPIRE = 0x247B79
 PINS[SQUAD_EXPIRE] = "9fc06df982b634efc45adf0d757738512d523c30cbabb7f2c067cbcd01b75ad0"
 REVISION_8_NEW = frozenset({SQUAD_GATE, SQUAD_EXPIRE}) | frozenset(SQUAD_WINDOWS)
+# b81 team building (revision 9; coordinator 11/25): economy_room_for_signing, the cap room a CPU club may spend on a
+# free-agent signing (cap room less 10), in one more unreferenced retail function (dead_code.py WINDOWS "roster_v", from
+# the team-building lane's proof). The team-building wishes (nfl2k5_team_building) call it at its pinned entry 0x2D82F0;
+# the economy lane's revision 10 changes only its body. No other site changes: a revision-8 image reads "legacy" and
+# upgrades in place by writing that window.
+ROOM_FOR_SIGNING_WINDOW = 0x2D82F0
+PINS[ROOM_FOR_SIGNING_WINDOW] = "58e11dd15a15fd5c794376c38955800f8a89a1f94d53811c4f3b4aef314055a3"
+REVISION_9_NEW = frozenset({ROOM_FOR_SIGNING_WINDOW})
 # b81 economy revision 10 (economy lane DESIGN.txt; coordinator rulings 2026-11-25). The ten-season panel 68001-68004
 # (8b180ed5): from 2031 every CPU club sat at 96-100% of the cap (real median room 2.9%), up to 17 starter-grade free
 # agents a league were unsigned at week 18, 5-6 year deals were 22% of the active book (real 0.8%). Code in
@@ -338,7 +346,8 @@ REVISION_8_NEW = frozenset({SQUAD_GATE, SQUAD_EXPIRE}) | frozenset(SQUAD_WINDOWS
 # entry), 22 unreferenced retail functions (dead_code.py), the CPU offer's random -1..+2 years at 0x3241A3 (now 0; the
 # RNG call stays), the re-signing stage's call at 0x248426 (cap casualties first). Rewritten: the windows below and the
 # rollover's reconcile call (0x247BC6: the cap by value first). A revision-8 image (and every older one) reads "legacy"
-# and upgrades in place. (Revision 9 is the team-building lane's economy_room_for_signing; merged when it lands.)
+# and upgrades in place. Revision 9 (team building) is merged under it: its economy_room_for_signing window (roster_v)
+# is rewritten too (its body now leaves the reserve).
 YEARS_WINDOW = 0x322690
 OFFER_JITTER = 0x3241A3             # mov esi, eax; and esi, 3; dec esi (the offer's years jitter) in 0x324180
 OFFER_JITTER_PATCHED = bytes.fromhex("31f690909090")   # xor esi, esi (jitter 0; the RNG call before it still runs)
@@ -368,13 +377,21 @@ R10_WINDOW_PINS = {                 # retail sha256 of each window the revision 
     0x3C8E00: "584184aca675af2dde2bfaf929b08597ffc0baba86dcea8864daf7a8d5eceb8f",
     0x3C98C0: "704783e70d8408dea647fbe7a4263b62990516b5aa6287e5a1297886b136f9d4",
     0x3D3390: "ef8bfbaf8b64e1013530787507f9869e3a56deabe6b8cdf9a1c7462d4cfae140",
+    0x121900: "620b4d0a07b0b475b62112680a330be15cedca91e299e04259496609d67192e3",   # the prove-it hole priority
+    0x17A480: "e71b40560481d14dbbcac0bef95159c3b3c82c239a10be6f5607305e3efab317",   # the prove-it hole priority
+    0x256230: "7e3e4d4ef768950751781e7d6d63d8d5cd5575cb4c732cb4597f9aa8486f5999",   # the prove-it hole priority
+    0x26CB60: "a416917f31c92569edf3815ddf7ca6b45072b946cb4fc26c6350573d715c6b77",   # the prove-it hole priority
+    0x2EC530: "30a455cfe830fe4df653d6caa045e11678ac1110fb2e8151320a4f510b3a93ed",   # the prove-it hole priority
+    0x2EE400: "156528052eb0fae5ea043bb10762a9115728e51758c77004a6c981f794137247",   # the prove-it hole priority
+    0x3D62D0: "d6dfaf369d58832c4c1da8418eca627611b2fc7d39696725075a14ac9fd2b86c",   # the prove-it hole priority
+    0x3E1030: "48b4ba8ad1e9a274bd48ee6a33f75102dada6b2aaea72cc1ba3724f2b80067a1",   # the prove-it hole priority
 }
 PINS.update(R10_WINDOW_PINS)
 PINS[OFFER_JITTER] = "fa53102234cdfb47e76212cf24faf309c148be7f525d793ad1ee97a9052f9e49"
 PINS[RESIGN_STAGE] = "618dd3590e6d39655c05657a34d3e9158ff05eda2240f73b70f81e07de18746f"
 R10_WINDOWS = frozenset(R10_WINDOW_PINS)
 REVISION_10_NEW = R10_WINDOWS | frozenset({OFFER_JITTER, RESIGN_STAGE})
-PREVIOUS_REVISION_9 = {             # the sites revision 10 rewrites, as revision 8 installed them (sha256)
+PREVIOUS_REVISION_9 = {             # the sites revision 10 rewrites, as revisions 8 and 9 installed them (sha256)
     0x264AC0: "419c4e81aba466572026513a360f881beea64cc5e80d2644a10d9583dc76c8a6",   # roster_o
     0x2BD440: "9b65660baaaaeaa82a1c1c3163c4f67759ce3251e1465a26540282fff305a0ac",   # value
     0x2BFBE0: "0a4b68da7e3ba0f3eae9cec5e43c983b22f5975d76606be5b965f8b60a21df9d",   # reconcile
@@ -390,6 +407,9 @@ PREVIOUS_REVISION_9 = {             # the sites revision 10 rewrites, as revisio
     0x4FE7A0: "04cfe59789ad7c9171644dfdd638696a6400fc67ec07633830e89ffe75d6c28a",   # cap growth 1.0788
     ROLLOVER_RECONCILE: "93bcf088d60a02096f8e9e588f0e0897189d4d145f3f47edcde91f78312acf5b",   # call economy_reconcile
     0x323BB3: "f8c0693c7061677d6267125e0be1a8f4304d7d675cac935604dfbed77edf511d",   # the offer gate's jump (economy_offer_gate moved with economy_contract)
+    ROOM_FOR_SIGNING_WINDOW: "64db62a40e3106e8cff3ce66159dd8a3dfdb039c4dacfd0ea272378a63da34aa",   # roster_v (revision 9)
+    0x24809C: "ffba3d1e8671bc9ead0fe8cf654d4b77e5ff66225a1d5a23b3cfd4c0affff716",   # STAGE6_CASE (economy_stage6 moved with economy_week)
+    0x248628: "6583d740e2196efe9ca80190ae584679f28cf5af3431e097dadc538ed8c190c7",   # AFTER_STAGE (economy_after moved with economy_week)
 }
 REVISION = 10
 # b81 economy revision 10, part 1 (coordinator ruling 6, 11/25): the draft class position mix (window roster_f's
@@ -432,7 +452,7 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
     windows = {va: code for va, code in WINDOWS.items()
                if (revision >= 3 or va not in REVISION_3_SITES) and (revision >= 4 or va not in REVISION_4_SITES)
                and (revision >= 7 or va not in REVISION_7_NEW) and (revision >= 8 or va not in REVISION_8_NEW)
-               and (revision >= 10 or va not in R10_WINDOWS)}
+               and (revision >= 9 or va not in REVISION_9_NEW) and (revision >= 10 or va not in R10_WINDOWS)}
     replacements = {**windows, ROOKIE_TABLE_VA: ROOKIE_TABLE,
                     0x13EF17: bytes.fromhex("c70578c2e300") + struct.pack("<I", GAME_CAP),
                     0x4FE7A0: struct.pack("<f", CAP_GROWTH if revision >= 10 else PREVIOUS_CAP_GROWTH),
@@ -490,11 +510,11 @@ def _site_state(image: XbeImage, site: Site) -> str:
 
 
 def _standalone_status(payload: bytes) -> str:
-    """retail | applied | legacy | foreign. b81 (revision 8): an image with every revision-8 site applied reads as the
-    revision-7 rules read the rest of it; an image with none of them (the four squad windows and the gate call retail)
-    reads "legacy" where those rules read "applied" or "legacy" (it upgrades in place); a mix of the two is foreign.
-    b81 revision 10 part 1: an image with the 9/9 class window reads as it would with the current window, "legacy" where
-    that reads "applied" or "legacy" (a draft-class-only image still reads "retail": the economy is not installed)."""
+    """retail | applied | legacy | foreign. b81 revision 10: an image with every revision-10 site applied (the new sites,
+    and the rewritten ones as revision 10 writes them) reads as the revision-9 rules read the rest of it; an image with the
+    new sites retail and the rewritten ones as revision 8 or 9 left them reads "legacy" where those rules read "applied"
+    or "legacy" (it upgrades in place); a mix is foreign. b81 revision 10 part 1: an image with the 9/9 class window reads
+    as it would with the current window, "legacy" where that reads "applied" (a draft-class-only image reads "retail")."""
     try:
         swapped = with_current_class_window(payload)
     except (ValueError, struct.error, IndexError):
@@ -524,8 +544,29 @@ def _standalone_status(payload: bytes) -> str:
 
 
 def _status_before_10(payload: bytes, assume: frozenset) -> str:
-    """The revision-8 rules, revision 10's new sites left out and the sites in `assume` (its rewritten sites, applied or as
-    revision 8 left them) counted as applied."""
+    """The revision-9 rules (b81 team building): an image with its new window applied reads as the revision-8 rules read the
+    rest of it; with that window retail it reads "legacy" where those rules read "applied" or "legacy" (a revision-8 or
+    older economy); a mix is foreign. Revision 10's new sites are left out; the sites in `assume` (revision 10's
+    rewritten sites, applied or as revision 8 or 9 left them) count as applied."""
+    try:
+        image = XbeImage(payload)
+        nine = {"applied" if site.va in assume else _site_state(image, site)
+                for site in sites() if site.va in REVISION_9_NEW}
+        rest = _status_before_9(payload, assume)
+        if nine == {"applied"}:
+            return rest if rest == "applied" else "foreign"
+        if nine == {"retail"}:
+            return "legacy" if rest in ("applied", "legacy") else rest
+        return "foreign"
+    except (ValueError, struct.error, IndexError):
+        return "foreign"
+
+
+def _status_before_9(payload: bytes, assume: frozenset = frozenset()) -> str:
+    """The revision-8 rules (revision 9's and 10's new sites left out; `assume` as above). b81 (revision 8): an image with
+    every revision-8 site applied reads as the revision-7 rules read the rest of it; an image with none of them (the four
+    squad windows and the gate call retail) reads "legacy" where those rules read "applied" or "legacy" (it upgrades in
+    place); a mix of the two is foreign."""
     try:
         image = XbeImage(payload)
         eight = {_site_state(image, site) for site in sites() if site.va in REVISION_8_NEW}
@@ -548,7 +589,7 @@ def _status_before_8(payload: bytes, assume: frozenset = frozenset()) -> str:
         image = XbeImage(payload)
         seven = {}
         for site in sites():
-            if site.va in REVISION_7_SITES and site.va not in REVISION_8_NEW:
+            if site.va in REVISION_7_SITES and site.va not in REVISION_8_NEW | REVISION_9_NEW:
                 state = "applied" if site.va in assume else _site_state(image, site)
                 if state == "foreign" and site.va in PREVIOUS_REVISION_6 and hashlib.sha256(
                         image.read(site.va, len(site.patched))).hexdigest() == PREVIOUS_REVISION_6[site.va]:
@@ -575,7 +616,8 @@ def _status_before_7(image: XbeImage, revision_6: frozenset) -> str:
     try:
         states = {}
         for site in sites():
-            if site.va in REVISION_7_NEW or site.va in REVISION_8_NEW or site.va in REVISION_10_NEW:
+            if site.va in REVISION_7_NEW or site.va in REVISION_8_NEW or site.va in REVISION_9_NEW or \
+                    site.va in REVISION_10_NEW:
                 continue
             state = "applied" if site.va in revision_6 else _site_state(image, site)
             if state == "foreign" and site.va in PREVIOUS and \

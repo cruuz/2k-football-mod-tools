@@ -683,8 +683,20 @@ def rookie_key_tables(payload: bytes) -> dict[str, dict[str, object]]:
     return out
 
 
+def _without_team_building(payload: bytes) -> bytes:
+    """b81 team building: the owner nfl2k5_team_building retargets two branches inside this module's sites (the pick
+    head's need call and the wish body's jump); read them as this module wrote them."""
+    try:
+        from . import nfl2k5_team_building as team_building
+    except ImportError:  # pragma: no cover - a Studio without the owner
+        return payload
+    return team_building.as_draft_ai(payload)
+
+
 def status(payload: bytes) -> str:
-    """retail | applied | legacy (the b778 dr2 pick head, every other site applied) | foreign."""
+    """retail | applied | legacy (the b778 dr2 pick head, every other site applied) | foreign. An executable with CPU
+    team building installed (nfl2k5_team_building) reads as its draft-AI bytes."""
+    payload = _without_team_building(payload)
     try:
         sites = _sites(payload)
     except (DraftAiError, ValueError, struct.error):

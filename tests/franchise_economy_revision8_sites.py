@@ -1,10 +1,14 @@
-"""Test fixture: the franchise economy sites revision 10 rewrites, as revision 8 installed them (b81 economy lane).
+"""Test fixture: the franchise economy sites revision 10 rewrites, as revision 8 installed them (b81 economy lane), and
+revision 9's one window (economy_room_for_signing, team building 3647cabab) as revision 9 installed it.
 
-Generated from the revision-8 code template (job/b81-economy-r10 6dd73d743); the sha256 of each entry equals
-nfl2k5_franchise_economy.PREVIOUS_REVISION_9. Used to build a revision-8 image from a revision-10 one."""
+Generated from the revision-8 code template (job/b81-economy-r10 6dd73d743) and from 3647cabab's template; the sha256
+of each entry equals nfl2k5_franchise_economy.PREVIOUS_REVISION_9. as_revision() builds a revision-8 or revision-9
+image from a revision-10 one (older-revision tests start from it)."""
 
 
 SITES = {
+    0x24809c: bytes.fromhex("2f3a3200"),   # STAGE6_CASE
+    0x248628: bytes.fromhex("e8f2b30d00"),   # AFTER_STAGE
     0x247bc6: bytes.fromhex(
         "e815800700"
     ),
@@ -144,3 +148,28 @@ SITES = {
         "01168a3f"
     ),
 }
+
+ROOM_FOR_SIGNING_REVISION_9 = bytes.fromhex("55ba0100000089e55389cb6a00e8d553feff2b83240100008b5dfcc983e80ac3cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc")
+
+
+def as_revision(current: bytes, retail: bytes, revision: int = 8) -> bytes:
+    """``current`` (revision 10) as revision 8 or 9 installed it: revision 10's rewritten sites with their old bytes, its
+    new sites retail, and revision 9's window retail (8) or as revision 9 wrote it (9). The class window stays."""
+    from mod_editor.core import nfl2k5_franchise_economy as economy
+    from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+    from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+    if revision not in (8, 9):
+        raise ValueError("revision 8 or 9")
+    image, source, out = XbeImage(current), XbeImage(retail), bytearray(current)
+    edits = dict(SITES)
+    for site in economy.sites():
+        if site.va in economy.REVISION_10_NEW or site.va in economy.REVISION_9_NEW:
+            edits[site.va] = source.read(site.va, len(site.patched))
+    if revision == 9:
+        edits[economy.ROOM_FOR_SIGNING_WINDOW] = ROOM_FOR_SIGNING_REVISION_9
+    for va, code in edits.items():
+        at = image.offset(va, len(code))
+        out[at:at + len(code)] = code
+    for section in _sections(bytes(out)):
+        out[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(out), section)
+    return bytes(out)

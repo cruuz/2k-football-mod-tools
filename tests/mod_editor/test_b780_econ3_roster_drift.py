@@ -46,6 +46,9 @@ def revision_six(payload: bytes, *, keep: frozenset = frozenset()) -> bytes:
     revision 7's new sites retail; the sites in ``keep`` keep their revision-7 bytes (to build mixed images). b81: revision
     8's new sites (the practice-squad fill) are retail as well, as on every image older than revision 8."""
     retail = XbeImage(retail_bytes())
+    if getattr(economy, "REVISION", 7) >= 10:             # b81: from revision 10, first back to revision 8
+        from tests.franchise_economy_revision8_sites import as_revision
+        payload = as_revision(payload, retail_bytes(), 8)
     image, out = XbeImage(payload), bytearray(payload)
     for va_hex, code in json.loads(FIXTURE.read_text())["windows"].items():
         va, body = int(va_hex, 16), bytes.fromhex(code)
@@ -53,7 +56,8 @@ def revision_six(payload: bytes, *, keep: frozenset = frozenset()) -> bytes:
             at = image.offset(va, len(body))
             out[at:at + len(body)] = body
     for site in economy.sites():
-        if (site.va in economy.REVISION_7_NEW and site.va not in keep) or site.va in getattr(economy, "REVISION_8_NEW", ()):
+        if (site.va in economy.REVISION_7_NEW and site.va not in keep) or site.va in getattr(economy, "REVISION_8_NEW", ()) \
+                or site.va in getattr(economy, "REVISION_9_NEW", ()):   # b81 team building: revision 9's window too
             at = image.offset(site.va, len(site.patched))
             out[at:at + len(site.patched)] = retail.read(site.va, len(site.patched))
     return _repin(out)

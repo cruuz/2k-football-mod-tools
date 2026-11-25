@@ -637,6 +637,12 @@ class BuildPlan:
     # over 75, is never its target. EXPERIMENTAL: on in the Advanced and Experimental presets (the SOFTDRINK 2K28
     # recipe builds from Experimental); Basic keeps the retail rule.
     star_retention: bool = False
+    # b81 team building (lane team-building, coordinator rulings of 2026-11-25): CPU clubs draft and sign to their
+    # weakest starters (the shared team-need rule, tools/common/team_need.h). The owner nfl2k5_team_building retargets
+    # two draft-AI branches into its own code (thirty proven-unreferenced retail functions), so it needs the draft AI
+    # and the franchise economy; without them it is left out with a note. On in the Experimental preset (the SOFTDRINK
+    # 2K28 recipe builds from it with the economy on).
+    team_building: bool = False
     # b778-pi1: Franchise practice: injured players sit out. Retail heals every match copy for practice (0x61540: keeps
     # injuries only in league games, modes 5..7), so a starter who is out for weeks lines up in the Coach's Desk
     # Practice. A late executable owner (nfl2k5_practice_injuries) hooks 0x61550 so practice (modes 0..2) with a
@@ -1354,6 +1360,10 @@ for _preset in PRESETS.values():
     _preset["star_retention"] = False
 PRESETS["softdrink_advanced"]["star_retention"] = True
 PRESETS["softdrink_experimental"]["star_retention"] = True
+# b81 team building: needs-based CPU drafts and signings, on in Experimental (needs the draft AI and the economy).
+for _preset in PRESETS.values():
+    _preset["team_building"] = False
+PRESETS["softdrink_experimental"]["team_building"] = True
 # b778-pi1: franchise practice keeps injuries: on wherever the Coach's Desk Practice row (franchise_practice) is on.
 for _preset in PRESETS.values():
     _preset["practice_injuries"] = bool(_preset.get("franchise_practice"))
@@ -1938,6 +1948,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_practice_injuries", "Franchise practice injuries", lambda p: p.practice_injuries),  # b778-pi1
     ("nfl2k5_ball_carrier_ai", "CPU ball carriers", lambda p: p.cpu_ball_carriers),  # b778-ai5
     ("nfl2k5_star_retention", "CPU clubs keep their stars", lambda p: p.star_retention),  # b778-fa1
+    ("nfl2k5_team_building", "CPU team building", lambda p: p.team_building),  # b81 team building
     ("nfl2k5_star_career", "Rookie and career stars", lambda p: p.star_career),  # b778-st2
     ("nfl2k5_draft_clock", "Franchise draft clock", lambda p: p.franchise_draft_clock),  # b778-dr1
     ("nfl2k5_weekly_progression", "Weekly player progression", lambda p: p.weekly_progression),  # b778-pg1
@@ -2448,6 +2459,53 @@ def _apply_star_retention(plan: "BuildPlan", target: Path, receipt: dict, progre
         raise RuntimeError("CPU clubs keep their stars: the output does not read back as applied")
     receipt["steps"].append({"step": "star_retention", **{k: v for k, v in star_receipt.items() if k != "reservations"}})
     receipt["result"]["star_retention"] = "applied"
+
+
+def _team_building_preflight(source: Path, progress) -> None:
+    """b81 team building: refuse a source whose code windows or draft-AI branches are foreign, before any write."""
+    module = _core_module("nfl2k5_team_building")
+    if module is None:
+        raise ValueError("CPU team building is not available in this installation.")
+    progress("Checking the draft AI's need call and wish routine for CPU team building", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"CPU team building cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The draft AI's need call or wish routine in this source is not retail, the draft AI's or CPU "
+                         "team building. Turn it off or build from your unmodified retail dump.")
+
+
+TEAM_BUILDING_LEFT_OUT = ("CPU team building was left out: it needs the draft AI and the 2026 franchise economy. Turn "
+                          "both on to include it.")
+
+
+@_core_step("team_building")
+def _apply_team_building(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b81 team building: after the draft AI and the economy (the xbe step) and the late owners; no allocation."""
+    if not plan.team_building:
+        return
+    module = _core_module("nfl2k5_team_building")
+    if module is None:
+        raise RuntimeError("CPU team building needs nfl2k5_team_building.")
+    original = _xbe_bytes(target)
+    if module.status(original) == "applied":
+        receipt["result"]["team_building"] = "applied"
+        return
+    if not module.needs_met(original):
+        if TEAM_BUILDING_LEFT_OUT not in receipt.setdefault("user_notes", []):
+            receipt["user_notes"].append(TEAM_BUILDING_LEFT_OUT)
+        receipt["steps"].append({"step": "team_building", "status": "left_out"})
+        receipt["result"]["team_building"] = "left_out"
+        return
+    progress("Franchise: CPU clubs draft and sign to their weakest starters", 0, 0)
+    payload, tb_receipt = module.apply(original)
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("CPU team building: the output does not read back as applied")
+    receipt["steps"].append({"step": "team_building", **{k: v for k, v in tb_receipt.items() if k != "edits"}})
+    receipt["result"]["team_building"] = "applied"
 
 
 @_core_step("star_career")
@@ -4238,6 +4296,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("crib_trophy_room", "nfl2k5_crib_trophy_room"),  # b778-xs1
                                ("inbox_standings", "nfl2k5_inbox_standings"),  # b778-pc3; no allocation
                                ("star_retention", "nfl2k5_star_retention"),  # b778-fa1
+                               ("team_building", "nfl2k5_team_building"),  # b81 team building; no allocation
                                ("practice_injuries", "nfl2k5_practice_injuries"),  # b778-pi1
                                ("cpu_ball_carriers", "nfl2k5_ball_carrier_ai"),  # b778-ai5
                                ("cpu_runner_vision", "nfl2k5_runner_vision"),  # b780 cv2-runner
@@ -4535,6 +4594,8 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     out["team_sleeves"] = team_sleeves.status(_xbe_bytes(source)) if team_sleeves is not None else "unavailable"
     star_retention = _core_module("nfl2k5_star_retention")  # b778-fa1
     out["star_retention"] = star_retention.status(_xbe_bytes(source)) if star_retention is not None else "unavailable"
+    team_building = _core_module("nfl2k5_team_building")  # b81 team building
+    out["team_building"] = team_building.status(_xbe_bytes(source)) if team_building is not None else "unavailable"
     practice_injuries = _core_module("nfl2k5_practice_injuries")  # b778-pi1
     out["practice_injuries"] = (practice_injuries.status(_xbe_bytes(source)) if practice_injuries is not None
                                 else "unavailable")
@@ -7013,6 +7074,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("The alien prospect must be Off or On.")
     if type(plan.star_retention) is not bool:  # b778-fa1
         raise ValueError("CPU clubs keep their stars must be Off or On.")
+    if type(plan.team_building) is not bool:  # b81 team building
+        raise ValueError("CPU team building must be Off or On.")
     if type(plan.practice_injuries) is not bool:  # b778-pi1
         raise ValueError("Franchise practice injuries must be Off or On.")
     if type(plan.cpu_ball_carriers) is not bool:  # b778-ai5
@@ -7862,6 +7925,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _alien_prospect_preflight(plan, source, is_image, progress)
     if plan.star_retention:  # b778-fa1: like fo1, before any write
         _star_retention_preflight(source, progress)
+    if plan.team_building:  # b81 team building: before any write
+        _team_building_preflight(source, progress)
     if plan.practice_injuries:  # b778-pi1: like fo1, before any write
         _practice_injuries_preflight(source, progress)
     if plan.sim_rb_injuries:  # b779-sim2: like pi1, before any write
@@ -9851,6 +9916,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_star_retention(plan, target, receipt, progress)
     # b778-st2: rookie stars and career stars, after the last b778 late owner
     _apply_star_career(plan, target, receipt, progress)
+    # b81 team building: retargets two draft-AI branches into its own proven-unreferenced windows (no allocation)
+    _apply_team_building(plan, target, receipt, progress)
     # b778-dr1: the franchise draft clock, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
     _apply_draft_clock(plan, target, receipt, progress)
     # b778-pg1: franchise weekly progression, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)

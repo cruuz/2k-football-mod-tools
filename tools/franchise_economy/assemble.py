@@ -40,7 +40,15 @@ R10_WINDOWS = {"r10_5de10": (0x5de10, 84),
                "r10_39c3f0": (0x39c3f0, 81),
                "r10_3c8e00": (0x3c8e00, 107),
                "r10_3c98c0": (0x3c98c0, 108),
-               "r10_3d3390": (0x3d3390, 81)}
+               "r10_3d3390": (0x3d3390, 81),
+               "r10_121900": (0x121900, 84),
+               "r10_17a480": (0x17a480, 84),
+               "r10_256230": (0x256230, 109),
+               "r10_26cb60": (0x26cb60, 84),
+               "r10_2ec530": (0x2ec530, 84),
+               "r10_2ee400": (0x2ee400, 85),
+               "r10_3d62d0": (0x3d62d0, 83),
+               "r10_3e1030": (0x3e1030, 104)}
 # the input sections each window takes (value: economy_value's own bytes, placed before economy_floor's pin below)
 R10_SECTIONS = {'r10_5de10': ['r10_casualty'],
                 'r10_87dc0': ['r10_rank'],
@@ -67,7 +75,16 @@ R10_SECTIONS = {'r10_5de10': ['r10_casualty'],
                 'years': ['r10_years'],
                 'roster_b': ['r10_clamp'],
                 'roster_c': ['r10_budget'],
-                'roster_d': ['r10_rollover']}
+                'roster_d': ['r10_rollover'],
+                'r10_121900': ['r10_quarter'],
+                'r10_17a480': ['r10_level'],
+                'r10_256230': ['r10_seat_row'],
+                'r10_26cb60': ['r10_seats'],
+                'r10_2ec530': ['r10_hole_p'],
+                'r10_2ee400': ['r10_could'],
+                'r10_3d62d0': ['r10_seat_ok'],
+                'r10_3e1030': ['r10_hole'],
+                'roster_v': ['r10_holefirst']}
 WINDOWS = {"value": (0x2BD440, 1082), "contracts": (0x3228A0, 215),
            "rookie": (0x322980, 280), "picks": (0x2BAB20, 403),
            "money": (0x31E580, 198), "reconcile": (0x2BFBE0, 370),
@@ -85,6 +102,9 @@ WINDOWS = {"value": (0x2BD440, 1082), "contracts": (0x3228A0, 215),
            "roster_p": (0x38D3E0, 143), "roster_q": (0x1C62E0, 156), "roster_r": (0x343040, 159),
            "roster_s": (0x3E9A90, 142), "roster_t": (0x3E9CD0, 134),
            "roster_u": (0x3220B0, 131),
+           # b81 team building (revision 9): economy_room_for_signing, one routine every CPU free-agent signing's
+           # affordability reads (the team-building wishes; the economy lane's revision 10 changes only its body).
+           "roster_v": (0x2D82F0, 110),
            # b81 revision 10: the retail "years wanted" routine 0x322690 (its four callers keep calling its entry, which
            # now answers from economy_years) and the revision's code and tables in unreferenced retail functions
            # (tools/franchise_economy/dead_code.py WINDOWS; R10_WINDOWS below names them).
@@ -111,7 +131,7 @@ STABLE = {"economy_floor": 0x2BD65C, "economy_penalty": 0x2BD68F, "economy_cap":
 # Entry points that must sit at their window's first byte.
 ENTRIES = {"economy_value": 0x2BD440, "economy_contract": 0x3228A0, "economy_rookie": 0x322980,
            "economy_pick": 0x2BAB20, "economy_money": 0x31E580, "economy_week": 0x323870,
-           "economy_reconcile": 0x2BFBE0, "economy_years_entry": 0x322690}
+           "economy_reconcile": 0x2BFBE0, "economy_room_for_signing": 0x2D82F0, "economy_years_entry": 0x322690}
 # PROVED OFFLINE: the first seven words at the retail pick-index base also
 # belong to Player Contracts' last action row. Only retire the values after it.
 ROOKIE_TABLE_VA = 0x521598

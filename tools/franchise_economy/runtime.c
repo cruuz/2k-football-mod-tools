@@ -56,6 +56,7 @@ int FAST economy_usable_room(u8 *team);
 int FAST economy_fill_budget(u8 *team);
 void FAST economy_camp(u8 *team, void *menu);
 void FAST economy_clear_cap(u8 *team);
+u8 *economy_hole_first(u8 *p, unsigned ask, u8 *club);
 u8 *FAST economy_vet_pick(u8 *team, u8 *proposed);
 
 static unsigned maximum(unsigned a, unsigned b) { return a > b ? a : b; }
@@ -475,6 +476,7 @@ SECTION(".week") void FAST economy_week(void *menu, unsigned unused, float low, 
         if (!PROVE_IT_FREE_AGENT(p) || p[0x35] >= 17 || !(n_rating(p, 1) > PROVE_IT)) continue;
         unsigned ask = economy_value(p, 0, 0, 1, 1);
         if (economy_best_room(p, &club) < ask || !club) continue;
+        club = economy_hole_first(p, ask, club);   /* b81 r10: a club with a hole he fills gets first call */
         /* b780 b4-economy (D10): economy_best_room no longer offers a full club, so this cut never runs now. */
         if (club[0x11c] >= limit) n_cut_to(club, limit - 1);
         n_cpu_sign(club, p[0x35], ask + 1, menu);
@@ -1056,6 +1058,17 @@ done:
 }
 
 /* ---------------------------------------------------------------------------------------------------------------------
+ * b81 team building (revision 9; coordinator 11/25: one routine for the CPU free-agent signing's affordability, so the
+ * economy lane's revision 10 changes only its body). The cap room a CPU club may spend on a free-agent signing: cap room
+ * less 10 ($40,000 real), the margin the prove-it pass already keeps (economy_best_room). Called by the team-building
+ * wishes (nfl2k5_team_building, tools/team_building/runtime.c tb_candidate) at this window's first byte (an ENTRY).
+ * b81 economy revision 10: the room a club may spend leaves its reserve (economy_usable_room: cap room - 10 - reserve).
+ * --------------------------------------------------------------------------------------------------------------------- */
+SECTION(".roster_v") int FAST economy_room_for_signing(u8 *team) {
+    return economy_usable_room(team);   /* b81 revision 10: and never the club's reserve (economy_reserve) */
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
  * b81 economy revision 10 (economy lane DESIGN.txt; coordinator rulings 2026-11-25). The ten-season panel 68001-68004
  * (8b180ed5): from 2031 every CPU club sat at 96-100% of the cap (real median room 2.9%, 7 of 32 clubs at 7.6%+), up to
  * 17 starter-grade free agents per league were unsigned at week 18, 5-6 year deals were 22% of the active book (real
@@ -1330,4 +1343,82 @@ SECTION(".r10_camp") void FAST economy_camp(u8 *team, void *menu) {
         u8 *mine = camp_pick(team, pos);
         if (mine && n_cpu_sign(team, pos, economy_fill_budget(team), menu)) n_release(team, mine, 1, 1);
     }
+}
+
+/* ---- b81 economy revision 10: prove-it hole priority (coordinator 11/25: the team-building lane's DESIGN 3.4, which it
+ * could not build without the economy's windows). When the prove-it pass has found a club for a long-unsigned man,
+ * a club with a hole at his position that can also sign him gets first call: the one of them with the most room.
+ * A hole is the shared team-need rule (tools/common/team_need.h, coordinator ruling N1, as the team-building lane reads
+ * it; each owner compiles its own copy): the club's need seats at the pool are its first TN_NEED_SEATS present men of the
+ * pool in depth-row order; the weakest of them rates 3+ points below him and fewer than a quarter of the league's need
+ * seats there rate below it (the team-building lane's P1). Quarterbacks (the quarterback room's), K, P and FB (no need
+ * seats) keep the old choice. A club a person owns never gets the call. ---- */
+#include "team_need.h"
+#define HOLE_MARGIN 0.03f                       /* three points of 0x246D80 */
+struct seats { float weak, line; unsigned left, n, below; };
+struct pick { u8 *club; int most; };
+
+/* A present man of `pool` in depth row `row` (team_need.h). */
+SECTION(".r10_seat_ok") unsigned seat_ok(u8 *q, unsigned pool, unsigned row) {
+    return q[0x35] < 17 && TN_POOL[q[0x35]] == pool && tn_row(q) == row && tn_present(q);
+}
+
+/* The men of depth row `row` at `pool` while seats are open: the weakest kept, those under s->line counted. */
+SECTION(".r10_seat_row") void seat_row(u8 *team, unsigned pool, unsigned row, struct seats *s) {
+    for (unsigned i = 0; i < team[0x11c] && s->left; ++i) {
+        u8 *q = ((u8 **)team)[i];
+        if (!seat_ok(q, pool, row)) continue;
+        float r = n_rating(q, 0);
+        --s->left;
+        ++s->n;
+        if (r < s->weak) s->weak = r;
+        s->below += r < s->line;
+    }
+}
+
+/* A club's need seats at `pool`, row by row. */
+SECTION(".r10_seats") void club_seats(u8 *team, unsigned pool, struct seats *s) {
+    s->left = TN_NEED_SEATS[pool];
+    for (unsigned row = 0; row < 8; ++row) seat_row(team, pool, row, s);
+}
+
+/* Fewer than a quarter of the league's need seats at `pool` rate below `line`. */
+SECTION(".r10_quarter") unsigned bottom_quarter(unsigned pool, float line) {
+    struct seats l = {line, line, 0, 0, 0};
+    for (unsigned t = 0; t < n_teams(); ++t) club_seats(n_team(t), pool, &l);
+    return 4 * l.below < l.n;
+}
+
+/* The club has a hole at `pool` that a man rated `him` fills: its weakest need seat 3+ points below him, and in the
+ * league's bottom quarter of those seats. */
+SECTION(".r10_hole") unsigned hole(u8 *team, unsigned pool, float him) {
+    struct seats s = {him, him, 0, 0, 0};
+    club_seats(team, pool, &s);
+    return s.n && him >= s.weak + HOLE_MARGIN && bottom_quarter(pool, s.weak);
+}
+
+/* `team`, if it can sign him now and pay `ask` with more usable room than k->most (not a person's club, not busy or full
+ * this week, a level for him as economy_best_room reads it) and has a hole he fills, becomes the pick. */
+SECTION(".r10_level") unsigned level_ok(u8 *team, u8 *p) {
+    return club_level(team, p[0x35], n_rating(p, 1), team[0x11c] >= 53);
+}
+
+SECTION(".r10_hole_p") unsigned hole_p(u8 *team, u8 *p) {
+    return hole(team, TN_POOL[p[0x35]], n_rating(p, 0));
+}
+
+SECTION(".r10_could") void hole_pick(u8 *team, u8 *p, unsigned ask, struct pick *k) {
+    int room = economy_usable_room(team);
+    if (room >= (int)ask && room > k->most && !n_human(team) && level_ok(team, p) && hole_p(team, p)) {
+        k->most = room;
+        k->club = team;
+    }
+}
+
+/* Called by the prove-it pass with the club economy_best_room chose: the hole club with the most room, else that club. */
+SECTION(".r10_holefirst") u8 *economy_hole_first(u8 *p, unsigned ask, u8 *club) {
+    struct pick k = {club, -1};
+    if (p[0x35] && TN_NEED_SEATS[TN_POOL[p[0x35]]])
+        for (unsigned t = 0; t < n_teams(); ++t) hole_pick(n_team(t), p, ask, &k);
+    return k.club;
 }
