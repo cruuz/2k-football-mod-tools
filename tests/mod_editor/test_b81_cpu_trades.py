@@ -788,6 +788,27 @@ class CpuTradesImage(unittest.TestCase):
         self.assertEqual([(e["buyer"], e["player"]) for e in rows],
                          [(b, (p - z.table) // 0x54) for b, _s, p, _pool, _h in packages])
 
+    def test_a_buyer_with_fewer_than_two_healthy_quarterbacks_is_out(self):
+        """A club down to one healthy quarterback never buys (its picks may go to 4b's quarterback trade first)."""
+        x = self.x
+        x.install(7)
+        x.run()
+        buyer = next(r["buyer"] for r in self.rows() if r["result"] == 1 and not r["flags"] & 8)
+        y, z = self.fresh(), self.fresh()
+        for image in (y, z):
+            qbs = [o for o in image.roster(buyer) if image.b(o + 0x35) == 0]
+            for o in qbs[1:]:
+                word = image.m.get(o + 0x20)
+                image.m.put(o + 0x20, word | 0x80000000 | 3 << 22)
+        y.install(7)
+        y.run()
+        rows = [e for e in _code().events(y.page()) if not e["flags"] & 0x48]
+        self.assertNotIn(buyer, [e["buyer"] for e in rows])
+        self.assertGreater(_code().counters(y.page())["out_quarterbacks"], 0)
+        packages, _q = model(z, 8, rows)
+        self.assertEqual([(e["buyer"], e["player"]) for e in rows],
+                         [(b, (p - z.table) // 0x54) for b, _s, p, _pool, _h in packages])
+
     def test_a_buyer_with_three_picks_gone_is_out(self):
         """S3: at most 3 of a club's own picks of the coming draft paid."""
         x, m = self.x, self.x.m
