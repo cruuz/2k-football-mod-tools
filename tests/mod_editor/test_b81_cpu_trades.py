@@ -809,6 +809,24 @@ class CpuTradesImage(unittest.TestCase):
         self.assertEqual([(e["buyer"], e["player"]) for e in rows],
                          [(b, (p - z.table) // 0x54) for b, _s, p, _pool, _h in packages])
 
+    def test_a_club_under_51_active_never_sells(self):
+        """The seller's floor: a club needs 51 or more active men to sell (the native evaluator's own count)."""
+        x = self.x
+        x.install(7)
+        x.run()
+        seller = next(r["seller"] for r in self.rows() if r["result"] == 1 and not r["flags"] & 8)
+        y, z = self.fresh(), self.fresh()
+        for image in (y, z):
+            team = image.club(seller)
+            image.m.uc.mem_write(team + 0x11C, bytes([50]))       # the list's last men drop off: 50 active
+        y.install(7)
+        y.run()
+        rows = [e for e in _code().events(y.page()) if not e["flags"] & 0x48]
+        self.assertNotIn(seller, [e["seller"] for e in rows])
+        packages, _q = model(z, 8, rows)
+        self.assertEqual([(e["buyer"], e["player"]) for e in rows],
+                         [(b, (p - z.table) // 0x54) for b, _s, p, _pool, _h in packages])
+
     def test_a_buyer_with_three_picks_gone_is_out(self):
         """S3: at most 3 of a club's own picks of the coming draft paid."""
         x, m = self.x, self.x.m
