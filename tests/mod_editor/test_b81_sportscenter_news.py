@@ -220,6 +220,26 @@ class FranchiseImageTests(unittest.TestCase):
                     f.m.uc.mem_write(player + 0x20, struct.pack("<I", word))
                     self.assertEqual(f.duration_class(player), expected)
 
+    def test_a_preseason_injury_counts_the_four_preseason_weeks(self):
+        """Review N8: in the Preseason stage (7) FUN_0021da50 turns preseason weeks played into regular-season weeks
+        with lea edi,[eax+esi-5] (retail's 5 preseason weeks). The 2026 preseason is 4 weeks (stage table 0x5151B4),
+        so a back hurt for 18 weeks after the last preseason week misses all 18 regular weeks: "rest of the regular
+        season" (class 1). With -5 he read 1 week short (class 0)."""
+        from mod_editor.core import nfl2k5_season_length as season
+        repaired, receipt = season.repair_injury_season_end(self.patched)
+        self.assertEqual((receipt["preseason_weeks"], receipt["preseason_before"]), (4, -5))
+        for xbe, expected in ((self.patched, 0), (repaired, 1)):
+            with self.subTest(offset=-5 if xbe is self.patched else -4):
+                f = _Franchise(xbe, self.original, self.regions)
+                f.m.uc.mem_write(0xE576A4, struct.pack("<I", 7))           # the Preseason stage
+                f.m.uc.mem_write(0xE576B0, struct.pack("<I", 4))           # its row bound (stage table row 7 +4)
+                self.assertEqual(f.m.call(0x15E8D0), 4)                     # all four preseason weeks played
+                player = next(p for club in f.clubs() for p in f.roster(club)
+                              if not f.get(p + 0x20) & 0xBFC00000 and not f.get(p + 0x24) & 0x70000000)
+                word = (f.get(player + 0x20) & ~0x3FC00000) | 0x80000000 | (18 << 22)
+                f.m.uc.mem_write(player + 0x20, struct.pack("<I", word))
+                self.assertEqual(f.duration_class(player), expected)
+
     def test_before_the_news_row_the_roll_posted_nothing(self):
         _f, rolled, rows = self._tick(self.original)
         self.assertTrue(rolled)
@@ -386,6 +406,40 @@ class OwnerTests(unittest.TestCase):
                 self.assertEqual(XbeImage(out).read(cave, rb.CODE_SIZE), rb.code_for(cave))
                 self.assertEqual(rb.apply(out)[1]["status"], "already_applied")
 
+    def test_the_build_step_needs_the_2026_season_or_modern_injured_reserve(self):
+        """Round 2 S5: a 128 MB Custom plan with modern injured reserve and no 2026 season still gets SportsCenter news
+        (mode 1, R2 + R3); a plan with neither is left alone (the six minimal-build tests); 64 MB never. The memory
+        model counts the page under the same condition."""
+        import tempfile
+        from mod_editor.core import mod_build
+        from mod_editor.core import nfl2k5_memory_budget as budget
+        _path, xbe = _fixture("NFL2K5_B81_SC_XBE", CANDIDATE_SHA)
+        # every plan here has a scale-out option (modern IR or the halfback roll), as a real 128 MB build reaching this
+        # step does; the target is an already scale-out executable
+        cases = ((dict(console_memory=128, modern_injured_reserve=True, season_2026=False), "applied"),
+                 (dict(console_memory=128, modern_injured_reserve=False, season_2026=True, sim_rb_injuries=True),
+                  "applied"),
+                 (dict(console_memory=128, modern_injured_reserve=False, season_2026=False, sim_rb_injuries=True),
+                  "retail"),
+                 (dict(console_memory=64, modern_injured_reserve=True, season_2026=True), "retail"))
+        for options, expected in cases:
+            with self.subTest(**options), tempfile.TemporaryDirectory() as temp:
+                source, target = Path(temp) / "source.xbe", Path(temp) / "target.xbe"
+                source.write_bytes(xbe)
+                target.write_bytes(xbe)
+                plan = mod_build.BuildPlan(str(source), str(target), **options)
+                receipt = {"steps": [], "result": {}}
+                mod_build._apply_sportscenter_news(plan, target, receipt, lambda *_: None)
+                built = target.read_bytes()
+                self.assertEqual(sc.status(built), expected)
+                if expected == "applied":
+                    self.assertEqual(sc._state(built)[1], sc.MODE_IR)
+                    self.assertEqual(receipt["result"]["sportscenter_news"], "applied")
+                else:
+                    self.assertEqual(built, xbe)
+                found = budget.owners(budget.options(plan), options["console_memory"])
+                self.assertEqual("sportscenter_news" in found, expected == "applied")
+
     def test_the_calendar_owner_s_injury_boundary_repair(self):
         """Review N3: nfl2k5_season_length.repair_injury_season_end, the calendar owner's in-place upgrade (like its
         repair_awards_timing): 17 weeks keep 22, 18 weeks get 23 (one byte and the section digest), idempotent,
@@ -399,13 +453,17 @@ class OwnerTests(unittest.TestCase):
                 _path, xbe = _fixture(name)
                 out, receipt = season.repair_injury_season_end(xbe)
                 self.assertEqual((receipt["before"], receipt["return_week"]), (22, 23))
+                self.assertEqual((receipt["preseason_before"], receipt["preseason_weeks"]), (-5, 4))   # review N8
                 image = XbeImage(out)
                 self.assertEqual(image.read(0x21DA97, 5), bytes.fromhex("83ff177d32"))
+                self.assertEqual(image.read(0x21DA72, 6), bytes.fromhex("8d7c30fceb09"))
                 changed = [i for i, (a, b) in enumerate(zip(xbe, out)) if a != b]
                 boundary = XbeImage(xbe).offset(season.INJURY_SEASON_END_VA)
+                preseason = XbeImage(xbe).offset(season.INJURY_PRESEASON_OFFSET_VA)
                 self.assertIn(boundary, changed)
-                # besides the byte, only the section's 20-byte digest in the headers
-                others = [i for i in changed if i != boundary]
+                self.assertIn(preseason, changed)
+                # besides the two bytes, only the section's 20-byte digest in the headers
+                others = [i for i in changed if i not in (boundary, preseason)]
                 self.assertLessEqual(len(others), 20)
                 self.assertTrue(all(i < XbeImage(xbe).headers_size for i in others))
                 self.assertEqual(season.repair_injury_season_end(out), (out, season.repair_injury_season_end(out)[1]))
@@ -413,6 +471,10 @@ class OwnerTests(unittest.TestCase):
                 self.assertEqual(sc.status(out), sc.status(xbe))
                 bad = bytearray(out)
                 bad[XbeImage(out).offset(0x21DA9A)] = 0x7C                 # jl instead of jge: no comparison of ours
+                with self.assertRaises(ValueError):
+                    season.repair_injury_season_end(bytes(bad))
+                bad = bytearray(out)
+                bad[XbeImage(out).offset(0x21DA75)] = 0xFA                 # -6: no preseason offset of ours
                 with self.assertRaises(ValueError):
                     season.repair_injury_season_end(bytes(bad))
 
@@ -437,6 +499,7 @@ class OwnerTests(unittest.TestCase):
         chained, upgrade = mod_build._sportscenter_news_upgrade(parked)
         self.assertEqual(sorted(upgrade), ["injury_season_end", "sim_rb_injuries", "sportscenter_news"])
         self.assertEqual(XbeImage(chained).read(0x21DA99, 1), b"\x17")
+        self.assertEqual(XbeImage(chained).read(0x21DA75, 1), b"\xfc")
         self.assertEqual((rb.status(chained), sc.status(chained), qb.read_settings(chained)["status"]),
                          ("applied", "applied", "applied"))
 

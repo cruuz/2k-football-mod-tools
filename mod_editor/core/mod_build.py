@@ -3728,10 +3728,10 @@ def _apply_sportscenter_news_in_place(target, receipt, progress):
 def _apply_sportscenter_news(plan, target, receipt, progress):
     """b81 sportscenter: SportsCenter news (nfl2k5_sportscenter_news), after every other executable owner: its fixed
     page is at 0x1533000 (nfl2k5_xbe_space.SPORTSCENTER_NEWS_VA). Franchise builds with the 2026 season (the presets
-    and the standard recipe), 128 MB scale-out only (the page grows the pool; modern injured reserve, which R2 serves,
-    is 128 MB only); a build without the 2026 season is left as its own options make it. Optional: a failure leaves it
-    out with a note."""
-    if plan.console_memory != 128 or not plan.season_2026:
+    and the standard recipe) or modern injured reserve (which R2 serves; a Custom plan may choose it without the 2026
+    season), 128 MB scale-out only (the page grows the pool; modern injured reserve is 128 MB only); any other build is
+    left as its own options make it. Optional: a failure leaves it out with a note."""
+    if plan.console_memory != 128 or not (plan.season_2026 or plan.modern_injured_reserve):
         return
     _step("sportscenter_news")
     news = _core_module("nfl2k5_sportscenter_news")

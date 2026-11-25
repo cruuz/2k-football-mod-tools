@@ -360,28 +360,46 @@ def repair_awards_timing(payload: bytes) -> tuple[bytes, dict]:
 # one, so with 18 weeks a return in week 22 (the Super Bowl) read "out for the season" (SportsCenter's Injured Reserve
 # page uses the class). Like repair_awards_timing: a repair outside WEEK_SITES, so existing installs still validate
 # and are upgraded in place by the build (mod_build's 2026-season step) and the v0.9 update (its SportsCenter chain).
+# Review N8, the same function's preseason path: in the Preseason stage (7) the weeks played count preseason rows
+# (the stage change sets the row bound 0xE576B0 from the stage table, 0x247B2A), and ``lea edi,[eax+esi-5]`` at
+# 0x21DA72 turns them into regular-season weeks by subtracting retail's 5 preseason weeks. The preseason group plays 4
+# (stage table 0x5151B4: 5 -> 4), so a preseason injury's return week came out one week early: its displacement byte
+# 0x21DA75 follows the native preseason week count (-5 or -4), in the same repair.
 INJURY_SEASON_END_VA = 0x0021DA99   # the imm8 of cmp edi,imm8 at 0x21DA97 (then jge 0x21DACE: 7d 32)
+INJURY_PRESEASON_OFFSET_VA = 0x0021DA75   # the disp8 of lea edi,[eax+esi+disp8] at 0x21DA72 (then jmp 0x21DA81: eb 09)
+STAGE_PRESEASON_WEEKS_VA = 0x005151B4     # stage table row 7 (Preseason) byte +4 (nfl2k5_preseason: 5 -> 4)
 
 
 def repair_injury_season_end(payload: bytes) -> tuple[bytes, dict]:
-    """Move FUN_0021da50's after-the-Super-Bowl return boundary to the native regular-season length + 5.
+    """Move FUN_0021da50's calendar constants to the native calendar: the after-the-Super-Bowl return boundary to the
+    regular-season length + 5 (N3), and the preseason path's offset to minus the preseason week count (N8).
 
-    Validates the whole comparison and branch and the stage table's season week count (17 or 18); changes only the
-    immediate and the containing section's digest. Idempotent; 17 weeks keep the retail 22."""
+    Validates each whole instruction and its neighbour, the stage table's season week count (17 or 18) and preseason
+    week count (5 or 4); changes only the two bytes and the containing section's digest. Idempotent; the retail
+    calendar keeps 22 and -5."""
     sections = _sections(payload)
     weeks = payload[_offset(payload, SEASON_WEEKS_VA, sections)]
     _require(weeks in (17, 18), "foreign regular-season week count")
+    preseason = payload[_offset(payload, STAGE_PRESEASON_WEEKS_VA, sections)]
+    _require(preseason in (4, 5), "foreign preseason week count")
     at = _offset(payload, INJURY_SEASON_END_VA, sections)
     _require(payload[at - 2:at] == b"\x83\xff" and payload[at + 1:at + 3] == b"\x7d\x32"
              and payload[at] in (22, 23), "foreign injury return-week comparison")
-    desired = weeks + 5
+    pre_at = _offset(payload, INJURY_PRESEASON_OFFSET_VA, sections)
+    _require(payload[pre_at - 3:pre_at] == b"\x8d\x7c\x30" and payload[pre_at + 1:pre_at + 3] == b"\xeb\x09"
+             and payload[pre_at] in (0xFB, 0xFC), "foreign preseason injury offset")
+    desired, desired_pre = weeks + 5, (-preseason) & 0xFF
     receipt = {"return_week": desired, "va": hex(INJURY_SEASON_END_VA), "before": payload[at],
-               "already_applied": payload[at] == desired}
+               "preseason_weeks": preseason, "preseason_va": hex(INJURY_PRESEASON_OFFSET_VA),
+               "preseason_before": payload[pre_at] - 0x100,
+               "already_applied": payload[at] == desired and payload[pre_at] == desired_pre}
     if receipt["already_applied"]:
         return payload, receipt
     out = bytearray(payload)
     out[at] = desired
+    out[pre_at] = desired_pre
     section = _section_for_offset(sections, at)
+    _require(_section_for_offset(sections, pre_at).header_offset == section.header_offset, "split injury class")
     digest_at = section.header_offset + 36
     out[digest_at:digest_at + 20] = section_digest(bytes(out), section)
     return bytes(out), receipt
@@ -752,7 +770,8 @@ __all__ = ["AWARDS_WEEK_VA", "CALENDAR_2026", "CALENDAR_GROUPS", "DEFAULT_YEAR",
            "SB_VENUE_TABLE_VA", "SEASON_WEEKS_VA", "STAGE_TABLE_VA", "SeasonLengthError", "Site", "WEEK_SITES",
            "apply", "calendar_sites", "created_player_date_sites", "group_sites", "group_status", "postseason_record", "postseason_table",
            "dob_formatter_bytes", "dob_pivot", "read_year", "repair_awards_timing", "repair_injury_season_end",
-           "INJURY_SEASON_END_VA", "rookie_birth_base", "site_table", "status", "year_sites"]
+           "INJURY_SEASON_END_VA", "INJURY_PRESEASON_OFFSET_VA",
+           "rookie_birth_base", "site_table", "status", "year_sites"]
 
 
 def simple_status(payload: bytes) -> str:

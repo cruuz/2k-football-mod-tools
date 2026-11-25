@@ -65,8 +65,13 @@ class Routing(unittest.TestCase):
                 self.assertEqual(season.status(complete)['super_bowl_venue'],'s40' if sofi else 's44')
 
     def test_off_is_exact_legacy_default_and_reapplication_is_idempotent(self):
-        old, _ = season.apply(self.retail)
+        # b81 sportscenter (review N3/N8, round 2 M2): the season step also runs the calendar owner's injury-class
+        # repair, on a fresh install and in place on an existing one
+        legacy, _ = season.apply(self.retail)
+        old, _ = season.repair_injury_season_end(legacy)
+        self.assertNotEqual(old, legacy)
         self.assertEqual(build_route(self.retail,False)[0],old)
+        self.assertEqual(build_route(legacy,False)[0],old)
         self.assertEqual(build_route(old,False)[0],old)
         new, _ = build_route(old,True)
         fresh, _ = build_route(self.retail,True)

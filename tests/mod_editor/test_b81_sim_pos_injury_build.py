@@ -440,6 +440,7 @@ class InPlaceUpgrades(_BuildPath):
         # review N3: the chain also moves the 18-week injury return boundary (nfl2k5_season_length)
         self.assertIn("injury_season_end", receipt["v09_update"])
         self.assertEqual(XbeImage(final).read(0x21DA97, 5), bytes.fromhex("83ff177d32"))
+        self.assertEqual(XbeImage(final).read(0x21DA72, 6), bytes.fromhex("8d7c30fceb09"))   # review N8
 
     def test_released_v09_late_steps_in_every_order(self):
         path = self.private_path("NFL2K5_V09_XISO")

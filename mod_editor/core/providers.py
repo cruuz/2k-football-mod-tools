@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "b849194e5b92d4c4ad3f94b741471e19089a0bc674ef520a42202a448d364397",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "0ccec8ce7fc84d169991a5de0f003fa096642255334134ec88d533e8b5a3579f",
+        "mod_editor/core/mod_build.py": "1ff3475f4bb3a8c8452b54e79bdb8bfbb2508db234ddcd96bc5595e33fe16de5",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -1005,7 +1005,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_qb_trades.py": "00f1b6fd4aceb6c647d7b490a4079b9ac998721d81174b3a379233116b76f6ff",  # b81 qb34 4b (C20): the room owner loads it with bit 16
         "mod_editor/core/nfl2k5_qb_trades_code.py": "03a3b7fe4d829e132d782f62fb180567b7bc5bfc581940c7ff8a3ae7eed7ea68",  # b81 qb34 4b: its generated page template
         "mod_editor/core/nfl2k5_helmet_side_numbers.py": "c10876d8ef2c26740f3559706d8678de673730a7e260285ddc35eaafec9e6069",  # b81 helmet-sides: mod_build loads it by name (route 5 = set E)
-        "mod_editor/core/nfl2k5_sportscenter_news.py": "28ebd50684a634b353ff307f85f469d405c3e98a1e73a4024186e10c00d5e770",  # b81 sportscenter: mod_build loads it by name (MyCareer's guard reads it)
+        "mod_editor/core/nfl2k5_sportscenter_news.py": "4255429d47b2dadae1cdd56b7254d988d7837ae9a8476fedaf8fb4bba28197eb",  # b81 sportscenter: mod_build loads it by name (MyCareer's guard reads it)
         "mod_editor/core/nfl2k5_sportscenter_lines.py": "008059901a2e3e4153882678fe073da80731bd5c7dab07aefd7d0cb443a1a9df",  # b81 sportscenter: mod_build loads it by name (director lines)
         "mod_editor/core/nfl2k5_sim_rb_injuries_b780.py": "0f14137670a5ca28b83092437dfc86c52fc4a5211a4b545271e16bb8aeef4f5c",  # b81 sportscenter: frozen pre-news-row roll for the previous state
         "mod_editor/core/nfl2k5_number_kerning.py": "48405334b32b7495399f204a898825531423ed6025e848b51ac0c86891df6902",  # b81 helmet-sides: the owner reads Number kerning's state (same cell addressing)
@@ -1076,7 +1076,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_screen_hooks_code.py": "bcab9155aceb1e62e2cb1e5a7b98231ec7cf101ae3623a8e0b2397dd4ab27b33",
         "mod_editor/core/nfl2k5_screen_timing.py": "8c7245f79a2c79df3974545b30db4de45c6b1b8071ff5d7a4bc396b2a9903894",
         "mod_editor/core/nfl2k5_season_cap.py": "dda1e4d3a11bfe798d837ab8629bfa1d4e90fc233417e39de1974ac1c5b959c6",
-        "mod_editor/core/nfl2k5_season_length.py": "46b452e7df9686c9d9d69eb42e657ef9895c1b768e27f5088ef15867c034dbaf",
+        "mod_editor/core/nfl2k5_season_length.py": "0640672b47f0205a2dd9e667109fc713290a52379db0471430647cd171092927",
         "mod_editor/core/nfl2k5_senior_bowl.py": "ce39c8aef6d9f5438a98c67360c1392d1e5063d7f5b9094b615dfdae141c255c",
         "mod_editor/core/nfl2k5_senior_bowl_code.py": "000abee8fc9bf5d382d4c8934a0509c32de7976805eadabb5c4aed3ccb0812da",
         "mod_editor/core/nfl2k5_seven_on_seven.py": "8d0da9680a0481ee861c45b0dc8f9e785015bd43e472796a3b6e781597244269",
