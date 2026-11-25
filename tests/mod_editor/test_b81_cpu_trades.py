@@ -14,6 +14,12 @@ the rows of both clubs repaired (S9), nothing of ours left on the board).
 Fixtures come from the environment only (no private paths in the repo): CPU_TRADES_IMAGE (a .b81mem.gz opening) and
 CPU_TRADES_IMAGE_XBE (the executable it was made with). Without them the image classes skip.
 
+SignedRoundTrip (N8): a signed franchise in its third season (NFL2K5_B81_STABILITY_FIXTURES, the pinned save of
+test_b81_sim_pos_injury_signed.py) cold-loaded natively on CPU_TRADES_STANDARD_XBE with the pages installed; one trade
+pass executes trades, the game writes and signs the franchise, a second machine cold-loads that save, and the next pass
+on the live machine and on the cold load must decide the same trades and leave the same players, clubs, picks, ledger
+and board (ledger rows are pointers in RAM; the save stores them as indices).
+
 PagesAndOwner: the byte interface and the owner (install, Retail, foreign, needs, the unowned range) on
 CPU_TRADES_STANDARD_XBE, a standard executable carrying the needs (else skip). Allocation: the fixed pages and the
 step-over, no fixture. Every class fails on c4406481b: there is no nfl2k5_cpu_trades owner, code module or allocation.
@@ -745,6 +751,94 @@ class CpuTradesImage(unittest.TestCase):
         self.assertTrue(greater(flags(1500, False)))
         self.assertFalse(greater(flags(1000, False)))
         self.assertEqual(self.counters()["stories_forced"], 1)
+
+
+THIRD_SEASON = {"rost.body": "70813bd95d1265b40009fb611569e2e1ffcce02bf17a5f73476e8f55ffa3d157",
+                "third-season/SAVEGAME.DAT": "b836dcef8c6c5e67092d0d595e175ea43c2912fe96b4a45cfd065009ff09d305"}
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is required for the native franchise save and load")
+class SignedRoundTrip(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        import hashlib
+        from mod_editor.core import nfl2k5_cpu_trades as ct
+        fixtures = os.environ.get("NFL2K5_B81_STABILITY_FIXTURES", "")
+        if not fixtures or not all((Path(fixtures) / name).is_file() for name in (*THIRD_SEASON, "third-season/EXTRA")):
+            raise unittest.SkipTest("the third-season signed franchise is absent (NFL2K5_B81_STABILITY_FIXTURES)")
+        data = {name: (Path(fixtures) / name).read_bytes() for name in THIRD_SEASON}
+        wrong = {n: hashlib.sha256(raw).hexdigest() for n, raw in data.items() if hashlib.sha256(raw).hexdigest() != THIRD_SEASON[n]}
+        if wrong:
+            raise AssertionError(f"private inputs differ from their pins: {wrong}")
+        cls.roster, cls.save = data["rost.body"], data["third-season/SAVEGAME.DAT"]
+        cls.xbe, _ = ct.install(_fixture(STANDARD_XBE).read_bytes(), 7, p8_ppm=1_000_000, p7_ppm=1_000_000)
+
+    def boot(self, raw):
+        """Cold-load a signed franchise as test_b81_sim_pos_injury_signed does (frontend, game PRNGs, native load)."""
+        from tests.nfl2k5_my_career_mode_fixture import Machine
+        m = Machine(self.xbe)
+        self.addCleanup(m.close)
+        m.frontend(self.roster)
+        m.call(0x77D20, stop=0x77D45, budget=2_000_000)
+        m.live_league_prng()
+        for generator in (0xB12680, 0xE5FCA0):
+            m.call(0x48BE0, ecx=generator, edx=2501)
+        m.put(0xE5FF80, 4)
+        m.native_load(raw, requested=False)
+        m.loaded_menu()
+        return m
+
+    @staticmethod
+    def page(m):
+        return bytes(m.uc.mem_read(VA, 0x2000))
+
+    def tick(self, m):
+        """One native trade pass; (its ring rows, its counters) as the difference to the pages before it."""
+        code = _code()
+        before = self.page(m)
+        m.call(0x2BC960, ecx=3, edx=m.ARENA + 0xF0000, budget=2_000_000_000)
+        after = self.page(m)
+        old, new = code.counters(before), code.counters(after)
+        rows = [{k: v for k, v in r.items() if k != "n"} for r in code.events(after)[len(code.events(before)):]]
+        return rows, {k: new[k] - old[k] for k in new}
+
+    @staticmethod
+    def state(m):
+        read = lambda at, n: bytes(m.uc.mem_read(at, n))
+        root = m.get(0xB72918)
+        count, pool, teams = m.get(root), m.get(root + 4), m.get(root + 0x1C)
+        ledger = []
+        for i in range(600):
+            word, player, club = struct.unpack("<III", read(LEDGER + 12 * i, 12))
+            ledger.append((word, (player - pool) // 0x54 if player else None, (club - teams) // 500 if club else None))
+        return {"players": read(pool, count * 0x54), "clubs": [read(teams + 500 * k, 500) for k in range(32)],
+                "picks": read(PICKS, 448), "cursor": m.get(LEDGER_CURSOR), "ledger": ledger,
+                "board": read(BOARD, 15 * RECORD), "when": [m.get(STAGE), m.get(WEEK), m.get(YEAR)]}
+
+    def test_a_signed_save_after_our_trades_reloads_to_the_same_next_pass(self):
+        from mod_editor.core import nfl2k5_roster_records as records
+        live = self.boot(self.save)
+        self.assertEqual([live.get(STAGE), live.get(YEAR)], [8, 2])
+        live.put(WEEK, 3)                                     # the saved franchise ended its season; trade week 3
+        rows, counts = self.tick(live)
+        self.assertGreater(counts["executed"], 0)
+        self.assertEqual(counts["stories_forced"], counts["executed"])
+        raw = live.native_save(budget=500_000_000)
+        extra = live.native_signature(raw)
+        self.assertTrue(records.verify_extra(raw, extra or b""), "the native signature does not verify")
+        cold = self.boot(raw)
+        self.assertEqual(self.state(cold), self.state(live), "the cold load differs from the live franchise")
+        rows_live, counts_live = self.tick(live)
+        rows_cold, counts_cold = self.tick(cold)
+        self.assertGreater(counts_live["executed"], 0)
+        self.assertEqual(rows_cold, rows_live)
+        self.assertEqual(counts_cold, counts_live)
+        self.assertEqual(self.state(cold), self.state(live))
+        # what the first pass executed is in the reloaded ledger as trade rows, so the second pass cannot repeat it
+        code = _code()
+        traded = {r["player"] for r in rows if r["flags"] & code.F_AFTER and r["result"] == code.RESULT_EXECUTED}
+        self.assertTrue(traded)
+        self.assertFalse(traded & {r["player"] for r in rows_cold if not r["flags"] & code.F_AFTER})
 
 
 class PagesAndLayout(unittest.TestCase):
