@@ -870,10 +870,10 @@ TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"), (
 GAP_OWNERS = (("nfl2k5_honors", "code"), ("nfl2k5_coach_ai", "code"), ("nfl2k5_moment_coaches", "code"),
               ("nfl2k5_human_tap_burst", "code"))
 MYCAREER_M3_STATE_VA = 0x1505000
-# b81 awards: one fixed page at 0x1531000 for the season award vote, the All-Pro team and the defensive credit in
-# simulated games (nfl2k5_awards; claimed in the lane's page register after the CPU trades pages 0x152E000-0x152FFFF and
-# the modern jersey numbers page 0x1530000). Placed like those pages: at its absolute address, never advancing the pool
-# cursor, with its own step-over in to_pool (FIXED_SPAN_END untouched), so every other pool owner skips
+# b81 awards: one fixed page at 0x1531000 for the season award vote and the All-Pro team (nfl2k5_awards; claimed in
+# the lane's page register after the CPU trades pages 0x152E000-0x152FFFF and the modern jersey numbers page 0x1530000).
+# Placed like those pages: at its absolute address, never advancing the pool cursor, with its own step-over in to_pool
+# (FIXED_SPAN_END untouched), so every other pool owner skips
 # 0x1531000..0x1531FFF whether or not it is requested and the owner can be added in place after every other owner.
 AWARDS_OWNER = "nfl2k5_awards"
 AWARDS_VA = 0x1531000

@@ -792,9 +792,9 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_letter_grades_attributes.py": "0fb3e43e4bd366b542bea98770f75d20ed0a46642bf25f38e261971d44b3e28a",
         "mod_editor/core/nfl2k5_letter_grades_code.py": "b01bcdb0e8a0e8c6a41f606500afeffd41034f2615c776dda6a9b24be6548dbd",
         "mod_editor/core/nfl2k5_letter_grades_progress.py": "5088c0b6a545b95efae98f906b5c4c2e030774b22f87a35fd08a2c1c80b31a90",
-        "mod_editor/core/nfl2k5_honors.py": "c7fe23b060e1bd9fc997662f289f5dac10cd4c72f8f41801e7d52a1a3867160a",
+        "mod_editor/core/nfl2k5_honors.py": "689c879603388b9859827be814ffc6290f88d941d4bd96f906ddff71cc2c48ce",
         "mod_editor/core/nfl2k5_honors_code.py": "5f74c634876b93f5a6fb37073b742d2248f7118f6074651473459791caccef59",
-        "mod_editor/core/nfl2k5_awards.py": "1c83ef10f6eadd305fe6af8c580c79ed58c4493cd245ebde86a808e0e170f381",  # b81 awards: the award vote and defensive credit (installed by the honors owner)
+        "mod_editor/core/nfl2k5_awards.py": "77c0ad4a9d8d0ca430c94a9b1a2d2866b4df102c4be7140b6e4713c5f14dd2a6",  # b81 awards: the award vote and defensive credit (installed by the honors owner)
         "mod_editor/core/nfl2k5_awards_code.py": "7fb5ddf1824a5a0d6ebf6e94d6574077a8776e3ca0fad9b6e4913cb950eafa16",  # b81 awards: its generated page
         "mod_editor/core/nfl2k5_champions.py": "f0291e02e9794d2421b588150e294a5898bc20d5e621eceeed0ed7eec3dcc682",
         "mod_editor/core/nfl2k5_champions_code.py": "d0b7c4b07d849a24fda938e120cf7c6d4f15f0b589ac20183ecde61fb7fa463a",
@@ -967,7 +967,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_star_career_code.py": "47b34490a21113803ba97a985378dcec237c39d53fed8fd6e9f498b82ec39098",  # b778-st2
         "mod_editor/core/nfl2k5_sportscenter_lineup.py": "d7901a39e3d80149441eb2b88ce71d49b5cdf6a47a27397ae3947d40f7c29023",  # b778-sc2
         "mod_editor/core/nfl2k5_draft_clock.py": "306e873a85e3c2aaf63815b424faa092a454a15cfd7a6fd334947686262cf4c6",  # b778-dr1
-        "mod_editor/core/nfl2k5_weekly_progression.py": "6fa99e8597da9e46eb69404d42735d2c6d0b7b6b7e4dfe3ea048484f10f64936",  # b778-pg1
+        "mod_editor/core/nfl2k5_weekly_progression.py": "7a5591e33c51891dae37cf5332fb3d6c46983285feaaaa8eade3e93ccafb61fb",  # b778-pg1
         "mod_editor/core/nfl2k5_player_progress_screen.py": "72730dea7dc942cc301fe89b05717913885897a484ed05f9e5a67e63c40fbbad",  # b778-pg2
         "mod_editor/core/nfl2k5_player_progression.py": "83b48e765dbce3139edfe7c2cf7b16d84d81d9cea4b60956bf455e85ef1998c2",  # b778-pg2
         "mod_editor/core/nfl2k5_franchise_extension.py": "f7ec35994cbbd7f48015a4e478167796db88788d77370fb46ae465e800c9663a",  # b780 j23
@@ -1103,7 +1103,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "5a05096fdcb1da480865c5ac49793074d0b7666329eecddc7d04c8ced32b4367",
+        "mod_editor/core/nfl2k5_xbe_space.py": "618105e0df3e191353a4e8c340c2cd1a9080b450266f606b2ad67368b8726d55",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "b63521c9b17119b87558aff36a5a914d0c3fdd42e96240cf7de20065ead644d7",

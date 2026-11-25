@@ -139,7 +139,7 @@ OWNER_BYTES = {
     "franchise_2026": (5120, 0, 0, 0, 4096), "dynamic_kickoff_relocated": (1939, 0, 0, 0, 10),
     "guardian_overlay": (496, 0, 0, 0, 0),
     "helmet_side_numbers": (space.HELMET_SIDES_SIZE, 0, 0, 0, 0),  # b81 helmet sides: route 5 -> set E, one fixed page
-    "awards": (space.AWARDS_SIZE, 0, 0, 0, 0),  # b81 awards: the season vote and defensive credit, one fixed page
+    "awards": (space.AWARDS_SIZE, 0, 0, 0, 0),  # b81 awards: the season vote and All-Pro team, one fixed page
     "franchise_ownership": (space.FRANCHISE_OWNERSHIP_SIZE, 0, 0, 0, 0),
     "injured_reserve": (6144, 0, 0, 0, 5312),  # Modern IR, franchise ownership checks and the 32-club IR store.
 }

@@ -1,4 +1,4 @@
-"""Job b81-awards: the season award vote, the 24-man All-Pro team and the defensive credit in simulated games.
+"""Job b81-awards: the season award vote and the 24-man All-Pro team (and the code of the uninstalled credit, R1).
 
 EXPERIMENTAL / UNWITNESSED in game. Static checks run everywhere. The native classes map the retail USA ``default.xbe``
 with the honors owner (which now installs ``nfl2k5_awards``) and run the real code under Unicorn:
@@ -7,8 +7,10 @@ with the honors owner (which now installs ``nfl2k5_awards``) and run the real co
   two seasons the owner reported (a 15-interception linebacker and a 15-interception corner named MVP over a 40-touchdown
   quarterback): failing first on c4406481b, where the champions owner's "otherworldly" rule gives both the MVP;
 * the All-Pro team: 24 men in the AP shape, nine through the retail best-at-position slots, fifteen written here;
-* the credit (site 0x134DF1): totals per club kept, only defenders who played credited, whole sacks to one man, the
-  gates (Franchise, simulated game, regular season or playoffs), determinism, and the position shares over many games.
+* the credit code (design R1; its site 0x134DF1 is NOT installed in beta 81: in simulated games the live records hold no
+  per-player INT / sack / tackle counters at merge time, see nfl2k5_awards): on synthetic records of the shape the retail
+  getters read, totals per club kept, only defenders who played credited, whole sacks to one man, the gates, determinism
+  and the position shares over many games. Kept for the LATER redesign; nothing in an installed executable calls it.
 
 Boundaries: team records come from substituted record routines (as in the champions tests); the derived ratings the
 credit reads (0x246A80) and the overall (0x246D80) are supplied per player. The full simulated seasons are the lane's
@@ -72,9 +74,10 @@ class StaticTests(unittest.TestCase):
     def test_sites_are_jumps_into_the_entries_over_the_retail_bytes(self):
         at = awards.labels()
         rows = {label: (va, before, after) for label, va, before, after in awards.sites()}
+        self.assertEqual(list(rows), ["vote"])          # beta 81: the vote only; the credit site is not installed
         self.assertEqual(rows["vote"][:2], (0x116E5A, bytes.fromhex("5e5d83c41c")))
-        self.assertEqual(rows["credit"][:2], (0x134DF1, bytes.fromhex("8bd88a871c010000")))
-        for label, entry in (("vote", "awards_vote_entry"), ("credit", "awards_credit_entry")):
+        self.assertEqual(awards.CREDIT_SITE[:3], ("credit", 0x134DF1, bytes.fromhex("8bd88a871c010000")))
+        for label, entry in (("vote", "awards_vote_entry"),):
             va, before, after = rows[label]
             self.assertEqual((after[0], len(after)), (0xE9, len(before)))
             self.assertEqual(va + 5 + struct.unpack_from("<i", after, 1)[0], at[entry])
@@ -542,6 +545,12 @@ class InstallTests(unittest.TestCase):
         code = honors.allocations(older)["code"]
         self.assertEqual(XbeImage(upgraded).read(code["va"], code["size"]), XbeImage(older).read(code["va"], code["size"]))
         self.assertEqual(honors.apply(upgraded)[0], upgraded)
+
+    def test_the_club_merge_stays_retail(self):
+        # beta 81 ships the vote only: FUN_00134DD0 (the credit's site 0x134DF1) is not touched by this owner
+        label, va, before, _entry, _op, length = awards.CREDIT_SITE
+        self.assertEqual(XbeImage(self.patched).read(va, length), before)
+        self.assertEqual(XbeImage(self.patched).read(0x134DD0, 0x35), XbeImage(self.retail).read(0x134DD0, 0x35))
 
     def test_a_single_foreign_site_is_refused(self):
         for label, va, before, after in awards.sites():

@@ -1,4 +1,4 @@
-"""Season award vote, a 24-man All-Pro team and defensive credit in simulated games (job b81-awards). EXPERIMENTAL.
+"""Season award vote and a 24-man All-Pro team (job b81-awards). EXPERIMENTAL.
 
 Owner, 2026-11-25 (simmed franchise, 2029): "award logic needs work. in 2029 in my sim, arvell reese wins mvp with an
 insane 4.5 sack, 104 tackle, 15 int, 2ff, 2 td season. but thats DPOY numbers... jayden daniels should be mvp, qb, plus
@@ -34,18 +34,17 @@ What this owner does (one fixed page, ``nfl2k5_xbe_space.AWARDS_VA``, code only)
     All-Pro: QB, HB, FB, three WR, TE, two T, two G, C, two DE, two DT, two LB, two CB, two S, K, P (24). The first of each
     retail category takes its best-at-position slot (the honors owner records those); the other fifteen get history field 104
     here (Franchise only, regular class). The return-man slot is cleared.
-* The credit, at 0x134DF1 (``mov ebx,eax; mov al,[edi+0x11c]`` of FUN_00134DD0, before one club's players are merged into
-  their careers): in a simulated Franchise game (league mode 2, game mode 4, regular season or playoffs) the club's credited
-  interceptions, sacks and tackles are drawn again among its defenders who played, one at a time (whole sacks to one man),
-  by the real position shares (``CREDIT_SHARES``, nflverse 2021-2025) and within a position by the game's own derived
-  ratings (0x246A80 categories 9 / 4 / 11, squared, squared and to the fifth power); 10% of the interceptions go to the
-  club's best coverage back. The club's totals, the plays and the score are unchanged; the draw uses its own xorshift
-  generator seeded from the game (never the game's 0x48B90 stream), so a simulated season plays out byte for byte as
-  before. When the cornerback tackle owner (``nfl2k5_sim_cb_tackles``) is installed its per-game corner bonus is part of the
-  corners' share, so the tackle table changes with it (``CREDIT_SHARES['tackles_with_cb']``).
+* The defensive credit (design R1, the same page holds its code: ``awards_credit`` / ``awards_credit_entry``) is NOT
+  installed in beta 81. It re-drew a club's interceptions, sacks and tackles in the live game records before the merge
+  at 0x134DF1, but the paired panel (lane REVIEW_ME.txt) showed it changes nothing: in a simulated game the live stats
+  objects carry no per-player INT / sack / tackle counters at merge time ([s+0x20], [s+0x28], [s+0x30] are null in all
+  521 records with the stat flag set, 40 club-games), so the merge's getters (0x24F060, 0x24EF90, 0x24EED0) take their
+  null path (when [0xAC13D8] is set) to the query 0x287530 -> 0x240FB0. A credit that works has to re-attribute the records that
+  query reads (likely the play log; unconfirmed) or the season history; see the lane LATER.txt. Its twin
+  (``credit_weights``, ``CREDIT_SHARES``) stays for that work.
 
 Installed with the honors owner (one toggle; ``nfl2k5_honors.apply``). Not witnessed in game; the rule is proven on the
-stored seasons and the credit on a paired season panel (lane REVIEW_ME.txt).
+stored seasons (native == twin, 40 of 40) and in a paired season panel (games byte for byte the control's).
 """
 from __future__ import annotations
 
@@ -67,9 +66,7 @@ HELP_TEXT = (
     "Season awards are voted the way they have gone in the modern NFL: the MVP is a quarterback on a winning club unless "
     "a back or receiver has a historic season (2,000 rushing yards, 26 touchdowns...) or a defender breaks a record (24 "
     "sacks or 14 interceptions) in a year without a standout quarterback; repeat winners face some voter fatigue. Pass "
-    "rushers and cover men win Defensive Player of the Year, and the All-Pro team has 24 men in the AP shape. In "
-    "simulated franchise games interceptions, sacks and tackles are credited by the real position shares, so linebackers "
-    "no longer collect corners' interceptions and edge rushers' sacks; scores and plays are unchanged.")
+    "rushers and cover men win Defensive Player of the Year, and the All-Pro team has 24 men in the AP shape.")
 
 POSITIONS = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
 P = {name: i for i, name in enumerate(POSITIONS)}
@@ -77,10 +74,11 @@ P = {name: i for i, name in enumerate(POSITIONS)}
 # (label, VA, retail bytes, entry label, opcode, length): each site becomes a jmp rel32 to the entry, NOP-padded.
 SITE_TABLE = (
     ("vote", 0x00116E5A, bytes.fromhex("5e5d83c41c"), "awards_vote_entry", 0xE9, 5),
-    ("credit", 0x00134DF1, bytes.fromhex("8bd88a871c010000"), "awards_credit_entry", 0xE9, 8),
 )
+# Design R1's credit site (not installed in beta 81; see the module docstring): FUN_00134DD0, before one club's merge.
+CREDIT_SITE = ("credit", 0x00134DF1, bytes.fromhex("8bd88a871c010000"), "awards_credit_entry", 0xE9, 8)
 AWARD_CALL, AWARD_TAIL = 0x00116E55, 0x00116E5F     # the champions owner's call site and the honors owner's tail
-CB_SITE = 0x001334C3                                 # read at run time: retail 0x8B unless the cornerback owner hooks it
+CB_SITE = 0x001334C3                                 # read by the (uninstalled) credit: retail 0x8B unless the corner owner hooks it
 
 # Retail routines the runtime calls or reads, pinned by SHA-256 of their retail bytes (own sites masked; the two
 # neighbouring award sites are masked to retail whatever another owner put there, and checked by opcode instead).
@@ -97,11 +95,8 @@ GUARDS = (
     ("team wins", 0x000C7720, 0x30, "83c4b626588be7c7e5da821f5c997519a879a1363edf84c23e2859e5c17a3d90"),
     ("team losses", 0x000C7750, 0x30, "405d309f1add61c7e134c95d1ec455b83848e24c1c882cdb42bfacf43cffc714"),
     ("team ties", 0x000C7780, 0x30, "2481cd7485cb21874604d2e063c8f2897c951ae7efa349ec2cd4dcf181494dab"),
-    ("derived attribute", 0x00246A80, 0x14, "fceb09aae6f34368c6afd32d5dd43384a032ac0acad3eebe64d907cc6b58bb1e"),
     ("overall", 0x00246D80, 0x0B, "b1d398b4daafb19cfa40d3752616c907d3a2b5210446b6fa137e8d034bcbeee9"),
-    ("live next", 0x00061B90, 0x18, "2293018ff01ac08f455d72b1a63bf840f3a702034ad353487e7ed425067b96a6"),
     ("award block", 0x00116E55, 0x0F, "80b8b0b7def41097d6b4d39eb6cde77b31dec53990a3b5be583a1ada1dd559e0"),
-    ("club merge head", 0x00134DD0, 0x35, "d76cb3b9b599b7053c7f1d26471790dbf282a752ea81e8f9140d3cce8013c900"),
 )
 ALWAYS_RETAIL = ((AWARD_CALL, bytes.fromhex("e856f1ffff")), (AWARD_TAIL, bytes.fromhex("e95cf2ffff")))
 

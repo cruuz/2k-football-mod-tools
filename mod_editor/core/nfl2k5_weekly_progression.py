@@ -210,11 +210,9 @@ def _recognize(payload):
         raw = image.read(owned["va"], CODE_SIZE)
         states.add("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == code_for(owned["va"]) else "foreign")
     require(states in ({"retail"}, {"applied"}), "Foreign or mixed weekly progression site/code")
-    from . import nfl2k5_awards as awards  # b81 awards: its credit site 0x134DF1 lies in the merge-loop guard
-    masked = list(edits) + awards.applied_sites(image)
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
-        for _, at, before, _ in masked:
+        for _, at, before, _ in edits:
             if va <= at and at + len(before) <= va + size:
                 content[at - va:at - va + len(before)] = before
         require(hashlib.sha256(content).hexdigest() == digest, f"Foreign weekly progression prerequisite at {va:#x}")

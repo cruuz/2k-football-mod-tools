@@ -61,7 +61,7 @@ import hashlib
 import struct
 from typing import Mapping
 
-from . import nfl2k5_awards as awards  # b81: the season vote, All-Pro team and defensive credit (installed with this owner)
+from . import nfl2k5_awards as awards  # b81: the season vote and All-Pro team (installed with this owner)
 from . import nfl2k5_champions as champions
 from . import nfl2k5_history_pool as history_pool  # b780 hist1: its in-place sites lie inside two guarded spans
 from . import nfl2k5_honors_code as runtime
