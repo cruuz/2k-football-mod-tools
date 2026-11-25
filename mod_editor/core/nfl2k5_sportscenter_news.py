@@ -91,9 +91,12 @@ GUARDS = (
     (0x21E2E0, 0x36C, "dd02dc5ba38cf9bc14095fff8022219497c40fce1400340fb948ed44830951e8"),  # injury segment begin
     (0x21DAF0, 0x13C, "ac7489d4b4d04873bb32cac10ed2b554689413938afb21531acbd6585cc7bba3"),  # list score
     (0x21DA50, 0x57, "163ec5a50d477238a25a33169b2b50091dff813d3d4bfe70f129d899ea6ab6ba"),   # duration class, to its
-    # calendar compares (0x21DAA7.., which the 18-week season owner changes)
+    # calendar compares (0x21DAA7.., which the 18-week season owner changes); its return boundary 0x21DA99 is judged at
+    # the retail 22 (the season owner's repair_injury_season_end writes 23 with 18 weeks)
     (0x15EE40, 0xBD, "0fb9a09ac2ec0ed0d0042735d87c26908c90602fe81fc3e7b6f419fe2e5351d6"),   # list init / insert
 )
+#: nfl2k5_season_length.INJURY_SEASON_END_VA: the duration class's return boundary (retail 22, 23 with 18 weeks)
+RETURN_BOUNDARY_VA = 0x0021DA99
 _FAILURES = (ValueError, IndexError, KeyError, TypeError, struct.error, OverflowError, UnicodeError)
 
 
@@ -253,6 +256,8 @@ def _guards(payload: bytes) -> None:
         for site, retail in ALL_SITES:
             if va <= site and site + len(retail) <= va + size and bytes(blob[site - va:site - va + len(retail)]) != retail:
                 blob[site - va:site - va + len(retail)] = retail      # judge the retail code around our own sites
+        if va <= RETURN_BOUNDARY_VA < va + size and blob[RETURN_BOUNDARY_VA - va] == 23:
+            blob[RETURN_BOUNDARY_VA - va] = 22                        # the calendar owner's 18-week return boundary
         _require(_sha(bytes(blob)) == digest, f"foreign SportsCenter news prerequisite at {va:#x}")
 
 

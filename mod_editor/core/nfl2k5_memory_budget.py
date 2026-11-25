@@ -501,11 +501,12 @@ def owners(opts: dict, target_mb: int = 64) -> list:
               and (opts.get("qb_room") is not None or (target_mb == 128 and qb_room_needs_met(opts.get))))
     if (target_mb == 128 and injuries) or piece3:
         out.append("qb_room")
-    # b81 sportscenter: this release's builder installs SportsCenter news on every 128 MB scale-out build
-    # (mod_build._apply_sportscenter_news; no option of its own). options() marks a BuildPlan or a recipe with
+    # b81 sportscenter: this release's builder installs SportsCenter news on every 128 MB scale-out build with the 2026
+    # season (mod_build._apply_sportscenter_news; no option of its own). options() marks a BuildPlan or a recipe with
     # "sportscenter_news"; a flat {field: value} dict is a measured build's effective options (the RC and v0.8
     # anchors had no news page) and counts it only when it says so.
-    if target_mb == 128 and on(opts, "sportscenter_news") and any(on(opts, f) for f in SCALEOUT_FIELDS):
+    if (target_mb == 128 and on(opts, "sportscenter_news") and on(opts, "season_2026")
+            and any(on(opts, f) for f in SCALEOUT_FIELDS)):
         out.append("sportscenter_news")
     return out + list(INFRASTRUCTURE) if out else out
 

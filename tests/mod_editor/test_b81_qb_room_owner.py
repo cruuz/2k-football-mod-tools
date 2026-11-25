@@ -49,7 +49,9 @@ class AllocatorPlacementTests(unittest.TestCase):
                 self.assertEqual((row["va"], row["size"], row["align"]), (0x1529000, 0x3000, 0x1000))
                 # C20: the dormant union also carries the trades page right after the room (0x152C000..0x152CFFF) and
                 # (b81 helmet sides) the side-numbers page after it (0x152D000..0x152DFFF).
-                end = 0x152E000 if name == "dormant union" else 0x152C000
+                # b81 sportscenter (review S1): and the SportsCenter news page at 0x1533000, so the union ends at
+                # 0x1533FFF.
+                end = 0x1534000 if name == "dormant union" else 0x152C000
                 self.assertEqual(report["file_size"] - space.SCALE3_FILE_SIZE, end - space.POOL_VA)
 
     def test_adding_the_room_moves_no_row_and_does_not_advance_the_cursor(self):

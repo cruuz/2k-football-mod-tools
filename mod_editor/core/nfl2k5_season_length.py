@@ -353,6 +353,40 @@ def repair_awards_timing(payload: bytes) -> tuple[bytes, dict]:
     out[digest_at:digest_at + 20] = section_digest(bytes(out), section)
     return bytes(out), receipt
 
+# b81 sportscenter (review N3): FUN_0021da50, the injury duration class, calls a player back after the Super Bowl when
+# his return week (weeks played + weeks out) reaches the regular weeks + 5: retail ``cmp edi,0x16`` (17 + 5) at
+# 0x21DA97, then class 2 or 3 ("out for the playoffs / the season"); below it, a return in the postseason is class 1.
+# The week sweep moved this function's four 17 -> 18 compares (WEEK_SITES "injury_beyond_regular_*") but left this
+# one, so with 18 weeks a return in week 22 (the Super Bowl) read "out for the season" (SportsCenter's Injured Reserve
+# page uses the class). Like repair_awards_timing: a repair outside WEEK_SITES, so existing installs still validate
+# and are upgraded in place by the build (mod_build's 2026-season step) and the v0.9 update (its SportsCenter chain).
+INJURY_SEASON_END_VA = 0x0021DA99   # the imm8 of cmp edi,imm8 at 0x21DA97 (then jge 0x21DACE: 7d 32)
+
+
+def repair_injury_season_end(payload: bytes) -> tuple[bytes, dict]:
+    """Move FUN_0021da50's after-the-Super-Bowl return boundary to the native regular-season length + 5.
+
+    Validates the whole comparison and branch and the stage table's season week count (17 or 18); changes only the
+    immediate and the containing section's digest. Idempotent; 17 weeks keep the retail 22."""
+    sections = _sections(payload)
+    weeks = payload[_offset(payload, SEASON_WEEKS_VA, sections)]
+    _require(weeks in (17, 18), "foreign regular-season week count")
+    at = _offset(payload, INJURY_SEASON_END_VA, sections)
+    _require(payload[at - 2:at] == b"\x83\xff" and payload[at + 1:at + 3] == b"\x7d\x32"
+             and payload[at] in (22, 23), "foreign injury return-week comparison")
+    desired = weeks + 5
+    receipt = {"return_week": desired, "va": hex(INJURY_SEASON_END_VA), "before": payload[at],
+               "already_applied": payload[at] == desired}
+    if receipt["already_applied"]:
+        return payload, receipt
+    out = bytearray(payload)
+    out[at] = desired
+    section = _section_for_offset(sections, at)
+    digest_at = section.header_offset + 36
+    out[digest_at:digest_at + 20] = section_digest(bytes(out), section)
+    return bytes(out), receipt
+
+
 WEEK_SITES: tuple[Site, ...] = (
     _cmp8("stage_table_season_weeks", SEASON_WEEKS_VA, 0x11, 0x12,
           ".rdata stage table row 8 (+4): weeks simulated by the Season stage (FUN_00247b20 / FUN_002480b0)"),
@@ -717,7 +751,8 @@ __all__ = ["AWARDS_WEEK_VA", "CALENDAR_2026", "CALENDAR_GROUPS", "DEFAULT_YEAR",
            "POSTSEASON_LABELS", "POSTSEASON_TABLE_VA", "RETAIL_POSTSEASON", "RETAIL_YEAR", "SB_VENUE_CASES",
            "SB_VENUE_TABLE_VA", "SEASON_WEEKS_VA", "STAGE_TABLE_VA", "SeasonLengthError", "Site", "WEEK_SITES",
            "apply", "calendar_sites", "created_player_date_sites", "group_sites", "group_status", "postseason_record", "postseason_table",
-           "dob_formatter_bytes", "dob_pivot", "read_year", "repair_awards_timing", "rookie_birth_base", "site_table", "status", "year_sites"]
+           "dob_formatter_bytes", "dob_pivot", "read_year", "repair_awards_timing", "repair_injury_season_end",
+           "INJURY_SEASON_END_VA", "rookie_birth_base", "site_table", "status", "year_sites"]
 
 
 def simple_status(payload: bytes) -> str:

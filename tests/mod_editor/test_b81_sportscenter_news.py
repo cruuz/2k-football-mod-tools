@@ -36,6 +36,7 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 CANDIDATE_SHA = "9edd1353bedfbca6b4ce35faa2acc3cb68b8a74521d3313e3b1873e6b12c7c3d"
 IMAGE_SHA = "1f725ff50fe01e920bd5043892b597901c8ce0665de8f56ab839522d1bef1b4e"
 LEDGER, CURSOR, THIS_WINDOW, LAST_WINDOW = 0xE3F070, 0xE3F06C, 0xE3F064, 0xE3F068
+LEAGUE_TYPE = 0xE576A0     # read by 0xC4B80: 2 = franchise
 IR_PAGE, MAJOR, NFC, AFC, NFL = 0xC13C90, 0xC13CCC, 0xC13CD8, 0xC13D14, 0xC13D50
 
 
@@ -125,6 +126,16 @@ class _Franchise:
             i = (i + 1) % 600
         return out
 
+    def raw_rows(self, start, end):
+        """(dword0, player, club) per row: dword0 = kind | a16 << 5 | (b10 & 0x3FF) << 21 | last << 31 (0x2BFDF0)."""
+        out = []
+        i = start
+        while i != end:
+            at = LEDGER + 12 * i
+            out.append((self.get(at), self.get(at + 4), self.get(at + 8)))
+            i = (i + 1) % 600
+        return out
+
     def entries(self, base, count):
         return [(self.get(base + 12 * k), self.get(base + 12 * k + 4)) for k in range(count) if self.get(base + 12 * k)]
 
@@ -142,8 +153,10 @@ class FranchiseImageTests(unittest.TestCase):
         cls.regions = fi.load_memory(image).regions
         cls.patched = sc.apply(rb.apply(cls.original)[0])[0]
 
-    def _tick(self, xbe):
+    def _tick(self, xbe, league_type=None):
         f = _Franchise(xbe, self.original, self.regions)
+        if league_type is not None:
+            f.m.uc.mem_write(LEAGUE_TYPE, struct.pack("<I", league_type))
         backs = {}
         for club in f.clubs():
             for p in f.roster(club):
@@ -154,6 +167,7 @@ class FranchiseImageTests(unittest.TestCase):
         rolled = {p: club for p, (club, (w20, w24)) in backs.items()
                   if not w20 & 0xBFC00000 and not w24 & 0x70000000
                   and f.get(p + 0x20) >> 31 and (f.get(p + 0x24) >> 28) & 7 == 4}
+        self.last_raw = f.raw_rows(start, f.get(CURSOR))
         return f, rolled, f.rows(start, f.get(CURSOR))
 
     def test_the_halfback_roll_posts_one_injury_row_per_back_it_hurts(self):
@@ -162,6 +176,49 @@ class FranchiseImageTests(unittest.TestCase):
         self.assertTrue(rolled, "the kept image's next tick rolls no halfback (the image changed?)")
         self.assertEqual(sorted((p, c) for k, p, c in rows if k == 10), sorted(rolled.items()))
         self.assertEqual([k for k, _p, _c in rows], [10] * len(rolled))
+
+    def test_the_news_row_fields_are_the_merge_poster_s(self):
+        """0x247160's row, as the end-of-game merge posts it: kind 10, a16 = min((w >> 10) & 7, w >> 13) of the player's
+        word +0x28, b10 = 0, last = 1, the club the roll walked."""
+        f, rolled, _rows = self._tick(self.patched)
+        self.assertTrue(rolled)
+        self.assertEqual(len(self.last_raw), len(rolled))
+        for dword0, player, club in self.last_raw:
+            word = f.get(player + 0x28) & 0xFFFF
+            self.assertEqual(dword0 & 31, 10)
+            self.assertEqual((dword0 >> 5) & 0xFFFF, min((word >> 10) & 7, word >> 13), f"{player:#x}: a16")
+            self.assertEqual((dword0 >> 21) & 0x3FF, 0)
+            self.assertEqual(dword0 >> 31, 1)
+            self.assertEqual(club, rolled[player])
+
+    def test_outside_franchise_mode_the_roll_posts_no_row(self):
+        """The stub posts only when 0xC4B80 (the league type [0xE576A0]) reads 2, franchise: the tick also runs in other
+        modes (the retail tick tests 2 itself at 0x133C8C)."""
+        f = _Franchise(self.patched, self.original, self.regions)
+        self.assertEqual(f.get(LEAGUE_TYPE), 2)
+        for league_type in (0, 1):
+            with self.subTest(league_type=league_type):
+                _f, rolled, rows = self._tick(self.patched, league_type=league_type)
+                self.assertTrue(rolled, "the roll itself runs outside franchise mode too")
+                self.assertEqual([r for r in rows if r[0] == 10], [])
+
+    def test_a_return_in_the_super_bowl_week_is_not_season_ending(self):
+        """Review N3: FUN_0021da50 (the class R2a reads) calls a player back after the Super Bowl from the return week
+        weeks played + weeks out >= 22 (17 + 5). With 18 weeks the Super Bowl is week 22, so a return then read "out for
+        the season" (class 3). nfl2k5_season_length.repair_injury_season_end moves the boundary to 23 (class 1 then)."""
+        from mod_editor.core import nfl2k5_season_length as season
+        repaired, receipt = season.repair_injury_season_end(self.patched)
+        self.assertEqual((receipt["before"], receipt["return_week"], receipt["already_applied"]), (22, 23, False))
+        for xbe, at_22 in ((self.patched, 3), (repaired, 1)):
+            f = _Franchise(xbe, self.original, self.regions)
+            played = f.m.call(0x15E8D0)
+            player = next(p for club in f.clubs() for p in f.roster(club)
+                          if not f.get(p + 0x20) & 0xBFC00000 and not f.get(p + 0x24) & 0x70000000)
+            for back, expected in ((21, 1), (22, at_22), (23, 3)):
+                with self.subTest(boundary=22 if xbe is self.patched else 23, return_week=back):
+                    word = (f.get(player + 0x20) & ~0x3FC00000) | 0x80000000 | ((back - played) << 22)
+                    f.m.uc.mem_write(player + 0x20, struct.pack("<I", word))
+                    self.assertEqual(f.duration_class(player), expected)
 
     def test_before_the_news_row_the_roll_posted_nothing(self):
         _f, rolled, rows = self._tick(self.original)
@@ -239,6 +296,7 @@ class OwnerTests(unittest.TestCase):
         # step-over, the quarterback span untouched
         self.assertEqual((space.SPORTSCENTER_NEWS_VA, space.SPORTSCENTER_NEWS_SIZE), (0x1533000, space.PAGE))
         self.assertEqual(sc.REQUESTS, (space.SPORTSCENTER_NEWS_REQUEST,))
+        self.assertIn(space.SPORTSCENTER_NEWS_REQUEST, space.dormant_union())     # review S1: the manifest's union
         self.assertIn(sc.OWNER, space.FIXED_PAGE_OWNERS)
         self.assertEqual(space.FIXED_SPAN_END, space.HELMET_SIDES_VA + space.HELMET_SIDES_SIZE)
         self.assertEqual(space.LATE_OWNERS[-4:], (sc.OWNER, space.QB_ROOM_OWNER, space.QB_TRADES_OWNER,
@@ -256,7 +314,7 @@ class OwnerTests(unittest.TestCase):
 
     def test_the_page_sits_at_its_address_and_every_other_pool_owner_steps_over_it(self):
         for name, requests in (("alone", [space.SPORTSCENTER_NEWS_REQUEST]),
-                               ("dormant union", list(space.dormant_union()) + [space.SPORTSCENTER_NEWS_REQUEST])):
+                               ("dormant union", list(space.dormant_union()))):
             with self.subTest(case=name):
                 rows = space.plan(requests)["allocations"]
                 row = next(r for r in rows if r["owner"] == sc.OWNER)
@@ -328,6 +386,36 @@ class OwnerTests(unittest.TestCase):
                 self.assertEqual(XbeImage(out).read(cave, rb.CODE_SIZE), rb.code_for(cave))
                 self.assertEqual(rb.apply(out)[1]["status"], "already_applied")
 
+    def test_the_calendar_owner_s_injury_boundary_repair(self):
+        """Review N3: nfl2k5_season_length.repair_injury_season_end, the calendar owner's in-place upgrade (like its
+        repair_awards_timing): 17 weeks keep 22, 18 weeks get 23 (one byte and the section digest), idempotent,
+        refused on foreign bytes; the season groups still validate and SportsCenter news accepts either value."""
+        from mod_editor.core import nfl2k5_season_length as season
+        _path, retail = _fixture("NFL2K5_RETAIL_XBE")
+        self.assertEqual(season.repair_injury_season_end(retail), (retail, season.repair_injury_season_end(retail)[1]))
+        self.assertTrue(season.repair_injury_season_end(retail)[1]["already_applied"])
+        for name in ("NFL2K5_V09_RELEASED_XBE", "NFL2K5_B81_SC_XBE"):
+            with self.subTest(name):
+                _path, xbe = _fixture(name)
+                out, receipt = season.repair_injury_season_end(xbe)
+                self.assertEqual((receipt["before"], receipt["return_week"]), (22, 23))
+                image = XbeImage(out)
+                self.assertEqual(image.read(0x21DA97, 5), bytes.fromhex("83ff177d32"))
+                changed = [i for i, (a, b) in enumerate(zip(xbe, out)) if a != b]
+                boundary = XbeImage(xbe).offset(season.INJURY_SEASON_END_VA)
+                self.assertIn(boundary, changed)
+                # besides the byte, only the section's 20-byte digest in the headers
+                others = [i for i in changed if i != boundary]
+                self.assertLessEqual(len(others), 20)
+                self.assertTrue(all(i < XbeImage(xbe).headers_size for i in others))
+                self.assertEqual(season.repair_injury_season_end(out), (out, season.repair_injury_season_end(out)[1]))
+                self.assertEqual(season.group_status(out, "season_length"), "applied")
+                self.assertEqual(sc.status(out), sc.status(xbe))
+                bad = bytearray(out)
+                bad[XbeImage(out).offset(0x21DA9A)] = 0x7C                 # jl instead of jge: no comparison of ours
+                with self.assertRaises(ValueError):
+                    season.repair_injury_season_end(bytes(bad))
+
     def test_rb_upgrade_keeps_the_weekly_jump_parked_by_simulated_qb_injuries(self):
         """The v0.9 update's order: Simulated QB injuries (current revision) park the weekly jump at 0x133CC9 first,
         then the SportsCenter chain upgrades the halfback roll. Fails before: "RB injury site 0x133cc9 is not the
@@ -347,7 +435,8 @@ class OwnerTests(unittest.TestCase):
         self.assertEqual(qb.read_settings(out)["status"], "applied")
         self.assertEqual(qb.read_settings(out)["mode"], "realistic")
         chained, upgrade = mod_build._sportscenter_news_upgrade(parked)
-        self.assertEqual(sorted(upgrade), ["sim_rb_injuries", "sportscenter_news"])
+        self.assertEqual(sorted(upgrade), ["injury_season_end", "sim_rb_injuries", "sportscenter_news"])
+        self.assertEqual(XbeImage(chained).read(0x21DA99, 1), b"\x17")
         self.assertEqual((rb.status(chained), sc.status(chained), qb.read_settings(chained)["status"]),
                          ("applied", "applied", "applied"))
 

@@ -8,7 +8,7 @@ reading), for every combination of the director variables the two events test.
     child 43) and calls spot 7 "on the outside looking in" (3284), and the sign-off names the division round after
     18 weeks (fails before: these are the retail bytes);
   * with the owner: everything selectable after N weeks is what retail selected after N-1 (weeks 15 to 23), except
-    that child 43 is never selectable and children 50/51 only for spot 8; nothing changes before week 13;
+    that child 43 is never selectable and children 50/51 only for spot 8; nothing changes through week 14;
   * Berman's Primetime Players (event 170, coordinator's ruling): "two weeks to go now" after Week 16, the wildcard /
     final four / conference lines one round later than retail, only the generic line after Weeks 15, 17 and 18, and
     never "Pivotal Week 16" or "And then there were 12" (fails before: "wildcard edition" after Week 18);
@@ -214,9 +214,9 @@ class LinesTests(unittest.TestCase):
 
     def test_applied_director_follows_the_2026_calendar(self):
         for event in (PICTURE, SIGN_OFF):
-            for weeks in range(0, 13):
+            for weeks in range(0, 15):
                 self.assertEqual(self._sel("after", event, weeks), self._sel("before", event, weeks),
-                                 f"event {event}, {weeks} weeks: unchanged before the pictures air")
+                                 f"event {event}, {weeks} weeks: unchanged through Week 14")
             for weeks in range(15, 24):
                 want = {child: set(spots) for child, spots in self._sel("before", event, weeks - 1).items()}
                 if event == PICTURE:
@@ -279,6 +279,33 @@ class LinesTests(unittest.TestCase):
     def test_calendar_gate(self):
         self.assertFalse(sl.wanted(_path("NFL2K5_RETAIL_XBE").read_bytes()), "retail calendar: retail lines stay")
         self.assertTrue(sl.wanted(_path("NFL2K5_B81_SC_XBE").read_bytes()), "18 weeks and seven seeds")
+
+
+class FinalPassTests(unittest.TestCase):
+    """The build re-reads the director after every later disc writer (review S3), like the news owner's check."""
+
+    def test_both_routes_recheck_after_the_compaction(self):
+        import inspect
+        from mod_editor.core import mod_build
+        for route in (mod_build._build, mod_build._update_v09_disc):
+            with self.subTest(route=route.__name__):
+                source = inspect.getsource(inspect.unwrap(route))
+                self.assertGreater(source.index("_verify_sportscenter_lines(target, receipt)"),
+                                   source.rindex("_compact_build_disc("))
+
+    def test_a_lost_site_stops_the_build_and_a_skipped_step_is_not_checked(self):
+        from unittest import mock
+        from mod_editor.core import mod_build
+        stub = mock.Mock()
+        with mock.patch.object(mod_build, "_core_module", return_value=stub):
+            stub.check_image.return_value = []
+            mod_build._verify_sportscenter_lines("disc", {"result": {"sportscenter_lines": "applied"}})
+            stub.check_image.return_value = [{"label": "signoff_division_round"}]
+            with self.assertRaisesRegex(ValueError, "signoff_division_round"):
+                mod_build._verify_sportscenter_lines("disc", {"result": {"sportscenter_lines": "applied"}})
+            stub.check_image.reset_mock()
+            mod_build._verify_sportscenter_lines("disc", {"result": {"sportscenter_lines": "skipped (not 18 weeks)"}})
+            stub.check_image.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -159,6 +159,10 @@ class PackExtentResolverTests(unittest.TestCase):
             def repair_awards_timing(xbe: bytes) -> tuple[bytes, dict]:  # b771 v1i: already repaired, nothing written
                 return xbe, {"already_applied": True}
 
+            @staticmethod
+            def repair_injury_season_end(xbe: bytes) -> tuple[bytes, dict]:  # b81 sportscenter: already moved
+                return xbe, {"already_applied": True}
+
         class Deadline:  # b778-tr1: reads the retail trade-deadline sites the stubbed bytes cannot carry
             @staticmethod
             def status(_xbe: bytes) -> str:

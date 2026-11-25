@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "b849194e5b92d4c4ad3f94b741471e19089a0bc674ef520a42202a448d364397",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "da9dcac2f9e15b4a34c3cf0141c4beda7c90ee6d7aaf3a7094e6885fa869338e",
+        "mod_editor/core/mod_build.py": "0ccec8ce7fc84d169991a5de0f003fa096642255334134ec88d533e8b5a3579f",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -1005,7 +1005,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_qb_trades.py": "00f1b6fd4aceb6c647d7b490a4079b9ac998721d81174b3a379233116b76f6ff",  # b81 qb34 4b (C20): the room owner loads it with bit 16
         "mod_editor/core/nfl2k5_qb_trades_code.py": "03a3b7fe4d829e132d782f62fb180567b7bc5bfc581940c7ff8a3ae7eed7ea68",  # b81 qb34 4b: its generated page template
         "mod_editor/core/nfl2k5_helmet_side_numbers.py": "c10876d8ef2c26740f3559706d8678de673730a7e260285ddc35eaafec9e6069",  # b81 helmet-sides: mod_build loads it by name (route 5 = set E)
-        "mod_editor/core/nfl2k5_sportscenter_news.py": "815115d312b2e116a3ac788e31701e4ae6786141e06c957acf8cee2fddaa57ee",  # b81 sportscenter: mod_build loads it by name (MyCareer's guard reads it)
+        "mod_editor/core/nfl2k5_sportscenter_news.py": "28ebd50684a634b353ff307f85f469d405c3e98a1e73a4024186e10c00d5e770",  # b81 sportscenter: mod_build loads it by name (MyCareer's guard reads it)
         "mod_editor/core/nfl2k5_sportscenter_lines.py": "008059901a2e3e4153882678fe073da80731bd5c7dab07aefd7d0cb443a1a9df",  # b81 sportscenter: mod_build loads it by name (director lines)
         "mod_editor/core/nfl2k5_sim_rb_injuries_b780.py": "0f14137670a5ca28b83092437dfc86c52fc4a5211a4b545271e16bb8aeef4f5c",  # b81 sportscenter: frozen pre-news-row roll for the previous state
         "mod_editor/core/nfl2k5_number_kerning.py": "48405334b32b7495399f204a898825531423ed6025e848b51ac0c86891df6902",  # b81 helmet-sides: the owner reads Number kerning's state (same cell addressing)
@@ -1076,7 +1076,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_screen_hooks_code.py": "bcab9155aceb1e62e2cb1e5a7b98231ec7cf101ae3623a8e0b2397dd4ab27b33",
         "mod_editor/core/nfl2k5_screen_timing.py": "8c7245f79a2c79df3974545b30db4de45c6b1b8071ff5d7a4bc396b2a9903894",
         "mod_editor/core/nfl2k5_season_cap.py": "dda1e4d3a11bfe798d837ab8629bfa1d4e90fc233417e39de1974ac1c5b959c6",
-        "mod_editor/core/nfl2k5_season_length.py": "259d80385ea6e657ea2732d87f1711c90f5f9165134eb5d62b55ecb4fb5cca97",
+        "mod_editor/core/nfl2k5_season_length.py": "46b452e7df9686c9d9d69eb42e657ef9895c1b768e27f5088ef15867c034dbaf",
         "mod_editor/core/nfl2k5_senior_bowl.py": "ce39c8aef6d9f5438a98c67360c1392d1e5063d7f5b9094b615dfdae141c255c",
         "mod_editor/core/nfl2k5_senior_bowl_code.py": "000abee8fc9bf5d382d4c8934a0509c32de7976805eadabb5c4aed3ccb0812da",
         "mod_editor/core/nfl2k5_seven_on_seven.py": "8d0da9680a0481ee861c45b0dc8f9e785015bd43e472796a3b6e781597244269",
@@ -1104,7 +1104,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "2c77ce8319515fc23561a67e09ebd032687a7a773c7a5a0824f1c02feab68350",
+        "mod_editor/core/nfl2k5_xbe_space.py": "a1d19e0e1018827f5e6bbed3f5a7861f163b478222e9141a4b119dd6e1095d4a",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "b63521c9b17119b87558aff36a5a914d0c3fdd42e96240cf7de20065ead644d7",
