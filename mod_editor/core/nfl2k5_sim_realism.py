@@ -76,6 +76,22 @@ so the games are identical) give lead backs 928/965 yards, 10/17 backs over 1,00
 (NFL 1,269) and top-32 960/1,006 (NFL 985). The beta 80 correction code stays in place and adds nothing. A custom build with this
 option but without Simulated RB short injuries keeps the retail fullback carries and loses the old correction.
 
+b81 fb-targets: fullback targets. Report (beta 81, from a played franchise): "patric ricard, h back for giants, dominated
+the stats for the year?? they never use him". The retail target lottery ``0x1034C0`` draws from the lineup slots at
+``0x4F6A80`` (4, 1, 5, 8, 2, 6, 3, 7: WR1, HB1, WR2, TE1, FB1, WR3, HB2, WR4), each weighted by its receiving composite
+squared, so the FB1 slot always competes. The b780 db2 rule thinned fullback carries, never targets: on the stored beta 81
+panels fullbacks caught 500-540 passes a league season (20-24% of the backfield's catches, 4.4-4.8% of all), the starters
+10-50 each and Ricard about 40, where the same players caught about 125 in the 2025 NFL season and Ricard 1. The target
+site now enters ``fb_entry``: the target step runs as before (the lottery and the redirect above), and a pick with
+position byte 8 (fullbacks and the authored H-backs) keeps the pass when the 16-bit league draw is below
+``FB_TARGET_KEEP_THRESHOLD`` (1 in 3); otherwise the step runs again, up to ``FB_TARGET_REDRAWS`` times, and the first
+other pick takes it (the TE1 slot, else the HB1 slot, if every draw is a fullback). A halfback in the FB slot is not
+touched. The room came from the season merge: the lead-back rush correction had a constant of 0 since b780 db2 and never
+changed a stat, so its branch and the rushing-yard read at the tackle entry are gone; the tackle correction is the same
+arithmetic, inlined. Everything before the tackle entry and the float pool keep their offsets (the simulated QB injury
+option links ``pass_scale`` and the pool, and edits the mix block), and the size stays 896, so the beta 81 revision
+before this rule reads "legacy" and is updated in place in its own allocation, under the QB injury option too.
+
 Every site is recognised by its pinned retail bytes; the module refuses a foreign executable.  The
 data reservation (16 bytes) holds the temporary merge and run-outcome hand-offs and nothing else.
 The played-game path (game mode other than 4 at the merge gate), the live playbook calls and every
@@ -94,7 +110,8 @@ BUILD_CAPTION = "Simulated season realism (experimental)"
 HELP_TEXT = (
     "EXPERIMENTAL. In franchise games the CPU simulates (not games you play) the play mix moves toward "
     "the modern NFL (about 33 passes and 27 runs a team), and better passers call more passes than weaker ones; "
-    "both starting receivers keep the targets the game gives them. Strong receiving pairs share extra targets, and mobile quarterbacks "
+    "both starting receivers keep the targets the game gives them. Strong receiving pairs share extra targets, fullbacks and "
+    "H-backs keep about one in three of the passes the game aims at them, and mobile quarterbacks "
     "carry more often. Team interceptions move toward 12.8, and tackle totals move toward the NFL leader and "
     "top-10 levels. Red-zone passes gain fewer yards so scoring and the touchdown mix land near the modern NFL. "
     "Played games, ratings and rosters are unchanged. The numbers are calibrated from nflverse 2021-2025 regular "
@@ -157,6 +174,16 @@ TACKLE_BONUS_PCT = 10                # b780 b5-sim: the code added a hard-coded 
                                      # and the round-5 notes said 10%; the code now uses the constant (17-game seasons put
                                      # the 21% tackle leader at 171-190 against the NFL's 155-180)
 SKIP_TACKLE_POSITION = 4             # cornerbacks are calibrated by nfl2k5_sim_cb_tackles
+# b81 fb-targets: a fullback (position byte 8: fullbacks and the authored H-backs) picked as the target keeps the pass
+# when the 16-bit league draw is below this (21845/65536 = 1 in 3); otherwise the whole target step (the retail lottery
+# and the redirect above) draws again, up to FB_TARGET_REDRAWS times, and then the TE1 lineup slot, else the HB1 slot,
+# takes it. Measured before the rule (stored b81 panels): fullbacks caught 500-540 passes a league season, 20-24% of the
+# backfield's catches; the same players caught about 125 in the 2025 NFL season.
+FULLBACK_POSITION = 8
+FB_TARGET_KEEP_THRESHOLD = 21845
+FB_TARGET_REDRAWS = 3
+FN_LEAGUE_DRAW = 0x00048BC0          # mov ecx,0xB12680; jmp 0x48B50: the league RNG (the carry rule's draw), dword in EAX
+TE1_SLOT, HB1_SLOT = 0x28, 0x0C      # sim team offense summary (EDI at the target call): TE1 (slot 8), HB1 (slot 1)
 
 # Fixed float-pool offsets inside the code cave (the assembler must not cross them). b780 b5-sim moved the pool from
 # 704 to 816 for the longer mix, target and lead-back code.
@@ -335,7 +362,74 @@ def _season_merge(a, state):
     a.b("c3")
 
 
-def _assemble(code_va, data_va, *, beta80=False):
+def _tackle_merge(a, state):
+    """b81 fb-targets: the tackle correction alone (cornerbacks skipped), inlined.
+
+    The lead-back rush correction is gone: its constant has been 0 since b780 db2, so that branch never changed a stat
+    (correct_delta returned at ``test ebp,ebp``). Its 32 bytes and the rushing-yard read at the entry make the room for the
+    fullback target rule; the tackle arithmetic is the same: (delta * TACKLE_BONUS_PCT + 50) / 100 when delta > 0."""
+    a.label("tackle_return")
+    a.b("60")                                             # pushad
+    a.b("8b3d" + _u32(state).hex())                       # edi = player
+    a.b("85ff")
+    a.j8("74", "merge_done")
+    a.b("807f35" + bytes([SKIP_TACKLE_POSITION]).hex())   # cornerbacks: nfl2k5_sim_cb_tackles
+    a.j8("74", "merge_done")
+    a.b("6a125a89f9")                                     # edx = tackles field, ecx = player
+    a.call(FN_STAT_READ)
+    a.b("2b05" + _u32(state + 4).hex())                   # sub eax,[prior tackles]
+    a.j8("7e", "merge_done")
+    a.b("6bc0" + bytes([TACKLE_BONUS_PCT]).hex())        # imul eax,eax,percent
+    a.b("83c03299")                                       # add eax,50; cdq
+    a.b("6a6459f7f9")                                     # idiv 100
+    a.b("85c0")
+    a.j8("7e", "merge_done")
+    a.b("506a125a89f9")                                   # push bonus; edx = tackles field, ecx = player
+    a.call(FN_HISTORY_ADD)
+    a.label("merge_done")
+    a.b("31c0a3" + _u32(state).hex())                     # clear the hand-off
+    a.b("61c20800")                                       # popad; ret 8
+
+
+def _fullback_target(a):
+    """b81 fb-targets: the target site's entry. The target step (retail lottery plus the redirect) runs first; a pick
+    with position byte 8 keeps the pass 1 time in 3 (the 16-bit league draw, as the carry rule), otherwise the step runs
+    again (up to FB_TARGET_REDRAWS times) and a non-fullback pick goes out as drawn. A fullback drawn every time gives
+    the pass to the TE1 lineup slot, else the HB1 slot, else he keeps it. EDI is the sim team at this call (0x10702A:
+    mov edi,[0xA9719C]); the target step and the league draw keep EDI and EBP."""
+    a.label("fb_entry")
+    a.j32("e8", "target")                                 # eax = the target step's pick
+    a.b("807835" + bytes([FULLBACK_POSITION]).hex())     # cmp byte [eax+0x35],8
+    a.j8("75", "fb_ret")
+    a.b("60")                                             # pushad (saved EAX = the fullback)
+    a.call(FN_LEAGUE_DRAW)
+    a.b("663d" + struct.pack("<H", FB_TARGET_KEEP_THRESHOLD).hex())  # cmp ax,threshold
+    a.j8("72", "fb_out")                                  # below: he keeps this pass
+    a.b("6a" + bytes([FB_TARGET_REDRAWS]).hex() + "5d")  # ebp = redraws
+    a.label("fb_redraw")
+    a.j32("e8", "target")
+    a.b("807835" + bytes([FULLBACK_POSITION]).hex())
+    a.j8("75", "fb_store")                                # not a fullback: this pick
+    a.b("4d")                                             # dec ebp
+    a.j8("75", "fb_redraw")
+    a.b("8b47" + bytes([TE1_SLOT]).hex())                 # mov eax,[edi+0x28]  TE1
+    a.b("85c0")
+    a.j8("75", "fb_store")
+    a.b("8b47" + bytes([HB1_SLOT]).hex())                 # mov eax,[edi+0xc]   HB1
+    a.b("85c0")
+    a.j8("74", "fb_out")                                  # neither: the fullback keeps it
+    a.label("fb_store")
+    a.b("8944241c")                                       # mov [esp+0x1c],eax
+    a.label("fb_out")
+    a.b("61")                                             # popad
+    a.label("fb_ret")
+    a.b("c3")
+
+
+def _assemble(code_va, data_va, *, beta80=False, fb=True):
+    """beta80: the beta 80 / v0.9 revision. fb=False: the beta 81 revision before the fullback target rule (same
+    896 bytes; everything before the tackle entry and the float pool are the same in both)."""
+    fb = fb and not beta80
     from .nfl2k5_draft_ai import _Asm
     a = _Asm(code_va)
     state, state_out = data_va, data_va + 8
@@ -554,6 +648,25 @@ def _assemble(code_va, data_va, *, beta80=False):
     # ---- tackle scale: save the career line before the merge --------------------------------
     a.label("tackle_entry")
     a.b("60")                                             # pushad
+    if fb:
+        # b81 fb-targets: [state] = the player (0 outside the scheduled sim) and [state+4] = his tackles; the rushing
+        # yards read went with the lead-back correction (see _tackle_merge)
+        a.b("31c0")                                       # xor eax,eax
+        a.b("803d" + _u32(SIM_MODE).hex() + "04")         # cmp byte [mode],4
+        a.j8("75", "tackle_entry_store")
+        a.b("6a125a89f9")                                 # edx = 18, ecx = player
+        a.call(FN_STAT_READ)
+        a.b("a3" + _u32(state + 4).hex())
+        a.b("89f8")                                       # mov eax,edi
+        a.label("tackle_entry_store")
+        a.b("a3" + _u32(state).hex())
+        a.b("61")                                         # popad
+        a.b("8d9424e0000000")                             # lea edx,[esp+0xe0] (replayed +4)
+        a.b("83c404")                                     # add esp,4
+        a.jmp_abs(TACKLE_ENTRY_RESUME)
+        _tackle_merge(a, state)
+        _fullback_target(a)
+        return _finish(a, code_va, beta80)
     a.b("31c0")                                           # xor eax,eax
     a.b("a3" + _u32(state).hex())                         # [state]=0
     a.b("803d" + _u32(SIM_MODE).hex() + "04")             # cmp byte [mode],4
@@ -578,6 +691,10 @@ def _assemble(code_va, data_va, *, beta80=False):
         _beta80_merge(a, state)
     else:
         _season_merge(a, state)
+    return _finish(a, code_va, beta80)
+
+
+def _finish(a, code_va, beta80):
     body = bytearray(a.assemble())
     require(len(body) <= FLOAT_POOL, f"sim realism code is {len(body)} bytes, float pool {FLOAT_POOL}")
     body = body.ljust(FLOAT_POOL, b"\xcc")
@@ -609,8 +726,11 @@ def label_offsets():
     return _LABEL_CACHE
 
 
-def sites(code_va, *, beta80=False):
-    offs = _assemble(code_va, 0, beta80=True)[0].labels if beta80 else label_offsets()
+def sites(code_va, *, beta80=False, fb=True):
+    """fb=False: the beta 81 revision before the fullback target rule (its target site calls the target step itself)."""
+    fb = fb and not beta80
+    offs = (_assemble(code_va, 0, beta80=True)[0].labels if beta80 else label_offsets() if fb
+            else _assemble(code_va, 0, fb=False)[0].labels)
     hook = lambda label, site, before, off: (label, site, before,
                                              b"\xe8" + struct.pack("<i", code_va + off - site - 5))
     mix = ("mix", MIX_SITE, MIX_BEFORE, b"\xe8" + struct.pack("<i", code_va - MIX_SITE - 5) + b"\x90" * 4)
@@ -618,7 +738,7 @@ def sites(code_va, *, beta80=False):
                      b"\xe9" + struct.pack("<i", code_va + offs["tackle_return"] - TACKLE_RETURN_SITE - 5))
     out = [mix,
            ("qb", QB_SITE, QB_BEFORE, b"\xe8" + struct.pack("<i", code_va + offs["qb"] - QB_SITE - 5) + b"\x90"),
-           hook("target", TARGET_SITE, TARGET_BEFORE, offs["target"]),
+           hook("target", TARGET_SITE, TARGET_BEFORE, offs["fb_entry" if fb else "target"]),
            hook("intercept", INTERCEPT_SITE, INTERCEPT_BEFORE, offs["int"]),
            ("tackle_entry", TACKLE_ENTRY_SITE, TACKLE_ENTRY_BEFORE,
             b"\xe8" + struct.pack("<i", code_va + offs["tackle_entry"] - TACKLE_ENTRY_SITE - 5) + b"\x90\x90"),
@@ -654,8 +774,17 @@ def _revision(payload):
         code, data = _allocations(payload)
         def old_code(va, state):
             return _assemble(va, state, beta80=True)[1]
-        if XbeImage(payload).read(code["va"], CODE_SIZE) == old_code(code["va"], data["va"]):
+        raw = XbeImage(payload).read(code["va"], CODE_SIZE)
+        if raw == old_code(code["va"], data["va"]):
             return CODE_SIZE, old_code, lambda va: sites(va, beta80=True), "beta80"
+        # b81 fb-targets: the revision before the fullback target rule. It differs from this one only from the tackle
+        # entry to the float pool, bytes the simulated QB injury option never edits (it edits the mix block and the
+        # pool), so the choice is right on an executable with that option installed too.
+        def b81_code(va, state):
+            return _assemble(va, state, fb=False)[1]
+        tail = slice(label_offsets()["tackle_entry"], FLOAT_POOL)
+        if raw[tail] == b81_code(code["va"], data["va"])[tail]:
+            return CODE_SIZE, b81_code, lambda va: sites(va, fb=False), "b81"
     return CODE_SIZE, code_for, sites, "applied"
 
 
@@ -704,7 +833,7 @@ def _recognize_physical(payload):
         states.add("retail" if raw == b"\xcc" * size else "applied" if raw == expected else "foreign")
     require(states in ({"retail"}, {"applied"}), "Foreign or mixed sim realism site/code")
     state = next(iter(states))
-    if state == "applied" and installed in ("previous", "beta80"):
+    if state == "applied" and installed in ("previous", "beta80", "b81"):
         return installed
     require(state == "applied" or size == CODE_SIZE, "an empty beta-79 sim realism allocation; rebuild from retail")
     return state
@@ -721,6 +850,20 @@ def apply(payload):
         code, data = _allocations(payload)
         return payload, {"owner": OWNER, "status": "already_applied", "code_va": hex(code["va"]),
                          "data_va": hex(data["va"]), "changed_bytes": 0}
+    if state == "b81":
+        # b81 fb-targets: a beta 81 executable with the simulated QB injury option installed carries that option's
+        # edits inside this owner's code (the mix block and the float pool). Update the physical executable beneath
+        # it, then write the option again exactly as it was; none of its bytes is one this update changes.
+        from . import nfl2k5_sim_qb_injuries as quarterback
+        physical = quarterback.physical_view(payload)
+        if physical != payload:
+            upgraded, receipt = apply(physical)
+            result = quarterback.reinstall_on(payload, upgraded)
+            require(_recognize(result) == "applied" and quarterback.physical_view(result) == upgraded,
+                    "Simulated season realism update beneath the QB injury option failed")
+            return result, {**receipt, "simulated_qb_injuries_kept": True,
+                            "changed_bytes": space.count_differing_bytes(payload, result),
+                            "file_growth": len(result) - len(payload)}
     before = payload
     receipt = {}
     # b779-int1: a full build allocates this owner with the selected request set (nfl2k5_throw_tuning) before this
@@ -733,8 +876,11 @@ def apply(payload):
             require(space.is_scaleout(payload), "Simulated season realism needs the scale-out allocator")
             payload, receipt = space.extend_scaleout(payload, REQUESTS)
     code, data = _allocations(payload)
-    previous = _assemble(code["va"], data["va"], beta80=True)[1] if state == "beta80" else None
-    old_hooks = {va: after for _, va, _, after in sites(code["va"], beta80=True)} if previous else {}
+    # In-place updates in the same allocation: the beta 80 / v0.9 revision and the beta 81 one before the fullback
+    # target rule (b81 fb-targets).
+    revision = {"beta80": {"beta80": True}, "b81": {"fb": False}}.get(state)
+    previous = _assemble(code["va"], data["va"], **revision)[1] if revision else None
+    old_hooks = {va: after for _, va, _, after in sites(code["va"], **revision)} if revision else {}
     payload, _ = space.install_code(payload, OWNER, code_for(code["va"], data["va"]), previous=previous)
     image = XbeImage(payload)
     buf = bytearray(payload)
@@ -758,12 +904,12 @@ def apply(payload):
 
 
 def status(payload):
-    """retail | applied | legacy (the beta 80 / v0.9 revision; apply() updates it in place) | previous (beta 79; rebuild
-    from retail) | foreign. Beta 81 review: the beta 80 revision used to read "applied", so a disc report could not tell
-    v0.9 from v0.10."""
+    """retail | applied | legacy (the beta 80 / v0.9 revision, or beta 81's before the fullback target rule; apply()
+    updates both in place) | previous (beta 79; rebuild from retail) | foreign. Beta 81 review: the beta 80 revision used
+    to read "applied", so a disc report could not tell v0.9 from v0.10."""
     try:
         state = _recognize(payload)
-        return "legacy" if state == "beta80" else state
+        return "legacy" if state in ("beta80", "b81") else state
     except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, UnicodeError, OSError):
         return "foreign"
 
