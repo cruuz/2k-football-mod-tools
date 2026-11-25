@@ -3831,6 +3831,9 @@ data/nfl2k5_espn25_fields/source/nfl_2008.png
 # b773 me1 Super Bowl event walls on the Anniversary stadium aliases (N06)
 mod_editor/core/nfl2k5_super_bowl_fields.py
 mod_editor/core/nfl2k5_super_bowl_hosts.py
+# b81 sb-booth: franchise Super Bowl booth lines for the 2026 calendar
+mod_editor/core/nfl2k5_super_bowl_booth.py
+tests/mod_editor/test_nfl2k5_super_bowl_booth.py
 data/nfl2k5_super_bowl_fields/manifest.json
 data/nfl2k5_super_bowl_fields/hosts/h41/banner_away_team.png
 data/nfl2k5_super_bowl_fields/hosts/h41/banner_home_player.png

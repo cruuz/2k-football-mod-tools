@@ -59,7 +59,7 @@ OPTIONAL_STEPS = frozenset({
     # broadcast art, people on the field, late visual passes
     "espn_marks_2026", "espn_wipes_boards_2026", "kick_meter_2026", "modern_goalposts", "modern_coaches",
     "modern_fans", "modern_officials", "modern_helmets", "menu_icon_orientation", "espn25_fields", "era_ball",
-    "broadcast_greens", "super_bowl_hosts",
+    "broadcast_greens", "super_bowl_hosts", "super_bowl_booth",
 })
 ROOT = Path(__file__).resolve().parents[2]
 PACK0_SIZE = 193_710_080   # vc_53450030/0 (retail); the schedule template lives in its ROST resource
@@ -9816,6 +9816,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 progress(line, 0, 0)
             receipt["steps"].append({"step": "super_bowl_hosts", **hosts_receipt})
             receipt["result"]["super_bowl_hosts"] = hosts_receipt["state"]
+        # sb-booth (b81): on the 2026 calendar the booth's retail Super Bowl welcome, coin toss and sign-off name Super
+        # Bowls XXXIX to XLII and their cities ("here in Jacksonville" at the first franchise Super Bowl); 14 bytes in
+        # three director entries point them at the game's own lines without a city or a number.
+        booth = _core_module("nfl2k5_super_bowl_booth")
+        if booth is None:
+            raise ValueError("the Super Bowl booth step is unavailable")
+        with _optional(receipt, target, progress, "super_bowl_booth"):
+            progress("Super Bowl booth lines for the 2026 calendar", 0, 0)
+            booth_receipt = booth.apply_to_image(target, progress=lambda line: progress(line, 0, 0))
+            receipt["steps"].append({"step": "super_bowl_booth", **booth_receipt})
+            receipt["result"]["super_bowl_booth"] = booth_receipt["state"]
     if plan.team_number_scale:
         _step("team_number_scale")
         # b776-ns1: after every executable writer (the hair styles' late owner and the Super Bowl hosts' season codes): a late
