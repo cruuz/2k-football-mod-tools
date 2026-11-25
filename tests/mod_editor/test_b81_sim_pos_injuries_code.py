@@ -99,7 +99,7 @@ KICKER_PUNTER_EDITS = (
       'specialists:',
       '    # rule 3 (b81 game outcomes, coordinator R3 ruling): the kicker and punter rows count only while both specialist',
       '    # slots of that side hold their own specialists (stored position 1 in slot 32, 2 in slot 14). While either is out,',
-      '    # the other covers both jobs unexposed, so a club never loses both and puts a position player in to kick or punt.',
+      '    # the other covers both jobs unexposed, so injuries alone cannot leave a club without both specialists.',
       '    mov eax, [ecx+32*4+8]', '    test eax, eax', '    jz next', '    cmp BYTE PTR [eax+0x35], 1', '    jne next',
       '    mov eax, [ecx+14*4+8]', '    test eax, eax', '    jz next', '    cmp BYTE PTR [eax+0x35], 2', '    jne next',
       'exposed:'),

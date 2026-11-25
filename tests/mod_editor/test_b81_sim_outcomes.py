@@ -237,13 +237,14 @@ def chart_reference(margin, period, fraction):
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is required to execute the page")
-@unittest.skipUnless(HAVE_UC, "Unicorn is required to execute the page")
 class GoalLine(unittest.TestCase):
-    """Touchdown mix part 1: a run or scramble snapped inside the 5 whose gain reaches the goal line scores with the keep
-    chance for its distance; otherwise the ball stops at the 1. Passes, gains short of the line, longer runs and kicks
-    are untouched; a two-point run is filtered too."""
-    RUN, SCRAMBLE = so.GOAL_LINE_RUN_RETURNS
+    """Touchdown mix part 1: a run snapped inside the 5 whose gain the commit would credit as reaching the goal line
+    (rounded half up, after the home/form factor) scores with the keep chance for its distance; otherwise the ball stops
+    at the 1. Passes, gains credited short of the line, longer runs and kicks are untouched; a two-point run is filtered
+    too."""
+    RUN, = so.GOAL_LINE_RUN_RETURNS
     PASS = 0x0010921F                     # another 0x106480 call (a completion): never filtered
+    OLD_SCRAMBLE = 0x001085C2             # 0x1085BD's return: season realism routes that call through its pass cave
 
     def commit(self, m, gain, *, line, ret=None, kind=0, side=0):
         m.u32(so.SIM_KIND, kind)
@@ -266,11 +267,12 @@ class GoalLine(unittest.TestCase):
     def test_always_and_never(self):
         m = _Machine(so.code_for(PAGE_VA, home_edge=0.0, form_sigma=0.0, goal_line=(0, 0, 0, 0)))
         _fixture(m)
-        for line, stopped in ((1.0, 0.0), (2.0, 1.0), (3.0, 2.0), (4.0, 3.0), (5.0, 4.0), (0.5, 0.0), (1.4, 0.4)):
+        for line, stopped in ((1.0, 0.0), (2.0, 1.0), (3.0, 2.0), (4.0, 3.0), (5.0, 4.0)):
             with self.subTest(line=line):
                 self.assertAlmostEqual(self.commit(m, line, line=line), stopped, places=5)
-                self.assertAlmostEqual(self.commit(m, line + 7.0, line=line, ret=self.SCRAMBLE), stopped, places=5)
-        self.assertEqual(self.counters(m), (14, 14))
+                self.assertAlmostEqual(self.commit(m, line + 7.0, line=line), stopped, places=5)
+                self.assertEqual(self.commit(m, line, line=line, ret=self.OLD_SCRAMBLE), line)   # not a run call
+        self.assertEqual(self.counters(m), (10, 10))
         m = _Machine(so.code_for(PAGE_VA, home_edge=0.0, form_sigma=0.0, goal_line=(1, 1, 1, 1)))
         _fixture(m)
         for line in (1.0, 2.0, 3.0, 5.0):
@@ -288,6 +290,45 @@ class GoalLine(unittest.TestCase):
         self.assertEqual(self.counters(m), (0, 0))
         self.assertEqual(self.commit(m, 2.0, line=2.0, kind=4), 1.0)               # a two-point run from the 2
         self.assertEqual(self.counters(m), (1, 1))
+
+    def test_the_decision_is_on_the_gain_the_commit_credits(self):
+        """Review S1 (the reviewer's Unicorn cases): the commit rounds half up before its line test, and the factor runs
+        first. A raw gain just short of the line that rounds onto it is a touchdown candidate and draws; a factor never
+        carries a short gain across the line (it stops at the last yard short), at the goal line or farther out."""
+        never = (0, 0, 0, 0)
+        m = _Machine(so.code_for(PAGE_VA, home_edge=0.0, form_sigma=0.0, goal_line=never))
+        _fixture(m)
+        self.assertAlmostEqual(self.commit(m, 2.7, line=3.0), 2.0, places=5)   # snapped at the 3, 2.7 credits 3: drawn
+        self.assertAlmostEqual(self.commit(m, 0.6, line=1.0), 0.0, places=5)   # snapped at the 1, 0.6 credits 1: drawn
+        self.assertAlmostEqual(self.commit(m, 2.4, line=3.0), 2.4, places=5)   # credits 2: short, no draw
+        self.assertEqual(self.counters(m), (2, 2))
+        self.assertAlmostEqual(self.commit(m, 3.0, line=3.0), 2.0, places=5)   # the control: drawn, stopped at the 1
+        self.assertEqual(self.counters(m), (3, 3))
+        # The reviewer used factors 1.3 and 1.2 (form at its clamp); the installer's home edge stops below 0.2, so the
+        # same cases run at home factor 1.15 (form off). 2.4 would become 2.76, credited 3: kept at the last yard short.
+        m = _Machine(so.code_for(PAGE_VA, home_edge=0.15, form_sigma=0.0, goal_line=never))
+        _fixture(m)
+        self.assertAlmostEqual(self.commit(m, 2.4, line=3.0), 2.0, places=5)
+        self.assertEqual(self.counters(m), (0, 0))
+        # at the 10: 9.0 would become 10.35, credited 10; kept at 9.0 (a factor never makes a touchdown anywhere)
+        self.assertAlmostEqual(self.commit(m, 9.0, line=10.0), 9.0, places=5)
+        self.assertAlmostEqual(self.commit(m, 7.0, line=10.0), 8.05, places=4)  # well short: scaled as before
+        self.assertEqual(self.commit(m, 10.0, line=10.0), 10.0)                # a touchdown already: unscaled
+
+    def test_retail_entry_never_filters(self):
+        """Failing first: with the retail first instruction at 0x106480 a goal-line run's touchdown always stands."""
+        m = _Machine(so.code_for(PAGE_VA, goal_line=(0, 0, 0, 0)))
+        _fixture(m)
+        m.put(so.COMMIT_SITE, so.COMMIT_RETAIL)
+        m.u32(so.SIM_KIND, 0)
+        m.u32(so.SIM_OFFENSE, so.HOME_SIDE)
+        m.f(so.SIM_LINE_TO_GOAL, 2.0)
+        m.reg("ESP", STACK - 8)
+        m.u32(STACK - 8, self.RUN)
+        m.f(STACK - 4, 2.0)
+        m.run(so.COMMIT_SITE, [COMMIT_RESUME])
+        self.assertEqual((m.get_f(STACK - 4), self.counters(m)), (2.0, (0, 0)))
+        self.assertAlmostEqual(self.commit(m, 2.0, line=2.0), 1.0, places=5)   # the page's entry: drawn, stopped
 
     def test_draws_follow_the_model_and_the_keep_chances(self):
         keep = (0.69, 0.59, 0.54, 0.55)
@@ -320,9 +361,10 @@ class RevisionPins(unittest.TestCase):
     code or constants (here or in a module it reads) a deliberate new revision: freeze this one first so discs built with
     it read "previous" and are upgraded in place, then re-pin (coordinator, 2026-11-25, after the fb-targets review S1)."""
     # Re-pinned for the goal-line filter, the move to 0x1534000 (0x1531000 is the awards page) and the regulation hook's
-    # move to 0x106400 (0x106427 stays retail), before any release or integration build carried the page.
-    PAGE = {(0.045, 0.08): "5f0bbe69df3567d8da088e08d4b81617827fc036ac6ef05e67b5ea6150cc8046",
-            (0.07, 0.12): "27a47c5a9be23aaac7ac3751aba5ec9043defd08da8039b6925bb96ca734f069"}
+    # move to 0x106400 (0x106427 stays retail) and the review's fixes (M1, S1, S2), before any release or integration
+    # build carried the page.
+    PAGE = {(0.045, 0.08): "7dc6cac7e46e593b6799df24559fc1d7b17b32e11ddd7e2d9cc8e1ac64399a88",
+            (0.07, 0.12): "63ff30935667c2606c8b572b0c169d42a7b463cf90a4a4e7ec8ae1db7e66ef5e"}
     SITES = "3d2f1051f096612c2deb0563164eb9f4a2d863e23d5e2cc264bb67cd339859ed"
 
     def test_page_bytes_up_to_the_state_block(self):
@@ -543,10 +585,13 @@ class RegulationEnd(unittest.TestCase):
     def test_next_handler_decides_on_the_scores_after_the_play(self):
         m = self.machine()
         self.advance(m, period=4, caller=so.COMMIT_CLOCK_RETURN, home=20, away=23)
-        m.u32(so.SIM_STATE, 0xB)                              # the handler went on (an interception return)
+        # The handler went on: an interception on the last play sets state 0xB. Known limit (review N1): the decision
+        # runs before the next handler, so that interception is never returned.
+        m.u32(so.SIM_STATE, 0xB)
         self.assertEqual(self.step(m, 20.0, 23.0), so.FN_DISPATCH)
-        self.assertEqual(m.get_u32(so.SIM_STATE), 0x12, "the game is over")
-        self.assertEqual(m.get_u32(so.SIM_PERIOD_INDEX), 3, "a regulation result")
+        # Review M1: the game is over with the period index at 4, as retail leaves every regulation game (0x1063D5);
+        # the pause menu's "simulate the rest" copies it into the played game (0x10B9A7 -> [0xE602C4]).
+        self.assertEqual((m.get_u32(so.SIM_STATE), m.get_u32(so.SIM_PERIOD_INDEX)), (0x12, 4))
         m = self.machine()
         self.advance(m, period=4, caller=so.COMMIT_CLOCK_RETURN, home=20, away=23)
         m.u32(so.SIM_STATE, 7)                                # the play's last kick tied the game
@@ -573,13 +618,24 @@ class RegulationEnd(unittest.TestCase):
         m.run(PAGE_VA + so.labels()["ties"], [TIES_ROLL, TIES_SKIP])
         self.assertEqual(bytes(m.uc.mem_read(self.PENDING, 1)), b"\x00")
 
-    def test_retail_game_over_is_overwritten(self):
-        """Failing first: retail ends regulation on the pre-play scores and a later handler write survives."""
-        m = self.machine(site=PERIOD_TAIL_RETAIL[:5])
-        self.assertEqual(self.advance(m, period=4, caller=so.COMMIT_CLOCK_RETURN, home=20, away=23), so.REG_GAME_OVER + 10)
-        self.assertEqual(m.get_u32(so.SIM_STATE), 0x12)
-        m.u32(so.SIM_STATE, 0xB)                              # 0x108AC0's interception write
-        self.assertEqual(m.get_u32(so.SIM_STATE), 0xB, "retail: the game goes on into a phantom overtime")
+    def test_retail_step_keeps_the_phantom_overtime(self):
+        """Failing first (review N2): with retail's 0x10B251 (call 0x105020 straight away) a play that went on after
+        retail ended regulation on the pre-play scores keeps its later state, the phantom overtime; the page's step
+        ends the game on the scores after the play."""
+        for site, expected in ((so.STEP_RETAIL, 0xB), (None, 0x12)):
+            with self.subTest(step="retail" if site else "page"):
+                m = self.machine(site=PERIOD_TAIL_RETAIL[:5] if site else None)
+                self.advance(m, period=4, caller=so.COMMIT_CLOCK_RETURN, home=20, away=23)
+                self.assertEqual(m.get_u32(so.SIM_STATE), 0x12)                # both: game over at the clock
+                m.u32(so.SIM_STATE, 0xB)                                       # 0x108AC0's interception write
+                after = site if site else dict((r[0], r[3]) for r in so.sites(PAGE_VA))["state_step"]
+                m.put(so.STEP_SITE, after)
+                m.f(0xA97300, 20.0)
+                m.f(0xA97304, 23.0)
+                m.reg("ESP", STACK - 8)
+                m.u32(STACK - 8, 0x0010B256)
+                self.assertEqual(m.run(so.STEP_SITE, [so.FN_DISPATCH]), so.FN_DISPATCH)
+                self.assertEqual(m.get_u32(so.SIM_STATE), expected)
 
 
 def _built_xbe():
@@ -646,6 +702,20 @@ class BuiltExecutable(unittest.TestCase):
         self.assertEqual(so.apply(new)[1]["already_applied"], True)
         settings = so.read_settings(new)
         self.assertEqual((settings["home_edge"], settings["form_sigma"]), (so.HOME_EDGE, so.FORM_SIGMA))
+
+    def test_the_run_handler_still_calls_the_commit_directly(self):
+        """Review S2: the goal-line filter recognises a run by the return address of 0x107D0D's call. With season realism
+        (and every other simulator owner) installed, that call must still be a direct call of 0x106480: a later owner
+        that wrapped it would turn the filter off without any other test failing."""
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        from mod_editor.core import nfl2k5_sim_realism as realism
+        new, _ = so.apply(realism.apply(self.base)[0])          # the Studio's order: season realism, then the page
+        self.assertEqual((realism.status(new), so.status(new)), ("applied", "applied"))
+        for payload in (self.base, new):
+            call = XbeImage(payload).read(so.RUN_COMMIT_CALL, 5)
+            self.assertEqual(call[0], 0xE8)
+            self.assertEqual(so.RUN_COMMIT_CALL + 5 + struct.unpack("<i", call[1:])[0], so.COMMIT_SITE)
+        self.assertEqual(so.RUN_COMMIT_CALL + 5, so.GOAL_LINE_RUN_RETURNS[0])
 
     def test_levers_reset_in_place_and_retail_restores_the_sites(self):
         new, _ = so.apply(self.base)

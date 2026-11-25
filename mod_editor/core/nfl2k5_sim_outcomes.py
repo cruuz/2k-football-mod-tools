@@ -2,8 +2,10 @@
 
 EXPERIMENTAL / UNWITNESSED.  Part of the Studio option "Simulated season realism" (``sim_realism``; it is installed
 and removed with ``nfl2k5_sim_realism``).  Everything here acts inside the native scheduled simulator (``0x10B280``
-and its state handlers), so it changes games the console simulates (franchise weeks, Gamecast, other simulations),
-never a played game, a save or a roster.
+and its state handlers), so it changes games the console simulates: franchise weeks, Gamecast, other simulations, and
+the rest of a played game when the player picks "simulate the rest of the game" from the pause menu (``0x6EFE0`` ->
+``0x10B980``, which copies the simulator's period ``[0xA971F0]`` back into the played game's ``[0xE602C4]``).  It never
+changes ratings, rosters or a save's format.
 
 What the simulator did (retail bytes, unchanged in the beta 81 standard edition; the lane's measurements are in
 b81/game-outcomes/DESIGN.txt, 40 stored seasons):
@@ -25,9 +27,12 @@ b81/game-outcomes/DESIGN.txt, 40 stored seasons):
 The changes:
 
 * **Commit hook** (``0x106480``, the one routine every scrimmage gain goes through, called from 0x107D0D, 0x1085BD,
-  0x10921A, 0x1094E4 and 0x10A6AC): on a scrimmage play (``[0xA971C0]`` == 0), a positive gain short of the goal line is
-  multiplied by the offense's game factor ``m``.  Gains that reach the goal line (every touchdown, breakaways included),
-  losses and try plays are unchanged.  ``m`` is set once per fixture and side:
+  0x10921A, 0x1094E4 and 0x10A6AC; season realism and the QB bank wrap the last three): on a scrimmage play
+  (``[0xA971C0]`` == 0), a positive gain the commit would credit short of the goal line is multiplied by the offense's
+  game factor ``m``, and the result is kept short of the line (at most the last yard).  "Credit" is the commit's own
+  rounding: ``0x1064AE`` adds 0.5 (subtracts for a loss) and ``0x100F00`` truncates, and the line test follows; the
+  page decides on that same rounded value.  So the factor never makes or removes a touchdown: gains that reach the goal
+  line (breakaways included), losses and try plays are unchanged.  ``m`` is set once per fixture and side:
   ``m = (1 + HOME_EDGE) x (1 + FORM_SIGMA x z)`` for the home side and ``(1 - HOME_EDGE) x (1 + FORM_SIGMA x z)`` for the
   away side, clamped to ``[M_LOW, M_HIGH]``; ``z`` is a standard-normal draw (the sum of four bytes of a hash, Irwin-Hall)
   from a private hash of the fixture (season, week, both clubs) and the two match-generator words read once when the
@@ -35,11 +40,16 @@ The changes:
 * **Two-point chart** (``0x103260`` jumps to the page): the played game's Modern 2 chart
   (``nfl2k5_cpu_money_downs.two_point_decision``): go for two when the threshold for the margin after the touchdown is
   "always", or when the game time left is at most the threshold; in overtime at -2 or -1 (with the overtime owner's
-  both-possessions rule a -1 margin only arises after both clubs have had the ball).  No draw.
+  both-possessions rule a -1 margin only arises after both clubs have had the ball).  No draw.  Retail's chooser drew
+  from the match generator (``0x1032AC``: ``call 0x48B90``, the 0.5% go), so leaving that draw out shifts the match
+  streams, as the tie roll's extra draw does the other way; both by design.
 * **Tie roll** (``0x10B2E9`` calls the page): the roll also happens in a franchise's regular season (mode word
-  ``[0xE576A0]`` 2, stage ``[0xE576A4]`` 8), whatever the stale flag says.  With the overtime owner's simulator rule this
-  gives every regular season its 10-minute overtime that can end tied; the postseason never ties.  One extra
-  match-generator draw per such game (the roll itself).
+  ``[0xE576A0]`` 2, stage ``[0xE576A4]`` 8), whatever the stale flag says.  The roll feeds the overtime owner's
+  unchanged simulator rules (``nfl2k5_overtime``: sim_roll ``0x10B2FA``, sim_tie ``0x106409``, sim_period
+  ``0x10720C``): with that owner's simulator group installed, every regular season gets its 10-minute overtime that can
+  end tied; without it, the roll is retail's 1-in-40 allowance and a 15-minute overtime.  The postseason never ties.
+  One extra match-generator draw per such game (the roll itself).  Measured: 1 tie in 4,352 confirmation games (NFL
+  about 0.3%); simulated overtimes nearly always end with a score.
 
 * **End of regulation after the last play** (``0x106400`` and ``0x10B251`` call the page): a play's commit
   (``0x106480``) runs the clock routine ``0x1061F0`` before the handler has finished the play; when the clock ran out it
@@ -48,16 +58,22 @@ The changes:
   and last-play points landed in the overtime column (85 of 10,880 stored games; some results flipped).  Now a
   regulation end reached from the commit (return address ``0x106A14``) is tentative: the period index goes back to the
   fourth quarter for the rest of the play and, before the next state handler, the result is decided on the scores after
-  the play: different -> the game is over, level -> overtime (period 4, its kickoff, as ``0x106450``).  A regulation
-  end before a play keeps the retail branch.  The tie roll's setup clears the flag for every game.  The hook takes only
+  the play: different -> the game is over with the period index at 4, as retail leaves it (the pause menu copies it
+  into a played game), level -> overtime (period 4, its kickoff, as ``0x106450``).  A regulation end before a play
+  keeps the retail branch.  Known limit: the decision runs before the next state handler, so a turnover on the last
+  play of regulation is not returned (``0x102AD0`` -> ``0x108AC0`` sets state ``0xB``; ``0x104AF0`` would pick the
+  recoverer): a pick-six on that play cannot count, and a tie it would create goes to overtime without its try.  Rare;
+  retail's phantom overtime was worse.  The tie roll's setup clears the flag for every game.  The hook takes only
   ``0x106400``'s ``cmp eax, 4 ; jle``: ``0x106427`` (game over) is also where an expired overtime goes (a first
   version replaced it and an overtime that ended tied jumped into the middle of the page's call: calibration root
   tdA/2502 stopped with an emulation error in week 2).
 
-* **Goal-line runs** (the same ``0x106480`` entry): a run or scramble (the gain calls returning to ``0x107D12`` and
-  ``0x1085C2``) snapped inside the 5 whose gain reaches the goal line scores only with probability ``GOAL_LINE_KEEP``
-  for its distance (the 1, the 2, the 3, the 4-5; a two-point try from the 2 too). Otherwise the ball stops at the 1
-  (from the 1: no gain). The draw is a private hash of the fixture's seed and a play counter, never the game's
+* **Goal-line runs** (the same ``0x106480`` entry): a run (the run handler's call ``0x107D0D``, returning to
+  ``0x107D12``; season realism leaves that call direct) snapped inside the 5 whose gain the commit would credit as
+  reaching the goal line (the rounding above, after the factor) scores only with probability ``GOAL_LINE_KEEP`` for its
+  distance (the 1, the 2, the 3, the 4-5; a two-point run from the 2 too).  Otherwise the ball stops at the 1 (from the
+  1: no gain).  The other gain calls (``0x1085BD`` and ``0x10921A``, which season realism routes through its pass-yard
+  cave, and ``0x1094E4``, the QB bank's) are passes and never filtered. The draw is a private hash of the fixture's seed and a play counter, never the game's
   generators. Measured before (40 stored seasons): 84/76/67% of runs scored from the 1/2/3 against the NFL's
   58/45/36%, and two-point tries converted 72% (47.5%).
 
@@ -78,10 +94,10 @@ BUILD_CAPTION = "Simulated game outcomes"
 HELP_TEXT = (
     "Part of Simulated season realism. In games the CPU simulates, home clubs get a home-field edge (they win about 54% "
     "of games, as in the modern NFL), clubs have better and worse days, CPU coaches use the same modern two-point chart "
-    "in simulated games as in played ones, a regular-season game still tied after its 10-minute overtime ends as a tie "
-    "in every season, not only the first, and a game decided on the last play of regulation ends there instead of going "
-    "on into an overtime, and runs from the goal line score about as often as in the NFL. Played games, ratings and "
-    "rosters are unchanged.")
+    "in simulated games as in played ones, ties are possible in every season, not only the first (with the overtime "
+    "option's 10-minute simulated overtime), a game decided on the last play of regulation ends there instead of going "
+    "on into an overtime, and runs from the goal line score about as often as in the NFL. This also applies to the rest "
+    "of a played game you choose to simulate from the pause menu. Ratings and rosters are unchanged.")
 CODE_SIZE = 0x1000
 PLACEHOLDER_VA = 0x1534000      # nfl2k5_xbe_space.SIM_OUTCOMES_VA (checked in apply)
 
@@ -97,7 +113,9 @@ M_LOW, M_HIGH = 0.70, 1.30      # clamp of the game factor
 # 40-season baseline 49.4% / -0.15 (real 53.95% / +2.06). Form 0.08 and 0.12 bracket the real residual margin SD (12.2).
 GOAL_LINE_KEEP = (0.69, 0.59, 0.54, 0.55)
 GOAL_LINE_BOUNDS = (1.5, 2.5, 3.5, 5.5)    # yards to goal at the snap: the 1, the 2, the 3, the 4-5
-GOAL_LINE_RUN_RETURNS = (0x00107D12, 0x001085C2)   # the run and scramble calls of 0x106480 (DESIGN problem 3)
+GOAL_LINE_RUN_RETURNS = (0x00107D12,)   # the run handler's call of 0x106480 (0x107D0D); the only direct caller left
+                                        # under season realism (0x1085BD/0x10921A go through its pass-yard cave)
+RUN_COMMIT_CALL = 0x00107D0D            # e8 -> 0x106480 (checked on built executables)
 IRWIN_HALL_MEAN = 510.0         # four bytes: mean 4 x 127.5
 IRWIN_HALL_SD = 147.80          # four bytes: sqrt(4 x (256^2 - 1) / 12)
 
@@ -148,6 +166,7 @@ MARK = b"SIMOUT1\0"
 D_MARK, D_HOME_UP, D_HOME_DOWN, D_FORM_UNIT, D_LOW, D_HIGH, D_MEAN, D_C90 = 0x00, 0x08, 0x0C, 0x10, 0x14, 0x18, 0x1C, 0x20
 D_THRESHOLDS = 0x24             # 33 bytes: margins -16..+16
 D_GOAL_BOUNDS, D_GOAL_KEEP = 0x48, 0x58   # 4 floats; 4 dwords (the keep chance x 65536)
+D_HALF = 0x68                   # 0.5: the commit's rounding (retail [0x4E4184])
 STATE_OFF = 0xE80
 S_KEY, S_FACTORS, S_SEED, S_FIXTURES, S_SCALED, S_TMP, S_PENDING = 0x00, 0x04, 0x0C, 0x10, 0x14, 0x18, 0x1C
 S_DEFERRED, S_FINAL, S_OVERTIME = 0x20, 0x24, 0x28   # counters: deferred regulation ends, decided final, overtime
@@ -212,24 +231,34 @@ def _commit_code(a: _Asm, page: int) -> None:
     a.label("commit_side")
     a.b("52")                                       # push edx
     a.call(page + _LABELS["fixture"])
-    a.b("8d542404")                                 # lea edx, [esp+4]  (the hook's frame)
-    a.call(page + _LABELS["goal_line"])
     a.b("5a")                                       # pop edx  (the side)
-    a.b("85c0")                                     # test eax, eax  (1: stopped at the 1, nothing else applies)
-    a.j8("75", "commit_done")
+    # The factor, on a positive gain the commit would credit short of the goal line, kept short of it.
     a.b("d9442404")                                 # fld dword [esp+4]  (the gain)
     a.b("d9ee")                                     # fldz
     a.b("dff1")                                     # fcomip st, st(1)   0 vs gain
-    a.j8("73", "commit_pop")                        # jae: gain <= 0 (or NaN) -> unchanged
-    a.b("d905" + _u32(SIM_LINE_TO_GOAL))            # fld dword [line to goal]
-    a.b("dff1")                                     # fcomip st, st(1)   line vs gain
-    a.j8("76", "commit_pop")                        # jbe: the gain reaches the goal line -> unchanged
+    a.j8("73", "commit_unscaled")                   # jae: gain <= 0 (or NaN) -> unchanged
+    a.b("d9c0")                                     # fld st(0)
+    a.call(page + _LABELS["reach"])                 # eax = 1: credited as reaching the goal line
+    a.b("85c0")
+    a.j8("75", "commit_unscaled")                   # a touchdown already: the factor leaves it alone
     a.b("d80c95" + _u32(state + S_FACTORS))         # fmul dword [factors + edx*4]
+    a.b("d9c0")                                     # fld st(0)
+    a.call(page + _LABELS["reach"])
+    a.b("85c0")
+    a.j8("74", "commit_store")                      # still short of the line
+    a.b("ddd8")                                     # fstp st(0)
+    a.b("d905" + _u32(SIM_LINE_TO_GOAL))            # fld dword [line]
+    a.b("d9e8")                                     # fld1
+    a.b("dee9")                                     # fsubp: line - 1, the last yard short
+    a.label("commit_store")
     a.b("d95c2404")                                 # fstp dword [esp+4]
     a.b("ff05" + _u32(state + S_SCALED))            # inc dword [scaled]
-    a.j8("eb", "commit_done")
-    a.label("commit_pop")
+    a.j8("eb", "commit_filter")
+    a.label("commit_unscaled")
     a.b("ddd8")                                     # fstp st(0)
+    a.label("commit_filter")
+    a.b("89e2")                                     # mov edx, esp  ([edx] the call's return, [edx+4] the gain)
+    a.call(page + _LABELS["goal_line"])
     a.label("commit_done")
     a.b(COMMIT_RETAIL.hex())                        # the replayed mov ecx, [0xA97210]
     a.jmp_abs(COMMIT_RESUME)
@@ -416,6 +445,7 @@ def _regulation_code(a: _Asm, page: int) -> None:
     a.b("ff05" + _u32(state + S_OVERTIME))
     a.jmp_abs(FN_DISPATCH)
     a.label("step_final")
+    a.b("c705" + _u32(SIM_PERIOD_INDEX) + "04000000")   # retail's end-of-regulation index (0x1063D5), kept by 0x106427
     a.b("c705" + _u32(SIM_STATE) + "12000000")      # the game is over (whatever the play's handler wrote)
     a.b("ff05" + _u32(state + S_FINAL))
     a.jmp_abs(FN_DISPATCH)
@@ -428,16 +458,16 @@ def _goal_line_code(a: _Asm, page: int) -> None:
     a.label("goal_line")
     a.b("52")                                       # push edx  (the frame)
     a.b("31c0")                                     # xor eax, eax
-    a.b("8b0a")                                     # mov ecx, [edx]
-    a.b("81f9" + _u32(GOAL_LINE_RUN_RETURNS[0]))
-    a.j8("74", "gl_run")
-    a.b("81f9" + _u32(GOAL_LINE_RUN_RETURNS[1]))
-    a.j8("75", "gl_ret")
-    a.label("gl_run")
-    a.b("d905" + _u32(SIM_LINE_TO_GOAL))            # fld dword [line to goal]
+    a.b("813a" + _u32(GOAL_LINE_RUN_RETURNS[0]))   # cmp dword [edx], 0x107D12  (the run handler's call)
+    a.j32("0f85", "gl_ret")
     a.b("d94204")                                   # fld dword [edx+4]  (the gain)
-    a.b("dff1")                                     # fcomip: gain vs line
-    a.j8("72", "gl_pop")                            # jb: short of the goal line (or unordered) -> unchanged
+    a.b("d9ee")                                     # fldz
+    a.b("dff1")                                     # fcomip: 0 vs gain
+    a.j8("73", "gl_pop")                            # jae: no gain (or NaN) -> unchanged
+    a.call(page + _LABELS["reach"])                 # pops the gain; eax = 1: credited as reaching the goal line
+    a.b("85c0")
+    a.j32("0f84", "gl_ret")                         # short of the line -> unchanged (eax 0)
+    a.b("d905" + _u32(SIM_LINE_TO_GOAL))            # fld dword [line to goal]
     a.b("31c9")                                     # xor ecx, ecx
     a.label("gl_bucket")
     a.b("d9048d" + _u32(data + D_GOAL_BOUNDS))      # fld dword [bounds + ecx*4]
@@ -482,6 +512,22 @@ def _goal_line_code(a: _Asm, page: int) -> None:
     a.b("5a")
     a.b("c3")
 
+    # reach(st0 = a gain >= 0, popped): eax = 1 when the commit would credit it as reaching the goal line: the commit
+    # adds 0.5 (0x1064AE..0x1064E1), truncates (0x100F00) and then compares with [line to goal]. Keeps ecx and edx.
+    a.label("reach")
+    a.b("d805" + _u32(data + D_HALF))               # fadd dword [0.5]
+    a.b("50")                                       # push eax  (room for the argument)
+    a.b("d91c24")                                   # fstp dword [esp]
+    a.call(FN_FLOAT_TO_INT)                         # stdcall: eax = trunc(gain + 0.5), the argument popped
+    a.b("a3" + _u32(state + S_TMP))                 # mov [tmp], eax
+    a.b("db05" + _u32(state + S_TMP))               # fild dword [tmp]
+    a.b("d905" + _u32(SIM_LINE_TO_GOAL))            # fld dword [line to goal]
+    a.b("dff1")                                     # fcomip: line vs the credited gain
+    a.b("ddd8")                                     # fstp st(0)  (flags kept)
+    a.b("0f96c0")                                   # setbe al: line <= credited gain (or unordered)
+    a.b("0fb6c0")                                   # movzx eax, al
+    a.b("c3")
+
 
 _LABELS: dict[str, int] = {}
 
@@ -506,7 +552,7 @@ def _assemble(page: int) -> tuple[bytes, dict[str, int]]:
 def _labels() -> dict[str, int]:
     """Label offsets inside the page (they do not depend on the page address)."""
     if not _LABELS:
-        _LABELS.update({"fixture": 0, "mix32": 0, "form": 0, "clamp": 0, "goal_line": 0})
+        _LABELS.update({"fixture": 0, "mix32": 0, "form": 0, "clamp": 0, "goal_line": 0, "reach": 0})
         _LABELS.update(_assemble(PLACEHOLDER_VA)[1])    # pass 1: sizes and offsets
         _LABELS.update(_assemble(PLACEHOLDER_VA)[1])    # pass 2: the calls resolved
     return dict(_LABELS)
@@ -532,6 +578,7 @@ def data_bytes(*, home_edge=HOME_EDGE, form_sigma=FORM_SIGMA, goal_line=GOAL_LIN
     out[D_THRESHOLDS:D_THRESHOLDS + 33] = two_point_thresholds()
     out[D_GOAL_BOUNDS:D_GOAL_BOUNDS + 16] = struct.pack("<4f", *GOAL_LINE_BOUNDS)
     out[D_GOAL_KEEP:D_GOAL_KEEP + 16] = struct.pack("<4I", *_keep_units(goal_line))
+    out[D_HALF:D_HALF + 4] = _f32(0.5)
     return bytes(out)
 
 

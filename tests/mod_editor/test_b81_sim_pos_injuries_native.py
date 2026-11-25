@@ -411,7 +411,9 @@ class PositionDecisions(PositionGate):
     def test_kicker_and_punter_only_while_both_specialists_play(self):
         """b81 game outcomes, coordinator's R3 ruling: the kicker (slot 32) and punter (slot 14) rows count only while
         slot 32 holds a kicker and slot 14 a punter. Calibration's confirmation saw one club lose both in two weeks and
-        play a quarterback at both jobs; with either specialist out the other covers both jobs unexposed."""
+        play a quarterback at both jobs; with either specialist out the other covers both jobs unexposed, so injuries
+        alone cannot take both. (A quarterback can still punt for the rest of a game in which the kicker was hurt: that
+        is the game's own in-game substitution, outside this walk.)"""
         self.load_rate(100_000)                         # sample 0 proposes any exposed, positive threshold
         def lineup(kicker_position, punter_position, kicker_rating=60, punter_rating=60):
             self.clear()
