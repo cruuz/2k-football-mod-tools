@@ -59,7 +59,7 @@ OPTIONAL_STEPS = frozenset({
     # broadcast art, people on the field, late visual passes
     "espn_marks_2026", "espn_wipes_boards_2026", "kick_meter_2026", "modern_goalposts", "modern_coaches",
     "modern_fans", "modern_officials", "modern_helmets", "menu_icon_orientation", "espn25_fields", "era_ball",
-    "broadcast_greens", "super_bowl_hosts",
+    "broadcast_greens", "super_bowl_hosts", "super_bowl_booth", "stadium_welcome", "stale_speech",
 })
 ROOT = Path(__file__).resolve().parents[2]
 PACK0_SIZE = 193_710_080   # vc_53450030/0 (retail); the schedule template lives in its ROST resource
@@ -6279,6 +6279,17 @@ def _r62_plan_options(plan, frozen_setup=None):
     return options
 
 
+def _user_lines_streams(plan) -> frozenset[int]:
+    """b81 sb-booth (review S2): the ``lines`` streams the user's own commentary replaced (plan.commentary, "lines:N");
+    the booth steps leave them reachable."""
+    out = set()
+    for swap in plan.commentary:
+        bank, _sep, number = str(swap.stream).rpartition(":")
+        if bank == "lines" and number.isdigit():
+            out.add(int(number))
+    return frozenset(out)
+
+
 def _commentary_final_wanted(plan, loaded_espn25_plan):
     """b77-c2: builds that write rosters end with the final commentary pass (nfl2k5_commentary_final)."""
     return bool(plan.roster_edits or plan.prospect_names or plan.espn25_rosters or plan.espn25_more_moments
@@ -9816,6 +9827,48 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 progress(line, 0, 0)
             receipt["steps"].append({"step": "super_bowl_hosts", **hosts_receipt})
             receipt["result"]["super_bowl_hosts"] = hosts_receipt["state"]
+        # sb-booth (b81): on the 2026 calendar the booth's retail Super Bowl welcome, coin toss and sign-off name Super
+        # Bowls XXXIX to XLII and their cities ("here in Jacksonville" at the first franchise Super Bowl), and Berman's
+        # sign-offs celebrate ESPN's 25th year; 18 bytes in three director entries point them at the game's own lines
+        # without a city, a number or the anniversary.
+        booth = _core_module("nfl2k5_super_bowl_booth")
+        if booth is None:
+            raise ValueError("the Super Bowl booth step is unavailable")
+        with _optional(receipt, target, progress, "super_bowl_booth"):
+            progress("Super Bowl booth lines for the 2026 calendar", 0, 0)
+            booth_receipt = booth.apply_to_image(target, keep_streams=_user_lines_streams(plan),
+                                                 progress=lambda line: progress(line, 0, 0))
+            receipt["steps"].append({"step": "super_bowl_booth", **booth_receipt})
+            receipt["result"]["super_bowl_booth"] = booth_receipt["state"]
+    if tt.is_disc_image(target):
+        # sb-booth (b81, audit finding 1): the pregame welcome (key 14039) names each stadium's 2004 building; for every
+        # stadium row this build renamed away from a recorded name, the welcome is skipped instead of naming it wrong.
+        # Data-driven: a disc without the venue renames is left alone.
+        welcome = _core_module("nfl2k5_stadium_welcome")
+        if welcome is None:
+            raise ValueError("the pregame welcome step is unavailable")
+        with _optional(receipt, target, progress, "stadium_welcome"):
+            progress("Pregame welcome for renamed stadiums", 0, 0)
+            welcome_receipt = welcome.apply_to_image(target, keep_streams=_user_lines_streams(plan),
+                                                     progress=lambda line: progress(line, 0, 0))
+            receipt["steps"].append({"step": "stadium_welcome", **welcome_receipt})
+            receipt["result"]["stadium_welcome"] = welcome_receipt["state"]
+        # sb-booth (b81, audit part 2, review fixes): per-team and per-stadium booth lines that name a moved building,
+        # a relocated club's old city, Washington's old name, a 2004 head coach or (with the 2026 season) a dated
+        # line take the game's own fallback (the generic line, the home/visiting team line) or are dropped, by the
+        # same context-list edit; each rule holds only when the built disc shows the change. Every booth step leaves
+        # the user's own commentary recordings reachable.
+        stale = _core_module("nfl2k5_stale_speech")
+        if stale is None:
+            raise ValueError("the stale booth lines step is unavailable")
+        with _optional(receipt, target, progress, "stale_speech"):
+            progress("Stale team and stadium booth lines", 0, 0)
+            stale_receipt = stale.apply_to_image(target, season_2026=bool(plan.season_2026),
+                                                 keep_streams=_user_lines_streams(plan),
+                                                 progress=lambda line: progress(line, 0, 0))
+            receipt["steps"].append({"step": "stale_speech", **{k: v for k, v in stale_receipt.items() if k != "edits"},
+                                     "edit_count": len(stale_receipt.get("edits", ()))})
+            receipt["result"]["stale_speech"] = stale_receipt["state"]
     if plan.team_number_scale:
         _step("team_number_scale")
         # b776-ns1: after every executable writer (the hair styles' late owner and the Super Bowl hosts' season codes): a late
@@ -10105,6 +10158,21 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         seasons = [row["super_bowl"] for row in _core_module("nfl2k5_champions_history").read_image(target)]
         if seasons != list(range(60, 38, -1)):
             raise ValueError("the champions history (Super Bowls XXXIX to LX) did not survive the final passes")
+    # b81 sb-booth (review S5): the booth lines, the pregame welcome and the stale team/stadium lines are late data
+    # owners of their own; check them on the finished disc like the other late steps.
+    if receipt["result"].get("super_bowl_booth") == "applied":
+        _booth = _core_module("nfl2k5_super_bowl_booth")
+        _keep = _user_lines_streams(plan)
+        if (_booth.image_state(target) != ("partial" if _booth.kept_keys(_keep) else "applied")
+                or _booth.check_image(target, _keep)):
+            raise ValueError("the Super Bowl booth lines did not survive the final passes")
+    if receipt["result"].get("stadium_welcome") == "applied":
+        _welcome = _core_module("nfl2k5_stadium_welcome").status(target, _user_lines_streams(plan))
+        if _welcome["skipped"] != _welcome["expected"]:
+            raise ValueError("the pregame welcome for renamed stadiums did not survive the final passes")
+    if receipt["result"].get("stale_speech") == "applied" and _core_module("nfl2k5_stale_speech").pending_bytes(
+            target, season_2026=bool(plan.season_2026), keep_streams=_user_lines_streams(plan)):
+        raise ValueError("the stale team and stadium booth lines did not survive the final passes")
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(
