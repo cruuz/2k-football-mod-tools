@@ -251,7 +251,8 @@ class OptionalStepListTests(unittest.TestCase):
         self.assertIsInstance(mod_build.OPTIONAL_STEPS, frozenset)
         self.assertEqual(sorted(set(names) - mod_build.OPTIONAL_STEPS), [], "wrapped but missing from OPTIONAL_STEPS")
         self.assertEqual(sorted(mod_build.OPTIONAL_STEPS - set(names)), [], "listed but never wrapped")
-        self.assertEqual(len(mod_build.OPTIONAL_STEPS), 61)   # b81-art: kit_fixes_2026_b81; b81-uniforms: its four steps (R54)
+        self.assertEqual(len(mod_build.OPTIONAL_STEPS), 63)   # b81-art: kit_fixes_2026_b81; b81-uniforms: its four steps (R54)
+        # b81 sportscenter: 63 = 61 + SportsCenter news and the SportsCenter playoff picture lines
         for name in mod_build.OPTIONAL_STEPS:
             self.assertIn(name, build_steps.STEP_LABELS, name)
 

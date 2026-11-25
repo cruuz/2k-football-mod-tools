@@ -225,7 +225,9 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [609, 10, 8, 9, 8, 9]
+            [612, 10, 8, 9, 8, 9]
+            # b81 sportscenter: 612 = 609 + SportsCenter news (MyCareer's guard and the cave manifest import it), the
+            # SportsCenter lines owner (loaded by name) and the frozen pre-news-row halfback roll (imported by the roll).
             # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
             # the cave manifest recorder) + Number kerning, whose state the owner reads.
             # b81 integration (qb34 trades merge): 607 = 605 (next lines) + the quarterback trades owner and its generated
@@ -343,6 +345,8 @@ class ProviderIntegrityTests(unittest.TestCase):
                     "mod_editor/core/nfl2k5_screen_timing.py",
                     # sc2: mod_build selects this reviewed late writer by module name.
                     "mod_editor/core/nfl2k5_sportscenter_lineup.py",
+                    # b81 sportscenter: mod_build selects the SportsCenter lines owner by name (director data only).
+                    "mod_editor/core/nfl2k5_sportscenter_lines.py",
                     # b81 qb34: mod_build selects the quarterback room owner by name; it imports its page template.
                     "mod_editor/core/nfl2k5_qb_room.py",
                     "mod_editor/core/nfl2k5_qb_room_code.py",

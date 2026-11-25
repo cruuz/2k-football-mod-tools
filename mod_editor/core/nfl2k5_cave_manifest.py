@@ -161,6 +161,10 @@ class Recorder:
             from . import nfl2k5_helmet_side_numbers as sides
             for name, va, retail, _ in sides.sites(0x14DA000):
                 self.reserve(va, len(retail), owner, "full owner site: " + name)
+        if owner == "nfl2k5_sportscenter_news":  # b81 sportscenter: its four whole call/load sites (both modes)
+            from . import nfl2k5_sportscenter_news as news
+            for va, retail in news.ALL_SITES:
+                self.reserve(va, len(retail), owner, "full owner site")
         if owner == "nfl2k5_offset_toss":
             from . import nfl2k5_offset_toss as toss
             self.reserve(toss.SITE, len(toss.RETAIL), owner, "full owner site")

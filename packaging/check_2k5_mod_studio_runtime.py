@@ -1745,6 +1745,9 @@ def main() -> int:
         "mod_editor.core.nfl2k5_number_kerning",        # b76-k2
         "mod_editor.core.nfl2k5_team_number_scale",     # b776-ns1
         "mod_editor.core.nfl2k5_helmet_side_numbers",   # b81 helmet-sides
+        "mod_editor.core.nfl2k5_sportscenter_news",     # b81 sportscenter
+        "mod_editor.core.nfl2k5_sportscenter_lines",    # b81 sportscenter
+        "mod_editor.core.nfl2k5_sim_rb_injuries_b780",  # b81 sportscenter: the frozen previous revision
         "mod_editor.core.exact_math",                   # b76.3: the stadium models' platform-independent math
         "mod_editor.core.nfl2k5_modern_color",
         "mod_editor.core.nfl2k5_presentation_standalone",

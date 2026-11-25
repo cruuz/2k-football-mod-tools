@@ -845,8 +845,18 @@ HELMET_SIDES_VA = QB_TRADES_VA + QB_TRADES_SIZE
 HELMET_SIDES_SIZE = PAGE
 HELMET_SIDES_REQUEST = (HELMET_SIDES_OWNER, "code", HELMET_SIDES_SIZE, PAGE)
 LATE_OWNERS += (HELMET_SIDES_OWNER,)
-FIXED_PAGE_OWNERS = (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER, QB_TRADES_OWNER, HELMET_SIDES_OWNER)
-FIXED_SPAN_END = HELMET_SIDES_VA + HELMET_SIDES_SIZE     # every pool owner steps over QB_ROOM_VA..FIXED_SPAN_END
+# b81 sportscenter: SportsCenter news (modern injured reserve on the injury report, the news windows across a save and
+# load). One fixed page right after the helmet side numbers page, placed like it: at its absolute address, never
+# advancing the pool cursor, and every other pool owner steps over it whether or not it is requested, so it can be added
+# in place after every other owner. No shipped or tested layout reaches 0x1529000 (see the quarterback room above), so
+# growing the stepped-over span by this page moves nothing.
+SPORTSCENTER_NEWS_OWNER = "nfl2k5_sportscenter_news"
+SPORTSCENTER_NEWS_VA = HELMET_SIDES_VA + HELMET_SIDES_SIZE
+SPORTSCENTER_NEWS_SIZE = PAGE
+SPORTSCENTER_NEWS_REQUEST = (SPORTSCENTER_NEWS_OWNER, "code", SPORTSCENTER_NEWS_SIZE, PAGE)
+LATE_OWNERS += (SPORTSCENTER_NEWS_OWNER,)
+FIXED_PAGE_OWNERS = (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER, QB_TRADES_OWNER, HELMET_SIDES_OWNER, SPORTSCENTER_NEWS_OWNER)
+FIXED_SPAN_END = SPORTSCENTER_NEWS_VA + SPORTSCENTER_NEWS_SIZE     # every pool owner steps over QB_ROOM_VA..FIXED_SPAN_END
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -1100,6 +1110,8 @@ def _scale_allocations(requests):
              "the quarterback trades page has one fixed page")
     _require(all(r == HELMET_SIDES_REQUEST for r in requests if r[0] == HELMET_SIDES_OWNER),
              "the helmet side numbers have one fixed page")
+    _require(all(r == SPORTSCENTER_NEWS_REQUEST for r in requests if r[0] == SPORTSCENTER_NEWS_OWNER),
+             "SportsCenter news has one fixed page")
     gadget = tuple(r for r in requests if r[0] == GADGET_OWNER)
     if gadget:
         _require(gadget == GADGET_REQUESTS, "incomplete or foreign gadget allocation")
@@ -1150,13 +1162,15 @@ def _scale_allocations(requests):
             at = (protected + FRANCHISE_OWNERSHIP_SIZE + align - 1) & -align
         # b81 qb34: unconditional, after the ownership step-over (an owner bumped over that page lands here next).
         room = QB_ROOM_VA - POOL_VA
-        span = FIXED_SPAN_END - QB_ROOM_VA                  # C20: the room's pages, the trades page, (b81) side numbers
+        span = FIXED_SPAN_END - QB_ROOM_VA                  # C20: the room's pages, the trades page, (b81) side numbers, news
         if owner == QB_ROOM_OWNER:
             at = room
         elif owner == QB_TRADES_OWNER:
             at = QB_TRADES_VA - POOL_VA
         elif owner == HELMET_SIDES_OWNER:
             at = HELMET_SIDES_VA - POOL_VA
+        elif owner == SPORTSCENTER_NEWS_OWNER:
+            at = SPORTSCENTER_NEWS_VA - POOL_VA
         elif at < room + span and at + size > room:
             at = (room + span + align - 1) & -align
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")

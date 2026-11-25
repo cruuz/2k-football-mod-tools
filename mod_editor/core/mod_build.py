@@ -60,6 +60,8 @@ OPTIONAL_STEPS = frozenset({
     "espn_marks_2026", "espn_wipes_boards_2026", "kick_meter_2026", "modern_goalposts", "modern_coaches",
     "modern_fans", "modern_officials", "modern_helmets", "menu_icon_orientation", "espn25_fields", "era_ball",
     "broadcast_greens", "super_bowl_hosts",
+    # b81 sportscenter: SportsCenter news (executable) and its playoff-picture lines (director)
+    "sportscenter_news", "sportscenter_lines",
 })
 ROOT = Path(__file__).resolve().parents[2]
 PACK0_SIZE = 193_710_080   # vc_53450030/0 (retail); the schedule template lives in its ROST resource
@@ -3684,6 +3686,77 @@ def _apply_history_pool_in_place(target, receipt, progress):
     receipt["result"]["history_pool"] = "applied"
 
 
+def _sportscenter_news_upgrade(payload):
+    """b81 sportscenter: the v0.9 update carries what a full build of this release writes for SportsCenter: the
+    halfback roll's earlier revision (beta-80 / v0.9, or beta-79) is upgraded in place to the one that posts its news
+    row, and SportsCenter news is installed, or its mode switched, on a 128 MB scale-out executable (its fixed page goes
+    in place after every other owner). Returns (payload, receipt or None)."""
+    receipt = {}
+    roll = _core_module("nfl2k5_sim_rb_injuries")
+    if roll is not None and roll.status(payload) == "previous":
+        payload, receipt["sim_rb_injuries"] = roll.apply(payload)
+    news = _core_module("nfl2k5_sportscenter_news")
+    if (news is not None and tt.k128_patch.read_settings(payload).get("require_128") is True
+            and space_is_scaleout(payload)):
+        patched, news_receipt = news.apply(payload)
+        if not news_receipt.get("already_applied"):
+            payload, receipt["sportscenter_news"] = patched, news_receipt
+    return payload, (receipt or None)
+
+
+def _apply_sportscenter_news_in_place(target, receipt, progress):
+    """The v0.9 update's write of _sportscenter_news_upgrade, after the route's own writers."""
+    patched, upgrade = _sportscenter_news_upgrade(_xbe_bytes(target))
+    if upgrade is None:
+        return
+    progress("SportsCenter news", 0, 0)
+    _write_xbe_bytes(target, patched)
+    if _xbe_bytes(target) != patched:
+        raise RuntimeError("The SportsCenter news update did not read back as written.")
+    for step, step_receipt in upgrade.items():
+        receipt["steps"].append({"step": step, **{k: v for k, v in step_receipt.items() if k != "reservations"}})
+        receipt["result"][step] = "applied"
+
+
+def _apply_sportscenter_news(plan, target, receipt, progress):
+    """b81 sportscenter: SportsCenter news (nfl2k5_sportscenter_news), after every other executable owner: its fixed
+    page follows the helmet side numbers page. 128 MB scale-out builds only (the page grows the pool; modern injured
+    reserve, which R2 serves, is 128 MB only). Optional: a failure leaves it out with a note."""
+    if plan.console_memory != 128:
+        return
+    _step("sportscenter_news")
+    news = _core_module("nfl2k5_sportscenter_news")
+    if news is None or not space_is_scaleout(_xbe_bytes(target)):
+        return
+    with _optional(receipt, target, progress, "sportscenter_news"):
+        progress("SportsCenter news", 0, 0)
+        patched, news_receipt = news.apply(_xbe_bytes(target))
+        if not news_receipt.get("already_applied"):
+            _write_xbe_bytes(target, patched)
+        if _xbe_bytes(target) != patched or news.status(patched) != "applied":
+            raise RuntimeError("SportsCenter news: the output does not read back as applied")
+        receipt["steps"].append({"step": "sportscenter_news", **news_receipt})
+        receipt["result"]["sportscenter_news"] = "applied"
+
+
+def _apply_sportscenter_lines(target, receipt, progress):
+    """b81 sportscenter: SportsCenter's playoff picture and sign-off lines (nfl2k5_sportscenter_lines, 11 bytes of the
+    wrapup director on the disc) for an executable with 18 regular weeks and seven seeds; the retail calendar keeps
+    the retail lines. Full builds (with the 2026 season) and the v0.9 update. Optional: a failure leaves it out."""
+    _step("sportscenter_lines")
+    lines = _core_module("nfl2k5_sportscenter_lines")
+    if lines is None:
+        raise ValueError("the SportsCenter lines step is unavailable")
+    if not lines.wanted(_xbe_bytes(target)):
+        receipt["result"]["sportscenter_lines"] = "skipped (not 18 weeks with seven seeds)"
+        return
+    with _optional(receipt, target, progress, "sportscenter_lines"):
+        progress("SportsCenter playoff picture lines", 0, 0)
+        lines_receipt = lines.apply_to_image(target, progress=lambda message: progress(message, 0, 0))
+        receipt["steps"].append({"step": "sportscenter_lines", **lines_receipt})
+        receipt["result"]["sportscenter_lines"] = lines_receipt["state"]
+
+
 def _gadget_play_preflight(source, progress):
     """Beta 81 Q62: refuse, before any write, a source whose gadget sites or slot another build changed."""
     gadget = _core_module("nfl2k5_gadget_play")
@@ -3839,6 +3912,9 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     expected, history_upgrade = _history_pool_upgrade(expected)  # b81 history-pool: every v0.9 update, as a full build
     if history_upgrade is not None:
         receipt["v09_update"].append("history_pool")
+    expected, news_upgrade = _sportscenter_news_upgrade(expected)  # b81 sportscenter: every v0.9 update, as a full build
+    if news_upgrade is not None:
+        receipt["v09_update"].extend(sorted(news_upgrade))
     if preflight:
         from .modpack import hash_file
         if hash_file(source, progress=progress) != release["image_sha256"]:
@@ -3863,6 +3939,8 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     if plan.gadget_play:
         _apply_gadget_play(plan, target, receipt, progress)
     _apply_history_pool_in_place(target, receipt, progress)  # b81 history-pool
+    _apply_sportscenter_news_in_place(target, receipt, progress)  # b81 sportscenter (the expected chain's order)
+    _apply_sportscenter_lines(target, receipt, progress)  # b81 sportscenter: director data, not the executable
     _compact_build_disc(target, source, receipt, progress)
     _step("final_checks")
     if _xbe_bytes(target) != expected:
@@ -9816,6 +9894,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 progress(line, 0, 0)
             receipt["steps"].append({"step": "super_bowl_hosts", **hosts_receipt})
             receipt["result"]["super_bowl_hosts"] = hosts_receipt["state"]
+        # b81 sportscenter: SportsCenter's playoff picture and sign-off (wrapup director, 11 bytes) follow the 18-week
+        # calendar and drop the six-seed 2- and 7-seed lines; only on an executable with 18 weeks and seven seeds
+        _apply_sportscenter_lines(target, receipt, progress)
     if plan.team_number_scale:
         _step("team_number_scale")
         # b776-ns1: after every executable writer (the hair styles' late owner and the Super Bowl hosts' season codes): a late
@@ -9974,6 +10055,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_sim_qb_injuries(plan, target, receipt, progress)
     _apply_qb_room(plan, target, receipt, progress)  # b81 qb34: right after the quarterback injury step
     _apply_helmet_side_numbers(plan, target, receipt, progress)  # b81 helmet-sides: the last allocator owner
+    _apply_sportscenter_news(plan, target, receipt, progress)  # b81 sportscenter: its fixed page after helmet sides
     # Beta 81 Q62: after every play-book writer and every other owner, so its table matches the books on the disc and
     # its gate call is the final one. Its code and table sit in the fixed gadget slots ahead of the cards.
     _apply_gadget_play(plan, target, receipt, progress)
@@ -10058,6 +10140,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the coach career counter fix did not survive the final passes")  # b780 c1
     if plan.history_pool and _core_module("nfl2k5_history_pool").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the career history pool fix did not survive the final passes")  # b780 hist1
+    if receipt["result"].get("sportscenter_news") == "applied" and _core_module(
+            "nfl2k5_sportscenter_news").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("SportsCenter news did not survive the final passes")  # b81 sportscenter
     if plan.load_user_team_guard and _core_module("nfl2k5_load_user_team_guard").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the Franchise load user-team guard did not survive the final passes")  # b780 mc1
     if plan.save_list_type_guard and _core_module("nfl2k5_save_list_type_guard").status(_xbe_bytes(target)) != "applied":

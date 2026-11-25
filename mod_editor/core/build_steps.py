@@ -183,6 +183,8 @@ STEP_LABELS: dict[str, str] = {
     "era_ball": "the era ball",
     "broadcast_greens": "the Broadcast greens pass",
     "super_bowl_hosts": "the franchise Super Bowl host pass",
+    "sportscenter_news": "SportsCenter news",
+    "sportscenter_lines": "the SportsCenter playoff picture lines",
     "team_number_scale": "the per-kit jersey number sizes",
     "run_blocking": "Run blocking",
     "pass_protection": "Pass protection",
@@ -288,6 +290,8 @@ KEPT: dict[str, str] = {
     "era_ball": "Your disc keeps the ball as it was.",
     "broadcast_greens": "Your disc keeps the field colours as they were.",
     "super_bowl_hosts": "Your franchise Super Bowls keep their neutral stadium.",
+    "sportscenter_news": "Your disc keeps SportsCenter's original injury report and news windows.",
+    "sportscenter_lines": "Your disc keeps SportsCenter's original playoff picture lines.",
     "moment_kits": "Your disc keeps the uniforms the Anniversary moments already had.",
     "team_sleeves": "Your disc keeps the long sleeves as they were.",
     **{step: "Your disc keeps those uniforms as they were." for step in (

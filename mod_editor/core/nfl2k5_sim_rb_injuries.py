@@ -86,8 +86,17 @@ path only and writes no roster field; every other selection returns retail's own
 lineup guard remains the first line; this covers the weeks-only cases that guard and the sim's status clear
 leave standing.
 
+b81 sportscenter (news row): the roll writes the roster record directly, so the game's own end-of-game merge never sees
+the injury and never posts its news-ledger row (kind 10, 0x247160 at 0x1335C4). SportsCenter, the injury pages and the
+game's injury notes read only that ledger, so a rolled back (in the week-7 save of 11/20, every out-player without a row
+was a halfback: Bijan Robinson, Saquon Barkley, Jahmyr Gibbs and five more) was never mentioned. After the write the roll
+now jumps to a small stub at ``POST_OFFSET`` that, in a franchise (``0xC4B80`` returns 2, the merge's own test), calls
+``0x247160`` with the player and his club: the game's own poster, which builds exactly the merge's row. The roll only
+picks a healthy back, so each row marks one onset, as the merge's healthy-to-injured test does. An install of the
+beta-80 / v0.9 cave (frozen ``nfl2k5_sim_rb_injuries_b780``) or the beta-79 one reads "previous" and is upgraded in place.
+
 0 writable and 0 read-only bytes are requested. The allocator code request is 640 bytes: the weekly roll,
-the carry guard and their shared constants. The cave is placed as the last late owner (see
+the carry guard, the news-row stub and their shared constants. The cave is placed as the last late owner (see
 ``nfl2k5_xbe_space.LATE_OWNERS``).
 """
 from __future__ import annotations
@@ -98,6 +107,9 @@ import struct
 OWNER = "nfl2k5_sim_rb_injuries"
 CODE_SIZE = 640
 SUB_OFFSET = 208                  # b780 db2: the guard (416 bytes with the fullback rule) starts here; beta-79 used 256
+POST_OFFSET = 432                 # b81 sportscenter: the news-row stub, after the guard (roll 0..200, guard 208..423)
+FN_LEAGUE_TYPE = 0x000C4B80       # [0xE576A0]: 2 = franchise (the merge 0x1335A2 asks the same before it posts)
+FN_POST_INJURY = 0x00247160       # ecx = player, edx = club: posts the kind-10 news row (0x2BFDF0), as the merge does
 UPGRADES_PREVIOUS = True          # status() may read "previous" (the beta-79 install); apply() upgrades it in place
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Simulated RB short injuries"
@@ -165,8 +177,8 @@ def require(ok, message):
         raise SimRbInjuriesError(message)
 
 
-def _weekly(a):
-    """The once-a-week roll. Entry replays the three pops the hook displaced."""
+def _weekly(a, post_va):
+    """The once-a-week roll. Entry replays the three pops the hook displaced; a roll injury goes on to the news stub."""
     a.b("5f")                                          # pop edi
     a.b("5e")                                          # pop esi
     a.b("5b")                                          # pop ebx
@@ -226,6 +238,7 @@ def _weekly(a):
     a.b("81e1" + struct.pack("<I", 0x8FFFFFFF).hex())  # and ecx, 0x8fffffff
     a.b("81c9" + struct.pack("<I", STATUS_OUT).hex())  # or ecx, 0x40000000
     a.b("894e24")                                      # mov [esi+0x24], ecx
+    a.jmp_abs(post_va)                                 # b81 sportscenter: the news row, then the next club
     a.label("next_team")
     a.b("43")                                          # inc ebx
     a.b("3bdd")                                        # cmp ebx, ebp
@@ -311,18 +324,37 @@ def _carrier(a):
     a.b("c3")                                          # ret
 
 
+def _news_row(a, next_team_va):
+    """b81 sportscenter: post the rolled back's kind-10 news row through the game's own poster, as the merge does.
+
+    Entry: esi = the player just written, edi = his club, ebx/ebp = the roll's club index and count (kept: 0x247160 and
+    0x2BFDF0 touch only eax, ecx and edx). In a franchise only (0xC4B80 == 2), the merge's own condition."""
+    a.call(FN_LEAGUE_TYPE)
+    a.b("83f802")                                      # cmp eax, 2
+    a.j8("75", "back")
+    a.b("8bce")                                        # mov ecx, esi   the player
+    a.b("8bd7")                                        # mov edx, edi   his club
+    a.call(FN_POST_INJURY)
+    a.label("back")
+    a.jmp_abs(next_team_va)
+
+
 def code_for(code_va):
     from .nfl2k5_draft_ai import _Asm
     a = _Asm(code_va)
-    _weekly(a)
+    _weekly(a, code_va + POST_OFFSET)
     body = a.assemble()
     require(len(body) <= SUB_OFFSET, f"weekly RB injury cave is {len(body)} bytes, guard offset {SUB_OFFSET}")
     b = _Asm(code_va + SUB_OFFSET)
     _carrier(b)
     guard = b.assemble()
-    require(len(guard) <= CODE_SIZE - SUB_OFFSET,
-            f"carrier guard is {len(guard)} bytes, limit {CODE_SIZE - SUB_OFFSET}")
-    return (body.ljust(SUB_OFFSET, b"\xcc") + guard).ljust(CODE_SIZE, b"\xcc")
+    require(len(guard) <= POST_OFFSET - SUB_OFFSET,
+            f"carrier guard is {len(guard)} bytes, limit {POST_OFFSET - SUB_OFFSET}")
+    c = _Asm(code_va + POST_OFFSET)
+    _news_row(c, code_va + a.labels["next_team"])
+    stub = c.assemble()
+    require(len(stub) <= CODE_SIZE - POST_OFFSET, f"news-row stub is {len(stub)} bytes")
+    return ((body.ljust(SUB_OFFSET, b"\xcc") + guard).ljust(POST_OFFSET, b"\xcc") + stub).ljust(CODE_SIZE, b"\xcc")
 
 def sites(code_va):
     return [("weekly_injury_tick", WEEKLY_SITE, WEEKLY_BEFORE,
@@ -339,7 +371,18 @@ def allocation(payload):
     return rows[0]
 
 
-def _recognize(payload):
+def _previous_revisions(code_va):
+    """Earlier installs this release upgrades in place, newest first: (name, cave bytes, site list).
+
+    b780: beta-80 / v0.9 and beta 81 before the news row (same hooks as now, its roll posts no row).
+    b779: beta-79 / v0.8 (its roll also hit clubs a person controls; its guard at offset 256)."""
+    from . import nfl2k5_sim_rb_injuries_b779 as b779
+    from . import nfl2k5_sim_rb_injuries_b780 as b780
+    return (("b780", b780.code_for(code_va), b780.sites(code_va)), ("b779", b779.code_for(code_va), b779.sites(code_va)))
+
+
+def _match(payload):
+    """(state, revision): state is retail / applied / previous / foreign; revision names the previous install."""
     from . import nfl2k5_xbe_space as space
     from . import nfl2k5_sim_qb_injuries as quarterback
     from .nfl2k5_cave_oracle import XbeImage
@@ -353,37 +396,35 @@ def _recognize(payload):
     image = XbeImage(payload)
     present = any(r["owner"] == OWNER for r in space.layout(payload)["allocations"])
     owned = allocation(payload) if present else None
-    states = set()
-    # b780 db2: the guard moved (256 -> 208), so a beta-79 install's carrier call is its own "previous" bytes
-    previous_sites = _previous_sites(owned["va"]) if owned else [None] * 2
-    for (_name, va, before, after), prior in zip(sites(owned["va"] if owned else 0), previous_sites):
-        raw = image.read(va, len(before))
-        states.add("retail" if raw == before else "applied" if owned and raw == after
-                   else "previous" if prior is not None and raw == prior[3] else "foreign")
-    code_state = None
-    if owned:
-        raw = image.read(owned["va"], CODE_SIZE)
-        code_state = ("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == code_for(owned["va"])
-                      else "previous" if raw == _previous_code_for(owned["va"]) else "foreign")
-        if code_state == "applied" and "previous" in states:
-            code_state = "foreign"  # b780 db2: this release's cave behind a beta-79 carrier call is no install of ours
-        states.add(code_state)
-    if states == {"applied", "previous"}:
-        states = {"previous"}   # b780 hunt1: the same hooks with the beta-79 roll (a v0.8 executable)
-    require(states in ({"retail"}, {"applied"}, {"previous"}), "Foreign or mixed RB injury site/code")
-    return next(iter(states))
+    code_va = owned["va"] if owned else 0
+    raw_sites = [image.read(va, len(before)) for _name, va, before, _after in sites(code_va)]
+    if all(raw == before for raw, (_n, _va, before, _a) in zip(raw_sites, sites(code_va))):
+        if not owned or image.read(code_va, CODE_SIZE) == b"\xcc" * CODE_SIZE:
+            return "retail", None
+        require(False, "Foreign or mixed RB injury site/code")
+    require(owned is not None, "Foreign or mixed RB injury site/code")
+    cave = image.read(code_va, CODE_SIZE)
+    if cave == code_for(code_va) and raw_sites == [after for _n, _va, _b, after in sites(code_va)]:
+        return "applied", None
+    # b780 db2: the guard moved (256 -> 208), so each revision is judged on its own cave AND its own hooks together;
+    # this release's cave behind a beta-79 carrier call, or the reverse, is no install of ours
+    for name, prior_code, prior_sites in _previous_revisions(code_va):
+        if cave == prior_code and raw_sites == [after for _n, _va, _b, after in prior_sites]:
+            return "previous", name
+    require(False, "Foreign or mixed RB injury site/code")
 
 
-def _previous_code_for(code_va):
-    """b780 hunt1: the beta-79 / v0.8 cave (its weekly roll also hit clubs a person controls), from the frozen module."""
-    from . import nfl2k5_sim_rb_injuries_b779 as b779
-    return b779.code_for(code_va)
+def _recognize(payload):
+    return _match(payload)[0]
 
 
-def _previous_sites(code_va):
-    """b780 db2: the beta-79 / v0.8 hooks (its guard at offset 256), from the frozen module."""
-    from . import nfl2k5_sim_rb_injuries_b779 as b779
-    return b779.sites(code_va)
+def previous_revision(payload):
+    """Which earlier install an executable that reads "previous" carries ("b780" or "b779"), else None."""
+    try:
+        state, name = _match(payload)
+    except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, UnicodeError, OSError):
+        return None
+    return name if state == "previous" else None
 
 
 def status(payload):
@@ -406,24 +447,40 @@ def apply(payload):
     if state == "previous":
         # b780 hunt1: a beta-79 / v0.8 install (same cave and hooks) is upgraded in place to the roll that leaves
         # clubs a person controls alone. b780 db2: the guard moved, so the carrier call is re-pointed as well; the
-        # weekly hook keeps its bytes. Same allocation and address; the result equals a fresh install.
+        # weekly hook keeps its bytes. b81 sportscenter: a beta-80 / v0.9 install (this release's hooks) gets the cave
+        # with the news-row stub. Same allocation and address; the result equals a fresh install.
         code_va = allocation(payload)["va"]
-        result, _ = space.install_code(payload, OWNER, code_for(code_va), previous=_previous_code_for(code_va))
+        revision = previous_revision(payload)
+        prior_code, prior_sites = next((c, t) for n, c, t in _previous_revisions(code_va) if n == revision)
+        # b81 sportscenter: Simulated injuries on Realistic or Custom park the weekly jump (the game's own tail at
+        # WEEKLY_SITE; the quarterback option restores the jump in its physical view, which status() reads). A parked
+        # site stays parked: the upgrade changes the cave only, and the jump the option restores is the same bytes.
+        from . import nfl2k5_sim_qb_injuries as quarterback
+        try:
+            physical = quarterback.physical_view(payload)
+        except quarterback.ERRORS:
+            physical = payload
+        result, _ = space.install_code(payload, OWNER, code_for(code_va), previous=prior_code)
         image = XbeImage(result)
+        physical_image = XbeImage(physical)
         buf = bytearray(result)
         edits = []
-        for (name, va, _retail, after), prior in zip(sites(code_va), _previous_sites(code_va)):
+        for (name, va, retail, after), prior in zip(sites(code_va), prior_sites):
             off = image.offset(va, len(after))
             if bytes(buf[off:off + len(after)]) == after:
                 continue
-            require(bytes(buf[off:off + len(after)]) == prior[3], f"RB injury site {va:#x} is not the beta-79 hook")
+            if (va == WEEKLY_SITE and bytes(buf[off:off + len(after)]) == retail and physical != payload
+                    and physical_image.read(va, len(after)) in (prior[3], after)):
+                edits.append(dict(label=name, va=hex(va), parked_by="nfl2k5_sim_qb_injuries", unchanged=retail.hex()))
+                continue
+            require(bytes(buf[off:off + len(after)]) == prior[3], f"RB injury site {va:#x} is not the {revision} hook")
             buf[off:off + len(after)] = after
             edits.append(dict(label=name, va=hex(va), before=prior[3].hex(), after=after.hex()))
         for section in _sections(buf):
             buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
         result = bytes(buf)
         require(status(result) == "applied" and space.status(result) == "applied", "RB injury upgrade postcondition failed")
-        return result, dict(common, status="applied", upgraded_from="previous",
+        return result, dict(common, status="applied", upgraded_from="previous", previous_revision=revision,
                             changed_bytes=space.count_differing_bytes(payload, result), edits=edits)
     before = payload
     receipt = {}
@@ -461,4 +518,4 @@ def apply(payload):
 __all__ = ["OWNER", "REQUESTS", "CODE_SIZE", "SUB_OFFSET", "WEEKLY_SITE", "WEEKLY_BEFORE",
            "CARRIER_SITE", "CARRIER_BEFORE", "BUILD_CAPTION", "HELP_TEXT", "code_for", "sites", "allocation",
            "status", "apply", "SimRbInjuriesError", "FULLBACK_POSITION", "FULLBACK_KEEP_THRESHOLD", "FULLBACK_REDRAWS",
-           "UPGRADES_PREVIOUS"]
+           "UPGRADES_PREVIOUS", "POST_OFFSET", "FN_POST_INJURY", "previous_revision"]

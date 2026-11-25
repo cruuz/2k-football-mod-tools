@@ -815,6 +815,16 @@ def check_context(payload, edits, *, installed=False, real=None):
         legacy.require(revision is not None, "foreign injured reserve companion")
         ir_code = injured_reserve.allocations(payload)["code"]["va"]
         camera_edits.extend(site for site in injured_reserve.sites(ir_code, revision=revision) if site[1] != injured_reserve.GUARD_VA)
+    # b81 sportscenter: SportsCenter news restores the news-ledger window starts at the franchise load (0x2D0EE3, inside
+    # the pinned front-office deserializer 0x2D0CE0). Accept its exact jump only after its complete status (page, every
+    # site of its mode, its own guards) reads applied, then restore the retail pair in this hash view. Its injury-segment
+    # sites lie in no MyCareer span.
+    from . import nfl2k5_sportscenter_news as sportscenter_news
+    if image.read(sportscenter_news.RELOAD_VA, len(sportscenter_news.RELOAD_RETAIL)) != sportscenter_news.RELOAD_RETAIL:
+        legacy.require(sportscenter_news.status(companions) == "applied", "foreign SportsCenter news companion")
+        news_page = sportscenter_news.allocation(companions)["va"]
+        camera_edits.append(next(site for site in sportscenter_news.sites(news_page, 0)
+                                 if site[1] == sportscenter_news.RELOAD_VA))
     for va, size, digest in GUARDS:
         raw = bytearray(image.read(va, size))
         # nm1 changes only the collector's label decision, not career control.
