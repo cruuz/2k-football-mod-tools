@@ -559,6 +559,7 @@ class FloorRuleTests(unittest.TestCase):
         # b81 integration (scoring merged): the in-place edit also writes the CPU kick aim, as a full build would; and
         # (combined levers) it updates the disc's legacy pass protection to this release's centre float first
         aimed, _ = aim.apply(qb.apply(pressure.apply(source)[0], "realistic")[0])
+        aimed = mod_build._overtime_crash_fix_upgrade(aimed)[0]   # b81 ot-crash review D3: and the overtime crash fix
         # b81 integration (practice squad merge): and upgrades the disc's revision 7 economy before the floor
         from mod_editor.core import nfl2k5_franchise_economy as economy
         prepared = ir.apply(economy.apply(aimed)[0], "modern", standard_guard=True)[0]
@@ -643,6 +644,7 @@ class InPlacePreflightTests(unittest.TestCase):
         # The edit updates the legacy pass protection (combined levers), applies the option and writes the CPU kick aim
         slice1, _ = qb.apply(pressure.apply(source)[0], "realistic")
         slice1, _ = aim.apply(slice1)  # b81 integration (scoring merged): the edit writes the CPU kick aim too
+        slice1 = mod_build._overtime_crash_fix_upgrade(slice1)[0]   # b81 ot-crash review D3
         # The helmet disc has the economy and the practice squad; the edit adds modern IR for the floor and (practice
         # squad merge) upgrades the disc's revision 7 economy to the current one first.
         from mod_editor.core import nfl2k5_franchise_economy as economy

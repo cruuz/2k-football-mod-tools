@@ -1,5 +1,5 @@
 /* nfl2k5_show_block_guard (replay): as --32 -o replay.o replay.S && ld -m elf_i386 -Ttext=0x83F10 --oformat binary -e _start -o replay.bin replay.o
- * The bytes are padded with 0x90 to the retail extent (mod_editor/core/nfl2k5_show_block_guard.py SITES). */
+ * The bytes fill the retail extent exactly (mod_editor/core/nfl2k5_show_block_guard.py SITES). */
 .intel_syntax noprefix
 .text
 .globl _start
@@ -7,6 +7,8 @@ _start:                                 /* 0x83F10: the replay system takes the 
     test byte ptr [0xb608f0], 1
     jne 2f
     push esi
+    cmp dword ptr [0xb9e234], 0         /* b81 review D5: no free block (a show holds it): leave channel 0 as it is */
+    je 1f                               /* (retail stops it and clears its bit 0; only its release sets the bit again) */
     call 0xf6060
     mov esi, eax
     xor cl, cl
@@ -15,8 +17,8 @@ _start:                                 /* 0x83F10: the replay system takes the 
     and dword ptr [0xb607f0], -2
     call 0xf6070
     test eax, eax
-    je 1f                               /* no block (a show holds it): no replay zones, and no release later */
-    mov dword ptr [0xb60a90], 1         /* (moved down) the replay holds the block */
+    je 1f                               /* no block after all: no replay zones, and no release later */
+    inc dword ptr [0xb60a90]            /* (moved down) the replay holds the block: 0 -> 1 (the release writes 0) */
     push esi
     mov edx, eax
     xor cl, cl

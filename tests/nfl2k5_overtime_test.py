@@ -9,6 +9,7 @@ the private copy exists.
 from __future__ import annotations
 
 import hashlib
+import os
 import importlib.util
 from pathlib import Path
 import struct
@@ -32,7 +33,16 @@ ONLINE_VA = 0x4D3000
 ONLINE_RAW = 0x340000
 ONLINE_SIZE = 0x2000
 ONLINE_INDEX = 1
-RETAIL_XBE = Path("/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe")
+def _retail_xbe() -> Path:
+    """The retail USA executable, from the environment only (b81 ot-crash review: no private default path)."""
+    if os.environ.get("NFL2K5_RETAIL_XBE"):
+        return Path(os.environ["NFL2K5_RETAIL_XBE"])
+    if os.environ.get("NFL2K5_RETAIL_EXTRACTION"):
+        return Path(os.environ["NFL2K5_RETAIL_EXTRACTION"]) / "ESPN NFL 2K5 (USA)" / "default.xbe"
+    return Path("/nonexistent/default.xbe")
+
+
+RETAIL_XBE = _retail_xbe()
 HAVE_UNICORN = importlib.util.find_spec("unicorn") is not None
 HAVE_CAPSTONE = importlib.util.find_spec("capstone") is not None
 
@@ -336,6 +346,13 @@ class SyntheticXbeTests(unittest.TestCase):
             self.assertEqual(patched[_off(va): _off(va) + len(retail)], retail, hex(va))
         labels = {e["label"] for e in receipt["edits"]}
         self.assertEqual(labels, {"main_cave", "aux_cave", "init_hook", "ot_kickoff_hook", "situation_hook"})
+
+    def test_postseason_no_ties_without_both_possessions_is_refused(self):
+        # b81 ot-crash review D7: the playoff rule trusts the has-possessed bits that only both_possessions writes
+        with self.assertRaises(ot.OvertimeError):
+            ot.apply(self.payload, 10, both_possessions=False, postseason_no_ties=True)
+        self.assertEqual(ot.status(ot.apply(self.payload, 10, both_possessions=True, postseason_no_ties=True)[0]),
+                         "applied")
 
     def test_other_minutes_change_only_the_scale_float(self) -> None:
         default, _ = ot.apply(self.payload, 10)

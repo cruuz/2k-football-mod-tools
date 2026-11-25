@@ -170,7 +170,9 @@ class ByteTests(unittest.TestCase):
             with self.subTest(site=label):
                 self.assertEqual(len(before), len(after))
 
-    @unittest.skipUnless(shutil.which("as") and shutil.which("ld"), "GNU as and ld are required")
+    @unittest.skipUnless(shutil.which("as") and shutil.which("ld") and (ROOT / "tools" / "nfl2k5_show_block_guard").is_dir(),
+                         "GNU as and ld and the tools/nfl2k5_show_block_guard sources are required (a packaged tree has "
+                         "no sources)")
     def test_the_assembly_sources_give_the_installed_bytes(self):
         folder = ROOT / "tools" / "nfl2k5_show_block_guard"
         for (label, va, before, after), name in zip(guard.SITES, ("loader", "release", "task", "period", "replay")):
@@ -240,10 +242,12 @@ class ShowBlockTests(unittest.TestCase):
     def test_the_replay_takes_nothing_when_the_show_holds_the_block(self):
         m = Machine(self.guarded)
         m.block(free=False)
+        m.put(0xB607F0, 1)                                      # replay channel 0 running
         m.call(guard.REPLAY_VA)
         self.assertNotIn("zone_register", [c[0] for c in m.calls])
+        self.assertNotIn("replay_channel_stop", [c[0] for c in m.calls])   # b81 review D5: the channel is left alone
         self.assertEqual(m.word(guard.REPLAY_ACTIVE), 0)
-        self.assertEqual(m.word(0xB607F0) & 1, 0)               # channel 0 stays inactive
+        self.assertEqual(m.word(0xB607F0) & 1, 1)               # and keeps its bit 0 (retail cleared it for good)
         m.calls.clear()
         m.call(0x83F70)                                         # the replay release: nothing to give back
         self.assertEqual(m.calls, [])
@@ -285,6 +289,11 @@ class ShowBlockTests(unittest.TestCase):
         r.call(guard.LOADER_VA, ecx=1)
         with self.assertRaisesRegex(AssertionError, r"0xda4d0 faulted at 0x4865c"):
             r.call(guard.LOADER_VA, ecx=1)
+
+    def test_the_in_place_routes_leave_a_disc_without_the_overtime_owner_alone(self):
+        # review D3: the route upgrade rides with an installed overtime owner only (a single-setting route adds nothing)
+        from mod_editor.core import mod_build
+        self.assertEqual(mod_build._overtime_crash_fix_upgrade(self.retail), (self.retail, None))
 
     # -- the period start ---------------------------------------------------------------------------------------------
     def test_a_show_still_loaded_at_a_period_start_is_released(self):
@@ -409,3 +418,65 @@ class ShowBlockTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def _released(variable: str) -> bytes | None:
+    path = os.environ.get(variable)
+    return Path(path).read_bytes() if path and Path(path).is_file() else None
+
+
+class ReleasedDiscTests(unittest.TestCase):
+    """b81 ot-crash review D1 and D3 on the released executables (NFL2K5_V09_RELEASED_XBE: v0.9 d78088f9,
+    NFL2K5_V08_XBE: v0.8 5f987568). Their overtime owner is the earlier revision ("previous"); era rules and MyCareer,
+    which require it, must keep reading as before; the in-place routes' upgrade brings the crash fix."""
+
+    RELEASES = (("v0.9", "NFL2K5_V09_RELEASED_XBE", "d78088f9"), ("v0.8", "NFL2K5_V08_XBE", "5f987568"))
+
+    def releases(self):
+        found = [(name, data) for name, variable, prefix in self.RELEASES
+                 if (data := _released(variable)) is not None and hashlib.sha256(data).hexdigest().startswith(prefix)]
+        if not found:
+            self.skipTest("the released v0.8 / v0.9 executables are required (NFL2K5_V09_RELEASED_XBE, NFL2K5_V08_XBE)")
+        return found
+
+    def test_the_neighbours_of_the_earlier_overtime_owner_still_read_as_installed(self):
+        from mod_editor.core import nfl2k5_era_rules as era, nfl2k5_my_career as career, nfl2k5_overtime as ot
+        for name, payload in self.releases():
+            with self.subTest(release=name):
+                self.assertEqual(ot.status(payload), "previous")
+                self.assertTrue(ot.installed(payload))
+                self.assertEqual(era.status(payload), "applied")          # 5b2a16741: foreign
+                self.assertEqual(career.status(payload), "previous")      # 5b2a16741: foreign
+                self.assertEqual(guard.status(payload), "retail")
+
+    def test_the_in_place_routes_upgrade_overtime_and_add_the_guard(self):
+        from mod_editor.core import mod_build, nfl2k5_era_rules as era, nfl2k5_my_career as career
+        from mod_editor.core import nfl2k5_overtime as ot
+        for name, payload in self.releases():
+            with self.subTest(release=name):
+                fixed, receipt = mod_build._overtime_crash_fix_upgrade(payload)
+                self.assertEqual(sorted(receipt), ["overtime", "show_block_guard"])
+                self.assertEqual((ot.status(fixed), guard.status(fixed)), ("applied", "applied"))
+                self.assertEqual(receipt["overtime"]["changed_bytes"], 100)
+                self.assertEqual({k: v for k, v in ot.read_settings(fixed).items() if k != "status"},
+                                 {k: v for k, v in ot.read_settings(payload).items() if k != "status"})
+                self.assertEqual((era.status(fixed), career.status(fixed)), ("applied", "previous"))
+                self.assertEqual(mod_build._overtime_crash_fix_upgrade(fixed), (fixed, None))   # idempotent
+
+    def test_the_v09_update_carries_the_crash_fix(self):
+        # review D3: the released v0.9 disc has the trigger (overtime "previous", guard retail); every v0.9 update now
+        # upgrades the overtime rule and adds the guard in its expected chain (preflight: nothing is written)
+        from unittest import mock
+        from mod_editor.core import mod_build
+        disc = os.environ.get("NFL2K5_V09_XISO")
+        if not disc or not Path(disc).is_file():
+            self.skipTest("the released v0.9 disc image is absent (NFL2K5_V09_XISO)")
+        release = mod_build._v09_reference(Path(disc), mod_build._xbe_bytes(Path(disc)))
+        target = Path(disc).with_name("never-written-v09-copy.xiso.iso")
+        plan = mod_build.v09_disc_update(disc, str(target), backfield_cards=True)
+        with mock.patch("mod_editor.core.modpack.hash_file", return_value=release["image_sha256"]):
+            receipt = mod_build._update_v09_disc(plan, lambda *_: None, preflight=True, project=False)
+        self.assertIn("overtime", receipt["v09_update"])
+        self.assertIn("show_block_guard", receipt["v09_update"])
+        self.assertFalse(target.exists())
+

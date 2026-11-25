@@ -780,7 +780,7 @@ PROFILE_64_TRIM = ("scorebug", "scorebug_runtime", "hair_styles", "kick_meter_20
 # b780 mc1: the Franchise load user-team guard (three in-place sites, a retail crash path on a save with no human club).
 # beta 81 review M1: the save messages that keep a player from deleting a franchise saved by the 128 MB edition
 # (nfl2k5_edition_save_notes: two strings in place). Only this profile turns it on; the presets leave it off.
-# b81 ot-crash: the show block guard (three in-place sites, a retail crash path after an overtime score; no allocation).
+# b81 ot-crash: the show block guard (five in-place sites, a retail crash path after an overtime score; no allocation).
 PROFILE_64_ON = ("history_pool", "load_user_team_guard", "save_list_type_guard", "edition_save_notes", "show_block_guard")
 PSEUDO_FIELDS = frozenset(("roster_capacity", "roster_draft_pick_ownership", "roster_hback_roles",
                            "cpu_money_downs_modern2"))

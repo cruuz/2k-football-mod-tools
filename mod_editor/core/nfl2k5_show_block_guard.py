@@ -57,7 +57,10 @@ What this owner changes (in place: each routine within its own extent and alignm
   load their postgame show into a free block. Room: ``cmp esi, 1`` before the ``pop esi`` becomes ``dec esi`` and
   ``mov ecx, 0x100`` becomes ``xor ecx, ecx / mov ch, 1``; the routine fills its extent and padding exactly.
 * 0x83F10: the replay system marks itself active (0xB60A90, read only by its two releases) only once it got the
-  block; without it, it registers no zone, and its release (0x83F70) gives nothing back.
+  block; without it, it registers no zone, and its release (0x83F70) gives nothing back. With no free block it also
+  leaves replay channel 0 alone (b81 review D5): retail stops the channel and clears bit 0 of 0xB607F0 before the
+  take, and only the release sets the bit again, which a setup without the block never reaches. Room: ``mov
+  [0xB60A90], 1`` becomes ``inc [0xB60A90]`` (it is 0 there; the release writes 0); the routine fills its extent.
 
 With the block free, every path makes the same writes and calls as retail (Unicorn-checked).
 """
@@ -130,8 +133,8 @@ SITES = (
             "f605f008b60001754d56c705900ab60001000000e8372107008bf032c9d1fee86cf5ffff8325f007b600fee830210700568bd0"
             "32c9a3b807b600e8e1f3ffffa1b807b6008d143056b1018915bc07b600e8cbf3ffff5ec3909090909090909090"),
         bytes.fromhex(
-            "f605f008b60001755156e84121070089c630c9d1fee876f5ffff8325f007b600fee83a21070085c0742fc705900ab600010000"
-            "005689c230c9a3b807b600e8ddf3ffffa1b807b6008d143056b1018915bc07b600e8c7f3ffff5ec39090909090")),
+            "f605f008b60001755656833d34e2b90000744be83821070089c630c9d1fee86df5ffff8325f007b600fee83121070085c0742bff"
+            "05900ab6005689c230c9a3b807b600e8d8f3ffffa1b807b6008d143056b1018915bc07b600e8c2f3ffff5ec3")),
 )
 
 # Pins for the unchanged routines the three sites rely on: the block's size, take and give, the zone registry, the

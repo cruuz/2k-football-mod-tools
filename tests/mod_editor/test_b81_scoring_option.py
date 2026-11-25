@@ -163,6 +163,7 @@ class InPlaceRoutes(unittest.TestCase):
                 # Realistic also updates the disc's legacy pass protection (combined lever 1, nine bytes)
                 upgraded = pressure.apply(source)[0] if mode == "realistic" else source
                 expected = aim.apply(qb.apply(upgraded, mode)[0])[0]
+                expected = mod_build._overtime_crash_fix_upgrade(expected)[0]   # b81 ot-crash review D3
                 with self.subTest(mode=mode):
                     self.assertEqual(result, hashlib.sha256(expected).hexdigest())
                     self.assertEqual(XbeImage(expected).read(aim.SITE_VA, aim.SITE_SIZE), aim.site_bytes())

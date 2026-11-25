@@ -573,7 +573,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_menu_chiefs_2026.py": "c60f4b3f79672c299fa19515ece7477de1d15b3bfcc38911e35590682f612f77",
         "mod_editor/core/nfl2k5_menu_helmet_w2026.py": "a01a8edc75729b354b56a32718c20e1059393b3fa6f69bbaa067c340b5480e71",
         "mod_editor/core/nfl2k5_era_rules_code.py": "a493d389359ac7f360b92a03b6713a2ffa8f41a31b1032e3f9824bf8f332499b",
-        "mod_editor/core/nfl2k5_era_rules.py": "34c783344c274c09b55265ae81051e900ee33fe3cfc17fb01d5db9631ca4e370",
+        "mod_editor/core/nfl2k5_era_rules.py": "37af203926c4372e9e8942e348f394e037a02d981142aca0e20b91d960ffb342",
         "mod_editor/core/nfl2k5_stock_books.py": "d8def627bbe667d5fb8f9e00fbd5bed5f436e30f64ac53571f6a59452a150a6c",
         "mod_editor/core/nfl2k5_moment_gun_weight.py": "ab0fa2a22641666208f5aecdb21d30a99b85c8d23ffeea87c5de37ebd5e29cb9",
         "mod_editor/core/nfl2k5_project_fit.py": "a0184fba0e2b544861fb127ee50f7492c29f9d0667963a492d5cda60fa8ea5fc",
@@ -599,12 +599,12 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "a3faea414e5a26b8bd77522edae2ece7812679d64fe795b2f07b0bdc4abaa400",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "56dd5a5479ad7eeb9e302e57e6d0dfee459e50995a2c8f4617e300fd8fff3083",
+        "mod_editor/core/mod_build.py": "09dadd446370ea58ea6a9b43b6bd698366f96eda8935c721539b2620b9cb871c",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
-        "mod_editor/core/modpack.py": "9358104a7fc4678c6b1292d77adc06627f898a55d4b91492612962d68a3cb3f9",
+        "mod_editor/core/modpack.py": "2c833db37955f5d86d7eb371552a39193b136f8b15f53a7eadec59237a004889",
         "mod_editor/core/modpack_files.py": "62d7cf1f6d7a6e9d6bc4899d2820213c6cfa848776e05d36e50b533af32125ce",
         "mod_editor/core/modpack_ops.py": "a9d0528670ed13904f040a7408f43355d100be7a41939f3c4fdde6e63db48f0e",
         "mod_editor/core/nfl2k5_abilities_runtime.py": "97092be1e9c457950822e7ee734a90a52341cf20412ac610712d0f03f5886e1d",
@@ -846,7 +846,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_my_career_advisory.py": "893e01173254d112593d5c8ad3cd3aaad5dd9edb3f6482357f2ad1bc534c21ac",
         "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
         "mod_editor/core/nfl2k5_my_career_events.py": "228a0b59d43b9b9c52e10ac93cc72072e772e694cc864c8e2e037c5d7c772460",
-        "mod_editor/core/nfl2k5_my_career_mode.py": "6bc271bc88b0d59bcd459bfcc4b149439ef02c0ab75448ec32620f1d4bc10411",
+        "mod_editor/core/nfl2k5_my_career_mode.py": "f43b12e0e1e4ff1de94e734c6f0585348e6e6d354b7485dabe6b2cbedf1599c7",
         "mod_editor/core/nfl2k5_rookie_faces.py": "3b7461fe711d72ada7c2009f04e2736783157612d03c351843fadbce9576b3f9",  # b780-int (gen1mc): MyCareer's draft-signing context reads its draft-number byte
         "mod_editor/core/nfl2k5_my_career_mode_code.py": "dbf9330b042795f057e5dfd92df680f6c004a97eae9f5218a3cd66cd13b5d489",
         "mod_editor/core/nfl2k5_my_career_home.py": "852747c8b6ae3b94bc61a3f0d8b7a3060bde155901667e71021a8346c291a0ab",
@@ -855,7 +855,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_my_career_home_code.py": "c23c0177432f74ec2d8c51b99400bd47c9160fc6e563b8aca05eebd12d7ac485",
         "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
         "mod_editor/core/nfl2k5_my_career_save.py": "2f8b4c9e7fe6114539f20f069ae0c428bac63d2004b6f620909aed5b6f412361",
-        "mod_editor/core/nfl2k5_overtime.py": "8882534bf80e5acc734c383367306d837c67dca0ec950ac93c019979fa64e406",
+        "mod_editor/core/nfl2k5_overtime.py": "c0b1bbe1270e35ea1b517c19be20d017378d0bd1b4b18813be92e4f8f93328ec",
         "mod_editor/core/nfl2k5_p8_texture_writer.py": "4a519adf657eeb5ecbf8be6a8cba99411cbd0e5843bf55d7bd7e142723498485",
         "mod_editor/core/nfl2k5_penalties.py": "f74e61d6404d30b54811442b1bbb58fa6d233d55f57856043a6cc6e8730c1ed8",
         "mod_editor/core/nfl2k5_play_codec.py": "3f01db64ac7230102fb8c37c3baa2ad60932803a576a8f7404dc3c0d347b268e",
@@ -985,7 +985,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_history_pool_code.py": "a4b2a9e08453619b58e3fec5ec9fb0f9bc0446bb224ef5cc057aefaa06d02eab",  # b780 hist1: its generated runtime
         "mod_editor/core/nfl2k5_load_user_team_guard.py": "70b3e0d9196a55d093870651173d83e305545f15118acd6224a9fb9f02ca7e86",  # b780 mc1
         "mod_editor/core/nfl2k5_save_list_type_guard.py": "64fcd510de0aa6b3595bfeb94e5f1555e96fb723595cc9d0390f9bf969368f40",  # b780 mc1
-        "mod_editor/core/nfl2k5_show_block_guard.py": "ecdd50d675c1257780b91cf38d98f41cea62973b4bb060aacfaf21aede68ad40",  # b81 ot-crash
+        "mod_editor/core/nfl2k5_show_block_guard.py": "89c78cbd7d59c00614935783387a20e2b94a91c188242c81cb1df4b456825424",  # b81 ot-crash
         "mod_editor/core/nfl2k5_edition_save_notes.py": "d321ef80273c081bdfc4871c11fa52d3733a604f3b7968149be9b4ab84268d05",  # beta 81 review M1
         "mod_editor/core/nfl2k5_sim_cb_tackles_b779.py": "09d6272b93b5e356cbc8b1147b6bac8c5184fcfbc37f4aee8729df723473eedd",  # b780-int: frozen beta-79 tail for the previous state
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "0b5655021e33a2c28bff7523399321f588aa4f925cf84823b9603c474c94f7a7",  # b778-cb1

@@ -387,6 +387,7 @@ class StudioRoutes(unittest.TestCase):
                 # since 7c64ec2ca the route adds the CPU kick aim repair in every mode (the base carries the kicking fixes)
                 self.assertEqual(aim.status(expected), "retail")
                 expected = aim.apply(expected)[0]
+                expected = mod_build._overtime_crash_fix_upgrade(expected)[0]   # b81 ot-crash review D3
                 self.assertEqual(update["result_sha256"], _sha(expected))
                 self.assertEqual(pp.status(expected), "applied" if upgrade else "legacy")
 

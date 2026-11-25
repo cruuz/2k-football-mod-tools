@@ -711,7 +711,9 @@ def check_context(payload, edits, *, installed=False, real=None):
         (kicks, kicks.PAT_STORE_SITE_VA, kicks.RETAIL_CALL_STORE, ("pat_store_hook", "pat_pick_hook")),
     ):
         if image.read(sentinel, len(pin)) != pin:
-            legacy.require(module.status(companions) == "applied", "foreign play-call companion owner")
+            # b81 ot-crash review D1: the overtime owner's earlier revision keeps its sudden_death_hook site unchanged
+            legacy.require(module.installed(companions) if module is overtime else module.status(companions) == "applied",
+                           "foreign play-call companion owner")
             if module is overtime:
                 candidates = [(label, off, before, after) for _, label, off, before, after in
                               module._sites(payload, 10, True, True, True)]

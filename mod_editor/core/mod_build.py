@@ -3065,6 +3065,11 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     patched, aim_receipt = _cpu_kick_aim_with_kicking(patched)
     if aim_receipt is not None:
         patch = {**patch, "cpu_kick_aim": aim_receipt}
+    # b81 ot-crash review D3: the copy carries the playoff overtime crash fix, as a full build does.
+    patched, crash_fix = _overtime_crash_fix_upgrade(patched)
+    if crash_fix is not None:
+        patch = {**patch, "overtime_crash_fix": {k: {kk: vv for kk, vv in v.items() if kk not in ("edits", "reservations")}
+                                                 for k, v in crash_fix.items()}}
     settings = _verify_sim_qb_injuries(plan, module, patched)
     # b81 qb34: the quarterback room rules ride with this option (DESIGN_CHANGES C1) on the same executable.
     room_level, room_stages, room_note = _qb_room_plan(plan, patched)
@@ -3094,6 +3099,7 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
         "source_sha256": sha256(original).hexdigest(), "result_sha256": sha256(patched).hexdigest(),
         "source_simulator": simulator_state, "simulator_upgraded": dependency is not None, "settings": settings,
         "pass_protection_upgraded": pressure is not None,
+        "overtime_crash_fix": sorted(crash_fix) if crash_fix else [],
         "stability_reference": stability,
     }
     if room_level is not None or room_note:
@@ -3259,10 +3265,12 @@ def _edit_installed_gadget(plan, source, target, original, receipt, progress, *,
         patched, patch = gadget.apply(original, books)
     else:
         patched, patch = gadget.remove(original)
+    patched, crash_fix = _overtime_crash_fix_upgrade(patched)  # b81 ot-crash review D3: as a full build
     receipt["installed_gadget_only"] = True
     receipt["gadget_source_update"] = {"source_sha256": sha256(original).hexdigest(),
                                        "result_sha256": sha256(patched).hexdigest(),
-                                       "source_state": gadget.status(original, books)}
+                                       "source_state": gadget.status(original, books),
+                                       "overtime_crash_fix": sorted(crash_fix) if crash_fix else []}
     if preflight:
         return True
     _copy_private_build_source(source, target, receipt, progress, consume)
@@ -3688,6 +3696,45 @@ def _verify_gadget_play(plan, target, receipt):
         raise ValueError(f"The gadget player on gadget plays did not survive the final archive pass ({settings})")
 
 
+def _overtime_crash_fix_upgrade(payload):
+    """b81 ot-crash review D3: an in-place copy (update-v09, edit-sim-qb, edit-gadget) carries the playoff overtime crash
+    fix, as a full build does. The overtime owner's earlier revision ("previous": beta-79 .. v0.9, whose continued
+    playoff overtime period loads the postgame show into play) is upgraded in place first, then the show block guard is
+    added where it reads retail. Disjoint bytes from every other route writer (overtime main cave 0x1AFDF0..0x1AFF1B;
+    guard 0x83F10, 0x9F940, 0xDA4D0..0xDA72F); each recomputes the .text digest. A disc without the overtime owner is
+    returned unchanged: retail never continues an overtime period with different scores, and a single-setting route
+    never adds an option. A foreign guard is left as it is. Returns (payload, receipt or None)."""
+    receipt = {}
+    overtime = _core_module("nfl2k5_overtime")
+    state = None if overtime is None else overtime.status(payload)
+    if state not in ("applied", "previous"):
+        return payload, None
+    if state == "previous":
+        payload, receipt["overtime"] = overtime.apply(payload)
+    guard = _core_module("nfl2k5_show_block_guard")
+    if guard is not None and guard.status(payload) == "retail":
+        payload, receipt["show_block_guard"] = guard.apply(payload)
+    return payload, (receipt or None)
+
+
+def _apply_overtime_crash_fix_in_place(target, receipt, progress):
+    """The in-place routes' write of _overtime_crash_fix_upgrade, after the route's own writers."""
+    patched, upgrade = _overtime_crash_fix_upgrade(_xbe_bytes(target))
+    if upgrade is None:
+        return
+    progress("Playoff overtime crash fix", 0, 0)
+    _write_xbe_bytes(target, patched)
+    written = _xbe_bytes(target)
+    if written != patched:
+        raise RuntimeError("The playoff overtime crash fix did not read back as written.")
+    if "overtime" in upgrade and _core_module("nfl2k5_overtime").status(written) != "applied":
+        raise RuntimeError("The overtime rules update did not read back as applied.")
+    if "show_block_guard" in upgrade and _core_module("nfl2k5_show_block_guard").status(written) != "applied":
+        raise RuntimeError("The show block guard did not read back as applied.")
+    for step, value in upgrade.items():
+        receipt["steps"].append({"step": step, **{k: v for k, v in value.items() if k not in ("edits", "reservations")}})
+
+
 def _update_v09_disc(plan, progress, *, preflight, project):
     if project or plan != v09_disc_update(
             plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
@@ -3774,6 +3821,11 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     if plan.gadget_play:
         # After every other v0.9 update, as in a standard Build; the books are the released disc's own.
         expected, _ = gadget.apply(expected, _gadget_resources(source))
+    # b81 ot-crash review D3: the released v0.9 disc carries the playoff overtime crash trigger; every v0.9 update gets
+    # the overtime rule's current revision and the show block guard, as a full build has them
+    expected, crash_fix = _overtime_crash_fix_upgrade(expected)
+    if crash_fix is not None:
+        receipt["v09_update"] += [step for step in ("overtime", "show_block_guard") if step in crash_fix]
     if preflight:
         from .modpack import hash_file
         if hash_file(source, progress=progress) != release["image_sha256"]:
@@ -3797,6 +3849,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     _apply_cpu_decisions_in_place(target, receipt, progress)  # beta 81 fake kicks (the expected chain's order)
     if plan.gadget_play:
         _apply_gadget_play(plan, target, receipt, progress)
+    _apply_overtime_crash_fix_in_place(target, receipt, progress)  # b81 ot-crash review D3 (the expected chain's order)
     _compact_build_disc(target, source, receipt, progress)
     _step("final_checks")
     if _xbe_bytes(target) != expected:
@@ -3893,7 +3946,8 @@ def _apply_load_user_team_guard(plan: "BuildPlan", target: Path, receipt: dict, 
 
 @_core_step("show_block_guard")
 def _apply_show_block_guard(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
-    """b81 ot-crash: the show loader, the show release and the replay setup check the show block, in place."""
+    """b81 ot-crash: the show loader, release and task, the period start and the replay setup check the show block,
+    in place (five sites)."""
     if not plan.show_block_guard:
         return
     module = _core_module("nfl2k5_show_block_guard")

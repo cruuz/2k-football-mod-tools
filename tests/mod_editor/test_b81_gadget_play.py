@@ -407,7 +407,11 @@ class BuildWiringTests(unittest.TestCase):
         receipt = build.preflight_plan(build.gadget_disc_edit(str(disc), str(target)))
         self.assertFalse(target.exists())
         expected, _ = gadget.apply(source, books)
-        self.assertEqual(receipt["gadget_source_update"]["result_sha256"], _sha(expected))
+        # b81 ot-crash review D3: the copy also carries the playoff overtime crash fix (the overtime rule's current
+        # revision, the show block guard) as a full build does
+        upgraded, crash_fix = build._overtime_crash_fix_upgrade(expected)
+        self.assertEqual(receipt["gadget_source_update"]["result_sha256"], _sha(upgraded))
+        self.assertEqual(receipt["gadget_source_update"]["overtime_crash_fix"], sorted(crash_fix) if crash_fix else [])
         self.assertEqual(receipt["gadget_source_update"]["source_state"], "retail")
 
     def test_an_installed_rule_is_replayed_and_an_executable_only_target_is_refused(self):

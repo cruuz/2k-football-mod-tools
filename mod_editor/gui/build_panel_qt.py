@@ -403,7 +403,10 @@ PREVIOUS_UPGRADE_KEYS = {"punter_holder": "saved field-goal holders", "modern_in
                          # b780 db2: the beta-79 RB injury guard (no fullback rule) is upgraded in place as well
                          "sim_rb_injuries": "simulated RB injuries",
                          # b780 hunt6: revision 1 of the franchise record fixes (the v0.9 release candidates)
-                         "coach_career_fix": "coach record fix"}
+                         "coach_career_fix": "coach record fix",
+                         # b81 ot-crash review D2: the beta-79 .. v0.9 overtime owner (only ot_expiry's tail differs)
+                         # reads "previous"; the owner loop upgrades it in place (nfl2k5_overtime.apply)
+                         "overtime": "modern overtime rules"}
 # b780 studio1: older revisions that read "legacy" and that the build upgrades in place (progression.apply and
 # franchise_economy.apply both accept "retail" or "legacy"). A v0.8 disc reads legacy for both; the boxes were greyed out
 # with no badge and no line in the disc summary, so retirement by age and the economy revision could not be added.
@@ -3634,7 +3637,10 @@ class BuildPanel(QWidget):
         for child, parents in ANNIVERSARY_DEPENDENCIES.items():
             if getattr(plan, child, False):
                 for parent in parents:
-                    if not getattr(plan, parent, False) and self._installed(parent):
+                    # b81 ot-crash review D2: a base installed in its earlier revision ("previous", e.g. the overtime owner
+                    # on the released v0.8 and v0.9 discs) is met too; the build upgrades it in place
+                    previous = parent in PREVIOUS_UPGRADE_KEYS and (self._state or {}).get(parent) == "previous"
+                    if not getattr(plan, parent, False) and (self._installed(parent) or previous):
                         setattr(plan, parent, True)
         return plan
 
@@ -4311,7 +4317,8 @@ class BuildPanel(QWidget):
             # kickoff, defensive try and overtime boxes unticked as installed) Make my disc was blocked for every choice.
             if child_box.isChecked() and child_box.isEnabled():
                 missing = [getattr(self, key + "_check").text() for key in parents
-                           if not getattr(self, key + "_check").isChecked() and not self._installed(key)]
+                           if not getattr(self, key + "_check").isChecked() and not self._installed(key)
+                           and not (key in PREVIOUS_UPGRADE_KEYS and (self._state or {}).get(key) == "previous")]
                 if missing:
                     return child_box.text() + " requires: " + ", ".join(missing) + "."
         gadget = self.gadget_play_check   # b81 relrev M3: said here, never by the build after Make my disc?

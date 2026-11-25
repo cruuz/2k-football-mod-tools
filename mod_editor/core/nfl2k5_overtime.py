@@ -918,6 +918,19 @@ def status(payload: bytes) -> str:
     return "foreign"
 
 
+INSTALLED_STATES = ("applied", "previous")
+
+
+def installed(payload: bytes) -> bool:
+    """True when the owner is installed, current or the earlier revision ("previous").
+
+    For neighbours that require this owner (era rules, MyCareer): the earlier revision differs only in ot_expiry's tail
+    (from 0x1AFECC); every label, hook site and hook target lies at the same address in both revisions.
+    """
+
+    return status(payload) in INSTALLED_STATES
+
+
 def read_settings(payload: bytes) -> dict[str, object]:
     """The overtime rules currently encoded (retail values when the patch is not applied)."""
 
@@ -965,6 +978,10 @@ def apply(payload: bytes, regular_minutes: float = 10, both_possessions: bool = 
     if state == "previous":
         return _upgrade(payload)
     _require(state == "retail", f"overtime sites are {state}, not retail")
+    # b81 ot-crash review D7: the playoff rule reads the has-possessed bits, which only the both-possessions group keeps;
+    # without them every playoff overtime period that ends with different scores would play on
+    _require(both_possessions or not postseason_no_ties,
+             "playoff overtime without ties needs the both-possessions rule (both_possessions=True)")
     buf = bytearray(payload)
     sections = _sections(payload)
     touched: set[int] = set()

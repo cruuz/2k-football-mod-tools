@@ -165,6 +165,19 @@ class InstalledBasesMeetDependenciesTests(_PanelCase):
         self.assertEqual(panel.blocker(), "")
         self.assertTrue(panel.build_button.isEnabled())
 
+    def test_the_released_discs_earlier_overtime_is_a_base_and_offered_as_an_update(self) -> None:
+        # b81 ot-crash review D2: the released v0.8 and v0.9 discs read "previous" for the overtime owner (its beta-79 ..
+        # v0.9 revision); the box offers the in-place update and era rules still find their base
+        panel = self.panel(**dict(self.V08, overtime="previous"))
+        self.assertTrue(panel.overtime_check.isEnabled())
+        self.assertFalse(panel.overtime_check.isChecked())
+        self.assertEqual(panel._badges["overtime"].text(), "Needs update")
+        self.assertIn("modern overtime rules", panel.overtime_check.toolTip())
+        panel.catch_check.setChecked(True)
+        self.assertEqual(panel.blocker(), "")
+        build = panel._plan_for_build()
+        self.assertTrue(build.espn25_era_rules and build.overtime)
+
     def test_the_plan_for_a_build_carries_the_installed_bases_and_the_plain_plan_does_not(self) -> None:
         panel = self.panel(**self.V08)
         build = panel._plan_for_build()

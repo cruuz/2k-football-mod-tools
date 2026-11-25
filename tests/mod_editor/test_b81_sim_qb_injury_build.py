@@ -99,10 +99,13 @@ class ProjectSettings(unittest.TestCase):
                     receipt = mod_build.preflight_plan(plan)
                     # b81 scoring: an in-place copy also gets the CPU kick-aim repair that rides with the kicking fixes.
                     from mod_editor.core import nfl2k5_cpu_kick_aim as aim
+                    # b81 ot-crash review D3: and the playoff overtime crash fix (both discs: overtime "previous")
+                    fixed, crash_fix = mod_build._overtime_crash_fix_upgrade(aim.apply(current)[0])
                     self.assertEqual(receipt["sim_qb_source_update"], {
-                        "source_sha256": digest, "result_sha256": hashlib.sha256(aim.apply(current)[0]).hexdigest(),
+                        "source_sha256": digest, "result_sha256": hashlib.sha256(fixed).hexdigest(),
                         "source_simulator": source_state, "simulator_upgraded": source_state == "legacy",
                         "settings": medical.read_settings(current), "pass_protection_upgraded": True,
+                        "overtime_crash_fix": sorted(crash_fix) if crash_fix else [],
                         "settings": medical.read_settings(current),
                         "stability_reference": {"source": "disc roster", "roster_sha256": roster,
                                                 "starters": [list(row) for row in code.STABILITY_CALIBRATION],
