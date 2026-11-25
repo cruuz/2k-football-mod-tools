@@ -47,7 +47,7 @@
     "data/nfl2k5_classic_teams/face/patch.json": null,
     "data/nfl2k5_classic_teams/face/pins.json": null,
     "data/nfl2k5_classic_teams/honours.json": null,
-    "data/nfl2k5_classic_teams/kits.json": "389d53845d3dbc595a1d1994c71c94a0ce07e30cbf8b63d5662fc4c38f6d1b41",
+    "data/nfl2k5_classic_teams/kits.json": "928b460930854de502b4948961dbd533b1611baa24ad93114947761afa32afdb",
     "data/nfl2k5_classic_teams/manifest.json": null,
     "data/nfl2k5_classic_teams/teams.json": null,
     "data/nfl2k5_coach_carousel_2026.json": null,
@@ -180,7 +180,7 @@
     "data/nfl2k5_moment_era_kits.json": "6f7095e05cc31ece037aa40cf2d5b315c45566482f7b4a1a6a855067d087ac76",
     "data/nfl2k5_moment_goalposts.json": null,
     "data/nfl2k5_moment_kits.json": "e2fcbb93f376f266f6973626a48e2244521df1f529f3fbe67ec28cfdc7565c18",
-    "data/nfl2k5_moment_kits_pins.json": "514dd6891d97b7102d7c3f85bf355840faaeefe13e7a296edaa34a0ef176a342",
+    "data/nfl2k5_moment_kits_pins.json": "0931360ad914f68f7e0240a21d6e8247799589be36e2e6fb4f46331a960469b4",
     "data/nfl2k5_moment_playbook_eras.json": null,
     "data/nfl2k5_moment_scans.json": null,
     "data/nfl2k5_moment_stats.json": null,
@@ -198,6 +198,7 @@
     "data/nfl2k5_release_gates.json": null,
     "data/nfl2k5_released_discs.json": null,
     "data/nfl2k5_relief_2026_b81u.json": "b4a07b3efbcba1d8e63fc2af19be3f659b7503dce027b4445ae33f6dda17b043",
+    "data/nfl2k5_relief_2026_classic.json": "8cce014325787397b7642539ae59499dfea8cbf2173ab6ff8d205e25e4ef9112",
     "data/nfl2k5_retail_name_cues.json": null,
     "data/nfl2k5_rookie_faces/bank.json": null,
     "data/nfl2k5_rookie_faces/hair.json": null,
@@ -8490,8 +8491,8 @@
         "-": {
           "cls": "iii",
           "passes": true,
-          "sha256": "a041ded2ee3c92724e84b26e3e41079cd9983a86158e96d9d8dd535fa5cbc6f9",
-          "texels": 7140,
+          "sha256": "2993043f6dc65e9102fa475767cb459536ca13f393851a684b0d967c9be2a8b3",
+          "texels": 7092,
           "why": 0
         }
       }

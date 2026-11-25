@@ -784,7 +784,7 @@ class NativeTests(unittest.TestCase):
 
     def test_the_seamen_stars_reach_the_imported_records(self):
         """The import (C1030 with the moments' +0x52 word copy) gives the Quick Game records the file's star, tier and
-        move flags: Bus Jibber's star under him and on his card, John Mike Peter's star."""
+        move flags: Bus Jibber's star under him in play (nfl2k5_player_star reads +0x53 bit 0), John Mike Peter's star."""
         cpu = self.make()
         name = self.receipts["seamen_2006"]["file"]
         cpu.team_select(cpu.team(0), cpu.team(15))
