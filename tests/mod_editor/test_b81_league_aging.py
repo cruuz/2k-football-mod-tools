@@ -260,10 +260,13 @@ class AgingTests(unittest.TestCase):
         # quarterbacks grow into starters at 25-28 (+1.5 a year on their skills)
         self.assertGreater(sum(new[("QB", "skill")][4:8]), sum(old[("QB", "skill")][4:8]) + 3.5)
 
-    def test_backs_turn_a_year_earlier(self):
+    def test_backs_keep_the_b780_years_pro_placement(self):
+        # retune r1 (paired-r0): moving the backs' slide a year earlier on top of the new clock made CPU halfback starters
+        # fall 7.6 overall in ten seasons; their table keeps b780's years-pro placement, and the production shift and the
+        # retirement ages do the rest (L6 in the lane's gates)
         new, old = self.means("b81"), self.means("b780")
-        self.assertLess(sum(new[("RB", "physical")][4:8]), sum(old[("RB", "physical")][4:8]) - 1.5)
-        self.assertLess(sum(new[("RB", "skill")][4:8]), sum(old[("RB", "skill")][4:8]) - 1.0)
+        self.assertAlmostEqual(sum(new[("RB", "physical")][4:9]), sum(old[("RB", "physical")][4:9]), delta=1.2)
+        self.assertLess(sum(new[("RB", "physical")][4:12]), -9.0)
 
     def test_the_rb_production_shift_is_for_outliers(self):
         code = pg.career_code(pg.career_layout(self.retail)[2])[0]

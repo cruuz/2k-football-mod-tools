@@ -465,17 +465,21 @@ PREVIOUS_AGE_AT_YEAR = 20
 # grow +1.5 a season at 25-28 (generated QBs gained +7 in five seasons and never reached the QB1 line) and slide gently
 # from 34 (NFL: about -0.2 ANY/A a year 29-35, a cliff from 37); backs turn a year earlier (real backs' scrimmage per
 # game peaks at 22-23 and falls every year from 24).
+# Retune r1 (the paired ten-season calibration, roots 68001-68004 against the stored 8b180ed5 arm, league-aging
+# out/paired-r0): starters' means by 2035 against 2026 moved HB -7.6, DB -4.7, TE -3.8 (declining a year too early twice:
+# the clock and the table), OL +4.6 (a five-year plateau). Backs keep b780's years-pro placement (labels a year later on
+# the new clock), corners, safeties and tight ends slide a year later on the physical side; linemen slide from 29.
 D_TARGET = {
     "QB": ({27: -1, 30: -2}, {25: 1.5, 29: 0, 34: -0.5, 36: -1, 37: -2, 38: -3}),
     "KP": ({29: -1}, {27: 0, 35: -0.5, 37: -1.5}),
-    "RB": ({25: -1.5, 26: -2, 27: -2.5, 28: -3, 30: -4}, {25: -0.5, 26: -1, 27: -1.5, 28: -2}),
+    "RB": ({25: -1, 27: -1.5, 28: -2, 29: -2.5, 30: -3, 32: -4}, {27: -0.5, 28: -1, 29: -1.5, 30: -2}),
     "FB": ({27: -1, 29: -2, 31: -3}, {29: -1}),
     "WR": ({26: -0.5, 27: -1.5, 29: -2, 31: -3}, {25: 0, 28: -0.5, 30: -1.5, 32: -2}),
-    "CB": ({26: -1, 27: -1.5, 28: -2.5, 29: -3, 30: -4}, {25: 0.5, 26: 0, 28: -1, 30: -2}),
-    "S": ({27: -1, 28: -1.5, 29: -2.5, 30: -3}, {25: 0.5, 26: 0, 29: -1, 31: -2}),
-    "TE": ({27: -1, 29: -1.5, 31: -2.5}, {25: 0, 29: -0.5, 31: -1.5, 33: -2}),
+    "CB": ({27: -1, 28: -1.5, 29: -2.5, 30: -3, 31: -4}, {25: 0.5, 27: 0, 29: -1, 31: -2}),
+    "S": ({28: -1, 29: -1.5, 30: -2.5, 31: -3}, {25: 0.5, 27: 0, 30: -1, 32: -2}),
+    "TE": ({28: -1, 30: -1.5, 32: -2.5}, {25: 0.5, 27: 0, 30: -0.5, 32: -1.5, 34: -2}),
     "LB": ({26: -1, 28: -2, 30: -3}, {25: 0, 28: -1, 30: -1.5, 31: -2}),
-    "OL": ({28: -1, 31: -2}, {25: 0.5, 27: 0, 31: -1, 33: -2}),
+    "OL": ({28: -1, 30: -1.5, 31: -2}, {25: 0.5, 27: 0, 29: -0.5, 31: -1, 33: -2}),
     "DL": ({27: -1, 29: -1.5, 31: -2.5}, {25: 0.5, 26: 0, 29: -0.5, 31: -1.5, 33: -2}),
 }
 AGE_AT_YEAR = 21                  # the change applied at years pro y is the NFL change at age 21 + y
