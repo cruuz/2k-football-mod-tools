@@ -200,7 +200,8 @@ def _prerequisites(payload, base_year):
             got = payload[off:off + site.size]
             if site.retail == site.patched and got == site.retail:
                 continue
-            values.add("retail" if got == site.retail else "applied" if got == site.patched else "foreign")
+            values.add("retail" if got == site.retail else "applied" if got == site.patched or
+                       (site.legacy and got == site.legacy) else "foreign")
         _require(values in ({"retail"}, {"applied"}), f"calendar prerequisite {group} is mixed/foreign")
         states[group] = next(iter(values))
     _require(cap.status(payload) in ("retail", "applied"), "foreign completion gate")

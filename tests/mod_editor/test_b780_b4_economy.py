@@ -215,6 +215,11 @@ def _player(m, p, *, age, depth_row, games, prospect=False, value=None):
     m.uc.mem_write(p, bytes(raw))
 
 
+def _birth_day(m, p):
+    """b81 league-aging: an unsigned kicker's or punter's own hold years come from his birth day (+0x18 bits 16..20)."""
+    return (struct.unpack("<I", bytes(m.uc.mem_read(p + 0x18, 4)))[0] >> 16) & 31
+
+
 def _rate(m, p, club, n):
     return sum(m.call(pg.RETIRE_VA, edi=p, args=(club,), budget=200000) == 1 for _ in range(n)) / n
 
@@ -237,30 +242,35 @@ class RetirementDecisionTests(unittest.TestCase):
         self.assertEqual(self.receipt["retirement_rule"]["contributor_games"], pg.RETIRE_GAMES)
 
     def test_a_beta79_image_reads_legacy_and_upgrades_only_the_decision(self):
-        image = bytearray(self.applied)
+        # b81 league-aging: a beta-78/79 image carries the b778 layer as the b780 release wrote it (the "b780" version's
+        # curves and tables) with the retail decision; it upgrades to exactly the fresh b81 install
+        image = bytearray(self.retail)
+        for _label, va, _before, after in pg._data_sites(self.retail, "b780") + pg._career_sites(self.retail, "b780"):
+            off = pg._offset(self.retail, va)
+            image[off:off + len(after)] = after
+        image = bytes(image)                      # (digests are not read)
         start = pg._offset(self.applied, pg.RETIRE_VA)
-        image[start:start + pg.RETIRE_SIZE] = self.retail[start:start + pg.RETIRE_SIZE]
-        image = bytes(image)                      # the b778 layer with the retail decision (digests are not read)
+        self.assertEqual(image[start:start + pg.RETIRE_SIZE], self.retail[start:start + pg.RETIRE_SIZE])
         self.assertEqual(pg.status(image), "legacy")
         upgraded, receipt = pg.apply(image)
         self.assertTrue(receipt["upgraded_from_legacy"])
         self.assertEqual(pg.status(upgraded), "applied")
-        changed = [i for i in range(len(image)) if image[i] != upgraded[i]]
-        self.assertTrue(all(start <= i < start + pg.RETIRE_SIZE or i < 0x1000 for i in changed))
+        self.assertEqual(upgraded, self.applied)
 
     def test_a_contributor_never_retires_before_his_position_age(self):
+        # b81 league-aging: "before his position's age" is now before (position age + RETIRE_FLOOR), one year earlier
         m = _machine(self.applied, self.roster)
         club = m.team_base
         for slot in range(0, 40, 5):
             p = m.get(club + 4 * slot)
-            age = pg.NFL_RETIRE_BASE[m.uc.mem_read(p + 0x35, 1)[0]] + 24
+            age = pg.NFL_RETIRE_BASE[m.uc.mem_read(p + 0x35, 1)[0]] + 24 + pg.RETIRE_FLOOR
             for row, games in ((0, 0), (6, pg.RETIRE_GAMES), (6, 16)):
                 _player(m, p, age=age - 1, depth_row=row, games=games)
                 self.assertEqual(_rate(m, p, club, 150), 0.0, (slot, row, games))
             # the same idle player off the club (a free agent): the age rule, never zero at a low overall
             _player(m, p, age=age - 1, depth_row=6, games=0)
             expect = pg.retirement_chance(position=m.uc.mem_read(p + 0x35, 1)[0], age=age - 1, overall=m.rating(p),
-                                          year=0, club=False)
+                                          year=0, club=False, birth_day=_birth_day(m, p))
             rate = _rate(m, p, 0, 150)
             if expect == 0:
                 self.assertEqual(rate, 0.0, slot)
@@ -279,7 +289,7 @@ class RetirementDecisionTests(unittest.TestCase):
                                              (age0 + 3, 6, 0, True), (age0 + 6, 6, 0, True)):
                 _player(m, p, age=age, depth_row=row, games=games)
                 chance = pg.retirement_chance(position=pos, age=age, overall=m.rating(p), year=0, club=on_club,
-                                              depth_row=row, games=games)
+                                              depth_row=row, games=games, birth_day=_birth_day(m, p))
                 rate = _rate(m, p, club if on_club else 0, n)
                 bound = 4.5 * (chance * (1 - chance) / n) ** 0.5 + 0.012
                 self.assertLess(abs(rate - chance), bound, (slot, age, row, games, on_club, rate, chance))

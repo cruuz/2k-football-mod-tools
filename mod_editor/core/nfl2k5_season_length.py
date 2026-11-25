@@ -114,6 +114,7 @@ class Site:
     retail: bytes
     patched: bytes
     note: str
+    legacy: bytes = b""     # earlier patched bytes still read as applied (b81 league-aging: the rookie birth base)
 
     @property
     def size(self) -> int:
@@ -155,10 +156,21 @@ RETAIL_DOB_FORMATTER = bytes.fromhex(
 
 
 def rookie_birth_base(year: int) -> int:
-    """Two-digit birth year base of a first-season draft class: ``year - 1924`` (2026 -> 102 -> '02')."""
-    base = year - 1924
-    _require(0 < base < 0x80, "rookie birth-year base must fit a signed imm8 (year <= 2051)")
+    """Two-digit birth year base of a first-season draft class: ``year - 1923`` (2026 -> 103 -> '03').
+
+    b81 league-aging (coordinator ruling R2, 11/25): retail's ``year - 1924`` (born 1980-82 for the 2005 draft, kept
+    by the 2026 port as born 2002-04 for the 2027 draft) made every generated rookie about a year older than real
+    rookies (season-end saves of ten simulated seasons: 23.66 on 1 September in the rookie season, the real 2026
+    rookies 22.76). One year later: born 2003-05 for the 2027 draft, about 22.7. Images written with the earlier base
+    still read as applied (``Site.legacy``); ``upgrade_rookie_birth`` moves them in place."""
+    base = year - 1923
+    _require(0 < base and base + 2 < 0x80, "rookie birth-year base must fit a signed imm8 (year <= 2048)")
     return base
+
+
+def previous_rookie_birth_base(year: int) -> int:
+    """The base images built before b81 league-aging carry (``year - 1924``)."""
+    return year - 1924
 
 
 def dob_pivot(year: int) -> int:
@@ -216,9 +228,11 @@ def year_sites(year: int) -> tuple[Site, ...]:
     base = rookie_birth_base(year)
     sites += [
         Site("rookie_birth_base", ROOKIE_BIRTH_BASE_VA, bytes([RETAIL_ROOKIE_BIRTH_BASE]), bytes([base]),
-             "FUN_002be6f0: add ebx,imm8 -> draft-class birth year = (season + base + 0..2) % 100"),
+             "FUN_002be6f0: add ebx,imm8 -> draft-class birth year = (season + base + 0..2) % 100",
+             bytes([previous_rookie_birth_base(year)])),
         Site("rookie_birth_top", ROOKIE_BIRTH_TOP_VA, bytes([RETAIL_ROOKIE_BIRTH_BASE + 2]), bytes([base + 2]),
-             "FUN_002be6f0: add edi,imm8 -> the top of the same three-year spread"),
+             "FUN_002be6f0: add edi,imm8 -> the top of the same three-year spread",
+             bytes([previous_rookie_birth_base(year) + 2])),
         Site("dob_four_digit_year", DOB_FORMATTER_VA, RETAIL_DOB_FORMATTER, dob_formatter_bytes(year),
              f"FUN_00145d20 rewritten: player-card DOB prints a four-digit year (two-digit <= {dob_pivot(year)} -> 2000s)"),
     ]
@@ -561,7 +575,50 @@ def group_sites(group: str, *, year: int = DEFAULT_YEAR,
 def _site_state(payload: bytes, site: Site, sections) -> str:
     off = _offset(payload, site.va, sections)
     got = payload[off: off + site.size]
-    return "retail" if got == site.retail else "applied" if got == site.patched else "foreign"
+    return ("retail" if got == site.retail else "applied" if got == site.patched or (site.legacy and got == site.legacy)
+            else "foreign")
+
+
+def rookie_birth_state(payload: bytes) -> str:
+    """'retail' (the year group is not installed), 'legacy' (the base before b81 league-aging), 'applied', or 'other'
+    (no single year, or bytes this module did not write)."""
+    try:   # the calendar engine never rewrites these two bytes; read_year sees through its overlay itself
+        sections = _sections(payload)
+        got = bytes(payload[_offset(payload, va, sections)] for va in (ROOKIE_BIRTH_BASE_VA, ROOKIE_BIRTH_TOP_VA))
+        if got == bytes([RETAIL_ROOKIE_BIRTH_BASE, RETAIL_ROOKIE_BIRTH_BASE + 2]):
+            return "retail"
+        year = read_year(payload)
+        if year is None:
+            return "other"
+        if got == bytes([rookie_birth_base(year), rookie_birth_base(year) + 2]):
+            return "applied"
+        if got == bytes([previous_rookie_birth_base(year), previous_rookie_birth_base(year) + 2]):
+            return "legacy"
+    except (SeasonLengthError, ValueError, struct.error, IndexError):
+        pass
+    return "other"
+
+
+def upgrade_rookie_birth(payload: bytes) -> tuple[bytes, dict]:
+    """Move a legacy rookie birth base (``year - 1924``) to the current one in place; anything else is returned as is."""
+    state = rookie_birth_state(payload)
+    if state != "legacy":
+        return payload, {"rookie_birth": state, "changed_bytes": 0}
+    year = read_year(payload)
+    sections = _sections(payload)
+    buf = bytearray(payload)
+    touched = set()
+    for va, value in ((ROOKIE_BIRTH_BASE_VA, rookie_birth_base(year)), (ROOKIE_BIRTH_TOP_VA, rookie_birth_base(year) + 2)):
+        off = _offset(payload, va, sections)
+        buf[off] = value
+        touched.add(_section_for_offset(sections, off).index)
+    for section in sections:
+        if section.index in touched:
+            d = section.header_offset + 36
+            buf[d: d + 20] = section_digest(bytes(buf), section)
+    out = bytes(buf)
+    _require(rookie_birth_state(out) == "applied", "rookie birth upgrade did not verify")
+    return out, {"rookie_birth": "upgraded", "year": year, "base": rookie_birth_base(year), "changed_bytes": 2}
 
 
 def group_status(payload: bytes, group: str, **kwargs) -> str:
@@ -717,7 +774,8 @@ __all__ = ["AWARDS_WEEK_VA", "CALENDAR_2026", "CALENDAR_GROUPS", "DEFAULT_YEAR",
            "POSTSEASON_LABELS", "POSTSEASON_TABLE_VA", "RETAIL_POSTSEASON", "RETAIL_YEAR", "SB_VENUE_CASES",
            "SB_VENUE_TABLE_VA", "SEASON_WEEKS_VA", "STAGE_TABLE_VA", "SeasonLengthError", "Site", "WEEK_SITES",
            "apply", "calendar_sites", "created_player_date_sites", "group_sites", "group_status", "postseason_record", "postseason_table",
-           "dob_formatter_bytes", "dob_pivot", "read_year", "repair_awards_timing", "rookie_birth_base", "site_table", "status", "year_sites"]
+           "dob_formatter_bytes", "dob_pivot", "previous_rookie_birth_base", "read_year", "repair_awards_timing", "rookie_birth_base",
+           "rookie_birth_state", "site_table", "status", "upgrade_rookie_birth", "year_sites"]
 
 
 def simple_status(payload: bytes) -> str:

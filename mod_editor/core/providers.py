@@ -681,7 +681,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_modern_arrowhead.py": "0bd6686db5572940b95b0c75211a89ddfb1c8d30aeb278a5ccf6921fca524b17",
         "mod_editor/core/nfl2k5_modern_color.py": "07ba4a7667d28c989cb59d12da91e0e0e8189c68e8c1a971d39289ee0d03617e",
         "mod_editor/core/nfl2k5_bump_strength.py": "79f9264fbe0813db9be66f22e35f8944e35b92ae415132d819eda50920e41bb0",
-        "mod_editor/core/nfl2k5_calendar_engine.py": "24dc9c152a79c81d75232b556f82ebc3ab6892a662c3d8071a4da85a6cd45644",
+        "mod_editor/core/nfl2k5_calendar_engine.py": "0ade93859ea9932903c550c51540e43dce05eb57f3d7ae2b99d925ec81fe67cd",
         "mod_editor/core/nfl2k5_calendar_engine_code.py": "9b43e835f1df76f85ecb13e7ef593d2eee884a1fa82fe41ea3d813186445ca22",
         "mod_editor/core/nfl2k5_later_schedule.py": "3bcf96d22a24338d02c7f930151d27c1d812612036a38fadfc0797f2a0e446ef",  # b780-season1
         "mod_editor/core/nfl2k5_camera.py": "c2b85ae199f5cd6b334b6b3dfa193caf782671488ce852eba8cb28fd50c34cfb",
@@ -847,7 +847,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
         "mod_editor/core/nfl2k5_my_career_events.py": "228a0b59d43b9b9c52e10ac93cc72072e772e694cc864c8e2e037c5d7c772460",
         "mod_editor/core/nfl2k5_my_career_mode.py": "6bc271bc88b0d59bcd459bfcc4b149439ef02c0ab75448ec32620f1d4bc10411",
-        "mod_editor/core/nfl2k5_rookie_faces.py": "3b7461fe711d72ada7c2009f04e2736783157612d03c351843fadbce9576b3f9",  # b780-int (gen1mc): MyCareer's draft-signing context reads its draft-number byte
+        "mod_editor/core/nfl2k5_rookie_faces.py": "bc1f4c3d6f08b6d0b0760fd41d2afce33f360502936f4569947900c71306770e",  # b780-int (gen1mc): MyCareer's draft-signing context reads its draft-number byte
         "mod_editor/core/nfl2k5_my_career_mode_code.py": "dbf9330b042795f057e5dfd92df680f6c004a97eae9f5218a3cd66cd13b5d489",
         "mod_editor/core/nfl2k5_my_career_home.py": "852747c8b6ae3b94bc61a3f0d8b7a3060bde155901667e71021a8346c291a0ab",
         "mod_editor/core/nfl2k5_my_career_mode_code_b779.py": "9774a72e254da1609e82a53d2d5b74701e1d2acec484b6588256fc9b256c0355",  # b780 n6: frozen beta-79 revision
@@ -913,7 +913,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_roster_fill_composition.py": "96547bdc1c66889f68f44deb147bd5f6095ee169d343d53aaa4f532d12ee53e8",
         "mod_editor/core/nfl2k5_franchise_economy.py": "db9d6a995233af83a516b805201125649525c02ca01f5df629f7223c0e84a970",
         "mod_editor/core/nfl2k5_franchise_economy_code.py": "9a7b580e27009b2cdb3b01db9cda210e40214e5d911e80ce7feea31ce4dd61b2",
-        "mod_editor/core/nfl2k5_progression.py": "5ff9ab5b8b5a9b38e6acba0526464838abee667c957596368673f26ff88eaf50",
+        "mod_editor/core/nfl2k5_progression.py": "2da925509fc6442b4094d7c1ceeef6a5fd1bc6212e3862bc69fe9e17f4f9baa8",
         "mod_editor/core/nfl2k5_prospect_names.py": "6f48b67a3b00b72b8bc51ca35527037ceca27c4137b9bb0e1d4542f27c39e7ac",
         "mod_editor/core/nfl2k5_qb_spy_runtime.py": "094e1ed86847a0b78e9ead41b44aea476f6f2f313ff6c986b1db722940553a2c",
         "mod_editor/core/nfl2k5_qb_spy_runtime_code.py": "759ee92ee3bac1d79d80ac6d6ae539ea6f0e3cef658dc945548a8c7db35c468f",
@@ -1073,7 +1073,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_screen_hooks_code.py": "bcab9155aceb1e62e2cb1e5a7b98231ec7cf101ae3623a8e0b2397dd4ab27b33",
         "mod_editor/core/nfl2k5_screen_timing.py": "8c7245f79a2c79df3974545b30db4de45c6b1b8071ff5d7a4bc396b2a9903894",
         "mod_editor/core/nfl2k5_season_cap.py": "dda1e4d3a11bfe798d837ab8629bfa1d4e90fc233417e39de1974ac1c5b959c6",
-        "mod_editor/core/nfl2k5_season_length.py": "259d80385ea6e657ea2732d87f1711c90f5f9165134eb5d62b55ecb4fb5cca97",
+        "mod_editor/core/nfl2k5_season_length.py": "7150c844b348fefd2fea0fa1c05c1ea3ac1a106e4401f2b9f3ba10cefc681276",
         "mod_editor/core/nfl2k5_senior_bowl.py": "ce39c8aef6d9f5438a98c67360c1392d1e5063d7f5b9094b615dfdae141c255c",
         "mod_editor/core/nfl2k5_senior_bowl_code.py": "000abee8fc9bf5d382d4c8934a0509c32de7976805eadabb5c4aed3ccb0812da",
         "mod_editor/core/nfl2k5_seven_on_seven.py": "8d0da9680a0481ee861c45b0dc8f9e785015bd43e472796a3b6e781597244269",

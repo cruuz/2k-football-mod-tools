@@ -208,7 +208,22 @@ CODE_A = bytes.fromhex(
     "440d1d44440d1a5f420d4051450b4d3d490b374a450d3949450d8834490987514a08825d4b097177480a4b4e480b0fb6"
     "7e358d3cbd94680e00e813ffffff50668b0fe877ffffff88462ae802ffffff5ac1e00888d00d000000ff668b4f02e85b"
     "ffffff88462b6a0759e8d7feffff01d2806622f1085622eb00")
+# b81 league-aging (coordinator ruling 11/25): one grade per prospect (qsetup/qrand keep their slots, qsetup2/qrand2
+# at the end of region C), so a class has the real spread of stars and busts. Executables with the b780 region C
+# (CODE_C_B780, every v0.9 and b81 integration image) still read applied; upgrade_region_c moves them in place.
 CODE_C = bytes.fromhex(
+    "e87101000089d9ff178944241cdb44241cd95c241089e9ff178944241cdb44241cd95c241cb9a0fce500e886000000d9"
+    "442410d864241c51dec9d8442420d91c24e879d1ffff88c289f1ff57fc83c71481fff84e4f007cad6a025f0fb6971d6e"
+    "0e00520fbe041383f8647c036a64580fbe4c150083f9647c036a645929c85150e825faffff0fb7c05a0fafc2c1f81059"
+    "01c85a8804164f79c2c6460806e9e8010000e803faffff50e916010000cccccccccccccccce8851df6ffd82584414e00"
+    "d80d4c6f0e00e91b010000cc4e515051528b4d008b5504394210750f39f2740b508b42143b461458f9740683c254e2e7"
+    "f85a59c352538b4e2a30e983e1038d1c85000000006a045f8d040b6603059d4f4f008b55548b04c24f740de8afffffff"
+    "73064183e103ebe08946105b5ac3e8aaf9ffff6a048b4610e892ffffff731bff0c2478160fb70da04f4f00e84ef9ffff"
+    "89d78b04fb894610ebdb59c383fe64730a83fe5b720583f83c73068bb0901b5200e936641d00e82ff9ffffc1e81e0fb6"
+    "4e358d04888b0d1829b7003b4108732e6bc05403410c8b402033462025007c00003146208b462025007c00003d003c00"
+    "000f93c0c0e00680660c3f08460ce9dffeffffb9a0fce500e8721cf6ff583c0a730ad9e8dec1d80d84414e00d95c2418"
+    "bfb44c4f00c3d8442418d9eedbe9dac1ddd9d9e8dbe9dbc1ddd9c33333b33e")
+CODE_C_B780 = bytes.fromhex(
     "e87101000089d9ff178944241cdb44241cd95c241089e9ff178944241cdb44241cd95c241cb9a0fce500e886000000d9"
     "442410d864241c51dec9d8442420d91c24e879d1ffff88c289f1ff57fc83c71481fff84e4f007cad6a025f0fb6971d6e"
     "0e00520fbe041383f8647c036a64580fbe4c150083f9647c036a645929c85150e825faffff0fb7c05a0fafc2c1f81059"
@@ -727,10 +742,11 @@ def xbe_status(payload: bytes) -> str:
         return "retail"
     spans = dict(_spans(bytes(TABLE_DATA)))
     d = current[TABLE_VA]
-    if all(current[va] == data for va, data in spans.items() if va != TABLE_VA) and \
-            d[TABLE_DATA:-4] == spans[TABLE_VA][TABLE_DATA:-4]:
-        return "applied" if _hair_ok(payload, struct.unpack_from("<I", d, len(d) - 4)[0]) else "foreign"
     pad = lambda code, size: code + b"\xcc" * (size - len(code))  # noqa: E731
+    region_c = (spans[REGION_C], pad(CODE_C_B780, REGION_C_END - REGION_C))   # b81 league-aging: either reads applied
+    if all(current[va] == data for va, data in spans.items() if va not in (TABLE_VA, REGION_C)) and \
+            current[REGION_C] in region_c and d[TABLE_DATA:-4] == spans[TABLE_VA][TABLE_DATA:-4]:
+        return "applied" if _hair_ok(payload, struct.unpack_from("<I", d, len(d) - 4)[0]) else "foreign"
     tail = TABLE_END - TABLE_VA - TABLE_DATA
     previous = {REGION_A: spans[REGION_A], STRING_VA: spans[STRING_VA],
                 REGION_B: pad(CODE_B_RF3, REGION_B_END - REGION_B), REGION_C: pad(CODE_C_RF3, REGION_C_END - REGION_C),
@@ -740,6 +756,35 @@ def xbe_status(payload: bytes) -> str:
             and d[TABLE_DATA:] in (pad(CODE_D_B779, tail), pad(CODE_D_B780RC, tail))):
         return "previous"   # beta-79 / v0.8 (rare first name from the college's low bits) or the v0.9 RC (GEN1)
     return "foreign"
+
+
+def region_c_state(payload: bytes) -> str:
+    """For an applied executable: 'current' (the b81 league-aging grade roll), 'b780' (one draw per rating) or 'other'."""
+    pad = lambda code: code + b"\xcc" * (REGION_C_END - REGION_C - len(code))  # noqa: E731
+    try:
+        off = _offset(payload, REGION_C, REGION_C_END - REGION_C)
+    except (RookieFacesError, struct.error):
+        return "other"
+    got = payload[off:off + REGION_C_END - REGION_C]
+    return "current" if got == pad(CODE_C) else "b780" if got == pad(CODE_C_B780) else "other"
+
+
+def upgrade_region_c(payload: bytes) -> tuple[bytes, dict[str, Any]]:
+    """b81 league-aging: an applied executable with the b780 rating loop gets the grade roll in place (region C only)."""
+    state = region_c_state(payload)
+    if state != "b780" or xbe_status(payload) != "applied":
+        return payload, {"region_c": state, "changed_bytes": 0}
+    data = CODE_C + b"\xcc" * (REGION_C_END - REGION_C - len(CODE_C))
+    off = _offset(payload, REGION_C, len(data))
+    buf = bytearray(payload)
+    changed = sum(1 for x, y in zip(buf[off:off + len(data)], data) if x != y)
+    buf[off:off + len(data)] = data
+    for sva, raw, rsize, h in _section_map(payload):
+        if raw <= off < raw + rsize:
+            buf[h + 36:h + 56] = hashlib.sha1(struct.pack("<I", rsize) + bytes(buf[raw:raw + rsize])).digest()  # nosec B324
+    out = bytes(buf)
+    require(xbe_status(out) == "applied" and region_c_state(out) == "current", "rookie faces region C upgrade read-back")
+    return out, {"region_c": "upgraded", "changed_bytes": changed}
 
 
 def _hair_allocation(payload: bytes) -> dict | None:
@@ -836,7 +881,7 @@ def xbe_apply(payload: bytes, table: bytes) -> tuple[bytes, dict[str, Any]]:
 
 
 SPAN_LABELS = ("class generator skin/face draw and weight/height roll -> body table + helpers", "class generator portrait pick",
-               "class generator rating loop -> blue-chip draw + compact capped rolls",
+               "class generator rating loop -> one grade per prospect (blue-chips high) + compact capped rolls",
                "rookie-face tables + code (retail generic range table)", "PORTRAIT record file name",
                "class generator college pick -> per-college weight table", "draft pick keeps the rookie's own jersey number",
                "Franchise Show portrait record file name", "jersey walk: DT / DE stay in the 90s before wrapping")

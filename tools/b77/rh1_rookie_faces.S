@@ -220,21 +220,17 @@ regionC:                            # b779-rf3: the rating loop (29 getter/sette
     jns 41b
     mov byte ptr [esi+8], 6         # retail (the record's type byte, the college pick's first instruction)
     jmp collegepick                 # b780 GEN1 Q84
-qsetup:                             # one byte per prospect: a blue-chip (BLUEK in 256) rolls every rating in the upper
-    call rnd                        # half of his template range; the flag lives in the frame's free slot [esp+0x14]
-    cmp al, BLUEK
-    sbb eax, eax
-    mov [esp+4+0x14], eax
-    mov edi, GETTAB
-    ret
-qrand:                              # st0 = r, or (r + 1) / 2 for a blue-chip
-    call FRAND
-    test byte ptr [esp+4+0x14], 1
-    jz 44f
-    fld1
-    faddp st(1), st
-    fmul dword ptr [HALF]
-44: ret
+qsetup:                             # b81 league-aging: one grade g per prospect, a float in the frame's free slot
+    call rnd                        # [esp+0x14]; a blue-chip (BLUEK in 256) draws g in the upper half. The slot keeps
+    push eax                        # b779-rf3's 19 bytes so no later label moves; the rest is at qsetup2
+    jmp qsetup2
+    .fill 19 - (. - qsetup), 1, 0xCC
+qrand:                              # b81 league-aging: st0 = clamp(g + GRADEW (u - 0.5), 0, 1), u = FRAND: every rating
+    call FRAND                      # of a prospect sits near his one grade, so a class has real stars and busts (b779-rf3
+    fsub dword ptr [HALF]           # drew r for each rating on its own: the overall averaged out, a class's spread was half
+    fmul dword ptr [gradew]         # the real one and its best rookie 4-8 under the starters' median). 23 bytes, as before
+    jmp qrand2
+    .fill 23 - (. - qrand), 1, 0xCC
 cofs:
     .byte 0x4E, 0x51, 0x50
 taken:                              # b780 GEN1: eax = a first-name string -> CF = 1 when another player on the roster
@@ -329,6 +325,31 @@ gearsetup:                          # b780 GEN1 Q82: the face mask from any of t
     and byte ptr [esi+0x0C], 0x3F
     or [esi+0x0C], al
 70: jmp qsetup
+qsetup2:                            # b81 league-aging (from qsetup, eax = the blue-chip byte pushed)
+    mov ecx, RNG
+    call FRAND
+    pop eax
+    cmp al, BLUEK
+    jae 45f
+    fld1
+    faddp st(1), st
+    fmul dword ptr [HALF]
+45: fstp dword ptr [esp+4+0x14]
+    mov edi, GETTAB
+    ret
+qrand2:                             # b81 league-aging (from qrand): + g, then clamp to [0, 1]
+    fadd dword ptr [esp+4+0x14]
+    fldz
+    fucomi st, st(1)
+    fcmovb st, st(1)                # max(0, x)
+    fstp st(1)
+    fld1
+    fucomi st, st(1)
+    fcmovnb st, st(1)               # min(1, x)
+    fstp st(1)
+    ret
+gradew:
+    .float 0.35
 regionC_end:
     .fill 0xE6F56 - 0xE6D51 - (regionC_end - regionC), 1, 0xCC
 29:
