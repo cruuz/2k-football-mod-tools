@@ -23,7 +23,8 @@
    healthy (it keeps 2 healthy ones), and after the sale a healthy backup rated 60 or more besides its best man (C24 F3).
    Package: the best-rated Qs over every seller: fully healthy, not on row 0, rated below the seller's best healthy
    quarterback (C22 (a): a seller never gives up its best man), 4+ years pro, 1+ contract years, not named by a live
-   record, ovr(Qs) - ovr(S') >= 3, buyer's cap room - Qs's charge > 10; and no free agent at least as good within the
+   record, ovr(Qs) - ovr(S') >= 3, buyer's cap room - Qs's charge after the trade > 10 (M1/N6: charge_after, the
+   executor's contract rewrite applied to a copy of his record); and no free agent at least as good within the
    buyer's reach (C24 F5: E2's candidate F for the buyer, the best healthy free agent the picker 0x322BB0 takes within
    cap room - 10, exactly as moves.c chooses it; ovr(F) >= ovr(Qs) means no trade: E1/E2 sign him instead). Price
    (C24, ruled): the buyer's OWN pick of the coming draft, word round | buyer << 6 (year 0; round one-based, slot =
@@ -78,6 +79,9 @@ extern u32 qb_trade_flags;                             /* this page + 0xF04: bit
                                                             deadline owner); C22 (c) posts only before it, always */
 
 #define SALARY ((u32 (FC *)(u32))0x000E6380)            /* this season's base charge (fastcall ECX) */
+#define TIMES10 ((u32 (FC *)(u32))0x000E5FF0)           /* value x 10 (arithmetic only) */
+#define TENTHS ((u32 (FC *)(u32))0x000E6000)            /* signed / 10, toward zero (arithmetic only) */
+#define OWED ((u32 (FC *)(u32))0x0013ED00)              /* bonus still owed: yearly bonus x years left, tenths */
 #define VALUE ((u32 (FC *)(u32, u32, u32, u32, u32))0x002BD440)   /* the picker's value (moves.c): AX */
 #define OFFERS 0x00E3C600u                               /* the offer table the picker scans after the list */
 #define OFFER_COUNT 100u
@@ -210,6 +214,22 @@ static i32 backup_after(u32 t, u32 starter, u32 qs) {
     return top;
 }
 
+/* M1/N6 (the trades review's 1.3): the buyer's charge for p once the trade is made. The executor rewrites every moved
+   man's contract (0x2BB360, called at 0x2BC733: x = 0xE5FF0(value); x -= 0x13ED00(p); bonus bits 20..23 of +0x24
+   cleared; value = 0xE6000(x)) and recounts both payrolls (0xC3F00: this season's charge plus the yearly bonus, which
+   is then zero). The same rewrite on a copy of the record, then 0xE6380 of the copy: the game's record is not touched.
+   0xE5FF0 and 0xE6000 are arithmetic on their argument; 0x13ED00 and 0xE6380 (with 0xE6020, 0xE6040 and 0xE3F10) read
+   only +0xA and +0x24 of the record they are given, never its address, so a copy on the stack prices as the record. */
+static u32 charge_after(u32 p) {
+    u8 copy[PLAYER_SIZE] __attribute__((aligned(4)));
+    u32 c = (u32)copy;
+    for (u32 i = 0; i < PLAYER_SIZE; i += 4) D(c + i) = D(p + i);
+    u32 x = TIMES10(W(p + 0xA)) - OWED(p);            /* 0x13ED00 with the original record, as the executor calls it */
+    D(c + 0x24) &= 0xFF0FFFFFu;
+    W(c + 0xA) = (u16)TENTHS(x);
+    return SALARY(c);
+}
+
 struct club { u32 team, starter, w, l, t, flags; i32 best; };
 #define OUT 1u                                           /* no club, human, or named by a live record */
 #define SELLER 2u
@@ -279,7 +299,7 @@ static u32 post(struct posted *out) {
                 i32 o;
                 if (!p || B(p + 0x35) != 0 || !healthy(p) || !(W(p + 0x28) & ROW_MASK) || (B(p + 0x25) & 31) < 4
                         || !(B(p + 0x24) & 15) || (o = ovr(p)) <= top || o >= c[i].best   /* C22 (a) */
-                        || room - (i32)SALARY(p) <= 10 || named(p)
+                        || room - (i32)charge_after(p) <= 10 || named(p)                 /* M1/N6 */
                         || backup_after(t, c[i].starter, p) < BACKUP_MIN)               /* C24 F3 */
                     continue;
                 qs = p;

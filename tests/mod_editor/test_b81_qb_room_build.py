@@ -666,6 +666,53 @@ class InPlacePreflightTests(unittest.TestCase):
         self.assertEqual(receipt["user_notes"], update["added"] + trades_note)
 
 
+class InPlaceTradesRevisionTests(unittest.TestCase):
+    """N6 (the 4b revision, coordinator ruling M1/N6): the in-place route's executable step (what edit-sim-qb's preflight
+    runs on the disc's default.xbe; nothing is written) on a Studio executable at 383 with the trades page of ff6ae30b2
+    (QB4B_383_XBE, from the environment only) upgrades the trades page in place: the room reaches it as "previous", the
+    trades page becomes the current template at the same address, the room page is untouched, and the receipt reads
+    back Realistic 383 with the trades applied."""
+
+    SHA = "8b180ed5bd69647c99ba7eb5f63c95471b1785d89afe4b489f2492ace37aa8aa"
+    NAME = "b81 4b trades 383"
+
+    def test_the_edit_upgrades_the_trades_page(self):
+        import hashlib
+        from unittest import mock
+        from mod_editor.core import nfl2k5_qb_room as room, nfl2k5_qb_trades_code as code
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        path = Path(os.environ.get("QB4B_383_XBE", "") or "absent")
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != self.SHA:
+            self.skipTest("QB4B_383_XBE is not set, absent or differs")
+        source = path.read_bytes()
+        self.assertEqual(room.read_settings(source)["status"], "previous")
+        calls, real = [], room.apply
+
+        def spy(payload, level="realistic", **kwargs):
+            out = real(payload, level, **kwargs)
+            calls.append((bytes(payload), level, kwargs, out))
+            return out
+        receipt = {"steps": [], "result": {}}
+        with mock.patch.object(room, "apply", spy):
+            self.assertTrue(mod_build._edit_installed_sim_qb(
+                mod_build.sim_qb_disc_edit("s.iso", "t.iso", "realistic"), Path("source.iso"), Path("copy.iso"), source,
+                receipt, lambda *_: None, preflight=True, consume=False, reference=None))
+        (before, _level, kwargs, (after, patch)), = [c for c in calls if c[1] == "realistic"]
+        self.assertEqual(kwargs, {"stages": 383})
+        settings = room.read_settings(before)
+        self.assertEqual((settings["status"], settings["revision"], settings["trades"]), ("previous", self.NAME, "previous"))
+        self.assertEqual((patch["status"], patch["upgraded_from"]), ("applied", self.NAME))
+        old, new = XbeImage(before), XbeImage(after)
+        link = int.from_bytes(new.read(0x152C000 + 0xF00, 4), "little")
+        self.assertEqual(new.read(0x152C000, 0x1000), code.page_bytes(0x152C000, 0x1529000, ir_store_va=link))
+        self.assertEqual(new.read(0x1529000, room.SIZE), old.read(0x1529000, room.SIZE))
+        update = receipt["qb_room_source_update"]
+        self.assertEqual((update["level"], update["stages"], update["result_sha256"]),
+                         ("realistic", 383, hashlib.sha256(after).hexdigest()))
+        self.assertEqual((update["settings"]["status"], update["settings"]["stages"], update["settings"]["trades"]),
+                         ("applied", 383, "applied"))
+
+
 class InPlaceWithoutDependenciesTests(unittest.TestCase):
     """The in-place edit on a 128 MB executable without depth chart locks: slice 1 changes, the room is left out."""
 
