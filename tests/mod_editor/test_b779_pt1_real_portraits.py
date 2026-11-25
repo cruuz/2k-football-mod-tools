@@ -264,8 +264,12 @@ class RosterPlayersRst2(unittest.TestCase):
         under the record's own name (Nick Westbrook-Ikhine's surname is Westbrook: the 15-character buffer)."""
         added = self.rows[121:168]
         addition = self.doc["additions"][-3]
-        self.assertEqual(addition, dict(job="b81-roster-1125", fetched="2026-11-25", rows=47, moved_from_wrong_faces=0,
-                                        note=addition["note"]))
+        self.assertEqual({k: v for k, v in addition.items() if k != "note"},
+                         dict(job="b81-roster-1125", fetched="2026-11-25", rows=47, moved_from_wrong_faces=0))
+        # each batch describes itself (review N1: the 11/25 batches had inherited the rst2 note)
+        self.assertTrue(addition["note"].startswith("Real players on 2026 club rosters (nflverse 11/25)"))
+        notes = [a["note"] for a in self.doc["additions"][-4:]]
+        self.assertEqual(len(set(notes)), 4)
         self.assertEqual([r["id"] for r in added], list(range(31116, 31163)))
         self.assertEqual({r["atlas"] for r in added}, {"faces_04.png"})
         names = {(r["first"], r["last"]) for r in added}
@@ -277,6 +281,7 @@ class RosterPlayersRst2(unittest.TestCase):
         agents. Manziel's NFL.com picture is the league's placeholder helmet, so his is the ESPN headshot of his espn_id."""
         named = self.rows[168:177]
         self.assertEqual(self.doc["additions"][-2]["job"], "b81-roster-1125-named")
+        self.assertTrue(self.doc["additions"][-2]["note"].startswith("Free agents named for the default pool"))
         self.assertEqual([r["id"] for r in named], list(range(31163, 31172)))
         self.assertEqual({r["last"] for r in named}, {"Manziel", "Griffin", "Carr", "Bridgewater", "Bortles", "Tebow", "Hurns",
                                                       "Walker", "Butler"})
@@ -286,10 +291,16 @@ class RosterPlayersRst2(unittest.TestCase):
         self.assertLess(named[-1]["id"], rp.ID_LIMIT)
 
     def test_the_long_tail_free_agents_fill_the_rest_of_the_id_window(self):
-        """b81 roster-1125 (coordinator ruling 11/25, option A): 28 of the ~600 long-tail free agents, most recent snaps
-        first, take the window's last ids; the others go the no-photo (created face) path."""
+        """b81 roster-1125 (coordinator ruling 11/25, option A, tightened after review): 28 of the 215 long-tail free agents
+        (NFL snaps in 2023 or later, not publicly retired), most recent snaps first, take the window's last ids; the
+        others go the no-photo (created face) path. Announced retirees from the first selection are gone."""
         tail = self.rows[177:]
         self.assertEqual(self.doc["additions"][-1]["job"], "b81-roster-1125-long")
+        self.assertTrue(self.doc["additions"][-1]["note"].startswith("Long-tail free agents"))
+        names = {(r["first"], r["last"]) for r in tail}
+        self.assertIn(("Reddy", "Steward"), names)            # 2026 snaps, now unsigned
+        for retired in (("J.J.", "Watt"), ("Alejandro", "Villanueva"), ("Patrick", "Peterson")):
+            self.assertNotIn(retired, names)
         self.assertEqual([r["id"] for r in tail], list(range(31172, rp.ID_LIMIT)))
         self.assertTrue(all(r["source_url"].startswith("https://static.www.nfl.com/") for r in tail))
 

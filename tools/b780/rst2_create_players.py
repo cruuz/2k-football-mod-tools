@@ -305,7 +305,7 @@ TRADED_CONTRACTS = {"00-0034342": ("Quenton Nelson", "IND", "SEA", 8)}
 SEASON_WEEKS = 18
 
 
-def traded_contracts(plan, fresh):
+def traded_contracts(plan):
     """Corrections for the traded players above: the new club's charge is base salary x weeks left / 18, fitted to the
     native contract with the fc fit (tools/franchise_economy/contracts.py); the record must hold the full-year fit now."""
     from tools.franchise_economy.contracts import fit_schedule
@@ -365,7 +365,7 @@ def finalize(args):
                 "players.csv of 2026-09-24 the plan's identity guard came from listed the earlier one")
             row["birth_date"] = node["birth_date"]
     plan["birth_corrections"] = sorted(corrections.values(), key=lambda c: c["index"])
-    report["contract_corrected"] = traded_contracts(plan, fresh)
+    report["contract_corrected"] = traded_contracts(plan)
     plan.pop("third_down_backs", None)
     plan["room_policy"] = "ir"                 # b780 IR1 / coordinator 11/04: injured players start on injured reserve
     plan["special_row_defaults"] = True        # b780 sub1: the writer's last step (3DRB and GAD, nfl2k5_third_down_back)

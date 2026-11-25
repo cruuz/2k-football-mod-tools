@@ -38,6 +38,7 @@ V09 = Path(os.environ.get("NFL2K5_B780_ROSTER_EDITS_V09",
 BASE = Path(os.environ.get("NFL2K5_B780_REFRESH_BASE", "/home/noah/2k-worktrees/.b77-scratch/i4/inputs/ro1/baseline.body"))
 RC_ROST = Path(os.environ.get("NFL2K5_B780_RC_ROST", "/media/noah/Storage/2K5-project/mem1/fixtures/rc_rost.bin"))
 BASE_SHA256 = "12701297fd05f86ff513acad4363dbe059cdb499d95d13976acb16dd87f8c98e"
+STAND_IN_SOURCE_SHA256 = "a599ec5ff8caaef5f40dd7cf680659066db908260f03d8db9b30497125235c2a"   # b81 fixtures v08/roster-edits-b779.json
 
 
 def depth_row(priority, index):
@@ -229,6 +230,10 @@ class SoftdrinkV09RetailFitTests(unittest.TestCase):
             # way a 64 MB build does on a user's own disc: the base is this document's own pre-refresh roster from the
             # retail dump (test_b780_m64b_console_memory.users_dump_base) and the document's base pins are dropped
             # (nfl2k5_console_memory.fit_roster_edits does the same); the counts below must not change.
+            # the stand-in source is pinned: the v0.8 pack plan with the deleted v0.9 file's 612 records, 879 free agents and
+            # 533 depth rows (b81/env.sh NFL2K5_B780_ROSTER_EDITS_V09); another document must not pass silently
+            if hashlib.sha256(cls.raw).hexdigest() != STAND_IN_SOURCE_SHA256:
+                raise unittest.SkipTest("the refresh base is not the pinned 12701297... body and the source is not the pinned stand-in")
             retail = Path(os.environ.get("NFL2K5_RETAIL_XISO", ""))
             if not retail.is_file():
                 raise unittest.SkipTest("the refresh base is not the pinned 12701297... body and no retail XISO to rebuild it")

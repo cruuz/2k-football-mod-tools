@@ -79,9 +79,9 @@ STANDARD_SOURCES = Path(os.environ.get("NFL2K5_B81_STANDARD_SOURCES", "") or "mi
 # b81 roster-1125 (Noah: "kirk cousins not on vikings, trade deadline roster not updated?"; the 2026 deadline was 11/10):
 # the release sources load the 11/25 refresh, 128 MB and the 64 MB retail-capacity fit of it.
 RELEASE_ROSTERS = {128: ("roster-edits-b81-refresh-20261125.json",
-                         "c002e7afdfd0b45b79314d85cd467a8675fa7fbec43d5d7ef29edfc22f09e85f"),
+                         "17c0cdd0d99154a7208fbfab1b880998d648b02008ba98f3227c4eae1da60eef"),
                    64: ("roster-edits-b81-refresh-20261125-retail-capacity-64mb.json",
-                        "49a255fffadbdec88f5e51a46967af0c02d1f5d88dac4b3f8fe6e82eca47ec98")}
+                        "86b56a42215469fa3644644b41ba2d417db9a06fff158046eca754ee1fa5ce54")}
 
 
 @unittest.skipUnless((STANDARD_SOURCES / "recipe.json").is_file(), "private release sources absent: NFL2K5_B81_STANDARD_SOURCES")
@@ -110,7 +110,7 @@ class ReleaseSourcesRosterTests(unittest.TestCase):
                 rows = {r["index"]: r for r in plan["players"]}
                 # coordinator 11/25: no two men on a club share a number across the 53, the practice squad and IR. The plan
                 # lists the 53 and the practice squad; which injured men stay on IR the writer decides (the 65-man list),
-                # so IR is checked on the written roster: test_b780_roster1_depth_lint jersey_clashes / lint(lists=True)
+                # so IR is checked on the written roster: test_b780_roster1_depth_lint jersey_clashes / lint(shared_numbers=True)
                 for team in plan["teams"]:
                     numbers = [rows[i]["fields"]["jersey"] for i in set(team["active"]) | set(team["reserves"])]
                     self.assertEqual(len(numbers), len(set(numbers)), team["team"])
@@ -126,10 +126,16 @@ class ReleaseSourcesRosterTests(unittest.TestCase):
                                              "Blake Bortles", "Tim Tebow", "Allen Hurns", "PJ Walker", "Hakeem Butler"})
                     self.assertTrue(all(r["index"] in plan["free_agents"] for r in plan["players"]
                                         if r.get("source_name") in named))
-                    # coordinator ruling 11/25 (option A): about 600 more real unsigned veterans as free agents
+                    # coordinator ruling 11/25 (option A, tightened after review): real unsigned veterans with NFL snaps in
+                    # 2023 or later who are not publicly retired; fewer than 600 qualify, so fewer ship
                     tail = [r for r in plan["players"] if (r.get("evidence") or {}).get("kind") == "long_tail_unsigned_veteran"]
-                    self.assertEqual(len(tail), 599)
+                    self.assertEqual(len(tail), 215)
                     self.assertTrue(all(r["status"] == "UFA" and r["index"] in plan["free_agents"] for r in tail))
+                    self.assertTrue(all(r["evidence"]["last_nfl_snaps_season"] >= 2023 for r in tail))
+                    # review S4: the rows this refresh adds point to neutral top-level notes, with no owner's name
+                    added = [r for r in plan["players"] if (r.get("evidence") or {}).get("kind")
+                             in ("long_tail_unsigned_veteran", "owner_named_default_free_agent")]
+                    self.assertNotIn("Noah", json.dumps([r["evidence"] for r in added]))
                 # coordinator ruling 11/25: Daniel Carlson is Miami's kicker on the 53; the released Zane Gonzalez is not
                 miami = next(t for t in plan["teams"] if t["team"] == "MIA")
                 carlson = next(r for r in plan["players"] if r.get("gsis_id") == "00-0034161")
@@ -137,6 +143,35 @@ class ReleaseSourcesRosterTests(unittest.TestCase):
                 self.assertEqual(miami["specialists"]["k"], carlson["index"])
                 gonzalez = next((r for r in plan["players"] if r.get("gsis_id") == "00-0033862"), None)
                 self.assertTrue(gonzalez is None or gonzalez["index"] not in miami["active"] + miami["reserves"])
+
+
+RETAIL_XISO = Path(os.environ.get("NFL2K5_RETAIL_XISO", "") or "missing")
+CLASS_SIZE = 450       # tools/franchise_economy/runtime.c CLASS_SIZE / MIN_CLASS: the free records a generated class takes
+
+
+@unittest.skipUnless((STANDARD_SOURCES / "recipe.json").is_file() and RETAIL_XISO.is_file(),
+                     "private release sources (NFL2K5_B81_STANDARD_SOURCES) or the retail XISO absent")
+class ReleaseRosterCapacityTests(unittest.TestCase):
+    """b81 roster-1125 (review S5): the free agents the 11/25 roster adds use capacity records, which come out of the
+    records a draft class takes. Written the way a build writes it on a user's retail dump, the 128 MB roster still
+    leaves a whole first class free (the disc's 380-record window plus the appended class records)."""
+
+    def test_the_first_draft_class_keeps_its_450_records(self):
+        import json
+        from mod_editor.core import nfl2k5_roster_arena as arena, nfl2k5_roster_refresh as refresh
+        from tests.mod_editor.test_b780_m64b_console_memory import users_dump_base
+        name, _digest = RELEASE_ROSTERS[128]
+        path = STANDARD_SOURCES.parent / "v10-sources-128" / "assets/files"
+        document = json.loads(next(path.glob("*_" + name)).read_text(encoding="utf-8"))
+        records = document["free_agent_capacity"]["records"]
+        grown, _ = arena.migrate(users_dump_base(document), reserves_16=False, capacity_records=records)
+        out, _ = refresh.apply_body(grown, document["roster_refresh"])
+        summary = rr.RosterDocument(out, scheme="one_pool", reference_year=2026).summary()
+        free_for_a_class = summary["draft_slots"] + summary["draft_capacity"]
+        self.assertEqual(summary["draft_slots"], 380)
+        self.assertGreaterEqual(free_for_a_class, CLASS_SIZE)
+        # the appended class records: the 4,096-record table less the records the capacity growth makes primary
+        self.assertEqual(free_for_a_class, 380 + arena.CAPACITY_PRIMARY_LIMIT - document["free_agent_capacity"]["final_primary"])
 
 
 MOD = Path(os.environ.get("NFL2K5_V09_XISO", ""))

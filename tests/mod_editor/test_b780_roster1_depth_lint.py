@@ -389,8 +389,7 @@ class WrongFaceTests(unittest.TestCase):
 
 
 # ------------------------------------------------------------------------------------------------ pack data
-@unittest.skipUnless(V08_ROST.is_file() and RELEASE_PLAN.is_file(),
-                     "NFL2K5_RELEASE_ROSTER_EDITS (the release roster edits, room_policy ir) or the v0.8 disc roster is not set")
+# No guard: a pure unit test on a small fake league (it needs no private file and runs in CI).
 class JerseyClashTests(unittest.TestCase):
     """b81 roster-1125: jersey_clashes finds a number a club's 53 (IR men are on it) shares with its practice squad."""
 
@@ -428,6 +427,8 @@ class JerseyClashTests(unittest.TestCase):
                                                   "BUF": {22: ["Amani Hooker", "Gardner-Johnson (IR)"]}})
 
 
+@unittest.skipUnless(V08_ROST.is_file() and RELEASE_PLAN.is_file(),
+                     "NFL2K5_RELEASE_ROSTER_EDITS (the release roster edits, room_policy ir) or the v0.8 disc roster is not set")
 class ReleaseRosterInjuredReserveTests(unittest.TestCase):
     """b780-int: the release roster edits (RST2, room_policy "ir") replayed on the released v0.8 disc roster, as the
     v0.9 build runs them. NFL2K5_V08_ROSTER_EDITS stays the beta-79 file the other pack tests expect."""
