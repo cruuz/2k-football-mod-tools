@@ -391,17 +391,67 @@ REVISION_3947E61B6_PATCHED = (
 )
 
 
-def _revision(name: str, patched, pin: str):
+# round 6 (review R6.4): the club form 57d432682 built (franchise history on, that commit only), its ten sites
+# (label, VA, patched bytes). It upgrades in place to this release's club form.
+REVISION_57D432682_CLUB_PATCHED = (
+    ('site_a', 0x0014E8B0, bytes.fromhex(
+        "56578b0d1829b7008b414089fe2b7144c1fe0289c129f17e0b8d748ffc8d3c8ffdf3a5fc5f8b351829b7008b0e8b560485c97e0f397a2c760483422c0483c25449ebedff4640b8010000005ec3e8defeffff833d987fbd0000740e833da476e5"
+        "000975052d00020000c3e8c1feffff2d00120000506afde8b406000058c3"
+    )),
+    ('site_b', 0x0014E930, bytes.fromhex(
+        "60ff35987fbd00c705987fbd00000000006a01e888000000e87302000089c3e88cfeffff8b0d1829b7002d701700003941407e0e83fb037c0953e8710600004bebdde869feffff8b0d1829b7008b15a476e50083ea08833c240074162d000200"
+        "003941407c1b4a7518e80f0900009090eb0f3941407c0a83fa017705e8aa0800008f05987fbd00e841ffffff8b0d1829b70031d23941400f9cc28954241c61c3"
+    )),
+    ('site_c', 0x0014E9D0, bytes.fromhex(
+        "5553565781ec08020000a11829b7008b48408b704485c90f8ef500000081f9000001000f87e9000000898c240002000031d231db84db750989dfc1ef086689147cf7049e000000107401424339cb72e485d20f84ba00000089d5a11829b7008b"
+        "088b580485c97e608b432c29f07253c1e8023b842400020000734789c28b3c96f7c700000010741785ff780a423b94240002000072e7c7432c00000000eb2389c2c1ea080fb73c54c1e20839c2730df704960000001074014742ebefc1e70229"
+        "7b2c83c35449eb9c8b8c240002000031d289f731db8b0496a900000010750e890783c70431db85c0781443eb1185c0790d85db7409814ffc0000008031db4239ca72d2a11829b700296840b801000000eb0231c081c4080200005f5e5b5dc204"
+        "00528b1081ca00000010891085d279218b512c39d0761383e804f7000000001075f1810800000080eb07c7412c000000005ac3e8b8fcffff8b0d1829b7003941407c25837c242cfc7407837c242c007c14506a00e887feffff598b151829b700"
+        "394a407c0931c0c3b801000000c3b802000000c38b5124c1ea0883e21f8b44242c85c0793583c00275168b4424043d00100000732f0fa344243073284a4aeb1c407509e818040000721aebf0e80606000085c0740f83ea03eb0229c289542410"
+        "31c040c3c7442410c0ffffff31c0c3"
+    )),
+    ('site_d', 0x0014EFE0, bytes.fromhex(
+        "5553565783ec14a11829b7008b4840894c240483242400a11829b7008b0c243b080f8d3e0100006bc954034804894c2408e84efbffff85c00f841f0100008b442408beff00000089f2e872f8ffff85c00f840701000089c38b0b89cfc1ef1783"
+        "e71fc1e91083e17f89cee82101000085c00f88d300000047578b4c240c89f2e8bcfdffff89c531c985c074030fbf080fbf1383fe5773155152e8ea0000005a5985c0750839d17d1e89d1eb1ae30583fe57741301d18d81008000003dffff0000"
+        "0f8784000000894c241085ed754685c97468e86cfaffff85c0746f83f8020f845affffff8b4c240889d8e822faffff89fac1e20709f2c1e2100fb744241009c281ca000000408b4c2408e831010000e92affffff85c9750d8b4c240889e8e8ee"
+        "f9ffffeb158b4500250000ffff0fb7c909c80d000000408945008b4c240889d8e8ccf9ffffe9f4feffff89d8beff00000089f2e848f7ffffe9f1feffffff0424e9b2feffff6a00e884f8ffffa11829b7008b484031c0394c24040f97c083c414"
+        "5f5e5b5dc20400"
+    )),
+    ('site_e', 0x0014F16F, bytes.fromhex(
+        "c3"
+    )),
+    ('site_f', 0x0014F249, bytes.fromhex(
+        "e8e2f6ffff85c00f85650000005f5e5d59c381ec0002000089e731c0b980000000f3ab8b351829b7008b4e388b5e3c8b7604bd5400000049781c8b048b29f072f631d2f7f585d275ee3d0010000073e70fab0424ebe16afee83afdffff81c400"
+        "020000c3e8a9ffffffe963f6ffff"
+    )),
+    ('site_g', 0x0014F239, bytes.fromhex(
+        "e8bff6ffff"
+    )),
+    ('site_h', 0x0014EDA8, bytes.fromhex(
+        "e831040000"
+    )),
+    ('site_i', 0x0014F170, bytes.fromhex(
+        "8b44241029f8782e837c242c007d278d56a083fa09761c837c242cfc741883fe57741083fe1f770eb80d731c000fa3f019c0c383c8ffc356538b5924c1eb0883e31f83eb02c1e3170fbaeb1e8b712c31c085f674168b0683c60450250000807f"
+        "39d858740685c079ec31c05b5ec3817c2408827c24007532a11829b7003b70047528608b2889f14d781fe8a8ffffff83c15485c074f1ff0d987fbd006afce8cdfdffffff05987fbd0061b801000000c3"
+    )),
+    ('site_j', 0x0014EFB0, bytes.fromhex(
+        "837c2434007425f64424083f752051526a00e809faffff5a59a11829b7008b40403b44243477078364243400f9c3f8c3"
+    )),
+)
+
+
+def _revision(name: str, patched, pin: str, sites=None):
     """(name, the revision's own sites (label, VA, retail, patched), what it holds over each of this release's spans
     (its bytes, then retail to our length; retail where it has no such site), the in-place upgrade (changed spans))."""
+    sites = SITES if sites is None else sites            # round 6: a club-form revision is measured against CLUB_SITES
     old = {label: (va, after) for label, va, after in patched}
-    own = tuple((label, va, before[:len(old[label][1])], old[label][1]) for label, va, before, _after in SITES
+    own = tuple((label, va, before[:len(old[label][1])], old[label][1]) for label, va, before, _after in sites
                 if label in old and old[label][0] == va and len(old[label][1]) <= len(before))
     if len(own) != len(old) or _digest(own) != pin:
         raise ImportError(f"nfl2k5_history_pool: the {name} revision does not match its pin")
     spans = tuple((label, va, before, (old[label][1] + before[len(old[label][1]):]) if label in old else before)
-                  for label, va, before, _after in SITES)
-    upgrade = tuple((label, va, was, after) for (label, va, _before, was), (_l, _v, _b, after) in zip(spans, SITES)
+                  for label, va, before, _after in sites)
+    upgrade = tuple((label, va, was, after) for (label, va, _before, was), (_l, _v, _b, after) in zip(spans, sites)
                     if was != after)
     return name, own, spans, upgrade
 
@@ -411,18 +461,22 @@ REVISION_570CD7C16_SHA256 = "7b61e3e99770293913efdb989b8d097a8bf2b2ef4a03b1a54e7
 REVISION_26D92BDE0_SHA256 = "92f96e1b979b075ccb73f67f7951f08ee523987baaea500439404d9a016d4d38"   # 26d92bde0's
 REVISION_F27DD95A6_SHA256 = "dea980b4159eefd0b5f7b7728dba0c2b7386b5c5838027d4f60f49d516597845"   # f27dd95a6's
 REVISION_3947E61B6_SHA256 = "9e8e9f792d6734174f875473f2eea789fb312462d28318f18dee7c37ac78ec5d"   # 3947e61b6's
+REVISION_57D432682_CLUB_SHA256 = "7bfcf9c320406f46eba347282984c4c2ba6df6189299276f6c5ea84d4eab65a2"   # its CLUB_PATCHED
 if _digest(SITES) != PATCHED_SHA256 or _digest(CLUB_SITES) != CLUB_PATCHED_SHA256:
     raise ImportError("nfl2k5_history_pool: the generated sites do not match their pins")
 REVISIONS = (_revision("beta-80", PREVIOUS_PATCHED, PREVIOUS_SHA256),
              _revision("b81 570cd7c16", REVISION_570CD7C16_PATCHED, REVISION_570CD7C16_SHA256),
              _revision("b81 26d92bde0", REVISION_26D92BDE0_PATCHED, REVISION_26D92BDE0_SHA256),
              _revision("b81 f27dd95a6", REVISION_F27DD95A6_PATCHED, REVISION_F27DD95A6_SHA256),
-             _revision("b81 3947e61b6", REVISION_3947E61B6_PATCHED, REVISION_3947E61B6_SHA256))
+             _revision("b81 3947e61b6", REVISION_3947E61B6_PATCHED, REVISION_3947E61B6_SHA256),
+             _revision("b81 57d432682 club", REVISION_57D432682_CLUB_PATCHED, REVISION_57D432682_CLUB_SHA256,
+                       sites=CLUB_SITES))
 PREVIOUS_SITES, UPGRADE_SITES = REVISIONS[0][1], REVISIONS[0][3]        # the shipped (beta-80 / v0.9) revision
 REVISION_570CD7C16_SITES, UPGRADE_570CD7C16_SITES = REVISIONS[1][1], REVISIONS[1][3]
 REVISION_26D92BDE0_SITES, UPGRADE_26D92BDE0_SITES = REVISIONS[2][1], REVISIONS[2][3]
 REVISION_F27DD95A6_SITES, UPGRADE_F27DD95A6_SITES = REVISIONS[3][1], REVISIONS[3][3]
 REVISION_3947E61B6_SITES, UPGRADE_3947E61B6_SITES = REVISIONS[4][1], REVISIONS[4][3]
+REVISION_57D432682_CLUB_SITES, UPGRADE_57D432682_CLUB_SITES = REVISIONS[5][1], REVISIONS[5][3]
 
 
 def _reads(payload: bytes, spans) -> bool:
@@ -571,4 +625,5 @@ __all__ = ["OWNER", "BUILD_CAPTION", "HELP_TEXT", "SITES", "PREVIOUS_SITES", "UP
            "REVISION_F27DD95A6_SITES", "UPGRADE_F27DD95A6_SITES", "PLAYOFF_ROOM", "HONOR_FIELDS",
            "CHUNK_WORDS", "MIN_DEPTH", "FREE_AGENT_DEPTH", "PLAYOFF_RESERVE", "PLAYOFF_FOLD_DEPTH", "CLOSE_FIELDS", "DROP_VA", "status", "apply", "applied_sites", "compatible_edits", "installed_revision",
            "verify", "variant", "CLUB_SITES", "CLUB_PATCHED_SHA256", "FIELD_TEAM", "REVISION_3947E61B6_SITES",
-           "UPGRADE_3947E61B6_SITES", "ROLLOVER_WIPE_CALL", "rollover_call_intact"]
+           "UPGRADE_3947E61B6_SITES", "ROLLOVER_WIPE_CALL", "rollover_call_intact",
+           "REVISION_57D432682_CLUB_SITES", "UPGRADE_57D432682_CLUB_SITES"]

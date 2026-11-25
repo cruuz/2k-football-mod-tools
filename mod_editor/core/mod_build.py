@@ -2686,8 +2686,14 @@ def _apply_history_pool(plan: "BuildPlan", target: Path, receipt: dict, progress
     if module is None:
         raise RuntimeError("The career history pool fix needs nfl2k5_history_pool.")
     progress("Franchise: career history keeps whole totals", 0, 0)
-    # b81 round 5: the club variant (a folded TEAM word keeps a real club) only when the build carries franchise history
-    payload, fix_receipt = module.apply(_xbe_bytes(target), club=bool(plan.franchise_history))
+    # b81 round 5: the club variant (a folded TEAM word keeps a real club) only when the build carries franchise history.
+    # Round 6 (review R6.4): one rule for every path, the executable's own state: the plan installs franchise history
+    # later in this build, and a build never removes it, so either one means the finished executable carries it
+    # (checked at the end, _verify_history_pool_final).
+    payload = _xbe_bytes(target)
+    history = _core_module("nfl2k5_history")
+    club = bool(plan.franchise_history) or (history is not None and history.status(payload) in ("applied", "previous"))
+    payload, fix_receipt = module.apply(payload, club=True) if club else module.apply(payload)
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
     if final != payload or module.status(final) != "applied":
@@ -3463,6 +3469,26 @@ def _apply_cpu_kick_aim_in_place(target, receipt, progress):
             raise ValueError("The CPU place-kick aim repair did not read back.")
     receipt["steps"].append({"step": "cpu_kick_aim", **aim_receipt})
     receipt["result"]["cpu_kick_aim"] = "applied"
+
+
+def _verify_history_pool_final(target, receipt) -> None:
+    """b81 round 6 (review R6.4): on the finished executable, the career history pool fix is applied, its site D form is
+    the club form exactly when franchise history is installed, and the rollover's retail `call 0x14ED90` at 0x247C7D
+    (which the completion knows the rollover by) is intact."""
+    if receipt["result"].get("history_pool") != "applied":
+        return
+    module = _core_module("nfl2k5_history_pool")
+    payload = _xbe_bytes(target)
+    if module.status(payload) != "applied":
+        raise ValueError("The career history pool fix did not survive the final archive pass.")
+    if not module.rollover_call_intact(payload):
+        raise ValueError("The career history pool fix needs the game's own season-rollover call at 0x247C7D, and "
+                         "another change replaced it. The franchise's early-folded seasons would not be finished.")
+    history = _core_module("nfl2k5_history")
+    want = "club" if history is not None and history.status(payload) in ("applied", "previous") else "sum"
+    if module.variant(payload) != want:
+        raise ValueError(f"The career history pool fix has the {module.variant(payload)} form, but this disc "
+                         f"{'carries' if want == 'club' else 'does not carry'} franchise history.")
 
 
 def _history_pool_upgrade(payload):
@@ -9749,6 +9775,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             # Keep the step plan intact, but report the finished disc reduction.
             receipt["intro_video_disc_bytes_freed"] = cut["plan"]["source_bytes"] - compacted["output_bytes"]
     _step("final_checks")
+    _verify_history_pool_final(target, receipt)
     if plan.backfield_cards and cards.status(_xbe_bytes(target)) != "applied":
         raise ValueError("Starting backfield cards did not survive the final archive pass")
     _verify_gadget_play(plan, target, receipt)

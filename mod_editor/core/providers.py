@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "dd6dd8908056ac091fd70d97e9d1c11a8a13cad2a7d1e2a8d8719200acf75b0f",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "f8560ce2ded65417727404276463a202489021773f5cbe01f8e30c76d8e4c907",
+        "mod_editor/core/mod_build.py": "d959f86483e1121bf4e27b46332a3e4569cb47237a0d66b460ddcf1cb5a57909",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -981,7 +981,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_history_code.py": "7677da0a95a58b89dd5e5b46c6bd74f8d69fd11b73678daa74c4d55d7464c0a5",  # b780 j23
         "mod_editor/core/nfl2k5_contract_college_guard.py": "4bf8deeb95c3718380e8dc248ec2a2f0c81116f304d1a93723e277cc4bd32fe6",  # b778-cr1
         "mod_editor/core/nfl2k5_coach_career_fix.py": "7dea3f42075289b257c8b81e9591d35d6d19530d450ecb5469764925e6bd90ba",  # b780 c1 (wired at b780-int)
-        "mod_editor/core/nfl2k5_history_pool.py": "1055b25328840cbca21a47aa7acea8dd724119f4d218a1725027ce9e36cdf7ac",  # b780 hist1
+        "mod_editor/core/nfl2k5_history_pool.py": "c273697ad83d0ff3b68e384a76d622f5850beb933f1318290f1d373c9e204459",  # b780 hist1
         "mod_editor/core/nfl2k5_history_pool_code.py": "4095d51eaf652e61dde4c1f48671c5ceedb79d0812ec1b565aac8aba3a08643a",  # b780 hist1: its generated runtime
         "mod_editor/core/nfl2k5_load_user_team_guard.py": "70b3e0d9196a55d093870651173d83e305545f15118acd6224a9fb9f02ca7e86",  # b780 mc1
         "mod_editor/core/nfl2k5_save_list_type_guard.py": "64fcd510de0aa6b3595bfeb94e5f1555e96fb723595cc9d0390f9bf969368f40",  # b780 mc1

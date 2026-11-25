@@ -39,10 +39,11 @@ from mod_editor.core import nfl2k5_history_pool_code as runtime  # noqa: E402
 from mod_editor.core import nfl2k5_rdata_sites as rdata  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage  # noqa: E402
 
-XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION",
-                          "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)" / "default.xbe"
+# round 6 (review R6.4): fixtures come from the environment only (no machine path as a default); without them, skip
+XBE = (Path(os.environ["NFL2K5_RETAIL_XBE"]) if os.environ.get("NFL2K5_RETAIL_XBE") else
+       Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/nonexistent")) / "ESPN NFL 2K5 (USA)" / "default.xbe")
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
-HUNT4 = Path(os.environ.get("B780_HUNT4_EVIDENCE", "/home/noah/2k-worktrees/.b77-scratch/b780/hunt4/evidence"))
+HUNT4 = Path(os.environ.get("B780_HUNT4_EVIDENCE", "/nonexistent"))
 ROSTER, CLASS, STAGE = 0xB72918, 0xBD7F98, 0xE576A4      # STAGE: franchise stage, 7 preseason, 8 season, 9 playoffs
 # b81 history-pool: a stored full franchise (seed 68001, 2032 playoffs, pool 50,000 of 50,000) and its executable (the
 # frozen bb5a408b1 candidate 8b180ed5, hist1 at its v0.9 revision). Private game data: never in git.
@@ -163,7 +164,8 @@ class TemplateTests(unittest.TestCase):
     def test_the_first_b81_revision_is_pinned_and_upgrades_in_place(self):
         # coordinator's ruling (11/24): 570cd7c16 (the free-agent resort without the playoff reserve) upgrades in place too
         self.assertEqual([row[0] for row in hp.REVISIONS],
-                         ["beta-80", "b81 570cd7c16", "b81 26d92bde0", "b81 f27dd95a6", "b81 3947e61b6"])
+                         ["beta-80", "b81 570cd7c16", "b81 26d92bde0", "b81 f27dd95a6", "b81 3947e61b6",
+                          "b81 57d432682 club"])
         self.assertEqual(hp._digest(hp.REVISION_570CD7C16_SITES), hp.REVISION_570CD7C16_SHA256)
         self.assertEqual(hp.REVISION_570CD7C16_SHA256, "7b61e3e99770293913efdb989b8d097a8bf2b2ef4a03b1a54e7d972f0144ddae")
         self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.REVISION_570CD7C16_SITES), 1142)
@@ -236,12 +238,28 @@ class TemplateTests(unittest.TestCase):
         # upgrades in place: review F1 (room) and F2 (gc_chunk) change sites C and B, site D one call displacement
         self.assertEqual(hp._digest(hp.REVISION_3947E61B6_SITES), hp.REVISION_3947E61B6_SHA256)
         self.assertEqual(hp.REVISION_3947E61B6_SHA256, "9e8e9f792d6734174f875473f2eea789fb312462d28318f18dee7c37ac78ec5d")
-        self.assertEqual([row[0] for row in hp.REVISIONS][-1], "b81 3947e61b6")
+        self.assertIn("b81 3947e61b6", [row[0] for row in hp.REVISIONS])
         self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_3947E61B6_SITES],
                          [("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 495), ("site_d", 0x14EFE0, 390)])
         old = dict((label, after) for label, _va, _b, after in hp.REVISION_3947E61B6_SITES)
         new = dict((label, after) for label, _va, _b, after in hp.SITES)
         self.assertEqual(sum(a != b for a, b in zip(old["site_d"], new["site_d"])), 1)
+
+    def test_the_club_form_57d432682_built_is_a_known_earlier_revision(self):
+        # round 6 (review R6.4): a disc built by 57d432682 with franchise history on carries that commit's club form;
+        # it reads previous and upgrades in place to this release's club form (sites B, C and D)
+        self.assertEqual(hp._digest(hp.REVISION_57D432682_CLUB_SITES), hp.REVISION_57D432682_CLUB_SHA256)
+        self.assertEqual(hp.REVISION_57D432682_CLUB_SHA256,
+                         "7bfcf9c320406f46eba347282984c4c2ba6df6189299276f6c5ea84d4eab65a2")
+        self.assertEqual([(label, va, len(after)) for label, va, _b, after in hp.UPGRADE_57D432682_CLUB_SITES],
+                         [("site_b", 0x14E930, 160), ("site_c", 0x14E9D0, 495), ("site_d", 0x14EFE0, 391)])
+        retail = _retail()
+        if retail is None:
+            return
+        earlier = rdata.apply(retail, hp.REVISION_57D432682_CLUB_SITES, "57d432682 club")[0]
+        self.assertEqual((hp.status(earlier), hp.installed_revision(earlier)), ("previous", "b81 57d432682 club"))
+        self.assertEqual(hp.apply(earlier, club=True)[0], hp.apply(retail, club=True)[0])
+        self.assertEqual(hp.apply(earlier)[0], hp.apply(retail)[0])
 
     def test_the_close_fields_are_the_season_closes_own_reads(self):
         # round 4: the list comes from the close itself (tools/nfl2k5_history/runtime.c, read_career): the ten leader
@@ -435,14 +453,42 @@ class RouteTests(unittest.TestCase):
         step = inspect.unwrap(mod_build._apply_history_pool)
         with tempfile.TemporaryDirectory() as temp:
             target = Path(temp) / "default.xbe"
-            for franchise_history, want in ((False, "sum"), (True, "club")):
-                target.write_bytes(self.retail)
+            # round 6 (review R6.4): one rule, the executable's own state: an executable that already carries franchise
+            # history gets the club form even when this build's plan leaves the option off (a build never removes it)
+            for start, franchise_history, want in ((self.retail, False, "sum"), (self.retail, True, "club"),
+                                                   (hist_retail, False, "club"), (hist_sum, False, "club")):
+                target.write_bytes(start)
                 receipt = {"steps": [], "result": {}}
                 step(types.SimpleNamespace(history_pool=True, franchise_history=franchise_history), target, receipt,
                      lambda *_: None)
                 self.assertEqual(hp.variant(target.read_bytes()), want)
-                if not franchise_history:
+                if not (start is self.retail and franchise_history):           # (there the history step installs
+                    mod_build._verify_history_pool_final(target, receipt)      # franchise history later in the build)
+                if start is self.retail and not franchise_history:
                     self.assertEqual(target.read_bytes(), self.fresh)
+
+    def test_the_final_check_refuses_a_wrong_form_or_a_replaced_rollover_call(self):
+        # round 6 (review R6.4 items 1 and 2): the full build's final checks
+        from mod_editor.core import mod_build
+        import tempfile
+        hist_retail = self.with_franchise_history(self.retail)
+        receipt = {"steps": [], "result": {"history_pool": "applied"}}
+        with tempfile.TemporaryDirectory() as temp:
+            target = Path(temp) / "default.xbe"
+            for payload, error in ((self.fresh, None), (hp.apply(self.retail, club=True)[0], "form"),
+                                   (hp.apply(hist_retail)[0], "form"), (hp.apply(hist_retail, club=True)[0], None)):
+                target.write_bytes(payload)
+                if error is None:
+                    mod_build._verify_history_pool_final(target, receipt)
+                else:
+                    with self.assertRaisesRegex(ValueError, "form"):
+                        mod_build._verify_history_pool_final(target, receipt)
+            broken = bytearray(self.fresh)
+            off = rdata.offset_of(self.fresh, 0x247C7D)
+            broken[off:off + 5] = b"\x90" * 5
+            target.write_bytes(bytes(broken))
+            with self.assertRaisesRegex(ValueError, "0x247C7D"):
+                mod_build._verify_history_pool_final(target, receipt)
 
     def test_the_build_tab_offers_the_update_on_a_previous_install(self):
         source = (ROOT / "mod_editor/gui/build_panel_qt.py").read_text(encoding="utf-8")
