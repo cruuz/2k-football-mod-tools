@@ -401,7 +401,9 @@ PREVIOUS_UPGRADE_KEYS = {"punter_holder": "saved field-goal holders", "modern_in
                          # b780 db2: the beta-79 RB injury guard (no fullback rule) is upgraded in place as well
                          "sim_rb_injuries": "simulated RB injuries",
                          # b780 hunt6: revision 1 of the franchise record fixes (the v0.9 release candidates)
-                         "coach_career_fix": "coach record fix"}
+                         "coach_career_fix": "coach record fix",
+                         # b81 history-pool: the v0.9 (beta 80) career history pool, upgraded in place
+                         "history_pool": "career history pool"}
 # b780 studio1: older revisions that read "legacy" and that the build upgrades in place (progression.apply and
 # franchise_economy.apply both accept "retail" or "legacy"). A v0.8 disc reads legacy for both; the boxes were greyed out
 # with no badge and no line in the disc summary, so retirement by age and the economy revision could not be added.

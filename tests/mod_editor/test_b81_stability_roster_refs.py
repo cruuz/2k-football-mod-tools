@@ -382,9 +382,10 @@ class Routes(unittest.TestCase):
                                                              reference=None))
         self.assertEqual(asked, [source])
         # combined levers: the edit also updates the disc's legacy pass protection to this release's centre float
+        # b81 history-pool: and the disc's v0.9-revision career history pool to this release's (as a full build)
         from mod_editor.core import nfl2k5_pass_protection as pressure
-        expected = mod_build._cpu_kick_aim_with_kicking(
-            qb.apply(pressure.apply(xbe)[0], "realistic", reference=reference)[0])[0]
+        expected = mod_build._history_pool_upgrade(mod_build._cpu_kick_aim_with_kicking(
+            qb.apply(pressure.apply(xbe)[0], "realistic", reference=reference)[0])[0])[0]
         update = receipt["sim_qb_source_update"]
         self.assertEqual(update["result_sha256"], _sha(expected))
         self.assertEqual(update["stability_reference"]["reference"], list(reference))
@@ -537,7 +538,9 @@ class Routes(unittest.TestCase):
             self.assertTrue(mod_build._edit_installed_sim_qb(plan, source, copy, treated, receipt, lambda *_: None,
                                                              preflight=False, consume=False, reference=None))
         from mod_editor.core import nfl2k5_pass_protection as pressure   # combined levers: the legacy centre updated
-        self._assert_copy(copy, receipt, mod_build._cpu_kick_aim_with_kicking(pressure.apply(frozen)[0])[0])
+        # b81 history-pool: the copy also carries this release's career history pool
+        self._assert_copy(copy, receipt, mod_build._history_pool_upgrade(
+            mod_build._cpu_kick_aim_with_kicking(pressure.apply(frozen)[0])[0])[0])
         # The sentence once, next to the floor's own notes (practice squad merge: this disc's earlier economy is
         # upgraded in place for the floor, and the report says so).
         floor_notes = receipt["qb_room_source_update"].get("added") or []
