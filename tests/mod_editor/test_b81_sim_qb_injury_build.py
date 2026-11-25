@@ -69,7 +69,8 @@ class ProjectSettings(unittest.TestCase):
         # b81 stability: the main roster of each disc (both have the calibration roster's starters and Durability).
         cases = (("NFL2K5_V09_XISO", "d78088f9ba47c6197e99ea540d0bc3d2c9255f7cd49152a77946be70dacab866", "legacy",
                   "8d2b2f50aa19679e4e3a6a783d7137acef96a5975b2ce22bef8ede037c26f42c"),
-                 ("NFL2K5_B81_REVIEWED_TEST_DISC", "98dd732945fb665a8d7fe771650d61c1098015cda4917ac83037059db477008e", "applied",
+                 # b81 fb-targets: a beta 81 disc's season realism before the fullback target rule reads "legacy" too
+                 ("NFL2K5_B81_REVIEWED_TEST_DISC", "98dd732945fb665a8d7fe771650d61c1098015cda4917ac83037059db477008e", "legacy",
                   "70813bd95d1265b40009fb611569e2e1ffcce02bf17a5f73476e8f55ffa3d157"))
         if any(not os.environ.get(variable) for variable, _, _, _ in cases):
             self.skipTest("private released and reviewed standard disc images are absent")
