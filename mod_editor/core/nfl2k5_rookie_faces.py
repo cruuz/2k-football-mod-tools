@@ -139,6 +139,27 @@ candidate's own class loop and CPU draft under Unicorn, 12 classes of 380 and on
      (WRAPUP_STRING_VA).  The show's record is then 55,128 bytes instead of 19,872 on the main game heap while the show
      runs (it frees the frontend's copy of the same record first).
 
+b81 rookie-faces (the owner, 11/25, after simming drafts: "the ugly draft prospect faces are still way too common. Every
+position has a bunch of them every draft. The ugly faces should be very rare."):
+   * measured with the game's own class loop under Unicorn (a new franchise's class, then three league years with every
+     earlier prospect kept, 8 seeds, the released v0.9 executable and roster, and the beta-81 candidate bda1e4a4):
+     homely / ugly / extreme faces were 12.9 % of prospects (9.6 % in the first class, 16 % once 1,140 bank faces were
+     worn, 21 % in the tone-3 heavy row).  The rf3 zone was checked on a row's first draw only, so every redraw of a worn
+     face was uniform and reached the zone as the league filled; the 117 homely / ugly faces with hanging hair sit first
+     in their rows (Dreads rule) and were never in the zone; the East / South rows hold more such faces than 5/16.
+   * now the row word counts a row's ordinary faces; its homely / ugly / extreme tail lies past them up to the next row's
+     first id (T_ROWEND follows the last row; NICK0..BUCKETS moved down one or two bytes for it) and only a rare-face
+     prospect, RAREK = 4 in 256, draws it, or the last third of the row's hanging faces.  Region D draws through pick
+     (region C, after gearsetup); 48 tries, the last 8 an overflow into the first half of the tail (mostly homely:
+     333 homely and 43 ugly-labelled faces, the ugly ones in 11 rows).  Measured the same way:
+     1.4 % (about 3 in a class of 224), 1.2 to 1.6 % in every class as the league fills, every skin tone x build row
+     under 3 % (the East / South rows, region D alone over 4,500 rare-surname prospects: 1.0 to 2.0 %, were 6 to 26 %),
+     no face twice.  The plainest 5/16 of the ordinary faces keep the first-draw redraw, so plain faces stay at 11 %
+     (bank share 14 %).  Nothing is deleted and every portrait id keeps its face; the GEN1 code reads "previous" and
+     xbe_apply upgrades it in place.  Old saves get it for every later class (code).  A model of region D in a fully
+     generated league (2,000 generated players alive) runs the white, tone-3 and tone-4 heavy rows out of ordinary faces:
+     3.0 % homely / ugly there (0.9 % ugly), 1.5 % repeats (GEN1: 17.9 %, 0.1 %); more ordinary heavy faces would fix it.
+
 Saves: the code reads the pool, the roster and the position from the live roster, so an old franchise save gets the
 new faces for every class it generates after the update (its own name pool may lack the nicknames; nothing else
 differs).  Players already in a save keep their portrait ids.  The bodies, the blue-chip draw and the zone are
@@ -198,12 +219,12 @@ RECORD_NAME = "Portrai2.iff"
 CDF_NAME = "portrai2.cdf"
 RETAIL_RECORD_NAME = "Portrait.iff"
 RETAIL_CDF_NAME = "portrait.cdf"
-# Assembled from tools/b77/rh1_rookie_faces.S (GNU as, linked at 0xE67EA; b780 GEN1 version: rarefirst at the end of
-# region C, region D calls it); the listing is in that file.
+# Assembled from tools/b77/rh1_rookie_faces.S (GNU as, linked at 0xE67EA; b81 rookie-faces version: region D draws
+# through pick (end of region C), the rare-face coin and the moved table fields); the listing is in that file.
 CODE_A = bytes.fromhex(
     "e9e900000051e8060000005931d2f7f1c3b9a0fce500e94b23f6ff31ff39cf73083904fb740347ebf4c38b4d008b5504"
-    "85c9740c66394206740983c25449ebf083c901c30fb705a04f4f0039c7722e39cf732a663b3d9d4f4f00730de8b0ffff"
-    "ff8405a24f4f0074140fb70da04f4f00e890ffffff89d78b04fb894610c3500fb6d40fb6c001d00fb654240201d0807c"
+    "85c9740c66394206740983c25449ebf083c901c30fb7059f4f4f0039c7722e39cf732a663b3d9d4f4f00730de8b0ffff"
+    "ff8405a14f4f0074140fb70d9f4f4f00e890ffffff89d78b04fb894610c3500fb6d40fb6c001d00fb654240201d0807c"
     "240304730505800100005a0fb6d50fafc2c1e80a0fb6c901c8c32850460e007a4212166c4510096f43111241440c1d44"
     "440d1d44440d1a5f420d4051450b4d3d490b374a450d3949450d8834490987514a08825d4b097177480a4b4e480b0fb6"
     "7e358d3cbd94680e00e813ffffff50668b0fe877ffffff88462ae802ffffff5ac1e00888d00d000000ff668b4f02e85b"
@@ -215,18 +236,52 @@ CODE_C = bytes.fromhex(
     "01c85a8804164f79c2c6460806e9e8010000e803faffff3c0a19c089442418bfb44c4f00c3e8851df6fff64424180174"
     "0ad9e8dec1d80d84414e00c34e515051528b4d008b5504394210750f39f2740b508b42143b461458f9740683c254e2e7"
     "f85a59c352538b4e2a30e983e1038d1c85000000006a045f8d040b6603059d4f4f008b55548b04c24f740de8afffffff"
+    "73064183e103ebe08946105b5ac3e8aaf9ffff6a048b4610e892ffffff731bff0c2478160fb70d9f4f4f00e84ef9ffff"
+    "89d78b04fb894610ebdb59c383fe64730a83fe5b720583f83c73068bb0901b5200e936641d00e82ff9ffffc1e81e0fb6"
+    "4e358d04888b0d1829b7003b4108732e6bc05403410c8b402033462025007c00003146208b462025007c00003d003c00"
+    "000f93c0c0e00680660c3f08460ce9dffeffff510fb74704662b0784ff780980fb09730501c8d1e891e8c0f8ffff3b14"
+    "24731db00838d873170fb64703d1e86bc80bc1e90529d04839c819c030f8d0e059c3")
+CODE_B = bytes.fromhex(
+    "89068b2d1829b7008b5d548b4d5083c3048b4614e8d3f7ffff897c241431d239cf732289f8c1e8020fb68008504f0089"
+    "f983e10301c9d3e883e0030fbe90744f4f008b4d508954241083eb048b4610e898f7ffffe80dfeffff8b03668b00663b"
+    "05a44f4f00752289f8c1e0050fb70d9f4f4f0031d2f7f183f81f77120fbe90544f4f0001542410eb05834c2414ff0fb6"
+    "463583f810770b0fbe80404f4f00014424108b4424100580000000c1f803790231c083f81f7602b01f0fb6b8784f4f00"
+    "e81df7ffff0fb6c039f819ffe811f7ffffba9c4f4f0031c94131db85ff7408ba984f4f00b104433a02720543424975f7"
+    "0fb6462a31d23c4a7606423c7d720142e964df4000")
+CODE_D = bytes.fromhex(
+    "895c24108b442414662b05a24f4f0083f803731931c93c020f93c18a99514f4f00895c24108d5906e8961dbfff8d3c5b"
+    "01d78d3cbda64f4f00e83b17bfff3c046a305b18ff0fb74f0280e501e8411ebfff722180fb30750c8d0489c1e80429c1"
+    "39ca7310895424140fb70701d0e82017bfff7504fecb75cd668946068b0d34514f00e302ffd18b4e1881e17efcffff8b"
+    "442410c1e00709c10fb64703d1e839442414730141894e185f5e5d5b83c408c20400")
+# b780 GEN1 (SOFTDRINK v0.9 and the beta-81 candidates up to c4406481b): the zone redraw on a row's first draw only, the
+# table fields at their old offsets. These read "previous" (source: git show c4406481b:tools/b77/rh1_rookie_faces.S).
+CODE_A_GEN1 = bytes.fromhex(
+    "e9e900000051e8060000005931d2f7f1c3b9a0fce500e94b23f6ff31ff39cf73083904fb740347ebf4c38b4d008b5504"
+    "85c9740c66394206740983c25449ebf083c901c30fb705a04f4f0039c7722e39cf732a663b3d9d4f4f00730de8b0ffff"
+    "ff8405a24f4f0074140fb70da04f4f00e890ffffff89d78b04fb894610c3500fb6d40fb6c001d00fb654240201d0807c"
+    "240304730505800100005a0fb6d50fafc2c1e80a0fb6c901c8c32850460e007a4212166c4510096f43111241440c1d44"
+    "440d1d44440d1a5f420d4051450b4d3d490b374a450d3949450d8834490987514a08825d4b097177480a4b4e480b0fb6"
+    "7e358d3cbd94680e00e813ffffff50668b0fe877ffffff88462ae802ffffff5ac1e00888d00d000000ff668b4f02e85b"
+    "ffffff88462b6a0759e8d7feffff01d2806622f1085622eb00")
+CODE_C_GEN1 = bytes.fromhex(
+    "e87101000089d9ff178944241cdb44241cd95c241089e9ff178944241cdb44241cd95c241cb9a0fce500e886000000d9"
+    "442410d864241c51dec9d8442420d91c24e879d1ffff88c289f1ff57fc83c71481fff84e4f007cad6a025f0fb6971d6e"
+    "0e00520fbe041383f8647c036a64580fbe4c150083f9647c036a645929c85150e825faffff0fb7c05a0fafc2c1f81059"
+    "01c85a8804164f79c2c6460806e9e8010000e803faffff3c0a19c089442418bfb44c4f00c3e8851df6fff64424180174"
+    "0ad9e8dec1d80d84414e00c34e515051528b4d008b5504394210750f39f2740b508b42143b461458f9740683c254e2e7"
+    "f85a59c352538b4e2a30e983e1038d1c85000000006a045f8d040b6603059d4f4f008b55548b04c24f740de8afffffff"
     "73064183e103ebe08946105b5ac3e8aaf9ffff6a048b4610e892ffffff731bff0c2478160fb70da04f4f00e84ef9ffff"
     "89d78b04fb894610ebdb59c383fe64730a83fe5b720583f83c73068bb0901b5200e936641d00e82ff9ffffc1e81e0fb6"
     "4e358d04888b0d1829b7003b4108732e6bc05403410c8b402033462025007c00003146208b462025007c00003d003c00"
     "000f93c0c0e00680660c3f08460ce9dffeffff")
-CODE_B = bytes.fromhex(
+CODE_B_GEN1 = bytes.fromhex(
     "89068b2d1829b7008b5d548b4d5083c3048b4614e8d3f7ffff897c241431d239cf732289f8c1e8020fb68008504f0089"
     "f983e10301c9d3e883e0030fbe90744f4f008b4d508954241083eb048b4610e898f7ffffe80dfeffff8b03668b00663b"
     "05a54f4f00752289f8c1e0050fb70da04f4f0031d2f7f183f81f77120fbe90544f4f0001542410eb05834c2414ff0fb6"
     "463583f810770b0fbe80404f4f00014424108b4424100580000000c1f803790231c083f81f7602b01f0fb6b8784f4f00"
     "e81df7ffff0fb6c039f819ffe811f7ffffba9c4f4f0031c94131db85ff7408ba984f4f00b104433a02720543424975f7"
     "0fb6462a31d23c4a7606423c7d720142e964df4000")
-CODE_D = bytes.fromhex(
+CODE_D_GEN1 = bytes.fromhex(
     "895c24108b442414662b05a34f4f0083f803731931c93c020f93c18a99514f4f00895c24108d5906e8961dbfff8d3c5b"
     "01d78d3cbda84f4f006a185b0fb74f0280e501e82517bfff80fb18750c8d0489c1e80429c139ca7310895424140fb707"
     "01d0e82b17bfff75034b75d0668946068b0d34514f00e302ffd18b4e1881e17efcffff8b442410c1e00709c10fb64703"
@@ -352,9 +407,12 @@ WRAPUP_RETAIL, WRAPUP_PATCHED = "portrait.iff".encode("utf-16-le"), "portrai2.if
 # table layout (offsets from TABLE_VA)
 T_POS, T_TONES, T_FIRST, T_LASTCODE, T_SIG = 0x00, 0x11, 0x14, 0x34, 0x38
 T_TCB, T_TCO, T_RFIRST0 = 0x58, 0x5C, 0x5D
-T_NICK0, T_NICKMASK, T_RS0 = 0x60, 0x62, 0x63
-T_CANARY = 0x65                # UTF-16 first letter of pool first name 0: an older save's own pool keeps its name term neutral
-T_BUCKETS, T_LASTBITS = 0x68, 0xC8
+T_NICK0, T_NICKMASK, T_RS0 = 0x5F, 0x61, 0x62   # b81 rookie-faces: NICK0..BUCKETS moved down (0x60, 0x62, 0x63, 0x65,
+T_CANARY = 0x64                # 0x68 before) to make room for T_ROWEND
+                               # T_CANARY: UTF-16 first letter of pool first name 0: an older save's own pool keeps its name
+                               # term neutral
+T_BUCKETS, T_LASTBITS = 0x66, 0xC8
+T_ROWEND = T_BUCKETS + 4 * 24  # u16: the id after the last row (a row's rare tail ends at the next row's first id)
 BUCKETS = 18                  # tone 0..5 x build 0..2, bucket = tone * 3 + build
 ROWS = 24                     # + the rare rows: 18 + 3 * group + build (group 0 East Asian, 1 South Asian)
 ROW_COUNT_MAX = 511           # row word = count | hanging << 9
@@ -425,7 +483,21 @@ BODY = {
 }
 BODY_TABLE_VA = 0xE6894       # the 68 table bytes inside region A (label bodytab in the .S)
 OUTLIER_K, OUTLIER_ADD = 4, 384
-ZONE_NUM, ZONE_SHIFT = 5, 4   # region D: a first draw in the row's last (5 * count) >> 4 faces is drawn again
+ZONE_NUM, ZONE_SHIFT = 5, 4   # region D: a first draw in the last (5 * ordinary) >> 4 ordinary faces is drawn again
+# b81 rookie-faces (the owner, 11/25: "the ugly draft prospect faces are still way too common ... The ugly faces should
+# be very rare"): each row's homely / ugly / extreme tail (RARE_LOOKS, last in the review's order) is drawn only by a rare-face
+# prospect, RAREK in 256, decided by one random byte per prospect; the row word counts the ordinary faces before the
+# tail.  The last (HANGING_RARE_NUM * hanging) >> 5 hanging-hair faces (where the row's homely and ugly hanging faces sit,
+# the native Dreads rule keeps hanging faces first) go the same way while more than LASTTRIES tries are left.  Of the
+# TRIES draws (a face a player already wears is drawn again), the last LASTTRIES take any face they draw, an ordinary
+# prospect's from his ordinary faces and the first half of the rare tail (the review's order puts homely first, so
+# mostly homely: 333 homely and 43 ugly-labelled faces, the ugly ones in 11 of the 24 rows): only a row whose ordinary
+# faces are all worn (a fully generated league: white, tone-3 and tone-4 heavy rows) then gives one of those instead of
+# a face a player already wears.
+RAREK = 4
+TRIES, LASTTRIES = 48, 8                     # immediates in region D / pick (were 24 tries)
+HANGING_RARE_NUM = 11
+RARE_LOOKS = ("homely", "ugly", "extreme")
 
 
 def body_table() -> bytes:
@@ -433,8 +505,26 @@ def body_table() -> bytes:
 
 
 def zone_start(count: int) -> int:
-    """First row index of the down-weighted zone (the review's plainest / ugliest faces sit there)."""
+    """First index of the plainest (5 * count) >> 4 of ``count`` ordinary faces (a first draw there is drawn again)."""
     return count - ((ZONE_NUM * count) >> ZONE_SHIFT)
+
+
+def rare_tail(bank: Mapping[str, Any], b: int) -> int:
+    """b81 rookie-faces: row b's rare tail, the run of RARE_LOOKS faces at its end (after its hanging faces); a row
+    given without faces (a test layout) may name it as ``rare``."""
+    row = bank["buckets"][b]
+    if "rare" in row or not bank.get("faces"):
+        return int(row.get("rare", 0))
+    looks = {f["id"]: f.get("look") for f in bank["faces"] if f.get("id") is not None}
+    tail = 0
+    while tail < row["count"] - row["hanging"] and looks[row["start"] + row["count"] - 1 - tail] in RARE_LOOKS:
+        tail += 1
+    return tail
+
+
+def hanging_rare(hanging: int) -> int:
+    """b81 rookie-faces: how many of a row's last hanging-hair faces only a rare-face prospect draws."""
+    return (HANGING_RARE_NUM * hanging) >> 5
 
 
 class RookieFacesError(ValueError):
@@ -655,12 +745,25 @@ def tables(firsts: Sequence[str], lasts: Sequence[str], bank: Mapping[str, Any],
     struct.pack_into("<H", out, T_RS0, rs0)
     struct.pack_into("<H", out, T_RFIRST0, rfirst0)
     out[T_TONES:T_TONES + 2] = bytes(RARE_TONES)
+    _write_rows(out, bank)
+    struct.pack_into("<H", out, T_CANARY, ord(firsts[0][0]))
+    return bytes(out)
+
+
+def _write_rows(out: bytearray, bank: Mapping[str, Any]) -> None:
+    """The 24 row words and the row end (b81 rookie-faces: a word counts the row's ordinary faces; its rare tail runs to
+    the next row's first id)."""
     require(len(bank["buckets"]) == ROWS, f"the bank needs {ROWS} rows")
     for b, row in enumerate(bank["buckets"]):
         require(row["count"] <= ROW_COUNT_MAX and row["hanging"] <= ROW_HANGING_MAX, f"row {b} is too large")
-        struct.pack_into("<HH", out, T_BUCKETS + 4 * b, row["start"], row["count"] | row["hanging"] << 9)
-    struct.pack_into("<H", out, T_CANARY, ord(firsts[0][0]))
-    return bytes(out)
+        ordinary = row["count"] - rare_tail(bank, b)
+        require(row["hanging"] <= ordinary, f"row {b}: the rare tail reaches into the hanging faces")
+        require(ordinary >= 1, f"row {b} needs an ordinary face")
+        if b + 1 < ROWS:
+            require(bank["buckets"][b + 1]["start"] == row["start"] + row["count"], f"row {b + 1} must follow row {b}")
+        struct.pack_into("<HH", out, T_BUCKETS + 4 * b, row["start"], ordinary | row["hanging"] << 9)
+    last = bank["buckets"][-1]
+    struct.pack_into("<H", out, T_ROWEND, last["start"] + last["count"])
 
 
 # ------------------------------------------------------------------------------------------------ XBE
@@ -715,30 +818,57 @@ def _retail_spans(payload: bytes) -> dict[int, bytes]:
             for va, data in _spans(bytes(TABLE_DATA))}
 
 
+def _gen1_spans() -> dict[int, bytes]:
+    """The b780 GEN1 revision's spans (released v0.9, beta-81 candidates up to c4406481b), the table block's code part
+    without the table bytes and HAIRPTR."""
+    pad = lambda code, size: code + b"\xcc" * (size - len(code))  # noqa: E731
+    spans = dict(_spans(bytes(TABLE_DATA)))
+    spans.update({REGION_A: pad(CODE_A_GEN1, REGION_A_END - REGION_A), REGION_B: pad(CODE_B_GEN1, REGION_B_END - REGION_B),
+                  REGION_C: pad(CODE_C_GEN1, REGION_C_END - REGION_C),
+                  TABLE_VA: bytes(TABLE_DATA) + pad(CODE_D_GEN1, TABLE_END - TABLE_VA - TABLE_DATA - 4) + bytes(4)})
+    return spans
+
+
 def xbe_status(payload: bytes) -> str:
     """retail | applied | previous | foreign (an applied image may carry any table bytes; code and string must match;
-    previous = the beta-79 / v0.8 region D (CODE_D_B779) or the first v0.9 release candidate's (CODE_D_B780RC), both
-    with the b779-rf3 region C (CODE_C_RF3), the retail college bands, draft numbers and Franchise Show record name)."""
+    previous = the b780 GEN1 revision (SOFTDRINK v0.9 and the beta-81 candidates before b81 rookie-faces, CODE_*_GEN1),
+    the beta-79 / v0.8 region D (CODE_D_B779) or the first v0.9 release candidate's (CODE_D_B780RC), the last two with
+    the b779-rf3 region C (CODE_C_RF3), the retail college bands, draft numbers and Franchise Show record name)."""
+    state = xbe_revision(payload)
+    return "previous" if state in PREVIOUS_REVISIONS else state
+
+
+PREVIOUS_REVISIONS = ("gen1", "b779")   # b780 GEN1 (v0.9, beta-81 candidates); beta-79 / v0.8 and the v0.9 RC
+
+
+def xbe_revision(payload: bytes) -> str:
+    """b81 rookie-faces: retail | applied | gen1 | b779 | foreign.  gen1 = the b780 GEN1 revision (released v0.9 and the
+    beta-81 candidates up to c4406481b): every span this release writes, with the older region D draw and table layout;
+    its region D calls HAIRPTR like this release's, so the rookie hair helper and MyCareer's draft-number companion accept
+    it.  b779 = beta-79 / v0.8 and the first v0.9 RC: retail college bands, draft numbers and Franchise Show name, and
+    0xCC padding where HAIRPTR sits (no hair helper)."""
     try:
         current = _retail_spans(payload)
     except (RookieFacesError, struct.error):
         return "foreign"
     if all(sha(current[va]) == RETAIL_SPAN_SHA256[va] for va in current):
         return "retail"
-    spans = dict(_spans(bytes(TABLE_DATA)))
     d = current[TABLE_VA]
-    if all(current[va] == data for va, data in spans.items() if va != TABLE_VA) and \
-            d[TABLE_DATA:-4] == spans[TABLE_VA][TABLE_DATA:-4]:
-        return "applied" if _hair_ok(payload, struct.unpack_from("<I", d, len(d) - 4)[0]) else "foreign"
+    hair_ok = lambda: _hair_ok(payload, struct.unpack_from("<I", d, len(d) - 4)[0])  # noqa: E731
+    for state, spans in (("applied", dict(_spans(bytes(TABLE_DATA)))), ("gen1", _gen1_spans())):
+        if all(current[va] == data for va, data in spans.items() if va != TABLE_VA) and \
+                d[TABLE_DATA:-4] == spans[TABLE_VA][TABLE_DATA:-4]:
+            return state if hair_ok() else "foreign"
+    gen1 = _gen1_spans()
     pad = lambda code, size: code + b"\xcc" * (size - len(code))  # noqa: E731
     tail = TABLE_END - TABLE_VA - TABLE_DATA
-    previous = {REGION_A: spans[REGION_A], STRING_VA: spans[STRING_VA],
+    previous = {REGION_A: gen1[REGION_A], STRING_VA: gen1[STRING_VA],
                 REGION_B: pad(CODE_B_RF3, REGION_B_END - REGION_B), REGION_C: pad(CODE_C_RF3, REGION_C_END - REGION_C),
                 COLLEGE_VA: COLLEGE_RETAIL, NUMBER_VA: NUMBER_RETAIL, WRAPUP_STRING_VA: WRAPUP_RETAIL,
                 JERSEY_HOOK_VA: JERSEY_RETAIL}
     if (all(current[va] == data for va, data in previous.items())
             and d[TABLE_DATA:] in (pad(CODE_D_B779, tail), pad(CODE_D_B780RC, tail))):
-        return "previous"   # beta-79 / v0.8 (rare first name from the college's low bits) or the v0.9 RC (GEN1)
+        return "b779"   # beta-79 / v0.8 (rare first name from the college's low bits) or the v0.9 RC
     return "foreign"
 
 
@@ -780,9 +910,12 @@ def hair_status(payload: bytes) -> str:
 
 def apply_hair(payload: bytes) -> tuple[bytes, dict[str, Any]]:
     """b780 GEN1 Q81: reserve the rookie hair owner (a late allocator owner appended to the sealed scale-out image),
-    install the helper and table, and point HAIRPTR at it. Needs rookie faces applied; idempotent."""
+    install the helper and table, and point HAIRPTR at it. Needs rookie faces applied; idempotent.  b81 rookie-faces: a
+    GEN1 host (released v0.9, beta-81 candidates; its region D calls HAIRPTR the same way) is accepted as it was before
+    GEN1 read "previous"; the beta-79 / RC states have padding at HAIRPTR and are not."""
     from . import nfl2k5_xbe_space as space  # noqa: PLC0415
-    require(xbe_status(payload) == "applied", "rookie faces must be applied before the rookie hair helper")
+    host = xbe_revision(payload)
+    require(host in ("applied", "gen1"), "rookie faces must be applied before the rookie hair helper")
     if hair_status(payload) == "applied":
         return payload, {"state": "applied", "already_applied": True, "changed_bytes": 0}
     require(hair_status(payload) == "off", "HAIRPTR holds a foreign value")
@@ -801,9 +934,43 @@ def apply_hair(payload: bytes) -> tuple[bytes, dict[str, Any]]:
         if raw <= off < raw + rsize:
             buf[h + 36:h + 56] = hashlib.sha1(struct.pack("<I", rsize) + bytes(buf[raw:raw + rsize])).digest()  # nosec B324
     out = bytes(buf)
-    require(xbe_status(out) == "applied" and hair_status(out) == "applied", "rookie hair read-back failed")
+    require(xbe_revision(out) == host and hair_status(out) == "applied", "rookie hair read-back failed")
     return out, {"state": "applied", "owner": HAIR_OWNER, "va": hex(va), "bytes": HAIR_SIZE,
                  "faces_with_a_style": len(load_hair()), "changed_bytes": space.count_differing_bytes(before, out)}
+
+
+# The b780 GEN1 table layout (c4406481b): NICK0..CANARY one byte higher, BUCKETS at 0x68 with full row counts, no row end.
+GEN1_T_NICK0, GEN1_T_BUCKETS = 0x60, 0x68
+
+
+def upgrade_xbe(payload: bytes, bank: Mapping[str, Any] | None = None) -> tuple[bytes, dict[str, Any] | None]:
+    """b81 rookie-faces: the in-place routes (v0.9 update, sim-QB and gadget edits) carry this revision, as a full build
+    does.  A GEN1 executable is upgraded in place: its own name tables (from the disc's own pool) move to this layout,
+    the rows are rebuilt from the bank (they must be the bank's rows, so the disc's portrait record holds every face),
+    and xbe_apply writes this release's code, keeping the rookie hair pointer.  Any other state is returned unchanged
+    (receipt None): a single-setting route never adds rookie faces, and beta-79 / RC executables are not taken."""
+    if xbe_revision(payload) != "gen1":
+        return payload, None
+    bank = bank or load_bank()
+    old = xbe_tables(payload)
+    rows = [struct.unpack_from("<HH", old, GEN1_T_BUCKETS + 4 * b) for b in range(ROWS)]
+    if rows != [(r["start"], r["count"] | r["hanging"] << 9) for r in bank["buckets"]]:
+        return payload, None
+    table = table_from_gen1(old, bank)
+    out, receipt = xbe_apply(payload, table)
+    return out, {**receipt, "upgraded_from": "previous", "table_sha256": sha(table)}
+
+
+def table_from_gen1(old: bytes, bank: Mapping[str, Any]) -> bytes:
+    """A GEN1 table block in this release's layout: the same name tables, NICK0..CANARY moved down one byte, the rows
+    from the bank (ordinary counts and the row end).  Equals tables() for the pool the GEN1 build used."""
+    require(len(old) == TABLE_DATA, "the table block has the wrong size")
+    out = bytearray(TABLE_DATA)
+    out[:GEN1_T_NICK0] = old[:GEN1_T_NICK0]
+    out[T_NICK0:T_BUCKETS] = old[GEN1_T_NICK0:GEN1_T_NICK0 + T_BUCKETS - T_NICK0]
+    out[T_LASTBITS:] = old[T_LASTBITS:]
+    _write_rows(out, bank)
+    return bytes(out)
 
 
 def xbe_tables(payload: bytes) -> bytes:
@@ -812,13 +979,20 @@ def xbe_tables(payload: bytes) -> bytes:
 
 
 def xbe_apply(payload: bytes, table: bytes) -> tuple[bytes, dict[str, Any]]:
+    """Write the generator code and ``table``.  b81 rookie-faces: an applied or previous executable (the b780 GEN1
+    revision, the beta-79 / v0.8 or v0.9 RC ones) is upgraded in place; an installed rookie hair helper stays installed
+    (its pointer is kept when it checks out, see _hair_ok)."""
     require(len(table) == TABLE_DATA, "the table block has the wrong size")
     state = xbe_status(payload)
-    require(state in ("retail", "applied"), f"the executable's generator bytes are {state}, not retail")
+    require(state in ("retail", "applied", "previous"), f"the executable's generator bytes are {state}, not retail")
+    hair_ptr = 0
+    if state != "retail":
+        pointer = struct.unpack_from("<I", payload, _offset(payload, HAIRPTR_VA, 4))[0]
+        hair_ptr = pointer if pointer and _hair_ok(payload, pointer) else 0
     buf = bytearray(payload)
     touched = set()
     changed = 0
-    for va, data in _spans(table):
+    for va, data in _spans(table, hair_ptr):
         off = _offset(payload, va, len(data))
         changed += sum(1 for x, y in zip(buf[off:off + len(data)], data) if x != y)
         buf[off:off + len(data)] = data
@@ -830,7 +1004,8 @@ def xbe_apply(payload: bytes, table: bytes) -> tuple[bytes, dict[str, Any]]:
         buf[h + 36:h + 56] = digest
     out = bytes(buf)
     require(xbe_status(out) == "applied" and xbe_tables(out) == table, "rookie faces executable read-back failed")
-    return out, {"state": "applied", "changed_bytes": changed, "sections_repinned": len(touched),
+    return out, {"state": "applied", "from": state, "changed_bytes": changed, "sections_repinned": len(touched),
+                 "hair_pointer": hex(hair_ptr),
                  "edits": [{"va": hex(va), "bytes": len(d), "label": label}
                            for (va, d), label in zip(_spans(table), SPAN_LABELS)]}
 

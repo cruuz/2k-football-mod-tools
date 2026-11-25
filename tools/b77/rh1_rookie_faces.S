@@ -8,7 +8,13 @@
 # The generic head-shape draw moved here from region D, which now down-weights each row's last 5/16 (the review's
 # plainest/ugliest faces): a first draw that lands there is redrawn once.
 # b780 GEN1: a rare surname's first name comes from rarefirst (end of region C, called from region D), which skips a
-# full name a player on the roster already carries. The college bands and the draft number flag are retail code
+# full name a player on the roster already carries.
+# b81 rookie-faces (the owner, 11/25: "the ugly draft prospect faces are still way too common ... The ugly faces should
+# be very rare"): a row's word now counts only its ordinary faces; its homely / ugly / extreme tail (the review's order puts them
+# last) lies past them, up to the next row's first id (a sentinel word follows the last row), and only a rare-face
+# prospect (RAREK in 256, one byte per prospect) draws there. The last third of a row's hanging-hair faces (where its
+# homely and ugly ones sit) is left to the rare-face prospects too, for the first TRIES - LASTTRIES draws. Region C's pick
+# does both; NICK0..BUCKETS moved down to make room for the sentinel. The college bands and the draft number flag are retail code
 # immediates the Python module writes (COLLEGE_BANDS, NUMBER_VA); they are not assembled here.
 # Linked at 0xE67EA: as --32; ld -m elf_i386 -Ttext=0xE67EA; objcopy -O binary.
 .intel_syntax noprefix
@@ -24,17 +30,23 @@
 .set TCB, D+0x58
 .set TCO, D+0x5C
 .set RFIRST0, D+0x5D      # u16: pool index of the rare first names (4 per rare surname; = count when none)
-.set NICK0, D+0x60
-.set NICKMASK, D+0x62
-.set RS0, D+0x63          # u16: pool index of the 3 rare surnames (2 East, then 1 South); 0x8000 = off
-.set CANARY, D+0x65
-.set BUCKETS, D+0x68      # 24 rows: tone 0..5 x build, then East x build, South x build: u16 start, u16 count | hanging << 9
+.set NICK0, D+0x5F       # b81 rookie-faces: NICK0..BUCKETS moved down (were 0x60, 0x62, 0x63, 0x65, 0x68)
+.set NICKMASK, D+0x61
+.set RS0, D+0x62          # u16: pool index of the 3 rare surnames (2 East, then 1 South); 0x8000 = off
+.set CANARY, D+0x64
+.set BUCKETS, D+0x66      # 24 rows: tone 0..5 x build, then East x build, South x build: u16 start, u16 ordinary count |
+                          # hanging << 9; then u16 = the id after the last row (each row's rare tail ends at the next start)
 .set LASTBITS, D+0xC8
 .set TABLE_END, D+0x142
 .set TONES, D+0x11        # tone of the East (0x11) / South (0x12) rows
 .set LEANMAX, 74          # weight - 150 <= 74: lean (< 225 lb)
 .set HEAVYMIN, 125        # weight - 150 >= 125: heavy (>= 275 lb)
-.set TRIES, 24
+.set TRIES, 48            # b81 rookie-faces: 48 (was 24)
+.set RAREK, 4             # b81 rookie-faces: rare-face prospects, 4 in 256 (1.6 %)
+.set LASTTRIES, 8         # the last 8 tries take any face they draw, an ordinary prospect's from his ordinary faces and
+                          # the first half of the rare tail (homely first, so mostly homely; it reaches some faces
+                          # labelled ugly in 11 rows): a row whose ordinary faces are all worn (a fully generated league)
+                          # gives one of those before a face a player already wears
 .set OUTK, 4            # heavy outlier: 4 in 256 prospects (1.6 %)
 .set OUTADD, 384
 .set BLUEK, 10           # blue-chip prospects: 10 in 256 (3.9 %)
@@ -329,6 +341,35 @@ gearsetup:                          # b780 GEN1 Q82: the face mask from any of t
     and byte ptr [esi+0x0C], 0x3F
     or [esi+0x0C], al
 70: jmp qsetup
+pick:                               # b81 rookie-faces, region D's draw: ecx = the row's ordinary faces, bh = 0xFF for a
+    push ecx                        # rare-face prospect, bl = tries left, edi = the row -> edx = index in the row,
+    movzx eax, word ptr [edi+4]     # CF = 1: draw again. Keeps ecx, ebx, esi, edi, ebp.
+    sub ax, [edi]                   # the whole row, rare tail included (up to the next row's first id)
+    test bh, bh
+    js 88f                          # a rare-face prospect draws from the whole row
+    cmp bl, LASTTRIES + 1
+    jnc 90f                         # an ordinary prospect from his ordinary faces, and in the last tries also from the
+    add eax, ecx                    # first half of the rare tail (homely first)
+    shr eax, 1
+88: xchg eax, ecx
+90: call rndmod
+    cmp edx, [esp]
+    jae 92f                         # in the rare tail: keep (CF = 0)
+    mov al, LASTTRIES
+    cmp al, bl
+    jae 92f                         # the last tries keep any face
+    movzx eax, byte ptr [edi+3]
+    shr eax, 1                      # hanging-hair faces (first in the row, plainest last)
+    imul ecx, eax, 11
+    shr ecx, 5                      # their last (11 * hanging) >> 5 hold the homely and ugly ones
+    sub eax, edx
+    dec eax
+    cmp eax, ecx                    # CF = 1: in that last third
+    sbb eax, eax
+    xor al, bh
+    shl al, 1                       # CF = 1: an ordinary prospect in that third, or a rare-face prospect outside it
+92: pop ecx
+    ret
 regionC_end:
     .fill 0xE6F56 - 0xE6D51 - (regionC_end - regionC), 1, 0xCC
 29:
@@ -477,12 +518,16 @@ regionD:                            # ebx = tone, edx = build
 20: lea edi, [ebx+ebx*2]
     add edi, edx
     lea edi, [BUCKETS+edi*4]
+    call rnd                        # b81 rookie-faces: one byte per prospect, RAREK in 256 may get a rare face (bh = 0xFF)
+    cmp al, RAREK
     push TRIES
     pop ebx
+    sbb bh, bh
 22: movzx ecx, word ptr [edi+2]
-    and ch, 1                       # count (9 bits)
-    call rndmod                     # edx = index, ecx = count
-    cmp bl, TRIES                   # first draw in the row's last 5/16 (the plainest faces): draw again
+    and ch, 1                       # the row's ordinary faces (9 bits)
+    call pick                       # edx = index, ecx = ordinary faces; CF = 1: draw again
+    jc 26f
+    cmp bl, TRIES                   # first draw in the last 5/16 of the ordinary faces (the plainest): draw again
     jne 25f
     lea eax, [ecx+ecx*4]
     shr eax, 4
@@ -494,7 +539,7 @@ regionD:                            # ebx = tone, edx = build
     add eax, edx
     call inuse
     jnz 23f
-26: dec ebx
+26: dec bl
     jnz 22b
 23: mov [esi+6], ax
     mov ecx, [HAIRPTR]              # b780 GEN1 Q81: his hair style from the face (+0x0D) when the rookie hair helper

@@ -165,8 +165,9 @@ class InPlaceRoutes(unittest.TestCase):
                 from mod_editor.core import nfl2k5_sim_realism as realism
                 upgraded = pressure.apply(realism.apply(source)[0])[0] if mode == "realistic" else source
                 expected = aim.apply(qb.apply(upgraded, mode)[0])[0]
-                # b81 history-pool: the copy also carries this release's career history pool (the disc has v0.9's)
-                expected = mod_build._history_pool_upgrade(expected)[0]
+                # b81 history-pool: the copy also carries this release's career history pool (the disc has v0.9's),
+                # b81 rookie-faces: after rookie faces' current revision (the disc has GEN1)
+                expected = mod_build._history_pool_upgrade(mod_build._rookie_faces_upgrade(expected)[0])[0]
                 with self.subTest(mode=mode):
                     self.assertEqual(result, hashlib.sha256(expected).hexdigest())
                     self.assertEqual(XbeImage(expected).read(aim.SITE_VA, aim.SITE_SIZE), aim.site_bytes())

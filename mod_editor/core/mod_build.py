@@ -3063,6 +3063,10 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     patched, aim_receipt = _cpu_kick_aim_with_kicking(patched)
     if aim_receipt is not None:
         patch = {**patch, "cpu_kick_aim": aim_receipt}
+    # b81 rookie-faces: the copy carries rookie faces' current revision (rare homely and ugly prospect faces).
+    patched, faces_upgrade = _rookie_faces_upgrade(patched)
+    if faces_upgrade is not None:
+        patch = {**patch, "rookie_faces": {k: v for k, v in faces_upgrade.items() if k != "edits"}}
     # b81 history-pool: the copy carries the career history pool's current revision, as a full build does.
     patched, history_upgrade = _history_pool_upgrade(patched)
     if history_upgrade is not None:
@@ -3096,6 +3100,7 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
         "source_sha256": sha256(original).hexdigest(), "result_sha256": sha256(patched).hexdigest(),
         "source_simulator": simulator_state, "simulator_upgraded": dependency is not None, "settings": settings,
         "pass_protection_upgraded": pressure is not None,
+        "rookie_faces_upgraded": faces_upgrade is not None,
         "history_pool_upgraded": history_upgrade is not None,
         "stability_reference": stability,
     }
@@ -3262,11 +3267,13 @@ def _edit_installed_gadget(plan, source, target, original, receipt, progress, *,
         patched, patch = gadget.apply(original, books)
     else:
         patched, patch = gadget.remove(original)
+    patched, faces_upgrade = _rookie_faces_upgrade(patched)  # b81 rookie-faces: as a full build
     patched, history_upgrade = _history_pool_upgrade(patched)  # b81 history-pool: as a full build
     receipt["installed_gadget_only"] = True
     receipt["gadget_source_update"] = {"source_sha256": sha256(original).hexdigest(),
                                        "result_sha256": sha256(patched).hexdigest(),
                                        "source_state": gadget.status(original, books),
+                                       "rookie_faces_upgraded": faces_upgrade is not None,
                                        "history_pool_upgraded": history_upgrade is not None}
     if preflight:
         return True
@@ -3282,6 +3289,9 @@ def _edit_installed_gadget(plan, source, target, original, receipt, progress, *,
         raise RuntimeError("Gadget player on gadget plays: the output does not read back as written")
     receipt["steps"].append({"step": "gadget_play", **{k: v for k, v in patch.items() if k != "books"}})
     receipt["result"]["gadget_play"] = "applied" if plan.gadget_play else "retail"
+    if faces_upgrade is not None:
+        receipt["steps"].append({"step": "rookie_faces", **{k: v for k, v in faces_upgrade.items() if k != "edits"}})
+        receipt["result"]["rookie_faces"] = "applied"
     if history_upgrade is not None:
         receipt["steps"].append({"step": "history_pool", **{k: v for k, v in history_upgrade.items() if k != "edits"}})
         receipt["result"]["history_pool"] = "applied"
@@ -3670,6 +3680,32 @@ def _history_pool_upgrade(payload):
     return module.apply(payload, club=True) if club else module.apply(payload)
 
 
+def _rookie_faces_upgrade(payload):
+    """b81 rookie-faces (the owner, 11/25: "The ugly faces should be very rare"): an in-place copy of a built disc
+    (update-v09, edit-sim-qb, edit-gadget) carries rookie faces' current revision, as a full build does. The released
+    v0.9 revision (b780 GEN1, "previous") is upgraded in place by nfl2k5_rookie_faces.upgrade_xbe (the code and table a
+    full build writes, from the disc's own name tables and the bank; the rookie hair pointer is kept); any other state
+    is returned unchanged: a single-setting route never adds rookie faces. Returns (payload, receipt or None)."""
+    module = _core_module("nfl2k5_rookie_faces")
+    if module is None:
+        return payload, None
+    return module.upgrade_xbe(payload)
+
+
+def _apply_rookie_faces_in_place(target, receipt, progress):
+    """The v0.9 update's write of _rookie_faces_upgrade, after the route's own writers and before the history pool."""
+    patched, upgrade = _rookie_faces_upgrade(_xbe_bytes(target))
+    if upgrade is None:
+        return
+    progress("Draft classes: rookie faces update (homely and ugly prospect faces made rare)", 0, 0)
+    _write_xbe_bytes(target, patched)
+    if _xbe_bytes(target) != patched or _core_module("nfl2k5_rookie_faces").xbe_status(patched) != "applied":
+        raise RuntimeError("The rookie faces update did not read back as applied.")
+    receipt["steps"].append({"step": "rookie_faces", **{k: v for k, v in upgrade.items() if k != "edits"},
+                             "edits": upgrade.get("edits", [])})
+    receipt["result"]["rookie_faces"] = "applied"
+
+
 def _apply_history_pool_in_place(target, receipt, progress):
     """The in-place routes' write of _history_pool_upgrade, after the route's own writers."""
     patched, upgrade = _history_pool_upgrade(_xbe_bytes(target))
@@ -3836,6 +3872,9 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     if plan.gadget_play:
         # After every other v0.9 update, as in a standard Build; the books are the released disc's own.
         expected, _ = gadget.apply(expected, _gadget_resources(source))
+    expected, faces_upgrade = _rookie_faces_upgrade(expected)  # b81 rookie-faces: every v0.9 update, as a full build
+    if faces_upgrade is not None:
+        receipt["v09_update"].append("rookie_faces")
     expected, history_upgrade = _history_pool_upgrade(expected)  # b81 history-pool: every v0.9 update, as a full build
     if history_upgrade is not None:
         receipt["v09_update"].append("history_pool")
@@ -3862,6 +3901,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     _apply_cpu_decisions_in_place(target, receipt, progress)  # beta 81 fake kicks (the expected chain's order)
     if plan.gadget_play:
         _apply_gadget_play(plan, target, receipt, progress)
+    _apply_rookie_faces_in_place(target, receipt, progress)  # b81 rookie-faces (before the history pool, as above)
     _apply_history_pool_in_place(target, receipt, progress)  # b81 history-pool
     _compact_build_disc(target, source, receipt, progress)
     _step("final_checks")

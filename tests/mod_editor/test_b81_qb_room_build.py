@@ -561,8 +561,9 @@ class FloorRuleTests(unittest.TestCase):
         # b81 fb-targets: and the disc's season realism from before the fullback target rule, beneath the QB option
         from mod_editor.core import nfl2k5_sim_realism as realism
         aimed, _ = aim.apply(qb.apply(pressure.apply(realism.apply(source)[0])[0], "realistic")[0])
-        # b81 history-pool: and this release's career history pool (the disc carries the v0.9 revision)
-        aimed = mod_build._history_pool_upgrade(aimed)[0]
+        # b81 history-pool: and this release's career history pool (the disc carries the v0.9 revision), after
+        # b81 rookie-faces: rookie faces' current revision (a GEN1 disc is upgraded in place; others are unchanged)
+        aimed = mod_build._history_pool_upgrade(mod_build._rookie_faces_upgrade(aimed)[0])[0]
         # b81 integration (practice squad merge): and upgrades the disc's revision 7 economy before the floor
         from mod_editor.core import nfl2k5_franchise_economy as economy
         prepared = ir.apply(economy.apply(aimed)[0], "modern", standard_guard=True)[0]
@@ -648,6 +649,7 @@ class InPlacePreflightTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_sim_realism as realism   # b81 fb-targets: the pre-rule season realism first
         slice1, _ = qb.apply(pressure.apply(realism.apply(source)[0])[0], "realistic")
         slice1, _ = aim.apply(slice1)  # b81 integration (scoring merged): the edit writes the CPU kick aim too
+        slice1 = mod_build._rookie_faces_upgrade(slice1)[0]   # b81 rookie-faces: the GEN1 disc's rookie faces upgraded
         slice1 = mod_build._history_pool_upgrade(slice1)[0]   # b81 history-pool: and this release's history pool
         # The helmet disc has the economy and the practice squad; the edit adds modern IR for the floor and (practice
         # squad merge) upgrades the disc's revision 7 economy to the current one first.
