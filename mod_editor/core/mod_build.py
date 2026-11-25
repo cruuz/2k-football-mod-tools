@@ -50,6 +50,7 @@ OPTIONAL_STEPS = frozenset({
     "menu_helmet_w2026", "menu_chiefs_2026", "pants_hem_2026", "kit_fixes_2026_ku1", "kit_fixes_2026_sw1",
     "kit_fixes_2026_names", "sideline_2026", "moment_kits", "nameplate_fixes_2026", "team_sleeves",
     "kit_fixes_2026_b81", "kit_fixes_2026_b81u", "glyph_fixes_2026_b81u", "sideline_2026_b81u", "relief_2026_b81u",
+    "relief_2026_classic",
     # stadiums, fields and their colour
     "modern_color_bundles", "modern_arrowhead", "modern_metlife", "modern_venues_2026", "modern_metlife_model",
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant", "modern_mercedes_benz",
@@ -9185,6 +9186,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 if relief_receipt["state"] == "applied":
                     receipt["steps"].append({"step": "relief_2026_b81u",
                                              **{k: v for k, v in relief_receipt.items() if k != "kits"}})
+            # b81-seamen (the owner 11/25: "seamen have a dolphins bump texture in their jersey, have them use a cleaner one"):
+            # the classic Seamen kits (composed above from the Dolphins kits before any relief) take the 2026 relief with
+            # no marks: plain fabric with this season's seams. Pinned spans only; a user's own relief art stays.
+            if plan.classic_teams and plan.historic_teams_quick_game:
+                with _optional(receipt, target, progress, "relief_2026_classic"):
+                    classic_relief = relief.apply_relief_classic(target, lambda: require_step_source(
+                        source if _retail_source is None else _retail_source, "classic Seamen jersey relief"),
+                        progress=progress)
+                    if classic_relief["state"] == "applied":
+                        receipt["steps"].append({"step": "relief_2026_classic", **classic_relief})
     if loaded_weather_plan is not None:
         _step("weather_plan")
         weather = _core_module("nfl2k5_weather")

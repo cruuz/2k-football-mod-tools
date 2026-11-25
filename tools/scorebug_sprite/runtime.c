@@ -67,18 +67,24 @@ static u32 monday_night(void) {
 }
 /* vb3 (2026-09-23): a historic team (category 4: the 25th Anniversary moments' teams and Quick Game's historic
  * teams) keeps its franchise's art code at +0x10C ("10" for Packers '66), so it takes that franchise's panel.
- * Only created teams (category 2) keep the neutral panel. */
+ * Only created teams (category 2) keep the neutral panel.
+ * b81-seamen (the owner 11/25: "the scorebug shows miami dolphins, not the seamen logo"): the classic Seamen ride the
+ * Dolphins' art code 14, so their panel is named by their identity (+0x118, 230, nfl2k5_classic_teams.own_name_identity;
+ * every team identity is below 256, so its low byte decides): "sbSEh0", the anchor. The name's two middle characters
+ * are one word (the art code's two characters, "SE", or the neutral "--"); a panel the collection lacks falls back to
+ * the neutral one, so the Seamen never take the Dolphins'. Same names and lookups as before for every other team. */
 static u32 logo(u32 context) {
  u16 name[8];
- V(name)=0x00620073;V(name+2)=0x002d002d;V(name+4)=0x00300068;V(name+6)=0;
- u32 p=V(context+0x10c),kind=V(context+0x128);
- if(p && kind!=2) {
+ u32 mid=0x002d002d,p=V(context+0x10c),kind=V(context+0x128);
+ if(*(u8*)(context+0x118)==230)mid=0x00450053;
+ else if(p && kind!=2) {
   u16 *s=(u16*)p;u32 tens=s[0]-'0',ones=s[1]-'0',code=tens*10+ones;
-  if(tens<=3 && ones<=9 && !s[2] && (code<=30 || code==37)){name[2]=s[0];name[3]=s[1];}
+  if(tens<=3 && ones<=9 && !s[2] && (code<=30 || code==37))mid=V(p);
  }
+ V(name)=0x00620073;V(name+2)=mid;V(name+4)=0x00300068;V(name+6)=0;
  Lookup find=(Lookup)0x449e0;
- u32 found=find(0xe614b8,0x52545854,name);
- if(!found && name[2]!='-') {name[2]=name[3]='-';found=find(0xe614b8,0x52545854,name);}
+ u32 found;
+ while(!(found=find(0xe614b8,0x52545854,name)) && V(name+2)!=0x002d002d)V(name+2)=0x002d002d;
  return found;
 }
 

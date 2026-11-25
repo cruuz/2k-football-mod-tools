@@ -1288,7 +1288,7 @@ def paint_scene(decoded, rec, prefix, code, plan, base, *, cap=256):
             dry = resample(dry, width, height) if dry.shape[:2] != (height, width) else dry
             target = _target_row(prefix, item["key"]) if scene == "stadium" else None
             layered = compose(item, dry, current, _art_at(item, width, height), code[1],
-                              cls=(target or {}).get("class"), canvas=canvas,
+                              cls=(target or {}).get("class", item.get("class")), canvas=canvas,   # b81-seamen: s48 walls
                               neighbours=tuple(a for key, a in endzones.items()
                                                if key != item["key"] and key.rsplit("_", 1)[0] == item["key"].rsplit("_", 1)[0]),
                               endzone_base=(resample(turf_donor, width, height)

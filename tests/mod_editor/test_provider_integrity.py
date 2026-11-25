@@ -225,7 +225,9 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [609, 10, 8, 9, 8, 9]
+            [611, 10, 8, 9, 8, 9]
+            # b81-seamen: 611 = 609 + the frozen revision 18 scorebug engine (the owner's recognition of 18 and 17) and
+            # the abilities editor (its tier capacities check the classic teams' authored player tags).
             # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
             # the cave manifest recorder) + Number kerning, whose state the owner reads.
             # b81 integration (qb34 trades merge): 607 = 605 (next lines) + the quarterback trades owner and its generated
@@ -417,7 +419,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_moment_era_kits.json": "6f7095e05cc31ece037aa40cf2d5b315c45566482f7b4a1a6a855067d087ac76",
                 "data/nfl2k5_era_kits_pins.json": "de18bdf5f1b32067b286c72c275641a6e3498791f852b6bbe48ea2c80ad0db90",
                 "data/nfl2k5_moment_kits.json": "e2fcbb93f376f266f6973626a48e2244521df1f529f3fbe67ec28cfdc7565c18",
-                "data/nfl2k5_moment_kits_pins.json": "514dd6891d97b7102d7c3f85bf355840faaeefe13e7a296edaa34a0ef176a342",
+                "data/nfl2k5_moment_kits_pins.json": "0931360ad914f68f7e0240a21d6e8247799589be36e2e6fb4f46331a960469b4",
                 "data/nfl2k5_release_gates.json": "12b1146cdedd09e72fc532b712b4726cf744ee9f1bfa360c4e6ffd13b1209285",
                 "data/nfl2k5_unc_bowl_uniforms_pins.json": "84dc131eebe5188fbfc18eee5187abc8ac5aba572b3796a35d2cd905a2769fe0",
                 "data/nfl2k5_nyg_numbers_pins.json": "e1d34f4a340820f6569f362a91e7a1a5f5f96fd74c3a46644d656500a392f2da",
@@ -929,7 +931,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_classic_teams/teams.json": "bbe46a3c6d87a9c7a8d2e1c95a63cece0495a7c069a132fd5253cd9ecca668ca",
                 "data/nfl2k5_classic_teams/manifest.json": "93e82081f2036b2196ae78ba9a71df138c205bae8e9269b596a60e2ea588de35",
                 "data/nfl2k5_classic_teams/appearance.json": "8b2607c2ceb4e70682991b0980736b3be9726fbdb1fbe440d812a48ef30b711c",
-                "data/nfl2k5_classic_teams/classic.json": "defcc410cb3ca1bec867f0a05fe8ecd599d727e9107426cfa2fa709473cf4b69",
+                "data/nfl2k5_classic_teams/classic.json": "ece17df6bc8d6f555f84478b0989b87942378746cfb4e130479504fe2b290168",
                 "data/nfl2k5_classic_teams/honours.json": "9430c474ede71ea59077476a01c051fc2675a032e864e84cf77312d25d52d184",
                 "data/nfl2k5_espn25_more_moments.json": "53b5667960d0720ab75d127804f152d9513d681648525b958228db16bf12bafd",
                 "data/nfl2k5_espn25_fields/source/nfl_2008.png": "1d0e8fe7f52a9ba3549e415e14c82bc70221a3ff9bfe6d934b4304be100eaec6",

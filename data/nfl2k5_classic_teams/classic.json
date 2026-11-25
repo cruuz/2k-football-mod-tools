@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "about": "ct1 hand decisions per classic team (2026-10-17): kit = 'modern' (style 0, the franchise's current kit), 'retail' (the franchise's historic spare: the retail 2004 kit, nfl2k5_historic_styles), an existing style index, or {prefer, fallback}; stadium = 'franchise' (the main roster's home venue row of that franchise). Noah 10/17: reuse an existing kit or stadium wherever the real one exists in the game. quality: match / close / stand-in. Uniform references: Gridiron Uniform Database season pages (reference only, never ship).",
+ "about": "ct1 hand decisions per classic team (2026-10-17): kit = 'modern' (style 0, the franchise's current kit), 'retail' (the franchise's historic spare: the retail 2004 kit, nfl2k5_historic_styles), an existing style index, or {prefer, fallback}; stadium = 'franchise' (the main roster's home venue row of that franchise). Noah 10/17: reuse an existing kit or stadium wherever the real one exists in the game. quality: match / close / stand-in. players (optional, b81-seamen): authored tags for named players, each {name (first and last as the roster CSV has them), star (the star tag, record +0x53 bit 0), ability_tier (0..3: Unranked, Star, Superstar, X-Factor), abilities (stored move flags, nfl2k5_roster_records.ABILITY_BITS names, at most the tier's capacity), why}; set on the compiled team file, nothing else of the record changes. Uniform references: Gridiron Uniform Database season pages (reference only, never ship).",
  "teams": {
   "bears_2006": {
    "kit": "modern",
@@ -197,7 +197,21 @@
     "name": "ESPN Stadium",
     "location": "Bristol, CT",
     "display": "ESPN Stadium"
-   }
+   },
+   "players": [
+    {
+     "name": "Bus Jibber",
+     "star": true,
+     "ability_tier": 3,
+     "abilities": ["right_stick_moves", "juke", "spin", "truck", "hurdle", "stiff_arm"],
+     "why": "The owner, 2026-11-25, playing the 11/20 private disc: \"bus jibber needs a star icon and right stick max abilities\". The star tag, the top ability tier (X-Factor: every right-stick move, the hurdle and the charge-up, and the largest tier bonus) and every stored right-stick move flag; his ratings stay as the videos show them."
+    },
+    {
+     "name": "John Mike Peter",
+     "star": true,
+     "why": "The owner, 2026-11-25: \"john mike peter a star too\". The star tag only; tier, move flags and ratings stay."
+    }
+   ]
   }
  }
 }

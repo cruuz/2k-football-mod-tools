@@ -4,7 +4,8 @@ The 2006 episodes show the kit in the Madden 07 uniform editor and on the field.
 
   primary colour 009284 (the Information screen swatch), secondary white
   home  : teal jersey and sleeves, white side panels, light (white) numbers without outline, teal pants with one wide
-          white stripe, white socks, white helmet with a teal centre stripe and a teal anchor on each side, teal facemask
+          white stripe, white socks, white helmet with a teal centre stripe and a teal anchor on each side (b81-seamen: as tall as the donor's side
+          logo, 51 texels, where it sits), teal facemask
   away  : white jersey and sleeves, teal side panels, dark teal numbers without outline, white pants with one wide
           teal stripe, white socks, the same helmet
 
@@ -33,6 +34,7 @@ WHITE = "#FFFFFF"
 SHELL = "#F3F4F7"                      # the donor helmet's own white
 ANCHOR_FILL = "#02A081"
 ANCHOR_INK = "#04201C"
+HELMET_ANCHOR = 51                     # b81-seamen: the helmet anchor's height in texels (the donor side logo's)
 
 AQUA = ["#00929B", "#008E97", "#008687", "#006869", "#006768"]
 ORANGE = ["#F4581F", "#FB4C00", "#FC4E00", "#E74900", "#E45426"]
@@ -128,8 +130,11 @@ def helmet_ops(chunk):
     ops.append(rect(SHELL, 146, 20, 181, 227, note="donor stripe"))
     ops.append(rect(SHELL, 146, 227, 181, 232, note="donor stripe end"))
     ops.append(rect(TEAL, 157, 22, 169, 229, note="centre stripe"))
-    ops += anchor_ops(72, 72, 33, rot180=True)       # the upper island is the player's right side, drawn upside down
-    ops += anchor_ops(72, 182, 33)
+    # b81-seamen (the owner 11/25: "the helmet anchor logo can be larger for the seamen too"): the anchor is as tall as the
+    # side logo the donor shell carries (the 2026 Dolphins mark: 51 texels, 38..108 x 48..98 and 38..108 x 157..207 on
+    # helmet02) and centred where it sits, as a real helmet decal; it was 33 texels at (72, 72) and (72, 182).
+    ops += anchor_ops(73, 73, HELMET_ANCHOR, rot180=True)   # the upper island is the player's right side, drawn upside down
+    ops += anchor_ops(73, 182, HELMET_ANCHOR)
     return ops
 
 
@@ -216,6 +221,10 @@ def build(doc):
         sd["chunks"] = chunks_for(letter)
         sd["art"] = side(letter)
         sd["atlas"] = {"format": "A8R8G8B8", "overlays": sd["atlas"]["overlays"], "ops": atlas_ops(letter)}
+        # b81-seamen: own_look (nfl2k5_moment_kits.own_look): every art row and the far sheet are the Seamen's own look
+        # on a donor that gives cloth shading and the shell only, so they draw on whatever pieces the donor holds; the
+        # 11/20 v0.10 build kept the Dolphins' far sheet on both Seamen kits (its sheet was not the stock piece)
+        sd["own_look"] = True
         sd["unif_colours"] = [TEAL, TEAL if letter == "H" else WHITE]
     kit["look"] = ("2006 Sarasota Seamen from the SOFTDRINKTV Madden 07 episodes: teal jersey, sleeves and pants at home "
                    "(white side panels, white pants stripe, light numbers), white jersey and pants on the road (teal side "

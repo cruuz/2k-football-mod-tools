@@ -182,12 +182,22 @@ def atlas_paints(atlas):
     return any(op.get("op") not in RECOLOUR_OPS for op in (atlas or {}).get("ops", ()))
 
 
+def own_look(side):
+    """b81-seamen: a kit side marked ``own_look`` (the classic Seamen) is a team of its own drawn on a donor that only
+    gives cloth shading and the shell: every art row and the far-sheet edit are that team's look, so they draw on
+    whatever pieces the donor holds and look up no stock piece. (The 11/20 v0.10 build kept the Dolphins' far sheet on
+    both Seamen kits because the sideline step had repaired the 2026 Dolphins sheet, so it was no longer the stock one.)"""
+    return side.get("own_look") is True
+
+
 def stock_needs(doc):
     """{donor selector: [chunk indexes]} whose stock hashes the drawing steps of ``doc`` look up (the chunk each such
     step paints on, and the far-player atlas chunk of every donor a drawing atlas edit reads)."""
     out = {}
     for kit in doc["kits"]:
         for side in kit["sides"].values():
+            if own_look(side):
+                continue
             sources = _expand(side.get("chunks", {}))
             for row in side.get("art", ()):
                 if row_paints(row):
@@ -319,7 +329,7 @@ def _swap_plans(side, packages, retail, stock=None):
             continue
         a, b = have[index], was[index]
         span, original = packages[selector][a.offset:a.end_offset], retail[selector][b.offset:b.end_offset]
-        if stock is not None and index in art and all(
+        if stock is not None and index in art and not own_look(side) and all(
                 row_paints(row) and not stock.is_stock(selector, index, span)
                 for row in side.get("art", []) if row["chunk"] == index):
             art.discard(index)
@@ -368,7 +378,8 @@ def _compose_side(side, packages, swaps, retail=None, who="", unchanged=None, st
     donor_spans = list(spans)          # the pieces as the donors have them: a colour swap below must not hide them
     for row in side.get("art", []):
         i = row["chunk"]
-        if stock is not None and row_paints(row) and not stock.is_stock(origin[i][0], i, donor_spans[i], origin[i][1]):
+        if (stock is not None and row_paints(row) and not own_look(side)
+                and not stock.is_stock(origin[i][0], i, donor_spans[i], origin[i][1])):
             # the user's own art: the step was made for the stock piece and would leave flat colour on this one
             if kept is not None:
                 kept.append(dict(side=who, chunk=i, texture=row.get("texture"), art=row["kind"], donor=origin[i][0],
@@ -402,7 +413,7 @@ def _compose_side(side, packages, swaps, retail=None, who="", unchanged=None, st
             overlays.append((decode_chunk(other, parse_chunks(other)[51])[0], row["boxes"]))
         mixed = era._native_atlas(decoded, c, overlays, atlas["format"])
         draw = bool(atlas.get("ops"))
-        if draw and stock is not None and atlas_paints(atlas):
+        if draw and stock is not None and atlas_paints(atlas) and not own_look(side):
             # the atlas edit draws on the base atlas and on the boxes copied into it: every atlas it reads must be stock
             base_selector, base_swapped = origin[51]
             pieces = [(base_selector, donor_spans[51], base_swapped)]
@@ -1108,8 +1119,11 @@ def judged_rows(doc=None):
             sources = _expand(side.get("chunks", {}))
             for row in side.get("art", ()):
                 steps = sorted({op.get("op") for op in row.get("ops", ())}) or [row["kind"]]
-                draws = row_paints(row)
-                if draws:
+                draws = row_paints(row) and not own_look(side)
+                if row_paints(row) and own_look(side):
+                    reason = ("draws the kit's own look (b81-seamen own_look: the donor gives cloth shading only), so it "
+                              "runs on any piece, the user's own art included")
+                elif draws:
                     reason = ("draws flat colour (" + ", ".join(s for s in steps if s not in RECOLOUR_OPS) +
                               ") on the stock piece it was made for; on the user's own art it would leave flat patches, "
                               "so it is kept off it and the pixels stay")
@@ -1125,14 +1139,18 @@ def judged_rows(doc=None):
             atlas = side.get("atlas")
             if atlas:
                 steps = sorted({op.get("op") for op in atlas.get("ops", ())}) or ["overlay"]
-                if atlas_paints(atlas):
+                kept_off = atlas_paints(atlas) and not own_look(side)
+                if atlas_paints(atlas) and own_look(side):
+                    reason = ("copies boxes from the donors' far-player sheets and draws the kit's own look on them "
+                              "(b81-seamen own_look): runs on any piece")
+                elif kept_off:
                     reason = ("copies boxes from the donors' far-player sheets (runs on any piece) and then draws "
                               "(" + ", ".join(s for s in steps if s not in RECOLOUR_OPS) + "); the drawing is kept off a "
                               "sheet that is the user's own art and the other steps still run")
                 else:
                     reason = "copies boxes from the donors' far-player sheets and recolours them: runs on any piece"
                 rows.append(dict(kit=kit["id"], side=letter, label=who, chunk=51, kind="atlas", steps=steps,
-                                 donor=sources.get(51, side["base"]), runs_on_user_art=not atlas_paints(atlas),
+                                 donor=sources.get(51, side["base"]), runs_on_user_art=not kept_off,
                                  reason=reason))
             if side.get("unif_colours") or side.get("unif"):
                 rows.append(dict(kit=kit["id"], side=letter, label=who, chunk=0, kind="unif", steps=["colour words"],

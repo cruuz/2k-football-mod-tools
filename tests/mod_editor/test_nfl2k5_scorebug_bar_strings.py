@@ -144,7 +144,7 @@ class LayoutTests(unittest.TestCase):
         self.assertEqual(new_image.tobytes(), self.image.tobytes())
 
     def test_the_budget_keeps_the_hud_sectors(self):
-        self.assertEqual(sprite.probe_sizes(), (34, 329184, 329728))       # sb4 prunes 20 unreachable small-set tokens
+        self.assertEqual(sprite.probe_sizes(), (35, 334464, 335872))       # b81-seamen: + the Seamen panel sbSEh0 (5,280 B, 3 sectors); sb4 prunes 20 unreachable small-set tokens
 
 
 @unittest.skipUnless(XBE.is_file(), 'the pinned USA XBE is required')
