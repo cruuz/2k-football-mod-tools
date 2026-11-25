@@ -35,6 +35,8 @@ from tests.nfl2k5_supersim_draft_fixture import HAVE_UC
 
 IMAGE = os.environ.get("CPU_TRADES_IMAGE", "")
 IMAGE_XBE = os.environ.get("CPU_TRADES_IMAGE_XBE", "")
+MIDSEASON = os.environ.get("CPU_TRADES_MIDSEASON_IMAGE", "")
+MIDSEASON_XBE = os.environ.get("CPU_TRADES_MIDSEASON_XBE", "")
 STANDARD_XBE = os.environ.get("CPU_TRADES_STANDARD_XBE", "")
 VA = 0x152E000
 BOARD, RECORD = 0xE3C27C, 0x3C
@@ -86,10 +88,10 @@ def _fixture(path):
 class Image:
     """A kept image on its executable with the CPU trades pages and both sites written in (the 4b tests' method)."""
 
-    def __init__(self):
+    def __init__(self, image=None, xbe=None):
         from tests.nfl2k5_supersim_draft_fixture import Machine
         from tools import franchise_invariants as fi
-        image, xbe = _fixture(IMAGE), _fixture(IMAGE_XBE)
+        image, xbe = _fixture(image or IMAGE), _fixture(xbe or IMAGE_XBE)
         self.memory = fi.load_memory(image)
         self.m = m = Machine(xbe.read_bytes(), trace_writes=False)
         for lo, data in self.memory.regions:
@@ -471,6 +473,11 @@ class CpuTradesImage(unittest.TestCase):
             present = [o for o in x.roster(seller) if x.pool(o) == pool and tn.present(x.rec(o))]
             self.assertGreaterEqual(len(present), tn.SEATS[pool])
             self.assertGreaterEqual(sum(1 for o in x.roster(seller) if x.pool(o) == pool), tn.CUT_MIN[pool])
+            # S8: nothing else moved at either club in this call (one trade per club per call, a native swap included)
+            self.assertEqual(set(x.roster(buyer)) - set(before[buyer]), {p})
+            self.assertLessEqual(len(set(before[buyer]) - set(x.roster(buyer))), 1)
+            self.assertEqual((set(before[seller]) - set(x.roster(seller)), set(x.roster(seller)) - set(before[seller])),
+                             ({p}, set()))
             self.assertEqual(x.pick_owner(r["word"]), seller)
             self.assertNotEqual(r["word"] & 0x3F, 1)                          # never a 1st (N3)
             self.assertLessEqual(m.get(x.club(buyer) + 0x124), m.get(CAP))    # M1: never over the cap
@@ -485,6 +492,13 @@ class CpuTradesImage(unittest.TestCase):
             gone = [o for o in before[buyer] if o not in x.roster(buyer)]
             for o in gone:                                                     # M3: the released man
                 self.assertNotIn(records[o][0x35], (0, 1, 2))
+                vpool = tn.POOL[records[o][0x35]]                              # S9: his pool's rows closed up too
+                was = sorted(tn.row(records[k]) for k in before[buyer] if tn.POOL[records[k][0x35]] == vpool)
+                if was == [min(k, 7) for k in range(len(was))]:
+                    rows_now = sorted(tn.row(x.rec(k)) for k in x.roster(buyer) if x.pool(k) == vpool)
+                    self.assertEqual(rows_now, [min(k, 7) for k in range(len(rows_now))], (buyer, vpool, rows_now))
+        clubs = [k for r in executed for k in (r["buyer"], r["seller"])]
+        self.assertEqual(len(clubs), len(set(clubs)), "a club in two of our trades in one call")
         ours = {x.table + 0x54 * r["player"] for r in rows}
         for rec in x.board():
             kind, player = struct.unpack_from("<I", rec, 0)[0], struct.unpack_from("<I", rec, 0xC)[0]
@@ -499,19 +513,47 @@ class CpuTradesImage(unittest.TestCase):
         x.install(7)
         twin = self.fresh()
         payroll = {i: m.get(x.club(i) + 0x124) for i in range(32)}
+        rosters = {i: set(x.roster(i)) for i in range(32)}
         predicted = {}
         x.run()
         for r in self.rows(after=True):
             if r["result"] != 1:
                 continue
             p = twin.table + 0x54 * r["player"]
-            predicted[r["buyer"]] = twin.charge_after(p)
+            if set(x.roster(r["buyer"])) == rosters[r["buyer"]] | {p}:      # nothing else moved (a release, a native trade)
+                predicted[r["buyer"]] = twin.charge_after(p)
         self.assertTrue(predicted)
-        releases = [r for r in self.rows() if r["flags"] & 2 and r["result"] == 1]
         for buyer, charge in predicted.items():
-            if any(r["buyer"] == buyer for r in releases):
-                continue                                                       # its payroll also lost a release
             self.assertEqual(m.get(x.club(buyer) + 0x124) - payroll[buyer], charge, buyer)
+
+    def test_the_cap_test_charges_the_contract_the_trade_writes(self):
+        """M1: a buyer whose room covers this season's salary but not the contract the executor writes (owed bonus folded
+        in) does not get the man; the model with the same payroll agrees."""
+        x = self.x
+        x.install(7)
+        twin = self.fresh()
+        x.run()
+        found = None
+        for r in [r for r in self.rows() if r["result"] == 1 and not r["flags"] & 8]:
+            p = twin.table + 0x54 * r["player"]
+            fold, base = twin.charge_after(p), twin.m.call(0xE6380, ecx=p, budget=2_000_000)
+            if fold > base:
+                found = r, fold, base
+                break
+        if found is None:
+            self.skipTest("no man posted on this image has an owed bonus to fold")
+        r, fold, base = found
+        y, z = self.fresh(), self.fresh()
+        margin = 2 * ((885 + 45 * min(y.m.get(YEAR), 4) + 3) // 4)
+        for image in (y, z):
+            image.m.put(image.club(r["buyer"]) + 0x124, image.m.get(CAP) - (fold + margin - 1))
+        y.install(7)
+        y.run()
+        first = [e for e in _code().events(y.page()) if not e["flags"] & 0x48]
+        self.assertNotIn((r["buyer"], r["player"]), [(e["buyer"], e["player"]) for e in first if e["result"] in (1, 2)])
+        packages, _q = model(z, 8, first)
+        self.assertEqual([(e["buyer"], e["player"]) for e in first],
+                         [(b, (p - z.table) // 0x54) for b, _s, p, _pool, _h in packages])
 
     def test_prices_follow_the_ladder_and_picks_were_the_buyers(self):
         x, m = self.x, self.x.m
@@ -609,7 +651,14 @@ class CpuTradesImage(unittest.TestCase):
         self.assertTrue(any(r["result"] == 2 for r in self.rows()))
         self.assertFalse(any(r["result"] in (1, 4) for r in self.rows()))
         self.assertEqual((self.counters()["posted"], self.counters()["releases"]), (0, 0))
-        self.assertEqual({i: x.roster(i) for i in range(32)}, rosters)
+        control = self.fresh()                                            # the same call with the retail sites
+        control.run()
+        self.assertEqual({i: x.roster(i) for i in range(32)}, {i: control.roster(i) for i in range(32)})
+        self.assertEqual({p: x.rec(p) for i in range(32) for p in x.roster(i)},
+                         {p: control.rec(p) for i in range(32) for p in control.roster(i)})
+        self.assertEqual(bytes(x.m.uc.mem_read(PICKS, 448)), bytes(control.m.uc.mem_read(PICKS, 448)))
+        self.assertEqual(bytes(x.m.uc.mem_read(LEDGER - 4, 4 + 600 * 12)), bytes(control.m.uc.mem_read(LEDGER - 4, 4 + 600 * 12)))
+        del rosters
         y = self.fresh()
         y.install(7)
         y.run()
@@ -699,9 +748,11 @@ class CpuTradesImage(unittest.TestCase):
         x.install(7)
         x.run()
         c = self.counters()
-        self.assertEqual(c["posted"], 0)
+        first = [r for r in self.rows() if not r["flags"] & 8]
+        self.assertFalse([r for r in first if r["result"] == 1])             # nothing of ours in the first round
         self.assertGreater(c["no_slot"], 0)
-        self.assertEqual(c["releases"], 0)                       # nothing released for a record that was never posted
+        posted = [r for r in self.rows() if r["result"] == 1]                # a second round after native pending trades
+        self.assertEqual(c["releases"], sum(1 for r in posted if r["flags"] & 2))   # released only for a posted record
         y = self.fresh()
         free = [slot for slot in range(1, 15) if not y.m.get(BOARD + RECORD * slot)]
         for slot in free[2:]:
@@ -712,6 +763,10 @@ class CpuTradesImage(unittest.TestCase):
         c = _code().counters(y.page())
         self.assertEqual(c["second_rounds"], 1)
         self.assertGreaterEqual(c["posted"], 2)
+        rows = [r for r in _code().events(y.page()) if not r["flags"] & 0x40 and r["result"] == 1]
+        one = {k for r in rows if not r["flags"] & 8 for k in (r["buyer"], r["seller"])}
+        two = {k for r in rows if r["flags"] & 8 for k in (r["buyer"], r["seller"])}
+        self.assertFalse(one & two)                                          # one trade per club per call
         del before
 
     def test_a_star_tagged_man_is_never_offered(self):
@@ -751,6 +806,31 @@ class CpuTradesImage(unittest.TestCase):
         self.assertTrue(greater(flags(1500, False)))
         self.assertFalse(greater(flags(1000, False)))
         self.assertEqual(self.counters()["stories_forced"], 1)
+
+
+class CpuTradesMidSeason(CpuTradesImage):
+    """Every image test again on a regular-season image with real records (CPU_TRADES_MIDSEASON_IMAGE: a season-panel
+    checkpoint in a later franchise year, stage 8, week 7; its executable CPU_TRADES_MIDSEASON_XBE), where the race
+    test (W + 1 < L: out), losing clubs' veteran sales (R3) and the q90 line under them are live."""
+
+    def fresh(self):
+        x = Image(MIDSEASON, MIDSEASON_XBE)
+        x.open_places(self.PLACES)
+        return x
+
+    def test_races_and_rebuild_sales_are_live_here(self):
+        x = self.x
+        x.install(7)
+        x.run()
+        c = self.counters()
+        self.assertGreater(c["out_race"], 0)
+        self.assertGreater(c["rebuild_packages"], 0)
+        _packages, q = model(self.fresh(), 8, self.rows())
+        for r in self.rows():
+            if r["flags"] & 1 and r["result"] in (1, 2):          # a rebuild sale: a veteran below his pool's q90
+                p = x.table + 0x54 * r["player"]
+                self.assertGreaterEqual(x.b(p + 0x25) & 31, 8)
+                self.assertLess(r["rating"], q[r["position"]][3])
 
 
 THIRD_SEASON = {"rost.body": "70813bd95d1265b40009fb611569e2e1ffcce02bf17a5f73476e8f55ffa3d157",
@@ -862,7 +942,8 @@ class PagesAndLayout(unittest.TestCase):
         self.assertEqual(code.RING_OFFSET + code.RING_COUNT * code.RING_EVENT.size, 0x2000)
         self.assertLessEqual(len(code.COUNTER_NAMES), code.COUNTERS_LIMIT)
         self.assertEqual(code.COUNTERS_OFFSET + 4 * code.COUNTERS_LIMIT, code.RING_CURSOR)
-        self.assertLessEqual(code.CURRENT + 4 * code.MAX_POSTS, code.RING_OFFSET)
+        self.assertEqual(code.CURRENT + 4 * code.MAX_POSTS, code.ROUND_MASK)
+        self.assertLessEqual(code.ROUND_MASK + 4, code.RING_OFFSET)
         for bad in (0, 8, 15):
             with self.assertRaises(ValueError):
                 code.settings_record(bad, p8_ppm=1, p7_ppm=1)

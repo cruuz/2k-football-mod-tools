@@ -177,6 +177,7 @@ extern volatile struct settings ct_settings;          /* page + 0x1B00 */
 extern volatile struct counters ct_counters;          /* page + 0x1B20 */
 extern volatile u32 ct_ring_cursor;                   /* page + 0x1BE0 */
 extern volatile u32 ct_current[MAX_POSTS];            /* page + 0x1BE4: our records during the pending scan (S7) */
+extern volatile u32 ct_round_mask;                    /* page + 0x1BFC: clubs in a record of ours or a trade this call (S8) */
 extern volatile struct event ct_ring[64];             /* page + 0x1C00 */
 
 /* The economy's smart cut tiers per position (cut_max, cut_keep; cut_min is the header's; one-pool LB). */
@@ -499,13 +500,18 @@ static void set_row(u32 p, u32 r) {
 /* S9 after an executed trade, at the traded pool only (a league-wide re-sort would also undo the quarterback room's
    pre-game holds): the seller closes the row the man left; the buyer seats him by rating among its men (a rank-locked
    man keeps his place ahead of him). */
+/* A man left `team` from `row` at `pool` (traded or released): the men behind him move up one row. */
+static void close_gap(u32 team, u32 pool, u32 row) {
+    u32 n = B(team + 0x11C);
+    for (u32 j = 0; j < n && j < SLOTS; j++) {
+        u32 o = D(team + 4 * j), ro;
+        if (o && pool_of(o) == pool && (ro = row_of(o)) > row && ro < 7) set_row(o, ro - 1);
+    }
+}
+
 static void repair(u32 seller, u32 buyer, u32 qs, u32 old_row) {
     u32 pool = pool_of(qs), n, newrow = 0, r = rating(qs);
-    n = B(seller + 0x11C);
-    for (u32 j = 0; j < n && j < SLOTS; j++) {
-        u32 o = D(seller + 4 * j), ro;
-        if (o && pool_of(o) == pool && (ro = row_of(o)) > old_row && ro < 7) set_row(o, ro - 1);
-    }
+    close_gap(seller, pool, old_row);
     n = B(buyer + 0x11C);
     for (u32 j = 0; j < n && j < SLOTS; j++) {
         u32 o = D(buyer + 4 * j);
@@ -539,7 +545,8 @@ static u32 post(struct posted *out, u32 stage, u32 round2, u32 *exhausted) {
         }
         x->active = B(x->team + 0x11C);
         scan(x);
-        if (D(USER_FLAG + 4 * i) || named_club(x->team)) x->flags = OUT;
+        /* S8: a club in a record of ours in the first round sits out the second (one trade per club per call) */
+        if (D(USER_FLAG + 4 * i) || named_club(x->team) || (round2 && ct_round_mask >> i & 1)) x->flags = OUT;
         for (u32 r = 1; r <= 7; r++)
             if (B(PICKS + 32 * r + i) != i) x->paid++;
     }
@@ -704,7 +711,9 @@ static u32 post(struct posted *out, u32 stage, u32 round2, u32 *exhausted) {
                 result = WOULD;
             } else {
                 if (victim) {
+                    u32 vpool = pool_of(victim), vrow = row_of(victim);
                     RELEASE(x->team, victim, 1, 1);
+                    close_gap(x->team, vpool, vrow);              /* S9: the native release leaves his row empty */
                     ct_counters.releases++;
                 }
                 if (!evaluate(offer)) {
@@ -725,6 +734,7 @@ static u32 post(struct posted *out, u32 stage, u32 round2, u32 *exhausted) {
                     out[count].word = word;
                     out[count].pool = pool | row_of(qs) << 8;       /* and his row at the seller */
                     ct_current[count] = rec;
+                    ct_round_mask |= 1u << b | 1u << seller;
                     count++;
                     ct_counters.posted++;
                     result = POSTED;
@@ -741,10 +751,17 @@ static u32 post(struct posted *out, u32 stage, u32 round2, u32 *exhausted) {
 static u32 round_of(u32 menu, u32 stage, u32 round2) {
     struct posted done[MAX_POSTS];
     u32 exhausted = 0, count;
+    u32 cursor = D(LEDGER_CURSOR), root = D(LEAGUE_ROOT);
     for (u32 i = 0; i < MAX_POSTS; i++) ct_current[i] = 0;
     count = post(done, stage, round2, &exhausted);
     PENDING(menu);
     for (u32 i = 0; i < MAX_POSTS; i++) ct_current[i] = 0;
+    /* S8: a club in any trade this scan executed (a native swap too) sits out the second round */
+    for (u32 n = 0; root && cursor < LEDGER_ROWS && cursor != D(LEDGER_CURSOR) && n < LEDGER_ROWS; n++) {
+        u32 at = LEDGER + 12u * cursor, club = D(at + 8);
+        if ((D(at) & 31u) == 7u && club >= D(root + 0x1C)) ct_round_mask |= 1u << (club - D(root + 0x1C)) / TEAM_SIZE % 32u;
+        if (++cursor == LEDGER_ROWS) cursor = 0;
+    }
     for (u32 i = 0; i < count; i++) {
         struct posted *x = &done[i];
         u32 result = 0;
@@ -781,6 +798,7 @@ void __attribute__((noinline, cdecl)) trade_call(u32 menu) {
         PENDING(menu);
         return;
     }
+    ct_round_mask = 0;
     if (round_of(menu, stage, 0) && !(ct_settings.flags & FLAG_SHADOW)) {
         ct_counters.second_rounds++;                            /* S8: once more after the scan freed slots */
         round_of(menu, stage, 1);
