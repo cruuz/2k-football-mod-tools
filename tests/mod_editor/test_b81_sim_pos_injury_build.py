@@ -423,7 +423,7 @@ class InPlaceUpgrades(_BuildPath):
         self.assertEqual(receipt.get("upgraded_from"), "slice1")
         settings = qb.read_settings(source)
         self.assertEqual((settings["mode"], settings.get("revision"), settings.get("positions")), ("realistic", 1, False))
-        self.assertEqual(qb.read_settings(upgraded).get("revision"), 4)
+        self.assertEqual(qb.read_settings(upgraded).get("revision"), qb.REVISION)   # 5 since the kicker and punter
         self.assertEqual(qb.apply(retail, "realistic")[0], upgraded)
         # Slice 2 and slice 3 installs on the same executable upgrade to the same bytes.
         later = {revision: _older_install(retail, "realistic", 310, revision) for revision in (2, 3)}

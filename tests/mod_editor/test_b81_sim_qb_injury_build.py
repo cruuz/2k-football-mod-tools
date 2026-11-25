@@ -112,7 +112,7 @@ class ProjectSettings(unittest.TestCase):
                         "settings": medical.read_settings(current), "pass_protection_upgraded": True,
                         "history_pool_upgraded": True,
                         "settings": medical.read_settings(current),
-                        "sim_outcomes": {k: v for k, v in outcomes.items() if k != "reservations"},
+                        "sim_outcomes_added": not outcomes["already_applied"],
                         "stability_reference": {"source": "disc roster", "roster_sha256": roster,
                                                 "starters": [list(row) for row in code.STABILITY_CALIBRATION],
                                                 "reference": list(code.STABILITY_REFERENCE)},

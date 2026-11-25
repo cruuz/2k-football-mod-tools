@@ -3132,6 +3132,8 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
         "source_simulator": simulator_state, "simulator_upgraded": dependency is not None, "settings": settings,
         "pass_protection_upgraded": pressure is not None,
         "history_pool_upgraded": history_upgrade is not None,
+        # b81 game outcomes: whether the copy gained the simulated-outcomes page (it rides with season realism)
+        "sim_outcomes_added": bool(outcomes) and not outcomes.get("already_applied"),
         "stability_reference": stability,
     }
     if room_level is not None or room_note:
