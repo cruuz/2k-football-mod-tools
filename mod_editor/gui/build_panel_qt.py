@@ -3616,6 +3616,7 @@ class BuildPanel(QWidget):
             return mod_build.v09_disc_update(plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
                                              modern_injured_reserve=plan.modern_injured_reserve,
                                              backfield_cards=plan.backfield_cards, gadget_play=plan.gadget_play,
+                                             team_building=plan.team_building,
                                              sim_qb_injuries=plan.sim_qb_injuries,
                                              custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
                                              overwrite=plan.overwrite,

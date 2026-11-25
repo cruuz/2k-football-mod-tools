@@ -3,22 +3,25 @@ their weakest starters, judged by the shared team-need rule (tools/common/team_n
 nfl2k5_team_need), so trades, signings and the draft pull the same way.
 
 Owner's report: "the chiefs are starting horrible wrs, teams need to make moves to stay relevant, priotize signing
-their weaknesses and drafting weaknesses high especially at premium positions". Measured on stored ten-season panels
-(the lane's DESIGN.txt): a CPU club with a bottom-quarter WR1/WR2 still has one the next season 72 percent of the time
-(real NFL 55), because the draft's need is a roster count (one fixed board for every club in round 1) and the free-agent
-wishes compare the best free agent with the average of every man at the position.
+their weaknesses and drafting weaknesses high especially at premium positions". Measured on stored ten-season panels: a
+CPU club with a bottom-quarter WR1/WR2 still has one the next season 72 percent of the time (real NFL 55), because the
+draft's need is a roster count (one fixed board for every club in round 1) and the free-agent wishes compare the best
+free agent with the average of every man at the position.
 
-What it installs (code in tools/team_building/runtime.c, built by tools/team_building/assemble.py into thirty proven
-unreferenced retail functions, tools/team_building/dead_code.py):
+What it installs (code in tools/team_building/runtime.c, built by tools/team_building/assemble.py into 29 proven
+unreferenced retail functions listed in tools/team_building/dead_code.py):
 - the draft: the draft AI's need call in its pick head (0x31E121, `call 0x31DEA0`) goes to tb_order, which keeps the
-  retail order for a club a person runs and otherwise moves the club's holes to the front (header need seats, the
-  league's bottom quarter, one season of aging read in, premium positions 3:2, QB included; not a position the club
-  already drafted in this draft, nor in rounds 1 and 2 one where it holds a development asset);
-- free agency: the draft AI's wish body jump (0x324414, `jmp 0x10B40`) goes to tb_wish_entry: QB, K, P and FB keep
-  the draft AI's own score; every other position wishes for the best free agent the club can pay, weakness first.
+  retail order for a club a person runs and otherwise moves the club's holes to the front (header need seats read as
+  the next depth sort will set them, the league's bottom quarter, one season of aging read in, premium positions 3:2,
+  QB included; not a position the club already drafted in this draft, nor in rounds 1 and 2 one where it holds an
+  unseated development asset);
+- free agency: the draft AI's wish body jump (0x324414, `jmp 0x10B40`) goes to tb_wish_entry: a club a person runs
+  goes on to the draft AI's own cave unchanged; QB, K, P and FB keep the draft AI's own score (ranked with the count
+  deficits when short of the roster minimum, a missing K or P above the holes); every other position wishes for the
+  best free agent the club can pay, weakness first, one wish a position pool.
 It needs the draft AI (current head) and the franchise economy at revision 9 or later (economy_value and
-economy_room_for_signing, the economy's one affordability routine, are called). No save
-field; no writable data. Retail puts the retail window bytes and the draft AI's own targets back.
+economy_room_for_signing, the economy's one affordability routine, are called). No save field; no writable data.
+Retail puts the retail window bytes and the draft AI's own targets back.
 """
 from __future__ import annotations
 
@@ -37,7 +40,9 @@ HELP_TEXT = ("EXPERIMENTAL. Computer clubs judge each starting spot against the 
              "takes that position first in every round, quarterbacks included, and its free agency first bids on the "
              "best free agent it can afford who would start there. Wide receivers, tackles, edge rushers, corners, "
              "defensive tackles and quarterbacks count first. Clubs stop bidding on players who would not start for "
-             "them. Your own club is never changed. Needs the draft AI and the 2026 franchise economy.")
+             "them, and a club that has just signed a starter stops bidding at that spot. Quarterback, kicker, punter "
+             "and fullback signings keep the draft AI's rules. Your own club is never changed, even with CPU roster "
+             "moves for your club turned on. Needs the draft AI and the 2026 franchise economy.")
 HEAD_CALL_VA = 0x31E121          # draft_ai _prefix_bytes: e8 rel32 -> 0x31DEA0 (FN_NEED)
 WISH_JUMP_VA = 0x324414          # draft_ai body_patch: e9 rel32 -> 0x10B40 (the wish cave)
 DRAFT_NEED_VA = 0x31DEA0
@@ -243,10 +248,11 @@ class View:
     young: list = field(default_factory=lambda: [0] * 17)
     drafted: list = field(default_factory=lambda: [0] * 17)
     scale: list = field(default_factory=lambda: [[] for _ in range(17)])
+    olb: bool = False        # some rostered man carries OLB (10): the two-pool scheme
 
 
-def seats(roster: Sequence[Man]) -> list[list[Man]]:
-    """Each pool's first two present men by row (ties: list order)."""
+def seats(roster: Sequence[Man]) -> list[list]:
+    """Each pool's first two present men by row (ties: list order); None where a pool has fewer."""
     out = [[] for _ in range(17)]
     for m in roster:
         if m.pos >= 17 or not m.present:
@@ -257,36 +263,69 @@ def seats(roster: Sequence[Man]) -> list[list[Man]]:
             del s[2:]
         elif len(s) < 2 or m.row < s[1].row:
             s[1:] = [m]
-    return out
+    return [s + [None] * (2 - len(s)) for s in out]
+
+
+def _seated(seat: Sequence, k: int, m: Man) -> bool:
+    return any(seat[j] is m for j in range(k))
+
+
+def bench(roster: Sequence[Man], men: list[list]) -> None:
+    """tb_bench: the own club's need seats as the next depth sort will set them. In roster order, an unseated present
+    man rated MARGIN or more above the weakest seat's man (an empty seat rates 0; the first of equals) takes that seat."""
+    for m in roster:
+        if m.pos >= 17 or not m.present:
+            continue
+        seat, k = men[tn.POOL[m.pos]], tn.NEED_SEATS[tn.POOL[m.pos]]
+        if not k or _seated(seat, k, m):
+            continue
+        w, low = 0, 256
+        for j in range(k):
+            r = seat[j].points if seat[j] else 0
+            if r < low:
+                w, low = j, r
+        if m.points >= low + MARGIN:
+            seat[w] = m
 
 
 def view(clubs: Sequence[Sequence[Man]], own: int) -> View:
     v = View()
     for i, roster in enumerate(clubs):
         men = seats(roster)
+        v.olb |= any(m.pos == 10 for m in roster)
+        for pool in range(17):
+            for j in range(tn.NEED_SEATS[pool]):
+                if len(v.scale[pool]) < 64:          # the depth-row seats; an empty seat rates 0 (header 1fbb90087)
+                    v.scale[pool].append(men[pool][j].points if men[pool][j] else 0)
+        if i != own:
+            continue
+        bench(roster, men)
+        for m in roster:
+            if m.pos >= 17 or not m.pro or m.pro > tn.YOUNG_YEARS:
+                continue
+            pool = tn.POOL[m.pos]
+            if m.pro == 1:
+                v.drafted[pool] = 1
+            if m.present and not _seated(men[pool], tn.NEED_SEATS[pool], m) and m.points > v.young[pool]:
+                v.young[pool] = m.points
         for pool in range(17):
             k = tn.NEED_SEATS[pool]
             weak, wpro = 255, 0
             for j in range(k):
-                m = men[pool][j] if j < len(men[pool]) else None
+                m = men[pool][j]
                 r = m.points if m else 0
-                if m and len(v.scale[pool]) < 64:
-                    v.scale[pool].append(r)
                 if r < weak:
                     weak, wpro = r, (m.pro if m else 0)
-            if i == own and k:
+            if k:
                 v.weak[pool], v.wpro[pool] = weak, wpro
     for pool in range(17):
         v.scale[pool].sort()
-    for m in clubs[own]:
-        if m.pos >= 17 or not m.pro or m.pro > tn.YOUNG_YEARS:
-            continue
-        pool = tn.POOL[m.pos]
-        if m.pro == 1:
-            v.drafted[pool] = 1
-        if m.present and m.points > v.young[pool]:
-            v.young[pool] = m.points
     return v
+
+
+def percentile(scale: Sequence[int], rating: int) -> int:
+    """tb_pct: the header's mid-rank percentile in 256ths (nfl2k5_team_need.percentile, header 1fbb90087)."""
+    return tn.percentile(scale, rating)
 
 
 def ahead(v: View, pool: int, decline_after: Sequence[int]) -> int:
@@ -298,7 +337,7 @@ def ahead(v: View, pool: int, decline_after: Sequence[int]) -> int:
 def key(v: View, pool: int, rnd: int, decline_after: Sequence[int]) -> int:
     if not tn.NEED_SEATS[pool] or v.drafted[pool]:
         return 255
-    pct = tn.percentile(v.scale[pool], ahead(v, pool, decline_after))
+    pct = percentile(v.scale[pool], ahead(v, pool, decline_after))
     n = len(v.scale[pool])
     if pct >= HOLE or (rnd < 2 and v.young[pool] > (v.scale[pool][n // 2] if n else 0)):
         return 255
@@ -309,7 +348,7 @@ def order(retail: Sequence[int], v: View, rnd: int, decline_after: Sequence[int]
     """tb_order: the retail need order with the club's holes moved to the front."""
     if human:
         return list(retail)
-    keys = [255 if p == 10 else key(v, tn.POOL[p], rnd, decline_after) for p in range(17)]
+    keys = [255 if p == 10 and not v.olb else key(v, tn.POOL[p], rnd, decline_after) for p in range(17)]
     out = []
     for k in range(256):
         out += [p for p in retail if keys[p] == k]
@@ -321,7 +360,7 @@ def new_score(v: View, pos: int, cand: int, deficit: int, jitter: int = 0) -> in
     from . import nfl2k5_team_building_code as code
     pool = tn.POOL[pos]
     weak = v.weak[pool]
-    pct = tn.percentile(v.scale[pool], weak)
+    pct = percentile(v.scale[pool], weak)
     up = cand >= weak + MARGIN
     if up and pct < HOLE:
         return 100000 + (HOLE - pct) * (2 + tn.PREMIUM[pool])
@@ -332,10 +371,21 @@ def new_score(v: View, pos: int, cand: int, deficit: int, jitter: int = 0) -> in
     return -1
 
 
+KEPT = (0, 1, 2, 8)      # QB and the positions without need seats (K, P, FB): the draft AI's own score
+
+
+def kept_score(pos: int, old: int, deficit: int, count: int) -> int:
+    """tb_kept: `old` is the draft AI's score x 100 (tb_old_score). The draft AI decides whether to wish; short of the
+    roster minimum the wish ranks with the count deficits, a K or P the club has none of above the holes."""
+    if old <= 0 or deficit <= 0:
+        return old
+    return old // 16 + (200000 if pos in (1, 2) and not count else 50000 + 1200 * deficit)
+
+
 def decline_after() -> list[int]:
     return list(_code().INPUTS["decline_after"])
 
 
 __all__ = ["TeamBuildingError", "STUDIO_LABEL", "HEAD_CALL_VA", "WISH_JUMP_VA", "apply", "as_draft_ai", "entries",
-           "needs_met", "restore", "status", "Man", "View", "seats", "view", "key", "order", "new_score",
-           "decline_after"]
+           "needs_met", "restore", "status", "Man", "View", "seats", "bench", "view", "key", "order", "new_score",
+           "kept_score", "KEPT", "percentile", "decline_after"]

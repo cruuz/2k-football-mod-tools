@@ -226,8 +226,8 @@ class ProviderIntegrityTests(unittest.TestCase):
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
             [612, 10, 8, 9, 8, 9]
-            # b81 economy r10 (team-building merge): 612 = 609 + team building's owner, its generated code module and the
-            # shared team-need module (3647cabab adds all three; its own count stayed at 609).
+            # b81 team building: 612 = 609 + the team-building owner (loaded by name; the draft AI's status reads it),
+            # its generated code template and the shared team-need mirror it imports.
             # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
             # the cave manifest recorder) + Number kerning, whose state the owner reads.
             # b81 integration (qb34 trades merge): 607 = 605 (next lines) + the quarterback trades owner and its generated

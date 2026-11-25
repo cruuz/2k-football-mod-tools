@@ -4,7 +4,8 @@ window roster_v and is proven in tools/franchise_economy/dead_code.py), by the e
 
 - no 4-byte value anywhere in the image (headers and every section, every byte offset) lies inside a window;
 - no rel32 call/jmp (E8/E9) or rel32 conditional jump (0F 80..8F) outside a window targets inside it;
-- no rel8 jump (70..7F, EB) within 130 bytes outside a window targets inside it;
+- no rel8 jump (70..7F, EB; and loop/jecxz E0..E3, loop_references) within 130 bytes outside a window targets
+  inside it;
 - each window starts after a return and alignment padding, and its bytes match the pinned digest;
 - the entry point, the TLS callbacks and every kernel import are outside every window.
 
@@ -16,7 +17,7 @@ Two more tests, both added for these windows (beta 81 team-building lane):
   are not used.
 - no other writer: none of the windows overlaps a span of the cave reservation inventory
   (data/nfl2k5_cave_reservations.json), an economy window, or a byte that any of 477 built executables of the beta 81
-  lanes (2026-11-25) changed from retail (the lane's tb_find_dead.py and check, recorded in its REVIEW_ME.txt).
+  lanes (2026-11-25) changed from retail (checked once by the lane when the windows were chosen).
 
 Usage: dead_code.py RETAIL_XBE
 """
@@ -130,7 +131,39 @@ def verify(payload: bytes, windows=None) -> dict:
     bad = {key: value for key, value in refs.items() if value}
     if bad:
         raise ValueError(f"referenced windows: {bad}")
-    return {"evidence": "PROVED OFFLINE", "windows": report, "references": 0, "tls_callbacks": k}
+    loops = loop_references(image)
+    if loops:
+        raise ValueError(f"loop/jecxz into a window: {loops}")
+    return {"evidence": "PROVED OFFLINE", "windows": report, "references": 0, "loop_references": 0,
+            "tls_callbacks": k}
+
+
+def loop_references(image) -> list[str]:
+    """The rel8 forms the economy's scan leaves out (review N7): loopne, loope, loop and jecxz (E0..E3), from within 130
+    bytes of a window, outside it, whose target lies inside it. A byte E0..E3 that is an operand of another instruction
+    is not one: it counts when at least half of the decodes from 24..96 bytes back land on it as loop or jecxz (the
+    retail hits 0x2CE022 and 0x3F634B are operands of `mov eax, 0x52E094` and `call 0x3FAD30`)."""
+    from capstone import Cs, CS_ARCH_X86, CS_MODE_32
+    md = Cs(CS_ARCH_X86, CS_MODE_32)
+    hits = []
+    for start, (size, _) in WINDOWS.items():
+        lo = start - 130
+        data = image.read(lo, size + 260)
+        for i, byte in enumerate(data[:-1]):
+            at = lo + i
+            if not 0xE0 <= byte <= 0xE3 or start <= at < start + size:
+                continue
+            if not start <= at + 2 + struct.unpack_from("<b", data, i + 1)[0] < start + size:
+                continue
+            votes = 0
+            for back in range(24, 97):
+                for ins in md.disasm(image.read(at - back, back + 2), at - back):
+                    if ins.address >= at:
+                        votes += ins.address == at and ins.mnemonic in ("loop", "loope", "loopne", "jecxz")
+                        break
+            if votes * 2 >= 73:
+                hits.append(f"{at:#x} ({votes}/73 decodes)")
+    return hits
 
 
 def reservations_clear(windows=None) -> list[str]:

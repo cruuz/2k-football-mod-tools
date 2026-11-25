@@ -7,7 +7,9 @@ these tables differ from the header's. The header's comment states the rule; in 
 - pools: OLB (10) counts as LB (11); EDGE = 16, interior line = 15;
 - starters: the first TN_SEATS[pool] present men of the pool in depth-row order (present = no status bits and out
   TN_PRESENT_WEEKS or fewer); a need is judged on the first TN_NEED_SEATS[pool] of them;
-- rating: 0x246D80(p, 0) in whole points; league scale = every club's need-seat starters at the pool, sorted;
+- rating: 0x246D80(p, 0) in whole points; league scale = every club's need-seat starters at the pool (32 x
+  NEED_SEATS values, an empty need seat rates 0), sorted; percentile = mid-rank on it (values below plus half of
+  those equal), in 256ths, so a tie at a cut line is not a hole;
 - development asset: TN_YOUNG_YEARS or fewer years pro and rated above the pool's median starter.
 """
 from __future__ import annotations
@@ -55,10 +57,18 @@ def points(bits: int) -> int:
 
 
 def percentile(scale, rating: int) -> int:
-    """Share of a sorted scale rated strictly below `rating`, in 256ths."""
+    """Mid-rank of `rating` on the scale in 256ths: (values below + half of those equal) / length, rounded down
+    (tn_percentile: (2 * below + equal) * 128 // n)."""
     scale = list(scale)
     below = sum(1 for v in scale if v < rating)
-    return below * SCALE // len(scale) if scale else 0
+    equal = sum(1 for v in scale if v == rating)
+    return (2 * below + equal) * (SCALE // 2) // len(scale) if scale else 0
+
+
+def league_scale(clubs_need_seat_ratings) -> list[int]:
+    """The league scale of a pool: every club's need-seat starter ratings (each club's list padded with 0 for an empty
+    need seat), all clubs together, sorted."""
+    return sorted(v for ratings in clubs_need_seat_ratings for v in ratings)
 
 
 def starters(men, records, pool, *, need=False):
