@@ -681,6 +681,48 @@ class CpuTradesImage(unittest.TestCase):
                          [(b, (p - x.table) // 0x54) for b, _s, p, _pool, _h in packages])
         self.assertGreater(self.counters()["kept"], 0)
 
+    def test_a_full_board_posts_nothing_and_a_second_round_uses_the_freed_slots(self):
+        """S8: with every CPU slot holding a native listing nothing is written (no_slot); with two slots free, the first
+        round posts two and, the board being full again, runs a second round after the pending scan."""
+        x, m = self.x, self.x.m
+        listing = lambda slot, club: (m.put(BOARD + RECORD * slot + 8, x.club(club)), m.put(BOARD + RECORD * slot, 1))
+        for slot in range(1, 15):
+            if not m.get(BOARD + RECORD * slot):
+                listing(slot, 15)                                # a listing by the person's club (names no CPU club)
+        before = x.board()
+        x.install(7)
+        x.run()
+        c = self.counters()
+        self.assertEqual(c["posted"], 0)
+        self.assertGreater(c["no_slot"], 0)
+        self.assertEqual(c["releases"], 0)                       # nothing released for a record that was never posted
+        y = self.fresh()
+        free = [slot for slot in range(1, 15) if not y.m.get(BOARD + RECORD * slot)]
+        for slot in free[2:]:
+            y.m.put(BOARD + RECORD * slot + 8, y.club(15))
+            y.m.put(BOARD + RECORD * slot, 1)
+        y.install(7)
+        y.run()
+        c = _code().counters(y.page())
+        self.assertEqual(c["second_rounds"], 1)
+        self.assertGreaterEqual(c["posted"], 2)
+        del before
+
+    def test_a_star_tagged_man_is_never_offered(self):
+        """MyCareer's man (and every star-tagged man) carries +0x53 bit 0: never offered."""
+        x, m = self.x, self.x.m
+        x.install(7)
+        x.run()
+        first = [r for r in self.rows() if r["result"] in (1, 2)]
+        self.assertTrue(first)
+        y = self.fresh()
+        tagged = {y.table + 0x54 * r["player"] for r in first}
+        for p in tagged:
+            y.m.uc.mem_write(p + 0x53, bytes([y.b(p + 0x53) | 1]))
+        y.install(7)
+        y.run()
+        self.assertFalse({y.table + 0x54 * r["player"] for r in _code().events(y.page())} & tagged)
+
     def test_the_story_gate_lets_our_records_through_and_leaves_others_native(self):
         """S7: the gate's flags for a record of ours read "greater"; for another record they are the native compare."""
         x, m = self.x, self.x.m
