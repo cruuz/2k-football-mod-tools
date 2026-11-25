@@ -185,6 +185,7 @@ STEP_LABELS: dict[str, str] = {
     "super_bowl_hosts": "the franchise Super Bowl host pass",
     "super_bowl_booth": "the franchise Super Bowl booth lines",
     "stadium_welcome": "the pregame welcome for renamed stadiums",
+    "stale_speech": "the stale team and stadium booth lines",
     "team_number_scale": "the per-kit jersey number sizes",
     "run_blocking": "Run blocking",
     "pass_protection": "Pass protection",
@@ -292,6 +293,7 @@ KEPT: dict[str, str] = {
     "super_bowl_hosts": "Your franchise Super Bowls keep their neutral stadium.",
     "super_bowl_booth": "Your franchise Super Bowls keep the retail booth lines.",
     "stadium_welcome": "Your pregame welcome keeps the retail stadium names.",
+    "stale_speech": "Your booth keeps the retail team and stadium lines.",
     "moment_kits": "Your disc keeps the uniforms the Anniversary moments already had.",
     "team_sleeves": "Your disc keeps the long sleeves as they were.",
     **{step: "Your disc keeps those uniforms as they were." for step in (

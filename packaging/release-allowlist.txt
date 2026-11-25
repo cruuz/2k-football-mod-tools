@@ -3836,6 +3836,8 @@ mod_editor/core/nfl2k5_super_bowl_booth.py
 tests/mod_editor/test_nfl2k5_super_bowl_booth.py
 mod_editor/core/nfl2k5_stadium_welcome.py
 tests/mod_editor/test_nfl2k5_stadium_welcome.py
+mod_editor/core/nfl2k5_stale_speech.py
+tests/mod_editor/test_nfl2k5_stale_speech.py
 data/nfl2k5_super_bowl_fields/manifest.json
 data/nfl2k5_super_bowl_fields/hosts/h41/banner_away_team.png
 data/nfl2k5_super_bowl_fields/hosts/h41/banner_home_player.png

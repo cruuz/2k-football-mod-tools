@@ -59,7 +59,7 @@ OPTIONAL_STEPS = frozenset({
     # broadcast art, people on the field, late visual passes
     "espn_marks_2026", "espn_wipes_boards_2026", "kick_meter_2026", "modern_goalposts", "modern_coaches",
     "modern_fans", "modern_officials", "modern_helmets", "menu_icon_orientation", "espn25_fields", "era_ball",
-    "broadcast_greens", "super_bowl_hosts", "super_bowl_booth", "stadium_welcome",
+    "broadcast_greens", "super_bowl_hosts", "super_bowl_booth", "stadium_welcome", "stale_speech",
 })
 ROOT = Path(__file__).resolve().parents[2]
 PACK0_SIZE = 193_710_080   # vc_53450030/0 (retail); the schedule template lives in its ROST resource
@@ -9840,6 +9840,18 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             welcome_receipt = welcome.apply_to_image(target, progress=lambda line: progress(line, 0, 0))
             receipt["steps"].append({"step": "stadium_welcome", **welcome_receipt})
             receipt["result"]["stadium_welcome"] = welcome_receipt["state"]
+        # sb-booth (b81, audit part 2): per-team and per-stadium booth lines that name a moved building, a relocated
+        # club's old city, Washington's old name or a 2004 head coach fall back to the game's generic line or are
+        # skipped, by the same context-list edit; each rule holds only when the built disc shows the change.
+        stale = _core_module("nfl2k5_stale_speech")
+        if stale is None:
+            raise ValueError("the stale booth lines step is unavailable")
+        with _optional(receipt, target, progress, "stale_speech"):
+            progress("Stale team and stadium booth lines", 0, 0)
+            stale_receipt = stale.apply_to_image(target, progress=lambda line: progress(line, 0, 0))
+            receipt["steps"].append({"step": "stale_speech", **{k: v for k, v in stale_receipt.items() if k != "edits"},
+                                     "edit_count": len(stale_receipt.get("edits", ()))})
+            receipt["result"]["stale_speech"] = stale_receipt["state"]
     if plan.team_number_scale:
         _step("team_number_scale")
         # b776-ns1: after every executable writer (the hair styles' late owner and the Super Bowl hosts' season codes): a late
