@@ -160,8 +160,10 @@ class InPlaceRoutes(unittest.TestCase):
             for mode in ("realistic", "retail"):
                 plan = mod_build.sim_qb_disc_edit(disc, str(Path(folder) / f"{mode}.iso"), mode)
                 result = mod_build.preflight_plan(plan)["sim_qb_source_update"]["result_sha256"]
-                # Realistic also updates the disc's legacy pass protection (combined lever 1, nine bytes)
-                upgraded = pressure.apply(source)[0] if mode == "realistic" else source
+                # Realistic also updates the disc's legacy pass protection (combined lever 1, nine bytes), and (b81
+                # fb-targets) the disc's season realism from before the fullback target rule, beneath the QB option
+                from mod_editor.core import nfl2k5_sim_realism as realism
+                upgraded = pressure.apply(realism.apply(source)[0])[0] if mode == "realistic" else source
                 expected = aim.apply(qb.apply(upgraded, mode)[0])[0]
                 # b81 history-pool: the copy also carries this release's career history pool (the disc has v0.9's)
                 expected = mod_build._history_pool_upgrade(expected)[0]
