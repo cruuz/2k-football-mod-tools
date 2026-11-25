@@ -501,6 +501,7 @@ class CpuTradesImage(unittest.TestCase):
             gone = [o for o in before[buyer] if o not in x.roster(buyer)]
             for o in gone:                                                     # M3: the released man
                 self.assertNotIn(records[o][0x35], (0, 1, 2))
+                self.assertFalse(twin.seated(buyer, o), (buyer, (o - x.table) // 0x54))    # never a seated starter
                 vpool = tn.POOL[records[o][0x35]]                              # S9: his pool's rows closed up too
                 was = sorted(tn.row(records[k]) for k in before[buyer] if tn.POOL[records[k][0x35]] == vpool)
                 if was == [min(k, 7) for k in range(len(was))]:
