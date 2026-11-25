@@ -246,13 +246,14 @@ class RosterPlayersRst2(unittest.TestCase):
 
     def test_ids_follow_b9_in_a_wider_window_and_fill_a_fifth_atlas(self):
         self.assertEqual([r["id"] for r in self.rows], list(range(30995, 30995 + len(self.rows))))
-        # b780 rst2's 121 (ids 30995..31115), then b81 roster-1125's 47 (31116..31162, see the next test)
-        self.assertEqual(len(self.rows), 121 + 47)
+        # b780 rst2's 121 (ids 30995..31115), then b81 roster-1125's 47 (31116..31162) and the 9 named free agents
+        # (31163..31171), see the next test
+        self.assertEqual(len(self.rows), 121 + 47 + 9)
         self.assertLess(self.rows[-1]["id"], rp.ID_LIMIT)
         self.assertEqual(rp.ID_LIMIT, 31200)
         self.assertEqual({r["atlas"] for r in self.rows}, {"faces_03.png", "faces_04.png"})
         self.assertIn("faces_04.png", {a["file"] for a in self.doc["atlases"]})
-        self.assertEqual([a["job"] for a in self.doc["additions"]][-2:], ["b780-rst2", "b81-roster-1125"])
+        self.assertEqual([a["job"] for a in self.doc["additions"]][-3:], ["b780-rst2", "b81-roster-1125", "b81-roster-1125-named"])
         every = [(r["first"], r["last"], r["birth_month"], r["birth_day"]) for r in self.doc["portraits"]]
         self.assertEqual(len(every), len(set(every)))
 
@@ -260,14 +261,28 @@ class RosterPlayersRst2(unittest.TestCase):
         """b81 roster-1125: the players the 11/25 refresh creates (nflverse 53-man players the plan had no record for, among
         them Micah Parsons, Myles Garrett and Kerby Joseph, back from injured reserve) get their official headshots,
         under the record's own name (Nick Westbrook-Ikhine's surname is Westbrook: the 15-character buffer)."""
-        added = self.rows[121:]
-        self.assertEqual(self.doc["additions"][-1], dict(job="b81-roster-1125", fetched="2026-11-25", rows=47,
-                                                         moved_from_wrong_faces=0, note=self.doc["additions"][-1]["note"]))
+        added = self.rows[121:168]
+        addition = self.doc["additions"][-2]
+        self.assertEqual(addition, dict(job="b81-roster-1125", fetched="2026-11-25", rows=47, moved_from_wrong_faces=0,
+                                        note=addition["note"]))
         self.assertEqual([r["id"] for r in added], list(range(31116, 31163)))
         self.assertEqual({r["atlas"] for r in added}, {"faces_04.png"})
         names = {(r["first"], r["last"]) for r in added}
         for name in (("Micah", "Parsons"), ("Myles", "Garrett"), ("Kerby", "Joseph"), ("Nick", "Westbrook")):
             self.assertIn(name, names)
+
+    def test_the_free_agents_noah_named_have_their_official_headshots(self):
+        """b81 roster-1125 (Noah 11/25: "Johnny Manziel should be a free agent ... RG3 ... Derek Carr ..."): nine named free
+        agents. Manziel's NFL.com picture is the league's placeholder helmet, so his is the ESPN headshot of his espn_id."""
+        named = self.rows[168:]
+        self.assertEqual(self.doc["additions"][-1]["job"], "b81-roster-1125-named")
+        self.assertEqual([r["id"] for r in named], list(range(31163, 31172)))
+        self.assertEqual({r["last"] for r in named}, {"Manziel", "Griffin", "Carr", "Bridgewater", "Bortles", "Tebow", "Hurns",
+                                                      "Walker", "Butler"})
+        manziel = next(r for r in named if r["last"] == "Manziel")
+        self.assertEqual((manziel["source_list"], manziel["source_url"]),
+                         ("espn", "https://a.espncdn.com/i/headshots/nfl/players/full/16736.png"))
+        self.assertLess(named[-1]["id"], rp.ID_LIMIT)
 
     def test_thorson_and_masses_have_their_own_pictures_and_are_no_longer_wrong_faces(self):
         names = {(r["first"], r["last"]) for r in self.rows}

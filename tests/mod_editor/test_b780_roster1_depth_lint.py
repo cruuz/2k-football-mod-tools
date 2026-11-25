@@ -53,9 +53,6 @@ ELIGIBLE = {"h": {"P", "K", "QB"}, "k": {"K"}, "ls": {"C", "TE", "G", "T"},
 # Left for a decision in this release (b780 roster1 report; BETA81_QUEUE.md), or fixed by another job.
 KNOWN = {
     ("LAR", "jersey twice"): "nflverse 11/03 lists Brandon McManus and the injured Blake Grupe, both kickers, as #19",
-    # b81 roster-1125: Amani Hooker (traded TEN -> BUF 11/10) wears #22 on buffalobills.com; nflverse 11/25 still lists the
-    # injured C.J. Gardner-Johnson (reserve, last listed week 8) as BUF #22, so he starts the franchise on IR with it
-    ("BUF", "jersey twice"): "nflverse 11/25 lists Amani Hooker and the injured C.J. Gardner-Johnson, both safeties, as #22",
 }
 # Findings of the plans before the 11/03 refresh (the b779 roster edits the v0.8 recipe loads, as_of 10/14). The release rosters
 # (128 and 64 MB) have none of them: the 11/03 refresh signs Karty and creates McManus (LAR kicker), creates Zach Wood (NO long
@@ -84,8 +81,23 @@ def starts_on_ir(doc, player):
     return bool(word20 & 0x80000000) and ((word20 >> 22) & 0xFF) >= 4 and (word24 >> 28) & 7 == 4
 
 
-def lint(doc, *, portraits=False):
-    """{(club, check): detail} for the 32 clubs of a one-pool roster document."""
+def jersey_clashes(doc):
+    """b81 roster-1125 (coordinator 11/25: "no two men on a club share a jersey number across the active list, practice
+    squad and IR"): {club: {number: [names]}} for every number two of a club's 53, practice squad or IR share."""
+    out = {}
+    for team in doc.teams[:32]:
+        numbers = collections.defaultdict(list)
+        for player in doc.team_players(team.index) + doc.reserve_players(team.index):
+            numbers[player.record.get("jersey")].append(player.display)
+        shared = {n: names for n, names in numbers.items() if len(names) > 1}
+        if shared:
+            out[team.abbreviation] = shared
+    return out
+
+
+def lint(doc, *, portraits=False, shared_numbers=False):
+    """{(club, check): detail} for the 32 clubs of a one-pool roster document. ``shared_numbers`` also checks jersey numbers
+    across the 53, the practice squad and IR (jersey_clashes); the release disc's lint runs with it."""
     found = {}
     lists = collections.defaultdict(list)
     for team in doc.teams[:32]:
@@ -155,6 +167,9 @@ def lint(doc, *, portraits=False):
                 found[(club, f"college {player.display}")] = None
             if not player.first or not player.last or "*" in player.first + player.last:
                 found[(club, f"name {player.index}")] = player.display
+    if shared_numbers:
+        for club, shared in jersey_clashes(doc).items():
+            found[(club, "jersey shared across 53, practice squad and IR")] = shared
     if portraits:
         owners = collections.defaultdict(list)
         for index, where in lists.items():
@@ -376,6 +391,43 @@ class WrongFaceTests(unittest.TestCase):
 # ------------------------------------------------------------------------------------------------ pack data
 @unittest.skipUnless(V08_ROST.is_file() and RELEASE_PLAN.is_file(),
                      "NFL2K5_RELEASE_ROSTER_EDITS (the release roster edits, room_policy ir) or the v0.8 disc roster is not set")
+class JerseyClashTests(unittest.TestCase):
+    """b81 roster-1125: jersey_clashes finds a number a club's 53 (IR men are on it) shares with its practice squad."""
+
+    class _Record:
+        def __init__(self, jersey):
+            self.jersey = jersey
+
+        def get(self, key):
+            return self.jersey
+
+    class _Player:
+        def __init__(self, name, jersey):
+            self.display, self.record = name, JerseyClashTests._Record(jersey)
+
+    class _Team:
+        def __init__(self, index, abbreviation):
+            self.index, self.abbreviation = index, abbreviation
+
+    class _League:
+        def __init__(self, lists):
+            self.teams = [JerseyClashTests._Team(i, abbr) for i, abbr in enumerate(lists)]
+            self.lists = list(lists.values())
+
+        def team_players(self, index):
+            return [JerseyClashTests._Player(n, j) for n, j in self.lists[index][0]]
+
+        def reserve_players(self, index):
+            return [JerseyClashTests._Player(n, j) for n, j in self.lists[index][1]]
+
+    def test_a_practice_squad_or_ir_man_with_an_active_mans_number_is_found(self):
+        league = self._League({"LAR": ([("Brandon McManus", 19), ("Blake Grupe (IR)", 7)], [("Practice Kicker", 2)]),
+                               "MIA": ([("Zane Gonzalez", 31)], [("Jack Browning", 31)]),
+                               "BUF": ([("Amani Hooker", 22), ("Gardner-Johnson (IR)", 22)], [])})
+        self.assertEqual(jersey_clashes(league), {"MIA": {31: ["Zane Gonzalez", "Jack Browning"]},
+                                                  "BUF": {22: ["Amani Hooker", "Gardner-Johnson (IR)"]}})
+
+
 class ReleaseRosterInjuredReserveTests(unittest.TestCase):
     """b780-int: the release roster edits (RST2, room_policy "ir") replayed on the released v0.8 disc roster, as the
     v0.9 build runs them. NFL2K5_V08_ROSTER_EDITS stays the beta-79 file the other pack tests expect."""
@@ -466,7 +518,7 @@ class PackRosterLintTests(unittest.TestCase):
 class PackImageLintTests(unittest.TestCase):
     def test_the_built_roster_passes_the_lint(self):
         doc = rr.load_image(LINT_IMAGE, scheme="one_pool", reference_year=2026)
-        self.assertEqual(unexpected(lint(doc, portraits=True)), {})
+        self.assertEqual(unexpected(lint(doc, portraits=True, shared_numbers=True)), {})
 
 
 if __name__ == "__main__":

@@ -79,9 +79,9 @@ STANDARD_SOURCES = Path(os.environ.get("NFL2K5_B81_STANDARD_SOURCES", "") or "mi
 # b81 roster-1125 (Noah: "kirk cousins not on vikings, trade deadline roster not updated?"; the 2026 deadline was 11/10):
 # the release sources load the 11/25 refresh, 128 MB and the 64 MB retail-capacity fit of it.
 RELEASE_ROSTERS = {128: ("roster-edits-b81-refresh-20261125.json",
-                         "80e4502bc87259edf5575935e3f2e261f879998dff4a6e38352e56b25b67032b"),
+                         "20668706593f6e4be9241ee5601659e7014aaff6953fb6a803b1be93b4d545a6"),
                    64: ("roster-edits-b81-refresh-20261125-retail-capacity-64mb.json",
-                        "26027d5259fea56e0e5261469e14ee4da6e34fedf801bb9f2a1d3d3f08c9a332")}
+                        "73b383824559b55bb7a0ef2dcebb5ae9020374390e56fdca0c401a8844c536e9")}
 
 
 @unittest.skipUnless((STANDARD_SOURCES / "recipe.json").is_file(), "private release sources absent: NFL2K5_B81_STANDARD_SOURCES")
@@ -107,6 +107,25 @@ class ReleaseSourcesRosterTests(unittest.TestCase):
                 self.assertEqual((cousins["team"], cousins["status"]), ("MIN", "ACT"))
                 minnesota = next(t for t in plan["teams"] if t["team"] == "MIN")
                 self.assertIn(cousins["index"], minnesota["active"])
+                rows = {r["index"]: r for r in plan["players"]}
+                # coordinator 11/25: no two men on a club share a number across the 53, the practice squad and IR. The plan
+                # lists the 53 and the practice squad; which injured men stay on IR the writer decides (the 65-man list),
+                # so IR is checked on the written roster: test_b780_roster1_depth_lint jersey_clashes / lint(lists=True)
+                for team in plan["teams"]:
+                    numbers = [rows[i]["fields"]["jersey"] for i in set(team["active"]) | set(team["reserves"])]
+                    self.assertEqual(len(numbers), len(set(numbers)), team["team"])
+                # Noah 11/25 on Joe Mixon ("He should be very likely to reinjure himself when signed"): Durability from
+                # his real availability (2025 all season on a reserve list): 85 -> 66
+                if memory == 128:   # the 64 MB fit leaves the free agents in capacity records out, Mixon and the named ones too
+                    mixon = next(r for r in plan["players"] if r.get("gsis_id") == "00-0033897")
+                    self.assertEqual((mixon["status"], mixon["fields"]["durability"]), ("UFA", 66))
+                    # Noah 11/25: the free agents he named
+                    named = {r["source_name"] for r in plan["players"] if (r.get("evidence") or {}).get("kind")
+                             == "owner_named_default_free_agent"}
+                    self.assertEqual(named, {"Johnny Manziel", "Robert Griffin III", "Derek Carr", "Teddy Bridgewater",
+                                             "Blake Bortles", "Tim Tebow", "Allen Hurns", "PJ Walker", "Hakeem Butler"})
+                    self.assertTrue(all(r["index"] in plan["free_agents"] for r in plan["players"]
+                                        if r.get("source_name") in named))
 
 
 MOD = Path(os.environ.get("NFL2K5_V09_XISO", ""))

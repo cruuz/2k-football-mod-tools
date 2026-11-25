@@ -50,11 +50,11 @@
   },
   {
    "file": "faces_04.png",
-   "sha256": "8492e7eb5ba64bf0b94fef05f9575a4c3d521d6df34d1e0c319990e0739a6c28"
+   "sha256": "1a1ef0eb9610c4b398530f10afe31ecbf111508493280f47232c824bf53365c7"
   },
   {
    "file": "faces_04_pal.png",
-   "sha256": "f9fbd01eab030a92e1a93f7c780df859db51377a7d2226b2048d0693cd5005c3"
+   "sha256": "8e392d473cbbe0584f650810564415cc1e4f171f94bb9f9070bbcef62b8e7e94"
   }
  ],
  "portraits": [
@@ -31458,6 +31458,249 @@
     8
    ],
    "review": "ok"
+  },
+  {
+   "id": 31163,
+   "gsis_id": "00-0031409",
+   "first": "Johnny",
+   "last": "Manziel",
+   "position": "QB",
+   "college": "Texas A&M",
+   "birth_month": 12,
+   "birth_day": 6,
+   "group": "roster_player",
+   "identity_match": "players_csv_gsis_id",
+   "source_url": "https://a.espncdn.com/i/headshots/nfl/players/full/16736.png",
+   "source_list": "espn",
+   "source_http_last_modified": "Mon, 04 Jun 2018 23:47:02 GMT",
+   "source_bytes": 467544,
+   "source_size": [
+    600,
+    436
+   ],
+   "source_sha256": "c1a1fee05e922880d23817b4c0f056c1c56f999f34d68746c954f16806122057",
+   "atlas": "faces_04.png",
+   "cell": [
+    11,
+    8
+   ],
+   "review": "ok_flagged"
+  },
+  {
+   "id": 31164,
+   "gsis_id": "00-0029665",
+   "first": "Robert",
+   "last": "Griffin",
+   "position": "QB",
+   "college": "Baylor",
+   "birth_month": 2,
+   "birth_day": 12,
+   "group": "roster_player",
+   "identity_match": "players_csv_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/k7asgb06pdsilmrb378b",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 02 Oct 2021 03:15:06 GMT",
+   "source_bytes": 439635,
+   "source_size": [
+    1400,
+    1000
+   ],
+   "source_sha256": "946132e9346893a042560c6c5cee491f0085d97fc8ca462271c1bb4aad10b86a",
+   "atlas": "faces_04.png",
+   "cell": [
+    12,
+    8
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31165,
+   "gsis_id": "00-0031280",
+   "first": "Derek",
+   "last": "Carr",
+   "position": "QB",
+   "college": "Fresno State",
+   "birth_month": 3,
+   "birth_day": 28,
+   "group": "roster_player",
+   "identity_match": "players_csv_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qsz1pyrlu6bmvby6maaf",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Mon, 02 Sep 2024 11:45:39 GMT",
+   "source_bytes": 2495617,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "47d233a6979b90b29a842b73604c1bba2f774d26cdf5fd5cdbbbf1f845b8689a",
+   "atlas": "faces_04.png",
+   "cell": [
+    13,
+    8
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31166,
+   "gsis_id": "00-0031237",
+   "first": "Teddy",
+   "last": "Bridgewater",
+   "position": "QB",
+   "college": "Louisville",
+   "birth_month": 11,
+   "birth_day": 10,
+   "group": "roster_player",
+   "identity_match": "players_csv_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wggyfg1dgyiwcgxafoen",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Wed, 10 Sep 2025 15:43:32 GMT",
+   "source_bytes": 3874943,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "8a279dc58ad41a56c5d565538ee6d1d7de7dd7ebcdb9be8fb5b3daa378440580",
+   "atlas": "faces_04.png",
+   "cell": [
+    14,
+    8
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31167,
+   "gsis_id": "00-0031407",
+   "first": "Blake",
+   "last": "Bortles",
+   "position": "QB",
+   "college": "UCF",
+   "birth_month": 4,
+   "birth_day": 28,
+   "group": "roster_player",
+   "identity_match": "players_csv_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/jvoui3bptgsfvgkz5e1b",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 25 Nov 2021 21:46:34 GMT",
+   "source_bytes": 361442,
+   "source_size": [
+    1400,
+    1000
+   ],
+   "source_sha256": "2322acfcacd8c3bf4aa637f813ab4cc8bff8a778b500edc72b056a2226fec7d4",
+   "atlas": "faces_04.png",
+   "cell": [
+    15,
+    8
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31168,
+   "gsis_id": "00-0027876",
+   "first": "Tim",
+   "last": "Tebow",
+   "position": "QB",
+   "college": "Florida",
+   "birth_month": 8,
+   "birth_day": 14,
+   "group": "roster_player",
+   "identity_match": "players_csv_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/s2erlgjztwbsquplostx",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sun, 04 Sep 2022 19:30:47 GMT",
+   "source_bytes": 352288,
+   "source_size": [
+    1400,
+    1000
+   ],
+   "source_sha256": "eca89b283a9bec0ea505e7773821d7b5ac88b19acbebafa74c2306d36497ddae",
+   "atlas": "faces_04.png",
+   "cell": [
+    0,
+    9
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31169,
+   "gsis_id": "00-0030821",
+   "first": "Allen",
+   "last": "Hurns",
+   "position": "WR",
+   "college": "Miami",
+   "birth_month": 11,
+   "birth_day": 12,
+   "group": "roster_player",
+   "identity_match": "players_csv_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/ficrwzwu4bfswpzu61fv",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 02 Oct 2021 03:05:34 GMT",
+   "source_bytes": 360743,
+   "source_size": [
+    1400,
+    1000
+   ],
+   "source_sha256": "6ba424e22b0d69089d0678ed6fcbf0758fb48782445bbe94d6516bf7a9dcf924",
+   "atlas": "faces_04.png",
+   "cell": [
+    1,
+    9
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31170,
+   "gsis_id": "00-0033275",
+   "first": "PJ",
+   "last": "Walker",
+   "position": "QB",
+   "college": "Temple",
+   "birth_month": 2,
+   "birth_day": 26,
+   "group": "roster_player",
+   "identity_match": "players_csv_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rfbfapksdwh1o4othraq",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Thu, 05 Sep 2024 12:34:46 GMT",
+   "source_bytes": 3154461,
+   "source_size": [
+    3400,
+    2450
+   ],
+   "source_sha256": "cb52abc0ee9bb7f671f65e66db2722e2fef129b5ff08d136c74eef7331635811",
+   "atlas": "faces_04.png",
+   "cell": [
+    2,
+    9
+   ],
+   "review": "ok"
+  },
+  {
+   "id": 31171,
+   "gsis_id": "00-0035529",
+   "first": "Hakeem",
+   "last": "Butler",
+   "position": "TE",
+   "college": "Iowa State",
+   "birth_month": 5,
+   "birth_day": 16,
+   "group": "roster_player",
+   "identity_match": "players_csv_gsis_id",
+   "source_url": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/oghggusz6f5y52yoslzi",
+   "source_list": "roster_2026",
+   "source_http_last_modified": "Sat, 09 Sep 2023 03:52:46 GMT",
+   "source_bytes": 6983453,
+   "source_size": [
+    3200,
+    2450
+   ],
+   "source_sha256": "66c6ef3f456e6c4319e01cf4c20acd442ce894f7946927a134d4f4373a8c2820",
+   "atlas": "faces_04.png",
+   "cell": [
+    3,
+    9
+   ],
+   "review": "ok"
   }
  ],
  "additions": [
@@ -31478,6 +31721,13 @@
    "job": "b81-roster-1125",
    "fetched": "2026-11-25",
    "rows": 47,
+   "moved_from_wrong_faces": 0,
+   "note": "Real players on 2026 club rosters that the pack had no record for, and two players whose records showed another man's stock portrait; same pipeline as pt1 and b9 D12."
+  },
+  {
+   "job": "b81-roster-1125-named",
+   "fetched": "2026-11-25",
+   "rows": 9,
    "moved_from_wrong_faces": 0,
    "note": "Real players on 2026 club rosters that the pack had no record for, and two players whose records showed another man's stock portrait; same pipeline as pt1 and b9 D12."
   }
