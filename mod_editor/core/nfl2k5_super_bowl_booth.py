@@ -1,4 +1,5 @@
-"""Franchise Super Bowl booth lines for the 2026 calendar (beta 81, job sb-booth). EXPERIMENTAL / UNWITNESSED.
+"""Booth lines for the 2026 calendar: the franchise Super Bowl and Berman's sign-offs (beta 81, job sb-booth).
+EXPERIMENTAL; witnessed for the Super Bowl lines (see below).
 
 The owner, testing a beta 81 disc after simming a new franchise's first season to the Super Bowl on the 2026 calendar:
 "why is the super bowl in jacksonville lmao", then "nevermind it is in sofi, commetary just said jascksonville". The
@@ -30,20 +31,32 @@ How the booth picks its Super Bowl lines (static RE, job sb-venue; the retail an
   one of those lines names the wrong game and three of the welcomes the wrong city. The game recorded no line for
   any later Super Bowl.
 
+Berman's postgame sign-offs (stale-line audit, revision 2)
+---------------------------------------------------------
+The halftime/postgame director (outer 1195) event 131 also ends ordinary broadcasts with ESPN's 2004 anniversary:
+child 67 (key 39795, regular season, both takes: "...celebrating 25 years as the worldwide leader in sports", "...for
+25 years and counting"), child 65 (key 39797, preseason, both takes) and children 68/69 (key 39799, AFC wild card). The
+same event already holds the recorded generic sign-offs: child 64 (key 39796, three takes, "Thanks for watching the
+NFL on ESPN, the worldwide leader in sports...") and child 66 (key 39798, two takes, the preseason). Revision 2 points
+39795 and 39799 at 39796 and 39797 at 39798 (4 more bytes in outer 1195). A disc with revision 1 (14 bytes) upgrades in
+place: its outer 1195 is accepted as the previous applied state.
+
 What this owner does
 --------------------
 Each of those say operands is pointed at the retail line the game already recorded for the same moment without a
 city or a number: key 14051, lines 1483 "Hi there, I'm Dan Stevens and welcome to the Super Bowl here on ESPN"
 (the line the Anniversary moments' welcome, nfl2k5_moment_booth, also uses); key 2959, lines 1051 "And the Super Bowl
 is about to get underway. Let's go to the coin toss"; key 39815, lines 2740 "That does it for our coverage of the
-Super Bowl on ESPN ...". 14 bytes (the low byte of each key) in three director entries that the disc stores
-uncompressed; every entry keeps its size, the executable, the speech tables and the audio are untouched, and no
+Super Bowl on ESPN ...", and the anniversary sign-offs at the generic ones above. 18 bytes (the low byte of each key)
+in three director entries that the disc stores uncompressed; every entry keeps its size, the executable, the speech tables and the audio are untouched, and no
 other director data changes. The Anniversary moments never run event 113 (0x67E80 skips it in game mode 8), so
 they are not affected. Saves do not hold director data: an existing franchise hears the new lines at its next
 Super Bowl. The build runs this with the 2026 season (``season_2026``); on the retail 2004 calendar the retail lines
 are right and stay.
 
-EXPERIMENTAL and UNWITNESSED in game unless a report says otherwise.
+Witnessed (xemu, 2026-11-25, revision 1): Super Bowls on a 2029 save at season index 0 (written before play) and 3
+(natural) said 14051, 2950-2953/2955 and 2959, never a numbered or city line; venues s40 (SoFi) and h41 (Nissan).
+The sign-offs (revision 2) are unwitnessed unless a report says otherwise.
 """
 from __future__ import annotations
 
@@ -61,7 +74,10 @@ LABEL = "EXPERIMENTAL / UNWITNESSED"
 WRAPPER = 0x20          # resource wrapper before the DRCT body inside each outer entry
 SAY = 0x9F              # the director's say instruction; the key follows big-endian
 WELCOME, COIN_TOSS, SIGN_OFF = 14051, 2959, 39815
-GENERIC_LINES = {WELCOME: 1483, COIN_TOSS: 1051, SIGN_OFF: 2740}
+SIGN_OFF_GAME, SIGN_OFF_PRESEASON = 39796, 39798
+#: the generic lines this owner points at -> their lines.bin streams (39796 and 39798 have several takes)
+GENERIC_LINES = {WELCOME: (1483,), COIN_TOSS: (1051,), SIGN_OFF: (2740,), SIGN_OFF_GAME: (9440, 9441, 9442),
+                 SIGN_OFF_PRESEASON: (9445, 9446)}
 
 
 @dataclass(frozen=True)
@@ -72,7 +88,8 @@ class Site:
     child: int          # the event's child (decision-tree leaf)
     retail: int         # retail phrase key
     generic: int        # the key this owner writes
-    line: int           # retail lines.bin stream of the retail key
+    line: int           # first retail lines.bin stream of the retail key
+    revision: int = 1   # 1: the Super Bowl lines (40c10fb79); 2: the anniversary sign-offs
 
 
 SITES = (
@@ -90,9 +107,13 @@ SITES = (
     Site(1195, 0x30D0, 131, 72, 39811, SIGN_OFF, 2737),
     Site(1195, 0x310C, 131, 75, 39812, SIGN_OFF, 2738),
     Site(1195, 0x3120, 131, 76, 39813, SIGN_OFF, 2739),
+    Site(1195, 0x306C, 131, 67, 39795, SIGN_OFF_GAME, 9438, 2),
+    Site(1195, 0x3044, 131, 65, 39797, SIGN_OFF_PRESEASON, 9443, 2),
+    Site(1195, 0x3080, 131, 68, 39799, SIGN_OFF_GAME, 2730, 2),
+    Site(1195, 0x3094, 131, 69, 39799, SIGN_OFF_GAME, 2730, 2),
 )
-#: the retail keys that name Super Bowls XXXIX to XLII (and, for the welcomes, their cities)
-NUMBERED_KEYS = frozenset(site.retail for site in SITES)
+#: the retail keys that name Super Bowls XXXIX to XLII (and, for the welcomes, their cities) or ESPN's 2004 anniversary
+STALE_KEYS = frozenset(site.retail for site in SITES)
 OUTERS = (4, 1194, 1195)
 ROLES = {4: "in-game director", 1194: "pregame director", 1195: "halftime and postgame director"}
 #: outer entry size and SHA-256 of the whole entry (wrapper + body), retail and with this owner applied
@@ -105,11 +126,13 @@ ENTRY_PINS = {
            "applied": "de1fc5e361ada65c585e0c2b095a786e521c8d6a786beb78efd422a8543a041e"},
     1195: {"size": 29_200,
            "retail": "644f445868afa7e75d3c50ed055bb2506ea4c909886d683a439b668395f70494",
-           "applied": "4913b9d9ad33cf4a37261702b94ecb871e244fcc136b1f2822eb79338be405d2"},
+           "applied": "a2057f6807b5ed177bd1f0284c050ee6c0f6e2aa35b4c3b73fcbbde409b2c56e",
+           # revision 1 (40c10fb79): the three Super Bowl sign-offs only
+           "previous": ("4913b9d9ad33cf4a37261702b94ecb871e244fcc136b1f2822eb79338be405d2",)},
 }
-UI_TEXT = ("EXPERIMENTAL / UNWITNESSED. With the 2026 season: franchise Super Bowls get the booth's own Super Bowl "
-           "welcome, coin toss and sign-off without a city or a number, instead of the retail lines for Super Bowls "
-           "XXXIX to XLII in Jacksonville, Detroit, Miami and Tempe.")
+UI_TEXT = ("EXPERIMENTAL. With the 2026 season: franchise Super Bowls get the booth's own Super Bowl welcome, coin toss "
+           "and sign-off without a city or a number, instead of the retail lines for Super Bowls XXXIX to XLII in "
+           "Jacksonville, Detroit, Miami and Tempe, and Berman's sign-offs no longer celebrate ESPN's 25th year.")
 
 
 class SuperBowlBoothError(ValueError):
@@ -137,7 +160,7 @@ def _key_at(entry: bytes, site: Site) -> int | None:
 
 
 def entry_state(outer: int, entry: bytes) -> str:
-    """retail / applied / foreign for one director entry (pinned by its whole-entry SHA-256)."""
+    """retail / previous / applied / foreign for one director entry (pinned by its whole-entry SHA-256)."""
     pins = ENTRY_PINS[outer]
     if len(entry) != pins["size"] or entry[:4] != b"DRCT":
         return "foreign"
@@ -146,37 +169,45 @@ def entry_state(outer: int, entry: bytes) -> str:
         return "retail"
     if digest == pins["applied"]:
         return "applied"
+    if digest in pins.get("previous", ()):
+        return "previous"
     return "foreign"
 
 
 def patch_entry(outer: int, entry: bytes) -> tuple[bytes, dict[str, Any]]:
-    """The entry with its say operands retargeted. Retail only; an applied entry is returned unchanged."""
+    """The entry with its say operands retargeted. Retail or the previous revision; an applied entry is returned
+    unchanged."""
     state = entry_state(outer, entry)
     if state == "applied":
         return bytes(entry), {"outer": outer, "state": "applied", "already_applied": True, "changed_bytes": 0}
-    require(state == "retail", f"outer entry {outer} ({ROLES[outer]}) is not the pinned retail or applied director; "
-                               "refusing")
+    require(state in ("retail", "previous"),
+            f"outer entry {outer} ({ROLES[outer]}) is not the pinned retail, previous or applied director; refusing")
     out = bytearray(entry)
+    pending = 0
     for site in sites_for(outer):
-        require(_key_at(out, site) == site.retail,
-                f"outer {outer} +0x{site.body_offset:X}: expected say {site.retail}, found {_key_at(out, site)}")
+        key = _key_at(out, site)
+        if state == "previous" and site.revision == 1 and key == site.generic:
+            continue
+        require(key == site.retail, f"outer {outer} +0x{site.body_offset:X}: expected say {site.retail}, found {key}")
         at = WRAPPER + site.body_offset + 1
         out[at:at + 2] = site.generic.to_bytes(2, "big")
+        pending += 1
     result = bytes(out)
     require(entry_state(outer, result) == "applied", f"outer entry {outer}: the patched director is not the pinned one")
     changed = [i for i, (a, b) in enumerate(zip(entry, result)) if a != b]
-    require(len(changed) == len(sites_for(outer)), f"outer entry {outer}: {len(changed)} bytes changed")
-    return result, {"outer": outer, "state": "applied", "already_applied": False, "changed_bytes": len(changed),
+    require(len(changed) == pending, f"outer entry {outer}: {len(changed)} bytes changed for {pending} sites")
+    return result, {"outer": outer, "state": "applied", "from": state, "already_applied": False,
+                    "changed_bytes": len(changed),
                     "entry_offsets": [f"0x{i:X}" for i in changed], "before_sha256": sha(entry),
                     "after_sha256": sha(result)}
 
 
-def numbered_lines(outer: int, entry: bytes) -> list[dict[str, Any]]:
-    """Every ``9F <key>`` in the entry whose key is one of the retail numbered/city lines (the release gate).
+def stale_lines(outer: int, entry: bytes) -> list[dict[str, Any]]:
+    """Every ``9F <key>`` in the entry whose key is one of the retail stale lines (the release gate).
 
-    A whole-entry byte scan, wider than the site table: on the retail directors it finds exactly the 14 sites."""
+    A whole-entry byte scan, wider than the site table: on the retail directors it finds exactly the 18 sites."""
     hits = []
-    for key in sorted(NUMBERED_KEYS):
+    for key in sorted(STALE_KEYS):
         needle = bytes([SAY]) + key.to_bytes(2, "big")
         at = entry.find(needle)
         while at != -1:
@@ -207,7 +238,7 @@ def read_entries(path: Path | str) -> dict[int, bytes]:
 
 
 def image_state(path: Path | str) -> str:
-    """retail / applied / mixed / foreign for a disc image or a loose pack folder."""
+    """retail / previous / applied / mixed / foreign for a disc image or a loose pack folder."""
     try:
         states = {entry_state(outer, raw) for outer, raw in read_entries(path).items()}
     except (OSError, ValueError, KeyError, IndexError):
@@ -218,15 +249,16 @@ def image_state(path: Path | str) -> str:
 
 
 def check_image(path: Path | str) -> list[dict[str, Any]]:
-    """Release gate: the numbered/city say operands left in the three directors (empty = pass)."""
+    """Release gate: the stale say operands left in the three directors (empty = pass)."""
     hits: list[dict[str, Any]] = []
     for outer, raw in read_entries(path).items():
-        hits.extend(numbered_lines(outer, raw))
+        hits.extend(stale_lines(outer, raw))
     return hits
 
 
 def apply_to_image(path: Path | str, *, progress: Callable[[str], None] | None = None) -> dict[str, Any]:
-    """Retarget the 14 say operands on a built COPY (in place, read back). Idempotent; refuses foreign directors."""
+    """Retarget the 18 say operands on a built COPY (in place, read back). Idempotent; upgrades revision 1 in place;
+    refuses foreign directors (and then writes nothing)."""
     say = progress or (lambda _m: None)
     entries: list[dict[str, Any]] = []
     with _outer_image()(path, writable=True) as archive:
@@ -238,26 +270,28 @@ def apply_to_image(path: Path | str, *, progress: Callable[[str], None] | None =
             plans.append((entry, before, after, receipt))
         for entry, before, after, receipt in plans:
             if not receipt["already_applied"]:
-                say(f"Super Bowl booth lines: {ROLES[receipt['outer']]} ({receipt['changed_bytes']} bytes)")
+                say(f"Booth lines: {ROLES[receipt['outer']]} ({receipt['changed_bytes']} bytes)")
                 for site in sites_for(receipt["outer"]):
                     at = WRAPPER + site.body_offset + 1
+                    if before[at:at + 2] == after[at:at + 2]:
+                        continue
                     require(archive.write(entry.virtual_offset + at, after[at:at + 2]) == 2,
                             f"short write in outer entry {receipt['outer']}")
                 readback = archive.read(entry.virtual_offset, entry.size)
                 require(readback == after, f"outer entry {receipt['outer']}: read-back differs")
             entries.append(receipt)
     left = check_image(path)
-    require(not left, f"numbered Super Bowl lines left after the write: {left}")
+    require(not left, f"stale booth lines left after the write: {left}")
     return {"owner": OWNER, "schema": SCHEMA, "label": LABEL, "state": "applied", "runtime_witnessed": False,
             "changed_bytes": sum(item["changed_bytes"] for item in entries), "entries": entries,
-            "generic_lines": {str(key): line for key, line in GENERIC_LINES.items()}}
+            "generic_lines": {str(key): list(lines) for key, lines in GENERIC_LINES.items()}}
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Franchise Super Bowl booth lines (2026 calendar).")
+    parser = argparse.ArgumentParser(description="Booth lines for the 2026 calendar (Super Bowl, Berman sign-offs).")
     sub = parser.add_subparsers(dest="command", required=True)
-    for name, text in (("status", "retail / applied / mixed / foreign"),
-                       ("check", "release gate: exit 1 when a numbered or city Super Bowl line is still said")):
+    for name, text in (("status", "retail / previous / applied / mixed / foreign"),
+                       ("check", "release gate: exit 1 when a stale Super Bowl or sign-off line is still said")):
         command = sub.add_parser(name, help=text)
         command.add_argument("image", type=Path, help="disc image or loose vc_53450030 folder (read only)")
     args = parser.parse_args(argv)

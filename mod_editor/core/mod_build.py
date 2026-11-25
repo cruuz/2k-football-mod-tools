@@ -9817,8 +9817,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             receipt["steps"].append({"step": "super_bowl_hosts", **hosts_receipt})
             receipt["result"]["super_bowl_hosts"] = hosts_receipt["state"]
         # sb-booth (b81): on the 2026 calendar the booth's retail Super Bowl welcome, coin toss and sign-off name Super
-        # Bowls XXXIX to XLII and their cities ("here in Jacksonville" at the first franchise Super Bowl); 14 bytes in
-        # three director entries point them at the game's own lines without a city or a number.
+        # Bowls XXXIX to XLII and their cities ("here in Jacksonville" at the first franchise Super Bowl), and Berman's
+        # sign-offs celebrate ESPN's 25th year; 18 bytes in three director entries point them at the game's own lines
+        # without a city, a number or the anniversary.
         booth = _core_module("nfl2k5_super_bowl_booth")
         if booth is None:
             raise ValueError("the Super Bowl booth step is unavailable")
