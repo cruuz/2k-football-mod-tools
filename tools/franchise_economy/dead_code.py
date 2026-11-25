@@ -107,6 +107,11 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     0x65940: (86, "20dcb7de3fb8abad5909d06f7de4b1fdccdda7087c1d0bbb6c2a0ec0e9ae2871"),   # r10: r10_prove (the prove-it club: best room, then a hole club)
     0x6F420: (95, "e5c4bd553d6342316f547b146c89c20c4877e936d6500c8d6ec4624799ae3600"),   # r10: restructure_best + economy_release (retune: the 3-a-club cap; releases prune the trade board)
     0x15E9D0: (91, "20f03f798baf9489d32685f6bc3115606680117bdb9729e6745a760bfa50b228"),   # r10: restructured: a club's restructured deals (retune)
+    0xFAA20: (94, "ae55f3d068724ec9a0ec7c73e18f546c1895fa21bf9c0c0ae26e6736f4f8abbf"),   # r10: camp_ahead + camp_fits (review M1)
+    0x25CC20: (94, "b4f18b6672a0602cc9a693e1b3b6dba1e1504117c12667d83560666f30f5fd88"),   # r10: camp_keep: the better of the two stays (review M1)
+    0x28D4A0: (94, "ae55f3d068724ec9a0ec7c73e18f546c1895fa21bf9c0c0ae26e6736f4f8abbf"),   # r10: camp_one: one position's camp competition (review M1)
+    0x329C50: (94, "ae55f3d068724ec9a0ec7c73e18f546c1895fa21bf9c0c0ae26e6736f4f8abbf"),   # r10: years_hash: the length draw 0..254 (review S2)
+    0x31B000: (93, "584bae975e91b245a9408bc69c535c992412054a17f2dfbd0ac046bccd599a43"),   # r10: hole_room: a hole club's room less its floor fills (review N1)
 }
 
 

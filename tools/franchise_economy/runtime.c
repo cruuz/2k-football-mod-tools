@@ -1080,7 +1080,7 @@ SECTION(".roster_v") int FAST economy_room_for_signing(u8 *team) {
  * room; lengths ignored age and price; the in-season prove-it ask counted the room of full clubs no one could sign with.
  * Revision 10:
  * - price: a player's rank at his position group among every rostered man, on the real market curve (OverTheCap, the
- *   k-th best-paid active player's share of the cap) x 0.80, the aging rule by age, the minimum. Rating inflation moves
+ *   k-th best-paid active player's share of the cap) x the price scale (1.0 since the 11/25 retune), the aging rule by age, the minimum. Rating inflation moves
  *   no price (data/nfl2k5_franchise_economy.json revision_10.price);
  * - a free agent's ask falls with the weeks he goes unsigned; the prove-it clamp counts only clubs that could sign him;
  * - lengths: one draw from the real length mix of the player's age band and price tier, used by the CPU's offers, the
@@ -1167,7 +1167,7 @@ SECTION(".r10_ask") unsigned ask_of(u8 *p, unsigned value, unsigned floor) {
 }
 
 /* After two unsigned weeks a man rated over 70 asks no more than the most room a club that could sign him now has left
- * (Noah 10/22: "take the best deal on the table after a week or two of no one signing them"). economy_best_room with a
+ * (the owner 10/22: "take the best deal on the table after a week or two of no one signing them"). economy_best_room with a
  * club pointer: a full club is busy, as in the signing pass itself (the old clamp counted full clubs too, so his ask
  * could exceed every open club's room and he never signed: 10-16 starter-grade men a league by 2033). */
 SECTION(".r10_clamp") unsigned economy_ask(u8 *p, unsigned value, unsigned floor) {
@@ -1199,12 +1199,18 @@ SECTION(".years") __attribute__((naked)) void economy_years_entry(void) {
     __asm__("mov %edi, %ecx\njmp economy_years\n");
 }
 
+/* His draw, 0..254 (review S2: a cell's 255 is 100 per cent, so 255 must never be drawn): a hash of his record and the
+ * season. */
+SECTION(".r10_hash") unsigned years_hash(u8 *p) {
+    u32 h = ((((u32)p - *(u32 *)(ROSTER_ROOT + 4)) ^ (SEASON * 0x9E3779B9u)) * 2654435761u) >> 24;
+    return h - (h == 255);
+}
+
 SECTION(".r10_years") unsigned FAST economy_years(u8 *p) {
     if (!p) return (unsigned)-1;
     if (p[0x35] >= 17) return 1;
     const u8 *cum = years_cell(p);
-    u32 h = ((((u32)p - *(u32 *)(ROSTER_ROOT + 4)) ^ (SEASON * 0x9E3779B9u)) * 2654435761u) >> 24;
-    unsigned years = 1;
+    unsigned h = years_hash(p), years = 1;
     while (years < 5 && h >= cum[years - 1]) ++years;
     if (years == 1 && age_of(p) <= 29) years = 2 + (h & 1);   /* retune 11/25: a man 29 or under signs for 2-3 years */
     return years;
@@ -1227,6 +1233,7 @@ SECTION(".r10_usable") int FAST economy_usable_room(u8 *team) {
 /* A native fill's budget for a CPU club: its usable room, but always four minimums (a club fills its depth). */
 SECTION(".r10_budget") int FAST economy_fill_budget(u8 *team) {
     int room = economy_usable_room(team), least = (int)(4 * floor_of(0));
+    if (room > 0xFFFF) room = 0xFFFF;           /* review S1: the native signing compares the low word only */
     return room > least ? room : least;
 }
 
@@ -1354,23 +1361,47 @@ SECTION(".r10_best") u8 *best_at(u8 **list, unsigned n, unsigned pos) {
     return best;
 }
 
-/* Camp competition (stage 6, from upkeep): for K, then P, a CPU club whose best healthy one rates 4+ below the best
- * healthy free agent signs one (0x322BB0: the best-rated free agent at the position whose ask fits its usable room, but
- * always four minimums) and releases the one it had. Kickers and punters change clubs; none retires for it (Noah 10/28:
- * no player retires because he is an unsigned free agent). */
-/* The club's best healthy man at `pos` when the best healthy free agent there rates 4+ above him, else 0. */
-SECTION(".r10_camp_pick") u8 *camp_pick(u8 *team, unsigned pos) {
+/* Camp competition (stage 6, from upkeep): for K, then P, a CPU club whose best healthy one rates CAMP_EDGE (2 points)
+ * below the best healthy free agent whose ask fits its fill budget signs (0x322BB0) and keeps the better man: the
+ * incumbent goes only when the man signed is healthy and rates the edge above him; otherwise the man signed goes
+ * (review M1: the native signing takes the best-rated affordable man at the position, hurt or not, who need not be the
+ * one compared). Kickers and punters change clubs; none retires for it (the owner 10/28: no player retires because he
+ * is an unsigned free agent). */
+/* Healthy and CAMP_EDGE above `mine`. */
+SECTION(".r10_camp_ahead") unsigned camp_ahead(u8 *q, u8 *mine) {
+    return q && HEALTHY(q) && n_rating(q, 0) >= n_rating(mine, 0) + CAMP_EDGE;
+}
+
+/* The club's best healthy man at `pos` when the best healthy free agent there, asking no more than `budget` (the price
+ * the native signing compares: 0x2BD440(p, 0; 0, 1, 0), low word), rates the edge above him, else 0. */
+/* He asks no more than `budget`. */
+SECTION(".r10_camp_fits") unsigned camp_fits(u8 *fa, int budget) {
+    return (int)(economy_value(fa, 0, 0, 1, 0) & 0xFFFF) <= budget;
+}
+
+SECTION(".r10_camp_pick") u8 *camp_pick(u8 *team, unsigned pos, int budget) {
     u32 *list = FA_LIST;
     u8 *mine = best_at((u8 **)team, team[0x11c], pos), *fa = best_at((u8 **)list[1], list[0], pos);
-    return mine && fa && n_rating(fa, 0) >= n_rating(mine, 0) + CAMP_EDGE ? mine : 0;
+    return mine && fa && camp_fits(fa, budget) && camp_ahead(fa, mine) ? mine : 0;
+}
+
+/* One position's competition: sign within the fill budget, keep the better of the two. */
+/* After a signing: the man just appended (0xC3EE0) stays only if he is healthy and the edge above `mine`. */
+SECTION(".r10_camp_keep") void FAST camp_keep(u8 *team, u8 *mine) {
+    u8 *signed_man = ((u8 **)team)[team[0x11c] - 1];
+    economy_release(team, camp_ahead(signed_man, mine) ? mine : signed_man);
+}
+
+SECTION(".r10_camp_one") void FAST camp_one(u8 *team, unsigned pos, void *menu) {
+    int budget = economy_fill_budget(team);
+    u8 *mine = camp_pick(team, pos, budget);
+    if (mine && n_cpu_sign(team, pos, budget, menu)) camp_keep(team, mine);
 }
 
 SECTION(".r10_camp") void FAST economy_camp(u8 *team, void *menu) {
     if (STAGE != 6 || n_human(team) || team[0x11c] >= 64) return;
-    for (unsigned pos = 1; pos <= 2; ++pos) {
-        u8 *mine = camp_pick(team, pos);
-        if (mine && n_cpu_sign(team, pos, economy_fill_budget(team), menu)) economy_release(team, mine);
-    }
+    camp_one(team, 1, menu);
+    camp_one(team, 2, menu);
 }
 
 /* ---- b81 economy revision 10: prove-it hole priority (coordinator 11/25: the team-building lane's DESIGN 3.4, which it
@@ -1492,8 +1523,15 @@ SECTION(".r10_level") unsigned level_ok(u8 *team, u8 *p) {
     return club_level(team, p[0x35], n_rating(p, 1), team[0x11c] >= 53);
 }
 
+/* The room a hole club may spend on him: its usable room less its floor fills (a club under 50 keeps a minimum for each
+ * man it still needs to 49, as economy_best_room does; review N1). */
+SECTION(".r10_hole_room") int FAST hole_room(u8 *team) {
+    int room = economy_usable_room(team), short_of = FLOOR_PLAYERS - 1 - team[0x11c];
+    return short_of > 0 ? room - short_of * (int)economy_floor(0) : room;
+}
+
 SECTION(".r10_could") void hole_pick(u8 *team, u8 *p, unsigned ask, struct pick *k) {
-    int room = economy_usable_room(team);
+    int room = hole_room(team);
     if (room >= (int)ask && room > k->most && !n_human(team) && level_ok(team, p) && economy_hole_p(team, p)) {
         k->most = room;
         k->club = team;

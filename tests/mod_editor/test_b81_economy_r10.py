@@ -473,5 +473,103 @@ class NativeTests(unittest.TestCase):
                 self.m.uc.mem_write(q, raw)
         self.assertEqual(results, {1: [mine], 3: [fa]})
 
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
+class ReviewFixTests(unittest.TestCase):
+    """The Fable review of revision 10 (economy/FABLE_REVIEW.txt, 11/25): M1, S1, S2. Each case in a fresh machine
+    (the reviewer's probe_camp4.py scenarios): the club with exactly one kicker, its kicker and the free-agent kickers
+    rated by hand, every free-agent punter hurt, stage 6."""
+
+    def camp(self, scenario):
+        from tools.franchise_economy.probe import start
+        m = start(retail_roster(), economy.apply(retail_bytes())[0])
+        m.leaf(0x14E540, lambda: m.ret(1), reason="user confirmation only")
+        m.leaf(0x14E520, lambda: m.ret(), reason="informational display only")
+        team = lambda t: m.team_base + 500 * t
+        rb = lambda a: m.uc.mem_read(a, 1)[0]
+        roster = lambda t: [m.get(team(t) + 4 * i) for i in range(rb(team(t) + 0x11C))]
+        human = [t for t in range(32) if m.call(0x13EC30, ecx=team(t))]
+        root = m.get(0xB72918)
+        fas = [m.get(m.get(root + 0x3C) + 4 * i) for i in range(m.get(root + 0x38))]
+        t = next(t for t in range(32) if t not in human and sum(rb(q + 0x35) == 1 for q in roster(t)) == 1)
+        club = team(t)
+        mine = next(q for q in roster(t) if rb(q + 0x35) == 1)
+        kickers = [q for q in fas if rb(q + 0x35) == 1]
+        m.put(0xE576A4, 6)
+        m.put(0xE576B8, 0)
+        mine_r = {"dear": 80, "wide": 45, "control": 80}[scenario]
+        m.uc.mem_write(mine + 0x38, bytes([mine_r] * (84 - 0x38)))
+        star = kickers[0]
+        m.uc.mem_write(star + 0x38, bytes([99] * (84 - 0x38)))
+        for q in kickers[1:]:
+            m.uc.mem_write(q + 0x38, bytes([55] * (84 - 0x38)))
+        for q in [mine] + kickers:
+            m.uc.mem_write(q + 0x23, bytes((rb(q + 0x23) & 0x7F,)))
+        for q in fas:
+            if rb(q + 0x35) == 2:
+                m.uc.mem_write(q + 0x23, bytes((rb(q + 0x23) | 0x80,)))
+        m.call(0xC3F00, ecx=club)
+        payroll = m.get(club + 0x124)
+        s32 = lambda v: v - ((v >> 31) << 32)
+        if scenario == "wide":                           # usable room just past 65,536 (the reviewer's 66,056)
+            cap = payroll + 66000
+            for _ in range(1000):
+                m.put(0xE3C278, cap)
+                u = s32(m.call(SYM["economy_usable_room"], ecx=club))
+                if 65536 + 400 <= u <= 65536 + 700:
+                    break
+                cap += (65536 + 550) - u if abs((65536 + 550) - u) > 2 else 1
+        else:
+            cap = payroll + (700 if scenario == "dear" else 30000)
+        m.put(0xE3C278, cap)
+        m.call(0xC3F00, ecx=club)
+        budget = s32(m.call(SYM["economy_fill_budget"], ecx=club))
+        star_ask = m.call(0x2BD440, ecx=star, edx=0, args=(0, 1, 0), budget=50_000_000) & 0xFFFF
+        m.call(SYM["economy_camp"], ecx=club, edx=m.ARENA + 0x1A0000, budget=1_500_000_000)
+        now = [q for q in roster(t) if rb(q + 0x35) == 1]
+        return dict(budget=budget, star_ask=star_ask, mine=mine, star=star, now=now,
+                    usable=s32(m.call(SYM["economy_usable_room"], ecx=club)))
+
+    def test_m1_a_club_that_cannot_afford_the_better_kicker_keeps_its_own(self):
+        # Room 700 (usable negative, fill budget four minimums): the best free agent asks more than that. Before the
+        # fix the club signed a 55-rated (43-point) kicker and released its 80-rated (75-point) one.
+        got = self.camp("dear")
+        self.assertGreater(got["star_ask"], got["budget"])
+        self.assertEqual(got["now"], [got["mine"]])
+
+    def test_m1_control_a_club_with_room_signs_the_better_kicker(self):
+        got = self.camp("control")
+        self.assertEqual(got["now"], [got["star"]])
+
+    def test_s1_the_fill_budget_stops_at_16_bits(self):
+        # Usable room past 65,535: the native signing compares the low word only, so an unclamped budget of 66,056 read
+        # as 520 and the club signed a cheap kicker over the star (asking 1,736) it could easily pay.
+        got = self.camp("wide")
+        self.assertGreater(got["usable"], 0xFFFF)
+        self.assertEqual(got["budget"], 0xFFFF)
+        self.assertEqual(got["now"], [got["star"]])
+
+    def test_s2_a_cell_at_one_year_always_draws_one_year(self):
+        # The length cell "33+, under 0.5% of the cap" is 100 per cent one year; the hash's top byte 255 used to pass
+        # its 255 and draw five years once in 256 seasons (the reviewer's 34-year-old receiver rated 40, season 125).
+        from tools.franchise_economy.probe import start
+        m = start(retail_roster(), economy.apply(retail_bytes())[0])
+        p = m.ARENA + 0x190000
+        b = bytearray(84)
+        b[8] = 4
+        b[0x24:0x28] = bytes((0, 12, 2, 0))
+        b[0x35] = 3
+        b[0x38:] = bytes([40] * (84 - 0x38))
+        season = m.get(0x247AC7) + 1
+        struct.pack_into("<I", b, 24, ((season - 34) % 100) << 21)
+        m.uc.mem_write(p, bytes(b))
+        years = set()
+        for index in range(600):
+            m.put(0xE576B8, index)
+            struct.pack_into("<I", b, 24, ((season + index - 34) % 100) << 21)
+            m.uc.mem_write(p, bytes(b))
+            years.add(m.call(0x322690, edi=p, budget=50_000_000))
+        self.assertEqual(years, {1})
+
 if __name__ == "__main__":
     unittest.main()
