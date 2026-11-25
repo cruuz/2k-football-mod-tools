@@ -30,11 +30,12 @@ VA = space.CPU_TRADES_VA
 SIZE = space.CPU_TRADES_SIZE
 LEVELS = ("retail", "realistic")
 # What the Studio installs for Realistic: the regular season (bit 1), the preseason (bit 2) and losing clubs' veteran
-# sales in season (bit 4, RULINGS R3), at the calibrated chances per package and tick (millionths, stage 8 halved and
+# sales in season (bit 4, RULINGS R3), at the calibrated chances per package and tick (millionths, stage 8 quartered and
 # weighted by week inside the page, both times the pool weight). P1 (4 roots x 3 seasons): our in-season trades 7.75
 # a season at 80,000 and 11.5 at 160,000 (equal pool weights); preseason 6.6 at 300,000 and 10.25 at 600,000. With the
 # calibrated pool weights these chances aim at about 16 in season and 16 to 21 in the preseason, all sources (G-T1,
-# G-T2); the ten-season run (P2) measures them.
+# G-T2). The ten-season run (P2) gave 16.6 in season and 13.1 in the preseason; on the coordinator's ruling the
+# preseason OL, LB and DT/DE weights went to 16 and the week table got steeper (trades.c), judged by the combined run.
 REALISTIC_STAGES = 1 | 2 | 4
 P8_PPM = 450_000
 P7_PPM = 1_000_000

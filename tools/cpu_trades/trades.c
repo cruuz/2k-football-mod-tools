@@ -15,7 +15,7 @@
    the deadline byte 0x5151C5 whatever the Trade Deadline option says; R5), 2 = the preseason (stage 7, from the second
    franchise season: S10), 4 = losing clubs may sell veterans past their prime in season (R3, S2); flags bit 0 = shadow
    (everything is computed, counted and logged; nothing is written: no release, no record, no row); p8_ppm and p7_ppm
-   = the posting chance per package in millionths (stage 8: times the week weight, halved; both times the pool weight).
+   = the posting chance per package in millionths (stage 8: times the week weight, quartered; both times the pool weight).
 
    One round (post):
    - League scale per pool (header): every club's need-seat starters (32 x TN_NEED_SEATS values; an empty seat rates
@@ -187,15 +187,17 @@ extern volatile struct event ct_ring[RING_EVENTS];    /* page + 0x1D00 */
 /* The economy's smart cut tiers per position (cut_max, cut_keep; cut_min is the header's; one-pool LB). */
 static const u8 CUT_MAX[TN_POSITIONS] = {3, 30, 30, 30, 30, 30, 30, 30, 2, 30, 0, 30, 30, 30, 30, 30, 30};
 static const u8 CUT_KEEP[TN_POSITIONS] = {2, 30, 30, 6, 6, 2, 2, 3, 1, 3, 0, 5, 2, 3, 4, 4, 4};
-/* Stage 8 week weights (stored week 0..8), halved when used: the real deadline rush. */
-static const u8 WEEK_WEIGHT[9] = {1, 1, 1, 1, 2, 2, 2, 4, 8};
+/* Stage 8 week weights (stored week 0..8), quartered when used: the real deadline rush. P2 (ten seasons) found ours
+   too even (34 percent in stored weeks 0..3, 34.6 in the last two open weeks; G-T5 wants at most 30 and at least 35):
+   the first two weeks now run at half the earlier rate, weeks 2..6 unchanged, weeks 7 and 8 half again more. */
+static const u8 WEEK_WEIGHT[9] = {1, 1, 2, 2, 4, 4, 4, 12, 24};
 /* Pool weights in 16ths (S1: hold the position mix to the real one), regular season and preseason. */
 /* Calibrated on P1 (trades-all/runs/p1, 4 roots x 3 seasons at two chances): at equal weights our in-season trades
    were 35-39 percent DB and 5-7 percent WR (real 21 and 21), the preseason's 33 percent OL and 14 percent TE (real 21
    and 5). Supply, not chance, limits WR (the 4th WR is rarely above the floor), so DB is cut hardest. */
 static const u8 POOL_WEIGHT[2][TN_POSITIONS] = {
     {0, 0, 0, 16, 4, 4, 4, 13, 0, 4, 0, 9, 2, 2, 2, 9, 9},          /* season */
-    {0, 0, 0, 12, 16, 16, 16, 2, 0, 3, 0, 14, 9, 9, 9, 12, 12},     /* preseason */
+    {0, 0, 0, 12, 16, 16, 16, 2, 0, 3, 0, 16, 16, 16, 16, 16, 16},  /* preseason (P2: OL, LB, DT/DE raised for G-T2) */
 };
 
 struct club {
@@ -619,7 +621,7 @@ static u32 post(struct posted *out, u32 stage, u32 round2, u32 *exhausted) {
         x->flags |= BUYER;
         ct_counters.buyers++;
     }
-    threshold = stage == 8 ? ct_settings.p8_ppm / 2 * WEEK_WEIGHT[week < 9 ? week : 8] : ct_settings.p7_ppm;
+    threshold = stage == 8 ? ct_settings.p8_ppm / 4 * WEEK_WEIGHT[week < 9 ? week : 8] : ct_settings.p7_ppm;
     start = fmix(year * 131u + week * 7u + stage + round2 * 977u) % CLUBS;
     for (u32 k = 0; k < CLUBS; k++) {
         u32 b = (start + k) % CLUBS, qs = 0, seller = 0, rebuild = 0, r = 0, pool = 0xFFu, depth = 0, word, result;

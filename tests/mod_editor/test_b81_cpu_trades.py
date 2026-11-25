@@ -49,9 +49,9 @@ CAP = 0xE3C278
 PROBE = 0x3200000
 CUT_MAX = (3, 30, 30, 30, 30, 30, 30, 30, 2, 30, 0, 30, 30, 30, 30, 30, 30)
 CUT_KEEP = (2, 30, 30, 6, 6, 2, 2, 3, 1, 3, 0, 5, 2, 3, 4, 4, 4)
-WEEK_WEIGHT = (1, 1, 1, 1, 2, 2, 2, 4, 8)
+WEEK_WEIGHT = (1, 1, 2, 2, 4, 4, 4, 12, 24)
 POOL_WEIGHT = ((0, 0, 0, 16, 4, 4, 4, 13, 0, 4, 0, 9, 2, 2, 2, 9, 9),
-               (0, 0, 0, 12, 16, 16, 16, 2, 0, 3, 0, 14, 9, 9, 9, 12, 12))
+               (0, 0, 0, 12, 16, 16, 16, 2, 0, 3, 0, 16, 16, 16, 16, 16, 16))
 
 
 def _code():
@@ -369,7 +369,7 @@ def model(x, stage, rows, *, round2=0, rebuild_bit=True, p8=1_000_000, p7=1_000_
         if (stage == 8 and c["w"] + 1 < c["l"]) or c["paid"] >= 3 or c["qbs"] < 2:
             continue
         c["buyer"] = True
-    threshold = p8 // 2 * WEEK_WEIGHT[min(week, 8)] if stage == 8 else p7
+    threshold = p8 // 4 * WEEK_WEIGHT[min(week, 8)] if stage == 8 else p7
     start = fmix((year * 131 + week * 7 + stage + round2 * 977) & 0xFFFFFFFF) % 32
     packages, by_buyer = [], {r["buyer"]: r for r in rows}
     for k in range(32):
@@ -426,7 +426,7 @@ class CpuTradesImage(unittest.TestCase):
 
     def fresh(self):
         x = Image()
-        x.m.put(WEEK, 8)                    # the last open week (weight 8: every draw fires at p8 = 1,000,000)
+        x.m.put(WEEK, 8)                    # the last open week (weight 24: a weight-3 pool or more always posts at 1,000,000)
         x.open_places(self.PLACES)
         return x
 
