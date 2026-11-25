@@ -12,6 +12,11 @@ advance's room pass writes it. The expected package is computed here from the de
 
 TradesPage and TradesOwner: the byte interface with the room page and the owner (install with bit 16, Retail, needs).
 
+The 4b revision (coordinator ruling M1/N6, the trades review's 1.3): TradesCapAfterTrade and TradesCapSeasonOne (the cap
+test charges what the buyer pays after the executor's contract rewrite), TradesPreviousRevision and StudioTrades' 383
+case (the page of ff6ae30b2 reads "previous" and upgrades in place). Their fixtures come from the environment only
+(QB4B_383_XBE, QB4B_CAP_IMAGE); they fail on f411bf2e4.
+
 Every class fails on b2672e398 (no nfl2k5_trade_picks, no trades page, the room refused bit 16):
 evidence qb34/evidence/trades/tests-on-b2672e398.txt.
 """
