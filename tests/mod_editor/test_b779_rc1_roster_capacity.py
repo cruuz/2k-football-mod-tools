@@ -273,7 +273,11 @@ class DraftClassSupplyTests(unittest.TestCase):
                                 | getattr(economy, "REVISION_6_SITES", frozenset())
                                 | getattr(economy, "REVISION_7_SITES", frozenset())
                                 | getattr(economy, "REVISION_8_NEW", frozenset())   # b81: the practice-squad fill
-                                | getattr(economy, "REVISION_9_NEW", frozenset())))   # b81 team building: the room routine
+                                | getattr(economy, "REVISION_9_NEW", frozenset())   # b81 team building: the room routine
+                                # b81 economy r10: its new windows and two sites and the windows it rewrote (their
+                                # revision-9 digests are PREVIOUS_REVISION_9); the class window is a revision-4 site
+                                | getattr(economy, "REVISION_10_NEW", frozenset())
+                                | frozenset(getattr(economy, "PREVIOUS_REVISION_9", ()))))
 
     def test_a_small_pool_still_gets_a_full_draft_and_keeps_the_vacancies(self):
         # The retail roster has only 241 free agents, mostly young: retiring by age alone frees far fewer than

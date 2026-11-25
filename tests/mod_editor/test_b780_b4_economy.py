@@ -362,7 +362,12 @@ class CampTests(unittest.TestCase):
                          sorted(self.economy.REVISION_5_SITES | getattr(self.economy, "REVISION_6_SITES", frozenset())
                                 | getattr(self.economy, "REVISION_7_SITES", frozenset())   # b780 econ3: revision 7
                                 | getattr(self.economy, "REVISION_8_NEW", frozenset())  # b81: the practice-squad fill
-                                | getattr(self.economy, "REVISION_9_NEW", frozenset())))  # b81 team building: the room routine
+                                | getattr(self.economy, "REVISION_9_NEW", frozenset())  # b81 team building: the room routine
+                                # b81 economy r10: its new windows and two sites, the windows it rewrote (their
+                                # revision-9 digests are PREVIOUS_REVISION_9) and the draft class window (K 4 / P 4)
+                                | getattr(self.economy, "REVISION_10_NEW", frozenset())
+                                | frozenset(getattr(self.economy, "PREVIOUS_REVISION_9", ()))
+                                | {self.economy.CLASS_WINDOW}))
         self.assertEqual(self.economy.status(self.fixed), "applied")
 
     def _camp(self, payload, stage, size):
