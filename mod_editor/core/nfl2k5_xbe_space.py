@@ -418,19 +418,30 @@ def reservations(payload: bytes | None = None) -> list[dict]:
     return result
 
 
+def _same_installed_requests(wanted, previous) -> bool:
+    """An installed image matches a build's request set. b81 awards: the season award vote's fixed page is appended by
+    its own owner after the build's allocation (honors.apply installs it), so an installed set may also hold exactly that
+    one request; the page sits at its absolute address and every other owner steps over it, so nothing else moves."""
+
+    if wanted == previous or wanted == [LOGO_REQUEST]:
+        return True
+    return (AWARDS_REQUEST in previous and AWARDS_REQUEST not in wanted
+            and [r for r in previous if r != AWARDS_REQUEST] == wanted)
+
+
 def apply(payload: bytes, requests=(), *, scaleout=False) -> tuple[bytes, dict]:
     _require(type(scaleout) is bool, "scaleout must be a boolean")
     grown, _, previous = _validate(payload)
     wanted = _requests(requests)
     if is_scaleout(payload):
-        _require(wanted == previous or wanted == [LOGO_REQUEST], "allocation requests differ; rebuild from base")
+        _require(_same_installed_requests(wanted, previous), "allocation requests differ; rebuild from base")
         return payload, {"status": "already_applied", "changed_bytes": 0, "allocations": _scale_allocations(previous)}
     if not grown and (scaleout or _needs_scaleout(wanted)):
         return _apply_scaleout(payload, wanted)
     _allocations(wanted)
     if grown:
         _require(not scaleout, "scale-out needs a rebuild from base")
-        _require(wanted == previous or wanted == [LOGO_REQUEST], "allocation requests differ; rebuild from base")
+        _require(_same_installed_requests(wanted, previous), "allocation requests differ; rebuild from base")
         return payload, {"status": "already_applied", "changed_bytes": 0, "allocations": _allocations(previous)}
     extended = _extended(wanted)
     if extended:

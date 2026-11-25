@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from mod_editor.core import nfl2k5_awards as awards  # noqa: E402
 from mod_editor.core import nfl2k5_champions as champions  # noqa: E402
 from mod_editor.core import nfl2k5_champions_code as runtime  # noqa: E402
 from mod_editor.core import nfl2k5_champions_code_b779 as runtime_b779  # noqa: E402
@@ -217,9 +218,16 @@ class ReleaseV08Tests(unittest.TestCase):
         self.assertEqual(honors.status(self.upgraded), "applied")
         self.assertEqual(champions.status(self.upgraded), "applied")
         self.assertEqual(self.receipt["upgraded_from"], "beta-79")
-        self.assertEqual(len(self.upgraded), len(self.v08))
+        # b81 awards: the upgrade also appends the award vote's fixed page (a late owner: the file grows, and a v3 image
+        # becomes v4 with the pool directory page); every earlier feature row stays where it was
+        self.assertLess(len(self.v08), len(self.upgraded))
         before = space.layout(self.v08)["allocations"]
-        self.assertEqual(before, space.layout(self.upgraded)["allocations"])
+        after = space.layout(self.upgraded)["allocations"]
+        self.assertEqual([r for r in after if r["owner"] not in (awards.OWNER, space.DIRECTORY_OWNER)],
+                         [r for r in before if r["owner"] != space.DIRECTORY_OWNER])
+        self.assertEqual([(r["owner"], r["va"]) for r in after if r["owner"] == awards.OWNER],
+                         [(awards.OWNER, space.AWARDS_VA)])
+        self.assertEqual(awards.status(self.upgraded), "applied")
         old, new = XbeImage(self.v08), XbeImage(self.upgraded)
         rewritten = {(honors.OWNER, "code"), (champions.OWNER, "code")}
         for row in before:
@@ -236,7 +244,9 @@ class ReleaseV08Tests(unittest.TestCase):
 
     def test_every_other_installed_owner_reads_the_same_after_the_upgrade(self):
         import importlib
-        names = [owner for owner in space.LATE_OWNERS if owner not in (honors.OWNER, champions.OWNER)]
+        # b81 awards: the award vote is installed by this upgrade (retail -> applied); every other owner reads the same
+        self.assertEqual((awards.status(self.v08), awards.status(self.upgraded)), ("retail", "applied"))
+        names = [owner for owner in space.LATE_OWNERS if owner not in (honors.OWNER, champions.OWNER, awards.OWNER)]
         names += ["nfl2k5_defensive_try", "nfl2k5_cpu_scrambles", "nfl2k5_cpu_money_downs", "nfl2k5_k128",
                   "nfl2k5_my_career", "nfl2k5_espn25_more_moments", "nfl2k5_abilities_runtime", "nfl2k5_coverage_trail"]
         checked = 0

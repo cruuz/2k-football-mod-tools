@@ -17,6 +17,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
+from mod_editor.core import nfl2k5_awards as awards
 from mod_editor.core import nfl2k5_honors as honors
 from mod_editor.core import nfl2k5_season_length as season
 from tests.mod_editor.test_nfl2k5_honors import (
@@ -200,6 +201,14 @@ class EventTests(unittest.TestCase):
                 m = self.machine(seeded=seeded, empty=empty)
                 for week in range(18):
                     m.season_stats(week)
+                    if week == 17:
+                        # b81 awards: honors.apply installs the season award vote, which fills the best-at-position
+                        # slots from its All-Pro team by season lines. Give the league a plausible final line (a few
+                        # interceptions thrown, tackles) so the vote has picks for the honors tail to record.
+                        for i, p in enumerate(m.players):
+                            m.put(CLASS, 0)
+                            for field, value in ((10, 5 + i), (18, 60 + i)):
+                                m.call(0x14F430, ecx=p, edx=field, stack=(value,))
                     m.weekly_results()
                     m.game(week, complete=False)
                     self.assertFalse(any(e[0] == "honors_season_hook" for e in m.events))
@@ -210,9 +219,17 @@ class EventTests(unittest.TestCase):
                 self.assertEqual([e for e in m.events if e[0] == "honors_season_hook"],
                                  [("honors_season_hook", 17)])
                 self.assertFalse(any(e[0] == "honors_fold_rule" for e in m.events))
+                # b81 awards: the vote takes the best-at-position slots from its 24-man All-Pro team (QB, HB, WR, TE,
+                # T, DE, LB, CB, K) and clears the return-man slot. This league has no tackle and no kicker with 10
+                # field-goal tries, so those slots stay empty too; the honors tail (set_honor skips a null player)
+                # records nobody from them.
+                empty = {0x5850, 0x5870, 0x5878} if awards.status(self.payload) == "applied" else set()
                 for off, name in honors.SEASON_SLOTS:
                     p = m.get(AWARDS + off)
-                    self.assertIn(p, m.players, name)
+                    if off in empty:
+                        self.assertEqual((p, m.get(AWARDS + off + 4)), (0, 0), hex(off))
+                        continue
+                    self.assertIn(p, m.players, (name, hex(off)))
                     slot = (m.get(p + 0x24) >> 8) & 31
                     self.assertEqual(honors_in(m.stream(p))[(honors.FIELDS[name], slot)], (1, False))
                     counts, years = m.page(p)

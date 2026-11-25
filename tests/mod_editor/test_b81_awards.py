@@ -90,6 +90,18 @@ class StaticTests(unittest.TestCase):
                          space.AWARDS_VA - space.POOL_VA + 4096)
         self.assertFalse(set(awards.REQUESTS) & set(honors.REQUESTS))      # appended by awards.install, not in the set
 
+    def test_a_build_accepts_an_installed_set_holding_the_appended_page_and_nothing_else(self):
+        # the build path re-checks an installed image against its own requests (honors.REQUESTS has no awards page)
+        wanted = space._requests(honors.REQUESTS)
+        with_page = space._requests(list(honors.REQUESTS) + [space.AWARDS_REQUEST])
+        self.assertTrue(space._same_installed_requests(wanted, wanted))
+        self.assertTrue(space._same_installed_requests(wanted, with_page))
+        self.assertFalse(space._same_installed_requests(with_page, wanted))       # asked for but not installed
+        other = space._requests(list(honors.REQUESTS) + [("nfl2k5_other", "code", 4096, 16)])
+        self.assertFalse(space._same_installed_requests(wanted, other))
+        both = space._requests(list(honors.REQUESTS) + [space.AWARDS_REQUEST, ("nfl2k5_other", "code", 4096, 16)])
+        self.assertFalse(space._same_installed_requests(wanted, both))
+
     def test_the_twin_uses_the_native_tables(self):
         text = SOURCE.read_text(encoding="utf-8")
 
